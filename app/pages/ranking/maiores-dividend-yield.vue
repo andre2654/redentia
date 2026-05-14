@@ -1,374 +1,402 @@
 <template>
   <NuxtLayout name="default" title="Maiores Dividend Yields da Bolsa">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Hero -->
-      <MoleculesPageHeader
-        :back-link="{ to: '/ranking', label: 'Todos os rankings' }"
-        icon="i-lucide-coins"
-        icon-style="circle"
-        icon-color="primary"
-        eyebrow="Ações e FIIs com Renda Passiva Mensal"
-        title="Maiores Dividend Yields"
-        description="As 50 ações e fundos imobiliários (FIIs) com maiores dividend yields da bolsa brasileira (B3) nos últimos 12 meses (TTM). Inclui dividendos pagos por bancos (BBSE3, ITUB4, BBDC4, BBAS3), seguradoras, energia, saneamento, FIIs de tijolo (HGLG11) e FIIs de papel (MXRF11, KNIP11, KNCR11). Ranking atualizado diariamente após pregão, baseado em dados oficiais. Considera dividendos + JCP (Juros sobre Capital Próprio)."
-      />
+    <RankingUiShell
+      back-to="/ranking"
+      back-label="Todos os rankings"
+      status-meta="Top 50 · DY 12 meses · B3"
+    >
+      <template #hero>
+        <RankingUiHero
+          eyebrow="Ações e FIIs com Renda Passiva Mensal"
+          :chips="heroChips"
+        >
+          <template #title>Maiores <em>Dividend Yields</em></template>
+          <template #lead>
+            As 50 ações e fundos imobiliários (FIIs) com maiores dividend yields da bolsa brasileira (B3) nos últimos 12 meses (TTM). Inclui dividendos pagos por bancos (BBSE3, ITUB4, BBDC4, BBAS3), seguradoras, energia, saneamento, FIIs de tijolo (HGLG11) e FIIs de papel (MXRF11, KNIP11, KNCR11). Ranking atualizado diariamente após pregão, baseado em dados oficiais. Considera dividendos + JCP (Juros sobre Capital Próprio).
+          </template>
+        </RankingUiHero>
+      </template>
 
-      <!-- Answer-first paragraph for AI citation -->
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-        Dividend Yield (DY) é o percentual de dividendos pagos por uma ação ou FII em relação ao seu preço atual: DY = (Dividendos 12 meses ÷ Preço Atual) × 100. Considerado bom: 4-8% para ações maduras, 8-12% para FIIs. DY acima de 12% pode indicar oportunidade ou armadilha de valor (value trap), exige análise do payout, geração de caixa e sustentabilidade. Este ranking lista os 50 ativos com maior DY da B3.
-      </p>
+      <template v-if="leader" #leader>
+        <RankingUiLeader
+          :ticker="leader.stock || leader.ticker || ''"
+          :name="leader.name"
+          :sector="leader.sector"
+          :value="Number(leader.dividend_yield ?? 0)"
+          value-label="DY 12 meses"
+          :price="Number(leader.market_price ?? leader.close ?? 0)"
+        />
+      </template>
 
-      <!-- Type filter tabs -->
-      <AtomsSegmented
-        v-model="activeType"
-        :options="tabs"
-        aria-label="Filtrar tipo de ativo"
-      />
-
-      <!-- Table -->
-      <div v-if="pending" class="flex items-center justify-center py-16">
-        <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
-      </div>
-      <MoleculesRankingTable
-        v-else
-        :rows="rows"
-        :columns="['dy', 'pe', 'change', 'marketCap']"
-        change-label="Hoje"
-      />
-
-      <!-- SEO content -->
-      <article
-        class="mt-8 flex flex-col gap-6 border-t pt-8"
-        :style="{ borderColor: 'var(--brand-border)' }"
-      >
-        <h2>O que é Dividend Yield?</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          Dividend Yield (DY) é o indicador que mostra quanto uma empresa pagou em dividendos nos últimos 12 meses em relação ao preço atual da ação. Um DY de 10% significa que, para cada R$ 100 investidos, o acionista recebeu R$ 10 em proventos no período. É o principal termômetro de renda passiva no Brasil, usado tanto pra ações de setores maduros (bancos, energia, saneamento, transmissão, seguradoras) quanto pra fundos imobiliários, onde o fluxo de dividendos é mais estável e previsível mês a mês.
-        </p>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          A fórmula do DY considera dividendos + JCP (Juros sobre Capital Próprio) pagos nos últimos 12 meses dividido pelo preço da cota hoje. Como o numerador é histórico e o denominador é atual, o indicador sobe quando o preço cai e desce quando o preço sobe, mesmo sem mudança nos pagamentos. Por isso usar DY isolado pode enganar, sempre cruze com payout, geração de caixa, dívida líquida e consistência de pagamento dos últimos 5 anos.
-        </p>
-
-        <h3>Como o ranking é calculado?</h3>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          O ranking considera o dividend yield nos últimos 12 meses (TTM), cruzando os dividendos pagos com o preço atual de cada ativo. Aplicamos filtros de qualidade para evitar distorções: excluímos DY acima de 50% (tipicamente erros de dados) e ativos sem histórico recente de pagamentos. Os dados vêm direto do feed oficial da B3 + filtros internos de saneamento (anti split/subscrição mal classificada).
-        </p>
-
-        <h3>Atenção ao "DY alto demais"</h3>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          Um DY muito elevado pode indicar tanto uma oportunidade quanto uma armadilha de valor (<em>value trap</em>). Quando o preço da ação cai muito por problemas fundamentais, o DY histórico sobe artificialmente, mas dividendos futuros podem ser cortados. Use o ranking como ponto de partida e sempre analise o histórico de 5 anos, payout (acima de 80% pra ações é arriscado), geração de caixa operacional e endividamento.
-        </p>
-
-        <!-- Top ações pagadoras -->
-        <h2>Melhores Ações Pagadoras de Dividendos em 2026</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          Lista das ações brasileiras com histórico mais consistente de pagamento de dividendos, usadas como núcleo de carteiras de renda passiva. Ordem foca em consistência (5+ anos pagando) mais do que em DY pico do momento.
-        </p>
-        <div class="grid gap-3 md:grid-cols-2">
-          <div
-            v-for="acao in topAcoes"
-            :key="acao.ticker"
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <div class="flex items-baseline gap-2">
-              <NuxtLink
-                :to="`/asset/${acao.ticker}`"
-                class="font-semibold transition hover:opacity-80"
-                :style="{ color: 'var(--brand-primary)' }"
-              >
-                {{ acao.ticker }}
-              </NuxtLink>
-              <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ acao.nome }}</span>
-            </div>
-            <p class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ acao.descricao }}</p>
+      <section class="dy-content">
+        <!-- Table toolbar (eyebrow + filter) -->
+        <header class="dy-table-toolbar">
+          <div class="dy-table-toolbar-meta">
+            <p class="dy-table-toolbar-eyebrow">Lista completa</p>
+            <p class="dy-table-toolbar-count">
+              {{ rows?.length || 0 }} ativos pagadores de dividendos
+            </p>
           </div>
+          <AtomsSegmented
+            v-model="activeType"
+            :options="tabs"
+            aria-label="Filtrar tipo de ativo"
+          />
+        </header>
+
+        <!-- Table -->
+        <div v-if="pending" class="flex items-center justify-center py-16">
+          <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
         </div>
+        <MoleculesRankingTable
+          v-else
+          :rows="rows"
+          :columns="['dy', 'pe', 'change', 'marketCap']"
+          change-label="Hoje"
+        />
 
-        <!-- Top FIIs pagadores -->
-        <h2>Melhores FIIs Pagadores de Dividendos Mensais</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          Os fundos imobiliários listados na B3 são obrigados por lei a distribuir 95% do lucro semestralmente, mas a maioria distribui mensalmente, daí o apelo pra renda passiva. Separamos por categoria.
+        <!-- Answer-first paragraph (abaixo da tabela, centralizado, fonte normal) -->
+        <p class="dy-answer-first">
+          Dividend Yield (DY) é o percentual de dividendos pagos por uma ação ou FII em relação ao seu preço atual: DY = (Dividendos 12 meses ÷ Preço Atual) × 100. Considerado bom: 4-8% para ações maduras, 8-12% para FIIs. DY acima de 12% pode indicar oportunidade ou armadilha de valor (value trap), exige análise do payout, geração de caixa e sustentabilidade. Este ranking lista os 50 ativos com maior DY da B3.
         </p>
-        <h3>FIIs de Tijolo (imóveis físicos)</h3>
-        <div class="grid gap-3 md:grid-cols-2">
-          <div
-            v-for="fii in fiisTijolo"
-            :key="fii.ticker"
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <div class="flex items-baseline gap-2">
-              <NuxtLink
-                :to="`/asset/${fii.ticker}`"
-                class="font-semibold transition hover:opacity-80"
-                :style="{ color: 'var(--brand-primary)' }"
-              >
-                {{ fii.ticker }}
-              </NuxtLink>
-              <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ fii.nome }}</span>
-            </div>
-            <p class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ fii.descricao }}</p>
-          </div>
-        </div>
-        <h3>FIIs de Papel (CRIs e debêntures)</h3>
-        <div class="grid gap-3 md:grid-cols-2">
-          <div
-            v-for="fii in fiisPapel"
-            :key="fii.ticker"
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <div class="flex items-baseline gap-2">
-              <NuxtLink
-                :to="`/asset/${fii.ticker}`"
-                class="font-semibold transition hover:opacity-80"
-                :style="{ color: 'var(--brand-primary)' }"
-              >
-                {{ fii.ticker }}
-              </NuxtLink>
-              <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ fii.nome }}</span>
-            </div>
-            <p class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ fii.descricao }}</p>
-          </div>
-        </div>
 
-        <!-- FIIs de Papel vs Tijolo -->
-        <h2>FIIs de Papel vs FIIs de Tijolo</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          As duas grandes famílias de fundos imobiliários têm dinâmicas, riscos e correlações diferentes. Misturar as duas é o primeiro passo pra diversificar uma carteira de renda passiva.
-        </p>
-        <div class="grid gap-4 md:grid-cols-2">
-          <div
-            class="brand-card border p-5"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <h4 class="mb-2" :style="{ color: 'var(--brand-primary)' }">FIIs de Tijolo</h4>
-            <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
-              Investem em imóveis físicos (galpões logísticos, lajes corporativas, shoppings, hospitais, agências bancárias) e geram receita via aluguel. DY tipicamente 8-10%, valor da cota oscila com o ciclo imobiliário, vacância, reajustes contratuais (IGP-M ou IPCA) e taxa de juros longa. Bom contra inflação no longo prazo, mas mais sensível a recessão.
-            </p>
-          </div>
-          <div
-            class="brand-card border p-5"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <h4 class="mb-2" :style="{ color: 'var(--brand-primary)' }">FIIs de Papel</h4>
-            <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
-              Investem em CRIs (Certificados de Recebíveis Imobiliários), LCIs e debêntures, recebem juros corrigidos por IPCA ou CDI. DY tipicamente 9-13%, mais correlacionado com Selic, CDI e IPCA do que com mercado imobiliário físico. Distribuem mensalmente quase como renda fixa estruturada, mas com risco de crédito do emissor do CRI.
-            </p>
-          </div>
-        </div>
+        <!-- SEO content -->
+        <article
+          class="mt-8 flex flex-col gap-6 border-t pt-8"
+          :style="{ borderColor: 'var(--brand-border)' }"
+        >
+          <h2>O que é Dividend Yield?</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            Dividend Yield (DY) é o indicador que mostra quanto uma empresa pagou em dividendos nos últimos 12 meses em relação ao preço atual da ação. Um DY de 10% significa que, para cada R$ 100 investidos, o acionista recebeu R$ 10 em proventos no período. É o principal termômetro de renda passiva no Brasil, usado tanto pra ações de setores maduros (bancos, energia, saneamento, transmissão, seguradoras) quanto pra fundos imobiliários, onde o fluxo de dividendos é mais estável e previsível mês a mês.
+          </p>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            A fórmula do DY considera dividendos + JCP (Juros sobre Capital Próprio) pagos nos últimos 12 meses dividido pelo preço da cota hoje. Como o numerador é histórico e o denominador é atual, o indicador sobe quando o preço cai e desce quando o preço sobe, mesmo sem mudança nos pagamentos. Por isso usar DY isolado pode enganar, sempre cruze com payout, geração de caixa, dívida líquida e consistência de pagamento dos últimos 5 anos.
+          </p>
 
-        <!-- Dividendos vs JCP -->
-        <h2>Dividendos vs JCP (Juros sobre Capital Próprio)</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          As empresas brasileiras podem remunerar acionistas de duas formas, e ambas contam pro dividend yield deste ranking.
-        </p>
-        <div class="flex flex-col gap-3">
-          <div
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
-              <strong>Dividendos</strong>: distribuição direta de lucro líquido. Atualmente ISENTOS de Imposto de Renda pra pessoa física no recebimento (regra desde 1996).
-            </p>
-          </div>
-          <div
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
-              <strong>JCP (Juros sobre Capital Próprio)</strong>: remuneração que a empresa pode deduzir da base do IR corporativo (IRPJ + CSLL), gerando economia tributária. Ao acionista chega líquido com 15% de IR retido na fonte, mas como a empresa pagou menos imposto, o efeito combinado costuma ser melhor que dividendo puro.
-            </p>
-          </div>
-          <div
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
-              <strong>Por que bancos usam tanto JCP</strong>: Itaú, Bradesco, Santander e BB têm caixa de sobra e patrimônio líquido alto, então maximizam o JCP pra reduzir IR corporativo. Por isso aparecem todo mês com DY consistente.
-            </p>
-          </div>
-          <div
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
-              <strong>Tributação 2026</strong>: o PL 1.087/2025 propõe alíquota de 10% sobre dividendos recebidos acima de R$ 50 mil/mês por pessoa física. Está em discussão no Senado, vigência provável a partir de 2027 caso aprovado. Não afeta investidores de renda passiva comum, mas muda o cálculo pra grandes patrimônios.
-            </p>
-          </div>
-        </div>
+          <h3>Como o ranking é calculado?</h3>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            O ranking considera o dividend yield nos últimos 12 meses (TTM), cruzando os dividendos pagos com o preço atual de cada ativo. Aplicamos filtros de qualidade para evitar distorções: excluímos DY acima de 50% (tipicamente erros de dados) e ativos sem histórico recente de pagamentos. Os dados vêm direto do feed oficial da B3 + filtros internos de saneamento (anti split/subscrição mal classificada).
+          </p>
 
-        <!-- Setores por DY -->
-        <h2>Setores com Maiores Dividendos na B3</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          Mapa rápido de onde os dividendos vivem na bolsa brasileira. Use pra montar uma carteira de renda passiva diversificada por setor, evitando concentração de risco.
-        </p>
-        <div class="overflow-x-auto">
-          <table class="w-full border-collapse">
-            <thead
-              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+          <h3>Atenção ao "DY alto demais"</h3>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            Um DY muito elevado pode indicar tanto uma oportunidade quanto uma armadilha de valor (<em>value trap</em>). Quando o preço da ação cai muito por problemas fundamentais, o DY histórico sobe artificialmente, mas dividendos futuros podem ser cortados. Use o ranking como ponto de partida e sempre analise o histórico de 5 anos, payout (acima de 80% pra ações é arriscado), geração de caixa operacional e endividamento.
+          </p>
+
+          <!-- Top ações pagadoras -->
+          <h2>Melhores Ações Pagadoras de Dividendos em 2026</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            Lista das ações brasileiras com histórico mais consistente de pagamento de dividendos, usadas como núcleo de carteiras de renda passiva. Ordem foca em consistência (5+ anos pagando) mais do que em DY pico do momento.
+          </p>
+          <div class="grid gap-3 md:grid-cols-2">
+            <div
+              v-for="acao in topAcoes"
+              :key="acao.ticker"
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
             >
-              <tr>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">Setor</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">DY Médio</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">Top Tickers</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(setor, idx) in setoresDividendos" :key="setor.nome" :style="idx % 2 === 1 ? { backgroundColor: 'color-mix(in srgb, var(--brand-surface) 30%, transparent)' } : {}">
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">{{ setor.nome }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-primary)' }">{{ setor.dy }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">{{ setor.tickers }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
-          Setores cíclicos (commodities, varejo, construção) podem entregar DY pontual alto após anos bons, mas tendem a oscilar muito. Pra renda recorrente, prefira utilities (energia, saneamento, transmissão) e financeiro.
-        </p>
+              <div class="flex items-baseline gap-2">
+                <NuxtLink
+                  :to="`/asset/${acao.ticker}`"
+                  class="font-semibold transition hover:opacity-80"
+                  :style="{ color: 'var(--brand-primary)' }"
+                >
+                  {{ acao.ticker }}
+                </NuxtLink>
+                <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ acao.nome }}</span>
+              </div>
+              <p class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ acao.descricao }}</p>
+            </div>
+          </div>
 
-        <!-- Estratégia renda passiva -->
-        <h2>Estratégia de Renda Passiva Mensal com Dividendos</h2>
-        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
-          Cinco regras práticas pra quem quer construir um fluxo previsível de dividendos sem cair em armadilha de valor.
-        </p>
-        <div class="space-y-3">
-          <div class="flex gap-4">
-            <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">1</div>
-            <div>
-              <h4 :style="{ color: 'var(--brand-text)' }">Diversifique por classe e setor</h4>
-              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Combine 5-10 ações com 5-10 FIIs de setores diferentes (bancos, energia, transmissão, FIIs de tijolo, FIIs de papel). Evita concentração de risco específico.</p>
+          <!-- Top FIIs pagadores -->
+          <h2>Melhores FIIs Pagadores de Dividendos Mensais</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            Os fundos imobiliários listados na B3 são obrigados por lei a distribuir 95% do lucro semestralmente, mas a maioria distribui mensalmente, daí o apelo pra renda passiva. Separamos por categoria.
+          </p>
+          <h3>FIIs de Tijolo (imóveis físicos)</h3>
+          <div class="grid gap-3 md:grid-cols-2">
+            <div
+              v-for="fii in fiisTijolo"
+              :key="fii.ticker"
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <div class="flex items-baseline gap-2">
+                <NuxtLink
+                  :to="`/asset/${fii.ticker}`"
+                  class="font-semibold transition hover:opacity-80"
+                  :style="{ color: 'var(--brand-primary)' }"
+                >
+                  {{ fii.ticker }}
+                </NuxtLink>
+                <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ fii.nome }}</span>
+              </div>
+              <p class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ fii.descricao }}</p>
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">2</div>
-            <div>
-              <h4 :style="{ color: 'var(--brand-text)' }">Foque em consistência, não em DY pico</h4>
-              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Empresa que pagou dividendo todos os anos nos últimos 5 anos vale mais que uma com DY de 18% mas histórico errático. Veja o gráfico de proventos do ativo.</p>
+          <h3>FIIs de Papel (CRIs e debêntures)</h3>
+          <div class="grid gap-3 md:grid-cols-2">
+            <div
+              v-for="fii in fiisPapel"
+              :key="fii.ticker"
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <div class="flex items-baseline gap-2">
+                <NuxtLink
+                  :to="`/asset/${fii.ticker}`"
+                  class="font-semibold transition hover:opacity-80"
+                  :style="{ color: 'var(--brand-primary)' }"
+                >
+                  {{ fii.ticker }}
+                </NuxtLink>
+                <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ fii.nome }}</span>
+              </div>
+              <p class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ fii.descricao }}</p>
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">3</div>
-            <div>
-              <h4 :style="{ color: 'var(--brand-text)' }">Reinvista enquanto está acumulando</h4>
-              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Reinvestir dividendos é o segredo do efeito composto. Só comece a "viver dos dividendos" quando o patrimônio for suficiente, antes disso reinveste tudo.</p>
+
+          <!-- FIIs de Papel vs Tijolo -->
+          <h2>FIIs de Papel vs FIIs de Tijolo</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            As duas grandes famílias de fundos imobiliários têm dinâmicas, riscos e correlações diferentes. Misturar as duas é o primeiro passo pra diversificar uma carteira de renda passiva.
+          </p>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div
+              class="brand-card border p-5"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <h4 class="mb-2" :style="{ color: 'var(--brand-primary)' }">FIIs de Tijolo</h4>
+              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
+                Investem em imóveis físicos (galpões logísticos, lajes corporativas, shoppings, hospitais, agências bancárias) e geram receita via aluguel. DY tipicamente 8-10%, valor da cota oscila com o ciclo imobiliário, vacância, reajustes contratuais (IGP-M ou IPCA) e taxa de juros longa. Bom contra inflação no longo prazo, mas mais sensível a recessão.
+              </p>
+            </div>
+            <div
+              class="brand-card border p-5"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <h4 class="mb-2" :style="{ color: 'var(--brand-primary)' }">FIIs de Papel</h4>
+              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
+                Investem em CRIs (Certificados de Recebíveis Imobiliários), LCIs e debêntures, recebem juros corrigidos por IPCA ou CDI. DY tipicamente 9-13%, mais correlacionado com Selic, CDI e IPCA do que com mercado imobiliário físico. Distribuem mensalmente quase como renda fixa estruturada, mas com risco de crédito do emissor do CRI.
+              </p>
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">4</div>
-            <div>
-              <h4 :style="{ color: 'var(--brand-text)' }">Combine FIIs (mensais) com ações (trimestrais)</h4>
-              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">FIIs distribuem todo mês, ações geralmente trimestral ou semestral. Misturar os dois alisa a curva mensal de proventos.</p>
+
+          <!-- Dividendos vs JCP -->
+          <h2>Dividendos vs JCP (Juros sobre Capital Próprio)</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            As empresas brasileiras podem remunerar acionistas de duas formas, e ambas contam pro dividend yield deste ranking.
+          </p>
+          <div class="flex flex-col gap-3">
+            <div
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
+                <strong>Dividendos</strong>: distribuição direta de lucro líquido. Atualmente ISENTOS de Imposto de Renda pra pessoa física no recebimento (regra desde 1996).
+              </p>
+            </div>
+            <div
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
+                <strong>JCP (Juros sobre Capital Próprio)</strong>: remuneração que a empresa pode deduzir da base do IR corporativo (IRPJ + CSLL), gerando economia tributária. Ao acionista chega líquido com 15% de IR retido na fonte, mas como a empresa pagou menos imposto, o efeito combinado costuma ser melhor que dividendo puro.
+              </p>
+            </div>
+            <div
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
+                <strong>Por que bancos usam tanto JCP</strong>: Itaú, Bradesco, Santander e BB têm caixa de sobra e patrimônio líquido alto, então maximizam o JCP pra reduzir IR corporativo. Por isso aparecem todo mês com DY consistente.
+              </p>
+            </div>
+            <div
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">
+                <strong>Tributação 2026</strong>: o PL 1.087/2025 propõe alíquota de 10% sobre dividendos recebidos acima de R$ 50 mil/mês por pessoa física. Está em discussão no Senado, vigência provável a partir de 2027 caso aprovado. Não afeta investidores de renda passiva comum, mas muda o cálculo pra grandes patrimônios.
+              </p>
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">5</div>
-            <div>
-              <h4 :style="{ color: 'var(--brand-text)' }">Atenção ao payout</h4>
-              <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Payout acima de 80% pra ações é arriscado, sinal de que a empresa distribui quase tudo o que ganha e tem pouco caixa pra investir ou aguentar crise. Pra FIIs o payout obrigatório é 95%, então o risco é outro (vacância, calote em CRI).</p>
+
+          <!-- Setores por DY -->
+          <h2>Setores com Maiores Dividendos na B3</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            Mapa rápido de onde os dividendos vivem na bolsa brasileira. Use pra montar uma carteira de renda passiva diversificada por setor, evitando concentração de risco.
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead
+                :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+              >
+                <tr>
+                  <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">Setor</th>
+                  <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">DY Médio</th>
+                  <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">Top Tickers</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(setor, idx) in setoresDividendos" :key="setor.nome" :style="idx % 2 === 1 ? { backgroundColor: 'color-mix(in srgb, var(--brand-surface) 30%, transparent)' } : {}">
+                  <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">{{ setor.nome }}</td>
+                  <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-primary)' }">{{ setor.dy }}</td>
+                  <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', color: 'var(--brand-text)' }">{{ setor.tickers }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
+            Setores cíclicos (commodities, varejo, construção) podem entregar DY pontual alto após anos bons, mas tendem a oscilar muito. Pra renda recorrente, prefira utilities (energia, saneamento, transmissão) e financeiro.
+          </p>
+
+          <!-- Estratégia renda passiva -->
+          <h2>Estratégia de Renda Passiva Mensal com Dividendos</h2>
+          <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
+            Cinco regras práticas pra quem quer construir um fluxo previsível de dividendos sem cair em armadilha de valor.
+          </p>
+          <div class="space-y-3">
+            <div class="flex gap-4">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">1</div>
+              <div>
+                <h4 :style="{ color: 'var(--brand-text)' }">Diversifique por classe e setor</h4>
+                <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Combine 5-10 ações com 5-10 FIIs de setores diferentes (bancos, energia, transmissão, FIIs de tijolo, FIIs de papel). Evita concentração de risco específico.</p>
+              </div>
             </div>
+            <div class="flex gap-4">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">2</div>
+              <div>
+                <h4 :style="{ color: 'var(--brand-text)' }">Foque em consistência, não em DY pico</h4>
+                <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Empresa que pagou dividendo todos os anos nos últimos 5 anos vale mais que uma com DY de 18% mas histórico errático. Veja o gráfico de proventos do ativo.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">3</div>
+              <div>
+                <h4 :style="{ color: 'var(--brand-text)' }">Reinvista enquanto está acumulando</h4>
+                <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Reinvestir dividendos é o segredo do efeito composto. Só comece a "viver dos dividendos" quando o patrimônio for suficiente, antes disso reinveste tudo.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">4</div>
+              <div>
+                <h4 :style="{ color: 'var(--brand-text)' }">Combine FIIs (mensais) com ações (trimestrais)</h4>
+                <p class="text-sm" :style="{ color: 'var(--brand-text)' }">FIIs distribuem todo mês, ações geralmente trimestral ou semestral. Misturar os dois alisa a curva mensal de proventos.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="flex size-8 shrink-0 items-center justify-center rounded-full font-bold" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)', color: 'var(--brand-primary)' }">5</div>
+              <div>
+                <h4 :style="{ color: 'var(--brand-text)' }">Atenção ao payout</h4>
+                <p class="text-sm" :style="{ color: 'var(--brand-text)' }">Payout acima de 80% pra ações é arriscado, sinal de que a empresa distribui quase tudo o que ganha e tem pouco caixa pra investir ou aguentar crise. Pra FIIs o payout obrigatório é 95%, então o risco é outro (vacância, calote em CRI).</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Glossário -->
+          <h2>Glossário Rápido</h2>
+          <dl class="grid gap-3 md:grid-cols-2">
+            <div
+              v-for="termo in glossario"
+              :key="termo.sigla"
+              class="brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <dt class="font-semibold" :style="{ color: 'var(--brand-primary)' }">{{ termo.sigla }}</dt>
+              <dd class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ termo.definicao }}</dd>
+            </div>
+          </dl>
+
+          <!-- FAQ -->
+          <h2>Perguntas Frequentes sobre Dividend Yield</h2>
+          <div class="space-y-4">
+            <details
+              v-for="faq in faqItems"
+              :key="faq.q"
+              class="group brand-card border p-4"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <summary class="cursor-pointer list-none flex items-center justify-between gap-3" :style="{ color: 'var(--brand-text)' }">
+                <span class="font-medium">{{ faq.q }}</span>
+                <UIcon name="i-lucide-chevron-down" class="size-5 shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <p class="mt-3 text-sm" :style="{ color: 'var(--brand-text)' }">{{ faq.a }}</p>
+            </details>
+          </div>
+        </article>
+
+        <!-- Outros Rankings -->
+        <div
+          class="flex flex-col gap-4 rounded-[30px] p-6"
+          :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+        >
+          <h2>Outros Rankings</h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            <NuxtLink
+              v-for="link in outrosRankings"
+              :key="link.to"
+              :to="link.to"
+              class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+              :style="{
+                backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+                borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+              }"
+            >
+              <UIcon
+                :name="link.icon"
+                class="size-8 shrink-0"
+                :style="{ color: 'var(--brand-primary)' }"
+              />
+              <div>
+                <h3 :style="{ color: 'var(--brand-text)' }">{{ link.titulo }}</h3>
+                <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ link.descricao }}</p>
+              </div>
+            </NuxtLink>
           </div>
         </div>
-
-        <!-- Glossário -->
-        <h2>Glossário Rápido</h2>
-        <dl class="grid gap-3 md:grid-cols-2">
-          <div
-            v-for="termo in glossario"
-            :key="termo.sigla"
-            class="brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <dt class="font-semibold" :style="{ color: 'var(--brand-primary)' }">{{ termo.sigla }}</dt>
-            <dd class="mt-1 text-sm" :style="{ color: 'var(--brand-text)' }">{{ termo.definicao }}</dd>
-          </div>
-        </dl>
-
-        <!-- FAQ -->
-        <h2>Perguntas Frequentes sobre Dividend Yield</h2>
-        <div class="space-y-4">
-          <details
-            v-for="faq in faqItems"
-            :key="faq.q"
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between gap-3" :style="{ color: 'var(--brand-text)' }">
-              <span class="font-medium">{{ faq.q }}</span>
-              <UIcon name="i-lucide-chevron-down" class="size-5 shrink-0 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm" :style="{ color: 'var(--brand-text)' }">{{ faq.a }}</p>
-          </details>
-        </div>
-      </article>
-
-      <!-- Outros Rankings -->
-      <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
-        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
-      >
-        <h2>Outros Rankings</h2>
-        <div class="grid gap-4 md:grid-cols-2">
-          <NuxtLink
-            v-for="link in outrosRankings"
-            :key="link.to"
-            :to="link.to"
-            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <UIcon
-              :name="link.icon"
-              class="size-8 shrink-0"
-              :style="{ color: 'var(--brand-primary)' }"
-            />
-            <div>
-              <h3 :style="{ color: 'var(--brand-text)' }">{{ link.titulo }}</h3>
-              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ link.descricao }}</p>
-            </div>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
+      </section>
+    </RankingUiShell>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+import type { RankingHeroChip } from '~/components/ranking-ui/Hero.vue'
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -398,6 +426,21 @@ const { data: rows, pending } = await useAsyncData(
     default: () => [],
   }
 )
+
+// Leader spotlight: top 1 do filtro atual. Usa rows[0] quando carregado.
+const leader = computed(() => {
+  const list = rows.value as any[] | null
+  return list && list.length ? list[0] : null
+})
+
+// Chips de confiança no hero (V5 design). Não substituem nenhum SEO content,
+// apenas complementam visualmente o cabeçalho.
+const heroChips: RankingHeroChip[] = [
+  { label: 'Top 50 atualizado diário', tone: 'positive' },
+  { label: 'Dados oficiais B3' },
+  { label: 'Dividendos + JCP' },
+  { label: 'Anti value trap' },
+]
 
 // ====================================================================
 // Top acoes pagadoras de dividendos — escolhidas por consistencia 5+ anos
@@ -528,3 +571,66 @@ usePageSeo({
   ],
 })
 </script>
+
+<style scoped>
+.dy-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 48px 24px 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border-subtle);
+}
+@media (min-width: 768px) {
+  .dy-content { padding: 64px 32px 96px; }
+}
+@media (min-width: 1024px) {
+  .dy-content { padding: 80px 56px 120px; }
+}
+
+.dy-table-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+@media (min-width: 640px) {
+  .dy-table-toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+  }
+}
+.dy-table-toolbar-meta { display: flex; flex-direction: column; gap: 4px; }
+.dy-table-toolbar-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-primary);
+  margin: 0;
+}
+.dy-table-toolbar-count {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-heading);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.dy-answer-first {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--brand-text-muted);
+  text-align: center;
+  max-width: 68ch;
+  margin: 8px auto 0;
+}
+</style>

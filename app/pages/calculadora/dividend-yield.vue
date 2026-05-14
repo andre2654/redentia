@@ -1,26 +1,31 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Dividend Yield">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-coins"
-        icon-color="secondary"
-        title="Calculadora de Dividend Yield 2026: DY Atual, Projetado e On Cost de Ações e FIIs"
-        description="Dividend Yield (DY) é o percentual de dividendos pagos em relação ao preço da ação: DY = (Dividendos Anuais ÷ Preço) × 100. Exemplo: ITUB4 a R$ 28,00 com R$ 1,80 anual tem DY de 6,4%. Considerado bom: 4-8% para ações, 8-12% para FIIs. Esta calculadora mostra DY atual, projetado e on cost (no seu preço de compra)."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-coins', label: 'Ações e FIIs', color: 'primary' },
-          { icon: 'i-lucide-trending-up', label: 'DY on cost + projeção', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
+    <CalculatorDividendYield
+      :assets="assets"
+      :assets-loading="assetsLoading"
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Calculadora · Dividend Yield</p>
+        <h1 class="calc-title">
+          DY Atual, Projetado e On Cost de Ações e
+          <em class="calc-italic">FIIs.</em>
+        </h1>
+        <p class="calc-lead">
+          Dividend Yield (DY) é o percentual de dividendos pagos em relação ao preço da ação: <strong>DY = (Dividendos Anuais ÷ Preço) × 100</strong>. Exemplo: ITUB4 a R$ 28,00 com R$ 1,80 anual tem DY de 6,4%. Considerado bom: 4-8% para ações, 8-12% para FIIs. Esta calculadora mostra DY atual, projetado e on cost (no seu preço de compra).
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> Ações e FIIs</li>
+          <li><span class="dot" /> DY on cost + projeção</li>
+        </ul>
+      </template>
+    </CalculatorDividendYield>
 
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
-        Calcule na hora o dividend yield de qualquer ação ou FII da B3. Veja DY atual, DY on cost (sobre o seu preço de compra), projeção do DY em 1 e 3 anos com base em LPA, payout e crescimento, e compare ITUB4, PETR4, BBAS3, TAEE11 e centenas de outras pagadoras de dividendos. Ideal pra montar carteira de renda passiva, sem planilha, sem cadastro, sem propaganda.
-      </p>
-
-      <CalculatorDividendYield :assets="assets" :assets-loading="assetsLoading" />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Cenarios populares (internal linking + deep-links) -->
       <!--
@@ -32,7 +37,7 @@
         "DY on cost PETR4", "DY FII TAEE11", "comparar DY acoes FIIs".
       -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -42,12 +47,12 @@
         <p class="text-sm">
           Veja na hora o DY dos ativos mais buscados e os cenários on cost mais comuns. Basta clicar e a calculadora carrega já preenchida.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <NuxtLink
             v-for="s in popularScenarios"
             :key="s.label"
             :to="s.to"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -62,7 +67,7 @@
         </div>
       </div>
 
-      <div class="quiet-prose max-w-none">
+      <div class="quiet-prose calc-edu-prose max-w-none">
         <h2>Simulador de dividend yield grátis e online</h2>
         <p class="leading-relaxed">
           Use a calculadora acima para simular o DY de qualquer ação ou FII da B3 em segundos. Ideal pra comparar pagadoras antes de montar a carteira de renda passiva.

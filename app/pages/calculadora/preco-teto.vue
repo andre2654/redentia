@@ -1,35 +1,36 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Preço Teto">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-target"
-        icon-color="secondary"
-        title="Calculadora de Preço Teto e Preço Justo 2026: Graham, Bazin, P/L e VPA"
-        description="O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por Graham (√(22.5×LPA×VPA)), Bazin (Dividendo÷0,06), P/L setorial ou VPA×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-database', label: 'Dados oficiais da B3', color: 'primary' },
-          { icon: 'i-lucide-layers', label: 'Graham · Bazin · P/L · VPA', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
+    <CalculatorFairPrice
+      :assets="assets"
+      :assets-loading="assetsLoading"
+      :sectors="sectors"
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Calculadora · Preço Teto e Preço Justo</p>
+        <h1 class="calc-title">
+          Graham, Bazin, P/L e
+          <em class="calc-italic">VPA.</em>
+        </h1>
+        <p class="calc-lead">
+          O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por <strong>Graham</strong> (√(22.5×LPA×VPA)), <strong>Bazin</strong> (Dividendo÷0,06), <strong>P/L</strong> setorial ou <strong>VPA</strong>×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> Dados oficiais da B3</li>
+          <li><span class="dot" /> Graham · Bazin · P/L · VPA</li>
+        </ul>
+      </template>
+    </CalculatorFairPrice>
 
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
-        Escolha uma ação da B3 e receba na hora o preço justo calculado pelas 4 principais metodologias da análise fundamentalista, com dados atualizados, consenso de margem de segurança e veredito de compra. Sem planilhas, sem cadastro.
-      </p>
-
-      <!-- Calculadora -->
-      <CalculatorFairPrice
-        :assets="assets"
-        :assets-loading="assetsLoading"
-        :sectors="sectors"
-      />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Ações Populares (internal linking + deep links para SEO) -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -39,28 +40,28 @@
         <p class="text-sm">
           Acesse o cálculo pronto das ações mais buscadas da Bolsa brasileira.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           <NuxtLink
             v-for="t in popularTickers"
             :key="t.ticker"
             :to="`/calculadora/preco-teto?ticker=${t.ticker}`"
-            class="group flex items-center gap-2 rounded-xl border px-3 py-2 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-2 rounded-md border px-3 py-2 transition hover:border-secondary/40 hover:bg-secondary/10"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
-            <UIcon name="i-lucide-target" class="size-4 text-secondary" />
-            <div class="flex flex-col">
-              <span class="text-sm">{{ t.ticker }}</span>
-              <span class="text-[10px] line-clamp-1">{{ t.name }}</span>
+            <UIcon name="i-lucide-target" class="size-4 shrink-0 text-secondary" />
+            <div class="flex min-w-0 flex-col">
+              <span class="text-sm font-medium">{{ t.ticker }}</span>
+              <span class="line-clamp-1 text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">{{ t.name }}</span>
             </div>
           </NuxtLink>
         </div>
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="quiet-prose max-w-none">
+      <div class="quiet-prose calc-edu-prose max-w-none">
         <h2>Simulador de preço teto grátis e online</h2>
         <p class="leading-relaxed">
           Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.

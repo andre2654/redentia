@@ -9,7 +9,7 @@
 -->
 <template>
   <NuxtLayout name="default" title="Calculadoras Financeiras">
-    <section class="flex flex-col gap-14 px-6 py-10">
+    <section class="flex flex-col gap-10 px-4 py-6 sm:gap-14 sm:px-6 sm:py-10">
       <!-- ============ Hero ============
            Page-level h1 is rendered ALWAYS. The static layout cascade
            hides any h1 inside `.static-content`, so on static this
@@ -45,7 +45,7 @@
           v-for="calc in calculators"
           :key="calc.to"
           :to="calc.to"
-          class="calc-card group flex flex-col gap-3 rounded-xl border p-6 transition-[border-color,background-color,box-shadow]"
+          class="calc-card group flex flex-col gap-3 rounded-xl border p-4 transition-[border-color,background-color,box-shadow] sm:p-6"
           :style="cardStyle"
         >
           <div class="flex items-center justify-between">

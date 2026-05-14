@@ -1,15 +1,21 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-coins" class="text-secondary size-6" />
-        <h2 class="text-xl">Calcular Dividend Yield</h2>
-      </div>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Dividend Yield</p>
+        <h1 class="calc-title">Calculadora de Dividend Yield</h1>
+        <p class="calc-lead">DY atual, projetado e on cost de ações e FIIs da B3.</p>
+      </slot>
+    </template>
 
-      <!-- Modo de Cálculo -->
-      <div class="flex flex-col gap-3">
-        <p class="text-sm font-semibold" :style="{ color: 'var(--text-heading)' }">Escolha o modo:</p>
-        <AtomsSegmented
+    <template #form>
+      <p class="cui-section-label">{{ results ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
+      <CalcUiField label="Escolha o modo">
+        <CalcUiSegmented
           v-model="mode"
           :options="[
             { value: 'simple', label: 'Cálculo Simples' },
@@ -18,354 +24,138 @@
           ]"
           aria-label="Modo de cálculo"
         />
-      </div>
+      </CalcUiField>
 
       <!-- Modo Simples -->
-      <div v-if="mode === 'simple'" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Selecione o Ativo" name="ticker" class="md:col-span-2">
-          <div class="flex flex-col gap-3">
-            <UInput
-              v-model="searchTerm"
-              icon="i-lucide-search"
-              placeholder="Buscar ação ou FII..."
-              size="lg"
-              variant="soft"
-              :loading="assetsLoading"
-            />
-            
-            <div
-              v-if="searchTerm && filteredAssets.length > 0"
-              class="max-h-[200px] overflow-y-auto rounded-lg border"
-              :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-            >
-              <button
-                v-for="asset in filteredAssets.slice(0, 10)"
-                :key="asset.ticker"
-                type="button"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-[var(--bg-overlay)]"
-                @click="selectAsset(asset)"
-              >
-                <UAvatar
-                  size="sm"
-                  :src="asset.logo"
-                  :alt="asset.ticker"
-                  class="shrink-0"
-                >
-                  {{ asset.ticker?.slice(0, 2) }}
-                </UAvatar>
-                <div class="flex-1">
-                  <p class="font-medium" :style="{ color: 'var(--text-heading)' }">{{ asset.ticker }}</p>
-                  <p class="text-xs line-clamp-1" :style="{ color: 'var(--text-muted)' }">{{ asset.name }}</p>
-                </div>
-              </button>
-            </div>
+      <template v-if="mode === 'simple'">
+        <CalcUiAssetSearch
+          v-model="searchTerm"
+          :results="filteredAssets"
+          :loading="assetsLoading"
+          label="Selecione o ativo"
+          placeholder="Buscar ação ou FII..."
+          @select="selectAsset"
+        />
 
-            <div
-              v-if="selectedAsset"
-              class="flex items-center gap-3 rounded-lg border px-4 py-3"
-              :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
-            >
-              <UAvatar
-                size="md"
-                :src="selectedAsset.logo"
-                :alt="selectedAsset.ticker"
-              >
-                {{ selectedAsset.ticker?.slice(0, 2) }}
-              </UAvatar>
-              <div class="flex-1">
-                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">{{ selectedAsset.ticker }}</p>
-                <p class="text-sm" :style="{ color: 'var(--text-body)' }">{{ selectedAsset.name }}</p>
-              </div>
-              <UButton
-                icon="i-lucide-x"
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                @click="clearSelection"
-              />
-            </div>
+        <div v-if="selectedAsset" class="cui-selected-asset">
+          <UAvatar size="md" :src="selectedAsset.logo" :alt="selectedAsset.ticker">
+            {{ selectedAsset.ticker?.slice(0, 2) }}
+          </UAvatar>
+          <div class="cui-selected-asset-info">
+            <p class="cui-selected-asset-ticker">{{ selectedAsset.ticker }}</p>
+            <p class="cui-selected-asset-name">{{ selectedAsset.name }}</p>
           </div>
-        </UFormField>
+          <button class="cui-selected-asset-clear" type="button" @click="clearSelection">
+            <UIcon name="i-lucide-x" class="size-4" />
+          </button>
+        </div>
 
-        <UFormField label="Preço da Ação (R$)" name="price">
-          <AtomsFormCurrencyInput
-            v-model="form.price"
-            placeholder="25,00"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Dividendos Anuais (R$)" name="annualDividend">
-          <AtomsFormCurrencyInput
-            v-model="form.annualDividend"
-            placeholder="1,50"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
+        <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+          <CalcUiField label="Preço da Ação (R$)" type="currency" v-model="form.price" placeholder="25,00" />
+          <CalcUiField label="Dividendos Anuais (R$)" type="currency" v-model="form.annualDividend" placeholder="1,50" />
+        </div>
+      </template>
 
       <!-- Modo On Cost -->
-      <div v-else-if="mode === 'onCost'" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Preço de Compra (R$)" name="purchasePrice">
-          <AtomsFormCurrencyInput
-            v-model="form.purchasePrice"
-            placeholder="20,00"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Preço Atual (R$)" name="currentPrice">
-          <AtomsFormCurrencyInput
-            v-model="form.currentPrice"
-            placeholder="25,00"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Dividendos Anuais Atuais (R$)" name="currentDividend">
-          <AtomsFormCurrencyInput
-            v-model="form.currentDividend"
-            placeholder="1,50"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
+      <div v-else-if="mode === 'onCost'" class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Preço de Compra (R$)" type="currency" v-model="form.purchasePrice" placeholder="20,00" />
+        <CalcUiField label="Preço Atual (R$)" type="currency" v-model="form.currentPrice" placeholder="25,00" />
+        <CalcUiField label="Dividendos Anuais Atuais (R$)" type="currency" v-model="form.currentDividend" placeholder="1,50" />
       </div>
 
       <!-- Modo Projeção -->
-      <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Preço da Ação (R$)" name="priceProjection">
-          <AtomsFormCurrencyInput
-            v-model="form.priceProjection"
-            placeholder="25,00"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Lucro por Ação - LPA (R$)" name="lpa">
-          <AtomsFormCurrencyInput
-            v-model="form.lpa"
-            placeholder="3,00"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Payout Ratio (%)" name="payout">
-          <AtomsFormPercentageInput
-            v-model="form.payout"
-            :min="0"
-            :max="100"
-            placeholder="50"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Crescimento do Lucro (%a.a.)" name="growth">
-          <AtomsFormPercentageInput
-            v-model="form.growth"
-            :min="-50"
-            :max="100"
-            placeholder="10"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
+      <div v-else class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Preço da Ação (R$)" type="currency" v-model="form.priceProjection" placeholder="25,00" />
+        <CalcUiField label="Lucro por Ação - LPA (R$)" type="currency" v-model="form.lpa" placeholder="3,00" />
+        <CalcUiField label="Payout Ratio (%)" type="percentage" v-model="form.payout" :min="0" :max="100" placeholder="50" />
+        <CalcUiField label="Crescimento do Lucro (% a.a.)" type="percentage" v-model="form.growth" :min="-50" :max="100" placeholder="10" />
       </div>
 
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calculator"
-        @click="calculate"
+      <CalcUiButton label="Calcular Dividend Yield" icon="i-lucide-sparkles" @click="calculate" />
+    </template>
+
+    <template #result>
+      <CalcUiResultMega
+        v-if="results"
+        :eyebrow="results.label"
+        :value="`${results.dy.toFixed(2)}%`"
+        mega-color="primary"
       >
-        Calcular Dividend Yield
-      </UButton>
-    </div>
-
-    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h3 class="text-xl">
-          Resultados - {{ form.ticker || 'Ativo' }}
-        </h3>
+        <template #caption>{{ results.description }}</template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Dividend Yield</p>
+        <p class="cui-empty-text">Preencha os dados ao lado e clique em "Calcular Dividend Yield".</p>
       </div>
+    </template>
 
-      <!-- Resultado Principal -->
-      <div
-        class="rounded-lg border p-6"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
-      >
-        <p class="mb-2 text-sm" :style="{ color: 'var(--text-muted)' }">{{ results.label }}</p>
-        <p class="text-5xl font-light tabular-nums text-secondary">
-          {{ results.dy.toFixed(2) }}%
-        </p>
-        <p class="mt-2 text-sm" :style="{ color: 'var(--text-body)' }">{{ results.description }}</p>
-      </div>
+    <template #chart>
+      <div v-if="results" class="flex flex-col gap-4">
 
-      <!-- Detalhes por Modo -->
-      <div v-if="mode === 'simple'" class="grid gap-4 md:grid-cols-3">
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Preço da Ação</p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ formatCurrency(form.price) }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Dividendos Anuais</p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ formatCurrency(form.annualDividend) }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Dividendos Mensais</p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-            {{ formatCurrency(form.annualDividend / 12) }}
-          </p>
+      <!-- Detalhes por Modo: Simples -->
+      <div v-if="mode === 'simple'" class="cui-subcard">
+        <h4 class="cui-subcard-title">Composição do cálculo</h4>
+        <div class="cui-subcard-grid cui-subcard-grid--3">
+          <CalcUiKpiBox label="Preço da ação" :value="formatCurrency(form.price)" color="heading" />
+          <CalcUiKpiBox label="Dividendos anuais" :value="formatCurrency(form.annualDividend)" color="heading" />
+          <CalcUiKpiBox label="Dividendos mensais" :value="formatCurrency(form.annualDividend / 12)" color="positive" />
         </div>
       </div>
 
-      <div v-else-if="mode === 'onCost'" class="grid gap-4 md:grid-cols-2">
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY no Preço de Compra</p>
-          <p class="text-2xl tabular-nums text-secondary">
-            {{ results.dyOnCost.toFixed(2) }}%
-          </p>
-          <p class="text-xs mt-1" :style="{ color: 'var(--text-muted)' }">
-            Seu retorno real sobre o investimento
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY no Preço Atual</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ results.dyCurrent.toFixed(2) }}%
-          </p>
-          <p class="text-xs mt-1" :style="{ color: 'var(--text-muted)' }">
-            Retorno para quem comprar hoje
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Valorização</p>
-          <p
-            class="text-2xl tabular-nums"
-            :style="{ color: results.appreciation >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
-          >
-            {{ results.appreciation >= 0 ? '+' : '' }}{{ results.appreciation.toFixed(1) }}%
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Ganho Total Anual</p>
-          <p class="text-2xl tabular-nums text-secondary">
-            {{ results.totalReturn.toFixed(2) }}%
-          </p>
-          <p class="text-xs mt-1" :style="{ color: 'var(--text-muted)' }">
-            DY + Valorização
-          </p>
+      <!-- Detalhes por Modo: On Cost -->
+      <div v-else-if="mode === 'onCost'" class="cui-subcard">
+        <h4 class="cui-subcard-title">DY on cost vs preço atual</h4>
+        <div class="cui-subcard-grid cui-subcard-grid--2">
+          <CalcUiKpiBox label="DY no preço de compra" :value="`${results.dyOnCost.toFixed(2)}%`" color="primary" caption="Seu retorno real sobre o investimento" />
+          <CalcUiKpiBox label="DY no preço atual" :value="`${results.dyCurrent.toFixed(2)}%`" color="heading" caption="Retorno para quem comprar hoje" />
+          <CalcUiKpiBox label="Valorização" :value="`${results.appreciation >= 0 ? '+' : ''}${results.appreciation.toFixed(1)}%`" :color="results.appreciation >= 0 ? 'positive' : 'negative'" />
+          <CalcUiKpiBox label="Ganho total anual" :value="`${results.totalReturn.toFixed(2)}%`" color="primary" caption="DY + Valorização" />
         </div>
       </div>
 
-      <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY Atual</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ results.currentDY.toFixed(2) }}%
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY Projetado (1 ano)</p>
-          <p class="text-2xl tabular-nums text-secondary">
-            {{ results.projectedDY1y.toFixed(2) }}%
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY Projetado (3 anos)</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-            {{ results.projectedDY3y.toFixed(2) }}%
-          </p>
+      <!-- Detalhes por Modo: Projeção -->
+      <div v-else class="cui-subcard">
+        <h4 class="cui-subcard-title">Projeção do dividend yield</h4>
+        <div class="cui-subcard-grid cui-subcard-grid--3">
+          <CalcUiKpiBox label="DY atual" :value="`${results.currentDY.toFixed(2)}%`" color="heading" />
+          <CalcUiKpiBox label="DY projetado (1 ano)" :value="`${results.projectedDY1y.toFixed(2)}%`" color="primary" />
+          <CalcUiKpiBox label="DY projetado (3 anos)" :value="`${results.projectedDY3y.toFixed(2)}%`" color="positive" />
         </div>
       </div>
 
       <!-- Análise -->
-      <div
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-      >
-        <h4 class="mb-3 font-medium" :style="{ color: 'var(--text-heading)' }">Análise do Dividend Yield</h4>
-        <div class="space-y-2 text-sm" :style="{ color: 'var(--text-body)' }">
-          <p v-if="results.dy < 3" class="flex items-start gap-2">
-            <UIcon name="i-lucide-info" class="size-4 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
-            <span>DY abaixo de 3% é considerado baixo. Pode indicar empresa de crescimento ou ação cara.</span>
-          </p>
-          <p v-else-if="results.dy >= 3 && results.dy < 6" class="flex items-start gap-2">
-            <UIcon name="i-lucide-check" class="size-4 mt-0.5" :style="{ color: 'var(--brand-positive)' }" />
-            <span>DY entre 3-6% é considerado bom para ações. Equilibra dividendos e crescimento.</span>
-          </p>
-          <p v-else-if="results.dy >= 6 && results.dy < 10" class="flex items-start gap-2">
-            <UIcon name="i-lucide-trending-up" class="text-secondary size-4 mt-0.5" />
-            <span>DY entre 6-10% é excelente! Típico de boas pagadoras de dividendos ou FIIs.</span>
-          </p>
-          <p v-else class="flex items-start gap-2">
-            <UIcon name="i-lucide-alert-triangle" class="size-4 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
-            <span>DY muito alto (>10%) pode indicar: ação em queda, dividendo extraordinário ou risco elevado. Investigue!</span>
-          </p>
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Análise do dividend yield</h4>
+        <div class="cui-info-list">
+          <div v-if="results.dy < 3" class="cui-info-item">
+            <UIcon name="i-lucide-info" class="cui-info-icon" />
+            <p class="cui-info-text">DY abaixo de 3% é considerado baixo. Pode indicar empresa de crescimento ou ação cara.</p>
+          </div>
+          <div v-else-if="results.dy >= 3 && results.dy < 6" class="cui-info-item">
+            <UIcon name="i-lucide-check" class="cui-info-icon" style="color: var(--brand-positive)" />
+            <p class="cui-info-text">DY entre 3-6% é considerado bom para ações. Equilibra dividendos e crescimento.</p>
+          </div>
+          <div v-else-if="results.dy >= 6 && results.dy < 10" class="cui-info-item">
+            <UIcon name="i-lucide-trending-up" class="cui-info-icon" />
+            <p class="cui-info-text">DY entre 6-10% é excelente! Típico de boas pagadoras de dividendos ou FIIs.</p>
+          </div>
+          <div v-else class="cui-info-item">
+            <UIcon name="i-lucide-alert-triangle" class="cui-info-icon" />
+            <p class="cui-info-text">DY muito alto (>10%) pode indicar: ação em queda, dividendo extraordinário ou risco elevado. Investigue!</p>
+          </div>
         </div>
       </div>
 
-      <!-- Dica -->
-      <div
-        class="rounded-lg border p-4 text-sm"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-primary) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--text-body)' }"
-      >
-        <strong :style="{ color: 'var(--brand-primary)' }">Dica:</strong> Dividend Yield alto não é sempre bom. Verifique se os dividendos são sustentáveis analisando o Payout Ratio (ideal 40-60% para ações, 95%+ para FIIs).
+      <div class="cui-callout">
+        <strong>Dica:</strong> Dividend Yield alto não é sempre bom. Verifique se os dividendos são sustentáveis analisando o Payout Ratio (ideal 40-60% para ações, 95%+ para FIIs).
       </div>
-    </div>
-  </div>
+      </div>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Análise e dicas</p>
+        <p class="cui-empty-text">Detalhamento aparece após o cálculo.</p>
+      </div>
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
@@ -374,6 +164,9 @@ import type { IAsset } from '~/types/asset'
 interface Props {
   assets?: IAsset[]
   assetsLoading?: boolean
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {

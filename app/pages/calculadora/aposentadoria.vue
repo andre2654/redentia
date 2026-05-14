@@ -1,27 +1,29 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Aposentadoria">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-piggy-bank"
-        icon-color="secondary"
-        title="Calculadora de Aposentadoria 2026: Quanto Preciso para Me Aposentar?"
-        description="Esta calculadora estima quanto você precisa investir hoje pra se aposentar com a renda mensal desejada. Aplica a regra dos 4% (saque seguro): patrimônio = renda mensal × 12 ÷ 0,04. Exemplo: pra ter R$ 5.000 por mês na aposentadoria, você precisa de R$ 1,5 milhão investidos. Considera INSS, inflação, idade atual e expectativa de vida."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-flame', label: 'Regra dos 4% e FIRE', color: 'primary' },
-          { icon: 'i-lucide-share-2', label: 'Link compartilhável', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
+    <CalculatorRetirement
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Calculadora · Aposentadoria</p>
+        <h1 class="calc-title">
+          Calculadora de Aposentadoria 2026: Quanto Preciso para me
+          <em class="calc-italic">Aposentar?</em>
+        </h1>
+        <p class="calc-lead">
+          Esta calculadora estima quanto você precisa investir hoje pra se aposentar com a renda mensal desejada. Aplica a <strong>regra dos 4%</strong> (saque seguro): patrimônio = renda mensal × 12 ÷ 0,04. Exemplo: pra ter R$ 5.000 por mês na aposentadoria, você precisa de R$ 1,5 milhão investidos. Considera INSS, inflação, idade atual e expectativa de vida.
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> Regra dos 4% e FIRE</li>
+          <li><span class="dot" /> Link compartilhável</li>
+        </ul>
+      </template>
+    </CalculatorRetirement>
 
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
-        Descubra na hora quanto patrimônio você precisa pra aposentar com R$ 5.000, R$ 10.000 ou R$ 20.000 por mês. Calculadora completa com regra dos 4%, INSS, expectativa de vida, ajuste pela inflação e simulação FIRE (Lean, Regular e Fat). Ideal pra planejar aposentadoria antecipada ou complementar o INSS, gratuito, sem cadastro.
-      </p>
-
-      <!-- Calculadora -->
-      <CalculatorRetirement />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Cenarios populares (internal linking + deep-links) -->
       <!--
@@ -32,7 +34,7 @@
         "aposentar aos 50", "regra dos 4%".
       -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -42,12 +44,12 @@
         <p class="text-sm">
           Veja na hora o patrimônio necessário e o aporte mensal pra cada cenário, basta clicar e a simulação carrega já preenchida.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <NuxtLink
             v-for="s in popularScenarios"
             :key="s.label"
             :to="s.to"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -63,7 +65,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="quiet-prose max-w-none">
+      <div class="quiet-prose calc-edu-prose max-w-none">
         <h2>Simulador de Aposentadoria grátis e online</h2>
         <h2>Como Planejar sua Aposentadoria no Brasil</h2>
         <p class="leading-relaxed">

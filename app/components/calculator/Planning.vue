@@ -1,36 +1,26 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h2 class="text-xl">Planejamento de Patrimônio</h2>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Planejamento Patrimonial</p>
+        <h1 class="calc-title">Planejamento de Patrimônio</h1>
+        <p class="calc-lead">Carteira sugerida baseada em dados históricos pra atingir sua meta.</p>
+      </slot>
+    </template>
+
+    <template #form>
+      <p class="cui-section-label">{{ planningResult ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
+      <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Meta financeira (R$)" type="currency" v-model="planningForm.goalValue" placeholder="500.000,00" />
+        <CalcUiField label="Aporte mensal (R$)" type="currency" v-model="planningForm.monthlyContribution" placeholder="1.500,00" />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Meta financeira (R$)" name="goalValue">
-          <AtomsFormCurrencyInput
-            v-model="planningForm.goalValue"
-            placeholder="500000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Aporte mensal (R$)" name="monthlyContribution">
-          <AtomsFormCurrencyInput
-            v-model="planningForm.monthlyContribution"
-            placeholder="1500"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <p class="text-sm font-semibold" :style="{ color: 'var(--text-heading)' }">Estratégia</p>
-        <AtomsSegmented
+      <CalcUiField label="Estratégia">
+        <CalcUiSegmented
           v-model="planningForm.strategy"
           :options="[
             { value: 'rentabilidade', label: 'Maior rentabilidade', icon: 'i-lucide-rocket' },
@@ -38,23 +28,12 @@
           ]"
           aria-label="Estratégia de planejamento"
         />
-        <p class="text-xs" :style="{ color: 'var(--text-muted)' }">
-          Escolha entre maximizar ganhos com ativos de alta performance ou
-          priorizar estabilidade com setores defensivos, FIIs consolidados e 10%
-          de renda fixa.
-        </p>
-      </div>
+        <template #help>
+          Escolha entre maximizar ganhos com ativos de alta performance ou priorizar estabilidade com setores defensivos, FIIs consolidados e 10% de renda fixa.
+        </template>
+      </CalcUiField>
 
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calendar-clock"
-        :loading="planningLoading"
-        @click="calculatePlanningStrategy"
-      >
-        Calcular Planejamento
-      </UButton>
+      <CalcUiButton label="Calcular Planejamento" icon="i-lucide-sparkles" :loading="planningLoading" @click="calculatePlanningStrategy" />
 
       <UAlert
         v-if="planningError"
@@ -63,221 +42,117 @@
         icon="i-lucide-alert-circle"
         :title="planningError"
       />
-    </div>
+    </template>
 
-    <div v-if="planningResult" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-timer" class="text-secondary size-6" />
-        <h3 class="text-xl">Plano recomendado</h3>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-[var(--text-muted)]">
-            Tempo estimado para alcançar a meta
-          </p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ planningResult.timeToGoalLabel }}
-          </p>
-          <p class="text-xs text-[var(--text-muted)]">
-            Aproximadamente até {{ planningResult.targetDateLabel }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-[var(--text-muted)]">
-            Aportes totais até a meta
-          </p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(planningResult.totalInvestedUntilGoal)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-[var(--text-muted)]">
-            Resultado projetado
-          </p>
-          <p class="text-secondary text-xl font-bold">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(planningResult.estimatedFinalValue)
-            }}
-          </p>
-          <p class="text-xs text-[var(--brand-positive)]">
-            Ganho estimado de
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(planningResult.estimatedProfit)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-[var(--text-muted)]">
-            Rentabilidade média mensal esperada
-          </p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ (planningResult.monthlyReturnRate * 100).toFixed(2) }}%
-          </p>
-        </div>
-      </div>
-
-      <div
-        class="grid grid-cols-1 gap-4 rounded-2xl bg-white/5 p-4 md:grid-cols-2"
+    <template #result>
+      <CalcUiResultMega
+        v-if="planningResult"
+        eyebrow="Tempo estimado para alcançar a meta"
+        :value="planningResult.timeToGoalLabel"
+        mega-color="primary"
+        :kpis="[
+          { label: 'Aportes até a meta', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(planningResult.totalInvestedUntilGoal), color: 'heading' },
+          { label: 'Resultado projetado', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(planningResult.estimatedFinalValue), color: 'primary' },
+          { label: 'Retorno mensal médio', value: `${(planningResult.monthlyReturnRate * 100).toFixed(2)}%`, color: 'positive' },
+        ]"
       >
-        <div class="flex flex-col gap-2">
-          <p class="text-sm font-semibold text-[var(--text-heading)]">
-            Se tivesse investido nos últimos
-            {{ planningResult.historicalYears.toFixed(1) }} anos
-          </p>
-          <p class="text-xs text-[var(--text-muted)]">
-            Considerando o mesmo aporte mensal e a carteira recomendada.
-          </p>
-          <div class="mt-2 flex flex-col gap-2">
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-[var(--text-muted)]">Total investido</span>
-              <span class="text-sm font-semibold text-[var(--text-heading)]">
-                {{
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(planningResult.historicalInvested)
-                }}
-              </span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-[var(--text-muted)]">Valor final</span>
-              <span class="text-secondary text-sm font-semibold">
-                {{
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(planningResult.historicalFinalValue)
-                }}
-              </span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-[var(--text-muted)]">Lucro histórico</span>
-              <span class="text-sm font-semibold text-[var(--brand-positive)]">
-                {{
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(planningResult.historicalProfit)
-                }}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <p class="text-sm font-semibold text-[var(--text-heading)]">Projeção de patrimônio</p>
-          <div class="h-[240px]">
-            <AtomsGraphLine
-              :data="planningResult.chartData"
-              :height="240"
-              :legend="[{ label: 'Patrimônio projetado', color: ChartColors.positive }]"
-              :colors="[ChartColors.positive]"
-            />
-          </div>
+        <template #caption>
+          até <span class="hl">{{ planningResult.targetDateLabel }}</span>
+          · <span class="positive">+{{ new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(planningResult.estimatedProfit) }}</span> de ganho
+        </template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Tempo estimado</p>
+        <p class="cui-empty-text">Preencha os dados ao lado e clique em "Calcular Planejamento".</p>
+      </div>
+    </template>
+
+    <template #chart>
+      <div v-if="planningResult" class="flex flex-col gap-4">
+      <CalcUiChart label="Projeção de patrimônio">
+        <AtomsGraphLine
+          :data="planningResult.chartData"
+          :height="240"
+          :legend="[{ label: 'Patrimônio projetado', color: ChartColors.positive }]"
+          :colors="[ChartColors.positive]"
+        />
+      </CalcUiChart>
+
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Se tivesse investido nos últimos {{ planningResult.historicalYears.toFixed(1) }} anos</h4>
+        <p class="cui-subcard-desc">Considerando o mesmo aporte mensal e a carteira recomendada.</p>
+        <div class="cui-subcard-grid cui-subcard-grid--3">
+          <CalcUiKpiBox label="Total investido" :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(planningResult.historicalInvested)" color="heading" />
+          <CalcUiKpiBox label="Valor final" :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(planningResult.historicalFinalValue)" color="primary" />
+          <CalcUiKpiBox label="Lucro histórico" :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(planningResult.historicalProfit)" color="positive" />
         </div>
       </div>
 
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center gap-3">
-          <UIcon name="i-lucide-layers" class="text-secondary size-5" />
-          <h4 class="text-lg font-semibold text-[var(--text-heading)]">Carteira sugerida</h4>
-        </div>
-        <p class="text-xs text-[var(--text-muted)]">
-          Distribuição baseada no desempenho histórico e nos critérios da
-          estratégia escolhida.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div
-          v-for="asset in planningResult.recommendedAssets"
-          :key="`${asset.ticker}-${asset.category}`"
-          class="flex flex-col gap-4 rounded-2xl bg-white/5 p-4"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <p class="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">
-                {{ asset.category }}
-              </p>
-              <h5 class="text-lg font-semibold text-[var(--text-heading)]">
-                {{ asset.ticker }}
-              </h5>
-              <p class="text-xs text-[var(--text-muted)]">
-                {{ asset.name }}
-              </p>
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Carteira sugerida</h4>
+        <p class="cui-subcard-desc">Distribuição baseada no desempenho histórico e nos critérios da estratégia escolhida.</p>
+        <div class="cui-asset-grid">
+          <div
+            v-for="asset in planningResult.recommendedAssets"
+            :key="`${asset.ticker}-${asset.category}`"
+            class="cui-asset-card"
+          >
+            <div class="cui-asset-head">
+              <div>
+                <p class="cui-asset-cat">{{ asset.category }}</p>
+                <h5 class="cui-asset-ticker">{{ asset.ticker }}</h5>
+                <p class="cui-asset-name">{{ asset.name }}</p>
+              </div>
+              <div class="cui-asset-weight">
+                <p class="cui-asset-weight-label">Peso</p>
+                <p class="cui-asset-weight-value">{{ (asset.weight * 100).toFixed(0) }}%</p>
+              </div>
             </div>
-            <div class="text-right">
-              <p class="text-xs text-[var(--text-muted)]">Peso</p>
-              <p class="text-secondary text-2xl font-bold">
-                {{ (asset.weight * 100).toFixed(0) }}%
-              </p>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p class="text-[var(--text-muted)]">
-                Retorno {{ planningResult.historicalYears.toFixed(0) }} anos
-              </p>
-              <p
-                class="font-semibold"
-                :class="
-                  asset.totalReturn >= 0 ? 'text-[var(--brand-positive)]' : 'text-[var(--brand-negative)]'
-                "
-              >
-                {{ (asset.totalReturn * 100).toFixed(1) }}%
-              </p>
-            </div>
-            <div>
-              <p class="text-[var(--text-muted)]">CAGR anual</p>
-              <p class="font-semibold text-[var(--text-heading)]">
-                {{ (asset.cagr * 100).toFixed(1) }}%
-              </p>
-            </div>
-            <div>
-              <p class="text-[var(--text-muted)]">Retorno mensal</p>
-              <p class="font-semibold text-[var(--text-heading)]">
-                {{ (asset.monthlyRate * 100).toFixed(2) }}%
-              </p>
-            </div>
-            <div>
-              <p class="text-[var(--text-muted)]">Dividendos reinvestidos</p>
-              <p class="font-semibold text-[var(--brand-positive)]">
-                {{
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(asset.totalDividends)
-                }}
-              </p>
+            <div class="cui-asset-metrics">
+              <div>
+                <p class="cui-asset-metric-label">Retorno {{ planningResult.historicalYears.toFixed(0) }} anos</p>
+                <p :class="['cui-asset-metric-value', asset.totalReturn >= 0 ? 'cui-asset-metric-value--positive' : 'cui-asset-metric-value--negative']">{{ (asset.totalReturn * 100).toFixed(1) }}%</p>
+              </div>
+              <div>
+                <p class="cui-asset-metric-label">CAGR anual</p>
+                <p class="cui-asset-metric-value">{{ (asset.cagr * 100).toFixed(1) }}%</p>
+              </div>
+              <div>
+                <p class="cui-asset-metric-label">Retorno mensal</p>
+                <p class="cui-asset-metric-value">{{ (asset.monthlyRate * 100).toFixed(2) }}%</p>
+              </div>
+              <div>
+                <p class="cui-asset-metric-label">Dividendos reinvestidos</p>
+                <p class="cui-asset-metric-value cui-asset-metric-value--positive">{{ new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(asset.totalDividends) }}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="rounded-2xl bg-emerald-500/10 p-4 text-sm text-emerald-200">
-        Recomendação baseada em dados históricos. Rentabilidades passadas não
-        garantem resultados futuros. Ajuste sempre sua carteira conforme o seu
-        perfil de risco.
+      <div class="cui-callout">
+        Recomendação baseada em dados históricos. Rentabilidades passadas não garantem resultados futuros. Ajuste sempre sua carteira conforme o seu perfil de risco.
       </div>
-    </div>
-  </div>
+      </div>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Análise complementar</p>
+        <p class="cui-empty-text">Carteira sugerida e projeção aparecem após o cálculo.</p>
+      </div>
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
 import { showErrorNotification } from '~/composables/useNotify'
 import type { IChartDataPoint } from '~/types/chart'
 import { ChartColors } from '~/design/chartColors'
+
+defineProps<{
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
+  assets?: unknown[]
+}>()
 
 type PlanningStrategy = 'rentabilidade' | 'seguranca'
 

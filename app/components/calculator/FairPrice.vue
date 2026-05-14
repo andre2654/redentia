@@ -1,420 +1,168 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h2 class="text-xl">Calcular Preço Teto</h2>
-      </div>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Preço Teto</p>
+        <h1 class="calc-title">Calculadora de Preço Teto</h1>
+        <p class="calc-lead">Graham, Bazin, P/L setorial e VPA com dados oficiais da B3.</p>
+      </slot>
+    </template>
 
-      <div v-if="!selectedAsset" class="flex flex-col gap-3">
-        <label class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-[var(--text-heading)]">Selecione a ação</span>
-          <span class="hidden items-center gap-1 text-[11px] uppercase tracking-wider text-[var(--text-muted)] md:flex">
-            <UIcon name="i-lucide-keyboard" class="size-3" />
-            Digite o ticker ou nome da empresa
-          </span>
-        </label>
+    <template #form>
+      <p class="cui-section-label">{{ results && selectedAsset ? 'Ajustar análise' : 'Selecione uma ação' }}</p>
+      <CalcUiAssetSearch
+        v-if="!selectedAsset"
+        v-model="searchTerm"
+        :results="filteredAssets"
+        :loading="assetsLoading"
+        label="Selecione a ação"
+        placeholder="Ex: PETR4, Petrobras, Itaú..."
+        @select="selectAsset"
+      />
 
-        <div class="relative">
-          <div
-            class="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-secondary/20 via-transparent to-secondary/20 opacity-0 blur-xl transition-opacity"
-            :class="{ 'opacity-100': isSearchFocused }"
+      <div v-else class="cui-selected-asset">
+        <div class="cui-selected-asset-logo">
+          <img
+            v-if="selectedAsset.logo"
+            :src="selectedAsset.logo"
+            :alt="selectedAsset.ticker || selectedAsset.stock"
           />
-          <div
-            class="relative flex items-center gap-3 rounded-2xl border bg-white/5 px-4 py-3 backdrop-blur transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
-            :class="isSearchFocused ? 'border-secondary/50 bg-white/10 shadow-lg shadow-secondary/10' : 'border-white/10'"
-          >
-            <UIcon
-              :name="assetsLoading ? 'i-lucide-loader-circle' : 'i-lucide-search'"
-              class="size-5 shrink-0 text-[var(--text-muted)]"
-              :class="{ 'motion-safe:animate-spin': assetsLoading }"
-            />
-            <input
-              v-model="searchTerm"
-              type="text"
-              class="flex-1 bg-transparent text-base font-medium text-[var(--text-heading)] placeholder:text-[var(--text-muted)] focus:outline-none md:text-lg"
-              placeholder="Ex: PETR4, Petrobras, Itaú..."
-              spellcheck="false"
-              autocomplete="off"
-              @focus="isSearchFocused = true"
-              @blur="handleSearchBlur"
-            />
-            <button
-              v-if="searchTerm"
-              type="button"
-              class="flex size-7 items-center justify-center rounded-full text-[var(--text-muted)] transition hover:bg-white/10 hover:text-[var(--text-heading)]"
-              aria-label="Limpar busca"
-              @click="searchTerm = ''"
-            >
-              <UIcon name="i-lucide-x" class="size-4" />
-            </button>
-            <span
-              v-else
-              class="hidden items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] md:flex"
-            >
-              /
-            </span>
-          </div>
+          <span v-else>{{ (selectedAsset.ticker || selectedAsset.stock || '').slice(0, 2) }}</span>
         </div>
-
-        <Transition
-          enter-active-class="transition duration-200 ease-out"
-          enter-from-class="opacity-0 -translate-y-1"
-          enter-to-class="opacity-100 translate-y-0"
-        >
-          <div
-            v-if="searchTerm && filteredAssets.length > 0"
-            class="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0d10]/95 shadow-2xl backdrop-blur"
-          >
-            <div class="flex items-center justify-between border-b border-white/5 px-4 py-2 text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-              <span>{{ filteredAssets.length }} resultado{{ filteredAssets.length === 1 ? '' : 's' }}</span>
-              <span>Ação · B3</span>
-            </div>
-            <div class="max-h-[300px] divide-y divide-white/5 overflow-y-auto">
-              <button
-                v-for="asset in filteredAssets.slice(0, 10)"
-                :key="asset.ticker || asset.stock"
-                type="button"
-                class="group flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/5"
-                @mousedown.prevent="selectAsset(asset)"
-              >
-                <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/5">
-                  <img
-                    v-if="asset.logo"
-                    :src="asset.logo"
-                    :alt="asset.ticker || asset.stock"
-                    class="size-full object-contain"
-                    loading="lazy"
-                  />
-                  <span v-else class="text-xs font-bold text-secondary">
-                    {{ (asset.ticker || asset.stock || '').slice(0, 2) }}
-                  </span>
-                </div>
-                <div class="flex min-w-0 flex-1 flex-col">
-                  <span class="font-mono text-sm font-bold tracking-wide text-[var(--text-heading)]">
-                    {{ (asset.ticker || asset.stock || '').toUpperCase() }}
-                  </span>
-                  <span class="truncate text-xs text-[var(--text-muted)]">
-                    {{ asset.name }}
-                  </span>
-                </div>
-                <span
-                  v-if="asset.sector"
-                  class="hidden shrink-0 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[var(--text-heading)] md:block"
-                >
-                  {{ asset.sector }}
-                </span>
-                <UIcon
-                  name="i-lucide-arrow-right"
-                  class="size-4 shrink-0 text-[var(--text-muted)] transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-0.5 group-hover:text-secondary"
-                />
-              </button>
-            </div>
-          </div>
-        </Transition>
-
-        <div
-          v-if="searchTerm && filteredAssets.length === 0 && !assetsLoading"
-          class="flex items-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-3 text-sm text-[var(--text-muted)]"
-        >
-          <UIcon name="i-lucide-search-x" class="size-5 text-[var(--text-muted)]" />
-          <span>
-            Nenhuma ação encontrada para
-            <strong class="text-[var(--text-heading)]">"{{ searchTerm }}"</strong>. Tente um ticker como PETR4 ou ITUB4.
-          </span>
+        <div class="cui-selected-asset-info">
+          <p class="cui-selected-asset-ticker">{{ (selectedAsset.ticker || selectedAsset.stock || '').toUpperCase() }}</p>
+          <p class="cui-selected-asset-name">{{ selectedAsset.name }}</p>
         </div>
+        <button class="cui-selected-asset-action" type="button" @click="clearSelection">
+          <UIcon name="i-lucide-refresh-cw" class="size-3.5" />
+          Trocar
+        </button>
       </div>
 
-      <div
-        v-else
-        class="group relative overflow-hidden rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/15 via-secondary/5 to-transparent p-5"
-      >
-        <div class="absolute -right-10 -top-10 size-40 rounded-full bg-secondary/20 blur-3xl" />
-
-        <div class="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div class="flex items-center gap-4">
-            <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-xl shadow-secondary/10">
-              <img
-                v-if="selectedAsset.logo"
-                :src="selectedAsset.logo"
-                :alt="selectedAsset.ticker || selectedAsset.stock"
-                class="size-full object-contain"
-              />
-              <span v-else class="font-mono text-lg font-bold text-secondary">
-                {{ (selectedAsset.ticker || selectedAsset.stock || '').slice(0, 2) }}
-              </span>
-            </div>
-            <div class="flex min-w-0 flex-col gap-1">
-              <div class="flex items-center gap-2">
-                <span class="font-mono text-xl font-bold tracking-wide text-[var(--text-heading)] md:text-2xl">
-                  {{ (selectedAsset.ticker || selectedAsset.stock || '').toUpperCase() }}
-                </span>
-                <span class="rounded-md border border-secondary/30 bg-secondary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">
-                  Selecionada
-                </span>
-              </div>
-              <p class="truncate text-sm text-[var(--text-heading)]">{{ selectedAsset.name }}</p>
-              <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
-                <span
-                  v-if="selectedAsset.sector"
-                  class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[var(--text-heading)]"
-                >
-                  <UIcon name="i-lucide-layers" class="size-3 text-secondary" />
-                  {{ selectedAsset.sector }}
-                </span>
-                <span
-                  v-if="(selectedAsset.type || '').toString().toUpperCase()"
-                  class="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--text-heading)]"
-                >
-                  {{ (selectedAsset.type || '').toString().toUpperCase() }}
-                </span>
-                <span
-                  class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[var(--text-heading)]"
-                >
-                  <UIcon name="i-lucide-building-2" class="size-3 text-[var(--brand-primary)]" />
-                  B3
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            class="flex shrink-0 items-center gap-2 self-start rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-[var(--text-heading)] transition hover:border-white/20 hover:bg-white/10 hover:text-[var(--text-heading)] md:self-center"
-            @click="clearSelection"
-          >
-            <UIcon name="i-lucide-refresh-cw" class="size-3.5" />
-            Trocar ação
-          </button>
-        </div>
-      </div>
-
-      <div
-        v-if="isFetching"
-        class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-[var(--text-heading)]"
-      >
-        <UIcon name="i-lucide-loader-circle" class="size-5 motion-safe:animate-spin text-secondary" />
+      <div v-if="isFetching" class="cui-loading">
+        <UIcon name="i-lucide-loader-circle" class="size-5 motion-safe:animate-spin" />
         Buscando fundamentos e calculando todas as metodologias...
       </div>
 
-      <div
-        v-if="fetchError && !isFetching"
-        class="rounded-xl border border-[color-mix(in_srgb,var(--brand-negative)_30%,transparent)] bg-[color-mix(in_srgb,var(--brand-negative)_10%,transparent)] p-4 text-sm text-red-200"
-      >
+      <div v-if="fetchError && !isFetching" class="cui-callout cui-callout--warning">
         <strong>Não foi possível carregar os fundamentos:</strong> {{ fetchError }}. Tente outra ação ou preencha os campos manualmente no modo avançado.
       </div>
 
-      <details v-if="selectedAsset" class="group rounded-xl border border-white/10 bg-white/5 p-4">
-        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-[var(--text-heading)] list-none">
+      <details v-if="selectedAsset" class="cui-collapse">
+        <summary class="cui-collapse-summary">
           <span class="flex items-center gap-2">
-            <UIcon name="i-lucide-sliders-horizontal" class="size-4 text-secondary" />
+            <UIcon name="i-lucide-sliders-horizontal" class="size-4" style="color: var(--brand-primary)" />
             Ajuste manual (opcional)
           </span>
-          <UIcon name="i-lucide-chevron-down" class="size-4 transition-transform group-open:rotate-180" />
+          <UIcon name="i-lucide-chevron-down" class="cui-collapse-chevron size-4" />
         </summary>
-
-        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <UFormField label="Preço Atual (R$)" name="currentPrice">
-            <AtomsFormCurrencyInput
-              v-model="form.currentPrice"
-              placeholder="25,00"
-              size="lg"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
-
-          <UFormField label="Lucro por Ação - LPA (R$)" name="lpa">
-            <AtomsFormCurrencyInput
-              v-model="form.lpa"
-              placeholder="3,50"
-              size="lg"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
-
-          <UFormField label="Valor Patrimonial - VPA (R$)" name="vpa">
-            <AtomsFormCurrencyInput
-              v-model="form.vpa"
-              placeholder="15,00"
-              size="lg"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
-
-          <UFormField label="Dividendo Anual (R$)" name="dividend">
-            <AtomsFormCurrencyInput
-              v-model="form.dividend"
-              placeholder="1,50"
-              size="lg"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
-
-          <UFormField label="P/L Médio do Setor" name="sectorPL">
-            <UInput
-              v-model.number="form.sectorPL"
-              type="number"
-              step="0.1"
-              placeholder="12"
-              size="lg"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
+        <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2 mt-4">
+          <CalcUiField label="Preço Atual (R$)" type="currency" v-model="form.currentPrice" placeholder="25,00" />
+          <CalcUiField label="Lucro por Ação - LPA (R$)" type="currency" v-model="form.lpa" placeholder="3,50" />
+          <CalcUiField label="Valor Patrimonial - VPA (R$)" type="currency" v-model="form.vpa" placeholder="15,00" />
+          <CalcUiField label="Dividendo Anual (R$)" type="currency" v-model="form.dividend" placeholder="1,50" />
+          <CalcUiField label="P/L Médio do Setor" type="number" v-model="form.sectorPL" placeholder="12" />
         </div>
       </details>
-    </div>
+    </template>
 
-    <div v-if="results && selectedAsset" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-chart-no-axes-combined" class="text-secondary size-6" />
-        <h3 class="text-xl">
-          Resultados — {{ form.ticker }}
-        </h3>
+    <template #result>
+      <CalcUiResultMega
+        v-if="results && selectedAsset"
+        eyebrow="Recomendação consensual"
+        :value="results.consensus.recommendation"
+        :mega-color="results.consensus.recommendation === 'Comprar' ? 'positive' : results.consensus.recommendation === 'Caro' ? 'negative' : 'primary'"
+        :kpis="[
+          { label: 'Preço teto médio', value: formatCurrency(results.consensus.averageFairPrice), color: 'primary' },
+          { label: 'Margem de segurança', value: `${(results.consensus.averageMargin * 100).toFixed(1)}%`, color: 'heading' },
+          { label: 'Preço atual', value: formatCurrency(form.currentPrice), color: 'heading' },
+        ]"
+      >
+        <template #caption>{{ results.consensus.explanation }}</template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Preço teto</p>
+        <p class="cui-empty-text">Selecione uma ação ao lado para ver Graham, Bazin, P/L e VPA.</p>
       </div>
+    </template>
 
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-[var(--text-muted)]">Preço Atual</p>
-          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.currentPrice) }}</p>
-        </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-[var(--text-muted)]">LPA (12m)</p>
-          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.lpa) }}</p>
-        </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-[var(--text-muted)]">VPA</p>
-          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.vpa) }}</p>
-        </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-[var(--text-muted)]">Dividendo 12m</p>
-          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.dividend) }}</p>
-        </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-[var(--text-muted)]">P/L Setor</p>
-          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ form.sectorPL.toFixed(1) }}</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div class="rounded-xl border p-4" :class="getStatusClass(results.graham.ratio)">
-          <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-[var(--text-heading)]">Fórmula de Graham</h4>
-            <UBadge :color="getStatusColor(results.graham.ratio)" variant="soft">
-              {{ getStatusText(results.graham.ratio) }}
-            </UBadge>
-          </div>
-          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
-            {{ formatCurrency(results.graham.fairPrice) }}
-          </p>
-          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.graham.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-[var(--text-muted)]">√(22.5 × LPA × VPA)</p>
-        </div>
-
-        <div class="rounded-xl border p-4" :class="getStatusClass(results.bazin.ratio)">
-          <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-[var(--text-heading)]">Método Bazin</h4>
-            <UBadge :color="getStatusColor(results.bazin.ratio)" variant="soft">
-              {{ getStatusText(results.bazin.ratio) }}
-            </UBadge>
-          </div>
-          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
-            {{ formatCurrency(results.bazin.fairPrice) }}
-          </p>
-          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.bazin.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-[var(--text-muted)]">Dividendo ÷ 0.06 (DY mín 6%)</p>
-        </div>
-
-        <div class="rounded-xl border p-4" :class="getStatusClass(results.plSector.ratio)">
-          <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-[var(--text-heading)]">P/L Setorial</h4>
-            <UBadge :color="getStatusColor(results.plSector.ratio)" variant="soft">
-              {{ getStatusText(results.plSector.ratio) }}
-            </UBadge>
-          </div>
-          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
-            {{ formatCurrency(results.plSector.fairPrice) }}
-          </p>
-          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.plSector.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-[var(--text-muted)]">LPA × P/L Médio do Setor</p>
-        </div>
-
-        <div class="rounded-xl border p-4" :class="getStatusClass(results.bookValue.ratio)">
-          <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-[var(--text-heading)]">Valor Patrimonial</h4>
-            <UBadge :color="getStatusColor(results.bookValue.ratio)" variant="soft">
-              {{ getStatusText(results.bookValue.ratio) }}
-            </UBadge>
-          </div>
-          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
-            {{ formatCurrency(results.bookValue.fairPrice) }}
-          </p>
-          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.bookValue.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-[var(--text-muted)]">VPA × 1.5 (margem Graham)</p>
+    <template #chart>
+      <div v-if="results && selectedAsset" class="flex flex-col gap-4">
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Fundamentos utilizados</h4>
+        <div class="cui-subcard-grid cui-subcard-grid--3">
+          <CalcUiKpiBox label="Preço atual" :value="formatCurrency(form.currentPrice)" color="heading" />
+          <CalcUiKpiBox label="LPA (12m)" :value="formatCurrency(form.lpa)" color="heading" />
+          <CalcUiKpiBox label="VPA" :value="formatCurrency(form.vpa)" color="heading" />
+          <CalcUiKpiBox label="Dividendo 12m" :value="formatCurrency(form.dividend)" color="heading" />
+          <CalcUiKpiBox label="P/L Setor" :value="form.sectorPL.toFixed(1)" color="heading" />
         </div>
       </div>
 
-      <div class="rounded-lg border border-secondary/30 bg-secondary/10 p-6">
-        <div class="mb-4 flex items-center gap-3">
-          <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-          <h4 class="text-xl font-medium">Consenso das Metodologias</h4>
-        </div>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div>
-            <p class="mb-1 text-sm text-[var(--text-muted)]">Preço Teto Médio</p>
-            <p class="text-2xl font-bold text-secondary">
-              {{ formatCurrency(results.consensus.averageFairPrice) }}
-            </p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm text-[var(--text-muted)]">Margem de Segurança Média</p>
-            <p class="text-2xl font-bold text-[var(--text-heading)]">
-              {{ (results.consensus.averageMargin * 100).toFixed(1) }}%
-            </p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm text-[var(--text-muted)]">Recomendação</p>
-            <p
-              class="text-2xl font-bold"
-              :class="{
-                'text-[var(--brand-positive)]': results.consensus.recommendation === 'Comprar',
-                'text-[var(--brand-primary)]': results.consensus.recommendation === 'Neutro',
-                'text-[var(--brand-negative)]': results.consensus.recommendation === 'Caro',
-              }"
-            >
-              {{ results.consensus.recommendation }}
-            </p>
-          </div>
-        </div>
-        <p class="mt-4 text-sm text-[var(--text-heading)]">
-          {{ results.consensus.explanation }}
-        </p>
-      </div>
-
-      <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-        <h4 class="mb-4 font-semibold text-[var(--text-heading)]">Comparação Visual</h4>
-        <div class="space-y-3">
-          <div>
-            <div class="mb-1 flex items-center justify-between text-sm">
-              <span class="text-[var(--text-muted)]">Preço Atual</span>
-              <span class="font-semibold text-[var(--text-heading)]">{{ formatCurrency(form.currentPrice) }}</span>
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">4 metodologias de preço teto</h4>
+        <div class="cui-method-grid">
+          <div class="cui-method" :class="getMethodStatus(results.graham.ratio)">
+            <div class="cui-method-head">
+              <h5 class="cui-method-title">Fórmula de Graham</h5>
+              <span class="cui-method-badge">{{ getStatusText(results.graham.ratio) }}</span>
             </div>
-            <div class="h-2 w-full rounded-full bg-white/10">
-              <div class="h-2 rounded-full bg-white" :style="{ width: '100%' }" />
+            <p class="cui-method-value">{{ formatCurrency(results.graham.fairPrice) }}</p>
+            <p class="cui-method-margin">Margem: {{ (results.graham.margin * 100).toFixed(1) }}%</p>
+            <p class="cui-method-formula">√(22.5 × LPA × VPA)</p>
+          </div>
+          <div class="cui-method" :class="getMethodStatus(results.bazin.ratio)">
+            <div class="cui-method-head">
+              <h5 class="cui-method-title">Método Bazin</h5>
+              <span class="cui-method-badge">{{ getStatusText(results.bazin.ratio) }}</span>
             </div>
+            <p class="cui-method-value">{{ formatCurrency(results.bazin.fairPrice) }}</p>
+            <p class="cui-method-margin">Margem: {{ (results.bazin.margin * 100).toFixed(1) }}%</p>
+            <p class="cui-method-formula">Dividendo ÷ 0.06 (DY mín 6%)</p>
+          </div>
+          <div class="cui-method" :class="getMethodStatus(results.plSector.ratio)">
+            <div class="cui-method-head">
+              <h5 class="cui-method-title">P/L Setorial</h5>
+              <span class="cui-method-badge">{{ getStatusText(results.plSector.ratio) }}</span>
+            </div>
+            <p class="cui-method-value">{{ formatCurrency(results.plSector.fairPrice) }}</p>
+            <p class="cui-method-margin">Margem: {{ (results.plSector.margin * 100).toFixed(1) }}%</p>
+            <p class="cui-method-formula">LPA × P/L Médio do Setor</p>
+          </div>
+          <div class="cui-method" :class="getMethodStatus(results.bookValue.ratio)">
+            <div class="cui-method-head">
+              <h5 class="cui-method-title">Valor Patrimonial</h5>
+              <span class="cui-method-badge">{{ getStatusText(results.bookValue.ratio) }}</span>
+            </div>
+            <p class="cui-method-value">{{ formatCurrency(results.bookValue.fairPrice) }}</p>
+            <p class="cui-method-margin">Margem: {{ (results.bookValue.margin * 100).toFixed(1) }}%</p>
+            <p class="cui-method-formula">VPA × 1.5 (margem Graham)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Comparação visual</h4>
+        <div class="cui-bar-group">
+          <div class="cui-bar-row">
+            <span class="cui-bar-label">Preço atual</span>
+            <span class="cui-bar-value">{{ formatCurrency(form.currentPrice) }}</span>
+          </div>
+          <div class="cui-bar-track">
+            <div class="cui-bar-fill" :style="{ width: '100%', background: 'var(--text-heading)' }" />
           </div>
           <div v-for="method in visualMethods" :key="method.key">
-            <div class="mb-1 flex items-center justify-between text-sm">
-              <span class="text-[var(--text-muted)]">{{ method.label }}</span>
-              <span class="font-semibold text-[var(--text-heading)]">{{ formatCurrency(method.fairPrice) }}</span>
+            <div class="cui-bar-row">
+              <span class="cui-bar-label">{{ method.label }}</span>
+              <span class="cui-bar-value">{{ formatCurrency(method.fairPrice) }}</span>
             </div>
-            <div class="h-2 w-full rounded-full bg-white/10">
+            <div class="cui-bar-track">
               <div
-                class="h-2 rounded-full"
+                class="cui-bar-fill"
                 :class="method.color"
                 :style="{ width: `${Math.min(100, (method.fairPrice / Math.max(form.currentPrice, 0.01)) * 100)}%` }"
               />
@@ -424,55 +172,37 @@
       </div>
 
       <div class="flex flex-wrap gap-3">
-        <UButton
-          :to="`/asset/${(form.ticker || '').toLowerCase()}`"
-          color="secondary"
-          variant="soft"
+        <CalcUiButton
+          variant="ghost"
+          :label="`Ver análise completa de ${form.ticker}`"
           icon="i-lucide-chart-line"
-        >
-          Ver análise completa de {{ form.ticker }}
-        </UButton>
-        <UButton
+          :block="false"
+          @click="navigateTo(`/asset/${(form.ticker || '').toLowerCase()}`)"
+        />
+        <CalcUiButton
           v-if="sectorSlug"
-          :to="`/setor/${sectorSlug}/comparativo`"
-          color="neutral"
-          variant="soft"
+          variant="ghost"
+          label="Comparar com o setor"
           icon="i-lucide-layers"
-        >
-          Comparar com o setor
-        </UButton>
+          :block="false"
+          @click="navigateTo(`/setor/${sectorSlug}/comparativo`)"
+        />
       </div>
 
-      <div class="rounded-xl border border-[color-mix(in_srgb,var(--brand-primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--brand-primary)_10%,transparent)] p-4 text-sm text-yellow-200">
+      <div class="cui-callout">
         <strong>Fonte dos dados:</strong> preço e fundamentos calculados com dados públicos da B3, fechamento do último pregão. O preço teto é uma referência, não uma garantia. Analise sempre os fundamentos da empresa, perspectivas futuras e seu perfil de risco antes de investir.
       </div>
-    </div>
-
-    <div
-      v-else-if="!selectedAsset"
-      class="rounded-lg border border-dashed border-white/10 bg-white/5 p-8 text-center"
-    >
-      <UIcon name="i-lucide-search" class="mx-auto size-10 text-[var(--text-muted)]" />
-      <p class="mt-3 text-lg font-medium text-[var(--text-heading)]">
-        Escolha uma ação para começar
-      </p>
-      <p class="mt-1 text-sm text-[var(--text-muted)]">
-        Os preços teto de Graham, Bazin, P/L setorial e VPA aparecem automaticamente.
-      </p>
-      <div class="mt-5 flex flex-wrap items-center justify-center gap-2">
-        <span class="text-xs uppercase tracking-wider text-[var(--text-muted)]">Populares:</span>
-        <button
-          v-for="t in popularTickers"
-          :key="t"
-          type="button"
-          class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-[var(--text-heading)] transition hover:border-secondary/40 hover:bg-secondary/10"
-          @click="selectByTicker(t)"
-        >
-          {{ t }}
-        </button>
       </div>
-    </div>
-  </div>
+      <CalcUiEmptyState
+        v-else-if="!selectedAsset"
+        icon="i-lucide-search"
+        title="Escolha uma ação para começar"
+        description="Os preços teto de Graham, Bazin, P/L setorial e VPA aparecem automaticamente."
+        :quick-picks="popularTickers.map((t: string) => ({ value: t, label: t }))"
+        @pick="selectByTicker"
+      />
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
@@ -484,6 +214,9 @@ interface Props {
   assetsLoading?: boolean
   sectors?: Array<{ slug: string; name: string; count?: number }>
   initialTicker?: string
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -575,10 +308,10 @@ const filteredAssets = computed(() => {
 const visualMethods = computed(() => {
   if (!results.value) return []
   return [
-    { key: 'graham', label: 'Graham', fairPrice: results.value.graham.fairPrice, color: 'bg-green-400' },
-    { key: 'bazin', label: 'Bazin', fairPrice: results.value.bazin.fairPrice, color: 'bg-blue-400' },
-    { key: 'plSector', label: 'P/L Setorial', fairPrice: results.value.plSector.fairPrice, color: 'bg-purple-400' },
-    { key: 'bookValue', label: 'Valor Patrimonial', fairPrice: results.value.bookValue.fairPrice, color: 'bg-orange-400' },
+    { key: 'graham', label: 'Graham', fairPrice: results.value.graham.fairPrice, color: 'cui-bar-fill--positive' },
+    { key: 'bazin', label: 'Bazin', fairPrice: results.value.bazin.fairPrice, color: 'cui-bar-fill--primary' },
+    { key: 'plSector', label: 'P/L Setorial', fairPrice: results.value.plSector.fairPrice, color: 'cui-bar-fill--primary' },
+    { key: 'bookValue', label: 'Valor Patrimonial', fairPrice: results.value.bookValue.fairPrice, color: 'cui-bar-fill--negative' },
   ]
 })
 
@@ -790,10 +523,17 @@ function formatCurrency(value: number): string {
 }
 
 function getStatusClass(ratio: number): string {
-  if (!ratio) return 'border-white/10 bg-white/5'
+  if (!ratio) return 'border-[var(--border-subtle)] bg-[var(--bg-elevated)]'
   if (ratio <= 0.8) return 'border-[color-mix(in_srgb,var(--brand-positive)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-positive)_10%,transparent)]'
   if (ratio <= 1.0) return 'border-[color-mix(in_srgb,var(--brand-primary)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-primary)_10%,transparent)]'
   return 'border-[color-mix(in_srgb,var(--brand-negative)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-negative)_10%,transparent)]'
+}
+
+function getMethodStatus(ratio: number): string {
+  if (!ratio) return ''
+  if (ratio <= 0.8) return 'cui-method--positive'
+  if (ratio <= 1.0) return 'cui-method--neutral'
+  return 'cui-method--negative'
 }
 
 function getStatusColor(ratio: number): string {

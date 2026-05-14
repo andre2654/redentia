@@ -1,26 +1,29 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de IR sobre Ações">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-receipt-text"
-        icon-color="secondary"
-        title="Calculadora de IR sobre Ações 2026: Day Trade, Swing Trade e DARF"
-        description="O IR sobre ações no Brasil é 15% (swing trade) ou 20% (day trade) sobre o lucro mensal. Vendas até R$ 20.000/mês em swing trade são isentas. Exemplo: vendeu R$ 25.000 com R$ 3.000 de lucro? Paga 15% × R$ 3.000 = R$ 450 via DARF código 6015 até o último dia útil do mês seguinte."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-file-text', label: 'DARF pronto (6015 / 8523)', color: 'primary' },
-          { icon: 'i-lucide-calendar', label: 'Compensa prejuízos', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
+    <CalculatorIncomeTax
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Calculadora · IR sobre Ações</p>
+        <h1 class="calc-title">
+          Calculadora de IR 2026: Day Trade, Swing Trade e
+          <em class="calc-italic">DARF.</em>
+        </h1>
+        <p class="calc-lead">
+          O IR sobre ações no Brasil é <strong>15%</strong> (swing trade) ou <strong>20%</strong> (day trade) sobre o lucro mensal. Vendas até R$ 20.000/mês em swing trade são isentas. Exemplo: vendeu R$ 25.000 com R$ 3.000 de lucro? Paga 15% × R$ 3.000 = R$ 450 via DARF código 6015 até o último dia útil do mês seguinte.
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> DARF pronto (6015 / 8523)</li>
+          <li><span class="dot" /> Compensa prejuízos</li>
+        </ul>
+      </template>
+    </CalculatorIncomeTax>
 
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
-        Calcule na hora o imposto de renda sobre suas operações na B3. Cobre swing trade (alíquota 15%, isenção até R$ 20 mil/mês de vendas, código DARF 6015) e day trade (20% sem isenção, código DARF 8523), com compensação automática de prejuízos e cálculo do vencimento do DARF. Sem planilha, sem cadastro, sem propaganda.
-      </p>
-
-      <CalculatorIncomeTax />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Cenarios populares (internal linking + deep-links) -->
       <!--
@@ -32,7 +35,7 @@
         "compensar prejuizo IR", etc.
       -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -42,12 +45,12 @@
         <p class="text-sm">
           Clique em um cenário típico do investidor brasileiro e a calculadora carrega já preenchida com vendas, lucro e tipo de operação.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <NuxtLink
             v-for="s in popularScenarios"
             :key="s.label"
             :to="s.to"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -62,7 +65,7 @@
         </div>
       </div>
 
-      <div class="quiet-prose max-w-none">
+      <div class="quiet-prose calc-edu-prose max-w-none">
         <h2>Simulador de IR sobre ações grátis e online</h2>
         <p class="leading-relaxed">
           Use a calculadora acima para simular o imposto de renda devido em swing trade e day trade em segundos. Ideal pra apurar o DARF do mês antes do vencimento.

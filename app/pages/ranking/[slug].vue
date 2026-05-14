@@ -19,79 +19,92 @@
 -->
 <template>
   <NuxtLayout name="default" :title="config.h1">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- ============ Hero ============ -->
-      <MoleculesPageHeader
-        :back-link="{ to: '/ranking', label: 'Todos os rankings' }"
-        :icon="config.icon"
-        icon-style="circle"
-        :icon-color="config.iconColor"
-        eyebrow="Ranking"
-        :title="config.h1"
-        :description="config.subtitle"
-      />
+    <RankingUiShell
+      back-to="/ranking"
+      back-label="Todos os rankings"
+      :status-meta="statusMeta"
+    >
+      <template #hero>
+        <RankingUiHero eyebrow="Ranking" :chips="heroChips">
+          <template #title>{{ config.h1 }}</template>
+          <template #lead>{{ config.subtitle }}</template>
+        </RankingUiHero>
+      </template>
 
-      <!-- ============ Trust badges ============ -->
-      <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs" :style="{ color: 'var(--brand-text-muted)' }">
-        <span
-          v-for="(badge, idx) in config.badges"
-          :key="badge.text"
-          class="flex items-center gap-1"
-        >
-          <UIcon
-            :name="badge.icon"
-            class="size-4"
-            :style="{ color: 'var(--brand-primary)' }"
+      <template v-if="leader" #leader>
+        <RankingUiLeader
+          :ticker="leader.stock || leader.ticker || ''"
+          :name="leader.name"
+          :sector="leader.sector"
+          :value="Number(leaderValue ?? 0)"
+          :value-label="leaderValueLabel"
+          :value-unit="leaderValueUnit"
+          :value-decimals="leaderValueDecimals"
+          :value-format="leaderValueFormat"
+          :price="leaderStripItems ? undefined : (leader.market_price ?? leader.close)"
+          :strip-items="leaderStripItems"
+        />
+      </template>
+
+      <section class="slug-content">
+        <!-- ============ Table toolbar (eyebrow + filter) ============ -->
+        <header class="rk-table-toolbar">
+          <div class="rk-table-toolbar-meta">
+            <p class="rk-table-toolbar-eyebrow">Lista completa</p>
+            <p class="rk-table-toolbar-count">
+              {{ rows?.length || 0 }} ativos no ranking
+            </p>
+          </div>
+          <AtomsSegmented
+            v-model="activeType"
+            :options="tabs"
+            aria-label="Filtrar tipo de ativo"
           />
-          {{ badge.text }}
-          <span v-if="idx < config.badges.length - 1" class="ml-1">·</span>
-        </span>
-      </div>
+        </header>
 
-      <!-- ============ Type filter tabs ============ -->
-      <AtomsSegmented
-        v-model="activeType"
-        :options="tabs"
-        aria-label="Filtrar tipo de ativo"
-      />
+        <!-- ============ Table ============ -->
+        <div v-if="pending" class="flex items-center justify-center py-16">
+          <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
+        </div>
+        <MoleculesRankingTable
+          v-else
+          :rows="rows || []"
+          :columns="config.columns"
+          :change-label="config.changeLabel || 'Hoje'"
+        />
 
-      <!-- ============ Table ============ -->
-      <div v-if="pending" class="flex items-center justify-center py-16">
-        <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
-      </div>
-      <MoleculesRankingTable
-        v-else
-        :rows="rows || []"
-        :columns="config.columns"
-        :change-label="config.changeLabel || 'Hoje'"
-      />
+        <!-- ============ Answer-first (abaixo da tabela, centralizado) ============ -->
+        <p v-if="config.answerFirst" class="slug-answer-first">
+          {{ config.answerFirst }}
+        </p>
 
-      <!-- ============ Educational content ============ -->
-      <article
-        class="mt-8 flex flex-col gap-6 border-t pt-8"
-        :style="{ borderColor: 'var(--brand-border)' }"
-      >
-        <template
-          v-for="(section, idx) in config.educationalSections"
-          :key="`section-${idx}`"
+        <!-- ============ Educational content ============ -->
+        <article
+          class="mt-8 flex flex-col gap-6 border-t pt-8"
+          :style="{ borderColor: 'var(--brand-border)' }"
         >
-          <h2
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(22px, 2.5vw, 26px)',
-              lineHeight: 1.2,
-              letterSpacing: '-0.4px',
-            }"
-          >{{ section.h2 }}</h2>
-          <p
-            v-for="(para, pIdx) in section.paragraphs"
-            :key="`p-${idx}-${pIdx}`"
-            class="leading-relaxed"
-            :style="{ color: 'var(--brand-text-muted)' }"
-          >{{ para }}</p>
-        </template>
-      </article>
+          <div
+            v-for="(section, idx) in config.educationalSections"
+            :key="`section-${idx}`"
+            class="flex flex-col gap-6"
+          >
+            <h2
+              class="font-light"
+              :style="{
+                color: 'var(--brand-text)',
+                fontSize: 'clamp(22px, 2.5vw, 26px)',
+                lineHeight: 1.2,
+                letterSpacing: '-0.4px',
+              }"
+            >{{ section.h2 }}</h2>
+            <p
+              v-for="(para, pIdx) in section.paragraphs"
+              :key="`p-${idx}-${pIdx}`"
+              class="leading-relaxed"
+              :style="{ color: 'var(--brand-text-muted)' }"
+            >{{ para }}</p>
+          </div>
+        </article>
 
       <!-- ============ Cross-links to calculators + outros rankings ============ -->
       <section class="flex flex-col gap-4">
@@ -176,16 +189,17 @@
         </div>
       </section>
 
-      <!-- ============ CTA ============ -->
-      <MoleculesCtaSection
-        :title="`Acompanhe ${config.title.toLowerCase()} na sua carteira`"
-        :description="`Cadastre-se na ${brand.name} e receba alertas automáticos sobre os ativos do ranking, com indicadores fundamentalistas atualizados diariamente.`"
-        :buttons="[
-          { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
-          { label: 'Ver outros rankings', to: '/ranking', variant: 'outline' },
-        ]"
-      />
-    </section>
+        <!-- ============ CTA ============ -->
+        <MoleculesCtaSection
+          :title="`Acompanhe ${config.title.toLowerCase()} na sua carteira`"
+          :description="`Cadastre-se na ${brand.name} e receba alertas automáticos sobre os ativos do ranking, com indicadores fundamentalistas atualizados diariamente.`"
+          :buttons="[
+            { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
+            { label: 'Ver outros rankings', to: '/ranking', variant: 'outline' },
+          ]"
+        />
+      </section>
+    </RankingUiShell>
   </NuxtLayout>
 </template>
 
@@ -260,6 +274,12 @@ interface RankingConfig {
   metaDescription: string
   h1: string
   subtitle: string
+  /**
+   * Answer-first paragraph mostrado abaixo da tabela, centralizado, com
+   * cor muted. Otimizado pra citação por LLMs/AI (definição + faixa de
+   * referência + escopo do ranking). Opcional — só renderiza se definido.
+   */
+  answerFirst?: string
   icon: string
   iconColor: 'primary' | 'positive' | 'negative'
   badges: BadgeItem[]
@@ -269,6 +289,29 @@ interface RankingConfig {
   educationalSections: EducationalSection[]
   crossLinks: CrossLink[]
   faqItems: FaqItem[]
+  /**
+   * Override do col usado pra calcular o mega number no leader spotlight.
+   * Default: primeira coluna em `columns`. Use quando o destaque visual
+   * deve ser diferente da coluna primária da tabela (ex.: Graham/Bazin
+   * mostram o preço da fórmula como primeira coluna mas o destaque útil
+   * é o upside %).
+   */
+  leaderPrimaryCol?: RankingColumn
+  /**
+   * Strip variant. 'price-formula' mostra Preço atual + Preço Graham/Bazin
+   * (label vem de `leaderFormulaLabel`). Default: undefined (strip padrão
+   * Preço/30D/12M conforme campos disponíveis).
+   */
+  leaderStripVariant?: 'price-formula'
+  /**
+   * Label da segunda métrica quando leaderStripVariant='price-formula'.
+   * Ex.: "Preço Graham", "Preço Bazin".
+   */
+  leaderFormulaLabel?: string
+  /**
+   * Field do row pra ler o preço da fórmula. Ex.: 'graham_price', 'bazin_price'.
+   */
+  leaderFormulaField?: string
 }
 
 // ----- Shared cross-links --------------------------------------------
@@ -319,6 +362,8 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
     h1: 'Maiores Empresas por Valor de Mercado',
     subtitle:
       'As 50 maiores empresas listadas na B3 ordenadas por capitalização de mercado, com Petrobras, Vale, Itaú, Bradesco e blue chips brasileiras. Atualizado diariamente após pregão.',
+    answerFirst:
+      'Valor de mercado (market cap) é o valor total que o mercado atribui a uma empresa = preço da ação × quantidade total de ações em circulação. Blue chips brasileiras têm market cap acima de R$ 50 bilhões (Petrobras, Vale, Itaú, Ambev, Bradesco), mid caps ficam entre R$ 5 bi e R$ 50 bi, e small caps abaixo de R$ 5 bi. Este ranking lista as 50 maiores empresas da B3 por capitalização.',
     icon: 'i-lucide-building-2',
     iconColor: 'primary',
     badges: [
@@ -387,6 +432,8 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
     metaTitle: 'Ações Mais Baratas pela Fórmula de Graham 2026 | Redentia',
     metaDescription:
       'Top 50 ações com maior desconto pela Fórmula de Graham (raiz de 22.5 × LPA × VPA). Estratégia value clássica de Benjamin Graham aplicada à B3.',
+    answerFirst:
+      'Preço Graham é a fórmula clássica de Benjamin Graham para valor intrínseco: √(22,5 × LPA × VPA), onde LPA é o lucro por ação e VPA é o valor patrimonial por ação dos últimos 12 meses. Ações cotadas abaixo do preço Graham têm margem de segurança implícita (estratégia value investing). Este ranking lista as 50 ações com maior desconto sobre o preço Graham na B3, atualizado diariamente.',
     h1: 'Ações Mais Baratas pela Fórmula de Graham',
     subtitle:
       'As 50 ações brasileiras com maior desconto em relação ao preço justo calculado pela Fórmula de Graham, raiz quadrada de 22,5 vezes o LPA vezes o VPA. Estratégia clássica de value investing de Benjamin Graham.',
@@ -399,6 +446,10 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
       { icon: 'i-lucide-sigma', text: 'Fórmula Graham' },
     ],
     columns: ['grahamPrice', 'upsidePct', 'change', 'marketCap'],
+    leaderPrimaryCol: 'upsidePct',
+    leaderStripVariant: 'price-formula',
+    leaderFormulaLabel: 'Preço Graham',
+    leaderFormulaField: 'graham_price',
     fetcher: (service, type) => service.getGrahamDiscount(type, 50),
     educationalSections: [
       {
@@ -461,6 +512,8 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
     h1: 'Ações Mais Baratas pela Fórmula de Bazin',
     subtitle:
       'As 50 ações brasileiras com maior desconto pela Fórmula de Bazin, dividendo médio anual dividido por 6 por cento. Foco em quem busca renda passiva por dividendos consistentes.',
+    answerFirst:
+      'Preço Bazin é a fórmula brasileira de Décio Bazin baseada em dividendos: preço justo = dividendos dos últimos 12 meses ÷ 0,06, assumindo dividend yield mínimo aceitável de 6%. Ações cotadas abaixo do Bazin oferecem DY esperado acima de 6% no preço atual. Este ranking lista as 50 ações com maior desconto pelo método Bazin na B3, ideal para quem busca renda passiva consistente.',
     icon: 'i-lucide-piggy-bank',
     iconColor: 'positive',
     badges: [
@@ -470,6 +523,10 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
       { icon: 'i-lucide-sigma', text: 'Fórmula Bazin' },
     ],
     columns: ['bazinPrice', 'upsidePct', 'dy', 'marketCap'],
+    leaderPrimaryCol: 'upsidePct',
+    leaderStripVariant: 'price-formula',
+    leaderFormulaLabel: 'Preço Bazin',
+    leaderFormulaField: 'bazin_price',
     fetcher: (service, type) => service.getBazinDiscount(type, 50),
     educationalSections: [
       {
@@ -532,6 +589,8 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
     h1: 'Maiores Margens Líquidas da Bolsa',
     subtitle:
       'As 50 empresas listadas na B3 que mais convertem receita em lucro líquido, indicador chave de eficiência operacional e poder de precificação. Atualizado com últimos balanços.',
+    answerFirst:
+      'Margem líquida é o percentual da receita que vira lucro depois de impostos, despesas e custos: margem líquida = (lucro líquido ÷ receita) × 100. Empresas com margem acima de 20% tendem a ter modelos eficientes, poder de precificação e vantagem competitiva (bancos, transmissoras de energia, B3). Margem entre 5% e 15% é o padrão da maioria dos setores; abaixo de 5% indica baixa eficiência. Este ranking lista as 50 ações com maior margem líquida da B3 nos últimos 12 meses.',
     icon: 'i-lucide-percent',
     iconColor: 'primary',
     badges: [
@@ -603,6 +662,8 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
     h1: 'Melhores Ações para Buy and Hold',
     subtitle:
       'Score proprietário de 0 a 10 que combina ROE consistente, dividend yield, baixo endividamento e regularidade de pagamentos. Pensado para o investidor de longo prazo que segue a filosofia buy and hold.',
+    answerFirst:
+      'Buy and Hold Score é um indicador proprietário de 0 a 10 que combina ROE consistente, dividend yield, baixo endividamento e regularidade de pagamentos de dividendos. Score acima de 7 indica empresa com fundamentos sólidos pra estratégia de longo prazo (5+ anos), filosofia popularizada por Warren Buffett. Empresas com score alto tendem a entregar retorno composto consistente. Este ranking lista as 50 ações com melhor score Buy & Hold da B3.',
     icon: 'i-lucide-shield-check',
     iconColor: 'primary',
     badges: [
@@ -1621,6 +1682,82 @@ const { data: rows, pending } = await useAsyncData(
   },
 )
 
+// ----- V5 hero/leader bindings --------------------------------------
+// Esse mapa decide qual campo da row[0] vira o "valor mega" no leader
+// spotlight (DY% / ROE% / P/L / preço justo / score, etc.), pra cada
+// coluna primária de um ranking. Cai pra `change_percent` se nada bater.
+type LeaderFormat = 'number' | 'compactNumber' | 'compactBrl'
+
+const PRIMARY_COL_MAP: Record<string, { field: string; label: string; unit: string; decimals: number; format?: LeaderFormat }> = {
+  dy: { field: 'dividend_yield', label: 'DY 12 meses', unit: '%', decimals: 1 },
+  pe: { field: 'trailing_pe', label: 'P/L', unit: '', decimals: 1 },
+  roe: { field: 'roe', label: 'ROE 12m', unit: '%', decimals: 1 },
+  netMargin: { field: 'net_margin', label: 'Margem líquida', unit: '%', decimals: 1 },
+  revenue: { field: 'total_revenue', label: 'Receita 12m', unit: '', decimals: 0, format: 'compactBrl' },
+  netIncome: { field: 'net_income', label: 'Lucro líquido', unit: '', decimals: 0, format: 'compactBrl' },
+  cash: { field: 'total_cash', label: 'Caixa', unit: '', decimals: 0, format: 'compactBrl' },
+  grahamPrice: { field: 'graham_price', label: 'Preço Graham', unit: '', decimals: 2 },
+  bazinPrice: { field: 'bazin_price', label: 'Preço Bazin', unit: '', decimals: 2 },
+  upsidePct: { field: 'upside_pct', label: 'Upside', unit: '%', decimals: 1 },
+  buyHoldScore: { field: 'buy_hold_score', label: 'B&H Score', unit: '', decimals: 1 },
+  marketCap: { field: 'market_cap', label: 'Market cap', unit: '', decimals: 0, format: 'compactNumber' },
+  change: { field: 'change_percent', label: 'Variação', unit: '%', decimals: 1 },
+}
+
+const leader = computed(() => {
+  const list = rows.value as any[] | null
+  return list && list.length ? list[0] : null
+})
+
+const primaryColMeta = computed(() => {
+  const overrideCol = config.value.leaderPrimaryCol as string | undefined
+  const primaryCol = overrideCol || (config.value.columns[0] as string | undefined)
+  return (primaryCol && PRIMARY_COL_MAP[primaryCol]) || PRIMARY_COL_MAP.change
+})
+
+const leaderValue = computed(() => {
+  if (!leader.value) return 0
+  return leader.value[primaryColMeta.value.field] ?? 0
+})
+
+const leaderValueLabel = computed(() => primaryColMeta.value.label)
+const leaderValueUnit = computed(() => primaryColMeta.value.unit)
+const leaderValueDecimals = computed(() => primaryColMeta.value.decimals)
+const leaderValueFormat = computed<LeaderFormat>(() => primaryColMeta.value.format ?? 'number')
+
+function formatBRL(value: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+}
+
+const leaderStripItems = computed(() => {
+  if (config.value.leaderStripVariant !== 'price-formula') return undefined
+  if (!leader.value) return undefined
+  const row = leader.value as any
+  const price = Number(row.market_price ?? row.close ?? 0)
+  const field = config.value.leaderFormulaField || 'graham_price'
+  const formulaPrice = Number(row[field] ?? 0)
+  return [
+    { label: 'Preço', value: formatBRL(price), tone: 'heading' as const },
+    {
+      label: config.value.leaderFormulaLabel || 'Preço fórmula',
+      value: formatBRL(formulaPrice),
+      tone: 'heading' as const,
+    },
+  ]
+})
+
+// Chips no hero (V5): converte os trust badges já configurados em chips.
+// Mantém o mesmo conteúdo, só muda a apresentação.
+const heroChips = computed<Array<{ label: string; tone?: 'default' | 'positive' }>>(() =>
+  (config.value.badges || []).map((b) => ({ label: b.text }))
+)
+
+// Status meta no topo (acima do hero): "Top N · [primary metric label]".
+const statusMeta = computed(() => {
+  const count = rows.value?.length || 50
+  return `Top ${count} · ${primaryColMeta.value.label} · B3`
+})
+
 // ----- SEO ----------------------------------------------------------
 
 // itemListEntries: top 10 dos rows pra ItemList schema. Vazio enquanto
@@ -1681,3 +1818,66 @@ usePageSeo({
   ],
 })
 </script>
+
+<style scoped>
+.slug-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 48px 24px 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border-subtle);
+}
+@media (min-width: 768px) {
+  .slug-content { padding: 64px 32px 96px; }
+}
+@media (min-width: 1024px) {
+  .slug-content { padding: 80px 56px 120px; }
+}
+
+.rk-table-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+@media (min-width: 640px) {
+  .rk-table-toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+  }
+}
+.rk-table-toolbar-meta { display: flex; flex-direction: column; gap: 4px; }
+.rk-table-toolbar-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-primary);
+  margin: 0;
+}
+.rk-table-toolbar-count {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-heading);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.slug-answer-first {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--brand-text-muted);
+  text-align: center;
+  max-width: 68ch;
+  margin: 8px auto 0;
+}
+</style>

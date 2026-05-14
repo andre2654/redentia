@@ -1,165 +1,132 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h2 class="text-xl">Simulação de Investimento</h2>
-      </div>
+  <CalcUiShell
+    ref="calcRoot"
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Juros Compostos</p>
+        <h1 class="calc-title">
+          Calculadora de Juros Compostos
+        </h1>
+        <p class="calc-lead">
+          Simule rendimento com juros compostos e aportes mensais.
+        </p>
+      </slot>
+    </template>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Valor Inicial (R$)" name="initialValue">
-          <AtomsFormCurrencyInput
-            v-model="compoundForm.initialValue"
-            placeholder="1.000,00 R$"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Aporte Mensal (R$)" name="monthlyValue">
-          <AtomsFormCurrencyInput
-            v-model="compoundForm.monthlyValue"
-            placeholder="500"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Taxa de Juros (%)" name="interestRate">
-          <div class="flex gap-2">
-            <AtomsFormPercentageInput
-              v-model="compoundForm.interestRate"
-              :min="0"
-              placeholder="10,50"
-              size="lg"
-              :max="100"
-              variant="soft"
-              class="flex-1"
-            />
-            <USelectMenu
+    <template #form>
+      <p class="cui-section-label">{{ compoundResult ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
+      <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField
+          label="Valor Inicial (R$)"
+          type="currency"
+          v-model="compoundForm.initialValue"
+          placeholder="10.000,00"
+        />
+        <CalcUiField
+          label="Aporte Mensal (R$)"
+          type="currency"
+          v-model="compoundForm.monthlyValue"
+          placeholder="500,00"
+        />
+        <CalcUiField
+          label="Taxa de Juros (%)"
+          type="percentage"
+          v-model="compoundForm.interestRate"
+          :min="0"
+          :max="100"
+          placeholder="10,50"
+        >
+          <template #help>
+            <CalcUiSegmented
               v-model="compoundForm.interestPeriod"
-              :items="[
-                { label: 'Ao ano', value: 'year' },
-                { label: 'Ao mês', value: 'month' },
+              :options="[
+                { value: 'year', label: 'Ao ano' },
+                { value: 'month', label: 'Ao mês' },
               ]"
-              size="lg"
-              :ui="{ base: 'min-w-[120px]' }"
-              variant="soft"
+              aria-label="Período da taxa"
             />
-          </div>
-        </UFormField>
-
-        <UFormField label="Período" name="period">
-          <div class="flex gap-2">
-            <UInput
-              v-model="compoundForm.period"
-              type="number"
-              placeholder="12"
-              size="lg"
-              variant="soft"
-              class="flex-1"
-            />
-            <USelectMenu
+          </template>
+        </CalcUiField>
+        <CalcUiField
+          label="Período"
+          type="number"
+          v-model="compoundForm.period"
+          placeholder="10"
+        >
+          <template #help>
+            <CalcUiSegmented
               v-model="compoundForm.periodType"
-              :items="[
-                { label: 'Meses', value: 'months' },
-                { label: 'Anos', value: 'years' },
+              :options="[
+                { value: 'years', label: 'Anos' },
+                { value: 'months', label: 'Meses' },
               ]"
-              size="lg"
-              :ui="{ base: 'min-w-[120px]' }"
-              variant="soft"
+              aria-label="Unidade do período"
             />
-          </div>
-        </UFormField>
+          </template>
+        </CalcUiField>
       </div>
 
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calculator"
+      <CalcUiButton
+        :label="compoundResult ? 'Atualizar simulação' : 'Calcular simulação'"
+        :icon="loading ? 'i-lucide-loader-2' : 'i-lucide-sparkles'"
+        :loading="loading"
         @click="calculateCompoundInterest"
+      />
+    </template>
+
+    <template #result>
+      <CalcUiResultMega
+        v-if="compoundResult"
+        eyebrow="Valor projetado"
+        :value="formatBRL(compoundResult.finalValue)"
+        :kpis="[
+          { label: 'Total investido', value: formatBRL(compoundResult.totalInvested), color: 'heading' },
+          { label: 'Juros ganhos', value: `+${formatBRL(compoundResult.totalInterest)}`, color: 'positive' },
+          { label: 'Multiplicador', value: `${(compoundResult.finalValue / Math.max(compoundResult.totalInvested, 1)).toFixed(2)}×`, color: 'heading' },
+        ]"
       >
-        Calcular Simulação
-      </UButton>
-    </div>
-
-    <div v-if="compoundResult" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
-        <h3 class="text-xl">Resultados da Simulação</h3>
+        <template #caption>
+          em <span class="hl">{{ compoundForm.period }} {{ compoundForm.periodType === 'years' ? 'anos' : 'meses' }}</span>
+          · <span class="positive">+{{ ((compoundResult.totalInterest / Math.max(compoundResult.totalInvested, 1)) * 100).toFixed(0) }}%</span> de rendimento
+        </template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Valor projetado</p>
+        <p class="cui-empty-text">Preencha os dados ao lado e clique em "Calcular simulação".</p>
       </div>
+    </template>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div
-          class="flex flex-col gap-2 rounded-lg p-4"
-          :style="{ backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="text-[13px] font-light" :style="{ color: 'var(--text-muted)' }">
-            Total Investido
-          </p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(compoundResult.totalInvested)
-            }}
-          </p>
-        </div>
-        <div
-          class="flex flex-col gap-2 rounded-lg p-4"
-          :style="{ backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="text-[13px] font-light" :style="{ color: 'var(--text-muted)' }">
-            Total de Juros
-          </p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(compoundResult.totalInterest)
-            }}
-          </p>
-        </div>
-        <div
-          class="flex flex-col gap-2 rounded-lg p-4"
-          :style="{ backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="text-[13px] font-light" :style="{ color: 'var(--text-muted)' }">Valor Final</p>
-          <p class="text-secondary text-2xl tabular-nums">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(compoundResult.finalValue)
-            }}
-          </p>
-        </div>
+    <template #chart>
+      <CalcUiChart v-if="compoundResult" label="Evolução do patrimônio">
+        <AtomsGraphLine
+          :data="compoundResult.chartData"
+          :height="350"
+          :legend="[{ label: 'Patrimônio', color: ChartColors.positive }]"
+          :colors="[ChartColors.positive]"
+        />
+      </CalcUiChart>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Evolução do patrimônio</p>
+        <p class="cui-empty-text">O gráfico aparece após o cálculo.</p>
       </div>
-
-      <div class="flex flex-col gap-2">
-        <h4 class="text-[16px] font-medium">Evolução do Patrimônio</h4>
-        <div class="h-[350px]">
-          <AtomsGraphLine
-            :data="compoundResult.chartData"
-            :height="350"
-            :legend="[{ label: 'Patrimônio', color: ChartColors.positive }]"
-            :colors="[ChartColors.positive]"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
 import type { IChartDataPoint } from '~/types/chart'
 import { showErrorNotification } from '~/composables/useNotify'
 import { ChartColors } from '~/design/chartColors'
+
+defineProps<{
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
+}>()
 
 type CompoundResult = {
   totalInvested: number
@@ -172,57 +139,44 @@ type CompoundForm = {
   initialValue: number
   monthlyValue: number
   interestRate: number | null
-  interestPeriod: { label: string; value: 'year' | 'month' }
+  interestPeriod: 'year' | 'month'
   period: number | null
-  periodType: { label: string; value: 'years' | 'months' }
+  periodType: 'years' | 'months'
 }
 
 const compoundForm = ref<CompoundForm>({
   initialValue: 10000,
   monthlyValue: 500,
   interestRate: 10.5,
-  interestPeriod: { label: 'Ao ano', value: 'year' },
+  interestPeriod: 'year',
   period: 10,
-  periodType: { label: 'Anos', value: 'years' },
+  periodType: 'years',
 })
 
 const compoundResult = ref<CompoundResult | null>(null)
-
+const loading = ref(false)
 const calcRoot = ref<HTMLElement | null>(null)
+
+function formatBRL(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value)
+}
 
 function scrollToCalc() {
   if (typeof window === 'undefined') return
-  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
   nextTick(() => {
-    calcRoot.value?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
+    (calcRoot.value as any)?.$el?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
   })
 }
 
-// ====================================================================
-// Deep-link via query params — abilita URLs canonicas pra cenarios
-// populares (ex: /calculadora/juros-compostos?monthly=500&years=20).
-// Cada combinacao vira uma "landing page" virtual indexavel pelo
-// Google sem precisar duplicar a pagina. Os hreflang sao gerados pelo
-// Nuxt SSR; o usePageSeo da rota mae cobre todas as variacoes.
-//
-// Params suportados:
-//   ?initial=10000       valor inicial em R$ (numero)
-//   ?monthly=500         aporte mensal em R$
-//   ?rate=10.5           taxa em % (a.a. por padrao)
-//   ?years=20            periodo em anos (sobrepoe `months`)
-//   ?months=240          periodo em meses
-//   ?auto=1              dispara o calculo automaticamente apos hidratar
-// ====================================================================
 const route = useRoute()
 
 function parseNumberParam(value: unknown): number | null {
   if (value === undefined || value === null) return null
   const raw = Array.isArray(value) ? value[0] : value
   if (typeof raw !== 'string' || raw.trim() === '') return null
-  // Aceita "10.5" e "10,5" (Brasil) — Number() so entende ponto.
   const normalized = raw.replace(',', '.')
   const num = Number(normalized)
   return Number.isFinite(num) ? num : null
@@ -241,30 +195,26 @@ function applyQueryParams() {
   if (rate !== null) compoundForm.value.interestRate = rate
   if (years !== null) {
     compoundForm.value.period = years
-    compoundForm.value.periodType = { label: 'Anos', value: 'years' }
+    compoundForm.value.periodType = 'years'
   } else if (months !== null) {
     compoundForm.value.period = months
-    compoundForm.value.periodType = { label: 'Meses', value: 'months' }
+    compoundForm.value.periodType = 'months'
   }
 
-  // Auto-fire o calculo se algum param de input foi passado — usuario
-  // chegou aqui via deep-link (compartilhamento, snippet do Google,
-  // landing interna), entao a expectativa e ver o resultado direto.
   const hasAnyInput =
     initial !== null || monthly !== null || rate !== null || years !== null || months !== null
   if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
-    // nextTick pra garantir que o v-model atualizou os children inputs
     nextTick(() => calculateCompoundInterest())
   }
 }
 
 onMounted(() => {
   applyQueryParams()
+  if (!route.query.initial && !route.query.monthly && !route.query.rate && !route.query.years && !route.query.months) {
+    calculateCompoundInterest()
+  }
 })
 
-// Re-apply when query changes (user clicked a scenario chip on the same page)
-// In this path, ALSO scroll to the calculator so the user sees the result.
-// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
 watch(
   () => route.query,
   () => {
@@ -280,6 +230,7 @@ async function calculateCompoundInterest() {
   const rate = compoundForm.value.interestRate ?? 0
   const period = compoundForm.value.period ?? 0
 
+  loading.value = true
   try {
     const result = await $fetch<CompoundResult>('/api/calculate', {
       method: 'POST',
@@ -290,8 +241,8 @@ async function calculateCompoundInterest() {
           monthlyValue: monthly,
           interestRate: rate,
           period: period,
-          periodType: compoundForm.value.periodType.value,
-          interestPeriod: compoundForm.value.interestPeriod.value,
+          periodType: compoundForm.value.periodType,
+          interestPeriod: compoundForm.value.interestPeriod,
         },
       },
     })
@@ -302,6 +253,24 @@ async function calculateCompoundInterest() {
       'Erro ao calcular',
       'Não foi possível simular o investimento. Tente novamente.'
     )
+  } finally {
+    loading.value = false
   }
 }
 </script>
+
+<style scoped>
+.cui-section-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+.cui-result-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+</style>

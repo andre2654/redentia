@@ -1,15 +1,21 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-receipt-text" class="text-secondary size-6" />
-        <h2 class="text-xl">Calcular Imposto de Renda</h2>
-      </div>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Imposto de Renda</p>
+        <h1 class="calc-title">Calculadora de IR sobre Ações</h1>
+        <p class="calc-lead">Calcule o imposto devido em operações na B3 (swing/day trade) com DARF e compensação de prejuízos.</p>
+      </slot>
+    </template>
 
-      <!-- Tipo de Operação -->
-      <div class="flex flex-col gap-3">
-        <p class="text-sm font-semibold" :style="{ color: 'var(--text-heading)' }">Tipo de operação:</p>
-        <AtomsSegmented
+    <template #form>
+      <p class="cui-section-label">{{ results ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
+      <CalcUiField label="Tipo de operação">
+        <CalcUiSegmented
           v-model="operationType"
           :options="[
             { value: 'swing', label: 'Swing Trade' },
@@ -17,234 +23,118 @@
           ]"
           aria-label="Tipo de operação"
         />
+      </CalcUiField>
+
+      <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Mês de Referência" type="month" v-model="form.month" />
+        <CalcUiField label="Total de Vendas no Mês (R$)" type="currency" v-model="form.totalSales" placeholder="50.000,00" />
+        <CalcUiField label="Lucro ou Prejuízo (R$)" type="currency" v-model="form.profitLoss" placeholder="5.000,00" />
+        <CalcUiField v-if="operationType === 'swing'" label="Prejuízos Acumulados (R$)" type="currency" v-model="form.accumulatedLoss" placeholder="0,00" />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Mês de Referência" name="month">
-          <UInput
-            v-model="form.month"
-            type="month"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
+      <CalcUiButton label="Calcular IR" icon="i-lucide-sparkles" @click="calculate" />
+    </template>
 
-        <UFormField label="Total de Vendas no Mês (R$)" name="totalSales">
-          <AtomsFormCurrencyInput
-            v-model="form.totalSales"
-            placeholder="50000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Lucro ou Prejuízo (R$)" name="profitLoss">
-          <AtomsFormCurrencyInput
-            v-model="form.profitLoss"
-            placeholder="5000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField v-if="operationType === 'swing'" label="Prejuízos Acumulados (R$)" name="accumulatedLoss">
-          <AtomsFormCurrencyInput
-            v-model="form.accumulatedLoss"
-            placeholder="0"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calculator"
-        @click="calculate"
+    <template #result>
+      <CalcUiResultMega
+        v-if="results"
+        eyebrow="Imposto de renda devido"
+        :value="formatCurrency(results.taxDue)"
+        :mega-color="results.taxDue === 0 ? 'positive' : 'primary'"
+        :kpis="[
+          { label: 'Total de vendas', value: formatCurrency(form.totalSales), color: 'heading' },
+          { label: form.profitLoss >= 0 ? 'Lucro' : 'Prejuízo', value: formatCurrency(Math.abs(form.profitLoss)), color: form.profitLoss >= 0 ? 'positive' : 'negative' },
+          { label: 'Alíquota', value: `${results.taxRate}%`, color: 'heading' },
+        ]"
       >
-        Calcular IR
-      </UButton>
-    </div>
+        <template #caption>{{ results.message }}</template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">IR devido</p>
+        <p class="cui-empty-text">Preencha os dados ao lado e clique em "Calcular IR".</p>
+      </div>
+    </template>
 
-    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-file-text" class="text-secondary size-6" />
-        <h3 class="text-xl">Resultado do Cálculo</h3>
+    <template #chart>
+      <div v-if="results" class="flex flex-col gap-4">
+
+      <div v-if="results.taxDue > 0" class="cui-subcard">
+        <h4 class="cui-subcard-title">Informações do DARF</h4>
+        <div class="cui-subcard-grid cui-subcard-grid--2">
+          <CalcUiKpiBox label="Código DARF" :value="results.darfCode" color="primary" />
+          <CalcUiKpiBox label="Vencimento" :value="results.dueDate" color="heading" />
+          <CalcUiKpiBox label="Valor a Pagar" :value="formatCurrency(results.taxDue)" color="primary" />
+          <CalcUiKpiBox label="Período de Apuração" :value="formatMonth(form.month)" color="heading" />
+        </div>
+        <div class="cui-callout">
+          <strong>Como pagar:</strong> Acesse o site da Receita Federal ou seu banco, gere o DARF com o código {{ results.darfCode }}, preencha o valor de {{ formatCurrency(results.taxDue) }} e efetue o pagamento até {{ results.dueDate }}.
+        </div>
       </div>
 
-      <!-- IR Devido -->
-      <div
-        class="rounded-lg border p-6"
-        :style="results.taxDue === 0
-          ? { borderColor: 'color-mix(in srgb, var(--brand-positive) 50%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-positive) 10%, transparent)' }
-          : { borderColor: 'color-mix(in srgb, var(--brand-primary) 50%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-primary) 10%, transparent)' }"
-      >
-        <p class="mb-2 text-sm" :style="{ color: 'var(--text-muted)' }">Imposto de Renda Devido:</p>
-        <p
-          class="text-5xl font-light tabular-nums"
-          :style="{ color: results.taxDue === 0 ? 'var(--brand-positive)' : 'var(--brand-primary)' }"
-        >
-          {{ formatCurrency(results.taxDue) }}
+      <div v-if="operationType === 'swing' && results.compensatedLoss > 0" class="cui-subcard">
+        <h4 class="cui-subcard-title">Compensação de Prejuízos</h4>
+        <p class="cui-subcard-desc">
+          Prejuízo acumulado compensado: <strong style="color: var(--text-heading); font-weight: 500">{{ formatCurrency(results.compensatedLoss) }}</strong>
         </p>
-        <p class="mt-2 text-sm" :style="{ color: 'var(--text-body)' }">{{ results.message }}</p>
+        <p class="cui-subcard-desc">
+          Novo saldo de prejuízo: <strong style="color: var(--text-heading); font-weight: 500">{{ formatCurrency(results.newAccumulatedLoss) }}</strong>
+        </p>
       </div>
 
-      <!-- Detalhamento -->
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Total de Vendas</p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ formatCurrency(form.totalSales) }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">
-            {{ form.profitLoss >= 0 ? 'Lucro' : 'Prejuízo' }}
-          </p>
-          <p
-            class="text-xl tabular-nums"
-            :style="{ color: form.profitLoss >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
-          >
-            {{ formatCurrency(Math.abs(form.profitLoss)) }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Alíquota</p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ results.taxRate }}%
-          </p>
+      <div v-if="operationType === 'swing' && results.exempt" class="cui-result-status cui-result-status--positive">
+        <UIcon name="i-lucide-check-circle" class="cui-result-status-icon" />
+        <div>
+          <h4 class="cui-result-status-title">Isento de IR</h4>
+          <p class="cui-result-status-msg">Vendas totais abaixo de R$ 20.000 no mês. Você está isento de pagar imposto sobre este lucro, mas ainda precisa declarar no IRPF anual.</p>
         </div>
       </div>
 
-      <!-- DARF -->
-      <div
-        v-if="results.taxDue > 0"
-        class="rounded-lg border p-6"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
-      >
-        <h4 class="mb-4 text-lg font-medium" :style="{ color: 'var(--text-heading)' }">Informações do DARF</h4>
-        <div class="grid gap-4 md:grid-cols-2">
-          <div>
-            <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Código DARF</p>
-            <p class="text-2xl tabular-nums text-secondary">{{ results.darfCode }}</p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Vencimento</p>
-            <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">{{ results.dueDate }}</p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Valor a Pagar</p>
-            <p class="text-2xl tabular-nums text-secondary">
-              {{ formatCurrency(results.taxDue) }}
-            </p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Período de Apuração</p>
-            <p class="text-lg font-medium" :style="{ color: 'var(--text-heading)' }">{{ formatMonth(form.month) }}</p>
-          </div>
-        </div>
-        <div
-          class="mt-4 rounded-md border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="text-sm" :style="{ color: 'var(--text-body)' }">
-            <strong :style="{ color: 'var(--text-heading)' }">Como pagar:</strong> Acesse o site da Receita Federal ou seu banco, gere o DARF com o código {{ results.darfCode }}, preencha o valor de {{ formatCurrency(results.taxDue) }} e efetue o pagamento até {{ results.dueDate }}.
-          </p>
-        </div>
-      </div>
-
-      <!-- Compensação de Prejuízos -->
-      <div
-        v-if="operationType === 'swing' && results.compensatedLoss > 0"
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-primary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)' }"
-      >
-        <h4 class="mb-3 font-medium" :style="{ color: 'var(--brand-primary)' }">Compensação de Prejuízos</h4>
-        <div class="space-y-2 text-sm" :style="{ color: 'var(--text-body)' }">
-          <p>Prejuízo acumulado compensado: <strong :style="{ color: 'var(--text-heading)' }">{{ formatCurrency(results.compensatedLoss) }}</strong></p>
-          <p>Novo saldo de prejuízo: <strong :style="{ color: 'var(--text-heading)' }">{{ formatCurrency(results.newAccumulatedLoss) }}</strong></p>
-        </div>
-      </div>
-
-      <!-- Isenção -->
-      <div
-        v-if="operationType === 'swing' && results.exempt"
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-positive) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-positive) 8%, transparent)' }"
-      >
-        <div class="flex items-start gap-3">
-          <UIcon
-            name="i-lucide-check-circle"
-            class="size-6 mt-0.5"
-            :style="{ color: 'var(--brand-positive)' }"
-          />
-          <div>
-            <h4 class="mb-2 font-medium" :style="{ color: 'var(--brand-positive)' }">Isento de IR</h4>
-            <p class="text-sm" :style="{ color: 'var(--text-body)' }">
-              Vendas totais abaixo de R$ 20.000 no mês. Você está isento de pagar imposto sobre este lucro, mas ainda precisa declarar no IRPF anual.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Histórico -->
-      <div
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-      >
-        <h4 class="mb-4 font-medium" :style="{ color: 'var(--text-heading)' }">Como Funciona o IR sobre Ações</h4>
-        <div class="space-y-3 text-sm" :style="{ color: 'var(--text-body)' }">
-          <div class="flex items-start gap-2">
-            <UIcon name="i-lucide-info" class="text-secondary size-4 mt-0.5 shrink-0" />
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Como funciona o IR sobre ações</h4>
+        <div class="cui-info-list">
+          <div class="cui-info-item">
+            <UIcon name="i-lucide-info" class="cui-info-icon" />
             <div>
-              <p class="font-medium mb-1" :style="{ color: 'var(--text-heading)' }">Swing Trade (acima de 20k/mês)</p>
-              <p>Alíquota de 15% sobre o lucro. Isenção para vendas até R$ 20.000/mês. Prejuízos podem ser compensados nos meses seguintes.</p>
+              <p class="cui-info-title">Swing Trade (acima de 20k/mês)</p>
+              <p class="cui-info-text">Alíquota de 15% sobre o lucro. Isenção para vendas até R$ 20.000/mês. Prejuízos podem ser compensados nos meses seguintes.</p>
             </div>
           </div>
-          <div class="flex items-start gap-2">
-            <UIcon name="i-lucide-info" class="text-secondary size-4 mt-0.5 shrink-0" />
+          <div class="cui-info-item">
+            <UIcon name="i-lucide-info" class="cui-info-icon" />
             <div>
-              <p class="font-medium mb-1" :style="{ color: 'var(--text-heading)' }">Day Trade</p>
-              <p>Alíquota de 20% sobre o lucro, sem isenção. Todo lucro é tributado, independente do valor de vendas.</p>
+              <p class="cui-info-title">Day Trade</p>
+              <p class="cui-info-text">Alíquota de 20% sobre o lucro, sem isenção. Todo lucro é tributado, independente do valor de vendas.</p>
             </div>
           </div>
-          <div class="flex items-start gap-2">
-            <UIcon name="i-lucide-calendar" class="text-secondary size-4 mt-0.5 shrink-0" />
+          <div class="cui-info-item">
+            <UIcon name="i-lucide-calendar" class="cui-info-icon" />
             <div>
-              <p class="font-medium mb-1" :style="{ color: 'var(--text-heading)' }">Vencimento</p>
-              <p>DARF deve ser pago até o último dia útil do mês seguinte ao das operações.</p>
+              <p class="cui-info-title">Vencimento</p>
+              <p class="cui-info-text">DARF deve ser pago até o último dia útil do mês seguinte ao das operações.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Aviso -->
-      <div
-        class="rounded-lg border p-4 text-sm"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-negative) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-negative) 8%, transparent)', color: 'var(--text-body)' }"
-      >
-        <strong :style="{ color: 'var(--brand-negative)' }">Atenção:</strong> O não pagamento do IR resulta em multa de 0,33% por dia (até 20%) + juros Selic. Declare todas as operações no IRPF anual, mesmo as isentas.
+      <div class="cui-callout cui-callout--warning">
+        <strong>Atenção:</strong> O não pagamento do IR resulta em multa de 0,33% por dia (até 20%) + juros Selic. Declare todas as operações no IRPF anual, mesmo as isentas.
       </div>
-    </div>
-  </div>
+      </div>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Detalhes adicionais</p>
+        <p class="cui-empty-text">DARF, compensação e tabela de regras aparecem após o cálculo.</p>
+      </div>
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
+defineProps<{
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
+}>()
+
 const route = useRoute()
 const operationType = ref<'swing' | 'day'>('swing')
 

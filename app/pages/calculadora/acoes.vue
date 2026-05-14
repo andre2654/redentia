@@ -1,27 +1,31 @@
 <template>
   <NuxtLayout name="default" title="Simulador de Investimento em Ações">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-chart-line"
-        icon-color="secondary"
-        title="Simulador de Investimento em Ações 2026: Histórico Real da B3 com Dividendos"
-        description="Este simulador mostra quanto você teria ganhado investindo em qualquer ação da B3 usando dados históricos reais, incluindo dividendos e JCP reinvestidos. Você escolhe ticker(s), valor inicial, aporte mensal e período. Exemplo: R$ 10.000 + R$ 500/mês em ITUB4 nos últimos 10 anos, com dividendos reinvestidos, viraria R$ 280.000-320.000."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-database', label: 'Dados reais da B3', color: 'primary' },
-          { icon: 'i-lucide-coins', label: 'Dividendos e JCP reinvestidos', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
+    <CalculatorStock
+      :assets="assets"
+      :assets-loading="assetsLoading"
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Simulador · Investimento em Ações</p>
+        <h1 class="calc-title">
+          Histórico real da B3 com
+          <em class="calc-italic">Dividendos.</em>
+        </h1>
+        <p class="calc-lead">
+          Este simulador mostra quanto você teria ganhado investindo em qualquer ação da B3 usando <strong>dados históricos reais</strong>, incluindo dividendos e JCP reinvestidos. Escolhe ticker(s), valor inicial, aporte mensal e período. Exemplo: R$ 10.000 + R$ 500/mês em ITUB4 nos últimos 10 anos, com dividendos reinvestidos, viraria R$ 280.000-320.000.
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> Dados reais da B3</li>
+          <li><span class="dot" /> Dividendos e JCP reinvestidos</li>
+        </ul>
+      </template>
+    </CalculatorStock>
 
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
-        Descubra na hora quanto R$ 10.000 + R$ 500/mês teriam virado em PETR4, ITUB4, VALE3 ou em uma carteira diversificada nos últimos 5, 10 ou 20 anos. Simulação com preços reais da B3, dividendos e JCP reinvestidos automaticamente, comparação entre múltiplos ativos e gráfico de evolução. Gratuito, sem cadastro, sem planilha.
-      </p>
-
-      <!-- Simulador -->
-      <CalculatorStock :assets="assets" :assets-loading="assetsLoading" />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Cenarios populares (internal linking + deep-links) -->
       <!--
@@ -32,7 +36,7 @@
         "carteira blue chips 5 anos", "PETR4 vs VALE3", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -42,12 +46,12 @@
         <p class="text-sm">
           Veja na hora o histórico real dos cenários mais buscados, basta clicar e a simulação carrega já preenchida com tickers, aporte e período.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <NuxtLink
             v-for="s in popularScenarios"
             :key="s.label"
             :to="s.to"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -63,7 +67,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="quiet-prose max-w-none" :style="{ color: 'var(--brand-text)' }">
+      <div class="quiet-prose calc-edu-prose max-w-none" :style="{ color: 'var(--brand-text)' }">
         <h2>Calculadora de Investimento em Ações Online</h2>
         <h2>Como Funciona o Simulador de Ações</h2>
         <p class="leading-relaxed">

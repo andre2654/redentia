@@ -1,295 +1,141 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-piggy-bank" class="text-secondary size-6" />
-        <h2 class="text-xl">Planejar Aposentadoria</h2>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Aposentadoria</p>
+        <h1 class="calc-title">Calculadora de Aposentadoria</h1>
+        <p class="calc-lead">Estime quanto investir hoje pra aposentar com a renda mensal desejada.</p>
+      </slot>
+    </template>
+
+    <template #form>
+      <p class="cui-section-label">{{ results ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
+      <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Idade Atual" type="number" v-model="form.currentAge" :min="18" :max="100" placeholder="35" />
+        <CalcUiField label="Idade Desejada de Aposentadoria" type="number" v-model="form.retirementAge" :min="30" :max="100" placeholder="60" />
+        <CalcUiField label="Expectativa de Vida (anos)" type="number" v-model="form.lifeExpectancy" :min="50" :max="120" placeholder="85" />
+        <CalcUiField label="Renda Mensal Desejada (R$)" type="currency" v-model="form.monthlyIncome" placeholder="5.000,00" />
+        <CalcUiField label="Patrimônio Atual (R$)" type="currency" v-model="form.currentWealth" placeholder="50.000,00" />
+        <CalcUiField label="Aporte Mensal (R$)" type="currency" v-model="form.monthlyContribution" placeholder="2.000,00" />
+        <CalcUiField label="Retorno na Acumulação (% a.a.)" type="percentage" v-model="form.returnRate" :min="0" :max="30" placeholder="10" />
+        <CalcUiField label="Retorno na Fruição (% a.a.)" type="percentage" v-model="form.withdrawalRate" :min="0" :max="20" placeholder="6" />
+        <CalcUiField label="Inflação Anual (%)" type="percentage" v-model="form.inflation" :min="0" :max="20" placeholder="4" />
+        <CalcUiField label="INSS Mensal (R$)" type="currency" v-model="form.inss" placeholder="0,00" />
       </div>
+      <CalcUiButton label="Calcular Aposentadoria" icon="i-lucide-sparkles" @click="calculate" />
+    </template>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Idade Atual" name="currentAge">
-          <UInput
-            v-model.number="form.currentAge"
-            type="number"
-            min="18"
-            max="100"
-            placeholder="35"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Idade Desejada de Aposentadoria" name="retirementAge">
-          <UInput
-            v-model.number="form.retirementAge"
-            type="number"
-            min="30"
-            max="100"
-            placeholder="60"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Expectativa de Vida (anos)" name="lifeExpectancy">
-          <UInput
-            v-model.number="form.lifeExpectancy"
-            type="number"
-            min="50"
-            max="120"
-            placeholder="85"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Renda Mensal Desejada (R$)" name="monthlyIncome">
-          <AtomsFormCurrencyInput
-            v-model="form.monthlyIncome"
-            placeholder="5000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Patrimônio Atual (R$)" name="currentWealth">
-          <AtomsFormCurrencyInput
-            v-model="form.currentWealth"
-            placeholder="50000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Aporte Mensal (R$)" name="monthlyContribution">
-          <AtomsFormCurrencyInput
-            v-model="form.monthlyContribution"
-            placeholder="2000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Retorno na Acumulação (%a.a.)" name="returnRate">
-          <AtomsFormPercentageInput
-            v-model="form.returnRate"
-            :min="0"
-            :max="30"
-            placeholder="10"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Retorno na Fruição (%a.a.)" name="withdrawalRate">
-          <AtomsFormPercentageInput
-            v-model="form.withdrawalRate"
-            :min="0"
-            :max="20"
-            placeholder="6"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Inflação Anual (%)" name="inflation">
-          <AtomsFormPercentageInput
-            v-model="form.inflation"
-            :min="0"
-            :max="20"
-            placeholder="4"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="INSS Mensal (R$)" name="inss">
-          <AtomsFormCurrencyInput
-            v-model="form.inss"
-            placeholder="0"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calculator"
-        @click="calculate"
+    <template #result>
+      <CalcUiResultMega
+        v-if="results"
+        eyebrow="Patrimônio projetado"
+        :value="formatCurrency(results.projectedWealth)"
+        :kpis="[
+          { label: 'Anos até aposentar', value: `${results.yearsToRetirement} anos`, color: 'heading' },
+          { label: 'Patrimônio necessário', value: formatCurrency(results.requiredWealth), color: 'heading' },
+          { label: 'Total investido', value: formatCurrency(results.totalInvested), color: 'heading' },
+        ]"
       >
-        Calcular Aposentadoria
-      </UButton>
-    </div>
-
-    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h3 class="text-xl">Resultados do Planejamento</h3>
+        <template #caption>
+          aos <span class="hl">{{ form.retirementAge }} anos</span>
+          <span v-if="results.viable" class="positive"> · plano viável</span>
+          <span v-else class="negative"> · ajustes necessários</span>
+        </template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Patrimônio projetado</p>
+        <p class="cui-empty-text">Preencha os dados ao lado e clique em "Calcular Aposentadoria".</p>
       </div>
+    </template>
 
-      <!-- Viabilidade -->
-      <div
-        class="rounded-xl border p-6"
-        :class="{
-          'border-[color-mix(in_srgb,var(--brand-positive)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-positive)_10%,transparent)]': results.viable,
-          'border-[color-mix(in_srgb,var(--brand-negative)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-negative)_10%,transparent)]': !results.viable,
-        }"
-      >
-        <div class="flex items-center gap-3">
+    <template #chart>
+      <div v-if="results" class="flex flex-col gap-4">
+        <div
+          class="cui-result-status"
+          :class="results.viable ? 'cui-result-status--positive' : 'cui-result-status--negative'"
+        >
           <UIcon
             :name="results.viable ? 'i-lucide-check-circle' : 'i-lucide-alert-circle'"
-            :class="results.viable ? 'text-[var(--brand-positive)]' : 'text-[var(--brand-negative)]'"
-            class="size-8"
+            class="cui-result-status-icon"
           />
           <div>
-            <h4 class="text-xl">
+            <h4 class="cui-result-status-title">
               {{ results.viable ? 'Plano Viável!' : 'Ajustes Necessários' }}
             </h4>
-            <p class="text-sm text-[var(--text-heading)]">
-              {{ results.message }}
-            </p>
+            <p class="cui-result-status-msg">{{ results.message }}</p>
           </div>
         </div>
-      </div>
 
-      <!-- Métricas Principais -->
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-[var(--text-muted)]">Anos até Aposentar</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ results.yearsToRetirement }} anos
-          </p>
+        <div class="cui-subcard">
+          <h4 class="cui-subcard-title">Renda na Aposentadoria</h4>
+          <div class="cui-subcard-grid cui-subcard-grid--3">
+            <CalcUiKpiBox label="Renda Desejada (hoje)" :value="`${formatCurrency(form.monthlyIncome)}/mês`" color="heading" />
+            <CalcUiKpiBox label="Renda Ajustada (futuro)" :value="`${formatCurrency(results.adjustedIncome)}/mês`" color="primary" caption="Corrigida pela inflação" />
+            <CalcUiKpiBox label="INSS Estimado" :value="`${formatCurrency(form.inss)}/mês`" color="heading" />
+          </div>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-[var(--text-muted)]">Patrimônio Projetado</p>
-          <p class="text-2xl font-bold text-secondary">
-            {{ formatCurrency(results.projectedWealth) }}
-          </p>
-        </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-[var(--text-muted)]">Patrimônio Necessário</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ formatCurrency(results.requiredWealth) }}
-          </p>
-        </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-[var(--text-muted)]">Total Investido</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ formatCurrency(results.totalInvested) }}
-          </p>
-        </div>
-      </div>
 
-      <!-- Renda na Aposentadoria -->
-      <div class="rounded-xl border border-secondary/30 bg-secondary/10 p-6">
-        <h4 class="mb-4 text-lg font-medium" :style="{ color: 'var(--text-heading)' }">Renda na Aposentadoria</h4>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div>
-            <p class="mb-1 text-sm text-[var(--text-muted)]">Renda Desejada (hoje)</p>
-            <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-              {{ formatCurrency(form.monthlyIncome) }}/mês
-            </p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm text-[var(--text-muted)]">Renda Ajustada (futuro)</p>
-            <p class="text-xl font-bold text-secondary">
-              {{ formatCurrency(results.adjustedIncome) }}/mês
-            </p>
-            <p class="text-xs text-[var(--text-muted)]">Corrigida pela inflação</p>
-          </div>
-          <div>
-            <p class="mb-1 text-sm text-[var(--text-muted)]">INSS Estimado</p>
-            <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-              {{ formatCurrency(form.inss) }}/mês
-            </p>
+        <div class="cui-subcard">
+          <h4 class="cui-subcard-title">Regra dos 4%</h4>
+          <p class="cui-subcard-desc">
+            Você pode sacar 4% do patrimônio por ano mantendo o capital com ajuste pela inflação.
+          </p>
+          <div class="cui-subcard-grid cui-subcard-grid--2">
+            <CalcUiKpiBox label="Com seu patrimônio projetado" :value="`${formatCurrency(results.projectedWealth * 0.04 / 12)}/mês`" color="heading" />
+            <CalcUiKpiBox label="Duração estimada" :value="`${results.wealthDuration} anos`" color="primary" />
           </div>
         </div>
-      </div>
 
-      <!-- Regra dos 4% -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-3 font-semibold text-[var(--text-heading)]">Regra dos 4% (Saque Seguro Anual)</h4>
-        <p class="mb-3 text-sm text-[var(--text-heading)]">
-          Segundo a regra dos 4%, você pode sacar 4% do patrimônio por ano (0.33% ao mês) mantendo o capital principal indefinidamente com ajuste pela inflação.
-        </p>
-        <div class="grid gap-3 md:grid-cols-2">
-          <div class="rounded-lg bg-white/10 p-3">
-            <p class="text-xs text-[var(--text-muted)]">Com seu patrimônio projetado</p>
-            <p class="text-lg font-semibold text-[var(--text-heading)]">
-              {{ formatCurrency(results.projectedWealth * 0.04 / 12) }}/mês
-            </p>
-          </div>
-          <div class="rounded-lg bg-white/10 p-3">
-            <p class="text-xs text-[var(--text-muted)]">Duração estimada do patrimônio</p>
-            <p class="text-lg font-semibold text-secondary">
-              {{ results.wealthDuration }} anos
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cenários -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-4 font-semibold text-[var(--text-heading)]">Cenários Alternativos</h4>
-        <div class="space-y-3">
-          <div class="rounded-lg border border-white/10 bg-white/5 p-3">
-            <div class="flex items-center justify-between">
+        <div class="cui-subcard">
+          <h4 class="cui-subcard-title">Cenários Alternativos</h4>
+          <div class="cui-scenario-list">
+            <div class="cui-scenario">
               <div>
-                <p class="font-semibold text-[var(--text-heading)]">Trabalhar mais 3 anos</p>
-                <p class="text-xs text-[var(--text-muted)]">Aposentar aos {{ form.retirementAge + 3 }}</p>
+                <p class="cui-scenario-title">Trabalhar mais 3 anos</p>
+                <p class="cui-scenario-sub">Aposentar aos {{ form.retirementAge + 3 }}</p>
               </div>
-              <p class="text-secondary font-bold">
-                {{ formatCurrency(results.scenarios.work3More) }}
-              </p>
+              <p class="cui-scenario-value">{{ formatCurrency(results.scenarios.work3More) }}</p>
             </div>
-          </div>
-          <div class="rounded-lg border border-white/10 bg-white/5 p-3">
-            <div class="flex items-center justify-between">
+            <div class="cui-scenario">
               <div>
-                <p class="font-semibold text-[var(--text-heading)]">Aumentar aporte em 20%</p>
-                <p class="text-xs text-[var(--text-muted)]">Investir {{ formatCurrency(form.monthlyContribution * 1.2) }}/mês</p>
+                <p class="cui-scenario-title">Aumentar aporte em 20%</p>
+                <p class="cui-scenario-sub">Investir {{ formatCurrency(form.monthlyContribution * 1.2) }}/mês</p>
               </div>
-              <p class="text-secondary font-bold">
-                {{ formatCurrency(results.scenarios.increase20Percent) }}
-              </p>
+              <p class="cui-scenario-value">{{ formatCurrency(results.scenarios.increase20Percent) }}</p>
             </div>
-          </div>
-          <div class="rounded-lg border border-white/10 bg-white/5 p-3">
-            <div class="flex items-center justify-between">
+            <div class="cui-scenario">
               <div>
-                <p class="font-semibold text-[var(--text-heading)]">Reduzir renda em 20%</p>
-                <p class="text-xs text-[var(--text-muted)]">Viver com {{ formatCurrency(form.monthlyIncome * 0.8) }}/mês</p>
+                <p class="cui-scenario-title">Reduzir renda em 20%</p>
+                <p class="cui-scenario-sub">Viver com {{ formatCurrency(form.monthlyIncome * 0.8) }}/mês</p>
               </div>
-              <p class="text-secondary font-bold">
-                {{ formatCurrency(results.scenarios.reduce20Percent) }}
-              </p>
+              <p class="cui-scenario-value">{{ formatCurrency(results.scenarios.reduce20Percent) }}</p>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Aviso -->
-      <div class="rounded-xl border border-[color-mix(in_srgb,var(--brand-primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--brand-primary)_10%,transparent)] p-4 text-sm text-yellow-200">
-        <strong>Lembre-se:</strong> Esta é uma projeção baseada nos parâmetros fornecidos. Retornos reais podem variar. Revise seu planejamento anualmente e ajuste conforme necessário.
+        <div class="cui-callout">
+          <strong>Lembre-se:</strong> Esta é uma projeção. Revise anualmente e ajuste conforme necessário.
+        </div>
       </div>
-    </div>
-  </div>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Análise complementar</p>
+        <p class="cui-empty-text">Detalhes adicionais aparecem após o cálculo.</p>
+      </div>
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
+defineProps<{
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
+}>()
+
 const form = ref({
   currentAge: 35,
   retirementAge: 60,
@@ -297,51 +143,18 @@ const form = ref({
   monthlyIncome: 5000,
   currentWealth: 50000,
   monthlyContribution: 2000,
-  returnRate: 10, // % ao ano
-  withdrawalRate: 6, // % ao ano na aposentadoria
-  inflation: 4, // % ao ano
+  returnRate: 10,
+  withdrawalRate: 6,
+  inflation: 4,
   inss: 0,
 })
 
-const calcRoot = ref<HTMLElement | null>(null)
-
-function scrollToCalc() {
-  if (typeof window === 'undefined') return
-  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
-  nextTick(() => {
-    calcRoot.value?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    })
-  })
-}
-
-// ====================================================================
-// Deep-link via query params — abilita URLs canonicas pra cenarios
-// populares (ex: /calculadora/aposentadoria?age=30&retire=55&income=10000).
-// Cada combinacao vira uma "landing page" virtual indexavel pelo
-// Google sem precisar duplicar a pagina.
-//
-// Params suportados:
-//   ?age=35              idade atual
-//   ?retire=60           idade de aposentadoria
-//   ?life=85             expectativa de vida
-//   ?income=5000         renda mensal desejada em R$
-//   ?wealth=50000        patrimonio atual em R$ (alias: ?atual=)
-//   ?monthly=2000        aporte mensal em R$
-//   ?rate=10             retorno na acumulacao em % a.a.
-//   ?withdrawal=6        retorno na fruicao em % a.a.
-//   ?inflation=4         inflacao em % a.a.
-//   ?inss=2000           INSS estimado em R$
-//   ?auto=1              dispara o calculo automaticamente apos hidratar
-// ====================================================================
 const route = useRoute()
 
 function parseNumberParam(value: unknown): number | null {
   if (value === undefined || value === null) return null
   const raw = Array.isArray(value) ? value[0] : value
   if (typeof raw !== 'string' || raw.trim() === '') return null
-  // Aceita "10.5" e "10,5" (Brasil), Number() so entende ponto.
   const normalized = raw.replace(',', '.')
   const num = Number(normalized)
   return Number.isFinite(num) ? num : null
@@ -372,16 +185,9 @@ function applyQueryParams() {
   if (inss !== null) form.value.inss = inss
 
   const hasAnyInput =
-    age !== null ||
-    retire !== null ||
-    life !== null ||
-    income !== null ||
-    wealth !== null ||
-    monthly !== null ||
-    rate !== null ||
-    withdrawal !== null ||
-    inflation !== null ||
-    inss !== null
+    age !== null || retire !== null || life !== null || income !== null ||
+    wealth !== null || monthly !== null || rate !== null || withdrawal !== null ||
+    inflation !== null || inss !== null
   if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
     nextTick(() => calculate())
   }
@@ -391,15 +197,9 @@ onMounted(() => {
   applyQueryParams()
 })
 
-// Re-apply when query changes (user clicked a scenario chip on the same page)
-// In this path, ALSO scroll to the calculator so the user sees the result.
-// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
 watch(
   () => route.query,
-  () => {
-    applyQueryParams()
-    scrollToCalc()
-  },
+  () => applyQueryParams(),
   { deep: true },
 )
 
@@ -423,16 +223,9 @@ const results = ref<Results | null>(null)
 
 function calculate() {
   const {
-    currentAge,
-    retirementAge,
-    lifeExpectancy,
-    monthlyIncome,
-    currentWealth,
-    monthlyContribution,
-    returnRate,
-    withdrawalRate,
-    inflation,
-    inss,
+    currentAge, retirementAge, lifeExpectancy, monthlyIncome,
+    currentWealth, monthlyContribution, returnRate, withdrawalRate,
+    inflation, inss,
   } = form.value
 
   if (retirementAge <= currentAge) {
@@ -445,7 +238,6 @@ function calculate() {
   const monthlyReturn = returnRate / 100 / 12
   const monthlyInflation = inflation / 100 / 12
 
-  // Fase de acumulação: calcular patrimônio projetado
   let wealth = currentWealth
   let totalInvested = currentWealth
 
@@ -454,48 +246,29 @@ function calculate() {
     totalInvested += monthlyContribution
   }
 
-  // Ajustar renda pela inflação até a aposentadoria
   const adjustedIncome = monthlyIncome * Math.pow(1 + monthlyInflation, monthsToRetirement)
-  const netIncome = adjustedIncome - inss // Renda que precisa vir dos investimentos
-
-  // Patrimônio necessário (regra dos 4%)
-  // Para sacar X/mês com 4% a.a., preciso de X × 12 ÷ 0.04
+  const netIncome = adjustedIncome - inss
   const requiredWealth = (netIncome * 12) / (withdrawalRate / 100)
 
-  // Verificar viabilidade
   const viable = wealth >= requiredWealth
   const gap = requiredWealth - wealth
   const gapPercent = (gap / requiredWealth) * 100
 
   let message = ''
   if (viable) {
-    message = `Parabéns! Você terá ${formatCurrency(wealth - requiredWealth)} a mais do que o necessário.`
+    message = `Seu patrimônio projetado supera o necessário em ${formatCurrency(wealth - requiredWealth)}`
+  } else if (gapPercent <= 20) {
+    message = `Falta ${formatCurrency(gap)} (${gapPercent.toFixed(1)}%). Pequenos ajustes podem viabilizar.`
   } else {
-    message = `Faltam ${formatCurrency(gap)} (${gapPercent.toFixed(1)}%) para atingir seu objetivo. Veja os cenários alternativos abaixo.`
+    message = `Gap significativo de ${formatCurrency(gap)} (${gapPercent.toFixed(1)}%). Considere aumentar aportes ou estender prazo.`
   }
 
-  // Calcular duração do patrimônio
-  const yearsInRetirement = lifeExpectancy - retirementAge
-  const monthlyWithdrawalRate = withdrawalRate / 100 / 12
-  let remainingWealth = wealth
-  let duration = 0
-
-  for (let month = 0; month < yearsInRetirement * 12; month++) {
-    remainingWealth = remainingWealth * (1 + monthlyWithdrawalRate) - netIncome
-    if (remainingWealth <= 0) {
-      duration = month / 12
-      break
-    }
-  }
-
-  if (remainingWealth > 0) {
-    duration = yearsInRetirement
-  }
-
-  // Cenários
-  const work3More = calculateScenario(yearsToRetirement + 3)
-  const increase20Percent = calculateScenario(yearsToRetirement, monthlyContribution * 1.2)
-  const reduce20Percent = (netIncome * 0.8 * 12) / (withdrawalRate / 100)
+  // Duração: meses que o patrimônio dura na fase de fruição
+  const monthlyWithdrawal = adjustedIncome - inss
+  const fruitionMonths = wealth > 0 && monthlyWithdrawal > 0
+    ? Math.floor(Math.log(1 - (wealth * (withdrawalRate / 100 / 12)) / -monthlyWithdrawal) / Math.log(1 + withdrawalRate / 100 / 12))
+    : 0
+  const wealthDuration = Math.min(Math.floor(fruitionMonths / 12), lifeExpectancy - retirementAge)
 
   results.value = {
     viable,
@@ -505,16 +278,16 @@ function calculate() {
     requiredWealth,
     totalInvested,
     adjustedIncome,
-    wealthDuration: duration,
+    wealthDuration,
     scenarios: {
-      work3More,
-      increase20Percent,
-      reduce20Percent,
+      work3More: calculateScenario(retirementAge + 3 - currentAge, monthlyContribution),
+      increase20Percent: calculateScenario(yearsToRetirement, monthlyContribution * 1.2),
+      reduce20Percent: (monthlyIncome * 0.8 * 12) / (withdrawalRate / 100),
     },
   }
 }
 
-function calculateScenario(years: number, contribution?: number): number {
+function calculateScenario(years: number, contribution: number): number {
   const monthlyReturn = form.value.returnRate / 100 / 12
   const months = years * 12
   const pmt = contribution || form.value.monthlyContribution
@@ -536,3 +309,19 @@ function formatCurrency(value: number): string {
   }).format(value)
 }
 </script>
+
+<style scoped>
+.cui-section-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+.cui-result-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+</style>

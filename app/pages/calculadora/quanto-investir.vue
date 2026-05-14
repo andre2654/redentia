@@ -1,27 +1,30 @@
 <template>
   <NuxtLayout name="default" title="Calculadora: Quanto Investir por Mês">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-wallet"
-        icon-color="secondary"
-        title="Calculadora 2026: Quanto Investir por Mês para Sua Meta Financeira"
-        description="Esta calculadora descobre quanto você precisa investir por mês para atingir uma meta financeira específica. Usa a fórmula do valor presente de uma série de pagamentos, considerando taxa de juros e prazo. Exemplo: pra juntar R$ 500.000 em 10 anos a 10% ao ano, você precisa aportar cerca de R$ 2.412 por mês, totalizando R$ 289.440 investidos e R$ 210.560 em juros."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-target', label: 'Cálculo reverso por meta', color: 'primary' },
-          { icon: 'i-lucide-share-2', label: 'Link compartilhável', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
-
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
         Descubra na hora quanto você precisa aportar mensalmente pra ter R$ 100 mil, R$ 500 mil ou R$ 1 milhão em 5, 10, 15 ou 20 anos. Calculadora reversa de juros compostos, considera patrimônio inicial, taxa de retorno realista e ajuste pela inflação. Gratuito, sem cadastro, sem planilha.
-      </p>
+    <CalculatorMonthlyInvestment
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Calculadora · Quanto Investir por Mês</p>
+        <h1 class="calc-title">
+          Quanto Investir por Mês para Sua
+          <em class="calc-italic">Meta.</em>
+        </h1>
+        <p class="calc-lead">
+          Esta calculadora descobre quanto você precisa investir por mês para atingir uma meta financeira específica. Usa a fórmula do <strong>valor presente</strong> de uma série de pagamentos, considerando taxa de juros e prazo. Exemplo: pra juntar R$ 500.000 em 10 anos a 10% ao ano, aporta cerca de R$ 2.412 por mês, totalizando R$ 289.440 investidos e R$ 210.560 em juros.
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> Cálculo reverso por meta</li>
+          <li><span class="dot" /> Link compartilhável</li>
+        </ul>
+      </template>
+    </CalculatorMonthlyInvestment>
 
-      <!-- Calculadora -->
-      <CalculatorMonthlyInvestment />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Cenarios populares (internal linking + deep-links) -->
       <!--
@@ -34,7 +37,7 @@
         imovel", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -44,12 +47,12 @@
         <p class="text-sm">
           Veja na hora o aporte mensal necessário para cada meta, basta clicar e a simulação carrega já preenchida.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <NuxtLink
             v-for="s in popularScenarios"
             :key="s.label"
             :to="s.to"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -65,7 +68,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="quiet-prose max-w-none">
+      <div class="quiet-prose calc-edu-prose max-w-none">
         <h2>Simulador de Aporte Mensal grátis e online</h2>
         <h2>Como Calcular Quanto Investir por Mês</h2>
         <p class="leading-relaxed">

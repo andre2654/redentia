@@ -1,296 +1,168 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-wallet" class="text-secondary size-6" />
-        <h2 class="text-xl">Calcular Aporte Mensal Necessário</h2>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Calculadora · Quanto Investir</p>
+        <h1 class="calc-title">Calculadora de Aporte Mensal</h1>
+        <p class="calc-lead">Descubra quanto investir por mês pra atingir sua meta financeira.</p>
+      </slot>
+    </template>
+
+    <template #form>
+      <p class="cui-section-label">{{ results ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
+      <div class="grid grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Meta Financeira (R$)" type="currency" v-model="form.goal" placeholder="500.000,00" />
+        <CalcUiField label="Prazo (anos)" type="number" v-model="form.years" :min="1" :max="50" placeholder="10" />
+        <CalcUiField label="Patrimônio Atual (R$)" type="currency" v-model="form.currentWealth" placeholder="50.000,00" />
+        <CalcUiField label="Taxa de Retorno (% a.a.)" type="percentage" v-model="form.returnRate" :min="0" :max="30" placeholder="10" />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <UFormField label="Meta Financeira (R$)" name="goal">
-          <AtomsFormCurrencyInput
-            v-model="form.goal"
-            placeholder="500000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
+      <UCheckbox
+        v-model="form.inflationAdjust"
+        label="Ajustar aportes pela inflação anualmente"
+      />
 
-        <UFormField label="Prazo (anos)" name="years">
-          <UInput
-            v-model.number="form.years"
-            type="number"
-            min="1"
-            max="50"
-            placeholder="10"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
+      <CalcUiField
+        v-if="form.inflationAdjust"
+        label="Inflação Anual (%)"
+        type="percentage"
+        v-model="form.inflation"
+        :min="0"
+        :max="20"
+        placeholder="4"
+      />
 
-        <UFormField label="Patrimônio Atual (R$)" name="currentWealth">
-          <AtomsFormCurrencyInput
-            v-model="form.currentWealth"
-            placeholder="50000"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
+      <CalcUiButton label="Calcular Aporte Necessário" icon="i-lucide-sparkles" @click="calculate" />
+    </template>
 
-        <UFormField label="Taxa de Retorno (%a.a.)" name="returnRate">
-          <AtomsFormPercentageInput
-            v-model="form.returnRate"
-            :min="0"
-            :max="30"
-            placeholder="10"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField name="inflationAdjust" class="md:col-span-2">
-          <UCheckbox
-            v-model="form.inflationAdjust"
-            label="Ajustar aportes pela inflação anualmente"
-          />
-        </UFormField>
-
-        <UFormField v-if="form.inflationAdjust" label="Inflação Anual (%)" name="inflation">
-          <AtomsFormPercentageInput
-            v-model="form.inflation"
-            :min="0"
-            :max="20"
-            placeholder="4"
-            size="lg"
-            variant="soft"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calculator"
-        @click="calculate"
+    <template #result>
+      <CalcUiResultMega
+        v-if="results"
+        eyebrow="Você precisa investir"
+        :value="formatCurrency(results.monthlyContribution)"
+        :kpis="[
+          { label: 'Total que será investido', value: formatCurrency(results.totalInvested), color: 'heading' },
+          { label: 'Total de juros', value: formatCurrency(results.totalInterest), color: 'positive' },
+          { label: 'Meta final', value: formatCurrency(form.goal), color: 'primary' },
+        ]"
       >
-        Calcular Aporte Necessário
-      </UButton>
-    </div>
-
-    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h3 class="text-xl">Plano de Aportes</h3>
+        <template #caption>
+          por mês durante <span class="hl">{{ form.years }} anos</span>
+        </template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Aporte necessário</p>
+        <p class="cui-empty-text">Preencha os dados ao lado e clique em "Calcular Aporte Necessário".</p>
       </div>
+    </template>
 
-      <!-- Aporte Necessário -->
-      <div
-        class="rounded-lg border p-6"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
-      >
-        <p class="mb-2 text-sm" :style="{ color: 'var(--text-muted)' }">Você precisa investir:</p>
-        <p class="text-5xl font-light tabular-nums text-secondary">
-          {{ formatCurrency(results.monthlyContribution) }}
-        </p>
-        <p class="text-sm" :style="{ color: 'var(--text-heading)' }">por mês durante {{ form.years }} anos</p>
-      </div>
-
-      <!-- Resumo -->
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Total que será Investido</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{ formatCurrency(results.totalInvested) }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Total de Juros</p>
-          <p class="text-2xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-            {{ formatCurrency(results.totalInterest) }}
-          </p>
-        </div>
-        <div
-          class="rounded-lg border p-4"
-          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-        >
-          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Meta Final</p>
-          <p class="text-2xl tabular-nums text-secondary">
-            {{ formatCurrency(form.goal) }}
-          </p>
-        </div>
-      </div>
+    <template #chart>
+      <div v-if="results" class="flex flex-col gap-4">
 
       <!-- Composição -->
-      <div
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-      >
-        <h4 class="mb-3 font-medium" :style="{ color: 'var(--text-heading)' }">De Onde Vem o Dinheiro?</h4>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span :style="{ color: 'var(--text-body)' }">Seus aportes</span>
-            <span class="font-medium tabular-nums" :style="{ color: 'var(--text-heading)' }">
-              {{ results.contributionPercent.toFixed(1) }}%
-            </span>
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">De onde vem o dinheiro?</h4>
+        <div class="cui-bar-group">
+          <div class="cui-bar-row">
+            <span class="cui-bar-label">Seus aportes</span>
+            <span class="cui-bar-value">{{ results.contributionPercent.toFixed(1) }}%</span>
           </div>
-          <div
-            class="h-2 w-full rounded-full"
-            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
-          >
-            <div
-              class="h-2 rounded-full"
-              :style="{ width: `${results.contributionPercent}%`, backgroundColor: 'var(--brand-primary)' }"
-            />
+          <div class="cui-bar-track">
+            <div class="cui-bar-fill cui-bar-fill--primary" :style="{ width: `${results.contributionPercent}%` }" />
           </div>
-
-          <div class="flex items-center justify-between">
-            <span :style="{ color: 'var(--text-body)' }">Juros compostos</span>
-            <span class="font-medium tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-              {{ results.interestPercent.toFixed(1) }}%
-            </span>
+          <div class="cui-bar-row">
+            <span class="cui-bar-label">Juros compostos</span>
+            <span class="cui-bar-value cui-bar-value--positive">{{ results.interestPercent.toFixed(1) }}%</span>
           </div>
-          <div
-            class="h-2 w-full rounded-full"
-            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
-          >
-            <div
-              class="h-2 rounded-full"
-              :style="{ width: `${results.interestPercent}%`, backgroundColor: 'var(--brand-positive)' }"
-            />
+          <div class="cui-bar-track">
+            <div class="cui-bar-fill cui-bar-fill--positive" :style="{ width: `${results.interestPercent}%` }" />
           </div>
         </div>
       </div>
 
       <!-- Cenários -->
-      <div
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-      >
-        <h4 class="mb-4 font-medium" :style="{ color: 'var(--text-heading)' }">E Se...?</h4>
-        <div class="space-y-3">
-          <div
-            class="rounded-md border p-3"
-            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">Aumentar aporte em 20%</p>
-                <p class="text-xs" :style="{ color: 'var(--text-muted)' }">Investir {{ formatCurrency(results.monthlyContribution * 1.2) }}/mês</p>
-              </div>
-              <div class="text-right">
-                <p class="text-secondary tabular-nums">
-                  {{ formatCurrency(results.scenarios.increase20) }}
-                </p>
-                <p class="text-xs tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-                  +{{ formatCurrency(results.scenarios.increase20 - form.goal) }}
-                </p>
-              </div>
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">E se...?</h4>
+        <div class="cui-scenario-list">
+          <div class="cui-scenario">
+            <div>
+              <p class="cui-scenario-title">Aumentar aporte em 20%</p>
+              <p class="cui-scenario-sub">Investir {{ formatCurrency(results.monthlyContribution * 1.2) }}/mês</p>
+            </div>
+            <div>
+              <p class="cui-scenario-value">{{ formatCurrency(results.scenarios.increase20) }}</p>
+              <p class="cui-scenario-delta cui-scenario-delta--positive">+{{ formatCurrency(results.scenarios.increase20 - form.goal) }}</p>
             </div>
           </div>
-
-          <div
-            class="rounded-md border p-3"
-            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">Reduzir aporte em 20%</p>
-                <p class="text-xs" :style="{ color: 'var(--text-muted)' }">Investir {{ formatCurrency(results.monthlyContribution * 0.8) }}/mês</p>
-              </div>
-              <div class="text-right">
-                <p class="tabular-nums" :style="{ color: 'var(--text-heading)' }">
-                  {{ formatCurrency(results.scenarios.reduce20) }}
-                </p>
-                <p class="text-xs tabular-nums" :style="{ color: 'var(--brand-negative)' }">
-                  {{ formatCurrency(results.scenarios.reduce20 - form.goal) }}
-                </p>
-              </div>
+          <div class="cui-scenario">
+            <div>
+              <p class="cui-scenario-title">Reduzir aporte em 20%</p>
+              <p class="cui-scenario-sub">Investir {{ formatCurrency(results.monthlyContribution * 0.8) }}/mês</p>
+            </div>
+            <div>
+              <p class="cui-scenario-value cui-scenario-value--neutral">{{ formatCurrency(results.scenarios.reduce20) }}</p>
+              <p class="cui-scenario-delta cui-scenario-delta--negative">{{ formatCurrency(results.scenarios.reduce20 - form.goal) }}</p>
             </div>
           </div>
-
-          <div
-            class="rounded-md border p-3"
-            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">Estender prazo em 2 anos</p>
-                <p class="text-xs" :style="{ color: 'var(--text-muted)' }">Investir por {{ form.years + 2 }} anos</p>
-              </div>
-              <div class="text-right">
-                <p class="text-secondary tabular-nums">
-                  {{ formatCurrency(results.scenarios.extend2Years) }}
-                </p>
-                <p class="text-xs tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-                  -{{ ((1 - results.scenarios.extend2Years / results.monthlyContribution) * 100).toFixed(0) }}% aporte
-                </p>
-              </div>
+          <div class="cui-scenario">
+            <div>
+              <p class="cui-scenario-title">Estender prazo em 2 anos</p>
+              <p class="cui-scenario-sub">Investir por {{ form.years + 2 }} anos</p>
+            </div>
+            <div>
+              <p class="cui-scenario-value">{{ formatCurrency(results.scenarios.extend2Years) }}</p>
+              <p class="cui-scenario-delta cui-scenario-delta--positive">-{{ ((1 - results.scenarios.extend2Years / results.monthlyContribution) * 100).toFixed(0) }}% aporte</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Tabela de Sensibilidade -->
-      <div
-        class="rounded-lg border p-5"
-        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-      >
-        <h4 class="mb-4 font-medium" :style="{ color: 'var(--text-heading)' }">Aporte Necessário por Taxa de Retorno</h4>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead :style="{ backgroundColor: 'var(--bg-elevated)' }">
+      <div class="cui-subcard">
+        <h4 class="cui-subcard-title">Aporte necessário por taxa de retorno</h4>
+        <div class="cui-table-wrap">
+          <table class="cui-table">
+            <thead>
               <tr>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'var(--border-subtle)' }">Taxa a.a.</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'var(--border-subtle)' }">Aporte Mensal</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'var(--border-subtle)' }">Total Investido</th>
+                <th>Taxa a.a.</th>
+                <th>Aporte mensal</th>
+                <th>Total investido</th>
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="rate in [6, 8, 10, 12, 15]"
-                :key="rate"
-                class="hover:bg-[var(--bg-overlay)]"
-              >
-                <td class="border px-4 py-2 tabular-nums" :style="{ borderColor: 'var(--border-subtle)' }">{{ rate }}%</td>
-                <td class="border px-4 py-2 font-medium tabular-nums" :style="{ borderColor: 'var(--border-subtle)' }">
-                  {{ formatCurrency(calculateForRate(rate)) }}
-                </td>
-                <td
-                  class="border px-4 py-2 tabular-nums"
-                  :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-body)' }"
-                >
-                  {{ formatCurrency(calculateForRate(rate) * form.years * 12) }}
-                </td>
+              <tr v-for="rate in [6, 8, 10, 12, 15]" :key="rate">
+                <td>{{ rate }}%</td>
+                <td class="cui-table-strong">{{ formatCurrency(calculateForRate(rate)) }}</td>
+                <td class="cui-table-muted">{{ formatCurrency(calculateForRate(rate) * form.years * 12) }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Dica -->
-      <div
-        class="rounded-lg border p-4 text-sm"
-        :style="{ borderColor: 'color-mix(in srgb, var(--brand-primary) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--text-body)' }"
-      >
-        <strong :style="{ color: 'var(--brand-primary)' }">Importante:</strong> Este cálculo assume aportes mensais fixos. Se você ajustar os aportes pela inflação ou aumentar conforme sua renda cresce, alcançará a meta mais rapidamente.
+      <div class="cui-callout">
+        <strong>Importante:</strong> Este cálculo assume aportes mensais fixos. Se você ajustar os aportes pela inflação ou aumentar conforme sua renda cresce, alcançará a meta mais rapidamente.
       </div>
-    </div>
-  </div>
+      </div>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Análise complementar</p>
+        <p class="cui-empty-text">Detalhes adicionais aparecem após o cálculo.</p>
+      </div>
+    </template>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
+defineProps<{
+  backTo?: string
+  backLabel?: string
+  lastUpdated?: string
+}>()
+
 const form = ref({
   goal: 500000,
   years: 10,

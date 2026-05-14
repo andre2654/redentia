@@ -1,65 +1,40 @@
 <template>
   <NuxtLayout :name="layoutName" :title="scenario.h1">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-links: parent base + all calculators -->
-      <div class="flex flex-col gap-1.5">
-        <NuxtLink
-          to="/calculadora"
-          class="flex items-center gap-1 text-xs transition hover:opacity-80"
-          :style="{ color: 'var(--brand-text-muted)' }"
-        >
-          <UIcon name="i-lucide-chevron-left" class="size-3" />
-          Todas as calculadoras
-        </NuxtLink>
-        <NuxtLink
-          to="/calculadora/quanto-investir"
-          class="flex items-center gap-1 text-xs transition hover:opacity-80"
-          :style="{ color: 'var(--brand-text-muted)' }"
-        >
-          <UIcon name="i-lucide-chevron-left" class="size-3" />
-          Calculadora de Aporte Mensal
-        </NuxtLink>
-      </div>
+    <article class="calc-v5">
+      <div class="calc-atmo calc-atmo-top" aria-hidden="true" />
+      <div class="calc-atmo calc-atmo-bottom" aria-hidden="true" />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-wallet" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >{{ scenario.h1 }}</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          {{ scenario.answerFirst }}
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span
-            v-for="(badge, idx) in scenario.badges"
-            :key="badge.label"
-            class="contents"
-          >
-            <span v-if="idx > 0">·</span>
-            <span class="flex items-center gap-1">
-              <UIcon
-                :name="badge.icon"
-                class="size-4"
-                :style="{ color: badge.color || 'var(--brand-primary)' }"
-              />
-              {{ badge.label }}
-            </span>
+      <div class="calc-status">
+        <span class="flex items-center gap-2">
+          <span class="relative flex size-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span class="relative inline-flex size-2 rounded-full bg-emerald-500" />
           </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
+          Simulador ao vivo
+        </span>
+        <span aria-hidden>·</span>
+        <span>Atualizado {{ lastUpdatedText }}</span>
+        <span aria-hidden>·</span>
+        <NuxtLink to="/calculadora/quanto-investir" class="calc-back">← Calculadora de Aporte Mensal</NuxtLink>
       </div>
 
+      <header class="calc-hero">
+        <p class="calc-eyebrow">Cenário · Quanto Investir</p>
+        <h1 class="calc-title">{{ scenario.h1 }}</h1>
+        <p class="calc-lead">{{ scenario.answerFirst }}</p>
+        <ul class="calc-chips">
+          <li
+            v-for="badge in scenario.badges"
+            :key="badge.label"
+          >
+            <span class="dot" :style="badge.color ? { background: badge.color } : undefined" />
+            {{ badge.label }}
+          </li>
+        </ul>
+      </header>
+    </article>
+
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
       <!-- Calculadora pre-preenchida via query params (redirect on mount) -->
       <CalculatorMonthlyInvestment />
 
@@ -80,7 +55,7 @@
             v-for="rel in relatedScenarios"
             :key="rel.slug"
             :to="`/calculadora/quanto-investir/${rel.slug}`"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',

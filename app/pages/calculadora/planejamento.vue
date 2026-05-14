@@ -1,27 +1,30 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Planejamento Patrimonial">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <MoleculesPageHeader
-        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
-        icon="i-lucide-target"
-        icon-color="secondary"
-        title="Calculadora de Planejamento Patrimonial 2026: Caminho para a Liberdade Financeira"
-        description="Esta calculadora monta uma carteira recomendada da B3 com base em dados históricos reais pra atingir sua meta. Você define meta + aporte mensal + estratégia (rentabilidade ou segurança), e ela retorna 5-10 ativos com pesos específicos e projeção de quando você atinge o objetivo. Exemplo: meta de R$ 1 milhão com R$ 2.000/mês na estratégia rentabilidade leva ~18 anos."
-        :chips="[
-          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
-          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
-          { icon: 'i-lucide-layers', label: 'Carteira sugerida com pesos', color: 'primary' },
-          { icon: 'i-lucide-database', label: 'Dados históricos reais B3', color: 'primary' },
-        ]"
-        :meta="`Última atualização: ${ lastUpdatedText }`"
-      />
+    <CalculatorPlanning
+      :assets="assets"
+      back-to="/calculadora"
+      back-label="Todas as calculadoras"
+      :last-updated="lastUpdatedText"
+    >
+      <template #hero>
+        <p class="calc-eyebrow">Calculadora · Planejamento Patrimonial</p>
+        <h1 class="calc-title">
+          Caminho para a liberdade
+          <em class="calc-italic">financeira.</em>
+        </h1>
+        <p class="calc-lead">
+          Esta calculadora monta uma carteira recomendada da B3 com base em <strong>dados históricos reais</strong> pra atingir sua meta. Define meta + aporte mensal + estratégia (rentabilidade ou segurança), retorna 5-10 ativos com pesos específicos e projeção de quando você atinge o objetivo. Exemplo: meta de R$ 1 milhão com R$ 2.000/mês na estratégia rentabilidade leva ~18 anos.
+        </p>
+        <ul class="calc-chips">
+          <li><span class="dot positive" /> 100% gratuito</li>
+          <li><span class="dot" /> Cálculo instantâneo</li>
+          <li><span class="dot" /> Carteira sugerida com pesos</li>
+          <li><span class="dot" /> Dados históricos reais B3</li>
+        </ul>
+      </template>
+    </CalculatorPlanning>
 
-      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
-        Descubra na hora quanto tempo leva para atingir R$ 500 mil, R$ 1 milhão ou aposentadoria com aporte de R$ 500, R$ 1.500 ou R$ 3.000/mês. Receba uma carteira sugerida com pesos exatos baseada em dados históricos reais da B3, escolha entre estratégia de rentabilidade ou segurança e veja a projeção mês a mês. Gratuito, sem cadastro, sem planilha.
-      </p>
-
-      <!-- Calculadora -->
-      <CalculatorPlanning :assets="assets" />
+    <section class="calc-aux flex flex-col gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8">
 
       <!-- Cenarios populares (internal linking + deep-links) -->
       <!--
@@ -32,7 +35,7 @@
         15 anos", "entrada de imovel R$ 150 mil", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-lg border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-4 sm:p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -42,12 +45,12 @@
         <p class="text-sm">
           Veja na hora a carteira sugerida e o tempo até a meta dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.
         </p>
-        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <NuxtLink
             v-for="s in popularScenarios"
             :key="s.label"
             :to="s.to"
-            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            class="group flex min-h-[44px] items-center gap-3 rounded-md border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10 sm:flex-col sm:items-start sm:gap-0.5 sm:rounded-xl"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -63,7 +66,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="quiet-prose max-w-none">
+      <div class="quiet-prose calc-edu-prose max-w-none">
         <h2>Simulador de Planejamento Patrimonial grátis e online</h2>
         <h2>O que é Planejamento Patrimonial?</h2>
         <p class="leading-relaxed">

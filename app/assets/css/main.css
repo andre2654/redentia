@@ -1330,3 +1330,1197 @@ button:disabled {
   background-repeat: repeat-x;
   background-size: 200px 14px;
 }
+
+/* ============================================================
+   CALCULATOR V5 LAYOUT — shared editorial premium split layout
+   used by /calculadora/* pages (juros-compostos, aposentadoria,
+   planejamento, etc.). Status strip + atmospheric amber + grid
+   2-col split: hero+form esquerda / result+chart direita.
+   Mobile colapsa em 1-col com ordem: hero → form → result → chart.
+   ============================================================ */
+.calc-v5 {
+  position: relative;
+  overflow: hidden;
+}
+.calc-atmo {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(200px);
+}
+.calc-atmo-top {
+  top: -15%;
+  right: -10%;
+  width: 60%;
+  height: 70%;
+  opacity: 0.4;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--brand-primary) 28%, transparent), transparent 60%);
+}
+.calc-atmo-bottom {
+  bottom: -20%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  opacity: 0.25;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 60%);
+}
+
+.calc-status {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.calc-back {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 150ms;
+}
+.calc-back:hover { color: var(--text-heading); }
+
+.calc-split {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.calc-block-hero { order: 1; }
+.calc-block-form { order: 2; }
+.calc-block-result { order: 3; }
+.calc-block-chart { order: 4; }
+
+@media (min-width: 1024px) {
+  .calc-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "hero result"
+      "form chart";
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .calc-block-hero { grid-area: hero; border-right: 1px solid var(--border-subtle); order: unset; }
+  .calc-block-result { grid-area: result; order: unset; }
+  .calc-block-form { grid-area: form; border-right: 1px solid var(--border-subtle); order: unset; }
+  .calc-block-chart { grid-area: chart; order: unset; }
+}
+
+.calc-hero {
+  position: relative;
+  z-index: 1;
+  padding: 48px 24px 32px;
+  max-width: 880px;
+}
+@media (min-width: 768px) {
+  .calc-hero { padding: 72px 32px 40px; }
+}
+@media (min-width: 1024px) {
+  .calc-hero { padding: 80px 56px 40px 32px; max-width: none; }
+}
+.calc-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-primary);
+  margin: 0 0 20px;
+}
+.calc-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--text-heading);
+  margin: 0 0 20px;
+}
+.calc-italic {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+}
+.calc-lead {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-body);
+  max-width: 56ch;
+  margin: 0 0 24px;
+}
+.calc-lead strong {
+  color: var(--text-heading);
+  font-weight: 500;
+}
+.calc-chips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.calc-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.calc-chips .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  display: inline-block;
+}
+.calc-chips .dot.positive { background: var(--brand-positive); }
+
+.calc-result {
+  position: relative;
+  z-index: 1;
+  padding: 32px 24px 48px;
+  border-top: 1px solid var(--border-subtle);
+}
+@media (min-width: 768px) {
+  .calc-result { padding: 48px 32px 56px; }
+}
+@media (min-width: 1024px) {
+  .calc-result {
+    border-top: none;
+    padding: 80px 32px 32px 56px;
+  }
+}
+.calc-result-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+.calc-result-mega {
+  font-size: clamp(40px, 11vw, 96px);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-primary);
+  margin: 0;
+  text-shadow: 0 8px 32px color-mix(in srgb, var(--brand-primary) 22%, transparent);
+}
+@media (min-width: 1024px) {
+  .calc-result-mega { font-size: clamp(48px, 5.5vw, 88px); }
+}
+.calc-result-caption {
+  font-size: 15px;
+  color: var(--text-body);
+  margin: 12px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.calc-result-caption .hl { color: var(--text-heading); font-weight: 500; }
+.calc-result-caption .positive { color: var(--brand-positive); font-weight: 500; }
+.calc-result-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 36px 0 24px;
+}
+.calc-kpis {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin: 0;
+}
+@media (min-width: 640px) {
+  .calc-kpis { grid-template-columns: repeat(3, 1fr); gap: 40px; }
+}
+.calc-kpis dt {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.calc-kpis dd {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--text-heading);
+  margin: 0;
+  white-space: nowrap;
+}
+.calc-kpis dd.positive { color: var(--brand-positive); }
+.calc-empty-text {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.calc-form {
+  position: relative;
+  z-index: 1;
+  padding: 40px 24px;
+  border-top: 1px solid var(--border-subtle);
+  max-width: 880px;
+}
+@media (min-width: 768px) {
+  .calc-form { padding: 56px 32px; }
+}
+@media (min-width: 1024px) {
+  .calc-form { padding: 32px 56px 80px 32px; max-width: none; }
+}
+.calc-form-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+.calc-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 640px) {
+  .calc-form-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 40px; }
+}
+.calc-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.calc-field input {
+  border: none;
+  border-bottom: 1px solid var(--border-default);
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 0;
+  font-size: 22px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+  letter-spacing: -0.018em;
+  color: var(--text-heading);
+}
+.calc-field input:focus {
+  border-bottom-color: var(--brand-primary);
+  box-shadow: none;
+  outline: none;
+}
+
+.calc-cta {
+  margin-top: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  color: var(--brand-primary);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.calc-cta:hover {
+  background: var(--brand-primary);
+  color: #1A0A2E;
+  border-color: var(--brand-primary);
+}
+.calc-cta:disabled { opacity: 0.6; cursor: wait; }
+
+.calc-chart {
+  position: relative;
+  z-index: 1;
+  padding: 32px 0 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+@media (min-width: 1024px) {
+  .calc-chart { padding: 32px 32px 56px 56px; }
+}
+.calc-chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px;
+  margin-bottom: 20px;
+}
+@media (min-width: 1024px) {
+  .calc-chart-header { padding: 0; }
+}
+.calc-chart-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin: 0;
+}
+.calc-chart-canvas {
+  height: 280px;
+}
+@media (min-width: 768px) {
+  .calc-chart-canvas { height: 380px; }
+}
+
+/* ============================================================
+   CALC EDU PROSE — unifica o conteúdo educacional abaixo do chart
+   nas pages de calculadora. Aplica em .quiet-prose pra herdar
+   ritmo vertical e adicionar estilo editorial premium V5:
+   headings clamp + weight 300, cards com bg-overlay limpo (sem
+   inline color-mix), tabelas zebradas, callouts amber sutis,
+   numbered steps com círculo amber.
+   ============================================================ */
+.calc-edu-prose {
+  max-width: none;
+}
+
+/* Headings V5: hierarquia clara, weight 300 nos grandes */
+.calc-edu-prose h2 {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-heading);
+  margin-top: 64px;
+  margin-bottom: 16px;
+}
+.calc-edu-prose h2:first-child {
+  margin-top: 0;
+}
+.calc-edu-prose h3 {
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--text-heading);
+  margin-top: 40px;
+  margin-bottom: 12px;
+}
+.calc-edu-prose h4 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-heading);
+  margin-bottom: 8px;
+}
+.calc-edu-prose p {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-body);
+}
+.calc-edu-prose strong {
+  color: var(--text-heading);
+  font-weight: 500;
+}
+
+/* Cards educacionais (override de .brand-card com inline color-mix) */
+.calc-edu-prose .brand-card {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 8px;
+  padding: 20px !important;
+  transition: border-color 200ms;
+}
+.calc-edu-prose .brand-card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent) !important;
+}
+.calc-edu-prose .brand-card h3,
+.calc-edu-prose .brand-card h4 {
+  margin-top: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--text-heading) !important;
+}
+.calc-edu-prose .brand-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-body);
+  margin: 0;
+}
+
+/* Callouts (formulas, exemplos) com amber subtle */
+.calc-edu-prose .brand-card.bg-secondary\/10,
+.calc-edu-prose .brand-card[class*="bg-secondary/10"],
+.calc-edu-prose .brand-card.border-secondary\/20,
+.calc-edu-prose .brand-card[class*="border-secondary/20"] {
+  background: color-mix(in srgb, var(--brand-primary) 6%, var(--bg-elevated)) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent) !important;
+  border-radius: 8px;
+}
+.calc-edu-prose .brand-card.bg-secondary\/10 p.text-lg,
+.calc-edu-prose .brand-card[class*="bg-secondary/10"] p.text-lg {
+  font-family: ui-monospace, monospace;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-primary);
+}
+
+/* Mini result boxes dentro de cards (rounded-lg bg-secondary/20) */
+.calc-edu-prose .bg-secondary\/20,
+.calc-edu-prose [class*="bg-secondary/20"]:not(.flex):not(button) {
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent) !important;
+}
+
+/* Tabelas V5: clean, zebradas, sem inline color-mix */
+.calc-edu-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 24px 0;
+}
+.calc-edu-prose thead {
+  background: var(--bg-overlay) !important;
+}
+.calc-edu-prose thead th {
+  font-size: 11px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-heading);
+  padding: 12px 16px !important;
+  text-align: left;
+  border: none !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+.calc-edu-prose tbody td {
+  padding: 12px 16px !important;
+  font-size: 14px;
+  color: var(--text-body);
+  border: none !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  font-variant-numeric: tabular-nums;
+}
+.calc-edu-prose tbody tr {
+  background: transparent !important;
+}
+.calc-edu-prose tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--bg-overlay) 50%, transparent) !important;
+}
+.calc-edu-prose tbody td.text-secondary {
+  color: var(--brand-primary) !important;
+  font-weight: 500;
+}
+
+/* Numbered steps (1. 2. 3. com círculo amber) */
+.calc-edu-prose .rounded-full.bg-secondary\/20,
+.calc-edu-prose [class*="rounded-full"][class*="bg-secondary/20"] {
+  background: color-mix(in srgb, var(--brand-primary) 15%, transparent) !important;
+  color: var(--brand-primary) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent);
+}
+
+/* Ranking/Calculadoras Relacionadas blocks */
+.calc-edu-prose .brand-card[class*="hover:border-secondary"] {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+.calc-edu-prose .brand-card[class*="hover:border-secondary"]:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 50%, transparent) !important;
+}
+
+/* H4 text-secondary nos cards deve virar amber V5 */
+.calc-edu-prose .brand-card h4.text-secondary {
+  color: var(--brand-primary) !important;
+}
+
+/* ============================================================
+   CALC AUX — unifica os blocos auxiliares que aparecem depois
+   da calculadora em cada page (Cenários populares, Rankings
+   Relacionados, Outras Calculadoras, Aside Autoria). Sobrescreve
+   inline color-mix com tokens semânticos V5.
+
+   Aplicar no <section> wrapper que envolve todos esses blocos.
+   ============================================================ */
+.calc-aux {
+  /* container, herda layout existente */
+}
+
+/* Blocos auxiliares: Cenários, Rankings, Outras Calc */
+.calc-aux > div[class*="rounded-lg"][class*="border"],
+.calc-aux > div[class*="rounded-lg"][class*="p-6"],
+.calc-aux > div[class*="rounded-lg"][class*="p-4"] {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+/* H2 dentro dos blocos auxiliares: editorial premium */
+.calc-aux > div[class*="rounded-lg"] > h2 {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 300;
+  letter-spacing: -0.018em;
+  color: var(--text-heading);
+  line-height: 1.2;
+  margin: 0;
+}
+.calc-aux > div[class*="rounded-lg"] > p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-body);
+  margin: 0;
+}
+
+/* NuxtLink items dentro dos blocos auxiliares (cenários + rankings + outras calc) */
+.calc-aux a.group {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  transition: border-color 200ms, background 200ms;
+}
+.calc-aux a.group:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 50%, transparent) !important;
+  background: color-mix(in srgb, var(--brand-primary) 4%, var(--bg-elevated)) !important;
+}
+
+/* Aside Autoria */
+.calc-aux > aside {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 12px;
+}
+.calc-aux > aside .bg-secondary\/20,
+.calc-aux > aside [class*="bg-secondary/20"] {
+  background: color-mix(in srgb, var(--brand-primary) 15%, transparent) !important;
+}
+.calc-aux > aside p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-body);
+}
+.calc-aux > aside p.text-xs {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.calc-aux > aside p.text-xs a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Rankings/Outras Calc cards (item NuxtLink com h3 + p) */
+.calc-aux a.group h3 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+  margin: 0;
+}
+.calc-aux a.group p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-body);
+  margin: 0;
+}
+.calc-aux a.group .text-secondary {
+  color: var(--brand-primary) !important;
+}
+
+/* MoleculesFAQ wrapper — overrides */
+.calc-aux details {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 8px !important;
+}
+
+/* ============================================================
+   CALC UI HELPER CLASSES — usadas dentro de calculator components
+   refatorados pra V5 (Retirement, IncomeTax, etc.). Padronizam
+   subcards, status banners, callouts e listas de cenários.
+   ============================================================ */
+
+.cui-subcard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+@media (min-width: 640px) {
+  .cui-subcard { padding: 20px; gap: 16px; }
+}
+.cui-subcard-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.cui-subcard-desc {
+  font-size: 13px;
+  color: var(--text-body);
+  line-height: 1.55;
+  margin: 0;
+}
+.cui-subcard-grid {
+  display: grid;
+  gap: 16px;
+}
+.cui-subcard-grid--2 { grid-template-columns: 1fr; }
+.cui-subcard-grid--3 { grid-template-columns: 1fr; }
+@media (min-width: 640px) {
+  .cui-subcard-grid--2 { grid-template-columns: repeat(2, 1fr); }
+  .cui-subcard-grid--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Status banner (Plano Viável / Ajustes Necessários) */
+.cui-result-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+.cui-result-status--positive {
+  background: color-mix(in srgb, var(--brand-positive) 8%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent);
+}
+.cui-result-status--negative {
+  background: color-mix(in srgb, var(--brand-negative) 8%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+}
+.cui-result-status-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.cui-result-status--positive .cui-result-status-icon { color: var(--brand-positive); }
+.cui-result-status--negative .cui-result-status-icon { color: var(--brand-negative); }
+.cui-result-status-title {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--text-heading);
+  margin: 0 0 4px;
+}
+.cui-result-status-msg {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-body);
+  margin: 0;
+}
+
+/* Lista de cenários (Retirement, Stock, etc.) */
+.cui-scenario-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cui-scenario {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+}
+.cui-scenario-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+}
+.cui-scenario-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.cui-scenario-value {
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Callout amber (avisos / observações) */
+.cui-callout {
+  padding: 14px 18px;
+  border-left: 3px solid var(--brand-primary);
+  background: color-mix(in srgb, var(--brand-primary) 6%, var(--bg-elevated));
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-body);
+}
+.cui-callout strong { color: var(--text-heading); }
+
+/* Composição bars (MonthlyInvestment, FairPrice, etc.) */
+.cui-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cui-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.cui-bar-label {
+  font-size: 13px;
+  color: var(--text-body);
+}
+.cui-bar-value {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-heading);
+}
+.cui-bar-value--positive { color: var(--brand-positive); }
+.cui-bar-value--negative { color: var(--brand-negative); }
+.cui-bar-track {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cui-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+.cui-bar-fill--primary { background: var(--brand-primary); }
+.cui-bar-fill--positive { background: var(--brand-positive); }
+.cui-bar-fill--negative { background: var(--brand-negative); }
+
+/* Tabela V5 limpa (dentro de calc components) */
+.cui-table-wrap {
+  overflow-x: auto;
+}
+.cui-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.cui-table thead {
+  background: transparent;
+}
+.cui-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-default);
+}
+.cui-table tbody td {
+  padding: 10px 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.cui-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--bg-overlay) 50%, transparent);
+}
+.cui-table-strong { color: var(--text-heading) !important; font-weight: 600; }
+.cui-table-muted { color: var(--text-muted) !important; }
+
+/* Scenario deltas (MonthlyInvestment) */
+.cui-scenario > div:last-child {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cui-scenario-value--neutral { color: var(--text-heading); }
+.cui-scenario-delta {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.cui-scenario-delta--positive { color: var(--brand-positive); }
+.cui-scenario-delta--negative { color: var(--brand-negative); }
+
+/* Asset cards (Planning, Stock) */
+.cui-asset-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .cui-asset-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1280px) {
+  .cui-asset-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.cui-asset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+.cui-asset-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cui-asset-cat {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0;
+}
+.cui-asset-ticker {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-heading);
+  margin: 4px 0 2px;
+}
+.cui-asset-name {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.cui-asset-weight {
+  text-align: right;
+}
+.cui-asset-weight-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0;
+}
+.cui-asset-weight-value {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.018em;
+  color: var(--brand-primary);
+  margin: 0;
+  line-height: 1;
+}
+.cui-asset-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.cui-asset-metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.cui-asset-metric-value {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-heading);
+  margin: 0;
+}
+.cui-asset-metric-value--positive { color: var(--brand-positive); }
+.cui-asset-metric-value--negative { color: var(--brand-negative); }
+
+/* Info list (IncomeTax "como funciona") */
+.cui-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cui-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.cui-info-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--brand-primary);
+}
+.cui-info-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0 0 2px;
+}
+.cui-info-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-body);
+  margin: 0;
+}
+
+/* Callout variants */
+.cui-callout--warning {
+  border-left-color: var(--brand-negative);
+  background: color-mix(in srgb, var(--brand-negative) 6%, var(--bg-elevated));
+}
+.cui-callout--warning strong { color: var(--brand-negative); }
+
+/* Selected asset chip (DividendYield, Stock) */
+.cui-selected-asset {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--brand-primary) 8%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  border-radius: 8px;
+}
+.cui-selected-asset-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cui-selected-asset-ticker {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+}
+.cui-selected-asset-name {
+  font-size: 12px;
+  color: var(--text-body);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cui-selected-asset-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 150ms;
+}
+.cui-selected-asset-clear:hover {
+  background: var(--bg-overlay);
+  color: var(--text-heading);
+}
+
+/* Selected asset (FairPrice + Stock) — versão com logo */
+.cui-selected-asset-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.cui-selected-asset-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cui-selected-asset-logo span {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  font-family: ui-monospace, monospace;
+}
+.cui-selected-asset-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-heading);
+  cursor: pointer;
+  transition: all 150ms;
+}
+.cui-selected-asset-action:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 60%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 6%, var(--bg-elevated));
+}
+
+/* Loading state */
+.cui-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-body);
+}
+.cui-loading :deep(*) { color: var(--brand-primary); }
+
+/* Collapsible (details/summary) */
+.cui-collapse {
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-overlay);
+  border-radius: 8px;
+  padding: 14px;
+}
+.cui-collapse-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  list-style: none;
+}
+.cui-collapse-summary::-webkit-details-marker { display: none; }
+.cui-collapse-chevron {
+  transition: transform 200ms;
+  color: var(--text-muted);
+}
+details[open] .cui-collapse-chevron { transform: rotate(180deg); }
+
+/* FairPrice method cards */
+.cui-method-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .cui-method-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.cui-method {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+.cui-method--positive { border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent); background: color-mix(in srgb, var(--brand-positive) 6%, var(--bg-elevated)); }
+.cui-method--negative { border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent); background: color-mix(in srgb, var(--brand-negative) 6%, var(--bg-elevated)); }
+.cui-method--neutral { border-color: color-mix(in srgb, var(--brand-primary) 25%, transparent); background: color-mix(in srgb, var(--brand-primary) 5%, var(--bg-elevated)); }
+
+.cui-method-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.cui-method-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+}
+.cui-method-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--bg-overlay);
+  color: var(--text-body);
+}
+.cui-method--positive .cui-method-badge { background: color-mix(in srgb, var(--brand-positive) 18%, transparent); color: var(--brand-positive); }
+.cui-method--negative .cui-method-badge { background: color-mix(in srgb, var(--brand-negative) 18%, transparent); color: var(--brand-negative); }
+.cui-method--neutral .cui-method-badge { background: color-mix(in srgb, var(--brand-primary) 18%, transparent); color: var(--brand-primary); }
+
+.cui-method-value {
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.018em;
+  color: var(--text-heading);
+  margin: 0;
+}
+.cui-method-margin {
+  font-size: 12px;
+  color: var(--text-body);
+  margin: 4px 0 0;
+}
+.cui-method-formula {
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+}
+
+/* Pill list (Stock asset chips) */
+.cui-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cui-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--brand-primary) 8%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  border-radius: 999px;
+}
+.cui-pill-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+.cui-pill-sub {
+  font-size: 11px;
+  color: var(--text-body);
+}
+.cui-pill-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 150ms;
+}
+.cui-pill-remove:hover {
+  background: var(--bg-overlay);
+  color: var(--text-heading);
+}
+
+/* Generic hint text */
+.cui-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}

@@ -1,182 +1,63 @@
 <template>
-  <div ref="calcRoot" class="space-y-6">
-    <div class="quiet-card flex flex-col gap-6 p-6">
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-chart-line" class="text-secondary size-6" />
-        <h2 class="text-xl">Análise de Histórico Real</h2>
+  <CalcUiShell
+    :back-to="backTo"
+    :back-label="backLabel"
+    :last-updated="lastUpdated"
+  >
+    <template #hero>
+      <slot name="hero">
+        <p class="calc-eyebrow">Simulador · Investimento em Ações</p>
+        <h1 class="calc-title">Análise de histórico real da B3</h1>
+        <p class="calc-lead">Simule múltiplos ativos com preços históricos reais + dividendos reinvestidos.</p>
+      </slot>
+    </template>
+
+    <template #form>
+      <p class="cui-section-label">{{ aggregatedSummary && !resultsStale ? 'Ajustar análise' : 'Configure a simulação' }}</p>
+      <CalcUiAssetSearch
+        v-model="searchTerm"
+        :results="filteredAssets.map(a => ({ ticker: a.label, id: a.id, name: a.suffix, logo: a.avatar?.src }))"
+        :loading="assetsLoading"
+        label="Selecione os ativos"
+        placeholder="Buscar ação ou FII..."
+        @select="(picked) => { const original = filteredAssets.find(a => a.id === picked.id); if (original) addAsset(original); }"
+      />
+
+      <div v-if="portfolioAssets.length" class="cui-pill-list">
+        <div
+          v-for="asset in portfolioAssets"
+          :key="asset.id"
+          class="cui-pill"
+        >
+          <span class="cui-pill-label">{{ asset.label }}</span>
+          <span v-if="asset.suffix" class="cui-pill-sub">{{ asset.suffix }}</span>
+          <button class="cui-pill-remove" type="button" aria-label="Remover ativo" @click="removeAsset(asset.id)">
+            <UIcon name="i-lucide-x" class="size-3.5" />
+          </button>
+        </div>
+      </div>
+      <p v-else class="cui-hint">
+        Adicione pelo menos um ativo para realizar o cálculo.
+      </p>
+
+      <div class="grid w-full grid-cols-1 gap-6 sm:gap-7 md:grid-cols-2">
+        <CalcUiField label="Valor Inicial de Aporte (R$)" type="currency" v-model="stockForm.initialInvestment" placeholder="10.000,00" />
+        <CalcUiField label="Aporte Mensal (R$)" type="currency" v-model="stockForm.monthlyInvestment" placeholder="500,00" />
+        <CalcUiField label="Período (anos)" type="number" v-model="stockForm.periodYears" :min="1" placeholder="2" />
       </div>
 
-      <div class="space-y-4">
-        <UFormField label="Selecione os ativos" name="tickers">
-          <div class="flex flex-col gap-3">
-            <UInput
-              v-model="searchTerm"
-              icon="i-lucide-search"
-              placeholder="Buscar ação ou FII..."
-              size="lg"
-              variant="soft"
-              :loading="assetsLoading"
-            />
+      <UCheckbox
+        v-model="stockForm.reinvestDividends"
+        label="Reinvestir proventos automaticamente"
+      />
 
-            <ClientOnly>
-              <div
-                ref="listContainer"
-                class="relative max-h-[320px] overflow-y-auto rounded-2xl border"
-                :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
-                @scroll="onScroll"
-              >
-                <div
-                  v-if="filteredAssets.length"
-                  class="relative w-full"
-                  :style="{ height: `${totalHeight}px` }"
-                >
-                  <div
-                    v-for="item in virtualItems"
-                    :key="item.asset.id"
-                    class="absolute inset-x-0 px-3"
-                    :style="{
-                      transform: `translateY(${item.top}px)`,
-                      height: `${rowHeight}px`,
-                    }"
-                  >
-                    <button
-                      type="button"
-                      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-secondary/10 focus-visible:bg-secondary/10"
-                      @click="addAsset(item.asset)"
-                    >
-                      <UAvatar
-                        size="md"
-                        :src="item.asset.avatar?.src"
-                        :alt="item.asset.label"
-                        :class="[
-                          'group-hover:ring-secondary/70 shrink-0 ring-1 ring-white/10 transition',
-                          !item.asset.avatar?.src &&
-                            'bg-secondary/20 text-secondary',
-                        ]"
-                      >
-                        {{ item.asset.label.slice(0, 2) }}
-                      </UAvatar>
-
-                      <div class="flex flex-1 flex-col">
-                        <span class="text-sm font-semibold" :style="{ color: 'var(--brand-text)' }">
-                          {{ item.asset.label }}
-                        </span>
-                        <span
-                          v-if="item.asset.suffix"
-                          class="line-clamp-1 text-xs" :style="{ color: 'var(--brand-text-muted)' }"
-                        >
-                          {{ item.asset.suffix }}
-                        </span>
-                      </div>
-
-                      <UIcon
-                        name="i-lucide-plus"
-                        class="text-secondary/80 group-hover:text-secondary transition"
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                <div v-else class="px-4 py-6 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
-                  Nenhum ativo encontrado.
-                </div>
-
-                <div
-                  v-if="assetsLoading"
-                  class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm"
-                >
-                  <UIcon
-                    name="i-lucide-loader-2"
-                    class="size-5 motion-safe:animate-spin text-[var(--text-heading)]"
-                  />
-                </div>
-              </div>
-            </ClientOnly>
-          </div>
-        </UFormField>
-
-        <div v-if="portfolioAssets.length" class="flex flex-wrap gap-2">
-          <div
-            v-for="asset in portfolioAssets"
-            :key="asset.id"
-            class="flex items-center gap-2 rounded-full px-3 py-1 text-sm"
-            :style="{ backgroundColor: 'var(--brand-border)' }"
-          >
-            <span class="font-medium" :style="{ color: 'var(--brand-text)' }">{{ asset.label }}</span>
-            <span v-if="asset.suffix" class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
-              {{ asset.suffix }}
-            </span>
-            <UButton
-              icon="i-lucide-x"
-              color="neutral"
-              variant="link"
-              size="xs"
-              aria-label="Remover ativo"
-              @click="removeAsset(asset.id)"
-            />
-          </div>
-        </div>
-        <p v-else class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
-          Adicione pelo menos um ativo para realizar o cálculo.
-        </p>
-
-        <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
-          <UFormField
-            label="Valor Inicial de Aporte (R$)"
-            name="initialInvestment"
-          >
-            <AtomsFormCurrencyInput
-              v-model="stockForm.initialInvestment"
-              placeholder="10000"
-              size="lg"
-              class="w-full"
-              variant="soft"
-            />
-          </UFormField>
-
-          <UFormField label="Aporte Mensal (R$)" name="monthlyInvestment">
-            <AtomsFormCurrencyInput
-              v-model="stockForm.monthlyInvestment"
-              placeholder="500"
-              size="lg"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
-
-          <UFormField label="Período (anos)" name="periodYears">
-            <UInput
-              v-model="stockForm.periodYears"
-              type="number"
-              size="lg"
-              min="1"
-              step="1"
-              placeholder="2"
-              variant="soft"
-              class="w-full"
-            />
-          </UFormField>
-        </div>
-
-        <UFormField name="reinvestDividends">
-          <UCheckbox
-            v-model="stockForm.reinvestDividends"
-            label="Reinvestir proventos automaticamente"
-          />
-        </UFormField>
-      </div>
-
-      <UButton
-        color="primary"
-        size="xl"
-        block
-        icon="i-lucide-calculator"
+      <CalcUiButton
+        label="Calcular Histórico"
+        icon="i-lucide-sparkles"
         :loading="calculatingStock"
         :disabled="!portfolioAssets.length"
         @click="calculateStockHistory"
-      >
-        Calcular Histórico
-      </UButton>
+      />
 
       <UAlert
         v-if="stockError"
@@ -196,177 +77,66 @@
         Clique em "Calcular Histórico" para atualizar as projeções após as
         alterações.
       </UAlert>
-    </div>
+    </template>
 
-    <div
-      v-if="aggregatedSummary && !resultsStale"
-      class="quiet-card flex flex-col gap-6 p-6"
-    >
-      <div class="flex items-center gap-3">
-        <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
-        <h3 class="text-xl">Resumo do Portfólio</h3>
+    <template #result>
+      <CalcUiResultMega
+        v-if="aggregatedSummary && !resultsStale"
+        eyebrow="Valor final consolidado"
+        :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(aggregatedSummary.finalValue)"
+        :kpis="[
+          { label: 'Total investido', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(aggregatedSummary.totalInvested), color: 'heading' },
+          { label: 'Rentabilidade', value: `${aggregatedSummary.return >= 0 ? '+' : ''}${aggregatedSummary.return.toFixed(2)}%`, color: aggregatedSummary.return >= 0 ? 'positive' : 'negative' },
+          { label: 'Total de proventos', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(aggregatedSummary.totalDividends), color: 'positive' },
+        ]"
+      >
+        <template v-if="aggregatedSummary.assetCount > 1" #caption>
+          Aportes distribuídos igualmente entre {{ aggregatedSummary.assetCount }} ativos
+        </template>
+      </CalcUiResultMega>
+      <div v-else class="cui-result-empty">
+        <p class="cui-result-eyebrow">Resultado consolidado</p>
+        <p class="cui-empty-text">Adicione ativos e clique em "Calcular Histórico" pra simular.</p>
       </div>
+    </template>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-            Total Investido
-          </p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(aggregatedSummary.totalInvested)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">Valor Final</p>
-          <p class="text-secondary text-xl font-bold">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(aggregatedSummary.finalValue)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">Rentabilidade</p>
-          <p
-            class="text-xl tabular-nums"
-            :style="{ color: aggregatedSummary.return >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
-          >
-            {{ aggregatedSummary.return >= 0 ? '+' : ''
-            }}{{ aggregatedSummary.return.toFixed(2) }}%
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-            Total de Proventos
-          </p>
-          <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(aggregatedSummary.totalDividends)
-            }}
-          </p>
-        </div>
-      </div>
-
-      <p v-if="aggregatedSummary.assetCount > 1" class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
-        Aportes iniciais e mensais foram distribuídos igualmente entre os ativos
-        selecionados.
-      </p>
-    </div>
-
-    <template v-if="!resultsStale">
-      <div
+    <template #chart>
+      <div v-if="!resultsStale && stockResults.length" class="flex flex-col gap-4">
+      <CalcUiCard
         v-for="result in stockResults"
         :key="result.ticker"
-        class="quiet-card flex flex-col gap-6 p-6"
+        :title="`Resultado — ${result.ticker}`"
+        icon="i-lucide-bar-chart-3"
+        heading-tag="h3"
       >
-        <div class="flex items-center gap-3">
-          <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
-          <div>
-            <h3 class="text-xl">
-              Resultados – {{ result.ticker }}
-            </h3>
-            <p v-if="result.name" class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
-              {{ result.name }}
-            </p>
+        <p v-if="result.name" class="cui-hint -mt-3">{{ result.name }}</p>
+
+        <CalcUiResultMega
+          eyebrow="Valor final"
+          :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(result.finalValue)"
+          :kpis="[
+            { label: 'Total investido', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(result.totalInvested), color: 'heading' },
+            { label: 'Rentabilidade', value: `${result.return >= 0 ? '+' : ''}${result.return.toFixed(2)}%`, color: result.return >= 0 ? 'positive' : 'negative' },
+            { label: 'Total de proventos', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(result.totalDividends), color: 'positive' },
+          ]"
+        />
+
+        <div class="cui-subcard">
+          <h4 class="cui-subcard-title">Composição da carteira</h4>
+          <div class="cui-subcard-grid cui-subcard-grid--2">
+            <CalcUiKpiBox label="Preço médio de compra" :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(result.averagePrice)" color="heading" />
+            <CalcUiKpiBox label="Quantidade de ações" :value="result.totalShares.toFixed(2)" color="heading" />
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-              Total Investido
-            </p>
-            <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-              {{
-                new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                }).format(result.totalInvested)
-              }}
-            </p>
-          </div>
-          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">Valor Final</p>
-            <p class="text-secondary text-xl font-bold">
-              {{
-                new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                }).format(result.finalValue)
-              }}
-            </p>
-          </div>
-          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-              Rentabilidade
-            </p>
-            <p
-              class="text-xl tabular-nums"
-              :style="{ color: result.return >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
-            >
-              {{ result.return >= 0 ? '+' : '' }}{{ result.return.toFixed(2) }}%
-            </p>
-          </div>
-          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-              Total de Proventos
-            </p>
-            <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-              {{
-                new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                }).format(result.totalDividends)
-              }}
-            </p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-              Preço Médio de Compra
-            </p>
-            <p class="text-lg font-medium" :style="{ color: 'var(--text-heading)' }">
-              {{
-                new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                }).format(result.averagePrice)
-              }}
-            </p>
-          </div>
-          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-              Quantidade de Ações
-            </p>
-            <p class="text-lg font-medium" :style="{ color: 'var(--text-heading)' }">
-              {{ result.totalShares.toFixed(2) }}
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <h4 class="text-[16px] font-semibold">Evolução do Investimento</h4>
-          <div class="h-[350px]">
-            <AtomsGraphLine
-              :data="result.chartData"
-              :height="350"
-              :legend="[{ label: 'Investimento', color: ChartColors.positive }]"
-              :colors="[ChartColors.positive]"
-            />
-          </div>
-        </div>
+        <CalcUiChart label="Evolução do investimento">
+          <AtomsGraphLine
+            :data="result.chartData"
+            :height="350"
+            :legend="[{ label: 'Investimento', color: ChartColors.positive }]"
+            :colors="[ChartColors.positive]"
+          />
+        </CalcUiChart>
 
         <div
           v-if="
@@ -374,116 +144,38 @@
             result.dividendsHistory &&
             result.dividendsHistory.length > 0
           "
-          class="flex flex-col gap-4"
+          class="cui-subcard"
         >
-          <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-table" class="text-secondary size-6" />
-            <h3 class="text-xl">Histórico de Proventos</h3>
+          <h4 class="cui-subcard-title">
+            <UIcon name="i-lucide-table" class="inline-block size-4 mr-1" style="color: var(--brand-primary)" />
+            Histórico de Proventos
+          </h4>
+
+          <div class="cui-subcard-grid cui-subcard-grid--3">
+            <CalcUiKpiBox label="Total de pagamentos" :value="String(result.dividendsHistory.length)" color="heading" />
+            <CalcUiKpiBox label="Total recebido" :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(result.totalDividends)" color="positive" />
+            <CalcUiKpiBox label="Média por pagamento" :value="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(result.totalDividends / result.dividendsHistory.length)" color="heading" />
           </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-              <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-                Total de Pagamentos
-              </p>
-              <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-                {{ result.dividendsHistory.length }}
-              </p>
-            </div>
-            <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-              <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-                Total Recebido
-              </p>
-              <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-                {{
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(result.totalDividends)
-                }}
-              </p>
-            </div>
-            <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-              <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
-                Média por Pagamento
-              </p>
-              <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
-                {{
-                  new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }).format(
-                    result.totalDividends / result.dividendsHistory.length
-                  )
-                }}
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="max-h-[500px] overflow-y-auto rounded-lg border"
-            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
-          >
-            <table class="w-full">
-              <thead class="sticky top-0 z-10" :style="{ backgroundColor: 'var(--brand-background)' }">
-                <tr class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
-                  <th class="px-4 py-3 text-left text-sm font-semibold">
-                    Data de Pagamento
-                  </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold">
-                    Valor por Ação
-                  </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold">
-                    Qtd. Ações
-                  </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold">
-                    Total Recebido
-                  </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold">
-                    Tipo
-                  </th>
+          <div class="cui-table-wrap" style="max-height: 500px; overflow-y: auto">
+            <table class="cui-table">
+              <thead>
+                <tr>
+                  <th>Data de pagamento</th>
+                  <th>Valor por ação</th>
+                  <th>Qtd. ações</th>
+                  <th>Total recebido</th>
+                  <th>Tipo</th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(dividend, index) in result.dividendsHistory"
-                  :key="`${result.ticker}-${index}`"
-                  class="border-b hover:bg-secondary/5"
-                  :style="{ borderColor: 'var(--brand-border)' }"
-                >
-                  <td class="px-4 py-3 text-sm">
-                    {{
-                      new Date(dividend.payment_date).toLocaleDateString(
-                        'pt-BR'
-                      )
-                    }}
-                  </td>
-                  <td class="px-4 py-3 text-sm font-medium" :style="{ color: 'var(--brand-text-muted)' }">
-                    {{
-                      new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 4,
-                      }).format(parseFloat(dividend.rate))
-                    }}
-                  </td>
-                  <td class="px-4 py-3 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
-                    {{ (dividend.sharesAtTime || 0).toFixed(2) }}
-                  </td>
-                  <td class="px-4 py-3 text-sm tabular-nums" :style="{ color: 'var(--brand-positive)' }">
-                    {{
-                      new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      }).format(dividend.totalReceived || 0)
-                    }}
-                  </td>
-                  <td class="px-4 py-3">
-                    <span
-                      class="quiet-badge"
-                      :class="dividend.label === 'JCP' ? 'quiet-badge--brand' : 'quiet-badge--success'"
-                    >
+                <tr v-for="(dividend, index) in result.dividendsHistory" :key="`${result.ticker}-${index}`">
+                  <td>{{ new Date(dividend.payment_date).toLocaleDateString('pt-BR') }}</td>
+                  <td class="cui-table-muted">{{ new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(parseFloat(dividend.rate)) }}</td>
+                  <td class="cui-table-muted">{{ (dividend.sharesAtTime || 0).toFixed(2) }}</td>
+                  <td style="color: var(--brand-positive)">{{ new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dividend.totalReceived || 0) }}</td>
+                  <td>
+                    <span class="quiet-badge" :class="dividend.label === 'JCP' ? 'quiet-badge--brand' : 'quiet-badge--success'">
                       {{ dividend.label }}
                     </span>
                   </td>
@@ -492,9 +184,14 @@
             </table>
           </div>
         </div>
+      </CalcUiCard>
+      </div>
+      <div v-else class="cui-result-empty">
+        <p class="cui-chart-label">Detalhamento por ativo</p>
+        <p class="cui-empty-text">Chart e tabela de proventos aparecem após o cálculo.</p>
       </div>
     </template>
-  </div>
+  </CalcUiShell>
 </template>
 
 <script setup lang="ts">
@@ -518,6 +215,9 @@ const props = withDefaults(
   defineProps<{
     assets?: IAsset[]
     assetsLoading?: boolean
+    backTo?: string
+    backLabel?: string
+    lastUpdated?: string
   }>(),
   {
     assets: () => [],
