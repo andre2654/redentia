@@ -42,224 +42,22 @@
 
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
-        <!-- Hero Dashboard Card: ambient gradient + sparkline -->
+        <!-- Ticker header bar (minimalista: logo + ticker + stats inline + sparkline) -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
-          <div
-            class="crypto-hero-card relative overflow-hidden rounded-2xl border"
-            :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: brand.colors.surface,
-            }"
-          >
-            <!-- Ambient gradient based on 24h change -->
-            <div
-              class="pointer-events-none absolute inset-0"
-              :style="{
-                background: cryptoIsPositive
-                  ? `radial-gradient(ellipse at 80% 0%, ${brand.colors.positive}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.positive}14, transparent 60%)`
-                  : `radial-gradient(ellipse at 80% 0%, ${brand.colors.negative}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.negative}14, transparent 60%)`,
-              }"
-              aria-hidden="true"
-            />
-            <div
-              class="pointer-events-none absolute inset-0 opacity-[0.04]"
-              :style="{
-                backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`,
-                backgroundSize: '48px 48px',
-              }"
-              aria-hidden="true"
-            />
-
-            <!-- Top-right mini sparkline -->
-            <div class="absolute right-5 top-5 hidden items-center gap-2 md:flex" aria-hidden="true">
-              <span
-                class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-                :style="{ color: brand.colors.textMuted }"
-              >
-                30D
-              </span>
-              <svg
-                v-if="cryptoSparkline.points.length > 1"
-                :viewBox="`0 0 ${cryptoSparkline.width} ${cryptoSparkline.height}`"
-                preserveAspectRatio="none"
-                class="h-8 w-28"
-              >
-                <defs>
-                  <linearGradient :id="`crypto-spark-${crypto?.symbol ?? 'na'}`" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" :stop-color="cryptoAccent" stop-opacity="0.35" />
-                    <stop offset="100%" :stop-color="cryptoAccent" stop-opacity="0" />
-                  </linearGradient>
-                </defs>
-                <path :d="cryptoSparkline.area" :fill="`url(#crypto-spark-${crypto?.symbol ?? 'na'})`" />
-                <path
-                  :d="cryptoSparkline.line"
-                  fill="none"
-                  :stroke="cryptoAccent"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  vector-effect="non-scaling-stroke"
-                />
-              </svg>
-            </div>
-
-            <!-- Content grid. Mobile: compact top row (logo + symbol + price)
-                 + discreet stats below. Desktop: 3-col balanced grid. -->
-            <div class="relative flex flex-col gap-4 p-4 md:grid md:grid-cols-12 md:items-center md:gap-8 md:p-8">
-              <!-- Top row mobile, Col 1 desktop: Identity -->
-              <div class="flex items-center gap-3 md:col-span-4 md:gap-4">
-                <div
-                  class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg md:size-16 md:rounded-xl"
-                  :style="{ backgroundColor: `${brand.colors.text}08` }"
-                >
-                  <NuxtImg
-                    v-if="crypto?.image"
-                    :src="crypto.image"
-                    :alt="`Logo ${crypto.name ?? crypto.symbol}`"
-                    width="64"
-                    height="64"
-                    loading="eager"
-                    fetchpriority="high"
-                    decoding="async"
-                    class="h-full w-full object-contain"
-                  />
-                  <span v-else class="font-mono-tab text-sm font-bold" :style="{ color: brand.colors.primary }">
-                    {{ crypto?.symbol.slice(0, 3).toUpperCase() }}
-                  </span>
-                </div>
-                <div class="flex min-w-0 flex-1 items-center gap-3 md:flex-col md:items-start md:gap-1">
-                  <div class="flex min-w-0 flex-col">
-                    <span
-                      class="hidden font-mono-tab text-[10px] uppercase tracking-[0.2em] md:block"
-                      :style="{ color: brand.colors.primary }"
-                      translate="no"
-                    >
-                      {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }} · #{{ crypto?.rank ?? '—' }}
-                    </span>
-                    <h1
-                      class="font-mono-tab text-lg font-bold leading-tight tracking-tight md:text-4xl md:leading-none"
-                      :style="{ color: brand.colors.text }"
-                      translate="no"
-                    >
-                      {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }}
-                    </h1>
-                    <span
-                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-semibold"
-                      :style="{ color: `${brand.colors.text}99` }"
-                    >
-                      {{ crypto?.name ?? symbol }}
-                    </span>
-                  </div>
-
-                  <!-- Mobile-only inline price at the right end of the header row -->
-                  <div class="ml-auto flex flex-col items-end gap-0.5 text-right md:hidden">
-                    <span
-                      class="font-mono-tab text-xl font-bold leading-none tabular-nums"
-                      :style="{ color: brand.colors.text }"
-                      translate="no"
-                    >
-                      R$&nbsp;{{ formatPriceNumberCrypto((crypto as any)?.price_brl ?? null) }}
-                    </span>
-                    <span
-                      class="font-mono-tab text-[11px] font-semibold tabular-nums"
-                      :style="{ color: cryptoAccent }"
-                      translate="no"
-                    >
-                      {{ cryptoIsPositive ? '+' : '' }}{{ Number(crypto?.change_24h_pct ?? 0).toFixed(2) }}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Col 2 desktop: Price + 24h badge (hidden mobile) -->
-              <div class="hidden flex-col gap-2 md:col-span-4 md:flex">
-                <div class="flex items-baseline gap-1.5">
-                  <span
-                    class="font-mono-tab text-xs opacity-70"
-                    :style="{ color: brand.colors.textMuted }"
-                    translate="no"
-                  >
-                    R$
-                  </span>
-                  <span
-                    class="font-mono-tab text-5xl font-light leading-none tabular-nums md:text-6xl"
-                    :style="{ color: brand.colors.text }"
-                    translate="no"
-                  >
-                    {{ formatPriceNumberCrypto((crypto as any)?.price_brl ?? null) }}
-                  </span>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <span
-                    class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-sm font-semibold tabular-nums"
-                    :style="{
-                      backgroundColor: `${cryptoAccent}1F`,
-                      color: cryptoAccent,
-                    }"
-                    translate="no"
-                  >
-                    <UIcon
-                      :name="cryptoIsPositive ? 'i-lucide-arrow-up-right' : 'i-lucide-arrow-down-right'"
-                      class="size-3.5"
-                      aria-hidden="true"
-                    />
-                    {{ cryptoIsPositive ? '+' : '' }}{{ Number(crypto?.change_24h_pct ?? 0).toFixed(2) }}%
-                  </span>
-                  <span
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                    :style="{ color: brand.colors.textMuted }"
-                    translate="no"
-                  >
-                    <template v-if="crypto?.price_usd != null">24H · ≈ {{ formatUsd(crypto.price_usd) }}</template>
-                    <template v-else>24H</template>
-                  </span>
-                </div>
-                <!-- Secondary pct deltas -->
-                <div class="flex flex-wrap items-center gap-3 font-mono-tab text-[11px] tabular-nums">
-                  <span>
-                    <span :style="{ color: brand.colors.textMuted }" translate="no">7D </span>
-                    <span :style="{ color: pctColor(crypto?.change_7d_pct) }" translate="no">{{ formatPct(crypto?.change_7d_pct) }}</span>
-                  </span>
-                  <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
-                  <span>
-                    <span :style="{ color: brand.colors.textMuted }" translate="no">30D </span>
-                    <span :style="{ color: pctColor(crypto?.change_30d_pct) }" translate="no">{{ formatPct(crypto?.change_30d_pct) }}</span>
-                  </span>
-                </div>
-              </div>
-
-              <!-- Stats row. Mobile: compact grid, tiny text, border-t
-                   separator from price row. Desktop: unchanged col-span-4. -->
-              <div class="border-t pt-3 md:col-span-4 md:border-t-0 md:pt-0" :style="{ borderColor: brand.colors.border }">
-                <div class="grid grid-cols-2 gap-x-3 gap-y-2 font-mono-tab md:gap-x-4 md:gap-y-3">
-                  <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HIGH 24H</span>
-                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.positive }" translate="no">
-                      {{ formatBrl((crypto?.ohlc as any)?.high_brl ?? null) }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">LOW 24H</span>
-                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.negative }" translate="no">
-                      {{ formatBrl((crypto?.ohlc as any)?.low_brl ?? null) }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">MKT CAP</span>
-                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.text }" translate="no">
-                      {{ formatBrl((crypto as any)?.market_cap_brl ?? null, { compact: true }) }}
-                    </span>
-                  </div>
-                  <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VOL 24H</span>
-                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.text }" translate="no">
-                      {{ formatBrl((crypto as any)?.volume_24h_brl ?? null, { compact: true }) }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MoleculesTickerHeaderBar
+            :logo="(crypto as any)?.image || undefined"
+            :ticker="(crypto?.symbol ?? symbol).toString().toUpperCase()"
+            :name="crypto?.name ?? symbol"
+            :badge="crypto?.rank ? `#${crypto.rank}` : 'CRYPTO'"
+            price-label="Preço"
+            price-unit="R$"
+            :price-value="formatPriceNumberCrypto((crypto as any)?.price_brl ?? null)"
+            :change-percent="crypto?.change_24h_pct"
+            change-label="24h"
+            :stats="cryptoStats"
+            :sparkline="cryptoSparkline.line ? { line: cryptoSparkline.line, area: cryptoSparkline.area, color: cryptoAccent } : undefined"
+            sparkline-label="30D"
+          />
         </section>
 
         <!-- Chart section (price ou rainbow, toggle no mesmo padrão do tesouro) -->
@@ -833,6 +631,20 @@ const cryptoIsPositive = computed(() => Number(crypto.value?.change_24h_pct ?? 0
 const cryptoAccent = computed(() =>
   cryptoIsPositive.value ? brand.colors.positive : brand.colors.negative,
 )
+
+// Stats inline pro TickerHeaderBar (4 cells)
+const cryptoStats = computed(() => {
+  const c = crypto.value as any
+  if (!c) return []
+  return [
+    { label: 'HIGH 24H', value: formatBrl(c.ohlc?.high_brl ?? null), accent: brand.colors.positive },
+    { label: 'LOW 24H', value: formatBrl(c.ohlc?.low_brl ?? null), accent: brand.colors.negative },
+    { label: 'MKT CAP', value: formatBrl(c.market_cap_brl ?? null, { compact: true }) },
+    { label: 'VOL 24H', value: formatBrl(c.volume_24h_brl ?? null, { compact: true }) },
+    { label: '7D', value: formatPct(c.change_7d_pct), accent: pctColor(c.change_7d_pct) },
+    { label: '30D', value: formatPct(c.change_30d_pct), accent: pctColor(c.change_30d_pct) },
+  ]
+})
 
 const cryptoSparkline = computed(() => {
   const full = chartData.value || []

@@ -77,221 +77,21 @@
     <!-- DEFAULT: Redentia Bloomberg-terminal layout -->
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
-        <!-- Hero Dashboard Card: ambient gradient + 3-col grid + sparkline -->
+        <!-- Ticker header bar (minimalista: logo + ticker + stats inline + sparkline) -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
-          <div
-            class="asset-hero-card relative overflow-hidden rounded-2xl border"
-            :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: brand.colors.surface,
-            }"
-          >
-            <!-- Ambient gradient: green/red tint based on today's change -->
-            <div
-              class="pointer-events-none absolute inset-0"
-              :style="{
-                background: isPositive
-                  ? `radial-gradient(ellipse at 80% 0%, ${brand.colors.positive}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.positive}14, transparent 60%)`
-                  : `radial-gradient(ellipse at 80% 0%, ${brand.colors.negative}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.negative}14, transparent 60%)`,
-              }"
-              aria-hidden="true"
-            />
-            <!-- Grid texture overlay -->
-            <div
-              class="pointer-events-none absolute inset-0 opacity-[0.04]"
-              :style="{
-                backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`,
-                backgroundSize: '48px 48px',
-              }"
-              aria-hidden="true"
-            />
-
-            <!-- Top-right mini sparkline (7d peek) -->
-            <div class="absolute right-5 top-5 hidden items-center gap-2 md:flex" aria-hidden="true">
-              <span
-                class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-                :style="{ color: brand.colors.textMuted }"
-              >
-                30D
-              </span>
-              <svg
-                v-if="heroSparkline.points.length > 1"
-                :viewBox="`0 0 ${heroSparkline.width} ${heroSparkline.height}`"
-                preserveAspectRatio="none"
-                class="h-8 w-28"
-              >
-                <defs>
-                  <linearGradient :id="`asset-spark-${tickerUpper}`" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" :stop-color="heroAccent" stop-opacity="0.35" />
-                    <stop offset="100%" :stop-color="heroAccent" stop-opacity="0" />
-                  </linearGradient>
-                </defs>
-                <path :d="heroSparkline.area" :fill="`url(#asset-spark-${tickerUpper})`" />
-                <path
-                  :d="heroSparkline.line"
-                  fill="none"
-                  :stroke="heroAccent"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  vector-effect="non-scaling-stroke"
-                />
-              </svg>
-            </div>
-
-            <!-- Content grid. Mobile: compact top row (logo + ticker + price)
-                 + discreet stats below. Desktop: 3-col balanced grid. -->
-            <div class="relative flex flex-col gap-4 p-4 md:grid md:grid-cols-12 md:items-center md:gap-8 md:p-8">
-              <!-- Top row mobile, Col 1-2 desktop: Identity + Price -->
-              <div class="flex items-center gap-3 md:col-span-8 md:gap-4">
-                <USkeleton v-if="isLoadingAsset" class="size-10 rounded-lg md:size-16 md:rounded-xl" />
-                <NuxtImg
-                  v-else-if="resolvedLogo && !failedLogos.isFailed(resolvedLogo)"
-                  :src="resolvedLogo"
-                  :alt="`Logo de ${assetName}`"
-                  width="64"
-                  height="64"
-                  loading="eager"
-                  fetchpriority="high"
-                  decoding="async"
-                  class="size-10 shrink-0 rounded-lg object-cover md:size-16 md:rounded-xl"
-                  @error="failedLogos.markFailed(resolvedLogo)"
-                />
-                <div
-                  v-else-if="!isLoadingAsset"
-                  class="flex size-10 shrink-0 items-center justify-center rounded-lg md:size-16 md:rounded-xl"
-                  :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`, color: brand.colors.textMuted }"
-                  aria-hidden="true"
-                >
-                  <span class="font-mono-tab text-xs font-bold md:text-base">
-                    {{ tickerUpper.slice(0, 2) }}
-                  </span>
-                </div>
-                <div class="flex min-w-0 flex-1 items-center gap-3 md:flex-col md:items-start md:gap-1">
-                  <!-- Ticker: compact on mobile (inline with price), prominent on desktop -->
-                  <div class="flex min-w-0 flex-col">
-                    <h1
-                      class="font-mono-tab text-lg font-bold leading-tight tracking-tight md:text-4xl"
-                      :style="{ color: brand.colors.text }"
-                      translate="no"
-                    >
-                      {{ tickerUpper }}
-                    </h1>
-                    <span
-                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-semibold"
-                      :style="{ color: `${brand.colors.text}99` }"
-                    >
-                      {{ asset?.name || assetName }}
-                    </span>
-                    <span
-                      v-if="asset?.sector"
-                      class="hidden font-mono-tab text-[10px] uppercase tracking-[0.12em] md:block"
-                      :style="{ color: brand.colors.textMuted }"
-                    >
-                      &gt; {{ asset.sector }}
-                    </span>
-                  </div>
-
-                  <!-- Mobile-only inline price at the right end of the header row -->
-                  <div class="ml-auto flex flex-col items-end gap-0.5 text-right md:hidden">
-                    <USkeleton v-if="isLoadingAsset" class="h-6 w-20" />
-                    <template v-else>
-                      <span
-                        class="font-mono-tab text-xl font-bold leading-none tabular-nums"
-                        :style="{ color: brand.colors.text }"
-                        translate="no"
-                      >
-                        R$&nbsp;{{ formatPriceNumber(asset?.market_price) }}
-                      </span>
-                      <span
-                        class="font-mono-tab text-[11px] font-semibold tabular-nums"
-                        :style="{ color: heroAccent }"
-                        translate="no"
-                      >
-                        {{ isPositive ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2) }}%
-                      </span>
-                    </template>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Desktop-only price block (hidden on mobile, shown in header row above) -->
-              <div class="hidden flex-col gap-2 md:col-span-4 md:flex">
-                <USkeleton v-if="isLoadingAsset" class="h-14 w-48" />
-                <template v-else>
-                  <div class="flex items-baseline gap-1.5">
-                    <span
-                      class="font-mono-tab text-xs opacity-70"
-                      :style="{ color: brand.colors.textMuted }"
-                      translate="no"
-                    >
-                      R$
-                    </span>
-                    <span
-                      class="font-mono-tab text-5xl font-light leading-none tabular-nums md:text-6xl"
-                      :style="{ color: brand.colors.text }"
-                      translate="no"
-                    >
-                      {{ formatPriceNumber(asset?.market_price) }}
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span
-                      class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-sm font-semibold tabular-nums"
-                      :style="{
-                        backgroundColor: `${heroAccent}1F`,
-                        color: heroAccent,
-                      }"
-                      translate="no"
-                    >
-                      <UIcon
-                        :name="isPositive ? 'i-lucide-arrow-up-right' : 'i-lucide-arrow-down-right'"
-                        class="size-3.5"
-                        aria-hidden="true"
-                      />
-                      {{ isPositive ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2) }}%
-                    </span>
-                    <span
-                      class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                      :style="{ color: brand.colors.textMuted }"
-                      translate="no"
-                    >
-                      <template v-if="lastUpdateLabel">HOJE · {{ lastUpdateLabel }}</template>
-                      <template v-else>HOJE</template>
-                    </span>
-                  </div>
-                </template>
-              </div>
-
-              <!-- Stats row. Mobile: horizontal scroll, tiny text, border-t
-                   separator from price row. Desktop: unchanged 3-col. -->
-              <div class="md:col-span-12 md:border-t-0 md:pt-0 border-t pt-3" :style="{ borderColor: brand.colors.border }">
-                <div
-                  class="grid grid-cols-3 gap-x-3 gap-y-2 font-mono-tab md:grid-cols-6 md:gap-x-4 md:gap-y-3"
-                >
-                  <div
-                    v-for="stat in sessionStats"
-                    :key="stat.label"
-                    class="flex flex-col gap-0.5"
-                  >
-                    <span
-                      class="text-[9px] uppercase tracking-[0.12em]"
-                      :style="{ color: brand.colors.textMuted }"
-                    >
-                      {{ stat.label }}
-                    </span>
-                    <span
-                      class="text-[12px] font-semibold tabular-nums md:text-[13px]"
-                      :style="{ color: stat.accent || brand.colors.text }"
-                      translate="no"
-                    >
-                      {{ stat.value || '—' }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MoleculesTickerHeaderBar
+            :logo="resolvedLogo && !failedLogos.isFailed(resolvedLogo) ? resolvedLogo : undefined"
+            :ticker="tickerUpper"
+            :name="asset?.name || assetName"
+            :badge="assetBadgeLabel"
+            price-label="Preço"
+            price-unit="R$"
+            :price-value="formatPriceNumber(asset?.market_price)"
+            :change-percent="asset?.change_percent"
+            :stats="sessionStats"
+            :sparkline="heroSparkline.line ? { line: heroSparkline.line, area: heroSparkline.area, color: heroAccent } : undefined"
+            sparkline-label="30D"
+          />
 
           <!-- Chart with unified toolbar -->
           <div ref="assetChartRef" class="mt-8">
@@ -2513,6 +2313,14 @@ const assetFullscreenRef = ref<{ open: () => void; close: () => void } | null>(n
 // Hero dashboard card state: gradient tint + accent color + sparkline
 const isPositive = computed(() => Number(asset.value?.change_percent ?? 0) >= 0)
 const heroAccent = computed(() => (isPositive.value ? brand.colors.positive : brand.colors.negative))
+
+// Badge mostrado no ticker bar. Prioriza subcategoria FII (FIAGRO, etc),
+// senão cai pro tipo do asset (STOCK, REIT, ETF, BDR).
+const assetBadgeLabel = computed(() => {
+  const extras = scrapeExtras.value as any
+  if (extras?.fii?.segment) return String(extras.fii.segment).toUpperCase()
+  return (asset.value?.type || '').toUpperCase() || undefined
+})
 
 // Build a normalized sparkline path from the last 30 days of chart data
 const heroSparkline = computed(() => {
