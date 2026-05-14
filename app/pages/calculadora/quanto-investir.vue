@@ -1,6 +1,5 @@
 <template>
   <NuxtLayout name="default" title="Calculadora: Quanto Investir por Mês">
-        Descubra na hora quanto você precisa aportar mensalmente pra ter R$ 100 mil, R$ 500 mil ou R$ 1 milhão em 5, 10, 15 ou 20 anos. Calculadora reversa de juros compostos, considera patrimônio inicial, taxa de retorno realista e ajuste pela inflação. Gratuito, sem cadastro, sem planilha.
     <CalculatorMonthlyInvestment
       back-to="/calculadora"
       back-label="Todas as calculadoras"
