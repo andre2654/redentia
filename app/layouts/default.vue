@@ -35,7 +35,7 @@
        é tratado movendo h-screen + overflow-hidden pra dentro do row
        container, preservando o banner como item natural acima. -->
   <div
-    class="flex w-full flex-col"
+    class="default-auth-shell flex w-full flex-col"
     :class="hideFooter ? 'h-screen' : 'min-h-screen'"
     :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
   >
@@ -1360,15 +1360,16 @@ onMounted(() => {
 
 <!--
   Non-scoped: reserves the left-edge space the menu button needs on
-  mobile, by adding extra padding to the QuickSearch root. The
-  `flex justify-center` inside QS then re-centers within the
-  remaining width, so the pill aligns to the right of the menu
-  button without overlapping. Reverts to default on xl+ (desktop has
-  the sidebar instead of the hamburger).
+  mobile, by adding extra padding to the QuickSearch root. So eh
+  aplicado quando ha um `.default-auth-shell` ancestor (usuario logado,
+  com sidebar + hamburger no mobile). Visitante (layout unauthenticated)
+  nao precisa do shift — o QuickSearch fica centralizado normalmente.
 -->
 <style>
 @media (max-width: 1279px) {
-  .quick-search-root {
+  .default-auth-shell ~ .quick-search-root,
+  .default-auth-shell .quick-search-root,
+  body:has(.default-auth-shell) .quick-search-root {
     padding-left: 4rem; /* button width (44px) + gap (12px) ≈ 56px → round to 64 */
   }
 }

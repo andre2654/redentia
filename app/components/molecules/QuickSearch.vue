@@ -1498,6 +1498,27 @@ watch(open, (val) => {
     0 0 0 3px var(--qs-primary-soft);
 }
 
+/* Pill maior no mobile: mais altura + max-width maior pra ficar
+   bem visivel e tappable. Desktop continua compacto. */
+@media (max-width: 767px) {
+  .quick-search-shell {
+    max-width: 100% !important;
+  }
+  .quick-search-pill {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  .quick-search-pill > [class*="size-4"] {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .quick-search-pill input[type="search"] {
+    font-size: 15px !important;
+  }
+}
+
 .qs-pill-open {
   box-shadow:
     0 24px 50px -16px rgba(0, 0, 0, 0.6),
