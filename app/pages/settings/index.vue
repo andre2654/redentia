@@ -153,6 +153,44 @@
         </NuxtLink>
       </section>
 
+      <!-- Preferências da plataforma -->
+      <section class="set-section">
+        <div class="set-section__head">
+          <span class="set-section__eyebrow">Preferências</span>
+          <h2 class="set-section__title">Plataforma</h2>
+          <p class="set-section__subtitle">
+            Comportamento da interface. Mudanças aplicam na hora.
+          </p>
+        </div>
+        <div class="set-card set-pref-card">
+          <button
+            type="button"
+            class="set-pref"
+            role="switch"
+            :aria-checked="interfaceStore.aiCursorEnabled"
+            @click="interfaceStore.toggleAiCursor()"
+          >
+            <span class="set-pref__icon" aria-hidden="true">
+              <UIcon name="i-lucide-mouse-pointer-2" class="size-5" />
+            </span>
+            <span class="set-pref__copy">
+              <span class="set-pref__title">Assistente de cursor</span>
+              <span class="set-pref__desc">
+                Pare o mouse sobre qualquer parte da plataforma por 1 segundo
+                pra abrir um chat contextual. Funciona só em desktop.
+              </span>
+            </span>
+            <span
+              class="set-pref__toggle"
+              :data-on="interfaceStore.aiCursorEnabled"
+              aria-hidden="true"
+            >
+              <span class="set-pref__toggle-thumb" />
+            </span>
+          </button>
+        </div>
+      </section>
+
       <!-- Sair (sessão) -->
       <section class="set-section">
         <div class="set-section__head">
@@ -187,6 +225,7 @@ usePageSeo({
 })
 
 const authStore = useAuthStore()
+const interfaceStore = useInterfaceStore()
 const router = useRouter()
 const ent = useEntitlements()
 
@@ -413,6 +452,91 @@ async function onLogout() {
 .set-link-card:hover .set-link-card__arrow {
   color: var(--brand-primary);
   transform: translateX(2px);
+}
+
+/* ============ PREFERÊNCIA TOGGLE ============ */
+.set-pref-card {
+  padding: 0;
+}
+.set-pref {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  background: transparent;
+  border: none;
+  border-radius: inherit;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  transition: background 150ms ease-out;
+}
+.set-pref:hover {
+  background: var(--bg-overlay);
+}
+.set-pref:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring-focus);
+}
+.set-pref__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  color: var(--brand-primary);
+  flex-shrink: 0;
+}
+.set-pref__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.set-pref__title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-heading);
+  letter-spacing: -0.005em;
+}
+.set-pref__desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+.set-pref__toggle {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border-radius: 9999px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  flex-shrink: 0;
+  transition: background 200ms ease-out, border-color 200ms ease-out;
+}
+.set-pref__toggle[data-on='true'] {
+  background: color-mix(in srgb, var(--brand-primary) 70%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 80%, transparent);
+}
+.set-pref__toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--bg-elevated);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.set-pref__toggle[data-on='true'] .set-pref__toggle-thumb {
+  transform: translateX(16px);
+  background: #fff;
 }
 
 /* ============ LOGOUT ============ */

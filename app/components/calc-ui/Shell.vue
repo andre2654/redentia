@@ -93,7 +93,7 @@ withDefaults(
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 0 16px 14px;
   border-bottom: 1px solid var(--border-subtle);
   font-size: 12px;
   font-weight: 500;
@@ -107,7 +107,7 @@ withDefaults(
     align-items: center;
     justify-content: space-between;
     gap: 12px 16px;
-    padding: 14px 24px;
+    padding: 0 24px 14px;
   }
 }
 

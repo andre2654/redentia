@@ -23,6 +23,13 @@
          sino do platform sidebar) abra o mesmo drawer via
          useInbox().openDrawer(). -->
     <MoleculesInboxDrawer />
+    <!-- Ask-anywhere cursor overlay — feature "pare o mouse em qualquer
+         coisa". O plugin `ai-cursor.client.ts` decide se o device suporta
+         (mouse + hover + viewport >= 1024px) e popula `useState('ai-cursor:enabled')`.
+         O componente lê esse state e v-if's o overlay. Em mobile/tablet
+         portrait nada monta. A rota /lab/ai-cursor pula este mount global
+         pra continuar usando sua instância sandbox com sliders/debug. -->
+    <MoleculesAiCursorMount />
   </UApp>
 </template>
 

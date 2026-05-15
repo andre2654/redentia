@@ -602,26 +602,30 @@
       </div>
     </aside>
     <div
-      class="relative flex w-full flex-col overflow-hidden xl:px-4 xl:py-4"
+      class="relative flex w-full flex-col overflow-hidden"
       :style="{ backgroundColor: brand.colors.background }"
     >
       <header
         v-bind="headerProps"
         ref="header"
-        class="sticky top-0 z-20 flex min-h-[60px] w-full items-center justify-between gap-4 px-4 pt-3 backdrop-blur-xl xl:px-0 xl:pt-0 xl:rounded-[25px]"
+        class="sticky top-0 z-20 flex min-h-[64px] w-full items-center justify-between gap-4 border-b px-4 py-3 backdrop-blur-xl xl:px-8"
+        :style="{
+          background: `color-mix(in srgb, ${brand.colors.background} 92%, transparent)`,
+          borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+        }"
       >
         <slot name="header-branding">
-          <div class="flex items-center gap-5">
+          <div class="flex items-center gap-4">
             <BrandLogo variant="icon" class="h-9 w-9" />
             <div class="flex flex-col">
               <span
-                class="text-[14px] uppercase tracking-[0.25em]"
+                class="text-[11px] uppercase tracking-[0.22em]"
                 :style="{ color: brand.colors.textMuted }"
               >
                 {{ brand.header.title }}
               </span>
               <span
-                class="-mt-2 text-[14px] font-semibold tracking-[0.05em]"
+                class="-mt-0.5 text-[14px] font-semibold tracking-[0.02em]"
                 :style="{ color: brand.colors.text }"
               >
                 {{ brand.header.subtitle }}
@@ -636,10 +640,20 @@
           <MoleculesInboxBell />
         </div>
       </header>
+
+      <!-- Content area: padding moved here so the header above can stay
+           full-width edge-to-edge with a clean border-bottom. Only horizontal
+           and top padding so full-bleed sections at the bottom of a page can
+           touch the footer. Background: pure white/black para Redentia,
+           brand color para outros tenants (Me Poupe, etc). -->
+      <div
+        class="flex min-h-0 flex-1 flex-col xl:px-4 xl:pt-4"
+        :style="{ backgroundColor: contentBg }"
+      >
       <!-- Banner status assessor (investidor): só pendente ou recusado -->
       <div
         v-if="authStore.me?.role === 'investor' && (authStore.me?.approval_status === 'pending' || authStore.me?.approval_status === 'rejected')"
-        class="mx-4 mt-5 brand-card border px-4 py-3 text-sm xl:mt-6"
+        class="mx-4 mt-5 brand-card border px-4 py-3 text-sm xl:mx-0 xl:mt-0"
         :class="{
           'border-amber-500/40 bg-amber-500/10 text-amber-200': authStore.me.approval_status === 'pending',
           'border-red-500/30 bg-red-500/10 text-red-200': authStore.me.approval_status === 'rejected',
@@ -674,6 +688,7 @@
 
         <slot />
       </div>
+      </div><!-- /content area (xl:px-4 xl:py-4) -->
     </div>
     </div><!-- /row container (sidebar + main) -->
   </div><!-- /outer flex-col wrapper -->
@@ -750,6 +765,18 @@ defineProps({
 })
 
 const brand = useBrand()
+const tenantSlug = useTenantSlug()
+const layoutColorMode = useColorMode()
+
+// Content-area bg: para o tenant Redentia (default), forçamos pure
+// white/black por modo (light/dark) pra criar contraste com a sidebar.
+// Tenants com paleta propria (Me Poupe, etc) mantêm o brand.colors.background.
+const contentBg = computed(() => {
+  if (tenantSlug === 'redentia') {
+    return layoutColorMode.value === 'dark' ? '#000000' : '#ffffff'
+  }
+  return brand.colors.background
+})
 
 // ============ ONBOARDING NAME MODAL ============
 // Soft modal pos-magic-link. Disparado por:

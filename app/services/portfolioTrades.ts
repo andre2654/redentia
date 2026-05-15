@@ -69,15 +69,66 @@ export function usePortfolioTradesService() {
     return resp
   }
 
+  /**
+   * Proventos (dividendos/JCP/income) agrupados por mês.
+   * Default: ultimos 12 meses. Cada mes retorna o total + lista detalhada
+   * de pagamentos por ticker. Alimenta o bar chart de renda passiva e o
+   * modal de detalhes do mês.
+   */
+  async function listIncome(params?: { from?: string; to?: string }): Promise<IncomeResponse> {
+    const qs = new URLSearchParams()
+    if (params?.from) qs.set('from', params.from)
+    if (params?.to) qs.set('to', params.to)
+    const suffix = qs.toString() ? `?${qs.toString()}` : ''
+    const resp = await $fetch<IncomeResponse>(
+      `${API}/portfolio/income${suffix}`,
+      { headers: authHeaders() },
+    )
+    return resp
+  }
+
   return {
     listTrades,
     getEquityCurve,
+    listIncome,
+  }
+}
+
+export type IncomeSide = 'DIVIDEND' | 'JCP' | 'INCOME'
+
+export interface IncomeEntry {
+  ticker: string
+  side: IncomeSide
+  trade_date: string  // YYYY-MM-DD
+  amount: number
+  name?: string | null
+  asset_class?: string | null
+}
+
+export interface IncomeMonthBucket {
+  month: string   // YYYY-MM
+  label: string   // 'Jan' | 'Fev' | ...
+  total: number
+  entries: IncomeEntry[]
+}
+
+export interface IncomeResponse {
+  months: IncomeMonthBucket[]
+  summary: {
+    totalAll: number
+    monthsCovered: number
+    from: string
+    to: string
   }
 }
 
 export interface EquityCurvePoint {
   date: string
+  // P&L total acumulado (realized + unrealized + income)
   equity: number
+  // Valor REAL das posicoes abertas em qty * preco corrente.
+  // E o que normalmente se chama "patrimonio".
+  position_value: number
   realized: number
   unrealized: number
   income: number

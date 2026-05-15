@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full flex-col" :style="{ backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text)' }">
+  <div class="flex w-full flex-col" :style="{ backgroundColor: footerBg, color: 'var(--brand-text)', borderTop: '1px solid var(--brand-border)' }">
     <!-- CTA de Notificações (apenas no app e se não liberou) -->
     <div
       v-if="showNotificationCta"
@@ -365,7 +365,20 @@
 
 <script setup lang="ts">
 const brand = useBrand()
+const tenantSlug = useTenantSlug()
+const colorMode = useColorMode()
 const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+// Footer background: tenant-aware + dark-mode safe.
+// - Redentia: gray-ish em light (#fafafb), preto em dark.
+// - Outros tenants: usa brand.colors.surface (auto-flipa por modo via brand).
+//   Isso preserva a identidade visual (ex: Me Poupe rosa, Norte verde).
+const footerBg = computed(() => {
+  if (tenantSlug === 'redentia') {
+    return colorMode.value === 'dark' ? '#000000' : '#fafafb'
+  }
+  return brand.colors.surface
+})
 
 // Phase 6: feature flags pra mostrar/esconder colunas inteiras do
 // footer. `features` undefined em tenants antigos = default-on

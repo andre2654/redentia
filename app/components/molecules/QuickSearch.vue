@@ -20,7 +20,7 @@
     <div
       v-if="open"
       class="quick-search-backdrop fixed inset-0 z-40"
-      :style="{ backgroundColor: 'rgba(0, 0, 0, 0.32)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }"
+      :style="{ backgroundColor: 'rgba(0, 0, 0, 0.32)' }"
       aria-hidden="true"
       @click="close"
     />
@@ -563,14 +563,12 @@ const placeholder = computed(() => {
 })
 
 // ==========================================================
-// Visual surfaces — translucent glass for both panel + pill.
-// Panel sits ~55% opacity so the page reads through clearly,
-// paired with strong backdrop blur in CSS. Pill stays a bit
-// more solid so its content is always readable.
+// Visual surfaces — solid (100% opaque). Panel + pill com brand-surface
+// puro, sem translucência. O backdrop também sem blur (ver CSS).
 // ==========================================================
-const panelBg = computed(() => `var(--brand-surface)8C`) // ~55%
+const panelBg = computed(() => `var(--brand-surface)`)
 const panelBorder = computed(() => `color-mix(in srgb, var(--brand-border) 50%, transparent)`)
-const pillBg = computed(() => `var(--brand-surface)D9`) // ~85%
+const pillBg = computed(() => `var(--brand-surface)`)
 const pillBorder = computed(() => `color-mix(in srgb, var(--brand-border) 70%, transparent)`)
 
 // Solid chip surface — translucent + the global backdrop blur was
@@ -1444,8 +1442,6 @@ watch(open, (val) => {
    reactivity on the colored layer above.
    ============================================================ */
 .qs-panel {
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
   box-shadow:
     0 24px 60px -20px rgba(0, 0, 0, 0.55),
     0 1px 0 rgba(255, 255, 255, 0.04) inset;
@@ -1473,8 +1469,6 @@ watch(open, (val) => {
    primary border via inline style; we just upgrade the shadow.
    ============================================================ */
 .quick-search-pill {
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
   box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.4);
 }
 
