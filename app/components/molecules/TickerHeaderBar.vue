@@ -234,7 +234,7 @@ const sparkColor = computed(() => {
   flex-shrink: 0;
 }
 
-/* Zone 2: stats inline */
+/* Zone 2: stats inline (escondido no mobile — apenas identidade visivel) */
 .tk-stats {
   display: flex;
   align-items: center;
@@ -242,13 +242,7 @@ const sparkColor = computed(() => {
   flex-wrap: wrap;
 }
 @media (max-width: 768px) {
-  .tk-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-subtle);
-  }
+  .tk-stats { display: none; }
 }
 .tk-stat {
   display: flex;
