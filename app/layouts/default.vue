@@ -974,24 +974,14 @@ const themeLabel = computed(() => {
 })
 
 function cycleThemeMode() {
-  const next: ThemePref =
-    themePref.value === 'light'
-      ? 'dark'
-      : themePref.value === 'dark'
-        ? 'system'
-        : 'light'
-  if (next === 'system') {
-    // Translate "Auto" to the current OS preference IMMEDIATELY,
-    // storing it as a concrete `light` or `dark`. Same pattern the
-    // AtomsColorModeToggle uses to avoid SSR/CSR hydration mismatch.
-    const osDark =
-      typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    colorMode.preference = osDark ? 'dark' : 'light'
-    return
-  }
-  colorMode.preference = next
+  // Toggle direto light <-> dark. O ciclo de 3 estados (light->dark->system)
+  // tinha um bug: o branch "system" resolvia imediatamente pra OS preference,
+  // entao se OS=dark e usuario ja estava em dark, clicar pegava "system->dark"
+  // (mesma cor) e visualmente nada mudava — usuario achava que estava quebrado.
+  // Resolve via .value (modo ATIVO, ja resolvido) em vez de .preference, pra
+  // garantir que toggle from 'system' vai pra direcao OPOSTA do que ta na tela.
+  const currentActive = colorMode.value === 'dark' ? 'dark' : 'light'
+  colorMode.preference = currentActive === 'dark' ? 'light' : 'dark'
 }
 
 // ============================================================

@@ -373,9 +373,12 @@ const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 // - Redentia: gray-ish em light (#fafafb), preto em dark.
 // - Outros tenants: usa brand.colors.surface (auto-flipa por modo via brand).
 //   Isso preserva a identidade visual (ex: Me Poupe rosa, Norte verde).
+// `colorMode.value` pode retornar 'system' durante SSR. Fallback pra
+// .preference quando isso acontece pra evitar flash de cor errada.
 const footerBg = computed(() => {
+  const mode = colorMode.value === 'system' ? colorMode.preference : colorMode.value
   if (tenantSlug === 'redentia') {
-    return colorMode.value === 'dark' ? '#000000' : '#fafafb'
+    return mode === 'dark' ? '#000000' : '#fafafb'
   }
   return brand.colors.surface
 })
