@@ -238,7 +238,7 @@ const mockups = [
     name: 'Primeira visita',
     tagline: 'Sem ativos importados ainda',
     description:
-      'Quando o usuário entra em /wallet pela primeira vez (ou apaga a carteira), vê esta tela. Único caminho de import: pelo chat. O upload XLSX direto na página foi removido — força o fluxo conversacional, onde a IA pode guiar quem não tem a planilha.',
+      'Quando o usuário entra em /wallet pela primeira vez (ou apaga a carteira), vê esta tela. Único caminho de import: pelo chat. O upload XLSX direto na página foi removido, força o fluxo conversacional, onde a IA pode guiar quem não tem a planilha.',
     deliverables: [
       'CTA primário "Importar via chat"',
       'Link secundário com guia CEI',

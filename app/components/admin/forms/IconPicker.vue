@@ -139,7 +139,7 @@
                   type="button"
                   class="icon-picker__cell"
                   :class="{ 'icon-picker__cell--active': modelValue === ic.name }"
-                  :title="`${ic.label} — ${ic.name}`"
+                  :title="`${ic.label}, ${ic.name}`"
                   @click="select(ic.name)"
                 >
                   <UIcon :name="ic.name" class="size-4" />

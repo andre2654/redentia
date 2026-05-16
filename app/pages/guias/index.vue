@@ -447,7 +447,7 @@ const guias: Guia[] = [
   {
     slug: 'widgets-financeiros-para-site',
     titulo: 'Widgets Financeiros Grátis para Seu Site: Guia 2026',
-    descricao: 'Como adicionar cotações da B3, calculadoras, mapas de calor e rankings em qualquer blog, newsletter ou site — sem cadastro, em 2 minutos.',
+    descricao: 'Como adicionar cotações da B3, calculadoras, mapas de calor e rankings em qualquer blog, newsletter ou site, sem cadastro, em 2 minutos.',
     categoria: 'ferramentas',
     categoriaLabel: 'Ferramentas',
     icon: 'i-lucide-code-xml',

@@ -249,7 +249,7 @@ const types: TypeOption[] = [
     color: '#a855f7',
     bgGradient: 'linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(168,85,247,0.04) 100%)',
     description: 'Aparece num inbox/sino com badge de unread.',
-    useCase: 'Avisos personalizados pra um user ou lista (suporte, alerta de carteira, lembrete de tarefa). Não interrompe — o usuário lê quando quiser.',
+    useCase: 'Avisos personalizados pra um user ou lista (suporte, alerta de carteira, lembrete de tarefa). Não interrompe, o usuário lê quando quiser.',
     preview: PreviewNotification,
   },
   {

@@ -553,7 +553,7 @@
             <p class="wp8r-ins-tag pos">Maior força</p>
             <h4 class="wp8r-ins-h">Sua média de win é <strong>{{ active.avgLoss ? (active.avgWin / Math.abs(active.avgLoss)).toFixed(1) : '—' }}x</strong> maior que a média de loss</h4>
             <p class="wp8r-ins-note">
-              Risk/reward de {{ rrRatio }}:1 — você arrisca pouco pra ganhar muito. Mantenha o stop curto.
+              Risk/reward de {{ rrRatio }}:1, você arrisca pouco pra ganhar muito. Mantenha o stop curto.
             </p>
           </article>
 

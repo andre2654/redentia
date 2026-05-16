@@ -222,7 +222,7 @@
             <span class="italic" :style="{ color: brand.colors.primary }">disciplina.</span>
           </h1>
           <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `${brand.colors.text}CC` }">
-            Mínimo 8 caracteres. Anota num lugar seguro — método é construir hábito, e hábito começa por não esquecer.
+            Mínimo 8 caracteres. Anota num lugar seguro, método é construir hábito, e hábito começa por não esquecer.
           </p>
 
           <div
@@ -331,7 +331,7 @@
             </h1>
             <hr class="dashed-rule mt-8 max-w-[8rem]" />
             <p class="font-academic-body mt-6 max-w-md text-[14px] italic" :style="{ color: brand.colors.textMuted }">
-              <span class="red-pen">Anota aí</span>: senha forte é como tese de tese — clara, única e revisada periodicamente.
+              <span class="red-pen">Anota aí</span>: senha forte é como tese de tese, clara, única e revisada periodicamente.
             </p>
           </div>
 

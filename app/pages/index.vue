@@ -519,10 +519,9 @@
          Posicionado logo antes das noticias — bridge abaixo conecta as 2. -->
     <section
       v-if="!authStore.isAuthenticated"
-      class="qs-showcase relative overflow-hidden border-t md:-mx-4"
+      class="qs-showcase relative overflow-hidden md:-mx-4"
       :style="{
         order: (sectionOrder('news') ?? 0) - 1,
-        borderColor: 'var(--border-subtle)',
         background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, ${brand.colors.primary} 5%, transparent) 50%, color-mix(in srgb, ${brand.colors.primary} 3%, transparent) 100%)`,
       }"
     >
@@ -559,72 +558,63 @@
           </div>
         </div>
 
-        <!-- Right: QuickSearch demo (mockup live) -->
+        <!-- Right: QuickSearch dock target em layout BENTO SPLIT (V3).
+             Card com 2 zonas internas: esquerda (4 col) com contexto +
+             atalho ⌘K destacado; direita (8 col) com bg dot pattern e
+             o dock + chips. O pill flutuante do bottom encaixa na
+             zona direita via Teleport+FLIP quando o user rola até aqui. -->
         <div class="md:col-span-7">
           <div
-            class="qs-mock relative rounded-2xl border p-2 backdrop-blur-md"
-            :style="{
-              borderColor: 'var(--border-subtle)',
-              backgroundColor: 'color-mix(in srgb, var(--bg-elevated) 94%, transparent)',
-              boxShadow: `0 30px 60px -25px color-mix(in srgb, ${brand.colors.primary} 24%, transparent), 0 8px 24px -12px rgba(0,0,0,0.08)`,
-            }"
+            class="grid grid-cols-12 gap-3 rounded-2xl border p-4"
+            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
           >
-            <!-- Search input com query rotacionando -->
-            <div class="flex items-center gap-3 rounded-xl px-4 py-3" :style="{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }">
-              <UIcon name="i-lucide-search" class="size-4 shrink-0" :style="{ color: 'var(--text-muted)' }" />
-              <span class="flex-1 truncate text-[14px]" :style="{ color: 'var(--text-heading)' }" translate="no">
-                {{ qsCurrentDemo.query }}<span class="qs-cursor" :style="{ backgroundColor: 'var(--brand-primary)' }" aria-hidden="true" />
-              </span>
+            <!-- LEFT bento zone: ⌘K context (4 cols) -->
+            <div
+              class="col-span-12 flex flex-col justify-between gap-4 rounded-xl p-6 md:col-span-4"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)' }"
+            >
               <kbd
-                class="inline-flex shrink-0 items-center gap-0.5 rounded-md border px-2 py-0.5 font-mono-tab text-[10px]"
-                :style="{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-overlay)', color: 'var(--text-muted)' }"
-                aria-hidden="true"
+                class="self-start inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 font-mono-tab text-[14px] font-medium"
+                :style="{
+                  borderColor: 'color-mix(in srgb, var(--brand-primary) 30%, transparent)',
+                  backgroundColor: 'var(--bg-base)',
+                  color: 'var(--brand-primary)',
+                }"
               >
                 <span>{{ qsShortcutModifier }}</span>
                 <span>K</span>
               </kbd>
+              <div>
+                <p class="text-[12px] font-medium uppercase tracking-[0.14em]" :style="{ color: 'var(--brand-primary)' }">
+                  Atalho global
+                </p>
+                <p class="mt-2 text-[14px] leading-snug" :style="{ color: 'var(--text-body)' }">
+                  Aperte de qualquer página pra abrir a busca instantânea.
+                </p>
+              </div>
             </div>
 
-            <!-- Results animados, troca conforme a query -->
-            <Transition name="qs-results" mode="out-in">
-              <ul :key="qsActiveDemoIdx" class="mt-2 flex flex-col gap-0.5 px-1 py-1">
-                <li
-                  v-for="result in qsCurrentDemo.results.slice(0, 2)"
-                  :key="result.title"
-                  class="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
-                  :style="{ backgroundColor: result.highlight ? `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)` : 'transparent' }"
+            <!-- RIGHT bento zone: dock target + chips (8 cols).
+                 bg dot grid pattern sutil pra dar textura editorial. -->
+            <div
+              class="col-span-12 flex flex-col items-center gap-4 rounded-xl p-6 md:col-span-8"
+              :style="{
+                backgroundColor: 'var(--bg-base)',
+                backgroundImage: 'radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--text-heading) 10%, transparent) 1px, transparent 0)',
+                backgroundSize: '16px 16px',
+              }"
+            >
+              <MoleculesQuickSearchDock placeholder="Pergunte qualquer coisa." />
+              <div class="flex flex-wrap items-center justify-center gap-2">
+                <NuxtLink
+                  v-for="ex in qsExamples"
+                  :key="ex.query"
+                  :to="`/search?q=${encodeURIComponent(ex.query)}`"
+                  class="qs-example-chip"
                 >
-                  <span
-                    class="flex size-7 shrink-0 items-center justify-center rounded-md text-[11px] font-medium"
-                    :style="{
-                      backgroundColor: `color-mix(in srgb, ${result.color} 14%, transparent)`,
-                      color: result.color,
-                    }"
-                  >{{ result.icon }}</span>
-                  <div class="flex min-w-0 flex-1 flex-col">
-                    <span class="truncate text-[13px] font-medium leading-none" :style="{ color: 'var(--text-heading)' }" translate="no">{{ result.title }}</span>
-                    <span class="mt-1 truncate text-[11px]" :style="{ color: 'var(--text-muted)' }">{{ result.subtitle }}</span>
-                  </div>
-                  <span
-                    v-if="result.value"
-                    class="font-mono-tab text-[12px] tabular-nums"
-                    :style="{ color: result.valueColor || 'var(--text-body)' }"
-                    translate="no"
-                  >{{ result.value }}</span>
-                </li>
-              </ul>
-            </Transition>
-
-            <!-- Footer mock: hint + atalho enter -->
-            <div class="mt-1 flex items-center justify-between border-t px-3 py-2 text-[11px]" :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }">
-              <span class="inline-flex items-center gap-1.5">
-                <UIcon name="i-lucide-sparkles" class="size-3" :style="{ color: 'var(--brand-primary)' }" />
-                Resultados ao vivo, sem digitar a página inteira
-              </span>
-              <span class="inline-flex items-center gap-1">
-                <kbd class="rounded border px-1.5 py-0.5 font-mono-tab text-[10px]" :style="{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-overlay)' }">↵</kbd>
-                <span>abrir</span>
-              </span>
+                  {{ ex.label }}
+                </NuxtLink>
+              </div>
             </div>
           </div>
         </div>
@@ -2131,82 +2121,24 @@ const ifixVariationColor = computed(() => {
   return stats.variation > 0 ? brand.colors.positive : brand.colors.negative
 })
 
-// QuickSearch showcase: queries rotacionando com results coerentes pra
-// vender a busca inteligente. Auto-cycle a cada 3.2s, pausa em hover.
+// qsShortcutModifier ainda é usado pelo hint "Aperte ⌘K" da copy esquerda.
+// O mockup rotacionando (qsDemos / qsCurrentDemo / qsActiveDemoIdx / qsTimer)
+// foi removido — a coluna direita agora hospeda o dock real do QuickSearch.
 const qsShortcutModifier = computed(() => {
   if (typeof navigator === 'undefined') return '⌘'
   return /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'
 })
 
-interface QsResult {
-  icon: string
-  color: string
-  title: string
-  subtitle: string
-  value?: string
-  valueColor?: string
-  highlight?: boolean
-}
-
-interface QsDemo {
-  query: string
-  results: QsResult[]
-}
-
-const qsDemos = computed<QsDemo[]>(() => [
-  {
-    query: 'PETR4',
-    results: [
-      { icon: '◉', color: brand.colors.positive, title: 'PETR4', subtitle: 'Petrobras PN · Petróleo & Gás', value: 'R$ 38,42 +2.84%', valueColor: brand.colors.positive, highlight: true },
-      { icon: '◯', color: brand.colors.primary, title: 'PETR3', subtitle: 'Petrobras ON', value: 'R$ 41,10 +2.61%', valueColor: brand.colors.positive },
-      { icon: '▦', color: 'var(--text-muted)', title: 'PETR.US', subtitle: 'Petrobras BDR · NYSE', value: 'US$ 14,82', valueColor: 'var(--text-body)' },
-    ],
-  },
-  {
-    query: 'Quem subiu hoje?',
-    results: [
-      { icon: '↑', color: brand.colors.positive, title: 'GOAU4', subtitle: 'Metalúrgica Gerdau', value: '+3,70%', valueColor: brand.colors.positive, highlight: true },
-      { icon: '↑', color: brand.colors.positive, title: 'GGBR4', subtitle: 'Gerdau PN', value: '+3,50%', valueColor: brand.colors.positive },
-      { icon: '↑', color: brand.colors.positive, title: 'PLPL3', subtitle: 'Plano & Plano', value: '+3,47%', valueColor: brand.colors.positive },
-    ],
-  },
-  {
-    query: 'Tesouro IPCA+ 2035',
-    results: [
-      { icon: '⊞', color: brand.colors.primary, title: 'Tesouro IPCA+ 2035', subtitle: 'Renda fixa · Atrelado à inflação', value: 'IPCA + 6,52%', valueColor: brand.colors.primary, highlight: true },
-      { icon: '⊞', color: brand.colors.primary, title: 'Tesouro IPCA+ 2029', subtitle: 'Renda fixa · Curto prazo', value: 'IPCA + 6,31%' },
-      { icon: '⊞', color: brand.colors.primary, title: 'Tesouro IPCA+ 2045', subtitle: 'Renda fixa · Longo prazo', value: 'IPCA + 6,68%' },
-    ],
-  },
-  {
-    query: 'Como diversificar carteira?',
-    results: [
-      { icon: '✦', color: brand.colors.primary, title: 'Pergunte à IA Redentia', subtitle: 'Resposta personalizada com sua carteira', value: 'Abrir →', valueColor: brand.colors.primary, highlight: true },
-      { icon: '📖', color: 'var(--text-muted)', title: 'Guia: Diversificação', subtitle: 'Conceito · 8 min de leitura' },
-      { icon: '🧮', color: 'var(--text-muted)', title: 'Calculadora de alocação', subtitle: 'Ferramenta · Distribua por classe' },
-    ],
-  },
-  {
-    query: 'Maiores dividendos',
-    results: [
-      { icon: '◑', color: brand.colors.positive, title: 'BBSE3', subtitle: 'BB Seguridade · DY 12 meses', value: '8,42%', valueColor: brand.colors.positive, highlight: true },
-      { icon: '◑', color: brand.colors.positive, title: 'TAEE11', subtitle: 'Taesa · Geração de energia', value: '7,98%', valueColor: brand.colors.positive },
-      { icon: '◑', color: brand.colors.positive, title: 'CMIG4', subtitle: 'Cemig · Energia elétrica', value: '7,64%', valueColor: brand.colors.positive },
-    ],
-  },
-])
-
-const qsActiveDemoIdx = ref(0)
-const qsCurrentDemo = computed<QsDemo>(() => qsDemos.value[qsActiveDemoIdx.value])
-let qsTimer: ReturnType<typeof setInterval> | null = null
-onMounted(() => {
-  qsTimer = setInterval(() => {
-    qsActiveDemoIdx.value = (qsActiveDemoIdx.value + 1) % qsDemos.value.length
-  }, 3200)
-})
-onBeforeUnmount(() => {
-  if (qsTimer) clearInterval(qsTimer)
-})
+// Chips de exemplo abaixo do dock — mostram variedade de queries que
+// a busca aceita (ticker, natural language, instrumento, conceito).
+// Clicar leva pra /search?q=… que abre os resultados completos.
+const qsExamples = [
+  { label: 'PETR4', query: 'PETR4' },
+  { label: 'Quem subiu hoje?', query: 'maiores altas' },
+  { label: 'Tesouro IPCA+', query: 'tesouro ipca' },
+  { label: 'Maiores dividendos', query: 'dividendos' },
+  { label: 'Como diversificar?', query: 'diversificar carteira' },
+]
 
 // Bento mini-tickers: dados REAIS via useAsyncData. 4 fetches paralelos
 // (details + 1mo history) por ticker, com fallback gracioso pra zero se
@@ -2485,33 +2417,29 @@ definePageMeta({
 </script>
 
 <style scoped>
-/* QuickSearch showcase ====================================================
-   - cursor blink ao lado da query mock
-   - results entry transition (fade + slide) na troca de demo */
-.qs-cursor {
-  display: inline-block;
-  width: 1px;
-  height: 14px;
-  margin-left: 2px;
-  vertical-align: middle;
-  animation: qs-cursor-blink 1s steps(2) infinite;
+/* Exemplo chips abaixo do QuickSearch dock na home.
+   Pill discreto, hover anima borda e cor pra brand-primary. */
+.qs-example-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-elevated);
+  color: var(--text-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: border-color 200ms ease, color 200ms ease,
+              background-color 200ms ease, transform 200ms ease;
 }
-@keyframes qs-cursor-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.qs-results-enter-active,
-.qs-results-leave-active {
-  transition: opacity 280ms ease, transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.qs-results-enter-from {
-  opacity: 0;
-  transform: translateY(6px);
-}
-.qs-results-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
+.qs-example-chip:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background-color: color-mix(in srgb, var(--brand-primary) 6%, var(--bg-elevated));
+  transform: translateY(-1px);
 }
 
 .carousel-container {

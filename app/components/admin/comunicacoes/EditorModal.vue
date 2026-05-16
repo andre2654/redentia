@@ -78,7 +78,7 @@
 
         <Field
           label="Corpo"
-          hint="Texto principal — 2 a 5 linhas funciona bem. Suporta listas, citação, headings 3/4 e formatação inline."
+          hint="Texto principal, 2 a 5 linhas funciona bem. Suporta listas, citação, headings 3/4 e formatação inline."
         >
           <AdminFormsRichTextField
             v-model="form.body"
@@ -146,7 +146,7 @@
         @toggle="open.cta = !open.cta"
       >
         <span class="section-lead">
-          Botão primário abaixo do corpo. Opcional — modais sem CTA viram avisos puros (só fecham).
+          Botão primário abaixo do corpo. Opcional, modais sem CTA viram avisos puros (só fecham).
         </span>
 
         <Field label="Link de destino" hint="URL absoluta ou path interno.">

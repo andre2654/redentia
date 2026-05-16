@@ -310,7 +310,7 @@ function parseBrl(s: string): number {
 
 function validate(): boolean {
   Object.keys(errors).forEach((k) => delete errors[k])
-  if (!form.name.trim()) errors.name = 'Dê um nome — ex: Aposentadoria 2050'
+  if (!form.name.trim()) errors.name = 'Dê um nome, ex: Aposentadoria 2050'
   const targetN = parseBrl(form.targetAmount)
   if (!targetN || targetN < 100) errors.targetAmount = 'Valor mínimo R$ 100'
   if (!form.targetDate) errors.targetDate = 'Escolha uma data'

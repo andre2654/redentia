@@ -128,7 +128,7 @@
           >
             <UInput
               v-model="form.title"
-              placeholder='Ex.: "Promoção MAX — Black Friday 2026"'
+              placeholder='Ex.: "Promoção MAX, Black Friday 2026"'
               size="md"
             />
           </Field>
@@ -150,7 +150,7 @@
 
           <Field
             label="Corpo"
-            hint="Texto secundário — 1-2 linhas funcionam melhor. Suporta listas, citação e formatação inline."
+            hint="Texto secundário, 1-2 linhas funcionam melhor. Suporta listas, citação e formatação inline."
           >
             <AdminFormsRichTextField
               v-model="form.body"
@@ -321,7 +321,7 @@
 
         <div v-if="!selectedPlacements.length" class="placement-multi-warn">
           <UIcon name="i-lucide-alert-triangle" class="size-3.5" />
-          Selecione pelo menos 1 lugar — sem placement, o CTA não aparece pra ninguém.
+          Selecione pelo menos 1 lugar, sem placement, o CTA não aparece pra ninguém.
         </div>
       </Section>
 
@@ -845,7 +845,7 @@ const placementGroups: PlacementGroup[] = [
   {
     label: 'Carteira & dashboard',
     items: [
-      { value: 'wallet-hero', label: 'Carteira — abaixo do hero', desc: '/wallet, abaixo do patrimônio', icon: 'i-lucide-wallet' },
+      { value: 'wallet-hero', label: 'Carteira, abaixo do hero', desc: '/wallet, abaixo do patrimônio', icon: 'i-lucide-wallet' },
       { value: 'help-prompt', label: 'Chat vazio', desc: '/help quando user abre sem mensagens', icon: 'i-lucide-message-circle' },
     ],
   },

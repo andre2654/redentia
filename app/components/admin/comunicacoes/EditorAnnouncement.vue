@@ -60,7 +60,7 @@
         <Field label="Título *" hint="Manchete do anúncio. Aparece em destaque no feed e nos previews.">
           <UInput
             v-model="form.title"
-            placeholder="Ex.: Lançamos o Raio-X v3 — análise mais profunda"
+            placeholder="Ex.: Lançamos o Raio-X v3, análise mais profunda"
             size="md"
             required
           />
@@ -104,7 +104,7 @@
       >
         <span class="section-lead">
           Anúncios podem aparecer no <strong>feed</strong> (lista colapsavel no topo da app) ou como <strong>modal</strong>
-          (overlay centralizado). Feed é o default — modal usa só pra anúncios mais importantes.
+          (overlay centralizado). Feed é o default, modal usa só pra anúncios mais importantes.
         </span>
 
         <div class="placement-grid">
@@ -144,7 +144,7 @@
         @toggle="open.cta = !open.cta"
       >
         <span class="section-lead">
-          Adicione um link clicável. No feed, vira "Ver mais →" — sem link, o item é apenas informativo.
+          Adicione um link clicável. No feed, vira "Ver mais →", sem link, o item é apenas informativo.
         </span>
 
         <Field label="Link de destino" hint="URL absoluta ou path interno. Detectamos automaticamente o tipo.">
@@ -1002,7 +1002,7 @@ const priorityPresets: PriorityPreset[] = [
   { value: 0, kind: 'low', label: 'Baixa', desc: 'Cede vez pra outros anúncios' },
   { value: 100, kind: 'medium', label: 'Média', desc: 'Default, fila normal' },
   { value: 500, kind: 'high', label: 'Alta', desc: 'Sobre quase todos os outros' },
-  { value: 1000, kind: 'urgent', label: 'Urgente', desc: 'Override total — usar com moderação' },
+  { value: 1000, kind: 'urgent', label: 'Urgente', desc: 'Override total, usar com moderação' },
 ]
 
 const priorityTier = computed<PriorityPreset>(() => {

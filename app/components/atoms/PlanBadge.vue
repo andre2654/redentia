@@ -60,7 +60,7 @@ const label = computed(() => {
 })
 
 const tooltip = computed(() => {
-  if (isTrial.value) return 'Trial em andamento — adicione cartão pra continuar'
+  if (isTrial.value) return 'Trial em andamento, adicione cartão pra continuar'
   return `Plano ${label.value}`
 })
 

@@ -138,7 +138,7 @@
         <!-- Fullscreen chart dialog -->
         <AtomsGraphFullscreenDialog
           ref="tesouroFullscreenRef"
-          :title="`${indexerLabel} — ${prettyName(data?.name ?? slug)}`"
+          :title="`${indexerLabel}, ${prettyName(data?.name ?? slug)}`"
           :subtitle="'Renda fixa · ' + formatMaturityLong(data?.maturity_date)"
           :is-positive="true"
         >
@@ -496,18 +496,18 @@ const interpretations = computed<string[]>(() => {
 
   if (idx === 'IPCA+' && rateNum !== null) {
     lines.push(
-      `Paga ${accent('IPCA + ' + rateNum.toFixed(2) + '%')} ao ano — garante retorno real acima da inflação oficial do Brasil até o vencimento.`,
+      `Paga ${accent('IPCA + ' + rateNum.toFixed(2) + '%')} ao ano, garante retorno real acima da inflação oficial do Brasil até o vencimento.`,
     )
     if (rateNum >= 7) {
-      lines.push(`Taxa real de ${pos(rateNum.toFixed(2) + '%')} está ${pos('acima da média histórica')} (~6%) — momento favorável pra travar retorno real alto.`)
+      lines.push(`Taxa real de ${pos(rateNum.toFixed(2) + '%')} está ${pos('acima da média histórica')} (~6%), momento favorável pra travar retorno real alto.`)
     }
   } else if (idx === 'PRÉ' && rateNum !== null) {
     lines.push(
-      `Taxa prefixada de ${accent(rateNum.toFixed(2) + '%')} ao ano — você sabe hoje exatamente quanto receberá no vencimento, mas perde se a inflação subir forte.`,
+      `Taxa prefixada de ${accent(rateNum.toFixed(2) + '%')} ao ano, você sabe hoje exatamente quanto receberá no vencimento, mas perde se a inflação subir forte.`,
     )
   } else if (idx === 'SELIC' && rateNum !== null) {
     lines.push(
-      `Rentabilidade acompanha a Selic (${d.reference_rate?.toFixed(2) ?? '—'}%) ${rateNum !== 0 ? accent(' + ' + rateNum.toFixed(2) + '%') : 'sem spread adicional'} — ideal pra reserva de emergência e investimentos de curto prazo.`,
+      `Rentabilidade acompanha a Selic (${d.reference_rate?.toFixed(2) ?? '—'}%) ${rateNum !== 0 ? accent(' + ' + rateNum.toFixed(2) + '%') : 'sem spread adicional'}, ideal pra reserva de emergência e investimentos de curto prazo.`,
     )
   }
 
@@ -519,7 +519,7 @@ const interpretations = computed<string[]>(() => {
     } else if (years >= 10) {
       lines.push(`Vencimento ${accent('médio a longo (' + years + ' anos)')} balanceia travamento de taxa com sensibilidade moderada à marcação a mercado.`)
     } else if (years >= 3) {
-      lines.push(`Vencimento ${accent('curto a médio (' + years + ' anos)')} — menor volatilidade de preço e boa opção pra metas de médio prazo.`)
+      lines.push(`Vencimento ${accent('curto a médio (' + years + ' anos)')}, menor volatilidade de preço e boa opção pra metas de médio prazo.`)
     }
   }
 

@@ -376,7 +376,7 @@ const toast = useToast()
 
 usePageSeo({
   title: `Planos | ${brand.name}`,
-  description: 'Pro e Max — comece com 7 dias grátis. Sem cartão pra começar, cancele quando quiser.',
+  description: 'Pro e Max, comece com 7 dias grátis. Sem cartão pra começar, cancele quando quiser.',
   path: '/pricing',
 })
 
@@ -393,7 +393,7 @@ const proPlan = computed(() => plans.value.find((p) => p.slug === 'pro') || null
 const faq = [
   {
     q: 'Posso cancelar quando quiser?',
-    a: 'Sim. Cancele direto pelo portal Stripe (em /settings/gerenciar-plano) ou no atendimento. Sua assinatura segue ativa até o fim do período já pago — sem multa, sem fidelidade.',
+    a: 'Sim. Cancele direto pelo portal Stripe (em /settings/gerenciar-plano) ou no atendimento. Sua assinatura segue ativa até o fim do período já pago, sem multa, sem fidelidade.',
   },
   {
     q: 'Como funciona o trial?',

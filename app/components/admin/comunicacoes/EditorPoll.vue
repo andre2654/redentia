@@ -239,7 +239,7 @@
               <span class="poll-results-toggle__label">Mostrar resultados após votar</span>
               <span class="poll-results-toggle__desc">
                 Quando ligado, o user vê o tally (% por opção) imediatamente após enviar o voto.
-                Quando desligado, o modal só agradece e fecha — admin vê via analytics.
+                Quando desligado, o modal só agradece e fecha, admin vê via analytics.
               </span>
             </div>
           </div>
@@ -801,11 +801,11 @@ const optionsValidation = computed<string | null>(() => {
   const opts = props.form.poll_options || []
   if (opts.length < 2) return 'Mínimo 2 opções pra enquete funcionar.'
   const empty = opts.filter((o) => !o.label || !o.label.trim()).length
-  if (empty > 0) return `${empty} ${empty === 1 ? 'opção sem texto' : 'opções sem texto'} — preencha antes de publicar.`
+  if (empty > 0) return `${empty} ${empty === 1 ? 'opção sem texto' : 'opções sem texto'}, preencha antes de publicar.`
   // Detecta duplicatas (case-insensitive)
   const labels = opts.map((o) => (o.label || '').trim().toLowerCase())
   const dupes = labels.filter((l, i) => l && labels.indexOf(l) !== i)
-  if (dupes.length) return 'Há opções duplicadas — use textos únicos pra cada uma.'
+  if (dupes.length) return 'Há opções duplicadas, use textos únicos pra cada uma.'
   return null
 })
 

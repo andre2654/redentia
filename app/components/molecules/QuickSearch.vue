@@ -32,11 +32,23 @@
     :class="{ 'quick-search-root--ready': mounted }"
     :style="{ paddingBottom: 'env(safe-area-inset-bottom)' }"
   >
+    <!-- Teleport docking: quando isDocked=true, o shell é fisicamente
+         movido pra dentro do <MoleculesQuickSearchDock />. Lá ele vira
+         filho do dock em document flow → scroll natural traciona ele
+         junto, sem rAF. FLIP animation (no watch abaixo) suaviza o
+         engage/disengage incluindo size change (translate + scale).
+         maxWidth dinâmico: 672px quando floating (presença maior),
+         448px quando docked (encaixa no slot do dock).
+         `body` é fallback no-op pro `:to` quando não tem dock ativo
+         (com :disabled=true, Vue ignora :to). -->
+    <Teleport :to="dockSelector" :disabled="!isDocked">
     <div
-      class="quick-search-shell w-full max-w-md pointer-events-auto"
+      ref="shellEl"
+      class="quick-search-shell w-full pointer-events-auto"
       :style="{
         '--qs-primary': 'var(--brand-primary)',
         '--qs-primary-soft': `var(--brand-primary)40`,
+        maxWidth: isDocked ? '448px' : '672px',
       } as any"
     >
       <!-- STAGED preview — when the user clicked a rotating suggestion in
@@ -516,12 +528,14 @@
         </kbd>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { IAsset } from '~/types/asset'
+import { setActiveDock, useQuickSearchDock } from '~/composables/useQuickSearchDock'
 
 interface SearchItem {
   id: string
@@ -556,6 +570,156 @@ const focusedKey = ref<string | null>(null)
 const isLoading = ref(false)
 const inputEl = ref<HTMLInputElement | null>(null)
 const rootEl = ref<HTMLElement | null>(null)
+const shellEl = ref<HTMLElement | null>(null)
+
+// ============================================================
+// DOCKING — pill é teleportado pra dentro do dock element quando o
+// dock entra no viewport. Vira filho dele em document flow → tracking
+// natural via scroll do navegador, sem rAF. FLIP animation (capture
+// rect → apply inverse transform → animate to identity) suaviza o
+// move do bottom flutuante até o dock e vice-versa.
+// threshold 0 + sem rootMargin: engaja assim que o dock encosta no
+// viewport (engage early, sem esperar o dock chegar na zona central).
+// ============================================================
+const { docks: registeredDocks } = useQuickSearchDock()
+
+// activeDockId = qual dock o pill deve docar AGORA. null = floating.
+const activeDockId = ref<string | null>(null)
+// isDocked: true quando ativamente docked + search panel fechado.
+// Painel aberto força disengage pra ter espaço pro panel expandir.
+const isDocked = computed(() => activeDockId.value != null && !open.value)
+// Sempre retorna um seletor válido — Vue Teleport valida `to` mesmo
+// quando `disabled=true` em algumas versões. `body` é no-op quando
+// disabled; quando enabled, vira o dock específico.
+const dockSelector = computed(() =>
+  activeDockId.value ? `[data-qs-dock-id="${activeDockId.value}"]` : 'body',
+)
+
+let dockIO: IntersectionObserver | null = null
+let dockResizeObs: ResizeObserver | null = null
+const visibleDockIds = new Set<string>()
+// FLIP: captura rect ANTES do Teleport mover o shell. Watcher abaixo
+// usa pra computar inverse transform e animar.
+let flipPrevRect: DOMRect | null = null
+
+function pickActiveDockId(): string | null {
+  if (visibleDockIds.size === 0) return null
+  return visibleDockIds.values().next().value as string
+}
+
+function observeAllDocks(): void {
+  if (!dockIO) return
+  for (const d of registeredDocks.value) {
+    if (d.el) dockIO.observe(d.el)
+  }
+}
+
+function setupDocking(): void {
+  // Respeita prefers-reduced-motion: desliga o docking inteiro.
+  if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    return
+  }
+
+  dockIO = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      // Matching por element reference (atributo data-qs-dock-id pode
+      // estar vazio no primeiro fire por timing de reatividade Vue).
+      const target = e.target as HTMLElement
+      const entry = registeredDocks.value.find(d => d.el === target)
+      if (!entry) continue
+      if (e.isIntersecting) visibleDockIds.add(entry.id)
+      else visibleDockIds.delete(entry.id)
+    }
+    const newActive = pickActiveDockId()
+    if (newActive !== activeDockId.value) {
+      activeDockId.value = newActive
+      // Sincroniza estado global da composable (pros docks reagirem).
+      setActiveDock(newActive, newActive ? 1 : 0)
+    }
+  }, {
+    // Engage SOON: dock só precisa começar a aparecer no viewport
+    // (threshold 0) pra acionar. Margin positivo no bottom expande
+    // virtualmente o viewport pra baixo → engage antecipa em 120px.
+    threshold: 0,
+    rootMargin: '0px 0px 120px 0px',
+  })
+
+  observeAllDocks()
+
+  window.addEventListener('resize', onWindowResize)
+  if (typeof ResizeObserver !== 'undefined') {
+    dockResizeObs = new ResizeObserver(() => {
+      // No-op: Teleport + document flow já cuida da posição.
+    })
+    dockResizeObs.observe(document.body)
+  }
+}
+
+function onWindowResize(): void {
+  // No-op: posição é totalmente delegada ao layout do navegador.
+}
+
+function teardownDocking(): void {
+  dockIO?.disconnect()
+  dockIO = null
+  visibleDockIds.clear()
+  dockResizeObs?.disconnect()
+  dockResizeObs = null
+  window.removeEventListener('resize', onWindowResize)
+  activeDockId.value = null
+  setActiveDock(null, 0)
+}
+
+// ============================================================
+// FLIP — animação suave entre as 2 posições do shell (fixed bottom
+// flutuante / docked dentro do dock). Inclui translate (Δpos) e
+// scale (Δtamanho) — shell maior no floating shrinka pro dock e
+// vice-versa, junto com o movimento. transform-origin top-left
+// pra translate + scale composarem sem deslocar a âncora.
+// Watcher dispara ANTES do re-render (flush: 'pre' default):
+// captura rect velho. Depois nextTick pro DOM reparentar +
+// maxWidth atualizar; captura rect novo. Aplica inverse, força
+// reflow, anima até identity.
+// ============================================================
+watch(isDocked, async () => {
+  if (!shellEl.value) return
+  // Rect ANTES do re-render (DOM ainda no estado antigo).
+  flipPrevRect = shellEl.value.getBoundingClientRect()
+  // Aguarda Vue aplicar mudança de Teleport + maxWidth.
+  await nextTick()
+  if (!shellEl.value || !flipPrevRect) return
+  const newRect = shellEl.value.getBoundingClientRect()
+  const dx = flipPrevRect.left - newRect.left
+  const dy = flipPrevRect.top - newRect.top
+  // Scale ratio: oldSize / newSize. > 1 quando vindo de tamanho maior
+  // (shrinking pro novo), < 1 quando vindo de menor (growing).
+  const sx = newRect.width > 0 ? flipPrevRect.width / newRect.width : 1
+  const sy = newRect.height > 0 ? flipPrevRect.height / newRect.height : 1
+  flipPrevRect = null
+  // Skip se nada significativo mudou (evita micro-jitter).
+  const negligiblePos = Math.abs(dx) < 1 && Math.abs(dy) < 1
+  const negligibleScale = Math.abs(sx - 1) < 0.01 && Math.abs(sy - 1) < 0.01
+  if (negligiblePos && negligibleScale) return
+  // Inverse transform instantâneo: shell aparece visualmente no estado
+  // anterior (posição + tamanho), sem flicker. transform-origin top-left
+  // garante que o scale não desloque a posição (default seria centro).
+  const el = shellEl.value
+  el.style.transition = 'none'
+  el.style.transformOrigin = 'top left'
+  el.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`
+  void el.offsetWidth // force reflow pra browser registrar o estado pre-anim
+  // Anima de volta pra identity → shell translata + escala simultaneamente.
+  el.style.transition = 'transform 460ms cubic-bezier(0.32, 0.72, 0, 1)'
+  el.style.transform = ''
+  // Limpa transition + transform-origin depois pra não interferir em
+  // outros usos do transform (ex.: search panel anims internas).
+  setTimeout(() => {
+    if (el && el.style.transition.includes('transform')) {
+      el.style.transition = ''
+      el.style.transformOrigin = ''
+    }
+  }, 480)
+})
 
 const placeholder = computed(() => {
   if (open.value) return 'Digite ticker ou nome…'
@@ -1396,6 +1560,9 @@ onMounted(() => {
   nextTick(() => {
     setTimeout(() => {
       mounted.value = true
+      // Docking só faz sentido depois que o pill terminou de aparecer
+      // (caso contrário, snapshotNativeRect mede num shell com opacity 0).
+      setupDocking()
     }, 50)
   })
   // Kick off rotation. Data may still be loading, in which case the pool
@@ -1411,7 +1578,24 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onGlobalKey)
   stopSuggestionRotation()
+  teardownDocking()
 })
+
+// Quando um dock é registrado/desregistrado (page change, conditional
+// mount), re-observa todos os docks atuais. IO vai disparar callbacks
+// iniciais pros novos elementos, populando visibleDockIds corretamente.
+// O watcher de isDocked já cuida da FLIP animation quando activeDockId
+// atualiza em consequência.
+watch(registeredDocks, () => {
+  if (!dockIO) return
+  dockIO.disconnect()
+  visibleDockIds.clear()
+  observeAllDocks()
+}, { deep: true })
+
+// Painel `open` mudou: a computed `isDocked` reage automaticamente
+// (porque depende de open.value). O watcher de isDocked acima dispara
+// o FLIP. Nada manual aqui.
 
 // Pause/resume rotation around the open state — no point cycling text
 // the user can't see while they're typing.

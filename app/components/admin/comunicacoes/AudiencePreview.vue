@@ -70,7 +70,7 @@
         <UIcon name="i-lucide-globe" class="size-5" />
         <div class="audience-preview__anon-text">
           <span class="audience-preview__anon-title">Visitantes anônimos</span>
-          <span class="audience-preview__anon-sub">Não rastreamos visitantes individualmente — toda vez que alguém acessa, o banner aparece.</span>
+          <span class="audience-preview__anon-sub">Não rastreamos visitantes individualmente, toda vez que alguém acessa, o banner aparece.</span>
         </div>
       </div>
 

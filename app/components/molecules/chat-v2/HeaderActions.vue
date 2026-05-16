@@ -17,7 +17,7 @@
             borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
             color: 'var(--brand-text-muted)',
           }"
-      :title="deepMode ? 'Desativar Redentia MAX' : 'Redentia MAX — análise rigorosa, multi-passo'"
+      :title="deepMode ? 'Desativar Redentia MAX' : 'Redentia MAX, análise rigorosa, multi-passo'"
       @click="$emit('toggle-deep')"
     >
       <UIcon name="i-lucide-sparkles" class="size-3" />

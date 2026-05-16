@@ -136,7 +136,7 @@ const insights = computed<Insight[]>(() => {
       out.push({
         icon: 'i-lucide-flame',
         title: `${best.hour}h é seu horário ouro`,
-        body: `Win rate de ${Math.round(best.winRate * 100)}% em ${best.count} operações. Padrão consistente — vale concentrar volume nessa janela.`,
+        body: `Win rate de ${Math.round(best.winRate * 100)}% em ${best.count} operações. Padrão consistente, vale concentrar volume nessa janela.`,
         tone: 'positive',
       })
     }
@@ -169,7 +169,7 @@ const insights = computed<Insight[]>(() => {
       out.push({
         icon: 'i-lucide-trophy',
         title: 'R:R assimétrico te sustenta',
-        body: `Win rate de ${Math.round(s.winRate * 100)}% mas R:R ${rr.toFixed(2).replace('.', ',')}:1. Estilo "deixar correr" funciona — mantenha disciplina nos stops.`,
+        body: `Win rate de ${Math.round(s.winRate * 100)}% mas R:R ${rr.toFixed(2).replace('.', ',')}:1. Estilo "deixar correr" funciona, mantenha disciplina nos stops.`,
         tone: 'positive',
       })
     }
@@ -185,7 +185,7 @@ const insights = computed<Insight[]>(() => {
     out.push({
       icon: 'i-lucide-check-circle',
       title: `Profit factor de ${s.profitFactor.toFixed(2).replace('.', ',')}`,
-      body: 'Sustentável em qualquer style. Continue rastreando consistência — a métrica mais confiável é estabilidade ao longo do tempo, não o número absoluto.',
+      body: 'Sustentável em qualquer style. Continue rastreando consistência, a métrica mais confiável é estabilidade ao longo do tempo, não o número absoluto.',
       tone: 'positive',
     })
   }

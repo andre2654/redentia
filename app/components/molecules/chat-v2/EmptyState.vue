@@ -119,7 +119,7 @@ const subtitle = computed(() => {
   }
   return (
     brand.ai?.chatSubtitle ??
-    'Cotações, fundamentos, dividendos, comparativos, planilhas — tudo em um só lugar.'
+    'Cotações, fundamentos, dividendos, comparativos, planilhas, tudo em um só lugar.'
   )
 })
 

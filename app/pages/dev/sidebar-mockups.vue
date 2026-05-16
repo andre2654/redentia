@@ -126,7 +126,7 @@
             class="text-[14px]"
             :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }"
           >
-            — {{ currentMockup.tagline }}
+            , {{ currentMockup.tagline }}
           </span>
         </div>
         <p
@@ -1078,7 +1078,7 @@ const mockups = [
     name: 'Mission Control',
     tagline: 'Sidebar como cockpit',
     description:
-      'Foca no patrimônio e no mercado em tempo real. Topo mostra um snapshot do seu patrimônio com sparkline, depois acesso rápido às ferramentas, depois a navegação categorizada, e o rodapé é uma faixa LIVE de mercado (IBOV, USD, SELIC). É a sidebar que mais "trabalha pra você" — abre o app e já vê estado.',
+      'Foca no patrimônio e no mercado em tempo real. Topo mostra um snapshot do seu patrimônio com sparkline, depois acesso rápido às ferramentas, depois a navegação categorizada, e o rodapé é uma faixa LIVE de mercado (IBOV, USD, SELIC). É a sidebar que mais "trabalha pra você", abre o app e já vê estado.',
     pros: [
       'Você vê seu patrimônio sem clicar em wallet',
       'Tickers do mercado vivem no rodapé sempre visíveis',
@@ -1087,7 +1087,7 @@ const mockups = [
     ],
     cons: [
       '280px de largura (20px a mais que padrão)',
-      'Mais "barulho visual" — não é minimal',
+      'Mais "barulho visual", não é minimal',
       'Snapshot precisa de WebSocket pra atualizar',
     ],
   },
@@ -1098,7 +1098,7 @@ const mockups = [
     description:
       'Navegação como biblioteca pessoal. "Sua biblioteca" agrupa carteira, watchlist, alertas, listas, calculadoras numa única lista filtrável (chips Tudo/Carteiras/Listas/Calculadoras). É a sidebar mais escaneável, com cada item mostrando tipo + metadata. Search bar grande no topo é o ponto de entrada principal.',
     pros: [
-      'Search ⌘K é o herói — encontra qualquer coisa rápido',
+      'Search ⌘K é o herói, encontra qualquer coisa rápido',
       'Filtros por chip deixam você focar em uma categoria',
       'Visual familiar (Spotify, Arc, Linear usam algo parecido)',
       'Cada item tem ícone colorido + metadata pra escanear',

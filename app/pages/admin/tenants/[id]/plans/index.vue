@@ -386,12 +386,12 @@ async function onToggleActive(plan: IPlan) {
 }
 
 async function onDelete(plan: IPlan) {
-  if (!confirm(`Deletar plano "${plan.name}"? Se houver assinantes, vai falhar — desative em vez de deletar.`)) return
+  if (!confirm(`Deletar plano "${plan.name}"? Se houver assinantes, vai falhar, desative em vez de deletar.`)) return
   try {
     await billing.deletePlan(tenantId.value, plan.id)
     await loadAll()
   } catch (err: any) {
-    toast.add({ title: 'Erro ao deletar', description: err?.data?.message ?? 'Plano tem assinantes — use desativar.', color: 'error' })
+    toast.add({ title: 'Erro ao deletar', description: err?.data?.message ?? 'Plano tem assinantes, use desativar.', color: 'error' })
   }
 }
 

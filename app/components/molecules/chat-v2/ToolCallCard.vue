@@ -197,7 +197,7 @@ const ariaLabel = computed(() => {
         ? 'concluído'
         : 'erro'
   const detail = argSummary.value ? ` (${argSummary.value})` : ''
-  return `${label.value}${detail} — ${status}`
+  return `${label.value}${detail}, ${status}`
 })
 
 const hoverLabel = computed(() => {

@@ -812,12 +812,12 @@ const INTENT_MAP: Record<string, IntentSpec> = {
   // already-imported carteira and only reruns the analysis pipeline.
   'analyze-portfolio': {
     prompt:
-      'Quero rodar análise completa da minha carteira agora — fazer o raio-x. Pega as posições já importadas, classifica os ativos, monta as 9 dimensões (concentração, qualidade, valuation, dividendos, geografia, macro, etc.), identifica forças e riscos principais, sugere ajustes prioritários e salva o snapshot.',
+      'Quero rodar análise completa da minha carteira agora, fazer o raio-x. Pega as posições já importadas, classifica os ativos, monta as 9 dimensões (concentração, qualidade, valuation, dividendos, geografia, macro, etc.), identifica forças e riscos principais, sugere ajustes prioritários e salva o snapshot.',
     tier: 'max',
   },
   'reanalyze-portfolio': {
     prompt:
-      'Reanalisar minha carteira agora — fazer raio-x novamente, atualizar análise. Pega o snapshot mais recente das posições, roda o pipeline com preços e dados atuais, salva por cima do snapshot anterior.',
+      'Reanalisar minha carteira agora, fazer raio-x novamente, atualizar análise. Pega o snapshot mais recente das posições, roda o pipeline com preços e dados atuais, salva por cima do snapshot anterior.',
     tier: 'max',
   },
   'portfolio-review': {
@@ -1092,7 +1092,7 @@ function onSelectAlertInline(alert: { id: string; ticker: string | null }) {
   void alertsState.markRead(alert.id)
   if (alert.ticker) {
     void chat.send(
-      `Vamos olhar de perto ${alert.ticker} — o alerta acabou de disparar. Análise rápida.`,
+      `Vamos olhar de perto ${alert.ticker}, o alerta acabou de disparar. Análise rápida.`,
     )
   }
 }

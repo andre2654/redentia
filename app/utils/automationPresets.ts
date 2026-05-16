@@ -468,7 +468,7 @@ const weeklyTreemap: AutomationPreset = {
   defaultCaption: `📊 Semana de {week.window.start} a {week.window.end} na B3 num só olhar.
 
 ↗ {week.leader.ticker} liderou as altas com {week.leader.change}
-↘ E teve muita coisa no vermelho — olha o lado direito
+↘ E teve muita coisa no vermelho, olha o lado direito
 
 Tamanho da célula = tamanho do movimento. Salva esse mapa antes da próxima abertura.
 
@@ -500,7 +500,7 @@ Qual ativo te surpreendeu aqui? 👇
 const textOnlyPost: AutomationPreset = {
   id: 'text-only',
   label: 'Post só texto',
-  description: 'Publicação puramente textual — sem imagem nem vídeo. Útil pra anúncios, novidades ou citações.',
+  description: 'Publicação puramente textual, sem imagem nem vídeo. Útil pra anúncios, novidades ou citações.',
   icon: 'i-lucide-message-square',
   type: 'scheduled_post',
   tone: 'neutral',

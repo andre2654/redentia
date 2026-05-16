@@ -304,7 +304,7 @@
             :title="opt.value === 'max' && maxIsBlocked
               ? `Limite MAX atingido. Próxima janela em ${maxTimeRemaining}.`
               : props.tierLocked && tier !== opt.value
-                ? 'Tier travado nesta conversa — abra uma Nova conversa para mudar'
+                ? 'Tier travado nesta conversa, abra uma Nova conversa para mudar'
                 : opt.tagline"
             @click="opt.value === 'max' && maxIsBlocked ? maxBlock.openModal() : onTierClick(opt.value)"
           >
@@ -406,7 +406,7 @@
         Redentia MAX · análise rigorosa · cada número validado
       </template>
       <template v-else>
-        Não é recomendação de investimento · A IA pode errar — confira informações sensíveis
+        Não é recomendação de investimento · A IA pode errar, confira informações sensíveis
       </template>
     </p>
   </div>

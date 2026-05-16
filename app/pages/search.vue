@@ -883,7 +883,7 @@
                   com buscas rápidas.
                 </p>
                 <p v-else class="text-sm" :style="{ color: brand.colors.textMuted }">
-                  Filtros de equity desabilitados — você está em modo {{ isTesouroMode ? 'Tesouro' : 'Cripto' }}.
+                  Filtros de equity desabilitados, você está em modo {{ isTesouroMode ? 'Tesouro' : 'Cripto' }}.
                 </p>
               </div>
 

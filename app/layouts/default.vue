@@ -272,8 +272,9 @@
           <AtomsSidebarGroup
             :label="brand.nav.wallet"
             icon="i-lucide-wallet"
-            :child-paths="['/wallet', '/wallet/resultado']"
+            :child-paths="['/wallet', '/wallet/hoje', '/wallet/resultado']"
           >
+            <AtomsSidebarButton to="/wallet/hoje" text="Hoje" is-sub-item />
             <AtomsSidebarButton to="/wallet" text="Visão geral" is-sub-item exact />
             <AtomsSidebarButton to="/wallet/resultado" text="Resultado" is-sub-item />
           </AtomsSidebarGroup>

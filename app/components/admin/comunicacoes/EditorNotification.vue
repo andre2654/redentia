@@ -106,7 +106,7 @@
       >
         <span class="section-lead">
           Quando o user clica no item da notificação, ele é levado pra essa URL.
-          Opcional — sem URL, o item só serve pra avisar.
+          Opcional, sem URL, o item só serve pra avisar.
         </span>
 
         <Field label="Link de destino" hint="URL absoluta ou path interno.">
@@ -158,7 +158,7 @@
         @toggle="open.audience = !open.audience"
       >
         <span class="section-lead">
-          Notificações são úteis pra <strong>avisos pessoais</strong> — em geral vão pra
+          Notificações são úteis pra <strong>avisos pessoais</strong>, em geral vão pra
           lista específica de usuários ou pra um filtro estreito (investidores ativos, etc).
         </span>
 

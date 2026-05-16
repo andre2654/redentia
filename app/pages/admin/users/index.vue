@@ -44,7 +44,7 @@
           <span
             v-if="stats && (stats.aum ?? 0) > 0"
             class="admin-stat admin-stat--positive"
-            title="Assets Under Management — soma de todas as carteiras"
+            title="Assets Under Management, soma de todas as carteiras"
           >
             <UIcon name="i-lucide-landmark" class="size-3" />
             <span class="admin-stat__value">{{ formatBRL(stats.aum ?? 0) }}</span>

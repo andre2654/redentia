@@ -544,31 +544,31 @@ const interpretations = computed<string[]>(() => {
 
   const ev = e.valuation.ev_ebitda
   if (ev != null) {
-    if (ev < 5) lines.push(`EV/EBITDA de ${accent(formatRatio(ev))} indica múltiplo ${pos('comprimido')} — mercado precifica abaixo da média histórica ou há desconto por risco setorial.`)
+    if (ev < 5) lines.push(`EV/EBITDA de ${accent(formatRatio(ev))} indica múltiplo ${pos('comprimido')}, mercado precifica abaixo da média histórica ou há desconto por risco setorial.`)
     else if (ev < 10) lines.push(`EV/EBITDA de ${accent(formatRatio(ev))} em patamar neutro, próximo da média histórica do mercado brasileiro.`)
-    else lines.push(`EV/EBITDA de ${accent(formatRatio(ev))} indica múltiplo ${neg('esticado')} — o preço já embute expectativas altas de crescimento.`)
+    else lines.push(`EV/EBITDA de ${accent(formatRatio(ev))} indica múltiplo ${neg('esticado')}, o preço já embute expectativas altas de crescimento.`)
   }
 
   const de = e.leverage.net_debt_to_ebitda
   if (de != null) {
-    if (de < 1.5) lines.push(`Dívida líquida em ${pos(formatRatio(de) + 'x EBITDA')} — alavancagem saudável, empresa quita o endividamento líquido em menos de 2 anos de geração de caixa operacional.`)
-    else if (de < 3) lines.push(`Dívida líquida em ${accent(formatRatio(de) + 'x EBITDA')} — alavancagem moderada, dentro do aceitável pro setor.`)
-    else lines.push(`Dívida líquida em ${neg(formatRatio(de) + 'x EBITDA')} — alavancagem elevada, o serviço da dívida consome parcela significativa do caixa operacional.`)
+    if (de < 1.5) lines.push(`Dívida líquida em ${pos(formatRatio(de) + 'x EBITDA')}, alavancagem saudável, empresa quita o endividamento líquido em menos de 2 anos de geração de caixa operacional.`)
+    else if (de < 3) lines.push(`Dívida líquida em ${accent(formatRatio(de) + 'x EBITDA')}, alavancagem moderada, dentro do aceitável pro setor.`)
+    else lines.push(`Dívida líquida em ${neg(formatRatio(de) + 'x EBITDA')}, alavancagem elevada, o serviço da dívida consome parcela significativa do caixa operacional.`)
   }
 
   const rg = e.growth.revenue_cagr_5y
   const eg = e.growth.earnings_cagr_5y
   if (rg != null && eg != null) {
-    if (eg > rg + 3) lines.push(`Lucro cresce ${pos(formatPercent(eg))} ao ano contra ${accent(formatPercent(rg))} na receita — ${pos('expansão real de margem')}, sinal de ganhos de escala ou eficiência operacional.`)
-    else if (rg > eg + 3) lines.push(`Receita cresce ${accent(formatPercent(rg))} mas lucro só ${neg(formatPercent(eg))} — ${neg('compressão de margem')}, custos subindo mais rápido que faturamento.`)
-    else lines.push(`Receita e lucro crescem em ritmo similar (${accent(formatPercent(rg))} vs ${accent(formatPercent(eg))}) — margens estáveis ao longo dos últimos 5 anos.`)
+    if (eg > rg + 3) lines.push(`Lucro cresce ${pos(formatPercent(eg))} ao ano contra ${accent(formatPercent(rg))} na receita, ${pos('expansão real de margem')}, sinal de ganhos de escala ou eficiência operacional.`)
+    else if (rg > eg + 3) lines.push(`Receita cresce ${accent(formatPercent(rg))} mas lucro só ${neg(formatPercent(eg))}, ${neg('compressão de margem')}, custos subindo mais rápido que faturamento.`)
+    else lines.push(`Receita e lucro crescem em ritmo similar (${accent(formatPercent(rg))} vs ${accent(formatPercent(eg))}), margens estáveis ao longo dos últimos 5 anos.`)
   }
 
   const roic = e.quality.return_on_invested_capital
   if (roic != null) {
-    if (roic > 15) lines.push(`ROIC de ${pos(formatPercent(roic))} é excelente — cada real investido gera retorno muito acima do custo de capital típico (~10%).`)
+    if (roic > 15) lines.push(`ROIC de ${pos(formatPercent(roic))} é excelente, cada real investido gera retorno muito acima do custo de capital típico (~10%).`)
     else if (roic > 8) lines.push(`ROIC de ${accent(formatPercent(roic))} em patamar razoável, indicando que a empresa cria valor acima do custo de capital.`)
-    else lines.push(`ROIC de ${neg(formatPercent(roic))} está ${neg('abaixo')} do custo de capital médio — capital alocado não está gerando retorno suficiente.`)
+    else lines.push(`ROIC de ${neg(formatPercent(roic))} está ${neg('abaixo')} do custo de capital médio, capital alocado não está gerando retorno suficiente.`)
   }
 
   const gov = governanceLabel.value

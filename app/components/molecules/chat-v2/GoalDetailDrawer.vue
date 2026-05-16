@@ -421,8 +421,8 @@ const cagrEmphasis = computed<'positive' | 'warning' | 'negative' | undefined>((
 
 const requiredHint = computed(() => {
   if (requiredCagr.value == null) return undefined
-  if (cagrEmphasis.value === 'positive') return 'Abaixo do realista — folga'
-  if (cagrEmphasis.value === 'warning') return 'Acima do realista — atenção'
+  if (cagrEmphasis.value === 'positive') return 'Abaixo do realista, folga'
+  if (cagrEmphasis.value === 'warning') return 'Acima do realista, atenção'
   if (cagrEmphasis.value === 'negative') return 'Muito acima do realista'
   return undefined
 })

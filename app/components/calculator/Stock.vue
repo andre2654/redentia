@@ -105,7 +105,7 @@
       <CalcUiCard
         v-for="result in stockResults"
         :key="result.ticker"
-        :title="`Resultado — ${result.ticker}`"
+        :title="`Resultado, ${result.ticker}`"
         icon="i-lucide-bar-chart-3"
         heading-tag="h3"
       >

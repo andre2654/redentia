@@ -145,7 +145,7 @@
         <!-- Fullscreen chart dialog -->
         <AtomsGraphFullscreenDialog
           ref="assetFullscreenRef"
-          :title="`${tickerUpper} — ${asset?.name || assetName}`"
+          :title="`${tickerUpper}, ${asset?.name || assetName}`"
           :subtitle="asset?.sector || 'Ações B3'"
           :change-label="`${isPositive ? '+' : ''}${Number(asset?.change_percent || 0).toFixed(2)}%`"
           :is-positive="isPositive"

@@ -51,10 +51,10 @@
         </h1>
         <p class="calc-lead">
           <template v-if="loading">
-            Sincronizando seus ativos via Open Finance. Análise IA, Raio-X em 9 dimensões e curva comparada com IBOV — tudo num único painel editorial.
+            Sincronizando seus ativos via Open Finance. Análise IA, Raio-X em 9 dimensões e curva comparada com IBOV, tudo num único painel editorial.
           </template>
           <template v-else>
-            {{ positions.length }} ativos sincronizados via Open Finance. Análise IA, Raio-X em 9 dimensões e curva comparada com IBOV — tudo num único painel editorial.
+            {{ positions.length }} ativos sincronizados via Open Finance. Análise IA, Raio-X em 9 dimensões e curva comparada com IBOV, tudo num único painel editorial.
           </template>
         </p>
         <ul class="calc-chips">

@@ -862,7 +862,7 @@ const placementOptionsForType = computed(() => {
   }
   if (form.type === 'cta') {
     return [
-      { value: 'wallet-hero', label: 'Wallet — abaixo do hero', desc: 'Card contextual na carteira' },
+      { value: 'wallet-hero', label: 'Wallet, abaixo do hero', desc: 'Card contextual na carteira' },
       { value: 'help-prompt', label: 'Chat vazio', desc: 'Quando o user abre o chat sem mensagens' },
       { value: 'home-cta', label: 'Home pública', desc: 'Em destaque na home' },
     ]

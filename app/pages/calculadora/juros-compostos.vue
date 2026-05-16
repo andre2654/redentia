@@ -817,12 +817,12 @@ const popularScenarios = [
   { label: 'R$ 2.000/mês por 15 anos', sub: 'Acelerado', icon: 'i-lucide-rocket', to: '/calculadora/juros-compostos?initial=0&monthly=2000&rate=10.5&years=15' },
   { label: 'R$ 10.000 inicial + R$ 500/mês', sub: 'Com capital inicial', icon: 'i-lucide-piggy-bank', to: '/calculadora/juros-compostos?initial=10000&monthly=500&rate=10.5&years=20' },
   { label: 'R$ 50.000 inicial sem aporte', sub: 'Renda passiva', icon: 'i-lucide-wallet', to: '/calculadora/juros-compostos?initial=50000&monthly=0&rate=10.5&years=20' },
-  { label: 'Aposentadoria — R$ 1.000/mês 35 anos', sub: 'Começando aos 30', icon: 'i-lucide-armchair', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=10.5&years=35' },
+  { label: 'Aposentadoria, R$ 1.000/mês 35 anos', sub: 'Começando aos 30', icon: 'i-lucide-armchair', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=10.5&years=35' },
   { label: '1 milhão em 20 anos', sub: 'Quanto investir por mês', icon: 'i-lucide-trophy', to: '/calculadora/juros-compostos?initial=0&monthly=1300&rate=10.5&years=20' },
-  { label: 'Tesouro Selic — R$ 500/mês', sub: 'Taxa ~12% a.a.', icon: 'i-lucide-shield-check', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=12&years=20' },
+  { label: 'Tesouro Selic, R$ 500/mês', sub: 'Taxa ~12% a.a.', icon: 'i-lucide-shield-check', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=12&years=20' },
   { label: 'Reserva de emergência', sub: 'R$ 300/mês por 2 anos', icon: 'i-lucide-life-buoy', to: '/calculadora/juros-compostos?initial=0&monthly=300&rate=12&years=2' },
-  { label: 'CDB 110% CDI — R$ 1.000/mês', sub: 'Taxa ~13% a.a.', icon: 'i-lucide-landmark', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=13&years=10' },
-  { label: 'Bolsa B3 — R$ 500/mês', sub: 'Taxa histórica ~14% a.a.', icon: 'i-lucide-bar-chart-3', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=14&years=20' },
+  { label: 'CDB 110% CDI, R$ 1.000/mês', sub: 'Taxa ~13% a.a.', icon: 'i-lucide-landmark', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=13&years=10' },
+  { label: 'Bolsa B3, R$ 500/mês', sub: 'Taxa histórica ~14% a.a.', icon: 'i-lucide-bar-chart-3', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=14&years=20' },
 ] as const
 
 // FAQs duplicados aqui pra manter a fonte unica entre o HTML

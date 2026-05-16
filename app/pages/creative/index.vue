@@ -383,7 +383,7 @@ definePageMeta({
 usePageSeo({
   title: 'Redentia Creative: Templates de Posts sobre Ações para Redes Sociais',
   description:
-    'Templates prontos para Instagram, Twitter e LinkedIn com dados reais da B3 — growth races, rankings, spotlights de ativos e notificações. Tire print, customize e poste. 20+ formatos em 1080×1080 grátis.',
+    'Templates prontos para Instagram, Twitter e LinkedIn com dados reais da B3, growth races, rankings, spotlights de ativos e notificações. Tire print, customize e poste. 20+ formatos em 1080×1080 grátis.',
   path: '/creative',
   breadcrumbs: [
     { name: 'Início', path: '/' },
@@ -393,7 +393,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: 'Redentia Creative — Templates para redes sociais',
+      name: 'Redentia Creative, Templates para redes sociais',
       description:
         'Templates prontos com dados do mercado brasileiro para Instagram, LinkedIn e Twitter.',
       about: [

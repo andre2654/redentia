@@ -22,7 +22,7 @@
           <span class="eyebrow">Engajamento</span>
           <h1 class="display-h1">Comunicações</h1>
           <p class="lead">
-            Gerencie banners, comunicados, CTAs, modais, enquetes e emails — todos os pontos de contato com o usuário num único lugar.
+            Gerencie banners, comunicados, CTAs, modais, enquetes e emails, todos os pontos de contato com o usuário num único lugar.
           </p>
         </div>
         <NuxtLink to="/admin/comunicacoes/new" class="primary-cta">

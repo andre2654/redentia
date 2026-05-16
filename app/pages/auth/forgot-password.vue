@@ -145,7 +145,7 @@
           </AtomsButton>
 
           <div v-if="sent" class="border p-4 font-editorial-body text-[12px] italic" :style="{ borderColor: `${brand.colors.positive}66`, color: brand.colors.text, backgroundColor: `${brand.colors.positive}10` }">
-            Sua correspondência seguiu. Verifique a caixa de entrada — o link expira em 60 minutos.
+            Sua correspondência seguiu. Verifique a caixa de entrada, o link expira em 60 minutos.
           </div>
 
           <hr class="dashed-rule" />

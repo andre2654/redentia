@@ -932,7 +932,7 @@ const rankingItems = computed(() => {
 
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '01 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '01 / 05' }}</div>
         </div>
 
         <div class="amber-min-center">
@@ -990,7 +990,7 @@ const rankingItems = computed(() => {
 
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">02 — 05</div>
+          <div class="amber-min-pager">02 / 05</div>
         </div>
 
         <div class="amber-min-split">
@@ -1051,7 +1051,7 @@ const rankingItems = computed(() => {
 
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">03 — 05</div>
+          <div class="amber-min-pager">03 / 05</div>
         </div>
 
         <div class="amber-min-center amber-min-center-tight">
@@ -1112,7 +1112,7 @@ const rankingItems = computed(() => {
 
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">04 — 05</div>
+          <div class="amber-min-pager">04 / 05</div>
         </div>
 
         <div class="amber-min-center amber-min-center-tight">
@@ -1154,7 +1154,7 @@ const rankingItems = computed(() => {
 
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '05 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '05 / 05' }}</div>
         </div>
 
         <div class="amber-cta-c">
@@ -1195,7 +1195,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-stat'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '02 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '02 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-tight">
           <div class="amber-min-eyebrow">{{ eyebrow || 'NÚMERO' }}</div>
@@ -1219,7 +1219,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-list'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '03 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '03 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-tight">
           <div class="amber-min-eyebrow">{{ eyebrow || 'ITENS' }}</div>
@@ -1248,7 +1248,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-steps'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '03 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '03 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-tight">
           <div class="amber-min-eyebrow">{{ eyebrow || 'PASSO A PASSO' }}</div>
@@ -1274,7 +1274,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-compare'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '04 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '04 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-tight">
           <div class="amber-min-eyebrow">{{ eyebrow || 'ANTES / DEPOIS' }}</div>
@@ -1308,7 +1308,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-quote'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '02 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '02 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-quote">
           <div class="amber-min-eyebrow">{{ eyebrow || 'CITAÇÃO' }}</div>
@@ -1478,7 +1478,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-embed-grid'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '02 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '02 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-tight">
           <div class="amber-min-eyebrow">{{ eyebrow || 'EMBED STUDIO' }}</div>
@@ -1529,7 +1529,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'redentia-embed-showcase'" class="body amber-body amber-cover-min">
         <div class="amber-min-top">
           <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
-          <div class="amber-min-pager">{{ pager || '03 — 05' }}</div>
+          <div class="amber-min-pager">{{ pager || '03 / 05' }}</div>
         </div>
         <div class="amber-min-center amber-min-center-tight">
           <div class="amber-min-eyebrow">{{ eyebrow || 'WIDGET' }}</div>

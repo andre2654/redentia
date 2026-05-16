@@ -62,7 +62,7 @@
               <UIcon name="i-lucide-bell-ring" class="size-5" />
             </div>
             <h3>Alertas em tempo real</h3>
-            <p>Avisamos quando algo na sua watchlist mexe — antes de você abrir o app.</p>
+            <p>Avisamos quando algo na sua watchlist mexe, antes de você abrir o app.</p>
           </li>
           <li class="cancel-recap__item">
             <div class="cancel-recap__icon" :style="{ color: 'var(--brand-primary)' }">

@@ -31,7 +31,7 @@
         type="button"
         class="hover-stack-avatar group relative flex size-8 shrink-0 items-center justify-center rounded-full transition-[transform,box-shadow] duration-200"
         :style="avatarStyle(g.status, i, expandedIdx === i)"
-        :aria-label="`${g.family.label} (${g.count}) — ${statusLabel(g.status)}`"
+        :aria-label="`${g.family.label} (${g.count}), ${statusLabel(g.status)}`"
         @mouseenter="hoverIdx = i"
         @mouseleave="hoverIdx = null"
         @click="toggleExpanded(i)"

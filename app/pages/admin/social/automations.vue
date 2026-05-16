@@ -278,7 +278,7 @@
                   maxlength="160"
                   class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
                   :style="{ borderColor: C.border, color: C.text }"
-                  placeholder="Ex: Ranking diário das altas — 18h"
+                  placeholder="Ex: Ranking diário das altas, 18h"
                 />
                 <span class="font-mono-tab text-[10px]" :style="{ color: C.textMuted }">
                   Só aparece pra você nessa lista. O chip gerado pro banco é <code>{{ draft.key || '—' }}</code>.

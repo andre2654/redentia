@@ -34,18 +34,18 @@
             class="dt-week__legend-dot"
             :style="{ backgroundColor: brand.colors.positive }"
           />
-          <span class="dt-week__legend-label">Verde — sessões positivas</span>
+          <span class="dt-week__legend-label">Verde, sessões positivas</span>
         </div>
         <div class="dt-week__legend-row">
           <span
             class="dt-week__legend-dot"
             :style="{ backgroundColor: brand.colors.negative }"
           />
-          <span class="dt-week__legend-label">Vermelho — sessões negativas</span>
+          <span class="dt-week__legend-label">Vermelho, sessões negativas</span>
         </div>
         <div class="dt-week__legend-row">
           <span class="dt-week__legend-square dt-week__legend-square--small" />
-          <span class="dt-week__legend-label">Tamanho — frequência</span>
+          <span class="dt-week__legend-label">Tamanho, frequência</span>
         </div>
       </div>
     </header>

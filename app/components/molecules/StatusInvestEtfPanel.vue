@@ -203,9 +203,9 @@ const interpretations = computed<string[]>(() => {
   const neg = (t: string) => `<strong style="color: ${brand.colors.negative}">${t}</strong>`
 
   if (e.change_12m !== null) {
-    if (e.change_12m >= 15) lines.push(`Valorização ${pos(formatPercent(e.change_12m))} em 12 meses — retorno forte e acima do CDI no período.`)
-    else if (e.change_12m >= 0) lines.push(`Variação de ${accent(formatPercent(e.change_12m))} em 12 meses — retorno positivo, mas vale comparar com o CDI/IPCA do período.`)
-    else lines.push(`Queda de ${neg(formatPercent(e.change_12m))} em 12 meses — momento desafiador para o índice que o ETF replica.`)
+    if (e.change_12m >= 15) lines.push(`Valorização ${pos(formatPercent(e.change_12m))} em 12 meses, retorno forte e acima do CDI no período.`)
+    else if (e.change_12m >= 0) lines.push(`Variação de ${accent(formatPercent(e.change_12m))} em 12 meses, retorno positivo, mas vale comparar com o CDI/IPCA do período.`)
+    else lines.push(`Queda de ${neg(formatPercent(e.change_12m))} em 12 meses, momento desafiador para o índice que o ETF replica.`)
   }
 
   if (e.num_shareholders !== null) {
@@ -214,15 +214,15 @@ const interpretations = computed<string[]>(() => {
     else if (e.num_shareholders >= 10_000)
       lines.push(`Com ${accent(formatInteger(e.num_shareholders) + ' cotistas')}, a liquidez é ${accent('adequada')} para investidores individuais.`)
     else
-      lines.push(`Com ${neg(formatInteger(e.num_shareholders) + ' cotistas')}, a liquidez pode ser ${neg('limitada')} — confira o spread antes de entrar/sair de posições grandes.`)
+      lines.push(`Com ${neg(formatInteger(e.num_shareholders) + ' cotistas')}, a liquidez pode ser ${neg('limitada')}, confira o spread antes de entrar/sair de posições grandes.`)
   }
 
   if (e.book_name) {
-    lines.push(`Administrado por ${accent(e.book_name)} — avalie o histórico da gestora e a taxa de administração no prospecto do fundo.`)
+    lines.push(`Administrado por ${accent(e.book_name)}, avalie o histórico da gestora e a taxa de administração no prospecto do fundo.`)
   }
 
   lines.push(
-    `ETFs replicam índices a custo baixo — ideal para diversificação em larga escala. ${pos('Tributação')}: IR de 15% sobre o ganho em venda, ${pos('sem isenção')} de R$ 20 mil mensais como ações.`,
+    `ETFs replicam índices a custo baixo, ideal para diversificação em larga escala. ${pos('Tributação')}: IR de 15% sobre o ganho em venda, ${pos('sem isenção')} de R$ 20 mil mensais como ações.`,
   )
 
   return lines

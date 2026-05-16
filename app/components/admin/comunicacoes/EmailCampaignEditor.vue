@@ -159,7 +159,7 @@
       >
         <span class="section-lead">
           Define quem recebe a campanha. Cada camada refina o conjunto.
-          Email só vai pra users <strong>autenticados com email cadastrado</strong> — visitantes nunca recebem.
+          Email só vai pra users <strong>autenticados com email cadastrado</strong>, visitantes nunca recebem.
         </span>
 
         <div class="aud-layer">
@@ -411,7 +411,7 @@
         @toggle="open.send = !open.send"
       >
         <span class="section-lead">
-          Email é <strong>one-shot</strong> — uma vez disparado, não pode voltar atrás.
+          Email é <strong>one-shot</strong>, uma vez disparado, não pode voltar atrás.
           Use "Enviar teste" antes pra validar o conteúdo na sua própria inbox.
         </span>
 
@@ -824,7 +824,7 @@ const campaignSubtitle = computed(() => {
   if (campaignState.value === 'sending') return `${stats.value?.queued ?? 0} na fila · ${stats.value?.sent ?? 0} entregues`
   if (campaignState.value === 'failed') return `${stats.value?.failed} falhas detectadas`
   if (campaignState.value === 'scheduled') return `Programado pra ${formatDateTime(props.form.starts_at)}`
-  return 'Rascunho — pronto pra disparar quando estiver bom'
+  return 'Rascunho, pronto pra disparar quando estiver bom'
 })
 
 // =================================================================

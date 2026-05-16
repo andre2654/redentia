@@ -102,9 +102,9 @@ const status = computed(() => ent.subscriptionStatus())
 
 const statusLabel = computed(() => {
   switch (status.value) {
-    case 'trialing': return 'Em trial — adicione um cartão pra continuar quando o período acabar.'
+    case 'trialing': return 'Em trial, adicione um cartão pra continuar quando o período acabar.'
     case 'active': return 'Ativa.'
-    case 'past_due': return 'Pagamento pendente — atualize o cartão.'
+    case 'past_due': return 'Pagamento pendente, atualize o cartão.'
     case 'canceled': return 'Cancelada.'
     case 'incomplete': return 'Pagamento incompleto.'
     default: return ''

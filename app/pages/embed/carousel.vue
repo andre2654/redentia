@@ -90,7 +90,7 @@ if (!isWidgetMode.value) {
     v-else
     breadcrumb="Carrossel"
     hero-title="Carrossel de Cotações da B3"
-    hero-description="Barra horizontal com múltiplos tickers atualizados em tempo real. Escolha até 20 ativos — ações, FIIs, ETFs ou combinações. Perfeito pra dashboards e headers de sites de conteúdo financeiro."
+    hero-description="Barra horizontal com múltiplos tickers atualizados em tempo real. Escolha até 20 ativos, ações, FIIs, ETFs ou combinações. Perfeito pra dashboards e headers de sites de conteúdo financeiro."
     eyebrow-suffix="MÚLTIPLOS TICKERS"
   >
       <div class="grid gap-8 md:grid-cols-5">

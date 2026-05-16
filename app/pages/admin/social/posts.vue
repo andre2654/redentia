@@ -17,7 +17,7 @@
           <h1 class="admin-page__title">Composer, contas e agendamento.</h1>
           <p class="admin-page__lead">
             Composição e agendamento de posts avulsos vivem no Postiz, nosso motor self-hosted.
-            Conecte uma vez, agende daqui — automações recorrentes usam a API por baixo.
+            Conecte uma vez, agende daqui, automações recorrentes usam a API por baixo.
           </p>
         </div>
       </header>

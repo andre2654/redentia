@@ -59,7 +59,7 @@
         :open="open.message"
         @toggle="open.message = !open.message"
       >
-        <Field label="Título *" hint="Aparece em destaque. Mantenha curto — ideal até 60 caracteres.">
+        <Field label="Título *" hint="Aparece em destaque. Mantenha curto, ideal até 60 caracteres.">
           <UInput
             v-model="form.title"
             placeholder="Ex.: Manutenção programada das 02:00 às 04:00"
@@ -867,9 +867,9 @@ const labelState = computed<LabelState>(() => {
 const labelStateMeta = computed(() => {
   const map: Record<LabelState, { icon: string; text: string }> = {
     idle: { icon: 'i-lucide-info', text: '' },
-    optimal: { icon: 'i-lucide-check-circle-2', text: 'Tamanho ideal — converte bem.' },
+    optimal: { icon: 'i-lucide-check-circle-2', text: 'Tamanho ideal, converte bem.' },
     long: { icon: 'i-lucide-alert-triangle', text: 'Pode encurtar pra ter mais impacto.' },
-    'too-long': { icon: 'i-lucide-alert-circle', text: 'Muito longo. Banner é faixa estreita — vai quebrar.' },
+    'too-long': { icon: 'i-lucide-alert-circle', text: 'Muito longo. Banner é faixa estreita, vai quebrar.' },
   }
   return map[labelState.value]
 })
@@ -1227,7 +1227,7 @@ const priorityPresets: PriorityPreset[] = [
   { value: 0, kind: 'low', label: 'Baixa', desc: 'Cede vez pra outros banners' },
   { value: 100, kind: 'medium', label: 'Média', desc: 'Default, fila normal' },
   { value: 500, kind: 'high', label: 'Alta', desc: 'Sobre quase todos os outros' },
-  { value: 1000, kind: 'urgent', label: 'Urgente', desc: 'Override total — usar com moderação' },
+  { value: 1000, kind: 'urgent', label: 'Urgente', desc: 'Override total, usar com moderação' },
 ]
 
 const priorityTier = computed<PriorityPreset>(() => {

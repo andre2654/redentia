@@ -72,7 +72,7 @@
             :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
           >Isenção total de imposto de renda</h3>
           <p :style="bodyStyle">
-            Dividendos de ações e FIIs são <span :style="strongStyle">100% isentos de IR</span> para pessoa física no Brasil. Todo valor que cair na conta é seu inteiro — vantagem grande pra construir renda passiva.
+            Dividendos de ações e FIIs são <span :style="strongStyle">100% isentos de IR</span> para pessoa física no Brasil. Todo valor que cair na conta é seu inteiro, vantagem grande pra construir renda passiva.
           </p>
         </article>
       </section>
@@ -136,7 +136,7 @@
         <p :style="bodyStyle" class="max-w-3xl">
           O Dividend Yield (DY) é o percentual recebido em dividendos no
           ano, em relação ao preço atual da ação. Quanto maior o DY,
-          maior a renda relativa — mas alto demais costuma ser sinal de
+          maior a renda relativa, mas alto demais costuma ser sinal de
           preço caindo, não de generosidade.
         </p>
 
@@ -173,7 +173,7 @@
       <section class="flex flex-col gap-6">
         <SectionHeading :brand="brand" eyebrow="04 · Setores" title="Onde os dividendos vivem" />
         <p :style="bodyStyle" class="max-w-3xl">
-          Setores tradicionalmente pagadores no Brasil — cada um com perfil de risco e DY característicos.
+          Setores tradicionalmente pagadores no Brasil, cada um com perfil de risco e DY característicos.
         </p>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
           <article
@@ -609,7 +609,7 @@ const proventoTypes = [
     def: 'Distribuição de lucros em dinheiro. Isento de IR para pessoa física.',
   },
   {
-    term: 'JCP — Juros sobre Capital Próprio',
+    term: 'JCP, Juros sobre Capital Próprio',
     def: 'Tributado em 15% na fonte, mas vantajoso pra empresa por ser dedutível do imposto sobre lucros.',
   },
   {
@@ -636,7 +636,7 @@ const strategySteps = [
   },
   {
     title: 'Defina o dividend yield alvo',
-    body: 'Use uma média realista pra carteira inteira — 6 a 9% é razoável misturando ações e FIIs.',
+    body: 'Use uma média realista pra carteira inteira, 6 a 9% é razoável misturando ações e FIIs.',
   },
   {
     title: 'Calcule o patrimônio necessário',
@@ -714,7 +714,7 @@ const faq = [
   },
   {
     q: 'Quando os dividendos caem na conta?',
-    a: 'Cada empresa define a própria data. Geralmente entre 30 e 60 dias após a data-com. Os dividendos caem automaticamente na conta da corretora — você não precisa fazer nada.',
+    a: 'Cada empresa define a própria data. Geralmente entre 30 e 60 dias após a data-com. Os dividendos caem automaticamente na conta da corretora, você não precisa fazer nada.',
   },
   {
     q: 'Devo reinvestir dividendos?',

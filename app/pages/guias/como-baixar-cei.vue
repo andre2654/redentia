@@ -316,14 +316,14 @@ const sheets = [
 const faq = [
   {
     q: 'Não estou conseguindo logar no CEI',
-    a: 'Se a senha falhar, vá em "Esqueceu a senha?" no próprio site. Se o 2FA não chegar, use o app oficial da B3 — o push aparece em segundos. Em último caso, ligue pra Central de Atendimento da B3 (11 2565-4000).',
+    a: 'Se a senha falhar, vá em "Esqueceu a senha?" no próprio site. Se o 2FA não chegar, use o app oficial da B3, o push aparece em segundos. Em último caso, ligue pra Central de Atendimento da B3 (11 2565-4000).',
   },
   {
     q: 'O botão "Baixar em Excel" não aparece pra mim',
     a: 'Geralmente é alguma extensão de navegador bloqueando JavaScript ou anti-tracking agressivo. Tente abrir em uma aba anônima ou em outro navegador (Chrome/Edge funcionam bem). Se persistir, atualize a página depois de 5 segundos.',
   },
   {
-    q: 'Tenho conta em mais de uma corretora — preciso baixar de cada uma?',
+    q: 'Tenho conta em mais de uma corretora, preciso baixar de cada uma?',
     a: 'Não. O CEI é centralizado: ele já agrega todas as suas posições nas corretoras conectadas à B3. Uma única planilha cobre tudo.',
   },
   {

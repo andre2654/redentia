@@ -55,7 +55,7 @@
         <select v-model="newSectionId" class="admin-input">
           <option value="">Escolha um id…</option>
           <option v-for="id in availableNewSections" :key="id" :value="id">
-            {{ id }} — {{ SECTION_LABELS[id] || '' }}
+            {{ id }}, {{ SECTION_LABELS[id] || '' }}
           </option>
         </select>
         <button

@@ -66,9 +66,9 @@ const demos: DemoStep[] = [
   {
     question: 'tô de olho em BBSE3 com a queda recente',
     answer: [
-      'BBSE3 está em R$ 34,27 (−1,8% mês). A "queda recente" reflete o rebaixamento do BBA — não há ruptura de tese.',
+      'BBSE3 está em R$ 34,27 (−1,8% mês). A "queda recente" reflete o rebaixamento do BBA, não há ruptura de tese.',
       'Suporte técnico em R$ 32 (média 200d). DY de 13,3% segue acima da média do setor.',
-      'Tese de renda intacta — preço perto do seu custo médio. Faz sentido {{propose}} pra te avisar se romper R$ 32.',
+      'Tese de renda intacta, preço perto do seu custo médio. Faz sentido {{propose}} pra te avisar se romper R$ 32.',
     ],
     tools: [
       { icon: 'i-lucide-search', label: 'view_asset · BBSE3' },
@@ -82,7 +82,7 @@ const demos: DemoStep[] = [
     question: 'avalie minha carteira',
     answer: [
       'Carteira diagnosticada: 35 posições, R$ 703k. Concentração em ações BR (35,7% vs alvo 20%).',
-      'CAGR realista da carteira: 12,8% a.a. Sua meta exige 14,2% — viável com tilt agressivo.',
+      'CAGR realista da carteira: 12,8% a.a. Sua meta exige 14,2%, viável com tilt agressivo.',
       'Stress test (queda 30% IBOV): −R$ 87k. Meta vira at_risk. {{propose}} pra simular cenários adversos.',
     ],
     tools: [
@@ -96,7 +96,7 @@ const demos: DemoStep[] = [
     question: 'vale a pena comprar BTC agora?',
     answer: [
       'BTC: R$ 383.884 (−1,8% hoje). Rali de +14% desde março, fluxo institucional positivo via ETFs.',
-      'Sua meta de R$ 1M em 8 meses exige 59% a.a. — matematicamente inviável só com BTC.',
+      'Sua meta de R$ 1M em 8 meses exige 59% a.a., matematicamente inviável só com BTC.',
       'Comprar BTC adiciona volatilidade ao gap. {{propose}} pra ver o impacto na sua meta atual.',
     ],
     tools: [
@@ -233,7 +233,7 @@ const stages: Step[] = [
   {
     num: '01',
     title: 'Pergunte naturalmente',
-    desc: 'PT-BR informal — "tô de olho em PETR4", "vale a pena BBSE3?", "minha carteira tá ok?". Sem comandos especiais.',
+    desc: 'PT-BR informal, "tô de olho em PETR4", "vale a pena BBSE3?", "minha carteira tá ok?". Sem comandos especiais.',
     icon: 'i-lucide-message-circle',
   },
   {
@@ -332,7 +332,7 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
           </h1>
 
           <p class="text-[15px] leading-relaxed md:text-[17px]" :style="{ color: 'var(--brand-text-muted)' }">
-            Cada número conferido via tools antes de virar resposta. Cada decisão entra como chip clicável. Carteira analisada em 9 camadas — não em palpite.
+            Cada número conferido via tools antes de virar resposta. Cada decisão entra como chip clicável. Carteira analisada em 9 camadas, não em palpite.
           </p>
 
           <div class="flex flex-col items-start gap-3 md:flex-row md:items-center">

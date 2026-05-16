@@ -190,7 +190,7 @@
                 <UIcon name="i-lucide-target" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
                 <p class="empty-title" :style="{ color: 'var(--brand-text)' }">Sem metas definidas</p>
                 <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
-                  Crie a primeira para que cada recomendação da IA passe a ser avaliada contra ela. Aposentadoria, FIRE, reserva de emergência — qualquer objetivo concreto.
+                  Crie a primeira para que cada recomendação da IA passe a ser avaliada contra ela. Aposentadoria, FIRE, reserva de emergência, qualquer objetivo concreto.
                 </p>
                 <button type="button" class="empty-cta" :style="ctaStyle" @click="onNewGoal">
                   Definir primeira meta
@@ -351,7 +351,7 @@
                   {{ decisionsState.decisions.value.length === 0 ? 'Sem decisões registradas' : 'Nenhuma decisão neste filtro' }}
                 </p>
                 <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
-                  Decisões prescritivas (compra, venda, rebalance) que a IA registra ficam aqui — com tese, invalidador e revisita automática em +30/+90/+180 dias.
+                  Decisões prescritivas (compra, venda, rebalance) que a IA registra ficam aqui, com tese, invalidador e revisita automática em +30/+90/+180 dias.
                 </p>
               </div>
               <ul v-else class="flex flex-col gap-2">
@@ -441,7 +441,7 @@
                       <textarea
                         v-model="counterProposalDraft[d.id]"
                         rows="2"
-                        placeholder="Ex.: ao invés de comprar PETR4 a 32, esperar 28 — risco/retorno melhora porque…"
+                        placeholder="Ex.: ao invés de comprar PETR4 a 32, esperar 28, risco/retorno melhora porque…"
                         class="counter-proposal-input min-w-0 resize-none border-0 bg-transparent text-[12.5px] leading-snug outline-none"
                         :style="{ color: 'var(--brand-text)' }"
                       />
@@ -682,7 +682,7 @@
                       v-else
                       class="text-[11px] italic"
                       :style="{ color: 'var(--brand-text-muted)' }"
-                    >Sem condições — não dispara alertas.</p>
+                    >Sem condições, não dispara alertas.</p>
                     <footer
                       class="flex items-center gap-1.5 pt-1"
                       :style="{ borderTop: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
@@ -733,7 +733,7 @@
                 v-if="memoriesState.memories.value.length > 0"
                 class="text-[11.5px] leading-snug"
                 :style="{ color: 'var(--brand-text-muted)' }"
-              >Tudo que a IA aprendeu sobre você. Esses fatos são injetados no prompt em toda nova mensagem — audite, edite ou remova o que não fizer sentido.</p>
+              >Tudo que a IA aprendeu sobre você. Esses fatos são injetados no prompt em toda nova mensagem, audite, edite ou remova o que não fizer sentido.</p>
 
               <!-- Search + filter -->
               <div
@@ -872,7 +872,7 @@
                 <UIcon name="i-lucide-activity" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
                 <p class="empty-title" :style="{ color: 'var(--brand-text)' }">Sem atividade recente</p>
                 <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
-                  Eventos da IA — tools rodadas, mudanças de status de decisão, alertas disparados, novas memórias — aparecem aqui em ordem cronológica.
+                  Eventos da IA, tools rodadas, mudanças de status de decisão, alertas disparados, novas memórias, aparecem aqui em ordem cronológica.
                 </p>
               </div>
 

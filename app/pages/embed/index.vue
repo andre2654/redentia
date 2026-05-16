@@ -52,7 +52,7 @@
           <span class="italic" :style="{ color: REDENTIA_COLORS.primary }">qualquer site.</span>
         </h1>
         <p class="max-w-2xl text-base leading-relaxed md:text-lg" :style="{ color: REDENTIA_COLORS.textMuted }">
-          Widgets gratuitos de cotação, calculadoras financeiras, mapas de calor e rankings da bolsa brasileira — tudo pronto pra copiar e colar no seu blog, newsletter ou dashboard. Dados em tempo real, zero cadastro.
+          Widgets gratuitos de cotação, calculadoras financeiras, mapas de calor e rankings da bolsa brasileira, tudo pronto pra copiar e colar no seu blog, newsletter ou dashboard. Dados em tempo real, zero cadastro.
         </p>
 
         <div class="mt-6 flex flex-wrap items-center gap-3">
@@ -500,7 +500,7 @@ const steps = [
   },
   {
     title: 'Cole no seu site',
-    description: 'Cole o iframe em qualquer CMS — WordPress, Webflow, Medium, Ghost ou Substack. Funciona em qualquer lugar que aceite HTML.',
+    description: 'Cole o iframe em qualquer CMS, WordPress, Webflow, Medium, Ghost ou Substack. Funciona em qualquer lugar que aceite HTML.',
   },
 ]
 

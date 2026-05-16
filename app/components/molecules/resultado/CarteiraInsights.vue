@@ -162,7 +162,7 @@ const insights = computed<Insight[]>(() => {
     out.push({
       icon: 'i-lucide-landmark',
       title: 'Hold é seu maior gerador de retorno',
-      body: `Posições de longo prazo somam ${brl(holdPnL)} no período. Day e swing somam menos. Vale calibrar quanto tempo dedicar a cada modalidade — seu edge parece estar no longo.`,
+      body: `Posições de longo prazo somam ${brl(holdPnL)} no período. Day e swing somam menos. Vale calibrar quanto tempo dedicar a cada modalidade, seu edge parece estar no longo.`,
       tone: 'positive',
     })
   }
@@ -176,8 +176,8 @@ const insights = computed<Insight[]>(() => {
   ) {
     out.push({
       icon: 'i-lucide-check-circle',
-      title: `Profit factor de ${s.profitFactor.toFixed(2).replace('.', ',')} — sustentável`,
-      body: 'Acima de 1,5 já considerado bom em qualquer style. Continue rastreando consistência mês a mês — a métrica mais confiável é a estabilidade ao longo do tempo, não o número absoluto.',
+      title: `Profit factor de ${s.profitFactor.toFixed(2).replace('.', ',')}, sustentável`,
+      body: 'Acima de 1,5 já considerado bom em qualquer style. Continue rastreando consistência mês a mês, a métrica mais confiável é a estabilidade ao longo do tempo, não o número absoluto.',
       tone: 'positive',
     })
   }

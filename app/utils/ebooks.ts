@@ -242,7 +242,7 @@ export const EBOOKS: readonly EbookMeta[] = [
         slug: 'trade-day-trade',
         name: 'Trade / Day Trade',
         description:
-          'Creators de trade e day trade — audiência massiva, ticket baixo e alto risco reputacional e regulatório.',
+          'Creators de trade e day trade, audiência massiva, ticket baixo e alto risco reputacional e regulatório.',
         notableNames: ['Pablo Spyer', 'Carol Paiffer', 'Kleber Stumpf', 'André Machado'],
       },
       {

@@ -298,8 +298,8 @@ const interpretations = computed<string[]>(() => {
 
   const pvp = f.price_to_book
   if (pvp !== null) {
-    if (pvp < 0.9) lines.push(`P/VP em ${pos(formatRatio(pvp))} indica que a cota negocia ${pos('abaixo do patrimônio')} — oportunidade se os fundamentos se mantiverem ou alerta se refletir deterioração dos ativos.`)
-    else if (pvp > 1.1) lines.push(`P/VP em ${neg(formatRatio(pvp))} indica que a cota negocia ${neg('acima do patrimônio')} — mercado está precificando uma expectativa de valorização dos imóveis ou qualidade da gestão.`)
+    if (pvp < 0.9) lines.push(`P/VP em ${pos(formatRatio(pvp))} indica que a cota negocia ${pos('abaixo do patrimônio')}, oportunidade se os fundamentos se mantiverem ou alerta se refletir deterioração dos ativos.`)
+    else if (pvp > 1.1) lines.push(`P/VP em ${neg(formatRatio(pvp))} indica que a cota negocia ${neg('acima do patrimônio')}, mercado está precificando uma expectativa de valorização dos imóveis ou qualidade da gestão.`)
     else lines.push(`P/VP em ${accent(formatRatio(pvp))} próximo de 1,00, a cota negocia em linha com o patrimônio líquido do fundo.`)
   }
 
