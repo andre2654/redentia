@@ -554,7 +554,8 @@
           <p class="mt-3 text-[14px] leading-relaxed md:text-[15px]" :style="{ color: 'var(--text-body)' }">
             Um ticker, um fundo, uma dúvida. Pergunte do jeito que você pensa, e a busca entende: ações, FIIs, ETFs, cripto, tesouro, e até conceitos do mercado.
           </p>
-          <div class="mt-5 inline-flex items-center gap-2 text-[12px]" :style="{ color: 'var(--text-muted)' }">
+          <!-- Atalho ⌘K só em desktop (mobile não tem teclado). -->
+          <div class="mt-5 hidden md:inline-flex items-center gap-2 text-[12px]" :style="{ color: 'var(--text-muted)' }">
             <span>Aperte</span>
             <kbd
               class="inline-flex items-center gap-0.5 rounded-md border px-2 py-0.5 font-mono-tab text-[11px]"
@@ -577,9 +578,10 @@
             class="grid grid-cols-12 gap-3 rounded-2xl border p-4"
             :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
           >
-            <!-- LEFT bento zone: ⌘K context (4 cols) -->
+            <!-- LEFT bento zone: ⌘K context (4 cols). Escondido no
+                 mobile — atalho de teclado não faz sentido em touch. -->
             <div
-              class="col-span-12 flex flex-col justify-between gap-4 rounded-xl p-6 md:col-span-4"
+              class="hidden md:flex flex-col justify-between gap-4 rounded-xl p-6 md:col-span-4"
               :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)' }"
             >
               <kbd
