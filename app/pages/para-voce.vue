@@ -171,7 +171,7 @@
 
               <g v-if="hoverPoint" class="hp9-chart-hover">
                 <line :x1="hoverPoint.x" y1="0" :x2="hoverPoint.x" y2="240" stroke="var(--text-heading)" stroke-width="1" stroke-dasharray="3 3" opacity="0.35" />
-                <circle :cx="hoverPoint.x" :cy="hoverPoint.y" r="5" :fill="ibovChartColor" stroke="var(--bg-default)" stroke-width="2" />
+                <circle :cx="hoverPoint.x" :cy="hoverPoint.y" r="5" fill="var(--brand-positive)" stroke="var(--bg-default)" stroke-width="2" />
               </g>
             </svg>
 
@@ -1375,11 +1375,7 @@ function formatRelativeTime(iso: string): string {
   position: absolute;
   top: 6px;
   transform: translateX(-50%);
-  /* Translúcido + blur: deixa a curva entrever atrás do tip, igual ao
-     /wallet/hoje. 88% de opacidade no fundo + backdrop-blur 6px. */
-  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: var(--bg-default);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 10px 12px;
