@@ -697,6 +697,12 @@ export default defineNuxtConfig({
       '/api/chat/**': {
         proxy: `${process.env.NUXT_CHAT_SERVICE_URL ?? 'https://redentia-api.saraivada.com/chat'}/**`,
       },
+      // /mercado-completo → / (301). Após swap 2026-05-17, o conteúdo
+      // que vivia em /mercado-completo virou a home (/). Preserva links
+      // externos / SEO redirecionando permanentemente.
+      '/mercado-completo': {
+        redirect: { to: '/', statusCode: 301 },
+      },
       // /legal/* → /institucional/* (301). Google Search Console
       // reportou ~471 paginas 404 em /legal/* devido a links
       // historicos no devPortalFooter que apontavam pra rotas

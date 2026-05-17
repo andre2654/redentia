@@ -18,7 +18,7 @@
           Sem posições, não conseguimos calcular impacto. Open Finance puxa tudo em minutos.
         </p>
         <div class="wp8-empty-ctas">
-          <NuxtLink to="/integracoes" class="wp8-result-btn">
+          <NuxtLink to="/settings/integracoes" class="wp8-result-btn">
             <UIcon name="i-lucide-link-2" class="size-4" />
             <span>Conectar Open Finance</span>
             <UIcon name="i-lucide-arrow-right" class="size-4 wp8-result-arrow" />
@@ -258,194 +258,155 @@
         </ul>
       </section>
 
-      <!-- ============ 5. NOTÍCIAS — bento por tema (petróleo, juros, etc) ============ -->
-      <section v-if="loading" class="hp9-section">
-        <header class="hp9-section-h">
-          <h2 class="hp9-h2">O <em class="hp9-italic">noticiário</em> traduzido.</h2>
-          <p class="hp9-section-deck"><span class="wp8-skel wp8-skel-text-sm" style="width: 80%;" /></p>
-        </header>
-        <div class="hp9-themes">
-          <article v-for="n in 2" :key="`skel-theme-${n}`" class="hp9-theme">
-            <header class="hp9-theme-head">
-              <span class="hp9-theme-icon"><span class="wp8-skel wp8-skel-circle" style="width: 18px; height: 18px;" /></span>
-              <div class="hp9-theme-text">
-                <p class="hp9-theme-eyebrow">Tema</p>
-                <h3 class="hp9-theme-label"><span class="wp8-skel wp8-skel-text-md" style="width: 160px;" /></h3>
-              </div>
-              <div class="hp9-theme-meta">
-                <p class="hp9-theme-amount"><span class="wp8-skel wp8-skel-chip" style="width: 70px;" /></p>
-                <p class="hp9-theme-count"><span class="wp8-skel wp8-skel-chip" style="width: 60px;" /></p>
-              </div>
-            </header>
-            <div class="hp9-bento">
-              <article class="hp9-bento-hero">
-                <div class="hp9-bento-hero-img"><span class="wp8-skel wp8-skel-block wp8-skel-img-16x9" style="border-radius: 0;" /></div>
-                <div class="hp9-bento-hero-body">
-                  <p class="hp9-bento-hero-impact"><span class="wp8-skel wp8-skel-chip" style="width: 80px; height: 14px;" /></p>
-                  <h4 class="hp9-bento-hero-headline">
-                    <span class="wp8-skel wp8-skel-text-sm" style="width: 92%; display: block; margin-bottom: 6px; height: 14px;" />
-                    <span class="wp8-skel wp8-skel-text-sm" style="width: 70%; display: block; height: 14px;" />
-                  </h4>
-                  <p class="hp9-bento-hero-sum"><span class="wp8-skel wp8-skel-text-sm" style="width: 95%;" /></p>
-                  <p class="hp9-bento-hero-footer"><span class="wp8-skel wp8-skel-chip" style="width: 120px;" /></p>
-                </div>
-              </article>
-              <ul class="hp9-bento-minis">
-                <li v-for="m in 3" :key="`skel-mini-${n}-${m}`" class="hp9-bento-mini">
-                  <div class="hp9-bento-mini-img"><span class="wp8-skel wp8-skel-block wp8-skel-img-square" style="border-radius: 0;" /></div>
-                  <div class="hp9-bento-mini-body">
-                    <p class="hp9-bento-mini-impact"><span class="wp8-skel wp8-skel-chip" style="width: 50px;" /></p>
-                    <h5 class="hp9-bento-mini-headline"><span class="wp8-skel wp8-skel-text-sm" style="width: 90%;" /></h5>
-                    <p class="hp9-bento-mini-meta"><span class="wp8-skel wp8-skel-chip" style="width: 70px;" /></p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section v-else-if="data.newsThemes.length" class="hp9-section">
-        <header class="hp9-section-h">
-          <h2 class="hp9-h2">O <em class="hp9-italic">noticiário</em> traduzido.</h2>
-          <p class="hp9-section-deck" v-html="newsLeadText" />
-        </header>
-
-        <div class="hp9-themes">
-          <article v-for="theme in data.newsThemes" :key="theme.key" class="hp9-theme">
-            <!-- Header do tema (icon colorido + label + amount + count) -->
-            <header class="hp9-theme-head">
-              <span class="hp9-theme-icon" :style="{ background: `color-mix(in srgb, ${theme.color} 14%, transparent)`, color: theme.color }">
-                <UIcon :name="theme.icon" class="size-5" />
-              </span>
-              <div class="hp9-theme-text">
-                <p class="hp9-theme-eyebrow">Tema</p>
-                <h3 class="hp9-theme-label">
-                  <em class="hp9-italic">{{ theme.label }}</em>
-                </h3>
-              </div>
-              <div class="hp9-theme-meta">
-                <p :class="['hp9-theme-amount', theme.totalImpact >= 0 ? 'pos' : 'neg']">
-                  {{ theme.totalImpact >= 0 ? '+' : '' }}{{ formatBRL(theme.totalImpact, { compact: true }) }}
-                </p>
-                <p class="hp9-theme-count">{{ theme.count }} {{ theme.count === 1 ? 'notícia' : 'notícias' }}</p>
-              </div>
-            </header>
-
-            <!-- BENTO: hero esquerda + minis empilhados direita -->
-            <div class="hp9-bento">
-              <!-- HERO -->
-              <article v-if="theme.items[0]" class="hp9-bento-hero">
-                <div :class="['hp9-bento-hero-img', `hp9-img-${theme.items[0].image}`]" aria-hidden="true">
-                  <NuxtImg
-                    v-if="cleanImageUrl(theme.items[0].image_url)"
-                    :src="cleanImageUrl(theme.items[0].image_url)"
-                    :alt="theme.items[0].headline"
-                    loading="lazy"
-                    class="hp9-bento-img-real"
-                    @error="(e) => { (e.target as HTMLElement).style.display = 'none' }"
-                  />
-                  <UIcon v-else :name="imageIcon(theme.items[0].image)" class="size-12" />
-                </div>
-                <div class="hp9-bento-hero-body">
-                  <p :class="['hp9-bento-hero-impact', theme.items[0].impact >= 0 ? 'pos' : 'neg']">
-                    <span class="hp9-bento-hero-amount">{{ theme.items[0].impact >= 0 ? '+' : '' }}{{ formatBRL(theme.items[0].impact) }}</span>
-                    <span class="hp9-bento-hero-sep">·</span>
-                    <span class="hp9-bento-hero-pct">{{ formatPct(theme.items[0].impactPct) }}</span>
-                  </p>
-                  <h4 class="hp9-bento-hero-headline">{{ theme.items[0].headline }}</h4>
-                  <p v-if="theme.items[0].summary" class="hp9-bento-hero-sum">{{ theme.items[0].summary }}</p>
-                  <p class="hp9-bento-hero-footer">
-                    <span>{{ theme.items[0].source }} · {{ theme.items[0].time }}</span>
-                    <span class="hp9-bento-hero-dot" aria-hidden="true">·</span>
-                    <span class="hp9-bento-hero-tickers">{{ theme.items[0].affectedAssets.join(' · ') }}</span>
-                  </p>
-                </div>
-              </article>
-
-              <!-- MINIS (até 3, empilhados verticalmente na coluna direita) -->
-              <ul v-if="theme.items.length > 1" class="hp9-bento-minis">
-                <li v-for="n in theme.items.slice(1, 4)" :key="n.id" class="hp9-bento-mini">
-                  <div :class="['hp9-bento-mini-img', `hp9-img-${n.image}`]" aria-hidden="true">
-                    <NuxtImg
-                      v-if="cleanImageUrl(n.image_url)"
-                      :src="cleanImageUrl(n.image_url)"
-                      :alt="n.headline"
-                      loading="lazy"
-                      class="hp9-bento-img-real"
-                      @error="(e) => { (e.target as HTMLElement).style.display = 'none' }"
-                    />
-                    <UIcon v-else :name="imageIcon(n.image)" class="size-4" />
-                  </div>
-                  <div class="hp9-bento-mini-body">
-                    <p :class="['hp9-bento-mini-impact', n.impact >= 0 ? 'pos' : 'neg']">
-                      {{ n.impact >= 0 ? '+' : '' }}{{ formatBRL(n.impact, { compact: true }) }}
-                    </p>
-                    <h5 class="hp9-bento-mini-headline">{{ n.headline }}</h5>
-                    <p class="hp9-bento-mini-meta">{{ n.source }} · {{ n.time }}</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- ============ 5. NOTÍCIAS — empty state (sem news real) ============ -->
-      <section v-else-if="!loading" class="hp9-section">
-        <header class="hp9-section-h">
-          <h2 class="hp9-h2">O <em class="hp9-italic">noticiário</em> traduzido.</h2>
-        </header>
-        <p class="hp9-news-empty">
-          Nenhuma notícia das últimas 24h afetou seus ativos. Vamos atualizar quando algo relevante aparecer.
-        </p>
-      </section>
-
-      <!-- ============ 5b. RESUMO REDENTIA — editorial pull-quote ============ -->
-      <section class="hp9-section hp9-resumo-min">
-        <header class="hp9-resumo-min-head">
-          <p class="hp9-resumo-min-eyebrow">
-            <template v-if="loading">Resumo Redentia · <span class="wp8-skel wp8-skel-chip" style="width: 50px;" /></template>
-            <template v-else>Resumo Redentia · {{ data.time }}</template>
+      <!-- ============ 5. NOTÍCIAS — DNA h-block igual /para-voce (header esquerda + cards direita) ============ -->
+      <section class="h-block">
+        <header class="h-block-head">
+          <p class="h-block-eyebrow">NOTICIÁRIO DO DIA</p>
+          <h2 class="h-block-h">As notícias que <em>movimentaram o dia.</em></h2>
+          <p v-if="loading" class="h-block-deck"><span class="wp8-skel wp8-skel-text-sm" style="width: 80%;" /></p>
+          <p v-else-if="data.newsThemes.length" class="h-block-deck" v-html="newsLeadText" />
+          <p v-else class="h-block-deck">
+            Nenhuma notícia das últimas 24h afetou seus ativos. Vamos atualizar quando algo relevante aparecer.
           </p>
-          <h2 class="hp9-h2">A leitura do dia, <em class="hp9-italic">na sua linguagem.</em></h2>
         </header>
 
-        <blockquote v-if="loading" class="hp9-resumo-min-quote">
-          <span class="wp8-skel wp8-skel-text-sm" style="width: 100%; display: block; margin-bottom: 8px;" />
-          <span class="wp8-skel wp8-skel-text-sm" style="width: 88%; display: block; margin-bottom: 8px;" />
-          <span class="wp8-skel wp8-skel-text-sm" style="width: 60%; display: block;" />
-        </blockquote>
-        <blockquote v-else class="hp9-resumo-min-quote">
-          {{ data.resumoAI }}
-        </blockquote>
+        <div class="h-block-body">
+          <!-- Loading: 2 grupos com 3 cards skeleton cada -->
+          <div v-if="loading" class="h-news-themes">
+            <article v-for="n in 2" :key="`skel-theme-${n}`" class="h-news-theme">
+              <header class="h-news-theme-head">
+                <span class="wp8-skel wp8-skel-circle" style="width: 36px; height: 36px;" />
+                <div>
+                  <p class="h-news-theme-eyebrow">Tema</p>
+                  <h3 class="h-news-theme-label"><span class="wp8-skel wp8-skel-text-md" style="width: 160px;" /></h3>
+                </div>
+                <span class="h-news-theme-count"><span class="wp8-skel wp8-skel-chip" style="width: 60px;" /></span>
+              </header>
+              <ul class="h-news-grid">
+                <li v-for="m in 3" :key="`skel-card-${n}-${m}`" class="h-news-card">
+                  <span class="wp8-skel wp8-skel-img-16x9" />
+                  <div class="h-news-card-body">
+                    <p class="h-news-card-impact"><span class="wp8-skel wp8-skel-chip" style="width: 70px;" /></p>
+                    <h4 class="h-news-card-title"><span class="wp8-skel wp8-skel-text-sm" style="width: 90%; display: block;" /></h4>
+                    <p class="h-news-card-meta"><span class="wp8-skel wp8-skel-chip" /></p>
+                  </div>
+                </li>
+              </ul>
+            </article>
+          </div>
 
-        <p v-if="loading" class="hp9-resumo-min-attribution">
-          <span class="wp8-skel wp8-skel-chip" style="width: 110px;" />
-          <span class="hp9-resumo-min-sep" aria-hidden="true">·</span>
-          <span class="wp8-skel wp8-skel-chip" style="width: 110px;" />
-          <span class="hp9-resumo-min-sep" aria-hidden="true">·</span>
-          <span class="wp8-skel wp8-skel-chip" style="width: 130px;" />
-        </p>
-        <p v-else class="hp9-resumo-min-attribution">
-          <span><strong>{{ data.resumoStats.macroPct }}%</strong> causa setorial</span>
-          <span class="hp9-resumo-min-sep" aria-hidden="true">·</span>
-          <span><strong>{{ data.resumoStats.specificPct }}%</strong> causa específica</span>
-          <span class="hp9-resumo-min-sep" aria-hidden="true">·</span>
-          <span><strong>{{ data.topMovers.length }}</strong> ativos com movimento</span>
-        </p>
-
-        <!-- Actions row: input do QuickSearch (dock target) à esquerda,
-             CTA dark à direita, na mesma linha. Filete alignment via
-             padding-left no container; gap entre os dois. -->
-        <div class="hp9-resumo-min-actions">
-          <MoleculesQuickSearchDock placeholder="Pergunte algo sobre o dia." />
-
-          <NuxtLink to="/help?q=por%20que%20minha%20carteira%20caiu%20hoje" class="hp9-resumo-min-cta">
-            <span>Continuar essa conversa</span>
-            <UIcon name="i-lucide-arrow-right" class="size-4 hp9-resumo-min-cta-arrow" />
-          </NuxtLink>
+          <!-- Rendered: themes com 3 cards uniformes (img top + body bottom + impacto financeiro) -->
+          <div v-else-if="data.newsThemes.length" class="h-news-themes">
+            <article v-for="theme in data.newsThemes" :key="theme.key" class="h-news-theme">
+              <header class="h-news-theme-head">
+                <span
+                  :class="['h-news-theme-icon', `h-news-theme-icon-${theme.key}`]"
+                  :style="theme.color ? { background: `color-mix(in srgb, ${theme.color} 14%, transparent)`, color: theme.color } : undefined"
+                >
+                  <UIcon :name="theme.icon" class="size-4" />
+                </span>
+                <div>
+                  <p class="h-news-theme-eyebrow">Tema</p>
+                  <h3 class="h-news-theme-label"><em>{{ theme.label }}</em></h3>
+                </div>
+                <span class="h-news-theme-count">
+                  {{ theme.count }} {{ theme.count === 1 ? 'notícia' : 'notícias' }}
+                </span>
+              </header>
+              <ul class="h-news-grid">
+                <li v-for="n in theme.items.slice(0, 3)" :key="n.id" class="h-news-card">
+                  <component
+                    :is="n.url ? 'a' : 'div'"
+                    :href="n.url || undefined"
+                    :target="n.url ? '_blank' : undefined"
+                    :rel="n.url ? 'noopener' : undefined"
+                    class="h-news-card-link"
+                  >
+                    <div :class="['h-news-card-img', `hp9-img-${n.image}`]" aria-hidden="true">
+                      <NuxtImg
+                        v-if="cleanImageUrl(n.image_url)"
+                        :src="cleanImageUrl(n.image_url)"
+                        :alt="n.headline"
+                        loading="lazy"
+                        class="hp9-news-img-real"
+                        @error="(e) => { (e.target as HTMLElement).style.display = 'none' }"
+                      />
+                      <UIcon v-else :name="imageIcon(n.image)" class="size-8" />
+                    </div>
+                    <div class="h-news-card-body">
+                      <p :class="['h-news-card-impact', n.impact >= 0 ? 'pos' : 'neg']">
+                        {{ n.impact >= 0 ? '+' : '' }}{{ formatBRL(n.impact) }}
+                      </p>
+                      <p v-if="n.affectedAssets?.length" class="h-news-card-tickers">
+                        {{ n.affectedAssets.slice(0, 3).join(' · ') }}
+                      </p>
+                      <h4 class="h-news-card-title">{{ n.headline }}</h4>
+                      <p v-if="n.summary" class="h-news-card-excerpt">{{ truncateText(n.summary, 140) }}</p>
+                      <p class="h-news-card-meta">
+                        <span>{{ n.source }}</span>
+                        <span class="h-news-card-dot" aria-hidden="true">·</span>
+                        <span>{{ n.time }}</span>
+                      </p>
+                    </div>
+                  </component>
+                </li>
+              </ul>
+            </article>
+          </div>
         </div>
+      </section>
+
+      <!-- ============ 5b. RESUMO REDENTIA (card destacado, padronizado com /para-voce) ============ -->
+      <section class="resumo-card-wrap">
+        <article class="resumo-card">
+          <header class="resumo-card-head">
+            <div class="resumo-card-brand">
+              <img
+                src="/brand/redentia/dark-logo-icon.png"
+                alt="Redentia"
+                class="resumo-card-logo"
+              />
+              <p class="resumo-card-cta">
+                <template v-if="loading">Resumo do dia · <span class="wp8-skel wp8-skel-chip" style="width: 50px;" /></template>
+                <template v-else>Resumo do dia · {{ data.time }}</template>
+              </p>
+            </div>
+            <h2 class="resumo-card-h">
+              A leitura do dia, <em>na sua linguagem.</em>
+            </h2>
+          </header>
+
+          <blockquote v-if="loading" class="resumo-card-quote">
+            <span class="wp8-skel wp8-skel-text-sm" style="width: 100%; display: block; margin-bottom: 8px;" />
+            <span class="wp8-skel wp8-skel-text-sm" style="width: 88%; display: block; margin-bottom: 8px;" />
+            <span class="wp8-skel wp8-skel-text-sm" style="width: 60%; display: block;" />
+          </blockquote>
+          <blockquote v-else class="resumo-card-quote">{{ data.resumoAI }}</blockquote>
+
+          <p v-if="loading" class="resumo-card-attribution">
+            <span class="wp8-skel wp8-skel-chip" style="width: 110px;" />
+            <span class="resumo-card-sep" aria-hidden="true">·</span>
+            <span class="wp8-skel wp8-skel-chip" style="width: 110px;" />
+            <span class="resumo-card-sep" aria-hidden="true">·</span>
+            <span class="wp8-skel wp8-skel-chip" style="width: 130px;" />
+          </p>
+          <p v-else class="resumo-card-attribution">
+            <span><strong>{{ data.resumoStats.macroPct }}%</strong> causa setorial</span>
+            <span class="resumo-card-sep" aria-hidden="true">·</span>
+            <span><strong>{{ data.resumoStats.specificPct }}%</strong> causa específica</span>
+            <span class="resumo-card-sep" aria-hidden="true">·</span>
+            <span><strong>{{ data.topMovers.length }}</strong> ativos com movimento</span>
+          </p>
+
+          <!-- /hoje exclusivo: search + CTA "continuar essa conversa" -->
+          <div class="resumo-card-actions">
+            <MoleculesQuickSearchDock placeholder="Pergunte algo sobre o dia." />
+            <NuxtLink to="/help?q=por%20que%20minha%20carteira%20caiu%20hoje" class="resumo-card-cta-btn">
+              <span>Continuar essa conversa</span>
+              <UIcon name="i-lucide-arrow-right" class="size-4" />
+            </NuxtLink>
+          </div>
+        </article>
       </section>
 
       <!-- ============ 6. SEUS ATIVOS — agrupados por impacto, colapsáveis ============ -->
@@ -583,6 +544,7 @@
             <ul>
               <li v-for="n in 5" :key="`skel-mvr-${col}-${n}`">
                 <span class="wp8-skel wp8-skel-circle" style="width: 14px; height: 14px;" />
+                <span class="wp8-skel wp8-skel-circle" style="width: 22px; height: 22px;" />
                 <span class="hp9-market-mvr-tk"><span class="wp8-skel wp8-skel-chip" style="width: 60px;" /></span>
                 <span class="hp9-market-mvr-pct"><span class="wp8-skel wp8-skel-chip" style="width: 50px;" /></span>
               </li>
@@ -632,13 +594,14 @@
           </ul>
         </div>
 
-        <!-- Top movers — editorial framing -->
+        <!-- Top movers — editorial framing (logos via icons.brapi.dev) -->
         <div class="hp9-market-mvr">
           <div class="hp9-market-mvr-col">
             <p class="hp9-market-mvr-h">Quem segurou <em class="hp9-italic">o índice.</em></p>
             <ul>
               <li v-for="t in data.topGainers" :key="t.ticker">
                 <UIcon name="i-lucide-arrow-up" class="size-3.5 pos" />
+                <AtomsTickerLogo :ticker="t.ticker" :logo="`https://icons.brapi.dev/icons/${t.ticker}.svg`" :size="22" />
                 <span class="hp9-market-mvr-tk">{{ t.ticker }}</span>
                 <span class="hp9-market-mvr-pct pos">{{ formatPct(t.pct) }}</span>
               </li>
@@ -649,6 +612,7 @@
             <ul>
               <li v-for="t in data.topLosers" :key="t.ticker">
                 <UIcon name="i-lucide-arrow-down" class="size-3.5 neg" />
+                <AtomsTickerLogo :ticker="t.ticker" :logo="`https://icons.brapi.dev/icons/${t.ticker}.svg`" :size="22" />
                 <span class="hp9-market-mvr-tk">{{ t.ticker }}</span>
                 <span class="hp9-market-mvr-pct neg">{{ formatPct(t.pct) }}</span>
               </li>
@@ -777,6 +741,12 @@ function formatBRL(value: number, opts?: { compact?: boolean }) {
 function formatPct(value: number) {
   const sign = value >= 0 ? '+' : ''
   return `${sign}${value.toFixed(2).replace('.', ',')}%`
+}
+/** Trunca texto sem cortar palavra. Usado no excerpt dos news cards. */
+function truncateText(text: string, max: number): string {
+  if (!text || text.length <= max) return text
+  const cut = text.slice(0, max).replace(/\s+\S*$/, '')
+  return `${cut}…`
 }
 function formatMarketValue(ix: { value: number; key: string }) {
   if (ix.key === 'dolar') return `R$ ${ix.value.toFixed(2).replace('.', ',')}`
@@ -1344,6 +1314,228 @@ definePageMeta({ layout: 'default' })
   margin: 0;
 }
 
+/* === Card body (estilo /para-voce, img top + body bottom) === */
+.hp9-news-card-link {
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  height: 100%;
+}
+.hp9-news-card-body {
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1;
+}
+.hp9-news-card-impact {
+  display: inline-flex; align-items: baseline;
+  font-size: 14px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.hp9-news-card-impact.pos { color: var(--brand-positive); }
+.hp9-news-card-impact.neg { color: var(--brand-negative); }
+.hp9-news-card-tickers {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brand-primary);
+  margin: 0;
+}
+.hp9-news-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.hp9-news-card-excerpt {
+  font-size: 13px;
+  color: var(--text-body);
+  margin: 0;
+  line-height: 1.5;
+}
+.hp9-news-card-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin: auto 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.hp9-news-card-dot { opacity: 0.5; }
+
+/* ============ H-BLOCK (2-col grid: header esquerda + body direita)
+   Portado verbatim de /para-voce. Usado pela seção NOTICIÁRIO DO DIA. */
+.h-block {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 960px) {
+  .h-block {
+    grid-template-columns: minmax(260px, 1fr) minmax(0, 2.6fr);
+    gap: 56px;
+    padding-bottom: 104px;
+  }
+}
+.h-block-head { min-width: 0; }
+.h-block-eyebrow {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.22em;
+  color: var(--brand-primary);
+  margin: 0 0 18px;
+}
+.h-block-h {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 300;
+  color: var(--text-heading);
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+.h-block-h em { font-style: italic; font-weight: 400; color: var(--brand-primary); }
+.h-block-deck {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-body);
+  margin: 18px 0 0;
+  max-width: 360px;
+}
+.h-block-body { min-width: 0; }
+
+/* === NOTICIÁRIO temas agrupados (header de tema + grid de 3 cards) === */
+.h-news-themes {
+  display: flex; flex-direction: column;
+  gap: 56px;
+}
+.h-news-theme {
+  display: flex; flex-direction: column;
+  gap: 18px;
+}
+.h-news-theme-head {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.h-news-theme-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+/* Cores default (override por :style inline quando theme.color veio do BE) */
+.h-news-theme-icon-petroleo  { background: color-mix(in srgb, #d97706 14%, transparent); color: #d97706; }
+.h-news-theme-icon-juros     { background: color-mix(in srgb, var(--brand-primary) 14%, transparent); color: var(--brand-primary); }
+.h-news-theme-icon-commodity { background: color-mix(in srgb, #b45309 14%, transparent); color: #b45309; }
+.h-news-theme-icon-consumo   { background: color-mix(in srgb, #7c3aed 14%, transparent); color: #7c3aed; }
+.h-news-theme-icon-global    { background: color-mix(in srgb, #2563eb 14%, transparent); color: #2563eb; }
+.h-news-theme-icon-dolar     { background: color-mix(in srgb, var(--brand-positive) 14%, transparent); color: var(--brand-positive); }
+.h-news-theme-icon-outros    { background: var(--bg-overlay); color: var(--text-muted); }
+.h-news-theme-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 2px;
+}
+.h-news-theme-label {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px; font-weight: 400;
+  color: var(--text-heading);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.h-news-theme-label em { font-style: italic; color: var(--brand-primary); font-weight: 400; }
+.h-news-theme-count {
+  margin-left: auto;
+  font-size: 12px; color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* === Grid 3-col + cards uniformes (img top + body bottom + impact pill) === */
+.h-news-grid {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: 24px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) { .h-news-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .h-news-grid { grid-template-columns: repeat(3, 1fr); } }
+.h-news-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 200ms, transform 200ms, box-shadow 200ms;
+}
+.h-news-card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 36%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent);
+}
+.h-news-card-link {
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  height: 100%;
+}
+.h-news-card-img {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-overlay);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.h-news-card-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.h-news-card-body {
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1;
+}
+.h-news-card-impact {
+  display: inline-flex; align-items: baseline;
+  font-size: 14px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.h-news-card-impact.pos { color: var(--brand-positive); }
+.h-news-card-impact.neg { color: var(--brand-negative); }
+.h-news-card-tickers {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--brand-primary);
+  margin: 0;
+}
+.h-news-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.h-news-card-excerpt {
+  font-size: 13px;
+  color: var(--text-body);
+  margin: 0;
+  line-height: 1.5;
+}
+.h-news-card-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin: auto 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.h-news-card-dot { opacity: 0.5; }
+
 /* ============ HP9 CHART HOVER — copiado literal do /wallet/index ============ */
 .hp9-curve { position: relative; }
 .hp9-chart-svg { cursor: crosshair; }
@@ -1431,147 +1623,6 @@ definePageMeta({ layout: 'default' })
   .hp9-theme-icon { width: 28px; height: 28px; border-radius: 8px; }
 }
 
-/* BENTO: hero esquerda dominante + minis empilhados na coluna direita */
-.hp9-bento {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
-@media (min-width: 768px) {
-  .hp9-bento {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 16px;
-  }
-}
-@media (min-width: 1024px) {
-  .hp9-bento { gap: 20px; }
-}
-
-/* HERO bento — img grande no topo + body abaixo (vertical) */
-.hp9-bento-hero {
-  display: flex; flex-direction: column;
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--bg-base);
-  transition: transform 200ms, box-shadow 200ms;
-}
-.hp9-bento-hero:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px -14px color-mix(in srgb, var(--text-heading) 18%, transparent);
-}
-.hp9-bento-hero-img {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 21 / 9;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.92);
-}
-@media (max-width: 767px) {
-  .hp9-bento-hero-img { aspect-ratio: 16 / 9; }
-}
-.hp9-bento-img-real {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-}
-.hp9-bento-hero-body { padding: 12px 14px 14px; }
-.hp9-bento-hero-impact {
-  display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 5px;
-  font-size: 10px; margin: 0 0 8px;
-  font-variant-numeric: tabular-nums;
-}
-.hp9-bento-hero-impact.pos .hp9-bento-hero-amount,
-.hp9-bento-hero-impact.pos .hp9-bento-hero-pct { color: var(--brand-positive); }
-.hp9-bento-hero-impact.neg .hp9-bento-hero-amount,
-.hp9-bento-hero-impact.neg .hp9-bento-hero-pct { color: var(--brand-negative); }
-.hp9-bento-hero-amount { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
-.hp9-bento-hero-pct { font-weight: 500; font-size: 11px; }
-.hp9-bento-hero-sep { color: var(--border-default); }
-.hp9-bento-hero-headline {
-  font-size: clamp(14px, 1.4vw, 16px);
-  font-weight: 500;
-  letter-spacing: -0.012em;
-  line-height: 1.28;
-  color: var(--text-heading);
-  margin: 0 0 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.hp9-bento-hero-sum {
-  font-size: 12px; line-height: 1.5;
-  color: var(--text-body);
-  margin: 0 0 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.hp9-bento-hero-footer {
-  font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--text-muted); font-weight: 500;
-  margin: 0;
-  display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 5px;
-}
-.hp9-bento-hero-dot { color: var(--border-default); }
-.hp9-bento-hero-tickers { letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
-
-/* MINIS: 3 cards verticais empilhados na coluna direita */
-.hp9-bento-minis {
-  list-style: none; padding: 0; margin: 0;
-  display: flex; flex-direction: column;
-  gap: 8px;
-}
-.hp9-bento-mini {
-  display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 10px;
-  align-items: stretch;
-  padding: 8px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  background: var(--bg-base);
-  transition: transform 150ms, border-color 150ms;
-}
-.hp9-bento-mini:hover {
-  transform: translateY(-1px);
-  border-color: var(--border-default);
-}
-.hp9-bento-mini-img {
-  position: relative;
-  width: 52px; height: 52px;
-  border-radius: 7px;
-  overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  color: rgba(255,255,255,0.92);
-  flex-shrink: 0;
-}
-.hp9-bento-mini-body { min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 1px 0; }
-.hp9-bento-mini-impact {
-  font-size: 11px; font-weight: 600; margin: 0;
-  font-variant-numeric: tabular-nums; letter-spacing: -0.005em;
-  line-height: 1;
-}
-.hp9-bento-mini-impact.pos { color: var(--brand-positive); }
-.hp9-bento-mini-impact.neg { color: var(--brand-negative); }
-.hp9-bento-mini-headline {
-  font-size: 11.5px; font-weight: 500;
-  line-height: 1.32; color: var(--text-heading);
-  margin: 0;
-  letter-spacing: -0.005em;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.hp9-bento-mini-meta {
-  font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--text-muted); font-weight: 500;
-  margin: 1px 0 0;
-  font-variant-numeric: tabular-nums;
-}
 
 /* ============ HP9 NEWS — 1 hero + 3 minis por grupo (legacy, unused) ============ */
 .hp9-news-stacks {
@@ -1836,116 +1887,94 @@ definePageMeta({ layout: 'default' })
   color: var(--text-muted); font-weight: 500;
 }
 
-/* ============ HP9 RESUMO REDENTIA — editorial pull-quote ============ */
-/* Full-bleed cream: escapa o padding do .hp7-shell pra ocupar toda content area */
-.hp9-resumo-min {
-  background: #f1e19e4a;
-  width: calc(100% + 32px);
-  margin-left: -16px;
-  padding: 72px 16px;
+/* ============ RESUMO CARD (padronizado com /para-voce) ============
+   Card destacado com bg cream sutil + logo Redentia + título serif.
+   /hoje exclusivo: actions row com QuickSearch + CTA "continuar conversa". */
+.resumo-card-wrap {
+  margin-bottom: 56px;
 }
-@media (min-width: 768px) {
-  .hp9-resumo-min {
-    width: calc(100% + 64px);
-    margin-left: -32px;
-    padding: 96px 64px;
-  }
+@media (min-width: 1024px) { .resumo-card-wrap { margin-bottom: 72px; } }
+.resumo-card {
+  background: color-mix(in srgb, var(--brand-primary) 4%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 16%, transparent);
+  border-radius: 20px;
+  padding: 32px 28px;
+  display: flex; flex-direction: column;
+  gap: 20px;
 }
-.hp9-resumo-min-head { margin-bottom: 40px; max-width: 64ch; }
-.hp9-resumo-min-eyebrow {
-  font-size: 11px; letter-spacing: 0.14em;
-  color: var(--text-muted); font-weight: 600;
-  margin: 0 0 16px; text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
-}
-/* Pull-quote com filete vertical à esquerda em vez de aspas literais */
-.hp9-resumo-min-quote {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(22px, 2.6vw, 30px);
-  line-height: 1.45;
-  color: var(--text-heading);
-  margin: 0 0 28px;
-  padding-left: 24px;
-  border-left: 2px solid var(--brand-primary);
-  font-style: italic;
-  letter-spacing: -0.005em;
-  max-width: 64ch;
-}
-@media (min-width: 768px) {
-  .hp9-resumo-min-quote {
-    padding-left: 32px;
-  }
-}
-/* Attribution em uma linha: "72% causa setorial · 28% causa específica · N ativos" */
-.hp9-resumo-min-attribution {
-  display: flex; flex-wrap: wrap; align-items: baseline;
-  gap: 6px 12px;
-  margin: 0 0 40px;
-  padding-left: 24px;
-  font-size: 13px; color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  max-width: 64ch;
-}
-@media (min-width: 768px) {
-  .hp9-resumo-min-attribution { padding-left: 32px; }
-}
-.hp9-resumo-min-attribution strong {
-  color: var(--text-heading); font-weight: 600;
-}
-.hp9-resumo-min-sep { color: var(--text-muted); opacity: 0.5; }
-/* Actions row — input do QuickSearch + CTA na mesma linha.
-   padding-left alinha o conjunto com o lane do filete/attribution.
-   gap separa input e botão. flex-wrap pra fallback mobile (cai pra
-   coluna se não couber). */
-.hp9-resumo-min-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-left: 24px;
-  margin: 0 0 32px;
-}
-@media (min-width: 768px) {
-  .hp9-resumo-min-actions { padding-left: 32px; gap: 20px; }
-}
-/* Override o margin: 0 auto interno do .qs-dock pra ele ficar
-   left-aligned dentro do seu slot flex (sem centralizar se houver
-   espaço extra à direita). */
-.hp9-resumo-min-actions .qs-dock {
-  margin-left: 0;
-  margin-right: 0;
-}
+@media (min-width: 768px) { .resumo-card { padding: 40px 48px; gap: 24px; } }
 
-/* CTA dark pill — mesma receita do .wp8-cta-primary da /wallet (Ver mais).
-   text-heading bg + bg-base color, hover flipa pra brand-primary com lift.
-   Sem margin-left agora: o parent .hp9-resumo-min-actions cuida do gap. */
-.hp9-resumo-min-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 22px 14px 24px;
+.resumo-card-head { display: flex; flex-direction: column; gap: 14px; }
+.resumo-card-brand {
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.resumo-card-logo {
+  width: 28px; height: 28px;
+  display: block;
+}
+.resumo-card-cta {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.22em;
+  color: var(--brand-primary);
+  margin: 0;
+  display: inline-flex; align-items: baseline; gap: 6px;
+}
+.resumo-card-h {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 300;
+  color: var(--text-heading);
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.resumo-card-h em { font-style: italic; font-weight: 400; color: var(--brand-primary); }
+.resumo-card-quote {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.65;
+  color: var(--text-heading);
+  margin: 0;
+  padding-left: 14px;
+  border-left: 3px solid color-mix(in srgb, var(--brand-primary) 38%, transparent);
+}
+.resumo-card-attribution {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  font-size: 12.5px; color: var(--text-muted);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.resumo-card-attribution strong { color: var(--text-heading); font-weight: 600; }
+.resumo-card-sep { opacity: 0.4; }
+
+/* Actions row (exclusivo /hoje): QuickSearch dock + CTA "continuar conversa" */
+.resumo-card-actions {
+  display: flex; align-items: center; gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  margin-top: 6px;
+}
+.resumo-card-actions > :first-child { flex: 1 1 240px; min-width: 0; }
+.resumo-card-actions .qs-dock { margin-left: 0; margin-right: 0; }
+
+.resumo-card-cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 20px;
   background: var(--text-heading);
-  border: 1px solid var(--text-heading);
-  border-radius: 999px;
   color: var(--bg-base);
+  border-radius: 999px;
+  font-size: 13.5px; font-weight: 600;
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  transition: all 200ms ease-out;
-  box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--text-heading) 50%, transparent);
   flex-shrink: 0;
+  transition: transform 200ms, box-shadow 200ms;
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--text-heading) 40%, transparent);
 }
-.hp9-resumo-min-cta :deep(*) { color: var(--bg-base); flex-shrink: 0; transition: transform 200ms; }
-.hp9-resumo-min-cta:hover {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-  color: var(--text-on-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px -8px color-mix(in srgb, var(--brand-primary) 60%, transparent);
+.resumo-card-cta-btn :deep(*) { color: var(--bg-base); }
+.resumo-card-cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--text-heading) 50%, transparent);
 }
-.hp9-resumo-min-cta:hover :deep(*) { color: var(--text-on-primary); }
-.hp9-resumo-min-cta:hover .hp9-resumo-min-cta-arrow { transform: translateX(4px); }
 
 /* ============ WP8 POS GROUPS (idêntico ao wallet/index.vue) ============ */
 .wp8-pos-groups { display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }

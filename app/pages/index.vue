@@ -1,6 +1,14 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
     <div class="flex flex-col">
+    <!-- View toggle: Para você (/para-voce) | Mercado completo (/).
+         Após swap 2026-05-17: esta página agora é a /, e a "Para você"
+         editorial migrou pra /para-voce. Toggle só aparece quando o
+         tenant ativou a flag `features.showParaVoce` no admin. -->
+    <div v-if="brand.features?.showParaVoce" class="flex justify-center py-2">
+      <MoleculesHomeViewToggle />
+    </div>
+
     <!-- Hero — always rendered in SSR (was wrapped in ClientOnly before, which
          caused a 0.578 CLS spike when the ~700px hero popped in after hydration,
          pushing every other section down).
@@ -113,7 +121,7 @@
     <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
     <!-- Seção de Mercado ao Vivo — quiet style (lightness as luxury). -->
-    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-6 pt-12 md:pt-16">
+    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-6 pt-12 md:px-4 md:pt-16">
       <!-- Editorial data band: ambient amber radial + floating chart/ticker card -->
       <div class="relative flex flex-col gap-10">
         <!-- Move 2: ambient amber radial glow (offset top-center, behind data) -->
@@ -515,11 +523,12 @@
 
     <!-- QuickSearch showcase: banner largo + altura modesta vendendo a busca
          inteligente. Demonstra o ⌘K rotacionando queries reais com results
-         vivos. Edge-to-edge na largura (escapa do main padding via -mx-4).
-         Posicionado logo antes das noticias — bridge abaixo conecta as 2. -->
+         vivos. Edge-to-edge na largura (parent não tem mais padding pra
+         escapar — sem -mx-4). Posicionado logo antes das noticias — bridge
+         abaixo conecta as 2. -->
     <section
       v-if="!authStore.isAuthenticated"
-      class="qs-showcase relative overflow-hidden md:-mx-4"
+      class="qs-showcase relative overflow-hidden"
       :style="{
         order: (sectionOrder('news') ?? 0) - 1,
         background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, ${brand.colors.primary} 5%, transparent) 50%, color-mix(in srgb, ${brand.colors.primary} 3%, transparent) 100%)`,
@@ -622,7 +631,7 @@
     </section>
 
     <!-- News Section — feed de notícias de mercado (apenas Redentia por enquanto) -->
-    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="px-4 md:px-0" />
+    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="px-4 md:px-4" />
 
     <!-- Metrics Section com contador gigante -->
     <MoleculesMetricsSection v-if="showSection('metrics') && !authStore.isAuthenticated" :style="{ order: sectionOrder('metrics') }" />
@@ -724,7 +733,7 @@
     </section>
 
     <!-- Seção Blog / Guias Educacionais - Bento grid editorial -->
-    <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides') }" class="px-4 pt-12 md:px-0">
+    <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides') }" class="px-4 pt-12 md:px-4">
       <header class="mb-8 flex flex-col gap-2">
         <span class="eyebrow">Guias e estudos</span>
         <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
@@ -900,540 +909,23 @@
     <!-- Testimonials Section -->
     <MoleculesTestimonialsSection v-if="showSection('testimonials') && !authStore.isAuthenticated" :style="{ order: sectionOrder('testimonials') }" class="mt-12" />
 
-    <!-- Seção de IA -->
-    <section v-if="showSection('aiCta') && !authStore.isAuthenticated" :style="{ order: sectionOrder('aiCta'), borderColor: brand.colors.border }" class="border-t px-4 pt-16 md:px-6">
-      <div class="mx-auto max-w-5xl">
-        <!-- Header -->
-        <div class="mb-10 text-center">
-          <div class="mb-4 inline-flex items-center gap-2 bg-secondary/10 px-4 py-2 brand-pill">
-            <IconAi class="fill-secondary h-4 w-4" />
-            <span class="text-sm font-medium text-secondary">{{ brand.homeTexts.aiCtaEyebrow }}</span>
-          </div>
-          <h2 class="mb-3 text-2xl md:text-3xl lg:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
-            {{ brand.homeTexts.aiCtaTitle }}
-          </h2>
-          <p class="mx-auto max-w-xl" :style="{ color: brand.colors.textMuted }">
-            {{ brand.homeTexts.aiCtaSubtitle }}
-          </p>
-        </div>
+    <!-- Seção de IA (extraída pra componente reutilizável) -->
+    <MoleculesHomeAiCta
+      v-if="showSection('aiCta') && !authStore.isAuthenticated"
+      :style="{ order: sectionOrder('aiCta') }"
+    />
 
-        <!-- Grid de sugestões clicáveis -->
-        <div class="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <NuxtLink
-            v-for="(item, idx) in brand.homeTexts.aiCtaQuestions"
-            :key="idx"
-            to="/auth/login"
-            class="group flex flex-col gap-4 border p-5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex h-10 w-10 items-center justify-center transition-colors group-hover:bg-secondary/20 brand-card-sm" :style="{ backgroundColor: `${brand.colors.text}10` }">
-                <UIcon :name="item.icon" class="h-5 w-5 transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }" />
-              </div>
-              <span class="px-2 py-1 text-xs brand-pill transition-colors group-hover:bg-secondary/10 group-hover:text-secondary/80" :style="{ backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }">
-                {{ item.category }}
-              </span>
-            </div>
-            <p class="font-medium" :style="{ color: brand.colors.text }">{{ item.question }}</p>
-            <div class="mt-auto flex items-center gap-1 text-sm transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }">
-              <span>Perguntar</span>
-              <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </div>
-          </NuxtLink>
-        </div>
-
-        <!-- CTA Box -->
-        <div class="relative overflow-hidden border bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent p-6 md:p-8 brand-card" :style="{ borderColor: brand.colors.border }">
-          <!-- Background glow -->
-          <div class="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-secondary/20 blur-3xl" />
-          <div class="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.primary}1A` }" />
-
-          <div class="relative flex flex-col items-center gap-6 text-center">
-            <!-- Mock chat preview -->
-            <div class="w-full max-w-md rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.background}80` }">
-              <div class="flex items-start gap-3">
-                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-secondary/20">
-                  <IconAi class="fill-secondary h-4 w-4" />
-                </div>
-                <div class="flex-1 text-left">
-                  <p class="text-sm" :style="{ color: `${brand.colors.text}CC` }">
-                    {{ brand.ai.ctaGreeting }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="flex items-center gap-6 text-sm" :style="{ color: brand.colors.textMuted }">
-              <template v-for="(feature, fIdx) in brand.ai.ctaFeatures" :key="fIdx">
-                <div v-if="fIdx > 0" class="h-4 w-px" :style="{ backgroundColor: `${brand.colors.text}20` }" :class="{ 'hidden sm:block': fIdx >= 2 }" />
-                <div class="flex items-center gap-2" :class="{ 'hidden sm:flex': fIdx >= 2 }">
-                  <UIcon :name="['i-lucide-zap', 'i-lucide-brain', 'i-lucide-infinity'][fIdx] || 'i-lucide-sparkles'" class="h-4 w-4 text-primary" />
-                  <span>{{ feature }}</span>
-                </div>
-              </template>
-            </div>
-
-            <!-- CTA Button -->
-            <UButton
-              to="/auth/login"
-              color="secondary"
-              size="xl"
-              icon="i-lucide-message-circle"
-              class="group w-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
-            >
-              {{ brand.ai.ctaButton }}
-              <template #trailing>
-                <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </template>
-            </UButton>
-
-            <!-- Trust -->
-            <p class="flex items-center gap-2 text-xs" :style="{ color: `rgb(var(--brand-overlay) / 0.4)` }">
-              <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
-              7 dias grátis no Pro • Sem cartão pra começar
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== DEVELOPER PRODUCTS · API + CREATIVE (Redentia terminal only) ========== -->
-    <!--
-      One unified section hosting both API and Creative CTAs as
-      side-by-side cards. Half the vertical footprint of the old
-      two-section layout and keeps the developer-tools story in
-      a single scroll.
-    -->
-    <!-- Phase 4: removed `brand.hero.variant === 'terminal'` gate.
-         Terminal variant foi deletada (sem tenant usando). Agora a
-         section apiProduct depende apenas de showSection('apiProduct'). -->
-    <section
+    <!-- ========== DEVELOPER PRODUCTS · API + Creative + Embed (componente reutilizável) ========== -->
+    <MoleculesHomeApiProduct
       v-if="showSection('apiProduct') && !authStore.isAuthenticated"
-      :style="{ order: sectionOrder('apiProduct'), borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
-      class="api-product-section relative mt-16 overflow-hidden border-t"
-    >
-      <!-- Atmospheric layers: scanlines + grid + amber sweep -->
-      <div class="pointer-events-none absolute inset-0">
-        <div
-          class="absolute inset-0 opacity-[0.035]"
-          :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '48px 48px' }"
-        />
-        <div
-          class="absolute inset-x-0 top-0 h-px"
-          :style="{ background: `linear-gradient(90deg, transparent, ${brand.colors.primary}80, transparent)` }"
-        />
-        <div
-          class="absolute -right-32 top-32 h-[520px] w-[520px] rounded-full blur-3xl opacity-25"
-          :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)` }"
-        />
-        <div
-          class="absolute -left-40 bottom-0 h-[420px] w-[420px] rounded-full blur-3xl opacity-15"
-          :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)` }"
-        />
-      </div>
+      :style="{ order: sectionOrder('apiProduct') }"
+    />
 
-      <!-- ============ MASTHEAD ============ -->
-      <div class="relative mx-auto max-w-7xl px-6 pt-20 md:px-10 md:pt-28">
-        <div class="flex flex-wrap items-end justify-between gap-6 border-b pb-8" :style="{ borderColor: `${brand.colors.border}80` }">
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.22em]">
-              <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-                <span class="relative flex size-1.5">
-                  <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-                  <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-                </span>
-                DEVELOPERS.SHIPPED
-              </span>
-              <span :style="{ color: brand.colors.border }">/</span>
-              <span :style="{ color: brand.colors.textMuted }">2026.04 · BUILD 2</span>
-            </div>
-            <h2
-              class="font-display max-w-2xl text-[44px] leading-[0.92] tracking-tight sm:text-[60px] md:text-[80px]"
-              :style="{ color: brand.colors.text }"
-            >
-              Pegue os dados.
-              <br />
-              <span class="italic" :style="{ color: brand.colors.primary }">Faça outra coisa.</span>
-            </h2>
-          </div>
-          <p class="max-w-sm text-sm leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-            Três produtos abertos: a <span :style="{ color: brand.colors.text }">plataforma</span> que você está vendo é só uma das interfaces. Pegue os dados em JSON, em PNG pronto pro feed, ou em widget pra embedar no seu site.
-          </p>
-        </div>
-      </div>
-
-      <!-- ============ PRODUCT 01, API ============ -->
-      <a
-        href="https://api.redentia.com.br"
-        target="_blank"
-        rel="noopener"
-        class="api-row group relative block border-b transition-colors"
-        :style="{ borderColor: `${brand.colors.border}60` }"
-      >
-        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-6 px-6 py-16 md:gap-10 md:px-10 md:py-24">
-          <!-- Numero gigante outline -->
-          <div class="col-span-12 md:col-span-2">
-            <div
-              class="font-display select-none text-[120px] leading-[0.8] tracking-tighter md:text-[180px]"
-              :style="{
-                color: 'transparent',
-                WebkitTextStroke: `1.5px ${brand.colors.primary}50`,
-              }"
-            >
-              01
-            </div>
-          </div>
-
-          <!-- Conteudo -->
-          <div class="col-span-12 md:col-span-5 md:pl-4">
-            <div class="mb-5 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]">
-              <span class="rounded-full border px-2.5 py-1" :style="{ borderColor: `${brand.colors.primary}80`, color: brand.colors.primary, backgroundColor: `${brand.colors.primary}10` }">
-                PUBLIC BETA
-              </span>
-              <span :style="{ color: brand.colors.textMuted }">REDENTIA.API/V1</span>
-            </div>
-
-            <h3
-              class="font-display text-[40px] leading-[0.95] tracking-tight md:text-[64px]"
-              :style="{ color: brand.colors.text }"
-            >
-              Os dados em
-              <span class="italic" :style="{ color: brand.colors.primary }">JSON.</span>
-            </h3>
-
-            <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-              Preços, fundamentos completos, dividendos e commentaries via REST. Schemas estáveis, latência sub-50&nbsp;ms, autenticação por API key. Pronta pra rodar em produção amanhã.
-            </p>
-
-            <!-- Stats inline -->
-            <div class="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded border" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.border}40` }">
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">50+</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">ENDPOINTS</span>
-              </div>
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">42<span class="text-[12px]">ms</span></span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P50 LAT.</span>
-              </div>
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">99.9<span class="text-[12px]">%</span></span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">UPTIME</span>
-              </div>
-            </div>
-
-            <div class="mt-10 inline-flex items-center gap-3 border-b pb-1 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-colors" :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }">
-              <span>PEGAR API KEY</span>
-              <span class="transition-transform group-hover:translate-x-2">→</span>
-            </div>
-          </div>
-
-          <!-- Terminal mockup -->
-          <div class="col-span-12 md:col-span-5">
-            <div
-              class="terminal-window overflow-hidden rounded-lg border shadow-2xl"
-              :style="{
-                borderColor: `${brand.colors.border}`,
-                backgroundColor: `${brand.colors.background}F5`,
-                boxShadow: `0 30px 80px -30px ${brand.colors.primary}40, 0 0 0 1px ${brand.colors.border}40`,
-              }"
-            >
-              <!-- Title bar -->
-              <div class="flex items-center justify-between border-b px-4 py-2.5" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.surface}80` }">
-                <div class="flex items-center gap-1.5">
-                  <span class="size-2.5 rounded-full" style="background: #ff5f57" />
-                  <span class="size-2.5 rounded-full" style="background: #febc2e" />
-                  <span class="size-2.5 rounded-full" style="background: #28c840" />
-                </div>
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">~/redentia/api</span>
-                <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">●●●</span>
-              </div>
-
-              <!-- Body -->
-              <div class="px-5 py-4 font-mono-tab text-[12px] leading-[1.65] md:text-[13px]">
-                <div class="flex items-center gap-2">
-                  <span :style="{ color: brand.colors.positive }">$</span>
-                  <span :style="{ color: brand.colors.text }">curl https://api.redentia.com.br/v1/tickers/<span :style="{ color: brand.colors.primary }">PETR4</span></span>
-                </div>
-                <div class="mt-1.5 flex items-center gap-2" :style="{ color: brand.colors.textMuted }">
-                  <span :style="{ color: brand.colors.positive }">→</span>
-                  <span :style="{ color: brand.colors.positive }">200 OK</span>
-                  <span :style="{ color: brand.colors.border }">·</span>
-                  <span>42 ms</span>
-                  <span :style="{ color: brand.colors.border }">·</span>
-                  <span>1.4 KB</span>
-                </div>
-
-                <div class="mt-3 rounded border-l-2 py-1 pl-3" :style="{ borderColor: brand.colors.primary, backgroundColor: `${brand.colors.primary}08` }">
-                  <div :style="{ color: brand.colors.text }">{</div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">"symbol"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.positive }">"PETR4"</span>,
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">"price"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.text }">38.42</span>,
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">"market_cap"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.text }">501823000000</span>,
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">"dividend_yield"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.text }">0.142</span>,
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">"updated_at"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.positive }">"2026-04-11T14:32:18Z"</span>
-                  </div>
-                  <div :style="{ color: brand.colors.text }">}</div>
-                </div>
-
-                <div class="mt-3 flex items-center gap-2">
-                  <span :style="{ color: brand.colors.positive }">$</span>
-                  <span class="inline-block h-3 w-1.5 motion-safe:animate-pulse" :style="{ backgroundColor: brand.colors.primary }" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- ============ PRODUCT 02, CREATIVE ============ -->
-      <a
-        href="https://creative.redentia.com.br"
-        target="_blank"
-        rel="noopener"
-        class="api-row group relative block transition-colors"
-      >
-        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-6 px-6 py-16 md:gap-10 md:px-10 md:py-24">
-          <!-- Creative thumbs first on desktop (asymmetric flip) -->
-          <div class="order-2 col-span-12 md:order-1 md:col-span-5">
-            <div class="grid grid-cols-2 gap-3">
-              <div
-                v-for="(thumb, i) in creativeThumbs"
-                :key="thumb.slug"
-                class="creative-tile relative aspect-square overflow-hidden rounded-lg border transition-transform"
-                :style="{
-                  borderColor: `${brand.colors.border}`,
-                  backgroundColor: `${brand.colors.surface}`,
-                  boxShadow: `0 20px 50px -25px ${brand.colors.primary}30`,
-                  transform: i % 2 === 0 ? 'translateY(-12px)' : 'translateY(12px)',
-                }"
-              >
-                <div
-                  class="absolute inset-0"
-                  :style="{ background: `radial-gradient(circle at 30% 20%, ${brand.colors.primary}25, transparent 60%)` }"
-                />
-                <!-- Frame label top -->
-                <div class="absolute inset-x-0 top-0 flex items-center justify-between px-3 py-2 font-mono-tab text-[8px] uppercase tracking-[0.18em]">
-                  <span :style="{ color: brand.colors.primary }">{{ thumb.eyebrow || '·' }}</span>
-                  <span :style="{ color: brand.colors.textMuted }">1080²</span>
-                </div>
-                <!-- Center icon -->
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <UIcon :name="thumb.icon" class="size-10" :style="{ color: brand.colors.primary }" />
-                </div>
-                <!-- Bottom label -->
-                <div class="absolute inset-x-0 bottom-0 px-3 py-2 font-mono-tab text-[9px] uppercase tracking-[0.16em]" :style="{ color: brand.colors.text }">
-                  {{ thumb.label }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Conteudo -->
-          <div class="order-1 col-span-12 md:order-2 md:col-span-5 md:pl-4">
-            <div class="mb-5 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]">
-              <span class="rounded-full px-2.5 py-1" :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }">
-                NEW · GRÁTIS
-              </span>
-              <span :style="{ color: brand.colors.textMuted }">REDENTIA.CREATIVE</span>
-            </div>
-
-            <h3
-              class="font-display text-[40px] leading-[0.95] tracking-tight md:text-[64px]"
-              :style="{ color: brand.colors.text }"
-            >
-              Os dados no
-              <span class="italic" :style="{ color: brand.colors.primary }">feed.</span>
-            </h3>
-
-            <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-              Cards, rankings e mockups com dados reais, prontos pra tirar print e postar. Growth races, spotlights de ativo, notificações iPhone, top gainers. Tudo em 1080×1080.
-            </p>
-
-            <!-- Stats inline -->
-            <div class="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded border" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.border}40` }">
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">20+</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">TEMPLATES</span>
-              </div>
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">1080²</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">FORMATO</span>
-              </div>
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">PNG</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">EXPORT</span>
-              </div>
-            </div>
-
-            <div class="mt-10 inline-flex items-center gap-3 border-b pb-1 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-colors" :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }">
-              <span>ABRIR STUDIO</span>
-              <span class="transition-transform group-hover:translate-x-2">→</span>
-            </div>
-          </div>
-
-          <!-- Numero gigante outline na direita -->
-          <div class="order-3 col-span-12 flex justify-end md:col-span-2">
-            <div
-              class="font-display select-none text-[120px] leading-[0.8] tracking-tighter md:text-[180px]"
-              :style="{
-                color: 'transparent',
-                WebkitTextStroke: `1.5px ${brand.colors.primary}50`,
-              }"
-            >
-              02
-            </div>
-          </div>
-        </div>
-      </a>
-
-      <!-- ============ PRODUCT 03, EMBED ============ -->
-      <a
-        href="https://embed.redentia.com.br"
-        target="_blank"
-        rel="noopener"
-        class="api-row group relative block border-t transition-colors"
-        :style="{ borderColor: `${brand.colors.border}60` }"
-      >
-        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-6 px-6 py-16 md:gap-10 md:px-10 md:py-24">
-          <!-- Numero gigante outline -->
-          <div class="col-span-12 md:col-span-2">
-            <div
-              class="font-display select-none text-[120px] leading-[0.8] tracking-tighter md:text-[180px]"
-              :style="{
-                color: 'transparent',
-                WebkitTextStroke: `1.5px ${brand.colors.primary}50`,
-              }"
-            >
-              03
-            </div>
-          </div>
-
-          <!-- Conteudo -->
-          <div class="col-span-12 md:col-span-5 md:pl-4">
-            <div class="mb-5 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]">
-              <span class="rounded-full px-2.5 py-1" :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }">
-                NEW · GRÁTIS
-              </span>
-              <span :style="{ color: brand.colors.textMuted }">REDENTIA.EMBED</span>
-            </div>
-
-            <h3
-              class="font-display text-[40px] leading-[0.95] tracking-tight md:text-[64px]"
-              :style="{ color: brand.colors.text }"
-            >
-              Os dados no
-              <span class="italic" :style="{ color: brand.colors.primary }">seu site.</span>
-            </h3>
-
-            <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-              Widgets gratuitos de cotações, rankings, mapas de calor e calculadoras pra embedar em blog, newsletter ou dashboard. Um iframe, zero cadastro, sempre atualizado em tempo real.
-            </p>
-
-            <!-- Stats inline -->
-            <div class="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded border" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.border}40` }">
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">8</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">WIDGETS</span>
-              </div>
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">iframe</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HTML PADRÃO</span>
-              </div>
-              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
-                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">0</span>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">CADASTRO</span>
-              </div>
-            </div>
-
-            <div class="mt-10 inline-flex items-center gap-3 border-b pb-1 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-colors" :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }">
-              <span>VER WIDGETS</span>
-              <span class="transition-transform group-hover:translate-x-2">→</span>
-            </div>
-          </div>
-
-          <!-- Iframe code mockup -->
-          <div class="col-span-12 md:col-span-5">
-            <div
-              class="terminal-window overflow-hidden rounded-lg border shadow-2xl"
-              :style="{
-                borderColor: `${brand.colors.border}`,
-                backgroundColor: `${brand.colors.background}F5`,
-                boxShadow: `0 30px 80px -30px ${brand.colors.primary}40, 0 0 0 1px ${brand.colors.border}40`,
-              }"
-            >
-              <div class="flex items-center justify-between border-b px-4 py-2.5" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.surface}80` }">
-                <div class="flex items-center gap-1.5">
-                  <span class="size-2.5 rounded-full" style="background: #ff5f57" />
-                  <span class="size-2.5 rounded-full" style="background: #febc2e" />
-                  <span class="size-2.5 rounded-full" style="background: #28c840" />
-                </div>
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">~/blog/post-petr4.html</span>
-                <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">●●●</span>
-              </div>
-
-              <div class="px-5 py-4 font-mono-tab text-[12px] leading-[1.65] md:text-[13px]">
-                <div :style="{ color: brand.colors.textMuted }">
-                  <span :style="{ color: brand.colors.text }">&lt;!--</span> cotação PETR4 no meu blog <span :style="{ color: brand.colors.text }">--&gt;</span>
-                </div>
-                <div class="mt-3 rounded border-l-2 py-1 pl-3" :style="{ borderColor: brand.colors.primary, backgroundColor: `${brand.colors.primary}08` }">
-                  <div :style="{ color: brand.colors.text }">
-                    <span :style="{ color: brand.colors.primary }">&lt;iframe</span>
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">src</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"https://embed.redentia.com.br/</span>
-                  </div>
-                  <div class="pl-8">
-                    <span :style="{ color: brand.colors.positive }">ticker/small?ticker=PETR4"</span>
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">width</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"320"</span>
-                    <span :style="{ color: brand.colors.primary }"> height</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"80"</span>
-                  </div>
-                  <div class="pl-4">
-                    <span :style="{ color: brand.colors.primary }">frameborder</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"0"</span>
-                    <span :style="{ color: brand.colors.primary }"> loading</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"lazy"</span><span :style="{ color: brand.colors.primary }">&gt;</span>
-                  </div>
-                  <div :style="{ color: brand.colors.primary }">&lt;/iframe&gt;</div>
-                </div>
-
-                <div class="mt-3 flex items-center gap-2 text-[11px]" :style="{ color: brand.colors.textMuted }">
-                  <span :style="{ color: brand.colors.positive }">✓</span>
-                  <span>cole, salve, publique. pronto.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </a>
-    </section>
-
-    <!-- ============ FAQ home publica ============
-         Phase 5+: agora config-driven. Toggle via `homeSections.faq`
-         + ordem via sectionOrder. Conteudo via `brand.faq.{eyebrow,
-         title, items}`. Defaults caem em `homeFaqItems` se config
-         vazia. Schema FAQPage emitido pelo proprio MoleculesFAQ. -->
-    <section
+    <!-- ============ FAQ home pública (componente reutilizável) ============ -->
+    <MoleculesHomeFaqBlock
       v-if="showSection('faq') && !authStore.isAuthenticated"
-      class="quiet-section relative"
-      :style="{ order: sectionOrder('faq'), borderColor: 'var(--brand-border)' }"
-    >
-      <div class="mx-auto max-w-3xl px-6">
-        <MoleculesFAQ
-          :eyebrow="brand.faq?.eyebrow || 'Dúvidas comuns'"
-          :title="brand.faq?.title || `Perguntas frequentes sobre a ${brand.name}`"
-          :items="resolvedFaqItems"
-        />
-      </div>
-    </section>
+      :style="{ order: sectionOrder('faq') }"
+    />
     </div>
   </NuxtLayout>
 </template>
@@ -1465,15 +957,8 @@ const userFirstName = computed(() => {
 // useOnboardingChecklist. A home autenticada agora so renderiza o
 // greeting; o "que fazer agora" vive sticky no canto.
 
-// Creative studio thumbnails, used in the redentia home CTA section.
-// Each entry links to a pre-filled creative template on the
-// creative.redentia.com.br subdomain.
-const creativeThumbs = [
-  { slug: 'growth-race', path: '/growth-race?tickers=PETR4,VALE3,ITUB4&reinvest=true', icon: 'i-lucide-trending-up', eyebrow: 'NOVO', label: 'Growth Race', isNew: true },
-  { slug: 'asset-spotlight', path: '/asset-spotlight?ticker=PETR4', icon: 'i-lucide-star', eyebrow: 'DESTAQUE', label: 'Spotlight', isNew: false },
-  { slug: 'ranking-top', path: '/ranking/top', icon: 'i-lucide-trophy', eyebrow: 'RANKING', label: 'Top Altas', isNew: false },
-  { slug: 'market-updates', path: '/market-updates?format=square', icon: 'i-lucide-bell', eyebrow: 'UPDATE', label: 'Notificação', isNew: false },
-]
+// (creativeThumbs movido pra MoleculesHomeApiProduct;
+//  homeFaqItems + resolvedFaqItems movidos pra MoleculesHomeFaqBlock)
 
 
 type HomeSectionId = typeof brand.homeSections[number]['id']
@@ -1526,74 +1011,6 @@ const navigationLinks = computed(() => [
   },
 ])
 
-// FAQ da home publica — Renderizado pelo <MoleculesFAQ> abaixo do bloco
-// "PRODUCT 03, EMBED" so quando nao-logado. As perguntas sao calibradas
-// pra topicos que o Google Trends mostra como long-tails recorrentes
-// ("redentia e gratis", "redentia e segura", "redentia vale a pena",
-// "como funciona redentia"). Schema FAQPage e emitido pelo proprio
-// componente, virando rich snippet candidate pra busca organica.
-const homeFaqItems = computed(() => [
-  {
-    question: `O que é a ${brand.name}?`,
-    answer: `${brand.name} é uma plataforma brasileira de análise de investimentos com inteligência artificial integrada. Reúne dados em tempo real da B3 e Tesouro Direto, calculadoras financeiras (juros compostos, dividend yield, preço teto, IR), rankings de ações e FIIs, simuladores de carteira e um assistente IA que responde sobre qualquer ativo, setor ou estratégia em português. Acesso 100% online, sem instalação.`,
-  },
-  {
-    question: `A ${brand.name} é gratuita?`,
-    answer: `Sim. A ${brand.name} oferece acesso gratuito a calculadoras, rankings, cotações da B3, glossário, guias e ferramentas básicas de análise. Os planos pagos (${brand.name} Pro e ${brand.name} Max) liberam recursos avançados de IA, análise de carteira em tempo real, alertas customizados, exportação de relatórios e integração com corretora. Veja a comparação completa na página de planos.`,
-  },
-  {
-    question: `A ${brand.name} é segura e confiável?`,
-    answer: `Sim. A ${brand.name} não recebe nem custodia dinheiro, é uma plataforma de informação e análise. Os dados de mercado vêm de fontes oficiais (B3, Tesouro Direto, Banco Central, CVM). A plataforma usa criptografia HTTPS em todas as conexões, autenticação OAuth e armazenamento seguro de dados. Não pedimos senha de corretora nem credenciais bancárias para mostrar análises.`,
-  },
-  {
-    question: `Por que a ${brand.name} é considerada a melhor plataforma de investimentos?`,
-    answer: `A ${brand.name} se destaca por três pilares: (1) IA conversacional treinada em metodologias clássicas de análise (Graham, Bazin, Buffett) que explica decisões em português, sem jargão; (2) framework proprietário de carteira em 9 camadas que valida composição, retorno esperado, correlação e stress-test antes de qualquer recomendação; (3) cobertura unificada de ações, FIIs, ETFs, BDRs, Tesouro Direto e cripto numa interface única, sem precisar trocar de site.`,
-  },
-  {
-    question: `Como funciona a inteligência artificial da ${brand.name}?`,
-    answer: `O assistente IA da ${brand.name} responde perguntas sobre qualquer ativo, setor ou estratégia consultando dados em tempo real da B3, fundamentos das empresas, histórico de dividendos e notícias. Diferente de chatbots genéricos, ele segue um framework de carteira em 9 camadas (perfil, diversificação geográfica, validação de retorno, stress-test, etc.) e cita fontes para tudo que afirma. Funciona em planos Pro e Max.`,
-  },
-  {
-    question: `Como começar a usar a ${brand.name}?`,
-    answer: `Basta criar uma conta gratuita com email ou Google em menos de 30 segundos. Depois você pode buscar qualquer ticker (PETR4, VALE3, HGLG11), usar as calculadoras, fazer simulações de carteira e tirar dúvidas com a IA. Não precisa cartão de crédito para começar, o trial Pro de 7 dias é opcional e sem cobrança automática.`,
-  },
-  {
-    question: `Quais ativos posso analisar na ${brand.name}?`,
-    answer: `Todos os ativos negociados na bolsa brasileira (B3): mais de 400 ações, todos os FIIs (fundos imobiliários), ETFs, BDRs, e o universo completo do Tesouro Direto (Selic, Prefixado, IPCA+). A plataforma também cobre criptomoedas (Bitcoin, Ethereum, etc.) e indicadores macro (Selic, IPCA, dólar, IBOV, IFIX) atualizados diariamente após o pregão.`,
-  },
-  {
-    question: `A ${brand.name} substitui minha corretora?`,
-    answer: `Não. A ${brand.name} é uma plataforma de análise e decisão, ela ajuda você a escolher o que comprar e quando rebalancear. Para executar a ordem (compra ou venda), você ainda usa sua corretora preferida (XP, Rico, Clear, Inter, NuInvest, etc.). Pense na ${brand.name} como o "cérebro" que orienta as decisões, e a corretora como o "braço" que executa.`,
-  },
-  {
-    question: `Posso conectar minha carteira de outra corretora?`,
-    answer: `Sim. A ${brand.name} importa carteira de qualquer corretora brasileira via planilha CEI (B3) ou upload manual de operações. Importação direta com algumas corretoras (XP, Rico, Clear, BTG, Inter) está em rollout no plano Pro+. Após importar, você vê alocação, performance, dividendos recebidos e análise de risco da carteira completa.`,
-  },
-  {
-    question: `A ${brand.name} tem aplicativo para celular?`,
-    answer: `Sim, a ${brand.name} é uma PWA (Progressive Web App), funciona como app nativo em iPhone e Android sem precisar baixar da App Store. Basta abrir no Safari/Chrome e adicionar à tela de início. Inclui notificações push para alertas de preço, dividendos e relatórios.`,
-  },
-  {
-    question: `Como cancelar minha assinatura na ${brand.name}?`,
-    answer: `O cancelamento é feito direto no painel da conta, em Configurações → Gerenciar plano, em 2 cliques. Sem ligação, sem retenção. Você mantém acesso ao plano pago até o fim do período já pago e depois volta automaticamente para o plano gratuito, sem perder histórico nem carteiras importadas.`,
-  },
-])
-
-// FAQ resolvido: prefere `brand.faq.items` quando configurado, fallback
-// para o conjunto hardcoded acima. Substitui `{name}` pelo brand.name
-// pra strings vindas do admin (admin nao precisa repetir o nome).
-const resolvedFaqItems = computed(() => {
-  const items = (brand as any).faq?.items
-  if (!Array.isArray(items) || items.length === 0) {
-    return homeFaqItems.value
-  }
-  const sub = (s: string) => typeof s === 'string'
-    ? s.replace(/\{name\}/g, brand.name).replace(/\{brand\}/g, brand.name)
-    : s
-  return items
-    .filter((it: any) => it && it.question && it.answer)
-    .map((it: any) => ({ question: sub(it.question), answer: sub(it.answer) }))
-})
 
 usePageSeo({
   title: brand.seo.title,

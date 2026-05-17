@@ -230,7 +230,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
 </script>
 
 <template>
-  <section class="hero-radiograph relative overflow-hidden md:-mx-4 md:-mt-4" :data-mode="resolvedMode">
+  <section class="hero-radiograph relative overflow-hidden" :data-mode="resolvedMode">
     <!-- ============ BACKGROUND PASTEL + WHITE WASH ============ -->
     <!-- Stack (back → front):
            1. baseWash: top-to-bottom linear that lands on pure white at 70%
@@ -289,52 +289,49 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             sentindo "grande" sem expulsar input/chips pra fora da
             tela. sm:44px e md:60px continuam servindo telas maiores.
           -->
-          <h1 class="hero-radiograph__headline mb-4 max-w-2xl text-[36px] leading-[1.05] tracking-[-0.02em] sm:text-[44px] md:mb-6 md:text-[60px] md:leading-[1.04] md:tracking-normal lg:text-[72px]" :style="{ color: 'var(--text-heading)' }">
-            Descubra os riscos escondidos da sua
-            <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">carteira</em><span :style="{ color: 'var(--brand-primary)' }">.</span>
+          <h1 class="hero-radiograph__headline mb-4 max-w-2xl text-[34px] leading-[1.06] tracking-[-0.02em] sm:text-[40px] md:mb-6 md:text-[52px] md:leading-[1.06] md:tracking-normal lg:text-[60px]" :style="{ color: 'var(--text-heading)' }">
+            Do Caos do mercado ao
+            <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">impacto</em>
+            na sua carteira.
           </h1>
 
           <!--
-            Subtitle de 30+ palavras só aparece a partir de md+. No
-            mobile ela ocupava 5 linhas e basicamente repetia o que o
-            headline já diz. Esconder libera a maior parte do ganho de
-            altura sem custo de mensagem (CTA "Analisar minha carteira
-            grátis" do input já tem promessa concreta).
+            Subtitle só aparece a partir de md+. No mobile o headline +
+            CTA já dão a mensagem; esconder libera altura. Highlight
+            "o que realmente" em italic+amber pra ecoar o tom do banner
+            CTA da home (/).
           -->
           <p class="mb-8 hidden max-w-xl text-[16px] leading-relaxed md:block md:text-[18px]" :style="{ color: 'var(--text-body)' }">
-            Adicione seus ativos e a Redent.IA cruza fundamentos, notícias, dividendos, concentração e mercado para mostrar o que está bom, o que está ruim e o que mudou.
+            A Redentia filtra notícias, ativos e indicadores para mostrar
+            <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">o que realmente</em>
+            mexeu nos seus investimentos.
           </p>
 
-          <!-- CTA: empurra direto pra /raio-x onde o flow de signup +
-               trial Pro acontece. Copy alinhada com /pricing e /raio-x:
-               "7 dias grátis no Pro" e a promessa real, depois R$ 49/mes.
-               Antes era "Analisar minha carteira grátis" + "Sem cadastro"
-               — desalinhado com o billing Pro/Max ja em producao. -->
+          <!-- CTA principal: vai pra / (Resumo Redentia, agora a home). -->
           <div class="mb-3 md:mb-5">
             <NuxtLink
-              to="/raio-x"
-              class="hero-radiograph__cta quiet-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-shadow md:text-[16px]"
+              to="/"
+              class="hero-radiograph__cta hero-radiograph__cta--resumo quiet-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-shadow md:text-[16px]"
             >
               <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              <span>Começar 7 dias grátis</span>
+              <span>Ver Resumo Redentia</span>
               <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
             </NuxtLink>
           </div>
 
-          <!-- Trust signals alinhados com o trial Pro real:
-               sem cartao pra comecar, resultado em 2 min, cancele em 1 click. -->
+          <!-- Trust signals alinhados com a promessa do Resumo. -->
           <ul class="hero-radiograph__trust">
             <li>
-              <UIcon name="i-lucide-shield-check" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Sem cartão pra começar</span>
-            </li>
-            <li>
               <UIcon name="i-lucide-clock" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Resultado em 2 min</span>
+              <span>30 segundos de leitura</span>
             </li>
             <li>
-              <UIcon name="i-lucide-undo-2" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Cancele em 1 click</span>
+              <UIcon name="i-lucide-sparkles" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
+              <span>3 fatores que importam</span>
+            </li>
+            <li>
+              <UIcon name="i-lucide-shield-check" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
+              <span>Determinístico, sem IA</span>
             </li>
           </ul>
         </div>

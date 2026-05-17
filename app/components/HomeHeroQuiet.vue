@@ -14,7 +14,7 @@
   - dois CTAs primary + ghost
 -->
 <template>
-  <section class="quiet-hero relative overflow-hidden md:-mx-4 md:-mt-4" :data-mode="resolvedMode">
+  <section class="quiet-hero relative overflow-hidden" :data-mode="resolvedMode">
     <!-- ============ MESH GRADIENT DRAMATICO ============ -->
     <div class="quiet-hero__bg pointer-events-none absolute inset-0">
       <!-- Blob amber principal, top-right, dramatico -->

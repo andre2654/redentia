@@ -8,7 +8,7 @@
        tag innerHTML and DOES propagate post-hydration. -->
   <div
     class="flex min-h-screen flex-col"
-    :style="{ backgroundColor: 'var(--brand-background)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }"
+    :style="{ backgroundColor: contentBg, paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }"
   >
     <!-- Skip link: visible only on focus, jumps screen-reader/keyboard users past the ticker+nav -->
     <a
@@ -230,8 +230,7 @@
 
     <main
       id="main-content"
-      class="md:px-4 md:py-4"
-      :style="{ scrollMarginTop: '80px' }"
+      :style="{ backgroundColor: contentBg, scrollMarginTop: '80px' }"
     >
       <!-- CTA contextual — placement derivado da rota (calculadora-top,
            ranking-top, asset-top, etc.). Mount unico cobre todas as
@@ -261,6 +260,8 @@ defineProps({
 
 const brand = useBrand()
 const menuMobileActive = ref(false)
+const tenantSlug = useTenantSlug()
+const layoutColorMode = useColorMode()
 
 function hexWithAlpha(hex: string, alpha: string): string {
   return `${hex}${alpha}`
@@ -285,6 +286,16 @@ const rankingsEnabled = computed(() => {
 })
 const calculatorsEnabled = computed(() => features.value.showCalculators !== false)
 const guidesEnabled = computed(() => features.value.showGuides !== false)
+
+// Content-area bg: para o tenant Redentia (default), forçamos pure
+// white/black por modo (light/dark) pra criar contraste com a sidebar.
+// Tenants com paleta propria (Me Poupe, etc) mantêm o brand.colors.background.
+const contentBg = computed(() => {
+  if (tenantSlug === 'redentia') {
+    return layoutColorMode.value === 'dark' ? '#000000' : '#ffffff'
+  }
+  return brand.colors.background
+})
 
 const navGroups = computed<Array<
   | { key: NavKey; label: string; kind: 'mega'; width: number; columns: NavColumn[] }

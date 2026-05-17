@@ -162,6 +162,19 @@ const CATEGORIES: CategoryDef[] = [
       { key: 'showEcosystemLinks', label: 'Ecosystem links', hint: 'Outros produtos do tenant' },
     ],
   },
+  {
+    id: 'home',
+    label: 'Home views',
+    icon: 'i-lucide-layout',
+    hint: 'Views editoriais alternativas na home anônima.',
+    items: [
+      {
+        key: 'showParaVoce',
+        label: 'View "Para você"',
+        hint: 'Habilita rota /para-voce + toggle "Para você | Mercado completo" no topo da home. Desligar: rota 404 + toggle some.',
+      },
+    ],
+  },
 ]
 
 /**

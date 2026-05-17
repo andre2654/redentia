@@ -28,6 +28,9 @@ const PATH_FLAGS: Array<{ prefix: string; flag: string }> = [
   // sao tratados no special-case abaixo pra backward-compat.
   { prefix: '/download', flag: 'showApp' },
   { prefix: '/baixar', flag: 'showApp' },
+  // View editorial alternativa da home (Redentia filter): opt-in
+  // per-tenant. Default OFF — só liga quando admin marca `showParaVoce: true`.
+  { prefix: '/para-voce', flag: 'showParaVoce' },
 ]
 
 const SKIP_PREFIXES = ['/_', '/api/', '/admin', '/auth', '/backoffice']
@@ -55,6 +58,10 @@ export default defineNuxtRouteMiddleware((to) => {
     enabled = features.showApp === true
       || features.showDownloadPage === true
       || features.showAppStoreLinks === true
+  } else if (match.flag === 'showParaVoce') {
+    // Default-OFF: rota /para-voce só funciona quando admin marca
+    // explicitamente true no config do tenant (opt-in).
+    enabled = features.showParaVoce === true
   } else {
     // Default-on: undefined/null vira true (backward-compat). Pra
     // explicitamente desligar, admin setta `false` no config.

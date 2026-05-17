@@ -22,7 +22,7 @@
           Em alguns minutos seu Raio-X em 9 dimensões fica pronto.
         </p>
         <div class="wp8-empty-ctas">
-          <NuxtLink to="/integracoes" class="wp8-result-btn">
+          <NuxtLink to="/settings/integracoes" class="wp8-result-btn">
             <UIcon name="i-lucide-link-2" class="size-4" />
             <span>Conectar Open Finance</span>
             <UIcon name="i-lucide-arrow-right" class="size-4 wp8-result-arrow" />
