@@ -133,22 +133,32 @@
           </div>
         </div>
 
-        <!-- RIGHT: chart intraday + stats -->
+        <!-- RIGHT: série diária 30 dias + stats. NÃO é intraday — o
+             endpoint /api/indices/ibov/prices?mode=1mo retorna closes
+             diários. Cor e stat top-right refletem a variação do
+             período (start→end), não o pct DE HOJE. -->
         <div class="hp9-main-right">
           <header class="hp9-chart-head">
             <div>
-              <p class="calc-result-eyebrow">O dia em um traço</p>
-              <h3 class="hp9-chart-title">Curva <em class="hp9-italic">intraday.</em></h3>
+              <p class="calc-result-eyebrow">Últimos 30 dias</p>
+              <h3 class="hp9-chart-title">Variação <em class="hp9-italic">no período.</em></h3>
             </div>
             <p v-if="homeLoading" class="hp9-chart-stat"><span class="wp8-skel wp8-skel-chip" style="width: 60px;" /></p>
-            <p v-else :class="['hp9-chart-stat', home.ibov.changePct >= 0 ? 'pos' : 'neg']">{{ formatChangePct(home.ibov.changePct) }}</p>
+            <p v-else :class="['hp9-chart-stat', home.chartStats.periodChangePct >= 0 ? 'pos' : 'neg']">{{ formatChangePct(home.chartStats.periodChangePct) }}</p>
           </header>
 
           <div v-if="homeLoading" class="hp9-curve">
             <span class="wp8-skel wp8-skel-curve" />
           </div>
           <div v-else class="hp9-curve">
-            <svg viewBox="0 0 800 240" preserveAspectRatio="none">
+            <svg
+              ref="chartSvgRef"
+              viewBox="0 0 800 240"
+              preserveAspectRatio="none"
+              class="hp9-chart-svg"
+              @mousemove="onChartMouseMove"
+              @mouseleave="onChartMouseLeave"
+            >
               <defs>
                 <linearGradient id="hp9-home-grad" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" :stop-color="ibovChartColor" stop-opacity="0.22" />
@@ -156,29 +166,43 @@
                 </linearGradient>
               </defs>
               <line v-for="y in [60, 120, 180]" :key="y" x1="0" :y1="y" x2="800" :y2="y" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="2 4" />
-              <polygon :points="ibovChartPath.polygon" fill="url(#hp9-home-grad)" />
-              <polyline :points="ibovChartPath.polyline" fill="none" :stroke="ibovChartColor" stroke-width="2" />
+              <polygon :points="ibovChartGeom.polygon" fill="url(#hp9-home-grad)" />
+              <polyline :points="ibovChartGeom.polyline" fill="none" :stroke="ibovChartColor" stroke-width="2" />
+
+              <g v-if="hoverPoint" class="hp9-chart-hover">
+                <line :x1="hoverPoint.x" y1="0" :x2="hoverPoint.x" y2="240" stroke="var(--text-heading)" stroke-width="1" stroke-dasharray="3 3" opacity="0.35" />
+                <circle :cx="hoverPoint.x" :cy="hoverPoint.y" r="5" :fill="ibovChartColor" stroke="var(--bg-default)" stroke-width="2" />
+              </g>
             </svg>
+
+            <div
+              v-if="hoverPoint"
+              class="hp9-chart-tip"
+              :style="{ left: `${(hoverPoint.x / 800) * 100}%` }"
+            >
+              <p class="hp9-chart-tip-date">{{ hoverPoint.label }}</p>
+              <p class="hp9-chart-tip-val">{{ formatNumberPtBR(hoverPoint.price) }}</p>
+            </div>
           </div>
 
           <ul class="hp9-curve-stats">
             <li>
-              <p class="hp9-cs-label">Abertura</p>
+              <p class="hp9-cs-label">Início</p>
               <p v-if="homeLoading" class="hp9-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
               <p v-else class="hp9-cs-val">{{ home.chartStats.open }}</p>
             </li>
             <li>
-              <p class="hp9-cs-label">Pior momento</p>
+              <p class="hp9-cs-label">Mínima</p>
               <p v-if="homeLoading" class="hp9-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
               <p v-else class="hp9-cs-val neg">{{ home.chartStats.worst }}</p>
             </li>
             <li>
-              <p class="hp9-cs-label">Fechamento</p>
+              <p class="hp9-cs-label">Variação</p>
               <p v-if="homeLoading" class="hp9-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
-              <p v-else :class="['hp9-cs-val', home.ibov.changePct >= 0 ? 'pos' : 'neg']">{{ home.chartStats.close }}</p>
+              <p v-else :class="['hp9-cs-val', home.chartStats.periodChangePct >= 0 ? 'pos' : 'neg']">{{ home.chartStats.close }}</p>
             </li>
             <li>
-              <p class="hp9-cs-label">Δ vs S&amp;P</p>
+              <p class="hp9-cs-label">Hoje vs S&amp;P</p>
               <p v-if="homeLoading" class="hp9-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
               <p v-else class="hp9-cs-val">{{ home.chartStats.deltaVsSp }}</p>
             </li>
@@ -669,32 +693,61 @@ function formatIndexValue(ix: { key: string; value: number }) {
   return formatNumberPtBR(ix.value)
 }
 
-// Polyline + polygon SVG paths derivados da série IBOV.
-// viewBox = 800×240, padding vertical de 20px (chart vive entre y=20 e y=220).
-const ibovChartPath = computed(() => {
+// Geometria da curva. viewBox = 800×240, plot entre y=20 e y=220.
+// Expõe os pontos individuais (não só strings) pra o hover indexar e
+// posicionar tooltip — mesmo pattern do chart de /wallet/hoje.
+const ibovChartGeom = computed(() => {
   const series = home.value.ibov.series
-  if (!series.length) return { polyline: '', polygon: '' }
+  if (!series.length) return { points: [], polyline: '', polygon: '' }
   const prices = series.map((s) => s.price)
   const min = Math.min(...prices)
   const max = Math.max(...prices)
   const range = max - min || 1
   const stepX = series.length > 1 ? 800 / (series.length - 1) : 0
-  // y inverso (SVG: 0=topo). Normaliza em [20, 220].
   const points = series.map((s, i) => {
     const x = i * stepX
     const y = 220 - ((s.price - min) / range) * 200
-    return `${x.toFixed(1)},${y.toFixed(1)}`
+    return { x, y, price: s.price, date: s.date }
   })
-  const polyline = points.join(' ')
-  // Polygon: fecha em baixo (y=240) começando e terminando em x=0/x=800
+  const polyline = points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
   const polygon = `0,240 ${polyline} 800,240`
-  return { polyline, polygon }
+  return { points, polyline, polygon }
 })
 
-// Cor do chart (verde se IBOV subindo, vermelho se caindo).
+// Cor do chart baseada na variação DO PERÍODO (start→end da série), não
+// no pct DE HOJE. Sem isso, dias em que IBOV sobe 0.1% mas a curva
+// mensal está caindo 6% pintavam de verde — visualmente uma mentira.
 const ibovChartColor = computed(() =>
-  home.value.ibov.changePct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
+  home.value.chartStats.periodChangePct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 )
+
+// Hover tooltip: mesmo pattern de /wallet/hoje (chartSvgRef + hoverIdx
+// indexando os pontos da geometria). Posição do tip em % da largura.
+const hoverIdx = ref<number | null>(null)
+const chartSvgRef = ref<SVGSVGElement | null>(null)
+
+function onChartMouseMove(e: MouseEvent) {
+  const svg = chartSvgRef.value
+  if (!svg) return
+  const n = ibovChartGeom.value.points.length
+  if (!n) return
+  const rect = svg.getBoundingClientRect()
+  const xRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+  hoverIdx.value = Math.round(xRatio * (n - 1))
+}
+function onChartMouseLeave() {
+  hoverIdx.value = null
+}
+const hoverPoint = computed(() => {
+  if (hoverIdx.value === null) return null
+  const p = ibovChartGeom.value.points[hoverIdx.value]
+  if (!p) return null
+  // "2026-04-29" → "29 abr" (compacto, sem o "de" do locale pt-BR).
+  const MONTHS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']
+  const [, m, d] = p.date.slice(0, 10).split('-').map(Number)
+  const label = `${String(d).padStart(2, '0')} ${MONTHS[(m ?? 1) - 1]}`
+  return { x: p.x, y: p.y, price: p.price, label }
+})
 
 // Banner "mercado fechado": quando a data do último pregão (as_of_date do IBOV)
 // é diferente de hoje em BRT (final de semana, feriado, antes da abertura).
@@ -1309,9 +1362,42 @@ function formatRelativeTime(iso: string): string {
 .hp9-curve {
   position: relative; flex: 1;
   min-height: 180px;
+  /* --bg-default fallback pra --bg-elevated (mesma justificativa da
+     /wallet/hoje: o token não existe globalmente, garante tooltip
+     opaco em vez de transparente). */
+  --bg-default: var(--bg-elevated);
 }
 @media (min-width: 1024px) { .hp9-curve { min-height: 220px; } }
 .hp9-curve svg { width: 100%; height: 100%; display: block; }
+.hp9-chart-svg { cursor: crosshair; }
+.hp9-chart-hover { pointer-events: none; }
+.hp9-chart-tip {
+  position: absolute;
+  top: 6px;
+  transform: translateX(-50%);
+  /* Translúcido + blur: deixa a curva entrever atrás do tip, igual ao
+     /wallet/hoje. 88% de opacidade no fundo + backdrop-blur 6px. */
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,0.18);
+  pointer-events: none;
+  min-width: 140px;
+  z-index: 5;
+  transition: left 60ms linear;
+}
+.hp9-chart-tip-date {
+  font-size: 11px; color: var(--text-muted); margin: 0 0 4px;
+  font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.hp9-chart-tip-val {
+  font-size: 16px; font-weight: 500; color: var(--text-heading);
+  margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+}
 
 .hp9-curve-stats {
   list-style: none; padding: 0; margin: 0;

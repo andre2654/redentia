@@ -95,12 +95,16 @@ export type HomeData = {
   leads: HomeLead[]
   // 4 pílulas do "O que mais pesou"
   pesouPills: HomePesouPill[]
-  // Stats footer do chart (Abertura / Pior momento / Fechamento / Δ vs S&P)
+  // Stats footer do chart (Início / Mínima / Variação / Hoje vs S&P).
+  // periodChangePct é o número cru da variação start→end (usado pra
+  // colorir o chart e o stat top-right, evitando o bug onde a curva
+  // cai 6% no mês mas pintava de verde porque o pct DE HOJE era +0.1%).
   chartStats: {
     open: string
     worst: string
     close: string
     deltaVsSp: string
+    periodChangePct: number
   }
   // Lista de índices pra seção "Mercado geral"
   marketIndices: HomeMarketIndex[]
@@ -124,7 +128,7 @@ function emptyShape(): HomeData {
     miniFactors: [],
     leads: [],
     pesouPills: [],
-    chartStats: { open: '', worst: '', close: '', deltaVsSp: '' },
+    chartStats: { open: '', worst: '', close: '', deltaVsSp: '', periodChangePct: 0 },
     marketIndices: [],
     topGainers: [],
     topLosers: [],
@@ -190,8 +194,10 @@ async function fetchHomeData(): Promise<HomeData> {
 
   // 3 fetches em paralelo. Cada um falha individualmente sem derrubar
   // a tela inteira (graceful degradation conforme ADR-007).
+  // ?scope=ibov filtra top movers às constituintes do Ibovespa
+  // (sem isso o backend retorna top movers de TODA a B3 — DOTZ3, etc).
   const [snapshotRes, ibovSeriesRes, newsRes] = await Promise.allSettled([
-    $fetch<any>(`${baseURL}/market/snapshot`),
+    $fetch<any>(`${baseURL}/market/snapshot?scope=ibov`),
     $fetch<any>(`${baseURL}/indices/ibov/prices?mode=1mo`),
     $fetch<any>(`${baseURL}/news/latest?limit=20`),
   ])
@@ -251,6 +257,7 @@ async function fetchHomeData(): Promise<HomeData> {
     worst: worst && open ? formatPctText(worstPctFromOpen) : '—',
     close: formatPctText(closePctFromOpen),
     deltaVsSp: ppText(ibovChangePct - sp500ChangePct),
+    periodChangePct: closePctFromOpen,
   }
 
   // --- Market indices list ---
