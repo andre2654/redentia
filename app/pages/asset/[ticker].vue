@@ -1814,13 +1814,24 @@ async function fetchChartData() {
     else if (selectedTimeRange.value === '3years') period = '3y'
     else if (selectedTimeRange.value === 'full') period = 'full'
     const data = await assetHistoricPrices(ticker, period)
-    // Transforma para o formato aceito pelo gráfico
+    // Transforma para o formato aceito pelo gráfico.
+    // IMPORTANTE: `new Date('2026-05-18')` parseia como midnight UTC.
+    // Em BRT (UTC-3) isso vira 17/mai 21h, e o tooltip mostra "17/mai"
+    // pro último dia. Fix: construir como midday local pra ficar imune
+    // ao TZ offset de -3 até -12 (ou seja, qualquer continente).
     chartData.value = Array.isArray(data)
-      ? data.map((item) => ({
-          date: item.price_at,
-          value: item.market_price,
-          timestamp: new Date(item.price_at).getTime(),
-        }))
+      ? data.map((item) => {
+          const iso = String(item.price_at || '').slice(0, 10)
+          const [y, m, d] = iso.split('-').map(Number)
+          const ts = (y && m && d)
+            ? new Date(y, m - 1, d, 12, 0, 0).getTime()
+            : new Date(item.price_at).getTime()
+          return {
+            date: item.price_at,
+            value: item.market_price,
+            timestamp: ts,
+          }
+        })
       : []
   } catch (error) {
     console.error('Error fetching chart data:', error)

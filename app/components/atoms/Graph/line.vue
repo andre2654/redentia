@@ -810,6 +810,21 @@ function formatAxisCurrency(value: number): string {
 function formatXAxisLabel(rawLabel: string): string {
   if (!rawLabel) return rawLabel
 
+  // ISO-date sem hora ('2026-05-18') é parsed como midnight UTC.
+  // Em BRT (UTC-3) isso vira o dia anterior 21h — toLocaleDateString
+  // formata como dia-1. Fix: forçar noon local pra ficar imune ao TZ.
+  const isoMatch = rawLabel.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (isoMatch) {
+    const [, y, m, d] = isoMatch
+    try {
+      return new Date(Number(y), Number(m) - 1, Number(d), 12, 0, 0)
+        .toLocaleDateString(props.locale, {
+          day: '2-digit',
+          month: props.locale === 'en-US' ? 'short' : '2-digit',
+        })
+    } catch { /* fall through */ }
+  }
+
   const parsed = Date.parse(rawLabel)
   if (!Number.isNaN(parsed)) {
     try {
@@ -844,8 +859,15 @@ function formatTooltipDate(rawDate: string): string {
   ]
 
   const tryParse = (value: string): Date | null => {
-    const parsed = new Date(value)
-    if (!Number.isNaN(parsed.getTime())) return parsed
+    // ISO YYYY-MM-DD: parsed pelo JS como midnight UTC. Em BRT
+    // (UTC-3) isso vira o dia anterior 21h — date.getDate() retorna
+    // dia-1. Fix: construir como noon local pra ficar imune ao TZ.
+    const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (isoMatch) {
+      const [, y, m, d] = isoMatch.map(Number)
+      const candidate = new Date(y, m - 1, d, 12, 0, 0)
+      if (!Number.isNaN(candidate.getTime())) return candidate
+    }
 
     const slashMatch = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/)
     if (slashMatch) {
@@ -864,6 +886,11 @@ function formatTooltipDate(rawDate: string): string {
         if (!Number.isNaN(candidate.getTime())) return candidate
       }
     }
+
+    // Fallback: native parse. Pode shiftar pra TZ — só usar quando
+    // ISO/slash falham.
+    const parsed = new Date(value)
+    if (!Number.isNaN(parsed.getTime())) return parsed
 
     return null
   }
