@@ -37,6 +37,20 @@ export interface IAsset {
   market_price?: number
   change_percent?: number
   mdi?: AssetMdiEntry[]
+  // Códigos antigos que apontam pra este ticker. Ex: EMBJ3 retorna
+  // [{old_symbol:'EMBR3', event_type:'rename', event_date:null}].
+  aliases?: Array<{
+    old_symbol: string
+    event_type: 'rename' | 'merger' | 'split' | 'spinoff' | 'delisted'
+    event_date: string | null
+  }>
+  // Se ESTE ticker é um alias antigo (ex: EMBR3.alias_of={new_symbol:'EMBJ3', event_type:'rename'}).
+  // null quando o ticker é canônico/atual.
+  alias_of?: {
+    event_type: 'rename' | 'merger' | 'split' | 'spinoff' | 'delisted'
+    event_date: string | null
+    new_symbol: string | null
+  } | null
 }
 
 export interface ScrapeExtrasEtf {

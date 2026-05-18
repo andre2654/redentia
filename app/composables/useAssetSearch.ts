@@ -41,6 +41,20 @@ export interface AssetSearchItem {
    *  `/tesouro/{slug}`). Useful when the picker doubles as a
    *  jump-to-asset menu. */
   slug: string
+  /** Códigos antigos que resolvem pra ESTE ticker. Indexados como
+   *  termos de busca: digitar "EMBR3" surfaceia o item canônico EMBJ3
+   *  e a UI mostra "antes EMBR3" no badge. */
+  aliases?: string[]
+  /** Se este item É um alias (ex: AZUL4 quando aparece no resultado),
+   *  carrega metadata pra UI mostrar "delisted desde X" ou "virou Y". */
+  aliasOf?: {
+    event_type: 'rename' | 'merger' | 'split' | 'spinoff' | 'delisted'
+    event_date: string | null
+    new_symbol: string | null
+  } | null
+  /** Quando o item foi encontrado VIA um alias, o termo digitado que
+   *  matchou. UI usa pra mostrar "EMBR3 → EMBJ3 (Embraer)". */
+  matchedAlias?: string | null
 }
 
 interface RawAsset {
@@ -48,6 +62,20 @@ interface RawAsset {
   name?: string
   logo?: string | null
   type?: string
+  /** Códigos antigos que apontam pra este ticker (ex: EMBJ3 tem aliases=['EMBR3']).
+   *  Vem do backend já agregado via LEFT JOIN ticker_aliases. */
+  aliases?: Array<{ old_symbol: string; event_type: string; event_date: string | null }> | null
+}
+
+/** /api/tickers/aliases — todos os aliases conhecidos, incluindo
+ *  delisted (new_symbol=null). Usado pra indexar códigos antigos
+ *  no search mesmo que o ticker já não tenha cotação recente. */
+interface RawAlias {
+  old_symbol: string
+  new_symbol: string | null
+  event_type: 'rename' | 'merger' | 'split' | 'spinoff' | 'delisted'
+  event_date: string | null
+  notes?: string | null
 }
 
 interface RawTesouro {
@@ -82,6 +110,10 @@ function mapStock(a: RawAsset): AssetSearchItem {
     : type === 'ETF' ? 'etf'
     : type === 'BDR' ? 'bdr'
     : 'stock'
+  // Extrai só os old_symbols pra ficar fácil de testar startsWith/includes.
+  const aliases = Array.isArray(a.aliases)
+    ? a.aliases.map((x) => x.old_symbol).filter(Boolean)
+    : undefined
   return {
     id: `${kind}-${a.ticker}`,
     ticker: a.ticker.toUpperCase(),
@@ -89,6 +121,7 @@ function mapStock(a: RawAsset): AssetSearchItem {
     logo: a.logo ?? null,
     kind,
     slug: a.ticker.toLowerCase(),
+    aliases,
   }
 }
 
@@ -128,14 +161,19 @@ async function loadOnce(): Promise<void> {
       const assetsService = useAssetsService()
       const tesouroService = useTesouroService()
       const cryptoService = useCryptoService()
+      const apiBase = useRuntimeConfig().public.apiBaseUrl as string
 
-      const [assetsRes, tesouroRes, cryptoRes] = await Promise.allSettled([
+      const [assetsRes, tesouroRes, cryptoRes, aliasesRes] = await Promise.allSettled([
         (assetsService as { getAssets?: () => Promise<RawAsset[]> }).getAssets?.()
           ?? Promise.resolve([] as RawAsset[]),
         (tesouroService as { listTesouros?: () => Promise<RawTesouro[]> }).listTesouros?.()
           ?? Promise.resolve([] as RawTesouro[]),
         (cryptoService as { listCryptos?: (n: number) => Promise<RawCrypto[]> }).listCryptos?.(500)
           ?? Promise.resolve([] as RawCrypto[]),
+        // Aliases (rename + delisted). Falha aqui não impede o resto
+        // do search — só perdemos a indexação de códigos antigos.
+        $fetch<{ data: RawAlias[] }>(`${apiBase}/tickers/aliases`)
+          .catch(() => ({ data: [] as RawAlias[] })),
       ])
 
       const next: AssetSearchItem[] = []
@@ -148,6 +186,42 @@ async function loadOnce(): Promise<void> {
       if (cryptoRes.status === 'fulfilled' && Array.isArray(cryptoRes.value)) {
         for (const c of cryptoRes.value) next.push(mapCrypto(c))
       }
+
+      // Para aliases tipo "delisted" (sem successor) que NÃO aparecem
+      // em /api/tickers (cutoff de 30d), criamos um ghost item separado
+      // pra surfacear em buscas como "AZUL4" → "AZUL4 (delisted)".
+      // Aliases tipo "rename" já vêm acoplados ao item canônico via
+      // aliases[] em mapStock — não duplicamos aqui pra não poluir a lista.
+      if (aliasesRes.status === 'fulfilled' && Array.isArray(aliasesRes.value?.data)) {
+        const stockByTicker = new Map<string, AssetSearchItem>()
+        for (const item of next) {
+          if (item.kind === 'stock' || item.kind === 'reit' || item.kind === 'etf' || item.kind === 'bdr') {
+            stockByTicker.set(item.ticker, item)
+          }
+        }
+        for (const alias of aliasesRes.value.data) {
+          if (alias.event_type === 'delisted' && !stockByTicker.has(alias.old_symbol)) {
+            // Ghost item de delisted — não navega pra detail page real,
+            // só mostra "AZUL4 — delisted desde X". UI pode linkar
+            // pra /asset/AZUL4 e a página decide mostrar histórico stale
+            // ou redirect, mas isso fica pra Fase 5.
+            next.push({
+              id: `delisted-${alias.old_symbol}`,
+              ticker: alias.old_symbol,
+              name: `${alias.old_symbol} (delisted)`,
+              logo: null,
+              kind: 'stock',
+              slug: alias.old_symbol.toLowerCase(),
+              aliasOf: {
+                event_type: 'delisted',
+                event_date: alias.event_date,
+                new_symbol: null,
+              },
+            })
+          }
+        }
+      }
+
       _items.value = next
       _loaded.value = true
     } finally {
@@ -171,28 +245,59 @@ export function useAssetSearch() {
    * comes ordered (stocks first, then ETFs/REITs/BDRs, treasuries,
    * cryptos).
    *
-   * Ranking heuristic: ticker prefix match > ticker contains > name
-   * contains. Within a tier, shorter tickers win (PETR4 before
-   * PETR5L). This keeps "PE" → PETR4 above PETROBRASE.
+   * Ranking heuristic:
+   *   tier1: ticker prefix match
+   *   tier2: alias prefix match (digitar "EMBR3" → EMBJ3 com badge)
+   *   tier3: ticker contains
+   *   tier4: name contains
+   * Within a tier, shorter tickers win (PETR4 before PETR5L).
+   *
+   * Quando o match foi via alias, retornamos o item com `matchedAlias`
+   * preenchido pra UI mostrar "EMBR3 → EMBJ3 (Embraer)".
    */
   function search(query: string, limit = 12): AssetSearchItem[] {
     const q = query.trim().toLowerCase()
     if (!q) return _items.value.slice(0, limit)
-    const tier1: AssetSearchItem[] = [] // ticker startsWith q
-    const tier2: AssetSearchItem[] = [] // ticker includes q
-    const tier3: AssetSearchItem[] = [] // name includes q
+    const tier1: AssetSearchItem[] = []
+    const tier2: AssetSearchItem[] = []
+    const tier3: AssetSearchItem[] = []
+    const tier4: AssetSearchItem[] = []
+    const seenIds = new Set<string>()
+
     for (const item of _items.value) {
+      if (seenIds.has(item.id)) continue
       const tk = item.ticker.toLowerCase()
-      if (tk.startsWith(q)) tier1.push(item)
-      else if (tk.includes(q)) tier2.push(item)
-      else if (item.name.toLowerCase().includes(q)) tier3.push(item)
-      if (tier1.length >= limit) break
+      // Tier 1: ticker prefix
+      if (tk.startsWith(q)) {
+        tier1.push(item)
+        seenIds.add(item.id)
+        continue
+      }
+      // Tier 2: alias prefix (EMBR3 → EMBJ3)
+      const aliasHit = item.aliases?.find((a) => a.toLowerCase().startsWith(q))
+      if (aliasHit) {
+        tier2.push({ ...item, matchedAlias: aliasHit })
+        seenIds.add(item.id)
+        continue
+      }
+      // Tier 3: ticker substring
+      if (tk.includes(q)) {
+        tier3.push(item)
+        seenIds.add(item.id)
+        continue
+      }
+      // Tier 4: name substring
+      if (item.name.toLowerCase().includes(q)) {
+        tier4.push(item)
+        seenIds.add(item.id)
+      }
     }
     const sortByTickerLen = (a: AssetSearchItem, b: AssetSearchItem) =>
       a.ticker.length - b.ticker.length
     tier1.sort(sortByTickerLen)
     tier2.sort(sortByTickerLen)
-    return [...tier1, ...tier2, ...tier3].slice(0, limit)
+    tier3.sort(sortByTickerLen)
+    return [...tier1, ...tier2, ...tier3, ...tier4].slice(0, limit)
   }
 
   return {

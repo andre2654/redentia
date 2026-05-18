@@ -336,6 +336,41 @@
                           translate="no"
                         >
                           {{ item.ticker }}
+                          <!-- Badge "antes EMBR3": match veio via alias, mostra a origem. -->
+                          <span
+                            v-if="item.matchedAlias"
+                            class="ml-1.5 inline-flex items-center rounded px-1.5 py-px font-mono-tab text-[10px] font-medium uppercase tracking-wide"
+                            :style="{
+                              background: 'color-mix(in srgb, var(--brand-primary) 10%, transparent)',
+                              color: 'var(--brand-primary)',
+                            }"
+                            translate="no"
+                          >
+                            antes {{ item.matchedAlias }}
+                          </span>
+                          <!-- Badge "delisted": ghost item de ticker descontinuado. -->
+                          <span
+                            v-else-if="item.aliasOf?.event_type === 'delisted'"
+                            class="ml-1.5 inline-flex items-center rounded px-1.5 py-px text-[10px] font-medium uppercase tracking-wide"
+                            :style="{
+                              background: 'color-mix(in srgb, var(--brand-negative) 12%, transparent)',
+                              color: 'var(--brand-negative)',
+                            }"
+                          >
+                            delisted
+                          </span>
+                          <!-- Badge "renomeado pra X": o ticker é antigo, aponta pro novo. -->
+                          <span
+                            v-else-if="item.aliasOf && item.aliasOf.new_symbol"
+                            class="ml-1.5 inline-flex items-center rounded px-1.5 py-px font-mono-tab text-[10px] font-medium uppercase tracking-wide"
+                            :style="{
+                              background: 'color-mix(in srgb, var(--brand-text-muted) 16%, transparent)',
+                              color: 'var(--brand-text-muted)',
+                            }"
+                            translate="no"
+                          >
+                            → {{ item.aliasOf.new_symbol }}
+                          </span>
                         </span>
                         <span
                           class="truncate text-[11.5px]"
@@ -546,6 +581,20 @@ interface SearchItem {
   priceLabel?: string | null
   changePercent?: number | null
   changeLabel?: string | null
+  /** Códigos antigos que resolvem pra este ticker (ex: EMBJ3 tem
+   *  aliases=['EMBR3']). Pesquisa "EMBR3" → matchedAlias='EMBR3'
+   *  e a row do EMBJ3 é exibida com badge. */
+  aliases?: string[]
+  /** Quando o item é ele próprio um alias (ex: ghost item delisted).
+   *  Marca o badge "delisted desde X" ou "virou Y". */
+  aliasOf?: {
+    event_type: 'rename' | 'merger' | 'split' | 'spinoff' | 'delisted'
+    event_date: string | null
+    new_symbol: string | null
+  } | null
+  /** Setado pelo `matches()` quando o hit veio via alias — UI usa pra
+   *  renderizar "antes EMBR3" inline. */
+  matchedAlias?: string | null
 }
 
 type GroupType = 'STOCK' | 'REIT' | 'ETF' | 'BDR' | 'CRYPTO' | 'TESOURO' | 'AI'
@@ -775,6 +824,12 @@ const routeContext = computed(() => {
 const stocks = ref<IAsset[]>([])
 const tesouros = ref<any[]>([])
 const cryptos = ref<any[]>([])
+// Aliases delisted (sem successor) que NÃO aparecem em /api/tickers
+// — ghost items pra surfacear no search ("AZUL4 — delisted").
+const delistedAliases = ref<Array<{
+  old_symbol: string
+  event_date: string | null
+}>>([])
 let dataLoaded = false
 
 async function loadData() {
@@ -784,16 +839,32 @@ async function loadData() {
     const assetsService = useAssetsService()
     const tesouroService = useTesouroService()
     const cryptoService = useCryptoService()
+    const apiBase = useRuntimeConfig().public.apiBaseUrl as string
 
-    const [assetsRes, tesouroRes, cryptoRes] = await Promise.allSettled([
+    const [assetsRes, tesouroRes, cryptoRes, aliasesRes] = await Promise.allSettled([
       assetsService.getAssets?.() ?? Promise.resolve([]),
       tesouroService.listTesouros?.() ?? Promise.resolve([]),
       cryptoService.listCryptos?.(500) ?? Promise.resolve([]),
+      $fetch<{
+        data: Array<{
+          old_symbol: string
+          new_symbol: string | null
+          event_type: string
+          event_date: string | null
+        }>
+      }>(`${apiBase}/tickers/aliases`).catch(() => ({ data: [] })),
     ])
 
     if (assetsRes.status === 'fulfilled') stocks.value = assetsRes.value || []
     if (tesouroRes.status === 'fulfilled') tesouros.value = tesouroRes.value || []
     if (cryptoRes.status === 'fulfilled') cryptos.value = cryptoRes.value || []
+    if (aliasesRes.status === 'fulfilled' && Array.isArray(aliasesRes.value?.data)) {
+      // Só os delisted viram ghost items. Os "rename" já vêm anexados
+      // no campo `aliases` do ticker canônico via TickerResource.
+      delistedAliases.value = aliasesRes.value.data
+        .filter((a) => a.event_type === 'delisted')
+        .map((a) => ({ old_symbol: a.old_symbol, event_date: a.event_date }))
+    }
     dataLoaded = true
   } catch {
     // graceful degrade
@@ -822,15 +893,20 @@ function fmtPct(value: number | null | undefined): string {
 }
 
 function mapStock(a: IAsset): SearchItem {
+  const aliases = Array.isArray(a.aliases)
+    ? a.aliases.map((x) => x.old_symbol).filter(Boolean)
+    : undefined
   return {
     id: `stock-${a.ticker}`,
-    ticker: a.ticker,
-    name: a.name || a.ticker,
-    to: `/asset/${a.ticker.toLowerCase()}`,
+    ticker: a.ticker ?? '',
+    name: a.name || a.ticker || '',
+    to: `/asset/${(a.ticker ?? '').toLowerCase()}`,
     logo: a.logo || null,
     priceLabel: a.market_price != null ? fmtBRL(a.market_price) : null,
     changePercent: a.change_percent ?? null,
     changeLabel: a.change_percent != null ? fmtPct(a.change_percent) : null,
+    aliases,
+    aliasOf: (a.alias_of ?? null) as SearchItem['aliasOf'],
   }
 }
 
@@ -868,7 +944,36 @@ function mapCrypto(c: any): SearchItem {
 // ==========================================================
 // Grouping + filtering
 // ==========================================================
-const stockItems = computed(() => stocks.value.filter((a) => a.type === 'STOCK').map(mapStock))
+// Ghost items pros tickers delisted (AZUL4, ELET3, etc) que não
+// aparecem em /api/tickers porque a query corta em 30d. Sem isso,
+// quem digitar "AZUL4" não recebe NADA — pior UX que mostrar
+// "delisted desde X".
+const delistedGhostItems = computed<SearchItem[]>(() => {
+  const inStocks = new Set(stocks.value.map((s) => (s.ticker || '').toUpperCase()))
+  return delistedAliases.value
+    .filter((a) => !inStocks.has(a.old_symbol))
+    .map((a) => ({
+      id: `delisted-${a.old_symbol}`,
+      ticker: a.old_symbol,
+      // Nome curto + sufixo "(delisted)" pra deixar óbvio na lista
+      // mesmo sem o badge (ex: ResultsList copy/paste).
+      name: `${a.old_symbol} (delisted)`,
+      to: `/asset/${a.old_symbol.toLowerCase()}`,
+      logo: null,
+      priceLabel: null,
+      changePercent: null,
+      changeLabel: null,
+      aliasOf: {
+        event_type: 'delisted' as const,
+        event_date: a.event_date,
+        new_symbol: null,
+      },
+    }))
+})
+const stockItems = computed(() => [
+  ...stocks.value.filter((a) => a.type === 'STOCK').map(mapStock),
+  ...delistedGhostItems.value,
+])
 const reitItems = computed(() => stocks.value.filter((a) => a.type === 'REIT').map(mapStock))
 const etfItems = computed(() => stocks.value.filter((a) => a.type === 'ETF').map(mapStock))
 const bdrItems = computed(() => stocks.value.filter((a) => a.type === 'BDR').map(mapStock))
@@ -877,7 +982,22 @@ const tesouroItems = computed(() => tesouros.value.map(mapTesouro))
 
 function matches(item: SearchItem, q: string): boolean {
   const lower = q.toLowerCase()
-  return item.ticker.toLowerCase().includes(lower) || item.name.toLowerCase().includes(lower)
+  if (item.ticker.toLowerCase().includes(lower)) return true
+  if (item.name.toLowerCase().includes(lower)) return true
+  // Aliases — digitar "EMBR3" também surfaceia EMBJ3.
+  if (item.aliases?.some((alias) => alias.toLowerCase().includes(lower))) return true
+  return false
+}
+
+// Devolve o alias que matchou o query, ou null. Permite UI mostrar
+// "EMBR3 → EMBJ3" sem precisar de pre-processing externo.
+function matchingAlias(item: SearchItem, q: string): string | null {
+  const lower = q.toLowerCase()
+  // Só consideramos alias hit quando o ticker canônico NÃO matchou,
+  // pra evitar badge enganoso quando ambos começam igual (raro mas
+  // possível em mid-renames).
+  if (item.ticker.toLowerCase().includes(lower)) return null
+  return item.aliases?.find((a) => a.toLowerCase().includes(lower)) ?? null
 }
 
 const groupedItems = computed<Group[]>(() => {
@@ -886,8 +1006,16 @@ const groupedItems = computed<Group[]>(() => {
   const limit = q.length > 0 ? 5 : 1
 
   const filterAndSlice = (items: SearchItem[]) => {
-    const filtered = q ? items.filter((i) => matches(i, q)) : items
-    return filtered.slice(0, limit)
+    if (!q) return items.slice(0, limit)
+    const out: SearchItem[] = []
+    for (const item of items) {
+      if (!matches(item, q)) continue
+      // Anota qual alias matchou — null se o match foi via ticker/name.
+      const hit = matchingAlias(item, q)
+      out.push(hit ? { ...item, matchedAlias: hit } : item)
+      if (out.length >= limit) break
+    }
+    return out
   }
 
   return [

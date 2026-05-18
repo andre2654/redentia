@@ -130,7 +130,15 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch(url, { method: 'GET' })
     )
-    return unwrapValue(resp)
+    // NÃO usamos unwrapValue aqui — o backend pode anexar
+    // `meta: { alias_resolved_from, delisted, ... }` no envelope quando
+    // o ticker pesquisado é alias antigo (EMBR3 → EMBJ3) ou delisted
+    // (AZUL4). Devolvemos `{ data, meta? }` cru pra page decidir
+    // redirect ou banner.
+    if (resp && typeof resp === 'object' && 'data' in resp) {
+      return resp as { data: any; meta?: any }
+    }
+    return { data: resp, meta: null }
   }
 
   async function getTickerDividends(ticker: string) {

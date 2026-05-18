@@ -3,6 +3,56 @@
     :name="layoutName"
     container-class="md:px-0"
   >
+    <!-- ============ ALIAS BANNERS ============
+         Quando o user chegou via código antigo (ex: /asset/EMBR3 que
+         foi renomeada pra EMBJ3) ou ativo delisted (AZUL4), o backend
+         retorna `meta` com a info. Renderizamos um aviso no topo
+         da página antes do conteúdo principal. -->
+    <div
+      v-if="aliasFromQuery"
+      class="mx-auto mb-3 max-w-6xl px-4 md:px-0"
+    >
+      <div
+        class="flex items-center gap-2 rounded-md border px-3 py-2 text-[12.5px]"
+        :style="{
+          borderColor: 'color-mix(in srgb, var(--brand-primary) 30%, transparent)',
+          background: 'color-mix(in srgb, var(--brand-primary) 6%, transparent)',
+          color: 'var(--brand-text)',
+        }"
+      >
+        <UIcon name="i-lucide-arrow-right-left" class="size-3.5 shrink-0" />
+        <span>
+          <strong>{{ aliasFromQuery }}</strong> foi renomeado para
+          <strong>{{ tickerUpper }}</strong>.
+          <span :style="{ color: 'var(--brand-text-muted)' }">
+            Buscas pelo código antigo continuam funcionando.
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div
+      v-else-if="assetMeta?.delisted"
+      class="mx-auto mb-3 max-w-6xl px-4 md:px-0"
+    >
+      <div
+        class="flex items-center gap-2 rounded-md border px-3 py-2 text-[12.5px]"
+        :style="{
+          borderColor: 'color-mix(in srgb, var(--brand-negative) 30%, transparent)',
+          background: 'color-mix(in srgb, var(--brand-negative) 6%, transparent)',
+          color: 'var(--brand-text)',
+        }"
+      >
+        <UIcon name="i-lucide-circle-x" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-negative)' }" />
+        <span>
+          <strong>{{ tickerUpper }}</strong> está descontinuado{{ assetMeta.event_date ? ` desde ${formatDelistDate(assetMeta.event_date)}` : '' }}.
+          <span :style="{ color: 'var(--brand-text-muted)' }">
+            Últimos dados conhecidos abaixo, sem atualização.
+          </span>
+        </span>
+      </div>
+    </div>
+
     <!-- ========================================================
          VARIANT ROUTER
          Tenants podem trocar o layout inteiro da asset page via
@@ -844,19 +894,66 @@ interface DividendData {
 
 const ticker = route.params.ticker as string
 const {
-  data: asset,
+  data: assetResponse,
   pending: assetPending,
   error: assetError,
 } = await useAsyncData(`asset-details-${ticker.toLowerCase()}`, () =>
   getTickerDetails(ticker)
 )
 
-if (assetError.value || !asset.value) {
+if (assetError.value || !assetResponse.value?.data) {
   throw createError({
     statusCode: 404,
     statusMessage: 'Asset not found',
     fatal: true,
   })
+}
+
+// Backend retorna { data: <asset>, meta?: { alias_resolved_from, delisted, ... } }
+// quando o ticker pesquisado é alias antigo. Mantemos `asset` apontando
+// pro inner data pra todo o resto da página continuar funcionando, e
+// expomos `assetMeta` separado pra banner + redirect.
+const asset = computed(() => assetResponse.value?.data ?? null)
+const assetMeta = computed(() => assetResponse.value?.meta ?? null)
+
+// Rename/merger: backend já resolveu pro canônico, só precisamos atualizar
+// a URL pra refletir. `replace: true` substitui no history (sem flash do
+// /asset/EMBR3 ficando no botão "voltar"). Query `?from=EMBR3` permite
+// a página destino mostrar banner explicando a renomeação.
+if (
+  process.client &&
+  assetMeta.value?.alias_resolved_from &&
+  asset.value?.ticker &&
+  asset.value.ticker.toUpperCase() !== ticker.toUpperCase()
+) {
+  navigateTo(
+    {
+      path: `/asset/${String(asset.value.ticker).toLowerCase()}`,
+      query: { from: ticker.toUpperCase() },
+    },
+    { replace: true },
+  )
+}
+
+// Param `?from=EMBR3` setado pelo redirect quando o user chega via
+// código antigo. Banner usa pra mostrar "EMBR3 foi renomeado para EMBJ3".
+const aliasFromQuery = computed(() => {
+  const f = route.query?.from
+  if (typeof f === 'string' && f.length > 0) return f.toUpperCase()
+  return null
+})
+
+// Formata "2025-05-01" → "mai/2025" pro banner de delisted ficar curto.
+function formatDelistDate(iso: string | null): string {
+  if (!iso) return ''
+  try {
+    const d = new Date(iso)
+    if (Number.isNaN(d.getTime())) return iso
+    const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+    return `${months[d.getMonth()]}/${d.getFullYear()}`
+  } catch {
+    return iso
+  }
 }
 
 const blockChat = ref(false)
