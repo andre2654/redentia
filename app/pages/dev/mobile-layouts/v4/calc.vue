@@ -710,6 +710,7 @@ const mobileTabs = [
   padding: 12px 14px; background: #FFFFFF;
   border: 1px solid rgba(15,15,14,.06); border-radius: 12px;
 }
+.phone.mercury .m-search > :first-child { max-width: 15px; flex-shrink: 0; }
 .phone.mercury .m-search span { flex: 1; font-size: 14px; color: rgba(15,15,14,.4); }
 
 .phone.mercury .m-feat-row {
