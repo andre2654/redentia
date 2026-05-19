@@ -736,19 +736,19 @@
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Raio-X')">
               <UIcon name="i-lucide-compass" class="size-5" />
               <span class="v3h-tab-lbl">Raio-X</span>
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Carta')">
               <UIcon name="i-lucide-mail" class="size-5" />
               <span class="v3h-tab-lbl">Carta</span>
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Chat')">
               <UIcon name="i-lucide-message-circle" class="size-5" />
               <span class="v3h-tab-lbl">Chat</span>
             </button>
@@ -1054,7 +1054,7 @@
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Raio-X')">
               <UIcon name="i-lucide-compass" class="size-5" />
               <span class="v3h-tab-lbl">Raio-X</span>
             </button>
@@ -1066,7 +1066,7 @@
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Chat')">
               <UIcon name="i-lucide-message-circle" class="size-5" />
               <span class="v3h-tab-lbl">Chat</span>
             </button>
@@ -1222,7 +1222,7 @@
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Raio-X')">
               <UIcon name="i-lucide-compass" class="size-5" />
               <span class="v3h-tab-lbl">Raio-X</span>
             </button>
@@ -1235,7 +1235,7 @@
             </button>
           </div>
           <div class="v3h-tab-wrap">
-            <button class="v3h-tab">
+            <button class="v3h-tab" @click="setTab('Chat')">
               <UIcon name="i-lucide-message-circle" class="size-5" />
               <span class="v3h-tab-lbl">Chat</span>
             </button>
