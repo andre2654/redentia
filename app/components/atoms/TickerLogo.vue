@@ -50,7 +50,7 @@ const wrapStyle = computed(() => ({
 }))
 
 const initialsStyle = computed(() => ({
-  color: brand.colors.textMuted,
+  color: 'var(--brand-text-muted)',
   // Scale font with the wrapper so 16px wraps look readable.
   fontSize: `${Math.max(8, Math.round(props.size * 0.45))}px`,
 }))

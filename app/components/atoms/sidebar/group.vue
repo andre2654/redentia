@@ -16,7 +16,7 @@
       }"
       :aria-expanded="open"
       @click="toggle"
-      @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = brand.colors.text; el.style.backgroundColor = `color-mix(in srgb, var(--brand-text) 5%, transparent)` }"
+      @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--brand-text)'; el.style.backgroundColor = `color-mix(in srgb, var(--brand-text) 5%, transparent)` }"
       @mouseleave="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = `color-mix(in srgb, var(--brand-text) 60%, transparent)`; el.style.backgroundColor = 'transparent' }"
     >
       <UIcon

@@ -263,7 +263,7 @@ function sourceColor(source: string): string {
     valor_investe: '#8B0000',
     cnn_brasil: '#CC0000',
   }
-  return map[source] ?? brand.colors.primary
+  return map[source] ?? 'var(--brand-primary)'
 }
 
 function sourceInitials(source: string): string {

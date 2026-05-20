@@ -48,7 +48,7 @@
           class="max-w-[78%] rounded-2xl px-4 py-3 text-[14px] leading-relaxed"
           :class="msg.sender_id === myId ? 'rounded-br-lg shadow-sm' : 'rounded-bl-lg border'"
           :style="msg.sender_id === myId
-            ? { backgroundColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 25%, transparent)', color: 'var(--brand-text)' }
+            ? { backgroundColor: 'color-mix(in srgb, var(--brand-primary) 25%, transparent)', color: 'var(--brand-text)' }
             : { borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface-hover)', color: 'var(--brand-text)' }"
         >
           <p class="whitespace-pre-wrap">{{ msg.body }}</p>

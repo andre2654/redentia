@@ -115,7 +115,7 @@ const activeMatch = computed(() => {
 function onEnter(e: MouseEvent) {
   if (props.disabled || activeMatch.value) return
   const el = e.currentTarget as HTMLElement
-  el.style.color = brand.colors.text
+  el.style.color = 'var(--brand-text)'
   el.style.backgroundColor = `color-mix(in srgb, var(--brand-text) 5%, transparent)`
 }
 

@@ -53,7 +53,7 @@ const formatted = computed(() => {
   })
 })
 
-const valueColor = computed(() => props.brand.colors.text)
+const valueColor = computed(() => 'var(--brand-text)')
 
 const dotStyle = computed(() => {
   const colors = props.brand.colors
