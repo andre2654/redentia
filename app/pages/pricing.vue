@@ -47,7 +47,7 @@
             </p>
 
             <p class="lp-hero__lead">
-              Sem fidelidade, cancela quando quiser. Aceitamos cartão, PIX e boleto no anual.
+              Sem fidelidade, cancela quando quiser. Aceitamos cartão e PIX (anual).
             </p>
 
             <!-- Cycle toggle -->
@@ -404,7 +404,7 @@ const faq = [
     a: 'Em até 7 dias da contratação, conforme o CDC. Reembolso integral, sem perguntas chatas.',
   },
   {
-    q: 'Aceitam PIX e boleto?',
+    q: 'Aceitam PIX?',
     a: 'Sim, no plano anual. A cobrança mensal só aceita cartão (PIX recorrente ainda não é nativo no Brasil).',
   },
   {
