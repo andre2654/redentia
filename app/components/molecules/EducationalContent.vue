@@ -25,8 +25,8 @@
             borderColor: 'var(--brand-border)',
             backgroundColor: 'var(--brand-surface)',
           }"
-          @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
-          @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.border; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
+          @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = 'var(--brand-secondary)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface-hover)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = 'var(--brand-border)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface)'"
         >
           <!-- Thumbnail -->
           <div class="relative aspect-video w-full overflow-hidden">

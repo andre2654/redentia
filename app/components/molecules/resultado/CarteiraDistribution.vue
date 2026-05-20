@@ -337,7 +337,7 @@ const centerSub = computed(() => {
   return s.label
 })
 
-const centerColor = computed(() => focusedStyle.value?.color || brand.colors.text)
+const centerColor = computed(() => focusedStyle.value?.color || 'var(--brand-text)')
 
 // ============ Instrument rows ============
 const INSTRUMENT_PALETTE = [
@@ -397,7 +397,7 @@ function formatSigned(v: number): string {
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
+  backgroundColor: 'var(--brand-surface)',
   borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
   boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
 }))

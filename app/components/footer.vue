@@ -380,7 +380,7 @@ const footerBg = computed(() => {
   if (tenantSlug === 'redentia') {
     return mode === 'dark' ? '#000000' : '#fafafb'
   }
-  return brand.colors.surface
+  return 'var(--brand-surface)'
 })
 
 // Phase 6: feature flags pra mostrar/esconder colunas inteiras do

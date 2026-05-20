@@ -88,8 +88,8 @@ function cardClass(personality: string) {
 
 function cardStyle(char: { color: string; personality: string }) {
   const base = {
-    borderColor: char.personality === 'villain' ? `${char.color}40` : brand.colors.border,
-    backgroundColor: brand.colors.surface,
+    borderColor: char.personality === 'villain' ? `${char.color}40` : 'var(--brand-border)',
+    backgroundColor: 'var(--brand-surface)',
   }
   return base
 }

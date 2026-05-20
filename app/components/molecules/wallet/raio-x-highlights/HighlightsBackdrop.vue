@@ -91,7 +91,7 @@ const particles = computed(() => {
 })
 
 const auroraStyle = computed(() => {
-  const c = brand.colors.primary
+  const c = 'var(--brand-primary)'
   return {
     background: `conic-gradient(from 0deg at 50% 50%,
       transparent 0deg,

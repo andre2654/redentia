@@ -79,7 +79,7 @@ if (!isWidgetMode.value) {
     <AtomsTickerCarousel
       :items="carouselItems"
       :no-control="true"
-      :fade-color="theme === 'light' ? '#ffffff' : brand.colors.surface"
+      :fade-color="theme === 'light' ? '#ffffff' : 'var(--brand-surface)'"
     />
     <div class="self-end pr-3 text-[9px] uppercase tracking-[0.15em] opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }">
       redentia.com.br

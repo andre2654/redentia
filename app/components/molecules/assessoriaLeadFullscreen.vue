@@ -229,8 +229,8 @@ const metaPixel = useMetaPixel()
 
 const isOpen = defineModel<boolean>('open', { default: false })
 
-const primary = computed(() => brand.colors.primary || '#D8881A')
-const positive = computed(() => brand.colors.positive || '#10b981')
+const primary = computed(() => 'var(--brand-primary, #D8881A)')
+const positive = computed(() => 'var(--brand-positive, #10b981)')
 
 // Steps: 1 (identificacao), 2 (diagnostico), 'success' (post-submit).
 type Step = 1 | 2 | 'success'
