@@ -407,12 +407,12 @@ const otherCreatives = computed(() => {
   padding: 10px 14px 10px 10px;
   border-radius: 9999px;
   background: rgba(10, 11, 14, 0.92);
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.8);
   font-family: 'Inter', system-ui, sans-serif;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 
 .raw-btn {
@@ -428,12 +428,12 @@ const otherCreatives = computed(() => {
   transition: transform 0.15s ease, background 0.15s ease;
   border: 1px solid transparent;
   background: transparent;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 
 .raw-btn-back {
   background: rgba(245, 166, 35, 0.12);
-  color: #F5A623;
+  color: var(--brand-primary);
   border-color: rgba(245, 166, 35, 0.4);
 }
 .raw-btn-back:hover {
@@ -448,10 +448,10 @@ const otherCreatives = computed(() => {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 10px;
   letter-spacing: 0.12em;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
-.raw-toolbar-tag { color: #F5A623; text-transform: uppercase; }
-.raw-toolbar-sep { color: #2A2E39; }
+.raw-toolbar-tag { color: var(--brand-primary); text-transform: uppercase; }
+.raw-toolbar-sep { color: var(--border-subtle); }
 .raw-toolbar-meta-text { text-transform: uppercase; }
 
 .raw-toolbar-actions {
@@ -469,14 +469,14 @@ const otherCreatives = computed(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   background: rgba(255, 255, 255, 0.04);
-  color: #F5A623;
+  color: var(--brand-primary);
   cursor: pointer;
   transition: all 0.2s;
 }
 .raw-toolbar-actions :slotted(button:hover) {
   background: rgba(245, 166, 35, 0.12);
-  border-color: #F5A623;
+  border-color: var(--brand-primary);
 }
 </style>

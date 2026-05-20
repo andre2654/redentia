@@ -56,8 +56,8 @@
             type="button"
             class="inline-flex h-8 min-w-12 items-center justify-center px-3 font-mono-tab text-[11px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             :style="{
-              backgroundColor: aspect === opt.value ? brand.colors.primary : 'transparent',
-              color: aspect === opt.value ? brand.colors.background : 'var(--brand-text-muted)',
+              backgroundColor: aspect === opt.value ? 'var(--brand-primary)' : 'transparent',
+              color: aspect === opt.value ? 'var(--brand-background)' : 'var(--brand-text-muted)',
             }"
             :aria-pressed="aspect === opt.value"
             @click="aspect = opt.value"
@@ -76,8 +76,8 @@
             type="button"
             class="inline-flex size-8 items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             :style="{
-              backgroundColor: theme === 'light' ? brand.colors.primary : 'transparent',
-              color: theme === 'light' ? brand.colors.background : 'var(--brand-text-muted)',
+              backgroundColor: theme === 'light' ? 'var(--brand-primary)' : 'transparent',
+              color: theme === 'light' ? 'var(--brand-background)' : 'var(--brand-text-muted)',
             }"
             :aria-pressed="theme === 'light'"
             aria-label="Tema claro"
@@ -90,8 +90,8 @@
             class="inline-flex size-8 items-center justify-center border-l transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             :style="{
               borderColor: 'var(--brand-border)',
-              backgroundColor: theme === 'dark' ? brand.colors.primary : 'transparent',
-              color: theme === 'dark' ? brand.colors.background : 'var(--brand-text-muted)',
+              backgroundColor: theme === 'dark' ? 'var(--brand-primary)' : 'transparent',
+              color: theme === 'dark' ? 'var(--brand-background)' : 'var(--brand-text-muted)',
             }"
             :aria-pressed="theme === 'dark'"
             aria-label="Tema escuro"
@@ -266,11 +266,11 @@ const themeColors = computed(() => {
     }
   }
   return {
-    background: brand.colors.background,
-    surface: brand.colors.surface,
-    border: brand.colors.border,
-    text: brand.colors.text,
-    textMuted: brand.colors.textMuted,
+    background: 'var(--brand-background)',
+    surface: 'var(--brand-surface)',
+    border: 'var(--brand-border)',
+    text: 'var(--brand-text)',
+    textMuted: 'var(--brand-text-muted)',
   }
 })
 

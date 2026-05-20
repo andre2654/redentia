@@ -24,7 +24,7 @@
       </header>
 
       <div v-if="!styleSlices.length" class="dist-card__empty">
-        <UIcon name="i-lucide-pie-chart" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+        <UIcon name="i-lucide-pie-chart" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
         <span>Sem operações no período.</span>
       </div>
 
@@ -90,7 +90,7 @@
               aria-hidden="true"
             />
             <div class="dist-donut__legend-main">
-              <span class="dist-donut__legend-label" :style="{ color: brand.colors.text }">
+              <span class="dist-donut__legend-label" :style="{ color: 'var(--brand-text)' }">
                 {{ row.label }}
               </span>
               <span
@@ -106,7 +106,7 @@
             <div class="dist-donut__legend-stats">
               <span
                 class="dist-donut__legend-pnl tabular-nums"
-                :style="{ color: row.pnl >= 0 ? brand.colors.positive : brand.colors.negative }"
+                :style="{ color: row.pnl >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
               >{{ formatSigned(row.pnl) }}</span>
               <span class="dist-donut__legend-pct tabular-nums">
                 {{ row.weight_pct.toFixed(1).replace('.', ',') }}%
@@ -133,7 +133,7 @@
       </header>
 
       <div v-if="!instrumentRows.length" class="alloc-bars__empty">
-        <UIcon name="i-lucide-bar-chart-3" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+        <UIcon name="i-lucide-bar-chart-3" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
         <span>Sem operações no período.</span>
       </div>
 
@@ -193,7 +193,7 @@
             </span>
             <span
               class="alloc-bars__pnl tabular-nums"
-              :style="{ color: row.pnl >= 0 ? brand.colors.positive : brand.colors.negative }"
+              :style="{ color: row.pnl >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
             >{{ formatSigned(row.pnl) }}</span>
           </li>
         </ul>
@@ -219,7 +219,7 @@ const hoveredStyleIdx = ref<number | null>(null)
 const instrumentHover = ref<number | null>(null)
 
 const bgRingColor = computed(() =>
-  `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+  `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
 )
 
 // ============ Style slices (Day/Swing/Hold/Renda) ============
@@ -398,8 +398,8 @@ function formatSigned(v: number): string {
 
 const cardStyle = computed(() => ({
   backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
 }))
 </script>
 

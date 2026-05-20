@@ -544,7 +544,7 @@ onMounted(loadAll)
   color: var(--brand-text);
   max-width: 760px;
   width: 92vw;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 80px -20px var(--shadow-ambient);
 }
 .plan-modal::backdrop {
   background: rgba(0, 0, 0, 0.6);

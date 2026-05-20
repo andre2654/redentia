@@ -20,7 +20,7 @@
         :style="{ color: winRateColor }"
       >{{ winRateLabel }}</span>
       <div class="dt-stat__bar"
-        :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)` }"
+        :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)` }"
       >
         <span
           class="dt-stat__bar-fill"
@@ -43,7 +43,7 @@
         :style="{ color: pfColor }"
       >{{ pfLabel }}</span>
       <div class="dt-stat__bar"
-        :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)` }"
+        :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)` }"
       >
         <span
           class="dt-stat__bar-fill"
@@ -62,12 +62,12 @@
       <div class="dt-stat__row">
         <span
           class="dt-stat__value-sm tabular-nums"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         >{{ avgWinLabel }}</span>
         <span class="dt-stat__sep" aria-hidden="true">/</span>
         <span
           class="dt-stat__value-sm tabular-nums"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >{{ avgLossLabel }}</span>
       </div>
       <span class="dt-stat__hint">{{ rrHint }}</span>
@@ -78,7 +78,7 @@
       <span class="dt-stat__label">Drawdown máx</span>
       <span
         class="dt-stat__value tabular-nums"
-        :style="{ color: brand.colors.negative }"
+        :style="{ color: 'var(--brand-negative)' }"
       >{{ drawdownLabel }}</span>
       <span class="dt-stat__hint">Pico → vale do período</span>
     </article>
@@ -98,7 +98,7 @@
       <span class="dt-stat__label">Tempo médio</span>
       <span
         class="dt-stat__value tabular-nums"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >{{ holdingLabel }}</span>
       <span class="dt-stat__hint">Por operação</span>
     </article>
@@ -123,11 +123,11 @@ const winRateLabel = computed(() => {
 
 const winRateColor = computed(() => {
   if (props.stats.wins + props.stats.losses === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 60%, transparent)`
   }
-  if (props.stats.winRate >= 0.6) return brand.colors.positive
-  if (props.stats.winRate >= 0.5) return brand.colors.primary
-  return brand.colors.negative
+  if (props.stats.winRate >= 0.6) return 'var(--brand-positive)'
+  if (props.stats.winRate >= 0.5) return 'var(--brand-primary)'
+  return 'var(--brand-negative)'
 })
 
 // ============ Profit factor ============
@@ -140,11 +140,11 @@ const pfLabel = computed(() => {
 
 const pfColor = computed(() => {
   const pf = props.stats.profitFactor
-  if (!Number.isFinite(pf)) return brand.colors.positive
-  if (pf === 0) return `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`
-  if (pf >= 1.5) return brand.colors.positive
-  if (pf >= 1) return brand.colors.text
-  return brand.colors.negative
+  if (!Number.isFinite(pf)) return 'var(--brand-positive)'
+  if (pf === 0) return `color-mix(in srgb, var(--brand-text) 60%, transparent)`
+  if (pf >= 1.5) return 'var(--brand-positive)'
+  if (pf >= 1) return 'var(--brand-text)'
+  return 'var(--brand-negative)'
 })
 
 // PF acima de 3.0 cai numa categoria "excelente" e o bar fica cheio.
@@ -199,9 +199,9 @@ const streakLabel = computed(() => {
 
 const streakColor = computed(() => {
   const s = props.stats.currentStreak
-  if (s > 0) return brand.colors.positive
-  if (s < 0) return brand.colors.negative
-  return `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`
+  if (s > 0) return 'var(--brand-positive)'
+  if (s < 0) return 'var(--brand-negative)'
+  return `color-mix(in srgb, var(--brand-text) 60%, transparent)`
 })
 
 const streakHint = computed(() => {
@@ -234,9 +234,9 @@ const holdingLabel = computed(() => {
 // shadow. Cor de cada KPI vive no proprio numero (winRateColor,
 // pfColor, streakColor) — nao na borda do card.
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
 }))
 </script>
 

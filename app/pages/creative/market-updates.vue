@@ -112,7 +112,7 @@ const headline2Parts = computed(() => {
   }
 })
 
-const accent = computed(() => firstString(route.query.accent) || '#F5A623')
+const accent = computed(() => firstString(route.query.accent) || 'var(--brand-primary)')
 
 const router = useRouter()
 const previewControls = computed(() => [
@@ -146,15 +146,15 @@ const cardOpacity = computed(() => {
 })
 
 // Hardcoded Redentia gradient colors.
-const primaryRgb = computed(() => hexToRgb('#F5A623'))
-const bgDark = computed(() => '#0A0B0E')
+const primaryRgb = computed(() => hexToRgb('var(--brand-primary)'))
+const bgDark = computed(() => 'var(--bg-base)')
 const bgDarker = computed(() => darkenHex(bgDark.value, 0.7))
 const bgDarkest = computed(() => darkenHex(bgDark.value, 0.4))
 
 const cardBackground = computed(() =>
-  `radial-gradient(circle at 20% 15%, rgba(${primaryRgb.value}, 0.35) 0%, rgba(0, 0, 0, 0) 55%), ` +
-  `radial-gradient(circle at 70% 60%, rgba(${primaryRgb.value}, 0.25) 0%, rgba(0, 0, 0, 0) 65%), ` +
-  `radial-gradient(circle at 50% 105%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 55%), ` +
+  `radial-gradient(circle at 20% 15%, rgba(${primaryRgb.value}, 0.35) 0%, transparent 55%), ` +
+  `radial-gradient(circle at 70% 60%, rgba(${primaryRgb.value}, 0.25) 0%, transparent 65%), ` +
+  `radial-gradient(circle at 50% 105%, rgba(0, 0, 0, 0.55) 0%, transparent 55%), ` +
   `linear-gradient(180deg, ${bgDark.value} 0%, ${bgDarker.value} 55%, ${bgDarkest.value} 100%)`
 )
 
@@ -189,7 +189,7 @@ useHead(() => ({
       :style="{
         background: cardBackground,
         fontFamily: fontFamily,
-        color: '#E8EAED',
+        color: 'var(--brand-text)',
       }"
     >
       <header class="header">

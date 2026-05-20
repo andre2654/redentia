@@ -451,7 +451,7 @@ onMounted(() => {
 .lead-drawer__backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--shadow-ambient);
   border: 0;
   cursor: pointer;
 }

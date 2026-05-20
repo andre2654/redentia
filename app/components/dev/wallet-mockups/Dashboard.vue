@@ -609,8 +609,8 @@
         <!-- Risks -->
         <article class="flex flex-col gap-3 rounded-xl border p-5" :style="warnCardStyle">
           <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-alert-triangle" class="size-4" :style="{ color: brand.colors.warning || '#f59e0b' }" />
-            <span class="mock-eyebrow !text-[10.5px]" :style="{ color: brand.colors.warning || '#f59e0b' }">Riscos</span>
+            <UIcon name="i-lucide-alert-triangle" class="size-4" :style="{ color: brand.colors.warning || 'var(--brand-warning)' }" />
+            <span class="mock-eyebrow !text-[10.5px]" :style="{ color: brand.colors.warning || 'var(--brand-warning)' }">Riscos</span>
           </div>
           <ul class="flex flex-col gap-3">
             <li v-for="r in RISKS.slice(0, 3)" :key="r.title" class="flex flex-col gap-0.5">
@@ -714,8 +714,8 @@ const strengthCardStyle = computed(() => ({
 }))
 
 const warnCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 5%, ${brand.colors.surface})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 22%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${brand.colors.warning || 'var(--brand-warning)'} 5%, ${brand.colors.surface})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.warning || 'var(--brand-warning)'} 22%, transparent)`,
 }))
 
 // Donut math: each slice's stroke-dasharray + offset, computed from
@@ -774,7 +774,7 @@ function formatDateLong(iso: string): string {
 }
 
 function labelColor(kind: string): string {
-  if (kind === 'JCP') return brand.colors.warning || '#f59e0b'
+  if (kind === 'JCP') return brand.colors.warning || 'var(--brand-warning)'
   if (kind === 'Dividendo') return brand.colors.positive
   return brand.colors.primary
 }
@@ -785,7 +785,7 @@ function eventTint(kind: 'ex' | 'pay' | 'earnings' | 'rotate' | 'maturity'): str
     case 'ex': return brand.colors.primary
     case 'earnings': return '#a78bfa'
     case 'rotate': return '#60a5fa'
-    case 'maturity': return brand.colors.warning || '#f59e0b'
+    case 'maturity': return brand.colors.warning || 'var(--brand-warning)'
   }
 }
 function eventIcon(kind: 'ex' | 'pay' | 'earnings' | 'rotate' | 'maturity'): string {

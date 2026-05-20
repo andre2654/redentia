@@ -11,14 +11,14 @@
   por variant, zero specificity wars, paleta amber vem do tenant ativo.
 -->
 <template>
-  <section class="mentor-hero relative overflow-hidden" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }">
+  <section class="mentor-hero relative overflow-hidden" :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }">
     <!-- Top tape: faixa laranja com selo editorial -->
     <div
       class="mentor-hero__tape relative flex items-center gap-4 px-6 py-3 md:px-10"
-      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
     >
       <span class="font-mentor-eyebrow">{{ tapeBadge }}</span>
-      <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+      <span class="flex-1 border-t" :style="{ borderColor: 'color-mix(in srgb, var(--brand-background) 25%, transparent)' }" />
       <span class="font-mentor-eyebrow">{{ tickerTag }}</span>
     </div>
 
@@ -27,10 +27,10 @@
       <!-- LEFT (col-span-4): foto founder + identidade -->
       <div
         class="relative flex flex-col justify-end px-6 py-10 md:col-span-4 md:px-10 md:py-14"
-        :style="{ backgroundColor: brand.colors.tertiary || brand.colors.surface }"
+        :style="{ backgroundColor: 'var(--brand-tertiary)' || 'var(--brand-surface)' }"
       >
         <!-- Faixa lateral laranja na borda direita -->
-        <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: brand.colors.primary }" />
+        <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: 'var(--brand-primary)' }" />
 
         <!-- Founder photo: book-cover headshot, large -->
         <NuxtImg
@@ -40,13 +40,13 @@
           class="mb-6 h-48 w-48 rounded-2xl object-cover shadow-2xl md:h-56 md:w-56"
         />
 
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           O MENTOR
         </span>
         <p
           class="font-mentor-display mt-2"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
           }"
         >
@@ -55,7 +55,7 @@
         <p
           v-if="brand.founder?.role"
           class="mt-3 text-sm font-semibold uppercase"
-          :style="{ color: `${brand.colors.text}CC`, letterSpacing: '0.08em' }"
+          :style="{ color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)', letterSpacing: '0.08em' }"
         >
           {{ brand.founder.role }}
         </p>
@@ -63,7 +63,7 @@
 
       <!-- RIGHT (col-span-8): headline monumental + CTAs -->
       <div class="flex flex-col justify-center px-6 py-14 md:col-span-8 md:px-14 md:py-20">
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           {{ brand.hero?.badge || 'CAPITULO I · CONSTRUA PATRIMONIO' }}
         </span>
 
@@ -71,13 +71,13 @@
         <h1
           class="font-mentor-display mt-4"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2.5rem, 6vw, 5.5rem)',
             lineHeight: '0.88',
           }"
         >
           <template v-for="(line, idx) in headlineLines" :key="`l-${idx}`">
-            <span class="block" :style="{ color: idx === headlineLines.length - 1 ? brand.colors.primary : brand.colors.text }">{{ line }}</span>
+            <span class="block" :style="{ color: idx === headlineLines.length - 1 ? 'var(--brand-primary)' : 'var(--brand-text)' }">{{ line }}</span>
           </template>
         </h1>
 
@@ -85,7 +85,7 @@
         <p
           v-if="brand.hero?.subtitle"
           class="mentor-hero__subtitle mt-8 max-w-xl text-base leading-relaxed md:text-lg"
-          :style="{ color: `${brand.colors.text}CC` }"
+          :style="{ color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)' }"
         >
           {{ brand.hero.subtitle }}
         </p>
@@ -94,12 +94,12 @@
         <div
           v-if="brand.hero?.founderQuote"
           class="mentor-hero__quote mt-10 max-w-2xl border-l-4 pl-6"
-          :style="{ borderColor: brand.colors.primary }"
+          :style="{ borderColor: 'var(--brand-primary)' }"
         >
           <p
             class="font-mentor-quote"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(1.25rem, 2vw, 1.75rem)',
             }"
           >
@@ -108,7 +108,7 @@
           <p
             v-if="brand.founder?.name"
             class="font-mentor-eyebrow mt-3"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             {{ brand.founder.name }}
           </p>
@@ -121,8 +121,8 @@
             :to="brand.hero?.ctaHref || '/auth/register'"
             class="mentor-hero__cta-primary group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 transition-transform hover:scale-[1.03]"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
             }"
           >
             <span class="font-mentor-eyebrow !text-xs">{{ brand.hero.ctaLabel }}</span>
@@ -137,8 +137,8 @@
             :to="brand.hero?.ctaSecondaryHref || '/auth/login'"
             class="inline-flex items-center justify-center rounded-full border-2 px-7 py-3.5 transition-colors hover:opacity-80"
             :style="{
-              borderColor: brand.colors.text,
-              color: brand.colors.text,
+              borderColor: 'var(--brand-text)',
+              color: 'var(--brand-text)',
             }"
           >
             <span class="font-mentor-eyebrow !text-xs">{{ brand.hero.ctaSecondaryLabel }}</span>
@@ -157,9 +157,9 @@
           >
             <span
               class="size-1.5 rounded-full"
-              :style="{ backgroundColor: brand.colors.primary }"
+              :style="{ backgroundColor: 'var(--brand-primary)' }"
             />
-            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}99` }">
+            <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 60%, transparent)' }">
               {{ item }}
             </span>
           </li>
@@ -168,7 +168,7 @@
     </div>
 
     <!-- Mentor-rule: barra grossa entre o hero e a proxima section -->
-    <hr class="mentor-rule" :style="{ backgroundColor: brand.colors.primary }" />
+    <hr class="mentor-rule" :style="{ backgroundColor: 'var(--brand-primary)' }" />
   </section>
 </template>
 

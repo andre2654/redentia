@@ -41,7 +41,7 @@
 
         <h3>Principais ETFs no Brasil</h3>
         <div class="space-y-4">
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-3 flex items-center justify-between">
               <h4 class="text-secondary">
                 BOVA11 - Ibovespa
@@ -59,7 +59,7 @@
             </div>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-3 text-secondary">
               SMAL11 - Small Caps
             </h4>
@@ -74,7 +74,7 @@
             </div>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-3 text-secondary">
               IVVB11 - S&P 500 em Reais
             </h4>
@@ -89,7 +89,7 @@
             </div>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-3 text-secondary">
               PIBB11 - IBrX-50
             </h4>
@@ -106,7 +106,7 @@
 
         <h3>Vantagens dos ETFs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
               <h4>Taxas Baixas</h4>
@@ -117,7 +117,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-layers" class="text-primary h-5 w-5" />
               <h4>Diversificação Automática</h4>
@@ -128,7 +128,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-zap" class="text-primary h-5 w-5" />
               <h4>Liquidez</h4>
@@ -139,7 +139,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-eye" class="text-primary h-5 w-5" />
               <h4>Transparência Total</h4>
@@ -156,29 +156,29 @@
           <table class="w-full text-sm">
             <caption class="sr-only">Comparativo entre ETF e Fundo de Ações por característica</caption>
             <thead>
-              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--brand-border)' }">
                 <th scope="col" class="p-3 text-left">Característica</th>
                 <th scope="col" class="p-3 text-left">ETF</th>
                 <th scope="col" class="p-3 text-left">Fundo de Ações</th>
               </tr>
             </thead>
             <tbody>
-              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--brand-border)' }">
                 <th scope="row" class="p-3 font-normal text-left">Taxa de administração</th>
                 <td class="p-3 text-secondary tabular-nums">0,20-0,80%</td>
                 <td class="p-3 tabular-nums">1,5-3%</td>
               </tr>
-              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--brand-border)' }">
                 <th scope="row" class="p-3 font-normal text-left">Objetivo</th>
                 <td class="p-3 text-secondary">Replicar índice</td>
                 <td class="p-3">Superar índice</td>
               </tr>
-              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--brand-border)' }">
                 <th scope="row" class="p-3 font-normal text-left">Liquidez</th>
                 <td class="p-3 text-secondary">Imediata (como ação)</td>
                 <td class="p-3">D+4 ou mais</td>
               </tr>
-              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--brand-border)' }">
                 <th scope="row" class="p-3 font-normal text-left">Transparência</th>
                 <td class="p-3 text-secondary">Total</td>
                 <td class="p-3">Parcial</td>
@@ -222,7 +222,7 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--brand-border)' }">
         <NuxtLink
           to="/search?group=etfs"
           class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"

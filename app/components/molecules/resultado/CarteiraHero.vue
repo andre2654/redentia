@@ -15,7 +15,7 @@
   <header class="hero flex flex-col gap-3">
     <span
       class="font-mono-tab text-[11px] font-medium uppercase"
-      :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+      :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
     >Resultado · {{ periodLabel }}</span>
 
     <div class="flex flex-wrap items-end justify-between gap-6">
@@ -49,7 +49,7 @@
 
           <span
             class="font-mono-tab text-[12.5px]"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
           >
             {{ stats.closedTradesCount }} {{ stats.closedTradesCount === 1 ? 'fechada' : 'fechadas' }}
             <template v-if="stats.openTradesCount > 0">
@@ -66,7 +66,7 @@
              ver um box separado. -->
         <div
           class="mt-1.5 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[12.5px]"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
         >
           <span class="hero__breakdown">
             <span class="hero__breakdown-label">Realizado</span>
@@ -77,7 +77,7 @@
           </span>
           <span
             class="hero__sep"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 25%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 25%, transparent)` }"
             aria-hidden="true"
           >·</span>
           <span class="hero__breakdown">
@@ -89,7 +89,7 @@
           </span>
           <span
             class="hero__sep"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 25%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 25%, transparent)` }"
             aria-hidden="true"
           >·</span>
           <span class="hero__breakdown">
@@ -135,7 +135,7 @@
         </svg>
         <span
           class="hero__spark-label font-mono-tab"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
         >Últimas 2 semanas</span>
       </div>
     </div>
@@ -210,7 +210,7 @@ const incomePctLabel = computed(() => {
 })
 
 function cellColor(v: number): string {
-  if (v === 0) return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
+  if (v === 0) return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
   return v > 0 ? brand.colors.positive : brand.colors.negative
 }
 

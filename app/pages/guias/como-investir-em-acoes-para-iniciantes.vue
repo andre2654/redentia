@@ -17,25 +17,25 @@
 
         <h3>Por que Investir em Ações?</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Potencial de Retorno</h4>
             <p class="text-sm">
               Historicamente, ações oferecem os maiores retornos no longo prazo, superando inflação e renda fixa.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Renda Passiva</h4>
             <p class="text-sm">
               Receba dividendos regularmente sem precisar vender suas ações. Empresas boas pagadoras distribuem lucros aos acionistas.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Proteção Contra Inflação</h4>
             <p class="text-sm">
               Empresas reajustam preços com a inflação, protegendo seu patrimônio do aumento do custo de vida.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Participação nos Lucros</h4>
             <p class="text-sm">
               Como sócio, você se beneficia do crescimento e sucesso da empresa através da valorização das ações.
@@ -114,21 +114,21 @@
           Não existe um valor mínimo obrigatório, mas algumas recomendações práticas:
         </p>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Para Iniciantes</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               R$ 100 a R$ 500 por mês - Para aprender e ganhar experiência
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Nível Intermediário</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               R$ 500 a R$ 2.000 por mês - Para construir patrimônio
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Avançado</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               Acima de R$ 2.000 por mês - Para acelerar crescimento
             </p>
           </div>
@@ -137,7 +137,7 @@
         <h2>Erros Comuns de Iniciantes</h2>
         <div
           class="rounded-xl border p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)' }"
         >
           <ul>
             <li>
@@ -213,8 +213,8 @@
       <div class="space-y-4">
         <h2>Perguntas Frequentes</h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               Quanto dinheiro preciso para começar a investir em ações?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -223,8 +223,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               Qual a melhor corretora para iniciantes?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -233,8 +233,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               É seguro investir em ações?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -243,8 +243,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               Quando vou receber dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -253,8 +253,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               Quantas ações devo ter na minha carteira?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -266,18 +266,18 @@
       </div>
 
       <!-- Navegação para Outros Guias -->
-      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">
+      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">
         <h3>Continue Aprendendo</h3>
         <div class="grid gap-4 sm:grid-cols-2">
           <NuxtLink
             to="/guias/melhores-fiis-para-investir-em-2026"
             class="normal-static-link group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-building-2" class="text-secondary h-6 w-6" />
             <div class="flex-1">
               <h4 class="group-hover:text-secondary">Melhores FIIs 2026</h4>
-              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Fundos imobiliários recomendados</p>
+              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">Fundos imobiliários recomendados</p>
             </div>
             <UIcon name="i-lucide-arrow-right" class="h-5 w-5" />
           </NuxtLink>
@@ -285,12 +285,12 @@
           <NuxtLink
             to="/guias/calculadora-de-dividendos"
             class="normal-static-link group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-coins" class="text-secondary h-6 w-6" />
             <div class="flex-1">
               <h4 class="group-hover:text-secondary">Calculadora de Dividendos</h4>
-              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Calcule sua renda passiva</p>
+              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">Calcule sua renda passiva</p>
             </div>
             <UIcon name="i-lucide-arrow-right" class="h-5 w-5" />
           </NuxtLink>

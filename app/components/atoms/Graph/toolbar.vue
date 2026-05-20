@@ -49,8 +49,8 @@
           type="button"
           class="inline-flex size-8 items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
           :style="{
-            backgroundColor: chartType === type.value ? brand.colors.primary : 'transparent',
-            color: chartType === type.value ? brand.colors.background : 'var(--brand-text-muted)',
+            backgroundColor: chartType === type.value ? 'var(--brand-primary)' : 'transparent',
+            color: chartType === type.value ? 'var(--brand-background)' : 'var(--brand-text-muted)',
           }"
           :aria-pressed="chartType === type.value"
           :aria-label="type.label"

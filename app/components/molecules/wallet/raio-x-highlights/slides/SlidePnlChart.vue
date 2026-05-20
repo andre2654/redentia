@@ -262,7 +262,7 @@ const deltaPctLabel = computed(() => {
 const trendColor = computed(() => {
   if (lastValue.value > firstValue.value) return '#10b981'
   if (lastValue.value < firstValue.value) return '#ef4444'
-  return '#f5a623'
+  return 'var(--brand-primary)'
 })
 const trendCopy = computed(() => {
   if (lastValue.value > firstValue.value) return 'Cresceu de forma consistente.'
@@ -720,7 +720,7 @@ function formatBrlAbs(v: number): string {
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--brand-primary, #f5a623);
+  color: var(--brand-primary, var(--brand-primary));
   font-weight: 500;
   margin: 0;
 }
@@ -822,7 +822,7 @@ function formatBrlAbs(v: number): string {
   color: rgba(255, 255, 255, 0.78);
   margin: 0;
   text-align: center;
-  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 16px var(--shadow-ambient);
   max-width: 480px;
 }
 

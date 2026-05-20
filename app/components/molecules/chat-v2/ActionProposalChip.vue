@@ -74,22 +74,22 @@ const aff = computed<Affordance>(
 // primário no bg + borda primária visível, mas mantendo as mesmas
 // dimensões/padding/altura do TickerChip default.
 const chipStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, ${brand.colors.surface})`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 10%, var(--brand-surface))`,
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
+  color: 'var(--brand-text)',
   textDecoration: 'none',
 }))
 
 const confirmedStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.positive ?? brand.colors.primary} 14%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.positive ?? brand.colors.primary} 35%, transparent)`,
-  color: brand.colors.positive ?? brand.colors.primary,
+  backgroundColor: `color-mix(in srgb, var(--brand-positive) 14%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-positive) 35%, transparent)`,
+  color: 'var(--brand-positive)',
 }))
 
 const skippedStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-  color: brand.colors.textMuted,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+  color: 'var(--brand-text-muted)',
   opacity: 0.85,
 }))
 
@@ -99,8 +99,8 @@ const skippedStyle = computed(() => ({
 const iconBadgeStyle = computed(() => ({
   width: '20px',
   height: '20px',
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
-  boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
+  boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
 }))
 
 const iconBadgeStaticStyle = computed(() => ({
@@ -109,7 +109,7 @@ const iconBadgeStaticStyle = computed(() => ({
   backgroundColor: `color-mix(in srgb, currentColor 18%, transparent)`,
 }))
 
-const iconColor = computed(() => brand.colors.primary)
+const iconColor = computed(() => 'var(--brand-primary)')
 
 // ---- Args summary (popover) -----------------------------------
 function formatArgsSummary(

@@ -110,8 +110,8 @@ const brand = useBrand()
 const headingId = `goals-section-${Math.random().toString(36).slice(2, 8)}`
 
 const emptyStyle = computed(() => ({
-  border: `1px dashed color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 4%, transparent)`,
+  border: `1px dashed color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 4%, transparent)`,
 }))
 </script>
 

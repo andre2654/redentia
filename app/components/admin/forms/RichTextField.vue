@@ -620,7 +620,7 @@ defineExpose({ editor })
   border-radius: 14px;
   background: var(--brand-surface, #1a1a1a);
   border: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
-  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 64px -16px var(--shadow-ambient);
 }
 .rich-modal__title {
   margin: 0 0 4px;
@@ -679,7 +679,7 @@ defineExpose({ editor })
 }
 .rich-modal__btn--primary {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   border-color: var(--brand-primary);
 }
 .rich-modal__btn--primary:hover { filter: brightness(1.05); }

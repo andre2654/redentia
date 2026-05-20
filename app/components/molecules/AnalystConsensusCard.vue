@@ -217,9 +217,9 @@ const recommendationLabel = computed(() => {
 
 const recommendationColor = computed(() => {
   const rec = data.value?.recommendation
-  if (rec === 'strong_buy' || rec === 'buy') return brand.colors.positive
-  if (rec === 'sell' || rec === 'strong_sell') return brand.colors.negative
-  return brand.colors.text
+  if (rec === 'strong_buy' || rec === 'buy') return 'var(--brand-positive)'
+  if (rec === 'sell' || rec === 'strong_sell') return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 })
 
 const upsideLabel = computed(() => {
@@ -231,8 +231,8 @@ const upsideLabel = computed(() => {
 
 const upsideColor = computed(() => {
   const v = data.value?.upside_percent
-  if (v === null || v === undefined) return brand.colors.text
-  return v >= 0 ? brand.colors.positive : brand.colors.negative
+  if (v === null || v === undefined) return 'var(--brand-text)'
+  return v >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 const hasTargetRange = computed(() => {

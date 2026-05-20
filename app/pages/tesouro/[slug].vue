@@ -22,7 +22,7 @@
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Ticker header bar (minimalista: indexer badge + nome + taxa + stats) -->
-        <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b pb-8" :style="{ borderColor: 'var(--brand-border)' }">
           <MoleculesTickerHeaderBar
             :ticker="indexerLabel"
             :name="prettyName(data?.name ?? slug)"
@@ -37,28 +37,28 @@
         </section>
 
         <!-- Price register bigger version -->
-        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <header class="mb-4 flex flex-col gap-1">
-            <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+            <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
               Preços do Tesouro Nacional
             </h2>
-            <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; COMPRA · VENDA · ATUALIZADO DIARIAMENTE
             </p>
           </header>
           <div
             class="grid grid-cols-1 gap-px border md:grid-cols-2"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
           >
-            <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">COMPRA</span>
-              <span class="font-mono-tab text-3xl font-light tabular-nums md:text-4xl" :style="{ color: brand.colors.positive }">
+            <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: 'var(--brand-surface)' }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">COMPRA</span>
+              <span class="font-mono-tab text-3xl font-light tabular-nums md:text-4xl" :style="{ color: 'var(--brand-positive)' }">
                 {{ formatMoney(data?.price_buy) }}
               </span>
             </div>
-            <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">VENDA</span>
-              <span class="font-mono-tab text-3xl font-light tabular-nums md:text-4xl" :style="{ color: brand.colors.text }">
+            <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: 'var(--brand-surface)' }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">VENDA</span>
+              <span class="font-mono-tab text-3xl font-light tabular-nums md:text-4xl" :style="{ color: 'var(--brand-text)' }">
                 {{ formatMoney(data?.price_sell) }}
               </span>
             </div>
@@ -66,7 +66,7 @@
         </section>
 
         <!-- Price history chart -->
-        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <div ref="tesouroChartRef" class="mt-0">
             <AtomsGraphLine
               :data="chartData"
@@ -84,13 +84,13 @@
                   <template #extras>
                     <span
                       class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >
                       {{ chartMode === 'rate' ? 'Histórico de rentabilidade' : 'Histórico de cotação' }}
                     </span>
                     <div
                       class="inline-flex items-center border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                      :style="{ borderColor: brand.colors.border }"
+                      :style="{ borderColor: 'var(--brand-border)' }"
                       role="group"
                       aria-label="Eixo do gráfico"
                     >
@@ -102,8 +102,8 @@
                         type="button"
                         class="inline-flex h-8 items-center justify-center px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
                         :style="{
-                          backgroundColor: chartMode === opt.value ? brand.colors.primary : 'transparent',
-                          color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                          backgroundColor: chartMode === opt.value ? 'var(--brand-primary)' : 'transparent',
+                          color: chartMode === opt.value ? 'var(--brand-background)' : 'var(--brand-text-muted)',
                         }"
                         @click="chartMode = opt.value"
                       >
@@ -170,78 +170,78 @@
         </AtomsGraphFullscreenDialog>
 
         <!-- AI Interpretation -->
-        <section v-if="interpretations.length" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section v-if="interpretations.length" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <header class="mb-4 flex items-center gap-2">
-            <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+            <IconAi class="h-3 w-3" :style="{ fill: 'var(--brand-primary)' }" />
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
               Interpretações IA
             </span>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; LEITURA DO TÍTULO
             </span>
           </header>
-          <div class="flex flex-col gap-px border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+          <div class="flex flex-col gap-px border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }">
             <div
               v-for="(line, idx) in interpretations"
               :key="idx"
               class="flex items-start gap-3 px-5 py-3"
-              :style="{ backgroundColor: brand.colors.surface }"
+              :style="{ backgroundColor: 'var(--brand-surface)' }"
             >
-              <p class="text-sm leading-relaxed" :style="{ color: brand.colors.text }" v-html="line" />
+              <p class="text-sm leading-relaxed" :style="{ color: 'var(--brand-text)' }" v-html="line" />
             </div>
           </div>
         </section>
 
         <!-- AI ASSISTANT (same as asset page) -->
-        <section v-if="!authStore.isAuthenticated" class="border-b py-12" :style="{ borderColor: brand.colors.border }">
+        <section v-if="!authStore.isAuthenticated" class="border-b py-12" :style="{ borderColor: 'var(--brand-border)' }">
           <header class="mb-6 flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
               Assistente IA
             </span>
-            <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
-              Dúvidas sobre <span class="italic" :style="{ color: brand.colors.primary }">este título</span>?
+            <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+              Dúvidas sobre <span class="italic" :style="{ color: 'var(--brand-primary)' }">este título</span>?
             </h2>
-            <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; PERGUNTE QUALQUER COISA · RESPOSTA EM ~3 SEGUNDOS
             </p>
           </header>
 
-          <div class="mb-6 grid gap-px border sm:grid-cols-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+          <div class="mb-6 grid gap-px border sm:grid-cols-3" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }">
             <NuxtLink
               v-for="(item, idx) in suggestionCards"
               :key="idx"
               to="/auth/login"
               class="group flex flex-col gap-2 p-5 transition-colors hover:brightness-125"
-              :style="{ backgroundColor: brand.colors.surface }"
+              :style="{ backgroundColor: 'var(--brand-surface)' }"
             >
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                 Pergunta {{ idx + 1 }}
               </span>
-              <p class="text-base font-medium leading-snug" :style="{ color: brand.colors.text }">
-                <span :style="{ color: brand.colors.primary }">&gt;</span> {{ item.text }}
+              <p class="text-base font-medium leading-snug" :style="{ color: 'var(--brand-text)' }">
+                <span :style="{ color: 'var(--brand-primary)' }">&gt;</span> {{ item.text }}
               </p>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ item.desc }}
               </span>
-              <span class="mt-auto flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
+              <span class="mt-auto flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-text-muted)' }">
                 PERGUNTAR →
               </span>
             </NuxtLink>
           </div>
 
-          <div class="flex flex-col items-center gap-4 border p-6 md:p-8" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="flex flex-col items-center gap-4 border p-6 md:p-8" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <UButton
               to="/auth/login"
               size="xl"
               class="group w-full font-mono-tab font-semibold uppercase tracking-wider transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 sm:w-auto"
-              :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+              :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
             >
               <template #leading>
                 <span class="font-mono-tab text-[10px] opacity-70">[F3]</span>
               </template>
               {{ brand.ai?.ctaButton ?? 'Entrar gratuitamente' }}
             </UButton>
-            <p class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
+            <p class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-text-muted)' }">
               <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
               GRATUITO · SEM CARTAO · RESPOSTA EM SEGUNDOS
             </p>
@@ -317,7 +317,7 @@ const chartData = computed<IChartDataPoint[]>(() => {
 const chartLegend = computed<IChartLegendItem[]>(() => [
   {
     label: chartMode.value === 'rate' ? 'Taxa de venda (% a.a.)' : 'Valor de venda',
-    color: brand.colors.positive,
+    color: 'var(--brand-positive)',
   },
 ])
 
@@ -419,10 +419,10 @@ const indexerLabel = computed(() => indexerBadge(data.value?.indexer ?? null))
 
 const indexerColor = computed(() => {
   const b = indexerLabel.value
-  if (b === 'IPCA+') return brand.colors.primary
-  if (b === 'SELIC') return brand.colors.positive
-  if (b === 'PRÉ') return brand.colors.text
-  return brand.colors.textMuted
+  if (b === 'IPCA+') return 'var(--brand-primary)'
+  if (b === 'SELIC') return 'var(--brand-positive)'
+  if (b === 'PRÉ') return 'var(--brand-text)'
+  return 'var(--brand-text-muted)'
 })
 
 const yearsToMaturity = computed(() => {
@@ -451,7 +451,7 @@ const maturityShort = computed(() => {
 const tesouroStats = computed(() => {
   const d = data.value as any
   return [
-    { label: 'COMPRA', value: formatMoney(d?.price_buy), accent: brand.colors.positive },
+    { label: 'COMPRA', value: formatMoney(d?.price_buy), accent: 'var(--brand-positive)' },
     { label: 'VENDA', value: formatMoney(d?.price_sell) },
     { label: 'VENCIMENTO', value: maturityShort.value },
     {
@@ -488,8 +488,8 @@ const interpretations = computed<string[]>(() => {
   const d = data.value
   if (!d) return []
   const lines: string[] = []
-  const accent = (t: string) => `<strong style="color: ${brand.colors.primary}">${t}</strong>`
-  const pos = (t: string) => `<strong style="color: ${brand.colors.positive}">${t}</strong>`
+  const accent = (t: string) => `<strong style="color: var(--brand-primary)">${t}</strong>`
+  const pos = (t: string) => `<strong style="color: var(--brand-positive)">${t}</strong>`
 
   const rateNum = d.rate_numeric
   const idx = indexerLabel.value

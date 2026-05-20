@@ -6,7 +6,7 @@
         <NuxtLink
           to="/setor"
           class="flex items-center gap-1 text-xs transition hover:opacity-80"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           <UIcon name="i-lucide-chevron-left" class="size-3" />
           Todos os setores
@@ -14,18 +14,18 @@
         <div class="flex items-center gap-3">
           <div
             class="flex size-12 items-center justify-center rounded-xl"
-            :style="{ backgroundColor: brand.colors.secondary + '22' }"
+            :style="{ backgroundColor: 'var(--brand-secondary)' + '22' }"
           >
             <UIcon
               name="i-lucide-layers"
               class="size-6"
-              :style="{ color: brand.colors.secondary }"
+              :style="{ color: 'var(--brand-secondary)' }"
             />
           </div>
           <div>
             <p
               class="text-[10px] font-medium uppercase tracking-[0.15em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               Comparativo Setorial
             </p>
@@ -34,7 +34,7 @@
             </h1>
           </div>
         </div>
-        <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
+        <p class="max-w-2xl text-base" :style="{ color: 'var(--brand-text-muted)' }">
           Comparativo completo das empresas do setor
           <strong>{{ sector?.name || '' }}</strong> na bolsa brasileira com
           indicadores fundamentalistas e métricas de mercado atualizadas.
@@ -45,52 +45,52 @@
       <div v-if="aggregates" class="grid grid-cols-2 gap-3 md:grid-cols-4">
         <div
           class="flex flex-col gap-1 rounded-xl border px-4 py-3"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <span
             class="text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             Empresas
           </span>
           <span
             class="text-xl font-medium tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             {{ aggregates.ticker_count }}
           </span>
         </div>
         <div
           class="flex flex-col gap-1 rounded-xl border px-4 py-3"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <span
             class="text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             Market Cap
           </span>
           <span
             class="text-xl font-medium tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             {{ formatMarketCap(aggregates.total_market_cap) }}
           </span>
         </div>
         <div
           class="flex flex-col gap-1 rounded-xl border px-4 py-3"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <span
             class="text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             Variação média hoje
           </span>
           <span
             class="text-xl font-medium tabular-nums"
             :style="{
-              color: aggregates.avg_change_percent >= 0 ? brand.colors.positive : brand.colors.negative,
+              color: aggregates.avg_change_percent >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >
             {{ formatPercent(aggregates.avg_change_percent) }}
@@ -98,11 +98,11 @@
         </div>
         <div
           class="flex flex-col gap-1 rounded-xl border px-4 py-3"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <span
             class="text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             DY médio (12m)
           </span>
@@ -126,15 +126,15 @@
         <UIcon
           name="i-lucide-search-x"
           class="size-10"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         />
-        <p class="text-sm" :style="{ color: brand.colors.textMuted }">
+        <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
           Setor não encontrado.
         </p>
         <NuxtLink
           to="/setor"
           class="text-xs transition hover:underline"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Voltar aos setores disponíveis
         </NuxtLink>
@@ -150,10 +150,10 @@
       <article
         v-if="sector"
         class="mt-8 border-t pt-8"
-        :style="{ borderColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)' }"
       >
         <h2>Sobre o setor {{ sector.name }}</h2>
-        <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
+        <p class="leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
           O setor <strong>{{ sector.name }}</strong> da bolsa brasileira reúne
           {{ aggregates?.ticker_count }} empresas listadas, ordenadas aqui por
           capitalização de mercado. Use esta página para comparar rapidamente
@@ -161,7 +161,7 @@
           price-to-book entre empresas do mesmo setor.
         </p>
         <h3>Como usar o comparativo</h3>
-        <ul class="space-y-2" :style="{ color: brand.colors.textMuted }">
+        <ul class="space-y-2" :style="{ color: 'var(--brand-text-muted)' }">
           <li>Identifique líderes por market cap no topo da lista</li>
           <li>Compare DY e P/L entre pares diretos do setor</li>
           <li>

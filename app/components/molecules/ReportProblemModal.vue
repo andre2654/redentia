@@ -43,15 +43,15 @@
         <div
           class="report-modal pointer-events-auto fixed left-1/2 top-1/2 z-10 flex w-[min(560px,92vw)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border shadow-2xl"
           :style="{
-            backgroundColor: brand.colors.surface,
-            borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-            color: brand.colors.text,
+            backgroundColor: 'var(--brand-surface)',
+            borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+            color: 'var(--brand-text)',
           }"
           @click.stop
         >
           <header
             class="flex items-center justify-between border-b px-5 py-4"
-            :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)` }"
+            :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)` }"
           >
             <h2
               id="report-problem-title"
@@ -62,7 +62,7 @@
             <button
               type="button"
               class="rounded-md p-1.5 transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
               aria-label="Fechar"
               @click="close"
             >
@@ -74,7 +74,7 @@
             <!-- Type radio. Four short, scannable options; visual is a
                  compact pill row that wraps on narrow screens. -->
             <fieldset class="flex flex-col gap-2">
-              <legend class="text-[12px] font-medium" :style="{ color: brand.colors.textMuted }">
+              <legend class="text-[12px] font-medium" :style="{ color: 'var(--brand-text-muted)' }">
                 O que é?
               </legend>
               <div class="flex flex-wrap gap-2">
@@ -100,8 +100,8 @@
             <!-- Email (anon only). Placed BEFORE title so anonymous
                  users notice it; authenticated users never see it. -->
             <label v-if="!auth.isAuthenticated" class="flex flex-col gap-1.5">
-              <span class="text-[12px] font-medium" :style="{ color: brand.colors.textMuted }">
-                Seu email <span :style="{ color: brand.colors.primary }">*</span>
+              <span class="text-[12px] font-medium" :style="{ color: 'var(--brand-text-muted)' }">
+                Seu email <span :style="{ color: 'var(--brand-primary)' }">*</span>
               </span>
               <input
                 v-model.trim="form.guest_email"
@@ -115,7 +115,7 @@
             </label>
 
             <label class="flex flex-col gap-1.5">
-              <span class="text-[12px] font-medium" :style="{ color: brand.colors.textMuted }">
+              <span class="text-[12px] font-medium" :style="{ color: 'var(--brand-text-muted)' }">
                 Título
               </span>
               <input
@@ -131,7 +131,7 @@
             </label>
 
             <label class="flex flex-col gap-1.5">
-              <span class="text-[12px] font-medium" :style="{ color: brand.colors.textMuted }">
+              <span class="text-[12px] font-medium" :style="{ color: 'var(--brand-text-muted)' }">
                 O que aconteceu? Como reproduzir?
               </span>
               <textarea
@@ -144,7 +144,7 @@
                 class="resize-y rounded-md border bg-transparent px-3 py-2 text-[14px] leading-[1.55] outline-none transition-colors"
                 :style="inputStyle"
               />
-              <span class="font-mono-tab text-[10.5px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="font-mono-tab text-[10.5px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ form.description.length }} / 5000
               </span>
             </label>
@@ -152,9 +152,9 @@
             <p
               class="rounded-md border px-3 py-2 text-[11.5px] leading-[1.5]"
               :style="{
-                borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
-                color: brand.colors.textMuted,
-                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 4%, transparent)`,
+                borderColor: `color-mix(in srgb, var(--brand-border) 40%, transparent)`,
+                color: 'var(--brand-text-muted)',
+                backgroundColor: `color-mix(in srgb, var(--brand-primary) 4%, transparent)`,
               }"
             >
               <UIcon name="i-lucide-info" class="mr-1 inline size-3.5" />
@@ -164,7 +164,7 @@
             <div
               v-if="error"
               class="rounded-md border px-3 py-2 text-[12px]"
-              :style="{ borderColor: brand.colors.negative, color: brand.colors.negative }"
+              :style="{ borderColor: 'var(--brand-negative)', color: 'var(--brand-negative)' }"
             >
               {{ error }}
             </div>
@@ -173,7 +173,7 @@
               <button
                 type="button"
                 class="rounded-md border px-4 py-2 text-[13px] font-medium transition-colors hover:opacity-80"
-                :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
+                :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }"
                 :disabled="submitting"
                 @click="close"
               >
@@ -182,7 +182,7 @@
               <button
                 type="submit"
                 class="inline-flex items-center gap-2 rounded-md px-4 py-2 text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
-                :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
                 :disabled="submitting || !canSubmit"
               >
                 <UIcon
@@ -252,18 +252,18 @@ const canSubmit = computed(() => {
 })
 
 const inputStyle = computed(() => ({
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-  color: brand.colors.text,
+  borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 
 function typeStyle(value: ReportType) {
   const active = form.type === value
   return {
-    borderColor: active ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+    borderColor: active ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
     backgroundColor: active
-      ? `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`
+      ? `color-mix(in srgb, var(--brand-primary) 14%, transparent)`
       : 'transparent',
-    color: active ? brand.colors.primary : brand.colors.text,
+    color: active ? 'var(--brand-primary)' : 'var(--brand-text)',
   }
 }
 

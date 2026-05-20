@@ -72,14 +72,14 @@
         <header
           class="chat-mobile-header relative z-20 flex items-center gap-2 px-3 xl:hidden"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.background} 82%, transparent)`,
-            borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 38%, transparent)`,
+            backgroundColor: `color-mix(in srgb, var(--brand-background) 82%, transparent)`,
+            borderBottom: `1px solid color-mix(in srgb, var(--brand-border) 38%, transparent)`,
           }"
         >
           <button
             type="button"
             class="chat-mobile-iconbtn"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
             aria-label="Abrir conversas"
             @click="sidebarOpen = true"
           >
@@ -103,7 +103,7 @@
             />
             <span
               class="truncate text-[14px] font-medium"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ mobileHeaderTitle }}</span>
           </button>
 
@@ -115,7 +115,7 @@
           <NuxtLink
             to="/"
             class="chat-mobile-iconbtn"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
             aria-label="Voltar para a home"
           >
             <UIcon name="i-lucide-x" class="size-[18px]" />
@@ -131,9 +131,9 @@
             type="button"
             class="flex size-9 items-center justify-center rounded-full transition-colors"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
-              color: brand.colors.text,
+              backgroundColor: `color-mix(in srgb, var(--brand-surface) 80%, transparent)`,
+              border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
+              color: 'var(--brand-text)',
             }"
             aria-label="Mostrar conversas"
             @click="sidebarCollapsed = false"
@@ -151,7 +151,7 @@
           <NuxtLink
             to="/"
             class="flex size-9 items-center justify-center rounded-full transition-colors"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
             aria-label="Fechar chat"
           >
             <UIcon name="i-lucide-x" class="size-4" />

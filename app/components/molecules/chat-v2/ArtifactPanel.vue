@@ -99,7 +99,7 @@
       <template v-else>
         <div
           class="prose prose-sm max-w-none"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
           v-html="renderedContent"
         />
       </template>

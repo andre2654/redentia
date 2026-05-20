@@ -193,9 +193,9 @@ const signedPct = computed(() => {
   align-items: center;
   justify-content: center;
   box-shadow:
-    inset 0 -3px 8px rgba(0, 0, 0, 0.4),
+    inset 0 -3px 8px var(--shadow-amber-near),
     inset 0 3px 6px rgba(255, 240, 200, 0.4),
-    0 4px 10px -3px rgba(0, 0, 0, 0.5);
+    0 4px 10px -3px var(--shadow-ambient);
   color: #2a1610;
 }
 </style>

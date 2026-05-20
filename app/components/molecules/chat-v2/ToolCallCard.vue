@@ -55,21 +55,21 @@
       v-if="toolCall.status === 'running'"
       name="i-lucide-loader-2"
       class="size-3 shrink-0 motion-safe:animate-spin"
-      :style="{ color: brand.colors.primary }"
+      :style="{ color: 'var(--brand-primary)' }"
       aria-hidden="true"
     />
     <UIcon
       v-else-if="toolCall.status === 'success'"
       name="i-lucide-check"
       class="size-3 shrink-0"
-      :style="{ color: brand.colors.positive }"
+      :style="{ color: 'var(--brand-positive)' }"
       aria-hidden="true"
     />
     <UIcon
       v-else
       name="i-lucide-alert-circle"
       class="size-3 shrink-0"
-      :style="{ color: brand.colors.negative }"
+      :style="{ color: 'var(--brand-negative)' }"
       aria-hidden="true"
     />
   </button>
@@ -206,14 +206,14 @@ const hoverLabel = computed(() => {
 })
 
 const tintColor = computed(() => {
-  if (props.toolCall.status === 'error') return brand.colors.negative
-  if (props.toolCall.status === 'success') return brand.colors.text
-  return brand.colors.primary
+  if (props.toolCall.status === 'error') return 'var(--brand-negative)'
+  if (props.toolCall.status === 'success') return 'var(--brand-text)'
+  return 'var(--brand-primary)'
 })
 
 const textColor = computed(() => {
-  if (props.toolCall.status === 'error') return brand.colors.negative
-  return brand.colors.text
+  if (props.toolCall.status === 'error') return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 })
 </script>
 

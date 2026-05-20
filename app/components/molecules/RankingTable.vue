@@ -178,7 +178,7 @@
               v-if="row.upside_pct != null"
               class="text-[10px] tabular-nums"
               :style="{
-                color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                color: Number(row.upside_pct) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(row.upside_pct) }}
@@ -200,7 +200,7 @@
               v-if="row.upside_pct != null"
               class="text-[10px] tabular-nums"
               :style="{
-                color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                color: Number(row.upside_pct) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(row.upside_pct) }}
@@ -212,7 +212,7 @@
             v-if="showColumn('upsidePct')"
             class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
             :style="{
-              color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              color: Number(row.upside_pct) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >
             {{ formatPercent(row.upside_pct) }}
@@ -249,7 +249,7 @@
             v-if="showColumn('revenueGrowth5y')"
             class="hidden w-32 text-right text-sm font-semibold tabular-nums md:block"
             :style="{
-              color: Number(row.revenue_growth_5y) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              color: Number(row.revenue_growth_5y) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >
             {{ formatPercent(row.revenue_growth_5y, true) }}
@@ -260,7 +260,7 @@
             v-if="showColumn('netIncomeGrowth5y')"
             class="hidden w-32 text-right text-sm font-semibold tabular-nums md:block"
             :style="{
-              color: Number(row.net_income_growth_5y) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              color: Number(row.net_income_growth_5y) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >
             {{ formatPercent(row.net_income_growth_5y, true) }}
@@ -280,7 +280,7 @@
             v-if="showColumn('change')"
             class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
             :style="{
-              color: Number(row.change_percent) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              color: Number(row.change_percent) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >
             {{ formatPercent(row.change_percent) }}
@@ -319,7 +319,7 @@
                 v-if="row.upside_pct != null"
                 class="text-[10px] tabular-nums"
                 :style="{
-                  color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                  color: Number(row.upside_pct) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
                 }"
               >
                 {{ formatPercent(row.upside_pct) }}
@@ -336,7 +336,7 @@
                 v-if="row.upside_pct != null"
                 class="text-[10px] tabular-nums"
                 :style="{
-                  color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                  color: Number(row.upside_pct) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
                 }"
               >
                 {{ formatPercent(row.upside_pct) }}
@@ -346,7 +346,7 @@
               v-else-if="showColumn('upsidePct')"
               class="text-sm font-semibold tabular-nums"
               :style="{
-                color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                color: Number(row.upside_pct) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(row.upside_pct) }}
@@ -397,7 +397,7 @@
               v-else-if="showColumn('change')"
               class="text-sm font-semibold tabular-nums"
               :style="{
-                color: Number(row.change_percent) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                color: Number(row.change_percent) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(row.change_percent) }}

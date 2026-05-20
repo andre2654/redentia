@@ -14,8 +14,8 @@
         title="O que vai cair na conta"
       />
       <div class="flex items-baseline gap-2">
-        <span class="text-[12.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Total estimado</span>
-        <span class="font-mono-tab text-[16px] font-medium tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.2px' }">{{ maskedBRL(totalEstimated) }}</span>
+        <span class="text-[12.5px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Total estimado</span>
+        <span class="font-mono-tab text-[16px] font-medium tabular-nums" :style="{ color: 'var(--brand-positive)', letterSpacing: '-0.2px' }">{{ maskedBRL(totalEstimated) }}</span>
       </div>
     </div>
 
@@ -25,15 +25,15 @@
           v-for="(d, i) in events"
           :key="`${d.ticker}-${d.payment_date}`"
           class="flex items-center gap-4 px-5 py-3"
-          :style="{ borderBottom: i < events.length - 1 ? `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` : 'none' }"
+          :style="{ borderBottom: i < events.length - 1 ? `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` : 'none' }"
         >
-          <div class="flex w-14 shrink-0 flex-col items-center" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">
-            <span class="font-mono-tab text-[10px] font-medium uppercase" :style="{ letterSpacing: '0.14em', color: brand.colors.primary }">{{ formatMonthShort(d.payment_date) }}</span>
-            <span class="font-mono-tab text-[18px] font-light tabular-nums" :style="{ color: brand.colors.text, letterSpacing: '-0.02em' }">{{ formatDay(d.payment_date) }}</span>
+          <div class="flex w-14 shrink-0 flex-col items-center" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">
+            <span class="font-mono-tab text-[10px] font-medium uppercase" :style="{ letterSpacing: '0.14em', color: 'var(--brand-primary)' }">{{ formatMonthShort(d.payment_date) }}</span>
+            <span class="font-mono-tab text-[18px] font-light tabular-nums" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.02em' }">{{ formatDay(d.payment_date) }}</span>
           </div>
           <div class="flex min-w-0 flex-1 flex-col leading-tight">
             <div class="flex items-center gap-2">
-              <span class="font-mono-tab text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ d.ticker }}</span>
+              <span class="font-mono-tab text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ d.ticker }}</span>
               <span
                 class="rounded px-1.5 py-0.5 font-mono-tab text-[10px] font-medium uppercase"
                 :style="{
@@ -43,15 +43,15 @@
                 }"
               >{{ d.kind }}</span>
             </div>
-            <span v-if="d.name" class="text-[11px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">{{ d.name }}</span>
+            <span v-if="d.name" class="text-[11px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">{{ d.name }}</span>
           </div>
-          <span class="font-mono-tab text-[14px] tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.005em' }">+{{ maskedBRL2(d.amount) }}</span>
+          <span class="font-mono-tab text-[14px] tabular-nums" :style="{ color: 'var(--brand-positive)', letterSpacing: '-0.005em' }">+{{ maskedBRL2(d.amount) }}</span>
         </li>
       </ul>
     </article>
 
     <article v-else class="rounded-xl border p-6 text-center" :style="cardStyle">
-      <p class="text-[13px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">
+      <p class="text-[13px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">
         Sem proventos previstos nos próximos 60 dias para sua carteira.
       </p>
     </article>
@@ -74,8 +74,8 @@ const props = defineProps<Props>()
 const brand = useBrand()
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const totalEstimated = computed(() => props.events.reduce((s, d) => s + (d.amount || 0), 0))
@@ -97,9 +97,9 @@ function formatMonthShort(iso: string): string {
   return d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').toLowerCase()
 }
 function labelColor(kind: string): string {
-  if (kind === 'JCP') return (brand.colors as { warning?: string }).warning || '#f59e0b'
-  if (kind === 'Dividendo') return brand.colors.positive
-  return brand.colors.primary
+  if (kind === 'JCP') return 'var(--brand-warning)'
+  if (kind === 'Dividendo') return 'var(--brand-positive)'
+  return 'var(--brand-primary)'
 }
 // Mascarar total estimado + valor por evento. Dividendos refletem
 // o tamanho da posicao (proventos × qty), entao expoem o patrimonio

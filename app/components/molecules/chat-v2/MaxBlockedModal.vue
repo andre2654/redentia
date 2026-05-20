@@ -125,7 +125,7 @@ function onClose() {
   background: var(--brand-surface);
   border: 1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent);
   box-shadow:
-    0 30px 80px -20px rgba(0, 0, 0, 0.5),
+    0 30px 80px -20px var(--shadow-ambient),
     0 0 0 1px color-mix(in srgb, var(--brand-primary) 8%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--brand-primary) 8%, transparent);
 }

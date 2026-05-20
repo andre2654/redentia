@@ -20,15 +20,15 @@
 <template>
   <div
     class="relative z-10 flex flex-col"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <!-- Top tape: thick orange strip with "MANUAL DO PRIMO · FICHA TECNICA" -->
     <div
       class="relative flex items-center gap-4 px-6 py-3 md:px-10"
-      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
     >
       <span class="font-mentor-eyebrow">MANUAL DO PRIMO · FICHA TÉCNICA</span>
-      <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+      <span class="flex-1 border-t" :style="{ borderColor: 'color-mix(in srgb, var(--brand-background) 25%, transparent)' }" />
       <span class="font-mentor-eyebrow">{{ tickerUpper }} · {{ assetTypeLabel }}</span>
     </div>
 
@@ -37,10 +37,10 @@
       <!-- Left column: logo + sector/industry -->
       <div
         class="relative flex flex-col justify-end px-6 py-10 md:col-span-4 md:px-10 md:py-14"
-        :style="{ backgroundColor: brand.colors.tertiary || brand.colors.surface }"
+        :style="{ backgroundColor: 'var(--brand-tertiary)' || 'var(--brand-surface)' }"
       >
         <!-- Vertical orange strip on right edge -->
-        <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: brand.colors.primary }" />
+        <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: 'var(--brand-primary)' }" />
         <img
           v-if="resolvedLogo && !isLoadingAsset && !failedLogos?.isFailed?.(resolvedLogo)"
           :src="resolvedLogo"
@@ -48,13 +48,13 @@
           class="mb-6 h-20 w-20 rounded-2xl object-cover shadow-2xl"
           @error="failedLogos?.markFailed?.(resolvedLogo)"
         />
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           O ATIVO
         </span>
         <h1
           class="font-mentor-display mt-2"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2.5rem, 4.5vw, 4rem)',
             lineHeight: '0.85',
           }"
@@ -62,18 +62,18 @@
           {{ assetName || tickerUpper }}
         </h1>
         <div class="mt-6 flex flex-col gap-1">
-          <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }">
             SETOR
           </span>
-          <span class="text-sm font-semibold uppercase" :style="{ color: `${brand.colors.text}CC` }">
+          <span class="text-sm font-semibold uppercase" :style="{ color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)' }">
             {{ asset?.sector || '-' }}
           </span>
         </div>
         <div v-if="asset?.industry" class="mt-4 flex flex-col gap-1">
-          <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }">
             INDÚSTRIA
           </span>
-          <span class="text-sm font-semibold uppercase" :style="{ color: `${brand.colors.text}CC` }">
+          <span class="text-sm font-semibold uppercase" :style="{ color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)' }">
             {{ asset.industry }}
           </span>
         </div>
@@ -81,7 +81,7 @@
 
       <!-- Right column: price monumental + change + stats -->
       <div class="flex flex-col justify-center px-6 py-14 md:col-span-8 md:px-14 md:py-20">
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           CAPÍTULO I · COTAÇÃO DE HOJE
         </span>
 
@@ -89,7 +89,7 @@
         <h2
           class="font-mentor-display mt-4"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(4rem, 8.5vw, 8.5rem)',
             lineHeight: '0.85',
           }"
@@ -100,17 +100,17 @@
         <!-- Price block -->
         <div class="mt-8 flex flex-wrap items-baseline gap-6">
           <div class="flex flex-col">
-            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+            <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }">
               PREÇO ATUAL
             </span>
             <div class="mt-2 flex items-baseline gap-3">
-              <span class="font-mentor-display text-xl" :style="{ color: `${brand.colors.text}80` }">
+              <span class="font-mentor-display text-xl" :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }">
                 R$
               </span>
               <span
                 class="font-mentor-display tabular-nums"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(3rem, 6vw, 5.5rem)',
                 }"
               >
@@ -120,13 +120,13 @@
           </div>
 
           <div class="flex flex-col">
-            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+            <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }">
               HOJE
             </span>
             <span
               class="font-mentor-display mt-2 tabular-nums"
               :style="{
-                color: Number(asset?.change_percent) >= 0 ? brand.colors.positive : brand.colors.negative,
+                color: Number(asset?.change_percent) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
                 fontSize: 'clamp(2rem, 3.5vw, 3rem)',
               }"
             >
@@ -136,25 +136,25 @@
         </div>
 
         <!-- Chunky orange rule -->
-        <hr class="mentor-rule mt-10 max-w-[6rem]" :style="{ backgroundColor: brand.colors.primary }" />
+        <hr class="mentor-rule mt-10 max-w-[6rem]" :style="{ backgroundColor: 'var(--brand-primary)' }" />
 
         <!-- Quick stats: 4 blocks (DY/PL/PVP/ROE) -->
         <div
           class="mt-10 grid gap-px"
           :class="basicIndicators ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1'"
-          :style="{ backgroundColor: `${brand.colors.text}18` }"
+          :style="{ backgroundColor: `${'var(--brand-text)'}18` }"
         >
           <template v-if="basicIndicators">
             <div
               v-for="item in mentorQuickStats"
               :key="item.label"
               class="flex flex-col gap-2 px-5 py-6"
-              :style="{ backgroundColor: brand.colors.background }"
+              :style="{ backgroundColor: 'var(--brand-background)' }"
             >
               <span
                 class="font-mentor-display tabular-nums"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)',
                 }"
               >
@@ -162,7 +162,7 @@
               </span>
               <span
                 class="text-[10px] font-bold uppercase tracking-wider"
-                :style="{ color: `${brand.colors.text}99` }"
+                :style="{ color: 'color-mix(in srgb, var(--brand-text) 60%, transparent)' }"
               >
                 {{ item.label }}
               </span>
@@ -175,18 +175,18 @@
     <!-- CAPITULO II: A TRAJETORIA (chart) -->
     <div
       class="border-t border-b py-16 md:py-20"
-      :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: brand.colors.surface }"
+      :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 8%, transparent)', backgroundColor: 'var(--brand-surface)' }"
     >
       <div class="mx-auto max-w-6xl px-6 md:px-10">
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div class="flex flex-col gap-2">
-            <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
               CAPÍTULO II
             </span>
             <h2
               class="font-mentor-display"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
               }"
             >
@@ -204,24 +204,24 @@
     <!-- CAPITULO de pausa: PAUSA PARA REFLEXAO (pull quote) -->
     <div
       class="border-b py-20 md:py-24"
-      :style="{ borderColor: `${brand.colors.text}15` }"
+      :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 8%, transparent)' }"
     >
       <div class="mx-auto max-w-6xl px-6 md:px-10">
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           PAUSA PARA REFLEXÃO
         </span>
         <blockquote
           class="font-mentor-quote mt-6 leading-[0.9]"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2rem, 5.5vw, 5rem)',
           }"
         >
           &ldquo;{{ mentorAssetQuote }}&rdquo;
         </blockquote>
         <div class="mt-8 flex items-center gap-4">
-          <div class="h-[2px] w-12" :style="{ backgroundColor: brand.colors.primary }" />
-          <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}99` }">
+          <div class="h-[2px] w-12" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+          <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 60%, transparent)' }">
             {{ (brand.founder?.name || 'THIAGO NIGRO').toUpperCase() }} · {{ founderTagline }}
           </span>
         </div>
@@ -231,38 +231,38 @@
     <!-- CAPITULO III: AS METRICAS QUE IMPORTAM (fundamentals numerados) -->
     <div v-if="brand.assetPage?.showIndicators !== false" class="mx-auto w-full max-w-6xl px-6 py-20 md:px-10 md:py-28">
       <div class="mb-12 flex flex-col gap-3">
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           CAPÍTULO III
         </span>
         <h2
           class="font-mentor-display"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
           }"
         >
           AS MÉTRICAS QUE IMPORTAM
         </h2>
-        <p class="max-w-2xl text-base" :style="{ color: `${brand.colors.text}B3` }">
+        <p class="max-w-2xl text-base" :style="{ color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' }">
           Os números que um investidor disciplinado olha antes de apertar o botão. Sem ruído, sem hype.
         </p>
       </div>
 
       <!-- Fundamentals list: 6 numbered rows, chunky -->
-      <div class="grid gap-0 border" :style="{ borderColor: `${brand.colors.text}15` }">
+      <div class="grid gap-0 border" :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 8%, transparent)' }">
         <div
           v-for="(item, idx) in mentorFundamentalsList"
           :key="item.label"
           class="group grid items-start gap-6 border-t px-6 py-6 transition-colors md:grid-cols-12 md:gap-10 md:px-10 md:py-8"
           :class="idx === 0 && '!border-t-0'"
-          :style="{ borderColor: `${brand.colors.text}15` }"
+          :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 8%, transparent)' }"
           @mouseenter="onRowEnter"
           @mouseleave="onRowLeave"
         >
           <div class="md:col-span-1">
             <span
               class="font-mentor-display"
-              :style="{ color: brand.colors.primary, fontSize: 'clamp(2.5rem, 4vw, 3.5rem)' }"
+              :style="{ color: 'var(--brand-primary)', fontSize: 'clamp(2.5rem, 4vw, 3.5rem)' }"
             >
               {{ String(idx + 1).padStart(2, '0') }}
             </span>
@@ -270,26 +270,26 @@
           <div class="md:col-span-4 md:pl-2">
             <span
               class="font-mentor-display"
-              :style="{ color: brand.colors.text, fontSize: 'clamp(1.5rem, 2.2vw, 2rem)', lineHeight: '0.9' }"
+              :style="{ color: 'var(--brand-text)', fontSize: 'clamp(1.5rem, 2.2vw, 2rem)', lineHeight: '0.9' }"
             >
               {{ item.label }}
             </span>
             <span
               class="mt-2 block font-mentor-eyebrow"
-              :style="{ color: `${brand.colors.text}66` }"
+              :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }"
             >
               {{ item.shortCode }}
             </span>
           </div>
           <div class="md:col-span-5 md:pl-2">
-            <p class="text-sm leading-relaxed md:text-base" :style="{ color: `${brand.colors.text}CC` }">
+            <p class="text-sm leading-relaxed md:text-base" :style="{ color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)' }">
               {{ item.description }}
             </p>
           </div>
           <div class="md:col-span-2 md:text-right">
             <span
               class="font-mentor-display tabular-nums"
-              :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 3.5vw, 3rem)' }"
+              :style="{ color: 'var(--brand-text)', fontSize: 'clamp(2rem, 3.5vw, 3rem)' }"
             >
               {{ item.value || '-' }}
             </span>
@@ -302,17 +302,17 @@
     <div
       v-if="mentorThesisText"
       class="border-t border-b py-20 md:py-24"
-      :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: brand.colors.surface }"
+      :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 8%, transparent)', backgroundColor: 'var(--brand-surface)' }"
     >
       <div class="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-12 md:px-10">
         <div class="md:col-span-4">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
             CAPÍTULO IV
           </span>
           <h2
             class="font-mentor-display mt-3"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2rem, 3.5vw, 3rem)',
               lineHeight: '0.9',
             }"
@@ -323,18 +323,18 @@
         <div class="md:col-span-8">
           <p
             class="text-lg leading-relaxed md:text-xl"
-            :style="{ color: `${brand.colors.text}E6` }"
+            :style="{ color: 'color-mix(in srgb, var(--brand-text) 90%, transparent)' }"
           >
             {{ mentorThesisText }}
           </p>
-          <hr class="mentor-rule mt-10 max-w-[4rem]" :style="{ backgroundColor: brand.colors.primary }" />
-          <p class="mt-8 font-mentor-eyebrow" :style="{ color: `${brand.colors.text}80` }">
+          <hr class="mentor-rule mt-10 max-w-[4rem]" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+          <p class="mt-8 font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }">
             RESUMO EM UMA LINHA
           </p>
           <p
             class="font-mentor-display mt-2 leading-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)',
             }"
           >
@@ -349,21 +349,21 @@
 
     <!-- CAPITULO FINAL: DECIDA COM DADOS -->
     <div class="mx-auto max-w-6xl px-6 py-24 text-center md:px-10 md:py-32">
-      <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+      <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
         CAPÍTULO FINAL
       </span>
       <h2
         class="font-mentor-display mt-6"
         :style="{
-          color: brand.colors.text,
+          color: 'var(--brand-text)',
           fontSize: 'clamp(3rem, 9vw, 9rem)',
         }"
       >
         DECIDA
         <br />
-        <span :style="{ color: brand.colors.primary }">COM DADOS.</span>
+        <span :style="{ color: 'var(--brand-primary)' }">COM DADOS.</span>
       </h2>
-      <p class="mx-auto mt-8 max-w-xl text-base md:text-lg" :style="{ color: `${brand.colors.text}B3` }">
+      <p class="mx-auto mt-8 max-w-xl text-base md:text-lg" :style="{ color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' }">
         Fundamentos, não opinião. Paciência, não timing. Método ARCA, não sorte.
       </p>
       <div class="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
@@ -371,14 +371,14 @@
           to="/auth/register"
           class="group inline-flex items-center gap-3 px-10 py-5 transition-transform hover:-translate-y-0.5"
           :style="{
-            backgroundColor: brand.colors.primary,
-            color: brand.colors.background,
+            backgroundColor: 'var(--brand-primary)',
+            color: 'var(--brand-background)',
           }"
         >
           <span class="font-mentor-eyebrow !text-[13px]" style="letter-spacing: 0.18em;">COMEÇAR A CONSTRUIR</span>
           <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
         </NuxtLink>
-        <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }">
           GRÁTIS · SEM CARTÃO · ACESSO IMEDIATO
         </span>
       </div>
@@ -420,7 +420,7 @@ const founderTagline = computed(() => {
 })
 
 function onRowEnter(e: MouseEvent) {
-  ;(e.currentTarget as HTMLElement).style.backgroundColor = `${brand.colors.primary}0D`
+  ;(e.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--brand-primary) 5%, transparent)'
 }
 function onRowLeave(e: MouseEvent) {
   ;(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'

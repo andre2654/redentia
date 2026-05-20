@@ -567,13 +567,13 @@ const hasAnySession = computed(
 // ---- Styles -------------------------------------------------------------
 const newConvStyle = computed(() => ({
   backgroundColor: 'var(--brand-primary)',
-  color: brand.colors.background,
+  color: 'var(--brand-background)',
   boxShadow: `0 8px 18px -10px color-mix(in srgb, var(--brand-primary) 60%, transparent), 0 4px 10px -6px rgba(0,0,0,0.10)`,
 }))
 
 const kbdStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.background} 25%, transparent)`,
-  color: brand.colors.background,
+  backgroundColor: `color-mix(in srgb, var(--brand-background) 25%, transparent)`,
+  color: 'var(--brand-background)',
 }))
 const kbdMutedStyle = computed(() => ({
   backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)`,
@@ -597,8 +597,8 @@ function filterPillStyle(id: FilterId): Record<string, string> {
   if (active) {
     return {
       backgroundColor: 'var(--brand-primary)',
-      color: brand.colors.background,
-      boxShadow: `0 1px 3px rgba(0,0,0,0.08)`,
+      color: 'var(--brand-background)',
+      boxShadow: `0 1px 3px var(--shadow-amber-near)`,
     }
   }
   return {
@@ -730,7 +730,7 @@ const rootRef = ref<HTMLElement | null>(null)
   transform: translateY(-1px);
   box-shadow:
     color-mix(in srgb, var(--brand-primary) 14%, transparent) 0px 12px 24px -16px,
-    rgba(0, 0, 0, 0.08) 0px 6px 14px -8px !important;
+    var(--shadow-amber-near) 0px 6px 14px -8px !important;
 }
 
 /* Session row hover */

@@ -91,20 +91,20 @@ usePageSeo({
         </p>
         <div class="overflow-x-auto">
           <table class="w-full border-collapse text-sm">
-            <thead :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+            <thead :style="{ backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
               <tr>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Taxa de poupança</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Anos até FIRE</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Taxa de poupança</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Anos até FIRE</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">10%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">51 anos</td></tr>
-              <tr :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">20%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">37 anos</td></tr>
-              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">30%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">28 anos</td></tr>
-              <tr :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">40%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">22 anos</td></tr>
-              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', color: brand.colors.primary }">50%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', color: brand.colors.primary }">17 anos</td></tr>
-              <tr :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">60%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">13 anos</td></tr>
-              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">70%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">9 anos</td></tr>
+              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">10%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">51 anos</td></tr>
+              <tr :style="{ backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">20%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">37 anos</td></tr>
+              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">30%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">28 anos</td></tr>
+              <tr :style="{ backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">40%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">22 anos</td></tr>
+              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', color: 'var(--brand-primary)' }">50%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', color: 'var(--brand-primary)' }">17 anos</td></tr>
+              <tr :style="{ backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">60%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">13 anos</td></tr>
+              <tr><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">70%</td><td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">9 anos</td></tr>
             </tbody>
           </table>
         </div>
@@ -165,11 +165,11 @@ usePageSeo({
         </p>
       </section>
 
-      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <h2 class="mb-3" :style="{ color: brand.colors.text }">
+      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <h2 class="mb-3" :style="{ color: 'var(--brand-text)' }">
           Em quantos anos VOCÊ se aposenta?
         </h2>
-        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
           Use a calculadora de aposentadoria da Redentia pra descobrir em minutos quanto você precisa acumular e quando chega a independência.
         </p>
         <div class="flex flex-wrap justify-center gap-3">

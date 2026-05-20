@@ -47,7 +47,7 @@
           Por que Investir em Ações?
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 text-secondary">
               Potencial de Crescimento
             </h4>
@@ -56,7 +56,7 @@
               superando a inflação e renda fixa no longo prazo.
             </p>
           </div>
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 text-secondary">
               Renda Passiva
             </h4>
@@ -65,7 +65,7 @@
               passiva para os acionistas sem precisar vender as ações.
             </p>
           </div>
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 text-secondary">
               Proteção Contra Inflação
             </h4>
@@ -74,7 +74,7 @@
               poder de compra no longo prazo.
             </p>
           </div>
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 text-secondary">
               Participação nos Lucros
             </h4>
@@ -119,25 +119,25 @@
           Principais Setores da Bolsa Brasileira
         </h3>
         <div class="space-y-3">
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">Financeiro (Bancos)</h4>
             <p class="text-sm">
               ITUB4, BBDC4, BBAS3 - Alta liquidez, bons pagadores de dividendos
             </p>
           </div>
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">Commodities</h4>
             <p class="text-sm">
               VALE3, PETR4 - Expostas a preços internacionais, cíclicas
             </p>
           </div>
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">Varejo</h4>
             <p class="text-sm">
               MGLU3, AMER3, LREN3 - Dependem do consumo interno, crescimento
             </p>
           </div>
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">Utilities (Energia, Saneamento)</h4>
             <p class="text-sm">
               ELET3, TAEE11, SAPR11 - Previsíveis, bons dividendos
@@ -159,14 +159,14 @@
               crescimento e dividendos consistentes.
             </p>
           </div>
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2">Carteira de Dividendos</h4>
             <p class="text-sm">
               Foco em empresas que pagam bons dividendos regularmente.
               Objetivo: renda passiva mensal ou trimestral.
             </p>
           </div>
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2">Diversificação Setorial</h4>
             <p class="text-sm">
               Distribua investimentos entre setores diferentes (bancos, varejo,
@@ -178,7 +178,7 @@
         <h3>Riscos de Investir em Ações</h3>
         <div
           class="brand-card p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
         >
           <ul class="list-disc space-y-2 pl-6">
             <li>
@@ -198,7 +198,7 @@
               o investimento
             </li>
           </ul>
-          <p class="mt-3 text-sm" :style="{ color: brand.colors.warning || '#f59e0b' }">
+          <p class="mt-3 text-sm" :style="{ color: 'var(--brand-warning)' || 'var(--brand-warning)' }">
             ⚠️ Importante: Invista apenas o que você pode deixar investido por
             pelo menos 5 anos. Nunca invista dinheiro que precisará no curto
             prazo.
@@ -293,7 +293,7 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--brand-border)' }">
         <NuxtLink
           to="/search?group=stocks"
           class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
@@ -318,7 +318,7 @@
       <div class="space-y-4">
         <h2>Perguntas Frequentes sobre Ações</h2>
         <div class="space-y-4">
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto preciso para começar a investir em ações?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -331,7 +331,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual a diferença entre ações ON e PN?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -344,7 +344,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Como recebo dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -356,7 +356,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Ações são seguras?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -369,7 +369,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Posso perder mais dinheiro do que investi?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />

@@ -12,8 +12,8 @@
             borderColor: 'var(--brand-border)',
             backgroundColor: 'var(--brand-surface)',
           }"
-          @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
-          @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
+          @mouseenter="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface-hover)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text-muted)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface)'"
         >
           {{ tag }}
         </span>
@@ -32,8 +32,8 @@
             borderColor: 'var(--brand-border)',
             backgroundColor: 'var(--brand-surface)',
           }"
-          @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
-          @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
+          @mouseenter="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface-hover)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text-muted)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface)'"
         >
           {{ tag }}
         </span>
@@ -52,8 +52,8 @@
             borderColor: 'var(--brand-border)',
             backgroundColor: 'var(--brand-surface)',
           }"
-          @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
-          @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
+          @mouseenter="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface-hover)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text-muted)'; ($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface)'"
         >
           {{ tag }}
         </span>

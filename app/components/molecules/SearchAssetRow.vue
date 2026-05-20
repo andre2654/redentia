@@ -4,7 +4,7 @@
     class="group flex items-center gap-4 border-b px-5 py-3 transition-colors"
     :style="{
       borderColor: 'var(--brand-border)',
-      backgroundColor: focused ? brand.colors.surface : 'transparent',
+      backgroundColor: focused ? 'var(--brand-surface)' : 'transparent',
     }"
     @click="$emit('click')"
     @mouseenter="$emit('mouseenter')"
@@ -80,7 +80,7 @@
     <UIcon
       name="i-lucide-chevron-right"
       class="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5"
-      :style="{ color: focused ? brand.colors.primary : 'var(--brand-text-muted)' }"
+      :style="{ color: focused ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
     />
   </NuxtLink>
 </template>
@@ -128,22 +128,22 @@ const typeBadge = computed(() => {
 
 const typeColor = computed(() => {
   const map: Record<string, string> = {
-    STOCK: brand.colors.primary,
-    REIT: brand.colors.positive,
-    ETF: brand.colors.text,
-    BDR: brand.colors.textMuted,
-    TESOURO: brand.colors.primary,
-    CRYPTO: brand.colors.primary,
+    STOCK: 'var(--brand-primary)',
+    REIT: 'var(--brand-positive)',
+    ETF: 'var(--brand-text)',
+    BDR: 'var(--brand-text-muted)',
+    TESOURO: 'var(--brand-primary)',
+    CRYPTO: 'var(--brand-primary)',
   }
-  return map[props.item.type] ?? brand.colors.textMuted
+  return map[props.item.type] ?? 'var(--brand-text-muted)'
 })
 
 const changeColor = computed(() => {
-  if (props.item.changePercent === null) return brand.colors.textMuted
+  if (props.item.changePercent === null) return 'var(--brand-text-muted)'
   // Tesouro shows the gross rate, not daily movement — render in amber
   // instead of the green/red variation palette.
-  if (props.item.type === 'TESOURO') return brand.colors.primary
-  return props.item.changePercent >= 0 ? brand.colors.positive : brand.colors.negative
+  if (props.item.type === 'TESOURO') return 'var(--brand-primary)'
+  return props.item.changePercent >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 const changeLabel = computed(() => {

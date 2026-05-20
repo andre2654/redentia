@@ -135,10 +135,10 @@ const indexerSlides = computed(() => {
   const all = items.value ?? []
   const by = (frag: string) => all.filter((i) => i.indexer?.toLowerCase().includes(frag.toLowerCase()))
   return [
-    { key: 'IPCA', label: 'IPCA+', title: 'Indexados à inflação', color: brand.colors.primary, items: by('ipca'), query: { indexer: 'IPCA' } },
-    { key: 'SELIC', label: 'SELIC', title: 'Pós-fixados', color: brand.colors.positive, items: by('selic'), query: { indexer: 'SELIC' } },
-    { key: 'PREFIXADO', label: 'PRÉ', title: 'Taxa fixa', color: brand.colors.text, items: by('prefixado'), query: { indexer: 'PREFIXADO' } },
-    { key: 'IGPM', label: 'IGPM+', title: 'Indexados ao IGPM', color: brand.colors.textMuted, items: by('igpm'), query: { indexer: 'IGPM' } },
+    { key: 'IPCA', label: 'IPCA+', title: 'Indexados à inflação', color: 'var(--brand-primary)', items: by('ipca'), query: { indexer: 'IPCA' } },
+    { key: 'SELIC', label: 'SELIC', title: 'Pós-fixados', color: 'var(--brand-positive)', items: by('selic'), query: { indexer: 'SELIC' } },
+    { key: 'PREFIXADO', label: 'PRÉ', title: 'Taxa fixa', color: 'var(--brand-text)', items: by('prefixado'), query: { indexer: 'PREFIXADO' } },
+    { key: 'IGPM', label: 'IGPM+', title: 'Indexados ao IGPM', color: 'var(--brand-text-muted)', items: by('igpm'), query: { indexer: 'IGPM' } },
   ]
 })
 

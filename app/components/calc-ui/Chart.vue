@@ -74,7 +74,7 @@ defineEmits<{ 'update:active': [value: number | string] }>()
 .cui-chart-pill:hover { color: var(--text-heading); }
 .cui-chart-pill--active {
   background: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
 }
 .cui-chart-canvas {
   height: 280px;

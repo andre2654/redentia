@@ -270,7 +270,7 @@ onMounted(() => load())
   border-radius: 18px;
   background: color-mix(in srgb, var(--brand-surface) 95%, var(--brand-background));
   border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 50px -10px var(--shadow-amber-near);
   overflow: hidden;
   max-height: 90vh;
   overflow-y: auto;

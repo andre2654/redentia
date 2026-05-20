@@ -45,8 +45,8 @@ const initialsText = computed(() => {
 const wrapStyle = computed(() => ({
   width: `${props.size}px`,
   height: `${props.size}px`,
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
-  boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
+  boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--brand-text) 8%, transparent)`,
 }))
 
 const initialsStyle = computed(() => ({

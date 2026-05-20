@@ -1,22 +1,22 @@
 <template>
   <div
     class="dl-root relative min-h-screen overflow-hidden"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <!-- Atmospheric background -->
     <div class="pointer-events-none absolute inset-0">
       <div
         class="absolute -top-40 left-1/2 h-[800px] w-[1200px] -translate-x-1/2 rounded-full blur-3xl opacity-30"
-        :style="{ background: `radial-gradient(ellipse at center, ${brand.colors.primary}, transparent 65%)` }"
+        :style="{ background: `radial-gradient(ellipse at center, var(--brand-primary), transparent 65%)` }"
       />
       <div
         class="absolute -right-40 top-[40%] h-[600px] w-[600px] rounded-full blur-3xl opacity-15"
-        :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)` }"
+        :style="{ background: `radial-gradient(circle, var(--brand-primary), transparent 65%)` }"
       />
       <div
         class="absolute inset-0 opacity-[0.06]"
         :style="{
-          backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(var(--brand-text) 1px, transparent 1px)`,
           backgroundSize: '36px 36px',
         }"
       />
@@ -27,7 +27,7 @@
          ============================================================ -->
     <header
       class="sticky top-0 z-50 border-b backdrop-blur-xl"
-      :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.background}D0` }"
+      :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)', backgroundColor: `${'var(--brand-background)'}D0` }"
     >
       <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-6 md:px-10">
         <NuxtLink to="/" class="flex items-center gap-3">
@@ -36,7 +36,7 @@
         <NuxtLink
           to="/"
           class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[12px] font-medium transition-colors hover:opacity-80"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
+          :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }"
         >
           <UIcon name="i-lucide-arrow-left" class="size-3.5" />
           Voltar
@@ -54,13 +54,13 @@
           <!-- Status pill -->
           <div
             class="mb-7 inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5"
-            :style="{ borderColor: `${brand.colors.primary}50`, backgroundColor: `${brand.colors.primary}10` }"
+            :style="{ borderColor: `${'var(--brand-primary)'}50`, backgroundColor: `color-mix(in srgb, var(--brand-primary) 6%, transparent)` }"
           >
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
             </span>
-            <span class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+            <span class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
               PWA · iOS · Android · Desktop
             </span>
           </div>
@@ -69,17 +69,17 @@
           <h1
             class="mb-7 leading-[0.88] tracking-tighter"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(3rem, 8vw, 7rem)',
               fontFamily: brand.font?.family ? `'${brand.font.family}', serif` : undefined,
             }"
           >
             {{ brand.shortName }} no<br />
-            <span class="italic" :style="{ color: brand.colors.primary }">seu bolso.</span>
+            <span class="italic" :style="{ color: 'var(--brand-primary)' }">seu bolso.</span>
           </h1>
 
-          <p class="mb-10 max-w-xl text-[17px] leading-[1.55] md:text-[19px]" :style="{ color: `${brand.colors.text}D0` }">
-            Instale como app no seu iPhone, Android ou desktop. <strong :style="{ color: brand.colors.text }">Sem App Store, sem download de 200MB.</strong> O site vira aplicativo em 5 segundos, com ícone na tela inicial, notificações push e modo offline.
+          <p class="mb-10 max-w-xl text-[17px] leading-[1.55] md:text-[19px]" :style="{ color: `${'var(--brand-text)'}D0` }">
+            Instale como app no seu iPhone, Android ou desktop. <strong :style="{ color: 'var(--brand-text)' }">Sem App Store, sem download de 200MB.</strong> O site vira aplicativo em 5 segundos, com ícone na tela inicial, notificações push e modo offline.
           </p>
 
           <!-- CTAs -->
@@ -87,9 +87,9 @@
             <button
               class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
-                boxShadow: `0 16px 50px -16px ${brand.colors.primary}A0`,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
+                boxShadow: `0 16px 50px -16px ${'var(--brand-primary)'}A0`,
               }"
               @click="installApp"
             >
@@ -99,30 +99,30 @@
             </button>
             <button
               class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-medium transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
               @click="scrollToHowTo"
             >
-              <span class="border-b pb-0.5" :style="{ borderColor: brand.colors.text }">Como funciona</span>
+              <span class="border-b pb-0.5" :style="{ borderColor: 'var(--brand-text)' }">Como funciona</span>
               <span>↓</span>
             </button>
           </div>
 
           <!-- Quick benefit row -->
-          <div class="grid grid-cols-3 gap-6 border-t pt-8" :style="{ borderColor: `${brand.colors.border}80` }">
+          <div class="grid grid-cols-3 gap-6 border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">
             <div class="flex flex-col gap-1">
-              <div class="text-[20px]" :style="{ color: brand.colors.primary }">⚡</div>
-              <div class="text-[13px] font-medium" :style="{ color: brand.colors.text }">Abre na hora</div>
-              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">Zero loading</div>
+              <div class="text-[20px]" :style="{ color: 'var(--brand-primary)' }">⚡</div>
+              <div class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">Abre na hora</div>
+              <div class="text-[12px]" :style="{ color: 'var(--brand-text-muted)' }">Zero loading</div>
             </div>
             <div class="flex flex-col gap-1">
-              <div class="text-[20px]" :style="{ color: brand.colors.primary }">📡</div>
-              <div class="text-[13px] font-medium" :style="{ color: brand.colors.text }">Modo offline</div>
-              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">Funciona sem net</div>
+              <div class="text-[20px]" :style="{ color: 'var(--brand-primary)' }">📡</div>
+              <div class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">Modo offline</div>
+              <div class="text-[12px]" :style="{ color: 'var(--brand-text-muted)' }">Funciona sem net</div>
             </div>
             <div class="flex flex-col gap-1">
-              <div class="text-[20px]" :style="{ color: brand.colors.primary }">🔔</div>
-              <div class="text-[13px] font-medium" :style="{ color: brand.colors.text }">Push real</div>
-              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">Tipo iMessage</div>
+              <div class="text-[20px]" :style="{ color: 'var(--brand-primary)' }">🔔</div>
+              <div class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">Push real</div>
+              <div class="text-[12px]" :style="{ color: 'var(--brand-text-muted)' }">Tipo iMessage</div>
             </div>
           </div>
         </div>
@@ -137,7 +137,7 @@
                 backgroundColor: '#0a0a0c',
                 border: '12px solid #1a1a1d',
                 borderRadius: '54px',
-                boxShadow: `0 60px 120px -30px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.05), 0 30px 80px -20px ${brand.colors.primary}30`,
+                boxShadow: `0 60px 120px -30px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.05), 0 30px 80px -20px color-mix(in srgb, var(--brand-primary) 19%, transparent)`,
                 width: '320px',
                 height: '660px',
               }"
@@ -152,12 +152,12 @@
               <div
                 class="absolute inset-0"
                 :style="{
-                  background: `linear-gradient(180deg, ${brand.colors.background} 0%, ${brand.colors.surface || brand.colors.background} 100%)`,
+                  background: `linear-gradient(180deg, var(--brand-background) 0%, ${'var(--brand-surface)' || 'var(--brand-background)'} 100%)`,
                 }"
               />
               <div
                 class="absolute inset-0 opacity-50"
-                :style="{ background: `radial-gradient(ellipse at 50% 30%, ${brand.colors.primary}40, transparent 60%)` }"
+                :style="{ background: `radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--brand-primary) 25%, transparent), transparent 60%)` }"
               />
 
               <!-- Status bar -->
@@ -190,7 +190,7 @@
                   <div class="flex items-start gap-2.5">
                     <div
                       class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md"
-                      :style="{ backgroundColor: brand.colors.primary }"
+                      :style="{ backgroundColor: 'var(--brand-primary)' }"
                     >
                       <!-- Pill is always primary regardless of theme, so
                            force the dark-surface variant which is the
@@ -222,7 +222,7 @@
                   <div class="flex items-start gap-2.5">
                     <div
                       class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md"
-                      :style="{ backgroundColor: brand.colors.primary }"
+                      :style="{ backgroundColor: 'var(--brand-primary)' }"
                     >
                       <!-- Pill is always primary regardless of theme, so
                            force the dark-surface variant which is the
@@ -262,19 +262,19 @@
          ============================================================ -->
     <section
       class="relative border-t"
-      :style="{ borderColor: `${brand.colors.border}`, backgroundColor: `${brand.colors.surface || brand.colors.background}80` }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: `${'var(--brand-surface)' || 'var(--brand-background)'}80` }"
     >
       <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
         <div class="mb-16 max-w-3xl">
-          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">, Por que instalar</div>
+          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">, Por que instalar</div>
           <h2
             class="mt-4 leading-[0.95] tracking-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.25rem, 5vw, 4rem)',
             }"
           >
-            Não é app. <span class="italic" :style="{ color: brand.colors.primary }">É melhor.</span>
+            Não é app. <span class="italic" :style="{ color: 'var(--brand-primary)' }">É melhor.</span>
           </h2>
         </div>
 
@@ -284,23 +284,23 @@
             :key="benefit.title"
             class="group flex flex-col gap-5 rounded-3xl border p-8 md:p-10 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
             :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: idx === 1 ? `${brand.colors.primary}08` : brand.colors.background,
+              borderColor: 'var(--brand-border)',
+              backgroundColor: idx === 1 ? 'color-mix(in srgb, var(--brand-primary) 3%, transparent)' : 'var(--brand-background)',
             }"
           >
             <div
               class="flex size-14 items-center justify-center rounded-2xl"
-              :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 13%, transparent)', color: 'var(--brand-primary)' }"
             >
               <UIcon :name="benefit.icon" class="size-7" />
             </div>
-            <h3 class="text-[22px] font-medium leading-tight tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
+            <h3 class="text-[22px] font-medium leading-tight tracking-tight" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">
               {{ benefit.title }}
             </h3>
-            <p class="text-[14px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="text-[14px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               {{ benefit.description }}
             </p>
-            <div class="mt-2 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.15em]" :style="{ color: brand.colors.primary }">
+            <div class="mt-2 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-primary)' }">
               <span>{{ benefit.tag }}</span>
             </div>
           </div>
@@ -314,19 +314,19 @@
     <section
       ref="howToSection"
       class="relative border-t"
-      :style="{ borderColor: brand.colors.border }"
+      :style="{ borderColor: 'var(--brand-border)' }"
     >
       <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
         <div class="mb-16 text-center">
-          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">, Como instalar</div>
+          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">, Como instalar</div>
           <h2
             class="mx-auto mt-4 max-w-3xl leading-[0.95] tracking-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.25rem, 5vw, 4rem)',
             }"
           >
-            Em 30 segundos. <span class="italic" :style="{ color: brand.colors.primary }">No seu device.</span>
+            Em 30 segundos. <span class="italic" :style="{ color: 'var(--brand-primary)' }">No seu device.</span>
           </h2>
         </div>
 
@@ -338,9 +338,9 @@
             class="inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-[13px] font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
             :class="{ 'shadow-lg': activePlatform === p.id }"
             :style="{
-              borderColor: activePlatform === p.id ? brand.colors.primary : brand.colors.border,
-              backgroundColor: activePlatform === p.id ? brand.colors.primary : 'transparent',
-              color: activePlatform === p.id ? brand.colors.background : brand.colors.text,
+              borderColor: activePlatform === p.id ? 'var(--brand-primary)' : 'var(--brand-border)',
+              backgroundColor: activePlatform === p.id ? 'var(--brand-primary)' : 'transparent',
+              color: activePlatform === p.id ? 'var(--brand-background)' : 'var(--brand-text)',
             }"
             @click="activePlatform = p.id"
           >
@@ -352,7 +352,7 @@
         <!-- Active platform steps -->
         <div
           class="mx-auto max-w-4xl rounded-3xl border p-8 md:p-12"
-          :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface || brand.colors.background}80` }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `${'var(--brand-surface)' || 'var(--brand-background)'}80` }"
         >
           <div class="grid gap-6 md:grid-cols-3 md:gap-8">
             <div
@@ -363,16 +363,16 @@
               <div class="flex items-center gap-4">
                 <div
                   class="flex size-12 items-center justify-center rounded-full border-2 text-[18px] font-medium tabular-nums"
-                  :style="{ borderColor: brand.colors.primary, color: brand.colors.primary }"
+                  :style="{ borderColor: 'var(--brand-primary)', color: 'var(--brand-primary)' }"
                 >
                   {{ idx + 1 }}
                 </div>
-                <div class="hidden h-px flex-1 md:block" :style="{ backgroundColor: brand.colors.border }" />
+                <div class="hidden h-px flex-1 md:block" :style="{ backgroundColor: 'var(--brand-border)' }" />
               </div>
-              <h3 class="text-[17px] font-medium leading-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
+              <h3 class="text-[17px] font-medium leading-tight" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">
                 {{ step.title }}
               </h3>
-              <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <p class="text-[13px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ step.description }}
               </p>
             </div>
@@ -382,9 +382,9 @@
             <button
               class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
-                boxShadow: `0 12px 40px -12px ${brand.colors.primary}A0`,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
+                boxShadow: `0 12px 40px -12px ${'var(--brand-primary)'}A0`,
               }"
               @click="installApp"
             >
@@ -393,8 +393,8 @@
               <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
             </button>
           </div>
-          <div v-else class="mt-10 flex items-center justify-center gap-3 rounded-2xl border px-5 py-4 text-[13px]" :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }">
-            <UIcon name="i-lucide-info" class="size-4 shrink-0" :style="{ color: brand.colors.primary }" />
+          <div v-else class="mt-10 flex items-center justify-center gap-3 rounded-2xl border px-5 py-4 text-[13px]" :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }">
+            <UIcon name="i-lucide-info" class="size-4 shrink-0" :style="{ color: 'var(--brand-primary)' }" />
             No iPhone, a instalação é manual via Safari. Siga os 3 passos acima.
           </div>
         </div>
@@ -406,15 +406,15 @@
          ============================================================ -->
     <section
       class="relative border-t"
-      :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface || brand.colors.background}60` }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: `${'var(--brand-surface)' || 'var(--brand-background)'}60` }"
     >
       <div class="mx-auto max-w-4xl px-6 py-24 md:px-10 md:py-28">
         <div class="mb-12">
-          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">, Perguntas frequentes</div>
+          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">, Perguntas frequentes</div>
           <h2
             class="mt-4 leading-[0.95] tracking-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2rem, 5vw, 3.5rem)',
             }"
           >
@@ -427,13 +427,13 @@
             v-for="faq in faqs"
             :key="faq.q"
             class="group rounded-2xl border p-6 transition-colors"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' }"
           >
-            <summary class="flex cursor-pointer items-center justify-between gap-4 text-[15px] font-medium" :style="{ color: brand.colors.text }">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 text-[15px] font-medium" :style="{ color: 'var(--brand-text)' }">
               {{ faq.q }}
-              <span class="text-[20px] transition-transform group-open:rotate-45" :style="{ color: brand.colors.primary }">+</span>
+              <span class="text-[20px] transition-transform group-open:rotate-45" :style="{ color: 'var(--brand-primary)' }">+</span>
             </summary>
-            <p class="mt-4 text-[14px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mt-4 text-[14px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               {{ faq.a }}
             </p>
           </details>
@@ -621,7 +621,7 @@ usePageSeo({
 /* Smooth focus rings */
 .dl-root a:focus-visible,
 .dl-root button:focus-visible {
-  outline: 2px solid var(--brand-primary, #F5A623);
+  outline: 2px solid var(--brand-primary, var(--brand-primary));
   outline-offset: 4px;
   border-radius: 8px;
 }

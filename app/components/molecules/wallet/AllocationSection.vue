@@ -176,29 +176,29 @@
         <div class="flex items-baseline gap-2">
           <span
             class="font-mono-tab text-[20px] font-light tabular-nums"
-            :style="{ color: brand.colors.text, letterSpacing: '-0.3px' }"
+            :style="{ color: 'var(--brand-text)', letterSpacing: '-0.3px' }"
           >{{ geography.brPct.toFixed(1) }}%</span>
-          <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Brasil</span>
+          <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Brasil</span>
         </div>
         <div class="flex items-baseline gap-2">
           <span
             class="font-mono-tab text-[16px] font-light tabular-nums"
-            :style="{ color: brand.colors.text, letterSpacing: '-0.2px' }"
+            :style="{ color: 'var(--brand-text)', letterSpacing: '-0.2px' }"
           >{{ geography.intlPct.toFixed(1) }}%</span>
-          <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Internacional<span v-if="geography.intlNote"> ({{ geography.intlNote }})</span></span>
+          <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Internacional<span v-if="geography.intlNote"> ({{ geography.intlNote }})</span></span>
         </div>
         <div
           class="mt-2 flex h-2 w-full overflow-hidden rounded-full"
-          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 7%, transparent)` }"
+          :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)` }"
         >
-          <div class="h-full" :style="{ width: geography.brPct + '%', backgroundColor: brand.colors.primary }" />
-          <div class="h-full" :style="{ width: geography.intlPct + '%', backgroundColor: brand.colors.positive }" />
+          <div class="h-full" :style="{ width: geography.brPct + '%', backgroundColor: 'var(--brand-primary)' }" />
+          <div class="h-full" :style="{ width: geography.intlPct + '%', backgroundColor: 'var(--brand-positive)' }" />
         </div>
         <p
           v-if="geography.note"
           class="mt-2 text-[12.5px]"
           :style="{
-            color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`,
             lineHeight: 1.5,
           }"
         >{{ geography.note }}</p>
@@ -235,14 +235,14 @@ const props = defineProps<Props>()
 const brand = useBrand()
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 // Cor do anel de fundo do donut (atrás dos slices). Computed em vez
 // de template literal inline pra evitar re-evaluation a cada render.
 const bgRingColor = computed(
-  () => `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`
+  () => `color-mix(in srgb, var(--brand-text) 6%, transparent)`
 )
 
 // Donut math: r=48, circumference = 2*PI*48 ≈ 301.59 units no SVG
@@ -366,7 +366,7 @@ const centerSub = computed(() => {
   return c.label
 })
 
-const centerColor = computed(() => focusedClass.value?.color || brand.colors.text)
+const centerColor = computed(() => focusedClass.value?.color || 'var(--brand-text)')
 </script>
 
 <style scoped>

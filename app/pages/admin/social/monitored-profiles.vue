@@ -390,7 +390,7 @@ onMounted(refresh)
   border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);
   background: var(--brand-background);
   overflow: hidden;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 80px -20px var(--shadow-ambient);
 }
 .profile-modal__head {
   display: flex;

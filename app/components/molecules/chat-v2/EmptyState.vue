@@ -59,7 +59,7 @@
           <UIcon
             :name="tier === 'max' ? 'i-lucide-sparkles' : 'i-lucide-arrow-up-right'"
             class="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-60"
-            :style="{ color: tier === 'max' ? brand.colors.primary : 'var(--brand-text-muted)' }"
+            :style="{ color: tier === 'max' ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
             aria-hidden="true"
           />
         </button>

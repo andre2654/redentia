@@ -26,7 +26,7 @@
     <div
       class="pointer-events-none absolute inset-0"
       :style="{
-        backgroundImage: `radial-gradient(ellipse 60% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 10%, transparent) 0%, transparent 60%)`,
+        backgroundImage: `radial-gradient(ellipse 60% 60% at 50% 0%, color-mix(in srgb, var(--brand-primary) 10%, transparent) 0%, transparent 60%)`,
       }"
     />
 
@@ -51,7 +51,7 @@
               :key="`ring-${i}`"
               :points="ringPoints(scale)"
               fill="none"
-              :stroke="`color-mix(in srgb, ${brand.colors.text} ${i === 3 ? 18 : 8}%, transparent)`"
+              :stroke="`color-mix(in srgb, var(--brand-text) ${i === 3 ? 18 : 8}%, transparent)`"
               stroke-width="1"
             />
           </g>
@@ -62,21 +62,21 @@
               :key="`spoke-${i}`"
               :x1="center" :y1="center"
               :x2="p.x" :y2="p.y"
-              :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`"
+              :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`"
               stroke-width="1"
             />
           </g>
           <!-- Filled portfolio polygon -->
           <defs>
             <radialGradient id="snowflake-fill" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" :stop-color="brand.colors.primary" stop-opacity="0.85" />
-              <stop offset="100%" :stop-color="brand.colors.primary" stop-opacity="0.55" />
+              <stop offset="0%" :stop-color="'var(--brand-primary)'" stop-opacity="0.85" />
+              <stop offset="100%" :stop-color="'var(--brand-primary)'" stop-opacity="0.55" />
             </radialGradient>
           </defs>
           <polygon
             :points="polygonPoints"
             fill="url(#snowflake-fill)"
-            :stroke="brand.colors.primary"
+            :stroke="'var(--brand-primary)'"
             stroke-width="1.5"
             stroke-linejoin="round"
           />
@@ -86,8 +86,8 @@
               v-for="(p, i) in polygonVertices"
               :key="`vx-${i}`"
               :cx="p.x" :cy="p.y" :r="3"
-              :fill="brand.colors.primary"
-              :stroke="brand.colors.background"
+              :fill="'var(--brand-primary)'"
+              :stroke="'var(--brand-background)'"
               stroke-width="1.5"
             />
           </g>
@@ -100,7 +100,7 @@
               :text-anchor="p.anchor"
               :dominant-baseline="p.baseline"
               class="snowflake-label"
-              :style="{ fill: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)` }"
+              :style="{ fill: `color-mix(in srgb, var(--brand-text) 70%, transparent)` }"
             >{{ axes[i].label }}</text>
           </g>
         </svg>
@@ -111,12 +111,12 @@
         <div class="flex flex-col gap-1.5">
           <span
             class="font-mono-tab text-[10.5px] font-medium uppercase"
-            :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+            :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
           >Snowflake</span>
           <h3
             class="font-light"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(22px, 2.8vw, 32px)',
               lineHeight: 1.15,
               letterSpacing: '-0.6px',
@@ -124,7 +124,7 @@
           >{{ headline }}</h3>
           <p
             class="text-[13px]"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.55 }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.55 }"
           >{{ subline }}</p>
         </div>
 
@@ -135,17 +135,17 @@
             class="flex items-center justify-between gap-3 py-2"
           >
             <div class="flex flex-col leading-tight">
-              <span class="text-[12.5px] font-medium" :style="{ color: brand.colors.text }">{{ a.label }}</span>
+              <span class="text-[12.5px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ a.label }}</span>
               <span
                 v-if="a.note"
                 class="text-[10.5px]"
-                :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+                :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
               >{{ a.note }}</span>
             </div>
             <div class="flex items-center gap-2">
               <div
                 class="h-1 w-24 overflow-hidden rounded-full"
-                :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 7%, transparent)` }"
+                :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)` }"
               >
                 <div
                   class="h-full rounded-full"
@@ -192,13 +192,13 @@ const radius = size / 2 - 56
 const labelOffset = radius + 22
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
-  boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 8%, transparent), 0 24px 60px -34px color-mix(in srgb, ${brand.colors.primary} 24%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
+  boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--brand-primary) 8%, transparent), 0 24px 60px -34px color-mix(in srgb, var(--brand-primary) 24%, transparent)`,
 }))
 
 const dividerStyle = computed(() => ({
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 30%, transparent)`,
 }))
 
 /**
@@ -258,9 +258,9 @@ const labelPositions = computed(() =>
 )
 
 function axisColor(value: number): string {
-  if (value >= 75) return brand.colors.positive
-  if (value >= 50) return (brand.colors as { warning?: string }).warning || '#f59e0b'
-  return brand.colors.negative
+  if (value >= 75) return 'var(--brand-positive)'
+  if (value >= 50) return 'var(--brand-warning)'
+  return 'var(--brand-negative)'
 }
 </script>
 

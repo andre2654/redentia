@@ -5,25 +5,25 @@
         <div class="flex items-center gap-3">
           <div
             class="flex size-12 items-center justify-center rounded-xl"
-            :style="{ backgroundColor: brand.colors.secondary + '22' }"
+            :style="{ backgroundColor: 'var(--brand-secondary)' + '22' }"
           >
             <UIcon
               name="i-lucide-layers"
               class="size-6"
-              :style="{ color: brand.colors.secondary }"
+              :style="{ color: 'var(--brand-secondary)' }"
             />
           </div>
           <div>
             <p
               class="text-[10px] font-medium uppercase tracking-[0.15em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               Explore
             </p>
             <h1>Setores da Bolsa</h1>
           </div>
         </div>
-        <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
+        <p class="max-w-2xl text-base" :style="{ color: 'var(--brand-text-muted)' }">
           Explore os setores econômicos da bolsa brasileira. Cada setor tem
           seu comparativo completo com todas as empresas listadas, indicadores
           fundamentalistas e métricas de mercado.
@@ -41,20 +41,20 @@
           :to="`/setor/${sector.slug}/comparativo`"
           class="group flex items-center justify-between gap-3 rounded-xl border px-5 py-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-white/20"
           :style="{
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
           }"
         >
           <div class="flex min-w-0 flex-1 flex-col">
             <span
               class="truncate text-sm"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               {{ sector.name }}
             </span>
             <span
               class="text-[11px] tabular-nums"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               {{ sector.count }} {{ sector.count === 1 ? 'empresa' : 'empresas' }}
             </span>
@@ -62,7 +62,7 @@
           <UIcon
             name="i-lucide-arrow-up-right"
             class="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           />
         </NuxtLink>
       </div>

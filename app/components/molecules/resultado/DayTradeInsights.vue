@@ -19,10 +19,10 @@
       <UIcon
         name="i-lucide-sparkles"
         class="size-5 shrink-0 mt-0.5"
-        :style="{ color: brand.colors.primary }"
+        :style="{ color: 'var(--brand-primary)' }"
       />
       <div class="flex flex-col gap-1">
-        <span class="dt-insights__empty-title" :style="{ color: brand.colors.text }">
+        <span class="dt-insights__empty-title" :style="{ color: 'var(--brand-text)' }">
           Pouca amostra pra opinar
         </span>
         <span class="dt-insights__empty-body">
@@ -57,7 +57,7 @@
             <UIcon :name="ins.icon" class="size-4" aria-hidden="true" />
           </div>
           <div class="dt-insight__text">
-            <span class="dt-insight__title" :style="{ color: brand.colors.text }">
+            <span class="dt-insight__title" :style="{ color: 'var(--brand-text)' }">
               {{ ins.title }}
             </span>
             <span class="dt-insight__desc">{{ ins.body }}</span>
@@ -195,23 +195,23 @@ const insights = computed<Insight[]>(() => {
 
 function toneColor(tone: InsightTone): string {
   switch (tone) {
-    case 'positive': return brand.colors.positive
-    case 'warning': return brand.colors.primary
-    case 'negative': return brand.colors.negative
-    case 'neutral': return brand.colors.text
+    case 'positive': return 'var(--brand-positive)'
+    case 'warning': return 'var(--brand-primary)'
+    case 'negative': return 'var(--brand-negative)'
+    case 'neutral': return 'var(--brand-text)'
   }
 }
 
 function cardStyle(tone: InsightTone) {
   return {
-    backgroundColor: brand.colors.surface,
+    backgroundColor: 'var(--brand-surface)',
     borderColor: `color-mix(in srgb, ${toneColor(tone)} 28%, transparent)`,
   }
 }
 
 const emptyStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 55%, transparent)`,
 }))
 </script>
 

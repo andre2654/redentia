@@ -193,7 +193,7 @@ const CLASS_META: Record<AssetClass, { label: string; color: string }> = {
   STOCK:    { label: 'Ações',    color: '#3b82f6' },
   REIT:     { label: 'FIIs',     color: '#8b5cf6' },
   ETF:      { label: 'ETFs',     color: '#06b6d4' },
-  BDR:      { label: 'BDRs',     color: '#f59e0b' },
+  BDR:      { label: 'BDRs',     color: 'var(--brand-warning)' },
   TREASURY: { label: 'Tesouro',  color: '#10b981' },
   CRYPTO:   { label: 'Cripto',   color: '#f97316' },
   OTHER:    { label: 'Outros',   color: '#94a3b8' },
@@ -318,7 +318,7 @@ function formatBRL(v: number): string {
   background: linear-gradient(
     100deg,
     var(--brand-negative, #dc2626) 0%,
-    #f59e0b 100%
+    var(--brand-warning) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -374,7 +374,7 @@ function formatBRL(v: number): string {
 
 .stress-card--crisis  { --tone: var(--brand-negative, #dc2626); }
 .stress-card--severe  { --tone: #ef4444; }
-.stress-card--projection { --tone: #f59e0b; }
+.stress-card--projection { --tone: var(--brand-warning); }
 
 .stress-card:hover {
   border-color: color-mix(in srgb, var(--tone) 50%, transparent);
@@ -434,9 +434,9 @@ function formatBRL(v: number): string {
 }
 
 .stress-card__tag--hipotetico {
-  background: color-mix(in srgb, #f59e0b 14%, transparent);
-  color: #f59e0b;
-  border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 14%, transparent);
+  color: var(--brand-warning);
+  border: 1px solid color-mix(in srgb, var(--brand-warning) 30%, transparent);
 }
 
 .stress-card__period {

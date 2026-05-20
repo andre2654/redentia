@@ -16,20 +16,20 @@
     <section>
       <header class="mentor-rankings__header mb-8 flex items-end justify-between gap-6 px-6 md:px-0">
         <div class="flex flex-col gap-3">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.positive }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-positive)' }">
             CAPÍTULO V · ELES SUBIRAM HOJE
           </span>
           <h2
             class="font-mentor-display"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
             }"
           >
             MAIORES ALTAS
           </h2>
         </div>
-        <hr class="mentor-rule hidden flex-1 md:block" :style="{ backgroundColor: brand.colors.positive, opacity: 0.6 }" />
+        <hr class="mentor-rule hidden flex-1 md:block" :style="{ backgroundColor: 'var(--brand-positive)', opacity: 0.6 }" />
       </header>
 
       <UCarousel
@@ -45,19 +45,19 @@
           <!-- Faixa lateral amber: ritmo editorial de margem de livro -->
           <span
             class="absolute left-2 top-4 bottom-4 w-[3px]"
-            :style="{ backgroundColor: brand.colors.positive }"
+            :style="{ backgroundColor: 'var(--brand-positive)' }"
             aria-hidden="true"
           />
 
           <!-- Tape header: eyebrow + categoria CHUNKY -->
           <header class="mb-5 pl-4">
-            <span class="font-mentor-eyebrow block" :style="{ color: brand.colors.positive }">
+            <span class="font-mentor-eyebrow block" :style="{ color: 'var(--brand-positive)' }">
               ALTAS · {{ item.label.toUpperCase() }}
             </span>
             <h3
               class="font-mentor-display mt-2"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(1.5rem, 2.4vw, 2rem)',
                 lineHeight: '0.92',
               }"
@@ -73,7 +73,7 @@
               :key="stock?.ticker"
               :stock="stock"
               class="border-b py-2"
-              :style="{ borderColor: `${brand.colors.text}1A` }"
+              :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
             />
           </div>
 
@@ -82,7 +82,7 @@
             <NuxtLink
               :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
               class="font-mentor-eyebrow inline-flex items-center gap-2 transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               :aria-label="`Ver todos ${item.label} em alta`"
             >
               VER QUADRO COMPLETO
@@ -97,20 +97,20 @@
     <section>
       <header class="mentor-rankings__header mb-8 flex items-end justify-between gap-6 px-6 md:px-0">
         <div class="flex flex-col gap-3">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.negative }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-negative)' }">
             CAPÍTULO VI · ELES CAÍRAM HOJE
           </span>
           <h2
             class="font-mentor-display"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
             }"
           >
             MAIORES BAIXAS
           </h2>
         </div>
-        <hr class="mentor-rule hidden flex-1 md:block" :style="{ backgroundColor: brand.colors.negative, opacity: 0.6 }" />
+        <hr class="mentor-rule hidden flex-1 md:block" :style="{ backgroundColor: 'var(--brand-negative)', opacity: 0.6 }" />
       </header>
 
       <UCarousel
@@ -125,18 +125,18 @@
         >
           <span
             class="absolute left-2 top-4 bottom-4 w-[3px]"
-            :style="{ backgroundColor: brand.colors.negative }"
+            :style="{ backgroundColor: 'var(--brand-negative)' }"
             aria-hidden="true"
           />
 
           <header class="mb-5 pl-4">
-            <span class="font-mentor-eyebrow block" :style="{ color: brand.colors.negative }">
+            <span class="font-mentor-eyebrow block" :style="{ color: 'var(--brand-negative)' }">
               BAIXAS · {{ item.label.toUpperCase() }}
             </span>
             <h3
               class="font-mentor-display mt-2"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(1.5rem, 2.4vw, 2rem)',
                 lineHeight: '0.92',
               }"
@@ -151,7 +151,7 @@
               :key="stock?.ticker"
               :stock="stock"
               class="border-b py-2"
-              :style="{ borderColor: `${brand.colors.text}1A` }"
+              :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
             />
           </div>
 
@@ -159,7 +159,7 @@
             <NuxtLink
               :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
               class="font-mentor-eyebrow inline-flex items-center gap-2 transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               :aria-label="`Ver todos ${item.label} em queda`"
             >
               VER QUADRO COMPLETO

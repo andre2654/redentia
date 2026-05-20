@@ -42,7 +42,7 @@
           </span>
           <span
             class="font-mono-tab text-lg font-bold tabular-nums"
-            :style="{ color: cell.accent || brand.colors.text }"
+            :style="{ color: cell.accent || 'var(--brand-text)' }"
           >
             {{ cell.value }}
           </span>
@@ -234,7 +234,7 @@ const snapshotCells = computed(() => {
   const f = fii.value
   if (!f) return []
   return [
-    { label: 'D.Y 12M', value: formatPercent(f.dividend_yield_12m), tooltip: 'Dividend Yield dos últimos 12 meses.', accent: brand.colors.primary },
+    { label: 'D.Y 12M', value: formatPercent(f.dividend_yield_12m), tooltip: 'Dividend Yield dos últimos 12 meses.', accent: 'var(--brand-primary)' },
     { label: 'P/VP', value: formatRatio(f.price_to_book), tooltip: 'Preço/Valor Patrimonial. Abaixo de 1 indica cota negociada abaixo do patrimônio.' },
     { label: 'VPA', value: formatMoneyBR(f.book_value_per_share), tooltip: 'Valor Patrimonial por Cota.' },
     { label: 'REND.MENSAL', value: formatMoneyBR(f.monthly_income_avg_24m), tooltip: 'Média mensal dos rendimentos distribuídos nos últimos 24 meses.' },
@@ -260,34 +260,34 @@ const hasProfile = computed(() => profileCells.value.length > 0)
 
 const dyColor = computed(() => {
   const v = fii.value?.dividend_yield_12m
-  if (v === null || v === undefined) return brand.colors.textMuted
-  if (v >= 10) return brand.colors.positive
-  if (v >= 7) return brand.colors.primary
-  return brand.colors.text
+  if (v === null || v === undefined) return 'var(--brand-text-muted)'
+  if (v >= 10) return 'var(--brand-positive)'
+  if (v >= 7) return 'var(--brand-primary)'
+  return 'var(--brand-text)'
 })
 
 const pvpColor = computed(() => {
   const v = fii.value?.price_to_book
-  if (v === null || v === undefined) return brand.colors.textMuted
-  if (v < 0.9) return brand.colors.positive
-  if (v > 1.1) return brand.colors.negative
-  return brand.colors.text
+  if (v === null || v === undefined) return 'var(--brand-text-muted)'
+  if (v < 0.9) return 'var(--brand-positive)'
+  if (v > 1.1) return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 })
 
 function changeColor(v: number | null): string {
-  if (v === null) return brand.colors.text
-  if (v > 0) return brand.colors.positive
-  if (v < 0) return brand.colors.negative
-  return brand.colors.text
+  if (v === null) return 'var(--brand-text)'
+  if (v > 0) return 'var(--brand-positive)'
+  if (v < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 }
 
 const interpretations = computed<string[]>(() => {
   const f = fii.value
   if (!f) return []
   const lines: string[] = []
-  const accent = (t: string) => `<strong style="color: ${brand.colors.primary}">${t}</strong>`
-  const pos = (t: string) => `<strong style="color: ${brand.colors.positive}">${t}</strong>`
-  const neg = (t: string) => `<strong style="color: ${brand.colors.negative}">${t}</strong>`
+  const accent = (t: string) => `<strong style="color: var(--brand-primary)">${t}</strong>`
+  const pos = (t: string) => `<strong style="color: var(--brand-positive)">${t}</strong>`
+  const neg = (t: string) => `<strong style="color: var(--brand-negative)">${t}</strong>`
 
   const dy = f.dividend_yield_12m
   if (dy !== null) {

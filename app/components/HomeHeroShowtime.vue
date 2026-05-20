@@ -16,22 +16,22 @@
 <template>
   <section
     class="showtime-hero relative overflow-hidden"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <!-- Decorative background: yellow blob + dots -->
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
       <div
         class="absolute -left-40 top-20 h-[420px] w-[420px] rounded-full blur-3xl opacity-25"
-        :style="{ backgroundColor: brand.colors.primary }"
+        :style="{ backgroundColor: 'var(--brand-primary)' }"
       />
       <div
         class="absolute right-0 top-40 h-[320px] w-[320px] rounded-full blur-3xl opacity-20"
-        :style="{ backgroundColor: brand.colors.secondary || brand.colors.primary }"
+        :style="{ backgroundColor: 'var(--brand-secondary)' || 'var(--brand-primary)' }"
       />
       <div
         class="absolute inset-0 opacity-[0.08]"
         :style="{
-          backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(var(--brand-text) 1px, transparent 1px)`,
           backgroundSize: '24px 24px',
         }"
       />
@@ -42,7 +42,7 @@
       <span class="lower-third">{{ liveBadge }}</span>
       <span
         class="font-showtime-label hidden sm:inline-block"
-        :style="{ color: `${brand.colors.text}99` }"
+        :style="{ color: 'color-mix(in srgb, var(--brand-text) 60%, transparent)' }"
       >
         {{ showtimeDate }}
       </span>
@@ -55,7 +55,7 @@
         <h1
           class="font-showtime-display chunky-shadow"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(3rem, 7vw, 6rem)',
           }"
         >
@@ -63,7 +63,7 @@
             <br v-if="idx > 0" />
             <span
               v-if="idx === headlineLines.length - 1"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             >{{ line }}</span>
             <span v-else>{{ line }}</span>
           </template>
@@ -76,7 +76,7 @@
           v-if="brand.hero?.subtitle"
           class="font-showtime-body mt-6 max-w-xl"
           :style="{
-            color: `${brand.colors.text}E6`,
+            color: 'color-mix(in srgb, var(--brand-text) 90%, transparent)',
             fontSize: 'clamp(1rem, 1.4vw, 1.25rem)',
           }"
         >
@@ -90,10 +90,10 @@
             :to="brand.hero?.ctaHref || '/auth/register'"
             class="showtime-hero__cta-primary group relative inline-flex items-center gap-3 px-8 py-4 font-showtime-label transition-transform hover:-translate-y-0.5"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
               borderRadius: '14px',
-              boxShadow: `0 6px 0 ${brand.colors.secondary || brand.colors.primary}, 0 16px 40px ${brand.colors.primary}55`,
+              boxShadow: `0 6px 0 ${'var(--brand-secondary)' || 'var(--brand-primary)'}, 0 16px 40px color-mix(in srgb, var(--brand-primary) 33%, transparent)`,
             }"
           >
             <UIcon name="i-lucide-sparkles" class="size-4" />
@@ -105,8 +105,8 @@
             :to="brand.hero?.ctaSecondaryHref || '/auth/login'"
             class="font-showtime-body text-base underline underline-offset-4 transition-opacity hover:opacity-70"
             :style="{
-              color: `${brand.colors.text}CC`,
-              textDecorationColor: brand.colors.primary,
+              color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)',
+              textDecorationColor: 'var(--brand-primary)',
             }"
           >
             {{ brand.hero.ctaSecondaryLabel }}
@@ -120,14 +120,14 @@
             :key="indicator"
             class="font-showtime-label inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 !text-[10px]"
             :style="{
-              borderColor: `${brand.colors.primary}70`,
-              backgroundColor: `${brand.colors.primary}15`,
-              color: brand.colors.text,
+              borderColor: 'color-mix(in srgb, var(--brand-primary) 44%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)',
+              color: 'var(--brand-text)',
             }"
           >
             <span
               class="inline-block size-1.5 rounded-full"
-              :style="{ backgroundColor: brand.colors.primary }"
+              :style="{ backgroundColor: 'var(--brand-primary)' }"
             />
             {{ indicator }}
           </div>
@@ -140,8 +140,8 @@
         <div
           class="absolute inset-0 m-auto aspect-square w-[86%] rounded-full"
           :style="{
-            background: `radial-gradient(circle at 30% 30%, ${brand.colors.primary}, ${brand.colors.secondary || brand.colors.primary})`,
-            boxShadow: `0 20px 60px ${brand.colors.primary}55`,
+            background: `radial-gradient(circle at 30% 30%, var(--brand-primary), ${'var(--brand-secondary)' || 'var(--brand-primary)'})`,
+            boxShadow: `0 20px 60px color-mix(in srgb, var(--brand-primary) 33%, transparent)`,
           }"
         />
         <!-- Founder photo -->

@@ -103,7 +103,7 @@
             v-if="hasNewReview(d)"
             name="i-lucide-bell-dot"
             class="size-3.5 shrink-0"
-            :style="{ color: brand.colors.warning ?? '#f59e0b' }"
+            :style="{ color: 'var(--brand-warning)' ?? 'var(--brand-warning)' }"
             :aria-label="'Revisita disponível'"
           />
         </button>
@@ -155,10 +155,10 @@ function typeLabel(t: DecisionType) {
 }
 
 function typeColor(t: DecisionType) {
-  if (t === 'buy') return brand.colors.positive
-  if (t === 'sell') return brand.colors.negative
-  if (t === 'rebalance' || t === 'allocate') return brand.colors.primary
-  return brand.colors.textMuted
+  if (t === 'buy') return 'var(--brand-positive)'
+  if (t === 'sell') return 'var(--brand-negative)'
+  if (t === 'rebalance' || t === 'allocate') return 'var(--brand-primary)'
+  return 'var(--brand-text-muted)'
 }
 
 function countdownLabel(d: ChatDecision): string {
@@ -181,7 +181,7 @@ function hasNewReview(d: ChatDecision): boolean {
 const hitRateStyle = computed(() => {
   const rate = props.hitRate.rate ?? 0
   const tone =
-    rate >= 0.66 ? brand.colors.positive : rate >= 0.4 ? brand.colors.primary : brand.colors.negative
+    rate >= 0.66 ? 'var(--brand-positive)' : rate >= 0.4 ? 'var(--brand-primary)' : 'var(--brand-negative)'
   return {
     backgroundColor: `color-mix(in srgb, ${tone} 14%, transparent)`,
     color: tone,
@@ -189,7 +189,7 @@ const hitRateStyle = computed(() => {
 })
 
 const emptyStyle = computed(() => ({
-  border: `1px dashed color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  border: `1px dashed color-mix(in srgb, var(--brand-border) 50%, transparent)`,
   backgroundColor: 'transparent',
   cursor: 'default',
 }))

@@ -882,7 +882,7 @@ const importCardStyle = computed(() => ({
   backgroundColor: 'var(--brand-surface)',
   border: `1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
   color: 'var(--brand-text)',
-  boxShadow: `color-mix(in srgb, var(--brand-primary) 18%, transparent) 0px 24px 50px -22px, rgba(0,0,0,0.08) 0px 8px 18px -10px`,
+  boxShadow: `color-mix(in srgb, var(--brand-primary) 18%, transparent) 0px 24px 50px -22px, var(--shadow-amber-near) 0px 8px 18px -10px`,
 }))
 
 // ---- Import card: file picker + emit handler --------------------
@@ -1736,7 +1736,7 @@ function formatRelativeTime(iso: string): string {
   transform: translateY(-1px);
   box-shadow:
     color-mix(in srgb, var(--brand-primary) 16%, transparent) 0px 24px 40px -22px,
-    rgba(0, 0, 0, 0.08) 0px 12px 20px -10px !important;
+    var(--shadow-amber-near) 0px 12px 20px -10px !important;
 }
 
 /* ---- Ticker chips marquee --------------------------------------------- */
@@ -1810,7 +1810,7 @@ function formatRelativeTime(iso: string): string {
   background-color: color-mix(in srgb, var(--brand-primary) 6%, var(--brand-surface)) !important;
   box-shadow:
     color-mix(in srgb, var(--brand-primary) 18%, transparent) 0px 10px 22px -12px,
-    rgba(0, 0, 0, 0.08) 0px 5px 12px -6px !important;
+    var(--shadow-amber-near) 0px 5px 12px -6px !important;
 }
 
 /* ---- News carousel ---------------------------------------------------- */

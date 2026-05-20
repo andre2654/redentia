@@ -256,7 +256,7 @@ onMounted(() => load())
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--shadow-ambient);
   backdrop-filter: blur(8px);
   color: rgba(255, 255, 255, 0.92);
   border: 0;

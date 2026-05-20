@@ -42,7 +42,7 @@
       >
         <defs>
           <linearGradient id="quiet-hero-arc" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" :stop-color="brand.colors.primary" stop-opacity="0.22" />
+            <stop offset="0%" :stop-color="'var(--brand-primary)'" stop-opacity="0.22" />
             <stop offset="60%" stop-color="#F96BEE" stop-opacity="0.08" />
             <stop offset="100%" stop-color="#F96BEE" stop-opacity="0" />
           </linearGradient>
@@ -138,7 +138,7 @@
               <div
                 class="pointer-events-none absolute inset-0"
                 :style="{
-                  background: `linear-gradient(135deg, ${brand.colors.primary}1A 0%, transparent 35%, #F96BEE14 80%, transparent 100%)`,
+                  background: `linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 10%, transparent) 0%, transparent 35%, #F96BEE14 80%, transparent 100%)`,
                 }"
                 aria-hidden="true"
               />
@@ -203,13 +203,13 @@
                     <!-- Gradient fill: tinta amber estavel (cor da marca,
                          independente da direcao) com fade pra transparente. -->
                     <linearGradient id="hero-area-fill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" :stop-color="brand.colors.primary" stop-opacity="0.28" />
-                      <stop offset="100%" :stop-color="brand.colors.primary" stop-opacity="0" />
+                      <stop offset="0%" :stop-color="'var(--brand-primary)'" stop-opacity="0.28" />
+                      <stop offset="100%" :stop-color="'var(--brand-primary)'" stop-opacity="0" />
                     </linearGradient>
                     <!-- Stroke: amber -> accent da variacao (positive ou
                          negative). O acento final reflete a direcao do dia. -->
                     <linearGradient id="hero-area-line" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" :stop-color="brand.colors.primary" />
+                      <stop offset="0%" :stop-color="'var(--brand-primary)'" />
                       <stop offset="100%" :stop-color="strokeEndColor" />
                     </linearGradient>
                   </defs>
@@ -275,7 +275,7 @@
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.positive}14 0%, transparent 40%, ${brand.colors.primary}10 100%)` }"
+                :style="{ background: `linear-gradient(135deg, color-mix(in srgb, var(--brand-positive) 8%, transparent) 0%, transparent 40%, color-mix(in srgb, var(--brand-primary) 6%, transparent) 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
@@ -327,14 +327,14 @@
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `radial-gradient(ellipse 70% 60% at 100% 0%, ${brand.colors.primary}1F, transparent 60%), radial-gradient(ellipse 60% 50% at 0% 100%, #F96BEE12, transparent 65%)` }"
+                :style="{ background: `radial-gradient(ellipse 70% 60% at 100% 0%, color-mix(in srgb, var(--brand-primary) 12%, transparent), transparent 60%), radial-gradient(ellipse 60% 50% at 0% 100%, #F96BEE12, transparent 65%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
                 <div class="flex items-center gap-2">
                   <span
                     class="flex size-6 items-center justify-center rounded-md"
-                    :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`, color: 'var(--brand-primary)' }"
+                    :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 18%, transparent)`, color: 'var(--brand-primary)' }"
                   >
                     <UIcon name="i-lucide-sparkles" class="size-3.5" />
                   </span>
@@ -360,7 +360,7 @@
                 <div class="flex justify-start">
                   <div
                     class="max-w-[88%] rounded-2xl rounded-bl-sm px-3.5 py-2 text-[12px] leading-relaxed"
-                    :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, transparent)`, color: 'var(--text-heading)', border: '1px solid color-mix(in srgb, ' + brand.colors.primary + ' 22%, transparent)' }"
+                    :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 10%, transparent)`, color: 'var(--text-heading)', border: '1px solid color-mix(in srgb, ' + 'var(--brand-primary)' + ' 22%, transparent)' }"
                   >
                     O <strong>Tesouro IPCA+ 2035</strong> paga <span class="font-medium tabular-nums" :style="{ color: 'var(--brand-primary)' }">IPCA + 6,52% a.a.</span>, garantindo retorno acima da inflação até 2035.
                   </div>
@@ -384,7 +384,7 @@
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(160deg, ${brand.colors.primary}14 0%, transparent 50%, transparent 100%)` }"
+                :style="{ background: `linear-gradient(160deg, color-mix(in srgb, var(--brand-primary) 8%, transparent) 0%, transparent 50%, transparent 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
@@ -425,7 +425,7 @@
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `radial-gradient(ellipse 80% 60% at 50% -20%, ${brand.colors.primary}1A, transparent 60%)` }"
+                :style="{ background: `radial-gradient(ellipse 80% 60% at 50% -20%, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 60%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
@@ -437,7 +437,7 @@
                 </div>
                 <span
                   class="rounded-md px-2 py-0.5 text-[11px] font-medium tabular-nums"
-                  :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 16%, transparent)`, color: 'var(--brand-positive)' }"
+                  :style="{ backgroundColor: `color-mix(in srgb, var(--brand-positive) 16%, transparent)`, color: 'var(--brand-positive)' }"
                 >+8,42%</span>
               </header>
               <div class="relative px-6 pt-5">
@@ -535,10 +535,10 @@ const eyebrow = computed(() => brand.header?.subtitle || 'Plataforma de investim
 // Dark = mesma composicao mas opacity reduzida pra nao saturar canvas.
 // ----------------------------------------------------------------
 const meshAmber = computed(() =>
-  `radial-gradient(circle, ${brand.colors.primary} 0%, transparent 70%)`,
+  `radial-gradient(circle, var(--brand-primary) 0%, transparent 70%)`,
 )
 const meshAmberSoft = computed(() =>
-  `radial-gradient(circle, ${brand.colors.primary} 0%, transparent 70%)`,
+  `radial-gradient(circle, var(--brand-primary) 0%, transparent 70%)`,
 )
 const meshRose = computed(() =>
   `radial-gradient(circle, #F96BEE 0%, transparent 70%)`,
@@ -554,9 +554,9 @@ const meshOpacity = computed(() => {
 // elevacao por inner border + ambient
 const heroCardShadow = computed(() => {
   if (resolvedMode.value === 'light') {
-    return `0 40px 60px -30px color-mix(in srgb, ${brand.colors.primary} 28%, transparent), 0 18px 36px -18px rgba(0,0,0,0.10)`
+    return `0 40px 60px -30px color-mix(in srgb, var(--brand-primary) 28%, transparent), 0 18px 36px -18px rgba(0,0,0,0.10)`
   }
-  return `0 40px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`
+  return `0 40px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px color-mix(in srgb, var(--brand-primary) 8%, transparent)`
 })
 
 // Background do mini card secundario (depth): em dark fica mais opaco

@@ -42,7 +42,7 @@
           </span>
           <span
             class="font-mono-tab text-lg font-bold tabular-nums"
-            :style="{ color: cell.accent || brand.colors.text }"
+            :style="{ color: cell.accent || 'var(--brand-text)' }"
           >
             {{ cell.value }}
           </span>
@@ -188,19 +188,19 @@ const profileCells = computed(() => {
 const hasProfile = computed(() => profileCells.value.length > 0)
 
 function changeColor(v: number | null): string {
-  if (v === null) return brand.colors.text
-  if (v > 0) return brand.colors.positive
-  if (v < 0) return brand.colors.negative
-  return brand.colors.text
+  if (v === null) return 'var(--brand-text)'
+  if (v > 0) return 'var(--brand-positive)'
+  if (v < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 }
 
 const interpretations = computed<string[]>(() => {
   const e = etf.value
   if (!e) return []
   const lines: string[] = []
-  const accent = (t: string) => `<strong style="color: ${brand.colors.primary}">${t}</strong>`
-  const pos = (t: string) => `<strong style="color: ${brand.colors.positive}">${t}</strong>`
-  const neg = (t: string) => `<strong style="color: ${brand.colors.negative}">${t}</strong>`
+  const accent = (t: string) => `<strong style="color: var(--brand-primary)">${t}</strong>`
+  const pos = (t: string) => `<strong style="color: var(--brand-positive)">${t}</strong>`
+  const neg = (t: string) => `<strong style="color: var(--brand-negative)">${t}</strong>`
 
   if (e.change_12m !== null) {
     if (e.change_12m >= 15) lines.push(`Valorização ${pos(formatPercent(e.change_12m))} em 12 meses, retorno forte e acima do CDI no período.`)

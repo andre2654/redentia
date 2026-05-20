@@ -232,7 +232,7 @@
             :key="r.title"
             class="flex items-start gap-3"
           >
-            <UIcon name="i-lucide-alert-triangle" class="mt-0.5 size-4 shrink-0" :style="{ color: brand.colors.warning || '#f59e0b' }" />
+            <UIcon name="i-lucide-alert-triangle" class="mt-0.5 size-4 shrink-0" :style="{ color: brand.colors.warning || 'var(--brand-warning)' }" />
             <div class="flex flex-col gap-0.5">
               <span class="text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ r.title }}</span>
               <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ r.body }}</span>

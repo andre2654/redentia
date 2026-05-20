@@ -171,7 +171,7 @@ async function onClearAll() {
 
 function severityColor(s: string | null): string {
   if (s === 'critical') return 'var(--brand-negative, #ef4444)'
-  if (s === 'warning') return '#f59e0b'
+  if (s === 'warning') return 'var(--brand-warning)'
   return 'var(--brand-primary)'
 }
 
@@ -234,7 +234,7 @@ watch(() => authStore.isAuthenticated, (next) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: -20px 0 50px -16px rgba(0, 0, 0, 0.4);
+  box-shadow: -20px 0 50px -16px var(--shadow-amber-near);
 }
 .inbox-drawer__head {
   display: flex;

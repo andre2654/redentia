@@ -469,18 +469,25 @@ interface Props {
   showPrevClose?: boolean
 }
 
-/* ========== Configurações padrão ========== */
+/* ========== Configurações padrão ==========
+ *
+ * IMPORTANTE: cor-related fields são getters que re-leem `cc.X` a cada
+ * acesso, garantindo que mudança de tema (light/dark) atualize o valor
+ * sem congelar com a resolução do setup. Não converter em propriedade
+ * estática (`COLORS: [cc.positive]`) — isso captura o hex no momento do
+ * mount e quebra o re-render em troca de tema (bug F5).
+ */
 const DEFAULTS = {
-  COLORS: [cc.positive],
+  get COLORS() { return [cc.positive] },
   HEIGHT: 300,
   LOCALE: 'pt-BR',
   CURRENCY: 'R$',
   LOADING_ANIMATION_INTERVAL: 800,
   DRAG_END_DELAY: 150,
   SCROLL_DEBOUNCE: 100,
-  POSITIVE_COLOR: cc.positive,
-  NEGATIVE_COLOR: cc.negative,
-  GRAY_COLOR: cc.neutral,
+  get POSITIVE_COLOR() { return cc.positive },
+  get NEGATIVE_COLOR() { return cc.negative },
+  get GRAY_COLOR() { return cc.neutral },
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -2638,6 +2645,25 @@ onUnmounted(() => {
   stopLoadingAnimation()
   if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer)
 })
+
+/* ========== Re-render no theme change ==========
+ *
+ * Chart.js pinta cores no canvas no momento da criacao. Quando o user
+ * muda de light/dark mode (toggle ou F5 com prefers-color-scheme:
+ * system), `cc.X` getters retornam novos valores, MAS o canvas ja
+ * pintado nao reage. Forcamos rebuild aqui pra que dataset.colors,
+ * grid, ticks e labels reflitam o tema atual.
+ */
+const _colorMode = useColorMode()
+watch(
+  () => _colorMode.value,
+  () => {
+    const chart = chartInstance.value
+    if (!chart) return
+    // Update existente atualiza colors sem recreate (rapido + preserva state)
+    chart.update('none')
+  }
+)
 
 const onRootMouseLeave = (): void => {
   isHovering.value = false

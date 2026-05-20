@@ -17,7 +17,7 @@
       :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
     >
       <!-- ============ HEADER STICKY ============ -->
-      <header class="mobile-menu__head" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)` }">
+      <header class="mobile-menu__head" :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }">
         <div class="mobile-menu__user">
           <template v-if="isAuthenticated">
             <div class="mobile-menu__avatar-wrap" :class="userPlanIsMax ? 'mobile-menu__avatar-wrap--max' : (userPlanIsPro ? 'mobile-menu__avatar-wrap--pro' : '')">
@@ -51,8 +51,8 @@
           <template v-else>
             <BrandLogo variant="icon" class="h-9 w-9" />
             <div class="mobile-menu__user-text">
-              <span class="mobile-menu__brand-eyebrow" :style="{ color: brand.colors.textMuted }">{{ brand.name }}</span>
-              <span class="mobile-menu__brand-title" :style="{ color: brand.colors.text }">{{ brand.subtitle }}</span>
+              <span class="mobile-menu__brand-eyebrow" :style="{ color: 'var(--brand-text-muted)' }">{{ brand.name }}</span>
+              <span class="mobile-menu__brand-title" :style="{ color: 'var(--brand-text)' }">{{ brand.subtitle }}</span>
             </div>
           </template>
         </div>

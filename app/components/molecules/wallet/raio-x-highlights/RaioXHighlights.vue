@@ -445,8 +445,8 @@ function close() {
   border-radius: 50%;
   background: radial-gradient(
     circle at center,
-    color-mix(in srgb, var(--brand-primary, #f5a623) 65%, transparent) 0%,
-    color-mix(in srgb, var(--brand-primary, #f5a623) 28%, transparent) 25%,
+    color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 65%, transparent) 0%,
+    color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 28%, transparent) 25%,
     transparent 60%
   );
   opacity: 0;

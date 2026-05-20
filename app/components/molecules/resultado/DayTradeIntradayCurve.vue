@@ -33,7 +33,7 @@
     </header>
 
     <div v-if="!chartData.length" class="dt-curve__empty">
-      <UIcon name="i-lucide-activity" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+      <UIcon name="i-lucide-activity" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
       <span>Sem operações no período.</span>
     </div>
 
@@ -82,9 +82,9 @@ const lastValue = computed(() =>
 )
 
 const lineColor = computed(() => {
-  if (lastValue.value > 0) return brand.colors.positive
-  if (lastValue.value < 0) return brand.colors.negative
-  return brand.colors.text
+  if (lastValue.value > 0) return 'var(--brand-positive)'
+  if (lastValue.value < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 })
 
 const endValueColor = computed(() => lineColor.value)
@@ -147,9 +147,9 @@ function titleForTrade(ticker: string, pnl: number): string {
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
 }))
 </script>
 

@@ -5,7 +5,7 @@
     </span>
     <div class="color-field__input">
       <!-- Native color picker. v-model="..." nao funciona com optional
-           hex (ex: '#F5A623AA' com alpha) — usamos :value + @input
+           hex (ex: 'var(--brand-primary)AA' com alpha) — usamos :value + @input
            pra preservar o que admin digitou. -->
       <input
         type="color"

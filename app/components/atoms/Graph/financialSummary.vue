@@ -107,6 +107,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 const brand = useBrand()
 const cc = useChartColors()
+const _colorMode = useColorMode()
 
 interface FinancialChartItem {
   label: string
@@ -283,6 +284,18 @@ onMounted(() => {
     }
   })
 })
+
+// Re-paint canvas quando o tema mudar (F5 com prefers-color-scheme: system,
+// toggle dark/light). Chart.js congela cores no momento do paint, sem isso
+// grid/ticks ficam misturados depois da troca de tema.
+watch(
+  () => _colorMode.value,
+  () => {
+    const chart = chartRef.value?.chart
+    if (!chart) return
+    chart.update('none')
+  }
+)
 
 onUnmounted(() => {
   try {

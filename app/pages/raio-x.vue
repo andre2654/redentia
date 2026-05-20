@@ -163,7 +163,7 @@ usePageSeo({
         class="lp-hero__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--brand-primary) 26%, transparent), transparent 65%)`,
         }"
       />
 
@@ -279,8 +279,8 @@ usePageSeo({
                     <svg viewBox="0 0 200 60" preserveAspectRatio="none">
                       <defs>
                         <linearGradient id="lp-spark" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0.4" />
-                          <stop offset="100%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0" />
+                          <stop offset="0%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0.4" />
+                          <stop offset="100%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0" />
                         </linearGradient>
                       </defs>
                       <path
@@ -289,7 +289,7 @@ usePageSeo({
                       />
                       <path
                         d="M0,20 L20,15 L40,18 L60,12 L80,28 L100,22 L120,35 L140,30 L160,42 L180,38 L200,48"
-                        :stroke="brand.colors.negative || '#dc2626'"
+                        :stroke="'var(--brand-negative, #dc2626)'"
                         stroke-width="2"
                         fill="none"
                       />
@@ -301,22 +301,22 @@ usePageSeo({
                 <div class="lp-mockup__cause-label">POR QUÊ:</div>
                 <ul class="lp-mockup__causes">
                   <li>
-                    <span class="lp-mockup__bullet" :style="{ background: brand.colors.negative || '#dc2626' }" />
+                    <span class="lp-mockup__bullet" :style="{ background: 'var(--brand-negative)' || '#dc2626' }" />
                     <strong>PETR4 -3,8%</strong> · queda do petróleo após reunião OPEC
                   </li>
                   <li>
-                    <span class="lp-mockup__bullet" :style="{ background: brand.colors.negative || '#dc2626' }" />
+                    <span class="lp-mockup__bullet" :style="{ background: 'var(--brand-negative)' || '#dc2626' }" />
                     <strong>VALE3 -2,1%</strong> · minério de ferro recua na China
                   </li>
                   <li>
-                    <span class="lp-mockup__bullet" :style="{ background: brand.colors.positive || '#10b981' }" />
+                    <span class="lp-mockup__bullet" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
                     <strong>ITUB4 +0,4%</strong> · resultado trimestral acima do esperado
                   </li>
                 </ul>
 
                 <!-- AI suggestion footer -->
                 <div class="lp-mockup__ai">
-                  <span class="lp-mockup__ai-icon" :style="{ background: brand.colors.primary }">
+                  <span class="lp-mockup__ai-icon" :style="{ background: 'var(--brand-primary)' }">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
                     </svg>
@@ -329,13 +329,13 @@ usePageSeo({
 
               <!-- Floating notification 1 -->
               <div class="lp-mockup__float lp-mockup__float--top">
-                <span class="lp-mockup__float-pulse" :style="{ background: brand.colors.primary }" />
+                <span class="lp-mockup__float-pulse" :style="{ background: 'var(--brand-primary)' }" />
                 <span><strong>Alerta:</strong> notícia nova na sua PETR4</span>
               </div>
 
               <!-- Floating notification 2 -->
               <div class="lp-mockup__float lp-mockup__float--bottom">
-                <span class="lp-mockup__float-icon" :style="{ background: brand.colors.positive || '#10b981' }">
+                <span class="lp-mockup__float-icon" :style="{ background: 'var(--brand-positive)' || '#10b981' }">
                   <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
@@ -352,7 +352,7 @@ usePageSeo({
     <section class="lp-tickerbar">
       <div class="lp-container lp-tickerbar__inner">
         <div class="lp-tickerbar__live" aria-live="polite">
-          <span class="lp-tickerbar__dot" :style="{ background: brand.colors.positive || '#10b981' }" />
+          <span class="lp-tickerbar__dot" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
           <span class="lp-tickerbar__num tabular-nums">{{ counterFormatted }}</span>
           <span class="lp-tickerbar__label">carteiras analisadas</span>
         </div>
@@ -404,8 +404,8 @@ usePageSeo({
         <div class="lp-features__grid">
           <!-- Feature 1: Raio-X -->
           <article class="lp-feat reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" />
                 <path d="M4 6h.01" />
                 <path d="M2.29 9.62A10 10 0 1 0 21.31 8.35" />
@@ -420,16 +420,16 @@ usePageSeo({
             <p>Mostra <strong>quais</strong> ativos pesaram e <strong>por quê</strong> caíram ou subiram. Não só o resultado, o motivo.</p>
             <!-- Mini sparkline preview -->
             <div class="lp-feat__viz">
-              <div class="lp-feat__bar" :style="{ width: '78%', background: brand.colors.primary }" />
-              <div class="lp-feat__bar" :style="{ width: '62%', background: `color-mix(in srgb, ${brand.colors.primary} 70%, transparent)` }" />
-              <div class="lp-feat__bar" :style="{ width: '45%', background: `color-mix(in srgb, ${brand.colors.primary} 50%, transparent)` }" />
+              <div class="lp-feat__bar" :style="{ width: '78%', background: 'var(--brand-primary)' }" />
+              <div class="lp-feat__bar" :style="{ width: '62%', background: `color-mix(in srgb, var(--brand-primary) 70%, transparent)` }" />
+              <div class="lp-feat__bar" :style="{ width: '45%', background: `color-mix(in srgb, var(--brand-primary) 50%, transparent)` }" />
             </div>
           </article>
 
           <!-- Feature 2: Alertas -->
           <article class="lp-feat lp-feat--highlight reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                 <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
               </svg>
@@ -438,11 +438,11 @@ usePageSeo({
             <p>Você não fica adivinhando. A IA monitora seus ativos 24/7 e te avisa quando algo muda, antes da concorrência reagir.</p>
             <div class="lp-feat__alerts">
               <div class="lp-feat__alert">
-                <span class="lp-feat__alert-pulse" :style="{ background: brand.colors.primary }" />
+                <span class="lp-feat__alert-pulse" :style="{ background: 'var(--brand-primary)' }" />
                 <span><strong>PETR4</strong> · novo gatilho técnico identificado</span>
               </div>
               <div class="lp-feat__alert">
-                <span class="lp-feat__alert-pulse" :style="{ background: brand.colors.positive || '#10b981' }" />
+                <span class="lp-feat__alert-pulse" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
                 <span><strong>HGLG11</strong> · oportunidade de entrada</span>
               </div>
             </div>
@@ -450,8 +450,8 @@ usePageSeo({
 
           <!-- Feature: Open Finance (HIGHLIGHT — diferencial vs concorrentes) -->
           <article class="lp-feat lp-feat--highlight reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.positive || '#10b981'} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.positive || '#10b981'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${'var(--brand-positive)' || '#10b981'} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-positive, #10b981)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 17H7A5 5 0 0 1 7 7h2"/>
                 <path d="M15 7h2a5 5 0 1 1 0 10h-2"/>
                 <line x1="8" x2="16" y1="12" y2="12"/>
@@ -478,8 +478,8 @@ usePageSeo({
 
           <!-- Feature 3: Notícias -->
           <article class="lp-feat reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
                 <path d="M18 14h-8" />
                 <path d="M15 18h-5" />
@@ -492,8 +492,8 @@ usePageSeo({
 
           <!-- Feature 4: Chat IA (também via WhatsApp) -->
           <article class="lp-feat reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
@@ -516,8 +516,8 @@ usePageSeo({
 
           <!-- Feature 5: Dividendos -->
           <article class="lp-feat reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
                 <line x1="16" x2="16" y1="2" y2="6" />
                 <line x1="8" x2="8" y1="2" y2="6" />
@@ -530,8 +530,8 @@ usePageSeo({
 
           <!-- Feature 6: Benchmarks -->
           <article class="lp-feat reveal-on-scroll">
-            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" x2="12" y1="20" y2="10" />
                 <line x1="18" x2="18" y1="20" y2="4" />
                 <line x1="6" x2="6" y1="20" y2="16" />
@@ -554,7 +554,7 @@ usePageSeo({
         class="lp-stress__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.negative || '#dc2626'} 16%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${'var(--brand-negative)' || '#dc2626'} 16%, transparent), transparent 65%)`,
         }"
       />
       <div class="lp-container">
@@ -723,7 +723,7 @@ usePageSeo({
         class="lp-carta__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 30%, color-mix(in srgb, ${brand.colors.primary} 14%, transparent), transparent 70%)`,
+          background: `radial-gradient(ellipse 70% 60% at 50% 30%, color-mix(in srgb, var(--brand-primary) 14%, transparent), transparent 70%)`,
         }"
       />
 
@@ -853,7 +853,7 @@ usePageSeo({
         class="lp-inside__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 60% 50% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 18%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 60% 50% at 50% 50%, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 65%)`,
         }"
       />
       <div class="lp-container">
@@ -882,40 +882,40 @@ usePageSeo({
                 <!-- Concentric pentagons -->
                 <g>
                   <!-- 4 anéis -->
-                  <polygon points="180,90 268,153 234,257 126,257 92,153" fill="none" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <polygon points="180,135 224,166 207,218 153,218 136,166" fill="none" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <polygon points="180,157 202,173 193,200 167,200 158,173" fill="none" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <polygon points="180,45 356,170 290,304 70,304 4,170" fill="none" :stroke="`color-mix(in srgb, ${brand.colors.text} 16%, transparent)`" stroke-width="1.2" />
+                  <polygon points="180,90 268,153 234,257 126,257 92,153" fill="none" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <polygon points="180,135 224,166 207,218 153,218 136,166" fill="none" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <polygon points="180,157 202,173 193,200 167,200 158,173" fill="none" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <polygon points="180,45 356,170 290,304 70,304 4,170" fill="none" :stroke="`color-mix(in srgb, var(--brand-text) 16%, transparent)`" stroke-width="1.2" />
                 </g>
                 <!-- Spokes -->
                 <g>
-                  <line x1="180" y1="180" x2="180" y2="45" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <line x1="180" y1="180" x2="356" y2="170" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <line x1="180" y1="180" x2="290" y2="304" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <line x1="180" y1="180" x2="70" y2="304" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
-                  <line x1="180" y1="180" x2="4" y2="170" :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`" stroke-width="1" />
+                  <line x1="180" y1="180" x2="180" y2="45" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <line x1="180" y1="180" x2="356" y2="170" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <line x1="180" y1="180" x2="290" y2="304" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <line x1="180" y1="180" x2="70" y2="304" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
+                  <line x1="180" y1="180" x2="4" y2="170" :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`" stroke-width="1" />
                 </g>
                 <!-- Filled snowflake polygon -->
                 <defs>
                   <radialGradient id="lp-snowflake-fill" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" :stop-color="brand.colors.primary" stop-opacity="0.85" />
-                    <stop offset="100%" :stop-color="brand.colors.primary" stop-opacity="0.45" />
+                    <stop offset="0%" :stop-color="'var(--brand-primary)'" stop-opacity="0.85" />
+                    <stop offset="100%" :stop-color="'var(--brand-primary)'" stop-opacity="0.45" />
                   </radialGradient>
                 </defs>
                 <!-- 5 pontos: Valor (76), Futuro (45), Passado (88), Saúde (62), Dividendos (92) -->
                 <polygon
                   points="180,77 248,237 207,295 130,278 8,170"
                   fill="url(#lp-snowflake-fill)"
-                  :stroke="brand.colors.primary"
+                  :stroke="'var(--brand-primary)'"
                   stroke-width="2"
                   stroke-linejoin="round"
                 />
                 <!-- Score dots on tips -->
-                <circle cx="180" cy="77" r="5" :fill="brand.colors.primary" />
-                <circle cx="248" cy="237" r="5" :fill="brand.colors.primary" />
-                <circle cx="207" cy="295" r="5" :fill="brand.colors.primary" />
-                <circle cx="130" cy="278" r="5" :fill="brand.colors.primary" />
-                <circle cx="8" cy="170" r="5" :fill="brand.colors.primary" />
+                <circle cx="180" cy="77" r="5" :fill="'var(--brand-primary)'" />
+                <circle cx="248" cy="237" r="5" :fill="'var(--brand-primary)'" />
+                <circle cx="207" cy="295" r="5" :fill="'var(--brand-primary)'" />
+                <circle cx="130" cy="278" r="5" :fill="'var(--brand-primary)'" />
+                <circle cx="8" cy="170" r="5" :fill="'var(--brand-primary)'" />
                 <!-- Axis labels -->
                 <text x="180" y="32" text-anchor="middle" class="lp-snowflake__label">VALOR</text>
                 <text x="180" y="50" text-anchor="middle" class="lp-snowflake__score">76</text>
@@ -937,7 +937,7 @@ usePageSeo({
             <div class="lp-inside__readout">
               <div class="lp-inside__readout-item">
                 <span class="lp-inside__readout-label">Mais forte</span>
-                <span class="lp-inside__readout-value" :style="{ color: brand.colors.primary }">Dividendos · 92</span>
+                <span class="lp-inside__readout-value" :style="{ color: 'var(--brand-primary)' }">Dividendos · 92</span>
               </div>
               <div class="lp-inside__readout-item">
                 <span class="lp-inside__readout-label">Brecha</span>
@@ -960,7 +960,7 @@ usePageSeo({
             <div class="lp-chat">
               <!-- Top: chat header -->
               <div class="lp-chat__topbar">
-                <span class="lp-chat__avatar" :style="{ background: brand.colors.primary }">
+                <span class="lp-chat__avatar" :style="{ background: 'var(--brand-primary)' }">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
                   </svg>
@@ -968,7 +968,7 @@ usePageSeo({
                 <div class="lp-chat__topinfo">
                   <span class="lp-chat__title">Assessor com IA</span>
                   <span class="lp-chat__status">
-                    <span class="lp-chat__online" :style="{ background: brand.colors.positive || '#10b981' }" />
+                    <span class="lp-chat__online" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
                     Online · responde em segundos
                   </span>
                 </div>
@@ -1001,7 +1001,7 @@ usePageSeo({
               <!-- Bottom: chat input mockup -->
               <div class="lp-chat__inputbar">
                 <span class="lp-chat__input-placeholder">Pergunta o que quiser sobre sua carteira…</span>
-                <span class="lp-chat__send" :style="{ background: brand.colors.primary }">
+                <span class="lp-chat__send" :style="{ background: 'var(--brand-primary)' }">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m5 12 7-7 7 7" /><path d="M12 19V5" />
                   </svg>
@@ -1014,19 +1014,19 @@ usePageSeo({
         <!-- Bottom row: 3 mini stat cards -->
         <div class="lp-inside__stats">
           <div class="lp-inside__stat">
-            <div class="lp-inside__stat-num" :style="{ color: brand.colors.primary }">11</div>
+            <div class="lp-inside__stat-num" :style="{ color: 'var(--brand-primary)' }">11</div>
             <div class="lp-inside__stat-label">fontes de notícia<br>monitoradas 24/7</div>
           </div>
           <div class="lp-inside__stat">
-            <div class="lp-inside__stat-num" :style="{ color: brand.colors.primary }">B3</div>
+            <div class="lp-inside__stat-num" :style="{ color: 'var(--brand-primary)' }">B3</div>
             <div class="lp-inside__stat-label">cotações oficiais<br>em tempo real</div>
           </div>
           <div class="lp-inside__stat">
-            <div class="lp-inside__stat-num" :style="{ color: brand.colors.primary }">100%</div>
+            <div class="lp-inside__stat-num" :style="{ color: 'var(--brand-primary)' }">100%</div>
             <div class="lp-inside__stat-label">dados auditáveis<br>(B3, Tesouro, BCB)</div>
           </div>
           <div class="lp-inside__stat">
-            <div class="lp-inside__stat-num" :style="{ color: brand.colors.primary }">24/7</div>
+            <div class="lp-inside__stat-num" :style="{ color: 'var(--brand-primary)' }">24/7</div>
             <div class="lp-inside__stat-label">monitora seus ativos<br>enquanto você dorme</div>
           </div>
         </div>
@@ -1064,7 +1064,7 @@ usePageSeo({
               decoding="async"
             />
             <div class="lp-video__play-overlay">
-              <span class="lp-video__play-btn" :style="{ background: brand.colors.primary }">
+              <span class="lp-video__play-btn" :style="{ background: 'var(--brand-primary)' }">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="0">
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -1072,7 +1072,7 @@ usePageSeo({
               <span class="lp-video__play-label">Tocar vídeo · 60s</span>
             </div>
             <span class="lp-video__badge">
-              <span class="lp-video__badge-dot" :style="{ background: brand.colors.primary }" />
+              <span class="lp-video__badge-dot" :style="{ background: 'var(--brand-primary)' }" />
               Apresentação Redent.IA
             </span>
           </button>
@@ -1153,7 +1153,7 @@ usePageSeo({
         class="lp-final__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 60% 70% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 32%, transparent), transparent 70%)`,
+          background: `radial-gradient(ellipse 60% 70% at 50% 50%, color-mix(in srgb, var(--brand-primary) 32%, transparent), transparent 70%)`,
         }"
       />
       <div class="lp-container">
@@ -2313,7 +2313,7 @@ usePageSeo({
   z-index: 2;
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0) 30%,
+    transparent 30%,
     rgba(0, 0, 0, 0.18) 100%
   );
 }
@@ -2792,7 +2792,7 @@ usePageSeo({
   background: linear-gradient(
     100deg,
     var(--brand-negative, #dc2626) 0%,
-    #f59e0b 100%
+    var(--brand-warning) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -2821,7 +2821,7 @@ usePageSeo({
 
 .lp-stress-card--crisis  { --tone: var(--brand-negative, #dc2626); }
 .lp-stress-card--severe  { --tone: #ef4444; }
-.lp-stress-card--projection { --tone: #f59e0b; }
+.lp-stress-card--projection { --tone: var(--brand-warning); }
 
 .lp-stress-card:hover {
   border-color: color-mix(in srgb, var(--tone) 50%, transparent);
@@ -2880,9 +2880,9 @@ usePageSeo({
 }
 
 .lp-stress-card__tag--projection {
-  background: color-mix(in srgb, #f59e0b 14%, transparent);
-  color: #f59e0b;
-  border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 14%, transparent);
+  color: var(--brand-warning);
+  border: 1px solid color-mix(in srgb, var(--brand-warning) 30%, transparent);
 }
 
 .lp-stress-card__period {

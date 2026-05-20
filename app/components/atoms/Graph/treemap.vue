@@ -20,7 +20,7 @@
       <span class="inline-flex items-center gap-1.5">
         <span
           class="h-1.5 w-1.5 rounded-full"
-          :style="{ backgroundColor: sessionOpen ? brand.colors.positive : 'var(--brand-neutral)' }"
+          :style="{ backgroundColor: sessionOpen ? 'var(--brand-positive)' : 'var(--brand-neutral)' }"
         />
         <span>SESSION {{ sessionOpen ? 'OPEN' : 'CLOSED' }}</span>
       </span>
@@ -78,7 +78,7 @@
             <span
               :style="{
                 color:
-                  sector.avgChange >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                  sector.avgChange >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ sector.avgChange >= 0 ? '+' : '' }}{{ sector.avgChange.toFixed(1) }}%
@@ -164,7 +164,7 @@
         <span
           class="tabular-nums font-semibold"
           :style="{
-            color: hovered.change >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+            color: hovered.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
           }"
         >
           {{ hovered.change >= 0 ? '+' : '' }}{{ hovered.change.toFixed(2) }}%
@@ -576,18 +576,21 @@ function cellStyle(cell: CellLayout) {
   const anyHover = hovered.value !== null
   const broken = isBrokenData(item) && !isAggregate(item)
   const aggregate = isAggregate(item)
+  // CSS vars pra cor evitam o congelamento de hex quando F5 com
+  // prefers-color-scheme: system — o `getCellBg(item.change)` ainda
+  // depende de `cc.positive/negative`, mas o cell color base usa var().
   return {
     left: `${cell.x}px`,
     top: `${cell.y}px`,
     width: `${cell.w}px`,
     height: `${cell.h}px`,
-    backgroundColor: aggregate ? brand.colors.surface : getCellBg(item.change),
-    color: brand.colors.text,
-    borderRight: `1px solid ${brand.colors.border}`,
-    borderBottom: `1px solid ${brand.colors.border}`,
+    backgroundColor: aggregate ? 'var(--brand-surface)' : getCellBg(item.change),
+    color: 'var(--brand-text)',
+    borderRight: `1px solid var(--brand-border)`,
+    borderBottom: `1px solid var(--brand-border)`,
     opacity: anyHover && !isHovered ? 0.4 : broken ? 0.55 : 1,
     textDecoration: 'none',
-    outline: isHovered ? `1px solid ${brand.colors.primary}` : 'none',
+    outline: isHovered ? `1px solid var(--brand-primary)` : 'none',
     outlineOffset: isHovered ? '-1px' : '0',
     zIndex: isHovered ? 2 : 1,
   } as Record<string, string | number>

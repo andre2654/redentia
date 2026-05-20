@@ -135,14 +135,14 @@ const bandColor = computed(() => {
   switch (props.band) {
     case 'excelente': return '#10b981'
     case 'bom': return '#84cc16'
-    case 'atencao': return '#f59e0b'
+    case 'atencao': return 'var(--brand-warning)'
     case 'critico': return '#ef4444'
     default: return '#fff'
   }
 })
 
 const ringStart = computed(() => bandColor.value)
-const ringEnd = computed(() => 'var(--brand-primary, #f5a623)')
+const ringEnd = computed(() => 'var(--brand-primary, var(--brand-primary))')
 
 const uid = Math.random().toString(36).slice(2, 8)
 const gradientId = `sl-score-grad-${uid}`
@@ -269,7 +269,7 @@ const shortSummary = computed(() => {
   font-weight: 200;
   letter-spacing: -0.04em;
   color: #fff;
-  text-shadow: 0 0 32px color-mix(in srgb, var(--brand-primary, #f5a623) 32%, transparent);
+  text-shadow: 0 0 32px color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 32%, transparent);
   filter: blur(14px);
   opacity: 0;
   animation: sl-score-number-defog 900ms cubic-bezier(0.16, 1, 0.3, 1) 320ms forwards;

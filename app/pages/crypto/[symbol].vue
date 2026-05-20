@@ -43,7 +43,7 @@
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Ticker header bar (minimalista: logo + ticker + stats inline + sparkline) -->
-        <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b pb-8" :style="{ borderColor: 'var(--brand-border)' }">
           <MoleculesTickerHeaderBar
             :logo="(crypto as any)?.image || undefined"
             :ticker="(crypto?.symbol ?? symbol).toString().toUpperCase()"
@@ -61,7 +61,7 @@
         </section>
 
         <!-- Chart section (price ou rainbow, toggle no mesmo padrão do tesouro) -->
-        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <div ref="cryptoChartRef" class="mt-0">
             <!-- Rainbow mode: toolbar sibling above (AtomsCryptoRainbow não tem slot #toolbar) -->
             <template v-if="chartMode === 'rainbow' && crypto?.has_rainbow">
@@ -70,13 +70,13 @@
                   <template #extras>
                     <span
                       class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >
                       Rainbow chart
                     </span>
                     <div
                       class="inline-flex items-center border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                      :style="{ borderColor: brand.colors.border }"
+                      :style="{ borderColor: 'var(--brand-border)' }"
                       role="group"
                       aria-label="Modo do gráfico"
                     >
@@ -88,8 +88,8 @@
                         type="button"
                         class="inline-flex h-8 items-center justify-center px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
                         :style="{
-                          backgroundColor: chartMode === opt.value ? brand.colors.primary : 'transparent',
-                          color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                          backgroundColor: chartMode === opt.value ? 'var(--brand-primary)' : 'transparent',
+                          color: chartMode === opt.value ? 'var(--brand-background)' : 'var(--brand-text-muted)',
                         }"
                         @click="chartMode = opt.value"
                       >
@@ -125,14 +125,14 @@
                     <template #extras>
                       <span
                         class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
-                        :style="{ color: brand.colors.textMuted }"
+                        :style="{ color: 'var(--brand-text-muted)' }"
                       >
                         Histórico de cotação
                       </span>
                       <div
                         v-if="crypto?.has_rainbow"
                         class="inline-flex items-center border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                        :style="{ borderColor: brand.colors.border }"
+                        :style="{ borderColor: 'var(--brand-border)' }"
                         role="group"
                         aria-label="Modo do gráfico"
                       >
@@ -144,8 +144,8 @@
                           type="button"
                           class="inline-flex h-8 items-center justify-center px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
                           :style="{
-                            backgroundColor: chartMode === opt.value ? brand.colors.primary : 'transparent',
-                            color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                            backgroundColor: chartMode === opt.value ? 'var(--brand-primary)' : 'transparent',
+                            color: chartMode === opt.value ? 'var(--brand-background)' : 'var(--brand-text-muted)',
                           }"
                           @click="chartMode = opt.value"
                         >
@@ -163,7 +163,7 @@
                   </AtomsGraphToolbar>
                 </template>
               </AtomsGraphLine>
-              <p v-if="!isLoadingChart && chartData.length === 0" class="mt-4 text-sm" :style="{ color: brand.colors.textMuted }">
+              <p v-if="!isLoadingChart && chartData.length === 0" class="mt-4 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                 Histórico não disponível para essa cripto. Hoje só BTC, ETH e SOL têm série histórica completa.
               </p>
             </template>
@@ -218,85 +218,85 @@
         </AtomsGraphFullscreenDialog>
 
         <!-- Tokenomics -->
-        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px' }">
               Tokenomics
             </h2>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; SUPPLY · EMISSÃO · VALOR TOTAL DILUÍDO
             </span>
           </div>
           <div
             class="grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-5"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
           >
-            <div v-for="m in tokenomicsMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">{{ m.label }}</span>
-              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: brand.colors.text }">{{ m.value }}</span>
-              <span v-if="m.sub" class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">{{ m.sub }}</span>
+            <div v-for="m in tokenomicsMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">{{ m.label }}</span>
+              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">{{ m.value }}</span>
+              <span v-if="m.sub" class="font-mono-tab text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">{{ m.sub }}</span>
             </div>
           </div>
         </section>
 
         <!-- Indicadores de Mercado -->
-        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px' }">
               Indicadores de mercado
             </h2>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; VALOR DE MERCADO · VOLUME · LIQUIDEZ · DOMINÂNCIA
             </span>
           </div>
           <div
             class="grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-4"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
           >
-            <div v-for="m in marketMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">{{ m.label }}</span>
-              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: m.color ?? brand.colors.text }">{{ m.value }}</span>
-              <span v-if="m.sub" class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">{{ m.sub }}</span>
+            <div v-for="m in marketMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">{{ m.label }}</span>
+              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: m.color ?? 'var(--brand-text)' }">{{ m.value }}</span>
+              <span v-if="m.sub" class="font-mono-tab text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">{{ m.sub }}</span>
             </div>
           </div>
         </section>
 
         <!-- Resumo diário -->
-        <section v-if="hasOhlc" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section v-if="hasOhlc" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px' }">
               Resumo diário
             </h2>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; OHLC · AMPLITUDE · VOLATILIDADE INTRADIÁRIA
             </span>
           </div>
           <div
             class="grid grid-cols-2 gap-px border md:grid-cols-4"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
           >
-            <div v-for="m in ohlcMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">{{ m.label }}</span>
-              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: m.color ?? brand.colors.text }">{{ m.value }}</span>
-              <span v-if="m.sub" class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">{{ m.sub }}</span>
+            <div v-for="m in ohlcMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">{{ m.label }}</span>
+              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: m.color ?? 'var(--brand-text)' }">{{ m.value }}</span>
+              <span v-if="m.sub" class="font-mono-tab text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">{{ m.sub }}</span>
             </div>
           </div>
         </section>
 
         <!-- 52 semanas / Valorização -->
-        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px' }">
               Faixa de 52 semanas
             </h2>
           </div>
           <div
             class="grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-6"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
           >
-            <div v-for="m in windowMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">{{ m.label }}</span>
-              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: m.color ?? brand.colors.text }">{{ m.value }}</span>
+            <div v-for="m in windowMetrics" :key="m.label" class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">{{ m.label }}</span>
+              <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: m.color ?? 'var(--brand-text)' }">{{ m.value }}</span>
             </div>
           </div>
         </section>
@@ -448,7 +448,7 @@ const chartData = computed<IChartDataPoint[]>(() =>
 )
 
 const chartLegend = computed<IChartLegendItem[]>(() => [
-  { label: 'Preço (BRL)', color: brand.colors.positive },
+  { label: 'Preço (BRL)', color: 'var(--brand-positive)' },
 ])
 
 const rainbowPoints = computed(() =>
@@ -545,7 +545,7 @@ const marketMetrics = computed(() => {
     {
       label: 'VARIAÇÃO VOLUME',
       value: volChange !== null && volChange !== undefined ? `${volChange >= 0 ? '+' : ''}${volChange.toFixed(2)}%` : '—',
-      color: volChange !== null && volChange !== undefined ? (volChange >= 0 ? brand.colors.positive : brand.colors.negative) : undefined,
+      color: volChange !== null && volChange !== undefined ? (volChange >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)') : undefined,
     },
     { label: 'ÍNDICE DE LIQUIDEZ', value: liq !== null && liq !== undefined ? `${liq.toFixed(2)}%` : '—' },
     { label: 'DOMINÂNCIA', value: dom !== null && dom !== undefined ? `${dom.toFixed(2)}%` : '—' },
@@ -569,7 +569,7 @@ const ohlcMetrics = computed(() => {
     {
       label: 'VARIAÇÃO',
       value: o.variation_pct !== null && o.variation_pct !== undefined ? `${o.variation_pct >= 0 ? '+' : ''}${o.variation_pct.toFixed(2)}%` : '—',
-      color: o.variation_pct !== null && o.variation_pct !== undefined ? (o.variation_pct >= 0 ? brand.colors.positive : brand.colors.negative) : undefined,
+      color: o.variation_pct !== null && o.variation_pct !== undefined ? (o.variation_pct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)') : undefined,
     },
     { label: 'VOLUME', value: formatBrl(o.volume_brl, { compact: true }) },
     { label: 'MÁXIMO', value: formatBrl(o.high_brl) },
@@ -596,12 +596,12 @@ const windowMetrics = computed(() => {
     {
       label: 'VALORIZAÇÃO 12M',
       value: app12 !== null && app12 !== undefined ? `${app12 >= 0 ? '+' : ''}${app12.toFixed(2)}%` : '—',
-      color: app12 !== null && app12 !== undefined ? (app12 >= 0 ? brand.colors.positive : brand.colors.negative) : undefined,
+      color: app12 !== null && app12 !== undefined ? (app12 >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)') : undefined,
     },
     {
       label: 'VALORIZAÇÃO MÊS',
       value: appMo !== null && appMo !== undefined ? `${appMo >= 0 ? '+' : ''}${appMo.toFixed(2)}%` : '—',
-      color: appMo !== null && appMo !== undefined ? (appMo >= 0 ? brand.colors.positive : brand.colors.negative) : undefined,
+      color: appMo !== null && appMo !== undefined ? (appMo >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)') : undefined,
     },
   ]
 })
@@ -617,8 +617,8 @@ function formatPct(v: number | null | undefined): string {
 }
 
 function pctColor(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return brand.colors.textMuted
-  return v >= 0 ? brand.colors.positive : brand.colors.negative
+  if (v === null || v === undefined || !Number.isFinite(v)) return 'var(--brand-text-muted)'
+  return v >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 function formatCompact(v: number | null | undefined): string {
@@ -629,7 +629,7 @@ function formatCompact(v: number | null | undefined): string {
 // Hero dashboard card: gradient tint + accent + sparkline (last 30 points)
 const cryptoIsPositive = computed(() => Number(crypto.value?.change_24h_pct ?? 0) >= 0)
 const cryptoAccent = computed(() =>
-  cryptoIsPositive.value ? brand.colors.positive : brand.colors.negative,
+  cryptoIsPositive.value ? 'var(--brand-positive)' : 'var(--brand-negative)',
 )
 
 // Stats inline pro TickerHeaderBar (4 cells)
@@ -637,8 +637,8 @@ const cryptoStats = computed(() => {
   const c = crypto.value as any
   if (!c) return []
   return [
-    { label: 'HIGH 24H', value: formatBrl(c.ohlc?.high_brl ?? null), accent: brand.colors.positive },
-    { label: 'LOW 24H', value: formatBrl(c.ohlc?.low_brl ?? null), accent: brand.colors.negative },
+    { label: 'HIGH 24H', value: formatBrl(c.ohlc?.high_brl ?? null), accent: 'var(--brand-positive)' },
+    { label: 'LOW 24H', value: formatBrl(c.ohlc?.low_brl ?? null), accent: 'var(--brand-negative)' },
     { label: 'MKT CAP', value: formatBrl(c.market_cap_brl ?? null, { compact: true }) },
     { label: 'VOL 24H', value: formatBrl(c.volume_24h_brl ?? null, { compact: true }) },
     { label: '7D', value: formatPct(c.change_7d_pct), accent: pctColor(c.change_7d_pct) },

@@ -4,10 +4,10 @@
          Color borrows from the active brand so it lives correctly in
          every variant (terminal/editorial/mentor/showtime/etc) without
          a per-variant override. -->
-    <div class="flex items-center gap-3" :style="{ color: brand.colors.textMuted }">
-      <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
+    <div class="flex items-center gap-3" :style="{ color: 'var(--brand-text-muted)' }">
+      <span class="h-px flex-1" :style="{ backgroundColor: 'var(--brand-border)' }" />
       <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]">{{ dividerLabel }}</span>
-      <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
+      <span class="h-px flex-1" :style="{ backgroundColor: 'var(--brand-border)' }" />
     </div>
 
     <!-- Google's official button container. Required by their brand
@@ -23,14 +23,14 @@
     <p
       v-if="state === 'submitting'"
       class="text-center text-[11px] font-medium"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >
       Entrando…
     </p>
     <p
       v-else-if="state === 'error' && errorMessage"
       class="text-center text-[11px]"
-      :style="{ color: brand.colors.negative }"
+      :style="{ color: 'var(--brand-negative)' }"
     >
       {{ errorMessage }}
     </p>

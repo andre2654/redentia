@@ -20,21 +20,21 @@
       <div class="dt-hero__top">
         <span
           class="dt-hero__eyebrow"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >Sessão · {{ periodLabel }}</span>
 
         <span
           v-if="marketOpen"
           class="dt-hero__live"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 14%, transparent)`,
-            color: brand.colors.positive,
-            borderColor: `color-mix(in srgb, ${brand.colors.positive} 40%, transparent)`,
+            backgroundColor: `color-mix(in srgb, var(--brand-positive) 14%, transparent)`,
+            color: 'var(--brand-positive)',
+            borderColor: `color-mix(in srgb, var(--brand-positive) 40%, transparent)`,
           }"
         >
           <span
             class="dt-hero__live-dot"
-            :style="{ backgroundColor: brand.colors.positive }"
+            :style="{ backgroundColor: 'var(--brand-positive)' }"
           />
           PREGÃO ABERTO
         </span>
@@ -42,14 +42,14 @@
           v-else
           class="dt-hero__live"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
-            color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
-            borderColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)`,
+            backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
+            borderColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)`,
           }"
         >
           <span
             class="dt-hero__live-dot"
-            :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
           />
           PREGÃO FECHADO
         </span>
@@ -76,7 +76,7 @@
       <div class="dt-hero__breakdown">
         <span class="dt-hero__chip">
           <span class="dt-hero__chip-label">Trades</span>
-          <span class="dt-hero__chip-value tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="dt-hero__chip-value tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ stats.count }}
           </span>
         </span>
@@ -97,7 +97,7 @@
         <span class="dt-hero__sep" aria-hidden="true">·</span>
         <span class="dt-hero__chip">
           <span class="dt-hero__chip-label">DD máx</span>
-          <span class="dt-hero__chip-value tabular-nums" :style="{ color: brand.colors.negative }">
+          <span class="dt-hero__chip-value tabular-nums" :style="{ color: 'var(--brand-negative)' }">
             {{ drawdownLabel }}
           </span>
         </span>
@@ -170,9 +170,9 @@ const periodLabel = computed(() => {
 })
 
 const amountColor = computed(() => {
-  if (props.stats.totalPnL > 0) return brand.colors.positive
-  if (props.stats.totalPnL < 0) return brand.colors.negative
-  return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
+  if (props.stats.totalPnL > 0) return 'var(--brand-positive)'
+  if (props.stats.totalPnL < 0) return 'var(--brand-negative)'
+  return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
 })
 
 const amountLabel = computed(() => {
@@ -195,10 +195,10 @@ const winRateLabel = computed(() => {
 })
 
 const winRateColor = computed(() => {
-  if (props.stats.wins + props.stats.losses === 0) return brand.colors.text
-  if (props.stats.winRate >= 0.6) return brand.colors.positive
-  if (props.stats.winRate >= 0.5) return brand.colors.primary
-  return brand.colors.negative
+  if (props.stats.wins + props.stats.losses === 0) return 'var(--brand-text)'
+  if (props.stats.winRate >= 0.6) return 'var(--brand-positive)'
+  if (props.stats.winRate >= 0.5) return 'var(--brand-primary)'
+  return 'var(--brand-negative)'
 })
 
 const avgPerTradeLabel = computed(() => {
@@ -263,9 +263,9 @@ const containerStyle = computed(() => ({
   // box-shadow leve em primary (amber). A "agressividade" sutil do
   // modo Day Trade vem de monospace + pulsing dots, nao de
   // background fill ou edge bar.
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
 }))
 </script>
 

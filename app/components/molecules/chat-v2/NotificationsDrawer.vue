@@ -38,7 +38,7 @@
         type="button"
         class="notifications-backdrop fixed inset-0 transition-opacity duration-200"
         :style="{
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--shadow-ambient)',
           opacity: backdropMounted ? 1 : 0,
           pointerEvents: openGuard ? 'none' : 'auto',
         }"
@@ -299,17 +299,17 @@ watch(
 // ---- helpers ----------------------------------------------------
 
 const panelStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  color: brand.colors.text,
+  backgroundColor: 'var(--brand-surface)',
+  color: 'var(--brand-text)',
   paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-  borderLeft: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  borderLeft: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
   boxShadow: '-16px 0 40px -16px rgba(0, 0, 0, 0.45)',
 }))
 
 function severityColor(s: ChatAlert['severity']): string {
-  if (s === 'critical') return brand.colors.negative
-  if (s === 'warning') return brand.colors.primary
-  return brand.colors.textMuted
+  if (s === 'critical') return 'var(--brand-negative)'
+  if (s === 'warning') return 'var(--brand-primary)'
+  return 'var(--brand-text-muted)'
 }
 
 function priceFromAlert(a: ChatAlert): number | null {

@@ -20,7 +20,7 @@
     <header class="dt-week__head">
       <div class="dt-week__head-left">
         <span class="dt-week__eyebrow">Mapa semanal</span>
-        <h3 class="dt-week__title" :style="{ color: brand.colors.text }">
+        <h3 class="dt-week__title" :style="{ color: 'var(--brand-text)' }">
           Quando você opera bem
         </h3>
         <p class="dt-week__sub">
@@ -32,14 +32,14 @@
         <div class="dt-week__legend-row">
           <span
             class="dt-week__legend-dot"
-            :style="{ backgroundColor: brand.colors.positive }"
+            :style="{ backgroundColor: 'var(--brand-positive)' }"
           />
           <span class="dt-week__legend-label">Verde, sessões positivas</span>
         </div>
         <div class="dt-week__legend-row">
           <span
             class="dt-week__legend-dot"
-            :style="{ backgroundColor: brand.colors.negative }"
+            :style="{ backgroundColor: 'var(--brand-negative)' }"
           />
           <span class="dt-week__legend-label">Vermelho, sessões negativas</span>
         </div>
@@ -51,7 +51,7 @@
     </header>
 
     <div v-if="!hasData" class="dt-week__empty">
-      <UIcon name="i-lucide-grid-3x3" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+      <UIcon name="i-lucide-grid-3x3" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
       <span>Sem operações suficientes pra montar o mapa.</span>
     </div>
 
@@ -64,7 +64,7 @@
           class="dt-week__day-label"
           :class="{ 'dt-week__day-label--peak': i === peakDayIdx }"
           :style="{
-            color: i === peakDayIdx ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+            color: i === peakDayIdx ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
           }"
         >{{ label }}</span>
       </div>
@@ -77,7 +77,7 @@
             class="dt-week__hour-label"
             :class="{ 'dt-week__hour-label--peak': hour === peakHour }"
             :style="{
-              color: hour === peakHour ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+              color: hour === peakHour ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
               gridRow: hi + 1,
               gridColumn: 1,
             }"
@@ -94,8 +94,8 @@
             :style="{
               backgroundColor: cellColor(cellMap[`${di}-${hour}`]),
               borderColor: cellMap[`${di}-${hour}`] === peakCell
-                ? brand.colors.primary
-                : `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+                ? 'var(--brand-primary)'
+                : `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
               gridRow: hi + 1,
               gridColumn: di + 2,
             }"
@@ -122,21 +122,21 @@
         <span class="dt-week__stat-label">Pico semanal</span>
         <span
           class="dt-week__stat-value tabular-nums"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         >{{ DAY_LABELS[peakCell.dayIdx] }} {{ peakCell.hour }}h · {{ formatPnl(peakCell.pnl) }}</span>
       </span>
       <span v-if="worstCell" class="dt-week__stat">
         <span class="dt-week__stat-label">Vale semanal</span>
         <span
           class="dt-week__stat-value tabular-nums"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >{{ DAY_LABELS[worstCell.dayIdx] }} {{ worstCell.hour }}h · {{ formatPnl(worstCell.pnl) }}</span>
       </span>
       <span class="dt-week__stat">
         <span class="dt-week__stat-label">Cobertura</span>
         <span
           class="dt-week__stat-value tabular-nums"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ filledCells }} / 40 slots</span>
       </span>
     </div>
@@ -160,8 +160,8 @@
             />
             <header class="dt-week-drill__head">
               <div class="flex flex-col gap-1.5 min-w-0">
-                <span class="dt-week-drill__eyebrow" :style="{ color: brand.colors.primary }">Slot</span>
-                <h3 class="dt-week-drill__title" :style="{ color: brand.colors.text }">
+                <span class="dt-week-drill__eyebrow" :style="{ color: 'var(--brand-primary)' }">Slot</span>
+                <h3 class="dt-week-drill__title" :style="{ color: 'var(--brand-text)' }">
                   {{ DAY_LABELS[selectedCell.dayIdx] }} às {{ selectedCell.hour }}h
                 </h3>
               </div>
@@ -169,7 +169,7 @@
                 type="button"
                 class="dt-week-drill__close"
                 aria-label="Fechar"
-                :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+                :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
                 @click="closeDrilldown"
               >
                 <UIcon name="i-lucide-x" class="size-4" />
@@ -188,14 +188,14 @@
                 <span class="dt-week-drill__total-label">Win rate</span>
                 <span
                   class="dt-week-drill__total-value tabular-nums"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ Math.round(selectedCell.winRate * 100) }}%</span>
               </div>
               <div class="dt-week-drill__total-cell">
                 <span class="dt-week-drill__total-label">Operações</span>
                 <span
                   class="dt-week-drill__total-value tabular-nums"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ selectedCell.count }}</span>
               </div>
             </div>
@@ -205,15 +205,15 @@
                 v-for="t in selectedCellTrades"
                 :key="t.id"
                 class="dt-week-drill__item"
-                :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)` }"
+                :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
               >
                 <span
                   class="dt-week-drill__item-time tabular-nums"
-                  :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+                  :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
                 >{{ formatDateTime(t.closedAt!) }}</span>
                 <span
                   class="dt-week-drill__item-ticker tabular-nums"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ t.ticker }}</span>
                 <span
                   class="dt-week-drill__item-result tabular-nums"
@@ -337,19 +337,19 @@ function cellColor(cell: WeekCell | undefined): string {
   if (!cell || cell.count === 0) {
     // Slot vazio: void escuro, sem warmth. Suga a luz pra contraste
     // com as celulas saturadas vizinhas.
-    return `color-mix(in srgb, ${brand.colors.text} 10%, ${brand.colors.background})`
+    return `color-mix(in srgb, var(--brand-text) 10%, var(--brand-background))`
   }
-  const base = cell.pnl >= 0 ? brand.colors.positive : brand.colors.negative
+  const base = cell.pnl >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
   // Saturacao: 60% (1 trade) ate 100% (4+ trades). Cell de 4+ trades
   // recebe a cor PURA do brand — agressivo, terminal, sem softening.
   const intensity = Math.min(1, cell.count / 4)
   const saturation = 60 + intensity * 40
-  return `color-mix(in srgb, ${base} ${saturation}%, ${brand.colors.background})`
+  return `color-mix(in srgb, ${base} ${saturation}%, var(--brand-background))`
 }
 
 function cellTextColor(cell: WeekCell | undefined): string {
   if (!cell || cell.count === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 30%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 30%, transparent)`
   }
   // Branco direto — texto sobre cor saturada precisa de contraste alto.
   return '#ffffff'
@@ -417,20 +417,20 @@ function formatDateTime(iso: string): string {
 }
 
 function drillResultColor(v: number): string {
-  if (v === 0) return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
-  return v > 0 ? brand.colors.positive : brand.colors.negative
+  if (v === 0) return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
+  return v > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
 }))
 
 const drillCardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 24px 60px -28px color-mix(in srgb, ${brand.colors.primary} 40%, transparent), 0 12px 30px -16px rgba(0, 0, 0, 0.32)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 24px 60px -28px color-mix(in srgb, var(--brand-primary) 40%, transparent), 0 12px 30px -16px rgba(0, 0, 0, 0.32)`,
 }))
 </script>
 
@@ -713,7 +713,7 @@ const drillCardStyle = computed(() => ({
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--shadow-ambient);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   font-family: var(--brand-font, system-ui, sans-serif);

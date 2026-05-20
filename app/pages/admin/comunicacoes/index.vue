@@ -453,7 +453,7 @@ onMounted(() => reload())
   padding: 9px 16px;
   border-radius: 9px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.005em;
@@ -612,7 +612,7 @@ onMounted(() => reload())
 .card:hover {
   border-color: color-mix(in srgb, var(--brand-text) 16%, transparent);
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 30px -16px var(--shadow-ambient);
 }
 
 .card::before {
@@ -794,7 +794,7 @@ onMounted(() => reload())
   gap: 4px;
   padding: 4px;
   border-radius: 7px;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--shadow-ambient);
   backdrop-filter: blur(8px);
   border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   opacity: 0;

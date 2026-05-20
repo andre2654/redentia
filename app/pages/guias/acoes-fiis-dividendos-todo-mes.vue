@@ -86,26 +86,26 @@ const acoesRecorrentes = [
         </p>
         <div class="overflow-x-auto">
           <table class="w-full border-collapse text-sm">
-            <thead :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+            <thead :style="{ backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
               <tr>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Ticker</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Nome</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Tipo</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Segmento</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">DY médio</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Ticker</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Nome</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Tipo</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Segmento</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">DY médio</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(f, i) in fiisMensal" :key="f.ticker" :style="i % 2 === 0 ? {} : { backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">
+              <tr v-for="(f, i) in fiisMensal" :key="f.ticker" :style="i % 2 === 0 ? {} : { backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }">
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">
                   <NuxtLink :to="`/asset/${f.ticker.toLowerCase()}`">
                     <strong>{{ f.ticker }}</strong>
                   </NuxtLink>
                 </td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">{{ f.nome }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">{{ f.tipo }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">{{ f.segmento }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', color: brand.colors.primary }">{{ f.dy }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">{{ f.nome }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">{{ f.tipo }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">{{ f.segmento }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', color: 'var(--brand-primary)' }">{{ f.dy }}</td>
               </tr>
             </tbody>
           </table>
@@ -131,26 +131,26 @@ const acoesRecorrentes = [
         </p>
         <div class="overflow-x-auto">
           <table class="w-full border-collapse text-sm">
-            <thead :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+            <thead :style="{ backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
               <tr>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Ticker</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Nome</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Setor</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">Frequência</th>
-                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">DY</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Ticker</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Nome</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Setor</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">Frequência</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">DY</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(a, i) in acoesRecorrentes" :key="a.ticker" :style="i % 2 === 0 ? {} : { backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">
+              <tr v-for="(a, i) in acoesRecorrentes" :key="a.ticker" :style="i % 2 === 0 ? {} : { backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }">
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">
                   <NuxtLink :to="`/asset/${a.ticker.toLowerCase()}`">
                     <strong>{{ a.ticker }}</strong>
                   </NuxtLink>
                 </td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">{{ a.nome }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">{{ a.setor }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">{{ a.freq }}</td>
-                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', color: brand.colors.primary }">{{ a.dy }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">{{ a.nome }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">{{ a.setor }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">{{ a.freq }}</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', color: 'var(--brand-primary)' }">{{ a.dy }}</td>
               </tr>
             </tbody>
           </table>
@@ -191,11 +191,11 @@ const acoesRecorrentes = [
         </p>
       </section>
 
-      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <h2 class="mb-3" :style="{ color: brand.colors.text }">
+      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <h2 class="mb-3" :style="{ color: 'var(--brand-text)' }">
           Pronto pra montar sua carteira de dividendos?
         </h2>
-        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
           Explore todos os FIIs e ações pagadoras da B3 com DY atualizado em tempo real, filtros por segmento e histórico de 5 anos.
         </p>
         <div class="flex flex-wrap justify-center gap-3">

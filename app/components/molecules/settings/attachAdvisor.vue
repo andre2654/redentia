@@ -145,9 +145,9 @@ async function onSubmit() {
 }
 
 .set-attach__banner--warning {
-  background: color-mix(in srgb, #f59e0b 10%, transparent);
-  border-color: color-mix(in srgb, #f59e0b 30%, transparent);
-  color: color-mix(in srgb, #f59e0b 90%, var(--brand-text));
+  background: color-mix(in srgb, var(--brand-warning) 10%, transparent);
+  border-color: color-mix(in srgb, var(--brand-warning) 30%, transparent);
+  color: color-mix(in srgb, var(--brand-warning) 90%, var(--brand-text));
 }
 
 .set-attach__banner--success {

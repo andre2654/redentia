@@ -37,7 +37,7 @@
   <div
     class="default-auth-shell flex w-full flex-col"
     :class="hideFooter ? 'h-screen' : 'min-h-screen'"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <!-- TopBanner — full-width, no topo absoluto, acima da sidebar.
          So renderiza quando ha campanha active com type=banner +
@@ -57,8 +57,8 @@
     <aside
       class="platform-sidebar sticky top-0 flex h-screen w-[260px] min-w-[260px] flex-col border-r max-xl:hidden"
       :style="{
-        backgroundColor: brand.colors.surface,
-        borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+        backgroundColor: 'var(--brand-surface)',
+        borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)`,
       }"
     >
       <!-- Header: brand lockup full -->
@@ -84,22 +84,22 @@
       <div v-if="authStore.me" class="shrink-0 px-3 pb-3">
         <div
           class="platform-snapshot-card rounded-xl border p-3"
-          :class="{ 'platform-snapshot-card--empty': portfolio.loaded && portfolio.value === null }"
+          :class="{ 'platform-snapshot-card--empty': portfolio.loaded && portfolio.amount === null }"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.background} 55%, transparent)`,
-            borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+            backgroundColor: `color-mix(in srgb, var(--brand-background) 55%, transparent)`,
+            borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
           }"
         >
           <div class="flex items-center justify-between">
             <span class="platform-sidebar-eyebrow !mb-0 !p-0">Patrimônio</span>
             <span
-              v-if="portfolio.loaded && portfolio.value !== null"
+              v-if="portfolio.loaded && portfolio.amount !== null"
               class="flex items-center gap-1 font-mono-tab text-[10px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.positive }"
+              :style="{ letterSpacing: '0.18em', color: 'var(--brand-positive)' }"
             >
               <span
                 class="inline-block size-1.5 rounded-full"
-                :style="{ backgroundColor: brand.colors.positive }"
+                :style="{ backgroundColor: 'var(--brand-positive)' }"
               />
               Live
             </span>
@@ -110,7 +110,7 @@
             v-if="!portfolio.loaded"
             class="platform-skeleton mt-1.5 h-7 w-32 rounded"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
             }"
           />
 
@@ -119,14 +119,14 @@
                aqui depois que voce adicionar a carteira (passo 3 do
                checklist abaixo). Sem link "ir pra carteira" — os 4
                passos do onboarding ja cobrem isso (passo 3). -->
-          <template v-else-if="portfolio.value === null">
+          <template v-else-if="portfolio.amount === null">
             <div
               class="mt-1.5 text-[14px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >Aqui ficará a sua carteira</div>
             <div
               class="mt-1 text-[11px] leading-snug"
-              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+              :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
             >
               Complete os passos abaixo para ver seu patrimônio em tempo real.
             </div>
@@ -139,13 +139,13 @@
             <div
               v-if="!onboarding.allDone.value && authStore.me?.role !== 'advisor'"
               class="mt-3 border-t pt-3"
-              :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)` }"
+              :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)` }"
             >
               <div class="flex items-center justify-between">
                 <span class="platform-sidebar-eyebrow !mb-0 !p-0">Próximos passos</span>
                 <span
                   class="font-mono-tab text-[10px] font-medium tabular-nums"
-                  :style="{ letterSpacing: '0.04em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+                  :style="{ letterSpacing: '0.04em', color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
                 >
                   {{ onboarding.done.value }}/{{ onboarding.total.value }}
                 </span>
@@ -159,19 +159,19 @@
                     <UIcon
                       :name="step.done ? 'i-lucide-circle-check' : 'i-lucide-circle'"
                       class="size-3.5 shrink-0"
-                      :style="{ color: step.done ? brand.colors.positive : `color-mix(in srgb, ${brand.colors.text} 40%, transparent)` }"
+                      :style="{ color: step.done ? 'var(--brand-positive)' : `color-mix(in srgb, var(--brand-text) 40%, transparent)` }"
                       aria-hidden="true"
                     />
                     <span
                       class="flex-1 truncate text-[12px] transition-colors"
                       :class="{ 'line-through': step.done }"
-                      :style="{ color: step.done ? `color-mix(in srgb, ${brand.colors.text} 45%, transparent)` : brand.colors.text }"
+                      :style="{ color: step.done ? `color-mix(in srgb, var(--brand-text) 45%, transparent)` : 'var(--brand-text)' }"
                     >{{ step.label }}</span>
                     <UIcon
                       v-if="!step.done"
                       name="i-lucide-arrow-right"
                       class="size-3 shrink-0 opacity-0 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100"
-                      :style="{ color: brand.colors.primary }"
+                      :style="{ color: 'var(--brand-primary)' }"
                       aria-hidden="true"
                     />
                   </NuxtLink>
@@ -185,14 +185,14 @@
           <NuxtLink v-else to="/wallet" class="block">
             <div
               class="mt-1.5 font-mono-tab text-[22px] font-light tabular-nums"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.02em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.02em' }"
             >
               {{ portfolioDisplay }}
             </div>
             <div
               class="mt-1 flex items-center justify-between gap-2 text-[10.5px]"
               :style="{
-                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
               }"
             >
               <span class="font-mono-tab" style="letter-spacing: 0.04em">
@@ -223,15 +223,15 @@
           :to="aiCtaTo"
           class="platform-ai-cta group flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-[background-color,box-shadow,transform]"
           :style="{
-            backgroundColor: brand.colors.primary,
-            color: brand.colors.background,
-            boxShadow: `0 8px 18px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent), 0 4px 10px -6px rgba(0,0,0,0.10)`,
+            backgroundColor: 'var(--brand-primary)',
+            color: 'var(--brand-background)',
+            boxShadow: `0 8px 18px -10px color-mix(in srgb, var(--brand-primary) 60%, transparent), 0 4px 10px -6px rgba(0,0,0,0.10)`,
           }"
         >
           <UIcon
             name="i-lucide-sparkles"
             class="h-4 w-4 shrink-0"
-            :style="{ color: brand.colors.background }"
+            :style="{ color: 'var(--brand-background)' }"
           />
           <span class="flex-1 text-center" :style="{ letterSpacing: '-0.005em' }">
             {{ aiCtaLabel }}
@@ -239,7 +239,7 @@
           <UIcon
             name="i-lucide-arrow-up-right"
             class="h-3.5 w-3.5 opacity-80 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            :style="{ color: brand.colors.background }"
+            :style="{ color: 'var(--brand-background)' }"
           />
         </NuxtLink>
       </div>
@@ -506,8 +506,8 @@
         type="button"
         class="platform-privacy-toggle flex flex-shrink-0 items-center gap-2.5 border-t px-3 py-2.5 transition-[background-color]"
         :style="{
-          borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-          color: brand.colors.text,
+          borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+          color: 'var(--brand-text)',
         }"
         :aria-pressed="!interfaceStore.revealAmount"
         @click="interfaceStore.toggleRevealAmount"
@@ -515,7 +515,7 @@
         <UIcon
           :name="interfaceStore.revealAmount ? 'i-lucide-eye' : 'i-lucide-eye-off'"
           class="size-4 shrink-0"
-          :style="{ color: !interfaceStore.revealAmount ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+          :style="{ color: !interfaceStore.revealAmount ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
           aria-hidden="true"
         />
         <span class="flex-1 text-left text-[13px]">Modo privacidade</span>
@@ -524,11 +524,11 @@
           :style="{
             letterSpacing: '0.14em',
             backgroundColor: !interfaceStore.revealAmount
-              ? `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`
-              : `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+              ? `color-mix(in srgb, var(--brand-primary) 18%, transparent)`
+              : `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
             color: !interfaceStore.revealAmount
-              ? brand.colors.primary
-              : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+              ? 'var(--brand-primary)'
+              : `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
           }"
         >{{ !interfaceStore.revealAmount ? 'On' : 'Off' }}</span>
       </button>
@@ -546,14 +546,14 @@
           <UAvatar :alt="authStore.me?.name || 'Usuário'" size="sm" />
           <span
             class="absolute -bottom-0.5 -right-0.5 size-2 rounded-full"
-            :style="{ backgroundColor: 'var(--brand-positive)', boxShadow: `0 0 0 2px ${brand.colors.surface}` }"
+            :style="{ backgroundColor: 'var(--brand-positive)', boxShadow: `0 0 0 2px var(--brand-surface)` }"
             aria-hidden="true"
           ></span>
         </div>
         <div class="ml-0.5 flex min-w-0 flex-1 flex-col leading-tight">
           <span
             class="truncate text-[13px] font-medium"
-            :style="{ color: brand.colors.text, letterSpacing: '-0.01em' }"
+            :style="{ color: 'var(--brand-text)', letterSpacing: '-0.01em' }"
           >
             {{ authStore.me?.name || 'Usuário' }}
           </span>
@@ -580,10 +580,10 @@
           v-if="supportsMultiMode"
           type="button"
           class="platform-icon-btn flex size-7 items-center justify-center rounded-md"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
           :title="`Tema: ${themeLabel} (clique pra alternar)`"
           :aria-label="`Tema: ${themeLabel}`"
-          @mouseover="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = `color-mix(in srgb, ${brand.colors.text} 7%, transparent)`)"
+          @mouseover="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = `color-mix(in srgb, var(--brand-text) 7%, transparent)`)"
           @mouseleave="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')"
           @click="cycleThemeMode"
         >
@@ -592,10 +592,10 @@
         <button
           type="button"
           class="platform-icon-btn flex size-7 items-center justify-center rounded-md"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
           :title="brand.nav.logout"
           @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'color-mix(in srgb, var(--brand-negative) 12%, transparent)'; el.style.color = 'var(--brand-negative)' }"
-          @mouseleave="(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'transparent'; el.style.color = `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          @mouseleave="(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'transparent'; el.style.color = `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
           @click="makeLogout"
         >
           <UIcon name="i-lucide-log-out" class="size-4" />
@@ -604,15 +604,15 @@
     </aside>
     <div
       class="relative flex w-full flex-col overflow-hidden"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <header
         v-bind="headerProps"
         ref="header"
         class="sticky top-0 z-20 flex min-h-[64px] w-full items-center justify-between gap-4 border-b px-4 py-3 backdrop-blur-xl xl:px-8"
         :style="{
-          background: `color-mix(in srgb, ${brand.colors.background} 92%, transparent)`,
-          borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+          background: `color-mix(in srgb, var(--brand-background) 92%, transparent)`,
+          borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
         }"
       >
         <slot name="header-branding">
@@ -621,13 +621,13 @@
             <div class="flex flex-col">
               <span
                 class="text-[11px] uppercase tracking-[0.22em]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ brand.header.title }}
               </span>
               <span
                 class="-mt-0.5 text-[14px] font-semibold tracking-[0.02em]"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ brand.header.subtitle }}
               </span>
@@ -721,9 +721,9 @@
       aria-label="Abrir menu"
       class="floating-menu-btn pointer-events-auto flex size-11 items-center justify-center rounded-full backdrop-blur-md transition-[background-color,border-color,transform]"
       :style="{
-        backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
-        border: `1px solid color-mix(in srgb, ${brand.colors.border} 65%, transparent)`,
-        color: brand.colors.text,
+        backgroundColor: `color-mix(in srgb, var(--brand-surface) 92%, transparent)`,
+        border: `1px solid color-mix(in srgb, var(--brand-border) 65%, transparent)`,
+        color: 'var(--brand-text)',
         boxShadow: 'var(--shadow-popover)',
       }"
       @click="menuMobileActive = true"
@@ -864,16 +864,16 @@ const userRowVariantClass = computed(() => {
 })
 
 const userRowStyle = computed(() => {
-  const baseBorder = `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`
+  const baseBorder = `color-mix(in srgb, var(--brand-border) 50%, transparent)`
   if (userPlanIsMax.value) {
     return {
-      borderColor: `color-mix(in srgb, ${brand.colors.primary} 38%, transparent)`,
-      backgroundImage: `linear-gradient(180deg, color-mix(in srgb, ${brand.colors.primary} 12%, transparent) 0%, transparent 100%)`,
+      borderColor: `color-mix(in srgb, var(--brand-primary) 38%, transparent)`,
+      backgroundImage: `linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 12%, transparent) 0%, transparent 100%)`,
     }
   }
   if (userPlanIsPro.value) {
     return {
-      borderColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+      borderColor: `color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
     }
   }
   return { borderColor: baseBorder }
@@ -882,12 +882,12 @@ const userRowStyle = computed(() => {
 const userPlanLabelStyle = computed(() => {
   if (userPlanIsMax.value || userPlanIsPro.value) {
     return {
-      color: brand.colors.primary,
+      color: 'var(--brand-primary)',
       letterSpacing: '0.14em',
     }
   }
   return {
-    color: `color-mix(in srgb, ${brand.colors.text} 48%, transparent)`,
+    color: `color-mix(in srgb, var(--brand-text) 48%, transparent)`,
     letterSpacing: '0.16em',
   }
 })
@@ -992,45 +992,83 @@ function cycleThemeMode() {
 // authenticated. We expose a single reactive object so the template
 // renders three states: skeleton (not yet loaded), empty (loaded
 // but zero positions), and value (loaded with totalValue).
-const portfolio = reactive<{
-  loaded: boolean
-  value: number | null
-  positions: number
-}>({
+//
+// IMPORTANTE: usa `useState` (Nuxt global) e nao `reactive` local
+// porque o `default.vue` re-monta quando o usuario navega entre
+// paginas com layouts diferentes (ex: /wallet [default] → /raio-x
+// [landing] → /wallet). Com `reactive` local, o portfolio.loaded
+// volta pra false a cada remount e o skeleton pisca. Com `useState`
+// o snapshot sobrevive entre nav e o card mantem o valor exibido.
+const portfolio = useState('platform:portfolio-snapshot', () => ({
   loaded: false,
-  value: null,
+  amount: null as number | null,
   positions: 0,
-})
+}))
 
 const portfolioDisplay = computed(() => {
-  if (portfolio.value === null) return '—'
+  if (portfolio.amount === null) return '—'
   if (!interfaceStore.revealAmount) return 'R$ ••••••'
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
     maximumFractionDigits: 0,
-  }).format(portfolio.value)
+  }).format(portfolio.value.amount)
 })
 
-async function fetchPortfolioSnapshot() {
-  if (!authStore.me) return
+async function fetchPortfolioSnapshot(force = false) {
+  // Cache: se ja carregou e nao foi forcado refresh, nao re-fetch.
+  // Como `portfolio` agora vive em useState (sobrevive entre nav),
+  // pular o fetch evita o skeleton piscar a cada layout remount.
+  // Use `fetchPortfolioSnapshot(true)` quando precisar de refresh real
+  // (ex: depois de aporte/venda).
+  if (!force && portfolio.value.loaded) return
+
+  // Sem auth: marca como loaded (pra renderizar empty state em vez de
+  // skeleton eterno) e sai. Quando o user logar, o `watch(authStore.me)`
+  // abaixo dispara o fetch real.
+  if (!authStore.me) {
+    portfolio.value.loaded = true
+    portfolio.value.amount = null
+    portfolio.value.positions = 0
+    return
+  }
   try {
     const portfolioService = usePortfolioService()
     const [composition, posResp] = await Promise.all([
       portfolioService.getComposition().catch(() => null),
       portfolioService.getPositions().catch(() => ({ positions: [] })),
     ])
-    portfolio.positions = posResp?.positions?.length || 0
-    portfolio.value =
+    portfolio.value.positions = posResp?.positions?.length || 0
+    portfolio.value.amount =
       composition && composition.totalValue > 0 ? composition.totalValue : null
   } catch {
     // Silent fail — the card will render the empty/CTA state which
     // is honest about the missing data without blocking the layout.
-    portfolio.value = null
+    portfolio.value.amount = null
   } finally {
-    portfolio.loaded = true
+    portfolio.value.loaded = true
   }
 }
+
+// Watcher pra refetchar quando user logar (auth chega depois do mount)
+// ou trocar de conta. Sem isso, o snapshot inicializa em "no auth →
+// loaded=true, amount=null" e nunca refaz, mesmo apos login.
+watch(
+  () => authStore.me?.id,
+  (newId, oldId) => {
+    if (newId && newId !== oldId) {
+      // Reset + refetch quando muda de user (ou logou agora)
+      portfolio.value.loaded = false
+      fetchPortfolioSnapshot()
+    } else if (!newId && oldId) {
+      // Logout — limpa snapshot
+      portfolio.value.loaded = true
+      portfolio.value.amount = null
+      portfolio.value.positions = 0
+    }
+  },
+  { immediate: false }
+)
 
 // ============================================================
 // Quick actions (2x2 grid)
@@ -1083,13 +1121,16 @@ type MarketCell = {
   change: string
   changeNum: number | null
 }
-const market = reactive<{ show: boolean; cells: MarketCell[] }>({
+// Mesmo motivo do `portfolio`: useState sobrevive a remount do layout
+// quando user navega entre paginas com layouts diferentes.
+const market = useState('platform:market-strip', () => ({
   show: true,
+  loaded: false,
   cells: [
-    { label: 'IBOV', value: '—', change: '—', changeNum: null },
-    { label: 'IFIX', value: '—', change: '—', changeNum: null },
-  ],
-})
+    { label: 'IBOV', value: '—', change: '—', changeNum: null as number | null },
+    { label: 'IFIX', value: '—', change: '—', changeNum: null as number | null },
+  ] as MarketCell[],
+}))
 
 function pctFmt(n: number) {
   const sign = n >= 0 ? '+' : ''
@@ -1102,7 +1143,10 @@ function thousandsFmt(n: number) {
   }).format(n)
 }
 
-async function fetchMarketStrip() {
+async function fetchMarketStrip(force = false) {
+  // Mesmo cache pattern do portfolio — pula refetch quando ja carregou
+  // e nao foi pedido refresh explicito.
+  if (!force && market.value.loaded) return
   try {
     const assets = useAssetsService()
     const [ibov, ifix] = await Promise.all([
@@ -1138,16 +1182,18 @@ async function fetchMarketStrip() {
       }
     }
 
-    market.cells = [
+    market.value.cells = [
       buildCell('IBOV', ibov),
       buildCell('IFIX', ifix),
     ]
     // If both cells failed, hide the strip entirely.
-    if (market.cells.every((c) => c.changeNum === null)) {
-      market.show = false
+    if (market.value.cells.every((c) => c.changeNum === null)) {
+      market.value.show = false
     }
   } catch {
-    market.show = false
+    market.value.show = false
+  } finally {
+    market.value.loaded = true
   }
 }
 

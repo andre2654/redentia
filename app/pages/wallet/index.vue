@@ -1612,7 +1612,7 @@ const positionTypeMeta: Record<string, { label: string; color: string; order: nu
   TREASURY: { label: 'Tesouro',    color: '#8b5cf6',               order: 3 },
   ETF:      { label: 'ETFs',       color: '#3b82f6',               order: 4 },
   BDR:      { label: 'BDRs',       color: '#a78bfa',               order: 5 },
-  CRYPTO:   { label: 'Cripto',     color: '#f59e0b',               order: 6 },
+  CRYPTO:   { label: 'Cripto',     color: 'var(--brand-warning)',               order: 6 },
   FIXED:    { label: 'Renda Fixa', color: '#8b5cf6',               order: 7 },
 }
 
@@ -1668,7 +1668,7 @@ const dotColor = (label: string) => {
     REIT: 'var(--brand-positive)',
     ETF: '#3b82f6',
     BDR: '#a78bfa',
-    CRYPTO: '#f59e0b',
+    CRYPTO: 'var(--brand-warning)',
     FIXED: '#8b5cf6',
   }
   return map[label] || 'var(--brand-primary)'

@@ -25,7 +25,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <span
         class="font-mono-tab text-[10.5px] font-medium uppercase"
-        :style="{ letterSpacing: '0.18em', color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+        :style="{ letterSpacing: '0.18em', color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
       >Posições · {{ positions.length }} {{ positions.length === 1 ? 'ativo' : 'ativos' }}</span>
       <div class="flex flex-wrap items-center gap-2">
         <button
@@ -37,16 +37,16 @@
             letterSpacing: '0.16em',
             backgroundColor:
               activeClass === cls.value
-                ? `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`
+                ? `color-mix(in srgb, var(--brand-primary) 16%, transparent)`
                 : 'transparent',
             color:
               activeClass === cls.value
-                ? brand.colors.primary
-                : `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
+                ? 'var(--brand-primary)'
+                : `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
             border: `1px solid ${
               activeClass === cls.value
-                ? `color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`
-                : `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`
+                ? `color-mix(in srgb, var(--brand-primary) 30%, transparent)`
+                : `color-mix(in srgb, var(--brand-border) 50%, transparent)`
             }`,
           }"
           @click="activeClass = cls.value"
@@ -58,7 +58,7 @@
       <div class="overflow-x-auto">
         <table class="w-full text-left">
           <thead>
-            <tr :style="{ borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)` }">
+            <tr :style="{ borderBottom: `1px solid color-mix(in srgb, var(--brand-border) 40%, transparent)` }">
               <th v-if="hasTheses" class="th th-status" aria-label="Status da tese" />
               <th class="th">Ativo</th>
               <th class="th">Setor</th>
@@ -75,7 +75,7 @@
               <tr
                 class="position-row"
                 :class="{ 'position-row--expandable': hasThesis(p), 'position-row--expanded': isExpanded(p) }"
-                :style="{ borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                :style="{ borderBottom: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
                 @click="hasThesis(p) && toggleExpand(p)"
               >
                 <td v-if="hasTheses" class="td td-status">
@@ -96,15 +96,15 @@
                       :size="28"
                     />
                     <div class="flex min-w-0 flex-col leading-tight">
-                      <span class="font-mono-tab text-[12.5px] font-medium" :style="{ color: brand.colors.text }">{{ p.ticker }}</span>
-                      <span class="truncate text-[10.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+                      <span class="font-mono-tab text-[12.5px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ p.ticker }}</span>
+                      <span class="truncate text-[10.5px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
                         {{ p.name || snapshots.get(p.ticker)?.name || displayClass(p.asset_class) }}
                         <span
                           v-if="p.is_loaned"
                           class="ml-1 rounded px-1 py-0.5 font-mono-tab text-[9px] font-medium"
                           :style="{
-                            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
-                            color: brand.colors.primary,
+                            backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
+                            color: 'var(--brand-primary)',
                           }"
                         >BTC</span>
                         <span
@@ -118,7 +118,7 @@
                   </div>
                 </td>
                 <td class="td">
-                  <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }">{{ p.sector || '—' }}</span>
+                  <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)` }">{{ p.sector || '—' }}</span>
                 </td>
                 <td class="td td-num">{{ interfaceStore.revealAmount ? p.quantity.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '••••' }}</td>
                 <td class="td td-num">{{ maskedBRL2(p.average_price) }}</td>
@@ -126,7 +126,7 @@
                 <td class="td td-num">
                   <span
                     v-if="p.current_price"
-                    :style="{ color: pnlPct(p) >= 0 ? brand.colors.positive : brand.colors.negative }"
+                    :style="{ color: pnlPct(p) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
                   >{{ formatPct(pnlPct(p)) }}</span>
                   <span v-else>—</span>
                 </td>
@@ -135,11 +135,11 @@
                     {{ weightPct(p).toFixed(2) }}%
                     <div
                       class="h-1 w-12 overflow-hidden rounded-full"
-                      :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 7%, transparent)` }"
+                      :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)` }"
                     >
                       <div
                         class="h-full rounded-full"
-                        :style="{ width: Math.min(weightPct(p) * 6, 100) + '%', backgroundColor: brand.colors.primary }"
+                        :style="{ width: Math.min(weightPct(p) * 6, 100) + '%', backgroundColor: 'var(--brand-primary)' }"
                       />
                     </div>
                   </span>
@@ -164,7 +164,7 @@
               <tr
                 v-if="hasThesis(p) && isExpanded(p)"
                 class="thesis-row"
-                :style="{ borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                :style="{ borderBottom: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
               >
                 <td :colspan="hasTheses ? 9 : 7" class="thesis-row__cell">
                   <div class="thesis-row__inner">
@@ -184,7 +184,7 @@
                         </span>
                         <span class="thesis-row__label">Tese</span>
                       </div>
-                      <p class="thesis-row__text" :style="{ color: brand.colors.text }">
+                      <p class="thesis-row__text" :style="{ color: 'var(--brand-text)' }">
                         {{ thesisFor(p)!.thesis }}
                       </p>
                     </div>
@@ -211,7 +211,7 @@
                           <span class="thesis-metric__label">12m</span>
                           <span
                             class="thesis-metric__value"
-                            :style="{ color: (thesisFor(p)!.metrics?.var12m ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative }"
+                            :style="{ color: (thesisFor(p)!.metrics?.var12m ?? 0) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
                           >
                             {{ thesisFor(p)!.metrics?.var12m != null ? formatPctSigned(thesisFor(p)!.metrics!.var12m!) : '—' }}
                           </span>
@@ -231,9 +231,9 @@
         type="button"
         class="flex w-full items-center justify-center gap-1.5 px-4 py-3 text-[12.5px] font-medium transition-[background-color]"
         :style="{
-          color: brand.colors.primary,
-          backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 4%, transparent)`,
-          borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+          color: 'var(--brand-primary)',
+          backgroundColor: `color-mix(in srgb, var(--brand-primary) 4%, transparent)`,
+          borderTop: `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`,
         }"
         @click="expanded = !expanded"
       >
@@ -346,8 +346,8 @@ onBeforeUnmount(() => {
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const classFilters = computed(() => {
@@ -426,11 +426,11 @@ function formatPctSigned(n: number): string {
 // ---- Thesis status mapping -------------------------------------
 function thesisStatusColor(status: PortfolioAnalysisThesis['status']): string {
   switch (status) {
-    case 'maintained': return brand.colors.positive
-    case 'at-risk':    return (brand.colors as { warning?: string }).warning || '#f59e0b'
+    case 'maintained': return 'var(--brand-positive)'
+    case 'at-risk':    return 'var(--brand-warning)'
     case 'weakened':   return '#f97316'
-    case 'broken':     return brand.colors.negative
-    default:           return brand.colors.primary
+    case 'broken':     return 'var(--brand-negative)'
+    default:           return 'var(--brand-primary)'
   }
 }
 

@@ -524,7 +524,7 @@ onBeforeUnmount(() => {
   border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--brand-text, #fff) 14%, transparent);
   background: var(--brand-surface, #1a1a1a);
-  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 18px 40px -16px var(--shadow-amber-near);
   overflow: hidden;
 }
 
@@ -736,7 +736,7 @@ onBeforeUnmount(() => {
 }
 .icon-picker__btn--primary {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   border-color: var(--brand-primary);
 }
 .icon-picker__btn--primary:hover { filter: brightness(1.05); }

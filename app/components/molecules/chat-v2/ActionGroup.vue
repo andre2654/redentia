@@ -142,15 +142,15 @@ watch(
 )
 
 const statusColor = computed(() => {
-  if (anyRunning.value) return brand.colors.primary
-  if (anyError.value) return brand.colors.negative
-  return `color-mix(in srgb, ${brand.colors.text} 30%, transparent)`
+  if (anyRunning.value) return 'var(--brand-primary)'
+  if (anyError.value) return 'var(--brand-negative)'
+  return `color-mix(in srgb, var(--brand-text) 30%, transparent)`
 })
 
 function callStatusColor(c: ChatToolCall): string {
-  if (c.status === 'running') return brand.colors.primary
-  if (c.status === 'error') return brand.colors.negative
-  return `color-mix(in srgb, ${brand.colors.text} 25%, transparent)`
+  if (c.status === 'running') return 'var(--brand-primary)'
+  if (c.status === 'error') return 'var(--brand-negative)'
+  return `color-mix(in srgb, var(--brand-text) 25%, transparent)`
 }
 
 const totalDurationMs = computed(() => {

@@ -430,7 +430,7 @@ const loserTopPct = computed(() => {
 .frame {
   width: 1080px; height: 1080px;
   position: relative; overflow: hidden;
-  background: #0A0B0E; color: #FFFFFF;
+  background: var(--bg-base); color: #FFFFFF;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -469,10 +469,10 @@ const loserTopPct = computed(() => {
   z-index: 3;
 }
 .sb-live { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; }
-.sb-dot { width: 10px; height: 10px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 14px rgba(245,166,35,0.8); }
+.sb-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand-primary); box-shadow: 0 0 14px rgba(245,166,35,0.8); }
 .sb-right { margin-left: auto; }
 .sb-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 19px; }
-.sb-brand-accent { color: #F5A623; }
+.sb-brand-accent { color: var(--brand-primary); }
 
 /* Hero */
 .hero {
@@ -491,7 +491,7 @@ const loserTopPct = computed(() => {
 }
 .hero-title em {
   font-style: italic;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* Panels — stacked vertical. Each fills almost the full width
@@ -517,8 +517,8 @@ const loserTopPct = computed(() => {
   color: rgba(255,255,255,0.92);
 }
 .panel-arrow { font-size: 28px; font-weight: 700; line-height: 1; }
-.panel-arrow.up { color: #00D395; }
-.panel-arrow.down { color: #FF4747; }
+.panel-arrow.up { color: var(--brand-positive); }
+.panel-arrow.down { color: var(--brand-negative); }
 .panel-label {
   font-weight: 700;
   font-size: 22px;
@@ -531,8 +531,8 @@ const loserTopPct = computed(() => {
   font-variant-numeric: tabular-nums;
   margin-left: 4px;
 }
-.panel-stat.up { color: #00D395; }
-.panel-stat.down { color: #FF4747; }
+.panel-stat.up { color: var(--brand-positive); }
+.panel-stat.down { color: var(--brand-negative); }
 /* Ativos count — bold number + mono label, no border. */
 .panel-count {
   margin-left: auto;
@@ -598,7 +598,7 @@ const loserTopPct = computed(() => {
   z-index: 3;
 }
 .ff-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 18px; }
-.ff-brand .ff-dot { color: #F5A623; }
+.ff-brand .ff-dot { color: var(--brand-primary); }
 .ff-sep { display: inline-block; width: 14px; height: 1px; background: rgba(255,255,255,0.28); margin: 0 18px; }
 .ff-right { margin-left: auto; color: #FFFFFF; font-weight: 600; font-size: 17px; }
 </style>

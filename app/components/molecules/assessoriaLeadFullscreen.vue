@@ -392,7 +392,7 @@ onBeforeUnmount(() => {
    destaque, nao mudam entre modes). */
 .ass-fs {
   --brand-background: #FAFAFB;
-  --brand-text: #1A0A2E;
+  --brand-text: var(--text-heading);
   --brand-text-muted: rgba(26, 10, 46, 0.6);
   --brand-surface: #FFFFFF;
   --brand-border: rgba(26, 10, 46, 0.14);
@@ -407,7 +407,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   background: #FAFAFB;
-  color: #1A0A2E;
+  color: var(--text-heading);
   font-family: var(--brand-font);
   overflow-y: auto;
   overflow-x: hidden;
@@ -515,7 +515,7 @@ onBeforeUnmount(() => {
 .ass-fs__step-num.is-current {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-primary) 22%, transparent);
 }
 .ass-fs__step-divider {
@@ -638,7 +638,7 @@ onBeforeUnmount(() => {
   border-radius: 14px;
   border: 0;
   background: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
   font-family: var(--brand-font);
   font-size: 15.5px;
   font-weight: 600;
@@ -784,7 +784,7 @@ onBeforeUnmount(() => {
 .ass-fs__q-btn.is-selected {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
   box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 .ass-fs__q-btn.is-selected svg { opacity: 1; }

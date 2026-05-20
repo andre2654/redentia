@@ -247,10 +247,10 @@ const props = defineProps<{
 const brand = useBrand()
 
 function statusColor(status: string): string {
-  if (status === 'hit' || status === 'on_track') return brand.colors.positive ?? brand.colors.primary
-  if (status === 'at_risk') return brand.colors.primary
-  if (status === 'unfeasible') return brand.colors.negative
-  return brand.colors.textMuted
+  if (status === 'hit' || status === 'on_track') return 'var(--brand-positive)'
+  if (status === 'at_risk') return 'var(--brand-primary)'
+  if (status === 'unfeasible') return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 }
 
 const baselineStatusColor = computed(() => statusColor(props.data.baseline.status))
@@ -264,9 +264,9 @@ function statusLabel(status: string): string {
 }
 
 function deltaColor(delta: number): string {
-  if (delta > 0) return brand.colors.positive ?? brand.colors.primary
-  if (delta < 0) return brand.colors.negative
-  return brand.colors.textMuted
+  if (delta > 0) return 'var(--brand-positive)'
+  if (delta < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 }
 
 function formatBRL(value: number): string {
@@ -344,9 +344,9 @@ function scenarioBadgeLabel(r: ScenarioResult): string {
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 70%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 55%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 
 function rowStyle(r: ScenarioResult): Record<string, string> {
@@ -356,7 +356,7 @@ function rowStyle(r: ScenarioResult): Record<string, string> {
   // wash is just a hint.
   if (!r.statusChanged) {
     return {
-      backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
+      backgroundColor: `color-mix(in srgb, var(--brand-text) 3%, transparent)`,
     }
   }
   const tint = statusColor(r.after.status)

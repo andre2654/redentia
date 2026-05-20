@@ -1275,7 +1275,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* Results visibility toggle row */
@@ -1452,7 +1452,7 @@ const Field = defineComponent({
   border-radius: 999px;
   border: 1.5px solid color-mix(in srgb, var(--brand-text) 25%, transparent);
   flex-shrink: 0;
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 .prev-poll-opt__check--multi {
   border-radius: 4px;
@@ -1485,7 +1485,7 @@ const Field = defineComponent({
   padding: 8px 14px;
   border-radius: 9px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-family: var(--brand-font);
   font-size: 12.5px;
   font-weight: 600;

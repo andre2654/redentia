@@ -92,15 +92,15 @@ let currentResolver: ((value: boolean) => void) | null = null
 const confirmStyle = computed(() => {
   if (state.value?.variant === 'destructive') {
     return {
-      backgroundColor: brand.colors.negative,
+      backgroundColor: 'var(--brand-negative)',
       color: '#fff',
-      borderColor: brand.colors.negative,
+      borderColor: 'var(--brand-negative)',
     }
   }
   return {
-    backgroundColor: brand.colors.primary,
-    color: brand.colors.background,
-    borderColor: brand.colors.primary,
+    backgroundColor: 'var(--brand-primary)',
+    color: 'var(--brand-background)',
+    borderColor: 'var(--brand-primary)',
   }
 })
 
@@ -145,7 +145,7 @@ defineExpose({ open })
   /* Viewport-centered regardless of browser engine. */
   margin: auto;
   inset: 0;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 25px 50px -12px var(--shadow-amber-near);
 }
 .confirm-dialog[open] {
   animation: confirm-fade-in 0.15s ease-out;

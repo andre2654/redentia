@@ -69,12 +69,12 @@
             </div>
 
             <!-- Title -->
-            <h3 class="font-bold transition-colors duration-200 group-hover:text-secondary" :style="{ color: brand.colors.text }">
+            <h3 class="font-bold transition-colors duration-200 group-hover:text-secondary" :style="{ color: 'var(--brand-text)' }">
               {{ item.title }}
             </h3>
 
             <!-- Description -->
-            <p class="line-clamp-2 text-sm" :style="{ color: brand.colors.textMuted }">
+            <p class="line-clamp-2 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
               {{ item.description }}
             </p>
           </div>

@@ -181,8 +181,8 @@ function onError(msg: string) {
   font-size: 12.5px;
   line-height: 1.4;
   color: var(--text-body);
-  background: color-mix(in srgb, #f59e0b 10%, transparent);
-  border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-warning) 30%, transparent);
 }
 
 .auth-choice__degraded :deep(svg) {

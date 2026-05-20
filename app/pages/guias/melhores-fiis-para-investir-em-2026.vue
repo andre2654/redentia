@@ -17,7 +17,7 @@
 
         <h3>Principais Vantagens dos FIIs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Renda Mensal Passiva
             </h4>
@@ -25,7 +25,7 @@
               FIIs pagam dividendos mensais provenientes dos aluguéis dos imóveis. Ideal para quem busca renda recorrente.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Isenção de IR
             </h4>
@@ -33,7 +33,7 @@
               Os dividendos recebidos são isentos de imposto de renda para pessoa física, aumentando sua rentabilidade líquida.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Diversificação
             </h4>
@@ -41,7 +41,7 @@
               Com pouco dinheiro você investe em múltiplos imóveis de alto padrão, impossível comprar diretamente.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Liquidez
             </h4>
@@ -58,7 +58,7 @@
           Investem diretamente em imóveis físicos e recebem aluguéis.
         </p>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">Lajes Corporativas</h4>
             <div class="mb-2 flex flex-wrap gap-1.5">
               <AtomsTickerEmbed ticker="HGLG11" size="sm" />
@@ -68,7 +68,7 @@
               Edifícios comerciais de escritórios. Risco médio, contratos longos.
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">Shopping Centers</h4>
             <div class="mb-2 flex flex-wrap gap-1.5">
               <AtomsTickerEmbed ticker="VISC11" size="sm" />
@@ -78,7 +78,7 @@
               Shoppings centers. Recebem aluguel + percentual sobre vendas.
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">Galpões Logísticos</h4>
             <div class="mb-2 flex flex-wrap gap-1.5">
               <AtomsTickerEmbed ticker="LVBI11" size="sm" />
@@ -88,7 +88,7 @@
               Armazéns e centros de distribuição. Crescimento com e-commerce.
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">Hospitais e Educação</h4>
             <div class="mb-2 flex flex-wrap gap-1.5">
               <AtomsTickerEmbed ticker="NSLU11" size="sm" />
@@ -104,7 +104,7 @@
           Investem em títulos e recebíveis do setor imobiliário (CRIs, LCIs).
         </p>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">FIIs de CRI</h4>
             <div class="mb-2 flex flex-wrap gap-1.5">
               <AtomsTickerEmbed ticker="MXRF11" size="sm" />
@@ -157,13 +157,13 @@
               Com expectativa de queda na Selic em 2026, FIIs tendem a se valorizar. FIIs de tijolo se beneficiam mais que FIIs de papel.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">Foco em Logística</h4>
             <p class="text-sm">
               O crescimento do e-commerce mantém demanda forte por galpões logísticos. Setor com boas perspectivas de longo prazo.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2">Diversifique Entre Segmentos</h4>
             <p class="text-sm">
               Monte uma carteira com FIIs de diferentes segmentos (logística, lajes, shoppings, papel) para reduzir riscos.
@@ -198,7 +198,7 @@
         <h2>Riscos dos FIIs</h2>
         <div
           class="rounded-xl border p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)' }"
         >
           <ul class="list-disc space-y-2 pl-6">
             <li>
@@ -217,7 +217,7 @@
               <strong>Taxa de Juros:</strong> Selic alta torna FIIs menos atrativos
             </li>
           </ul>
-          <p class="mt-3 text-sm" :style="{ color: brand.colors.warning || '#f59e0b' }">
+          <p class="mt-3 text-sm" :style="{ color: 'var(--brand-warning)' || 'var(--brand-warning)' }">
             ⚠️ Importante: Diversifique sua carteira de FIIs entre diferentes segmentos e gestoras para reduzir riscos.
           </p>
         </div>
@@ -260,7 +260,7 @@
       <div class="space-y-4">
         <h2>Perguntas Frequentes sobre FIIs</h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual o melhor FII para iniciantes?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -270,7 +270,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               FIIs pagam dividendos todo mês?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -280,7 +280,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto rende R$ 1.000 em FIIs por mês?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -290,7 +290,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               FIIs são melhores que ações?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -300,7 +300,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Posso perder dinheiro com FIIs?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -313,13 +313,13 @@
       </div>
 
       <!-- Navegação para Outros Guias -->
-      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">
+      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">
         <h3 class="mb-4">Continue Aprendendo</h3>
         <div class="grid gap-4 sm:grid-cols-2">
           <NuxtLink
             to="/guias/calculadora-de-dividendos"
             class="group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-coins" class="text-secondary h-6 w-6" />
             <div class="flex-1">
@@ -332,7 +332,7 @@
           <NuxtLink
             to="/guias/small-caps-guia-completo"
             class="group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-rocket" class="text-secondary h-6 w-6" />
             <div class="flex-1">

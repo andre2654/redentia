@@ -807,12 +807,12 @@ function formatRate(value: number | string): string {
 function getLabelColor(label: string): string {
   const norm = (label || '').toUpperCase()
   if (norm.includes('JCP') || norm.includes('JUROS')) {
-    return brand.colors.warning || '#f59e0b'
+    return 'var(--brand-warning)'
   }
   if (norm.includes('BONIF')) {
-    return brand.colors.secondary
+    return 'var(--brand-secondary)'
   }
-  return brand.colors.positive || brand.colors.primary
+  return 'var(--brand-positive)'
 }
 
 // ====================================================================

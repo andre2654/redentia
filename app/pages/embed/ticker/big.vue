@@ -115,17 +115,17 @@ if (!isWidgetMode.value) {
       rel="noopener noreferrer"
       class="block h-full w-full rounded-xl p-5 no-underline"
       :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+        backgroundColor: theme === 'light' ? '#ffffff' : 'var(--brand-surface)',
+        border: `1px solid ${theme === 'light' ? '#e5e7eb' : 'var(--brand-border)'}`,
       }"
     >
       <!-- Header inline: logo + ticker + variação com cores controladas por tema -->
       <div class="flex items-center gap-2">
         <img v-if="logoUrl && !failedLogos.isFailed(logoUrl)" :src="logoUrl" :alt="ticker" class="size-7 rounded object-contain" @error="failedLogos.markFailed(logoUrl)" />
-        <div v-else class="flex size-7 items-center justify-center rounded bg-black/10 text-[10px] font-medium" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+        <div v-else class="flex size-7 items-center justify-center rounded bg-black/10 text-[10px] font-medium" :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }">
           {{ ticker.slice(0, 2) }}
         </div>
-        <span class="text-sm font-medium tracking-wide" :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.005em' }">
+        <span class="text-sm font-medium tracking-wide" :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)', letterSpacing: '-0.005em' }">
           {{ ticker }}
         </span>
         <span
@@ -140,7 +140,7 @@ if (!isWidgetMode.value) {
       <!-- Preço grande -->
       <div
         class="mt-3 text-2xl font-light tabular-nums"
-        :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.4px' }"
+        :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)', letterSpacing: '-0.4px' }"
       >
         {{ loading ? '—' : formatPrice(price) }}
       </div>
@@ -148,23 +148,23 @@ if (!isWidgetMode.value) {
       <!-- Stats row com brand tokens -->
       <div
         class="mt-3 grid grid-cols-3 gap-3 border-t pt-3"
-        :style="{ borderColor: theme === 'light' ? '#e5e7eb' : brand.colors.border }"
+        :style="{ borderColor: theme === 'light' ? '#e5e7eb' : 'var(--brand-border)' }"
       >
         <div>
-          <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">DY</div>
-          <div class="text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatPct(dy) }}</div>
+          <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : 'var(--brand-text-muted)' }">DY</div>
+          <div class="text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)' }">{{ formatPct(dy) }}</div>
         </div>
         <div>
-          <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">P/L</div>
-          <div class="text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatNumber(pl) }}</div>
+          <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : 'var(--brand-text-muted)' }">P/L</div>
+          <div class="text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)' }">{{ formatNumber(pl) }}</div>
         </div>
         <div>
-          <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">SETOR</div>
-          <div class="truncate text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ sector || '—' }}</div>
+          <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : 'var(--brand-text-muted)' }">SETOR</div>
+          <div class="truncate text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)' }">{{ sector || '—' }}</div>
         </div>
       </div>
 
-      <div class="mt-3 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+      <div class="mt-3 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }">
         powered by redentia.com.br
       </div>
     </a>
@@ -180,21 +180,21 @@ if (!isWidgetMode.value) {
   >
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Customizar</h2>
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Ticker</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Ticker</label>
             <UInput v-model="ticker" placeholder="VALE3" @update:model-value="(v) => (ticker = String(v).toUpperCase())" />
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Tema</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Tema</label>
             <div class="flex gap-2">
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'" :style="theme !== 'dark' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'dark'">Escuro</button>
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'" :style="theme !== 'light' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'light'">Claro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'" :style="theme !== 'dark' ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}" @click="theme = 'dark'">Escuro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'" :style="theme !== 'light' ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}" @click="theme = 'light'">Claro</button>
             </div>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Código iframe</label>
-            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }">
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Código iframe</label>
+            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: 'var(--brand-background)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }">
               <code>{{ iframeCode }}</code>
             </div>
             <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" color="primary" block @click="copyIframe">
@@ -204,8 +204,8 @@ if (!isWidgetMode.value) {
         </div>
 
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Pré-visualização</h2>
-          <div class="flex min-h-[360px] items-center justify-center rounded-2xl border p-8" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Pré-visualização</h2>
+          <div class="flex min-h-[360px] items-center justify-center rounded-2xl border p-8" :style="{ borderColor: 'var(--brand-border)', backgroundColor: theme === 'light' ? '#f9fafb' : 'var(--brand-background)' }">
             <iframe :src="embedUrl" width="420" height="220" frameborder="0" loading="lazy" :title="`Cotação ${ticker}`" style="border:0;border-radius:12px;" />
           </div>
         </div>

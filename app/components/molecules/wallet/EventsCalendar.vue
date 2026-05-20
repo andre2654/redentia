@@ -343,7 +343,7 @@ function formatDateLong(iso: string): string {
 function kindColor(k: UnifiedKind): string {
   switch (k) {
     case 'pay':         return 'var(--brand-positive, #10b981)'
-    case 'jcp':         return '#f59e0b'
+    case 'jcp':         return 'var(--brand-warning)'
     case 'rendimento':  return 'var(--brand-positive, #10b981)'
     case 'ex':          return 'var(--brand-primary)'
     case 'earnings':    return '#a78bfa'

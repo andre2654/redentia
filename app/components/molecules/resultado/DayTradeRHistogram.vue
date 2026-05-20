@@ -27,14 +27,14 @@
           <span class="dt-rhist__total-label">Cauda esq</span>
           <span
             class="dt-rhist__total-value tabular-nums"
-            :style="{ color: brand.colors.negative }"
+            :style="{ color: 'var(--brand-negative)' }"
           >{{ leftTailCount }}</span>
         </span>
         <span class="dt-rhist__total">
           <span class="dt-rhist__total-label">Cauda dir</span>
           <span
             class="dt-rhist__total-value tabular-nums"
-            :style="{ color: brand.colors.positive }"
+            :style="{ color: 'var(--brand-positive)' }"
           >{{ rightTailCount }}</span>
         </span>
         <span class="dt-rhist__total">
@@ -48,7 +48,7 @@
     </header>
 
     <div v-if="!hasData" class="dt-rhist__empty">
-      <UIcon name="i-lucide-bar-chart" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+      <UIcon name="i-lucide-bar-chart" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
       <span>Sem operações no período.</span>
     </div>
 
@@ -56,7 +56,7 @@
       <!-- Linha do zero (vertical) — eixo de simetria do histograma. -->
       <span
         class="dt-rhist__zero-line"
-        :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+        :style="{ borderColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }"
         aria-hidden="true"
       />
 
@@ -69,7 +69,7 @@
         >
           <span
             class="dt-rhist__count tabular-nums"
-            :style="{ color: bucket.count > 0 ? brand.colors.text : `color-mix(in srgb, ${brand.colors.text} 30%, transparent)` }"
+            :style="{ color: bucket.count > 0 ? 'var(--brand-text)' : `color-mix(in srgb, var(--brand-text) 30%, transparent)` }"
           >{{ bucket.count > 0 ? bucket.count : '' }}</span>
           <span
             class="dt-rhist__bar"
@@ -84,7 +84,7 @@
           <span
             class="dt-rhist__bar-label tabular-nums"
             :class="{ 'dt-rhist__bar-label--zero': bucket.bucket === 0 }"
-            :style="{ color: bucket.bucket === 0 ? brand.colors.text : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+            :style="{ color: bucket.bucket === 0 ? 'var(--brand-text)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
           >{{ bucket.label }}</span>
         </div>
       </div>
@@ -114,16 +114,16 @@ function barHeight(count: number): number {
 
 function barColor(bucket: RMultipleBucket): string {
   if (bucket.count === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 8%, transparent)`
   }
   if (bucket.side === 'neutral') {
-    return `color-mix(in srgb, ${brand.colors.text} 30%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 30%, transparent)`
   }
   // Saturacao aumenta quanto mais distante do zero
   const distance = Math.abs(bucket.bucket)
   const saturation = 50 + distance * 12 // 62%, 74%, 86%, 100%
-  const base = bucket.side === 'positive' ? brand.colors.positive : brand.colors.negative
-  return `color-mix(in srgb, ${base} ${Math.min(100, saturation)}%, ${brand.colors.surface})`
+  const base = bucket.side === 'positive' ? 'var(--brand-positive)' : 'var(--brand-negative)'
+  return `color-mix(in srgb, ${base} ${Math.min(100, saturation)}%, var(--brand-surface))`
 }
 
 const leftTailCount = computed(() =>
@@ -149,9 +149,9 @@ const skewLabel = computed(() => {
 
 const skewColor = computed(() => {
   const diff = rightTailCount.value - leftTailCount.value
-  if (diff > 0) return brand.colors.positive
-  if (diff < 0) return brand.colors.negative
-  return brand.colors.text
+  if (diff > 0) return 'var(--brand-positive)'
+  if (diff < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 })
 
 const subtitle = computed(() => {
@@ -172,9 +172,9 @@ const rUnitLabel = computed(() => {
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
 }))
 </script>
 

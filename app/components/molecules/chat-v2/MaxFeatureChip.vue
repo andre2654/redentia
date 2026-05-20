@@ -33,12 +33,12 @@
       <UIcon
         name="i-lucide-sparkles"
         class="size-3"
-        :style="{ color: brand.colors.primary }"
+        :style="{ color: 'var(--brand-primary)' }"
       />
     </span>
     <span
       class="max-feature-chip-eyebrow font-mono-tab text-[9.5px] font-semibold uppercase tracking-[0.16em]"
-      :style="{ color: brand.colors.primary }"
+      :style="{ color: 'var(--brand-primary)' }"
     >Feature MAX</span>
     <span
       v-if="label"
@@ -72,8 +72,8 @@ const title = computed(() =>
 
 const chipStyle = computed(() => ({
   // Soft amber surface with subtle border. Brighter on hover.
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, var(--brand-surface))`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 10%, var(--brand-surface))`,
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
   color: 'var(--brand-text)',
   // Aligns baseline with surrounding prose (same trick as TickerChip).
   position: 'relative' as const,
@@ -83,8 +83,8 @@ const chipStyle = computed(() => ({
 const badgeStyle = computed(() => ({
   width: '18px',
   height: '18px',
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
-  boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
+  boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
 }))
 
 function onClick() {

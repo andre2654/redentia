@@ -128,7 +128,7 @@
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Ticker header bar (minimalista: logo + ticker + stats inline + sparkline) -->
-        <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
+        <section class="border-b pb-8" :style="{ borderColor: 'var(--brand-border)' }">
           <MoleculesTickerHeaderBar
             :logo="resolvedLogo && !failedLogos.isFailed(resolvedLogo) ? resolvedLogo : undefined"
             :ticker="tickerUpper"
@@ -163,7 +163,7 @@
                   <template #extras>
                     <span
                       class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >
                       Histórico de cotação
                     </span>
@@ -250,14 +250,14 @@
         <!-- Fundamentals + Volatility side by side (terminal panels) —
              only when scrape_extras is NOT available (otherwise the new
              fundamentals panel below covers these indicators + more). -->
-        <section v-if="!scrapeExtras" class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: brand.colors.border }">
+        <section v-if="!scrapeExtras" class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: 'var(--brand-border)' }">
           <!-- Col 1-2: Fundamentals register -->
           <div v-if="brand.assetPage.showIndicators" class="lg:col-span-2">
             <div class="mb-4 flex flex-col gap-1">
-              <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+              <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                 Indicadores fundamentalistas
               </h2>
-              <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+              <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                 &gt; MÉTRICAS DE {{ tickerUpper }} · ÚLTIMA ATUALIZAÇÃO DISPONÍVEL
               </p>
             </div>
@@ -266,71 +266,71 @@
             <div
               v-if="isLoadingFundamentus"
               class="grid grid-cols-3 gap-px border md:grid-cols-6"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
             >
-              <div v-for="i in 6" :key="`ind-load-${i}`" class="p-4" :style="{ backgroundColor: brand.colors.surface }">
+              <div v-for="i in 6" :key="`ind-load-${i}`" class="p-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
                 <USkeleton class="h-16 w-full" />
               </div>
             </div>
             <div
               v-else-if="basicIndicators"
               class="grid grid-cols-3 gap-px border md:grid-cols-6"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
             >
               <div
                 v-for="(item, idx) in fundamentalsCells"
                 :key="item.label"
                 class="flex flex-col gap-1.5 px-4 py-4 transition-colors hover:brightness-110"
-                :style="{ backgroundColor: brand.colors.surface }"
+                :style="{ backgroundColor: 'var(--brand-surface)' }"
               >
                 <div class="flex items-center justify-end">
                   <UTooltip v-if="item.tooltip" :text="item.tooltip" :delay-duration="0">
-                    <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+                    <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
                   </UTooltip>
                 </div>
-                <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+                <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                   {{ item.label }}
                 </span>
-                <span class="font-mono-tab text-xl font-bold tabular-nums" :style="{ color: item.accent || brand.colors.text }">
+                <span class="font-mono-tab text-xl font-bold tabular-nums" :style="{ color: item.accent || 'var(--brand-text)' }">
                   {{ item.value || '-' }}
                 </span>
               </div>
             </div>
-            <div v-else class="border border-dashed p-6 text-center font-mono-tab text-[11px] uppercase tracking-wider" :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }">
+            <div v-else class="border border-dashed p-6 text-center font-mono-tab text-[11px] uppercase tracking-wider" :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }">
               &gt; DATA UNAVAILABLE
             </div>
 
             <!-- Smart indicators register (AI analysis) — only when scrape is missing -->
             <div v-if="!scrapeExtras && brand.assetPage.showSmartIndicators && (intelligentIndicators || isLoadingFundamentus)" class="mt-4">
-              <div class="mb-2 flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
+              <div class="mb-2 flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
+                <IconAi class="h-3 w-3" :style="{ fill: 'var(--brand-primary)' }" />
                 <span>Análise IA</span>
-                <span :style="{ color: brand.colors.textMuted }">&gt; METRICAS INTERPRETADAS</span>
+                <span :style="{ color: 'var(--brand-text-muted)' }">&gt; METRICAS INTERPRETADAS</span>
               </div>
               <div
                 v-if="isLoadingFundamentus"
                 class="grid grid-cols-2 gap-px border md:grid-cols-4"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+                :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
               >
-                <div v-for="i in 8" :key="`smart-load-${i}`" class="p-4" :style="{ backgroundColor: brand.colors.surface }">
+                <div v-for="i in 8" :key="`smart-load-${i}`" class="p-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
                   <USkeleton class="h-16 w-full" />
                 </div>
               </div>
               <div
                 v-else-if="intelligentIndicators"
                 class="grid grid-cols-2 gap-px border md:grid-cols-4"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+                :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
               >
                 <div
                   v-for="(item, idx) in smartCells"
                   :key="item.label"
                   class="flex flex-col gap-1.5 px-4 py-4"
-                  :style="{ backgroundColor: brand.colors.surface }"
+                  :style="{ backgroundColor: 'var(--brand-surface)' }"
                 >
-                  <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+                  <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ item.label }}
                   </span>
-                  <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: brand.colors.text }">
+                  <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
                     {{ item.value || '-' }}
                   </span>
                 </div>
@@ -342,14 +342,14 @@
           <div class="lg:col-span-1 flex flex-col gap-8">
             <div v-if="brand.assetPage.showVolatility">
               <div class="mb-4 flex flex-col gap-1">
-                <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+                <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                   Volatilidade
                 </h2>
-                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                   &gt; {{ volatilityPeriodLabel || 'JANELA DE 30 DIAS' }}
                 </p>
               </div>
-              <div class="border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <div class="border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
                 <AtomsRiskMeter
                   :risk="volatilityRisk"
                   :period="volatilityPeriodLabel"
@@ -362,7 +362,7 @@
         </section>
 
         <!-- Fundamentals rich panels — FII / ETF / stock variant by asset_type -->
-        <section v-if="scrapeExtras" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <section v-if="scrapeExtras" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
           <MoleculesStatusInvestFiiPanel v-if="scrapeExtras.asset_type === 'fii'" :extras="scrapeExtras" />
           <MoleculesStatusInvestEtfPanel v-else-if="scrapeExtras.asset_type === 'etf'" :extras="scrapeExtras" />
           <MoleculesStatusInvestPanel v-else :extras="scrapeExtras" />
@@ -371,14 +371,14 @@
           <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div v-if="brand.assetPage.showVolatility">
               <div class="mb-4 flex flex-col gap-1">
-                <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
+                <h3 class="text-[18px] font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">
                   Volatilidade
                 </h3>
-                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                   &gt; {{ volatilityPeriodLabel || 'JANELA DE 30 DIAS' }}
                 </p>
               </div>
-              <div class="border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <div class="border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
                 <AtomsRiskMeter
                   :risk="volatilityRisk"
                   :period="volatilityPeriodLabel"
@@ -392,38 +392,38 @@
       </div>
 
       <!-- Dividends -->
-      <section v-if="(brand.assetPage.showDividendMap || brand.assetPage.showDividendChart) && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+      <section v-if="(brand.assetPage.showDividendMap || brand.assetPage.showDividendChart) && !isEtf" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
         <!-- Terminal header -->
         <header class="mb-6 flex flex-col gap-1">
-          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+          <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Dividendos e proventos
           </h2>
-          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
             &gt; HISTÓRICO DE PAGAMENTOS{{ isForeignOrFii ? '' : ' · PROBABILIDADE MENSAL' }}
           </p>
         </header>
 
         <!-- MDI Card, terminal dividend heatmap — stock-only; FIIs distribute
              monthly, BDRs irregularly, so probability-by-month is noise there -->
-        <div v-if="brand.assetPage.showDividendMap && !isForeignOrFii" class="mb-8 border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div v-if="brand.assetPage.showDividendMap && !isForeignOrFii" class="mb-8 border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <!-- Header: mono label + reference -->
-          <div class="flex items-center justify-between border-b px-5 py-3" :style="{ borderColor: brand.colors.border }">
+          <div class="flex items-center justify-between border-b px-5 py-3" :style="{ borderColor: 'var(--brand-border)' }">
             <div class="flex flex-col gap-0.5">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
                 Histórico de dividendos
               </span>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                 &gt; PROBABILIDADE MENSAL · BASELINE 10A
               </span>
             </div>
-            <div v-if="isLoadingDividends" class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
+            <div v-if="isLoadingDividends" class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-text-muted)' }">
               <UIcon name="i-lucide-loader-2" class="h-3 w-3 motion-safe:animate-spin" />
               ANALISANDO
             </div>
             <span
               v-else-if="monthlyDividendProbability.referenceLabel"
               class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               REF · {{ monthlyDividendProbability.referenceLabel }}
             </span>
@@ -433,16 +433,16 @@
           <div
             v-if="isLoadingDividends"
             class="grid grid-cols-4 gap-px md:grid-cols-6 lg:grid-cols-12"
-            :style="{ backgroundColor: brand.colors.border }"
+            :style="{ backgroundColor: 'var(--brand-border)' }"
           >
-            <div v-for="month in 12" :key="`dividend-month-skeleton-${month}`" class="p-4" :style="{ backgroundColor: brand.colors.surface }">
+            <div v-for="month in 12" :key="`dividend-month-skeleton-${month}`" class="p-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
               <USkeleton class="h-16 w-full" />
             </div>
           </div>
           <div
             v-else
             class="grid grid-cols-4 gap-px md:grid-cols-6 lg:grid-cols-12"
-            :style="{ backgroundColor: brand.colors.border }"
+            :style="{ backgroundColor: 'var(--brand-border)' }"
           >
             <div
               v-for="item in monthlyDividendProbability.months"
@@ -453,7 +453,7 @@
               <!-- Month label mono (top-left) -->
               <span
                 class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-                :style="{ color: item.highlight ? brand.colors.primary : brand.colors.textMuted }"
+                :style="{ color: item.highlight ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
               >
                 {{ item.label }}
               </span>
@@ -467,7 +467,7 @@
               </span>
 
               <!-- Tiny bar indicator at the bottom, horizontal, width = percentage -->
-              <div class="mt-auto h-[3px] w-full" :style="{ backgroundColor: brand.colors.border }">
+              <div class="mt-auto h-[3px] w-full" :style="{ backgroundColor: 'var(--brand-border)' }">
                 <div
                   class="h-full transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
                   :style="{
@@ -482,20 +482,20 @@
           <!-- Legend as terminal output -->
           <div
             class="flex flex-wrap items-center justify-between gap-3 border-t px-5 py-3 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+            :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
           >
             <span>&gt; LEGENDA</span>
             <div class="flex items-center gap-5">
               <span class="flex items-center gap-1.5">
-                <span class="inline-block size-2" :style="{ backgroundColor: brand.colors.primary }" />
+                <span class="inline-block size-2" :style="{ backgroundColor: 'var(--brand-primary)' }" />
                 MES ATUAL
               </span>
               <span class="flex items-center gap-1.5">
-                <span class="inline-block size-2" :style="{ backgroundColor: brand.colors.positive }" />
+                <span class="inline-block size-2" :style="{ backgroundColor: 'var(--brand-positive)' }" />
                 ALTA PROBABILIDADE
               </span>
               <span class="flex items-center gap-1.5">
-                <span class="inline-block size-2" :style="{ backgroundColor: brand.colors.border }" />
+                <span class="inline-block size-2" :style="{ backgroundColor: 'var(--brand-border)' }" />
                 BAIXA PROBABILIDADE
               </span>
             </div>
@@ -512,12 +512,12 @@
 
       <!-- Financial Statements — hidden for BDRs (foreign company) and ETFs
            (basket, not an operating company with DRE/balance) -->
-      <section v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+      <section v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
         <header class="mb-6 flex flex-col gap-1">
-          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+          <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Demonstrações financeiras
           </h2>
-          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
             &gt; ÚLTIMO TRIMESTRE DISPONÍVEL{{ isFii ? ' · BALANÇO · DRE' : ' · FLUXO DE CAIXA · BALANÇO · DRE' }}
           </p>
         </header>
@@ -555,42 +555,42 @@
         <div
           v-else
           class="flex flex-col items-center justify-center brand-card border border-dashed py-12 text-center"
-          :style="{ borderColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)' }"
         >
-          <UIcon name="i-lucide-file-x" class="mb-3 h-8 w-8" :style="{ color: brand.colors.textMuted }" />
-          <p class="text-sm" :style="{ color: brand.colors.textMuted }">Demonstrações indisponíveis</p>
+          <UIcon name="i-lucide-file-x" class="mb-3 h-8 w-8" :style="{ color: 'var(--brand-text-muted)' }" />
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">Demonstrações indisponíveis</p>
         </div>
       </section>
 
       <!-- Buy & Hold Checklist — stock, FII, or BDR variant. ETFs don't
            have per-fund fundamentals that map to these criteria. -->
-      <section v-if="brand.assetPage.showChecklist && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
-        <div class="border p-6" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <section v-if="brand.assetPage.showChecklist && !isEtf" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
+        <div class="border p-6" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <!-- Header terminal-style -->
           <header class="mb-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div class="flex flex-col gap-1">
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
                   Qualidade
                 </span>
-                <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+                <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                   Checklist Buy & Hold
                 </h2>
-                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                   &gt; CRITERIOS PARA INVESTIDORES DE LONGO PRAZO
                 </p>
               </div>
 
               <!-- Score as terminal register -->
               <div v-if="!isLoadingFundamentus && activeChecklist.length" class="flex items-center gap-3 font-mono-tab">
-                <span class="text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                <span class="text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Score
                 </span>
-                <span class="text-3xl font-light tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.02em' }">
+                <span class="text-3xl font-light tabular-nums" :style="{ color: 'var(--brand-positive)', letterSpacing: '-0.02em' }">
                   {{ activeChecklist.filter(i => i.status === 'pass').length }}
                 </span>
-                <span class="text-xl tabular-nums" :style="{ color: brand.colors.textMuted }">/</span>
-                <span class="text-xl tabular-nums" :style="{ color: brand.colors.text }">
+                <span class="text-xl tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">/</span>
+                <span class="text-xl tabular-nums" :style="{ color: 'var(--brand-text)' }">
                   {{ activeChecklist.length }}
                 </span>
               </div>
@@ -613,7 +613,7 @@
                 v-for="item in activeChecklist"
                 :key="item.id"
                 class="group flex items-center gap-3 brand-card border p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
               >
                 <!-- Status Icon -->
                 <div
@@ -625,7 +625,7 @@
                         ? 'bg-red-500/10 text-red-500'
                         : '',
                   ]"
-                  :style="item.status === 'unknown' ? { backgroundColor: brand.colors.surface, color: brand.colors.textMuted } : {}"
+                  :style="item.status === 'unknown' ? { backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text-muted)' } : {}"
                 >
                   <UIcon
                     :name="
@@ -642,7 +642,7 @@
                 <!-- Content -->
                 <div class="flex min-w-0 flex-1 flex-col">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-sm" :style="{ color: brand.colors.text }">
+                    <span class="text-sm" :style="{ color: 'var(--brand-text)' }">
                       {{ item.label }}
                     </span>
                     <UTooltip
@@ -653,7 +653,7 @@
                       <button
                         type="button"
                         class="transition-colors"
-                        :style="{ color: brand.colors.textMuted }"
+                        :style="{ color: 'var(--brand-text-muted)' }"
                       >
                         <UIcon name="i-lucide-info" class="h-3 w-3" />
                       </button>
@@ -661,13 +661,13 @@
                   </div>
                   <p
                     v-if="item.detail"
-                    class="text-xs leading-relaxed" :style="{ color: brand.colors.textMuted }"
+                    class="text-xs leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }"
                   >
                     {{ item.detail }}
                   </p>
                   <p
                     v-else-if="item.status === 'unknown'"
-                    class="text-xs" :style="{ color: brand.colors.textMuted }"
+                    class="text-xs" :style="{ color: 'var(--brand-text-muted)' }"
                   >
                     Dados indisponíveis
                   </p>
@@ -679,28 +679,28 @@
             <div
               v-else
               class="flex flex-col items-center justify-center brand-card border border-dashed py-12 text-center"
-              :style="{ borderColor: brand.colors.border }"
+              :style="{ borderColor: 'var(--brand-border)' }"
             >
-              <UIcon name="i-lucide-clipboard-list" class="mb-3 h-8 w-8" :style="{ color: brand.colors.textMuted }" />
-              <p class="text-sm" :style="{ color: brand.colors.textMuted }">Checklist indisponível</p>
-              <p class="text-xs" :style="{ color: brand.colors.textMuted }">Dados insuficientes para análise</p>
+              <UIcon name="i-lucide-clipboard-list" class="mb-3 h-8 w-8" :style="{ color: 'var(--brand-text-muted)' }" />
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">Checklist indisponível</p>
+              <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Dados insuficientes para análise</p>
             </div>
           </template>
         </div>
       </section>
 
       <!-- Company profile -->
-      <section v-if="brand.assetPage.showCompanyInfo" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+      <section v-if="brand.assetPage.showCompanyInfo" class="border-b py-8" :style="{ borderColor: 'var(--brand-border)' }">
         <header class="mb-6 flex flex-col gap-1">
-          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+          <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Sobre a empresa
           </h2>
-          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
             &gt; DADOS INSTITUCIONAIS · SETOR · INDÚSTRIA
           </p>
         </header>
 
-        <div class="border p-6" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="border p-6" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <div class="flex items-start gap-5">
             <USkeleton v-if="isLoadingAsset" class="h-16 w-16 flex-shrink-0 rounded-xl" />
             <img
@@ -713,7 +713,7 @@
             <div
               v-else-if="!isLoadingAsset"
               class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`, color: brand.colors.textMuted }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)`, color: 'var(--brand-text-muted)' }"
               aria-hidden="true"
             >
               <span class="font-mono-tab text-base font-bold">{{ tickerUpper.slice(0, 2) }}</span>
@@ -721,10 +721,10 @@
             <div class="flex flex-1 flex-col gap-1">
               <USkeleton v-if="isLoadingAsset" class="h-6 w-48" />
               <template v-else>
-                <h3 class="text-[18px] font-medium md:text-[20px]" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
+                <h3 class="text-[18px] font-medium md:text-[20px]" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">
                   {{ asset?.name }}
                 </h3>
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
                   {{ tickerUpper }} · CODIGO B3
                 </span>
               </template>
@@ -733,24 +733,24 @@
 
           <div
             class="mt-6 grid grid-cols-1 gap-px border sm:grid-cols-2 lg:grid-cols-3"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
           >
             <USkeleton v-if="isLoadingAsset" class="h-16" />
             <template v-else>
-              <div v-if="asset?.sector" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              <div v-if="asset?.sector" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: 'var(--brand-background)' }">
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Setor
                 </span>
-                <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.sector }}</span>
+                <span class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">{{ asset.sector }}</span>
               </div>
-              <div v-if="asset?.industry" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              <div v-if="asset?.industry" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: 'var(--brand-background)' }">
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Indústria
                 </span>
-                <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.industry }}</span>
+                <span class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">{{ asset.industry }}</span>
               </div>
-              <div v-if="asset?.website" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              <div v-if="asset?.website" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: 'var(--brand-background)' }">
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Website
                 </span>
                 <a
@@ -758,7 +758,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="text-sm font-medium transition-colors hover:underline"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                 >
                   {{ asset.website.replace(/^https?:\/\//, '').replace(/\/$/, '') }} →
                 </a>
@@ -775,7 +775,7 @@
               v-for="(p, idx) in editorialDescriptionParagraphs"
               :key="idx"
               class="text-[15px] leading-[1.7]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >{{ p }}</p>
           </div>
 
@@ -792,21 +792,21 @@
       </section>
 
       <!-- Seção de IA para não autenticados, terminal REPL style -->
-      <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: brand.colors.border }">
+      <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: 'var(--brand-border)' }">
         <header class="mb-6 flex flex-col gap-1">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
             Assistente IA
           </span>
-          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
-            Dúvidas sobre <span class="italic" :style="{ color: brand.colors.primary }">{{ tickerUpper }}</span>?
+          <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+            Dúvidas sobre <span class="italic" :style="{ color: 'var(--brand-primary)' }">{{ tickerUpper }}</span>?
           </h2>
-          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
             &gt; PERGUNTE QUALQUER COISA · RESPOSTA EM ~3 SEGUNDOS
           </p>
         </header>
 
         <!-- Terminal-styled query cards, like recent commands list -->
-        <div class="mb-6 grid gap-px border sm:grid-cols-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+        <div class="mb-6 grid gap-px border sm:grid-cols-3" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }">
           <NuxtLink
             v-for="(item, idx) in [
               { text: `Vale investir em ${tickerUpper}?`, desc: 'Analise de viabilidade' },
@@ -816,32 +816,32 @@
             :key="idx"
             to="/auth/login"
             class="group flex flex-col gap-2 p-5 transition-colors hover:brightness-125"
-            :style="{ backgroundColor: brand.colors.surface }"
+            :style="{ backgroundColor: 'var(--brand-surface)' }"
           >
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
               Pergunta {{ idx + 1 }}
             </span>
-            <p class="text-base font-medium leading-snug" :style="{ color: brand.colors.text }">
-              <span :style="{ color: brand.colors.primary }">&gt;</span> {{ item.text }}
+            <p class="text-base font-medium leading-snug" :style="{ color: 'var(--brand-text)' }">
+              <span :style="{ color: 'var(--brand-primary)' }">&gt;</span> {{ item.text }}
             </p>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
               {{ item.desc }}
             </span>
-            <span class="mt-auto flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors" :style="{ color: brand.colors.textMuted }">
+            <span class="mt-auto flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors" :style="{ color: 'var(--brand-text-muted)' }">
               PERGUNTAR →
             </span>
           </NuxtLink>
         </div>
 
         <!-- CTA as terminal keyboard key -->
-        <div class="flex flex-col items-center gap-4 border p-6 md:p-8" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="flex flex-col items-center gap-4 border p-6 md:p-8" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <UButton
             to="/auth/login"
             size="xl"
             class="group w-full font-mono-tab font-semibold uppercase tracking-wider transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 sm:w-auto"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
             }"
           >
             <template #leading>
@@ -849,7 +849,7 @@
             </template>
             {{ brand.ai.ctaButton }}
           </UButton>
-          <p class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
+          <p class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-text-muted)' }">
             <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
             GRATUITO · SEM CARTAO · RESPOSTA EM SEGUNDOS
           </p>
@@ -1088,7 +1088,7 @@ const fundamentalsCells = computed(() => {
   return [
     { label: 'P/L', value: ind.pl, tooltip: 'Preco sobre Lucro' },
     { label: 'P/VP', value: ind.pvpa, tooltip: 'Preco sobre Valor Patrimonial' },
-    { label: 'DY', value: ind.dividendYield, tooltip: 'Dividend Yield 12M', accent: brand.colors.primary },
+    { label: 'DY', value: ind.dividendYield, tooltip: 'Dividend Yield 12M', accent: 'var(--brand-primary)' },
     { label: 'ROE', value: ind.roe, tooltip: 'Return on Equity' },
     { label: 'ROA', value: ind.roa, tooltip: 'Return on Assets' },
     { label: 'MG.LIQ', value: ind.netMargin, tooltip: 'Margem liquida' },
@@ -1101,32 +1101,32 @@ const fundamentalsCells = computed(() => {
 function monthCellStyle(item: any): Record<string, string> {
   if (item.highlight) {
     return {
-      backgroundColor: brand.colors.primary + '1F', // ~12% amber tint
-      borderLeft: `2px solid ${brand.colors.primary}`,
+      backgroundColor: `color-mix(in srgb, var(--brand-primary) 12%, transparent)`,
+      borderLeft: `2px solid var(--brand-primary)`,
     }
   }
   if (item.percentage >= 80) {
     return {
-      backgroundColor: brand.colors.positive + '14', // ~8% green tint
+      backgroundColor: `color-mix(in srgb, var(--brand-positive) 8%, transparent)`,
     }
   }
   if (item.percentage >= 50) {
     return {
-      backgroundColor: brand.colors.positive + '0A', // ~4% green tint
+      backgroundColor: `color-mix(in srgb, var(--brand-positive) 4%, transparent)`,
     }
   }
   if (item.percentage > 0) {
-    return { backgroundColor: brand.colors.surface }
+    return { backgroundColor: 'var(--brand-surface)' }
   }
-  return { backgroundColor: brand.colors.background }
+  return { backgroundColor: 'var(--brand-background)' }
 }
 
 function monthCellAccent(item: any): string {
-  if (item.highlight) return brand.colors.primary
-  if (item.percentage >= 80) return brand.colors.positive
-  if (item.percentage >= 50) return brand.colors.text
-  if (item.percentage > 0) return brand.colors.textMuted
-  return brand.colors.border
+  if (item.highlight) return 'var(--brand-primary)'
+  if (item.percentage >= 80) return 'var(--brand-positive)'
+  if (item.percentage >= 50) return 'var(--brand-text)'
+  if (item.percentage > 0) return 'var(--brand-text-muted)'
+  return 'var(--brand-border)'
 }
 
 // ==========================================================
@@ -2420,7 +2420,7 @@ const assetFullscreenRef = ref<{ open: () => void; close: () => void } | null>(n
 
 // Hero dashboard card state: gradient tint + accent color + sparkline
 const isPositive = computed(() => Number(asset.value?.change_percent ?? 0) >= 0)
-const heroAccent = computed(() => (isPositive.value ? brand.colors.positive : brand.colors.negative))
+const heroAccent = computed(() => (isPositive.value ? 'var(--brand-positive)' : 'var(--brand-negative)'))
 
 // Badge mostrado no ticker bar. Prioriza subcategoria FII (FIAGRO, etc),
 // senão cai pro tipo do asset (STOCK, REIT, ETF, BDR).
@@ -2462,7 +2462,7 @@ const sessionStats = computed(() => {
     return [
       { label: 'VOL', value: formatVolumeShort(currentVolume.value) },
       { label: 'COTISTAS', value: f.num_shareholders !== null ? Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(f.num_shareholders) : '-' },
-      { label: 'DY', value: f.dividend_yield_12m !== null ? `${f.dividend_yield_12m.toFixed(2)}%` : '-', accent: brand.colors.primary },
+      { label: 'DY', value: f.dividend_yield_12m !== null ? `${f.dividend_yield_12m.toFixed(2)}%` : '-', accent: 'var(--brand-primary)' },
       { label: 'VPA', value: f.book_value_per_share !== null ? `R$ ${f.book_value_per_share.toFixed(2)}` : '-' },
       { label: 'P/VP', value: f.price_to_book !== null ? f.price_to_book.toFixed(2) : '-' },
       { label: 'REND.MENSAL', value: f.monthly_income_avg_24m !== null ? `R$ ${f.monthly_income_avg_24m.toFixed(2)}` : '-' },
@@ -2475,7 +2475,7 @@ const sessionStats = computed(() => {
     return [
       { label: 'VOL', value: formatVolumeShort(e.volume ?? currentVolume.value) },
       { label: 'COTISTAS', value: e.num_shareholders !== null ? Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(e.num_shareholders) : '-' },
-      { label: 'VAR.12M', value: e.change_12m !== null ? `${e.change_12m >= 0 ? '+' : ''}${e.change_12m.toFixed(2)}%` : '-', accent: e.change_12m !== null ? (e.change_12m >= 0 ? brand.colors.positive : brand.colors.negative) : undefined },
+      { label: 'VAR.12M', value: e.change_12m !== null ? `${e.change_12m >= 0 ? '+' : ''}${e.change_12m.toFixed(2)}%` : '-', accent: e.change_12m !== null ? (e.change_12m >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)') : undefined },
       { label: 'MIN.52W', value: e.min_price_52_weeks !== null ? `R$ ${e.min_price_52_weeks.toFixed(2)}` : '-' },
       { label: 'MÁX.52W', value: e.max_price_52_weeks !== null ? `R$ ${e.max_price_52_weeks.toFixed(2)}` : '-' },
       { label: 'RATIO', value: e.ratio !== null ? String(e.ratio) : '-' },
@@ -2489,7 +2489,7 @@ const sessionStats = computed(() => {
     return [
       { label: 'VOL', value: formatVolumeShort(currentVolume.value) },
       { label: 'M.CAP', value: formatMarketCapShort(v.market_cap) },
-      { label: 'DY', value: v.dividend_yield !== null ? `${v.dividend_yield.toFixed(2)}%` : '-', accent: brand.colors.primary },
+      { label: 'DY', value: v.dividend_yield !== null ? `${v.dividend_yield.toFixed(2)}%` : '-', accent: 'var(--brand-primary)' },
       { label: 'P/L', value: v.price_to_earnings !== null ? v.price_to_earnings.toFixed(2) : '-' },
       { label: 'P/VP', value: v.price_to_book !== null ? v.price_to_book.toFixed(2) : '-' },
       { label: 'ROE', value: q.return_on_equity !== null ? `${q.return_on_equity.toFixed(1)}%` : '-' },
@@ -2500,7 +2500,7 @@ const sessionStats = computed(() => {
   return [
     { label: 'VOL', value: formatVolumeShort(currentVolume.value) },
     { label: 'M.CAP', value: formatMarketCapShort((asset.value as { market_cap?: number } | undefined)?.market_cap) },
-    { label: 'DY', value: formatDyShort(basicIndicators.value?.dividendYield), accent: brand.colors.primary },
+    { label: 'DY', value: formatDyShort(basicIndicators.value?.dividendYield), accent: 'var(--brand-primary)' },
     { label: 'P/L', value: basicIndicators.value?.pl || '-' },
     { label: 'P/VP', value: basicIndicators.value?.pvpa || '-' },
     { label: 'ROE', value: basicIndicators.value?.roe || '-' },

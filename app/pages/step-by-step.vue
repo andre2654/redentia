@@ -5,7 +5,7 @@
         <h1
           class="font-medium"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(20px, 2.6vw, 24px)',
             letterSpacing: '-0.4px',
           }"

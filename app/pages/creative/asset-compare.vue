@@ -56,11 +56,11 @@ function resetControls() {
 }
 
 // Hardcoded Redentia palette, creatives are tenant-agnostic by design.
-const primaryColor = computed(() => '#F5A623')
-const positiveColor = computed(() => '#00D395')
-const negativeColor = computed(() => '#FF4747')
-const bgColor = computed(() => '#0A0B0E')
-const textColor = computed(() => '#E8EAED')
+const primaryColor = computed(() => 'var(--brand-primary)')
+const positiveColor = computed(() => 'var(--brand-positive)')
+const negativeColor = computed(() => 'var(--brand-negative)')
+const bgColor = computed(() => 'var(--bg-base)')
+const textColor = computed(() => 'var(--brand-text)')
 const primaryRgb = computed(() => hexToRgb(primaryColor.value))
 const textRgb = computed(() => hexToRgb(textColor.value))
 

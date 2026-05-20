@@ -72,7 +72,7 @@
     <span
       v-else
       class="ticker-chip-loading font-mono-tab"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >…</span>
   </component>
 </template>
@@ -129,8 +129,8 @@ const deltaPct = computed<number | null>(() => {
 
 const deltaColor = computed(() => {
   const delta = deltaPct.value
-  if (delta == null || Math.abs(delta) < 0.01) return brand.colors.textMuted
-  return delta > 0 ? (brand.colors.positive ?? brand.colors.primary) : brand.colors.negative
+  if (delta == null || Math.abs(delta) < 0.01) return 'var(--brand-text-muted)'
+  return delta > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 const livePriceColor = computed(() => {
@@ -138,8 +138,8 @@ const livePriceColor = computed(() => {
   // material (> 2%). Inside that band the price stays neutral so the
   // eye doesn't get pulled by every micro-move.
   const delta = deltaPct.value
-  if (delta == null || Math.abs(delta) < 2) return brand.colors.text
-  return delta > 0 ? (brand.colors.positive ?? brand.colors.primary) : brand.colors.negative
+  if (delta == null || Math.abs(delta) < 2) return 'var(--brand-text)'
+  return delta > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 const href = computed(() => {
@@ -180,9 +180,9 @@ function formatDelta(delta: number): string {
 const logoSize = computed(() => (props.density === 'compact' ? 16 : 20))
 
 const chipStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 80%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
+  color: 'var(--brand-text)',
   textDecoration: 'none',
 }))
 </script>

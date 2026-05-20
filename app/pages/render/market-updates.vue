@@ -127,9 +127,9 @@ const bgDarker = computed(() => darkenHex(bgDark.value, 0.7))
 const bgDarkest = computed(() => darkenHex(bgDark.value, 0.4))
 
 const cardBackground = computed(() =>
-  `radial-gradient(circle at 20% 15%, rgba(${primaryRgb.value}, 0.35) 0%, rgba(0, 0, 0, 0) 55%), ` +
-  `radial-gradient(circle at 70% 60%, rgba(${primaryRgb.value}, 0.25) 0%, rgba(0, 0, 0, 0) 65%), ` +
-  `radial-gradient(circle at 50% 105%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 55%), ` +
+  `radial-gradient(circle at 20% 15%, rgba(${primaryRgb.value}, 0.35) 0%, transparent 55%), ` +
+  `radial-gradient(circle at 70% 60%, rgba(${primaryRgb.value}, 0.25) 0%, transparent 65%), ` +
+  `radial-gradient(circle at 50% 105%, rgba(0, 0, 0, 0.55) 0%, transparent 55%), ` +
   `linear-gradient(180deg, ${bgDark.value} 0%, ${bgDarker.value} 55%, ${bgDarkest.value} 100%)`
 )
 
@@ -160,7 +160,7 @@ useHead(() => ({
       :style="{
         background: cardBackground,
         fontFamily: fontFamily,
-        color: brand.colors.text || '#fff',
+        color: 'var(--brand-text)' || '#fff',
       }"
     >
       <header class="header">

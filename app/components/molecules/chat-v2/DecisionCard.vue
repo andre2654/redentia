@@ -83,11 +83,11 @@
         <template v-if="decision.triggerCondition">
           <dt
             class="font-mono-tab pt-0.5 text-[10px] uppercase tracking-[0.14em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >Gatilho</dt>
           <dd
             class="text-pretty leading-snug"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ decision.triggerCondition }}</dd>
         </template>
       </dl>
@@ -142,12 +142,12 @@
       <UIcon
         name="i-lucide-calendar-clock"
         class="size-3.5 shrink-0"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-hidden="true"
       />
       <p
         class="font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         Revisita: {{ revisitsLabel }}
       </p>
@@ -157,7 +157,7 @@
       v-if="error"
       class="ml-12 text-[11.5px]"
       role="alert"
-      :style="{ color: brand.colors.negative }"
+      :style="{ color: 'var(--brand-negative)' }"
     >{{ error }}</p>
   </article>
 </template>
@@ -203,13 +203,13 @@ const typeIcon = computed(() => meta.value.icon)
 const typeColor = computed(() => {
   switch (meta.value.tone) {
     case 'positive':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'negative':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     case 'primary':
-      return brand.colors.primary
+      return 'var(--brand-primary)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 
@@ -237,27 +237,27 @@ const revisitsLabel = computed(() => {
 // identity lives in the icon + label; the wrapper stays out of the
 // way so the inline card doesn't compete with the answer text above.
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 70%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 55%, transparent)`,
 }))
 
 const primaryBtnStyle = computed(() => ({
-  backgroundColor: brand.colors.primary,
-  color: brand.colors.background,
+  backgroundColor: 'var(--brand-primary)',
+  color: 'var(--brand-background)',
 }))
 const tertiaryBtnStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`,
-  color: brand.colors.primary,
-  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 25%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 12%, transparent)`,
+  color: 'var(--brand-primary)',
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
 }))
 const ghostBtnStyle = computed(() => ({
   backgroundColor: 'transparent',
-  color: brand.colors.textMuted,
+  color: 'var(--brand-text-muted)',
 }))
 const acceptedBadgeStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 14%, transparent)`,
-  color: brand.colors.positive,
-  border: `1px solid color-mix(in srgb, ${brand.colors.positive} 30%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-positive) 14%, transparent)`,
+  color: 'var(--brand-positive)',
+  border: `1px solid color-mix(in srgb, var(--brand-positive) 30%, transparent)`,
 }))
 
 async function accept() {

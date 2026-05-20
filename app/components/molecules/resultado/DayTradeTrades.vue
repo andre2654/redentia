@@ -19,11 +19,11 @@
       <div class="flex flex-col gap-1">
         <span
           class="font-mono-tab text-[11px] font-medium uppercase"
-          :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+          :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
         >Histórico</span>
         <h3
           class="font-light"
-          :style="{ fontSize: '18px', color: brand.colors.text, letterSpacing: '-0.01em' }"
+          :style="{ fontSize: '18px', color: 'var(--brand-text)', letterSpacing: '-0.01em' }"
         >Operações no período</h3>
       </div>
 
@@ -45,11 +45,11 @@
       <UIcon
         name="i-lucide-search"
         class="size-6 opacity-40 mx-auto"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       />
       <span
         class="mt-2 block text-[13px]"
-        :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+        :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
       >
         Nenhuma operação corresponde ao filtro selecionado.
       </span>
@@ -63,7 +63,7 @@
       <!-- Header -->
       <div
         class="trades-row trades-row--header"
-        :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.background} 55%, transparent)` }"
+        :style="{ backgroundColor: `color-mix(in srgb, var(--brand-background) 55%, transparent)` }"
       >
         <span class="th th--time">Tempo</span>
         <span class="th th--asset">Ativo</span>
@@ -79,24 +79,24 @@
         v-for="t in paginated"
         :key="t.id"
         class="trades-row"
-        :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)` }"
+        :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
       >
         <span class="td td--time">
           <span
             class="td--time-hms tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ formatTime(t.closedAt!) }}</span>
           <span
             class="td--time-date tabular-nums"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
           >{{ formatDate(t.closedAt!) }}</span>
         </span>
 
         <span class="td td--asset">
-          <span class="asset-ticker tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="asset-ticker tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ t.ticker }}
           </span>
-          <span class="asset-name" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+          <span class="asset-name" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
             {{ t.name }}
           </span>
         </span>
@@ -105,9 +105,9 @@
           <span
             class="side-pill"
             :style="{
-              color: brand.colors.positive,
-              borderColor: `color-mix(in srgb, ${brand.colors.positive} 30%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 10%, transparent)`,
+              color: 'var(--brand-positive)',
+              borderColor: `color-mix(in srgb, var(--brand-positive) 30%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-positive) 10%, transparent)`,
             }"
           >
             <UIcon name="i-lucide-arrow-up-right" class="size-3" />
@@ -115,21 +115,21 @@
           </span>
         </span>
 
-        <span class="td td--qty tabular-nums" :style="{ color: brand.colors.text }">
+        <span class="td td--qty tabular-nums" :style="{ color: 'var(--brand-text)' }">
           {{ formatQty(t.quantity) }}
         </span>
 
         <span class="td td--prices">
-          <span class="tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ formatPrice(t.openPrice, t.instrumentType) }}
           </span>
-          <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 35%, transparent)` }">→</span>
-          <span class="tabular-nums" :style="{ color: brand.colors.text }">
+          <span :style="{ color: `color-mix(in srgb, var(--brand-text) 35%, transparent)` }">→</span>
+          <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ t.closePrice != null ? formatPrice(t.closePrice, t.instrumentType) : '—' }}
           </span>
         </span>
 
-        <span class="td td--hold tabular-nums" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }">
+        <span class="td td--hold tabular-nums" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)` }">
           {{ formatHold(t.holdingSeconds) }}
         </span>
 
@@ -143,7 +143,7 @@
     <div
       v-if="totalPages > 1"
       class="flex items-center justify-between gap-3 px-1 text-[12px]"
-      :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+      :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
     >
       <span>
         {{ pageStart + 1 }}–{{ Math.min(pageStart + PAGE_SIZE, filtered.length) }}
@@ -262,9 +262,9 @@ function formatHold(sec: number): string {
 
 function resultColor(amount: number | null): string {
   if (amount == null || amount === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
   }
-  return amount > 0 ? brand.colors.positive : brand.colors.negative
+  return amount > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 function formatResult(t: MockTrade): string {
@@ -278,19 +278,19 @@ function formatResult(t: MockTrade): string {
 }
 
 const tableStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const emptyStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const pageButtonStyle = computed(() => ({
   backgroundColor: 'transparent',
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 </script>
 

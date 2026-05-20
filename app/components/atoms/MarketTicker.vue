@@ -44,7 +44,7 @@
             </span>
             <span
               :style="{
-                color: item.change >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                color: item.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ item.change >= 0 ? '▲' : '▼' }} {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
@@ -60,15 +60,15 @@
       <div class="ticker-track flex shrink-0 items-center gap-8 whitespace-nowrap px-6" aria-hidden="true">
         <template v-for="(item, idx) in tapeItems" :key="`b-${idx}`">
           <div class="flex items-center gap-2 font-mono-tab text-[11px]">
-            <span class="font-semibold" :style="{ color: brand.colors.text }">
+            <span class="font-semibold" :style="{ color: 'var(--brand-text)' }">
               {{ item.symbol }}
             </span>
-            <span :style="{ color: brand.colors.textMuted }">
+            <span :style="{ color: 'var(--brand-text-muted)' }">
               {{ item.value }}
             </span>
             <span
               :style="{
-                color: item.change >= 0 ? brand.colors.positive : brand.colors.negative,
+                color: item.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ item.change >= 0 ? '▲' : '▼' }} {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
@@ -76,7 +76,7 @@
           </div>
           <span
             class="h-3 w-px"
-            :style="{ backgroundColor: brand.colors.border }"
+            :style="{ backgroundColor: 'var(--brand-border)' }"
           />
         </template>
       </div>
@@ -85,7 +85,7 @@
     <!-- Right-side fade mask -->
     <div
       class="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l to-transparent"
-      :style="{ '--tw-gradient-from': brand.colors.surface, backgroundImage: `linear-gradient(to left, ${brand.colors.surface}, transparent)` }"
+      :style="{ '--tw-gradient-from': 'var(--brand-surface)', backgroundImage: `linear-gradient(to left, var(--brand-surface), transparent)` }"
     />
   </div>
 </template>

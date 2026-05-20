@@ -208,7 +208,7 @@ function onMultiModeToggle(enabled: boolean) {
 }
 .theme-form__radio--active {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1A0A2E);
+  color: var(--text-on-primary, var(--text-heading));
   font-weight: 600;
 }
 .theme-form__select {

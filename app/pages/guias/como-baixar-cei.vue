@@ -6,7 +6,7 @@
         v-if="!authStore.isAuthenticated"
         to="/guias"
         class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         <UIcon name="i-lucide-chevron-left" class="size-3" />
         Todos os guias
@@ -15,14 +15,14 @@
       <header class="flex max-w-3xl flex-col gap-3">
         <span
           class="font-mono-tab text-[11px] font-medium uppercase"
-          :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+          :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
         >Guia · Importação de carteira</span>
         <p
           class="max-w-2xl"
           :style="{
             fontSize: '17.5px',
             lineHeight: 1.55,
-            color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 72%, transparent)`,
           }"
         >Em 4 cliques o próprio site da B3 gera o arquivo certo, com todos os teus ativos: ações, FIIs, ETFs, Tesouro Direto e contratos de aluguel. Depois é só anexar aqui na Redentia que a IA processa tudo.</p>
         <div class="mt-2 flex flex-wrap items-center gap-3">
@@ -30,9 +30,9 @@
             to="/help?intent=import-portfolio"
             class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[13.5px] font-medium"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
-              boxShadow: `0 8px 18px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent)`,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
+              boxShadow: `0 8px 18px -10px color-mix(in srgb, var(--brand-primary) 60%, transparent)`,
             }"
           >
             <UIcon name="i-lucide-sparkles" class="size-4" />
@@ -44,8 +44,8 @@
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-[13.5px] font-medium"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-              color: brand.colors.text,
+              borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+              color: 'var(--brand-text)',
             }"
           >
             <UIcon name="i-lucide-external-link" class="size-3.5" />
@@ -68,36 +68,36 @@
             :key="step.title"
             class="flex flex-col gap-3 rounded-xl border p-6 md:flex-row md:gap-6"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+              borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
             }"
           >
             <div class="flex shrink-0 items-start gap-3 md:w-[180px] md:flex-col md:items-start">
               <span
                 class="flex size-9 shrink-0 items-center justify-center rounded-full font-mono-tab text-[14px] font-medium tabular-nums"
                 :style="{
-                  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
-                  color: brand.colors.primary,
+                  backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
+                  color: 'var(--brand-primary)',
                 }"
               >{{ i + 1 }}</span>
               <span
                 class="font-mono-tab text-[10.5px] font-medium uppercase"
                 :style="{
                   letterSpacing: '0.18em',
-                  color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
                 }"
               >Passo {{ String(i + 1).padStart(2, '0') }}</span>
             </div>
             <div class="flex flex-1 flex-col gap-2">
               <h3
                 class="text-[18px] font-medium"
-                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+                :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
               >{{ step.title }}</h3>
               <p
                 class="text-[14.5px]"
                 :style="{
                   lineHeight: 1.55,
-                  color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 72%, transparent)`,
                 }"
                 v-html="step.body"
               ></p>
@@ -107,7 +107,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mt-1 inline-flex items-center gap-1.5 self-start font-mono-tab text-[12px] font-medium"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               >
                 {{ step.link.label }}
                 <UIcon name="i-lucide-arrow-up-right" class="size-3" />
@@ -131,8 +131,8 @@
             :key="sheet.title"
             class="flex flex-col gap-2 rounded-xl border p-5"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 50%, ${brand.colors.background})`,
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-surface) 50%, var(--brand-background))`,
+              borderColor: `color-mix(in srgb, var(--brand-border) 45%, transparent)`,
             }"
           >
             <span
@@ -145,18 +145,18 @@
               class="font-mono-tab text-[10.5px] font-medium uppercase"
               :style="{
                 letterSpacing: '0.18em',
-                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
               }"
             >Aba "{{ sheet.tab_name }}"</span>
             <h3
               class="text-[15px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >{{ sheet.title }}</h3>
             <p
               class="text-[13px]"
               :style="{
                 lineHeight: 1.55,
-                color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`,
               }"
             >{{ sheet.body }}</p>
           </article>
@@ -176,26 +176,26 @@
             :key="qa.q"
             class="group rounded-xl border p-5"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 50%, ${brand.colors.background})`,
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-surface) 50%, var(--brand-background))`,
+              borderColor: `color-mix(in srgb, var(--brand-border) 45%, transparent)`,
             }"
           >
             <summary
               class="flex cursor-pointer list-none items-center justify-between gap-3 text-[14.5px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >
               {{ qa.q }}
               <UIcon
                 name="i-lucide-chevron-down"
                 class="size-4 shrink-0 transition-transform group-open:rotate-180"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               />
             </summary>
             <p
               class="mt-3 text-[13.5px]"
               :style="{
                 lineHeight: 1.6,
-                color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 72%, transparent)`,
               }"
               v-html="qa.a"
             ></p>
@@ -207,30 +207,30 @@
       <section
         class="flex flex-col gap-2 rounded-xl border p-6"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 5%, ${brand.colors.surface})`,
-          borderColor: `color-mix(in srgb, ${brand.colors.positive} 22%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-positive) 5%, var(--brand-surface))`,
+          borderColor: `color-mix(in srgb, var(--brand-positive) 22%, transparent)`,
         }"
       >
         <div class="flex items-center gap-2">
           <UIcon
             name="i-lucide-shield-check"
             class="size-5"
-            :style="{ color: brand.colors.positive }"
+            :style="{ color: 'var(--brand-positive)' }"
           />
           <span
             class="font-mono-tab text-[11px] font-medium uppercase"
-            :style="{ letterSpacing: '0.18em', color: brand.colors.positive }"
+            :style="{ letterSpacing: '0.18em', color: 'var(--brand-positive)' }"
           >Privacidade</span>
         </div>
         <h3
           class="text-[18px] font-medium"
-          :style="{ color: brand.colors.text, letterSpacing: '-0.01em' }"
+          :style="{ color: 'var(--brand-text)', letterSpacing: '-0.01em' }"
         >Seus dados ficam só com você</h3>
         <p
           class="text-[14px]"
           :style="{
             lineHeight: 1.55,
-            color: `color-mix(in srgb, ${brand.colors.text} 75%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 75%, transparent)`,
           }"
         >A planilha é processada exclusivamente pra montar sua carteira na Redentia. Não vendemos os dados, não compartilhamos com terceiros, não fazemos análise para fins comerciais. A conexão é criptografada (TLS) tanto na subida quanto na ida pra IA, e nenhuma corretora ou instituição financeira tem acesso a esse arquivo via Redentia.</p>
       </section>

@@ -650,8 +650,8 @@ function resendCurrent() {
   font-size: 12px;
   line-height: 1.35;
   color: color-mix(in srgb, var(--brand-text, #111) 80%, transparent);
-  background: color-mix(in srgb, #f59e0b 8%, transparent);
-  border: 1px solid color-mix(in srgb, #f59e0b 28%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-warning) 28%, transparent);
 }
 
 .raiox-auth__degraded svg {

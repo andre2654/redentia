@@ -453,7 +453,7 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
                         <span
                           class="font-mono-tab text-[10.5px] tabular-nums"
                           :style="{
-                            color: currentDemo.ticker.positive ? (brand.colors.positive ?? brand.colors.primary) : 'var(--brand-negative)',
+                            color: currentDemo.ticker.positive ? ('var(--brand-positive)' ?? 'var(--brand-primary)') : 'var(--brand-negative)',
                           }"
                         >{{ currentDemo.ticker.price }} <span class="opacity-80">{{ currentDemo.ticker.delta }}</span></span>
                       </span>
@@ -505,7 +505,7 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
                 :key="i"
                 class="size-1.5 rounded-full transition-[background-color,opacity]"
                 :style="{
-                  backgroundColor: i === demoIndex ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.textMuted} 30%, transparent)`,
+                  backgroundColor: i === demoIndex ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-text-muted) 30%, transparent)`,
                 }"
                 aria-hidden="true"
               />
@@ -523,11 +523,11 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
         <div class="mb-10 flex flex-col items-center gap-3 text-center md:mb-14">
           <span
             class="font-mono-tab text-[10.5px] uppercase tracking-[0.22em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >Como funciona</span>
           <h2
             class="font-display text-[28px] font-semibold leading-[1.1] md:text-[40px]"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >Você pergunta. A Redentia pesquisa. Você decide.</h2>
         </div>
 
@@ -537,29 +537,29 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
             :key="step.num"
             class="showcase-step relative flex flex-col gap-4 rounded-3xl p-6 md:p-7"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-surface) 80%, transparent)`,
+              border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
               animationDelay: `${i * 120}ms`,
             }"
           >
             <span
               class="font-mono-tab text-[12px] font-bold tracking-[0.18em]"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             >{{ step.num }}</span>
             <div
               class="flex size-11 items-center justify-center rounded-2xl"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
-                color: brand.colors.primary,
+                backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
+                color: 'var(--brand-primary)',
               }"
             >
               <UIcon :name="step.icon" class="size-5" aria-hidden="true" />
             </div>
             <h3
               class="text-[18px] font-semibold leading-tight md:text-[20px]"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ step.title }}</h3>
-            <p class="text-[13.5px] leading-relaxed md:text-[14.5px]" :style="{ color: brand.colors.textMuted }">
+            <p class="text-[13.5px] leading-relaxed md:text-[14.5px]" :style="{ color: 'var(--brand-text-muted)' }">
               {{ step.desc }}
             </p>
           </article>
@@ -575,11 +575,11 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
         <div class="mb-10 flex flex-col items-center gap-3 text-center md:mb-14">
           <span
             class="font-mono-tab text-[10.5px] uppercase tracking-[0.22em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >Por que Redentia</span>
           <h2
             class="font-display text-[28px] font-semibold leading-[1.1] md:text-[40px]"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >Não é mais um chatbot.</h2>
         </div>
 
@@ -589,21 +589,21 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
             :key="pillar.title"
             class="flex flex-col gap-3 rounded-3xl p-6 md:p-7"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 4%, ${brand.colors.surface})`,
-              border: `1px solid color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-primary) 4%, var(--brand-surface))`,
+              border: `1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
             }"
           >
             <UIcon
               :name="pillar.icon"
               class="size-7"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               aria-hidden="true"
             />
             <h3
               class="text-[17px] font-semibold leading-tight md:text-[19px]"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ pillar.title }}</h3>
-            <p class="text-[13.5px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="text-[13.5px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               {{ pillar.desc }}
             </p>
           </article>
@@ -618,24 +618,24 @@ function answerSegments(line: string): Array<{ kind: 'text' | 'propose'; value: 
       <div
         class="mx-auto flex max-w-4xl flex-col items-center gap-6 rounded-[28px] px-6 py-10 text-center md:px-10 md:py-14"
         :style="{
-          background: `radial-gradient(ellipse 100% 80% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 22%, ${brand.colors.surface}) 0%, color-mix(in srgb, ${brand.colors.surface} 96%, transparent) 65%)`,
-          border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+          background: `radial-gradient(ellipse 100% 80% at 50% 0%, color-mix(in srgb, var(--brand-primary) 22%, var(--brand-surface)) 0%, color-mix(in srgb, var(--brand-surface) 96%, transparent) 65%)`,
+          border: `1px solid color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
         }"
       >
         <h2
           class="font-display text-[26px] font-semibold leading-[1.1] md:text-[36px]"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >Sua próxima decisão tem dado por trás dela.</h2>
-        <p class="max-w-xl text-[14.5px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+        <p class="max-w-xl text-[14.5px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
           Análise multi-passo, validação cruzada, framework de carteira de 9 camadas. Tudo conferido antes de virar resposta.
         </p>
         <button
           type="button"
           class="showcase-cta inline-flex items-center gap-2 rounded-full px-7 py-3 text-[15px] font-semibold transition-[transform,filter,box-shadow]"
           :style="{
-            background: `linear-gradient(135deg, ${brand.colors.primary} 0%, color-mix(in srgb, ${brand.colors.primary} 70%, ${brand.colors.text}) 100%)`,
-            color: brand.colors.background,
-            boxShadow: `0 16px 32px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent), inset 0 1px 0 0 color-mix(in srgb, white 30%, transparent)`,
+            background: `linear-gradient(135deg, var(--brand-primary) 0%, color-mix(in srgb, var(--brand-primary) 70%, var(--brand-text)) 100%)`,
+            color: 'var(--brand-background)',
+            boxShadow: `0 16px 32px -10px color-mix(in srgb, var(--brand-primary) 60%, transparent), inset 0 1px 0 0 color-mix(in srgb, white 30%, transparent)`,
           }"
           @click="onCta"
         >

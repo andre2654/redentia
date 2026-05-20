@@ -516,7 +516,7 @@ async function shareCard(idx: number) {
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--brand-primary, #f5a623);
+  color: var(--brand-primary, var(--brand-primary));
   font-weight: 500;
   margin: 0;
 }

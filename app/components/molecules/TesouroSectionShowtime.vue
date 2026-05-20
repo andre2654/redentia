@@ -11,16 +11,16 @@
       <h2
         class="font-showtime-display chunky-shadow"
         :style="{
-          color: brand.colors.text,
+          color: 'var(--brand-text)',
           fontSize: 'clamp(2rem, 5vw, 3.5rem)',
         }"
       >
-        A <span class="highlighter" :style="{ color: brand.colors.primary }">grana segura</span><br />
+        A <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">grana segura</span><br />
         que rende sem susto.
       </h2>
       <p
         class="font-showtime-body max-w-xl text-base"
-        :style="{ color: `${brand.colors.text}CC` }"
+        :style="{ color: 'color-mix(in srgb, var(--brand-text) 80%, transparent)' }"
       >
         Tesouro Direto descomplicado, criatura. O dinheiro do governo te pagando juros, atualizado todo dia.
       </p>
@@ -36,11 +36,11 @@
       <article
         class="showtime-frame relative flex w-full flex-col rounded-[24px] p-5"
         :class="index % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
-        :style="{ backgroundColor: brand.colors.surface }"
+        :style="{ backgroundColor: 'var(--brand-surface)' }"
       >
         <div class="washi-tape" />
 
-        <header class="mb-4 flex items-start justify-between gap-3 border-b pb-3" :style="{ borderColor: `${brand.colors.text}1A` }">
+        <header class="mb-4 flex items-start justify-between gap-3 border-b pb-3" :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }">
           <div class="flex flex-col gap-1">
             <span class="font-showtime-label" :style="{ color: item.color }">
               ★ TD · {{ String(item.label).toUpperCase() }}
@@ -48,7 +48,7 @@
             <h3
               class="font-showtime-display"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(1.15rem, 1.6vw, 1.4rem)',
               }"
             >
@@ -58,7 +58,7 @@
           <NuxtLink
             :to="{ path: '/search', query: item.query }"
             class="font-showtime-label inline-flex items-center gap-1 transition-transform hover:translate-x-0.5"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             VER MAIS →
           </NuxtLink>
@@ -75,13 +75,13 @@
             <div class="flex min-w-0 flex-1 flex-col">
               <span
                 class="font-showtime-body text-[13px] font-bold leading-tight"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ prettyName(title.name) }}
               </span>
               <span
                 class="font-showtime-label !text-[10px]"
-                :style="{ color: `${brand.colors.text}80` }"
+                :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
               >
                 VENCE {{ formatMaturity(title.maturity_date) }}
               </span>
@@ -98,7 +98,7 @@
               </span>
               <span
                 class="tabular-nums mt-0.5 text-[10.5px]"
-                :style="{ color: `${brand.colors.text}80` }"
+                :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
               >
                 {{ formatMoney(title.price_buy) }}
               </span>
@@ -108,7 +108,7 @@
           <div
             v-if="!item.items.length"
             class="font-showtime-body py-6 text-center text-[12px] italic"
-            :style="{ color: `${brand.colors.text}80` }"
+            :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
           >
             Sem titulos por aqui, criatura.
           </div>

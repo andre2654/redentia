@@ -89,15 +89,15 @@ const progressPct = computed(() => Math.round(progress.value * 100))
 const statusColor = computed(() => {
   switch (props.goal.status) {
     case 'hit':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'on_track':
-      return brand.colors.primary
+      return 'var(--brand-primary)'
     case 'at_risk':
-      return brand.colors.warning ?? '#f59e0b'
+      return 'var(--brand-warning)'
     case 'unfeasible':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 

@@ -876,14 +876,14 @@ function openLeadModal(plan?: string) {
 // ============================================================
 
 const C = {
-  primary: '#F5A623',
-  positive: '#00D395',
-  background: '#0A0B0E',
-  surface: '#14161C',
-  surfaceLight: '#0F1116',
-  border: '#2A2E39',
-  text: '#E8EAED',
-  textMuted: '#8B92A7',
+  primary: 'var(--brand-primary)',
+  positive: 'var(--brand-positive)',
+  background: 'var(--bg-base)',
+  surface: 'var(--bg-elevated)',
+  surfaceLight: 'var(--bg-input)',
+  border: 'var(--border-subtle)',
+  text: 'var(--brand-text)',
+  textMuted: 'var(--text-muted)',
   accent2: '#6366F1',
 }
 
@@ -953,9 +953,9 @@ const tenants = [
     description: 'O tenant-mãe. Bloomberg terminal reimaginado, amber, monospace, dados por primeiro.',
     url: 'https://redentia.com.br',
     iframeSrc: 'https://www.redentia.com.br/',
-    bg: '#0A0B0E',
-    fg: '#E8EAED',
-    accent: '#F5A623',
+    bg: 'var(--bg-base)',
+    fg: 'var(--brand-text)',
+    accent: 'var(--brand-primary)',
     font: "'Instrument Serif', serif",
     italic: false,
     weight: 400,
@@ -1021,7 +1021,7 @@ const tenants = [
     description: 'Nathalia Arcuri em formato programa de TV pop. Poppins 900, amarelo sticker, Margarete mascote.',
     url: 'https://redentia.com.br/?brand=me-poupe',
     iframeSrc: 'https://www.redentia.com.br/?brand=me-poupe',
-    bg: '#1A0A2E',
+    bg: 'var(--text-heading)',
     fg: '#FFFFFF',
     accent: '#FACC15',
     font: "'Poppins', sans-serif",
@@ -1038,9 +1038,9 @@ const tenants = [
     description: 'Deploy em 1 semana. Identidade visual 100% custom, domínio próprio, zero mention de "Redentia".',
     url: '#cta',
     iframeSrc: '',
-    bg: '#14161C',
-    fg: '#E8EAED',
-    accent: '#F5A623',
+    bg: 'var(--bg-elevated)',
+    fg: 'var(--brand-text)',
+    accent: 'var(--brand-primary)',
     font: "'Instrument Serif', serif",
     italic: true,
     weight: 400,
@@ -1305,7 +1305,7 @@ usePageSeo({
 /* Focus rings */
 .wl-root a:focus-visible,
 .wl-root button:focus-visible {
-  outline: 2px solid #F5A623;
+  outline: 2px solid var(--brand-primary);
   outline-offset: 4px;
   border-radius: 8px;
 }

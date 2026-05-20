@@ -74,15 +74,15 @@
     <section v-if="brand.hero.variant === 'split'"  class="relative overflow-hidden">
       <!-- Background: dots + color splashes -->
       <div class="pointer-events-none absolute inset-0">
-        <div class="absolute right-0 top-0 h-[400px] w-[400px] rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.primary}26` }" />
-        <div class="absolute -left-20 bottom-0 h-[300px] w-[300px] rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.secondary}1A` }" />
+        <div class="absolute right-0 top-0 h-[400px] w-[400px] rounded-full blur-3xl" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 15%, transparent)' }" />
+        <div class="absolute -left-20 bottom-0 h-[300px] w-[300px] rounded-full blur-3xl" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }" />
       </div>
 
       <div class="relative px-6 py-12 md:py-16">
         <div class="mx-auto flex max-w-6xl flex-col items-center gap-10 md:flex-row md:gap-16">
           <!-- Left: founder image (when hero.image is set) -->
           <div v-if="brand.hero.image" class="relative flex flex-1 items-end justify-center md:justify-start">
-            <div class="absolute -inset-16 rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.primary}15` }" />
+            <div class="absolute -inset-16 rounded-full blur-3xl" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)' }" />
             <NuxtImg
               :src="brand.hero.image"
               :alt="brand.founder.name"
@@ -93,7 +93,7 @@
           <!-- Text content -->
           <div class="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
             <!-- Badge energetico -->
-            <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 brand-card-sm" :style="{ backgroundColor: `${brand.colors.primary}1A`, border: `1px solid ${brand.colors.primary}33` }">
+            <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 brand-card-sm" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 10%, transparent)', border: `1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent)` }">
               <span class="text-sm font-semibold" :style="{ color: 'var(--brand-primary)' }">{{ brand.hero.badge }}</span>
             </div>
 
@@ -108,9 +108,9 @@
             </p>
 
             <!-- Founder quote -->
-            <p class="mb-6 max-w-sm text-sm italic" :style="{ color: `${brand.colors.text}80` }">
+            <p class="mb-6 max-w-sm text-sm italic" :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }">
               "{{ brand.hero.founderQuote }}"
-              <span class="not-italic" :style="{ color: `${brand.colors.text}4D` }">, {{ brand.founder.name }}</span>
+              <span class="not-italic" :style="{ color: 'color-mix(in srgb, var(--brand-text) 30%, transparent)' }">, {{ brand.founder.name }}</span>
             </p>
 
             <!-- CTAs lado a lado, pill shape -->
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Trust inline -->
-            <div class="mt-8 flex flex-wrap items-center gap-4 text-xs" :style="{ color: `${brand.colors.text}66` }">
+            <div class="mt-8 flex flex-wrap items-center gap-4 text-xs" :style="{ color: 'color-mix(in srgb, var(--brand-text) 40%, transparent)' }">
               <div v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx" class="flex items-center gap-1.5">
                 <UIcon name="i-lucide-check-circle" class="h-3 w-3" :style="{ color: 'var(--brand-secondary)' }" />
                 <span>{{ indicator }}</span>
@@ -136,7 +136,7 @@
           <div v-if="!brand.hero.image" class="flex flex-1 flex-col items-center gap-4">
             <div class="w-full max-w-sm border p-6 backdrop-blur-sm brand-card" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
               <div class="mb-4 flex items-center gap-3">
-                <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: `${brand.colors.primary}26` }">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 15%, transparent)' }">
                   <BrandLogo variant="icon" class="h-7 w-7" />
                 </div>
                 <div>
@@ -144,7 +144,7 @@
                   <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ brand.founder.role }}</p>
                 </div>
               </div>
-              <p class="text-base italic leading-relaxed" :style="{ color: `${brand.colors.text}B3` }">"{{ brand.hero.founderQuote }}"</p>
+              <p class="text-base italic leading-relaxed" :style="{ color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' }">"{{ brand.hero.founderQuote }}"</p>
             </div>
             <BrandLogo variant="full" class="h-8 opacity-40" />
           </div>
@@ -184,7 +184,7 @@
               <div class="flex items-center gap-2 border-l-2 pl-4 brand-card-sm" :style="{ borderColor: 'var(--brand-primary)' }">
                 <div>
                   <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ brand.founder.name }}</p>
-                  <p class="text-sm italic" :style="{ color: `${brand.colors.text}99` }">"{{ brand.hero.founderQuote }}"</p>
+                  <p class="text-sm italic" :style="{ color: 'color-mix(in srgb, var(--brand-text) 60%, transparent)' }">"{{ brand.hero.founderQuote }}"</p>
                 </div>
               </div>
               <div class="flex flex-wrap gap-4 text-xs" :style="{ color: 'var(--brand-text-muted)' }">
@@ -242,7 +242,7 @@
               <NuxtLink
                 to="/auth/register"
                 class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold shadow-lg transition hover:opacity-90"
-                :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)', boxShadow: `0 8px 30px ${brand.colors.primary}30` }"
+                :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)', boxShadow: `0 8px 30px color-mix(in srgb, var(--brand-primary) 19%, transparent)` }"
               >
                 <UIcon :name="brand.hero.ctaIcon || 'i-lucide-briefcase'" class="size-4" />
                 {{ brand.hero.ctaLabel }}

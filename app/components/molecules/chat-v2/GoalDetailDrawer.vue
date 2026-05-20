@@ -24,7 +24,7 @@
       <div
         v-if="open && goal"
         class="goal-drawer-backdrop fixed inset-0 z-[80] flex items-end justify-end md:items-stretch"
-        :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
+        :style="{ backgroundColor: 'var(--shadow-ambient)' }"
         role="presentation"
         @keydown.esc="close"
         @click.self="close"
@@ -341,7 +341,6 @@ const emit = defineEmits<{
   archived: [goalId: string]
 }>()
 
-const brand = useBrand()
 const titleId = computed(() => `goal-detail-${props.goal?.id ?? 'na'}`)
 const dialogRef = ref<HTMLElement | null>(null)
 
@@ -384,15 +383,15 @@ const timeLeftLabel = computed(() => {
 const statusColor = computed(() => {
   switch (props.goal?.status) {
     case 'hit':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'on_track':
-      return brand.colors.primary
+      return 'var(--brand-primary)'
     case 'at_risk':
-      return brand.colors.warning ?? '#f59e0b'
+      return 'var(--brand-warning)'
     case 'unfeasible':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 
@@ -601,54 +600,54 @@ function relativeTime(iso: string): string {
 
 // ---- Style helpers ----------------------------------------------
 const panelStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
+  backgroundColor: 'var(--brand-surface)',
   borderTopLeftRadius: '24px',
   borderTopRightRadius: '24px',
   borderRadius: undefined as string | undefined,
-  borderLeft: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
+  borderLeft: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 
 const footerStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderTopColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderTopColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
   paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
 }))
 
 const inputStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.background} 70%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-background) 70%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 
 const primaryBtnStyle = computed(() => ({
-  backgroundColor: brand.colors.primary,
-  color: brand.colors.background,
+  backgroundColor: 'var(--brand-primary)',
+  color: 'var(--brand-background)',
 }))
 
 const secondaryBtnStyle = computed(() => ({
   backgroundColor: 'transparent',
-  color: brand.colors.text,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+  color: 'var(--brand-text)',
+  border: `1px solid color-mix(in srgb, var(--brand-border) 60%, transparent)`,
 }))
 
 const ghostBtnStyle = computed(() => ({
   backgroundColor: 'transparent',
-  color: brand.colors.textMuted,
+  color: 'var(--brand-text-muted)',
 }))
 
 const destructiveBtnStyle = computed(() => {
   if (confirmingArchive.value) {
     return {
-      backgroundColor: brand.colors.negative,
-      color: brand.colors.background,
-      border: `1px solid ${brand.colors.negative}`,
+      backgroundColor: 'var(--brand-negative)',
+      color: 'var(--brand-background)',
+      border: `1px solid var(--brand-negative)`,
     }
   }
   return {
     backgroundColor: 'transparent',
-    color: brand.colors.negative,
-    border: `1px solid color-mix(in srgb, ${brand.colors.negative} 50%, transparent)`,
+    color: 'var(--brand-negative)',
+    border: `1px solid color-mix(in srgb, var(--brand-negative) 50%, transparent)`,
   }
 })
 </script>

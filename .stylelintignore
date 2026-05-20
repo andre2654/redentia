@@ -1,0 +1,18 @@
+# Build outputs
+.nuxt/
+.output/
+dist/
+node_modules/
+
+# Tokens source-of-truth — hexes válidos aqui
+app/config/brand.ts
+app/plugins/brand.ts
+
+# Dev playground (mobile-layouts v1-v4, mockups, etc)
+app/pages/dev/
+
+# Static assets
+public/
+
+# Types
+*.d.ts

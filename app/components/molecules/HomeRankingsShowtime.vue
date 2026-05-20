@@ -15,12 +15,12 @@
         <h2
           class="font-showtime-display chunky-shadow"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2rem, 5vw, 3.5rem)',
           }"
         >
           Quem é que tá<br />
-          <span class="highlighter" :style="{ color: brand.colors.positive }">bombando, criatura?</span>
+          <span class="highlighter" :style="{ color: 'var(--brand-positive)' }">bombando, criatura?</span>
         </h2>
       </header>
 
@@ -34,19 +34,19 @@
         <article
           class="showtime-frame relative flex w-full flex-col rounded-[24px] p-5"
           :class="index % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="washi-tape" />
 
-          <header class="mb-4 flex items-start justify-between gap-3 border-b pb-3" :style="{ borderColor: `${brand.colors.text}1A` }">
+          <header class="mb-4 flex items-start justify-between gap-3 border-b pb-3" :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }">
             <div class="flex flex-col gap-1">
-              <span class="font-showtime-label" :style="{ color: brand.colors.positive }">
+              <span class="font-showtime-label" :style="{ color: 'var(--brand-positive)' }">
                 ↗ {{ item.label.toUpperCase() }}
               </span>
               <h3
                 class="font-showtime-display"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(1.25rem, 1.8vw, 1.5rem)',
                 }"
               >
@@ -56,7 +56,7 @@
             <NuxtLink
               :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
               class="font-showtime-label inline-flex items-center gap-1 transition-transform hover:translate-x-0.5"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               :aria-label="`Ver todos ${item.label} em alta`"
             >
               VER MAIS →
@@ -83,11 +83,11 @@
         <h2
           class="font-showtime-display chunky-shadow"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2rem, 5vw, 3.5rem)',
           }"
         >
-          Os <span class="highlighter" :style="{ color: brand.colors.negative }">tombos do dia</span><br />
+          Os <span class="highlighter" :style="{ color: 'var(--brand-negative)' }">tombos do dia</span><br />
           em câmera lenta.
         </h2>
       </header>
@@ -102,19 +102,19 @@
         <article
           class="showtime-frame relative flex w-full flex-col rounded-[24px] p-5"
           :class="index % 2 === 0 ? 'showtime-frame--tilt-right' : 'showtime-frame--tilt-left'"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="washi-tape" />
 
-          <header class="mb-4 flex items-start justify-between gap-3 border-b pb-3" :style="{ borderColor: `${brand.colors.text}1A` }">
+          <header class="mb-4 flex items-start justify-between gap-3 border-b pb-3" :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }">
             <div class="flex flex-col gap-1">
-              <span class="font-showtime-label" :style="{ color: brand.colors.negative }">
+              <span class="font-showtime-label" :style="{ color: 'var(--brand-negative)' }">
                 ↘ {{ item.label.toUpperCase() }}
               </span>
               <h3
                 class="font-showtime-display"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(1.25rem, 1.8vw, 1.5rem)',
                 }"
               >
@@ -124,7 +124,7 @@
             <NuxtLink
               :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
               class="font-showtime-label inline-flex items-center gap-1 transition-transform hover:translate-x-0.5"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               :aria-label="`Ver todos ${item.label} em queda`"
             >
               VER MAIS →

@@ -33,8 +33,8 @@
           <div class="min-w-0 flex-1">
             <div class="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
               <div class="flex items-center gap-2">
-                <UIcon :name="step.icon" class="h-4 w-4 shrink-0" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : 'var(--brand-primary)' }" />
-                <h3 class="text-sm font-semibold md:text-base" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : 'var(--brand-text)' }">
+                <UIcon :name="step.icon" class="h-4 w-4 shrink-0" :style="{ color: step.status === 'locked' ? 'var(--brand-text-muted)' : 'var(--brand-primary)' }" />
+                <h3 class="text-sm font-semibold md:text-base" :style="{ color: step.status === 'locked' ? 'var(--brand-text-muted)' : 'var(--brand-text)' }">
                   {{ step.title }}
                 </h3>
               </div>
@@ -54,7 +54,7 @@
           </div>
 
           <!-- CTA arrow -->
-          <div class="hidden shrink-0 items-center gap-1 text-xs font-semibold transition-transform group-hover:translate-x-0.5 md:flex" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : 'var(--brand-primary)' }">
+          <div class="hidden shrink-0 items-center gap-1 text-xs font-semibold transition-transform group-hover:translate-x-0.5 md:flex" :style="{ color: step.status === 'locked' ? 'var(--brand-text-muted)' : 'var(--brand-primary)' }">
             <span>{{ step.ctaText }}</span>
             <UIcon name="i-lucide-chevron-right" class="h-3.5 w-3.5" />
           </div>
@@ -78,14 +78,14 @@ const config = computed(() => brand.investorChecklist!)
 
 function stepStyle(status: string) {
   const base = {
-    backgroundColor: brand.colors.surface,
-    borderColor: brand.colors.border,
+    backgroundColor: 'var(--brand-surface)',
+    borderColor: 'var(--brand-border)',
   }
   if (status === 'recommended') {
     return {
       ...base,
-      borderColor: `${brand.colors.primary}40`,
-      backgroundColor: `${brand.colors.primary}08`,
+      borderColor: 'color-mix(in srgb, var(--brand-primary) 25%, transparent)',
+      backgroundColor: 'color-mix(in srgb, var(--brand-primary) 3%, transparent)',
     }
   }
   if (status === 'locked') {
@@ -100,19 +100,19 @@ function stepStyle(status: string) {
 function numberStyle(status: string) {
   if (status === 'recommended') {
     return {
-      backgroundColor: brand.colors.primary,
-      color: brand.colors.background,
+      backgroundColor: 'var(--brand-primary)',
+      color: 'var(--brand-background)',
     }
   }
   if (status === 'locked') {
     return {
-      backgroundColor: `${brand.colors.textMuted}1A`,
-      color: brand.colors.textMuted,
+      backgroundColor: 'color-mix(in srgb, var(--brand-text-muted) 10%, transparent)',
+      color: 'var(--brand-text-muted)',
     }
   }
   return {
-    backgroundColor: `${brand.colors.primary}1A`,
-    color: brand.colors.primary,
+    backgroundColor: 'color-mix(in srgb, var(--brand-primary) 10%, transparent)',
+    color: 'var(--brand-primary)',
   }
 }
 </script>

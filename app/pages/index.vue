@@ -96,7 +96,7 @@
       <!-- Linha vertical fading no centro -->
       <div
         class="absolute left-1/2 top-0 h-[60%] w-px -translate-x-1/2"
-        :style="{ background: `linear-gradient(180deg, color-mix(in srgb, ${brand.colors.primary} 30%, transparent), transparent 100%)` }"
+        :style="{ background: `linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 30%, transparent), transparent 100%)` }"
       />
       <!-- Cluster: eyebrow + chevron animado -->
       <div class="relative flex flex-col items-center gap-1.5 px-4" :style="{ backgroundColor: 'var(--bg-base)' }">
@@ -131,7 +131,7 @@
         >
           <div
             class="mx-auto h-full w-[110%] max-w-[1280px] -translate-y-8"
-            :style="{ background: `radial-gradient(ellipse 60% 80% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 28%, transparent), transparent 65%)`, filter: 'blur(160px)' }"
+            :style="{ background: `radial-gradient(ellipse 60% 80% at 50% 0%, color-mix(in srgb, var(--brand-primary) 28%, transparent), transparent 65%)`, filter: 'blur(160px)' }"
           />
         </div>
 
@@ -153,7 +153,7 @@
             class="pointer-events-none absolute inset-0"
             aria-hidden="true"
             :style="{
-              background: `radial-gradient(ellipse 70% 60% at 90% -10%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
+              background: `radial-gradient(ellipse 70% 60% at 90% -10%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 65%)`,
             }"
           />
           <!-- Sutil rose secundário, bottom-left, equilibra a composição -->
@@ -161,7 +161,7 @@
             class="pointer-events-none absolute inset-0"
             aria-hidden="true"
             :style="{
-              background: `radial-gradient(ellipse 50% 50% at 5% 110%, color-mix(in srgb, ${brand.colors.primary} 10%, transparent), transparent 60%)`,
+              background: `radial-gradient(ellipse 50% 50% at 5% 110%, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 60%)`,
             }"
           />
 
@@ -269,7 +269,7 @@
               class="pointer-events-none absolute inset-0"
               aria-hidden="true"
               :style="{
-                background: `radial-gradient(ellipse 70% 60% at 90% -20%, color-mix(in srgb, ${ticker.change >= 0 ? brand.colors.positive : brand.colors.negative} 14%, transparent), transparent 65%)`,
+                background: `radial-gradient(ellipse 70% 60% at 90% -20%, color-mix(in srgb, ${ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'} 14%, transparent), transparent 65%)`,
               }"
             />
             <div class="relative flex h-full flex-col justify-between gap-3 p-4">
@@ -307,8 +307,8 @@
               >
                 <defs>
                   <linearGradient :id="`bento-fill-${ticker.code}`" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" :stop-color="ticker.change >= 0 ? brand.colors.positive : brand.colors.negative" stop-opacity="0.18" />
-                    <stop offset="100%" :stop-color="ticker.change >= 0 ? brand.colors.positive : brand.colors.negative" stop-opacity="0" />
+                    <stop offset="0%" :stop-color="ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'" stop-opacity="0.18" />
+                    <stop offset="100%" :stop-color="ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'" stop-opacity="0" />
                   </linearGradient>
                 </defs>
                 <path
@@ -318,7 +318,7 @@
                 <path
                   :d="bentoSparklineLine(ticker.sparkline)"
                   fill="none"
-                  :stroke="ticker.change >= 0 ? brand.colors.positive : brand.colors.negative"
+                  :stroke="ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'"
                   stroke-width="1.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -336,8 +336,8 @@
                 <span
                   class="rounded-md px-1.5 py-0.5 text-[11px] font-medium tabular-nums"
                   :style="{
-                    backgroundColor: `color-mix(in srgb, ${ticker.change >= 0 ? brand.colors.positive : brand.colors.negative} 14%, transparent)`,
-                    color: ticker.change >= 0 ? brand.colors.positive : brand.colors.negative,
+                    backgroundColor: `color-mix(in srgb, ${ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'} 14%, transparent)`,
+                    color: ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
                   }"
                   translate="no"
                 >{{ ticker.change >= 0 ? '+' : '' }}{{ ticker.change.toFixed(2) }}%</span>
@@ -424,7 +424,7 @@
             <div
               class="flex w-full flex-col gap-2 px-2 py-4"
               :class="rankingCardClass"
-              :style="rankingCardStyle(brand.colors.positive)"
+              :style="rankingCardStyle('var(--brand-positive)')"
             >
               <!-- Header quiet: eyebrow positive sutil + h3 normal weight, ver todos como link inline -->
               <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
@@ -469,7 +469,7 @@
             <div
               class="flex w-full flex-col gap-2 px-2 py-4"
               :class="rankingCardClass"
-              :style="rankingCardStyle(brand.colors.negative)"
+              :style="rankingCardStyle('var(--brand-negative)')"
             >
               <!-- Header quiet: eyebrow negative sutil + h3 normal, ver todos link -->
               <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
@@ -531,14 +531,14 @@
       class="qs-showcase relative overflow-hidden"
       :style="{
         order: (sectionOrder('news') ?? 0) - 1,
-        background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, ${brand.colors.primary} 5%, transparent) 50%, color-mix(in srgb, ${brand.colors.primary} 3%, transparent) 100%)`,
+        background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--brand-primary) 5%, transparent) 50%, color-mix(in srgb, var(--brand-primary) 3%, transparent) 100%)`,
       }"
     >
       <!-- Radial subtle accent atras -->
       <div
         class="pointer-events-none absolute inset-0"
         aria-hidden="true"
-        :style="{ background: `radial-gradient(ellipse 50% 80% at 70% 50%, color-mix(in srgb, ${brand.colors.primary} 10%, transparent), transparent 65%)` }"
+        :style="{ background: `radial-gradient(ellipse 50% 80% at 70% 50%, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 65%)` }"
       />
 
       <div class="relative mx-auto grid max-w-6xl items-center gap-8 px-6 py-7 md:grid-cols-12 md:gap-12 md:py-9">
@@ -654,13 +654,13 @@
     <section v-if="showSection('categories')" :style="{ order: sectionOrder('categories') }" class="mt-12 px-6 pt-6">
       <div class="flex flex-col gap-6">
         <div class="text-center">
-          <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+          <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.homeTexts.categoriesEyebrow }}
           </p>
-          <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+          <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: 'var(--brand-text)' }">
             {{ brand.homeTexts.categoriesTitle }}
           </h2>
-          <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+          <p class="text-sm md:text-base" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.homeTexts.categoriesSubtitle }}
           </p>
         </div>
@@ -673,15 +673,15 @@
               :key="cat.to"
               :to="cat.to"
               class="group flex flex-col gap-3 border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] brand-card"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="flex items-center gap-3">
                 <div class="bg-secondary/20 p-3 brand-pill">
                   <UIcon :name="cat.icon" class="text-secondary h-6 w-6" />
                 </div>
-                <h3 class="text-[18px] font-medium group-hover:text-secondary" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">{{ cat.label }}</h3>
+                <h3 class="text-[18px] font-medium group-hover:text-secondary" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">{{ cat.label }}</h3>
               </div>
-              <p v-if="cat.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
+              <p v-if="cat.description" class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ cat.description }}
               </p>
               <div class="flex items-center gap-2 text-secondary text-sm font-medium">
@@ -698,13 +698,13 @@
               :key="cat.to"
               :to="cat.to"
               class="group flex flex-col items-center gap-4 border p-8 text-center transition-[transform,opacity,box-shadow,background-color,border-color,filter] brand-card"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="bg-secondary/20 p-4 brand-pill">
                 <UIcon :name="cat.icon" class="text-secondary h-8 w-8" />
               </div>
-              <h3 class="text-[18px] font-medium group-hover:text-secondary" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">{{ cat.label }}</h3>
-              <p v-if="cat.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
+              <h3 class="text-[18px] font-medium group-hover:text-secondary" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">{{ cat.label }}</h3>
+              <p v-if="cat.description" class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ cat.description }}
               </p>
               <span class="mt-auto flex items-center gap-1 text-secondary text-sm font-semibold">
@@ -721,10 +721,10 @@
               :key="cat.to"
               :to="cat.to"
               class="category-minimal group flex items-center justify-between border-l-2 py-3 pl-4 pr-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-              :style="{ borderLeftColor: brand.colors.primary, '--hover-bg': `${brand.colors.textMuted}0D` } as Record<string, string>"
+              :style="{ borderLeftColor: 'var(--brand-primary)', '--hover-bg': 'color-mix(in srgb, var(--brand-text-muted) 5%, transparent)' } as Record<string, string>"
             >
-              <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ cat.label }}</span>
-              <span class="flex items-center gap-1 text-xs font-medium" :style="{ color: brand.colors.primary }">
+              <span class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">{{ cat.label }}</span>
+              <span class="flex items-center gap-1 text-xs font-medium" :style="{ color: 'var(--brand-primary)' }">
                 {{ cat.cta }}
                 <UIcon name="i-lucide-chevron-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </span>
@@ -747,18 +747,18 @@
       </header>
 
       <!-- Bento: hero (2x2) + 4 medium + 8 compact tiles -->
-      <div class="bento-guides grid gap-px" :style="{ backgroundColor: brand.colors.border }">
+      <div class="bento-guides grid gap-px" :style="{ backgroundColor: 'var(--brand-border)' }">
         <!-- HERO card: col-span 2, row-span 2 -->
         <NuxtLink
           :to="guidesHero[0].to"
           class="bento-guides-hero group relative flex flex-col justify-between overflow-hidden p-6 transition-[transform,box-shadow] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset md:p-10"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
           :aria-label="`Ler ${guidesHero[0].titulo}`"
         >
           <!-- Ambient radial glow -->
           <div
             class="pointer-events-none absolute inset-0 opacity-70 transition-opacity duration-500 group-hover:opacity-100"
-            :style="{ background: `radial-gradient(ellipse at 80% 20%, ${brand.colors.primary}22, transparent 60%), radial-gradient(ellipse at 20% 90%, ${brand.colors.primary}10, transparent 55%)` }"
+            :style="{ background: `radial-gradient(ellipse at 80% 20%, ${'var(--brand-primary)'}22, transparent 60%), radial-gradient(ellipse at 20% 90%, color-mix(in srgb, var(--brand-primary) 6%, transparent), transparent 55%)` }"
             aria-hidden="true"
           />
           <!-- Top row: eyebrow categoria + arrow circle -->
@@ -817,13 +817,13 @@
           :key="`gm-${guide.to}`"
           :to="guide.to"
           class="bento-guides-medium group relative flex flex-col justify-between gap-4 overflow-hidden p-5 transition-[transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
           :aria-label="`Ler ${guide.titulo}`"
         >
           <div class="flex items-start justify-between gap-3">
             <div
               class="flex size-10 shrink-0 items-center justify-center rounded-lg transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:scale-110"
-              :style="{ backgroundColor: `${brand.colors.primary}14`, color: brand.colors.primary }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--brand-primary)' }"
               aria-hidden="true"
             >
               <UIcon :name="guide.icon" class="size-5" />
@@ -844,7 +844,7 @@
               <UIcon
                 name="i-lucide-arrow-up-right"
                 class="size-3 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
                 aria-hidden="true"
               />
             </span>
@@ -857,12 +857,12 @@
           :key="`gt-${guide.to}`"
           :to="guide.to"
           class="bento-guides-tile group relative flex items-center gap-3 overflow-hidden p-3 transition-[transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
           :aria-label="`Abrir ${guide.titulo}`"
         >
           <div
             class="flex size-8 shrink-0 items-center justify-center rounded-md transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:scale-110"
-            :style="{ backgroundColor: `${brand.colors.primary}14`, color: brand.colors.primary }"
+            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--brand-primary)' }"
             aria-hidden="true"
           >
             <UIcon :name="guide.icon" class="size-4" />
@@ -885,7 +885,7 @@
           <UIcon
             name="i-lucide-arrow-up-right"
             class="size-3.5 shrink-0 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
             aria-hidden="true"
           />
         </NuxtLink>
@@ -1214,7 +1214,7 @@ const rankingCardClass = computed(() => {
 
 function rankingCardStyle(accentColor: string) {
   const v = brand.homePage.rankingCard.variant
-  if (v === 'card') return { borderColor: brand.colors.border, backgroundColor: brand.colors.surface }
+  if (v === 'card') return { borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }
   if (v === 'border-left') return { borderColor: accentColor }
   return {}
 }
@@ -1530,14 +1530,14 @@ const ifixLastPrice = computed(() => {
 
 const ibovVariationColor = computed(() => {
   const stats = calculateSeriesStats(homeMarketData.value?.ibovSeries)
-  if (!stats || stats.variation === 0) return brand.colors.textMuted
-  return stats.variation > 0 ? brand.colors.positive : brand.colors.negative
+  if (!stats || stats.variation === 0) return 'var(--brand-text-muted)'
+  return stats.variation > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 const ifixVariationColor = computed(() => {
   const stats = calculateSeriesStats(homeMarketData.value?.ifixSeries)
-  if (!stats || stats.variation === 0) return brand.colors.textMuted
-  return stats.variation > 0 ? brand.colors.positive : brand.colors.negative
+  if (!stats || stats.variation === 0) return 'var(--brand-text-muted)'
+  return stats.variation > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 // qsShortcutModifier ainda é usado pelo hint "Aperte ⌘K" da copy esquerda.
@@ -1924,7 +1924,7 @@ definePageMeta({
 .bento-guides-medium:focus-visible::after,
 .bento-guides-tile:hover::after,
 .bento-guides-tile:focus-visible::after {
-  box-shadow: inset 0 0 0 1px var(--brand-primary, #f59e0b);
+  box-shadow: inset 0 0 0 1px var(--brand-primary, var(--brand-warning));
 }
 
 /* ========== API PRODUCT SECTION ========== */
@@ -1935,7 +1935,7 @@ definePageMeta({
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, var(--brand-primary, #f59e0b)0a, transparent);
+  background: linear-gradient(90deg, transparent, var(--brand-primary, var(--brand-warning))0a, transparent);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;

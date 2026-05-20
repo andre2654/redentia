@@ -38,10 +38,10 @@ const arcOffset = computed(() => 0)
 const fillLength = computed(() => circumference.value * (props.report.score / 100))
 
 const bandColor = computed(() => {
-  if (props.report.band === 'critico') return brand.colors.negative || '#FF4747'
-  if (props.report.band === 'atencao') return brand.colors.primary || '#F5A623'
-  if (props.report.band === 'bom') return brand.colors.primary || '#F5A623'
-  return brand.colors.positive || '#00D395'
+  if (props.report.band === 'critico') return 'var(--brand-negative)'
+  if (props.report.band === 'atencao') return 'var(--brand-primary)'
+  if (props.report.band === 'bom') return 'var(--brand-primary)'
+  return 'var(--brand-positive)'
 })
 
 const bandToneClass = computed(() => {
@@ -67,7 +67,7 @@ const labelFontSize = computed(() => props.size === 'sm' ? '11px' : '12px')
       >
         <defs>
           <linearGradient :id="`score-gradient-${report.score}`" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" :stop-color="brand.colors.primary" />
+            <stop offset="0%" :stop-color="'var(--brand-primary)'" />
             <stop offset="100%" :stop-color="bandColor" />
           </linearGradient>
         </defs>
@@ -78,7 +78,7 @@ const labelFontSize = computed(() => props.size === 'sm' ? '11px' : '12px')
           :cy="center"
           :r="radius"
           fill="none"
-          :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`"
+          :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`"
           :stroke-width="stroke"
           stroke-linecap="round"
           :stroke-dasharray="`${arcLength} ${circumference}`"

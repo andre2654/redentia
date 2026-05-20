@@ -1358,7 +1358,7 @@ const Field = defineComponent({
 .campaign-action--send {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-weight: 600;
   font-size: 13px;
   padding: 9px 16px;
@@ -1600,14 +1600,14 @@ const Field = defineComponent({
 .send-card__action--primary {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-weight: 600;
 }
 .send-card__action--primary:hover:not(:disabled) {
   filter: brightness(1.05);
   background: var(--brand-primary);
   border-color: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 .send-card__actions {
   display: flex;
@@ -2124,7 +2124,7 @@ const Field = defineComponent({
   font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .email-render__head {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid var(--shadow-amber-near);
   padding-bottom: 10px;
 }
 .email-render__title {
@@ -2207,7 +2207,7 @@ const Field = defineComponent({
   align-self: flex-start;
   padding: 10px 18px;
   border-radius: 6px;
-  background: var(--brand-primary, #f59e0b);
+  background: var(--brand-primary, var(--brand-warning));
   color: var(--text-on-primary, #fff);
   font-weight: 600;
   font-size: 13.5px;
@@ -2219,7 +2219,7 @@ const Field = defineComponent({
   gap: 4px;
   padding-top: 14px;
   margin-top: 6px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--shadow-amber-near);
   font-size: 10.5px;
   color: #9ca3af;
 }

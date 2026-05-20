@@ -67,6 +67,6 @@ const initials = computed(() => {
 })
 
 const hairlineColor = computed(
-  () => `color-mix(in srgb, ${brand.colors.text} 15%, transparent)`
+  () => `color-mix(in srgb, var(--brand-text) 15%, transparent)`
 )
 </script>

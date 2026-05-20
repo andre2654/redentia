@@ -84,7 +84,7 @@
             <span
               class="text-right text-[11px] font-semibold tabular-nums"
               :style="{
-                color: isPositive(item.change_percent) ? brand.colors.positive : 'var(--brand-negative)',
+                color: isPositive(item.change_percent) ? 'var(--brand-positive)' : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(item.change_percent) }}
@@ -270,9 +270,9 @@
               <span
                 class="mc-dot"
                 :style="{
-                  borderColor: isPositive(item.change_percent) ? brand.colors.positive : 'var(--brand-negative)',
+                  borderColor: isPositive(item.change_percent) ? 'var(--brand-positive)' : 'var(--brand-negative)',
                   backgroundColor: isToday(item.date)
-                    ? (isPositive(item.change_percent) ? brand.colors.positive : brand.colors.negative)
+                    ? (isPositive(item.change_percent) ? 'var(--brand-positive)' : 'var(--brand-negative)')
                     : 'var(--brand-surface)',
                 }"
               />
@@ -291,7 +291,7 @@
                 <span
                   class="flex items-center gap-0.5 text-xs font-medium"
                   :style="{
-                    color: isPositive(item.change_percent) ? brand.colors.positive : 'var(--brand-negative)',
+                    color: isPositive(item.change_percent) ? 'var(--brand-positive)' : 'var(--brand-negative)',
                   }"
                 >
                   <UIcon

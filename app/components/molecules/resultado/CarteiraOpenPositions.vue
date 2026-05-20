@@ -19,22 +19,22 @@
       <div class="flex flex-col gap-1">
         <span
           class="font-mono-tab text-[11px] font-medium uppercase"
-          :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+          :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
         >Posições</span>
         <h3
           class="font-light"
-          :style="{ fontSize: '18px', color: brand.colors.text, letterSpacing: '-0.01em' }"
+          :style="{ fontSize: '18px', color: 'var(--brand-text)', letterSpacing: '-0.01em' }"
         >Em aberto na carteira</h3>
       </div>
 
       <span
         v-if="positions.length"
         class="font-mono-tab text-[12px] tabular-nums"
-        :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+        :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
       >
         {{ positions.length }} {{ positions.length === 1 ? 'ativo' : 'ativos' }}
         ·
-        <span :style="{ color: totalPnl >= 0 ? brand.colors.positive : brand.colors.negative }">
+        <span :style="{ color: totalPnl >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }">
           {{ totalPnl >= 0 ? '+' : '−' }}{{ brl(Math.abs(totalPnl)) }}
         </span>
       </span>
@@ -48,9 +48,9 @@
       <UIcon
         name="i-lucide-inbox"
         class="size-6 opacity-40 mx-auto"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       />
-      <span class="mt-2 block text-[13px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+      <span class="mt-2 block text-[13px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
         Nenhuma posição aberta no momento.
       </span>
     </div>
@@ -62,7 +62,7 @@
     >
       <div
         class="positions-row positions-row--header"
-        :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.background} 55%, transparent)` }"
+        :style="{ backgroundColor: `color-mix(in srgb, var(--brand-background) 55%, transparent)` }"
       >
         <span class="th th--asset">Ativo</span>
         <span class="th th--qty">Qtd</span>
@@ -77,26 +77,26 @@
         v-for="p in positions"
         :key="p.id"
         class="positions-row"
-        :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)` }"
+        :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
       >
         <span class="td td--asset">
-          <span class="asset-ticker tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="asset-ticker tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ p.ticker }}
           </span>
-          <span class="asset-name" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+          <span class="asset-name" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
             {{ p.name }}
           </span>
         </span>
 
-        <span class="td td--qty tabular-nums" :style="{ color: brand.colors.text }">
+        <span class="td td--qty tabular-nums" :style="{ color: 'var(--brand-text)' }">
           {{ formatQty(p.quantity) }}
         </span>
 
-        <span class="td td--avg tabular-nums" :style="{ color: brand.colors.text }">
+        <span class="td td--avg tabular-nums" :style="{ color: 'var(--brand-text)' }">
           {{ formatPrice(p.openPrice) }}
         </span>
 
-        <span class="td td--current tabular-nums" :style="{ color: brand.colors.text }">
+        <span class="td td--current tabular-nums" :style="{ color: 'var(--brand-text)' }">
           {{ p.closePrice != null ? formatPrice(p.closePrice) : '—' }}
         </span>
 
@@ -108,7 +108,7 @@
           {{ formatPct(p) }}
         </span>
 
-        <span class="td td--invested tabular-nums" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+        <span class="td td--invested tabular-nums" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
           {{ brl(p.notional) }}
         </span>
       </div>
@@ -153,9 +153,9 @@ function formatPrice(price: number): string {
 
 function pnlColor(amount: number | null): string {
   if (amount == null || amount === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
   }
-  return amount > 0 ? brand.colors.positive : brand.colors.negative
+  return amount > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 function formatPnl(amount: number | null): string {
@@ -173,13 +173,13 @@ function formatPct(p: MockTrade): string {
 }
 
 const tableStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const emptyStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 </script>
 

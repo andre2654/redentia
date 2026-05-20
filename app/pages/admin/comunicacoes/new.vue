@@ -374,7 +374,7 @@ function defaultPlacement(type: CommunicationType) {
 .type-card:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
   transform: translateY(-3px);
-  box-shadow: 0 18px 38px -18px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 18px 38px -18px var(--shadow-ambient);
 }
 
 .type-card:disabled {
@@ -593,7 +593,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-modal__backdrop) {
   position: absolute; inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--shadow-amber-near);
   backdrop-filter: blur(2px);
 }
 :deep(.preview-modal__card) {

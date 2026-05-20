@@ -56,7 +56,7 @@
           class="centered-hero__cta-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-[14px] font-semibold transition-transform hover:scale-[1.02]"
           :style="{
             backgroundColor: 'var(--brand-primary)',
-            color: 'var(--text-on-primary, #1A0A2E)',
+            color: 'var(--text-on-primary, var(--text-heading))',
           }"
         >
           <UIcon

@@ -66,7 +66,7 @@ defineEmits<{ 'update:modelValue': [value: string | number] }>()
 }
 .cui-seg-btn--active {
   background: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
 }
 .cui-seg-icon {
   width: 14px;

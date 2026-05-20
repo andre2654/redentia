@@ -930,7 +930,7 @@ onMounted(() => {
   border-radius: 14px;
   background: var(--brand-surface);
   border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
-  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 64px -16px var(--shadow-ambient);
   overflow: hidden;
 }
 .user-modal__panel--danger {

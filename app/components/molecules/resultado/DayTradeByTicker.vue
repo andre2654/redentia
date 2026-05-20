@@ -21,7 +21,7 @@
     </header>
 
     <div v-if="!hasData" class="dt-byticker__empty">
-      <UIcon name="i-lucide-pie-chart" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+      <UIcon name="i-lucide-pie-chart" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
       <span>Sem operações no período.</span>
     </div>
 
@@ -32,7 +32,7 @@
           <circle
             cx="50" cy="50" r="40"
             fill="none"
-            :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`"
+            :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`"
             stroke-width="14"
           />
           <g transform="rotate(-90 50 50)">
@@ -82,7 +82,7 @@
         >
           <span
             class="dt-byticker__row-rank tabular-nums"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 35%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 35%, transparent)` }"
           >{{ String(i + 1).padStart(2, '0') }}</span>
           <span
             class="dt-byticker__row-dot"
@@ -92,11 +92,11 @@
             }"
             aria-hidden="true"
           />
-          <span class="dt-byticker__row-name tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="dt-byticker__row-name tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ row.ticker }}
           </span>
           <span class="dt-byticker__row-bar"
-            :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
           >
             <span
               class="dt-byticker__row-bar-fill"
@@ -108,7 +108,7 @@
           </span>
           <span
             class="dt-byticker__row-count tabular-nums"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
           >{{ row.count }}</span>
           <span
             class="dt-byticker__row-pnl tabular-nums"
@@ -140,9 +140,9 @@ const subtitle = computed(() => {
 })
 
 function rowColor(row: ByTickerBucket): string {
-  if (row.pnl > 0) return brand.colors.positive
-  if (row.pnl < 0) return brand.colors.negative
-  return `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`
+  if (row.pnl > 0) return 'var(--brand-positive)'
+  if (row.pnl < 0) return 'var(--brand-negative)'
+  return `color-mix(in srgb, var(--brand-text) 50%, transparent)`
 }
 
 function formatSigned(v: number): string {
@@ -198,7 +198,7 @@ const donutSlices = computed<DonutSlice[]>(() => {
   // Paleta semantica: ainda usamos a sequencia positive (verde) ou
   // negative (vermelho), mas variando saturacao pra distinguir
   // tickers entre si dentro do mesmo lado.
-  const baseColor = donutMode.value === 'negative' ? brand.colors.negative : brand.colors.positive
+  const baseColor = donutMode.value === 'negative' ? 'var(--brand-negative)' : 'var(--brand-positive)'
   const SATURATIONS = [100, 78, 60, 46, 36, 28, 22, 18]
 
   const C = 2 * Math.PI * 40 // circumference do raio 40
@@ -212,7 +212,7 @@ const donutSlices = computed<DonutSlice[]>(() => {
     const offset = -acc
     acc += len
     return {
-      color: `color-mix(in srgb, ${baseColor} ${SATURATIONS[i] || 18}%, ${brand.colors.surface})`,
+      color: `color-mix(in srgb, ${baseColor} ${SATURATIONS[i] || 18}%, var(--brand-surface))`,
       dasharray: `${visible} ${C - visible}`,
       offset: String(offset),
       ticker: r.ticker,
@@ -241,10 +241,10 @@ const centerValue = computed(() => {
 })
 
 const centerValueColor = computed(() => {
-  if (!focused.value) return brand.colors.text
-  if (focused.value.pnl > 0) return brand.colors.positive
-  if (focused.value.pnl < 0) return brand.colors.negative
-  return brand.colors.text
+  if (!focused.value) return 'var(--brand-text)'
+  if (focused.value.pnl > 0) return 'var(--brand-positive)'
+  if (focused.value.pnl < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text)'
 })
 
 const centerSub = computed(() => {
@@ -253,9 +253,9 @@ const centerSub = computed(() => {
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
 }))
 </script>
 

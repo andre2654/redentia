@@ -107,7 +107,7 @@
         <button
           type="button"
           class="flex items-center gap-2 text-xs transition-colors"
-          :style="{ color: groupByYear ? brand.colors.text : 'var(--brand-text-muted)' }"
+          :style="{ color: groupByYear ? 'var(--brand-text)' : 'var(--brand-text-muted)' }"
           @click="groupByYear = !groupByYear"
         >
           <div
@@ -176,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import colorLib from '@kurkle/color'
 import {
   Chart as ChartJS,
@@ -196,6 +196,7 @@ import { useChartColors } from '~/design/chartColors'
 
 const cc = useChartColors()
 const brand = useBrand()
+const _colorMode = useColorMode()
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -835,6 +836,17 @@ onMounted(() => {
     }
   })
 })
+
+// Re-paint quando tema muda (F5 com prefers-color-scheme: system / toggle).
+// Chart.js congela cores no canvas, sem isso grid/ticks/dataset ficam errados.
+watch(
+  () => _colorMode.value,
+  () => {
+    const chart = chartInstance.value
+    if (!chart) return
+    chart.update('none')
+  }
+)
 
 onUnmounted(() => {
   try {

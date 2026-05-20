@@ -23,21 +23,21 @@
 
         <h3>Dados da Empresa</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Ticker</h4>
             <p class="text-sm">
               PETR3 (ON) e PETR4 (PN) - PETR4 é mais líquida
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Setor</h4>
             <p class="text-sm">Petróleo, Gás e Combustíveis</p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Listagem</h4>
             <p class="text-sm">B3, NYSE (PBR)</p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="text-secondary">Controle</h4>
             <p class="text-sm">Empresa de economia mista, controlada pelo Governo Federal</p>
           </div>
@@ -47,25 +47,25 @@
 
         <h3>Pontos Fortes</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 8%, transparent)' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-primary)' + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-primary)' + ' 8%, transparent)' }">
             <h4 class="text-secondary">Líder em Exploração em Águas Profundas</h4>
             <p class="text-sm">
               A Petrobras é referência mundial em tecnologia de exploração no pré-sal, com custos de produção competitivos e reservas de alta qualidade.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Geração de Caixa Robusto</h4>
             <p class="text-sm">
               Alta capacidade de geração de caixa operacional, permitindo distribuição generosa de dividendos e redução de dívida.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Dividendos Atrativos</h4>
             <p class="text-sm">
               Historicamente paga dividendos elevados, com Dividend Yield frequentemente acima de 10% ao ano em períodos de petróleo alto.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Redução de Dívida</h4>
             <p class="text-sm">
               Vem reduzindo consistentemente sua dívida líquida nos últimos anos, melhorando a saúde financeira.
@@ -76,7 +76,7 @@
         <h3>Pontos de Atenção</h3>
         <div
           class="rounded-xl border p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)' }"
         >
           <ul>
             <li>
@@ -98,31 +98,31 @@
         </div>
 
         <h2>Indicadores Fundamentalistas (Referência)</h2>
-        <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+        <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
           <em>Nota: Os valores abaixo são ilustrativos. Consulte dados atualizados na {{ brand.name }}.</em>
         </p>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>P/L (Preço/Lucro)</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               Geralmente entre 3-6, considerado baixo (barato)
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Dividend Yield</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               Varia com o petróleo, pode superar 15% em anos bons
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>ROE</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               Retorno sobre patrimônio geralmente acima de 20%
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Dívida Líquida/EBITDA</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               Tem melhorado, buscando níveis abaixo de 1,5x
             </p>
           </div>
@@ -132,7 +132,7 @@
 
         <h3>Cenário Positivo</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.success || '#10b981') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.success || '#10b981') + ' 8%, transparent)' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, var(--brand-positive, #10b981) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-positive, #10b981) 8%, transparent)' }">
             <ul class="text-sm">
               <li>Preço do petróleo mantém-se em patamares elevados (US$ 80-90/barril)</li>
               <li>Produção do pré-sal continua crescendo</li>
@@ -145,7 +145,7 @@
 
         <h3>Cenário Negativo</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.danger || '#ef4444') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.danger || '#ef4444') + ' 8%, transparent)' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, var(--brand-negative, #ef4444) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-negative, #ef4444) 8%, transparent)' }">
             <ul class="text-sm">
               <li>Queda acentuada no preço do petróleo (< US$ 60/barril)</li>
               <li>Intervenção do governo em preços de combustíveis</li>
@@ -159,7 +159,7 @@
         <h2>Para Quem PETR4 é Indicada?</h2>
 
         <h3>Perfil Ideal</h3>
-        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 8%, transparent)' }">
+        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-primary)' + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-primary)' + ' 8%, transparent)' }">
           <ul>
             <li>Investidores que buscam <strong>dividendos elevados</strong></li>
             <li>Quem tem <strong>tolerância à volatilidade</strong> de curto prazo</li>
@@ -170,7 +170,7 @@
         </div>
 
         <h3>Não é Ideal Para</h3>
-        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
           <ul>
             <li>Investidores <strong>conservadores</strong> que não toleram riscos políticos</li>
             <li>Quem busca <strong>previsibilidade total</strong> nos dividendos</li>
@@ -198,28 +198,28 @@
 
         <h2>Comparação com Pares</h2>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Setor de Petróleo no Brasil</h4>
             <div class="mb-2 flex flex-wrap gap-2">
               <AtomsTickerEmbed ticker="PETR4" size="sm" />
               <AtomsTickerEmbed ticker="PETR3" size="sm" />
               <AtomsTickerEmbed ticker="PRIO3" size="sm" />
             </div>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               PETR4 tem maior escala e liquidez. PRIO3 é privada e mais ágil, mas menor. PETR3 tem direito a voto.
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4>Comparação Internacional</h4>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
               Exxon, Chevron têm menos risco político mas dividendos menores. PETR4 oferece mais retorno com mais risco.
             </p>
           </div>
         </div>
 
         <h2>Conclusão: Vale a Pena Investir?</h2>
-        <div class="rounded-xl border p-6" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 8%, transparent)' }">
-          <p class="mb-3" :style="{ color: brand.colors.primary }"><strong>Veredito: DEPENDE DO SEU PERFIL</strong></p>
+        <div class="rounded-xl border p-6" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-primary)' + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-primary)' + ' 8%, transparent)' }">
+          <p class="mb-3" :style="{ color: 'var(--brand-primary)' }"><strong>Veredito: DEPENDE DO SEU PERFIL</strong></p>
           <p>
             PETR4 é uma ação com <strong>alto potencial de dividendos</strong> e <strong>fundamentos sólidos</strong> em termos operacionais. No entanto, carrega <strong>riscos políticos significativos</strong> e <strong>volatilidade</strong> relacionada ao preço do petróleo.
           </p>
@@ -247,8 +247,8 @@
       <div class="space-y-4">
         <h2>Perguntas Frequentes sobre PETR4</h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               PETR4 paga bons dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -257,8 +257,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               Qual a diferença entre PETR3 e PETR4?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -267,8 +267,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               PETR4 é um bom investimento para longo prazo?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -277,8 +277,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               O governo pode mudar a política de dividendos da Petrobras?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -287,8 +287,8 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
-            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: brand.colors.text }">
+          <details class="group rounded-xl border p-4 normal-static-link" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between" :style="{ color: 'var(--brand-text)' }">
               Quanto da minha carteira devo alocar em PETR4?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
@@ -300,18 +300,18 @@
       </div>
 
       <!-- Navegação para Outros Guias -->
-      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">
+      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">
         <h3>Continue Aprendendo</h3>
         <div class="grid gap-4 sm:grid-cols-2">
           <NuxtLink
             to="/guias/como-investir-em-acoes-para-iniciantes"
             class="normal-static-link group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-trending-up" class="text-secondary h-6 w-6" />
             <div class="flex-1">
               <h4 class="group-hover:text-secondary">Como Investir em Ações</h4>
-              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Guia para iniciantes</p>
+              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">Guia para iniciantes</p>
             </div>
             <UIcon name="i-lucide-arrow-right" class="h-5 w-5" />
           </NuxtLink>
@@ -319,12 +319,12 @@
           <NuxtLink
             to="/guias/calculadora-de-dividendos"
             class="normal-static-link group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-coins" class="text-secondary h-6 w-6" />
             <div class="flex-1">
               <h4 class="group-hover:text-secondary">Calculadora de Dividendos</h4>
-              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Calcule sua renda passiva</p>
+              <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">Calcule sua renda passiva</p>
             </div>
             <UIcon name="i-lucide-arrow-right" class="h-5 w-5" />
           </NuxtLink>

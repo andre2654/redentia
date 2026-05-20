@@ -511,14 +511,14 @@
       v-if="!authStore.isAuthenticated"
       class="qs-showcase relative overflow-hidden"
       :style="{
-        background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, ${brand.colors.primary} 5%, transparent) 50%, color-mix(in srgb, ${brand.colors.primary} 3%, transparent) 100%)`,
+        background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--brand-primary) 5%, transparent) 50%, color-mix(in srgb, var(--brand-primary) 3%, transparent) 100%)`,
       }"
     >
       <!-- Radial subtle accent atrás -->
       <div
         class="pointer-events-none absolute inset-0"
         aria-hidden="true"
-        :style="{ background: `radial-gradient(ellipse 50% 80% at 70% 50%, color-mix(in srgb, ${brand.colors.primary} 10%, transparent), transparent 65%)` }"
+        :style="{ background: `radial-gradient(ellipse 50% 80% at 70% 50%, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 65%)` }"
       />
 
       <div class="relative mx-auto grid max-w-6xl items-center gap-8 px-6 py-7 md:grid-cols-12 md:gap-12 md:py-9">

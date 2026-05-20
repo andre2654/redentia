@@ -15,8 +15,8 @@
 -->
 <template>
   <div v-if="trades.length > 0" class="dt-tape" :style="containerStyle">
-    <span class="dt-tape__label" :style="{ color: brand.colors.primary }">
-      <span class="dt-tape__live-dot" :style="{ backgroundColor: brand.colors.primary }" />
+    <span class="dt-tape__label" :style="{ color: 'var(--brand-primary)' }">
+      <span class="dt-tape__live-dot" :style="{ backgroundColor: 'var(--brand-primary)' }" />
       TAPE
     </span>
     <div class="dt-tape__viewport">
@@ -28,21 +28,21 @@
           :key="`tape-${idx}`"
           class="dt-tape__item"
         >
-          <span class="dt-tape__time tabular-nums" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+          <span class="dt-tape__time tabular-nums" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
             {{ formatTime(t.closedAt!) }}
           </span>
-          <span class="dt-tape__ticker tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="dt-tape__ticker tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ t.ticker }}
           </span>
           <span
             class="dt-tape__side"
-            :style="{ color: (t.resultAmount ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative }"
+            :style="{ color: (t.resultAmount ?? 0) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
           >L</span>
           <span
             class="dt-tape__amount tabular-nums"
             :style="{ color: amountColorFor(t.resultAmount) }"
           >{{ formatAmount(t.resultAmount) }}</span>
-          <span class="dt-tape__sep" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }">·</span>
+          <span class="dt-tape__sep" :style="{ color: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }">·</span>
         </span>
       </div>
     </div>
@@ -90,13 +90,13 @@ function formatAmount(v: number | null): string {
 }
 
 function amountColorFor(v: number | null): string {
-  if (v == null || v === 0) return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
-  return v > 0 ? brand.colors.positive : brand.colors.negative
+  if (v == null || v === 0) return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
+  return v > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 const containerStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 55%, transparent)`,
 }))
 </script>
 

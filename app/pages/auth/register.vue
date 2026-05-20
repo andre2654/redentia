@@ -172,7 +172,7 @@
 
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
+            :style="{ color: score >= 1 ? 'var(--brand-positive)' : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -314,7 +314,7 @@
 
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
+            :style="{ color: score >= 1 ? 'var(--brand-positive)' : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -452,7 +452,7 @@
 
             <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
+            :style="{ color: score >= 1 ? 'var(--brand-positive)' : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -492,7 +492,7 @@
     >
       <div class="pointer-events-none absolute inset-0 opacity-25">
         <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
-        <div class="absolute left-[18%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+        <div class="absolute left-[18%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-secondary)' }" />
         <div class="absolute right-[12%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
         <div class="absolute right-[30%] top-[75%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-positive)' }" />
       </div>
@@ -610,7 +610,7 @@
 
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
+            :style="{ color: score >= 1 ? 'var(--brand-positive)' : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -744,7 +744,7 @@
           </UFormField>
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
+            :style="{ color: score >= 1 ? 'var(--brand-positive)' : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -898,7 +898,7 @@
             </UFormField>
             <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
+            :style="{ color: score >= 1 ? 'var(--brand-positive)' : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon

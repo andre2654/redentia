@@ -9,14 +9,14 @@
   <header class="flex flex-col gap-3">
     <span
       class="font-mono-tab text-[11px] font-medium uppercase"
-      :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+      :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
     >Carteira · {{ updatedLabel }}</span>
     <div class="flex flex-wrap items-end justify-between gap-6">
       <div class="flex min-w-0 flex-col gap-1">
         <h1
           class="font-light tabular-nums"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(40px, 5.5vw, 56px)',
             lineHeight: 1.0,
             letterSpacing: '-1.5px',
@@ -26,19 +26,19 @@
           <span
             v-if="pnlAmount !== null"
             class="font-mono-tab text-[15px] tabular-nums"
-            :style="{ color: pnlAmount >= 0 ? brand.colors.positive : brand.colors.negative }"
+            :style="{ color: pnlAmount >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
           >{{ interfaceStore.revealAmount ? (pnlAmount >= 0 ? '+' : '') + formatBRL(pnlAmount) : 'R$ ••••••' }}</span>
           <span
             v-if="pnlPct !== null"
             class="rounded-md px-2 py-0.5 font-mono-tab text-[12px] font-medium tabular-nums"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${pnlPct >= 0 ? brand.colors.positive : brand.colors.negative} 16%, transparent)`,
-              color: pnlPct >= 0 ? brand.colors.positive : brand.colors.negative,
+              backgroundColor: `color-mix(in srgb, ${pnlPct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'} 16%, transparent)`,
+              color: pnlPct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >{{ formatPct(pnlPct) }}</span>
           <span
             class="font-mono-tab text-[12.5px]"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
           >{{ positionsCount }} ativos<span v-if="ytdPct !== null"> · YTD {{ formatPct(ytdPct) }}</span><span v-if="vsCdiPct !== null"> · {{ formatPct(vsCdiPct) }} vs CDI</span></span>
         </div>
       </div>

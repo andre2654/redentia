@@ -358,7 +358,7 @@
       <!-- Confetti dots -->
       <div class="pointer-events-none absolute inset-0 opacity-25">
         <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
-        <div class="absolute left-[18%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+        <div class="absolute left-[18%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-secondary)' }" />
         <div class="absolute right-[12%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
         <div class="absolute right-[30%] top-[75%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-positive)' }" />
       </div>

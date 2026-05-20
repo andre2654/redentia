@@ -21,12 +21,12 @@
       <header class="flex max-w-3xl flex-col gap-3">
         <span
           class="font-mono-tab text-[11px] font-medium uppercase"
-          :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+          :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
         >Guia · Dividendos</span>
         <h1
           class="font-light"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(32px, 5vw, 48px)',
             lineHeight: 1.05,
             letterSpacing: '-1.2px',
@@ -37,7 +37,7 @@
           :style="{
             fontSize: '17.5px',
             lineHeight: 1.55,
-            color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 72%, transparent)`,
           }"
         >Como construir uma carteira de dividendos e viver de renda passiva. As melhores ações e FIIs pagadores do Brasil, sem misticismo nem promessa de rentabilidade.</p>
       </header>
@@ -60,16 +60,16 @@
             <UIcon
               name="i-lucide-check-circle-2"
               class="size-4"
-              :style="{ color: brand.colors.positive }"
+              :style="{ color: 'var(--brand-positive)' }"
             />
             <span
               class="font-mono-tab text-[10.5px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.positive }"
+              :style="{ letterSpacing: '0.18em', color: 'var(--brand-positive)' }"
             >Vantagem fiscal</span>
           </div>
           <h3
             class="text-[18px] font-medium"
-            :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
+            :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }"
           >Isenção total de imposto de renda</h3>
           <p :style="bodyStyle">
             Dividendos de ações e FIIs são <span :style="strongStyle">100% isentos de IR</span> para pessoa física no Brasil. Todo valor que cair na conta é seu inteiro, vantagem grande pra construir renda passiva.
@@ -91,12 +91,12 @@
               class="font-mono-tab text-[10.5px] font-medium uppercase tabular-nums"
               :style="{
                 letterSpacing: '0.18em',
-                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
               }"
             >Passo 0{{ idx + 1 }}</span>
             <h3
               class="text-[16px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >{{ step.title }}</h3>
             <p :style="bodySmallStyle">{{ step.body }}</p>
           </li>
@@ -112,17 +112,17 @@
             :key="t.term"
             class="grid grid-cols-1 gap-1.5 border-b py-4 last:border-b-0 md:grid-cols-[260px_1fr] md:gap-8 md:py-5"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-border) 40%, transparent)`,
             }"
           >
             <dt class="flex items-baseline gap-2">
               <span
                 class="size-1 shrink-0 rounded-full"
-                :style="{ backgroundColor: brand.colors.primary }"
+                :style="{ backgroundColor: 'var(--brand-primary)' }"
               />
               <span
                 class="text-[14.5px] font-medium"
-                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+                :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
               >{{ t.term }}</span>
             </dt>
             <dd :style="bodyStyle">{{ t.def }}</dd>
@@ -146,7 +146,7 @@
         >
           <div
             class="font-mono-tab text-[14px] tabular-nums"
-            :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+            :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
           >DY = (dividendos últimos 12 meses ÷ preço atual) × 100</div>
           <p :style="bodySmallStyle">
             <span :style="strongStyle">Exemplo:</span> ação a R$ 40 que pagou R$ 3,20 no ano = DY de 8%.
@@ -155,7 +155,7 @@
             class="my-1"
             :style="{
               border: 0,
-              borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+              borderTop: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
             }"
           >
           <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -186,17 +186,17 @@
               class="font-mono-tab text-[10.5px] font-medium uppercase"
               :style="{
                 letterSpacing: '0.16em',
-                color: brand.colors.primary,
+                color: 'var(--brand-primary)',
               }"
             >{{ s.dy }}</span>
             <h3
               class="text-[15px] font-medium"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ s.name }}</h3>
             <p
               class="font-mono-tab text-[12px] tabular-nums"
               :style="{
-                color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
               }"
             >{{ s.tickers }}</p>
           </article>
@@ -216,14 +216,14 @@
             <span
               class="flex size-9 shrink-0 items-center justify-center rounded-lg font-mono-tab text-[14px] font-medium tabular-nums"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`,
-                color: brand.colors.primary,
+                backgroundColor: `color-mix(in srgb, var(--brand-primary) 12%, transparent)`,
+                color: 'var(--brand-primary)',
               }"
             >{{ idx + 1 }}</span>
             <div class="flex flex-col gap-1">
               <h3
                 class="text-[16px] font-medium"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ step.title }}</h3>
               <p :style="bodySmallStyle">{{ step.body }}</p>
             </div>
@@ -245,54 +245,54 @@
             <div
               class="rounded-lg p-3"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.background} 50%, transparent)`,
+                backgroundColor: `color-mix(in srgb, var(--brand-background) 50%, transparent)`,
               }"
             >
               <span
                 class="font-mono-tab text-[10.5px] font-medium uppercase"
                 :style="{
                   letterSpacing: '0.18em',
-                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
                 }"
               >Renda anual</span>
               <div
                 class="font-mono-tab text-[20px] font-light tabular-nums"
                 :style="{
-                  color: brand.colors.positive,
+                  color: 'var(--brand-positive)',
                   letterSpacing: '-0.02em',
                 }"
               >R$ 27.000</div>
               <div
                 class="font-mono-tab text-[11px] tabular-nums"
                 :style="{
-                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
                 }"
               >R$ 300.000 × 9%</div>
             </div>
             <div
               class="rounded-lg p-3"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.background} 50%, transparent)`,
+                backgroundColor: `color-mix(in srgb, var(--brand-background) 50%, transparent)`,
               }"
             >
               <span
                 class="font-mono-tab text-[10.5px] font-medium uppercase"
                 :style="{
                   letterSpacing: '0.18em',
-                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
                 }"
               >Renda mensal</span>
               <div
                 class="font-mono-tab text-[20px] font-light tabular-nums"
                 :style="{
-                  color: brand.colors.positive,
+                  color: 'var(--brand-positive)',
                   letterSpacing: '-0.02em',
                 }"
               >R$ 2.250</div>
               <div
                 class="font-mono-tab text-[11px] tabular-nums"
                 :style="{
-                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
                 }"
               >R$ 27.000 ÷ 12</div>
             </div>
@@ -316,12 +316,12 @@
             <UIcon
               name="i-lucide-alert-triangle"
               class="mt-0.5 size-4 shrink-0"
-              :style="{ color: brand.colors.warning || '#f59e0b' }"
+              :style="{ color: 'var(--brand-warning)' || 'var(--brand-warning)' }"
             />
             <div class="flex flex-col gap-0.5">
               <h3
                 class="text-[14.5px] font-medium"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ c.title }}</h3>
               <p :style="bodySmallStyle">{{ c.body }}</p>
             </div>
@@ -342,43 +342,43 @@
             class="flex items-center justify-between gap-4 border-b px-5 py-3"
             :class="idx === portfolioRows.length - 1 ? '!border-b-0' : ''"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-border) 40%, transparent)`,
             }"
           >
             <div class="flex min-w-0 items-center gap-3">
               <span
                 class="font-mono-tab text-[12px] font-medium tabular-nums"
                 :style="{
-                  color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
                   width: '40px',
                 }"
               >{{ row.weight }}</span>
               <span
                 class="text-[14.5px]"
-                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+                :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
               >{{ row.bucket }}</span>
             </div>
             <span
               class="font-mono-tab text-[12px] tabular-nums"
               :style="{
-                color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`,
               }"
             >{{ row.dy }}</span>
           </div>
           <div
             class="flex items-center justify-between gap-4 px-5 py-4"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`,
-              borderTop: `1px solid color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-primary) 8%, transparent)`,
+              borderTop: `1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
             }"
           >
             <span
               class="text-[14.5px] font-medium"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >Dividend Yield médio</span>
             <span
               class="font-mono-tab text-[15px] font-medium tabular-nums"
-              :style="{ color: brand.colors.primary, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-primary)', letterSpacing: '-0.005em' }"
             >~8,5% ao ano</span>
           </div>
         </article>
@@ -398,19 +398,19 @@
               class="font-mono-tab text-[10.5px] font-medium uppercase"
               :style="{
                 letterSpacing: '0.18em',
-                color: brand.colors.primary,
+                color: 'var(--brand-primary)',
               }"
             >{{ link.eyebrow }}</span>
             <h3
               class="text-[18px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }"
             >{{ link.title }}</h3>
             <p :style="bodySmallStyle">{{ link.body }}</p>
           </div>
           <UIcon
             name="i-lucide-arrow-up-right"
             class="size-5 shrink-0 transition-[transform,opacity] group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           />
         </NuxtLink>
       </section>
@@ -427,13 +427,13 @@
           >
             <summary
               class="flex cursor-pointer list-none items-center justify-between gap-3 text-[15px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >
               {{ qa.q }}
               <UIcon
                 name="i-lucide-chevron-down"
                 class="size-4 shrink-0 transition-transform group-open:rotate-180"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               />
             </summary>
             <p class="mt-3" :style="bodySmallStyle">{{ qa.a }}</p>
@@ -553,33 +553,33 @@ usePageSeo({
 const bodyStyle = computed(() => ({
   fontSize: '16px',
   lineHeight: 1.55,
-  color: `color-mix(in srgb, ${brand.colors.text} 75%, transparent)`,
+  color: `color-mix(in srgb, var(--brand-text) 75%, transparent)`,
 }))
 
 const bodySmallStyle = computed(() => ({
   fontSize: '14px',
   lineHeight: 1.55,
-  color: `color-mix(in srgb, ${brand.colors.text} 68%, transparent)`,
+  color: `color-mix(in srgb, var(--brand-text) 68%, transparent)`,
 }))
 
 const strongStyle = computed(() => ({
   fontWeight: 500,
-  color: brand.colors.text,
+  color: 'var(--brand-text)',
 }))
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const highlightCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 6%, ${brand.colors.surface})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.positive} 28%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-positive) 6%, var(--brand-surface))`,
+  borderColor: `color-mix(in srgb, var(--brand-positive) 28%, transparent)`,
 }))
 
 const warnCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 6%, ${brand.colors.surface})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 24%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-warning) 6%, var(--brand-surface))`,
+  borderColor: `color-mix(in srgb, var(--brand-warning) 24%, transparent)`,
 }))
 
 // ---------- Editorial copy ----------

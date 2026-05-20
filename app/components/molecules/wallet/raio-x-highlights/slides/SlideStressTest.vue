@@ -112,7 +112,7 @@ function tintFor(impact: number): string {
   const a = Math.abs(impact)
   if (a >= 30) return '#ef4444'        // catastrophic — red
   if (a >= 18) return '#f97316'        // severe — orange
-  if (a >= 8) return '#f59e0b'         // moderate — amber
+  if (a >= 8) return 'var(--brand-warning)'         // moderate — amber
   return '#10b981'                      // resilient — green
 }
 
@@ -220,7 +220,7 @@ const camDurationMs = 7000
 
 .sl-stress__title-italic {
   font-style: italic;
-  background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, var(--brand-primary, #f5a623) 70%, #fff) 100%);
+  background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 70%, #fff) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -300,7 +300,7 @@ const camDurationMs = 7000
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--card-tint, #f59e0b) 18%, transparent), transparent 60%);
+  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--card-tint, var(--brand-warning)) 18%, transparent), transparent 60%);
   pointer-events: none;
 }
 
@@ -366,7 +366,7 @@ const camDurationMs = 7000
   color: #fff;
   line-height: 0.9;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 0 30px var(--shadow-amber-near);
 }
 
 .sl-stress__impact-pct {
@@ -391,7 +391,7 @@ const camDurationMs = 7000
   height: 100%;
   width: 0;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--fill-color, #f59e0b) 0%, color-mix(in srgb, var(--fill-color, #f59e0b) 55%, transparent) 100%);
+  background: linear-gradient(90deg, var(--fill-color, var(--brand-warning)) 0%, color-mix(in srgb, var(--fill-color, var(--brand-warning)) 55%, transparent) 100%);
   box-shadow: 0 0 14px var(--fill-glow, transparent);
   animation: sl-stress-bar-grow 1400ms cubic-bezier(0.16, 1, 0.3, 1) var(--fill-delay, 0ms) forwards;
 }
@@ -436,7 +436,7 @@ const camDurationMs = 7000
    of the data without needing JS for it. We piggy-back on the bar fill
    color which is already set inline. */
 .sl-stress__card {
-  --card-tint: #f59e0b;
+  --card-tint: var(--brand-warning);
 }
 
 /* ============ Floor reflection plane ============ */
@@ -447,7 +447,7 @@ const camDurationMs = 7000
   width: 1400px;
   height: 220px;
   margin-left: -700px;
-  background: radial-gradient(ellipse 50% 80% at 50% 0%, color-mix(in srgb, var(--brand-primary, #f5a623) 20%, transparent), transparent 70%);
+  background: radial-gradient(ellipse 50% 80% at 50% 0%, color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 20%, transparent), transparent 70%);
   transform: rotateX(75deg) translateZ(-180px);
   transform-origin: center top;
   filter: blur(20px);

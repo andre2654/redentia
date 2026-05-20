@@ -44,7 +44,7 @@
     </header>
 
     <div v-if="!series.length" class="equity__empty">
-      <UIcon name="i-lucide-line-chart" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+      <UIcon name="i-lucide-line-chart" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
       <span>Sem operações neste período.</span>
     </div>
 
@@ -112,7 +112,7 @@ const lastValue = computed(() =>
 )
 
 const lineColor = computed(() =>
-  lastValue.value >= 0 ? brand.colors.positive : brand.colors.negative,
+  lastValue.value >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
 )
 
 const endValueColor = computed(() => lineColor.value)
@@ -220,9 +220,9 @@ const markersPillStyle = computed(() => ({
   gap: '4px',
   padding: '3px 8px',
   borderRadius: '999px',
-  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 28%, transparent)`,
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, transparent)`,
-  color: brand.colors.primary,
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 10%, transparent)`,
+  color: 'var(--brand-primary)',
   fontFamily: 'var(--font-mono, "JetBrains Mono", ui-monospace, monospace)',
   fontSize: '10.5px',
   fontWeight: 500,
@@ -331,9 +331,9 @@ function reasonForDay(date: string, dayPnl: number): string {
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
 }))
 </script>
 

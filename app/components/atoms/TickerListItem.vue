@@ -4,7 +4,7 @@
     v-if="cfg.variant === 'default'"
     :to="tickerLink"
     class="flex items-center gap-3 py-2.5 transition-colors"
-    @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
+    @mouseenter="$event.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--brand-text-muted) 5%, transparent)'"
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <img
@@ -57,7 +57,7 @@
     v-else-if="cfg.variant === 'compact'"
     :to="tickerLink"
     class="flex items-center gap-3 py-3 transition-colors"
-    @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
+    @mouseenter="$event.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--brand-text-muted) 5%, transparent)'"
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <img
@@ -105,7 +105,7 @@
     v-else
     :to="tickerLink"
     class="flex items-center gap-3 py-2 transition-colors"
-    @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
+    @mouseenter="$event.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--brand-text-muted) 5%, transparent)'"
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <div class="flex min-w-0 flex-1 flex-col">

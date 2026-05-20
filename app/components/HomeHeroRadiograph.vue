@@ -202,7 +202,7 @@ function stackStyle(absoluteIdx: number) {
 // Mantido por compatibilidade caso algum filho consuma; nao tem callers no arquivo.
 // Fallback hex puro porque essa computed pode ser passada pra contextos
 // (libs externas, SVG attribute) que nao resolvem CSS vars.
-const ibovChangeColor = computed(() => props.ibovVariationColor || '#FF4747')
+const ibovChangeColor = computed(() => props.ibovVariationColor || 'var(--brand-negative)')
 
 const topStockMock = computed(() => [
   { ticker: 'BBAS3', name: 'Banco do Brasil', dy: '9.5%', change: '+2.84%', up: true },

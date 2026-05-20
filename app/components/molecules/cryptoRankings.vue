@@ -235,16 +235,16 @@ const tiles = computed(() => byMarketCap.value.slice(1, 7))
 
 const heroAccent = computed(() => {
   const pct = hero.value?.change_24h_pct ?? 0
-  if (pct > 0) return brand.colors.positive
-  if (pct < 0) return brand.colors.negative
-  return brand.colors.primary
+  if (pct > 0) return 'var(--brand-positive)'
+  if (pct < 0) return 'var(--brand-negative)'
+  return 'var(--brand-primary)'
 })
 
 function changeColor(pct: number | null | undefined): string {
   const n = pct ?? 0
-  if (n > 0) return brand.colors.positive
-  if (n < 0) return brand.colors.negative
-  return brand.colors.textMuted
+  if (n > 0) return 'var(--brand-positive)'
+  if (n < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 }
 
 function compactBRL(value: number | null | undefined): string {

@@ -17,7 +17,7 @@
   <dialog
     ref="dialogEl"
     class="fullscreen-chart w-[min(95vw,1400px)] max-w-none rounded-2xl border p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm"
-    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text)' }"
     @close="handleClose"
     @cancel="handleCancel"
   >
@@ -25,20 +25,20 @@
       <!-- Header -->
       <header
         class="flex items-center justify-between gap-4 border-b px-6 py-4"
-        :style="{ borderColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)' }"
       >
         <div class="flex min-w-0 flex-col">
           <span
             v-if="subtitle"
             class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
             translate="no"
           >
             {{ subtitle }}
           </span>
           <h2
             class="truncate text-xl font-bold tracking-tight"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             {{ title }}
           </h2>
@@ -48,8 +48,8 @@
             v-if="changeLabel"
             class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-sm font-semibold tabular-nums"
             :style="{
-              backgroundColor: `${isPositive ? brand.colors.positive : brand.colors.negative}1F`,
-              color: isPositive ? brand.colors.positive : brand.colors.negative,
+              backgroundColor: `${isPositive ? 'var(--brand-positive)' : 'var(--brand-negative)'}1F`,
+              color: isPositive ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
             translate="no"
           >
@@ -59,9 +59,9 @@
             type="button"
             class="inline-flex size-9 items-center justify-center rounded-md border transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             :style="{
-              borderColor: brand.colors.border,
-              color: brand.colors.text,
-              backgroundColor: brand.colors.background,
+              borderColor: 'var(--brand-border)',
+              color: 'var(--brand-text)',
+              backgroundColor: 'var(--brand-background)',
             }"
             aria-label="Fechar tela cheia"
             @click="close"

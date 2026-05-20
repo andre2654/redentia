@@ -26,8 +26,8 @@
           <UIcon :name="eventIcon(e.kind)" class="size-4" :style="{ color: eventTint(e.kind) }" />
         </span>
         <div class="flex flex-1 flex-col leading-tight">
-          <span class="text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ e.label }}</span>
-          <span class="font-mono-tab text-[11px] tabular-nums" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">{{ formatDateLong(e.date) }}</span>
+          <span class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ e.label }}</span>
+          <span class="font-mono-tab text-[11px] tabular-nums" :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">{{ formatDateLong(e.date) }}</span>
         </div>
       </article>
     </div>
@@ -49,8 +49,8 @@ defineProps<Props>()
 const brand = useBrand()
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 function formatDateLong(iso: string): string {
@@ -63,13 +63,12 @@ function formatDateLong(iso: string): string {
 }
 
 function eventTint(kind: EventKind): string {
-  const warn = (brand.colors as { warning?: string }).warning || '#f59e0b'
   switch (kind) {
-    case 'pay': return brand.colors.positive
-    case 'ex': return brand.colors.primary
+    case 'pay': return 'var(--brand-positive)'
+    case 'ex': return 'var(--brand-primary)'
     case 'earnings': return '#a78bfa'
     case 'rotate': return '#60a5fa'
-    case 'maturity': return warn
+    case 'maturity': return 'var(--brand-warning)'
   }
 }
 function eventIcon(kind: EventKind): string {

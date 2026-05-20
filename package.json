@@ -12,7 +12,10 @@
     "postinstall": "nuxt prepare",
     "pretty": "prettier --write \"./**/*.{vue,js,jsx,mjs,cjs,ts,tsx,json}\"",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint:css": "stylelint \"app/**/*.{vue,css}\"",
+    "lint:css:fix": "stylelint \"app/**/*.{vue,css}\" --fix",
+    "lint:colors": "echo '\\n[1/2] Stylelint (CSS hex literals):\\n' && npm run lint:css; echo '\\n[2/2] ESLint (template :style anti-pattern):\\n' && eslint \"app/components/**/*.vue\" \"app/pages/**/*.vue\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.87.0",
@@ -53,8 +56,11 @@
     "@nuxtjs/sitemap": "7.4.7",
     "@pinia-plugin-persistedstate/nuxt": "1.2.1",
     "eslint": "9.9.0",
+    "postcss-html": "^1.8.1",
     "prettier": "3.3.3",
     "prettier-plugin-tailwindcss": "0.6.6",
+    "stylelint": "^17.12.0",
+    "stylelint-config-standard": "^40.0.0",
     "tsx": "^4.19.2",
     "vite-svg-loader": "5.1.0",
     "vue-eslint-parser": "9.4.3"

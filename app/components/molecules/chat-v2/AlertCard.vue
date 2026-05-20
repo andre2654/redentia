@@ -83,9 +83,9 @@ defineEmits<{
 const brand = useBrand()
 
 const severityColor = computed(() => {
-  if (props.alert.severity === 'critical') return brand.colors.negative
-  if (props.alert.severity === 'warning') return brand.colors.primary
-  return brand.colors.textMuted
+  if (props.alert.severity === 'critical') return 'var(--brand-negative)'
+  if (props.alert.severity === 'warning') return 'var(--brand-primary)'
+  return 'var(--brand-text-muted)'
 })
 
 const iconName = computed(() => {
@@ -95,8 +95,8 @@ const iconName = computed(() => {
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 /**

@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-8 px-6 py-8">
       <!-- Header -->
       <section class="flex flex-col gap-4">
-        <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
           Aprenda a investir em ações, FIIs e dividendos da B3 com guias completos, análises dos maiores ativos, tutoriais práticos e dados de mercado em tempo real. Conteúdo gratuito da {{ brand.name }} para investidores de todos os níveis.
         </p>
       </section>
@@ -26,12 +26,12 @@
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-3">
               <UBadge label="Ações" color="secondary" variant="subtle" size="xs" />
-              <span class="text-xs" :style="{ color: brand.colors.textMuted }">8 min de leitura</span>
+              <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">8 min de leitura</span>
             </div>
             <h3 class="mb-2 group-hover:text-secondary transition-colors">
               Como Investir em Ações para Iniciantes
             </h3>
-            <p class="mb-4" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-4" :style="{ color: 'var(--brand-text-muted)' }">
               Guia completo passo a passo para você começar a investir na bolsa de valores. Aprenda desde o básico até estratégias avançadas.
             </p>
             <div class="flex items-center gap-2 text-secondary text-sm font-medium">
@@ -51,7 +51,7 @@
           <div>
             <p
               class="mb-1 text-[10px] font-medium uppercase tracking-[0.15em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               Dados da B3 em tempo real
             </p>
@@ -65,8 +65,8 @@
             :to="tool.to"
             class="group flex items-start gap-3 rounded-2xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-white/20"
             :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: brand.colors.surface,
+              borderColor: 'var(--brand-border)',
+              backgroundColor: 'var(--brand-surface)',
             }"
           >
             <div
@@ -79,19 +79,19 @@
               <div class="mb-0.5 flex items-center gap-1.5">
                 <h3
                   class="text-sm"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   {{ tool.title }}
                 </h3>
                 <UIcon
                   name="i-lucide-arrow-up-right"
                   class="size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 />
               </div>
               <p
                 class="text-[11px] leading-relaxed"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ tool.description }}
               </p>
@@ -243,7 +243,7 @@ const allMarketTools: MarketTool[] = [
     description:
       'Ranking diário das ações e FIIs que mais pagam dividendos proporcionalmente ao preço.',
     icon: 'i-lucide-coins',
-    accent: brand.colors.primary,
+    accent: 'var(--brand-primary)',
     flag: 'showDividendYieldRanking',
   },
   {
@@ -252,7 +252,7 @@ const allMarketTools: MarketTool[] = [
     description:
       'Ativos com maior valorização nos últimos 30 dias na bolsa brasileira.',
     icon: 'i-lucide-trending-up',
-    accent: brand.colors.positive,
+    accent: 'var(--brand-positive)',
     flag: 'showMonthlyMoversRanking',
   },
   {
@@ -261,7 +261,7 @@ const allMarketTools: MarketTool[] = [
     description:
       'Ativos com maior desvalorização nos últimos 30 dias, oportunidades ou alertas.',
     icon: 'i-lucide-trending-down',
-    accent: brand.colors.negative,
+    accent: 'var(--brand-negative)',
     flag: 'showMonthlyMoversRanking',
   },
   {
@@ -270,7 +270,7 @@ const allMarketTools: MarketTool[] = [
     description:
       'Próximos pagamentos de dividendos, JCP e rendimentos das empresas listadas na B3.',
     icon: 'i-lucide-calendar-days',
-    accent: brand.colors.primary,
+    accent: 'var(--brand-primary)',
     flag: 'showDividendCalendar',
   },
   {
@@ -279,7 +279,7 @@ const allMarketTools: MarketTool[] = [
     description:
       'Compare empresas do mesmo setor econômico com indicadores fundamentalistas.',
     icon: 'i-lucide-layers',
-    accent: brand.colors.secondary,
+    accent: 'var(--brand-secondary)',
     flag: 'showSectorComparatives',
   },
   {
@@ -288,7 +288,7 @@ const allMarketTools: MarketTool[] = [
     description:
       'Hub completo com todos os rankings e ferramentas de análise do mercado.',
     icon: 'i-lucide-trophy',
-    accent: brand.colors.secondary,
+    accent: 'var(--brand-secondary)',
     flag: '__any_ranking__',
   },
 ]

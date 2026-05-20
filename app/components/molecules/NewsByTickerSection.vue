@@ -325,6 +325,6 @@ function formatRelativeTime(iso: string): string {
 }
 .other-link:hover::after,
 .other-link:focus-visible::after {
-  box-shadow: inset 0 0 0 1px var(--brand-primary, #f59e0b);
+  box-shadow: inset 0 0 0 1px var(--brand-primary, var(--brand-warning));
 }
 </style>

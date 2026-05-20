@@ -34,36 +34,36 @@
     <div class="wrc__inner">
       <!-- LEFT: copy + giant number -->
       <div class="wrc__left">
-        <p class="wrc__eyebrow" :style="{ color: brand.colors.primary }">
-          <span class="wrc__eyebrow-dot" :style="{ background: brand.colors.primary, boxShadow: `0 0 10px ${brand.colors.primary}` }" />
+        <p class="wrc__eyebrow" :style="{ color: 'var(--brand-primary)' }">
+          <span class="wrc__eyebrow-dot" :style="{ background: 'var(--brand-primary)', boxShadow: `0 0 10px var(--brand-primary)` }" />
           Resultado · Rentabilidade
         </p>
 
-        <h2 class="wrc__title" :style="{ color: brand.colors.text }">
+        <h2 class="wrc__title" :style="{ color: 'var(--brand-text)' }">
           <template v-if="hasPnl">
             Sua carteira
             <span class="wrc__title-em" :style="{ color: titleEmColor }">{{ isGain ? 'rendeu' : isLoss ? 'recuou' : 'está' }}</span>
           </template>
           <template v-else>
             Conecte e veja
-            <span class="wrc__title-em" :style="{ color: brand.colors.primary }">quanto rendeu</span>
+            <span class="wrc__title-em" :style="{ color: 'var(--brand-primary)' }">quanto rendeu</span>
           </template>
         </h2>
 
         <div v-if="hasPnl" class="wrc__pnl">
           <span class="wrc__pnl-sign" :style="{ color: signColor }">{{ isGain ? '+' : '−' }}</span>
-          <span class="wrc__pnl-amount" :style="{ color: brand.colors.text }">
+          <span class="wrc__pnl-amount" :style="{ color: 'var(--brand-text)' }">
             {{ formatBrlAbs(pnlAmount || 0) }}
           </span>
           <span class="wrc__pnl-pct" :style="{ color: signColor, background: badgeBg, borderColor: badgeBorder }">
             {{ isGain ? '+' : '−' }}{{ Math.abs(pnlPct || 0).toFixed(1).replace('.', ',') }}%
           </span>
         </div>
-        <p v-else class="wrc__placeholder" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">
+        <p v-else class="wrc__placeholder" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">
           Open Finance entrega o histórico real de cada ordem pra a Redentia calcular sua rentabilidade.
         </p>
 
-        <p v-if="hasPnl" class="wrc__lead" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }">
+        <p v-if="hasPnl" class="wrc__lead" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)` }">
           Veja o detalhamento por ativo, comparação com CDI/Ibov, melhores e piores meses, e o gráfico de patrimônio ao longo do tempo.
         </p>
       </div>
@@ -88,15 +88,15 @@
         <div class="wrc__meta">
           <span class="wrc__meta-row">
             <span class="wrc__meta-label">Patrimônio</span>
-            <span class="wrc__meta-value" :style="{ color: brand.colors.text }">{{ formatBrl(totalValue) }}</span>
+            <span class="wrc__meta-value" :style="{ color: 'var(--brand-text)' }">{{ formatBrl(totalValue) }}</span>
           </span>
           <span v-if="positionsCount > 0" class="wrc__meta-row">
             <span class="wrc__meta-label">Ativos</span>
-            <span class="wrc__meta-value" :style="{ color: brand.colors.text }">{{ positionsCount }}</span>
+            <span class="wrc__meta-value" :style="{ color: 'var(--brand-text)' }">{{ positionsCount }}</span>
           </span>
         </div>
 
-        <span class="wrc__cta" :style="{ color: brand.colors.primary }">
+        <span class="wrc__cta" :style="{ color: 'var(--brand-primary)' }">
           Ver análise completa
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="wrc__cta-icon" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
@@ -132,15 +132,15 @@ const isGain = computed(() => (props.pnlAmount ?? 0) > 0)
 const isLoss = computed(() => (props.pnlAmount ?? 0) < 0)
 
 const signColor = computed(() => {
-  if (isGain.value) return brand.colors.positive || '#10b981'
-  if (isLoss.value) return brand.colors.negative || '#ef4444'
-  return brand.colors.primary
+  if (isGain.value) return 'var(--brand-positive, #10b981)'
+  if (isLoss.value) return 'var(--brand-negative, #ef4444)'
+  return 'var(--brand-primary)'
 })
 
 const titleEmColor = computed(() => {
-  if (isGain.value) return brand.colors.positive || '#10b981'
-  if (isLoss.value) return brand.colors.negative || '#ef4444'
-  return brand.colors.primary
+  if (isGain.value) return 'var(--brand-positive, #10b981)'
+  if (isLoss.value) return 'var(--brand-negative, #ef4444)'
+  return 'var(--brand-primary)'
 })
 
 const badgeBg = computed(() => `color-mix(in srgb, ${signColor.value} 14%, transparent)`)
@@ -148,12 +148,12 @@ const badgeBorder = computed(() => `color-mix(in srgb, ${signColor.value} 38%, t
 
 const cardStyle = computed(() => ({
   '--wrc-tint': signColor.value,
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.text} 12%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-text) 12%, transparent)`,
 }))
 
 const glowStyle = computed(() => ({
-  background: `radial-gradient(ellipse 70% 80% at 20% 50%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
+  background: `radial-gradient(ellipse 70% 80% at 20% 50%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 65%)`,
 }))
 
 // Soft sine wave + sign bias so the last bar reflects gain/loss direction.
@@ -196,15 +196,15 @@ function formatBrlAbs(v: number): string {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease-out, border-color 200ms ease-out;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.03) inset,
-    0 12px 32px -16px color-mix(in srgb, var(--wrc-tint, #f5a623) 18%, transparent);
+    0 12px 32px -16px color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 18%, transparent);
 }
 
 .wrc:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--wrc-tint, #f5a623) 28%, transparent);
+  border-color: color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 28%, transparent);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 24px 60px -22px color-mix(in srgb, var(--wrc-tint, #f5a623) 32%, transparent);
+    0 24px 60px -22px color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 32%, transparent);
 }
 
 .wrc:active {
@@ -214,8 +214,8 @@ function formatBrlAbs(v: number): string {
 .wrc:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--brand-primary, #f5a623) 30%, transparent),
-    0 24px 60px -22px color-mix(in srgb, var(--wrc-tint, #f5a623) 32%, transparent);
+    0 0 0 3px color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 30%, transparent),
+    0 24px 60px -22px color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 32%, transparent);
 }
 
 /* ============ Decorative layers ============ */
@@ -251,7 +251,7 @@ function formatBrlAbs(v: number): string {
   left: -120%;
   width: 60%;
   height: 200%;
-  background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--wrc-tint, #f5a623) 8%, transparent) 48%, color-mix(in srgb, var(--wrc-tint, #f5a623) 14%, transparent) 50%, color-mix(in srgb, var(--wrc-tint, #f5a623) 8%, transparent) 52%, transparent 70%);
+  background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 8%, transparent) 48%, color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 14%, transparent) 50%, color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 8%, transparent) 52%, transparent 70%);
   transform: skewX(-18deg);
   animation: wrc-shine 9s ease-in-out infinite;
   opacity: 0.7;
@@ -361,7 +361,7 @@ function formatBrlAbs(v: number): string {
   letter-spacing: -0.035em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 30px color-mix(in srgb, var(--wrc-tint, #f5a623) 22%, transparent);
+  text-shadow: 0 0 30px color-mix(in srgb, var(--wrc-tint, var(--brand-primary)) 22%, transparent);
 }
 
 .wrc__pnl-pct {

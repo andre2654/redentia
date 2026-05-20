@@ -63,7 +63,7 @@
         <button
           type="button"
           class="fixed inset-0 backdrop-blur-sm"
-          :style="{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }"
+          :style="{ backgroundColor: 'var(--shadow-amber-near)' }"
           aria-label="Fechar conversas"
           @click="$emit('close-sidebar')"
         />
@@ -104,7 +104,7 @@
         <button
           type="button"
           class="fixed inset-0 backdrop-blur-sm"
-          :style="{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }"
+          :style="{ backgroundColor: 'var(--shadow-amber-near)' }"
           aria-label="Fechar artefato"
           @click="$emit('close-artifact')"
         />

@@ -19,8 +19,8 @@
       <svg :viewBox="`0 0 ${size} ${size}`" overflow="visible" class="sl-snow__svg" aria-hidden="true">
         <defs>
           <radialGradient id="sl-snow-fill" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="var(--brand-primary, #f5a623)" stop-opacity="0.9" />
-            <stop offset="100%" stop-color="var(--brand-primary, #f5a623)" stop-opacity="0.45" />
+            <stop offset="0%" stop-color="var(--brand-primary, var(--brand-primary))" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="var(--brand-primary, var(--brand-primary))" stop-opacity="0.45" />
           </radialGradient>
           <filter id="sl-snow-bloom" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -64,7 +64,7 @@
           class="sl-snow__poly"
           :points="polygonPoints"
           fill="url(#sl-snow-fill)"
-          stroke="var(--brand-primary, #f5a623)"
+          stroke="var(--brand-primary, var(--brand-primary))"
           stroke-width="1.5"
           filter="url(#sl-snow-bloom)"
         />
@@ -76,7 +76,7 @@
             :key="`flare-${i}`"
             :cx="p.x" :cy="p.y"
             r="0"
-            fill="var(--brand-primary, #f5a623)"
+            fill="var(--brand-primary, var(--brand-primary))"
             class="sl-snow__flare"
             :style="{ '--flare-delay': `${i * 110 + 1100}ms` }"
           />
@@ -88,7 +88,7 @@
             v-for="(p, i) in vertexPoints"
             :key="`vx-${i}`"
             :cx="p.x" :cy="p.y" r="4.5"
-            fill="var(--brand-primary, #f5a623)"
+            fill="var(--brand-primary, var(--brand-primary))"
             stroke="#fff"
             stroke-width="1.2"
             class="sl-snow__vertex"
@@ -300,7 +300,7 @@ const bottomAxis = computed(() => sorted.value[sorted.value.length - 1])
   transform-box: fill-box;
   transform-origin: 50% 50%;
   animation: sl-snow-vertex-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--vx-delay, 0ms) forwards;
-  filter: drop-shadow(0 0 6px var(--brand-primary, #f5a623));
+  filter: drop-shadow(0 0 6px var(--brand-primary, var(--brand-primary)));
 }
 
 @keyframes sl-snow-vertex-pop {

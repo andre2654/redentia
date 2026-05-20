@@ -89,7 +89,7 @@ function classificationLabel(c?: string): string {
 function badgeColor(c?: string): string {
   if (c === 'achieved') return 'var(--brand-positive, #16a34a)'
   if (c === 'unfeasible') return 'var(--brand-negative, #dc2626)'
-  if (c === 'aggressive') return '#f59e0b'
+  if (c === 'aggressive') return 'var(--brand-warning)'
   return 'var(--brand-primary)'
 }
 function badgeBg(c?: string): string {

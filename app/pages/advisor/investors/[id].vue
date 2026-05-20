@@ -5,13 +5,13 @@
         <NuxtLink
           to="/advisor"
           class="rounded-lg p-2 transition hover:bg-white/10"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
         >
           <UIcon name="i-lucide-arrow-left" class="h-5 w-5" />
         </NuxtLink>
         <div class="flex flex-col gap-1">
-          <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">{{ investorName }}</h2>
-          <p class="text-xs" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">{{ investorEmail }}</p>
+          <h2 class="text-[18px] font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">{{ investorName }}</h2>
+          <p class="text-xs" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">{{ investorEmail }}</p>
         </div>
         <NuxtLink
           :to="`/help?advisor_chat=${route.params.id}`"
@@ -23,8 +23,8 @@
 
       <!-- Sugestão de mensagem -->
       <div class="rounded-xl border border-secondary/20 bg-secondary/5 p-4">
-        <h3 class="mb-2 text-sm font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Sugerir mensagem</h3>
-        <p class="mb-3 text-xs" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Gere um rascunho personalizado com base no perfil e na carteira do investidor.</p>
+        <h3 class="mb-2 text-sm font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">Sugerir mensagem</h3>
+        <p class="mb-3 text-xs" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Gere um rascunho personalizado com base no perfil e na carteira do investidor.</p>
         <UButton
           color="secondary"
           size="sm"
@@ -38,7 +38,7 @@
             :rows="5"
             class="w-full"
             :ui="{ base: 'rounded-xl border-white/10 bg-white/5' }"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           />
           <UButton
             class="mt-2"
@@ -80,7 +80,7 @@
       </div>
 
       <div v-else-if="tab === 'profile'" class="rounded-xl border border-white/10 bg-white/5 p-6">
-        <h3 class="mb-4 text-sm font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Perfil do investidor</h3>
+        <h3 class="mb-4 text-sm font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">Perfil do investidor</h3>
         <UForm :state="profileState" class="flex flex-col gap-4" @submit="saveProfile">
           <UFormField label="Tolerância a risco">
             <UInput
@@ -113,7 +113,7 @@
       </div>
 
       <div v-else-if="tab === 'notes'" class="rounded-xl border border-white/10 bg-white/5 p-6">
-        <h3 class="mb-4 text-sm font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Anotações</h3>
+        <h3 class="mb-4 text-sm font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">Anotações</h3>
         <form class="mb-6 flex gap-2" @submit.prevent="addNote">
           <UTextarea
             v-model="newNoteContent"
@@ -129,35 +129,35 @@
             v-for="note in notes"
             :key="note.id"
             class="rounded-lg border border-white/10 bg-white/5 p-3 text-sm"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 90%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 90%, transparent)` }"
           >
             <p class="whitespace-pre-wrap">{{ note.content }}</p>
-            <p class="mt-2 text-[11px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 40%, transparent)` }">{{ formatDate(note.created_at) }}</p>
+            <p class="mt-2 text-[11px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 40%, transparent)` }">{{ formatDate(note.created_at) }}</p>
           </div>
-          <p v-if="!notes.length && !loading" class="text-sm" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">Nenhuma anotação ainda.</p>
+          <p v-if="!notes.length && !loading" class="text-sm" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">Nenhuma anotação ainda.</p>
         </div>
       </div>
 
       <div v-else-if="tab === 'portfolio'" class="rounded-xl border border-white/10 bg-white/5 p-6">
-        <h3 class="mb-4 text-sm font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Carteira do investidor</h3>
+        <h3 class="mb-4 text-sm font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">Carteira do investidor</h3>
         <div v-if="portfolioLoading" class="flex justify-center py-8">
           <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin text-secondary" />
         </div>
-        <div v-else-if="!portfolioPositions.length" class="py-6 text-center text-sm" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">
+        <div v-else-if="!portfolioPositions.length" class="py-6 text-center text-sm" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">
           O investidor ainda não importou nenhuma carteira.
         </div>
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="border-b border-white/10">
               <tr>
-                <th class="px-3 py-2 font-medium" :style="{ color: brand.colors.text }">Ticker</th>
-                <th class="px-3 py-2 font-medium" :style="{ color: brand.colors.text }">Quantidade</th>
-                <th class="px-3 py-2 font-medium" :style="{ color: brand.colors.text }">Preço médio</th>
-                <th class="px-3 py-2 font-medium" :style="{ color: brand.colors.text }">Valor total</th>
+                <th class="px-3 py-2 font-medium" :style="{ color: 'var(--brand-text)' }">Ticker</th>
+                <th class="px-3 py-2 font-medium" :style="{ color: 'var(--brand-text)' }">Quantidade</th>
+                <th class="px-3 py-2 font-medium" :style="{ color: 'var(--brand-text)' }">Preço médio</th>
+                <th class="px-3 py-2 font-medium" :style="{ color: 'var(--brand-text)' }">Valor total</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/10">
-              <tr v-for="p in portfolioPositions" :key="p.ticker" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 80%, transparent)` }">
+              <tr v-for="p in portfolioPositions" :key="p.ticker" :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }">
                 <td class="px-3 py-2">{{ p.ticker }}</td>
                 <td class="px-3 py-2">{{ formatNumber(p.quantity) }}</td>
                 <td class="px-3 py-2">{{ formatBRL(p.average_price) }}</td>
@@ -166,8 +166,8 @@
             </tbody>
             <tfoot class="border-t border-white/10 font-medium">
               <tr>
-                <td colspan="3" class="px-3 py-2" :style="{ color: brand.colors.text }">Total</td>
-                <td class="px-3 py-2" :style="{ color: brand.colors.text }">{{ formatBRL(portfolioTotal) }}</td>
+                <td colspan="3" class="px-3 py-2" :style="{ color: 'var(--brand-text)' }">Total</td>
+                <td class="px-3 py-2" :style="{ color: 'var(--brand-text)' }">{{ formatBRL(portfolioTotal) }}</td>
               </tr>
             </tfoot>
           </table>

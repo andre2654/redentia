@@ -145,14 +145,14 @@ usePageSeo({
             :key="w.slug"
             :to="`/embed/${w.slug}`"
             class="normal-static-link group flex flex-col gap-2 rounded-xl border p-5 transition hover:border-secondary/50"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
             <div class="flex items-center justify-between">
-              <h3 :style="{ color: brand.colors.text }">{{ w.nome }}</h3>
+              <h3 :style="{ color: 'var(--brand-text)' }">{{ w.nome }}</h3>
               <UIcon name="i-lucide-arrow-up-right" class="size-4 opacity-40 transition group-hover:opacity-100" />
             </div>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">{{ w.descricao }}</p>
-            <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 50%, transparent)' }"><strong>Quando usar:</strong> {{ w.quando }}</p>
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">{{ w.descricao }}</p>
+            <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 50%, transparent)' }"><strong>Quando usar:</strong> {{ w.quando }}</p>
           </NuxtLink>
         </div>
 
@@ -241,11 +241,11 @@ usePageSeo({
       </section>
 
       <!-- CTA -->
-      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <h2 class="mb-3" :style="{ color: brand.colors.text }">
+      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <h2 class="mb-3" :style="{ color: 'var(--brand-text)' }">
           Pronto pra instalar o primeiro widget?
         </h2>
-        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
           Abra a página de embeds, escolha um widget e cole o código. Em 2 minutos seu conteúdo tá com dados ao vivo da B3.
         </p>
         <NuxtLink to="/embed" class="quiet-btn-primary">Abrir lista de widgets</NuxtLink>

@@ -94,7 +94,7 @@ const formattedDate = computed(() => {
   height: 700px;
   margin-left: -350px;
   margin-top: -350px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary, #f5a623) 18%, transparent), transparent 65%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 18%, transparent), transparent 65%);
   filter: blur(50px);
   z-index: 0;
   pointer-events: none;
@@ -122,7 +122,7 @@ const formattedDate = computed(() => {
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--brand-primary, #f5a623);
+  color: var(--brand-primary, var(--brand-primary));
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -182,7 +182,7 @@ const formattedDate = computed(() => {
 }
 
 .sl-intro__char--italic {
-  background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, var(--brand-primary, #f5a623) 60%, #fff) 100%);
+  background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 60%, #fff) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

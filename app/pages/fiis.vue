@@ -44,7 +44,7 @@
 
         <h3>Tipos de FIIs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-building" aria-hidden="true" class="h-5 w-5" />
               Fundos de Tijolo
@@ -61,7 +61,7 @@
             </ul>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-file-text" aria-hidden="true" class="h-5 w-5" />
               Fundos de Papel
@@ -77,7 +77,7 @@
             </ul>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-layers" aria-hidden="true" class="h-5 w-5" />
               Fundos de Fundos (FOFs)
@@ -88,7 +88,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-combine" aria-hidden="true" class="h-5 w-5" />
               Fundos Híbridos
@@ -137,7 +137,7 @@
           Vantagens de Investir em FIIs
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-coins" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4>Renda Passiva Mensal</h4>
@@ -148,7 +148,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-shield-check" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4>Isenção de IR</h4>
@@ -159,7 +159,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-zap" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4>Alta Liquidez</h4>
@@ -170,7 +170,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4>Acessibilidade</h4>
@@ -187,7 +187,7 @@
         </h3>
         <div
           class="brand-card p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
         >
           <ul class="list-disc space-y-2 pl-6">
             <li>
@@ -318,7 +318,7 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--brand-border)' }">
         <NuxtLink
           to="/search?group=reits"
           class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
@@ -345,7 +345,7 @@
           Perguntas Frequentes sobre FIIs
         </h2>
         <div class="space-y-4">
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               FIIs pagam dividendos todo mês?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -357,7 +357,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual o melhor FII para iniciantes?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -369,7 +369,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               É melhor tijolo ou papel?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -381,7 +381,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto preciso para começar a investir em FIIs?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -393,7 +393,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               FIIs são seguros?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -405,7 +405,7 @@
             </p>
           </details>
 
-          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <details class="group brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual o dividend yield ideal de um FII?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />

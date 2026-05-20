@@ -21,13 +21,13 @@
         <UIcon
           name="i-lucide-sparkles"
           class="size-5 shrink-0 mt-0.5"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         />
         <div class="flex flex-col gap-1">
-          <span class="text-[14px] font-medium" :style="{ color: brand.colors.text }">
+          <span class="text-[14px] font-medium" :style="{ color: 'var(--brand-text)' }">
             Pouco volume pra opinar
           </span>
-          <span class="text-[12.5px] leading-relaxed" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">
+          <span class="text-[12.5px] leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">
             Mais operações registradas e a leitura ganha densidade. Quando o backend de operações estiver online, esta seção vira um diagnóstico personalizado da sua semana.
           </span>
         </div>
@@ -60,11 +60,11 @@
           <div class="flex flex-col gap-1.5 min-w-0">
             <span
               class="text-[13.5px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >{{ ins.title }}</span>
             <span
               class="text-[12.5px] leading-relaxed"
-              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)` }"
+              :style="{ color: `color-mix(in srgb, var(--brand-text) 70%, transparent)` }"
             >{{ ins.body }}</span>
           </div>
         </div>
@@ -73,7 +73,7 @@
 
     <p
       class="mt-1 inline-flex items-start gap-1.5 text-[11px] leading-snug"
-      :style="{ color: `color-mix(in srgb, ${brand.colors.text} 45%, transparent)` }"
+      :style="{ color: `color-mix(in srgb, var(--brand-text) 45%, transparent)` }"
     >
       <UIcon name="i-lucide-info" class="size-3 shrink-0 mt-0.5" aria-hidden="true" />
       <span>Leituras automatizadas baseadas em padrões matemáticos do período. Não constituem recomendação de investimento.</span>
@@ -187,23 +187,23 @@ const insights = computed<Insight[]>(() => {
 
 function toneColor(tone: InsightTone): string {
   switch (tone) {
-    case 'positive': return brand.colors.positive
-    case 'warning': return brand.colors.primary
-    case 'negative': return brand.colors.negative
-    case 'neutral': return brand.colors.text
+    case 'positive': return 'var(--brand-positive)'
+    case 'warning': return 'var(--brand-primary)'
+    case 'negative': return 'var(--brand-negative)'
+    case 'neutral': return 'var(--brand-text)'
   }
 }
 
 function insightCardStyle(tone: InsightTone) {
   return {
-    backgroundColor: brand.colors.surface,
+    backgroundColor: 'var(--brand-surface)',
     borderColor: `color-mix(in srgb, ${toneColor(tone)} 24%, transparent)`,
   }
 }
 
 const emptyStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 </script>
 

@@ -13,7 +13,7 @@
   -->
   <div
     class="flex min-h-screen flex-col"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <div class="flex-1">
       <slot />

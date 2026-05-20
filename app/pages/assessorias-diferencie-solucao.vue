@@ -334,7 +334,7 @@ useHead({
         class="lp-hero__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--brand-primary) 26%, transparent), transparent 65%)`,
         }"
       />
 
@@ -471,7 +471,7 @@ useHead({
                     <div class="ass-dash__grid">
                       <article class="ass-dash__card">
                         <header class="ass-dash__card-head">
-                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 6"/></svg>
                           </span>
                           <span class="ass-dash__card-title">Raio-X da carteira</span>
@@ -496,7 +496,7 @@ useHead({
 
                       <article class="ass-dash__card">
                         <header class="ass-dash__card-head">
-                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                           </span>
                           <span class="ass-dash__card-title">O que mexeu hoje</span>
@@ -504,17 +504,17 @@ useHead({
                         </header>
                         <ul class="ass-dash__movers">
                           <li>
-                            <span class="ass-dash__mover-dot" :style="{ background: brand.colors.negative || '#dc2626' }" />
+                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-negative)' || '#dc2626' }" />
                             <span class="ass-dash__mover-label"><strong>PETR4</strong> caiu com petróleo</span>
                             <span class="ass-dash__mover-pct ass-dash__mover-pct--neg">-3,2%</span>
                           </li>
                           <li>
-                            <span class="ass-dash__mover-dot" :style="{ background: brand.colors.positive || '#10b981' }" />
+                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
                             <span class="ass-dash__mover-label"><strong>IVVB11</strong> compensou com dólar</span>
                             <span class="ass-dash__mover-pct ass-dash__mover-pct--pos">+1,1%</span>
                           </li>
                           <li>
-                            <span class="ass-dash__mover-dot" :style="{ background: brand.colors.negative || '#dc2626' }" />
+                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-negative)' || '#dc2626' }" />
                             <span class="ass-dash__mover-label"><strong>Bancos</strong> com Copom hawkish</span>
                             <span class="ass-dash__mover-pct ass-dash__mover-pct--neg">-0,9%</span>
                           </li>
@@ -524,7 +524,7 @@ useHead({
 
                       <article class="ass-dash__card">
                         <header class="ass-dash__card-head">
-                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
                           </span>
                           <span class="ass-dash__card-title">Assistente IA</span>
@@ -543,7 +543,7 @@ useHead({
 
                       <article class="ass-dash__card">
                         <header class="ass-dash__card-head">
-                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                           </span>
                           <span class="ass-dash__card-title">Relatório para cliente</span>
@@ -563,7 +563,7 @@ useHead({
 
                       <article class="ass-dash__card">
                         <header class="ass-dash__card-head">
-                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                           </span>
                           <span class="ass-dash__card-title">Insights personalizados</span>
@@ -578,7 +578,7 @@ useHead({
 
                       <article class="ass-dash__card">
                         <header class="ass-dash__card-head">
-                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                           </span>
                           <span class="ass-dash__card-title">Alertas e oportunidades</span>
@@ -706,8 +706,8 @@ useHead({
                     <svg class="ass-asset__chart-svg" viewBox="0 0 700 180" preserveAspectRatio="none" aria-hidden="true">
                       <defs>
                         <linearGradient id="ass-asset-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0.3" />
-                          <stop offset="100%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0" />
+                          <stop offset="0%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0.3" />
+                          <stop offset="100%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0" />
                         </linearGradient>
                       </defs>
                       <!-- Grid horizontal sutil -->
@@ -716,10 +716,10 @@ useHead({
                       <line x1="0" y1="135" x2="700" y2="135" stroke="#E4E4E7" stroke-width="1" stroke-dasharray="2,4"/>
                       <!-- Linha do ativo, queda no fim -->
                       <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158 L700,180 L0,180 Z" fill="url(#ass-asset-grad)" />
-                      <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158" :stroke="brand.colors.negative || '#dc2626'" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158" :stroke="'var(--brand-negative, #dc2626)'" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
                       <!-- Pontilho sob o ultimo ponto -->
-                      <circle cx="700" cy="158" r="4" :fill="brand.colors.negative || '#dc2626'" />
-                      <circle cx="700" cy="158" r="9" :fill="brand.colors.negative || '#dc2626'" fill-opacity="0.18" />
+                      <circle cx="700" cy="158" r="4" :fill="'var(--brand-negative, #dc2626)'" />
+                      <circle cx="700" cy="158" r="9" :fill="'var(--brand-negative, #dc2626)'" fill-opacity="0.18" />
                     </svg>
                   </div>
 
@@ -727,7 +727,7 @@ useHead({
                   <div class="ass-asset__row">
                     <article class="ass-asset__card ass-asset__card--ai">
                       <header class="ass-asset__card-head">
-                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                           <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
                         </span>
                         <span class="ass-asset__card-title">Análise IA · Sua marca</span>
@@ -744,7 +744,7 @@ useHead({
 
                     <article class="ass-asset__card">
                       <header class="ass-asset__card-head">
-                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                           <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                         </span>
                         <span class="ass-asset__card-title">Dividendos</span>
@@ -759,7 +759,7 @@ useHead({
 
                     <article class="ass-asset__card">
                       <header class="ass-asset__card-head">
-                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                           <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>
                         </span>
                         <span class="ass-asset__card-title">Notícias do ativo</span>
@@ -855,7 +855,7 @@ useHead({
 
                   <!-- Input bar com simulacao de typing (caret pulsante + texto sendo digitado) -->
                   <div class="ass-chat__input">
-                    <span class="ass-chat__input-icon" :style="{ color: brand.colors.primary }">
+                    <span class="ass-chat__input-icon" :style="{ color: 'var(--brand-primary)' }">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                     </span>
                     <span
@@ -870,7 +870,7 @@ useHead({
                     </span>
                     <span
                       :class="['ass-chat__input-send', { 'is-ready': !!chatUserDraft }]"
-                      :style="{ background: brand.colors.primary }"
+                      :style="{ background: 'var(--brand-primary)' }"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     </span>
@@ -902,25 +902,25 @@ useHead({
               <div class="ass-float__head">Performance no dia</div>
               <div class="ass-float__row">
                 <div class="ass-float__col">
-                  <span class="ass-float__num" :style="{ color: brand.colors.negative || '#dc2626' }">-1,8%</span>
+                  <span class="ass-float__num" :style="{ color: 'var(--brand-negative)' || '#dc2626' }">-1,8%</span>
                   <span class="ass-float__sub">R$ -22.340</span>
                 </div>
                 <svg class="ass-float__spark" viewBox="0 0 70 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="ass-float-spark" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0.35" />
-                      <stop offset="100%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0" />
+                      <stop offset="0%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0.35" />
+                      <stop offset="100%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0" />
                     </linearGradient>
                   </defs>
                   <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28 L70,36 L0,36 Z" fill="url(#ass-float-spark)" />
-                  <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28" :stroke="brand.colors.negative || '#dc2626'" stroke-width="1.5" fill="none" />
+                  <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28" :stroke="'var(--brand-negative, #dc2626)'" stroke-width="1.5" fill="none" />
                 </svg>
               </div>
             </div>
 
             <!-- Float 2: clientes ativos (bottom left) -->
             <div class="ass-float ass-float--clients" aria-hidden="true">
-              <span class="ass-float__icon-wrap" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+              <span class="ass-float__icon-wrap" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </span>
               <div>
@@ -931,7 +931,7 @@ useHead({
 
             <!-- Float 3: plataforma com sua marca (bottom right) -->
             <div class="ass-float ass-float--brand" aria-hidden="true">
-              <span class="ass-float__icon-wrap" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+              <span class="ass-float__icon-wrap" :style="{ background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </span>
               <div>
@@ -1015,7 +1015,7 @@ useHead({
 
             <ul class="ass-preview__features">
               <li v-for="f in p.features" :key="f">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" :stroke="'var(--brand-primary)'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
                 {{ f }}
               </li>
             </ul>
@@ -1030,7 +1030,7 @@ useHead({
         <!-- Faixa de trust embaixo + CTA pra lead -->
         <div class="ass-previews__foot">
           <div class="ass-previews__foot-item">
-            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+            <span class="ass-previews__foot-icon" :style="{ color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             </span>
             <div class="ass-previews__foot-text">
@@ -1039,7 +1039,7 @@ useHead({
             </div>
           </div>
           <div class="ass-previews__foot-item">
-            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+            <span class="ass-previews__foot-icon" :style="{ color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
             </span>
             <div class="ass-previews__foot-text">
@@ -1048,7 +1048,7 @@ useHead({
             </div>
           </div>
           <div class="ass-previews__foot-item">
-            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+            <span class="ass-previews__foot-icon" :style="{ color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             </span>
             <div class="ass-previews__foot-text">
@@ -1057,7 +1057,7 @@ useHead({
             </div>
           </div>
           <div class="ass-previews__foot-item">
-            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+            <span class="ass-previews__foot-icon" :style="{ color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </span>
             <div class="ass-previews__foot-text">
@@ -1095,7 +1095,7 @@ useHead({
 
         <div class="sol-what__grid">
           <article class="sol-what__card">
-            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
             </div>
             <h3>Carteira</h3>
@@ -1103,7 +1103,7 @@ useHead({
           </article>
 
           <article class="sol-what__card">
-            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>
             </div>
             <h3>Notícias</h3>
@@ -1111,7 +1111,7 @@ useHead({
           </article>
 
           <article class="sol-what__card">
-            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
             <h3>Impactos</h3>
@@ -1119,7 +1119,7 @@ useHead({
           </article>
 
           <article class="sol-what__card">
-            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
             <h3>Riscos</h3>
@@ -1142,7 +1142,7 @@ useHead({
         class="sol-diff__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 60% 50% at 50% 30%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 60% 50% at 50% 30%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 65%)`,
         }"
       />
       <div class="lp-container">
@@ -1248,7 +1248,7 @@ useHead({
 
         <div class="sol-uses__grid">
           <article class="sol-uses__card">
-            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
             <h3>Para clientes premium</h3>
@@ -1256,7 +1256,7 @@ useHead({
           </article>
 
           <article class="sol-uses__card">
-            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
             <h3>Para captação</h3>
@@ -1264,7 +1264,7 @@ useHead({
           </article>
 
           <article class="sol-uses__card">
-            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </div>
             <h3>Para relacionamento</h3>
@@ -1272,7 +1272,7 @@ useHead({
           </article>
 
           <article class="sol-uses__card">
-            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <h3>Para retenção</h3>
@@ -1280,7 +1280,7 @@ useHead({
           </article>
 
           <article class="sol-uses__card">
-            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
             <h3>Para posicionamento</h3>
@@ -1356,7 +1356,7 @@ useHead({
         class="ass-scarcity__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 28%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in srgb, var(--brand-primary) 28%, transparent), transparent 65%)`,
         }"
       />
       <div class="lp-container">
@@ -1405,7 +1405,7 @@ useHead({
 
         <div class="ass-proof__grid">
           <article class="ass-proof__card">
-            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M6 8h12M6 12h8M6 16h6"/></svg>
             </div>
             <h3>Cliente acostumado com experiência digital</h3>
@@ -1413,7 +1413,7 @@ useHead({
           </article>
 
           <article class="ass-proof__card">
-            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
             </div>
             <h3>Atenção do investidor está em disputa</h3>
@@ -1421,7 +1421,7 @@ useHead({
           </article>
 
           <article class="ass-proof__card">
-            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
             </div>
             <h3>IA virou expectativa, não novidade</h3>
@@ -1429,7 +1429,7 @@ useHead({
           </article>
 
           <article class="ass-proof__card">
-            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             </div>
             <h3>Quem cria experiência sai do funil de comoditização</h3>
@@ -1540,7 +1540,7 @@ useHead({
         class="sol-final__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, var(--brand-primary) 26%, transparent), transparent 65%)`,
         }"
       />
       <div class="lp-container">

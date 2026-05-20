@@ -133,8 +133,8 @@
           <AtomsGraphLine
             :data="result.chartData"
             :height="350"
-            :legend="[{ label: 'Investimento', color: ChartColors.positive }]"
-            :colors="[ChartColors.positive]"
+            :legend="[{ label: 'Investimento', color: cc.positive }]"
+            :colors="[cc.positive]"
           />
         </CalcUiChart>
 
@@ -207,9 +207,13 @@ import {
 import { showErrorNotification } from '~/composables/useNotify'
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
-import { ChartColors } from '~/design/chartColors'
+import { useChartColors } from '~/design/chartColors'
 
 const brand = useBrand()
+// Reativo via useChartColors() — evita congelamento de hex em F5 com
+// prefers-color-scheme: system. ChartColors estático lê de seedBrand
+// e não reflete troca de tema.
+const cc = useChartColors()
 
 const props = withDefaults(
   defineProps<{

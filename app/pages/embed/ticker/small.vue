@@ -169,8 +169,8 @@ if (isWidgetMode.value) {
       rel="noopener"
       class="flex w-full max-w-full flex-col gap-1 rounded-lg border px-3 py-2 no-underline"
       :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        borderColor: theme === 'light' ? '#e5e7eb' : brand.colors.border,
+        backgroundColor: theme === 'light' ? '#ffffff' : 'var(--brand-surface)',
+        borderColor: theme === 'light' ? '#e5e7eb' : 'var(--brand-border)',
       }"
     >
       <div class="flex items-center gap-2">
@@ -186,14 +186,14 @@ if (isWidgetMode.value) {
           class="flex size-6 items-center justify-center rounded text-[9px] font-medium"
           :style="{
             backgroundColor: theme === 'light' ? '#f3f4f6' : 'rgba(255,255,255,0.1)',
-            color: theme === 'light' ? '#6b7280' : brand.colors.textMuted,
+            color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)',
           }"
         >
           {{ ticker.slice(0, 2) }}
         </div>
         <span
           class="text-sm font-medium tracking-wide"
-          :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.005em' }"
+          :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)', letterSpacing: '-0.005em' }"
         >
           {{ ticker }}
         </span>
@@ -207,13 +207,13 @@ if (isWidgetMode.value) {
       </div>
       <div
         class="text-base font-medium tabular-nums"
-        :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.005em' }"
+        :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)', letterSpacing: '-0.005em' }"
       >
         {{ loading ? 'R$ —' : formatPrice(price) }}
       </div>
       <div
         class="text-[9px] uppercase tracking-[0.15em] opacity-60"
-        :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }"
+        :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }"
       >
         powered by redentia.com.br
       </div>
@@ -232,22 +232,22 @@ if (isWidgetMode.value) {
       <div class="grid gap-8 md:grid-cols-5">
         <!-- Config -->
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Customizar</h2>
 
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Ticker</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Ticker</label>
             <UInput v-model="ticker" placeholder="PETR4" @update:model-value="(v) => (ticker = String(v).toUpperCase())" />
-            <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Qualquer ativo da B3: PETR4, VALE3, MGLU3, HGLG11, BOVA11, etc.</p>
+            <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">Qualquer ativo da B3: PETR4, VALE3, MGLU3, HGLG11, BOVA11, etc.</p>
           </div>
 
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Tema</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Tema</label>
             <div class="flex gap-2">
               <button
                 type="button"
                 class="flex-1 rounded-lg border px-4 py-2 text-sm transition"
                 :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'"
-                :style="theme !== 'dark' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}"
+                :style="theme !== 'dark' ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}"
                 @click="theme = 'dark'"
               >
                 Escuro
@@ -256,7 +256,7 @@ if (isWidgetMode.value) {
                 type="button"
                 class="flex-1 rounded-lg border px-4 py-2 text-sm transition"
                 :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'"
-                :style="theme !== 'light' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}"
+                :style="theme !== 'light' ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}"
                 @click="theme = 'light'"
               >
                 Claro
@@ -265,10 +265,10 @@ if (isWidgetMode.value) {
           </div>
 
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Código para copiar</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Código para copiar</label>
             <div
               class="overflow-x-auto rounded-lg border p-4 font-mono text-xs"
-              :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }"
+              :style="{ backgroundColor: 'var(--brand-background)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }"
             >
               <code>{{ iframeCode }}</code>
             </div>
@@ -280,12 +280,12 @@ if (isWidgetMode.value) {
 
         <!-- Preview -->
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Pré-visualização</h2>
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Pré-visualização</h2>
           <div
             class="flex min-h-[400px] items-center justify-center rounded-2xl border p-8"
             :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background,
+              borderColor: 'var(--brand-border)',
+              backgroundColor: theme === 'light' ? '#f9fafb' : 'var(--brand-background)',
             }"
           >
             <iframe
@@ -298,7 +298,7 @@ if (isWidgetMode.value) {
               style="border:0;border-radius:12px;"
             />
           </div>
-          <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+          <p class="text-xs" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
             Pré-visualização usando o mesmo iframe que você vai colar no seu site.
           </p>
         </div>
@@ -306,32 +306,32 @@ if (isWidgetMode.value) {
 
       <!-- Feature list for SEO -->
       <div>
-        <h2 class="mb-4 text-2xl font-light" :style="{ color: brand.colors.text, letterSpacing: '-0.4px', fontSize: 'clamp(1.5rem, 3vw, 1.875rem)' }">
+        <h2 class="mb-4 text-2xl font-light" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px', fontSize: 'clamp(1.5rem, 3vw, 1.875rem)' }">
           Por que usar o widget de cotação da Redentia
         </h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: brand.colors.border }">
-            <h3 class="font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Dados em tempo real da B3</h3>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Cotações atualizam durante o pregão (10h às 17h30). Fora do horário, mostra o último fechamento.</p>
+          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: 'var(--brand-border)' }">
+            <h3 class="font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Dados em tempo real da B3</h3>
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Cotações atualizam durante o pregão (10h às 17h30). Fora do horário, mostra o último fechamento.</p>
           </div>
-          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: brand.colors.border }">
-            <h3 class="font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">100% gratuito e sem cadastro</h3>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Sem limite de uso, sem API key, sem autenticação. Copie o iframe e pronto.</p>
+          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: 'var(--brand-border)' }">
+            <h3 class="font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">100% gratuito e sem cadastro</h3>
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Sem limite de uso, sem API key, sem autenticação. Copie o iframe e pronto.</p>
           </div>
-          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: brand.colors.border }">
-            <h3 class="font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Funciona em qualquer CMS</h3>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">WordPress, Webflow, Medium, Ghost, Substack, Notion pages públicas. Onde tiver iframe, funciona.</p>
+          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: 'var(--brand-border)' }">
+            <h3 class="font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Funciona em qualquer CMS</h3>
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">WordPress, Webflow, Medium, Ghost, Substack, Notion pages públicas. Onde tiver iframe, funciona.</p>
           </div>
-          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: brand.colors.border }">
-            <h3 class="font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Tema claro ou escuro</h3>
-            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Escolha o tema que combina com seu site. Atualiza automaticamente quando você troca no painel acima.</p>
+          <div class="flex flex-col gap-2 rounded-xl border p-5" :style="{ borderColor: 'var(--brand-border)' }">
+            <h3 class="font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Tema claro ou escuro</h3>
+            <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Escolha o tema que combina com seu site. Atualiza automaticamente quando você troca no painel acima.</p>
           </div>
         </div>
       </div>
 
       <!-- Outros embeds -->
       <div>
-        <h2 class="mb-4 text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
+        <h2 class="mb-4 text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">
           Outros widgets
         </h2>
         <div class="flex flex-wrap gap-2">

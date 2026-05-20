@@ -1781,7 +1781,7 @@ watch(open, (val) => {
    primary border via inline style; we just upgrade the shadow.
    ============================================================ */
 .quick-search-pill {
-  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 32px -12px var(--shadow-amber-near);
 }
 
 /* Hide the native browser "clear" affordance on type="search" inputs
@@ -1800,7 +1800,7 @@ watch(open, (val) => {
 .qs-pill-idle:hover {
   border-color: var(--qs-primary) !important;
   box-shadow:
-    0 12px 32px -12px rgba(0, 0, 0, 0.4),
+    0 12px 32px -12px var(--shadow-amber-near),
     0 0 0 3px var(--qs-primary-soft);
 }
 
@@ -1851,7 +1851,7 @@ watch(open, (val) => {
    knows this is the commit step. Inherits the chip base styling
    already defined below. */
 .qs-staged-chip {
-  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 18px -10px var(--shadow-ambient);
 }
 .qs-staged-chip:hover {
   border-color: var(--qs-primary, #f5b301) !important;

@@ -17,13 +17,13 @@
 
         <h3>Classificação por Tamanho</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Large Caps (Grandes)</h4>
             <p class="text-sm">
               Valor de mercado > R$ 10 bilhões. Exemplos: PETR4, VALE3, ITUB4, B3SA3
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Mid Caps (Médias)</h4>
             <p class="text-sm">
               Entre R$ 2 e R$ 10 bilhões. Exemplos: HAPV3, RADL3, RENT3
@@ -39,7 +39,7 @@
 
         <h2>Por que Investir em Small Caps?</h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Alto Potencial de Crescimento
             </h4>
@@ -47,7 +47,7 @@
               Empresas pequenas têm mais espaço para crescer. Uma small cap que dobre de tamanho pode gerar retornos extraordinários.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Menos Cobertura Analítica
             </h4>
@@ -55,7 +55,7 @@
               Poucos analistas cobrem small caps, criando oportunidades para investidores que estudam.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Diversificação
             </h4>
@@ -63,7 +63,7 @@
               Acesso a setores e nichos não disponíveis nas large caps, como empresas regionais ou especializadas.
             </p>
           </div>
-          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-2 text-secondary">
               Multiplos de Crescimento
             </h4>
@@ -76,7 +76,7 @@
         <h2>Riscos das Small Caps</h2>
         <div
           class="rounded-xl border p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)' }"
         >
           <ul class="list-disc space-y-2 pl-6">
             <li>
@@ -98,7 +98,7 @@
               <strong>Manipulação de Preço:</strong> Mais suscetíveis a esquemas de "pump and dump"
             </li>
           </ul>
-          <p class="mt-3 text-sm" :style="{ color: brand.colors.warning || '#f59e0b' }">
+          <p class="mt-3 text-sm" :style="{ color: 'var(--brand-warning)' || 'var(--brand-warning)' }">
             ⚠️ Importante: Small caps devem representar no máximo 10-20% de uma carteira conservadora ou 20-30% de uma carteira agressiva.
           </p>
         </div>
@@ -140,25 +140,25 @@
           Invista em empresas de setores com boas perspectivas:
         </p>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Tecnologia e SaaS</h4>
             <p class="text-sm">
               Software, tecnologia educacional, fintechs
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Saúde e Farmacêutico</h4>
             <p class="text-sm">
               Clínicas, laboratórios, farmacêuticas
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Agronegócio</h4>
             <p class="text-sm">
               Fertilizantes, sementes, máquinas agrícolas
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Construção e Materiais</h4>
             <p class="text-sm">
               Construtoras regionais, materiais de construção
@@ -192,21 +192,21 @@
         </div>
 
         <h3>2. Value Investing</h3>
-        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
           <p class="text-sm">
             Procure small caps subvalorizadas negociando abaixo do valor patrimonial ou com múltiplos muito baixos. Compre quando ninguém quer, venda quando todos querem.
           </p>
         </div>
 
         <h3>3. Growth Investing</h3>
-        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
           <p class="text-sm">
             Foque em empresas de alto crescimento, mesmo que os múltiplos sejam elevados. Aceita pagar mais por empresas que estão crescendo 30%, 50% ou 100% ao ano.
           </p>
         </div>
 
         <h3>4. Portfólio Diversificado de Small Caps</h3>
-        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+        <div class="rounded-xl border p-5" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
           <p class="text-sm">
             Monte um portfólio com 10-15 small caps de setores diferentes. Algumas vão falhar, mas as vencedoras compensam as perdedoras. Rebalanceie anualmente.
           </p>
@@ -254,25 +254,25 @@
 
         <h2>Exemplos de Setores com Small Caps Promissoras</h2>
         <div class="space-y-3">
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Varejo Regional</h4>
             <p class="text-sm">
               Redes locais de supermercados, farmácias ou vestuário com potencial de expansão
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Educação</h4>
             <p class="text-sm">
               Escolas, universidades e plataformas de ensino digital
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Utilities Regionais</h4>
             <p class="text-sm">
               Distribuidoras de energia, saneamento e gás de menor porte
             </p>
           </div>
-          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <div class="rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <h4 class="mb-1">Industrial</h4>
             <p class="text-sm">
               Fabricantes de componentes, autopeças, químicos
@@ -310,7 +310,7 @@
       <div class="space-y-4">
         <h2>Perguntas Frequentes sobre Small Caps</h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               O que são small caps?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -320,7 +320,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto da carteira devo alocar em small caps?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -330,7 +330,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Small caps rendem mais que large caps?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -340,7 +340,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Como identificar uma boa small cap?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -350,7 +350,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }">
+          <details class="group rounded-xl border p-4" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Iniciantes devem investir em small caps?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -363,13 +363,13 @@
       </div>
 
       <!-- Navegação para Outros Guias -->
-      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)' }">
+      <div class="border-t pt-8" :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)' }">
         <h3 class="mb-4">Continue Aprendendo</h3>
         <div class="grid gap-4 sm:grid-cols-2">
           <NuxtLink
             to="/guias/como-investir-em-acoes-para-iniciantes"
             class="group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-trending-up" class="text-secondary h-6 w-6" />
             <div class="flex-1">
@@ -382,7 +382,7 @@
           <NuxtLink
             to="/guias/analise-petr4-vale-a-pena-investir"
             class="group flex items-center gap-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-            :style="{ borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+            :style="{ borderColor: 'color-mix(in srgb, ' + 'var(--brand-border)' + ' 50%, transparent)', backgroundColor: 'color-mix(in srgb, ' + 'var(--brand-surface)' + ' 55%, ' + 'var(--brand-background)' + ')' }"
           >
             <UIcon name="i-lucide-chart-line" class="text-secondary h-6 w-6" />
             <div class="flex-1">

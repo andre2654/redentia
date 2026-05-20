@@ -7,7 +7,7 @@
       'ml-6 rounded-l-none pl-4': isSubItem,
     }"
     :style="{
-      color: activeMatch ? brand.colors.text : `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
+      color: activeMatch ? 'var(--brand-text)' : `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
       backgroundColor: activeMatch ? `color-mix(in srgb, var(--brand-text) 6%, transparent)` : 'transparent',
       fontWeight: activeMatch ? 500 : 400,
     }"
@@ -116,13 +116,13 @@ function onEnter(e: MouseEvent) {
   if (props.disabled || activeMatch.value) return
   const el = e.currentTarget as HTMLElement
   el.style.color = brand.colors.text
-  el.style.backgroundColor = `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`
+  el.style.backgroundColor = `color-mix(in srgb, var(--brand-text) 5%, transparent)`
 }
 
 function onLeave(e: MouseEvent) {
   if (props.disabled || activeMatch.value) return
   const el = e.currentTarget as HTMLElement
-  el.style.color = `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`
+  el.style.color = `color-mix(in srgb, var(--brand-text) 60%, transparent)`
   el.style.backgroundColor = 'transparent'
 }
 </script>

@@ -1402,7 +1402,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* =========================================================
@@ -1481,7 +1481,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* =========================================================
@@ -1784,7 +1784,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   flex-shrink: 0;
 }
 .aud-scope-grid {
@@ -1860,7 +1860,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 .aud-tenant-select { margin-top: 4px; }
 .aud-filter {
@@ -1931,7 +1931,7 @@ const Field = defineComponent({
 }
 .aud-segmented__btn--active {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 .aud-currency-input {
@@ -2585,7 +2585,7 @@ const Field = defineComponent({
   padding: 8px 14px;
   border-radius: 9px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-family: var(--brand-font);
   font-size: 12.5px;
   font-weight: 600;

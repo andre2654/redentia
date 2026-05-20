@@ -1618,7 +1618,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* =========================================================
@@ -1679,7 +1679,7 @@ const Field = defineComponent({
   padding: 8px 16px;
   border-radius: 8px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-family: var(--brand-font);
   font-size: 13px;
   font-weight: 600;
@@ -2000,7 +2000,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* =========================================================
@@ -2194,7 +2194,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   flex-shrink: 0;
 }
 
@@ -2273,7 +2273,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 .aud-tenant-select {
@@ -2351,7 +2351,7 @@ const Field = defineComponent({
 }
 .aud-segmented__btn--active {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 
@@ -3130,7 +3130,7 @@ const Field = defineComponent({
   padding: 4px 10px;
   border-radius: 6px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 11px;
   font-weight: 600;
   flex-shrink: 0;

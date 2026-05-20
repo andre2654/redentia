@@ -168,7 +168,7 @@ const halftone = (() => {
   transform: rotate(-0.6deg);
   box-shadow:
     0 24px 60px -18px rgba(0, 0, 0, 0.7),
-    0 6px 16px -6px rgba(0, 0, 0, 0.5),
+    0 6px 16px -6px var(--shadow-ambient),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
   z-index: 3;
   overflow: hidden;
@@ -250,7 +250,7 @@ const halftone = (() => {
   z-index: 5;
   white-space: nowrap;
   box-shadow:
-    0 4px 10px -4px rgba(0, 0, 0, 0.4),
+    0 4px 10px -4px var(--shadow-amber-near),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
@@ -294,7 +294,7 @@ const halftone = (() => {
   color: #d9a635;
   margin-bottom: 6px;
   display: inline-flex;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 1px 2px var(--shadow-amber-near));
 }
 
 .card-chrome__brand {
@@ -336,7 +336,7 @@ const halftone = (() => {
   top: 10%;
   left: 5%;
   transform: rotate(-12deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 4px var(--shadow-ambient));
 }
 
 .card-chrome__star-2 {
@@ -344,7 +344,7 @@ const halftone = (() => {
   top: 38%;
   right: 5%;
   transform: rotate(15deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 4px var(--shadow-ambient));
 }
 
 .card-chrome__star-3 {
@@ -352,7 +352,7 @@ const halftone = (() => {
   top: 62%;
   left: 4%;
   transform: rotate(8deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 4px var(--shadow-ambient));
 }
 
 .card-chrome__star-4 {
@@ -360,7 +360,7 @@ const halftone = (() => {
   top: 50%;
   right: 12%;
   transform: rotate(-22deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 4px var(--shadow-ambient));
 }
 
 /* ============ Tape strip (upper right) ============ */

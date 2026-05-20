@@ -744,23 +744,23 @@ const composerStyle = computed(() => {
   // expands on focus. Shape (radius, surface) is shared between tiers;
   // tier identity is carried by border tint only.
   const borderColor = isMax.value
-    ? `color-mix(in srgb, ${brand.colors.primary} ${focused.value ? 75 : 55}%, transparent)`
+    ? `color-mix(in srgb, var(--brand-primary) ${focused.value ? 75 : 55}%, transparent)`
     : focused.value
-      ? brand.colors.primary
-      : `color-mix(in srgb, ${brand.colors.primary} 22%, ${brand.colors.border})`
+      ? 'var(--brand-primary)'
+      : `color-mix(in srgb, var(--brand-primary) 22%, var(--brand-border))`
   const ringTint = focused.value
-    ? `0 0 0 3px color-mix(in srgb, ${brand.colors.primary} ${isMax.value ? 22 : 18}%, transparent)`
+    ? `0 0 0 3px color-mix(in srgb, var(--brand-primary) ${isMax.value ? 22 : 18}%, transparent)`
     : ''
   // Resting state: amber-tinted lift shadow (stripe pattern) + soft
   // dark base. Combined they create a clear "this is where you type"
   // affordance even when nothing is focused.
-  const baseShadow = `0 24px 50px -22px color-mix(in srgb, ${brand.colors.primary} 22%, transparent), 0 12px 24px -12px rgba(0,0,0,0.16)`
+  const baseShadow = `0 24px 50px -22px color-mix(in srgb, var(--brand-primary) 22%, transparent), 0 12px 24px -12px rgba(0,0,0,0.16)`
   return {
     // Solid surface — not translucent. Earlier 96/98% blended values
     // read as washed-out over the page background, especially in light
     // mode. Keeping the composer fully opaque sharpens its presence as
     // the page's primary interactive surface.
-    backgroundColor: brand.colors.surface,
+    backgroundColor: 'var(--brand-surface)',
     // border-radius lives in CSS now (`.chat-composer`) so the mobile
     // sheet treatment (top-only radius) can override it via media query
     // without a class soup.
@@ -781,20 +781,20 @@ function tierBtnStyle(value: ChatTier) {
   const active = tier.value === value
   if (!active) {
     return {
-      color: `color-mix(in srgb, ${brand.colors.textMuted} 90%, transparent)`,
+      color: `color-mix(in srgb, var(--brand-text-muted) 90%, transparent)`,
     } as Record<string, string>
   }
   if (value === 'max') {
     return {
-      backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, ${brand.colors.surface})`,
-      color: brand.colors.primary,
-      boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+      backgroundColor: `color-mix(in srgb, var(--brand-primary) 12%, var(--brand-surface))`,
+      color: 'var(--brand-primary)',
+      boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
     } as Record<string, string>
   }
   return {
-    backgroundColor: brand.colors.surface,
-    color: brand.colors.text,
-    boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+    backgroundColor: 'var(--brand-surface)',
+    color: 'var(--brand-text)',
+    boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--brand-border) 60%, transparent)`,
   } as Record<string, string>
 }
 
@@ -802,13 +802,13 @@ const sendButtonStyle = computed(() => {
   // Solid fill, no gradient. Disabled state uses muted border tone.
   if (!canSend.value) {
     return {
-      backgroundColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
-      color: brand.colors.textMuted,
+      backgroundColor: `color-mix(in srgb, var(--brand-border) 70%, transparent)`,
+      color: 'var(--brand-text-muted)',
     } as Record<string, string>
   }
   return {
-    backgroundColor: brand.colors.primary,
-    color: brand.colors.background,
+    backgroundColor: 'var(--brand-primary)',
+    color: 'var(--brand-background)',
   } as Record<string, string>
 })
 

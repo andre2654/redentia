@@ -35,7 +35,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3 -mt-2">
       <span
         class="font-mono-tab text-[10.5px] font-medium uppercase"
-        :style="{ letterSpacing: '0.16em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+        :style="{ letterSpacing: '0.16em', color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
       >Janela de análise</span>
       <AtomsSegmented
         v-model="period"

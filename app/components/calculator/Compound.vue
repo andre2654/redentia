@@ -105,8 +105,8 @@
         <AtomsGraphLine
           :data="compoundResult.chartData"
           :height="350"
-          :legend="[{ label: 'Patrimônio', color: ChartColors.positive }]"
-          :colors="[ChartColors.positive]"
+          :legend="[{ label: 'Patrimônio', color: cc.positive }]"
+          :colors="[cc.positive]"
         />
       </CalcUiChart>
       <div v-else class="cui-result-empty">
@@ -120,7 +120,12 @@
 <script setup lang="ts">
 import type { IChartDataPoint } from '~/types/chart'
 import { showErrorNotification } from '~/composables/useNotify'
-import { ChartColors } from '~/design/chartColors'
+import { useChartColors } from '~/design/chartColors'
+
+// Reativo via useChartColors() — `ChartColors` estático (de seedBrand)
+// congelaria a cor no F5 com prefers-color-scheme: system. Aqui usamos
+// o composable que retorna getters re-avaliados a cada acesso.
+const cc = useChartColors()
 
 defineProps<{
   backTo?: string

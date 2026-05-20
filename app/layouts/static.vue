@@ -1,12 +1,12 @@
 <template>
   <div
     class="selection:bg-primary min-h-screen font-sans selection:text-black"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <!-- Header -->
     <header
       class="fixed top-0 z-50 w-full border-b backdrop-blur-xl"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background + '80' }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' + '80' }"
     >
       <div
         class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6"
@@ -58,7 +58,7 @@
           v-if="title"
           class="mb-12 text-center font-light"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(36px, 6vw, 56px)',
             lineHeight: 1.05,
             letterSpacing: '-1.4px',
@@ -69,7 +69,7 @@
         <div
           class="static-content"
           :style="{
-            color: `color-mix(in srgb, ${brand.colors.text} 75%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 75%, transparent)`,
           }"
         >
           <slot />

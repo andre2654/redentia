@@ -122,18 +122,18 @@
             </div>
 
             <!-- Dashboard body -->
-            <div class="relative flex min-h-[520px] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000 md:min-h-[580px]" :style="{ backgroundColor: currentStep >= 1 ? brand.colors.background : '#08080a' }">
+            <div class="relative flex min-h-[520px] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000 md:min-h-[580px]" :style="{ backgroundColor: currentStep >= 1 ? 'var(--brand-background)' : '#08080a' }">
               <!-- Bloom glow -->
               <div class="absolute inset-0 transition-opacity duration-[2s]" :style="{ opacity: currentStep >= 1 ? 0.3 : 0, background: `radial-gradient(ellipse at 15% 20%, ${primaryColor}18, transparent 55%), radial-gradient(ellipse at 85% 80%, ${primaryColor}08, transparent 50%)` }" />
 
               <!-- ===== SIDEBAR ===== -->
               <div
                 class="relative hidden w-52 shrink-0 border-r p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000 md:block"
-                :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#0e0e10', backgroundColor: currentStep >= 1 ? `${brand.colors.surface || '#0a0a0a'}80` : '#09090b' }"
+                :style="{ borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#0e0e10', backgroundColor: currentStep >= 1 ? `${'var(--brand-surface)' || '#0a0a0a'}80` : '#09090b' }"
               >
                 <!-- Logo -->
                 <div class="mb-6 flex items-center gap-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.15 }">
-                  <div class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ backgroundColor: currentStep >= 1 ? brand.colors.primary : '#151515' }">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ backgroundColor: currentStep >= 1 ? 'var(--brand-primary)' : '#151515' }">
                     {{ currentStep >= 3 ? brandName.charAt(0).toUpperCase() : '?' }}
                   </div>
                   <span class="text-xs font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :class="currentStep >= 2 ? 'bld-text-focus' : ''" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit' }">
@@ -150,8 +150,8 @@
                       opacity: currentStep >= 3 ? 1 : 0.06,
                       transform: currentStep >= 3 ? 'translateX(0)' : 'translateX(-8px)',
                       transitionDelay: `${i * 80}ms`,
-                      backgroundColor: i === 0 && currentStep >= 3 ? `${brand.colors.primary}12` : 'transparent',
-                      color: i === 0 && currentStep >= 3 ? brand.colors.primary : (brand.colors.textMuted || '#666'),
+                      backgroundColor: i === 0 && currentStep >= 3 ? `${'var(--brand-primary)'}12` : 'transparent',
+                      color: i === 0 && currentStep >= 3 ? 'var(--brand-primary)' : ('var(--brand-text-muted)' || '#666'),
                     }"
                   >
                     <UIcon :name="item.icon" class="size-3.5" />
@@ -164,15 +164,15 @@
                   :style="{
                     opacity: currentStep >= 5 ? 1 : 0,
                     transform: currentStep >= 5 ? 'translateY(0)' : 'translateY(12px)',
-                    borderColor: `${brand.colors.primary}20`,
-                    backgroundColor: `${brand.colors.primary}08`,
+                    borderColor: 'color-mix(in srgb, var(--brand-primary) 13%, transparent)',
+                    backgroundColor: 'color-mix(in srgb, var(--brand-primary) 3%, transparent)',
                   }"
                 >
                   <div class="flex items-center gap-2">
-                    <div class="flex h-7 w-7 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.primary }"><UIcon name="i-lucide-bot" class="size-3 text-white" /></div>
+                    <div class="flex h-7 w-7 items-center justify-center rounded-lg" :style="{ backgroundColor: 'var(--brand-primary)' }"><UIcon name="i-lucide-bot" class="size-3 text-white" /></div>
                     <div>
-                      <p class="text-[10px] font-semibold" :style="{ color: brand.colors.text }">Assessor IA</p>
-                      <p class="text-[8px]" :style="{ color: brand.colors.textMuted }">Pergunte qualquer coisa</p>
+                      <p class="text-[10px] font-semibold" :style="{ color: 'var(--brand-text)' }">Assessor IA</p>
+                      <p class="text-[8px]" :style="{ color: 'var(--brand-text-muted)' }">Pergunte qualquer coisa</p>
                     </div>
                   </div>
                 </div>
@@ -183,10 +183,10 @@
                 <!-- Top bar: greeting + search -->
                 <div class="mb-6 flex items-center justify-between">
                   <div class="transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.1 }">
-                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">Bem-vindo ao</p>
-                    <h3 class="text-lg font-medium" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit', color: brand.colors.text, letterSpacing: '-0.005em' }">{{ currentStep >= 3 ? brandName : '•••••' }}</h3>
+                    <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Bem-vindo ao</p>
+                    <h3 class="text-lg font-medium" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit', color: 'var(--brand-text)', letterSpacing: '-0.005em' }">{{ currentStep >= 3 ? brandName : '•••••' }}</h3>
                   </div>
-                  <div class="flex h-8 w-48 items-center gap-2 rounded-lg border px-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 3 ? 0.6 : 0.05, backgroundColor: currentStep >= 1 ? (brand.colors.inputBg || '#050505') : '#0a0a0a' }">
+                  <div class="flex h-8 w-48 items-center gap-2 rounded-lg border px-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#111', opacity: currentStep >= 3 ? 0.6 : 0.05, backgroundColor: currentStep >= 1 ? ('var(--brand-input-bg)' || '#050505') : '#0a0a0a' }">
                     <UIcon name="i-lucide-search" class="size-3 text-white/20" />
                     <span class="text-[10px] text-white/15">Buscar ativos...</span>
                   </div>
@@ -194,9 +194,9 @@
 
                 <!-- IBOV / IFIX indicators -->
                 <div class="mb-5 flex gap-4">
-                  <div v-for="(idx, i) in indices" :key="idx.name" class="flex items-center gap-3 rounded-xl border px-4 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.08, transform: currentStep >= 4 ? 'translateY(0)' : 'translateY(6px)', transitionDelay: `${i * 100}ms` }">
+                  <div v-for="(idx, i) in indices" :key="idx.name" class="flex items-center gap-3 rounded-xl border px-4 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? ('var(--brand-surface)' || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.08, transform: currentStep >= 4 ? 'translateY(0)' : 'translateY(6px)', transitionDelay: `${i * 100}ms` }">
                     <div>
-                      <p class="text-[9px] font-bold uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ idx.name }}</p>
+                      <p class="text-[9px] font-bold uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">{{ idx.name }}</p>
                       <p class="text-sm font-bold tabular-nums">{{ idx.value }}</p>
                     </div>
                     <span class="text-[10px] font-bold tabular-nums" :style="{ color: idx.positive ? '#4ade80' : '#ef4444' }">{{ idx.change }}</span>
@@ -204,15 +204,15 @@
                 </div>
 
                 <!-- Ticker marquee -->
-                <div class="mb-6 overflow-hidden rounded-xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 4 ? 1 : 0.05, height: currentStep >= 4 ? '40px' : '0px' }">
+                <div class="mb-6 overflow-hidden rounded-xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#111', opacity: currentStep >= 4 ? 1 : 0.05, height: currentStep >= 4 ? '40px' : '0px' }">
                   <div class="flex h-full items-center gap-6 px-4" :class="currentStep >= 4 ? 'bld-marquee' : ''">
                     <div v-for="t in marqueeItems" :key="t.s" class="flex shrink-0 items-center gap-2 text-[10px]">
-                      <span class="font-bold" :style="{ color: brand.colors.text }">{{ t.s }}</span>
+                      <span class="font-bold" :style="{ color: 'var(--brand-text)' }">{{ t.s }}</span>
                       <span class="tabular-nums" :style="{ color: t.p ? '#4ade80' : '#ef4444' }">{{ t.c }}</span>
                     </div>
                     <!-- duplicate for seamless loop -->
                     <div v-for="t in marqueeItems" :key="t.s + '_dup'" class="flex shrink-0 items-center gap-2 text-[10px]">
-                      <span class="font-bold" :style="{ color: brand.colors.text }">{{ t.s }}</span>
+                      <span class="font-bold" :style="{ color: 'var(--brand-text)' }">{{ t.s }}</span>
                       <span class="tabular-nums" :style="{ color: t.p ? '#4ade80' : '#ef4444' }">{{ t.c }}</span>
                     </div>
                   </div>
@@ -221,11 +221,11 @@
                 <!-- Main grid: Chart + Portfolio -->
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
                   <!-- Chart card (3 cols) -->
-                  <div class="col-span-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.05, transform: currentStep >= 4 ? 'scale(1)' : 'scale(0.97)' }">
+                  <div class="col-span-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? ('var(--brand-surface)' || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.05, transform: currentStep >= 4 ? 'scale(1)' : 'scale(0.97)' }">
                     <div class="mb-3 flex items-center justify-between">
-                      <p class="text-[10px] font-bold uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">IBOVESPA</p>
+                      <p class="text-[10px] font-bold uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">IBOVESPA</p>
                       <div class="flex gap-1">
-                        <span v-for="p in ['1M', '3M', 'YTD', '1A']" :key="p" class="rounded px-1.5 py-0.5 text-[8px]" :style="{ backgroundColor: p === '1M' ? `${brand.colors.primary}15` : 'transparent', color: p === '1M' ? brand.colors.primary : (brand.colors.textMuted || '#666') }">{{ p }}</span>
+                        <span v-for="p in ['1M', '3M', 'YTD', '1A']" :key="p" class="rounded px-1.5 py-0.5 text-[8px]" :style="{ backgroundColor: p === '1M' ? 'color-mix(in srgb, var(--brand-primary) 8%, transparent)' : 'transparent', color: p === '1M' ? 'var(--brand-primary)' : ('var(--brand-text-muted)' || '#666') }">{{ p }}</span>
                       </div>
                     </div>
                     <!-- SVG chart that draws itself -->
@@ -257,14 +257,14 @@
                       :key="asset.ticker"
                       class="flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700"
                       :style="{
-                        borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111',
-                        backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d',
+                        borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#111',
+                        backgroundColor: currentStep >= 1 ? ('var(--brand-surface)' || '#0a0a0a') : '#0b0b0d',
                         opacity: currentStep >= 4 ? 1 : 0.05,
                         transform: currentStep >= 4 ? 'translateX(0)' : 'translateX(12px)',
                         transitionDelay: `${i * 120}ms`,
                       }"
                     >
-                      <div class="h-7 w-7 rounded-lg" :style="{ backgroundColor: currentStep >= 1 ? `${brand.colors.primary}15` : '#151515' }" />
+                      <div class="h-7 w-7 rounded-lg" :style="{ backgroundColor: currentStep >= 1 ? 'color-mix(in srgb, var(--brand-primary) 8%, transparent)' : '#151515' }" />
                       <div class="min-w-0 flex-1">
                         <div class="flex items-baseline justify-between">
                           <span class="text-[10px] font-bold">{{ asset.ticker }}</span>
@@ -276,7 +276,7 @@
                             class="h-full rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000"
                             :style="{
                               width: currentStep >= 4 ? `${asset.alloc}%` : '0%',
-                              backgroundColor: brand.colors.primary,
+                              backgroundColor: 'var(--brand-primary)',
                               opacity: 0.6,
                               transitionDelay: `${i * 150 + 300}ms`,
                             }"
@@ -289,19 +289,19 @@
                     <div
                       class="rounded-xl border p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700"
                       :style="{
-                        borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111',
-                        backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d',
+                        borderColor: currentStep >= 1 ? ('var(--brand-border)' || '#1a1a1a') : '#111',
+                        backgroundColor: currentStep >= 1 ? ('var(--brand-surface)' || '#0a0a0a') : '#0b0b0d',
                         opacity: currentStep >= 5 ? 1 : 0,
                         transform: currentStep >= 5 ? 'translateY(0)' : 'translateY(8px)',
                       }"
                     >
-                      <p class="mb-2 text-[9px] font-bold uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Proventos do mes</p>
+                      <p class="mb-2 text-[9px] font-bold uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">Proventos do mes</p>
                       <div class="flex items-baseline gap-1">
                         <span class="text-lg font-bold tabular-nums" :style="{ color: '#4ade80' }">R$ 847</span>
-                        <span class="text-[9px]" :style="{ color: brand.colors.textMuted }">,32</span>
+                        <span class="text-[9px]" :style="{ color: 'var(--brand-text-muted)' }">,32</span>
                       </div>
                       <div class="mt-2 flex gap-1">
-                        <div v-for="(m, i) in dividendBars" :key="i" class="flex-1 rounded-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ height: `${m}px`, backgroundColor: `${brand.colors.primary}${i === 4 ? '90' : '30'}`, transitionDelay: `${i * 80}ms` }" />
+                        <div v-for="(m, i) in dividendBars" :key="i" class="flex-1 rounded-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ height: `${m}px`, backgroundColor: `var(--brand-primary)${i === 4 ? '90' : '30'}`, transitionDelay: `${i * 80}ms` }" />
                       </div>
                     </div>
                   </div>
@@ -312,12 +312,12 @@
                   <div
                     v-if="currentStep >= 5"
                     class="absolute right-6 top-4 flex items-center gap-3 rounded-2xl border px-4 py-3 shadow-2xl md:right-8"
-                    :style="{ backgroundColor: brand.colors.surface, borderColor: `${brand.colors.primary}15`, boxShadow: `0 12px 40px rgba(0,0,0,0.5)` }"
+                    :style="{ backgroundColor: 'var(--brand-surface)', borderColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', boxShadow: `0 12px 40px rgba(0,0,0,0.5)` }"
                   >
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg" :style="{ backgroundColor: '#4ade80' }"><UIcon name="i-lucide-trending-up" class="size-3.5 text-white" /></div>
                     <div>
-                      <p class="text-[10px] font-semibold" :style="{ color: brand.colors.text }">PETR4 subiu 2.34%</p>
-                      <p class="text-[8px]" :style="{ color: brand.colors.textMuted }">Atualizacao em tempo real</p>
+                      <p class="text-[10px] font-semibold" :style="{ color: 'var(--brand-text)' }">PETR4 subiu 2.34%</p>
+                      <p class="text-[8px]" :style="{ color: 'var(--brand-text-muted)' }">Atualizacao em tempo real</p>
                     </div>
                     <span class="h-2 w-2 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
                   </div>
@@ -353,16 +353,16 @@
               <span class="h-2 w-2 rounded-full bg-white/10" /><span class="h-2 w-2 rounded-full bg-white/10" /><span class="h-2 w-2 rounded-full bg-white/10" />
               <div class="mx-3 flex-1 rounded-md bg-white/[.03] px-3 py-1 text-center text-[10px] font-mono text-white/15">{{ previewDomain }}</div>
             </div>
-            <div class="p-8 text-left md:p-12" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }">
+            <div class="p-8 text-left md:p-12" :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }">
               <div class="mb-5 flex items-center gap-3">
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold text-white" :style="{ backgroundColor: brand.colors.primary }">{{ brandName.charAt(0).toUpperCase() }}</div>
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold text-white" :style="{ backgroundColor: 'var(--brand-primary)' }">{{ brandName.charAt(0).toUpperCase() }}</div>
                 <span class="text-lg font-bold" :style="{ fontFamily: `'${brand.font.family}', sans-serif` }">{{ brandName }}</span>
               </div>
               <h3 class="mb-2 text-2xl font-medium md:text-3xl" :style="{ fontFamily: `'${brand.font.family}', sans-serif`, letterSpacing: '-0.005em' }">Investir com {{ brandName }}.</h3>
-              <p class="mb-6 text-sm" :style="{ color: brand.colors.textMuted }">Analise ativos, acompanhe dividendos e invista com inteligencia.</p>
+              <p class="mb-6 text-sm" :style="{ color: 'var(--brand-text-muted)' }">Analise ativos, acompanhe dividendos e invista com inteligencia.</p>
               <div class="flex gap-3">
-                <span class="rounded-xl px-6 py-2.5 text-sm font-medium text-white" :style="{ backgroundColor: brand.colors.primary }">Criar conta</span>
-                <span class="rounded-xl border px-6 py-2.5 text-sm" :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }">Saiba mais</span>
+                <span class="rounded-xl px-6 py-2.5 text-sm font-medium text-white" :style="{ backgroundColor: 'var(--brand-primary)' }">Criar conta</span>
+                <span class="rounded-xl border px-6 py-2.5 text-sm" :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }">Saiba mais</span>
               </div>
             </div>
           </div>

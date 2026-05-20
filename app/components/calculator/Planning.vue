@@ -73,8 +73,8 @@
         <AtomsGraphLine
           :data="planningResult.chartData"
           :height="240"
-          :legend="[{ label: 'Patrimônio projetado', color: ChartColors.positive }]"
-          :colors="[ChartColors.positive]"
+          :legend="[{ label: 'Patrimônio projetado', color: cc.positive }]"
+          :colors="[cc.positive]"
         />
       </CalcUiChart>
 
@@ -145,7 +145,12 @@
 <script setup lang="ts">
 import { showErrorNotification } from '~/composables/useNotify'
 import type { IChartDataPoint } from '~/types/chart'
-import { ChartColors } from '~/design/chartColors'
+import { useChartColors } from '~/design/chartColors'
+
+// Reativo via useChartColors() — evita congelamento de hex em F5 com
+// prefers-color-scheme: system. ChartColors estático lê de seedBrand
+// e não reflete troca de tema.
+const cc = useChartColors()
 
 defineProps<{
   backTo?: string

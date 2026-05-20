@@ -84,18 +84,18 @@ const progressPct = computed(() => {
 })
 
 const statusColor = computed(() => {
-  if (!props.goal) return brand.colors.textMuted
+  if (!props.goal) return 'var(--brand-text-muted)'
   switch (props.goal.status) {
     case 'hit':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'on_track':
-      return brand.colors.primary
+      return 'var(--brand-primary)'
     case 'at_risk':
-      return brand.colors.warning ?? '#f59e0b'
+      return 'var(--brand-warning)'
     case 'unfeasible':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 
@@ -121,8 +121,8 @@ const statusLabel = computed(() => {
 // like a glowing pill on top of the conversation; restraint pass
 // pulls that back so the eye lands on the goal name first.
 const badgeStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 </script>
 

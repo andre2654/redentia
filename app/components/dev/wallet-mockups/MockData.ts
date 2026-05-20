@@ -67,7 +67,7 @@ export const POSITIONS: MockPosition[] = [
   { ticker: 'RANI3', name: 'Irani Papel', asset_class: 'STOCK', sector: 'Papel & Celulose', quantity: 1050, average_price: 7.8, current_price: 8.21, current_value: 8620.5, pnl_amount: 430.5, pnl_pct: 5.26, weight_pct: 1.77, dy_12m_pct: 5.4, logoBg: '#60a5fa' },
   { ticker: 'CPLE3', name: 'Copel', asset_class: 'STOCK', sector: 'Energia Elétrica', quantity: 1550, average_price: 14.3, current_price: 16.13, current_value: 25001.5, pnl_amount: 2836.5, pnl_pct: 12.79, weight_pct: 5.13, dy_12m_pct: 8.9, logoBg: '#22c55e', is_loaned: true, loan_yield_pct: 0.05 },
   { ticker: 'CSMG3', name: 'Copasa', asset_class: 'STOCK', sector: 'Saneamento', quantity: 310, average_price: 48.5, current_price: 55.21, current_value: 17115.1, pnl_amount: 2080.6, pnl_pct: 13.84, weight_pct: 3.51, dy_12m_pct: 6.1, logoBg: '#06b6d4', is_loaned: true, loan_yield_pct: 2.74 },
-  { ticker: 'TAEE11', name: 'Taesa', asset_class: 'STOCK', sector: 'Energia Elétrica', quantity: 800, average_price: 33.5, current_price: 35.8, current_value: 28640, pnl_amount: 1840, pnl_pct: 6.87, weight_pct: 5.88, dy_12m_pct: 9.7, logoBg: '#f59e0b' },
+  { ticker: 'TAEE11', name: 'Taesa', asset_class: 'STOCK', sector: 'Energia Elétrica', quantity: 800, average_price: 33.5, current_price: 35.8, current_value: 28640, pnl_amount: 1840, pnl_pct: 6.87, weight_pct: 5.88, dy_12m_pct: 9.7, logoBg: 'var(--brand-warning)' },
   { ticker: 'BBDC4', name: 'Bradesco', asset_class: 'STOCK', sector: 'Bancos', quantity: 850, average_price: 13.2, current_price: 14.72, current_value: 12512, pnl_amount: 1292, pnl_pct: 11.52, weight_pct: 2.57, dy_12m_pct: 5.8, logoBg: '#ef4444' },
 
   // ============ FIIs ============

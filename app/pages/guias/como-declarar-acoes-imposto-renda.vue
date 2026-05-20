@@ -164,11 +164,11 @@ usePageSeo({
         </ul>
       </section>
 
-      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <h2 class="mb-3" :style="{ color: brand.colors.text }">
+      <div class="rounded-3xl border p-8 text-center" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <h2 class="mb-3" :style="{ color: 'var(--brand-text)' }">
           Calcule seu IR antes de vender
         </h2>
-        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
+        <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">
           Nossa calculadora de IR sobre ações aplica todas as regras (R$ 20k, day trade, FIIs) e gera o valor exato que você vai pagar de DARF.
         </p>
         <div class="flex flex-wrap justify-center gap-3">

@@ -22,7 +22,7 @@
       <div
         v-if="open && decision"
         class="dec-drawer-backdrop fixed inset-0 z-[80] flex items-end justify-end md:items-stretch"
-        :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
+        :style="{ backgroundColor: 'var(--shadow-ambient)' }"
         role="presentation"
         @keydown.esc="close"
         @click.self="close"
@@ -121,13 +121,13 @@
                   v-if="decision.invalidator"
                   class="rounded-2xl px-4 py-3"
                   :style="{
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.warning ?? '#f59e0b'} 6%, transparent)`,
-                    border: `1px solid color-mix(in srgb, ${brand.colors.warning ?? '#f59e0b'} 18%, transparent)`,
+                    backgroundColor: `color-mix(in srgb, ${'var(--brand-warning)' ?? 'var(--brand-warning)'} 6%, transparent)`,
+                    border: `1px solid color-mix(in srgb, ${'var(--brand-warning)' ?? 'var(--brand-warning)'} 18%, transparent)`,
                   }"
                 >
                   <p
                     class="font-mono-tab mb-1 text-[10px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.warning ?? '#f59e0b' }"
+                    :style="{ color: 'var(--brand-warning)' ?? 'var(--brand-warning)' }"
                   >Invalidador</p>
                   <p
                     class="text-pretty text-[13px] leading-relaxed"
@@ -310,9 +310,9 @@
               class="absolute bottom-20 left-5 right-5 rounded-lg px-3 py-2 text-[11.5px]"
               role="alert"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 10%, transparent)`,
-                border: `1px solid color-mix(in srgb, ${brand.colors.negative} 28%, transparent)`,
-                color: brand.colors.negative,
+                backgroundColor: `color-mix(in srgb, var(--brand-negative) 10%, transparent)`,
+                border: `1px solid color-mix(in srgb, var(--brand-negative) 28%, transparent)`,
+                color: 'var(--brand-negative)',
               }"
             >{{ errorMsg }}</p>
           </aside>
@@ -337,7 +337,6 @@ const emit = defineEmits<{
   'go-to-session': [sessionId: string]
 }>()
 
-const brand = useBrand()
 const titleId = computed(() => `dec-detail-${props.decision?.id ?? 'na'}`)
 
 const busy = ref(false)
@@ -361,13 +360,13 @@ const typeIcon = computed(() => meta.value.icon)
 const typeColor = computed(() => {
   switch (meta.value.tone) {
     case 'positive':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'negative':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     case 'primary':
-      return brand.colors.primary
+      return 'var(--brand-primary)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 
@@ -393,17 +392,17 @@ const statusLabel = computed(() => {
 const statusPillColor = computed(() => {
   switch (props.decision?.status) {
     case 'pending':
-      return brand.colors.warning ?? '#f59e0b'
+      return 'var(--brand-warning)'
     case 'accepted':
     case 'executed':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'cancelled':
     case 'expired':
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
     case 'reviewed':
-      return brand.colors.primary
+      return 'var(--brand-primary)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 const statusPillStyle = computed(() => ({
@@ -455,15 +454,15 @@ const upcomingReviews = computed(() => {
 const outcomeColor = computed(() => {
   switch (props.decision?.outcome) {
     case 'confirmed':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'wrong':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     case 'partial':
-      return brand.colors.warning ?? '#f59e0b'
+      return 'var(--brand-warning)'
     case 'open':
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
     default:
-      return brand.colors.textMuted
+      return 'var(--brand-text-muted)'
   }
 })
 const outcomeStyle = computed(() => ({
@@ -487,38 +486,38 @@ const outcomeLabel = computed(() => {
 
 // ---- Style helpers --------------------------------------------------
 const panelStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
+  backgroundColor: 'var(--brand-surface)',
   borderTopLeftRadius: '24px',
   borderTopRightRadius: '24px',
-  borderLeft: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
+  borderLeft: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 const footerStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderTopColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderTopColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
   paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
 }))
 const primaryBtnStyle = computed(() => ({
-  backgroundColor: brand.colors.primary,
-  color: brand.colors.background,
+  backgroundColor: 'var(--brand-primary)',
+  color: 'var(--brand-background)',
 }))
 const secondaryBtnStyle = computed(() => ({
   backgroundColor: 'transparent',
-  color: brand.colors.text,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+  color: 'var(--brand-text)',
+  border: `1px solid color-mix(in srgb, var(--brand-border) 60%, transparent)`,
 }))
 const destructiveBtnStyle = computed(() => {
   if (confirmingRemove.value) {
     return {
-      backgroundColor: brand.colors.negative,
-      color: brand.colors.background,
-      border: `1px solid ${brand.colors.negative}`,
+      backgroundColor: 'var(--brand-negative)',
+      color: 'var(--brand-background)',
+      border: `1px solid var(--brand-negative)`,
     }
   }
   return {
     backgroundColor: 'transparent',
-    color: brand.colors.negative,
-    border: `1px solid color-mix(in srgb, ${brand.colors.negative} 50%, transparent)`,
+    color: 'var(--brand-negative)',
+    border: `1px solid color-mix(in srgb, var(--brand-negative) 50%, transparent)`,
   }
 })
 

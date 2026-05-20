@@ -376,13 +376,13 @@ function openLeadModal(plan?: string) {
 }
 
 const C = {
-  primary: '#F5A623',
-  background: '#0A0B0E',
-  surface: '#14161C',
-  surfaceLight: '#0F1116',
-  border: '#2A2E39',
-  text: '#E8EAED',
-  textMuted: '#8B92A7',
+  primary: 'var(--brand-primary)',
+  background: 'var(--bg-base)',
+  surface: 'var(--bg-elevated)',
+  surfaceLight: 'var(--bg-input)',
+  border: 'var(--border-subtle)',
+  text: 'var(--brand-text)',
+  textMuted: 'var(--text-muted)',
 }
 
 const F = {
@@ -475,7 +475,7 @@ const sampleTickers = [
 ]
 
 const tenants = [
-  { slug: 'redentia', name: 'Redentia', accent: '#F5A623', font: "'Instrument Serif', serif", italic: false, weight: 400 },
+  { slug: 'redentia', name: 'Redentia', accent: 'var(--brand-primary)', font: "'Instrument Serif', serif", italic: false, weight: 400 },
   { slug: 'norte-capital', name: 'Norte Capital', accent: '#8B6F3D', font: "'Fraunces', serif", italic: true, weight: 400 },
   { slug: 'primo-rico', name: 'Primo Rico', accent: '#FF6B35', font: "'Fraunces', serif", italic: false, weight: 700 },
   { slug: 'investidor-sardinha', name: 'Investidor Sardinha', accent: '#C84B31', font: "'IBM Plex Serif', serif", italic: true, weight: 400 },
@@ -554,7 +554,7 @@ usePageSeo({
 
 .wl2-root a:focus-visible,
 .wl2-root button:focus-visible {
-  outline: 2px solid #F5A623;
+  outline: 2px solid var(--brand-primary);
   outline-offset: 4px;
   border-radius: 8px;
 }

@@ -45,7 +45,7 @@
           <defs>
             <linearGradient id="gauge" x1="0" x2="1" y1="0" y2="0">
               <stop offset="0%" :stop-color="brand.colors.negative" />
-              <stop offset="50%" :stop-color="brand.colors.warning || '#f59e0b'" />
+              <stop offset="50%" :stop-color="brand.colors.warning || 'var(--brand-warning)'" />
               <stop offset="100%" :stop-color="brand.colors.positive" />
             </linearGradient>
           </defs>
@@ -305,7 +305,7 @@
                 color: m.sensitivity === 'baixa'
                   ? brand.colors.positive
                   : m.sensitivity === 'média'
-                    ? brand.colors.warning || '#f59e0b'
+                    ? brand.colors.warning || 'var(--brand-warning)'
                     : brand.colors.negative,
               }"
             >Sensibilidade {{ m.sensitivity }}</span>
@@ -338,8 +338,8 @@
 
         <article class="flex flex-col gap-3 rounded-xl border p-5" :style="warnCardStyle">
           <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-alert-triangle" class="size-4" :style="{ color: brand.colors.warning || '#f59e0b' }" />
-            <span class="font-mono-tab text-[10.5px] font-medium uppercase" :style="{ letterSpacing: '0.18em', color: brand.colors.warning || '#f59e0b' }">Riscos ({{ RISKS.length }})</span>
+            <UIcon name="i-lucide-alert-triangle" class="size-4" :style="{ color: brand.colors.warning || 'var(--brand-warning)' }" />
+            <span class="font-mono-tab text-[10.5px] font-medium uppercase" :style="{ letterSpacing: '0.18em', color: brand.colors.warning || 'var(--brand-warning)' }">Riscos ({{ RISKS.length }})</span>
           </div>
           <ul class="flex flex-col gap-3">
             <li v-for="r in RISKS" :key="r.title" class="flex flex-col gap-0.5">
@@ -439,18 +439,18 @@ const strengthCardStyle = computed(() => ({
   borderColor: `color-mix(in srgb, ${brand.colors.positive} 22%, transparent)`,
 }))
 const warnCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 5%, ${brand.colors.surface})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 22%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${brand.colors.warning || 'var(--brand-warning)'} 5%, ${brand.colors.surface})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.warning || 'var(--brand-warning)'} 22%, transparent)`,
 }))
 
 function dimensionColor(value: number): string {
   if (value >= 75) return brand.colors.positive
-  if (value >= 50) return brand.colors.warning || '#f59e0b'
+  if (value >= 50) return brand.colors.warning || 'var(--brand-warning)'
   return brand.colors.negative
 }
 function severityColor(s: 'low' | 'medium' | 'high'): string {
   return s === 'high' ? brand.colors.negative
-       : s === 'medium' ? (brand.colors.warning || '#f59e0b')
+       : s === 'medium' ? (brand.colors.warning || 'var(--brand-warning)')
        : brand.colors.primary
 }
 
@@ -475,7 +475,7 @@ function thesisStatusLabel(s: string): string {
 function thesisStatusColor(s: string): string {
   switch (s) {
     case 'maintained': return brand.colors.positive
-    case 'at-risk': return brand.colors.warning || '#f59e0b'
+    case 'at-risk': return brand.colors.warning || 'var(--brand-warning)'
     case 'weakened': return '#fb923c'
     case 'broken': return brand.colors.negative
     default: return brand.colors.text

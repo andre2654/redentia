@@ -35,7 +35,7 @@
             <path
               d="M 12 70 A 48 48 0 0 1 108 70"
               fill="none"
-              :stroke="`color-mix(in srgb, ${brand.colors.text} 8%, transparent)`"
+              :stroke="`color-mix(in srgb, var(--brand-text) 8%, transparent)`"
               stroke-width="8"
               stroke-linecap="round"
             />
@@ -54,7 +54,7 @@
               x="60" y="60"
               text-anchor="middle"
               class="metric-hero__gauge-text"
-              :fill="brand.colors.text"
+              :fill="'var(--brand-text)'"
             >{{ winRateValueText }}</text>
           </svg>
 
@@ -62,23 +62,23 @@
             <div class="metric-hero__detail-row">
               <span
                 class="metric-hero__detail-dot"
-                :style="{ backgroundColor: brand.colors.positive }"
+                :style="{ backgroundColor: 'var(--brand-positive)' }"
               />
               <span class="metric-hero__detail-label">Ganhos</span>
               <span
                 class="metric-hero__detail-value tabular-nums"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ stats.wins }}</span>
             </div>
             <div class="metric-hero__detail-row">
               <span
                 class="metric-hero__detail-dot"
-                :style="{ backgroundColor: brand.colors.negative }"
+                :style="{ backgroundColor: 'var(--brand-negative)' }"
               />
               <span class="metric-hero__detail-label">Perdas</span>
               <span
                 class="metric-hero__detail-value tabular-nums"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ stats.losses }}</span>
             </div>
             <p class="metric-hero__hint">{{ winRateHint }}</p>
@@ -106,26 +106,26 @@
             <!-- Mini-bar mostrando "ganhos brutos vs perdas brutas" -->
             <div class="metric-hero__pf-bar-wrap">
               <span class="metric-hero__pf-bar-label">
-                <span :style="{ color: brand.colors.positive }">{{ formatBRL(grossProfit) }}</span>
-                <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 35%, transparent)` }">vs</span>
-                <span :style="{ color: brand.colors.negative }">{{ formatBRL(grossLoss) }}</span>
+                <span :style="{ color: 'var(--brand-positive)' }">{{ formatBRL(grossProfit) }}</span>
+                <span :style="{ color: `color-mix(in srgb, var(--brand-text) 35%, transparent)` }">vs</span>
+                <span :style="{ color: 'var(--brand-negative)' }">{{ formatBRL(grossLoss) }}</span>
               </span>
               <div
                 class="metric-hero__pf-bar"
-                :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+                :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
               >
                 <span
                   class="metric-hero__pf-bar-fill"
                   :style="{
                     width: `${pfBarPositiveWidth}%`,
-                    backgroundColor: brand.colors.positive,
+                    backgroundColor: 'var(--brand-positive)',
                   }"
                 />
                 <span
                   class="metric-hero__pf-bar-fill"
                   :style="{
                     width: `${pfBarNegativeWidth}%`,
-                    backgroundColor: brand.colors.negative,
+                    backgroundColor: 'var(--brand-negative)',
                   }"
                 />
               </div>
@@ -144,16 +144,16 @@
         <div class="metric-mini__inline">
           <span
             class="metric-mini__value tabular-nums"
-            :style="{ color: brand.colors.positive }"
+            :style="{ color: 'var(--brand-positive)' }"
           >{{ avgWinLabel }}</span>
           <span
             class="metric-mini__sep"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 35%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 35%, transparent)` }"
             aria-hidden="true"
           >/</span>
           <span
             class="metric-mini__value tabular-nums"
-            :style="{ color: brand.colors.negative }"
+            :style="{ color: 'var(--brand-negative)' }"
           >{{ avgLossLabel }}</span>
         </div>
         <span class="metric-mini__hint">{{ rrHint }}</span>
@@ -164,7 +164,7 @@
         <span class="metric-mini__eyebrow">Maior ganho</span>
         <span
           class="metric-mini__value tabular-nums"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         >{{ bestLabel }}</span>
         <span class="metric-mini__hint">{{ bestHint }}</span>
       </article>
@@ -174,7 +174,7 @@
         <span class="metric-mini__eyebrow">Maior perda</span>
         <span
           class="metric-mini__value tabular-nums"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >{{ worstLabel }}</span>
         <span class="metric-mini__hint">{{ worstHint }}</span>
       </article>
@@ -195,19 +195,19 @@
          Reforca a UX decision de leverage. -->
     <p
       class="metrics-footer"
-      :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+      :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
     >
       <UIcon name="i-lucide-info" class="size-3 shrink-0" aria-hidden="true" />
       Volume operado de
       <span
         class="font-mono-tab tabular-nums"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >{{ volumeLabel }}</span>
       (exposição, não patrimônio)<template v-if="stats.avgMargin != null">.
       Margem média:
       <span
         class="font-mono-tab tabular-nums"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >{{ marginLabel }}</span></template>.
     </p>
   </div>
@@ -239,10 +239,10 @@ const winRateValueText = computed(() => {
 const winRateArcLen = computed(() => (winRatePct.value / 100) * 150)
 
 const winRateColor = computed(() => {
-  if (props.stats.wins + props.stats.losses === 0) return `color-mix(in srgb, ${brand.colors.text} 30%, transparent)`
-  if (winRatePct.value >= 60) return brand.colors.positive
-  if (winRatePct.value >= 50) return brand.colors.primary
-  return brand.colors.negative
+  if (props.stats.wins + props.stats.losses === 0) return `color-mix(in srgb, var(--brand-text) 30%, transparent)`
+  if (winRatePct.value >= 60) return 'var(--brand-positive)'
+  if (winRatePct.value >= 50) return 'var(--brand-primary)'
+  return 'var(--brand-negative)'
 })
 
 const winRateHint = computed(() => {
@@ -276,10 +276,10 @@ const pfValueText = computed(() => {
 
 const pfColor = computed(() => {
   const pf = props.stats.profitFactor
-  if (!Number.isFinite(pf) || pf === 0) return brand.colors.text
-  if (pf >= 1.5) return brand.colors.positive
-  if (pf >= 1) return brand.colors.text
-  return brand.colors.negative
+  if (!Number.isFinite(pf) || pf === 0) return 'var(--brand-text)'
+  if (pf >= 1.5) return 'var(--brand-positive)'
+  if (pf >= 1) return 'var(--brand-text)'
+  return 'var(--brand-negative)'
 })
 
 const pfQualifier = computed(() => {
@@ -375,8 +375,8 @@ const ibovDelta = computed(() => {
 })
 
 const ibovColor = computed(() => {
-  if (!ibovAvailable.value) return `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`
-  return userPctApprox.value - ibovPct.value >= 0 ? brand.colors.positive : brand.colors.negative
+  if (!ibovAvailable.value) return `color-mix(in srgb, var(--brand-text) 50%, transparent)`
+  return userPctApprox.value - ibovPct.value >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
 const ibovHint = computed(() => {
@@ -391,9 +391,9 @@ const marginLabel = computed(() =>
 )
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
 }))
 </script>
 

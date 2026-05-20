@@ -1093,7 +1093,7 @@ const Field = defineComponent({
   height: 16px;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-family: 'JetBrains Mono', monospace;
   font-size: 9.5px;
   font-weight: 700;

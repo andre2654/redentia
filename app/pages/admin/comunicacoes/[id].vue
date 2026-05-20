@@ -1180,7 +1180,7 @@ onMounted(() => {
   padding: 8px 14px;
   border-radius: 8px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 12.5px;
   font-weight: 600;
   letter-spacing: -0.005em;
@@ -1695,7 +1695,7 @@ onMounted(() => {
   padding: 4px 10px;
   border-radius: 7px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 11.5px;
   font-weight: 600;
 }
@@ -1871,7 +1871,7 @@ onMounted(() => {
   padding: 9px 16px;
   border-radius: 11px;
   background: linear-gradient(135deg, var(--brand-primary) 0%, color-mix(in srgb, var(--brand-primary) 80%, white) 100%);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 13px;
   font-weight: 600;
   position: relative;
@@ -1889,7 +1889,7 @@ onMounted(() => {
 .prev-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--shadow-ambient);
   backdrop-filter: blur(2px);
 }
 .prev-modal {
@@ -1897,7 +1897,7 @@ onMounted(() => {
   border-radius: 14px;
   background: rgba(40, 44, 52, 0.98);
   border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 40px -10px var(--shadow-ambient);
   max-height: 280px;
   overflow-y: auto;
   width: 90%;
@@ -1957,7 +1957,7 @@ onMounted(() => {
   padding: 8px 14px;
   border-radius: 9px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 12px;
   font-weight: 600;
   margin-top: 4px;
@@ -2077,7 +2077,7 @@ onMounted(() => {
   padding: 8px 14px;
   border-radius: 7px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 12px;
   font-weight: 600;
 }

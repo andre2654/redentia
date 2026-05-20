@@ -109,9 +109,9 @@ const brand = useBrand()
 const unread = computed(() => props.alerts.filter((a) => a.readAt == null).length)
 
 function severityColor(s: ChatAlert['severity']): string {
-  if (s === 'critical') return brand.colors.negative
-  if (s === 'warning') return brand.colors.primary
-  return brand.colors.textMuted
+  if (s === 'critical') return 'var(--brand-negative)'
+  if (s === 'warning') return 'var(--brand-primary)'
+  return 'var(--brand-text-muted)'
 }
 
 const RELATIVE_DIVISIONS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = [

@@ -7,7 +7,7 @@
           <UIcon name="i-lucide-book-open" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">Glossário Financeiro</h1>
         </div>
-        <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
           Aprenda mais de 200 termos essenciais sobre investimentos, ações, FIIs
           e mercado financeiro. Definições claras e exemplos práticos.
         </p>
@@ -27,9 +27,9 @@
           class="group flex flex-col gap-3"
         >
           <div class="flex items-center justify-between">
-            <h3 class="font-light group-hover:text-secondary" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
+            <h3 class="font-light group-hover:text-secondary" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
               {{ termoDoDia.nome }}
-              <span v-if="termoDoDia.sigla" :style="{ color: brand.colors.textMuted }">
+              <span v-if="termoDoDia.sigla" :style="{ color: 'var(--brand-text-muted)' }">
                 ({{ termoDoDia.sigla }})
               </span>
             </h3>
@@ -38,7 +38,7 @@
               class="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
             />
           </div>
-          <p :style="{ color: brand.colors.textMuted }">{{ termoDoDia.definicaoResumida }}</p>
+          <p :style="{ color: 'var(--brand-text-muted)' }">{{ termoDoDia.definicaoResumida }}</p>
           <UButton
             color="secondary"
             variant="soft"
@@ -103,7 +103,7 @@
       <!-- Lista de Termos -->
       <section class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-          <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
+          <h2 class="text-[18px] font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">
             {{ termosFiltrados.length }} termo{{
               termosFiltrados.length !== 1 ? 's' : ''
             }}
@@ -120,14 +120,14 @@
             :key="termo.slug"
             :to="`/glossario/${termo.slug}`"
             class="group brand-card border p-5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-80"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
             <div class="flex flex-col gap-3">
               <div class="flex items-start justify-between">
                 <div class="flex flex-col gap-1">
                   <h3
                     class="text-[18px] font-medium group-hover:text-secondary transition-colors"
-                    :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
+                    :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }"
                   >
                     {{ termo.nome }}
                   </h3>
@@ -148,7 +148,7 @@
                   size="xs"
                 />
               </div>
-              <p class="line-clamp-3 text-sm" :style="{ color: brand.colors.textMuted }">
+              <p class="line-clamp-3 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ termo.definicaoResumida }}
               </p>
               <div class="flex items-center gap-2 text-secondary text-sm">
@@ -165,14 +165,14 @@
         <div
           v-else
           class="flex flex-col items-center gap-4 brand-card border p-12 text-center"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <UIcon name="i-lucide-search-x" class="h-12 w-12" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }" />
+          <UIcon name="i-lucide-search-x" class="h-12 w-12" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }" />
           <div>
-            <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
+            <h3 class="text-[18px] font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">
               Nenhum termo encontrado
             </h3>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
+            <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
               Tente ajustar os filtros ou usar outros termos de busca
             </p>
           </div>

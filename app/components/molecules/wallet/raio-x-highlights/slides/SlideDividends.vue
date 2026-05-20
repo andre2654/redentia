@@ -142,8 +142,8 @@ const raindrops = computed(() => {
   width: var(--d-size, 3px);
   height: var(--d-size, 3px);
   border-radius: 999px;
-  background: var(--brand-primary, #f5a623);
-  box-shadow: 0 0 8px var(--brand-primary, #f5a623);
+  background: var(--brand-primary, var(--brand-primary));
+  box-shadow: 0 0 8px var(--brand-primary, var(--brand-primary));
   opacity: 0;
   animation: sl-divs-drop-fall var(--d-duration, 8s) linear var(--d-delay, 0s) infinite;
 }
@@ -170,7 +170,7 @@ const raindrops = computed(() => {
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--brand-primary, #f5a623);
+  color: var(--brand-primary, var(--brand-primary));
   font-weight: 500;
 }
 
@@ -193,7 +193,7 @@ const raindrops = computed(() => {
   font-weight: 200;
   letter-spacing: -0.04em;
   color: #fff;
-  text-shadow: 0 0 40px color-mix(in srgb, var(--brand-primary, #f5a623) 38%, transparent);
+  text-shadow: 0 0 40px color-mix(in srgb, var(--brand-primary, var(--brand-primary)) 38%, transparent);
 }
 
 .sl-divs__period {
@@ -249,7 +249,7 @@ const raindrops = computed(() => {
 
 .sl-divs__yield {
   font-size: 12px;
-  color: var(--brand-primary, #f5a623);
+  color: var(--brand-primary, var(--brand-primary));
   font-variant-numeric: tabular-nums;
 }
 

@@ -30,7 +30,7 @@
         :cx="p.x"
         :cy="p.y"
         :r="p.r"
-        :fill="brand.colors.primary"
+        :fill="'var(--brand-primary)'"
         :style="{
           '--p-delay': `${p.delay}s`,
           '--p-duration': `${p.duration}s`,
@@ -105,10 +105,10 @@ const auroraStyle = computed(() => {
 })
 
 const glowAStyle = computed(() => ({
-  background: `radial-gradient(circle at center, color-mix(in srgb, ${brand.colors.primary} 38%, transparent), transparent 70%)`,
+  background: `radial-gradient(circle at center, color-mix(in srgb, var(--brand-primary) 38%, transparent), transparent 70%)`,
 }))
 const glowBStyle = computed(() => ({
-  background: `radial-gradient(circle at center, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 70%)`,
+  background: `radial-gradient(circle at center, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 70%)`,
 }))
 </script>
 

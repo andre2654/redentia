@@ -12,7 +12,7 @@
         class="success-glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 60% 50% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 24%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 60% 50% at 50% 0%, color-mix(in srgb, var(--brand-primary) 24%, transparent), transparent 65%)`,
         }"
       />
 

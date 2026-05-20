@@ -79,10 +79,10 @@ const changeLabel = computed(() => {
   return `${sign}${changePct.value.toFixed(2)}%`
 })
 const changeColor = computed(() => {
-  if (changePct.value == null) return brand.colors.textMuted
-  if (changePct.value > 0) return brand.colors.positive
-  if (changePct.value < 0) return brand.colors.negative
-  return brand.colors.textMuted
+  if (changePct.value == null) return 'var(--brand-text-muted)'
+  if (changePct.value > 0) return 'var(--brand-positive)'
+  if (changePct.value < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 })
 
 const assetUrl = computed(() => {

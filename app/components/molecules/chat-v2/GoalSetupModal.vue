@@ -391,36 +391,36 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 
 // ---- Style helpers -----------------------------------------------
 const dialogStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
+  backgroundColor: 'var(--brand-surface)',
   borderRadius: '24px 24px 0 0',
   paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  color: 'var(--brand-text)',
   maxHeight: '92vh',
   overflowY: 'auto',
 }))
 const inputStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.background} 70%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-background) 70%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 const templateStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 5%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 const activeTemplateStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
-  color: brand.colors.primary,
-  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
+  color: 'var(--brand-primary)',
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
 }))
 const primaryBtnStyle = computed(() => ({
-  backgroundColor: brand.colors.primary,
-  color: brand.colors.background,
+  backgroundColor: 'var(--brand-primary)',
+  color: 'var(--brand-background)',
 }))
 const secondaryBtnStyle = computed(() => ({
   backgroundColor: 'transparent',
-  color: brand.colors.textMuted,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+  color: 'var(--brand-text-muted)',
+  border: `1px solid color-mix(in srgb, var(--brand-border) 60%, transparent)`,
 }))
 </script>
 

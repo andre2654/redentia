@@ -72,8 +72,8 @@ if (!isWidgetMode.value) {
     v-if="isWidgetMode"
     class="embed-widget flex h-full w-full flex-col gap-1 rounded-xl p-2"
     :style="{
-      backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-      border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+      backgroundColor: theme === 'light' ? '#ffffff' : 'var(--brand-surface)',
+      border: `1px solid ${theme === 'light' ? '#e5e7eb' : 'var(--brand-border)'}`,
     }"
   >
     <AtomsTickerCarousel
@@ -81,7 +81,7 @@ if (!isWidgetMode.value) {
       :no-control="true"
       :fade-color="theme === 'light' ? '#ffffff' : brand.colors.surface"
     />
-    <div class="self-end pr-3 text-[9px] uppercase tracking-[0.15em] opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+    <div class="self-end pr-3 text-[9px] uppercase tracking-[0.15em] opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }">
       redentia.com.br
     </div>
   </div>
@@ -95,7 +95,7 @@ if (!isWidgetMode.value) {
   >
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">Customizar</h2>
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-400">Tickers (separados por vírgula)</label>
             <UTextarea v-model="tickersInput" :rows="3" placeholder="PETR4,VALE3,ITUB4" />
@@ -110,13 +110,13 @@ if (!isWidgetMode.value) {
           </div>
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-400">Código iframe</label>
-            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }"><code>{{ iframeCode }}</code></div>
+            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: 'var(--brand-background)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }"><code>{{ iframeCode }}</code></div>
             <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" color="primary" block @click="copyIframe">{{ copied ? 'Copiado!' : 'Copiar código' }}</UButton>
           </div>
         </div>
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Pré-visualização</h2>
-          <div class="flex min-h-[200px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.22px' }">Pré-visualização</h2>
+          <div class="flex min-h-[200px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: theme === 'light' ? '#f9fafb' : 'var(--brand-background)' }">
             <iframe :src="embedUrl" width="100%" height="100" frameborder="0" loading="lazy" title="Carrossel de cotações" style="border:0;border-radius:12px;" />
           </div>
         </div>

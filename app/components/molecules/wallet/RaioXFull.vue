@@ -28,7 +28,7 @@
         <ul v-if="analysis.dimensions?.length" class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="d in analysis.dimensions" :key="d.key" class="flex flex-col gap-1.5">
             <div class="flex items-baseline justify-between gap-2">
-              <span class="text-[12.5px]" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">{{ d.label }}</span>
+              <span class="text-[12.5px]" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">{{ d.label }}</span>
               <span
                 class="font-mono-tab text-[12.5px] tabular-nums"
                 :style="{ color: dimensionColor(d.value) }"
@@ -36,7 +36,7 @@
             </div>
             <div
               class="h-1 w-full overflow-hidden rounded-full"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 7%, transparent)` }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)` }"
             >
               <div
                 class="h-full rounded-full"
@@ -46,11 +46,11 @@
             <span
               v-if="d.note"
               class="text-[10.5px]"
-              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`, lineHeight: 1.4 }"
+              :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)`, lineHeight: 1.4 }"
             >{{ d.note }}</span>
           </li>
         </ul>
-        <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Sem dimensões registradas neste snapshot.</p>
+        <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Sem dimensões registradas neste snapshot.</p>
       </article>
     </section>
 
@@ -67,19 +67,19 @@
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <article class="flex flex-col gap-3 rounded-xl border p-5" :style="strengthCardStyle">
           <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-circle-check" class="size-4" :style="{ color: brand.colors.positive }" />
+            <UIcon name="i-lucide-circle-check" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
             <span
               class="font-mono-tab text-[10.5px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.positive }"
+              :style="{ letterSpacing: '0.18em', color: 'var(--brand-positive)' }"
             >Pontos fortes ({{ analysis.strengths?.length || 0 }})</span>
           </div>
           <ul v-if="analysis.strengths?.length" class="flex flex-col gap-3">
             <li v-for="s in analysis.strengths" :key="s.title" class="flex flex-col gap-0.5">
-              <span class="text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ s.title }}</span>
-              <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ s.body }}</span>
+              <span class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ s.title }}</span>
+              <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">{{ s.body }}</span>
             </li>
           </ul>
-          <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Nada destacado neste snapshot.</p>
+          <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Nada destacado neste snapshot.</p>
         </article>
 
         <article class="flex flex-col gap-3 rounded-xl border p-5" :style="warnCardStyle">
@@ -93,7 +93,7 @@
           <ul v-if="analysis.risks?.length" class="flex flex-col gap-3">
             <li v-for="r in analysis.risks" :key="r.title" class="flex flex-col gap-0.5">
               <div class="flex items-center gap-2">
-                <span class="text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ r.title }}</span>
+                <span class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ r.title }}</span>
                 <span
                   class="rounded px-1.5 py-0.5 font-mono-tab text-[9px] font-medium uppercase"
                   :style="{
@@ -103,31 +103,31 @@
                   }"
                 >{{ r.severity }}</span>
               </div>
-              <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ r.body }}</span>
+              <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">{{ r.body }}</span>
             </li>
           </ul>
-          <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Sem riscos detectados.</p>
+          <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Sem riscos detectados.</p>
         </article>
 
         <article class="flex flex-col gap-3 rounded-xl border p-5" :style="cardStyle">
           <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-sparkles" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-sparkles" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             <span
               class="font-mono-tab text-[10.5px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+              :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
             >Próximos passos</span>
           </div>
           <ul v-if="analysis.recommendations?.length" class="flex flex-col gap-3">
             <li v-for="r in analysis.recommendations" :key="r.title" class="flex flex-col gap-0.5">
-              <span class="text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ r.title }}</span>
-              <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ r.body }}</span>
+              <span class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ r.title }}</span>
+              <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">{{ r.body }}</span>
             </li>
           </ul>
-          <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Sem recomendações novas.</p>
+          <p v-else class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">Sem recomendações novas.</p>
           <NuxtLink
             to="/help?intent=portfolio-review"
             class="mt-2 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium"
-            :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
           >
             <UIcon name="i-lucide-sparkles" class="size-3.5" />
             Discutir no chat
@@ -170,16 +170,16 @@
           class="flex flex-col gap-2 rounded-xl border p-5"
           :style="cardStyle"
         >
-          <span class="font-mono-tab text-[10.5px] font-medium uppercase" :style="{ letterSpacing: '0.16em', color: brand.colors.primary }">Cenário</span>
-          <h3 class="text-[15px] font-medium" :style="{ color: brand.colors.text }">{{ s.name }}</h3>
+          <span class="font-mono-tab text-[10.5px] font-medium uppercase" :style="{ letterSpacing: '0.16em', color: 'var(--brand-primary)' }">Cenário</span>
+          <h3 class="text-[15px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ s.name }}</h3>
           <div
             class="font-mono-tab text-[24px] font-light tabular-nums"
             :style="{
-              color: s.change_pct >= 0 ? brand.colors.positive : brand.colors.negative,
+              color: s.change_pct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
               letterSpacing: '-0.4px',
             }"
           >{{ formatPctSigned(s.change_pct) }}</div>
-          <p class="text-[11.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ s.note }}</p>
+          <p class="text-[11.5px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">{{ s.note }}</p>
         </article>
       </div>
     </section>
@@ -199,21 +199,21 @@
           :style="cardStyle"
         >
           <div class="flex items-center gap-2">
-            <UIcon :name="macroIcon(m.label)" class="size-4" :style="{ color: brand.colors.primary }" />
-            <span class="text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ m.label }}</span>
+            <UIcon :name="macroIcon(m.label)" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
+            <span class="text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ m.label }}</span>
           </div>
           <span
             class="font-mono-tab text-[10.5px] font-medium uppercase"
             :style="{
               letterSpacing: '0.16em',
               color: m.sensitivity === 'baixa'
-                ? brand.colors.positive
+                ? 'var(--brand-positive)'
                 : m.sensitivity === 'média'
                   ? warnColor
-                  : brand.colors.negative,
+                  : 'var(--brand-negative)',
             }"
           >Sensibilidade {{ m.sensitivity }}</span>
-          <p class="text-[11.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ m.note }}</p>
+          <p class="text-[11.5px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">{{ m.note }}</p>
         </article>
       </div>
     </section>
@@ -232,28 +232,28 @@
             v-for="(alt, i) in analysis.alternatives"
             :key="`${alt.from}-${alt.to}-${i}`"
             class="grid items-center gap-4 px-5 py-4 md:grid-cols-[1fr_auto_1fr_auto]"
-            :style="{ borderBottom: i < analysis.alternatives.length - 1 ? `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` : 'none' }"
+            :style="{ borderBottom: i < analysis.alternatives.length - 1 ? `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` : 'none' }"
           >
             <div class="flex items-center gap-2.5">
-              <span class="font-mono-tab text-[10px] font-medium uppercase" :style="{ letterSpacing: '0.16em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">DE</span>
+              <span class="font-mono-tab text-[10px] font-medium uppercase" :style="{ letterSpacing: '0.16em', color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">DE</span>
               <AtomsTickerLogo
                 :ticker="alt.from"
                 :logo="snapshots.get(alt.from.toUpperCase())?.logo ?? null"
                 :size="22"
               />
-              <span class="font-mono-tab text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ alt.from }}</span>
+              <span class="font-mono-tab text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ alt.from }}</span>
             </div>
-            <UIcon name="i-lucide-arrow-right" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-arrow-right" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             <div class="flex items-center gap-2.5">
-              <span class="font-mono-tab text-[10px] font-medium uppercase" :style="{ letterSpacing: '0.16em', color: brand.colors.primary }">PARA</span>
+              <span class="font-mono-tab text-[10px] font-medium uppercase" :style="{ letterSpacing: '0.16em', color: 'var(--brand-primary)' }">PARA</span>
               <AtomsTickerLogo
                 :ticker="alt.to"
                 :logo="snapshots.get(alt.to.toUpperCase())?.logo ?? null"
                 :size="22"
               />
-              <span class="font-mono-tab text-[13px] font-medium" :style="{ color: brand.colors.text }">{{ alt.to }}</span>
+              <span class="font-mono-tab text-[13px] font-medium" :style="{ color: 'var(--brand-text)' }">{{ alt.to }}</span>
             </div>
-            <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }">{{ alt.reason }}</span>
+            <span class="text-[12px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`, lineHeight: 1.5 }">{{ alt.reason }}</span>
           </li>
         </ul>
       </article>
@@ -325,28 +325,28 @@ onBeforeUnmount(() => {
 
 // ---- Visuals + helpers ----------------------------------------
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 const strengthCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 5%, ${brand.colors.surface})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.positive} 22%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-positive) 5%, var(--brand-surface))`,
+  borderColor: `color-mix(in srgb, var(--brand-positive) 22%, transparent)`,
 }))
-const warnColor = computed(() => (brand.colors as { warning?: string }).warning || '#f59e0b')
+const warnColor = computed(() => 'var(--brand-warning)')
 const warnCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${warnColor.value} 5%, ${brand.colors.surface})`,
+  backgroundColor: `color-mix(in srgb, ${warnColor.value} 5%, var(--brand-surface))`,
   borderColor: `color-mix(in srgb, ${warnColor.value} 22%, transparent)`,
 }))
 
 function dimensionColor(value: number): string {
-  if (value >= 75) return brand.colors.positive
+  if (value >= 75) return 'var(--brand-positive)'
   if (value >= 50) return warnColor.value
-  return brand.colors.negative
+  return 'var(--brand-negative)'
 }
 function severityColor(s: 'low' | 'medium' | 'high'): string {
-  return s === 'high' ? brand.colors.negative
+  return s === 'high' ? 'var(--brand-negative)'
        : s === 'medium' ? warnColor.value
-       : brand.colors.primary
+       : 'var(--brand-primary)'
 }
 // thesisStatusLabel/thesisStatusColor moveram pro PositionsTable
 // (a tese agora vive como linha expansivel da tabela unificada).

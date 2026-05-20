@@ -215,7 +215,7 @@ async function onRemove() {
 
 .asset-uploader__hint {
   font-size: 11px;
-  color: var(--text-muted, rgba(0, 0, 0, 0.5));
+  color: var(--text-muted, var(--shadow-ambient));
 }
 
 .asset-uploader__slot {
@@ -233,7 +233,7 @@ async function onRemove() {
 }
 
 .asset-uploader__slot--dark {
-  background-color: #14161C;
+  background-color: var(--bg-elevated);
   border-color: rgba(255, 255, 255, 0.12);
 }
 
@@ -258,7 +258,7 @@ async function onRemove() {
 .asset-uploader__placeholder {
   width: 24px;
   height: 24px;
-  color: var(--text-muted, rgba(0, 0, 0, 0.4));
+  color: var(--text-muted, var(--shadow-amber-near));
 }
 
 .asset-uploader__slot--dark .asset-uploader__placeholder {

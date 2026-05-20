@@ -113,11 +113,11 @@ if (!isWidgetMode.value) {
     <div
       class="flex h-full w-full flex-col rounded-xl p-4"
       :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+        backgroundColor: theme === 'light' ? '#ffffff' : 'var(--brand-surface)',
+        border: `1px solid ${theme === 'light' ? '#e5e7eb' : 'var(--brand-border)'}`,
       }"
     >
-      <h3 class="mb-3 text-sm font-medium uppercase tracking-wider" :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.005em' }">
+      <h3 class="mb-3 text-sm font-medium uppercase tracking-wider" :style="{ color: theme === 'light' ? '#111' : 'var(--brand-text)', letterSpacing: '-0.005em' }">
         Calculadora · {{ tipoLabel }}
       </h3>
       <div class="flex-1 overflow-auto">
@@ -136,19 +136,19 @@ if (!isWidgetMode.value) {
         <CalculatorRetirement v-else-if="tipo === 'aposentadoria'" />
         <CalculatorMonthlyInvestment v-else-if="tipo === 'quanto-investir'" />
         <CalculatorIncomeTax v-else-if="tipo === 'imposto-renda'" />
-        <div v-else class="flex h-full flex-col items-center justify-center gap-3 text-center" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+        <div v-else class="flex h-full flex-col items-center justify-center gap-3 text-center" :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }">
           <UIcon name="i-lucide-construction" class="size-10" />
           <p class="text-sm">Calculadora não encontrada.</p>
           <NuxtLink
             to="/embed/calculadora/juros-compostos"
             class="text-sm font-medium underline"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             Ver juros compostos
           </NuxtLink>
         </div>
       </div>
-      <div class="mt-2 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+      <div class="mt-2 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : 'var(--brand-text-muted)' }">
         redentia.com.br
       </div>
     </div>
@@ -163,7 +163,7 @@ if (!isWidgetMode.value) {
   >
       <!-- Seletor de calculadoras disponíveis -->
       <div>
-        <h2 class="mb-3 text-sm uppercase tracking-wider" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Outras calculadoras embeddable</h2>
+        <h2 class="mb-3 text-sm uppercase tracking-wider" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 60%, transparent)' }">Outras calculadoras embeddable</h2>
         <div class="flex flex-wrap gap-2">
           <NuxtLink
             v-for="c in availableCalcs"
@@ -171,7 +171,7 @@ if (!isWidgetMode.value) {
             :to="`/embed/calculadora/${c.slug}`"
             class="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition"
             :class="c.slug === tipo ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'"
-            :style="c.slug !== tipo ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}"
+            :style="c.slug !== tipo ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}"
           >
             <UIcon :name="c.icon" class="size-4" />
             {{ c.label }}
@@ -181,23 +181,23 @@ if (!isWidgetMode.value) {
 
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Customizar</h2>
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Tema</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Tema</label>
             <div class="flex gap-2">
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="theme !== 'dark' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'dark'">Escuro</button>
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="theme !== 'light' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'light'">Claro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="theme !== 'dark' ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}" @click="theme = 'dark'">Escuro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="theme !== 'light' ? { color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' } : {}" @click="theme = 'light'">Claro</button>
             </div>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Código iframe</label>
-            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }"><code>{{ iframeCode }}</code></div>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + 'var(--brand-text)' + ' 70%, transparent)' }">Código iframe</label>
+            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: 'var(--brand-background)', borderColor: 'var(--brand-border)', color: 'var(--brand-text)' }"><code>{{ iframeCode }}</code></div>
             <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" color="primary" block @click="copyIframe">{{ copied ? 'Copiado!' : 'Copiar código' }}</UButton>
           </div>
         </div>
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Pré-visualização</h2>
-          <div class="flex min-h-[740px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
+          <h2 class="text-xl font-medium" :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }">Pré-visualização</h2>
+          <div class="flex min-h-[740px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: theme === 'light' ? '#f9fafb' : 'var(--brand-background)' }">
             <iframe :src="embedUrl" width="480" height="700" frameborder="0" loading="lazy" :title="`Calculadora ${tipoLabel}`" style="border:0;border-radius:12px;max-width:100%;" />
           </div>
         </div>

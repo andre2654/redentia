@@ -12,18 +12,18 @@
       <span class="mock-eyebrow">Patrimônio</span>
       <div
         class="font-mono-tab text-[24px] font-light tabular-nums"
-        :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }"
+        :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px' }"
       >{{ maskedBRL(totalValue) }}</div>
       <svg viewBox="0 0 200 36" class="h-8 w-full">
         <defs>
           <linearGradient id="metric-spark" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" :stop-color="brand.colors.positive" stop-opacity="0.32" />
-            <stop offset="100%" :stop-color="brand.colors.positive" stop-opacity="0" />
+            <stop offset="0%" :stop-color="'var(--brand-positive)'" stop-opacity="0.32" />
+            <stop offset="100%" :stop-color="'var(--brand-positive)'" stop-opacity="0" />
           </linearGradient>
         </defs>
         <path
           d="M0,28 L18,26 L36,30 L54,22 L72,24 L90,18 L108,20 L126,12 L144,15 L162,10 L180,7 L200,9"
-          :stroke="brand.colors.positive"
+          :stroke="'var(--brand-positive)'"
           stroke-width="1.5"
           fill="none"
           stroke-linecap="round"
@@ -42,11 +42,11 @@
       <div class="flex items-baseline gap-2">
         <div
           class="font-mono-tab text-[40px] font-light tabular-nums leading-none"
-          :style="{ color: brand.colors.text, letterSpacing: '-0.04em' }"
+          :style="{ color: 'var(--brand-text)', letterSpacing: '-0.04em' }"
         >{{ score }}</div>
         <span
           class="font-mono-tab text-[12px] tabular-nums"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
         >/100</span>
       </div>
       <span
@@ -55,13 +55,13 @@
       >{{ scoreLabel }}</span>
       <div
         class="mt-1 h-1.5 w-full rounded-full"
-        :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 7%, transparent)` }"
+        :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)` }"
       >
         <div
           class="h-full rounded-full"
           :style="{
             width: score + '%',
-            background: `linear-gradient(90deg, ${brand.colors.primary} 0%, ${brand.colors.positive} 100%)`,
+            background: `linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-positive) 100%)`,
           }"
         />
       </div>
@@ -72,12 +72,12 @@
       <span class="mock-eyebrow">Dividendos · 12m</span>
       <div
         class="font-mono-tab text-[24px] font-light tabular-nums"
-        :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }"
+        :style="{ color: 'var(--brand-text)', letterSpacing: '-0.4px' }"
       >{{ maskedBRL(dividendForecast12m) }}</div>
       <div class="flex items-center gap-2">
         <span
           class="font-mono-tab text-[11px] tabular-nums"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         >{{ maskedBRL(dividendForecast12m / 12) }}/mês médio</span>
       </div>
       <span class="mock-meta">{{ dividendMeta }}</span>
@@ -88,7 +88,7 @@
       <div
         class="font-mono-tab text-[24px] font-light tabular-nums"
         :style="{
-          color: pnlPct !== null && pnlPct >= 0 ? brand.colors.positive : brand.colors.negative,
+          color: pnlPct !== null && pnlPct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
           letterSpacing: '-0.4px',
         }"
       >{{ pnlPct !== null ? formatPct(pnlPct) : '—' }}</div>
@@ -98,10 +98,10 @@
           :key="b.label"
           class="flex items-center justify-between text-[11px]"
         >
-          <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">{{ b.label }}</span>
+          <span :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">{{ b.label }}</span>
           <span
             class="font-mono-tab tabular-nums"
-            :style="{ color: b.return_12m_pct >= 0 ? brand.colors.positive : brand.colors.negative }"
+            :style="{ color: b.return_12m_pct >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
           >{{ formatPct(b.return_12m_pct) }}</span>
         </div>
       </div>
@@ -133,8 +133,8 @@ const props = withDefaults(defineProps<Props>(), {
 const brand = useBrand()
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const scoreLabel = computed(() => {
@@ -145,9 +145,9 @@ const scoreLabel = computed(() => {
 })
 
 const scoreLabelColor = computed(() => {
-  if (props.score >= 70) return brand.colors.positive
-  if (props.score >= 50) return (brand.colors as { warning?: string }).warning || '#f59e0b'
-  return brand.colors.negative
+  if (props.score >= 70) return 'var(--brand-positive)'
+  if (props.score >= 50) return 'var(--brand-warning)'
+  return 'var(--brand-negative)'
 })
 
 // Reveal toggle compartilhado — mascara patrimonio + dividendos

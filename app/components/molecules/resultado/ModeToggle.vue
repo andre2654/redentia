@@ -21,7 +21,7 @@
     <span
       class="hidden text-[11px] font-medium uppercase md:inline"
       :style="{
-        color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+        color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
         letterSpacing: '0.16em',
       }"
     >Modo</span>

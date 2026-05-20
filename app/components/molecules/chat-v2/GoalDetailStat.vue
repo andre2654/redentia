@@ -45,18 +45,18 @@ const brand = useBrand()
 const valueColor = computed(() => {
   switch (props.emphasize) {
     case 'positive':
-      return brand.colors.positive
+      return 'var(--brand-positive)'
     case 'warning':
-      return brand.colors.warning ?? '#f59e0b'
+      return 'var(--brand-warning)'
     case 'negative':
-      return brand.colors.negative
+      return 'var(--brand-negative)'
     default:
-      return brand.colors.text
+      return 'var(--brand-text)'
   }
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.background} 50%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-background) 50%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
 }))
 </script>

@@ -16,13 +16,13 @@
   <header class="flex max-w-3xl flex-col gap-2">
     <span
       class="font-mono-tab text-[11px] font-medium uppercase"
-      :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+      :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
     >{{ eyebrow }}</span>
     <component
       :is="level"
       class="font-light"
       :style="{
-        color: brand.colors.text,
+        color: 'var(--brand-text)',
         fontSize: titleSize,
         lineHeight: 1.1,
         letterSpacing: titleTracking,
@@ -34,7 +34,7 @@
       :style="{
         fontSize: '17px',
         lineHeight: 1.55,
-        color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+        color: `color-mix(in srgb, var(--brand-text) 72%, transparent)`,
       }"
     >{{ lead }}</p>
   </header>

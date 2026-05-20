@@ -40,7 +40,7 @@
           <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
             {{ cell.label }}
           </span>
-          <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: cell.accent || brand.colors.text }">
+          <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: cell.accent || 'var(--brand-text)' }">
             {{ cell.value }}
           </span>
         </div>
@@ -393,13 +393,12 @@
 import type { ScrapeExtras } from '~/types/asset'
 
 const props = defineProps<{ extras: ScrapeExtras | null }>()
-const brand = useBrand()
 
 const valuationCells = computed(() => {
   const v = props.extras?.valuation
   if (!v) return []
   return [
-    { label: 'D.Y', value: formatPercent(v.dividend_yield), tooltip: 'Dividend Yield. Quanto a empresa pagou em dividendos nos últimos 12 meses sobre o preço atual.', accent: brand.colors.primary },
+    { label: 'D.Y', value: formatPercent(v.dividend_yield), tooltip: 'Dividend Yield. Quanto a empresa pagou em dividendos nos últimos 12 meses sobre o preço atual.', accent: 'var(--brand-primary)' },
     { label: 'P/L', value: formatRatio(v.price_to_earnings), tooltip: 'Preço sobre lucro. Quantos anos a empresa levaria pra pagar o preço da ação com o lucro atual.' },
     { label: 'PEG', value: formatRatio(v.peg_ratio), tooltip: 'P/L ajustado pelo crescimento. Abaixo de 1 sugere que a ação está barata em relação ao ritmo de crescimento.' },
     { label: 'P/VP', value: formatRatio(v.price_to_book), tooltip: 'Preço sobre valor patrimonial. Abaixo de 1 indica que o mercado precifica a ação por menos do que o patrimônio por ação.' },
@@ -448,10 +447,10 @@ const marginCascade = computed(() => {
   const q = props.extras?.quality
   if (!q) return []
   return [
-    { label: 'BRUTA', value: q.gross_margin, color: brand.colors.textMuted },
-    { label: 'EBITDA', value: q.ebitda_margin, color: brand.colors.primary },
-    { label: 'EBIT', value: q.ebit_margin, color: brand.colors.primary },
-    { label: 'LÍQUIDA', value: q.net_margin, color: brand.colors.positive },
+    { label: 'BRUTA', value: q.gross_margin, color: 'var(--brand-text-muted)' },
+    { label: 'EBITDA', value: q.ebitda_margin, color: 'var(--brand-primary)' },
+    { label: 'EBIT', value: q.ebit_margin, color: 'var(--brand-primary)' },
+    { label: 'LÍQUIDA', value: q.net_margin, color: 'var(--brand-positive)' },
   ]
 })
 
@@ -467,27 +466,27 @@ const debtActiveBars = computed(() => {
 
 const debtHealth = computed(() => {
   const r = props.extras?.leverage.net_debt_to_ebitda
-  if (r == null) return { label: 'N/A', color: brand.colors.textMuted }
-  if (r < 1.5) return { label: 'SAUDÁVEL', color: brand.colors.positive }
-  if (r < 3) return { label: 'MODERADO', color: brand.colors.primary }
-  if (r < 5) return { label: 'ELEVADO', color: brand.colors.negative }
-  return { label: 'CRÍTICO', color: brand.colors.negative }
+  if (r == null) return { label: 'N/A', color: 'var(--brand-text-muted)' }
+  if (r < 1.5) return { label: 'SAUDÁVEL', color: 'var(--brand-positive)' }
+  if (r < 3) return { label: 'MODERADO', color: 'var(--brand-primary)' }
+  if (r < 5) return { label: 'ELEVADO', color: 'var(--brand-negative)' }
+  return { label: 'CRÍTICO', color: 'var(--brand-negative)' }
 })
 
 function debtBarColor(index: number): string {
   const pct = (index - 1) / (debtBars - 1)
-  if (pct < 0.4) return brand.colors.positive
-  if (pct < 0.75) return brand.colors.primary
-  return brand.colors.negative
+  if (pct < 0.4) return 'var(--brand-positive)'
+  if (pct < 0.75) return 'var(--brand-primary)'
+  return 'var(--brand-negative)'
 }
 
 // --- Growth color ---
 function growthColor(v: number | null | undefined): string {
-  if (v == null) return brand.colors.textMuted
-  if (v < 0) return brand.colors.negative
-  if (v < 5) return brand.colors.textMuted
-  if (v < 15) return brand.colors.primary
-  return brand.colors.positive
+  if (v == null) return 'var(--brand-text-muted)'
+  if (v < 0) return 'var(--brand-negative)'
+  if (v < 5) return 'var(--brand-text-muted)'
+  if (v < 15) return 'var(--brand-primary)'
+  return 'var(--brand-positive)'
 }
 
 function growthBarPct(v: number | null | undefined): number {
@@ -498,10 +497,10 @@ function growthBarPct(v: number | null | undefined): number {
 // --- ROIC color ---
 const roicColor = computed(() => {
   const r = props.extras?.quality.return_on_invested_capital
-  if (r == null) return brand.colors.textMuted
-  if (r < 5) return brand.colors.negative
-  if (r < 10) return brand.colors.primary
-  return brand.colors.positive
+  if (r == null) return 'var(--brand-text-muted)'
+  if (r < 5) return 'var(--brand-negative)'
+  if (r < 10) return 'var(--brand-primary)'
+  return 'var(--brand-positive)'
 })
 
 // --- Governance — friendly label + color + tooltip explaining what it means ---
@@ -518,10 +517,10 @@ const governanceLabel = computed(() => {
 
 const governanceColor = computed(() => {
   const label = governanceLabel.value
-  if (label === 'MÁXIMA') return brand.colors.positive
-  if (label === 'AVANÇADA') return brand.colors.primary
-  if (label === 'BÁSICA') return brand.colors.text
-  return brand.colors.textMuted
+  if (label === 'MÁXIMA') return 'var(--brand-positive)'
+  if (label === 'AVANÇADA') return 'var(--brand-primary)'
+  if (label === 'BÁSICA') return 'var(--brand-text)'
+  return 'var(--brand-text-muted)'
 })
 
 const governanceTooltip = computed(() => {
@@ -538,9 +537,9 @@ const interpretations = computed<string[]>(() => {
   const e = props.extras
   if (!e) return []
   const lines: string[] = []
-  const accent = (txt: string) => `<strong style="color: ${brand.colors.primary}">${txt}</strong>`
-  const pos = (txt: string) => `<strong style="color: ${brand.colors.positive}">${txt}</strong>`
-  const neg = (txt: string) => `<strong style="color: ${brand.colors.negative}">${txt}</strong>`
+  const accent = (txt: string) => `<strong style="color: var(--brand-primary)">${txt}</strong>`
+  const pos = (txt: string) => `<strong style="color: var(--brand-positive)">${txt}</strong>`
+  const neg = (txt: string) => `<strong style="color: var(--brand-negative)">${txt}</strong>`
 
   const ev = e.valuation.ev_ebitda
   if (ev != null) {

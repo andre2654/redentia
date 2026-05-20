@@ -105,7 +105,7 @@
                 to="/api-portal/docs"
                 class="flex items-center gap-2 rounded px-2 py-1.5 text-[13px] transition-colors"
                 :style="{
-                  color: currentPath === '/api-portal/docs' ? brand.colors.primary : 'var(--brand-text-muted)',
+                  color: currentPath === '/api-portal/docs' ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
                   backgroundColor: currentPath === '/api-portal/docs' ? `var(--brand-primary)15` : 'transparent',
                 }"
               >
@@ -147,7 +147,7 @@
                   :to="`/api-portal/docs/${endpoint.slug}`"
                   class="group flex items-center gap-2 rounded py-1 pl-2 pr-2 text-[12px] transition-colors"
                   :style="{
-                    color: currentPath.endsWith('/' + endpoint.slug) ? brand.colors.primary : 'var(--brand-text-muted)',
+                    color: currentPath.endsWith('/' + endpoint.slug) ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
                     backgroundColor: currentPath.endsWith('/' + endpoint.slug) ? `var(--brand-primary)15` : 'transparent',
                   }"
                 >
@@ -188,8 +188,8 @@
               :href="`#${item.id}`"
               class="block border-l-2 py-1 pl-3 text-[12px] leading-snug transition-colors hover:opacity-100"
               :style="{
-                borderColor: activeTocId === item.id ? brand.colors.primary : 'transparent',
-                color: activeTocId === item.id ? brand.colors.primary : 'var(--brand-text-muted)',
+                borderColor: activeTocId === item.id ? 'var(--brand-primary)' : 'transparent',
+                color: activeTocId === item.id ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
                 paddingLeft: item.level === 3 ? '1.5rem' : '0.75rem',
                 marginLeft: '-1px',
               }"

@@ -24,30 +24,30 @@
       <div v-if="hasData" class="dt-zones__legend">
         <span
           class="dt-zones__legend-item"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         >
-          <span class="dt-zones__legend-dot" :style="{ backgroundColor: brand.colors.positive }" />
+          <span class="dt-zones__legend-dot" :style="{ backgroundColor: 'var(--brand-positive)' }" />
           Hot
         </span>
         <span
           class="dt-zones__legend-item"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
-          <span class="dt-zones__legend-dot" :style="{ backgroundColor: brand.colors.primary }" />
+          <span class="dt-zones__legend-dot" :style="{ backgroundColor: 'var(--brand-primary)' }" />
           Morno
         </span>
         <span
           class="dt-zones__legend-item"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >
-          <span class="dt-zones__legend-dot" :style="{ backgroundColor: brand.colors.negative }" />
+          <span class="dt-zones__legend-dot" :style="{ backgroundColor: 'var(--brand-negative)' }" />
           Frio
         </span>
       </div>
     </header>
 
     <div v-if="!hasData" class="dt-zones__empty">
-      <UIcon name="i-lucide-flame" class="size-6 opacity-40" :style="{ color: brand.colors.text }" />
+      <UIcon name="i-lucide-flame" class="size-6 opacity-40" :style="{ color: 'var(--brand-text)' }" />
       <span>{{ stats.count > 0 ? 'Poucas operações pra montar mapa estatístico (mínimo 3).' : 'Sem operações no período.' }}</span>
     </div>
 
@@ -67,17 +67,17 @@
             :style="{
               height: `${barHeight(bucket)}%`,
               backgroundColor: bucket.count === 0
-                ? `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`
+                ? `color-mix(in srgb, var(--brand-text) 8%, transparent)`
                 : barColor(bucket),
               borderColor: bucket.count === 0
-                ? `color-mix(in srgb, ${brand.colors.text} 14%, transparent)`
+                ? `color-mix(in srgb, var(--brand-text) 14%, transparent)`
                 : `color-mix(in srgb, ${barColor(bucket)} 60%, transparent)`,
             }"
           >
             <span
               v-if="bucket.count > 0"
               class="dt-zones__bar-value tabular-nums"
-              :style="{ color: bucket.count >= 2 ? '#ffffff' : brand.colors.text }"
+              :style="{ color: bucket.count >= 2 ? '#ffffff' : 'var(--brand-text)' }"
             >{{ Math.round(bucket.winRate * 100) }}%</span>
           </span>
           <span class="dt-zones__hour-label tabular-nums">{{ bucket.hour }}h</span>
@@ -90,26 +90,26 @@
           <UIcon
             name="i-lucide-flame"
             class="size-3.5"
-            :style="{ color: brand.colors.positive }"
+            :style="{ color: 'var(--brand-positive)' }"
             aria-hidden="true"
           />
           <span class="dt-zones__footer-label">Hora ouro</span>
           <span
             class="dt-zones__footer-value tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ hottest.hour }}h · {{ Math.round(hottest.winRate * 100) }}% WR · {{ pnlSigned(hottest.pnl) }}</span>
         </span>
         <span v-if="coldest" class="dt-zones__footer-item">
           <UIcon
             name="i-lucide-snowflake"
             class="size-3.5"
-            :style="{ color: brand.colors.negative }"
+            :style="{ color: 'var(--brand-negative)' }"
             aria-hidden="true"
           />
           <span class="dt-zones__footer-label">Hora dreno</span>
           <span
             class="dt-zones__footer-value tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ coldest.hour }}h · {{ Math.round(coldest.winRate * 100) }}% WR · {{ pnlSigned(coldest.pnl) }}</span>
         </span>
       </div>
@@ -150,12 +150,12 @@ function barColor(bucket: HourBucket): string {
   // - 50-60% amber (primary)
   // - 33-50% laranja (mistura amber+negative)
   // - <33% vermelho (negative)
-  if (bucket.winRate >= 0.6) return brand.colors.positive
-  if (bucket.winRate >= 0.5) return brand.colors.primary
+  if (bucket.winRate >= 0.6) return 'var(--brand-positive)'
+  if (bucket.winRate >= 0.5) return 'var(--brand-primary)'
   if (bucket.winRate >= 0.33) {
-    return `color-mix(in srgb, ${brand.colors.primary} 60%, ${brand.colors.negative})`
+    return `color-mix(in srgb, var(--brand-primary) 60%, var(--brand-negative))`
   }
-  return brand.colors.negative
+  return 'var(--brand-negative)'
 }
 
 function tooltipFor(bucket: HourBucket): string {
@@ -184,9 +184,9 @@ function pnlSigned(pnl: number): string {
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
 }))
 </script>
 

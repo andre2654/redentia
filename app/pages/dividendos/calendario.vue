@@ -86,7 +86,7 @@
             Pagamento
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-warning, #f59e0b)' }" />
+            <span class="size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-warning, var(--brand-warning))' }" />
             JCP
           </span>
           <span class="font-medium tabular-nums" :style="{ color: 'var(--brand-text)' }">
@@ -544,11 +544,11 @@
             <div
               class="brand-card flex flex-col gap-2 border p-5"
               :style="{
-                backgroundColor: `color-mix(in srgb, var(--brand-warning, #f59e0b) 8%, var(--brand-surface))`,
-                borderColor: `color-mix(in srgb, var(--brand-warning, #f59e0b) 30%, var(--brand-border))`,
+                backgroundColor: `color-mix(in srgb, var(--brand-warning, var(--brand-warning)) 8%, var(--brand-surface))`,
+                borderColor: `color-mix(in srgb, var(--brand-warning, var(--brand-warning)) 30%, var(--brand-border))`,
               }"
             >
-              <h3 class="text-base font-semibold" :style="{ color: 'var(--brand-warning, #f59e0b)' }">JCP (Juros sobre Capital Próprio)</h3>
+              <h3 class="text-base font-semibold" :style="{ color: 'var(--brand-warning, var(--brand-warning))' }">JCP (Juros sobre Capital Próprio)</h3>
               <ul class="flex flex-col gap-1 text-sm leading-relaxed" :style="{ color: 'var(--brand-text)' }">
                 <li>Pago como remuneração do capital investido</li>
                 <li>15% de IR retido na fonte</li>
@@ -690,7 +690,7 @@
             :style="{
               backgroundColor: 'var(--brand-surface)',
               borderColor: 'var(--brand-border)',
-              boxShadow: `0 30px 80px -20px rgba(0,0,0,0.5), 0 12px 30px -12px color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
+              boxShadow: `0 30px 80px -20px var(--shadow-ambient), 0 12px 30px -12px color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
             }"
             @click.stop
           >
@@ -1126,10 +1126,10 @@ function formatRate(value: number | string): string {
 function labelColor(label: string): string {
   const normalized = (label || '').toUpperCase()
   if (normalized.includes('JCP') || normalized.includes('JUROS')) {
-    return brand.colors.warning || '#f59e0b'
+    return 'var(--brand-warning)'
   }
   if (normalized.includes('BONIF')) {
-    return brand.colors.secondary
+    return 'var(--brand-secondary)'
   }
   return rateAccent.value
 }

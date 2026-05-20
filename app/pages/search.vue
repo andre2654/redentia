@@ -8,40 +8,40 @@
     <div
       v-if="terminalVariant"
       class="flex flex-col"
-      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+      :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
     >
       <!-- Status bar top -->
       <div
         class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-        :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+        :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
       >
         <span>{{ isCryptoMode ? 'CRYPTO' : isTesouroMode ? 'TESOURO DIRETO' : 'B3' }}</span>
-        <span :style="{ color: brand.colors.border }">·</span>
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
         <span class="tabular-nums">{{ isCryptoMode ? cryptoItems.length : isTesouroMode ? tesouroItems.length : allAssets.length }} UNIVERSE</span>
-        <span :style="{ color: brand.colors.border }">·</span>
-        <span class="tabular-nums" :style="{ color: brand.colors.text }">{{ resultsCount }} RESULTS</span>
-        <span v-if="!isTesouroMode && !isCryptoMode" :style="{ color: brand.colors.border }">·</span>
-        <span v-if="!isTesouroMode && !isCryptoMode" class="tabular-nums" :style="{ color: activeFiltersCount > 0 ? brand.colors.primary : brand.colors.textMuted }">
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
+        <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }">{{ resultsCount }} RESULTS</span>
+        <span v-if="!isTesouroMode && !isCryptoMode" :style="{ color: 'var(--brand-border)' }">·</span>
+        <span v-if="!isTesouroMode && !isCryptoMode" class="tabular-nums" :style="{ color: activeFiltersCount > 0 ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }">
           {{ activeFiltersCount }} FILTERS
         </span>
         <span class="ml-auto flex items-center gap-3">
           <span class="inline-flex items-center gap-1.5">
-            <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+            <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-positive)' }" />
             <span>LIVE · {{ lastUpdatedLabel }}</span>
           </span>
         </span>
       </div>
 
       <!-- Hero title -->
-      <div class="border-b px-4 py-8 md:py-12" :style="{ borderColor: brand.colors.border }">
+      <div class="border-b px-4 py-8 md:py-12" :style="{ borderColor: 'var(--brand-border)' }">
         <h1
           class="mt-2 font-light tracking-tight"
           :class="brand.font.headingWeight"
-          :style="{ color: brand.colors.text, fontFamily: brandFontStack, fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.1, letterSpacing: '-0.4px' }"
+          :style="{ color: 'var(--brand-text)', fontFamily: brandFontStack, fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.1, letterSpacing: '-0.4px' }"
         >
           BUSCA AVANÇADA
         </h1>
-        <p class="mt-2 font-mono-tab text-[11px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+        <p class="mt-2 font-mono-tab text-[11px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
           &gt; FILTROS FUNDAMENTALISTAS + TECNICOS · COMBINE QUALQUER NUMERO DE CRITERIOS
         </p>
       </div>
@@ -49,9 +49,9 @@
       <!-- Search input (sticky) -->
       <div
         class="sticky top-0 z-20 flex items-center gap-3 border-b px-4 py-3 font-mono-tab"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' }"
       >
-        <span class="text-[11px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+        <span class="text-[11px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
           &gt; QUERY
         </span>
         <label for="global-search-input-terminal" class="sr-only">Buscar por ticker ou nome da companhia</label>
@@ -63,68 +63,68 @@
           spellcheck="false"
           placeholder="BUSCAR POR TICKER OU NOME DA COMPANHIA…"
           class="flex-1 bg-transparent py-1 font-mono-tab text-[14px] uppercase tracking-wide outline-none placeholder:opacity-40 focus-visible:ring-2 focus-visible:ring-offset-1"
-          :style="{ color: brand.colors.text, caretColor: brand.colors.primary }"
+          :style="{ color: 'var(--brand-text)', caretColor: 'var(--brand-primary)' }"
         />
         <button
           v-if="globalFilter.length > 0"
           type="button"
           class="inline-flex cursor-pointer items-center gap-1 text-[11px] uppercase tracking-wide opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
           aria-label="Limpar busca"
           @click="globalFilter = ''"
         >
           CLEAR ×
         </button>
-        <span class="hidden items-center gap-1 text-[10px] lg:flex" :style="{ color: brand.colors.textMuted }">
-          <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: brand.colors.border }">⌘</kbd>
-          <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: brand.colors.border }">K</kbd>
+        <span class="hidden items-center gap-1 text-[10px] lg:flex" :style="{ color: 'var(--brand-text-muted)' }">
+          <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: 'var(--brand-border)' }">⌘</kbd>
+          <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: 'var(--brand-border)' }">K</kbd>
         </span>
       </div>
 
       <!-- Ticker strip -->
-      <div class="border-b py-2" :style="{ borderColor: brand.colors.border }">
+      <div class="border-b py-2" :style="{ borderColor: 'var(--brand-border)' }">
         <AtomsTickerCarousel class="px-4" no-control />
       </div>
 
       <!-- FILTERS PANEL: 4-col grid, tight, no rounded corners (disabled in tesouro mode) -->
       <div
         class="border-b transition-opacity"
-        :style="{ borderColor: brand.colors.border, opacity: (isTesouroMode || isCryptoMode) ? 0.4 : 1, pointerEvents: (isTesouroMode || isCryptoMode) ? 'none' : 'auto' }"
+        :style="{ borderColor: 'var(--brand-border)', opacity: (isTesouroMode || isCryptoMode) ? 0.4 : 1, pointerEvents: (isTesouroMode || isCryptoMode) ? 'none' : 'auto' }"
       >
         <div
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <span :style="{ color: brand.colors.primary }">Filtros</span>
-          <span :style="{ color: brand.colors.border }">·</span>
+          <span :style="{ color: 'var(--brand-primary)' }">Filtros</span>
+          <span :style="{ color: 'var(--brand-border)' }">·</span>
           <span>RANGE + GROUP + MDI</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
           <!-- Market cap -->
-          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
+          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: 'var(--brand-border)' }">
             <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-              <span :style="{ color: brand.colors.primary }">Market Cap</span>
-              <span :style="{ color: brand.colors.textMuted }">R$</span>
+              <span :style="{ color: 'var(--brand-primary)' }">Market Cap</span>
+              <span :style="{ color: 'var(--brand-text-muted)' }">R$</span>
             </div>
-            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
+            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: 'var(--brand-text)' }">
               {{ formatCurrencyBRL(marketCapRange[0]) }}
-              <span :style="{ color: brand.colors.textMuted }">→</span>
+              <span :style="{ color: 'var(--brand-text-muted)' }">→</span>
               {{ formatCurrencyBRL(marketCapRange[1]) }}
             </div>
             <USlider v-model="marketCapRange" :min="minMax.mcMin" :max="minMax.mcMax" :step="minMax.mcStep" />
           </div>
 
           <!-- Price -->
-          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
+          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: 'var(--brand-border)' }">
             <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-              <span :style="{ color: brand.colors.primary }">Preço</span>
-              <span :style="{ color: brand.colors.textMuted }">R$</span>
+              <span :style="{ color: 'var(--brand-primary)' }">Preço</span>
+              <span :style="{ color: 'var(--brand-text-muted)' }">R$</span>
             </div>
-            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
+            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: 'var(--brand-text)' }">
               <template v-if="!assetsLoading">
                 {{ formatCurrencyBRL(priceRange[0]) }}
-                <span :style="{ color: brand.colors.textMuted }">→</span>
+                <span :style="{ color: 'var(--brand-text-muted)' }">→</span>
                 {{ formatCurrencyBRL(priceRange[1]) }}
               </template>
               <template v-else>...</template>
@@ -133,18 +133,18 @@
           </div>
 
           <!-- Change -->
-          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
+          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: 'var(--brand-border)' }">
             <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-              <span :style="{ color: brand.colors.primary }">Variação</span>
-              <span :style="{ color: brand.colors.textMuted }">INTRADAY</span>
+              <span :style="{ color: 'var(--brand-primary)' }">Variação</span>
+              <span :style="{ color: 'var(--brand-text-muted)' }">INTRADAY</span>
             </div>
-            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
+            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: 'var(--brand-text)' }">
               <template v-if="!assetsLoading">
-                <span :style="{ color: changeRange[0] < 0 ? brand.colors.negative : brand.colors.text }">
+                <span :style="{ color: changeRange[0] < 0 ? 'var(--brand-negative)' : 'var(--brand-text)' }">
                   {{ formatPercent(changeRange[0]) }}
                 </span>
-                <span :style="{ color: brand.colors.textMuted }">→</span>
-                <span :style="{ color: changeRange[1] > 0 ? brand.colors.positive : brand.colors.text }">
+                <span :style="{ color: 'var(--brand-text-muted)' }">→</span>
+                <span :style="{ color: changeRange[1] > 0 ? 'var(--brand-positive)' : 'var(--brand-text)' }">
                   {{ formatPercent(changeRange[1]) }}
                 </span>
               </template>
@@ -155,21 +155,21 @@
 
           <!-- Group -->
           <div class="p-4">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Tipo
             </div>
             <div class="flex flex-col gap-2">
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
                 <input v-model="showStock" type="checkbox" class="accent-current" :disabled="assetsLoading || isTesouroMode || isCryptoMode" />
-                <span :style="{ color: brand.colors.text }">STOCK</span>
+                <span :style="{ color: 'var(--brand-text)' }">STOCK</span>
               </label>
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
                 <input v-model="showReit" type="checkbox" class="accent-current" :disabled="assetsLoading || isTesouroMode || isCryptoMode" />
-                <span :style="{ color: brand.colors.text }">REIT</span>
+                <span :style="{ color: 'var(--brand-text)' }">REIT</span>
               </label>
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
                 <input v-model="showBdr" type="checkbox" class="accent-current" :disabled="assetsLoading || isTesouroMode || isCryptoMode" />
-                <span :style="{ color: brand.colors.text }">BDR</span>
+                <span :style="{ color: 'var(--brand-text)' }">BDR</span>
               </label>
             </div>
           </div>
@@ -179,22 +179,22 @@
       <!-- MDI ROW: 3 columns (disabled in tesouro mode) -->
       <div
         class="border-b transition-opacity"
-        :style="{ borderColor: brand.colors.border, opacity: (isTesouroMode || isCryptoMode) ? 0.4 : 1, pointerEvents: (isTesouroMode || isCryptoMode) ? 'none' : 'auto' }"
+        :style="{ borderColor: 'var(--brand-border)', opacity: (isTesouroMode || isCryptoMode) ? 0.4 : 1, pointerEvents: (isTesouroMode || isCryptoMode) ? 'none' : 'auto' }"
       >
         <div
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <span :style="{ color: brand.colors.primary }">MDI</span>
-          <span :style="{ color: brand.colors.border }">·</span>
+          <span :style="{ color: 'var(--brand-primary)' }">MDI</span>
+          <span :style="{ color: 'var(--brand-border)' }">·</span>
           <span>MONTHLY DIVIDEND INDEX</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3">
-          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: 'var(--brand-border)' }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Ocorrências
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; MES COM MAIOR RECORRENCIA DE DIVIDENDOS
             </p>
             <USelectMenu
@@ -205,11 +205,11 @@
               size="sm"
             />
           </div>
-          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: 'var(--brand-border)' }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Mês destaque
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; MES DE MAIOR PROBABILIDADE DE PAGAMENTO
             </p>
             <USelectMenu
@@ -221,15 +221,15 @@
             />
           </div>
           <div class="p-4">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Filtro MDI
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; FILTRAR SO ATIVOS COM HISTORICO MDI
             </p>
             <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
               <input v-model="onlyWithMdi" type="checkbox" class="accent-current" />
-              <span :style="{ color: brand.colors.text }">ONLY-WITH-MDI</span>
+              <span :style="{ color: 'var(--brand-text)' }">ONLY-WITH-MDI</span>
             </label>
           </div>
         </div>
@@ -238,23 +238,23 @@
       <!-- TESOURO.MODULE: toggle + indexer picker (disabled in crypto mode) -->
       <div
         class="border-b transition-opacity"
-        :style="{ borderColor: brand.colors.border, opacity: isCryptoMode ? 0.4 : 1, pointerEvents: isCryptoMode ? 'none' : 'auto' }"
+        :style="{ borderColor: 'var(--brand-border)', opacity: isCryptoMode ? 0.4 : 1, pointerEvents: isCryptoMode ? 'none' : 'auto' }"
       >
         <div
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <span :style="{ color: brand.colors.primary }">Tesouro</span>
-          <span :style="{ color: brand.colors.border }">·</span>
+          <span :style="{ color: 'var(--brand-primary)' }">Tesouro</span>
+          <span :style="{ color: 'var(--brand-border)' }">·</span>
           <span>RENDA FIXA GOVERNAMENTAL</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3">
           <!-- Mode toggle -->
-          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: 'var(--brand-border)' }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Modo
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; EXIBIR TÍTULOS DO TESOURO DIRETO
             </p>
             <NuxtLink
@@ -262,23 +262,23 @@
               class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide"
             >
               <input type="checkbox" class="accent-current pointer-events-none" :checked="isTesouroMode" readonly />
-              <span :style="{ color: brand.colors.text }">
+              <span :style="{ color: 'var(--brand-text)' }">
                 {{ isTesouroMode ? 'TESOURO ATIVO' : 'ATIVAR TESOURO' }}
               </span>
             </NuxtLink>
           </div>
 
           <!-- Indexer picker -->
-          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: 'var(--brand-border)' }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Indexador
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; ESCOLHA O INDEXADOR
             </p>
             <div
               class="flex flex-wrap items-center gap-px"
-              :style="{ opacity: isTesouroMode ? 1 : 0.4, pointerEvents: isTesouroMode ? 'auto' : 'none', backgroundColor: brand.colors.border }"
+              :style="{ opacity: isTesouroMode ? 1 : 0.4, pointerEvents: isTesouroMode ? 'auto' : 'none', backgroundColor: 'var(--brand-border)' }"
             >
               <NuxtLink
                 v-for="chip in tesouroIndexers"
@@ -286,8 +286,8 @@
                 :to="{ path: '/search', query: { indexer: chip.key } }"
                 class="flex items-center gap-2 px-3 py-1.5 font-mono-tab text-[11px] uppercase tracking-wide transition-colors"
                 :style="{
-                  backgroundColor: tesouroIndexer === chip.key ? brand.colors.surface : brand.colors.background,
-                  color: tesouroIndexer === chip.key ? chip.color : brand.colors.textMuted,
+                  backgroundColor: tesouroIndexer === chip.key ? 'var(--brand-surface)' : 'var(--brand-background)',
+                  color: tesouroIndexer === chip.key ? chip.color : 'var(--brand-text-muted)',
                 }"
               >
                 <span>{{ chip.label }}</span>
@@ -297,10 +297,10 @@
 
           <!-- Info -->
           <div class="p-4">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Informações
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               <template v-if="isTesouroMode">
                 &gt; EXIBINDO {{ tesouroItems.length }} TÍTULOS · FILTROS DE AÇÃO DESABILITADOS
               </template>
@@ -315,23 +315,23 @@
       <!-- CRYPTO.MODULE: toggle + sort picker (disabled in tesouro mode) -->
       <div
         class="border-b transition-opacity"
-        :style="{ borderColor: brand.colors.border, opacity: isTesouroMode ? 0.4 : 1, pointerEvents: isTesouroMode ? 'none' : 'auto' }"
+        :style="{ borderColor: 'var(--brand-border)', opacity: isTesouroMode ? 0.4 : 1, pointerEvents: isTesouroMode ? 'none' : 'auto' }"
       >
         <div
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <span :style="{ color: brand.colors.primary }">Cripto</span>
-          <span :style="{ color: brand.colors.border }">·</span>
+          <span :style="{ color: 'var(--brand-primary)' }">Cripto</span>
+          <span :style="{ color: 'var(--brand-border)' }">·</span>
           <span>CRIPTOMOEDAS GLOBAIS</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3">
           <!-- Mode toggle -->
-          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: 'var(--brand-border)' }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Modo
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; EXIBIR UNIVERSO DE CRIPTOATIVOS
             </p>
             <NuxtLink
@@ -339,23 +339,23 @@
               class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide"
             >
               <input type="checkbox" class="accent-current pointer-events-none" :checked="isCryptoMode" readonly />
-              <span :style="{ color: brand.colors.text }">
+              <span :style="{ color: 'var(--brand-text)' }">
                 {{ isCryptoMode ? 'CRYPTO ATIVO' : 'ATIVAR CRYPTO' }}
               </span>
             </NuxtLink>
           </div>
 
           <!-- Sort picker -->
-          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: 'var(--brand-border)' }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Ordenação
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               &gt; ORDENAR POR
             </p>
             <div
               class="flex flex-wrap items-center gap-px"
-              :style="{ opacity: isCryptoMode ? 1 : 0.4, pointerEvents: isCryptoMode ? 'auto' : 'none', backgroundColor: brand.colors.border }"
+              :style="{ opacity: isCryptoMode ? 1 : 0.4, pointerEvents: isCryptoMode ? 'auto' : 'none', backgroundColor: 'var(--brand-border)' }"
             >
               <NuxtLink
                 v-for="opt in cryptoSortOptions"
@@ -363,8 +363,8 @@
                 :to="{ path: '/search', query: { crypto: '1', sort: opt.key } }"
                 class="flex items-center gap-2 px-3 py-1.5 font-mono-tab text-[11px] uppercase tracking-wide transition-colors"
                 :style="{
-                  backgroundColor: cryptoSort === opt.key ? brand.colors.surface : brand.colors.background,
-                  color: cryptoSort === opt.key ? brand.colors.primary : brand.colors.textMuted,
+                  backgroundColor: cryptoSort === opt.key ? 'var(--brand-surface)' : 'var(--brand-background)',
+                  color: cryptoSort === opt.key ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
                 }"
               >
                 <span>{{ opt.label }}</span>
@@ -374,10 +374,10 @@
 
           <!-- Info -->
           <div class="p-4">
-            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-primary)' }">
               Informações
             </div>
-            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               <template v-if="isCryptoMode">
                 &gt; EXIBINDO {{ cryptoItems.length }} ATIVOS · BRL · ATUALIZAÇÃO A CADA 15 MIN
               </template>
@@ -393,16 +393,16 @@
       <div>
         <div
           class="flex flex-wrap items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <span class="tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ resultsCount }} {{ isCryptoMode ? 'ATIVOS' : isTesouroMode ? 'TÍTULOS' : 'MATCHES' }}
           </span>
           <template v-if="!isTesouroMode && !isCryptoMode">
-            <span :style="{ color: brand.colors.border }">·</span>
+            <span :style="{ color: 'var(--brand-border)' }">·</span>
             <span>PAGE {{ currentPage }} / {{ totalPages }}</span>
           </template>
-          <span class="ml-auto" :style="{ color: brand.colors.textMuted }">
+          <span class="ml-auto" :style="{ color: 'var(--brand-text-muted)' }">
             {{ isCryptoMode ? 'CLICK ROW TO OPEN CRYPTO' : isTesouroMode ? 'CLICK ROW TO OPEN TITLE' : 'CLICK ROW TO OPEN ASSET' }}
           </span>
         </div>
@@ -412,8 +412,8 @@
           v-if="isCryptoMode"
           class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.textMuted,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text-muted)',
             gridTemplateColumns: '0.5fr 1fr 2fr 1fr 1fr 1.2fr',
           }"
         >
@@ -430,8 +430,8 @@
           v-else-if="isTesouroMode"
           class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.textMuted,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text-muted)',
             gridTemplateColumns: '1fr 2.5fr 1fr 1.2fr 1.2fr',
           }"
         >
@@ -447,8 +447,8 @@
           v-else
           class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.textMuted,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text-muted)',
             gridTemplateColumns: '1fr 2fr 1fr 1fr 1.2fr 1fr',
           }"
         >
@@ -468,7 +468,7 @@
               :key="`cr-sk-${i}`"
               class="grid gap-2 border-b px-4 py-2.5 font-mono-tab tabular-nums"
               :style="{
-                borderColor: brand.colors.border,
+                borderColor: 'var(--brand-border)',
                 gridTemplateColumns: '0.5fr 1fr 2fr 1fr 1fr 1.2fr',
               }"
             >
@@ -487,14 +487,14 @@
               :to="`/crypto/${coin.symbol.toLowerCase()}`"
               class="grid items-center gap-2 border-b px-4 py-2 font-mono-tab text-[12px] tabular-nums transition-colors hover:bg-[var(--row-hover)]"
               :style="{
-                borderColor: brand.colors.border,
+                borderColor: 'var(--brand-border)',
                 gridTemplateColumns: '0.5fr 1fr 2fr 1fr 1fr 1.2fr',
                 textDecoration: 'none',
-                color: brand.colors.text,
-                '--row-hover': hexWithAlpha(brand.colors.primary, '14'),
+                color: 'var(--brand-text)',
+                '--row-hover': hexWithAlpha('var(--brand-primary)', '14'),
               }"
             >
-              <span :style="{ color: brand.colors.textMuted }">{{ coin.rank ?? '—' }}</span>
+              <span :style="{ color: 'var(--brand-text-muted)' }">{{ coin.rank ?? '—' }}</span>
               <span class="flex items-center gap-2">
                 <img
                   v-if="coin.image && !failedLogos.isFailed(coin.image)"
@@ -503,11 +503,11 @@
                   class="h-5 w-5 shrink-0 object-contain"
                   @error="failedLogos.markFailed(coin.image)"
                 />
-                <span class="truncate font-medium" :style="{ color: brand.colors.primary }">
+                <span class="truncate font-medium" :style="{ color: 'var(--brand-primary)' }">
                   {{ coin.symbol }}
                 </span>
               </span>
-              <span class="truncate text-[11px] uppercase" :style="{ color: brand.colors.text }">
+              <span class="truncate text-[11px] uppercase" :style="{ color: 'var(--brand-text)' }">
                 {{ coin.name }}
               </span>
               <span class="text-right">
@@ -527,9 +527,9 @@
           <div
             v-else
             class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+            :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
           >
-            <span :style="{ color: brand.colors.primary }">Sem resultados</span>
+            <span :style="{ color: 'var(--brand-primary)' }">Sem resultados</span>
             <span>NENHUM ATIVO CRIPTO</span>
           </div>
         </template>
@@ -542,7 +542,7 @@
               :key="`td-sk-${i}`"
               class="grid gap-2 border-b px-4 py-2.5 font-mono-tab tabular-nums"
               :style="{
-                borderColor: brand.colors.border,
+                borderColor: 'var(--brand-border)',
                 gridTemplateColumns: '1fr 2.5fr 1fr 1.2fr 1.2fr',
               }"
             >
@@ -560,11 +560,11 @@
               :to="`/tesouro/${title.slug}`"
               class="grid items-center gap-2 border-b px-4 py-2 font-mono-tab text-[12px] tabular-nums transition-colors hover:bg-[var(--row-hover)]"
               :style="{
-                borderColor: brand.colors.border,
+                borderColor: 'var(--brand-border)',
                 gridTemplateColumns: '1fr 2.5fr 1fr 1.2fr 1.2fr',
                 textDecoration: 'none',
-                color: brand.colors.text,
-                '--row-hover': hexWithAlpha(brand.colors.primary, '14'),
+                color: 'var(--brand-text)',
+                '--row-hover': hexWithAlpha('var(--brand-primary)', '14'),
               }"
             >
               <span class="flex items-center">
@@ -578,13 +578,13 @@
                   {{ activeTesouroIndexer?.label }}
                 </span>
               </span>
-              <span class="truncate text-[11px] uppercase" :style="{ color: brand.colors.text }">
+              <span class="truncate text-[11px] uppercase" :style="{ color: 'var(--brand-text)' }">
                 {{ prettyTesouroName(title.name) }}
               </span>
-              <span class="text-right" :style="{ color: brand.colors.textMuted }">
+              <span class="text-right" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ formatTesouroMaturity(title.maturity_date) }}
               </span>
-              <span class="text-right font-medium" :style="{ color: brand.colors.primary }">
+              <span class="text-right font-medium" :style="{ color: 'var(--brand-primary)' }">
                 {{ formatTesouroRate(title) }}
               </span>
               <span class="text-right">
@@ -595,21 +595,21 @@
           <div
             v-else
             class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+            :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
           >
-            <span :style="{ color: brand.colors.primary }">Sem resultados</span>
+            <span :style="{ color: 'var(--brand-primary)' }">Sem resultados</span>
             <span>NENHUM TÍTULO NESTA CATEGORIA</span>
           </div>
         </template>
 
         <!-- EQUITY MODE: loading + rows -->
-        <div v-else-if="assetsLoading" class="divide-y" :style="{ '--divide-color': brand.colors.border }">
+        <div v-else-if="assetsLoading" class="divide-y" :style="{ '--divide-color': 'var(--brand-border)' }">
           <div
             v-for="i in 8"
             :key="`tsk-${i}`"
             class="grid gap-2 border-b px-4 py-2.5 font-mono-tab tabular-nums"
             :style="{
-              borderColor: brand.colors.border,
+              borderColor: 'var(--brand-border)',
               gridTemplateColumns: '1fr 2fr 1fr 1fr 1.2fr 1fr',
             }"
           >
@@ -631,11 +631,11 @@
               :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
               class="grid items-center gap-2 border-b px-4 py-2 font-mono-tab text-[12px] tabular-nums transition-colors hover:bg-[var(--row-hover)]"
               :style="{
-                borderColor: brand.colors.border,
+                borderColor: 'var(--brand-border)',
                 gridTemplateColumns: '1fr 2fr 1fr 1fr 1.2fr 1fr',
                 textDecoration: 'none',
-                color: brand.colors.text,
-                '--row-hover': hexWithAlpha(brand.colors.primary, '14'),
+                color: 'var(--brand-text)',
+                '--row-hover': hexWithAlpha('var(--brand-primary)', '14'),
               }"
             >
               <span class="flex items-center gap-2">
@@ -644,14 +644,14 @@
                   :src="getAssetLogo(asset) || ''"
                   :alt="asset.ticker || asset.stock"
                   class="h-5 w-5 shrink-0 border object-cover"
-                  :style="{ borderColor: brand.colors.border }"
+                  :style="{ borderColor: 'var(--brand-border)' }"
                   @error="markAssetLogoFailed(asset)"
                 />
-                <span class="truncate font-medium" :style="{ color: brand.colors.primary }">
+                <span class="truncate font-medium" :style="{ color: 'var(--brand-primary)' }">
                   {{ asset.ticker || asset.stock }}
                 </span>
               </span>
-              <span class="truncate text-[11px] uppercase" :style="{ color: brand.colors.text }">
+              <span class="truncate text-[11px] uppercase" :style="{ color: 'var(--brand-text)' }">
                 {{ asset.name }}
               </span>
               <span class="text-right">
@@ -666,12 +666,12 @@
               <span class="text-right">
                 {{ formatCurrencyBRL(asset.market_cap) }}
               </span>
-              <span class="flex items-center justify-end gap-1 text-right text-[10px] uppercase" :style="{ color: brand.colors.textMuted }">
+              <span class="flex items-center justify-end gap-1 text-right text-[10px] uppercase" :style="{ color: 'var(--brand-text-muted)' }">
                 <template v-if="getMdiLabels(asset.mdi).occurrenceLabel || getMdiLabels(asset.mdi).starLabel">
                   <span v-if="getMdiLabels(asset.mdi).occurrenceLabel">
                     {{ getMdiLabels(asset.mdi).occurrenceLabel }}
                   </span>
-                  <span v-if="getMdiLabels(asset.mdi).starLabel" :style="{ color: brand.colors.secondary }">
+                  <span v-if="getMdiLabels(asset.mdi).starLabel" :style="{ color: 'var(--brand-secondary)' }">
                     ★ {{ getMdiLabels(asset.mdi).starLabel }}
                   </span>
                 </template>
@@ -682,9 +682,9 @@
           <div
             v-else
             class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+            :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
           >
-            <span :style="{ color: brand.colors.primary }">Sem resultados</span>
+            <span :style="{ color: 'var(--brand-primary)' }">Sem resultados</span>
             <span>NENHUM ATIVO CASA COM OS FILTROS ATUAIS</span>
           </div>
         </template>
@@ -693,7 +693,7 @@
         <div
           v-if="!isTesouroMode && !isCryptoMode && !assetsLoading && resultsCount > itemsPerPage"
           class="flex flex-wrap items-center gap-3 px-4 py-3 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           <span>
             {{ (currentPage - 1) * itemsPerPage + 1 }}–{{
@@ -707,8 +707,8 @@
               type="button"
               class="border px-2 py-1 uppercase tracking-wide transition-colors disabled:opacity-40"
               :style="{
-                borderColor: brand.colors.border,
-                color: currentPage > 1 ? brand.colors.text : brand.colors.textMuted,
+                borderColor: 'var(--brand-border)',
+                color: currentPage > 1 ? 'var(--brand-text)' : 'var(--brand-text-muted)',
               }"
               :disabled="currentPage <= 1"
               @click="currentPage = Math.max(1, currentPage - 1)"
@@ -722,8 +722,8 @@
               type="button"
               class="border px-2 py-1 uppercase tracking-wide transition-colors disabled:opacity-40"
               :style="{
-                borderColor: brand.colors.border,
-                color: currentPage < totalPages ? brand.colors.text : brand.colors.textMuted,
+                borderColor: 'var(--brand-border)',
+                color: currentPage < totalPages ? 'var(--brand-text)' : 'var(--brand-text-muted)',
               }"
               :disabled="currentPage >= totalPages"
               @click="currentPage = Math.min(totalPages, currentPage + 1)"
@@ -769,7 +769,7 @@
             <span
               v-if="terminalVariant"
               class="font-mono-tab text-[10px] uppercase tracking-[0.22em]"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             >
               Busca
             </span>
@@ -783,7 +783,7 @@
             <h1
               class="text-3xl tracking-tight md:text-5xl"
               :class="[brand.font.headingWeight, brand.font.headingStyle]"
-              :style="{ color: brand.colors.text, fontFamily: brandFontStack }"
+              :style="{ color: 'var(--brand-text)', fontFamily: brandFontStack }"
             >
               <template v-if="terminalVariant">Busca avançada, Terminal de ativos</template>
               <template v-else>Encontre ativos com precisão</template>
@@ -791,7 +791,7 @@
             <p
               class="text-sm md:text-base"
               :class="terminalVariant ? 'font-mono-tab text-[12px] uppercase tracking-[0.12em]' : ''"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               <template v-if="terminalVariant">
                 &gt; Combine indicadores tecnicos e fundamentalistas. Acoes, FIIs, BDRs e ETFs.
@@ -805,33 +805,33 @@
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div
               class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Resultados</span>
-              <p class="mt-1 font-light tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
+              <p class="mt-1 font-light tabular-nums" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
                 {{ resultsCount }}
               </p>
-              <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Ativos nos filtros.</p>
+              <p class="text-[11px] sm:text-xs" :style="{ color: 'var(--brand-text-muted)' }">Ativos nos filtros.</p>
             </div>
             <div
               class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Filtros ativos</span>
-              <p class="mt-1 font-light tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
+              <p class="mt-1 font-light tabular-nums" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
                 {{ activeFiltersCount }}
               </p>
-              <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Modificados.</p>
+              <p class="text-[11px] sm:text-xs" :style="{ color: 'var(--brand-text-muted)' }">Modificados.</p>
             </div>
             <div
               class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Atualização</span>
-              <p class="mt-1 font-light tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
+              <p class="mt-1 font-light tabular-nums" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
                 {{ lastUpdatedLabel }}
               </p>
-              <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">API {{ brand.name }}.</p>
+              <p class="text-[11px] sm:text-xs" :style="{ color: 'var(--brand-text-muted)' }">API {{ brand.name }}.</p>
             </div>
           </div>
         </div>
@@ -840,15 +840,15 @@
       <section class="relative z-10 max-md:px-4">
         <AtomsTickerCarousel
           class="mx-auto hidden w-full brand-pill px-6 py-3 md:flex"
-          :style="{ backgroundColor: brand.colors.surface }"
-          :fade-color="brand.colors.surface"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
+          fade-color="var(--brand-surface)"
           big
           no-control
         />
         <AtomsTickerCarousel
           class="mx-auto w-full brand-pill px-3 py-2 md:hidden"
-          :style="{ backgroundColor: brand.colors.surface }"
-          :fade-color="brand.colors.surface"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
+          fade-color="var(--brand-surface)"
           no-control
         />
       </section>
@@ -865,9 +865,9 @@
         <div class="mx-auto flex w-full flex-col gap-8">
           <div
             class="rounded-4xl border p-6 shadow-lg backdrop-blur-md"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
-            <div class="flex flex-col gap-6" :style="{ color: brand.colors.text }">
+            <div class="flex flex-col gap-6" :style="{ color: 'var(--brand-text)' }">
               <div class="flex flex-col gap-2">
                 <span
                   class="text-xs font-medium uppercase tracking-[0.3em]"
@@ -877,12 +877,12 @@
                   <template v-if="terminalVariant">Filtros</template>
                   <template v-else>Filtros avançados</template>
                 </span>
-                <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">Personalize sua análise</h2>
-                <p v-if="!isTesouroMode && !isCryptoMode" class="text-sm" :style="{ color: brand.colors.textMuted }">
+                <h2 class="font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">Personalize sua análise</h2>
+                <p v-if="!isTesouroMode && !isCryptoMode" class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                   Ajuste ranges numéricos, selecione grupos de ativos e combine
                   com buscas rápidas.
                 </p>
-                <p v-else class="text-sm" :style="{ color: brand.colors.textMuted }">
+                <p v-else class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                   Filtros de equity desabilitados, você está em modo {{ isTesouroMode ? 'Tesouro' : 'Cripto' }}.
                 </p>
               </div>
@@ -906,17 +906,17 @@
                 <div
                   class="flex flex-wrap gap-1.5 rounded-xl border p-1"
                   :style="{
-                    borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
+                    borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+                    backgroundColor: `color-mix(in srgb, var(--brand-text) 3%, transparent)`,
                   }"
                 >
                   <NuxtLink
                     :to="{ path: '/search' }"
                     class="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors"
                     :style="{
-                      backgroundColor: (!isTesouroMode && !isCryptoMode) ? brand.colors.surface : 'transparent',
-                      color: (!isTesouroMode && !isCryptoMode) ? brand.colors.text : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
-                      boxShadow: (!isTesouroMode && !isCryptoMode) ? `0 1px 3px -1px color-mix(in srgb, ${brand.colors.text} 12%, transparent)` : 'none',
+                      backgroundColor: (!isTesouroMode && !isCryptoMode) ? 'var(--brand-surface)' : 'transparent',
+                      color: (!isTesouroMode && !isCryptoMode) ? 'var(--brand-text)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
+                      boxShadow: (!isTesouroMode && !isCryptoMode) ? `0 1px 3px -1px color-mix(in srgb, var(--brand-text) 12%, transparent)` : 'none',
                     }"
                   >
                     <UIcon name="i-lucide-trending-up" class="size-3.5" />
@@ -926,9 +926,9 @@
                     :to="{ path: '/search', query: { indexer: 'IPCA' } }"
                     class="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors"
                     :style="{
-                      backgroundColor: isTesouroMode ? brand.colors.surface : 'transparent',
-                      color: isTesouroMode ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
-                      boxShadow: isTesouroMode ? `0 1px 3px -1px color-mix(in srgb, ${brand.colors.primary} 28%, transparent)` : 'none',
+                      backgroundColor: isTesouroMode ? 'var(--brand-surface)' : 'transparent',
+                      color: isTesouroMode ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
+                      boxShadow: isTesouroMode ? `0 1px 3px -1px color-mix(in srgb, var(--brand-primary) 28%, transparent)` : 'none',
                     }"
                   >
                     <UIcon name="i-lucide-landmark" class="size-3.5" />
@@ -938,9 +938,9 @@
                     :to="{ path: '/search', query: { crypto: '1' } }"
                     class="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors"
                     :style="{
-                      backgroundColor: isCryptoMode ? brand.colors.surface : 'transparent',
-                      color: isCryptoMode ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
-                      boxShadow: isCryptoMode ? `0 1px 3px -1px color-mix(in srgb, ${brand.colors.primary} 28%, transparent)` : 'none',
+                      backgroundColor: isCryptoMode ? 'var(--brand-surface)' : 'transparent',
+                      color: isCryptoMode ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-text) 55%, transparent)`,
+                      boxShadow: isCryptoMode ? `0 1px 3px -1px color-mix(in srgb, var(--brand-primary) 28%, transparent)` : 'none',
                     }"
                   >
                     <UIcon name="i-lucide-bitcoin" class="size-3.5" />
@@ -968,15 +968,15 @@
                     :style="{
                       backgroundColor: tesouroIndexer === chip.key
                         ? `color-mix(in srgb, ${chip.color} 16%, transparent)`
-                        : `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`,
+                        : `color-mix(in srgb, var(--brand-text) 6%, transparent)`,
                       color: tesouroIndexer === chip.key
                         ? chip.color
-                        : `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                        : `color-mix(in srgb, var(--brand-text) 65%, transparent)`,
                     }"
                   >{{ chip.label }}</NuxtLink>
                   <span
                     class="ml-auto text-[12px]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   ><span class="font-mono-tab tabular-nums">{{ tesouroItems.length }}</span> títulos</span>
                 </div>
 
@@ -996,16 +996,16 @@
                     class="rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-colors"
                     :style="{
                       backgroundColor: cryptoSort === opt.key
-                        ? `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`
-                        : `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`,
+                        ? `color-mix(in srgb, var(--brand-primary) 16%, transparent)`
+                        : `color-mix(in srgb, var(--brand-text) 6%, transparent)`,
                       color: cryptoSort === opt.key
-                        ? brand.colors.primary
-                        : `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                        ? 'var(--brand-primary)'
+                        : `color-mix(in srgb, var(--brand-text) 65%, transparent)`,
                     }"
                   >{{ opt.label }}</NuxtLink>
                   <span
                     class="ml-auto text-[12px]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   ><span class="font-mono-tab tabular-nums">{{ cryptoItems.length }}</span> ativos</span>
                 </div>
               </div>
@@ -1024,8 +1024,8 @@
                 icon="i-lucide-search"
                 class="w-full"
                 :ui="{
-                  base: `border text-[${brand.colors.text}] placeholder:text-[${brand.colors.textMuted}]`,
-                  style: `border-color: ${brand.colors.border}; background-color: ${brand.colors.background}`,
+                  base: `border text-[var(--brand-text)] placeholder:text-[var(--brand-text-muted)]`,
+                  style: `border-color: var(--brand-border); background-color: var(--brand-background)`,
                 }"
               >
                 <template #trailing>
@@ -1039,15 +1039,15 @@
               <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
                 <div
                   class="flex flex-col gap-3 brand-card border p-4"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
                   <div
                     class="flex items-center justify-between text-sm font-medium"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >
                     <span>Market Cap (R$)</span>
                   </div>
-                  <span class="text-xs font-light" :style="{ color: brand.colors.textMuted }">
+                  <span class="text-xs font-light" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ formatCurrencyBRL(marketCapRange[0]) }} -
                     {{ formatCurrencyBRL(marketCapRange[1]) }}
                   </span>
@@ -1061,15 +1061,15 @@
 
                 <div
                   class="flex flex-col gap-3 brand-card border p-4"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
                   <div
                     class="flex items-center justify-between text-sm font-medium"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >
                     <span>Preço (R$)</span>
                   </div>
-                  <span class="text-xs font-light" :style="{ color: brand.colors.textMuted }">
+                  <span class="text-xs font-light" :style="{ color: 'var(--brand-text-muted)' }">
                     <template v-if="!assetsLoading">
                       {{ formatCurrencyBRL(priceRange[0]) }} -
                       {{ formatCurrencyBRL(priceRange[1]) }}
@@ -1087,15 +1087,15 @@
 
                 <div
                   class="flex flex-col gap-3 brand-card border p-4"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
                   <div
                     class="flex items-center justify-between text-sm font-medium"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >
                     <span>Variação (%)</span>
                   </div>
-                  <span class="text-xs font-light" :style="{ color: brand.colors.textMuted }">
+                  <span class="text-xs font-light" :style="{ color: 'var(--brand-text-muted)' }">
                     <template v-if="!assetsLoading">
                       {{ formatPercent(changeRange[0]) }} -
                       {{ formatPercent(changeRange[1]) }}
@@ -1113,9 +1113,9 @@
 
                 <div
                   class="flex flex-col gap-4 brand-card border p-4"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
-                  <div class="text-sm font-medium" :style="{ color: brand.colors.text }">Grupo</div>
+                  <div class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">Grupo</div>
                   <div class="flex flex-wrap items-center gap-3">
                     <UCheckbox
                       v-model="showStock"
@@ -1139,13 +1139,13 @@
               <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div
                   class="flex flex-col gap-4 brand-card border p-4"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-medium" :style="{ color: brand.colors.text }">
+                    <span class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
                       MDI, Ocorrência principal
                     </span>
-                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">
+                    <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                       Mostra ativos cujo mês com maior recorrência de dividendos
                       coincide com o selecionado.
                     </p>
@@ -1178,13 +1178,13 @@
 
                 <div
                   class="flex flex-col gap-4 brand-card border p-4"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-medium" :style="{ color: brand.colors.text }">
+                    <span class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
                       MDI, Maior probabilidade
                     </span>
-                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">
+                    <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                       Filtra conforme o mês com maior indicação de pagamento
                       (estrela).
                     </p>
@@ -1217,13 +1217,13 @@
 
                 <div
                   class="flex flex-col justify-between gap-4 brand-card border p-4"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-medium" :style="{ color: brand.colors.text }">
+                    <span class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
                       Dados MDI
                     </span>
-                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">
+                    <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                       Garanta que apenas ativos com histórico MDI sejam
                       exibidos.
                     </p>
@@ -1241,9 +1241,9 @@
 
           <div
             class="brand-card border p-4 shadow-lg backdrop-blur-md sm:p-6"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
-            <div class="flex flex-col gap-4" :style="{ color: brand.colors.text }">
+            <div class="flex flex-col gap-4" :style="{ color: 'var(--brand-text)' }">
               <div class="flex flex-col gap-1">
                 <span
                   class="text-[10px] font-medium uppercase tracking-wider sm:text-xs"
@@ -1253,11 +1253,11 @@
                   <template v-if="terminalVariant">Resultados</template>
                   <template v-else>Resultados</template>
                 </span>
-                <h2 class="flex items-center gap-2 font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
+                <h2 class="flex items-center gap-2 font-light" :style="{ color: 'var(--brand-text)', fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                   Ativos encontrados
-                  <IconAi class="h-5 w-5 shrink-0 sm:h-6 sm:w-6" :style="{ fill: brand.colors.secondary }" aria-hidden="true" />
+                  <IconAi class="h-5 w-5 shrink-0 sm:h-6 sm:w-6" :style="{ fill: 'var(--brand-secondary)' }" aria-hidden="true" />
                 </h2>
-                <p class="text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
+                <p class="text-xs sm:text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                   Toque no card para ver detalhes.
                 </p>
               </div>
@@ -1285,7 +1285,7 @@
                     :key="asset.ticker || asset.stock"
                     :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
                     class="group flex flex-col gap-3 brand-card border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] active:scale-[0.99] sm:gap-4 sm:p-5"
-                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                   >
                     <div class="flex items-center justify-between gap-2">
                       <div class="flex min-w-0 flex-1 items-center gap-3">
@@ -1294,34 +1294,34 @@
                           :src="getAssetLogo(asset) || ''"
                           :alt="asset.ticker || asset.stock"
                           class="h-10 w-10 shrink-0 rounded-xl border object-cover sm:h-11 sm:w-11"
-                          :style="{ borderColor: brand.colors.border }"
+                          :style="{ borderColor: 'var(--brand-border)' }"
                           @error="markAssetLogoFailed(asset)"
                         />
                         <BrandLogo
                           v-else
                           variant="icon"
                           class="h-10 w-10 shrink-0 rounded-xl border p-2 sm:h-11 sm:w-11"
-                          :style="{ borderColor: brand.colors.border }"
+                          :style="{ borderColor: 'var(--brand-border)' }"
                         />
                         <div class="min-w-0 flex-1">
-                          <p class="truncate font-medium" :style="{ color: brand.colors.text }">
+                          <p class="truncate font-medium" :style="{ color: 'var(--brand-text)' }">
                             {{ asset.ticker || asset.stock }}
                           </p>
-                          <p class="truncate text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
+                          <p class="truncate text-xs sm:text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                             {{ asset.name }}
                           </p>
                         </div>
                       </div>
                       <span
                         class="shrink-0 brand-card-sm px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide sm:text-xs"
-                        :style="{ backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
+                        :style="{ backgroundColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
                       >
                         {{ getAssetTypeLabel(asset.type) }}
                       </span>
                     </div>
 
                     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
-                      <span class="font-medium" :style="{ color: brand.colors.text }">
+                      <span class="font-medium" :style="{ color: 'var(--brand-text)' }">
                         {{ formatCurrencyBRL(getAssetPrice(asset)) }}
                       </span>
                       <span
@@ -1343,21 +1343,21 @@
                       <span
                         v-if="getMdiLabels(asset.mdi).occurrenceLabel"
                         class="brand-card-sm px-2 py-1 text-[10px] sm:text-xs"
-                        :style="{ backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
+                        :style="{ backgroundColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
                       >
                         {{ getMdiLabels(asset.mdi).occurrenceLabel }}
                       </span>
                       <span
                         v-if="getMdiLabels(asset.mdi).starLabel"
                         class="inline-flex items-center gap-1 brand-card-sm px-2 py-1 text-[10px] sm:text-xs"
-                        :style="{ color: brand.colors.secondary, backgroundColor: hexWithAlpha(brand.colors.secondary, '1A') }"
+                        :style="{ color: 'var(--brand-secondary)', backgroundColor: hexWithAlpha('var(--brand-secondary)', '1A') }"
                       >
-                        <IconAi class="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" :style="{ fill: brand.colors.secondary }" aria-hidden="true" />
+                        <IconAi class="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" :style="{ fill: 'var(--brand-secondary)' }" aria-hidden="true" />
                         {{ getMdiLabels(asset.mdi).starLabel }}
                       </span>
                     </div>
 
-                    <p class="mt-auto text-[10px] sm:text-xs" :style="{ color: brand.colors.textMuted }">
+                    <p class="mt-auto text-[10px] sm:text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                       MC {{ formatCurrencyBRL(asset.market_cap) }}
                     </p>
                   </NuxtLink>
@@ -1379,7 +1379,7 @@
                     :key="item.slug"
                     :to="`/tesouro/${item.slug}`"
                     class="group flex flex-col gap-3 brand-card border p-4 transition-[transform,opacity,box-shadow,background-color,border-color] active:scale-[0.99] sm:gap-4 sm:p-5"
-                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                   >
                     <div class="flex items-start justify-between gap-2">
                       <div class="min-w-0 flex-1">
@@ -1389,30 +1389,30 @@
                         >{{ item.indexer || 'TESOURO' }}</span>
                         <p
                           class="mt-0.5 line-clamp-2 text-[14px] font-medium leading-snug"
-                          :style="{ color: brand.colors.text }"
+                          :style="{ color: 'var(--brand-text)' }"
                         >{{ item.name }}</p>
                       </div>
                     </div>
 
-                    <div class="flex items-baseline justify-between gap-2 border-t pt-3" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)` }">
+                    <div class="flex items-baseline justify-between gap-2 border-t pt-3" :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)` }">
                       <div class="flex flex-col gap-0.5">
                         <span
                           class="font-mono-tab text-[10px] uppercase"
-                          :style="{ letterSpacing: '0.14em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+                          :style="{ letterSpacing: '0.14em', color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
                         >Taxa atual</span>
                         <span
                           class="font-mono-tab text-[15px] font-medium tabular-nums"
-                          :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+                          :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
                         >{{ item.rate || '—' }}</span>
                       </div>
                       <div class="flex flex-col items-end gap-0.5">
                         <span
                           class="font-mono-tab text-[10px] uppercase"
-                          :style="{ letterSpacing: '0.14em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+                          :style="{ letterSpacing: '0.14em', color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
                         >Vencimento</span>
                         <span
                           class="font-mono-tab text-[12px] tabular-nums"
-                          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 75%, transparent)` }"
+                          :style="{ color: `color-mix(in srgb, var(--brand-text) 75%, transparent)` }"
                         >{{ formatTesouroMaturity(item.maturity_date) }}</span>
                       </div>
                     </div>
@@ -1420,8 +1420,8 @@
                     <p
                       v-if="item.price_buy"
                       class="mt-auto text-[11px]"
-                      :style="{ color: brand.colors.textMuted }"
-                    >Preço unitário <span class="font-mono-tab tabular-nums" :style="{ color: brand.colors.text }">{{ formatCurrencyBRL(item.price_buy) }}</span></p>
+                      :style="{ color: 'var(--brand-text-muted)' }"
+                    >Preço unitário <span class="font-mono-tab tabular-nums" :style="{ color: 'var(--brand-text)' }">{{ formatCurrencyBRL(item.price_buy) }}</span></p>
                   </NuxtLink>
                 </div>
 
@@ -1438,7 +1438,7 @@
                     :key="item.id"
                     :to="`/asset/${item.symbol.toLowerCase()}`"
                     class="group flex flex-col gap-3 brand-card border p-4 transition-[transform,opacity,box-shadow,background-color,border-color] active:scale-[0.99] sm:gap-4 sm:p-5"
-                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
                   >
                     <div class="flex items-center justify-between gap-2">
                       <div class="flex min-w-0 flex-1 items-center gap-3">
@@ -1447,22 +1447,22 @@
                           :src="item.image"
                           :alt="item.symbol"
                           class="h-10 w-10 shrink-0 rounded-full border object-cover sm:h-11 sm:w-11"
-                          :style="{ borderColor: brand.colors.border }"
+                          :style="{ borderColor: 'var(--brand-border)' }"
                         />
                         <div
                           v-else
                           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border sm:h-11 sm:w-11"
-                          :style="{ borderColor: brand.colors.border, backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+                          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
                         >
-                          <span class="font-mono-tab text-[11px] font-medium" :style="{ color: brand.colors.textMuted }">
+                          <span class="font-mono-tab text-[11px] font-medium" :style="{ color: 'var(--brand-text-muted)' }">
                             {{ item.symbol.slice(0, 3) }}
                           </span>
                         </div>
                         <div class="min-w-0 flex-1">
-                          <p class="truncate font-medium" :style="{ color: brand.colors.text }">
+                          <p class="truncate font-medium" :style="{ color: 'var(--brand-text)' }">
                             {{ item.symbol }}
                           </p>
-                          <p class="truncate text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
+                          <p class="truncate text-xs sm:text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                             {{ item.name }}
                           </p>
                         </div>
@@ -1470,12 +1470,12 @@
                       <span
                         v-if="item.rank"
                         class="shrink-0 brand-card-sm px-2 py-0.5 font-mono-tab text-[10px] font-medium tabular-nums"
-                        :style="{ letterSpacing: '0.05em', backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
+                        :style="{ letterSpacing: '0.05em', backgroundColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
                       >#{{ item.rank }}</span>
                     </div>
 
                     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
-                      <span class="font-medium tabular-nums" :style="{ color: brand.colors.text }">
+                      <span class="font-medium tabular-nums" :style="{ color: 'var(--brand-text)' }">
                         {{ formatCryptoPrice(item.price_brl) }}
                       </span>
                       <span
@@ -1491,7 +1491,7 @@
                       </span>
                     </div>
 
-                    <p class="mt-auto text-[10px] sm:text-xs" :style="{ color: brand.colors.textMuted }">
+                    <p class="mt-auto text-[10px] sm:text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                       MC <span class="font-mono-tab tabular-nums">{{ formatCurrencyBRL(item.market_cap_brl ?? 0) }}</span>
                     </p>
                   </NuxtLink>
@@ -1501,7 +1501,7 @@
                 <div
                   v-else
                   class="brand-card border py-12 text-center text-sm sm:py-16"
-                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
+                  :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text-muted)' }"
                 >
                   <template v-if="isTesouroMode">
                     Nenhum título do Tesouro Direto disponível para o indexador <strong>{{ tesouroIndexer }}</strong>.
@@ -1519,7 +1519,7 @@
             <div
               v-if="!assetsLoading && resultsCount > itemsPerPage"
               class="mt-6 flex justify-center border-t pt-4"
-              :style="{ borderColor: brand.colors.border }"
+              :style="{ borderColor: 'var(--brand-border)' }"
             >
               <UPagination
                 :page="currentPage"
@@ -1579,18 +1579,18 @@ const editorialVariant = computed(() =>
   ),
 )
 
-const bgGlowPrimary = computed(() => hexWithAlpha(brand.colors.primary, '1A')) // ~10%
-const bgGlowSecondary = computed(() => hexWithAlpha(brand.colors.secondary, '14')) // ~8%
-const secondaryMuted = computed(() => hexWithAlpha(brand.colors.secondary, 'B3')) // ~70%
-const primaryStrong = computed(() => brand.colors.primary)
-const positiveColor = computed(() => brand.colors.positive)
-const negativeColor = computed(() => brand.colors.negative)
+const bgGlowPrimary = computed(() => `color-mix(in srgb, var(--brand-primary) 10%, transparent)`)
+const bgGlowSecondary = computed(() => `color-mix(in srgb, var(--brand-secondary) 8%, transparent)`)
+const secondaryMuted = computed(() => `color-mix(in srgb, var(--brand-secondary) 70%, transparent)`)
+const primaryStrong = computed(() => 'var(--brand-primary)')
+const positiveColor = computed(() => 'var(--brand-positive)')
+const negativeColor = computed(() => 'var(--brand-negative)')
 const brandFontStack = computed(() => {
   const f = brand.font?.family || 'Inter'
   return `'${f}', system-ui, sans-serif`
 })
 const terminalGridBg = computed(() => {
-  const c = hexWithAlpha(brand.colors.border, '55')
+  const c = `color-mix(in srgb, var(--brand-border) 33%, transparent)`
   return `linear-gradient(${c} 1px, transparent 1px), linear-gradient(90deg, ${c} 1px, transparent 1px)`
 })
 
@@ -2057,10 +2057,10 @@ const filteredData = computed(() => {
 const { listTesouros: loadTesouros } = useTesouroService()
 
 const tesouroIndexers = computed(() => [
-  { key: 'IPCA', label: 'IPCA+', title: 'Indexados à inflação', color: brand.colors.primary },
-  { key: 'SELIC', label: 'SELIC', title: 'Pós-fixados', color: brand.colors.positive },
-  { key: 'PREFIXADO', label: 'PRÉ', title: 'Taxa fixa', color: brand.colors.text },
-  { key: 'IGPM', label: 'IGPM+', title: 'Indexados ao IGPM', color: brand.colors.textMuted },
+  { key: 'IPCA', label: 'IPCA+', title: 'Indexados à inflação', color: 'var(--brand-primary)' },
+  { key: 'SELIC', label: 'SELIC', title: 'Pós-fixados', color: 'var(--brand-positive)' },
+  { key: 'PREFIXADO', label: 'PRÉ', title: 'Taxa fixa', color: 'var(--brand-text)' },
+  { key: 'IGPM', label: 'IGPM+', title: 'Indexados ao IGPM', color: 'var(--brand-text-muted)' },
 ])
 
 const tesouroIndexer = computed<string | null>(() => {
@@ -2119,10 +2119,10 @@ function formatTesouroMaturity(iso: string | null): string {
 // indexador for desconhecido, fallback no textMuted (caso a API
 // um dia retornar algo fora do enum).
 function getTesouroIndexerColor(indexer: string | null): string {
-  if (!indexer) return brand.colors.textMuted
+  if (!indexer) return 'var(--brand-text-muted)'
   const upper = indexer.toUpperCase()
   const found = tesouroIndexers.value.find((t) => t.key === upper || upper.startsWith(t.key))
-  return found?.color ?? brand.colors.textMuted
+  return found?.color ?? 'var(--brand-text-muted)'
 }
 
 // Crypto price formatter — diferente do BRL padrao porque preco de

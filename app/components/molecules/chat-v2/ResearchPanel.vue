@@ -53,7 +53,7 @@
         <span
           class="inline-flex size-2 shrink-0 rounded-full"
           :style="{
-            backgroundColor: anyRunning ? brand.colors.primary : 'var(--brand-text-muted)',
+            backgroundColor: anyRunning ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
           }"
           aria-hidden="true"
         />

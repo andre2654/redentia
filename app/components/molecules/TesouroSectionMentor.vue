@@ -9,13 +9,13 @@
   <section class="tesouro-mentor pt-12 md:pt-16">
     <header class="mb-8 flex items-end justify-between gap-6 px-6 md:px-0">
       <div class="flex flex-col gap-3">
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           CAPÍTULO VII · A BASE DO PATRIMÔNIO
         </span>
         <h2
           class="font-mentor-display"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
           }"
         >
@@ -23,12 +23,12 @@
         </h2>
         <p
           class="max-w-xl text-base leading-relaxed"
-          :style="{ color: `${brand.colors.text}B3` }"
+          :style="{ color: 'color-mix(in srgb, var(--brand-text) 70%, transparent)' }"
         >
           Renda fixa pública: o alicerce do método ARCA. Atualização diária, sem ruído.
         </p>
       </div>
-      <hr class="mentor-rule hidden flex-1 md:block" :style="{ backgroundColor: brand.colors.primary, opacity: 0.6 }" />
+      <hr class="mentor-rule hidden flex-1 md:block" :style="{ backgroundColor: 'var(--brand-primary)', opacity: 0.6 }" />
     </header>
 
     <UCarousel
@@ -53,7 +53,7 @@
           <h3
             class="font-mentor-display mt-2"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(1.5rem, 2.4vw, 2rem)',
               lineHeight: '0.92',
             }"
@@ -68,18 +68,18 @@
             :key="title.slug"
             :to="`/tesouro/${title.slug}`"
             class="group flex items-center justify-between gap-3 border-b py-3 transition-colors"
-            :style="{ borderColor: `${brand.colors.text}1A` }"
-            @mouseenter="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = `${brand.colors.primary}0D`)"
+            :style="{ borderColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
+            @mouseenter="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--brand-primary) 5%, transparent)')"
             @mouseleave="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')"
           >
             <div class="flex min-w-0 flex-1 flex-col">
-              <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}80`, letterSpacing: '0.12em' }">
+              <span class="font-mentor-eyebrow" :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)', letterSpacing: '0.12em' }">
                 VENC {{ formatMaturity(title.maturity_date) }}
               </span>
               <span
                 class="font-mentor-display mt-1 truncate"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(1rem, 1.2vw, 1.15rem)',
                   lineHeight: '1',
                   letterSpacing: '-0.01em',
@@ -99,7 +99,7 @@
               >
                 {{ formatRate(title) }}
               </span>
-              <span class="tabular-nums mt-0.5 text-[11px]" :style="{ color: `${brand.colors.text}80` }">
+              <span class="tabular-nums mt-0.5 text-[11px]" :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }">
                 {{ formatMoney(title.price_buy) }}
               </span>
             </div>
@@ -108,7 +108,7 @@
           <div
             v-if="!item.items.length"
             class="py-6 text-center text-[12px]"
-            :style="{ color: `${brand.colors.text}80` }"
+            :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
           >
             Sem títulos disponíveis
           </div>
@@ -118,7 +118,7 @@
           <NuxtLink
             :to="{ path: '/search', query: item.query }"
             class="font-mentor-eyebrow inline-flex items-center gap-2 transition-opacity hover:opacity-70"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             VER QUADRO COMPLETO
             <span aria-hidden="true">→</span>

@@ -198,7 +198,7 @@
           <button
             type="button"
             class="fixed inset-0"
-            :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
+            :style="{ backgroundColor: 'var(--shadow-ambient)' }"
             aria-label="Fechar detalhe"
             @click="closeDetail"
           />

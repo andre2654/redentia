@@ -1694,7 +1694,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   flex-shrink: 0;
 }
 
@@ -1771,7 +1771,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 .aud-tenant-select { margin-top: 4px; }
 
@@ -1844,7 +1844,7 @@ const Field = defineComponent({
 }
 .aud-segmented__btn--active {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 
@@ -2633,7 +2633,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* Image input */
@@ -2879,7 +2879,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   flex-shrink: 0;
 }
 
@@ -2896,7 +2896,7 @@ const Field = defineComponent({
   border-radius: 4px;
   border: 1.5px solid color-mix(in srgb, var(--brand-text) 25%, transparent);
   background: transparent;
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   flex-shrink: 0;
   transition: background 150ms, border-color 150ms;
 }
@@ -3067,7 +3067,7 @@ const Field = defineComponent({
   padding: 8px 14px;
   border-radius: 9px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-family: var(--brand-font);
   font-size: 12.5px;
   font-weight: 600;

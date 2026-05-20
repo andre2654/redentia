@@ -20,7 +20,7 @@
         v-for="req in requirements"
         :key="req.text"
         class="flex items-center gap-2"
-        :style="{ color: req.met ? brand.colors.primary : 'var(--brand-text-muted)' }"
+        :style="{ color: req.met ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
       >
         <UIcon
           :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"

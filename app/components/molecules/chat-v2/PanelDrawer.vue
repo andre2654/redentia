@@ -37,7 +37,7 @@
         type="button"
         class="audit-backdrop fixed inset-0 transition-opacity duration-200"
         :style="{
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--shadow-ambient)',
           opacity: backdropMounted ? 1 : 0,
           pointerEvents: openGuard ? 'none' : 'auto',
         }"
@@ -959,7 +959,6 @@ const emit = defineEmits<{
   'chat-prompt': [text: string]
 }>()
 
-const brand = useBrand()
 const goalsState = useGoals()
 const decisionsState = useDecisions()
 const watchlistState = useWatchlist()
@@ -1089,21 +1088,21 @@ function setTab(id: SectionId) {
 // ---- Style helpers ----------------------------------------------
 
 const panelStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  color: brand.colors.text,
+  backgroundColor: 'var(--brand-surface)',
+  color: 'var(--brand-text)',
   paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-  borderLeft: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  borderLeft: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
   boxShadow: '-16px 0 40px -16px rgba(0, 0, 0, 0.45)',
 }))
 
 function sideNavStyle(id: SectionId): Record<string, string> {
   const isActive = activeTab.value === id
   return {
-    color: isActive ? brand.colors.text : brand.colors.textMuted,
+    color: isActive ? 'var(--brand-text)' : 'var(--brand-text-muted)',
     backgroundColor: isActive
-      ? `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`
+      ? `color-mix(in srgb, var(--brand-primary) 8%, transparent)`
       : 'transparent',
-    borderLeft: isActive ? `2px solid ${brand.colors.primary}` : '2px solid transparent',
+    borderLeft: isActive ? `2px solid var(--brand-primary)` : '2px solid transparent',
     fontWeight: isActive ? '500' : '400',
   }
 }
@@ -1111,19 +1110,19 @@ function sideNavStyle(id: SectionId): Record<string, string> {
 function mobileNavStyle(id: SectionId): Record<string, string> {
   const isActive = activeTab.value === id
   return {
-    color: isActive ? brand.colors.text : brand.colors.textMuted,
+    color: isActive ? 'var(--brand-text)' : 'var(--brand-text-muted)',
     backgroundColor: isActive
-      ? `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`
+      ? `color-mix(in srgb, var(--brand-primary) 12%, transparent)`
       : 'transparent',
-    border: `1px solid color-mix(in srgb, ${brand.colors.border} ${isActive ? 50 : 30}%, transparent)`,
+    border: `1px solid color-mix(in srgb, var(--brand-border) ${isActive ? 50 : 30}%, transparent)`,
     fontWeight: isActive ? '500' : '400',
   }
 }
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 3%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 
 const emptyStyle = computed(() => ({
@@ -1134,16 +1133,16 @@ const emptyStyle = computed(() => ({
   gap: '10px',
   padding: '40px 24px 36px',
   borderRadius: '16px',
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 2%, transparent)`,
-  border: `1px dashed color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 2%, transparent)`,
+  border: `1px dashed color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 const ctaStyle = computed(() => ({
   marginTop: '4px',
   padding: '8px 18px',
   borderRadius: '999px',
-  backgroundColor: brand.colors.primary,
-  color: brand.colors.background,
+  backgroundColor: 'var(--brand-primary)',
+  color: 'var(--brand-background)',
   fontSize: '12.5px',
   fontWeight: '500',
   border: 'none',
@@ -1151,8 +1150,8 @@ const ctaStyle = computed(() => ({
 }))
 
 const memoryGroupStyle = computed(() => ({
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 2%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 2%, transparent)`,
 }))
 
 const hitRatePillStyle = computed(() => ({
@@ -1161,15 +1160,15 @@ const hitRatePillStyle = computed(() => ({
   fontSize: '11px',
   fontFamily: 'var(--font-mono-tab, monospace)',
   fontVariantNumeric: 'tabular-nums',
-  color: brand.colors.text,
+  color: 'var(--brand-text)',
   padding: '4px 10px',
   borderRadius: '999px',
-  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-primary) 10%, transparent)`,
 }))
 
 const primaryActionStyle = computed(() => ({
-  color: brand.colors.primary,
-  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+  color: 'var(--brand-primary)',
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
   borderRadius: '999px',
   padding: '4px 10px',
   backgroundColor: 'transparent',
@@ -1181,9 +1180,9 @@ function actionPillStyle(primary: boolean): Record<string, string> {
   // tinted background + brand text; default = neutral border-only.
   if (primary) {
     return {
-      backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
-      border: `1px solid color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
-      color: brand.colors.primary,
+      backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
+      border: `1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+      color: 'var(--brand-primary)',
       padding: '4px 10px',
       borderRadius: '999px',
       fontSize: '11px',
@@ -1196,8 +1195,8 @@ function actionPillStyle(primary: boolean): Record<string, string> {
   }
   return {
     backgroundColor: 'transparent',
-    border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-    color: brand.colors.textMuted,
+    border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+    color: 'var(--brand-text-muted)',
     padding: '4px 10px',
     borderRadius: '999px',
     fontSize: '11px',
@@ -1211,10 +1210,10 @@ function actionPillStyle(primary: boolean): Record<string, string> {
 function filterPillStyle(active: boolean): Record<string, string> {
   return {
     backgroundColor: active
-      ? `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`
+      ? `color-mix(in srgb, var(--brand-primary) 14%, transparent)`
       : 'transparent',
-    border: `1px solid color-mix(in srgb, ${brand.colors.border} ${active ? 55 : 35}%, transparent)`,
-    color: active ? brand.colors.text : brand.colors.textMuted,
+    border: `1px solid color-mix(in srgb, var(--brand-border) ${active ? 55 : 35}%, transparent)`,
+    color: active ? 'var(--brand-text)' : 'var(--brand-text-muted)',
     padding: '4px 10px',
     borderRadius: '999px',
     fontSize: '11.5px',
@@ -1226,11 +1225,11 @@ function filterPillStyle(active: boolean): Record<string, string> {
 // ---- Goals helpers ----------------------------------------------
 
 function goalStatusColor(status: GoalStatus | null | string): string {
-  if (status === 'hit') return brand.colors.positive ?? brand.colors.primary
-  if (status === 'on_track') return brand.colors.primary
-  if (status === 'at_risk') return brand.colors.warning ?? brand.colors.primary
-  if (status === 'unfeasible') return brand.colors.negative
-  return brand.colors.textMuted
+  if (status === 'hit') return 'var(--brand-positive)'
+  if (status === 'on_track') return 'var(--brand-primary)'
+  if (status === 'at_risk') return 'var(--brand-warning)'
+  if (status === 'unfeasible') return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 }
 function goalStatusLabel(status: GoalStatus | null | string): string {
   if (status === 'hit') return 'Atingida'
@@ -1293,10 +1292,10 @@ function decisionTypeLabel(t: DecisionType): string {
 }
 
 function decisionStatusColor(status: string): string {
-  if (status === 'pending') return brand.colors.primary
-  if (status === 'executed') return brand.colors.positive ?? brand.colors.primary
-  if (status === 'cancelled' || status === 'expired') return brand.colors.negative
-  return brand.colors.textMuted
+  if (status === 'pending') return 'var(--brand-primary)'
+  if (status === 'executed') return 'var(--brand-positive)'
+  if (status === 'cancelled' || status === 'expired') return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 }
 
 function parseDecisionPrice(raw: string | null | undefined): number | null {
@@ -1463,9 +1462,9 @@ const activityGroups = computed<ActivityGroup[]>(() => {
 })
 
 function activityKindColor(k: ActivityKind): string {
-  if (k === 'alert_fired') return brand.colors.primary
-  if (k === 'decision_created' || k === 'decision_updated') return brand.colors.primary
-  return brand.colors.textMuted
+  if (k === 'alert_fired') return 'var(--brand-primary)'
+  if (k === 'decision_created' || k === 'decision_updated') return 'var(--brand-primary)'
+  return 'var(--brand-text-muted)'
 }
 
 // ---- Smart-action prompts ---------------------------------------
@@ -1617,9 +1616,9 @@ function askAiToSuggestWatchlist() {
 }
 
 const manualInputStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 4%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 4%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+  color: 'var(--brand-text)',
   fontSize: '12.5px',
   padding: '6px 10px',
   borderRadius: '8px',

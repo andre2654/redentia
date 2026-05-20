@@ -27,7 +27,7 @@
 
         <h3>Classificação por Tamanho</h3>
         <div class="space-y-3">
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">
               Mega Caps (> R$ 100 bilhões)
             </h4>
@@ -35,13 +35,13 @@
               Vale, Petrobras, Itaú - Gigantes consolidadas
             </p>
           </div>
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">Large Caps (R$ 10-100 bi)</h4>
             <p class="text-sm">
               Weg, Localiza, Magazine Luiza - Grandes empresas
             </p>
           </div>
-          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <h4 class="mb-1">Mid Caps (R$ 2-10 bi)</h4>
             <p class="text-sm">
               Empresas médias em crescimento
@@ -63,7 +63,7 @@
           Por que Investir em Small Caps?
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
               <h4>Alto Potencial de Crescimento</h4>
@@ -74,7 +74,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-target" class="text-primary h-5 w-5" />
               <h4>Pouca Cobertura de Analistas</h4>
@@ -85,7 +85,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-award" class="text-primary h-5 w-5" />
               <h4>Futuras Blue Chips</h4>
@@ -96,7 +96,7 @@
             </p>
           </div>
 
-          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+          <div class="brand-card p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-shield" class="text-primary h-5 w-5" />
               <h4>Menor Competição</h4>
@@ -111,7 +111,7 @@
         <h3>Riscos das Small Caps</h3>
         <div
           class="brand-card p-5"
-          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
+          :style="{ borderColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + ('var(--brand-warning)' || 'var(--brand-warning)') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
         >
           <ul class="list-disc space-y-2 pl-6">
             <li>
@@ -135,7 +135,7 @@
               recessões
             </li>
           </ul>
-          <p class="mt-4" :style="{ color: brand.colors.warning || '#f59e0b' }">
+          <p class="mt-4" :style="{ color: 'var(--brand-warning)' || 'var(--brand-warning)' }">
             ⚠️ Small caps NÃO são para iniciantes. Exigem mais conhecimento e
             tolerância a risco.
           </p>
@@ -225,7 +225,7 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--brand-border)' }">
         <NuxtLink
           to="/search?mc_max=2000000000&group=stocks"
           class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"

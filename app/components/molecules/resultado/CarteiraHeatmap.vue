@@ -21,7 +21,7 @@
       <div class="heatmap__head-right">
         <!-- Legenda compacta: menos / mais -->
         <div class="heatmap__legend"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
+          :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }">
           <span>Pior</span>
           <div
             v-for="(c, i) in legendCells"
@@ -38,7 +38,7 @@
       <UIcon
         name="i-lucide-calendar-x"
         class="size-6 opacity-40"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       />
       <span class="empty__text">Sem operações neste período.</span>
     </div>
@@ -54,7 +54,7 @@
             :style="{
               gridColumn: 1,
               gridRow: idx + 2,
-              color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+              color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
             }"
           >{{ label }}</div>
         </template>
@@ -66,7 +66,7 @@
           v-for="(label, idx) in monthLabels"
           :key="`m-${idx}`"
           class="heatmap__month"
-          :style="{ gridColumn: label.col, color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          :style="{ gridColumn: label.col, color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
         >{{ label.text }}</div>
 
         <!-- Celulas dos dias. Renderizadas em ordem (semana, weekday)
@@ -85,7 +85,7 @@
             gridColumn: cell.col,
             gridRow: cell.row,
             backgroundColor: cell.color,
-            outlineColor: cell.isToday ? brand.colors.primary : cell.outline,
+            outlineColor: cell.isToday ? 'var(--brand-primary)' : cell.outline,
             outlineWidth: cell.isToday ? '2px' : '1px',
             color: cell.textColor,
           }"
@@ -115,25 +115,25 @@
         <span class="heatmap__stat-label">Melhor dia</span>
         <span
           class="heatmap__stat-value tabular-nums"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         >{{ bestDayLabel }}</span>
       </span>
       <span class="heatmap__stat">
         <span class="heatmap__stat-label">Pior dia</span>
         <span
           class="heatmap__stat-value tabular-nums"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >{{ worstDayLabel }}</span>
       </span>
       <span class="heatmap__stat">
         <span class="heatmap__stat-label">Dias no azul</span>
-        <span class="heatmap__stat-value tabular-nums" :style="{ color: brand.colors.text }">
+        <span class="heatmap__stat-value tabular-nums" :style="{ color: 'var(--brand-text)' }">
           {{ positiveDays }} / {{ totalDays }}
         </span>
       </span>
       <span v-if="size === 'huge' && longestStreak > 0" class="heatmap__stat">
         <span class="heatmap__stat-label">Maior sequência verde</span>
-        <span class="heatmap__stat-value tabular-nums" :style="{ color: brand.colors.positive }">
+        <span class="heatmap__stat-value tabular-nums" :style="{ color: 'var(--brand-positive)' }">
           {{ longestStreak }} {{ longestStreak === 1 ? 'dia' : 'dias' }}
         </span>
       </span>
@@ -166,18 +166,18 @@
               <div class="flex flex-col gap-1.5 min-w-0">
                 <span
                   class="heatmap-drill__eyebrow"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                 >Drill-down</span>
                 <h3
                   class="heatmap-drill__title"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ drilldownDateLabel }}</h3>
               </div>
               <button
                 type="button"
                 class="heatmap-drill__close"
                 aria-label="Fechar"
-                :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+                :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
                 @click="closeDrilldown"
               >
                 <UIcon name="i-lucide-x" class="size-4" />
@@ -200,7 +200,7 @@
                 </span>
                 <span
                   class="heatmap-drill__total-value tabular-nums"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ drilldownTrades.length }}</span>
               </div>
             </div>
@@ -210,15 +210,15 @@
                 v-for="t in drilldownTrades"
                 :key="t.id"
                 class="heatmap-drill__item"
-                :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)` }"
+                :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
               >
                 <span
                   class="heatmap-drill__item-time tabular-nums"
-                  :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+                  :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
                 >{{ formatDrilldownTime(t.closedAt ?? t.openedAt) }}</span>
                 <span
                   class="heatmap-drill__item-ticker tabular-nums"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ t.ticker }}</span>
                 <span
                   class="heatmap-drill__item-kind"
@@ -307,12 +307,12 @@ const maxAbs = computed(() =>
 )
 
 function colorFor(pnl: number | null): string {
-  if (pnl == null) return `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`
-  if (pnl === 0) return `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`
+  if (pnl == null) return `color-mix(in srgb, var(--brand-text) 6%, transparent)`
+  if (pnl === 0) return `color-mix(in srgb, var(--brand-text) 8%, transparent)`
   const intensity = Math.min(1, Math.abs(pnl) / maxAbs.value)
   const pct = 18 + intensity * 70 // 18% → 88%
-  const base = pnl > 0 ? brand.colors.positive : brand.colors.negative
-  return `color-mix(in srgb, ${base} ${pct}%, ${brand.colors.surface})`
+  const base = pnl > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
+  return `color-mix(in srgb, ${base} ${pct}%, var(--brand-surface))`
 }
 
 // Cor do texto (numero do dia) por intensidade. Quando ha trade pesado
@@ -320,14 +320,14 @@ function colorFor(pnl: number | null): string {
 // muted (mesma cor de label).
 function textColorFor(pnl: number | null): string {
   if (pnl == null || pnl === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 35%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 35%, transparent)`
   }
   const intensity = Math.abs(pnl) / maxAbs.value
   if (intensity > 0.5) {
     // Cores fortes: usa branco em saturacao alta (legivel sobre verde/vermelho)
     return '#ffffff'
   }
-  return `color-mix(in srgb, ${brand.colors.text} 70%, transparent)`
+  return `color-mix(in srgb, var(--brand-text) 70%, transparent)`
 }
 
 interface Cell {
@@ -436,9 +436,9 @@ function formatDrilldownTime(iso: string): string {
 
 function drillResultColor(amount: number | null | undefined): string {
   if (amount == null || amount === 0) {
-    return `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`
+    return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
   }
-  return amount > 0 ? brand.colors.positive : brand.colors.negative
+  return amount > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 function drillFormatResult(amount: number | null | undefined): string {
@@ -453,9 +453,9 @@ function drillKindLabel(kind: string): string {
 }
 
 const drillCardStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 24px 60px -28px color-mix(in srgb, ${brand.colors.primary} 40%, transparent), 0 12px 30px -16px rgba(0, 0, 0, 0.32)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 24px 60px -28px color-mix(in srgb, var(--brand-primary) 40%, transparent), 0 12px 30px -16px rgba(0, 0, 0, 0.32)`,
 }))
 
 const cells = computed<Cell[]>(() => {
@@ -480,7 +480,7 @@ const cells = computed<Cell[]>(() => {
       row,
       color: colorFor(pnl),
       outline: point && point.pnl !== 0
-        ? `color-mix(in srgb, ${brand.colors.text} 12%, transparent)`
+        ? `color-mix(in srgb, var(--brand-text) 12%, transparent)`
         : 'transparent',
       tooltip: tooltipText(iso, point),
       textColor: textColorFor(pnl),
@@ -605,9 +605,9 @@ const worstDayLabel = computed(() => {
 })
 
 const containerStyle = computed(() => ({
-  backgroundColor: brand.colors.surface,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  boxShadow: `0 8px 22px -16px color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
+  backgroundColor: 'var(--brand-surface)',
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `0 8px 22px -16px color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
 }))
 </script>
 
@@ -944,7 +944,7 @@ const containerStyle = computed(() => ({
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--shadow-ambient);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   font-family: var(--brand-font, system-ui, sans-serif);

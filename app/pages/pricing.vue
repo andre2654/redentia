@@ -23,7 +23,7 @@
         class="lp-hero__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--brand-primary) 26%, transparent), transparent 65%)`,
         }"
       />
 
@@ -105,7 +105,7 @@
             <div class="lp-stack">
               <!-- Top: AI insight -->
               <div class="lp-stack__card lp-stack__card--top">
-                <span class="lp-stack__eyebrow" :style="{ color: brand.colors.primary }">RAIO-X · AGORA</span>
+                <span class="lp-stack__eyebrow" :style="{ color: 'var(--brand-primary)' }">RAIO-X · AGORA</span>
                 <p class="lp-stack__title">Sua carteira recuou 1,8% hoje</p>
                 <p class="lp-stack__sub">PETR4 puxou. Selic em alta favorece bancos.</p>
                 <div class="lp-stack__row">
@@ -116,21 +116,21 @@
 
               <!-- Middle: action -->
               <div class="lp-stack__card lp-stack__card--mid">
-                <span class="lp-stack__eyebrow" :style="{ color: brand.colors.primary }">SUGESTÃO DA IA</span>
+                <span class="lp-stack__eyebrow" :style="{ color: 'var(--brand-primary)' }">SUGESTÃO DA IA</span>
                 <p class="lp-stack__title">Reduzir 4% em PETR4 e levar pra ITSA4.</p>
                 <p class="lp-stack__sub">Diversifica setor + aumenta dividendo esperado em R$ 1.240/ano.</p>
               </div>
 
               <!-- Bottom: alerts -->
               <div class="lp-stack__card lp-stack__card--bottom">
-                <span class="lp-stack__eyebrow" :style="{ color: brand.colors.primary }">ALERTAS ATIVOS</span>
+                <span class="lp-stack__eyebrow" :style="{ color: 'var(--brand-primary)' }">ALERTAS ATIVOS</span>
                 <ul class="lp-stack__alerts">
                   <li>
-                    <span class="lp-stack__pulse" :style="{ background: brand.colors.primary }" />
+                    <span class="lp-stack__pulse" :style="{ background: 'var(--brand-primary)' }" />
                     Dividendo MXRF11 cai amanhã
                   </li>
                   <li>
-                    <span class="lp-stack__pulse" :style="{ background: brand.colors.positive || '#10b981' }" />
+                    <span class="lp-stack__pulse" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
                     ITUB4 superou consenso de lucro
                   </li>
                 </ul>
@@ -154,7 +154,7 @@
 
         <!-- Loading -->
         <div v-if="loading" class="lp-loading">
-          <UIcon name="i-lucide-loader-2" class="size-8 motion-safe:animate-spin" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-loader-2" class="size-8 motion-safe:animate-spin" :style="{ color: 'var(--brand-primary)' }" />
         </div>
 
         <div v-else-if="!plans.length" class="lp-loading">
@@ -174,7 +174,7 @@
               class="lp-plan__halo"
               aria-hidden="true"
               :style="{
-                background: `radial-gradient(ellipse 80% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 20%, transparent), transparent 70%)`,
+                background: `radial-gradient(ellipse 80% 60% at 50% 0%, color-mix(in srgb, var(--brand-primary) 20%, transparent), transparent 70%)`,
               }"
             />
 
@@ -204,7 +204,7 @@
             <p v-if="cycle === 'yearly'" class="lp-plan__price-sub">
               Cobrado R$ {{ formatBRL(yearlyPrice(plan)) }} anual (10 meses pra pagar 12)
             </p>
-            <p v-else-if="plan.price_brl_yearly" class="lp-plan__price-sub" :style="{ color: brand.colors.primary }">
+            <p v-else-if="plan.price_brl_yearly" class="lp-plan__price-sub" :style="{ color: 'var(--brand-primary)' }">
               ou R$ {{ formatBRL(yearlyPrice(plan) / 12) }}/mês no anual
             </p>
 
@@ -324,7 +324,7 @@
         class="lp-final__glow"
         aria-hidden="true"
         :style="{
-          background: `radial-gradient(ellipse 60% 50% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 70%)`,
+          background: `radial-gradient(ellipse 60% 50% at 50% 50%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 70%)`,
         }"
       />
       <div class="lp-container lp-final__inner">
@@ -789,7 +789,7 @@ onMounted(() => {
 }
 .lp-cycle__btn.is-active {
   background: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
 }
 .lp-cycle__btn:focus-visible {
   outline: none;

@@ -57,11 +57,11 @@ const highlighted = computed(() => {
   let code = esc(props.code)
 
   const colors = {
-    key: brand.colors.primary,
-    str: brand.colors.positive,
-    num: brand.colors.text,
-    cmt: brand.colors.textMuted,
-    kw: brand.colors.primary,
+    key: 'var(--brand-primary)',
+    str: 'var(--brand-positive)',
+    num: 'var(--brand-text)',
+    cmt: 'var(--brand-text-muted)',
+    kw: 'var(--brand-primary)',
   }
 
   // Comments, # ... (bash) or // ... (js/go)

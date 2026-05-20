@@ -99,7 +99,7 @@
             class="ml-auto inline-flex size-1.5 shrink-0 self-start rounded-full"
             :style="{
               backgroundColor:
-                item.severity === 'critical' ? brand.colors.negative : 'var(--brand-primary)',
+                item.severity === 'critical' ? 'var(--brand-negative)' : 'var(--brand-primary)',
               marginTop: '7px',
             }"
             :aria-label="item.severity === 'critical' ? 'crítico' : 'atenção'"
@@ -228,21 +228,21 @@ const snapshotEntries = computed(() => {
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
-  color: brand.colors.text,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 70%, transparent)`,
+  border: `1px solid color-mix(in srgb, var(--brand-border) 55%, transparent)`,
+  color: 'var(--brand-text)',
 }))
 
 const primaryStyle = computed(() => {
   if (allCriticalChecked.value) {
     return {
-      backgroundColor: brand.colors.primary,
-      color: brand.colors.background,
+      backgroundColor: 'var(--brand-primary)',
+      color: 'var(--brand-background)',
     } as Record<string, string>
   }
   return {
-    backgroundColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-    color: brand.colors.textMuted,
+    backgroundColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+    color: 'var(--brand-text-muted)',
     cursor: 'not-allowed',
   } as Record<string, string>
 })

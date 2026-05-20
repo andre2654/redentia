@@ -71,7 +71,7 @@ defineEmits<{ click: [event: MouseEvent] }>()
 }
 .cui-btn--primary:hover:not(:disabled) {
   background: var(--brand-primary);
-  color: #1A0A2E;
+  color: var(--text-heading);
   border-color: var(--brand-primary);
 }
 

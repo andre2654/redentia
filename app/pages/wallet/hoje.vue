@@ -2283,7 +2283,7 @@ definePageMeta({ layout: 'default' })
 .hp7-composer {
   display: flex; align-items: center; gap: 10px;
   padding: 14px 14px 14px 18px;
-  background: linear-gradient(135deg, #1a0a2e, #2a1a4a);
+  background: linear-gradient(135deg, var(--text-heading), #2a1a4a);
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.7);
 }
@@ -2295,7 +2295,7 @@ definePageMeta({ layout: 'default' })
 }
 .hp7-composer-btn {
   width: 36px; height: 36px; border-radius: 999px;
-  background: #fff; color: #1a0a2e; border: 0;
+  background: #fff; color: var(--text-heading); border: 0;
   display: inline-flex; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0;
 }
@@ -2331,7 +2331,7 @@ definePageMeta({ layout: 'default' })
 .hp7-resumo-sparkle {
   display: inline-flex; align-items: center; justify-content: center;
   width: 56px; height: 56px; border-radius: 12px;
-  background: linear-gradient(135deg, #1a0a2e, #2a1a4a);
+  background: linear-gradient(135deg, var(--text-heading), #2a1a4a);
   color: var(--brand-primary); flex-shrink: 0;
 }
 

@@ -9,11 +9,11 @@
         <div>
           <h2
             class="text-lg font-medium"
-            :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+            :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
           >{{ step.title }}</h2>
           <p
             class="text-sm"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text) 70%, transparent)` }"
           >{{ step.description }}</p>
         </div>
       </div>

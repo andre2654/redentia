@@ -490,7 +490,7 @@ function onClose(): void {
 }
 .thread-search-hit.is-active {
   background-color: var(--brand-primary);
-  color: #1a0a2e;
+  color: var(--text-heading);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-primary) 40%, transparent);
   border-radius: 3px;
 }

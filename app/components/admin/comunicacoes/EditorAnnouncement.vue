@@ -1382,7 +1382,7 @@ const Field = defineComponent({
   width: 60%;
   height: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 200px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 200px var(--shadow-amber-near);
 }
 .placement-card__meta { display: flex; flex-direction: column; gap: 1px; }
 .placement-card__label {
@@ -1407,7 +1407,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 /* =========================================================
@@ -1745,7 +1745,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 
 .aud-scope-grid {
@@ -1815,7 +1815,7 @@ const Field = defineComponent({
   justify-content: center;
   border-radius: 999px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
 }
 .aud-tenant-select { margin-top: 4px; }
 
@@ -1877,7 +1877,7 @@ const Field = defineComponent({
 }
 .aud-segmented__btn--active {
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 
@@ -2524,7 +2524,7 @@ const Field = defineComponent({
 .prev-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--shadow-amber-near);
   backdrop-filter: blur(2px);
   border-radius: 8px;
 }
@@ -2536,7 +2536,7 @@ const Field = defineComponent({
   background: var(--brand-surface);
   border: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
   overflow: hidden;
-  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 30px 80px -20px var(--shadow-ambient);
 }
 .prev-modal__close {
   position: absolute;
@@ -2549,7 +2549,7 @@ const Field = defineComponent({
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--shadow-amber-near);
   color: rgba(255, 255, 255, 0.8);
 }
 .prev-modal__img {
@@ -2597,7 +2597,7 @@ const Field = defineComponent({
   padding: 7px 14px;
   border-radius: 8px;
   background: var(--brand-primary);
-  color: var(--text-on-primary, #1a0a2e);
+  color: var(--text-on-primary, var(--text-heading));
   font-size: 12.5px;
   font-weight: 600;
 }

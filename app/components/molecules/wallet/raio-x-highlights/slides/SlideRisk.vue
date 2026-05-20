@@ -74,9 +74,9 @@ const props = defineProps<Props>()
 const tintColor = computed(() => {
   switch (props.risk.severity) {
     case 'high': return '#ef4444'
-    case 'medium': return '#f59e0b'
+    case 'medium': return 'var(--brand-warning)'
     case 'low': return '#fbbf24'
-    default: return '#f59e0b'
+    default: return 'var(--brand-warning)'
   }
 })
 
