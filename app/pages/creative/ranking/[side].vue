@@ -117,11 +117,11 @@ function resetControls() {
 }
 
 // Hardcoded Redentia palette.
-const positiveColor = computed(() => '#00D395')
-const negativeColor = computed(() => '#FF4747')
-const bgColor = computed(() => '#0A0B0E')
+const positiveColor = computed(() => 'var(--brand-positive)')
+const negativeColor = computed(() => 'var(--brand-negative)')
+const bgColor = computed(() => 'var(--bg-base)')
 const accentColor = computed(() => theme.value === 'positive' ? positiveColor.value : negativeColor.value)
-const textColor = computed(() => '#E8EAED')
+const textColor = computed(() => 'var(--brand-text)')
 
 const positiveGlow = computed(() => darkenHex(positiveColor.value, 0.3))
 const negativeGlow = computed(() => darkenHex(negativeColor.value, 0.3))
@@ -390,7 +390,7 @@ const avgPct = computed(() => {
 .frame {
   width: 1080px; height: 1080px;
   position: relative; overflow: hidden;
-  background: #0A0B0E; color: #FFFFFF;
+  background: var(--bg-base); color: #FFFFFF;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -434,10 +434,10 @@ const avgPct = computed(() => {
   z-index: 3;
 }
 .sb-live { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; }
-.sb-dot { width: 10px; height: 10px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 14px rgba(245,166,35,0.8); }
+.sb-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand-primary); box-shadow: 0 0 14px rgba(245,166,35,0.8); }
 .sb-right { margin-left: auto; }
 .sb-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 19px; }
-.sb-brand-accent { color: #F5A623; }
+.sb-brand-accent { color: var(--brand-primary); }
 
 /* Hero area — headline centered, date as the subtitle line. */
 .hero {
@@ -455,8 +455,8 @@ const avgPct = computed(() => {
 /* Tail word is tinted by the ranking side — green for top movers,
    red for bottom movers. Keeps the accent coherent with the card tints
    below. */
-.frame.positive .hero-title em { color: #00D395; }
-.frame.negative .hero-title em { color: #FF4747; }
+.frame.positive .hero-title em { color: var(--brand-positive); }
+.frame.negative .hero-title em { color: var(--brand-negative); }
 .hero-title-sub {
   display: block;
   margin-top: 28px;
@@ -521,7 +521,7 @@ const avgPct = computed(() => {
   letter-spacing: 0.05em;
   font-variant-numeric: tabular-nums;
 }
-.card-hero .card-rank { color: #F5A623; }
+.card-hero .card-rank { color: var(--brand-primary); }
 .card-logo-wrap {
   flex: 0 0 auto;
   width: 96px; height: 96px; border-radius: 50%;
@@ -582,8 +582,8 @@ const avgPct = computed(() => {
   margin-left: 4px;
   opacity: 0.7;
 }
-.card.up .card-pct { color: #00D395; }
-.card.down .card-pct { color: #FF4747; }
+.card.up .card-pct { color: var(--brand-positive); }
+.card.down .card-pct { color: var(--brand-negative); }
 
 /* Footer — mono, high-contrast white brand. */
 .rkfooter {
@@ -596,7 +596,7 @@ const avgPct = computed(() => {
   z-index: 3;
 }
 .ff-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 18px; }
-.ff-brand .ff-dot { color: #F5A623; }
+.ff-brand .ff-dot { color: var(--brand-primary); }
 .ff-sep { display: inline-block; width: 14px; height: 1px; background: rgba(255,255,255,0.28); margin: 0 18px; }
 .ff-right { margin-left: auto; color: #FFFFFF; font-weight: 600; font-size: 17px; }
 </style>

@@ -11,6 +11,18 @@ app/plugins/brand.ts
 # Dev playground (mobile-layouts v1-v4, mockups, etc)
 app/pages/dev/
 
+# Creative / landing pages com paleta visual decorativa.
+# As cores semânticas (positive/negative/text/etc) já foram tokenizadas
+# nesses arquivos. O que sobra são cores únicas de design (gradientes
+# de hero, glow effects, sticker badges, ornaments coloridos) que NÃO
+# fazem parte do design system canônico — são intent visual específico
+# desses landings. Tokenizar todas inflaria brand.ts sem ganho real.
+app/pages/creative/
+app/pages/hero-examples.vue
+app/pages/builder.vue
+app/pages/assessorias-diferencie-problema.vue
+app/pages/assessorias-diferencie-solucao.vue
+
 # Static assets
 public/
 

@@ -77,7 +77,7 @@ useHead(() => ({
   link: [{ rel: 'stylesheet', href: fontsHref }],
   style: isEditorial.value ? [{
     children: `
-      html, body, #__nuxt, #__layout { margin: 0; padding: 0; background: #F5A623; width: 1080px; height: 1080px; overflow: hidden; }
+      html, body, #__nuxt, #__layout { margin: 0; padding: 0; background: var(--brand-primary); width: 1080px; height: 1080px; overflow: hidden; }
       body > * { width: 1080px; height: 1080px; }
     `,
   }] : [],
@@ -850,10 +850,10 @@ const rankingItems = computed(() => {
           <span class="data-amber">Cinco identidades.</span>
         </h2>
         <div class="tenants-real-grid">
-          <div class="tenant-real-card" style="background: #0A0B0E; border-color: #F5A623">
-            <div class="trc-eyebrow" style="color: #F5A623">TERMINAL</div>
-            <div class="trc-title" style="font-family: 'Instrument Serif'; color: #E8EAED">Investir com <i style="color:#F5A623">inteligência.</i></div>
-            <div class="trc-brand" style="color: #F5A623">REDENTIA</div>
+          <div class="tenant-real-card" style="background: var(--bg-base); border-color: var(--brand-primary)">
+            <div class="trc-eyebrow" style="color: var(--brand-primary)">TERMINAL</div>
+            <div class="trc-title" style="font-family: 'Instrument Serif'; color: var(--brand-text)">Investir com <i style="color:var(--brand-primary)">inteligência.</i></div>
+            <div class="trc-brand" style="color: var(--brand-primary)">REDENTIA</div>
           </div>
           <div class="tenant-real-card" style="background: #F7F5EF; border-color: #C9A26A">
             <div class="trc-eyebrow" style="color: #6B5838">NORTE CAPITAL</div>
@@ -870,15 +870,15 @@ const rankingItems = computed(() => {
             <div class="trc-title" style="font-family: 'IBM Plex Serif'; color: #1F1A12; font-style: italic">A única <span style="color:#C84B31">verdade possível.</span></div>
             <div class="trc-brand" style="color: #C84B31; font-family: 'IBM Plex Serif'">Investidor Sardinha</div>
           </div>
-          <div class="tenant-real-card" style="background: #1A0A2E; border-color: #FACC15">
+          <div class="tenant-real-card" style="background: var(--text-heading); border-color: #FACC15">
             <div class="trc-eyebrow" style="color: #FACC15">AO VIVO · PROGRAMA #001</div>
             <div class="trc-title" style="font-family: 'Poppins'; color: #FFFFFF; font-weight: 900">Chega de dinheirofobia, <span style="color:#FACC15">criatura!</span></div>
             <div class="trc-brand" style="color: #FACC15; font-family: 'Poppins'; font-weight: 800">Me Poupe!</div>
           </div>
           <div class="tenant-real-card tenant-real-card-next">
-            <div class="trc-eyebrow" style="color: #F5A623">SUA MARCA</div>
-            <div class="trc-title" style="font-family: 'Instrument Serif'; color: #E8EAED">O próximo <i style="color:#F5A623">é você.</i></div>
-            <div class="trc-brand" style="color: #F5A623">DEPLOY EM 1 SEMANA</div>
+            <div class="trc-eyebrow" style="color: var(--brand-primary)">SUA MARCA</div>
+            <div class="trc-title" style="font-family: 'Instrument Serif'; color: var(--brand-text)">O próximo <i style="color:var(--brand-primary)">é você.</i></div>
+            <div class="trc-brand" style="color: var(--brand-primary)">DEPLOY EM 1 SEMANA</div>
           </div>
         </div>
       </div>
@@ -1570,8 +1570,8 @@ const rankingItems = computed(() => {
            Fallback
            ============================================================ -->
       <div v-else class="body fallback-body">
-        <div style="font-family:'Instrument Serif';font-size:120px;color:#F5A623">{{ variant }}</div>
-        <div style="font-family:'JetBrains Mono', monospace;color:#8B92A7">variant não encontrada</div>
+        <div style="font-family:'Instrument Serif';font-size:120px;color:var(--brand-primary)">{{ variant }}</div>
+        <div style="font-family:'JetBrains Mono', monospace;color:var(--text-muted)">variant não encontrada</div>
       </div>
 
       <!-- ============================================================
@@ -1595,7 +1595,7 @@ const rankingItems = computed(() => {
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -1605,9 +1605,9 @@ const rankingItems = computed(() => {
   height: 1080px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  background: #0A0B0E;
-  color: #E8EAED;
-  border: 1px solid #2A2E39;
+  background: var(--bg-base);
+  color: var(--brand-text);
+  border: 1px solid var(--border-subtle);
   border-radius: 14px;
   overflow: hidden;
   display: flex;
@@ -1633,8 +1633,8 @@ const rankingItems = computed(() => {
 .backdrop-grid {
   opacity: 0.04;
   background-image:
-    linear-gradient(#E8EAED 1px, transparent 1px),
-    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
+    linear-gradient(var(--brand-text) 1px, transparent 1px),
+    linear-gradient(90deg, var(--brand-text) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 .backdrop-noise {
@@ -1652,7 +1652,7 @@ const rankingItems = computed(() => {
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
   z-index: 2;
 }
 .header-brand {
@@ -1665,11 +1665,11 @@ const rankingItems = computed(() => {
   height: 32px;
 }
 .header-name {
-  color: #E8EAED;
+  color: var(--brand-text);
   font-weight: 700;
 }
 .header-tag {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 .footer {
@@ -1684,7 +1684,7 @@ const rankingItems = computed(() => {
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
   z-index: 2;
 }
 .footer-logo {
@@ -1741,7 +1741,7 @@ const rankingItems = computed(() => {
   background: #000;
   border-radius: 20px;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 8px var(--shadow-ambient);
 }
 
 .iphone-screen {
@@ -1821,7 +1821,7 @@ const rankingItems = computed(() => {
   padding: 16px 18px;
   color: white;
   font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px var(--shadow-amber-near);
   border: 0.5px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1834,7 +1834,7 @@ const rankingItems = computed(() => {
 .push-app-icon {
   width: 24px;
   height: 24px;
-  background: #F5A623;
+  background: var(--brand-primary);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -1910,7 +1910,7 @@ const rankingItems = computed(() => {
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 600;
 }
 .app-portfolio-value {
@@ -1927,7 +1927,7 @@ const rankingItems = computed(() => {
 .app-portfolio-change {
   font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
   font-size: 13px;
-  color: #00D395;
+  color: var(--brand-positive);
   font-weight: 600;
 }
 .app-portfolio-change span { opacity: 0.85; }
@@ -1948,7 +1948,7 @@ const rankingItems = computed(() => {
 }
 .app-tab-active {
   color: #fff;
-  border-bottom-color: #F5A623;
+  border-bottom-color: var(--brand-primary);
 }
 
 .app-asset-list {
@@ -2006,8 +2006,8 @@ const rankingItems = computed(() => {
   margin-top: 1px;
   font-variant-numeric: tabular-nums;
 }
-.app-asset-change.pos { color: #00D395; }
-.app-asset-change.neg { color: #FF4747; }
+.app-asset-change.pos { color: var(--brand-positive); }
+.app-asset-change.neg { color: var(--brand-negative); }
 
 .app-bottom-nav {
   position: absolute;
@@ -2030,7 +2030,7 @@ const rankingItems = computed(() => {
   font-size: 9px;
   color: rgba(255,255,255,0.4);
 }
-.app-nav-active { color: #F5A623; }
+.app-nav-active { color: var(--brand-primary); }
 .app-nav-icon { font-size: 14px; line-height: 1; }
 
 /* ===== Chat (iMessage style) ===== */
@@ -2046,7 +2046,7 @@ const rankingItems = computed(() => {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #F5A623;
+  background: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2075,15 +2075,15 @@ const rankingItems = computed(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #00D395;
-  box-shadow: 0 0 8px #00D395;
+  background: var(--brand-positive);
+  box-shadow: 0 0 8px var(--brand-positive);
 }
 .chat-info-btn {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: rgba(245, 166, 35, 0.15);
-  color: #F5A623;
+  color: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2114,7 +2114,7 @@ const rankingItems = computed(() => {
   word-wrap: break-word;
 }
 .chat-bubble-user {
-  background: linear-gradient(135deg, #F5A623 0%, #ec9210 100%);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #ec9210 100%);
   color: #0a0b0e;
   font-weight: 500;
   border-bottom-right-radius: 4px;
@@ -2138,7 +2138,7 @@ const rankingItems = computed(() => {
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   margin-bottom: 4px;
 }
@@ -2152,7 +2152,7 @@ const rankingItems = computed(() => {
   color: #fff;
   font-weight: 600;
 }
-.chat-card-row strong.pos { color: #00D395; }
+.chat-card-row strong.pos { color: var(--brand-positive); }
 .chat-time {
   font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
   font-size: 9px;
@@ -2207,7 +2207,7 @@ const rankingItems = computed(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #F5A623;
+  background: var(--brand-primary);
   color: #0a0b0e;
   display: flex;
   align-items: center;
@@ -2229,7 +2229,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.2em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
   margin-bottom: 24px;
 }
@@ -2239,7 +2239,7 @@ const rankingItems = computed(() => {
   font-size: 92px;
   line-height: 0.95;
   letter-spacing: -0.02em;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0 0 28px 0;
   max-width: 440px;
 }
@@ -2247,7 +2247,7 @@ const rankingItems = computed(() => {
 .iphone-sub {
   font-size: 20px;
   line-height: 1.5;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-bottom: 32px;
   max-width: 440px;
 }
@@ -2255,8 +2255,8 @@ const rankingItems = computed(() => {
 .iphone-tag {
   display: inline-block;
   padding: 14px 22px;
-  background: #F5A623;
-  color: #0A0B0E;
+  background: var(--brand-primary);
+  color: var(--bg-base);
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   font-weight: 700;
@@ -2306,13 +2306,13 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.2em;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 
 /* Me Poupe jargon, purple + yellow highlight + Poppins 900 */
 .card-jargon-mepoupe {
-  background: linear-gradient(135deg, #1A0A2E 0%, #2D1047 50%, #1A0A2E 100%);
+  background: linear-gradient(135deg, var(--text-heading) 0%, #2D1047 50%, var(--text-heading) 100%);
 }
 .card-jargon-mepoupe .backdrop-1 { display: none; }
 .card-jargon-mepoupe .backdrop-2 {
@@ -2445,14 +2445,14 @@ const rankingItems = computed(() => {
 
 /* Redentia jargon, amber terminal */
 .card-jargon-redentia .jargon-eyebrow {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .card-jargon-redentia .jargon-quote {
   font-family: 'Instrument Serif', serif;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .card-jargon-redentia .italic-amber {
-  color: #F5A623;
+  color: var(--brand-primary);
   font-style: italic;
 }
 
@@ -2502,7 +2502,7 @@ const rankingItems = computed(() => {
 
 /* Me Poupe showcase */
 .card-tenant-showcase-mepoupe {
-  background: linear-gradient(135deg, #1A0A2E 0%, #2D1047 55%, #1A0A2E 100%);
+  background: linear-gradient(135deg, var(--text-heading) 0%, #2D1047 55%, var(--text-heading) 100%);
 }
 .card-tenant-showcase-mepoupe .backdrop-1 { display: none; }
 .card-tenant-showcase-mepoupe .backdrop-2 {
@@ -2521,7 +2521,7 @@ const rankingItems = computed(() => {
 .card-tenant-showcase-mepoupe .tenant-badge {
   display: inline-block;
   background: #FACC15;
-  color: #1A0A2E;
+  color: var(--text-heading);
   padding: 10px 20px;
   border-radius: 9999px;
   font-family: 'Poppins', sans-serif;
@@ -2530,7 +2530,7 @@ const rankingItems = computed(() => {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   transform: rotate(-3deg);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 16px var(--shadow-amber-near);
 }
 .card-tenant-showcase-mepoupe .tenant-title-mepoupe {
   font-family: 'Poppins', sans-serif;
@@ -2742,25 +2742,25 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.2em;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-top: 12px;
   margin-bottom: 40px;
   text-transform: uppercase;
 }
 .card-tenant-showcase-redentia .status-dot-live {
-  color: #F5A623;
+  color: var(--brand-primary);
   animation: pulse 1.5s infinite;
 }
 .card-tenant-showcase-redentia .tenant-title-redentia {
   font-family: 'Instrument Serif', serif;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .card-tenant-showcase-redentia .tenant-highlight-amber {
-  color: #F5A623;
+  color: var(--brand-primary);
   font-style: italic;
 }
 .card-tenant-showcase-redentia .tenant-sub {
-  color: #8B92A7;
+  color: var(--text-muted);
   font-size: 22px;
 }
 .card-tenant-showcase-redentia .tenant-terminal-line {
@@ -2772,13 +2772,13 @@ const rankingItems = computed(() => {
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .terminal-caret-mini {
   display: inline-block;
   width: 10px;
   height: 22px;
-  background: #F5A623;
+  background: var(--brand-primary);
   margin-left: 4px;
   animation: blink 1s infinite step-end;
 }
@@ -2797,7 +2797,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .data-coverage-headline {
@@ -2809,7 +2809,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 320px;
   line-height: 0.85;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: -0.04em;
   margin-top: 8px;
 }
@@ -2817,7 +2817,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 20px;
   letter-spacing: 0.15em;
-  color: #E8EAED;
+  color: var(--brand-text);
   text-transform: uppercase;
   margin-top: 8px;
 }
@@ -2834,19 +2834,19 @@ const rankingItems = computed(() => {
 }
 .ticker-wall-chip {
   padding: 10px 16px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   font-weight: 700;
-  color: #E8EAED;
+  color: var(--brand-text);
   background: rgba(20, 22, 28, 0.6);
   letter-spacing: 0.04em;
 }
 .data-foot {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   text-align: center;
@@ -2858,12 +2858,12 @@ const rankingItems = computed(() => {
   font-size: 96px;
   line-height: 0.95;
   letter-spacing: -0.02em;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
   max-width: 900px;
 }
 .data-amber {
-  color: #F5A623;
+  color: var(--brand-primary);
   font-style: italic;
 }
 
@@ -2881,7 +2881,7 @@ const rankingItems = computed(() => {
   left: 4%;
   right: 4%;
   height: 2px;
-  background: linear-gradient(to right, #2A2E39, #F5A623 85%, #FFC555);
+  background: linear-gradient(to right, var(--border-subtle), var(--brand-primary) 85%, var(--brand-secondary));
   z-index: 0;
 }
 .timeline-year {
@@ -2896,18 +2896,18 @@ const rankingItems = computed(() => {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #0A0B0E;
-  border: 2px solid #8B92A7;
+  background: var(--bg-base);
+  border: 2px solid var(--text-muted);
 }
 .timeline-dot-end {
-  background: #F5A623;
-  border-color: #F5A623;
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
   box-shadow: 0 0 0 6px rgba(245, 166, 35, 0.25);
 }
 .timeline-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
-  color: #8B92A7;
+  color: var(--text-muted);
   font-weight: 700;
 }
 
@@ -2920,7 +2920,7 @@ const rankingItems = computed(() => {
 }
 .security-item {
   padding: 30px 28px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   background: rgba(20, 22, 28, 0.65);
 }
@@ -2932,12 +2932,12 @@ const rankingItems = computed(() => {
 .security-name {
   font-family: 'Instrument Serif', serif;
   font-size: 36px;
-  color: #F5A623;
+  color: var(--brand-primary);
   margin-bottom: 6px;
 }
 .security-desc {
   font-size: 15px;
-  color: #8B92A7;
+  color: var(--text-muted);
   line-height: 1.4;
 }
 
@@ -2953,38 +2953,38 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .ai-title {
   font-family: 'Instrument Serif', serif;
   font-size: 80px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
 .ai-chat-frame {
-  background: #14161C;
-  border: 1px solid #2A2E39;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
   border-radius: 18px;
   padding: 24px;
   margin-top: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px var(--shadow-ambient);
 }
 .ai-chat-header {
   display: flex;
   align-items: center;
   gap: 14px;
   padding-bottom: 18px;
-  border-bottom: 1px solid #2A2E39;
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 20px;
 }
 .ai-chat-avatar {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #F5A623;
-  color: #0A0B0E;
+  background: var(--brand-primary);
+  color: var(--bg-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2994,13 +2994,13 @@ const rankingItems = computed(() => {
 }
 .ai-chat-name {
   font-size: 17px;
-  color: #E8EAED;
+  color: var(--brand-text);
   font-weight: 700;
 }
 .ai-chat-status {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-top: 2px;
   display: flex;
   align-items: center;
@@ -3009,7 +3009,7 @@ const rankingItems = computed(() => {
 .ai-chat-dot {
   width: 8px;
   height: 8px;
-  background: #00D395;
+  background: var(--brand-positive);
   border-radius: 50%;
   display: inline-block;
 }
@@ -3027,15 +3027,15 @@ const rankingItems = computed(() => {
   max-width: 85%;
 }
 .ai-msg-user {
-  background: #2A2E39;
-  color: #E8EAED;
+  background: var(--border-subtle);
+  color: var(--brand-text);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
 .ai-msg-bot {
   background: rgba(245, 166, 35, 0.08);
   border: 1px solid rgba(245, 166, 35, 0.25);
-  color: #E8EAED;
+  color: var(--brand-text);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
@@ -3043,7 +3043,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -3053,7 +3053,7 @@ const rankingItems = computed(() => {
   border-top: 1px solid rgba(245, 166, 35, 0.15);
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  color: #8B92A7;
+  color: var(--text-muted);
   letter-spacing: 0.15em;
 }
 
@@ -3069,14 +3069,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .stats-title {
   font-family: 'Instrument Serif', serif;
   font-size: 72px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
   max-width: 900px;
 }
@@ -3088,7 +3088,7 @@ const rankingItems = computed(() => {
 }
 .stats-item {
   padding: 36px 30px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   background: rgba(20, 22, 28, 0.6);
 }
@@ -3096,7 +3096,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 94px;
   line-height: 0.9;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: -0.03em;
 }
 .stats-lab {
@@ -3104,12 +3104,12 @@ const rankingItems = computed(() => {
   font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin-top: 14px;
 }
 .stats-sub {
   font-size: 14px;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-top: 6px;
 }
 
@@ -3124,14 +3124,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .why-title {
   font-family: 'Instrument Serif', serif;
   font-size: 84px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
 .why-columns {
@@ -3144,12 +3144,12 @@ const rankingItems = computed(() => {
 .why-col {
   flex: 1;
   padding: 36px 28px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 14px;
   background: rgba(20, 22, 28, 0.6);
 }
 .why-col-after {
-  border-color: #F5A623;
+  border-color: var(--brand-primary);
   box-shadow: 0 16px 60px rgba(245, 166, 35, 0.15);
 }
 .why-col-label {
@@ -3157,11 +3157,11 @@ const rankingItems = computed(() => {
   font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-bottom: 22px;
 }
 .why-col-label-amber {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .wallets-stack {
   display: flex;
@@ -3170,13 +3170,13 @@ const rankingItems = computed(() => {
 }
 .wallet-card {
   padding: 16px 20px;
-  background: #14161C;
-  border: 1px solid #2A2E39;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   font-weight: 700;
-  color: #E8EAED;
+  color: var(--brand-text);
   letter-spacing: 0.12em;
 }
 .wallets-one {
@@ -3184,16 +3184,16 @@ const rankingItems = computed(() => {
   align-items: center;
   gap: 18px;
   padding: 28px 22px;
-  background: #0A0B0E;
-  border: 1.5px solid #F5A623;
+  background: var(--bg-base);
+  border: 1.5px solid var(--brand-primary);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(245, 166, 35, 0.2);
 }
 .wallet-one-icon {
   width: 64px;
   height: 64px;
-  background: #F5A623;
-  color: #0A0B0E;
+  background: var(--brand-primary);
+  color: var(--bg-base);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -3205,17 +3205,17 @@ const rankingItems = computed(() => {
 .wallet-one-text {
   font-family: 'Instrument Serif', serif;
   font-size: 32px;
-  color: #E8EAED;
+  color: var(--brand-text);
   line-height: 1.1;
 }
 .why-col-sub {
   margin-top: 20px;
   font-size: 14px;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 .why-arrow {
   font-size: 64px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -3223,7 +3223,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.15em;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-align: center;
   text-transform: uppercase;
 }
@@ -3240,14 +3240,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .calc-title {
   font-family: 'Instrument Serif', serif;
   font-size: 82px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
 .calc-grid {
@@ -3259,7 +3259,7 @@ const rankingItems = computed(() => {
 .calc-item {
   padding: 26px 18px;
   background: rgba(20, 22, 28, 0.7);
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   text-align: center;
 }
@@ -3270,14 +3270,14 @@ const rankingItems = computed(() => {
 .calc-name {
   font-family: 'Instrument Serif', serif;
   font-size: 22px;
-  color: #E8EAED;
+  color: var(--brand-text);
   line-height: 1;
 }
 .calc-tag {
   margin-top: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -3285,7 +3285,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.2em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
   text-align: center;
 }
@@ -3304,14 +3304,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .of-title {
   font-family: 'Instrument Serif', serif;
   font-size: 92px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0 0 12px 0;
   text-align: center;
 }
@@ -3329,7 +3329,7 @@ const rankingItems = computed(() => {
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background: radial-gradient(circle, #F5A623 0%, #C07A00 100%);
+  background: radial-gradient(circle, var(--brand-primary) 0%, #C07A00 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3339,7 +3339,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 96px;
   font-weight: 400;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 1;
 }
 .of-ring-bank {
@@ -3351,20 +3351,20 @@ const rankingItems = computed(() => {
   margin-left: -34px;
   margin-top: -34px;
   border-radius: 50%;
-  background: #14161C;
-  border: 1.5px solid #2A2E39;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.04em;
 }
 .of-foot {
   font-size: 15px;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-align: center;
   max-width: 740px;
   margin: 0 auto;
@@ -3383,7 +3383,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .feat-badge-wrap {
@@ -3392,8 +3392,8 @@ const rankingItems = computed(() => {
 .feat-badge {
   display: inline-block;
   padding: 9px 22px;
-  background: #F5A623;
-  color: #0A0B0E;
+  background: var(--brand-primary);
+  color: var(--bg-base);
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
@@ -3404,23 +3404,23 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 84px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
 .feat-sub {
   font-size: 18px;
   line-height: 1.5;
-  color: #8B92A7;
+  color: var(--text-muted);
   max-width: 900px;
 }
 .feat-card {
-  background: #14161C;
+  background: var(--bg-elevated);
   border: 1px solid rgba(245, 166, 35, 0.35);
-  border-left: 4px solid #F5A623;
+  border-left: 4px solid var(--brand-primary);
   border-radius: 12px;
   padding: 28px 32px;
   margin-top: 10px;
-  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 16px 60px var(--shadow-amber-near);
 }
 .feat-card-header {
   display: flex;
@@ -3432,32 +3432,32 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   letter-spacing: 0.18em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .feat-card-change {
   font-family: 'JetBrains Mono', monospace;
   font-size: 22px;
-  color: #00D395;
+  color: var(--brand-positive);
   font-weight: 700;
 }
 .feat-card-title {
   font-family: 'Instrument Serif', serif;
   font-size: 32px;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0 0 10px 0;
   line-height: 1.15;
 }
 .feat-card-body {
   font-size: 15px;
-  color: #8B92A7;
+  color: var(--text-muted);
   line-height: 1.5;
   margin: 0 0 14px 0;
 }
 .feat-card-sources {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
-  color: #8B92A7;
+  color: var(--text-muted);
   letter-spacing: 0.16em;
   padding-top: 12px;
   border-top: 1px solid rgba(245, 166, 35, 0.15);
@@ -3475,14 +3475,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .tenants-real-title {
   font-family: 'Instrument Serif', serif;
   font-size: 78px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
 .tenants-real-grid {
@@ -3519,7 +3519,7 @@ const rankingItems = computed(() => {
 }
 .tenant-real-card-next {
   background: rgba(20, 22, 28, 0.5);
-  border-color: #F5A623;
+  border-color: var(--brand-primary);
   border-style: dashed;
 }
 
@@ -3535,14 +3535,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .int-title {
   font-family: 'Instrument Serif', serif;
   font-size: 72px;
   line-height: 0.98;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
   max-width: 900px;
 }
@@ -3560,18 +3560,18 @@ const rankingItems = computed(() => {
   gap: 22px;
   padding: 22px 26px;
   background: rgba(20, 22, 28, 0.6);
-  border: 1px solid #2A2E39;
-  border-left: 4px solid #F5A623;
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand-primary);
   border-radius: 10px;
   font-family: 'Instrument Serif', serif;
   font-size: 26px;
-  color: #E8EAED;
+  color: var(--brand-text);
   line-height: 1.25;
 }
 .int-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 20px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   letter-spacing: 0.05em;
 }
@@ -3590,7 +3590,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
 }
 .br-flag {
@@ -3603,7 +3603,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 90px;
   line-height: 0.95;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
 .br-features {
@@ -3615,11 +3615,11 @@ const rankingItems = computed(() => {
 .br-feature {
   padding: 18px 22px;
   background: rgba(20, 22, 28, 0.6);
-  border: 1px solid #2A2E39;
-  border-left: 3px solid #F5A623;
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--brand-primary);
   border-radius: 8px;
   font-size: 17px;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 
 /* ============================================================
@@ -3632,7 +3632,7 @@ const rankingItems = computed(() => {
    than :has() for broader headless-browser support. */
 .stage-editorial {
   padding: 0 !important;
-  background: #F5A623 !important;
+  background: var(--brand-primary) !important;
   min-height: 1080px !important;
   height: 1080px !important;
   align-items: stretch !important;
@@ -3647,13 +3647,13 @@ const rankingItems = computed(() => {
 .card-redentia-analysis,
 .card-redentia-features,
 .card-redentia-cta {
-  background-color: #F5A623;
+  background-color: var(--brand-primary);
   background-image:
     linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
     linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
   background-size: 54px 54px;
   background-position: -1px -1px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   border: none;
   border-radius: 0;
   /* Padding moved into .amber-cover-min so the body can use the
@@ -3710,7 +3710,7 @@ const rankingItems = computed(() => {
 }
 .card-redentia-embed-grid,
 .card-redentia-embed-showcase {
-  background-color: #F5A623;
+  background-color: var(--brand-primary);
   background-image:
     linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
     linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
@@ -3734,7 +3734,7 @@ const rankingItems = computed(() => {
   display: none;
 }
 .card-redentia-launch {
-  background-color: #F5A623;
+  background-color: var(--brand-primary);
   background-image:
     linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
     linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
@@ -3764,8 +3764,8 @@ const rankingItems = computed(() => {
   z-index: 1;
   opacity: 0.14;
   background-image:
-    linear-gradient(#0A0B0E 1px, transparent 1px),
-    linear-gradient(90deg, #0A0B0E 1px, transparent 1px);
+    linear-gradient(var(--bg-base) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-base) 1px, transparent 1px);
   background-size: 72px 72px;
 }
 
@@ -3796,13 +3796,13 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.25em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   z-index: 3;
   padding: 8px 14px;
-  border: 2px solid #0A0B0E;
+  border: 2px solid var(--bg-base);
   border-radius: 999px;
-  background: #F5A623;
+  background: var(--brand-primary);
 }
 
 .amber-pager-inline {
@@ -3815,7 +3815,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.3em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -3843,7 +3843,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   letter-spacing: 0.14em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   text-transform: uppercase;
   font-weight: 600;
   flex-shrink: 0;
@@ -3859,7 +3859,7 @@ const rankingItems = computed(() => {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #0A0B0E;
+  background: var(--bg-base);
   box-shadow: 0 0 0 0 rgba(10, 11, 14, 0.5);
   animation: amber-live-pulse 1.8s ease-in-out infinite;
 }
@@ -3884,8 +3884,8 @@ const rankingItems = computed(() => {
 .amber-ticker-tape {
   position: relative;
   z-index: 3;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   overflow: hidden;
   margin: 12px -72px 4px -72px;
   border-top: 1px solid rgba(245, 166, 35, 0.18);
@@ -3914,14 +3914,14 @@ const rankingItems = computed(() => {
   align-items: center;
 }
 .amber-ticker-track strong {
-  color: #FFE082;
+  color: var(--brand-gradient-to);
   font-weight: 800;
 }
 .amber-ticker-track em {
   font-style: normal;
 }
-.amber-ticker-track em.pos { color: #00D395; }
-.amber-ticker-track em.neg { color: #FF4747; }
+.amber-ticker-track em.pos { color: var(--brand-positive); }
+.amber-ticker-track em.neg { color: var(--brand-negative); }
 @keyframes amber-ticker-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -3934,7 +3934,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   letter-spacing: 0.24em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   padding: 10px 0;
   border-bottom: 1px solid rgba(10, 11, 14, 0.2);
@@ -3976,7 +3976,7 @@ const rankingItems = computed(() => {
 .mini-stat-num {
   font-family: 'Instrument Serif', serif;
   font-size: 32px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -3986,7 +3986,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.16em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.65;
   font-weight: 700;
   text-transform: uppercase;
@@ -4007,7 +4007,7 @@ const rankingItems = computed(() => {
 }
 .amber-ai-note {
   background: rgba(10, 11, 14, 0.9);
-  color: #F5A623;
+  color: var(--brand-primary);
   padding: 14px 18px;
   border-radius: 10px;
   font-family: 'JetBrains Mono', monospace;
@@ -4020,13 +4020,13 @@ const rankingItems = computed(() => {
   flex-wrap: wrap;
 }
 .amber-ai-caret {
-  color: #00D395;
+  color: var(--brand-positive);
   font-weight: 700;
 }
 .amber-ai-note em {
   font-style: normal;
   font-weight: 700;
-  color: #FFE082;
+  color: var(--brand-gradient-to);
   padding-right: 8px;
   border-right: 1px solid rgba(245, 166, 35, 0.25);
 }
@@ -4046,7 +4046,7 @@ const rankingItems = computed(() => {
   letter-spacing: 0.08em;
 }
 .laptop-card-delta.pos {
-  color: #00D395;
+  color: var(--brand-positive);
   background: rgba(0, 211, 149, 0.12);
   border: 1px solid rgba(0, 211, 149, 0.25);
 }
@@ -4068,7 +4068,7 @@ const rankingItems = computed(() => {
 
 /* CTA terminal · POST 5 */
 .amber-cta-terminal {
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 20px 48px rgba(10, 11, 14, 0.45);
@@ -4077,7 +4077,7 @@ const rankingItems = computed(() => {
   max-width: 760px;
 }
 .amber-cta-terminal-bar {
-  background: #14161C;
+  background: var(--bg-elevated);
   padding: 10px 14px;
   display: flex;
   align-items: center;
@@ -4105,14 +4105,14 @@ const rankingItems = computed(() => {
   font-weight: 600;
 }
 .amber-cta-terminal-line .caret {
-  color: #00D395;
+  color: var(--brand-positive);
   margin-right: 8px;
   font-weight: 700;
 }
 .amber-cta-terminal-url {
   font-family: 'JetBrains Mono', monospace;
   font-size: 44px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1;
@@ -4121,7 +4121,7 @@ const rankingItems = computed(() => {
   margin-top: 2px;
 }
 .amber-cta-terminal-url .terminal-cursor {
-  background: #F5A623;
+  background: var(--brand-primary);
   width: 0.38em;
   height: 0.78em;
   margin-left: 0.15em;
@@ -4141,13 +4141,13 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.28em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
 }
 .amber-eyebrow-inv {
-  color: #F5A623;
-  background: #0A0B0E;
+  color: var(--brand-primary);
+  background: var(--bg-base);
   display: inline-block;
   padding: 8px 14px;
   border-radius: 4px;
@@ -4155,7 +4155,7 @@ const rankingItems = computed(() => {
 
 .amber-underline {
   display: inline;
-  background-image: linear-gradient(180deg, transparent 0%, transparent 82%, #0A0B0E 82%, #0A0B0E 96%, transparent 96%);
+  background-image: linear-gradient(180deg, transparent 0%, transparent 82%, var(--bg-base) 82%, var(--bg-base) 96%, transparent 96%);
   padding: 0 4px 4px 4px;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -4180,7 +4180,7 @@ const rankingItems = computed(() => {
   font-size: 200px;
   line-height: 0.88;
   margin: 0;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.035em;
   font-weight: 400;
   display: flex;
@@ -4193,13 +4193,13 @@ const rankingItems = computed(() => {
   display: inline-block;
 }
 .amber-dot {
-  color: #0A0B0E;
+  color: var(--bg-base);
   display: inline-block;
   transform: translateY(-4px);
 }
 .amber-accent {
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   padding: 6px 22px 18px 22px;
   display: inline-block;
   border-radius: 8px;
@@ -4211,8 +4211,8 @@ const rankingItems = computed(() => {
 .amber-accent-terminal {
   display: inline-flex;
   align-items: flex-end;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   padding: 2px 24px 14px 24px;
   margin-left: 0;
   font-family: 'JetBrains Mono', monospace;
@@ -4229,13 +4229,13 @@ const rankingItems = computed(() => {
   height: 0.72em;
   margin-left: 0.14em;
   margin-bottom: 0.06em;
-  background: #F5A623;
+  background: var(--brand-primary);
 }
 .amber-cover-sub {
   font-family: 'Instrument Serif', serif;
   font-size: 48px;
   line-height: 1.1;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   font-weight: 400;
   max-width: 780px;
@@ -4254,7 +4254,7 @@ const rankingItems = computed(() => {
 }
 .amber-data-card {
   background: rgba(10, 11, 14, 0.96);
-  color: #F5A623;
+  color: var(--brand-primary);
   padding: 18px 18px 16px 18px;
   border-radius: 12px;
   display: flex;
@@ -4267,8 +4267,8 @@ const rankingItems = computed(() => {
   border: 1px solid rgba(245, 166, 35, 0.18);
 }
 .amber-data-card-hl {
-  background: #FFE082;
-  color: #0A0B0E;
+  background: var(--brand-gradient-to);
+  color: var(--bg-base);
   border-color: rgba(10, 11, 14, 0.25);
 }
 .amber-data-label {
@@ -4319,7 +4319,7 @@ const rankingItems = computed(() => {
   border-radius: 3px;
   letter-spacing: 0.12em;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .amber-data-chat {
   font-family: 'JetBrains Mono', monospace;
@@ -4348,7 +4348,7 @@ const rankingItems = computed(() => {
 }
 .amber-cover-url {
   font-size: 14px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   letter-spacing: 0.12em;
   display: flex;
@@ -4356,7 +4356,7 @@ const rankingItems = computed(() => {
   gap: 8px;
 }
 .amber-cover-url-caret {
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.55;
 }
 
@@ -4405,7 +4405,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   letter-spacing: 0.18em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 600;
   text-transform: uppercase;
   opacity: 0.85;
@@ -4430,7 +4430,7 @@ const rankingItems = computed(() => {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #0A0B0E;
+  background: var(--bg-base);
   box-shadow: 0 0 0 0 rgba(10, 11, 14, 0.5);
   animation: amber-live-pulse 1.8s ease-in-out infinite;
 }
@@ -4458,14 +4458,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.2em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.55;
   font-weight: 700;
 }
 .amber-min-stock-price {
   font-family: 'Instrument Serif', serif;
   font-size: 26px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 1;
   letter-spacing: -0.01em;
 }
@@ -4492,7 +4492,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
   letter-spacing: 0.3em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 600;
   opacity: 0.65;
 }
@@ -4510,7 +4510,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 20px;
   letter-spacing: 0.28em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   opacity: 0.75;
 }
@@ -4518,7 +4518,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 84px;
   line-height: 1.02;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   letter-spacing: -0.04em;
   margin: 0;
@@ -4530,7 +4530,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 26px;
   line-height: 1.45;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   opacity: 0.8;
   max-width: 820px;
@@ -4557,14 +4557,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
   letter-spacing: 0.25em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.55;
   font-weight: 600;
 }
 .amber-min-pillar-name {
   font-family: 'Fraunces', serif;
   font-size: 32px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 1;
   font-weight: 400;
 }
@@ -4585,7 +4585,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   letter-spacing: 0.12em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -4594,7 +4594,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.3em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -4680,7 +4680,7 @@ const rankingItems = computed(() => {
   position: relative;
 }
 .iphone-screen-iframe {
-  background: #0A0B0E;
+  background: var(--bg-base);
 }
 .amber-min-iphone-iframe {
   /* The Redentia home page forces its body to 1080px wide.
@@ -4693,7 +4693,7 @@ const rankingItems = computed(() => {
   display: block;
   transform: scale(0.304);
   transform-origin: top left;
-  background: #0A0B0E;
+  background: var(--bg-base);
 }
 
 /* POST 3 · cards compactos */
@@ -4714,20 +4714,20 @@ const rankingItems = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   backdrop-filter: blur(2px);
 }
 .amber-min-card-ticker {
   font-family: 'Inter', sans-serif;
   font-size: 34px;
   font-weight: 800;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.01em;
 }
 .amber-min-card-name {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.55;
   font-style: normal;
   font-weight: 600;
@@ -4751,14 +4751,14 @@ const rankingItems = computed(() => {
   font-size: 18px;
 }
 .amber-min-card-rows span {
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.6;
   letter-spacing: 0.02em;
   font-weight: 500;
 }
 .amber-min-card-rows em {
   font-style: normal;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-family: 'Inter', sans-serif;
@@ -4782,12 +4782,12 @@ const rankingItems = computed(() => {
 .amber-min-laptop .laptop-frame {
   width: 920px;
   height: 500px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 3px solid #0A0B0E;
+  border: 3px solid var(--bg-base);
 }
 .amber-min-laptop .laptop-bar {
   padding: 8px 14px;
@@ -4796,7 +4796,7 @@ const rankingItems = computed(() => {
 }
 .laptop-screen-iframe-wrap {
   flex: 1;
-  background: #0A0B0E;
+  background: var(--bg-base);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -4815,7 +4815,7 @@ const rankingItems = computed(() => {
   display: block;
   transform: scale(0.852);
   transform-origin: top left;
-  background: #0A0B0E;
+  background: var(--bg-base);
 }
 .amber-min-laptop .laptop-frame::after {
   content: '';
@@ -4834,8 +4834,8 @@ const rankingItems = computed(() => {
   align-items: center;
   gap: 14px;
   padding: 18px 28px;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   border-radius: 2px;
 }
 
@@ -4861,7 +4861,7 @@ const rankingItems = computed(() => {
   width: 170px;
   height: 170px;
   border-radius: 50%;
-  border: 3px solid #0A0B0E;
+  border: 3px solid var(--bg-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4872,7 +4872,7 @@ const rankingItems = computed(() => {
   content: '';
   position: absolute;
   inset: 6px;
-  border: 1px dashed #0A0B0E;
+  border: 1px dashed var(--bg-base);
   border-radius: 50%;
 }
 .amber-cta-stamp-inner {
@@ -4886,7 +4886,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 42px;
   font-weight: 800;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.03em;
   line-height: 1;
 }
@@ -4894,7 +4894,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   font-weight: 700;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
@@ -4908,7 +4908,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.22em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -4920,7 +4920,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 110px;
   line-height: 0.98;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 800;
   letter-spacing: -0.04em;
   margin: 0;
@@ -4948,15 +4948,15 @@ const rankingItems = computed(() => {
   align-items: center;
   gap: 14px;
   padding: 18px 26px;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   border-radius: 6px;
   box-shadow: 0 14px 28px rgba(10, 11, 14, 0.25);
 }
 .amber-cta-url-caret {
   font-family: 'JetBrains Mono', monospace;
   font-size: 32px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
 }
 .amber-cta-url-label {
@@ -4971,7 +4971,7 @@ const rankingItems = computed(() => {
 .amber-cta-url-big {
   font-family: 'JetBrains Mono', monospace;
   font-size: 32px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 1;
@@ -4980,7 +4980,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 17px;
   line-height: 1.5;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.8;
   margin: 0;
   max-width: 500px;
@@ -5000,16 +5000,16 @@ const rankingItems = computed(() => {
 .amber-cta-qr-svg {
   width: 170px;
   height: 170px;
-  border: 2px solid #0A0B0E;
+  border: 2px solid var(--bg-base);
   padding: 8px;
-  background: #F5A623;
+  background: var(--brand-primary);
   border-radius: 4px;
 }
 .amber-cta-qr-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.22em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-align: center;
   line-height: 1.4;
@@ -5037,13 +5037,13 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 18px;
   font-weight: 700;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 1.1;
 }
 .amber-cta-signature-role {
   font-family: 'Inter', sans-serif;
   font-size: 11px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.6;
   font-weight: 500;
   margin-top: 2px;
@@ -5062,7 +5062,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 800;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -5070,7 +5070,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.2em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.6;
   text-transform: uppercase;
   font-weight: 600;
@@ -5095,7 +5095,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 20px;
   letter-spacing: 0.28em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
   opacity: 0.75;
@@ -5104,7 +5104,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 180px;
   line-height: 0.92;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 800;
   letter-spacing: -0.05em;
   margin: 0;
@@ -5113,7 +5113,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   line-height: 1.45;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.75;
   margin: 0;
   max-width: 780px;
@@ -5124,8 +5124,8 @@ const rankingItems = computed(() => {
   align-items: center;
   gap: 20px;
   padding: 20px 28px 20px 28px;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   border-radius: 6px;
   align-self: flex-start;
   box-shadow: 0 18px 40px rgba(10, 11, 14, 0.3);
@@ -5137,8 +5137,8 @@ const rankingItems = computed(() => {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #F5A623;
-  color: #0A0B0E;
+  background: var(--brand-primary);
+  color: var(--bg-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5163,7 +5163,7 @@ const rankingItems = computed(() => {
 .amber-cta-c-button-url {
   font-family: 'JetBrains Mono', monospace;
   font-size: 28px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 1;
@@ -5182,7 +5182,7 @@ const rankingItems = computed(() => {
   gap: 10px;
   font-family: 'Inter', sans-serif;
   font-size: 16px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 500;
 }
 .amber-cta-c-foot-left strong {
@@ -5201,7 +5201,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   letter-spacing: 0.16em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 600;
   text-transform: uppercase;
   opacity: 0.75;
@@ -5218,7 +5218,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 38px;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.02em;
 }
 .amber-min-sub-center {
@@ -5238,7 +5238,7 @@ const rankingItems = computed(() => {
   font-size: 14px;
   letter-spacing: 0.22em;
   font-weight: 700;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin-top: 14px;
   flex-wrap: wrap;
 }
@@ -5267,7 +5267,7 @@ const rankingItems = computed(() => {
   font-size: 88px;
   line-height: 0.92;
   margin: 0;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 400;
   letter-spacing: -0.02em;
 }
@@ -5278,7 +5278,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   line-height: 1.45;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   max-width: 520px;
   opacity: 0.85;
@@ -5299,7 +5299,7 @@ const rankingItems = computed(() => {
 .amber-bullets li {
   font-family: 'JetBrains Mono', monospace;
   font-size: 16px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: 0.04em;
   padding-left: 24px;
   position: relative;
@@ -5310,7 +5310,7 @@ const rankingItems = computed(() => {
   position: absolute;
   left: 0;
   top: 0;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
 }
 .amber-iphone {
@@ -5374,8 +5374,8 @@ const rankingItems = computed(() => {
   margin-top: 4px;
 }
 .amber-card {
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   padding: 18px 16px 16px 16px;
   border-radius: 12px;
   display: flex;
@@ -5393,7 +5393,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 26px;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.04em;
 }
 .amber-card-badge {
@@ -5404,13 +5404,13 @@ const rankingItems = computed(() => {
   padding: 4px 8px;
   border: 1px solid rgba(245, 166, 35, 0.5);
   border-radius: 4px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
 }
 .amber-card-badge-pos {
-  background: #00D395;
-  color: #0A0B0E;
-  border-color: #00D395;
+  background: var(--brand-positive);
+  color: var(--bg-base);
+  border-color: var(--brand-positive);
 }
 .amber-card-name {
   font-family: 'JetBrains Mono', monospace;
@@ -5446,12 +5446,12 @@ const rankingItems = computed(() => {
 .amber-card-row strong {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.amber-card-row strong.pos { color: #00D395; }
-.amber-card-row strong.neg { color: #FF4747; }
+.amber-card-row strong.pos { color: var(--brand-positive); }
+.amber-card-row strong.neg { color: var(--brand-negative); }
 
 /* ----- POST 4 · FEATURES / LAPTOP ----- */
 .amber-features {
@@ -5478,12 +5478,12 @@ const rankingItems = computed(() => {
 .laptop-frame {
   width: 880px;
   height: 500px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 16px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 4px solid #0A0B0E;
+  border: 4px solid var(--bg-base);
   box-shadow: 0 4px 0 rgba(10, 11, 14, 0.4);
 }
 .laptop-frame::after {
@@ -5498,7 +5498,7 @@ const rankingItems = computed(() => {
   box-shadow: 0 6px 12px rgba(10, 11, 14, 0.3);
 }
 .laptop-bar {
-  background: #14161C;
+  background: var(--bg-elevated);
   padding: 10px 16px;
   display: flex;
   align-items: center;
@@ -5516,23 +5516,23 @@ const rankingItems = computed(() => {
 .laptop-url {
   margin-left: auto;
   margin-right: auto;
-  background: #0A0B0E;
+  background: var(--bg-base);
   padding: 6px 20px;
   border-radius: 6px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.05em;
   font-weight: 600;
 }
 .laptop-screen {
   flex: 1;
   display: flex;
-  background: #0A0B0E;
+  background: var(--bg-base);
 }
 .laptop-sidebar {
   width: 60px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-right: 1px solid rgba(245, 166, 35, 0.08);
   display: flex;
   flex-direction: column;
@@ -5550,7 +5550,7 @@ const rankingItems = computed(() => {
   color: rgba(245, 166, 35, 0.4);
   font-size: 14px;
 }
-.laptop-nav-active { color: #F5A623; }
+.laptop-nav-active { color: var(--brand-primary); }
 .laptop-main {
   flex: 1;
   padding: 18px;
@@ -5564,7 +5564,7 @@ const rankingItems = computed(() => {
   height: 100%;
 }
 .laptop-card {
-  background: #14161C;
+  background: var(--bg-elevated);
   border: 1px solid rgba(245, 166, 35, 0.15);
   border-radius: 10px;
   padding: 14px 16px;
@@ -5578,14 +5578,14 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   letter-spacing: 0.22em;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-transform: uppercase;
   font-weight: 700;
 }
 .laptop-card-big {
   font-family: 'Instrument Serif', serif;
   font-size: 44px;
-  color: #E8EAED;
+  color: var(--brand-text);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -5602,7 +5602,7 @@ const rankingItems = computed(() => {
 }
 .laptop-card-bars span {
   flex: 1;
-  background: linear-gradient(180deg, #F5A623 0%, #C47A12 100%);
+  background: linear-gradient(180deg, var(--brand-primary) 0%, #C47A12 100%);
   border-radius: 3px 3px 0 0;
 }
 .laptop-chat-bubble {
@@ -5613,13 +5613,13 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   line-height: 1.35;
-  color: #E8EAED;
+  color: var(--brand-text);
   font-weight: 500;
 }
 .laptop-card-foot {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
-  color: #00D395;
+  color: var(--brand-positive);
   letter-spacing: 0.1em;
   font-weight: 600;
   margin-top: auto;
@@ -5629,18 +5629,18 @@ const rankingItems = computed(() => {
   justify-content: space-between;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  color: #E8EAED;
+  color: var(--brand-text);
   padding: 4px 0;
   border-bottom: 1px dashed rgba(245, 166, 35, 0.12);
   font-weight: 600;
 }
 .laptop-move:last-child { border-bottom: none; }
-.laptop-move .pos { color: #00D395; }
-.laptop-move .neg { color: #FF4747; }
+.laptop-move .pos { color: var(--brand-positive); }
+.laptop-move .neg { color: var(--brand-negative); }
 .laptop-calc {
   font-family: 'Instrument Serif', serif;
   font-size: 32px;
-  color: #F5A623;
+  color: var(--brand-primary);
   line-height: 1;
 }
 .laptop-calc span {
@@ -5670,8 +5670,8 @@ const rankingItems = computed(() => {
   font-weight: 700;
   letter-spacing: 0.15em;
   padding: 8px 14px;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   border-radius: 999px;
 }
 
@@ -5695,23 +5695,23 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 140px;
   line-height: 0.92;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   font-weight: 400;
   letter-spacing: -0.03em;
 }
 .amber-cta-accent {
   font-style: italic;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   padding: 0 24px 14px 24px;
   display: inline-block;
   border-radius: 14px;
   line-height: 0.85;
 }
 .amber-cta-box {
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   padding: 24px 42px;
   border-radius: 16px;
   display: flex;
@@ -5725,7 +5725,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 46px;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.04em;
 }
 .amber-cta-sub {
@@ -5742,8 +5742,8 @@ const rankingItems = computed(() => {
   margin-top: 14px;
 }
 .amber-cta-badge {
-  background: #F5A623;
-  border: 2px solid #0A0B0E;
+  background: var(--brand-primary);
+  border: 2px solid var(--bg-base);
   border-radius: 12px;
   padding: 14px 22px;
   display: flex;
@@ -5755,7 +5755,7 @@ const rankingItems = computed(() => {
 .amber-cta-badge strong {
   font-family: 'Instrument Serif', serif;
   font-size: 44px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 1;
   font-weight: 400;
 }
@@ -5763,7 +5763,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.18em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
 }
 
@@ -5772,7 +5772,7 @@ const rankingItems = computed(() => {
   font-size: 140px;
   line-height: 0.95;
   margin: 0;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.03em;
   font-weight: 400;
   display: block;
@@ -5793,13 +5793,13 @@ const rankingItems = computed(() => {
 .card-redentia-push,
 .card-redentia-movimento,
 .card-redentia-ranking {
-  background-color: #F5A623;
+  background-color: var(--brand-primary);
   background-image:
     linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
     linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
   background-size: 54px 54px;
   background-position: -1px -1px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   border: none;
   border-radius: 0;
   border-radius: 0;
@@ -5860,7 +5860,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 320px;
   line-height: 0.85;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   letter-spacing: -0.05em;
   font-weight: 400;
@@ -5873,7 +5873,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 80px;
   line-height: 0.95;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   font-weight: 400;
   letter-spacing: -0.02em;
@@ -5882,7 +5882,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   line-height: 1.45;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.85;
   margin: 0;
   max-width: 820px;
@@ -5920,16 +5920,16 @@ const rankingItems = computed(() => {
   align-items: center;
   gap: 24px;
   padding: 18px 24px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 14px;
-  color: #F5A623;
+  color: var(--brand-primary);
   box-shadow: 0 10px 28px rgba(10, 11, 14, 0.25);
 }
 .amber-list-num {
   font-family: 'JetBrains Mono', monospace;
   font-size: 22px;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: 0.04em;
   min-width: 48px;
 }
@@ -5937,11 +5937,11 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 30px;
   line-height: 1.2;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 400;
 }
 .amber-list-hl {
-  color: #FFE082;
+  color: var(--brand-gradient-to);
   font-style: italic;
 }
 
@@ -5973,7 +5973,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 80px;
   line-height: 1;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 400;
   min-width: 110px;
   text-align: center;
@@ -5987,7 +5987,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 24px;
   line-height: 1.35;
-  color: #0A0B0E;
+  color: var(--bg-base);
   flex: 1;
   display: flex;
   align-items: center;
@@ -6021,21 +6021,21 @@ const rankingItems = computed(() => {
   border: 2px dashed rgba(10, 11, 14, 0.3);
 }
 .amber-compare-after {
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
 }
 .amber-compare-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.28em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
   padding-bottom: 10px;
   border-bottom: 1px dashed rgba(10, 11, 14, 0.3);
 }
 .amber-compare-label-after {
-  color: #F5A623;
+  color: var(--brand-primary);
   border-bottom-color: rgba(245, 166, 35, 0.3);
 }
 .amber-compare-col ul {
@@ -6050,7 +6050,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 18px;
   line-height: 1.35;
-  color: #0A0B0E;
+  color: var(--bg-base);
   padding-left: 28px;
   position: relative;
   font-weight: 500;
@@ -6068,7 +6068,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 19px;
   line-height: 1.35;
-  color: #F5A623;
+  color: var(--brand-primary);
   padding-left: 28px;
   position: relative;
   font-weight: 600;
@@ -6078,13 +6078,13 @@ const rankingItems = computed(() => {
   position: absolute;
   left: 0;
   top: 0;
-  color: #00D395;
+  color: var(--brand-positive);
   font-weight: 700;
 }
 .amber-compare-arrow {
   font-family: 'Instrument Serif', serif;
   font-size: 84px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   align-self: center;
   justify-self: center;
   line-height: 1;
@@ -6110,7 +6110,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 280px;
   line-height: 0.6;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 400;
   height: 100px;
   font-style: italic;
@@ -6119,7 +6119,7 @@ const rankingItems = computed(() => {
   font-family: 'Instrument Serif', serif;
   font-size: 96px;
   line-height: 0.98;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 0;
   font-weight: 400;
   letter-spacing: -0.02em;
@@ -6128,7 +6128,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
   letter-spacing: 0.18em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
   margin-top: 20px;
@@ -6148,7 +6148,7 @@ const rankingItems = computed(() => {
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.05em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   margin: 4px 0 0 0;
 }
 .amber-min-stat-unit {
@@ -6187,7 +6187,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
   font-weight: 700;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.5;
   letter-spacing: 0.04em;
   min-width: 44px;
@@ -6197,7 +6197,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 19px;
   line-height: 1.4;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 500;
   flex: 1;
 }
@@ -6226,7 +6226,7 @@ const rankingItems = computed(() => {
   font-size: 64px;
   font-weight: 800;
   line-height: 1;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.03em;
   min-width: 100px;
   padding-right: 24px;
@@ -6236,7 +6236,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   line-height: 1.35;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 500;
   flex: 1;
 }
@@ -6263,21 +6263,21 @@ const rankingItems = computed(() => {
   border: 1px solid rgba(10, 11, 14, 0.2);
 }
 .amber-min-compare-after {
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
 }
 .amber-min-compare-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.24em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
   padding-bottom: 12px;
   border-bottom: 1px solid rgba(10, 11, 14, 0.2);
 }
 .amber-min-compare-label-after {
-  color: #F5A623;
+  color: var(--brand-primary);
   border-bottom-color: rgba(245, 166, 35, 0.3);
 }
 .amber-min-compare-col ul {
@@ -6292,7 +6292,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 17px;
   line-height: 1.35;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.65;
   padding-left: 24px;
   position: relative;
@@ -6310,7 +6310,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 18px;
   line-height: 1.35;
-  color: #F5A623;
+  color: var(--brand-primary);
   padding-left: 24px;
   position: relative;
   font-weight: 600;
@@ -6319,7 +6319,7 @@ const rankingItems = computed(() => {
   content: '✓';
   position: absolute;
   left: 0;
-  color: #00D395;
+  color: var(--brand-positive);
   font-weight: 700;
 }
 
@@ -6332,7 +6332,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 240px;
   font-weight: 900;
-  color: #0A0B0E;
+  color: var(--bg-base);
   line-height: 0.7;
   height: 110px;
   letter-spacing: -0.05em;
@@ -6346,7 +6346,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   letter-spacing: 0.22em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
   margin-top: 32px;
@@ -6371,7 +6371,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 20px;
   letter-spacing: 0.28em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -6440,7 +6440,7 @@ const rankingItems = computed(() => {
 .amber-push-card-icon {
   width: 28px;
   height: 28px;
-  background: #F5A623;
+  background: var(--brand-primary);
   border-radius: 7px;
   display: flex;
   align-items: center;
@@ -6486,7 +6486,7 @@ const rankingItems = computed(() => {
 .amber-push-caption {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.75;
   line-height: 1.4;
   text-align: center;
@@ -6507,14 +6507,14 @@ const rankingItems = computed(() => {
   font-size: 120px;
   font-weight: 800;
   line-height: 0.95;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.05em;
 }
 .amber-mov-name {
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
   letter-spacing: 0.18em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.7;
   font-weight: 600;
   text-transform: uppercase;
@@ -6533,7 +6533,7 @@ const rankingItems = computed(() => {
   font-size: 72px;
   font-weight: 800;
   line-height: 1;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.03em;
 }
 .amber-mov-change {
@@ -6558,7 +6558,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   letter-spacing: 0.12em;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 600;
   opacity: 0.7;
   flex-wrap: wrap;
@@ -6596,7 +6596,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 28px;
   font-weight: 800;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.45;
   letter-spacing: -0.02em;
 }
@@ -6604,7 +6604,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 26px;
   font-weight: 800;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: -0.01em;
 }
 .amber-ranking-value {
@@ -6618,7 +6618,7 @@ const rankingItems = computed(() => {
 .amber-ranking-extra {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.55;
   letter-spacing: 0.08em;
   font-weight: 600;
@@ -6632,8 +6632,8 @@ const rankingItems = computed(() => {
   align-items: center;
   gap: 10px;
   padding: 10px 18px;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   border-radius: 999px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
@@ -6645,7 +6645,7 @@ const rankingItems = computed(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #F5A623;
+  background: var(--brand-primary);
   animation: amber-live-pulse 1.8s ease-in-out infinite;
 }
 .amber-launch-head {
@@ -6661,7 +6661,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 82px;
   line-height: 0.98;
-  color: #0A0B0E;
+  color: var(--bg-base);
   font-weight: 800;
   letter-spacing: -0.04em;
   margin: 0;
@@ -6670,7 +6670,7 @@ const rankingItems = computed(() => {
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   line-height: 1.45;
-  color: #0A0B0E;
+  color: var(--bg-base);
   opacity: 0.75;
   margin: 0;
   max-width: 820px;
@@ -6688,12 +6688,12 @@ const rankingItems = computed(() => {
 .amber-launch-laptop .laptop-frame {
   width: 920px;
   height: 460px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 3px solid #0A0B0E;
+  border: 3px solid var(--bg-base);
 }
 .amber-launch-laptop .laptop-bar {
   padding: 8px 14px;
@@ -6716,8 +6716,8 @@ const rankingItems = computed(() => {
   letter-spacing: 0.16em;
   font-weight: 700;
   padding: 10px 20px;
-  background: #0A0B0E;
-  color: #F5A623;
+  background: var(--bg-base);
+  color: var(--brand-primary);
   border-radius: 999px;
   text-transform: uppercase;
 }
@@ -6741,7 +6741,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 22px;
   font-weight: 700;
-  color: #0A0B0E;
+  color: var(--bg-base);
   letter-spacing: 0.06em;
 }
 
@@ -6759,7 +6759,7 @@ const rankingItems = computed(() => {
   flex-shrink: 0;
 }
 .amber-embed-tile {
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -6777,7 +6777,7 @@ const rankingItems = computed(() => {
   border: 0;
   width: 100%;
   height: 100%;
-  background: #0A0B0E;
+  background: var(--bg-base);
 }
 .amber-embed-iframe-chart {
   height: 170px;
@@ -6791,7 +6791,7 @@ const rankingItems = computed(() => {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.2em;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
   background: linear-gradient(180deg, transparent 0%, rgba(10, 11, 14, 0.85) 60%);
   text-transform: uppercase;
@@ -6805,7 +6805,7 @@ const rankingItems = computed(() => {
   position: relative;
   z-index: 2;
   margin: 8px 0 18px 0;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 12px;
   padding: 24px;
   display: flex;
@@ -6824,7 +6824,7 @@ const rankingItems = computed(() => {
 .amber-embed-code {
   position: relative;
   z-index: 2;
-  background: #0A0B0E;
+  background: var(--bg-base);
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(245, 166, 35, 0.25);
@@ -6865,25 +6865,25 @@ const rankingItems = computed(() => {
   font-size: 11px;
   letter-spacing: 0.18em;
   font-weight: 700;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .amber-embed-code-body {
   padding: 22px 20px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 15px;
   line-height: 1.65;
-  color: #E8EAED;
+  color: var(--brand-text);
   word-break: break-all;
 }
 .amber-embed-code-tag {
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
 }
 .amber-embed-code-attr {
   color: rgba(255, 224, 130, 0.85);
 }
 .amber-embed-code-str {
-  color: #00D395;
+  color: var(--brand-positive);
 }
 </style>
 
@@ -6893,7 +6893,7 @@ const rankingItems = computed(() => {
 html, body {
   margin: 0 !important;
   padding: 0 !important;
-  background: #F5A623 !important;
+  background: var(--brand-primary) !important;
   min-height: 1080px !important;
 }
 body {
@@ -6906,7 +6906,7 @@ body {
   max-height: 1080px !important;
   padding: 0 !important;
   margin: 0 !important;
-  background: #F5A623 !important;
+  background: var(--brand-primary) !important;
   overflow: hidden !important;
   display: block !important;
 }

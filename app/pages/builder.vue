@@ -199,7 +199,7 @@
                       <p class="text-[9px] font-bold uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">{{ idx.name }}</p>
                       <p class="text-sm font-bold tabular-nums">{{ idx.value }}</p>
                     </div>
-                    <span class="text-[10px] font-bold tabular-nums" :style="{ color: idx.positive ? '#4ade80' : '#ef4444' }">{{ idx.change }}</span>
+                    <span class="text-[10px] font-bold tabular-nums" :style="{ color: idx.positive ? '#4ade80' : 'var(--brand-negative)' }">{{ idx.change }}</span>
                   </div>
                 </div>
 
@@ -208,12 +208,12 @@
                   <div class="flex h-full items-center gap-6 px-4" :class="currentStep >= 4 ? 'bld-marquee' : ''">
                     <div v-for="t in marqueeItems" :key="t.s" class="flex shrink-0 items-center gap-2 text-[10px]">
                       <span class="font-bold" :style="{ color: 'var(--brand-text)' }">{{ t.s }}</span>
-                      <span class="tabular-nums" :style="{ color: t.p ? '#4ade80' : '#ef4444' }">{{ t.c }}</span>
+                      <span class="tabular-nums" :style="{ color: t.p ? '#4ade80' : 'var(--brand-negative)' }">{{ t.c }}</span>
                     </div>
                     <!-- duplicate for seamless loop -->
                     <div v-for="t in marqueeItems" :key="t.s + '_dup'" class="flex shrink-0 items-center gap-2 text-[10px]">
                       <span class="font-bold" :style="{ color: 'var(--brand-text)' }">{{ t.s }}</span>
-                      <span class="tabular-nums" :style="{ color: t.p ? '#4ade80' : '#ef4444' }">{{ t.c }}</span>
+                      <span class="tabular-nums" :style="{ color: t.p ? '#4ade80' : 'var(--brand-negative)' }">{{ t.c }}</span>
                     </div>
                   </div>
                 </div>
@@ -268,7 +268,7 @@
                       <div class="min-w-0 flex-1">
                         <div class="flex items-baseline justify-between">
                           <span class="text-[10px] font-bold">{{ asset.ticker }}</span>
-                          <span class="text-[9px] font-semibold tabular-nums" :style="{ color: asset.positive ? '#4ade80' : '#ef4444' }">{{ asset.change }}</span>
+                          <span class="text-[9px] font-semibold tabular-nums" :style="{ color: asset.positive ? '#4ade80' : 'var(--brand-negative)' }">{{ asset.change }}</span>
                         </div>
                         <!-- Allocation bar -->
                         <div class="mt-1 h-1 overflow-hidden rounded-full bg-white/[.04]">
@@ -312,7 +312,7 @@
                   <div
                     v-if="currentStep >= 5"
                     class="absolute right-6 top-4 flex items-center gap-3 rounded-2xl border px-4 py-3 shadow-2xl md:right-8"
-                    :style="{ backgroundColor: 'var(--brand-surface)', borderColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', boxShadow: `0 12px 40px rgba(0,0,0,0.5)` }"
+                    :style="{ backgroundColor: 'var(--brand-surface)', borderColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', boxShadow: `0 12px 40px var(--shadow-ambient)` }"
                   >
                     <div class="flex h-8 w-8 items-center justify-center rounded-lg" :style="{ backgroundColor: '#4ade80' }"><UIcon name="i-lucide-trending-up" class="size-3.5 text-white" /></div>
                     <div>
@@ -502,7 +502,7 @@ const previewDomain = computed(() => {
 })
 
 const colorPresets = [
-  { hex: '#FF5900' }, { hex: '#FACC15' }, { hex: '#DC2626' }, { hex: '#4ADE80' },
+  { hex: '#FF5900' }, { hex: '#FACC15' }, { hex: 'var(--brand-negative)' }, { hex: '#4ADE80' },
   { hex: '#3B82F6' }, { hex: '#8B5CF6' }, { hex: '#EC4899' }, { hex: '#14B8A6' },
 ]
 
@@ -535,7 +535,7 @@ function hslToHex(h: number, s: number, l: number) { s /= 100; l /= 100; const a
 function darkenHex(hex: string, factor: number) { const [h, s, l] = hexToHsl(hex); return hslToHex(h, s, Math.max(0, Math.round(l * (1 - factor)))) }
 
 function derivePalette(primary: string) {
-  return { primary, secondary: darkenHex(primary, 0.15), tertiary: '#0A0A0A', positive: '#4ADE80', negative: '#EF4444', neutral: '#6B7280', background: '#000000', surface: '#0A0A0A', surfaceHover: '#131313', border: '#1F1F1F', text: '#FFFFFF', textMuted: '#9CA3AF', inputBg: '#05070b', inputBgHover: '#070b12', inputBorder: '#1f2937', gradient: { from: primary, via: darkenHex(primary, 0.15), to: darkenHex(primary, 0.3) } }
+  return { primary, secondary: darkenHex(primary, 0.15), tertiary: '#0A0A0A', positive: '#4ADE80', negative: 'var(--brand-negative)', neutral: '#6B7280', background: '#000000', surface: '#0A0A0A', surfaceHover: '#131313', border: '#1F1F1F', text: '#FFFFFF', textMuted: '#9CA3AF', inputBg: '#05070b', inputBgHover: '#070b12', inputBorder: '#1f2937', gradient: { from: primary, via: darkenHex(primary, 0.15), to: darkenHex(primary, 0.3) } }
 }
 
 const fontOptions = [

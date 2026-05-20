@@ -897,7 +897,7 @@ function replay() {
             <span
               v-else
               class="lb-logo-fallback"
-              :style="{ backgroundColor: line.color, color: '#0A0B0E' }"
+              :style="{ backgroundColor: line.color, color: 'var(--bg-base)' }"
             >{{ line.ticker.slice(0, 3) }}</span>
           </div>
           <span class="lb-ticker">{{ line.ticker }}</span>
@@ -944,7 +944,7 @@ function replay() {
   height: 1080px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  background: #0A0B0E;
+  background: var(--bg-base);
   color: #FFFFFF;
   border-radius: 0;
   overflow: hidden;
@@ -989,10 +989,10 @@ function replay() {
   z-index: 3;
 }
 .sb-live { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
-.sb-dot { width: 9px; height: 9px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 12px rgba(245,166,35,0.8); }
+.sb-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--brand-primary); box-shadow: 0 0 12px rgba(245,166,35,0.8); }
 .sb-right { margin-left: auto; }
 .sb-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.22em; font-size: 17px; }
-.sb-brand-accent { color: #F5A623; }
+.sb-brand-accent { color: var(--brand-primary); }
 
 /* Hero: compacto, afastado do status bar pra dar respiro visual. */
 .hero {
@@ -1009,8 +1009,8 @@ function replay() {
 }
 .hero-title .tk { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 96px; letter-spacing: -0.02em; }
 .hero-title .sep { font-style: italic; font-weight: 400; }
-.frame.positive .hero-title .sep { color: #00D395; }
-.frame.negative .hero-title .sep { color: #FF4747; }
+.frame.positive .hero-title .sep { color: var(--brand-positive); }
+.frame.negative .hero-title .sep { color: var(--brand-negative); }
 .hero-sub {
   display: block;
   margin-top: 12px;
@@ -1108,8 +1108,8 @@ function replay() {
   margin-left: 2px;
   opacity: 0.7;
 }
-.lb-card.up .lb-value { color: #00D395; }
-.lb-card.down .lb-value { color: #FF4747; }
+.lb-card.up .lb-value { color: var(--brand-positive); }
+.lb-card.down .lb-value { color: var(--brand-negative); }
 
 /* Footer (unified com ranking). */
 .grfooter {
@@ -1124,7 +1124,7 @@ function replay() {
   z-index: 3;
 }
 .fbrand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.22em; font-size: 16px; }
-.fbrand .fdot { color: #F5A623; }
+.fbrand .fdot { color: var(--brand-primary); }
 .fsep { display: inline-block; width: 12px; height: 1px; background: rgba(255,255,255,0.28); margin: 0 14px; }
 .fright { margin-left: auto; color: #FFFFFF; font-weight: 600; font-size: 15px; }
 

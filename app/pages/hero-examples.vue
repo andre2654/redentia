@@ -150,10 +150,10 @@
           <div class="hex-stage a06">
             <div class="a06-shell">
               <ul class="a06-strike">
-                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="#ef4444" stroke-width="3" /></svg>8 cards de KPI</li>
-                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="#ef4444" stroke-width="3" /></svg>24 indicadores</li>
-                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="#ef4444" stroke-width="3" /></svg>16 charts</li>
-                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="#ef4444" stroke-width="3" /></svg>6 tabelas</li>
+                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="var(--brand-negative)" stroke-width="3" /></svg>8 cards de KPI</li>
+                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="var(--brand-negative)" stroke-width="3" /></svg>24 indicadores</li>
+                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="var(--brand-negative)" stroke-width="3" /></svg>16 charts</li>
+                <li><svg viewBox="0 0 200 20" class="a06-line"><line x1="0" y1="10" x2="200" y2="10" stroke="var(--brand-negative)" stroke-width="3" /></svg>6 tabelas</li>
               </ul>
               <p class="a06-eq">=</p>
               <p class="a06-result">Só <em>o que mexeu.</em></p>
@@ -733,7 +733,7 @@ const a09Tickers = [
 .a04-noise span:nth-child(2n) { background: #5a2424; }
 .a04-noise span:nth-child(3n) { background: #3a1818; }
 .a04-cap { font-size: 11.5px; font-weight: 600; margin: 0; }
-.a04-cap-chaos { color: #ef4444; }
+.a04-cap-chaos { color: var(--brand-negative); }
 .a04-calm { background: var(--bg-default); border: 1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent); overflow: hidden; }
 .a04-glow { position: absolute; inset: 0; background: radial-gradient(circle at center, color-mix(in srgb, var(--brand-primary) 18%, transparent) 0%, transparent 70%); pointer-events: none; }
 .a04-quote { position: relative; font-family: Georgia, serif; font-size: 18px; font-style: italic; color: var(--text-heading); margin: 0 0 12px; line-height: 1.3; min-height: 80px; }
@@ -796,7 +796,7 @@ const a09Tickers = [
 .a08-blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.7; pointer-events: none; }
 .a08-blob-1 { width: 400px; height: 400px; background: #6366f1; top: -100px; left: -100px; }
 .a08-blob-2 { width: 350px; height: 350px; background: #ec4899; bottom: -100px; right: 50px; }
-.a08-blob-3 { width: 300px; height: 300px; background: #fbbf24; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.4; }
+.a08-blob-3 { width: 300px; height: 300px; background: var(--brand-warning); top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.4; }
 .a08-shell { position: relative; max-width: 680px; }
 .a08-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.24em; color: rgba(255,255,255,0.8); margin: 0 0 24px; text-align: center; }
 .a08-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
@@ -804,7 +804,7 @@ const a09Tickers = [
 .a08-card-old { background: rgba(255,255,255,0.05); }
 .a08-card-new { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.4); }
 .a08-card-tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.7); margin: 0 0 14px; }
-.a08-card-new .a08-card-tag { color: #fbbf24; }
+.a08-card-new .a08-card-tag { color: var(--brand-warning); }
 .a08-card-noise { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 .a08-card-noise span { aspect-ratio: 1; background: rgba(255,255,255,0.1); border-radius: 2px; }
 .a08-card-quote { font-family: Georgia, serif; font-size: 18px; font-style: italic; color: #fff; margin: 0; line-height: 1.3; }
@@ -938,15 +938,15 @@ const a09Tickers = [
    ============================================================ */
 .b05 { background: linear-gradient(135deg, #0c0a1f 0%, #1a1240 100%); padding: 40px; }
 .b05-shell { text-align: center; max-width: 560px; }
-.b05-badge { width: 110px; height: 110px; margin: 0 auto 28px; border-radius: 28px; padding: 3px; background: linear-gradient(135deg, #fbbf24, #f0598d, #818cf8, #fbbf24); background-size: 200% 200%; animation: b05-shimmer 4s linear infinite; position: relative; box-shadow: 0 20px 50px -10px rgba(251,191,36,0.4); }
+.b05-badge { width: 110px; height: 110px; margin: 0 auto 28px; border-radius: 28px; padding: 3px; background: linear-gradient(135deg, var(--brand-warning), #f0598d, #818cf8, var(--brand-warning)); background-size: 200% 200%; animation: b05-shimmer 4s linear infinite; position: relative; box-shadow: 0 20px 50px -10px rgba(251,191,36,0.4); }
 @keyframes b05-shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 .b05-badge-inner { width: 100%; height: 100%; background: #1a1240; border-radius: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-.b05-badge-inner :deep(svg) { color: #fbbf24; }
+.b05-badge-inner :deep(svg) { color: var(--brand-warning); }
 .b05-badge-text { font-size: 12px; font-weight: 800; letter-spacing: 0.22em; color: #fff; margin: 0; }
 .b05-h { font-family: Georgia, serif; font-size: clamp(30px, 4.4vw, 42px); font-weight: 300; color: #fff; margin: 0 0 14px; letter-spacing: -0.025em; }
-.b05-h em { font-style: italic; background: linear-gradient(135deg, #fbbf24, #f0598d); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.b05-h em { font-style: italic; background: linear-gradient(135deg, var(--brand-warning), #f0598d); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .b05-sub { font-size: 15px; color: rgba(255,255,255,0.7); margin: 0 0 26px; line-height: 1.5; }
-.b05-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: linear-gradient(135deg, #fbbf24, #f0598d); color: #1a1240; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none; }
+.b05-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: linear-gradient(135deg, var(--brand-warning), #f0598d); color: #1a1240; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none; }
 
 /* ============================================================
    B06 — PIPELINE COM FLUXO
@@ -973,9 +973,9 @@ const a09Tickers = [
 .b07-shell { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; max-width: 800px; }
 .b07-left {}
 .b07-h { font-family: Georgia, serif; font-size: clamp(26px, 3.6vw, 34px); font-weight: 400; color: #fff; margin: 0 0 14px; letter-spacing: -0.022em; }
-.b07-h em { font-style: italic; color: #fbbf24; }
+.b07-h em { font-style: italic; color: var(--brand-warning); }
 .b07-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin: 0 0 22px; line-height: 1.55; }
-.b07-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: #fbbf24; color: #1e1b4b; border-radius: 999px; font-size: 13.5px; font-weight: 700; text-decoration: none; }
+.b07-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: var(--brand-warning); color: #1e1b4b; border-radius: 999px; font-size: 13.5px; font-weight: 700; text-decoration: none; }
 .b07-mock { padding: 18px; background: rgba(255,255,255,0.06); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; }
 .b07-mock-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
 .b07-mock-num { font-family: Georgia, serif; font-size: 22px; font-weight: 400; color: #fff; margin: 0; font-variant-numeric: tabular-nums; }

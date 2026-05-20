@@ -236,8 +236,8 @@ const tenantPreviews = [
     tag: 'Plataforma master, amber editorial',
     badgeLabel: 'Master',
     badgeKind: 'preview',
-    bg: '#0A0B0E',
-    fg: '#F5A623',
+    bg: 'var(--bg-base)',
+    fg: 'var(--brand-primary)',
     font: "'Inter', sans-serif",
     italic: false,
     iframeUrl: '/?brand=redentia',
@@ -253,7 +253,7 @@ const tenantPreviews = [
     badgeLabel: 'Showtime',
     badgeKind: 'demo',
     bg: '#FFD93D',
-    fg: '#1A0A2E',
+    fg: 'var(--text-heading)',
     font: "'Poppins', sans-serif",
     italic: false,
     iframeUrl: '/?brand=me-poupe',
@@ -486,7 +486,7 @@ useHead({
                           <ul class="ass-dash__legend">
                             <li><span class="ass-dash__legend-dot" style="background:#D8881A"/>Renda Variável<em>42%</em></li>
                             <li><span class="ass-dash__legend-dot" style="background:#3B82F6"/>FIIs<em>18%</em></li>
-                            <li><span class="ass-dash__legend-dot" style="background:#10B981"/>Renda Fixa<em>28%</em></li>
+                            <li><span class="ass-dash__legend-dot" style="background:var(--brand-positive)"/>Renda Fixa<em>28%</em></li>
                             <li><span class="ass-dash__legend-dot" style="background:#9CA3AF"/>Exterior<em>8%</em></li>
                             <li><span class="ass-dash__legend-dot" style="background:#D1D5DB"/>Caixa<em>4%</em></li>
                           </ul>
@@ -504,17 +504,17 @@ useHead({
                         </header>
                         <ul class="ass-dash__movers">
                           <li>
-                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-negative)' || '#dc2626' }" />
+                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-negative)' || 'var(--brand-negative)' }" />
                             <span class="ass-dash__mover-label"><strong>PETR4</strong> caiu com petróleo</span>
                             <span class="ass-dash__mover-pct ass-dash__mover-pct--neg">-3,2%</span>
                           </li>
                           <li>
-                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-positive)' || '#10b981' }" />
+                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-positive)' || 'var(--brand-positive)' }" />
                             <span class="ass-dash__mover-label"><strong>IVVB11</strong> compensou com dólar</span>
                             <span class="ass-dash__mover-pct ass-dash__mover-pct--pos">+1,1%</span>
                           </li>
                           <li>
-                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-negative)' || '#dc2626' }" />
+                            <span class="ass-dash__mover-dot" :style="{ background: 'var(--brand-negative)' || 'var(--brand-negative)' }" />
                             <span class="ass-dash__mover-label"><strong>Bancos</strong> com Copom hawkish</span>
                             <span class="ass-dash__mover-pct ass-dash__mover-pct--neg">-0,9%</span>
                           </li>
@@ -706,8 +706,8 @@ useHead({
                     <svg class="ass-asset__chart-svg" viewBox="0 0 700 180" preserveAspectRatio="none" aria-hidden="true">
                       <defs>
                         <linearGradient id="ass-asset-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0.3" />
-                          <stop offset="100%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0" />
+                          <stop offset="0%" :stop-color="'var(--brand-negative, var(--brand-negative))'" stop-opacity="0.3" />
+                          <stop offset="100%" :stop-color="'var(--brand-negative, var(--brand-negative))'" stop-opacity="0" />
                         </linearGradient>
                       </defs>
                       <!-- Grid horizontal sutil -->
@@ -716,10 +716,10 @@ useHead({
                       <line x1="0" y1="135" x2="700" y2="135" stroke="#E4E4E7" stroke-width="1" stroke-dasharray="2,4"/>
                       <!-- Linha do ativo, queda no fim -->
                       <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158 L700,180 L0,180 Z" fill="url(#ass-asset-grad)" />
-                      <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158" :stroke="'var(--brand-negative, #dc2626)'" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158" :stroke="'var(--brand-negative, var(--brand-negative))'" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
                       <!-- Pontilho sob o ultimo ponto -->
-                      <circle cx="700" cy="158" r="4" :fill="'var(--brand-negative, #dc2626)'" />
-                      <circle cx="700" cy="158" r="9" :fill="'var(--brand-negative, #dc2626)'" fill-opacity="0.18" />
+                      <circle cx="700" cy="158" r="4" :fill="'var(--brand-negative, var(--brand-negative))'" />
+                      <circle cx="700" cy="158" r="9" :fill="'var(--brand-negative, var(--brand-negative))'" fill-opacity="0.18" />
                     </svg>
                   </div>
 
@@ -902,18 +902,18 @@ useHead({
               <div class="ass-float__head">Performance no dia</div>
               <div class="ass-float__row">
                 <div class="ass-float__col">
-                  <span class="ass-float__num" :style="{ color: 'var(--brand-negative)' || '#dc2626' }">-1,8%</span>
+                  <span class="ass-float__num" :style="{ color: 'var(--brand-negative)' || 'var(--brand-negative)' }">-1,8%</span>
                   <span class="ass-float__sub">R$ -22.340</span>
                 </div>
                 <svg class="ass-float__spark" viewBox="0 0 70 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="ass-float-spark" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0.35" />
-                      <stop offset="100%" :stop-color="'var(--brand-negative, #dc2626)'" stop-opacity="0" />
+                      <stop offset="0%" :stop-color="'var(--brand-negative, var(--brand-negative))'" stop-opacity="0.35" />
+                      <stop offset="100%" :stop-color="'var(--brand-negative, var(--brand-negative))'" stop-opacity="0" />
                     </linearGradient>
                   </defs>
                   <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28 L70,36 L0,36 Z" fill="url(#ass-float-spark)" />
-                  <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28" :stroke="'var(--brand-negative, #dc2626)'" stroke-width="1.5" fill="none" />
+                  <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28" :stroke="'var(--brand-negative, var(--brand-negative))'" stroke-width="1.5" fill="none" />
                 </svg>
               </div>
             </div>
@@ -1619,7 +1619,7 @@ useHead({
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 40%, transparent);
   font-family: var(--brand-font);
-  color: #1A0A2E;
+  color: var(--text-heading);
   cursor: pointer;
   text-align: center;
   transition: filter 200ms;
@@ -1657,7 +1657,7 @@ useHead({
   gap: 5px;
   padding: 4px 12px;
   border-radius: 999px;
-  background: #1A0A2E;
+  background: var(--text-heading);
   color: var(--brand-primary);
   font-size: 11.5px;
   font-weight: 600;
@@ -1936,7 +1936,7 @@ useHead({
   align-items: center;
   gap: 6px;
 }
-.lp-hero__trust svg { color: var(--brand-positive, #10b981); }
+.lp-hero__trust svg { color: var(--brand-positive, var(--brand-positive)); }
 
 /* ============ HERO DASHBOARD MOCK (.ass-dash + .ass-float) ============
    Substitui o mockup pequeno do raio-x. Aqui o objetivo e mostrar a
@@ -2007,7 +2007,7 @@ useHead({
   overflow: hidden;
   font-size: 12px;
   line-height: 1.4;
-  color: #0F1116;
+  color: var(--bg-input);
 }
 
 /* ====== Browser chrome (mac-style top bar) ====== */
@@ -2044,7 +2044,7 @@ useHead({
   border-radius: 6px;
   background: #FFFFFF;
   font-size: 11px;
-  color: #71717A;
+  color: var(--text-muted);
   border: 1px solid color-mix(in srgb, var(--brand-border) 45%, transparent);
 }
 
@@ -2059,7 +2059,7 @@ useHead({
   align-items: center;
   gap: 18px;
   padding: 12px 18px;
-  background: #0F1116;
+  background: var(--bg-input);
   color: #FAFAFB;
 }
 .ass-dash__brand {
@@ -2076,7 +2076,7 @@ useHead({
   height: 32px;
   border-radius: 6px;
   background: #FFFFFF;
-  color: #0F1116;
+  color: var(--bg-input);
   font-family: 'Instrument Serif', serif;
   font-size: 14px;
   font-weight: 600;
@@ -2152,7 +2152,7 @@ useHead({
   height: 6px;
   border-radius: 50%;
   background: var(--brand-primary);
-  box-shadow: 0 0 0 2px #0F1116;
+  box-shadow: 0 0 0 2px var(--bg-input);
 }
 .ass-dash__avatar {
   display: inline-flex;
@@ -2161,7 +2161,7 @@ useHead({
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #71717A, #3F3F46);
+  background: linear-gradient(135deg, var(--text-muted), var(--border-default));
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -2203,7 +2203,7 @@ useHead({
   gap: 7px;
   font-size: 10.5px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.005em;
 }
 .ass-dash__card-icon {
@@ -2339,7 +2339,7 @@ useHead({
   font-family: 'Instrument Serif', serif;
   font-size: 22px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.02em;
 }
 .ass-dash__loading-spinner {
@@ -2372,7 +2372,7 @@ useHead({
   margin: 0;
   font-size: 13px;
   font-weight: 500;
-  color: #3F3F46;
+  color: var(--border-default);
   text-align: center;
   letter-spacing: -0.005em;
   /* Fade-in da frase, separado da fade do overlay, pra dar
@@ -2431,7 +2431,7 @@ useHead({
   font-family: var(--brand-font);
   font-size: 10.5px;
   font-weight: 500;
-  color: #71717A;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 200ms;
 }
@@ -2444,10 +2444,10 @@ useHead({
   transition: background 200ms;
 }
 .ass-dash__pager-dot:hover {
-  color: #0F1116;
+  color: var(--bg-input);
 }
 .ass-dash__pager-dot:hover::before {
-  background: #71717A;
+  background: var(--text-muted);
 }
 .ass-dash__pager-dot.is-active {
   background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
@@ -2487,14 +2487,14 @@ useHead({
   font-family: 'Instrument Serif', serif;
   font-size: 18px;
   font-weight: 400;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.02em;
   line-height: 1.15;
 }
 .ass-chat__sub {
   margin: 2px 0 0;
   font-size: 10px;
-  color: #71717A;
+  color: var(--text-muted);
 }
 .ass-chat__badge {
   display: inline-flex;
@@ -2544,7 +2544,7 @@ useHead({
   flex-shrink: 0;
 }
 .ass-chat__msg-avatar--user {
-  background: linear-gradient(135deg, #71717A, #3F3F46);
+  background: linear-gradient(135deg, var(--text-muted), var(--border-default));
 }
 .ass-chat__msg-avatar--ai {
   background: linear-gradient(135deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 70%, #B85F0A));
@@ -2556,7 +2556,7 @@ useHead({
   background: color-mix(in srgb, var(--brand-text) 4%, transparent);
   font-size: 11px;
   line-height: 1.5;
-  color: #0F1116;
+  color: var(--bg-input);
   max-width: 78%;
 }
 .ass-chat__msg--user .ass-chat__msg-bubble {
@@ -2574,10 +2574,10 @@ useHead({
   margin: 0;
   font-size: 11px;
   line-height: 1.55;
-  color: #0F1116;
+  color: var(--bg-input);
 }
 .ass-chat__msg-bubble p strong {
-  color: #0F1116;
+  color: var(--bg-input);
   font-weight: 600;
 }
 .ass-chat__msg-bubble p + p { margin-top: 6px; }
@@ -2595,7 +2595,7 @@ useHead({
   padding-left: 12px;
   font-size: 10.5px;
   line-height: 1.5;
-  color: #3F3F46;
+  color: var(--border-default);
 }
 .ass-chat__bullets li::before {
   content: '';
@@ -2607,7 +2607,7 @@ useHead({
   border-radius: 50%;
   background: var(--brand-primary);
 }
-.ass-chat__bullets li strong { color: #0F1116; font-weight: 600; }
+.ass-chat__bullets li strong { color: var(--bg-input); font-weight: 600; }
 
 .ass-chat__sumline {
   margin-top: 10px !important;
@@ -2633,7 +2633,7 @@ useHead({
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #71717A;
+  color: var(--text-muted);
   margin-right: 2px;
 }
 .ass-chat__source {
@@ -2642,7 +2642,7 @@ useHead({
   border-radius: 5px;
   background: color-mix(in srgb, var(--brand-text) 5%, transparent);
   font-size: 9.5px;
-  color: #3F3F46;
+  color: var(--border-default);
   border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
 }
 
@@ -2655,7 +2655,7 @@ useHead({
 }
 .ass-chat__sugs-label {
   font-size: 9.5px;
-  color: #71717A;
+  color: var(--text-muted);
   font-weight: 500;
   margin-right: 2px;
 }
@@ -2685,7 +2685,7 @@ useHead({
   border-radius: 12px;
   background: #FFFFFF;
   border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
-  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px -6px var(--shadow-amber-near);
 }
 .ass-chat__input-icon {
   display: inline-flex;
@@ -2695,14 +2695,14 @@ useHead({
 .ass-chat__input-placeholder {
   flex: 1;
   font-size: 11px;
-  color: #A1A1AA;
+  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
   min-height: 14px;
 }
 /* Quando ta digitando, texto fica com cor do user (nao mais placeholder). */
 .ass-chat__input-placeholder.is-typing {
-  color: #0F1116;
+  color: var(--bg-input);
 }
 
 /* Caret pulsante amber depois do texto digitado */
@@ -3052,7 +3052,7 @@ useHead({
   align-items: center;
   gap: 6px;
   font-size: 10px;
-  color: #71717A;
+  color: var(--text-muted);
   font-weight: 500;
 }
 .ass-asset__crumb .is-current {
@@ -3105,7 +3105,7 @@ useHead({
   font-family: 'Instrument Serif', serif;
   font-size: 26px;
   font-weight: 400;
-  color: #0F1116;
+  color: var(--bg-input);
   margin: 0;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -3113,7 +3113,7 @@ useHead({
 .ass-asset__name {
   font-size: 11px;
   font-weight: 600;
-  color: #3F3F46;
+  color: var(--border-default);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -3125,7 +3125,7 @@ useHead({
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #A1A1AA;
+  color: var(--text-muted);
   margin: 1px 0 0;
 }
 
@@ -3142,13 +3142,13 @@ useHead({
 }
 .ass-asset__price-currency {
   font-size: 12px;
-  color: #71717A;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 .ass-asset__price-value {
   font-size: 32px;
   font-weight: 300;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -3169,19 +3169,19 @@ useHead({
   font-variant-numeric: tabular-nums;
 }
 .ass-asset__chip--neg {
-  background: color-mix(in srgb, var(--brand-negative, #dc2626) 14%, transparent);
-  color: var(--brand-negative, #dc2626);
+  background: color-mix(in srgb, var(--brand-negative, var(--brand-negative)) 14%, transparent);
+  color: var(--brand-negative, var(--brand-negative));
 }
 .ass-asset__chip--pos {
-  background: color-mix(in srgb, var(--brand-positive, #10b981) 14%, transparent);
-  color: var(--brand-positive, #10b981);
+  background: color-mix(in srgb, var(--brand-positive, var(--brand-positive)) 14%, transparent);
+  color: var(--brand-positive, var(--brand-positive));
 }
 .ass-asset__price-when {
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #A1A1AA;
+  color: var(--text-muted);
 }
 
 /* Stats row 6 colunas */
@@ -3201,16 +3201,16 @@ useHead({
   font-size: 8.5px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #A1A1AA;
+  color: var(--text-muted);
 }
 .ass-asset__stats strong {
   font-size: 11.5px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   font-variant-numeric: tabular-nums;
 }
-.ass-asset__stats strong.is-pos { color: var(--brand-positive, #10b981); }
-.ass-asset__stats strong.is-neg { color: var(--brand-negative, #dc2626); }
+.ass-asset__stats strong.is-pos { color: var(--brand-positive, var(--brand-positive)); }
+.ass-asset__stats strong.is-neg { color: var(--brand-negative, var(--brand-negative)); }
 
 /* Chart */
 .ass-asset__chart {
@@ -3229,7 +3229,7 @@ useHead({
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #71717A;
+  color: var(--text-muted);
 }
 .ass-asset__chart-range {
   display: flex;
@@ -3247,7 +3247,7 @@ useHead({
   border-radius: 4px;
   font-size: 9px;
   font-weight: 600;
-  color: #71717A;
+  color: var(--text-muted);
   cursor: default;
 }
 .ass-asset__chart-range span.is-active {
@@ -3293,7 +3293,7 @@ useHead({
   gap: 7px;
   font-size: 10px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
 }
 .ass-asset__card-title { letter-spacing: -0.005em; }
 
@@ -3301,9 +3301,9 @@ useHead({
   margin: 0;
   font-size: 10.5px;
   line-height: 1.55;
-  color: #3F3F46;
+  color: var(--border-default);
 }
-.ass-asset__ai-text strong { color: #0F1116; font-weight: 600; }
+.ass-asset__ai-text strong { color: var(--bg-input); font-weight: 600; }
 .ass-asset__ai-tags {
   display: flex;
   flex-wrap: wrap;
@@ -3337,24 +3337,24 @@ useHead({
   border-radius: 5px;
   background: #FFFFFF;
   font-size: 10px;
-  color: #71717A;
+  color: var(--text-muted);
   border: 1px solid color-mix(in srgb, var(--brand-border) 45%, transparent);
   font-variant-numeric: tabular-nums;
 }
 .ass-asset__divs li strong {
   font-weight: 600;
   font-size: 10.5px;
-  color: #0F1116;
+  color: var(--bg-input);
 }
-.ass-asset__divs li strong.is-pos { color: var(--brand-positive, #10b981); }
+.ass-asset__divs li strong.is-pos { color: var(--brand-positive, var(--brand-positive)); }
 .ass-asset__divs-foot {
   margin: 4px 0 0;
   padding-top: 6px;
   border-top: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
   font-size: 9.5px;
-  color: #71717A;
+  color: var(--text-muted);
 }
-.ass-asset__divs-foot strong { color: #0F1116; font-weight: 600; }
+.ass-asset__divs-foot strong { color: var(--bg-input); font-weight: 600; }
 
 .ass-asset__news {
   list-style: none;
@@ -3370,7 +3370,7 @@ useHead({
   gap: 2px;
   font-size: 10px;
   line-height: 1.4;
-  color: #3F3F46;
+  color: var(--border-default);
 }
 .ass-asset__news-time {
   font-size: 8.5px;
@@ -3399,7 +3399,7 @@ useHead({
   background: conic-gradient(
     #D8881A 0% 42%,
     #3B82F6 42% 60%,
-    #10B981 60% 88%,
+    var(--brand-positive) 60% 88%,
     #9CA3AF 88% 96%,
     #D1D5DB 96% 100%
   );
@@ -3426,21 +3426,21 @@ useHead({
 }
 .ass-dash__donut-label {
   font-size: 6px;
-  color: #71717A;
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .ass-dash__donut-value {
   font-size: 8.5px;
   font-weight: 700;
-  color: #0F1116;
+  color: var(--bg-input);
   font-variant-numeric: tabular-nums;
   margin-top: 1px;
 }
 .ass-dash__donut-delta {
   font-size: 6.5px;
   font-weight: 600;
-  color: var(--brand-negative, #dc2626);
+  color: var(--brand-negative, var(--brand-negative));
   font-variant-numeric: tabular-nums;
   margin-top: 1px;
 }
@@ -3453,7 +3453,7 @@ useHead({
   flex-direction: column;
   gap: 3px;
   font-size: 9.5px;
-  color: #3F3F46;
+  color: var(--border-default);
 }
 .ass-dash__legend li {
   display: flex;
@@ -3464,7 +3464,7 @@ useHead({
   margin-left: auto;
   font-style: normal;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   font-variant-numeric: tabular-nums;
 }
 .ass-dash__legend-dot {
@@ -3488,7 +3488,7 @@ useHead({
   align-items: center;
   gap: 7px;
   font-size: 10.5px;
-  color: #3F3F46;
+  color: var(--border-default);
 }
 .ass-dash__mover-dot {
   width: 6px;
@@ -3497,21 +3497,21 @@ useHead({
   flex-shrink: 0;
 }
 .ass-dash__mover-label { flex: 1; }
-.ass-dash__mover-label strong { color: #0F1116; font-weight: 600; }
+.ass-dash__mover-label strong { color: var(--bg-input); font-weight: 600; }
 .ass-dash__mover-pct {
   font-size: 10px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
-.ass-dash__mover-pct--neg { color: var(--brand-negative, #dc2626); }
-.ass-dash__mover-pct--pos { color: var(--brand-positive, #10b981); }
+.ass-dash__mover-pct--neg { color: var(--brand-negative, var(--brand-negative)); }
+.ass-dash__mover-pct--pos { color: var(--brand-positive, var(--brand-positive)); }
 .ass-dash__movers-foot {
   margin: 6px 0 0;
   padding-top: 7px;
   border-top: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
   font-size: 9.5px;
-  color: #71717A;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -3519,12 +3519,12 @@ useHead({
 .ass-dash__ai-greet {
   margin: 0;
   font-size: 10.5px;
-  color: #0F1116;
+  color: var(--bg-input);
   font-weight: 500;
 }
 .ass-dash__ai-greet em {
   font-style: normal;
-  color: #71717A;
+  color: var(--text-muted);
   font-weight: 400;
 }
 .ass-dash__ai-bubble {
@@ -3535,7 +3535,7 @@ useHead({
   border: 1px solid color-mix(in srgb, var(--brand-primary) 24%, transparent);
   font-size: 10px;
   line-height: 1.45;
-  color: #0F1116;
+  color: var(--bg-input);
 }
 .ass-dash__ai-cursor {
   position: absolute;
@@ -3547,7 +3547,7 @@ useHead({
 .ass-dash__ai-suglabel {
   margin: 4px 0 0;
   font-size: 9px;
-  color: #71717A;
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -3562,7 +3562,7 @@ useHead({
   border-radius: 6px;
   background: #F4F4F5;
   font-size: 9.5px;
-  color: #3F3F46;
+  color: var(--border-default);
   border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
 }
 
@@ -3571,12 +3571,12 @@ useHead({
   margin: 0;
   font-size: 10px;
   font-weight: 500;
-  color: #0F1116;
+  color: var(--bg-input);
 }
 .ass-dash__report-body {
   margin: 0;
   font-size: 9.5px;
-  color: #71717A;
+  color: var(--text-muted);
   line-height: 1.45;
 }
 .ass-dash__report-row {
@@ -3612,7 +3612,7 @@ useHead({
   width: 16px;
   height: 16px;
   border-radius: 3px;
-  background: #0F1116;
+  background: var(--bg-input);
   color: #FFFFFF;
   font-family: 'Instrument Serif', serif;
   font-size: 8px;
@@ -3648,7 +3648,7 @@ useHead({
   padding-left: 11px;
   font-size: 10px;
   line-height: 1.4;
-  color: #3F3F46;
+  color: var(--border-default);
 }
 .ass-dash__insights li::before {
   content: '';
@@ -3660,7 +3660,7 @@ useHead({
   border-radius: 50%;
   background: var(--brand-primary);
 }
-.ass-dash__insights li strong { color: #0F1116; font-weight: 600; }
+.ass-dash__insights li strong { color: var(--bg-input); font-weight: 600; }
 
 /* ====== Card 6: Alerts ====== */
 .ass-dash__alert {
@@ -3670,15 +3670,15 @@ useHead({
   padding: 7px 10px;
   border-radius: 7px;
   font-size: 10px;
-  color: #3F3F46;
+  color: var(--border-default);
 }
 .ass-dash__alert--warn {
-  background: color-mix(in srgb, var(--brand-negative, #dc2626) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-negative, #dc2626) 22%, transparent);
+  background: color-mix(in srgb, var(--brand-negative, var(--brand-negative)) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-negative, var(--brand-negative)) 22%, transparent);
 }
 .ass-dash__alert--ok {
-  background: color-mix(in srgb, var(--brand-positive, #10b981) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-positive, #10b981) 22%, transparent);
+  background: color-mix(in srgb, var(--brand-positive, var(--brand-positive)) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-positive, var(--brand-positive)) 22%, transparent);
 }
 .ass-dash__alert-tag {
   display: inline-flex;
@@ -3692,11 +3692,11 @@ useHead({
 }
 .ass-dash__alert--warn .ass-dash__alert-tag {
   background: rgba(255, 255, 255, 0.7);
-  color: var(--brand-negative, #dc2626);
+  color: var(--brand-negative, var(--brand-negative));
 }
 .ass-dash__alert--ok .ass-dash__alert-tag {
   background: rgba(255, 255, 255, 0.7);
-  color: var(--brand-positive, #10b981);
+  color: var(--brand-positive, var(--brand-positive));
 }
 
 /* ============ FLOATS sobrepostos ao dashboard ============ */
@@ -3715,7 +3715,7 @@ useHead({
     0 6px 18px -8px rgba(0, 0, 0, 0.10);
   font-size: 11px;
   line-height: 1.3;
-  color: #0F1116;
+  color: var(--bg-input);
   white-space: nowrap;
   animation: ass-float-in 700ms cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
   /* Transition do transform pra animar entre os translateZ default <->
@@ -3747,7 +3747,7 @@ useHead({
 .ass-float__head {
   font-size: 9.5px;
   font-weight: 600;
-  color: #71717A;
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -3770,7 +3770,7 @@ useHead({
 }
 .ass-float__sub {
   font-size: 9.5px;
-  color: #71717A;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   margin-top: 2px;
 }
@@ -3803,7 +3803,7 @@ useHead({
   display: block;
   font-size: 18px;
   font-weight: 700;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.015em;
   font-variant-numeric: tabular-nums;
   line-height: 1.05;
@@ -3812,7 +3812,7 @@ useHead({
   font-style: normal;
   font-size: 10.5px;
   font-weight: 500;
-  color: var(--brand-positive, #10b981);
+  color: var(--brand-positive, var(--brand-positive));
   margin-left: 4px;
 }
 
@@ -3833,7 +3833,7 @@ useHead({
   display: block;
   font-size: 11.5px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.005em;
   margin-bottom: 2px;
 }
@@ -3924,7 +3924,7 @@ useHead({
   background: #FFFFFF;
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
-  box-shadow: 0 14px 36px -16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 36px -16px var(--shadow-amber-near);
   overflow: hidden;
   transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
               box-shadow 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -3967,9 +3967,9 @@ useHead({
   border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent);
 }
 .ass-preview__badge--demo {
-  background: color-mix(in srgb, var(--brand-positive, #10b981) 14%, transparent);
-  color: var(--brand-positive, #10b981);
-  border: 1px solid color-mix(in srgb, var(--brand-positive, #10b981) 28%, transparent);
+  background: color-mix(in srgb, var(--brand-positive, var(--brand-positive)) 14%, transparent);
+  color: var(--brand-positive, var(--brand-positive));
+  border: 1px solid color-mix(in srgb, var(--brand-positive, var(--brand-positive)) 28%, transparent);
 }
 
 .ass-preview__brand {
@@ -4000,7 +4000,7 @@ useHead({
 .ass-preview__name {
   font-size: 16px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.01em;
 }
 .ass-preview__tag {
@@ -4126,7 +4126,7 @@ useHead({
   border-radius: 16px;
   background: #FFFFFF;
   border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
-  box-shadow: 0 14px 36px -18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 36px -18px var(--shadow-amber-near);
 }
 @media (min-width: 768px) {
   .ass-previews__foot {
@@ -4167,7 +4167,7 @@ useHead({
 .ass-previews__foot-text strong {
   font-size: 13.5px;
   font-weight: 600;
-  color: #0F1116;
+  color: var(--bg-input);
   letter-spacing: -0.005em;
 }
 .ass-previews__foot-text span {
@@ -5169,7 +5169,7 @@ useHead({
 <style>
 body.assessorias-light-only {
   --brand-background: #FAFAFB;
-  --brand-text: #1A0A2E;
+  --brand-text: var(--text-heading);
   --brand-text-muted: rgba(26, 10, 46, 0.6);
   --brand-surface: #FFFFFF;
   --brand-surface-hover: #F4F4F5;
@@ -5177,7 +5177,7 @@ body.assessorias-light-only {
   --brand-input-bg: #FFFFFF;
   --brand-input-bg-hover: #FAFAFB;
   --brand-input-border: rgba(26, 10, 46, 0.2);
-  --text-heading: #1A0A2E;
+  --text-heading: var(--text-heading);
   --text-body: rgba(26, 10, 46, 0.85);
   --text-muted: rgba(26, 10, 46, 0.55);
   --bg-base: #FAFAFB;
@@ -5187,7 +5187,7 @@ body.assessorias-light-only {
   --border-default: rgba(26, 10, 46, 0.18);
   --border-strong: rgba(26, 10, 46, 0.30);
   background: #FAFAFB !important;
-  color: #1A0A2E;
+  color: var(--text-heading);
   color-scheme: light;
 }
 </style>

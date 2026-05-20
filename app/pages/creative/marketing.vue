@@ -251,8 +251,8 @@ const rankingRows = [
         <span class="eyebrow">{{ eyebrow || 'WHITE LABEL' }}</span>
         <h2 class="serif-mid">{{ title || '5 marcas. 1 infra.' }}</h2>
         <div class="tg-grid">
-          <div class="tg-item" style="background:#0A0B0E">
-            <div class="tg-name" style="color:#F5A623;font-family:'Instrument Serif'">Redentia</div>
+          <div class="tg-item" style="background:var(--bg-base)">
+            <div class="tg-name" style="color:var(--brand-primary);font-family:'Instrument Serif'">Redentia</div>
           </div>
           <div class="tg-item" style="background:#F7F5EF">
             <div class="tg-name" style="color:#1C2133;font-family:'Fraunces';font-style:italic">Norte</div>
@@ -263,7 +263,7 @@ const rankingRows = [
           <div class="tg-item" style="background:#F6F1E8">
             <div class="tg-name" style="color:#C84B31;font-family:'IBM Plex Serif';font-style:italic">Sardinha</div>
           </div>
-          <div class="tg-item" style="background:#1A0A2E">
+          <div class="tg-item" style="background:var(--text-heading)">
             <div class="tg-name" style="color:#FACC15;font-family:'Poppins';font-weight:900">Me Poupe!</div>
           </div>
           <div class="tg-item tg-next">
@@ -454,7 +454,7 @@ const rankingRows = [
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  background: #0A0B0E;
+  background: var(--bg-base);
   font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -464,9 +464,9 @@ const rankingRows = [
   height: 1080px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  background: #0A0B0E;
-  color: #E8EAED;
-  border: 1px solid #2A2E39;
+  background: var(--bg-base);
+  color: var(--brand-text);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
@@ -488,8 +488,8 @@ const rankingRows = [
 .bg-layer.grid {
   opacity: 0.04;
   background-image:
-    linear-gradient(#E8EAED 1px, transparent 1px),
-    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
+    linear-gradient(var(--brand-text) 1px, transparent 1px),
+    linear-gradient(90deg, var(--brand-text) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 .bg-layer.scanlines {
@@ -509,7 +509,7 @@ const rankingRows = [
   font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 .hdr-left {
   display: flex;
@@ -521,11 +521,11 @@ const rankingRows = [
   height: 32px;
 }
 .hdr-name {
-  color: #E8EAED;
+  color: var(--brand-text);
   font-weight: 700;
 }
 .hdr-right {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 .foot {
@@ -540,7 +540,7 @@ const rankingRows = [
   font-size: 13px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 .foot-logo {
   width: 28px;
@@ -583,12 +583,12 @@ const rankingRows = [
   font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
   margin-bottom: 24px;
   display: inline-block;
 }
 .eyebrow.amber {
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
 }
 
@@ -597,7 +597,7 @@ const rankingRows = [
   font-size: 112px;
   line-height: 0.92;
   letter-spacing: -0.02em;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
   max-width: 900px;
 }
@@ -610,7 +610,7 @@ const rankingRows = [
   font-size: 72px;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0 0 32px 0;
   max-width: 900px;
 }
@@ -620,7 +620,7 @@ const rankingRows = [
 }
 
 .amber {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -630,9 +630,9 @@ const rankingRows = [
   margin-top: 48px;
   width: 100%;
   max-width: 780px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: #14161C;
+  background: var(--bg-elevated);
   overflow: hidden;
   text-align: left;
 }
@@ -641,23 +641,23 @@ const rankingRows = [
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid #2A2E39;
-  background: #0A0B0E;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-base);
 }
 .dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
-.dot.red { background: #FF4747; }
-.dot.amber { background: #F5A623; }
-.dot.green { background: #00D395; }
+.dot.red { background: var(--brand-negative); }
+.dot.amber { background: var(--brand-primary); }
+.dot.green { background: var(--brand-positive); }
 .terminal-title {
   margin-left: 12px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.15em;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 .terminal-body {
@@ -665,14 +665,14 @@ const rankingRows = [
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
   line-height: 1.7;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .prompt {
-  color: #F5A623;
+  color: var(--brand-primary);
   margin-right: 8px;
 }
 .terminal-body .muted {
-  color: #00D395;
+  color: var(--brand-positive);
 }
 
 /* ============================================================
@@ -682,7 +682,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-size: 360px;
   line-height: 0.9;
-  color: #F5A623;
+  color: var(--brand-primary);
   letter-spacing: -0.04em;
 }
 .stat-label {
@@ -691,12 +691,12 @@ const rankingRows = [
   font-size: 20px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .sub-small {
   margin-top: 28px;
   font-size: 22px;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -706,7 +706,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-size: 200px;
   line-height: 0.5;
-  color: #F5A623;
+  color: var(--brand-primary);
   margin-top: 40px;
   margin-bottom: 16px;
 }
@@ -714,7 +714,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-size: 44px;
   line-height: 1.25;
-  color: #E8EAED;
+  color: var(--brand-text);
   max-width: 820px;
   margin-top: 16px;
   font-style: italic;
@@ -730,7 +730,7 @@ const rankingRows = [
   height: 64px;
   border-radius: 50%;
   background: rgba(245, 166, 35, 0.2);
-  color: #F5A623;
+  color: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -744,11 +744,11 @@ const rankingRows = [
 .author-name {
   font-size: 22px;
   font-weight: 700;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .author-role {
   font-size: 14px;
-  color: #8B92A7;
+  color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -768,9 +768,9 @@ const rankingRows = [
 }
 .ba-side {
   padding: 40px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -781,17 +781,17 @@ const rankingRows = [
   font-size: 14px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-bottom: 16px;
 }
 .ba-label.amber {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .ba-text {
   font-family: 'Instrument Serif', serif;
   font-size: 38px;
   line-height: 1.15;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .ba-divider {
   display: flex;
@@ -800,7 +800,7 @@ const rankingRows = [
 }
 .ba-arrow {
   font-size: 80px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
 }
 .ba-bottom {
@@ -810,7 +810,7 @@ const rankingRows = [
   font-size: 18px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 
 /* ============================================================
@@ -825,9 +825,9 @@ const rankingRows = [
   max-width: 820px;
 }
 .fg-item {
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
   padding: 40px 32px;
   text-align: center;
 }
@@ -838,7 +838,7 @@ const rankingRows = [
 .fg-title {
   font-family: 'Instrument Serif', serif;
   font-size: 36px;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .fg-sub {
   margin-top: 8px;
@@ -846,7 +846,7 @@ const rankingRows = [
   font-size: 14px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -862,13 +862,13 @@ const rankingRows = [
 }
 .pd-side {
   padding: 40px 32px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
   text-align: center;
 }
 .pd-side.pd-us {
-  border-color: #F5A623;
+  border-color: var(--brand-primary);
   box-shadow: 0 10px 40px -15px rgba(245, 166, 35, 0.5);
 }
 .pd-brand {
@@ -876,17 +876,17 @@ const rankingRows = [
   font-size: 16px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-bottom: 16px;
 }
 .pd-price {
   font-family: 'Instrument Serif', serif;
   font-size: 96px;
   line-height: 0.9;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .pd-price.amber {
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .pd-unit {
   margin-top: 8px;
@@ -894,7 +894,7 @@ const rankingRows = [
   font-size: 14px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 .pd-bullets {
   list-style: none;
@@ -902,7 +902,7 @@ const rankingRows = [
   margin: 32px 0 0 0;
   text-align: left;
   font-size: 18px;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .pd-bullets li {
   padding: 6px 0;
@@ -914,7 +914,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-style: italic;
   font-size: 72px;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -922,9 +922,9 @@ const rankingRows = [
    ============================================================ */
 .code-box {
   margin-top: 24px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: #14161C;
+  background: var(--bg-elevated);
   overflow: hidden;
   flex: 1;
 }
@@ -933,15 +933,15 @@ const rankingRows = [
   align-items: center;
   gap: 8px;
   padding: 14px 20px;
-  border-bottom: 1px solid #2A2E39;
-  background: #0A0B0E;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-base);
 }
 .code-title {
   margin-left: 14px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 0.15em;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-transform: uppercase;
 }
 .code-body {
@@ -949,18 +949,18 @@ const rankingRows = [
   font-family: 'JetBrains Mono', monospace;
   font-size: 22px;
   line-height: 1.7;
-  color: #E8EAED;
+  color: var(--brand-text);
   margin: 0;
 }
-.code-body .amber { color: #F5A623; }
-.code-body .green { color: #00D395; }
+.code-body .amber { color: var(--brand-primary); }
+.code-body .green { color: var(--brand-positive); }
 .code-foot {
   margin-top: 24px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 18px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
   text-align: center;
 }
 
@@ -977,7 +977,7 @@ const rankingRows = [
 }
 .tg-item {
   aspect-ratio: 1 / 1;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -991,7 +991,7 @@ const rankingRows = [
   line-height: 1;
 }
 .tg-next {
-  border: 2px dashed #F5A623;
+  border: 2px dashed var(--brand-primary);
   background: rgba(245, 166, 35, 0.05);
 }
 .tg-sub {
@@ -1000,7 +1000,7 @@ const rankingRows = [
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -1010,7 +1010,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-size: 180px;
   line-height: 0.9;
-  color: #E8EAED;
+  color: var(--brand-text);
   letter-spacing: -0.02em;
 }
 .gh-change {
@@ -1026,12 +1026,12 @@ const rankingRows = [
   font-size: 20px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 .gh-sub {
   margin-top: 48px;
   font-size: 22px;
-  color: #E8EAED;
+  color: var(--brand-text);
   max-width: 680px;
 }
 
@@ -1048,12 +1048,12 @@ const rankingRows = [
 }
 .mb-side {
   padding: 40px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
 }
 .mb-side.mb-truth {
-  border-color: #F5A623;
+  border-color: var(--brand-primary);
   background: rgba(245, 166, 35, 0.05);
 }
 .mb-label {
@@ -1061,15 +1061,15 @@ const rankingRows = [
   font-size: 14px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
   margin-bottom: 16px;
 }
-.mb-label.amber { color: #F5A623; }
+.mb-label.amber { color: var(--brand-primary); }
 .mb-text {
   font-family: 'Instrument Serif', serif;
   font-size: 36px;
   line-height: 1.2;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .mb-bottom {
   margin-top: 24px;
@@ -1078,7 +1078,7 @@ const rankingRows = [
   font-size: 16px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -1097,9 +1097,9 @@ const rankingRows = [
   align-items: center;
   gap: 24px;
   padding: 32px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
 }
 .sl-num {
   width: 72px;
@@ -1108,8 +1108,8 @@ const rankingRows = [
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #F5A623;
-  color: #0A0B0E;
+  background: var(--brand-primary);
+  color: var(--bg-base);
   font-family: 'Instrument Serif', serif;
   font-size: 48px;
   flex-shrink: 0;
@@ -1117,7 +1117,7 @@ const rankingRows = [
 .sl-text {
   font-family: 'Instrument Serif', serif;
   font-size: 32px;
-  color: #E8EAED;
+  color: var(--brand-text);
   line-height: 1.2;
 }
 .sl-foot {
@@ -1127,7 +1127,7 @@ const rankingRows = [
   font-size: 18px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -1137,7 +1137,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-size: 240px;
   line-height: 0.9;
-  color: #E8EAED;
+  color: var(--brand-text);
   letter-spacing: -0.04em;
   margin-top: 24px;
 }
@@ -1147,14 +1147,14 @@ const rankingRows = [
   font-size: 18px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 .ts-price {
   margin-top: 48px;
   font-family: 'Instrument Serif', serif;
   font-size: 96px;
   line-height: 1;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .ts-change {
   margin-top: 8px;
@@ -1168,7 +1168,7 @@ const rankingRows = [
   font-size: 16px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -1186,25 +1186,25 @@ const rankingRows = [
   gap: 24px;
   align-items: center;
   padding: 24px 32px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
-  background: #14161C;
+  background: var(--bg-elevated);
 }
 .rm-rank {
   font-family: 'Instrument Serif', serif;
   font-size: 36px;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 .rm-ticker {
   font-weight: 800;
   font-size: 28px;
-  color: #E8EAED;
+  color: var(--brand-text);
   letter-spacing: 0.02em;
 }
 .rm-name {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
-  color: #8B92A7;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -1220,7 +1220,7 @@ const rankingRows = [
   font-size: 16px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -1232,7 +1232,7 @@ const rankingRows = [
   font-size: 20px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -1241,9 +1241,9 @@ const rankingRows = [
 .an-badge {
   display: inline-block;
   padding: 16px 40px;
-  border: 3px solid #F5A623;
-  background: #F5A623;
-  color: #0A0B0E;
+  border: 3px solid var(--brand-primary);
+  background: var(--brand-primary);
+  color: var(--bg-base);
   font-family: 'JetBrains Mono', monospace;
   font-size: 24px;
   font-weight: 900;
@@ -1258,7 +1258,7 @@ const rankingRows = [
   font-size: 20px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 
 /* ============================================================
@@ -1275,13 +1275,13 @@ const rankingRows = [
   align-items: center;
   gap: 24px;
   padding: 28px 32px;
-  border: 1px solid #2A2E39;
-  border-left: 4px solid #F5A623;
-  background: #14161C;
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand-primary);
+  background: var(--bg-elevated);
   border-radius: 8px;
   font-family: 'Instrument Serif', serif;
   font-size: 36px;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .rd-num {
   font-family: 'JetBrains Mono', monospace;
@@ -1296,7 +1296,7 @@ const rankingRows = [
   font-size: 18px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -1310,9 +1310,9 @@ const rankingRows = [
 }
 .chip {
   padding: 12px 20px;
-  border: 1px solid #F5A623;
+  border: 1px solid var(--brand-primary);
   background: rgba(245, 166, 35, 0.1);
-  color: #F5A623;
+  color: var(--brand-primary);
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px;
   letter-spacing: 0.12em;
@@ -1326,7 +1326,7 @@ const rankingRows = [
   font-size: 16px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8B92A7;
+  color: var(--text-muted);
 }
 
 /* ============================================================
@@ -1342,15 +1342,15 @@ const rankingRows = [
 }
 .wc-step {
   padding: 40px 24px;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
   text-align: center;
 }
 .wc-num {
   font-family: 'Instrument Serif', serif;
   font-size: 96px;
-  color: #F5A623;
+  color: var(--brand-primary);
   line-height: 0.9;
 }
 .wc-text {
@@ -1359,11 +1359,11 @@ const rankingRows = [
   font-size: 14px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 .wc-arrow {
   font-size: 48px;
-  color: #F5A623;
+  color: var(--brand-primary);
   font-weight: 700;
 }
 .wc-foot {
@@ -1373,7 +1373,7 @@ const rankingRows = [
   font-size: 18px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #E8EAED;
+  color: var(--brand-text);
 }
 
 /* ============================================================
@@ -1389,9 +1389,9 @@ const rankingRows = [
 }
 .cp-card {
   aspect-ratio: 1 / 1;
-  border: 1px solid #2A2E39;
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  background: #14161C;
+  background: var(--bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1403,7 +1403,7 @@ const rankingRows = [
   font-size: 18px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 
 /* ============================================================
@@ -1414,7 +1414,7 @@ const rankingRows = [
   font-family: 'Instrument Serif', serif;
   font-size: 46px;
   line-height: 1.2;
-  color: #E8EAED;
+  color: var(--brand-text);
   max-width: 900px;
   font-style: italic;
   flex: 1;
@@ -1427,6 +1427,6 @@ const rankingRows = [
   font-size: 16px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #F5A623;
+  color: var(--brand-primary);
 }
 </style>

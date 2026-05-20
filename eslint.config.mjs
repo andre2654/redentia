@@ -33,6 +33,17 @@ const REDENTIA_HEX_LITERAL_IN_STYLE = {
 }
 
 export default withNuxt({
+  // Ignora playground/dev + landings decorativas — esses arquivos tem
+  // padroes intencionalmente fora do design system canonico.
+  ignores: [
+    'app/pages/dev/**',
+    'app/components/dev/**',
+    'app/pages/creative/**',
+    'app/pages/hero-examples.vue',
+    'app/pages/builder.vue',
+    'app/pages/assessorias-diferencie-problema.vue',
+    'app/pages/assessorias-diferencie-solucao.vue',
+  ],
   rules: {
     'no-console': 'warn',
     'vue/multi-word-component-names': 'off',
