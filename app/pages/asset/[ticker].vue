@@ -879,7 +879,7 @@ const authStore = useAuthStore()
 const route = useRoute()
 const {
   assetHistoricPrices,
-  getTickerDetails,
+  getTickerDetailsWithMeta,
   getTickerDividends,
   getTickerFundamentus,
 } = useAssetsService()
@@ -898,7 +898,7 @@ const {
   pending: assetPending,
   error: assetError,
 } = await useAsyncData(`asset-details-${ticker.toLowerCase()}`, () =>
-  getTickerDetails(ticker)
+  getTickerDetailsWithMeta(ticker)
 )
 
 if (assetError.value || !assetResponse.value?.data) {

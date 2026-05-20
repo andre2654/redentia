@@ -130,11 +130,28 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch(url, { method: 'GET' })
     )
-    // NÃO usamos unwrapValue aqui — o backend pode anexar
-    // `meta: { alias_resolved_from, delisted, ... }` no envelope quando
-    // o ticker pesquisado é alias antigo (EMBR3 → EMBJ3) ou delisted
-    // (AZUL4). Devolvemos `{ data, meta? }` cru pra page decidir
-    // redirect ou banner.
+    // Retorna o asset object UNWRAPPED pra preservar a API que TODOS
+    // os consumers existentes esperam (home bento, TickerEmbed,
+    // FairPrice, embed/*, asset page). Eles fazem `details.market_price`
+    // direto. Quebrar isso voltaria a +0.00% em todos os cards.
+    //
+    // O `meta` (alias_resolved_from, delisted, event_type) vive num
+    // getter separado abaixo — só a página /asset/[ticker] precisa
+    // dele pra decidir redirect/banner.
+    return unwrapValue(resp)
+  }
+
+  /**
+   * Variante de `getTickerDetails` que devolve `{ data, meta }` cru.
+   * Use quando precisar saber se o ticker buscado é um alias antigo
+   * (EMBR3 → EMBJ3) ou delisted (AZUL4) pra mostrar banner / redirect.
+   */
+  async function getTickerDetailsWithMeta(ticker: string) {
+    const url = `${API}/tickers/${ticker}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch(url, { method: 'GET' })
+    )
     if (resp && typeof resp === 'object' && 'data' in resp) {
       return resp as { data: any; meta?: any }
     }
@@ -422,6 +439,7 @@ export const useAssetsService = () => {
     getTopBDRs,
     assetHistoricPrices,
     getTickerDetails,
+    getTickerDetailsWithMeta,
     getTickerDividends,
     getTickerFundamentus,
     getIndiceHistoricPrices,
