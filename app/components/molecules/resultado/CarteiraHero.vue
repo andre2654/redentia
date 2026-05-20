@@ -177,7 +177,7 @@ const periodLabel = computed(() => {
 const hasPnl = computed(() => props.stats.totalPnL !== 0)
 
 const amountColor = computed(() =>
-  props.stats.totalPnL >= 0 ? brand.colors.positive : brand.colors.negative,
+  props.stats.totalPnL >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
 )
 
 const amountLabel = computed(() => {
@@ -211,7 +211,7 @@ const incomePctLabel = computed(() => {
 
 function cellColor(v: number): string {
   if (v === 0) return `color-mix(in srgb, var(--brand-text) 65%, transparent)`
-  return v > 0 ? brand.colors.positive : brand.colors.negative
+  return v > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 }
 
 function formatSigned(v: number): string {
