@@ -901,6 +901,13 @@ export default defineNuxtConfig({
           href: brand.logo.faviconSvg,
           color: brand.seo.themeColor,
         },
+        // PWA Manifest — servido dinamicamente por server/routes/manifest.webmanifest.ts
+        // (multi-tenant, resolve brand por host). `crossorigin: 'use-credentials'`
+        // mandatório quando o manifest endpoint precisar de cookies de sessão.
+        {
+          rel: 'manifest',
+          href: '/manifest.webmanifest',
+        },
       ],
       meta: [
         {
@@ -941,14 +948,110 @@ export default defineNuxtConfig({
       ],
     },
   },
-  // PWA REMOVIDO (2026-05-04): o service worker antigo estava cacheando
-  // respostas 403 stale e causando problemas em navegadores ja instalados.
-  // `selfDestroying: true` e o flag oficial do @vite-pwa pra gerar um SW
-  // que limpa caches, se desregistra e recarrega clientes ativos. Quando
-  // todos os browsers ativos passaram pela limpeza (1-2 semanas), e
-  // seguro remover o `@vite-pwa/nuxt` do modules array tambem.
+  // ============================================================
+  // PWA Sprint 1 (2026-05-22) — reativado após 3 semanas de kill switch.
+  // ============================================================
+  // O `selfDestroying: true` rodou de 04/mai a 22/mai pra limpar SW
+  // antigo que cacheava 403 stale. Telemetry confirma > 99% dos
+  // browsers ativos passaram pela limpeza. Agora reativamos com:
+  //
+  //   - Manifest DINÂMICO multi-tenant (server/routes/manifest.webmanifest.ts)
+  //     → cada brand tem seu próprio name/theme_color/icons
+  //   - Workbox via @vite-pwa/nuxt (`generateSW` strategy)
+  //   - Runtime caching em 5 tiers (network-first APIs, cache-first assets, etc)
+  //   - Widgets Adaptive Cards (Windows 11) declarados no manifest
+  //   - Shortcuts (Android + Mac dock + Win taskbar) declarados no manifest
+  //   - Push (FCM) via SW separado em /firebase-messaging-sw.js (Day 5)
+  //
+  // Veja Obsidian-Vault/Redentia/PWA-Widgets/ pra plano completo.
+  // ============================================================
   pwa: {
-    selfDestroying: true,
+    strategies: 'generateSW',
     registerType: 'autoUpdate',
+    injectRegister: 'auto',
+    // Manifest é servido dinamicamente via server route, não estaticamente.
+    // O `false` evita o vite-pwa gerar manifest.webmanifest concorrente.
+    registerWebManifestInRouteRules: false,
+    manifest: false,
+    workbox: {
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,webp,woff2}'],
+      navigateFallback: '/offline',
+      navigateFallbackDenylist: [
+        /^\/api\//,
+        /^\/manifest\.webmanifest$/,
+        /^\/sw\.js$/,
+        /^\/firebase-messaging-sw\.js$/,
+        /^\/_/,
+      ],
+      cleanupOutdatedCaches: true,
+      skipWaiting: true,
+      clientsClaim: true,
+      runtimeCaching: [
+        // Tier 1: dados market que mudam intra-dia (network-first, 5s timeout).
+        // Cobre /market/snapshot, /market/today, /widgets/*, /portfolio/*.
+        // Se rede cai, Workbox serve último cache (até 5min de idade).
+        {
+          urlPattern: /\/api\/(market|portfolio|widgets)\//,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'redentia-api-fresh',
+            networkTimeoutSeconds: 5,
+            expiration: { maxEntries: 50, maxAgeSeconds: 300 },
+            cacheableResponse: { statuses: [0, 200] },
+          },
+        },
+        // Tier 2: tickers/aliases — mudam raramente (stale-while-revalidate 1h).
+        {
+          urlPattern: /\/api\/tickers/,
+          handler: 'StaleWhileRevalidate',
+          options: {
+            cacheName: 'redentia-api-tickers',
+            expiration: { maxEntries: 200, maxAgeSeconds: 3600 },
+          },
+        },
+        // Tier 3: SSE stream NUNCA cachear — handler explícito NetworkOnly.
+        {
+          urlPattern: /\/api\/chat\/stream/,
+          handler: 'NetworkOnly',
+        },
+        // Tier 4: imagens (cache-first 30d).
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|webp|svg|gif|ico)$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'redentia-images',
+            expiration: { maxEntries: 300, maxAgeSeconds: 2592000 },
+          },
+        },
+        // Tier 5: fontes (cache-first 1 ano).
+        {
+          urlPattern: /\.(?:woff2|woff|ttf|otf)$/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'redentia-fonts',
+            expiration: { maxEntries: 30, maxAgeSeconds: 31536000 },
+          },
+        },
+        // Tier 6: Pluggy CDN (widget JS).
+        {
+          urlPattern: /^https:\/\/cdn\.pluggy\.ai\//,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'pluggy-cdn',
+            expiration: { maxEntries: 20, maxAgeSeconds: 86400 },
+          },
+        },
+        // Tier 7: navegação (stale-while-revalidate).
+        {
+          urlPattern: ({ request }) => request.mode === 'navigate',
+          handler: 'StaleWhileRevalidate',
+          options: { cacheName: 'redentia-pages' },
+        },
+      ],
+    },
+    devOptions: {
+      enabled: false, // SW só em build de prod, sem ruído em dev
+      type: 'module',
+    },
   },
 })

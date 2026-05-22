@@ -1,0 +1,121 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "body": [
+    {
+      "type": "Container",
+      "spacing": "None",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "Center",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://redentia.com.br/icons/192.png",
+                  "size": "Small",
+                  "altText": "Redentia",
+                  "width": "32px"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "IBOVESPA",
+                  "weight": "Bolder",
+                  "size": "Small",
+                  "color": "Accent",
+                  "spacing": "None"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${ibov.value_formatted} pts",
+                  "size": "ExtraLarge",
+                  "weight": "Bolder",
+                  "spacing": "None",
+                  "wrap": false
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "Center",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${ibov.change_pct_formatted}",
+                  "size": "Large",
+                  "weight": "Bolder",
+                  "color": "${if(ibov.direction == 'up', 'Good', 'Attention')}",
+                  "horizontalAlignment": "Right"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "${lead}",
+      "wrap": true,
+      "size": "Small",
+      "color": "Default",
+      "isSubtle": true,
+      "spacing": "Medium",
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "spacing": "Medium",
+      "separator": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "FATORES MOVENDO HOJE",
+          "weight": "Bolder",
+          "size": "Small",
+          "color": "Accent",
+          "spacing": "None"
+        },
+        {
+          "type": "FactSet",
+          "spacing": "Small",
+          "facts": [
+            {
+              "$data": "${factors}",
+              "title": "${icon} ${label}",
+              "value": "${impact_pct_formatted}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Atualizado ${updated_at_relative}",
+      "size": "Small",
+      "color": "Default",
+      "isSubtle": true,
+      "horizontalAlignment": "Center",
+      "spacing": "Large"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "Ver análise completa",
+      "url": "${deep_link}"
+    }
+  ]
+}

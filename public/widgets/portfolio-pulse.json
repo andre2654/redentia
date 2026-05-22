@@ -1,0 +1,168 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "SUA CARTEIRA HOJE",
+          "weight": "Bolder",
+          "size": "Small",
+          "color": "Accent",
+          "spacing": "None"
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${portfolio.value_brl_formatted}",
+                  "size": "ExtraLarge",
+                  "weight": "Bolder",
+                  "spacing": "None"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${portfolio.day_change_amount_formatted} hoje",
+                  "size": "Small",
+                  "color": "${if(portfolio.direction == 'up', 'Good', 'Attention')}",
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "Center",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${portfolio.day_change_pct_formatted}",
+                  "size": "Large",
+                  "weight": "Bolder",
+                  "color": "${if(portfolio.direction == 'up', 'Good', 'Attention')}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "Medium",
+      "separator": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "MAIORES CONTRIBUIDORES",
+          "weight": "Bolder",
+          "size": "Small",
+          "color": "Accent",
+          "spacing": "None"
+        },
+        {
+          "type": "FactSet",
+          "spacing": "Small",
+          "facts": [
+            {
+              "$data": "${top_contributors}",
+              "title": "${ticker}",
+              "value": "${change_amount_formatted}  (${change_pct_formatted})"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "Medium",
+      "separator": true,
+      "$when": "${dividends_today.count > 0}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "Center",
+              "items": [
+                { "type": "TextBlock", "text": "💰", "size": "Medium" }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Dividendos recebidos hoje",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "spacing": "None"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${dividends_today.total_brl_formatted} (${dividends_today.count} pagamentos)",
+                  "size": "Small",
+                  "color": "Good",
+                  "spacing": "None"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "Medium",
+      "separator": true,
+      "$when": "${alerts_unread > 0}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "Center",
+              "items": [
+                { "type": "TextBlock", "text": "🔔", "size": "Medium" }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${alerts_unread} ${if(alerts_unread > 1, 'alertas pendentes', 'alerta pendente')}",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Warning",
+                  "spacing": "None"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "Abrir carteira",
+      "url": "${deep_link}"
+    }
+  ]
+}
