@@ -260,7 +260,7 @@
              + CTA "Ver mais ativos". Card único com divisores verticais
              entre os tickers, no estilo do reference editorial. -->
         <div
-          class="ticker-row grid grid-cols-2 overflow-hidden rounded-[14px] border md:flex md:items-stretch"
+          class="ticker-row mx-4 grid grid-cols-2 overflow-hidden rounded-[14px] border md:mx-0 md:flex md:items-stretch"
           :style="{
             background: 'var(--bg-elevated)',
             borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)',
