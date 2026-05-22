@@ -25,25 +25,31 @@
       <MoleculesHomeIntelligenceBanner :full-bleed="true" />
     </header>
 
-    <!-- ============ EVENTS BAR (full-bleed, glued ao hero) ============ -->
-    <div class="h-events-bar">
+    <!-- ============ EVENTS BAR (full-bleed, glued ao hero) ============
+         Chips dinâmicos derivados de home.causalFactors (mesma fonte
+         dos cards "Análise do dia" abaixo). Número coincide com a
+         contagem real de fatores com impacto material no índice. -->
+    <div v-if="home.causalFactors.length > 0" class="h-events-bar">
       <div class="h-events-bar-inner">
         <span class="h-events-pill-icon">
           <UIcon name="i-lucide-sparkles" class="size-3.5" />
         </span>
-        <p class="h-events-pill-text">4 fatores moveram o mercado hoje</p>
+        <p class="h-events-pill-text">
+          {{ home.causalFactors.length }}
+          {{ home.causalFactors.length === 1 ? 'fator' : 'fatores' }}
+          {{ marketOpenNow
+              ? (home.causalFactors.length === 1 ? 'move' : 'movem') + ' o mercado agora'
+              : (home.causalFactors.length === 1 ? 'moveu' : 'moveram') + ' o mercado hoje'
+          }}
+        </p>
         <ul class="h-events-pill-chips">
-          <li class="h-chip h-chip-oil">
-            <UIcon name="i-lucide-droplet" class="size-3" />
-            <span>Petróleo</span>
-          </li>
-          <li class="h-chip h-chip-juros">
-            <UIcon name="i-lucide-percent" class="size-3" />
-            <span>Juros futuros</span>
-          </li>
-          <li class="h-chip h-chip-consumo">
-            <UIcon name="i-lucide-shopping-bag" class="size-3" />
-            <span>Consumo doméstico</span>
+          <li
+            v-for="f in home.causalFactors"
+            :key="f.key"
+            :class="['h-chip', `h-chip-${f.key === 'petroleo' ? 'oil' : f.key}`]"
+          >
+            <UIcon :name="f.icon" class="size-3" />
+            <span>{{ f.label }}</span>
           </li>
         </ul>
       </div>
@@ -210,48 +216,59 @@
         </div>
       </article>
 
-      <!-- ============ BLOCO 1: ANÁLISE DO DIA ============ -->
+      <!-- ============ BLOCO 1: ANÁLISE DO DIA ============
+           Dados REAIS: home.causalFactors vem do /api/market/today
+           agregado client-side (mesmo padrão do /wallet/hoje). Cada
+           card descreve um fator macro com tickers afetados + magnitude
+           (severity). Substituiu o placeholder mock que dizia coisas
+           contradizendo os dados ("queda do petróleo" enquanto brent
+           estava subindo +1,77%). -->
       <section class="h-block">
         <header class="h-block-head">
           <p class="h-block-eyebrow">ANÁLISE DO DIA</p>
           <h2 class="h-block-h">
-            Hoje, 3 fatores moveram <em>carteiras brasileiras</em>
+            <template v-if="home.causalFactors.length > 0">
+              {{ marketOpenNow ? 'Agora,' : 'Hoje,' }} {{ home.causalFactors.length }} {{ home.causalFactors.length === 1 ? 'fator move' : 'fatores movem' }} <em>carteiras brasileiras</em>
+            </template>
+            <template v-else>
+              {{ marketOpenNow ? 'Agora, 3 fatores movem' : 'Hoje, 3 fatores moveram' }} <em>carteiras brasileiras</em>
+            </template>
           </h2>
         </header>
 
         <div class="h-block-body">
-          <ul class="h-factors-grid">
-            <li class="h-factor-card">
+          <ul v-if="homeLoading" class="h-factors-grid">
+            <li v-for="n in 3" :key="`skel-factor-${n}`" class="h-factor-card">
               <span class="h-factor-icon h-factor-icon-juros">
-                <UIcon name="i-lucide-line-chart" class="size-5" />
+                <span class="wp8-skel wp8-skel-circle" style="width: 20px; height: 20px;" />
               </span>
-              <h3 class="h-factor-h">Juros</h3>
-              <p class="h-factor-desc">
-                Abertura dos juros futuros pressionou bancos, FIIs e títulos de maior duration.
-              </p>
-              <span class="h-factor-pill h-factor-pill-high">Alto impacto</span>
-            </li>
-            <li class="h-factor-card">
-              <span class="h-factor-icon h-factor-icon-oil">
-                <UIcon name="i-lucide-droplet" class="size-5" />
-              </span>
-              <h3 class="h-factor-h">Petróleo</h3>
-              <p class="h-factor-desc">
-                Queda do petróleo impactou empresas exportadoras e o setor de energia.
-              </p>
-              <span class="h-factor-pill h-factor-pill-medium">Médio impacto</span>
-            </li>
-            <li class="h-factor-card">
-              <span class="h-factor-icon h-factor-icon-fx">
-                <UIcon name="i-lucide-shield" class="size-5" />
-              </span>
-              <h3 class="h-factor-h">Dólar</h3>
-              <p class="h-factor-desc">
-                Moeda americana enfraqueceu e trouxe alívio parcial pra exportadoras.
-              </p>
-              <span class="h-factor-pill h-factor-pill-pos">Proteção parcial</span>
+              <h3 class="h-factor-h"><span class="wp8-skel wp8-skel-text-sm" style="width: 80px;" /></h3>
+              <p class="h-factor-desc"><span class="wp8-skel wp8-skel-text-sm" style="width: 90%;" /></p>
             </li>
           </ul>
+          <ul v-else-if="home.causalFactors.length > 0" class="h-factors-grid">
+            <li v-for="f in home.causalFactors" :key="f.key" class="h-factor-card">
+              <span :class="['h-factor-icon', `h-factor-icon-${f.key === 'petroleo' ? 'oil' : f.key === 'dolar' ? 'fx' : f.key}`]">
+                <UIcon :name="f.icon" class="size-5" />
+              </span>
+              <h3 class="h-factor-h">{{ f.label }}</h3>
+              <p class="h-factor-desc">
+                {{ factorNarrative(f) }}
+              </p>
+              <span
+                :class="[
+                  'h-factor-pill',
+                  f.severity === 'high' ? 'h-factor-pill-high' :
+                  f.severity === 'medium' ? 'h-factor-pill-medium' : 'h-factor-pill-pos'
+                ]"
+              >
+                {{ f.severity === 'high' ? 'Alto impacto' : f.severity === 'medium' ? 'Médio impacto' : 'Baixo impacto' }}
+              </span>
+            </li>
+          </ul>
+          <p v-else class="h-empty-state">
+            Mercado calmo agora — nenhum fator macro com impacto material no índice.
+          </p>
         </div>
       </section>
 
@@ -294,7 +311,8 @@
         <header class="h-block-head">
           <p class="h-block-eyebrow">NOTICIÁRIO DO DIA</p>
           <h2 class="h-block-h">
-            As notícias que <em>movimentaram o dia.</em>
+            As notícias que
+            <em>{{ marketOpenNow ? 'estão movimentando o dia.' : 'movimentaram o dia.' }}</em>
           </h2>
           <p class="h-block-deck">
             Cada manchete é cruzada com os ativos que ela afeta e agrupada
@@ -690,6 +708,46 @@ function formatChangePts(v: number) {
   const sign = v >= 0 ? '+' : '−'
   return `${sign}${formatNumberPtBR(Math.abs(v))} pts`
 }
+/**
+ * Narrativa editorial pra cada card de causal factor. Template-based,
+ * deterministico (não LLM). Descreve OBSERVAÇÃO (o que as ações daquele
+ * grupo fizeram) — NÃO infere o "por quê" do commodity em si. Sem isso
+ * o texto dizia "queda do petróleo" enquanto o brent estava subindo
+ * +1,77% (o que caiu foi PETR4 por dinâmica idiossincrática).
+ */
+function factorNarrative(f: {
+  key: string
+  label: string
+  impact: number
+  tickers: string[]
+  affectedCount: number
+}): string {
+  const verbPressure = f.impact >= 0
+    ? (marketOpenNow.value ? 'sustentam' : 'sustentaram')
+    : (marketOpenNow.value ? 'pressionam' : 'pressionaram')
+  const tickerList = f.tickers.length > 0
+    ? f.tickers.slice(0, 3).join(', ')
+    : null
+  const tickerSuffix = tickerList ? ` — destaques: ${tickerList}.` : '.'
+
+  switch (f.key) {
+    case 'petroleo':
+      return `Ações expostas a petróleo ${verbPressure} o índice${tickerSuffix}`
+    case 'dolar':
+      return `Exportadoras e companhias com receita em dólar ${verbPressure} o índice${tickerSuffix}`
+    case 'juros':
+      return `Bancos, FIIs e ativos sensíveis a juros ${verbPressure} o índice${tickerSuffix}`
+    case 'commodity':
+      return `Mineradoras, papel e proteína animal ${verbPressure} o índice${tickerSuffix}`
+    case 'global':
+      return `BDRs e empresas internacionalizadas ${verbPressure} o índice${tickerSuffix}`
+    case 'consumo':
+      return `Varejo, alimentos e serviços de consumo doméstico ${verbPressure} o índice${tickerSuffix}`
+    default:
+      return `${f.label} ${verbPressure} ${f.affectedCount} ${f.affectedCount === 1 ? 'ativo' : 'ativos'} do índice${tickerSuffix}`
+  }
+}
+
 function formatIndexValue(ix: { key: string; value: number }) {
   if (ix.key === 'dolar') return `R$ ${ix.value.toFixed(2).replace('.', ',')}`
   if (ix.key === 'brent') return `US$ ${ix.value.toFixed(2).replace('.', ',')}`
@@ -750,6 +808,27 @@ const hoverPoint = computed(() => {
   const [, m, d] = p.date.slice(0, 10).split('-').map(Number)
   const label = `${String(d).padStart(2, '0')} ${MONTHS[(m ?? 1) - 1]}`
   return { x: p.x, y: p.y, price: p.price, label }
+})
+
+// Mercado B3 aberto agora? Espelha a função `isMarketOpenBRT()` do
+// useHomeData. Usado pra alternar tempo verbal nos copys editoriais
+// ("movem" agora vs "moveram" no fechamento). Reativo: o computed
+// é re-avaliado quando a página re-renderiza, mas dentro de uma mesma
+// renderização fica estável.
+const marketOpenNow = computed(() => {
+  const brtNow = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date())
+  const m = brtNow.match(/^(\w{3}),?\s+(\d{1,2}):(\d{2})/)
+  if (!m) return false
+  const weekday = m[1]
+  const minutes = Number(m[2]) * 60 + Number(m[3])
+  const isWeekday = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(weekday)
+  return isWeekday && minutes >= 600 && minutes <= 1050
 })
 
 // Banner "mercado fechado": quando a data do último pregão (as_of_date do IBOV)
@@ -1161,6 +1240,14 @@ function formatRelativeTime(iso: string): string {
 .h-chip-global {
   background: color-mix(in srgb, #2563eb 8%, transparent);
   color: #2563eb;
+}
+.h-chip-dolar {
+  background: color-mix(in srgb, var(--brand-positive) 8%, transparent);
+  color: var(--brand-positive);
+}
+.h-chip-commodity {
+  background: color-mix(in srgb, #6b7280 10%, transparent);
+  color: #4b5563;
 }
 @media (max-width: 600px) {
   .h-events-pill { padding: 12px 14px; }
@@ -1605,6 +1692,13 @@ function formatRelativeTime(iso: string): string {
 .h-factor-pill-pos {
   background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
   color: var(--brand-positive);
+}
+.h-empty-state {
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-style: italic;
 }
 
 /* ============ BLOCO 2: PESOU (4 pills editoriais) ============ */
