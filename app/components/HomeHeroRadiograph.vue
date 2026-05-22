@@ -230,7 +230,11 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
 </script>
 
 <template>
-  <section class="hero-radiograph relative overflow-hidden" :data-mode="resolvedMode">
+  <section
+    class="hero-radiograph relative overflow-hidden"
+    :data-mode="resolvedMode"
+    style="border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent); border-radius: 14px; margin: 16px;"
+  >
     <!-- ============ BACKGROUND PASTEL + WHITE WASH ============ -->
     <!-- Stack (back → front):
            1. baseWash: top-to-bottom linear that lands on pure white at 70%
@@ -267,21 +271,13 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
       a viewport inteira. Desktop continua generoso (pt-20 pb-28) pq
       o split 50/50 com o stack 3D precisa de respiro.
     -->
-    <div class="relative mx-auto max-w-6xl px-6 pb-10 pt-8 md:pb-28 md:pt-20">
+    <div class="relative mx-auto max-w-6xl px-6 pb-6 pt-6 md:pb-12 md:pt-10">
       <div class="grid items-center gap-6 md:grid-cols-12 md:gap-12 lg:gap-16">
         <!-- ============ LEFT: manifesto + input ============ -->
         <!-- order-2 on mobile so the 3D pile carousel renders ABOVE the
              headline (per UX request: "no mobile, deixe os cards em cima").
              md:order-1 reverts to the desktop layout (manifesto on the left). -->
         <div class="order-2 md:order-1 md:col-span-7">
-          <!--
-            Eyebrow descritivo "PLATAFORMA DE IA PARA SUA CARTEIRA" só
-            aparece a partir de md+. No mobile o headline + input já
-            comunicam a proposta sem precisar dessa linha de contexto;
-            cortando ela ganhamos ~32 px de altura crítica acima da
-            dobra.
-          -->
-          <p class="eyebrow mb-5 hidden md:block">{{ eyebrow }}</p>
 
           <!--
             Headline mobile-first: 36 px com leading apertado. A 36 px
@@ -320,20 +316,25 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
           </div>
 
           <!-- Trust signals alinhados com a promessa do Resumo. -->
-          <ul class="hero-radiograph__trust">
-            <li>
-              <UIcon name="i-lucide-clock" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>30 segundos de leitura</span>
-            </li>
-            <li>
-              <UIcon name="i-lucide-sparkles" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>3 fatores que importam</span>
-            </li>
-            <li>
-              <UIcon name="i-lucide-shield-check" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Determinístico, sem IA</span>
-            </li>
-          </ul>
+          <!-- Banks trust row: tagline + 4 logos em stack circular +
+               chip "+110" + texto "Conectado com X bancos e instituições". -->
+          <div class="hero-radiograph__banks">
+            <p class="hero-radiograph__banks-tagline">
+              Conecte seus bancos via Open Finance e veja seu patrimônio em tempo real.
+            </p>
+            <div class="hero-radiograph__banks-row">
+              <div class="hero-radiograph__banks-stack" aria-hidden="true">
+                <img src="/icons/logo nubank.webp" alt="" class="hero-radiograph__bank-logo" />
+                <img src="/icons/logo itau.webp" alt="" class="hero-radiograph__bank-logo" />
+                <img src="/icons/logo bradesco.webp" alt="" class="hero-radiograph__bank-logo" />
+                <img src="/icons/logo santander.webp" alt="" class="hero-radiograph__bank-logo" />
+                <span class="hero-radiograph__bank-more">+110</span>
+              </div>
+              <p class="hero-radiograph__banks-text">
+                Conectado com <strong>114 bancos</strong> e instituições.
+              </p>
+            </div>
+          </div>
         </div>
 
         <!-- ============ RIGHT: 3D PILE CAROUSEL ============ -->
@@ -636,6 +637,72 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
   font-size: 1.06em;
   display: inline;
   white-space: nowrap;
+}
+
+/* Banks trust row: tagline + 4 logos circulares sobrepostos + chip "+110" */
+.hero-radiograph__banks {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hero-radiograph__banks-tagline {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 44ch;
+}
+.hero-radiograph__banks-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero-radiograph__banks-stack {
+  display: inline-flex;
+  align-items: center;
+  /* Sobreposição dos logos: cada um cobre 12px do anterior */
+}
+.hero-radiograph__bank-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  object-fit: cover;
+  background: var(--bg-elevated);
+  border: 2px solid var(--bg-base);
+  flex-shrink: 0;
+  display: block;
+}
+.hero-radiograph__bank-logo + .hero-radiograph__bank-logo,
+.hero-radiograph__bank-logo + .hero-radiograph__bank-more {
+  margin-left: -12px;
+}
+.hero-radiograph__bank-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--text-heading) 14%, var(--bg-elevated));
+  color: var(--text-heading);
+  border: 2px solid var(--bg-base);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.hero-radiograph__banks-text {
+  font-size: 14px;
+  color: var(--text-body);
+  margin: 0;
+  line-height: 1.4;
+}
+.hero-radiograph__banks-text strong {
+  color: var(--text-heading);
+  font-weight: 600;
 }
 
 /* Trust signals row, mais legivel: pill com icon + bg sutil */

@@ -6,15 +6,15 @@
     >
       <div
         ref="carousel"
-        class="flex max-w-full items-stretch whitespace-nowrap will-change-transform"
+        class="flex max-w-full items-stretch gap-2 whitespace-nowrap will-change-transform"
         :style="{ transform: `translateX(${position}px)` }"
       >
         <NuxtLink
           v-for="(item, index) in repeatedItems"
           :key="index"
           :to="`/asset/${item?.ticker?.toLowerCase?.() || item?.ticker || ''}`"
-          :class="['relative flex items-center gap-3 border-l first:border-l-0', big ? 'px-8 py-3' : 'px-6 py-2']"
-          :style="{ borderColor: 'var(--border-subtle)' }"
+          :class="['relative flex shrink-0 items-center gap-3 border rounded-[14px] transition-colors', big ? 'px-5 py-3' : 'px-4 py-2']"
+          :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)', backgroundColor: 'var(--bg-elevated)' }"
         >
           <!-- Logo grande, ocupa as duas linhas a esquerda -->
           <img
@@ -190,10 +190,14 @@ const loop = () => {
     if (carouselEl) {
       const firstItem = carouselEl.children[0] as HTMLElement | undefined
       if (firstItem) {
-        const firstItemWidth = firstItem.offsetWidth
+        // Considera o gap do flex parent — sem isso, o reset de posição
+        // não cobre o espaço entre items, gerando "buracos" no carousel
+        // quando os cards ganham gap > 0.
+        const gap = parseFloat(getComputedStyle(carouselEl).columnGap || '0') || 0
+        const step = firstItem.offsetWidth + gap
 
-        if (Math.abs(position.value) >= firstItemWidth) {
-          position.value += firstItemWidth
+        if (Math.abs(position.value) >= step) {
+          position.value += step
           carouselEl.appendChild(firstItem)
         }
       }

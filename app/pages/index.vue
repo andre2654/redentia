@@ -43,8 +43,7 @@
          de mercado direto debaixo do hero). Default true mantem behavior. -->
     <div
       v-if="showTickerRail"
-      class="w-full border-b py-4"
-      style="background: var(--bg-elevated); border-bottom-color: var(--border-subtle);"
+      class="w-full py-4"
     >
       <AtomsTickerCarousel
         class="w-full max-md:hidden"
@@ -84,32 +83,6 @@
       </p>
     </section>
 
-    <!-- BRIDGE: conector visual entre o hero e a secao seguinte (mercado).
-         Linha vertical amber decrescente + eyebrow "Mercado ao vivo" +
-         chevron com bounce sutil. Aparece em DOM order logo apos o hero
-         (sem order explicito → default 0, mesmo do hero, resolve por DOM). -->
-    <div
-      v-if="!authStore.isAuthenticated"
-      class="qs-bridge relative flex items-center justify-center pt-6 pb-2 md:pt-8 md:pb-3"
-      aria-hidden="true"
-    >
-      <!-- Linha vertical fading no centro -->
-      <div
-        class="absolute left-1/2 top-0 h-[60%] w-px -translate-x-1/2"
-        :style="{ background: `linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 30%, transparent), transparent 100%)` }"
-      />
-      <!-- Cluster: eyebrow + chevron animado -->
-      <div class="relative flex flex-col items-center gap-1.5 px-4" :style="{ backgroundColor: 'var(--bg-base)' }">
-        <span class="text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">
-          Mercado ao vivo
-        </span>
-        <UIcon
-          name="i-lucide-chevron-down"
-          class="size-4 motion-safe:animate-bounce"
-          :style="{ color: 'var(--brand-primary)', animationDuration: '2.4s' }"
-        />
-      </div>
-    </div>
 
     <!-- Calculadora de Impacto / Poder do Tempo -->
     <MoleculesWealthProjection v-if="showSection('wealthCalculator') && brand.wealthCalculator && !authStore.isAuthenticated" :style="{ order: sectionOrder('wealthCalculator') }" />
@@ -121,9 +94,9 @@
     <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
     <!-- Seção de Mercado ao Vivo — quiet style (lightness as luxury). -->
-    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-6 pt-12 md:px-4 md:pt-16">
+    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-6 pt-4 md:px-4 md:pt-6">
       <!-- Editorial data band: ambient amber radial + floating chart/ticker card -->
-      <div class="relative flex flex-col gap-10">
+      <div class="relative flex flex-col gap-4">
         <!-- Move 2: ambient amber radial glow (offset top-center, behind data) -->
         <div
           class="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[640px] overflow-hidden"
@@ -145,204 +118,215 @@
                linha "Hoje, ... pts" no estilo do quiet hero.
                Bento: span 2 cols (mobile) / 8 cols + 2 rows (md+). -->
           <article
-            class="ibov-editorial-card relative col-span-2 overflow-hidden rounded-2xl border transition-shadow duration-300 md:col-span-8 md:row-span-2"
-          style="background: var(--bg-elevated); border-color: var(--border-subtle); box-shadow: var(--shadow-card);"
-        >
-          <!-- Atmospheric peach radial bg, top-right offset (mesma direção do hero) -->
-          <div
-            class="pointer-events-none absolute inset-0"
-            aria-hidden="true"
-            :style="{
-              background: `radial-gradient(ellipse 70% 60% at 90% -10%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 65%)`,
-            }"
-          />
-          <!-- Sutil rose secundário, bottom-left, equilibra a composição -->
-          <div
-            class="pointer-events-none absolute inset-0"
-            aria-hidden="true"
-            :style="{
-              background: `radial-gradient(ellipse 50% 50% at 5% 110%, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 60%)`,
-            }"
-          />
-
-          <!-- Chart header (hero card style) + chart -->
-          <div class="relative flex w-full flex-col gap-5 px-5 pb-5 pt-6 md:px-7 md:pb-6 md:pt-7">
-            <!-- Status line: dot Ao vivo · clock + B3 pill -->
-            <header class="flex items-center justify-between gap-3">
-              <div class="flex items-center gap-2 text-[13px]" style="color: var(--text-muted);">
-                <span class="relative flex size-2" aria-hidden="true">
-                  <span
-                    v-if="marketStatus.animate"
-                    class="absolute inline-flex h-full w-full rounded-full opacity-70 motion-safe:animate-ping"
-                    :style="{ backgroundColor: marketStatus.color }"
-                  />
-                  <span class="relative inline-flex size-2 rounded-full" :style="{ backgroundColor: marketStatus.color }" />
-                </span>
-                <span class="font-medium" style="color: var(--text-body);" translate="no">{{ marketStatus.label }}</span>
-                <span style="color: var(--text-muted);" aria-hidden="true">·</span>
-                <span class="tabular-nums" style="color: var(--text-muted);" translate="no">{{ ibovClock || '—' }}</span>
-              </div>
-              <span
-                class="rounded-md px-2 py-0.5 text-[11px] font-medium tabular-nums"
-                style="background: color-mix(in srgb, var(--text-heading) 6%, transparent); color: var(--text-label);"
-                translate="no"
-              >B3</span>
-            </header>
-
-            <!-- Asset name + ticker -->
-            <div class="flex items-baseline gap-2">
-              <h3 class="text-[16px] font-medium" style="color: var(--text-heading);" translate="no">Ibovespa</h3>
-              <span class="text-[14px]" style="color: var(--text-muted);" translate="no">IBOV</span>
-            </div>
-
-            <!-- Linha principal: big number + change pill + period
-                 selector compacto, todos no mesmo eixo horizontal.
-                 `dropdown` força o select pequeno (em vez do segmented
-                 de 4 pílulas) pra a row caber bem mesmo em narrow card.
-                 `Hoje, -X pts` segue na linha de baixo dentro do
-                 mesmo wrapper. -->
-            <div class="flex w-full flex-col gap-1.5">
-              <div class="flex flex-wrap items-center gap-3">
-                <p
-                  class="font-light leading-none tabular-nums text-[28px] md:text-[44px]"
-                  style="color: var(--text-heading); letter-spacing: -0.03em;"
-                  aria-label="Cotação atual do IBOV"
-                  translate="no"
-                >
-                  {{ fmt.brl(ibovLastPrice) }}
-                </p>
-                <span
-                  class="rounded-md px-2 py-1 text-[12px] font-medium tabular-nums"
-                  :style="{
-                    backgroundColor: `color-mix(in srgb, ${ibovVariationColor} 16%, transparent)`,
-                    color: ibovVariationColor,
-                  }"
-                  translate="no"
-                >{{ ibovIndicator }}</span>
+            class="ibov-editorial-card relative col-span-2 overflow-hidden rounded-[14px] border md:col-span-8 md:row-span-2"
+            style="background: var(--bg-elevated); border-color: color-mix(in srgb, var(--brand-border) 30%, transparent);"
+          >
+            <!-- Chart header + chart, sem atmospheric blur -->
+            <div class="relative flex w-full flex-col gap-5 px-5 pb-5 pt-6 md:px-7 md:pb-6 md:pt-7">
+              <!-- Header: IBOVESPA (IBOV) · Ao Vivo + period selector -->
+              <header class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-[13px]">
+                  <span class="font-semibold tracking-wide" style="color: var(--text-heading);" translate="no">
+                    IBOVESPA (IBOV)
+                  </span>
+                  <span aria-hidden="true" style="color: var(--text-muted);">·</span>
+                  <span class="inline-flex items-center gap-1.5" style="color: var(--text-muted);">
+                    <span class="relative flex size-2" aria-hidden="true">
+                      <span
+                        v-if="marketStatus.animate"
+                        class="absolute inline-flex h-full w-full rounded-full opacity-70 motion-safe:animate-ping"
+                        :style="{ backgroundColor: marketStatus.color }"
+                      />
+                      <span class="relative inline-flex size-2 rounded-full" :style="{ backgroundColor: marketStatus.color }" />
+                    </span>
+                    <span translate="no">{{ marketStatus.label }}</span>
+                  </span>
+                </div>
                 <MoleculesPeriodSelector
                   v-model="selectedTimeRange"
                   :loading="loading"
-                  :dropdown="true"
-                  class="ml-auto"
+                  :dropdown="false"
                 />
-              </div>
-              <p
-                v-if="ibovDeltaPtsFormatted"
-                class="text-[12px]"
-                style="color: var(--text-muted);"
-                translate="no"
-              >
-                Hoje, <span class="tabular-nums" :style="{ color: ibovVariationColor }">{{ ibovDeltaPtsFormatted }}</span>
-              </p>
-            </div>
-
-            <AtomsGraphLine
-              :data="ibovChartData"
-              :legend="ibovChartLabel"
-              :height="280"
-              :loading="loading"
-            />
-          </div>
-          <!-- Ticker rail moved out of the card. Lives below the bento
-               as a full-width band (see end of `.market-bento` block).
-               This way the IBOV card stays a focused price-explorer
-               surface and the rail doesn't compete for attention with
-               the chart. -->
-        </article>
-
-          <!-- Mini bento ticker cards (PETR4, VALE3, AAPL34, TSLA34).
-               Cada um span col-2 row-1 (md+), mobile span col-1 row-1 (col-span-1 = 1 das 2 cols mobile).
-               Layout interno: header com logo+ticker+nome / preco grande / change pill+sparkline. -->
-          <NuxtLink
-            v-for="ticker in bentoTickers"
-            :key="ticker.code"
-            :to="`/asset/${ticker.code.toLowerCase()}`"
-            class="bento-ticker group relative col-span-1 overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5 md:col-span-2 md:row-span-1"
-            :style="{
-              background: 'var(--bg-elevated)',
-              borderColor: 'var(--border-subtle)',
-              boxShadow: 'var(--shadow-card)',
-            }"
-          >
-            <!-- Accent radial sutil tinted pela direcao -->
-            <div
-              class="pointer-events-none absolute inset-0"
-              aria-hidden="true"
-              :style="{
-                background: `radial-gradient(ellipse 70% 60% at 90% -20%, color-mix(in srgb, ${ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'} 14%, transparent), transparent 65%)`,
-              }"
-            />
-            <div class="relative flex h-full flex-col justify-between gap-3 p-4">
-              <!-- Top: logo + ticker + nome -->
-              <header class="flex items-center gap-2.5">
-                <div
-                  class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md border"
-                  :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-                >
-                  <img
-                    v-if="ticker.logo"
-                    :src="ticker.logo"
-                    :alt="`Logo ${ticker.code}`"
-                    class="size-full object-cover"
-                    @error="$event.target.style.display='none'"
-                  />
-                  <span
-                    v-else
-                    class="font-mono-tab text-[9px] font-bold"
-                    :style="{ color: 'var(--text-muted)' }"
-                  >{{ ticker.code.slice(0, 2) }}</span>
-                </div>
-                <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span class="truncate text-[14px] font-medium leading-none" :style="{ color: 'var(--text-heading)' }" translate="no">{{ ticker.code }}</span>
-                  <span class="truncate text-[10px]" :style="{ color: 'var(--text-muted)' }">{{ ticker.name }}</span>
-                </div>
               </header>
 
-              <!-- Mini sparkline SVG: amber stroke + soft fill que segue a direcao -->
-              <svg
-                viewBox="0 0 120 32"
-                preserveAspectRatio="none"
-                class="h-8 w-full"
-                aria-hidden="true"
-              >
-                <defs>
-                  <linearGradient :id="`bento-fill-${ticker.code}`" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" :stop-color="ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'" stop-opacity="0.18" />
-                    <stop offset="100%" :stop-color="ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'" stop-opacity="0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  :d="bentoSparklineArea(ticker.sparkline)"
-                  :fill="`url(#bento-fill-${ticker.code})`"
-                />
-                <path
-                  :d="bentoSparklineLine(ticker.sparkline)"
-                  fill="none"
-                  :stroke="ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  vector-effect="non-scaling-stroke"
-                />
-              </svg>
-
-              <!-- Bottom: preco grande + change pill -->
-              <div class="flex items-end justify-between gap-2">
+              <!-- Big number + delta inline (sem chip) -->
+              <div class="flex w-full flex-col gap-1.5">
+                <div class="flex flex-wrap items-baseline gap-3">
+                  <p
+                    class="font-light leading-none tabular-nums text-[28px] md:text-[44px]"
+                    style="color: var(--text-heading); letter-spacing: -0.03em;"
+                    aria-label="Cotação atual do IBOV"
+                    translate="no"
+                  >
+                    {{ fmt.brl(ibovLastPrice).replace(/^R\$\s*/, '') }}
+                  </p>
+                  <span
+                    class="font-medium tabular-nums text-[15px]"
+                    :style="{ color: ibovVariationColor }"
+                    translate="no"
+                  >
+                    {{ ibovIndicator }}
+                  </span>
+                </div>
                 <p
-                  class="font-light leading-none tabular-nums text-[20px]"
-                  :style="{ color: 'var(--text-heading)', letterSpacing: '-0.02em' }"
+                  v-if="ibovDeltaPtsFormatted"
+                  class="text-[12px]"
+                  style="color: var(--text-muted);"
                   translate="no"
-                >{{ ticker.price }}</p>
+                >
+                  Hoje, <span class="tabular-nums" :style="{ color: ibovVariationColor }">{{ ibovDeltaPtsFormatted }} pts</span>
+                  <span v-if="ibovPrevClose !== null" aria-hidden="true"> · </span>
+                  <template v-if="ibovPrevClose !== null">Fech. anterior: <span class="tabular-nums">{{ fmt.brl(ibovPrevClose).replace(/^R\$\s*/, '') }}</span></template>
+                </p>
+              </div>
+
+              <AtomsGraphLine
+                :data="ibovChartData"
+                :legend="ibovChartLabel"
+                :height="200"
+                :loading="loading"
+              />
+            </div>
+          </article>
+
+          <!-- Mercado agora — narrativa setorial/macro do dia.
+               Reusa o `pesouPills` do /para-voce (top mover, brent, dolar). -->
+          <aside
+            class="market-now relative col-span-2 overflow-hidden rounded-[14px] border md:col-span-4 md:row-span-2"
+            :style="{
+              background: 'var(--bg-elevated)',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)',
+            }"
+          >
+            <div class="flex h-full flex-col gap-4 px-5 py-5 md:px-6 md:py-6">
+              <header class="flex items-center justify-between">
+                <span class="eyebrow">Mercado agora</span>
+                <NuxtLink
+                  to="/para-voce"
+                  class="text-[12px] font-medium transition-colors hover:opacity-80"
+                  :style="{ color: 'var(--brand-text)' }"
+                >Análise completa →</NuxtLink>
+              </header>
+
+              <!-- Skeleton enquanto pesouPills carrega -->
+              <ul v-if="homeNarrativeLoading || !homeNarrative.pesouPills.length" class="flex flex-1 flex-col gap-3">
+                <li
+                  v-for="n in 4"
+                  :key="`skel-mn-${n}`"
+                  class="flex items-start gap-3 rounded-[12px] border px-3.5 py-3"
+                  :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }"
+                >
+                  <span
+                    class="block h-9 w-9 shrink-0 rounded-[10px]"
+                    :style="{ background: 'color-mix(in srgb, var(--text-heading) 4%, transparent)' }"
+                  />
+                  <div class="flex flex-1 flex-col gap-1.5">
+                    <span
+                      class="block h-3 rounded"
+                      :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', width: '90%' }"
+                    />
+                    <span
+                      class="block h-3 rounded"
+                      :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', width: '55%' }"
+                    />
+                  </div>
+                </li>
+              </ul>
+
+              <ul v-else class="flex flex-1 flex-col gap-3">
+                <li
+                  v-for="p in homeNarrative.pesouPills.slice(0, 4)"
+                  :key="p.key"
+                  :class="['market-now-pill flex items-start gap-3 rounded-[12px] border px-3.5 py-3 transition-colors', `market-now-pill--${p.key}`]"
+                  :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }"
+                >
+                  <span
+                    :class="['market-now-icon flex size-9 shrink-0 items-center justify-center rounded-[10px]', `market-now-icon--${p.key}`]"
+                  >
+                    <UIcon :name="p.icon" class="size-[18px]" />
+                  </span>
+                  <p
+                    class="market-now-text text-[13px] leading-snug"
+                    :style="{ color: 'var(--text-body)' }"
+                    v-html="p.html"
+                  />
+                </li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Linha horizontal de ticker cards (PETR4 / VALE3 / AAPL34 / TSLA34)
+             + CTA "Ver mais ativos". Card único com divisores verticais
+             entre os tickers, no estilo do reference editorial. -->
+        <div
+          class="ticker-row grid grid-cols-2 overflow-hidden rounded-[14px] border md:flex md:items-stretch"
+          :style="{
+            background: 'var(--bg-elevated)',
+            borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)',
+          }"
+        >
+          <NuxtLink
+            v-for="(ticker, idx) in bentoTickers"
+            :key="ticker.code"
+            :to="`/asset/${ticker.code.toLowerCase()}`"
+            :class="[
+              'ticker-row-item group relative flex items-center gap-3 px-4 py-4 transition-colors md:flex-1 md:gap-4 md:px-5 md:py-5',
+              idx > 0 ? 'ticker-row-item--divider' : '',
+            ]"
+          >
+            <div
+              class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border md:size-11"
+              :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+            >
+              <img
+                v-if="ticker.logo"
+                :src="ticker.logo"
+                :alt="`Logo ${ticker.code}`"
+                class="size-full object-cover"
+                @error="$event.target.style.display='none'"
+              />
+              <span
+                v-else
+                class="font-mono-tab text-[10px] font-bold"
+                :style="{ color: 'var(--text-muted)' }"
+              >{{ ticker.code.slice(0, 2) }}</span>
+            </div>
+            <div class="flex min-w-0 flex-1 flex-col gap-1">
+              <span
+                class="truncate text-[14px] font-medium leading-none"
+                :style="{ color: 'var(--text-heading)' }"
+                translate="no"
+              >{{ ticker.code }}</span>
+              <span
+                class="truncate text-[11px] leading-none"
+                :style="{ color: 'var(--text-muted)' }"
+              >{{ ticker.name }}</span>
+              <div class="mt-1 flex items-baseline gap-2">
                 <span
-                  class="rounded-md px-1.5 py-0.5 text-[11px] font-medium tabular-nums"
-                  :style="{
-                    backgroundColor: `color-mix(in srgb, ${ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'} 14%, transparent)`,
-                    color: ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
-                  }"
+                  class="text-[13px] tabular-nums leading-none"
+                  :style="{ color: 'var(--text-body)' }"
+                  translate="no"
+                >{{ ticker.price }}</span>
+                <span
+                  class="text-[12px] font-medium tabular-nums leading-none"
+                  :style="{ color: ticker.change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
                   translate="no"
                 >{{ ticker.change >= 0 ? '+' : '' }}{{ ticker.change.toFixed(2) }}%</span>
               </div>
             </div>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/search"
+            class="ticker-row-cta col-span-2 flex items-center justify-center gap-2 border-t px-5 py-4 text-[13px] font-medium transition-colors md:col-span-1 md:flex-shrink-0 md:border-l md:border-t-0 md:px-6"
+            :style="{
+              color: 'var(--text-heading)',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)',
+            }"
+          >
+            Ver mais ativos
+            <UIcon name="i-lucide-arrow-right" class="size-4" />
           </NuxtLink>
         </div>
       </div>
@@ -1068,6 +1052,11 @@ const {
   assetHistoricPrices,
 } = useAssetsService()
 
+// Driver narrative ("Mercado agora" card) — reusa o pesouPills do
+// /para-voce. Lista 3-4 forças setoriais/macro que estão movendo o
+// índice agora (gainers/losers + Brent + Dólar).
+const { data: homeNarrative, loading: homeNarrativeLoading } = useHomeData()
+
 const loading = ref(false)
 const blockChat = ref(false)
 
@@ -1687,15 +1676,27 @@ onBeforeUnmount(() => {
 })
 
 // Delta intradiario do IBOV em pontos (ultimo - penultimo) para a linha "Hoje, ... pts"
-const ibovDeltaPtsFormatted = computed(() => {
+const ibovDeltaPtsRaw = computed(() => {
   const series = homeMarketData.value?.ibovSeries
-  if (!Array.isArray(series) || series.length < 2) return ''
+  if (!Array.isArray(series) || series.length < 2) return null
   const last = coerceNumber(series[series.length - 1].market_price)
   const prev = coerceNumber(series[series.length - 2].market_price)
   const delta = last - prev
-  if (!Number.isFinite(delta)) return ''
+  if (!Number.isFinite(delta)) return null
+  return delta
+})
+
+const ibovDeltaPtsFormatted = computed(() => {
+  const delta = ibovDeltaPtsRaw.value
+  if (delta === null) return ''
   const sign = delta >= 0 ? '+' : ''
-  return `${sign}${fmt.number(Math.round(delta))} pts`
+  return `${sign}${fmt.number(Math.round(delta))}`
+})
+
+const ibovPrevClose = computed(() => {
+  const delta = ibovDeltaPtsRaw.value
+  if (delta === null) return null
+  return ibovLastPrice.value - delta
 })
 
 const chatSuggestions = [
@@ -1707,20 +1708,39 @@ const chatSuggestions = [
   'Vale a pena investir em ETFs?',
 ]
 
-const tickerCarouselItems = computed(() =>
-  topAssets.value.top.stocks.slice(0, 40).map((asset) => {
+// Combina altas + baixas de todas as classes (stocks/reits/etfs/bdrs) num
+// único pool de tickers pro rail, deduplicando por ticker. Antes usávamos
+// só top.stocks (~8 items), o que deixava o carousel com buracos em telas
+// largas. Com 4 classes × 2 (top + bottom) × 8 = até 64 candidatos.
+const tickerCarouselItems = computed(() => {
+  const pool = [
+    ...topAssets.value.top.stocks,
+    ...topAssets.value.bottom.stocks,
+    ...topAssets.value.top.reits,
+    ...topAssets.value.bottom.reits,
+    ...topAssets.value.top.etfs,
+    ...topAssets.value.bottom.etfs,
+    ...topAssets.value.top.bdrs,
+    ...topAssets.value.bottom.bdrs,
+  ]
+  const seen = new Set<string>()
+  const out: { logo: string; ticker: string; change: string; price: string }[] = []
+  for (const asset of pool) {
+    if (!asset?.ticker || seen.has(asset.ticker)) continue
+    seen.add(asset.ticker)
     const priceNum = coerceNumber(asset.market_price ?? asset.close)
     const price = priceNum > 0
       ? `R$ ${priceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : ''
-    return {
+    out.push({
       logo: asset.logo || '/default-logo.png',
       ticker: asset.ticker,
       change: `${coerceNumber(asset.change_percent ?? asset.change).toFixed(2)}%`,
       price,
-    }
-  })
-)
+    })
+  }
+  return out
+})
 
 watchEffect(() => {
   const payload = homeMarketData.value
@@ -1956,5 +1976,53 @@ definePageMeta({
   transform: translateY(-4px);
 }
 
+/* ========== MERCADO AGORA (driver narrative card a direita do IBOV) ========== */
+.market-now-pill:hover {
+  background: color-mix(in srgb, var(--text-heading) 3%, transparent);
+}
+.market-now-icon--losers,
+.market-now-icon--juros {
+  background: color-mix(in srgb, var(--brand-negative) 14%, transparent);
+  color: var(--brand-negative);
+}
+.market-now-icon--gainers,
+.market-now-icon--commodity {
+  background: color-mix(in srgb, var(--brand-positive) 14%, transparent);
+  color: var(--brand-positive);
+}
+.market-now-icon--petroleo {
+  background: color-mix(in srgb, #d97706 14%, transparent);
+  color: #d97706;
+}
+.market-now-icon--dolar,
+.market-now-icon--global {
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color: var(--brand-primary);
+}
+.market-now-icon--consumo {
+  background: color-mix(in srgb, #7c3aed 14%, transparent);
+  color: #7c3aed;
+}
+.market-now-text :deep(strong) { color: var(--text-heading); font-weight: 600; }
+.market-now-text :deep(strong.pos) { color: var(--brand-positive); }
+.market-now-text :deep(strong.neg) { color: var(--brand-negative); }
+
+/* ========== TICKER ROW (linha horizontal de tickers + CTA) ========== */
+.ticker-row-item--divider {
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 20%, transparent);
+}
+@media (min-width: 768px) {
+  .ticker-row-item--divider {
+    border-top: none;
+    border-left: 1px solid color-mix(in srgb, var(--brand-border) 20%, transparent);
+  }
+}
+.ticker-row-item:hover {
+  background: color-mix(in srgb, var(--text-heading) 3%, transparent);
+}
+.ticker-row-cta:hover {
+  background: color-mix(in srgb, var(--brand-primary) 6%, transparent);
+  color: var(--brand-primary);
+}
 
 </style>
