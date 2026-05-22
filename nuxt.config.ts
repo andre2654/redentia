@@ -975,6 +975,20 @@ export default defineNuxtConfig({
     manifest: false,
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico,webp,woff2}'],
+      // Exclui assets pesados do precache (>2MB Workbox falha o build).
+      // Ainda são servidos normalmente — browser cacheia via HTTP cache
+      // ou via runtimeCaching abaixo se baterem em alguma regra.
+      //   - brand/holder/author.png (~4MB) é decorativo, raramente visto.
+      //   - screenshots/*.png e .map são desnecessários no SW precache.
+      globIgnores: [
+        '**/brand/holder/author.*',
+        '**/screenshots/**',
+        '**/*.map',
+      ],
+      // Safety net caso outro asset cresça no futuro — eleva o teto pra
+      // 5MB. Acima disso o build avisa (que é o sinal certo pra otimizar
+      // o asset, não pra subir mais o limite).
+      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       navigateFallback: '/offline',
       navigateFallbackDenylist: [
         /^\/api\//,
