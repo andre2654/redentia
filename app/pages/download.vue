@@ -85,17 +85,21 @@
           <!-- CTAs -->
           <div class="mb-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
               :style="{
                 backgroundColor: 'var(--brand-primary)',
                 color: 'var(--brand-background)',
                 boxShadow: `0 16px 50px -16px ${'var(--brand-primary)'}A0`,
               }"
+              :disabled="installing"
               @click="installApp"
             >
-              <UIcon name="i-lucide-download" class="size-4" />
-              Instalar agora
-              <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+              <UIcon
+                :name="installed ? 'i-lucide-check-circle' : installing ? 'i-lucide-loader-2' : 'i-lucide-download'"
+                :class="['size-4', installing ? 'animate-spin' : '']"
+              />
+              {{ installed ? 'App instalado' : installing ? 'Instalando...' : 'Instalar agora' }}
+              <span v-if="!installed && !installing" class="inline-block transition-transform group-hover:translate-x-1">→</span>
             </button>
             <button
               class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-medium transition-opacity hover:opacity-70"
@@ -380,17 +384,21 @@
 
           <div v-if="activePlatform === 'android' || activePlatform === 'desktop'" class="mt-10 flex justify-center">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
               :style="{
                 backgroundColor: 'var(--brand-primary)',
                 color: 'var(--brand-background)',
                 boxShadow: `0 12px 40px -12px ${'var(--brand-primary)'}A0`,
               }"
+              :disabled="installing"
               @click="installApp"
             >
-              <UIcon name="i-lucide-download" class="size-4" />
-              Instalar {{ brand.shortName }} agora
-              <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+              <UIcon
+                :name="installed ? 'i-lucide-check-circle' : installing ? 'i-lucide-loader-2' : 'i-lucide-download'"
+                :class="['size-4', installing ? 'animate-spin' : '']"
+              />
+              {{ installed ? 'App já instalado' : installing ? 'Instalando...' : `Instalar ${brand.shortName} agora` }}
+              <span v-if="!installed && !installing" class="inline-block transition-transform group-hover:translate-x-1">→</span>
             </button>
           </div>
           <div v-else class="mt-10 flex items-center justify-center gap-3 rounded-2xl border px-5 py-4 text-[13px]" :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }">
@@ -553,15 +561,63 @@ const todayShort = computed(() => {
   return d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
 })
 
-// PWA removida em 2026-05-04 — o `installApp` antes acionava o prompt
-// nativo do navegador via `usePWA().install()`. Como o PWA foi
-// desativado, agora o botao apenas rola pro guia "como instalar"
-// para o usuario seguir manualmente quando voltarmos com a PWA.
-const installApp = () => {
+// PWA reativada no Sprint 1 (2026-05-22). O `installApp` agora tenta
+// disparar o prompt nativo do browser (Chromium/Android) via
+// `useInstallPrompt().install()`. Caem pro scroll-to-guide só em:
+//   - iOS Safari (sem API programática, instalação manual via Share)
+//   - Firefox desktop (sem suporte)
+//   - Chromium ainda não considerou a PWA elegível (rare)
+const { canInstall, installed, install } = useInstallPrompt()
+const toast = useToast()
+const installing = ref(false)
+
+const installApp = async () => {
+  // Já instalado → leva o user pro app aberto (não faz sentido instalar 2x)
+  if (installed.value) {
+    toast.add({
+      title: 'App já instalado',
+      description: 'Procure o ícone na sua tela inicial ou dock.',
+      icon: 'i-lucide-check-circle',
+      color: 'success',
+    })
+    return
+  }
+
+  // Browser pronto pra prompt → dispara nativo
+  if (canInstall.value) {
+    installing.value = true
+    try {
+      const outcome = await install()
+      if (outcome === 'accepted') {
+        toast.add({
+          title: 'Instalando...',
+          description: 'O app vai aparecer na sua tela inicial em segundos.',
+          icon: 'i-lucide-download',
+          color: 'success',
+        })
+      } else if (outcome === 'dismissed') {
+        // User fechou o prompt — mostra o guia manual como alternativa
+        detectAndScrollToPlatform()
+      } else {
+        // 'unavailable' — chave caiu entre canInstall e prompt(), trata como fallback
+        detectAndScrollToPlatform()
+      }
+    } finally {
+      installing.value = false
+    }
+    return
+  }
+
+  // Fallback: iOS Safari, Firefox, ou Chromium ainda não elegível →
+  // detecta plataforma e rola pro guia manual (comportamento antigo).
+  detectAndScrollToPlatform()
+}
+
+const detectAndScrollToPlatform = () => {
   const isIOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-    !(window as any).MSStream
+    !(window as unknown as { MSStream?: unknown }).MSStream
 
   if (isIOS) {
     activePlatform.value = 'iphone'
