@@ -29,7 +29,12 @@ const OUT_DIR = resolve(root, 'public/icons')
 const WIDGETS_DIR = resolve(root, 'public/widgets')
 
 const THEME_PRIMARY = '#D8881A'         // brand-primary (Redentia)
-const BACKGROUND_COLOR = '#FAF8F4'       // brand-bg pra apple-touch (sem alpha)
+const BACKGROUND_COLOR = '#FAF8F4'       // brand-bg light (legado, mantido pra widget icon)
+// Fundo dos ícones principais. O logo Redentia é monocromático branco
+// (fill="white" no SVG), então precisa de fundo escuro pra contraste.
+// `#0a0a0c` é o preto deep da identity v3 — mesmo do iPhone bezel no
+// hero da /download. Evita preto puro 100% que fica "morto" no AMOLED.
+const ICON_BACKGROUND = '#0a0a0c'
 
 // Cores dos shortcuts — cada um tem um tom semântico
 const SHORTCUT_COLORS = {
@@ -50,15 +55,32 @@ function pickSource() {
 }
 
 async function generateMainIcons(source) {
+  // Ícone principal: logo branco SOBRE fundo escuro sólido, com padding
+  // generoso (estilo Instagram/Twitter — "chip" reconhecível na grid de
+  // apps em vez de logo flutuando solto).
+  //
+  // Padding 22% de cada lado = inner 56% do canvas. Funciona bem porque:
+  //   - No app drawer do Android, ícones "chip" não-maskable ficam com
+  //     este padding consistente com o resto do sistema.
+  //   - Em maskable separado (gerador abaixo) o OS pode croppar com
+  //     safe-zone, então maskable usa um inner maior.
   const sizes = [192, 384, 512, 1024]
   for (const size of sizes) {
     const out = resolve(OUT_DIR, `${size}.png`)
-    // SVG aceita density via sharp; PNG só resize.
-    const pipeline = source.type === 'svg'
-      ? sharp(source.path, { density: Math.max(72, Math.round(size / 4)) })
-      : sharp(source.path)
-    await pipeline
-      .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    const inner = Math.round(size * 0.56)
+    const padding = Math.round((size - inner) / 2)
+
+    const innerBuffer = await (source.type === 'svg'
+      ? sharp(source.path, { density: Math.max(72, Math.round(inner / 2)) })
+      : sharp(source.path))
+      .resize(inner, inner, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer()
+
+    await sharp({
+      create: { width: size, height: size, channels: 4, background: ICON_BACKGROUND },
+    })
+      .composite([{ input: innerBuffer, top: padding, left: padding }])
       .png({ compressionLevel: 9, palette: false })
       .toFile(out)
     console.log(`  ✓ ${size}.png`)
@@ -86,7 +108,7 @@ async function generateMaskable(source) {
         width: size,
         height: size,
         channels: 4,
-        background: BACKGROUND_COLOR,
+        background: ICON_BACKGROUND,
       },
     })
       .composite([{ input: innerBuffer, top: padding, left: padding }])
@@ -97,10 +119,11 @@ async function generateMaskable(source) {
 }
 
 async function generateAppleTouchIcon(source) {
-  // Apple Touch Icon: 180×180, SEM ALPHA, bg=background_color.
-  // Apple sobrepoe um background branco se houver alpha → fica feio com logo claro.
+  // Apple Touch Icon: 180×180, SEM ALPHA, bg=ICON_BACKGROUND (preto deep).
+  // Apple sobrepoe um background branco se houver alpha → fica feio com
+  // logo claro. Por isso channels:3 (RGB sem canal alpha).
   const out = resolve(OUT_DIR, 'apple-touch-icon.png')
-  const innerSize = Math.round(180 * 0.78)
+  const innerSize = Math.round(180 * 0.56)
   const padding = Math.round((180 - innerSize) / 2)
   const innerBuffer = await (source.type === 'svg'
     ? sharp(source.path, { density: 100 })
@@ -113,7 +136,7 @@ async function generateAppleTouchIcon(source) {
       width: 180,
       height: 180,
       channels: 3,
-      background: BACKGROUND_COLOR,
+      background: ICON_BACKGROUND,
     },
   })
     .composite([{ input: innerBuffer, top: padding, left: padding }])

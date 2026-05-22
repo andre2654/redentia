@@ -27,6 +27,8 @@ interface BrandConfig {
   colors?: {
     primary?: string
     background?: string
+    /** Override do splash screen do PWA (default: '#0a0a0c'). */
+    splash_background?: string
   }
   logo?: {
     icon?: string
@@ -134,7 +136,13 @@ export default defineEventHandler(async (event) => {
   const shortName = brand?.short_name ?? (name.length <= 12 ? name : 'Redentia')
   const description = brand?.description ?? 'Do caos do mercado ao impacto na sua carteira'
   const themeColor = brand?.colors?.primary ?? '#D8881A'
-  const backgroundColor = brand?.colors?.background ?? '#FAF8F4'
+  // background_color: cor mostrada NO SPLASH SCREEN do PWA (Android,
+  // iOS, Win) e durante o loading inicial antes do CSS pintar.
+  // Os ícones principais são gerados com fundo `#0a0a0c` (logo branco
+  // sobre preto deep) — usar o mesmo bg aqui evita o flash branco
+  // gritante atrás do ícone enquanto o app abre. Light-mode internas
+  // pintam normalmente assim que a SPA inicializa.
+  const backgroundColor = brand?.colors?.splash_background ?? '#0a0a0c'
 
   setHeader(event, 'Content-Type', 'application/manifest+json; charset=utf-8')
   setHeader(event, 'Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
