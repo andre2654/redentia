@@ -41,13 +41,19 @@
     >
       <!-- HERO -->
       <template #hero>
+        <!-- Ilustração orgânica decorativa (canto direito).
+             Asset estático em /public/wallet-hero-illo.png. -->
+        <div class="wallet-hero-illo" aria-hidden="true">
+          <img src="/wallet-hero-illo.png" alt="" />
+        </div>
+
         <p class="calc-eyebrow">
           <template v-if="loading"><span class="wp8-skel wp8-skel-text-sm" /></template>
           <template v-else>Sua carteira · {{ openFinanceStatus.bankCount }} bancos sincronizados</template>
         </p>
-        <h1 class="calc-title">
-          Patrimônio hoje, projeções e
-          <em class="calc-italic">renda passiva.</em>
+        <h1 class="calc-title wallet-hero-headline">
+          <span class="wallet-hero-line">Patrimônio hoje,</span>
+          <span class="wallet-hero-line">projeções e <em class="calc-italic">renda passiva.</em></span>
         </h1>
         <p class="calc-lead">
           <template v-if="loading">
@@ -99,23 +105,34 @@
           </template>
         </p>
 
-        <div class="calc-result-divider" />
-
-        <dl class="calc-kpis">
+        <dl class="calc-kpis wallet-result-kpis">
           <div>
-            <dt>Renda projetada 12m</dt>
+            <dt>Renda projetada 12M</dt>
             <dd v-if="loading"><span class="wp8-skel wp8-skel-kpi" /></dd>
             <dd v-else class="primary">{{ formatBRL(dividendForecast12m, { compact: true }) }}</dd>
+            <div class="wallet-mini-icon wallet-mini-icon--amber" aria-hidden="true">
+              <UIcon name="i-lucide-dollar-sign" class="size-4" />
+            </div>
           </div>
           <div>
             <dt>Redentia Score</dt>
             <dd v-if="loading"><span class="wp8-skel wp8-skel-kpi" /></dd>
             <dd v-else class="positive">{{ portfolioScore }}<span class="wp-kpi-suf">/100</span></dd>
+            <p v-if="!loading" class="wallet-mini-meta wallet-mini-meta--positive">
+              {{ portfolioScore >= 80 ? 'Excelente' : portfolioScore >= 65 ? 'Bom' : portfolioScore >= 50 ? 'Razoável' : 'Atenção' }}
+            </p>
+            <div class="wallet-mini-icon wallet-mini-icon--positive" aria-hidden="true">
+              <UIcon name="i-lucide-shield-check" class="size-4" />
+            </div>
           </div>
           <div>
             <dt>Ativos</dt>
             <dd v-if="loading"><span class="wp8-skel wp8-skel-kpi" /></dd>
             <dd v-else>{{ positions.length }}</dd>
+            <p v-if="!loading" class="wallet-mini-meta">Diversificados</p>
+            <div class="wallet-mini-icon wallet-mini-icon--neutral" aria-hidden="true">
+              <UIcon name="i-lucide-pie-chart" class="size-4" />
+            </div>
           </div>
         </dl>
       </template>
@@ -156,19 +173,58 @@
           </ul>
         </div>
 
-        <div class="calc-result-divider" />
-
-        <div class="wp8-of-block">
-          <p class="calc-result-eyebrow" style="margin-bottom: 12px;">Open Finance</p>
-          <p class="wp8-of-status">
-            <span class="wp8-of-dot positive" />
-            <span v-if="loading"><span class="wp8-skel wp8-skel-text-sm" /></span>
-            <span v-else><strong>{{ openFinanceStatus.bankCount }} bancos</strong> conectados · última sync <strong>{{ openFinanceStatus.lastSync }}</strong></span>
-          </p>
-          <p class="wp8-of-meta">
+        <!-- OPEN FINANCE section — dentro do card de composição,
+             abaixo do donut + legenda. Status + lista de bancos. -->
+        <div v-if="!loading" class="wallet-of-section">
+          <p class="calc-result-eyebrow">Open Finance</p>
+          <div class="wallet-of-status">
+            <div class="wallet-of-shield" aria-hidden="true">
+              <UIcon name="i-lucide-shield-check" class="size-4" />
+            </div>
+            <p class="wallet-of-status-text">
+              <strong>{{ openFinanceStatus.bankCount }} {{ openFinanceStatus.bankCount === 1 ? 'banco conectado' : 'bancos conectados' }}</strong>
+              · última sync {{ openFinanceStatus.lastSync }}
+            </p>
+            <button type="button" class="wallet-of-sync">
+              <UIcon name="i-lucide-refresh-cw" class="size-3.5" />
+              <span>Sincronizar agora</span>
+            </button>
+          </div>
+          <p class="wallet-of-meta">
             Próxima sincronização automática em 6h. Toque em qualquer banco abaixo para forçar atualização.
           </p>
+          <div class="wallet-of-banks">
+            <NuxtLink
+              v-for="b in bankAccounts"
+              :key="b.id"
+              to="/settings/integracoes"
+              class="wallet-of-bank"
+            >
+              <div class="wallet-of-bank-logo">
+                <img v-if="b.logo" :src="b.logo" :alt="b.bank" />
+                <span v-else>{{ b.bank.charAt(0) }}</span>
+              </div>
+              <div class="wallet-of-bank-info">
+                <p class="wallet-of-bank-name">{{ b.bank }}</p>
+                <p class="wallet-of-bank-meta">
+                  Conectado via Open Finance
+                  <span class="wallet-of-bank-badge">Atualizado</span>
+                </p>
+              </div>
+              <UIcon name="i-lucide-chevron-right" class="size-4 wallet-of-bank-chev" />
+            </NuxtLink>
+
+            <!-- Pílula "Adicionar conta" — sempre visível ao fim da lista,
+                 abre a tela de integrações pra conectar um banco novo. -->
+            <NuxtLink to="/settings/integracoes" class="wallet-of-bank wallet-of-bank--add">
+              <span class="wallet-of-bank-add-icon" aria-hidden="true">
+                <UIcon name="i-lucide-plus" class="size-3.5" />
+              </span>
+              <span class="wallet-of-bank-add-label">Conectar banco</span>
+            </NuxtLink>
+          </div>
         </div>
+
       </template>
 
       <!-- CHART → PATRIMÔNIO 90D (real data, com tooltip) -->
@@ -231,16 +287,19 @@
             <p class="wp8-cs-label">Patrimônio máx.</p>
             <p v-if="loading" class="wp8-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
             <p v-else class="wp8-cs-val">{{ formatBRL(patrimonioKpis.high, { compact: true }) }}</p>
+            <p v-if="!loading" class="wp8-cs-meta">{{ formatShortDate(patrimonioKpis.highDate) }}</p>
           </li>
           <li>
             <p class="wp8-cs-label">Patrimônio mín.</p>
             <p v-if="loading" class="wp8-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
             <p v-else class="wp8-cs-val">{{ formatBRL(patrimonioKpis.low, { compact: true }) }}</p>
+            <p v-if="!loading" class="wp8-cs-meta">{{ formatShortDate(patrimonioKpis.lowDate) }}</p>
           </li>
           <li>
             <p class="wp8-cs-label">Volatilidade</p>
             <p v-if="loading" class="wp8-cs-val"><span class="wp8-skel wp8-skel-kpi" /></p>
-            <p v-else class="wp8-cs-val">{{ patrimonioKpis.vol.toFixed(2).replace('.', ',') }}</p>
+            <p v-else class="wp8-cs-val">{{ patrimonioKpis.vol.toFixed(1).replace('.', ',') }}%</p>
+            <p v-if="!loading" class="wp8-cs-meta">90 dias</p>
           </li>
           <li>
             <p class="wp8-cs-label">Variação 90d</p>
@@ -248,6 +307,7 @@
             <p v-else class="wp8-cs-val" :class="patrimonioKpis.deltaPct >= 0 ? 'positive' : 'negative'">
               {{ formatPct(patrimonioKpis.deltaPct) }}
             </p>
+            <p v-if="!loading" class="wp8-cs-meta">{{ formatBRL(patrimonioKpis.deltaAbs, { compact: true }) }}</p>
           </li>
         </ul>
       </template>
@@ -255,54 +315,8 @@
 
     <!-- ============ SEÇÕES ABAIXO DO SHELL ============ -->
     <section v-if="loading || positionsReal.length" class="wp8-rail">
-      <!-- BANCOS Open Finance -->
-      <section class="wp8-section">
-        <header class="wp8-head">
-          <div>
-            <p class="calc-eyebrow">Contas conectadas</p>
-            <h2 class="wp8-h2">Open Finance <em class="calc-italic">strip.</em></h2>
-          </div>
-          <div class="wp8-head-actions">
-            <p v-if="loading" class="wp8-head-meta"><span class="wp8-skel wp8-skel-text-sm" /></p>
-            <p v-else class="wp8-head-meta">{{ bankAccounts.length }} bancos · sync {{ openFinanceStatus.lastSync }}</p>
-            <NuxtLink to="/integracoes" class="wp8-head-link">
-              Gerenciar integrações
-              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
-            </NuxtLink>
-          </div>
-        </header>
-
-        <div class="wp8-banks">
-          <template v-if="loading">
-            <article v-for="n in 3" :key="`skel-bank-${n}`" class="wp8-bank">
-              <p class="wp8-bank-name"><span class="wp8-skel wp8-skel-text-sm" /></p>
-              <p class="wp8-bank-type"><span class="wp8-skel wp8-skel-chip" /></p>
-              <p class="wp8-bank-balance"><span class="wp8-skel wp8-skel-kpi" /></p>
-              <p class="wp8-bank-sync"><span class="wp8-skel wp8-skel-chip" /></p>
-            </article>
-          </template>
-          <template v-else>
-            <article v-for="b in bankAccounts" :key="b.id" class="wp8-bank">
-              <p class="wp8-bank-name">{{ b.bank }}</p>
-              <p class="wp8-bank-type">{{ b.type }}</p>
-              <p class="wp8-bank-balance">{{ formatBRL(b.balance) }}</p>
-              <p class="wp8-bank-sync">sync {{ b.lastSync }}</p>
-            </article>
-          </template>
-
-          <!-- Add new account cell (sempre visivel) -->
-          <NuxtLink to="/integracoes" class="wp8-bank wp8-bank-add">
-            <span class="wp8-bank-add-icon">
-              <UIcon name="i-lucide-plus" class="size-5" />
-            </span>
-            <p class="wp8-bank-add-title">Conectar banco</p>
-            <p class="wp8-bank-add-sub">Itaú, Nubank, Bradesco, Santander e mais 30+</p>
-          </NuxtLink>
-        </div>
-      </section>
-
       <!-- POSIÇÕES — agrupadas por classe, colapsável -->
-      <section class="wp8-section">
+      <section class="wp8-section wp8-section--por-classe">
         <header class="wp8-head">
           <div>
             <p class="calc-eyebrow">
@@ -466,53 +480,106 @@
           </div>
         </div>
 
-        <div v-else class="wp8-raiox-split">
-          <!-- SNOWFLAKE — minimalista (sem dots, sem labels textuais nas pontas) -->
+        <div v-else class="wp8-raiox-2col">
+        <div class="wp8-raiox-split">
+          <!-- ESQUERDA: Bloco SCORE GERAL — pill + número gigante +
+               delta + comparação. -->
+          <div class="wp8-score-block">
+            <span class="wp8-score-pill">SCORE GERAL</span>
+            <p class="wp8-score-mega">
+              {{ Math.round(raioXDimensions.reduce((a, b) => a + b.score, 0) / raioXDimensions.length) }}<span class="wp8-score-mega-suf">/100</span>
+            </p>
+            <p class="wp8-score-delta">
+              <UIcon name="i-lucide-arrow-up" class="size-3.5" />
+              {{ greenCount }} de {{ raioXDimensions.length }} dimensões verdes
+            </p>
+            <p class="wp8-score-note">
+              Resultado consolidado a partir das 9 dimensões avaliadas pela IA.
+            </p>
+          </div>
+
+          <!-- DIREITA: Snowflake/radar maior com labels ao redor de cada
+               vértice (nome em cima + score grande colorido por status). -->
           <div class="wp8-snowflake">
-            <svg viewBox="-130 -130 260 260" class="wp8-snowflake-svg">
-              <!-- rings (apenas 50% e 100%, sutis) -->
-              <circle cx="0" cy="0" r="60" fill="none" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="2 5" opacity="0.6" />
+            <svg viewBox="-200 -200 400 400" class="wp8-snowflake-svg">
+              <!-- 3 rings concêntricos (25%, 50%, 100%) -->
+              <circle cx="0" cy="0" r="30" fill="none" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="2 4" opacity="0.5" />
+              <circle cx="0" cy="0" r="75" fill="none" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="2 4" opacity="0.6" />
               <circle cx="0" cy="0" r="120" fill="none" stroke="var(--border-subtle)" stroke-width="1" />
 
-              <!-- axes muito sutis -->
+              <!-- Axes sutis -->
               <line v-for="(d, i) in raioXDimensions" :key="`axis-${i}`"
                 x1="0" y1="0"
                 :x2="Math.cos((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * 120"
                 :y2="Math.sin((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * 120"
                 stroke="var(--border-subtle)" stroke-width="1" opacity="0.4" />
 
-              <!-- snowflake polygon -->
-              <polygon :points="snowflakePoints" fill="color-mix(in srgb, var(--brand-primary) 14%, transparent)" stroke="var(--brand-primary)" stroke-width="1.2" />
+              <!-- Snowflake polygon (área preenchida amber) -->
+              <polygon :points="snowflakePoints" fill="color-mix(in srgb, var(--brand-primary) 14%, transparent)" stroke="var(--brand-primary)" stroke-width="1.8" stroke-linejoin="round" />
+
+              <!-- Dots nos vértices da polygon (cor por status) -->
+              <circle v-for="(d, i) in raioXDimensions" :key="`dot-${i}`"
+                :cx="Math.cos((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * (d.score / 100 * 120)"
+                :cy="Math.sin((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * (d.score / 100 * 120)"
+                r="4"
+                :fill="d.status === 'good' ? 'var(--brand-positive)' : d.status === 'medium' ? 'var(--brand-primary)' : 'var(--brand-negative)'" />
+
+              <!-- Labels ao redor: nome + score colorido -->
+              <g v-for="(d, i) in raioXDimensions" :key="`label-${i}`" class="wp8-sf-label-g">
+                <text
+                  :x="Math.cos((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * 155"
+                  :y="Math.sin((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * 155 - 4"
+                  text-anchor="middle"
+                  class="wp8-sf-label-name">{{ d.name }}</text>
+                <text
+                  :x="Math.cos((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * 155"
+                  :y="Math.sin((i * 2 * Math.PI / raioXDimensions.length) - Math.PI / 2) * 155 + 16"
+                  text-anchor="middle"
+                  :class="['wp8-sf-label-score', d.status]">{{ d.score }}</text>
+              </g>
             </svg>
 
-            <div class="wp8-snowflake-meta">
-              <p class="calc-result-eyebrow" style="margin-bottom: 6px;">Score geral</p>
-              <p class="wp8-sf-score">{{ Math.round(raioXDimensions.reduce((a, b) => a + b.score, 0) / raioXDimensions.length) }}<span class="wp-kpi-suf">/100</span></p>
-              <p class="wp8-sf-status">{{ greenCount }} de 9 dimensões verdes · 0 vermelhas</p>
+            <!-- Legenda no rodapé do radar -->
+            <div class="wp8-sf-legend">
+              <span class="wp8-sf-legend-item">
+                <span class="wp8-sf-legend-line wp8-sf-legend-line--solid" />
+                Sua carteira
+              </span>
+              <span class="wp8-sf-legend-item">
+                <span class="wp8-sf-legend-line wp8-sf-legend-line--dashed" />
+                Benchmark (IBOV)
+              </span>
             </div>
           </div>
-
-          <!-- INSIGHTS editoriais (3 cards) -->
-          <div class="wp8-rx-insights">
-            <article v-if="bestDimension" class="wp8-ins">
-              <p class="wp8-ins-tag pos">Maior força</p>
-              <h4 class="wp8-ins-h">{{ bestDimension.name }} <span class="wp8-ins-score pos">{{ bestDimension.score }}</span></h4>
-              <p class="wp8-ins-note">{{ bestDimension.summary }}</p>
-            </article>
-
-            <article v-if="worstDimension" class="wp8-ins">
-              <p class="wp8-ins-tag neutral">Precisa atenção</p>
-              <h4 class="wp8-ins-h">{{ worstDimension.name }} <span class="wp8-ins-score neutral">{{ worstDimension.score }}</span></h4>
-              <p class="wp8-ins-note">{{ worstDimension.summary }}</p>
-            </article>
-
-            <article v-if="opportunityDimension" class="wp8-ins">
-              <p class="wp8-ins-tag accent">Oportunidade</p>
-              <h4 class="wp8-ins-h">{{ opportunityDimension.name }} <span class="wp8-ins-score accent">{{ opportunityDimension.score }}</span></h4>
-              <p class="wp8-ins-note">{{ opportunityDimension.summary }}</p>
-            </article>
-          </div>
         </div>
+
+        <!-- INSIGHTS card — segunda coluna do 2col grid (lado a lado com radar). -->
+        <div class="wp8-rx-insights wp8-rx-insights--standalone">
+            <header class="wp8-rx-insights-head">
+              <span class="wp8-rx-insights-badge">
+                <UIcon name="i-lucide-sparkles" class="size-3" />
+                INSIGHTS DA IA
+              </span>
+              <h3 class="wp8-rx-insights-title">
+                Leitura <em class="calc-italic">inteligente</em> da sua carteira
+              </h3>
+            </header>
+
+            <article v-for="(ins, i) in aiInsights" :key="`ins-${i}`" class="wp8-ins">
+              <div
+                class="wp8-ins-icon"
+                :class="ins.status === 'good' ? 'wp8-ins-icon--pos' : ins.status === 'bad' ? 'wp8-ins-icon--neg' : 'wp8-ins-icon--neutral'"
+                aria-hidden="true"
+              >
+                <UIcon :name="ins.icon" class="size-5" />
+              </div>
+              <div class="wp8-ins-body">
+                <h4 class="wp8-ins-h">{{ ins.title }}</h4>
+                <p class="wp8-ins-note">{{ ins.summary }}</p>
+              </div>
+            </article>
+        </div>
+        </div><!-- /.wp8-raiox-2col -->
 
         <!-- grid horizontal: as 9 dimensões em cells editoriais. Loading: 9 skels. -->
         <ul v-if="loading" class="wp8-rx-grid">
@@ -709,52 +776,97 @@
     <!-- CTA full-bleed: background amarelado + dados do resultado + Ver mais.
          Esconde no empty state — sem positions nao faz sentido mostrar o
          "Resultado +X em 12m". -->
-    <section v-if="!loading && positionsReal.length" class="wp8-cta-fullbleed">
-      <div class="wp8-cta-atmo wp8-cta-atmo--top" aria-hidden="true" />
-      <div class="wp8-cta-atmo wp8-cta-atmo--bottom" aria-hidden="true" />
+    <!-- Card destaque RESULTADO 12 MESES + 2 sub-cards Swing/Day trade.
+         Hero card com bg gradient amber + ilustração SVG abstrata (dots
+         tracejados subindo) atrás do texto. Embaixo, 2 cards menores
+         lado a lado com mini sparkline cada. -->
+    <section v-if="!loading && positionsReal.length" class="wp8-result-cta">
+      <!-- HERO: card grande com bg gradient + SVG decorativo + CTA -->
+      <article class="wp8-cta-hero">
+        <div class="wp8-cta-bg-illo" aria-hidden="true">
+          <svg viewBox="0 0 800 280" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="wp8-cta-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--brand-primary)" stop-opacity="0.32" />
+                <stop offset="100%" stop-color="var(--brand-primary)" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <!-- Onda preenchida amber translúcida -->
+            <path
+              d="M 0 220 Q 80 150 160 180 T 320 130 Q 400 110 480 120 T 640 80 Q 720 60 800 70 L 800 280 L 0 280 Z"
+              fill="url(#wp8-cta-fill)"
+            />
+            <!-- Curva tracejada amber por cima -->
+            <path
+              d="M 0 220 Q 80 150 160 180 T 320 130 Q 400 110 480 120 T 640 80 Q 720 60 800 70"
+              fill="none"
+              stroke="var(--brand-primary)"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-dasharray="2 7"
+              opacity="0.85"
+            />
+          </svg>
+        </div>
 
-      <div class="wp8-cta-inner">
-        <header class="wp8-cta-head">
-          <div>
-            <p class="calc-eyebrow">Resultado · 12 meses</p>
-            <h2 class="wp8-cta-h">
-              Resultado:
-              <em class="calc-italic">+{{ formatBRL(swingStats.realizedPnl + dayTradeStats.totalPnl, { compact: true }) }}</em>
-              em 12 meses.
-            </h2>
-          </div>
+        <div class="wp8-cta-hero-content">
+          <p class="calc-eyebrow">Resultado · 12 meses</p>
+          <h2 class="wp8-cta-h">
+            Resultado:
+            <em class="calc-italic">+{{ formatBRL(swingStats.realizedPnl + dayTradeStats.totalPnl, { compact: true }) }}</em>
+            <br />em 12 meses.
+          </h2>
+        </div>
 
-          <NuxtLink to="/wallet/resultado" class="wp8-cta-primary">
-            <span>Ver mais</span>
-            <UIcon name="i-lucide-arrow-right" class="size-4 wp8-cta-arrow" />
-          </NuxtLink>
-        </header>
+        <NuxtLink to="/wallet/resultado" class="wp8-cta-primary">
+          <span>Ver mais</span>
+          <UIcon name="i-lucide-arrow-right" class="size-4 wp8-cta-arrow" />
+        </NuxtLink>
+      </article>
 
-        <div class="wp8-cta-data">
-          <article class="wp8-cta-block">
+      <!-- 2 sub-cards lado a lado: Swing + Day trade com sparkline -->
+      <div class="wp8-cta-data">
+        <article class="wp8-cta-block">
+          <div class="wp8-cta-block-text">
             <p class="wp8-cta-block-tag">Swing · 12 meses</p>
             <p class="wp8-cta-block-mega pos">+{{ formatBRL(swingStats.realizedPnl, { compact: true }) }}</p>
-            <p class="wp8-cta-block-meta">
-              <span>{{ swingStats.winRate }}% win</span>
-              <span class="sep">·</span>
-              <span>PF {{ swingStats.profitFactor.toFixed(1) }}</span>
-              <span class="sep">·</span>
-              <span>{{ swingStats.totalTrades }} trades</span>
-            </p>
-          </article>
+            <p class="wp8-cta-block-meta">Variação total realizada</p>
+          </div>
+          <svg class="wp8-cta-block-spark" viewBox="0 0 120 60" preserveAspectRatio="none" aria-hidden="true">
+            <path
+              d="M 0 50 Q 20 42 35 38 T 65 30 Q 80 25 95 22 T 120 12 L 120 60 L 0 60 Z"
+              fill="color-mix(in srgb, var(--brand-positive) 14%, transparent)"
+            />
+            <path
+              d="M 0 50 Q 20 42 35 38 T 65 30 Q 80 25 95 22 T 120 12"
+              fill="none"
+              stroke="var(--brand-positive)"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </article>
 
-          <article class="wp8-cta-block">
+        <article class="wp8-cta-block">
+          <div class="wp8-cta-block-text">
             <p class="wp8-cta-block-tag">Day trade · 7 dias</p>
             <p class="wp8-cta-block-mega pos">+{{ formatBRL(dayTradeStats.totalPnl, { compact: true }) }}</p>
-            <p class="wp8-cta-block-meta">
-              <span>{{ dayTradeStats.winRate }}% win</span>
-              <span class="sep">·</span>
-              <span>PF {{ dayTradeStats.profitFactor.toFixed(1) }}</span>
-              <span class="sep">·</span>
-              <span>{{ dayTradeStats.count }} trades</span>
-            </p>
-          </article>
-        </div>
+            <p class="wp8-cta-block-meta">Resultado no período</p>
+          </div>
+          <svg class="wp8-cta-block-spark" viewBox="0 0 120 60" preserveAspectRatio="none" aria-hidden="true">
+            <path
+              d="M 0 45 Q 18 40 30 35 T 55 28 Q 70 25 85 20 T 120 8 L 120 60 L 0 60 Z"
+              fill="color-mix(in srgb, var(--brand-positive) 14%, transparent)"
+            />
+            <path
+              d="M 0 45 Q 18 40 30 35 T 55 28 Q 70 25 85 20 T 120 8"
+              fill="none"
+              stroke="var(--brand-positive)"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </article>
       </div>
     </section>
 
@@ -1033,6 +1145,10 @@ const bankAccounts = computed(() => {
       type: a.type === 'INVESTMENT' ? 'Investim.' : 'Corrente',
       balance: a.balance,
       lastSync: formatSyncRelative(a.last_synced_at),
+      // Pluggy fornece a URL do logo via `institution.imageUrl`. Se ausente
+      // (ou se backend ainda não persiste isso), caímos no fallback de letra
+      // inicial colorida no template.
+      logo: (a.institution as any)?.imageUrl ?? null as string | null,
     }))
 })
 
@@ -1335,9 +1451,12 @@ function formatChartDate(iso: string) {
 // KPIs derivados da janela 90d
 const patrimonioKpis = computed(() => {
   const eq = equityCurveSlice.value.vals
-  if (eq.length < 2) return { high: 0, low: 0, vol: 0, deltaPct: 0 }
+  const dates = equityCurveSlice.value.dates
+  if (eq.length < 2) return { high: 0, low: 0, vol: 0, deltaPct: 0, deltaAbs: 0, highDate: '', lowDate: '' }
   const high = Math.max(...eq)
   const low = Math.min(...eq)
+  const highIdx = eq.indexOf(high)
+  const lowIdx = eq.indexOf(low)
   const rets: number[] = []
   for (let i = 1; i < eq.length; i++) {
     const prev = eq[i - 1]
@@ -1347,8 +1466,23 @@ const patrimonioKpis = computed(() => {
   const mean = rets.length ? rets.reduce((a, r) => a + r, 0) / rets.length : 0
   const variance = rets.length ? rets.reduce((a, r) => a + (r - mean) ** 2, 0) / rets.length : 0
   const vol = Math.sqrt(variance)
-  return { high, low, vol, deltaPct: patrimonioChart.value.deltaPct }
+  const deltaAbs = eq[eq.length - 1] - eq[0]
+  return {
+    high, low, vol,
+    deltaPct: patrimonioChart.value.deltaPct,
+    deltaAbs,
+    highDate: dates[highIdx] || '',
+    lowDate: dates[lowIdx] || '',
+  }
 })
+
+// Formata YYYY-MM-DD pra DD/MM/YYYY (curto, sem mes textual)
+function formatShortDate(iso: string): string {
+  if (!iso) return '—'
+  const [y, m, d] = iso.split('-')
+  if (!y || !m || !d) return '—'
+  return `${d}/${m}/${y}`
+}
 
 // 12 meses renda passiva — REAL (passados + atual) + PROJEÇÃO (atual + futuros)
 type ClassKey = 'FIIs' | 'Acoes' | 'ETF' | 'Outros'
@@ -1791,6 +1925,56 @@ const worstDimension = computed(() => [...raioXDimensions.value].sort((a, b) => 
 // "oportunidade" = segunda menor pra dar uma direção acionável
 const opportunityDimension = computed(() => [...raioXDimensions.value].sort((a, b) => a.score - b.score)[1])
 
+// AI Insights — gera 5 cards narrativos a partir de 5 dimensões-chave
+// (Volatilidade, Crescimento, Renda, Exposição Cambial, Diversificação).
+// Cada um tem 3 variantes (good/medium/bad) com ícone + título + summary
+// em prosa amigável (sem score técnico, sem dimensão crua).
+type Insight = { icon: string; status: 'good' | 'medium' | 'bad'; title: string; summary: string }
+
+const aiInsights = computed<Insight[]>(() => {
+  const dims = new Map(raioXDimensions.value.map((d) => [d.name, d]))
+  const out: Insight[] = []
+
+  const push = (name: string, variants: Record<'good' | 'medium' | 'bad', { icon: string; title: string; summary: string }>) => {
+    const d = dims.get(name)
+    if (!d) return
+    const tpl = variants[d.status as 'good' | 'medium' | 'bad']
+    out.push({ icon: tpl.icon, status: d.status as 'good' | 'medium' | 'bad', title: tpl.title, summary: tpl.summary })
+  }
+
+  push('Volatilidade', {
+    good: { icon: 'i-lucide-shield-check', title: 'Carteira defensiva e resiliente', summary: 'Sua carteira apresenta boa proteção contra volatilidade e resiliência acima da média do mercado.' },
+    medium: { icon: 'i-lucide-shield', title: 'Volatilidade controlada', summary: 'Volatilidade em nível moderado. Há espaço para otimizar a proteção em cenários de stress.' },
+    bad: { icon: 'i-lucide-alert-triangle', title: 'Volatilidade elevada', summary: 'Sua carteira mostra volatilidade alta em relação ao perfil. Considere ativos mais defensivos.' },
+  })
+
+  push('Crescimento', {
+    good: { icon: 'i-lucide-trending-up', title: 'Alta exposição a crescimento', summary: 'Bom posicionamento em setores de alto potencial. A dimensão de crescimento está acima da média.' },
+    medium: { icon: 'i-lucide-bar-chart-3', title: 'Crescimento moderado', summary: 'Exposição a setores de crescimento está em nível mediano. Combine com pagadoras de dividendos.' },
+    bad: { icon: 'i-lucide-trending-down', title: 'Baixa exposição a crescimento', summary: 'A dimensão de crescimento está abaixo da média. Considere aumentar exposição a empresas de alto crescimento.' },
+  })
+
+  push('Renda', {
+    good: { icon: 'i-lucide-banknote', title: 'Dividend yield acima da média', summary: 'Sua carteira tem DY estimado acima do IBOV. Ótimo para geração de renda recorrente.' },
+    medium: { icon: 'i-lucide-banknote', title: 'Renda equilibrada', summary: 'O dividend yield está em linha com a média do mercado. Boa base, sem grandes desvios.' },
+    bad: { icon: 'i-lucide-banknote', title: 'Renda passiva abaixo do ideal', summary: 'Seu DY está abaixo da média. Aumente exposição a pagadoras consistentes para geração de renda.' },
+  })
+
+  push('Exposição cambial', {
+    good: { icon: 'i-lucide-globe', title: 'Diversificação geográfica saudável', summary: 'Boa exposição a ativos internacionais. Protege contra cenários locais adversos e oscilação cambial.' },
+    medium: { icon: 'i-lucide-globe', title: 'Exposição internacional moderada', summary: 'Sua carteira tem alguma exposição internacional. Há espaço para ampliar a diversificação geográfica.' },
+    bad: { icon: 'i-lucide-globe', title: 'Internacional abaixo do ideal', summary: 'Exposição internacional está baixa em relação ao recomendado. Diversificar geograficamente reduz risco de longo prazo.' },
+  })
+
+  push('Diversificação', {
+    good: { icon: 'i-lucide-pie-chart', title: 'Diversificação setorial robusta', summary: 'Carteira bem distribuída entre múltiplos setores. Reduz o risco específico de um único segmento.' },
+    medium: { icon: 'i-lucide-pie-chart', title: 'Diversificação moderada', summary: 'A distribuição setorial está OK, mas ampliar a exposição a mais setores reduziria risco específico.' },
+    bad: { icon: 'i-lucide-pie-chart', title: 'Concentração setorial elevada', summary: 'Poucos setores carregam grande parte do peso da carteira. Risco de concentração alto — vale revisar.' },
+  })
+
+  return out
+})
+
 // stress test scenarios
 const stressScenarios = [
   {
@@ -2132,12 +2316,196 @@ function openHighlights() {
 .wp8-chart-tip-date { font-size: 11px; color: var(--text-muted); margin: 0 0 4px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 .wp8-chart-tip-val { font-size: 16px; font-weight: 500; color: var(--text-heading); margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 
-.wp8-curve-stats { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 24px; }
+.wp8-curve-stats { list-style: none; padding: 0; margin: 24px 0 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 @media (min-width: 768px) { .wp8-curve-stats { grid-template-columns: repeat(4, 1fr); } }
+.wp8-curve-stats > li {
+  position: relative;
+  padding: 16px 18px 18px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 100px;
+}
 .wp8-cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 500; margin: 0 0 4px; }
-.wp8-cs-val { font-size: 16px; font-weight: 500; color: var(--text-heading); margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.wp8-cs-val { font-size: 20px; font-weight: 400; color: var(--text-heading); margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.015em; line-height: 1.1; }
 .wp8-cs-val.positive { color: var(--brand-positive); }
 .wp8-cs-val.negative { color: var(--brand-negative); }
+.wp8-cs-meta { font-size: 12px; color: var(--text-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; }
+
+/* =================================================================
+   OPEN FINANCE section — dentro do card de composição.
+   Status + descrição + lista de bancos com logo, nome, badge.
+   ================================================================= */
+.wallet-of-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.wallet-of-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.wallet-of-shield {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
+  color: var(--brand-positive);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wallet-of-status-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-body);
+  margin: 0;
+  min-width: 200px;
+}
+.wallet-of-status-text strong {
+  color: var(--text-heading);
+  font-weight: 500;
+}
+.wallet-of-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  background: transparent;
+  color: var(--text-heading);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 200ms, border-color 200ms;
+}
+.wallet-of-sync:hover {
+  background: var(--bg-overlay);
+  border-color: var(--brand-border);
+}
+.wallet-of-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.55;
+}
+/* Bancos em pill row — compactos e inline. */
+.wallet-of-banks {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.wallet-of-bank {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 9999px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 200ms, background 200ms;
+}
+.wallet-of-bank:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 60%, transparent);
+  background: var(--bg-overlay);
+}
+.wallet-of-bank-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: var(--brand-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+.wallet-of-bank-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wallet-of-bank-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.wallet-of-bank-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-heading);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.wallet-of-bank-meta {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0;
+  color: var(--text-muted);
+  margin: 0;
+}
+.wallet-of-bank-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
+  color: var(--brand-positive);
+  font-weight: 500;
+  font-size: 10.5px;
+  line-height: 1;
+}
+.wallet-of-bank-chev {
+  color: var(--text-muted);
+  width: 14px;
+  height: 14px;
+  margin-left: 2px;
+}
+
+/* Pílula "Conectar banco" — variant dashed amber. */
+.wallet-of-bank--add {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);
+}
+.wallet-of-bank--add:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 60%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 6%, transparent);
+}
+.wallet-of-bank-add-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color: var(--brand-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wallet-of-bank-add-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--brand-primary);
+  letter-spacing: -0.005em;
+}
 
 /* ============= RAIL (sections below shell) ============= */
 .wp8-rail { max-width: 1440px; margin: 0 auto; padding: 0 16px; }
@@ -2241,9 +2609,25 @@ function openHighlights() {
 }
 
 /* ============= POSITIONS GROUPS (collapsible) ============= */
-.wp8-pos-groups { display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }
-.wp8-pos-group { border-bottom: 1px solid var(--border-subtle); }
-.wp8-pos-group:last-child { border-bottom: 0; }
+.wp8-pos-groups { display: flex; flex-direction: column; gap: 10px; border-top: none; }
+.wp8-pos-group {
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+.wp8-pos-group:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.wp8-pos-group:last-child { border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent); }
+
+/* Variant amber soft pro card "Por classe" — bg amber 4% bem sutil
+   pra destacar como container das classes (que ficam em cards brancos). */
+.wp8-section--por-classe {
+  background: color-mix(in srgb, var(--brand-primary) 4%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent) !important;
+}
 
 .wp8-pos-head {
   display: grid;
@@ -2251,7 +2635,7 @@ function openHighlights() {
   align-items: center;
   gap: 16px;
   width: 100%;
-  padding: 18px 0;
+  padding: 18px 16px;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -2336,7 +2720,126 @@ function openHighlights() {
 }
 
 /* ============= RAIO-X · SNOWFLAKE minimal + INSIGHTS ============= */
-.wp8-raiox-split { display: grid; grid-template-columns: 1fr; gap: 40px; border-top: 1px solid var(--border-subtle); padding-top: 40px; }
+/* Wrapper 2-col: (SCORE + Radar) à esquerda + Insights à direita */
+.wp8-raiox-2col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  border-top: none;
+  padding-top: 0;
+}
+@media (min-width: 1280px) {
+  .wp8-raiox-2col {
+    grid-template-columns: 1.6fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+.wp8-raiox-split { display: grid; grid-template-columns: 1fr; gap: 40px; }
+@media (min-width: 1024px) {
+  .wp8-raiox-split { grid-template-columns: 280px 1fr; align-items: center; gap: 56px; }
+}
+
+/* Bloco SCORE GERAL (esquerda) */
+.wp8-score-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+.wp8-score-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  background: var(--bg-overlay);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.6;
+}
+.wp8-score-mega {
+  font-size: clamp(56px, 7vw, 88px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-primary);
+  margin: 4px 0 0;
+}
+.wp8-score-mega-suf {
+  font-size: 0.4em;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 4px;
+  letter-spacing: 0;
+}
+.wp8-score-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--brand-positive);
+  font-weight: 500;
+  margin: 8px 0 0;
+}
+.wp8-score-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+  line-height: 1.55;
+  max-width: 28ch;
+}
+
+/* Labels SVG ao redor do snowflake */
+.wp8-sf-label-name {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--text-heading);
+  font-family: var(--brand-font);
+  letter-spacing: -0.005em;
+}
+.wp8-sf-label-score {
+  font-size: 22px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--brand-font);
+  letter-spacing: -0.02em;
+}
+.wp8-sf-label-score.good { fill: var(--brand-positive); }
+.wp8-sf-label-score.medium { fill: var(--brand-primary); }
+.wp8-sf-label-score.bad { fill: var(--brand-negative); }
+
+/* Legenda do snowflake (Sua carteira / Benchmark IBOV) */
+.wp8-sf-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.wp8-sf-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.wp8-sf-legend-line {
+  display: inline-block;
+  width: 20px;
+  height: 2px;
+}
+.wp8-sf-legend-line--solid { background: var(--brand-primary); }
+.wp8-sf-legend-line--dashed {
+  background: transparent;
+  border-top: 2px dashed var(--text-muted);
+  height: 0;
+  opacity: 0.6;
+}
 @media (min-width: 1024px) { .wp8-raiox-split { grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; } }
 
 /* Empty state quando carteira foi importada mas Raio-X ainda nao rodou */
@@ -2358,26 +2861,101 @@ function openHighlights() {
 .wp8-sf-status { font-size: 13px; color: var(--text-muted); margin: 10px 0 0; letter-spacing: 0.02em; }
 
 /* INSIGHTS editoriais (3 cards verticais) */
-.wp8-rx-insights { display: flex; flex-direction: column; gap: 0; }
-.wp8-ins { padding: 20px 0; border-bottom: 1px solid var(--border-subtle); }
-.wp8-ins:first-child { padding-top: 0; }
-.wp8-ins:last-child { border-bottom: 0; padding-bottom: 0; }
-.wp8-ins-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 500; margin: 0 0 8px; }
+/* Card "Insights da IA" — header pill + headline + lista de items
+   com ícone redondo + body. */
+.wp8-rx-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  padding: 24px;
+  background: var(--bg-elevated);
+}
+.wp8-rx-insights-head { display: flex; flex-direction: column; gap: 12px; }
+.wp8-rx-insights-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  color: var(--brand-primary);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  align-self: flex-start;
+  line-height: 1.4;
+}
+.wp8-rx-insights-title {
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 400;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  margin: 0;
+}
+
+.wp8-ins {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+}
+.wp8-ins-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wp8-ins-icon--pos {
+  background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
+  color: var(--brand-positive);
+}
+.wp8-ins-icon--neutral {
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  color: var(--brand-primary);
+}
+.wp8-ins-icon--accent {
+  background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
+  color: var(--brand-positive);
+}
+.wp8-ins-icon--neg {
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
+}
+.wp8-ins-body { flex: 1; min-width: 0; }
+
+.wp8-ins-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 500; margin: 0 0 4px; }
 .wp8-ins-tag.pos { color: var(--brand-positive); }
 .wp8-ins-tag.neutral { color: var(--brand-primary); }
 .wp8-ins-tag.accent { color: var(--text-muted); }
-.wp8-ins-h { font-size: 18px; font-weight: 400; color: var(--text-heading); margin: 0 0 6px; letter-spacing: -0.015em; display: flex; align-items: baseline; gap: 12px; }
-.wp8-ins-score { font-size: 22px; font-weight: 300; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.wp8-ins-h { font-size: 16px; font-weight: 600; color: var(--text-heading); margin: 0 0 4px; letter-spacing: -0.01em; display: flex; align-items: baseline; gap: 10px; }
+.wp8-ins-score { font-size: 18px; font-weight: 300; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .wp8-ins-score.pos { color: var(--brand-positive); }
 .wp8-ins-score.neutral { color: var(--brand-primary); }
 .wp8-ins-score.accent { color: var(--text-muted); }
 .wp8-ins-note { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.55; max-width: 56ch; }
 
 /* Grid editorial 9 dimensões — cells com border interna estilo jornal */
-.wp8-rx-grid { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--border-subtle); border-left: 1px solid var(--border-subtle); }
+.wp8-rx-grid { list-style: none; padding: 0; margin: 40px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 0; }
 @media (min-width: 768px) { .wp8-rx-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1024px) { .wp8-rx-grid { grid-template-columns: repeat(9, 1fr); } }
-.wp8-rx-cell { padding: 20px 16px; border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 6px; transition: background 200ms; }
+.wp8-rx-cell {
+  padding: 16px 14px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 200ms, background 200ms;
+}
 .wp8-rx-cell:hover { background: color-mix(in srgb, var(--brand-primary) 3%, transparent); }
 .wp8-rx-cell-score { font-size: 28px; font-weight: 300; line-height: 1; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; margin: 0; }
 .wp8-rx-cell-score.pos { color: var(--brand-positive); }
@@ -2393,11 +2971,23 @@ function openHighlights() {
 /* ============= STRESS TEST · minimal editorial ============= */
 .wp8-stress-lead { font-size: 14px; line-height: 1.6; color: var(--text-muted); max-width: 64ch; margin: 0 0 32px; }
 
-.wp8-stress-grid { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--border-subtle); }
+.wp8-stress-grid { display: grid; grid-template-columns: 1fr; gap: 12px; border-top: none; }
 @media (min-width: 1024px) { .wp8-stress-grid { grid-template-columns: repeat(3, 1fr); } }
 
-.wp8-stress-cell { padding: 28px 32px 28px 0; border-right: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px; }
-.wp8-stress-cell:last-child { border-right: 0; padding-right: 0; }
+.wp8-stress-cell {
+  padding: 20px 22px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 200ms, background 200ms;
+}
+.wp8-stress-cell:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 55%, transparent);
+}
+.wp8-stress-cell:last-child { padding-right: 22px; }
 @media (max-width: 1023px) { .wp8-stress-cell { padding: 28px 0; border-right: 0; border-bottom: 1px solid var(--border-subtle); } .wp8-stress-cell:last-child { border-bottom: 0; } }
 @media (min-width: 1024px) { .wp8-stress-cell + .wp8-stress-cell { padding-left: 32px; } }
 
@@ -2417,7 +3007,7 @@ function openHighlights() {
 .wp8-stress-time { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
 
 /* ============= RENDA ============= */
-.wp8-renda-grid { display: grid; grid-template-columns: 1fr; gap: 32px; border-top: 1px solid var(--border-subtle); padding-top: 32px; }
+.wp8-renda-grid { display: grid; grid-template-columns: 1fr; gap: 32px; border-top: none; padding-top: 0; }
 @media (min-width: 1024px) { .wp8-renda-grid { grid-template-columns: 1.6fr 1fr; gap: 56px; } }
 
 /* Bar chart — SVG editorial */
@@ -2670,57 +3260,73 @@ function openHighlights() {
 .wp8-ev-val { font-size: 15px; font-weight: 400; margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 .wp8-ev-val.positive { color: var(--brand-positive); }
 
-/* ============= CTA ============= */
-/* ============= CTA · full-bleed amarelado ============= */
-/* Truque viewport-edge: position + left + width 100vw fazem o elemento
-   escapar do padding do parent e ocupar toda a largura da viewport sem
-   precisar de negative margin nem reestruturação do DOM. */
-.wp8-cta-fullbleed {
-  position: relative;
-  width: 100%;
-  padding: 30px 0;
-  background: #f1e19e4a;
-  overflow: hidden;
+/* ============= CTA · Resultado consolidado =============
+   Card hero com bg gradient amber + SVG decorativo (dots tracejados
+   subindo) + 2 sub-cards de Swing/Day trade lado a lado com sparkline. */
+.wp8-result-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
 }
-/* Apenas no xl+ o parent (content-area da default.vue) tem xl:px-4 (16px).
-   Escapamos esses 16px de cada lado via width + left, sem usar margin. */
-@media (min-width: 1280px) {
-  .wp8-cta-fullbleed {
-    width: calc(100% + 32px);
-    left: -16px;
+
+/* Card hero principal */
+.wp8-cta-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 36px 32px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--brand-primary) 14%, var(--bg-elevated)) 0%,
+    color-mix(in srgb, var(--brand-primary) 5%, var(--bg-elevated)) 70%,
+    var(--bg-elevated) 100%
+  );
+}
+@media (max-width: 768px) {
+  .wp8-cta-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 28px 24px;
   }
 }
 
-.wp8-cta-atmo { position: absolute; pointer-events: none; filter: blur(200px); z-index: 0; }
-.wp8-cta-atmo--top {
-  top: -10%; right: -5%; width: 55%; height: 70%;
-  opacity: 0.55;
-  background: radial-gradient(ellipse, color-mix(in srgb, var(--brand-primary) 30%, transparent), transparent 60%);
+/* SVG decorativo absoluto no bg, centro/direita */
+.wp8-cta-bg-illo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
 }
-.wp8-cta-atmo--bottom {
-  bottom: -20%; left: -10%; width: 50%; height: 60%;
-  opacity: 0.4;
-  background: radial-gradient(ellipse, color-mix(in srgb, #fbbf24 30%, transparent), transparent 60%);
+.wp8-cta-bg-illo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.wp8-cta-inner {
+.wp8-cta-hero-content {
   position: relative;
   z-index: 1;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 16px;
 }
-@media (min-width: 768px) { .wp8-cta-inner { padding: 0 32px; } }
-
-.wp8-cta-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 32px;
-  margin-bottom: 56px;
+.wp8-cta-h {
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 400;
+  color: var(--text-heading);
+  margin: 10px 0 0;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
 }
-.wp8-cta-head > div { max-width: 56ch; }
+.wp8-cta-h .calc-italic {
+  color: var(--brand-primary);
+  font-style: italic;
+  font-weight: 700;
+}
 
 .wp8-cta-h {
   font-size: clamp(28px, 3.6vw, 44px);
@@ -2761,27 +3367,31 @@ function openHighlights() {
 .wp8-cta-primary:hover :deep(*) { color: var(--text-on-primary); }
 .wp8-cta-primary:hover .wp8-cta-arrow { transform: translateX(4px); }
 
-/* Data: 2 blocks minimalistas separados por divider sutil */
+/* 2 sub-cards (Swing / Day trade) lado a lado, cada um com sparkline */
 .wp8-cta-data {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 32px 0;
-  border-top: 1px solid color-mix(in srgb, var(--text-heading) 10%, transparent);
-  padding-top: 40px;
+  gap: 12px;
+  border-top: none;
+  padding-top: 0;
 }
 @media (min-width: 768px) {
-  .wp8-cta-data {
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-  }
-  .wp8-cta-block:first-child {
-    padding-right: 48px;
-    border-right: 1px solid color-mix(in srgb, var(--text-heading) 10%, transparent);
-  }
-  .wp8-cta-block:last-child { padding-left: 48px; }
+  .wp8-cta-data { grid-template-columns: 1fr 1fr; }
 }
 
-.wp8-cta-block { display: flex; flex-direction: column; gap: 8px; }
+.wp8-cta-block {
+  position: relative;
+  padding: 20px 24px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  overflow: hidden;
+}
+.wp8-cta-block-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .wp8-cta-block-tag {
   font-size: 11px;
   text-transform: uppercase;
@@ -2791,14 +3401,21 @@ function openHighlights() {
   margin: 0;
 }
 .wp8-cta-block-mega {
-  font-size: clamp(40px, 5vw, 64px);
+  font-size: clamp(28px, 3.2vw, 38px);
   font-weight: 300;
   line-height: 1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
-  margin: 4px 0 4px;
+  margin: 6px 0 4px;
+  color: var(--text-heading);
 }
 .wp8-cta-block-mega.pos { color: var(--brand-positive); }
+.wp8-cta-block-spark {
+  width: 130px;
+  height: 60px;
+  flex-shrink: 0;
+  opacity: 0.95;
+}
 .wp8-cta-block-meta {
   display: flex;
   flex-wrap: wrap;
@@ -2810,4 +3427,292 @@ function openHighlights() {
   letter-spacing: -0.005em;
 }
 .wp8-cta-block-meta .sep { color: var(--text-muted); opacity: 0.6; }
+
+/* =================================================================
+   STACK MODE — tira o grid 2x2 do CalcUiShell e aplica card style
+   uniforme em todos os blocos da wallet.
+
+   Decisões:
+   - layout flex column (stack vertical), sem grid
+   - padding suave: 24px
+   - border quase transparente: 30% opacity tint do brand-border
+   - arredondamento suave: 14px (entre rounded-md 8px e rounded-2xl 20px)
+   - sem atmospheric blur (ruído visual)
+   ================================================================= */
+
+/* Container externo do shell — limpa overflow:hidden e atmospheric */
+:deep(.cui-shell) {
+  overflow: visible;
+}
+:deep(.cui-shell-atmo) {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Mobile: stack vertical (sem grid). Desktop (≥1024px): hero + result
+   lado a lado na 1ª linha, form e chart full-width abaixo (stack). */
+:deep(.cui-shell-split) {
+  display: flex !important;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0;
+}
+@media (min-width: 1024px) {
+  :deep(.cui-shell-split) {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "hero result"
+      "form chart";
+  }
+  :deep(.cui-shell-block-hero) { grid-area: hero !important; }
+  :deep(.cui-shell-block-result) { grid-area: result !important; }
+  :deep(.cui-shell-block-form) { grid-area: form !important; }
+  :deep(.cui-shell-block-chart) { grid-area: chart !important; }
+}
+
+/* Cada bloco do shell vira card autocontido */
+:deep(.cui-shell-block-hero),
+:deep(.cui-shell-block-result),
+:deep(.cui-shell-block-form),
+:deep(.cui-shell-block-chart),
+:deep(.cui-shell-hero),
+:deep(.cui-shell-result),
+:deep(.cui-shell-form),
+:deep(.cui-shell-chart) {
+  padding: 24px !important;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent) !important;
+  border-radius: 14px !important;
+  background: var(--bg-elevated) !important;
+  max-width: none !important;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent) !important;
+  border-right: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent) !important;
+  order: unset !important;
+}
+
+/* Status strip (back nav) sem border-bottom — fica solta */
+:deep(.cui-shell-status) {
+  border-bottom: none;
+  padding: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Meta "Última atualização" — sem indent */
+:deep(.cui-shell-meta) {
+  margin-top: 16px;
+}
+
+/* Sections abaixo do shell (.wp8-rail .wp8-section) — mesmo card style */
+.wp8-rail {
+  max-width: none;
+  margin: 16px 0 0;
+  padding: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.wp8-section {
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  margin: 0;
+}
+
+/* Empty state também vira card */
+.wp8-empty {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.wp8-empty-inner {
+  padding: 48px 32px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+}
+
+/* ================================================================
+   Card HERO da wallet — copy esquerda + ilustração orgânica direita.
+   Padding generoso, headline em 2 linhas balanceadas, ilustração
+   absoluta no canto direito (não conta no flow do texto).
+   ================================================================ */
+:deep(.cui-shell-block-hero) {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Headline em 2 linhas determinístico via <span class="wallet-hero-line"> */
+:deep(.cui-shell-block-hero .calc-title),
+.wallet-hero-headline {
+  font-weight: 400 !important;
+  font-size: clamp(28px, 3vw, 36px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.025em;
+  position: relative;
+  z-index: 1;
+  max-width: none;
+}
+.wallet-hero-line {
+  display: block; /* força quebra entre os dois <span> */
+}
+
+/* Lead com largura limitada pra não invadir a ilustração */
+:deep(.cui-shell-block-hero .calc-lead) {
+  max-width: 38ch;
+  position: relative;
+  z-index: 1;
+}
+
+/* Chips + CTAs também acima da ilustração */
+:deep(.cui-shell-block-hero .calc-chips),
+:deep(.cui-shell-block-hero .wp8-hero-ctas) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Footer "Última atualização" — meta do CalcUiShell */
+:deep(.cui-shell-block-hero .cui-shell-meta) {
+  position: relative;
+  z-index: 1;
+  margin-top: 32px !important;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ================================================================
+   Card RESULT — Patrimônio total + 3 mini-stats horizontais.
+   3 sub-cards em grid 3-cols, cada um com eyebrow + value grande
+   + meta opcional + ícone em chip no canto bottom-right.
+   ================================================================ */
+:deep(.cui-shell-block-result .calc-result-divider) {
+  display: none;
+}
+:deep(.cui-shell-block-result .calc-result-mega) {
+  text-shadow: none;
+}
+:deep(.cui-shell-block-result .calc-kpis) {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+@media (max-width: 768px) {
+  :deep(.cui-shell-block-result .calc-kpis) {
+    grid-template-columns: 1fr;
+  }
+}
+:deep(.cui-shell-block-result .calc-kpis > div) {
+  position: relative;
+  padding: 20px 20px 24px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  min-height: 144px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+:deep(.cui-shell-block-result .calc-kpis dt) {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+  max-width: 80%; /* deixa o eyebrow quebrar antes do icon */
+}
+:deep(.cui-shell-block-result .calc-kpis dd) {
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-heading);
+  margin: 0;
+  margin-top: auto; /* empurra value pra base do card */
+}
+:deep(.cui-shell-block-result .calc-kpis dd.primary) {
+  color: var(--brand-primary);
+}
+:deep(.cui-shell-block-result .calc-kpis dd.positive) {
+  color: var(--brand-positive);
+}
+:deep(.cui-shell-block-result .calc-kpis .wp-kpi-suf) {
+  color: var(--text-muted);
+  font-size: 0.55em;
+  font-weight: 400;
+  margin-left: 4px;
+  letter-spacing: 0;
+}
+
+/* Meta line (Bom / Diversificados) abaixo do value */
+.wallet-mini-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+  font-weight: 400;
+}
+.wallet-mini-meta--positive { color: var(--brand-positive); }
+
+/* Ícone container no canto bottom-right do sub-card */
+.wallet-mini-icon {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wallet-mini-icon--amber {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent);
+  color: var(--brand-primary);
+}
+.wallet-mini-icon--positive {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--brand-positive) 28%, transparent);
+  color: var(--brand-positive);
+}
+.wallet-mini-icon--neutral {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-heading) 14%, transparent);
+  color: var(--text-muted);
+}
+
+/* Ilustração orgânica absoluta no canto direito */
+.wallet-hero-illo {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 42%;
+  max-width: 380px;
+  aspect-ratio: 280 / 220;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.95;
+}
+.wallet-hero-illo img,
+.wallet-hero-illo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+@media (max-width: 768px) {
+  .wallet-hero-illo {
+    width: 60%;
+    top: 24px;
+    right: -16px;
+    transform: none;
+    opacity: 0.35;
+  }
+}
 </style>

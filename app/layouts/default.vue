@@ -648,7 +648,7 @@
            touch the footer. Background: pure white/black para Redentia,
            brand color para outros tenants (Me Poupe, etc). -->
       <div
-        class="flex min-h-0 flex-1 flex-col xl:px-4 xl:pt-4"
+        class="flex min-h-0 flex-1 flex-col p-4"
         :style="{ backgroundColor: contentBg }"
       >
       <!-- Banner status assessor (investidor): só pendente ou recusado -->
