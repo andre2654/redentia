@@ -426,7 +426,7 @@
       </section>
 
       <!-- TRADES TABLE (colapsável por período) -->
-      <section class="wp8r-section">
+      <section class="wp8r-section wp8r-section--historico">
         <header class="wp8r-head">
           <div>
             <p class="calc-eyebrow">
@@ -508,7 +508,17 @@
                   <tbody>
                     <tr v-for="t in group.trades" :key="t.id">
                       <td class="left muted">{{ formatTradeDate(t.date) }}</td>
-                      <td class="left strong">{{ t.ticker }}</td>
+                      <td class="left strong">
+                        <span class="ticker-cell">
+                          <img
+                            :src="`https://icons.brapi.dev/icons/${t.ticker.toUpperCase()}.svg`"
+                            :alt="t.ticker"
+                            class="ticker-logo"
+                            @error="($event.target as HTMLImageElement).style.display = 'none'"
+                          />
+                          <span>{{ t.ticker }}</span>
+                        </span>
+                      </td>
                       <td>{{ t.qty }}</td>
                       <td>{{ formatBRL(t.price) }}</td>
                       <td class="muted">{{ formatBRL(t.volume) }}</td>
@@ -1438,10 +1448,31 @@ onMounted(async () => {
 .wp8r-chart-tip-val.pos { color: var(--brand-positive); }
 .wp8r-chart-tip-val.neg { color: var(--brand-negative); }
 
-.wp8r-curve-stats { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 24px; }
+.wp8r-curve-stats {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .wp8r-curve-stats { grid-template-columns: repeat(4, 1fr); }
+}
+.wp8r-curve-stats > li {
+  position: relative;
+  padding: 16px 18px 18px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 90px;
+}
 @media (min-width: 768px) { .wp8r-curve-stats { grid-template-columns: repeat(4, 1fr); } }
-.wp8r-cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 500; margin: 0 0 4px; }
-.wp8r-cs-val { font-size: 16px; font-weight: 500; color: var(--text-heading); margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.wp8r-cs-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-muted); font-weight: 500; margin: 0; }
+.wp8r-cs-val { font-size: 22px; font-weight: 300; color: var(--text-heading); margin: auto 0 0; font-variant-numeric: tabular-nums; letter-spacing: -0.025em; line-height: 1; }
 .wp8r-cs-val.pos { color: var(--brand-positive); }
 .wp8r-cs-val.neg { color: var(--brand-negative); }
 
@@ -1463,13 +1494,23 @@ onMounted(async () => {
 
 /* ============= STATS GRID ============= */
 .wp8r-stats-grid {
-  list-style: none; padding: 0; margin: 0;
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;
-  border-top: 1px solid var(--border-subtle); border-left: 1px solid var(--border-subtle);
+  list-style: none; padding: 0; margin: 24px 0 0;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  border-top: none; border-left: none;
 }
 @media (min-width: 768px) { .wp8r-stats-grid { grid-template-columns: repeat(4, 1fr); } }
-.wp8r-stat { padding: 20px 18px; border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 4px; }
-.wp8r-stat-val { font-size: clamp(20px, 2.4vw, 26px); font-weight: 300; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; margin: 0; color: var(--text-heading); }
+@media (min-width: 1024px) { .wp8r-stats-grid { grid-template-columns: repeat(7, 1fr); } }
+.wp8r-stat {
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 96px;
+}
+.wp8r-stat-val { font-size: clamp(20px, 2.4vw, 26px); font-weight: 300; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; margin: 0; color: var(--text-heading); white-space: nowrap; }
 .wp8r-stat-val.pos { color: var(--brand-positive); }
 .wp8r-stat-val.neg { color: var(--brand-negative); }
 .wp8r-stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 500; margin: 0; }
@@ -1487,7 +1528,7 @@ onMounted(async () => {
 .lvl-pos3 { background: var(--brand-positive); }
 
 /* CALENDAR 6m */
-.wp8r-cal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; border-top: 1px solid var(--border-subtle); padding-top: 24px; }
+.wp8r-cal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; border-top: none; padding-top: 0; }
 @media (min-width: 768px) { .wp8r-cal { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1024px) { .wp8r-cal { grid-template-columns: repeat(6, 1fr); } }
 .wp8r-cal-mo-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); font-weight: 500; margin: 0 0 12px; }
@@ -1596,13 +1637,21 @@ onMounted(async () => {
 .wp8r-hm-sq { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
 
 /* ============= TRADE GROUPS (colapsável) ============= */
-.wp8r-trade-groups { display: flex; flex-direction: column; border-top: 1px solid var(--border-subtle); }
-.wp8r-tg { border-bottom: 1px solid var(--border-subtle); }
-.wp8r-tg:last-child { border-bottom: 0; }
+.wp8r-trade-groups { display: flex; flex-direction: column; gap: 10px; border-top: none; margin-top: 16px; }
+.wp8r-tg {
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+  transition: border-color 200ms;
+}
+.wp8r-tg:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
 .wp8r-tg-head {
   display: grid; grid-template-columns: 1fr auto;
   align-items: center; gap: 24px;
-  width: 100%; padding: 18px 0;
+  width: 100%; padding: 18px 16px;
   background: transparent; border: 0; cursor: pointer; text-align: left;
   font-family: inherit; color: inherit;
   transition: background 150ms;
@@ -1649,9 +1698,24 @@ onMounted(async () => {
 .wp8-head-link--ghost:hover :deep(*) { color: var(--text-heading); }
 
 /* ============= INSIGHTS ============= */
-.wp8r-insights { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--border-subtle); }
+.wp8r-insights {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 16px;
+  border-top: none;
+}
 @media (min-width: 1024px) { .wp8r-insights { grid-template-columns: repeat(3, 1fr); } }
-.wp8r-ins { padding: 28px 0; border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px; }
+@media (min-width: 1024px) { .wp8r-insights { grid-template-columns: repeat(3, 1fr); } }
+.wp8r-ins {
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 @media (min-width: 1024px) {
   .wp8r-ins:not(:last-child) { border-right: 1px solid var(--border-subtle); padding-right: 32px; }
   .wp8r-ins + .wp8r-ins { padding-left: 32px; }
@@ -1753,6 +1817,237 @@ onMounted(async () => {
 .wp8r-cta-block-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--text-body); margin: 0; font-variant-numeric: tabular-nums; letter-spacing: -0.005em; }
 .wp8r-cta-block-meta .sep { color: var(--text-muted); opacity: 0.6; }
 .wp8r-cta-block-meta .pos { color: var(--brand-positive); font-weight: 500; }
+
+/* =================================================================
+   FUNDAÇÃO IDENTITY (replicando padrão da /wallet/index.vue).
+   Vide design/IDENTITY.md secções 3 e 4.
+
+   - tira grid 2x2 do CalcUiShell → stack column
+   - cada cui-shell-block-* vira card (radius 14, border 30%, padding 24)
+   - wp8r-rail vira flex column sem max-width
+   - wp8r-section vira card uniforme
+   - tira atmospheric blur e meta border do shell
+   ================================================================= */
+
+/* Shell: limpa overflow + atmosférico */
+:deep(.cui-shell) { overflow: visible; }
+:deep(.cui-shell-atmo) { display: none !important; opacity: 0 !important; }
+
+/* Split: stack mobile / hero+result lado a lado no desktop. */
+:deep(.cui-shell-split) {
+  display: flex !important;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0;
+}
+@media (min-width: 1024px) {
+  :deep(.cui-shell-split) {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "hero result"
+      "form chart";
+  }
+  :deep(.cui-shell-block-hero) { grid-area: hero !important; }
+  :deep(.cui-shell-block-result) { grid-area: result !important; }
+  :deep(.cui-shell-block-form) { grid-area: form !important; }
+  :deep(.cui-shell-block-chart) { grid-area: chart !important; }
+}
+
+/* Cada bloco do shell vira card autocontido */
+:deep(.cui-shell-block-hero),
+:deep(.cui-shell-block-result),
+:deep(.cui-shell-block-form),
+:deep(.cui-shell-block-chart),
+:deep(.cui-shell-hero),
+:deep(.cui-shell-result),
+:deep(.cui-shell-form),
+:deep(.cui-shell-chart) {
+  padding: 24px !important;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent) !important;
+  border-radius: 14px !important;
+  background: var(--bg-elevated) !important;
+  max-width: none !important;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent) !important;
+  border-right: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent) !important;
+  order: unset !important;
+}
+
+/* Status strip (back nav) sem border-bottom */
+:deep(.cui-shell-status) {
+  border-bottom: none;
+  padding: 16px 0;
+}
+
+/* Meta "Última atualização" — sem border-top, padding-top zero */
+:deep(.cui-shell-meta) {
+  margin-top: 32px !important;
+  padding-top: 0;
+  border-top: none;
+  position: relative;
+  z-index: 1;
+}
+
+/* Tira text-shadow (glow) do hero number */
+:deep(.cui-shell-block-result .calc-result-mega) {
+  text-shadow: none;
+}
+
+/* Card result: tira divider, transforma 3 KPIs em sub-cards horizontais
+   (Profit Factor / Win Rate / R/R Médio). Mesma recipe da wallet. */
+:deep(.cui-shell-block-result .calc-result-divider) {
+  display: none;
+}
+:deep(.cui-shell-block-result .calc-kpis) {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 32px;
+}
+@media (max-width: 768px) {
+  :deep(.cui-shell-block-result .calc-kpis) { grid-template-columns: 1fr; }
+}
+:deep(.cui-shell-block-result .calc-kpis > div) {
+  position: relative;
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+:deep(.cui-shell-block-result .calc-kpis dt) {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+:deep(.cui-shell-block-result .calc-kpis dd) {
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-heading);
+  margin: auto 0 0;
+}
+:deep(.cui-shell-block-result .calc-kpis dd.positive) {
+  color: var(--brand-positive);
+}
+:deep(.cui-shell-block-result .calc-kpis dd.negative) {
+  color: var(--brand-negative);
+}
+
+/* Card form (Vencedores vs Perdedores + Extremos): tira divider entre
+   as duas partes e transforma KPIs de extremos em sub-cards horizontais. */
+:deep(.cui-shell-block-form .calc-result-divider) {
+  display: none;
+}
+:deep(.cui-shell-block-form .wp8r-extremes) {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+:deep(.cui-shell-block-form .calc-kpis) {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+@media (max-width: 768px) {
+  :deep(.cui-shell-block-form .calc-kpis) { grid-template-columns: 1fr; }
+}
+:deep(.cui-shell-block-form .calc-kpis > div) {
+  position: relative;
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+:deep(.cui-shell-block-form .calc-kpis dt) {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  margin: 0;
+}
+:deep(.cui-shell-block-form .calc-kpis dd) {
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-heading);
+  margin: auto 0 0;
+}
+:deep(.cui-shell-block-form .calc-kpis dd.positive) { color: var(--brand-positive); }
+:deep(.cui-shell-block-form .calc-kpis dd.negative) { color: var(--brand-negative); }
+
+/* Sections abaixo do shell — flex column sem max-width */
+.wp8r-rail {
+  max-width: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Cada wp8r-section vira card uniforme */
+.wp8r-section {
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  margin: 0;
+}
+
+/* Variant Histórico — bg amber 4% sutil + border amber 18%, igual ao
+   "Por classe" da wallet. Sub-cards (.wp8r-tg) ficam brancos contrastando. */
+.wp8r-section--historico {
+  background: color-mix(in srgb, var(--brand-primary) 4%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent) !important;
+}
+
+/* Logo do ticker na coluna da tabela. Brapi CDN serve SVG real pra
+   ações líquidas; pra FIIs/menores @error oculta sem quebrar layout. */
+.ticker-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ticker-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-overlay);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Empty state também vira card */
+.wp8-empty {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.wp8-empty-inner {
+  padding: 48px 32px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 14px;
+  background: var(--bg-elevated);
+}
 </style>
 
 <style>

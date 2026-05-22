@@ -389,7 +389,17 @@
                   </thead>
                   <tbody>
                     <tr v-for="p in group.positions" :key="p.ticker">
-                      <td class="left strong">{{ p.ticker }}</td>
+                      <td class="left strong">
+                        <span class="ticker-cell">
+                          <img
+                            :src="`https://icons.brapi.dev/icons/${p.ticker.toUpperCase()}.svg`"
+                            :alt="p.ticker"
+                            class="ticker-logo"
+                            @error="($event.target as HTMLImageElement).style.display = 'none'"
+                          />
+                          <span>{{ p.ticker }}</span>
+                        </span>
+                      </td>
                       <td class="left muted">{{ p.name }}</td>
                       <td>{{ p.qty.toLocaleString('pt-BR') }}</td>
                       <td>{{ formatBRL(p.currentPrice) }}</td>
@@ -2629,6 +2639,22 @@ function openHighlights() {
   border: 1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent) !important;
 }
 
+/* Logo do ticker na coluna da tabela de posições. Brapi CDN serve SVG
+   real pra ações líquidas; pra FIIs/menores @error oculta sem quebrar. */
+.ticker-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ticker-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-overlay);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .wp8-pos-head {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -2854,8 +2880,8 @@ function openHighlights() {
 .wp8-rx-empty-hint { font-size: 12px; color: var(--text-muted); letter-spacing: 0.02em; }
 
 /* SNOWFLAKE compacto */
-.wp8-snowflake { position: relative; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.wp8-snowflake-svg { width: 100%; max-width: 320px; height: auto; aspect-ratio: 1; }
+.wp8-snowflake { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: 20px; width: 100%; }
+.wp8-snowflake-svg { width: 100%; max-width: none; height: auto; aspect-ratio: 1; display: block; }
 .wp8-snowflake-meta { text-align: center; }
 .wp8-sf-score { font-size: 56px; font-weight: 300; line-height: 1; color: var(--brand-primary); margin: 0; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; text-shadow: 0 8px 32px color-mix(in srgb, var(--brand-primary) 22%, transparent); }
 .wp8-sf-status { font-size: 13px; color: var(--text-muted); margin: 10px 0 0; letter-spacing: 0.02em; }
@@ -3669,6 +3695,14 @@ function openHighlights() {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+/* Reserva ~44px de espaço à direita do value/meta pra não colidir
+   com o ícone absolute bottom-right do mini-stat. */
+:deep(.cui-shell-block-result .calc-kpis dd),
+:deep(.cui-shell-block-result .calc-kpis .wallet-mini-meta),
+.wallet-mini-value,
+.wallet-mini-meta {
+  padding-right: 44px;
 }
 .wallet-mini-icon--amber {
   background: transparent;
