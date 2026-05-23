@@ -164,7 +164,7 @@
           <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
             <!-- ===== LEFT: Resumo Inteligente ===== -->
             <article
-              class="resumo-card flex flex-col gap-5 rounded-[14px] border px-6 py-6"
+              class="resumo-card card-soft-bg flex flex-col gap-5 rounded-[14px] border px-6 py-6"
               :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
             >
               <header class="flex flex-col gap-2">
@@ -489,7 +489,7 @@
             <article
               v-if="brand.assetPage.showNews"
               id="sec-noticias"
-              class="news-compact-card flex flex-col gap-5 rounded-[14px] border px-6 py-6"
+              class="news-compact-card card-soft-bg flex flex-col gap-5 rounded-[14px] border px-6 py-6"
               :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
             >
               <header class="flex flex-col gap-1">
@@ -668,7 +668,7 @@
           <div v-else class="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]">
             <!-- LEFT: Destaques Fundamentais -->
             <article
-              class="destaques-card flex flex-col gap-5 rounded-[14px] border px-6 py-6"
+              class="destaques-card card-soft-bg flex flex-col gap-5 rounded-[14px] border px-6 py-6"
               :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
             >
               <header class="flex flex-col gap-1">

@@ -184,7 +184,7 @@
           <!-- Mercado agora — narrativa setorial/macro do dia.
                Reusa o `pesouPills` do /para-voce (top mover, brent, dolar). -->
           <aside
-            class="market-now relative col-span-2 overflow-hidden rounded-[14px] border md:col-span-4 md:row-span-2"
+            class="market-now card-soft-bg relative col-span-2 overflow-hidden rounded-[14px] border md:col-span-4 md:row-span-2"
             :style="{
               background: 'var(--bg-elevated)',
               borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)',
@@ -416,7 +416,7 @@
       <section class="market-insights grid grid-cols-1 gap-4 px-4 md:grid-cols-2 md:px-0">
         <!-- LEFT: Mapa de setores -->
         <article
-          class="sectors-card flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          class="sectors-card card-soft-bg flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
           :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
         >
           <header class="flex items-start justify-between gap-3">
@@ -651,7 +651,7 @@
 
         <!-- RIGHT: Notícias do mercado (top 4) -->
         <article
-          class="news-card flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          class="news-card card-soft-bg flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
           :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
         >
           <header class="flex items-start justify-between gap-3">

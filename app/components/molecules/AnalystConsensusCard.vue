@@ -1,7 +1,7 @@
 <template>
   <section
     v-if="data"
-    class="analyst-consensus-card flex flex-col gap-5 rounded-[14px] border px-6 py-6"
+    class="analyst-consensus-card card-soft-bg flex flex-col gap-5 rounded-[14px] border px-6 py-6"
     :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
     :aria-label="`Consenso dos analistas para ${ticker}`"
   >

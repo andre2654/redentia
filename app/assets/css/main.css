@@ -254,6 +254,34 @@ table td, table th, [data-tnum] {
   box-shadow: var(--shadow-card-hover, var(--shadow-card, none));
 }
 
+/* Soft-tinted card variant — bg ligeiramente amber/warm pra criar
+   ritmo visual em rows de 2 cards. Aplicado no card "secundário" de
+   pares (Notícias next to Dividendos, Mercado agora next to IBOV)
+   pra dar diferenciacao sutil sem quebrar a linguagem v4. */
+.quiet-card-soft,
+.card-soft-bg {
+  background: color-mix(in srgb, var(--brand-primary) 4%, var(--bg-elevated)) !important;
+}
+:root.dark .quiet-card-soft,
+:root.dark .card-soft-bg {
+  background: color-mix(in srgb, var(--brand-primary) 6%, var(--bg-elevated)) !important;
+}
+
+/* Wallet + Resultado: aplica tint suave em alguns wp8-section/wp8r-section
+   pra criar ritmo visual (cards alternados com bg ligeiramente warm). */
+.wp8-pos-group:nth-child(even),
+.wp8r-tg:nth-child(even),
+.wp8r-stat:nth-child(2n),
+.wp8r-ins:nth-child(2n) {
+  background: color-mix(in srgb, var(--brand-primary) 3%, var(--bg-elevated));
+}
+:root.dark .wp8-pos-group:nth-child(even),
+:root.dark .wp8r-tg:nth-child(even),
+:root.dark .wp8r-stat:nth-child(2n),
+:root.dark .wp8r-ins:nth-child(2n) {
+  background: color-mix(in srgb, var(--brand-primary) 5%, var(--bg-elevated));
+}
+
 /* Quiet button primary — alternativa direta sem depender do UButton
    wrapper. Use class .quiet-btn-primary em qualquer <button>/<a>. */
 .quiet-btn-primary {
