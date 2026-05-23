@@ -234,9 +234,15 @@ export const useAssetsService = () => {
   async function getTopDividendYield(
     type: 'STOCK' | 'REIT' | 'ETF' | null = null,
     limit = 30,
+    minCap: number | null = null,
   ): Promise<IAsset[]> {
     const params = new URLSearchParams({ limit: String(limit) })
     if (type) params.set('type', type)
+    // Backend default e R$500M (filtro anti-small-cap-com-DY-artificial).
+    // FIIs costumam ter market_cap menor ou null, entao pra REIT
+    // passamos min_cap=0 pra nao filtrar tudo.
+    const effectiveMinCap = minCap ?? (type === 'REIT' ? 0 : null)
+    if (effectiveMinCap !== null) params.set('min_cap', String(effectiveMinCap))
     const url = `${API}/rankings/top-dividend-yield?${params.toString()}`
     try {
       const resp = await preventWithCache(

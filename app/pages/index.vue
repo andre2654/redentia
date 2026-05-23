@@ -332,162 +332,212 @@
       </div>
 
 
-      <div class="flex items-end justify-between gap-4 px-4 pt-10 md:px-0">
-        <div class="flex flex-col gap-2">
-          <span class="eyebrow">Mercado ao vivo</span>
-          <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
-            {{ brand.homeTexts.marketTitle }}
-          </h2>
-          <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
-            {{ brand.homeTexts.marketSubtitle }}
+      <!-- ============ EXPLORAR O MERCADO ============
+           Header compacto + tabs de categoria + 5 mini-listas
+           (maiores altas / baixas / mais negociadas / dividend yield / market cap).
+           Refatorado do bloco "Mercado ao vivo" original (que mostrava
+           treemap + carousels). Pattern: pill tabs no estilo /wallet,
+           cards com border 30% e bg-elevated. -->
+      <section class="explore-market flex flex-col gap-5 px-4 pt-10 md:px-0">
+        <header class="flex items-center justify-between gap-4">
+          <span class="eyebrow">Explorar o mercado</span>
+          <NuxtLink
+            to="/search"
+            class="inline-flex items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
+            :style="{ color: 'var(--brand-text)' }"
+          >
+            Ver tudo
+            <UIcon name="i-lucide-arrow-right" class="size-3.5" />
+          </NuxtLink>
+        </header>
+
+        <!-- Category tabs (pill-style) -->
+        <div class="explore-tabs flex flex-wrap items-center gap-2">
+          <button
+            v-for="cat in exploreCategoriesList"
+            :key="cat.key"
+            type="button"
+            :class="['explore-tab rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors', selectedExploreCategory === cat.key ? 'explore-tab--active' : '']"
+            @click="selectedExploreCategory = cat.key"
+          >
+            {{ cat.label }}
+          </button>
+        </div>
+
+        <!-- 5 listas grid (1 col mobile / 2 tablet / 5 desktop) -->
+        <div class="explore-lists grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <article
+            v-for="list in exploreLists"
+            :key="list.key"
+            class="explore-list-card flex flex-col gap-4 rounded-[14px] border px-5 py-5"
+            :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+          >
+            <h3 class="text-[13px] font-medium" :style="{ color: 'var(--text-heading)' }">{{ list.title }}</h3>
+
+            <ul v-if="list.items.length" class="flex flex-col gap-3">
+              <li
+                v-for="item in list.items"
+                :key="item.ticker"
+                class="flex items-center justify-between gap-2"
+              >
+                <NuxtLink
+                  :to="item.href"
+                  class="flex min-w-0 flex-1 items-center gap-2 transition-opacity hover:opacity-80"
+                >
+                  <span
+                    class="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md border"
+                    :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+                  >
+                    <img
+                      v-if="item.logo && !failedExploreLogos.isFailed(item.logo)"
+                      :src="item.logo"
+                      :alt="`Logo ${item.ticker}`"
+                      class="size-full object-cover"
+                      loading="lazy"
+                      @error="failedExploreLogos.markFailed(item.logo)"
+                    />
+                    <span
+                      v-else
+                      class="font-mono-tab text-[8px] font-bold"
+                      :style="{ color: 'var(--text-muted)' }"
+                    >{{ item.ticker.slice(0, 2) }}</span>
+                  </span>
+                  <span
+                    class="truncate text-[13px] font-medium leading-none"
+                    :style="{ color: 'var(--text-heading)' }"
+                    translate="no"
+                  >{{ item.ticker }}</span>
+                </NuxtLink>
+                <span
+                  class="shrink-0 tabular-nums text-[13px] leading-none"
+                  :style="{ color: item.colorVar ?? 'var(--text-body)' }"
+                  translate="no"
+                >{{ item.value }}</span>
+              </li>
+            </ul>
+            <p v-else class="text-[12px]" :style="{ color: 'var(--text-muted)' }">
+              Sem dados ainda
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============ MAPA DE SETORES + INSIGHTS DA REDENTIA ============
+           Dois cards lado-a-lado. Esquerda: heatmap de setores com
+           magnitude do dia. Direita: 3 insights AI (causalFactors do
+           useHomeData, mesma fonte do /para-voce). -->
+      <section class="market-insights grid grid-cols-1 gap-4 px-4 md:grid-cols-2 md:px-0">
+        <!-- LEFT: Mapa de setores -->
+        <article
+          class="sectors-card flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+        >
+          <header class="flex items-start justify-between gap-3">
+            <div class="flex flex-col gap-1">
+              <span class="eyebrow">Mapa de setores</span>
+              <h3 class="text-[18px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Desempenho do dia</h3>
+            </div>
+            <NuxtLink
+              to="/setor"
+              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              Ver todos setores
+              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
+            </NuxtLink>
+          </header>
+
+          <div
+            v-if="sectorHeatmap.length"
+            class="sectors-grid grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
+          >
+            <NuxtLink
+              v-for="t in sectorHeatmap"
+              :key="t.key"
+              :to="`/setor/${encodeURIComponent(t.key.toLowerCase().replace(/\s+/g, '-'))}`"
+              class="sector-tile relative flex flex-col gap-2 rounded-[12px] border px-3 py-3 transition-opacity hover:opacity-90"
+              :style="{ background: sectorTileStyle(t.changePct).background, borderColor: sectorTileStyle(t.changePct).borderColor }"
+            >
+              <UIcon
+                :name="t.icon"
+                class="size-4"
+                :style="{ color: sectorTileStyle(t.changePct).accentColor }"
+              />
+              <div class="flex flex-col gap-0.5">
+                <span class="truncate text-[12px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">{{ t.label }}</span>
+                <span
+                  class="text-[13px] font-medium tabular-nums leading-none"
+                  :style="{ color: sectorTileStyle(t.changePct).accentColor }"
+                  translate="no"
+                >{{ formatPctSigned(t.changePct) }}</span>
+              </div>
+            </NuxtLink>
+          </div>
+          <p v-else class="text-[12px]" :style="{ color: 'var(--text-muted)' }">
+            Sem dados de setor ainda.
           </p>
-        </div>
-        <!-- View toggle: padrao oficial AtomsSegmented (design/IDENTITY.md secao 3.3) -->
-        <AtomsSegmented
-          v-model="viewMode"
-          :options="[
-            { value: 'list', label: 'List', icon: 'i-lucide-list', ariaLabel: 'Visualização em lista' },
-            { value: 'map', label: 'Map', icon: 'i-lucide-grid-2x2', ariaLabel: 'Visualização em mapa de calor' },
-          ]"
-          aria-label="Modo de visualização dos rankings"
-          hide-label-on-mobile
-        />
-      </div>
+        </article>
 
-      <div v-if="showMap" class="mb-6 flex flex-col">
-        <!-- Treemap filter: AtomsSegmented oficial (design/IDENTITY.md secao 3.3) -->
-        <div class="mx-auto mb-5 mt-6 max-md:mx-6">
-          <AtomsSegmented
-            v-model="treemapFilter"
-            :options="[
-              { value: 'all', label: 'Todos' },
-              { value: 'positive', label: 'Altas' },
-              { value: 'negative', label: 'Baixas' },
-            ]"
-            aria-label="Filtro do mapa de calor"
-          />
-        </div>
-        <LazyAtomsGraphTreemap
-          :data="stocksData"
-          :height="550"
-          :show-positive="
-            treemapFilter === 'all' || treemapFilter === 'positive'
-          "
-          :show-negative="
-            treemapFilter === 'all' || treemapFilter === 'negative'
-          "
-        />
-      </div>
-      <template v-else>
-        <!-- Variant router: cada tenant pode trocar o visual do ranking
-             completo (altas + baixas) via brand.hero.variant. Default
-             eh o layout quiet Redentia abaixo. -->
-        <MoleculesHomeRankingsMentor
-          v-if="brand.hero?.variant === 'mentor'"
-          :asset-categories="assetCategories"
-          :top-assets="topAssets"
-          :ranking-link-queries="rankingLinkQueries"
-          :slice-ranking="sliceRanking"
-        />
-        <MoleculesHomeRankingsShowtime
-          v-else-if="brand.hero?.variant === 'showtime'"
-          :asset-categories="assetCategories"
-          :top-assets="topAssets"
-          :ranking-link-queries="rankingLinkQueries"
-          :slice-ranking="sliceRanking"
-        />
-        <template v-else>
-          <!-- Maiores Altas (default Redentia quiet) -->
-          <UCarousel
-            v-slot="{ item }"
-            class="w-full"
-            loop
-            :items="assetCategories"
-            :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
-          >
-            <div
-              class="flex w-full flex-col gap-2 px-2 py-4"
-              :class="rankingCardClass"
-              :style="rankingCardStyle('var(--brand-positive)')"
-            >
-              <!-- Header quiet: eyebrow positive sutil + h3 normal weight, ver todos como link inline -->
-              <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
-                <div class="flex flex-col gap-1">
-                  <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-positive)' }" translate="no">
-                    <UIcon name="i-lucide-trending-up" class="h-3 w-3" aria-hidden="true" />
-                    Maiores altas
-                  </span>
-                  <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
-                </div>
-                <NuxtLink
-                  :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-                  class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
-                  :style="{ color: 'var(--brand-primary)' }"
-                  :aria-label="`Ver todos ${item.label} em alta`"
-                >
-                  <span>Ver todos</span>
-                  <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
-                </NuxtLink>
-              </div>
-              <!-- Lista -->
-              <div class="flex flex-col">
-                <AtomsTickerListItem
-                  v-for="stock in sliceRanking(topAssets.top[item.key])"
-                  :key="stock?.ticker"
-                  :stock="stock"
-                  class="border-b"
-                  style="border-color: var(--brand-border);"
-                />
-              </div>
+        <!-- RIGHT: Insights da Redentia -->
+        <article
+          class="insights-card flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+        >
+          <header class="flex items-start justify-between gap-3">
+            <div class="flex flex-col gap-1">
+              <span class="eyebrow">Insights da Redent.IA</span>
+              <h3 class="text-[18px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Fatores movendo carteiras</h3>
             </div>
-          </UCarousel>
+            <NuxtLink
+              to="/para-voce"
+              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              Análise completa
+              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
+            </NuxtLink>
+          </header>
 
-          <!-- Maiores Baixas (default Redentia quiet) -->
-          <UCarousel
-            v-slot="{ item }"
-            class="w-full"
-            loop
-            :items="assetCategories"
-            :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
-          >
-            <div
-              class="flex w-full flex-col gap-2 px-2 py-4"
-              :class="rankingCardClass"
-              :style="rankingCardStyle('var(--brand-negative)')"
+          <ul v-if="homeNarrativeLoading || !insightPills.length" class="flex flex-col gap-4">
+            <li v-for="n in 3" :key="`ins-skel-${n}`" class="flex items-start gap-3">
+              <span class="block size-11 shrink-0 rounded-full" :style="{ background: 'color-mix(in srgb, var(--text-heading) 5%, transparent)' }" />
+              <div class="flex flex-1 flex-col gap-1.5">
+                <span class="block h-3.5 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', width: '70%' }" />
+                <span class="block h-3 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', width: '92%' }" />
+              </div>
+            </li>
+          </ul>
+          <ul v-else class="flex flex-col gap-4">
+            <li
+              v-for="ins in insightPills"
+              :key="ins.key"
+              class="flex items-start gap-3"
             >
-              <!-- Header quiet: eyebrow negative sutil + h3 normal, ver todos link -->
-              <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
-                <div class="flex flex-col gap-1">
-                  <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-negative)' }" translate="no">
-                    <UIcon name="i-lucide-trending-down" class="h-3 w-3" aria-hidden="true" />
-                    Maiores baixas
-                  </span>
-                  <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
+              <span
+                class="flex size-11 shrink-0 items-center justify-center rounded-full"
+                :style="{ background: ins.iconBg }"
+              >
+                <UIcon :name="ins.icon" class="size-5" :style="{ color: ins.iconColor }" />
+              </span>
+              <div class="flex min-w-0 flex-1 flex-col gap-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h4 class="text-[14px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">{{ ins.title }}</h4>
+                  <span
+                    class="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                    :style="{
+                      background: `color-mix(in srgb, ${ins.pillColorVar} 14%, transparent)`,
+                      color: ins.pillColorVar,
+                    }"
+                  >{{ ins.pillLabel }}</span>
                 </div>
-                <NuxtLink
-                  :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
-                  class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
-                  :style="{ color: 'var(--brand-primary)' }"
-                  :aria-label="`Ver todos ${item.label} em queda`"
-                >
-                  <span>Ver todos</span>
-                  <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
-                </NuxtLink>
+                <p class="text-[12px] leading-snug" :style="{ color: 'var(--text-body)' }">
+                  {{ ins.description }}
+                </p>
               </div>
-              <!-- Lista -->
-              <div class="flex flex-col">
-                <AtomsTickerListItem
-                  v-for="stock in sliceRanking(topAssets.bottom[item.key])"
-                  :key="stock?.ticker"
-                  :stock="stock"
-                  class="border-b"
-                  style="border-color: var(--brand-border);"
-                />
-              </div>
-            </div>
-          </UCarousel>
-        </template>
-      </template>
+            </li>
+          </ul>
+        </article>
+      </section>
 
       <!-- Crypto rankings — depois dos filtros inteligentes pra manter o
            ritmo: primeiro a grid do B3, depois atalhos, depois cripto,
@@ -496,12 +546,154 @@
            Gate: tenants podem desativar o bloco via brand.features.showCrypto
            (Me Poupe! por exemplo nao quer cripto na home — fora do tom
            "TV pop magazine"). Default true mantem behavior atual. -->
-      <LazyMoleculesCryptoRankings v-if="showCrypto" />
+      <!-- ============ TESOURO + NOTÍCIAS (row dupla compacta) ============
+           Dois cards lado-a-lado: Tesouro Direto (esquerda, 3 mini-tabelas
+           IPCA/SELIC/Prefixado) + Notícias do mercado (direita, top 4
+           manchetes recentes). Substituem as 2 secoes full-width antigas. -->
+      <section class="market-extra grid grid-cols-1 gap-4 px-4 md:grid-cols-2 md:px-0">
+        <!-- LEFT: Tesouro Direto -->
+        <article
+          class="tesouro-card flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+        >
+          <header class="flex items-start justify-between gap-3">
+            <div class="flex flex-col gap-1">
+              <span class="eyebrow">Renda fixa pública</span>
+              <h3 class="text-[18px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Tesouro Direto</h3>
+            </div>
+            <NuxtLink
+              to="/search?group=tesouro"
+              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              Ver todos
+              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
+            </NuxtLink>
+          </header>
 
-      <!-- Tesouro Direto — após rankings + filtros inteligentes -->
-      <div class="px-4 md:px-0">
-        <LazyMoleculesTesouroSection />
-      </div>
+          <!-- 3 sub-cards horizontais: IPCA / SELIC / Prefixado -->
+          <div v-if="tesouroLoading" class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div
+              v-for="n in 3"
+              :key="`tes-skel-${n}`"
+              class="flex flex-col gap-2 rounded-[12px] border px-3.5 py-3"
+              :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }"
+            >
+              <span class="block h-3 w-1/2 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 8%, transparent)' }" />
+              <span v-for="m in 3" :key="m" class="block h-3 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)' }" />
+            </div>
+          </div>
+          <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div
+              v-for="g in tesouroGroups"
+              :key="g.key"
+              class="tesouro-group flex flex-col gap-2 rounded-[12px] border px-3.5 py-3"
+              :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }"
+            >
+              <header class="flex items-center gap-2">
+                <span class="block size-1.5 rounded-full" :style="{ background: g.accent }" />
+                <span class="text-[13px] font-medium" :style="{ color: 'var(--text-heading)' }">{{ g.label }}</span>
+              </header>
+              <ul v-if="g.items.length" class="flex flex-col gap-2">
+                <li
+                  v-for="it in g.items"
+                  :key="it.slug"
+                  class="flex items-center justify-between gap-2"
+                >
+                  <NuxtLink
+                    :to="`/tesouro/${it.slug}`"
+                    class="truncate text-[12px] transition-opacity hover:opacity-80"
+                    :style="{ color: 'var(--text-body)' }"
+                  >{{ shortTesouroName(it.name) }}</NuxtLink>
+                  <span
+                    class="shrink-0 text-[12px] font-medium tabular-nums"
+                    :style="{ color: g.accent }"
+                    translate="no"
+                  >{{ formatTesouroRate(it) }}</span>
+                </li>
+              </ul>
+              <p v-else class="text-[12px]" :style="{ color: 'var(--text-muted)' }">
+                Sem títulos.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <!-- RIGHT: Notícias do mercado (top 4) -->
+        <article
+          class="news-card flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+        >
+          <header class="flex items-start justify-between gap-3">
+            <div class="flex flex-col gap-1">
+              <span class="eyebrow">Notícias do mercado</span>
+              <h3 class="text-[18px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Últimas 24h</h3>
+            </div>
+            <NuxtLink
+              to="/help?q=notícias do mercado hoje"
+              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              Ver todas
+              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
+            </NuxtLink>
+          </header>
+
+          <ul v-if="homeNewsLoading" class="flex flex-col gap-4">
+            <li v-for="n in 4" :key="`news-skel-${n}`" class="flex items-start gap-3">
+              <span class="block size-10 shrink-0 rounded-full" :style="{ background: 'color-mix(in srgb, var(--text-heading) 5%, transparent)' }" />
+              <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+                <span class="block h-3 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', width: '92%' }" />
+                <span class="block h-3 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', width: '48%' }" />
+              </div>
+            </li>
+          </ul>
+          <ul v-else-if="recentHomeNews.length" class="flex flex-col gap-4">
+            <li
+              v-for="n in recentHomeNews"
+              :key="n.id"
+              class="flex items-start gap-3"
+            >
+              <a
+                :href="n.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border"
+                :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+              >
+                <img
+                  v-if="n.image_url"
+                  :src="n.image_url"
+                  :alt="n.title"
+                  class="size-full object-cover"
+                  @error="$event.target.style.display='none'"
+                />
+                <UIcon
+                  v-else
+                  name="i-lucide-newspaper"
+                  class="size-4"
+                  :style="{ color: 'var(--text-muted)' }"
+                />
+              </a>
+              <div class="flex min-w-0 flex-1 flex-col gap-1">
+                <a
+                  :href="n.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="line-clamp-2 text-[13px] leading-snug transition-opacity hover:opacity-80"
+                  :style="{ color: 'var(--text-heading)' }"
+                >{{ n.title }}</a>
+                <p class="text-[11px]" :style="{ color: 'var(--text-muted)' }">
+                  {{ relativeTimeShort(n.published_at) }} <span aria-hidden="true">·</span> {{ n.source }}
+                </p>
+              </div>
+            </li>
+          </ul>
+          <p v-else class="text-[13px]" :style="{ color: 'var(--text-muted)' }">
+            Sem notícias agora.
+          </p>
+        </article>
+      </section>
     </div>
 
 
@@ -616,8 +808,9 @@
       </div>
     </section>
 
-    <!-- News Section — feed de notícias de mercado (apenas Redentia por enquanto) -->
-    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="px-4 md:px-4" />
+    <!-- (NewsSection foi movido pra dentro do bento principal — agora vive
+         lado-a-lado com Tesouro Direto no row "TESOURO + NOTÍCIAS",
+         dentro da section .market-extra acima.) -->
 
     <!-- Metrics Section com contador gigante -->
     <MoleculesMetricsSection v-if="showSection('metrics') && !authStore.isAuthenticated" :style="{ order: sectionOrder('metrics') }" />
@@ -920,6 +1113,8 @@
 import type { IAsset } from '~/types/asset'
 import type { ChartTimeRange } from '~/types/chart'
 import { useFormat } from '~/composables/useFormat'
+import { useTesouroService, type TesouroItem } from '~/services/tesouro'
+import { isPlaceholderLogo as isPlaceholderLogoUtil } from '~/utils/logo'
 
 const brand = useBrand()
 const authStore = useAuthStore()
@@ -1050,12 +1245,104 @@ const {
   getIndiceHistoricPrices,
   getTickerDetails,
   assetHistoricPrices,
+  getTopDividendYield,
 } = useAssetsService()
 
 // Driver narrative ("Mercado agora" card) — reusa o pesouPills do
 // /para-voce. Lista 3-4 forças setoriais/macro que estão movendo o
 // índice agora (gainers/losers + Brent + Dólar).
 const { data: homeNarrative, loading: homeNarrativeLoading } = useHomeData()
+
+// ============ TESOURO + NOTÍCIAS (row dupla compacta) ============
+// Cards lado-a-lado abaixo de "Explorar o mercado". Substituem os
+// componentes full-width antigos (LazyMoleculesTesouroSection +
+// MoleculesNewsSection) — agora condensados em duas listas pequenas.
+const { listTesouros } = useTesouroService()
+const tesouroItems = ref<TesouroItem[]>([])
+const tesouroLoading = ref(true)
+
+interface HomeNewsArticle {
+  id: number
+  source: string
+  url: string
+  title: string
+  image_url: string | null
+  tickers: string[]
+  published_at: string
+}
+const homeNewsArticles = ref<HomeNewsArticle[]>([])
+const homeNewsLoading = ref(true)
+
+onMounted(async () => {
+  // Tesouro
+  try {
+    tesouroItems.value = await listTesouros()
+  } catch {
+    tesouroItems.value = []
+  } finally {
+    tesouroLoading.value = false
+  }
+  // News
+  try {
+    const runtimeCfg = useRuntimeConfig()
+    const apiBase = runtimeCfg.public.apiBaseUrl as string
+    const resp = await $fetch<{ data: HomeNewsArticle[] }>(`${apiBase}/news/latest`, {
+      query: { limit: 10 },
+    })
+    homeNewsArticles.value = resp?.data ?? []
+  } catch {
+    homeNewsArticles.value = []
+  } finally {
+    homeNewsLoading.value = false
+  }
+})
+
+// 3 grupos de tesouro (IPCA+, SELIC, Prefixado) com 3 items cada.
+const tesouroGroups = computed(() => {
+  const all = tesouroItems.value ?? []
+  const by = (frag: string) =>
+    all.filter((i) => i.indexer?.toLowerCase().includes(frag.toLowerCase())).slice(0, 3)
+  return [
+    { key: 'IPCA', label: 'IPCA+', accent: 'var(--brand-primary)', items: by('ipca') },
+    { key: 'SELIC', label: 'SELIC', accent: 'var(--brand-positive)', items: by('selic') },
+    { key: 'PREFIXADO', label: 'Prefixado', accent: 'var(--brand-text)', items: by('prefixado') },
+  ]
+})
+
+function formatTesouroRate(item: TesouroItem): string {
+  if (!item.rate) return '—'
+  return (
+    item.rate
+      .replace('IPCA +', 'IPCA+')
+      .replace('IGPM +', 'IGPM+')
+      .replace(/SELIC\s*\+\s*/, 'SELIC+')
+      .replace(/\s+/g, ' ') + '%'
+  )
+}
+function shortTesouroName(raw: string): string {
+  return raw.replace('Tesouro ', '').replace(/\s+\|.*$/, '')
+}
+
+// News top 4 — sem agrupamento, ordem cronológica decrescente.
+const recentHomeNews = computed(() => {
+  const all = homeNewsArticles.value ?? []
+  return [...all]
+    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+    .slice(0, 4)
+})
+
+function relativeTimeShort(iso: string): string {
+  if (!iso) return ''
+  const now = Date.now()
+  const t = new Date(iso).getTime()
+  if (!Number.isFinite(t)) return ''
+  const diffMin = Math.max(1, Math.round((now - t) / 60000))
+  if (diffMin < 60) return `${diffMin}min`
+  const diffH = Math.round(diffMin / 60)
+  if (diffH < 24) return `${diffH}h`
+  const diffD = Math.round(diffH / 24)
+  return `${diffD}d`
+}
 
 const loading = ref(false)
 const blockChat = ref(false)
@@ -1136,6 +1423,435 @@ const assetCategories = [
   { key: 'reits', label: 'Reits' },
   { key: 'bdrs', label: 'BDRs' },
 ] as const
+
+// Categorias do novo bloco "Explorar o mercado" (5 lists × 5 categorias).
+// Label "FIIs" em vez de "Reits" pra consistência com o vocabulário BR.
+type ExploreCategory = 'stocks' | 'etfs' | 'reits' | 'bdrs' | 'crypto'
+const exploreCategoriesList: { key: ExploreCategory; label: string }[] = [
+  { key: 'stocks', label: 'Ações' },
+  { key: 'etfs', label: 'ETFs' },
+  { key: 'reits', label: 'FIIs' },
+  { key: 'bdrs', label: 'BDRs' },
+  { key: 'crypto', label: 'Criptomoedas' },
+]
+const selectedExploreCategory = ref<ExploreCategory>('stocks')
+
+// Dividend yield carregado lazy por categoria pra não bloquear SSR.
+// Stocks/ETFs/REITs têm endpoint próprio; BDRs e crypto não.
+const dyByCategory = ref<Record<ExploreCategory, IAsset[]>>({
+  stocks: [],
+  etfs: [],
+  reits: [],
+  bdrs: [],
+  crypto: [],
+})
+const dyLoading = ref<Record<ExploreCategory, boolean>>({
+  stocks: false,
+  etfs: false,
+  reits: false,
+  bdrs: false,
+  crypto: false,
+})
+
+// ============ Crypto data (categoria nova) ============
+// Endpoint /api/crypto retorna shape rico: symbol, name, image, price_brl,
+// market_cap_brl, change_24h_pct, market_cap_dominance_pct, etc.
+interface CryptoAsset {
+  id: string
+  symbol: string
+  name: string
+  image: string | null
+  rank: number
+  price_brl: number | null
+  market_cap_brl: number | null
+  volume_24h_brl: number | null
+  change_24h_pct: number | null
+  change_7d_pct: number | null
+  market_cap_dominance_pct: number | null
+}
+const cryptoAssets = ref<CryptoAsset[]>([])
+const cryptoLoading = ref(false)
+async function loadCryptoAssets() {
+  if (cryptoAssets.value.length || cryptoLoading.value) return
+  cryptoLoading.value = true
+  try {
+    const runtimeCfg = useRuntimeConfig()
+    const apiBase = runtimeCfg.public.apiBaseUrl as string
+    const resp = await $fetch<{ data: CryptoAsset[] }>(`${apiBase}/crypto`, {
+      query: { limit: 50 },
+    })
+    cryptoAssets.value = Array.isArray(resp?.data) ? resp.data : []
+  } catch (err) {
+    console.warn('[explore] crypto fetch failed', err)
+    cryptoAssets.value = []
+  } finally {
+    cryptoLoading.value = false
+  }
+}
+async function loadDividendYieldFor(cat: ExploreCategory) {
+  if (cat === 'bdrs' || cat === 'crypto') return
+  if (dyByCategory.value[cat].length || dyLoading.value[cat]) return
+  dyLoading.value[cat] = true
+  try {
+    const typeMap: Partial<Record<ExploreCategory, 'STOCK' | 'ETF' | 'REIT'>> = {
+      stocks: 'STOCK',
+      etfs: 'ETF',
+      reits: 'REIT',
+    }
+    const type = typeMap[cat]
+    if (!type) return
+    const items = await getTopDividendYield(type, 5)
+    dyByCategory.value[cat] = Array.isArray(items) ? items : []
+  } catch (err) {
+    console.warn('[explore] DY fetch failed', cat, err)
+  } finally {
+    dyLoading.value[cat] = false
+  }
+}
+watch(
+  selectedExploreCategory,
+  (cat) => {
+    if (cat === 'crypto') loadCryptoAssets()
+    else loadDividendYieldFor(cat)
+  },
+  { immediate: true }
+)
+
+// Helpers de formatação compacta para os mini-cards do "Explorar".
+function formatCompactBRL(value: number | null | undefined): string {
+  const n = Number(value)
+  if (!Number.isFinite(n) || n <= 0) return '—'
+  if (n >= 1e12) return `R$ ${(n / 1e12).toFixed(2).replace('.', ',')} tri`
+  if (n >= 1e9) return `R$ ${(n / 1e9).toFixed(2).replace('.', ',')} bi`
+  if (n >= 1e6) return `R$ ${(n / 1e6).toFixed(2).replace('.', ',')} mi`
+  if (n >= 1e3) return `R$ ${(n / 1e3).toFixed(0)} mil`
+  return `R$ ${n.toFixed(2).replace('.', ',')}`
+}
+function formatPctSigned(value: number | null | undefined): string {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return '—'
+  const sign = n >= 0 ? '+' : ''
+  return `${sign}${n.toFixed(2).replace('.', ',')}%`
+}
+function pickTicker(asset: any): string {
+  return (asset?.ticker || asset?.stock || '').toString().toUpperCase()
+}
+function pickChange(asset: any): number {
+  return Number(asset?.change_percent ?? asset?.change ?? 0) || 0
+}
+
+// 5 listas pra categoria selecionada.
+// - Ações/ETFs/FIIs/BDRs: derivadas de topAssets (rankings top+bottom dedupados)
+//   + endpoint /rankings/top-dividend-yield pro card de DY.
+// - Crypto: usa /api/crypto (snapshot rico com image, price_brl, mcap, etc).
+interface ExploreItem {
+  ticker: string
+  logo?: string | null
+  value: string
+  colorVar?: string
+  href: string
+}
+interface ExploreList {
+  key: string
+  title: string
+  items: ExploreItem[]
+}
+
+// Logo pra um ativo. Ordem: campo logo explícito → brapi CDN fallback.
+// Usa o util compartilhado isPlaceholderLogo pra detectar o placeholder
+// genérico `icons.brapi.dev/icons/BRAPI.svg` que o backend devolve quando
+// nao tem logo de verdade. Combinado com useFailedLogos no template
+// (img.onerror -> markFailed) cobre tambem o caso de 404 do CDN.
+const failedExploreLogos = useFailedLogos()
+function assetLogoUrl(a: any): string | null {
+  if (a?.logo && !isPlaceholderLogoUtil(a.logo)) return a.logo
+  if (a?.scrape_logo && !isPlaceholderLogoUtil(a.scrape_logo)) return a.scrape_logo
+  const t = pickTicker(a)
+  if (t) return `https://icons.brapi.dev/icons/${t}.svg`
+  return null
+}
+
+const exploreListsRaw = computed<ExploreList[]>(() => {
+  const cat = selectedExploreCategory.value
+
+  // ----- CRYPTO -----
+  if (cat === 'crypto') {
+    const all = cryptoAssets.value || []
+    const withChange = all.filter((c) => c.change_24h_pct !== null)
+    const gainers = [...withChange]
+      .sort((a, b) => (b.change_24h_pct ?? 0) - (a.change_24h_pct ?? 0))
+      .slice(0, 5)
+    const losers = [...withChange]
+      .sort((a, b) => (a.change_24h_pct ?? 0) - (b.change_24h_pct ?? 0))
+      .slice(0, 5)
+    const byMcap = [...all]
+      .filter((c) => Number(c.market_cap_brl) > 0)
+      .sort((a, b) => (b.market_cap_brl ?? 0) - (a.market_cap_brl ?? 0))
+      .slice(0, 5)
+    const byPrice = [...all]
+      .filter((c) => Number(c.price_brl) > 0)
+      .sort((a, b) => (b.price_brl ?? 0) - (a.price_brl ?? 0))
+      .slice(0, 5)
+    const byVolatility = [...withChange]
+      .sort((a, b) => Math.abs(b.change_24h_pct ?? 0) - Math.abs(a.change_24h_pct ?? 0))
+      .slice(0, 5)
+    const mapCryptoItem = (c: CryptoAsset, valueField: 'change' | 'price' | 'mcap'): ExploreItem => {
+      const ch = Number(c.change_24h_pct ?? 0)
+      let value = '—'
+      let colorVar: string | undefined
+      if (valueField === 'change') {
+        value = formatPctSigned(ch)
+        colorVar = ch >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
+      } else if (valueField === 'price') {
+        value = formatCompactBRL(Number(c.price_brl ?? 0))
+      } else {
+        value = formatCompactBRL(Number(c.market_cap_brl ?? 0))
+      }
+      return {
+        ticker: c.symbol,
+        logo: c.image,
+        value,
+        colorVar,
+        href: `/crypto/${(c.id || c.symbol || '').toLowerCase()}`,
+      }
+    }
+    return [
+      { key: 'top', title: 'Maiores altas', items: gainers.map((c) => mapCryptoItem(c, 'change')) },
+      { key: 'bottom', title: 'Maiores baixas', items: losers.map((c) => mapCryptoItem(c, 'change')) },
+      { key: 'expensive', title: 'Mais caras', items: byPrice.map((c) => mapCryptoItem(c, 'price')) },
+      { key: 'cap', title: 'Maior market cap', items: byMcap.map((c) => mapCryptoItem(c, 'mcap')) },
+      { key: 'vol', title: 'Mais voláteis', items: byVolatility.map((c) => mapCryptoItem(c, 'change')) },
+    ]
+  }
+
+  // ----- AÇÕES / ETFs / FIIs / BDRs -----
+  const top = topAssets.value.top[cat] || []
+  const bottom = topAssets.value.bottom[cat] || []
+  const all = [...top, ...bottom]
+  const dedupedByTicker = new Map<string, IAsset>()
+  for (const a of all) {
+    const k = pickTicker(a)
+    if (k && !dedupedByTicker.has(k)) dedupedByTicker.set(k, a)
+  }
+  const unique = Array.from(dedupedByTicker.values())
+
+  const mostVolatile = [...unique]
+    .sort((a, b) => Math.abs(pickChange(b)) - Math.abs(pickChange(a)))
+    .slice(0, 5)
+  const mostExpensive = [...unique]
+    .filter((a) => Number(a.market_price) > 0)
+    .sort((a, b) => (Number(b.market_price) || 0) - (Number(a.market_price) || 0))
+    .slice(0, 5)
+  const dyItems = (dyByCategory.value[cat] || []).slice(0, 5)
+
+  const mapAssetItem = (a: any, value: string, colorVar?: string): ExploreItem => {
+    const ticker = pickTicker(a)
+    return {
+      ticker,
+      logo: assetLogoUrl(a),
+      value,
+      colorVar,
+      href: `/asset/${ticker.toLowerCase()}`,
+    }
+  }
+
+  return [
+    {
+      key: 'top',
+      title: 'Maiores altas',
+      items: top.slice(0, 5).map((a) => mapAssetItem(a, formatPctSigned(pickChange(a)), 'var(--brand-positive)')),
+    },
+    {
+      key: 'bottom',
+      title: 'Maiores baixas',
+      items: bottom.slice(0, 5).map((a) => mapAssetItem(a, formatPctSigned(pickChange(a)), 'var(--brand-negative)')),
+    },
+    {
+      key: 'expensive',
+      title: 'Mais caras',
+      items: mostExpensive.map((a) => mapAssetItem(a, formatCompactBRL(Number(a.market_price) || 0))),
+    },
+    {
+      key: 'dy',
+      title: cat === 'bdrs' ? 'Mais voláteis (BDRs)' : 'Maior dividend yield',
+      items:
+        cat === 'bdrs'
+          ? mostVolatile.map((a) =>
+              mapAssetItem(
+                a,
+                formatPctSigned(pickChange(a)),
+                pickChange(a) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
+              )
+            )
+          : dyItems.map((a: any) => {
+              // Endpoint pode retornar DY em % (ex: 12.5) ou fração (0.125).
+              const raw = Number(a.dividend_yield ?? 0)
+              const pct = raw > 0 && raw <= 1 ? raw * 100 : raw
+              return mapAssetItem(a, formatPctSigned(pct), 'var(--brand-positive)')
+            }),
+    },
+    {
+      key: 'vol',
+      title: 'Mais voláteis',
+      items: mostVolatile.map((a) =>
+        mapAssetItem(
+          a,
+          formatPctSigned(pickChange(a)),
+          pickChange(a) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
+        )
+      ),
+    },
+  ]
+})
+
+// Filtra listas vazias — quando uma categoria não tem dados (ex: ETFs
+// sem dividend yield no endpoint), o card simplesmente desaparece e o
+// grid reflowa pras colunas restantes em vez de mostrar "Sem dados".
+const exploreLists = computed<ExploreList[]>(() =>
+  exploreListsRaw.value.filter((l) => l.items.length > 0)
+)
+
+// ============ MAPA DE SETORES (heatmap) + INSIGHTS DA REDENTIA ============
+// Sector heatmap derivado dos topAssets (top+bottom de stocks+reits) agregado
+// client-side: para cada setor, media simples do change_percent.
+// Cards coloridos por intensidade (verde/vermelho), com nome PT e icone.
+
+// Mapping EN→PT + icone lucide pra cada setor que o StatusInvest retorna.
+// Quando o setor nao tem mapping, exibimos o nome cru e icone default.
+const SECTOR_META: Record<string, { label: string; icon: string }> = {
+  'Financial Services': { label: 'Financeiro', icon: 'i-lucide-landmark' },
+  'Energy': { label: 'Petróleo e Gás', icon: 'i-lucide-fuel' },
+  'Basic Materials': { label: 'Materiais Básicos', icon: 'i-lucide-hammer' },
+  'Industrials': { label: 'Bens Industriais', icon: 'i-lucide-factory' },
+  'Consumer Cyclical': { label: 'Consumo Cíclico', icon: 'i-lucide-shopping-bag' },
+  'Consumer Defensive': { label: 'Consumo Defensivo', icon: 'i-lucide-shopping-cart' },
+  'Utilities': { label: 'Utilities', icon: 'i-lucide-zap' },
+  'Real Estate': { label: 'Imobiliário', icon: 'i-lucide-building' },
+  'Healthcare': { label: 'Saúde', icon: 'i-lucide-heart-pulse' },
+  'Technology': { label: 'Tecnologia', icon: 'i-lucide-cpu' },
+  'Communication Services': { label: 'Comunicações', icon: 'i-lucide-radio' },
+}
+interface SectorTile {
+  key: string
+  label: string
+  icon: string
+  changePct: number
+  tickerCount: number
+}
+const sectorHeatmap = computed<SectorTile[]>(() => {
+  const buckets = new Map<string, { sum: number; count: number }>()
+  const pools = [
+    ...(topAssets.value.top.stocks || []),
+    ...(topAssets.value.bottom.stocks || []),
+    ...(topAssets.value.top.reits || []),
+    ...(topAssets.value.bottom.reits || []),
+  ]
+  for (const a of pools) {
+    const sector = (a as any)?.sector
+    if (!sector || typeof sector !== 'string') continue
+    const change = pickChange(a)
+    if (!Number.isFinite(change)) continue
+    const b = buckets.get(sector) || { sum: 0, count: 0 }
+    b.sum += change
+    b.count += 1
+    buckets.set(sector, b)
+  }
+  const tiles: SectorTile[] = []
+  for (const [key, { sum, count }] of buckets) {
+    if (count < 1) continue
+    const meta = SECTOR_META[key]
+    tiles.push({
+      key,
+      label: meta?.label || key,
+      icon: meta?.icon || 'i-lucide-circle',
+      changePct: sum / count,
+      tickerCount: count,
+    })
+  }
+  // Ordena por magnitude do impacto (positivo ou negativo)
+  return tiles.sort((a, b) => Math.abs(b.changePct) - Math.abs(a.changePct)).slice(0, 12)
+})
+
+// Cor de fundo do tile baseada no sinal+intensidade do change.
+// Usa color-mix pra modular opacidade conforme a magnitude do movimento.
+function sectorTileStyle(change: number) {
+  const abs = Math.min(Math.abs(change), 3) // satura em 3%
+  const intensity = Math.round(8 + (abs / 3) * 18) // 8% a 26% mix
+  const accent = change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
+  return {
+    background: `color-mix(in srgb, ${accent} ${intensity}%, var(--bg-elevated))`,
+    borderColor: `color-mix(in srgb, ${accent} ${Math.round(intensity * 1.5)}%, transparent)`,
+    accentColor: accent,
+  }
+}
+
+// Severity → label pill humano-amigável (Risco / Oportunidade / Tendência).
+// Mapeia a magnitude + sinal do impact em vez do severity bruto.
+interface InsightPill {
+  key: string
+  icon: string
+  iconBg: string
+  iconColor: string
+  title: string
+  description: string
+  pillLabel: 'Risco' | 'Oportunidade' | 'Tendência'
+  pillColorVar: string
+}
+const FACTOR_KEY_PALETTE: Record<string, { bg: string; color: string }> = {
+  juros: { bg: 'color-mix(in srgb, #7c3aed 14%, transparent)', color: '#7c3aed' },
+  petroleo: { bg: 'color-mix(in srgb, #d97706 14%, transparent)', color: '#d97706' },
+  oil: { bg: 'color-mix(in srgb, #d97706 14%, transparent)', color: '#d97706' },
+  dolar: { bg: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)', color: 'var(--brand-primary)' },
+  fx: { bg: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)', color: 'var(--brand-primary)' },
+  commodity: { bg: 'color-mix(in srgb, #b45309 14%, transparent)', color: '#b45309' },
+  consumo: { bg: 'color-mix(in srgb, #7c3aed 14%, transparent)', color: '#7c3aed' },
+  global: { bg: 'color-mix(in srgb, var(--brand-positive) 14%, transparent)', color: 'var(--brand-positive)' },
+}
+function buildInsightNarrative(f: any): string {
+  const tickers = Array.isArray(f.tickers) ? f.tickers.slice(0, 3).join(', ') : ''
+  const verb = (f.impact ?? 0) >= 0 ? 'sustentaram' : 'pressionaram'
+  switch (f.key) {
+    case 'petroleo':
+      return `Ações expostas a petróleo ${verb} o índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+    case 'dolar':
+      return `Exportadoras e companhias com receita em dólar ${verb} o índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+    case 'juros':
+      return `Bancos, FIIs e ativos sensíveis a juros ${verb} o índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+    case 'commodity':
+      return `Mineradoras, papel e proteína animal ${verb} o índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+    case 'global':
+      return `BDRs e empresas internacionalizadas ${verb} o índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+    case 'consumo':
+      return `Varejo, alimentos e serviços de consumo doméstico ${verb} o índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+    default:
+      return `${f.label} ${verb} ${f.affectedCount ?? 0} ativos do índice${tickers ? ` — destaques: ${tickers}.` : '.'}`
+  }
+}
+const insightPills = computed<InsightPill[]>(() => {
+  const factors = homeNarrative.value?.causalFactors || []
+  return factors.slice(0, 3).map((f: any) => {
+    const palette = FACTOR_KEY_PALETTE[f.key] || { bg: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', color: 'var(--text-body)' }
+    let pillLabel: InsightPill['pillLabel'] = 'Tendência'
+    let pillColorVar = 'var(--brand-primary)'
+    if (f.severity === 'high' && (f.impact ?? 0) < 0) {
+      pillLabel = 'Risco'
+      pillColorVar = 'var(--brand-negative)'
+    } else if ((f.impact ?? 0) > 0) {
+      pillLabel = 'Oportunidade'
+      pillColorVar = 'var(--brand-positive)'
+    }
+    return {
+      key: f.key,
+      icon: f.icon || 'i-lucide-trending-up',
+      iconBg: palette.bg,
+      iconColor: palette.color,
+      title: f.label,
+      description: buildInsightNarrative(f),
+      pillLabel,
+      pillColorVar,
+    }
+  })
+})
 
 interface ChartPoint {
   date: string
@@ -2006,6 +2722,24 @@ definePageMeta({
 .market-now-text :deep(strong) { color: var(--text-heading); font-weight: 600; }
 .market-now-text :deep(strong.pos) { color: var(--brand-positive); }
 .market-now-text :deep(strong.neg) { color: var(--brand-negative); }
+
+/* ========== EXPLORAR O MERCADO (tabs pill + 5 mini-listas) ========== */
+.explore-tab {
+  border-color: color-mix(in srgb, var(--brand-border) 30%, transparent);
+  background: var(--bg-elevated);
+  color: var(--text-body);
+  cursor: pointer;
+}
+.explore-tab:hover {
+  color: var(--text-heading);
+  border-color: color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.explore-tab--active {
+  background: var(--bg-overlay);
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, var(--brand-border));
+  color: var(--text-heading);
+}
+.explore-list-card { min-height: 240px; }
 
 /* ========== TICKER ROW (linha horizontal de tickers + CTA) ========== */
 .ticker-row-item--divider {
