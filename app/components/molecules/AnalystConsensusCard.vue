@@ -1,30 +1,26 @@
 <template>
   <section
     v-if="data"
+    class="analyst-consensus-card flex flex-col gap-5 rounded-[14px] border px-6 py-6"
+    :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
     :aria-label="`Consenso dos analistas para ${ticker}`"
   >
-    <div class="mb-4 flex flex-col gap-1">
-      <span
-        class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-        :style="{ color: 'var(--brand-primary)' }"
-      >
-        Consenso de analistas
-      </span>
+    <header class="flex flex-col gap-1">
       <h2
-        class="text-xl font-semibold md:text-2xl"
-        :style="{ color: 'var(--brand-text)' }"
+        class="text-[18px] font-medium leading-tight"
+        :style="{ color: 'var(--text-heading)' }"
       >
         Consenso dos analistas
       </h2>
       <p
-        class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-        :style="{ color: 'var(--brand-text-muted)' }"
+        class="text-[12px]"
+        :style="{ color: 'var(--text-muted)' }"
       >
-        &gt; TARGET MÉDIO · {{ coverageLabel }}
+        Target médio · {{ coverageLabel.toLowerCase() }}
       </p>
-    </div>
+    </header>
 
-    <div class="border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+    <div class="rounded-[12px] border overflow-hidden" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }">
       <!-- Recommendation + upside cells (register style, glued with gap-px) -->
       <div
         class="grid grid-cols-2 gap-px"

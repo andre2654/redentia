@@ -1,10 +1,10 @@
 <template>
   <section
-    class="financial-card flex h-full flex-col overflow-hidden rounded-xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
-    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
+    class="financial-card flex h-full flex-col overflow-hidden rounded-[14px] border transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
+    :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)', backgroundColor: 'var(--bg-elevated)' }"
   >
     <!-- Header -->
-    <header class="flex items-center justify-between border-b px-4 py-3" :style="{ borderColor: 'var(--brand-border)' }">
+    <header class="flex items-center justify-between border-b px-5 py-4" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 20%, transparent)' }">
       <div class="flex items-center gap-2">
         <UIcon v-if="props.icon" :name="props.icon" class="h-4 w-4" :style="{ color: 'var(--brand-text-muted)' }" />
         <h3 class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Legend -->
-    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t px-4 py-3" :style="{ borderColor: 'var(--brand-border)' }">
+    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t px-5 py-3" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 20%, transparent)' }">
       <div
         v-for="(item, index) in props.items"
         :key="item.label"

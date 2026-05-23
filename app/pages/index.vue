@@ -1,14 +1,6 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
     <div class="flex flex-col">
-    <!-- View toggle: Para você (/para-voce) | Mercado completo (/).
-         Após swap 2026-05-17: esta página agora é a /, e a "Para você"
-         editorial migrou pra /para-voce. Toggle só aparece quando o
-         tenant ativou a flag `features.showParaVoce` no admin. -->
-    <div v-if="brand.features?.showParaVoce" class="flex justify-center py-2">
-      <MoleculesHomeViewToggle />
-    </div>
-
     <!-- Hero — always rendered in SSR (was wrapped in ClientOnly before, which
          caused a 0.578 CLS spike when the ~700px hero popped in after hydration,
          pushing every other section down).
@@ -201,11 +193,6 @@
             <div class="flex h-full flex-col gap-4 px-5 py-5 md:px-6 md:py-6">
               <header class="flex items-center justify-between">
                 <span class="eyebrow">Mercado agora</span>
-                <NuxtLink
-                  to="/para-voce"
-                  class="text-[12px] font-medium transition-colors hover:opacity-80"
-                  :style="{ color: 'var(--brand-text)' }"
-                >Análise completa →</NuxtLink>
               </header>
 
               <!-- Skeleton enquanto pesouPills carrega -->
@@ -454,7 +441,7 @@
             <NuxtLink
               v-for="t in sectorHeatmap"
               :key="t.key"
-              :to="`/setor/${encodeURIComponent(t.key.toLowerCase().replace(/\s+/g, '-'))}`"
+              :to="`/setor/${t.key.toLowerCase().replace(/\s+/g, '-')}/comparativo`"
               class="sector-tile relative flex flex-col gap-2 rounded-[12px] border px-3 py-3 transition-opacity hover:opacity-90"
               :style="{ background: sectorTileStyle(t.changePct).background, borderColor: sectorTileStyle(t.changePct).borderColor }"
             >
@@ -488,14 +475,6 @@
               <span class="eyebrow">Insights da Redent.IA</span>
               <h3 class="text-[18px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Fatores movendo carteiras</h3>
             </div>
-            <NuxtLink
-              to="/para-voce"
-              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
-              :style="{ color: 'var(--brand-text)' }"
-            >
-              Análise completa
-              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
-            </NuxtLink>
           </header>
 
           <ul v-if="homeNarrativeLoading || !insightPills.length" class="flex flex-col gap-4">
@@ -571,8 +550,41 @@
             </NuxtLink>
           </header>
 
+          <!-- Hero strip: destaque do IPCA+ com maior taxa, ancorando
+               visualmente o topo do card antes das 3 sub-listas. -->
+          <NuxtLink
+            v-if="!tesouroLoading && tesouroHero"
+            :to="`/tesouro/${tesouroHero.slug}`"
+            class="tesouro-hero relative flex items-center justify-between gap-4 overflow-hidden rounded-[12px] border px-4 py-3.5 transition-opacity hover:opacity-90"
+            :style="{
+              background: `linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 8%, var(--bg-elevated)) 0%, color-mix(in srgb, var(--brand-primary) 2%, var(--bg-elevated)) 100%)`,
+              borderColor: 'color-mix(in srgb, var(--brand-primary) 28%, transparent)',
+            }"
+          >
+            <div class="flex flex-col gap-1">
+              <span
+                class="text-[10px] font-semibold uppercase tracking-[0.16em]"
+                :style="{ color: 'var(--brand-primary)' }"
+              >Maior taxa hoje</span>
+              <div class="flex items-baseline gap-2">
+                <span class="text-[15px] font-medium" :style="{ color: 'var(--text-heading)' }">{{ shortTesouroName(tesouroHero.name) }}</span>
+                <span class="text-[11px]" :style="{ color: 'var(--text-muted)' }" translate="no">
+                  Venc {{ formatTesouroMaturity(tesouroHero.maturity_date) }}
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end gap-0.5 text-right">
+              <span
+                class="text-[20px] font-light tabular-nums leading-none"
+                :style="{ color: 'var(--brand-primary)', letterSpacing: '-0.01em' }"
+                translate="no"
+              >{{ formatTesouroRate(tesouroHero) }}</span>
+              <span class="text-[10px]" :style="{ color: 'var(--text-muted)' }">ao ano</span>
+            </div>
+          </NuxtLink>
+
           <!-- 3 sub-cards horizontais: IPCA / SELIC / Prefixado -->
-          <div v-if="tesouroLoading" class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div v-if="tesouroLoading" class="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
             <div
               v-for="n in 3"
               :key="`tes-skel-${n}`"
@@ -580,36 +592,54 @@
               :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }"
             >
               <span class="block h-3 w-1/2 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 8%, transparent)' }" />
-              <span v-for="m in 3" :key="m" class="block h-3 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)' }" />
+              <span v-for="m in 5" :key="m" class="block h-3 rounded" :style="{ background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)' }" />
             </div>
           </div>
-          <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div v-else class="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
             <div
               v-for="g in tesouroGroups"
               :key="g.key"
-              class="tesouro-group flex flex-col gap-2 rounded-[12px] border px-3.5 py-3"
+              class="tesouro-group flex flex-col gap-3 rounded-[12px] border px-3.5 py-3.5"
               :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)' }"
             >
-              <header class="flex items-center gap-2">
-                <span class="block size-1.5 rounded-full" :style="{ background: g.accent }" />
-                <span class="text-[13px] font-medium" :style="{ color: 'var(--text-heading)' }">{{ g.label }}</span>
+              <header class="flex items-center justify-between gap-2 border-b pb-2.5" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 20%, transparent)' }">
+                <div class="flex items-center gap-2">
+                  <span class="block size-1.5 rounded-full" :style="{ background: g.accent }" />
+                  <span class="text-[13px] font-medium" :style="{ color: 'var(--text-heading)' }">{{ g.label }}</span>
+                </div>
+                <span
+                  class="text-[10px]"
+                  :style="{ color: 'var(--text-muted)' }"
+                  translate="no"
+                >{{ g.items.length }} {{ g.items.length === 1 ? 'título' : 'títulos' }}</span>
               </header>
-              <ul v-if="g.items.length" class="flex flex-col gap-2">
+              <ul v-if="g.items.length" class="flex flex-col gap-2.5">
                 <li
                   v-for="it in g.items"
                   :key="it.slug"
-                  class="flex items-center justify-between gap-2"
                 >
                   <NuxtLink
                     :to="`/tesouro/${it.slug}`"
-                    class="truncate text-[12px] transition-opacity hover:opacity-80"
-                    :style="{ color: 'var(--text-body)' }"
-                  >{{ shortTesouroName(it.name) }}</NuxtLink>
-                  <span
-                    class="shrink-0 text-[12px] font-medium tabular-nums"
-                    :style="{ color: g.accent }"
-                    translate="no"
-                  >{{ formatTesouroRate(it) }}</span>
+                    class="flex items-center justify-between gap-2 transition-opacity hover:opacity-80"
+                  >
+                    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span
+                        class="truncate text-[12px] font-medium leading-none"
+                        :style="{ color: 'var(--text-heading)' }"
+                      >{{ shortTesouroName(it.name) }}</span>
+                      <span
+                        v-if="it.maturity_date"
+                        class="text-[10px] leading-none tabular-nums"
+                        :style="{ color: 'var(--text-muted)' }"
+                        translate="no"
+                      >Venc {{ formatTesouroMaturity(it.maturity_date) }}</span>
+                    </div>
+                    <span
+                      class="shrink-0 text-[12px] font-medium tabular-nums leading-none"
+                      :style="{ color: g.accent }"
+                      translate="no"
+                    >{{ formatTesouroRate(it) }}</span>
+                  </NuxtLink>
                 </li>
               </ul>
               <p v-else class="text-[12px]" :style="{ color: 'var(--text-muted)' }">
@@ -629,14 +659,6 @@
               <span class="eyebrow">Notícias do mercado</span>
               <h3 class="text-[18px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Últimas 24h</h3>
             </div>
-            <NuxtLink
-              to="/help?q=notícias do mercado hoje"
-              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
-              :style="{ color: 'var(--brand-text)' }"
-            >
-              Ver todas
-              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
-            </NuxtLink>
           </header>
 
           <ul v-if="homeNewsLoading" class="flex flex-col gap-4">
@@ -911,178 +933,220 @@
       </div>
     </section>
 
-    <!-- Seção Blog / Guias Educacionais - Bento grid editorial -->
+    <!-- Seção Guias: Estudo em destaque + Em alta na Redentia
+         Refatorado do bento (1 hero + 4 medium + 8 tiles) pra layout
+         editorial 2-col: featured study (esquerda, dark com gradient +
+         insight strip) + lista numerada (1-4) na direita. -->
     <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides') }" class="px-4 pt-12 md:px-4">
-      <header class="mb-8 flex flex-col gap-2">
+      <header class="mb-6 flex flex-col gap-2 md:mb-8">
         <span class="eyebrow">Guias e estudos</span>
-        <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
-          {{ brand.homeTexts.guidesTitle }}
+        <h2
+          class="font-light leading-tight text-[28px] md:text-[36px]"
+          :style="{ color: 'var(--text-heading)', letterSpacing: '-0.025em' }"
+        >
+          Aprenda do <em class="italic" :style="{ fontFamily: '\'Instrument Serif\', Georgia, serif', color: 'var(--brand-primary)' }">jeito Redentia.</em>
         </h2>
-        <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
-          {{ guidesHero.length + guidesMedium.length + guidesTiles.length }} estudos disponíveis, 4 trilhas ativas e ferramentas para aprofundar.
+        <p class="text-[14px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
+          Estudos profundos, análises de ativos e ferramentas para tomar decisões com mais clareza.
         </p>
       </header>
 
-      <!-- Bento: hero (2x2) + 4 medium + 8 compact tiles -->
-      <div class="bento-guides grid gap-px" :style="{ backgroundColor: 'var(--brand-border)' }">
-        <!-- HERO card: col-span 2, row-span 2 -->
+      <div class="guides-row grid grid-cols-1 items-start gap-4 md:grid-cols-2">
+        <!-- LEFT COLUMN: Estudo em destaque (card escuro) + Insight da IA
+             (pill claro abaixo). Wrapper de coluna pra manter os 2 cards
+             empilhados na mesma coluna do grid. -->
+        <div class="flex flex-col gap-4">
+        <!-- Estudo em destaque (featured study, dark editorial) -->
         <NuxtLink
           :to="guidesHero[0].to"
-          class="bento-guides-hero group relative flex flex-col justify-between overflow-hidden p-6 transition-[transform,box-shadow] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset md:p-10"
-          :style="{ backgroundColor: 'var(--brand-surface)' }"
+          class="guide-featured group relative flex flex-col justify-between overflow-hidden rounded-[14px] border p-6 pb-16 transition-all duration-300 md:min-h-[460px] md:p-8 md:pb-20"
+          :style="{
+            background: `linear-gradient(135deg, #0F0B18 0%, #1A1423 60%, #0F0B18 100%)`,
+            borderColor: 'color-mix(in srgb, var(--brand-primary) 18%, transparent)',
+          }"
           :aria-label="`Ler ${guidesHero[0].titulo}`"
         >
-          <!-- Ambient radial glow -->
+          <!-- Ambient amber/purple radial glow -->
           <div
-            class="pointer-events-none absolute inset-0 opacity-70 transition-opacity duration-500 group-hover:opacity-100"
-            :style="{ background: `radial-gradient(ellipse at 80% 20%, ${'var(--brand-primary)'}22, transparent 60%), radial-gradient(ellipse at 20% 90%, color-mix(in srgb, var(--brand-primary) 6%, transparent), transparent 55%)` }"
+            class="pointer-events-none absolute inset-0 opacity-80"
+            :style="{ background: `radial-gradient(ellipse at 78% 30%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 55%), radial-gradient(ellipse at 12% 85%, color-mix(in srgb, #7c3aed 14%, transparent), transparent 55%)` }"
             aria-hidden="true"
           />
-          <!-- Top row: eyebrow categoria + arrow circle -->
+          <!-- 3D-ish chart silhouette on the right (decorative SVG) -->
+          <svg
+            class="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 opacity-70 md:block"
+            width="280" height="240" viewBox="0 0 280 240" fill="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="featGrad1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--brand-primary)" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="var(--brand-primary)" stop-opacity="0.05"/>
+              </linearGradient>
+              <linearGradient id="featGrad2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.05"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="170" cy="190" rx="100" ry="14" fill="color-mix(in srgb, var(--brand-primary) 12%, transparent)"/>
+            <rect x="90" y="120" width="34" height="70" rx="3" fill="url(#featGrad2)" stroke="color-mix(in srgb, #7c3aed 50%, transparent)" stroke-width="0.5"/>
+            <rect x="130" y="80" width="34" height="110" rx="3" fill="url(#featGrad1)" stroke="color-mix(in srgb, var(--brand-primary) 50%, transparent)" stroke-width="0.5"/>
+            <rect x="170" y="40" width="34" height="150" rx="3" fill="url(#featGrad1)" stroke="color-mix(in srgb, var(--brand-primary) 65%, transparent)" stroke-width="0.5"/>
+            <rect x="210" y="100" width="34" height="90" rx="3" fill="url(#featGrad2)" stroke="color-mix(in srgb, #7c3aed 50%, transparent)" stroke-width="0.5"/>
+          </svg>
+
+          <!-- Top: eyebrow + arrow icon -->
           <div class="relative flex items-start justify-between gap-4">
-            <span class="eyebrow" translate="no">
-              Estudo em destaque · {{ guidesHero[0].categoria }}
-            </span>
-            <div
-              class="flex size-10 items-center justify-center rounded-md transition-all duration-200 group-hover:translate-x-1 group-hover:-translate-y-px"
-              style="background-color: var(--brand-primary); color: var(--text-on-primary);"
-              aria-hidden="true"
-            >
-              <UIcon name="i-lucide-arrow-up-right" class="size-5" />
-            </div>
-          </div>
-
-          <!-- Middle: icon + title + description -->
-          <div class="relative flex flex-col gap-5">
-            <div
-              class="flex size-14 items-center justify-center rounded-lg md:size-16"
-              style="background-color: color-mix(in srgb, var(--brand-primary) 14%, transparent); color: var(--brand-primary);"
-              aria-hidden="true"
-            >
-              <UIcon :name="guidesHero[0].icon" class="size-7 md:size-8" />
-            </div>
-            <div class="flex flex-col gap-3">
-              <h3
-                class="font-light leading-[1.1] text-[28px] sm:text-[32px] md:text-[40px]"
-                style="color: var(--text-heading); letter-spacing: -0.025em;"
-              >
-                {{ guidesHero[0].titulo }}
-              </h3>
-              <p
-                class="max-w-xl text-[15px] leading-relaxed md:text-[16px]"
-                style="color: var(--text-body);"
-              >
-                {{ guidesHero[0].descricao }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Bottom metadata: caption sem mono -->
-          <div class="relative flex items-center gap-3 text-[12px]" style="color: var(--text-muted);">
-            <span class="inline-flex items-center gap-1.5" translate="no">
-              <UIcon name="i-lucide-clock" class="size-3" aria-hidden="true" />
-              {{ guidesHero[0].tempoLeitura }} min de leitura
-            </span>
-            <span aria-hidden="true">·</span>
-            <span translate="no">Atualizado 04 jan 2026</span>
-          </div>
-        </NuxtLink>
-
-        <!-- 4 medium cards: 1 col each -->
-        <NuxtLink
-          v-for="(guide, idx) in guidesMedium"
-          :key="`gm-${guide.to}`"
-          :to="guide.to"
-          class="bento-guides-medium group relative flex flex-col justify-between gap-4 overflow-hidden p-5 transition-[transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-          :style="{ backgroundColor: 'var(--brand-surface)' }"
-          :aria-label="`Ler ${guide.titulo}`"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div
-              class="flex size-10 shrink-0 items-center justify-center rounded-lg transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:scale-110"
-              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--brand-primary)' }"
-              aria-hidden="true"
-            >
-              <UIcon :name="guide.icon" class="size-5" />
-            </div>
-          </div>
-
-          <h3
-            class="line-clamp-2 text-[15px] font-medium leading-snug transition-colors"
-            style="color: var(--text-heading);"
-          >
-            {{ guide.titulo }}
-          </h3>
-
-          <div class="flex items-center justify-between gap-2 text-[12px]" style="color: var(--text-muted);">
-            <span translate="no">{{ guide.categoria }}</span>
-            <span class="inline-flex items-center gap-1" translate="no">
-              {{ guide.tempoLeitura }} min
-              <UIcon
-                name="i-lucide-arrow-up-right"
-                class="size-3 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
-                :style="{ color: 'var(--brand-primary)' }"
-                aria-hidden="true"
-              />
-            </span>
-          </div>
-        </NuxtLink>
-
-        <!-- 8 compact tiles (full row on bottom, 4 cols each row) -->
-        <NuxtLink
-          v-for="guide in guidesTiles"
-          :key="`gt-${guide.to}`"
-          :to="guide.to"
-          class="bento-guides-tile group relative flex items-center gap-3 overflow-hidden p-3 transition-[transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-          :style="{ backgroundColor: 'var(--brand-surface)' }"
-          :aria-label="`Abrir ${guide.titulo}`"
-        >
-          <div
-            class="flex size-8 shrink-0 items-center justify-center rounded-md transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:scale-110"
-            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--brand-primary)' }"
-            aria-hidden="true"
-          >
-            <UIcon :name="guide.icon" class="size-4" />
-          </div>
-          <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-            <h4
-              class="line-clamp-1 text-[13px] font-medium leading-snug transition-colors"
-              style="color: var(--text-heading);"
-            >
-              {{ guide.titulo }}
-            </h4>
             <span
-              class="text-[11px]"
-              style="color: var(--text-muted);"
+              class="text-[11px] font-semibold uppercase tracking-[0.18em]"
+              :style="{ color: 'color-mix(in srgb, var(--brand-primary) 80%, white)' }"
               translate="no"
+            >Estudo em destaque</span>
+            <div
+              class="flex size-9 items-center justify-center rounded-full transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              :style="{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.85)' }"
+              aria-hidden="true"
             >
-              {{ guide.tempoLeitura }} min · {{ guide.categoria }}
-            </span>
+              <UIcon name="i-lucide-arrow-up-right" class="size-4" />
+            </div>
           </div>
-          <UIcon
-            name="i-lucide-arrow-up-right"
-            class="size-3.5 shrink-0 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
-            :style="{ color: 'var(--brand-primary)' }"
-            aria-hidden="true"
-          />
+
+          <!-- Middle: category pill + title + description -->
+          <div class="relative mt-6 flex max-w-[420px] flex-col gap-4 md:mt-0">
+            <span
+              class="self-start rounded-full border px-3 py-1 text-[11px] font-medium"
+              :style="{
+                borderColor: 'rgba(255,255,255,0.16)',
+                background: 'rgba(255,255,255,0.04)',
+                color: 'rgba(255,255,255,0.85)',
+              }"
+              translate="no"
+            >{{ guidesHero[0].categoria }}</span>
+            <h3
+              class="font-light leading-[1.08] text-[26px] sm:text-[30px] md:text-[34px]"
+              style="font-family: 'Instrument Serif', Georgia, serif; color: rgba(255,255,255,0.96); letter-spacing: -0.02em;"
+            >
+              {{ guidesHero[0].titulo }}
+            </h3>
+            <p
+              class="text-[14px] leading-relaxed md:text-[15px]"
+              :style="{ color: 'rgba(255,255,255,0.62)' }"
+            >
+              {{ guidesHero[0].descricao }}
+            </p>
+            <div class="flex items-center gap-3 text-[11px]" :style="{ color: 'rgba(255,255,255,0.5)' }">
+              <span class="inline-flex items-center gap-1.5" translate="no">
+                <UIcon name="i-lucide-clock" class="size-3" aria-hidden="true" />
+                Leitura de {{ guidesHero[0].tempoLeitura }} min
+              </span>
+              <span aria-hidden="true">·</span>
+              <span translate="no">Atualizado em 04 mai 2026</span>
+            </div>
+          </div>
+
         </NuxtLink>
+
+        <!-- Insight da IA — pill claro, fora do card escuro (mesma coluna).
+             margin-top negativo pra sobrepor o card escuro acima (efeito
+             editorial de cartão flutuando sobre o hero). z-10 garante que
+             o pill fique na frente da borda do card. -->
+        <div
+          class="guide-insight relative z-10 mx-auto -mt-[50px] flex w-max max-w-[80%] items-center gap-3 rounded-full border px-4 py-2.5 shadow-lg"
+          :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+        >
+          <div class="flex items-center gap-2 border-r pr-3" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }">
+            <span
+              class="flex size-6 shrink-0 items-center justify-center rounded-full"
+              :style="{ background: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)', color: 'var(--brand-primary)' }"
+              aria-hidden="true"
+            >
+              <UIcon name="i-lucide-sparkles" class="size-3" />
+            </span>
+            <span class="text-[11px] font-semibold" :style="{ color: 'var(--text-heading)' }">Insight da IA</span>
+          </div>
+          <p class="text-[11px] leading-snug" :style="{ color: 'var(--text-body)' }">
+            Carteiras mais diversificadas e com foco em qualidade tendem a se recuperar
+            <span :style="{ color: 'var(--brand-primary)', fontWeight: 600 }">2,3×</span> mais rápido após crises.
+          </p>
+        </div>
+        </div>
+
+        <!-- RIGHT: Em alta na Redentia -->
+        <article
+          class="guides-trending flex flex-col gap-5 rounded-[14px] border px-5 py-5 md:px-6 md:py-6"
+          :style="{ background: 'var(--bg-elevated)', borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+        >
+          <header class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span
+                class="flex size-8 items-center justify-center rounded-md"
+                :style="{ background: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)', color: 'var(--brand-primary)' }"
+                aria-hidden="true"
+              >
+                <UIcon name="i-lucide-trending-up" class="size-4" />
+              </span>
+              <h3 class="text-[16px] font-medium leading-tight" :style="{ color: 'var(--text-heading)' }">Em alta na Redentia</h3>
+            </div>
+            <NuxtLink
+              to="/guias"
+              class="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              Ver todos
+              <UIcon name="i-lucide-arrow-right" class="size-3.5" />
+            </NuxtLink>
+          </header>
+
+          <ul class="flex flex-col gap-4">
+            <li
+              v-for="(guide, idx) in guidesMedium.slice(0, 4)"
+              :key="`trend-${guide.to}`"
+              class="flex items-start gap-3"
+            >
+              <span
+                class="flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
+                :style="{
+                  background: 'var(--brand-primary)',
+                  color: 'var(--text-on-primary)',
+                }"
+                aria-hidden="true"
+              >{{ idx + 1 }}</span>
+              <NuxtLink
+                :to="guide.to"
+                class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border transition-opacity hover:opacity-80"
+                :style="{ borderColor: 'var(--border-subtle)', background: 'color-mix(in srgb, var(--brand-primary) 8%, var(--bg-overlay))', color: 'var(--brand-primary)' }"
+                :aria-label="`Abrir ${guide.titulo}`"
+              >
+                <UIcon :name="guide.icon" class="size-5" />
+              </NuxtLink>
+              <div class="flex min-w-0 flex-1 flex-col gap-1">
+                <NuxtLink
+                  :to="guide.to"
+                  class="line-clamp-2 text-[14px] font-medium leading-snug transition-opacity hover:opacity-80"
+                  :style="{ color: 'var(--text-heading)' }"
+                >{{ guide.titulo }}</NuxtLink>
+                <p class="line-clamp-2 text-[12px] leading-snug" :style="{ color: 'var(--text-muted)' }">
+                  {{ guide.descricao }}
+                </p>
+              </div>
+              <div class="flex shrink-0 flex-col items-end gap-1">
+                <span
+                  class="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                  :style="{
+                    background: `color-mix(in srgb, var(--brand-primary) 12%, transparent)`,
+                    color: 'var(--brand-text)',
+                  }"
+                  translate="no"
+                >{{ guide.categoria }}</span>
+                <span class="text-[11px]" :style="{ color: 'var(--text-muted)' }" translate="no">
+                  {{ guide.tempoLeitura }} min de leitura
+                </span>
+              </div>
+            </li>
+          </ul>
+        </article>
       </div>
 
-      <!-- CTA: ver todos — quiet ghost button (rounded-md, sem mono, sem uppercase) -->
-      <div class="mt-8 flex justify-center">
-        <NuxtLink
-          to="/guias"
-          class="group quiet-btn-ghost"
-        >
-          <UIcon name="i-lucide-book-open" class="size-4" aria-hidden="true" />
-          <span>Ver todos os guias</span>
-          <UIcon
-            name="i-lucide-arrow-right"
-            class="size-4 transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
-        </NuxtLink>
-      </div>
     </section>
 
     <!-- Testimonials Section -->
@@ -1297,16 +1361,28 @@ onMounted(async () => {
   }
 })
 
-// 3 grupos de tesouro (IPCA+, SELIC, Prefixado) com 3 items cada.
+// 3 grupos de tesouro (IPCA+, SELIC, Prefixado) com 5 items cada.
+// 5 = sweet spot pra preencher a coluna sem ficar comprida demais e
+// fica visualmente balanceada com o card de Notícias do lado.
 const tesouroGroups = computed(() => {
   const all = tesouroItems.value ?? []
   const by = (frag: string) =>
-    all.filter((i) => i.indexer?.toLowerCase().includes(frag.toLowerCase())).slice(0, 3)
+    all.filter((i) => i.indexer?.toLowerCase().includes(frag.toLowerCase())).slice(0, 5)
   return [
     { key: 'IPCA', label: 'IPCA+', accent: 'var(--brand-primary)', items: by('ipca') },
     { key: 'SELIC', label: 'SELIC', accent: 'var(--brand-positive)', items: by('selic') },
     { key: 'PREFIXADO', label: 'Prefixado', accent: 'var(--brand-text)', items: by('prefixado') },
   ]
+})
+
+// Titulo destacado pro topo do card — pega o IPCA+ com maior taxa pra
+// servir de "headline hero" que ancora visualmente.
+const tesouroHero = computed(() => {
+  const all = tesouroItems.value ?? []
+  const ipcas = all.filter((i) => i.indexer?.toLowerCase().includes('ipca'))
+  if (!ipcas.length) return null
+  const sorted = [...ipcas].sort((a, b) => (b.rate_numeric ?? 0) - (a.rate_numeric ?? 0))
+  return sorted[0]
 })
 
 function formatTesouroRate(item: TesouroItem): string {
@@ -1320,7 +1396,19 @@ function formatTesouroRate(item: TesouroItem): string {
   )
 }
 function shortTesouroName(raw: string): string {
-  return raw.replace('Tesouro ', '').replace(/\s+\|.*$/, '')
+  return raw
+    .replace('Tesouro ', '')
+    .replace(/\s+\|.*$/, '')
+    .replace('com Juros Semestrais', 'JS')
+}
+function formatTesouroMaturity(iso: string | null): string {
+  if (!iso) return ''
+  try {
+    const d = new Date(iso)
+    return d.toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' })
+  } catch {
+    return ''
+  }
 }
 
 // News top 4 — sem agrupamento, ordem cronológica decrescente.

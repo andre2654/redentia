@@ -227,6 +227,15 @@ const divMini = [
 
 // Riscos preview (top 3 da demo report)
 const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
+
+// 4 ativos demo pro card de Open Finance — aparecem em sequência durante
+// a animação. Tickers reais pra logos carregarem do brapi CDN.
+const ofAssetPreview = [
+  { ticker: 'PETR4', shares: '120 cotas', value: 'R$ 5.328' },
+  { ticker: 'VALE3', shares: '85 cotas', value: 'R$ 7.013' },
+  { ticker: 'HGLG11', shares: '40 cotas', value: 'R$ 6.520' },
+  { ticker: 'ITUB4', shares: '200 cotas', value: 'R$ 7.840' },
+]
 </script>
 
 <template>
@@ -285,7 +294,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             sentindo "grande" sem expulsar input/chips pra fora da
             tela. sm:44px e md:60px continuam servindo telas maiores.
           -->
-          <h1 class="hero-radiograph__headline mb-4 max-w-2xl text-[34px] leading-[1.06] tracking-[-0.02em] sm:text-[40px] md:mb-6 md:text-[52px] md:leading-[1.06] md:tracking-normal lg:text-[60px]" :style="{ color: 'var(--text-heading)' }">
+          <h1 class="hero-radiograph__headline mb-4 max-w-2xl text-[26px] leading-[1.08] tracking-[-0.02em] sm:text-[32px] md:mb-5 md:text-[40px] md:leading-[1.08] md:tracking-normal lg:text-[46px]" :style="{ color: 'var(--text-heading)' }">
             Do Caos do mercado ao
             <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">impacto</em>
             na sua carteira.
@@ -298,30 +307,15 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             CTA da home (/).
           -->
           <p class="mb-8 hidden max-w-xl text-[16px] leading-relaxed md:block md:text-[18px]" :style="{ color: 'var(--text-body)' }">
-            A Redentia filtra notícias, ativos e indicadores para mostrar
-            <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">o que realmente</em>
-            mexeu nos seus investimentos.
+            Conecte seus bancos via Open Finance e a Redentia puxa
+            <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">tudo automaticamente</em>:
+            saldos, investimentos e transações em tempo real.
           </p>
 
-          <!-- CTA principal: vai pra / (Resumo Redentia, agora a home). -->
-          <div class="mb-3 md:mb-5">
-            <NuxtLink
-              to="/"
-              class="hero-radiograph__cta hero-radiograph__cta--resumo quiet-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-shadow md:text-[16px]"
-            >
-              <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              <span>Ver Resumo Redentia</span>
-              <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
-            </NuxtLink>
-          </div>
-
-          <!-- Trust signals alinhados com a promessa do Resumo. -->
-          <!-- Banks trust row: tagline + 4 logos em stack circular +
-               chip "+110" + texto "Conectado com X bancos e instituições". -->
+          <!-- Trust signals alinhados com a promessa do Resumo.
+               Logos dos bancos suportados + contador "+110". A tagline
+               textual saiu pra evitar redundância com o subtitle acima. -->
           <div class="hero-radiograph__banks">
-            <p class="hero-radiograph__banks-tagline">
-              Conecte seus bancos via Open Finance e veja seu patrimônio em tempo real.
-            </p>
             <div class="hero-radiograph__banks-row">
               <div class="hero-radiograph__banks-stack" aria-hidden="true">
                 <img src="/icons/logo nubank.webp" alt="" class="hero-radiograph__bank-logo" />
@@ -359,9 +353,10 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
               transformStyle: 'preserve-3d',
             }"
           >
-            <!-- ============ CARD 0: Redent Score (principal) ============ -->
+            <!-- ============ CARD 0: Open Finance Connect (animacao
+                 CPF -> bancos puxando -> ativos importados) ============ -->
             <article
-              class="hero-stack__card overflow-hidden rounded-2xl border"
+              class="hero-stack__card of-card overflow-hidden rounded-2xl border"
               :style="[stackStyle(0), { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', boxShadow: heroCardShadow }]"
               @click="activeStackIdx = 0"
             >
@@ -370,58 +365,57 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
                 :style="{ background: `linear-gradient(135deg, var(--brand-primary)1A 0%, transparent 35%, #F96BEE14 80%, transparent 100%)` }"
                 aria-hidden="true"
               />
+
               <header class="relative flex items-center justify-between px-6 pt-6">
                 <div class="flex items-center gap-2">
-                  <span class="text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">REDENT SCORE · DEMO</span>
+                  <span class="text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">OPEN FINANCE · DEMO</span>
                 </div>
-                <span class="rounded-md px-2 py-0.5 text-[10px] font-medium" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
-                  Exemplo
+                <span class="of-status-badge rounded-md px-2 py-0.5 text-[10px] font-medium" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
+                  Conectando
                 </span>
               </header>
-              <div class="relative px-6 pt-5">
-                <div class="flex items-center gap-5">
-                  <MoleculesPortfolioScoreDial :report="demoReport" size="sm" :show-band="false" />
-                  <div class="flex flex-col gap-2">
-                    <span
-                      class="rounded-md border px-2 py-1 text-[10px] font-medium uppercase tracking-[0.06em]"
-                      :style="{
-                        background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
-                        color: 'var(--brand-primary)',
-                        borderColor: `color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
-                      }"
-                    >{{ demoReport.bandLabel }}</span>
-                    <ul class="flex flex-col gap-1.5 text-[11px]">
-                      <li class="flex items-center gap-2">
-                        <span class="size-1.5 rounded-full" :style="{ background: 'var(--brand-positive)' }" />
-                        <span :style="{ color: 'var(--text-body)' }">{{ demoReport.strengths.length }} pontos fortes</span>
-                      </li>
-                      <li class="flex items-center gap-2">
-                        <span class="size-1.5 rounded-full" :style="{ background: 'var(--brand-negative)' }" />
-                        <span :style="{ color: 'var(--text-body)' }">{{ demoReport.risks.length }} riscos</span>
-                      </li>
-                      <li class="flex items-center gap-2">
-                        <span class="size-1.5 rounded-full" :style="{ background: 'var(--brand-primary)' }" />
-                        <span :style="{ color: 'var(--text-body)' }">{{ demoReport.events.length }} eventos hoje</span>
-                      </li>
-                    </ul>
-                  </div>
+
+              <!-- Step 1: CPF input com digitacao animada -->
+              <div class="relative mt-5 px-6">
+                <label class="block text-[10px] font-medium uppercase tracking-[0.14em] mb-1.5" :style="{ color: 'var(--text-muted)' }">Informe seu CPF</label>
+                <div class="of-cpf-field flex items-center gap-2 rounded-lg border px-3 py-2.5" :style="{ borderColor: 'var(--border-default)', background: 'var(--bg-base)' }">
+                  <UIcon name="i-lucide-user" class="size-4 shrink-0" :style="{ color: 'var(--text-muted)' }" />
+                  <span class="of-cpf-text font-mono-tab tabular-nums text-[14px]" :style="{ color: 'var(--text-heading)' }">
+                    <span class="of-cpf-typed">123.456.789-00</span><span class="of-cpf-cursor" aria-hidden="true">|</span>
+                  </span>
+                  <UIcon name="i-lucide-check" class="of-cpf-check ml-auto size-4 shrink-0" :style="{ color: 'var(--brand-positive)' }" />
                 </div>
               </div>
+
+              <!-- Step 2: Bancos sincronizando -->
+              <div class="of-banks-row relative mt-3 flex items-center gap-2 px-6">
+                <UIcon name="i-lucide-link-2" class="size-3 shrink-0" :style="{ color: 'var(--brand-primary)' }" />
+                <span class="text-[11px]" :style="{ color: 'var(--text-body)' }">Sincronizando bancos</span>
+                <div class="of-banks-pulse ml-auto flex items-center gap-1">
+                  <span class="of-dot of-dot-1 block size-1.5 rounded-full" :style="{ background: 'var(--brand-primary)' }" />
+                  <span class="of-dot of-dot-2 block size-1.5 rounded-full" :style="{ background: 'var(--brand-primary)' }" />
+                  <span class="of-dot of-dot-3 block size-1.5 rounded-full" :style="{ background: 'var(--brand-primary)' }" />
+                </div>
+              </div>
+
+              <!-- Step 3: Ativos sendo importados (4 linhas que aparecem em sequencia) -->
               <div class="relative mt-4 border-t px-6 py-4" :style="{ borderColor: 'var(--border-subtle)' }">
-                <p class="mb-2 text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">RISCOS DESTA CARTEIRA</p>
-                <ul class="flex flex-col gap-1.5">
+                <p class="mb-2 text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">ATIVOS IMPORTADOS</p>
+                <ul class="flex flex-col gap-2">
                   <li
-                    v-for="(risk, i) in risksPreview"
-                    :key="i"
-                    class="flex items-start gap-2 text-[11px] leading-snug"
-                    :style="{ color: 'var(--text-body)' }"
+                    v-for="(asset, i) in ofAssetPreview"
+                    :key="asset.ticker"
+                    class="of-asset-row flex items-center justify-between gap-2 text-[11px]"
+                    :class="`of-asset-${i + 1}`"
                   >
-                    <UIcon
-                      name="i-lucide-alert-triangle"
-                      class="mt-[2px] size-3 shrink-0"
-                      :style="{ color: risk.severity === 'high' ? 'var(--brand-negative)' : 'var(--brand-primary)' }"
-                    />
-                    <span>{{ risk.title }}</span>
+                    <div class="flex items-center gap-2">
+                      <span class="flex size-5 items-center justify-center overflow-hidden rounded border" :style="{ borderColor: 'var(--border-subtle)', background: 'var(--bg-overlay)' }">
+                        <img :src="`https://icons.brapi.dev/icons/${asset.ticker}.svg`" :alt="`Logo ${asset.ticker}`" class="size-full object-cover" @error="$event.target.style.display='none'" />
+                      </span>
+                      <span :style="{ color: 'var(--text-heading)' }" class="font-medium">{{ asset.ticker }}</span>
+                      <span :style="{ color: 'var(--text-muted)' }">{{ asset.shares }}</span>
+                    </div>
+                    <span class="tabular-nums" :style="{ color: 'var(--text-body)' }">{{ asset.value }}</span>
                   </li>
                 </ul>
               </div>
@@ -774,24 +768,26 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
      o flash some. -->
 <style>
 /* Default (modo nao definido, ainda no media query) — light atmosphere
-   pra evitar flash quando OS=dark mas anti-flash ainda nao rodou. */
+   pra evitar flash quando OS=dark mas anti-flash ainda nao rodou.
+   Bg um pouco mais saturado: wash de 8% (vs 4%) e meshes ~50% mais
+   opacos pra dar presenca sem virar laranja editorial 100%. */
 .hero-radiograph__bg {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 4%, white) 0%, white 70%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 8%, white) 0%, color-mix(in srgb, var(--brand-primary) 2%, white) 70%);
 }
 .hero-radiograph__mesh-amber {
-  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 35%, white), transparent 65%);
-  opacity: 0.18;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 45%, white), transparent 65%);
+  opacity: 0.32;
 }
 .hero-radiograph__mesh-rose {
-  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 28%, white), transparent 70%);
-  opacity: 0.10;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 38%, white), transparent 70%);
+  opacity: 0.20;
 }
 .hero-radiograph__mesh-soft {
-  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 30%, white), transparent 70%);
-  opacity: 0.12;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 40%, white), transparent 70%);
+  opacity: 0.24;
 }
-.hero-radiograph__arc-stop1 { stop-opacity: 0.08; }
-.hero-radiograph__arc-stop2 { stop-opacity: 0.03; }
+.hero-radiograph__arc-stop1 { stop-opacity: 0.14; }
+.hero-radiograph__arc-stop2 { stop-opacity: 0.06; }
 
 /* Dark — saturated mesh on near-black, baseWash transparente */
 @media (prefers-color-scheme: dark) {
@@ -826,4 +822,128 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
 }
 :root.dark .hero-radiograph__arc-stop1 { stop-opacity: 0.22; }
 :root.dark .hero-radiograph__arc-stop2 { stop-opacity: 0.08; }
+
+/* ============ OPEN FINANCE ANIMATION (CARD 0) ============
+   Loop de 8s: 0-2s digita CPF, 2-2.5s pisca check, 2.5-4.5s sincroniza
+   bancos (dots), 4.5-7.5s ativos aparecem em cascata, 7.5-8s reset. */
+.of-card { position: relative; }
+
+/* Step 1: CPF typing — width vai de 0 ao tamanho total */
+.of-cpf-typed {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  animation: of-cpf-type 8s infinite steps(14, end);
+}
+@keyframes of-cpf-type {
+  0%   { max-width: 0; }
+  25%  { max-width: 14ch; } /* 14 chars: 123.456.789-00 */
+  100% { max-width: 14ch; }
+}
+
+/* Cursor pisca durante a digitacao, some quando termina */
+.of-cpf-cursor {
+  display: inline-block;
+  color: var(--brand-primary);
+  font-weight: 400;
+  margin-left: 1px;
+  animation: of-cursor-blink 0.7s infinite step-end, of-cursor-fade 8s infinite;
+}
+@keyframes of-cursor-blink {
+  0%, 50%   { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@keyframes of-cursor-fade {
+  0%, 28%  { opacity: 1; }
+  30%, 100% { opacity: 0; }
+}
+
+/* Checkmark aparece depois que CPF foi digitado */
+.of-cpf-check {
+  opacity: 0;
+  transform: scale(0.5);
+  animation: of-check-pop 8s infinite;
+}
+@keyframes of-check-pop {
+  0%, 28% { opacity: 0; transform: scale(0.5); }
+  32%     { opacity: 1; transform: scale(1.15); }
+  38%, 100% { opacity: 1; transform: scale(1); }
+}
+
+/* Step 2: bancos sincronizando — dots pulsando em sequencia */
+.of-banks-row {
+  opacity: 0.4;
+  animation: of-banks-show 8s infinite;
+}
+@keyframes of-banks-show {
+  0%, 32%  { opacity: 0; transform: translateY(4px); }
+  36%, 58% { opacity: 1; transform: translateY(0); }
+  62%, 100% { opacity: 0.5; transform: translateY(0); }
+}
+.of-dot {
+  opacity: 0.25;
+  animation: of-dot-bounce 1.2s infinite;
+}
+.of-dot-1 { animation-delay: 0s; }
+.of-dot-2 { animation-delay: 0.18s; }
+.of-dot-3 { animation-delay: 0.36s; }
+@keyframes of-dot-bounce {
+  0%, 100% { opacity: 0.25; transform: scale(0.7); }
+  40%      { opacity: 1; transform: scale(1.2); }
+}
+
+/* Step 3: ativos importados aparecem em cascata */
+.of-asset-row {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: of-asset-in 8s infinite;
+}
+.of-asset-1 { animation-delay: 0s; }
+.of-asset-2 { animation-delay: 0s; }
+.of-asset-3 { animation-delay: 0s; }
+.of-asset-4 { animation-delay: 0s; }
+@keyframes of-asset-in {
+  0%, 55% { opacity: 0; transform: translateY(6px); }
+  100%    { opacity: 1; transform: translateY(0); }
+}
+.of-asset-1 { animation-name: of-asset-in-1; }
+.of-asset-2 { animation-name: of-asset-in-2; }
+.of-asset-3 { animation-name: of-asset-in-3; }
+.of-asset-4 { animation-name: of-asset-in-4; }
+@keyframes of-asset-in-1 {
+  0%, 56% { opacity: 0; transform: translateY(6px); }
+  62%, 100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes of-asset-in-2 {
+  0%, 62% { opacity: 0; transform: translateY(6px); }
+  68%, 100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes of-asset-in-3 {
+  0%, 68% { opacity: 0; transform: translateY(6px); }
+  74%, 100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes of-asset-in-4 {
+  0%, 74% { opacity: 0; transform: translateY(6px); }
+  80%, 100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Status badge alterna texto via pseudo-element pra acompanhar o estado */
+.of-status-badge {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .of-cpf-typed,
+  .of-cpf-cursor,
+  .of-cpf-check,
+  .of-banks-row,
+  .of-dot,
+  .of-asset-row {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    max-width: 14ch;
+  }
+}
 </style>

@@ -1,22 +1,21 @@
 <!--
-  MoleculesTickerHeaderBar: barra horizontal minimalista usada nas paginas
-  de asset, crypto e tesouro. Substitui o "hero card" decorativo (com
-  gradient + grid texture + 3-col grid) por uma row enxuta no padrao
-  da imagem aprovada (logo + ticker/name/badge | stats inline | sparkline).
+  MoleculesTickerHeaderBar: cabecalho editorial das paginas de asset,
+  crypto e tesouro. Redesign 2026-05 — card maior, logo grande,
+  stats com captions, sparkline carded no canto direito.
 
-  Desktop: single row, todas as colunas inline.
-  Mobile: stack vertical em 3 zones (identidade+preco / stats grid / sparkline).
+  Desktop: row de 3 zones com separadores verticais entre stats.
+  Mobile: stack vertical (identidade / stats em grid 2x2 / sparkline).
 -->
 <template>
   <header class="tk-bar">
-    <!-- Zone 1: identidade (logo + ticker + name + badge) -->
+    <!-- Zone 1: identidade (logo grande + ticker + name + badges) -->
     <div class="tk-identity">
       <div v-if="logo" class="tk-logo">
         <NuxtImg
           :src="logo"
           :alt="`Logo ${ticker}`"
-          width="48"
-          height="48"
+          width="88"
+          height="88"
           loading="eager"
           fetchpriority="high"
           decoding="async"
@@ -29,22 +28,26 @@
 
       <div class="tk-identity-text">
         <h1 class="tk-ticker" translate="no">{{ ticker }}</h1>
-        <div class="tk-subline">
-          <span v-if="name" class="tk-name">{{ name }}</span>
+        <p v-if="name" class="tk-name">{{ formatName(name) }}</p>
+        <div v-if="badge || secondaryBadge" class="tk-badges">
           <span
             v-if="badge"
             class="tk-badge"
             :style="badgeColor ? { backgroundColor: `${badgeColor}1F`, color: badgeColor } : undefined"
           >{{ badge }}</span>
+          <span
+            v-if="secondaryBadge"
+            class="tk-badge tk-badge--neutral"
+          >{{ secondaryBadge }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Zone 2: stats inline (price + extras) -->
+    <!-- Zone 2: stats grid (preço + extras) com separadores verticais -->
     <div class="tk-stats">
       <!-- Price cell (sempre primeira) -->
       <div v-if="priceValue !== undefined && priceValue !== null" class="tk-stat tk-stat--price">
-        <p class="tk-stat-label">{{ priceLabel || 'Preço' }}</p>
+        <p class="tk-stat-label">{{ priceLabel || 'Preço atual' }}</p>
         <p class="tk-stat-value tk-stat-value--bold">
           <span v-if="priceUnit" class="tk-stat-unit">{{ priceUnit }}</span>{{ priceValue }}
         </p>
@@ -54,11 +57,11 @@
           :style="{ color: Number(changePercent) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
         >
           <span aria-hidden="true">{{ Number(changePercent) >= 0 ? '↑' : '↓' }}</span>
-          {{ Number(changePercent) >= 0 ? '+' : '' }}{{ Number(changePercent).toFixed(2) }}% {{ changeLabel || 'hoje' }}
+          {{ Number(changePercent) >= 0 ? '+' : '' }}{{ Number(changePercent).toFixed(2).replace('.', ',') }}% {{ changeLabel || 'hoje' }}
         </p>
       </div>
 
-      <!-- Stats extras -->
+      <!-- Stats extras (cada uma com label, value, caption opcional) -->
       <div
         v-for="stat in stats"
         :key="stat.label"
@@ -66,24 +69,33 @@
       >
         <p class="tk-stat-label">{{ stat.label }}</p>
         <p
-          class="tk-stat-value"
+          class="tk-stat-value tk-stat-value--bold"
           :style="stat.accent ? { color: stat.accent } : undefined"
         >{{ stat.value || '—' }}</p>
+        <p v-if="stat.caption" class="tk-stat-caption">{{ stat.caption }}</p>
       </div>
     </div>
 
-    <!-- Zone 3: sparkline (desktop only) -->
+    <!-- Zone 3: sparkline (card com header) -->
     <div v-if="sparkline && sparkline.line" class="tk-spark">
-      <span class="tk-spark-label">{{ sparklineLabel || '7D' }}</span>
+      <div class="tk-spark-head">
+        <span class="tk-spark-label">{{ sparklineLabel || 'Desempenho 30 dias' }}</span>
+        <span
+          v-if="changePercent !== undefined && changePercent !== null"
+          class="tk-spark-change"
+          :style="{ color: Number(changePercent) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
+          translate="no"
+        >{{ Number(changePercent) >= 0 ? '+' : '' }}{{ Number(changePercent).toFixed(2).replace('.', ',') }}%</span>
+      </div>
       <svg
-        viewBox="0 0 120 32"
+        viewBox="0 0 160 56"
         preserveAspectRatio="none"
         class="tk-spark-svg"
         aria-hidden="true"
       >
         <defs>
           <linearGradient :id="`tk-grad-${uid}`" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" :stop-color="sparkColor" stop-opacity="0.3" />
+            <stop offset="0%" :stop-color="sparkColor" stop-opacity="0.28" />
             <stop offset="100%" :stop-color="sparkColor" stop-opacity="0" />
           </linearGradient>
         </defs>
@@ -106,6 +118,7 @@
 export type TickerStat = {
   label: string
   value?: string | number | null
+  caption?: string
   accent?: string
 }
 
@@ -121,6 +134,8 @@ const props = defineProps<{
   name?: string
   badge?: string
   badgeColor?: string
+  /** Segunda pill (opcional) — ex: "B3", "NYSE", "NASDAQ" */
+  secondaryBadge?: string
   priceLabel?: string
   priceValue?: string | number | null
   priceUnit?: string
@@ -143,6 +158,12 @@ const sparkColor = computed(() => {
   }
   return 'var(--brand-primary)'
 })
+
+// Limpa o nome do ativo — StatusInvest devolve "MINERVA     ON      NM"
+// com espaços largos. Compactamos pra um espaço só pra renderizar limpo.
+function formatName(raw: string): string {
+  return raw.replace(/\s+/g, ' ').trim()
+}
 </script>
 
 <style scoped>
@@ -150,34 +171,34 @@ const sparkColor = computed(() => {
   display: grid;
   grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 24px;
-  padding: 14px 18px;
+  gap: 32px;
+  padding: 24px 28px;
   background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  border-radius: 14px;
 }
 @media (max-width: 768px) {
   .tk-bar {
     grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 14px;
+    gap: 20px;
+    padding: 18px;
   }
 }
 
-/* Zone 1: identity */
+/* Zone 1: identity — logo grande + ticker + name + badges */
 .tk-identity {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px;
   min-width: 0;
 }
 .tk-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   background: var(--bg-overlay);
   border: 1px solid var(--border-subtle);
   overflow: hidden;
@@ -186,125 +207,163 @@ const sparkColor = computed(() => {
 .tk-logo-img { width: 100%; height: 100%; object-fit: cover; }
 .tk-logo--fallback {
   font-family: ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--brand-primary);
 }
 .tk-identity-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 .tk-ticker {
   font-family: ui-monospace, monospace;
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-heading);
   margin: 0;
-  line-height: 1.1;
-}
-.tk-subline {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  min-width: 0;
+  line-height: 1;
 }
 .tk-name {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-muted);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 220px;
+  max-width: 280px;
+  margin: 0;
+}
+.tk-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
 }
 .tk-badge {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
   color: var(--brand-primary);
   flex-shrink: 0;
 }
+.tk-badge--neutral {
+  background: color-mix(in srgb, var(--text-heading) 6%, transparent);
+  color: var(--text-body);
+}
 
-/* Zone 2: stats inline (escondido no mobile — apenas identidade visivel) */
+/* Zone 2: stats grid com separadores verticais entre celulas */
 .tk-stats {
   display: flex;
-  align-items: center;
-  gap: 32px;
+  align-items: stretch;
+  justify-content: flex-end;
   flex-wrap: wrap;
 }
 @media (max-width: 768px) {
-  .tk-stats { display: none; }
+  .tk-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    justify-content: stretch;
+  }
 }
 .tk-stat {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
   min-width: 0;
+  padding: 0 22px;
+  border-left: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+.tk-stat:first-child { border-left: none; padding-left: 0; }
+@media (max-width: 768px) {
+  .tk-stat {
+    padding: 0;
+    border-left: none;
+  }
+  .tk-stat:first-child { padding: 0; }
 }
 .tk-stat-label {
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text-muted);
   margin: 0;
+  letter-spacing: 0;
 }
 .tk-stat-value {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 22px;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   color: var(--text-heading);
   margin: 0;
   white-space: nowrap;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
-.tk-stat-value--bold { font-size: 16px; font-weight: 600; }
+.tk-stat-value--bold { font-weight: 500; }
 .tk-stat-unit {
   font-size: 0.7em;
   font-weight: 400;
   color: var(--text-muted);
-  margin-right: 2px;
+  margin-right: 4px;
+}
+.tk-stat-caption {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin: 0;
+  letter-spacing: 0;
 }
 .tk-stat-change {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  margin: 2px 0 0;
-  padding: 1px 6px;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--brand-negative) 10%, transparent);
+  margin: 0;
   display: inline-flex;
   align-items: center;
   gap: 3px;
   align-self: flex-start;
 }
 
-/* Zone 3: sparkline */
+/* Zone 3: sparkline carded com header */
 .tk-spark {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  background: var(--bg-base);
   flex-shrink: 0;
+  min-width: 200px;
 }
-@media (max-width: 768px) { .tk-spark { display: none; } }
+@media (max-width: 768px) { .tk-spark { width: 100%; } }
+.tk-spark-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
 .tk-spark-label {
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--text-muted);
 }
+.tk-spark-change {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
 .tk-spark-svg {
-  width: 120px;
-  height: 28px;
+  width: 100%;
+  height: 56px;
 }
 </style>
