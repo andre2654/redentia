@@ -1099,7 +1099,7 @@
 
           <ul class="flex flex-col gap-4">
             <li
-              v-for="(guide, idx) in guidesMedium.slice(0, 4)"
+              v-for="(guide, idx) in guidesMedium.slice(0, 6)"
               :key="`trend-${guide.to}`"
               class="flex items-start gap-3"
             >
@@ -2157,7 +2157,23 @@ interface GuideEntry {
   tempoLeitura: number
 }
 
+// guidesHero: ESTUDO EM DESTAQUE (card grande dark). 1 item só.
+// Rotação cascata: o novo guide (gerado pela skill /generate-redentia-guide
+// ou /generate-premium-memo) entra aqui. O item antigo desce pra
+// guidesMedium[0]. Cresce indefinidamente até hit max de guidesMedium (6),
+// quando o último é removido.
 const guidesHero: GuideEntry[] = [
+  {
+    titulo: 'Open Finance: sua carteira ainda está espalhada?',
+    descricao: 'Brasil tem 100 milhões de clientes no Open Finance em 2026. Entenda como o consentimento regulado pelo BCB consolida sua carteira em 2 minutos, sem planilha, sem senha, sem fricção.',
+    to: '/guias/open-finance-carteira-espalhada',
+    icon: 'i-lucide-network',
+    categoria: 'Guia Redentia',
+    tempoLeitura: 13,
+  },
+]
+
+const guidesMedium: GuideEntry[] = [
   {
     titulo: 'Como investir em ações',
     descricao: 'Guia completo para iniciantes começarem a investir na bolsa de valores. Da abertura de conta até estratégias avançadas, com exemplos reais e passo a passo.',
@@ -2166,9 +2182,6 @@ const guidesHero: GuideEntry[] = [
     categoria: 'Ações',
     tempoLeitura: 8,
   },
-]
-
-const guidesMedium: GuideEntry[] = [
   {
     titulo: 'Melhores FIIs 2026',
     descricao: 'Fundos imobiliários mais promissores com análise de segmentos e indicadores.',

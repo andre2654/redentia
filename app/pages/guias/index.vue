@@ -355,6 +355,16 @@ function parseDateToIso(pt: string): string {
 
 const guias: Guia[] = [
   {
+    slug: 'open-finance-carteira-espalhada',
+    titulo: 'Open Finance: Sua Carteira Ainda Está Espalhada?',
+    descricao: 'Brasil tem 100M+ clientes no Open Finance e 154M consentimentos ativos em 2026. Como funciona, por que é seguro (BCB + LGPD), e como conectar sua carteira em 2 minutos via API oficial.',
+    categoria: 'memos',
+    categoriaLabel: 'Guia Redentia',
+    icon: 'i-lucide-network',
+    data: '24 Mai 2026',
+    tempoLeitura: 13,
+  },
+  {
     slug: 'poupanca-vs-tesouro-ipca-mais-2026',
     titulo: 'Poupança vs Tesouro IPCA+: Por Que Você Perde Metade do Retorno em 2026',
     descricao: 'Com Selic em 14,5%, a poupança ganha da inflação pela 1ª vez em 13 anos. Mas Tesouro IPCA+ paga 6,95% real e LCI/LCA pagam 13% isento. Os 3 vetores que separam quem ganha 3,7% de quem ganha 6,95%.',
