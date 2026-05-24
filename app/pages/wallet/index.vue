@@ -11,29 +11,13 @@
   <NuxtLayout name="default" title="Preview Wallet · V8 Calc style">
     <!-- EMPTY STATE — apos carregar, se nao tem positions, mostra
          um card editorial calc-style com CTA pra /integracoes. -->
-    <section v-if="!loading && !positionsReal.length" class="wp8-empty">
-      <div class="wp8-empty-inner">
-        <p class="calc-eyebrow">Carteira vazia</p>
-        <h1 class="wp8-empty-title">
-          Conecte sua corretora e veja sua carteira <em class="calc-italic">em tempo real.</em>
-        </h1>
-        <p class="wp8-empty-lead">
-          Open Finance puxa posições, saldos e dividendos automaticamente. Sem planilhas, sem inputs manuais.
-          Em alguns minutos seu Raio-X em 9 dimensões fica pronto.
-        </p>
-        <div class="wp8-empty-ctas">
-          <NuxtLink to="/settings/integracoes" class="wp8-result-btn">
-            <UIcon name="i-lucide-link-2" class="size-4" />
-            <span>Conectar Open Finance</span>
-            <UIcon name="i-lucide-arrow-right" class="size-4 wp8-result-arrow" />
-          </NuxtLink>
-          <NuxtLink to="/help?intent=import-portfolio" class="wp8-result-btn wp8-result-btn--ghost">
-            <UIcon name="i-lucide-message-square" class="size-4" />
-            <span>Importar via chat</span>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
+    <MoleculesEmptyConnectPrompt
+      v-if="!loading && !positionsReal.length"
+      eyebrow="Carteira vazia"
+      title="Conecte sua corretora e veja sua carteira"
+      title-em="em tempo real."
+      lead="Open Finance puxa posições, saldos e dividendos automaticamente. Sem planilhas, sem inputs manuais. Em alguns minutos seu Raio-X em 9 dimensões fica pronto."
+    />
 
     <CalcUiShell
       v-else
@@ -2135,26 +2119,6 @@ function openHighlights() {
 .wp8-skel-curve { display: block; width: 100%; height: 100%; min-height: 240px; border-radius: 6px; }
 .wp8-skel-snowflake { width: 100%; max-width: 320px; aspect-ratio: 1; border-radius: 50%; margin: 0 auto; }
 
-/* ============= EMPTY STATE ============= */
-.wp8-empty { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
-.wp8-empty-inner { display: flex; flex-direction: column; gap: 16px; text-align: left; }
-.wp8-empty-title {
-  font-size: clamp(28px, 4vw, 44px);
-  font-weight: 300;
-  color: var(--text-heading);
-  margin: 8px 0 0;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-}
-.wp8-empty-lead {
-  font-size: 16px;
-  color: var(--text-body);
-  margin: 12px 0 24px;
-  line-height: 1.6;
-  max-width: 56ch;
-}
-.wp8-empty-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
-
 /* --- KPI helpers (extends global .calc-kpis) --- */
 .wp-kpi-suf { font-size: 0.5em; opacity: 0.55; margin-left: 4px; font-weight: 400; }
 :deep(.calc-kpis dd.primary) { color: var(--brand-primary); }
@@ -2195,21 +2159,6 @@ function openHighlights() {
 .wp8-result-btn:hover .wp8-result-arrow { transform: translateX(3px); }
 .wp8-result-arrow { opacity: 0.75; }
 .wp8-result-btn:hover .wp8-result-arrow { opacity: 1; }
-
-/* Variant: ghost — bg tinted orange, mantém mesmo tamanho do primary */
-.wp8-result-btn.wp8-result-btn--ghost {
-  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
-  color: var(--brand-primary);
-}
-.wp8-result-btn.wp8-result-btn--ghost :deep(*) { color: var(--brand-primary); }
-.wp8-result-btn.wp8-result-btn--ghost:hover {
-  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
-  border-color: var(--brand-primary);
-  color: var(--brand-primary);
-  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--brand-primary) 40%, transparent);
-}
-.wp8-result-btn.wp8-result-btn--ghost:hover :deep(*) { color: var(--brand-primary); }
 
 /* --- Highlights button (editorial chamativo: pill com tint + play circle + arrow) --- */
 .wp8-highlights-btn {
@@ -3545,19 +3494,6 @@ function openHighlights() {
   border-radius: 14px;
   background: var(--bg-elevated);
   margin: 0;
-}
-
-/* Empty state também vira card */
-.wp8-empty {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 16px;
-}
-.wp8-empty-inner {
-  padding: 48px 32px;
-  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
-  border-radius: 14px;
-  background: var(--bg-elevated);
 }
 
 /* ================================================================

@@ -16,33 +16,14 @@
 <template>
   <NuxtLayout name="default" title="Resultado · Swing + Day Trade">
     <!-- EMPTY STATE — sem auth ou sem connection Pluggy ativa. Sem
-         historico de operacoes nao tem como gerar metricas. Mesma DNA
-         do empty state do v8/index.vue. -->
-    <section v-if="!loading && (!isAuthed || !hasConnection)" class="wp8-empty">
-      <div class="wp8-empty-inner">
-        <p class="calc-eyebrow">Resultado vazio</p>
-        <h1 class="wp8-empty-title">
-          Conecte sua corretora e veja seu resultado <em class="calc-italic">em tempo real.</em>
-        </h1>
-        <p class="wp8-empty-lead">
-          O Resultado é montado a partir das suas operações reais. Open Finance puxa o histórico (até 12 meses)
-          automaticamente. Sem conexão, não temos trades pra calcular P&amp;L, win rate, profit factor ou heatmap.
-        </p>
-        <div class="wp8-empty-ctas">
-          <NuxtLink to="/settings/integracoes" class="wp8-result-btn">
-            <UIcon name="i-lucide-link-2" class="size-4" />
-            <span>Conectar Open Finance</span>
-            <UIcon name="i-lucide-arrow-right" class="size-4 wp8-result-arrow" />
-          </NuxtLink>
-          <NuxtLink to="/help?intent=import-portfolio" class="wp8-highlights-btn">
-            <span class="wp8-highlights-play">
-              <UIcon name="i-lucide-message-square" class="size-3.5" />
-            </span>
-            <span>Importar via chat</span>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
+         historico de operacoes nao tem como gerar metricas. -->
+    <MoleculesEmptyConnectPrompt
+      v-if="!loading && (!isAuthed || !hasConnection)"
+      eyebrow="Resultado vazio"
+      title="Conecte sua corretora e veja seu resultado"
+      title-em="em tempo real."
+      lead="O Resultado é montado a partir das suas operações reais. Open Finance puxa o histórico (até 12 meses) automaticamente. Sem conexão, não temos trades pra calcular P&L, win rate, profit factor ou heatmap."
+    />
 
     <CalcUiShell
       v-else
@@ -1271,89 +1252,6 @@ onMounted(async () => {
 .wp8r-skel-snowflake { width: 100%; max-width: 320px; aspect-ratio: 1; border-radius: 50%; }
 .wp8r-skel-heatmap { display: block; width: 100%; height: 240px; border-radius: 6px; margin-top: 24px; }
 
-/* ============= EMPTY STATE (sem auth ou sem connection) ============= */
-.wp8-empty { max-width: 720px; margin: 0 auto; padding: 80px 24px; }
-.wp8-empty-inner { display: flex; flex-direction: column; gap: 16px; text-align: left; }
-.wp8-empty-title {
-  font-size: clamp(28px, 4vw, 44px);
-  font-weight: 300;
-  color: var(--text-heading);
-  margin: 8px 0 0;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-}
-.wp8-empty-lead {
-  font-size: 16px;
-  color: var(--text-body);
-  margin: 12px 0 24px;
-  line-height: 1.6;
-  max-width: 56ch;
-}
-.wp8-empty-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
-
-/* Reused button styles (espelhados do v8/index.vue) — dark-mode safe */
-.wp8-result-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px 8px 14px;
-  background: var(--text-heading);
-  border: 1px solid var(--text-heading);
-  border-radius: 999px;
-  color: var(--bg-base);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  transition: all 200ms ease-out;
-}
-.wp8-result-btn :deep(*) { color: var(--bg-base); flex-shrink: 0; transition: transform 200ms; }
-.wp8-result-btn:hover {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-  color: var(--text-on-primary);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--brand-primary) 60%, transparent);
-}
-.wp8-result-btn:hover :deep(*) { color: var(--text-on-primary); }
-.wp8-result-btn:hover .wp8-result-arrow { transform: translateX(3px); }
-.wp8-result-arrow { opacity: 0.75; }
-.wp8-result-btn:hover .wp8-result-arrow { opacity: 1; }
-
-.wp8-highlights-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 18px 8px 8px;
-  background: transparent;
-  border: 1px solid var(--border-default);
-  border-radius: 999px;
-  color: var(--text-heading);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 200ms ease-out;
-}
-.wp8-highlights-btn :deep(*) { color: var(--text-heading); flex-shrink: 0; }
-.wp8-highlights-btn:hover {
-  border-color: var(--text-heading);
-  transform: translateY(-1px);
-}
-.wp8-highlights-play {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--brand-primary) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-primary) 45%, transparent);
-}
-.wp8-highlights-play :deep(*) { color: var(--brand-primary); }
-
 /* ============= TRADE EMPTY INLINE ============= */
 .wp8r-trade-empty {
   display: flex;
@@ -2036,18 +1934,6 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 
-/* Empty state também vira card */
-.wp8-empty {
-  max-width: none;
-  margin: 0;
-  padding: 0;
-}
-.wp8-empty-inner {
-  padding: 48px 32px;
-  border: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
-  border-radius: 14px;
-  background: var(--bg-elevated);
-}
 </style>
 
 <style>

@@ -7,29 +7,13 @@
 <template>
   <NuxtLayout name="default" title="Hoje">
     <!-- EMPTY STATE: sem positions. Só aparece depois do load (loading=false). -->
-    <section v-if="!loading && data.empty" class="wp8-empty">
-      <div class="wp8-empty-inner">
-        <p class="calc-eyebrow">/ Hoje</p>
-        <h1 class="wp8-empty-title">
-          Conecte sua corretora pra ver o que <em class="calc-italic">mexeu hoje.</em>
-        </h1>
-        <p class="wp8-empty-lead">
-          A tela /hoje cruza suas posições com fatores macro (juros, petróleo, dólar) e notícias do dia.
-          Sem posições, não conseguimos calcular impacto. Open Finance puxa tudo em minutos.
-        </p>
-        <div class="wp8-empty-ctas">
-          <NuxtLink to="/settings/integracoes" class="wp8-result-btn">
-            <UIcon name="i-lucide-link-2" class="size-4" />
-            <span>Conectar Open Finance</span>
-            <UIcon name="i-lucide-arrow-right" class="size-4 wp8-result-arrow" />
-          </NuxtLink>
-          <NuxtLink to="/help?intent=import-portfolio" class="wp8-result-btn wp8-result-btn--ghost">
-            <UIcon name="i-lucide-message-square" class="size-4" />
-            <span>Importar via chat</span>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
+    <MoleculesEmptyConnectPrompt
+      v-if="!loading && data.empty"
+      eyebrow="/ Hoje"
+      title="Conecte sua corretora pra ver o que"
+      title-em="mexeu hoje."
+      lead="A tela /hoje cruza suas posições com fatores macro (juros, petróleo, dólar) e notícias do dia. Sem posições, não conseguimos calcular impacto. Open Finance puxa tudo em minutos."
+    />
 
     <div v-else class="hp7-shell">
       <!-- ============ 0. BANNER: dados de D-1 (mercado fechado / feriado) ============ -->

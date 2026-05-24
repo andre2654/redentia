@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
 
         <div class="onb__card">
           <div class="onb__icon" aria-hidden="true">
-            <UIcon name="i-lucide-user-round" class="size-7" />
+            <UIcon name="i-lucide-user" class="size-7" />
           </div>
 
           <h2 id="onb-title" class="onb__title">

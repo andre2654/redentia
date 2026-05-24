@@ -128,55 +128,7 @@
               class="mt-1 text-[11px] leading-snug"
               :style="{ color: `color-mix(in srgb, var(--brand-text) 55%, transparent)` }"
             >
-              Complete os passos abaixo para ver seu patrimônio em tempo real.
-            </div>
-
-            <!-- Onboarding inline — so aparece quando carteira vazia E
-                 onboarding incompleto. Eyebrow + counter no topo, lista
-                 vertical compact com circle/check + label. Diferente
-                 do card standalone abaixo (que so aparece depois que
-                 o usuario adiciona carteira mas ainda tem passos). -->
-            <div
-              v-if="!onboarding.allDone.value && authStore.me?.role !== 'advisor'"
-              class="mt-3 border-t pt-3"
-              :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)` }"
-            >
-              <div class="flex items-center justify-between">
-                <span class="platform-sidebar-eyebrow !mb-0 !p-0">Próximos passos</span>
-                <span
-                  class="font-mono-tab text-[10px] font-medium tabular-nums"
-                  :style="{ letterSpacing: '0.04em', color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }"
-                >
-                  {{ onboarding.done.value }}/{{ onboarding.total.value }}
-                </span>
-              </div>
-              <ul class="mt-2 flex flex-col">
-                <li v-for="step in onboarding.steps.value" :key="step.id">
-                  <NuxtLink
-                    :to="step.to"
-                    class="onboarding-sidebar-item group flex items-center gap-2 rounded-md px-1.5 py-1.5 transition-colors"
-                  >
-                    <UIcon
-                      :name="step.done ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-                      class="size-3.5 shrink-0"
-                      :style="{ color: step.done ? 'var(--brand-positive)' : `color-mix(in srgb, var(--brand-text) 40%, transparent)` }"
-                      aria-hidden="true"
-                    />
-                    <span
-                      class="flex-1 truncate text-[12px] transition-colors"
-                      :class="{ 'line-through': step.done }"
-                      :style="{ color: step.done ? `color-mix(in srgb, var(--brand-text) 45%, transparent)` : 'var(--brand-text)' }"
-                    >{{ step.label }}</span>
-                    <UIcon
-                      v-if="!step.done"
-                      name="i-lucide-arrow-right"
-                      class="size-3 shrink-0 opacity-0 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100"
-                      :style="{ color: 'var(--brand-primary)' }"
-                      aria-hidden="true"
-                    />
-                  </NuxtLink>
-                </li>
-              </ul>
+              Conecte sua corretora para ver seu patrimônio em tempo real.
             </div>
           </template>
 
@@ -832,7 +784,7 @@ const aiCtaTo = computed(() =>
   raioXStep.value?.done ? '/help' : '/wallet?from=onboarding-raio-x',
 )
 const aiCtaLabel = computed(() =>
-  raioXStep.value?.done ? brand.sidebar.aiCtaTitle : 'Gerar Raio-X',
+  raioXStep.value?.done ? brand.sidebar.aiCtaTitle : 'Conectar carteira',
 )
 
 const menuMobileActive = ref(false)
