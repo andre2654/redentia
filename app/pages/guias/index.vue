@@ -166,6 +166,15 @@
           >
             Ferramentas
           </UButton>
+          <UButton
+            color="secondary"
+            :variant="filtroCategoria === 'memos' ? 'soft' : 'ghost'"
+            size="md"
+            icon="i-lucide-book-open-text"
+            @click="filtroCategoria = 'memos'"
+          >
+            Premium Memos
+          </UButton>
         </div>
       </section>
 
@@ -215,6 +224,7 @@ type CategoriaGuia =
   | 'analises'
   | 'planejamento'
   | 'ferramentas'
+  | 'memos'
 
 interface Guia {
   slug: string
@@ -344,6 +354,46 @@ function parseDateToIso(pt: string): string {
 }
 
 const guias: Guia[] = [
+  {
+    slug: 'poupanca-vs-tesouro-ipca-mais-2026',
+    titulo: 'Poupança vs Tesouro IPCA+: Por Que Você Perde Metade do Retorno em 2026',
+    descricao: 'Com Selic em 14,5%, a poupança ganha da inflação pela 1ª vez em 13 anos. Mas Tesouro IPCA+ paga 6,95% real e LCI/LCA pagam 13% isento. Os 3 vetores que separam quem ganha 3,7% de quem ganha 6,95%.',
+    categoria: 'memos',
+    categoriaLabel: 'Premium Memo',
+    icon: 'i-lucide-book-open-text',
+    data: '24 Mai 2026',
+    tempoLeitura: 14,
+  },
+  {
+    slug: 'como-ganhar-40-60-renda-fixa-2026',
+    titulo: 'Como Ganhar 40-60% em Renda Fixa nos Próximos 24 Meses',
+    descricao: 'Aconteceu 4 vezes em 25 anos. A janela abriu hoje. Com Selic em 14,5% e IPCA+ 2050 pagando 6,95% real, a marcação a mercado pode entregar 40-60% em 24 meses. Os 3 pilares: ciclo, mecânica, execução.',
+    categoria: 'memos',
+    categoriaLabel: 'Premium Memo',
+    icon: 'i-lucide-trending-up',
+    data: '21 Mai 2026',
+    tempoLeitura: 16,
+  },
+  {
+    slug: 'hora-certa-de-vender-acoes',
+    titulo: 'A Hora Certa de Vender Ações: Buffett, Mercado e Psicologia',
+    descricao: 'Apenas 4% das ações geram todo o ganho. Buffett saiu 4 vezes em 60 anos e acertou. Em 2026, Buffett Indicator a 232%, CAPE acima de 30. Os 5 gatilhos quantitativos para vender.',
+    categoria: 'memos',
+    categoriaLabel: 'Premium Memo',
+    icon: 'i-lucide-trending-down',
+    data: '22 Mai 2026',
+    tempoLeitura: 15,
+  },
+  {
+    slug: 'raio-x-da-carteira-em-crise',
+    titulo: 'Raio X da Carteira em Crise: Estrutura, Correlação e Liquidez',
+    descricao: 'Diversificação não é proteção. Em março de 2020, a correlação Ibov vs S&P 500 chegou a 0,91. Os 3 vetores estruturais que separam carteiras que absorvem choque das que apenas desabam mais devagar.',
+    categoria: 'memos',
+    categoriaLabel: 'Premium Memo',
+    icon: 'i-lucide-shield-alert',
+    data: '20 Mai 2026',
+    tempoLeitura: 12,
+  },
   {
     slug: 'como-investir-em-acoes-para-iniciantes',
     titulo: 'Como Investir em Ações para Iniciantes',

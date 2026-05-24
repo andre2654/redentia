@@ -1149,6 +1149,114 @@
 
     </section>
 
+    <!-- ========== Premium Memos · Estudos editoriais profundos ==========
+         Cards menores em grid abaixo da seção Guias. Diferenciados dos
+         guias comuns por: (a) categoria "Premium Memo" no pill, (b) tint
+         amber sutil no background, (c) Instrument Serif italic na palavra
+         âncora do título, (d) header com eyebrow + subtitle editorial. -->
+    <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides') }" class="px-4 pt-12 md:px-4">
+      <header class="mb-6 flex flex-col gap-2 md:mb-8">
+        <span class="eyebrow">Estudos premium</span>
+        <h2
+          class="font-light leading-tight text-[24px] md:text-[30px]"
+          :style="{ color: 'var(--text-heading)', letterSpacing: '-0.025em' }"
+        >
+          Memos editoriais para quem quer ir
+          <em class="italic" :style="{ fontFamily: '\'Instrument Serif\', Georgia, serif', color: 'var(--brand-primary)' }">fundo.</em>
+        </h2>
+        <p class="text-[14px] leading-relaxed max-w-[640px]" :style="{ color: 'var(--text-body)' }">
+          Análises densas com dados primários, precedentes históricos e perspectiva contraintuitiva. Cada memo é um mini-relatório de banco de investimento condensado.
+        </p>
+      </header>
+
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <li v-for="memo in premiumMemos" :key="memo.to" class="contents">
+          <NuxtLink
+            :to="memo.to"
+            class="memo-card group relative flex h-full flex-col gap-4 overflow-hidden rounded-[14px] border p-6 transition-all duration-300 hover:-translate-y-0.5"
+            :style="{
+              background: `linear-gradient(155deg, color-mix(in srgb, var(--brand-primary) 4%, var(--bg-elevated)) 0%, var(--bg-elevated) 65%)`,
+              borderColor: 'color-mix(in srgb, var(--brand-primary) 22%, transparent)',
+            }"
+            :aria-label="`Ler memo: ${memo.titulo}`"
+          >
+            <!-- Subtle radial glow no canto superior direito -->
+            <div
+              class="pointer-events-none absolute inset-0 opacity-60"
+              :style="{ background: `radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--brand-primary) 10%, transparent), transparent 60%)` }"
+              aria-hidden="true"
+            />
+
+            <!-- Top row: ícone + pill categoria + arrow -->
+            <div class="relative flex items-start justify-between gap-2">
+              <span
+                class="flex size-10 shrink-0 items-center justify-center rounded-full"
+                :style="{
+                  background: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)',
+                  color: 'var(--brand-primary)',
+                }"
+                aria-hidden="true"
+              >
+                <UIcon :name="memo.icon" class="size-5" />
+              </span>
+              <div
+                class="flex size-8 items-center justify-center rounded-full transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                :style="{
+                  background: 'color-mix(in srgb, var(--text-heading) 6%, transparent)',
+                  color: 'var(--text-muted)',
+                }"
+                aria-hidden="true"
+              >
+                <UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
+              </div>
+            </div>
+
+            <!-- Pill Premium Memo -->
+            <span
+              class="relative self-start rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em]"
+              :style="{
+                borderColor: 'color-mix(in srgb, var(--brand-primary) 28%, transparent)',
+                background: 'color-mix(in srgb, var(--brand-primary) 10%, transparent)',
+                color: 'var(--brand-primary)',
+              }"
+              translate="no"
+            >Premium Memo</span>
+
+            <!-- Título com Instrument Serif italic na palavra-âncora -->
+            <h3
+              class="relative font-light leading-[1.15] text-[18px] md:text-[20px]"
+              :style="{ color: 'var(--text-heading)', letterSpacing: '-0.01em', fontFamily: '\'Instrument Serif\', Georgia, serif' }"
+            >
+              {{ memo.titulo }}
+            </h3>
+
+            <!-- Descrição curta -->
+            <p
+              class="relative line-clamp-3 text-[13px] leading-relaxed"
+              :style="{ color: 'var(--text-body)' }"
+            >
+              {{ memo.descricao }}
+            </p>
+
+            <!-- Footer: tempo de leitura -->
+            <div
+              class="relative mt-auto flex items-center gap-2 border-t pt-3 text-[11px]"
+              :style="{
+                borderColor: 'color-mix(in srgb, var(--brand-border) 25%, transparent)',
+                color: 'var(--text-muted)',
+              }"
+            >
+              <UIcon name="i-lucide-clock" class="size-3" aria-hidden="true" />
+              <span translate="no">{{ memo.tempoLeitura }} min de leitura</span>
+              <span class="ml-auto text-[12px] font-medium transition-opacity group-hover:opacity-100" :style="{ color: 'var(--brand-primary)', opacity: 0.85 }">
+                Ler estudo →
+              </span>
+            </div>
+          </NuxtLink>
+        </li>
+      </ul>
+    </section>
+
     <!-- Testimonials Section -->
     <MoleculesTestimonialsSection v-if="showSection('testimonials') && !authStore.isAuthenticated" :style="{ order: sectionOrder('testimonials') }" class="mt-12" />
 
@@ -2159,6 +2267,45 @@ const guidesTiles: GuideEntry[] = [
     icon: 'i-lucide-receipt-text',
     categoria: 'Ferramenta',
     tempoLeitura: 4,
+  },
+]
+
+// Premium Memos — estudos editoriais profundos publicados em /guias/<slug>.
+// Cada item espelha o memo gerado pela skill /generate-premium-memo. Mantém
+// a ordem cronológica reversa (mais recente primeiro). Quando um novo memo
+// for publicado, adicionar no topo desse array.
+const premiumMemos: GuideEntry[] = [
+  {
+    titulo: 'Poupança vs Tesouro IPCA+ 2026',
+    descricao: 'Selic em 14,5%, IPCA+ paga 6,95% real e LCI/LCA pagam 13% isento. Por que o PF deixa metade do retorno na mesa.',
+    to: '/guias/poupanca-vs-tesouro-ipca-mais-2026',
+    icon: 'i-lucide-piggy-bank',
+    categoria: 'Premium Memo',
+    tempoLeitura: 14,
+  },
+  {
+    titulo: 'Como ganhar 40-60% em renda fixa',
+    descricao: 'Aconteceu 4 vezes em 25 anos. A janela abriu hoje. Os 3 pilares: ciclo, mecânica e execução em Tesouro IPCA+.',
+    to: '/guias/como-ganhar-40-60-renda-fixa-2026',
+    icon: 'i-lucide-trending-up',
+    categoria: 'Premium Memo',
+    tempoLeitura: 16,
+  },
+  {
+    titulo: 'A hora certa de vender ações',
+    descricao: 'Apenas 4% das ações geram todo o ganho. Buffett saiu 4 vezes em 60 anos e acertou. Os 5 gatilhos para vender.',
+    to: '/guias/hora-certa-de-vender-acoes',
+    icon: 'i-lucide-trending-down',
+    categoria: 'Premium Memo',
+    tempoLeitura: 15,
+  },
+  {
+    titulo: 'Raio X da carteira em crise',
+    descricao: 'Diversificação não é proteção. Em março de 2020, Ibov vs S&P 500 chegou a 0,91. Estrutura, correlação, liquidez.',
+    to: '/guias/raio-x-da-carteira-em-crise',
+    icon: 'i-lucide-shield-alert',
+    categoria: 'Premium Memo',
+    tempoLeitura: 12,
   },
 ]
 
