@@ -355,6 +355,16 @@ function parseDateToIso(pt: string): string {
 
 const guias: Guia[] = [
   {
+    slug: 'redent-score-0-100-explicado',
+    titulo: 'Redent Score 0-100: O Que Mede e Por Que Você Precisa',
+    descricao: '60M brasileiros investem mas só 17% diversificam (ANBIMA). O Redent Score é a nota 0-100 da Redentia em 9 dimensões (Markowitz, Sharpe) com 4 bandas: Crítica, Atenção, Boa, Excelente. Fórmula pública neste guia.',
+    categoria: 'memos',
+    categoriaLabel: 'Guia Redentia',
+    icon: 'i-lucide-gauge',
+    data: '26 Mai 2026',
+    tempoLeitura: 14,
+  },
+  {
     slug: 'open-finance-carteira-espalhada',
     titulo: 'Open Finance: Sua Carteira Ainda Está Espalhada?',
     descricao: 'Brasil tem 100M+ clientes no Open Finance e 154M consentimentos ativos em 2026. Como funciona, por que é seguro (BCB + LGPD), e como conectar sua carteira em 2 minutos via API oficial.',

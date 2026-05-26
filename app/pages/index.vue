@@ -2164,16 +2164,24 @@ interface GuideEntry {
 // quando o último é removido.
 const guidesHero: GuideEntry[] = [
   {
-    titulo: 'Open Finance: sua carteira ainda está espalhada?',
-    descricao: 'Brasil tem 100 milhões de clientes no Open Finance em 2026. Entenda como o consentimento regulado pelo BCB consolida sua carteira em 2 minutos, sem planilha, sem senha, sem fricção.',
+    titulo: 'Redent Score 0-100: a nota que faltava pra sua carteira',
+    descricao: '60 milhões investem no Brasil em 2025 (ANBIMA), mas só 17% diversificam. O Redent Score mede 9 dimensões (Markowitz, Sharpe) e devolve uma nota objetiva: Crítica, Em Atenção, Boa ou Excelente.',
+    to: '/guias/redent-score-0-100-explicado',
+    icon: 'i-lucide-gauge',
+    categoria: 'Guia Redentia',
+    tempoLeitura: 14,
+  },
+]
+
+const guidesMedium: GuideEntry[] = [
+  {
+    titulo: 'Open Finance: carteira espalhada?',
+    descricao: 'Brasil tem 100M+ clientes no Open Finance em 2026. Consentimento regulado pelo BCB consolida sua carteira em 2 minutos, sem planilha, sem senha.',
     to: '/guias/open-finance-carteira-espalhada',
     icon: 'i-lucide-network',
     categoria: 'Guia Redentia',
     tempoLeitura: 13,
   },
-]
-
-const guidesMedium: GuideEntry[] = [
   {
     titulo: 'Como investir em ações',
     descricao: 'Guia completo para iniciantes começarem a investir na bolsa de valores. Da abertura de conta até estratégias avançadas, com exemplos reais e passo a passo.',
