@@ -55,12 +55,9 @@
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.102",
     "@nuxt/eslint": "0.5.1",
-    "@nuxt/test-utils": "^4.0.3",
     "@nuxtjs/sitemap": "7.4.7",
     "@pinia-plugin-persistedstate/nuxt": "1.2.1",
-    "@vue/test-utils": "^2.4.10",
     "eslint": "9.9.0",
-    "happy-dom": "^20.9.0",
     "postcss-html": "^1.8.1",
     "prettier": "3.3.3",
     "prettier-plugin-tailwindcss": "0.6.6",
