@@ -27,3 +27,48 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+  lint-changed:
+    name: Lint (changed)
+    runs-on: ubuntu-latest
+
+    env:
+      NUXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Ratchet gate: lint ONLY the files changed in this PR/push, so new and
+      # touched code must be clean while the (large) legacy lint debt is left
+      # untouched and burned down opportunistically. Run `npm run lint` locally
+      # to see the full backlog.
+      - name: Lint changed files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+          fi
+          if [ -z "$BASE" ] || ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            echo "Base commit unavailable — skipping changed-file lint."
+            exit 0
+          fi
+          mapfile -t FILES < <(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- '*.ts' '*.tsx' '*.js' '*.mjs' '*.cjs' '*.vue' | grep -vE '^(tests/|\.nuxt/|\.output/)' || true)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "No lintable files changed."
+            exit 0
+          fi
+          printf 'Linting %d changed file(s):\n' "${#FILES[@]}"
+          printf '  %s\n' "${FILES[@]}"
+          npx eslint "${FILES[@]}"
