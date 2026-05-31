@@ -1,4 +1,5 @@
 import withNuxt from './.nuxt/eslint.config.mjs'
+import vuejsA11y from 'eslint-plugin-vuejs-accessibility'
 
 /**
  * Regras especificas pro design system Redentia.
@@ -32,30 +33,59 @@ const REDENTIA_HEX_LITERAL_IN_STYLE = {
     "Hex literal em `:style` quebra com troca de tema. Use CSS var semantica (`var(--brand-primary)`, `var(--text-heading)` etc).",
 }
 
-export default withNuxt({
-  // Ignora playground/dev + landings decorativas — esses arquivos tem
-  // padroes intencionalmente fora do design system canonico.
-  ignores: [
-    'app/pages/dev/**',
-    'app/components/dev/**',
-    'app/pages/creative/**',
-    'app/pages/hero-examples.vue',
-    'app/pages/builder.vue',
-    'app/pages/assessorias-diferencie-problema.vue',
-    'app/pages/assessorias-diferencie-solucao.vue',
-  ],
-  rules: {
-    'no-console': 'warn',
-    'vue/multi-word-component-names': 'off',
-    'vue/prefer-true-attribute-shorthand': 1,
-    'vue/html-self-closing': 'off',
-    'vue/no-multiple-template-root': 'off',
-
-    // Anti-FOIT — ver bloco de doc acima
-    'vue/no-restricted-syntax': [
-      'warn', // warn por enquanto, virar 'error' depois de cleanup completo
-      REDENTIA_BRAND_COLORS_IN_STYLE,
-      REDENTIA_HEX_LITERAL_IN_STYLE,
-    ],
+export default withNuxt(
+  // -------- A11y gate (eslint-plugin-vuejs-accessibility) --------
+  // Ratchet de acessibilidade: roda junto do job "Lint (changed)" do
+  // CI, entao so trava nos arquivos .vue que MUDARAM no PR/push (o
+  // backlog legado fica intacto e e queimado oportunamente). Sem
+  // servidor, sem build — analise estatica do template, igual ao
+  // ratchet de lint que ja existe.
+  //
+  // `flat/recommended` liga 20 regras como 'error'. Mantemos como
+  // ERROR as de alto sinal / baixo falso-positivo (bug real de a11y:
+  // img sem alt, aria quebrado, control sem label, heading/anchor
+  // vazio) e rebaixamos pra 'warn' as estruturais/ruidosas
+  // (click-events-have-key-events e cia) — assim o gate pega defeito
+  // de verdade sem bloquear PR legitimo por padrao discutivel.
+  ...vuejsA11y.configs['flat/recommended'],
+  {
+    rules: {
+      'vuejs-accessibility/click-events-have-key-events': 'warn',
+      'vuejs-accessibility/no-static-element-interactions': 'warn',
+      'vuejs-accessibility/interactive-supports-focus': 'warn',
+      'vuejs-accessibility/mouse-events-have-key-events': 'warn',
+      'vuejs-accessibility/media-has-caption': 'warn',
+      'vuejs-accessibility/no-autofocus': 'warn',
+      'vuejs-accessibility/label-has-for': 'warn',
+    },
   },
-})
+
+  // -------- Regras do design system Redentia --------
+  {
+    // Ignora playground/dev + landings decorativas — esses arquivos tem
+    // padroes intencionalmente fora do design system canonico.
+    ignores: [
+      'app/pages/dev/**',
+      'app/components/dev/**',
+      'app/pages/creative/**',
+      'app/pages/hero-examples.vue',
+      'app/pages/builder.vue',
+      'app/pages/assessorias-diferencie-problema.vue',
+      'app/pages/assessorias-diferencie-solucao.vue',
+    ],
+    rules: {
+      'no-console': 'warn',
+      'vue/multi-word-component-names': 'off',
+      'vue/prefer-true-attribute-shorthand': 1,
+      'vue/html-self-closing': 'off',
+      'vue/no-multiple-template-root': 'off',
+
+      // Anti-FOIT — ver bloco de doc acima
+      'vue/no-restricted-syntax': [
+        'warn', // warn por enquanto, virar 'error' depois de cleanup completo
+        REDENTIA_BRAND_COLORS_IN_STYLE,
+        REDENTIA_HEX_LITERAL_IN_STYLE,
+      ],
+    },
+  },
+)
