@@ -44,7 +44,11 @@ export type TopMover = {
   factorLabel: string
 }
 
-export type MarketIndex = {
+// Module-private: the canonical, auto-imported `MarketIndex` is the one in
+// stores/market.ts. Keeping this un-exported avoids a Nuxt auto-import name
+// collision (two exported `MarketIndex` -> "Duplicated imports" warning, with
+// the composable's silently ignored).
+type MarketIndex = {
   key: string
   label: string
   value: number

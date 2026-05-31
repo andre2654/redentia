@@ -31,7 +31,13 @@ const STORAGE_KEY = 'redentia-failed-logos'
 const state = reactive({ urls: new Set<string>() })
 
 let hydrated = false
-function ensureHydrated(): void {
+let scheduled = false
+
+/**
+ * Read the persisted registry from sessionStorage into the reactive set.
+ * Idempotent — runs at most once per session.
+ */
+function loadFromStorage(): void {
   if (hydrated || typeof window === 'undefined') return
   hydrated = true
   try {
@@ -45,6 +51,25 @@ function ensureHydrated(): void {
   } catch {
     /* corrupted storage — ignore, start fresh */
   }
+}
+
+/**
+ * Schedule the sessionStorage read for AFTER the app has hydrated.
+ *
+ * Loading synchronously here (during component setup) populated
+ * `state.urls` while the client was still hydrating: a logo that failed
+ * earlier this session was rendered as `<img>` on the server (empty set)
+ * but as the `<div>`/`<span>` fallback on the client (populated set) — a
+ * hydration mismatch on EVERY such logo, across all consumers of this
+ * composable. `onNuxtReady` fires once, right after hydration completes,
+ * so the first client render matches the SSR HTML (both render `<img>`);
+ * the known-failed swap then happens as a normal reactive update. On the
+ * server it's a no-op (the `window` guard in `loadFromStorage`).
+ */
+function ensureHydrated(): void {
+  if (hydrated || scheduled || typeof window === 'undefined') return
+  scheduled = true
+  onNuxtReady(loadFromStorage)
 }
 
 function persist(): void {
