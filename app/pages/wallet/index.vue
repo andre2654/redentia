@@ -367,6 +367,7 @@
                       <th>Peso</th>
                       <th>P&L</th>
                       <th>%</th>
+                      <th>DY</th>
                       <th>7d</th>
                     </tr>
                   </thead>
@@ -395,6 +396,7 @@
                       </td>
                       <td :class="p.pnl >= 0 ? 'positive' : 'negative'">{{ p.pnl >= 0 ? '+' : '' }}{{ formatBRL(p.pnl) }}</td>
                       <td :class="p.pnlPct >= 0 ? 'positive' : 'negative'">{{ formatPct(p.pnlPct) }}</td>
+                      <td class="muted">{{ p.dividendYield.toFixed(1) }}%</td>
                       <td class="wp8-spark-cell">
                         <svg viewBox="0 0 60 20" class="wp8-spark">
                           <polyline :points="sparkline(p.sparkline, 60, 20)" fill="none" :stroke="p.pnl >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'" stroke-width="1.4" />
