@@ -162,14 +162,14 @@
             >
               <defs>
                 <linearGradient id="hp9-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="var(--brand-negative)" stop-opacity="0.22" />
-                  <stop offset="100%" stop-color="var(--brand-negative)" stop-opacity="0" />
+                  <stop offset="0%" :stop-color="curveColor" stop-opacity="0.22" />
+                  <stop offset="100%" :stop-color="curveColor" stop-opacity="0" />
                 </linearGradient>
               </defs>
               <line v-for="y in [60, 120, 180]" :key="y" x1="0" :y1="y" x2="800" :y2="y" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="2 4" />
               <line :y1="zeroY" :y2="zeroY" x1="0" x2="800" stroke="var(--border-default)" stroke-dasharray="4 4" />
               <polygon :points="`0,${zeroY} ${curve} 800,${zeroY}`" fill="url(#hp9-grad)" />
-              <polyline :points="curve" fill="none" stroke="var(--brand-negative)" stroke-width="2" />
+              <polyline :points="curve" fill="none" :stroke="curveColor" stroke-width="2" />
 
               <g v-if="hoverPoint" class="hp9-chart-hover">
                 <line :x1="hoverPoint.x" y1="0" :x2="hoverPoint.x" y2="240" stroke="var(--text-heading)" stroke-width="1" stroke-dasharray="3 3" opacity="0.35" />
@@ -262,7 +262,7 @@
                 <span class="wp8-skel wp8-skel-circle" style="width: 36px; height: 36px;" />
                 <div>
                   <p class="h-news-theme-eyebrow">Tema</p>
-                  <h3 class="h-news-theme-label"><span class="wp8-skel wp8-skel-text-md" style="width: 160px;" /></h3>
+                  <h3 class="h-news-theme-label"><span class="sr-only">Carregando…</span><span class="wp8-skel wp8-skel-text-md" style="width: 160px;" aria-hidden="true" /></h3>
                 </div>
                 <span class="h-news-theme-count"><span class="wp8-skel wp8-skel-chip" style="width: 60px;" /></span>
               </header>
@@ -271,7 +271,7 @@
                   <span class="wp8-skel wp8-skel-img-16x9" />
                   <div class="h-news-card-body">
                     <p class="h-news-card-impact"><span class="wp8-skel wp8-skel-chip" style="width: 70px;" /></p>
-                    <h4 class="h-news-card-title"><span class="wp8-skel wp8-skel-text-sm" style="width: 90%; display: block;" /></h4>
+                    <h4 class="h-news-card-title"><span class="sr-only">Carregando…</span><span class="wp8-skel wp8-skel-text-sm" style="width: 90%; display: block;" aria-hidden="true" /></h4>
                     <p class="h-news-card-meta"><span class="wp8-skel wp8-skel-chip" /></p>
                   </div>
                 </li>
@@ -658,7 +658,7 @@
 // fetcha em background. Ao terminar, troca por dados reais.
 const { data: hojeData, loading } = useHojeData()
 const data = computed(() => hojeData.value)
-const assetsTable = computed(() => data.value.assetsTable)
+const _assetsTable = computed(() => data.value.assetsTable)
 
 // Estado de colapso dos 3 grupos da seção "Seus ativos".
 // Inicia com os 2 primeiros expandidos (up + down) e flat colapsado
@@ -737,7 +737,7 @@ function formatMarketValue(ix: { value: number; key: string }) {
   if (ix.key === 'brent') return `US$ ${ix.value.toFixed(2).replace('.', ',')}`
   return ix.value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })
 }
-function pesouLabel(key: string) {
+function _pesouLabel(key: string) {
   const map: Record<string, string> = {
     juros: 'Juros futuros',
     petroleo: 'Petrobras',
@@ -787,7 +787,7 @@ function pillText(c: { key: string; label?: string; impact: number; tickers?: st
   if (!set) return ''
   return isPositive ? set.pos : set.neg
 }
-function severityLabel(s: string) {
+function _severityLabel(s: string) {
   if (s === 'high') return 'alto impacto'
   if (s === 'medium') return 'médio impacto'
   if (s === 'positive') return 'baixo impacto positivo'
@@ -819,7 +819,7 @@ function imageIcon(key: string) {
   }
   return map[key] || 'i-lucide-newspaper'
 }
-function factorIcon(f: string) {
+function _factorIcon(f: string) {
   const map: Record<string, string> = {
     juros: 'i-lucide-percent',
     petroleo: 'i-lucide-droplet',
@@ -898,6 +898,10 @@ const curve = computed(() =>
   curveData.value.points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '),
 )
 const zeroY = computed(() => curveData.value.zeroY.toFixed(1))
+
+// Curve color follows the day's sign (was hardcoded red) so a positive day
+// (+0,60%) renders green instead of contradicting the headline.
+const curveColor = computed(() => (data.value.portfolio?.dayChangePct ?? 0) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)')
 
 // Tooltip hover (mesmo pattern de /wallet/index)
 const hoverIdx = ref<number | null>(null)
