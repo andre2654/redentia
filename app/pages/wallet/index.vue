@@ -1092,7 +1092,7 @@ const positions = computed<WalletPosition[]>(() => {
       weight,
       pnl,
       pnlPct,
-      dividendYield: 0, // TODO: backend nao expoe DY 12m por posicao ainda
+      dividendYield: Number(p.dividend_yield) || 0, // DY 12m (%) joined from key_statistics by the API
       sparkline: [1, 1, 1, 1, 1, 1, 1], // TODO: backend nao expoe sparkline 7d ainda
     }
   })

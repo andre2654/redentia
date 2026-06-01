@@ -42,6 +42,8 @@ export interface UnifiedPosition {
   source?: string
   /** Optional sector hint coming from the import tool. */
   sector?: string
+  /** DY 12m in PERCENT (e.g. 7.6), joined from key_statistics by the API. */
+  dividend_yield?: number | string | null
 }
 
 /** Legacy alias kept for callers that still import `PortfolioPosition`. */
