@@ -1898,7 +1898,14 @@ function monthStack(idx: number) {
 
 // KPIs derivados — usam realized + projected (filteredMonths ja inclui ambos).
 const maxMonthInfo = computed(() => [...filteredMonths.value].sort((a, b) => b.value - a.value)[0])
-const minMonthInfo = computed(() => [...filteredMonths.value].sort((a, b) => a.value - b.value)[0])
+// "Menor mês" = o menor mês COM provento. A janela é fixa em 12 meses, então
+// carteiras novas têm meses iniciais zerados (pré-aporte) que não devem virar
+// "R$ 0,00" no KPI. Se nenhum mês teve provento, cai pro pool completo.
+const minMonthInfo = computed(() => {
+  const active = filteredMonths.value.filter((m) => m.value > 0)
+  const pool = active.length ? active : filteredMonths.value
+  return [...pool].sort((a, b) => a.value - b.value)[0]
+})
 const avgMonth = computed(() => filteredMonths.value.reduce((a, m) => a + m.value, 0) / filteredMonths.value.length)
 const totalFiltered = computed(() => filteredMonths.value.reduce((a, m) => a + m.value, 0))
 
