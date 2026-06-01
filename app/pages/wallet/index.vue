@@ -1220,12 +1220,15 @@ const dayTradeStats = computed(() => ({
   worstTrade: 0,
 }))
 
-// dividendForecast12m — sem endpoint dedicado ainda. Derivamos como
-// sum(amount) dos upcomingDividends * 12 / 2 (aproximacao linear sobre
-// janela de 60d ~ 2 meses). TODO: backend deveria expor projecao 12m.
+// Renda 12m = soma dos proventos REALIZADOS nos últimos 12 meses, vinda do
+// endpoint /portfolio/income (o mesmo dado que alimenta as barras do gráfico
+// de renda passiva + o "recebido" do dashboard). Antes era uma extrapolação
+// linear crua (sum60d * 6) que destoava das próprias barras e da realidade.
+// Conta nova sem histórico realizado: cai na projeção dos proventos futuros.
 const dividendForecast12m = computed(() => {
-  const sum60d = dividendEvents.value.reduce((acc, e) => acc + e.amount, 0)
-  return sum60d * 6 // 60d -> 12m (linear extrapolation)
+  const realized12m = incomeMonthsReal.value.reduce((acc, b) => acc + (b.total ?? 0), 0)
+  if (realized12m > 0) return realized12m
+  return dividendEvents.value.reduce((acc, e) => acc + e.amount, 0) * 6
 })
 
 // =================== LOADERS ===================
