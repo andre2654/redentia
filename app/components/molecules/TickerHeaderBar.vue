@@ -81,11 +81,11 @@
       <div class="tk-spark-head">
         <span class="tk-spark-label">{{ sparklineLabel || 'Desempenho 30 dias' }}</span>
         <span
-          v-if="changePercent !== undefined && changePercent !== null"
+          v-if="sparkChange !== undefined && sparkChange !== null"
           class="tk-spark-change"
-          :style="{ color: Number(changePercent) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
+          :style="{ color: Number(sparkChange) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
           translate="no"
-        >{{ Number(changePercent) >= 0 ? '+' : '' }}{{ Number(changePercent).toFixed(2).replace('.', ',') }}%</span>
+        >{{ Number(sparkChange) >= 0 ? '+' : '' }}{{ Number(sparkChange).toFixed(2).replace('.', ',') }}%</span>
       </div>
       <svg
         viewBox="0 0 160 56"
@@ -144,9 +144,16 @@ const props = defineProps<{
   stats?: TickerStat[]
   sparkline?: TickerSparkline
   sparklineLabel?: string
+  /** Change % for the sparkline's OWN window (e.g. 30d). Falls back to
+   *  changePercent (today) when omitted, so existing callers are unchanged. */
+  sparklineChange?: number | null
 }>()
 
 const uid = Math.random().toString(36).slice(2, 9)
+
+// The sparkline delta should track ITS window (sparklineChange), not today's
+// price move. Falls back to changePercent so existing callers stay intact.
+const sparkChange = computed(() => props.sparklineChange ?? props.changePercent)
 
 const sparkColor = computed(() => {
   if (props.sparkline?.color) return props.sparkline.color

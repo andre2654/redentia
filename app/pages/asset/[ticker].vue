@@ -142,6 +142,7 @@
             :stats="sessionStats"
             :sparkline="heroSparkline.line ? { line: heroSparkline.line, area: heroSparkline.area, color: heroAccent } : undefined"
             sparkline-label="Desempenho 30 dias"
+            :sparkline-change="heroSparkline30dChange"
           />
 
           <!-- Section nav (card abaixo do header). Anchor links pra cada
@@ -3236,6 +3237,18 @@ const heroSparkline = computed(() => {
   return { points, width, height, line, area }
 })
 
+// 30d change for the header sparkline (first vs last of the 30-point slice),
+// so its delta reflects the 30-day trend — not today's price move (which the
+// price line already shows as "hoje").
+const heroSparkline30dChange = computed<number | null>(() => {
+  const p = heroSparkline.value.points
+  if (p.length < 2) return null
+  const first = p[0]
+  const last = p[p.length - 1]
+  if (first == null || last == null || first === 0) return null
+  return ((last - first) / first) * 100
+})
+
 const sessionStats = computed(() => {
   const extras = scrapeExtras.value
 
@@ -3861,54 +3874,6 @@ definePageMeta({
   font-feature-settings: 'ss01', 'cv11';
 }
 
-/* Sticker text styles, match the home hero */
-.pb-asset-sticker {
-  display: inline-block;
-  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
-  font-weight: 700;
-}
-
-.pb-asset-sticker-cold {
-  display: inline-block;
-}
-
-.pb-asset-sticker-hot {
-  display: inline-block;
-  background: #EF4444;
-  color: #FFFFFF !important;
-  padding: 0.02em 0.3em;
-  border-radius: 0.15em;
-  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
-  font-weight: 700;
-  box-shadow:
-    -3px 3px 0 #0B0B0E,
-    0 0 0 4px #FFFFFF,
-    -3px 3px 0 4px #0B0B0E;
-  transform: rotate(2deg);
-}
-
-/* Villain card pulse */
-@keyframes pb-asset-villain-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-  50% { box-shadow: 0 0 60px -10px rgba(239, 68, 68, 0.25); }
-}
-
-.pb-asset-villain {
-  animation: pb-asset-villain-pulse 3s ease-in-out infinite;
-}
-
-/* Sweat drops */
-@keyframes pb-asset-sweat-drop {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; }
-  50% { transform: translateY(5px) scale(0.85); opacity: 0.4; }
-}
-
-.pb-asset-sweat {
-  animation: pb-asset-sweat-drop 1.4s ease-in-out infinite;
-}
-.pb-asset-sweat-2 {
-  animation-delay: 0.7s;
-}
 
 /* ========== DIVIDENDOS COMPACT CARD ========== */
 .dividends-axis-label {
