@@ -367,7 +367,6 @@
                       <th>Peso</th>
                       <th>P&L</th>
                       <th>%</th>
-                      <th>DY</th>
                       <th>7d</th>
                     </tr>
                   </thead>
@@ -396,7 +395,6 @@
                       </td>
                       <td :class="p.pnl >= 0 ? 'positive' : 'negative'">{{ p.pnl >= 0 ? '+' : '' }}{{ formatBRL(p.pnl) }}</td>
                       <td :class="p.pnlPct >= 0 ? 'positive' : 'negative'">{{ formatPct(p.pnlPct) }}</td>
-                      <td class="muted">{{ p.dividendYield.toFixed(1) }}%</td>
                       <td class="wp8-spark-cell">
                         <svg viewBox="0 0 60 20" class="wp8-spark">
                           <polyline :points="sparkline(p.sparkline, 60, 20)" fill="none" :stroke="p.pnl >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'" stroke-width="1.4" />
@@ -434,7 +432,7 @@
           <div class="wp8-rx-insights">
             <article v-for="n in 3" :key="`skel-ins-${n}`" class="wp8-ins">
               <p class="wp8-ins-tag"><span class="wp8-skel wp8-skel-chip" /></p>
-              <h4 class="wp8-ins-h"><span class="wp8-skel wp8-skel-text-sm" /></h4>
+              <h4 class="wp8-ins-h"><span class="sr-only">Carregando insight…</span><span class="wp8-skel wp8-skel-text-sm" aria-hidden="true" /></h4>
               <p class="wp8-ins-note"><span class="wp8-skel wp8-skel-text-sm" style="width: 80%;" /></p>
             </article>
           </div>
@@ -481,7 +479,7 @@
           <div class="wp8-score-block">
             <span class="wp8-score-pill">SCORE GERAL</span>
             <p class="wp8-score-mega">
-              {{ Math.round(raioXDimensions.reduce((a, b) => a + b.score, 0) / raioXDimensions.length) }}<span class="wp8-score-mega-suf">/100</span>
+              {{ portfolioScore }}<span class="wp8-score-mega-suf">/100</span>
             </p>
             <p class="wp8-score-delta">
               <UIcon name="i-lucide-arrow-up" class="size-3.5" />
@@ -1142,7 +1140,7 @@ const bankAccounts = computed(() => {
       // Pluggy fornece a URL do logo via `institution.imageUrl`. Se ausente
       // (ou se backend ainda não persiste isso), caímos no fallback de letra
       // inicial colorida no template.
-      logo: (a.institution as any)?.imageUrl ?? null as string | null,
+      logo: (a.institution as { imageUrl?: string | null } | null | undefined)?.imageUrl ?? null,
     }))
 })
 
@@ -1190,7 +1188,7 @@ const raioXDimensions = computed(() => {
 
 // equityCurve ← do tradesService.getEquityCurve(), pego os ultimos 90 pontos
 // pra bater com o shape do mock (array de numbers). Vazio enquanto carrega.
-const equityCurve = computed(() => equityCurveReal.value)
+const _equityCurve = computed(() => equityCurveReal.value)
 
 // upcomingDividends ← shape WalletDividendEvent ja gerado no loadDividends
 const upcomingDividends = computed(() => dividendEvents.value)
@@ -1706,10 +1704,10 @@ function toggleClassExpand(key: string) {
   expandedClasses.value = next
 }
 
-function classColor(key: ClassKey) {
+function _classColor(key: ClassKey) {
   return allClasses.find(c => c.key === key)?.color ?? 'var(--text-muted)'
 }
-function classLabelOf(key: ClassKey) {
+function _classLabelOf(key: ClassKey) {
   return allClasses.find(c => c.key === key)?.label ?? key
 }
 
@@ -1837,7 +1835,7 @@ const classBreakdown = computed(() => {
   const totalAll = dividendMonths.value.reduce((sum, m) => {
     return sum + allClasses.reduce((a, c) => a + m.byClass[c.key] + m.byClassProjected[c.key], 0)
   }, 0)
-  const result: Record<ClassKey, { value: number; pct: number }> = {} as any
+  const result = {} as Record<ClassKey, { value: number; pct: number }>
   for (const c of allClasses) {
     const val = dividendMonths.value.reduce(
       (a, m) => a + m.byClass[c.key] + m.byClassProjected[c.key],
@@ -1914,10 +1912,10 @@ const snowflakePoints = computed(() => {
 const greenCount = computed(() => raioXDimensions.value.filter((d) => d.status === 'good').length)
 
 // insights editoriais
-const bestDimension = computed(() => [...raioXDimensions.value].sort((a, b) => b.score - a.score)[0])
-const worstDimension = computed(() => [...raioXDimensions.value].sort((a, b) => a.score - b.score)[0])
+const _bestDimension = computed(() => [...raioXDimensions.value].sort((a, b) => b.score - a.score)[0])
+const _worstDimension = computed(() => [...raioXDimensions.value].sort((a, b) => a.score - b.score)[0])
 // "oportunidade" = segunda menor pra dar uma direção acionável
-const opportunityDimension = computed(() => [...raioXDimensions.value].sort((a, b) => a.score - b.score)[1])
+const _opportunityDimension = computed(() => [...raioXDimensions.value].sort((a, b) => a.score - b.score)[1])
 
 // AI Insights — gera 5 cards narrativos a partir de 5 dimensões-chave
 // (Volatilidade, Crescimento, Renda, Exposição Cambial, Diversificação).
