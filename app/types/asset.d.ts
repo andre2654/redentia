@@ -36,6 +36,8 @@ export interface IAsset {
   long_business_summary?: string
   market_price?: number
   change_percent?: number
+  price_at?: string
+  priceAt?: string
   mdi?: AssetMdiEntry[]
   // Códigos antigos que apontam pra este ticker. Ex: EMBJ3 retorna
   // [{old_symbol:'EMBR3', event_type:'rename', event_date:null}].
@@ -183,8 +185,15 @@ export interface ScrapeExtrasStock {
   refreshed_at: string | null
 }
 
+// BDR — Brazilian Depositary Receipts carry the same StatusInvest metric
+// groups as a stock (valuation/leverage/growth/quality/market), the backend
+// only swaps the discriminant to 'bdr' (TickerFundamentalsService).
+export interface ScrapeExtrasBdr extends Omit<ScrapeExtrasStock, 'asset_type'> {
+  asset_type: 'bdr'
+}
+
 // Union — the backend discriminates with `asset_type`.
-export type ScrapeExtras = ScrapeExtrasStock | ScrapeExtrasFii | ScrapeExtrasEtf
+export type ScrapeExtras = ScrapeExtrasStock | ScrapeExtrasFii | ScrapeExtrasEtf | ScrapeExtrasBdr
 
 // Interface para resposta da API getTickerFundamentus
 export interface FundamentusApiResponse {
@@ -208,6 +217,8 @@ export interface FundamentusApiResponse {
     total_assets: string
     ytd_return: string
     fifty_two_week_change: string
+    volume?: string
+    payout_ratio?: string
   }
   financial_data: {
     ticker: string

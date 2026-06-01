@@ -399,8 +399,8 @@
         <!-- Dividendos + Notícias (row dupla compacta) — movido pra cá
              pra aparecer logo apos o Resumo/Cotação, antes da analise. -->
         <section
-          id="sec-dividendos"
           v-if="brand.assetPage.showNews || (brand.assetPage.showDividendMap || brand.assetPage.showDividendChart) && !isEtf"
+          id="sec-dividendos"
           class="py-8"
         >
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -548,7 +548,7 @@
         <!-- Fundamentals + Volatility side by side (terminal panels) —
              only when scrape_extras is NOT available (otherwise the new
              fundamentals panel below covers these indicators + more). -->
-        <section id="sec-analise" v-if="!scrapeExtras" class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: 'var(--brand-border)' }">
+        <section v-if="!scrapeExtras" id="sec-analise" class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: 'var(--brand-border)' }">
           <!-- Col 1-2: Fundamentals register -->
           <div v-if="brand.assetPage.showIndicators" class="lg:col-span-2">
             <div class="mb-4 flex flex-col gap-1">
@@ -576,7 +576,7 @@
               :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
             >
               <div
-                v-for="(item, idx) in fundamentalsCells"
+                v-for="item in fundamentalsCells"
                 :key="item.label"
                 class="flex flex-col gap-1.5 px-4 py-4 transition-colors hover:brightness-110"
                 :style="{ backgroundColor: 'var(--brand-surface)' }"
@@ -620,7 +620,7 @@
                 :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
               >
                 <div
-                  v-for="(item, idx) in smartCells"
+                  v-for="item in smartCells"
                   :key="item.label"
                   class="flex flex-col gap-1.5 px-4 py-4"
                   :style="{ backgroundColor: 'var(--brand-surface)' }"
@@ -660,7 +660,7 @@
         </section>
 
         <!-- Fundamentals rich panels — FII / ETF / stock variant by asset_type -->
-        <section id="sec-analise-rich" v-if="scrapeExtras" class="py-8">
+        <section v-if="scrapeExtras" id="sec-analise-rich" class="py-8">
           <MoleculesStatusInvestFiiPanel v-if="scrapeExtras.asset_type === 'fii'" :extras="scrapeExtras" />
           <MoleculesStatusInvestEtfPanel v-else-if="scrapeExtras.asset_type === 'etf'" :extras="scrapeExtras" />
 
@@ -728,7 +728,7 @@
 
               <ul class="flex flex-col">
                 <li
-                  v-for="(it, idx) in indicadoresEssenciais"
+                  v-for="it in indicadoresEssenciais"
                   :key="it.label"
                   class="flex items-center justify-between gap-3 border-t py-3 first:border-t-0 first:pt-0 last:pb-0"
                   :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 20%, transparent)' }"
@@ -778,7 +778,7 @@
 
       <!-- Financial Statements — hidden for BDRs (foreign company) and ETFs
            (basket, not an operating company with DRE/balance) -->
-      <section id="sec-financeiro" v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" class="py-8">
+      <section v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" id="sec-financeiro" class="py-8">
         <header class="mb-6 flex flex-col gap-1">
           <h2 class="text-[24px] font-medium leading-tight" :style="{ color: 'var(--text-heading)', letterSpacing: '-0.02em' }">
             Demonstrações financeiras
@@ -957,7 +957,7 @@
       </section>
 
       <!-- Company profile -->
-      <section id="sec-sobre" v-if="brand.assetPage.showCompanyInfo" class="pb-8">
+      <section v-if="brand.assetPage.showCompanyInfo" id="sec-sobre" class="pb-8">
         <header class="mb-6 flex flex-col gap-1">
           <h2 class="text-[24px] font-medium leading-tight" :style="{ color: 'var(--text-heading)', letterSpacing: '-0.02em' }">
             Sobre a empresa
@@ -1153,6 +1153,12 @@ import type {
 } from '~/types/asset'
 import { generateChartConfig } from '~/helpers/utils'
 
+// Loose accessor for scrape_extras when reading groups across asset types
+// without discriminating first (e.g. quality/growth/leverage for stocks AND
+// fii/etf for funds). Values are always consumed via Number(...)/?? null, so
+// `unknown` is safe here.
+type LooseExtras = Record<string, Record<string, unknown> | undefined>
+
 const brand = useBrand()
 const failedLogos = useFailedLogos()
 const authStore = useAuthStore()
@@ -1201,7 +1207,7 @@ const assetMeta = computed(() => assetResponse.value?.meta ?? null)
 // /asset/EMBR3 ficando no botão "voltar"). Query `?from=EMBR3` permite
 // a página destino mostrar banner explicando a renomeação.
 if (
-  process.client &&
+  import.meta.client &&
   assetMeta.value?.alias_resolved_from &&
   asset.value?.ticker &&
   asset.value.ticker.toUpperCase() !== ticker.toUpperCase()
@@ -1236,7 +1242,7 @@ function formatDelistDate(iso: string | null): string {
   }
 }
 
-const blockChat = ref(false)
+const _blockChat = ref(false)
 const isLoadingAsset = computed(() => assetPending.value)
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
@@ -1255,7 +1261,7 @@ onMounted(() => {
   fetchFundamentusData()
 })
 
-const chatSuggestions = [
+const _chatSuggestions = [
   'Qual a diferença entre ações e FIIs?',
   'Como funcionam os dividendos?',
   'O que é diversificação?',
@@ -1346,15 +1352,15 @@ function formatDyShort(value: unknown): string {
 // Current volume, tries fundamentus first, then asset field
 const currentVolume = computed(() => {
   const v = safeNumber(
-    (fundamentusData.value as any)?.key_statistics?.volume
+    (fundamentusData.value)?.key_statistics?.volume
   )
   if (v !== null) return v
-  return safeNumber((asset.value as any)?.volume) ?? 0
+  return safeNumber((asset.value)?.volume) ?? 0
 })
 
 // "Last update" label for the status bar, tracks the latest price_at
-const lastUpdateLabel = computed(() => {
-  const rawDate = (asset.value as any)?.price_at || (asset.value as any)?.priceAt
+const _lastUpdateLabel = computed(() => {
+  const rawDate = (asset.value)?.price_at || (asset.value)?.priceAt
   if (!rawDate) return ''
   const d = new Date(rawDate)
   if (isNaN(d.getTime())) return ''
@@ -1378,7 +1384,7 @@ const fundamentalsCells = computed(() => {
 // Dividend heatmap cell styling, flat terminal look, no rounded/gradients.
 // Cells share a border via gap-px on a bordered parent, so each cell is
 // a simple rectangle filled with surface/background colors.
-function monthCellStyle(item: any): Record<string, string> {
+function _monthCellStyle(item: { highlight?: boolean; percentage?: number }): Record<string, string> {
   if (item.highlight) {
     return {
       backgroundColor: `color-mix(in srgb, var(--brand-primary) 12%, transparent)`,
@@ -1401,7 +1407,7 @@ function monthCellStyle(item: any): Record<string, string> {
   return { backgroundColor: 'var(--brand-background)' }
 }
 
-function monthCellAccent(item: any): string {
+function _monthCellAccent(item: { highlight?: boolean; percentage?: number }): string {
   if (item.highlight) return 'var(--brand-primary)'
   if (item.percentage >= 80) return 'var(--brand-positive)'
   if (item.percentage >= 50) return 'var(--brand-text)'
@@ -1707,7 +1713,7 @@ async function refreshCommentaries() {
   try {
     const fresh = await commentariesService.forTicker(ticker)
     commentariesData.value = fresh
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 async function startBackfill() {
@@ -1753,7 +1759,7 @@ async function startBackfill() {
             }
           }
         }
-      } catch {}
+      } catch { /* ignore */ }
     }, 3000)
 
     // Hard timeout after 3 minutes
@@ -1767,7 +1773,7 @@ async function startBackfill() {
       },
       3 * 60 * 1000
     )
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 onMounted(() => {
@@ -1947,7 +1953,7 @@ const toIsoDate = (raw: unknown): string => {
   return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString()
 }
 const newsArticlesStructuredData = computed(() => {
-  const arr = (commentaries.value || []) as any[]
+  const arr = commentaries.value || []
   if (!arr || arr.length === 0) return []
   return arr.slice(0, 5).map((c) => ({
     '@context': 'https://schema.org',
@@ -2041,7 +2047,7 @@ const articleStructuredData = computed(() => {
 })
 
 const combinedStructuredData = computed(() => {
-  const base: any[] = [financialProductStructuredData.value, faqStructuredData.value]
+  const base: Record<string, unknown>[] = [financialProductStructuredData.value, faqStructuredData.value]
   if (articleStructuredData.value) base.push(articleStructuredData.value)
   return [...base, ...newsArticlesStructuredData.value]
 })
@@ -2487,7 +2493,7 @@ const bazinPriceDisplay = computed(() => {
   })}`
 })
 
-const monthlyDividendProbability = computed(() => {
+const _monthlyDividendProbability = computed(() => {
   const baseMonths = monthLabels.map((label) => ({
     label,
     percentage: 0,
@@ -2675,7 +2681,7 @@ function formatIndicator(
 
 // Computed para indicadores básicos com safeguards
 const scrapeExtras = computed(() => {
-  return (fundamentusData.value as any)?.scrape_extras ?? null
+  return (fundamentusData.value)?.scrape_extras ?? null
 })
 
 const isFii = computed(() => scrapeExtras.value?.asset_type === 'fii')
@@ -2725,7 +2731,7 @@ interface DestaqueStat {
   captionColor?: string
 }
 
-function fmtCompactBRL(n: any): string {
+function fmtCompactBRL(n: unknown): string {
   const num = Number(n)
   if (!Number.isFinite(num) || num === 0) return '—'
   const abs = Math.abs(num)
@@ -2736,7 +2742,7 @@ function fmtCompactBRL(n: any): string {
 }
 
 const destaquesBadges = computed<DestaqueBadge[]>(() => {
-  const extras = scrapeExtras.value as any
+  const extras = scrapeExtras.value as unknown as LooseExtras | null
   const quality = extras?.quality || {}
   const growth = extras?.growth || {}
   const leverage = extras?.leverage || {}
@@ -2787,9 +2793,9 @@ const destaquesBadges = computed<DestaqueBadge[]>(() => {
 })
 
 const destaquesStats = computed<DestaqueStat[]>(() => {
-  const extras = scrapeExtras.value as any
-  const fd = (fundamentusData.value as any)?.financial_data || {}
-  const ks = (fundamentusData.value as any)?.key_statistics || {}
+  const extras = scrapeExtras.value as unknown as LooseExtras | null
+  const fd = (fundamentusData.value)?.financial_data || {}
+  const ks = (fundamentusData.value)?.key_statistics || {}
   const quality = extras?.quality || {}
   const growth = extras?.growth || {}
   const leverage = extras?.leverage || {}
@@ -2841,15 +2847,15 @@ const destaquesStats = computed<DestaqueStat[]>(() => {
 })
 
 const indicadoresEssenciais = computed<Array<{ label: string; value: string }>>(() => {
-  const extras = scrapeExtras.value as any
+  const extras = scrapeExtras.value as unknown as LooseExtras | null
   const v = extras?.valuation || {}
-  const ks = (fundamentusData.value as any)?.key_statistics || {}
+  const ks = (fundamentusData.value)?.key_statistics || {}
 
-  const fmtNum = (n: any, d = 2) => {
+  const fmtNum = (n: unknown, d = 2) => {
     const num = Number(n)
     return Number.isFinite(num) ? num.toFixed(d).replace('.', ',') : '—'
   }
-  const fmtPct = (n: any) => {
+  const fmtPct = (n: unknown) => {
     const num = Number(n)
     return Number.isFinite(num) ? `${num.toFixed(2).replace('.', ',')}%` : '—'
   }
@@ -2956,7 +2962,7 @@ interface TickerNewsItem {
   published_at: string
 }
 const tickerNews = ref<TickerNewsItem[]>([])
-const activeNewsFilter = ref<'Todas' | 'Empresa' | 'Mercado' | 'Setor'>('Todas')
+const _activeNewsFilter = ref<'Todas' | 'Empresa' | 'Mercado' | 'Setor'>('Todas')
 const tickerNewsTop = computed(() => tickerNews.value.slice(0, 3))
 
 function formatNewsDate(iso: string): string {
@@ -2982,8 +2988,8 @@ onMounted(async () => {
 
 // Slice minimalista de commentaries pro card Resumo Inteligente.
 // Top 4 mais recentes; cada item leva data, change %, titulo.
-const resumoCommentaries = computed(() => {
-  const list = (commentariesData.value || []) as any[]
+const _resumoCommentaries = computed(() => {
+  const list = commentariesData.value || []
   return [...list]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 4)
@@ -2991,7 +2997,7 @@ const resumoCommentaries = computed(() => {
 // Lista completa (sem cap) pro carrossel horizontal — o user dá scroll
 // lateral pra ver todos os eventos.
 const resumoCommentariesAll = computed(() => {
-  const list = (commentariesData.value || []) as any[]
+  const list = commentariesData.value || []
   return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 })
 function formatShortDate(iso: string): string {
@@ -3095,7 +3101,7 @@ const previousClosePrice = computed<number | null>(() => {
 const computedVolatility1Y = computed<number | null>(() => {
   const data = chartData.value || []
   if (data.length < 30) return null
-  const prices = data.map((p: any) => Number(p.value)).filter((v) => Number.isFinite(v) && v > 0)
+  const prices = data.map((p) => Number(p.value)).filter((v) => Number.isFinite(v) && v > 0)
   if (prices.length < 30) return null
   const returns: number[] = []
   for (let i = 1; i < prices.length; i++) {
@@ -3108,32 +3114,32 @@ const computedVolatility1Y = computed<number | null>(() => {
 })
 
 const cotacaoStats = computed<Array<{ label: string; value: string }>>(() => {
-  const extras = scrapeExtras.value as any
+  const extras = scrapeExtras.value as unknown as LooseExtras | null
   const market = extras?.market || {}
   const fii = extras?.fii || {}
   const etf = extras?.etf || {}
 
   const min52 = market.min_price_52_weeks ?? fii.min_price_52_weeks ?? etf.min_price_52_weeks ?? null
   const max52 = market.max_price_52_weeks ?? fii.max_price_52_weeks ?? etf.max_price_52_weeks ?? null
-  const var12m = Number((fundamentusData.value as any)?.key_statistics?.fifty_two_week_change ?? null) * 100
+  const var12m = Number((fundamentusData.value)?.key_statistics?.fifty_two_week_change ?? null) * 100
   const freeFloat = market.free_float ?? null
   const shares = market.shares_outstanding ?? null
 
-  const fmtBRL = (n: any) => {
+  const fmtBRL = (n: unknown) => {
     const num = Number(n)
     return Number.isFinite(num) && num > 0 ? `R$ ${num.toFixed(2).replace('.', ',')}` : '—'
   }
-  const fmtPctSigned = (n: any) => {
+  const fmtPctSigned = (n: unknown) => {
     const num = Number(n)
     if (!Number.isFinite(num) || num === 0) return '—'
     const sign = num >= 0 ? '+' : ''
     return `${sign}${num.toFixed(2).replace('.', ',')}%`
   }
-  const fmtPctPlain = (n: any) => {
+  const fmtPctPlain = (n: unknown) => {
     const num = Number(n)
     return Number.isFinite(num) && num > 0 ? `${num.toFixed(1).replace('.', ',')}%` : '—'
   }
-  const fmtCompactCount = (n: any) => {
+  const fmtCompactCount = (n: unknown) => {
     const num = Number(n)
     if (!Number.isFinite(num) || num <= 0) return '—'
     if (num >= 1e9) return `${(num / 1e9).toFixed(2).replace('.', ',')}B`
@@ -3202,7 +3208,7 @@ onBeforeUnmount(() => {
 })
 
 const assetBadgeLabel = computed(() => {
-  const extras = scrapeExtras.value as any
+  const extras = scrapeExtras.value as unknown as LooseExtras | null
   if (extras?.fii?.segment) return String(extras.fii.segment).toUpperCase()
   return (asset.value?.type || '').toUpperCase() || undefined
 })
