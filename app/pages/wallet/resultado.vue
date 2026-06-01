@@ -519,10 +519,8 @@
         </div>
       </section>
 
-      <!-- INSIGHTS -->
-      <!-- TODO: insights ainda usam texto hardcoded (VALE3, PETR4, Energia).
-           Quando backend expor analise IA por trade (correlacao setor/horario),
-           trocar pra dinamico. Por enquanto mantemos como placeholder. -->
+      <!-- INSIGHTS — data-driven from the closed-trade set: força = avg
+           win/loss ratio, atenção = biggest loss, oportunidade = best trade. -->
       <section class="wp8r-section">
         <header class="wp8r-head">
           <div>
@@ -534,7 +532,7 @@
         <div v-if="loading" class="wp8r-insights">
           <article v-for="i in 3" :key="`ins-skel-${i}`" class="wp8r-ins">
             <p class="wp8r-ins-tag"><span class="wp8r-skel wp8r-skel-chip" /></p>
-            <h4 class="wp8r-ins-h"><span class="wp8r-skel wp8r-skel-text-sm" /></h4>
+            <h4 class="wp8r-ins-h"><span class="sr-only">Carregando insight…</span><span class="wp8r-skel wp8r-skel-text-sm" aria-hidden="true" /></h4>
             <p class="wp8r-ins-note"><span class="wp8r-skel wp8r-skel-text-sm" style="width: 80%;" /></p>
           </article>
         </div>
@@ -550,18 +548,14 @@
 
           <article class="wp8r-ins">
             <p class="wp8r-ins-tag neutral">Atenção</p>
-            <h4 class="wp8r-ins-h">{{ mode === 'swing' ? 'Posição em VALE3 foi seu único trade negativo' : 'Performance cai depois das 14h' }}</h4>
-            <p class="wp8r-ins-note">
-              {{ mode === 'swing' ? 'Mineração e ciclos de commodities são mais voláteis. Reduza tamanho ou use ordens stop-loss mais apertadas.' : 'Considere fechar operações até 13h e evitar entradas no fim do pregão.' }}
-            </p>
+            <h4 class="wp8r-ins-h">{{ attentionInsight.title }}</h4>
+            <p class="wp8r-ins-note">{{ attentionInsight.note }}</p>
           </article>
 
           <article class="wp8r-ins">
             <p class="wp8r-ins-tag accent">Oportunidade</p>
-            <h4 class="wp8r-ins-h">{{ mode === 'swing' ? 'Setor de Energia (TAEE11, CPLE6) tem 100% de win rate' : 'PETR4 te deu 4 wins em 5 trades' }}</h4>
-            <p class="wp8r-ins-note">
-              {{ mode === 'swing' ? 'Considere aumentar exposição em utilities. Setor previsível com bons retornos.' : 'Seu setup em PETR4 tá afiado. Continue replicando o padrão.' }}
-            </p>
+            <h4 class="wp8r-ins-h">{{ opportunityInsight.title }}</h4>
+            <p class="wp8r-ins-note">{{ opportunityInsight.note }}</p>
           </article>
         </div>
       </section>
@@ -770,7 +764,10 @@ const swingStatsReal = computed(() => computeStats(tradesAdapted.value.filter(t 
 const dayTradeStatsReal = computed(() => computeStats(tradesAdapted.value.filter(t => t.style === 'day')))
 
 function computeStats(items: AdaptedTrade[]) {
-  const closed = items.filter(t => Number.isFinite(t.result))
+  // Decisive trades only — exclude scratch/breakeven (result === 0) so the
+  // wins + losses breakdown reconciles with the trade count and win rate
+  // (otherwise "15 W · 6 L" = 21 didn't match the "22 trades" shown).
+  const closed = items.filter(t => Number.isFinite(t.result) && t.result !== 0)
   const wins = closed.filter(t => (t.result ?? 0) > 0)
   const losses = closed.filter(t => (t.result ?? 0) < 0)
   const winsSum = wins.reduce((a, t) => a + (t.result ?? 0), 0)
@@ -792,6 +789,33 @@ const winCount = computed(() => activeTrades.value.filter(t => (t.result ?? 0) >
 const lossCount = computed(() => activeTrades.value.filter(t => (t.result ?? 0) < 0).length)
 const winsValue = computed(() => activeTrades.value.filter(t => (t.result ?? 0) > 0).reduce((a, t) => a + (t.result ?? 0), 0))
 const lossesValue = computed(() => activeTrades.value.filter(t => (t.result ?? 0) < 0).reduce((a, t) => a + (t.result ?? 0), 0))
+
+// ---- Data-driven insights (were hardcoded VALE3/Energia placeholders) ----
+const biggestLossTrade = computed<AdaptedTrade | null>(() =>
+  [...activeTrades.value].filter(t => (t.result ?? 0) < 0)
+    .sort((a, b) => (a.result ?? 0) - (b.result ?? 0))[0] ?? null,
+)
+const biggestWinTrade = computed<AdaptedTrade | null>(() =>
+  [...activeTrades.value].filter(t => (t.result ?? 0) > 0)
+    .sort((a, b) => (b.result ?? 0) - (a.result ?? 0))[0] ?? null,
+)
+const attentionInsight = computed(() => {
+  const t = biggestLossTrade.value
+  if (!t) {
+    return { title: 'Nenhuma operação fechou no negativo no período', note: 'Disciplina de stop impecável: tudo fechou no zero ou no positivo.' }
+  }
+  const title = lossCount.value === 1
+    ? `${t.ticker} foi seu único trade negativo`
+    : `Sua maior perda foi em ${t.ticker}`
+  return { title, note: `${lossCount.value} de ${active.value.totalTrades} trades fecharam no negativo, a maior em ${formatBRL(t.result ?? 0)}. Reveja tamanho de posição e stop.` }
+})
+const opportunityInsight = computed(() => {
+  const t = biggestWinTrade.value
+  if (!t) {
+    return { title: 'Ainda sem trades positivos no período', note: 'Quando vier o primeiro positivo, registre o setup que funcionou.' }
+  }
+  return { title: `${t.ticker} foi seu melhor trade (+${formatBRL(t.result ?? 0)})`, note: 'Seu setup ali funcionou. Continue replicando o padrão que deu certo.' }
+})
 const rrRatio = computed(() => {
   const al = Math.abs(active.value.avgLoss)
   if (!al) return '—'
