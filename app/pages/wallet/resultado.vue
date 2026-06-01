@@ -534,7 +534,7 @@
         <div v-if="loading" class="wp8r-insights">
           <article v-for="i in 3" :key="`ins-skel-${i}`" class="wp8r-ins">
             <p class="wp8r-ins-tag"><span class="wp8r-skel wp8r-skel-chip" /></p>
-            <h4 class="wp8r-ins-h"><span class="wp8r-skel wp8r-skel-text-sm" /></h4>
+            <h4 class="wp8r-ins-h"><span class="sr-only">Carregando insight…</span><span class="wp8r-skel wp8r-skel-text-sm" aria-hidden="true" /></h4>
             <p class="wp8r-ins-note"><span class="wp8r-skel wp8r-skel-text-sm" style="width: 80%;" /></p>
           </article>
         </div>
@@ -770,7 +770,10 @@ const swingStatsReal = computed(() => computeStats(tradesAdapted.value.filter(t 
 const dayTradeStatsReal = computed(() => computeStats(tradesAdapted.value.filter(t => t.style === 'day')))
 
 function computeStats(items: AdaptedTrade[]) {
-  const closed = items.filter(t => Number.isFinite(t.result))
+  // Decisive trades only — exclude scratch/breakeven (result === 0) so the
+  // wins + losses breakdown reconciles with the trade count and win rate
+  // (otherwise "15 W · 6 L" = 21 didn't match the "22 trades" shown).
+  const closed = items.filter(t => Number.isFinite(t.result) && t.result !== 0)
   const wins = closed.filter(t => (t.result ?? 0) > 0)
   const losses = closed.filter(t => (t.result ?? 0) < 0)
   const winsSum = wins.reduce((a, t) => a + (t.result ?? 0), 0)
