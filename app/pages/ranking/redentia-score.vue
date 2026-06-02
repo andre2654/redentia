@@ -28,7 +28,7 @@
 
       <!-- ============ Hero (gradient amber treatment) ============ -->
       <header
-        class="relative overflow-hidden rounded-3xl border px-6 py-10 md:px-12 md:py-16"
+        class="relative overflow-hidden rounded-[14px] border px-6 py-10 md:px-12 md:py-16"
         :style="{
           borderColor: 'color-mix(in srgb, var(--brand-primary) 35%, var(--brand-border))',
           background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 14%, var(--brand-background)) 0%, color-mix(in srgb, var(--brand-secondary) 8%, var(--brand-background)) 100%)',
@@ -137,7 +137,7 @@
           <article
             v-for="(step, idx) in methodologySteps"
             :key="step.title"
-            class="flex flex-col gap-3 rounded-2xl border p-5"
+            class="flex flex-col gap-3 rounded-[14px] border p-5"
             :style="{
               backgroundColor: 'color-mix(in srgb, var(--brand-surface) 60%, var(--brand-background))',
               borderColor: 'color-mix(in srgb, var(--brand-border) 60%, transparent)',
@@ -165,7 +165,7 @@
 
         <!-- Formula callout -->
         <div
-          class="flex flex-col gap-2 rounded-2xl border-l-4 p-5 md:flex-row md:items-center md:justify-between md:gap-6"
+          class="flex flex-col gap-2 rounded-[14px] border-l-4 p-5 md:flex-row md:items-center md:justify-between md:gap-6"
           :style="{
             backgroundColor: 'color-mix(in srgb, var(--brand-primary) 7%, var(--brand-surface))',
             borderLeftColor: 'var(--brand-primary)',
@@ -203,7 +203,7 @@
 
       <!-- ============ Custom score table ============ -->
       <div
-        class="overflow-hidden rounded-2xl border"
+        class="overflow-hidden rounded-[14px] border"
         :style="{
           borderColor: 'var(--brand-border)',
           backgroundColor: 'var(--brand-surface)',

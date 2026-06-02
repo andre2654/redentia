@@ -29,7 +29,7 @@
         </p>
 
         <div
-          class="my-6 rounded-2xl border border-secondary/20 bg-secondary/10 p-6"
+          class="my-6 rounded-[14px] border border-secondary/20 bg-secondary/10 p-6"
         >
           <h3 class="mb-3 text-secondary">
             Grande Vantagem: Dividendos Isentos de IR!
@@ -116,8 +116,8 @@
             15% é preocupante para fundos de tijolo
           </li>
           <li>
-            <strong>P/VP (Preço sobre Valor Patrimonial):</strong> < 1,0 =
-            desconto. > 1,0 = prêmio. Analise o motivo
+            <strong>P/VP (Preço sobre Valor Patrimonial):</strong> &lt; 1,0 =
+            desconto. &gt; 1,0 = prêmio. Analise o motivo
           </li>
           <li>
             <strong>Liquidez:</strong> Volume diário de negociação. FIIs
@@ -258,7 +258,7 @@
       </div>
 
       <!-- Destaque para Planejamento com FIIs -->
-      <div class="rounded-[30px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8">
+      <div class="rounded-[14px] border border-secondary/30 bg-secondary/10 p-8">
         <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-2">
@@ -321,7 +321,7 @@
       <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--brand-border)' }">
         <NuxtLink
           to="/search?group=reits"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between rounded-[14px] border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="group-hover:text-secondary transition-colors">

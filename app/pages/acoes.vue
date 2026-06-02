@@ -107,7 +107,7 @@
           </li>
           <li>
             <strong>Dívida Líquida/EBITDA:</strong> Avalia endividamento
-            (idealmente < 2x)
+            (idealmente &lt; 2x)
           </li>
           <li>
             <strong>Margem Líquida:</strong> Quanto a empresa lucra de cada
@@ -232,7 +232,7 @@
       </div>
 
       <!-- Destaque para Simulador de Ações -->
-      <div class="rounded-[30px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8">
+      <div class="rounded-[14px] border border-secondary/30 bg-secondary/10 p-8">
         <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-2">
@@ -296,7 +296,7 @@
       <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--brand-border)' }">
         <NuxtLink
           to="/search?group=stocks"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between rounded-[14px] border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="group-hover:text-secondary transition-colors">
