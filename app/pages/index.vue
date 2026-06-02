@@ -1924,11 +1924,13 @@ const sectorHeatmap = computed<SectorTile[]>(() => {
 // Usa color-mix pra modular opacidade conforme a magnitude do movimento.
 function sectorTileStyle(change: number) {
   const abs = Math.min(Math.abs(change), 3) // satura em 3%
-  const intensity = Math.round(8 + (abs / 3) * 18) // 8% a 26% mix
+  // Fill discreto conforme a magnitude. Teto em 12% no fundo pra respeitar a
+  // identidade "quiet" — antes ia a 26% no bg e 39% na borda, saturado demais.
+  const intensity = Math.round(6 + (abs / 3) * 6) // 6% a 12% mix
   const accent = change >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
   return {
     background: `color-mix(in srgb, ${accent} ${intensity}%, var(--bg-elevated))`,
-    borderColor: `color-mix(in srgb, ${accent} ${Math.round(intensity * 1.5)}%, transparent)`,
+    borderColor: `color-mix(in srgb, ${accent} ${Math.round(intensity * 1.6)}%, transparent)`,
     accentColor: accent,
   }
 }
