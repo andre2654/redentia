@@ -1260,6 +1260,7 @@ onMounted(() => {
   fetchChartData()
   fetchDividendsData()
   fetchFundamentusData()
+  fetchVolatility1YSeries()
 })
 
 const _chatSuggestions = [
@@ -3097,12 +3098,24 @@ const previousClosePrice = computed<number | null>(() => {
   return cur / (1 + ch / 100)
 })
 
-// Volatilidade 1A = stddev anualizada dos retornos diarios da serie do chart.
-// Anualiza com sqrt(252) (dias úteis B3). Volta '—' se a serie e curta.
+// Volatilidade 1A = stddev anualizada dos retornos diarios. Usa uma série
+// dedicada de 12 meses, INDEPENDENTE do range do gráfico (que abre em 1 mês,
+// curto demais pra anualizar — por isso a stat aparecia "—" por padrão).
+// Anualiza com sqrt(252) (dias úteis B3). Volta '—' se a série de 1 ano vier
+// curta (ticker novo/ilíquido).
+const volatility1ySeries = ref<number[]>([])
+async function fetchVolatility1YSeries() {
+  try {
+    const data = await assetHistoricPrices(ticker, '12mo')
+    volatility1ySeries.value = Array.isArray(data)
+      ? data.map((it) => Number(it.market_price)).filter((v) => Number.isFinite(v) && v > 0)
+      : []
+  } catch {
+    volatility1ySeries.value = []
+  }
+}
 const computedVolatility1Y = computed<number | null>(() => {
-  const data = chartData.value || []
-  if (data.length < 30) return null
-  const prices = data.map((p) => Number(p.value)).filter((v) => Number.isFinite(v) && v > 0)
+  const prices = volatility1ySeries.value
   if (prices.length < 30) return null
   const returns: number[] = []
   for (let i = 1; i < prices.length; i++) {
