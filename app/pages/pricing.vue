@@ -531,7 +531,7 @@ async function loadPlans() {
   try {
     const slug = brand.slug
     const data = await billingService.listPublicPlans(slug)
-    const payload = (data as any)?.data ?? data
+    const payload = (data as { data?: typeof data })?.data ?? data
     plans.value = payload.plans ?? []
     tenantName.value = payload.tenant?.name ?? brand.name
     billingEnabled.value = Boolean(payload.billing_enabled)
@@ -572,14 +572,15 @@ async function onCheckout(
       cycle: c,
       ...(opts?.with_trial ? { with_trial: true } : {}),
     })
-    const payload = (data as any)?.data ?? data
+    const payload = (data as { data?: typeof data })?.data ?? data
     if (payload?.checkout_url) {
       window.location.href = payload.checkout_url
       return
     }
     toast.add({ title: 'Erro ao iniciar checkout', color: 'error' })
-  } catch (err: any) {
-    toast.add({ title: 'Não foi possível iniciar checkout', description: err?.data?.message ?? 'Tente novamente.', color: 'error' })
+  } catch (err: unknown) {
+    const apiError = err as { data?: { message?: string } }
+    toast.add({ title: 'Não foi possível iniciar checkout', description: apiError?.data?.message ?? 'Tente novamente.', color: 'error' })
   } finally {
     busyPlanId.value = null
   }
