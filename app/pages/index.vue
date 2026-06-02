@@ -1284,6 +1284,7 @@
 <script setup lang="ts">
 import type { IAsset } from '~/types/asset'
 import type { ChartTimeRange } from '~/types/chart'
+import type { HomeCausalFactor } from '~/composables/useHomeData'
 import { useFormat } from '~/composables/useFormat'
 import { useTesouroService, type TesouroItem } from '~/services/tesouro'
 import { isPlaceholderLogo as isPlaceholderLogoUtil } from '~/utils/logo'
@@ -1335,7 +1336,6 @@ const siteUrl = computed(() => {
   const url = runtimeConfig.public?.siteUrl || brand.url
   return url.endsWith('/') ? url.slice(0, -1) : url
 })
-const canonicalUrl = computed(() => `${siteUrl.value}/`)
 const metaDescription = brand.seo.description
 const navigationLinks = computed(() => [
   {
@@ -1541,21 +1541,17 @@ function relativeTimeShort(iso: string): string {
 }
 
 const loading = ref(false)
-const blockChat = ref(false)
 
 // Deep-linked home state. URL is the single source of truth for the
 // market view (range, map/list, heat filter). `replace` avoids polluting
 // history with every toggle while keeping shareable links working.
 const VALID_RANGES: ChartTimeRange[] = ['month', 'year', '3years', 'full']
-const VALID_FILTERS = ['all', 'positive', 'negative'] as const
-type TreemapFilter = typeof VALID_FILTERS[number]
 
 function replaceQuery(patch: Record<string, string | undefined>) {
-  const next = { ...route.query }
-  for (const [k, v] of Object.entries(patch)) {
-    if (v === undefined) delete next[k]
-    else next[k] = v
-  }
+  const merged = { ...route.query, ...patch }
+  const next = Object.fromEntries(
+    Object.entries(merged).filter(([, v]) => v !== undefined)
+  )
   router.replace({ query: next })
 }
 
@@ -1568,57 +1564,6 @@ const selectedTimeRange = computed<ChartTimeRange>({
     replaceQuery({ range: value === 'month' ? undefined : value })
   },
 })
-
-const showMap = computed<boolean>({
-  get() {
-    return String(route.query.view ?? '') === 'map'
-  },
-  set(value) {
-    replaceQuery({ view: value ? 'map' : undefined })
-  },
-})
-
-// Adapter para AtomsSegmented que usa string discriminada em vez de boolean.
-const viewMode = computed<'list' | 'map'>({
-  get() {
-    return showMap.value ? 'map' : 'list'
-  },
-  set(value) {
-    showMap.value = value === 'map'
-  },
-})
-
-const treemapFilter = computed<TreemapFilter>({
-  get() {
-    const q = String(route.query.filter ?? 'all') as TreemapFilter
-    return (VALID_FILTERS as readonly string[]).includes(q) ? q : 'all'
-  },
-  set(value) {
-    replaceQuery({ filter: value === 'all' ? undefined : value })
-  },
-})
-
-const rankingLinkQueries = {
-  top: {
-    stocks: { ch_min: 0, group: 'stocks', reit: 0, bdr: 0 },
-    etfs: { ch_min: 0, group: 'etfs', reit: 0, bdr: 0 },
-    reits: { ch_min: 0, group: 'reits', stock: 0, bdr: 0 },
-    bdrs: { ch_min: 0, group: 'bdrs', stock: 0, reit: 0 },
-  },
-  bottom: {
-    stocks: { ch_max: 0, group: 'stocks', reit: 0, bdr: 0 },
-    etfs: { ch_max: 0, group: 'etfs', reit: 0, bdr: 0 },
-    reits: { ch_max: 0, group: 'reits', stock: 0, bdr: 0 },
-    bdrs: { ch_max: 0, group: 'bdrs', stock: 0, reit: 0 },
-  },
-} as const
-
-const assetCategories = [
-  { key: 'stocks', label: 'Ações' },
-  { key: 'etfs', label: 'ETFs' },
-  { key: 'reits', label: 'Reits' },
-  { key: 'bdrs', label: 'BDRs' },
-] as const
 
 // Categorias do novo bloco "Explorar o mercado" (5 lists × 5 categorias).
 // Label "FIIs" em vez de "Reits" pra consistência com o vocabulário BR.
@@ -1729,10 +1674,17 @@ function formatPctSigned(value: number | null | undefined): string {
   const sign = n >= 0 ? '+' : ''
   return `${sign}${n.toFixed(2).replace('.', ',')}%`
 }
-function pickTicker(asset: any): string {
+// Ativo "solto" como chega nos cards do Explorar: IAsset dos rankings mais
+// campos extras do endpoint de dividend yield (scrape_logo, dividend_yield)
+// que não fazem parte do IAsset canônico.
+type ExploreAssetLike = Partial<IAsset> & {
+  scrape_logo?: string | null
+  dividend_yield?: number | string | null
+}
+function pickTicker(asset: ExploreAssetLike | null | undefined): string {
   return (asset?.ticker || asset?.stock || '').toString().toUpperCase()
 }
-function pickChange(asset: any): number {
+function pickChange(asset: ExploreAssetLike | null | undefined): number {
   return Number(asset?.change_percent ?? asset?.change ?? 0) || 0
 }
 
@@ -1759,7 +1711,7 @@ interface ExploreList {
 // nao tem logo de verdade. Combinado com useFailedLogos no template
 // (img.onerror -> markFailed) cobre tambem o caso de 404 do CDN.
 const failedExploreLogos = useFailedLogos()
-function assetLogoUrl(a: any): string | null {
+function assetLogoUrl(a: ExploreAssetLike | null | undefined): string | null {
   if (a?.logo && !isPlaceholderLogoUtil(a.logo)) return a.logo
   if (a?.scrape_logo && !isPlaceholderLogoUtil(a.scrape_logo)) return a.scrape_logo
   const t = pickTicker(a)
@@ -1840,7 +1792,7 @@ const exploreListsRaw = computed<ExploreList[]>(() => {
     .slice(0, 5)
   const dyItems = (dyByCategory.value[cat] || []).slice(0, 5)
 
-  const mapAssetItem = (a: any, value: string, colorVar?: string): ExploreItem => {
+  const mapAssetItem = (a: ExploreAssetLike, value: string, colorVar?: string): ExploreItem => {
     const ticker = pickTicker(a)
     return {
       ticker,
@@ -1879,7 +1831,7 @@ const exploreListsRaw = computed<ExploreList[]>(() => {
                 pickChange(a) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
               )
             )
-          : dyItems.map((a: any) => {
+          : dyItems.map((a: ExploreAssetLike) => {
               // Endpoint pode retornar DY em % (ex: 12.5) ou fração (0.125).
               const raw = Number(a.dividend_yield ?? 0)
               const pct = raw > 0 && raw <= 1 ? raw * 100 : raw
@@ -1943,7 +1895,7 @@ const sectorHeatmap = computed<SectorTile[]>(() => {
     ...(topAssets.value.bottom.reits || []),
   ]
   for (const a of pools) {
-    const sector = (a as any)?.sector
+    const sector = a.sector
     if (!sector || typeof sector !== 'string') continue
     const change = pickChange(a)
     if (!Number.isFinite(change)) continue
@@ -2003,7 +1955,7 @@ const FACTOR_KEY_PALETTE: Record<string, { bg: string; color: string }> = {
   consumo: { bg: 'color-mix(in srgb, #7c3aed 14%, transparent)', color: '#7c3aed' },
   global: { bg: 'color-mix(in srgb, var(--brand-positive) 14%, transparent)', color: 'var(--brand-positive)' },
 }
-function buildInsightNarrative(f: any): string {
+function buildInsightNarrative(f: HomeCausalFactor): string {
   const tickers = Array.isArray(f.tickers) ? f.tickers.slice(0, 3).join(', ') : ''
   const verb = (f.impact ?? 0) >= 0 ? 'sustentaram' : 'pressionaram'
   switch (f.key) {
@@ -2025,7 +1977,7 @@ function buildInsightNarrative(f: any): string {
 }
 const insightPills = computed<InsightPill[]>(() => {
   const factors = homeNarrative.value?.causalFactors || []
-  return factors.slice(0, 3).map((f: any) => {
+  return factors.slice(0, 3).map((f) => {
     const palette = FACTOR_KEY_PALETTE[f.key] || { bg: 'color-mix(in srgb, var(--text-heading) 6%, transparent)', color: 'var(--text-body)' }
     let pillLabel: InsightPill['pillLabel'] = 'Tendência'
     let pillColorVar = 'var(--brand-primary)'
@@ -2082,7 +2034,6 @@ interface HomeMarketData {
 }
 
 const stocksData = ref<TreemapEntry[]>([])
-const { requestPermission, token: fcmToken } = useFirebaseNotifications()
 
 const topAssets = ref<{
   top: RankingBucket
@@ -2105,37 +2056,10 @@ const topAssets = ref<{
 const RANKING_LIMIT = 8
 const TREEMAP_LIMIT = 200
 
-// Ranking card variant helpers
-const rankingCardClass = computed(() => {
-  const v = brand.homePage.rankingCard.variant
-  if (v === 'card') return 'mx-2 brand-card-md border p-4'
-  if (v === 'border-left') return 'mx-1 border-l-2 pl-4'
-  return ''
-})
-
-function rankingCardStyle(accentColor: string) {
-  const v = brand.homePage.rankingCard.variant
-  if (v === 'card') return { borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }
-  if (v === 'border-left') return { borderColor: accentColor }
-  return {}
-}
-
-function sliceRanking(items: any[] | undefined) {
-  if (!items) return []
-  return items.slice(0, brand.homePage.rankingCard.itemsPerCategory)
-}
-
-// Crypto rankings gate: tenants podem desativar o bloco inteiro via
-// `brand.features.showCrypto: false` (ex: Me Poupe! fica fora do tom).
-// Default = true pra preservar behavior atual.
-const showCrypto = computed(() => {
-  return (brand as any).features?.showCrypto !== false
-})
-
 // Ticker rail gate: regua de tickers ao vivo debaixo do hero. Me Poupe!
 // nao usa (visual showtime ja tem propria gramatica). Default true.
 const showTickerRail = computed(() => {
-  return (brand as any).features?.showTickerRail !== false
+  return (brand as { features?: { showTickerRail?: boolean } }).features?.showTickerRail !== false
 })
 
 const categoryGridCols = computed(() => {
@@ -2221,73 +2145,6 @@ const guidesMedium: GuideEntry[] = [
     icon: 'i-lucide-coins',
     categoria: 'Dividendos',
     tempoLeitura: 7,
-  },
-]
-
-const guidesTiles: GuideEntry[] = [
-  {
-    titulo: 'Juros compostos',
-    descricao: 'Simule quanto seus investimentos renderão.',
-    to: '/calculadora/juros-compostos',
-    icon: 'i-lucide-trending-up',
-    categoria: 'Ferramenta',
-    tempoLeitura: 5,
-  },
-  {
-    titulo: 'Simulador de ações',
-    descricao: 'Quanto você teria ganho investindo na B3.',
-    to: '/calculadora/acoes',
-    icon: 'i-lucide-chart-line',
-    categoria: 'Ferramenta',
-    tempoLeitura: 5,
-  },
-  {
-    titulo: 'Planejamento patrimonial',
-    descricao: 'Calcule quanto investir para atingir suas metas.',
-    to: '/calculadora/planejamento',
-    icon: 'i-lucide-target',
-    categoria: 'Ferramenta',
-    tempoLeitura: 5,
-  },
-  {
-    titulo: 'Preço teto',
-    descricao: 'Graham e Bazin para saber se uma ação está cara.',
-    to: '/calculadora/preco-teto',
-    icon: 'i-lucide-shield-check',
-    categoria: 'Ferramenta',
-    tempoLeitura: 5,
-  },
-  {
-    titulo: 'Aposentadoria / FIRE',
-    descricao: 'Planeje sua aposentadoria considerando INSS e inflação.',
-    to: '/calculadora/aposentadoria',
-    icon: 'i-lucide-piggy-bank',
-    categoria: 'Ferramenta',
-    tempoLeitura: 5,
-  },
-  {
-    titulo: 'Dividend yield',
-    descricao: 'DY atual, projetado e on cost.',
-    to: '/calculadora/dividend-yield',
-    icon: 'i-lucide-percent',
-    categoria: 'Ferramenta',
-    tempoLeitura: 4,
-  },
-  {
-    titulo: 'Quanto investir / mês',
-    descricao: 'Meta financeira em aporte mensal.',
-    to: '/calculadora/quanto-investir',
-    icon: 'i-lucide-wallet',
-    categoria: 'Ferramenta',
-    tempoLeitura: 4,
-  },
-  {
-    titulo: 'IR sobre ações',
-    descricao: 'Swing trade, day trade e DARF.',
-    to: '/calculadora/imposto-renda',
-    icon: 'i-lucide-receipt-text',
-    categoria: 'Ferramenta',
-    tempoLeitura: 4,
   },
 ]
 
@@ -2495,12 +2352,6 @@ const ibovVariationColor = computed(() => {
   return stats.variation > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
 })
 
-const ifixVariationColor = computed(() => {
-  const stats = calculateSeriesStats(homeMarketData.value?.ifixSeries)
-  if (!stats || stats.variation === 0) return 'var(--brand-text-muted)'
-  return stats.variation > 0 ? 'var(--brand-positive)' : 'var(--brand-negative)'
-})
-
 // qsShortcutModifier ainda é usado pelo hint "Aperte ⌘K" da copy esquerda.
 // O mockup rotacionando (qsDemos / qsCurrentDemo / qsActiveDemoIdx / qsTimer)
 // foi removido — a coluna direita agora hospeda o dock real do QuickSearch.
@@ -2529,6 +2380,13 @@ interface BentoTickerData {
   price: number
   change: number
   sparkline: number[]
+}
+
+// Ponto de série histórica devolvido por assetHistoricPrices (shape solto
+// do backend); só lemos market_price/close pra montar o sparkline.
+interface PricePoint {
+  market_price?: number | string | null
+  close?: number | string | null
 }
 
 const BENTO_CODES = ['PETR4', 'VALE3', 'AAPL34', 'TSLA34'] as const
@@ -2568,14 +2426,14 @@ onMounted(async () => {
           getTickerDetails(code).catch(() => null),
           assetHistoricPrices(code, '1mo').catch(() => null),
         ])
-        const d: any = details || {}
+        const d: Partial<IAsset> = (details as Partial<IAsset>) || {}
         const price = coerceNumber(d.market_price ?? d.close)
         const change = coerceNumber(d.change_percent ?? d.change)
-        const name = (d.name as string) || BENTO_FALLBACK_NAMES[code] || code
-        const histArr = Array.isArray(history) ? history : []
+        const name = d.name || BENTO_FALLBACK_NAMES[code] || code
+        const histArr: PricePoint[] = Array.isArray(history) ? (history as PricePoint[]) : []
         const points = histArr
-          .map((p: any) => coerceNumber(p?.market_price ?? p?.close))
-          .filter((v: number) => Number.isFinite(v) && v > 0)
+          .map((p) => coerceNumber(p?.market_price ?? p?.close))
+          .filter((v) => Number.isFinite(v) && v > 0)
         // Sample ~15 points pra sparkline (mantem forma da curva sem ruido).
         let sparkline: number[] = points
         if (points.length > 15) {
@@ -2610,27 +2468,6 @@ const bentoTickers = computed(() =>
     sparkline: t.sparkline,
   }))
 )
-
-// Helpers SVG sparkline para os bento tickers (viewBox 120×32).
-function bentoSparklineLine(pts: number[]): string {
-  if (!pts.length) return ''
-  const min = Math.min(...pts)
-  const max = Math.max(...pts)
-  const range = max - min || 1
-  const stepX = 120 / (pts.length - 1)
-  const pad = 3
-  return pts.map((v, i) => {
-    const x = i * stepX
-    const y = 32 - pad - ((v - min) / range) * (32 - pad * 2)
-    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`
-  }).join(' ')
-}
-function bentoSparklineArea(pts: number[]): string {
-  const line = bentoSparklineLine(pts)
-  if (!line) return ''
-  const last = (pts.length - 1) * (120 / (pts.length - 1))
-  return `${line} L ${last.toFixed(1)} 32 L 0 32 Z`
-}
 
 // Live clock para o card editorial (HH:MM em America/Sao_Paulo, atualiza a cada 30s)
 const ibovClock = ref('')
@@ -2670,15 +2507,6 @@ const ibovPrevClose = computed(() => {
   if (delta === null) return null
   return ibovLastPrice.value - delta
 })
-
-const chatSuggestions = [
-  'Qual a diferença entre ações e FIIs?',
-  'Como funcionam os dividendos?',
-  'O que é diversificação?',
-  'Quanto devo investir por mês?',
-  'Como escolher boas ações?',
-  'Vale a pena investir em ETFs?',
-]
 
 // Combina altas + baixas de todas as classes (stocks/reits/etfs/bdrs) num
 // único pool de tickers pro rail, deduplicando por ticker. Antes usávamos
@@ -2771,10 +2599,6 @@ function buildTreemapDataset(
   return dataset
 }
 
-function handleChatCardClick() {
-  blockChat.value = true
-}
-
 const ibovChartLabel = computed(() => {
   const lastPoint =
     ibovChartData.value.length > 0
@@ -2803,12 +2627,6 @@ async function fetchIbovChartData(
   const data = await getIndiceHistoricPrices('ibov', period)
   ibovChartData.value = mapIndiceSeries(Array.isArray(data) ? data : [])
   loading.value = false
-}
-
-function redirectToLogin(source: string) {
-  navigateTo(
-    `/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`
-  )
 }
 
 watch(selectedTimeRange, (range) => {
