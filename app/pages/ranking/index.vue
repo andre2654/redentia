@@ -45,7 +45,7 @@
 
       <!-- ============ Featured: Redentia Score (flagship) ============ -->
       <article
-        class="rs-featured relative overflow-hidden rounded-2xl border p-6 md:p-8"
+        class="rs-featured relative overflow-hidden rounded-[14px] border p-6 md:p-8"
         :style="{
           borderColor: 'color-mix(in srgb, var(--brand-primary) 40%, var(--brand-border))',
           background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 12%, var(--brand-surface)) 0%, color-mix(in srgb, var(--brand-secondary) 8%, var(--brand-surface)) 100%)',
@@ -189,7 +189,7 @@
         <article
           v-for="r in rankings"
           :key="r.slug"
-          class="ranking-card flex flex-col gap-3 rounded-2xl border p-5 transition-[border-color,background-color,box-shadow]"
+          class="ranking-card flex flex-col gap-3 rounded-[14px] border p-5 transition-[border-color,background-color,box-shadow]"
           :class="{ 'ranking-card--soon': r.soon }"
           :style="{
             backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
@@ -348,6 +348,8 @@
 </template>
 
 <script setup lang="ts">
+import type { IAsset } from '~/types/asset'
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -393,6 +395,49 @@ type Metric =
   | 'consecutiveProfitYears'
   | 'mentionCount'
 
+// Linha enriquecida que o RankingResource devolve: IAsset + os campos
+// numericos extras (roe, net_margin, dividend_yield, buy_hold_score, …)
+// que os helpers de formatacao leem via `pickFirst(row.xxx, ...)`.
+// Todos opcionais porque cada ranking so popula os campos da sua metrica.
+interface RankingRow extends IAsset {
+  dividend_yield?: number
+  dy?: number
+  total_revenue?: number
+  revenue?: number
+  net_income?: number
+  profit?: number
+  income?: number
+  total_cash?: number
+  cash_and_equivalents?: number
+  cash?: number
+  roe?: number
+  return_on_equity?: number
+  net_margin?: number
+  profit_margins?: number
+  upside_pct?: number
+  graham_discount?: number
+  bazin_discount?: number
+  upside_potential?: number
+  upside?: number
+  discount?: number
+  trailing_pe?: number
+  pe?: number
+  price_to_earnings?: number
+  change?: number
+  monthly_change?: number
+  yearly_change?: number
+  buy_hold_score?: number
+  buy_and_hold_score?: number
+  score?: number
+  revenue_growth_5y?: number
+  cagr_5y?: number
+  net_income_growth_5y?: number
+  consecutive_profit_years?: number
+  profit_years?: number
+  mention_count?: number
+  mentions?: number
+}
+
 type Ranking = {
   slug: string
   title: string
@@ -400,7 +445,7 @@ type Ranking = {
   icon: string
   tint: string
   metric: Metric
-  fetcher?: () => Promise<any[]>
+  fetcher?: () => Promise<RankingRow[]>
   soon?: boolean
 }
 
@@ -629,14 +674,14 @@ const { data: rankingData, pending } = await useAsyncData(
     const settled = await Promise.allSettled(
       active.map((r) => r.fetcher!()),
     )
-    const out: Record<string, any[]> = {}
+    const out: Record<string, RankingRow[]> = {}
     settled.forEach((res, idx) => {
       const slug = active[idx]!.slug
       out[slug] = res.status === 'fulfilled' ? (res.value || []) : []
     })
     return out
   },
-  { default: () => ({}) as Record<string, any[]> },
+  { default: () => ({}) as Record<string, RankingRow[]> },
 )
 
 // ====================================================================
@@ -674,7 +719,7 @@ function formatBrl(n: number): string {
   return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 })
 }
 
-function formatMetric(metric: Metric, row: any): string {
+function formatMetric(metric: Metric, row: RankingRow): string {
   switch (metric) {
     case 'marketCap': {
       const v = pickFirst(row.market_cap)
@@ -776,7 +821,7 @@ function formatMetric(metric: Metric, row: any): string {
   }
 }
 
-function metricColor(metric: Metric, row: any): string {
+function metricColor(metric: Metric, row: RankingRow): string {
   if (
     metric === 'monthlyChangeTop' ||
     metric === 'yearlyChangeTop'
