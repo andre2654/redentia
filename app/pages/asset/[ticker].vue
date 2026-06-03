@@ -86,6 +86,7 @@
       <template #chart>
         <AtomsGraphLine
           :data="chartData"
+          :previous-close="previousClosePrice"
           :legend="chartLabel"
           :height="360"
           :loading="isLoadingChart"
@@ -115,6 +116,7 @@
       <template #chart>
         <AtomsGraphLine
           :data="chartData"
+          :previous-close="previousClosePrice"
           :legend="chartLabel"
           :height="320"
           :loading="isLoadingChart"
@@ -312,6 +314,7 @@
               <div ref="assetChartRef">
                 <AtomsGraphLine
                   :data="chartData"
+                  :previous-close="previousClosePrice"
                   :legend="chartLabel"
                   :height="220"
                   :mobile-height="200"
@@ -370,6 +373,7 @@
           <template #chart="{ expandedHeight }">
             <AtomsGraphLine
               :data="chartData"
+              :previous-close="previousClosePrice"
               :legend="chartLabel"
               :height="expandedHeight"
               :mobile-height="expandedHeight"
