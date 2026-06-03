@@ -11,6 +11,15 @@
   --ui-positive: var(--brand-positive, #4ADE80);
   --ui-negative: var(--brand-negative, #ef4444);
   --ui-neutral: var(--brand-neutral, #6b7280);
+
+  /* Category accent hues (factor types, event kinds) — fixed semantic colors,
+     distinct from the per-tenant --brand-* palette. Centralized so templates
+     reference tokens instead of hardcoded hex. */
+  --cat-violet: #7c3aed;
+  --cat-violet-soft: #a78bfa;
+  --cat-blue: #60a5fa;
+  --cat-orange: #d97706;
+  --cat-brown: #b45309;
 }
 
 body {

@@ -66,8 +66,8 @@ function eventTint(kind: EventKind): string {
   switch (kind) {
     case 'pay': return 'var(--brand-positive)'
     case 'ex': return 'var(--brand-primary)'
-    case 'earnings': return '#a78bfa'
-    case 'rotate': return '#60a5fa'
+    case 'earnings': return 'var(--cat-violet-soft)'
+    case 'rotate': return 'var(--cat-blue)'
     case 'maturity': return 'var(--brand-warning)'
   }
 }
