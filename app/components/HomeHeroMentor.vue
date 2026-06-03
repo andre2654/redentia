@@ -37,7 +37,7 @@
           v-if="brand.founder?.photo"
           :src="brand.founder.photo"
           :alt="brand.founder?.name || 'Founder'"
-          class="mb-6 h-48 w-48 rounded-2xl object-cover shadow-2xl md:h-56 md:w-56"
+          class="mb-6 h-48 w-48 rounded-[14px] object-cover md:h-56 md:w-56"
         />
 
         <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
@@ -173,7 +173,45 @@
 </template>
 
 <script setup lang="ts">
-const brand = useBrand() as any
+// Shape of the (arbitrary tenant JSON) brand config this hero reads. Every
+// key is optional/loose because tenants populate `hero`/`founder` ad-hoc in
+// the backend `config` JSONB — we only model the fields this component touches.
+interface MentorBrandHero {
+  tapeBadge?: string
+  tickerTag?: string
+  badge?: string
+  title?: string
+  subtitle?: string
+  founderQuote?: string
+  ctaLabel?: string
+  ctaHref?: string
+  ctaIcon?: string
+  ctaSecondaryLabel?: string
+  ctaSecondaryHref?: string
+  trustIndicators?: string[]
+}
+interface MentorBrandFounder {
+  name?: string
+  role?: string
+  photo?: string
+}
+interface MentorBrand {
+  name?: string
+  shortName?: string
+  tagline?: string
+  hero?: MentorBrandHero
+  founder?: MentorBrandFounder
+}
+
+// IBOV mini-series point — mirrors the `IbovPoint` shape the parent
+// (HomeHero.vue) passes down.
+interface IbovPoint {
+  date: string
+  value: number
+  timestamp: number
+}
+
+const brand = useBrand() as MentorBrand
 
 const tapeBadge = computed(() => {
   return brand.hero?.tapeBadge || 'MANUAL DO PRIMO · CAPA DO LIVRO'
@@ -194,7 +232,7 @@ const trustIndicators = computed<string[]>(() => {
 })
 
 defineProps<{
-  ibovSeries?: any
+  ibovSeries?: IbovPoint[]
   ibovLastPrice?: number | null
   ibovIndicator?: string | null
   ibovVariationColor?: string | null

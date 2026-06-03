@@ -45,7 +45,7 @@
           v-if="resolvedLogo && !isLoadingAsset && !failedLogos?.isFailed?.(resolvedLogo)"
           :src="resolvedLogo"
           :alt="assetName || tickerUpper"
-          class="mb-6 h-20 w-20 rounded-2xl object-cover shadow-2xl"
+          class="mb-6 h-20 w-20 rounded-[14px] object-cover"
           @error="failedLogos?.markFailed?.(resolvedLogo)"
         />
         <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
@@ -387,21 +387,46 @@
 </template>
 
 <script setup lang="ts">
-const brand = useBrand() as any
+import type { IAsset } from '~/types/asset'
+
+// Loose tenant JSON brand config — only the keys this component reads.
+interface MentorBrand {
+  assetPage?: { showIndicators?: boolean }
+  founder?: { name?: string }
+}
+
+// The parent (`pages/asset/[ticker].vue`) passes the raw backend ticker
+// payload, which is an `IAsset` plus a flat `industry` string the mentor
+// hero surfaces (distinct from `IAsset.industry_category`).
+type AssetMentorData = IAsset & { industry?: string }
+
+// `basicIndicators` is the parent's formatted-indicator bag (each value is a
+// pre-formatted string from `formatIndicator`), or null before fundamentals
+// load. This component only reads its truthiness to pick the grid layout.
+interface MentorBasicIndicators {
+  pl: string
+  pvpa: string
+  dividendYield: string
+  roe: string
+  roa: string
+  netMargin: string
+}
+
+const brand = useBrand() as MentorBrand
 
 // Props — all values that vary per asset come from parent page. Helpers
 // (mentorQuickStats, mentorFundamentalsList, mentorAssetQuote, mentorThesisText,
 // mentorOneLiner) are computeds already declared in pages/asset/[ticker].vue —
 // parent passes them down. Keeping the components dumb avoids duplicating logic.
 const props = defineProps<{
-  asset?: any
+  asset?: AssetMentorData | null
   tickerUpper: string
   assetName?: string
   resolvedLogo?: string | null
   isLoadingAsset?: boolean
   failedLogos?: { isFailed?: (url: string) => boolean; markFailed?: (url: string) => void }
   formatPriceNumber: (n: number | null | undefined) => string
-  basicIndicators?: any
+  basicIndicators?: MentorBasicIndicators | null
   mentorQuickStats: Array<{ label: string; value: string }>
   mentorFundamentalsList: Array<{ label: string; shortCode: string; description: string; value: string }>
   mentorAssetQuote: string
