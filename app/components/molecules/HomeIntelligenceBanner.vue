@@ -2,9 +2,7 @@
   HomeIntelligenceBanner — Banner CTA "Do caos ao impacto".
 
   Headline + sub editorial sobre o problema (caos de informação) e a
-  promessa (impacto na carteira). Sem toggle interno — o toggle de view
-  (Para você | Mercado completo) vive separado em <MoleculesHomeViewToggle>
-  e fica ACIMA do banner na rota /.
+  promessa (impacto na carteira). Sem toggle interno.
 
   BG: mesh gradient + arc SVG portados do <HomeHeroRadiograph> usado em
   /mercado-completo, pra unificar a atmosfera visual entre as duas rotas

@@ -62,11 +62,11 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  features: Record<string, any> | undefined
+  features: Record<string, unknown> | undefined
 }>()
 
 const emit = defineEmits<{
-  (e: 'change', path: string, value: any): void
+  (e: 'change', path: string, value: boolean): void
 }>()
 
 interface FeatureDef { key: string; label: string; hint?: string }
@@ -160,19 +160,6 @@ const CATEGORIES: CategoryDef[] = [
     items: [
       { key: 'showFounderPhoto', label: 'Foto do founder', hint: 'Hero/about' },
       { key: 'showEcosystemLinks', label: 'Ecosystem links', hint: 'Outros produtos do tenant' },
-    ],
-  },
-  {
-    id: 'home',
-    label: 'Home views',
-    icon: 'i-lucide-layout',
-    hint: 'Views editoriais alternativas na home anônima.',
-    items: [
-      {
-        key: 'showParaVoce',
-        label: 'View "Para você"',
-        hint: 'Habilita rota /para-voce + toggle "Para você | Mercado completo" no topo da home. Desligar: rota 404 + toggle some.',
-      },
     ],
   },
 ]

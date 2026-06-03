@@ -121,9 +121,6 @@ export const seedBrand = {
     showDividendCalendar: false,
     showSectorComparatives: false,
     showMarketCommentaries: false,
-    // View editorial filtrada (/para-voce) + toggle "Para você | Mercado completo"
-    // na home. Default OFF — cada tenant decide se quer expor.
-    showParaVoce: false,
   },
 
   // Sub-objetos vazios pra não null-check em todos lados
