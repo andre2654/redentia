@@ -35,7 +35,7 @@
           v-if="crypto?.image"
           :src="crypto.image"
           :alt="crypto?.name || symbolUpper"
-          class="mb-6 h-20 w-20 rounded-2xl object-cover shadow-2xl"
+          class="mb-6 h-20 w-20 rounded-[14px] object-cover"
         />
         <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           O ATIVO DIGITAL
@@ -214,10 +214,17 @@
 </template>
 
 <script setup lang="ts">
-const brand = useBrand() as any
+import type { CryptoAssetItem } from '~/services/crypto'
+
+// Only the founder name is read off the (loose tenant JSON) brand config here.
+interface MentorBrand {
+  founder?: { name?: string }
+}
+
+const brand = useBrand() as MentorBrand
 
 const props = defineProps<{
-  crypto?: any
+  crypto?: CryptoAssetItem | null
   symbolUpper: string
   formatPriceNumber: (n: number | null | undefined) => string
 }>()
