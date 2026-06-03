@@ -152,8 +152,13 @@ const props = defineProps<{
 const uid = Math.random().toString(36).slice(2, 9)
 
 // The sparkline delta should track ITS window (sparklineChange), not today's
-// price move. Falls back to changePercent so existing callers stay intact.
-const sparkChange = computed(() => props.sparklineChange ?? props.changePercent)
+// price move. Only fall back to changePercent when the caller doesn't provide
+// a window delta AT ALL (undefined — e.g. crypto/tesouro pages). An EXPLICIT
+// null means "window data missing" → render no delta, so a "30 dias" label
+// never silently shows today's % (P2.3).
+const sparkChange = computed(() =>
+  props.sparklineChange === undefined ? props.changePercent : props.sparklineChange,
+)
 
 const sparkColor = computed(() => {
   if (props.sparkline?.color) return props.sparkline.color
