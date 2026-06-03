@@ -362,8 +362,13 @@ import {
   shallowRef,
   type Ref,
 } from 'vue'
-import colorLib from '@kurkle/color'
-import type { Chart as ChartJS, Plugin } from 'chart.js'
+import type {
+  Chart as ChartJS,
+  Plugin,
+  Tick,
+  ScriptableContext,
+  ScriptableLineSegmentContext,
+} from 'chart.js'
 import {
   Chart as ChartCore,
   CategoryScale,
@@ -424,6 +429,24 @@ interface IClosingFillGradients {
   negative: ChartFillStyle
 }
 
+/** Pares de coordenadas de ponteiro (mouse/touch) aceitos por getIndexFromEvt. */
+type PointerCoords = { clientX: number; clientY: number }
+
+/** Tipo de evento aceito pelo helper getRelativePosition do Chart.js. */
+type ChartRelativeEvent = Parameters<typeof getRelativePosition>[0]
+
+type SegmentOrientation = 'above' | 'below' | 'mixed'
+
+/**
+ * Instancia do Chart.js augmentada com a propriedade custom
+ * `_segmentOrientations`, gravada pelos plugins de fill para que o
+ * segment colorer (dynamicLineColor) saiba se cada trecho ficou acima
+ * ou abaixo da referencia de fechamento.
+ */
+type ChartWithSegments = ChartJS & {
+  _segmentOrientations?: SegmentOrientation[]
+}
+
 export interface IChartMarker {
   date: string
   title: string
@@ -467,6 +490,10 @@ interface Props {
    * where the reference line just adds noise).
    */
   showPrevClose?: boolean
+  /** Canonical previous-close. When provided (finite), overrides the chart's
+   *  own data[len-2] guess so the "Fech. anterior" reference matches the
+   *  consumer's value (e.g. /asset derives it from the live quote — P1.3). */
+  previousClose?: number | null
 }
 
 /* ========== Configurações padrão ==========
@@ -753,15 +780,6 @@ function stopLoadingAnimation(): void {
 }
 
 /* ========== Utilitários ========== */
-function transparentize(hex: string, opacity: number): string {
-  try {
-    const alpha = opacity === undefined ? 0.5 : 1 - opacity
-    return colorLib(hex).alpha(alpha).rgbString()
-  } catch {
-    return `rgba(0, 0, 0, ${1 - opacity})`
-  }
-}
-
 function formatCurrency(value: number): string {
   try {
     return `${props.currency} ${value.toLocaleString(props.locale, {
@@ -947,9 +965,12 @@ function evaluateVariation(
   return result
 }
 
-function getIndexFromEvt(chart: ChartJS, e: MouseEvent): number | null {
+function getIndexFromEvt(
+  chart: ChartJS,
+  e: MouseEvent | PointerCoords,
+): number | null {
   try {
-    const pos = getRelativePosition(e, chart)
+    const pos = getRelativePosition(e as ChartRelativeEvent, chart)
     const { chartArea, scales } = chart
     const xScale = scales?.x
 
@@ -1134,13 +1155,6 @@ const tooltipBgColor = computed(() => {
   return bg
 })
 
-const tooltipClasses = computed(() => {
-  if (isDragging.value) {
-    return 'bg-white/20'
-  }
-  return 'bg-gray-500/20 border-white border'
-})
-
 /* ========== Cor dinâmica ========== */
 const dynamicColor = computed(() => {
   if (props.loading) return DEFAULTS.GRAY_COLOR
@@ -1214,6 +1228,12 @@ const datasetStats = computed<{
  * series (nothing to compare against).
  */
 const prevCloseValue = computed<number | null>(() => {
+  // A canonical previous-close from the consumer (e.g. /asset derives it from
+  // the live quote) wins over the chart's own data[len-2] guess, so the
+  // "Fech. anterior" reference matches the page's strip (P1.3).
+  if (typeof props.previousClose === 'number' && Number.isFinite(props.previousClose)) {
+    return props.previousClose
+  }
   if (!isDataValid.value || !Array.isArray(props.data) || props.data.length < 2) {
     return null
   }
@@ -1540,12 +1560,12 @@ function setupCanvasEvents(chart: ChartJS): () => void {
       const leftIdx = getIndexFromEvt(chart, {
         clientX: leftTouch.clientX,
         clientY: leftTouch.clientY,
-      } as any)
+      })
 
       const rightIdx = getIndexFromEvt(chart, {
         clientX: rightTouch.clientX,
         clientY: rightTouch.clientY,
-      } as any)
+      })
 
       if (leftIdx === null || rightIdx === null) return
 
@@ -1564,7 +1584,7 @@ function setupCanvasEvents(chart: ChartJS): () => void {
       const idx = getIndexFromEvt(chart, {
         clientX: touch.clientX,
         clientY: touch.clientY,
-      } as any)
+      })
 
       if (idx !== null) {
         hoverState.index = idx
@@ -1615,12 +1635,12 @@ function setupCanvasEvents(chart: ChartJS): () => void {
       const leftIdx = getIndexFromEvt(chart, {
         clientX: leftTouch.clientX,
         clientY: leftTouch.clientY,
-      } as any)
+      })
 
       const rightIdx = getIndexFromEvt(chart, {
         clientX: rightTouch.clientX,
         clientY: rightTouch.clientY,
-      } as any)
+      })
 
       if (isDragging.value) {
         if (leftIdx !== null) dragState.startIndex = leftIdx
@@ -1651,7 +1671,7 @@ function setupCanvasEvents(chart: ChartJS): () => void {
       const idx = getIndexFromEvt(chart, {
         clientX: touch.clientX,
         clientY: touch.clientY,
-      } as any)
+      })
 
       if (idx !== null) {
         hoverState.index = idx
@@ -1752,9 +1772,9 @@ function setupCanvasEvents(chart: ChartJS): () => void {
 }
 
 /* ========== Plugin do hover line ========== */
-function getSegmentOrientation(index: number): 'above' | 'below' | 'mixed' {
-  const orientations: ('above' | 'below' | 'mixed')[] | undefined = (
-    chartInstance.value as any
+function getSegmentOrientation(index: number): SegmentOrientation {
+  const orientations: SegmentOrientation[] | undefined = (
+    chartInstance.value as ChartWithSegments | null
   )?._segmentOrientations
   if (!orientations || orientations.length === 0) return 'mixed'
 
@@ -1838,9 +1858,6 @@ const hoverLinePlugin: Plugin<'line'> = {
       const yScale = scales.y
 
       // Linha do fechamento anterior
-      const segmentOrientations: ('above' | 'below' | 'mixed')[] =
-        (chart as any)._segmentOrientations ?? []
-
       if (
         props.showPrevClose &&
         !props.loading &&
@@ -1969,13 +1986,13 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
         const stats = datasetStats.value
         const meta = chart.getDatasetMeta(0)
         if (!stats || !meta || !Array.isArray(meta.data) || meta.data.length < 2) {
-          ;(chart as any)._segmentOrientations = []
+          ;(chart as ChartWithSegments)._segmentOrientations = []
           return
         }
 
         const { chartArea } = chart
         if (!chartArea) {
-          ;(chart as any)._segmentOrientations = []
+          ;(chart as ChartWithSegments)._segmentOrientations = []
           return
         }
 
@@ -2028,7 +2045,7 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
         }
 
         ctx.restore()
-        ;(chart as any)._segmentOrientations = segmentColors
+        ;(chart as ChartWithSegments)._segmentOrientations = segmentColors
         return
       }
 
@@ -2154,7 +2171,7 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
     } catch {
       // Silently handle chart rendering errors
     } finally {
-      ;(chart as any)._segmentOrientations = segmentColors
+      ;(chart as ChartWithSegments)._segmentOrientations = segmentColors
       chartInstance.value = chart
     }
   },
@@ -2213,10 +2230,7 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       const drawXAxisOverlay = pluginOptions?.drawXAxisOverlay ?? true
       const xOverlayTextColor =
         pluginOptions?.xOverlayTextColor ?? 'rgba(226, 232, 240, 0.92)'
-      const xOverlayBorderWidth = pluginOptions?.xOverlayBorderWidth ?? 0
       const xOverlayPaddingX = pluginOptions?.xOverlayPaddingX ?? 10
-      const xOverlayPaddingY = pluginOptions?.xOverlayPaddingY ?? 4
-      const xOverlayCornerRadius = pluginOptions?.xOverlayCornerRadius ?? 10
       const xOverlayOffsetY = pluginOptions?.xOverlayOffsetY ?? 16
       const maxXLabels = pluginOptions?.maxXLabels ?? 6
       const xLabelRotation = pluginOptions?.xLabelRotation ?? -32
@@ -2251,7 +2265,7 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 
       const xTicks = xScale?.ticks ?? []
 
-      xTicks.forEach((tick: any, tickIndex: number) => {
+      xTicks.forEach((tick: Tick, tickIndex: number) => {
         if (tickIndex === 0 || tickIndex === xTicks.length - 1) return
 
         const rawValue = typeof tick.value === 'number' ? tick.value : tickIndex
@@ -2305,13 +2319,10 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 
         const textMetrics = ctx.measureText(formattedLabel)
         const textWidth = textMetrics.width
-        const textHeight =
-          fontSize + (textMetrics.actualBoundingBoxDescent ?? 0)
 
         const minLeft = chartArea.left + 4
         const maxRight = chartArea.right - 4
         const halfBoxWidth = Math.max(0, textWidth / 2 + xOverlayPaddingX)
-        const boxHeight = textHeight + xOverlayPaddingY * 2
 
         let centerX = x
         let boxLeft = centerX - halfBoxWidth
@@ -2329,13 +2340,6 @@ const overlayLabelsPlugin: Plugin<'line'> = {
           boxRight -= delta
         }
 
-        const boxTop = targetY - boxHeight / 2
-        const boxBottom = targetY + boxHeight / 2
-        const radius = Math.max(
-          0,
-          Math.min(xOverlayCornerRadius, boxHeight / 2)
-        )
-
         ctx.fillStyle = xOverlayTextColor
         ctx.translate(centerX, targetY)
         if (rotationRadians !== 0) ctx.rotate(rotationRadians)
@@ -2351,7 +2355,7 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 
         const yTicks = yScale?.ticks ?? []
 
-        yTicks.forEach((tick: any, tickIndex: number) => {
+        yTicks.forEach((tick: Tick, tickIndex: number) => {
           if (tickIndex === 0 || tickIndex === yTicks.length - 1) return
           if (typeof tick.value !== 'number') return
 
@@ -2369,7 +2373,13 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 }
 
 /* ========== Registro do Chart.js ========== */
-if (!(ChartCore as any)._adapters?._customRegisteredOnce) {
+// Flag custom gravada na classe Chart pra garantir que o register()
+// global rode uma unica vez por sessao, mesmo com varias instancias do
+// componente montadas.
+type ChartCoreWithGuard = typeof ChartCore & {
+  _adapters?: { _customRegisteredOnce?: boolean }
+}
+if (!(ChartCore as ChartCoreWithGuard)._adapters?._customRegisteredOnce) {
   ChartCore.register(
     CategoryScale,
     LinearScale,
@@ -2378,10 +2388,16 @@ if (!(ChartCore as any)._adapters?._customRegisteredOnce) {
     Title,
     Filler
   )
-  ;(ChartCore as any)._adapters = { _customRegisteredOnce: true }
+  ;(ChartCore as ChartCoreWithGuard)._adapters = { _customRegisteredOnce: true }
 }
 
 /* ========== Chart data/options ========== */
+// O borderColor a nivel de dataset recebe um ScriptableContext padrao,
+// mas reaproveitamos os indices de segmento (p0/p1) quando o Chart.js os
+// fornece — por isso sao opcionais aqui.
+type LineBorderColorContext = ScriptableContext<'line'> &
+  Partial<Pick<ScriptableLineSegmentContext, 'p0DataIndex' | 'p1DataIndex'>>
+
 const chartData = computed(() => {
   const hasRealData = isDataValid.value
   const dataToUse =
@@ -2394,13 +2410,14 @@ const chartData = computed(() => {
         data: dataToUse.map((d) => d.value),
         label: props.legend[0]?.label || 'Preço',
         segment: {
-          borderColor: (ctx: any) => dynamicLineColor(ctx.p1DataIndex, true),
+          borderColor: (ctx: ScriptableLineSegmentContext) =>
+            dynamicLineColor(ctx.p1DataIndex, true),
         },
         backgroundColor: () => 'rgba(34, 197, 94, 0.06)',
         borderWidth: 2.5,
         fill: false,
         clip: false,
-        borderColor: (ctx: any) =>
+        borderColor: (ctx: LineBorderColorContext) =>
           dynamicLineColor(ctx.p1DataIndex ?? ctx.p0DataIndex ?? 0, true),
         pointHitRadius: props.loading ? 0 : 10,
         pointRadius: 0,
