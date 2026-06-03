@@ -843,9 +843,6 @@ onMounted(() => {
   background: var(--brand-surface);
   border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
   padding: 18px 20px;
-  box-shadow:
-    0 18px 48px -16px color-mix(in srgb, var(--brand-primary) 22%, transparent),
-    0 8px 24px -8px rgba(0, 0, 0, 0.16);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -972,9 +969,6 @@ onMounted(() => {
 
 .lp-plan--highlighted {
   border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
-  box-shadow:
-    0 24px 64px -20px color-mix(in srgb, var(--brand-primary) 32%, transparent),
-    0 12px 32px -10px rgba(0, 0, 0, 0.18);
 }
 
 .lp-plan__halo {
