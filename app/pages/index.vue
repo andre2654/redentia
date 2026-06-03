@@ -2286,6 +2286,21 @@ function formatVariation(value: number) {
 const ibovChartData = ref<ChartPoint[]>([])
 
 // Status do mercado (B3: 10h-17h dias uteis, timezone America/Sao_Paulo)
+// Feriados B3 em dia útil (YYYY-MM-DD). Fim de semana já é coberto pelo getDay
+// abaixo. Atualizar anualmente; fora da lista, o status assume pregão normal —
+// NÃO inferir feriado pelo lag do dado diário (a série diária só ganha o ponto
+// de hoje após o fechamento, então durante o pregão "parece" feriado todo dia).
+const B3_HOLIDAYS = new Set<string>([
+  // 2026
+  '2026-01-01', '2026-02-16', '2026-02-17', '2026-04-03', '2026-04-21',
+  '2026-05-01', '2026-06-04', '2026-09-07', '2026-10-12', '2026-11-02',
+  '2026-11-15', '2026-11-20', '2026-12-25',
+  // 2027
+  '2027-01-01', '2027-02-08', '2027-02-09', '2027-03-26', '2027-04-21',
+  '2027-05-01', '2027-05-27', '2027-09-07', '2027-10-12', '2027-11-02',
+  '2027-11-15', '2027-12-25',
+])
+
 const marketStatus = computed(() => {
   const series = homeMarketData.value?.ibovSeries
   const lastEntry = Array.isArray(series) && series.length > 0 ? series[series.length - 1] : null
@@ -2314,12 +2329,13 @@ const marketStatus = computed(() => {
     return { label: 'Pre-mercado', color: '#eab308', animate: true, lastUpdate: lastUpdateFormatted }
   }
 
+  // Feriado B3 em dia util — checagem por DATA real, nao pelo lag do dado.
+  if (B3_HOLIDAYS.has(todayStr)) {
+    return { label: 'Feriado', color: '#f97316', animate: false, lastUpdate: lastUpdateFormatted }
+  }
+
   // Dia util, horario de mercado
   if (hour >= 10 && hour < 17) {
-    // Se nao tem dado de hoje, provavelmente e feriado
-    if (lastPriceAt && lastPriceAt < todayStr) {
-      return { label: 'Feriado', color: '#f97316', animate: false, lastUpdate: lastUpdateFormatted }
-    }
     return { label: 'Ao Vivo', color: '#22c55e', animate: true, lastUpdate: lastUpdateFormatted }
   }
 
