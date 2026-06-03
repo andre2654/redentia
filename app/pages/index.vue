@@ -1948,13 +1948,13 @@ interface InsightPill {
   pillColorVar: string
 }
 const FACTOR_KEY_PALETTE: Record<string, { bg: string; color: string }> = {
-  juros: { bg: 'color-mix(in srgb, #7c3aed 14%, transparent)', color: '#7c3aed' },
-  petroleo: { bg: 'color-mix(in srgb, #d97706 14%, transparent)', color: '#d97706' },
-  oil: { bg: 'color-mix(in srgb, #d97706 14%, transparent)', color: '#d97706' },
+  juros: { bg: 'color-mix(in srgb, var(--cat-violet) 14%, transparent)', color: 'var(--cat-violet)' },
+  petroleo: { bg: 'color-mix(in srgb, var(--cat-orange) 14%, transparent)', color: 'var(--cat-orange)' },
+  oil: { bg: 'color-mix(in srgb, var(--cat-orange) 14%, transparent)', color: 'var(--cat-orange)' },
   dolar: { bg: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)', color: 'var(--brand-primary)' },
   fx: { bg: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)', color: 'var(--brand-primary)' },
-  commodity: { bg: 'color-mix(in srgb, #b45309 14%, transparent)', color: '#b45309' },
-  consumo: { bg: 'color-mix(in srgb, #7c3aed 14%, transparent)', color: '#7c3aed' },
+  commodity: { bg: 'color-mix(in srgb, var(--cat-brown) 14%, transparent)', color: 'var(--cat-brown)' },
+  consumo: { bg: 'color-mix(in srgb, var(--cat-violet) 14%, transparent)', color: 'var(--cat-violet)' },
   global: { bg: 'color-mix(in srgb, var(--brand-positive) 14%, transparent)', color: 'var(--brand-positive)' },
 }
 function buildInsightNarrative(f: HomeCausalFactor): string {
@@ -2783,8 +2783,8 @@ definePageMeta({
   color: var(--brand-positive);
 }
 .market-now-icon--petroleo {
-  background: color-mix(in srgb, #d97706 14%, transparent);
-  color: #d97706;
+  background: color-mix(in srgb, var(--cat-orange) 14%, transparent);
+  color: var(--cat-orange);
 }
 .market-now-icon--dolar,
 .market-now-icon--global {
@@ -2792,8 +2792,8 @@ definePageMeta({
   color: var(--brand-primary);
 }
 .market-now-icon--consumo {
-  background: color-mix(in srgb, #7c3aed 14%, transparent);
-  color: #7c3aed;
+  background: color-mix(in srgb, var(--cat-violet) 14%, transparent);
+  color: var(--cat-violet);
 }
 .market-now-text :deep(strong) { color: var(--text-heading); font-weight: 600; }
 .market-now-text :deep(strong.pos) { color: var(--brand-positive); }
