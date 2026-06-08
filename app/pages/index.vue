@@ -1908,11 +1908,11 @@ async function fetchExploreLeaderSparklines() {
     }),
   )
 }
-watch(
-  exploreLists,
-  () => { if (import.meta.client) fetchExploreLeaderSparklines() },
-  { immediate: true },
-)
+// O watch que dispara fetchExploreLeaderSparklines() vive logo abaixo da
+// declaração de `topAssets` (ref) — e NÃO aqui — porque um watch avalia sua
+// source já no setup. Como `exploreLists` → exploreListsRaw → topAssets.value,
+// criá-lo antes da const `topAssets` dá TDZ ("Cannot access 'topAssets' before
+// initialization") e derruba a home inteira no SSR e na hidratação (logado).
 
 // ============ MAPA DE SETORES (heatmap) + INSIGHTS DA REDENTIA ============
 // Sector heatmap derivado dos topAssets (top+bottom de stocks+reits) agregado
@@ -2109,6 +2109,17 @@ const topAssets = ref<{
     bdrs: [],
   },
 })
+
+// Sparkline do líder de cada lista de exploração (#25). Criado AQUI de
+// propósito, DEPOIS de `topAssets` e das demais deps de exploreListsRaw
+// (selectedExploreCategory/dyByCategory/cryptoAssets, todas declaradas acima):
+// o watch avalia a source `exploreLists` (→ exploreListsRaw → topAssets.value)
+// já no setup, então acima da const `topAssets` quebrava com TDZ.
+watch(
+  exploreLists,
+  () => { if (import.meta.client) fetchExploreLeaderSparklines() },
+  { immediate: true },
+)
 
 const RANKING_LIMIT = 8
 const TREEMAP_LIMIT = 200
