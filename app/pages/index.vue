@@ -365,55 +365,58 @@
               <li
                 v-for="(item, idx) in list.items"
                 :key="item.ticker"
-                class="flex flex-col gap-2"
               >
-                <div class="flex items-center justify-between gap-2">
-                  <NuxtLink
-                    :to="item.href"
-                    class="flex min-w-0 flex-1 items-center gap-2 transition-opacity hover:opacity-80"
-                  >
-                    <span
-                      class="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md border"
-                      :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
-                    >
-                      <img
-                        v-if="item.logo && !failedExploreLogos.isFailed(item.logo)"
-                        :src="item.logo"
-                        :alt="`Logo ${item.ticker}`"
-                        class="size-full object-cover"
-                        loading="lazy"
-                        @error="failedExploreLogos.markFailed(item.logo)"
-                      />
+                <NuxtLink
+                  :to="item.href"
+                  class="flex flex-col gap-2 transition-[background-color,opacity] hover:opacity-80"
+                  :class="hasLeaderSpark(list.key, idx) ? '-mx-[10px] rounded-[5px] p-[10px]' : ''"
+                  :style="hasLeaderSpark(list.key, idx) ? { backgroundColor: 'color-mix(in srgb, var(--text-heading) 3%, transparent)', border: '1px solid color-mix(in srgb, var(--text-heading) 5%, transparent)' } : undefined"
+                >
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="flex min-w-0 flex-1 items-center gap-2">
                       <span
-                        v-else
-                        class="font-mono-tab text-[8px] font-bold"
-                        :style="{ color: 'var(--text-muted)' }"
-                      >{{ item.ticker.slice(0, 2) }}</span>
+                        class="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md border"
+                        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+                      >
+                        <img
+                          v-if="item.logo && !failedExploreLogos.isFailed(item.logo)"
+                          :src="item.logo"
+                          :alt="`Logo ${item.ticker}`"
+                          class="size-full object-cover"
+                          loading="lazy"
+                          @error="failedExploreLogos.markFailed(item.logo)"
+                        />
+                        <span
+                          v-else
+                          class="font-mono-tab text-[8px] font-bold"
+                          :style="{ color: 'var(--text-muted)' }"
+                        >{{ item.ticker.slice(0, 2) }}</span>
+                      </span>
+                      <span
+                        class="truncate text-[13px] font-medium leading-none"
+                        :style="{ color: 'var(--text-heading)' }"
+                        translate="no"
+                      >{{ item.ticker }}</span>
                     </span>
                     <span
-                      class="truncate text-[13px] font-medium leading-none"
-                      :style="{ color: 'var(--text-heading)' }"
+                      class="shrink-0 tabular-nums text-[13px] leading-none"
+                      :style="{ color: item.colorVar ?? 'var(--text-body)' }"
                       translate="no"
-                    >{{ item.ticker }}</span>
-                  </NuxtLink>
-                  <span
-                    class="shrink-0 tabular-nums text-[13px] leading-none"
-                    :style="{ color: item.colorVar ?? 'var(--text-body)' }"
-                    translate="no"
-                  >{{ item.value }}</span>
-                </div>
-                <!-- Gráfico do mês (30d) do líder da lista -->
-                <div
-                  v-if="idx === 0 && (leaderSparkline(list.key)?.length ?? 0) > 1"
-                  class="h-10 w-full"
-                >
-                  <RankingUiSparkline
-                    :data="leaderSparkline(list.key) || []"
-                    :direction="sparkDirection(leaderSparkline(list.key))"
-                    with-gradient
-                    :stroke-width="1.5"
-                  />
-                </div>
+                    >{{ item.value }}</span>
+                  </div>
+                  <!-- Gráfico do mês (30d) do líder da lista -->
+                  <div
+                    v-if="hasLeaderSpark(list.key, idx)"
+                    class="h-10 w-full"
+                  >
+                    <RankingUiSparkline
+                      :data="leaderSparkline(list.key) || []"
+                      :direction="sparkDirection(leaderSparkline(list.key))"
+                      with-gradient
+                      :stroke-width="1.5"
+                    />
+                  </div>
+                </NuxtLink>
               </li>
             </ul>
             <p v-else class="text-[12px]" :style="{ color: 'var(--text-muted)' }">
@@ -1883,6 +1886,11 @@ function leaderSparkline(key: string): number[] | undefined {
 function sparkDirection(arr?: number[]): 'positive' | 'negative' {
   if (!arr || arr.length < 2) return 'positive'
   return (arr[arr.length - 1] ?? 0) >= (arr[0] ?? 0) ? 'positive' : 'negative'
+}
+// idx===0 + série já carregada → o líder da lista vira card (padding + bg
+// suave) com o gráfico do mês; o item inteiro é clicável via NuxtLink.
+function hasLeaderSpark(key: string, idx: number): boolean {
+  return idx === 0 && (leaderSparkline(key)?.length ?? 0) > 1
 }
 async function fetchExploreLeaderSparklines() {
   await Promise.all(
