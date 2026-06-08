@@ -722,14 +722,18 @@ export default defineNuxtConfig({
         },
       },
 
-      // Phase 5: edge cache pra rotas de marketing (home + landing pages).
-      // Vercel CDN cacheia por host header automaticamente — entao 1
-      // request resolvido vira cache hit pra todos os outros visitantes
-      // do MESMO tenant. Cache miss vai pra serverless (~200ms), hits
-      // sao ~5ms. Stale-while-revalidate 1 dia evita cliffs em deploys.
+      // '/' NÃO é edge-cacheado de propósito. A home é dupla — landing pra
+      // anônimo + "Visão Geral" pro logado — e o CDN cacheia por HOST, não
+      // varia pelo cookie `auth:token`. Cachear fazia o usuário logado receber
+      // o HTML DESLOGADO cacheado e ver o layout "logado + deslogado ao mesmo
+      // tempo" até o client re-hidratar (só sumia com hard refresh). Sem cache,
+      // cada request faz SSR fresco lendo o cookie → estado de auth correto.
+      // (As outras landings — /assessores, /investidores — seguem cacheadas;
+      // não têm variante logada.) Se reativar cache aqui, faça via edge
+      // middleware que bypassa quando `auth:token` está presente.
       '/': {
         headers: {
-          'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+          'cache-control': 'private, no-store',
         },
       },
       '/assessores': {
