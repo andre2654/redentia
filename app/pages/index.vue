@@ -363,43 +363,57 @@
 
             <ul v-if="list.items.length" class="flex flex-col gap-3">
               <li
-                v-for="item in list.items"
+                v-for="(item, idx) in list.items"
                 :key="item.ticker"
-                class="flex items-center justify-between gap-2"
+                class="flex flex-col gap-2"
               >
-                <NuxtLink
-                  :to="item.href"
-                  class="flex min-w-0 flex-1 items-center gap-2 transition-opacity hover:opacity-80"
-                >
-                  <span
-                    class="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md border"
-                    :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+                <div class="flex items-center justify-between gap-2">
+                  <NuxtLink
+                    :to="item.href"
+                    class="flex min-w-0 flex-1 items-center gap-2 transition-opacity hover:opacity-80"
                   >
-                    <img
-                      v-if="item.logo && !failedExploreLogos.isFailed(item.logo)"
-                      :src="item.logo"
-                      :alt="`Logo ${item.ticker}`"
-                      class="size-full object-cover"
-                      loading="lazy"
-                      @error="failedExploreLogos.markFailed(item.logo)"
-                    />
                     <span
-                      v-else
-                      class="font-mono-tab text-[8px] font-bold"
-                      :style="{ color: 'var(--text-muted)' }"
-                    >{{ item.ticker.slice(0, 2) }}</span>
-                  </span>
+                      class="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md border"
+                      :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+                    >
+                      <img
+                        v-if="item.logo && !failedExploreLogos.isFailed(item.logo)"
+                        :src="item.logo"
+                        :alt="`Logo ${item.ticker}`"
+                        class="size-full object-cover"
+                        loading="lazy"
+                        @error="failedExploreLogos.markFailed(item.logo)"
+                      />
+                      <span
+                        v-else
+                        class="font-mono-tab text-[8px] font-bold"
+                        :style="{ color: 'var(--text-muted)' }"
+                      >{{ item.ticker.slice(0, 2) }}</span>
+                    </span>
+                    <span
+                      class="truncate text-[13px] font-medium leading-none"
+                      :style="{ color: 'var(--text-heading)' }"
+                      translate="no"
+                    >{{ item.ticker }}</span>
+                  </NuxtLink>
                   <span
-                    class="truncate text-[13px] font-medium leading-none"
-                    :style="{ color: 'var(--text-heading)' }"
+                    class="shrink-0 tabular-nums text-[13px] leading-none"
+                    :style="{ color: item.colorVar ?? 'var(--text-body)' }"
                     translate="no"
-                  >{{ item.ticker }}</span>
-                </NuxtLink>
-                <span
-                  class="shrink-0 tabular-nums text-[13px] leading-none"
-                  :style="{ color: item.colorVar ?? 'var(--text-body)' }"
-                  translate="no"
-                >{{ item.value }}</span>
+                  >{{ item.value }}</span>
+                </div>
+                <!-- Gráfico do mês (30d) do líder da lista -->
+                <div
+                  v-if="idx === 0 && (leaderSparkline(list.key)?.length ?? 0) > 1"
+                  class="h-10 w-full"
+                >
+                  <RankingUiSparkline
+                    :data="leaderSparkline(list.key) || []"
+                    :direction="sparkDirection(leaderSparkline(list.key))"
+                    with-gradient
+                    :stroke-width="1.5"
+                  />
+                </div>
               </li>
             </ul>
             <p v-else class="text-[12px]" :style="{ color: 'var(--text-muted)' }">
@@ -1857,6 +1871,47 @@ const exploreListsRaw = computed<ExploreList[]>(() => {
 // grid reflowa pras colunas restantes em vez de mostrar "Sem dados".
 const exploreLists = computed<ExploreList[]>(() =>
   exploreListsRaw.value.filter((l) => l.items.length > 0)
+)
+
+// Gráfico do mês (30d) do PRIMEIRO ativo de cada lista. Busca a série 1mo
+// (mesma fonte dos bentos), amostra ~20 pontos e guarda por list.key.
+// Client-only; re-busca quando troca a categoria (Ações/ETFs/FIIs/…).
+const exploreLeaderSparklines = ref<Record<string, number[]>>({})
+function leaderSparkline(key: string): number[] | undefined {
+  return exploreLeaderSparklines.value[key]
+}
+function sparkDirection(arr?: number[]): 'positive' | 'negative' {
+  if (!arr || arr.length < 2) return 'positive'
+  return (arr[arr.length - 1] ?? 0) >= (arr[0] ?? 0) ? 'positive' : 'negative'
+}
+async function fetchExploreLeaderSparklines() {
+  await Promise.all(
+    exploreLists.value.map(async (list) => {
+      const leader = list.items[0]
+      if (!leader || exploreLeaderSparklines.value[list.key]) return
+      try {
+        const history = await assetHistoricPrices(leader.ticker, '1mo')
+        const pts = (Array.isArray(history) ? (history as PricePoint[]) : [])
+          .map((p) => coerceNumber(p?.market_price ?? p?.close))
+          .filter((v) => Number.isFinite(v) && v > 0)
+        let spark = pts
+        if (pts.length > 20) {
+          const step = (pts.length - 1) / 19
+          spark = Array.from({ length: 20 }, (_, i) => pts[Math.round(i * step)] ?? 0)
+        }
+        if (spark.length >= 2) {
+          exploreLeaderSparklines.value = { ...exploreLeaderSparklines.value, [list.key]: spark }
+        }
+      } catch {
+        // silencioso — sem gráfico se a série falhar (ex: cripto sem 1mo)
+      }
+    }),
+  )
+}
+watch(
+  exploreLists,
+  () => { if (import.meta.client) fetchExploreLeaderSparklines() },
+  { immediate: true },
 )
 
 // ============ MAPA DE SETORES (heatmap) + INSIGHTS DA REDENTIA ============
