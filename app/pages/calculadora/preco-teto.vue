@@ -11,8 +11,8 @@
       <template #hero>
         <p class="calc-eyebrow">Calculadora · Preço Teto e Preço Justo</p>
         <h1 class="calc-title">
-          Graham, Bazin, P/L e
-          <em class="calc-italic">VPA.</em>
+          Calculadora de Preço Teto e Preço Justo:
+          <em class="calc-italic">Graham, Bazin, P/L e VPA.</em>
         </h1>
         <p class="calc-lead">
           O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por <strong>Graham</strong> (√(22.5×LPA×VPA)), <strong>Bazin</strong> (Dividendo÷0,06), <strong>P/L</strong> setorial ou <strong>VPA</strong>×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.
@@ -453,7 +453,7 @@
               2. Combine com Outros Indicadores
             </h4>
             <p class="text-sm">
-              Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA < 3, Crescimento de receita > 5% a.a., Payout sustentável.
+              Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA &lt; 3, Crescimento de receita > 5% a.a., Payout sustentável.
             </p>
           </div>
           <div
@@ -613,10 +613,6 @@ import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
 const brand = useBrand()
-const authStore = useAuthStore()
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'unauthenticated'
-)
 const { getAssets, getSectors } = useAssetsService()
 
 const [{ data: assetsData, pending: assetsPending }, { data: sectorsData }] = await Promise.all([
@@ -632,7 +628,7 @@ const sectors = computed(() => sectorsData.value ?? [])
 // (novas FAQs, mudanca em metodologia, ano novo). Google usa
 // dateModified como sinal de relevancia, manter mensal evita pagina
 // "envelhecer" no indice.
-const CONTENT_VERSION = '2026-05-01'
+const CONTENT_VERSION = '2026-06-08'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
   day: '2-digit',
@@ -754,6 +750,7 @@ usePageSeo({
         price: '0',
         priceCurrency: 'BRL',
       },
+      dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de preço teto para ações da B3. Calcula Graham, Bazin, P/L setorial e valor patrimonial automaticamente a partir do ticker.',
       featureList: [

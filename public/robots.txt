@@ -15,10 +15,10 @@ Allow: /estudo
 Allow: /estudo/
 Allow: /ebooks/
 
-# Bloquear páginas de autenticação (não queremos indexar login/registro)
-Disallow: /auth/
-Disallow: /auth/login
-Disallow: /auth/register
+# Páginas de autenticação (login/registro): NÃO bloquear no robots.
+# Elas já têm noindex meta — bloquear aqui impede o Google de LER o noindex,
+# gerando "Crawled, not indexed" (mesmo motivo do /render explicado abaixo).
+# Deixar o Google rastrear faz o noindex ser respeitado e a URL sair do índice.
 
 # Bloquear rotas internas (render/automação)
 Disallow: /n8n/
