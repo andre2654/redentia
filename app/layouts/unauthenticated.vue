@@ -263,17 +263,15 @@ const menuMobileActive = ref(false)
 const tenantSlug = useTenantSlug()
 const layoutColorMode = useColorMode()
 
-function hexWithAlpha(hex: string, alpha: string): string {
-  return `${hex}${alpha}`
-}
-
 type NavKey = 'explore' | 'rankings' | 'tools'
 const openedMenu = ref<NavKey | null>(null)
 
 interface NavItem { label: string; to: string; description?: string }
 interface NavColumn { heading: string; items: NavItem[] }
 
-const features = computed(() => (brand as any).features ?? {})
+const features = computed<Record<string, boolean | undefined>>(
+  () => (brand as { features?: Record<string, boolean | undefined> }).features ?? {},
+)
 // Master flag de rankings (Phase 6): se off, esconde grupo inteiro do
 // header + sidebar + tira links do mobile menu. Backward-compat: se
 // algum flag granular antigo (showDividendYieldRanking, showMonthly...)
@@ -297,11 +295,12 @@ const contentBg = computed(() => {
   return brand.colors.background
 })
 
-const navGroups = computed<Array<
+type NavGroup =
   | { key: NavKey; label: string; kind: 'mega'; width: number; columns: NavColumn[] }
   | { key: NavKey; label: string; kind: 'simple'; width: number; items: NavItem[] }
->>(() => {
-  const groups: Array<any> = [
+
+const navGroups = computed<NavGroup[]>(() => {
+  const groups: NavGroup[] = [
   {
     key: 'explore',
     label: 'Explorar',
@@ -367,6 +366,7 @@ const navGroups = computed<Array<
     kind: 'simple',
     width: 260,
     items: [
+      { label: 'Raio-X da carteira', to: '/raio-x' },
       ...(calculatorsEnabled.value ? [{ label: 'Calculadoras', to: '/calculadora' }] : []),
       { label: 'Análise setorial', to: '/setor' },
       ...(guidesEnabled.value ? [{ label: 'Guias e conteúdo', to: '/guias' }] : []),
@@ -376,7 +376,7 @@ const navGroups = computed<Array<
   // Filtra grupos vazios (ex: tools sem nenhum item) e o rankings inteiro
   // se off. Resultado e o nav real visivel pro tenant.
   return groups
-    .filter((g: any) => {
+    .filter((g: NavGroup) => {
       if (g.key === 'rankings' && !rankingsEnabled.value) return false
       if (g.kind === 'simple' && Array.isArray(g.items) && g.items.length === 0) return false
       return true

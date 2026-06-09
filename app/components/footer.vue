@@ -67,6 +67,11 @@
             {{ brand.footer.sections.tools }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <NuxtLink to="/raio-x" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
+                Raio-X da carteira
+              </NuxtLink>
+            </li>
             <template v-if="features.showCalculators !== false">
               <li>
                 <NuxtLink to="/calculadora" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
@@ -387,7 +392,9 @@ const footerBg = computed(() => {
 // footer. `features` undefined em tenants antigos = default-on
 // (backward-compat). Master flag `showRankings` cobre o caso mais
 // comum (white-label sem rankings).
-const features = computed(() => (brand as any).features ?? {})
+const features = computed<Record<string, boolean | undefined>>(
+  () => (brand as { features?: Record<string, boolean | undefined> }).features ?? {},
+)
 const rankingsEnabled = computed(() => {
   const f = features.value
   return f.showRankings === true
@@ -432,7 +439,6 @@ function formatWhatsApp(raw: string): string {
   return digits ? `+${digits}` : ''
 }
 
-const route = useRoute()
 const { checkPermission, requestPermission, permissionStatus } =
   useFirebaseNotifications()
 
@@ -442,7 +448,8 @@ const isAppInstalled = computed(() => {
   
   const standalone =
     window.matchMedia?.('(display-mode: standalone)')?.matches ?? false
-  const iosStandalone = (window.navigator as any).standalone === true
+  const iosStandalone =
+    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
   
   return standalone || iosStandalone
 })
