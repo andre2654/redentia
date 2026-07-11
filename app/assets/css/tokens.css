@@ -1,0 +1,60 @@
+/**
+ * Redentia Nu — tokens do design system.
+ * FONTE DE VERDADE: docs/redentia-nu/designs/*.dc.html (contrato de UX).
+ * Regra de ouro (lição do Frontend, paga com 5.641 inline styles):
+ * componente NUNCA hardcoda cor — só var(--nu-*).
+ */
+:root {
+  /* superfícies */
+  --nu-white: #ffffff;
+  --nu-cream: #F5F1EA;        /* fundo base, pills claras */
+  --nu-cream-2: #F0EDE6;      /* bordas suaves */
+  --nu-cream-hover: #f3f0e9;  /* hover de nav/botões fantasmas */
+  --nu-navy: #0C1524;         /* seções escuras (charts, footer) */
+  --nu-navy-2: #16233B;       /* cards sobre navy */
+  --nu-navy-3: #1C2C4A;       /* hover de cards sobre navy */
+
+  /* marca */
+  --nu-blue: #2F6BFF;         /* primário */
+  --nu-blue-hover: #2258DB;
+  --nu-blue-deep: #2456C9;    /* cards de ação em seção azul */
+  --nu-blue-soft: #9EC8FF;    /* acentos sobre navy, linhas de gráfico */
+  --nu-blue-tint: rgba(47, 107, 255, 0.10);  /* pill ativa da nav */
+  --nu-blue-tint-2: rgba(47, 107, 255, 0.08);/* hover de outline */
+
+  /* texto */
+  --nu-ink: #0A0A0C;
+  --nu-gray: #8A8378;         /* secundário */
+  --nu-gray-2: #57534A;       /* deks */
+  --nu-gray-3: #3A3733;       /* corpo sobre creme */
+  --nu-sand: #B9AE9C;         /* neutro apagado */
+  --nu-sand-2: #ECE7DC;       /* bg de badge neutro */
+  --nu-cream-text: #F5F1EA;   /* texto sobre navy */
+  --nu-cream-text-70: rgba(245, 241, 234, 0.7);
+  --nu-cream-text-78: rgba(245, 241, 234, 0.78);
+  --nu-cream-text-55: rgba(245, 241, 234, 0.55);
+  --nu-cream-text-60: rgba(245, 241, 234, 0.6);
+
+  /* semânticas de mercado */
+  --nu-green: #148F4E;        /* variação positiva (texto sobre claro) */
+  --nu-green-2: #0E7A42;      /* texto em badge verde */
+  --nu-green-bg: #DCF2E4;     /* bg de badge verde */
+  --nu-red: #D6323B;          /* variação negativa */
+  --nu-red-2: #C22B34;
+
+  /* raios */
+  --nu-r-pill: 999px;
+  --nu-r-card: 24px;
+  --nu-r-card-lg: 26px;
+  --nu-r-panel: 22px;
+  --nu-r-tile: 16px;
+  --nu-r-input: 14px;
+  --nu-r-chip: 12px;
+
+  /* tipografia */
+  --nu-font: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* sombras (dos designs) */
+  --nu-shadow-card: 0 24px 60px -30px rgba(12, 21, 36, 0.18);
+  --nu-shadow-float: 0 30px 64px -24px rgba(5, 10, 25, 0.6);
+}

@@ -1,0 +1,34 @@
+/**
+ * Redentia Nu — reset e regras globais (espelho do <style> dos designs).
+ */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--nu-white);
+  font-family: var(--nu-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: var(--nu-ink);
+}
+button, input { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: inherit; }
+
+/* scrollbars invisíveis (linguagem do design — faixas roláveis limpas) */
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* animações compartilhadas dos designs */
+@keyframes nu-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes nu-fade-lg { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes nu-bob { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+/* responsivo global (contrato dos designs: breakpoint 760px) */
+@media (max-width: 760px) {
+  [data-nu-hide] { display: none !important; }
+  [data-nu-pill-label] { display: none !important; }
+  [data-nu-show-mobile] { display: inline !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
