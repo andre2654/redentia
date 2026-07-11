@@ -4,8 +4,9 @@
  * (nunca vazio), hidrata com dados reais no client, e QUALQUER erro degrada
  * de volta pro seed — a faixa nunca quebra uma página.
  *
- * Fontes: GET /market/snapshot (IBOV/IFIX/macro) · GET /api/chat/tickers/snapshot
- * (batch PETR4) · GET /crypto/btc (Bitcoin).
+ * Fontes: GET /market/snapshot (IBOV/IFIX/macro) · GET /tickers/PETR4 (Laravel,
+ * MESMA rota das páginas de ativo — o snapshot do chat ficava stale) ·
+ * GET /crypto/btc (Bitcoin).
  */
 export interface TickerItem {
   n: string          // nome curto (IBOV, Dólar…)
@@ -41,9 +42,9 @@ export function useMarketTicker() {
   async function hydrate() {
     if (loaded.value) return
     try {
-      const [snap, quotes, btc] = await Promise.all([
+      const [snap, petrQ, btc] = await Promise.all([
         publicFetch<any>('/market/snapshot?scope=ibov').catch(() => null),
-        $fetch<any>('/api/chat/tickers/snapshot?symbols=PETR4').catch(() => null),
+        publicFetch<any>('/tickers/PETR4').catch(() => null),
         publicFetch<any>('/crypto/btc').catch(() => null),
       ])
 
@@ -54,8 +55,8 @@ export function useMarketTicker() {
       if (ifix?.value != null) next.push({ n: 'IFIX', v: nf0.format(ifix.value), ...pctFmt(ifix.change_pct) })
       const usd = snap?.macro?.usd_brl
       if (usd?.value != null) next.push({ n: 'Dólar', v: `R$ ${nf2.format(usd.value)}`, ...pctFmt(usd.change_pct) })
-      const petr = quotes?.snapshots?.PETR4
-      if (petr?.price != null) next.push({ n: 'PETR4', v: `R$ ${nf2.format(petr.price)}`, ...pctFmt(petr.changePct1d) })
+      const petr = petrQ?.data
+      if (petr?.market_price != null) next.push({ n: 'PETR4', v: `R$ ${nf2.format(petr.market_price)}`, ...pctFmt(petr.change_percent) })
       const btcData = btc?.data ?? btc
       if (btcData?.price_brl != null) next.push({ n: 'Bitcoin', v: `R$ ${nf0.format(btcData.price_brl)}`, ...pctFmt(btcData.change_24h) })
       const cdi = snap?.macro?.cdi

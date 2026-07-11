@@ -110,11 +110,6 @@ export interface MarketTodayApi {
   constituents?: { ticker: string; change_pct: number | null }[]
 }
 
-/** GET /api/chat/tickers/snapshot?symbols= (único batch-quote da plataforma). */
-export interface TickerSnapshotsApi {
-  snapshots: Record<string, { price: number; changePct1d: number | null; name?: string } | null>
-}
-
 /* ————— view-models (shape do design) ————— */
 
 export type NuDir = 'up' | 'down'

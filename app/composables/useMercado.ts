@@ -23,7 +23,6 @@ import type {
   NuThesis,
   ThesisCardApi,
   TickerApi,
-  TickerSnapshotsApi,
 } from '~/types/market'
 
 /* ————— helpers de formatação ————— */
@@ -392,7 +391,7 @@ export function useNuBriefing() {
         marketFetchBriefingToday(),
         marketFetchSnapshot(),
         marketFetchToday(),
-        marketFetchTickerSnapshots(['PETR4']),
+        marketFetchQuote('PETR4'),
       ])
       if (b.status !== 'fulfilled' || !b.value?.data?.headline) return
       const d = b.value.data
@@ -427,9 +426,9 @@ export function useNuBriefing() {
         }
       }
       if (petr.status === 'fulfilled') {
-        const q = petr.value?.snapshots?.PETR4
-        if (q?.changePct1d != null) {
-          pills.push({ label: 'PETR4', value: null, delta: pctFmt(q.changePct1d), dir: dirOf(q.changePct1d) })
+        const q = petr.value?.data
+        if (q?.change_percent != null) {
+          pills.push({ label: 'PETR4', value: null, delta: pctFmt(q.change_percent), dir: dirOf(q.change_percent) })
         }
       }
 
@@ -620,16 +619,19 @@ export function useNuNews() {
 
       const picked = items.slice(0, 5)
       const symbols = [...new Set(picked.map((n) => n.ticker).filter((t): t is string => !!t))]
-      const empty: TickerSnapshotsApi = { snapshots: {} }
-      const snaps = symbols.length
-        ? await marketFetchTickerSnapshots(symbols).catch(() => empty)
-        : empty
+      // Cotações da MESMA rota Laravel das páginas (≤5 fetches, cache 300s no
+      // servidor) — o batch do chat-service ficava stale vs o scraper.
+      const quotes = new Map<string, number>()
+      await Promise.all(symbols.map(async (s) => {
+        const q = await marketFetchQuote(s).catch(() => null)
+        if (q?.data?.change_percent != null) quotes.set(s.toUpperCase(), q.data.change_percent)
+      }))
 
       const badgeFor = (t: string | null) => {
         if (!t) return null
-        const q = snaps.snapshots?.[t.toUpperCase()]
-        if (q?.changePct1d == null) return null
-        return { text: `${t.toUpperCase()} ${pctFmt(q.changePct1d)}`, dir: dirOf(q.changePct1d) }
+        const chg = quotes.get(t.toUpperCase())
+        if (chg == null) return null
+        return { text: `${t.toUpperCase()} ${pctFmt(chg)}`, dir: dirOf(chg) }
       }
       const sourceLine = (n: RawNews) => {
         // 'seu_dinheiro' → 'Seu Dinheiro' (o design mostra o veículo por extenso)
@@ -679,11 +681,11 @@ export function useNuHeroCards() {
     if (started.value) return
     started.value = true
     try {
-      const q = await marketFetchTickerSnapshots(['PETR4'])
-      const s = q.snapshots?.PETR4
-      if (s?.price != null) {
-        const chg = s.changePct1d ?? 0
-        cards.value = { ...cards.value, price: `R$ ${nf2.format(s.price)}`, pct: pctFmt(chg), dir: dirOf(chg) }
+      const q = await marketFetchQuote('PETR4')
+      const s = q.data
+      if (s?.market_price != null) {
+        const chg = s.change_percent ?? 0
+        cards.value = { ...cards.value, price: `R$ ${nf2.format(s.market_price)}`, pct: pctFmt(chg), dir: dirOf(chg) }
       }
     } catch { /* mantém o seed */ }
   }

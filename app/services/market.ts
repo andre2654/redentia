@@ -14,7 +14,6 @@ import type {
   TesouroApi,
   ThesisCardApi,
   TickerApi,
-  TickerSnapshotsApi,
 } from '~/types/market'
 
 const base = '/api/backend'
@@ -65,8 +64,8 @@ export function marketFetchToday() {
   return $fetch<MarketTodayApi>(`${base}/market/today`, json)
 }
 
-/** GET /api/chat/tickers/snapshot — único batch-quote público (cap 30). */
-export function marketFetchTickerSnapshots(symbols: string[]) {
-  const list = symbols.slice(0, 30).map((s) => encodeURIComponent(s.toUpperCase())).join(',')
-  return $fetch<TickerSnapshotsApi>(`/api/chat/tickers/snapshot?symbols=${list}`, json)
+/** GET /tickers/{ticker} — cotação Laravel, MESMA fonte das páginas de ativo.
+ *  (o snapshot do chat-service ficava stale vs o scraper — decisão 2026-07-11) */
+export function marketFetchQuote(ticker: string) {
+  return $fetch<{ data: TickerApi }>(`${base}/tickers/${encodeURIComponent(ticker.toUpperCase())}`, json)
 }
