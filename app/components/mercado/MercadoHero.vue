@@ -149,6 +149,8 @@ const newsTitle = computed(() => (newsLoaded.value ? featured.value.title : card
    full-bleed sem arredondamento, e os float cards ficam minimalistas e
    reposicionados PARA DENTRO do painel (nada estoura o viewport). */
 @media (max-width: 760px) {
+  /* painel full-bleed encosta direto na próxima seção (sem respiro creme) */
+  .mh { padding-bottom: 0; }
   .mh__right { margin-inline: calc(var(--mh-pad) * -1); min-height: 460px; }
   .mh__panel { border-radius: 0; }
 

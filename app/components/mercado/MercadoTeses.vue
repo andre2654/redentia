@@ -156,4 +156,13 @@ onBeforeUnmount(() => {
 }
 .mtz__play:hover { background: var(--nu-cream); }
 .mtz__ring { position: absolute; inset: 0; pointer-events: none; }
+
+/* Mobile: o seletor sai da lateral e vira uma barra horizontal ABAIXO do
+   carrossel; os chevrons (cima/baixo) giram -90° pra virar esq/dir. */
+@media (max-width: 760px) {
+  .mtz__right { flex-direction: column; }
+  .mtz__controls { flex-direction: row; gap: 16px; margin-top: 4px; }
+  .mtz__dots { flex-direction: row; padding: 0 4px; }
+  .mtz__arrow svg { transform: rotate(-90deg); }
+}
 </style>
