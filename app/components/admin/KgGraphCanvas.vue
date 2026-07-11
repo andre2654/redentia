@@ -1,22 +1,24 @@
 <script setup lang="ts">
-// Canvas força-dirigido do Knowledge Graph. Busca GET /kg/graph (via proxy
-// /api/chat), simula em canvas (nó = entidade, tamanho = nº de claims) e emite
-// as stats pro pai montar a legenda. Client-only (usa canvas/window em onMounted).
-interface GraphNode { l: string; k: string; c: number; x?: number; y?: number; vx?: number; vy?: number; r?: number }
+// Knowledge Graph — visualização interativa estilo Neo4j Browser (cytoscape).
+// Pan (arrasta o fundo), zoom (scroll), arrasta nós, clica pra focar a
+// vizinhança, filtra por tipo, painel de detalhes. Lê GET /kg/graph via
+// proxy /api/chat. Client-only (cytoscape importado em onMounted).
+import type { Core, NodeSingular } from 'cytoscape'
+
+interface GNode { l: string; k: string; c: number }
 type Link = [number, number]
-interface Graph { nodes: GraphNode[]; links: Link[]; stats: { entities: number; links: number; claims: number } }
+interface Graph { nodes: GNode[]; links: Link[]; stats: { entities: number; links: number; claims: number } }
 
 const emit = defineEmits<{ stats: [Graph['stats']] }>()
 
 const COL: Record<string, string> = { asset: '#4FD6A8', sector: '#EF9F27', thesis: '#DDFF33' }
 
-const cv = ref<HTMLCanvasElement | null>(null)
-const tip = ref<HTMLDivElement | null>(null)
+const container = ref<HTMLElement | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
-
-let raf = 0
-let stop: (() => void) | null = null
+const selected = ref<{ label: string; kind: string; claims: number; degree: number } | null>(null)
+const kinds = reactive<Record<string, boolean>>({ asset: true, sector: true, thesis: true })
+let cy: Core | null = null
 
 async function load() {
   loading.value = true
@@ -25,120 +27,132 @@ async function load() {
     const g = await $fetch<Graph>('/api/chat/kg/graph')
     emit('stats', g.stats)
     await nextTick()
-    render(g)
+    await build(g)
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Falha ao carregar o grafo'
   } finally {
     loading.value = false
   }
 }
-defineExpose({ reload: load })
 
-function render(g: Graph) {
-  if (stop) stop()
-  const canvas = cv.value
-  const tipEl = tip.value
-  if (!canvas) return
-  const ctx = canvas.getContext('2d')!
-  const N = g.nodes as Required<GraphNode>[]
+// Força-dirigido headless (repulsão n², mola nas arestas, gravidade ao centro).
+// Roda ~450 iterações sem renderizar e devolve {x,y} por nó pro cytoscape.
+function computeLayout(g: Graph): Array<{ x: number; y: number }> {
+  const N = g.nodes.map(() => ({ x: (Math.random() - 0.5) * 500, y: (Math.random() - 0.5) * 500, vx: 0, vy: 0 }))
   const L = g.links
-  const H = 520
-  const DPR = Math.min(2, window.devicePixelRatio || 1)
-  let W = 0
-  const size = () => { W = canvas.clientWidth || 800; canvas.width = W * DPR; canvas.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0) }
-
-  N.forEach((n) => { n.r = Math.max(2.2, Math.min(16, 2 + Math.sqrt(n.c) * 0.75)); n.x = (Math.random() - 0.5) * 340; n.y = (Math.random() - 0.5) * 340; n.vx = 0; n.vy = 0 })
-  const labeled = new Set(N.map((n, i) => [i, n.c] as [number, number]).sort((a, b) => b[1] - a[1]).slice(0, 10).map((x) => x[0]))
-  const adj: number[][] = N.map(() => [])
-  for (const e of L) { adj[e[0]]!.push(e[1]); adj[e[1]]!.push(e[0]) }
-  let alpha = 1
-  let hover = -1
-  size()
-
-  function tick() {
+  for (let it = 0; it < 450; it++) {
+    const alpha = Math.max(0.03, 1 - it / 450)
     for (let i = 0; i < N.length; i++) {
       const a = N[i]!
       for (let j = i + 1; j < N.length; j++) {
         const b = N[j]!
         let dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy
         if (d2 < 1) d2 = 1
-        if (d2 > 90000) continue
-        const d = Math.sqrt(d2), f = 400 / d2, fx = dx / d * f, fy = dy / d * f
+        if (d2 > 160000) continue
+        const d = Math.sqrt(d2), f = 650 / d2, fx = dx / d * f, fy = dy / d * f
         a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy
       }
-      a.vx += (-a.x) * 0.006; a.vy += (-a.y) * 0.006
+      a.vx += -a.x * 0.005; a.vy += -a.y * 0.005
     }
     for (const e of L) {
       const a = N[e[0]]!, b = N[e[1]]!
       let dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 1
-      const target = 36 + a.r + b.r, f = (d - target) * 0.02, fx = dx / d * f, fy = dy / d * f
+      const f = (d - 46) * 0.03, fx = dx / d * f, fy = dy / d * f
       a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy
     }
-    for (const a of N) { a.x += a.vx * alpha; a.y += a.vy * alpha; a.vx *= 0.86; a.vy *= 0.86 }
+    for (const a of N) { a.x += a.vx * alpha; a.y += a.vy * alpha; a.vx *= 0.85; a.vy *= 0.85 }
   }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H)
-    const ox = W / 2, oy = H / 2
-    const hi = hover >= 0 ? new Set(adj[hover]!.concat([hover])) : null
-    ctx.lineWidth = 1
-    for (const e of L) {
-      const a = N[e[0]]!, b = N[e[1]]!
-      const on = hi && (e[0] === hover || e[1] === hover)
-      ctx.strokeStyle = on ? 'rgba(221,255,51,0.55)' : 'rgba(255,255,255,0.05)'
-      ctx.beginPath(); ctx.moveTo(ox + a.x, oy + a.y); ctx.lineTo(ox + b.x, oy + b.y); ctx.stroke()
-    }
-    for (let i = 0; i < N.length; i++) {
-      const n = N[i]!
-      ctx.globalAlpha = hi && !hi.has(i) ? 0.22 : 1
-      ctx.beginPath(); ctx.arc(ox + n.x, oy + n.y, n.r, 0, 6.2832); ctx.fillStyle = COL[n.k] ?? '#8b8b93'; ctx.fill()
-      if (i === hover) { ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke() }
-    }
-    ctx.globalAlpha = 1; ctx.font = '500 10px ui-monospace,monospace'; ctx.textAlign = 'center'
-    for (let i = 0; i < N.length; i++) {
-      if (labeled.has(i) || (hi && hi.has(i))) {
-        const n = N[i]!
-        ctx.fillStyle = i === hover ? '#DDFF33' : '#cfcfd6'
-        ctx.fillText(n.l, ox + n.x, oy + n.y - n.r - 3)
-      }
-    }
-  }
-
-  let f = 0
-  const loop = () => { if (f < 540) { tick(); alpha = Math.max(0.02, 1 - f / 540); f++ } draw(); raf = requestAnimationFrame(loop) }
-  loop()
-
-  const onMove = (ev: MouseEvent) => {
-    const rc = canvas.getBoundingClientRect()
-    const mx = ev.clientX - rc.left - W / 2, my = ev.clientY - rc.top - H / 2
-    let best = -1, bd = 1e9
-    for (let i = 0; i < N.length; i++) {
-      const n = N[i]!, dx = mx - n.x, dy = my - n.y, d = dx * dx + dy * dy
-      if (d < Math.max(64, (n.r + 4) * (n.r + 4)) && d < bd) { bd = d; best = i }
-    }
-    hover = best
-    if (best >= 0 && tipEl) {
-      const n = N[best]!
-      tipEl.style.left = `${W / 2 + n.x}px`; tipEl.style.top = `${H / 2 + n.y}px`
-      tipEl.style.opacity = '1'; tipEl.textContent = `${n.l} · ${n.c} claims`
-    } else if (tipEl) tipEl.style.opacity = '0'
-  }
-  const onLeave = () => { hover = -1; if (tipEl) tipEl.style.opacity = '0' }
-  canvas.addEventListener('mousemove', onMove)
-  canvas.addEventListener('mouseleave', onLeave)
-  window.addEventListener('resize', size)
-  stop = () => { cancelAnimationFrame(raf); canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('mouseleave', onLeave); window.removeEventListener('resize', size) }
+  return N.map((n) => ({ x: n.x, y: n.y }))
 }
 
+async function build(g: Graph) {
+  if (!container.value) return
+  const cytoscape = (await import('cytoscape')).default
+  if (cy) { cy.destroy(); cy = null }
+
+  const sz = (c: number) => Math.max(10, Math.min(64, 9 + Math.sqrt(c) * 2.4))
+  // Posições via force-sim próprio (o cose colapsava este grafo em linha).
+  // O cytoscape só renderiza (layout 'preset') e cuida da interação.
+  const pos = computeLayout(g)
+  const nodes = g.nodes.map((n, i) => ({ data: { id: `n${i}`, label: n.l, kind: n.k, claims: n.c, size: sz(n.c) }, position: pos[i] }))
+  const edges = g.links.map((e, i) => ({ data: { id: `e${i}`, source: `n${e[0]}`, target: `n${e[1]}` } }))
+
+  cy = cytoscape({
+    container: container.value,
+    elements: { nodes, edges },
+    minZoom: 0.1,
+    maxZoom: 3,
+    layout: { name: 'preset' },
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'background-color': (ele: NodeSingular) => COL[ele.data('kind')] ?? '#8b8b93',
+          width: 'data(size)', height: 'data(size)',
+          label: 'data(label)', color: '#0B0B0F',
+          'font-family': 'ui-monospace, monospace', 'font-size': 8, 'font-weight': 600,
+          'text-valign': 'center', 'text-halign': 'center',
+          'text-opacity': 0, 'border-width': 0,
+        },
+      },
+      { selector: 'node[claims >= 60]', style: { 'text-opacity': 1 } },
+      { selector: 'node.hl', style: { 'text-opacity': 1 } },
+      { selector: 'node:selected', style: { 'border-width': 2, 'border-color': '#fff', 'text-opacity': 1 } },
+      { selector: 'edge', style: { width: 1, 'line-color': 'rgba(255,255,255,0.09)', 'curve-style': 'straight' } },
+      { selector: 'edge.hl', style: { 'line-color': 'rgba(221,255,51,0.5)', width: 1.4 } },
+      { selector: '.faded', style: { opacity: 0.1, 'text-opacity': 0 } },
+    ],
+  })
+  // Enquadra só depois do container ter o tamanho final pintado (senão o fit
+  // pega uma viewport 0 e joga o grafo no canto).
+  requestAnimationFrame(() => { cy?.resize(); cy?.fit(cy.elements(), 40) })
+
+  cy.on('tap', 'node', (ev) => {
+    const node = ev.target as NodeSingular
+    cy!.elements().addClass('faded').removeClass('hl')
+    const nb = node.closedNeighborhood()
+    nb.removeClass('faded'); nb.addClass('hl')
+    selected.value = { label: node.data('label'), kind: node.data('kind'), claims: node.data('claims'), degree: node.degree(false) }
+  })
+  cy.on('tap', (ev) => {
+    if (ev.target === cy) { cy!.elements().removeClass('faded hl'); selected.value = null }
+  })
+}
+
+function applyFilter() {
+  if (!cy) return
+  cy.nodes().forEach((n) => { n.style('display', kinds[n.data('kind')] ? 'element' : 'none') })
+}
+watch(kinds, applyFilter, { deep: true })
+
+function fit() { cy?.fit(undefined, 40) }
+defineExpose({ reload: load, fit })
+
 onMounted(load)
-onBeforeUnmount(() => { if (stop) stop() })
+onBeforeUnmount(() => { cy?.destroy(); cy = null })
 </script>
 
 <template>
   <div class="kg-panel">
     <p v-if="error" class="kg-msg">{{ error }}</p>
-    <canvas ref="cv" class="kg-canvas" />
-    <div ref="tip" class="kg-tip" />
+
+    <div class="kg-controls">
+      <button v-for="(on, k) in kinds" :key="k" type="button" class="kg-chip" :class="{ off: !on }" @click="kinds[k] = !kinds[k]">
+        <span class="kg-cdot" :style="{ background: COL[k] }" />{{ k }}
+      </button>
+      <button type="button" class="kg-chip kg-chip--act" @click="fit()">
+        <UIcon name="i-lucide-maximize-2" class="size-3" /> ajustar
+      </button>
+    </div>
+
+    <div v-if="selected" class="kg-detail">
+      <span class="kg-detail__badge" :style="{ background: COL[selected.kind], color: '#0B0B0F' }">{{ selected.kind }}</span>
+      <span class="kg-detail__name">{{ selected.label }}</span>
+      <span class="kg-detail__meta">{{ selected.claims }} claims · {{ selected.degree }} conexões</span>
+    </div>
+
+    <p v-if="loading" class="kg-loading">carregando o grafo…</p>
+    <div ref="container" class="kg-cy" />
   </div>
 </template>
 
@@ -147,12 +161,31 @@ onBeforeUnmount(() => { if (stop) stop() })
   position: relative; background: #0B0B0F; border-radius: 14px;
   overflow: hidden; border: 0.5px solid #26262c;
 }
-.kg-canvas { display: block; width: 100%; height: 520px; }
+.kg-cy { width: 100%; height: 600px; }
 .kg-msg { color: #f0997b; font-size: 13px; padding: 20px; }
-.kg-tip {
-  position: absolute; pointer-events: none; background: #16161b; color: #F4F4F0;
-  border: 0.5px solid #3a3a42; border-radius: 6px; padding: 4px 8px;
-  font: 500 11px/1.3 ui-monospace, monospace; opacity: 0;
-  transform: translate(-50%, -140%); white-space: nowrap; transition: opacity .1s;
+.kg-loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: ui-monospace, monospace; font-size: 12px; color: #8b8b93; pointer-events: none;
 }
+.kg-controls {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.kg-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #16161b; border: 0.5px solid #3a3a42; border-radius: 999px;
+  padding: 4px 10px; color: #cfcfd6; cursor: pointer;
+  font: 500 11px/1 ui-monospace, monospace; text-transform: capitalize; transition: opacity .15s;
+}
+.kg-chip.off { opacity: 0.4; }
+.kg-chip--act { color: #DDFF33; border-color: #4a521f; text-transform: none; }
+.kg-cdot { width: 8px; height: 8px; border-radius: 50%; }
+.kg-detail {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-end;
+  background: #16161b; border: 0.5px solid #3a3a42; border-radius: 10px; padding: 10px 12px;
+}
+.kg-detail__badge { font: 600 9px/1 ui-monospace, monospace; padding: 3px 7px; border-radius: 5px; text-transform: capitalize; }
+.kg-detail__name { font: 600 14px/1 ui-monospace, monospace; color: #F4F4F0; }
+.kg-detail__meta { font: 400 10px/1 ui-monospace, monospace; color: #8b8b93; }
 </style>
