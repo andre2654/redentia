@@ -57,4 +57,55 @@
   /* sombras (dos designs) */
   --nu-shadow-card: 0 24px 60px -30px rgba(12, 21, 36, 0.18);
   --nu-shadow-float: 0 30px 64px -24px rgba(5, 10, 25, 0.6);
+
+  /* ——— PR1 /mercado (valores exatos de Redentia Mercado Nu.dc.html) ——— */
+  --nu-green-soft: #8FF0B5;    /* variação positiva sobre navy (perf de tese, altas) */
+  --nu-red-soft: #FFB3B8;      /* variação negativa sobre navy */
+  --nu-amber: #F2C94C;         /* tile de letra dos tickers nos cards de tese */
+  --nu-blue-hover-3: #1F55E0;  /* hover do CTA azul do briefing */
+  --nu-blue-30: rgba(47, 107, 255, 0.3);         /* underline de link inline no briefing */
+  --nu-blue-soft-35: rgba(158, 200, 255, 0.35);  /* underline de link no card takeaway */
+  --nu-grad-blue-1: #4D86E8;   /* stops exclusivos dos gradientes do blog */
+  --nu-grad-blue-2: #7FA9F0;
+  --nu-cream-3: #E9E4D8;       /* track do anel de progresso do carrossel de teses */
+  --nu-cream-4: #EFE9DD;       /* hover das explore rows */
+  --nu-sand-3: #CFC9BC;        /* dot inativo do carrossel */
+  --nu-score-track: #EEF1F5;   /* track da barra do Redentia Score (hero) */
+  --nu-orb-deep: #0A1030;      /* radial do painel do orb (hero) */
+  --nu-orb-black: #05070F;
+  --nu-green-tint: rgba(14, 122, 66, 0.12);  /* bg do badge de ticker positivo (notícias) */
+  --nu-red-tint: rgba(214, 50, 59, 0.12);    /* variante negativa (estado de dado real) */
+
+  /* opacidades de creme sobre navy/azul (bandas dark do /mercado) */
+  --nu-cream-text-92: rgba(245, 241, 234, 0.92);
+  --nu-cream-text-85: rgba(245, 241, 234, 0.85);
+  --nu-cream-text-80: rgba(245, 241, 234, 0.8);
+  --nu-cream-text-75: rgba(245, 241, 234, 0.75);
+  --nu-cream-text-50: rgba(245, 241, 234, 0.5);
+  --nu-cream-text-45: rgba(245, 241, 234, 0.45);
+  --nu-cream-text-12: rgba(245, 241, 234, 0.12);
+  --nu-cream-text-10: rgba(245, 241, 234, 0.1);
+
+  /* opacidades de branco (cards de tese e blog) */
+  --nu-white-90: rgba(255, 255, 255, 0.9);
+  --nu-white-88: rgba(255, 255, 255, 0.88);
+  --nu-white-85: rgba(255, 255, 255, 0.85);
+  --nu-white-78: rgba(255, 255, 255, 0.78);
+  --nu-white-75: rgba(255, 255, 255, 0.75);
+  --nu-white-65: rgba(255, 255, 255, 0.65);
+  --nu-white-60: rgba(255, 255, 255, 0.6);
+  --nu-white-35: rgba(255, 255, 255, 0.35);
+  --nu-white-30: rgba(255, 255, 255, 0.3);
+  --nu-white-18: rgba(255, 255, 255, 0.18);
+  --nu-white-16: rgba(255, 255, 255, 0.16);
+  --nu-white-14: rgba(255, 255, 255, 0.14);
+
+  /* opacidades de ink (sobre claro) */
+  --nu-ink-75: rgba(10, 10, 12, 0.75);
+  --nu-ink-30: rgba(10, 10, 12, 0.3);
+  --nu-ink-14: rgba(10, 10, 12, 0.14);
+  --nu-ink-04: rgba(10, 10, 12, 0.04);
+
+  /* scrim dos cards de tese (4 stops do design) */
+  --nu-thesis-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.6) 0%, rgba(8, 12, 20, 0.1) 36%, rgba(8, 12, 20, 0.34) 58%, rgba(8, 12, 20, 0.93) 100%);
 }
