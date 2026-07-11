@@ -55,6 +55,8 @@ export default defineNuxtConfig({
     '/mercado': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/noticias': { headers: { 'cache-control': 'public, s-maxage=180, stale-while-revalidate=600' } },
     '/acao/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
+    // '/guias/**' não casa a base — o hub precisa da regra exata (PR4).
+    '/guias': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/guias/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/tese/**': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/calculadoras': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },

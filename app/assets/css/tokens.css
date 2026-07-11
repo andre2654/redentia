@@ -141,4 +141,8 @@
   --nu-red-bg: #FBE3E4;        /* bg do chip de ticker negativo (par do --nu-green-bg) */
   --nu-sand-border: #E4E0D6;   /* borda da tab-pill inativa */
   --nu-sand-hover: #E2DCCB;    /* hover do botão "Carregar mais" (bg é --nu-sand-2) */
+
+  /* ——— PR4 /guias (valores exatos de Redentia Guias Nu / Guia Open Finance) ——— */
+  --nu-white-20: rgba(255, 255, 255, 0.2);  /* tag-pílula sobre gradient dos cards de guia */
+  --nu-ink-10: rgba(10, 10, 12, 0.10);      /* trilho da timeline de passos do guia */
 }

@@ -1,11 +1,16 @@
 <script setup lang="ts">
 // Accordion de FAQ single-open (inicia com o 1º aberto; clicar no aberto
-// fecha). Ícone '+' rotaciona 45° e a resposta entra com nu-fade .3s —
-// comportamento e valores exatos do design. Emite o JSON-LD FAQPage via
-// useHead (rich snippet), pra qualquer tela que use o componente.
+// fecha; defaultOpen=-1 = tudo fechado). Ícone '+' rotaciona 45° e a resposta
+// entra com nu-fade .3s — comportamento e valores exatos do design. Emite o
+// JSON-LD FAQPage via useHead (rich snippet), pra qualquer tela que use o
+// componente. variant="compact" (PR4): escala do FAQ do guia (Redentia Guia
+// Open Finance.dc.html) — cards 22x24, pergunta 17px, ícone 19, gap 12.
 import type { NuFaqItem } from '~/types/market'
 
-const props = withDefaults(defineProps<{ items: NuFaqItem[]; defaultOpen?: number }>(), { defaultOpen: 0 })
+const props = withDefaults(
+  defineProps<{ items: NuFaqItem[]; defaultOpen?: number; variant?: 'compact' }>(),
+  { defaultOpen: 0, variant: undefined },
+)
 
 const open = ref(props.defaultOpen)
 function toggle(i: number) {
@@ -29,11 +34,11 @@ useHead({
 </script>
 
 <template>
-  <div class="nfa">
+  <div class="nfa" :class="{ 'nfa--compact': variant === 'compact' }">
     <div v-for="(f, i) in items" :key="f.q" class="nfa__item">
       <button type="button" class="nfa__q" :aria-expanded="open === i" @click="toggle(i)">
         <span class="nfa__q-text">{{ f.q }}</span>
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#0A0A0C" stroke-width="2.3" stroke-linecap="round" class="nfa__icon" :class="{ 'nfa__icon--open': open === i }"><path d="M12 5v14M5 12h14" /></svg>
+        <svg :width="variant === 'compact' ? 19 : 21" :height="variant === 'compact' ? 19 : 21" viewBox="0 0 24 24" fill="none" stroke="#0A0A0C" stroke-width="2.3" stroke-linecap="round" class="nfa__icon" :class="{ 'nfa__icon--open': open === i }"><path d="M12 5v14M5 12h14" /></svg>
       </button>
       <div v-if="open === i" class="nfa__a">{{ f.a }}</div>
     </div>
@@ -54,4 +59,12 @@ useHead({
   color: var(--nu-ink-75); font-size: 15.5px; font-weight: 500; line-height: 1.7;
   margin-top: 16px; animation: nu-fade .3s ease both;
 }
+
+/* variante compact (valores exatos do FAQ do Guia Open Finance) */
+.nfa--compact { gap: 12px; }
+.nfa--compact .nfa__item { padding: 22px 24px; }
+.nfa--compact .nfa__q { gap: 18px; }
+.nfa--compact .nfa__q-text { font-size: 17px; }
+.nfa--compact .nfa__icon { margin-top: 2px; }
+.nfa--compact .nfa__a { font-size: 15px; margin-top: 14px; }
 </style>

@@ -708,7 +708,7 @@ export const MERCADO_EXPLORE = [
 ] as const
 
 export const MERCADO_GUIDES: NuGuideCardItem[] = [
-  { tag: 'Guia Redentia', title: 'Open Finance: carteira espalhada?', href: '/guias', variant: 1 },
+  { tag: 'Guia Redentia', title: 'Open Finance: carteira espalhada?', href: '/guias/open-finance', variant: 1 },
   { tag: 'Ações', title: 'Como investir em ações', href: '/guias', variant: 2 },
   { tag: 'FIIs', title: 'Melhores FIIs 2026', href: '/guias', variant: 3 },
   { tag: 'Análise', title: 'Análise PETR4', href: '/guias', variant: 1 },

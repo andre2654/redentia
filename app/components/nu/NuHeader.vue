@@ -9,6 +9,7 @@ const NAV_ANON = [
   { label: 'Mercado', to: '/mercado' },
   { label: 'Ações', to: '/acao/PETR4' },
   { label: 'Notícias', to: '/noticias' },
+  { label: 'Guias', to: '/guias' },
   { label: 'Calculadoras', to: '/calculadoras' },
 ]
 const NAV_AUTH = [
@@ -17,6 +18,7 @@ const NAV_AUTH = [
   { label: 'Carteira', to: '/carteira' },
   { label: 'Notícias', to: '/noticias' },
   { label: 'Mercado', to: '/mercado' },
+  { label: 'Guias', to: '/guias' },
   { label: 'Calculadoras', to: '/calculadoras' },
 ]
 const nav = computed(() => (isAuthenticated.value ? NAV_AUTH : NAV_ANON))
