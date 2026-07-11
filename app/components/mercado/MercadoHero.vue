@@ -68,8 +68,9 @@ const newsTitle = computed(() => (newsLoaded.value ? featured.value.title : card
 
 <style scoped>
 .mh {
+  --mh-pad: clamp(22px, 5.5vw, 80px);
   background: var(--nu-cream);
-  padding: clamp(64px, 9vw, 120px) clamp(22px, 5.5vw, 80px) clamp(60px, 8vw, 100px);
+  padding: clamp(64px, 9vw, 120px) var(--mh-pad) clamp(60px, 8vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .mh__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: stretch; flex-wrap: wrap; }
@@ -143,4 +144,35 @@ const newsTitle = computed(() => (newsLoaded.value ? featured.value.title : card
 .mh__bar { height: 7px; border-radius: var(--nu-r-pill); background: var(--nu-score-track); overflow: hidden; margin-top: 12px; }
 .mh__bar-fill { height: 100%; border-radius: var(--nu-r-pill); background: var(--nu-blue); }
 .mh__news-title { color: var(--nu-ink); font-size: 15px; font-weight: 700; line-height: 1.4; margin-top: 8px; }
+
+/* Mobile (ajustes do dono do design, 2026-07-11): o painel do orb vira
+   full-bleed sem arredondamento, e os float cards ficam minimalistas e
+   reposicionados PARA DENTRO do painel (nada estoura o viewport). */
+@media (max-width: 760px) {
+  .mh__right { margin-inline: calc(var(--mh-pad) * -1); min-height: 460px; }
+  .mh__panel { border-radius: 0; }
+
+  .mh__float--quote { top: 14px; left: 14px; }
+  .mh__float--score { top: 38%; right: 14px; }
+  .mh__float--news { bottom: 14px; left: 14px; }
+
+  .mh__float-card {
+    padding: 10px 14px; border-radius: 14px;
+    box-shadow: 0 12px 30px -18px rgba(5, 10, 25, 0.45);
+  }
+  .mh__float-card--score { min-width: 132px; }
+  .mh__float-card--news { padding: 10px 14px; max-width: 220px; }
+  .mh__float-label { font-size: 10px; letter-spacing: .8px; }
+  .mh__quote-row { gap: 8px; margin-top: 5px; }
+  .mh__price { font-size: 19px; }
+  .mh__pill { font-size: 11px; padding: 3px 8px; }
+  .mh__score-row { margin-top: 5px; }
+  .mh__score { font-size: 22px; }
+  .mh__score-max { font-size: 12px; }
+  .mh__bar { height: 5px; margin-top: 8px; }
+  .mh__news-title {
+    font-size: 13px; margin-top: 6px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+}
 </style>
