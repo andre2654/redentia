@@ -16,13 +16,21 @@ const CARD = 540
 const GAP = 20
 const PAD = 30
 
+// Mobile (≤760px): o eixo do carrossel vira HORIZONTAL — cada slot ocupa a
+// largura do viewport (medida via ResizeObserver) e o track anda em X.
+const isMobile = ref(false)
+const vpRef = ref<HTMLElement | null>(null)
+const vpW = ref(0)
+
 let progress = 0
 let timer: ReturnType<typeof setInterval> | null = null
 
 const count = computed(() => theses.value.length)
 const current = computed(() => theses.value[idx.value] ?? theses.value[0]!)
 const colStyle = computed(() => ({
-  transform: `translateY(${PAD - idx.value * (CARD + GAP)}px)`,
+  transform: isMobile.value
+    ? `translateX(${-idx.value * (vpW.value + GAP)}px)`
+    : `translateY(${PAD - idx.value * (CARD + GAP)}px)`,
   transition: 'transform .7s cubic-bezier(.22,.9,.3,1)',
 }))
 
@@ -38,7 +46,17 @@ function prev() { go(idx.value - 1) }
 function next() { go(idx.value + 1) }
 function togglePause() { paused.value = !paused.value }
 
+let mq: MediaQueryList | null = null
+let ro: ResizeObserver | null = null
+const applyMq = () => { isMobile.value = mq?.matches ?? false }
+
 onMounted(() => {
+  mq = matchMedia('(max-width: 760px)')
+  applyMq()
+  mq.addEventListener('change', applyMq)
+  ro = new ResizeObserver(() => { vpW.value = vpRef.value?.clientWidth ?? 0 })
+  if (vpRef.value) ro.observe(vpRef.value)
+
   timer = setInterval(() => {
     if (paused.value) return
     progress += 50 / 5000
@@ -51,6 +69,8 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer)
+  mq?.removeEventListener('change', applyMq)
+  ro?.disconnect()
 })
 </script>
 
@@ -75,7 +95,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="mtz__right">
-        <div class="mtz__viewport">
+        <div ref="vpRef" class="mtz__viewport">
           <div class="mtz__col" :style="colStyle">
             <div v-for="t in theses" :key="t.slug" class="mtz__card-slot">
               <NuThesisCard :t="t" />
@@ -157,10 +177,14 @@ onBeforeUnmount(() => {
 .mtz__play:hover { background: var(--nu-cream); }
 .mtz__ring { position: absolute; inset: 0; pointer-events: none; }
 
-/* Mobile: o seletor sai da lateral e vira uma barra horizontal ABAIXO do
-   carrossel; os chevrons (cima/baixo) giram -90° pra virar esq/dir. */
+/* Mobile: o carrossel vira HORIZONTAL (track em X, 1 card por tela, sem o
+   peek do PAD) e o seletor sai da lateral pra uma barra abaixo do viewport;
+   os chevrons (cima/baixo) giram -90° pra virar esq/dir. */
 @media (max-width: 760px) {
   .mtz__right { flex-direction: column; }
+  .mtz__viewport { flex: 1 1 100%; width: 100%; height: 540px; }
+  .mtz__col { display: flex; gap: 20px; height: 100%; }
+  .mtz__card-slot { flex: 0 0 100%; margin-bottom: 0; }
   .mtz__controls { flex-direction: row; gap: 16px; margin-top: 4px; }
   .mtz__dots { flex-direction: row; padding: 0 4px; }
   .mtz__arrow svg { transform: rotate(-90deg); }
