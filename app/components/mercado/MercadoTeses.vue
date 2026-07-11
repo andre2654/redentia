@@ -181,6 +181,9 @@ onBeforeUnmount(() => {
    peek do PAD) e o seletor sai da lateral pra uma barra abaixo do viewport;
    os chevrons (cima/baixo) giram -90° pra virar esq/dir. */
 @media (max-width: 760px) {
+  /* painel de texto vai pra BAIXO do carrossel */
+  .mtz__cols { flex-direction: column; }
+  .mtz__left { order: 2; }
   .mtz__right { flex-direction: column; }
   .mtz__viewport { flex: 1 1 100%; width: 100%; height: 540px; }
   .mtz__col { display: flex; gap: 20px; height: 100%; }
