@@ -11,7 +11,7 @@ defineProps<{ rows: AcaoStatRow[]; dark?: boolean }>()
   <div>
     <div v-for="(r, i) in rows" :key="r.l" class="nsl__row" :class="[dark ? 'nsl__row--dark' : 'nsl__row--light', { 'nsl__row--first': dark && i === 0 }]">
       <span class="nsl__label" :class="dark ? 'nsl__label--dark' : 'nsl__label--light'">{{ r.l }}</span>
-      <span class="nsl__value" :class="dark ? 'nsl__value--dark' : 'nsl__value--light'">{{ r.v }}</span>
+      <span class="nsl__value" :class="[dark ? 'nsl__value--dark' : 'nsl__value--light', { 'nsl__value--green': r.accent === 'green' }]">{{ r.v }}</span>
     </div>
   </div>
 </template>
@@ -30,4 +30,7 @@ defineProps<{ rows: AcaoStatRow[]; dark?: boolean }>()
 .nsl__value { font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .nsl__value--dark { color: var(--nu-cream-text); font-size: 16.5px; }
 .nsl__value--light { color: var(--nu-ink); font-size: 17px; }
+/* PR5: valor com destaque (ex.: 'Desde o lançamento' na tese) */
+.nsl__value--dark.nsl__value--green { color: var(--nu-green-soft); }
+.nsl__value--light.nsl__value--green { color: var(--nu-green-2); }
 </style>

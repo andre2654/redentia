@@ -9,6 +9,7 @@
 import type {
   AcaoRange,
   ConsensusApi,
+  PriceMode,
   DividendApi,
   EditorialApi,
   FundamentalsOverviewApi,
@@ -36,7 +37,7 @@ export function acaoFetchPrices(base: string, ticker: string, mode: AcaoRange) {
  * GOTCHA runtime: o símbolo documentado `^BVSP` devolve `{data:[]}` desde a
  * migração do indices-scraper (2026-07-04); o que funciona é `IBOV`.
  */
-export function acaoFetchIbovPrices(base: string, mode: AcaoRange) {
+export function acaoFetchIbovPrices(base: string, mode: PriceMode) {
   return $fetch<{ data: PricePointApi[] }>(`${base}/indices/IBOV/prices?mode=${mode}`, json)
 }
 

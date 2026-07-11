@@ -155,6 +155,9 @@ export interface ThesisDetailApi {
 
 export type AcaoRange = '1mo' | '6mo' | '12mo'
 
+/** enum completo do `mode` de /prices (PR5: o IBOV da tese olha além de 12M). */
+export type PriceMode = AcaoRange | 'ytd' | '3mo' | '2y' | '3y' | '4y' | '5y' | 'full'
+
 export interface SeriesPoint {
   t: string // 'YYYY-MM-DD'
   v: number
@@ -179,6 +182,8 @@ export interface AcaoHeroVM {
 export interface AcaoStatRow {
   l: string
   v: string
+  /** cor de destaque do valor (PR5: 'Desde o lançamento' verde na tese) */
+  accent?: 'green'
 }
 
 export interface AcaoPerfilRow {

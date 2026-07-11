@@ -32,7 +32,7 @@ const imgFailed = ref(false)
         <div class="ntc__desc">{{ t.desc }}</div>
         <div class="ntc__chips">
           <span v-for="k in t.tickers" :key="k.name" class="ntc__chip">
-            <span class="ntc__tile" :style="{ background: k.tile }">{{ k.letter }}</span>
+            <NuTickerTile :letter="k.letter" :bg="k.tile" />
             <span class="ntc__chip-name">{{ k.name }}</span>
           </span>
           <span v-if="t.more" class="ntc__more">{{ t.more }}</span>
@@ -84,10 +84,7 @@ const imgFailed = ref(false)
   display: inline-flex; align-items: center; gap: 8px; background: var(--nu-white-14);
   backdrop-filter: blur(8px); border-radius: var(--nu-r-pill); padding: 5px 13px 5px 5px;
 }
-.ntc__tile {
-  width: 22px; height: 22px; flex-shrink: 0; border-radius: 7px; color: var(--nu-navy);
-  display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800;
-}
+/* tile de letra extraído pro NuTickerTile (PR5) */
 .ntc__chip-name { color: var(--nu-white); font-size: 12.5px; font-weight: 800; }
 .ntc__more {
   display: inline-flex; align-items: center; border: 1.5px solid var(--nu-white-35);

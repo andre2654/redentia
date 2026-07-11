@@ -145,4 +145,25 @@
   /* ——— PR4 /guias (valores exatos de Redentia Guias Nu / Guia Open Finance) ——— */
   --nu-white-20: rgba(255, 255, 255, 0.2);  /* tag-pílula sobre gradient dos cards de guia */
   --nu-ink-10: rgba(10, 10, 12, 0.10);      /* trilho da timeline de passos do guia */
+
+  /* ——— PR5 /tese/[slug] (valores exatos de Redentia Tese.dc.html) ——— */
+  --nu-tese-line: #5A8CFF;                       /* linha da tese no chart de performance */
+  --nu-blue-bg: #E8F0FF;                         /* bg do badge azul-claro (Acompanhar) */
+  --nu-blue-16: rgba(47, 107, 255, 0.16);        /* highlight de trecho do editorial */
+  --nu-green-soft-16: rgba(143, 240, 181, 0.16); /* bg do badge de convicção no hero */
+  --nu-cream-text-88: rgba(245, 241, 234, 0.88); /* bullets dos driver cards */
+  --nu-cream-text-65: rgba(245, 241, 234, 0.65); /* breadcrumb, linha IBOV, footer do risco */
+  --nu-cream-text-40: rgba(245, 241, 234, 0.4);  /* borda do CTA outline do hero */
+  --nu-cream-text-16: rgba(245, 241, 234, 0.16); /* hairline do footer do risco central */
+  --nu-navy-60: rgba(12, 21, 36, 0.6);           /* valor do IBOV no tooltip do chart */
+  /* overlay do hero da tese (4 stops do design) */
+  --nu-tese-hero-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.62) 0%, rgba(8, 12, 20, 0.18) 34%, rgba(8, 12, 20, 0.55) 62%, rgba(8, 12, 20, 0.95) 100%);
+  /* pares bg/fg dos tiles de ticker (avaliação por ativo) */
+  --nu-tile-amber-bg: rgba(242, 201, 76, 0.28);
+  --nu-tile-amber-fg: #8A6A00;
+  --nu-tile-blue-bg: rgba(47, 107, 255, 0.14);   /* fg = --nu-blue-deep */
+  --nu-tile-red-bg: rgba(214, 50, 59, 0.12);     /* fg = --nu-red-2 */
+  --nu-tile-green-bg: rgba(0, 156, 59, 0.14);    /* fg = --nu-green-2 */
+  --nu-tile-orange-bg: rgba(242, 153, 74, 0.22);
+  --nu-tile-orange-fg: #C06A10;
 }
