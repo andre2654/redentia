@@ -108,4 +108,32 @@
 
   /* scrim dos cards de tese (4 stops do design) */
   --nu-thesis-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.6) 0%, rgba(8, 12, 20, 0.1) 36%, rgba(8, 12, 20, 0.34) 58%, rgba(8, 12, 20, 0.93) 100%);
+
+  /* ——— PR2 /acao/[ticker] (valores exatos de Redentia Acoes Nu.dc.html) ——— */
+  --nu-amber-bg: #F7E8C8;        /* bg da tag semântica amber (Moderado) */
+  --nu-amber-text: #A66B00;      /* texto da tag amber */
+  --nu-amber-soft: #FFD9A0;      /* pontos de atenção sobre azul (Leitura da IA) */
+  --nu-gray-tag: #6B6558;        /* texto da tag cinza (bg é --nu-sand-2) */
+  --nu-cream-line: #E7E0D2;      /* hairline das listas sobre creme */
+  --nu-bar-inactive: rgba(12, 21, 36, 0.13);  /* barras inativas do chart de dividendos */
+  --nu-navy-55: rgba(12, 21, 36, 0.55);       /* label da pill "TICKER hoje" no chart */
+
+  /* opacidades de creme sobre navy/azul exclusivas da tela de ativo */
+  --nu-cream-text-35: rgba(245, 241, 234, 0.35);  /* labels das gridlines do chart */
+  --nu-cream-text-30: rgba(245, 241, 234, 0.30);  /* crosshair do chart */
+  --nu-cream-text-18: rgba(245, 241, 234, 0.18);  /* tracks (score bar, range de consenso) */
+  --nu-cream-text-14: rgba(245, 241, 234, 0.14);  /* hairlines dos cards da seção IA */
+  --nu-cream-text-08: rgba(245, 241, 234, 0.08);  /* gridlines do chart */
+
+  /* verde-accent sobre azul (score/consenso) */
+  --nu-green-soft-35: rgba(143, 240, 181, 0.35);  /* início do gradiente do range */
+  --nu-green-soft-18: rgba(143, 240, 181, 0.18);  /* bg da pill de classificação */
+
+  /* halos do chart de preço */
+  --nu-blue-soft-18: rgba(158, 200, 255, 0.18);   /* halo do dot de fechamento */
+  --nu-blue-28: rgba(47, 107, 255, 0.28);         /* halo do dot do crosshair */
+
+  /* sombras dos overlays do chart (tooltip e pill de fechamento) */
+  --nu-shadow-chart-pill: 0 12px 28px -12px rgba(0, 0, 0, 0.5);
+  --nu-shadow-chart-tip: 0 18px 40px -14px rgba(0, 0, 0, 0.55);
 }

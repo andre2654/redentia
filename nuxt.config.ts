@@ -28,6 +28,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Server-only: URL direta do Laravel pros fetches SSR (evita loopback do
+    // Nitro no próprio proxy). Override: NUXT_BACKEND_DIRECT_BASE.
+    backendDirectBase: process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api',
     public: {
       // Browser SEMPRE fala com same-origin (/api/backend, /api/chat) — zero CORS.
       // chatDirectUrl: escape hatch se o proxy Vercel bufferizar SSE (lição do Atlas).
