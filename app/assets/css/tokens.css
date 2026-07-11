@@ -136,4 +136,9 @@
   /* sombras dos overlays do chart (tooltip e pill de fechamento) */
   --nu-shadow-chart-pill: 0 12px 28px -12px rgba(0, 0, 0, 0.5);
   --nu-shadow-chart-tip: 0 18px 40px -14px rgba(0, 0, 0, 0.55);
+
+  /* ——— PR3 /noticias (valores exatos de Redentia Noticias Nu.dc.html) ——— */
+  --nu-red-bg: #FBE3E4;        /* bg do chip de ticker negativo (par do --nu-green-bg) */
+  --nu-sand-border: #E4E0D6;   /* borda da tab-pill inativa */
+  --nu-sand-hover: #E2DCCB;    /* hover do botão "Carregar mais" (bg é --nu-sand-2) */
 }

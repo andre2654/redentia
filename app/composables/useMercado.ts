@@ -51,21 +51,7 @@ function briefingHtml(s: string): string {
     .replace(/\{mark\}([\s\S]*?)\{\/mark\}/g, '<strong>$1</strong>')
     .replace(/\{\/?mark\}/g, '')
 }
-function localISODate(d = new Date()): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-/** 'hoje, 08:30' · 'ontem' · '04/07' (formato das linhas de notícia do design). */
-function relTime(iso: string | null): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return ''
-  const today = localISODate()
-  const yesterday = localISODate(new Date(Date.now() - 86_400_000))
-  const day = localISODate(d)
-  if (day === today) return `hoje, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-  if (day === yesterday) return 'ontem'
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
-}
+/* localISODate/relTime/sourcePretty: compartilhados em app/utils/format.ts (PR3) */
 /** '2026-08-15' → 'Venc. 08/26' (formato dos cards de Tesouro do design). */
 function vencFmt(dateStr: string | null): string {
   if (!dateStr) return ''
@@ -634,8 +620,7 @@ export function useNuNews() {
         return { text: `${t.toUpperCase()} ${pctFmt(chg)}`, dir: dirOf(chg) }
       }
       const sourceLine = (n: RawNews) => {
-        // 'seu_dinheiro' → 'Seu Dinheiro' (o design mostra o veículo por extenso)
-        const label = n.source.replace(/_/g, ' ').replace(/(^|\s)\S/g, (c) => c.toUpperCase())
+        const label = sourcePretty(n.source)
         const when = relTime(n.publishedAt)
         return when ? `${label} · ${when}` : label
       }

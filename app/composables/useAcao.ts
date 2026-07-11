@@ -44,8 +44,6 @@ const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-const MONTHS_PT = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
-
 function pctFmt(n: number): string {
   return `${n > 0 ? '+' : ''}${nf2.format(n)}%`
 }
@@ -65,30 +63,12 @@ function moneyBig(v: number, decimals: 1 | 2 = 2): string {
   if (Math.abs(v) >= 1e6) return `R$ ${nf.format(v / 1e6)}M`
   return `R$ ${nf.format(v)}`
 }
+/* localISODate/relTime/sourcePretty/MONTHS_PT: compartilhados em app/utils/format.ts (PR3) */
 /** '2026-08-20' → '20 ago 2026'. */
 function dateShortPt(iso: string): string {
   const [y, m, d] = iso.split('-')
   if (!y || !m || !d) return iso
   return `${Number(d)} ${MONTHS_PT[Number(m) - 1] ?? m} ${y}`
-}
-function localISODate(d = new Date()): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-/** 'hoje, 09:40' · 'ontem' · '04/07' (formato das linhas de notícia do design). */
-function relTime(iso: string | null): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return ''
-  const today = localISODate()
-  const yesterday = localISODate(new Date(Date.now() - 86_400_000))
-  const day = localISODate(d)
-  if (day === today) return `hoje, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-  if (day === yesterday) return 'ontem'
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
-}
-/** 'money_times' → 'Money Times'. */
-function sourcePretty(s: string): string {
-  return s.replace(/_/g, ' ').replace(/(^|\s)\S/g, (c) => c.toUpperCase())
 }
 /** 1ª frase de um texto longo (bullets da Leitura da IA / papel na tese). */
 function firstSentence(text: string | null | undefined, max = 140): string | null {
