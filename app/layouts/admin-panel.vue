@@ -150,6 +150,7 @@ const mainNav = computed(() => {
     { to: '/admin/comunicacoes', label: 'Comunicações', icon: 'i-lucide-megaphone', superOnly: false },
     { to: '/admin/leads', label: 'Leads', icon: 'i-lucide-magnet', superOnly: false },
     { to: '/admin/reports', label: 'Reports', icon: 'i-lucide-life-buoy', superOnly: false },
+    { to: '/admin/knowledge-graph', label: 'Knowledge Graph', icon: 'i-lucide-share-2', superOnly: false },
   ]
   return items.filter(item => !item.superOnly || isSuperAdmin.value)
 })
