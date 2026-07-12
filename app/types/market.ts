@@ -182,6 +182,31 @@ export interface NuBriefing {
   takeaway: { kicker: string; html: string } | null
 }
 
+/* ═════ "O dia no mercado" (seção-gatilho + NuDayModal, PR-R4) ═════ */
+
+/** Um dos 4 blocos rotulados do modal do resumo (modal burro só recebe isto). */
+export interface NuDayBlock {
+  label: string   // "O placar", "O que puxou", …
+  color: string   // var CSS da cor do rótulo (ex.: 'var(--nu-blue)')
+  html: string    // parágrafo do bloco (v-html: real escapado ou mock do design)
+}
+
+/**
+ * Tópico do dia: alimenta AO MESMO TEMPO um card de destaque da seção e um
+ * bloco do modal (1 estrutura, 2 projeções). Montado por buildDayTopics
+ * (utils/dayBrief) a partir do briefing real, com fallback de mock do design.
+ */
+export interface NuDayTopic {
+  label: string
+  labelColor: string                       // cor do rótulo no modal
+  icon: 'trend' | 'bars' | 'flame' | 'compass'
+  stat: string | null                      // número hero do card (só o 1º tópico)
+  cardTitle: string | null                 // título editorial do card (tópicos 2–4)
+  cardBlurb: string                        // frase curta do card
+  modalHtml: string                        // parágrafo completo do modal (v-html)
+  real: boolean                            // true = veio do briefing real; false = placeholder do design
+}
+
 export interface NuTesouroRow {
   name: string
   venc: string

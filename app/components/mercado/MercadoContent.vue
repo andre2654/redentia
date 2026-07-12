@@ -8,6 +8,11 @@
 // conteúdo, 2 entradas de rota.
 const { featured, rows } = useNuNews()
 
+// "O dia no mercado" (PR-R4): o briefing do Atlas (sempre com seed → a seção
+// nunca some no /mercado) mapeado nos 4 tópicos da seção-gatilho + modal.
+const { briefing } = useNuBriefing()
+const dayTopics = computed(() => dayTopicsFromNuBriefing(briefing.value))
+
 const guiaRef = ref<HTMLElement | null>(null)
 function guiaScroll(d: number) {
   guiaRef.value?.scrollBy({ left: d * 392, behavior: 'smooth' })
@@ -36,7 +41,7 @@ function guiaScroll(d: number) {
 
     <MercadoMovers />
 
-    <MercadoBriefing />
+    <NuDaySection tone="mercado" :meta-line="briefing.metaLine" :topics="dayTopics" />
 
     <!-- Explore por onde começar -->
     <section class="mex">

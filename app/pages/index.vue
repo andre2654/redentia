@@ -24,6 +24,10 @@ if (sessionDead.value) {
 const showHome = computed(() => hasToken && !sessionDead.value && !!home?.data.value)
 const payload = computed(() => home?.data.value ?? null)
 
+// "O dia no mercado" (PR-R4): mesma seção-gatilho + modal do /mercado. Degrade-
+// safe — sem briefing hoje (VM null), a seção some (o v-if no template).
+const dayTopics = computed(() => (payload.value?.briefing ? dayTopicsFromHome(payload.value.briefing) : []))
+
 if (hasToken && !sessionDead.value) {
   // Home logada: conteúdo pessoal — noindex + title do produto. O no-store
   // já vem do routeRules.
@@ -57,7 +61,7 @@ if (hasToken && !sessionDead.value) {
       :refreshing="home?.pending.value"
       @refresh="home?.refresh()"
     />
-    <HomeBriefing v-if="payload.briefing" :briefing="payload.briefing" />
+    <NuDaySection v-if="payload.briefing" tone="home" :meta-line="payload.briefing.byline" :topics="dayTopics" />
     <HomeNews :news="payload.news" />
   </div>
   <MercadoContent v-else />

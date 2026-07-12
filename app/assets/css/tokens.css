@@ -274,4 +274,25 @@
   --nu-white-92: rgba(255, 255, 255, 0.92);      /* categoria do card */
   --nu-white-62: rgba(255, 255, 255, 0.62);      /* label "desde que segue" */
   --nu-green-soft-22: rgba(143, 240, 181, 0.22); /* bg da pill "Seguindo" */
+
+  /* ——— PR-R4 "O dia no mercado" — seção-gatilho + NuDayModal (designs v2) ——— */
+  /* A seção-gatilho é IGUAL nas duas telas; só o bg da banda difere por tone:
+     tone='mercado' → --nu-blue (#2F6BFF) · tone='home' → --nu-navy (#0C1524).
+     Reusam: --nu-cream-text (títulos/ícones), --nu-cream-text-72 (subtítulo da
+     banda), --nu-white/--nu-white-75 (número e parágrafos dos cards), --nu-cream
+     (bg do botão) + --nu-white (hover). */
+  --nu-day-card-navy: #16357F;    /* bg dos 4 cards de destaque (sobre as duas bandas) */
+  --nu-day-btn-ink: #0A2050;      /* texto do botão creme "Ler o resumo do dia" */
+  /* Modal do resumo. Reusam: --nu-blue (eyebrow + rótulo "A leitura do Atlas"),
+     --nu-gray (rótulo "O placar" + linha de data), --nu-ink (h4 + botão preto),
+     --nu-ink-hover (hover do botão preto), --nu-r-card-lg (raio 26). */
+  --nu-day-card: #FBF9F4;         /* bg do card do modal */
+  --nu-day-backdrop: rgba(8, 14, 30, 0.55);   /* scrim do modal (blur 4px por cima) */
+  --nu-day-divider: #E7E1D4;      /* hairline sob o header do modal */
+  --nu-day-close: #EDE7DA;        /* bg do botão ✕ */
+  --nu-day-close-hover: #E1D9C8;  /* hover do ✕ */
+  --nu-day-body: #2A2620;         /* texto dos 4 parágrafos do modal */
+  --nu-day-puxou: #0B7A4B;        /* rótulo "O que puxou" (verde) */
+  --nu-day-ficou: #C0392B;        /* rótulo "O que ficou pra trás" (vermelho) */
+  --nu-shadow-day-modal: 0 40px 110px rgba(0, 0, 0, 0.45);
 }
