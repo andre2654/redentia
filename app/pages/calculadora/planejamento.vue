@@ -189,234 +189,244 @@ usePageSeo({
     </PlanejamentoCalcSection>
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="pl__band pl__band--cream">
-      <h2 class="pl__h2">Cenários populares de planejamento</h2>
-      <p class="pl__p pl__p--dek">
-        Veja na hora a carteira sugerida e o tempo até a meta dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de planejamento">
+      <template #dek>
+        <p>Veja na hora a carteira sugerida e o tempo até a meta dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.</p>
+      </template>
       <div class="pl__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label" :to="s.to" class="pl__scenario">
           <span class="pl__scenario-label">{{ s.label }}</span>
           <span class="pl__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="pl__band pl__band--white">
-      <h2 class="pl__h2">Simulador de Planejamento Patrimonial grátis e online</h2>
-      <h2 class="pl__h2 pl__mt">O que é Planejamento Patrimonial?</h2>
-      <p class="pl__p">
-        Planejamento patrimonial é o processo de definir metas financeiras claras e criar uma estratégia concreta para alcançá-las. Não basta apenas "investir", você precisa saber exatamente quanto investir, por quanto tempo, e em quais ativos, para realizar seus objetivos.
-      </p>
-      <p class="pl__p">
-        Nossa calculadora vai além de simulações genéricas: ela analisa dados históricos reais de centenas de ativos da B3, monta uma carteira otimizada para seu perfil, e projeta quando você atingirá sua meta. Tudo baseado em performance real, não em promessas.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Simulador de Planejamento Patrimonial grátis e online</template>
+      <template #left>
+        <h2 class="pl__sub">O que é Planejamento Patrimonial?</h2>
+      </template>
+      <div class="pl__prose">
+        <p>Planejamento patrimonial é o processo de definir metas financeiras claras e criar uma estratégia concreta para alcançá-las. Não basta apenas "investir", você precisa saber exatamente quanto investir, por quanto tempo, e em quais ativos, para realizar seus objetivos.</p>
+        <p>Nossa calculadora vai além de simulações genéricas: ela analisa dados históricos reais de centenas de ativos da B3, monta uma carteira otimizada para seu perfil, e projeta quando você atingirá sua meta. Tudo baseado em performance real, não em promessas.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="pl__h3">Por que Fazer um Planejamento Patrimonial?</h3>
-      <div class="pl__cards pl__cards--two">
-        <div v-for="c in whyCards" :key="c.title" class="pl__card">
+    <CalcBand tone="cream" title-tag="h3" title="Por que Fazer um Planejamento Patrimonial?">
+      <div class="pl__tiles">
+        <div v-for="c in whyCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
           <p class="pl__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="pl__h2 pl__mt">Reserva de Emergência: Pré-requisito do Planejamento</h2>
-      <p class="pl__p">
-        Antes de qualquer estratégia patrimonial, monte uma reserva de emergência. Quanto: 6 a 12 meses do seu custo de vida (autônomo ou renda variável: 12 meses; CLT estável: 6 meses). Onde guardar: Tesouro Selic 2030, CDB com liquidez diária de banco grande (FGC até R$ 250 mil), conta remunerada como Nubank, Inter ou C6 que rende ~100% do CDI.
-      </p>
-      <p class="pl__p">
-        Por que: pra não precisar vender investimentos de longo prazo no pior momento (queda de bolsa, mercado em pânico). Exemplo prático: se você gasta R$ 4 mil/mês, sua reserva é R$ 24-48 mil. Se gasta R$ 8 mil/mês, fica entre R$ 48-96 mil. Sem essa proteção, qualquer evento inesperado (saúde, demissão, conserto grande) vira motivo pra cristalizar prejuízo.
-      </p>
-    </section>
+    <CalcSplit tone="white">
+      <template #title>Reserva de Emergência: Pré-requisito do Planejamento</template>
+      <div class="pl__prose">
+        <p>Antes de qualquer estratégia patrimonial, monte uma reserva de emergência. Quanto: 6 a 12 meses do seu custo de vida (autônomo ou renda variável: 12 meses; CLT estável: 6 meses). Onde guardar: Tesouro Selic 2030, CDB com liquidez diária de banco grande (FGC até R$ 250 mil), conta remunerada como Nubank, Inter ou C6 que rende ~100% do CDI.</p>
+        <p>Por que: pra não precisar vender investimentos de longo prazo no pior momento (queda de bolsa, mercado em pânico). Exemplo prático: se você gasta R$ 4 mil/mês, sua reserva é R$ 24-48 mil. Se gasta R$ 8 mil/mês, fica entre R$ 48-96 mil. Sem essa proteção, qualquer evento inesperado (saúde, demissão, conserto grande) vira motivo pra cristalizar prejuízo.</p>
+      </div>
+    </CalcSplit>
 
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="pl__band pl__band--cream">
-      <h2 class="pl__h2 pl__h2--center">Como Usar a Calculadora de Planejamento</h2>
-      <div class="pl__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar a Calculadora de Planejamento">
+      <div class="pl__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
 
-    <!-- ============ Asset allocation + estratégias + exemplos (texto verbatim) ============ -->
-    <section class="pl__band pl__band--white">
-      <h2 class="pl__h2">Asset Allocation: Alocação de Ativos por Perfil</h2>
-      <p class="pl__p">
-        Asset allocation é a distribuição percentual da carteira entre classes de ativos: ações, FIIs, renda fixa, ouro, internacional. A decisão estratégica de "quanto em cada classe" pesa mais que qual ativo individual escolher dentro da classe.
-      </p>
-      <p class="pl__p">
-        Por que importa: o estudo clássico de Brinson, Hood e Beebower (1986) mostra que cerca de 90% da variação de retorno de longo prazo de uma carteira vem da alocação entre classes, NÃO da escolha de ativos individuais. Ou seja, decidir 60% renda variável + 40% renda fixa importa mais que escolher entre ITUB4 ou BBDC4 dentro da fatia de ações.
-      </p>
-      <div class="pl__cards pl__cards--three">
-        <div v-for="c in allocationCards" :key="c.title" class="pl__card">
+    <!-- ============ Asset allocation (split: título gigante + prosa e tiles à direita) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Asset Allocation: Alocação de Ativos por Perfil</template>
+      <div class="pl__prose">
+        <p>Asset allocation é a distribuição percentual da carteira entre classes de ativos: ações, FIIs, renda fixa, ouro, internacional. A decisão estratégica de "quanto em cada classe" pesa mais que qual ativo individual escolher dentro da classe.</p>
+        <p>Por que importa: o estudo clássico de Brinson, Hood e Beebower (1986) mostra que cerca de 90% da variação de retorno de longo prazo de uma carteira vem da alocação entre classes, NÃO da escolha de ativos individuais. Ou seja, decidir 60% renda variável + 40% renda fixa importa mais que escolher entre ITUB4 ou BBDC4 dentro da fatia de ações.</p>
+      </div>
+      <div class="pl__tiles pl__tiles--split">
+        <div v-for="c in allocationCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
           <p class="pl__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcSplit>
 
-      <h2 class="pl__h2 pl__mt">Estratégias de Planejamento</h2>
-
-      <h3 class="pl__h3">Maior Rentabilidade</h3>
-      <div class="pl__card pl__card--wide pl__card--positive">
-        <h4 class="pl__h4 pl__h4--positive">
-          Para quem: Investidores com tolerância a risco e horizonte longo (10+ anos)
-        </h4>
-        <p class="pl__card-p">
-          Esta estratégia seleciona ativos com melhor performance histórica, priorizando crescimento de capital. Pode ter maior volatilidade no curto prazo, mas tende a maximizar retornos no longo prazo.
-        </p>
-        <p class="pl__card-p pl__card-p--strong">Características:</p>
-        <ul class="pl__list pl__list--plain">
-          <li>• 80-90% em ações de alto crescimento e blue chips</li>
-          <li>• 10-20% em FIIs consolidados</li>
-          <li>• Foco em setores com boas perspectivas futuras</li>
-          <li>• Maior exposição a small caps de qualidade</li>
-          <li>• Retorno histórico médio: 14-18% a.a.</li>
-        </ul>
-      </div>
-
-      <h3 class="pl__h3">Maior Segurança</h3>
-      <div class="pl__card pl__card--wide pl__card--primary">
-        <h4 class="pl__h4 pl__h4--accent">
-          Para quem: Investidores conservadores ou próximos de usar o dinheiro (5-10 anos)
-        </h4>
-        <p class="pl__card-p">
-          Esta estratégia prioriza estabilidade e previsibilidade. Seleciona empresas consolidadas, setores defensivos e inclui renda fixa para reduzir volatilidade.
-        </p>
-        <p class="pl__card-p pl__card-p--strong">Características:</p>
-        <ul class="pl__list pl__list--plain">
-          <li>• 50-60% em ações de setores defensivos (bancos, energia, saneamento)</li>
-          <li>• 30-40% em FIIs consolidados e diversificados</li>
-          <li>• 10% em renda fixa (Tesouro Direto, CDBs)</li>
-          <li>• Foco em pagadores consistentes de dividendos</li>
-          <li>• Retorno histórico médio: 10-13% a.a.</li>
-        </ul>
-      </div>
-
-      <h2 class="pl__h2 pl__mt">Exemplos de Metas e Resultados</h2>
-
-      <h3 class="pl__h3">Exemplo 1: Aposentadoria Antecipada</h3>
-      <div class="pl__card pl__card--wide">
-        <h4 class="pl__h4">João, 30 anos - Meta: R$ 1 milhão</h4>
-        <ul class="pl__list">
-          <li>Aporte mensal: R$ 2.000</li>
-          <li>Estratégia: Maior rentabilidade</li>
-          <li>Horizonte: 20 anos</li>
-        </ul>
-        <div class="pl__result-box">
-          <p class="pl__result-main">Resultado: Alcança meta em aproximadamente 18 anos</p>
-          <p class="pl__result-sub">Total investido: R$ 432.000 | Ganho projetado: R$ 568.000</p>
-          <p class="pl__result-sub">Carteira sugerida: 40% ITUB4, 20% VALE3, 15% WEGE3, 15% PETR4, 10% BBDC4</p>
+    <!-- ============ Estratégias (banda creme, cards brancos com título h3) ============ -->
+    <CalcBand tone="cream" title="Estratégias de Planejamento">
+      <div class="pl__ex-grid">
+        <div>
+          <h3 class="pl__ex-title">Maior Rentabilidade</h3>
+          <div class="pl__ex-card">
+            <h4 class="pl__h4 pl__h4--positive">
+              Para quem: Investidores com tolerância a risco e horizonte longo (10+ anos)
+            </h4>
+            <p class="pl__card-p">
+              Esta estratégia seleciona ativos com melhor performance histórica, priorizando crescimento de capital. Pode ter maior volatilidade no curto prazo, mas tende a maximizar retornos no longo prazo.
+            </p>
+            <p class="pl__card-p pl__card-p--strong">Características:</p>
+            <ul class="pl__list pl__list--plain">
+              <li>• 80-90% em ações de alto crescimento e blue chips</li>
+              <li>• 10-20% em FIIs consolidados</li>
+              <li>• Foco em setores com boas perspectivas futuras</li>
+              <li>• Maior exposição a small caps de qualidade</li>
+              <li>• Retorno histórico médio: 14-18% a.a.</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <h3 class="pl__ex-title">Maior Segurança</h3>
+          <div class="pl__ex-card">
+            <h4 class="pl__h4 pl__h4--accent">
+              Para quem: Investidores conservadores ou próximos de usar o dinheiro (5-10 anos)
+            </h4>
+            <p class="pl__card-p">
+              Esta estratégia prioriza estabilidade e previsibilidade. Seleciona empresas consolidadas, setores defensivos e inclui renda fixa para reduzir volatilidade.
+            </p>
+            <p class="pl__card-p pl__card-p--strong">Características:</p>
+            <ul class="pl__list pl__list--plain">
+              <li>• 50-60% em ações de setores defensivos (bancos, energia, saneamento)</li>
+              <li>• 30-40% em FIIs consolidados e diversificados</li>
+              <li>• 10% em renda fixa (Tesouro Direto, CDBs)</li>
+              <li>• Foco em pagadores consistentes de dividendos</li>
+              <li>• Retorno histórico médio: 10-13% a.a.</li>
+            </ul>
+          </div>
         </div>
       </div>
+    </CalcBand>
 
-      <h3 class="pl__h3">Exemplo 2: Entrada de Imóvel</h3>
-      <div class="pl__card pl__card--wide">
-        <h4 class="pl__h4">Maria, 25 anos - Meta: R$ 150.000</h4>
-        <ul class="pl__list">
-          <li>Aporte mensal: R$ 1.500</li>
-          <li>Estratégia: Maior rentabilidade</li>
-          <li>Horizonte: 7 anos</li>
-        </ul>
-        <div class="pl__result-box">
-          <p class="pl__result-main">Resultado: Alcança meta em aproximadamente 6,5 anos</p>
-          <p class="pl__result-sub">Total investido: R$ 117.000 | Ganho projetado: R$ 33.000</p>
-          <p class="pl__result-sub">Carteira sugerida: 35% PETR4, 25% VALE3, 20% BBDC4, 20% WEGE3</p>
+    <!-- ============ Exemplos de metas (banda branca, cards creme com título h3) ============ -->
+    <CalcBand tone="white" title="Exemplos de Metas e Resultados">
+      <div class="pl__ex-grid">
+        <div>
+          <h3 class="pl__ex-title">Exemplo 1: Aposentadoria Antecipada</h3>
+          <div class="pl__ex-card">
+            <h4 class="pl__h4">João, 30 anos - Meta: R$ 1 milhão</h4>
+            <ul class="pl__list">
+              <li>Aporte mensal: R$ 2.000</li>
+              <li>Estratégia: Maior rentabilidade</li>
+              <li>Horizonte: 20 anos</li>
+            </ul>
+            <div class="pl__result-box">
+              <p class="pl__result-main">Resultado: Alcança meta em aproximadamente 18 anos</p>
+              <p class="pl__result-sub">Total investido: R$ 432.000 | Ganho projetado: R$ 568.000</p>
+              <p class="pl__result-sub">Carteira sugerida: 40% ITUB4, 20% VALE3, 15% WEGE3, 15% PETR4, 10% BBDC4</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="pl__ex-title">Exemplo 2: Entrada de Imóvel</h3>
+          <div class="pl__ex-card">
+            <h4 class="pl__h4">Maria, 25 anos - Meta: R$ 150.000</h4>
+            <ul class="pl__list">
+              <li>Aporte mensal: R$ 1.500</li>
+              <li>Estratégia: Maior rentabilidade</li>
+              <li>Horizonte: 7 anos</li>
+            </ul>
+            <div class="pl__result-box">
+              <p class="pl__result-main">Resultado: Alcança meta em aproximadamente 6,5 anos</p>
+              <p class="pl__result-sub">Total investido: R$ 117.000 | Ganho projetado: R$ 33.000</p>
+              <p class="pl__result-sub">Carteira sugerida: 35% PETR4, 25% VALE3, 20% BBDC4, 20% WEGE3</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="pl__ex-title">Exemplo 3: Renda Passiva para Aposentadoria</h3>
+          <div class="pl__ex-card">
+            <h4 class="pl__h4">Carlos, 45 anos - Meta: R$ 800.000</h4>
+            <ul class="pl__list">
+              <li>Aporte mensal: R$ 3.000</li>
+              <li>Estratégia: Maior segurança</li>
+              <li>Horizonte: 15 anos (aposentar aos 60)</li>
+            </ul>
+            <div class="pl__result-box">
+              <p class="pl__result-main">Resultado: Alcança meta em aproximadamente 14 anos</p>
+              <p class="pl__result-sub">Total investido: R$ 540.000 | Ganho projetado: R$ 260.000</p>
+              <p class="pl__result-sub">Carteira sugerida: 30% FIIs diversos, 25% ITUB4, 20% BBDC4, 15% PETR4, 10% Renda Fixa</p>
+              <p class="pl__result-sub">Com R$ 800 mil gerando 10% a.a., terá R$ 6.600/mês de renda passiva</p>
+            </div>
+          </div>
         </div>
       </div>
+    </CalcBand>
 
-      <h3 class="pl__h3">Exemplo 3: Renda Passiva para Aposentadoria</h3>
-      <div class="pl__card pl__card--wide">
-        <h4 class="pl__h4">Carlos, 45 anos - Meta: R$ 800.000</h4>
-        <ul class="pl__list">
-          <li>Aporte mensal: R$ 3.000</li>
-          <li>Estratégia: Maior segurança</li>
-          <li>Horizonte: 15 anos (aposentar aos 60)</li>
-        </ul>
-        <div class="pl__result-box">
-          <p class="pl__result-main">Resultado: Alcança meta em aproximadamente 14 anos</p>
-          <p class="pl__result-sub">Total investido: R$ 540.000 | Ganho projetado: R$ 260.000</p>
-          <p class="pl__result-sub">Carteira sugerida: 30% FIIs diversos, 25% ITUB4, 20% BBDC4, 15% PETR4, 10% Renda Fixa</p>
-          <p class="pl__result-sub">Com R$ 800 mil gerando 10% a.a., terá R$ 6.600/mês de renda passiva</p>
-        </div>
-      </div>
-
-      <h2 class="pl__h2 pl__mt">Como Interpretar a Carteira Recomendada</h2>
-      <p class="pl__p">
-        A carteira recomendada mostra ativos específicos e seus pesos sugeridos. Veja o que cada informação significa:
-      </p>
-      <div class="pl__cards pl__cards--two">
-        <div v-for="c in interpretCards" :key="c.title" class="pl__card">
+    <!-- ============ Como interpretar (banda creme centrada + tiles brancos) ============ -->
+    <CalcBand tone="cream" title="Como Interpretar a Carteira Recomendada">
+      <template #dek>
+        <p>A carteira recomendada mostra ativos específicos e seus pesos sugeridos. Veja o que cada informação significa:</p>
+      </template>
+      <div class="pl__tiles">
+        <div v-for="c in interpretCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
           <p class="pl__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="pl__h2 pl__mt">Planejamento Patrimonial vs Planejamento Sucessório</h2>
-      <p class="pl__p">
-        Os dois conceitos são complementares mas têm focos distintos. Planejamento patrimonial foca em ACUMULAR e GERIR riqueza durante a vida ativa do investidor, escolha de ativos, asset allocation, otimização tributária. Planejamento sucessório foca em TRANSMITIR esse patrimônio aos herdeiros com mínimo de impostos e mínimo de conflito, é uma camada que entra em cena quando o patrimônio começa a ficar relevante.
-      </p>
-      <p class="pl__p">
-        Quando faz sentido planejar a sucessão: patrimônio acima de R$ 500 mil, múltiplos herdeiros, atividade empresarial em andamento, ou casamento em comunhão de bens com complexidades familiares.
-      </p>
-      <div class="pl__cards pl__cards--two">
-        <div v-for="c in sucessorioCards" :key="c.title" class="pl__card">
+    <!-- ============ Patrimonial vs sucessório (split: prosa + tiles à direita) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Planejamento Patrimonial vs Planejamento Sucessório</template>
+      <div class="pl__prose">
+        <p>Os dois conceitos são complementares mas têm focos distintos. Planejamento patrimonial foca em ACUMULAR e GERIR riqueza durante a vida ativa do investidor, escolha de ativos, asset allocation, otimização tributária. Planejamento sucessório foca em TRANSMITIR esse patrimônio aos herdeiros com mínimo de impostos e mínimo de conflito, é uma camada que entra em cena quando o patrimônio começa a ficar relevante.</p>
+        <p>Quando faz sentido planejar a sucessão: patrimônio acima de R$ 500 mil, múltiplos herdeiros, atividade empresarial em andamento, ou casamento em comunhão de bens com complexidades familiares.</p>
+      </div>
+      <div class="pl__tiles pl__tiles--split">
+        <div v-for="c in sucessorioCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
           <p class="pl__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcSplit>
 
-    <!-- ============ FAQ (design 2 colunas, 16 perguntas verbatim) ============ -->
-    <section class="pl__band pl__band--cream">
-      <div class="pl__faq">
-        <div class="pl__faq-left">
-          <h2 class="pl__h2">Perguntas Frequentes</h2>
-          <NuxtLink to="/busca" class="pl__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="pl__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
-      </div>
-    </section>
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes</template>
+      <template #left>
+        <NuxtLink to="/busca" class="pl__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
-    <!-- ============ Dicas + erros comuns (texto verbatim) ============ -->
-    <section class="pl__band pl__band--white">
-      <h2 class="pl__h2">Dicas para Executar Seu Planejamento</h2>
-      <div class="pl__cards pl__cards--two">
-        <div v-for="c in tipCards" :key="c.title" class="pl__card">
+    <!-- ============ Dicas (banda branca, tiles creme) ============ -->
+    <CalcBand tone="white" title="Dicas para Executar Seu Planejamento">
+      <div class="pl__tiles">
+        <div v-for="c in tipCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--accent">{{ c.title }}</h4>
           <p class="pl__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="pl__h2 pl__mt">Erros Comuns a Evitar</h2>
-      <div class="pl__cards pl__cards--two">
-        <div v-for="c in errorCards" :key="c.title" class="pl__card pl__card--negative">
+    <!-- ============ Erros comuns (banda creme, tiles brancos com h4 negativo) ============ -->
+    <CalcBand tone="cream" title="Erros Comuns a Evitar">
+      <div class="pl__tiles">
+        <div v-for="c in errorCards" :key="c.title" class="pl__tile">
           <h4 class="pl__h4 pl__h4--negative">{{ c.title }}</h4>
           <p class="pl__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + CTA ============ -->
-    <section class="pl__band pl__band--cream">
-      <h2 class="pl__h2">Rankings Relacionados</h2>
-      <p class="pl__p pl__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="pl__cards pl__cards--three pl__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="pl__card pl__card--link">
-          <h3 class="pl__h3 pl__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="white" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="pl__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="pl__card-link">
+          <h3 class="pl__card-link-title">{{ r.title }}</h3>
           <p class="pl__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="pl__h2 pl__mt">Outras Ferramentas</h2>
-      <div class="pl__cards pl__cards--two pl__cards--links">
-        <NuxtLink to="/calculadora/juros-compostos" class="pl__card pl__card--link">
-          <h3 class="pl__h3 pl__h3--card">Calculadora de Juros Compostos</h3>
+    <CalcBand tone="cream" title="Outras Ferramentas">
+      <div class="pl__grid-cards">
+        <NuxtLink to="/calculadora/juros-compostos" class="pl__card-link">
+          <h3 class="pl__card-link-title">Calculadora de Juros Compostos</h3>
           <p class="pl__card-p">Simule investimentos com taxas fixas</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/acoes" class="pl__card pl__card--link">
-          <h3 class="pl__h3 pl__h3--card">Simulador de Ações</h3>
+        <NuxtLink to="/calculadora/acoes" class="pl__card-link">
+          <h3 class="pl__card-link-title">Simulador de Ações</h3>
           <p class="pl__card-p">Analise histórico real de ativos da B3</p>
         </NuxtLink>
       </div>
@@ -429,7 +439,7 @@ usePageSeo({
           <NuxtLink to="/guias" class="pl__pill pl__pill--outline">Ver mais guias</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -467,30 +477,24 @@ usePageSeo({
 .pl__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 .pl__chip-dot--positive { background: var(--nu-green); }
 
-/* ——— bandas ——— */
-.pl__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.pl__band--white { background: var(--nu-white); }
-.pl__band--cream { background: var(--nu-cream); }
-.pl__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.pl__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.pl__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.pl__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.pl__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada ——— */
 .pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .pl__h4--accent { color: var(--nu-blue); }
 .pl__h4--positive { color: var(--nu-green); }
 .pl__h4--negative { color: var(--nu-red); }
-.pl__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.pl__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
 }
-.pl__p--dek { color: var(--nu-gray-2); }
+.pl__prose p:last-child { margin-bottom: 0; }
+
+/* ——— sub-heading dentro da coluna esquerda do split ——— */
+.pl__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.pl__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— cenários populares ——— */
 .pl__scenarios {
@@ -506,23 +510,23 @@ usePageSeo({
 .pl__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .pl__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.pl__cards {
+/* ——— tiles (grid de cards pequenos, mesma família do exemplar) ——— */
+.pl__tiles {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pl__cards--two { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
-.pl__cards--three { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
-.pl__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.pl__band--cream .pl__card { background: var(--nu-white); }
-.pl__card--wide { max-width: 760px; margin-top: clamp(20px, 3vw, 28px); }
-.pl__card--positive { background: var(--nu-green-tint); }
-.pl__card--primary { background: var(--nu-blue-tint-2); }
-.pl__card--negative { background: var(--nu-red-tint); }
-.pl__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.pl__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pl__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.pl__card .pl__card-p { margin-top: 6px; }
+.pl__tiles--split {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  max-width: none; margin-top: 0;
+}
+.pl__prose + .pl__tiles { margin-top: clamp(20px, 3vw, 28px); }
+.pl__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+/* regra .cbd--cream: tile branco em banda creme (":global(x) y" compila errado
+   neste setup — descendente é dropado — então fica o descendente scoped puro,
+   que casa porque só o último elemento do seletor recebe o data-v). */
+.cbd--cream .pl__tile { background: var(--nu-white); }
+.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .pl__card-p--strong { color: var(--nu-ink); font-weight: 700; margin-top: 14px; }
 .pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .pl__list--plain { list-style: none; padding-left: 0; }
@@ -530,15 +534,30 @@ usePageSeo({
 .pl__result-main { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; }
 .pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* ——— steps ——— */
-.pl__steps { margin-top: clamp(30px, 4vw, 48px); }
+/* ——— ex-grid (cards com título h3 acima, família dos exemplos do exemplar) ——— */
+.pl__ex-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
+}
+.pl__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.pl__ex-card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
+.cbd--cream .pl__ex-card { background: var(--nu-white); }
 
-/* ——— FAQ 2 colunas (design) ——— */
-.pl__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.pl__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.pl__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.pl__faq-left .pl__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.pl__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— cards-link (rankings / outras ferramentas) ——— */
+.pl__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
+}
+.pl__card-link {
+  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+.cbd--cream .pl__card-link { background: var(--nu-white); }
+.pl__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.pl__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .pl__pill {
@@ -550,8 +569,9 @@ usePageSeo({
 .pl__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pl__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; max-width: none; }
+.pl__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .pl__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
 .pl__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .pl__cta .pl__pill { margin-top: 0; }

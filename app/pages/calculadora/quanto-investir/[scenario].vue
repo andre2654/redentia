@@ -324,12 +324,11 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
       <template #title>Aporte mensal.</template>
     </QuantoInvestirCalc>
 
-    <!-- ============ Outros cenários populares (cross-link) ============ -->
-    <section class="qis__band qis__band--cream">
-      <h2 class="qis__h2">Outros cenários populares</h2>
-      <p class="qis__p qis__p--dek">
-        Compare aporte mensal exigido para metas diferentes, basta clicar e a calculadora carrega já preenchida.
-      </p>
+    <!-- ============ Outros cenários populares (cross-link, banda do design) ============ -->
+    <CalcBand tone="cream" title="Outros cenários populares">
+      <template #dek>
+        <p>Compare aporte mensal exigido para metas diferentes, basta clicar e a calculadora carrega já preenchida.</p>
+      </template>
       <div class="qis__related">
         <NuxtLink
           v-for="rel in relatedScenarios"
@@ -341,31 +340,30 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
           <span class="qis__rel-sub">{{ rel.preview }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional do cenário (verbatim) ============ -->
-    <section class="qis__band qis__band--white">
-      <h2 class="qis__h2">{{ scenario.eduH2 }}</h2>
-      <div v-for="block in scenario.eduBlocks" :key="block.h3" class="qis__block">
-        <h3 class="qis__h3">{{ block.h3 }}</h3>
-        <p v-for="(p, i) in block.paragraphs" :key="i" class="qis__p">{{ p }}</p>
-      </div>
-    </section>
-
-    <!-- ============ FAQ do cenário (verbatim, accordion do design) ============ -->
-    <section class="qis__band qis__band--cream">
-      <div class="qis__faq">
-        <div class="qis__faq-left">
-          <h2 class="qis__h2">Perguntas frequentes sobre este cenário</h2>
-        </div>
-        <div class="qis__faq-right">
-          <NuFaqAccordion :key="slug" :items="scenario.faq" />
+    <!-- ============ Conteúdo educacional do cenário (verbatim, split do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>{{ scenario.eduH2 }}</template>
+      <div>
+        <div v-for="block in scenario.eduBlocks" :key="block.h3" class="qis__block">
+          <h3 class="qis__sub">{{ block.h3 }}</h3>
+          <p v-for="(p, i) in block.paragraphs" :key="i" class="qis__prose-p">{{ p }}</p>
         </div>
       </div>
-    </section>
+    </CalcSplit>
+
+    <!-- ============ FAQ do cenário (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas frequentes sobre este cenário</template>
+      <template #left>
+        <NuxtLink to="/busca" class="qis__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :key="slug" :items="scenario.faq" surface="white" />
+    </CalcSplit>
 
     <!-- ============ CTA (texto verbatim) ============ -->
-    <section class="qis__band qis__band--white">
+    <CalcBand tone="white">
       <div class="qis__cta">
         <h2 class="qis__cta-title">Acompanhe sua meta na Redentia</h2>
         <p class="qis__cta-sub">Cadastre-se para monitorar o progresso da sua meta com gráficos e análises em tempo real.</p>
@@ -374,7 +372,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
           <NuxtLink to="/calculadora/quanto-investir" class="qis__pill qis__pill--outline">Voltar para a calculadora</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -411,22 +409,13 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 }
 .qis__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
-/* ——— bandas ——— */
-.qis__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.qis__band--white { background: var(--nu-white); }
-.qis__band--cream { background: var(--nu-cream); }
-.qis__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
+/* ——— prosa da coluna direita do split (h3 sub + parágrafos) ——— */
+.qis__block + .qis__block { margin-top: clamp(28px, 4vw, 44px); }
+.qis__sub { margin: 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.qis__prose-p {
+  margin: 12px 0 0; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
 }
-.qis__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.qis__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.qis__p--dek { color: var(--nu-gray-2); }
-.qis__block { margin-top: 6px; }
 
 /* ——— cenários relacionados ——— */
 .qis__related {
@@ -442,27 +431,24 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 .qis__rel-title { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
 .qis__rel-sub { color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.5; }
 
-/* ——— FAQ ——— */
-.qis__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.qis__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.qis__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.qis__faq-left .qis__h2 { font-size: clamp(30px, 3.8vw, 48px); letter-spacing: -0.04em; line-height: 1.06; }
-.qis__faq-right :deep(.nfa__item) { background: var(--nu-white); }
-
-/* ——— CTA ——— */
+/* ——— pills / CTA ——— */
+.qis__pill {
+  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  margin-top: 30px; transition: background .2s, color .2s;
+}
+.qis__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .qis__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center;
+  max-width: 1080px; margin: 0 auto;
 }
 .qis__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .qis__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
 .qis__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.qis__pill {
-  display: inline-flex; align-items: center; border-radius: var(--nu-r-pill);
-  padding: 14px 26px; font-size: 15.5px; font-weight: 700; transition: background .2s, color .2s;
-}
+.qis__cta .qis__pill { margin-top: 0; }
 .qis__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
 .qis__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.qis__pill--outline { border: 2px solid var(--nu-white-35); color: var(--nu-white); }
+.qis__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
 .qis__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

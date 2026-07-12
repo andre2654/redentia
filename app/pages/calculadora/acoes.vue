@@ -223,63 +223,64 @@ usePageSeo({
     <CalcAcoesSimulator />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="sa__band sa__band--cream">
-      <h2 class="sa__h2">Cenários populares de simulação</h2>
-      <p class="sa__p sa__p--dek">
-        Veja na hora o histórico real dos cenários mais buscados, basta clicar e a simulação carrega já preenchida com tickers, aporte e período.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de simulação">
+      <template #dek>
+        <p>Veja na hora o histórico real dos cenários mais buscados, basta clicar e a simulação carrega já preenchida com tickers, aporte e período.</p>
+      </template>
       <div class="sa__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label" :to="s.to" class="sa__scenario">
           <span class="sa__scenario-label">{{ s.label }}</span>
           <span class="sa__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="sa__band sa__band--white">
-      <h2 class="sa__h2">Calculadora de Investimento em Ações Online</h2>
-      <h2 class="sa__h2 sa__mt">Como Funciona o Simulador de Ações</h2>
-      <p class="sa__p">
-        Nosso simulador usa dados históricos reais da Bolsa de Valores brasileira (B3) para mostrar exatamente quanto você teria ganho (ou perdido) investindo em ações específicas. Diferente de calculadoras genéricas que usam taxas fixas, aqui você vê o resultado real, com todas as oscilações do mercado.
-      </p>
-      <p class="sa__p">
-        O simulador considera preços históricos de fechamento, dividendos pagos, juros sobre capital próprio (JCP) e permite reinvestimento automático de proventos - exatamente como acontece na realidade com muitos investidores.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Calculadora de Investimento em Ações Online</template>
+      <template #left>
+        <h2 class="sa__sub">Como Funciona o Simulador de Ações</h2>
+      </template>
+      <div class="sa__prose">
+        <p>Nosso simulador usa dados históricos reais da Bolsa de Valores brasileira (B3) para mostrar exatamente quanto você teria ganho (ou perdido) investindo em ações específicas. Diferente de calculadoras genéricas que usam taxas fixas, aqui você vê o resultado real, com todas as oscilações do mercado.</p>
+        <p>O simulador considera preços históricos de fechamento, dividendos pagos, juros sobre capital próprio (JCP) e permite reinvestimento automático de proventos - exatamente como acontece na realidade com muitos investidores.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="sa__h3">Por que Simular Investimentos em Ações?</h3>
-      <div class="sa__cards sa__cards--two">
-        <div v-for="c in whyCards" :key="c.title" class="sa__card">
+    <CalcBand tone="white" title-tag="h3" title="Por que Simular Investimentos em Ações?">
+      <div class="sa__tiles">
+        <div v-for="c in whyCards" :key="c.title" class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">{{ c.title }}</h4>
           <p class="sa__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="sa__band sa__band--cream">
-      <h2 class="sa__h2 sa__h2--center">Como Usar o Simulador</h2>
-      <div class="sa__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar o Simulador">
+      <div class="sa__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
 
-    <!-- ============ O poder dos dividendos (texto verbatim) ============ -->
-    <section class="sa__band sa__band--white">
-      <h2 class="sa__h2">O Poder dos Dividendos</h2>
-      <p class="sa__p">
-        Dividendos são parcelas do lucro que as empresas distribuem aos acionistas. No Brasil, eles são isentos de imposto de renda para pessoa física, tornando-os ainda mais atrativos.
-      </p>
+    <!-- ============ O poder dos dividendos (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>O Poder dos Dividendos</template>
+      <div class="sa__prose">
+        <p>Dividendos são parcelas do lucro que as empresas distribuem aos acionistas. No Brasil, eles são isentos de imposto de renda para pessoa física, tornando-os ainda mais atrativos.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="sa__h3">Tipos de Proventos</h3>
-      <div class="sa__cards sa__cards--three">
-        <div v-for="c in proventoCards" :key="c.title" class="sa__card">
+    <CalcBand tone="cream" title-tag="h3" title="Tipos de Proventos">
+      <div class="sa__tiles">
+        <div v-for="c in proventoCards" :key="c.title" class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">{{ c.title }}</h4>
           <p class="sa__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h3 class="sa__h3">Reinvestimento vs Saque</h3>
-      <div class="sa__cards sa__cards--two">
-        <div class="sa__card sa__card--positive">
+    <CalcBand tone="white" title-tag="h3" title="Reinvestimento vs Saque">
+      <div class="sa__ex-grid">
+        <div class="sa__tile sa__tile--positive">
           <h4 class="sa__h4 sa__h4--positive">Reinvestindo Dividendos</h4>
           <p class="sa__card-p">
             Você compra mais ações com os dividendos recebidos, acelerando o crescimento exponencial.
@@ -290,7 +291,7 @@ usePageSeo({
             <p class="sa__result-note">Rentabilidade: 350%</p>
           </div>
         </div>
-        <div class="sa__card">
+        <div class="sa__tile">
           <h4 class="sa__h4">Sacando Dividendos</h4>
           <p class="sa__card-p">
             Você usa os dividendos para renda passiva, mas perde o efeito composto.
@@ -302,156 +303,144 @@ usePageSeo({
           </div>
         </div>
       </div>
-      <p class="sa__small">
+      <p class="sa__small sa__small--center">
         *Valores ilustrativos. Reinvestir dividendos pode praticamente dobrar seu patrimônio no longo prazo!
       </p>
-
-      <p class="sa__p">
+      <p class="sa__ex-note">
         Compare sempre com o Ibovespa: o índice reúne ~80 ações mais negociadas da B3 e serve como benchmark do mercado brasileiro. Histórico ~14% a.a. nos últimos 30 anos. Ações que rendem MENOS que o Ibovespa por longos períodos sinalizam underperformance, considere rebalancear.
       </p>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Exemplos de simulações (texto verbatim) ============ -->
-    <section class="sa__band sa__band--cream">
-      <h2 class="sa__h2">Exemplos de Simulações</h2>
-
-      <template v-for="ex in exampleCards" :key="ex.heading">
-        <h3 class="sa__h3">{{ ex.heading }}</h3>
-        <div class="sa__card sa__card--wide">
-          <h4 class="sa__h4">Cenário</h4>
-          <ul class="sa__list">
-            <li v-for="line in ex.scenario" :key="line">{{ line }}</li>
-          </ul>
-          <div class="sa__result-box" :class="{ 'sa__result-box--negative': ex.negative }">
-            <p class="sa__result-main">{{ ex.result }}</p>
-            <p class="sa__result-note">{{ ex.sub }}</p>
-            <p class="sa__result-note sa__result-note--spaced">{{ ex.note }}</p>
+    <!-- ============ Exemplos de simulações (texto verbatim, banda creme + cards brancos) ============ -->
+    <CalcBand tone="cream" title="Exemplos de Simulações">
+      <div class="sa__ex-grid">
+        <div v-for="ex in exampleCards" :key="ex.heading">
+          <h3 class="sa__ex-title">{{ ex.heading }}</h3>
+          <div class="sa__ex-card">
+            <h4 class="sa__h4">Cenário</h4>
+            <ul class="sa__list">
+              <li v-for="line in ex.scenario" :key="line">{{ line }}</li>
+            </ul>
+            <div class="sa__result-box" :class="{ 'sa__result-box--negative': ex.negative }">
+              <p class="sa__result-main">{{ ex.result }}</p>
+              <p class="sa__result-note">{{ ex.sub }}</p>
+              <p class="sa__result-note sa__result-note--spaced">{{ ex.note }}</p>
+            </div>
           </div>
         </div>
-      </template>
-
-      <p class="sa__small">
+      </div>
+      <p class="sa__small sa__small--center">
         *Estes são exemplos ilustrativos. Use o simulador para ver resultados precisos com dados reais!
       </p>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Comparativo + diversificação (texto verbatim) ============ -->
-    <section class="sa__band sa__band--white">
-      <h2 class="sa__h2">Comparativo: PETR4 vs VALE3 (10 anos)</h2>
-      <p class="sa__p">
-        PETR4 e VALE3 são os dois pesos-pesados de commodities da B3 e disputam o topo do ranking de pagadoras de dividendos. Ver lado a lado ajuda a entender o trade-off entre as duas teses:
-      </p>
-      <div class="sa__cards sa__cards--two">
-        <div class="sa__card">
+    <!-- ============ Comparativo PETR4 vs VALE3 (split: título gigante + tiles) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Comparativo: PETR4 vs VALE3 (10 anos)</template>
+      <template #dek>
+        <p>PETR4 e VALE3 são os dois pesos-pesados de commodities da B3 e disputam o topo do ranking de pagadoras de dividendos. Ver lado a lado ajuda a entender o trade-off entre as duas teses:</p>
+      </template>
+      <div class="sa__tiles sa__tiles--two">
+        <div class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">PETR4, Petrobras</h4>
           <p class="sa__card-p">
             Setor de óleo e gás. Pagou dividendos extraordinários em 2022-2024 (Dividend Yield de 30%+ em alguns anos). Forte volatilidade, sensível a preço do petróleo, câmbio e política de preços. Histórico 10 anos: ~150% de retorno bruto + dividendos.
           </p>
         </div>
-        <div class="sa__card">
+        <div class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">VALE3, Vale</h4>
           <p class="sa__card-p">
             Setor de mineração de ferro. Dividendos sazonais conforme o preço da commodity, exporta majoritariamente pra China. Volátil. Histórico 10 anos: ~120% de retorno bruto + dividendos.
           </p>
         </div>
       </div>
-      <p class="sa__p">
-        Conclusão: ambas têm forte exposição a commodities. Ter VALE3 + PETR4 não dilui muito o risco setorial, as duas reagem juntas a ciclos globais. Pra balancear, combine com bancos (ITUB4, BBAS3) e bens industriais (WEGE3), que têm dinâmicas mais descorrelacionadas e dão mais previsibilidade ao portfólio.
-      </p>
-
-      <h2 class="sa__h2 sa__mt">Diversificação de Carteira</h2>
-      <p class="sa__p">
-        Uma das maiores vantagens do simulador é poder testar carteiras diversificadas. Ao invés de simular uma única ação, adicione 5-10 ativos diferentes e veja como a diversificação reduz volatilidade.
-      </p>
-
-      <h3 class="sa__h3">Exemplo de Carteira Diversificada</h3>
-      <div class="sa__table-wrap">
-        <table class="sa__table">
-          <thead>
-            <tr><th>Ticker</th><th>Empresa</th><th>Setor</th><th>Peso</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in portfolioRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td class="sa__td--accent">{{ r[3] }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="sa__prose sa__prose--gap">
+        <p>Conclusão: ambas têm forte exposição a commodities. Ter VALE3 + PETR4 não dilui muito o risco setorial, as duas reagem juntas a ciclos globais. Pra balancear, combine com bancos (ITUB4, BBAS3) e bens industriais (WEGE3), que têm dinâmicas mais descorrelacionadas e dão mais previsibilidade ao portfólio.</p>
       </div>
-      <p class="sa__small">
-        Esta carteira diversifica entre setores (bancos, mineração, petróleo, industriais) reduzindo risco específico.
-      </p>
-    </section>
+    </CalcSplit>
 
-    <!-- ============ FAQ (design 2 colunas, 15 perguntas verbatim) ============ -->
-    <section class="sa__band sa__band--cream">
-      <div class="sa__faq">
-        <div class="sa__faq-left">
-          <h2 class="sa__h2">Perguntas Frequentes</h2>
-          <NuxtLink to="/busca" class="sa__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="sa__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
+    <!-- ============ Diversificação (banda com título centrado + CalcTableCard) ============ -->
+    <CalcBand tone="white" title="Diversificação de Carteira">
+      <template #dek>
+        <p>Uma das maiores vantagens do simulador é poder testar carteiras diversificadas. Ao invés de simular uma única ação, adicione 5-10 ativos diferentes e veja como a diversificação reduz volatilidade.</p>
+      </template>
+      <h3 class="sa__ex-title sa__ex-title--center">Exemplo de Carteira Diversificada</h3>
+      <div class="sa__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Ticker', 'Empresa', 'Setor', 'Peso']"
+          :rows="portfolioRows"
+          :accent-col="3"
+          note="Esta carteira diversifica entre setores (bancos, mineração, petróleo, industriais) reduzindo risco específico."
+        />
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Buy and Hold (texto verbatim) ============ -->
-    <section class="sa__band sa__band--white">
-      <h2 class="sa__h2">Estratégia Buy and Hold: Comprar e Manter</h2>
-      <p class="sa__p">
-        Buy and Hold significa "comprar e manter": adquirir ações de empresas sólidas e segurar por décadas, ignorando oscilações de curto prazo. É a estratégia defendida por Warren Buffett e Charlie Munger, e historicamente entrega retornos próximos do índice de referência sem o stress de tentar acertar timing.
-      </p>
-      <div class="sa__cards sa__cards--two">
-        <div class="sa__card">
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes</template>
+      <template #left>
+        <NuxtLink to="/busca" class="sa__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
+
+    <!-- ============ Buy and Hold (split: título gigante + tiles + prosa) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Estratégia Buy and Hold: Comprar e Manter</template>
+      <template #dek>
+        <p>Buy and Hold significa "comprar e manter": adquirir ações de empresas sólidas e segurar por décadas, ignorando oscilações de curto prazo. É a estratégia defendida por Warren Buffett e Charlie Munger, e historicamente entrega retornos próximos do índice de referência sem o stress de tentar acertar timing.</p>
+      </template>
+      <div class="sa__tiles sa__tiles--two">
+        <div class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">Vantagens</h4>
           <p class="sa__card-p">
             Zero stress de timing de mercado. Aproveita a isenção de IR de R$ 20 mil/mês em vendas pequenas. Dividendos compostos crescem ano a ano. Custos de corretagem mínimos por baixo giro.
           </p>
         </div>
-        <div class="sa__card">
+        <div class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">Desvantagens</h4>
           <p class="sa__card-p">
             Precisa estômago pra crises (-30%, -50% acontecem em ciclos). Empresas que pareciam sólidas podem deteriorar (Eternit, OGX, Eletrobras). Não funciona pra dinheiro de curto prazo.
           </p>
         </div>
       </div>
-      <p class="sa__p">
-        Como aplicar na prática: monte uma carteira com 5-10 ações de qualidade (blue chips ITUB4, ITSA4, BBAS3, BBSE3, WEGE3, ABEV3 são clássicas), mantenha aporte mensal automático, NÃO venda em crises (cristaliza prejuízo), e rebalanceie 1x por ano pra manter os pesos próximos do plano.
-      </p>
-    </section>
+      <div class="sa__prose sa__prose--gap">
+        <p>Como aplicar na prática: monte uma carteira com 5-10 ações de qualidade (blue chips ITUB4, ITSA4, BBAS3, BBSE3, WEGE3, ABEV3 são clássicas), mantenha aporte mensal automático, NÃO venda em crises (cristaliza prejuízo), e rebalanceie 1x por ano pra manter os pesos próximos do plano.</p>
+      </div>
+    </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <section class="sa__band sa__band--cream">
-      <h2 class="sa__h2">Dicas para Investir em Ações</h2>
-      <div class="sa__cards sa__cards--two">
-        <div v-for="c in tipCards" :key="c.title" class="sa__card">
+    <CalcBand tone="cream" title="Dicas para Investir em Ações">
+      <div class="sa__tiles">
+        <div v-for="c in tipCards" :key="c.title" class="sa__tile">
           <h4 class="sa__h4 sa__h4--accent">{{ c.title }}</h4>
           <p class="sa__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + CTA ============ -->
-    <section class="sa__band sa__band--white">
-      <h2 class="sa__h2">Rankings Relacionados</h2>
-      <p class="sa__p sa__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="sa__cards sa__cards--three sa__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="sa__card sa__card--link">
-          <h3 class="sa__h3 sa__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="white" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="sa__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="sa__card-link">
+          <h3 class="sa__card-link-title">{{ r.title }}</h3>
           <p class="sa__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="sa__h2 sa__mt">Outras Ferramentas</h2>
-      <div class="sa__cards sa__cards--two sa__cards--links">
-        <NuxtLink to="/calculadora/juros-compostos" class="sa__card sa__card--link">
-          <h3 class="sa__h3 sa__h3--card">Calculadora de Juros Compostos</h3>
+    <CalcBand tone="cream" title="Outras Ferramentas">
+      <div class="sa__grid-cards">
+        <NuxtLink to="/calculadora/juros-compostos" class="sa__card-link">
+          <h3 class="sa__card-link-title">Calculadora de Juros Compostos</h3>
           <p class="sa__card-p">Simule investimentos com taxas fixas</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/planejamento" class="sa__card sa__card--link">
-          <h3 class="sa__h3 sa__h3--card">Planejamento Patrimonial</h3>
+        <NuxtLink to="/calculadora/planejamento" class="sa__card-link">
+          <h3 class="sa__card-link-title">Planejamento Patrimonial</h3>
           <p class="sa__card-p">Crie estratégia para suas metas</p>
         </NuxtLink>
       </div>
@@ -464,7 +453,7 @@ usePageSeo({
           <NuxtLink to="/mercado" class="sa__pill sa__pill--outline">Ver ações em alta</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -502,30 +491,27 @@ usePageSeo({
 .sa__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 .sa__chip-dot--positive { background: var(--nu-green); }
 
-/* ——— bandas ——— */
-.sa__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.sa__band--white { background: var(--nu-white); }
-.sa__band--cream { background: var(--nu-cream); }
-.sa__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.sa__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.sa__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.sa__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.sa__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada (mesmos valores do exemplar jc__) ——— */
 .sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .sa__h4--accent { color: var(--nu-blue); }
 .sa__h4--positive { color: var(--nu-green); }
-.sa__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
+.sa__small { margin: 14px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; }
+.sa__small--center { margin: 22px auto 0; max-width: 680px; text-align: center; }
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.sa__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
 }
-.sa__p--dek { color: var(--nu-gray-2); }
-.sa__small { margin: 12px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; max-width: 840px; }
+.sa__prose p:last-child { margin-bottom: 0; }
+.sa__prose--gap { margin-top: 22px; }
+
+/* ——— sub-heading dentro da coluna esquerda do split ——— */
+.sa__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.sa__band-body { margin-top: clamp(30px, 4vw, 48px); }
+.sa__ex-title--center + .sa__band-body { margin-top: 20px; }
 
 /* ——— cenários populares ——— */
 .sa__scenarios {
@@ -541,59 +527,56 @@ usePageSeo({
 .sa__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .sa__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.sa__cards {
+/* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
+.sa__tiles {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.sa__cards--two { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
-.sa__cards--three { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
-.sa__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.sa__band--cream .sa__card { background: var(--nu-white); }
-.sa__card--positive { background: color-mix(in srgb, var(--nu-green-bg) 45%, var(--nu-white)); }
-.sa__card--wide { max-width: 720px; margin-top: clamp(20px, 3vw, 28px); }
-.sa__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.sa__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sa__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.sa__card .sa__card-p { margin-top: 6px; }
+.sa__tiles--two {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  max-width: none; margin-top: 0;
+}
+.sa__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+:global(.cbd--cream) .sa__tile { background: var(--nu-white); }
+.sa__tile--positive { background: color-mix(in srgb, var(--nu-green-bg) 45%, var(--nu-white)); }
+.sa__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .sa__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .sa__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .sa__result-box--negative { background: var(--nu-red-tint); }
-.sa__result-main { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.sa__result-main { margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .sa__result-note { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; }
 .sa__result-note:first-child { margin-top: 0; }
 .sa__result-note--spaced { margin-top: 8px; }
 
-/* ——— tabela ——— */
-.sa__table-wrap {
-  overflow-x: auto; background: var(--nu-cream);
-  border-radius: var(--nu-r-panel); margin-top: clamp(20px, 3vw, 28px);
-  max-width: 980px;
+/* ——— exemplos práticos (cards brancos na banda creme) ——— */
+.sa__ex-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.sa__band--cream .sa__table-wrap { background: var(--nu-white); }
-.sa__table { width: 100%; border-collapse: collapse; min-width: 560px; }
-.sa__table th {
-  text-align: left; padding: 14px 18px;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
-  letter-spacing: .8px; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
+.sa__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.sa__ex-title--center { text-align: center; margin: clamp(36px, 5vw, 56px) 0 0; }
+.sa__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
+.sa__ex-note {
+  margin: 22px auto 0; max-width: 680px; text-align: center;
+  color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.6;
 }
-.sa__table td {
-  padding: 13px 18px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
-}
-.sa__table tbody tr:last-child td { border-bottom: none; }
-.sa__td--accent { color: var(--nu-blue); font-weight: 800; }
 
-/* ——— steps ——— */
-.sa__steps { margin-top: clamp(30px, 4vw, 48px); }
-
-/* ——— FAQ 2 colunas (design) ——— */
-.sa__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.sa__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.sa__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.sa__faq-left .sa__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.sa__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— cards-link (rankings / outras ferramentas) ——— */
+.sa__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
+}
+.sa__card-link {
+  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+:global(.cbd--cream) .sa__card-link { background: var(--nu-white); }
+.sa__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.sa__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .sa__pill {
@@ -605,8 +588,9 @@ usePageSeo({
 .sa__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.sa__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; max-width: none; }
+.sa__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .sa__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
 .sa__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .sa__cta .sa__pill { margin-top: 0; }

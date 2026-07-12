@@ -34,8 +34,9 @@ const pGrowth = ref(10)
 
 // ====================================================================
 // Deep-link via query params — porte do applyQueryParams antigo.
-// ?ticker= era pré-seleção da lista de ativos (API do app antigo, não
-// portada); os params numéricos + ?mode= seguem funcionando e a
+// ?ticker= hidrata dados REAIS do backend (preço canônico /tickers/{t},
+// dividendos 12m de /dividends/{t}, LPA do overview — mesma paridade do
+// preco-teto); os params numéricos + ?mode= seguem funcionando e a
 // inferência de modo é idêntica. Reativo — sem ?auto (calcula sempre).
 //   ?price= ?dividend=       Modo Simples (price também na Projeção)
 //   ?purchase= ?current= ?div=   Modo On Cost
@@ -89,6 +90,69 @@ function applyQueryParams() {
   if (lpa !== null) pLpa.value = lpa
   if (payout !== null) pPayout.value = payout
   if (growth !== null) pGrowth.value = growth
+
+  // ?ticker= → dados reais (client-side; se houver QUALQUER param numérico
+  // explícito, ele manda e o backend não sobrescreve)
+  const anyNumeric = [price, dividend, purchase, current, div, lpa, payout, growth].some((v) => v !== null)
+  const ticker = parseStringParam(q.ticker)?.toUpperCase()
+  if (import.meta.client && ticker && !anyNumeric) seedFromBackend(ticker)
+}
+
+// Tetos dos sliders são reativos: dado real acima do teto default expande o
+// range (senão arrastar o slider depois da hidratação "engoliria" o valor).
+const priceMax = ref(200)
+const divMax = ref(25)
+const lpaMax = ref(30)
+function expandMax(target: Ref<number>, value: number) {
+  if (value > target.value * 0.8) target.value = Math.ceil((value * 1.5) / 10) * 10
+}
+
+// Hidrata os sliders com dados REAIS de qualquer ticker (padrão
+// seed→real→degrade; paridade com a pré-seleção via API da página antiga).
+// Preço da rota canônica /tickers/{t}; dividendo = soma dos proventos pagos
+// nos últimos 365d (fallback DY×preço); LPA e payout derivados do overview.
+async function seedFromBackend(t: string) {
+  if (!/^[A-Z]{4}\d{1,2}$/.test(t)) return
+  try {
+    const [quote, dividends, overview] = await Promise.all([
+      $fetch<any>(`/api/backend/tickers/${t}`),
+      $fetch<any>(`/api/backend/dividends/${t}`).catch(() => null),
+      $fetch<any>(`/api/backend/fundamentals/${t}/overview`).catch(() => null),
+    ])
+    const round2 = (n: number) => Math.round(n * 100) / 100
+    const stats = overview?.data?.key_statistics ?? {}
+    const valuation = overview?.data?.scrape_extras?.valuation ?? {}
+    const px = Number(quote?.data?.market_price) || Number(valuation.price) || 0
+    const dyPct = Number(stats.dividend_yield) || Number(valuation.dividend_yield) || 0
+    const eps = Number(stats.trailing_eps) || Number(valuation.earnings_per_share) || 0
+
+    let annualDividend = 0
+    const divList = Array.isArray(dividends?.data) ? dividends.data : []
+    const oneYearMs = 365 * 24 * 60 * 60 * 1000
+    for (const d of divList) {
+      const pd = d?.payment_date ? new Date(d.payment_date).getTime() : NaN
+      if (Number.isFinite(pd) && Date.now() - pd <= oneYearMs) annualDividend += parseFloat(d?.rate) || 0
+    }
+    if (!annualDividend && dyPct && px) annualDividend = (dyPct / 100) * px
+
+    if (px > 0) {
+      expandMax(priceMax, px)
+      sPrice.value = round2(px)
+      pPrice.value = round2(px)
+      ocCurrent.value = round2(px)
+    }
+    if (annualDividend > 0) {
+      expandMax(divMax, annualDividend)
+      sDiv.value = round2(annualDividend)
+      ocDiv.value = round2(annualDividend)
+    }
+    if (eps > 0) {
+      expandMax(lpaMax, eps)
+      pLpa.value = round2(eps)
+      // payout observado = dividendo 12m ÷ LPA (clamp no range do slider)
+      if (annualDividend > 0) pPayout.value = Math.max(1, Math.min(100, Math.round((annualDividend / eps) * 100)))
+    }
+  } catch { /* degrade elegante: sliders ficam como estão */ }
 }
 applyQueryParams()
 
@@ -334,10 +398,10 @@ usePageSeo({
       description:
         'Calculadora gratuita de dividend yield com 3 modos de cálculo: simples (DY atual), on cost (sobre o preço de compra) e projeção (DY futuro com LPA, payout e crescimento). Cobre ações e FIIs da B3 com pré-seleção via URL.',
       featureList: [
-        'Cálculo de DY atual em tempo real',
+        'DY atual com preço e dividendos reais do ticker (deep-link)',
         'DY on cost (rentabilidade sobre o preço de compra)',
         'Projeção de DY em 1 e 3 anos via LPA + payout + crescimento',
-        'Busca de tickers da B3 (ações e FIIs)',
+        '17 ações e FIIs populares com cálculo pronto em 1 clique',
         'Análise automática (DY baixo / bom / excelente / suspeito)',
         'Cálculo de dividendos mensais e ganho total anual',
         'Cenários populares pré-preenchidos via URL (deep-link)',
@@ -392,26 +456,26 @@ usePageSeo({
         </div>
 
         <template v-if="mode === 'simple'">
-          <CalcSliderField v-model="sPrice" label="Preço da ação" :min="1" :max="200" :step="0.5" :value-text="money(sPrice)" />
+          <CalcSliderField v-model="sPrice" label="Preço da ação" :min="1" :max="priceMax" :step="0.5" :value-text="money(sPrice)" />
           <div class="dy__gap">
-            <CalcSliderField v-model="sDiv" label="Dividendos anuais" :min="0" :max="25" :step="0.05" :value-text="money(sDiv)" />
+            <CalcSliderField v-model="sDiv" label="Dividendos anuais" :min="0" :max="divMax" :step="0.05" :value-text="money(sDiv)" />
           </div>
         </template>
 
         <template v-else-if="mode === 'onCost'">
-          <CalcSliderField v-model="ocPurchase" label="Preço de compra" :min="1" :max="200" :step="0.5" :value-text="money(ocPurchase)" />
+          <CalcSliderField v-model="ocPurchase" label="Preço de compra" :min="1" :max="priceMax" :step="0.5" :value-text="money(ocPurchase)" />
           <div class="dy__gap">
-            <CalcSliderField v-model="ocCurrent" label="Preço atual" :min="1" :max="200" :step="0.5" :value-text="money(ocCurrent)" />
+            <CalcSliderField v-model="ocCurrent" label="Preço atual" :min="1" :max="priceMax" :step="0.5" :value-text="money(ocCurrent)" />
           </div>
           <div class="dy__gap">
-            <CalcSliderField v-model="ocDiv" label="Dividendos anuais atuais" :min="0" :max="25" :step="0.05" :value-text="money(ocDiv)" />
+            <CalcSliderField v-model="ocDiv" label="Dividendos anuais atuais" :min="0" :max="divMax" :step="0.05" :value-text="money(ocDiv)" />
           </div>
         </template>
 
         <template v-else>
-          <CalcSliderField v-model="pPrice" label="Preço da ação" :min="1" :max="200" :step="0.5" :value-text="money(pPrice)" />
+          <CalcSliderField v-model="pPrice" label="Preço da ação" :min="1" :max="priceMax" :step="0.5" :value-text="money(pPrice)" />
           <div class="dy__gap">
-            <CalcSliderField v-model="pLpa" label="Lucro por ação (LPA)" :min="0" :max="30" :step="0.1" :value-text="money(pLpa)" />
+            <CalcSliderField v-model="pLpa" label="Lucro por ação (LPA)" :min="0" :max="lpaMax" :step="0.1" :value-text="money(pLpa)" />
           </div>
           <div class="dy__gap">
             <CalcSliderField v-model="pPayout" label="Payout ratio" :min="0" :max="100" :step="1" :value-text="pPayout + '%'" :presets="payoutPresets" />
@@ -436,93 +500,96 @@ usePageSeo({
     </CalcShell>
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="dy__band dy__band--cream">
-      <h2 class="dy__h2">Cenários populares de dividend yield</h2>
-      <p class="dy__p dy__p--dek">
-        Veja na hora o DY dos ativos mais buscados e os cenários on cost mais comuns. Basta clicar e a calculadora carrega já preenchida.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de dividend yield">
+      <template #dek>
+        <p>Veja na hora o DY dos ativos mais buscados e os cenários on cost mais comuns. Basta clicar e a calculadora carrega já preenchida.</p>
+      </template>
       <div class="dy__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label" :to="s.to" class="dy__scenario">
           <span class="dy__scenario-label">{{ s.label }}</span>
           <span class="dy__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="dy__band dy__band--white">
-      <h2 class="dy__h2">Simulador de dividend yield grátis e online</h2>
-      <p class="dy__p">
-        Use a calculadora acima para simular o DY de qualquer ação ou FII da B3 em segundos. Ideal pra comparar pagadoras antes de montar a carteira de renda passiva.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Simulador de dividend yield grátis e online</template>
+      <div class="dy__prose">
+        <p>Use a calculadora acima para simular o DY de qualquer ação ou FII da B3 em segundos. Ideal pra comparar pagadoras antes de montar a carteira de renda passiva.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="dy__h2 dy__mt">O que é Dividend Yield?</h2>
-      <p class="dy__p">
-        Dividend Yield (DY) é um indicador que mostra quanto uma empresa paga em dividendos em relação ao preço da ação. É expresso em porcentagem anual e é fundamental para quem investe buscando renda passiva.
-      </p>
-
-      <div class="dy__formula-wrap">
-        <CalcFormulaCard>Dividend Yield = (Dividendos Anuais ÷ Preço da Ação) × 100</CalcFormulaCard>
+    <CalcSplit tone="cream">
+      <template #title>O que é Dividend Yield?</template>
+      <div class="dy__prose">
+        <p>Dividend Yield (DY) é um indicador que mostra quanto uma empresa paga em dividendos em relação ao preço da ação. É expresso em porcentagem anual e é fundamental para quem investe buscando renda passiva.</p>
+      </div>
+      <div class="dy__formula-block">
+        <CalcFormulaCard tone="white">Dividend Yield = (Dividendos Anuais ÷ Preço da Ação) × 100</CalcFormulaCard>
         <div class="dy__formula-example">
-          <p class="dy__p dy__p--center"><strong>Exemplo:</strong> Ação custa R$ 25 e paga R$ 1,50/ano em dividendos</p>
-          <p class="dy__p dy__p--center dy__p--accent">DY = (1,50 ÷ 25) × 100 = 6% ao ano</p>
+          <p><strong>Exemplo:</strong> Ação custa R$ 25 e paga R$ 1,50/ano em dividendos</p>
+          <p class="dy__formula-accent">DY = (1,50 ÷ 25) × 100 = 6% ao ano</p>
         </div>
       </div>
+    </CalcSplit>
 
-      <h3 class="dy__h3">DY On Cost, O Verdadeiro Retorno</h3>
-      <p class="dy__p">
-        DY on cost é o dividend yield calculado sobre o seu preço de compra, não o preço atual. Se você comprou uma ação por R$ 20 e ela vale R$ 30 hoje, mas continua pagando R$ 1,50 de dividendo, seu DY on cost é 7,5% (1,50÷20), não 5% (1,50÷30).
-      </p>
-      <p class="dy__p">
-        Este é o conceito mais importante para investidores de dividendos. Com o tempo, conforme os dividendos crescem e você mantém seu preço de compra baixo, seu DY on cost pode chegar a 10%, 15% ou até 20% ao ano, é a chamada "máquina de juros" defendida por Décio Bazin e Luiz Barsi.
-      </p>
-
-      <h2 class="dy__h2 dy__mt">Média de DY por Tipo de Ativo</h2>
-      <div class="dy__table-wrap">
-        <table class="dy__table">
-          <thead>
-            <tr><th>Tipo de Ativo</th><th>DY Típico</th><th>Observações</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in dyTableRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td class="dy__td--accent">{{ r[1] }}</td><td>{{ r[2] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcSplit tone="white" title-tag="h3" size="sm">
+      <template #title>DY On Cost, O Verdadeiro Retorno</template>
+      <div class="dy__prose">
+        <p>DY on cost é o dividend yield calculado sobre o seu preço de compra, não o preço atual. Se você comprou uma ação por R$ 20 e ela vale R$ 30 hoje, mas continua pagando R$ 1,50 de dividendo, seu DY on cost é 7,5% (1,50÷20), não 5% (1,50÷30).</p>
+        <p>Este é o conceito mais importante para investidores de dividendos. Com o tempo, conforme os dividendos crescem e você mantém seu preço de compra baixo, seu DY on cost pode chegar a 10%, 15% ou até 20% ao ano, é a chamada "máquina de juros" defendida por Décio Bazin e Luiz Barsi.</p>
       </div>
+    </CalcSplit>
 
-      <h2 class="dy__h2 dy__mt">Tributação de Dividendos no Brasil (Lei e Mudanças 2026)</h2>
-      <p class="dy__p">
-        A tributação de dividendos no Brasil sempre foi um diferencial competitivo: dividendos pagos por empresas listadas a pessoa física são isentos de Imposto de Renda. Essa regra está em discussão no Congresso desde 2025 e pode mudar nos próximos anos. Entender o cenário atual e o que está em tramitação ajuda você a planejar a carteira de dividendos sem ser pego de surpresa.
-      </p>
+    <CalcBand tone="cream" title="Média de DY por Tipo de Ativo">
+      <div class="dy__band-body">
+        <CalcTableCard
+          :columns="['Tipo de Ativo', 'DY Típico', 'Observações']"
+          :rows="dyTableRows"
+          :accent-col="1"
+        />
+      </div>
+    </CalcBand>
 
-      <h3 class="dy__h3">Como funciona hoje (até 2025 / 2026)</h3>
-      <div class="dy__card dy__card--wide">
+    <CalcSplit tone="white">
+      <template #title>Tributação de Dividendos no Brasil (Lei e Mudanças 2026)</template>
+      <template #dek>
+        <p>A tributação de dividendos no Brasil sempre foi um diferencial competitivo: dividendos pagos por empresas listadas a pessoa física são isentos de Imposto de Renda. Essa regra está em discussão no Congresso desde 2025 e pode mudar nos próximos anos. Entender o cenário atual e o que está em tramitação ajuda você a planejar a carteira de dividendos sem ser pego de surpresa.</p>
+      </template>
+      <template #left>
+        <h3 class="dy__sub">Como funciona hoje (até 2025 / 2026)</h3>
+      </template>
+      <div class="dy__tile">
         <ul class="dy__list">
           <!-- conteúdo local confiável (strong) — eslint-disable-next-line vue/no-v-html -->
           <li v-for="(item, i) in taxTodayItems" :key="i" v-html="item" />
         </ul>
       </div>
+    </CalcSplit>
 
-      <h3 class="dy__h3">O que pode mudar (PL 1.087/2025)</h3>
-      <p class="dy__p">
-        O Projeto de Lei 1.087/2025 propõe taxar dividendos pagos a pessoa física acima de R$ 50.000 por mês a 10% retidos na fonte. Pra investidor médio (R$ 5.000 a R$ 10.000/mês de dividendos), a probabilidade de ser afetado é baixa. O PL foi aprovado na Câmara em 2025 e está em apreciação no Senado em 2026. Caso aprovado sem grandes alterações, a vigência mais provável é 2027.
-      </p>
-      <div class="dy__card dy__card--wide">
+    <CalcSplit tone="cream" title-tag="h3" size="sm">
+      <template #title>O que pode mudar (PL 1.087/2025)</template>
+      <template #dek>
+        <p>O Projeto de Lei 1.087/2025 propõe taxar dividendos pagos a pessoa física acima de R$ 50.000 por mês a 10% retidos na fonte. Pra investidor médio (R$ 5.000 a R$ 10.000/mês de dividendos), a probabilidade de ser afetado é baixa. O PL foi aprovado na Câmara em 2025 e está em apreciação no Senado em 2026. Caso aprovado sem grandes alterações, a vigência mais provável é 2027.</p>
+      </template>
+      <div class="dy__tile">
         <h4 class="dy__h4 dy__h4--accent">O que pode mudar no texto final</h4>
         <ul class="dy__list">
           <li v-for="(item, i) in plChangesItems" :key="i">{{ item }}</li>
         </ul>
       </div>
-      <p class="dy__p">
-        Recomendação prática: planeje como se fosse implementar pra não ser pego de surpresa. Concentre parte da carteira em FIIs (isenção mantida), monitore o trâmite no Congresso e tenha em mente que mudanças tributárias do gênero costumam ser graduais (alíquota crescente, faixa de isenção, transição plurianual).
-      </p>
+      <div class="dy__prose dy__prose--mt">
+        <p>Recomendação prática: planeje como se fosse implementar pra não ser pego de surpresa. Concentre parte da carteira em FIIs (isenção mantida), monitore o trâmite no Congresso e tenha em mente que mudanças tributárias do gênero costumam ser graduais (alíquota crescente, faixa de isenção, transição plurianual).</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="dy__h3">FIIs com Dividendos Mensais</h3>
-      <p class="dy__p">
-        FIIs (Fundos de Investimento Imobiliário) são o veículo preferido de quem busca dividendos mensais e isenção de IR no Brasil. Por lei, distribuem 95% ou mais do lucro do fundo, geralmente todo mês (até o dia 25). Existem dois grandes blocos com perfis distintos.
-      </p>
-      <div class="dy__card dy__card--wide">
+    <CalcSplit tone="white" title-tag="h3" size="sm">
+      <template #title>FIIs com Dividendos Mensais</template>
+      <template #dek>
+        <p>FIIs (Fundos de Investimento Imobiliário) são o veículo preferido de quem busca dividendos mensais e isenção de IR no Brasil. Por lei, distribuem 95% ou mais do lucro do fundo, geralmente todo mês (até o dia 25). Existem dois grandes blocos com perfis distintos.</p>
+      </template>
+      <div class="dy__tile">
         <ul class="dy__list">
           <!-- conteúdo local confiável (strong) — eslint-disable-next-line vue/no-v-html -->
           <li v-for="(item, i) in fiiItems" :key="i" v-html="item" />
@@ -531,58 +598,53 @@ usePageSeo({
           Exemplos com track record consistente: HGLG11 (logística), KNCR11 (papel), MXRF11 (papel), VISC11 (shoppings), HSML11 (shoppings), GGRC11 (logística), DIVD11 (paga DY+ alto), SNLG11 (papel high-yield). Uma carteira diversificada de renda passiva costuma combinar tijolo (proteção real e estabilidade) com papel (yield maior e menor exposição ao ciclo imobiliário).
         </p>
       </div>
-    </section>
+    </CalcSplit>
 
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="dy__band dy__band--cream">
-      <h2 class="dy__h2 dy__h2--center">Como Usar a Calculadora de Dividend Yield</h2>
-      <div class="dy__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar a Calculadora de Dividend Yield">
+      <div class="dy__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
 
-    <!-- ============ FAQ (design 2 colunas, 12 perguntas verbatim) ============ -->
-    <section class="dy__band dy__band--white">
-      <div class="dy__faq">
-        <div class="dy__faq-left">
-          <h2 class="dy__h2">Perguntas Frequentes sobre Dividend Yield</h2>
-          <NuxtLink to="/busca" class="dy__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="dy__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
-      </div>
-    </section>
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes sobre Dividend Yield</template>
+      <template #left>
+        <NuxtLink to="/busca" class="dy__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
     <!-- ============ Rankings + outras ferramentas + E-E-A-T + CTA ============ -->
-    <section class="dy__band dy__band--cream">
-      <h2 class="dy__h2">Rankings Relacionados</h2>
-      <p class="dy__p dy__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="dy__cards dy__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="dy__card dy__card--link">
-          <h3 class="dy__h3 dy__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="white" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="dy__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="dy__card-link">
+          <h3 class="dy__card-link-title">{{ r.title }}</h3>
           <p class="dy__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="dy__h2 dy__mt">Outras Ferramentas</h2>
-      <div class="dy__cards dy__cards--links">
-        <NuxtLink to="/calculadora/planejamento" class="dy__card dy__card--link">
-          <h3 class="dy__h3 dy__h3--card">Planejamento Patrimonial</h3>
+    <CalcBand tone="cream" title="Outras Ferramentas">
+      <div class="dy__grid-cards">
+        <NuxtLink to="/calculadora/planejamento" class="dy__card-link">
+          <h3 class="dy__card-link-title">Planejamento Patrimonial</h3>
           <p class="dy__card-p">Carteira com foco em dividendos</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/preco-teto" class="dy__card dy__card--link">
-          <h3 class="dy__h3 dy__h3--card">Preço Teto</h3>
+        <NuxtLink to="/calculadora/preco-teto" class="dy__card-link">
+          <h3 class="dy__card-link-title">Preço Teto</h3>
           <p class="dy__card-p">Veja se a ação está barata</p>
         </NuxtLink>
       </div>
 
       <aside class="dy__eeat">
-        <p class="dy__p">Metodologia revisada pela equipe de análise da Redentia</p>
-        <p class="dy__p">
+        <p class="dy__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="dy__eeat-p">
           Cálculos baseados nas fórmulas clássicas de avaliação por dividendos (DY = Dividendos ÷ Preço, DY on cost = Dividendos ÷ Preço de Compra) e referenciam a metodologia de Décio Bazin e Luiz Barsi para análise de pagadoras de dividendos no mercado brasileiro. Os tickers exibidos vêm da B3 em tempo real via API oficial.
         </p>
-        <p class="dy__small">
+        <p class="dy__eeat-small">
           Fontes: <a href="https://www.b3.com.br" target="_blank" rel="noopener nofollow" class="dy__link">B3 (Brasil, Bolsa, Balcão)</a>,
           <a href="https://www.cvm.gov.br" target="_blank" rel="noopener nofollow" class="dy__link">CVM</a>,
           <a href="https://www.bcb.gov.br" target="_blank" rel="noopener nofollow" class="dy__link">Banco Central do Brasil</a>.
@@ -597,7 +659,7 @@ usePageSeo({
           <NuxtLink to="/login" class="dy__pill dy__pill--outline">Criar conta grátis</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -673,34 +735,25 @@ usePageSeo({
 .dy__insight--tip { background: var(--nu-blue-tint); margin-top: 14px; }
 .dy__insight strong { color: var(--nu-ink); font-weight: 800; }
 
-/* ——— bandas ——— */
-.dy__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.dy__band--white { background: var(--nu-white); }
-.dy__band--cream { background: var(--nu-cream); }
-.dy__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.dy__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.dy__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.dy__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.dy__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada (classes do exemplar jc__, mesmos valores) ——— */
 .dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .dy__h4--accent { color: var(--nu-blue); }
-.dy__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.dy__p--dek { color: var(--nu-gray-2); }
-.dy__p--center { text-align: center; max-width: none; }
-.dy__p--accent { color: var(--nu-blue); font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
-.dy__p strong { color: var(--nu-ink); font-weight: 800; }
-.dy__small { margin: 12px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; max-width: 840px; }
 .dy__link { text-decoration: underline; }
 .dy__link:hover { color: var(--nu-blue); }
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.dy__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
+}
+.dy__prose p:last-child { margin-bottom: 0; }
+.dy__prose--mt { margin-top: 18px; }
+
+/* ——— sub-heading dentro da coluna esquerda do split ——— */
+.dy__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.dy__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— cenários populares ——— */
 .dy__scenarios {
@@ -716,54 +769,37 @@ usePageSeo({
 .dy__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .dy__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.dy__cards {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
-}
-.dy__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.dy__band--cream .dy__card { background: var(--nu-white); }
-.dy__card--wide { max-width: 720px; margin-top: clamp(20px, 3vw, 28px); }
-.dy__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.dy__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dy__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+/* ——— tiles (cards do conteúdo; creme em banda branca, branco em banda creme) ——— */
+.dy__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+:global(.cbd--cream) .dy__tile,
+:global(.csp--cream) .dy__tile { background: var(--nu-white); }
+.dy__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .dy__card-p--mt { margin-top: 12px; }
 .dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .dy__list li + li { margin-top: 8px; }
 .dy__list :deep(strong) { color: var(--nu-ink); font-weight: 800; }
 
-/* ——— fórmula ——— */
-.dy__formula-wrap { max-width: 720px; margin-top: clamp(18px, 2.5vw, 26px); }
-.dy__formula-example { margin-top: 14px; }
+/* ——— fórmula (exemplo centrado abaixo do card) ——— */
+.dy__formula-block { margin-top: 22px; }
+.dy__formula-example { margin-top: 14px; text-align: center; }
+.dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.6; }
+.dy__formula-example p strong { color: var(--nu-ink); font-weight: 800; }
+.dy__formula-accent { color: var(--nu-blue) !important; font-weight: 700 !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
 
-/* ——— tabelas ——— */
-.dy__table-wrap {
-  overflow-x: auto; background: var(--nu-cream);
-  border-radius: var(--nu-r-panel); margin-top: clamp(20px, 3vw, 28px);
-  max-width: 980px;
+/* ——— cards-link (rankings / outras ferramentas) ——— */
+.dy__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
 }
-.dy__table { width: 100%; border-collapse: collapse; min-width: 560px; }
-.dy__table th {
-  text-align: left; padding: 14px 18px;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
-  letter-spacing: .8px; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
+.dy__card-link {
+  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
 }
-.dy__table td {
-  padding: 13px 18px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
-}
-.dy__table tbody tr:last-child td { border-bottom: none; }
-.dy__td--accent { color: var(--nu-blue); font-weight: 800; }
-
-/* ——— steps ——— */
-.dy__steps { margin-top: clamp(30px, 4vw, 48px); }
-
-/* ——— FAQ 2 colunas (design) ——— */
-.dy__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.dy__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.dy__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.dy__faq-left .dy__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
+:global(.cbd--cream) .dy__card-link { background: var(--nu-white); }
+.dy__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .dy__pill {
@@ -774,13 +810,15 @@ usePageSeo({
 .dy__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .dy__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); margin-top: clamp(44px, 6vw, 72px); max-width: 980px;
+  padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.dy__eeat .dy__p:first-child { margin-top: 0; font-weight: 700; color: var(--nu-ink); font-size: 15.5px; }
-.dy__eeat .dy__p { font-size: 14.5px; }
+.dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
+.dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
+.dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
 .dy__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .dy__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .dy__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }

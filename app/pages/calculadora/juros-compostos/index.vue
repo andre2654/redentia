@@ -210,127 +210,127 @@ usePageSeo({
     </CalcCompoundSection>
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="jc__band jc__band--cream">
-      <h2 class="jc__h2">Cenários populares de investimento</h2>
-      <p class="jc__p jc__p--dek">
-        Veja na hora o resultado dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de investimento">
+      <template #dek>
+        <p>Veja na hora o resultado dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.</p>
+      </template>
       <div class="jc__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label" :to="s.to" class="jc__scenario">
           <span class="jc__scenario-label">{{ s.label }}</span>
           <span class="jc__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="jc__band jc__band--white">
-      <h2 class="jc__h2">Simulador de juros compostos grátis e online</h2>
-      <p class="jc__p">
-        Use a calculadora acima para simular o rendimento de qualquer aporte com juros compostos em segundos. Ideal pra planejar aposentadoria, metas e reserva de longo prazo.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Simulador de juros compostos grátis e online</template>
+      <div class="jc__prose">
+        <p>Use a calculadora acima para simular o rendimento de qualquer aporte com juros compostos em segundos. Ideal pra planejar aposentadoria, metas e reserva de longo prazo.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="jc__h2 jc__mt">O que são Juros Compostos?</h2>
-      <p class="jc__p">
-        Juros compostos são os "juros sobre juros", ou seja, quando você ganha retorno não apenas sobre o capital inicial, mas também sobre os rendimentos acumulados. É o conceito mais poderoso das finanças pessoais e o segredo para construir riqueza a longo prazo.
-      </p>
-      <p class="jc__p">
-        Albert Einstein teria dito que "os juros compostos são a força mais poderosa do universo". E de fato, quando você entende como funcionam, percebe o impacto transformador que podem ter no seu patrimônio.
-      </p>
+    <CalcSplit tone="cream">
+      <template #title>O que são Juros Compostos?</template>
+      <div class="jc__prose">
+        <p>Juros compostos são os "juros sobre juros", ou seja, quando você ganha retorno não apenas sobre o capital inicial, mas também sobre os rendimentos acumulados. É o conceito mais poderoso das finanças pessoais e o segredo para construir riqueza a longo prazo.</p>
+        <p>Albert Einstein teria dito que "os juros compostos são a força mais poderosa do universo". E de fato, quando você entende como funcionam, percebe o impacto transformador que podem ter no seu patrimônio.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="jc__h3">Por que Investir com Juros Compostos?</h3>
-      <div class="jc__cards">
-        <div v-for="c in whyCards" :key="c.title" class="jc__card">
+    <CalcBand tone="white" title-tag="h3" title="Por que Investir com Juros Compostos?">
+      <div class="jc__tiles">
+        <div v-for="c in whyCards" :key="c.title" class="jc__tile">
           <h4 class="jc__h4 jc__h4--accent">{{ c.title }}</h4>
           <p class="jc__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="jc__h2 jc__mt">Como Calcular Juros Compostos: Fórmula Completa</h2>
+    <CalcSplit tone="white">
+      <template #title>Como Calcular Juros Compostos: Fórmula Completa</template>
+      <template #left>
+        <h3 class="jc__sub">Fórmula Matemática</h3>
+        <p class="jc__sub-p">A fórmula básica dos juros compostos é:</p>
+      </template>
+      <CalcFormulaCard
+        :terms="[
+          { sym: 'M', desc: 'Montante final (valor futuro)' },
+          { sym: 'C', desc: 'Capital inicial' },
+          { sym: 'i', desc: 'Taxa de juros por período' },
+          { sym: 'n', desc: 'Número de períodos' },
+        ]"
+      >M = C × (1 + i)ⁿ</CalcFormulaCard>
+    </CalcSplit>
 
-      <h3 class="jc__h3">Fórmula Matemática</h3>
-      <p class="jc__p">
-        A fórmula básica dos juros compostos é:
-      </p>
-      <div class="jc__formula-wrap">
-        <CalcFormulaCard
-          :terms="[
-            { sym: 'M', desc: 'Montante final (valor futuro)' },
-            { sym: 'C', desc: 'Capital inicial' },
-            { sym: 'i', desc: 'Taxa de juros por período' },
-            { sym: 'n', desc: 'Número de períodos' },
-          ]"
-        >M = C × (1 + i)ⁿ</CalcFormulaCard>
+    <CalcSplit tone="cream" title-tag="h3" size="sm">
+      <template #title>Com Aportes Mensais</template>
+      <template #dek>
+        <p>Quando você faz aportes regulares, a fórmula se torna um pouco mais complexa:</p>
+      </template>
+      <CalcFormulaCard
+        tone="white"
+        :terms="[
+          { sym: 'P', desc: 'Valor do aporte mensal' },
+        ]"
+      >M = C × (1 + i)ⁿ + P × [((1 + i)ⁿ - 1) / i]</CalcFormulaCard>
+      <p class="jc__small">Os demais valores seguem a mesma definição</p>
+    </CalcSplit>
+
+    <CalcBand tone="white" title="Quanto Rende R$ 500 por Mês em Juros Compostos? (5, 10, 20 e 30 anos)">
+      <template #dek>
+        <p>A melhor forma de entender o poder dos juros compostos é ver o que acontece com o mesmo aporte em horizontes diferentes. Na tabela abaixo, simulamos R$ 500 investidos por mês a 10% ao ano (taxa próxima da média histórica da bolsa brasileira):</p>
+      </template>
+      <div class="jc__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Prazo', 'Total Investido', 'Montante Final', 'Juros Acumulados', 'Multiplicador']"
+          :rows="horizonRows"
+          :accent-col="2"
+          note="Observe o salto entre 20 e 30 anos: dobrar o tempo triplica o resultado. Esse é o efeito exponencial dos juros compostos, ele não é linear, cresce cada vez mais rápido no final."
+        />
       </div>
+    </CalcBand>
 
-      <h3 class="jc__h3">Com Aportes Mensais</h3>
-      <p class="jc__p">
-        Quando você faz aportes regulares, a fórmula se torna um pouco mais complexa:
-      </p>
-      <div class="jc__formula-wrap">
-        <CalcFormulaCard
-          :terms="[
-            { sym: 'P', desc: 'Valor do aporte mensal' },
-          ]"
-        >M = C × (1 + i)ⁿ + P × [((1 + i)ⁿ - 1) / i]</CalcFormulaCard>
-        <p class="jc__small">Os demais valores seguem a mesma definição</p>
-      </div>
-
-      <h2 class="jc__h2 jc__mt">Quanto Rende R$ 500 por Mês em Juros Compostos? (5, 10, 20 e 30 anos)</h2>
-      <p class="jc__p">
-        A melhor forma de entender o poder dos juros compostos é ver o que acontece com o mesmo aporte em horizontes diferentes. Na tabela abaixo, simulamos R$ 500 investidos por mês a 10% ao ano (taxa próxima da média histórica da bolsa brasileira):
-      </p>
-      <div class="jc__table-wrap">
-        <table class="jc__table">
-          <thead>
-            <tr><th>Prazo</th><th>Total Investido</th><th>Montante Final</th><th>Juros Acumulados</th><th>Multiplicador</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in horizonRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td class="jc__td--accent">{{ r[2] }}</td><td>{{ r[3] }}</td><td>{{ r[4] }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="jc__small">
-        Observe o salto entre 20 e 30 anos: dobrar o tempo triplica o resultado. Esse é o efeito exponencial dos juros compostos, ele não é linear, cresce cada vez mais rápido no final.
-      </p>
-
-      <h2 class="jc__h2 jc__mt">Exemplos Práticos de Juros Compostos</h2>
-
-      <h3 class="jc__h3">Exemplo 1: Investimento Inicial sem Aportes</h3>
-      <div class="jc__card jc__card--wide">
-        <h4 class="jc__h4">Cenário</h4>
-        <ul class="jc__list">
-          <li>Investimento inicial: R$ 10.000</li>
-          <li>Taxa de juros: 10% ao ano</li>
-          <li>Período: 20 anos</li>
-          <li>Sem aportes mensais</li>
-        </ul>
-        <div class="jc__result-box">
-          <p class="jc__result-main">Resultado: R$ 67.275,00</p>
-          <p class="jc__result-sub">Ganho de R$ 57.275 (572% de rentabilidade)</p>
+    <CalcBand tone="cream" title="Exemplos Práticos de Juros Compostos">
+      <div class="jc__ex-grid">
+        <div>
+          <h3 class="jc__ex-title">Exemplo 1: Investimento Inicial sem Aportes</h3>
+          <div class="jc__ex-card">
+            <h4 class="jc__h4">Cenário</h4>
+            <ul class="jc__list">
+              <li>Investimento inicial: R$ 10.000</li>
+              <li>Taxa de juros: 10% ao ano</li>
+              <li>Período: 20 anos</li>
+              <li>Sem aportes mensais</li>
+            </ul>
+            <div class="jc__result-box">
+              <p class="jc__result-main">Resultado: R$ 67.275,00</p>
+              <p class="jc__result-sub">Ganho de R$ 57.275 (572% de rentabilidade)</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="jc__ex-title">Exemplo 2: Com Aportes Mensais</h3>
+          <div class="jc__ex-card">
+            <h4 class="jc__h4">Cenário</h4>
+            <ul class="jc__list">
+              <li>Investimento inicial: R$ 10.000</li>
+              <li>Aporte mensal: R$ 500</li>
+              <li>Taxa de juros: 10% ao ano</li>
+              <li>Período: 20 anos</li>
+            </ul>
+            <div class="jc__result-box">
+              <p class="jc__result-main">Resultado: R$ 450.192,00</p>
+              <p class="jc__result-sub">Total investido: R$ 130.000 | Ganho: R$ 320.192</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <h3 class="jc__h3">Exemplo 2: Com Aportes Mensais</h3>
-      <div class="jc__card jc__card--wide">
-        <h4 class="jc__h4">Cenário</h4>
-        <ul class="jc__list">
-          <li>Investimento inicial: R$ 10.000</li>
-          <li>Aporte mensal: R$ 500</li>
-          <li>Taxa de juros: 10% ao ano</li>
-          <li>Período: 20 anos</li>
-        </ul>
-        <div class="jc__result-box">
-          <p class="jc__result-main">Resultado: R$ 450.192,00</p>
-          <p class="jc__result-sub">Total investido: R$ 130.000 | Ganho: R$ 320.192</p>
-        </div>
-      </div>
-
-      <h3 class="jc__h3">Exemplo 3: Começando Cedo</h3>
-      <div class="jc__cards jc__cards--two">
-        <div class="jc__card">
+      <h3 class="jc__ex-title jc__ex-title--center">Exemplo 3: Começando Cedo</h3>
+      <div class="jc__ex-grid">
+        <div class="jc__ex-card">
           <h4 class="jc__h4 jc__h4--accent">João - Começou aos 25 anos</h4>
           <ul class="jc__list">
             <li>Aporte mensal: R$ 500</li>
@@ -342,7 +342,7 @@ usePageSeo({
             <p class="jc__result-sub">Investido: R$ 240.000</p>
           </div>
         </div>
-        <div class="jc__card">
+        <div class="jc__ex-card">
           <h4 class="jc__h4 jc__h4--negative">Maria - Começou aos 35 anos</h4>
           <ul class="jc__list">
             <li>Aporte mensal: R$ 500</li>
@@ -355,120 +355,104 @@ usePageSeo({
           </div>
         </div>
       </div>
-      <p class="jc__small">
-        João investiu apenas R$ 60.000 a mais, mas terminou com R$ 2 milhões a mais que Maria! Isso é o poder de começar cedo.
-      </p>
+      <p class="jc__ex-note">João investiu apenas R$ 60.000 a mais, mas terminou com R$ 2 milhões a mais que Maria! Isso é o poder de começar cedo.</p>
+    </CalcBand>
 
-      <h2 class="jc__h2 jc__mt">Juros Simples vs Juros Compostos</h2>
-      <div class="jc__table-wrap">
-        <table class="jc__table">
-          <thead>
-            <tr><th>Característica</th><th>Juros Simples</th><th>Juros Compostos</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in simpleVsCompoundRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td class="jc__td--accent">{{ r[2] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="white" title="Juros Simples vs Juros Compostos">
+      <div class="jc__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Característica', 'Juros Simples', 'Juros Compostos']"
+          :rows="simpleVsCompoundRows"
+          :accent-col="2"
+        />
       </div>
+    </CalcBand>
 
-      <h2 class="jc__h2 jc__mt">Poupança vs Juros Compostos: Por Que a Poupança é o Pior Investimento</h2>
-      <p class="jc__p">
-        A poupança rende 70% da Selic + TR (quando Selic está acima ou igual a 8,5%) ou 0,5% ao mês + TR (quando Selic abaixo de 8,5%). Em 2026 com Selic em 12%, poupança rende cerca de 6,5% a.a. Já o Tesouro Selic, considerado o investimento mais seguro do Brasil, rende próximo da Selic integral, ou seja, ~12% a.a. Mesmo após o IR, ainda ganha de longe da poupança.
-      </p>
-      <div class="jc__table-wrap">
-        <table class="jc__table">
-          <thead>
-            <tr><th>Investimento</th><th>Taxa Bruta</th><th>Após IR</th><th>Total em 20 anos</th><th>Diferença vs Poupança</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in poupancaRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td class="jc__td--accent">{{ r[3] }}</td><td>{{ r[4] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="white" title="Poupança vs Juros Compostos: Por Que a Poupança é o Pior Investimento">
+      <template #dek>
+        <p>A poupança rende 70% da Selic + TR (quando Selic está acima ou igual a 8,5%) ou 0,5% ao mês + TR (quando Selic abaixo de 8,5%). Em 2026 com Selic em 12%, poupança rende cerca de 6,5% a.a. Já o Tesouro Selic, considerado o investimento mais seguro do Brasil, rende próximo da Selic integral, ou seja, ~12% a.a. Mesmo após o IR, ainda ganha de longe da poupança.</p>
+      </template>
+      <div class="jc__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Investimento', 'Taxa Bruta', 'Após IR', 'Total em 20 anos', 'Diferença vs Poupança']"
+          :rows="poupancaRows"
+          :accent-col="3"
+          note="Cenário: aporte de R$ 500/mês durante 20 anos. A poupança não acompanha a inflação na maioria dos cenários. Mesmo com a isenção de IR, perde pra Tesouro Selic e CDB com folga."
+        />
       </div>
-      <p class="jc__small">
-        Cenário: aporte de R$ 500/mês durante 20 anos. A poupança não acompanha a inflação na maioria dos cenários. Mesmo com a isenção de IR, perde pra Tesouro Selic e CDB com folga.
-      </p>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="jc__band jc__band--cream">
-      <h2 class="jc__h2 jc__h2--center">Como Usar a Calculadora de Juros Compostos</h2>
-      <div class="jc__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar a Calculadora de Juros Compostos">
+      <div class="jc__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
 
-    <!-- ============ Onde aplicar (texto verbatim) ============ -->
-    <section class="jc__band jc__band--white">
-      <h2 class="jc__h2">Tesouro Direto, CDB, LCI e LCA: Onde Aplicar Juros Compostos</h2>
-      <p class="jc__p">
-        Os juros compostos só funcionam de verdade quando você aplica em produtos com retorno consistente. Os 4 mais usados no Brasil hoje:
-      </p>
-      <div class="jc__cards jc__cards--two">
-        <div v-for="c in productCards" :key="c.title" class="jc__card">
+    <!-- ============ Onde aplicar (split: título à esquerda, tiles à direita) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Tesouro Direto, CDB, LCI e LCA: Onde Aplicar Juros Compostos</template>
+      <template #dek>
+        <p>Os juros compostos só funcionam de verdade quando você aplica em produtos com retorno consistente. Os 4 mais usados no Brasil hoje:</p>
+      </template>
+      <div class="jc__tiles jc__tiles--two">
+        <div v-for="c in productCards" :key="c.title" class="jc__tile">
           <h4 class="jc__h4 jc__h4--accent">{{ c.title }}</h4>
           <p class="jc__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcSplit>
 
-    <!-- ============ FAQ (design 2 colunas, 13 perguntas verbatim) ============ -->
-    <section class="jc__band jc__band--cream">
-      <div class="jc__faq">
-        <div class="jc__faq-left">
-          <h2 class="jc__h2">Perguntas Frequentes sobre Juros Compostos</h2>
-          <NuxtLink to="/busca" class="jc__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="jc__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
-      </div>
-    </section>
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes sobre Juros Compostos</template>
+      <template #left>
+        <NuxtLink to="/busca" class="jc__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <section class="jc__band jc__band--white">
-      <h2 class="jc__h2">Dicas para Maximizar Seus Juros Compostos</h2>
-      <div class="jc__cards jc__cards--two">
-        <div v-for="c in tipCards" :key="c.title" class="jc__card">
+    <CalcBand tone="white" title="Dicas para Maximizar Seus Juros Compostos">
+      <div class="jc__tiles">
+        <div v-for="c in tipCards" :key="c.title" class="jc__tile">
           <h4 class="jc__h4 jc__h4--accent">{{ c.title }}</h4>
           <p class="jc__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
     <!-- ============ Rankings + outras calculadoras + E-E-A-T + CTA ============ -->
-    <section class="jc__band jc__band--cream">
-      <h2 class="jc__h2">Rankings Relacionados</h2>
-      <p class="jc__p jc__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="jc__cards jc__cards--two jc__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="jc__card jc__card--link">
-          <h3 class="jc__h3 jc__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="cream" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="jc__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="jc__card-link">
+          <h3 class="jc__card-link-title">{{ r.title }}</h3>
           <p class="jc__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="jc__h2 jc__mt">Outras Calculadoras</h2>
-      <div class="jc__cards jc__cards--two jc__cards--links">
-        <NuxtLink to="/calculadora/acoes" class="jc__card jc__card--link">
-          <h3 class="jc__h3 jc__h3--card">Simulador de Ações</h3>
+    <CalcBand tone="cream" title="Outras Calculadoras">
+      <div class="jc__grid-cards">
+        <NuxtLink to="/calculadora/acoes" class="jc__card-link">
+          <h3 class="jc__card-link-title">Simulador de Ações</h3>
           <p class="jc__card-p">Analise investimentos em ações reais da B3</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/planejamento" class="jc__card jc__card--link">
-          <h3 class="jc__h3 jc__h3--card">Planejamento Patrimonial</h3>
+        <NuxtLink to="/calculadora/planejamento" class="jc__card-link">
+          <h3 class="jc__card-link-title">Planejamento Patrimonial</h3>
           <p class="jc__card-p">Calcule quanto investir para suas metas</p>
         </NuxtLink>
       </div>
 
       <aside class="jc__eeat">
-        <p class="jc__p">Metodologia revisada pela equipe de análise da Redentia</p>
-        <p class="jc__p">
+        <p class="jc__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="jc__eeat-p">
           Cálculos baseados nas fórmulas oficiais de matemática financeira (M = C × (1 + i)ⁿ) e em médias históricas do mercado brasileiro (CDI, Ibovespa, IPCA). As simulações assumem juros capitalizados mensalmente e reinvestimento integral dos rendimentos.
         </p>
-        <p class="jc__small">
+        <p class="jc__eeat-small">
           Fontes: <a href="https://www.bcb.gov.br" target="_blank" rel="noopener nofollow" class="jc__link">Banco Central do Brasil</a>,
           <a href="https://www.b3.com.br" target="_blank" rel="noopener nofollow" class="jc__link">B3 (Brasil, Bolsa, Balcão)</a>,
           <a href="https://www.ibge.gov.br" target="_blank" rel="noopener nofollow" class="jc__link">IBGE</a>.
@@ -483,7 +467,7 @@ usePageSeo({
           <NuxtLink to="/guias" class="jc__pill jc__pill--outline">Ver mais guias</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -521,32 +505,27 @@ usePageSeo({
 .jc__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 .jc__chip-dot--positive { background: var(--nu-green); }
 
-/* ——— bandas ——— */
-.jc__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.jc__band--white { background: var(--nu-white); }
-.jc__band--cream { background: var(--nu-cream); }
-.jc__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.jc__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.jc__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.jc__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.jc__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada ——— */
 .jc__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .jc__h4--accent { color: var(--nu-blue); }
 .jc__h4--negative { color: var(--nu-red); }
-.jc__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.jc__p--dek { color: var(--nu-gray-2); }
-.jc__small { margin: 12px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; max-width: 840px; }
+.jc__small { margin: 14px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; }
 .jc__link { text-decoration: underline; }
 .jc__link:hover { color: var(--nu-blue); }
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.jc__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
+}
+.jc__prose p:last-child { margin-bottom: 0; }
+
+/* ——— sub-heading dentro da coluna esquerda do split ——— */
+.jc__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.jc__sub-p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 420px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.jc__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— cenários populares ——— */
 .jc__scenarios {
@@ -562,58 +541,53 @@ usePageSeo({
 .jc__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .jc__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.jc__cards {
+/* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
+.jc__tiles {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.jc__cards--two { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
-.jc__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.jc__band--cream .jc__card { background: var(--nu-white); }
-.jc__card--wide { max-width: 720px; margin-top: clamp(20px, 3vw, 28px); }
-.jc__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.jc__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.jc__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.jc__card .jc__card-p { margin-top: 6px; }
+.jc__tiles--two {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  max-width: none; margin-top: 0;
+}
+.jc__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+.cbd--cream .jc__tile { background: var(--nu-white); }
+.jc__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .jc__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .jc__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .jc__result-box--negative { background: var(--nu-red-tint); }
-.jc__result-main { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.jc__result-main { margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .jc__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; }
 
-/* ——— fórmulas ——— */
-.jc__formula-wrap { max-width: 720px; margin-top: clamp(18px, 2.5vw, 26px); }
-
-/* ——— tabelas ——— */
-.jc__table-wrap {
-  overflow-x: auto; background: var(--nu-white);
-  border-radius: var(--nu-r-panel); margin-top: clamp(20px, 3vw, 28px);
-  max-width: 980px;
+/* ——— exemplos práticos (cards brancos na banda creme) ——— */
+.jc__ex-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.jc__band--white .jc__table-wrap { background: var(--nu-cream); }
-.jc__table { width: 100%; border-collapse: collapse; min-width: 560px; }
-.jc__table th {
-  text-align: left; padding: 14px 18px;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
-  letter-spacing: .8px; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
+.jc__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.jc__ex-title--center { text-align: center; margin: clamp(36px, 5vw, 56px) 0 0; }
+.jc__ex-title--center + .jc__ex-grid { margin-top: 20px; }
+.jc__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
+.jc__ex-note {
+  margin: 22px auto 0; max-width: 680px; text-align: center;
+  color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.6;
 }
-.jc__table td {
-  padding: 13px 18px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
+
+/* ——— cards-link (rankings / outras calculadoras) ——— */
+.jc__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
 }
-.jc__table tbody tr:last-child td { border-bottom: none; }
-.jc__td--accent { color: var(--nu-blue); font-weight: 800; }
-
-/* ——— steps ——— */
-.jc__steps { margin-top: clamp(30px, 4vw, 48px); }
-
-/* ——— FAQ 2 colunas (design) ——— */
-.jc__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.jc__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.jc__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.jc__faq-left .jc__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.jc__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+.jc__card-link {
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+.jc__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.jc__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .jc__pill {
@@ -624,13 +598,15 @@ usePageSeo({
 .jc__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .jc__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); margin-top: clamp(44px, 6vw, 72px); max-width: 980px;
+  padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.jc__eeat .jc__p:first-child { margin-top: 0; font-weight: 700; color: var(--nu-ink); font-size: 15.5px; }
-.jc__eeat .jc__p { font-size: 14.5px; }
+.jc__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
+.jc__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
+.jc__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
 .jc__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .jc__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .jc__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }

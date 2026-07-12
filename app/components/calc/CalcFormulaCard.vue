@@ -2,11 +2,15 @@
 // PR10 — card de fórmula do design: card creme radius 26, fórmula centrada
 // (slot com HTML local: sup, fração com border-bottom) + glossário de termos
 // (letra azul w800 largura 26 + descrição), linhas separadas por hairline.
-defineProps<{ terms?: { sym: string; desc: string }[] }>()
+defineProps<{
+  terms?: { sym: string; desc: string }[]
+  /** 'white' = card branco (quando a banda é creme — alternância do design) */
+  tone?: 'white'
+}>()
 </script>
 
 <template>
-  <div class="cfc">
+  <div class="cfc" :class="{ 'cfc--white': tone === 'white' }">
     <div class="cfc__formula"><slot /></div>
     <div v-if="terms?.length" class="cfc__terms">
       <div v-for="t in terms" :key="t.sym" class="cfc__term">
@@ -26,6 +30,7 @@ defineProps<{ terms?: { sym: string; desc: string }[] }>()
   border-radius: var(--nu-r-card-lg);
   padding: clamp(26px, 3.5vw, 44px);
 }
+.cfc--white { background: var(--nu-white); }
 .cfc__formula {
   color: var(--nu-ink);
   font-size: clamp(22px, 2.4vw, 32px);

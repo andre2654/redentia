@@ -65,6 +65,18 @@ function seedExample(t: string) {
 
 const round2 = (n: number) => Math.round(n * 100) / 100
 
+// Tetos dos sliders são reativos: dado real acima do teto default expande o
+// range (senão arrastar o slider depois da hidratação "engoliria" o valor;
+// a página antiga usava inputs livres, sem teto).
+const priceMax = ref(150)
+const lpaMax = ref(20)
+const vpaMax = ref(60)
+const dividendMax = ref(10)
+const plMax = ref(30)
+function expandMax(target: Ref<number>, value: number) {
+  if (value > target.value * 0.8) target.value = Math.ceil((value * 1.5) / 10) * 10
+}
+
 // Cadeia de P/L setorial portada do FairPrice.vue antigo: média do setor
 // (aggregates.avg_trailing_pe, senão média dos trailing_pe 0<pe<100) →
 // P/L próprio se 0<pe<60 → 12. Lista de setores cacheada no módulo.
@@ -122,11 +134,11 @@ async function seedFromBackend(t: string) {
     if (!sectorPE && ownPE > 0 && ownPE < 60) sectorPE = ownPE
     if (!sectorPE) sectorPE = 12
 
-    if (px > 0) price.value = round2(px)
-    if (eps > 0) lpa.value = round2(eps)
-    if (bvps > 0) vpa.value = round2(bvps)
-    if (annualDividend > 0) dividend.value = round2(annualDividend)
-    sectorPL.value = round2(sectorPE)
+    if (px > 0) { expandMax(priceMax, px); price.value = round2(px) }
+    if (eps > 0) { expandMax(lpaMax, eps); lpa.value = round2(eps) }
+    if (bvps > 0) { expandMax(vpaMax, bvps); vpa.value = round2(bvps) }
+    if (annualDividend > 0) { expandMax(dividendMax, annualDividend); dividend.value = round2(annualDividend) }
+    expandMax(plMax, sectorPE); sectorPL.value = round2(sectorPE)
   } catch { /* degrade elegante: mantém seed estático */ }
 }
 
@@ -447,19 +459,19 @@ usePageSeo({
           >{{ t }}</button>
         </div>
         <div class="pt__gap">
-          <CalcSliderField v-model="price" label="Preço Atual (R$)" :min="1" :max="150" :step="0.5" :value-text="priceTxt" />
+          <CalcSliderField v-model="price" label="Preço Atual (R$)" :min="1" :max="priceMax" :step="0.5" :value-text="priceTxt" />
         </div>
         <div class="pt__gap">
-          <CalcSliderField v-model="lpa" label="Lucro por Ação - LPA (R$)" :min="0" :max="20" :step="0.1" :value-text="lpaTxt" />
+          <CalcSliderField v-model="lpa" label="Lucro por Ação - LPA (R$)" :min="0" :max="lpaMax" :step="0.1" :value-text="lpaTxt" />
         </div>
         <div class="pt__gap">
-          <CalcSliderField v-model="vpa" label="Valor Patrimonial - VPA (R$)" :min="0" :max="60" :step="0.5" :value-text="vpaTxt" />
+          <CalcSliderField v-model="vpa" label="Valor Patrimonial - VPA (R$)" :min="0" :max="vpaMax" :step="0.5" :value-text="vpaTxt" />
         </div>
         <div class="pt__gap">
-          <CalcSliderField v-model="dividend" label="Dividendo Anual (R$)" :min="0" :max="10" :step="0.1" :value-text="dividendTxt" />
+          <CalcSliderField v-model="dividend" label="Dividendo Anual (R$)" :min="0" :max="dividendMax" :step="0.1" :value-text="dividendTxt" />
         </div>
         <div class="pt__gap">
-          <CalcSliderField v-model="sectorPL" label="P/L Médio do Setor" :min="1" :max="30" :step="0.5" :value-text="sectorPLTxt" :presets="plPresets" />
+          <CalcSliderField v-model="sectorPL" label="P/L Médio do Setor" :min="1" :max="plMax" :step="0.5" :value-text="sectorPLTxt" :presets="plPresets" />
         </div>
         <p class="pt__controls-note">Valores ilustrativos, ajuste com os fundamentos reais da ação (LPA, VPA e dividendos dos últimos 12 meses).</p>
       </template>
@@ -517,12 +529,11 @@ usePageSeo({
       </template>
     </CalcShell>
 
-    <!-- ============ Ações populares (deep-links verbatim) ============ -->
-    <section class="pt__band pt__band--cream">
-      <h2 class="pt__h2">Ações populares para calcular preço teto</h2>
-      <p class="pt__p pt__p--dek">
-        Acesse o cálculo pronto das ações mais buscadas da Bolsa brasileira.
-      </p>
+    <!-- ============ Ações populares (deep-links verbatim, banda do design) ============ -->
+    <CalcBand tone="cream" title="Ações populares para calcular preço teto">
+      <template #dek>
+        <p>Acesse o cálculo pronto das ações mais buscadas da Bolsa brasileira.</p>
+      </template>
       <div class="pt__tickers">
         <NuxtLink
           v-for="t in popularTickers"
@@ -534,26 +545,30 @@ usePageSeo({
           <span class="pt__ticker-name">{{ t.name }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="pt__band pt__band--white">
-      <h2 class="pt__h2">Simulador de preço teto grátis e online</h2>
-      <p class="pt__p">
-        Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Simulador de preço teto grátis e online</template>
+      <div class="pt__prose">
+        <p>Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="pt__h2 pt__mt">O que é Preço Teto?</h2>
-      <p class="pt__p">
-        O preço teto é o valor máximo que você deveria pagar por uma ação, considerando seus fundamentos e uma margem de segurança. É um conceito fundamental da análise fundamentalista, popularizado por Benjamin Graham (o "pai do value investing") e adaptado por investidores brasileiros como Décio Bazin.
-      </p>
-      <p class="pt__p">
-        Diferente de apenas olhar o preço atual da ação, o preço teto considera indicadores como lucro, patrimônio, dividendos e múltiplos do setor para determinar um valor justo. Se a ação estiver abaixo do preço teto, pode ser uma boa oportunidade de compra. Se estiver acima, pode estar cara.
-      </p>
+    <CalcSplit tone="cream">
+      <template #title>O que é Preço Teto?</template>
+      <div class="pt__prose">
+        <p>O preço teto é o valor máximo que você deveria pagar por uma ação, considerando seus fundamentos e uma margem de segurança. É um conceito fundamental da análise fundamentalista, popularizado por Benjamin Graham (o "pai do value investing") e adaptado por investidores brasileiros como Décio Bazin.</p>
+        <p>Diferente de apenas olhar o preço atual da ação, o preço teto considera indicadores como lucro, patrimônio, dividendos e múltiplos do setor para determinar um valor justo. Se a ação estiver abaixo do preço teto, pode ser uma boa oportunidade de compra. Se estiver acima, pode estar cara.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="pt__h2 pt__mt">Metodologias de Cálculo</h2>
-
-      <h3 class="pt__h3">1. Fórmula de Benjamin Graham</h3>
+    <!-- ============ Metodologias (splits de fórmula do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Metodologias de Cálculo</template>
+      <template #left>
+        <h3 class="pt__sub">1. Fórmula de Benjamin Graham</h3>
+      </template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
           :terms="[
@@ -563,24 +578,29 @@ usePageSeo({
           ]"
         >Preço Teto = √(22.5 × LPA × VPA)</CalcFormulaCard>
       </div>
-      <p class="pt__p">
-        Graham defendia que empresas deveriam ser compradas com P/L máximo de 15 e P/VP máximo de 1.5. A fórmula combina esses dois critérios em um único número. É ideal para empresas maduras e lucrativas.
-      </p>
+      <div class="pt__prose pt__prose--gap">
+        <p>Graham defendia que empresas deveriam ser compradas com P/L máximo de 15 e P/VP máximo de 1.5. A fórmula combina esses dois critérios em um único número. É ideal para empresas maduras e lucrativas.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="pt__h3">2. Método Bazin (Dividendos)</h3>
+    <CalcSplit tone="cream" title-tag="h3" size="sm">
+      <template #title>2. Método Bazin (Dividendos)</template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
+          tone="white"
           :terms="[
             { sym: 'Dividendo Anual', desc: 'Soma dos dividendos por ação nos últimos 12 meses' },
             { sym: '0.06 (6%)', desc: 'Dividend Yield mínimo aceitável segundo Bazin' },
           ]"
         >Preço Teto = Dividendo Anual ÷ 0.06</CalcFormulaCard>
       </div>
-      <p class="pt__p">
-        Décio Bazin focava em dividendos consistentes. Segundo ele, uma ação só vale a pena se pagar pelo menos 6% de dividend yield. O método é excelente para quem busca renda passiva e empresas consolidadas que distribuem lucros regularmente.
-      </p>
+      <div class="pt__prose pt__prose--gap">
+        <p>Décio Bazin focava em dividendos consistentes. Segundo ele, uma ação só vale a pena se pagar pelo menos 6% de dividend yield. O método é excelente para quem busca renda passiva e empresas consolidadas que distribuem lucros regularmente.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="pt__h3">3. P/L Setorial</h3>
+    <CalcSplit tone="white" title-tag="h3" size="sm">
+      <template #title>3. P/L Setorial</template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
           :terms="[
@@ -588,93 +608,104 @@ usePageSeo({
           ]"
         >Preço Teto = LPA × P/L Médio do Setor</CalcFormulaCard>
       </div>
-      <p class="pt__p">
-        Cada setor tem um P/L considerado "normal". Bancos costumam ter P/L de 8-12, enquanto tecnologia pode ter 20-30. Comparar com o setor evita julgar uma empresa por padrões inadequados.
-      </p>
+      <div class="pt__prose pt__prose--gap">
+        <p>Cada setor tem um P/L considerado "normal". Bancos costumam ter P/L de 8-12, enquanto tecnologia pode ter 20-30. Comparar com o setor evita julgar uma empresa por padrões inadequados.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="pt__h3">4. Valor Patrimonial (Graham Modificado)</h3>
+    <CalcSplit tone="cream" title-tag="h3" size="sm">
+      <template #title>4. Valor Patrimonial (Graham Modificado)</template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
+          tone="white"
           :terms="[
             { sym: 'VPA', desc: 'Patrimônio Líquido ÷ Número de Ações' },
             { sym: '1.5', desc: 'Margem máxima sobre valor contábil (Graham)' },
           ]"
         >Preço Teto = VPA × 1.5</CalcFormulaCard>
       </div>
-      <p class="pt__p">
-        Graham sugeria não pagar mais que 1.5x o valor patrimonial. Útil para empresas com muitos ativos tangíveis (bancos, seguradoras, indústrias). Menos efetivo para empresas de serviço ou tecnologia.
-      </p>
+      <div class="pt__prose pt__prose--gap">
+        <p>Graham sugeria não pagar mais que 1.5x o valor patrimonial. Útil para empresas com muitos ativos tangíveis (bancos, seguradoras, indústrias). Menos efetivo para empresas de serviço ou tecnologia.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="pt__h2 pt__mt">Indicadores de análise fundamentalista</h2>
-      <p class="pt__p">
-        O preço teto é apenas uma parte da análise fundamentalista. Antes de comprar, cruze o resultado com os principais indicadores de qualidade da empresa. Eles dizem se o desconto é real ou se a ação está barata por um motivo legítimo.
-      </p>
-      <div class="pt__card pt__card--wide">
+    <!-- ============ Indicadores (split: título gigante + card de lista) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Indicadores de análise fundamentalista</template>
+      <template #dek>
+        <p>O preço teto é apenas uma parte da análise fundamentalista. Antes de comprar, cruze o resultado com os principais indicadores de qualidade da empresa. Eles dizem se o desconto é real ou se a ação está barata por um motivo legítimo.</p>
+      </template>
+      <div class="pt__card">
         <ul class="pt__ind-list">
           <li v-for="it in indicatorItems" :key="it.strong"><strong>{{ it.strong }}</strong>{{ it.text }}</li>
         </ul>
       </div>
+    </CalcSplit>
 
-      <h2 class="pt__h2 pt__mt">Exemplos Práticos</h2>
-
-      <h3 class="pt__h3">Exemplo 1: Itaú Unibanco (ITUB4)</h3>
-      <div class="pt__card pt__card--example">
-        <h4 class="pt__h4">Dados (valores ilustrativos):</h4>
-        <ul class="pt__list">
-          <li v-for="d in exampleItub.data" :key="d">{{ d }}</li>
-        </ul>
-        <div class="pt__ex-grid">
-          <div v-for="b in exampleItub.boxes" :key="b.label" class="pt__ex-box">
-            <p class="pt__ex-label">{{ b.label }}</p>
-            <p class="pt__ex-value">{{ b.value }}</p>
+    <!-- ============ Exemplos práticos (banda creme + cards brancos, anatomia do exemplar) ============ -->
+    <CalcBand tone="cream" title="Exemplos Práticos">
+      <div class="pt__ex-grid">
+        <div>
+          <h3 class="pt__ex-title">Exemplo 1: Itaú Unibanco (ITUB4)</h3>
+          <div class="pt__ex-card">
+            <h4 class="pt__h4">Dados (valores ilustrativos):</h4>
+            <ul class="pt__list">
+              <li v-for="d in exampleItub.data" :key="d">{{ d }}</li>
+            </ul>
+            <div class="pt__ex-boxes">
+              <div v-for="b in exampleItub.boxes" :key="b.label" class="pt__ex-box">
+                <p class="pt__ex-label">{{ b.label }}</p>
+                <p class="pt__ex-value">{{ b.value }}</p>
+              </div>
+            </div>
+            <div class="pt__result-box">
+              <p class="pt__result-main">{{ exampleItub.resultMain }}</p>
+              <p class="pt__result-sub">{{ exampleItub.resultSub }}</p>
+            </div>
           </div>
         </div>
-        <div class="pt__result-box">
-          <p class="pt__result-main">{{ exampleItub.resultMain }}</p>
-          <p class="pt__result-sub">{{ exampleItub.resultSub }}</p>
-        </div>
-      </div>
-
-      <h3 class="pt__h3">Exemplo 2: Petrobras (PETR4)</h3>
-      <div class="pt__card pt__card--example">
-        <h4 class="pt__h4">Dados (valores ilustrativos):</h4>
-        <ul class="pt__list">
-          <li v-for="d in examplePetr.data" :key="d">{{ d }}</li>
-        </ul>
-        <div class="pt__ex-grid">
-          <div v-for="b in examplePetr.boxes" :key="b.label" class="pt__ex-box">
-            <p class="pt__ex-label">{{ b.label }}</p>
-            <p class="pt__ex-value">{{ b.value }}</p>
+        <div>
+          <h3 class="pt__ex-title">Exemplo 2: Petrobras (PETR4)</h3>
+          <div class="pt__ex-card">
+            <h4 class="pt__h4">Dados (valores ilustrativos):</h4>
+            <ul class="pt__list">
+              <li v-for="d in examplePetr.data" :key="d">{{ d }}</li>
+            </ul>
+            <div class="pt__ex-boxes">
+              <div v-for="b in examplePetr.boxes" :key="b.label" class="pt__ex-box">
+                <p class="pt__ex-label">{{ b.label }}</p>
+                <p class="pt__ex-value">{{ b.value }}</p>
+              </div>
+            </div>
+            <div class="pt__result-box pt__result-box--positive">
+              <p class="pt__result-main pt__result-main--positive">{{ examplePetr.resultMain }}</p>
+              <p class="pt__result-sub">{{ examplePetr.resultSub }}</p>
+            </div>
           </div>
         </div>
-        <div class="pt__result-box pt__result-box--positive">
-          <p class="pt__result-main pt__result-main--positive">{{ examplePetr.resultMain }}</p>
-          <p class="pt__result-sub">{{ examplePetr.resultSub }}</p>
-        </div>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="pt__band pt__band--cream">
-      <h2 class="pt__h2 pt__h2--center">Como Usar a Calculadora</h2>
-      <div class="pt__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar a Calculadora">
+      <div class="pt__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
 
-    <!-- ============ Value vs Growth + Limitações (texto verbatim) ============ -->
-    <section class="pt__band pt__band--white">
-      <h2 class="pt__h2">Value Investing vs Growth Investing</h2>
-      <p class="pt__p">
-        A calculadora de preço teto é uma ferramenta clássica do value investing, escola que busca empresas negociadas abaixo do valor intrínseco. Antes de aplicar as fórmulas, vale entender se o ativo analisado faz sentido pra essa filosofia ou se ele pertence ao outro lado, growth investing.
-      </p>
-      <div class="pt__cards pt__cards--two">
-        <div class="pt__card">
+    <!-- ============ Value vs Growth (split: título à esquerda, tiles à direita) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Value Investing vs Growth Investing</template>
+      <template #dek>
+        <p>A calculadora de preço teto é uma ferramenta clássica do value investing, escola que busca empresas negociadas abaixo do valor intrínseco. Antes de aplicar as fórmulas, vale entender se o ativo analisado faz sentido pra essa filosofia ou se ele pertence ao outro lado, growth investing.</p>
+      </template>
+      <div class="pt__tiles pt__tiles--two">
+        <div class="pt__tile">
           <h4 class="pt__h4 pt__h4--accent">Value Investing</h4>
           <p class="pt__card-p">
             Foco em preço teto, fórmulas Graham e Bazin, dividendos consistentes, ROE alto, P/L baixo e margem de segurança. O investidor procura empresas maduras pagando bom dividendo, com lucro previsível e múltiplos esticados pra baixo. Resultado costuma vir devagar, com renda recorrente.
           </p>
           <p class="pt__card-small">Exemplos clássicos na B3: ITUB4, BBAS3, TAEE11.</p>
         </div>
-        <div class="pt__card">
+        <div class="pt__tile">
           <h4 class="pt__h4 pt__h4--accent">Growth Investing</h4>
           <p class="pt__card-p">
             Foco em receita crescente, reinvestimento de lucros e expansão de margem futura. P/L alto é tolerado quando justificado por crescimento de dois dígitos por vários anos. As fórmulas tradicionais subestimam essas empresas porque o lucro presente é pequeno comparado ao potencial. Para essas, prefira múltiplos de receita (P/S, EV/Sales) ou fluxo de caixa descontado (DCF).
@@ -682,61 +713,59 @@ usePageSeo({
           <p class="pt__card-small">Exemplos: WEGE3, MGLU3 (em fase forte), Stone, Magalu nos anos bons.</p>
         </div>
       </div>
+    </CalcSplit>
 
-      <h2 class="pt__h2 pt__mt">Limitações e Quando NÃO Usar</h2>
-      <div class="pt__cards pt__cards--two">
-        <div v-for="c in limitCards" :key="c.title" class="pt__card pt__card--negative">
+    <!-- ============ Limitações (banda com grid de tiles) ============ -->
+    <CalcBand tone="cream" title="Limitações e Quando NÃO Usar">
+      <div class="pt__tiles">
+        <div v-for="c in limitCards" :key="c.title" class="pt__tile pt__tile--negative">
           <h4 class="pt__h4 pt__h4--negative">{{ c.title }}</h4>
           <p class="pt__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ FAQ (design 2 colunas, 11 perguntas verbatim) ============ -->
-    <section class="pt__band pt__band--cream">
-      <div class="pt__faq">
-        <div class="pt__faq-left">
-          <h2 class="pt__h2">Perguntas Frequentes</h2>
-          <NuxtLink to="/busca" class="pt__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="pt__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
-      </div>
-    </section>
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes</template>
+      <template #left>
+        <NuxtLink to="/busca" class="pt__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <section class="pt__band pt__band--white">
-      <h2 class="pt__h2">Dicas para Investir com Preço Teto</h2>
-      <div class="pt__cards pt__cards--two">
-        <div v-for="c in tipCards" :key="c.title" class="pt__card pt__card--cream">
+    <CalcBand tone="white" title="Dicas para Investir com Preço Teto">
+      <div class="pt__tiles">
+        <div v-for="c in tipCards" :key="c.title" class="pt__tile">
           <h4 class="pt__h4 pt__h4--accent">{{ c.title }}</h4>
           <p class="pt__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Rankings + outras ferramentas + CTA ============ -->
-    <section class="pt__band pt__band--cream">
-      <h2 class="pt__h2">Rankings Relacionados</h2>
-      <p class="pt__p pt__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="pt__cards pt__cards--three pt__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="pt__card pt__card--link">
-          <h3 class="pt__h3 pt__h3--card">{{ r.title }}</h3>
+    <!-- ============ Rankings relacionados ============ -->
+    <CalcBand tone="cream" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="pt__grid-cards pt__grid-cards--three">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="pt__card-link">
+          <h3 class="pt__card-link-title">{{ r.title }}</h3>
           <p class="pt__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="pt__h2 pt__mt">Outras Ferramentas</h2>
-      <div class="pt__cards pt__cards--two pt__cards--links">
-        <NuxtLink to="/calculadora/dividend-yield" class="pt__card pt__card--link">
-          <h3 class="pt__h3 pt__h3--card">Calculadora de Dividend Yield</h3>
+    <!-- ============ Outras ferramentas + CTA ============ -->
+    <CalcBand tone="white" title="Outras Ferramentas">
+      <div class="pt__grid-cards">
+        <NuxtLink to="/calculadora/dividend-yield" class="pt__card-link">
+          <h3 class="pt__card-link-title">Calculadora de Dividend Yield</h3>
           <p class="pt__card-p">Calcule DY atual e projetado</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/acoes" class="pt__card pt__card--link">
-          <h3 class="pt__h3 pt__h3--card">Simulador de Ações</h3>
+        <NuxtLink to="/calculadora/acoes" class="pt__card-link">
+          <h3 class="pt__card-link-title">Simulador de Ações</h3>
           <p class="pt__card-p">Histórico real de investimentos</p>
         </NuxtLink>
       </div>
@@ -749,7 +778,7 @@ usePageSeo({
           <NuxtLink to="/mercado" class="pt__pill pt__pill--outline">Ver ações</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -863,29 +892,24 @@ usePageSeo({
 }
 .pt__insight strong { color: var(--nu-ink); font-weight: 800; }
 
-/* ——— bandas ——— */
-.pt__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.pt__band--white { background: var(--nu-white); }
-.pt__band--cream { background: var(--nu-cream); }
-.pt__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.pt__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.pt__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.pt__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.pt__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada ——— */
 .pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .pt__h4--accent { color: var(--nu-blue); }
 .pt__h4--negative { color: var(--nu-red); }
-.pt__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.pt__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
 }
-.pt__p--dek { color: var(--nu-gray-2); }
+.pt__prose p:last-child { margin-bottom: 0; }
+.pt__prose--gap { margin-top: 20px; }
+
+/* ——— sub-heading dentro da coluna esquerda do split ——— */
+.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.pt__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— ações populares ——— */
 .pt__tickers {
@@ -902,40 +926,47 @@ usePageSeo({
 .pt__ticker-name { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
 /* ——— fórmulas ——— */
-.pt__formula-wrap { max-width: 720px; margin-top: clamp(18px, 2.5vw, 26px); }
 /* termos longos (Dividendo Anual, P/L Médio) — a coluna fixa de 26px do kit
    quebraria; largura automática preserva o texto verbatim sem tocar no kit */
 .pt__formula-wrap :deep(.cfc__sym) { width: auto; min-width: 26px; white-space: nowrap; }
 
-/* ——— cards educacionais ——— */
-.pt__cards {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+/* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
+.pt__tiles {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__cards--three { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
-.pt__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.pt__band--cream .pt__card { background: var(--nu-white); }
-.pt__card--cream { background: var(--nu-cream); }
-.pt__card--negative { background: var(--nu-red-tint); }
-.pt__card--wide { max-width: 840px; margin-top: clamp(20px, 3vw, 28px); }
-.pt__card--example { max-width: 840px; margin-top: clamp(20px, 3vw, 28px); }
-.pt__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.pt__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.pt__card .pt__card-p { margin-top: 6px; }
+.pt__tiles--two {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  max-width: none; margin-top: 0;
+}
+.pt__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+:global(.cbd--cream) .pt__tile { background: var(--nu-white); }
+.pt__tile--negative { background: var(--nu-red-tint); }
+:global(.cbd--cream) .pt__tile--negative { background: var(--nu-red-tint); }
+.pt__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .pt__card-small { margin: 10px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+
+/* ——— card de lista dos indicadores (coluna direita do split) ——— */
+.pt__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
 .pt__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .pt__ind-list { margin: 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.75; }
 .pt__ind-list li + li { margin-top: 8px; }
 .pt__ind-list strong { color: var(--nu-ink); font-weight: 800; }
 
-/* ——— exemplos práticos ——— */
+/* ——— exemplos práticos (cards brancos na banda creme) ——— */
 .pt__ex-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
+}
+.pt__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.pt__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
+.pt__ex-boxes {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 12px; margin-top: 16px;
 }
-.pt__ex-box { background: var(--nu-white); border-radius: var(--nu-r-input); padding: 14px 16px; }
-.pt__band--white .pt__ex-box { background: var(--nu-white); }
+.pt__ex-box { background: var(--nu-cream); border-radius: var(--nu-r-input); padding: 14px 16px; }
 .pt__ex-label { margin: 0; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; }
 .pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .pt__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 16px; }
@@ -944,15 +975,21 @@ usePageSeo({
 .pt__result-main--positive { color: var(--nu-green); }
 .pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; }
 
-/* ——— steps ——— */
-.pt__steps { margin-top: clamp(30px, 4vw, 48px); }
-
-/* ——— FAQ 2 colunas (design) ——— */
-.pt__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.pt__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.pt__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.pt__faq-left .pt__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.pt__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— cards-link (rankings / outras ferramentas) ——— */
+.pt__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
+}
+.pt__grid-cards--three { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+.pt__card-link {
+  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+:global(.cbd--cream) .pt__card-link { background: var(--nu-white); }
+.pt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .pt__pill {
@@ -964,6 +1001,7 @@ usePageSeo({
 .pt__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .pt__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .pt__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }

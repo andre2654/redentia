@@ -2,6 +2,8 @@
 // /calculadora/quanto-investir — calculadora de aporte mensal (PR10, fase 2).
 // Contrato de UX: docs/redentia-nu/designs/Redentia Calculadoras Nu.dc.html
 // (kit da fase 1: sliders + número-herói + gráfico + steps + fórmula + FAQ).
+// Corpo SEO nas 3 anatomias do design (CalcBand / CalcSplit / CalcTableCard),
+// mesma linguagem do exemplar juros-compostos/index.vue.
 // Contrato de SEO (regra nº1): TODO o texto da página antiga
 // (Frontend/app/pages/calculadora/quanto-investir.vue) verbatim, na MESMA
 // ordem de tags (h1 → h2/h3/h4 → p → li → tabelas → FAQ). Muda o visual.
@@ -243,242 +245,218 @@ usePageSeo({
     </QuantoInvestirCalc>
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="qi__band qi__band--cream">
-      <h2 class="qi__h2">Cenários populares de meta financeira</h2>
-      <p class="qi__p qi__p--dek">
-        Veja na hora o aporte mensal necessário para cada meta, basta clicar e a simulação carrega já preenchida.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de meta financeira">
+      <template #dek>
+        <p>Veja na hora o aporte mensal necessário para cada meta, basta clicar e a simulação carrega já preenchida.</p>
+      </template>
       <div class="qi__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label + s.sub" :to="s.to" class="qi__scenario">
           <span class="qi__scenario-label">{{ s.label }}</span>
           <span class="qi__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="qi__band qi__band--white">
-      <h2 class="qi__h2">Simulador de Aporte Mensal grátis e online</h2>
-      <h2 class="qi__h2 qi__mt">Como Calcular Quanto Investir por Mês</h2>
-      <p class="qi__p">
-        A maioria das calculadoras te pergunta "quanto você vai investir" e mostra "quanto vai ter". Esta faz o caminho inverso: você define sua meta (R$ 500 mil, R$ 1 milhão, entrada de imóvel) e o prazo, e a calculadora descobre exatamente quanto precisa aportar todo mês para chegar lá.
-      </p>
-      <p class="qi__p">
-        O cálculo usa a fórmula de anuidade dos juros compostos invertida, considerando seu patrimônio atual, a taxa de retorno esperada e, opcionalmente, o ajuste dos aportes pela inflação para preservar o poder de compra ao longo do tempo.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <!-- h2 órfão no SEO antigo → banda-statement compacta (sem vão) -->
+    <CalcBand tone="white" title="Simulador de Aporte Mensal grátis e online" tight />
 
-      <h3 class="qi__h3">Por que Calcular Quanto Investir Faz Diferença</h3>
-      <div class="qi__cards qi__cards--two">
-        <div v-for="c in whyCards" :key="c.title" class="qi__card">
+    <CalcSplit tone="cream">
+      <template #title>Como Calcular Quanto Investir por Mês</template>
+      <div class="qi__prose">
+        <p>A maioria das calculadoras te pergunta "quanto você vai investir" e mostra "quanto vai ter". Esta faz o caminho inverso: você define sua meta (R$ 500 mil, R$ 1 milhão, entrada de imóvel) e o prazo, e a calculadora descobre exatamente quanto precisa aportar todo mês para chegar lá.</p>
+        <p>O cálculo usa a fórmula de anuidade dos juros compostos invertida, considerando seu patrimônio atual, a taxa de retorno esperada e, opcionalmente, o ajuste dos aportes pela inflação para preservar o poder de compra ao longo do tempo.</p>
+      </div>
+    </CalcSplit>
+
+    <CalcBand tone="white" title-tag="h3" title="Por que Calcular Quanto Investir Faz Diferença">
+      <div class="qi__tiles">
+        <div v-for="c in whyCards" :key="c.title" class="qi__tile">
           <h4 class="qi__h4 qi__h4--accent">{{ c.title }}</h4>
           <p class="qi__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="qi__h2 qi__mt">Educação Financeira Aplicada</h2>
-      <p class="qi__p">
-        Educação financeira é o ponto de partida do planejamento financeiro pessoal. Antes de saber quanto investir, é preciso entender 3 coisas: orçamento (regra 50/30/20 ou método dos 4 envelopes), reserva de emergência (6-12 meses de despesas em renda fixa líquida) e perfil de risco (conservador, moderado, arrojado). Sem esses três alicerces, qualquer aporte vira aposta. Com eles, o aporte vira plano e a meta vira rotina.
-      </p>
+    <CalcSplit tone="cream">
+      <template #title>Educação Financeira Aplicada</template>
+      <div class="qi__prose">
+        <p>Educação financeira é o ponto de partida do planejamento financeiro pessoal. Antes de saber quanto investir, é preciso entender 3 coisas: orçamento (regra 50/30/20 ou método dos 4 envelopes), reserva de emergência (6-12 meses de despesas em renda fixa líquida) e perfil de risco (conservador, moderado, arrojado). Sem esses três alicerces, qualquer aporte vira aposta. Com eles, o aporte vira plano e a meta vira rotina.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="qi__h2 qi__mt">Reserva de Emergência: Antes de Tudo</h2>
-      <p class="qi__p">
-        Antes de aportar em metas de longo prazo, monte a reserva de emergência. Ela é o colchão financeiro que protege seu plano de imprevistos (desemprego, problema de saúde, conserto urgente) e impede que você venda investimentos de longo prazo em momentos ruins, cristalizando perdas.
-      </p>
-      <ul class="qi__list">
+    <CalcSplit tone="white">
+      <template #title>Reserva de Emergência: Antes de Tudo</template>
+      <template #dek>
+        <p>Antes de aportar em metas de longo prazo, monte a reserva de emergência. Ela é o colchão financeiro que protege seu plano de imprevistos (desemprego, problema de saúde, conserto urgente) e impede que você venda investimentos de longo prazo em momentos ruins, cristalizando perdas.</p>
+      </template>
+      <ul class="qi__reserve">
         <li v-for="it in reserveItems" :key="it.strong"><strong>{{ it.strong }}</strong>{{ it.text }}</li>
       </ul>
+    </CalcSplit>
 
-      <h2 class="qi__h2 qi__mt">Onde Investir o Aporte Mensal</h2>
-      <p class="qi__p">
-        Calcular o aporte é metade do trabalho. A outra metade é decidir onde alocar o dinheiro todo mês. A escolha depende do seu perfil de risco e do horizonte da meta. Veja a sugestão de carteira por perfil:
-      </p>
-      <div class="qi__cards qi__cards--three">
-        <div v-for="c in profileCards" :key="c.title" class="qi__card">
+    <CalcBand tone="cream" title="Onde Investir o Aporte Mensal">
+      <template #dek>
+        <p>Calcular o aporte é metade do trabalho. A outra metade é decidir onde alocar o dinheiro todo mês. A escolha depende do seu perfil de risco e do horizonte da meta. Veja a sugestão de carteira por perfil:</p>
+      </template>
+      <div class="qi__tiles">
+        <div v-for="c in profileCards" :key="c.title" class="qi__tile">
           <h4 class="qi__h4 qi__h4--accent">{{ c.title }}</h4>
           <p class="qi__card-p">{{ c.body }}</p>
           <p class="qi__card-note">{{ c.note }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="qi__h2 qi__mt">Comparar CDB e Tesouro Direto</h2>
-      <p class="qi__p">
-        As duas alternativas mais usadas pra renda fixa no Brasil são Tesouro Direto (títulos do governo) e CDB (Certificado de Depósito Bancário emitido por bancos). Veja as diferenças que importam pra sua decisão:
-      </p>
-      <div class="qi__table-wrap">
-        <table class="qi__table">
-          <thead>
-            <tr><th>Critério</th><th>Tesouro Direto</th><th>CDB</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in cdbTesouroRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="white" title="Comparar CDB e Tesouro Direto">
+      <template #dek>
+        <p>As duas alternativas mais usadas pra renda fixa no Brasil são Tesouro Direto (títulos do governo) e CDB (Certificado de Depósito Bancário emitido por bancos). Veja as diferenças que importam pra sua decisão:</p>
+      </template>
+      <div class="qi__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Critério', 'Tesouro Direto', 'CDB']"
+          :rows="cdbTesouroRows"
+          note="Conclusão prática: pra reserva de emergência, Tesouro Selic costuma ser a opção mais simples e barata. Pra prazos mais longos, CDB de bancões médios pode pagar 110-120% do CDI, batendo o Tesouro Selic mesmo descontando o IR. Diversificar entre os dois faz sentido em carteiras maiores, e LCI/LCA podem complementar pra aportes específicos por serem isentas de IR pra pessoa física."
+        />
       </div>
-      <p class="qi__small">
-        Conclusão prática: pra reserva de emergência, Tesouro Selic costuma ser a opção mais simples e barata. Pra prazos mais longos, CDB de bancões médios pode pagar 110-120% do CDI, batendo o Tesouro Selic mesmo descontando o IR. Diversificar entre os dois faz sentido em carteiras maiores, e LCI/LCA podem complementar pra aportes específicos por serem isentas de IR pra pessoa física.
-      </p>
+    </CalcBand>
 
-      <h2 class="qi__h2 qi__mt">Fórmula do Aporte Mensal Necessário</h2>
-      <p class="qi__p">
-        A matemática por trás do cálculo é a fórmula de anuidade dos juros compostos invertida para isolar o aporte (PMT):
-      </p>
-      <div class="qi__formula-wrap">
-        <CalcFormulaCard
-          :terms="[
-            { sym: 'PMT', desc: 'Aporte mensal necessário' },
-            { sym: 'FV', desc: 'Valor futuro (sua meta)' },
-            { sym: 'PV', desc: 'Valor presente (patrimônio atual)' },
-            { sym: 'i', desc: 'Taxa mensal de retorno (taxa anual ÷ 12)' },
-            { sym: 'n', desc: 'Número de meses (anos × 12)' },
-          ]"
-        >PMT = (FV − PV × (1 + i)ⁿ) ÷ [((1 + i)ⁿ − 1) ÷ i]</CalcFormulaCard>
+    <CalcSplit tone="cream">
+      <template #title>Fórmula do Aporte Mensal Necessário</template>
+      <template #dek>
+        <p>A matemática por trás do cálculo é a fórmula de anuidade dos juros compostos invertida para isolar o aporte (PMT):</p>
+      </template>
+      <CalcFormulaCard
+        tone="white"
+        :terms="[
+          { sym: 'PMT', desc: 'Aporte mensal necessário' },
+          { sym: 'FV', desc: 'Valor futuro (sua meta)' },
+          { sym: 'PV', desc: 'Valor presente (patrimônio atual)' },
+          { sym: 'i', desc: 'Taxa mensal de retorno (taxa anual ÷ 12)' },
+          { sym: 'n', desc: 'Número de meses (anos × 12)' },
+        ]"
+      >PMT = (FV − PV × (1 + i)ⁿ) ÷ [((1 + i)ⁿ − 1) ÷ i]</CalcFormulaCard>
+    </CalcSplit>
+
+    <CalcBand tone="white" title="Tabela de Aporte Mensal por Meta e Prazo (Taxa 10% a.a.)">
+      <template #dek>
+        <p>A referência rápida para metas comuns considerando 10% a.a. de retorno (próximo da média histórica do CDI somado a uma fatia de bolsa):</p>
+      </template>
+      <div class="qi__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Meta', '5 anos', '10 anos', '15 anos', '20 anos']"
+          :rows="goalTermRows"
+          :accent-col="1"
+          note="Note como dobrar o prazo reduz o aporte em mais de 50%. Esticar de 10 para 20 anos para a meta de R$ 500 mil reduz o aporte de R$ 2.412 para R$ 661, uma economia de quase R$ 1.800/mês."
+        />
       </div>
+    </CalcBand>
 
-      <h2 class="qi__h2 qi__mt">Tabela de Aporte Mensal por Meta e Prazo (Taxa 10% a.a.)</h2>
-      <p class="qi__p">
-        A referência rápida para metas comuns considerando 10% a.a. de retorno (próximo da média histórica do CDI somado a uma fatia de bolsa):
-      </p>
-      <div class="qi__table-wrap">
-        <table class="qi__table">
-          <thead>
-            <tr><th>Meta</th><th>5 anos</th><th>10 anos</th><th>15 anos</th><th>20 anos</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in goalTermRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td class="qi__td--accent">{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td><td>{{ r[4] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="cream" title="Quanto Investir para Cada Tipo de Meta">
+      <div class="qi__meta-grid">
+        <div class="qi__meta-card">
+          <h3 class="qi__meta-title">Reserva de Emergência</h3>
+          <p class="qi__meta-p">Meta: 3 a 12 meses de despesas. Para alguém com R$ 5 mil de gasto mensal, a reserva ideal é R$ 30 mil a R$ 60 mil. Por ser dinheiro de curto prazo, a calculadora costuma indicar aportes mais agressivos (R$ 800 a R$ 1.500/mês) em horizonte de 1 a 2 anos, em CDB de liquidez diária ou Tesouro Selic.</p>
+        </div>
+        <div class="qi__meta-card">
+          <h3 class="qi__meta-title">Entrada de Imóvel</h3>
+          <p class="qi__meta-p">Meta típica: R$ 80 mil a R$ 200 mil em 3 a 5 anos. A 10% a.a., R$ 100 mil em 3 anos exigem cerca de R$ 2.400/mês. Em 5 anos, cai para R$ 1.288/mês. Se você não tem pressa, esticar o prazo em 2 anos quase dobra o tempo até a chave, mas reduz drasticamente o sacrifício mensal.</p>
+        </div>
+        <div class="qi__meta-card">
+          <h3 class="qi__meta-title">Independência Financeira</h3>
+          <p class="qi__meta-p">Meta: 25× a despesa anual (regra dos 4%). Para uma pessoa que gasta R$ 8 mil/mês (R$ 96 mil/ano), o número mágico é R$ 2,4 milhões. Em 25 anos com 10% a.a., isso exige R$ 1.819/mês de aporte. Em 30 anos, cai para R$ 1.063/mês. Cada década adicionada divide o esforço quase pela metade.</p>
+        </div>
+        <div class="qi__meta-card">
+          <h3 class="qi__meta-title">Aposentadoria com R$ 800 mil</h3>
+          <p class="qi__meta-p">Meta clássica de classe média brasileira: aposentar com R$ 800 mil para complementar INSS. Em 25 anos, demanda R$ 606/mês a 10% a.a. Em 20 anos, R$ 1.058/mês. Use a <NuxtLink to="/calculadora/aposentadoria" class="qi__link qi__link--accent">calculadora de aposentadoria</NuxtLink> pra incluir INSS, expectativa de vida e regra dos 4% com mais detalhe.</p>
+        </div>
       </div>
-      <p class="qi__small">
-        Note como dobrar o prazo reduz o aporte em mais de 50%. Esticar de 10 para 20 anos para a meta de R$ 500 mil reduz o aporte de R$ 2.412 para R$ 661, uma economia de quase R$ 1.800/mês.
-      </p>
+    </CalcBand>
 
-      <h2 class="qi__h2 qi__mt">Quanto Investir para Cada Tipo de Meta</h2>
-
-      <h3 class="qi__h3">Reserva de Emergência</h3>
-      <p class="qi__p">
-        Meta: 3 a 12 meses de despesas. Para alguém com R$ 5 mil de gasto mensal, a reserva ideal é R$ 30 mil a R$ 60 mil. Por ser dinheiro de curto prazo, a calculadora costuma indicar aportes mais agressivos (R$ 800 a R$ 1.500/mês) em horizonte de 1 a 2 anos, em CDB de liquidez diária ou Tesouro Selic.
-      </p>
-
-      <h3 class="qi__h3">Entrada de Imóvel</h3>
-      <p class="qi__p">
-        Meta típica: R$ 80 mil a R$ 200 mil em 3 a 5 anos. A 10% a.a., R$ 100 mil em 3 anos exigem cerca de R$ 2.400/mês. Em 5 anos, cai para R$ 1.288/mês. Se você não tem pressa, esticar o prazo em 2 anos quase dobra o tempo até a chave, mas reduz drasticamente o sacrifício mensal.
-      </p>
-
-      <h3 class="qi__h3">Independência Financeira</h3>
-      <p class="qi__p">
-        Meta: 25× a despesa anual (regra dos 4%). Para uma pessoa que gasta R$ 8 mil/mês (R$ 96 mil/ano), o número mágico é R$ 2,4 milhões. Em 25 anos com 10% a.a., isso exige R$ 1.819/mês de aporte. Em 30 anos, cai para R$ 1.063/mês. Cada década adicionada divide o esforço quase pela metade.
-      </p>
-
-      <h3 class="qi__h3">Aposentadoria com R$ 800 mil</h3>
-      <p class="qi__p">
-        Meta clássica de classe média brasileira: aposentar com R$ 800 mil para complementar INSS. Em 25 anos, demanda R$ 606/mês a 10% a.a. Em 20 anos, R$ 1.058/mês. Use a <NuxtLink to="/calculadora/aposentadoria" class="qi__link qi__link--accent">calculadora de aposentadoria</NuxtLink> pra incluir INSS, expectativa de vida e regra dos 4% com mais detalhe.
-      </p>
-
-      <h2 class="qi__h2 qi__mt">Quanto da Renda Devo Investir?</h2>
-      <div class="qi__table-wrap">
-        <table class="qi__table">
-          <thead>
-            <tr><th>Perfil</th><th>% da renda</th><th>Renda R$ 5 mil</th><th>Patrimônio em 20 anos</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in incomeRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td class="qi__td--accent">{{ r[3] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="white" title="Quanto da Renda Devo Investir?">
+      <div class="qi__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Perfil', '% da renda', 'Renda R$ 5 mil', 'Patrimônio em 20 anos']"
+          :rows="incomeRows"
+          :accent-col="3"
+        />
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="qi__band qi__band--cream">
-      <h2 class="qi__h2 qi__h2--center">Como Usar a Calculadora de Aporte Mensal</h2>
-      <div class="qi__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar a Calculadora de Aporte Mensal">
+      <div class="qi__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
 
     <!-- ============ Quanto investir por idade (texto verbatim) ============ -->
-    <section class="qi__band qi__band--white">
-      <h2 class="qi__h2">Quanto Investir por Idade</h2>
-      <p class="qi__p">
-        O aporte ideal varia ao longo da vida. Quanto antes começar, menor o esforço mensal exigido pra alcançar metas relevantes. Veja a referência por faixa etária:
-      </p>
-      <div class="qi__table-wrap">
-        <table class="qi__table">
-          <thead>
-            <tr><th>Idade</th><th>Aporte Sugerido</th><th>% da Renda</th><th>Meta Realista</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in ageRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td class="qi__td--accent">{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="white" title="Quanto Investir por Idade">
+      <template #dek>
+        <p>O aporte ideal varia ao longo da vida. Quanto antes começar, menor o esforço mensal exigido pra alcançar metas relevantes. Veja a referência por faixa etária:</p>
+      </template>
+      <div class="qi__band-body">
+        <CalcTableCard
+          tone="cream"
+          :columns="['Idade', 'Aporte Sugerido', '% da Renda', 'Meta Realista']"
+          :rows="ageRows"
+          :accent-col="1"
+          note="O princípio é simples: quem começa cedo precisa investir menos por mês porque os juros compostos trabalham por mais tempo. Dos 20 aos 35 anos o foco é construir hábito e reserva. Dos 35 aos 55 é a década de maior acúmulo, quando renda profissional costuma estar no pico. Acima dos 56, prioridade muda pra preservação do patrimônio e geração de renda recorrente, reduzindo gradualmente a renda variável."
+        />
       </div>
-      <p class="qi__small">
-        O princípio é simples: quem começa cedo precisa investir menos por mês porque os juros compostos trabalham por mais tempo. Dos 20 aos 35 anos o foco é construir hábito e reserva. Dos 35 aos 55 é a década de maior acúmulo, quando renda profissional costuma estar no pico. Acima dos 56, prioridade muda pra preservação do patrimônio e geração de renda recorrente, reduzindo gradualmente a renda variável.
-      </p>
-    </section>
+    </CalcBand>
 
-    <!-- ============ FAQ (design 2 colunas, 15 perguntas verbatim) ============ -->
-    <section class="qi__band qi__band--cream">
-      <div class="qi__faq">
-        <div class="qi__faq-left">
-          <h2 class="qi__h2">Perguntas Frequentes sobre Aporte Mensal</h2>
-          <NuxtLink to="/busca" class="qi__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="qi__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
-      </div>
-    </section>
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes sobre Aporte Mensal</template>
+      <template #left>
+        <NuxtLink to="/busca" class="qi__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <section class="qi__band qi__band--white">
-      <h2 class="qi__h2">Dicas para Cumprir o Aporte Mensal Calculado</h2>
-      <div class="qi__cards qi__cards--two">
-        <div v-for="c in tipCards" :key="c.title" class="qi__card">
+    <CalcBand tone="white" title="Dicas para Cumprir o Aporte Mensal Calculado">
+      <div class="qi__tiles">
+        <div v-for="c in tipCards" :key="c.title" class="qi__tile">
           <h4 class="qi__h4 qi__h4--accent">{{ c.title }}</h4>
           <p class="qi__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
     <!-- ============ Rankings + outras calculadoras + E-E-A-T + CTA ============ -->
-    <section class="qi__band qi__band--cream">
-      <h2 class="qi__h2">Rankings Relacionados</h2>
-      <p class="qi__p qi__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="qi__cards qi__cards--two qi__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="qi__card qi__card--link">
-          <h3 class="qi__h3 qi__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="cream" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="qi__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="qi__card-link">
+          <h3 class="qi__card-link-title">{{ r.title }}</h3>
           <p class="qi__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="qi__h2 qi__mt">Outras Calculadoras</h2>
-      <div class="qi__cards qi__cards--two qi__cards--links">
-        <NuxtLink to="/calculadora/juros-compostos" class="qi__card qi__card--link">
-          <h3 class="qi__h3 qi__h3--card">Juros Compostos</h3>
+    <CalcBand tone="cream" title="Outras Calculadoras">
+      <div class="qi__grid-cards">
+        <NuxtLink to="/calculadora/juros-compostos" class="qi__card-link">
+          <h3 class="qi__card-link-title">Juros Compostos</h3>
           <p class="qi__card-p">Simule quanto vai ter no futuro</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/aposentadoria" class="qi__card qi__card--link">
-          <h3 class="qi__h3 qi__h3--card">Aposentadoria</h3>
+        <NuxtLink to="/calculadora/aposentadoria" class="qi__card-link">
+          <h3 class="qi__card-link-title">Aposentadoria</h3>
           <p class="qi__card-p">Planeje sua aposentadoria com regra dos 4%</p>
         </NuxtLink>
       </div>
 
       <aside class="qi__eeat">
-        <p class="qi__p">
-          Metodologia revisada pela equipe de análise da Redentia
-        </p>
-        <p class="qi__p">
+        <p class="qi__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="qi__eeat-p">
           Cálculos baseados na fórmula de anuidade dos juros compostos invertida (PMT = (FV − PV(1+i)ⁿ) ÷ [((1+i)ⁿ − 1)÷i]) e em médias históricas do mercado brasileiro (CDI, Ibovespa, IPCA). Resultados assumem aportes mensais constantes e capitalização mensal dos rendimentos.
         </p>
-        <p class="qi__small">
+        <p class="qi__eeat-small">
           Fontes: <a href="https://www.bcb.gov.br" target="_blank" rel="noopener nofollow" class="qi__link">Banco Central do Brasil</a>,
           <a href="https://www.b3.com.br" target="_blank" rel="noopener nofollow" class="qi__link">B3 (Brasil, Bolsa, Balcão)</a>,
           <a href="https://www.ibge.gov.br" target="_blank" rel="noopener nofollow" class="qi__link">IBGE</a>.
@@ -493,7 +471,7 @@ usePageSeo({
           <NuxtLink to="/calculadoras" class="qi__pill qi__pill--outline">Ver mais calculadoras</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -531,39 +509,23 @@ usePageSeo({
 .qi__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 .qi__chip-dot--positive { background: var(--nu-green); }
 
-/* ——— bandas ——— */
-.qi__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.qi__band--white { background: var(--nu-white); }
-.qi__band--cream { background: var(--nu-cream); }
-.qi__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.qi__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.qi__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.qi__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.qi__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada ——— */
 .qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .qi__h4--accent { color: var(--nu-blue); }
-.qi__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.qi__p--dek { color: var(--nu-gray-2); }
-.qi__small { margin: 12px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; max-width: 840px; }
 .qi__link { text-decoration: underline; }
 .qi__link:hover { color: var(--nu-blue); }
 .qi__link--accent { color: var(--nu-blue); font-weight: 700; }
 .qi__link--accent:hover { color: var(--nu-blue-hover); }
-.qi__list {
-  margin: 16px 0 0; padding-left: 20px; color: var(--nu-gray-3);
-  font-size: 15px; font-weight: 500; line-height: 1.7; max-width: 840px;
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.qi__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
 }
-.qi__list li { margin-top: 8px; }
-.qi__list strong { color: var(--nu-ink); font-weight: 800; }
+.qi__prose p:last-child { margin-bottom: 0; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.qi__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— cenários populares ——— */
 .qi__scenarios {
@@ -579,54 +541,54 @@ usePageSeo({
 .qi__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .qi__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.qi__cards {
+/* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
+.qi__tiles {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.qi__cards--two { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
-.qi__cards--three { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
-.qi__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.qi__band--cream .qi__card { background: var(--nu-white); }
-.qi__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.qi__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.qi__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.qi__card .qi__card-p { margin-top: 6px; }
+.qi__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+:global(.cbd--cream) .qi__tile { background: var(--nu-white); }
+.qi__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .qi__card-note { margin: 10px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— fórmula ——— */
-.qi__formula-wrap { max-width: 720px; margin-top: clamp(18px, 2.5vw, 26px); }
-
-/* ——— tabelas ——— */
-.qi__table-wrap {
-  overflow-x: auto; background: var(--nu-cream);
-  border-radius: var(--nu-r-panel); margin-top: clamp(20px, 3vw, 28px);
-  max-width: 980px;
+/* ——— reserva de emergência (card creme com hairlines na banda branca) ——— */
+.qi__reserve {
+  background: var(--nu-cream); border-radius: var(--nu-r-panel);
+  padding: 26px 28px; margin: 0; list-style: none;
 }
-.qi__band--cream .qi__table-wrap { background: var(--nu-white); }
-.qi__table { width: 100%; border-collapse: collapse; min-width: 560px; }
-.qi__table th {
-  text-align: left; padding: 14px 18px;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
-  letter-spacing: .8px; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
+.qi__reserve li {
+  padding: 12px 0; border-top: 1.5px solid var(--nu-cream-line-2);
+  color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.7;
 }
-.qi__table td {
-  padding: 13px 18px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
+.qi__reserve li:first-child { border-top: none; padding-top: 0; }
+.qi__reserve li:last-child { padding-bottom: 0; }
+.qi__reserve strong { color: var(--nu-ink); font-weight: 800; }
+
+/* ——— metas por tipo (cards brancos na banda creme, família jc__ex-*) ——— */
+.qi__meta-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.qi__table tbody tr:last-child td { border-bottom: none; }
-.qi__td--accent { color: var(--nu-blue); font-weight: 800; }
+.qi__meta-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
+.qi__meta-title { margin: 0 0 10px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.qi__meta-p { margin: 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.65; }
 
-/* ——— steps ——— */
-.qi__steps { margin-top: clamp(30px, 4vw, 48px); }
-
-/* ——— FAQ 2 colunas (design) ——— */
-.qi__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.qi__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.qi__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.qi__faq-left .qi__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.qi__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— cards-link (rankings / outras calculadoras) ——— */
+.qi__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
+}
+.qi__card-link {
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+.qi__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.qi__card-link .qi__card-p { margin: 0; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .qi__pill {
@@ -637,13 +599,15 @@ usePageSeo({
 .qi__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .qi__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); margin-top: clamp(44px, 6vw, 72px); max-width: 980px;
+  padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.qi__eeat .qi__p:first-child { margin-top: 0; font-weight: 700; color: var(--nu-ink); font-size: 15.5px; }
-.qi__eeat .qi__p { font-size: 14.5px; }
+.qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
+.qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
+.qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
 .qi__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .qi__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .qi__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }

@@ -261,6 +261,9 @@ const relatedScenarios = scenario.related
   })
   .filter((x): x is { slug: string; h1: string; preview: string } => !!x)
 
+// blocos educacionais em bandas split alternadas (1º junto do eduH2)
+const [firstEduBlock, ...restEduBlocks] = scenario.eduBlocks
+
 const seed = {
   age: scenario.inputs.age,
   retire: scenario.inputs.retire,
@@ -333,13 +336,12 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
       <template #title>Aposentadoria.</template>
     </CalcRetirementSection>
 
-    <!-- ============ Outros cenários populares (cross-link) ============ -->
-    <section class="aps__band aps__band--cream">
-      <h2 class="aps__h2">Outros cenários populares</h2>
-      <p class="aps__p aps__p--dek">
-        Compare planos de aposentadoria diferentes, basta clicar e a calculadora carrega já preenchida.
-      </p>
-      <div class="aps__related">
+    <!-- ============ Outros cenários populares (cross-link, grid de cards-link) ============ -->
+    <CalcBand tone="cream" title="Outros cenários populares">
+      <template #dek>
+        <p>Compare planos de aposentadoria diferentes, basta clicar e a calculadora carrega já preenchida.</p>
+      </template>
+      <div class="aps__grid-cards">
         <NuxtLink
           v-for="rel in relatedScenarios"
           :key="rel.slug"
@@ -350,31 +352,43 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
           <span class="aps__rel-sub">{{ rel.preview }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional do cenário (verbatim) ============ -->
-    <section class="aps__band aps__band--white">
-      <h2 class="aps__h2">{{ scenario.eduH2 }}</h2>
-      <div v-for="block in scenario.eduBlocks" :key="block.h3" class="aps__block">
-        <h3 class="aps__h3">{{ block.h3 }}</h3>
-        <p v-for="(p, i) in block.paragraphs" :key="i" class="aps__p">{{ p }}</p>
-      </div>
-    </section>
+    <!-- ============ Conteúdo educacional do cenário (verbatim, bandas split alternando) ============ -->
+    <CalcSplit tone="white">
+      <template #title>{{ scenario.eduH2 }}</template>
+      <template v-if="firstEduBlock">
+        <h3 class="aps__sub">{{ firstEduBlock.h3 }}</h3>
+        <div class="aps__prose">
+          <p v-for="(p, i) in firstEduBlock.paragraphs" :key="i">{{ p }}</p>
+        </div>
+      </template>
+    </CalcSplit>
 
-    <!-- ============ FAQ do cenário (verbatim, accordion do design) ============ -->
-    <section class="aps__band aps__band--cream">
-      <div class="aps__faq">
-        <div class="aps__faq-left">
-          <h2 class="aps__h2">Perguntas frequentes sobre este cenário</h2>
-        </div>
-        <div class="aps__faq-right">
-          <NuFaqAccordion :key="slug" :items="scenario.faq" />
-        </div>
+    <CalcSplit
+      v-for="(block, i) in restEduBlocks"
+      :key="block.h3"
+      :tone="i % 2 === 0 ? 'white' : 'cream'"
+      title-tag="h3"
+      size="sm"
+    >
+      <template #title>{{ block.h3 }}</template>
+      <div class="aps__prose">
+        <p v-for="(p, j) in block.paragraphs" :key="j">{{ p }}</p>
       </div>
-    </section>
+    </CalcSplit>
+
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas frequentes sobre este cenário</template>
+      <template #left>
+        <NuxtLink to="/busca" class="aps__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :key="slug" :items="scenario.faq" surface="white" />
+    </CalcSplit>
 
     <!-- ============ CTA (texto verbatim) ============ -->
-    <section class="aps__band aps__band--white">
+    <CalcBand tone="white">
       <div class="aps__cta">
         <h2 class="aps__cta-title">Acompanhe seu plano de aposentadoria</h2>
         <p class="aps__cta-sub">Cadastre-se na Redentia e monitore o progresso rumo à independência financeira em tempo real.</p>
@@ -383,7 +397,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
           <NuxtLink to="/calculadora/aposentadoria" class="aps__pill aps__pill--outline">Voltar para a calculadora</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -420,58 +434,49 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
 }
 .aps__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
-/* ——— bandas ——— */
-.aps__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.aps__band--white { background: var(--nu-white); }
-.aps__band--cream { background: var(--nu-cream); }
-.aps__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.aps__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
 }
-.aps__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.aps__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.aps__p--dek { color: var(--nu-gray-2); }
-.aps__block { margin-top: 6px; }
+.aps__prose p:last-child { margin-bottom: 0; }
 
-/* ——— cenários relacionados ——— */
-.aps__related {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 12px; margin-top: clamp(24px, 3.5vw, 36px);
+/* ——— sub-heading dentro da coluna direita do split ——— */
+.aps__sub { margin: 0 0 14px; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ——— cenários relacionados (grid de cards-link) ——— */
+.aps__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
 }
 .aps__rel-card {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 20px 22px;
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
   display: flex; flex-direction: column; gap: 6px;
   transition: transform .18s, box-shadow .2s;
 }
 .aps__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.aps__rel-title { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
-.aps__rel-sub { color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.5; }
+.aps__rel-title { color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; line-height: 1.3; }
+.aps__rel-sub { color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 
-/* ——— FAQ ——— */
-.aps__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.aps__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.aps__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.aps__faq-left .aps__h2 { font-size: clamp(30px, 3.8vw, 48px); letter-spacing: -0.04em; line-height: 1.06; }
-.aps__faq-right :deep(.nfa__item) { background: var(--nu-white); }
-
-/* ——— CTA ——— */
+/* ——— pills / CTA ——— */
+.aps__pill {
+  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  margin-top: 30px; transition: background .2s, color .2s;
+}
+.aps__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .aps__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center;
+  max-width: 1080px; margin: 0 auto;
 }
 .aps__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .aps__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
 .aps__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.aps__pill {
-  display: inline-flex; align-items: center; border-radius: var(--nu-r-pill);
-  padding: 14px 26px; font-size: 15.5px; font-weight: 700; transition: background .2s, color .2s;
-}
+.aps__cta .aps__pill { margin-top: 0; }
 .aps__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
 .aps__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.aps__pill--outline { border: 2px solid var(--nu-white-35); color: var(--nu-white); }
+.aps__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
 .aps__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

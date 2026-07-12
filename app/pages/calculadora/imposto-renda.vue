@@ -369,13 +369,13 @@ usePageSeo({
         </div>
 
         <div class="ir__gap">
-          <CalcSliderField v-model="totalSales" label="Total de Vendas no Mês" :min="0" :max="200000" :step="500" :value-text="salesTxt" :presets="salesPresets" />
+          <CalcSliderField v-model="totalSales" label="Total de Vendas no Mês (R$)" :min="0" :max="200000" :step="500" :value-text="salesTxt" :presets="salesPresets" />
         </div>
         <div class="ir__gap">
-          <CalcSliderField v-model="profitLoss" label="Lucro ou Prejuízo" :min="-20000" :max="50000" :step="250" :value-text="profitTxt" />
+          <CalcSliderField v-model="profitLoss" label="Lucro ou Prejuízo (R$)" :min="-20000" :max="50000" :step="250" :value-text="profitTxt" />
         </div>
         <div v-if="operationType === 'swing'" class="ir__gap">
-          <CalcSliderField v-model="accumulatedLoss" label="Prejuízos Acumulados" :min="0" :max="30000" :step="250" :value-text="accLossTxt" />
+          <CalcSliderField v-model="accumulatedLoss" label="Prejuízos Acumulados (R$)" :min="0" :max="30000" :step="250" :value-text="accLossTxt" />
         </div>
       </template>
       <template #result>
@@ -458,34 +458,36 @@ usePageSeo({
     </CalcShell>
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="ir__band ir__band--cream">
-      <h2 class="ir__h2">Cenários populares de IR sobre ações</h2>
-      <p class="ir__p ir__p--dek">
-        Clique em um cenário típico do investidor brasileiro e a calculadora carrega já preenchida com vendas, lucro e tipo de operação.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de IR sobre ações">
+      <template #dek>
+        <p>Clique em um cenário típico do investidor brasileiro e a calculadora carrega já preenchida com vendas, lucro e tipo de operação.</p>
+      </template>
       <div class="ir__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label" :to="s.to" class="ir__scenario">
           <span class="ir__scenario-label">{{ s.label }}</span>
           <span class="ir__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="ir__band ir__band--white">
-      <h2 class="ir__h2">Simulador de IR sobre ações grátis e online</h2>
-      <p class="ir__p">
-        Use a calculadora acima para simular o imposto de renda devido em swing trade e day trade em segundos. Ideal pra apurar o DARF do mês antes do vencimento.
-      </p>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Simulador de IR sobre ações grátis e online</template>
+      <div class="ir__prose">
+        <p>Use a calculadora acima para simular o imposto de renda devido em swing trade e day trade em segundos. Ideal pra apurar o DARF do mês antes do vencimento.</p>
+      </div>
+    </CalcSplit>
 
-      <h2 class="ir__h2 ir__mt">Como Funciona o IR sobre Ações no Brasil</h2>
-      <p class="ir__p">
-        No Brasil, o Imposto de Renda sobre operações com ações segue regras específicas que todo investidor precisa conhecer. O não pagamento resulta em multas pesadas e problemas com a Receita Federal.
-      </p>
-
-      <h3 class="ir__h3">Regras Principais</h3>
-      <div class="ir__cards ir__cards--two">
-        <div v-for="c in ruleCards" :key="c.title" class="ir__card">
+    <CalcSplit tone="cream">
+      <template #title>Como Funciona o IR sobre Ações no Brasil</template>
+      <template #dek>
+        <p>No Brasil, o Imposto de Renda sobre operações com ações segue regras específicas que todo investidor precisa conhecer. O não pagamento resulta em multas pesadas e problemas com a Receita Federal.</p>
+      </template>
+      <template #left>
+        <h3 class="ir__sub">Regras Principais</h3>
+      </template>
+      <div class="ir__tiles ir__tiles--two">
+        <div v-for="c in ruleCards" :key="c.title" class="ir__tile">
           <h4 class="ir__h4 ir__h4--accent">{{ c.title }}</h4>
           <ul class="ir__list">
             <!-- eslint-disable-next-line vue/no-v-html — conteúdo local confiável (strong) -->
@@ -493,175 +495,189 @@ usePageSeo({
           </ul>
         </div>
       </div>
+    </CalcSplit>
 
-      <h2 class="ir__h2 ir__mt">Tributação de Dividendos: Mudanças com a Nova Lei (PL 1.087/2025)</h2>
-      <p class="ir__p">
-        A grande dúvida do investidor brasileiro em 2026 é a tributação de dividendos. Vale a pena entender o que vale hoje e o que pode mudar nos próximos anos pra organizar a estratégia da carteira.
-      </p>
-      <h3 class="ir__h3">Status Atual (vigente em 2026)</h3>
-      <p class="ir__p">
-        Dividendos de ações e FIIs continuam isentos de IR para pessoa física. JCP (Juros sobre Capital Próprio) tem 15% retidos na fonte, antes do crédito cair na conta. Essa estrutura está em vigor desde 1996 (Lei 9.249/1995) e é um dos atrativos históricos da bolsa brasileira para o investidor pessoa física.
-      </p>
-      <h3 class="ir__h3">O que o PL 1.087/2025 Propõe</h3>
-      <p class="ir__p">
-        O Projeto de Lei 1.087/2025 propõe a retenção de 10% na fonte sobre dividendos pagos a pessoa física acima de R$ 50.000 por mês. Investidores que recebem menos do que esse limite mensal por empresa pagadora não seriam afetados na prática. O investidor médio brasileiro, que recebe poucos milhares de reais em dividendos por mês, não entra na regra.
-      </p>
-      <h3 class="ir__h3">Status Legislativo</h3>
-      <p class="ir__p">
-        O PL foi aprovado na Câmara dos Deputados em 2025 e segue em apreciação no Senado em 2026. Se aprovado e sancionado neste ano, a vigência mais provável é janeiro de 2027 (pelo princípio da anterioridade nonagesimal e anual aplicável a tributos federais sobre a renda).
-      </p>
-      <h3 class="ir__h3">Estratégia Possível</h3>
-      <p class="ir__p">
-        FIIs continuam isentos no texto atual do PL. Concentrar parte da carteira em FIIs que pagam dividendos mensais e em empresas com bom payout via JCP (que já tem retenção, mas a empresa abate como despesa dedutível e paga menos IR corporativo) pode mitigar o impacto futuro caso a regra entre em vigor. Importante: o cenário ainda está em construção e qualquer decisão tributária deve ser revisada conforme a tramitação avança.
-      </p>
-      <p class="ir__small">
-        Aviso: a situação está em evolução. Acompanhe a tramitação no Senado e a sanção presidencial antes de tomar decisões definitivas. Esta calculadora trabalha com as regras vigentes em 2026.
-      </p>
-    </section>
-
-    <!-- ============ Passo a passo do DARF (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="ir__band ir__band--cream">
-      <h2 class="ir__h2 ir__h2--center">Passo a Passo para Pagar o DARF</h2>
-      <div class="ir__steps"><CalcSteps :steps="darfSteps" /></div>
-    </section>
-
-    <!-- ============ Declaração IRPF + FIIs + Cripto (texto verbatim) ============ -->
-    <section class="ir__band ir__band--white">
-      <h2 class="ir__h2">Como Declarar Suas Ações no IRPF 2026</h2>
-      <p class="ir__p">
-        Pagar o DARF mensal não substitui a declaração anual no IRPF. A Receita Federal exige a declaração completa de operações em renda variável, mesmo as isentas, e cruza a informação com a e-Financeira das corretoras. Veja o que precisa ser feito:
-      </p>
-      <h3 class="ir__h3">Quando Você é Obrigado a Declarar</h3>
-      <ul class="ir__list ir__list--loose">
-        <li>Vendas totais em ações superiores a R$ 40.000 no ano (mesmo que isentas mensalmente).</li>
-        <li>Qualquer operação com IR devido (swing trade tributado ou day trade).</li>
-        <li>Recebimento de dividendos acima de R$ 200/mês ou demais critérios gerais do IRPF.</li>
-        <li>Saldo de ativos em renda variável superior a R$ 1.000 em 31/12.</li>
-      </ul>
-      <h3 class="ir__h3">Onde Declarar Cada Item</h3>
-      <ul class="ir__list ir__list--loose">
-        <li><strong>Bens e Direitos (código 31):</strong> ações ordinárias e preferenciais detidas em 31/12.</li>
-        <li><strong>Bens e Direitos (código 73):</strong> cotas de FIIs em 31/12.</li>
-        <li><strong>Rendimentos Isentos e Não Tributáveis (linha 9):</strong> dividendos recebidos.</li>
-        <li><strong>Rendimentos Sujeitos à Tributação Exclusiva (linha 6):</strong> JCP (Juros sobre Capital Próprio).</li>
-        <li><strong>Renda Variável (anexo):</strong> operações sujeitas a IR (lucros, prejuízos, IR pago via DARF, IR retido na fonte).</li>
-      </ul>
-      <h3 class="ir__h3">Ferramentas Oficiais</h3>
-      <ul class="ir__list ir__list--loose">
-        <li><strong>GCAP:</strong> programa da Receita Federal pra calcular ganho de capital fora da bolsa, gera arquivo que importa direto no IRPF.</li>
-        <li><strong>Sicalc Web:</strong> ferramenta oficial para gerar DARF mensal (códigos 6015 e 8523).</li>
-        <li><strong>Programa IRPF:</strong> baixe o programa do ano-base 2026 no site da Receita Federal pra preencher e transmitir a declaração.</li>
-      </ul>
-      <h3 class="ir__h3">Erros Comuns que Caem na Malha Fina</h3>
-      <ul class="ir__list ir__list--loose">
-        <li>Esquecer de declarar saldo de ações ou FIIs em 31/12 (mesmo se já constava em ano anterior).</li>
-        <li>Não somar custos de aquisição (corretagem, emolumentos), inflando o lucro tributado.</li>
-        <li>Misturar gavetas de prejuízo (swing trade, day trade, FIIs e criptomoedas têm controles separados).</li>
-        <li>Omitir dividendos sob a justificativa de serem isentos. Isenção exige declaração mesmo assim.</li>
-        <li>Declarar valor de mercado em vez de custo de aquisição em Bens e Direitos (a regra é custo de aquisição).</li>
-      </ul>
-
-      <h2 class="ir__h2 ir__mt">IR sobre FIIs (Fundos Imobiliários)</h2>
-      <p class="ir__p">
-        Fundos Imobiliários têm regime tributário próprio, diferente das ações. Saber a regra evita pagar imposto a mais ou a menos.
-      </p>
-      <h3 class="ir__h3">Dividendos Mensais</h3>
-      <p class="ir__p">
-        Os rendimentos mensais distribuídos pelos FIIs são ISENTOS de IR para pessoa física. Para a isenção valer, o FII precisa atender três condições: cota negociada em bolsa (ou mercado de balcão organizado), ter pelo menos 50 cotistas e o investidor não pode deter mais de 10% do total de cotas.
-      </p>
-      <h3 class="ir__h3">Ganho de Capital na Venda</h3>
-      <p class="ir__p">
-        A alíquota é de 20% sobre o lucro da venda da cota (compra menos venda menos custos). NÃO existe a isenção dos R$ 20 mil/mês que vale para ações. Toda venda de FII com lucro paga IR de 20%, mesmo se a venda total do mês for pequena.
-      </p>
-      <h3 class="ir__h3">Compensação de Prejuízo</h3>
-      <p class="ir__p">
-        Prejuízo em FII compensa apenas lucro futuro de FII (gaveta separada de ações, ETFs e criptos). A compensação é indefinida no tempo.
-      </p>
-      <h3 class="ir__h3">Exemplo Prático</h3>
-      <p class="ir__p">
-        Você comprou 100 cotas de HGLG11 a R$ 150 (custo R$ 15.000) e vendeu por R$ 160 (R$ 16.000). Lucro bruto R$ 1.000. IR devido: 20% × R$ 1.000 = R$ 200. Pague via DARF código 6015 até o último dia útil do mês seguinte. Declare em Bens e Direitos (código 73), Renda Variável e Rendimentos Isentos (dividendos recebidos no ano).
-      </p>
-
-      <h2 class="ir__h2 ir__mt">IR sobre Criptomoedas</h2>
-      <p class="ir__p">
-        Bitcoin, Ethereum e demais criptomoedas têm regime próprio definido pela IN RFB 1.888/2019 e atualizações. Confunde porque parece ações, mas as regras divergem em pontos importantes.
-      </p>
-      <h3 class="ir__h3">Faixa de Isenção Mensal</h3>
-      <p class="ir__p">
-        Vendas de criptomoedas até R$ 35.000 por mês (somando todos os ativos) são ISENTAS de IR. Acima desse limite, todo o lucro é tributado.
-      </p>
-      <h3 class="ir__h3">Alíquotas Progressivas</h3>
-      <ul class="ir__list ir__list--loose">
-        <li>15% sobre lucro até R$ 5 milhões.</li>
-        <li>17,5% sobre lucro entre R$ 5 milhões e R$ 10 milhões.</li>
-        <li>20% sobre lucro entre R$ 10 milhões e R$ 30 milhões.</li>
-        <li>22,5% sobre lucro acima de R$ 30 milhões.</li>
-      </ul>
-      <h3 class="ir__h3">DARF e Vencimento</h3>
-      <p class="ir__p">
-        Use o código DARF 4600. Vencimento é o último dia útil do mês seguinte ao da operação tributável. Não dá pra compensar prejuízo de criptomoedas com lucro de ações nem com FIIs (cada um em sua própria gaveta).
-      </p>
-      <h3 class="ir__h3">Declaração no IRPF</h3>
-      <p class="ir__p">
-        Quem teve saldo superior a R$ 5.000 em criptomoedas em 31/12 deve declarar em Bens e Direitos com os códigos: 81 (Bitcoin), 82 (Ethereum) e 89 (demais criptoativos). As corretoras Mercado Bitcoin, Binance, Foxbit e demais geram relatórios anuais de movimentação que ajudam a preencher os campos. Quem opera há mais tempo precisa também observar a obrigação acessória mensal da IN 1.888 quando movimenta acima de R$ 30 mil em uma única exchange.
-      </p>
-    </section>
-
-    <!-- ============ FAQ (design 2 colunas, 15 perguntas verbatim) ============ -->
-    <section class="ir__band ir__band--cream">
-      <div class="ir__faq">
-        <div class="ir__faq-left">
-          <h2 class="ir__h2">Perguntas Frequentes sobre IR de Ações</h2>
-          <NuxtLink to="/busca" class="ir__pill">Perguntar à Redentia AI</NuxtLink>
+    <CalcBand tone="white" title="Tributação de Dividendos: Mudanças com a Nova Lei (PL 1.087/2025)">
+      <template #dek>
+        <p>A grande dúvida do investidor brasileiro em 2026 é a tributação de dividendos. Vale a pena entender o que vale hoje e o que pode mudar nos próximos anos pra organizar a estratégia da carteira.</p>
+      </template>
+      <div class="ir__tiles ir__tiles--duo">
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Status Atual (vigente em 2026)</h3>
+          <p class="ir__card-p">Dividendos de ações e FIIs continuam isentos de IR para pessoa física. JCP (Juros sobre Capital Próprio) tem 15% retidos na fonte, antes do crédito cair na conta. Essa estrutura está em vigor desde 1996 (Lei 9.249/1995) e é um dos atrativos históricos da bolsa brasileira para o investidor pessoa física.</p>
         </div>
-        <div class="ir__faq-right">
-          <NuFaqAccordion :items="faqItems" />
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">O que o PL 1.087/2025 Propõe</h3>
+          <p class="ir__card-p">O Projeto de Lei 1.087/2025 propõe a retenção de 10% na fonte sobre dividendos pagos a pessoa física acima de R$ 50.000 por mês. Investidores que recebem menos do que esse limite mensal por empresa pagadora não seriam afetados na prática. O investidor médio brasileiro, que recebe poucos milhares de reais em dividendos por mês, não entra na regra.</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Status Legislativo</h3>
+          <p class="ir__card-p">O PL foi aprovado na Câmara dos Deputados em 2025 e segue em apreciação no Senado em 2026. Se aprovado e sancionado neste ano, a vigência mais provável é janeiro de 2027 (pelo princípio da anterioridade nonagesimal e anual aplicável a tributos federais sobre a renda).</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Estratégia Possível</h3>
+          <p class="ir__card-p">FIIs continuam isentos no texto atual do PL. Concentrar parte da carteira em FIIs que pagam dividendos mensais e em empresas com bom payout via JCP (que já tem retenção, mas a empresa abate como despesa dedutível e paga menos IR corporativo) pode mitigar o impacto futuro caso a regra entre em vigor. Importante: o cenário ainda está em construção e qualquer decisão tributária deve ser revisada conforme a tramitação avança.</p>
         </div>
       </div>
-    </section>
+      <p class="ir__note">Aviso: a situação está em evolução. Acompanhe a tramitação no Senado e a sanção presidencial antes de tomar decisões definitivas. Esta calculadora trabalha com as regras vigentes em 2026.</p>
+    </CalcBand>
+
+    <!-- ============ Passo a passo do DARF (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Passo a Passo para Pagar o DARF">
+      <div class="ir__band-body"><CalcSteps :steps="darfSteps" /></div>
+    </CalcBand>
+
+    <!-- ============ Declaração IRPF (banda branca, tiles creme) ============ -->
+    <CalcBand tone="white" title="Como Declarar Suas Ações no IRPF 2026">
+      <template #dek>
+        <p>Pagar o DARF mensal não substitui a declaração anual no IRPF. A Receita Federal exige a declaração completa de operações em renda variável, mesmo as isentas, e cruza a informação com a e-Financeira das corretoras. Veja o que precisa ser feito:</p>
+      </template>
+      <div class="ir__tiles ir__tiles--duo">
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Quando Você é Obrigado a Declarar</h3>
+          <ul class="ir__list">
+            <li>Vendas totais em ações superiores a R$ 40.000 no ano (mesmo que isentas mensalmente).</li>
+            <li>Qualquer operação com IR devido (swing trade tributado ou day trade).</li>
+            <li>Recebimento de dividendos acima de R$ 200/mês ou demais critérios gerais do IRPF.</li>
+            <li>Saldo de ativos em renda variável superior a R$ 1.000 em 31/12.</li>
+          </ul>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Onde Declarar Cada Item</h3>
+          <ul class="ir__list">
+            <li><strong>Bens e Direitos (código 31):</strong> ações ordinárias e preferenciais detidas em 31/12.</li>
+            <li><strong>Bens e Direitos (código 73):</strong> cotas de FIIs em 31/12.</li>
+            <li><strong>Rendimentos Isentos e Não Tributáveis (linha 9):</strong> dividendos recebidos.</li>
+            <li><strong>Rendimentos Sujeitos à Tributação Exclusiva (linha 6):</strong> JCP (Juros sobre Capital Próprio).</li>
+            <li><strong>Renda Variável (anexo):</strong> operações sujeitas a IR (lucros, prejuízos, IR pago via DARF, IR retido na fonte).</li>
+          </ul>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Ferramentas Oficiais</h3>
+          <ul class="ir__list">
+            <li><strong>GCAP:</strong> programa da Receita Federal pra calcular ganho de capital fora da bolsa, gera arquivo que importa direto no IRPF.</li>
+            <li><strong>Sicalc Web:</strong> ferramenta oficial para gerar DARF mensal (códigos 6015 e 8523).</li>
+            <li><strong>Programa IRPF:</strong> baixe o programa do ano-base 2026 no site da Receita Federal pra preencher e transmitir a declaração.</li>
+          </ul>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Erros Comuns que Caem na Malha Fina</h3>
+          <ul class="ir__list">
+            <li>Esquecer de declarar saldo de ações ou FIIs em 31/12 (mesmo se já constava em ano anterior).</li>
+            <li>Não somar custos de aquisição (corretagem, emolumentos), inflando o lucro tributado.</li>
+            <li>Misturar gavetas de prejuízo (swing trade, day trade, FIIs e criptomoedas têm controles separados).</li>
+            <li>Omitir dividendos sob a justificativa de serem isentos. Isenção exige declaração mesmo assim.</li>
+            <li>Declarar valor de mercado em vez de custo de aquisição em Bens e Direitos (a regra é custo de aquisição).</li>
+          </ul>
+        </div>
+      </div>
+    </CalcBand>
+
+    <!-- ============ FIIs (banda creme, tiles brancos) ============ -->
+    <CalcBand tone="cream" title="IR sobre FIIs (Fundos Imobiliários)">
+      <template #dek>
+        <p>Fundos Imobiliários têm regime tributário próprio, diferente das ações. Saber a regra evita pagar imposto a mais ou a menos.</p>
+      </template>
+      <div class="ir__tiles ir__tiles--duo">
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Dividendos Mensais</h3>
+          <p class="ir__card-p">Os rendimentos mensais distribuídos pelos FIIs são ISENTOS de IR para pessoa física. Para a isenção valer, o FII precisa atender três condições: cota negociada em bolsa (ou mercado de balcão organizado), ter pelo menos 50 cotistas e o investidor não pode deter mais de 10% do total de cotas.</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Ganho de Capital na Venda</h3>
+          <p class="ir__card-p">A alíquota é de 20% sobre o lucro da venda da cota (compra menos venda menos custos). NÃO existe a isenção dos R$ 20 mil/mês que vale para ações. Toda venda de FII com lucro paga IR de 20%, mesmo se a venda total do mês for pequena.</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Compensação de Prejuízo</h3>
+          <p class="ir__card-p">Prejuízo em FII compensa apenas lucro futuro de FII (gaveta separada de ações, ETFs e criptos). A compensação é indefinida no tempo.</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Exemplo Prático</h3>
+          <p class="ir__card-p">Você comprou 100 cotas de HGLG11 a R$ 150 (custo R$ 15.000) e vendeu por R$ 160 (R$ 16.000). Lucro bruto R$ 1.000. IR devido: 20% × R$ 1.000 = R$ 200. Pague via DARF código 6015 até o último dia útil do mês seguinte. Declare em Bens e Direitos (código 73), Renda Variável e Rendimentos Isentos (dividendos recebidos no ano).</p>
+        </div>
+      </div>
+    </CalcBand>
+
+    <!-- ============ Criptomoedas (banda branca, tiles creme) ============ -->
+    <CalcBand tone="white" title="IR sobre Criptomoedas">
+      <template #dek>
+        <p>Bitcoin, Ethereum e demais criptomoedas têm regime próprio definido pela IN RFB 1.888/2019 e atualizações. Confunde porque parece ações, mas as regras divergem em pontos importantes.</p>
+      </template>
+      <div class="ir__tiles ir__tiles--duo">
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Faixa de Isenção Mensal</h3>
+          <p class="ir__card-p">Vendas de criptomoedas até R$ 35.000 por mês (somando todos os ativos) são ISENTAS de IR. Acima desse limite, todo o lucro é tributado.</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Alíquotas Progressivas</h3>
+          <ul class="ir__list">
+            <li>15% sobre lucro até R$ 5 milhões.</li>
+            <li>17,5% sobre lucro entre R$ 5 milhões e R$ 10 milhões.</li>
+            <li>20% sobre lucro entre R$ 10 milhões e R$ 30 milhões.</li>
+            <li>22,5% sobre lucro acima de R$ 30 milhões.</li>
+          </ul>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">DARF e Vencimento</h3>
+          <p class="ir__card-p">Use o código DARF 4600. Vencimento é o último dia útil do mês seguinte ao da operação tributável. Não dá pra compensar prejuízo de criptomoedas com lucro de ações nem com FIIs (cada um em sua própria gaveta).</p>
+        </div>
+        <div class="ir__tile">
+          <h3 class="ir__tile-title">Declaração no IRPF</h3>
+          <p class="ir__card-p">Quem teve saldo superior a R$ 5.000 em criptomoedas em 31/12 deve declarar em Bens e Direitos com os códigos: 81 (Bitcoin), 82 (Ethereum) e 89 (demais criptoativos). As corretoras Mercado Bitcoin, Binance, Foxbit e demais geram relatórios anuais de movimentação que ajudam a preencher os campos. Quem opera há mais tempo precisa também observar a obrigação acessória mensal da IN 1.888 quando movimenta acima de R$ 30 mil em uma única exchange.</p>
+        </div>
+      </div>
+    </CalcBand>
+
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes sobre IR de Ações</template>
+      <template #left>
+        <NuxtLink to="/busca" class="ir__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
     <!-- ============ Evite estes erros (texto verbatim) ============ -->
-    <section class="ir__band ir__band--white">
-      <h2 class="ir__h2">Evite Estes Erros</h2>
-      <div class="ir__cards ir__cards--two">
-        <div v-for="c in avoidCards" :key="c.title" class="ir__card ir__card--danger">
+    <CalcBand tone="white" title="Evite Estes Erros">
+      <div class="ir__tiles ir__tiles--duo">
+        <div v-for="c in avoidCards" :key="c.title" class="ir__tile ir__tile--danger">
           <h4 class="ir__h4 ir__h4--negative">{{ c.title }}</h4>
           <p class="ir__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
     <!-- ============ Rankings + outras ferramentas + E-E-A-T + CTA ============ -->
-    <section class="ir__band ir__band--cream">
-      <h2 class="ir__h2">Rankings Relacionados</h2>
-      <p class="ir__p ir__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="ir__cards ir__cards--two ir__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="ir__card ir__card--link">
-          <h3 class="ir__h3 ir__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="cream" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="ir__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="ir__card-link">
+          <h3 class="ir__card-link-title">{{ r.title }}</h3>
           <p class="ir__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="ir__h2 ir__mt">Outras Ferramentas</h2>
-      <div class="ir__cards ir__cards--two ir__cards--links">
-        <NuxtLink to="/calculadora/acoes" class="ir__card ir__card--link">
-          <h3 class="ir__h3 ir__h3--card">Simulador de Ações</h3>
+    <CalcBand tone="cream" title="Outras Ferramentas">
+      <div class="ir__grid-cards">
+        <NuxtLink to="/calculadora/acoes" class="ir__card-link">
+          <h3 class="ir__card-link-title">Simulador de Ações</h3>
           <p class="ir__card-p">Simule investimentos em ações</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/preco-teto" class="ir__card ir__card--link">
-          <h3 class="ir__h3 ir__h3--card">Preço Teto</h3>
+        <NuxtLink to="/calculadora/preco-teto" class="ir__card-link">
+          <h3 class="ir__card-link-title">Preço Teto</h3>
           <p class="ir__card-p">Descubra se ação está barata</p>
         </NuxtLink>
       </div>
 
       <aside class="ir__eeat">
-        <p class="ir__p">Conteúdo revisado pela equipe de análise da Redentia</p>
-        <p class="ir__p">
+        <p class="ir__eeat-title">Conteúdo revisado pela equipe de análise da Redentia</p>
+        <p class="ir__eeat-p">
           Cálculos baseados nas regras vigentes da Receita Federal do Brasil para tributação de ganhos em renda variável (Lei 11.033/2004 e IN RFB 1.585/2015): swing trade com alíquota de 15% e isenção de R$ 20 mil/mês em vendas, day trade com alíquota de 20% sem isenção, vencimento do DARF no último dia útil do mês subsequente.
         </p>
-        <p class="ir__small">
+        <p class="ir__eeat-small">
           Fontes: <a href="https://www.gov.br/receitafederal" target="_blank" rel="noopener nofollow" class="ir__link">Receita Federal do Brasil</a>,
           <a href="https://www.b3.com.br" target="_blank" rel="noopener nofollow" class="ir__link">B3 (Brasil, Bolsa, Balcão)</a>,
           <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm" target="_blank" rel="noopener nofollow" class="ir__link">Lei 11.033/2004</a>.
@@ -676,7 +692,7 @@ usePageSeo({
           <NuxtLink to="/calculadoras" class="ir__pill ir__pill--outline">Ver mais calculadoras</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -779,32 +795,25 @@ usePageSeo({
 .ir__info-title { margin: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }
 .ir__info-text { margin: 3px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.6; }
 
-/* ——— bandas ——— */
-.ir__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.ir__band--white { background: var(--nu-white); }
-.ir__band--cream { background: var(--nu-cream); }
-.ir__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.ir__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.ir__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.ir__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.ir__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada ——— */
 .ir__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .ir__h4--accent { color: var(--nu-blue); }
 .ir__h4--negative { color: var(--nu-red); }
-.ir__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.ir__p--dek { color: var(--nu-gray-2); }
-.ir__small { margin: 12px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; max-width: 840px; }
 .ir__link { text-decoration: underline; }
 .ir__link:hover { color: var(--nu-blue); }
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.ir__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
+}
+.ir__prose p:last-child { margin-bottom: 0; }
+
+/* ——— sub-heading dentro da coluna esquerda do split ——— */
+.ir__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.ir__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— cenários populares ——— */
 .ir__scenarios {
@@ -820,32 +829,46 @@ usePageSeo({
 .ir__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .ir__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.ir__cards {
+/* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
+.ir__tiles {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.ir__cards--two { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
-.ir__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.ir__band--cream .ir__card { background: var(--nu-white); }
-.ir__card--danger { background: var(--nu-red-tint); }
-.ir__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.ir__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ir__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.ir__card .ir__card-p { margin-top: 6px; }
+.ir__tiles--two {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  max-width: none; margin-top: 0;
+}
+.ir__tiles--duo {
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px;
+}
+.ir__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+:global(.cbd--cream) .ir__tile { background: var(--nu-white); }
+:global(.csp--cream) .ir__tile { background: var(--nu-white); }
+.ir__tile--danger { background: var(--nu-red-tint); }
+.ir__tile-title { margin: 0 0 8px; color: var(--nu-blue); font-size: 17px; font-weight: 800; letter-spacing: -.2px; }
+.ir__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .ir__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .ir__list :deep(strong), .ir__list strong { color: var(--nu-ink); font-weight: 800; }
-.ir__list--loose { margin-top: 14px; max-width: 840px; font-size: 15.5px; color: var(--nu-gray-3); }
+.ir__note {
+  margin: 22px auto 0; max-width: 680px; text-align: center;
+  color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.6;
+}
 
-/* ——— steps ——— */
-.ir__steps { margin-top: clamp(30px, 4vw, 48px); }
-
-/* ——— FAQ 2 colunas (design) ——— */
-.ir__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.ir__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.ir__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.ir__faq-left .ir__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.ir__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— cards-link (rankings / outras ferramentas) ——— */
+.ir__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
+}
+.ir__card-link {
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+.ir__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ir__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .ir__pill {
@@ -856,13 +879,15 @@ usePageSeo({
 .ir__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .ir__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); margin-top: clamp(44px, 6vw, 72px); max-width: 980px;
+  padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.ir__eeat .ir__p:first-child { margin-top: 0; font-weight: 700; color: var(--nu-ink); font-size: 15.5px; }
-.ir__eeat .ir__p { font-size: 14.5px; }
+.ir__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
+.ir__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
+.ir__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
 .ir__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .ir__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .ir__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }

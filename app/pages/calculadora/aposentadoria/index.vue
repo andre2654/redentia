@@ -252,47 +252,46 @@ usePageSeo({
     </CalcRetirementSection>
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
-    <section class="ap__band ap__band--cream">
-      <h2 class="ap__h2">Cenários populares de aposentadoria</h2>
-      <p class="ap__p ap__p--dek">
-        Veja na hora o patrimônio necessário e o aporte mensal pra cada cenário, basta clicar e a simulação carrega já preenchida.
-      </p>
+    <CalcBand tone="cream" title="Cenários populares de aposentadoria">
+      <template #dek>
+        <p>Veja na hora o patrimônio necessário e o aporte mensal pra cada cenário, basta clicar e a simulação carrega já preenchida.</p>
+      </template>
       <div class="ap__scenarios">
         <NuxtLink v-for="s in popularScenarios" :key="s.label" :to="s.to" class="ap__scenario">
           <span class="ap__scenario-label">{{ s.label }}</span>
           <span class="ap__scenario-sub">{{ s.sub }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional (texto verbatim) ============ -->
-    <section class="ap__band ap__band--white">
-      <h2 class="ap__h2">Simulador de Aposentadoria grátis e online</h2>
+    <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
+    <!-- h2 órfão no SEO antigo → banda-statement compacta (sem vão) -->
+    <CalcBand tone="white" title="Simulador de Aposentadoria grátis e online" tight />
 
-      <h2 class="ap__h2 ap__mt">Como Planejar sua Aposentadoria no Brasil</h2>
-      <p class="ap__p">
-        Aposentadoria não acontece por acaso, é resultado de planejamento, disciplina e juros compostos trabalhando por décadas. Quanto mais cedo você começar a planejar, mais confortável será sua aposentadoria e menor será o aporte mensal exigido.
-      </p>
-      <p class="ap__p">
-        Esta calculadora considera todas as variáveis críticas: idade atual e desejada de aposentadoria, expectativa de vida, renda mensal desejada, patrimônio atual, aporte mensal, retorno esperado na fase de acumulação e na fase de fruição, inflação anual e estimativa de INSS. O resultado é o cenário completo: viabilidade, patrimônio projetado vs necessário, e duração do patrimônio na aposentadoria.
-      </p>
+    <CalcSplit tone="cream">
+      <template #title>Como Planejar sua Aposentadoria no Brasil</template>
+      <div class="ap__prose">
+        <p>Aposentadoria não acontece por acaso, é resultado de planejamento, disciplina e juros compostos trabalhando por décadas. Quanto mais cedo você começar a planejar, mais confortável será sua aposentadoria e menor será o aporte mensal exigido.</p>
+        <p>Esta calculadora considera todas as variáveis críticas: idade atual e desejada de aposentadoria, expectativa de vida, renda mensal desejada, patrimônio atual, aporte mensal, retorno esperado na fase de acumulação e na fase de fruição, inflação anual e estimativa de INSS. O resultado é o cenário completo: viabilidade, patrimônio projetado vs necessário, e duração do patrimônio na aposentadoria.</p>
+      </div>
+    </CalcSplit>
 
-      <h3 class="ap__h3">Os 3 Pilares do Planejamento de Aposentadoria</h3>
-      <div class="ap__cards ap__cards--two">
-        <div v-for="c in pillarCards" :key="c.title" class="ap__card">
+    <CalcBand tone="white" title-tag="h3" title="Os 3 Pilares do Planejamento de Aposentadoria">
+      <div class="ap__tiles">
+        <div v-for="c in pillarCards" :key="c.title" class="ap__tile">
           <h4 class="ap__h4 ap__h4--accent">{{ c.title }}</h4>
           <p class="ap__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcBand>
 
-      <h2 class="ap__h2 ap__mt">Reserva de Emergência: Pré-requisito da Aposentadoria</h2>
-      <p class="ap__p">
-        Antes de pensar em FIRE, regra dos 4% ou previdência privada, monte uma reserva de emergência. Ela é o que evita você sacar seus investimentos de longo prazo em momentos ruins (perda de emprego, problema de saúde, despesa inesperada) e quebrar o efeito dos juros compostos.
-      </p>
-      <p class="ap__p">
-        A reserva ideal cobre 6 a 12 meses de despesas, alocada em renda fixa de alta liquidez (Tesouro Selic, CDB com liquidez diária de bancão grande). Vem ANTES dos investimentos de longo prazo porque é seguro de carreira e tranquilidade emocional, não rentabilidade.
-      </p>
-      <div class="ap__card ap__card--wide">
+    <CalcSplit tone="cream">
+      <template #title>Reserva de Emergência: Pré-requisito da Aposentadoria</template>
+      <div class="ap__prose">
+        <p>Antes de pensar em FIRE, regra dos 4% ou previdência privada, monte uma reserva de emergência. Ela é o que evita você sacar seus investimentos de longo prazo em momentos ruins (perda de emprego, problema de saúde, despesa inesperada) e quebrar o efeito dos juros compostos.</p>
+        <p>A reserva ideal cobre 6 a 12 meses de despesas, alocada em renda fixa de alta liquidez (Tesouro Selic, CDB com liquidez diária de bancão grande). Vem ANTES dos investimentos de longo prazo porque é seguro de carreira e tranquilidade emocional, não rentabilidade.</p>
+      </div>
+      <div class="ap__tile ap__tile--push">
         <h4 class="ap__h4">Tabela rápida de referência</h4>
         <ul class="ap__list">
           <li>Renda mensal R$ 5.000, reserva R$ 30.000 a R$ 60.000.</li>
@@ -303,26 +302,29 @@ usePageSeo({
           Quem é CLT estável: 6 meses. Autônomo, freelancer ou empresário: 9 a 12 meses. Casal com 2 rendas estáveis: pode usar 4 a 6.
         </p>
       </div>
+    </CalcSplit>
 
-      <h2 class="ap__h2 ap__mt">A Regra dos 4% (Safe Withdrawal Rate)</h2>
-      <p class="ap__p">
-        A regra dos 4%, derivada do Trinity Study (1998), é o pilar matemático da aposentadoria moderna. Ela diz que você pode sacar 4% do seu patrimônio inicial por ano (corrigido pela inflação) com altíssima probabilidade de não acabar o dinheiro em 30 anos. No Brasil, com taxas reais mais altas, a regra é até mais confortável.
-      </p>
-      <div class="ap__formula-wrap">
-        <CalcFormulaCard>Patrimônio necessário = Renda mensal desejada × 12 ÷ 0.04 (ou × 300)</CalcFormulaCard>
-        <div class="ap__examples">
-          <p class="ap__p"><strong>Exemplo 1:</strong> Para R$ 5.000/mês, preciso de R$ 1,5 milhão (R$ 5.000 × 300)</p>
-          <p class="ap__p"><strong>Exemplo 2:</strong> Para R$ 10.000/mês, preciso de R$ 3 milhões</p>
-          <p class="ap__p"><strong>Exemplo 3:</strong> Para R$ 20.000/mês (Fat FIRE), preciso de R$ 6 milhões</p>
-          <p class="ap__p"><strong>Variação:</strong> Quem usa 3,5% (mais conservador) precisa multiplicar por 343. Quem usa 5% (mais agressivo) multiplica por 240.</p>
-        </div>
+    <!-- split de fórmula em banda branca = CalcFormulaCard creme (default, pin do design) -->
+    <CalcSplit tone="white">
+      <template #title>A Regra dos 4% (Safe Withdrawal Rate)</template>
+      <template #dek>
+        <p>A regra dos 4%, derivada do Trinity Study (1998), é o pilar matemático da aposentadoria moderna. Ela diz que você pode sacar 4% do seu patrimônio inicial por ano (corrigido pela inflação) com altíssima probabilidade de não acabar o dinheiro em 30 anos. No Brasil, com taxas reais mais altas, a regra é até mais confortável.</p>
+      </template>
+      <CalcFormulaCard>Patrimônio necessário = Renda mensal desejada × 12 ÷ 0.04 (ou × 300)</CalcFormulaCard>
+      <div class="ap__examples">
+        <p><strong>Exemplo 1:</strong> Para R$ 5.000/mês, preciso de R$ 1,5 milhão (R$ 5.000 × 300)</p>
+        <p><strong>Exemplo 2:</strong> Para R$ 10.000/mês, preciso de R$ 3 milhões</p>
+        <p><strong>Exemplo 3:</strong> Para R$ 20.000/mês (Fat FIRE), preciso de R$ 6 milhões</p>
+        <p><strong>Variação:</strong> Quem usa 3,5% (mais conservador) precisa multiplicar por 343. Quem usa 5% (mais agressivo) multiplica por 240.</p>
       </div>
+    </CalcSplit>
 
-      <h2 class="ap__h2 ap__mt">Taxa de Retirada Segura (SWR) e Regra dos 4%</h2>
-      <p class="ap__p">
-        A Safe Withdrawal Rate (SWR) é o percentual que você pode sacar do patrimônio por ano sem o risco de acabar o dinheiro durante a aposentadoria. A regra dos 4% nasceu do Trinity Study de 1998, que rodou simulações com dados históricos do mercado americano de 1925 a 1995 e concluiu que 4% real (ajustado pela inflação) por 30 anos tem altíssima taxa de sucesso.
-      </p>
-      <div class="ap__card ap__card--wide">
+    <CalcSplit tone="cream">
+      <template #title>Taxa de Retirada Segura (SWR) e Regra dos 4%</template>
+      <template #dek>
+        <p>A Safe Withdrawal Rate (SWR) é o percentual que você pode sacar do patrimônio por ano sem o risco de acabar o dinheiro durante a aposentadoria. A regra dos 4% nasceu do Trinity Study de 1998, que rodou simulações com dados históricos do mercado americano de 1925 a 1995 e concluiu que 4% real (ajustado pela inflação) por 30 anos tem altíssima taxa de sucesso.</p>
+      </template>
+      <div class="ap__tile">
         <h4 class="ap__h4 ap__h4--accent">Variações da SWR</h4>
         <ul class="ap__list">
           <li v-for="item in swrItems" :key="item.strong"><strong>{{ item.strong }}</strong>{{ item.rest }}</li>
@@ -331,131 +333,125 @@ usePageSeo({
           Importante: a SWR é aplicada sobre o saldo INICIAL e ajustada pela inflação a cada ano, não recalculada sobre o saldo do ano corrente.
         </p>
       </div>
+    </CalcSplit>
 
-      <h2 class="ap__h2 ap__mt">Movimento FIRE: Aposentadoria Antecipada no Brasil</h2>
-      <p class="ap__p">
-        FIRE (Financial Independence, Retire Early) é um movimento global que prega independência financeira e aposentadoria antecipada através de poupança agressiva (50-70% da renda) e investimentos disciplinados. No Brasil, com Selic alta e ferramentas como Tesouro Direto, FIRE é matematicamente viável.
-      </p>
-      <div class="ap__cards">
-        <div v-for="c in fireCards" :key="c.title" class="ap__card">
+    <CalcSplit tone="white">
+      <template #title>Movimento FIRE: Aposentadoria Antecipada no Brasil</template>
+      <template #dek>
+        <p>FIRE (Financial Independence, Retire Early) é um movimento global que prega independência financeira e aposentadoria antecipada através de poupança agressiva (50-70% da renda) e investimentos disciplinados. No Brasil, com Selic alta e ferramentas como Tesouro Direto, FIRE é matematicamente viável.</p>
+      </template>
+      <div class="ap__tiles ap__tiles--two">
+        <div v-for="c in fireCards" :key="c.title" class="ap__tile">
           <h4 class="ap__h4 ap__h4--accent">{{ c.title }}</h4>
           <p class="ap__card-p">{{ c.body }}</p>
         </div>
       </div>
+    </CalcSplit>
 
-      <h2 class="ap__h2 ap__mt">Quanto Preciso Acumular para Cada Renda na Aposentadoria</h2>
-      <p class="ap__p">
-        Tabela de referência rápida usando a regra dos 4%, sem considerar INSS e sem ajuste pela inflação. Para projeções com inflação, use a calculadora acima.
-      </p>
-      <div class="ap__table-wrap">
-        <table class="ap__table">
-          <thead>
-            <tr><th>Renda mensal</th><th>Renda anual</th><th>Patrimônio (4%)</th><th>Aporte 25 anos (10% a.a.)</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in wealthRows" :key="r[0]">
-              <td>{{ r[0] }}</td><td>{{ r[1] }}</td><td class="ap__td--accent">{{ r[2] }}</td><td>{{ r[3] }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <CalcBand tone="cream" title="Quanto Preciso Acumular para Cada Renda na Aposentadoria">
+      <template #dek>
+        <p>Tabela de referência rápida usando a regra dos 4%, sem considerar INSS e sem ajuste pela inflação. Para projeções com inflação, use a calculadora acima.</p>
+      </template>
+      <div class="ap__band-body">
+        <CalcTableCard
+          tone="white"
+          :columns="['Renda mensal', 'Renda anual', 'Patrimônio (4%)', 'Aporte 25 anos (10% a.a.)']"
+          :rows="wealthRows"
+          :accent-col="2"
+          note="Note como o Lean FIRE (R$ 3-5 mil/mês) é viável com aporte de R$ 700-1.200/mês durante 25 anos. Já o Fat FIRE (R$ 20 mil/mês) exige R$ 4.500/mês de aporte, geralmente só viável com renda alta."
+        />
       </div>
-      <p class="ap__small">
-        Note como o Lean FIRE (R$ 3-5 mil/mês) é viável com aporte de R$ 700-1.200/mês durante 25 anos. Já o Fat FIRE (R$ 20 mil/mês) exige R$ 4.500/mês de aporte, geralmente só viável com renda alta.
-      </p>
+    </CalcBand>
 
-      <h2 class="ap__h2 ap__mt">Cenários Reais de Aposentadoria</h2>
-      <template v-for="sc in realScenarios" :key="sc.h3">
-        <h3 class="ap__h3">{{ sc.h3 }}</h3>
-        <div class="ap__card ap__card--wide">
-          <h4 class="ap__h4">Perfil</h4>
-          <ul class="ap__list">
-            <li v-for="(item, i) in sc.profile" :key="i">{{ item }}</li>
-          </ul>
-          <div class="ap__result-box">
-            <p class="ap__result-main">{{ sc.result }}</p>
+    <CalcBand tone="white" title="Cenários Reais de Aposentadoria">
+      <div class="ap__ex-grid">
+        <div v-for="sc in realScenarios" :key="sc.h3">
+          <h3 class="ap__ex-title">{{ sc.h3 }}</h3>
+          <div class="ap__ex-card">
+            <h4 class="ap__h4">Perfil</h4>
+            <ul class="ap__list">
+              <li v-for="(item, i) in sc.profile" :key="i">{{ item }}</li>
+            </ul>
+            <div class="ap__result-box">
+              <p class="ap__result-main">{{ sc.result }}</p>
+            </div>
           </div>
         </div>
+      </div>
+    </CalcBand>
+
+    <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
+    <CalcBand tone="cream" title="Como Usar a Calculadora de Aposentadoria">
+      <div class="ap__band-body"><CalcSteps :steps="howToSteps" /></div>
+    </CalcBand>
+
+    <!-- ============ Previdência privada (split: título à esquerda, tiles à direita) ============ -->
+    <CalcSplit tone="white">
+      <template #title>Previdência Privada (PGBL e VGBL) vs Investimentos Diretos</template>
+      <template #dek>
+        <p>Previdência privada complementa o INSS e funciona como veículo automatizado de aposentadoria, com débito mensal e benefício fiscal. PGBL e VGBL são os dois principais formatos no Brasil, cada um indicado pra um perfil específico de declaração de Imposto de Renda. Saber qual escolher (e se vale escolher algum) muda bastante o resultado de longo prazo.</p>
       </template>
-    </section>
-
-    <!-- ============ Como usar (steps 01-05 do design, texto verbatim) ============ -->
-    <section class="ap__band ap__band--cream">
-      <h2 class="ap__h2 ap__h2--center">Como Usar a Calculadora de Aposentadoria</h2>
-      <div class="ap__steps"><CalcSteps :steps="howToSteps" /></div>
-    </section>
-
-    <!-- ============ Previdência privada (texto verbatim) ============ -->
-    <section class="ap__band ap__band--white">
-      <h2 class="ap__h2">Previdência Privada (PGBL e VGBL) vs Investimentos Diretos</h2>
-      <p class="ap__p">
-        Previdência privada complementa o INSS e funciona como veículo automatizado de aposentadoria, com débito mensal e benefício fiscal. PGBL e VGBL são os dois principais formatos no Brasil, cada um indicado pra um perfil específico de declaração de Imposto de Renda. Saber qual escolher (e se vale escolher algum) muda bastante o resultado de longo prazo.
-      </p>
-      <div class="ap__cards ap__cards--two">
-        <div v-for="c in previdenciaCards" :key="c.title" class="ap__card">
+      <div class="ap__tiles ap__tiles--two">
+        <div v-for="c in previdenciaCards" :key="c.title" class="ap__tile">
           <h4 class="ap__h4 ap__h4--accent">{{ c.title }}</h4>
           <p class="ap__card-p">{{ c.body }}</p>
         </div>
       </div>
-      <p class="ap__p">
-        Investir direto em Tesouro IPCA+, FIIs e ações tem custos menores e flexibilidade maior, mas exige disciplina pra manter os aportes. Previdência privada é boa pra quem quer débito automático e benefício fiscal, mas só vale a pena com taxa de administração abaixo de 1% ao ano e fundo com bom histórico.
-      </p>
-    </section>
-
-    <!-- ============ FAQ (design 2 colunas, 14 perguntas verbatim) ============ -->
-    <section class="ap__band ap__band--cream">
-      <div class="ap__faq">
-        <div class="ap__faq-left">
-          <h2 class="ap__h2">Perguntas Frequentes sobre Aposentadoria</h2>
-          <NuxtLink to="/busca" class="ap__pill">Perguntar à Redentia AI</NuxtLink>
-        </div>
-        <div class="ap__faq-right">
-          <NuFaqAccordion :items="faqItems" />
-        </div>
+      <div class="ap__prose ap__prose--push">
+        <p>Investir direto em Tesouro IPCA+, FIIs e ações tem custos menores e flexibilidade maior, mas exige disciplina pra manter os aportes. Previdência privada é boa pra quem quer débito automático e benefício fiscal, mas só vale a pena com taxa de administração abaixo de 1% ao ano e fundo com bom histórico.</p>
       </div>
-    </section>
+    </CalcSplit>
+
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas Frequentes sobre Aposentadoria</template>
+      <template #left>
+        <NuxtLink to="/busca" class="ap__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :items="faqItems" surface="white" />
+    </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <section class="ap__band ap__band--white">
-      <h2 class="ap__h2">Dicas para Acelerar sua Aposentadoria</h2>
-      <div class="ap__cards ap__cards--two">
-        <div v-for="c in tipCards" :key="c.title" class="ap__card">
+    <CalcBand tone="white" title="Dicas para Acelerar sua Aposentadoria">
+      <div class="ap__tiles">
+        <div v-for="c in tipCards" :key="c.title" class="ap__tile">
           <h4 class="ap__h4 ap__h4--accent">{{ c.title }}</h4>
           <p class="ap__card-p">{{ c.body }}</p>
         </div>
       </div>
-    </section>
+    </CalcBand>
 
     <!-- ============ Rankings + outras calculadoras + E-E-A-T + CTA ============ -->
-    <section class="ap__band ap__band--cream">
-      <h2 class="ap__h2">Rankings Relacionados</h2>
-      <p class="ap__p ap__p--dek">
-        Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
-      </p>
-      <div class="ap__cards ap__cards--two ap__cards--links">
-        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="ap__card ap__card--link">
-          <h3 class="ap__h3 ap__h3--card">{{ r.title }}</h3>
+    <CalcBand tone="cream" title="Rankings Relacionados">
+      <template #dek>
+        <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
+      </template>
+      <div class="ap__grid-cards">
+        <NuxtLink v-for="r in relatedRankings" :key="r.to" :to="r.to" class="ap__card-link">
+          <h3 class="ap__card-link-title">{{ r.title }}</h3>
           <p class="ap__card-p">{{ r.sub }}</p>
         </NuxtLink>
       </div>
+    </CalcBand>
 
-      <h2 class="ap__h2 ap__mt">Outras Calculadoras</h2>
-      <div class="ap__cards ap__cards--two ap__cards--links">
-        <NuxtLink to="/calculadora/quanto-investir" class="ap__card ap__card--link">
-          <h3 class="ap__h3 ap__h3--card">Quanto Investir por Mês</h3>
+    <CalcBand tone="cream" title="Outras Calculadoras">
+      <div class="ap__grid-cards">
+        <NuxtLink to="/calculadora/quanto-investir" class="ap__card-link">
+          <h3 class="ap__card-link-title">Quanto Investir por Mês</h3>
           <p class="ap__card-p">Calcule o aporte para suas metas</p>
         </NuxtLink>
-        <NuxtLink to="/calculadora/juros-compostos" class="ap__card ap__card--link">
-          <h3 class="ap__h3 ap__h3--card">Juros Compostos</h3>
+        <NuxtLink to="/calculadora/juros-compostos" class="ap__card-link">
+          <h3 class="ap__card-link-title">Juros Compostos</h3>
           <p class="ap__card-p">Simule a evolução do patrimônio</p>
         </NuxtLink>
       </div>
 
       <aside class="ap__eeat">
-        <p class="ap__p">Metodologia revisada pela equipe de análise da Redentia</p>
-        <p class="ap__p">
+        <p class="ap__eeat-title">Metodologia revisada pela equipe de análise da Redentia</p>
+        <p class="ap__eeat-p">
           Cálculos baseados na regra dos 4% do Trinity Study (1998), na fórmula de anuidade dos juros compostos e em médias históricas do mercado brasileiro (CDI, Ibovespa, IPCA, INPC, INSS). Projeções consideram capitalização mensal, ajuste pela inflação anual e duas fases (acumulação e fruição) com retornos distintos.
         </p>
-        <p class="ap__small">
+        <p class="ap__eeat-small">
           Fontes: <a href="https://www.bcb.gov.br" target="_blank" rel="noopener nofollow" class="ap__link">Banco Central do Brasil</a>,
           <a href="https://www.gov.br/inss" target="_blank" rel="noopener nofollow" class="ap__link">INSS</a>,
           <a href="https://www.ibge.gov.br" target="_blank" rel="noopener nofollow" class="ap__link">IBGE</a>,
@@ -471,7 +467,7 @@ usePageSeo({
           <NuxtLink to="/calculadoras" class="ap__pill ap__pill--outline">Ver mais calculadoras</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -509,32 +505,22 @@ usePageSeo({
 .ap__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 .ap__chip-dot--positive { background: var(--nu-green); }
 
-/* ——— bandas ——— */
-.ap__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.ap__band--white { background: var(--nu-white); }
-.ap__band--cream { background: var(--nu-cream); }
-.ap__mt { margin-top: clamp(44px, 6vw, 72px); }
-
-/* ——— tipografia do conteúdo ——— */
-.ap__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
-}
-.ap__h2--center { text-align: center; max-width: none; font-size: clamp(32px, 4vw, 54px); letter-spacing: -0.04em; line-height: 1.06; }
-.ap__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.ap__h3--card { margin: 0; font-size: 18px; }
+/* ——— tipografia compartilhada ——— */
 .ap__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .ap__h4--accent { color: var(--nu-blue); }
-.ap__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.ap__p strong { color: var(--nu-ink); font-weight: 800; }
-.ap__p--dek { color: var(--nu-gray-2); }
-.ap__small { margin: 12px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; max-width: 840px; }
 .ap__link { text-decoration: underline; }
 .ap__link:hover { color: var(--nu-blue); }
+
+/* ——— prosa da coluna direita (bandas split do design) ——— */
+.ap__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
+}
+.ap__prose p:last-child { margin-bottom: 0; }
+.ap__prose--push { margin-top: 20px; }
+
+/* ——— corpo de banda centrada (card 1080 do design) ——— */
+.ap__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
 /* ——— cenários populares ——— */
 .ap__scenarios {
@@ -550,59 +536,58 @@ usePageSeo({
 .ap__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
 .ap__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— cards educacionais ——— */
-.ap__cards {
+/* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
+.ap__tiles {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px; margin-top: clamp(20px, 3vw, 28px);
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.ap__cards--two { grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); }
-.ap__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.ap__band--cream .ap__card { background: var(--nu-white); }
-.ap__card--wide { max-width: 720px; margin-top: clamp(20px, 3vw, 28px); }
-.ap__card--link { display: flex; flex-direction: column; gap: 6px; transition: transform .18s, box-shadow .2s; }
-.ap__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ap__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.ap__card .ap__card-p { margin-top: 6px; }
+.ap__tiles--two {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  max-width: none; margin-top: 0;
+}
+.ap__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
+:global(.cbd--cream) .ap__tile { background: var(--nu-white); }
+:global(.csp--cream) .ap__tile { background: var(--nu-white); }
+.ap__tile--push { margin-top: 22px; }
+.ap__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 .ap__card-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.6; }
 .ap__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
 .ap__list strong { color: var(--nu-ink); font-weight: 800; }
 .ap__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .ap__result-main { margin: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 600; line-height: 1.55; font-variant-numeric: tabular-nums; }
 
-/* ——— fórmula + exemplos ——— */
-.ap__formula-wrap { max-width: 720px; margin-top: clamp(18px, 2.5vw, 26px); }
-.ap__examples { margin-top: 4px; }
-.ap__examples .ap__p { font-size: 15px; margin-top: 10px; }
-
-/* ——— tabela ——— */
-.ap__table-wrap {
-  overflow-x: auto; background: var(--nu-cream);
-  border-radius: var(--nu-r-panel); margin-top: clamp(20px, 3vw, 28px);
-  max-width: 980px;
+/* ——— exemplos da fórmula (coluna direita do split) ——— */
+.ap__examples { margin-top: 18px; }
+.ap__examples p {
+  margin: 10px 0 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500;
+  line-height: 1.65;
 }
-.ap__table { width: 100%; border-collapse: collapse; min-width: 560px; }
-.ap__table th {
-  text-align: left; padding: 14px 18px;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
-  letter-spacing: .8px; text-transform: uppercase;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
-}
-.ap__table td {
-  padding: 13px 18px; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 600;
-  border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
-}
-.ap__table tbody tr:last-child td { border-bottom: none; }
-.ap__td--accent { color: var(--nu-blue); font-weight: 800; }
+.ap__examples strong { color: var(--nu-ink); font-weight: 800; }
 
-/* ——— steps ——— */
-.ap__steps { margin-top: clamp(30px, 4vw, 48px); }
+/* ——— cenários reais (cards na banda, regra tile creme/branco) ——— */
+.ap__ex-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
+}
+.ap__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.ap__ex-card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
+:global(.cbd--cream) .ap__ex-card { background: var(--nu-white); }
 
-/* ——— FAQ 2 colunas (design) ——— */
-.ap__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.ap__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.ap__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.ap__faq-left .ap__h2 { font-size: clamp(32px, 4vw, 52px); letter-spacing: -0.04em; line-height: 1.06; }
-.ap__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— cards-link (rankings / outras calculadoras) ——— */
+.ap__grid-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 48px);
+  max-width: 980px; margin-left: auto; margin-right: auto;
+}
+.ap__card-link {
+  background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: transform .18s, box-shadow .2s;
+}
+.ap__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.ap__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .ap__pill {
@@ -613,13 +598,15 @@ usePageSeo({
 .ap__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .ap__eeat {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); margin-top: clamp(44px, 6vw, 72px); max-width: 980px;
+  padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.ap__eeat .ap__p:first-child { margin-top: 0; font-weight: 700; color: var(--nu-ink); font-size: 15.5px; }
-.ap__eeat .ap__p { font-size: 14.5px; }
+.ap__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
+.ap__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
+.ap__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
 .ap__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .ap__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .ap__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }

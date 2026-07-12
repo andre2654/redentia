@@ -8,8 +8,14 @@
 import type { NuFaqItem } from '~/types/market'
 
 const props = withDefaults(
-  defineProps<{ items: NuFaqItem[]; defaultOpen?: number; variant?: 'compact' }>(),
-  { defaultOpen: 0, variant: undefined },
+  defineProps<{
+    items: NuFaqItem[]
+    defaultOpen?: number
+    variant?: 'compact'
+    /** 'white' = cards brancos (banda creme, design das calculadoras) */
+    surface?: 'white'
+  }>(),
+  { defaultOpen: 0, variant: undefined, surface: undefined },
 )
 
 const open = ref(props.defaultOpen)
@@ -34,7 +40,7 @@ useHead({
 </script>
 
 <template>
-  <div class="nfa" :class="{ 'nfa--compact': variant === 'compact' }">
+  <div class="nfa" :class="{ 'nfa--compact': variant === 'compact', 'nfa--white': surface === 'white' }">
     <div v-for="(f, i) in items" :key="f.q" class="nfa__item">
       <button type="button" class="nfa__q" :aria-expanded="open === i" @click="toggle(i)">
         <span class="nfa__q-text">{{ f.q }}</span>
@@ -64,6 +70,9 @@ useHead({
   margin-top: 16px;
 }
 .nfa__a--open { animation: nu-fade .3s ease both; }
+
+/* variante white: cards brancos sobre banda creme (design das calculadoras) */
+.nfa--white .nfa__item { background: var(--nu-white); }
 
 /* variante compact (valores exatos do FAQ do Guia Open Finance) */
 .nfa--compact { gap: 12px; }

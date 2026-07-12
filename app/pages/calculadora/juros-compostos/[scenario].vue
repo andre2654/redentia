@@ -300,48 +300,46 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
       <template #title>Juros compostos.</template>
     </CalcCompoundSection>
 
-    <!-- ============ Outros cenários populares (cross-link) ============ -->
-    <section class="jcs__band jcs__band--cream">
-      <h2 class="jcs__h2">Outros cenários populares</h2>
-      <p class="jcs__p jcs__p--dek">
-        Compare diferentes simulações lado a lado, basta clicar e a calculadora carrega já preenchida com os valores do cenário.
-      </p>
-      <div class="jcs__related">
+    <!-- ============ Outros cenários populares (banda centrada do design) ============ -->
+    <CalcBand tone="cream" title="Outros cenários populares">
+      <template #dek>
+        <p>Compare diferentes simulações lado a lado, basta clicar e a calculadora carrega já preenchida com os valores do cenário.</p>
+      </template>
+      <div class="jcs__scenarios">
         <NuxtLink
           v-for="rel in relatedScenarios"
           :key="rel.slug"
           :to="`/calculadora/juros-compostos/${rel.slug}`"
-          class="jcs__rel-card"
+          class="jcs__scenario"
         >
-          <span class="jcs__rel-title">{{ rel.h1 }}</span>
-          <span class="jcs__rel-sub">{{ rel.preview }}</span>
+          <span class="jcs__scenario-label">{{ rel.h1 }}</span>
+          <span class="jcs__scenario-sub">{{ rel.preview }}</span>
         </NuxtLink>
       </div>
-    </section>
+    </CalcBand>
 
-    <!-- ============ Conteúdo educacional do cenário (verbatim) ============ -->
-    <section class="jcs__band jcs__band--white">
-      <h2 class="jcs__h2">{{ scenario.eduH2 }}</h2>
-      <div v-for="block in scenario.eduBlocks" :key="block.h3" class="jcs__block">
-        <h3 class="jcs__h3">{{ block.h3 }}</h3>
-        <p v-for="(p, i) in block.paragraphs" :key="i" class="jcs__p">{{ p }}</p>
-      </div>
-    </section>
-
-    <!-- ============ FAQ do cenário (verbatim, accordion do design) ============ -->
-    <section class="jcs__band jcs__band--cream">
-      <div class="jcs__faq">
-        <div class="jcs__faq-left">
-          <h2 class="jcs__h2">Perguntas frequentes sobre este cenário</h2>
-        </div>
-        <div class="jcs__faq-right">
-          <NuFaqAccordion :key="slug" :items="scenario.faq" />
+    <!-- ============ Conteúdo educacional (split: título gigante + prosa, texto verbatim) ============ -->
+    <CalcSplit tone="white">
+      <template #title>{{ scenario.eduH2 }}</template>
+      <div class="jcs__prose">
+        <div v-for="block in scenario.eduBlocks" :key="block.h3">
+          <h3 class="jcs__sub">{{ block.h3 }}</h3>
+          <p v-for="(p, i) in block.paragraphs" :key="i">{{ p }}</p>
         </div>
       </div>
-    </section>
+    </CalcSplit>
 
-    <!-- ============ CTA (texto verbatim) ============ -->
-    <section class="jcs__band jcs__band--white">
+    <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
+    <CalcSplit tone="cream" wide>
+      <template #title>Perguntas frequentes sobre este cenário</template>
+      <template #left>
+        <NuxtLink to="/busca" class="jcs__pill">Perguntar à Redentia AI</NuxtLink>
+      </template>
+      <NuFaqAccordion :key="slug" :items="scenario.faq" surface="white" />
+    </CalcSplit>
+
+    <!-- ============ CTA (card azul do design, texto verbatim) ============ -->
+    <CalcBand tone="white">
       <div class="jcs__cta">
         <h2 class="jcs__cta-title">Quer mais controle sobre seus investimentos?</h2>
         <p class="jcs__cta-sub">Cadastre-se na Redentia e acompanhe sua carteira com análises em tempo real e IA.</p>
@@ -350,7 +348,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
           <NuxtLink to="/calculadora/juros-compostos" class="jcs__pill jcs__pill--outline">Voltar para a calculadora</NuxtLink>
         </div>
       </div>
-    </section>
+    </CalcBand>
   </div>
 </template>
 
@@ -387,58 +385,50 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 }
 .jcs__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
-/* ——— bandas ——— */
-.jcs__band { padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.jcs__band--white { background: var(--nu-white); }
-.jcs__band--cream { background: var(--nu-cream); }
-.jcs__h2 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(28px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 1.08; max-width: 900px;
+/* ——— cenários relacionados (grid de tiles do exemplar: jc__scenarios) ——— */
+.jcs__scenarios {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px; margin-top: clamp(24px, 3.5vw, 36px);
 }
-.jcs__h3 { margin: clamp(28px, 4vw, 44px) 0 0; color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.jcs__p {
-  margin: 14px 0 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
-  line-height: 1.65; max-width: 840px;
-}
-.jcs__p--dek { color: var(--nu-gray-2); }
-.jcs__block { margin-top: 6px; }
-
-/* ——— cenários relacionados ——— */
-.jcs__related {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 12px; margin-top: clamp(24px, 3.5vw, 36px);
-}
-.jcs__rel-card {
-  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 20px 22px;
-  display: flex; flex-direction: column; gap: 6px;
+.jcs__scenario {
+  background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 3px;
   transition: transform .18s, box-shadow .2s;
 }
-.jcs__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.jcs__rel-title { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
-.jcs__rel-sub { color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.5; }
+.jcs__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.jcs__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
+.jcs__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* ——— FAQ ——— */
-.jcs__faq { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.jcs__faq-left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.jcs__faq-right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.jcs__faq-left .jcs__h2 { font-size: clamp(30px, 3.8vw, 48px); letter-spacing: -0.04em; line-height: 1.06; }
-.jcs__faq-right :deep(.nfa__item) { background: var(--nu-white); }
+/* ——— prosa da coluna direita (bandas split do design: jc__prose) ——— */
+.jcs__prose p {
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  line-height: 1.7;
+}
+.jcs__prose p:last-child { margin-bottom: 0; }
 
-/* ——— CTA ——— */
+/* ——— sub-heading dentro da prosa (exemplar: jc__sub) ——— */
+.jcs__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.jcs__sub + p { margin-top: 10px; }
+.jcs__prose > div:first-child .jcs__sub { margin-top: 0; }
+
+/* ——— pills / CTA (exemplar: jc__pill / jc__cta) ——— */
+.jcs__pill {
+  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  margin-top: 30px; transition: background .2s;
+}
+.jcs__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .jcs__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center;
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .jcs__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .jcs__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
 .jcs__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.jcs__pill {
-  display: inline-flex; align-items: center; border-radius: var(--nu-r-pill);
-  padding: 14px 26px; font-size: 15.5px; font-weight: 700; transition: background .2s, color .2s;
-}
+.jcs__cta .jcs__pill { margin-top: 0; }
 .jcs__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
 .jcs__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.jcs__pill--outline { border: 2px solid var(--nu-white-35); color: var(--nu-white); }
+.jcs__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
 .jcs__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>
