@@ -13,7 +13,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'pt-BR' },
-      titleTemplate: (title) => (title ? `${title} · Redentia` : 'Redentia — invista com uma IA do seu lado'),
+      // titleTemplate NÃO pode viver aqui: função em app.head não serializa e
+      // o SSR renderiza o title cru sem sufixo de marca (bug desde o PR0,
+      // pego no verify do PR10). O template vive em app.vue via useHead.
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
@@ -70,6 +72,11 @@ export default defineNuxtConfig({
     '/guias/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/tese/**': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/calculadoras': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
+    // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
+    // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
+    '/calculadora': { redirect: { to: '/calculadoras', statusCode: 301 } },
+    '/calculadora/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
   },
 
   nitro: {

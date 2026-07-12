@@ -40,7 +40,11 @@ useHead({
         <span class="nfa__q-text">{{ f.q }}</span>
         <svg :width="variant === 'compact' ? 19 : 21" :height="variant === 'compact' ? 19 : 21" viewBox="0 0 24 24" fill="none" stroke="#0A0A0C" stroke-width="2.3" stroke-linecap="round" class="nfa__icon" :class="{ 'nfa__icon--open': open === i }"><path d="M12 5v14M5 12h14" /></svg>
       </button>
-      <div v-if="open === i" class="nfa__a">{{ f.a }}</div>
+      <!-- v-show, NÃO v-if: TODAS as respostas precisam existir no HTML SSR
+           (paridade SEO com as páginas antigas, que serviam tudo via <details>;
+           regra nº1 do PR10). A animação vive na classe --open pra replayar
+           a cada abertura mesmo com o nó persistente. -->
+      <div v-show="open === i" class="nfa__a" :class="{ 'nfa__a--open': open === i }">{{ f.a }}</div>
     </div>
   </div>
 </template>
@@ -57,8 +61,9 @@ useHead({
 .nfa__icon--open { transform: rotate(45deg); }
 .nfa__a {
   color: var(--nu-ink-75); font-size: 15.5px; font-weight: 500; line-height: 1.7;
-  margin-top: 16px; animation: nu-fade .3s ease both;
+  margin-top: 16px;
 }
+.nfa__a--open { animation: nu-fade .3s ease both; }
 
 /* variante compact (valores exatos do FAQ do Guia Open Finance) */
 .nfa--compact { gap: 12px; }
