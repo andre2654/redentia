@@ -217,4 +217,9 @@ const hov = computed(() => {
 .npc__tip-delta { font-size: 13px; font-weight: 800; margin-top: 2px; }
 .npc__tip-delta--up { color: var(--nu-green-2); }
 .npc__tip-delta--down { color: var(--nu-red-2); }
+
+/* mobile: sem o marcador de fim de linha (UX do dono 2026-07-11) */
+@media (max-width: 760px) {
+  .npc__endpill { display: none; }
+}
 </style>

@@ -10,6 +10,12 @@ import type { HomePositionsVM } from '~/types/home'
 
 defineProps<{ positions: HomePositionsVM }>()
 const { hidden } = useHiddenValues()
+
+// Logos REAIS dos ativos (UX do dono 2026-07-11): mesma fonte que a tabela
+// `tickers` do backend usa (icons.brapi.dev). Falhou/404 → volta pro tile de
+// letra colorido (o design original) via mapa `failed`.
+const failed = reactive<Record<string, boolean>>({})
+const logoUrl = (t: string) => `https://icons.brapi.dev/icons/${encodeURIComponent(t.toUpperCase())}.svg`
 </script>
 
 <template>
@@ -45,7 +51,16 @@ const { hidden } = useHiddenValues()
       <div class="hps__right">
         <template v-if="positions.state === 'full'">
           <NuxtLink v-for="p in positions.rows" :key="p.ticker" :to="p.href" class="hps__card">
-            <span class="hps__tile" :style="{ background: p.tileBg, color: p.tileFg }">{{ p.letter }}</span>
+            <span
+              class="hps__tile"
+              :style="failed[p.ticker] ? { background: p.tileBg, color: p.tileFg } : undefined"
+            >
+              <img
+                v-if="!failed[p.ticker]" :src="logoUrl(p.ticker)" :alt="p.ticker"
+                class="hps__tile-img" loading="lazy" @error="failed[p.ticker] = true"
+              >
+              <template v-else>{{ p.letter }}</template>
+            </span>
             <span class="hps__main">
               <span class="hps__ticker">{{ p.ticker }}</span>
               <span class="hps__sub">{{ p.sub }}</span>
@@ -112,7 +127,9 @@ const { hidden } = useHiddenValues()
 .hps__tile {
   width: 52px; height: 52px; flex-shrink: 0; border-radius: var(--nu-r-tile);
   display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800;
+  overflow: hidden; background: var(--nu-cream);
 }
+.hps__tile-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hps__main { flex: 1; min-width: 0; overflow: hidden; }
 .hps__ticker { display: block; color: var(--nu-ink); font-size: 19px; font-weight: 800; white-space: nowrap; }
 .hps__sub {

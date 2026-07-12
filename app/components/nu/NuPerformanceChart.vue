@@ -202,4 +202,9 @@ const hov = computed(() => {
 .nperf__tip-row { display: flex; align-items: baseline; gap: 10px; margin-top: 4px; }
 .nperf__tip-t { color: var(--nu-blue); font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .nperf__tip-b { color: var(--nu-navy-60); font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* mobile: sem o marcador de fim de linha (UX do dono 2026-07-11) */
+@media (max-width: 760px) {
+  .nperf__endpill { display: none; }
+}
 </style>

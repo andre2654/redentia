@@ -31,7 +31,10 @@ const { items } = useMarketTicker()
 <style scoped>
 .nut-wrap {
   background: var(--nu-cream);
-  position: sticky; top: 0; z-index: 40;
+  /* gruda ABAIXO do header sticky (UX do dono 2026-07-11): --nuh-h vive no
+     <html>, setada pelo NuHeader (76px normal, 58px encolhido). */
+  position: sticky; top: var(--nuh-h, 76px); z-index: 40;
+  transition: top .28s ease;
 }
 .nut { display: flex; align-items: center; gap: 26px; padding: 14px 22px; }
 .nut__label { color: var(--nu-ink); font-size: 15px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }

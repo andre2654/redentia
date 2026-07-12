@@ -119,4 +119,16 @@ const failed = ref<Record<string, boolean>>({})
   width: 46px; height: 46px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
 }
+
+/* Mobile (UX do dono 2026-07-11): o card empilha em coluna — imagem no topo
+   ocupando a largura TODA, corpo embaixo; a coluna da seta (que quebrava o
+   flex-wrap) some — o card inteiro já é o link. */
+@media (max-width: 760px) {
+  .hts__card { flex-direction: column; flex-wrap: nowrap; }
+  .hts__media { flex: none; width: 100%; min-height: 200px; }
+  /* em coluna, o flex-basis 380px do desktop viraria ALTURA (vão gigante) */
+  .hts__body { flex: none; min-width: 0; }
+  .hts__box { margin-top: 16px; }
+  .hts__arrow-col { display: none; }
+}
 </style>
