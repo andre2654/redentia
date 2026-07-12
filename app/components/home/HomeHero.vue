@@ -14,6 +14,29 @@ const patrimonio = computed(() =>
   props.hero.patrimonio ? (hidden.value ? 'R$ ••••••' : props.hero.patrimonio) : null)
 const hojeTxt = computed(() =>
   props.hero.hojeTxt ? (hidden.value ? '+R$ •• hoje' : props.hero.hojeTxt) : null)
+
+// Fit-text do patrimônio (UX do dono 2026-07-11): o número SEMPRE ocupa uma
+// linha só, no maior tamanho que couber ao lado do olho — o clamp() do CSS é o
+// teto, daqui só encolhe (nunca estica além do design). Reage a resize e ao
+// toggle da máscara (texto muda de largura).
+const valueEl = ref<HTMLElement | null>(null)
+function fitValue() {
+  const el = valueEl.value
+  if (!el) return
+  el.style.fontSize = ''
+  const base = parseFloat(getComputedStyle(el).fontSize)
+  if (el.scrollWidth > el.clientWidth) {
+    el.style.fontSize = `${Math.max(30, Math.floor(base * (el.clientWidth / el.scrollWidth) * 0.985))}px`
+  }
+}
+let ro: ResizeObserver | null = null
+onMounted(() => {
+  fitValue()
+  ro = new ResizeObserver(fitValue)
+  if (valueEl.value) ro.observe(valueEl.value)
+})
+onBeforeUnmount(() => { ro?.disconnect() })
+watch(patrimonio, () => nextTick(fitValue))
 </script>
 
 <template>
@@ -22,7 +45,7 @@ const hojeTxt = computed(() =>
 
     <template v-if="hero.state === 'patrimonio'">
       <div class="hhr__row">
-        <h1 class="hhr__value">{{ patrimonio }}</h1>
+        <h1 ref="valueEl" class="hhr__value hhr__value--fit">{{ patrimonio }}</h1>
         <button
           type="button" class="hhr__eye"
           :aria-label="hidden ? 'Mostrar valores' : 'Esconder valores'"
@@ -70,12 +93,14 @@ const hojeTxt = computed(() =>
   animation: nu-fade .5s ease both;
 }
 .hhr__greeting { color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
-.hhr__row { display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap; margin-top: 16px; }
+.hhr__row { display: flex; align-items: flex-end; gap: 22px; margin-top: 16px; }
 .hhr__value {
   margin: 0; color: var(--nu-ink); font-size: clamp(54px, 8.5vw, 106px);
   font-weight: 800; letter-spacing: -0.045em; line-height: 0.98;
   font-variant-numeric: tabular-nums;
 }
+/* variante fit: 1 linha sempre; o JS encolhe a fonte até caber ao lado do olho */
+.hhr__value--fit { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; }
 .hhr__value--connect { margin-top: 16px; }
 .hhr__eye {
   width: 48px; height: 48px; margin-bottom: 8px; border-radius: 50%;

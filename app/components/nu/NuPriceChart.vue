@@ -52,22 +52,31 @@ const line = computed(() => {
 })
 const area = computed(() => `${line.value}L1000,${H}L0,${H}Z`)
 
-/** Gridlines em passos "redondos" (3-6 linhas estritamente dentro do eixo). */
+/**
+ * Gridlines em passos "redondos" (3-6 linhas), em QUALQUER magnitude — a lista
+ * fixa antiga capava em 5.000 e um patrimônio de R$ 346k virava ~20 linhas
+ * (feedback do dono 2026-07-11). Passo = "nice number" de span/5; labels de
+ * milhar viram compactos ('R$ 340 mil') pra não poluir o eixo.
+ */
+function niceStep(raw: number): number {
+  const mag = 10 ** Math.floor(Math.log10(raw))
+  const norm = raw / mag
+  const nice = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10
+  return nice * mag
+}
 const grid = computed(() => {
   const { lo, hi } = domain.value
   const span = hi - lo
-  const CANDIDATES = [0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000]
-  let step = CANDIDATES[CANDIDATES.length - 1]!
-  for (const c of CANDIDATES) {
-    if (span / c <= 6) { step = c; break }
+  if (span <= 0) return []
+  const step = niceStep(span / 5)
+  const fmt = (m: number) => {
+    if (step >= 1000) return `R$ ${nf0.format(m / 1000)} mil`
+    return `R$ ${step >= 1 ? nf0.format(m) : nf2.format(m)}`
   }
   const lines: { top: string; lbl: string }[] = []
   for (let m = Math.ceil(lo / step) * step; m < hi; m += step) {
     if (m <= lo) continue
-    lines.push({
-      top: `${((Y(m) / H) * 100).toFixed(2)}%`,
-      lbl: `R$ ${step >= 1 ? nf0.format(m) : nf2.format(m)}`,
-    })
+    lines.push({ top: `${((Y(m) / H) * 100).toFixed(2)}%`, lbl: fmt(m) })
   }
   return lines
 })
