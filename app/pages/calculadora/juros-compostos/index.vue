@@ -181,33 +181,23 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="jc__hero">
-      <div class="jc__status">
-        <NuxtLink to="/calculadoras" class="jc__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="jc__eyebrow">Calculadora · Juros Compostos</p>
-      <h1 class="jc__h1">
-        Calculadora de Juros Compostos 2026: Simulador com Aportes
-        <em class="jc__italic">Mensais.</em>
-      </h1>
-      <p class="jc__lead">
-        Juros compostos são os juros sobre juros, calculados pela fórmula <strong>M = C×(1+i)ⁿ</strong>. Exemplo: R$ 500 investidos por mês a 10,5% ao ano durante 20 anos viram R$ 410.000, sendo R$ 290.000 só de juros. Quanto maior o prazo, mais o rendimento cresce de forma exponencial.
-      </p>
-      <ul class="jc__chips">
-        <li><span class="jc__chip-dot jc__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="jc__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="jc__chip-dot" /> Gráfico mês a mês</li>
-        <li><span class="jc__chip-dot" /> Link compartilhável</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Simule quanto seu dinheiro vira com aportes mensais e tempo.">
+      Calculadora de Juros Compostos 2026: Simulador com Aportes
+      <em>Mensais.</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design) ============ -->
     <CalcCompoundSection :seed="seed" section-id="juros">
       <template #title>Juros compostos.</template>
     </CalcCompoundSection>
+
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · Juros Compostos"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Gráfico mês a mês', 'Link compartilhável']"
+      :updated="lastUpdatedText"
+    />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de investimento">
@@ -226,6 +216,8 @@ usePageSeo({
     <CalcSplit tone="white">
       <template #title>Simulador de juros compostos grátis e online</template>
       <div class="jc__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>Juros compostos são os juros sobre juros, calculados pela fórmula <strong>M = C×(1+i)ⁿ</strong>. Exemplo: R$ 500 investidos por mês a 10,5% ao ano durante 20 anos viram R$ 410.000, sendo R$ 290.000 só de juros. Quanto maior o prazo, mais o rendimento cresce de forma exponencial.</p>
         <p>Use a calculadora acima para simular o rendimento de qualquer aporte com juros compostos em segundos. Ideal pra planejar aposentadoria, metas e reserva de longo prazo.</p>
       </div>
     </CalcSplit>
@@ -472,39 +464,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.jc__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.jc__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.jc__back { color: var(--nu-blue); font-weight: 800; }
-.jc__back:hover { color: var(--nu-blue-hover); }
-.jc__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.jc__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.jc__italic { font-style: italic; }
-.jc__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.jc__lead strong { color: var(--nu-ink); font-weight: 800; }
-.jc__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.jc__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.jc__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.jc__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— tipografia compartilhada ——— */
 .jc__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .jc__h4--accent { color: var(--nu-blue); }
@@ -519,6 +478,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .jc__prose p:last-child { margin-bottom: 0; }
+.jc__prose strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
 .jc__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }

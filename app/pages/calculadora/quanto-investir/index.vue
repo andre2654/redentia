@@ -216,33 +216,23 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="qi__hero">
-      <div class="qi__status">
-        <NuxtLink to="/calculadoras" class="qi__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="qi__eyebrow">Calculadora · Quanto Investir por Mês</p>
-      <h1 class="qi__h1">
-        Quanto Investir por Mês para Sua
-        <em class="qi__italic">Meta.</em>
-      </h1>
-      <p class="qi__lead">
-        Esta calculadora descobre quanto você precisa investir por mês para atingir uma meta financeira específica. Usa a fórmula do <strong>valor presente</strong> de uma série de pagamentos, considerando taxa de juros e prazo. Exemplo: pra juntar R$ 500.000 em 10 anos a 10% ao ano, aporta cerca de R$ 2.412 por mês, totalizando R$ 289.440 investidos e R$ 210.560 em juros.
-      </p>
-      <ul class="qi__chips">
-        <li><span class="qi__chip-dot qi__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="qi__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="qi__chip-dot" /> Cálculo reverso por meta</li>
-        <li><span class="qi__chip-dot" /> Link compartilhável</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Defina a meta e veja o aporte mensal exato pra chegar lá.">
+      Quanto Investir por Mês para Sua
+      <em>Meta.</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design) ============ -->
     <QuantoInvestirCalc :seed="seed" section-id="aporte">
       <template #title>Aporte mensal.</template>
     </QuantoInvestirCalc>
+
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · Quanto Investir por Mês"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Cálculo reverso por meta', 'Link compartilhável']"
+      :updated="lastUpdatedText"
+    />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de meta financeira">
@@ -258,8 +248,13 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <!-- h2 órfão no SEO antigo → banda-statement compacta (sem vão) -->
-    <CalcBand tone="white" title="Simulador de Aporte Mensal grátis e online" tight />
+    <CalcSplit tone="white">
+      <template #title>Simulador de Aporte Mensal grátis e online</template>
+      <div class="qi__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>Esta calculadora descobre quanto você precisa investir por mês para atingir uma meta financeira específica. Usa a fórmula do <strong>valor presente</strong> de uma série de pagamentos, considerando taxa de juros e prazo. Exemplo: pra juntar R$ 500.000 em 10 anos a 10% ao ano, aporta cerca de R$ 2.412 por mês, totalizando R$ 289.440 investidos e R$ 210.560 em juros.</p>
+      </div>
+    </CalcSplit>
 
     <CalcSplit tone="cream">
       <template #title>Como Calcular Quanto Investir por Mês</template>
@@ -476,39 +471,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.qi__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.qi__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.qi__back { color: var(--nu-blue); font-weight: 800; }
-.qi__back:hover { color: var(--nu-blue-hover); }
-.qi__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.qi__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.qi__italic { font-style: italic; }
-.qi__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.qi__lead strong { color: var(--nu-ink); font-weight: 800; }
-.qi__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.qi__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.qi__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.qi__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— tipografia compartilhada ——— */
 .qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .qi__h4--accent { color: var(--nu-blue); }
@@ -523,6 +485,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .qi__prose p:last-child { margin-bottom: 0; }
+.qi__prose strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .qi__band-body { margin-top: clamp(30px, 4vw, 48px); }

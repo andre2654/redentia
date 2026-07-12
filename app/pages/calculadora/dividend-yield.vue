@@ -416,28 +416,11 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="dy__hero">
-      <div class="dy__status">
-        <NuxtLink to="/calculadoras" class="dy__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="dy__eyebrow">Calculadora · Dividend Yield</p>
-      <h1 class="dy__h1">
-        DY Atual, Projetado e On Cost de Ações e
-        <em class="dy__italic">FIIs.</em>
-      </h1>
-      <p class="dy__lead">
-        Dividend Yield (DY) é o percentual de dividendos pagos em relação ao preço da ação: <strong>DY = (Dividendos Anuais ÷ Preço) × 100</strong>. Exemplo: ITUB4 a R$ 28,00 com R$ 1,80 anual tem DY de 6,4%. Considerado bom: 4-8% para ações, 8-12% para FIIs. Esta calculadora mostra DY atual, projetado e on cost (no seu preço de compra).
-      </p>
-      <ul class="dy__chips">
-        <li><span class="dy__chip-dot dy__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="dy__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="dy__chip-dot" /> Ações e FIIs</li>
-        <li><span class="dy__chip-dot" /> DY on cost + projeção</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Calcule o DY atual, on cost e projetado de qualquer ativo.">
+      DY Atual, Projetado e On Cost de Ações e
+      <em>FIIs.</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design) ============ -->
     <CalcShell eyebrow="Calculadora" section-id="dy">
@@ -499,6 +482,13 @@ usePageSeo({
       </template>
     </CalcShell>
 
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · Dividend Yield"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Ações e FIIs', 'DY on cost + projeção']"
+      :updated="lastUpdatedText"
+    />
+
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de dividend yield">
       <template #dek>
@@ -516,6 +506,8 @@ usePageSeo({
     <CalcSplit tone="white">
       <template #title>Simulador de dividend yield grátis e online</template>
       <div class="dy__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>Dividend Yield (DY) é o percentual de dividendos pagos em relação ao preço da ação: <strong>DY = (Dividendos Anuais ÷ Preço) × 100</strong>. Exemplo: ITUB4 a R$ 28,00 com R$ 1,80 anual tem DY de 6,4%. Considerado bom: 4-8% para ações, 8-12% para FIIs. Esta calculadora mostra DY atual, projetado e on cost (no seu preço de compra).</p>
         <p>Use a calculadora acima para simular o DY de qualquer ação ou FII da B3 em segundos. Ideal pra comparar pagadoras antes de montar a carteira de renda passiva.</p>
       </div>
     </CalcSplit>
@@ -664,39 +656,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.dy__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.dy__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.dy__back { color: var(--nu-blue); font-weight: 800; }
-.dy__back:hover { color: var(--nu-blue-hover); }
-.dy__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.dy__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.dy__italic { font-style: italic; }
-.dy__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.dy__lead strong { color: var(--nu-ink); font-weight: 800; }
-.dy__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.dy__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.dy__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.dy__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— calculadora: modos + resultado ——— */
 .dy__modes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 26px; }
 .dy__mode {
@@ -747,6 +706,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .dy__prose p:last-child { margin-bottom: 0; }
+.dy__prose strong { color: var(--nu-ink); font-weight: 800; }
 .dy__prose--mt { margin-top: 18px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */

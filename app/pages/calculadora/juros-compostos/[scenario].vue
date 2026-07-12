@@ -282,7 +282,10 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
         <span aria-hidden>·</span>
         <span>Atualizado {{ lastUpdatedText }}</span>
         <span aria-hidden>·</span>
-        <NuxtLink to="/calculadora/juros-compostos" class="jcs__back">← Calculadora de Juros Compostos</NuxtLink>
+        <NuxtLink to="/calculadora/juros-compostos" class="jcs__back">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+          Calculadora de Juros Compostos
+        </NuxtLink>
       </div>
       <p class="jcs__eyebrow">Cenário · Juros Compostos</p>
       <h1 class="jcs__h1">{{ scenario.h1 }}</h1>
@@ -365,8 +368,14 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 }
 .jcs__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: 700; }
 .jcs__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
-.jcs__back { color: var(--nu-blue); font-weight: 800; }
-.jcs__back:hover { color: var(--nu-blue-hover); }
+.jcs__back {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--nu-white); color: var(--nu-ink);
+  border-radius: var(--nu-r-pill); padding: 11px 20px;
+  font-size: 14.5px; font-weight: 700;
+  transition: transform .18s, box-shadow .2s;
+}
+.jcs__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
 .jcs__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .jcs__h1 {
   margin: 12px 0 0; color: var(--nu-ink);

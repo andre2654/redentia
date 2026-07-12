@@ -223,33 +223,23 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="ap__hero">
-      <div class="ap__status">
-        <NuxtLink to="/calculadoras" class="ap__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="ap__eyebrow">Calculadora · Aposentadoria</p>
-      <h1 class="ap__h1">
-        Calculadora de Aposentadoria 2026: Quanto Preciso para me
-        <em class="ap__italic">Aposentar?</em>
-      </h1>
-      <p class="ap__lead">
-        Esta calculadora estima quanto você precisa investir hoje pra se aposentar com a renda mensal desejada. Aplica a <strong>regra dos 4%</strong> (saque seguro): patrimônio = renda mensal × 12 ÷ 0,04. Exemplo: pra ter R$ 5.000 por mês na aposentadoria, você precisa de R$ 1,5 milhão investidos. Considera INSS, inflação, idade atual e expectativa de vida.
-      </p>
-      <ul class="ap__chips">
-        <li><span class="ap__chip-dot ap__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="ap__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="ap__chip-dot" /> Regra dos 4% e FIRE</li>
-        <li><span class="ap__chip-dot" /> Link compartilhável</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Descubra quanto investir por mês pra se aposentar do seu jeito.">
+      Calculadora de Aposentadoria 2026: Quanto Preciso para me
+      <em>Aposentar?</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design) ============ -->
     <CalcRetirementSection :seed="seed" section-id="aposentadoria">
       <template #title>Aposentadoria.</template>
     </CalcRetirementSection>
+
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · Aposentadoria"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Regra dos 4% e FIRE', 'Link compartilhável']"
+      :updated="lastUpdatedText"
+    />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de aposentadoria">
@@ -265,8 +255,13 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
-    <!-- h2 órfão no SEO antigo → banda-statement compacta (sem vão) -->
-    <CalcBand tone="white" title="Simulador de Aposentadoria grátis e online" tight />
+    <CalcSplit tone="white">
+      <template #title>Simulador de Aposentadoria grátis e online</template>
+      <div class="ap__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>Esta calculadora estima quanto você precisa investir hoje pra se aposentar com a renda mensal desejada. Aplica a <strong>regra dos 4%</strong> (saque seguro): patrimônio = renda mensal × 12 ÷ 0,04. Exemplo: pra ter R$ 5.000 por mês na aposentadoria, você precisa de R$ 1,5 milhão investidos. Considera INSS, inflação, idade atual e expectativa de vida.</p>
+      </div>
+    </CalcSplit>
 
     <CalcSplit tone="cream">
       <template #title>Como Planejar sua Aposentadoria no Brasil</template>
@@ -472,39 +467,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.ap__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.ap__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.ap__back { color: var(--nu-blue); font-weight: 800; }
-.ap__back:hover { color: var(--nu-blue-hover); }
-.ap__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.ap__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.ap__italic { font-style: italic; }
-.ap__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.ap__lead strong { color: var(--nu-ink); font-weight: 800; }
-.ap__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.ap__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.ap__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.ap__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— tipografia compartilhada ——— */
 .ap__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .ap__h4--accent { color: var(--nu-blue); }
@@ -517,6 +479,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .ap__prose p:last-child { margin-bottom: 0; }
+.ap__prose strong { color: var(--nu-ink); font-weight: 800; }
 .ap__prose--push { margin-top: 20px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */

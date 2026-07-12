@@ -320,28 +320,11 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="ir__hero">
-      <div class="ir__status">
-        <NuxtLink to="/calculadoras" class="ir__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="ir__eyebrow">Calculadora · IR sobre Ações</p>
-      <h1 class="ir__h1">
-        Calculadora de IR 2026: Day Trade, Swing Trade e
-        <em class="ir__italic">DARF.</em>
-      </h1>
-      <p class="ir__lead">
-        O IR sobre ações no Brasil é <strong>15%</strong> (swing trade) ou <strong>20%</strong> (day trade) sobre o lucro mensal. Vendas até R$ 20.000/mês em swing trade são isentas. Exemplo: vendeu R$ 25.000 com R$ 3.000 de lucro? Paga 15% × R$ 3.000 = R$ 450 via DARF código 6015 até o último dia útil do mês seguinte.
-      </p>
-      <ul class="ir__chips">
-        <li><span class="ir__chip-dot ir__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="ir__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="ir__chip-dot" /> DARF pronto (6015 / 8523)</li>
-        <li><span class="ir__chip-dot" /> Compensa prejuízos</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Calcule o IR das suas operações e o DARF do mês em segundos.">
+      Calculadora de IR 2026: Day Trade, Swing Trade e
+      <em>DARF.</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design Nu, matemática antiga) ============ -->
     <CalcShell section-id="ir" eyebrow="Calculadora">
@@ -457,6 +440,13 @@ usePageSeo({
       </template>
     </CalcShell>
 
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · IR sobre Ações"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'DARF pronto (6015 / 8523)', 'Compensa prejuízos']"
+      :updated="lastUpdatedText"
+    />
+
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de IR sobre ações">
       <template #dek>
@@ -474,6 +464,8 @@ usePageSeo({
     <CalcSplit tone="white">
       <template #title>Simulador de IR sobre ações grátis e online</template>
       <div class="ir__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>O IR sobre ações no Brasil é <strong>15%</strong> (swing trade) ou <strong>20%</strong> (day trade) sobre o lucro mensal. Vendas até R$ 20.000/mês em swing trade são isentas. Exemplo: vendeu R$ 25.000 com R$ 3.000 de lucro? Paga 15% × R$ 3.000 = R$ 450 via DARF código 6015 até o último dia útil do mês seguinte.</p>
         <p>Use a calculadora acima para simular o imposto de renda devido em swing trade e day trade em segundos. Ideal pra apurar o DARF do mês antes do vencimento.</p>
       </div>
     </CalcSplit>
@@ -697,39 +689,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.ir__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.ir__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.ir__back { color: var(--nu-blue); font-weight: 800; }
-.ir__back:hover { color: var(--nu-blue-hover); }
-.ir__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.ir__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.ir__italic { font-style: italic; }
-.ir__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.ir__lead strong { color: var(--nu-ink); font-weight: 800; }
-.ir__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.ir__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.ir__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.ir__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— controles custom (segmented + mês) no estilo do kit ——— */
 .ir__field-label { display: block; color: var(--nu-gray); font-size: 14px; font-weight: 700; }
 .ir__segmented {
@@ -808,6 +767,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .ir__prose p:last-child { margin-bottom: 0; }
+.ir__prose strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
 .ir__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }

@@ -160,33 +160,23 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="pl__hero">
-      <div class="pl__status">
-        <NuxtLink to="/calculadoras" class="pl__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="pl__eyebrow">Calculadora · Planejamento Patrimonial</p>
-      <h1 class="pl__h1">
-        Caminho para a liberdade
-        <em class="pl__italic">financeira.</em>
-      </h1>
-      <p class="pl__lead">
-        Esta calculadora monta uma carteira recomendada da B3 com base em <strong>dados históricos reais</strong> pra atingir sua meta. Define meta + aporte mensal + estratégia (rentabilidade ou segurança), retorna 5-10 ativos com pesos específicos e projeção de quando você atinge o objetivo. Exemplo: meta de R$ 1 milhão com R$ 2.000/mês na estratégia rentabilidade leva ~18 anos.
-      </p>
-      <ul class="pl__chips">
-        <li><span class="pl__chip-dot pl__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="pl__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="pl__chip-dot" /> Carteira sugerida com pesos</li>
-        <li><span class="pl__chip-dot" /> Dados históricos reais B3</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Monte o plano de patrimônio pra sua meta, com dados reais da B3.">
+      Caminho para a liberdade
+      <em>financeira.</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design + matemática antiga) ============ -->
     <PlanejamentoCalcSection section-id="planejamento">
       <template #title>Planejamento patrimonial.</template>
     </PlanejamentoCalcSection>
+
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · Planejamento Patrimonial"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Carteira sugerida com pesos', 'Dados históricos reais B3']"
+      :updated="lastUpdatedText"
+    />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de planejamento">
@@ -208,6 +198,8 @@ usePageSeo({
         <h2 class="pl__sub">O que é Planejamento Patrimonial?</h2>
       </template>
       <div class="pl__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>Esta calculadora monta uma carteira recomendada da B3 com base em <strong>dados históricos reais</strong> pra atingir sua meta. Define meta + aporte mensal + estratégia (rentabilidade ou segurança), retorna 5-10 ativos com pesos específicos e projeção de quando você atinge o objetivo. Exemplo: meta de R$ 1 milhão com R$ 2.000/mês na estratégia rentabilidade leva ~18 anos.</p>
         <p>Planejamento patrimonial é o processo de definir metas financeiras claras e criar uma estratégia concreta para alcançá-las. Não basta apenas "investir", você precisa saber exatamente quanto investir, por quanto tempo, e em quais ativos, para realizar seus objetivos.</p>
         <p>Nossa calculadora vai além de simulações genéricas: ela analisa dados históricos reais de centenas de ativos da B3, monta uma carteira otimizada para seu perfil, e projeta quando você atingirá sua meta. Tudo baseado em performance real, não em promessas.</p>
       </div>
@@ -444,39 +436,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.pl__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.pl__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.pl__back { color: var(--nu-blue); font-weight: 800; }
-.pl__back:hover { color: var(--nu-blue-hover); }
-.pl__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.pl__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.pl__italic { font-style: italic; }
-.pl__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.pl__lead strong { color: var(--nu-ink); font-weight: 800; }
-.pl__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.pl__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.pl__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.pl__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— tipografia compartilhada ——— */
 .pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .pl__h4--accent { color: var(--nu-blue); }
@@ -489,6 +448,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .pl__prose p:last-child { margin-bottom: 0; }
+.pl__prose strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
 .pl__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }

@@ -196,31 +196,21 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="sa__hero">
-      <div class="sa__status">
-        <NuxtLink to="/calculadoras" class="sa__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="sa__eyebrow">Simulador · Investimento em Ações</p>
-      <h1 class="sa__h1">
-        Histórico real da B3 com
-        <em class="sa__italic">Dividendos.</em>
-      </h1>
-      <p class="sa__lead">
-        Este simulador mostra quanto você teria ganhado investindo em qualquer ação da B3 usando <strong>dados históricos reais</strong>, incluindo dividendos e JCP reinvestidos. Escolhe ticker(s), valor inicial, aporte mensal e período. Exemplo: R$ 10.000 + R$ 500/mês em ITUB4 nos últimos 10 anos, com dividendos reinvestidos, viraria R$ 280.000-320.000.
-      </p>
-      <ul class="sa__chips">
-        <li><span class="sa__chip-dot sa__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="sa__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="sa__chip-dot" /> Dados reais da B3</li>
-        <li><span class="sa__chip-dot" /> Dividendos e JCP reinvestidos</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Veja quanto teria rendido investir em ações reais da B3.">
+      Histórico real da B3 com
+      <em>Dividendos.</em>
+    </CalcHero>
 
     <!-- ============ Simulador interativo (design + kit) ============ -->
     <CalcAcoesSimulator />
+
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Simulador · Investimento em Ações"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Dados reais da B3', 'Dividendos e JCP reinvestidos']"
+      :updated="lastUpdatedText"
+    />
 
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de simulação">
@@ -242,6 +232,8 @@ usePageSeo({
         <h2 class="sa__sub">Como Funciona o Simulador de Ações</h2>
       </template>
       <div class="sa__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>Este simulador mostra quanto você teria ganhado investindo em qualquer ação da B3 usando <strong>dados históricos reais</strong>, incluindo dividendos e JCP reinvestidos. Escolhe ticker(s), valor inicial, aporte mensal e período. Exemplo: R$ 10.000 + R$ 500/mês em ITUB4 nos últimos 10 anos, com dividendos reinvestidos, viraria R$ 280.000-320.000.</p>
         <p>Nosso simulador usa dados históricos reais da Bolsa de Valores brasileira (B3) para mostrar exatamente quanto você teria ganho (ou perdido) investindo em ações específicas. Diferente de calculadoras genéricas que usam taxas fixas, aqui você vê o resultado real, com todas as oscilações do mercado.</p>
         <p>O simulador considera preços históricos de fechamento, dividendos pagos, juros sobre capital próprio (JCP) e permite reinvestimento automático de proventos - exatamente como acontece na realidade com muitos investidores.</p>
       </div>
@@ -458,39 +450,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.sa__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.sa__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.sa__back { color: var(--nu-blue); font-weight: 800; }
-.sa__back:hover { color: var(--nu-blue-hover); }
-.sa__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.sa__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.sa__italic { font-style: italic; }
-.sa__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.sa__lead strong { color: var(--nu-ink); font-weight: 800; }
-.sa__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.sa__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.sa__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.sa__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— tipografia compartilhada (mesmos valores do exemplar jc__) ——— */
 .sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
 .sa__h4--accent { color: var(--nu-blue); }
@@ -504,6 +463,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .sa__prose p:last-child { margin-bottom: 0; }
+.sa__prose strong { color: var(--nu-ink); font-weight: 800; }
 .sa__prose--gap { margin-top: 22px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */

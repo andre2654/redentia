@@ -420,28 +420,11 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero (texto antigo verbatim, visual Nu) ============ -->
-    <section class="pt__hero">
-      <div class="pt__status">
-        <NuxtLink to="/calculadoras" class="pt__back">← Todas as calculadoras</NuxtLink>
-        <span aria-hidden>·</span>
-        <span>Atualizado {{ lastUpdatedText }}</span>
-      </div>
-      <p class="pt__eyebrow">Calculadora · Preço Teto e Preço Justo</p>
-      <h1 class="pt__h1">
-        Calculadora de Preço Teto e Preço Justo:
-        <em class="pt__italic">Graham, Bazin, P/L e VPA.</em>
-      </h1>
-      <p class="pt__lead">
-        O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por <strong>Graham</strong> (√(22.5×LPA×VPA)), <strong>Bazin</strong> (Dividendo÷0,06), <strong>P/L</strong> setorial ou <strong>VPA</strong>×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.
-      </p>
-      <ul class="pt__chips">
-        <li><span class="pt__chip-dot pt__chip-dot--positive" /> 100% gratuito</li>
-        <li><span class="pt__chip-dot" /> Cálculo instantâneo</li>
-        <li><span class="pt__chip-dot" /> Dados oficiais da B3</li>
-        <li><span class="pt__chip-dot" /> Graham · Bazin · P/L · VPA</li>
-      </ul>
-    </section>
+    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <CalcHero desc="Descubra até quanto vale pagar por uma ação, em segundos.">
+      Calculadora de Preço Teto e Preço Justo:
+      <em>Graham, Bazin, P/L e VPA.</em>
+    </CalcHero>
 
     <!-- ============ Calculadora interativa (design/kit) ============ -->
     <CalcShell section-id="teto" eyebrow="Calculadora">
@@ -529,6 +512,13 @@ usePageSeo({
       </template>
     </CalcShell>
 
+    <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
+    <CalcMetaStrip
+      label="Calculadora · Preço Teto e Preço Justo"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'Dados oficiais da B3', 'Graham · Bazin · P/L · VPA']"
+      :updated="lastUpdatedText"
+    />
+
     <!-- ============ Ações populares (deep-links verbatim, banda do design) ============ -->
     <CalcBand tone="cream" title="Ações populares para calcular preço teto">
       <template #dek>
@@ -551,6 +541,8 @@ usePageSeo({
     <CalcSplit tone="white">
       <template #title>Simulador de preço teto grátis e online</template>
       <div class="pt__prose">
+        <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
+        <p>O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por <strong>Graham</strong> (√(22.5×LPA×VPA)), <strong>Bazin</strong> (Dividendo÷0,06), <strong>P/L</strong> setorial ou <strong>VPA</strong>×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.</p>
         <p>Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.</p>
       </div>
     </CalcSplit>
@@ -783,39 +775,6 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* ——— hero ——— */
-.pt__hero {
-  background: var(--nu-cream);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
-  animation: nu-fade .5s ease both;
-}
-.pt__status {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
-}
-.pt__back { color: var(--nu-blue); font-weight: 800; }
-.pt__back:hover { color: var(--nu-blue-hover); }
-.pt__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.pt__h1 {
-  margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;
-  letter-spacing: -0.045em; line-height: 1.04; max-width: 1080px;
-}
-.pt__italic { font-style: italic; }
-.pt__lead {
-  color: var(--nu-gray-2); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500;
-  line-height: 1.6; margin: 20px 0 0; max-width: 780px;
-}
-.pt__lead strong { color: var(--nu-ink); font-weight: 800; }
-.pt__chips { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin: 26px 0 0; padding: 0; }
-.pt__chips li {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
-}
-.pt__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
-.pt__chip-dot--positive { background: var(--nu-green); }
-
 /* ——— controles da calculadora ——— */
 .pt__gap { margin-top: 26px; }
 .pt__examples { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -903,6 +862,7 @@ usePageSeo({
   line-height: 1.7;
 }
 .pt__prose p:last-child { margin-bottom: 0; }
+.pt__prose strong { color: var(--nu-ink); font-weight: 800; }
 .pt__prose--gap { margin-top: 20px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
