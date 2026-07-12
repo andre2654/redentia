@@ -37,21 +37,8 @@ function pctFmt(n: number): string {
 function dirOf(n: number): NuDir {
   return n < 0 ? 'down' : 'up'
 }
-/** escapa texto vindo da API antes de virar HTML (parágrafos usam v-html). */
-function esc(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
-/**
- * Parágrafo do briefing (API → HTML seguro): escapa e converte a convenção
- * {mark}…{/mark} do loop atlas-daily-briefing em <strong> (a ênfase editorial
- * do design). Tokens órfãos são removidos — nunca vaza "{mark}" literal.
- */
-function briefingHtml(s: string): string {
-  return esc(s)
-    .replace(/\{mark\}([\s\S]*?)\{\/mark\}/g, '<strong>$1</strong>')
-    .replace(/\{\/?mark\}/g, '')
-}
-/* localISODate/relTime/sourcePretty: compartilhados em app/utils/format.ts (PR3) */
+/* localISODate/relTime/sourcePretty: compartilhados em app/utils/format.ts (PR3);
+   escapeHtml/briefingHtml idem (extraídos no PR7 — a Home renderiza o mesmo briefing) */
 /** '2026-08-15' → 'Venc. 08/26' (formato dos cards de Tesouro do design). */
 function vencFmt(dateStr: string | null): string {
   if (!dateStr) return ''

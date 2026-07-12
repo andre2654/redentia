@@ -12,6 +12,12 @@ const props = defineProps<{
   ticker: string
   /** 'R$ 39,60' — valor da pill de fechamento */
   currentLabel: string
+  /**
+   * PR7 (Home): modo "valores ocultos" — o R$ do tooltip vira 'R$ ••••••'
+   * (o delta % fica, igual ao mock; a pill é mascarada pelo pai via
+   * currentLabel). Sem efeito nas telas públicas (default false).
+   */
+  masked?: boolean
 }>()
 
 const H = 320
@@ -98,7 +104,7 @@ const hov = computed(() => {
     topPct: `${((Y(p.v) / H) * 100).toFixed(2)}%`,
     tipLeft: `${(Math.min(0.86, Math.max(0.14, frac)) * 100).toFixed(2)}%`,
     date: `${Number(d)} ${MONTHS_PT[Number(m) - 1] ?? m} ${y}`,
-    val: `R$ ${nf2.format(p.v)}`,
+    val: props.masked ? 'R$ ••••••' : `R$ ${nf2.format(p.v)}`,
     delta: `${dp > 0 ? '+' : ''}${nf2.format(dp)}% no período`,
     dir: dp >= 0 ? 'up' : 'down',
   }

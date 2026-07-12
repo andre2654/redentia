@@ -171,4 +171,29 @@
   --nu-placeholder: #C9C2B4;   /* placeholder dos inputs underline */
   --nu-underline: #E9E4D8;     /* linha de repouso do input (mesmo hex de --nu-cream-3, papel próprio) */
   --nu-row-hover: #FAF8F3;     /* hover dos list-buttons de auth */
+
+  /* ——— PR7 Home logada (valores exatos de Redentia Home Nu.dc.html) ——— */
+  --nu-blue-legend: #7FB1FF;   /* valor 'Você' na legenda do gráfico navy */
+  --nu-ink-hover: #2A2A2E;     /* hover do botão preto do briefing */
+  --nu-warning-bg: rgba(255, 194, 77, 0.22); /* badge 'Risco de concentração' (texto --nu-amber-soft) */
+
+  /* alocação por classe (barra empilhada de "Suas posições") */
+  --nu-alloc-stock: #2F6BFF;   /* Ações (= --nu-blue, papel próprio) */
+  --nu-alloc-fii: #7C5FD6;     /* FIIs */
+  --nu-alloc-fixed: #0E9E63;   /* Renda Fixa */
+  --nu-alloc-crypto: #F2994A;  /* Cripto */
+  --nu-alloc-cash: #B9AE9C;    /* Caixa/Outros (= --nu-sand, papel próprio) */
+
+  /* pares bg/fg dos tiles de posição (mapa TL do design) */
+  --nu-tile-petr-bg: #00A868;                    /* fg = --nu-white */
+  --nu-tile-vale-bg: rgba(0, 156, 59, 0.16);
+  --nu-tile-vale-fg: #00915B;
+  --nu-tile-bbas-bg: rgba(242, 194, 0, 0.25);
+  --nu-tile-bbas-fg: #A87B00;
+  --nu-tile-wege-bg: rgba(0, 120, 255, 0.14);
+  --nu-tile-wege-fg: #2F6BD8;
+  --nu-tile-itub-bg: rgba(236, 112, 0, 0.16);
+  --nu-tile-itub-fg: #D96B00;
+  --nu-tile-mxrf-bg: rgba(157, 123, 255, 0.20);
+  --nu-tile-mxrf-fg: #7C5FD6;
 }

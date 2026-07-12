@@ -48,3 +48,32 @@ export function relTimeFeed(iso: string | null): string {
 export function sourcePretty(s: string): string {
   return s.replace(/_/g, ' ').replace(/(^|\s)\S/g, (c) => c.toUpperCase())
 }
+
+/**
+ * CDI do GET /macro/snapshot vem em % AO DIA (label '% a.d.', SGS 12 do BCB —
+ * verificado em prod 2026-07-11: value 0.052531). Anualiza compondo 252
+ * pregões; se um dia o backend passar a mandar % a.a., o label muda e o valor
+ * passa direto. Usado no ticker global e na legenda CDI da Home (PR7).
+ */
+export function cdiAnnualPct(cdi: { value: number | null; label?: string | null } | null | undefined): number | null {
+  if (cdi?.value == null || !Number.isFinite(cdi.value)) return null
+  if ((cdi.label ?? '').includes('a.d')) return ((1 + cdi.value / 100) ** 252 - 1) * 100
+  return cdi.value
+}
+
+/** Escapa texto vindo da API antes de virar HTML (parágrafos usam v-html). */
+export function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+/**
+ * Parágrafo do briefing (API → HTML seguro): escapa e converte a convenção
+ * {mark}…{/mark} do loop atlas-daily-briefing em <strong> (a ênfase editorial
+ * do design). Tokens órfãos são removidos — nunca vaza "{mark}" literal.
+ * (Extraído do useMercado no PR7 — a Home logada renderiza o mesmo briefing.)
+ */
+export function briefingHtml(s: string): string {
+  return escapeHtml(s)
+    .replace(/\{mark\}([\s\S]*?)\{\/mark\}/g, '<strong>$1</strong>')
+    .replace(/\{\/?mark\}/g, '')
+}

@@ -75,7 +75,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="mtz">
+  <!-- id="teses": âncora do link 'Explorar teses' da Home logada (PR7) -->
+  <section id="teses" class="mtz">
     <NuSectionHeading eyebrow="Teses Redentia">
       Invista em ideias,<br>não em palpites.
       <template #dek>

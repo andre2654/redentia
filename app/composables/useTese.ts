@@ -51,16 +51,13 @@ function pct1(n: number): string {
   return `${n >= 0 ? '+' : ''}${nf1.format(n)}%`
 }
 
-function esc(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
 /**
- * Prosa da tese (API → HTML seguro): escapa e converte {mark}…{/mark} do
- * seeder de teses no span de destaque do design (bg azul .16, w800).
- * Tokens órfãos são removidos — nunca vaza "{mark}" literal.
+ * Prosa da tese (API → HTML seguro): escapa (escapeHtml de utils/format, PR7)
+ * e converte {mark}…{/mark} do seeder de teses no span de destaque do design
+ * (bg azul .16, w800). Tokens órfãos são removidos — nunca vaza "{mark}".
  */
 function markHtml(s: string): string {
-  return esc(s)
+  return escapeHtml(s)
     .replace(/\{mark\}([\s\S]*?)\{\/mark\}/g, '<span class="tse-hi">$1</span>')
     .replace(/\{\/?mark\}/g, '')
 }
