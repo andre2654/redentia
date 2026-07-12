@@ -231,4 +231,15 @@
   --nu-shadow-hist-active: 0 8px 20px rgba(12, 21, 36, 0.08);     /* item ativo do histórico */
   /* fade atrás do composer sticky (stops exatos do design) */
   --nu-chat-fade: linear-gradient(180deg, rgba(12, 21, 36, 0) 0%, #0C1524 42%);
+
+  /* ——— PR-R1 NuMarketReading + Login (animação "Redentia lendo o mercado") ——— */
+  /* recência do feed que acende sobre navy (wcol do design DC) */
+  --nu-cream-text-24: rgba(245, 241, 234, 0.24);  /* palavra ainda não lida (d<=0) */
+  --nu-cream-text-72: rgba(245, 241, 234, 0.72);  /* palavra recém-lida (d=2) */
+  --nu-red-soft-16: rgba(255, 179, 184, 0.16);    /* bg da pill de baixa no feed (par de --nu-green-soft-16) */
+  --nu-read-doc-bg: rgba(127, 169, 240, 0.16);    /* tile do ícone doc sobre navy (tint de --nu-grad-blue-2 #7FA9F0) */
+  /* lockup da marca no morph de brand */
+  --nu-white-82: rgba(255, 255, 255, 0.82);       /* tagline "leu o mercado por você." */
+  --nu-read-glow: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%); /* halo atrás do logo */
+  --nu-read-logo-shadow: drop-shadow(0 22px 44px rgba(4, 18, 85, 0.45)); /* sombra do logo no lockup */
 }
