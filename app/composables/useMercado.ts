@@ -10,7 +10,6 @@ import type {
   NuDir,
   NuFaqItem,
   NuGuideCardItem,
-  NuHeroCards,
   NuIndexStat,
   NuMoverRow,
   NuMoverTab,
@@ -632,38 +631,6 @@ export function useNuNews() {
 
   onMounted(hydrate)
   return { featured, rows, loaded }
-}
-
-/* ═════ Hero (float cards) ═════ */
-
-const HERO_SEED: NuHeroCards = {
-  quoteLabel: 'PETR4 · Petrobras',
-  price: 'R$ 38,25',
-  pct: '+0,76%',
-  dir: 'up',
-  score: 93,
-  newsTitle: 'Brent caminha para US$ 60 e pressiona petroleiras',
-}
-
-export function useNuHeroCards() {
-  const cards = useState<NuHeroCards>('nu:mercado:hero', () => HERO_SEED)
-  const started = useState('nu:mercado:hero-started', () => false)
-
-  async function hydrate() {
-    if (started.value) return
-    started.value = true
-    try {
-      const q = await marketFetchQuote('PETR4')
-      const s = q.data
-      if (s?.market_price != null) {
-        const chg = s.change_percent ?? 0
-        cards.value = { ...cards.value, price: `R$ ${nf2.format(s.market_price)}`, pct: pctFmt(chg), dir: dirOf(chg) }
-      }
-    } catch { /* mantém o seed */ }
-  }
-
-  onMounted(hydrate)
-  return { cards }
 }
 
 /* ═════ Conteúdo estático da página (copy exata do design) ═════ */

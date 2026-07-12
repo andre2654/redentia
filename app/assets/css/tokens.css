@@ -242,4 +242,20 @@
   --nu-white-82: rgba(255, 255, 255, 0.82);       /* tagline "leu o mercado por você." */
   --nu-read-glow: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%); /* halo atrás do logo */
   --nu-read-logo-shadow: drop-shadow(0 22px 44px rgba(4, 18, 85, 0.45)); /* sombra do logo no lockup */
+
+  /* ——— PR-R2 NuMarketReading tema 'light' + card do hero do /mercado ——— */
+  /* recência do feed que acende sobre card branco (wcol light do design DC) */
+  --nu-read-word-1: #C4BEB2;   /* palavra ainda não lida (d<=0) */
+  --nu-read-word-2: #BAB4A8;   /* d=1 */
+  --nu-read-word-3: #8E887C;   /* d=2 */
+  --nu-read-word-4: #585349;   /* d=3 (a mais recente antes do topo, que é --nu-ink) */
+  /* pills de variação sobre card branco (bg da alta reusa --nu-green-bg; brand reusa --nu-tile-blue-bg) */
+  --nu-read-green: #0B7A3E;    /* texto da pill de alta */
+  --nu-read-red-bg: #FBE1E2;   /* bg da pill de baixa (≠ --nu-red-bg #FBE3E4) */
+  --nu-read-red: #C42B33;      /* texto da pill de baixa */
+  /* tile do ícone doc sobre card branco (brand reusa --nu-blue-16; stroke sempre --nu-blue) */
+  --nu-read-doc-bg-light: #EAF1FF;
+  /* chrome do card de leitura no hero do /mercado */
+  --nu-navy-06: rgba(12, 21, 36, 0.06);                            /* borda do card */
+  --nu-shadow-read-card: 0 34px 74px -36px rgba(12, 21, 36, 0.32); /* sombra do card */
 }

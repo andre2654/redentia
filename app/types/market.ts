@@ -233,11 +233,3 @@ export interface NuFaqItem {
   a: string
 }
 
-export interface NuHeroCards {
-  quoteLabel: string
-  price: string
-  pct: string
-  dir: NuDir
-  score: number
-  newsTitle: string
-}
