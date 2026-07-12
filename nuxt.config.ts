@@ -77,6 +77,10 @@ export default defineNuxtConfig({
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
     '/calculadora': { redirect: { to: '/calculadoras', statusCode: 301 } },
     '/calculadora/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // Páginas estáticas/legais (institucional + metodologia): conteúdo jurídico/
+    // editorial que quase nunca muda — cache longo na borda + SWR de 1 dia.
+    '/institucional/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
+    '/metodologia': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
   },
 
   nitro: {

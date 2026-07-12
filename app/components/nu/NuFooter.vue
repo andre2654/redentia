@@ -9,7 +9,8 @@ const CARDS = [
 const COLUMNS = [
   { title: 'Produto', links: [{ label: 'Ações', to: '/acao/PETR4' }, { label: 'Carteira', to: '/carteira' }, { label: 'Mercado', to: '/mercado' }, { label: 'Calculadoras', to: '/calculadoras' }] },
   { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Busca', to: '/busca' }, { label: 'Guias', to: '/guias' }] },
-  { title: 'Empresa', links: [{ label: 'Sobre', to: '/mercado' }, { label: 'Contato', to: '/mercado' }] },
+  { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
+  { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
 ]
 </script>
 
