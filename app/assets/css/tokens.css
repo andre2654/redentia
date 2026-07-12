@@ -166,4 +166,9 @@
   --nu-tile-green-bg: rgba(0, 156, 59, 0.14);    /* fg = --nu-green-2 */
   --nu-tile-orange-bg: rgba(242, 153, 74, 0.22);
   --nu-tile-orange-fg: #C06A10;
+
+  /* ——— PR6 /login (valores exatos de Redentia Login Nu.dc.html) ——— */
+  --nu-placeholder: #C9C2B4;   /* placeholder dos inputs underline */
+  --nu-underline: #E9E4D8;     /* linha de repouso do input (mesmo hex de --nu-cream-3, papel próprio) */
+  --nu-row-hover: #FAF8F3;     /* hover dos list-buttons de auth */
 }

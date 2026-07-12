@@ -17,6 +17,12 @@ interface PageSeoInput {
   structuredData?: Record<string, unknown>[]
   breadcrumbs?: Breadcrumb[]
   noindex?: boolean
+  /**
+   * Override completo da meta robots (ex.: 'noindex, follow' em telas de
+   * auth — não rankeiam, mas os links internos continuam rastreáveis).
+   * Vence o default 'noindex, nofollow' do flag noindex.
+   */
+  robots?: string
 }
 
 export function usePageSeo(input: PageSeoInput) {
@@ -41,7 +47,11 @@ export function usePageSeo(input: PageSeoInput) {
     twitterTitle: input.title,
     twitterDescription: input.description,
     twitterImage: image,
-    ...(input.noindex ? { robots: 'noindex, nofollow' } : {}),
+    ...(input.robots
+      ? { robots: input.robots }
+      : input.noindex
+        ? { robots: 'noindex, nofollow' }
+        : {}),
   })
 
   const ld: Record<string, unknown>[] = []

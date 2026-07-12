@@ -36,6 +36,13 @@ export default defineNuxtConfig({
       // chatDirectUrl: escape hatch se o proxy Vercel bufferizar SSE (lição do Atlas).
       chatDirectUrl: process.env.NUXT_PUBLIC_CHAT_DIRECT_URL || '',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://redentia.com.br',
+      // Google OAuth Web client ID (público por design — o browser precisa
+      // dele pro Google Identity Services emitir o id_token; o secret vive
+      // só no Laravel, que valida via tokeninfo + aud). ENV-ONLY, sem
+      // fallback hardcoded (lição registrada em conventions.md). Sem a env,
+      // o botão Google do /login se esconde sozinho (LoginGoogleButton
+      // documenta o que falta pra ligar).
+      googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
     },
   },
 
@@ -52,6 +59,9 @@ export default defineNuxtConfig({
     '/': { headers: { 'cache-control': 'private, no-store' } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
     '/busca': { headers: { 'cache-control': 'private, no-store' } },
+    // /login redireciona SSR-side quem já tem cookie de sessão e lê
+    // ?redirect/?email — cachear seria servir o redirect de um user pro outro.
+    '/login': { headers: { 'cache-control': 'private, no-store' } },
     '/mercado': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/noticias': { headers: { 'cache-control': 'public, s-maxage=180, stale-while-revalidate=600' } },
     '/acao/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
