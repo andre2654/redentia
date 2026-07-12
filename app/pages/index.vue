@@ -48,7 +48,7 @@ if (hasToken && !sessionDead.value) {
 <template>
   <div v-if="showHome && payload">
     <HomeHero :hero="payload.hero" />
-    <HomeChart v-if="payload.chart" :chart="payload.chart" />
+    <NuPortfolioChart v-if="payload.chart" :chart="payload.chart" />
     <HomePositions :positions="payload.positions" />
     <HomeTheses v-if="payload.theses" :theses="payload.theses" />
     <HomeActions

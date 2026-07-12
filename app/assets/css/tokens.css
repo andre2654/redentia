@@ -196,4 +196,23 @@
   --nu-tile-itub-fg: #D96B00;
   --nu-tile-mxrf-bg: rgba(157, 123, 255, 0.20);
   --nu-tile-mxrf-fg: #7C5FD6;
+
+  /* ——— PR8 /carteira (valores exatos de Redentia Carteira Nu.dc.html) ——— */
+  --nu-ink-16: rgba(10, 10, 12, 0.16);       /* borda de repouso do botão-olho */
+  --nu-red-pill-bg: #F8DEDE;                 /* bg da pill de retorno negativo (grupo) */
+  --nu-cream-line-2: #E9E2D3;                /* divisórias do painel interno de ativos */
+  --nu-amber-fill: #E8A13D;                  /* fill âmbar das barras do Raio-X */
+  --nu-cream-text-22: rgba(245, 241, 234, 0.22); /* barras inativas do mini bar chart (renda) */
+  /* tiles por classe (Renda Fixa / Cripto — fg RF = --nu-alloc-fixed, ETH = tile mxrf) */
+  --nu-tile-rf-bg: rgba(14, 158, 99, 0.14);
+  --nu-tile-btc-bg: rgba(242, 153, 74, 0.18);
+  --nu-tile-btc-fg: #D97706;
+  /* heatmap P&L: alpha computada em runtime sobre os canais RGB (função hmCell
+     portada do design) — hex só aqui, componente monta rgba(var(--nu-hm-*-rgb), α) */
+  --nu-hm-green-rgb: 14, 158, 99;            /* #0E9E63 */
+  --nu-hm-red-rgb: 214, 50, 59;              /* #D6323B */
+  --nu-hm-green-ink: #0B6B44;                /* texto sobre célula verde clara */
+  --nu-hm-red-ink: #A02730;                  /* texto sobre célula vermelha clara */
+  --nu-hm-empty: #EDE8DC;                    /* célula vazia (mês futuro/sem dado) */
+  --nu-hm-green: #0E9E63;                    /* pill sólida do total anual (papel próprio) */
 }

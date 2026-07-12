@@ -5,6 +5,27 @@
  */
 
 export const MONTHS_PT = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'] as const
+export const MONTH_LONG_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'] as const
+
+const nf2pct = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+/** '+1,89%' / '-0,42%' — formato padrão de variação dos designs (2 casas). */
+export function pctFmt(n: number): string {
+  return `${n > 0 ? '+' : ''}${nf2pct.format(n)}%`
+}
+
+/** direção semântica (0 conta como alta — padrão dos designs). */
+export function dirOf(n: number): 'up' | 'down' {
+  return n < 0 ? 'down' : 'up'
+}
+
+/**
+ * 'YYYY-MM-DD' de hoje em São Paulo (produto BR-only: SSR e client no MESMO
+ * fuso — sem mismatch de hidratação). Extraído do useHome no PR8.
+ */
+export function spISODate(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
+}
 
 export function localISODate(d = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`

@@ -8,35 +8,16 @@
 import type { HomeHeroVM } from '~/types/home'
 
 const props = defineProps<{ hero: HomeHeroVM }>()
-const { hidden, toggle } = useHiddenValues()
+const { hidden } = useHiddenValues()
 
 const patrimonio = computed(() =>
   props.hero.patrimonio ? (hidden.value ? 'R$ ••••••' : props.hero.patrimonio) : null)
 const hojeTxt = computed(() =>
   props.hero.hojeTxt ? (hidden.value ? '+R$ •• hoje' : props.hero.hojeTxt) : null)
 
-// Fit-text do patrimônio (UX do dono 2026-07-11): o número SEMPRE ocupa uma
-// linha só, no maior tamanho que couber ao lado do olho — o clamp() do CSS é o
-// teto, daqui só encolhe (nunca estica além do design). Reage a resize e ao
-// toggle da máscara (texto muda de largura).
-const valueEl = ref<HTMLElement | null>(null)
-function fitValue() {
-  const el = valueEl.value
-  if (!el) return
-  el.style.fontSize = ''
-  const base = parseFloat(getComputedStyle(el).fontSize)
-  if (el.scrollWidth > el.clientWidth) {
-    el.style.fontSize = `${Math.max(30, Math.floor(base * (el.clientWidth / el.scrollWidth) * 0.985))}px`
-  }
-}
-let ro: ResizeObserver | null = null
-onMounted(() => {
-  fitValue()
-  ro = new ResizeObserver(fitValue)
-  if (valueEl.value) ro.observe(valueEl.value)
-})
-onBeforeUnmount(() => { ro?.disconnect() })
-watch(patrimonio, () => nextTick(fitValue))
+// Fit-text do patrimônio — padrão compartilhado (useFitText, extraído no PR8;
+// o hero da /carteira usa o mesmo).
+const { el: valueEl } = useFitText(patrimonio)
 </script>
 
 <template>
@@ -46,15 +27,7 @@ watch(patrimonio, () => nextTick(fitValue))
     <template v-if="hero.state === 'patrimonio'">
       <div class="hhr__row">
         <h1 ref="valueEl" class="hhr__value hhr__value--fit">{{ patrimonio }}</h1>
-        <button
-          type="button" class="hhr__eye"
-          :aria-label="hidden ? 'Mostrar valores' : 'Esconder valores'"
-          :aria-pressed="hidden"
-          @click="toggle"
-        >
-          <svg v-if="!hidden" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0A0A0C" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-          <svg v-else width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0A0A0C" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>
-        </button>
+        <NuEyeButton class="hhr__eye" />
       </div>
       <div class="hhr__meta">
         <span v-if="hojeTxt" class="hhr__badge" :class="`hhr__badge--${hero.hojeDir}`">
@@ -102,13 +75,7 @@ watch(patrimonio, () => nextTick(fitValue))
 /* variante fit: 1 linha sempre; o JS encolhe a fonte até caber ao lado do olho */
 .hhr__value--fit { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; }
 .hhr__value--connect { margin-top: 16px; }
-.hhr__eye {
-  width: 48px; height: 48px; margin-bottom: 8px; border-radius: 50%;
-  background: transparent; border: 2px solid rgba(10, 10, 12, 0.16);
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-  flex-shrink: 0; transition: background .2s, border-color .2s;
-}
-.hhr__eye:hover { background: var(--nu-white); border-color: var(--nu-ink-30); }
+.hhr__eye { margin-bottom: 8px; }
 .hhr__meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 26px; }
 .hhr__badge {
   display: inline-flex; align-items: center; gap: 7px;

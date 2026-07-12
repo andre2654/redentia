@@ -28,7 +28,6 @@
  */
 import type {
   CompositionApi,
-  EquityCurvePointApi,
   HomeActionCardVM,
   HomeAllocationVM,
   HomeBriefingVM,
@@ -56,12 +55,7 @@ const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFr
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const nfQty = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 })
 
-function pctFmt(n: number): string {
-  return `${n > 0 ? '+' : ''}${nf2.format(n)}%`
-}
-function dirOf(n: number): NuDir {
-  return n < 0 ? 'down' : 'up'
-}
+// pctFmt/dirOf/spISODate vivem em utils/format.ts (extraídos no PR8).
 
 /**
  * Relógio de São Paulo nos DOIS lados (produto BR-only): SSR e client
@@ -82,17 +76,8 @@ function spClock() {
   }
 }
 
-/** 'YYYY-MM-DD' de hoje em São Paulo (compara com datas do backend). */
-function spISODate(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
-}
-
-/** valor de uma posição na precedência do backend (current_value > mtm > custo). */
-function positionValue(p: PortfolioPositionApi): number {
-  if (p.current_value != null) return p.current_value
-  if (p.current_price != null) return p.current_price * p.quantity
-  return (p.average_price ?? 0) * p.quantity
-}
+// positionValue/portfolioTotalValue/CLASS_*/TILE_*/buildEquityChartVM vivem em
+// utils/portfolio.ts (extraídos no PR8 — /carteira usa os MESMOS builders).
 
 const ok = <X>(r: PromiseSettledResult<X>): X | null => (r.status === 'fulfilled' ? r.value : null)
 
@@ -137,78 +122,7 @@ function buildHero(userName: string | null, totalValue: number, today: Portfolio
   }
 }
 
-/* ————— gráfico ————— */
-
-/**
- * Fiel ao design: a curva plota o PATRIMÔNIO em R$ (gridlines 'R$ NNk', pill
- * 'Patrimônio hoje', tooltip R$ + delta% no período) — IBOV e CDI entram como
- * COMPARATIVOS DE LEGENDA (Você/IBOV/CDI %), não como linhas. A instrução
- * original citava série normalizada em % via NuPerformanceChart, mas o
- * .dc.html (contrato de UX) desenha UMA série em R$ — o design venceu;
- * decisão documentada no relatório do PR.
- * Estados: null = seção some (sem curva/sem conexão); collecting = curva com
- * <10 pontos ("coletando histórico", sem gráfico falso).
- */
-function buildChart(
-  curve: EquityCurvePointApi[] | null,
-  ibov12m: SeriesPoint[] | null,
-  cdiRate: number | null,
-  totalValue: number,
-): HomeChartVM | null {
-  if (!curve?.length) return null
-  // corta o prólogo sem preço confiável (position_value 0 vira parede no chart)
-  const firstIdx = curve.findIndex((p) => p.position_value > 0)
-  if (firstIdx < 0) return null
-  const points: SeriesPoint[] = curve.slice(firstIdx).map((p) => ({ t: p.date, v: p.position_value }))
-  // Coerência hero×chart: o último ponto da curva ancora no MESMO total do
-  // hero (/portfolio/today marca a mercado com o preço mais fresco; a curva
-  // fecha com sum(current_value) do Pluggy — duas verdades verificadas ao
-  // vivo: 346.227 vs 335.132). O backend já faz override do último ponto;
-  // aqui só trocamos a âncora pela mais fresca. Documentado no relatório.
-  const last = points[points.length - 1]!
-  if (totalValue > 0) last.v = totalValue
-  return {
-    points,
-    collecting: points.length < 10,
-    currentLabel: `R$ ${nf0.format(last.v)}`,
-    ibov12m,
-    cdiRate,
-  }
-}
-
 /* ————— posições ————— */
-
-/** mapa de cor por ticker do design (TL) — resto cicla os pares do PR5. */
-const TILE_MAP: Record<string, [bg: string, fg: string]> = {
-  PETR4: ['var(--nu-tile-petr-bg)', 'var(--nu-white)'],
-  VALE3: ['var(--nu-tile-vale-bg)', 'var(--nu-tile-vale-fg)'],
-  BBAS3: ['var(--nu-tile-bbas-bg)', 'var(--nu-tile-bbas-fg)'],
-  WEGE3: ['var(--nu-tile-wege-bg)', 'var(--nu-tile-wege-fg)'],
-  ITUB4: ['var(--nu-tile-itub-bg)', 'var(--nu-tile-itub-fg)'],
-  MXRF11: ['var(--nu-tile-mxrf-bg)', 'var(--nu-tile-mxrf-fg)'],
-}
-const TILE_CYCLE: [string, string][] = [
-  ['var(--nu-tile-blue-bg)', 'var(--nu-blue-deep)'],
-  ['var(--nu-tile-amber-bg)', 'var(--nu-tile-amber-fg)'],
-  ['var(--nu-tile-green-bg)', 'var(--nu-green-2)'],
-  ['var(--nu-tile-orange-bg)', 'var(--nu-tile-orange-fg)'],
-]
-
-const CLASS_LABEL: Record<string, string> = {
-  STOCK: 'Ações', BDR: 'Ações', ETF: 'Ações',
-  REIT: 'FIIs',
-  TREASURY: 'Renda Fixa', FIXED_INCOME: 'Renda Fixa',
-  CRYPTO: 'Cripto',
-}
-const CLASS_COLOR: Record<string, string> = {
-  'Ações': 'var(--nu-alloc-stock)',
-  'FIIs': 'var(--nu-alloc-fii)',
-  'Renda Fixa': 'var(--nu-alloc-fixed)',
-  'Cripto': 'var(--nu-alloc-crypto)',
-  'Outros': 'var(--nu-alloc-cash)',
-}
-/** ordem fixa do design (Ações → FIIs → RF → Cripto → Outros). */
-const CLASS_ORDER = ['Ações', 'FIIs', 'Renda Fixa', 'Cripto', 'Outros']
 
 /**
  * Estados: 'full' (resumo + alocação por CLASSE derivada das posições — o
@@ -421,8 +335,6 @@ async function buildTheses(
 }
 
 /* ————— "O que fazer agora" (regras determinísticas) ————— */
-
-const MONTH_LONG_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 
 /**
  * REGRAS (todas de dado real; card só entra quando a regra dispara — 0 cards
@@ -730,9 +642,7 @@ async function loadHome(base: string, token: string): Promise<HomePayload> {
     .map((p) => ({ t: p.price_at, v: p.market_price as number }))
   const positionsVM = buildPositions(portfolio, today)
 
-  const totalValue = today?.totals?.value_now && today.totals.value_now > 0
-    ? today.totals.value_now
-    : (portfolio ?? []).reduce((s, p) => s + positionValue(p), 0)
+  const totalValue = portfolioTotalValue(portfolio, today)
 
   /* 3. dependentes (bounded): teses seguidas + consenso das top 3 posições */
   const topEquities = positionsVM.rows
@@ -748,7 +658,7 @@ async function loadHome(base: string, token: string): Promise<HomePayload> {
 
   return {
     hero: buildHero(userName, totalValue, today),
-    chart: buildChart(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
+    chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
     positions: positionsVM,
     theses: thesesVM,
     actions: buildActions(income, composition, portfolio, consensus, positionsVM),

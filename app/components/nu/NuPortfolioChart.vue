@@ -1,8 +1,10 @@
 <script setup lang="ts">
-// Seção navy "Sua carteira em N meses." (design Home Nu): pills de período
-// 1M/6M/12M funcionais, legenda Você/IBOV/CDI e o gráfico do PATRIMÔNIO em R$
-// full-bleed (NuPriceChart — mesma anatomia do design: gridlines 'R$ NNk',
-// pill 'Patrimônio hoje', crosshair). IBOV/CDI são comparativos DE LEGENDA,
+// Seção navy "Sua carteira em N meses." — COMPARTILHADA entre a Home logada
+// (PR7) e /carteira (PR8): os dois designs desenham o MESMO bloco (movida de
+// components/home/HomeChart.vue no PR8, 1 implementação por responsabilidade).
+// Pills de período 1M/6M/12M funcionais, legenda Você/IBOV/CDI e gráfico do
+// PATRIMÔNIO em R$ full-bleed (NuPriceChart — gridlines 'R$ NNk', pill
+// 'Patrimônio hoje', crosshair). IBOV/CDI são comparativos DE LEGENDA,
 // como no .dc.html (decisão documentada no relatório do PR).
 //  - Você  = variação do patrimônio no período (curva real /portfolio/equity-curve)
 //  - IBOV  = /indices/IBOV/prices?mode= (12mo pré-buscado no SSR; 1M/6M lazy)
