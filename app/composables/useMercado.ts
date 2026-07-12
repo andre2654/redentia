@@ -635,24 +635,6 @@ export function useNuNews() {
 
 /* ═════ Conteúdo estático da página (copy exata do design) ═════ */
 
-export const MERCADO_VALUE_PROPS = [
-  {
-    icon: 'bars',
-    title: 'Análise pronta',
-    desc: 'Fundamentos de mais de 400 ações e FIIs traduzidos em notas, tags e um score de 0 a 100. Sem planilha.',
-  },
-  {
-    icon: 'chat',
-    title: 'IA que responde',
-    desc: 'Pergunte "vale a pena comprar?" e receba uma análise com dados, preço-alvo e riscos — em segundos.',
-  },
-  {
-    icon: 'bell',
-    title: 'Alertas do que importa',
-    desc: 'Notícias, proventos e fatos relevantes filtrados pela sua carteira. Você só é avisado do que te afeta.',
-  },
-] as const
-
 export const MERCADO_EXPLORE = [
   { t: 'Ações', d: 'Análise fundamentalista de 400+ empresas da B3, com score e preço-alvo.', href: '/acao/PETR4' },
   { t: 'FIIs', d: 'Fundos imobiliários com dividend yield, vacância e histórico de proventos.', href: '#' },

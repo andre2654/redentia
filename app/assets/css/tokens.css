@@ -295,4 +295,21 @@
   --nu-day-puxou: #0B7A4B;        /* rótulo "O que puxou" (verde) */
   --nu-day-ficou: #C0392B;        /* rótulo "O que ficou pra trás" (vermelho) */
   --nu-shadow-day-modal: 0 40px 110px rgba(0, 0, 0, 0.45);
+
+  /* ——— PR-R5 novas seções de imagem do /mercado (designs v2) ——— */
+  /* "Sua carteira, conectada." — avatares de banco (CSS puro, cores das marcas).
+     Bradesco "B" usa bg --nu-cream + texto --nu-bank-bradesco; Santander bg
+     --nu-bank-santander + texto branco; "+110" bg --nu-cream-text-22 (já existe). */
+  --nu-bank-nu: #820AD1;        /* Nubank */
+  --nu-bank-itau: #0A1A54;      /* Itaú */
+  --nu-bank-bradesco: #CC092F;  /* Bradesco (texto sobre --nu-cream) */
+  --nu-bank-santander: #EC0000; /* Santander */
+  --nu-cream-text-82: rgba(245, 241, 234, 0.82); /* dek da banda azul + sub do CTA final */
+  /* placeholder elegante das imagens lifestyle (TODO(asset): fotos reais do André) */
+  --nu-img-placeholder: linear-gradient(135deg, #2456C9 0%, #16357F 52%, #0C1524 100%);
+  --nu-img-glow: radial-gradient(120% 90% at 78% 14%, rgba(158, 200, 255, 0.30) 0%, rgba(158, 200, 255, 0) 60%);
+  --nu-cta-placeholder: linear-gradient(120deg, #2F6BFF 0%, #2456C9 58%, #16357F 100%);
+  /* CTA final com foto de fundo — scrims exatos do design (azul→transparente + base) */
+  --nu-cta-scrim-h: linear-gradient(90deg, #2F6BFF 0%, rgba(47, 107, 255, 0.82) 24%, rgba(47, 107, 255, 0.44) 56%, rgba(47, 107, 255, 0.12) 100%);
+  --nu-cta-scrim-v: linear-gradient(180deg, rgba(47, 107, 255, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
 }
