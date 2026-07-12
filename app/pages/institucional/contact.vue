@@ -100,9 +100,20 @@ useHead({ titleTemplate: null })
           </div>
         </div>
 
-        <!-- FAQ rápido -->
-        <h2 class="ctc__h2">Perguntas Frequentes</h2>
-        <NuFaqAccordion :items="faqs" :default-open="-1" surface="white" />
+      </div>
+    </section>
+
+    <!-- FAQ — seção padrão das outras telas (mesmo bloco do /mercado) -->
+    <section class="cfq">
+      <div class="cfq__cols">
+        <div class="cfq__left">
+          <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
+          <div class="cfq__copy">Respostas para as principais dúvidas sobre a Redentia. Se preferir, pergunte direto à nossa IA.</div>
+          <NuxtLink to="/busca" class="cfq__cta">Perguntar à Redentia AI</NuxtLink>
+        </div>
+        <div class="cfq__right">
+          <NuFaqAccordion :items="faqs" />
+        </div>
       </div>
     </section>
   </div>
@@ -111,7 +122,7 @@ useHead({ titleTemplate: null })
 <style scoped>
 .ctc {
   background: var(--nu-white);
-  padding: clamp(44px, 6vw, 76px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  padding: clamp(44px, 6vw, 76px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .ctc__inner { max-width: 720px; margin: 0 auto; }
@@ -146,8 +157,23 @@ useHead({ titleTemplate: null })
 .ctc__channel-value--link { color: var(--nu-blue); text-decoration: none; transition: color .2s; }
 .ctc__channel-value--link:hover { color: var(--nu-blue-hover); text-decoration: underline; text-underline-offset: 2px; }
 
-/* Espaço antes do FAQ accordion (o h2 já dá o respiro superior). */
-.ctc :deep(.nfa) { margin-top: 22px; }
+/* FAQ — seção padrão (mesmo bloco .mfq do /mercado): 2 colunas, título +
+   copy + CTA à esquerda, accordion à direita. */
+.cfq {
+  background: var(--nu-white);
+  padding: 0 clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  animation: nu-fade .5s ease both;
+}
+.cfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+.cfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
+.cfq__copy { color: var(--nu-gray-2); font-size: 17px; font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
+.cfq__cta {
+  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  margin-top: 30px; transition: background .2s;
+}
+.cfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.cfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 
 @media (max-width: 760px) {
   .ctc__channels { grid-template-columns: 1fr; }
