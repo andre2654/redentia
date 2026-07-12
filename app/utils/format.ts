@@ -82,9 +82,31 @@ export function cdiAnnualPct(cdi: { value: number | null; label?: string | null 
   return cdi.value
 }
 
+/**
+ * 'agora' · 'há 12 min' · 'há 2 h' · 'há 3 d' — escala das conversas do chat
+ * do /busca (PR9; porta a rel() do mock Redentia Busca Nu.dc.html).
+ */
+export function relAgo(iso: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const mn = Math.round(Math.max(0, Date.now() - d.getTime()) / 60_000)
+  if (mn < 1) return 'agora'
+  if (mn < 60) return `há ${mn} min`
+  const h = Math.round(mn / 60)
+  if (h < 24) return `há ${h} h`
+  return `há ${Math.round(h / 24)} d`
+}
+
 /** Escapa texto vindo da API antes de virar HTML (parágrafos usam v-html). */
 export function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  // aspas TAMBÉM: conteúdo escapado entra em atributos (href de link do chat)
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 /**
