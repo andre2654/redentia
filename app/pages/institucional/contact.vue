@@ -112,7 +112,7 @@ useHead({ titleTemplate: null })
           <NuxtLink to="/busca" class="cfq__cta">Perguntar à Redentia AI</NuxtLink>
         </div>
         <div class="cfq__right">
-          <NuFaqAccordion :items="faqs" />
+          <NuFaqAccordion :items="faqs" surface="white" />
         </div>
       </div>
     </section>
@@ -160,8 +160,10 @@ useHead({ titleTemplate: null })
 /* FAQ — seção padrão (mesmo bloco .mfq do /mercado): 2 colunas, título +
    copy + CTA à esquerda, accordion à direita. */
 .cfq {
-  background: var(--nu-white);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  /* banda creme própria (color-blocking creme→branco→creme); cards do
+     accordion viram brancos (surface=white) pra contrastar. */
+  background: var(--nu-cream);
+  padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .cfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
