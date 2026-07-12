@@ -186,6 +186,12 @@ export interface HomePositionsVM {
 export interface HomeThesisCardVM {
   slug: string
   title: string
+  /** categoria/setor da tese (topo do card do carrossel) */
+  cat: string
+  /** tickers da tese (chips "Ativos da tese"); vazio se a API não trouxe */
+  tickers: string[]
+  /** o usuário segue esta tese (pill "Seguindo") — true no modo 'favorites' */
+  following: boolean
   image: string | null
   /** 'Convicção 88 · +1 hoje' | 'Convicção 82 · estável' | 'Explorar' */
   badge: string

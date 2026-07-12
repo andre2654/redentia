@@ -18,7 +18,7 @@ function guiaScroll(d: number) {
   <div>
     <MercadoHero />
 
-    <MercadoTeses />
+    <NuTeseStrip />
 
     <!-- Value props (banda azul) -->
     <section class="mvp">

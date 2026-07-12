@@ -54,7 +54,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'a-fabrica-volta-para-casa',
     cat: 'Reindustrialização',
-    image: null,
+    image: '/teses/reindustrializacao-eua.png',
     perf: '+34%',
     perfLabel: 'Tese em destaque',
     titlePre: 'A fábrica ',
@@ -76,7 +76,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'energia-para-ia',
     cat: 'Energia',
-    image: null,
+    image: '/teses/a-conta-de-luz-da-ia.png',
     perf: '+96%',
     perfLabel: 'Melhor tese',
     titlePre: '',
@@ -98,7 +98,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'a-nova-geografia-do-frete',
     cat: 'Logística',
-    image: null,
+    image: '/teses/a-nova-geografia-do-frete.png',
     perf: '+18%',
     perfLabel: 'Tese recente',
     titlePre: 'A nova geografia do ',
@@ -120,7 +120,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'o-imovel-mais-disputado-do-mundo',
     cat: 'Data centers',
-    image: null,
+    image: '/teses/imovel-mais-disputado-data-center.png',
     perf: '+44%',
     perfLabel: 'Popular',
     titlePre: 'O imóvel mais ',

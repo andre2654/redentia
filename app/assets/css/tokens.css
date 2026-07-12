@@ -258,4 +258,20 @@
   /* chrome do card de leitura no hero do /mercado */
   --nu-navy-06: rgba(12, 21, 36, 0.06);                            /* borda do card */
   --nu-shadow-read-card: 0 34px 74px -36px rgba(12, 21, 36, 0.32); /* sombra do card */
+
+  /* ——— PR-R3 carrosséis de tese (valores exatos dos designs v2) ——— */
+  /* Mercado "Invista com Teses." — faixa de painéis-imagem (NuTeseStrip) */
+  /* scrim do painel selecionado (4 stops — ≠ do --nu-thesis-scrim do card antigo) */
+  --nu-tese-strip-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.42) 0%, rgba(8, 12, 20, 0.04) 34%, rgba(8, 12, 20, 0.30) 62%, rgba(8, 12, 20, 0.90) 100%);
+  --nu-white-72: rgba(255, 255, 255, 0.72);  /* perfLabel sobre o scrim do painel */
+  --nu-cream-5: #F1ECE1;                      /* bg das setas prev/next da faixa */
+  --nu-cream-5-hover: #E5DECE;                /* hover das setas prev/next */
+
+  /* Home "Suas teses." — cards navy em scroll horizontal (3 gradientes ciclados) */
+  --nu-tese-grad-1: linear-gradient(200deg, #9EC8FF 0%, #4D86E8 34%, #16233B 88%);
+  --nu-tese-grad-2: linear-gradient(165deg, #2F6BFF 0%, #2456C9 46%, #0C1524 100%);
+  --nu-tese-grad-3: linear-gradient(205deg, #7FA9F0 0%, #2456C9 56%, #0C1524 96%);
+  --nu-white-92: rgba(255, 255, 255, 0.92);      /* categoria do card */
+  --nu-white-62: rgba(255, 255, 255, 0.62);      /* label "desde que segue" */
+  --nu-green-soft-22: rgba(143, 240, 181, 0.22); /* bg da pill "Seguindo" */
 }

@@ -246,6 +246,9 @@ async function buildTheses(
       cards: picks.map((c) => ({
         slug: c.id,
         title: c.title,
+        cat: c.sector,
+        tickers: (c.tickers ?? []).slice(0, 6),
+        following: false,
         image: c.image,
         badge: 'Explorar',
         badgeTone: 'blue',
@@ -315,6 +318,9 @@ async function buildTheses(
     return {
       slug,
       title: card.title,
+      cat: card.sector,
+      tickers: (card.tickers ?? []).slice(0, 6),
+      following: true,
       image: card.image,
       badge,
       badgeTone,
