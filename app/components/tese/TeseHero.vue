@@ -11,19 +11,9 @@ const props = defineProps<{ hero: TeseHeroVM; slug: string }>()
 // Capa quebrada não pode vazar ícone de imagem partida — degrada pro navy.
 const imgFailed = ref(false)
 
-/* Seguir tese (V1): anônimo → login com redirect de volta; logado → toggle
-   local. TODO(PR6+): persistir em GET/POST/DELETE /thesis-favorites
-   (auth:sanctum, cross-device) quando o fluxo logado entrar. */
-const { isAuthenticated } = useAuthState()
-const following = ref(false)
-
-function onToggleFollow() {
-  if (!isAuthenticated.value) {
-    navigateTo(`/login?redirect=${encodeURIComponent(`/tese/${props.slug}`)}`)
-    return
-  }
-  following.value = !following.value
-}
+// Seguir tese: persiste em /thesis-favorites (cross-device) via useThesisFollow;
+// anônimo → login com redirect. A Home lê esses favoritos.
+const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 </script>
 
 <template>
