@@ -210,7 +210,9 @@ function guiaScroll(d: number) {
   min-height: clamp(320px, 34vw, 430px); display: flex; align-items: center;
   animation: nu-fade .5s ease both;
 }
-.mct__media { position: absolute; inset: 0; z-index: 0; background: var(--nu-cta-placeholder); }
+/* foto de fundo: solte em public/mercado/cta-pessoas.jpg. Enquanto não existir,
+   a url 404a silenciosamente e o gradiente (2ª camada) aparece — nada quebra. */
+.mct__media { position: absolute; inset: 0; z-index: 0; background: url('/mercado/cta-pessoas.jpg') center / cover no-repeat, var(--nu-cta-placeholder); }
 .mct__scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .mct__scrim--h { background: var(--nu-cta-scrim-h); }
 .mct__scrim--v { background: var(--nu-cta-scrim-v); }

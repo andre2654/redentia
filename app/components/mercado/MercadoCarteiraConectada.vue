@@ -14,6 +14,11 @@ const banks = [
   { label: 'S', bg: 'var(--nu-bank-santander)', fg: 'var(--nu-white)', size: '16px' },
   { label: '+110', bg: 'var(--nu-cream-text-22)', fg: 'var(--nu-cream-text)', size: '12.5px' },
 ] as const
+
+// Imagem lifestyle real: solte o arquivo em public/mercado/carteira-conectada.jpg
+// (ou .png/.webp — ajuste a extensão aqui). Enquanto o arquivo não existir, o
+// @error cai pro placeholder on-brand embaixo. Nada quebra.
+const photoFailed = ref(false)
 </script>
 
 <template>
@@ -40,6 +45,13 @@ const banks = [
              lá, placeholder on-brand: gradiente navy/azul + glow + glifo de
              carteira/conexão. Mantém o aspect-ratio 4/3 do design. -->
         <div class="mcc__media" role="img" aria-label="Ilustração — carteira conectada">
+          <!-- foto real quando existir; some pro placeholder se faltar o arquivo -->
+          <!-- :src dinâmico (não estático) — senão o Vite tenta resolver o asset
+               em build e falha enquanto o arquivo não existe em public/ -->
+          <img
+            v-show="!photoFailed" :src="'/mercado/carteira-conectada.jpg'" alt=""
+            class="mcc__media-photo" loading="lazy" @error="photoFailed = true"
+          >
           <div class="mcc__media-glow" aria-hidden="true" />
           <svg class="mcc__media-art" viewBox="0 0 260 200" fill="none" aria-hidden="true">
             <!-- nós de conta orbitando -->
@@ -100,6 +112,7 @@ const banks = [
   background: var(--nu-img-placeholder);
   display: flex; align-items: center; justify-content: center;
 }
+.mcc__media-photo { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: cover; display: block; }
 .mcc__media-glow { position: absolute; inset: 0; background: var(--nu-img-glow); pointer-events: none; }
 .mcc__media-art { position: relative; width: min(60%, 320px); height: auto; }
 </style>
