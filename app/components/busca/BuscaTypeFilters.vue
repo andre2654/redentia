@@ -16,6 +16,7 @@ const emit = defineEmits<{ (e: 'update:modelValue', v: BuscaType): void }>()
 const open = ref(false)
 const root = ref<HTMLElement | null>(null)
 const btn = ref<HTMLElement | null>(null)
+const panel = ref<HTMLElement | null>(null)
 // Painel é position:FIXED ancorado no botão (não absolute): o .nu-shell tem
 // overflow-x:clip e o dropdown absolute estende pra fora dele — ficava
 // recortado/invisível (mesmo bug dos drawers do NuHeader). Fixed escapa do
@@ -96,7 +97,12 @@ function close() {
 }
 
 function onDocClick(e: MouseEvent) {
-  if (open.value && root.value && !root.value.contains(e.target as Node)) close()
+  // painel é teleportado pro body — checa root E painel pra não fechar ao
+  // clicar num item antes do NuxtLink navegar.
+  if (!open.value) return
+  const t = e.target as Node
+  if (root.value?.contains(t) || panel.value?.contains(t)) return
+  close()
 }
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape' && open.value) {
@@ -140,19 +146,24 @@ onBeforeUnmount(() => {
         <svg class="btf__caret" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
       </button>
 
-      <div
-        v-if="open" class="btf__panel" role="menu"
-        :style="{ top: `${panelPos.top}px`, right: `${panelPos.right}px` }"
-      >
-        <div class="btf__panel-label">Screeners da Redentia</div>
-        <NuxtLink
-          v-for="it in advItems" :key="it.href" :to="it.href" class="btf__panel-item"
-          role="menuitem" @click="close"
+      <!-- Teleport pro body: o painel escapa de QUALQUER overflow/stacking dos
+           ancestrais (.nu-shell overflow-x:clip, seções irmãs opacas). Fixed +
+           coords do botão. Só monta no client (open=false no SSR). -->
+      <Teleport to="body">
+        <div
+          v-if="open" ref="panel" class="btf__panel" role="menu"
+          :style="{ top: `${panelPos.top}px`, right: `${panelPos.right}px` }"
         >
-          <span>{{ it.label }}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
-        </NuxtLink>
-      </div>
+          <div class="btf__panel-label">Screeners da Redentia</div>
+          <NuxtLink
+            v-for="it in advItems" :key="it.href" :to="it.href" class="btf__panel-item"
+            role="menuitem" @click="close"
+          >
+            <span>{{ it.label }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </NuxtLink>
+        </div>
+      </Teleport>
     </div>
   </div>
 </template>
