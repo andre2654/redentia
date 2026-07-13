@@ -15,9 +15,8 @@ const banks = [
   { label: '+110', bg: 'var(--nu-cream-text-22)', fg: 'var(--nu-cream-text)', size: '12.5px' },
 ] as const
 
-// Imagem lifestyle real: solte o arquivo em public/mercado/carteira-conectada.jpg
-// (ou .png/.webp — ajuste a extensão aqui). Enquanto o arquivo não existir, o
-// @error cai pro placeholder on-brand embaixo. Nada quebra.
+// Imagem lifestyle real: solte o arquivo em public/mercado/carteira-conectada.webp.
+// Enquanto o arquivo não existir, o @error cai pro placeholder on-brand embaixo.
 const photoFailed = ref(false)
 </script>
 
@@ -49,7 +48,7 @@ const photoFailed = ref(false)
           <!-- :src dinâmico (não estático) — senão o Vite tenta resolver o asset
                em build e falha enquanto o arquivo não existe em public/ -->
           <img
-            v-show="!photoFailed" :src="'/mercado/carteira-conectada.jpg'" alt=""
+            v-show="!photoFailed" :src="'/mercado/carteira-conectada.webp'" alt=""
             class="mcc__media-photo" loading="lazy" @error="photoFailed = true"
           >
           <div class="mcc__media-glow" aria-hidden="true" />
