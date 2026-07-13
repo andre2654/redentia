@@ -46,6 +46,25 @@ export interface CryptoApi {
   change_24h: number | null
 }
 
+/**
+ * Bloco estruturado do briefing (contrato PR-B, auditoria 2026-07-13).
+ * `paragraph` pode carregar {mark}…{/mark} → passa por briefingHtml no front.
+ */
+export interface BriefingSectionApi {
+  stat?: string | null      // só no placar: '+1,22%' (delta IBOV do dia; front tem fallback)
+  title?: string | null     // puxou/ficou/leitura: 2-3 palavras + ponto ('Bancos & duration.')
+  blurb?: string | null     // <=160 chars (card de destaque)
+  paragraph?: string | null // parágrafo completo do modal
+}
+
+/** JSONB `sections` do briefing — os 4 blocos do modal "O dia no mercado". */
+export interface BriefingSectionsApi {
+  placar?: BriefingSectionApi | null
+  puxou?: BriefingSectionApi | null
+  ficou?: BriefingSectionApi | null
+  leitura?: BriefingSectionApi | null
+}
+
 /** GET /api/briefing/today → data (DailyBriefing::toBriefingResource). */
 export interface BriefingApi {
   eyebrow: string
@@ -53,8 +72,10 @@ export interface BriefingApi {
   minutes: number
   body: string
   date: string | null
-  highlights?: string[]
-  sources?: string[]
+  /** blocos estruturados (PR-B) — ausente nos briefings antigos, front degrada pro body fatiado */
+  sections?: BriefingSectionsApi | null
+  /** timestamp da publicação (PR-B) — alimenta o "às 18h12" da byline */
+  published_at?: string | null
 }
 
 /** GET /api/tesouro?indexer= → data[] (TesouroController::toArray). */
@@ -180,6 +201,8 @@ export interface NuBriefing {
   paragraphs: string[]
   extraParagraphs: string[]
   takeaway: { kicker: string; html: string } | null
+  /** blocos estruturados CRUS da API (PR-B) — buildDayTopics escapa/marca; null = briefing antigo */
+  sections: BriefingSectionsApi | null
 }
 
 /* ═════ "O dia no mercado" (seção-gatilho + NuDayModal, PR-R4) ═════ */

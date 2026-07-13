@@ -818,7 +818,6 @@ function petr4Seed(): AcaoPayload {
       { kind: 'metric', label: 'ROA', value: '8,6%', tag: g('Bom') },
     ],
     theses: [
-      { slug: 'petroleo-e-dividendos-br', title: 'O último ciclo do petróleo', image: '/teses/petroleo-e-dividendos-br.png', conviction: 84, roleStrong: 'máquina de dividendos do pré-sal', roleRest: ', o caixa do fim do ciclo pago a quem espera' },
       { slug: 'a-conta-de-luz-da-ia', title: 'Energia para IA', image: '/teses/a-conta-de-luz-da-ia.png', conviction: 82, roleStrong: 'o gás que segura a base térmica', roleRest: ' enquanto os data centers dobram o consumo' },
     ],
     dividends: {

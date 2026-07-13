@@ -16,8 +16,14 @@
  * atlas-daily-briefing gerar os 4 campos estruturados (fase 2, plano à parte).
  * NÃO inventa número: o único número dos cards é o delta real do IBOV; quando
  * ausente, cai no placeholder do design (o mesmo seed que o app já embarca).
+ *
+ * PR-B (2026-07-13): quando o briefing traz `sections` (JSONB estruturado do
+ * loop novo), cada campo REAL (stat/title/blurb/paragraph) vence campo a campo;
+ * o que faltar degrada pro comportamento V1 acima (body fatiado + mocks).
+ * `paragraph` chega CRU da API → passa por briefingHtml (escape + {mark}→strong).
  */
-import type { NuBriefing, NuDayTopic, NuStatPill } from '~/types/market'
+import type { BriefingSectionsApi, NuBriefing, NuDayTopic, NuStatPill } from '~/types/market'
+import { briefingHtml } from './format'
 
 /* Copy exata dos designs v2 (placeholder honesto). Cards: números só no card 1;
    os demais são frases editoriais neutras. Modal: parágrafos completos. */
@@ -40,54 +46,76 @@ interface DayBriefCore {
   ibovDelta: string | null   // '+1,22%' — delta do dia do IBOV (real)
   body: string[]             // parágrafos do corpo, em ordem (HTML já escapado)
   takeawayHtml: string | null
+  /** blocos estruturados CRUS da API (PR-B); ausente/null = briefing antigo */
+  sections?: BriefingSectionsApi | null
 }
 
 function ibovDeltaOf(pills: NuStatPill[]): string | null {
   return pills.find((p) => p.label === 'Ibovespa')?.delta ?? null
 }
 
-/** Núcleo do mapeamento — distribui o corpo real nos 4 tópicos com fallback. */
+/** Texto útil ou null (a API pode mandar '' — não vence o fallback). */
+function txt(s: string | null | undefined): string | null {
+  const t = s?.trim()
+  return t || null
+}
+
+/** Parágrafo de section: cru da API → HTML seguro (escape + {mark}→<strong>). */
+function sectionHtml(p: string | null | undefined): string | null {
+  const t = txt(p)
+  return t ? briefingHtml(t) : null
+}
+
+/**
+ * Núcleo do mapeamento — distribui o briefing real nos 4 tópicos com fallback
+ * campo a campo: sections (PR-B) → V1 (body fatiado + delta/headline) → mock.
+ */
 export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
+  const s = core.sections
+  const placarHtml = sectionHtml(s?.placar?.paragraph)
+  const puxouHtml = sectionHtml(s?.puxou?.paragraph)
+  const ficouHtml = sectionHtml(s?.ficou?.paragraph)
+  const leituraHtml = sectionHtml(s?.leitura?.paragraph)
   return [
     {
       label: 'O placar',
       labelColor: 'var(--nu-gray)',
       icon: 'trend',
-      stat: core.ibovDelta ?? MOCK_CARD.placar.stat,
+      stat: txt(s?.placar?.stat) ?? core.ibovDelta ?? MOCK_CARD.placar.stat,
       cardTitle: null,
-      cardBlurb: core.headline?.trim() || MOCK_CARD.placar.blurb,
-      modalHtml: core.body[0] ?? MOCK_MODAL.placar,
-      real: core.body[0] != null,
+      cardBlurb: txt(s?.placar?.blurb) ?? (core.headline?.trim() || MOCK_CARD.placar.blurb),
+      modalHtml: placarHtml ?? core.body[0] ?? MOCK_MODAL.placar,
+      real: placarHtml != null || core.body[0] != null,
     },
     {
       label: 'O que puxou',
       labelColor: 'var(--nu-day-puxou)',
       icon: 'bars',
       stat: null,
-      cardTitle: MOCK_CARD.puxou.title,
-      cardBlurb: MOCK_CARD.puxou.blurb,
-      modalHtml: core.body[1] ?? MOCK_MODAL.puxou,
-      real: core.body[1] != null,
+      cardTitle: txt(s?.puxou?.title) ?? MOCK_CARD.puxou.title,
+      cardBlurb: txt(s?.puxou?.blurb) ?? MOCK_CARD.puxou.blurb,
+      modalHtml: puxouHtml ?? core.body[1] ?? MOCK_MODAL.puxou,
+      real: puxouHtml != null || core.body[1] != null,
     },
     {
       label: 'O que ficou pra trás',
       labelColor: 'var(--nu-day-ficou)',
       icon: 'flame',
       stat: null,
-      cardTitle: MOCK_CARD.ficou.title,
-      cardBlurb: MOCK_CARD.ficou.blurb,
-      modalHtml: core.body[2] ?? MOCK_MODAL.ficou,
-      real: core.body[2] != null,
+      cardTitle: txt(s?.ficou?.title) ?? MOCK_CARD.ficou.title,
+      cardBlurb: txt(s?.ficou?.blurb) ?? MOCK_CARD.ficou.blurb,
+      modalHtml: ficouHtml ?? core.body[2] ?? MOCK_MODAL.ficou,
+      real: ficouHtml != null || core.body[2] != null,
     },
     {
       label: 'A leitura da IA',
       labelColor: 'var(--nu-blue)',
       icon: 'compass',
       stat: null,
-      cardTitle: MOCK_CARD.leitura.title,
-      cardBlurb: MOCK_CARD.leitura.blurb,
-      modalHtml: core.takeawayHtml ?? MOCK_MODAL.leitura,
-      real: core.takeawayHtml != null,
+      cardTitle: txt(s?.leitura?.title) ?? MOCK_CARD.leitura.title,
+      cardBlurb: txt(s?.leitura?.blurb) ?? MOCK_CARD.leitura.blurb,
+      modalHtml: leituraHtml ?? core.takeawayHtml ?? MOCK_MODAL.leitura,
+      real: leituraHtml != null || core.takeawayHtml != null,
     },
   ]
 }
@@ -99,5 +127,6 @@ export function dayTopicsFromNuBriefing(b: NuBriefing): NuDayTopic[] {
     ibovDelta: ibovDeltaOf(b.pills),
     body: [...b.paragraphs, ...b.extraParagraphs],
     takeawayHtml: b.takeaway?.html ?? null,
+    sections: b.sections,
   })
 }

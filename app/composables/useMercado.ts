@@ -360,6 +360,27 @@ const BRIEFING_SEED: NuBriefing = {
     kicker: 'O que segurar do dia',
     html: 'Foi um rali de alívio, não de fundamento. A peça que ainda falta é o estrangeiro, e a tese "O fluxo que ainda não chegou" segue no aguardo. Dólar mais fraco e curva em queda montam o cenário para o fluxo virar, mas enquanto o Tesouro IPCA+ paga cerca de 8% de juro real, a renda fixa continua sendo o maior concorrente da bolsa. A alta de hoje é o convite; a confirmação depende de o capital de fora finalmente aceitar.',
   },
+  sections: null,
+}
+
+/**
+ * '18h12' a partir do published_at do briefing (PR-B) — ou null quando o campo
+ * ainda não existe (briefings antigos) ou não parseia. Timestamp COM timezone
+ * (ISO do resource Laravel) → converte pra America/Sao_Paulo; sem timezone
+ * ('YYYY-MM-DD HH:MM:SS' cru do banco) → assume que já é hora de SP e extrai.
+ */
+function publishedTimeLabel(raw: string | null | undefined): string | null {
+  const s = raw?.trim()
+  if (!s) return null
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(s)) {
+    const dt = new Date(s)
+    if (Number.isNaN(dt.getTime())) return null
+    return new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' })
+      .format(dt)
+      .replace(':', 'h')
+  }
+  const m = s.match(/[T ](\d{2}):(\d{2})/)
+  return m ? `${m[1]}h${m[2]}` : null
 }
 
 export function useNuBriefing() {
@@ -417,14 +438,16 @@ export function useNuBriefing() {
 
       const isToday = d.date === localISODate()
       const dateLabel = isToday || !d.date ? 'hoje' : `${d.date.slice(8, 10)}/${d.date.slice(5, 7)}`
+      const timeLabel = publishedTimeLabel(d.published_at)
       briefing.value = {
-        metaLine: `Todo pregão, a IA da Redentia escreve o fechamento. Este é o de ${dateLabel}`,
+        metaLine: `Todo pregão, a IA da Redentia escreve o fechamento. Este é o de ${dateLabel}${timeLabel ? `, às ${timeLabel}` : ''}`,
         headline: d.headline,
         dek: null, // o resource real não tem dek separado do corpo
         pills,
         paragraphs: paras.slice(0, 2).map(briefingHtml),
         extraParagraphs: paras.slice(2).map(briefingHtml),
         takeaway: null, // idem: sem bloco "o que segurar" no resource atual
+        sections: d.sections ?? null, // blocos estruturados (PR-B) — buildDayTopics consome cru
       }
     } catch { /* mantém o seed */ }
   }
