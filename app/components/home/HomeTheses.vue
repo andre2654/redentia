@@ -29,7 +29,7 @@ function gradFor(i: number) {
       <div class="hts__head">
         <h2 class="hts__title">Suas teses.</h2>
         <div class="hts__sub">{{ theses.sub }}</div>
-        <NuxtLink to="/mercado#teses" class="hts__explore">
+        <NuxtLink to="/teses" class="hts__explore">
           Explorar teses<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9" /></svg>
         </NuxtLink>
       </div>

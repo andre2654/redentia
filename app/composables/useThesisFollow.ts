@@ -19,7 +19,9 @@ export function useThesisFollow(slug: MaybeRefOrGetter<string>) {
   async function hydrate() {
     if (!isAuthenticated.value) return
     try {
-      const res = await authFetch<{ favorites: string[] }>('/thesis-favorites')
+      // redirectOnAuthError:false — página pública: token expirado limpa a
+      // sessão em silêncio, não pode expulsar o visitante pro /login.
+      const res = await authFetch<{ favorites: string[] }>('/thesis-favorites', {}, { redirectOnAuthError: false })
       following.value = (res?.favorites ?? []).includes(toValue(slug))
     } catch {
       /* silencioso: sem confirmação, o botão fica em 'Acompanhar' (nunca falso-positivo) */

@@ -71,7 +71,7 @@ usePageSeo({
   image: ogImage,
   structuredData,
   breadcrumbs: [
-    { name: 'Teses', path: '/mercado' },
+    { name: 'Teses', path: '/teses' },
     { name: tese.value.title, path: `/tese/${slug}` },
   ],
 })

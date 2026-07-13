@@ -27,7 +27,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
     <div class="the__scrim" />
     <div class="the__body">
       <div class="the__crumb">
-        <NuxtLink to="/mercado" class="the__crumb-link">Teses</NuxtLink>
+        <NuxtLink to="/teses" class="the__crumb-link">Teses</NuxtLink>
         <span>›</span>
         <span class="the__crumb-cat">{{ hero.cat }}</span>
       </div>

@@ -71,6 +71,8 @@ export default defineNuxtConfig({
     '/guias': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/guias/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/tese/**': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
+    // /teses: SSR 100% público (seed do design; favoritos hidratam client-side).
+    '/teses': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/calculadoras': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo

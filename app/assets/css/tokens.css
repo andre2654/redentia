@@ -329,4 +329,10 @@
   /* CTA final com foto de fundo — scrims exatos do design (azul→transparente + base) */
   --nu-cta-scrim-h: linear-gradient(90deg, #2F6BFF 0%, rgba(47, 107, 255, 0.82) 24%, rgba(47, 107, 255, 0.44) 56%, rgba(47, 107, 255, 0.12) 100%);
   --nu-cta-scrim-v: linear-gradient(180deg, rgba(47, 107, 255, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
+
+  /* ——— /teses (valores exatos de Redentia Teses Nu.dc.html) ———
+     Os carrosséis reusam --nu-tese-grad-1..3, --nu-white-92/-62/-16/-18/-85,
+     --nu-green-soft(-22); o FAQ reusa --nu-gray-2/--nu-ink-75. Só o NOVO aqui. */
+  --nu-teses-hero-sub: #5C564B;   /* parágrafo do hero "Invista em ideias" */
+  --nu-teses-benefit: #1E48B5;    /* cards do grid "Sua jornada com mais vantagens" */
 }
