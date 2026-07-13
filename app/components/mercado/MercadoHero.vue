@@ -15,13 +15,21 @@ function submit() {
 // docText nasce em '1.240' (readN=0 → 1240+0, SSR-safe) e é espelhado pelo
 // NuMarketReading via emit `doc` durante a animação (client).
 const docText = ref('1.240')
+
+// Eyebrow do logado = a data de hoje por extenso ("sábado, 13 de julho de
+// 2026" — direção do dono). Computado uma vez; mismatch SSR/client só na
+// virada da meia-noite, irrelevante.
+const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+}).format(new Date())
 </script>
 
 <template>
   <section class="mh">
     <div class="mh__cols">
       <div class="mh__left">
-        <div class="mh__eyebrow">O mercado, traduzido por IA</div>
+        <!-- logado vê a data de hoje; anônimo, a proposta de valor -->
+        <div class="mh__eyebrow">{{ isAuthenticated ? hojeExtenso : 'O mercado, traduzido por IA' }}</div>
         <h1 class="mh__title">Invista com uma<br>IA do seu lado.</h1>
         <div class="mh__dek">Análise fundamentalista pronta, alertas do que afeta a sua carteira e respostas na hora. Sem planilha, sem economês.</div>
         <!-- anônimo: captura de e-mail · logado: boas-vindas + CTA pra carteira -->
