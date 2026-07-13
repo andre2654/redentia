@@ -110,23 +110,15 @@ function guiaScroll(d: number) {
       </div>
     </section>
 
-    <!-- CTA final (banda azul com foto de fundo + scrims) -->
-    <section class="mct">
-      <!-- TODO(asset): foto lifestyle real "pessoa à direita, espaço livre à
-           esquerda" (André). Placeholder on-brand: gradiente azul + os 2 scrims
-           do design garantem legibilidade do texto à esquerda. -->
-      <div class="mct__media" aria-hidden="true" />
-      <div class="mct__scrim mct__scrim--h" aria-hidden="true" />
-      <div class="mct__scrim mct__scrim--v" aria-hidden="true" />
-      <div class="mct__inner">
-        <h2 class="mct__title">Pronto para investir<br>com uma IA do seu lado?</h2>
-        <div class="mct__sub">Crie sua conta em menos de 2 minutos — grátis, sem cartão.</div>
-        <div class="mct__actions">
-          <NuxtLink to="/login" class="mct__primary">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/busca" class="mct__secondary">Falar com a Redentia AI</NuxtLink>
-        </div>
-      </div>
-    </section>
+    <!-- CTA final (NuCtaPhoto — implementação única do padrão; foto default
+         /mercado/cta-pessoas.webp) -->
+    <NuCtaPhoto
+      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :secondary="{ label: 'Falar com a Redentia AI', to: '/busca' }"
+    >
+      <template #title>Pronto para investir<br>com uma IA do seu lado?</template>
+      <template #subtitle>Crie sua conta em menos de 2 minutos — grátis, sem cartão.</template>
+    </NuCtaPhoto>
   </div>
 </template>
 
@@ -203,36 +195,5 @@ function guiaScroll(d: number) {
 .mfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .mfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 
-/* ——— CTA final (foto de fundo + scrims) ——— */
-.mct {
-  position: relative; overflow: hidden; background: var(--nu-blue);
-  padding: clamp(52px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px);
-  min-height: clamp(320px, 34vw, 430px); display: flex; align-items: center;
-  animation: nu-fade .5s ease both;
-}
-/* foto de fundo: solte em public/mercado/cta-pessoas.webp. Enquanto não existir,
-   a url 404a silenciosamente e o gradiente (2ª camada) aparece — nada quebra. */
-.mct__media { position: absolute; inset: 0; z-index: 0; background: url('/mercado/cta-pessoas.webp') center / cover no-repeat, var(--nu-cta-placeholder); }
-.mct__scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.mct__scrim--h { background: var(--nu-cta-scrim-h); }
-.mct__scrim--v { background: var(--nu-cta-scrim-v); }
-.mct__inner { position: relative; z-index: 2; max-width: 660px; }
-.mct__title {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(40px, 5.5vw, 76px);
-  font-weight: 800; letter-spacing: -0.045em; line-height: 1.03;
-}
-.mct__sub { color: var(--nu-cream-text-82); font-size: clamp(16px, 1.7vw, 19px); font-weight: 600; margin-top: 18px; }
-.mct__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
-.mct__primary {
-  display: inline-flex; align-items: center; gap: 10px; background: var(--nu-cream); color: var(--nu-navy);
-  border-radius: var(--nu-r-pill); padding: 17px 30px; font-size: 17px; font-weight: 800;
-  transition: background .2s, transform .15s;
-}
-.mct__primary:hover { background: var(--nu-white); color: var(--nu-navy); transform: translateY(-2px); }
-.mct__secondary {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
-  border: 2px solid var(--nu-cream-text-45); border-radius: var(--nu-r-pill); padding: 15px 28px;
-  font-size: 17px; font-weight: 700; transition: background .2s, border-color .2s;
-}
-.mct__secondary:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-80); color: var(--nu-cream-text); }
+/* (CTA final extraída pro NuCtaPhoto — estilos vivem lá) */
 </style>

@@ -217,14 +217,16 @@ function cardTypes(meta: RankingMeta): string[] {
       </div>
     </section>
 
-    <!-- ============ CTA ============ -->
-    <section class="rkh__cta-wrap">
-      <NuCtaBanner
-        title="Acompanhe os rankings na sua carteira"
-        subtitle="Crie sua conta grátis e veja como os seus ativos aparecem em cada ranking, com dados atualizados diariamente."
-        to="/login"
-      />
-    </section>
+    <!-- ============ CTA final full-bleed (direção André 2026-07-13:
+         "faça desse card uma seção, ocupando a tela inteira e mais impactante"
+         — padrão NuCtaPhoto, o mesmo da CTA final do /mercado) ============ -->
+    <NuCtaPhoto
+      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :secondary="{ label: 'Ver como funciona', to: '/como-funciona' }"
+    >
+      <template #title>Acompanhe os rankings<br>na sua carteira</template>
+      <template #subtitle>Crie sua conta grátis e veja como os seus ativos aparecem em cada ranking, com dados atualizados diariamente.</template>
+    </NuCtaPhoto>
   </div>
 </template>
 
@@ -274,7 +276,8 @@ function cardTypes(meta: RankingMeta): string[] {
 /* ——— grid por tema ——— */
 .rkh__grid-wrap {
   background: var(--nu-white);
-  padding: clamp(48px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(24px, 3vw, 40px);
+  /* bottom maior: a CTA full-bleed (NuCtaPhoto) cola logo abaixo */
+  padding: clamp(48px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 104px);
   animation: nu-fade .5s ease both;
 }
 .rkh__group + .rkh__group { margin-top: clamp(44px, 5.5vw, 72px); }
@@ -314,11 +317,6 @@ function cardTypes(meta: RankingMeta): string[] {
 }
 .rkh__card-preview-value { color: var(--nu-blue); font-size: 13.5px; font-weight: 800; }
 .rkh__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue); font-size: 14px; font-weight: 800; }
-
-/* ——— CTA ——— */
-.rkh__cta-wrap {
-  background: var(--nu-white);
-  padding: clamp(24px, 3vw, 40px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
-}
-.rkh__cta-wrap > * { max-width: 1080px; margin: 0 auto; }
+/* (CTA final = NuCtaPhoto full-bleed, estilos no componente; o grid acima
+   fecha com o próprio padding-bottom) */
 </style>
