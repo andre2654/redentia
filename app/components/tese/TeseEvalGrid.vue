@@ -1,8 +1,11 @@
 <script setup lang="ts">
-// "Avaliação por ativo" (design): fundo branco, h2 + meta da revalidação,
-// grid auto-fit minmax(min(380px,100%),1fr) de cards creme — NuTickerTile lg
-// + ticker/nome (cross-link pra /asset/{ticker}) + NuBadge de status + texto
-// da avaliação + rodapé 'POR QUÊ'. Card 'Entra' ganha border 2.5px azul.
+// "Avaliação por ativo" (design + refino do dono 2026-07-13): fundo branco,
+// h2 + meta da revalidação, grid de cards creme — logo REAL da empresa
+// (NuAssetLogo, brapi + fallback de letra) + ticker/nome + NuBadge de status
+// + texto + rodapé 'POR QUÊ'. O CARD INTEIRO é o link pro /asset/{ticker},
+// com o botão azul de seta (padrão dos movers) sinalizando o clique.
+// Card 'Entra' ganha border 2.5px azul.
+import { NuxtLink } from '#components'
 import type { TeseEvalVM } from '~/types/tese'
 
 defineProps<{ evalSection: TeseEvalVM }>()
@@ -22,30 +25,34 @@ function hrefFor(ticker: string): string | null {
       <span class="tev__meta">{{ evalSection.metaLine }}</span>
     </div>
     <div class="tev__grid">
-      <article v-for="c in evalSection.cards" :key="c.ticker" class="tev__card" :class="{ 'tev__card--hi': c.highlight }">
+      <!-- card inteiro clicável quando o ticker tem página; a seta azul
+           (padrão dos movers) sinaliza o destino -->
+      <component
+        :is="hrefFor(c.ticker) ? NuxtLink : 'article'"
+        v-for="c in evalSection.cards" :key="c.ticker"
+        :to="hrefFor(c.ticker) ?? undefined"
+        class="tev__card"
+        :class="{ 'tev__card--hi': c.highlight, 'tev__card--link': hrefFor(c.ticker) }"
+      >
         <div class="tev__card-head">
-          <NuxtLink v-if="hrefFor(c.ticker)" :to="hrefFor(c.ticker)!" class="tev__id tev__id--link">
-            <NuTickerTile :letter="c.letter" :bg="c.tileBg" :fg="c.tileFg" size="lg" />
-            <span class="tev__names">
-              <span class="tev__ticker">{{ c.ticker }}</span>
-              <span class="tev__name">{{ c.name }}</span>
-            </span>
-          </NuxtLink>
-          <span v-else class="tev__id">
-            <NuTickerTile :letter="c.letter" :bg="c.tileBg" :fg="c.tileFg" size="lg" />
+          <span class="tev__id">
+            <NuAssetLogo :ticker="c.ticker" :letter="c.letter" :tile-bg="c.tileBg" :tile-fg="c.tileFg" :size="52" :radius="16" />
             <span class="tev__names">
               <span class="tev__ticker">{{ c.ticker }}</span>
               <span class="tev__name">{{ c.name }}</span>
             </span>
           </span>
           <NuBadge :variant="c.badgeVariant" size="eval">{{ c.badgeText }}</NuBadge>
+          <span v-if="hrefFor(c.ticker)" class="tev__go" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          </span>
         </div>
         <div class="tev__txt">{{ c.txt }}</div>
         <div v-if="c.pq" class="tev__why">
           <span class="tev__why-lbl">Por quê</span>
           <span class="tev__why-txt">{{ c.pq }}</span>
         </div>
-      </article>
+      </component>
     </div>
   </section>
 </template>
@@ -62,13 +69,21 @@ function hrefFor(ticker: string): string | null {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
   gap: 16px; margin-top: 40px;
 }
-.tev__card { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 26px; }
+.tev__card { display: block; background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 26px; }
 .tev__card--hi { border: 2.5px solid var(--nu-blue); }
+.tev__card--link { transition: transform .15s, box-shadow .2s; }
+.tev__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.tev__card--link:hover .tev__ticker { color: var(--nu-blue); }
+.tev__card--link:hover .tev__go { background: var(--nu-blue-hover); }
 .tev__card-head { display: flex; align-items: center; gap: 14px; }
 .tev__id { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
 .tev__names { flex: 1; min-width: 0; }
 .tev__ticker { display: block; color: var(--nu-ink); font-size: 19px; font-weight: 800; white-space: nowrap; transition: color .2s; }
-.tev__id--link:hover .tev__ticker { color: var(--nu-blue); }
+/* botão azul da Redentia: o card leva pra tela do ativo */
+.tev__go {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
+  display: flex; align-items: center; justify-content: center; transition: background .16s;
+}
 .tev__name {
   display: block; color: var(--nu-gray); font-size: 13.5px; font-weight: 600;
   margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
