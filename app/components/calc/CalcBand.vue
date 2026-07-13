@@ -9,6 +9,9 @@ defineProps<{
   tone?: 'cream' | 'white'
   title?: string
   titleTag?: 'h2' | 'h3'
+  /** eyebrow curto acima do título (ex.: 'Transparência total' na
+   *  metodologia do redentia-score — texto visível da página antiga). */
+  kicker?: string
   /** banda-statement (só título, sem conteúdo): padding reduzido pra não
    *  virar um vão gigante — usada quando o h2 do SEO antigo era órfão */
   tight?: boolean
@@ -17,6 +20,7 @@ defineProps<{
 
 <template>
   <section class="cbd" :class="{ 'cbd--cream': tone === 'cream', 'cbd--tight': tight }">
+    <p v-if="kicker" class="cbd__kicker">{{ kicker }}</p>
     <component :is="titleTag ?? 'h2'" v-if="title || $slots.title" class="cbd__title">
       <slot name="title">{{ title }}</slot>
     </component>
@@ -33,6 +37,11 @@ defineProps<{
 }
 .cbd--cream { background: var(--nu-cream); }
 .cbd--tight { padding-top: clamp(36px, 5vw, 60px); padding-bottom: clamp(36px, 5vw, 60px); }
+.cbd__kicker {
+  margin: 0 auto 14px; max-width: 980px; text-align: center;
+  color: var(--nu-blue); font-size: 12px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .14em;
+}
 .cbd__title {
   margin: 0 auto; max-width: 980px;
   color: var(--nu-ink); font-size: clamp(32px, 4vw, 54px); font-weight: 800;

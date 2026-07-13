@@ -79,6 +79,19 @@ export default defineNuxtConfig({
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
     '/calculadora': { redirect: { to: '/calculadoras', statusCode: 301 } },
     '/calculadora/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // Rankings (kit PLANO-RANKINGS.md): hub novo /rankings + detalhe nos
+    // slugs ANTIGOS /ranking/<slug> (equity de SEO). O 301 do hub antigo é
+    // EXATO ('/ranking' não casa '/ranking/**' no Nitro — mesma lição do
+    // '/calculadora' acima). Backend cacheia 15 min → s-maxage=900 na borda.
+    '/ranking': { redirect: { to: '/rankings', statusCode: 301 } },
+    '/ranking/**': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
+    '/rankings': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
+    // Rotas antigas por classe morrem (stub [classe].vue deletado): as 3 de
+    // equity viram filtro do hub; renda-fixa vira o detalhe do tesouro.
+    '/rankings/acoes': { redirect: { to: '/rankings?classe=acoes', statusCode: 301 } },
+    '/rankings/fiis': { redirect: { to: '/rankings?classe=fiis', statusCode: 301 } },
+    '/rankings/bdrs': { redirect: { to: '/rankings?classe=bdrs', statusCode: 301 } },
+    '/rankings/renda-fixa': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
     // Páginas estáticas/legais (institucional + metodologia): conteúdo jurídico/
     // editorial que quase nunca muda — cache longo na borda + SWR de 1 dia.
     '/institucional/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },

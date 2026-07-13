@@ -26,10 +26,10 @@ const NAV: NavItem[] = [
     label: 'Ferramentas',
     children: [
       { label: 'Calculadoras', to: '/calculadoras' },
-      { label: 'Rankings de Ações', to: '/rankings/acoes' },
-      { label: 'Rankings de FIIs', to: '/rankings/fiis' },
-      { label: 'Rankings de BDRs', to: '/rankings/bdrs' },
-      { label: 'Ranking de Renda Fixa', to: '/rankings/renda-fixa' },
+      { label: 'Rankings de Ações', to: '/rankings?classe=acoes' },
+      { label: 'Rankings de FIIs', to: '/rankings?classe=fiis' },
+      { label: 'Rankings de BDRs', to: '/rankings?classe=bdrs' },
+      { label: 'Ranking de Renda Fixa', to: '/ranking/tesouro-direto' },
     ],
   },
   {
