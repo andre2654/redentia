@@ -15,6 +15,12 @@ const emit = defineEmits<{ (e: 'update:modelValue', v: BuscaType): void }>()
 
 const open = ref(false)
 const root = ref<HTMLElement | null>(null)
+const btn = ref<HTMLElement | null>(null)
+// Painel é position:FIXED ancorado no botão (não absolute): o .nu-shell tem
+// overflow-x:clip e o dropdown absolute estende pra fora dele — ficava
+// recortado/invisível (mesmo bug dos drawers do NuHeader). Fixed escapa do
+// clip; fecha no scroll porque a âncora se move.
+const panelPos = ref({ top: 0, right: 0 })
 
 /** rankings fundamentalistas — recebem ?type= quando a classe suporta. */
 const FUND = [
@@ -80,7 +86,10 @@ function pick(t: BuscaType) {
 }
 
 function toggle() {
-  open.value = !open.value
+  if (open.value) { close(); return }
+  const r = btn.value?.getBoundingClientRect()
+  if (r) panelPos.value = { top: r.bottom + 8, right: Math.max(8, window.innerWidth - r.right) }
+  open.value = true
 }
 function close() {
   open.value = false
@@ -99,10 +108,12 @@ function onKey(e: KeyboardEvent) {
 onMounted(() => {
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey, true) // capture: vence a cascata
+  window.addEventListener('scroll', close, { passive: true }) // âncora fixed some no scroll
 })
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocClick)
   document.removeEventListener('keydown', onKey, true)
+  window.removeEventListener('scroll', close)
 })
 </script>
 
@@ -119,6 +130,7 @@ onBeforeUnmount(() => {
 
     <div class="btf__adv">
       <button
+        ref="btn"
         type="button" class="btf__adv-btn" :class="{ 'btf__adv-btn--open': open }"
         :aria-expanded="open" aria-haspopup="menu"
         @click="toggle"
@@ -128,7 +140,10 @@ onBeforeUnmount(() => {
         <svg class="btf__caret" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
       </button>
 
-      <div v-if="open" class="btf__panel" role="menu">
+      <div
+        v-if="open" class="btf__panel" role="menu"
+        :style="{ top: `${panelPos.top}px`, right: `${panelPos.right}px` }"
+      >
         <div class="btf__panel-label">Screeners da Redentia</div>
         <NuxtLink
           v-for="it in advItems" :key="it.href" :to="it.href" class="btf__panel-item"
@@ -177,9 +192,10 @@ onBeforeUnmount(() => {
 .btf__caret { transition: transform .2s; }
 .btf__adv-btn--open .btf__caret { transform: rotate(180deg); }
 
+/* FIXED (ancorado no botão via JS) — escapa do overflow-x:clip do .nu-shell */
 .btf__panel {
-  position: absolute; top: calc(100% + 8px); right: 0; z-index: 30;
-  min-width: 268px; background: var(--nu-white);
+  position: fixed; z-index: 120;
+  width: 288px; max-width: calc(100vw - 16px); background: var(--nu-white);
   border: 1.5px solid var(--nu-cream-3); border-radius: var(--nu-r-panel);
   box-shadow: var(--nu-shadow-drawer); padding: 8px;
   animation: nu-fade .18s ease both;
@@ -203,6 +219,6 @@ onBeforeUnmount(() => {
   .btf { gap: 12px; }
   .btf__adv { width: 100%; }
   .btf__adv-btn { width: 100%; justify-content: center; }
-  .btf__panel { left: 0; right: 0; min-width: 0; }
+  /* painel fixed + width clampada já se vira no mobile (posição vem do JS) */
 }
 </style>
