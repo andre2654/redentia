@@ -30,9 +30,15 @@ import type {
   TeseHeroVM,
   TeseNumbersVM,
   TesePayload,
+  TeseReportPartVM,
+  TeseReportSourceVM,
+  TeseReportTocItemVM,
+  TeseReportVM,
   TeseStudyVM,
   ThesisFullApi,
   ThesisPerformanceApi,
+  ThesisReportApi,
+  ThesisReportSourceApi,
   ThesisStudyApi,
 } from '~/types/tese'
 import type { AcaoStatRow, PriceMode, PricePointApi } from '~/types/acao'
@@ -447,6 +453,113 @@ function buildDiary(d: ThesisFullApi, conv: ConvictionHistoryApi | null): TeseDi
   }
 }
 
+/* ————— relatório completo (JSONB `report`, nullable) ————— */
+
+/** fontes do report → VM (label obrigatória; url vazia vira null → <span>). */
+function reportSources(list: ThesisReportSourceApi[] | null | undefined): TeseReportSourceVM[] {
+  return (list ?? [])
+    .filter((s) => !!s?.label?.trim())
+    .map((s) => ({ label: s.label.trim(), url: s.url?.trim() || null }))
+}
+
+/** parágrafos/bullets do report → HTML seguro (MESMO tratamento do editorial). */
+function reportHtml(list: string[] | null | undefined): string[] {
+  return (list ?? []).filter((p) => !!p?.trim()).map(markHtml)
+}
+
+/**
+ * report JSONB → VM da seção "O relatório completo". Toda subseção é opcional
+ * (JSONB curado à mão): ausente → não renderiza, e o TOC de âncoras lista só
+ * o que existe. Prosa e bullets passam pelo markHtml do editorial ({mark} →
+ * .tse-hi, escape ANTES); campos atômicos (headings, premissas, fairValue)
+ * são texto puro — stripMarks garante que "{mark}" nunca vaza literal.
+ */
+function buildReport(d: ThesisFullApi): TeseReportVM | null {
+  const r = d.report
+  if (!r) return null
+
+  const opportunityHtml = reportHtml(r.opportunity?.paragraphs)
+  const thesisHtml = reportHtml(r.thesis)
+  const risksHtml = reportHtml(r.risks)
+  const conclusionHtml = reportHtml(r.conclusion?.paragraphs)
+  const milestones = (r.conclusion?.milestones ?? [])
+    .map((m) => stripMarks(m ?? ''))
+    .filter(Boolean)
+
+  const parts: TeseReportPartVM[] = (r.parts ?? [])
+    .filter((p) => !!p?.heading?.trim() && (p.paragraphs ?? []).some((x) => !!x?.trim()))
+    .map((p, i) => ({
+      id: `rel-parte-${i + 1}`,
+      heading: stripMarks(p.heading),
+      paragraphsHtml: reportHtml(p.paragraphs),
+      sources: reportSources(p.sources),
+    }))
+
+  const v = r.valuation
+  const assumptions = (v?.assumptions ?? [])
+    .filter((a) => !!a?.label?.trim() && !!a?.value?.trim())
+    .map((a) => ({ label: stripMarks(a.label), value: stripMarks(a.value), note: a.note?.trim() ? stripMarks(a.note) : null }))
+  const mathHtml = reportHtml(v?.math)
+  const valuation = v && (v.intro?.trim() || assumptions.length || mathHtml.length || v.fairValue?.trim())
+    ? {
+        introHtml: v.intro?.trim() ? markHtml(v.intro) : null,
+        assumptions,
+        mathHtml,
+        fairValue: v.fairValue?.trim() ? stripMarks(v.fairValue) : null,
+        vsPrice: v.vsPrice?.trim() ? stripMarks(v.vsPrice) : null,
+      }
+    : null
+
+  const sources = reportSources(r.sources)
+
+  // report presente mas vazio (JSONB rascunho) → seção não existe. Honesto.
+  if (!opportunityHtml.length && !thesisHtml.length && !risksHtml.length
+    && !parts.length && !valuation && !conclusionHtml.length) return null
+
+  const metaParts: string[] = []
+  if (r.readMinutes != null && r.readMinutes > 0) metaParts.push(`Leitura de ${nf0.format(r.readMinutes)} min`)
+  if (r.publishedAt) metaParts.push(`Publicado em ${dayMonthYear(r.publishedAt)}`)
+
+  const toc: TeseReportTocItemVM[] = []
+  if (opportunityHtml.length) toc.push({ id: 'rel-oportunidade', label: 'A oportunidade' })
+  if (thesisHtml.length) toc.push({ id: 'rel-tese', label: 'A tese em pilares' })
+  if (risksHtml.length) toc.push({ id: 'rel-riscos', label: 'Os riscos' })
+  for (const p of parts) toc.push({ id: p.id, label: p.heading.replace(/[.]$/, '') })
+  if (valuation) toc.push({ id: 'rel-valuation', label: 'Valuation' })
+  if (conclusionHtml.length || milestones.length) toc.push({ id: 'rel-conclusao', label: 'Conclusão' })
+  if (sources.length) toc.push({ id: 'rel-fontes', label: 'Fontes' })
+
+  return {
+    metaLine: metaParts.length ? metaParts.join(' · ') : null,
+    toc,
+    opportunityHtml,
+    thesisHtml,
+    risksHtml,
+    parts,
+    valuation,
+    conclusionHtml,
+    milestones,
+    sources,
+  }
+}
+
+/** contagem de palavras do report (Article.wordCount do JSON-LD). */
+function reportWordCount(r: ThesisReportApi | null | undefined): number | null {
+  if (!r) return null
+  const texts: string[] = [
+    ...(r.opportunity?.paragraphs ?? []),
+    ...(r.thesis ?? []),
+    ...(r.risks ?? []),
+    ...(r.parts ?? []).flatMap((p) => [p?.heading ?? '', ...(p?.paragraphs ?? [])]),
+    r.valuation?.intro ?? '',
+    ...(r.valuation?.math ?? []),
+    ...(r.conclusion?.paragraphs ?? []),
+    ...(r.conclusion?.milestones ?? []),
+  ]
+  const n = texts.reduce((acc, t) => acc + (stripMarks(t ?? '').match(/\S+/g)?.length ?? 0), 0)
+  return n > 0 ? n : null
+}
+
 /* ————— SEO ————— */
 
 function buildSeo(d: ThesisFullApi): TesePayload['seo'] {
@@ -467,8 +580,11 @@ function buildSeo(d: ThesisFullApi): TesePayload['seo'] {
     title: `Tese ${d.title}: análise, ativos e convicção da IA`,
     description,
     image: d.image,
-    datePublished: oldest ?? (launch ? localISODate(launch) : null),
+    // publishedAt do report (quando existe) é a data editorial real do
+    // artigo — mais fiel que o estudo mais antigo da revalidação.
+    datePublished: d.report?.publishedAt ?? oldest ?? (launch ? localISODate(launch) : null),
     dateModified: latest,
+    wordCount: reportWordCount(d.report),
   }
 }
 
@@ -621,12 +737,16 @@ function teseSeed(): TesePayload {
       ],
       moreLabel: 'Ver os 152 estudos anteriores',
     },
+    // O seed do design NÃO tem report — a tese exemplar renderiza sem a
+    // seção, exatamente como hoje (zero regressão offline).
+    report: null,
     seo: {
       title: 'Tese A fábrica volta para casa: análise, ativos e convicção da IA',
       description: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro. Convicção 88/100, +34% desde o lançamento, 7 ativos revalidados diariamente pela IA.',
       image: '/teses/reindustrializacao-eua.png',
       datePublished: '2026-02-09',
       dateModified: '2026-07-11',
+      wordCount: null,
     },
   }
 }
@@ -678,6 +798,7 @@ async function loadTese(base: string, slug: string): Promise<TesePayload> {
     evalSection: buildEval(detail),
     drivers: buildDrivers(detail),
     diary: buildDiary(detail, conv),
+    report: buildReport(detail),
     seo: buildSeo(detail),
   }
 }

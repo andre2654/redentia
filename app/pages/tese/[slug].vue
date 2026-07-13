@@ -3,7 +3,8 @@
 // docs/redentia-nu/designs/Redentia Tese.dc.html. O layout default já
 // renderiza NuHeader + NuMarketTicker + NuFooter; aqui vive o miolo na ordem
 // do design: hero (navy, imagem) → editorial (creme) → números (navy, chart
-// vs IBOV) → avaliação por ativo (branco) → drivers (azul) → diário (creme).
+// vs IBOV) → avaliação por ativo (branco) → drivers (azul) → diário (creme)
+// → relatório completo (branco, SÓ quando a tese tem o campo `report`).
 //
 // SEO: SSR-first (detail + performance + convicção buscados no servidor via
 // useAsyncData — editorial completo no HTML da 1ª resposta), canonical
@@ -60,6 +61,9 @@ const structuredData: Record<string, unknown>[] = [
     description: tese.value.seo.description,
     ...(tese.value.seo.datePublished ? { datePublished: tese.value.seo.datePublished } : {}),
     ...(tese.value.seo.dateModified ? { dateModified: tese.value.seo.dateModified } : {}),
+    // wordCount só quando a tese TEM o relatório completo (o campo mede o
+    // artigo longo, não os blocos vivos da página).
+    ...(tese.value.seo.wordCount ? { wordCount: tese.value.seo.wordCount } : {}),
     author: { '@type': 'Organization', name: 'Redentia', url: origin },
   },
 ]
@@ -90,5 +94,12 @@ usePageSeo({
     <TeseDrivers v-if="tese.drivers" :drivers="tese.drivers" />
 
     <TeseDiary v-if="tese.diary && tese.diary.studies.length" :diary="tese.diary" />
+
+    <!-- O relatório completo (campo `report`, nullable): fecha a página como
+         capítulo de leitura longa DEPOIS do bloco vivo (hero→diário são o
+         estado revalidado diariamente; o relatório é o documento de fundação,
+         opt-in via âncoras). Banda branca fecha a alternância com o diário
+         creme. Tese sem report: nada muda. -->
+    <TeseReport v-if="tese.report" :report="tese.report" />
   </div>
 </template>

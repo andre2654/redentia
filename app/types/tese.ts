@@ -72,6 +72,51 @@ export interface ThesisStudyApi {
   sources: ThesisStudySourceApi[] | null
 }
 
+/* ————— relatório completo (JSONB `report`, nullable) —————
+ * Contrato do campo (versão 1). Tese sem report não muda em NADA na página —
+ * todo campo interno é tolerante a null/ausente (JSONB curado à mão). */
+
+/** Fonte citada — no fim de cada parte e na lista consolidada. */
+export interface ThesisReportSourceApi {
+  label: string // 'RI Petrobras 1T26'
+  url: string
+}
+
+/** Parte argumentativa: heading = frase-argumento, prosa com {mark}. */
+export interface ThesisReportPartApi {
+  heading: string
+  paragraphs: string[]
+  sources: ThesisReportSourceApi[] | null
+}
+
+export interface ThesisReportAssumptionApi {
+  label: string // 'Crescimento de receita'
+  value: string // '3% a.a.'
+  note: string | null // por quê
+}
+
+export interface ThesisReportValuationApi {
+  intro: string | null // abordagem em 1 §
+  assumptions: ThesisReportAssumptionApi[] | null
+  math: string[] | null // um passo de conta por item
+  fairValue: string | null // número final
+  vsPrice: string | null // vs preço atual (upside/downside honesto)
+}
+
+/** data.report — o relatório completo da tese (nullable no banco). */
+export interface ThesisReportApi {
+  version: number
+  readMinutes: number | null
+  publishedAt: string | null // 'YYYY-MM-DD'
+  opportunity: { paragraphs: string[] } | null
+  thesis: string[] | null // 4-6 bullets, os pilares
+  risks: string[] | null // 5-7 bullets, o que mata a tese
+  parts: ThesisReportPartApi[] | null
+  valuation: ThesisReportValuationApi | null
+  conclusion: { paragraphs: string[]; milestones: string[] | null } | null
+  sources: ThesisReportSourceApi[] | null
+}
+
 /** GET /api/theses/{slug} → data (detail completo). */
 export interface ThesisFullApi {
   id: string
@@ -100,6 +145,8 @@ export interface ThesisFullApi {
   companies: ThesisCompanyFullApi[] | null
   monitoring: { eyebrow: string; body: string; ctaLabel: string } | null
   studies: ThesisStudyApi[] | null
+  /** relatório completo (JSONB nullable) — ausente/null em teses sem report */
+  report?: ThesisReportApi | null
 }
 
 /** GET /api/theses/{slug}/performance → data. */
@@ -233,6 +280,55 @@ export interface TeseDiaryVM {
   moreLabel: string | null // 'Ver os 9 estudos anteriores'
 }
 
+/* ————— relatório completo (view-models) ————— */
+
+export interface TeseReportSourceVM {
+  label: string
+  /** null nunca acontece no contrato v1, mas o VM tolera (renderia <span>) */
+  url: string | null
+}
+
+export interface TeseReportPartVM {
+  id: string // âncora 'rel-parte-N'
+  heading: string
+  /** HTML JÁ ESCAPADO ({mark} → .tse-hi, mesmo tratamento do editorial) */
+  paragraphsHtml: string[]
+  sources: TeseReportSourceVM[]
+}
+
+export interface TeseReportAssumptionVM {
+  label: string
+  value: string
+  note: string | null
+}
+
+export interface TeseReportValuationVM {
+  introHtml: string | null // HTML escapado
+  assumptions: TeseReportAssumptionVM[]
+  mathHtml: string[] // HTML escapado, um passo por item
+  fairValue: string | null
+  vsPrice: string | null
+}
+
+export interface TeseReportTocItemVM {
+  id: string
+  label: string
+}
+
+export interface TeseReportVM {
+  /** 'Leitura de 18 min · Publicado em 1 ago 2026' (partes ausentes somem) */
+  metaLine: string | null
+  toc: TeseReportTocItemVM[] // só seções presentes (âncoras simples)
+  opportunityHtml: string[] // HTML escapado
+  thesisHtml: string[] // pilares (HTML escapado)
+  risksHtml: string[] // o que mata a tese (HTML escapado)
+  parts: TeseReportPartVM[]
+  valuation: TeseReportValuationVM | null
+  conclusionHtml: string[] // HTML escapado
+  milestones: string[] // marcos observáveis (texto puro)
+  sources: TeseReportSourceVM[] // fontes consolidadas
+}
+
 export interface TesePayload {
   slug: string
   title: string
@@ -242,11 +338,15 @@ export interface TesePayload {
   evalSection: TeseEvalVM | null
   drivers: TeseDriversVM | null
   diary: TeseDiaryVM | null
+  /** null = tese sem report → a seção "O relatório completo" não existe */
+  report: TeseReportVM | null
   seo: {
     title: string
     description: string
     image: string | null
     datePublished: string | null
     dateModified: string | null
+    /** palavras do relatório (Article.wordCount) — null sem report */
+    wordCount: number | null
   }
 }
