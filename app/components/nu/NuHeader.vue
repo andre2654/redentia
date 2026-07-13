@@ -52,10 +52,24 @@ function isParentActive(item: NavItem): boolean {
   return (item.children ?? []).some((c) => isActive(c.to))
 }
 
-/* ——— drawers da nav (desktop) ——— */
+/* ——— drawers da nav (desktop) ———
+   O painel é position:FIXED ancorado no botão (não absolute): a nav tem
+   overflow-x:auto (scroll em telas estreitas) e um absolute lá dentro é
+   CLIPADO pelo overflow — o drawer abria invisível. Fixed escapa do clip;
+   fecha ao rolar (o header encolhe e a âncora muda). */
 const openDrawer = ref<string | null>(null)
-function toggleDrawer(label: string) {
-  openDrawer.value = openDrawer.value === label ? null : label
+const drawerPos = ref({ left: 0, top: 0 })
+function toggleDrawer(label: string, ev: MouseEvent) {
+  if (openDrawer.value === label) {
+    openDrawer.value = null
+    return
+  }
+  const r = (ev.currentTarget as HTMLElement).getBoundingClientRect()
+  drawerPos.value = {
+    left: Math.max(8, Math.min(r.left, window.innerWidth - 246)), // clampa na borda
+    top: r.bottom + 8,
+  }
+  openDrawer.value = label
 }
 function onNavDocClick(e: MouseEvent) {
   const nav = document.querySelector('.nuh__nav')
@@ -92,6 +106,7 @@ function onScroll() {
     const y = window.scrollY
     if (!shrunk.value && y > SHRINK_AT) shrunk.value = true
     else if (shrunk.value && y < GROW_AT) shrunk.value = false
+    if (openDrawer.value) openDrawer.value = null // painel é fixed: a âncora se move ao rolar
   })
 }
 // A faixa do ticker (irmã no layout) lê --nuh-h pra grudar logo abaixo;
@@ -147,12 +162,15 @@ onBeforeUnmount(() => {
               type="button" class="nuh__navitem nuh__navitem--drawer"
               :class="{ 'nuh__navitem--active': isParentActive(item), 'nuh__navitem--open': openDrawer === item.label }"
               :aria-expanded="openDrawer === item.label" aria-haspopup="menu"
-              @click="toggleDrawer(item.label)"
+              @click="toggleDrawer(item.label, $event)"
             >
               {{ item.label }}
               <svg class="nuh__drawer-chev" :class="{ 'nuh__drawer-chev--open': openDrawer === item.label }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
             </button>
-            <div v-if="openDrawer === item.label" class="nuh__drawer" role="menu">
+            <div
+              v-if="openDrawer === item.label" class="nuh__drawer" role="menu"
+              :style="{ left: `${drawerPos.left}px`, top: `${drawerPos.top}px` }"
+            >
               <NuxtLink
                 v-for="c in item.children" :key="c.to" :to="c.to" role="menuitem"
                 class="nuh__drawer-item" :class="{ 'nuh__drawer-item--active': isActive(c.to) }"
@@ -294,7 +312,8 @@ onBeforeUnmount(() => {
 .nuh__drawer-chev { transition: transform .2s ease; }
 .nuh__drawer-chev--open { transform: rotate(180deg); }
 .nuh__drawer {
-  position: absolute; top: calc(100% + 8px); left: 0; z-index: 60;
+  /* fixed (não absolute): escapa do overflow-x:auto da nav — ver nota no script */
+  position: fixed; z-index: 60;
   min-width: 230px; padding: 8px;
   background: var(--nu-white); border-radius: var(--nu-r-tile);
   box-shadow: 0 24px 54px -22px rgba(12, 21, 36, 0.35), 0 2px 8px rgba(12, 21, 36, 0.08);
