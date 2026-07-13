@@ -11,8 +11,9 @@
  *  - alocação   derivada das posições por CLASSE (sem posições → card some)
  *  - chart      MESMO builder da Home (buildEquityChartVM): cheio | parcial
  *               (<10 pontos → 'Coletando histórico') | some
- *  - posições   grupos sticky por classe; retorno % só onde há custo
- *               (average_price) — coluna honesta, nunca inventada
+ *  - posições   posicoes-v2: sidebar de navegação (scrollspy) + 1 card por
+ *               classe; retorno % só onde há custo (average_price) — coluna
+ *               honesta, nunca inventada; só classes com dados aparecem
  *  - raio-x     DETERMINÍSTICO de dado real (regras portadas do
  *               usePortfolioScore do Frontend /raio-x — ver buildRaioX);
  *               insight do banner SÓ do /portfolio/analysis; sem carteira → some
@@ -183,7 +184,7 @@ function buildAllocation(rows: PosRow[]): CarteiraAllocationVM[] {
     }))
 }
 
-/* ————— posições por classe (cards sticky) ————— */
+/* ————— posições por classe (posicoes-v2: sidebar + card por classe) ————— */
 
 /** CTAs por classe — copy verbatim do design; destinos = rotas Nu reais. */
 const GROUP_CTA: Record<string, { cta: string; href: string }> = {
@@ -285,6 +286,7 @@ function buildGroups(
         count: `${list.length} ${list.length === 1 ? one : many}`,
         total: `R$ ${nf0.format(gTotal)}`,
         share: `${nf1.format((gTotal / total) * 100)}%`,
+        shareNum: (gTotal / total) * 100,
         ret: retPct != null ? pctFmt(retPct) : null,
         retKind: retPct == null ? 'flat' : retPct >= 0 ? 'up' : 'down',
         rows: rowsVM,
@@ -294,8 +296,9 @@ function buildGroups(
       }
     })
 
+  // sub do design posicoes-v2: '{N} classes · role para explorar'
   const nc = byClass.size
-  const positionsSub = `${rows.length} ${rows.length === 1 ? 'ativo' : 'ativos'} em ${nc} ${nc === 1 ? 'classe' : 'classes'} · role para explorar`
+  const positionsSub = `${nc} ${nc === 1 ? 'classe' : 'classes'} · role para explorar`
   return { positionsSub, groups }
 }
 

@@ -125,10 +125,12 @@ export interface CarteiraRowVM {
 
 export interface CarteiraGroupVM {
   name: string // 'Ações'
-  color: string // var(--nu-alloc-*)
+  color: string // var(--nu-alloc-*) / var(--nu-class-*)
   count: string // '5 ativos'
   total: string // 'R$ 60.647' (mascarável)
   share: string // '71,9%'
+  /** participação numérica 0-100 — largura da barra da sidebar (posicoes-v2) */
+  shareNum: number
   ret: string | null // '+12,4%' — null = sem custo no grupo (pill some)
   retKind: 'up' | 'down' | 'flat'
   rows: CarteiraRowVM[]
@@ -225,7 +227,7 @@ export interface CarteiraPayload {
   hero: CarteiraHeroVM
   allocation: CarteiraAllocationVM[]
   chart: HomeChartVM | null
-  positionsSub: string | null // '11 ativos em 5 classes · role para explorar'
+  positionsSub: string | null // '5 classes · role para explorar' (posicoes-v2)
   groups: CarteiraGroupVM[]
   raiox: CarteiraRaioXVM | null
   income: CarteiraIncomeVM | null

@@ -38,12 +38,26 @@ export const CLASS_LABEL: Record<string, string> = {
   TREASURY: 'Renda Fixa', FIXED_INCOME: 'Renda Fixa',
   CRYPTO: 'Cripto',
 }
+/**
+ * Cor por classe (mapa clsColors do design posicoes-v2 — 12 classes). Hoje o
+ * CLASS_LABEL só produz as 5 primeiras ('Caixa' do design = nosso 'Outros');
+ * as demais já têm cor pronta pra quando o backend passar a classificá-las
+ * (classe fora deste mapa cai no fallback --nu-alloc-cash de quem consome).
+ */
 export const CLASS_COLOR: Record<string, string> = {
   'Ações': 'var(--nu-alloc-stock)',
   'FIIs': 'var(--nu-alloc-fii)',
   'Renda Fixa': 'var(--nu-alloc-fixed)',
   'Cripto': 'var(--nu-alloc-crypto)',
   'Outros': 'var(--nu-alloc-cash)',
+  'Caixa': 'var(--nu-alloc-cash)',
+  'BDRs': 'var(--nu-class-bdr)',
+  'ETFs': 'var(--nu-class-etf)',
+  'Debêntures': 'var(--nu-class-deb)',
+  'Ouro': 'var(--nu-class-gold)',
+  'Previdência': 'var(--nu-class-prev)',
+  'Fundos': 'var(--nu-class-fund)',
+  'Câmbio': 'var(--nu-class-fx)',
 }
 /** ordem fixa do design (Ações → FIIs → RF → Cripto → Outros). */
 export const CLASS_ORDER = ['Ações', 'FIIs', 'Renda Fixa', 'Cripto', 'Outros']
