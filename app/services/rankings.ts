@@ -24,14 +24,6 @@ export interface RankingFetchParams {
   min_cap?: number
 }
 
-/* Guard de sanidade (2026-07-13): GOLL54 vem do backend com market_cap de
-   R$ 11,7 TRI (shares outstanding quebrado no scrape) e abriria o ranking de
-   valor de mercado como nº 1. Nada na B3 passa de ~R$ 600 bi; acima de 2 tri
-   só existe dado quebrado. Aplicado SÓ onde o market cap é a métrica ranqueada
-   (dropar a linha de outros rankings jogaria fora dado legítimo, ex.: a
-   variação de preço do mesmo ticker é real). Remover quando o backend corrigir. */
-const MARKET_CAP_SANITY = 2_000_000_000_000
-
 /** GET /rankings/<endpoint> — lista ranqueada (limit=50, ?type= opcional). */
 export async function fetchRanking(
   endpoint: string,
@@ -42,11 +34,7 @@ export async function fetchRanking(
   if (side) params.set('side', side)
   if (days != null) params.set('days', String(days))
   if (min_cap != null) params.set('min_cap', String(min_cap))
-  const res = await $fetch<{ data: RankingRowApi[] }>(`${base}/rankings/${endpoint}?${params.toString()}`, json)
-  if (endpoint === 'top-market-cap') {
-    return { data: (res.data ?? []).filter((r) => (r.market_cap ?? 0) < MARKET_CAP_SANITY) }
-  }
-  return res
+  return $fetch<{ data: RankingRowApi[] }>(`${base}/rankings/${endpoint}?${params.toString()}`, json)
 }
 
 /**
