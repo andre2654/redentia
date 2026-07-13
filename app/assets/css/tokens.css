@@ -109,7 +109,7 @@
   /* scrim dos cards de tese (4 stops do design) */
   --nu-thesis-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.6) 0%, rgba(8, 12, 20, 0.1) 36%, rgba(8, 12, 20, 0.34) 58%, rgba(8, 12, 20, 0.93) 100%);
 
-  /* ——— PR2 /acao/[ticker] (valores exatos de Redentia Acoes Nu.dc.html) ——— */
+  /* ——— PR2 /asset/[ticker] (valores exatos de Redentia Acoes Nu.dc.html) ——— */
   --nu-amber-bg: #F7E8C8;        /* bg da tag semântica amber (Moderado) */
   --nu-amber-text: #A66B00;      /* texto da tag amber */
   --nu-amber-soft: #FFD9A0;      /* pontos de atenção sobre azul (Leitura da IA) */

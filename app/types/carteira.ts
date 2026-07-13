@@ -120,7 +120,7 @@ export interface CarteiraRowVM {
   val: string // 'R$ 14.274' (mascarável)
   ret: string | null // '+13,90%' — null quando sem custo (coluna honesta)
   retDir: NuDir
-  href: string | null // /acao/{t} pra equities; null = linha sem link
+  href: string | null // /asset/{t} pra equities; null = linha sem link
 }
 
 export interface CarteiraGroupVM {

@@ -84,7 +84,7 @@ function toRow(a: RawAsset): BuscaAssetRow {
     price: a.price != null ? `R$ ${nf2.format(a.price)}` : null,
     pct: a.chg != null ? pctFmt(a.chg) : null,
     dir: dirOf(a.chg ?? 0),
-    href: `/acao/${a.ticker}`,
+    href: `/asset/${a.ticker}`,
   }
 }
 

@@ -7,7 +7,7 @@ const CARDS = [
   { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva — resultados em segundos.', to: '/calculadoras' },
 ]
 const COLUMNS = [
-  { title: 'Produto', links: [{ label: 'Ações', to: '/acao/PETR4' }, { label: 'Carteira', to: '/carteira' }, { label: 'Mercado', to: '/mercado' }, { label: 'Calculadoras', to: '/calculadoras' }] },
+  { title: 'Produto', links: [{ label: 'Ações', to: '/asset/PETR4' }, { label: 'Carteira', to: '/carteira' }, { label: 'Mercado', to: '/mercado' }, { label: 'Calculadoras', to: '/calculadoras' }] },
   { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Busca', to: '/busca' }, { label: 'Guias', to: '/guias' }] },
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },

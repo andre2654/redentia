@@ -3,7 +3,7 @@
  * outros 21). Texto VERBATIM da Redentia antiga
  * (Frontend/app/pages/ranking/[slug].vue, entrada 'maiores-valor-mercado'),
  * na MESMA ordem de tags. Única alteração permitida: " — " → vírgula.
- * Links re-mapeados: /asset/<t> → /acao/<t> · /auth/register → /login ·
+ * Links re-mapeados: /asset/<t> mantém (URL canônica) · /auth/register → /login ·
  * /ranking (hub) → /rankings · /calculadora/* mantém.
  */
 import type { RankingCopy } from '~/types/rankings'

@@ -1,7 +1,7 @@
 /**
  * Copy portada VERBATIM da página dedicada da Redentia antiga
  * (Frontend/app/pages/ranking/redentia-score.vue), na mesma ordem de tags.
- * ADAPTAÇÃO AUTORIZADA (decisão PR2, mesma régua do /acao): escala 0-10 → 0-100
+ * ADAPTAÇÃO AUTORIZADA (decisão PR2, mesma régua do /asset): escala 0-10 → 0-100
  * em methodologySteps (Cálculo), methodologyIntro, methodologyFormula e FAQs
  * (6→60, 8→80, 2→20, 8+→80+, ±0.5 ponto→±5 pontos, cap 10→100, ×10→×100).
  * Pontos internos por posição (1.0 / 0.98 / 0.02) mantidos verbatim.

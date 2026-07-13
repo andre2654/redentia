@@ -56,7 +56,9 @@ const grid = computed(() =>
         <div class="cac__line" :style="{ top: g.top }" />
         <div class="cac__lbl" :style="{ top: g.top }">{{ g.label }}</div>
       </template>
-      <svg :viewBox="`0 0 1000 ${H}`" preserveAspectRatio="none" class="cac__svg" aria-hidden="true">
+      <!-- .attr obrigatório: sem ele a hidratação seta viewBox como DOM prop
+           e SVGSVGElement.viewBox é getter-only (warn no console) -->
+      <svg :viewBox.attr="`0 0 1000 ${H}`" preserveAspectRatio="none" class="cac__svg" aria-hidden="true">
         <defs>
           <linearGradient :id="gradId" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="var(--nu-blue)" stop-opacity="0.34" />

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 // "Avaliação por ativo" (design): fundo branco, h2 + meta da revalidação,
 // grid auto-fit minmax(min(380px,100%),1fr) de cards creme — NuTickerTile lg
-// + ticker/nome (cross-link pra /acao/{ticker}) + NuBadge de status + texto
+// + ticker/nome (cross-link pra /asset/{ticker}) + NuBadge de status + texto
 // da avaliação + rodapé 'POR QUÊ'. Card 'Entra' ganha border 2.5px azul.
 import type { TeseEvalVM } from '~/types/tese'
 
 defineProps<{ evalSection: TeseEvalVM }>()
 
-// /acao só existe pra tickers B3 (PETR4, CATP34, E1TN34…) — formato validado
+// /asset só existe pra tickers B3 (PETR4, CATP34, E1TN34…) — formato validado
 // pelo middleware da página de ativo; fora do formato, sem link.
 const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 function hrefFor(ticker: string): string | null {
-  return TICKER_RE.test(ticker) ? `/acao/${ticker}` : null
+  return TICKER_RE.test(ticker) ? `/asset/${ticker}` : null
 }
 </script>
 

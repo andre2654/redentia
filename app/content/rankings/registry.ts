@@ -5,7 +5,7 @@
  * h1/lead/chips/metaTitle/metaDescription = VERBATIM das páginas antigas
  * (Frontend/app/pages/ranking/*) — contrato de SEO, não reescrever.
  * Exceções documentadas: redentia-score adaptado da escala 0-10 pra /100
- * (decisão PR2 — mesma régua do /acao) e tesouro-direto (ranking novo).
+ * (decisão PR2 — mesma régua do /asset) e tesouro-direto (ranking novo).
  *
  * Endpoints validados ao vivo (19 GET /rankings/* + derivação /tesouro):
  * mapeamento tirado do service antigo (Frontend/app/services/assets.ts).

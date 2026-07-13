@@ -501,7 +501,7 @@ usePageSeo({
             </template>
           </div>
 
-          <NuxtLink :to="`/acao/${activeTicker.toLowerCase()}`" class="pt__asset-link">
+          <NuxtLink :to="`/asset/${activeTicker.toLowerCase()}`" class="pt__asset-link">
             Ver análise completa de {{ activeTicker }} →
           </NuxtLink>
 

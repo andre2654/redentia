@@ -6,10 +6,14 @@
  *  - Estáticas + calculadoras + cenários: hardcoded (espelham app/pages/*;
  *    os slugs de cenário vêm dos maps `scenarios` das páginas [scenario].vue).
  *  - Rankings: derivados do registry canônico (app/content/rankings/registry).
- *  - Teses e ativos: fetch do backend real com try/catch — se o backend
- *    falhar, a seção é omitida (sitemap parcial > sitemap 500).
- *  - Ativos: só STOCK e REIT até a página amadurecer pra ETF/BDR (PR-E).
- *    Ordenados por market cap desc — o llms-full corta o top 100.
+ *  - Teses, ativos, tesouro, cripto e dividendos: fetch do backend real com
+ *    try/catch — se o backend falhar, a seção é omitida (sitemap parcial >
+ *    sitemap 500).
+ *  - Ativos /asset/{TICKER}: STOCK, REIT, BDR e ETF (a página suporta os 4).
+ *  - Dividendos /dividendos/{TICKER}: 12 clássicos + top 20 do ranking de DY
+ *    (dedupe). Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} idem, do
+ *    backend. As rotas /tesouro e /dividendos estão em construção em frentes
+ *    paralelas — tudo bem o sitemap já listá-las.
  */
 import { RANKINGS } from '../../app/content/rankings/registry'
 
@@ -20,7 +24,7 @@ export interface SitePage {
 }
 
 export interface SiteSection {
-  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'institucional' | 'teses' | 'ativos'
+  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos'
   title: string
   description?: string
   pages: SitePage[]
@@ -134,9 +138,8 @@ const fetchThesisPages = defineCachedFunction(
 )
 
 /**
- * Ativos /acao/{TICKER} (payload ~1.1MB — por isso o cache de 1h importa).
- * Só STOCK e REIT (ETF/BDR ficam de fora até a página amadurecer — PR-E).
- * Ordenados por market cap desc pro llms-full poder cortar o top N.
+ * Ativos /asset/{TICKER} (payload ~1.1MB — por isso o cache de 1h importa).
+ * STOCK, REIT, BDR e ETF (a página de ativo suporta os quatro).
  */
 const fetchAssetPages = defineCachedFunction(
   async (): Promise<SitePage[]> => {
@@ -151,7 +154,7 @@ const fetchAssetPages = defineCachedFunction(
           (t): t is TickerApiItem & { ticker: string } =>
             typeof t.ticker === 'string' &&
             /^[A-Z][A-Z0-9]{3}\d{1,2}$/.test(t.ticker.toUpperCase()) &&
-            (t.type === 'STOCK' || t.type === 'REIT'),
+            (t.type === 'STOCK' || t.type === 'REIT' || t.type === 'BDR' || t.type === 'ETF'),
         )
         // Ordem alfabética de propósito: o market_cap do /tickers-full vem em
         // escalas misturadas e mutáveis (raw R$, milhões e um número pequeno
@@ -161,7 +164,7 @@ const fetchAssetPages = defineCachedFunction(
         // conhecidos.
         .sort((a, b) => a.ticker.localeCompare(b.ticker))
         .map((t) => ({
-          path: `/acao/${t.ticker.toUpperCase()}`,
+          path: `/asset/${t.ticker.toUpperCase()}`,
           title: t.name
             ? `${t.ticker.toUpperCase()} (${t.name.replace(/\s+/g, ' ').trim()})`
             : t.ticker.toUpperCase(),
@@ -171,6 +174,105 @@ const fetchAssetPages = defineCachedFunction(
     }
   },
   { name: 'site-pages-assets', maxAge: 3600, swr: true, getKey: () => 'all' },
+)
+
+interface TesouroApiItem {
+  slug?: string
+  name?: string
+  indexer?: string
+  rate?: string
+}
+
+/** Títulos do Tesouro Direto → /tesouro/{slug} (~70 títulos vivos). */
+const fetchTesouroPages = defineCachedFunction(
+  async (): Promise<SitePage[]> => {
+    try {
+      const res = await $fetch<{ data?: TesouroApiItem[] }>('/tesouro', {
+        baseURL: backendBase(),
+        timeout: 10_000,
+      })
+      const items = Array.isArray(res?.data) ? res.data : []
+      return items
+        .filter((t): t is TesouroApiItem & { slug: string } => typeof t.slug === 'string' && t.slug.length > 0)
+        .map((t) => ({
+          path: `/tesouro/${t.slug}`,
+          title: t.name || t.slug,
+          description: t.rate ? `Taxa do dia: ${t.rate}${t.indexer ? ` (${t.indexer})` : ''}.` : undefined,
+        }))
+    } catch {
+      return []
+    }
+  },
+  { name: 'site-pages-tesouro', maxAge: 3600, swr: true, getKey: () => 'all' },
+)
+
+interface CryptoApiItem {
+  symbol?: string
+  name?: string
+}
+
+/** Top 20 criptos → /asset/{SYMBOL} (mesma página de ativo). */
+const fetchCryptoPages = defineCachedFunction(
+  async (): Promise<SitePage[]> => {
+    try {
+      const res = await $fetch<{ data?: CryptoApiItem[] }>('/crypto?limit=20', {
+        baseURL: backendBase(),
+        timeout: 10_000,
+      })
+      const items = Array.isArray(res?.data) ? res.data : []
+      return items
+        .filter((c): c is CryptoApiItem & { symbol: string } => typeof c.symbol === 'string' && c.symbol.length > 0)
+        .slice(0, 20)
+        .map((c) => ({
+          path: `/asset/${c.symbol.toUpperCase()}`,
+          title: c.name ? `${c.symbol.toUpperCase()} (${c.name})` : c.symbol.toUpperCase(),
+        }))
+    } catch {
+      return []
+    }
+  },
+  { name: 'site-pages-crypto', maxAge: 3600, swr: true, getKey: () => 'all' },
+)
+
+/**
+ * Pagadoras clássicas de dividendos — cauda garantida do /dividendos/{TICKER}
+ * mesmo com o backend fora (o top 20 do ranking de DY entra por cima, dedupe).
+ */
+const DIVIDEND_CLASSICS = [
+  'ITUB4', 'PETR4', 'VALE3', 'ITSA4', 'BBAS3', 'BBDC4',
+  'BBSE3', 'TAEE11', 'ABEV3', 'MXRF11', 'KNCR11', 'HGLG11',
+]
+
+interface RankingRowApiLite {
+  ticker?: string
+  name?: string
+}
+
+/** /dividendos/{TICKER}: 12 clássicos + top 20 do ranking de DY (dedupe). */
+const fetchDividendPages = defineCachedFunction(
+  async (): Promise<SitePage[]> => {
+    const tickers = new Set<string>(DIVIDEND_CLASSICS)
+    try {
+      const res = await $fetch<{ data?: RankingRowApiLite[] }>('/rankings/top-dividend-yield?limit=20', {
+        baseURL: backendBase(),
+        timeout: 10_000,
+      })
+      const items = Array.isArray(res?.data) ? res.data : []
+      for (const row of items) {
+        if (typeof row.ticker === 'string' && row.ticker.length > 0) {
+          tickers.add(row.ticker.toUpperCase())
+        }
+      }
+    } catch {
+      // ranking fora → segue só com os clássicos
+    }
+    return [...tickers].map((t) => ({
+      path: `/dividendos/${t}`,
+      title: `Dividendos de ${t}`,
+      description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${t}.`,
+    }))
+  },
+  { name: 'site-pages-dividends', maxAge: 3600, swr: true, getKey: () => 'all' },
 )
 
 function rankingPages(): SitePage[] {
@@ -186,7 +288,13 @@ function rankingPages(): SitePage[] {
  * seção a seção (e corta a cauda de ativos).
  */
 export async function getSiteSections(): Promise<SiteSection[]> {
-  const [teses, ativos] = await Promise.all([fetchThesisPages(), fetchAssetPages()])
+  const [teses, ativos, tesouro, cripto, dividendos] = await Promise.all([
+    fetchThesisPages(),
+    fetchAssetPages(),
+    fetchTesouroPages(),
+    fetchCryptoPages(),
+    fetchDividendPages(),
+  ])
 
   const sections: SiteSection[] = [
     { id: 'core', title: 'Páginas principais', pages: CORE_PAGES },
@@ -224,11 +332,38 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     })
   }
 
+  if (tesouro.length > 0) {
+    sections.push({
+      id: 'tesouro',
+      title: 'Tesouro Direto',
+      description: 'Cada título público tem página própria em /tesouro/{slug} com taxa do dia, preço e vencimento.',
+      pages: tesouro,
+    })
+  }
+
+  if (dividendos.length > 0) {
+    sections.push({
+      id: 'dividendos',
+      title: 'Dividendos por ativo',
+      description: 'Histórico de proventos e dividend yield por ticker em /dividendos/{TICKER}.',
+      pages: dividendos,
+    })
+  }
+
+  if (cripto.length > 0) {
+    sections.push({
+      id: 'cripto',
+      title: 'Criptomoedas',
+      description: 'As 20 maiores criptomoedas com página própria em /asset/{SYMBOL}, preço em reais e dados de mercado.',
+      pages: cripto,
+    })
+  }
+
   if (ativos.length > 0) {
     sections.push({
       id: 'ativos',
       title: 'Ativos individuais',
-      description: 'Cada ticker tem página própria em /acao/{TICKER} com cotação, fundamentos, dividendos e análise.',
+      description: 'Cada ticker tem página própria em /asset/{TICKER} com cotação, fundamentos, dividendos e análise.',
       pages: ativos,
     })
   }

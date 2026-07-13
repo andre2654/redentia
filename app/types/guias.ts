@@ -19,7 +19,7 @@ export type GuideTag =
  * Frontmatter de um guia listado no hub. Três estados possíveis:
  *  - `slug` presente  → guia escrito, card linka /guias/[slug]
  *  - `href` presente  → card que aponta pra outra superfície do produto
- *                       (ex.: Análise PETR4 → /acao/PETR4, como no mock)
+ *                       (ex.: Análise PETR4 → /asset/PETR4, como no mock)
  *  - nenhum dos dois  → guia planejado sem página ("em breve" no hub)
  */
 export interface GuideMeta {

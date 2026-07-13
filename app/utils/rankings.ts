@@ -9,7 +9,7 @@
  *  - change_percent null → 0;
  *  - nomes crus da B3 → colapsar espaços múltiplos;
  *  - redentia_score é 0-10 comprimido → display PERCENTIL /100 (×10, mesma
- *    régua do /acao, decisão PR2).
+ *    régua do /asset, decisão PR2).
  */
 import type { RankingColumnKey, RankingRowApi } from '~/types/rankings'
 
@@ -186,7 +186,7 @@ export const RANKING_COLUMNS: Record<RankingColumnKey, RankingColumnDef> = {
       return v == null ? '—' : nf0.format(v)
     },
   },
-  // redentia_score 0-10 → percentil /100 (×10; mesma régua do /acao — PR2).
+  // redentia_score 0-10 → percentil /100 (×10; mesma régua do /asset — PR2).
   score: {
     label: 'Redentia Score',
     raw: (r) => (num(r.redentia_score) == null ? null : Math.min(100, Math.round(num(r.redentia_score)! * 10))),

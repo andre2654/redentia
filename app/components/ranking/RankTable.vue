@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Tabela do ranking — colunas fixas (#, Ativo com NuAssetLogo, Cotação) +
 // colunas configuráveis por meta.columns (formatters em utils/rankings.ts).
-// Linha inteira navega pro /acao/<ticker>. tabular-nums em todo número.
+// Linha inteira navega pro /asset/<ticker>. tabular-nums em todo número.
 // Mobile ≤760: o CONTAINER rola horizontal (a página nunca rola no eixo x).
 //
 // breakdown (só o redentia-score): coluna extra 'Ver detalhe'/'Ocultar' que
@@ -60,11 +60,11 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
         <template v-for="(row, i) in rows" :key="rankingTicker(row) || i">
           <tr
             class="rkt__row"
-            @click="navigateTo(`/acao/${rankingTicker(row).toLowerCase()}`)"
+            @click="navigateTo(`/asset/${rankingTicker(row)}`)"
           >
             <td class="rkt__cell rkt__cell--pos">{{ i + 1 }}</td>
             <td class="rkt__cell rkt__cell--asset">
-              <NuxtLink :to="`/acao/${rankingTicker(row).toLowerCase()}`" class="rkt__asset" @click.stop>
+              <NuxtLink :to="`/asset/${rankingTicker(row)}`" class="rkt__asset" @click.stop>
                 <NuAssetLogo
                   :ticker="rankingTicker(row)" :letter="rankingTicker(row).charAt(0) || '?'"
                   tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)"

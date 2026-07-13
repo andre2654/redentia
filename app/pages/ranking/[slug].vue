@@ -49,7 +49,7 @@ const primaryLabel = computed(() => {
 
 // ————— SEO —————
 // FAQPage JSON-LD é emitido pelo NuFaqAccordion (fonte única — não duplicar).
-// ItemList: top 10 → /acao/<t> (só equity; tesouro não tem página de ativo).
+// ItemList: top 10 → /asset/<t> (só equity; tesouro não tem página de ativo).
 // Vive num useHead REATIVO próprio: o usePageSeo serializa structuredData no
 // setup, ANTES das rows resolverem — o computed garante o ItemList no SSR.
 const itemListScript = computed(() => {
@@ -70,7 +70,7 @@ const itemListScript = computed(() => {
         '@type': 'ListItem',
         position: idx + 1,
         name: `${rankingTicker(row)}${rankingName(row) ? ` - ${rankingName(row)}` : ''}`,
-        url: `/acao/${rankingTicker(row).toLowerCase()}`,
+        url: `/asset/${rankingTicker(row)}`,
       })),
     }),
   }]

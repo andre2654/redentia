@@ -26,7 +26,7 @@ const tone = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/acao/${ticker.toLowerCase()}`" class="rkl">
+  <NuxtLink :to="`/asset/${ticker}`" class="rkl">
     <span class="rkl__crown">Nº 1 do ranking</span>
     <div class="rkl__main">
       <div class="rkl__id">

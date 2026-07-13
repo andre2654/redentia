@@ -2,7 +2,7 @@
  * Copy do /ranking/maiores-dividend-yield — portada VERBATIM da página
  * dedicada da Redentia antiga (Frontend/app/pages/ranking/maiores-dividend-yield.vue),
  * na MESMA ordem de tags. Única alteração permitida: " — " → vírgula.
- * Links re-mapeados: /ranking (hub) → /rankings · /asset/<t> → /acao/<t>
+ * Links re-mapeados: /ranking (hub) → /rankings · /asset/<t> mantém (URL canônica)
  * (cards de ticker viram parágrafos { linkText, href, text } — o prefixo
  * TICKER é link pra página do ativo, concatenação verbatim).
  * NOTA de flattening (limites restantes do modelo RankingCopy):
@@ -33,15 +33,15 @@ const copy: RankingCopy = {
       h2: 'Melhores Ações Pagadoras de Dividendos em 2026',
       paragraphs: [
         'Lista das ações brasileiras com histórico mais consistente de pagamento de dividendos, usadas como núcleo de carteiras de renda passiva. Ordem foca em consistência (5+ anos pagando) mais do que em DY pico do momento.',
-        { linkText: 'ITUB4', href: '/acao/itub4', text: ' (Itaú Unibanco): Payout consistente de 50-60%, DY histórico 5-8%. Distribui via JCP, paga em ciclos mensais e trimestrais.' },
-        { linkText: 'ITSA4', href: '/acao/itsa4', text: ' (Itaúsa): Holding controladora do Itaú e outras empresas (Alpargatas, Dexco, NTS). DY 6-9%, exposição a Itaú com desconto de holding.' },
-        { linkText: 'BBAS3', href: '/acao/bbas3', text: ' (Banco do Brasil): DY 8-12%, banco estatal lucrativo com payout alto. Sensível a cenário político e direcionamento de crédito.' },
-        { linkText: 'BBSE3', href: '/acao/bbse3', text: ' (BB Seguridade): DY 7-9%, seguradora ligada ao BB. Payout próximo de 90%, modelo capital-light gera caixa estável.' },
-        { linkText: 'BBDC4', href: '/acao/bbdc4', text: ' (Bradesco): DY 5-7%, banco privado com payout consistente. Estratégia mais conservadora que ITUB4.' },
-        { linkText: 'TAEE11', href: '/acao/taee11', text: ' (Taesa): Transmissão elétrica, contratos longos indexados ao IPCA. DY 7-10%, baixa volatilidade.' },
-        { linkText: 'CMIG4', href: '/acao/cmig4', text: ' (Cemig): Geração e distribuição de energia em Minas Gerais. DY variável 6-12% conforme tarifa e dívida.' },
-        { linkText: 'TRPL4', href: '/acao/trpl4', text: ' (Transmissão Paulista): Transmissão de energia, fluxo previsível. DY 8-11%, perfil parecido com Taesa.' },
-        { linkText: 'ABEV3', href: '/acao/abev3', text: ' (Ambev): Defensiva clássica, líder de cervejas. DY 4-6%, payout regular, geração de caixa robusta.' },
+        { linkText: 'ITUB4', href: '/asset/itub4', text: ' (Itaú Unibanco): Payout consistente de 50-60%, DY histórico 5-8%. Distribui via JCP, paga em ciclos mensais e trimestrais.' },
+        { linkText: 'ITSA4', href: '/asset/itsa4', text: ' (Itaúsa): Holding controladora do Itaú e outras empresas (Alpargatas, Dexco, NTS). DY 6-9%, exposição a Itaú com desconto de holding.' },
+        { linkText: 'BBAS3', href: '/asset/bbas3', text: ' (Banco do Brasil): DY 8-12%, banco estatal lucrativo com payout alto. Sensível a cenário político e direcionamento de crédito.' },
+        { linkText: 'BBSE3', href: '/asset/bbse3', text: ' (BB Seguridade): DY 7-9%, seguradora ligada ao BB. Payout próximo de 90%, modelo capital-light gera caixa estável.' },
+        { linkText: 'BBDC4', href: '/asset/bbdc4', text: ' (Bradesco): DY 5-7%, banco privado com payout consistente. Estratégia mais conservadora que ITUB4.' },
+        { linkText: 'TAEE11', href: '/asset/taee11', text: ' (Taesa): Transmissão elétrica, contratos longos indexados ao IPCA. DY 7-10%, baixa volatilidade.' },
+        { linkText: 'CMIG4', href: '/asset/cmig4', text: ' (Cemig): Geração e distribuição de energia em Minas Gerais. DY variável 6-12% conforme tarifa e dívida.' },
+        { linkText: 'TRPL4', href: '/asset/trpl4', text: ' (Transmissão Paulista): Transmissão de energia, fluxo previsível. DY 8-11%, perfil parecido com Taesa.' },
+        { linkText: 'ABEV3', href: '/asset/abev3', text: ' (Ambev): Defensiva clássica, líder de cervejas. DY 4-6%, payout regular, geração de caixa robusta.' },
       ],
     },
     {
@@ -49,17 +49,17 @@ const copy: RankingCopy = {
       paragraphs: [
         'Os fundos imobiliários listados na B3 são obrigados por lei a distribuir 95% do lucro semestralmente, mas a maioria distribui mensalmente, daí o apelo pra renda passiva. Separamos por categoria.',
         { h3: 'FIIs de Tijolo (imóveis físicos)' },
-        { linkText: 'HGLG11', href: '/acao/hglg11', text: ' (CGHG Logística): Galpões logísticos premium em SP, RJ e MG. Maior FII de tijolo do Brasil.' },
-        { linkText: 'VISC11', href: '/acao/visc11', text: ' (Vinci Shopping Centers): Shoppings em capitais brasileiras. Receita atrelada a aluguel + percentual de vendas dos lojistas.' },
-        { linkText: 'HSML11', href: '/acao/hsml11', text: ' (HSI Malls): Shopping centers em cidades médias. Maior exposição ao consumo regional.' },
-        { linkText: 'GGRC11', href: '/acao/ggrc11', text: ' (GGR Covepi Renda): Logística e built-to-suit. Contratos longos atípicos com inquilinos âncora.' },
-        { linkText: 'BCFF11', href: '/acao/bcff11', text: ' (BTG Pactual Fundo de Fundos): Fundo de fundos: investe em outros FIIs. Diversificação automática em uma cota só.' },
+        { linkText: 'HGLG11', href: '/asset/hglg11', text: ' (CGHG Logística): Galpões logísticos premium em SP, RJ e MG. Maior FII de tijolo do Brasil.' },
+        { linkText: 'VISC11', href: '/asset/visc11', text: ' (Vinci Shopping Centers): Shoppings em capitais brasileiras. Receita atrelada a aluguel + percentual de vendas dos lojistas.' },
+        { linkText: 'HSML11', href: '/asset/hsml11', text: ' (HSI Malls): Shopping centers em cidades médias. Maior exposição ao consumo regional.' },
+        { linkText: 'GGRC11', href: '/asset/ggrc11', text: ' (GGR Covepi Renda): Logística e built-to-suit. Contratos longos atípicos com inquilinos âncora.' },
+        { linkText: 'BCFF11', href: '/asset/bcff11', text: ' (BTG Pactual Fundo de Fundos): Fundo de fundos: investe em outros FIIs. Diversificação automática em uma cota só.' },
         { h3: 'FIIs de Papel (CRIs e debêntures)' },
-        { linkText: 'MXRF11', href: '/acao/mxrf11', text: ' (Maxi Renda): CRIs diversificados, valor de cota baixa, FII mais popular de entry-level no Brasil.' },
-        { linkText: 'KNCR11', href: '/acao/kncr11', text: ' (Kinea Rendimentos Imobiliários): CRIs corporativos high grade indexados ao CDI. Renda mensal estável.' },
-        { linkText: 'KNIP11', href: '/acao/knip11', text: ' (Kinea Índices de Preços): CRIs indexados ao IPCA. Proteção contra inflação no longo prazo.' },
-        { linkText: 'DIVD11', href: '/acao/divd11', text: ' (Maua Capital Recebíveis): High yield, busca CRIs com spread maior. DY tipicamente acima de 12%.' },
-        { linkText: 'SNLG11', href: '/acao/snlg11', text: ' (Suno Logística): Mistura tijolo logístico + recebíveis. Estratégia híbrida de geração de caixa.' },
+        { linkText: 'MXRF11', href: '/asset/mxrf11', text: ' (Maxi Renda): CRIs diversificados, valor de cota baixa, FII mais popular de entry-level no Brasil.' },
+        { linkText: 'KNCR11', href: '/asset/kncr11', text: ' (Kinea Rendimentos Imobiliários): CRIs corporativos high grade indexados ao CDI. Renda mensal estável.' },
+        { linkText: 'KNIP11', href: '/asset/knip11', text: ' (Kinea Índices de Preços): CRIs indexados ao IPCA. Proteção contra inflação no longo prazo.' },
+        { linkText: 'DIVD11', href: '/asset/divd11', text: ' (Maua Capital Recebíveis): High yield, busca CRIs com spread maior. DY tipicamente acima de 12%.' },
+        { linkText: 'SNLG11', href: '/asset/snlg11', text: ' (Suno Logística): Mistura tijolo logístico + recebíveis. Estratégia híbrida de geração de caixa.' },
       ],
     },
     {

@@ -649,7 +649,7 @@ export function useNuNews() {
 // (Card "Cripto" removido — não existe página de cripto pra apontar; a lista
 //  é uma coluna flex, então 4 linhas não quebram o layout.)
 export const MERCADO_EXPLORE = [
-  { t: 'Ações', d: 'Análise fundamentalista de 400+ empresas da B3, com score e preço-alvo.', href: '/acao/PETR4' },
+  { t: 'Ações', d: 'Análise fundamentalista de 400+ empresas da B3, com score e preço-alvo.', href: '/asset/PETR4' },
   { t: 'FIIs', d: 'Fundos imobiliários com dividend yield, vacância e histórico de proventos.', href: '/rankings?classe=fiis' },
   { t: 'Tesouro Direto', d: 'Títulos públicos comparados com CDB e poupança, sem juridiquês.', href: '/ranking/tesouro-direto' },
   { t: 'Calculadoras', d: 'Juros compostos, preço teto e renda passiva em segundos.', href: '/calculadoras' },

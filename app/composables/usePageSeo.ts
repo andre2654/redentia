@@ -10,7 +10,7 @@ interface Breadcrumb { name: string; path: string }
 interface PageSeoInput {
   title: string
   description: string
-  /** path canônico (ex.: /acao/petr4). Default: rota atual. */
+  /** path canônico (ex.: /asset/petr4). Default: rota atual. */
   path?: string
   image?: string
   /** JSON-LD adicionais (Article, FAQPage…) — Organization é global no app. */

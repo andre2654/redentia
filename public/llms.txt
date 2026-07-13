@@ -36,14 +36,14 @@ Estas páginas são mantidas com dados atualizados, conteúdo answer-first e est
 
 ### Ativos individuais (1.000+ páginas)
 
-Cada ticker tem página própria em /acao/{TICKER} com cotação, gráfico, fundamentos, dividendos históricos e análise. Exemplos:
+Cada ticker tem página própria em /asset/{TICKER} com cotação, gráfico, fundamentos, dividendos históricos e análise. Exemplos:
 
-- [PETR4, Petrobras PN](https://redentia.com.br/acao/PETR4)
-- [VALE3, Vale ON](https://redentia.com.br/acao/VALE3)
-- [ITUB4, Itaú Unibanco PN](https://redentia.com.br/acao/ITUB4)
-- [BBAS3, Banco do Brasil ON](https://redentia.com.br/acao/BBAS3)
-- [WEGE3, WEG ON](https://redentia.com.br/acao/WEGE3)
-- [MXRF11, Maxi Renda FII](https://redentia.com.br/acao/MXRF11)
+- [PETR4, Petrobras PN](https://redentia.com.br/asset/PETR4)
+- [VALE3, Vale ON](https://redentia.com.br/asset/VALE3)
+- [ITUB4, Itaú Unibanco PN](https://redentia.com.br/asset/ITUB4)
+- [BBAS3, Banco do Brasil ON](https://redentia.com.br/asset/BBAS3)
+- [WEGE3, WEG ON](https://redentia.com.br/asset/WEGE3)
+- [MXRF11, Maxi Renda FII](https://redentia.com.br/asset/MXRF11)
 
 ### Rankings (22 rankings, atualizados diariamente)
 
@@ -56,6 +56,23 @@ Cada ticker tem página própria em /acao/{TICKER} com cotação, gráfico, fund
 - [Maiores Baixas do Mês](https://redentia.com.br/ranking/maiores-baixas-mes)
 - [Ranking do Tesouro Direto](https://redentia.com.br/ranking/tesouro-direto): melhores taxas do dia (IPCA+, Prefixado, Selic)
 - Demais rankings (ROE, margem líquida, P/L, crescimento, valor de mercado, lucros, caixa) em /ranking/{slug}
+
+### Tesouro Direto (título a título)
+
+Cada título público tem página própria em /tesouro/{slug} com taxa do dia, preço de compra e venda e vencimento. Exemplos:
+
+- [Tesouro IPCA+ 2026](https://redentia.com.br/tesouro/tesouro-ipca-2026)
+- [Tesouro Prefixado 2027](https://redentia.com.br/tesouro/tesouro-prefixado-2027)
+- [Tesouro Selic 2027](https://redentia.com.br/tesouro/tesouro-selic-2027)
+
+### Dividendos por ativo
+
+Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histórico de proventos, dividend yield e agenda de pagamentos. Exemplos:
+
+- [Dividendos de ITUB4](https://redentia.com.br/dividendos/ITUB4)
+- [Dividendos de PETR4](https://redentia.com.br/dividendos/PETR4)
+- [Dividendos de TAEE11](https://redentia.com.br/dividendos/TAEE11)
+- [Dividendos de MXRF11](https://redentia.com.br/dividendos/MXRF11)
 
 ### Teses de investimento
 

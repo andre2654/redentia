@@ -201,7 +201,7 @@ function buildPositions(
       pct: r.dayPct != null ? pctFmt(r.dayPct) : null,
       dir: dirOf(r.dayPct ?? 0),
       // cripto/tesouro não têm página de ativo — caem na carteira (documentado)
-      href: isEquity(r.asset_class) ? `/acao/${r.ticker}` : '/carteira',
+      href: isEquity(r.asset_class) ? `/asset/${r.ticker}` : '/carteira',
     }
   })
 
@@ -455,7 +455,7 @@ function buildActions(
           targetSub: analysts ? `alvo médio · ${analysts} analistas` : 'alvo médio',
         },
         cta: `Analisar ${best.ticker}`,
-        ctaHref: `/acao/${best.ticker}`,
+        ctaHref: `/asset/${best.ticker}`,
         ctaVariant: 'outline',
       })
     }
@@ -652,7 +652,7 @@ async function loadHome(base: string, token: string): Promise<HomePayload> {
 
   /* 3. dependentes (bounded): teses seguidas + consenso das top 3 posições */
   const topEquities = positionsVM.rows
-    .filter((r) => r.href.startsWith('/acao/'))
+    .filter((r) => r.href.startsWith('/asset/'))
     .slice(0, 3)
     .map((r) => r.ticker)
   const [thesesVM, consensusRaw] = await Promise.all([

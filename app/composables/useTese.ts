@@ -1,7 +1,7 @@
 /**
  * Dados do /tese/[slug] (PR5). Contrato de UX: designs/Redentia Tese.dc.html.
  *
- * SSR-FIRST como o /acao (PR2): o fetch roda no servidor via useAsyncData pro
+ * SSR-FIRST como o /asset (PR2): o fetch roda no servidor via useAsyncData pro
  * HTML da 1ª resposta já sair indexável com o editorial completo. Política de
  * degradação POR SEÇÃO (documentada em cada builder): o seed do design (a tese
  * "A fábrica volta pra casa") só entra quando o backend INTEIRO falha e o slug

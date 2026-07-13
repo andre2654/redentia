@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // Tabela do caso especial tesouro-direto (renda fixa não tem /rankings/* no
 // backend — deriva de GET /tesouro ordenado por rate_numeric): título,
-// indexador, taxa, vencimento e preço. Sem navegação por linha (título
-// público não tem página de ativo). Mesma pele da RankTable.
+// indexador, taxa, vencimento e preço. Linha inteira navega pro detalhe
+// /tesouro/{slug} (as páginas do Tesouro existem desde a frente E do
+// PLANO-REFINO-POS-ATLAS). Mesma pele da RankTable.
 import type { TesouroRankingRow } from '~/types/rankings'
 
 defineProps<{ rows: TesouroRankingRow[] }>()
@@ -30,9 +31,14 @@ function fmtMaturity(iso: string | null): string {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, i) in rows" :key="row.slug" class="rkt__row">
+        <tr
+          v-for="(row, i) in rows" :key="row.slug" class="rkt__row"
+          @click="navigateTo(`/tesouro/${row.slug}`)"
+        >
           <td class="rkt__cell rkt__cell--pos">{{ i + 1 }}</td>
-          <td class="rkt__cell rkt__cell--asset">{{ row.name }}</td>
+          <td class="rkt__cell rkt__cell--asset">
+            <NuxtLink :to="`/tesouro/${row.slug}`" class="rkt__link" @click.stop>{{ row.name }}</NuxtLink>
+          </td>
           <td class="rkt__cell rkt__cell--num"><span class="rkt__badge">{{ row.indexer }}</span></td>
           <td class="rkt__cell rkt__cell--num rkt__cell--rate">{{ row.rate }}</td>
           <td class="rkt__cell rkt__cell--num">{{ fmtMaturity(row.maturity) }}</td>
@@ -55,6 +61,8 @@ function fmtMaturity(iso: string | null): string {
 .rkt__th--pos { width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .rkt__th--asset { text-align: left; }
 .rkt__th--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
+.rkt__row { cursor: pointer; transition: background .15s; }
+.rkt__row:hover { background: var(--nu-cream-hover); }
 .rkt__row + .rkt__row .rkt__cell { border-top: 1px solid var(--nu-cream-2); }
 .rkt__cell {
   padding: 14px 16px; text-align: right; white-space: nowrap;
@@ -66,6 +74,8 @@ function fmtMaturity(iso: string | null): string {
   color: var(--nu-gray); font-size: 13.5px; font-weight: 800;
 }
 .rkt__cell--asset { text-align: left; font-weight: 800; letter-spacing: -.1px; }
+.rkt__link { color: var(--nu-ink); }
+.rkt__link:hover { color: var(--nu-blue); }
 .rkt__cell--rate { color: var(--nu-blue); font-weight: 800; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .rkt__badge {

@@ -31,7 +31,7 @@ export function localISODate(d = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-/** 'hoje, 08:30' · 'ontem' · '04/07' (formato das linhas de notícia do /mercado e /acao). */
+/** 'hoje, 08:30' · 'ontem' · '04/07' (formato das linhas de notícia do /mercado e /asset). */
 export function relTime(iso: string | null): string {
   if (!iso) return ''
   const d = new Date(iso)

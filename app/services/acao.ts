@@ -1,5 +1,5 @@
 /**
- * Serviço do domínio ação (PR2 /acao/[ticker]) — fetchers tipados, finos.
+ * Serviço do domínio ação (PR2 /asset/[ticker]) — fetchers tipados, finos.
  * Diferença pro market.ts (PR1): esta página é SSR-first (SEO), então os
  * fetchers recebem `base` — no server o composable passa a URL direta do
  * Laravel (runtimeConfig.backendDirectBase, sem loopback no próprio Nitro);
@@ -9,6 +9,8 @@
 import type {
   AcaoRange,
   ConsensusApi,
+  CryptoDetailApi,
+  CryptoPricePointApi,
   PriceMode,
   DividendApi,
   EditorialApi,
@@ -91,4 +93,18 @@ export function acaoFetchNewsByTicker(base: string, ticker: string) {
 /** GET /news?ticker= — fallback pra tickers fora da regex do endpoint acima. */
 export function acaoFetchNewsFiltered(base: string, ticker: string, limit = 8) {
   return $fetch<{ data: NewsApi[] }>(`${base}/news?ticker=${ticker}&limit=${limit}`, json)
+}
+
+/** GET /crypto/{idOrSymbol} — detail da moeda (404 quando não existe). */
+export function acaoFetchCrypto(base: string, symbol: string) {
+  return $fetch<{ data: CryptoDetailApi }>(`${base}/crypto/${symbol}`, json)
+}
+
+/**
+ * GET /crypto/{idOrSymbol}/prices?range= — série DIÁRIA em BRL.
+ * Ranges reais (verificados 2026-07-13): `30d`, `6m`, `5y`, `full`; qualquer
+ * outro valor (inclusive vazio) cai no default de 12 meses.
+ */
+export function acaoFetchCryptoPrices(base: string, symbol: string, range: string) {
+  return $fetch<{ data: CryptoPricePointApi[] }>(`${base}/crypto/${symbol}/prices?range=${range}`, json)
 }

@@ -3,7 +3,7 @@
 // conteúdo (meta → título-link → leitura do Atlas → chips de ticker), com
 // direção ALTERNADA par/ímpar via prop `reverse` — o índice é o da lista
 // FILTRADA, como no mock. Valores exatos do design (Redentia Noticias Nu.dc.html).
-// NÃO confundir com NuNewsRow (linha compacta do /mercado e /acao).
+// NÃO confundir com NuNewsRow (linha compacta do /mercado e /asset).
 import type { NoticiasItem } from '~/types/noticias'
 
 defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()

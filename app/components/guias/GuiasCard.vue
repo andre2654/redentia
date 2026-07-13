@@ -37,7 +37,10 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
       <span class="gdc__foot">
         <span class="gdc__min">{{ minutes }} min de leitura</span>
         <span v-if="to" class="gdc__arrow">
-          <svg :width="variant === 'hub' ? 14 : 13" :height="variant === 'hub' ? 14 : 13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          <!-- tamanho via CSS (.gdc__arrow svg), não :width/:height — binding
+               dinâmico de width em <svg> vira DOM prop na hidratação e
+               SVGSVGElement.width é getter-only (warn no console) -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
         </span>
         <span v-else class="gdc__soon">Em breve</span>
       </span>
@@ -92,6 +95,8 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 }
 .gdc--hub .gdc__arrow { width: 38px; height: 38px; }
 .gdc--related .gdc__arrow { width: 36px; height: 36px; }
+.gdc--hub .gdc__arrow svg { width: 14px; height: 14px; }
+.gdc--related .gdc__arrow svg { width: 13px; height: 13px; }
 /* estado "em breve" (linguagem do design: pill areia como as tags neutras) */
 .gdc__soon {
   display: inline-flex; align-items: center; background: var(--nu-sand-2);

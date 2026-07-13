@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     }
 
     if (section.id === 'ativos' && section.pages.length > pages.length) {
-      lines.push('', `Mais ${section.pages.length - pages.length} tickers com página própria em /acao/{TICKER} (lista completa no sitemap.xml).`)
+      lines.push('', `Mais ${section.pages.length - pages.length} tickers com página própria em /asset/{TICKER} (lista completa no sitemap.xml).`)
     }
 
     lines.push('')

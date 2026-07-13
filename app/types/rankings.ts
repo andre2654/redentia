@@ -89,7 +89,7 @@ export interface RankingMeta {
  *  - { h3 }: subtítulo (h3 real da página antiga, não parágrafo);
  *  - { ul }: lista de bullets (itens verbatim);
  *  - { linkText, href, text }: parágrafo cujo prefixo é link interno
- *    (re-mapeamento /asset/<t> → /acao/<t> dos cards de ticker antigos;
+ *    (cards de ticker antigos mantêm /asset/<t>, mesma URL da Redentia antiga;
  *    o texto renderizado é linkText + text, concatenação verbatim).
  */
 export type RankingParagraph =
@@ -128,7 +128,7 @@ export interface RankingCopy {
   answerFirst: string
   /** Seções h2 educacionais, na MESMA ordem da página antiga. */
   educationalSections: RankingEducationalSection[]
-  /** "Ferramentas relacionadas" (links re-mapeados: /rankings, /acao/…). */
+  /** "Ferramentas relacionadas" (links re-mapeados: /rankings, /asset/…). */
   crossLinks: RankingCrossLink[]
   /** FAQ (JSON-LD FAQPage emitido pelo NuFaqAccordion). */
   faqItems: RankingFaqItem[]

@@ -1,5 +1,5 @@
 /**
- * Tipos do domínio ação (PR2 /acao/[ticker]).
+ * Tipos do domínio ação (PR2 /asset/[ticker]).
  *  - *Api  = shapes REAIS do backend (verificados via curl no proxy 2026-07-11)
  *  - Acao* = view-models da página (shape do design Redentia Acoes Nu.dc.html)
  *
@@ -86,7 +86,65 @@ export interface FundamentalsOverviewApi {
       num_shareholders: number | null
       trading_name: string | null
     } | null
+    /**
+     * presente só em ETFs (asset_type: 'etf') — verificado ao vivo 2026-07-13
+     * (IVVB11). É a ÚNICA fonte de dados de ETF: valuation/quality vêm vazios,
+     * então extractFund devolve null e a página degradava pra vazia antes do
+     * PR de tipos de ativo.
+     */
+    etf?: {
+      price: number | null
+      change_12m: number | null
+      min_price_52_weeks: number | null
+      max_price_52_weeks: number | null
+      num_shareholders: number | null
+      volume: number | null
+      lot_size: number | null
+      market: string | null
+      isin_code: string | null
+      book_name: string | null
+      cnpj: string | null
+      fund_start_date: string | null // 'dd/mm/yyyy'
+      trading_name: string | null // vem SUJO ('ETF DA BOLSA AMERICANA cotação e composição')
+    } | null
   } | null
+}
+
+/**
+ * GET /api/crypto/{idOrSymbol} → data (campos usados; verificado ao vivo
+ * 2026-07-13). Preços em BRL; cache de 5 min no backend.
+ */
+export interface CryptoDetailApi {
+  id: string
+  symbol: string
+  name: string
+  image: string | null
+  rank: number | null
+  price_brl: number | null
+  change_24h_pct: number | null
+  change_7d_pct: number | null
+  change_30d_pct: number | null
+  appreciation_12m_pct: number | null
+  market_cap_brl: number | null
+  volume_24h_brl: number | null
+  market_cap_dominance_pct: number | null
+  min_52w_brl: number | null
+  max_52w_brl: number | null
+  circulating_supply: number | null
+  max_supply: number | null
+  ohlc?: { last_updated: string | null } | null
+}
+
+/**
+ * GET /api/crypto/{idOrSymbol}/prices?range= → data[] (diário).
+ * GOTCHA runtime: `price_usd` vem null; ranges aceitos ≠ /tickers: `30d` (31
+ * pts), `6m` (182), `5y`, `full`; qualquer outro valor cai no default de 12
+ * meses (366 pts).
+ */
+export interface CryptoPricePointApi {
+  price_at: string // 'YYYY-MM-DD'
+  price_brl: number | null
+  price_usd: number | null
 }
 
 /** GET /api/rankings/redentia-score → data[] (campos usados). */
@@ -153,6 +211,13 @@ export interface ThesisDetailApi {
 
 /* ————— view-models (shape do design) ————— */
 
+/**
+ * Tipo do ativo resolvido em runtime: scrape_extras.asset_type quando existe,
+ * fallback no `type` do ProfileResource; 'crypto' vem da ROTA (símbolo curto
+ * A-Z fora do formato B3 → GET /crypto/{symbol}).
+ */
+export type AssetKind = 'stock' | 'fii' | 'bdr' | 'etf' | 'crypto'
+
 export type AcaoRange = '1mo' | '6mo' | '12mo'
 
 /** enum completo do `mode` de /prices (PR5: o IBOV da tese olha além de 12M). */
@@ -177,6 +242,10 @@ export interface AcaoHeroVM {
   changeLine: string | null // '+R$ 0,29 (0,76%) hoje' (null = sem variação do dia)
   dir: NuDir
   metaLine: string // 'fech. anterior R$ 37,96 · atualizado em 10/07'
+  /** logo redondo antes do nome (cripto usa o `image` do backend; B3 omite) */
+  logo?: string | null
+  /** pill outline ao lado do nome — default 'B3' (cripto: 'CRIPTO') */
+  exchangeLabel?: string
 }
 
 export interface AcaoStatRow {
@@ -272,17 +341,28 @@ export interface AcaoSeriesPair {
   ibov: SeriesPoint[]
 }
 
+/** Seção "O fundo" (ETF): linhas cadastrais no lugar dos fundamentos de empresa. */
+export interface AcaoFundInfoVM {
+  heading: [string, string]
+  sub: string
+  rows: AcaoStatRow[]
+}
+
 export interface AcaoPayload {
   ticker: string
   name: string
-  isFii: boolean
+  kind: AssetKind
   hero: AcaoHeroVM
   currentPrice: number | null
   series12: AcaoSeriesPair | null
   chartStats: AcaoStatRow[]
   perfil: AcaoPerfilRow[]
   fundHeading: [string, string]
+  /** subtítulo da seção de fundamentos (muda por tipo: B3/informes/matriz USD) */
+  fundSub: string
   fcards: AcaoFundCard[]
+  /** só ETF: dados cadastrais do fundo (null pros demais tipos) */
+  fundInfo: AcaoFundInfoVM | null
   theses: AcaoThesisRowVM[]
   dividends: AcaoDividendsVM | null
   ai: AcaoAiVM | null

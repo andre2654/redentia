@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// Hero do ativo (design Acoes Nu): badges (nome·ticker azul, pill outline B3,
-// pill de posição na carteira — AUTH-ONLY, anônimo nunca vê), preço H1 gigante
+// Hero do ativo (design Acoes Nu): badges (nome·ticker azul, pill outline B3 —
+// ou o rótulo do VM: cripto usa 'CRIPTO' + logo redondo do backend —, pill de
+// posição na carteira — AUTH-ONLY, anônimo nunca vê), preço H1 gigante
 // tabular-nums, pill de variação do dia com triângulo (verde/vermelha), linha
 // de fechamento anterior e CTAs primária + outline.
 import type { AcaoHeroVM } from '~/types/acao'
@@ -9,13 +10,15 @@ import type { AcaoPosition } from '~/composables/useAcao'
 defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+const logoFailed = ref(false)
 </script>
 
 <template>
   <section class="ahr">
     <div class="ahr__badges">
+      <img v-if="hero.logo && !logoFailed" :src="hero.logo" alt="" class="ahr__logo" @error="logoFailed = true">
       <span class="ahr__company">{{ hero.companyLine }}</span>
-      <span class="ahr__exchange">B3</span>
+      <span class="ahr__exchange">{{ hero.exchangeLabel || 'B3' }}</span>
       <span v-if="position" class="ahr__position">Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</span>
     </div>
     <h1 class="ahr__price">{{ hero.priceFmt }}</h1>
@@ -39,6 +42,10 @@ const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
   animation: nu-fade .5s ease both;
 }
 .ahr__badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ahr__logo {
+  width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block;
+  background: var(--nu-white); flex-shrink: 0;
+}
 .ahr__company { color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
 .ahr__exchange {
   display: inline-flex; align-items: center; border: 2px solid var(--nu-ink-14);

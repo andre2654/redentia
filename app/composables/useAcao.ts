@@ -1,5 +1,5 @@
 /**
- * Dados do /acao/[ticker] (PR2). Contrato de UX: designs/Redentia Acoes Nu.dc.html.
+ * Dados do /asset/[ticker] (PR2). Contrato de UX: designs/Redentia Acoes Nu.dc.html.
  *
  * Diferente do /mercado (client-hydrate), esta página é SSR-FIRST: o fetch
  * acontece no servidor via useAsyncData pra o HTML da 1ª resposta já sair
@@ -17,6 +17,7 @@ import type {
   AcaoConsensusVM,
   AcaoDividendsVM,
   AcaoFundCard,
+  AcaoFundInfoVM,
   AcaoHeroVM,
   AcaoMetricCard,
   AcaoPayload,
@@ -27,7 +28,10 @@ import type {
   AcaoStatRow,
   AcaoTag,
   AcaoThesisRowVM,
+  AssetKind,
   ConsensusApi,
+  CryptoDetailApi,
+  CryptoPricePointApi,
   DividendApi,
   EditorialApi,
   FundamentalsOverviewApi,
@@ -55,13 +59,17 @@ function num(x: unknown): number | null {
   const n = Number(x)
   return Number.isFinite(n) ? n : null
 }
-/** 517171740422 → 'R$ 517,17B' (casas conforme o design: 2 no chart, 1 nos cards). */
-function moneyBig(v: number, decimals: 1 | 2 = 2): string {
+/**
+ * 517171740422 → 'R$ 517,17B' (casas conforme o design: 2 no chart, 1 nos
+ * cards). `cur` sinaliza a moeda: BDRs têm DRE em dólar da matriz (currency
+ * null no backend) — prefixo vira US$ pra não mentir escala em reais.
+ */
+function moneyBig(v: number, decimals: 1 | 2 = 2, cur = 'R$'): string {
   const nf = decimals === 1 ? nf1 : nf2
-  if (Math.abs(v) >= 1e12) return `R$ ${nf.format(v / 1e12)}T`
-  if (Math.abs(v) >= 1e9) return `R$ ${nf.format(v / 1e9)}B`
-  if (Math.abs(v) >= 1e6) return `R$ ${nf.format(v / 1e6)}M`
-  return `R$ ${nf.format(v)}`
+  if (Math.abs(v) >= 1e12) return `${cur} ${nf.format(v / 1e12)}T`
+  if (Math.abs(v) >= 1e9) return `${cur} ${nf.format(v / 1e9)}B`
+  if (Math.abs(v) >= 1e6) return `${cur} ${nf.format(v / 1e6)}M`
+  return `${cur} ${nf.format(v)}`
 }
 /* localISODate/relTime/sourcePretty/MONTHS_PT: compartilhados em app/utils/format.ts (PR3) */
 /** '2026-08-20' → '20 ago 2026'. */
@@ -79,22 +87,28 @@ function firstSentence(text: string | null | undefined, max = 140): string | nul
   return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s
 }
 const SMALL_WORDS = new Set(['de', 'do', 'da', 'dos', 'das', 'e'])
-/**
- * 'PETROBRAS   PN      N2' → 'Petrobras'. O ProfileResource devolve o nome
- * bruto da B3 (colunas separadas por espaços múltiplos + sufixo de classe);
- * FIIs usam o trading_name do fundamentals quando existe.
- */
-function prettyName(raw: string, fiiTradingName?: string | null): string {
-  if (fiiTradingName) return fiiTradingName
-  const head = (raw.split(/\s{2,}/)[0] ?? raw)
-    .replace(/\s+(ON|PN[AB]?|UNT|UNS|N1|N2|NM|MA|MB|EJ|ED|ER|ES)$/i, '')
+/** 'PÁTRIA LOG' → 'Pátria Log' (trading_name de FII / book_name de ETF vêm MAIÚSCULOS). */
+function titleCasePt(s: string): string {
+  return s
     .trim()
-  if (!head) return raw
-  return head
     .toLowerCase()
     .split(/\s+/)
     .map((w) => (SMALL_WORDS.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
     .join(' ')
+}
+/**
+ * 'PETROBRAS   PN      N2' → 'Petrobras'. O ProfileResource devolve o nome
+ * bruto da B3 (colunas separadas por espaços múltiplos + sufixo de classe);
+ * FIIs usam o trading_name do fundamentals quando existe (title-case: vem
+ * MAIÚSCULO do scraper).
+ */
+function prettyName(raw: string, fiiTradingName?: string | null): string {
+  if (fiiTradingName) return titleCasePt(fiiTradingName)
+  const head = (raw.split(/\s{2,}/)[0] ?? raw)
+    .replace(/\s+(ON|PN[AB]?|UNT|UNS|N1|N2|NM|MA|MB|EJ|ED|ER|ES)$/i, '')
+    .trim()
+  if (!head) return raw
+  return titleCasePt(head)
 }
 
 /* ————— motor de regras (cortes documentados; zero LLM) ————— */
@@ -154,6 +168,8 @@ function scaleLin(v: number, worst: number, best: number): number {
 
 interface Fund {
   isFii: boolean
+  /** BDR: DRE em dólar da matriz (currency null no backend) → valores US$ */
+  isBdr: boolean
   marketCap: number | null
   dy: number | null
   pl: number | null
@@ -185,10 +201,12 @@ function extractFund(ov: FundamentalsOverviewApi | null): Fund | null {
   const q = se?.quality
   const fii = se?.fii
   const isFii = se?.asset_type === 'fii'
+  const isBdr = se?.asset_type === 'bdr'
   const revenue = num(fd?.total_revenue)
   const netMargin = q?.net_margin ?? (num(fd?.profit_margins) != null ? num(fd?.profit_margins)! * 100 : null)
   const f: Fund = {
     isFii,
+    isBdr,
     marketCap: val?.market_cap ?? null,
     dy: val?.dividend_yield ?? fii?.dividend_yield_12m ?? num(ks?.dividend_yield),
     pl: val?.price_to_earnings ?? num(ks?.forward_pe),
@@ -213,6 +231,71 @@ function extractFund(ov: FundamentalsOverviewApi | null): Fund | null {
   // Sem NENHUM indicador → trata como fundamentals ausentes (seções escondem).
   const any = [f.dy, f.pl, f.pvp, f.roe, f.netMargin, f.revenue, f.fiiVpCota].some((x) => x != null)
   return any ? f : null
+}
+
+/* ————— ETF (scrape_extras.etf é a ÚNICA fonte: valuation/quality vêm vazios,
+   então extractFund devolve null e a página saía VAZIA antes deste branch) ————— */
+
+interface EtfInfo {
+  name: string | null // book_name em title-case ('Ishare Sp500')
+  bookName: string | null // bruto ('ISHARE SP500') — linha 'Nome de pregão'
+  change12m: number | null
+  shareholders: number | null
+  volume: number | null
+  lotSize: number | null
+  market: string | null
+  isin: string | null
+  cnpj: string | null
+  startDate: string | null // 'dd/mm/yyyy'
+}
+
+function extractEtf(ov: FundamentalsOverviewApi | null): EtfInfo | null {
+  const e = ov?.scrape_extras?.etf
+  if (!e) return null
+  return {
+    // book_name é o nome limpo; trading_name vem SUJO ('… cotação e composição')
+    // e o prettyName sobre o ProfileResource mutila ('Ishare Sp500ci').
+    name: e.book_name ? titleCasePt(e.book_name) : null,
+    bookName: e.book_name ?? null,
+    change12m: e.change_12m ?? null,
+    shareholders: e.num_shareholders ?? null,
+    volume: e.volume ?? null,
+    lotSize: e.lot_size ?? null,
+    market: e.market ?? null,
+    isin: e.isin_code ?? null,
+    cnpj: e.cnpj ?? null,
+    startDate: e.fund_start_date ?? null,
+  }
+}
+
+/** Stats dark do chart pra ETF (não existe DRE/valuation de empresa). */
+function buildEtfChartStats(e: EtfInfo | null): AcaoStatRow[] {
+  if (!e) return []
+  const rows: AcaoStatRow[] = []
+  if (e.change12m != null) rows.push({ l: 'Variação 12 meses', v: pctFmt(e.change12m) })
+  if (e.shareholders != null) rows.push({ l: 'Cotistas', v: nf0.format(e.shareholders) })
+  if (e.volume != null) rows.push({ l: 'Volume diário', v: moneyBig(e.volume, 2) })
+  if (e.lotSize != null) rows.push({ l: 'Lote padrão', v: nf0.format(e.lotSize) })
+  if (e.isin) rows.push({ l: 'ISIN', v: e.isin })
+  if (e.startDate) rows.push({ l: 'Início do fundo', v: e.startDate })
+  return rows.slice(0, 7)
+}
+
+/** Seção "O fundo" (no lugar dos fundamentos de empresa, que ETF não tem). */
+function buildEtfFundInfo(e: EtfInfo | null): AcaoFundInfoVM | null {
+  if (!e) return null
+  const rows: AcaoStatRow[] = []
+  if (e.bookName) rows.push({ l: 'Nome de pregão', v: e.bookName })
+  if (e.market) rows.push({ l: 'Mercado', v: e.market })
+  if (e.cnpj) rows.push({ l: 'CNPJ', v: e.cnpj })
+  if (e.startDate) rows.push({ l: 'Início do fundo', v: e.startDate })
+  if (e.isin) rows.push({ l: 'Código ISIN', v: e.isin })
+  if (!rows.length) return null
+  return {
+    heading: ['O fundo', 'por dentro.'],
+    sub: 'Dados cadastrais do fundo na B3',
+    rows,
+  }
 }
 
 /* ————— builders por seção ————— */
@@ -248,13 +331,14 @@ function toSeries(data: PricePointApi[] | undefined | null): SeriesPoint[] {
 
 function buildChartStats(f: Fund | null): AcaoStatRow[] {
   if (!f) return []
+  const cur = f.isBdr ? 'US$' : 'R$'
   const rows: AcaoStatRow[] = []
   if (f.marketCap != null) rows.push({ l: 'Valor de Mercado', v: moneyBig(f.marketCap, 2) })
   if (f.dy != null) rows.push({ l: 'Dividend Yield', v: `${nf2.format(f.dy)}%` })
   if (f.pl != null) rows.push({ l: 'P/L (TTM)', v: nf2.format(f.pl) })
   if (f.roe != null) rows.push({ l: 'ROE', v: `${nf1.format(f.roe)}%` })
-  if (f.revenue != null) rows.push({ l: 'Receita (12M)', v: moneyBig(f.revenue, 2) })
-  if (f.profit != null) rows.push({ l: 'Lucro Líquido (12M)', v: moneyBig(f.profit, 2) })
+  if (f.revenue != null) rows.push({ l: 'Receita (12M)', v: moneyBig(f.revenue, 2, cur) })
+  if (f.profit != null) rows.push({ l: 'Lucro Líquido (12M)', v: moneyBig(f.profit, 2, cur) })
   if (f.netMargin != null) rows.push({ l: 'Margem Líquida', v: `${nf1.format(f.netMargin)}%` })
   if (f.isFii) {
     if (f.fiiVpCota != null) rows.push({ l: 'VP por cota', v: `R$ ${nf2.format(f.fiiVpCota)}` })
@@ -284,6 +368,7 @@ function buildPerfil(f: Fund | null): AcaoPerfilRow[] {
 /** Grid de fundamentos com os 2 AI insight cards nas posições 4 e 9 (design). */
 function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
   if (!f) return []
+  const cur = f.isBdr ? 'US$' : 'R$'
   const m: AcaoMetricCard[] = []
   const push = (label: string, value: string, tag: AcaoTag | null) => m.push({ kind: 'metric', label, value, tag })
   if (f.roe != null) push('ROE', `${nf1.format(f.roe)}%`, tagRoe(f.roe))
@@ -292,8 +377,8 @@ function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
   if (f.pvp != null) push('P/VP', nf2.format(f.pvp), tagPvp(f.pvp, f.isFii))
   if (f.ev != null && f.ev > 0) push('EV/EBITDA', nf2.format(f.ev), tagEv(f.ev))
   if (f.netMargin != null) push('Margem Líquida', `${nf1.format(f.netMargin)}%`, tagMargin(f.netMargin))
-  if (f.revenue != null) push('Receita (12M)', moneyBig(f.revenue, 1), f.revCagr != null ? tagGrowth(f.revCagr) : null)
-  if (f.profit != null) push('Lucro Líquido (12M)', moneyBig(f.profit, 1), f.earnGrowth != null ? tagGrowth(f.earnGrowth) : null)
+  if (f.revenue != null) push('Receita (12M)', moneyBig(f.revenue, 1, cur), f.revCagr != null ? tagGrowth(f.revCagr) : null)
+  if (f.profit != null) push('Lucro Líquido (12M)', moneyBig(f.profit, 1, cur), f.earnGrowth != null ? tagGrowth(f.earnGrowth) : null)
   if (f.debtEbitda != null) push('Dív. Líq./EBITDA', nf2.format(f.debtEbitda), tagDebt(f.debtEbitda))
   if (f.roa != null) push('ROA', `${nf1.format(f.roa)}%`, tagRoa(f.roa))
   if (f.isFii) {
@@ -306,11 +391,21 @@ function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
   // Insights determinísticos (texto por faixa; sem chamada de LLM).
   const cards: AcaoFundCard[] = [...m]
   const insights: AcaoFundCard[] = []
+  // BDR: card informativo curto no lugar de comparação com "média da B3"
+  // (o papel espelha uma empresa estrangeira; comparar com a B3 seria mentir).
+  if (f.isBdr) {
+    insights.push({
+      kind: 'insight',
+      insight: `${ticker} é um BDR: um recibo negociado na B3 que representa ações de uma empresa estrangeira. Os resultados vêm da matriz, em dólar.`,
+      cta: 'Perguntar sobre BDRs',
+      href: '/busca',
+    })
+  }
   if (f.pl != null && f.pl > 0) {
     const text = f.pl <= 6
-      ? `O P/L de ${nf2.format(f.pl)} está entre os mais baixos da bolsa: o mercado paga menos de ${Math.ceil(f.pl)} anos de lucro pela empresa.`
+      ? `O P/L de ${nf2.format(f.pl)} está entre os mais baixos ${f.isBdr ? 'do mercado' : 'da bolsa'}: o mercado paga menos de ${Math.ceil(f.pl)} anos de lucro pela empresa.`
       : f.pl <= 15
-        ? `O P/L de ${nf2.format(f.pl)} está em linha com a média da B3: o preço acompanha os fundamentos, sem prêmio nem desconto relevante.`
+        ? `O P/L de ${nf2.format(f.pl)} está em linha com a média ${f.isBdr ? 'histórica do mercado' : 'da B3'}: o preço acompanha os fundamentos, sem prêmio nem desconto relevante.`
         : `O P/L de ${nf2.format(f.pl)} embute expectativa alta de crescimento: o mercado paga caro pelos lucros futuros de ${ticker}.`
     insights.push({ kind: 'insight', insight: text, cta: 'Perguntar sobre o valuation', href: '/busca' })
   } else if (f.pvp != null) {
@@ -321,9 +416,9 @@ function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
   }
   if (f.dy != null) {
     const text = f.dy >= 6 && f.fcf != null && f.fcf > 0
-      ? `O DY de ${nf2.format(f.dy)}% vem acompanhado de ${moneyBig(f.fcf, 1)} em caixa livre, o fluxo que banca os proventos.`
+      ? `O DY de ${nf2.format(f.dy)}% vem acompanhado de ${moneyBig(f.fcf, 1, cur)} em caixa livre, o fluxo que banca os proventos.`
       : f.dy >= 6
-        ? `O DY de ${nf2.format(f.dy)}% coloca ${ticker} entre as boas pagadoras de proventos da B3.`
+        ? `O DY de ${nf2.format(f.dy)}% coloca ${ticker} entre as boas pagadoras de proventos${f.isBdr ? '' : ' da B3'}.`
         : `O DY de ${nf2.format(f.dy)}% fica abaixo das grandes pagadoras: aqui o retorno depende mais do preço do que dos proventos.`
     insights.push({ kind: 'insight', insight: text, cta: 'Analisar os dividendos', href: '/busca' })
   }
@@ -524,7 +619,7 @@ function buildAiRead(f: Fund | null, editorial: EditorialApi | null, ticker: str
     if (f.pl != null && f.pl > 0 && f.pl <= 8) pros.push(`Múltiplos atrativos, P/L ${nf2.format(f.pl)}${f.ev != null && f.ev > 0 ? ` e EV/EBITDA ${nf2.format(f.ev)}` : ''}`)
     if (f.netMargin != null && f.netMargin >= 15) pros.push(`Margem líquida de ${nf1.format(f.netMargin)}%`)
     if (f.revCagr != null && f.revCagr >= 10) pros.push(`Receita crescendo ${nf1.format(f.revCagr)}% a.a. em 5 anos`)
-    if (f.fcf != null && f.fcf > 0 && f.dy != null && f.dy >= 4) pros.push(`Caixa livre de ${moneyBig(f.fcf, 1)} cobre os proventos`)
+    if (f.fcf != null && f.fcf > 0 && f.dy != null && f.dy >= 4) pros.push(`Caixa livre de ${moneyBig(f.fcf, 1, f.isBdr ? 'US$' : 'R$')} cobre os proventos`)
   }
   const conEd = firstSentence(editorial?.thesis_cons, 110)
   if (conEd) cons.push(conEd)
@@ -541,7 +636,7 @@ function buildAiRead(f: Fund | null, editorial: EditorialApi | null, ticker: str
   return { pros: pros.slice(0, 3), cons: cons.slice(0, 3) }
 }
 
-function buildNews(items: NewsApi[], profile: TickerProfileApi, series12: SeriesPoint[]): AcaoPayload['news'] {
+function buildNews(items: NewsApi[], profile: Pick<TickerProfileApi, 'ticker' | 'change_percent'>, series12: SeriesPoint[]): AcaoPayload['news'] {
   const usable = items.filter((n) => !!n.title).slice(0, 4)
   if (usable.length < 2) return null
   const today = localISODate()
@@ -590,12 +685,21 @@ function buildNews(items: NewsApi[], profile: TickerProfileApi, series12: Series
 
 /* ————— SEO ————— */
 
-function buildSeo(ticker: string, name: string, profile: TickerProfileApi, f: Fund | null, editorial: EditorialApi | null): AcaoPayload['seo'] {
+/** Title/description por tipo — Score/consenso só existem pra ações, então a
+ * promessa da description muda junto com o que a página realmente mostra. */
+function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<TickerProfileApi, 'market_price' | 'change_percent'>, f: Fund | null, editorial: EditorialApi | null): AcaoPayload['seo'] {
   const price = profile.market_price
   const priceFmt = price != null ? `R$ ${nf2.format(price)}` : ''
+  const TAIL: Record<AssetKind, string> = {
+    stock: 'dividendos, fundamentos e análise',
+    fii: 'rendimentos e P/VP',
+    bdr: 'fundamentos e análise do BDR',
+    etf: 'variação e dados do fundo',
+    crypto: 'preço, variação e gráfico', // não usado (cripto tem builder próprio)
+  }
   const title = price != null
-    ? `${ticker} hoje: cotação ${priceFmt}, dividendos, fundamentos e análise`
-    : `${ticker}: cotação, dividendos, fundamentos e análise`
+    ? `${ticker} hoje: cotação ${priceFmt}, ${TAIL[kind]}`
+    : `${ticker}: cotação, ${TAIL[kind]}`
   const bits: string[] = []
   if (price != null) {
     const chg = profile.change_percent != null ? ` (${pctFmt(profile.change_percent)})` : ''
@@ -606,9 +710,17 @@ function buildSeo(ticker: string, name: string, profile: TickerProfileApi, f: Fu
   const facts: string[] = []
   if (f?.dy != null) facts.push(`dividend yield ${nf2.format(f.dy)}%`)
   if (f?.pl != null && f.pl > 0) facts.push(`P/L ${nf2.format(f.pl)}`)
-  if (f?.roe != null) facts.push(`ROE ${nf1.format(f.roe)}%`)
+  if (kind === 'fii' && f?.pvp != null) facts.push(`P/VP ${nf2.format(f.pvp)}`)
+  if (f?.roe != null && kind !== 'fii') facts.push(`ROE ${nf1.format(f.roe)}%`)
   if (facts.length) bits.push(`${facts.join(', ').replace(/^./, (c) => c.toUpperCase())}.`)
-  bits.push('Veja gráfico de 12 meses, histórico de dividendos, Redentia Score, consenso de analistas, notícias e a leitura da Redentia AI.')
+  const CLOSER: Record<AssetKind, string> = {
+    stock: 'Veja gráfico de 12 meses, histórico de dividendos, Redentia Score, consenso de analistas, notícias e a leitura da Redentia AI.',
+    fii: 'Veja gráfico de 12 meses, histórico de rendimentos, indicadores do fundo, notícias e a leitura da Redentia AI.',
+    bdr: 'Veja gráfico de 12 meses, fundamentos da matriz em dólar, notícias e a leitura da Redentia AI.',
+    etf: 'Veja gráfico de 12 meses, variação, cotistas e os dados cadastrais do fundo.',
+    crypto: 'Veja preço em reais, gráfico de 12 meses e variações por janela.',
+  }
+  bits.push(CLOSER[kind])
   return {
     title,
     description: bits.join(' '),
@@ -657,7 +769,7 @@ function petr4Seed(): AcaoPayload {
   return {
     ticker: 'PETR4',
     name: 'Petrobras',
-    isFii: false,
+    kind: 'stock',
     hero: {
       companyLine: 'Petrobras · PETR4',
       ticker: 'PETR4',
@@ -689,6 +801,8 @@ function petr4Seed(): AcaoPayload {
       { name: 'Dividendo', tag: g('Excelente') },
     ],
     fundHeading: ['Os números', 'da empresa.'],
+    fundSub: 'Últimos 12 meses · dados da B3 e balanços',
+    fundInfo: null,
     fcards: [
       { kind: 'metric', label: 'ROE', value: '24,2%', tag: g('Excelente') },
       { kind: 'metric', label: 'Dividend Yield', value: '6,95%', tag: g('Excelente') },
@@ -814,8 +928,20 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
   const overview = ok(overviewR)?.data ?? null
   const f = extractFund(overview)
-  const isFii = f?.isFii ?? profile.type === 'REIT'
-  const name = prettyName(profile.name, f?.fiiName)
+  const etf = extractEtf(overview)
+  // Tipo: scrape_extras.asset_type manda; sem overview, cai no ProfileResource.
+  const assetType = overview?.scrape_extras?.asset_type
+  const kind: AssetKind = assetType === 'fii'
+    ? 'fii'
+    : assetType === 'bdr'
+      ? 'bdr'
+      : assetType === 'etf'
+        ? 'etf'
+        : assetType
+          ? 'stock'
+          : profile.type === 'REIT' ? 'fii' : profile.type === 'ETF' ? 'etf' : profile.type === 'BDR' ? 'bdr' : 'stock'
+  const isFii = kind === 'fii'
+  const name = kind === 'etf' && etf?.name ? etf.name : prettyName(profile.name, f?.fiiName)
   // flat, sem wrapper `data` (gotcha documentado no service)
   const editorial = ok(editorialR) ?? null
 
@@ -840,22 +966,178 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai = { updatedLabel, score, consensus, read }
   }
 
+  // Subtítulo dos fundamentos por tipo (a copy antiga prometia "balanços" pra
+  // FII e "dados da B3" pra DRE de matriz em dólar — mentiras pequenas, mas mentiras).
+  const fundSub = isFii
+    ? 'Últimos 12 meses · dados da B3 e informes do fundo'
+    : kind === 'bdr'
+      ? 'Últimos 12 meses · resultados da matriz, em dólar'
+      : 'Últimos 12 meses · dados da B3 e balanços'
+
   return {
     ticker,
     name,
-    isFii,
+    kind,
     hero: buildHero(profile, name),
     currentPrice: profile.market_price,
     series12,
-    chartStats: buildChartStats(f),
+    // ETF não tem DRE/valuation de empresa: stats do chart vêm do bloco etf.
+    chartStats: kind === 'etf' ? buildEtfChartStats(etf) : buildChartStats(f),
     perfil: buildPerfil(f),
     fundHeading: isFii ? ['Os números', 'do fundo.'] : ['Os números', 'da empresa.'],
+    fundSub,
     fcards: buildFundCards(f, ticker),
+    fundInfo: kind === 'etf' ? buildEtfFundInfo(etf) : null,
     theses,
     dividends: buildDividends(ok(dividendsR)?.data ?? [], profile.market_price, ticker),
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
-    seo: buildSeo(ticker, name, profile, f, editorial),
+    seo: buildSeo(kind, ticker, name, profile, f, editorial),
+  }
+}
+
+/* ————— cripto (fluxo próprio: GET /crypto/{symbol}, sem B3/score/consenso/
+   dividendos — nada de seção vazia fingindo dado que não existe) ————— */
+
+/**
+ * Mapa AcaoRange → range REAL da API de cripto (verificado 2026-07-13):
+ * `30d` e `6m` funcionam; '12m' cai no default do endpoint, que É 12 meses.
+ */
+const CRYPTO_RANGE: Record<AcaoRange, string> = { '1mo': '30d', '6mo': '6m', '12mo': '12m' }
+
+const nfc = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 })
+
+/** Preço de cripto em BRL: BTC vale ~R$ 328 mil (centavos só abaixo de R$ 1.000). */
+function cryptoBrl(v: number): string {
+  return `R$ ${v >= 1000 ? nf0.format(v) : nf2.format(v)}`
+}
+
+/** 20055443 → '20,06M' (supply circulante/máximo). */
+function compactQty(v: number): string {
+  if (v >= 1e9) return `${nfc.format(v / 1e9)}B`
+  if (v >= 1e6) return `${nfc.format(v / 1e6)}M`
+  if (v >= 1e3) return `${nfc.format(v / 1e3)} mil`
+  return nfc.format(v)
+}
+
+function toCryptoSeries(data: CryptoPricePointApi[] | undefined | null): SeriesPoint[] {
+  return (data ?? [])
+    .filter((p) => p.price_brl != null && !!p.price_at)
+    .map((p) => ({ t: p.price_at, v: p.price_brl as number }))
+}
+
+function buildCryptoHero(c: CryptoDetailApi, sym: string): AcaoHeroVM {
+  const price = c.price_brl
+  const chg = c.change_24h_pct
+  let changeLine: string | null = null
+  if (price != null && chg != null) {
+    const prev = price / (1 + chg / 100)
+    const abs = Math.abs(price - prev)
+    // cripto roda 24/7 — 'em 24h', não 'hoje'
+    changeLine = `${chg < 0 ? '-' : '+'}R$ ${abs >= 1000 ? nf0.format(abs) : nf2.format(abs)} (${nf2.format(Math.abs(chg))}%) em 24h`
+  }
+  const upd = c.ohlc?.last_updated
+  const metaLine = upd
+    ? `mercado 24 horas · atualizado em ${upd.slice(8, 10)}/${upd.slice(5, 7)}`
+    : 'mercado 24 horas · preço em reais'
+  return {
+    companyLine: `${c.name} · ${sym}`,
+    ticker: sym,
+    priceFmt: price != null ? cryptoBrl(price) : '—',
+    changeLine,
+    dir: dirOf(chg ?? 0),
+    metaLine,
+    logo: c.image,
+    exchangeLabel: 'CRIPTO',
+  }
+}
+
+function buildCryptoStats(c: CryptoDetailApi, sym: string): AcaoStatRow[] {
+  const rows: AcaoStatRow[] = []
+  if (c.market_cap_brl != null) rows.push({ l: 'Valor de Mercado', v: moneyBig(c.market_cap_brl, 2) })
+  if (c.volume_24h_brl != null) rows.push({ l: 'Volume (24h)', v: moneyBig(c.volume_24h_brl, 2) })
+  if (c.market_cap_dominance_pct != null && c.market_cap_dominance_pct > 0) rows.push({ l: 'Dominância', v: `${nf2.format(c.market_cap_dominance_pct)}%` })
+  if (c.rank != null) rows.push({ l: 'Rank global', v: `#${nf0.format(c.rank)}` })
+  if (c.min_52w_brl != null) rows.push({ l: 'Mín. 52 semanas', v: cryptoBrl(c.min_52w_brl) })
+  if (c.max_52w_brl != null) rows.push({ l: 'Máx. 52 semanas', v: cryptoBrl(c.max_52w_brl) })
+  if (c.circulating_supply != null) rows.push({ l: 'Supply circulante', v: `${compactQty(c.circulating_supply)} ${sym}` })
+  if (c.max_supply != null) rows.push({ l: 'Supply máximo', v: `${compactQty(c.max_supply)} ${sym}` })
+  return rows.slice(0, 8)
+}
+
+/** Janelas de variação como metric cards (a seção de fundamentos vira isso). */
+function buildCryptoCards(c: CryptoDetailApi): AcaoFundCard[] {
+  const win = (label: string, n: number | null): AcaoMetricCard | null =>
+    n == null ? null : { kind: 'metric', label, value: pctFmt(n), tag: n >= 0 ? T('alta', 'green') : T('queda', 'gray') }
+  return [
+    win('24 horas', c.change_24h_pct),
+    win('7 dias', c.change_7d_pct),
+    win('30 dias', c.change_30d_pct),
+    win('12 meses', c.appreciation_12m_pct),
+  ].filter((x): x is AcaoMetricCard => x != null)
+}
+
+function buildCryptoSeo(c: CryptoDetailApi, sym: string): AcaoPayload['seo'] {
+  const price = c.price_brl
+  const title = price != null
+    ? `${c.name} (${sym}) hoje: preço ${cryptoBrl(price)}, variação e gráfico`
+    : `${c.name} (${sym}): preço hoje, variação e gráfico`
+  const bits: string[] = []
+  if (price != null) {
+    const chg = c.change_24h_pct != null ? ` (${pctFmt(c.change_24h_pct)} em 24 horas)` : ''
+    bits.push(`Preço de ${c.name} (${sym}) hoje: ${cryptoBrl(price)}${chg}.`)
+  } else {
+    bits.push(`${c.name} (${sym}), preço em reais.`)
+  }
+  const facts: string[] = []
+  if (c.market_cap_brl != null) facts.push(`valor de mercado ${moneyBig(c.market_cap_brl, 2)}`)
+  if (c.volume_24h_brl != null) facts.push(`volume de ${moneyBig(c.volume_24h_brl, 2)} em 24 horas`)
+  if (facts.length) bits.push(`${facts.join(', ').replace(/^./, (ch) => ch.toUpperCase())}.`)
+  bits.push('Veja gráfico de 12 meses e variações em 7 dias, 30 dias e 12 meses, com preços em reais.')
+  return { title, description: bits.join(' '), faq: [] }
+}
+
+async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
+  let c: CryptoDetailApi
+  try {
+    c = (await acaoFetchCrypto(base, symbol)).data
+  } catch (e) {
+    const status = statusOf(e)
+    if (status === 404) {
+      throw createError({ statusCode: 404, statusMessage: `Ativo ${symbol} não encontrado` })
+    }
+    throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
+  }
+  const sym = (c.symbol ?? symbol).toUpperCase()
+
+  const [pricesR, newsR] = await Promise.allSettled([
+    acaoFetchCryptoPrices(base, symbol, CRYPTO_RANGE['12mo']),
+    // Notícias: só o fallback ?ticker= existe pra cripto; vazio → seção some.
+    acaoFetchNewsFiltered(base, sym),
+  ])
+  const ok = <X>(r: PromiseSettledResult<X>): X | null => (r.status === 'fulfilled' ? r.value : null)
+
+  const series = toCryptoSeries(ok(pricesR)?.data)
+  const series12: AcaoSeriesPair | null = series.length >= 2 ? { asset: series, ibov: [] } : null
+
+  return {
+    ticker: sym,
+    name: c.name,
+    kind: 'crypto',
+    hero: buildCryptoHero(c, sym),
+    currentPrice: c.price_brl,
+    series12,
+    chartStats: buildCryptoStats(c, sym),
+    perfil: [],
+    fundHeading: ['As variações', `de ${sym}.`],
+    fundSub: 'Janelas de variação · preço em reais',
+    fcards: buildCryptoCards(c),
+    fundInfo: null,
+    theses: [],
+    dividends: null,
+    ai: null,
+    news: buildNews(ok(newsR)?.data ?? [], { ticker: sym, change_percent: c.change_24h_pct }, series),
+    seo: buildCryptoSeo(c, sym),
   }
 }
 
@@ -874,9 +1156,14 @@ export async function useAcao(ticker: string) {
   const { authFetch } = useApi()
   const { isAuthenticated } = useAuthState()
 
+  // Cripto = símbolo curto A-Z (2-6) que NÃO casa o formato B3 (que sempre tem
+  // dígito). Mesmas regexes do middleware de pages/asset/[ticker].vue — manter
+  // os dois em sincronia ao mexer.
+  const isCrypto = !/^[A-Z][A-Z0-9]{3}\d{1,2}$/.test(ticker) && /^[A-Z]{2,6}$/.test(ticker)
+
   const { data, error } = await useAsyncData<AcaoPayload>(
     `acao:${ticker}`,
-    () => loadAcao(import.meta.server ? serverBase : clientBase, ticker),
+    () => (isCrypto ? loadCrypto : loadAcao)(import.meta.server ? serverBase : clientBase, ticker),
   )
 
   /* tabs 1M/6M/12M: 12M vem do payload SSR; 1M/6M são buscados sob demanda
@@ -895,14 +1182,23 @@ export async function useAcao(ticker: string) {
     }
     rangeLoading.value = true
     try {
-      const [asset, ibov] = await Promise.all([
-        acaoFetchPrices(clientBase, ticker, mode),
-        acaoFetchIbovPrices(clientBase, mode).catch(() => null),
-      ])
-      const pts = toSeries(asset?.data)
-      if (pts.length >= 2) {
-        rangeSeries.value = { ...rangeSeries.value, [mode]: { asset: pts, ibov: toSeries(ibov?.data) } }
-        activeRange.value = mode
+      if (isCrypto) {
+        const res = await acaoFetchCryptoPrices(clientBase, ticker, CRYPTO_RANGE[mode])
+        const pts = toCryptoSeries(res?.data)
+        if (pts.length >= 2) {
+          rangeSeries.value = { ...rangeSeries.value, [mode]: { asset: pts, ibov: [] } }
+          activeRange.value = mode
+        }
+      } else {
+        const [asset, ibov] = await Promise.all([
+          acaoFetchPrices(clientBase, ticker, mode),
+          acaoFetchIbovPrices(clientBase, mode).catch(() => null),
+        ])
+        const pts = toSeries(asset?.data)
+        if (pts.length >= 2) {
+          rangeSeries.value = { ...rangeSeries.value, [mode]: { asset: pts, ibov: toSeries(ibov?.data) } }
+          activeRange.value = mode
+        }
       }
     } catch { /* mantém o range atual */ } finally {
       rangeLoading.value = false

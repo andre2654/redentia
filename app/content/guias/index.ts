@@ -57,7 +57,7 @@ export const GUIDES: GuideMeta[] = [
     description: 'Fundamentos, dividendos e o veredito da IA sobre a Petrobras.',
     tag: 'Análise',
     minutes: 12,
-    href: '/acao/PETR4',
+    href: '/asset/PETR4',
   },
   {
     title: 'Tesouro Direto para iniciantes',

@@ -66,7 +66,12 @@ export default defineNuxtConfig({
     '/login': { headers: { 'cache-control': 'private, no-store' } },
     '/mercado': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/noticias': { headers: { 'cache-control': 'public, s-maxage=180, stale-while-revalidate=600' } },
-    '/acao/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
+    '/asset/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
+    // Tesouro e dividendos: páginas próprias (em construção em frentes
+    // paralelas) — cache já configurado pra quando entrarem no ar.
+    '/tesouro': { headers: { 'cache-control': 'public, s-maxage=600, stale-while-revalidate=3600' } },
+    '/tesouro/**': { headers: { 'cache-control': 'public, s-maxage=600, stale-while-revalidate=3600' } },
+    '/dividendos/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     // '/guias/**' não casa a base — o hub precisa da regra exata (PR4).
     '/guias': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/guias/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
@@ -101,17 +106,18 @@ export default defineNuxtConfig({
     // 301s dos paths da Redentia antiga; cobrem 100% do top-30 orgânico real.
     // Só produzem efeito pleno quando o domínio apontar pro Nu, mas ficam
     // prontos desde já (e valem pra quem chegar por link antigo no vercel.app).
-    '/asset/**': { redirect: { to: '/acao/**', statusCode: 301 } },
+    // /asset/{ticker} voltou a ser a URL canônica (equity de SEO da antiga);
+    // /acao/** só existiu por dias no vercel.app e agora 301a de volta.
+    '/acao/**': { redirect: { to: '/asset/**', statusCode: 301 } },
     '/help': { redirect: { to: '/busca', statusCode: 301 } },
     '/search': { redirect: { to: '/busca', statusCode: 301 } },
     '/auth/**': { redirect: { to: '/login', statusCode: 301 } },
-    // /dividendos: página própria de proventos é o PR-F; até lá, destinos
-    // topicamente honestos. A regra EXATA de /dividendos/calendario precisa
-    // vir antes do wildcard (mais específica vence no Nitro, mas explícito
-    // é explícito) — o wildcard mandaria "calendario" pro /acao e 404aria.
+    // /dividendos/{ticker}: página própria em construção (frente paralela) —
+    // o wildcard de redirect saiu; ficam só os EXATOS: o hub /dividendos e o
+    // /dividendos/calendario (calendário ainda não existe) vão pro ranking
+    // de DY, destino topicamente honesto.
     '/dividendos/calendario': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
     '/dividendos': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
-    '/dividendos/**': { redirect: { to: '/acao/**', statusCode: 301 } },
     // Guias antigos com slug diferente/sem equivalente (guia real = PR-F).
     '/guias/open-finance-carteira-espalhada': { redirect: { to: '/guias/open-finance', statusCode: 301 } },
     '/guias/calculadora-de-dividendos': { redirect: { to: '/calculadoras', statusCode: 301 } },
@@ -121,10 +127,9 @@ export default defineNuxtConfig({
     '/fiis': { redirect: { to: '/rankings?classe=fiis', statusCode: 301 } },
     '/etfs': { redirect: { to: '/rankings', statusCode: 301 } },
     '/small-caps': { redirect: { to: '/rankings', statusCode: 301 } },
-    // Tesouro antigo (listagem+detalhe) → ranking por taxa, até a página real
-    // de título entrar (PR-E; aí o wildcard sai e /tesouro/[slug] assume).
-    '/tesouro': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
-    '/tesouro/**': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
+    // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
+    // paralela) — os redirects provisórios pro ranking saíram; as regras de
+    // cache vivem no bloco de cache acima.
     '/mercado-completo': { redirect: { to: '/mercado', statusCode: 301 } },
     // /legal/* → /institucional/* (mesmos 3 slugs; a antiga tinha ~471
     // 404s de /legal/* reportados no Search Console — não herdar isso).

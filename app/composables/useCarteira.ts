@@ -276,7 +276,7 @@ function buildGroups(
           val: `R$ ${nf0.format(r.value)}`,
           ret: retP != null ? pctFmt(retP) : null,
           retDir: dirOf(retP ?? 0),
-          href: isEquity(r.assetClass) ? `/acao/${r.ticker}` : null,
+          href: isEquity(r.assetClass) ? `/asset/${r.ticker}` : null,
         }
       })
 
