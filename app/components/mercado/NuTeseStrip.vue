@@ -96,7 +96,9 @@ onBeforeUnmount(() => {
             </span>
             <span class="tstz__over-bottom">
               <span class="tstz__perf-label">{{ t.perfLabel }}</span>
-              <span class="tstz__panel-title">{{ t.titlePre }}<span class="tstz__hi">{{ t.titleHi }}</span>{{ t.titlePost }}</span>
+              <!-- span de destaque SÓ com palavra marcada — a API real não marca
+                   (titleHi vazio) e span vazio com padding vira caixinha azul -->
+              <span class="tstz__panel-title">{{ t.titlePre }}<span v-if="t.titleHi" class="tstz__hi">{{ t.titleHi }}</span>{{ t.titlePost }}</span>
             </span>
           </span>
         </button>
