@@ -232,6 +232,8 @@ onBeforeUnmount(() => {
   .nuh__nav { display: none; }
   .nuh__desktop-only { display: none; }
   .nuh__burger { display: flex; }
+  /* a nav (display:none) era o espaçador flex — empurra os ícones pra direita */
+  .nuh__right { margin-left: auto; }
 }
 
 /* ——— menu full-screen ——— */
