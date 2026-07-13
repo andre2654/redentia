@@ -222,7 +222,7 @@ function cardTypes(meta: RankingMeta): string[] {
          — padrão NuCtaPhoto, o mesmo da CTA final do /mercado) ============ -->
     <NuCtaPhoto
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
-      :secondary="{ label: 'Ver como funciona', to: '/como-funciona' }"
+      :secondary="{ label: 'Ver como funciona', to: '/institucional/how-works' }"
     >
       <template #title>Acompanhe os rankings<br>na sua carteira</template>
       <template #subtitle>Crie sua conta grátis e veja como os seus ativos aparecem em cada ranking, com dados atualizados diariamente.</template>

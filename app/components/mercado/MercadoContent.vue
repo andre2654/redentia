@@ -96,13 +96,13 @@ function guiaScroll(d: number) {
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="mfq">
+    <!-- FAQ (id="faq": a CTA da coluna esquerda ancora no próprio accordion) -->
+    <section id="faq" class="mfq">
       <div class="mfq__cols">
         <div class="mfq__left">
           <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
           <div class="mfq__copy">Encontre respostas para as principais dúvidas sobre produtos e serviços da Redentia.</div>
-          <a href="#" class="mfq__cta">Confira perguntas frequentes</a>
+          <a href="#faq" class="mfq__cta">Confira perguntas frequentes</a>
         </div>
         <div class="mfq__right">
           <NuFaqAccordion :items="MERCADO_FAQS" />

@@ -141,10 +141,11 @@ const THESES_SEED: NuThesis[] = [
   },
 ]
 
-function mapThesis(c: ThesisCardApi, i: number): NuThesis {
+function mapThesis(c: ThesisCardApi, i: number, authed: boolean): NuThesis {
   // Espelha o gating do design: 1ª tese (em destaque) abre a página da tese,
-  // as demais convidam pro login.
-  const unlocked = i === 0
+  // as demais convidam pro login — mas o convite é só pra ANÔNIMO; logado vai
+  // direto pra tese (o /login não faz sentido pra quem já tem sessão).
+  const unlocked = i === 0 || authed
   const href = unlocked ? `/tese/${c.id}` : '/login'
   const title = (c.title ?? '').trim()
   const leftTitle = /[.!?…]$/.test(title) ? title : `${title}.`
@@ -175,8 +176,18 @@ function mapThesis(c: ThesisCardApi, i: number): NuThesis {
 }
 
 export function useNuTheses() {
-  const theses = useState<NuThesis[]>('nu:mercado:theses', () => THESES_SEED)
+  // Estado = cards CRUS da API; os VMs saem de um computed porque o href das
+  // teses travadas depende de isAuthenticated (reage a login/logout sem
+  // re-fetch). SSR-safe: apiCards só é preenchido no onMounted, então o SSR
+  // sempre renderiza o SEED — zero hydration mismatch.
+  const apiCards = useState<ThesisCardApi[]>('nu:mercado:theses-api', () => [])
   const started = useState('nu:mercado:theses-started', () => false)
+  const { isAuthenticated } = useAuthState()
+
+  const theses = computed<NuThesis[]>(() => {
+    if (apiCards.value.length < 2) return THESES_SEED
+    return apiCards.value.map((c, i) => mapThesis(c, i, isAuthenticated.value))
+  })
 
   async function hydrate() {
     if (started.value) return
@@ -185,7 +196,7 @@ export function useNuTheses() {
       const res = await marketFetchTheses()
       const cards = (res?.data ?? []).slice(0, 4)
       if (cards.length < 2) return // carrossel precisa de conteúdo — mantém o seed
-      theses.value = cards.map(mapThesis)
+      apiCards.value = cards
     } catch { /* mantém o seed */ }
   }
 
@@ -343,11 +354,11 @@ const BRIEFING_SEED: NuBriefing = {
     'A queda do juro longo reprecifica o mercado inteiro. Custo de capital menor favorece quem tem duration, e a bolsa girou exatamente nessa direção: bancos e financeiras lideraram, com B3 e BTG subindo perto de 4% e o Banco do Brasil 2,4%, enquanto imobiliárias como Cyrela e Cury — e nomes sensíveis a juro no varejo e na saúde, caso de Raia Drogasil e Rede D\'Or — figuraram entre as maiores altas. O IFIX acompanhou de leve, com avanço de 0,27%. É a rotação clássica para o risco quando o prêmio de juro cede.',
   ],
   extraParagraphs: [
-    'A contrapartida ficou na energia. O alívio geopolítico que animou a bolsa é o mesmo que tira prêmio do petróleo, e a Petrobras andou na direção oposta ao índice: PETR4 caiu 1,08% e PETR3 recuou 1,40%, puxando PRIO e PetroRecôncavo junto. É a tese <a href="#">"O petróleo que paga dividendo"</a> operando ao contrário no curto prazo — quando o risco global desinflaciona, o mercado troca o dividendo defensivo do óleo pelo beta dos juros.',
+    'A contrapartida ficou na energia. O alívio geopolítico que animou a bolsa é o mesmo que tira prêmio do petróleo, e a Petrobras andou na direção oposta ao índice: PETR4 caiu 1,08% e PETR3 recuou 1,40%, puxando PRIO e PetroRecôncavo junto. É a tese "O petróleo que paga dividendo" operando ao contrário no curto prazo — quando o risco global desinflaciona, o mercado troca o dividendo defensivo do óleo pelo beta dos juros.',
   ],
   takeaway: {
     kicker: 'O que segurar do dia',
-    html: 'Foi um rali de alívio, não de fundamento. A peça que ainda falta é o estrangeiro — e a tese <a href="#">"O fluxo que ainda não chegou"</a> segue no aguardo. Dólar mais fraco e curva em queda montam o cenário para o fluxo virar, mas enquanto o Tesouro IPCA+ paga cerca de 8% de juro real, a renda fixa continua sendo o maior concorrente da bolsa. A alta de hoje é o convite; a confirmação depende de o capital de fora finalmente aceitar.',
+    html: 'Foi um rali de alívio, não de fundamento. A peça que ainda falta é o estrangeiro — e a tese "O fluxo que ainda não chegou" segue no aguardo. Dólar mais fraco e curva em queda montam o cenário para o fluxo virar, mas enquanto o Tesouro IPCA+ paga cerca de 8% de juro real, a renda fixa continua sendo o maior concorrente da bolsa. A alta de hoje é o convite; a confirmação depende de o capital de fora finalmente aceitar.',
   },
 }
 
@@ -635,11 +646,12 @@ export function useNuNews() {
 
 /* ═════ Conteúdo estático da página (copy exata do design) ═════ */
 
+// (Card "Cripto" removido — não existe página de cripto pra apontar; a lista
+//  é uma coluna flex, então 4 linhas não quebram o layout.)
 export const MERCADO_EXPLORE = [
   { t: 'Ações', d: 'Análise fundamentalista de 400+ empresas da B3, com score e preço-alvo.', href: '/acao/PETR4' },
-  { t: 'FIIs', d: 'Fundos imobiliários com dividend yield, vacância e histórico de proventos.', href: '#' },
-  { t: 'Tesouro Direto', d: 'Títulos públicos comparados com CDB e poupança, sem juridiquês.', href: '#' },
-  { t: 'Cripto', d: 'Bitcoin, Ethereum e as principais moedas com dados em tempo real.', href: '#' },
+  { t: 'FIIs', d: 'Fundos imobiliários com dividend yield, vacância e histórico de proventos.', href: '/rankings?classe=fiis' },
+  { t: 'Tesouro Direto', d: 'Títulos públicos comparados com CDB e poupança, sem juridiquês.', href: '/ranking/tesouro-direto' },
   { t: 'Calculadoras', d: 'Juros compostos, preço teto e renda passiva em segundos.', href: '/calculadoras' },
 ] as const
 

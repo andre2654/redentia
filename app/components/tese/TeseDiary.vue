@@ -52,13 +52,20 @@ const showMore = computed(() => !expanded.value && !!props.diary.moreLabel && ro
       <div v-if="selected.sources.length" class="tdi__sources">
         <div class="tdi__sources-lbl">Fontes consultadas</div>
         <div class="tdi__sources-grid">
-          <a v-for="f in selected.sources" :key="f.title" :href="f.url" target="_blank" rel="noopener noreferrer" class="tdi__source">
+          <!-- fonte sem url (seed) vira <span> — mesmo visual, sem cursor
+               pointer, sem hover azul e sem o ícone de link externo -->
+          <component
+            :is="f.url ? 'a' : 'span'"
+            v-for="f in selected.sources" :key="f.title"
+            v-bind="f.url ? { href: f.url, target: '_blank', rel: 'noopener noreferrer' } : {}"
+            class="tdi__source" :class="{ 'tdi__source--plain': !f.url }"
+          >
             <span class="tdi__source-body">
               <span class="tdi__source-title">{{ f.title }}</span>
               <span class="tdi__source-meta">{{ f.meta }}</span>
             </span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tdi__source-icon"><path d="M7 17L17 7M8 7h9v9" /></svg>
-          </a>
+            <svg v-if="f.url" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="tdi__source-icon"><path d="M7 17L17 7M8 7h9v9" /></svg>
+          </component>
         </div>
       </div>
 
@@ -124,6 +131,8 @@ const showMore = computed(() => !expanded.value && !!props.diary.moreLabel && ro
 .tdi__source-body { flex: 1; min-width: 0; }
 .tdi__source-title { display: block; color: var(--nu-ink); font-size: 14.5px; font-weight: 700; line-height: 1.4; transition: color .2s; }
 .tdi__source:hover .tdi__source-title { color: var(--nu-blue); }
+.tdi__source--plain { cursor: default; }
+.tdi__source--plain:hover .tdi__source-title { color: var(--nu-ink); }
 .tdi__source-meta { display: block; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; margin-top: 3px; }
 .tdi__source-icon { flex-shrink: 0; stroke: var(--nu-sand); }
 

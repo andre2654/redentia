@@ -203,7 +203,8 @@ export interface TeseDecisionVM {
 
 export interface TeseSourceVM {
   title: string
-  url: string
+  /** null = fonte sem link (seeds): renderiza <span>, nunca <a href="#">. */
+  url: string | null
   meta: string // 'Notícia · Money Times'
 }
 

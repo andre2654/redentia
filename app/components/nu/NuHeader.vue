@@ -9,7 +9,7 @@
 // - mobile (≤760): nav e CTAs saem; ficam busca + avatar (logado) + hambúrguer
 //   que abre um menu full-screen (itens grandes com chevron, ativo em azul,
 //   CTAs de rodapé) — referência visual enviada pelo dono.
-const { isAuthenticated, initial } = useAuthState()
+const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
 
 // Estrutura de nav (direção do dono 2026-07-13): Início · Carteira (logado) ·
@@ -89,6 +89,49 @@ watch(openDrawer, (o) => {
   }
 })
 
+/* ——— menu de conta (avatar logado) ———
+   Mesma mecânica dos drawers da nav: painel position:fixed ancorado no
+   getBoundingClientRect do avatar, fecha com click-fora/Escape/scroll.
+   Itens: Minha carteira · Sair (encerra a sessão e volta pro /mercado). */
+const ACCOUNT_W = 230 // = min-width do .nuh__drawer (alinha a borda direita no avatar)
+const accountOpen = ref(false)
+const accountPos = ref({ left: 0, top: 0 })
+function toggleAccount(ev: MouseEvent) {
+  if (accountOpen.value) {
+    accountOpen.value = false
+    return
+  }
+  const r = (ev.currentTarget as HTMLElement).getBoundingClientRect()
+  accountPos.value = {
+    left: Math.max(8, Math.min(r.right - ACCOUNT_W, window.innerWidth - ACCOUNT_W - 8)),
+    top: r.bottom + 8,
+  }
+  accountOpen.value = true
+}
+function onAccountDocClick(e: MouseEvent) {
+  const wrap = document.querySelector('.nuh__account')
+  if (wrap && !wrap.contains(e.target as Node)) accountOpen.value = false
+}
+function onAccountKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') accountOpen.value = false
+}
+watch(accountOpen, (o) => {
+  if (!import.meta.client) return
+  if (o) {
+    document.addEventListener('click', onAccountDocClick, true)
+    document.addEventListener('keydown', onAccountKey)
+  } else {
+    document.removeEventListener('click', onAccountDocClick, true)
+    document.removeEventListener('keydown', onAccountKey)
+  }
+})
+async function logout() {
+  accountOpen.value = false
+  toggleMenu(false)
+  clearSession()
+  await navigateTo('/mercado')
+}
+
 /* ——— shrink on scroll (com HISTERESE) ———
    Limiar único oscilava na fronteira: encolher tira 18px de altura do header,
    o conteúdo sobe, o scroll re-cruza o limiar → estica → desce de novo → pumping
@@ -107,6 +150,7 @@ function onScroll() {
     if (!shrunk.value && y > SHRINK_AT) shrunk.value = true
     else if (shrunk.value && y < GROW_AT) shrunk.value = false
     if (openDrawer.value) openDrawer.value = null // painel é fixed: a âncora se move ao rolar
+    if (accountOpen.value) accountOpen.value = false // idem
   })
 }
 // A faixa do ticker (irmã no layout) lê --nuh-h pra grudar logo abaixo;
@@ -123,7 +167,7 @@ function toggleMenu(open: boolean) {
   if (!open) menuGroup.value = null
   document.documentElement.style.overflow = open ? 'hidden' : ''
 }
-watch(() => route.fullPath, () => { toggleMenu(false); openDrawer.value = null })
+watch(() => route.fullPath, () => { toggleMenu(false); openDrawer.value = null; accountOpen.value = false })
 
 // (o banner contextual de seções — "Carteira · 6 seções" — vive no
 //  NuSectionRail, que já aparece em todos os breakpoints; nada aqui.)
@@ -137,6 +181,8 @@ onBeforeUnmount(() => {
   if (raf) cancelAnimationFrame(raf)
   document.removeEventListener('click', onNavDocClick, true)
   document.removeEventListener('keydown', onNavKey)
+  document.removeEventListener('click', onAccountDocClick, true)
+  document.removeEventListener('keydown', onAccountKey)
   document.documentElement.style.overflow = ''
 })
 </script>
@@ -190,7 +236,21 @@ onBeforeUnmount(() => {
           <NuxtLink to="/busca" class="nuh__ai nuh__desktop-only">
             <span>Pergunte à Redentia AI</span>
           </NuxtLink>
-          <span class="nuh__avatar">{{ initial }}</span>
+          <div class="nuh__account">
+            <button
+              type="button" class="nuh__avatar" aria-label="Conta"
+              :aria-expanded="accountOpen" aria-haspopup="menu"
+              @click="toggleAccount"
+            >{{ initial }}</button>
+            <div
+              v-if="accountOpen" class="nuh__drawer" role="menu"
+              :style="{ left: `${accountPos.left}px`, top: `${accountPos.top}px` }"
+            >
+              <NuxtLink to="/carteira" role="menuitem" class="nuh__drawer-item" @click="accountOpen = false">Minha carteira</NuxtLink>
+              <div class="nuh__account-div" role="separator" />
+              <button type="button" role="menuitem" class="nuh__drawer-item nuh__drawer-item--danger" @click="logout">Sair</button>
+            </div>
+          </div>
         </template>
         <template v-else>
           <NuxtLink to="/login" class="nuh__enter nuh__desktop-only">Entrar</NuxtLink>
@@ -261,6 +321,7 @@ onBeforeUnmount(() => {
           <template v-if="isAuthenticated">
             <NuxtLink to="/carteira" class="num__cta-outline" @click="toggleMenu(false)">Minha carteira</NuxtLink>
             <NuxtLink to="/busca" class="num__cta" @click="toggleMenu(false)">Pergunte à Redentia AI</NuxtLink>
+            <button type="button" class="num__logout" @click="logout">Sair</button>
           </template>
           <template v-else>
             <NuxtLink to="/login" class="num__cta-outline" @click="toggleMenu(false)">Entrar</NuxtLink>
@@ -360,13 +421,23 @@ onBeforeUnmount(() => {
 }
 .nuh-wrap--shrunk .nuh__ai { padding: 9px 18px; font-size: 14.5px; }
 .nuh__ai:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.nuh__account { position: relative; flex-shrink: 0; display: flex; }
 .nuh__avatar {
   width: 42px; height: 42px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
+  border: none; padding: 0; cursor: pointer; font-family: inherit;
   color: var(--nu-white); font-size: 14.5px; font-weight: 700;
-  transition: width .28s ease, height .28s ease;
+  transition: background .2s, width .28s ease, height .28s ease;
 }
+.nuh__avatar:hover { background: var(--nu-blue-hover); }
 .nuh-wrap--shrunk .nuh__avatar { width: 36px; height: 36px; }
+/* menu de conta: reusa o painel .nuh__drawer; só o divisor e o "Sair" são novos */
+.nuh__account-div { height: 1.5px; background: var(--nu-cream-2); margin: 4px 6px; }
+.nuh__drawer-item--danger {
+  width: 100%; text-align: left; border: none; background: transparent;
+  cursor: pointer; font-family: inherit; color: var(--nu-red);
+}
+.nuh__drawer-item--danger:hover { background: var(--nu-red-tint); color: var(--nu-red-2); }
 .nuh__burger {
   display: none; width: 42px; height: 42px; border: none; background: transparent;
   align-items: center; justify-content: center; cursor: pointer; border-radius: 50%;
@@ -430,5 +501,12 @@ onBeforeUnmount(() => {
   color: var(--nu-blue); border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
   padding: 15px 24px; font-size: 16.5px; font-weight: 800;
 }
+.num__logout {
+  display: flex; align-items: center; justify-content: center; background: transparent;
+  border: none; cursor: pointer; font-family: inherit;
+  color: var(--nu-red); border-radius: var(--nu-r-pill);
+  padding: 13px 24px; font-size: 15.5px; font-weight: 800;
+}
+.num__logout:hover { background: var(--nu-red-tint); }
 
 </style>

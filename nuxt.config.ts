@@ -96,6 +96,41 @@ export default defineNuxtConfig({
     // editorial que quase nunca muda — cache longo na borda + SWR de 1 dia.
     '/institucional/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
     '/metodologia': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
+
+    // ——— Migração redentia.com.br → Nu (PR-A do PLANO-REFINO-POS-ATLAS) ———
+    // 301s dos paths da Redentia antiga; cobrem 100% do top-30 orgânico real.
+    // Só produzem efeito pleno quando o domínio apontar pro Nu, mas ficam
+    // prontos desde já (e valem pra quem chegar por link antigo no vercel.app).
+    '/asset/**': { redirect: { to: '/acao/**', statusCode: 301 } },
+    '/help': { redirect: { to: '/busca', statusCode: 301 } },
+    '/search': { redirect: { to: '/busca', statusCode: 301 } },
+    '/auth/**': { redirect: { to: '/login', statusCode: 301 } },
+    // /dividendos: página própria de proventos é o PR-F; até lá, destinos
+    // topicamente honestos. A regra EXATA de /dividendos/calendario precisa
+    // vir antes do wildcard (mais específica vence no Nitro, mas explícito
+    // é explícito) — o wildcard mandaria "calendario" pro /acao e 404aria.
+    '/dividendos/calendario': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
+    '/dividendos': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
+    '/dividendos/**': { redirect: { to: '/acao/**', statusCode: 301 } },
+    // Guias antigos com slug diferente/sem equivalente (guia real = PR-F).
+    '/guias/open-finance-carteira-espalhada': { redirect: { to: '/guias/open-finance', statusCode: 301 } },
+    '/guias/calculadora-de-dividendos': { redirect: { to: '/calculadoras', statusCode: 301 } },
+    '/guias/acoes-fiis-dividendos-todo-mes': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
+    // Hubs de categoria da antiga → filtros do hub de rankings.
+    '/acoes': { redirect: { to: '/rankings?classe=acoes', statusCode: 301 } },
+    '/fiis': { redirect: { to: '/rankings?classe=fiis', statusCode: 301 } },
+    '/etfs': { redirect: { to: '/rankings', statusCode: 301 } },
+    '/small-caps': { redirect: { to: '/rankings', statusCode: 301 } },
+    // Tesouro antigo (listagem+detalhe) → ranking por taxa, até a página real
+    // de título entrar (PR-E; aí o wildcard sai e /tesouro/[slug] assume).
+    '/tesouro': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
+    '/tesouro/**': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
+    '/mercado-completo': { redirect: { to: '/mercado', statusCode: 301 } },
+    // /legal/* → /institucional/* (mesmos 3 slugs; a antiga tinha ~471
+    // 404s de /legal/* reportados no Search Console — não herdar isso).
+    '/legal/terms': { redirect: { to: '/institucional/terms', statusCode: 301 } },
+    '/legal/privacy': { redirect: { to: '/institucional/privacy', statusCode: 301 } },
+    '/legal/cookies': { redirect: { to: '/institucional/cookies', statusCode: 301 } },
   },
 
   nitro: {

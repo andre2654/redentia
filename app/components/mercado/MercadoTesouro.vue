@@ -9,12 +9,12 @@ const { highlight, groups } = useNuTesouro()
   <section class="mts">
     <div class="mts__head">
       <NuSectionHeading eyebrow="Renda fixa pública">Tesouro Direto.</NuSectionHeading>
-      <a href="#" class="mts__all">
+      <NuxtLink to="/ranking/tesouro-direto" class="mts__all">
         <span class="mts__all-label">Ver todos</span>
         <span class="mts__all-circle">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
         </span>
-      </a>
+      </NuxtLink>
     </div>
 
     <div class="mts__grid">

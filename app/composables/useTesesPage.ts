@@ -54,7 +54,7 @@ function stripCat(sector: string): string {
   return sector.replace(/^Tese\s*·\s*/u, '').trim() || sector
 }
 
-function mapCard(c: ThesisCardApi, unlockedSlug: string | null, favs: Set<string>): TesesCardVM {
+function mapCard(c: ThesisCardApi, unlockedSlug: string | null, favs: Set<string>, authed: boolean): TesesCardVM {
   return {
     slug: c.id,
     cat: stripCat(c.sector ?? ''),
@@ -68,17 +68,46 @@ function mapCard(c: ThesisCardApi, unlockedSlug: string | null, favs: Set<string
     since: 'retorno acumulado',
     tickers: (c.tickers ?? []).slice(0, 5),
     // Gating espelhado do /mercado (useNuTheses): a 1ª tese da lista abre a
-    // página; as demais convidam pro login.
-    href: c.id === unlockedSlug ? `/tese/${c.id}` : '/login',
+    // página; as demais convidam pro login — só pra ANÔNIMO. Logado vai
+    // direto pra tese.
+    href: authed || c.id === unlockedSlug ? `/tese/${c.id}` : '/login',
   }
 }
 
 export function useTesesPage() {
-  const ideias = useState<TesesCardVM[]>('nu:teses:ideias', () => IDEIAS_SEED)
-  const pesquisas = useState<TesesCardVM[]>('nu:teses:pesquisas', () => PESQUISAS_SEED)
+  // Estado = cards CRUS da API + favoritos; os VMs saem de computeds porque o
+  // href das teses travadas depende de isAuthenticated (reage a login/logout
+  // sem re-fetch). SSR-safe: apiCards só é preenchido no onMounted, então o
+  // SSR sempre renderiza os SEEDS — zero hydration mismatch.
+  const apiCards = useState<ThesisCardApi[]>('nu:teses:api-cards', () => [])
+  const favSlugs = useState<string[]>('nu:teses:favs', () => [])
   const started = useState('nu:teses:started', () => false)
   const { isAuthenticated } = useAuthState()
   const { authFetch } = useApi()
+
+  const ideias = computed<TesesCardVM[]>(() => {
+    const cards = apiCards.value
+    if (cards.length < 2) return IDEIAS_SEED
+    const favs = new Set(favSlugs.value)
+    const unlocked = cards[0]?.id ?? null
+    return cards.slice(0, 5).map((c) => mapCard(c, unlocked, favs, isAuthenticated.value))
+  })
+
+  const pesquisas = computed<TesesCardVM[]>(() => {
+    const cards = apiCards.value
+    if (cards.length < 2) return PESQUISAS_SEED
+    const ranked = cards
+      .filter((c) => c.returnPct != null)
+      .sort((a, b) => (b.returnPct as number) - (a.returnPct as number))
+      .slice(0, 5)
+    if (ranked.length < 2) return PESQUISAS_SEED
+    const favs = new Set(favSlugs.value)
+    const unlocked = cards[0]?.id ?? null
+    return ranked.map((c, i) => ({
+      ...mapCard(c, unlocked, favs, isAuthenticated.value),
+      pill: `Nº ${i + 1}`,
+    }))
+  })
 
   async function hydrate() {
     if (started.value) return
@@ -98,21 +127,8 @@ export function useTesesPage() {
       const res = await marketFetchTheses()
       const cards = res?.data ?? []
       if (cards.length < 2) return // carrossel precisa de conteúdo — mantém o seed
-      const favs = new Set(await favsPromise)
-      const unlocked = cards[0]?.id ?? null
-
-      ideias.value = cards.slice(0, 5).map((c) => mapCard(c, unlocked, favs))
-
-      const ranked = cards
-        .filter((c) => c.returnPct != null)
-        .sort((a, b) => (b.returnPct as number) - (a.returnPct as number))
-        .slice(0, 5)
-      if (ranked.length >= 2) {
-        pesquisas.value = ranked.map((c, i) => ({
-          ...mapCard(c, unlocked, favs),
-          pill: `Nº ${i + 1}`,
-        }))
-      }
+      favSlugs.value = await favsPromise
+      apiCards.value = cards
     } catch { /* mantém o seed */ }
   }
 
