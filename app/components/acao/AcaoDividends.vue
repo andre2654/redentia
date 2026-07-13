@@ -32,7 +32,12 @@ const incomePill = computed(() => {
         </div>
         <div v-if="incomePill" class="adv__income">{{ incomePill }}</div>
         <div class="adv__cta-row">
-          <NuxtLink to="/calculadoras" class="adv__cta">Simular renda com {{ ticker }}</NuxtLink>
+          <!-- leva pra landing de proventos do ticker (histórico completo + FAQ) -->
+          <NuxtLink :to="`/dividendos/${ticker}`" class="adv__cta adv__cta--primary">
+            Ver histórico de dividendos
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          </NuxtLink>
+          <NuxtLink to="/calculadora/dividend-yield" class="adv__cta">Simular renda com {{ ticker }}</NuxtLink>
         </div>
       </div>
       <div class="adv__right">
@@ -64,12 +69,15 @@ const incomePill = computed(() => {
   color: var(--nu-blue); font-size: 14.5px; font-weight: 800; padding: 11px 18px;
   border-radius: var(--nu-r-pill); margin-top: 24px; font-variant-numeric: tabular-nums;
 }
-.adv__cta-row { margin-top: 28px; }
+.adv__cta-row { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
 .adv__cta {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 14px 26px;
   font-size: 16px; font-weight: 700; transition: background .2s;
 }
 .adv__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
+/* primária: leva pra tela dedicada de dividendos do ticker */
+.adv__cta--primary { background: var(--nu-blue); color: var(--nu-white); border-color: var(--nu-blue); font-weight: 800; }
+.adv__cta--primary:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .adv__right { flex: 1.6 1 460px; min-width: min(320px, 100%); }
 </style>

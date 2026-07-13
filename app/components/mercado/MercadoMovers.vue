@@ -37,7 +37,7 @@ const active = computed(() => movers.value[activeTab.value])
           <span class="mmv__card-title">Maiores altas</span>
         </div>
         <div class="mmv__rows">
-          <div v-for="r in active.gainers" :key="r.ticker" class="mmv__row">
+          <NuxtLink v-for="r in active.gainers" :key="r.ticker" :to="`/asset/${r.ticker}`" class="mmv__row">
             <span class="mmv__rank">{{ r.rank }}</span>
             <span class="mmv__id">
               <span class="mmv__ticker">{{ r.ticker }}</span>
@@ -45,7 +45,10 @@ const active = computed(() => movers.value[activeTab.value])
             </span>
             <span data-nu-hide class="mmv__price">{{ r.price }}</span>
             <span class="mmv__pct" :class="`mmv__pct--${r.dir}`">{{ r.pct }}</span>
-          </div>
+            <span class="mmv__go" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+            </span>
+          </NuxtLink>
         </div>
       </div>
 
@@ -55,7 +58,7 @@ const active = computed(() => movers.value[activeTab.value])
           <span class="mmv__card-title">Maiores baixas</span>
         </div>
         <div class="mmv__rows">
-          <div v-for="r in active.losers" :key="r.ticker" class="mmv__row">
+          <NuxtLink v-for="r in active.losers" :key="r.ticker" :to="`/asset/${r.ticker}`" class="mmv__row">
             <span class="mmv__rank">{{ r.rank }}</span>
             <span class="mmv__id">
               <span class="mmv__ticker">{{ r.ticker }}</span>
@@ -63,7 +66,10 @@ const active = computed(() => movers.value[activeTab.value])
             </span>
             <span data-nu-hide class="mmv__price">{{ r.price }}</span>
             <span class="mmv__pct" :class="`mmv__pct--${r.dir}`">{{ r.pct }}</span>
-          </div>
+            <span class="mmv__go" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+            </span>
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -104,7 +110,19 @@ const active = computed(() => movers.value[activeTab.value])
 .mmv__card-head { display: flex; align-items: center; gap: 10px; }
 .mmv__card-title { color: var(--nu-cream-text); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
 .mmv__rows { margin-top: 14px; }
-.mmv__row { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px solid var(--nu-cream-text-12); }
+.mmv__row {
+  display: flex; align-items: center; gap: 14px; padding: 13px 12px; margin: 0 -12px;
+  border-top: 1px solid var(--nu-cream-text-12); border-radius: var(--nu-r-card);
+  transition: background .16s;
+}
+.mmv__rows > .mmv__row:first-child { border-top: none; }
+.mmv__row:hover { background: var(--nu-cream-text-08); }
+.mmv__row:hover .mmv__go { background: var(--nu-blue-hover); }
+/* botão azul da Redentia: indica que a linha leva pro ativo */
+.mmv__go {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
+  display: flex; align-items: center; justify-content: center; transition: background .16s;
+}
 .mmv__rank {
   color: var(--nu-cream-text-45); font-size: 15px; font-weight: 800; width: 18px;
   flex-shrink: 0; font-variant-numeric: tabular-nums;

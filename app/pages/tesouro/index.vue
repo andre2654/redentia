@@ -12,6 +12,7 @@
 import type { TesouroIndexerFilter } from '~/types/tesouro'
 
 const { rows, count, pending, unavailable, empty, activeIndexer, setIndexer } = useTesouroHub()
+const { isAuthenticated } = useAuthState() // CTA final só pra visitante deslogado
 
 /* pills ↔ ?indexer= (labels humanas, URL na língua da API) */
 const FILTERS = Object.entries(TESOURO_FILTER_LABELS) as [TesouroIndexerFilter, string][]
@@ -143,17 +144,16 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <!-- ============ CTA ============ -->
-    <CalcBand tone="white" tight>
-      <div class="tsh__cta">
-        <h2 class="tsh__cta-title">Acompanhe a renda fixa na sua carteira</h2>
-        <p class="tsh__cta-sub">Cadastre-se na Redentia e veja seus títulos, ações e FIIs em um lugar só, com análises automáticas e dados atualizados diariamente.</p>
-        <div class="tsh__cta-actions">
-          <NuxtLink to="/login" class="tsh__pill tsh__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/rankings" class="tsh__pill tsh__pill--outline">Ver rankings</NuxtLink>
-        </div>
-      </div>
-    </CalcBand>
+    <!-- ============ CTA final full-bleed (só deslogado — mesmo padrão dos
+         outros CTAs da Redentia: NuCtaPhoto) ============ -->
+    <NuCtaPhoto
+      v-if="!isAuthenticated"
+      :primary="{ label: 'Criar conta grátis', to: '/login' }"
+      :secondary="{ label: 'Ver rankings', to: '/rankings' }"
+    >
+      <template #title>Acompanhe a renda fixa<br>na sua carteira</template>
+      <template #subtitle>Cadastre-se e veja renda fixa, ações e FIIs em uma carteira só, com análises automáticas e dados atualizados diariamente.</template>
+    </NuCtaPhoto>
   </div>
 </template>
 
@@ -206,23 +206,5 @@ usePageSeo({
 .tsh__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
 .tsh__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
 
-/* ——— pills / CTA (mesma família dos rankings) ——— */
-.tsh__pill {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
-  transition: background .2s;
-}
-.tsh__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.tsh__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center;
-  max-width: 1080px; margin: 0 auto;
-}
-.tsh__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.tsh__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
-.tsh__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.tsh__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.tsh__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.tsh__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.tsh__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
+/* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
 </style>

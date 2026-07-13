@@ -39,6 +39,22 @@ function coverFailed(slug: string) {
       </div>
     </template>
 
+    <template v-if="props.results.tesouro.length">
+      <div class="bsr__group bsr__group--far">Tesouro Direto</div>
+      <div class="bsr__grid">
+        <NuxtLink v-for="t in props.results.tesouro" :key="t.slug" :to="t.href" class="bsr__row">
+          <span class="bsr__tag">{{ t.indexer }}</span>
+          <span class="bsr__row-main">
+            <span class="bsr__ticker bsr__ticker--wrap">{{ t.name }}</span>
+          </span>
+          <span class="bsr__quote">
+            <span class="bsr__price">{{ t.rate }}</span>
+          </span>
+          <svg class="bsr__chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+        </NuxtLink>
+      </div>
+    </template>
+
     <template v-if="props.results.theses.length">
       <div class="bsr__group bsr__group--far">Teses</div>
       <div class="bsr__theses">
@@ -97,6 +113,7 @@ function coverFailed(slug: string) {
 .bsr__row:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bsr__row-main { flex: 1; min-width: 0; }
 .bsr__ticker { display: block; color: var(--nu-ink); font-size: 16px; font-weight: 800; white-space: nowrap; }
+.bsr__ticker--wrap { overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
 .bsr__name {
   display: block; color: var(--nu-gray); font-size: 13px; font-weight: 600; margin-top: 1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

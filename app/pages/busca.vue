@@ -14,6 +14,9 @@
 //  - Atalhos: '/' foca a busca (fora de campos de texto); Escape em cascata
 //    (drawer → chat → limpa a query), sempre com blur.
 import { BUSCA_SUGESTOES } from '~/composables/useBuscaIndex'
+import type { BuscaType } from '~/composables/useBuscaIndex'
+
+const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'cripto', 'tesouro']
 
 usePageSeo({
   title: 'Busca',
@@ -32,6 +35,20 @@ const qParam = route.query.q
 const q = ref(typeof qParam === 'string' ? qParam : '')
 const chatMode = ref(route.query.chat === '1')
 const histOpen = ref(false)
+
+/* ——— filtro de tipo (pills), refletido em ?tipo= ——— */
+const tipo = computed<BuscaType>(() => {
+  const t = String(route.query.tipo ?? '')
+  return (VALID_TIPOS as string[]).includes(t) ? (t as BuscaType) : 'todos'
+})
+function setTipo(t: BuscaType) {
+  index.resetBrowse() // nova pill começa do topo da lista
+  const query = { ...route.query } as Record<string, any>
+  if (t === 'todos') delete query.tipo
+  else query.tipo = t
+  router.replace({ query })
+  index.ensureType(t) // garante a fonte do tipo (assets/crypto/tesouro), lazy
+}
 
 // Deep-link ?chat=1 é gatilho de chat: anônimo vai pro login (SSR-side,
 // sem flash — o cookie nu:token é visível no servidor).
@@ -52,8 +69,11 @@ watch(chatMode, (on) => {
   if (!on) histOpen.value = false
 })
 
-/* ——— resultados live ——— */
-const results = computed(() => index.search(q.value))
+/* ——— resultados live ———
+   sem query + tipo específico → LISTA NAVEGÁVEL (browse); senão → busca. */
+const browseMode = computed(() => !q.value.trim() && tipo.value !== 'todos')
+const results = computed(() => index.search(q.value, tipo.value))
+const browseVM = computed(() => index.browse(tipo.value))
 
 const recents = computed(() =>
   chat.sessions.value.slice(0, 3).map((s) => {
@@ -132,8 +152,10 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener('keydown', onKey)
-  // ?q= pré-preenchido já pede o índice completo
-  if (q.value.trim()) void index.ensureAssets()
+  // ?q= pré-preenchido já pede o universo completo (B3 + cripto + tesouro)
+  if (q.value.trim()) index.ensureUniverse()
+  // ?tipo= deep-linkado já pede a fonte daquele tipo
+  if (tipo.value !== 'todos') index.ensureType(tipo.value)
   // histórico do banco (anônimo não tem sessão — nem chama)
   if (isAuthenticated.value) void chat.loadSessions()
 })
@@ -161,9 +183,11 @@ onBeforeUnmount(() => {
         @open-chat="abrirChat"
         @suggest="suggest"
         @open-recent="openRecent"
-        @activate="index.ensureAssets()"
+        @activate="index.ensureUniverse()"
       />
-      <BuscaResults :results="results" />
+      <BuscaTypeFilters :model-value="tipo" @update:model-value="setTipo" />
+      <BuscaBrowseList v-if="browseMode" :browse="browseVM" @more="index.showMore()" />
+      <BuscaResults v-else :results="results" />
     </template>
   </div>
 </template>
