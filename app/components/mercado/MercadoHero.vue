@@ -1,8 +1,11 @@
 <script setup lang="ts">
-// Hero do /mercado: proposta de valor + captura de e-mail (coluna esquerda) +
-// card branco de leitura "Redentia lendo o mercado" (NuMarketReading tema light,
-// PR-R2 — substitui o orb + 3 float cards).
-// Form de e-mail: navega pra /login?email=<valor> (sem POST — contrato PR1).
+// Hero da home `/`: proposta de valor (coluna esquerda) + card branco de
+// leitura "Redentia lendo o mercado" (NuMarketReading tema light, PR-R2 —
+// substitui o orb + 3 float cards; a animação FICA pros dois casos).
+// AUTH-AWARE (home única, 2026-07-13): anônimo vê o card de captura de e-mail
+// (navega pra /login?email=<valor>, sem POST — contrato PR1); logado não cria
+// conta — vê um bloco compacto de boas-vindas com CTA pill pra /carteira.
+const { isAuthenticated } = useAuthState()
 const email = ref('')
 function submit() {
   const v = email.value.trim()
@@ -20,8 +23,9 @@ const docText = ref('1.240')
       <div class="mh__left">
         <div class="mh__eyebrow">O mercado, traduzido por IA</div>
         <h1 class="mh__title">Invista com uma<br>IA do seu lado.</h1>
-        <div class="mh__dek">Análise fundamentalista pronta, alertas do que afeta a sua carteira e respostas na hora — sem planilha, sem economês.</div>
-        <form class="mh__card" @submit.prevent="submit">
+        <div class="mh__dek">Análise fundamentalista pronta, alertas do que afeta a sua carteira e respostas na hora. Sem planilha, sem economês.</div>
+        <!-- anônimo: captura de e-mail · logado: boas-vindas + CTA pra carteira -->
+        <form v-if="!isAuthenticated" class="mh__card" @submit.prevent="submit">
           <div class="mh__card-title">Crie sua conta e comece agora</div>
           <input v-model="email" type="email" placeholder="Digite seu e-mail" class="mh__input" autocomplete="email">
           <button type="submit" class="mh__cta">
@@ -29,6 +33,12 @@ const docText = ref('1.240')
           </button>
           <div class="mh__micro">Grátis para começar · sem cartão de crédito</div>
         </form>
+        <div v-else class="mh__welcome">
+          <div class="mh__welcome-text">Bem-vindo de volta. O mercado de hoje já foi lido, e a sua carteira está a um clique.</div>
+          <NuxtLink to="/carteira" class="mh__cta mh__cta--pill">
+            Ver minha carteira<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
+          </NuxtLink>
+        </div>
       </div>
 
       <div class="mh__right">
@@ -88,6 +98,18 @@ const docText = ref('1.240')
 }
 .mh__cta:hover { background: var(--nu-blue-hover); }
 .mh__micro { color: var(--nu-gray); font-size: 13px; font-weight: 600; margin-top: 14px; }
+
+/* bloco compacto de boas-vindas (logado) — ocupa o slot do card de signup */
+.mh__welcome {
+  background: var(--nu-white); border-radius: var(--nu-r-card); padding: 26px;
+  max-width: 480px; margin-top: 44px; box-shadow: var(--nu-shadow-card);
+}
+.mh__welcome-text { color: var(--nu-ink); font-size: 17px; font-weight: 700; line-height: 1.5; }
+.mh__cta--pill {
+  display: inline-flex; width: auto; margin-top: 18px; padding: 14px 28px;
+  border-radius: var(--nu-r-pill);
+}
+.mh__cta--pill:hover { color: var(--nu-white); }
 
 /* card branco de leitura (substitui o orb + float cards) */
 .mh__right { flex: 1 1 400px; min-width: min(320px, 100%); display: flex; }

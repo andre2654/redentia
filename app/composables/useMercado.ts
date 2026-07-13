@@ -60,7 +60,7 @@ const THESES_SEED: NuThesis[] = [
     titlePre: 'A fábrica ',
     titleHi: 'volta',
     titlePost: ' para casa',
-    desc: 'Mais de US$ 1,4 tri em fábricas anunciadas — quem vende energia, automação e máquina pesada fatura primeiro.',
+    desc: 'Mais de US$ 1,4 tri em fábricas anunciadas: quem vende energia, automação e máquina pesada fatura primeiro.',
     tickers: [
       { letter: 'C', name: 'CATP34', tile: 'var(--nu-amber)' },
       { letter: 'G', name: 'GGBR4', tile: 'var(--nu-green-soft)' },
@@ -69,7 +69,7 @@ const THESES_SEED: NuThesis[] = [
     fontes: '246 fontes',
     href: '/login',
     leftTitle: 'A fábrica volta para casa.',
-    leftDesc: 'Os EUA decidiram fabricar de novo — e quem vende as picaretas ganha primeiro. Convicção 88/100, revalidada hoje com a entrada da TUPY3.',
+    leftDesc: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro. Convicção 88/100, revalidada hoje com a entrada da TUPY3.',
     cta: 'Ver a tese completa',
     ctaHref: '/login',
   },
@@ -91,7 +91,7 @@ const THESES_SEED: NuThesis[] = [
     fontes: '230 fontes',
     href: '/login',
     leftTitle: 'Energia para IA.',
-    leftDesc: 'Os data centers vão dobrar o consumo de energia do mundo — alguém precisa gerar. A melhor tese da Redentia até aqui: +96% desde o lançamento.',
+    leftDesc: 'Os data centers vão dobrar o consumo de energia do mundo, e alguém precisa gerar. A melhor tese da Redentia até aqui: +96% desde o lançamento.',
     cta: 'Criar conta para desbloquear',
     ctaHref: '/login',
   },
@@ -104,7 +104,7 @@ const THESES_SEED: NuThesis[] = [
     titlePre: 'A nova geografia do ',
     titleHi: 'frete',
     titlePost: '',
-    desc: 'O nearshoring redesenha as rotas globais — e o Brasil herda a comida, o minério e o frete.',
+    desc: 'O nearshoring redesenha as rotas globais, e o Brasil herda a comida, o minério e o frete.',
     tickers: [
       { letter: 'R', name: 'RAIL3', tile: 'var(--nu-amber)' },
       { letter: 'S', name: 'STBP3', tile: 'var(--nu-blue-soft)' },
@@ -113,7 +113,7 @@ const THESES_SEED: NuThesis[] = [
     fontes: '118 fontes',
     href: '/login',
     leftTitle: 'A nova geografia do frete.',
-    leftDesc: 'Quando a fábrica muda de continente, a carga muda de rota. A perna brasileira do reshoring — portos, ferrovias e grãos.',
+    leftDesc: 'Quando a fábrica muda de continente, a carga muda de rota. A perna brasileira do reshoring: portos, ferrovias e grãos.',
     cta: 'Criar conta para desbloquear',
     ctaHref: '/login',
   },
@@ -126,7 +126,7 @@ const THESES_SEED: NuThesis[] = [
     titlePre: 'O imóvel mais ',
     titleHi: 'disputado',
     titlePost: ' do mundo',
-    desc: 'A fila por um data center vago nunca foi tão longa — quem aluga o rack ganha primeiro.',
+    desc: 'A fila por um data center vago nunca foi tão longa: quem aluga o rack ganha primeiro.',
     tickers: [
       { letter: 'E', name: 'EQIX34', tile: 'var(--nu-blue-soft)' },
       { letter: 'A', name: 'ALOS3', tile: 'var(--nu-amber)' },
@@ -339,9 +339,9 @@ export function useNuMovers() {
 /* ═════ Briefing ("A leitura do dia") ═════ */
 
 const BRIEFING_SEED: NuBriefing = {
-  metaLine: 'Todo pregão, o Atlas escreve o fechamento — este é o de hoje, às 18:12',
+  metaLine: 'Todo pregão, a IA da Redentia escreve o fechamento. Este é o de hoje, às 18:12',
   headline: 'Ibovespa sobe 1,22% rumo aos 173 mil com a curva de juros em queda.',
-  dek: 'O fluxo gira para bancos e duration — e só o petróleo fica para trás.',
+  dek: 'O fluxo gira para bancos e duration, e só o petróleo fica para trás.',
   pills: [
     { label: 'Ibovespa', value: '172.742', delta: '+1,22%', dir: 'up' },
     { label: 'Amplitude', value: '65 altas · 7 quedas', delta: null, dir: null },
@@ -350,15 +350,15 @@ const BRIEFING_SEED: NuBriefing = {
     { label: 'PETR4', value: null, delta: '−1,08%', dir: 'down' },
   ],
   paragraphs: [
-    'O Ibovespa avançou 1,22% e fechou aos 172.742 pontos, colado nos 173 mil, num pregão de alta rara pela amplitude: 65 das 82 ações do índice subiram, contra apenas 7 quedas. Não foi rali de uma ponta só. O gatilho veio de fora — o alívio entre EUA e Irã derrubou o prêmio de risco e puxou os Treasuries para baixo, arrastando a curva de juros brasileira em todos os vértices. Com o dólar recuando 0,43% para R$ 5,13, o pano de fundo virou favorável ao ativo de risco.',
-    'A queda do juro longo reprecifica o mercado inteiro. Custo de capital menor favorece quem tem duration, e a bolsa girou exatamente nessa direção: bancos e financeiras lideraram, com B3 e BTG subindo perto de 4% e o Banco do Brasil 2,4%, enquanto imobiliárias como Cyrela e Cury — e nomes sensíveis a juro no varejo e na saúde, caso de Raia Drogasil e Rede D\'Or — figuraram entre as maiores altas. O IFIX acompanhou de leve, com avanço de 0,27%. É a rotação clássica para o risco quando o prêmio de juro cede.',
+    'O Ibovespa avançou 1,22% e fechou aos 172.742 pontos, colado nos 173 mil, num pregão de alta rara pela amplitude: 65 das 82 ações do índice subiram, contra apenas 7 quedas. Não foi rali de uma ponta só. O gatilho veio de fora: o alívio entre EUA e Irã derrubou o prêmio de risco e puxou os Treasuries para baixo, arrastando a curva de juros brasileira em todos os vértices. Com o dólar recuando 0,43% para R$ 5,13, o pano de fundo virou favorável ao ativo de risco.',
+    'A queda do juro longo reprecifica o mercado inteiro. Custo de capital menor favorece quem tem duration, e a bolsa girou exatamente nessa direção: bancos e financeiras lideraram, com B3 e BTG subindo perto de 4% e o Banco do Brasil 2,4%, enquanto imobiliárias como Cyrela e Cury e nomes sensíveis a juro no varejo e na saúde (caso de Raia Drogasil e Rede D\'Or) figuraram entre as maiores altas. O IFIX acompanhou de leve, com avanço de 0,27%. É a rotação clássica para o risco quando o prêmio de juro cede.',
   ],
   extraParagraphs: [
-    'A contrapartida ficou na energia. O alívio geopolítico que animou a bolsa é o mesmo que tira prêmio do petróleo, e a Petrobras andou na direção oposta ao índice: PETR4 caiu 1,08% e PETR3 recuou 1,40%, puxando PRIO e PetroRecôncavo junto. É a tese "O petróleo que paga dividendo" operando ao contrário no curto prazo — quando o risco global desinflaciona, o mercado troca o dividendo defensivo do óleo pelo beta dos juros.',
+    'A contrapartida ficou na energia. O alívio geopolítico que animou a bolsa é o mesmo que tira prêmio do petróleo, e a Petrobras andou na direção oposta ao índice: PETR4 caiu 1,08% e PETR3 recuou 1,40%, puxando PRIO e PetroRecôncavo junto. É a tese "O petróleo que paga dividendo" operando ao contrário no curto prazo: quando o risco global desinflaciona, o mercado troca o dividendo defensivo do óleo pelo beta dos juros.',
   ],
   takeaway: {
     kicker: 'O que segurar do dia',
-    html: 'Foi um rali de alívio, não de fundamento. A peça que ainda falta é o estrangeiro — e a tese "O fluxo que ainda não chegou" segue no aguardo. Dólar mais fraco e curva em queda montam o cenário para o fluxo virar, mas enquanto o Tesouro IPCA+ paga cerca de 8% de juro real, a renda fixa continua sendo o maior concorrente da bolsa. A alta de hoje é o convite; a confirmação depende de o capital de fora finalmente aceitar.',
+    html: 'Foi um rali de alívio, não de fundamento. A peça que ainda falta é o estrangeiro, e a tese "O fluxo que ainda não chegou" segue no aguardo. Dólar mais fraco e curva em queda montam o cenário para o fluxo virar, mas enquanto o Tesouro IPCA+ paga cerca de 8% de juro real, a renda fixa continua sendo o maior concorrente da bolsa. A alta de hoje é o convite; a confirmação depende de o capital de fora finalmente aceitar.',
   },
 }
 
@@ -418,7 +418,7 @@ export function useNuBriefing() {
       const isToday = d.date === localISODate()
       const dateLabel = isToday || !d.date ? 'hoje' : `${d.date.slice(8, 10)}/${d.date.slice(5, 7)}`
       briefing.value = {
-        metaLine: `Todo pregão, o Atlas escreve o fechamento — este é o de ${dateLabel}`,
+        metaLine: `Todo pregão, a IA da Redentia escreve o fechamento. Este é o de ${dateLabel}`,
         headline: d.headline,
         dek: null, // o resource real não tem dek separado do corpo
         pills,
@@ -671,11 +671,11 @@ export const MERCADO_FAQS: NuFaqItem[] = [
   },
   {
     q: 'Como a IA analisa as ações?',
-    a: 'Ela cruza os fundamentos publicados pelas empresas — balanços, dividendos, endividamento — com preço e consenso de analistas, e traduz tudo em um score de 0 a 100 explicado em português claro.',
+    a: 'Ela cruza os fundamentos publicados pelas empresas (balanços, dividendos, endividamento) com preço e consenso de analistas, e traduz tudo em um score de 0 a 100 explicado em português claro.',
   },
   {
     q: 'Preciso conectar minha corretora?',
-    a: 'Não é obrigatório. Você pode cadastrar posições manualmente ou conectar via Open Finance, com consentimento regulado pelo Banco Central — somente leitura, sem acesso a movimentações.',
+    a: 'Não é obrigatório. Você pode cadastrar posições manualmente ou conectar via Open Finance, com consentimento regulado pelo Banco Central: somente leitura, sem acesso a movimentações.',
   },
   {
     q: 'A Redentia recomenda compra e venda?',

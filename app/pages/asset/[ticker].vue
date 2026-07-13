@@ -89,7 +89,7 @@ usePageSeo({
   path: `/asset/${ticker}`,
   structuredData,
   breadcrumbs: [
-    { name: 'Início', path: '/mercado' },
+    { name: 'Início', path: '/' },
     { name: ticker, path: `/asset/${ticker}` },
   ],
 })

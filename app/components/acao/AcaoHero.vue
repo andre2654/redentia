@@ -30,7 +30,7 @@ const logoFailed = ref(false)
     </div>
     <div class="ahr__ctas">
       <NuxtLink to="/busca" class="ahr__primary">Perguntar à Redentia AI</NuxtLink>
-      <NuxtLink to="/carteira" class="ahr__outline">Adicionar à carteira</NuxtLink>
+      <NuxtLink to="/" class="ahr__outline">Adicionar à carteira</NuxtLink>
     </div>
   </section>
 </template>

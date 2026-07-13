@@ -15,7 +15,7 @@ const banks = [
   { label: '+110', bg: 'var(--nu-cream-text-22)', fg: 'var(--nu-cream-text)', size: '12.5px' },
 ] as const
 
-// Imagem lifestyle real: solte o arquivo em public/mercado/carteira-conectada.webp.
+// Imagem lifestyle real: solte o arquivo em public/img/mercado/carteira-conectada.webp.
 // Enquanto o arquivo não existir, o @error cai pro placeholder on-brand embaixo.
 const photoFailed = ref(false)
 </script>
@@ -25,7 +25,7 @@ const photoFailed = ref(false)
     <div class="mcc__cols">
       <div class="mcc__left">
         <h2 class="mcc__title">Sua carteira,<br>conectada.</h2>
-        <div class="mcc__dek">Conecte contas de qualquer banco ou corretora e a Redentia importa seus ativos automaticamente — sem planilha.</div>
+        <div class="mcc__dek">Conecte contas de qualquer banco ou corretora e a Redentia importa seus ativos automaticamente, sem planilha.</div>
         <div class="mcc__banks">
           <span
             v-for="(b, i) in banks" :key="b.label"
@@ -43,12 +43,12 @@ const photoFailed = ref(false)
         <!-- TODO(asset): imagem lifestyle real "carteira conectada" (André). Até
              lá, placeholder on-brand: gradiente navy/azul + glow + glifo de
              carteira/conexão. Mantém o aspect-ratio 4/3 do design. -->
-        <div class="mcc__media" role="img" aria-label="Ilustração — carteira conectada">
+        <div class="mcc__media" role="img" aria-label="Ilustração: carteira conectada">
           <!-- foto real quando existir; some pro placeholder se faltar o arquivo -->
           <!-- :src dinâmico (não estático) — senão o Vite tenta resolver o asset
                em build e falha enquanto o arquivo não existe em public/ -->
           <img
-            v-show="!photoFailed" :src="'/mercado/carteira-conectada.webp'" alt=""
+            v-show="!photoFailed" :src="'/img/mercado/carteira-conectada.webp'" alt=""
             class="mcc__media-photo" loading="lazy" @error="photoFailed = true"
           >
           <div class="mcc__media-glow" aria-hidden="true" />

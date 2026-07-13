@@ -442,7 +442,7 @@ usePageSeo({
         <p class="sa__cta-sub">Use a Redentia para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira.</p>
         <div class="sa__cta-actions">
           <NuxtLink to="/login" class="sa__pill sa__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/mercado" class="sa__pill sa__pill--outline">Ver ações em alta</NuxtLink>
+          <NuxtLink to="/" class="sa__pill sa__pill--outline">Ver ações em alta</NuxtLink>
         </div>
       </div>
     </CalcBand>

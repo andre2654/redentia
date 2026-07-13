@@ -46,7 +46,7 @@ usePageSeo({
     })),
   }],
   breadcrumbs: [
-    { name: 'Início', path: '/mercado' },
+    { name: 'Início', path: '/' },
     { name: 'Guias', path: '/guias' },
   ],
 })
@@ -56,7 +56,7 @@ usePageSeo({
   <div>
     <NuPageHero
       eyebrow="Blog da Redentia"
-      subtitle="Do primeiro aporte à carteira que paga suas contas — em português claro."
+      subtitle="Do primeiro aporte à carteira que paga suas contas, em português claro."
       size="lg"
     >
       <template #title>Guias para<br>investir melhor.</template>

@@ -441,7 +441,7 @@ function buildDiary(d: ThesisFullApi, conv: ConvictionHistoryApi | null): TeseDi
   // 3 linhas de estudos anteriores visíveis; o botão revela o resto.
   const hidden = vms.length - 1 - 3
   return {
-    metaLine: 'Revalidação automática do Atlas, todos os dias',
+    metaLine: 'Revalidação automática da IA, todos os dias',
     studies: vms,
     moreLabel: hidden > 0 ? `Ver os ${hidden} estudos anteriores` : null,
   }
@@ -532,7 +532,7 @@ function teseSeed(): TesePayload {
       titlePre: 'A fábrica ',
       titleHi: 'volta',
       titlePost: ' para casa.',
-      subtitle: 'Os EUA decidiram fabricar de novo — e quem vende as picaretas ganha primeiro.',
+      subtitle: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro.',
       image: '/teses/reindustrializacao-eua.png',
       convBadge: 'Convicção 88/100 · +1 hoje',
       sinceBadge: '+34% desde o lançamento',
@@ -542,10 +542,10 @@ function teseSeed(): TesePayload {
     editorial: {
       heading: 'Quem vende as picaretas.',
       paragraphsHtml: [
-        'Depois de trinta anos terceirizando a produção para a Ásia, os Estados Unidos resolveram construir fábrica em casa de novo. Mas <span class="tse-hi">o dinheiro de verdade não está em quem monta a fábrica — está em quem vende o que faz a fábrica funcionar.</span>',
+        'Depois de trinta anos terceirizando a produção para a Ásia, os Estados Unidos resolveram construir fábrica em casa de novo. Mas <span class="tse-hi">o dinheiro de verdade não está em quem monta a fábrica: está em quem vende o que faz a fábrica funcionar.</span>',
         'Empresas já anunciaram mais de <strong>US$ 1,4 trilhão</strong> em novas plantas americanas, puxadas por semicondutores e farmacêuticos. Cada uma precisa de energia, automação e máquina pesada antes de produzir o primeiro parafuso.',
-        'E essa remontagem de cadeia tem uma perna brasileira: o reshoring que ergue a fábrica nos EUA é o outro lado do nearshoring que redesenha as rotas em <a href="/tese/a-nova-geografia-do-frete">A nova geografia do frete</a> — onde o Brasil herda a comida, o minério e o frete que alimentam os dois lados.',
-        'Há ainda o eixo do silício: as fábricas de chip que essa tese traz de volta (AMD, Texas Instruments) existem para abastecer a demanda que nasce nos data centers de IA — <a href="/tese/imovel-mais-disputado-data-center">O imóvel mais disputado do mundo</a>. São os dois extremos da mesma cadeia: aqui se remonta a fábrica, lá se consome o chip.',
+        'E essa remontagem de cadeia tem uma perna brasileira: o reshoring que ergue a fábrica nos EUA é o outro lado do nearshoring que redesenha as rotas em <a href="/tese/a-nova-geografia-do-frete">A nova geografia do frete</a>, onde o Brasil herda a comida, o minério e o frete que alimentam os dois lados.',
+        'Há ainda o eixo do silício: as fábricas de chip que essa tese traz de volta (AMD, Texas Instruments) existem para abastecer a demanda que nasce nos data centers de IA (<a href="/tese/imovel-mais-disputado-data-center">O imóvel mais disputado do mundo</a>). São os dois extremos da mesma cadeia: aqui se remonta a fábrica, lá se consome o chip.',
       ],
     },
     numbers: {
@@ -566,30 +566,30 @@ function teseSeed(): TesePayload {
         evalCard('E1TN34', 'Eaton', 'Mantém', 'Pedidos de data center +240% e receita do segmento +50%; margem de 25,6% no 1T abaixo do esperado, guia exit acima de 30% no 2S26.', 'Gatilho de margem pendente mas no prazo, guidance elevado para 10%.', tile(1), 'green'),
         evalCard('TEXA34', 'Texas Instruments', 'Acompanhar', 'Ciclo analógico virando, SM1 rampando com CHIPS Act, mira US$ 8+ de FCF por ação.', 'Perna de caixa da tese, recuperação ainda em curso.', tile(2), 'blue'),
         evalCard('DEEC34', 'Deere', 'Acompanhar', '2T26 bate, pedidos de Construção +50%, fundo do agro reafirmado.', 'Catalisador de fundo cumprido, retomada de máquinas grandes ainda por vir.', tile(3), 'blue'),
-        evalCard('A1MD34', 'AMD', 'Acompanhar', 'MI450 em amostragem, 1 GW da OpenAI no 2S26, demanda lead superando planos.', 'Lastro plurianual sólido — a execução do primeiro deployment é o teste.', tile(2), 'blue'),
+        evalCard('A1MD34', 'AMD', 'Acompanhar', 'MI450 em amostragem, 1 GW da OpenAI no 2S26, demanda lead superando planos.', 'Lastro plurianual sólido: a execução do primeiro deployment é o teste.', tile(2), 'blue'),
         evalCard('GGBR4', 'Gerdau', 'Mantém', 'Produção americana +12,3% em 2025, tarifa de aço a 50% favorece a operação NA, BTG eleva para compra em 6/jul.', 'Âncora BR com tailwind de tarifa e Selic; contrapeso da tarifa de 25% sobre o Brasil.', tile(1), 'green'),
-        evalCard('TUPY3', 'Tupy', 'Entra hoje', 'XP eleva para compra em 10/jul citando a recuperação de caminhões pesados nos EUA; fundição exposta à cadeia industrial americana.', 'Segunda perna brasileira da tese — entra em observação a R$ 14,34.', tile(4), 'blue-solid', true),
+        evalCard('TUPY3', 'Tupy', 'Entra hoje', 'XP eleva para compra em 10/jul citando a recuperação de caminhões pesados nos EUA; fundição exposta à cadeia industrial americana.', 'Segunda perna brasileira da tese: entra em observação a R$ 14,34.', tile(4), 'blue-solid', true),
       ],
     },
     drivers: {
       favor: [
         'Backlog recorde de US$ 63 bi na Caterpillar, com pedidos de 1 GW e capacidade triplicada',
         'Tarifa do aço a 50% nos EUA reforça a Gerdau North America',
-        'Selic em queda — IPCA de junho a 0,16% reforça o ciclo de cortes',
+        'Selic em queda: IPCA de junho a 0,16% reforça o ciclo de cortes',
         'Fundo do agro confirmado pela Deere: pedidos de construção +50%',
       ],
       sinal: [
-        'Margem da Eaton a 25,6% no 1T, abaixo do esperado — gatilho do 2S26 ainda pendente',
-        'Retomada de máquinas grandes da Deere ainda por vir — catalisador cumprido só no fundo',
+        'Margem da Eaton a 25,6% no 1T, abaixo do esperado. Gatilho do 2S26 ainda pendente',
+        'Retomada de máquinas grandes da Deere ainda por vir: catalisador cumprido só no fundo',
         'Execução do primeiro deployment de 1 GW da AMD é o teste do eixo do silício',
       ],
       risco: {
         title: 'Tarifa Section 301 de 25% sobre o Brasil',
-        body: 'Pesa diretamente sobre a Gerdau e é o contrapeso da convicção. Mitigada por possíveis exclusões de aço e equipamento já protegidos sob a Section 232 — audiência acompanhada dia a dia pelo Atlas.',
+        body: 'Pesa diretamente sobre a Gerdau e é o contrapeso da convicção. Mitigada por possíveis exclusões de aço e equipamento já protegidos sob a Section 232. Audiência acompanhada dia a dia pela IA.',
       },
     },
     diary: {
-      metaLine: 'Revalidação automática do Atlas, todos os dias',
+      metaLine: 'Revalidação automática da IA, todos os dias',
       studies: [
         {
           id: 'seed-hoje',
@@ -599,9 +599,9 @@ function teseSeed(): TesePayload {
           title: 'Reindustrialização segue confirmando: backlog, aço a 50% e Selic em queda.',
           summary: 'Os catalisadores caminham na direção certa: Caterpillar com backlog recorde e pedidos de 1 GW, Deere confirmando o fundo do agro, e a tarifa de aço a 50% nos EUA reforçando a Gerdau North America. A Selic em queda entra como combustível da reindustrialização, e o upgrade da Tupy pela XP adiciona uma segunda perna brasileira. A convicção sobe modestamente, com a tarifa de 25% sobre o Brasil como contrapeso.',
           decisions: [
-            { tag: 'Convicção', variant: 'green', txt: '87 → 88 — alta modesta com histerese: catalisadores confirmando (CAT, Deere, tarifa do aço, Selic) contra o overhang da tarifa de 25% sobre o Brasil.' },
+            { tag: 'Convicção', variant: 'green', txt: '87 → 88, alta modesta com histerese: catalisadores confirmando (CAT, Deere, tarifa do aço, Selic) contra o overhang da tarifa de 25% sobre o Brasil.' },
             { tag: 'Composição', variant: 'blue', txt: 'Entra TUPY3 como segunda perna brasileira (Acompanhar), ao lado de GGBR4. Nenhuma empresa sai.' },
-            { tag: 'Macro', variant: 'neutral', txt: 'IPCA de junho a 0,16% e 4,64% em 12 meses reforça o corte da Selic — citado pela imprensa como combustível direto da reindustrialização.' },
+            { tag: 'Macro', variant: 'neutral', txt: 'IPCA de junho a 0,16% e 4,64% em 12 meses reforça o corte da Selic, citado pela imprensa como combustível direto da reindustrialização.' },
             { tag: 'Risco', variant: 'red', txt: 'Tarifa Section 301 de 25% sobre o Brasil (audiência em 6/jul) pesa sobre a Gerdau, mitigada por possíveis exclusões de aço e equipamento já sob a Section 232.' },
           ],
           sources: [
@@ -623,7 +623,7 @@ function teseSeed(): TesePayload {
     },
     seo: {
       title: 'Tese A fábrica volta para casa: análise, ativos e convicção da IA',
-      description: 'Os EUA decidiram fabricar de novo — e quem vende as picaretas ganha primeiro. Convicção 88/100, +34% desde o lançamento, 7 ativos revalidados diariamente pela IA.',
+      description: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro. Convicção 88/100, +34% desde o lançamento, 7 ativos revalidados diariamente pela IA.',
       image: '/teses/reindustrializacao-eua.png',
       datePublished: '2026-02-09',
       dateModified: '2026-07-11',

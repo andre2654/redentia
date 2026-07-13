@@ -11,11 +11,11 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
   slug: 'open-finance',
   tag: 'Guia Redentia',
   title: 'Open Finance: sua carteira está espalhada?',
-  dek: 'Como consolidar seus investimentos em 2 minutos — com consentimento regulado pelo Banco Central, sem planilha e sem compartilhar senhas.',
+  dek: 'Como consolidar seus investimentos em 2 minutos, com consentimento regulado pelo Banco Central, sem planilha e sem compartilhar senhas.',
   description:
     'O que é Open Finance, como conectar suas contas em 2 minutos e por que é seguro: consentimento regulado pelo Banco Central, acesso somente leitura e carteira consolidada na Redentia, sincronizada todos os dias.',
   summary:
-    'O Brasil passou de 100 milhões de clientes no Open Finance. Veja como consolidar tudo em 2 minutos — com consentimento regulado pelo BCB, sem planilha e sem senha.',
+    'O Brasil passou de 100 milhões de clientes no Open Finance. Veja como consolidar tudo em 2 minutos, com consentimento regulado pelo BCB, sem planilha e sem senha.',
   minutes: 13,
   author: 'Equipe Redentia',
   datePublished: '2026-07-08',
@@ -29,7 +29,7 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'O Open Finance é o sistema do Banco Central que permite compartilhar seus dados financeiros entre instituições — <strong>com o seu consentimento explícito</strong>. Na prática: a corretora onde estão suas ações pode enviar suas posições para a Redentia, e você vê tudo em um lugar só.',
+          html: 'O Open Finance é o sistema do Banco Central que permite compartilhar seus dados financeiros entre instituições, <strong>com o seu consentimento explícito</strong>. Na prática: a corretora onde estão suas ações pode enviar suas posições para a Redentia, e você vê tudo em um lugar só.',
         },
         {
           kind: 'p',
@@ -52,10 +52,10 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
         {
           kind: 'steps',
           items: [
-            'Você escolhe a instituição e autoriza o compartilhamento — definindo exatamente o quê (só posições, por exemplo) e por quanto tempo.',
-            'A autenticação acontece <strong>no app da própria instituição</strong> — sua senha nunca passa pela Redentia.',
+            'Você escolhe a instituição e autoriza o compartilhamento, definindo exatamente o quê (só posições, por exemplo) e por quanto tempo.',
+            'A autenticação acontece <strong>no app da própria instituição</strong>: sua senha nunca passa pela Redentia.',
             'A instituição envia os dados pelas APIs padronizadas do Banco Central, criptografados de ponta a ponta.',
-            'Sua carteira aparece consolidada na Redentia e sincroniza sozinha todos os dias — sem planilha, sem digitação.',
+            'Sua carteira aparece consolidada na Redentia e sincroniza sozinha todos os dias, sem planilha, sem digitação.',
           ],
         },
       ],
@@ -66,15 +66,15 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'Sim — e mais seguro do que os métodos que ele substitui, como compartilhar senhas com agregadores ou manter planilhas desatualizadas. Quatro garantias importam:',
+          html: 'Sim, e mais seguro do que os métodos que ele substitui, como compartilhar senhas com agregadores ou manter planilhas desatualizadas. Quatro garantias importam:',
         },
         {
           kind: 'checks',
           items: [
-            '<strong>Regulado pelo Banco Central</strong> — regras únicas de segurança e responsabilidade para todas as instituições participantes.',
-            '<strong>Somente leitura</strong> — a Redentia enxerga posições e proventos; ninguém consegue movimentar seu dinheiro.',
-            '<strong>Criptografia de ponta a ponta</strong> — os dados trafegam pelas APIs oficiais, nunca por telas ou robôs que imitam você.',
-            '<strong>Consentimento revogável</strong> — você cancela o compartilhamento quando quiser, em um toque.',
+            '<strong>Regulado pelo Banco Central</strong>: regras únicas de segurança e responsabilidade para todas as instituições participantes.',
+            '<strong>Somente leitura</strong>: a Redentia enxerga posições e proventos; ninguém consegue movimentar seu dinheiro.',
+            '<strong>Criptografia de ponta a ponta</strong>: os dados trafegam pelas APIs oficiais, nunca por telas ou robôs que imitam você.',
+            '<strong>Consentimento revogável</strong>: você cancela o compartilhamento quando quiser, em um toque.',
           ],
         },
       ],
@@ -86,7 +86,7 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
         { kind: 'p', html: 'Com a carteira consolidada, três coisas destravam de uma vez:' },
         {
           kind: 'p',
-          html: '<strong>1. Seu patrimônio de verdade.</strong> Rentabilidade, alocação e risco calculados sobre o todo — não sobre o pedaço que está em cada app.',
+          html: '<strong>1. Seu patrimônio de verdade.</strong> Rentabilidade, alocação e risco calculados sobre o todo, não sobre o pedaço que está em cada app.',
         },
         {
           kind: 'p',
@@ -104,7 +104,7 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
   cta: {
     title: 'Conecte sua carteira em 2 minutos',
     subtitle: 'Grátis para começar · consentimento revogável · só leitura',
-    to: '/carteira',
+    to: '/',
   },
   faqTitle: 'Perguntas frequentes',
   faq: [
@@ -118,11 +118,11 @@ export const OPEN_FINANCE_GUIDE: GuideDoc = {
     },
     {
       q: 'Quais instituições posso conectar?',
-      a: 'Todas as grandes corretoras e bancos participam do Open Finance por obrigação regulatória — incluindo XP, BTG, Rico, Inter, Itaú, Nubank e outras dezenas.',
+      a: 'Todas as grandes corretoras e bancos participam do Open Finance por obrigação regulatória, incluindo XP, BTG, Rico, Inter, Itaú, Nubank e outras dezenas.',
     },
     {
       q: 'A Redentia vê minha senha ou movimenta meu dinheiro?',
-      a: 'Nunca. A autenticação acontece no app da sua instituição e o acesso é somente leitura — posições e proventos, nada de transações.',
+      a: 'Nunca. A autenticação acontece no app da sua instituição e o acesso é somente leitura: posições e proventos, nada de transações.',
     },
   ],
   related: ['Como investir em ações', 'Tesouro Direto para iniciantes', 'Dividendos todo mês'],

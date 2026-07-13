@@ -32,7 +32,7 @@ function connect() {
       {{ label }}
     </button>
     <p v-if="connected" class="cct__ok">
-      Conexão criada — estamos sincronizando suas posições. Elas aparecem aqui
+      Conexão criada. Estamos sincronizando suas posições, elas aparecem aqui
       em alguns minutos.
     </p>
     <p v-else-if="error" class="cct__error">{{ error }}</p>

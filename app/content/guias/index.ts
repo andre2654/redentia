@@ -61,7 +61,7 @@ export const GUIDES: GuideMeta[] = [
   },
   {
     title: 'Tesouro Direto para iniciantes',
-    description: 'IPCA+, Selic ou Prefixado: qual proteger o quê — sem juridiquês.',
+    description: 'IPCA+, Selic ou Prefixado: qual proteger o quê, sem juridiquês.',
     tag: 'Renda fixa',
     minutes: 9,
   },
@@ -92,7 +92,7 @@ export const GUIDES: GuideMeta[] = [
   },
   {
     title: 'Como declarar investimentos no IR',
-    description: 'Ações, FIIs e cripto na declaração — o passo a passo completo.',
+    description: 'Ações, FIIs e cripto na declaração: o passo a passo completo.',
     tag: 'Guia Redentia',
     minutes: 15,
   },

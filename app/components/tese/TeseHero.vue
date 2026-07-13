@@ -20,7 +20,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
   <section class="the">
     <div class="the__media">
       <img
-        v-if="hero.image && !imgFailed" :src="hero.image" :alt="`Imagem da tese — ${hero.titlePre}${hero.titleHi}${hero.titlePost}`"
+        v-if="hero.image && !imgFailed" :src="hero.image" :alt="`Imagem da tese ${hero.titlePre}${hero.titleHi}${hero.titlePost}`"
         class="the__img" @error="imgFailed = true"
       >
     </div>

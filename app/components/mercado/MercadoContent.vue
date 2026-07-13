@@ -1,11 +1,34 @@
 <script setup lang="ts">
-// Miolo do /mercado (PR1) — extraído da página no PR7 porque a rota `/`
-// anônima renderiza o MESMO conteúdo (dual route: deslogado vê o Mercado,
-// logado vê a Home). UX idêntica ao contrato: designs-v2/Redentia Mercado
-// Nu.dc.html, na ordem do design (refresh PR-R5): hero → Sua carteira conectada
-// → teses → O mercado hoje → explore → O dia no mercado → tesouro → notícias →
-// blog → FAQ → CTA final (com foto de fundo). SEO fica nas páginas (mercado.vue
-// e index.vue) — 1 implementação de conteúdo, 2 entradas de rota.
+// Miolo da home `/` (PR1; home única desde 2026-07-13, direção do dono): o
+// MERCADO é a página inicial pros DOIS casos e este componente é AUTH-AWARE —
+// anônimo vê o conteúdo público exatamente como no contrato
+// (designs-v2/Redentia Mercado Nu.dc.html), logado vê as MESMAS seções com
+// variações por conveniência:
+//  - hero sem form de signup (bloco de boas-vindas + CTA pra /carteira —
+//    variação dentro do MercadoHero, que também lê useAuthState)
+//  - banda azul de marketing "Sua carteira, conectada." → vira o resumo
+//    compacto "Sua carteira" (MercadoSuaCarteira; sem Open Finance → convite
+//    de conexão; resumo indisponível → a banda some — nunca número inventado)
+//  - CTA dos movers pra criar conta → "Acompanhe estes ativos na sua
+//    carteira" (dentro do MercadoMovers)
+//  - CTA final de signup (NuCtaPhoto) some (padrão do /tesouro)
+// FAQ, Explore, teses, dia no mercado, tesouro, notícias e blog ficam pros
+// dois. Ordem do design (refresh PR-R5): hero → carteira → teses → O mercado
+// hoje → explore → O dia no mercado → tesouro → notícias → blog → FAQ → CTA.
+// SEO fica na página (index.vue) — head único, não varia por auth.
+const { isAuthenticated, clearSession } = useAuthState()
+
+// resumo da carteira (só logado; anônimo não dispara fetch — o composable
+// devolve null sem token). Token morto (401/403) → limpa a sessão AQUI e a
+// página inteira degrada pro conteúdo anônimo na mesma resposta SSR — o
+// conteúdo público É a resposta certa pra `/` sem sessão (padrão documentado).
+const resumoData = isAuthenticated.value ? await useCarteiraResumo() : null
+if (resumoData?.data.value?.unauthenticated) {
+  clearSession() // Set-Cookie de limpeza sai na própria resposta SSR
+}
+const resumo = computed(() =>
+  resumoData?.data.value && !resumoData.data.value.unauthenticated ? resumoData.data.value : null)
+
 const { featured, rows } = useNuNews()
 
 // "O dia no mercado" (PR-R4): o briefing do Atlas (sempre com seed → a seção
@@ -23,7 +46,10 @@ function guiaScroll(d: number) {
   <div>
     <MercadoHero />
 
-    <MercadoCarteiraConectada />
+    <!-- anônimo: banda de marketing do Open Finance · logado: resumo compacto
+         da carteira (ou convite de conexão); resumo indisponível → nada -->
+    <MercadoCarteiraConectada v-if="!isAuthenticated" />
+    <MercadoSuaCarteira v-else-if="resumo" :resumo="resumo" />
 
     <NuTeseStrip />
 
@@ -34,7 +60,7 @@ function guiaScroll(d: number) {
       <div class="mex__cols">
         <div class="mex__left">
           <NuSectionHeading>Explore por<br>onde começar.</NuSectionHeading>
-          <div class="mex__sub">Conteúdo aberto — não precisa de conta.</div>
+          <div class="mex__sub">Conteúdo aberto, não precisa de conta.</div>
         </div>
         <div class="mex__rows">
           <NuxtLink v-for="ex in MERCADO_EXPLORE" :key="ex.t" :to="ex.href" class="mex__row">
@@ -110,14 +136,16 @@ function guiaScroll(d: number) {
       </div>
     </section>
 
-    <!-- CTA final (NuCtaPhoto — implementação única do padrão; foto default
-         /mercado/cta-pessoas.webp) -->
+    <!-- CTA final de signup (NuCtaPhoto — implementação única do padrão; foto
+         default /img/mercado/cta-pessoas.webp): só pra visitante deslogado,
+         mesmo padrão do /tesouro -->
     <NuCtaPhoto
+      v-if="!isAuthenticated"
       :primary="{ label: 'Criar conta grátis', to: '/login' }"
       :secondary="{ label: 'Falar com a Redentia AI', to: '/busca' }"
     >
       <template #title>Pronto para investir<br>com uma IA do seu lado?</template>
-      <template #subtitle>Crie sua conta em menos de 2 minutos — grátis, sem cartão.</template>
+      <template #subtitle>Crie sua conta em menos de 2 minutos: grátis, sem cartão.</template>
     </NuCtaPhoto>
   </div>
 </template>

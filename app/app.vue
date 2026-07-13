@@ -6,7 +6,7 @@ useHead({
   // titleTemplate em app.head não serializa e o SSR saía sem sufixo (bug desde
   // o PR0, pego no verify do PR10). /login segue com opt-out via titleTemplate: null.
   titleTemplate: (title?: string | null) =>
-    title ? `${title} · Redentia` : 'Redentia — invista com uma IA do seu lado',
+    title ? `${title} · Redentia` : 'Redentia: invista com uma IA do seu lado',
   script: [{
     type: 'application/ld+json',
     innerHTML: JSON.stringify({

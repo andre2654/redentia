@@ -1,68 +1,24 @@
 <script setup lang="ts">
-// Rota dupla (decisão André 2026-07-11, PLANO §1): deslogado vê o conteúdo do
-// Mercado (URL canônica cacheável = /mercado; aqui o canonical aponta pra lá),
-// logado vê a Home Nu (PR7). `/` é private/no-store no routeRules — a CDN não
-// varia por cookie (lição documentada do Frontend).
+// Home única `/` (direção do dono, 2026-07-13): o MERCADO é a página inicial
+// pros DOIS casos. Anônimo vê o conteúdo público exatamente como era; logado
+// vê o MESMO MercadoContent com SEÇÕES variadas (hero sem form de signup +
+// resumo compacto da carteira no lugar da banda de marketing "conecte seu
+// open finance" + CTAs de conta escondidos). A consciência de auth vive
+// DENTRO do MercadoContent (useAuthState) — esta página só cuida do SEO.
+// A carteira completa segue página separada em /carteira (privada).
 //
-// AUTH/SSR: o SSR decide a variante pelo cookie `nu:token`. Se QUALQUER coisa
-// der 401/403 no /auth/me (token expirado/revogado), o useHome devolve
-// `unauthenticated: true` → limpamos a sessão AQUI e caímos pro conteúdo
-// anônimo na mesma resposta (sem redirect pro /login: o conteúdo público É a
-// resposta certa pra `/` sem sessão; o padrão 401→/login do useApi segue
-// valendo pro miolo logado navegável tipo /carteira). Decisão documentada.
-const auth = useAuthState()
-
-// bifurcação estável por render: cookie presente = tenta a Home
-const hasToken = !!auth.token.value
-const home = hasToken ? await useHome() : null
-
-const sessionDead = computed(() => home?.data.value?.unauthenticated === true)
-if (sessionDead.value) {
-  auth.clearSession() // Set-Cookie de limpeza sai na própria resposta SSR
-}
-
-const showHome = computed(() => hasToken && !sessionDead.value && !!home?.data.value)
-const payload = computed(() => home?.data.value ?? null)
-
-// "O dia no mercado" (PR-R4): mesma seção-gatilho + modal do /mercado. Degrade-
-// safe — sem briefing hoje (VM null), a seção some (o v-if no template).
-const dayTopics = computed(() => (payload.value?.briefing ? dayTopicsFromHome(payload.value.briefing) : []))
-
-if (hasToken && !sessionDead.value) {
-  // Home logada: conteúdo pessoal — noindex + title do produto. O no-store
-  // já vem do routeRules.
-  usePageSeo({
-    title: 'Início',
-    description: 'Seu patrimônio, suas posições, suas teses e o que fazer agora — a Redentia com uma IA do seu lado.',
-    robots: 'noindex, nofollow',
-  })
-} else {
-  // Variante anônima: MESMO SEO do conteúdo Mercado (title + BreadcrumbList),
-  // com canonical apontando pra URL pública canônica /mercado (PLANO §1) —
-  // evita conteúdo duplicado entre `/` e /mercado.
-  usePageSeo({
-    title: 'Mercado hoje: ações, FIIs, notícias e análise com IA',
-    description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações, FIIs e BDRs, taxas do Tesouro Direto, notícias do dia e o briefing de fechamento escrito por IA — grátis, sem conta.',
-    path: '/mercado',
-    breadcrumbs: [{ name: 'Início', path: '/mercado' }],
-  })
-}
+// SEO: '/' é a URL pública canônica (o /mercado 301a pra cá) — head único,
+// indexável; pro logado a variação de seção NÃO muda o head. O routeRules já
+// serve '/' com private/no-store (rota com variante logada — CDN não varia
+// por cookie, regra dura documentada).
+usePageSeo({
+  title: 'Mercado hoje: ações, FIIs, notícias e análise com IA',
+  description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações, FIIs e BDRs, taxas do Tesouro Direto, notícias do dia e o briefing de fechamento escrito por IA. Grátis, sem conta.',
+  path: '/',
+  breadcrumbs: [{ name: 'Início', path: '/' }],
+})
 </script>
 
 <template>
-  <div v-if="showHome && payload">
-    <HomeHero :hero="payload.hero" />
-    <NuPortfolioChart v-if="payload.chart" :chart="payload.chart" />
-    <HomePositions :positions="payload.positions" />
-    <HomeTheses v-if="payload.theses" :theses="payload.theses" />
-    <HomeActions
-      v-if="payload.actions.length"
-      :cards="payload.actions"
-      :refreshing="home?.pending.value"
-      @refresh="home?.refresh()"
-    />
-    <NuDaySection v-if="payload.briefing" tone="home" :meta-line="payload.briefing.byline" :topics="dayTopics" />
-    <HomeNews :news="payload.news" />
-  </div>
-  <MercadoContent v-else />
+  <MercadoContent />
 </template>

@@ -29,8 +29,7 @@ Estas páginas são mantidas com dados atualizados, conteúdo answer-first e est
 
 ### Mercado (atualizado diariamente após o pregão)
 
-- [Home, terminal de investimentos](https://redentia.com.br/): cotações ao vivo, principais índices, rankings em destaque
-- [Mercado](https://redentia.com.br/mercado): panorama do dia na B3, altas, baixas, Tesouro Direto e destaques
+- [Home, terminal de investimentos](https://redentia.com.br/): panorama do dia na B3 com cotações ao vivo, altas, baixas, Tesouro Direto, notícias e o briefing de fechamento escrito por IA
 - [Notícias](https://redentia.com.br/noticias): notícias do mercado financeiro brasileiro curadas e comentadas
 - [Busca de ativos](https://redentia.com.br/busca): busca por qualquer ação, FII ou índice da B3
 

@@ -46,11 +46,11 @@ if (ldItems.length) {
 
 usePageSeo({
   title: 'Notícias do mercado hoje, lidas pela IA',
-  description: 'As notícias que mexem com a B3, cada uma com a leitura do Atlas, a IA da Redentia: o que muda de verdade, para quais ativos e a direção do impacto em cada ticker. Ações, FIIs e macro, atualizado ao longo do pregão.',
+  description: 'As notícias que mexem com a B3, cada uma com a leitura da IA da Redentia: o que muda de verdade, para quais ativos e a direção do impacto em cada ticker. Ações, FIIs e macro, atualizado ao longo do pregão.',
   path: '/noticias',
   structuredData,
   breadcrumbs: [
-    { name: 'Início', path: '/mercado' },
+    { name: 'Início', path: '/' },
     { name: 'Notícias', path: '/noticias' },
   ],
 })
@@ -60,9 +60,9 @@ usePageSeo({
   <div>
     <NuPageHero
       eyebrow="Notícias"
-      subtitle="Toda notícia chega com a leitura da nossa IA: o que muda de verdade, para quais ativos — e para a sua carteira."
+      subtitle="Toda notícia chega com a leitura da nossa IA: o que muda de verdade, para quais ativos e para a sua carteira."
     >
-      <template #title>O mercado,<br>lido pelo Atlas.</template>
+      <template #title>O mercado,<br>lido pela IA.</template>
       <NuFilterPills :items="tabs" :model-value="tab" @update:model-value="setTab" />
     </NuPageHero>
 
@@ -82,7 +82,7 @@ usePageSeo({
             ? 'Conecte sua corretora para filtrar o feed pelos seus ativos: só o que afeta o seu dinheiro.'
             : 'Entre na sua conta e conecte a carteira para ver só o que afeta os seus ativos.' }}
         </div>
-        <NuxtLink :to="isAuthenticated ? '/carteira' : '/login?redirect=/noticias'" class="nof__empty-cta">
+        <NuxtLink :to="isAuthenticated ? '/' : '/login?redirect=/noticias'" class="nof__empty-cta">
           {{ isAuthenticated ? 'Conectar carteira' : 'Entrar na Redentia' }}
         </NuxtLink>
       </div>

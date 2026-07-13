@@ -2,8 +2,11 @@
 // "O mercado hoje": banda navy com tabs por classe (Ações/FIIs/Cripto/BDRs),
 // linha de índices e 2 cards de rankings (altas/baixas). Valores exatos do
 // design; troca de dataset é client-side, como no protótipo.
+// CTA final auth-aware (home única, 2026-07-13): anônimo = signup pra alertas;
+// logado não cria conta — o convite vira "acompanhe na sua carteira".
 import type { NuMoverTab } from '~/types/market'
 
+const { isAuthenticated } = useAuthState()
 const { tabs, movers, indices } = useNuMovers()
 const activeTab = ref<NuMoverTab>('Ações')
 const active = computed(() => movers.value[activeTab.value])
@@ -74,11 +77,11 @@ const active = computed(() => movers.value[activeTab.value])
       </div>
     </div>
 
-    <NuxtLink to="/login" class="mmv__cta">
+    <NuxtLink :to="isAuthenticated ? '/carteira' : '/login'" class="mmv__cta">
       <span class="mmv__cta-circle">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0C1524" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
       </span>
-      <span class="mmv__cta-label">Criar conta para receber alertas destes ativos</span>
+      <span class="mmv__cta-label">{{ isAuthenticated ? 'Acompanhe estes ativos na sua carteira' : 'Criar conta para receber alertas destes ativos' }}</span>
     </NuxtLink>
   </section>
 </template>

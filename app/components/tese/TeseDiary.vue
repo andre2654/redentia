@@ -71,7 +71,7 @@ const showMore = computed(() => !expanded.value && !!props.diary.moreLabel && ro
 
       <div class="tdi__sig">
         <span class="tdi__sig-tile"><img src="/logo-branca.svg" alt="Redentia" class="tdi__sig-logo"></span>
-        <span class="tdi__sig-txt">Estudo gerado pelo Atlas na revalidação diária da tese.</span>
+        <span class="tdi__sig-txt">Estudo gerado pela IA na revalidação diária da tese.</span>
       </div>
     </article>
 

@@ -59,12 +59,16 @@ export default defineNuxtConfig({
     // Cache por rota. Regra dura (lição do Frontend): rota com variante
     // logada/deslogada = private/no-store — CDN não varia por cookie.
     '/': { headers: { 'cache-control': 'private, no-store' } },
-    '/carteira': { headers: { 'cache-control': 'private, no-store' } },
     '/busca': { headers: { 'cache-control': 'private, no-store' } },
     // /login redireciona SSR-side quem já tem cookie de sessão e lê
     // ?redirect/?email — cachear seria servir o redirect de um user pro outro.
     '/login': { headers: { 'cache-control': 'private, no-store' } },
-    '/mercado': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
+    // Home única (dono, 2026-07-13): o MERCADO é a home `/` pros dois casos
+    // (anônimo e logado — só variam SEÇÕES); /mercado 301a pra raiz (regra
+    // EXATA; '/' já é private/no-store acima). A carteira segue página
+    // separada e privada — NÃO redireciona.
+    '/mercado': { redirect: { to: '/', statusCode: 301 } },
+    '/carteira': { headers: { 'cache-control': 'private, no-store' } },
     '/noticias': { headers: { 'cache-control': 'public, s-maxage=180, stale-while-revalidate=600' } },
     '/asset/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
     // Tesouro e dividendos: páginas próprias (em construção em frentes
@@ -130,7 +134,8 @@ export default defineNuxtConfig({
     // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
     // paralela) — os redirects provisórios pro ranking saíram; as regras de
     // cache vivem no bloco de cache acima.
-    '/mercado-completo': { redirect: { to: '/mercado', statusCode: 301 } },
+    // direto pra raiz (o /mercado também 301a pra '/' — evita corrente de 301)
+    '/mercado-completo': { redirect: { to: '/', statusCode: 301 } },
     // /legal/* → /institucional/* (mesmos 3 slugs; a antiga tinha ~471
     // 404s de /legal/* reportados no Search Console — não herdar isso).
     '/legal/terms': { redirect: { to: '/institucional/terms', statusCode: 301 } },

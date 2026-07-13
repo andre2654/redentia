@@ -539,7 +539,7 @@ export function useBuscaIndex() {
         tesouro: [],
         total: top.length,
         hasMore: false,
-        moreHref: '/mercado',
+        moreHref: '/',
         moreLabel: 'Ver cripto no mercado',
         loading,
         empty: !loading && top.length === 0,

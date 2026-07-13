@@ -60,7 +60,7 @@ function closeModal() {
 
     <NuDayModal
       :open="open"
-      eyebrow="Resumo do dia · Atlas"
+      eyebrow="Resumo do dia · Redentia"
       title="O dia no mercado"
       :date-line="metaLine"
       :blocks="blocks"

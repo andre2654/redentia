@@ -12,8 +12,9 @@
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
 
-// Estrutura de nav (direção do dono 2026-07-13): Início · Carteira (logado) ·
-// Teses · Ferramentas (drawer: calculadoras + rankings) · Informações (drawer:
+// Estrutura de nav (direção do dono 2026-07-13): Início (a home única = o
+// Mercado auth-aware) · Carteira (logado — página separada) · Teses ·
+// Ferramentas (drawer: calculadoras + rankings) · Informações (drawer:
 // guias + notícias). Mesma estrutura no menu mobile (grupos expansíveis).
 interface NavChild { label: string; to: string }
 interface NavItem { label: string; to?: string; children?: NavChild[]; authOnly?: boolean }
@@ -92,7 +93,8 @@ watch(openDrawer, (o) => {
 /* ——— menu de conta (avatar logado) ———
    Mesma mecânica dos drawers da nav: painel position:fixed ancorado no
    getBoundingClientRect do avatar, fecha com click-fora/Escape/scroll.
-   Itens: Minha carteira · Sair (encerra a sessão e volta pro /mercado). */
+   Itens: Minha carteira · Sair (encerra a sessão e volta pra raiz, que sem
+   sessão renderiza o conteúdo público). */
 const ACCOUNT_W = 230 // = min-width do .nuh__drawer (alinha a borda direita no avatar)
 const accountOpen = ref(false)
 const accountPos = ref({ left: 0, top: 0 })
@@ -129,7 +131,7 @@ async function logout() {
   accountOpen.value = false
   toggleMenu(false)
   clearSession()
-  await navigateTo('/mercado')
+  await navigateTo('/')
 }
 
 /* ——— shrink on scroll (com HISTERESE) ———
@@ -190,7 +192,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="nuh-wrap" :class="{ 'nuh-wrap--shrunk': shrunk }">
     <div class="nuh">
-      <NuxtLink :to="isAuthenticated ? '/' : '/mercado'" class="nuh__brand" aria-label="Redentia">
+      <NuxtLink to="/" class="nuh__brand" aria-label="Redentia">
         <img src="/logo-branca.svg" alt="Redentia" class="nuh__logo">
       </NuxtLink>
 
@@ -267,7 +269,7 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <div v-if="menuOpen" class="num">
         <div class="num__top">
-          <NuxtLink :to="isAuthenticated ? '/' : '/mercado'" class="num__brand" aria-label="Redentia" @click="toggleMenu(false)">
+          <NuxtLink to="/" class="num__brand" aria-label="Redentia" @click="toggleMenu(false)">
             <img src="/logo-branca.svg" alt="Redentia" class="num__logo">
           </NuxtLink>
           <div class="num__top-right">

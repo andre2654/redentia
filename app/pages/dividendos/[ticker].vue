@@ -71,7 +71,7 @@ usePageSeo({
   description: div.value.seo.description,
   path: `/dividendos/${ticker}`,
   breadcrumbs: [
-    { name: 'Início', path: '/mercado' },
+    { name: 'Início', path: '/' },
     { name: ticker, path: `/asset/${ticker}` },
     { name: 'Dividendos', path: `/dividendos/${ticker}` },
   ],

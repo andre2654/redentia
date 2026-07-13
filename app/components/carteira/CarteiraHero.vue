@@ -61,13 +61,16 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
         <template v-else>
           <h1 class="chr__value chr__value--connect">Conecte<br>sua carteira.</h1>
           <div class="chr__connect-sub">
-            Traga suas posições pelo Open Finance — leitura automática regulada
+            Traga suas posições pelo Open Finance: leitura automática regulada
             pelo Banco Central, sem acesso a movimentações. Patrimônio,
             proventos, movimentações e o Raio-X da IA aparecem aqui.
           </div>
           <div class="chr__ctas">
             <CarteiraConnect @connected="emit('connected')" />
-            <NuxtLink to="/mercado" class="chr__cta-outline">Explorar o mercado</NuxtLink>
+            <!-- fusão home+carteira: este hero VIVE na '/' — '/mercado' morreu
+                 e apontar pra própria raiz seria self-link; rankings é o
+                 destino real de "explorar o mercado" pra quem já está logado -->
+            <NuxtLink to="/rankings" class="chr__cta-outline">Explorar o mercado</NuxtLink>
           </div>
         </template>
       </div>
@@ -102,10 +105,10 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
           </div>
           <NuCheckList
             :items="[
-              '<strong>Patrimônio consolidado</strong> — ações, FIIs, Tesouro e cripto num número só',
-              '<strong>Renda passiva</strong> — proventos por mês e a agenda dos próximos pagamentos',
-              '<strong>Raio-X da carteira</strong> — diagnóstico de diversificação, risco, renda e qualidade',
-              '<strong>P&amp;L mês a mês</strong> — seu retorno mensal, com proventos',
+              '<strong>Patrimônio consolidado</strong>: ações, FIIs, Tesouro e cripto num número só',
+              '<strong>Renda passiva</strong>: proventos por mês e a agenda dos próximos pagamentos',
+              '<strong>Raio-X da carteira</strong>: diagnóstico de diversificação, risco, renda e qualidade',
+              '<strong>P&amp;L mês a mês</strong>: seu retorno mensal, com proventos',
             ]"
           />
         </div>

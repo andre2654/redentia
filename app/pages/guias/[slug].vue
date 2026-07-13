@@ -43,7 +43,7 @@ usePageSeo({
     inLanguage: 'pt-BR',
   }],
   breadcrumbs: [
-    { name: 'Início', path: '/mercado' },
+    { name: 'Início', path: '/' },
     { name: 'Guias', path: '/guias' },
     { name: doc.title, path: `/guias/${doc.slug}` },
   ],

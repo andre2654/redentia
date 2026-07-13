@@ -8,20 +8,13 @@ import type { NoticiasItem } from '~/types/noticias'
 
 defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
 
-// Imagem quebrada não pode vazar ícone partido — degrada pro bloco creme
-// (o mesmo placeholder do image-slot do design).
-const imgFailed = ref(false)
+// Imagem quebrada/ausente degrada pro fallback único do NuNewsImage
+// (logo Redentia pequena + aviso), sem vazar ícone partido do browser.
 </script>
 
 <template>
   <article class="nfr" :class="{ 'nfr--reverse': reverse }">
-    <div class="nfr__media">
-      <img
-        v-if="item.image && !imgFailed"
-        :src="item.image" :alt="item.titulo" class="nfr__img"
-        loading="lazy" @error="imgFailed = true"
-      >
-    </div>
+    <NuNewsImage :src="item.image" :alt="item.titulo" class="nfr__media" />
     <div class="nfr__content">
       <div class="nfr__meta">
         <span class="nfr__veiculo">{{ item.veiculo }}</span>
@@ -45,12 +38,11 @@ const imgFailed = ref(false)
   gap: clamp(22px, 3.5vw, 56px); flex-wrap: wrap;
 }
 .nfr--reverse { flex-direction: row-reverse; }
+/* sizing/radius do slot de imagem do design; miolo (img/fallback) = NuNewsImage */
 .nfr__media {
-  flex: 1 1 320px; min-width: min(300px, 100%); position: relative;
-  min-height: clamp(240px, 26vw, 380px); border-radius: 28px; overflow: hidden;
-  background: var(--nu-cream);
+  flex: 1 1 320px; min-width: min(300px, 100%);
+  min-height: clamp(240px, 26vw, 380px); border-radius: 28px;
 }
-.nfr__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .nfr__content { flex: 1.1 1 340px; min-width: min(300px, 100%); }
 .nfr__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .nfr__veiculo { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }

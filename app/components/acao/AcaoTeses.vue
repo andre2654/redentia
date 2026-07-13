@@ -21,7 +21,7 @@ const heading = computed(() =>
         <div class="ats__eyebrow">Teses Redentia</div>
         <h2 class="ats__title">{{ heading }}</h2>
       </div>
-      <NuxtLink to="/mercado" class="ats__all">
+      <NuxtLink to="/teses" class="ats__all">
         <span class="ats__all-label">Explorar todas</span>
         <span class="ats__all-circle">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>

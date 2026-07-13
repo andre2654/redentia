@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<{
   primary: CtaAction
   secondary?: CtaAction
 }>(), {
-  image: '/mercado/cta-pessoas.webp',
+  image: '/img/mercado/cta-pessoas.webp',
   secondary: undefined,
 })
 

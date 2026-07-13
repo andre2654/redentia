@@ -46,7 +46,7 @@ const { setSession, user } = useAuthState()
 const redirectTarget = sanitizeRedirect(route.query.redirect)
 
 // Tela de auth não rankeia: noindex, mas FOLLOW — os links internos (logo →
-// /mercado) continuam passando sinal. Title exato do produto, sem o sufixo
+// '/') continuam passando sinal. Title exato do produto, sem o sufixo
 // '· Redentia' do titleTemplate global (ficaria "Entrar na Redentia · Redentia").
 usePageSeo({
   title: 'Entrar na Redentia',

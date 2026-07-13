@@ -4,10 +4,12 @@
 // Contrato de UX: designs/Redentia Mercado Nu.dc.html (footer, linhas 521-589).
 const CARDS = [
   { title: 'Redentia AI', desc: 'Seu assessor de investimentos, disponível 24h para qualquer pergunta.', to: '/busca' },
-  { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva — resultados em segundos.', to: '/calculadoras' },
+  { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva: resultados em segundos.', to: '/calculadoras' },
 ]
 const COLUMNS = [
-  { title: 'Produto', links: [{ label: 'Ações', to: '/asset/PETR4' }, { label: 'Carteira', to: '/carteira' }, { label: 'Mercado', to: '/mercado' }, { label: 'Calculadoras', to: '/calculadoras' }] },
+  // fusão home+carteira (2026-07-13): /mercado e /carteira viraram '/' — o
+  // link único "Mercado" cobre os dois (logado, '/' É a carteira).
+  { title: 'Produto', links: [{ label: 'Ações', to: '/asset/PETR4' }, { label: 'Mercado', to: '/' }, { label: 'Teses', to: '/teses' }, { label: 'Calculadoras', to: '/calculadoras' }] },
   { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Busca', to: '/busca' }, { label: 'Guias', to: '/guias' }] },
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },

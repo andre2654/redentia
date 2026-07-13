@@ -49,7 +49,7 @@ const advItems = computed<AdvItem[]>(() => {
   }
   if (t === 'cripto') {
     return [
-      { label: 'Cripto no mercado', href: '/mercado' },
+      { label: 'Cripto no mercado', href: '/' },
       { label: 'Ver todos os rankings', href: '/rankings' },
     ]
   }

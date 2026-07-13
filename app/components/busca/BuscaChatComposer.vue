@@ -37,7 +37,7 @@ function onKey(e: KeyboardEvent) {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
       </button>
     </div>
-    <div class="bcc__disclaimer">Respostas geradas por IA — não são recomendação de investimento.</div>
+    <div class="bcc__disclaimer">Respostas geradas por IA. Não são recomendação de investimento.</div>
   </div>
 </template>
 

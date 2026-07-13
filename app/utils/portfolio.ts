@@ -1,9 +1,10 @@
 /**
- * Domínio carteira compartilhado entre a Home logada (PR7) e /carteira (PR8).
- * EXTRAÍDO do useHome no PR8 (regra "1 implementação por responsabilidade"):
- * valor de posição, total do patrimônio, mapas de classe/tile do design e o
- * builder do gráfico navy (equity-curve + IBOV + CDI) — as duas telas plotam
- * a MESMA curva com a MESMA âncora, então o número nunca diverge entre elas.
+ * Domínio carteira compartilhado entre a /carteira (PR8) e o resumo compacto
+ * da home `/` (useCarteiraResumo). EXTRAÍDO do useHome no PR8 (regra "1
+ * implementação por responsabilidade"): valor de posição, total do
+ * patrimônio, mapas de classe/tile do design e o builder do gráfico navy
+ * (equity-curve + IBOV + CDI) — as duas superfícies calculam o MESMO número
+ * com a MESMA precedência, então o valor nunca diverge entre elas.
  */
 import type { EquityCurvePointApi, HomeChartVM, PortfolioPositionApi, PortfolioTodayApi } from '~/types/home'
 import type { SeriesPoint } from '~/types/acao'

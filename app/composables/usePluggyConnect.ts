@@ -69,7 +69,7 @@ export function usePluggyConnect() {
             await pluggyRegisterConnection(base, authHeaders(), item.id)
             opts.onConnected(item)
           } catch {
-            error.value = 'A conexão foi criada no seu banco, mas não conseguimos registrá-la aqui. Recarregue a página — se ela não aparecer, tente conectar de novo.'
+            error.value = 'A conexão foi criada no seu banco, mas não conseguimos registrá-la aqui. Recarregue a página. Se ela não aparecer, tente conectar de novo.'
           } finally {
             registering.value = false
           }

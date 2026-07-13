@@ -11,7 +11,7 @@ defineProps<{ drivers: TeseDriversVM }>()
 
 <template>
   <section class="tdr">
-    <NuSectionHeading dark>O que sustenta —<br>e o que ameaça.</NuSectionHeading>
+    <NuSectionHeading dark>O que sustenta<br>e o que ameaça.</NuSectionHeading>
     <div class="tdr__grid">
       <div v-if="drivers.favor.length" class="tdr__card">
         <span class="tdr__lbl tdr__lbl--favor">A favor</span>

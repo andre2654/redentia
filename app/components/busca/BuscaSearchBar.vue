@@ -29,7 +29,7 @@ defineExpose({
       type="text"
       class="bsb__input"
       :value="props.modelValue"
-      placeholder="Busque um ativo, tese, guia — ou pergunte qualquer coisa"
+      placeholder="Busque um ativo, tese, guia ou pergunte qualquer coisa"
       aria-label="Buscar um ativo, tese ou guia"
       @input="onInput"
       @focus="emit('activate')"

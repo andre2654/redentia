@@ -3,7 +3,7 @@
 // label uppercase espaçada + parágrafo da leitura da IA) — valores exatos do
 // design (Redentia Noticias Nu.dc.html). Compartilhado: qualquer tela que
 // mostre take do Atlas (notícia, ativo, mercado, briefing).
-withDefaults(defineProps<{ text: string; label?: string }>(), { label: 'A leitura do Atlas' })
+withDefaults(defineProps<{ text: string; label?: string }>(), { label: 'A leitura da IA' })
 </script>
 
 <template>

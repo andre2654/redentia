@@ -31,8 +31,9 @@ export interface SiteSection {
 }
 
 const CORE_PAGES: SitePage[] = [
-  { path: '/', title: 'Home', description: 'Cotações ao vivo da B3, índices, rankings em destaque e a IA da Redentia.' },
-  { path: '/mercado', title: 'Mercado', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto e destaques.' },
+  // fusão home+carteira (2026-07-13): /mercado morreu (301 → '/') e a home
+  // pública herdou o panorama do mercado — 1 entrada só.
+  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.' },
   { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.' },
   { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.' },
   { path: '/guias', title: 'Guias', description: 'Conteúdo educacional sobre investimentos no Brasil.' },

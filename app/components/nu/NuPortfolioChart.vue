@@ -122,7 +122,7 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
     <div v-else class="hch__collecting">
       <div class="hch__collecting-kicker">Coletando histórico</div>
       <p class="hch__collecting-body">
-        Sua conexão é recente — a curva diária do patrimônio aparece aqui depois
+        Sua conexão é recente: a curva diária do patrimônio aparece aqui depois
         de alguns pregões. Enquanto isso, suas posições já estão logo abaixo.
       </p>
     </div>

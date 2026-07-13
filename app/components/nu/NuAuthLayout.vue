@@ -4,7 +4,7 @@
 // centralizado com paddings fluidos) + painel dark com a orbe (flex 1 1
 // 460px, some <=1020px via NuAuthAsidePanel). Sem header/nav/footer — quem
 // usa este layout declara `definePageMeta({ layout: false })`.
-withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/mercado' })
+withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/' })
 </script>
 
 <template>

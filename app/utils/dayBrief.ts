@@ -17,23 +17,22 @@
  * NÃO inventa número: o único número dos cards é o delta real do IBOV; quando
  * ausente, cai no placeholder do design (o mesmo seed que o app já embarca).
  */
-import type { HomeBriefingVM } from '~/types/home'
 import type { NuBriefing, NuDayTopic, NuStatPill } from '~/types/market'
 
 /* Copy exata dos designs v2 (placeholder honesto). Cards: números só no card 1;
    os demais são frases editoriais neutras. Modal: parágrafos completos. */
 const MOCK_CARD = {
-  placar: { stat: '+1,22%', blurb: 'Ibovespa a 172.742 pontos — o melhor pregão da semana, com 65 das 82 ações no azul.' },
+  placar: { stat: '+1,22%', blurb: 'Ibovespa a 172.742 pontos, o melhor pregão da semana, com 65 das 82 ações no azul.' },
   puxou: { title: 'Bancos & duration.', blurb: 'Curva de juros em queda e dólar a R$ 5,13 giraram o fluxo para os setores sensíveis a juros.' },
-  ficou: { title: 'Petróleo.', blurb: 'O alívio que animou a bolsa tira prêmio do óleo — Petrobras andou na contramão, com PETR4 a −1,08%.' },
+  ficou: { title: 'Petróleo.', blurb: 'O alívio que animou a bolsa tira prêmio do óleo: Petrobras andou na contramão, com PETR4 a −1,08%.' },
   leitura: { title: 'A leitura.', blurb: 'Rali de alívio, não de fundamento. Falta o estrangeiro confirmar o movimento.' },
 } as const
 
 const MOCK_MODAL = {
-  placar: 'O Ibovespa fechou aos 172.742 pontos, alta de 1,22% — o melhor pregão da semana. Foram 65 das 82 ações no campo positivo, com o giro financeiro concentrado nas blue chips.',
-  puxou: 'A largada veio da renda fixa: a curva de juros cedeu de ponta a ponta e o dólar recuou para R$ 5,13. Esse alívio girou o fluxo para os setores mais sensíveis a juros — bancos e nomes de <i>duration</i> longa lideraram os ganhos.',
+  placar: 'O Ibovespa fechou aos 172.742 pontos, alta de 1,22%, o melhor pregão da semana. Foram 65 das 82 ações no campo positivo, com o giro financeiro concentrado nas blue chips.',
+  puxou: 'A largada veio da renda fixa: a curva de juros cedeu de ponta a ponta e o dólar recuou para R$ 5,13. Esse alívio girou o fluxo para os setores mais sensíveis a juros: bancos e nomes de <i>duration</i> longa lideraram os ganhos.',
   ficou: 'Na contramão, o petróleo. O mesmo alívio que animou a bolsa tira prêmio do óleo, e a Petrobras andou de lado: PETR4 caiu 1,08% e PETR3, 1,40%.',
-  leitura: 'É um rali de alívio, não de fundamento. O movimento se sustenta enquanto a curva de juros seguir cedendo — mas falta o investidor estrangeiro confirmar a entrada para o fôlego virar tendência. Sem esse fluxo, o teto de curto prazo fica perto dos 174 mil pontos.',
+  leitura: 'É um rali de alívio, não de fundamento. O movimento se sustenta enquanto a curva de juros seguir cedendo, mas falta o investidor estrangeiro confirmar a entrada para o fôlego virar tendência. Sem esse fluxo, o teto de curto prazo fica perto dos 174 mil pontos.',
 } as const
 
 interface DayBriefCore {
@@ -81,7 +80,7 @@ export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
       real: core.body[2] != null,
     },
     {
-      label: 'A leitura do Atlas',
+      label: 'A leitura da IA',
       labelColor: 'var(--nu-blue)',
       icon: 'compass',
       stat: null,
@@ -100,15 +99,5 @@ export function dayTopicsFromNuBriefing(b: NuBriefing): NuDayTopic[] {
     ibovDelta: ibovDeltaOf(b.pills),
     body: [...b.paragraphs, ...b.extraParagraphs],
     takeawayHtml: b.takeaway?.html ?? null,
-  })
-}
-
-/** Adaptador do briefing da Home logada (useHome → HomeBriefingVM, sem takeaway). */
-export function dayTopicsFromHome(b: HomeBriefingVM): NuDayTopic[] {
-  return buildDayTopics({
-    headline: b.headline,
-    ibovDelta: ibovDeltaOf(b.pills),
-    body: [...b.paragraphs, ...b.extraParagraphs],
-    takeawayHtml: null,
   })
 }

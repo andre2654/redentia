@@ -220,6 +220,29 @@ export interface CarteiraHeatmapVM {
   note: string // 'jul/2026 é parcial · células vazias são meses futuros'
 }
 
+/**
+ * Resumo compacto pra seção "Sua carteira" da home `/` (Mercado logado):
+ * patrimônio + variação do dia + top 3 posições. Estados: 'patrimonio'
+ * (conectado) | 'connect' (sem Open Finance → convite compacto); token morto
+ * → `unauthenticated` (quem consome limpa a sessão).
+ */
+export interface CarteiraResumoVM {
+  unauthenticated?: boolean
+  state: 'patrimonio' | 'connect'
+  patrimonio: string | null // 'R$ 84.712,44' (mascarável)
+  hojeTxt: string | null // '+R$ 761,20 (0,91%) hoje' — null se /today degradou
+  hojeDir: NuDir
+  top: {
+    ticker: string
+    label: string // ticker (ou nome, na Renda Fixa)
+    letter: string
+    tileBg: string // SEMPRE var(--nu-*)
+    tileFg: string
+    val: string // 'R$ 14.274' (mascarável)
+    href: string | null // /asset/{ticker} só pra equity
+  }[]
+}
+
 /** Payload único do useAsyncData da /carteira. */
 export interface CarteiraPayload {
   /** token morto → a página limpa a sessão e redireciona pro /login */

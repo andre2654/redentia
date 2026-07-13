@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
     <div class="tstz__eyebrow">Teses Redentia</div>
     <h2 class="tstz__title">Invista com Teses.</h2>
     <div class="tstz__dek">
-      Carteiras temáticas com pesquisa profunda — estudadas e revalidadas <strong>todos os dias</strong> por IA, com convicção que sobe e desce conforme os fatos.
+      Carteiras temáticas com pesquisa profunda, estudadas e revalidadas <strong>todos os dias</strong> por IA, com convicção que sobe e desce conforme os fatos.
     </div>
 
     <div class="tstz__wrap">

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // Quadrado 76×76 azul com o logo branco 34×34 — âncora de marca no canto das
 // telas de auth (contrato: Redentia Login Nu.dc.html) e escape hatch de
-// navegação (default: volta pro /mercado).
-withDefaults(defineProps<{ to?: string }>(), { to: '/mercado' })
+// navegação (default: volta pra home '/').
+withDefaults(defineProps<{ to?: string }>(), { to: '/' })
 </script>
 
 <template>
-  <NuxtLink :to="to" class="nlb" aria-label="Redentia — voltar ao mercado">
+  <NuxtLink :to="to" class="nlb" aria-label="Redentia, voltar ao início">
     <img src="/logo-branca.svg" alt="Redentia" class="nlb__logo">
   </NuxtLink>
 </template>

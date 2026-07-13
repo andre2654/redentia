@@ -1,7 +1,11 @@
 /**
- * Dados da /carteira (PR8). Contrato de UX: designs/Redentia Carteira Nu.dc.html.
+ * Dados da carteira (PR8) — página /carteira (o miolo vive no
+ * CarteiraContent). Contrato de UX: designs/Redentia Carteira Nu.dc.html.
+ * A home `/` (Mercado auth-aware) consome só o RESUMO compacto via
+ * useCarteiraResumo (fim do arquivo) — mesmo fetch/mesmas regras, payload
+ * mínimo (patrimônio + dia + top 3 posições).
  *
- * SSR-FIRST (padrão useHome): fetch no servidor via useAsyncData com o Bearer
+ * SSR-FIRST: fetch no servidor via useAsyncData com o Bearer
  * do cookie `nu:token` — a 1ª resposta já sai com o patrimônio real.
  *
  * DIRETRIZ Nº1 (dono): tela DINÂMICA por card. Política POR SEÇÃO:
@@ -26,7 +30,7 @@
  *               (byMonth) sobre a equity-curve; <2 meses → some
  *
  * 401/403 no /portfolio ⇒ token morto → `unauthenticated: true`; a página
- * limpa a sessão e redireciona pro /login (padrão do useApi).
+ * /carteira limpa a sessão e redireciona pro /login (padrão useApi).
  */
 import type {
   CarteiraAllocationVM,
@@ -38,6 +42,7 @@ import type {
   CarteiraMovementVM,
   CarteiraPayload,
   CarteiraRaioXVM,
+  CarteiraResumoVM,
   CarteiraRowVM,
   PortfolioAnalysisApi,
   RaioXMetricVM,
@@ -189,7 +194,9 @@ function buildAllocation(rows: PosRow[]): CarteiraAllocationVM[] {
 /** CTAs por classe — copy verbatim do design; destinos = rotas Nu reais. */
 const GROUP_CTA: Record<string, { cta: string; href: string }> = {
   'Ações': { cta: 'Analisar ações com a IA', href: '/busca' },
-  'FIIs': { cta: 'Explorar mais FIIs', href: '/mercado' },
+  // o antigo hub '/mercado' morreu (301 → '/'); o filtro de FIIs do hub de
+  // rankings é o destino honesto.
+  'FIIs': { cta: 'Explorar mais FIIs', href: '/rankings?classe=fiis' },
   'Renda Fixa': { cta: 'Simular renda fixa', href: '/calculadoras' },
   'Cripto': { cta: 'Ver análise de risco', href: '/busca' },
   'Outros': { cta: 'Reinvestir agora', href: '/busca' },
@@ -359,7 +366,7 @@ function buildRaioX(
     // display minúsculo do design ('71,9% em ações') — FIIs é sigla, não desce
     const classLower: Record<string, string> = { 'Ações': 'ações', 'FIIs': 'FIIs', 'Renda Fixa': 'renda fixa', 'Cripto': 'cripto', 'Outros': 'outros' }
     const note = topSector
-      ? `${nf1.format((topClass[1] / total) * 100)}% em ${classLower[topClass[0]] ?? topClass[0]} — maior setor: ${topSector[0]} (${nf0.format((topSector[1] / total) * 100)}% do total).`
+      ? `${nf1.format((topClass[1] / total) * 100)}% em ${classLower[topClass[0]] ?? topClass[0]}. Maior setor: ${topSector[0]} (${nf0.format((topSector[1] / total) * 100)}% do total).`
       : `${n} ${n === 1 ? 'ativo' : 'ativos'} em ${sectors.size} ${sectors.size === 1 ? 'setor' : 'setores'}.`
     dims.push({ weight: 1.4, score, vm: { label: 'Diversificação', value: `${score}/100`, fillPct: score, note, ...tagFor(score) } })
   }
@@ -395,7 +402,7 @@ function buildRaioX(
       const mTotal = matched.reduce((s, r) => s + r.value, 0)
       const q = Math.round(matched.reduce((s, r) => s + (scoreMap.get(r.ticker.toUpperCase())! * 10) * r.value, 0) / mTotal)
       const top = [...matched].sort((a, b) => scoreMap.get(b.ticker.toUpperCase())! - scoreMap.get(a.ticker.toUpperCase())!).slice(0, 2)
-      const note = `Score médio de ${matched.length} dos seus ativos — ${top.map((t) => t.ticker).join(' e ')} ${top.length > 1 ? 'puxam' : 'puxa'} para cima.`
+      const note = `Score médio de ${matched.length} dos seus ativos: ${top.map((t) => t.ticker).join(' e ')} ${top.length > 1 ? 'puxam' : 'puxa'} para cima.`
       dims.push({ weight: 1.5, score: q, vm: { label: 'Qualidade', value: `${q}/100`, fillPct: q, note, ...tagFor(q) } })
     }
   }
@@ -414,7 +421,7 @@ function buildRaioX(
   if (risks.length) {
     const order = { high: 0, medium: 1, low: 2 } as Record<string, number>
     const top = [...risks].sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))[0]!
-    const text = [top.title, top.body].filter(Boolean).join(' — ')
+    const text = [top.title, top.body].filter(Boolean).join(': ')
     insight = text.length > 220 ? `${text.slice(0, 217).trimEnd()}…` : text
   }
 
@@ -802,6 +809,94 @@ export async function useCarteira() {
       const t = token.value
       if (!t) return Promise.resolve(emptyPayload(true))
       return loadCarteira(import.meta.server ? serverBase : clientBase, t)
+    },
+  )
+
+  return { data, pending, refresh }
+}
+
+/* ————— resumo compacto (seção "Sua carteira" da home `/`) ————— */
+
+/**
+ * Payload MÍNIMO pra seção compacta da home Mercado (logado): patrimônio +
+ * variação do dia + 3 maiores posições. MESMO fetch/mesmas regras da página
+ * (homeFetchPortfolio/homeFetchToday + toRows/portfolioTotalValue/tileFor) —
+ * zero lógica duplicada. Estados honestos:
+ *  - state 'patrimonio'  conectado com valor → resumo cheio (hojeTxt pode
+ *                        faltar se o /today degradou — badge some)
+ *  - state 'connect'     sem Open Finance → a seção vira o convite compacto
+ *  - unauthenticated     token morto (401/403) → quem consome limpa a sessão
+ *  - fetch do /portfolio falhou (não-auth) → `null` → a seção some
+ */
+async function loadCarteiraResumo(base: string, token: string): Promise<CarteiraResumoVM | null> {
+  const headers = { Accept: 'application/json', Authorization: `Bearer ${token}` }
+
+  const [portfolioR, todayR] = await Promise.allSettled([
+    homeFetchPortfolio(base, headers),
+    homeFetchToday(base, headers),
+  ])
+
+  if (portfolioR.status === 'rejected') {
+    const e = portfolioR.reason as { statusCode?: number; response?: { status?: number } }
+    const status = e?.statusCode ?? e?.response?.status
+    if (status === 401 || status === 403) return { unauthenticated: true, state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up', top: [] }
+    return null // dado indisponível (não-auth) → seção some
+  }
+
+  const portfolio = ok(portfolioR)?.positions ?? null
+  const today = ok(todayR)
+  const rows = toRows(portfolio)
+  const totalValue = portfolioTotalValue(portfolio, today)
+
+  if (totalValue <= 0) {
+    return { state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up', top: [] }
+  }
+
+  // badge do dia: MESMA regra do buildHero (só com /today válido; nunca inventado)
+  let hojeTxt: string | null = null
+  let hojeDir: NuDir = 'up'
+  if (today?.totals && today.totals.value_d1 > 0) {
+    const amt = today.totals.day_change_amount
+    const pctDay = today.totals.day_change_pct
+    hojeDir = dirOf(amt)
+    hojeTxt = `${amt >= 0 ? '+' : '−'}R$ ${nf2.format(Math.abs(amt))} (${nf2.format(Math.abs(pctDay))}%) hoje`
+  }
+
+  const isEquity = (c: string) => ['STOCK', 'REIT', 'ETF', 'BDR'].includes(c)
+  return {
+    state: 'patrimonio',
+    patrimonio: `R$ ${nf2.format(totalValue)}`,
+    hojeTxt,
+    hojeDir,
+    top: rows.slice(0, 3).map((r, i) => {
+      const tile = tileFor(r.ticker, r.assetClass, i)
+      const label = r.className === 'Renda Fixa' ? (r.name || r.ticker) : r.ticker
+      return {
+        ticker: r.ticker,
+        label,
+        letter: label.charAt(0).toUpperCase(),
+        tileBg: tile[0],
+        tileFg: tile[1],
+        val: `R$ ${nf0.format(r.value)}`,
+        href: isEquity(r.assetClass) ? `/asset/${r.ticker}` : null,
+      }
+    }),
+  }
+}
+
+/** Resumo da carteira pra home `/` (Mercado logado). null = anônimo/indisponível. */
+export async function useCarteiraResumo() {
+  const config = useRuntimeConfig()
+  const { token } = useAuthState()
+  const serverBase = (config.backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
+  const clientBase = '/api/backend'
+
+  const { data, pending, refresh } = await useAsyncData<CarteiraResumoVM | null>(
+    'carteira-resumo',
+    () => {
+      const t = token.value
+      if (!t) return Promise.resolve(null)
+      return loadCarteiraResumo(import.meta.server ? serverBase : clientBase, t)
     },
   )
 
