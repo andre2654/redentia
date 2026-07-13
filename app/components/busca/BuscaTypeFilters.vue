@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
   position: fixed; z-index: 120;
   width: 288px; max-width: calc(100vw - 16px); background: var(--nu-white);
   border: 1.5px solid var(--nu-cream-3); border-radius: var(--nu-r-panel);
-  box-shadow: var(--nu-shadow-drawer); padding: 8px;
+  box-shadow: var(--nu-shadow-card); padding: 8px;
   animation: nu-fade .18s ease both;
 }
 .btf__panel-label {
