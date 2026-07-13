@@ -59,15 +59,8 @@ function toggleMenu(open: boolean) {
 }
 watch(() => route.fullPath, () => toggleMenu(false))
 
-/* ——— rail contextual no menu (PR-R6) ——— */
-// Quando a rota declara seções (useSectionRail), o menu ganha um bloco
-// expansível "{pageLabel} · N seções" com as sub-seções (print do dono).
-const railSections = useState<RailState | null>('nu:section-rail', () => null)
-const railExpanded = ref(true)
-function onMenuSection(id: string) {
-  toggleMenu(false)
-  nextTick(() => scrollToRailSection(id))
-}
+// (o banner contextual de seções — "Carteira · 6 seções" — vive no
+//  NuSectionRail, que já aparece em todos os breakpoints; nada aqui.)
 
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
@@ -143,28 +136,6 @@ onBeforeUnmount(() => {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="isActive(item.to) ? 'var(--nu-blue)' : '#0A0A0C'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </NuxtLink>
 
-          <!-- rail contextual da rota atual (PR-R6) -->
-          <div v-if="railSections" class="num__rail">
-            <button
-              type="button" class="num__rail-toggle" :aria-expanded="railExpanded"
-              @click="railExpanded = !railExpanded"
-            >
-              <span class="num__rail-head">
-                <span class="num__rail-title">{{ railSections.pageLabel }}</span>
-                <span class="num__rail-count">{{ railSections.sections.length }} seções</span>
-              </span>
-              <svg class="num__rail-chev" :class="{ 'num__rail-chev--open': railExpanded }" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--nu-gray)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
-            </button>
-            <div v-if="railExpanded" class="num__rail-list">
-              <button
-                v-for="s in railSections.sections" :key="s.id" type="button"
-                class="num__rail-item" @click="onMenuSection(s.id)"
-              >
-                <span>{{ s.label }}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--nu-gray)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-              </button>
-            </div>
-          </div>
         </nav>
 
         <div class="num__ctas">
@@ -302,24 +273,4 @@ onBeforeUnmount(() => {
   padding: 15px 24px; font-size: 16.5px; font-weight: 800;
 }
 
-/* ——— rail contextual dentro do menu (PR-R6) ——— */
-.num__rail { margin-top: 10px; padding-top: 14px; border-top: 1.5px solid var(--nu-cream-2); }
-.num__rail-toggle {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  width: 100%; padding: 12px 4px; border: none; background: transparent; cursor: pointer;
-  font-family: inherit; text-align: left;
-}
-.num__rail-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
-.num__rail-title { color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
-.num__rail-count { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; white-space: nowrap; }
-.num__rail-chev { flex-shrink: 0; transition: transform .22s ease; }
-.num__rail-chev--open { transform: rotate(180deg); }
-.num__rail-list { display: flex; flex-direction: column; padding: 2px 0 6px; }
-.num__rail-item {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 13px 4px 13px 16px; border: none; background: transparent; cursor: pointer;
-  font-family: inherit; text-align: left;
-  color: var(--nu-gray-2); font-size: 17px; font-weight: 700;
-}
-.num__rail-item:active { color: var(--nu-blue); }
 </style>
