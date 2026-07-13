@@ -352,7 +352,12 @@ onBeforeUnmount(clearTimers)
 </template>
 
 <style scoped>
-.nmr { position: relative; width: 100%; }
+/* SEM position:relative de propósito (correção do dono 2026-07-13): o overlay
+   do brand (.nmr__brand, absolute inset:0) deve subir até o CARD hospedeiro —
+   o azul cobre o card INTEIRO (header/contador inclusos), não só a área do
+   feed. CONTRATO: o card pai é o único ancestral posicionado na cadeia
+   (.mh__anim no mercado, .nap no login); nada entre eles pode ter position. */
+.nmr { width: 100%; }
 .nmr__feed {
   position: relative; width: 100%;
   min-height: clamp(150px, 16vh, 190px);

@@ -33,6 +33,9 @@ const docText = ref('1.240')
 
 <style scoped>
 .nap {
+  /* position:relative AQUI de propósito: é o ancestral posicionado do overlay
+     do brand do NuMarketReading — o azul do morph cobre o painel INTEIRO
+     (header + feed + tagline), como no design. Não posicionar o .nap__mid. */
   flex: 1 1 460px; min-width: 0; position: relative; overflow: hidden;
   background: radial-gradient(130% 130% at 72% 28%, var(--nu-orb-deep) 0%, var(--nu-orb-black) 72%);
   display: flex; flex-direction: column;

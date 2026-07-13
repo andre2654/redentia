@@ -120,7 +120,9 @@ const docText = ref('1.240')
   font-variant-numeric: tabular-nums;
 }
 .mh__anim-mid {
-  position: relative; flex: 1; display: flex; align-items: center;
+  /* NÃO posicionar: o overlay do brand do NuMarketReading precisa ancorar no
+     .mh__anim (o card) pra cobrir o card inteiro no morph — ver contrato lá. */
+  flex: 1; display: flex; align-items: center;
   padding: clamp(20px, 2.6vw, 32px) clamp(24px, 3vw, 34px) clamp(28px, 3.4vw, 38px);
 }
 @keyframes mh-read-pulse {
