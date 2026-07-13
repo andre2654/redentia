@@ -35,14 +35,23 @@ function isActive(to: string): boolean {
   return route.path === to || route.path.startsWith(`${to.split('/').slice(0, 2).join('/')}/`) && to !== '/'
 }
 
-/* ——— shrink on scroll ——— */
+/* ——— shrink on scroll (com HISTERESE) ———
+   Limiar único oscilava na fronteira: encolher tira 18px de altura do header,
+   o conteúdo sobe, o scroll re-cruza o limiar → estica → desce de novo → pumping
+   ("quase pra cima" ficava bugado). Dois limiares com vão (56px) MAIOR que o
+   delta de altura (18px): encolhe só passando de 72, volta só abaixo de 16 —
+   nenhuma mudança de altura consegue cruzar os dois ao mesmo tempo. */
+const SHRINK_AT = 72
+const GROW_AT = 16
 const shrunk = ref(false)
 let raf = 0
 function onScroll() {
   if (raf) return
   raf = requestAnimationFrame(() => {
     raf = 0
-    shrunk.value = window.scrollY > 12
+    const y = window.scrollY
+    if (!shrunk.value && y > SHRINK_AT) shrunk.value = true
+    else if (shrunk.value && y < GROW_AT) shrunk.value = false
   })
 }
 // A faixa do ticker (irmã no layout) lê --nuh-h pra grudar logo abaixo;
