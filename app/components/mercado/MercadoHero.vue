@@ -5,7 +5,7 @@
 // AUTH-AWARE (home única, 2026-07-13): anônimo vê o card de captura de e-mail
 // (navega pra /login?email=<valor>, sem POST — contrato PR1); logado não cria
 // conta — vê um bloco compacto de boas-vindas com CTA pill pra /carteira.
-const { isAuthenticated } = useAuthState()
+const { isAuthenticated, firstName } = useAuthState()
 const email = ref('')
 function submit() {
   const v = email.value.trim()
@@ -30,7 +30,10 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
       <div class="mh__left">
         <!-- logado vê a data de hoje; anônimo, a proposta de valor -->
         <div class="mh__eyebrow">{{ isAuthenticated ? hojeExtenso : 'O mercado, traduzido por IA' }}</div>
-        <h1 class="mh__title">Invista com uma<br>IA do seu lado.</h1>
+        <!-- logado: saudação com o primeiro nome (cookie nu:name, SSR sem
+             flash; sem nome conhecido cai em "Olá." até o plugin hidratar) -->
+        <h1 v-if="isAuthenticated" class="mh__title">Olá{{ firstName ? `, ${firstName}` : '' }}.</h1>
+        <h1 v-else class="mh__title">Invista com uma<br>IA do seu lado.</h1>
         <div class="mh__dek">Análise fundamentalista pronta, alertas do que afeta a sua carteira e respostas na hora. Sem planilha, sem economês.</div>
         <!-- anônimo: captura de e-mail · logado: boas-vindas + CTA pra carteira -->
         <form v-if="!isAuthenticated" class="mh__card" @submit.prevent="submit">

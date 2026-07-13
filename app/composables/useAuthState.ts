@@ -27,19 +27,42 @@ export function useAuthState() {
   const token = useState<string | null>('nu:token-live', () => cookie.value ?? null)
   const user = useState<NuUser | null>('nu:user', () => null)
 
+  // Nome persistido em cookie próprio (`nu:name`) pro SSR renderizar
+  // "Olá, Nome" sem flash — o `user` completo só existe em memória (morre no
+  // reload); o nome sobrevive junto do token. Mesmo padrão useState+cookie.
+  const nameCookie = useCookie<string | null>('nu:name', {
+    maxAge: 60 * 60 * 24 * 30,
+    sameSite: 'lax',
+    secure: true,
+  })
+  const displayName = useState<string | null>('nu:name-live', () => nameCookie.value ?? null)
+
   const isAuthenticated = computed(() => !!token.value)
-  const initial = computed(() => (user.value?.name?.trim()?.[0] ?? 'R').toUpperCase())
+  const initial = computed(
+    () => ((user.value?.name ?? displayName.value)?.trim()?.[0] ?? 'R').toUpperCase(),
+  )
+  /** primeiro nome pra saudações ("Olá, André"); null quando desconhecido. */
+  const firstName = computed(() => {
+    const n = (user.value?.name ?? displayName.value)?.trim()
+    return n ? (n.split(/\s+/)[0] ?? null) : null
+  })
 
   function setSession(newToken: string, newUser: NuUser | null = null) {
     token.value = newToken
     cookie.value = newToken
     user.value = newUser
+    if (newUser?.name) {
+      displayName.value = newUser.name
+      nameCookie.value = newUser.name
+    }
   }
   function clearSession() {
     token.value = null
     cookie.value = null
     user.value = null
+    displayName.value = null
+    nameCookie.value = null
   }
 
-  return { token, user, isAuthenticated, initial, setSession, clearSession }
+  return { token, user, isAuthenticated, initial, firstName, displayName, setSession, clearSession }
 }
