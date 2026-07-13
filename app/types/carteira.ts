@@ -152,6 +152,10 @@ export interface RaioXMetricVM {
 export interface CarteiraRaioXVM {
   score: number // 0-100
   badge: string // 'Boa saúde · 1 ponto de atenção'
+  /** banda isolada ('Boa saúde') — mesma régua nas duas telas (home + /carteira) */
+  band: string
+  /** nº de métricas com score <70 — reusado pelo mini-dashboard e atalhos da home */
+  attention: number
   metrics: RaioXMetricVM[]
   /** insight do /portfolio/analysis — null = banner some (sem IA inventada) */
   insight: string | null
@@ -221,10 +225,16 @@ export interface CarteiraHeatmapVM {
 }
 
 /**
- * Resumo compacto pra seção "Sua carteira" da home `/` (Mercado logado):
- * patrimônio + variação do dia + top 3 posições. Estados: 'patrimonio'
+ * Resumo da carteira pra home `/` logada (refinamento 2026-07-13): alimenta a
+ * banda azul "Sua carteira" (patrimônio + variação + atalhos) E o mini-
+ * dashboard "Sua carteira hoje" no card do hero. Estados: 'patrimonio'
  * (conectado) | 'connect' (sem Open Finance → convite compacto); token morto
- * → `unauthenticated` (quem consome limpa a sessão).
+ * → `unauthenticated` (quem consome limpa a sessão). Cada campo do mini-
+ * dashboard é null quando o dado real faltou → o mini-card correspondente
+ * SOME (diretriz nº1, nunca número inventado). Os números vêm dos MESMOS
+ * builders da /carteira (buildRaioX/buildMovements/income) — cada campo só
+ * existe quando a seção-destino também renderiza, então as âncoras nunca
+ * apontam pro vazio.
  */
 export interface CarteiraResumoVM {
   unauthenticated?: boolean
@@ -232,15 +242,15 @@ export interface CarteiraResumoVM {
   patrimonio: string | null // 'R$ 84.712,44' (mascarável)
   hojeTxt: string | null // '+R$ 761,20 (0,91%) hoje' — null se /today degradou
   hojeDir: NuDir
-  top: {
-    ticker: string
-    label: string // ticker (ou nome, na Renda Fixa)
-    letter: string
-    tileBg: string // SEMPRE var(--nu-*)
-    tileFg: string
-    val: string // 'R$ 14.274' (mascarável)
-    href: string | null // /asset/{ticker} só pra equity
-  }[]
+  /** proventos 12M ('R$ 4.980', mascarável) — null = /income indisponível ou zero */
+  proventos12m: string | null
+  /** score do Raio-X (mesma régua da /carteira) — null = raio-x indisponível */
+  score: { val: number; band: string; tone: 'green' | 'amber' } | null
+  /** nº de movimentações na janela de 12m do /portfolio/trades — null = sem eventos */
+  movCount: number | null
+  movLabel: string | null // 'últimos 12 meses' (janela honesta do fetch)
+  /** pontos de atenção do Raio-X (0 = estado positivo) — null = raio-x indisponível */
+  atencao: number | null
 }
 
 /** Payload único do useAsyncData da /carteira. */

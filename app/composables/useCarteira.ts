@@ -1,9 +1,10 @@
 /**
  * Dados da carteira (PR8) — página /carteira (o miolo vive no
  * CarteiraContent). Contrato de UX: designs/Redentia Carteira Nu.dc.html.
- * A home `/` (Mercado auth-aware) consome só o RESUMO compacto via
- * useCarteiraResumo (fim do arquivo) — mesmo fetch/mesmas regras, payload
- * mínimo (patrimônio + dia + top 3 posições).
+ * A home `/` (Mercado auth-aware) consome o RESUMO via useCarteiraResumo
+ * (fim do arquivo) — mesmos fetchers/mesmos builders, payload da banda
+ * "Sua carteira" + mini-dashboard do hero (proventos/score/movimentações/
+ * pontos de atenção).
  *
  * SSR-FIRST: fetch no servidor via useAsyncData com o Bearer
  * do cookie `nu:token` — a 1ª resposta já sai com o patrimônio real.
@@ -414,6 +415,8 @@ function buildRaioX(
   const band = score < 45 ? 'Saúde crítica' : score < 65 ? 'Atenção' : score < 82 ? 'Boa saúde' : 'Excelente'
   const attention = dims.filter((d) => d.score < 70).length
   const badge = attention > 0 ? `${band} · ${attention} ${attention === 1 ? 'ponto' : 'pontos'} de atenção` : band
+  // band/attention saem isolados no VM: o mini-dashboard da home reusa os
+  // MESMOS números desta função (zero regra duplicada — refinamento 2026-07-13)
 
   /* insight do banner: só do /portfolio/analysis (severity high > medium > low) */
   let insight: string | null = null
@@ -425,7 +428,7 @@ function buildRaioX(
     insight = text.length > 220 ? `${text.slice(0, 217).trimEnd()}…` : text
   }
 
-  return { score, badge, metrics: dims.map((d) => d.vm), insight }
+  return { score, badge, band, attention, metrics: dims.map((d) => d.vm), insight }
 }
 
 /**
@@ -815,31 +818,45 @@ export async function useCarteira() {
   return { data, pending, refresh }
 }
 
-/* ————— resumo compacto (seção "Sua carteira" da home `/`) ————— */
+/* ————— resumo da home `/` (banda "Sua carteira" + mini-dashboard do hero) ————— */
+
+const RESUMO_CONNECT: CarteiraResumoVM = {
+  state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up',
+  proventos12m: null, score: null, movCount: null, movLabel: null, atencao: null,
+}
 
 /**
- * Payload MÍNIMO pra seção compacta da home Mercado (logado): patrimônio +
- * variação do dia + 3 maiores posições. MESMO fetch/mesmas regras da página
- * (homeFetchPortfolio/homeFetchToday + toRows/portfolioTotalValue/tileFor) —
- * zero lógica duplicada. Estados honestos:
- *  - state 'patrimonio'  conectado com valor → resumo cheio (hojeTxt pode
- *                        faltar se o /today degradou — badge some)
- *  - state 'connect'     sem Open Finance → a seção vira o convite compacto
+ * Payload da home Mercado logada (refinamento 2026-07-13): patrimônio +
+ * variação do dia (banda azul) + os 4 KPIs do mini-dashboard do hero
+ * (proventos 12M, score do Raio-X, movimentações, pontos de atenção).
+ * REUSA os builders da página /carteira (buildRaioX/buildMovements + os
+ * mesmos fetchers) — zero regra duplicada, MESMOS números nas duas telas.
+ * Estados honestos:
+ *  - state 'patrimonio'  conectado com valor → resumo cheio; cada KPI só sai
+ *                        quando o dado real existe (campo null → mini-card some)
+ *  - state 'connect'     sem Open Finance → convite compacto (hero e banda)
  *  - unauthenticated     token morto (401/403) → quem consome limpa a sessão
- *  - fetch do /portfolio falhou (não-auth) → `null` → a seção some
+ *  - fetch do /portfolio falhou (não-auth) → `null` → banda some e o hero
+ *    mantém a animação (nada inventado)
  */
 async function loadCarteiraResumo(base: string, token: string): Promise<CarteiraResumoVM | null> {
   const headers = { Accept: 'application/json', Authorization: `Bearer ${token}` }
 
-  const [portfolioR, todayR] = await Promise.allSettled([
+  const [portfolioR, todayR, incomeR, tradesR, curveR, ibovR, scoreR, analysisR] = await Promise.allSettled([
     homeFetchPortfolio(base, headers),
     homeFetchToday(base, headers),
+    homeFetchIncome(base, headers),
+    carteiraFetchTrades(base, headers, '12m'),
+    homeFetchEquityCurve(base, headers),
+    acaoFetchIbovPrices(base, '12mo'),
+    acaoFetchScoreRanking(base),
+    carteiraFetchAnalysis(base, headers), // 404 'no_analysis_yet' cai no ok() → null
   ])
 
   if (portfolioR.status === 'rejected') {
     const e = portfolioR.reason as { statusCode?: number; response?: { status?: number } }
     const status = e?.statusCode ?? e?.response?.status
-    if (status === 401 || status === 403) return { unauthenticated: true, state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up', top: [] }
+    if (status === 401 || status === 403) return { ...RESUMO_CONNECT, unauthenticated: true }
     return null // dado indisponível (não-auth) → seção some
   }
 
@@ -848,9 +865,7 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
   const rows = toRows(portfolio)
   const totalValue = portfolioTotalValue(portfolio, today)
 
-  if (totalValue <= 0) {
-    return { state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up', top: [] }
-  }
+  if (totalValue <= 0) return { ...RESUMO_CONNECT }
 
   // badge do dia: MESMA regra do buildHero (só com /today válido; nunca inventado)
   let hojeTxt: string | null = null
@@ -862,25 +877,40 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     hojeTxt = `${amt >= 0 ? '+' : '−'}R$ ${nf2.format(Math.abs(amt))} (${nf2.format(Math.abs(pctDay))}%) hoje`
   }
 
-  const isEquity = (c: string) => ['STOCK', 'REIT', 'ETF', 'BDR'].includes(c)
+  const income = ok(incomeR)
+  const ibov12m: SeriesPoint[] = (ok(ibovR)?.data ?? [])
+    .filter((p) => p.market_price != null)
+    .map((p) => ({ t: p.price_at, v: p.market_price as number }))
+
+  // Raio-X: MESMA função da /carteira → score/band/attention idênticos lá e cá.
+  // raiox null (sem carteira, já excluído acima) não acontece aqui; ainda assim
+  // os campos degradam pra null (mini-cards somem, atalho de atenção some).
+  const raiox = buildRaioX(
+    rows,
+    income,
+    ok(scoreR)?.data ?? null,
+    ok(curveR)?.data ?? null,
+    ibov12m.length ? ibov12m : null,
+    ok(analysisR)?.analysis ?? null,
+  )
+
+  // Movimentações: allEvents do MESMO builder do extrato (janela 12m do fetch)
+  const movements = buildMovements(ok(tradesR)?.data ?? null)
+
+  // Proventos: só com valor real >0 — quando sai, a seção #renda-passiva da
+  // /carteira também existe (mesma condição do buildIncome), âncora garantida
+  const totalAll = income?.summary?.totalAll ?? 0
+
   return {
     state: 'patrimonio',
     patrimonio: `R$ ${nf2.format(totalValue)}`,
     hojeTxt,
     hojeDir,
-    top: rows.slice(0, 3).map((r, i) => {
-      const tile = tileFor(r.ticker, r.assetClass, i)
-      const label = r.className === 'Renda Fixa' ? (r.name || r.ticker) : r.ticker
-      return {
-        ticker: r.ticker,
-        label,
-        letter: label.charAt(0).toUpperCase(),
-        tileBg: tile[0],
-        tileFg: tile[1],
-        val: `R$ ${nf0.format(r.value)}`,
-        href: isEquity(r.assetClass) ? `/asset/${r.ticker}` : null,
-      }
-    }),
+    proventos12m: totalAll > 0 ? `R$ ${nf0.format(totalAll)}` : null,
+    score: raiox ? { val: raiox.score, band: raiox.band, tone: raiox.score < 65 ? 'amber' : 'green' } : null,
+    movCount: movements ? movements.allEvents.length : null,
+    movLabel: movements ? 'últimos 12 meses' : null,
+    atencao: raiox ? raiox.attention : null,
   }
 }
 

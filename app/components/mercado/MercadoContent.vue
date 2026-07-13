@@ -4,11 +4,13 @@
 // anônimo vê o conteúdo público exatamente como no contrato
 // (designs-v2/Redentia Mercado Nu.dc.html), logado vê as MESMAS seções com
 // variações por conveniência:
-//  - hero sem form de signup (bloco de boas-vindas + CTA pra /carteira —
-//    variação dentro do MercadoHero, que também lê useAuthState)
-//  - banda azul de marketing "Sua carteira, conectada." → vira o resumo
-//    compacto "Sua carteira" (MercadoSuaCarteira; sem Open Finance → convite
-//    de conexão; resumo indisponível → a banda some — nunca número inventado)
+//  - hero sem form de signup (bloco de boas-vindas + CTA pra /carteira) e o
+//    card branco da direita vira o mini-dashboard "Sua carteira hoje"
+//    (variações dentro do MercadoHero, que recebe o resumo via prop)
+//  - banda azul de marketing "Sua carteira, conectada." → vira "Sua carteira"
+//    (MercadoSuaCarteira: patrimônio centralizado + atalhos pra /carteira;
+//    sem Open Finance → convite de conexão; resumo indisponível → a banda
+//    some — nunca número inventado)
 //  - CTA dos movers pra criar conta → "Acompanhe estes ativos na sua
 //    carteira" (dentro do MercadoMovers)
 //  - CTA final de signup (NuCtaPhoto) some (padrão do /tesouro)
@@ -44,10 +46,13 @@ function guiaScroll(d: number) {
 
 <template>
   <div>
-    <MercadoHero />
+    <!-- o hero recebe o resumo pro mini-dashboard "Sua carteira hoje" no card
+         branco da direita (logado); anônimo/indisponível → animação intacta -->
+    <MercadoHero :resumo="resumo" />
 
-    <!-- anônimo: banda de marketing do Open Finance · logado: resumo compacto
-         da carteira (ou convite de conexão); resumo indisponível → nada -->
+    <!-- anônimo: banda de marketing do Open Finance · logado: patrimônio
+         centralizado + atalhos pra /carteira (ou convite de conexão);
+         resumo indisponível → nada -->
     <MercadoCarteiraConectada v-if="!isAuthenticated" />
     <MercadoSuaCarteira v-else-if="resumo" :resumo="resumo" />
 

@@ -33,6 +33,22 @@ const railSections = computed<RailSection[]>(() => {
   return s
 })
 useSectionRail(railSections, { pageLabel: 'Carteira' })
+
+// Âncoras vindas da home (refinamento 2026-07-13: mini-dashboard do hero +
+// atalhos da banda "Sua carteira" chegam com #raio-x/#renda-passiva/
+// #movimentacoes/#posicoes): o scrollBehavior default do Nuxt dispara antes
+// do layout assentar (na navegação SPA nem chega a rolar) e a âncora morre no
+// topo. Correção pós-mount reusando o scrollToRailSection (respeita o
+// scroll-margin-top das seções — 1 fonte de verdade). nextTick + correção em
+// 400ms (o chart client-only cresce a página depois do 1º paint; rAF NÃO
+// serve — aba sem paint nunca dispararia o scroll).
+onMounted(() => {
+  const hash = useRoute().hash
+  if (!hash) return
+  const id = hash.slice(1)
+  nextTick(() => scrollToRailSection(id))
+  setTimeout(() => scrollToRailSection(id), 400)
+})
 </script>
 
 <template>

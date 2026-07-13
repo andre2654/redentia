@@ -1,11 +1,15 @@
 <script setup lang="ts">
-// "Sua carteira" compacta — a conveniência da home única (dono, 2026-07-13):
-// pro LOGADO, esta seção entra no slot da banda azul de marketing
-// (MercadoCarteiraConectada, que é só pra anônimo). Mesma banda azul do
-// design pra manter o ritmo visual da página.
-// ESTADOS (Diretriz nº1, sem número inventado):
-//  - 'patrimonio'  patrimônio total + variação do dia (se o /today respondeu)
-//                  + 3 maiores posições + link "Ver carteira completa"
+// "Sua carteira" — banda azul da home logada (rework do dono, 2026-07-13):
+// o card "Maiores posições" MORREU; a seção agora é o VALOR TOTAL da carteira
+// CENTRALIZADO (número hero mascarável + variação do dia embaixo) e uma
+// fileira de ATALHOS (pills clicáveis, centradas, 2 colunas no mobile) pras
+// seções REAIS da /carteira (ids do rail PR-R6: #posicoes/#raio-x/
+// #movimentacoes — âncoras conferidas no CarteiraContent).
+// ESTADOS (diretriz nº1, sem número inventado):
+//  - 'patrimonio'  valor + variação (se o /today respondeu) + atalhos;
+//                  "Ver extrato" só com movimentações reais; o pill de
+//                  atenção mostra a contagem REAL do Raio-X (0 → estado
+//                  positivo verde, sem ação; raio-x indisponível → some)
 //  - 'connect'     sem Open Finance → convite compacto de conexão → /carteira
 // (dado indisponível não chega aqui — o MercadoContent nem renderiza a seção)
 import type { CarteiraResumoVM } from '~/types/carteira'
@@ -18,42 +22,63 @@ const patrimonio = computed(() =>
   props.resumo.patrimonio ? (hidden.value ? 'R$ ••••••' : props.resumo.patrimonio) : null)
 const hojeTxt = computed(() =>
   props.resumo.hojeTxt ? (hidden.value ? '+R$ •• hoje' : props.resumo.hojeTxt) : null)
-const maskVal = (v: string) => (hidden.value ? 'R$ ••••' : v)
 
-// linha vira link só quando há página do ativo (equity) — padrão da /carteira
-const NuxtLink = resolveComponent('NuxtLink')
+// Atalhos: destinos = âncoras reais da /carteira. "Novo aporte" e
+// "Rebalancear carteira" ainda NÃO têm feature própria — apontam pro destino
+// honesto que existe (posições e Raio-X/alocação), nunca link morto.
+// TODO(produto): quando existir fluxo de aporte, "Novo aporte" passa a abrir
+// o fluxo (hoje: /carteira#posicoes, onde as posições e a conexão vivem;
+// o CarteiraHero manda o mesmo label pra /busca — unificar quando o fluxo
+// nascer).
+// TODO(produto): quando existir rebalanceamento guiado, "Rebalancear
+// carteira" passa a abrir o fluxo (hoje: /carteira#raio-x, o diagnóstico de
+// alocação/diversificação que fundamenta o rebalanceio; o CarteiraHero manda
+// "Rebalancear com a IA" pra /busca — unificar idem).
+const atalhos = computed(() => {
+  const list: { label: string; to: string }[] = []
+  // #posicoes/#raio-x da /carteira são condicionais a rows/raiox — o score no
+  // resumo é o proxy de que essas seções existem (mesmos builders). Guarda o
+  // edge transiente de value_now>0 com positions vazias (âncora nunca morta).
+  if (props.resumo.score != null) {
+    list.push(
+      { label: 'Novo aporte', to: '/carteira#posicoes' },
+      { label: 'Rebalancear carteira', to: '/carteira#raio-x' },
+    )
+  }
+  // "Ver extrato" só quando há movimentações reais (a seção #movimentacoes
+  // da /carteira só existe nesse caso — mesma condição do buildMovements)
+  if (props.resumo.movCount != null) list.push({ label: 'Ver extrato', to: '/carteira#movimentacoes' })
+  return list
+})
 </script>
 
 <template>
   <section class="msc">
-    <!-- conectado: resumo compacto -->
-    <div v-if="resumo.state === 'patrimonio'" class="msc__cols">
-      <div class="msc__left">
-        <div class="msc__eyebrow">Sua carteira</div>
-        <div class="msc__value">{{ patrimonio }}</div>
-        <div v-if="hojeTxt" class="msc__hoje" :class="`msc__hoje--${resumo.hojeDir}`">
-          <svg width="11" height="11" viewBox="0 0 10 10" :class="{ 'msc__tri--down': resumo.hojeDir === 'down' }"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>
-          {{ hojeTxt }}
-        </div>
-        <NuxtLink to="/carteira" class="msc__all">
-          <span class="msc__all-circle">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--nu-blue)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-          </span>
-          <span class="msc__all-label">Ver carteira completa</span>
-        </NuxtLink>
+    <!-- conectado: patrimônio centralizado + atalhos -->
+    <div v-if="resumo.state === 'patrimonio'" class="msc__center">
+      <div class="msc__eyebrow">Sua carteira</div>
+      <div class="msc__value">{{ patrimonio }}</div>
+      <div v-if="hojeTxt" class="msc__hoje" :class="`msc__hoje--${resumo.hojeDir}`">
+        <svg width="11" height="11" viewBox="0 0 10 10" :class="{ 'msc__tri--down': resumo.hojeDir === 'down' }"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>
+        {{ hojeTxt }}
       </div>
 
-      <div v-if="resumo.top.length" class="msc__card">
-        <div class="msc__card-title">Maiores posições</div>
-        <component
-          :is="p.href ? NuxtLink : 'div'"
-          v-for="p in resumo.top" :key="p.ticker"
-          :to="p.href ?? undefined" class="msc__row"
+      <div class="msc__atalhos">
+        <NuxtLink v-for="a in atalhos" :key="a.label" :to="a.to" class="msc__atalho">
+          {{ a.label }}
+        </NuxtLink>
+        <!-- contagem REAL do Raio-X: >0 → ação; 0 → estado positivo (sem ação,
+             lê melhor que um link pra "resolver" o que não existe) -->
+        <NuxtLink
+          v-if="resumo.atencao != null && resumo.atencao > 0"
+          to="/carteira#raio-x" class="msc__atalho msc__atalho--warn"
         >
-          <span class="msc__tile" :style="{ background: p.tileBg, color: p.tileFg }">{{ p.letter }}</span>
-          <span class="msc__ticker">{{ p.label }}</span>
-          <span class="msc__val">{{ maskVal(p.val) }}</span>
-        </component>
+          Resolver pontos de atenção ({{ resumo.atencao }})
+        </NuxtLink>
+        <div v-else-if="resumo.atencao === 0" class="msc__atalho msc__atalho--ok">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11" /></svg>
+          Nenhum ponto de atenção
+        </div>
       </div>
     </div>
 
@@ -73,14 +98,13 @@ const NuxtLink = resolveComponent('NuxtLink')
 <style scoped>
 .msc { background: var(--nu-blue); padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
 
-/* ——— estado conectado ——— */
-.msc__cols { display: flex; gap: clamp(32px, 5vw, 80px); align-items: center; flex-wrap: wrap; }
-.msc__left { flex: 1 1 360px; min-width: min(300px, 100%); }
+/* ——— estado conectado (centralizado) ——— */
+.msc__center { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .msc__eyebrow { color: var(--nu-cream-text-82); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.2px; }
 .msc__value {
-  color: var(--nu-cream-text); font-size: clamp(40px, 4.6vw, 64px);
+  color: var(--nu-cream-text); font-size: clamp(44px, 5.4vw, 76px);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.02;
-  font-variant-numeric: tabular-nums; margin-top: 10px;
+  font-variant-numeric: tabular-nums; margin-top: 12px;
 }
 .msc__hoje {
   display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
@@ -89,37 +113,23 @@ const NuxtLink = resolveComponent('NuxtLink')
 .msc__hoje--up { color: var(--nu-green-soft); }
 .msc__hoje--down { color: var(--nu-red-soft); }
 .msc__tri--down { transform: rotate(180deg); }
-.msc__all { display: inline-flex; align-items: center; gap: 14px; margin-top: 28px; transition: gap .2s; }
-.msc__all:hover { gap: 19px; }
-.msc__all-circle {
-  width: 46px; height: 46px; border-radius: 50%; background: var(--nu-cream);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.msc__all-label { color: var(--nu-cream-text); font-size: 17px; font-weight: 800; }
 
-.msc__card {
-  flex: 1 1 380px; min-width: min(320px, 100%);
-  background: var(--nu-white); border-radius: var(--nu-r-card-lg);
-  padding: 24px 26px; box-shadow: var(--nu-shadow-card);
+/* ——— atalhos (pills centradas; 2 colunas no mobile) ——— */
+.msc__atalhos {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  margin-top: clamp(28px, 3.4vw, 40px);
 }
-.msc__card-title { color: var(--nu-gray); font-size: 14px; font-weight: 800; letter-spacing: .2px; }
-.msc__row {
-  display: flex; align-items: center; gap: 14px; padding: 14px 10px; margin: 0 -10px;
-  border-top: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-card);
-  transition: background .16s;
+.msc__atalho {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--nu-cream); color: var(--nu-blue);
+  border-radius: var(--nu-r-pill); padding: 14px 26px;
+  font-size: 15.5px; font-weight: 800; white-space: nowrap;
+  transition: transform .15s, background .2s;
 }
-.msc__card > .msc__row:first-of-type { border-top: none; margin-top: 8px; }
-a.msc__row:hover { background: var(--nu-cream); }
-.msc__tile {
-  width: 40px; height: 40px; border-radius: var(--nu-r-tile); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 800;
-}
-.msc__ticker {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 16px; font-weight: 800;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.msc__val { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+a.msc__atalho:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }
+.msc__atalho--warn { color: var(--nu-amber-text); }
+a.msc__atalho--warn:hover { color: var(--nu-amber-text); }
+.msc__atalho--ok { color: var(--nu-green-2); cursor: default; }
 
 /* ——— convite compacto (sem Open Finance) ——— */
 .msc__connect { display: flex; align-items: center; justify-content: space-between; gap: clamp(24px, 4vw, 60px); flex-wrap: wrap; }
@@ -141,6 +151,8 @@ a.msc__row:hover { background: var(--nu-cream); }
 .msc__connect-cta:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }
 
 @media (max-width: 760px) {
+  .msc__atalhos { display: grid; grid-template-columns: repeat(2, 1fr); width: 100%; }
+  .msc__atalho { white-space: normal; padding: 14px 16px; text-align: center; }
   .msc__connect-cta { width: 100%; justify-content: center; }
 }
 </style>
