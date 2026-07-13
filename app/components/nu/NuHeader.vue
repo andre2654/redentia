@@ -12,28 +12,68 @@
 const { isAuthenticated, initial } = useAuthState()
 const route = useRoute()
 
-const NAV_ANON = [
-  { label: 'Mercado', to: '/mercado' },
-  { label: 'Ações', to: '/acao/PETR4' },
-  { label: 'Notícias', to: '/noticias' },
-  { label: 'Guias', to: '/guias' },
-  { label: 'Calculadoras', to: '/calculadoras' },
-]
-const NAV_AUTH = [
+// Estrutura de nav (direção do dono 2026-07-13): Início · Carteira (logado) ·
+// Teses · Ferramentas (drawer: calculadoras + rankings) · Informações (drawer:
+// guias + notícias). Mesma estrutura no menu mobile (grupos expansíveis).
+interface NavChild { label: string; to: string }
+interface NavItem { label: string; to?: string; children?: NavChild[]; authOnly?: boolean }
+
+const NAV: NavItem[] = [
   { label: 'Início', to: '/' },
-  { label: 'Ações', to: '/acao/PETR4' },
-  { label: 'Carteira', to: '/carteira' },
-  { label: 'Notícias', to: '/noticias' },
-  { label: 'Mercado', to: '/mercado' },
-  { label: 'Guias', to: '/guias' },
-  { label: 'Calculadoras', to: '/calculadoras' },
+  { label: 'Carteira', to: '/carteira', authOnly: true },
+  { label: 'Teses', to: '/teses' },
+  {
+    label: 'Ferramentas',
+    children: [
+      { label: 'Calculadoras', to: '/calculadoras' },
+      { label: 'Rankings de Ações', to: '/rankings/acoes' },
+      { label: 'Rankings de FIIs', to: '/rankings/fiis' },
+      { label: 'Rankings de BDRs', to: '/rankings/bdrs' },
+      { label: 'Ranking de Renda Fixa', to: '/rankings/renda-fixa' },
+    ],
+  },
+  {
+    label: 'Informações',
+    children: [
+      { label: 'Guias', to: '/guias' },
+      { label: 'Notícias', to: '/noticias' },
+    ],
+  },
 ]
-const nav = computed(() => (isAuthenticated.value ? NAV_AUTH : NAV_ANON))
+const nav = computed(() => NAV.filter((i) => !i.authOnly || isAuthenticated.value))
 
 function isActive(to: string): boolean {
   if (to === '/') return route.path === '/'
   return route.path === to || route.path.startsWith(`${to.split('/').slice(0, 2).join('/')}/`) && to !== '/'
 }
+// pai (drawer) ativo quando qualquer filho está ativo
+function isParentActive(item: NavItem): boolean {
+  if (item.to) return isActive(item.to)
+  return (item.children ?? []).some((c) => isActive(c.to))
+}
+
+/* ——— drawers da nav (desktop) ——— */
+const openDrawer = ref<string | null>(null)
+function toggleDrawer(label: string) {
+  openDrawer.value = openDrawer.value === label ? null : label
+}
+function onNavDocClick(e: MouseEvent) {
+  const nav = document.querySelector('.nuh__nav')
+  if (nav && !nav.contains(e.target as Node)) openDrawer.value = null
+}
+function onNavKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') openDrawer.value = null
+}
+watch(openDrawer, (o) => {
+  if (!import.meta.client) return
+  if (o) {
+    document.addEventListener('click', onNavDocClick, true)
+    document.addEventListener('keydown', onNavKey)
+  } else {
+    document.removeEventListener('click', onNavDocClick, true)
+    document.removeEventListener('keydown', onNavKey)
+  }
+})
 
 /* ——— shrink on scroll (com HISTERESE) ———
    Limiar único oscilava na fronteira: encolher tira 18px de altura do header,
@@ -62,11 +102,13 @@ watch(shrunk, (s) => {
 
 /* ——— menu mobile ——— */
 const menuOpen = ref(false)
+const menuGroup = ref<string | null>(null) // grupo expandido (Ferramentas/Informações)
 function toggleMenu(open: boolean) {
   menuOpen.value = open
+  if (!open) menuGroup.value = null
   document.documentElement.style.overflow = open ? 'hidden' : ''
 }
-watch(() => route.fullPath, () => toggleMenu(false))
+watch(() => route.fullPath, () => { toggleMenu(false); openDrawer.value = null })
 
 // (o banner contextual de seções — "Carteira · 6 seções" — vive no
 //  NuSectionRail, que já aparece em todos os breakpoints; nada aqui.)
@@ -78,6 +120,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   if (raf) cancelAnimationFrame(raf)
+  document.removeEventListener('click', onNavDocClick, true)
+  document.removeEventListener('keydown', onNavKey)
   document.documentElement.style.overflow = ''
 })
 </script>
@@ -90,10 +134,33 @@ onBeforeUnmount(() => {
       </NuxtLink>
 
       <nav class="nuh__nav" data-nu-nav>
-        <NuxtLink
-          v-for="item in nav" :key="item.to" :to="item.to"
-          class="nuh__navitem" :class="{ 'nuh__navitem--active': isActive(item.to) }"
-        >{{ item.label }}</NuxtLink>
+        <template v-for="item in nav" :key="item.label">
+          <!-- link direto -->
+          <NuxtLink
+            v-if="item.to" :to="item.to"
+            class="nuh__navitem" :class="{ 'nuh__navitem--active': isActive(item.to) }"
+          >{{ item.label }}</NuxtLink>
+
+          <!-- drawer (Ferramentas / Informações) -->
+          <div v-else class="nuh__drawer-wrap">
+            <button
+              type="button" class="nuh__navitem nuh__navitem--drawer"
+              :class="{ 'nuh__navitem--active': isParentActive(item), 'nuh__navitem--open': openDrawer === item.label }"
+              :aria-expanded="openDrawer === item.label" aria-haspopup="menu"
+              @click="toggleDrawer(item.label)"
+            >
+              {{ item.label }}
+              <svg class="nuh__drawer-chev" :class="{ 'nuh__drawer-chev--open': openDrawer === item.label }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+            </button>
+            <div v-if="openDrawer === item.label" class="nuh__drawer" role="menu">
+              <NuxtLink
+                v-for="c in item.children" :key="c.to" :to="c.to" role="menuitem"
+                class="nuh__drawer-item" :class="{ 'nuh__drawer-item--active': isActive(c.to) }"
+                @click="openDrawer = null"
+              >{{ c.label }}</NuxtLink>
+            </div>
+          </div>
+        </template>
       </nav>
 
       <div class="nuh__right" :class="{ 'nuh__right--auth': isAuthenticated }">
@@ -136,15 +203,40 @@ onBeforeUnmount(() => {
         </div>
 
         <nav class="num__list">
-          <NuxtLink
-            v-for="item in nav" :key="item.to" :to="item.to"
-            class="num__item" :class="{ 'num__item--active': isActive(item.to) }"
-            @click="toggleMenu(false)"
-          >
-            <span>{{ item.label }}</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="isActive(item.to) ? 'var(--nu-blue)' : '#0A0A0C'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-          </NuxtLink>
+          <template v-for="item in nav" :key="item.label">
+            <!-- link direto -->
+            <NuxtLink
+              v-if="item.to" :to="item.to"
+              class="num__item" :class="{ 'num__item--active': isActive(item.to) }"
+              @click="toggleMenu(false)"
+            >
+              <span>{{ item.label }}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="isActive(item.to) ? 'var(--nu-blue)' : '#0A0A0C'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+            </NuxtLink>
 
+            <!-- grupo expansível (Ferramentas / Informações) -->
+            <div v-else class="num__group">
+              <button
+                type="button" class="num__item num__item--group"
+                :class="{ 'num__item--active': isParentActive(item) }"
+                :aria-expanded="menuGroup === item.label"
+                @click="menuGroup = menuGroup === item.label ? null : item.label"
+              >
+                <span>{{ item.label }}</span>
+                <svg class="num__group-chev" :class="{ 'num__group-chev--open': menuGroup === item.label }" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="isParentActive(item) ? 'var(--nu-blue)' : '#0A0A0C'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+              <div v-if="menuGroup === item.label" class="num__sublist">
+                <NuxtLink
+                  v-for="c in item.children" :key="c.to" :to="c.to"
+                  class="num__subitem" :class="{ 'num__subitem--active': isActive(c.to) }"
+                  @click="toggleMenu(false)"
+                >
+                  <span>{{ c.label }}</span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+                </NuxtLink>
+              </div>
+            </div>
+          </template>
         </nav>
 
         <div class="num__ctas">
@@ -191,6 +283,31 @@ onBeforeUnmount(() => {
 .nuh__navitem:hover { background: var(--nu-cream-hover); }
 .nuh__navitem--active { color: var(--nu-blue); background: var(--nu-blue-tint); }
 .nuh__navitem--active:hover { background: var(--nu-blue-tint); }
+
+/* ——— drawers da nav (Ferramentas / Informações) ——— */
+.nuh__drawer-wrap { position: relative; flex-shrink: 0; }
+.nuh__navitem--drawer {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: none; background: transparent; cursor: pointer; font-family: inherit;
+}
+.nuh__navitem--open { background: var(--nu-cream-hover); }
+.nuh__drawer-chev { transition: transform .2s ease; }
+.nuh__drawer-chev--open { transform: rotate(180deg); }
+.nuh__drawer {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 60;
+  min-width: 230px; padding: 8px;
+  background: var(--nu-white); border-radius: var(--nu-r-tile);
+  box-shadow: 0 24px 54px -22px rgba(12, 21, 36, 0.35), 0 2px 8px rgba(12, 21, 36, 0.08);
+  display: flex; flex-direction: column; gap: 2px;
+  animation: nu-fade .16s ease both;
+}
+.nuh__drawer-item {
+  display: block; padding: 11px 14px; border-radius: 10px;
+  color: var(--nu-ink); font-size: 15px; font-weight: 700; white-space: nowrap;
+  transition: background .15s;
+}
+.nuh__drawer-item:hover { background: var(--nu-cream-hover); color: var(--nu-ink); }
+.nuh__drawer-item--active { color: var(--nu-blue); background: var(--nu-blue-tint); }
 .nuh__right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .nuh__right--auth { gap: 14px; }
 .nuh__search {
@@ -268,6 +385,17 @@ onBeforeUnmount(() => {
   letter-spacing: -0.03em;
 }
 .num__item--active { color: var(--nu-blue); }
+.num__item--group { width: 100%; border: none; background: transparent; cursor: pointer; font-family: inherit; text-align: left; }
+.num__group-chev { transition: transform .22s ease; }
+.num__group-chev--open { transform: rotate(180deg); }
+.num__sublist { display: flex; flex-direction: column; padding: 0 0 8px; }
+.num__subitem {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 13px 4px 13px 18px; color: var(--nu-gray-2); font-size: 18px; font-weight: 700;
+}
+.num__subitem svg { color: var(--nu-sand); flex-shrink: 0; }
+.num__subitem--active { color: var(--nu-blue); }
+.num__subitem--active svg { color: var(--nu-blue); }
 .num__ctas {
   padding: 18px 24px calc(24px + env(safe-area-inset-bottom, 0px));
   border-top: 1.5px solid var(--nu-cream-2);
