@@ -275,13 +275,21 @@ watch(active, (i) => {
 
 /* ——— responsivo: breakpoint 860px DO DESIGN (layout desta seção; o global do
    app é 760) — wrap vira coluna e a sidebar vira faixa horizontal sticky ——— */
+/* Mobile (direção do dono 2026-07-13): a navegação vira PÍLULAS compactas
+   (só dot + nome + retorno; a barra de share e a linha de detalhe somem) e a
+   faixa NÃO é sticky — rola junto com a página. */
 @media (max-width: 860px) {
   .cps2__wrap { flex-direction: column; gap: 18px; }
   .cps2__side {
-    width: 100%; top: calc(var(--nuh-h, 76px) + 56px);
-    flex-direction: row; overflow-x: auto; gap: 8px; padding: 2px 0 8px;
-    background: var(--nu-cream); z-index: 20;
+    width: 100%; position: static;
+    flex-direction: row; flex-wrap: wrap; overflow-x: visible;
+    gap: 8px; padding: 0;
   }
-  .cps2__nav { flex: 0 0 auto; width: 220px; }
+  .cps2__nav {
+    flex: 0 0 auto; width: auto;
+    padding: 9px 14px; border-radius: var(--nu-r-pill); gap: 0;
+  }
+  .cps2__nav-top { width: auto; gap: 8px; }
+  .cps2__nav-bar, .cps2__nav-share { display: none; }
 }
 </style>
