@@ -1,6 +1,0 @@
-{
-  "version": "0.0.1",
-  "configurations": [
-    { "name": "nu-dev", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "3986"], "port": 3986 }
-  ]
-}
