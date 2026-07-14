@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// /conta/perfil — dados de identificação (PR1). Nome e telefone editáveis via
-// PUT /auth/profile (aceita name + celular direto, sem PIN). E-mail read-only:
-// a troca passa pela verificação por código (fluxo separado, fora deste PR).
-// CPF fica de fora: o backend não tem (decisão do dono 2026-07-14).
+// Seção Perfil de /conta (PR1). Nome e telefone editáveis via PUT /auth/profile
+// (aceita name + celular direto, sem PIN). E-mail read-only: a troca passa pela
+// verificação por código (fluxo separado, fora deste PR). CPF fica de fora: o
+// backend não tem (decisão do dono 2026-07-14).
 const { data: me, refresh } = await useMe()
 const { authFetch } = useApi()
 const { setSession, token } = useAuthState()

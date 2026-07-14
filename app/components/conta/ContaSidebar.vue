@@ -1,15 +1,15 @@
 <script setup lang="ts">
-// Navegação lateral de /conta (mockup: item ativo = card branco com sombra;
-// inativos = plano sobre o creme). Sub-rotas reais por seção → deep-link e o
-// voltar do browser funcionam. Sticky no desktop; vira lista/tira no mobile.
-const route = useRoute()
-
+// Sidebar de /conta = ATALHOS DE SCROLL (scrollspy), não abas (direção do dono
+// 2026-07-14). Uma página só com todas as seções empilhadas à direita; clicar
+// rola até a seção e o item ativo acende conforme o scroll — mesma mecânica do
+// NuTocSidebar (useNuScrollFrame + getBoundingClientRect < 40% do viewport).
+// Visual do design: ícone + label; ativo = card branco com sombra.
 const items = [
-  { to: '/conta/perfil', label: 'Perfil', icon: 'user' },
-  { to: '/conta/notificacoes', label: 'Notificações', icon: 'bell' },
-  { to: '/conta/open-finance', label: 'Open Finance', icon: 'link' },
-  { to: '/conta/mcp', label: 'Redentia MCP', icon: 'mcp' },
-  { to: '/conta/seguranca', label: 'Segurança', icon: 'shield' },
+  { id: 'perfil', label: 'Perfil', icon: 'user' },
+  { id: 'notificacoes', label: 'Notificações', icon: 'bell' },
+  { id: 'open-finance', label: 'Open Finance', icon: 'link' },
+  { id: 'mcp', label: 'Redentia MCP', icon: 'mcp' },
+  { id: 'seguranca', label: 'Segurança', icon: 'shield' },
 ] as const
 
 const ICON: Record<string, string[]> = {
@@ -20,26 +20,44 @@ const ICON: Record<string, string[]> = {
   shield: ['M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3Z'],
 }
 
-function isActive(to: string) {
-  return route.path === to
+const active = ref(0)
+useNuScrollFrame(() => {
+  const vh = window.innerHeight || 800
+  let idx = 0
+  items.forEach((it, i) => {
+    const el = document.getElementById(it.id)
+    if (el && el.getBoundingClientRect().top < vh * 0.4) idx = i
+  })
+  active.value = idx
+})
+
+// clique = rola suave até a seção (respeita scroll-margin-top do header sticky)
+// + atualiza o hash pra deep-link, sem o "pulo" seco da âncora nativa.
+function go(e: MouseEvent, id: string) {
+  e.preventDefault()
+  const el = document.getElementById(id)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  if (typeof history !== 'undefined') history.replaceState(null, '', '#' + id)
 }
 </script>
 
 <template>
   <nav class="csb" aria-label="Seções da conta">
-    <NuxtLink
-      v-for="it in items"
-      :key="it.to"
-      :to="it.to"
+    <a
+      v-for="(it, i) in items"
+      :key="it.id"
+      :href="'#' + it.id"
       class="csb__item"
-      :class="{ 'csb__item--active': isActive(it.to) }"
-      :aria-current="isActive(it.to) ? 'page' : undefined"
+      :class="{ 'csb__item--active': active === i }"
+      :aria-current="active === i ? 'true' : undefined"
+      @click="go($event, it.id)"
     >
       <svg class="csb__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path v-for="d in ICON[it.icon]" :key="d" :d="d" />
       </svg>
       <span>{{ it.label }}</span>
-    </NuxtLink>
+    </a>
   </nav>
 </template>
 

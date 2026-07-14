@@ -70,9 +70,8 @@ export default defineNuxtConfig({
     '/mercado': { redirect: { to: '/', statusCode: 301 } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
     // Configurações: pessoal e atrás de login → private/no-store (a página já é
-    // noindex). Cobre /conta e todas as sub-rotas de seção.
+    // noindex). Página única com seções ancoradas (sem sub-rotas).
     '/conta': { headers: { 'cache-control': 'private, no-store' } },
-    '/conta/**': { headers: { 'cache-control': 'private, no-store' } },
     '/noticias': { headers: { 'cache-control': 'public, s-maxage=180, stale-while-revalidate=600' } },
     '/asset/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
     // Tesouro e dividendos: páginas próprias (em construção em frentes

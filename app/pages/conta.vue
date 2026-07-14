@@ -1,19 +1,20 @@
 <script setup lang="ts">
-// /conta — Configurações (PR1). Contrato de UX: mockups Claude Design. Shell
-// persistente: cabeçalho da conta (avatar + nome + email + Sair) + sidebar de
-// seções + <NuxtPage> com o painel da seção ativa. Sub-rotas reais por seção
-// (deep-link + voltar do browser). Auth OBRIGATÓRIA (mesmo padrão da /carteira):
-// anônimo → /login?redirect; /conta puro → /conta/perfil. Página pessoal:
-// noindex + private/no-store (routeRules do nuxt.config).
+// /conta — Configurações (PR1). Contrato de UX: mockups Claude Design. UMA
+// página só: cabeçalho da conta (avatar + nome + email + Sair) + duas colunas —
+// sidebar de ATALHOS DE SCROLL (scrollspy) à esquerda e TODAS as seções
+// empilhadas à direita (direção do dono 2026-07-14: a sidebar não troca
+// conteúdo, só rola até a seção). Auth OBRIGATÓRIA (mesmo padrão da /carteira):
+// anônimo → /login?redirect. noindex + private/no-store (routeRules).
+//
+// Cada seção tem id (âncora do scrollspy) + scroll-margin-top pro header sticky.
+// Hoje só Perfil é real; Notificações/Open Finance/MCP/Segurança são placeholder
+// e serão trocados pelos componentes reais nos PRs 2-5.
 definePageMeta({
   middleware: [
     (to) => {
       const token = useCookie<string | null>('nu:token')
       if (!token.value) {
         return navigateTo(`/login?redirect=${encodeURIComponent(to.fullPath)}`, { replace: true })
-      }
-      if (to.path === '/conta') {
-        return navigateTo('/conta/perfil', { replace: true })
       }
     },
   ],
@@ -56,7 +57,40 @@ usePageSeo({
 
     <div class="conta__cols">
       <ContaSidebar class="conta__nav" />
-      <div class="conta__panel"><NuxtPage /></div>
+
+      <div class="conta__panel">
+        <section id="perfil" class="conta__sec">
+          <ContaPerfil />
+        </section>
+        <section id="notificacoes" class="conta__sec">
+          <ContaPlaceholder
+            title="Notificações"
+            subtitle="Escolha onde e o que você recebe da Redentia."
+            note="A central de notificações e o resumo diário por e-mail e WhatsApp chegam em breve."
+          />
+        </section>
+        <section id="open-finance" class="conta__sec">
+          <ContaPlaceholder
+            title="Open Finance"
+            subtitle="Suas conexões de Open Finance."
+            note="Conectar, sincronizar, reconectar e remover instituições chega em breve."
+          />
+        </section>
+        <section id="mcp" class="conta__sec">
+          <ContaPlaceholder
+            title="Redentia MCP"
+            subtitle="Conecte sua carteira e as teses ao seu assistente de IA."
+            note="Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor. Chega em breve."
+          />
+        </section>
+        <section id="seguranca" class="conta__sec">
+          <ContaPlaceholder
+            title="Segurança"
+            subtitle="Senha e acesso da sua conta."
+            note="Trocar a senha e ver a sessão atual chega em breve."
+          />
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -89,12 +123,15 @@ usePageSeo({
   font-family: var(--nu-font); font-size: 15px; font-weight: 800; transition: background .18s;
 }
 .conta__logout:hover { background: var(--nu-cream-hover); }
+
 .conta__cols { display: flex; gap: clamp(20px, 3vw, 40px); align-items: flex-start; margin-top: clamp(28px, 4vw, 48px); }
 .conta__nav { flex: 0 0 clamp(210px, 22vw, 264px); position: sticky; top: 96px; }
-.conta__panel { flex: 1; min-width: 0; }
+.conta__panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(18px, 2.6vw, 28px); }
+/* âncora do scrollspy: compensa o header + faixa "Mercado agora" sticky */
+.conta__sec { scroll-margin-top: 112px; }
 
 @media (max-width: 860px) {
   .conta__cols { flex-direction: column; }
-  .conta__nav { position: static; flex-basis: auto; width: 100%; }
+  .conta__nav { position: sticky; top: 84px; z-index: 2; flex-basis: auto; width: 100%; background: var(--nu-cream); padding: 8px 0; }
 }
 </style>
