@@ -69,11 +69,7 @@ usePageSeo({
           <ContaOpenFinance />
         </section>
         <section id="mcp" class="conta__sec">
-          <ContaPlaceholder
-            title="Redentia MCP"
-            subtitle="Conecte sua carteira e as teses ao seu assistente de IA."
-            note="Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor. Chega em breve."
-          />
+          <ContaMcp />
         </section>
         <section id="seguranca" class="conta__sec">
           <ContaSeguranca />
