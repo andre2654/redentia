@@ -21,6 +21,9 @@ defineProps<{
 }>()
 
 const railRef = ref<HTMLElement | null>(null)
+// Capa quebrada/404 → cai pro gradiente navy (mesma degradação do NuTeseStrip),
+// sem ícone de imagem partida. Rastreado por slug.
+const failed = ref<Record<string, boolean>>({})
 function scroll(d: number) {
   railRef.value?.scrollBy({ left: d * 356, behavior: 'smooth' })
 }
@@ -43,6 +46,11 @@ function gradFor(i: number) {
             v-for="(c, i) in cards" :key="c.slug"
             :to="c.href" class="tcr__card" :style="{ background: gradFor(i) }"
           >
+            <img
+              v-if="c.image && !failed[c.slug]" :src="c.image" :alt="c.title"
+              class="tcr__img" loading="lazy" @error="failed[c.slug] = true"
+            >
+            <span v-if="c.image && !failed[c.slug]" class="tcr__scrim" />
             <span class="tcr__inner">
               <span class="tcr__top">
                 <span class="tcr__top-l">
@@ -102,6 +110,10 @@ function gradFor(i: number) {
   width: min(340px, 80vw); min-height: 452px; border-radius: var(--nu-r-card);
   padding: 28px; scroll-snap-align: start; overflow: hidden;
 }
+/* Capa real da tese: sangra o card inteiro sobre o gradiente-base (que reaparece
+   se a imagem faltar/404) + scrim de 4 stops pra legibilidade do texto branco. */
+.tcr__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; z-index: 0; }
+.tcr__scrim { position: absolute; inset: 0; background: var(--nu-thesis-scrim); pointer-events: none; z-index: 0; }
 .tcr__inner { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
 .tcr__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
