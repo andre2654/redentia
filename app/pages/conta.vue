@@ -70,11 +70,7 @@ usePageSeo({
           />
         </section>
         <section id="open-finance" class="conta__sec">
-          <ContaPlaceholder
-            title="Open Finance"
-            subtitle="Suas conexões de Open Finance."
-            note="Conectar, sincronizar, reconectar e remover instituições chega em breve."
-          />
+          <ContaOpenFinance />
         </section>
         <section id="mcp" class="conta__sec">
           <ContaPlaceholder
