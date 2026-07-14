@@ -16,6 +16,7 @@
  *    paralelas — tudo bem o sitemap já listá-las.
  */
 import { RANKINGS } from '../../app/content/rankings/registry'
+import { GUIDE_DOCS } from '../../app/content/guias'
 
 export interface SitePage {
   path: string
@@ -37,7 +38,11 @@ const CORE_PAGES: SitePage[] = [
   { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.' },
   { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.' },
   { path: '/guias', title: 'Guias', description: 'Conteúdo educacional sobre investimentos no Brasil.' },
-  { path: '/guias/open-finance', title: 'Guia: Open Finance', description: 'Como conectar suas corretoras via Open Finance e ver a carteira consolidada.' },
+  // Guias individuais /guias/{slug}: derivados de GUIDE_DOCS (fonte única do
+  // hub e das páginas). Só entra guia com doc escrito e registrado, então
+  // toda URL do sitemap resolve 200. Cards href-only (ex.: Análise PETR4 →
+  // /asset/PETR4) não têm doc e já entram pela seção de ativos.
+  ...guideDocPages(),
   { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Redentia.' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
@@ -275,6 +280,15 @@ const fetchDividendPages = defineCachedFunction(
   },
   { name: 'site-pages-dividends', maxAge: 3600, swr: true, getKey: () => 'all' },
 )
+
+/** Guias escritos → /guias/{slug}, derivados do registry (fonte única). */
+function guideDocPages(): SitePage[] {
+  return Object.values(GUIDE_DOCS).map((g) => ({
+    path: `/guias/${g.slug}`,
+    title: g.title,
+    description: g.description,
+  }))
+}
 
 function rankingPages(): SitePage[] {
   return Object.values(RANKINGS).map((r) => ({

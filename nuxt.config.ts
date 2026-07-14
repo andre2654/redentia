@@ -122,10 +122,10 @@ export default defineNuxtConfig({
     // de DY, destino topicamente honesto.
     '/dividendos/calendario': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
     '/dividendos': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
-    // Guias antigos com slug diferente/sem equivalente (guia real = PR-F).
+    // Guia antigo com slug diferente → guia real Nu (301 preserva o equity).
+    // /guias/calculadora-de-dividendos e /guias/acoes-fiis-dividendos-todo-mes
+    // deixaram de ser 301 provisórios: viraram páginas reais de guia (KIT).
     '/guias/open-finance-carteira-espalhada': { redirect: { to: '/guias/open-finance', statusCode: 301 } },
-    '/guias/calculadora-de-dividendos': { redirect: { to: '/calculadoras', statusCode: 301 } },
-    '/guias/acoes-fiis-dividendos-todo-mes': { redirect: { to: '/ranking/maiores-dividend-yield', statusCode: 301 } },
     // Hubs de categoria da antiga → filtros do hub de rankings.
     '/acoes': { redirect: { to: '/rankings?classe=acoes', statusCode: 301 } },
     '/fiis': { redirect: { to: '/rankings?classe=fiis', statusCode: 301 } },

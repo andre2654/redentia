@@ -13,6 +13,14 @@
  */
 import type { GuideDoc, GuideMeta, GuideTag } from '~/types/guias'
 import { OPEN_FINANCE_GUIDE } from '~/content/guias/open-finance'
+import { COMO_INVESTIR_EM_ACOES_GUIDE } from '~/content/guias/como-investir-em-acoes'
+import { MELHORES_FIIS_2026_GUIDE } from '~/content/guias/melhores-fiis-2026'
+import { SMALL_CAPS_GUIA_COMPLETO_GUIDE } from '~/content/guias/small-caps-guia-completo'
+import { CALCULADORA_DE_DIVIDENDOS_GUIDE } from '~/content/guias/calculadora-de-dividendos'
+import { TESOURO_DIRETO_PARA_INICIANTES_GUIDE } from '~/content/guias/tesouro-direto-para-iniciantes'
+import { ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE } from '~/content/guias/acoes-fiis-dividendos-todo-mes'
+import { BITCOIN_NA_CARTEIRA_GUIDE } from '~/content/guias/bitcoin-na-carteira'
+import { COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE } from '~/content/guias/como-declarar-investimentos-no-ir'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -32,12 +40,26 @@ export const FEATURED_GUIDE: GuideDoc = OPEN_FINANCE_GUIDE
 /** Docs escritos, por slug (o hub e o [slug] leem daqui). */
 export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [OPEN_FINANCE_GUIDE.slug]: OPEN_FINANCE_GUIDE,
+  [COMO_INVESTIR_EM_ACOES_GUIDE.slug]: COMO_INVESTIR_EM_ACOES_GUIDE,
+  [CALCULADORA_DE_DIVIDENDOS_GUIDE.slug]: CALCULADORA_DE_DIVIDENDOS_GUIDE,
+  [MELHORES_FIIS_2026_GUIDE.slug]: MELHORES_FIIS_2026_GUIDE,
+  [SMALL_CAPS_GUIA_COMPLETO_GUIDE.slug]: SMALL_CAPS_GUIA_COMPLETO_GUIDE,
+  [TESOURO_DIRETO_PARA_INICIANTES_GUIDE.slug]: TESOURO_DIRETO_PARA_INICIANTES_GUIDE,
+  [ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE.slug]: ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE,
+  [BITCOIN_NA_CARTEIRA_GUIDE.slug]: BITCOIN_NA_CARTEIRA_GUIDE,
+  [COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE.slug]: COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE,
 }
 
 /**
- * Grid do hub — os 9 cards do design, na ordem do mock. Cards sem `slug` nem
- * `href` são guias planejados sem página escrita (o hub mostra "Em breve";
- * conteúdo de guia novo NÃO é inventado aqui).
+ * Grid do hub — os 9 cards do design, na ordem do mock. Cada card resolve o
+ * destino via `guideCardTo`: `slug` → página de guia /guias/[slug]; `href` →
+ * outra superfície do produto (ex.: Análise PETR4 → /asset/PETR4). Card sem
+ * nenhum dos dois mostraria "Em breve" no hub — hoje todos têm destino.
+ *
+ * KIT (2026-07-13): os 8 guias do kit ganharam `slug` (equity de SEO da
+ * Redentia antiga preservado nos slugs). O doc escrito de cada slug vive em
+ * app/content/guias/<slug>.ts e está registrado em GUIDE_DOCS acima; os 8
+ * resolvem /guias/<slug> → 200. Conteúdo de guia NÃO é inventado aqui.
  */
 export const GUIDES: GuideMeta[] = [
   {
@@ -45,12 +67,14 @@ export const GUIDES: GuideMeta[] = [
     description: 'Da abertura de conta até a primeira compra, com exemplos reais e passo a passo.',
     tag: 'Ações',
     minutes: 8,
+    slug: 'como-investir-em-acoes',
   },
   {
     title: 'Melhores FIIs 2026',
     description: 'Os fundos imobiliários mais promissores, com análise de segmentos e indicadores.',
     tag: 'FIIs',
     minutes: 10,
+    slug: 'melhores-fiis-2026',
   },
   {
     title: 'Análise PETR4: vale a pena?',
@@ -64,37 +88,44 @@ export const GUIDES: GuideMeta[] = [
     description: 'IPCA+, Selic ou Prefixado: qual proteger o quê, sem juridiquês.',
     tag: 'Renda fixa',
     minutes: 9,
+    slug: 'tesouro-direto-para-iniciantes',
   },
   {
+    // Título do hub "Dividendos todo mês", mas slug ANTIGO de SEO da Redentia.
     title: 'Dividendos todo mês',
     description: 'Como montar uma escada de proventos que paga suas contas.',
     tag: 'Dividendos',
     minutes: 11,
+    slug: 'acoes-fiis-dividendos-todo-mes',
   },
   {
     title: 'Small caps: guia completo',
     description: 'Ações de pequenas empresas: como escolher, riscos e estratégias.',
     tag: 'Ações',
     minutes: 9,
+    slug: 'small-caps-guia-completo',
   },
   {
     title: 'Bitcoin na carteira: quanto alocar?',
     description: 'O limite saudável de cripto para cada perfil, segundo os dados.',
     tag: 'Cripto',
     minutes: 6,
+    slug: 'bitcoin-na-carteira',
   },
   {
+    // Vira guia real (antes apontava pra /calculadoras); href removido.
     title: 'Calculadora de dividendos',
     description: 'Quanto investir para atingir sua meta de renda passiva.',
     tag: 'Dividendos',
     minutes: 7,
-    href: '/calculadoras',
+    slug: 'calculadora-de-dividendos',
   },
   {
     title: 'Como declarar investimentos no IR',
     description: 'Ações, FIIs e cripto na declaração: o passo a passo completo.',
     tag: 'Guia Redentia',
     minutes: 15,
+    slug: 'como-declarar-investimentos-no-ir',
   },
 ]
 

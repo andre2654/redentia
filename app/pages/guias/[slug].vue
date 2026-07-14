@@ -121,6 +121,13 @@ usePageSeo({
 }
 .gdp__p + .gdp__p { margin-top: 16px; }
 .gdp__p :deep(strong) { font-weight: 800; }
+/* cross-links inline (v-html, href interno) — cor de marca + sublinhado sutil */
+.gdp__article :deep(a) {
+  color: var(--nu-blue); font-weight: 700;
+  text-decoration: underline; text-underline-offset: 2px;
+  text-decoration-thickness: 1px; text-decoration-color: var(--nu-blue-soft);
+}
+.gdp__article :deep(a:hover) { text-decoration-color: var(--nu-blue); }
 
 .gdp__stats {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
