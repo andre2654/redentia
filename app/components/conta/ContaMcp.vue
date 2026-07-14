@@ -62,7 +62,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
 </script>
 
 <template>
-  <section class="mcp">
+  <section class="mcp" :class="{ 'mcp--off': !mcpOn }">
     <div class="mcp__glow" aria-hidden="true" />
 
     <div class="mcp__head">
@@ -141,11 +141,31 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
   position: relative; overflow: hidden;
   border-radius: 26px; padding: clamp(26px, 3vw, 40px);
   background: linear-gradient(150deg, #123A8F 0%, #1E4FC2 46%, #2F6BFF 100%);
+  transition: background .3s ease;
 }
 .mcp__glow {
   position: absolute; top: -90px; right: -70px; width: 280px; height: 280px; border-radius: 50%;
   background: radial-gradient(circle, rgba(143, 240, 181, .28) 0%, rgba(143, 240, 181, 0) 70%); pointer-events: none;
+  transition: opacity .3s ease;
 }
+
+/* DESLIGADO (dono 2026-07-14): card cinza, como se o MCP estivesse mesmo fora.
+   Fundo vira cinza + conteúdo dessatura/esmaece/trava; SÓ o toggle principal
+   continua colorido e clicável (é como se religa). */
+.mcp__head-txt,
+.mcp__apps,
+.mcp__panel,
+.mcp__perms-label,
+.mcp__perms,
+.mcp__docs { transition: filter .3s ease, opacity .3s ease; }
+.mcp--off { background: linear-gradient(150deg, #363B44 0%, #474D57 46%, #59606B 100%); }
+.mcp--off .mcp__glow { opacity: 0; }
+.mcp--off .mcp__head-txt,
+.mcp--off .mcp__apps,
+.mcp--off .mcp__panel,
+.mcp--off .mcp__perms-label,
+.mcp--off .mcp__perms,
+.mcp--off .mcp__docs { filter: grayscale(1); opacity: .55; pointer-events: none; }
 
 .mcp__head { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .mcp__head-txt { max-width: 560px; }
