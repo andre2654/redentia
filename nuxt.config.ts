@@ -101,6 +101,11 @@ export default defineNuxtConfig({
     '/rankings/fiis': { redirect: { to: '/rankings?classe=fiis', statusCode: 301 } },
     '/rankings/bdrs': { redirect: { to: '/rankings?classe=bdrs', statusCode: 301 } },
     '/rankings/renda-fixa': { redirect: { to: '/ranking/tesouro-direto', statusCode: 301 } },
+    // Setores (SEO programático /setor): hub /setor + detalhe /setor/{ptSlug}.
+    // Audit: os slugs ingleses do /setor antigo não tinham tráfego relevante →
+    // sem 301. Backend (GET /sectors) cacheia igual aos rankings → s-maxage=900.
+    '/setor': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
+    '/setor/**': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
     // Páginas estáticas/legais (institucional + metodologia): conteúdo jurídico/
     // editorial que quase nunca muda — cache longo na borda + SWR de 1 dia.
     '/institucional/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
