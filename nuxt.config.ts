@@ -79,6 +79,10 @@ export default defineNuxtConfig({
     // '/guias/**' não casa a base — o hub precisa da regra exata (PR4).
     '/guias': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     '/guias/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // Glossário (KIT 2026-07-14): conteúdo estável (dicionário) → cache longo.
+    // Hub /glossario e cada termo /glossario/{slug} cacheiam 24h na borda.
+    '/glossario': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
+    '/glossario/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
     '/tese/**': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     // /teses: SSR 100% público (seed do design; favoritos hidratam client-side).
     '/teses': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },

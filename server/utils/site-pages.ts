@@ -18,6 +18,7 @@
 import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
+import { allTerms as glossaryTerms } from '../../app/content/glossario'
 
 export interface SitePage {
   path: string
@@ -26,7 +27,7 @@ export interface SitePage {
 }
 
 export interface SiteSection {
-  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos'
+  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos'
   title: string
   description?: string
   pages: SitePage[]
@@ -47,6 +48,7 @@ const CORE_PAGES: SitePage[] = [
   { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Redentia.' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   { path: '/setor', title: 'Hub de setores', description: 'Os setores da B3 com empresas, valor de mercado somado e variação do dia.' },
+  { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
 ]
 
@@ -309,6 +311,15 @@ function setorPages(): SitePage[] {
   }))
 }
 
+/** Glossário → /glossario/{slug}, derivados do registry (fonte única A-Z). */
+function glossarioPages(): SitePage[] {
+  return glossaryTerms.map((t) => ({
+    path: `/glossario/${t.slug}`,
+    title: `O que é ${t.term}?`,
+    description: t.short,
+  }))
+}
+
 /**
  * Inventário completo, agrupado. Sitemap achata tudo; llms-full renderiza
  * seção a seção (e corta a cauda de ativos).
@@ -347,6 +358,12 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       title: 'Setores da B3',
       description: 'Cada setor da bolsa tem página própria em /setor/{slug} com empresas, valor de mercado somado e variação do dia.',
       pages: setorPages(),
+    },
+    {
+      id: 'glossario',
+      title: 'Glossário do investidor',
+      description: 'Cada termo do mercado tem página própria em /glossario/{slug} com definição, exemplo e perguntas frequentes.',
+      pages: glossarioPages(),
     },
     {
       id: 'institucional',

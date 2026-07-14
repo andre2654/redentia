@@ -38,6 +38,8 @@ const NAV: NavItem[] = [
     children: [
       { label: 'Guias', to: '/guias' },
       { label: 'Notícias', to: '/noticias' },
+      { label: 'Setores', to: '/setor' },
+      { label: 'Glossário', to: '/glossario' },
     ],
   },
 ]
