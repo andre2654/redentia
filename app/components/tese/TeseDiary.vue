@@ -5,9 +5,16 @@
 // Atlas) + linhas clicáveis de estudos anteriores (trocam o card) e botão
 // 'Ver os N estudos anteriores' que expande a lista (paginação client-side,
 // V1 — os estudos já vêm inteiros no detail).
+//
+// PAYWALL (dono 2026-07-14): pro ANÔNIMO o diário (card do estudo + linhas dos
+// estudos anteriores) entra embaçado — o título 'Diário da tese' fica nítido
+// pra dar o gancho, o miolo fica atrás do cadastro (o gate da avaliação por
+// ativo é a chamada). Logado vê tudo. Texto continua no HTML (blur só visual).
 import type { TeseDiaryVM, TeseStudyVM } from '~/types/tese'
 
 const props = defineProps<{ diary: TeseDiaryVM }>()
+
+const { isAuthenticated } = useAuthState()
 
 const ROWS_VISIBLE = 3
 
@@ -29,7 +36,7 @@ const showMore = computed(() => !expanded.value && !!props.diary.moreLabel && ro
       <span class="tdi__meta">{{ diary.metaLine }}</span>
     </div>
 
-    <article class="tdi__card">
+    <article class="tdi__card" :class="{ 'tdi__locked': !isAuthenticated }" :aria-hidden="!isAuthenticated || undefined">
       <div class="tdi__badges">
         <NuBadge variant="black" size="card">{{ selected.dateBadge }}</NuBadge>
         <NuBadge v-if="selected.conv && selected.conv.changed" variant="green" size="card">
@@ -75,7 +82,7 @@ const showMore = computed(() => !expanded.value && !!props.diary.moreLabel && ro
       </div>
     </article>
 
-    <div v-if="rows.length" class="tdi__rows">
+    <div v-if="rows.length" class="tdi__rows" :class="{ 'tdi__locked': !isAuthenticated }" :aria-hidden="!isAuthenticated || undefined">
       <button v-for="s in visibleRows" :key="s.id" type="button" class="tdi__row" @click="selectedId = s.id">
         <span class="tdi__row-date">{{ s.rowDate }}</span>
         <span class="tdi__row-title">{{ s.title }}</span>
@@ -101,6 +108,8 @@ const showMore = computed(() => !expanded.value && !!props.diary.moreLabel && ro
 .tdi__meta { color: var(--nu-gray); font-size: 16px; font-weight: 600; }
 
 .tdi__card { background: var(--nu-white); border-radius: 28px; padding: clamp(26px, 4vw, 44px); margin-top: 40px; }
+/* embaçado (anônimo): diário tease não-interativo, atrás do cadastro */
+.tdi__locked { filter: blur(7px); opacity: .55; pointer-events: none; user-select: none; }
 .tdi__badges { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .tdi__title {
   margin: 20px 0 0; color: var(--nu-ink);
