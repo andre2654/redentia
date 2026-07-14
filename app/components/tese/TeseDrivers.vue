@@ -4,15 +4,26 @@
 // (bullets com triangle-alert âmbar) e 'RISCO CENTRAL' (título grande +
 // parágrafo + footer 'Monitorado na revalidação diária' colado embaixo).
 // Cards sem conteúdo somem (auto-fit reacomoda).
+//
+// PAYWALL (dono 2026-07-14): pro ANÔNIMO o conteúdo (a favor / sinal / risco
+// central) entra embaçado — o título fica nítido pra dar o gancho, o miolo
+// fica atrás do cadastro (o gate da avaliação por ativo é a chamada). Logado
+// vê tudo. O texto continua no HTML (blur é só visual → SEO preservado).
 import type { TeseDriversVM } from '~/types/tese'
 
 defineProps<{ drivers: TeseDriversVM }>()
+
+const { isAuthenticated } = useAuthState()
 </script>
 
 <template>
   <section class="tdr">
     <NuSectionHeading dark>O que sustenta<br>e o que ameaça.</NuSectionHeading>
-    <div class="tdr__grid">
+    <div
+      class="tdr__grid"
+      :class="{ 'tdr__grid--locked': !isAuthenticated }"
+      :aria-hidden="!isAuthenticated || undefined"
+    >
       <div v-if="drivers.favor.length" class="tdr__card">
         <span class="tdr__lbl tdr__lbl--favor">A favor</span>
         <div class="tdr__list">
@@ -54,6 +65,8 @@ defineProps<{ drivers: TeseDriversVM }>()
   display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px; margin-top: 40px;
 }
+/* embaçado (anônimo): conteúdo tease não-interativo, atrás do cadastro */
+.tdr__grid--locked { filter: blur(7px); opacity: .55; pointer-events: none; user-select: none; }
 .tdr__card { background: var(--nu-blue-deep); border-radius: var(--nu-r-card-lg); padding: 28px; }
 .tdr__card--risco { display: flex; flex-direction: column; }
 .tdr__lbl { font-size: 12.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }

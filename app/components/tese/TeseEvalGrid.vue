@@ -13,7 +13,9 @@ import type { TeseEvalVM } from '~/types/tese'
 const props = withDefaults(defineProps<{
   evalSection: TeseEvalVM
   studiesCount?: number
-}>(), { studiesCount: 0 })
+  // a tese tem relatório completo? (só então o gate promete o relatório)
+  hasReport?: boolean
+}>(), { studiesCount: 0, hasReport: false })
 
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
@@ -89,7 +91,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
           Tese completa
         </span>
         <h2 class="tev__gate-title">Você viu {{ FREE }} dos {{ total }} ativos.</h2>
-        <p class="tev__gate-sub">Crie sua conta grátis para abrir a avaliação de todos os ativos, os sinais de risco e o diário da tese, revalidado todo dia pela Redentia.</p>
+        <p class="tev__gate-sub">Crie sua conta grátis para abrir a tese completa: a avaliação de todos os ativos, os sinais de risco, {{ hasReport ? 'o relatório completo' : 'o risco central' }} e o diário, revalidado todo dia pela Redentia.</p>
         <div class="tev__gate-actions">
           <NuxtLink :to="loginTo" class="tev__gate-cta">
             Criar conta grátis<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
@@ -101,6 +103,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
       <ul class="tev__gate-list">
         <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Avaliação dos <b>{{ total }} ativos</b> da carteira</span></li>
         <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Sinais de risco e risco central</span></li>
+        <li v-if="hasReport"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>O <b>relatório completo</b> da tese</span></li>
         <li v-if="studiesCount > 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Diário da tese <b>· {{ studiesCount }} estudos</b></span></li>
         <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg><span>Acompanhe e receba alertas</span></li>
       </ul>

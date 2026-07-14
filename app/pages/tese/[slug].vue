@@ -47,6 +47,12 @@ if (error.value || !data.value) {
 
 const tese = computed(() => data.value!)
 
+// Paywall (dono 2026-07-14): pro ANÔNIMO o relatório completo NÃO é renderizado
+// (o gate da avaliação por ativo é a parede) e os drivers entram embaçados.
+// useAuthState resolve o login no servidor (cookie) → o SSR do anônimo já vem
+// sem o relatório, e o do logado vem completo.
+const { isAuthenticated } = useAuthState()
+
 const pageUrl = useRequestURL()
 const origin = `${pageUrl.protocol}//${pageUrl.host}`
 const ogImage = tese.value.seo.image ? `${origin}${tese.value.seo.image}` : undefined
@@ -98,13 +104,15 @@ usePageSeo({
       v-if="tese.evalSection"
       :eval-section="tese.evalSection"
       :studies-count="tese.studiesCount"
+      :has-report="!!tese.report"
     />
 
     <!-- O relatório completo (campo `report`, nullable): o documento de
          fundação da tese, em duas colunas no padrão dos guias (índice sticky à
          esquerda com scrollspy + artigo longo à direita). Só existe quando a
-         tese tem o campo `report`. -->
-    <TeseReport v-if="tese.report" :report="tese.report" />
+         tese tem o campo `report` — e, no PAYWALL, só pro logado: o anônimo
+         não recebe o relatório (fica atrás do cadastro, junto com os drivers). -->
+    <TeseReport v-if="tese.report && isAuthenticated" :report="tese.report" />
 
     <TeseDrivers v-if="tese.drivers" :drivers="tese.drivers" />
 
