@@ -251,6 +251,7 @@ onBeforeUnmount(() => {
               :style="{ left: `${accountPos.left}px`, top: `${accountPos.top}px` }"
             >
               <NuxtLink to="/carteira" role="menuitem" class="nuh__drawer-item" @click="accountOpen = false">Minha carteira</NuxtLink>
+              <NuxtLink to="/conta" role="menuitem" class="nuh__drawer-item" @click="accountOpen = false">Configurações</NuxtLink>
               <div class="nuh__account-div" role="separator" />
               <button type="button" role="menuitem" class="nuh__drawer-item nuh__drawer-item--danger" @click="logout">Sair</button>
             </div>
@@ -324,6 +325,7 @@ onBeforeUnmount(() => {
         <div class="num__ctas">
           <template v-if="isAuthenticated">
             <NuxtLink to="/carteira" class="num__cta-outline" @click="toggleMenu(false)">Minha carteira</NuxtLink>
+            <NuxtLink to="/conta" class="num__cta-outline" @click="toggleMenu(false)">Configurações</NuxtLink>
             <NuxtLink to="/busca" class="num__cta" @click="toggleMenu(false)">Pergunte à Redentia AI</NuxtLink>
             <button type="button" class="num__logout" @click="logout">Sair</button>
           </template>
