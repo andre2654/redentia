@@ -687,6 +687,7 @@ function teseSeed(): TesePayload {
         evalCard('TUPY3', 'Tupy', 'Entra hoje', 'XP eleva para compra em 10/jul citando a recuperação de caminhões pesados nos EUA; fundição exposta à cadeia industrial americana.', 'Segunda perna brasileira da tese: entra em observação a R$ 14,34.', tile(4), 'blue-solid', true),
       ],
     },
+    studiesCount: 152,
     drivers: {
       favor: [
         'Backlog recorde de US$ 63 bi na Caterpillar, com pedidos de 1 GW e capacidade triplicada',
@@ -796,6 +797,7 @@ async function loadTese(base: string, slug: string): Promise<TesePayload> {
     editorial: buildEditorial(detail),
     numbers: buildNumbers(detail, perf, conv, ibov),
     evalSection: buildEval(detail),
+    studiesCount: detail.studiesCount ?? 0,
     drivers: buildDrivers(detail),
     diary: buildDiary(detail, conv),
     report: buildReport(detail),

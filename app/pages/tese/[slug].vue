@@ -90,14 +90,21 @@ usePageSeo({
 
     <TeseNumbers v-if="tese.numbers" :numbers="tese.numbers" />
 
-    <!-- O relatório completo (campo `report`, nullable): vem LOGO DEPOIS dos
-         números — o documento de fundação da tese, em duas colunas no padrão
-         dos guias (índice sticky à esquerda com scrollspy + artigo longo à
-         direita). Só existe quando a tese tem o campo `report`; as teses sem
-         relatório seguem direto pros blocos vivos abaixo (zero regressão). -->
-    <TeseReport v-if="tese.report" :report="tese.report" />
+    <!-- Avaliação por ativo LOGO DEPOIS dos números (direção do dono
+         2026-07-14): quem chega quer ver quais ativos compõem a tese. Pro
+         ANÔNIMO, os cards além dos 2 primeiros são embaçados e um card de
+         gate força o login (o resto da tese fica atrás do cadastro). -->
+    <TeseEvalGrid
+      v-if="tese.evalSection"
+      :eval-section="tese.evalSection"
+      :studies-count="tese.studiesCount"
+    />
 
-    <TeseEvalGrid v-if="tese.evalSection" :eval-section="tese.evalSection" />
+    <!-- O relatório completo (campo `report`, nullable): o documento de
+         fundação da tese, em duas colunas no padrão dos guias (índice sticky à
+         esquerda com scrollspy + artigo longo à direita). Só existe quando a
+         tese tem o campo `report`. -->
+    <TeseReport v-if="tese.report" :report="tese.report" />
 
     <TeseDrivers v-if="tese.drivers" :drivers="tese.drivers" />
 

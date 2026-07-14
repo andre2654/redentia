@@ -336,6 +336,8 @@ export interface TesePayload {
   editorial: TeseEditorialVM | null
   numbers: TeseNumbersVM | null
   evalSection: TeseEvalVM | null
+  /** total de estudos da tese (do backend) — usado no gate do anônimo */
+  studiesCount: number
   drivers: TeseDriversVM | null
   diary: TeseDiaryVM | null
   /** null = tese sem report → a seção "O relatório completo" não existe */
