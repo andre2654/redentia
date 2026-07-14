@@ -84,11 +84,7 @@ usePageSeo({
           />
         </section>
         <section id="seguranca" class="conta__sec">
-          <ContaPlaceholder
-            title="Segurança"
-            subtitle="Senha e acesso da sua conta."
-            note="Trocar a senha e ver a sessão atual chega em breve."
-          />
+          <ContaSeguranca />
         </section>
       </div>
     </div>
