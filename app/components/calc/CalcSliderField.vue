@@ -155,29 +155,35 @@ function cancel() {
 </template>
 
 <style scoped>
-.csf__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.csf__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .csf__label { color: var(--nu-gray); font-size: 14px; font-weight: 700; }
 
-/* valor: mesma tipografia do design; vira alvo de clique pra editar. Idle =
-   número + lapiseira quieta (sand); hover/foco = tudo azul (afeta "editável"). */
+/* valor = campo editável: box levemente mais clara que o creme + arredondada,
+   sinalizando "passe o mouse e troque". Idle = branco suave + lapiseira quieta;
+   hover/foco = branco cheio + borda + azul; editando = borda azul. Mesmas
+   medidas de box nos estados (borda 1.5px sempre reservada) → sem pulo. */
 .csf__value {
   display: inline-flex; align-items: center; gap: 7px;
-  border: none; background: none; padding: 0; margin: 0; font-family: inherit;
-  color: var(--nu-ink); font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums;
-  cursor: pointer; line-height: 1.1; transition: color .18s;
+  margin: 0; padding: 3px 11px; border: 1.5px solid transparent; border-radius: 10px;
+  background: var(--nu-white-75);
+  font-family: inherit; color: var(--nu-ink);
+  font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.15;
+  transition: background .18s, border-color .18s, color .18s;
 }
-.csf__value:hover, .csf__value:focus-visible { color: var(--nu-blue); outline: none; }
-.csf__edit-ic { color: var(--nu-sand-border); flex-shrink: 0; transition: color .18s; }
-.csf__value:hover .csf__edit-ic, .csf__value:focus-visible .csf__edit-ic { color: var(--nu-blue); }
+button.csf__value { cursor: pointer; }
+button.csf__value:hover, button.csf__value:focus-visible {
+  background: var(--nu-white); border-color: var(--nu-sand-border); color: var(--nu-blue); outline: none;
+}
+.csf__edit-ic { color: var(--nu-sand); flex-shrink: 0; transition: color .18s; }
+button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edit-ic { color: var(--nu-blue); }
 
-/* input inline: some a borda, fica só um traço azul embaixo pra sinalizar edição */
-.csf__value--edit { display: inline-flex; }
+/* editando: box branca com borda azul; input transparente por dentro */
+.csf__value--edit { background: var(--nu-white); border-color: var(--nu-blue); }
 .csf__input {
-  font-family: inherit; font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums;
-  color: var(--nu-ink); text-align: right; line-height: 1.1;
+  font: inherit; font-variant-numeric: tabular-nums;
+  color: var(--nu-ink); text-align: right; line-height: 1.15;
   min-width: 3ch; max-width: 62vw;
-  border: none; border-bottom: 2px solid var(--nu-blue);
-  background: none; padding: 0 0 1px; margin: 0; outline: none;
+  border: none; background: none; padding: 0; margin: 0; outline: none;
   caret-color: var(--nu-blue);
 }
 
