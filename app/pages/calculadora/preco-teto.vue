@@ -776,7 +776,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— controles da calculadora ——— */
-.pt__gap { margin-top: 26px; }
+.pt__gap { margin-top: 36px; }
 .pt__examples { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .pt__examples-label { color: var(--nu-gray); font-size: 14px; font-weight: 700; margin-right: 4px; }
 /* chips no MESMO estilo visual do kit (csf__chip do CalcSliderField) */

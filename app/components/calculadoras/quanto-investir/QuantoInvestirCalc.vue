@@ -280,7 +280,7 @@ const barSegments = computed(() => [
 </template>
 
 <style scoped>
-.qic__gap { margin-top: 26px; }
+.qic__gap { margin-top: 36px; }
 
 /* toggle no estilo dos preset chips do kit */
 .qic__toggle {

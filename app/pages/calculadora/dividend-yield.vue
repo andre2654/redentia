@@ -675,7 +675,7 @@ usePageSeo({
   background: var(--nu-ink);
   color: var(--nu-white);
 }
-.dy__gap { margin-top: 26px; }
+.dy__gap { margin-top: 36px; }
 .dy__result-label {
   margin-top: 16px; color: var(--nu-blue);
   font-size: 13px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;

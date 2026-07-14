@@ -94,7 +94,7 @@ const barSegments = computed(() => [
 </template>
 
 <style scoped>
-.ccs__gap { margin-top: 26px; }
+.ccs__gap { margin-top: 36px; }
 .ccs__bar { margin-top: 16px; }
 .ccs__chart { margin-top: 30px; }
 .ccs__insight {

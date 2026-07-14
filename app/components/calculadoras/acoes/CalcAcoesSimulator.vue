@@ -446,7 +446,7 @@ const jpTxt = computed(() => periodYears.value + (periodYears.value === 1 ? ' an
 
 <style scoped>
 .cas__section-label { margin: 0 0 18px; color: var(--nu-gray); font-size: 12.5px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
-.cas__gap { margin-top: 26px; }
+.cas__gap { margin-top: 36px; }
 
 /* busca */
 .cas__search { position: relative; }

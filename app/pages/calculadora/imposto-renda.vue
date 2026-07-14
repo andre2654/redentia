@@ -703,7 +703,7 @@ usePageSeo({
   transition: all .2s;
 }
 .ir__seg-btn--active { background: var(--nu-ink); color: var(--nu-white); }
-.ir__gap { margin-top: 26px; }
+.ir__gap { margin-top: 36px; }
 .ir__month {
   display: block; width: 100%; margin-top: 12px;
   background: var(--nu-white); border: 2px solid var(--nu-sand-border);

@@ -298,7 +298,7 @@ const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
 
 <style scoped>
 .pcs__form-label { margin: 0 0 22px; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
-.pcs__gap { margin-top: 26px; }
+.pcs__gap { margin-top: 36px; }
 .pcs__gap:first-of-type { margin-top: 0; }
 .pcs__label { display: block; color: var(--nu-gray); font-size: 14px; font-weight: 700; }
 

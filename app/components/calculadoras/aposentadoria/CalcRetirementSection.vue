@@ -325,7 +325,7 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
 </template>
 
 <style scoped>
-.crs__gap { margin-top: 26px; }
+.crs__gap { margin-top: 36px; }
 .crs__chart { margin-top: 30px; }
 
 .crs__status {
