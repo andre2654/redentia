@@ -3,8 +3,9 @@
 // docs/redentia-nu/designs/Redentia Tese.dc.html. O layout default já
 // renderiza NuHeader + NuMarketTicker + NuFooter; aqui vive o miolo na ordem
 // do design: hero (navy, imagem) → editorial (creme) → números (navy, chart
-// vs IBOV) → avaliação por ativo (branco) → drivers (azul) → diário (creme)
-// → relatório completo (branco, SÓ quando a tese tem o campo `report`).
+// vs IBOV) → relatório completo (branco, duas colunas no padrão dos guias, SÓ
+// quando a tese tem o campo `report`) → avaliação por ativo (branco) →
+// drivers (azul) → diário (creme).
 //
 // SEO: SSR-first (detail + performance + convicção buscados no servidor via
 // useAsyncData — editorial completo no HTML da 1ª resposta), canonical
@@ -89,17 +90,17 @@ usePageSeo({
 
     <TeseNumbers v-if="tese.numbers" :numbers="tese.numbers" />
 
+    <!-- O relatório completo (campo `report`, nullable): vem LOGO DEPOIS dos
+         números — o documento de fundação da tese, em duas colunas no padrão
+         dos guias (índice sticky à esquerda com scrollspy + artigo longo à
+         direita). Só existe quando a tese tem o campo `report`; as teses sem
+         relatório seguem direto pros blocos vivos abaixo (zero regressão). -->
+    <TeseReport v-if="tese.report" :report="tese.report" />
+
     <TeseEvalGrid v-if="tese.evalSection" :eval-section="tese.evalSection" />
 
     <TeseDrivers v-if="tese.drivers" :drivers="tese.drivers" />
 
     <TeseDiary v-if="tese.diary && tese.diary.studies.length" :diary="tese.diary" />
-
-    <!-- O relatório completo (campo `report`, nullable): fecha a página como
-         capítulo de leitura longa DEPOIS do bloco vivo (hero→diário são o
-         estado revalidado diariamente; o relatório é o documento de fundação,
-         opt-in via âncoras). Banda branca fecha a alternância com o diário
-         creme. Tese sem report: nada muda. -->
-    <TeseReport v-if="tese.report" :report="tese.report" />
   </div>
 </template>

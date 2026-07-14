@@ -23,33 +23,16 @@ const patrimonio = computed(() =>
 const hojeTxt = computed(() =>
   props.resumo.hojeTxt ? (hidden.value ? '+R$ •• hoje' : props.resumo.hojeTxt) : null)
 
-// Atalhos: destinos = âncoras reais da /carteira. "Novo aporte" e
-// "Rebalancear carteira" ainda NÃO têm feature própria — apontam pro destino
-// honesto que existe (posições e Raio-X/alocação), nunca link morto.
-// TODO(produto): quando existir fluxo de aporte, "Novo aporte" passa a abrir
-// o fluxo (hoje: /carteira#posicoes, onde as posições e a conexão vivem;
-// o CarteiraHero manda o mesmo label pra /busca — unificar quando o fluxo
-// nascer).
-// TODO(produto): quando existir rebalanceamento guiado, "Rebalancear
-// carteira" passa a abrir o fluxo (hoje: /carteira#raio-x, o diagnóstico de
-// alocação/diversificação que fundamenta o rebalanceio; o CarteiraHero manda
-// "Rebalancear com a IA" pra /busca — unificar idem).
-const atalhos = computed(() => {
-  const list: { label: string; to: string }[] = []
-  // #posicoes/#raio-x da /carteira são condicionais a rows/raiox — o score no
-  // resumo é o proxy de que essas seções existem (mesmos builders). Guarda o
-  // edge transiente de value_now>0 com positions vazias (âncora nunca morta).
-  if (props.resumo.score != null) {
-    list.push(
-      { label: 'Novo aporte', to: '/carteira#posicoes' },
-      { label: 'Rebalancear carteira', to: '/carteira#raio-x' },
-    )
-  }
-  // "Ver extrato" só quando há movimentações reais (a seção #movimentacoes
-  // da /carteira só existe nesse caso — mesma condição do buildMovements)
-  if (props.resumo.movCount != null) list.push({ label: 'Ver extrato', to: '/carteira#movimentacoes' })
-  return list
-})
+// Atalhos que levam ao CHAT (direção do dono, 2026-07-13; MESMO fluxo do
+// CarteiraHero via useAporteChat):
+//  - "Novo aporte"        → abre o NuAmountModal (valor em R$) → confirma →
+//                           /busca?chat=1&q=... com o valor na pergunta.
+//  - "Rebalancear carteira" → link direto pro chat (SEM modal), pergunta pronta.
+// Ambos só aparecem quando a carteira TEM dado (score != null é o proxy de que
+// as seções da /carteira existem — mesmos builders; guarda o edge transiente
+// de value_now>0 com positions vazias). "Ver extrato" segue apontando pra
+// âncora real da /carteira (só com movimentações reais).
+const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = useAporteChat()
 </script>
 
 <template>
@@ -64,8 +47,12 @@ const atalhos = computed(() => {
       </div>
 
       <div class="msc__atalhos">
-        <NuxtLink v-for="a in atalhos" :key="a.label" :to="a.to" class="msc__atalho">
-          {{ a.label }}
+        <template v-if="resumo.score != null">
+          <button type="button" class="msc__atalho" @click="openAporte">Novo aporte</button>
+          <NuxtLink :to="rebalanceHref" class="msc__atalho">Rebalancear carteira</NuxtLink>
+        </template>
+        <NuxtLink v-if="resumo.movCount != null" to="/carteira#movimentacoes" class="msc__atalho">
+          Ver extrato
         </NuxtLink>
         <!-- contagem REAL do Raio-X: >0 → ação; 0 → estado positivo (sem ação,
              lê melhor que um link pra "resolver" o que não existe) -->
@@ -92,6 +79,10 @@ const atalhos = computed(() => {
         Conectar minha carteira<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
       </NuxtLink>
     </div>
+
+    <!-- Novo aporte: pergunta o valor e leva pro chat (logado-only: o atalho
+         só existe no estado 'patrimonio', que já é logado com carteira) -->
+    <NuAmountModal :open="aporteOpen" @close="closeAporte" @confirm="confirmAporte" />
   </section>
 </template>
 
@@ -122,11 +113,12 @@ const atalhos = computed(() => {
 .msc__atalho {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: var(--nu-cream); color: var(--nu-blue);
-  border-radius: var(--nu-r-pill); padding: 14px 26px;
-  font-size: 15.5px; font-weight: 800; white-space: nowrap;
+  border: none; border-radius: var(--nu-r-pill); padding: 14px 26px;
+  font-size: 15.5px; font-weight: 800; white-space: nowrap; font-family: inherit;
   transition: transform .15s, background .2s;
 }
-a.msc__atalho:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }
+button.msc__atalho { cursor: pointer; }
+a.msc__atalho:hover, button.msc__atalho:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }
 .msc__atalho--warn { color: var(--nu-amber-text); }
 a.msc__atalho--warn:hover { color: var(--nu-amber-text); }
 .msc__atalho--ok { color: var(--nu-green-2); cursor: default; }

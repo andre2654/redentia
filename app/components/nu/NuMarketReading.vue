@@ -22,13 +22,17 @@
 // SSR/perf: no servidor renderiza o estado inicial (fase read, readN=0) sem
 // timers; a animação só começa em onMounted (client) e é limpa no unmount.
 // prefers-reduced-motion: mostra o feed inteiro estático, sem loop nem morph.
-interface Token {
-  k: 'co' | 'w' | 'up' | 'dn' | 'doc'
-  t?: string   // texto (palavra / valor da pill)
-  tx?: string  // letra do tile de ticker
-  bg?: string  // cor de marca de terceiro (tile) — hardcoded, ver nota abaixo
-  fg?: string
-}
+//
+// DINÂMICA (correção do dono 2026-07-13): o feed deixa de ser só o SEED fixo e
+// passa a ler os MAIORES MOVERS REAIS do dia via useMarketReading (mesma fonte
+// do /mercado), com a LOGO real de cada empresa (icons.brapi.dev). SSR e 1º
+// paint mostram o seed; o client hidrata os movers e troca o feed; fetch falha
+// → seed. Os tokens do seed já carregam o ticker real, então a logo aparece
+// mesmo antes de hidratar (e degrada pra letra quando não houver logo).
+import { readingLogoEligible, readingLogoSrc, useMarketReading } from '~/composables/useMarketReading'
+import type { ReadingToken } from '~/composables/useMarketReading'
+
+type Token = ReadingToken
 
 type Theme = 'navy' | 'light'
 
@@ -55,28 +59,31 @@ const emit = defineEmits<{
 // As cores dos tiles de empresa (#0E8F4E, #E9B21E, …) são identidade de marca de
 // TERCEIROS — ficam hardcoded de propósito (não são cor do design system Redentia).
 // Hidratar com tickers reais é fase 2.
+// Os tokens 'co' trazem o `ticker` real → a logo (icons.brapi.dev) aparece já no
+// seed; `bg`/`fg` (cores de marca de terceiros, hardcoded de propósito) só valem
+// como fallback de letra quando a logo não carrega.
 const NAVY_FEED: Token[] = [
-  { k: 'co', bg: '#0E8F4E', fg: '#ffffff', tx: 'P' }, // Petrobras
+  { k: 'co', ticker: 'PETR4', bg: '#0E8F4E', fg: '#ffffff', tx: 'P' }, // Petrobras
   { k: 'w', t: 'Petrobras' }, { k: 'w', t: 'avança' }, { k: 'up', t: '+0,76%' }, { k: 'w', t: 'com o Brent em alta.' }, { k: 'doc' },
-  { k: 'co', bg: '#E9B21E', fg: '#0C1524', tx: 'V' }, // Vale
+  { k: 'co', ticker: 'VALE3', bg: '#E9B21E', fg: '#0C1524', tx: 'V' }, // Vale
   { k: 'w', t: 'Vale' }, { k: 'w', t: 'cede' }, { k: 'dn', t: '-1,10%' }, { k: 'w', t: 'no minério de ferro.' },
-  { k: 'co', bg: '#EC7000', fg: '#ffffff', tx: 'I' }, // Itaú
+  { k: 'co', ticker: 'ITUB4', bg: '#EC7000', fg: '#ffffff', tx: 'I' }, // Itaú
   { k: 'w', t: 'Itaú' }, { k: 'w', t: 'renova máxima' }, { k: 'up', t: '+1,32%.' }, { k: 'doc' },
-  { k: 'co', bg: '#7A2FF0', fg: '#ffffff', tx: 'N' }, // Nubank
+  { k: 'co', ticker: 'ROXO34', bg: '#7A2FF0', fg: '#ffffff', tx: 'N' }, // Nubank
   { k: 'w', t: 'Nubank' }, { k: 'w', t: 'supera projeções' }, { k: 'up', t: '+2,04%' }, { k: 'w', t: 'no trimestre.' },
-  { k: 'co', bg: '#0A66C2', fg: '#ffffff', tx: 'B' }, // Banco do Brasil
+  { k: 'co', ticker: 'BBAS3', bg: '#0A66C2', fg: '#ffffff', tx: 'B' }, // Banco do Brasil
   { k: 'w', t: 'Banco do Brasil' }, { k: 'w', t: 'aprova dividendos.' }, { k: 'doc' },
-  { k: 'co', bg: '#0F1115', fg: '#ffffff', tx: 'W' }, // WEG
+  { k: 'co', ticker: 'WEGE3', bg: '#0F1115', fg: '#ffffff', tx: 'W' }, // WEG
   { k: 'w', t: 'WEG' }, { k: 'w', t: 'recua' }, { k: 'dn', t: '-0,44%' }, { k: 'w', t: 'após o balanço.' },
   { k: 'w', t: 'Ibovespa' }, { k: 'w', t: 'bate 197 mil pontos,' }, { k: 'up', t: '+0,91%.' },
 ]
 // feed mais curto (20 tokens / 4 tickers) do card do hero do /mercado
 const LIGHT_FEED: Token[] = [
-  { k: 'co', bg: '#0E8F4E', fg: '#ffffff', tx: 'P' }, // Petrobras
+  { k: 'co', ticker: 'PETR4', bg: '#0E8F4E', fg: '#ffffff', tx: 'P' }, // Petrobras
   { k: 'w', t: 'Petrobras' }, { k: 'w', t: 'avança' }, { k: 'up', t: '+0,76%' }, { k: 'w', t: 'com o Brent.' }, { k: 'doc' },
-  { k: 'co', bg: '#E9B21E', fg: '#0C1524', tx: 'V' }, // Vale
+  { k: 'co', ticker: 'VALE3', bg: '#E9B21E', fg: '#0C1524', tx: 'V' }, // Vale
   { k: 'w', t: 'Vale' }, { k: 'w', t: 'cede' }, { k: 'dn', t: '-1,10%' }, { k: 'w', t: 'no minério.' },
-  { k: 'co', bg: '#EC7000', fg: '#ffffff', tx: 'I' }, // Itaú
+  { k: 'co', ticker: 'ITUB4', bg: '#EC7000', fg: '#ffffff', tx: 'I' }, // Itaú
   { k: 'w', t: 'Itaú' }, { k: 'w', t: 'renova máxima' }, { k: 'up', t: '+1,32%.' }, { k: 'doc' },
   { k: 'w', t: 'Ibovespa' }, { k: 'w', t: 'bate 197 mil' }, { k: 'up', t: '+0,91%.' },
 ]
@@ -138,8 +145,19 @@ const THEMES: Record<Theme, ThemeCfg> = {
 }
 
 const cfg = computed(() => THEMES[props.theme])
-const tokens = computed(() => cfg.value.feed)
+
+// Feed dinâmico: seed do tema (SSR-safe) → movers reais no client → seed se
+// falhar. navy usa o feed longo (6 frases); light, o curto (4). O seed passado
+// é o do tema, então SSR e 1º paint são idênticos ao que já existia.
+const { feed } = useMarketReading(cfg.value.feed, props.theme === 'navy' ? 6 : 4)
+const tokens = computed(() => feed.value)
 const total = computed(() => tokens.value.length)
+
+// logos que falharam (404 na Brapi) → degradam pro tile de letra, por índice.
+const logoFailed = reactive(new Set<number>())
+function showLogo(tk: Token, i: number): boolean {
+  return !isBrand.value && readingLogoEligible(tk.ticker) && !logoFailed.has(i)
+}
 
 const readN = ref(0)
 const phase = ref<'read' | 'brand'>('read')
@@ -202,6 +220,7 @@ function pillStyle(tk: Token, i: number) {
 function coStyle(tk: Token, i: number) {
   const on = seen(i)
   const c = cfg.value
+  const logo = showLogo(tk, i)
   return {
     display: 'inline-flex',
     alignItems: 'center',
@@ -215,8 +234,10 @@ function coStyle(tk: Token, i: number) {
     fontWeight: 800,
     lineHeight: 1,
     verticalAlign: 'middle',
-    // tk.bg/tk.fg = cor de marca de terceiro (hardcoded no feed); no morph vira a marca Redentia
-    background: isBrand.value ? c.coBrandBg : tk.bg,
+    overflow: 'hidden',
+    // com logo → fundo neutro (a logo é a identidade); sem logo → tk.bg/tk.fg
+    // (cor de marca de terceiro); no morph pra marca vira o tile Redentia.
+    background: isBrand.value ? c.coBrandBg : logo ? 'var(--nu-white)' : tk.bg,
     color: isBrand.value ? c.coBrandFg : tk.fg,
     opacity: on ? 1 : c.offOpacity,
     transform: on ? 'scale(1)' : 'scale(.8)',
@@ -311,6 +332,19 @@ onMounted(() => {
   startRead()
 })
 onBeforeUnmount(clearTimers)
+
+// Quando o feed real hidrata (troca de tamanho/conteúdo), reinicia a leitura do
+// zero pra animar o feed novo por inteiro — mas só no client, com a animação
+// ativa (reduced-motion mantém o estado estático). Guarda pelo tamanho pra não
+// reprocessar em toda re-render.
+watch(total, () => {
+  if (!import.meta.client) return
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    readN.value = total.value
+    return
+  }
+  if (reader || readTo || brandTo || readN.value > 0) startRead()
+})
 </script>
 
 <template>
@@ -323,7 +357,14 @@ onBeforeUnmount(clearTimers)
                literal antes de </span> (whitespace condense) e cola as palavras -->
           <span v-if="tk.k === 'w'" :style="wordStyle(i)">{{ tk.t + ' ' }}</span>
           <span v-else-if="tk.k === 'up' || tk.k === 'dn'" :style="pillStyle(tk, i)">{{ tk.t }}</span>
-          <span v-else-if="tk.k === 'co'" :style="coStyle(tk, i)">{{ tk.tx }}</span>
+          <span v-else-if="tk.k === 'co'" :style="coStyle(tk, i)">
+            <img
+              v-if="showLogo(tk, i)" class="nmr__logo-co"
+              :src="readingLogoSrc(tk.ticker!)" :alt="tk.tx" loading="lazy"
+              @error="logoFailed.add(i)"
+            >
+            <template v-else>{{ tk.tx }}</template>
+          </span>
           <span v-else-if="tk.k === 'doc'" :style="docStyle(i)">
             <svg
               width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -358,6 +399,8 @@ onBeforeUnmount(clearTimers)
    feed. CONTRATO: o card pai é o único ancestral posicionado na cadeia
    (.mh__anim no mercado, .nap no login); nada entre eles pode ter position. */
 .nmr { width: 100%; }
+/* logo real do ativo dentro do tile 'co' (icons.brapi.dev) — preenche o círculo */
+.nmr__logo-co { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 .nmr__feed {
   position: relative; width: 100%;
   min-height: clamp(150px, 16vh, 190px);

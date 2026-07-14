@@ -51,9 +51,10 @@ function setTipo(t: BuscaType) {
 }
 
 // Deep-link ?chat=1 é gatilho de chat: anônimo vai pro login (SSR-side,
-// sem flash — o cookie nu:token é visível no servidor).
+// sem flash — o cookie nu:token é visível no servidor). Preserva a rota
+// INTEIRA (incl. ?q=) pra pergunta sobreviver ao login.
 if (chatMode.value && !isAuthenticated.value) {
-  await navigateTo(`/login?redirect=${encodeURIComponent('/busca?chat=1')}`, { replace: true })
+  await navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`, { replace: true })
 }
 
 // Modo chat esconde o footer global (o design não tem footer no chat; o
@@ -158,6 +159,21 @@ onMounted(() => {
   if (tipo.value !== 'todos') index.ensureType(tipo.value)
   // histórico do banco (anônimo não tem sessão — nem chama)
   if (isAuthenticated.value) void chat.loadSessions()
+
+  // Deep-link ?chat=1&q= AUTO-ENVIA a pergunta ao chegar — é o contrato dos
+  // atalhos "Novo aporte"/"Rebalancear carteira" da carteira (useAporteChat).
+  // Só logado: o anônimo com ?chat=1 já foi mandado pro login no setup.
+  // Nova conversa pra a pergunta não se misturar num thread antigo; limpa o
+  // ?q= da URL pra um refresh não reenviar (o ?chat=1 fica).
+  if (chatMode.value && q.value.trim() && isAuthenticated.value) {
+    const question = q.value.trim()
+    q.value = ''
+    chat.newConversation()
+    void chat.send(question)
+    const query = { ...route.query } as Record<string, any>
+    delete query.q
+    void router.replace({ query })
+  }
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKey)

@@ -2,14 +2,17 @@
 // "O relatório completo" — a tese em formato de research de verdade (campo
 // JSONB `report`, nullable; tese sem report NÃO renderiza esta seção).
 // Anatomia (referência editorial Finimize, na linguagem Nu): banda branca
-// fechando a alternância creme→branco depois do diário; head no padrão das
+// fechando a alternância creme→branco depois dos números; head no padrão das
 // irmãs (NuSectionHeading + meta à direita — leitura estimada/publicação);
-// corpo = ARTIGO LONGO em coluna de 760px (mesma medida do corpo dos guias):
-//   índice de âncoras → Oportunidade (lead em destaque) → pilares (cards
-//   numerados) → riscos (card vermelho suave) → partes argumentativas (h2
-//   frase-argumento + prosa + fontes-chip) → valuation (premissas + contas
-//   numeradas + preço justo em card hero navy) → conclusão + marcos
-//   (checklist de observação) → fontes consolidadas.
+// corpo em DUAS COLUNAS no padrão dos guias (NuTocSidebar): índice sticky à
+// esquerda que acende a seção ativa no scroll + ARTIGO LONGO à direita em
+// coluna de 760px (mesma medida do corpo dos guias):
+//   Oportunidade (lead em destaque) → pilares (cards numerados) → riscos
+//   (card vermelho suave) → partes argumentativas (h2 frase-argumento + prosa
+//   + fontes-chip) → valuation (premissas + contas numeradas + preço justo em
+//   card hero navy) → conclusão + marcos (checklist de observação) → fontes
+//   consolidadas. O índice (report.toc) lista só o que existe; no ≤1080 ele
+//   some (mesma regra do guia), o artigo segue sozinho.
 // Prosa chega JÁ ESCAPADA do useTese ({mark} → .tse-hi, mesmo pipeline do
 // editorial); campos atômicos são texto puro. Toda subseção é opcional —
 // ausente some, e o índice lista só o que existe (estados honestos).
@@ -21,6 +24,11 @@ const props = defineProps<{ report: TeseReportVM }>()
 const idx = (i: number) => String(i + 1).padStart(2, '0')
 
 const hasConclusion = computed(() => props.report.conclusionHtml.length > 0 || props.report.milestones.length > 0)
+
+// report.toc ({ id, label }) → contrato do NuTocSidebar ({ label, targetId }).
+// Reuso o índice sticky + scrollspy dos guias (1 implementação por
+// responsabilidade); só monta com >1 seção (âncora única não vira índice).
+const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, targetId: t.id })))
 </script>
 
 <template>
@@ -30,15 +38,12 @@ const hasConclusion = computed(() => props.report.conclusionHtml.length > 0 || p
       <span v-if="report.metaLine" class="trp__meta">{{ report.metaLine }}</span>
     </div>
 
-    <div class="trp__article">
-      <!-- índice de âncoras (a página não usa section rail — âncoras simples) -->
-      <nav v-if="report.toc.length > 1" class="trp__toc" aria-label="Neste relatório">
-        <span class="trp__toc-lbl">Neste relatório</span>
-        <div class="trp__toc-links">
-          <a v-for="t in report.toc" :key="t.id" :href="`#${t.id}`" class="trp__toc-link">{{ t.label }}</a>
-        </div>
-      </nav>
+    <div class="trp__cols">
+      <!-- índice sticky com scrollspy (mesmo componente/padrão dos guias) —
+           acende a seção ativa no scroll; some no ≤1080 (regra do guia). -->
+      <NuTocSidebar v-if="tocItems.length > 1" :items="tocItems" label="Neste relatório" />
 
+      <article class="trp__article">
       <!-- A oportunidade: o caso em 1-2 §§, lead em destaque -->
       <div v-if="report.opportunityHtml.length" id="rel-oportunidade" class="trp__block">
         <div class="trp__eyebrow">A oportunidade</div>
@@ -152,6 +157,7 @@ const hasConclusion = computed(() => props.report.conclusionHtml.length > 0 || p
           </component>
         </div>
       </div>
+      </article>
     </div>
   </section>
 </template>
@@ -165,25 +171,17 @@ const hasConclusion = computed(() => props.report.conclusionHtml.length > 0 || p
 .trp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
 .trp__meta { color: var(--nu-gray); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* coluna de artigo longo — mesma medida do corpo dos guias (760px) */
-.trp__article { max-width: 760px; margin: clamp(36px, 4.5vw, 56px) auto 0; }
+/* duas colunas no padrão dos guias: índice sticky (NuTocSidebar) à esquerda +
+   artigo longo à direita (mesma medida de 760px do corpo dos guias). */
+.trp__cols {
+  display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start;
+  margin: clamp(36px, 4.5vw, 56px) auto 0;
+}
+.trp__article { flex: 1; min-width: 0; max-width: 760px; }
 
 /* blocos ancorados: scroll-margin compensa header sticky + faixa "Mercado agora" */
 .trp__block { margin-top: clamp(44px, 5vw, 64px); scroll-margin-top: 132px; }
 .trp__block:first-child { margin-top: 0; }
-
-/* índice de âncoras */
-.trp__toc { border-left: 2.5px solid var(--nu-blue); padding-left: 18px; }
-.trp__toc-lbl {
-  display: block; color: var(--nu-gray); font-size: 12.5px; font-weight: 800;
-  letter-spacing: 1.3px; text-transform: uppercase;
-}
-.trp__toc-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; }
-.trp__toc-link {
-  color: var(--nu-gray-2); font-size: 14.5px; font-weight: 700; line-height: 1.5;
-  border-bottom: 2px solid var(--nu-cream-2); transition: color .2s, border-color .2s;
-}
-.trp__toc-link:hover { color: var(--nu-blue); border-bottom-color: var(--nu-blue-30); }
 
 /* eyebrow + lead da oportunidade */
 .trp__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }

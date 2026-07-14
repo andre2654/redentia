@@ -12,6 +12,10 @@ const props = defineProps<{ hero: CarteiraHeroVM; allocation: CarteiraAllocation
 const emit = defineEmits<{ (e: 'connected'): void }>()
 const { hidden } = useHiddenValues()
 
+// "Novo aporte" (modal → chat) e "Rebalancear com a IA" (chat direto): MESMO
+// fluxo da home (MercadoSuaCarteira) via useAporteChat — uma só UX de aporte.
+const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = useAporteChat()
+
 const patrimonio = computed(() =>
   props.hero.patrimonio ? (hidden.value ? 'R$ ••••••' : props.hero.patrimonio) : null)
 const hojeTxt = computed(() =>
@@ -53,8 +57,8 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
             </span>
           </div>
           <div class="chr__ctas">
-            <NuxtLink to="/busca" class="chr__cta">Novo aporte</NuxtLink>
-            <NuxtLink to="/busca" class="chr__cta-outline">Rebalancear com a IA</NuxtLink>
+            <button type="button" class="chr__cta" @click="openAporte">Novo aporte</button>
+            <NuxtLink :to="rebalanceHref" class="chr__cta-outline">Rebalancear com a IA</NuxtLink>
           </div>
         </template>
 
@@ -114,6 +118,9 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
         </div>
       </div>
     </div>
+
+    <!-- Novo aporte: pergunta o valor e leva pro chat (mesmo modal da home) -->
+    <NuAmountModal :open="aporteOpen" @close="closeAporte" @confirm="confirmAporte" />
   </section>
 </template>
 
@@ -161,8 +168,8 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
 .chr__ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
 .chr__cta {
   display: inline-flex; align-items: center; gap: 10px; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 16px 28px; font-size: 16.5px; font-weight: 700;
-  transition: background .2s, transform .15s;
+  border: none; border-radius: var(--nu-r-pill); padding: 16px 28px; font-size: 16.5px; font-weight: 700;
+  font-family: inherit; cursor: pointer; transition: background .2s, transform .15s;
 }
 .chr__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
 .chr__cta-outline {
