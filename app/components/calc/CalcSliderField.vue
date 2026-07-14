@@ -8,10 +8,16 @@
 // ENTRADA MANUAL (dono 2026-07-14): além de arrastar, o valor é EDITÁVEL. O
 // número (à direita) vira um botão discreto com lapiseira; clicou, vira um
 // input inline (mesma tipografia), digita, Enter/clicar-fora confirma, Esc
-// cancela. Parse pt-BR ('.' milhar, ',' decimal), clampa em [min,max] e
-// arredonda pra precisão do step. Sem branding, sem tocar em nenhum call site:
-// o componente já recebe modelValue/min/max/step, então vale pra TODAS as
-// calculadoras de uma vez.
+// cancela. Parse pt-BR ('.' milhar, ',' decimal) + arredonda pra precisão do
+// step. Sem branding, sem tocar em nenhum call site: o componente já recebe
+// modelValue/min/max/step, então vale pra TODAS as calculadoras de uma vez.
+//
+// IMPORTANTE (dono 2026-07-14): min/max são só a FAIXA DE ARRASTO do slider, NÃO
+// o limite do valor. Digitar NÃO é preso nesses limites — dá pra colocar acima
+// do max e abaixo do min (renda de 50k num slider que vai até 30k, etc.). Único
+// piso: 0 pra campos naturalmente não-negativos (min>=0), pra não gerar valor
+// sem sentido/NaN; campos que aceitam negativo (min<0) ficam totalmente livres.
+// O thumb do slider fica encostado na ponta quando o valor passa da faixa.
 const props = defineProps<{
   label: string
   modelValue: number
@@ -79,11 +85,11 @@ function commit() {
   editing.value = false
   const parsed = parseDraft(draft.value)
   if (parsed === null) return // entrada vazia/inválida → mantém o valor atual
-  // clampa em [min,max] e arredonda pra precisão do step (respeita o valor
-  // digitado — não força múltiplo exato do step)
-  let v = Math.min(props.max, Math.max(props.min, parsed))
+  // NÃO prende nos limites do slider (min/max = só faixa de arrasto). Único
+  // piso: 0 pra campos não-negativos (min>=0); campos com min<0 aceitam negativo
+  // livre. Arredonda só pra precisão do step (respeita o valor digitado).
+  let v = props.min >= 0 ? Math.max(0, parsed) : parsed
   v = Number(v.toFixed(stepDecimals.value))
-  v = Math.min(props.max, Math.max(props.min, v))
   if (v !== props.modelValue) emit('update:modelValue', v)
 }
 
