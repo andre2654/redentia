@@ -27,6 +27,22 @@ function closeModal() {
   open.value = false
   nextTick(() => triggerRef.value?.focus())
 }
+
+// "Ativar resumo diário" (dono 2026-07-14): 2º gatilho ao lado do "Ler o resumo
+// do dia". Logado + sem canal → "Ativar"; logado + com canal → "Resumo ativo ·
+// canais" (pílula verde); deslogado → CTA "Receba o resumo no email ou
+// WhatsApp". Todos abrem o NuBriefingModal (que trata logado vs anônimo).
+const { isAuthenticated } = useAuthState()
+const { enabled, channelsLabel, hydrate } = useBriefingPrefs()
+onMounted(hydrate)
+
+const briefingOpen = ref(false)
+const briefingTriggerRef = ref<HTMLButtonElement | null>(null)
+function openBriefing() { briefingOpen.value = true }
+function closeBriefing() {
+  briefingOpen.value = false
+  nextTick(() => briefingTriggerRef.value?.focus())
+}
 </script>
 
 <template>
@@ -56,6 +72,21 @@ function closeModal() {
       <button ref="triggerRef" type="button" class="nds__btn" aria-haspopup="dialog" :aria-expanded="open" @click="openModal">
         Ler o resumo do dia<span class="nds__btn-arrow">→</span>
       </button>
+
+      <button
+        ref="briefingTriggerRef"
+        type="button"
+        class="nds__btn2"
+        :class="{ 'nds__btn2--active': isAuthenticated && enabled }"
+        aria-haspopup="dialog"
+        :aria-expanded="briefingOpen"
+        @click="openBriefing"
+      >
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>
+        <span v-if="!isAuthenticated">Receba o resumo no email ou WhatsApp</span>
+        <span v-else-if="enabled">Resumo ativo · {{ channelsLabel }}</span>
+        <span v-else>Ativar resumo diário</span>
+      </button>
     </div>
 
     <NuDayModal
@@ -66,6 +97,8 @@ function closeModal() {
       :blocks="blocks"
       @close="closeModal"
     />
+
+    <NuBriefingModal :open="briefingOpen" @close="closeBriefing" />
   </section>
 </template>
 
@@ -88,7 +121,7 @@ function closeModal() {
 .nds__blurb { margin: 14px 0 0; color: var(--nu-white-75); font-size: 16.5px; font-weight: 600; line-height: 1.5; text-wrap: pretty; }
 .nds__body--stat .nds__blurb { margin-top: 16px; }
 
-.nds__cta { display: flex; justify-content: center; margin-top: clamp(36px, 4vw, 44px); }
+.nds__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(36px, 4vw, 44px); }
 .nds__btn {
   display: inline-flex; align-items: center; gap: 11px; background: var(--nu-cream); color: var(--nu-day-btn-ink);
   border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: 17px; font-weight: 800;
@@ -96,4 +129,16 @@ function closeModal() {
 }
 .nds__btn:hover { background: var(--nu-white); transform: translateY(-1px); }
 .nds__btn-arrow { font-size: 19px; line-height: 1; }
+
+/* 2º gatilho: pílula ghost sobre a banda escura; verde quando o resumo está ativo */
+.nds__btn2 {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
+  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: 15.5px; font-weight: 800;
+  cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+}
+.nds__btn2:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }
+.nds__btn2--active { color: var(--nu-green-soft); border-color: var(--nu-green-soft-35); background: var(--nu-green-soft-16); }
+.nds__btn2--active:hover { background: var(--nu-green-soft-22); }
+.nds__btn2 svg { flex-shrink: 0; }
 </style>

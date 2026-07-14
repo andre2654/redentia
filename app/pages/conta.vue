@@ -63,11 +63,7 @@ usePageSeo({
           <ContaPerfil />
         </section>
         <section id="notificacoes" class="conta__sec">
-          <ContaPlaceholder
-            title="Notificações"
-            subtitle="Escolha onde e o que você recebe da Redentia."
-            note="A central de notificações e o resumo diário por e-mail e WhatsApp chegam em breve."
-          />
+          <ContaNotificacoes />
         </section>
         <section id="open-finance" class="conta__sec">
           <ContaOpenFinance />
