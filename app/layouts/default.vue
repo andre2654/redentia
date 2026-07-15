@@ -14,6 +14,8 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
       <slot />
     </main>
     <NuFooter />
+    <!-- Anúncio do Redentia MCP: aparece 1x, 5s após entrar (logado ou não). -->
+    <NuMcpPromo />
   </div>
 </template>
 
