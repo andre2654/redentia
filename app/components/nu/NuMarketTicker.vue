@@ -5,7 +5,10 @@
 // e as cotações giram num marquee contínuo e lento (pausa no hover;
 // prefers-reduced-motion desliga). Loop sem emenda: o track duplica os itens
 // e anima -50% da própria largura.
-const { items } = useMarketTicker()
+const { items, loading } = useMarketTicker()
+
+// larguras variadas pros bares do skeleton (parece uma faixa de cotações)
+const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 </script>
 
 <template>
@@ -13,7 +16,11 @@ const { items } = useMarketTicker()
     <div class="nut">
       <span class="nut__label">Mercado agora</span>
       <div class="nut__marquee">
-        <div class="nut__track">
+        <!-- skeleton: barras estáticas enquanto as cotações reais carregam (sem seed falso) -->
+        <div v-if="loading" class="nut__sk">
+          <NuSkeleton v-for="(w, i) in SK_WIDTHS" :key="i" variant="line" :width="`${w}px`" height="15px" radius="pill" />
+        </div>
+        <div v-else class="nut__track">
           <div v-for="half in 2" :key="half" class="nut__group" :aria-hidden="half === 2 || undefined">
             <span v-for="t in items" :key="`${half}-${t.n}`" class="nut__item">
               <span class="nut__name">{{ t.n }}</span>
@@ -39,6 +46,7 @@ const { items } = useMarketTicker()
 .nut { display: flex; align-items: center; gap: 26px; padding: 14px 22px; }
 .nut__label { color: var(--nu-ink); font-size: 15px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
 .nut__marquee { flex: 1; min-width: 0; overflow: hidden; }
+.nut__sk { display: flex; align-items: center; gap: 26px; }
 .nut__track { display: inline-flex; width: max-content; animation: nut-scroll 55s linear infinite; }
 .nut__marquee:hover .nut__track { animation-play-state: paused; }
 .nut__group { display: inline-flex; align-items: center; gap: 26px; padding-right: 26px; }

@@ -37,10 +37,13 @@ function pctFmt(x: unknown): { pct: string | null; dir: TickerItem['dir'] } {
 export function useMarketTicker() {
   const items = useState<TickerItem[]>('nu:ticker', () => SEED)
   const loaded = useState<boolean>('nu:ticker-loaded', () => false)
+  // loading = ainda não tentou hidratar (SSR + antes do fetch). A faixa mostra
+  // skeleton em vez do seed; vira false no fim do hydrate (sucesso OU degrade).
+  const loading = useState<boolean>('nu:ticker-loading', () => true)
   const { publicFetch } = useApi()
 
   async function hydrate() {
-    if (loaded.value) return
+    if (loaded.value) { loading.value = false; return }
     try {
       const [snap, petrQ, btc] = await Promise.all([
         publicFetch<any>('/market/snapshot?scope=ibov').catch(() => null),
@@ -72,9 +75,12 @@ export function useMarketTicker() {
     } catch {
       /* mantém o seed — a faixa nunca quebra a página */
     }
+    finally {
+      loading.value = false
+    }
   }
 
   onMounted(hydrate)
 
-  return { items, loaded }
+  return { items, loaded, loading }
 }
