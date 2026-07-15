@@ -11,7 +11,7 @@
 // (_tProg += 50/8000, valor exato do design v2). Dados: useNuTheses (os mesmos
 // de antes — só muda a apresentação). Capa quebrada/ausente degrada pro navy
 // do painel (bg já é navy + scrim), sem ícone de imagem partida.
-const { theses } = useNuTheses()
+const { theses, loading } = useNuTheses()
 
 const idx = ref(0)
 const paused = ref(false)
@@ -74,6 +74,23 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="tstz__wrap">
+      <template v-if="loading">
+        <div class="tstz__strip">
+          <div
+            v-for="i in 5" :key="`skp${i}`" class="tstz__panel tstz__panel--sk"
+            :style="{ flexGrow: i === 1 ? 8 : 1, minWidth: i === 1 ? 'min(260px, 78vw)' : '82px' }"
+          >
+            <NuSkeleton tone="navy" variant="block" width="100%" height="100%" radius="card" />
+          </div>
+        </div>
+        <div class="tstz__foot">
+          <div class="tstz__foot-left">
+            <NuSkeleton variant="text" :lines="2" last-width="72%" height="19px" />
+            <NuSkeleton variant="line" width="210px" height="50px" radius="pill" style="margin-top: 22px" />
+          </div>
+        </div>
+      </template>
+      <template v-else>
       <div class="tstz__strip">
         <button
           v-for="(t, i) in theses" :key="t.slug" type="button"
@@ -138,6 +155,7 @@ onBeforeUnmount(() => {
           </button>
         </div>
       </div>
+      </template>
     </div>
   </section>
 </template>
@@ -158,6 +176,7 @@ onBeforeUnmount(() => {
   flex-shrink: 1; flex-basis: 0; text-align: left;
   transition: flex-grow .8s cubic-bezier(.55, 0, .25, 1), min-width .8s cubic-bezier(.55, 0, .25, 1);
 }
+.tstz__panel--sk { cursor: default; }
 .tstz__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .tstz__scrim { position: absolute; inset: 0; background: var(--nu-tese-strip-scrim); pointer-events: none; }
 

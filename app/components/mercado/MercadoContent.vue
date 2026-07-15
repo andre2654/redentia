@@ -31,7 +31,7 @@ if (resumoData?.data.value?.unauthenticated) {
 const resumo = computed(() =>
   resumoData?.data.value && !resumoData.data.value.unauthenticated ? resumoData.data.value : null)
 
-const { featured, rows } = useNuNews()
+const { featured, rows, loading: newsLoading } = useNuNews()
 
 // "O dia no mercado" (PR-R4): o briefing do Atlas (sempre com seed → a seção
 // nunca some no /mercado) mapeado nos 4 tópicos da seção-gatilho + modal.
@@ -89,10 +89,26 @@ function guiaScroll(d: number) {
     <section class="mnw">
       <NuSectionHeading>Notícias do<br>mercado.</NuSectionHeading>
       <div class="mnw__featured">
-        <NuNewsFeatured :item="featured" />
+        <template v-if="newsLoading">
+          <div class="mnw__sk-meta">
+            <NuSkeleton variant="line" width="112px" height="30px" radius="pill" />
+            <NuSkeleton variant="line" width="140px" height="15px" radius="chip" />
+          </div>
+          <NuSkeleton variant="text" :lines="2" last-width="66%" height="40px" style="margin-top: 16px" />
+          <NuSkeleton variant="text" :lines="2" last-width="52%" height="17px" style="margin-top: 14px" />
+        </template>
+        <NuNewsFeatured v-else :item="featured" />
       </div>
       <div class="mnw__rows">
-        <NuNewsRow v-for="(n, i) in rows" :key="i" :item="n" />
+        <div v-for="i in (newsLoading ? 4 : 0)" :key="`skn${i}`" class="mnw__sk-row">
+          <div class="mnw__sk-main">
+            <NuSkeleton variant="line" width="78%" height="18px" />
+            <NuSkeleton variant="line" width="132px" height="13px" style="margin-top: 6px" />
+          </div>
+          <NuSkeleton variant="line" width="70px" height="15px" radius="chip" />
+          <NuSkeleton variant="circle" width="42px" height="42px" />
+        </div>
+        <NuNewsRow v-for="(n, i) in (newsLoading ? [] : rows)" :key="i" :item="n" />
       </div>
       <NuxtLink to="/noticias" class="mnw__all">
         <span class="mnw__all-circle">
@@ -180,6 +196,9 @@ function guiaScroll(d: number) {
 .mnw { background: var(--nu-white); padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
 .mnw__featured { margin-top: 44px; }
 .mnw__rows { margin-top: 38px; }
+.mnw__sk-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.mnw__sk-row { display: flex; align-items: center; gap: 18px; padding: 21px 0; border-top: 1.5px solid var(--nu-cream-2); }
+.mnw__sk-main { flex: 1; min-width: 0; }
 .mnw__all { display: inline-flex; align-items: center; gap: 14px; margin-top: 36px; transition: gap .2s; }
 .mnw__all:hover { gap: 19px; }
 .mnw__all-circle {

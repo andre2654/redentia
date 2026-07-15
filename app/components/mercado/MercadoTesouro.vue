@@ -2,7 +2,7 @@
 // "Tesouro Direto": 1 card destaque azul (maior taxa do dia) + 3 cards de
 // grupo (IPCA+/SELIC/Prefixado, 5 títulos cada). Valores exatos do design;
 // dados de useNuTesouro (seed → GET /tesouro?indexer=).
-const { highlight, groups } = useNuTesouro()
+const { highlight, groups, loading } = useNuTesouro()
 </script>
 
 <template>
@@ -20,14 +20,38 @@ const { highlight, groups } = useNuTesouro()
     <div class="mts__grid">
       <div class="mts__hi">
         <span class="mts__hi-kicker">Maior taxa hoje</span>
-        <div class="mts__hi-name">{{ highlight.name }}</div>
-        <div class="mts__hi-venc">{{ highlight.venc }}</div>
-        <div class="mts__hi-rate">{{ highlight.rate }}</div>
-        <div class="mts__hi-unit">ao ano</div>
-        <div class="mts__hi-updated">{{ highlight.updated }}</div>
+        <template v-if="loading">
+          <NuSkeleton tone="cream" variant="line" width="128px" height="22px" style="margin-top: 22px" />
+          <NuSkeleton tone="cream" variant="line" width="88px" height="14px" style="margin-top: 8px" />
+          <NuSkeleton tone="cream" variant="line" width="152px" height="38px" style="margin-top: 22px" />
+          <div class="mts__hi-unit">ao ano</div>
+          <NuSkeleton tone="cream" variant="line" width="158px" height="13px" style="margin-top: auto" />
+        </template>
+        <template v-else>
+          <div class="mts__hi-name">{{ highlight.name }}</div>
+          <div class="mts__hi-venc">{{ highlight.venc }}</div>
+          <div class="mts__hi-rate">{{ highlight.rate }}</div>
+          <div class="mts__hi-unit">ao ano</div>
+          <div class="mts__hi-updated">{{ highlight.updated }}</div>
+        </template>
       </div>
 
-      <div v-for="g in groups" :key="g.name" class="mts__group">
+      <div v-for="i in (loading ? 3 : 0)" :key="`skg${i}`" class="mts__group">
+        <div class="mts__group-head">
+          <NuSkeleton variant="line" width="82px" height="19px" />
+          <NuSkeleton variant="line" width="66px" height="24px" radius="pill" />
+        </div>
+        <div class="mts__rows">
+          <div v-for="n in 5" :key="n" class="mts__row">
+            <span class="mts__row-id">
+              <NuSkeleton variant="line" width="92px" height="14px" />
+              <NuSkeleton variant="line" width="62px" height="12px" style="margin-top: 3px" />
+            </span>
+            <NuSkeleton variant="line" width="74px" height="14px" radius="chip" />
+          </div>
+        </div>
+      </div>
+      <div v-for="g in (loading ? [] : groups)" :key="g.name" class="mts__group">
         <div class="mts__group-head">
           <span class="mts__group-name">{{ g.name }}</span>
           <span class="mts__group-count">{{ g.count }}</span>
