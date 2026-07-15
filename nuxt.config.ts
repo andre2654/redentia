@@ -73,6 +73,11 @@ export default defineNuxtConfig({
     // EXATA; '/' já é private/no-store acima). A carteira segue página
     // separada e privada — NÃO redireciona.
     '/mercado': { redirect: { to: '/', statusCode: 301 } },
+    // Raio-X aposentado no Nu (existia no Frontend antigo): 301 pra home,
+    // preserva o link equity e evita 404 das URLs indexadas. Regra exata +
+    // curinga pra qualquer sub-path/variante que o Google tenha pego.
+    '/raio-x': { redirect: { to: '/', statusCode: 301 } },
+    '/raio-x/**': { redirect: { to: '/', statusCode: 301 } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
     // Configurações: pessoal e atrás de login → private/no-store (a página já é
     // noindex). Página única com seções ancoradas (sem sub-rotas).
