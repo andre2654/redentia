@@ -7,7 +7,7 @@
 import type { NuMoverTab } from '~/types/market'
 
 const { isAuthenticated } = useAuthState()
-const { tabs, movers, indices } = useNuMovers()
+const { tabs, movers, indices, loading } = useNuMovers()
 const activeTab = ref<NuMoverTab>('Ações')
 const active = computed(() => movers.value[activeTab.value])
 </script>
@@ -26,7 +26,8 @@ const active = computed(() => movers.value[activeTab.value])
     </div>
 
     <div class="mmv__indices">
-      <span v-for="ix in indices" :key="ix.label" class="mmv__index">
+      <NuSkeleton v-for="i in (loading ? 2 : 0)" :key="`ix${i}`" tone="navy" variant="line" width="148px" height="22px" radius="chip" />
+      <span v-for="ix in (loading ? [] : indices)" :key="ix.label" class="mmv__index">
         <span class="mmv__index-label">{{ ix.label }}</span>
         <span class="mmv__index-value">{{ ix.value }}</span>
         <span class="mmv__index-pct" :class="`mmv__index-pct--${ix.dir}`">{{ ix.pct }}</span>
@@ -40,7 +41,17 @@ const active = computed(() => movers.value[activeTab.value])
           <span class="mmv__card-title">Maiores altas</span>
         </div>
         <div class="mmv__rows">
-          <NuxtLink v-for="r in active.gainers" :key="r.ticker" :to="`/asset/${r.ticker}`" class="mmv__row">
+          <div v-for="i in (loading ? 5 : 0)" :key="`skg${i}`" class="mmv__row mmv__row--sk">
+            <NuSkeleton tone="navy" variant="line" width="14px" height="15px" radius="chip" />
+            <span class="mmv__id">
+              <NuSkeleton tone="navy" variant="line" width="66px" height="15px" />
+              <NuSkeleton tone="navy" variant="line" width="98px" height="12px" style="margin-top: 4px" />
+            </span>
+            <NuSkeleton data-nu-hide tone="navy" variant="line" width="70px" height="14px" radius="chip" />
+            <NuSkeleton tone="navy" variant="line" width="58px" height="16px" radius="chip" />
+            <NuSkeleton tone="navy" variant="circle" width="30px" height="30px" />
+          </div>
+          <NuxtLink v-for="r in (loading ? [] : active.gainers)" :key="r.ticker" :to="`/asset/${r.ticker}`" class="mmv__row">
             <span class="mmv__rank">{{ r.rank }}</span>
             <span class="mmv__id">
               <span class="mmv__ticker">{{ r.ticker }}</span>
@@ -61,7 +72,17 @@ const active = computed(() => movers.value[activeTab.value])
           <span class="mmv__card-title">Maiores baixas</span>
         </div>
         <div class="mmv__rows">
-          <NuxtLink v-for="r in active.losers" :key="r.ticker" :to="`/asset/${r.ticker}`" class="mmv__row">
+          <div v-for="i in (loading ? 5 : 0)" :key="`skl${i}`" class="mmv__row mmv__row--sk">
+            <NuSkeleton tone="navy" variant="line" width="14px" height="15px" radius="chip" />
+            <span class="mmv__id">
+              <NuSkeleton tone="navy" variant="line" width="66px" height="15px" />
+              <NuSkeleton tone="navy" variant="line" width="98px" height="12px" style="margin-top: 4px" />
+            </span>
+            <NuSkeleton data-nu-hide tone="navy" variant="line" width="70px" height="14px" radius="chip" />
+            <NuSkeleton tone="navy" variant="line" width="58px" height="16px" radius="chip" />
+            <NuSkeleton tone="navy" variant="circle" width="30px" height="30px" />
+          </div>
+          <NuxtLink v-for="r in (loading ? [] : active.losers)" :key="r.ticker" :to="`/asset/${r.ticker}`" class="mmv__row">
             <span class="mmv__rank">{{ r.rank }}</span>
             <span class="mmv__id">
               <span class="mmv__ticker">{{ r.ticker }}</span>
@@ -119,6 +140,8 @@ const active = computed(() => movers.value[activeTab.value])
   transition: background .16s;
 }
 .mmv__rows > .mmv__row:first-child { border-top: none; }
+.mmv__row--sk { pointer-events: none; }
+.mmv__row--sk .mmv__id { display: flex; flex-direction: column; }
 .mmv__row:hover { background: var(--nu-cream-text-08); }
 .mmv__row:hover .mmv__go { background: var(--nu-blue-hover); }
 /* botão azul da Redentia: indica que a linha leva pro ativo */

@@ -182,6 +182,7 @@ export function useNuTheses() {
   // sempre renderiza o SEED — zero hydration mismatch.
   const apiCards = useState<ThesisCardApi[]>('nu:mercado:theses-api', () => [])
   const started = useState('nu:mercado:theses-started', () => false)
+  const loading = useState('nu:mercado:theses-loading', () => true)
   const { isAuthenticated } = useAuthState()
 
   const theses = computed<NuThesis[]>(() => {
@@ -197,11 +198,13 @@ export function useNuTheses() {
       const cards = (res?.data ?? []).slice(0, 4)
       if (cards.length < 2) return // carrossel precisa de conteúdo — mantém o seed
       apiCards.value = cards
-    } catch { /* mantém o seed */ }
+    }
+    catch { /* mantém o seed */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { theses }
+  return { theses, loading }
 }
 
 /* ═════ Movers ("O mercado hoje") ═════ */
@@ -262,6 +265,7 @@ export function useNuMovers() {
   const movers = useState<Record<NuMoverTab, NuMoversClass>>('nu:mercado:movers', () => MOVERS_SEED)
   const indices = useState<NuIndexStat[]>('nu:mercado:indices', () => INDICES_SEED)
   const started = useState('nu:mercado:movers-started', () => false)
+  const loading = useState('nu:mercado:movers-loading', () => true)
 
   async function hydrate() {
     if (started.value) return
@@ -329,11 +333,13 @@ export function useNuMovers() {
         }
         if (out.length) indices.value = out
       }
-    } catch { /* mantém o seed */ }
+    }
+    catch { /* mantém o seed */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { tabs, movers, indices }
+  return { tabs, movers, indices, loading }
 }
 
 /* ═════ Briefing ("A leitura do dia") ═════ */
@@ -505,6 +511,7 @@ export function useNuTesouro() {
   const highlight = useState<NuTesouroHighlight>('nu:mercado:tesouro-hi', () => TESOURO_HIGHLIGHT_SEED)
   const groups = useState<NuTesouroGroup[]>('nu:mercado:tesouro-groups', () => TESOURO_GROUPS_SEED)
   const started = useState('nu:mercado:tesouro-started', () => false)
+  const loading = useState('nu:mercado:tesouro-loading', () => true)
 
   async function hydrate() {
     if (started.value) return
@@ -553,11 +560,13 @@ export function useNuTesouro() {
           updated: updated || highlight.value.updated,
         }
       }
-    } catch { /* mantém o seed */ }
+    }
+    catch { /* mantém o seed */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { highlight, groups }
+  return { highlight, groups, loading }
 }
 
 /* ═════ Notícias ═════ */
@@ -590,6 +599,7 @@ export function useNuNews() {
   const rows = useState<NuNewsRowItem[]>('nu:mercado:news-rows', () => NEWS_ROWS_SEED)
   const loaded = useState('nu:mercado:news-loaded', () => false)
   const started = useState('nu:mercado:news-started', () => false)
+  const loading = useState('nu:mercado:news-loading', () => true)
 
   async function hydrate() {
     if (started.value) return
@@ -660,11 +670,13 @@ export function useNuNews() {
         ticker: badgeFor(n.ticker),
       }))
       loaded.value = true
-    } catch { /* mantém o seed */ }
+    }
+    catch { /* mantém o seed */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { featured, rows, loaded }
+  return { featured, rows, loaded, loading }
 }
 
 /* ═════ Conteúdo estático da página (copy exata do design) ═════ */
