@@ -15,7 +15,7 @@ const mcpOn = computed(() => status.value?.enabled ?? false)
 const keyMasked = computed(() => status.value?.key_masked ?? '')
 
 // Permissões locais espelhando o backend (sincroniza no hydrate/rotate).
-const perms = reactive({ carteira: true, teses: true, news: true })
+const perms = reactive({ carteira: true, mercado: true, teses: true, news: true })
 watch(() => status.value?.permissions, (p) => { if (p) Object.assign(perms, p) }, { immediate: true })
 
 const reveal = ref(false)
@@ -58,7 +58,7 @@ async function onToggleMain() {
   if (!hasKey.value) { await rotate(); reveal.value = true; return }
   await setEnabled(!mcpOn.value)
 }
-async function onTogglePerm(k: 'carteira' | 'teses' | 'news') {
+async function onTogglePerm(k: 'carteira' | 'mercado' | 'teses' | 'news') {
   if (busy.value || !hasKey.value) return
   perms[k] = !perms[k]
   await setPermissions({ ...perms })
@@ -104,7 +104,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
       <div class="mcp__head-txt">
         <span class="mcp__badge">Novo</span>
         <h2 class="mcp__title">Redentia MCP</h2>
-        <p class="mcp__desc">Conecte sua carteira e as teses ao seu assistente de IA. Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor — a Redentia responde com os seus dados.</p>
+        <p class="mcp__desc">Conecte sua carteira, o mercado e as teses ao seu assistente de IA. Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor — a Redentia responde com os seus dados.</p>
       </div>
       <button type="button" class="msw" :class="{ 'msw--on': mcpOn }" role="switch" :aria-checked="mcpOn" aria-label="Ativar Redentia MCP" @click="onToggleMain"><span class="msw__knob" /></button>
     </div>
@@ -151,6 +151,13 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
           <div class="mcp__perm-desc">Posições, saldo e proventos — somente leitura.</div>
         </div>
         <button type="button" class="msw" :class="{ 'msw--on': perms.carteira }" role="switch" :aria-checked="perms.carteira" aria-label="Permissão carteira" @click="onTogglePerm('carteira')"><span class="msw__knob" /></button>
+      </div>
+      <div class="mcp__perm">
+        <div class="mcp__perm-txt">
+          <div class="mcp__perm-name">Mercado</div>
+          <div class="mcp__perm-desc">Cotações, busca de ativos e placar do mercado.</div>
+        </div>
+        <button type="button" class="msw" :class="{ 'msw--on': perms.mercado }" role="switch" :aria-checked="perms.mercado" aria-label="Permissão mercado" @click="onTogglePerm('mercado')"><span class="msw__knob" /></button>
       </div>
       <div class="mcp__perm">
         <div class="mcp__perm-txt">

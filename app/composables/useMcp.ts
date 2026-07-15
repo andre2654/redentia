@@ -6,6 +6,7 @@
  */
 export interface McpPermissions {
   carteira: boolean
+  mercado: boolean
   teses: boolean
   news: boolean
 }
