@@ -50,7 +50,6 @@ export default defineNuxtConfig({
       // LCP. Pra desligar num env, basta setar a env correspondente vazia.
       gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-F2QGZNWJTM', // Google Analytics 4
       clarityProjectId: process.env.NUXT_PUBLIC_CLARITY_PROJECT_ID || 'wmh9pyc3io', // Microsoft Clarity
-      metaPixelId: process.env.NUXT_PUBLIC_META_PIXEL_ID || '26687981637519908', // Meta Pixel
     },
   },
 
