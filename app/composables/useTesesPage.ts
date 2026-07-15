@@ -103,6 +103,10 @@ export function useTesesPage() {
   const apiCards = useState<ThesisCardApi[]>('nu:teses:api-cards', () => [])
   const favSlugs = useState<string[]>('nu:teses:favs', () => [])
   const started = useState('nu:teses:started', () => false)
+  // loading = ainda não hidratou (SSR + antes do fetch client). A página mostra
+  // skeleton em vez dos SEEDs; vira false no fim do hydrate (sucesso OU falha).
+  // Persistido em useState → revisita na mesma sessão já entra com os reais.
+  const loading = useState('nu:teses:loading', () => true)
   const { isAuthenticated } = useAuthState()
   const { authFetch } = useApi()
 
@@ -173,14 +177,17 @@ export function useTesesPage() {
     try {
       const res = await marketFetchTheses()
       const cards = res?.data ?? []
-      if (cards.length < 2) return // carrossel precisa de conteúdo — mantém o seed
-      favSlugs.value = await favsPromise
-      apiCards.value = cards
-    } catch { /* mantém o seed */ }
+      if (cards.length >= 2) { // carrossel precisa de conteúdo; senão degrada pro seed
+        favSlugs.value = await favsPromise
+        apiCards.value = cards
+      }
+    }
+    catch { /* mantém o seed (degrade de outage) */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { ideias, pesquisas, estrategias }
+  return { ideias, pesquisas, estrategias, loading }
 }
 
 /* ═════ FAQ (copy do design; travessões viram vírgula — regra de copy pública) ═════ */
