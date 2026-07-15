@@ -5,7 +5,7 @@
 // hero → "Grandes ideias." → banner Redentia AI → "Estratégias de
 // investidores." → "Melhores pesquisas." → vantagens (#explorar) → FAQ.
 // Dados: useTesesPage (seed do design → /theses real → degrade).
-const { ideias, pesquisas, estrategias } = useTesesPage()
+const { ideias, pesquisas, estrategias, loading } = useTesesPage()
 
 usePageSeo({
   title: 'Teses de investimento',
@@ -24,7 +24,8 @@ usePageSeo({
     </section>
 
     <TesesCarrossel
-      v-if="ideias.length"
+      v-if="loading || ideias.length"
+      :loading="loading"
       title="Grandes ideias."
       sub="As últimas teses da Redentia"
       :cards="ideias"
@@ -35,7 +36,8 @@ usePageSeo({
     <TesesAiBanner />
 
     <TesesCarrossel
-      v-if="estrategias.length"
+      v-if="loading || estrategias.length"
+      :loading="loading"
       title="Estratégias de investidores."
       sub="Fácil de seguir, estudo de portfólios."
       :cards="estrategias"
@@ -45,7 +47,8 @@ usePageSeo({
     />
 
     <TesesCarrossel
-      v-if="pesquisas.length"
+      v-if="loading || pesquisas.length"
+      :loading="loading"
       title="Melhores pesquisas."
       sub="Teses que performaram melhor."
       :cards="pesquisas"

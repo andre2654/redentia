@@ -18,6 +18,8 @@ defineProps<{
   cta: string
   /** fundo da banda (default white) */
   surface?: 'cream'
+  /** enquanto os dados reais carregam: mostra cards-skeleton no lugar do seed */
+  loading?: boolean
 }>()
 
 const railRef = ref<HTMLElement | null>(null)
@@ -42,8 +44,34 @@ function gradFor(i: number) {
 
       <div class="tcr__right">
         <div ref="railRef" class="tcr__car">
+          <!-- skeleton: cards-placeholder enquanto /theses carrega (sem seed falso) -->
+          <div
+            v-for="i in (loading ? 4 : 0)" :key="`sk${i}`"
+            class="tcr__card tcr__card--sk" :style="{ background: gradFor(i) }"
+          >
+            <span class="tcr__inner">
+              <span class="tcr__top">
+                <NuSkeleton tone="navy" variant="line" width="86px" height="15px" />
+                <NuSkeleton tone="navy" variant="line" width="64px" height="24px" radius="pill" />
+              </span>
+              <span class="tcr__sk-lower">
+                <NuSkeleton tone="navy" variant="text" :lines="2" last-width="54%" height="24px" />
+                <NuSkeleton tone="navy" variant="line" width="72px" height="10px" class="tcr__sk-eyebrow" />
+                <span class="tcr__chips">
+                  <NuSkeleton v-for="n in 4" :key="n" tone="navy" variant="line" width="50px" height="31px" radius="chip" />
+                </span>
+                <span class="tcr__bottom">
+                  <span class="tcr__ret-wrap">
+                    <NuSkeleton tone="navy" variant="line" width="88px" height="26px" />
+                    <NuSkeleton tone="navy" variant="line" width="118px" height="11px" class="tcr__sk-since" />
+                  </span>
+                  <NuSkeleton tone="navy" variant="line" width="96px" height="42px" radius="pill" />
+                </span>
+              </span>
+            </span>
+          </div>
           <NuxtLink
-            v-for="(c, i) in cards" :key="c.slug"
+            v-for="(c, i) in (loading ? [] : cards)" :key="c.slug"
             :to="c.href" class="tcr__card" :style="{ background: gradFor(i) }"
           >
             <img
@@ -76,7 +104,7 @@ function gradFor(i: number) {
             </span>
           </NuxtLink>
         </div>
-        <div class="tcr__nav">
+        <div v-if="!loading" class="tcr__nav">
           <button type="button" class="tcr__nav-btn" :aria-label="`${title} anteriores`" @click="scroll(-1)">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </button>
@@ -143,6 +171,14 @@ function gradFor(i: number) {
   display: inline-flex; align-items: center; gap: 7px; border: 1.5px solid var(--nu-white-85); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 10px 17px; font-size: 13.5px; font-weight: 800; white-space: nowrap; flex-shrink: 0;
 }
+
+/* skeleton card (mesma anatomia, tone navy) */
+.tcr__card--sk { pointer-events: none; }
+.tcr__sk-lower { margin-top: auto; display: flex; flex-direction: column; }
+.tcr__sk-eyebrow { margin-top: 20px; }
+.tcr__sk-lower .tcr__chips { margin-top: 11px; }
+.tcr__sk-lower .tcr__bottom { margin-top: 22px; padding-top: 20px; }
+.tcr__sk-since { margin-top: 6px; }
 
 .tcr__nav { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; padding-right: clamp(22px, 5.5vw, 80px); }
 .tcr__nav-btn {
