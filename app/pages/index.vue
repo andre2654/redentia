@@ -12,8 +12,8 @@
 // serve '/' com private/no-store (rota com variante logada — CDN não varia
 // por cookie, regra dura documentada).
 usePageSeo({
-  title: 'Mercado hoje: ações, FIIs, notícias e análise com IA',
-  description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações, FIIs e BDRs, taxas do Tesouro Direto, notícias do dia e o briefing de fechamento escrito por IA. Grátis, sem conta.',
+  title: 'Mercado hoje: ações, FIIs e análise com IA',
+  description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações e FIIs, Tesouro Direto, notícias e o briefing de fechamento por IA. Grátis, sem conta.',
   path: '/',
   breadcrumbs: [{ name: 'Início', path: '/' }],
 })
