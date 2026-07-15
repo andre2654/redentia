@@ -86,11 +86,12 @@ async function copyCfg() {
   cTimer = setTimeout(() => (copiedCfg.value = false), 1600)
 }
 
+// Logos reais (marcas transparentes → tile branco por trás no CSS).
 const apps = [
-  { name: 'Claude', letter: 'C', bg: '#D97757' },
-  { name: 'ChatGPT', letter: 'G', bg: '#10A37F' },
-  { name: 'Cursor', letter: '▹', bg: '#0A0A0C' },
-  { name: 'Raycast', letter: 'R', bg: '#FF6363' },
+  { name: 'Claude', logo: '/icons/logo-claude.webp' },
+  { name: 'ChatGPT', logo: '/icons/logo-chatgpt.webp' },
+  { name: 'Cursor', logo: '/icons/logo-cursor.webp' },
+  { name: 'Raycast', logo: '/icons/logo-raycast.webp' },
 ]
 
 onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
@@ -111,7 +112,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
 
     <div class="mcp__apps">
       <span v-for="a in apps" :key="a.name" class="mcp__app">
-        <span class="mcp__app-ic" :style="{ background: a.bg }">{{ a.letter }}</span>{{ a.name }}
+        <span class="mcp__app-ic"><img :src="a.logo" :alt="a.name" class="mcp__app-img" width="22" height="22"></span>{{ a.name }}
       </span>
     </div>
 
@@ -239,9 +240,10 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
   padding: 9px 15px; border-radius: 12px;
 }
 .mcp__app-ic {
-  width: 22px; height: 22px; border-radius: 6px; color: #fff;
-  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;
+  width: 22px; height: 22px; border-radius: 6px; background: #fff; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
+.mcp__app-img { width: 100%; height: 100%; object-fit: contain; padding: 3px; display: block; }
 
 .mcp__panel { position: relative; background: rgba(9, 20, 44, .5); border: 1px solid rgba(255, 255, 255, .14); border-radius: 18px; padding: 20px; margin-top: 22px; }
 .mcp__panel-label { color: rgba(245, 241, 234, .7); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }

@@ -5,14 +5,14 @@
 // coluna direita com imagem lifestyle (aspect 4/3). Copy e cores exatas do
 // contrato: designs-v2/Redentia Mercado Nu.dc.html.
 //
-// Os avatares são círculos com texto (cores das marcas em tokens --nu-bank-*),
-// sobrepostos com margin negativo e borda 3px da cor da banda (--nu-blue).
+// Avatares = logos reais das marcas (tiles cheios em public/icons/*.webp),
+// clipados em círculo (object-fit:cover), sobrepostos com margin negativo e
+// borda 3px da cor da banda (--nu-blue). O "+110" segue como círculo de texto.
 const banks = [
-  { label: 'nu', bg: 'var(--nu-bank-nu)', fg: 'var(--nu-white)', size: '15px' },
-  { label: 'itaú', bg: 'var(--nu-bank-itau)', fg: 'var(--nu-white)', size: '12px' },
-  { label: 'B', bg: 'var(--nu-cream)', fg: 'var(--nu-bank-bradesco)', size: '16px' },
-  { label: 'S', bg: 'var(--nu-bank-santander)', fg: 'var(--nu-white)', size: '16px' },
-  { label: '+110', bg: 'var(--nu-cream-text-22)', fg: 'var(--nu-cream-text)', size: '12.5px' },
+  { name: 'Nubank', logo: '/icons/logo-nubank.webp' },
+  { name: 'Itaú', logo: '/icons/logo-itau.webp' },
+  { name: 'Bradesco', logo: '/icons/logo-bradesco.webp' },
+  { name: 'Santander', logo: '/icons/logo-santander.webp' },
 ] as const
 
 // Imagem lifestyle real: solte o arquivo em public/img/mercado/carteira-conectada.webp.
@@ -28,12 +28,22 @@ const photoFailed = ref(false)
         <div class="mcc__dek">Conecte contas de qualquer banco ou corretora e a Redentia importa seus ativos automaticamente, sem planilha.</div>
         <div class="mcc__banks">
           <span
-            v-for="(b, i) in banks" :key="b.label"
+            v-for="(b, i) in banks" :key="b.name"
             class="mcc__bank"
             :class="{ 'mcc__bank--overlap': i > 0 }"
-            :style="{ background: b.bg, color: b.fg, fontSize: b.size }"
-          >{{ b.label }}</span>
+          >
+            <img :src="b.logo" :alt="b.name" class="mcc__bank-img" width="46" height="46">
+          </span>
+          <span class="mcc__bank mcc__bank--overlap mcc__bank--more">+110</span>
         </div>
+
+        <!-- Teaser do Redentia MCP: a carteira conectada não fica presa no app;
+             o investidor conversa com ela direto no assistente de IA. -->
+        <div class="mcc__mcp">
+          <span class="mcc__mcp-badge">Novo</span>
+          <span class="mcc__mcp-txt">E não só aqui: converse com a sua carteira direto no Claude, ChatGPT ou Cursor com o <strong>Redentia MCP</strong>.</span>
+        </div>
+
         <NuxtLink to="/login" class="mcc__cta">
           Conectar minha carteira<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
         </NuxtLink>
@@ -93,9 +103,27 @@ const photoFailed = ref(false)
 .mcc__bank {
   width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  font-weight: 800; border: 3px solid var(--nu-blue);
+  overflow: hidden; background: var(--nu-cream); border: 3px solid var(--nu-blue);
 }
+.mcc__bank-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mcc__bank--overlap { margin-left: -14px; }
+.mcc__bank--more {
+  background: var(--nu-cream-text-22); color: var(--nu-cream-text);
+  font-size: 12.5px; font-weight: 800;
+}
+
+/* teaser do Redentia MCP */
+.mcc__mcp {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  margin-top: 26px; max-width: 480px;
+}
+.mcc__mcp-badge {
+  flex-shrink: 0; background: var(--nu-cream-text-14); color: var(--nu-cream-text);
+  font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+  padding: 5px 11px; border-radius: var(--nu-r-pill);
+}
+.mcc__mcp-txt { color: var(--nu-cream-text-82); font-size: 15px; font-weight: 500; line-height: 1.55; }
+.mcc__mcp-txt strong { color: var(--nu-cream-text); font-weight: 800; }
 .mcc__cta {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
   border: 1.6px solid var(--nu-cream-text-55); border-radius: var(--nu-r-pill); padding: 16px 34px;

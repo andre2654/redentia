@@ -314,13 +314,9 @@
   --nu-shadow-day-modal: 0 40px 110px rgba(0, 0, 0, 0.45);
 
   /* ——— PR-R5 novas seções de imagem do /mercado (designs v2) ——— */
-  /* "Sua carteira, conectada." — avatares de banco (CSS puro, cores das marcas).
-     Bradesco "B" usa bg --nu-cream + texto --nu-bank-bradesco; Santander bg
-     --nu-bank-santander + texto branco; "+110" bg --nu-cream-text-22 (já existe). */
-  --nu-bank-nu: #820AD1;        /* Nubank */
-  --nu-bank-itau: #0A1A54;      /* Itaú */
-  --nu-bank-bradesco: #CC092F;  /* Bradesco (texto sobre --nu-cream) */
-  --nu-bank-santander: #EC0000; /* Santander */
+  /* "Sua carteira, conectada." agora usa logos reais das marcas
+     (public/icons/logo-*.webp), não mais círculos de texto — os tokens
+     --nu-bank-* foram removidos por ficarem órfãos. */
   --nu-cream-text-82: rgba(245, 241, 234, 0.82); /* dek da banda azul + sub do CTA final */
   /* placeholder elegante das imagens lifestyle (TODO(asset): fotos reais do André) */
   --nu-img-placeholder: linear-gradient(135deg, #2456C9 0%, #16357F 52%, #0C1524 100%);
