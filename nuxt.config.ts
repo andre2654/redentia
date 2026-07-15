@@ -45,6 +45,12 @@ export default defineNuxtConfig({
       // o botão Google do /login se esconde sozinho (LoginGoogleButton
       // documenta o que falta pra ligar).
       googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      // Observabilidade (migrada do Frontend antigo no cutover). Plugins
+      // client carregam lazy (requestIdleCallback) pra não competir com o
+      // LCP. Pra desligar num env, basta setar a env correspondente vazia.
+      gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-F2QGZNWJTM', // Google Analytics 4
+      clarityProjectId: process.env.NUXT_PUBLIC_CLARITY_PROJECT_ID || 'wmh9pyc3io', // Microsoft Clarity
+      metaPixelId: process.env.NUXT_PUBLIC_META_PIXEL_ID || '26687981637519908', // Meta Pixel
     },
   },
 
