@@ -17,6 +17,34 @@ function coverFailed(slug: string) {
   <section class="bsr">
     <div class="bsr__label">{{ props.results.label }}</div>
 
+    <!-- curadoria "Em alta agora" hidratando: skeleton no lugar dos seeds -->
+    <template v-if="props.results.loading">
+      <div class="bsr__group">Ativos</div>
+      <div class="bsr__grid">
+        <div v-for="i in 4" :key="`ska${i}`" class="bsr__row">
+          <NuSkeleton variant="block" width="42px" height="42px" radius="tile" />
+          <span class="bsr__row-main">
+            <NuSkeleton variant="line" width="64px" height="16px" radius="chip" />
+            <NuSkeleton variant="line" width="120px" height="13px" radius="chip" style="margin-top: 5px" />
+          </span>
+          <span class="bsr__quote bsr__quote--sk">
+            <NuSkeleton variant="line" width="72px" height="15px" radius="chip" />
+            <NuSkeleton variant="line" width="46px" height="12px" radius="chip" style="margin-top: 5px; margin-left: auto" />
+          </span>
+        </div>
+      </div>
+      <div class="bsr__group bsr__group--far">Teses</div>
+      <div class="bsr__theses">
+        <div v-for="i in 2" :key="`skt${i}`" class="bsr__thesis bsr__thesis--sk">
+          <NuSkeleton variant="block" width="86px" height="64px" radius="tile" />
+          <span class="bsr__thesis-main">
+            <NuSkeleton variant="line" width="80%" height="16px" radius="chip" />
+            <NuSkeleton variant="line" width="55%" height="13px" radius="chip" style="margin-top: 7px" />
+          </span>
+        </div>
+      </div>
+    </template>
+
     <template v-if="props.results.assets.length">
       <div class="bsr__group">Ativos</div>
       <div class="bsr__grid">
@@ -119,6 +147,9 @@ function coverFailed(slug: string) {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bsr__quote { text-align: right; flex-shrink: 0; }
+.bsr__quote--sk { display: flex; flex-direction: column; align-items: flex-end; }
+.bsr__thesis--sk { cursor: default; }
+.bsr__thesis--sk:hover { transform: none; }
 .bsr__price {
   display: block; color: var(--nu-ink); font-size: 15px; font-weight: 800;
   font-variant-numeric: tabular-nums;

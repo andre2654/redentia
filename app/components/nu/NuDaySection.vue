@@ -14,6 +14,7 @@ const props = defineProps<{
   tone: 'mercado' | 'home'
   metaLine: string
   topics: NuDayTopic[]
+  loading?: boolean
 }>()
 
 const open = ref(false)
@@ -49,11 +50,19 @@ function closeBriefing() {
   <section class="nds" :class="`nds--${tone}`">
     <div class="nds__head">
       <h2 class="nds__title">O dia no mercado.</h2>
-      <div class="nds__sub">{{ metaLine }}</div>
+      <NuSkeleton v-if="loading" tone="cream" variant="line" width="min(360px, 80%)" height="15px" radius="chip" style="margin: 16px auto 0" />
+      <div v-else class="nds__sub">{{ metaLine }}</div>
     </div>
 
     <div class="nds__grid">
-      <div v-for="(t, i) in topics" :key="i" class="nds__card">
+      <div v-for="i in (loading ? 4 : 0)" :key="`skd${i}`" class="nds__card">
+        <NuSkeleton tone="navy" variant="line" width="34px" height="34px" radius="tile" />
+        <div class="nds__body">
+          <NuSkeleton tone="navy" variant="line" width="62%" height="40px" />
+          <NuSkeleton tone="navy" variant="text" :lines="3" last-width="72%" height="16px" style="margin-top: 14px" />
+        </div>
+      </div>
+      <div v-for="(t, i) in (loading ? [] : topics)" :key="i" class="nds__card">
         <span class="nds__icon">
           <svg v-if="t.icon === 'trend'" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8" /><path d="M17 7h4v4" /></svg>
           <svg v-else-if="t.icon === 'bars'" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L3 8.5h18z" /><path d="M4 21h16" /><path d="M6 21v-9" /><path d="M10 21v-9" /><path d="M14 21v-9" /><path d="M18 21v-9" /></svg>

@@ -392,6 +392,7 @@ function publishedTimeLabel(raw: string | null | undefined): string | null {
 export function useNuBriefing() {
   const briefing = useState<NuBriefing>('nu:mercado:briefing', () => BRIEFING_SEED)
   const started = useState('nu:mercado:briefing-started', () => false)
+  const loading = useState('nu:mercado:briefing-loading', () => true)
 
   async function hydrate() {
     if (started.value) return
@@ -455,11 +456,13 @@ export function useNuBriefing() {
         takeaway: null, // idem: sem bloco "o que segurar" no resource atual
         sections: d.sections ?? null, // blocos estruturados (PR-B) — buildDayTopics consome cru
       }
-    } catch { /* mantém o seed */ }
+    }
+    catch { /* mantém o seed */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { briefing }
+  return { briefing, loading }
 }
 
 /* ═════ Tesouro Direto ═════ */

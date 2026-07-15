@@ -149,9 +149,14 @@ const cfg = computed(() => THEMES[props.theme])
 // Feed dinâmico: seed do tema (SSR-safe) → movers reais no client → seed se
 // falhar. navy usa o feed longo (6 frases); light, o curto (4). O seed passado
 // é o do tema, então SSR e 1º paint são idênticos ao que já existia.
-const { feed } = useMarketReading(cfg.value.feed, props.theme === 'navy' ? 6 : 4)
+const { feed, loading } = useMarketReading(cfg.value.feed, props.theme === 'navy' ? 6 : 4)
 const tokens = computed(() => feed.value)
 const total = computed(() => tokens.value.length)
+
+// tom do skeleton por tema (navy no login; cream sobre o card branco do hero)
+const skTone = computed<'navy' | 'cream'>(() => (props.theme === 'navy' ? 'navy' : 'cream'))
+// larguras dos chips do skeleton do feed (2 "frases" ilustrativas, sem % falso)
+const SK_CHIPS = [110, 74, 64, 146, 96, 120, 70] as const
 
 // logos que falharam (404 na Brapi) → degradam pro tile de letra, por índice.
 const logoFailed = reactive(new Set<number>())
@@ -317,7 +322,10 @@ function startRead() {
   }, ms)
 }
 
-onMounted(() => {
+// Só arranca a animação quando o feed ASSENTA (loading=false: movers reais
+// hidratados OU degrade pro seed). Enquanto carrega, o template mostra skeleton
+// e nada anima — o feed com percentuais reais entra já pronto, sem piscar o seed.
+function settle() {
   const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   if (reduce) {
     // acessibilidade: feed completo estático, sem loop nem morph de marca
@@ -330,20 +338,18 @@ onMounted(() => {
   emit('doc', docText.value)
   emit('phase', phase.value)
   startRead()
+}
+
+onMounted(() => {
+  // se o feed já assentou (2ª página que reusa o useState), arranca na hora
+  if (!loading.value) settle()
 })
 onBeforeUnmount(clearTimers)
 
-// Quando o feed real hidrata (troca de tamanho/conteúdo), reinicia a leitura do
-// zero pra animar o feed novo por inteiro — mas só no client, com a animação
-// ativa (reduced-motion mantém o estado estático). Guarda pelo tamanho pra não
-// reprocessar em toda re-render.
-watch(total, () => {
-  if (!import.meta.client) return
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-    readN.value = total.value
-    return
-  }
-  if (reader || readTo || brandTo || readN.value > 0) startRead()
+// feed assentou → arranca a leitura do feed final (real ou degrade) por inteiro
+watch(loading, (v) => {
+  if (v || !import.meta.client) return
+  settle()
 })
 </script>
 
@@ -351,7 +357,17 @@ watch(total, () => {
   <div class="nmr">
     <!-- feed que acende palavra a palavra -->
     <div class="nmr__feed">
-      <div class="nmr__text" :style="textWrapStyle">
+      <!-- skeleton enquanto o feed não assenta: 2 "frases" ilustrativas, sem
+           percentual falso; some assim que os movers reais entram -->
+      <div v-if="loading" class="nmr__sk" aria-hidden="true">
+        <NuSkeleton :tone="skTone" variant="circle" width="38px" height="38px" />
+        <NuSkeleton
+          v-for="(w, i) in SK_CHIPS" :key="`skr${i}`"
+          :tone="skTone" variant="line" :width="`${w}px`" height="22px" radius="chip"
+        />
+        <NuSkeleton :tone="skTone" variant="circle" width="32px" height="32px" />
+      </div>
+      <div v-else class="nmr__text" :style="textWrapStyle">
         <template v-for="(tk, i) in tokens" :key="i">
           <!-- espaço no VALOR (tk.t + ' '), como o DC: o Vue apara o espaço
                literal antes de </span> (whitespace condense) e cola as palavras -->
@@ -406,6 +422,8 @@ watch(total, () => {
   min-height: clamp(150px, 16vh, 190px);
   display: flex; align-items: center;
 }
+/* skeleton do feed: chips shimmer no fluxo do texto (mesma altura de linha) */
+.nmr__sk { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 12px; width: 100%; }
 .nmr__brand {
   position: absolute; inset: 0; z-index: 5;
   display: flex; flex-direction: column; align-items: center; justify-content: center;

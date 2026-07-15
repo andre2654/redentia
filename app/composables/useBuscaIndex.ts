@@ -93,6 +93,8 @@ export interface BuscaResultsVM {
   theses: BuscaThesisRow[]
   guias: BuscaGuideRow[]
   empty: boolean
+  /** curadoria "Em alta agora" ainda hidratando (skeleton no lugar do seed). */
+  loading: boolean
 }
 
 /** view-model da lista navegável por tipo (pill selecionada, sem query). */
@@ -284,6 +286,10 @@ export function useBuscaIndex() {
   const theses = useState<BuscaThesisRow[]>('nu:busca:theses', () => THESES_SEED)
   const thesesStarted = useState<boolean>('nu:busca:theses-started', () => false)
 
+  // curadoria "Em alta agora" (movers + teses) hidratando → skeleton no lugar
+  // dos seeds; vira false quando o hydrate assenta (real OU degrade pro seed).
+  const loading = useState('nu:busca:curadoria-loading', () => true)
+
   // paginação do browse ("Ver mais") — reseta quando a pill muda
   const browseLimit = useState<number>('nu:busca:browse-limit', () => BROWSE_PAGE)
 
@@ -390,6 +396,7 @@ export function useBuscaIndex() {
   }
 
   async function hydrate() {
+   try {
     if (!moversStarted.value) {
       moversStarted.value = true
       try {
@@ -428,6 +435,9 @@ export function useBuscaIndex() {
         }
       } catch { /* mantém o seed */ }
     }
+   } finally {
+     loading.value = false
+   }
   }
 
   onMounted(hydrate)
@@ -443,11 +453,14 @@ export function useBuscaIndex() {
       // pro browse); mesmo assim degradamos honestamente pra "Em alta agora".
       return {
         label: 'Em alta agora',
-        assets: movers.value.slice(0, 4).map(toRow),
+        // curadoria hidratando → [] (o componente mostra skeleton); assentou →
+        // movers/teses reais (ou seed, em degrade honesto)
+        assets: loading.value ? [] : movers.value.slice(0, 4).map(toRow),
         tesouro: [],
-        theses: theses.value.slice(0, 2),
+        theses: loading.value ? [] : theses.value.slice(0, 2),
         guias: GUIAS.slice(0, 3),
         empty: false,
+        loading: loading.value,
       }
     }
 
@@ -520,6 +533,7 @@ export function useBuscaIndex() {
       theses: matchedTheses,
       guias: matchedGuias,
       empty: total === 0,
+      loading: false, // busca por texto: resultados vêm do índice, sem seed falso
     }
   }
 
