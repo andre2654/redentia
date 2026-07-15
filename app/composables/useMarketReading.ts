@@ -113,6 +113,10 @@ export function useMarketReading(seed: ReadingToken[], count = 6) {
   // movers crus compartilhados (useState → SSR-safe, uma hidratação por página)
   const movers = useState<{ gainers: Mover[]; losers: Mover[] } | null>('nu:reading:movers', () => null)
   const started = useState('nu:reading:started', () => false)
+  // `loading` verdadeiro até o feed ASSENTAR (movers reais OU degrade pro seed).
+  // Enquanto isso o componente mostra skeleton e NÃO anima — evita ler frases
+  // com percentuais falsos do seed antes de trocar pelos reais. SSR = skeleton.
+  const loading = useState('nu:reading:loading', () => true)
 
   const feed = computed<ReadingToken[]>(() => {
     const m = movers.value
@@ -122,7 +126,7 @@ export function useMarketReading(seed: ReadingToken[], count = 6) {
   })
 
   async function hydrate() {
-    if (started.value) return
+    if (started.value) { loading.value = false; return }
     started.value = true
     try {
       const [top, worst] = await Promise.allSettled([
@@ -139,8 +143,9 @@ export function useMarketReading(seed: ReadingToken[], count = 6) {
       if (gainers.length + losers.length < 2) return
       movers.value = { gainers, losers }
     } catch { /* mantém o seed */ }
+    finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { feed }
+  return { feed, loading }
 }
