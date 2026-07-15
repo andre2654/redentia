@@ -21,6 +21,7 @@ import { TESOURO_DIRETO_PARA_INICIANTES_GUIDE } from '~/content/guias/tesouro-di
 import { ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE } from '~/content/guias/acoes-fiis-dividendos-todo-mes'
 import { BITCOIN_NA_CARTEIRA_GUIDE } from '~/content/guias/bitcoin-na-carteira'
 import { COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE } from '~/content/guias/como-declarar-investimentos-no-ir'
+import { COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE } from '~/content/guias/como-montar-carteira-de-investimentos'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -48,6 +49,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE.slug]: ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE,
   [BITCOIN_NA_CARTEIRA_GUIDE.slug]: BITCOIN_NA_CARTEIRA_GUIDE,
   [COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE.slug]: COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE,
+  [COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE.slug]: COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE,
 }
 
 /**
@@ -126,6 +128,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Guia Redentia',
     minutes: 15,
     slug: 'como-declarar-investimentos-no-ir',
+  },
+  {
+    title: 'Como montar uma carteira de investimentos',
+    description: 'Alocação por objetivo, diversificação de verdade e rebalanceamento, sem fórmula mágica.',
+    tag: 'Guia Redentia',
+    minutes: 10,
+    slug: 'como-montar-carteira-de-investimentos',
   },
 ]
 
