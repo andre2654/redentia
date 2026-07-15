@@ -1,22 +1,31 @@
 <script setup lang="ts">
-// Seção Redentia MCP de /conta (PR5) — MOCK. Card recriado EXATAMENTE a partir
-// do design do dono (Claude Design "Redentia Configuracoes Nu.dc.html", card
-// #sec-mcp): gradiente azul + glow verde, toggle mint, chips dos apps, chave de
-// acesso mascarada (Revelar/Copiar/Gerar nova), permissões e JSON de config +
-// link de documentação. Cores exatas do design (não os tokens --nu-*, pra bater
-// pixel a pixel). Estado 100% local — nada de backend (produto MCP a construir).
-const mcpOn = ref(true)
-const reveal = ref(false)
-const token = ref('rdt_mcp_9f2c7a41d8e0b3f9a')
+// Seção Redentia MCP de /conta. Card do design do dono (Claude Design
+// "Redentia Configuracoes Nu.dc.html", #sec-mcp): gradiente azul + glow
+// verde, toggle mint, chips dos apps, chave mascarada, permissões e JSON de
+// config. Cores exatas do design (não os tokens --nu-*, pra bater pixel a
+// pixel). LIGADO no backend real (/api/me/mcp via useMcp): gera/rotaciona
+// chave (mostrada 1x), permissões por escopo e endpoint público do MCP.
+// Estado real via backend (/api/me/mcp). A chave em claro só existe UMA
+// vez, no retorno do rotate — depois disso, só o mascarado.
+const { status, plainKey, hydrate, rotate, setEnabled, setPermissions, busy } = useMcp()
+onMounted(() => { hydrate().catch(() => {}) })
 
-const last4 = computed(() => token.value.slice(-4))
-const masked = computed(() => `rdt_mcp_${'•'.repeat(12)}${last4.value}`)
-const tokenText = computed(() => (reveal.value ? token.value : masked.value))
-const bearer = computed(() => (reveal.value ? token.value : `rdt_mcp_••••${last4.value}`))
+const hasKey = computed(() => status.value?.has_key ?? false)
+const mcpOn = computed(() => status.value?.enabled ?? false)
+const keyMasked = computed(() => status.value?.key_masked ?? '')
+
+// Permissões locais espelhando o backend (sincroniza no hydrate/rotate).
+const perms = reactive({ carteira: true, teses: true, news: true })
+watch(() => status.value?.permissions, (p) => { if (p) Object.assign(perms, p) }, { immediate: true })
+
+const reveal = ref(false)
+// Texto da chave: a recém-gerada (revelável) senão o mascarado do banco.
+const tokenText = computed(() => (reveal.value && plainKey.value ? plainKey.value : keyMasked.value))
+const bearer = computed(() => plainKey.value ?? keyMasked.value ?? 'rdt_mcp_...')
 const cfgText = computed(() => `{
   "mcpServers": {
     "redentia": {
-      "url": "https://mcp.redentia.com.br/sse",
+      "url": "https://redentia-api.saraivada.com/mcp",
       "headers": {
         "Authorization": "Bearer ${bearer.value}"
       }
@@ -24,14 +33,48 @@ const cfgText = computed(() => `{
   }
 }`)
 
-const perms = reactive({ carteira: true, teses: true, news: false })
+function relTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const min = Math.floor(diff / 60000)
+  if (min < 1) return 'agora'
+  if (min < 60) return `há ${min} min`
+  const h = Math.floor(min / 60)
+  if (h < 24) return `há ${h} h`
+  return `há ${Math.floor(h / 24)} d`
+}
+const metaText = computed(() => {
+  const s = status.value
+  if (!s?.has_key) return ''
+  const created = s.created_at
+    ? new Date(s.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+    : null
+  const used = s.last_used_at ? `último uso ${relTime(s.last_used_at)}` : 'ainda não usada'
+  return created ? `Criada em ${created} · ${used}` : used
+})
+
+// Toggle principal: sem chave → gera a 1ª (liga); com chave → habilita/desabilita.
+async function onToggleMain() {
+  if (busy.value) return
+  if (!hasKey.value) { await rotate(); reveal.value = true; return }
+  await setEnabled(!mcpOn.value)
+}
+async function onTogglePerm(k: 'carteira' | 'teses' | 'news') {
+  if (busy.value || !hasKey.value) return
+  perms[k] = !perms[k]
+  await setPermissions({ ...perms })
+}
+async function onRotate() {
+  if (busy.value) return
+  await rotate()
+  reveal.value = true // revela a nova — única chance de copiar
+}
 
 const copiedToken = ref(false)
 const copiedCfg = ref(false)
 let tTimer: ReturnType<typeof setTimeout> | undefined
 let cTimer: ReturnType<typeof setTimeout> | undefined
 async function copyToken() {
-  try { await navigator.clipboard?.writeText(token.value) } catch { /* bloqueado */ }
+  try { await navigator.clipboard?.writeText(bearer.value) } catch { /* bloqueado */ }
   copiedToken.value = true
   clearTimeout(tTimer)
   tTimer = setTimeout(() => (copiedToken.value = false), 1600)
@@ -41,14 +84,6 @@ async function copyCfg() {
   copiedCfg.value = true
   clearTimeout(cTimer)
   cTimer = setTimeout(() => (copiedCfg.value = false), 1600)
-}
-
-const HEX = '0123456789abcdef'
-function regen() {
-  let s = 'rdt_mcp_'
-  for (let i = 0; i < 16; i++) s += HEX[Math.floor(Math.random() * 16)]
-  token.value = s
-  reveal.value = false
 }
 
 const apps = [
@@ -71,7 +106,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
         <h2 class="mcp__title">Redentia MCP</h2>
         <p class="mcp__desc">Conecte sua carteira e as teses ao seu assistente de IA. Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor — a Redentia responde com os seus dados.</p>
       </div>
-      <button type="button" class="msw" :class="{ 'msw--on': mcpOn }" role="switch" :aria-checked="mcpOn" aria-label="Ativar Redentia MCP" @click="mcpOn = !mcpOn"><span class="msw__knob" /></button>
+      <button type="button" class="msw" :class="{ 'msw--on': mcpOn }" role="switch" :aria-checked="mcpOn" aria-label="Ativar Redentia MCP" @click="onToggleMain"><span class="msw__knob" /></button>
     </div>
 
     <div class="mcp__apps">
@@ -82,18 +117,30 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
 
     <div class="mcp__panel">
       <div class="mcp__panel-label">Sua chave de acesso</div>
-      <div class="mcp__key-row">
-        <code class="mcp__key">{{ tokenText }}</code>
-        <button type="button" class="mcp__reveal" @click="reveal = !reveal">{{ reveal ? 'Ocultar' : 'Revelar' }}</button>
-        <button type="button" class="mcp__copy" :class="{ 'mcp__copy--done': copiedToken }" @click="copyToken">{{ copiedToken ? 'Copiado' : 'Copiar' }}</button>
-      </div>
-      <div class="mcp__key-foot">
-        <button type="button" class="mcp__regen" @click="regen">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" /></svg>
-          Gerar nova chave
+
+      <template v-if="hasKey">
+        <div class="mcp__key-row">
+          <code class="mcp__key">{{ tokenText }}</code>
+          <button v-if="plainKey" type="button" class="mcp__reveal" @click="reveal = !reveal">{{ reveal ? 'Ocultar' : 'Revelar' }}</button>
+          <button type="button" class="mcp__copy" :class="{ 'mcp__copy--done': copiedToken }" @click="copyToken">{{ copiedToken ? 'Copiado' : 'Copiar' }}</button>
+        </div>
+        <p v-if="plainKey" class="mcp__key-warn">Copie agora — por segurança, não mostramos a chave de novo.</p>
+        <div class="mcp__key-foot">
+          <button type="button" class="mcp__regen" :disabled="busy" @click="onRotate">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" /></svg>
+            Gerar nova chave
+          </button>
+          <span v-if="metaText" class="mcp__key-meta">{{ metaText }}</span>
+        </div>
+      </template>
+
+      <template v-else>
+        <p class="mcp__key-empty">Você ainda não tem uma chave. Gere a sua pra conectar a Redentia ao seu assistente de IA.</p>
+        <button type="button" class="mcp__gen" :disabled="busy" @click="onRotate">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+          Gerar minha chave
         </button>
-        <span class="mcp__key-meta">Criada em 12 jul 2026 · último uso há 1h</span>
-      </div>
+      </template>
     </div>
 
     <div class="mcp__perms-label">Permissões da chave</div>
@@ -103,21 +150,21 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
           <div class="mcp__perm-name">Carteira</div>
           <div class="mcp__perm-desc">Posições, saldo e proventos — somente leitura.</div>
         </div>
-        <button type="button" class="msw" :class="{ 'msw--on': perms.carteira }" role="switch" :aria-checked="perms.carteira" aria-label="Permissão carteira" @click="perms.carteira = !perms.carteira"><span class="msw__knob" /></button>
+        <button type="button" class="msw" :class="{ 'msw--on': perms.carteira }" role="switch" :aria-checked="perms.carteira" aria-label="Permissão carteira" @click="onTogglePerm('carteira')"><span class="msw__knob" /></button>
       </div>
       <div class="mcp__perm">
         <div class="mcp__perm-txt">
           <div class="mcp__perm-name">Teses</div>
           <div class="mcp__perm-desc">Teses que você acompanha e a convicção atual.</div>
         </div>
-        <button type="button" class="msw" :class="{ 'msw--on': perms.teses }" role="switch" :aria-checked="perms.teses" aria-label="Permissão teses" @click="perms.teses = !perms.teses"><span class="msw__knob" /></button>
+        <button type="button" class="msw" :class="{ 'msw--on': perms.teses }" role="switch" :aria-checked="perms.teses" aria-label="Permissão teses" @click="onTogglePerm('teses')"><span class="msw__knob" /></button>
       </div>
       <div class="mcp__perm">
         <div class="mcp__perm-txt">
           <div class="mcp__perm-name">Notícias &amp; pesquisa</div>
           <div class="mcp__perm-desc">Notícias analisadas e relatórios da Redentia.</div>
         </div>
-        <button type="button" class="msw" :class="{ 'msw--on': perms.news }" role="switch" :aria-checked="perms.news" aria-label="Permissão notícias e pesquisa" @click="perms.news = !perms.news"><span class="msw__knob" /></button>
+        <button type="button" class="msw" :class="{ 'msw--on': perms.news }" role="switch" :aria-checked="perms.news" aria-label="Permissão notícias e pesquisa" @click="onTogglePerm('news')"><span class="msw__knob" /></button>
       </div>
     </div>
 
@@ -215,6 +262,16 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
 }
 .mcp__regen:hover { color: #fff; }
 .mcp__key-meta { color: rgba(245, 241, 234, .5); font-size: 12.5px; font-weight: 600; }
+.mcp__key-warn { margin: 10px 0 0; color: #8FF0B5; font-size: 12.5px; font-weight: 700; }
+.mcp__key-empty { margin: 12px 0 0; color: rgba(245, 241, 234, .72); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.mcp__gen {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+  background: #8FF0B5; color: #0A2050; border: 0; border-radius: 999px;
+  padding: 11px 20px; font-size: 14px; font-weight: 800; cursor: pointer;
+  transition: opacity .15s ease;
+}
+.mcp__gen:disabled { opacity: .55; cursor: default; }
+.mcp__regen:disabled { opacity: .5; cursor: default; }
 
 .mcp__perms-label { position: relative; color: rgba(245, 241, 234, .7); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; margin-top: 24px; }
 .mcp__perms { position: relative; margin-top: 8px; }
