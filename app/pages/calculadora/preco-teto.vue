@@ -46,12 +46,14 @@ const vpa = ref(18)
 const dividend = ref(1.8)
 const sectorPL = ref(10)
 
+// ticker escolhido no seletor (tem prioridade sobre o deep-link ?ticker=)
+const selectedTicker = ref('')
 const queryTicker = computed(() => {
   const raw = route.query.ticker
   const t = (Array.isArray(raw) ? raw[0] : raw) ?? ''
   return String(t).trim().toUpperCase()
 })
-const activeTicker = computed(() => queryTicker.value || 'ITUB4')
+const activeTicker = computed(() => selectedTicker.value || queryTicker.value || 'ITUB4')
 
 function seedExample(t: string) {
   const ex = EXAMPLES[t]
@@ -140,6 +142,62 @@ async function seedFromBackend(t: string) {
     if (annualDividend > 0) { expandMax(dividendMax, annualDividend); dividend.value = round2(annualDividend) }
     expandMax(plMax, sectorPE); sectorPL.value = round2(sectorPE)
   } catch { /* degrade elegante: mantém seed estático */ }
+}
+
+/* ————— seletor de ativo (busca única, mesma fonte /tickers-full da calc de ações) ————— */
+interface AssetItem { id: string; label: string; suffix?: string }
+const searchTerm = ref('')
+const searchOpen = ref(false)
+
+const { data: assetsData, pending: assetsLoading } = useAsyncData(
+  'calc-teto-tickers-full',
+  () => $fetch<unknown>('/api/backend/tickers-full', { headers: { Accept: 'application/json' } }),
+  { server: false },
+)
+
+function unwrapArray(payload: unknown): Record<string, unknown>[] {
+  if (Array.isArray(payload)) return payload
+  const p = payload as { data?: unknown } | null
+  if (p && Array.isArray(p.data)) return p.data as Record<string, unknown>[]
+  return []
+}
+
+const normalizedAssets = computed<AssetItem[]>(() =>
+  unwrapArray(assetsData.value)
+    .filter((a) => {
+      // preço teto usa LPA/VPA/dividendos → ações (STOCK/FUND) e FIIs (REIT, via Bazin)
+      const type = String(a.type ?? '').toUpperCase()
+      return type === 'STOCK' || type === 'FUND' || type === 'REIT'
+    })
+    .map((a) => {
+      const ticker = (a.ticker || a.stock) as string | undefined
+      return ticker ? { id: ticker, label: ticker, suffix: a.name as string | undefined } : null
+    })
+    .filter((a): a is AssetItem => Boolean(a))
+    .sort((a, b) => a.label.localeCompare(b.label)),
+)
+
+const filteredAssets = computed(() => {
+  const term = searchTerm.value.trim().toLowerCase()
+  if (!term) return normalizedAssets.value.slice(0, 30)
+  return normalizedAssets.value
+    .filter((a) => a.label.toLowerCase().includes(term) || (a.suffix ?? '').toLowerCase().includes(term))
+    .slice(0, 30)
+})
+
+// escolher 1 ticker → seed instantâneo (se exemplo) + hidratação real da B3
+function selectTicker(ticker: string) {
+  const t = ticker.trim().toUpperCase()
+  if (!t) return
+  selectedTicker.value = t
+  seedExample(t)
+  if (import.meta.client) seedFromBackend(t)
+}
+
+function pickAsset(item: AssetItem) {
+  selectTicker(item.id)
+  searchTerm.value = item.label
+  searchOpen.value = false
 }
 
 watch(queryTicker, (t, old) => {
@@ -430,15 +488,42 @@ usePageSeo({
     <CalcShell section-id="teto" eyebrow="Calculadora">
       <template #title>Preço teto.</template>
       <template #controls>
+        <!-- seletor de ativo (busca, mesmo padrão da calc de ações) -->
+        <div class="pt__search">
+          <span class="pt__search-label">Escolha a ação</span>
+          <input
+            v-model="searchTerm"
+            type="text"
+            class="pt__search-input"
+            placeholder="Buscar ação ou FII (ex.: PETR4)…"
+            aria-label="Escolha a ação"
+            @focus="searchOpen = true"
+            @blur="searchOpen = false"
+          >
+          <div v-if="searchOpen && (filteredAssets.length || assetsLoading)" class="pt__dropdown">
+            <p v-if="assetsLoading" class="pt__search-hint">Carregando ativos…</p>
+            <button
+              v-for="a in filteredAssets"
+              :key="a.id"
+              type="button"
+              class="pt__option"
+              @mousedown.prevent="pickAsset(a)"
+            >
+              <span class="pt__option-ticker">{{ a.label }}</span>
+              <span v-if="a.suffix" class="pt__option-name">{{ a.suffix }}</span>
+            </button>
+          </div>
+        </div>
+
         <div class="pt__examples">
           <span class="pt__examples-label">Exemplos</span>
           <button
-            v-for="(ex, t) in EXAMPLES"
+            v-for="t in Object.keys(EXAMPLES)"
             :key="t"
             type="button"
             class="pt__chip-btn"
-            :class="{ 'pt__chip-btn--active': activeTicker === t && price === ex.price && lpa === ex.lpa }"
-            @click="seedExample(String(t))"
+            :class="{ 'pt__chip-btn--active': activeTicker === t }"
+            @click="selectTicker(t)"
           >{{ t }}</button>
         </div>
         <div class="pt__gap">
@@ -788,6 +873,33 @@ usePageSeo({
 }
 .pt__chip-btn--active { border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white); }
 .pt__controls-note { margin: 22px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.55; }
+
+/* ——— seletor de ativo (busca, mesmo padrão da calc de ações) ——— */
+.pt__search { position: relative; margin-bottom: 22px; }
+.pt__search-label { display: block; color: var(--nu-gray); font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.pt__search-input {
+  width: 100%; padding: 13px 16px;
+  background: var(--nu-white); border: 2px solid var(--nu-sand-border);
+  border-radius: var(--nu-r-input); color: var(--nu-ink);
+  font-size: 15px; font-weight: 700; font-family: var(--nu-font); outline: none;
+  transition: border-color .2s;
+}
+.pt__search-input::placeholder { color: var(--nu-placeholder); font-weight: 600; }
+.pt__search-input:focus { border-color: var(--nu-blue); }
+.pt__dropdown {
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 30; margin-top: 6px;
+  background: var(--nu-white); border-radius: var(--nu-r-tile);
+  box-shadow: var(--nu-shadow-card); max-height: 280px; overflow-y: auto; padding: 6px;
+}
+.pt__search-hint { margin: 8px 0; padding: 0 12px; color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.pt__option {
+  display: flex; align-items: baseline; gap: 10px; width: 100%;
+  background: transparent; border: none; text-align: left; cursor: pointer;
+  padding: 10px 12px; border-radius: 10px; transition: background .15s;
+}
+.pt__option:hover { background: var(--nu-cream); }
+.pt__option-ticker { color: var(--nu-ink); font-size: 14px; font-weight: 800; flex-shrink: 0; }
+.pt__option-name { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ——— resultado ——— */
 .pt__reco {
