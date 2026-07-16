@@ -56,6 +56,7 @@ onMounted(() => {
     <CarteiraHero :hero="payload.hero" :allocation="payload.allocation" @connected="emit('connected')" />
     <NuPortfolioChart v-if="payload.chart" id="desempenho" class="car-sec" :chart="payload.chart" />
     <CarteiraPositions v-if="payload.groups.length && payload.positionsSub" id="posicoes" class="car-sec" :sub="payload.positionsSub" :groups="payload.groups" />
+    <CarteiraMcpBanner v-if="payload.hero.state === 'patrimonio'" />
     <CarteiraRaioX v-if="payload.raiox" id="raio-x" class="car-sec" :raiox="payload.raiox" />
     <CarteiraIncome v-if="payload.income" id="renda-passiva" class="car-sec" :income="payload.income" />
     <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="car-sec" :movements="payload.movements" />
