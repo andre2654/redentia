@@ -7,12 +7,24 @@
 // /login (com redirect pro card). Segue a base dos modais Nu (NuAmountModal):
 // Teleport pro body, scrim + blur, scroll-lock, animações, SSR-safe.
 const { isAuthenticated } = useAuthState()
+const route = useRoute()
 
 const STORAGE_KEY = 'redentia_mcp_promo_v1'
 const DELAY_MS = 5000
+const RETRY_MS = 15000
 
 const open = ref(false)
+const cardRef = ref<HTMLElement | null>(null)
 let timer: ReturnType<typeof setTimeout> | undefined
+
+// Não atropela o usuário: adia se outro modal Nu está aberto (dia/briefing/
+// aporte — 2 overlays juntos = Escape ambíguo e scrim dobrado) ou se ele está
+// DENTRO do chat (/busca?chat=1). Re-tenta até a via estar livre.
+function busyContext(): boolean {
+  if (document.querySelector('.ndm, .nbm, .nam')) return true
+  if (route.path === '/busca' && route.query.chat) return true
+  return false
+}
 
 function lockScroll(on: boolean) {
   document.documentElement.style.overflow = on ? 'hidden' : ''
@@ -26,8 +38,14 @@ function markDismissed() {
   try { localStorage.setItem(STORAGE_KEY, '1') } catch { /* storage bloqueado: só não persiste */ }
 }
 
+// CAPTURE phase + stopPropagation: os outros modais Nu ouvem Escape no bubble
+// do document — sem isso, um Escape fecharia o promo E outro modal junto
+// (e queimaria o one-shot sem o usuário nem ler). O promo consome a tecla.
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Escape') close()
+  if (e.key === 'Escape') {
+    e.stopPropagation()
+    close()
+  }
 }
 
 // Fechar (qualquer caminho) = grava e não exibe de novo (regra do dono).
@@ -35,35 +53,44 @@ function close() {
   markDismissed()
   open.value = false
   lockScroll(false)
-  document.removeEventListener('keydown', onKey)
+  document.removeEventListener('keydown', onKey, true)
 }
 
 function activate() {
   markDismissed()
   open.value = false
   lockScroll(false)
-  document.removeEventListener('keydown', onKey)
+  document.removeEventListener('keydown', onKey, true)
+  // /conta usa âncoras de seção (#mcp) com scrollspy — ?section= não existe.
   navigateTo(
     isAuthenticated.value
-      ? '/conta?section=mcp'
-      : `/login?redirect=${encodeURIComponent('/conta?section=mcp')}`,
+      ? '/conta#mcp'
+      : `/login?redirect=${encodeURIComponent('/conta#mcp')}`,
   )
+}
+
+function tryOpen() {
+  if (alreadyDismissed()) return
+  if (busyContext()) {
+    timer = setTimeout(tryOpen, RETRY_MS)
+    return
+  }
+  open.value = true
+  lockScroll(true)
+  document.addEventListener('keydown', onKey, true)
+  // foco inicial no card (padrão da casa: NuDayModal/NuBriefingModal)
+  nextTick(() => cardRef.value?.focus())
 }
 
 onMounted(() => {
   if (alreadyDismissed()) return
-  timer = setTimeout(() => {
-    if (alreadyDismissed()) return
-    open.value = true
-    lockScroll(true)
-    document.addEventListener('keydown', onKey)
-  }, DELAY_MS)
+  timer = setTimeout(tryOpen, DELAY_MS)
 })
 
 onBeforeUnmount(() => {
   clearTimeout(timer)
   if (import.meta.server) return
-  document.removeEventListener('keydown', onKey)
+  document.removeEventListener('keydown', onKey, true)
   lockScroll(false)
 })
 
@@ -78,7 +105,7 @@ const apps = [
 <template>
   <Teleport to="body">
     <div v-if="open" class="mpr" @click="close">
-      <div class="mpr__card" role="dialog" aria-modal="true" aria-labelledby="mpr-title" @click.stop>
+      <div ref="cardRef" class="mpr__card" role="dialog" aria-modal="true" aria-labelledby="mpr-title" tabindex="-1" @click.stop>
         <div class="mpr__glow" aria-hidden="true" />
 
         <!-- topo: badge + fechar -->
