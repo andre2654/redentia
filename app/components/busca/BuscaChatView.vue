@@ -96,7 +96,10 @@ async function abrirSessao(id: string) {
       @delete-session="deleteSession"
     />
 
-    <div class="bcv__body">
+    <!-- role=log + aria-live: o leitor de tela anuncia a resposta da IA à
+         medida que streama (antes só o "digitando" era anunciado e a resposta
+         vinha em silêncio). polite = não interrompe o que o usuário digita. -->
+    <div class="bcv__body" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversa com a Redentia AI">
       <div v-if="chatVazio" class="bcv__empty">
         <img src="/logo-branca.svg" alt="Redentia" class="bcv__empty-logo">
         <div class="bcv__empty-title">Pergunte qualquer coisa.</div>

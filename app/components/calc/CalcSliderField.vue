@@ -138,6 +138,7 @@ function cancel() {
       :step="step"
       :value="modelValue"
       :aria-label="label"
+      :aria-valuetext="valueText"
       :style="{ background: `linear-gradient(to right, var(--nu-blue) 0% ${fillPct}%, var(--nu-sand-2) ${fillPct}% 100%)` }"
       @input="onInput"
     >
@@ -216,6 +217,14 @@ button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edi
   border: 4px solid var(--nu-white);
   box-shadow: var(--nu-shadow-slider-thumb);
   cursor: pointer;
+}
+/* foco de teclado visível: outline:none acima tirava QUALQUER indicação de
+   qual slider está focado (o usuário mexia com as setas "no escuro"). */
+.csf__range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--nu-white), 0 0 0 6px var(--nu-blue);
+}
+.csf__range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--nu-white), 0 0 0 6px var(--nu-blue);
 }
 
 .csf__chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }

@@ -40,31 +40,31 @@ const NOTICIAS_SEED: NoticiasItem[] = [
   {
     id: 'seed-2', veiculo: 'Money Times', tempo: 'há 2 h', cat: 'Ações', url: null, image: null, publishedAt: null,
     titulo: 'Banco do Brasil anuncia dividendos extraordinários no ciclo de payout alto',
-    leitura: 'R$ 0,105 por ação a mais confirma a disposição do banco de devolver caixa. BBAS3 é a sua maior posição (16,9% da carteira): os R$ 54,60 do provento já caíram na sua conta no dia 04 e entram na conta de reinvestimento sugerida.',
+    leitura: 'R$ 0,105 por ação a mais confirma a disposição do banco de devolver caixa. Com o payout perto do teto e o lucro resiliente, o BBAS3 segue como uma das principais pagadoras de dividendos do índice.',
     tickers: [{ ticker: 'BBAS3', dir: 'up' }],
   },
   {
     id: 'seed-3', veiculo: 'Valor Investe', tempo: 'hoje, 09:40', cat: 'Ações', url: null, image: null, publishedAt: null,
     titulo: 'Petroleiras perdem apelo com Brent caminhando para US$ 60',
-    leitura: 'Citi e Goldman veem excesso de oferta no 2º semestre. Pressiona a margem do pré-sal, mas não muda o payout de 45% da Petrobras: o dividendo segue coberto. PETR4 é 14,5% da sua carteira; o alvo médio de R$ 54,13 segue de pé por enquanto.',
+    leitura: 'Citi e Goldman veem excesso de oferta no 2º semestre. Pressiona a margem do pré-sal, mas não muda o payout de 45% da Petrobras: o dividendo segue coberto pelo caixa, e o alvo médio dos analistas continua acima do preço atual.',
     tickers: [{ ticker: 'PETR4', dir: 'down' }, { ticker: 'PRIO3', dir: 'down' }],
   },
   {
     id: 'seed-4', veiculo: 'Exame', tempo: 'hoje, 08:30', cat: 'Macro', url: null, image: null, publishedAt: null,
     titulo: 'Ibovespa renova recorde histórico aos 197 mil pontos',
-    leitura: 'Fluxo estrangeiro e IPCA surpreendendo para baixo sustentam a 12ª máxima do ano. Com beta de 0,84, sua carteira captura cerca de três quartos desse movimento, com menos volatilidade que o índice.',
+    leitura: 'Fluxo estrangeiro e IPCA surpreendendo para baixo sustentam a 12ª máxima do ano. Carteiras diversificadas com peso em bancos e utilities tendem a capturar boa parte da alta com menos volatilidade que o índice.',
     tickers: [{ ticker: 'IBOV', dir: 'up' }],
   },
   {
     id: 'seed-5', veiculo: 'InfoMoney', tempo: 'ontem', cat: 'Ações', url: null, image: null, publishedAt: null,
     titulo: 'Vale amplia guidance de produção de minério para 2027',
-    leitura: 'Guidance ~6% maior com custo caindo reforça a VALE3 (13,1% da sua carteira). O contraponto: aumenta a concentração em commodities que o raio-X já aponta como seu único ponto de atenção: 46% do total.',
+    leitura: 'Guidance ~6% maior com custo caindo reforça a tese de valor da VALE3. O contraponto é a concentração em commodities, que exige atenção ao peso do setor em qualquer carteira exposta a mineração.',
     tickers: [{ ticker: 'VALE3', dir: 'up' }],
   },
   {
     id: 'seed-6', veiculo: 'Bloomberg Línea', tempo: 'ontem', cat: 'Ações', url: null, image: null, publishedAt: null,
     titulo: 'WEG anuncia nova fábrica de motores no México',
-    leitura: 'Nearshoring na prática: capacidade instalada ao lado do cliente americano. Conecta direto com a tese "A nova geografia do frete", e a WEGE3 segue como o melhor retorno da sua carteira (+16,3%).',
+    leitura: 'Nearshoring na prática: capacidade instalada ao lado do cliente americano. Conecta direto com a tese "A nova geografia do frete" e reforça a WEGE3 como uma das melhores histórias de crescimento industrial da bolsa.',
     tickers: [{ ticker: 'WEGE3', dir: 'up' }],
   },
   {

@@ -71,17 +71,25 @@ function stripMarks(s: string): string {
   return s.replace(/\{\/?mark\}/g, '').replace(/\s+/g, ' ').trim()
 }
 
-/** '2026-07-11' → '11 jul' / '11 jul 2026' / '08 jul' (linhas, dia padded como no design). */
-function dayMonth(iso: string): string {
+/** '2026-07-11' → '11 jul' / '11 jul 2026' / '08 jul' (linhas, dia padded como no design).
+ * NULL-SAFE: o backend manda `date: null` em alguns studies (ex.: a tese
+ * o-pedagio-da-energia) — sem o guard, o `.split` estourava TypeError no
+ * transform, o useAsyncData virava error e a página /tese/[slug] devolvia 503
+ * (a tese caía do ar apesar do backend 200). Data ausente → string vazia,
+ * a seção degrada sem badge de data em vez de derrubar a página. */
+function dayMonth(iso?: string | null): string {
+  if (!iso) return ''
   const [, m, d] = iso.split('-')
   if (!m || !d) return iso
   return `${Number(d)} ${MONTHS_PT[Number(m) - 1] ?? m}`
 }
-function dayMonthYear(iso: string): string {
+function dayMonthYear(iso?: string | null): string {
+  if (!iso) return ''
   const [y] = iso.split('-')
-  return `${dayMonth(iso)} ${y}`
+  return `${dayMonth(iso)} ${y}`.trim()
 }
-function rowDateFmt(iso: string): string {
+function rowDateFmt(iso?: string | null): string {
+  if (!iso) return ''
   const [, m, d] = iso.split('-')
   if (!m || !d) return iso
   return `${d} ${MONTHS_PT[Number(m) - 1] ?? m}`
