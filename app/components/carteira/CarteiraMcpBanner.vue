@@ -30,8 +30,8 @@ const apps = [
 
       <div class="cmb__side">
         <div class="cmb__apps" aria-hidden="true">
-          <span v-for="a in apps" :key="a.name" class="cmb__app" :title="a.name">
-            <img :src="a.logo" :alt="a.name" class="cmb__app-img" width="34" height="34">
+          <span v-for="a in apps" :key="a.name" class="cmb__app">
+            <span class="cmb__app-ic"><img :src="a.logo" :alt="a.name" class="cmb__app-img" width="22" height="22"></span>{{ a.name }}
           </span>
         </div>
         <span class="cmb__cta">
@@ -66,7 +66,7 @@ const apps = [
 .cmb__eyebrow { display: flex; align-items: center; gap: 10px; }
 .cmb__badge {
   display: inline-flex; align-items: center;
-  background: rgba(143, 240, 181, .92); color: #0A2050;
+  background: rgba(255, 255, 255, .16); backdrop-filter: blur(6px); color: #fff;
   font-size: 10.5px; font-weight: 800; letter-spacing: 1.3px; text-transform: uppercase;
   padding: 4px 10px; border-radius: 999px;
 }
@@ -75,16 +75,18 @@ const apps = [
 .cmb__sub { margin: 8px 0 0; color: rgba(245, 241, 234, .8); font-size: 15px; font-weight: 600; line-height: 1.55; text-wrap: pretty; }
 
 .cmb__side { position: relative; display: flex; align-items: center; gap: clamp(16px, 2vw, 26px); flex-wrap: wrap; }
-/* tiles dos apps empilhados (mesmas cores do ContaMcp), leve overlap de stack */
-.cmb__apps { display: flex; align-items: center; }
+/* chips dos apps (logo real + nome) — mesmos do card MCP de /conta */
+.cmb__apps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cmb__app {
-  width: 34px; height: 34px; border-radius: 10px; background: #fff; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid rgba(30, 79, 194, .9); margin-left: -8px;
-  transition: transform .18s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255, 255, 255, .12); color: #fff; font-size: 13.5px; font-weight: 700;
+  padding: 9px 15px; border-radius: 12px;
 }
-.cmb__app:first-child { margin-left: 0; }
-.cmb__app-img { width: 100%; height: 100%; object-fit: contain; padding: 5px; display: block; }
+.cmb__app-ic {
+  width: 22px; height: 22px; border-radius: 6px; background: #fff; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cmb__app-img { width: 100%; height: 100%; object-fit: contain; padding: 3px; display: block; }
 .cmb__card:hover .cmb__app { transform: translateY(-1px); }
 
 .cmb__cta {
