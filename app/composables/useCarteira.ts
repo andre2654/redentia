@@ -91,6 +91,8 @@ interface PosRow {
   sector: string | null
   indexer: string | null
   maturity: string | null
+  /** banco/corretora da conexão Open Finance (sub das linhas de Renda Fixa) */
+  institution: string | null
 }
 
 function toRows(portfolio: PortfolioPositionApi[] | null): PosRow[] {
@@ -112,6 +114,7 @@ function toRows(portfolio: PortfolioPositionApi[] | null): PosRow[] {
         sector: p.sector,
         indexer: raw.indexer ?? null,
         maturity: raw.maturity ?? null,
+        institution: p.institution_name ?? null,
       }
     })
     .filter((r) => r.value > 0)
@@ -219,6 +222,10 @@ function rowSub(r: PosRow): string {
       parts.push(`venc. ${d.slice(5, 7)}/${d.slice(2, 4)}`)
     }
     if (parts.length) return parts.join(' · ')
+    // sem indexador/vencimento (Tesouro e CDBs vindos do Pluggy): o banco diz
+    // mais que a quantidade de unidades (o agregado de caixinhas soma milhões
+    // de "un." sem significado nenhum pro investidor)
+    if (r.institution) return r.institution
     return `${nfQty.format(r.qty)} un.`
   }
   if (r.className === 'Cripto') return `${nfQty.format(r.qty)} ${r.ticker.toUpperCase()}`

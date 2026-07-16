@@ -14,30 +14,19 @@ import type { PluggyConnection } from '~/types/pluggy'
 
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
-const pluggy = usePluggy()
 const { openWidget, opening, registering } = usePluggyConnect()
 const { hidden } = useHiddenValues()
 
-const connections = ref<PluggyConnection[]>([])
-const loading = ref(true)
-
-async function load() {
-  try {
-    connections.value = await pluggy.listConnections()
-  }
-  catch { /* hero segue sem pills; a de conectar fica */ }
-  finally {
-    loading.value = false
-  }
-}
-onMounted(() => void load())
+// fetch compartilhado com a faixa "Saldo em conta" das posições (1 GET só)
+const { connections, loading, ensure, refresh } = useContasConectadas()
+onMounted(ensure)
 
 function connect() {
   if (opening.value || registering.value) return
   openWidget({
     onConnected: async () => {
       emit('connected')
-      await load()
+      await refresh()
     },
   })
 }

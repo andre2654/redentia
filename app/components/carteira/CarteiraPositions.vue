@@ -85,6 +85,9 @@ watch(active, (i) => {
     <h2 class="cps2__title">Suas posições.</h2>
     <div class="cps2__sub">{{ sub }}</div>
 
+    <!-- Saldo em conta (topo): dinheiro parado por banco, fora dos grupos -->
+    <CarteiraSaldoContas />
+
     <div class="cps2__wrap">
       <!-- sidebar de classes (sticky; <860px vira faixa horizontal) -->
       <div ref="sideEl" class="cps2__side">
