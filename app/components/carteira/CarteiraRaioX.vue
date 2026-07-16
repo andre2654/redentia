@@ -17,7 +17,9 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
     <div class="crx__cols">
       <div class="crx__left">
         <h2 class="crx__title">Raio-X da<br>carteira.</h2>
-        <div class="crx__sub">Diagnóstico automático da Redentia AI · atualizado hoje</div>
+        <!-- "atualizado hoje" vale pras MÉTRICAS (computadas a cada load);
+             o texto da IA carrega a própria data no banner quando é antigo -->
+        <div class="crx__sub">Diagnóstico automático da Redentia · atualizado hoje</div>
         <div class="crx__score">
           <span class="crx__score-num">{{ raiox.score }}</span>
           <span class="crx__score-max">/100</span>
@@ -45,7 +47,7 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
 
         <NuxtLink v-if="raiox.insight" to="/busca" class="crx__banner">
           <span class="crx__banner-main">
-            <span class="crx__banner-eyebrow">Redentia AI · ponto de atenção</span>
+            <span class="crx__banner-eyebrow">Redentia AI · ponto de atenção{{ raiox.insightDate ? ` · análise de ${raiox.insightDate}` : '' }}</span>
             <span class="crx__banner-text">{{ raiox.insight }}</span>
           </span>
           <span class="crx__banner-circle">

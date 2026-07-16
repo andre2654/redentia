@@ -435,7 +435,19 @@ function buildRaioX(
     insight = text.length > 220 ? `${text.slice(0, 217).trimEnd()}…` : text
   }
 
-  return { score, badge, band, attention, metrics: dims.map((d) => d.vm), insight }
+  // Data da análise da IA quando NÃO é de hoje: a análise é um snapshot LLM
+  // persistido (portfolio_analyses) que pode ter semanas — sem a data, o
+  // banner apresenta texto antigo como diagnóstico atual (auditoria
+  // 2026-07-16: banner citava composição de 22/05 como se fosse de hoje).
+  let insightDate: string | null = null
+  if (insight && analysis?.generated_at) {
+    const gen = new Date(analysis.generated_at)
+    if (!Number.isNaN(gen.getTime()) && gen.toDateString() !== new Date().toDateString()) {
+      insightDate = `${String(gen.getDate()).padStart(2, '0')}/${String(gen.getMonth() + 1).padStart(2, '0')}`
+    }
+  }
+
+  return { score, badge, band, attention, metrics: dims.map((d) => d.vm), insight, insightDate }
 }
 
 /**

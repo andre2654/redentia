@@ -159,6 +159,10 @@ export interface CarteiraRaioXVM {
   metrics: RaioXMetricVM[]
   /** insight do /portfolio/analysis — null = banner some (sem IA inventada) */
   insight: string | null
+  /** data da análise da IA ('22/05') quando NÃO é de hoje — o banner mostra;
+   *  null = análise de hoje (ou sem data). As MÉTRICAS são sempre frescas
+   *  (computadas a cada load); só o texto da IA pode ser antigo. */
+  insightDate: string | null
 }
 
 export interface CarteiraIncomeVM {
