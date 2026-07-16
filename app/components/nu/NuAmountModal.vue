@@ -141,6 +141,10 @@ onBeforeUnmount(() => {
   padding: 34px 34px 30px; box-shadow: var(--nu-shadow-day-modal);
   animation: namrise .24s cubic-bezier(.2, .8, .2, 1);
 }
+/* o card recebe foco programático (useModalA11y) só pra ancorar o trap/leitor
+   de tela; remover o outline do CONTAINER — os botões/input dentro mantêm o
+   próprio foco de teclado. Mesma regra do NuDayModal/NuBriefingModal. */
+.nam__card:focus { outline: none; }
 .nam__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
 .nam__title { margin: 0; color: var(--nu-ink); font-size: 24px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
 .nam__sub { margin: 9px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.5; }

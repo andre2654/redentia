@@ -37,11 +37,33 @@ const photoFailed = ref(false)
           <span class="mcc__bank mcc__bank--overlap mcc__bank--more">+110</span>
         </div>
 
-        <!-- Teaser do Redentia MCP: a carteira conectada não fica presa no app;
-             o investidor conversa com ela direto no assistente de IA. -->
-        <div class="mcc__mcp">
-          <span class="mcc__mcp-badge">Novo</span>
-          <span class="mcc__mcp-txt">E não só aqui: converse com a sua carteira direto no Claude, ChatGPT ou Cursor com o <strong>Redentia MCP</strong>.</span>
+        <!-- Redentia MCP promovido a card de destaque sóbrio, porém COMPACTO: badge
+             + manchete + logos das ferramentas + arrow-link. A carteira conectada
+             não fica presa no app; o investidor conversa com ela na própria IA. A
+             prova/chat-mock fica só no modal (NuMcpPromo), aqui seria excesso. Só o
+             arrow-link é clicável, então não compete com o CTA primário abaixo. -->
+        <div class="mcc__mcpcard">
+          <div class="mcc__mcpcard-head">
+            <span class="mcc__mcpcard-badge">Novo</span>
+            <span class="mcc__mcpcard-kicker">Redentia MCP</span>
+          </div>
+
+          <p class="mcc__mcpcard-copy">Converse com a sua carteira direto na sua IA, com os seus números reais.</p>
+
+          <div class="mcc__mcpcard-foot">
+            <span class="mcc__mcpcard-tools" aria-hidden="true">
+              <span class="mcc__mcpcard-tile"><img src="/icons/logo-claude.webp" alt="" width="28" height="28"></span>
+              <span class="mcc__mcpcard-tile"><img src="/icons/logo-chatgpt.webp" alt="" width="28" height="28"></span>
+              <span class="mcc__mcpcard-tile"><img src="/icons/logo-cursor.webp" alt="" width="28" height="28"></span>
+            </span>
+            <NuxtLink
+              to="/login?redirect=%2Fconta%23mcp"
+              class="mcc__mcpcard-link"
+              aria-label="Conheça o Redentia MCP: converse com a sua carteira no Claude, ChatGPT ou Cursor, com os seus números reais."
+            >
+              Ver como funciona<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
+            </NuxtLink>
+          </div>
         </div>
 
         <NuxtLink to="/login" class="mcc__cta">
@@ -89,8 +111,11 @@ const photoFailed = ref(false)
 
 <style scoped>
 .mcc { background: var(--nu-blue); padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.mcc__cols { display: flex; gap: clamp(36px, 5vw, 80px); align-items: center; flex-wrap: wrap; }
-.mcc__left { flex: 1 1 400px; min-width: min(320px, 100%); }
+/* grid determinístico: 1 coluna no mobile (conteúdo primeiro no DOM → empilha
+   conteúdo em cima, foto embaixo), 2 colunas no desktop com ZIG-ZAG (a foto vai
+   pra ESQUERDA, alternando com o hero acima que tem o visual à direita). */
+.mcc__cols { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 64px); align-items: center; }
+.mcc__left { min-width: 0; }
 .mcc__title {
   margin: 0; color: var(--nu-cream-text); font-size: clamp(40px, 5vw, 74px);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
@@ -112,18 +137,77 @@ const photoFailed = ref(false)
   font-size: 12.5px; font-weight: 800;
 }
 
-/* teaser do Redentia MCP */
-.mcc__mcp {
-  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
-  margin-top: 26px; max-width: 480px;
+/* Redentia MCP — card de destaque sóbrio (substitui o teaser tímido de 1 linha).
+   Síntese do painel: container de vidro translúcido + chip de tool mono (eco do
+   NuMcpPromo) + rima dos logos com os avatares de banco. Só tokens --nu-*. O acento
+   --nu-blue-soft fica restrito a micro detalhes (bolinha do badge, função do chip,
+   seta do link) porque só passa AA como detalhe, nunca como preenchimento/corpo. O
+   card é um DIV sóbrio (nunca botão preenchido); apenas o arrow-link é clicável,
+   então não rivaliza em superfície de toque nem em peso com o CTA primário. */
+.mcc__mcpcard {
+  max-width: 480px; margin-top: 26px;
+  padding: 15px 18px; border-radius: 14px;
+  background: var(--nu-cream-text-08);
+  border: 1px solid var(--nu-cream-text-14);
+  animation: nu-fade .6s ease both;
 }
-.mcc__mcp-badge {
-  flex-shrink: 0; background: var(--nu-cream-text-14); color: var(--nu-cream-text);
-  font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
-  padding: 5px 11px; border-radius: var(--nu-r-pill);
+
+/* cabeçalho: badge de status + kicker da feature */
+.mcc__mcpcard-head { display: flex; align-items: center; gap: 10px; }
+.mcc__mcpcard-badge {
+  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+  background: var(--nu-cream-text-14); color: var(--nu-cream-text);
+  font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 5px 11px 5px 9px; border-radius: var(--nu-r-pill);
 }
-.mcc__mcp-txt { color: var(--nu-cream-text-82); font-size: 15px; font-weight: 500; line-height: 1.55; }
-.mcc__mcp-txt strong { color: var(--nu-cream-text); font-weight: 800; }
+.mcc__mcpcard-badge::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--nu-blue-soft); flex-shrink: 0;
+  box-shadow: 0 0 0 3px var(--nu-cream-text-10);
+}
+/* -82 (não -70): iguala o nível de texto secundário do dek nesta banda de baixo
+   contraste por design; -70 sobre o azul vivo cairia abaixo do dek vizinho. */
+.mcc__mcpcard-kicker {
+  color: var(--nu-cream-text-82); font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px;
+}
+
+/* manchete curta e confiante — cream CHEIO garante o melhor contraste possível aqui */
+.mcc__mcpcard-copy {
+  margin: 10px 0 0; max-width: 34ch; color: var(--nu-cream-text);
+  font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -0.01em;
+}
+
+/* rodapé: tiles dos logos reais (rima com os avatares de banco) + arrow-link */
+.mcc__mcpcard-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap; margin-top: 13px;
+}
+.mcc__mcpcard-tools { display: inline-flex; align-items: center; gap: 7px; }
+.mcc__mcpcard-tile {
+  width: 28px; height: 28px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+  background: var(--nu-cream); border: 1px solid var(--nu-cream-text-16);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.mcc__mcpcard-tile img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
+
+/* micro-CTA próprio do MCP: única zona clicável, texto+seta, nunca um botão cheio */
+.mcc__mcpcard-link {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  color: var(--nu-cream-text); font-size: 14px; font-weight: 700; text-decoration: none;
+  padding: 4px 2px; border-radius: 6px;
+  transition: gap .18s ease;
+}
+.mcc__mcpcard-link svg { color: var(--nu-blue-soft); transition: transform .18s ease; }
+.mcc__mcpcard-link:hover { gap: 9px; }
+.mcc__mcpcard-link:hover svg { transform: translateX(3px); }
+.mcc__mcpcard-link:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
+
+/* coluna estreita (~320px): tiles e link caem em linhas próprias sem estourar */
+@media (max-width: 400px) {
+  .mcc__mcpcard { padding: 14px 15px; }
+  .mcc__mcpcard-copy { font-size: 15.5px; }
+  .mcc__mcpcard-foot { gap: 12px; }
+}
 .mcc__cta {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
   border: 1.6px solid var(--nu-cream-text-55); border-radius: var(--nu-r-pill); padding: 16px 34px;
@@ -132,9 +216,9 @@ const photoFailed = ref(false)
 }
 .mcc__cta:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text); color: var(--nu-cream-text); transform: translateY(-2px); }
 
-.mcc__right { flex: 1 1 520px; min-width: min(320px, 100%); }
+.mcc__right { min-width: 0; }
 .mcc__media {
-  /* sem border-radius: o design usa um retângulo full-bleed (aspect 4/3) */
+  /* sem border-radius: o design usa um retângulo full-bleed */
   position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden;
   background: var(--nu-img-placeholder);
   display: flex; align-items: center; justify-content: center;
@@ -142,4 +226,15 @@ const photoFailed = ref(false)
 .mcc__media-photo { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: cover; display: block; }
 .mcc__media-glow { position: absolute; inset: 0; background: var(--nu-img-glow); pointer-events: none; }
 .mcc__media-art { position: relative; width: min(60%, 320px); height: auto; }
+
+/* desktop: 2 colunas + zig-zag. Foto na coluna 1 (esquerda), conteúdo na 2
+   (direita); o conteúdo continua primeiro no DOM (bom pro mobile). align-items
+   stretch faz a coluna da foto acompanhar a altura do conteúdo → foto editorial
+   full-height (não mais um bloco 4/3 flutuando centralizado). */
+@media (min-width: 880px) {
+  .mcc__cols { grid-template-columns: 1.05fr 1fr; align-items: stretch; }
+  .mcc__right { grid-column: 1; grid-row: 1; }
+  .mcc__left { grid-column: 2; grid-row: 1; align-self: center; }
+  .mcc__media { aspect-ratio: auto; height: 100%; min-height: 440px; }
+}
 </style>

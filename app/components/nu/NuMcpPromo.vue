@@ -188,6 +188,10 @@ const apps = [
   box-shadow: 0 40px 110px rgba(9, 18, 40, 0.55);
   animation: mprrise .28s cubic-bezier(.2, .8, .2, 1);
 }
+/* o card recebe foco programático (useModalA11y) só pra ancorar o trap/leitor
+   de tela; remover o outline do CONTAINER — os botões dentro mantêm o próprio
+   foco de teclado. Mesma regra do NuDayModal/NuBriefingModal. */
+.mpr__card:focus { outline: none; }
 .mpr__glow {
   position: absolute; top: -110px; right: -90px; width: 300px; height: 300px; border-radius: 50%;
   background: radial-gradient(circle, rgba(143, 240, 181, .22) 0%, rgba(143, 240, 181, 0) 70%); pointer-events: none;
@@ -299,7 +303,9 @@ const apps = [
 @keyframes mprrise { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 760px) {
-  .mpr { padding: 16px; align-items: flex-end; }
+  /* centralizado no mobile (igual ao NuDayModal), não colado embaixo — é modal
+     de anúncio, não bottom-sheet de input como o NuAmountModal */
+  .mpr { padding: 16px; align-items: center; }
   .mpr__card { width: 100%; border-radius: 26px; }
   .mpr__foot { flex-wrap: wrap-reverse; }
   .mpr__cta { flex: 1 1 100%; }
