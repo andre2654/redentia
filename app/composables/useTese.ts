@@ -798,17 +798,45 @@ async function loadTese(base: string, slug: string): Promise<TesePayload> {
   const ibov = ok(ibovR)?.data ?? null
   const latestStudy = detail.studies?.[0] ?? null
 
+  // Degradação POR SEÇÃO de verdade (política documentada no topo do arquivo):
+  // cada builder roda num guard. Antes, um throw em QUALQUER builder (ex.: um
+  // perf/conv/ibov que degradou pra null num blip Vercel↔VPS, ou um campo nulo
+  // inesperado do backend) rejeitava o loadTese inteiro → useAsyncData error →
+  // a página 503ava (intermitente). Agora a seção problemática vira null (o
+  // template já a esconde com v-if) e o resto da tese renderiza normal.
+  const safe = <T>(fn: () => T, fallback: T, tag: string): T => {
+    try {
+      return fn()
+    } catch (e) {
+      console.error(`[tese:${slug}] build ${tag} falhou (seção degradada):`, e)
+      return fallback
+    }
+  }
+
+  // Hero é obrigatório (SEO/título): se crashar, um hero mínimo do detail em
+  // vez de derrubar a página.
+  const heroFallback: TeseHeroVM = {
+    cat: detail.sector ?? '',
+    titlePre: (detail.title ?? '').trim() || 'Tese',
+    titleHi: '', titlePost: '',
+    subtitle: detail.description ?? '',
+    image: teseCover(detail.image),
+    convBadge: null, sinceBadge: null,
+    ativosBadge: `${detail.companiesCount ?? 0} ativos`,
+    revalBadge: null,
+  }
+
   return {
     slug,
     title: detail.title,
-    hero: buildHero(detail, perf, conv, latestStudy),
-    editorial: buildEditorial(detail),
-    numbers: buildNumbers(detail, perf, conv, ibov),
-    evalSection: buildEval(detail),
+    hero: safe(() => buildHero(detail, perf, conv, latestStudy), heroFallback, 'hero'),
+    editorial: safe(() => buildEditorial(detail), null, 'editorial'),
+    numbers: safe(() => buildNumbers(detail, perf, conv, ibov), null, 'numbers'),
+    evalSection: safe(() => buildEval(detail), null, 'eval'),
     studiesCount: detail.studiesCount ?? 0,
-    drivers: buildDrivers(detail),
-    diary: buildDiary(detail, conv),
-    report: buildReport(detail),
+    drivers: safe(() => buildDrivers(detail), null, 'drivers'),
+    diary: safe(() => buildDiary(detail, conv), null, 'diary'),
+    report: safe(() => buildReport(detail), null, 'report'),
     seo: buildSeo(detail),
   }
 }
