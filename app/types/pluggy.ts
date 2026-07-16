@@ -19,6 +19,10 @@ export interface PluggyConnection {
   accounts_count: number
   positions_count: number
   total_balance: number
+  /** saldo só de contas BANK (cartão de crédito fica de fora) */
+  bank_balance: number
+  /** total investido (soma de current_value das positions da conexão) */
+  positions_value: number
 }
 
 /** POST /pluggy/connections/{id}/sync — rate-limit de 1h do Pluggy e item
