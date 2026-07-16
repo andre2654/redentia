@@ -7,8 +7,13 @@
 // chave (mostrada 1x), permissões por escopo e endpoint público do MCP.
 // Estado real via backend (/api/me/mcp). A chave em claro só existe UMA
 // vez, no retorno do rotate — depois disso, só o mascarado.
-const { status, plainKey, hydrate, rotate, setEnabled, setPermissions, busy } = useMcp()
+const { status, plainKey, hydrate, rotate, setEnabled, setPermissions, busy, loading } = useMcp()
 onMounted(() => { hydrate().catch(() => {}) })
+
+// Enquanto o GET /me/mcp está em voo, status=null lê como "sem chave" — um
+// clique no toggle nessa janela cairia no rotate() e MATARIA a chave real do
+// usuário (auditoria 2026-07-15). Trava tudo até hidratar.
+const pending = computed(() => busy.value || loading.value || status.value === null)
 
 const hasKey = computed(() => status.value?.has_key ?? false)
 const mcpOn = computed(() => status.value?.enabled ?? false)
@@ -54,19 +59,28 @@ const metaText = computed(() => {
 
 // Toggle principal: sem chave → gera a 1ª (liga); com chave → habilita/desabilita.
 async function onToggleMain() {
-  if (busy.value) return
-  if (!hasKey.value) { await rotate(); reveal.value = true; return }
-  await setEnabled(!mcpOn.value)
+  if (pending.value) return
+  try {
+    if (!hasKey.value) { await rotate(); reveal.value = true; return }
+    await setEnabled(!mcpOn.value)
+  } catch { await hydrate().catch(() => {}) } // falhou → re-sincroniza com o banco
 }
 async function onTogglePerm(k: 'carteira' | 'mercado' | 'teses' | 'news') {
-  if (busy.value || !hasKey.value) return
-  perms[k] = !perms[k]
-  await setPermissions({ ...perms })
+  if (pending.value || !hasKey.value) return
+  const prev = perms[k]
+  perms[k] = !perms[k] // otimista…
+  try {
+    await setPermissions({ ...perms })
+  } catch {
+    perms[k] = prev // …com rollback: a UI nunca mente sobre escopo de segurança
+  }
 }
 async function onRotate() {
-  if (busy.value) return
-  await rotate()
-  reveal.value = true // revela a nova — única chance de copiar
+  if (pending.value) return
+  try {
+    await rotate()
+    reveal.value = true // revela a nova — única chance de copiar
+  } catch { /* mantém a chave atual na tela */ }
 }
 
 const copiedToken = ref(false)
@@ -127,7 +141,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
         </div>
         <p v-if="plainKey" class="mcp__key-warn">Copie agora — por segurança, não mostramos a chave de novo.</p>
         <div class="mcp__key-foot">
-          <button type="button" class="mcp__regen" :disabled="busy" @click="onRotate">
+          <button type="button" class="mcp__regen" :disabled="pending" @click="onRotate">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5" /></svg>
             Gerar nova chave
           </button>
@@ -137,7 +151,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
 
       <template v-else>
         <p class="mcp__key-empty">Você ainda não tem uma chave. Gere a sua pra conectar a Redentia ao seu assistente de IA.</p>
-        <button type="button" class="mcp__gen" :disabled="busy" @click="onRotate">
+        <button type="button" class="mcp__gen" :disabled="pending" @click="onRotate">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
           Gerar minha chave
         </button>

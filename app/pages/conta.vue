@@ -32,6 +32,23 @@ async function logout() {
   await navigateTo('/')
 }
 
+// Deep-link de seção (/conta#mcp etc., usado pelo modal do MCP e por URLs
+// compartilhadas): o scrollBehavior do router não resolve aqui porque as
+// seções hidratam depois do mount (a altura acima do alvo muda). Rola no
+// próximo tick e re-ancora uma vez após a hidratação dos cards; scrollIntoView
+// respeita o scroll-margin-top das seções (header sticky).
+const route = useRoute()
+function scrollToHash() {
+  const id = route.hash?.slice(1)
+  if (!id) return
+  const el = document.getElementById(id)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'auto', block: 'start' }), 450)
+}
+onMounted(() => nextTick(scrollToHash))
+watch(() => route.hash, () => nextTick(scrollToHash))
+
 usePageSeo({
   title: 'Configurações',
   description: 'Gerencie seu perfil, notificações, conexões de Open Finance e a segurança da sua conta Redentia.',
