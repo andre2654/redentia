@@ -56,6 +56,8 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
               <span class="chr__stat-value" :class="`chr__stat-value--${s.tone}`">{{ statValue(s) }}</span>
             </span>
           </div>
+          <!-- contas conectadas (pills): patrimônio por instituição + conectar outra -->
+          <CarteiraContasPills @connected="emit('connected')" />
           <div class="chr__ctas">
             <button type="button" class="chr__cta" @click="openAporte">Novo aporte</button>
             <NuxtLink :to="rebalanceHref" class="chr__cta-outline">Rebalancear com a IA</NuxtLink>
