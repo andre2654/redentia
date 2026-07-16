@@ -19,9 +19,11 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 <template>
   <section class="the">
     <div class="the__media">
+      <!-- capa = LCP da página SEO de tese: fetchpriority high pra o browser
+           priorizar o download (webp otimizado, ~80-145KB) -->
       <img
         v-if="hero.image && !imgFailed" :src="hero.image" :alt="`Imagem da tese ${hero.titlePre}${hero.titleHi}${hero.titlePost}`"
-        class="the__img" @error="imgFailed = true"
+        class="the__img" fetchpriority="high" @error="imgFailed = true"
       >
     </div>
     <div class="the__scrim" />

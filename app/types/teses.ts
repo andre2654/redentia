@@ -20,7 +20,7 @@ export interface TesesCardVM {
   since: string
   /** chips de ticker (até 5) */
   tickers: string[]
-  /** capa real da tese (campo image do backend, ex. /teses/x.png). null → o
+  /** capa real da tese (campo image do backend, ex. /teses/x.webp). null → o
    *  card degrada pro gradiente navy (fallback padrão do projeto). */
   image: string | null
   /** destino do card e do CTA fantasma */

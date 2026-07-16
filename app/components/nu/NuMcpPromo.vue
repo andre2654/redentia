@@ -15,6 +15,7 @@ const RETRY_MS = 15000
 
 const open = ref(false)
 const cardRef = ref<HTMLElement | null>(null)
+useModalA11y(cardRef, open) // trap de Tab + restauração de foco
 let timer: ReturnType<typeof setTimeout> | undefined
 
 // Não atropela o usuário: adia se outro modal Nu está aberto (dia/briefing/

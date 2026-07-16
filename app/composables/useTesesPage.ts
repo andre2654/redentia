@@ -39,19 +39,19 @@ function shelfOf(c: ThesisCardApi): Shelf {
 // ('reindustrializacao-eua'), que nunca 404a com o backend fora. As capas
 // apontam pros PNGs reais que já existem em public/teses (sem capa → gradiente).
 const IDEIAS_SEED: TesesCardVM[] = [
-  { slug: 'a-fabrica-volta-para-casa', cat: 'Reindustrialização', title: 'A fábrica volta para casa', foll: true, pill: 'Convicção 88', ret: '+12,4%', since: 'desde que você segue', tickers: ['WEGE3', 'TUPY3', 'ROMI3', 'KEPL3', 'EALT4'], image: '/teses/reindustrializacao-eua.png', href: '/tese/reindustrializacao-eua' },
-  { slug: 'energia-para-ia', cat: 'Energia', title: 'Energia para IA', foll: true, pill: 'Convicção 82', ret: '+21,8%', since: 'desde que você segue', tickers: ['EGIE3', 'CMIG4', 'ELET3', 'ENGI11', 'TAEE11'], image: '/teses/a-conta-de-luz-da-ia.png', href: '/login' },
-  { slug: 'a-nova-geografia-do-frete', cat: 'Logística', title: 'A nova geografia do frete', foll: false, pill: 'Convicção 82', ret: '+9,3%', since: 'retorno em 12 meses', tickers: ['RAIL3', 'STBP3', 'HBSA3'], image: '/teses/a-nova-geografia-do-frete.png', href: '/login' },
-  { slug: 'o-imovel-mais-disputado-do-mundo', cat: 'Data centers', title: 'O imóvel mais disputado do mundo', foll: false, pill: 'Convicção 92', ret: '+15,2%', since: 'retorno em 12 meses', tickers: ['EQIX34', 'ALOS3', 'LOGG3'], image: '/teses/imovel-mais-disputado-data-center.png', href: '/login' },
+  { slug: 'a-fabrica-volta-para-casa', cat: 'Reindustrialização', title: 'A fábrica volta para casa', foll: true, pill: 'Convicção 88', ret: '+12,4%', since: 'desde que você segue', tickers: ['WEGE3', 'TUPY3', 'ROMI3', 'KEPL3', 'EALT4'], image: '/teses/reindustrializacao-eua.webp', href: '/tese/reindustrializacao-eua' },
+  { slug: 'energia-para-ia', cat: 'Energia', title: 'Energia para IA', foll: true, pill: 'Convicção 82', ret: '+21,8%', since: 'desde que você segue', tickers: ['EGIE3', 'CMIG4', 'ELET3', 'ENGI11', 'TAEE11'], image: '/teses/a-conta-de-luz-da-ia.webp', href: '/login' },
+  { slug: 'a-nova-geografia-do-frete', cat: 'Logística', title: 'A nova geografia do frete', foll: false, pill: 'Convicção 82', ret: '+9,3%', since: 'retorno em 12 meses', tickers: ['RAIL3', 'STBP3', 'HBSA3'], image: '/teses/a-nova-geografia-do-frete.webp', href: '/login' },
+  { slug: 'o-imovel-mais-disputado-do-mundo', cat: 'Data centers', title: 'O imóvel mais disputado do mundo', foll: false, pill: 'Convicção 92', ret: '+15,2%', since: 'retorno em 12 meses', tickers: ['EQIX34', 'ALOS3', 'LOGG3'], image: '/teses/imovel-mais-disputado-data-center.webp', href: '/login' },
   { slug: 'saneamento-concessoes', cat: 'Infraestrutura', title: 'Saneamento & concessões', foll: false, pill: 'Convicção 76', ret: '+15,2%', since: 'retorno em 12 meses', tickers: ['SBSP3', 'SAPR11', 'CSMG3'], image: null, href: '/login' },
 ]
 
 const PESQUISAS_SEED: TesesCardVM[] = [
   { slug: 'o-brasil-que-decola', cat: 'Defesa & Aeroespacial', title: 'O Brasil que decola', foll: true, pill: 'Nº 1', ret: '+140%', since: 'retorno acumulado', tickers: ['EMBR3', 'TASA4'], image: null, href: '/login' },
-  { slug: 'energia-para-ia-rank', cat: 'Energia', title: 'Energia para IA', foll: true, pill: 'Nº 2', ret: '+96%', since: 'retorno acumulado', tickers: ['EGIE3', 'NEOE3', 'CMIG4'], image: '/teses/a-conta-de-luz-da-ia.png', href: '/login' },
+  { slug: 'energia-para-ia-rank', cat: 'Energia', title: 'Energia para IA', foll: true, pill: 'Nº 2', ret: '+96%', since: 'retorno acumulado', tickers: ['EGIE3', 'NEOE3', 'CMIG4'], image: '/teses/a-conta-de-luz-da-ia.webp', href: '/login' },
   { slug: 'a-agua-virou-ativo', cat: 'Saneamento', title: 'A água virou ativo', foll: false, pill: 'Nº 3', ret: '+52%', since: 'retorno acumulado', tickers: ['SBSP3', 'CSMG3', 'SAPR11'], image: null, href: '/login' },
-  { slug: 'o-imovel-mais-disputado-do-mundo', cat: 'Data centers', title: 'O imóvel mais disputado do mundo', foll: false, pill: 'Nº 4', ret: '+44%', since: 'retorno acumulado', tickers: ['EQIX34', 'ALOS3', 'LOGG3'], image: '/teses/imovel-mais-disputado-data-center.png', href: '/login' },
-  { slug: 'a-fabrica-volta-para-casa-rank', cat: 'Reindustrialização', title: 'A fábrica volta para casa', foll: true, pill: 'Nº 5', ret: '+34%', since: 'retorno acumulado', tickers: ['CATP34', 'GGBR4', 'WEGE3'], image: '/teses/reindustrializacao-eua.png', href: '/tese/reindustrializacao-eua' },
+  { slug: 'o-imovel-mais-disputado-do-mundo', cat: 'Data centers', title: 'O imóvel mais disputado do mundo', foll: false, pill: 'Nº 4', ret: '+44%', since: 'retorno acumulado', tickers: ['EQIX34', 'ALOS3', 'LOGG3'], image: '/teses/imovel-mais-disputado-data-center.webp', href: '/login' },
+  { slug: 'a-fabrica-volta-para-casa-rank', cat: 'Reindustrialização', title: 'A fábrica volta para casa', foll: true, pill: 'Nº 5', ret: '+34%', since: 'retorno acumulado', tickers: ['CATP34', 'GGBR4', 'WEGE3'], image: '/teses/reindustrializacao-eua.webp', href: '/tese/reindustrializacao-eua' },
 ]
 
 /** "Estratégias de investidores." — SEED do design (shelf 'estrategias'). Some
@@ -87,7 +87,7 @@ function mapCard(c: ThesisCardApi, unlockedSlug: string | null, favs: Set<string
     tickers: (c.tickers ?? []).slice(0, 5),
     // Capa real da tese; null (ex.: tese sem cover) → o card degrada pro
     // gradiente navy no componente (fallback padrão do projeto).
-    image: c.image ?? null,
+    image: teseCover(c.image),
     // Gating espelhado do /mercado (useNuTheses): a 1ª tese da lista abre a
     // página; as demais convidam pro login — só pra ANÔNIMO. Logado vai
     // direto pra tese.

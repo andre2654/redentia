@@ -21,6 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 
 const cardRef = ref<HTMLElement | null>(null)
+useModalA11y(cardRef, toRef(props, 'open')) // trap de Tab + restauração de foco
 const titleId = useId()
 
 function onKey(e: KeyboardEvent) {

@@ -89,6 +89,20 @@ export function relTimeFeed(iso: string | null): string {
   return `${cur.day} ${MONTHS_PT[cur.monthIdx]}`
 }
 
+/**
+ * Capa de tese otimizada: as capas viviam como PNG de 2-2,6MB (11,6MB total,
+ * 79% do public/) e eram o LCP das páginas SEO /tese/*. Agora servimos WebP
+ * (~80-140KB, -95%). O backend ainda devolve o path `.png` (repo separado);
+ * este helper reescreve `/teses/X.png` → `/teses/X.webp` no ponto de render.
+ * Só toca capas de tese: qualquer outro path (webp já, imagem de notícia, URL
+ * externa, null) passa direto. Se uma capa nova do backend não tiver .webp, o
+ * @error dos cards cai no placeholder on-brand (degrade, não img quebrada).
+ */
+export function teseCover(url: string | null | undefined): string | null {
+  if (!url) return null
+  return /^\/teses\/[a-z0-9-]+\.png$/i.test(url) ? url.replace(/\.png$/i, '.webp') : url
+}
+
 /** 'money_times' → 'Money Times' (o design mostra o veículo por extenso). */
 export function sourcePretty(s: string): string {
   return s.replace(/_/g, ' ').replace(/(^|\s)\S/g, (c) => c.toUpperCase())
