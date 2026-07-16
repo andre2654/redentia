@@ -164,7 +164,7 @@ function buildHero(
     titleHi: '',
     titlePost: '',
     subtitle: d.description,
-    image: d.image,
+    image: teseCover(d.image),
     convBadge,
     sinceBadge,
     ativosBadge: `${d.companiesCount} ${d.companiesCount === 1 ? 'ativo' : 'ativos'}`,
@@ -587,7 +587,7 @@ function buildSeo(d: ThesisFullApi): TesePayload['seo'] {
   return {
     title: `Tese ${d.title}: análise, ativos e convicção da IA`,
     description,
-    image: d.image,
+    image: teseCover(d.image),
     // publishedAt do report (quando existe) é a data editorial real do
     // artigo — mais fiel que o estudo mais antigo da revalidação.
     datePublished: d.report?.publishedAt ?? oldest ?? (launch ? localISODate(launch) : null),
@@ -657,7 +657,7 @@ function teseSeed(): TesePayload {
       titleHi: 'volta',
       titlePost: ' para casa.',
       subtitle: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro.',
-      image: '/teses/reindustrializacao-eua.png',
+      image: '/teses/reindustrializacao-eua.webp',
       convBadge: 'Convicção 88/100 · +1 hoje',
       sinceBadge: '+34% desde o lançamento',
       ativosBadge: '7 ativos',
@@ -752,7 +752,7 @@ function teseSeed(): TesePayload {
     seo: {
       title: 'Tese A fábrica volta para casa: análise, ativos e convicção da IA',
       description: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro. Convicção 88/100, +34% desde o lançamento, 7 ativos revalidados diariamente pela IA.',
-      image: '/teses/reindustrializacao-eua.png',
+      image: '/teses/reindustrializacao-eua.webp',
       datePublished: '2026-02-09',
       dateModified: '2026-07-11',
       wordCount: null,

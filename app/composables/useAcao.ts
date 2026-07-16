@@ -454,7 +454,7 @@ async function buildTheses(base: string, ticker: string, list: ThesisCardApi[]):
     return {
       slug: t.id,
       title: t.title,
-      image: t.image,
+      image: teseCover(t.image),
       conviction: t.conviction,
       roleStrong,
       roleRest,
@@ -818,7 +818,7 @@ function petr4Seed(): AcaoPayload {
       { kind: 'metric', label: 'ROA', value: '8,6%', tag: g('Bom') },
     ],
     theses: [
-      { slug: 'a-conta-de-luz-da-ia', title: 'Energia para IA', image: '/teses/a-conta-de-luz-da-ia.png', conviction: 82, roleStrong: 'o gás que segura a base térmica', roleRest: ' enquanto os data centers dobram o consumo' },
+      { slug: 'a-conta-de-luz-da-ia', title: 'Energia para IA', image: '/teses/a-conta-de-luz-da-ia.webp', conviction: 82, roleStrong: 'o gás que segura a base térmica', roleRest: ' enquanto os data centers dobram o consumo' },
     ],
     dividends: {
       heading: ['Uma máquina', 'de dividendos.'],

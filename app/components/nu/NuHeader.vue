@@ -166,10 +166,21 @@ watch(shrunk, (s) => {
 /* ——— menu mobile ——— */
 const menuOpen = ref(false)
 const menuGroup = ref<string | null>(null) // grupo expandido (Ferramentas/Informações)
+const menuRef = ref<HTMLElement | null>(null)
+// a11y do overlay full-screen: trap de Tab + restauração de foco pro hambúrguer
+// (antes o Tab vazava pra página atrás e o Esc não fechava nada).
+useModalA11y(menuRef, menuOpen)
+function onMenuKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') toggleMenu(false)
+}
 function toggleMenu(open: boolean) {
   menuOpen.value = open
   if (!open) menuGroup.value = null
-  document.documentElement.style.overflow = open ? 'hidden' : ''
+  if (import.meta.client) {
+    document.documentElement.style.overflow = open ? 'hidden' : ''
+    if (open) document.addEventListener('keydown', onMenuKey)
+    else document.removeEventListener('keydown', onMenuKey)
+  }
 }
 watch(() => route.fullPath, () => { toggleMenu(false); openDrawer.value = null; accountOpen.value = false })
 
@@ -187,6 +198,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', onNavKey)
   document.removeEventListener('click', onAccountDocClick, true)
   document.removeEventListener('keydown', onAccountKey)
+  document.removeEventListener('keydown', onMenuKey)
   document.documentElement.style.overflow = ''
 })
 </script>
@@ -270,7 +282,7 @@ onBeforeUnmount(() => {
 
     <!-- menu mobile full-screen (referência do dono) -->
     <Teleport to="body">
-      <div v-if="menuOpen" class="num">
+      <div v-if="menuOpen" ref="menuRef" class="num" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
         <div class="num__top">
           <NuxtLink to="/" class="num__brand" aria-label="Redentia" @click="toggleMenu(false)">
             <img src="/logo-branca.svg" alt="Redentia" class="num__logo">

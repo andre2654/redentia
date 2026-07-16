@@ -18,6 +18,7 @@ const route = useRoute()
 const loginTo = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`)
 
 const cardRef = ref<HTMLElement | null>(null)
+useModalA11y(cardRef, toRef(props, 'open')) // trap de Tab + restauração de foco
 const titleId = useId()
 
 // rascunho local (só grava no "Salvar")

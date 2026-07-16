@@ -23,6 +23,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ close: []; confirm: [value: number] }>()
 
 const inputRef = ref<HTMLInputElement | null>(null)
+const cardRef = ref<HTMLElement | null>(null)
+useModalA11y(cardRef, toRef(props, 'open')) // trap de Tab + restauração de foco (o input já é o foco inicial)
 const titleId = useId()
 const errId = useId()
 
@@ -82,6 +84,7 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <div v-if="open" class="nam" @click="emit('close')">
       <form
+        ref="cardRef"
         class="nam__card"
         role="dialog"
         aria-modal="true"
@@ -103,6 +106,7 @@ onBeforeUnmount(() => {
             ref="inputRef"
             class="nam__input"
             :value="display"
+            aria-label="Valor do aporte em reais"
             inputmode="numeric"
             autocomplete="off"
             placeholder="0"

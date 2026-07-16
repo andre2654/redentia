@@ -54,7 +54,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'a-fabrica-volta-para-casa',
     cat: 'Reindustrialização',
-    image: '/teses/reindustrializacao-eua.png',
+    image: '/teses/reindustrializacao-eua.webp',
     perf: '+34%',
     perfLabel: 'Tese em destaque',
     titlePre: 'A fábrica ',
@@ -76,7 +76,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'energia-para-ia',
     cat: 'Energia',
-    image: '/teses/a-conta-de-luz-da-ia.png',
+    image: '/teses/a-conta-de-luz-da-ia.webp',
     perf: '+96%',
     perfLabel: 'Melhor tese',
     titlePre: '',
@@ -98,7 +98,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'a-nova-geografia-do-frete',
     cat: 'Logística',
-    image: '/teses/a-nova-geografia-do-frete.png',
+    image: '/teses/a-nova-geografia-do-frete.webp',
     perf: '+18%',
     perfLabel: 'Tese recente',
     titlePre: 'A nova geografia do ',
@@ -120,7 +120,7 @@ const THESES_SEED: NuThesis[] = [
   {
     slug: 'o-imovel-mais-disputado-do-mundo',
     cat: 'Data centers',
-    image: '/teses/imovel-mais-disputado-data-center.png',
+    image: '/teses/imovel-mais-disputado-data-center.webp',
     perf: '+44%',
     perfLabel: 'Popular',
     titlePre: 'O imóvel mais ',
@@ -152,7 +152,7 @@ function mapThesis(c: ThesisCardApi, i: number, authed: boolean): NuThesis {
   return {
     slug: c.id,
     cat: c.sector,
-    image: c.image,
+    image: teseCover(c.image),
     perf: c.returnLabel || null,
     perfLabel: c.rankLabel || 'Tese Redentia',
     // A API não marca trecho de destaque no título — hidratado renderiza plano.
