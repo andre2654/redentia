@@ -57,7 +57,7 @@ function onKey(e: KeyboardEvent) {
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
   color: var(--nu-ink); font-size: 15.5px; font-weight: 600; padding: 11px 0;
 }
-.bcc__input::placeholder { color: var(--nu-sand); font-weight: 500; }
+.bcc__input::placeholder { color: var(--nu-gray); font-weight: 500; }
 .bcc__send {
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--nu-blue); border: none;

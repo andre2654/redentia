@@ -45,7 +45,7 @@ defineProps<{
 .ctc__scroll { overflow-x: auto; }
 .ctc__table { width: 100%; border-collapse: collapse; min-width: 520px; }
 .ctc__table th {
-  color: var(--nu-sand); font-size: 12px; font-weight: 800;
+  color: var(--nu-gray); font-size: 12px; font-weight: 800;
   letter-spacing: 1px; text-transform: uppercase; text-align: left;
   padding: 10px 18px 12px 0; white-space: nowrap;
 }

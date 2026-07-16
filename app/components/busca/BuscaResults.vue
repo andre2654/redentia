@@ -157,7 +157,7 @@ function coverFailed(slug: string) {
 .bsr__pct { display: block; font-size: 12.5px; font-weight: 800; margin-top: 1px; font-variant-numeric: tabular-nums; }
 .bsr__pct--up { color: var(--nu-green-2); }
 .bsr__pct--down { color: var(--nu-red-2); }
-.bsr__chev { flex-shrink: 0; color: var(--nu-sand); }
+.bsr__chev { flex-shrink: 0; color: var(--nu-gray); }
 
 /* Teses: cards creme */
 .bsr__theses {

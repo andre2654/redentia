@@ -51,9 +51,9 @@ defineExpose({
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
   color: var(--nu-ink); font-size: clamp(16px, 1.6vw, 18px); font-weight: 600; padding: 12px 0;
 }
-.bsb__input::placeholder { color: var(--nu-sand); font-weight: 500; }
+.bsb__input::placeholder { color: var(--nu-gray); font-weight: 500; }
 .bsb__kbd {
-  color: var(--nu-sand); font-size: 12.5px; font-weight: 700; flex-shrink: 0;
+  color: var(--nu-gray); font-size: 12.5px; font-weight: 700; flex-shrink: 0;
   border: 1.5px solid var(--nu-cream-3); border-radius: 8px; padding: 4px 9px;
 }
 .bsb__cta {

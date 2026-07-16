@@ -46,7 +46,7 @@ defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
 .nfr__content { flex: 1.1 1 340px; min-width: min(300px, 100%); }
 .nfr__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .nfr__veiculo { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }
-.nfr__dot { color: var(--nu-sand); font-size: 13px; font-weight: 700; }
+.nfr__dot { color: var(--nu-gray); font-size: 13px; font-weight: 700; }
 .nfr__tempo { color: var(--nu-gray); font-size: 14px; font-weight: 600; }
 .nfr__badge {
   display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue);

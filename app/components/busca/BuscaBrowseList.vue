@@ -117,7 +117,7 @@ const emit = defineEmits<{ (e: 'more'): void }>()
 .bbl__pct { display: block; font-size: 12.5px; font-weight: 800; margin-top: 1px; font-variant-numeric: tabular-nums; }
 .bbl__pct--up { color: var(--nu-green-2); }
 .bbl__pct--down { color: var(--nu-red-2); }
-.bbl__chev { flex-shrink: 0; color: var(--nu-sand); }
+.bbl__chev { flex-shrink: 0; color: var(--nu-gray); }
 .bbl__tag {
   display: inline-flex; align-items: center; flex-shrink: 0;
   background: var(--nu-cream); color: var(--nu-gray);

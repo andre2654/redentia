@@ -248,7 +248,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
   transition: background .2s, color .2s;
 }
 a.trp__chip:hover { background: var(--nu-cream-hover); color: var(--nu-blue); }
-.trp__chip-icon { flex-shrink: 0; color: var(--nu-sand); }
+.trp__chip-icon { flex-shrink: 0; color: var(--nu-gray); }
 a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 
 /* rótulo pequeno dos cards internos */

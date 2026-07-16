@@ -20,5 +20,5 @@ defineProps<{ label: string; help?: string }>()
 <style scoped>
 .nfl { display: flex; align-items: center; gap: 7px; }
 .nfl__text { color: var(--nu-gray-2); font-size: 14px; font-weight: 700; }
-.nfl__help { display: inline-flex; color: var(--nu-sand); cursor: help; }
+.nfl__help { display: inline-flex; color: var(--nu-gray); cursor: help; }
 </style>

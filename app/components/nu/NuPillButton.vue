@@ -32,6 +32,6 @@ withDefaults(
   font-size: 16.5px; font-weight: 800; cursor: pointer;
   transition: background .2s, color .2s, transform .15s;
 }
-.npb--off { background: var(--nu-cream-2); color: var(--nu-sand); pointer-events: none; cursor: default; }
+.npb--off { background: var(--nu-cream-2); color: var(--nu-gray); pointer-events: none; cursor: default; }
 .npb--wait { pointer-events: none; cursor: default; }
 </style>

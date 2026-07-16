@@ -501,7 +501,7 @@ onBeforeUnmount(() => {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding: 13px 4px 13px 18px; color: var(--nu-gray-2); font-size: 18px; font-weight: 700;
 }
-.num__subitem svg { color: var(--nu-sand); flex-shrink: 0; }
+.num__subitem svg { color: var(--nu-gray); flex-shrink: 0; }
 .num__subitem--active { color: var(--nu-blue); }
 .num__subitem--active svg { color: var(--nu-blue); }
 .num__ctas {

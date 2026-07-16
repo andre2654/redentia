@@ -27,5 +27,5 @@ defineEmits<{ click: [] }>()
 .nlab:hover { background: var(--nu-row-hover); }
 .nlab__icon { display: inline-flex; color: var(--nu-gray-2); }
 .nlab__label { flex: 1; color: var(--nu-ink); font-size: 15px; font-weight: 700; }
-.nlab__chevron { color: var(--nu-sand); flex: none; }
+.nlab__chevron { color: var(--nu-gray); flex: none; }
 </style>

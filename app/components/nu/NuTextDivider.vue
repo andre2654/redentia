@@ -15,5 +15,5 @@ withDefaults(defineProps<{ label?: string }>(), { label: 'ou' })
 <style scoped>
 .ntd { display: flex; align-items: center; gap: 14px; }
 .ntd__line { flex: 1; height: 1.5px; background: var(--nu-cream-2); }
-.ntd__label { color: var(--nu-sand); font-size: 13px; font-weight: 700; }
+.ntd__label { color: var(--nu-gray); font-size: 13px; font-weight: 700; }
 </style>
