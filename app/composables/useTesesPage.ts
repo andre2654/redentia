@@ -148,8 +148,13 @@ export function useTesesPage() {
   const pesquisas = computed<TesesCardVM[]>(() => {
     const cards = apiCards.value
     if (cards.length < 2) return PESQUISAS_SEED
+    // Piso de mérito (curadoria 2026-07-16): só entra no ranking tese com
+    // retorno real relevante (≥ +10% desde a publicação). Tese recém-nascida
+    // (~0%) NÃO ocupa vaga em "Melhores pesquisas" por sorteio de ordenação;
+    // ela entra quando provar. Com menos de 2 qualificadas o seed segura a
+    // prateleira (mesmo degrade honesto de sempre).
     const ranked = cards
-      .filter((c) => c.returnPct != null)
+      .filter((c) => c.returnPct != null && (c.returnPct as number) >= 10)
       .sort((a, b) => (b.returnPct as number) - (a.returnPct as number))
       .slice(0, 5)
     if (ranked.length < 2) return PESQUISAS_SEED
