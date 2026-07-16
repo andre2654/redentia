@@ -8,7 +8,16 @@
 // Estado real via backend (/api/me/mcp). A chave em claro só existe UMA
 // vez, no retorno do rotate — depois disso, só o mascarado.
 const { status, plainKey, hydrate, rotate, setEnabled, setPermissions, busy, loading } = useMcp()
-onMounted(() => { hydrate().catch(() => {}) })
+
+// GET /me/mcp falhou → sem estado de erro, o card ficava num "gere sua chave"
+// com o botão travado por `pending` (status null) = beco sem saída. loadFailed
+// mostra um retry honesto (auditoria de frontend 2026-07-15).
+const loadFailed = ref(false)
+async function load() {
+  loadFailed.value = false
+  try { await hydrate() } catch { loadFailed.value = true }
+}
+onMounted(load)
 
 // Enquanto o GET /me/mcp está em voo, status=null lê como "sem chave" — um
 // clique no toggle nessa janela cairia no rotate() e MATARIA a chave real do
@@ -133,7 +142,15 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
     <div class="mcp__panel">
       <div class="mcp__panel-label">Sua chave de acesso</div>
 
-      <template v-if="hasKey">
+      <template v-if="loadFailed">
+        <p class="mcp__key-empty">Não consegui carregar sua chave agora.</p>
+        <button type="button" class="mcp__gen" @click="load">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5" /></svg>
+          Tentar de novo
+        </button>
+      </template>
+
+      <template v-else-if="hasKey">
         <div class="mcp__key-row">
           <code class="mcp__key">{{ tokenText }}</code>
           <button v-if="plainKey" type="button" class="mcp__reveal" @click="reveal = !reveal">{{ reveal ? 'Ocultar' : 'Revelar' }}</button>

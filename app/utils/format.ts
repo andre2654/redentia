@@ -31,17 +31,41 @@ export function localISODate(d = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+/**
+ * Partes de uma data no fuso de SP — usar em TODO rótulo de hora que roda no
+ * SSR. O Nitro da Vercel roda em UTC; getHours()/localISODate() no servidor
+ * davam +3h ('hoje, 09:50' às 06:50 de SP = hora no futuro pro leitor BR) e a
+ * virada hoje/ontem caía às 21h. Intl com timeZone resolve no cliente e no
+ * servidor igual (sem mismatch de hidratação). { ymd, hm, dm }.
+ */
+function spParts(d: Date): { ymd: string; hm: string; dm: string; day: number; monthIdx: number } {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    }).formatToParts(d).map((x) => [x.type, x.value]),
+  ) as Record<string, string>
+  const hour = p.hour === '24' ? '00' : p.hour
+  return {
+    ymd: `${p.year}-${p.month}-${p.day}`,
+    hm: `${hour}:${p.minute}`,
+    dm: `${p.day}/${p.month}`,
+    day: Number(p.day),
+    monthIdx: Number(p.month) - 1,
+  }
+}
+
 /** 'hoje, 08:30' · 'ontem' · '04/07' (formato das linhas de notícia do /mercado e /asset). */
 export function relTime(iso: string | null): string {
   if (!iso) return ''
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return ''
-  const today = localISODate()
-  const yesterday = localISODate(new Date(Date.now() - 86_400_000))
-  const day = localISODate(d)
-  if (day === today) return `hoje, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-  if (day === yesterday) return 'ontem'
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
+  const today = spParts(new Date()).ymd
+  const yesterday = spParts(new Date(Date.now() - 86_400_000)).ymd
+  const cur = spParts(d)
+  if (cur.ymd === today) return `hoje, ${cur.hm}`
+  if (cur.ymd === yesterday) return 'ontem'
+  return cur.dm
 }
 
 /**
@@ -55,14 +79,14 @@ export function relTimeFeed(iso: string | null): string {
   if (Number.isNaN(d.getTime())) return ''
   const now = new Date()
   const diffMin = Math.floor((now.getTime() - d.getTime()) / 60_000)
-  const day = localISODate(d)
-  if (day === localISODate(now) && diffMin >= 0) {
+  const cur = spParts(d)
+  if (cur.ymd === spParts(now).ymd && diffMin >= 0) {
     if (diffMin < 60) return `há ${Math.max(diffMin, 1)} min`
     if (diffMin < 180) return `há ${Math.round(diffMin / 60)} h`
-    return `hoje, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+    return `hoje, ${cur.hm}`
   }
-  if (day === localISODate(new Date(now.getTime() - 86_400_000))) return 'ontem'
-  return `${d.getDate()} ${MONTHS_PT[d.getMonth()]}`
+  if (cur.ymd === spParts(new Date(now.getTime() - 86_400_000)).ymd) return 'ontem'
+  return `${cur.day} ${MONTHS_PT[cur.monthIdx]}`
 }
 
 /** 'money_times' → 'Money Times' (o design mostra o veículo por extenso). */

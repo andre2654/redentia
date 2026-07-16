@@ -524,16 +524,29 @@ export function useBuscaIndex() {
       : []
 
     const total = matchedAssets.length + matchedTesouro.length + matchedTheses.length + matchedGuias.length
+
+    // "Sem resultados" só quando o universo REALMENTE respondeu. Enquanto o
+    // índice B3 (/tickers-full, ~1.1MB, ~1.5s em 4G) ainda baixa, rodamos só
+    // sobre os movers → afirmar "sem resultados" pra um ticker que existe é
+    // mentira; e se o fetch falhou, é indisponibilidade, não vazio. Nos dois
+    // casos com 0 matches, não estampar "sem resultados".
+    const universeLoading = wantB3 && (assetsStatus.value === 'idle' || assetsStatus.value === 'loading') && assets.value.length === 0
+    const universeError = wantB3 && assetsStatus.value === 'error' && assets.value.length === 0
+    let label: string
+    if (total > 0) label = `Resultados para "${raw}"`
+    else if (universeLoading) label = `Buscando "${raw}"…`
+    else if (universeError) label = `Não consegui carregar os ativos agora. Tente de novo ou clique em Perguntar à IA`
+    else label = `Sem resultados para "${raw}". Clique em Perguntar à IA`
+
     return {
-      label: total === 0
-        ? `Sem resultados para "${raw}". Clique em Perguntar à IA`
-        : `Resultados para "${raw}"`,
+      label,
       assets: matchedAssets,
       tesouro: matchedTesouro,
       theses: matchedTheses,
       guias: matchedGuias,
-      empty: total === 0,
-      loading: false, // busca por texto: resultados vêm do índice, sem seed falso
+      // vazio "de verdade" só quando o universo respondeu (senão é loading/erro)
+      empty: total === 0 && !universeLoading && !universeError,
+      loading: total === 0 && universeLoading,
     }
   }
 
