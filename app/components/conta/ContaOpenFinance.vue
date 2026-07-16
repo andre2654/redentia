@@ -1,10 +1,13 @@
 <script setup lang="ts">
 // Seção Open Finance de /conta (PR3). Porta a estrutura do Frontend antigo
 // (settings/integracoes.vue): lista de conexões Pluggy com logo/nome/tipo +
-// status (7 estados) + meta (última sync, ativos, saldo) + ações contextuais
-// (Reconectar pra LOGIN_ERROR/WAITING_USER_INPUT, Atualizar/sync pro resto,
-// Desconectar). Polling 30s enquanto algo está UPDATING/CREATING. Conectar/
-// reconectar abrem o widget do Pluggy (usePluggyWidget).
+// status (8 estados) + meta (última sync, ativos, saldo) + ações contextuais
+// (Reconectar pra LOGIN_ERROR/WAITING_USER_INPUT/ITEM_NOT_FOUND, Atualizar/
+// sync pro resto, Desconectar). ITEM_NOT_FOUND = item órfão no Pluggy (troca
+// de app/credenciais): Reconectar abre o widget em modo FRESH (item novo) e
+// remove a conexão órfã; os outros dois reabrem em modo update (itemId).
+// Polling 30s enquanto algo está UPDATING/CREATING. Conectar/reconectar abrem
+// o widget do Pluggy (usePluggyWidget).
 //
 // NOTA (dono 2026-07-14): o Pluggy não está pago agora, então o fluxo de
 // conectar não vai funcionar ainda (getConnectToken → 500). A estrutura fica
@@ -63,11 +66,40 @@ async function openConnectFlow() {
   })
 }
 
+// Dois modos de reconexão, decididos pelo status:
+//  - LOGIN_ERROR/WAITING_USER_INPUT: o item ainda EXISTE no Pluggy, só precisa
+//    de reauth → widget em modo update (passa itemId).
+//  - ITEM_NOT_FOUND: o item não existe mais neste app Pluggy (deletado, ou
+//    credenciais trocadas de app) → modo update daria 404. Abre o widget SEM
+//    itemId (cria item novo no app atual), PINADO no connector da órfã (senão
+//    o widget abre a lista inteira de bancos e o user pode conectar outro).
+//    A substituição da órfã é do BACKEND (store() faz takeover por
+//    user+connector) — robusto a aba fechada e nunca apaga outra instituição.
+//    O registro da nova fica por conta do próprio widget (onSuccess do
+//    usePluggyWidget já chama registerConnection + sync inicial).
+//  Se o item virou órfão DEPOIS do status ter sido gravado (ex.: preso em
+//  LOGIN_ERROR), o modo update falha com 410 item_not_found no connect-token;
+//  o backend já marcou ITEM_NOT_FOUND — o loadAll do onError troca o card pro
+//  fluxo fresh e o próximo clique reconecta de verdade.
 async function reconnect(conn: PluggyConnection) {
+  const orphan = conn.status === 'ITEM_NOT_FOUND'
   await openWidget({
-    itemId: conn.item_id,
-    onSuccess: async () => { notify('success', `${conn.institution_name} voltou a sincronizar.`); await loadAll() },
-    onError: (err) => notify('error', (err as { message?: string })?.message || 'Não foi possível reautenticar.'),
+    ...(orphan
+      ? (conn.connector_id ? { connectorIds: [conn.connector_id] } : {})
+      : { itemId: conn.item_id }),
+    onSuccess: async () => {
+      notify('success', `${conn.institution_name} voltou a sincronizar.`)
+      await loadAll()
+    },
+    onError: async (err) => {
+      const data = (err as { data?: { code?: string, message?: string } })?.data
+      notify('error', data?.message
+        || (err as { message?: string })?.message
+        || 'Não foi possível reautenticar.')
+      // recarrega sempre: se o connect-token marcou ITEM_NOT_FOUND (410), o
+      // card troca o selo pra "Reconecte" e o próximo clique usa o modo fresh.
+      await loadAll()
+    },
   })
 }
 
@@ -79,6 +111,13 @@ async function syncOne(conn: PluggyConnection) {
     if (result.status === 'rate_limited') {
       const min = result.retry_after_minutes ?? 60
       notify('success', `${conn.institution_name} foi atualizado há pouco. Próximo refresh completo em ~${min} min.`)
+    }
+    else if (result.status === 'item_not_found') {
+      // conexão órfã (item não existe mais no app Pluggy): o loadAll abaixo
+      // já troca o selo pra "Reconecte" e o botão pra Reconectar. Mensagem
+      // local (não a do backend): nomeia a instituição, importante em lista
+      // com várias conexões.
+      notify('error', `A conexão com ${conn.institution_name} expirou no Open Finance. Reconecte a conta para voltar a sincronizar.`)
     }
     else {
       notify('success', `Buscando dados atualizados em ${conn.institution_name}.`)
@@ -124,6 +163,7 @@ function statusVisual(status: PluggyConnection['status']): { label: string, tone
     case 'UPDATING': return { label: 'Sincronizando', tone: 'info' }
     case 'CREATING': return { label: 'Configurando', tone: 'info' }
     case 'ERROR': return { label: 'Erro', tone: 'negative' }
+    case 'ITEM_NOT_FOUND': return { label: 'Reconecte', tone: 'negative' }
     default: return { label: status, tone: 'neutral' }
   }
 }
@@ -219,7 +259,7 @@ function timeSince(iso: string | null): string {
 
           <div class="of__actions">
             <button
-              v-if="conn.status === 'LOGIN_ERROR' || conn.status === 'WAITING_USER_INPUT'"
+              v-if="conn.status === 'LOGIN_ERROR' || conn.status === 'WAITING_USER_INPUT' || conn.status === 'ITEM_NOT_FOUND'"
               type="button" class="of__act of__act--primary" :disabled="widgetLoading" @click="reconnect(conn)"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 7.5a5 5 0 1 0-7 4.5L3 18v3h3l1-1h2l1-2 2.5-2.5A5 5 0 0 0 15.5 7.5z" /><circle cx="16.5" cy="7.5" r="1" /></svg>

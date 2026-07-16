@@ -8,6 +8,9 @@
  */
 interface OpenWidgetParams {
   itemId?: string
+  /** restringe o widget a conectores específicos (ex.: reconexão de órfã —
+   *  pina na instituição da conexão antiga pra não abrir a lista inteira) */
+  connectorIds?: number[]
   onSuccess: (data: { item: { id: string; status: string } }) => void
   onError?: (error: unknown) => void
   onClose?: () => void
@@ -45,6 +48,7 @@ export function usePluggyWidget() {
         connectToken: accessToken,
         includeSandbox: false,
         ...(params.itemId ? { updateItem: params.itemId } : {}),
+        ...(params.connectorIds?.length ? { connectorIds: params.connectorIds } : {}),
         onSuccess: async ({ item }: { item: { id: string; status: string } }) => {
           // backend persiste a conexão + dispara sync inicial async
           try {
