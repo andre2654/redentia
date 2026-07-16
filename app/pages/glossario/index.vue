@@ -237,7 +237,7 @@ const totalShown = computed(() => filtered.value.length)
   display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .glx__card-arrow {
-  position: absolute; top: 20px; right: 20px; color: var(--nu-sand);
+  position: absolute; top: 20px; right: 20px; color: var(--nu-gray);
   opacity: 0; transform: translateX(-4px); transition: opacity .18s, transform .18s;
 }
 .glx__card:hover .glx__card-arrow { opacity: 1; transform: none; color: var(--nu-blue); }

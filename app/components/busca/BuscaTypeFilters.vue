@@ -221,7 +221,7 @@ onBeforeUnmount(() => {
   color: var(--nu-ink); font-size: 14px; font-weight: 700;
   transition: background .15s;
 }
-.btf__panel-item svg { color: var(--nu-sand); flex-shrink: 0; }
+.btf__panel-item svg { color: var(--nu-gray); flex-shrink: 0; }
 .btf__panel-item:hover { background: var(--nu-cream); }
 .btf__panel-item:hover svg { color: var(--nu-blue); }
 .btf__panel-item:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }

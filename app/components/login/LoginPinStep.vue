@@ -187,7 +187,7 @@ onMounted(() => focusCell(0))
   color: var(--nu-blue); font-size: 14.5px; font-weight: 800;
   cursor: pointer; font-family: inherit;
 }
-.lps__resend-btn:disabled { color: var(--nu-sand); cursor: default; }
-.lps__resend-wait { color: var(--nu-sand); font-size: 14.5px; font-weight: 600; }
+.lps__resend-btn:disabled { color: var(--nu-gray); cursor: default; }
+.lps__resend-wait { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
 .lps__back { margin-top: clamp(32px, 5vh, 52px); }
 </style>

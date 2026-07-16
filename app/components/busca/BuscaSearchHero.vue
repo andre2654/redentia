@@ -115,5 +115,5 @@ defineExpose({
   color: var(--nu-ink); font-size: 14px; font-weight: 700; max-width: 320px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.bsh__recent-time { color: var(--nu-sand); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.bsh__recent-time { color: var(--nu-gray); font-size: 12px; font-weight: 700; white-space: nowrap; }
 </style>

@@ -333,7 +333,7 @@ usePageSeo({
 }
 .chb__tip { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 .chb__tip-tag {
-  display: block; color: var(--nu-sand); font-size: 11px; font-weight: 800;
+  display: block; color: var(--nu-gray); font-size: 11px; font-weight: 800;
   letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 8px;
 }
 

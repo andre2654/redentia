@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
 }
 .nsr__head { display: inline-flex; align-items: baseline; gap: 10px; min-width: 0; }
 .nsr__title { color: var(--nu-ink); font-size: 15px; font-weight: 800; white-space: nowrap; }
-.nsr__count { color: var(--nu-sand); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.nsr__count { color: var(--nu-gray); font-size: 13px; font-weight: 700; white-space: nowrap; }
 .nsr__chev { flex-shrink: 0; color: var(--nu-ink); transition: transform .25s ease; }
 .nsr__chev--open { transform: rotate(180deg); }
 
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
 }
 .nsr__row + .nsr__row { border-top: 1px solid var(--nu-cream-2); }
 .nsr__row:hover { background: var(--nu-cream-hover); }
-.nsr__row svg { color: var(--nu-sand); flex-shrink: 0; }
+.nsr__row svg { color: var(--nu-gray); flex-shrink: 0; }
 .nsr__row--active { color: var(--nu-blue); }
 .nsr__row--active svg { color: var(--nu-blue); }
 </style>

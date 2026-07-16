@@ -175,7 +175,7 @@ button.csf__value { cursor: pointer; }
 button.csf__value:hover, button.csf__value:focus-visible {
   background: var(--nu-white); border-color: var(--nu-sand-border); color: var(--nu-blue); outline: none;
 }
-.csf__edit-ic { color: var(--nu-sand); flex-shrink: 0; transition: color .18s; }
+.csf__edit-ic { color: var(--nu-gray); flex-shrink: 0; transition: color .18s; }
 button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edit-ic { color: var(--nu-blue); }
 
 /* editando: box branca com borda azul; input transparente por dentro */

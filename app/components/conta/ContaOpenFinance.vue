@@ -298,7 +298,7 @@ function timeSince(iso: string | null): string {
 .of__status--info { background: var(--nu-blue-bg); color: var(--nu-blue); }
 
 .of__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 600; }
-.of__dot { color: var(--nu-sand); }
+.of__dot { color: var(--nu-gray); }
 .of__meta-strong { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 
 .of__actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }

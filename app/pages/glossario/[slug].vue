@@ -120,7 +120,7 @@ usePageSeo({
 .gt__crumbs { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; }
 .gt__crumb { color: var(--nu-blue); }
 .gt__crumb--here { color: var(--nu-gray-2); }
-.gt__crumb-sep { color: var(--nu-sand); }
+.gt__crumb-sep { color: var(--nu-gray); }
 .gt__title {
   margin: 16px 0 0; color: var(--nu-ink);
   font-size: clamp(40px, 6vw, 76px); font-weight: 800;
