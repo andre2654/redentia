@@ -27,6 +27,7 @@ const NAV: NavItem[] = [
     label: 'Ferramentas',
     children: [
       { label: 'Calculadoras', to: '/calculadoras' },
+      { label: 'Redentia MCP', to: '/mcp' },
       { label: 'Rankings de Ações', to: '/rankings?classe=acoes' },
       { label: 'Rankings de FIIs', to: '/rankings?classe=fiis' },
       { label: 'Rankings de BDRs', to: '/rankings?classe=bdrs' },
