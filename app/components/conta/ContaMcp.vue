@@ -215,10 +215,10 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
       <pre class="mcp__code">{{ cfgText }}</pre>
     </div>
 
-    <a href="#" class="mcp__docs">
+    <NuxtLink to="/mcp" class="mcp__docs">
       Ver documentação do MCP
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9" /></svg>
-    </a>
+    </NuxtLink>
   </section>
 </template>
 

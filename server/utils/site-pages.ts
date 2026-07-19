@@ -46,6 +46,7 @@ const CORE_PAGES: SitePage[] = [
   // /asset/PETR4) não têm doc e já entram pela seção de ativos.
   ...guideDocPages(),
   { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Redentia.' },
+  { path: '/mcp', title: 'Redentia MCP', description: 'Servidor MCP da Redentia: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   { path: '/setor', title: 'Hub de setores', description: 'Os setores da B3 com empresas, valor de mercado somado e variação do dia.' },
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },

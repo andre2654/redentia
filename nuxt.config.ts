@@ -100,6 +100,9 @@ export default defineNuxtConfig({
     // /teses: SSR 100% público (seed do design; favoritos hidratam client-side).
     '/teses': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
     '/calculadoras': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // /mcp: docs públicas do servidor MCP — conteúdo estático (o CTA troca de
+    // destino client-side pós-mount, o SSR é idêntico pra todo mundo).
+    '/mcp': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
