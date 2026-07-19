@@ -22,6 +22,8 @@ import { ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE } from '~/content/guias/acoes-fiis
 import { BITCOIN_NA_CARTEIRA_GUIDE } from '~/content/guias/bitcoin-na-carteira'
 import { COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE } from '~/content/guias/como-declarar-investimentos-no-ir'
 import { COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE } from '~/content/guias/como-montar-carteira-de-investimentos'
+import { CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE } from '~/content/guias/conectar-carteira-ao-chatgpt'
+import { MCP_PARA_INVESTIMENTOS_GUIDE } from '~/content/guias/mcp-para-investimentos'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -50,6 +52,8 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [BITCOIN_NA_CARTEIRA_GUIDE.slug]: BITCOIN_NA_CARTEIRA_GUIDE,
   [COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE.slug]: COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE,
   [COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE.slug]: COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE,
+  [CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE.slug]: CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE,
+  [MCP_PARA_INVESTIMENTOS_GUIDE.slug]: MCP_PARA_INVESTIMENTOS_GUIDE,
 }
 
 /**
@@ -64,6 +68,20 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
  * resolvem /guias/<slug> → 200. Conteúdo de guia NÃO é inventado aqui.
  */
 export const GUIDES: GuideMeta[] = [
+  {
+    title: 'Como conectar sua carteira ao ChatGPT e ao Claude',
+    description: 'A IA responde sobre a sua carteira real da B3, no Brasil, com acesso somente leitura.',
+    tag: 'Guia Redentia',
+    minutes: 9,
+    slug: 'conectar-carteira-ao-chatgpt',
+  },
+  {
+    title: 'MCP para investimentos: o que é e como usar',
+    description: 'O padrão que conecta assistentes de IA aos seus dados da B3, sem jargão.',
+    tag: 'Guia Redentia',
+    minutes: 8,
+    slug: 'mcp-para-investimentos',
+  },
   {
     title: 'Como investir em ações',
     description: 'Da abertura de conta até a primeira compra, com exemplos reais e passo a passo.',
