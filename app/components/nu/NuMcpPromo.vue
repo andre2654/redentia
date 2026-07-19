@@ -24,6 +24,8 @@ let timer: ReturnType<typeof setTimeout> | undefined
 function busyContext(): boolean {
   if (document.querySelector('.ndm, .nbm, .nam')) return true
   if (route.path === '/busca' && route.query.chat) return true
+  // /mcp É a página do produto anunciado: modal ali é redundante e cobre a doc
+  if (route.path === '/mcp') return true
   return false
 }
 
