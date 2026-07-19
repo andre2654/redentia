@@ -9,7 +9,7 @@ const CARDS = [
 const COLUMNS = [
   // fusão home+carteira (2026-07-13): /mercado e /carteira viraram '/' — o
   // link único "Mercado" cobre os dois (logado, '/' É a carteira).
-  { title: 'Produto', links: [{ label: 'Ações', to: '/asset/PETR4' }, { label: 'Mercado', to: '/' }, { label: 'Teses', to: '/teses' }, { label: 'Calculadoras', to: '/calculadoras' }] },
+  { title: 'Produto', links: [{ label: 'Ações', to: '/asset/PETR4' }, { label: 'Mercado', to: '/' }, { label: 'Teses', to: '/teses' }, { label: 'Calculadoras', to: '/calculadoras' }, { label: 'Redentia MCP', to: '/mcp' }] },
   { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Busca', to: '/busca' }, { label: 'Guias', to: '/guias' }] },
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
