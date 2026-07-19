@@ -217,7 +217,7 @@ usePageSeo({
             <span class="mdoc__n">1</span>
             <div class="mdoc__item-body">
               <p class="mdoc__p">Abra <a href="https://claude.ai/settings/connectors" target="_blank" rel="noopener" class="mdoc__link">claude.ai/settings/connectors</a>, clique em <strong>Add</strong> e escolha <strong>Adicionar conector personalizado</strong>.</p>
-              <img src="/mcp/claude-web-menu.webp" alt="Tela de conectores do Claude com o botão Add destacado" class="mdoc__shot" width="1592" height="912" loading="lazy" decoding="async">
+              <img src="/mcp-img/claude-web-menu.webp" alt="Tela de conectores do Claude com o botão Add destacado" class="mdoc__shot" width="1592" height="912" loading="lazy" decoding="async">
             </div>
           </li>
           <li class="mdoc__item">
@@ -228,7 +228,7 @@ usePageSeo({
                 <button type="button" class="mdoc__copy" @click="copy('url', ENDPOINT)">{{ copied === 'url' ? 'Copiado' : 'Copiar' }}</button>
                 <pre class="mdoc__code">{{ ENDPOINT }}</pre>
               </div>
-              <img src="/mcp/claude-web-dialog.webp" alt="Modal Adicionar conector personalizado do Claude com os campos Name e Remote MCP server URL" class="mdoc__shot" width="1592" height="912" loading="lazy" decoding="async">
+              <img src="/mcp-img/claude-web-dialog.webp" alt="Modal Adicionar conector personalizado do Claude com os campos Name e Remote MCP server URL" class="mdoc__shot" width="1592" height="912" loading="lazy" decoding="async">
             </div>
           </li>
           <li class="mdoc__item">
