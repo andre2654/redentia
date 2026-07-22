@@ -24,6 +24,7 @@ import { COMO_DECLARAR_INVESTIMENTOS_NO_IR_GUIDE } from '~/content/guias/como-de
 import { COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE } from '~/content/guias/como-montar-carteira-de-investimentos'
 import { CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE } from '~/content/guias/conectar-carteira-ao-chatgpt'
 import { MCP_PARA_INVESTIMENTOS_GUIDE } from '~/content/guias/mcp-para-investimentos'
+import { RESERVA_DE_EMERGENCIA_GUIDE } from '~/content/guias/reserva-de-emergencia'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -54,6 +55,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE.slug]: COMO_MONTAR_CARTEIRA_DE_INVESTIMENTOS_GUIDE,
   [CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE.slug]: CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE,
   [MCP_PARA_INVESTIMENTOS_GUIDE.slug]: MCP_PARA_INVESTIMENTOS_GUIDE,
+  [RESERVA_DE_EMERGENCIA_GUIDE.slug]: RESERVA_DE_EMERGENCIA_GUIDE,
 }
 
 /**
@@ -146,6 +148,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Guia Redentia',
     minutes: 15,
     slug: 'como-declarar-investimentos-no-ir',
+  },
+  {
+    title: 'Reserva de emergência: quanto guardar e onde investir',
+    description: 'O colchão que vem antes de qualquer investimento: tamanho, onde deixar e quando usar.',
+    tag: 'Renda fixa',
+    minutes: 8,
+    slug: 'reserva-de-emergencia',
   },
   {
     title: 'Como montar uma carteira de investimentos',
