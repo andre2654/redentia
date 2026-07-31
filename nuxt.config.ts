@@ -103,6 +103,11 @@ export default defineNuxtConfig({
     // /mcp: docs públicas do servidor MCP — conteúdo estático (o CTA troca de
     // destino client-side pós-mount, o SSR é idêntico pra todo mundo).
     '/mcp': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // /business: landing da Redentia for Business. Conteúdo estático e SEM
+    // variante logada (o console é outro app, sem sessão compartilhada), então
+    // pode ser público na borda. A página está noindex até o PR5 — ver a trava
+    // no topo de components/business/RbSeguranca.vue.
+    '/business': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
