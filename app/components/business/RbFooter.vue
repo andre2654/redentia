@@ -13,9 +13,9 @@
  * saídas honestas desta página, e é aqui que "Para investidores" mora depois
  * de sair do header.
  *
- * ⚠️ CONFIRMAR O E-MAIL: contato@redentia.com é o endereço publicado no deck
- * MFO_Operational_Standard. O app usa suporte@redentia.com.br, em OUTRO
- * domínio. Se o .com não recebe, o lead morre aqui.
+ * E-MAIL CONFIRMADO PELO DONO (2026-08-01): contato@redentia.com existe e
+ * recebe. É o endereço do deck MFO_Operational_Standard; o app usa
+ * suporte@redentia.com.br, e a diferença de domínio é intencional.
  */
 const CARDS = [
   {
@@ -110,7 +110,10 @@ const COLUMNS = [
     </div>
 
     <div class="rbf__bottom">
-      <img src="/logo-branca.svg" alt="" class="rbf__bottom-logo">
+      <!-- a logo volta pro app, como a do header (direção do dono 2026-08-01) -->
+      <NuxtLink to="/" class="rbf__bottom-link" aria-label="Voltar para a Redentia">
+        <img src="/logo-branca.svg" alt="" class="rbf__bottom-logo">
+      </NuxtLink>
       <span class="rbf__bottom-name">Redentia <span class="rbf__bottom-suffix">For Business</span></span>
       <span class="rbf__copy">© 2026 Redentia Tecnologia S.A.</span>
     </div>
@@ -171,6 +174,9 @@ const COLUMNS = [
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
   margin-top: clamp(48px, 6vw, 84px); padding-bottom: 30px;
 }
+.rbf__bottom-link { display: block; transition: opacity .2s; }
+.rbf__bottom-link:hover { opacity: 0.6; }
+.rbf__bottom-link:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .rbf__bottom-logo { width: 27px; height: 27px; display: block; object-fit: contain; }
 /* o nome por extenso: é a diferença que o dono pediu entre os dois footers */
 .rbf__bottom-name { color: var(--nu-cream-text); font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }

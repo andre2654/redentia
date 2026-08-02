@@ -10,10 +10,19 @@
  * PREÇO VISÍVEL (decisão do dono 2026-07-30): R$ 2.500/mês filtra quem não
  * tem orçamento antes da reunião.
  *
- * CAPACIDADE SEM CONTADOR (decisão do dono + PLANO §6.1, que corta dispositivo
- * de escassez): o deck fecha com "3 de 5 vagas restantes". Isso é placar, fica
- * falso no dia seguinte sem alguém pra atualizar, e some daqui. Capacidade
- * vira fato de atendimento, dito uma vez.
+ * COPY REVISADA E APROVADA (2026-08-01, revisão de conversão): "POC" era a
+ * única sigla não apresentada da página e virou "prova de conceito" (o
+ * trocadilho até melhora); "poucas por vez" virou "cinco por trimestre",
+ * amarrando com o trilho do topo e com o FAQ 27; e "O investimento" virou
+ * "O preço", porque eufemismo de pitch-deck destoa de uma página que constrói
+ * confiança falando seco. A anáfora de "número" (4x) é deliberada e FICA.
+ *
+ * CAPACIDADE SEM CONTADOR *NESTA SEÇÃO* (decisão do dono + PLANO §6.1): o deck
+ * fecha com "3 de 5 vagas restantes"; aqui capacidade é fato de atendimento,
+ * dito uma vez. O placar EXISTE na página, mas mora num lugar só — o trilho
+ * RbCapacidade do topo, que o dono pediu de volta em 2026-08-01 e que carrega
+ * a regra de atualização manual. Não duplique o número aqui: dois placares é
+ * duas chances de mentir.
  *
  * O QUE A SEÇÃO NÃO PROMETE: o deck anuncia "10 dias úteis recuperados" como
  * retorno. Aqui os 10 dias são o que a POC vai MEDIR, no fechamento do próprio
@@ -29,7 +38,7 @@ const CONTRATO = [
   {
     rotulo: 'Escopo',
     valor: 'Uma tese só',
-    nota: 'Escolhemos junto a etapa mais cara do seu mês e atacamos ela. POC que tenta tudo não prova nada.',
+    nota: 'Escolhemos junto a etapa mais cara do seu mês e atacamos ela. Prova de conceito que tenta tudo não prova nada.',
   },
   {
     rotulo: 'Objetivo',
@@ -53,13 +62,13 @@ const CONTRATO = [
         </NuSectionHeading>
 
         <p class="rbpv__cap">
-          Rodamos poucas provas de conceito por vez, porque cada uma tem gente
-          da Redentia dentro do seu fechamento.
+          Rodamos cinco provas de conceito por trimestre, porque cada uma tem
+          gente da Redentia dentro do seu fechamento.
         </p>
       </div>
 
       <div class="rbpv__card">
-        <span class="rbpv__label">O investimento</span>
+        <span class="rbpv__label">O preço</span>
         <p class="rbpv__preco">
           <span class="rbpv__moeda">R$</span><span class="rbpv__valor">2.500</span><span class="rbpv__periodo">/mês</span>
         </p>

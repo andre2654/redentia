@@ -13,12 +13,16 @@
  * verificações bloqueantes do plano (V5 forma do portfólio, V7 o relatório
  * cabe num template, e o alvo da POC). Perguntar isso no primeiro e-mail
  * antecipa a qualificação em uma reunião inteira.
+ *
+ * COPY REVISADA (2026-08-01): só o item 2 ("anonimizado se quiser"). O "a
+ * gente" do dek FICA de propósito: é a voz desta página (Fale com a gente),
+ * diferente da landing prototipada, que conjugava 1ª do plural.
  */
 const EMAIL = 'contato@redentia.com'
 
 const ANTECEDE = [
   'Quantas famílias você atende e por quantos custodiantes o patrimônio delas está espalhado.',
-  'Um extrato de exemplo, pode ser anonimizado. É o que diz se a captura funciona no seu caso.',
+  'Um extrato de exemplo, anonimizado se quiser. É o que diz se a captura funciona no seu caso.',
   'Qual etapa do fechamento dói mais hoje. É ela que vira a tese da prova de conceito.',
 ]
 </script>
