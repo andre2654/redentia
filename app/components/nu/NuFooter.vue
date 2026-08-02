@@ -60,6 +60,9 @@ const COLUMNS = [
     <div class="nuf__bottom">
       <img src="/logo-branca.svg" alt="Redentia" class="nuf__bottom-logo">
       <span class="nuf__copy">© 2026 Redentia Tecnologia S.A.</span>
+      <!-- a entrada do B2B no app (direção do dono 2026-08-01): botão discreto
+           no rodapé, não item de coluna — é outro produto, não outra página -->
+      <NuxtLink to="/business" class="nuf__biz">For Business</NuxtLink>
     </div>
   </footer>
 </template>
@@ -114,4 +117,13 @@ const COLUMNS = [
 }
 .nuf__bottom-logo { width: 27px; height: 27px; display: block; object-fit: contain; }
 .nuf__copy { color: var(--nu-cream-text-60); font-size: 14px; font-weight: 500; }
+/* mesma superfície dos cards do footer (navy-2/navy-3), não um terceiro azul */
+.nuf__biz {
+  margin-left: auto; display: inline-flex; align-items: center;
+  background: var(--nu-navy-2); color: var(--nu-cream-text);
+  border-radius: var(--nu-r-pill); padding: 10px 20px;
+  font-size: 14px; font-weight: 700; white-space: nowrap; transition: background .2s;
+}
+.nuf__biz:hover { background: var(--nu-navy-3); color: var(--nu-white); }
+.nuf__biz:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 </style>

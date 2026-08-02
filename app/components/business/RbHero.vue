@@ -12,6 +12,15 @@
  * o OBJETIVO da prova de conceito, medido no fechamento do cliente. A legenda
  * abaixo das barras diz isso com todas as letras.
  *
+ * COPY REVISADA E APROVADA (2026-08-01, revisão de conversão):
+ *  - H1 sem "Seu": o dono escolheu a versão que não afirma um fato sobre o
+ *    leitor ("Fechar o mês leva 15 dias" é observação de mercado; "Seu
+ *    fechamento leva" quebrava no primeiro segundo pra quem fecha em 8).
+ *  - CTA específico: "Agendar o setup de 1 hora" diz o que a pessoa recebe e
+ *    quanto custa em tempo. O genérico "Falar com a gente" fica no header.
+ *  - A nota de procedência agora diz O QUE ela prova (os 15 dias), em vez de
+ *    flutuar solta embaixo do botão.
+ *
  * Direção visual (PLANO §6.1, "a mesma Redentia com menos manchas"):
  *  - banda creme, o piso da página; sem foto e sem gradiente
  *  - a comparação é UMA tinta em duas densidades, não duas cores semânticas:
@@ -20,10 +29,19 @@
  *  - o card separa por HAIRLINE, não por sombra, e usa raio de documento
  *    (16px) em vez dos 24-26px do app
  */
-const LINHAS = [
-  { label: 'Hoje', dias: 15, largura: 100, tom: 'morto' as const },
-  { label: 'Com a Redentia', dias: 5, largura: 33, tom: 'marca' as const },
-]
+/**
+ * O CARD É UM CALENDÁRIO, NÃO UM GRÁFICO (aprovado 2026-08-01): as barras de
+ * comparação repetiam o 15/5 que o H1 acabou de dizer, dez centímetros ao
+ * lado. Os 15 dias viram 15 quadradinhos em 3 linhas de 5 — três semanas
+ * úteis, que é o que 15 dias de fechamento realmente são. A primeira semana
+ * acesa é o fechamento; as duas apagadas são os 10 dias que VOLTAM pro
+ * escritório. O card deixa de repetir o número e mostra a consequência dele.
+ * ⚠️ Os números precisam bater com o H1 ("15 dias." / "levar 5."), que é
+ * texto escrito à mão três linhas abaixo.
+ */
+const DIAS_TOTAL = 15
+const DIAS_FECHAMENTO = 5
+const DIAS_DEVOLVIDOS = DIAS_TOTAL - DIAS_FECHAMENTO
 </script>
 
 <template>
@@ -34,41 +52,49 @@ const LINHAS = [
         <!-- quebra manual: a medida do título é decisão de composição, não do
              navegador (mesma razão do NuSectionHeading usar slot) -->
         <h1 class="rbh0__title">
-          Seu fechamento leva<br>
+          Fechar o mês leva<br>
           <span class="rbh0__num">15 dias.</span><br>
           <span class="rbh0__soft">Deveria levar 5.</span>
         </h1>
         <p class="rbh0__dek">
           Garimpar produto e normalizar planilha consome as horas mais caras do
-          escritório. A Redentia captura, normaliza e concilia, e devolve o mês
-          fechado com rastro até a fonte.
+          escritório. A Redentia assume esse meio do caminho: captura, normaliza,
+          concilia. O mês volta fechado, com rastro até a fonte.
         </p>
-        <a href="#contato" class="rbh0__cta">Falar com a gente</a>
+        <a href="#contato" class="rbh0__cta">Agendar o setup de 1 hora</a>
         <p class="rbh0__source">
-          O que ouvimos de dezenas de gestores e líderes de MFO ao longo de 2026.
+          Os 15 dias são o que ouvimos de dezenas de gestores e líderes de MFO
+          em 2026.
         </p>
       </div>
 
       <div class="rbh0__right">
         <div class="rbh0__card">
-          <span class="rbh0__card-label">Ciclo de fechamento</span>
-          <div class="rbh0__rows">
-            <div v-for="l in LINHAS" :key="l.label" class="rbh0__row">
-              <div class="rbh0__row-top">
-                <span class="rbh0__row-label">{{ l.label }}</span>
-                <span class="rbh0__row-value">{{ l.dias }} dias</span>
-              </div>
-              <div class="rbh0__track">
-                <div
-                  class="rbh0__bar" :class="`rbh0__bar--${l.tom}`"
-                  :style="{ width: `${l.largura}%` }"
-                />
-              </div>
-            </div>
+          <span class="rbh0__card-label">Ciclo de fechamento · {{ DIAS_TOTAL }} dias úteis</span>
+
+          <!-- 3 linhas de 5 = três semanas úteis. Decorativo: a legenda abaixo
+               carrega a informação em texto de verdade. -->
+          <div class="rbh0__cal" aria-hidden="true">
+            <span
+              v-for="d in DIAS_TOTAL" :key="d"
+              class="rbh0__dia" :class="{ 'rbh0__dia--on': d <= DIAS_FECHAMENTO }"
+            >{{ d }}</span>
           </div>
+
+          <div class="rbh0__leg">
+            <p class="rbh0__leg-item">
+              <span class="rbh0__swatch rbh0__swatch--on" aria-hidden="true" />
+              <strong>{{ DIAS_FECHAMENTO }} dias</strong>, o fechamento com a Redentia.
+            </p>
+            <p class="rbh0__leg-item">
+              <span class="rbh0__swatch" aria-hidden="true" />
+              <strong>{{ DIAS_DEVOLVIDOS }} dias</strong> de volta pro escritório.
+            </p>
+          </div>
+
           <p class="rbh0__caption">
-            Os 5 dias são a meta da prova de conceito, medida no seu próprio
-            fechamento. Não é promessa de resultado.
+            Os {{ DIAS_FECHAMENTO }} dias são a meta da prova de conceito, medida
+            no seu próprio fechamento. Não é promessa de resultado.
           </p>
         </div>
       </div>
@@ -98,7 +124,7 @@ const LINHAS = [
   display: block; color: var(--nu-blue); font-size: 11.5px; font-weight: 800;
   text-transform: uppercase; letter-spacing: 1.5px;
 }
-/* A escala inteira é ditada pela linha mais longa, "Seu fechamento leva" (19
+/* A escala inteira é ditada pela linha mais longa, "Fechar o mês leva" (17
    caracteres): se ela não couber na coluna, "leva" cai sozinha e a quebra
    manual das 3 linhas perde o sentido. Medido no canvas em cada largura, não
    estimado — a 38px o texto pedia 358px numa coluna de 331 no iPhone, e a
@@ -140,21 +166,35 @@ const LINHAS = [
   display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
   text-transform: uppercase; letter-spacing: 1.4px;
 }
-.rbh0__rows { display: flex; flex-direction: column; gap: 22px; margin-top: 26px; }
-.rbh0__row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.rbh0__row-label { color: var(--nu-gray-2); font-size: 14.5px; font-weight: 700; }
-.rbh0__row-value {
-  color: var(--nu-ink); font-size: 17px; font-weight: 800;
-  font-variant-numeric: tabular-nums; white-space: nowrap;
+/* o calendário: 5 colunas (a semana útil) × 3 linhas. Raio 4px, quadrado de
+   documento, não pílula — é o detalhe que separa o B2B do app. */
+.rbh0__cal {
+  margin-top: 24px; max-width: 340px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px;
 }
-.rbh0__track { margin-top: 10px; height: 14px; }
-/* raio 4px: barra de documento, não pílula. É o detalhe que separa o B2B do
-   app sem trocar uma cor sequer. */
-.rbh0__bar { height: 100%; border-radius: 4px; }
-.rbh0__bar--morto { background: var(--nu-ink-14); }
-.rbh0__bar--marca { background: var(--nu-blue); }
+.rbh0__dia {
+  aspect-ratio: 1.15; border-radius: 4px;
+  display: grid; place-items: center;
+  border: 1px solid var(--nu-cream-line);
+  color: var(--nu-gray); font-size: 12.5px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.rbh0__dia--on { background: var(--nu-blue); border-color: var(--nu-blue); color: var(--nu-white); }
+
+.rbh0__leg { margin-top: 22px; display: flex; flex-direction: column; gap: 8px; }
+.rbh0__leg-item {
+  margin: 0; display: flex; align-items: center; gap: 10px;
+  color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500;
+}
+.rbh0__leg-item strong { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.rbh0__swatch {
+  width: 13px; height: 13px; flex-shrink: 0; border-radius: 3px;
+  border: 1px solid var(--nu-cream-line);
+}
+.rbh0__swatch--on { background: var(--nu-blue); border-color: var(--nu-blue); }
+
 .rbh0__caption {
-  margin: 26px 0 0; padding-top: 20px; border-top: 1px solid var(--nu-cream-line);
+  margin: 24px 0 0; padding-top: 20px; border-top: 1px solid var(--nu-cream-line);
   color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.55;
 }
 

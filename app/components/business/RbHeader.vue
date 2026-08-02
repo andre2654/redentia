@@ -11,7 +11,10 @@
  * O que muda:
  *  1. LOCKUP DE MARCA — o Nu mostra só o quadrado; aqui o quadrado ganha o
  *     nome ao lado, porque "Redentia" e "Redentia For Business" são produtos
- *     diferentes e o quadrado sozinho não distingue os dois.
+ *     diferentes e o quadrado sozinho não distingue os dois. E são DOIS links
+ *     (direção do dono 2026-08-01): o quadrado azul volta pra Redentia normal
+ *     (/), o nome ancora o topo do próprio business. Mesmo destino duplo do
+ *     footer, onde a logo do rodapé também volta pro app.
  *  2. UM BOTÃO E SÓ (direção do dono 2026-07-30: "tá com muito botão no
  *     header, tire a maior parte"). Saíram o nav de âncora, o link de volta
  *     pro B2C e — por consequência — o hambúrguer e o menu full-screen
@@ -49,15 +52,15 @@ watch(shrunk, (s) => {
 <template>
   <div class="rbh-wrap" :class="{ 'rbh-wrap--shrunk': shrunk }">
     <div class="rbh">
-      <NuxtLink to="/business" class="rbh__brand" aria-label="Redentia For Business, início">
-        <span class="rbh__mark">
+      <div class="rbh__brand">
+        <NuxtLink to="/" class="rbh__mark" aria-label="Voltar para a Redentia">
           <img src="/logo-branca.svg" alt="" class="rbh__logo">
-        </span>
-        <span class="rbh__lockup">
+        </NuxtLink>
+        <NuxtLink to="/business" class="rbh__lockup" aria-label="Redentia For Business, início">
           <span class="rbh__name">Redentia</span>
           <span class="rbh__suffix">For Business</span>
-        </span>
-      </NuxtLink>
+        </NuxtLink>
+      </div>
 
       <a href="#contato" class="rbh__cta">Falar com a gente</a>
     </div>
@@ -89,9 +92,11 @@ watch(shrunk, (s) => {
 .rbh__mark {
   width: 76px; height: 76px; flex-shrink: 0; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
-  transition: width .28s ease, height .28s ease;
+  transition: width .28s ease, height .28s ease, background .2s;
   /* sem radius de propósito: o bloco é flush no canto da viewport */
 }
+/* o quadrado é link (volta pro app): o hover diz isso sem mudar o desenho */
+.rbh__mark:hover { background: var(--nu-blue-hover); }
 .rbh-wrap--shrunk .rbh__mark { width: 58px; height: 58px; }
 .rbh__logo { width: 34px; height: 34px; display: block; object-fit: contain; transition: width .28s ease, height .28s ease; }
 .rbh-wrap--shrunk .rbh__logo { width: 27px; height: 27px; }
@@ -119,7 +124,8 @@ watch(shrunk, (s) => {
 
 /* foco visível: o app não tem regra global (dívida conhecida), então o
    componente novo já nasce com ela em vez de herdar o buraco */
-.rbh__brand:focus-visible,
+.rbh__mark:focus-visible,
+.rbh__lockup:focus-visible,
 .rbh__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
 /* Mobile: o lockup EMPILHA em duas linhas. Medido, não estimado — em uma linha

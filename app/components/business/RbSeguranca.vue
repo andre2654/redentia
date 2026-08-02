@@ -4,10 +4,19 @@
  *
  * ⚠️ TRAVA DE PUBLICAÇÃO: esta seção descreve a arquitetura decidida no
  * PLANO-REDENTIA-FOR-BUSINESS, e parte dela ainda NÃO EXISTE. O `pg-biz` é o
- * PR5. Enquanto ele não estiver de pé, o bloco "Banco separado" afirma coisa
- * que o sistema não faz. O próprio plano registra isso na tabela de
- * afirmações (linha 214): a redação abaixo é a AUTORIZADA, e só vale "depois
- * do pg-biz". NÃO tirar o noindex da /business antes do PR5.
+ * PR5. A revisão de 2026-08-01 reescreveu "Banco separado" como PRÉ-REQUISITO
+ * da POC (tempo honesto, alinhado com o FAQ 15 desta página), o que reduz a
+ * exposição — mas tirar o noindex antes do PR5 continua decisão do dono, não
+ * desta copy.
+ *
+ * COPY REVISADA E APROVADA (2026-08-01, revisão de conversão): a seção
+ * contradizia o FAQ da própria página em três pontos, e o dek promete
+ * exatamente "sobreviver a due diligence". (1) "vivem em banco próprio" no
+ * presente vs FAQ 15 no futuro → virou pré-requisito declarado. (2) "revogar
+ * é imediato" vs FAQ 18 ("até um minuto, não no ato" — o resolve fica 60s em
+ * cache, verificado no mcp-service) → o diferencial honesto é o isolamento,
+ * não a velocidade. (3) "não manda para modelo nenhum" vs o card do Claude
+ * duas seções abaixo → agora explica a demo em vez de contradizê-la.
  *
  * O QUE O DECK DIZ E ESTA SEÇÃO NÃO REPETE — as três estão na lista de
  * afirmações falsas do parecer de compliance:
@@ -28,11 +37,11 @@
 const FATOS = [
   {
     rotulo: 'Banco separado',
-    texto: 'Os dados do seu escritório vivem em banco próprio, com o isolamento entre organizações aplicado dentro do próprio banco, não só na aplicação.',
+    texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito da primeira prova de conceito com dado real, não um upgrade vendido depois.',
   },
   {
     rotulo: 'Chave por assento, com prazo',
-    texto: 'Cada pessoa do time acessa com a própria chave, e toda chave tem validade obrigatória. Quando alguém sai do escritório, revogar é imediato e não derruba o resto do time.',
+    texto: 'Cada pessoa do time acessa com a própria chave, e toda chave tem validade obrigatória. Quando alguém sai do escritório, revogar a chave dela não derruba o resto do time.',
   },
   {
     rotulo: 'Somente leitura',
@@ -40,7 +49,7 @@ const FATOS = [
   },
   {
     rotulo: 'Zero IA no caminho do dado',
-    texto: 'A Redentia não manda o dado do seu cliente para modelo de IA nenhum. Se o seu escritório usa IA, o modelo é o seu, rodando sob o seu contrato, com o seu registro de uso.',
+    texto: 'A Redentia não coloca modelo de IA nenhum no caminho do seu dado, e não treina nada com ele. Quando o seu time pergunta pelo assistente, o modelo é o seu, rodando sob o seu contrato, com o seu registro de uso.',
   },
 ]
 </script>
@@ -52,8 +61,8 @@ const FATOS = [
         O que dá<br>pra verificar.
         <template #dek>
           Quatro afirmações que sobrevivem a uma <strong>due diligence</strong>,
-          porque cada uma se checa olhando a arquitetura. Nenhuma delas é selo,
-          adjetivo ou promessa de futuro.
+          porque cada uma se checa olhando a arquitetura. Nenhuma delas é selo
+          ou adjetivo.
         </template>
       </NuSectionHeading>
     </div>

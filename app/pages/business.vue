@@ -2,9 +2,11 @@
 /**
  * Redentia for Business — landing do produto B2B (MFO, gestora, consultoria).
  *
- * Ritmo das bandas, e ele é intencional: creme (a página) → branco (artefato)
- * → creme → NAVY (a proposta) → creme → navy (footer). O plano dá três pisos
- * e só, e a página gasta o navy uma vez no meio, na oferta, e uma no fim.
+ * Ritmo das bandas, e ele é intencional: trilho navy/azul (capacidade) →
+ * creme (a página) → branco (artefato) → creme → branco (o assistente) →
+ * NAVY (a proposta) → creme → branco (FAQ) → navy (footer). O plano dá três
+ * pisos e só; o navy de banda continua gasto uma vez no meio, na oferta, e
+ * uma no fim — o trilho do topo é régua fina, não banda.
  *
  * ⚠️ NOINDEX ATÉ O PR5. A seção de segurança afirma "banco separado", que é o
  * `pg-biz` e ainda não existe. Ver a trava no topo de RbSeguranca.vue. Tirar o
@@ -25,10 +27,13 @@ useHead({ titleTemplate: null })
 
 <template>
   <div>
+    <RbCapacidade />
     <RbHero />
     <RbComoFunciona />
     <RbSeguranca />
+    <RbAssistente />
     <RbProva />
     <RbContato />
+    <RbFaq />
   </div>
 </template>
