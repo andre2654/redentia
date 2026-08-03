@@ -93,8 +93,8 @@ const DIAS_DEVOLVIDOS = DIAS_TOTAL - DIAS_FECHAMENTO
           </div>
 
           <p class="rbh0__caption">
-            Os {{ DIAS_FECHAMENTO }} dias são a meta da prova de conceito, medida
-            no seu próprio fechamento. Não é promessa de resultado.
+            Os {{ DIAS_FECHAMENTO }} dias são a meta que medimos no seu próprio
+            fechamento. Não é promessa de resultado.
           </p>
         </div>
       </div>

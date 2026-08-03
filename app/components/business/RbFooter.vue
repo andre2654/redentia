@@ -37,7 +37,9 @@ const COLUMNS = [
       { label: 'O gargalo', to: '/business#gargalo' },
       { label: 'Como funciona', to: '/business#como-funciona' },
       { label: 'Segurança', to: '/business#seguranca' },
-      { label: 'Prova de conceito', to: '/business#prova' },
+      { label: 'O plano', to: '/business#prova' },
+      { label: 'Ativar acesso', to: '/business/cadastro' },
+      { label: 'Conectar', to: '/business/comecar' },
     ],
   },
   {

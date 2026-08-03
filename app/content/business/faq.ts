@@ -87,7 +87,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'E se o número não bater com o extrato?',
-        a: 'A divergência aparece como exceção aberta, e enquanto ela existir o aviso viaja junto com o número, nunca o número limpo. O fechamento que trava o mês até a exceção ser resolvida ou justificada ainda não existe e é parte do que a prova de conceito constrói.',
+        a: 'A divergência aparece como exceção aberta, e enquanto ela existir o aviso viaja junto com o número, nunca o número limpo. O fechamento que trava o mês até a exceção ser resolvida ou justificada ainda não existe e é construído na implantação, junto com a sua casa.',
       },
       {
         q: 'Quem confere o fechamento?',
@@ -100,7 +100,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Onde os dados ficam armazenados?',
-        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para a primeira prova de conceito com dado real. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
+        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para dado real de escritório entrar. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
       },
       {
         q: 'Algum modelo de IA treina com os dados dos meus clientes?',
@@ -108,11 +108,11 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Quem na minha equipe vê o quê?',
-        a: 'A intenção é escopo por pessoa e por família, com chave individual e validade obrigatória. Hoje o produto ainda não tem organização nem assento, a chave é uma por pessoa física, e isso é parte do que a prova de conceito constrói.',
+        a: 'A intenção é escopo por pessoa e por família, com chave individual e validade obrigatória. Hoje o produto ainda não tem organização nem assento, a chave é uma por pessoa física, e isso é parte do que a implantação constrói.',
       },
       {
         q: 'Como eu revogo o acesso de quem saiu?',
-        a: 'Hoje, com a própria pessoa: cada uma gera, desliga e rotaciona a chave dela na área autenticada da Redentia. A revogação por um administrador da casa, sem depender de quem saiu, depende do modelo de organização, que ainda não existe e é uma das entregas da prova de conceito. Vale saber também que a chave revogada para de valer em até um minuto, não no ato, porque o servidor guarda a validação por sessenta segundos.',
+        a: 'Hoje, com a própria pessoa: cada uma gera, desliga e rotaciona a chave dela na área autenticada da Redentia. A revogação por um administrador da casa, sem depender de quem saiu, depende do modelo de organização, que ainda não existe e está no roteiro do plano para escritórios. Vale saber também que a chave revogada para de valer em até um minuto, não no ato, porque o servidor guarda a validação por sessenta segundos.',
       },
       {
         q: 'Existe trilha de auditoria?',
@@ -128,7 +128,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'O relatório sai com a minha marca?',
-        a: 'Sim, com a ressalva de que a geração do PDF ainda não existe e é uma das entregas da prova de conceito. Logo, cor, CNPJ e domínio do escritório, sem nenhuma menção à Redentia, e o rodapé traz de quantas contas veio, de quantas instituições, quem conferiu e quando.',
+        a: 'Sim, com a ressalva de que a geração do PDF ainda não existe e é uma das entregas da implantação. Logo, cor, CNPJ e domínio do escritório, sem nenhuma menção à Redentia, e o rodapé traz de quantas contas veio, de quantas instituições, quem conferiu e quando.',
       },
       {
         q: 'A carta do gestor é escrita por IA?',
@@ -141,11 +141,11 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Quanto custa?',
-        a: 'A prova de conceito custa R$ 2.500 por mês, por sessenta a noventa dias. Depois dela os planos são Starter, Growth e Enterprise, e o valor pago vira crédito integral na conversão.',
+        a: 'R$ 2.500 por mês por escritório, com uma chave para cada pessoa do time, sem custo por assento. O plano é mensal, sem contrato anual.',
       },
       {
-        q: 'Como funciona a prova de conceito?',
-        a: 'Uma reunião técnica de uma hora mapeia as fontes de dado, escolhemos juntos uma tese operacional para atacar primeiro, e o ciclo roda em sessenta a noventa dias com critério de sucesso escrito antes de começar.',
+        q: 'Como funciona a implantação?',
+        a: 'Uma reunião técnica de uma hora mapeia as fontes de dado da casa e escolhemos juntos por onde começar. A conexão dos assistentes leva minutos; o que leva tempo é o dado, e a implantação é acompanhada por gente da Redentia.',
       },
       {
         q: 'Em quanto tempo eu começo a usar?',
