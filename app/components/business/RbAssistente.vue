@@ -17,6 +17,12 @@
  *     digitação TERMINA, não em timeout absoluto: aba em segundo plano
  *     estrangula setInterval pra ~1 tick/s e os relógios se atropelam.
  *
+ * ⚠️ A tool do card é `get_portfolio`, que é a que EXISTE no mcp-service. Ela
+ * fica no escopo carteira, que o plano do dia 1 não inclui: o card mostra o
+ * destino da implantação, e é por isso que a nota ao lado diz que hoje as
+ * chaves respondem pelo mercado. Nunca invente nome de tool aqui: o comprador
+ * abre o Claude na reunião e pergunta exatamente o que viu na tela.
+ *
  * Os números são os mesmos do exemplo fictício de toda a página B2B (Família
  * Bittencourt, R$ 1.284.902.117, Marina Duarte) — se mudar aqui, mudou no
  * aria-label também, que é a alternativa textual INTEIRA do card (role="img").
@@ -121,7 +127,7 @@ onBeforeUnmount(clearAll)
           class="rbas__card"
           role="img"
           aria-label="Dentro do Claude, a pergunta sobre a carteira de um cliente aciona a
-            ferramenta redentia book_get_positions e recebe R$ 1.284.902.117 consolidados,
+            ferramenta redentia get_portfolio e recebe R$ 1.284.902.117 consolidados,
             maior peso em renda fixa, 46%, a partir de 7 contas em 4 instituições,
             conferido por Marina Duarte em 05.08."
         >
@@ -141,7 +147,7 @@ onBeforeUnmount(clearAll)
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M12 2l10 10-10 10L2 12z" fill="currentColor" />
               </svg>
-              redentia · book_get_positions
+              redentia · get_portfolio
               <span v-show="buscando" class="rbas__dot3"><i /><i /><i /></span>
               <svg
                 v-show="!buscando" width="12" height="12" viewBox="0 0 24 24" fill="none"

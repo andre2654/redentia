@@ -25,7 +25,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'O que é o MCP da Redentia?',
-        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre dados do mercado brasileiro e sobre as carteiras dos seus clientes com dado real, em vez de dado genérico ou inventado.',
+        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, comparações de fundos, teses e notícias. A consulta às carteiras consolidadas dos seus clientes é o que a implantação constrói.',
       },
       {
         q: 'O que é MCP?',
