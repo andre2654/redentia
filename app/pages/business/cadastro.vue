@@ -1,15 +1,17 @@
 <script setup lang="ts">
 /**
- * /business/cadastro — a porta de entrada do time do escritório (PR-F do MVP).
+ * /business/cadastro — a porta de entrada da conta do escritório.
  *
- * SEM AUTH PRÓPRIA E SEM FORMULÁRIO DE LEAD, de propósito:
- *  - Auth é o handoff documentado do /login (?email= pré-preenche, ?redirect=
- *    traz de volta) — o mesmo padrão da NuNewsletterBand e do hero do /mercado.
- *    Reimplementar PIN/WhatsApp/Google aqui seria duplicar 400 linhas delicadas.
- *  - Captura de escritório/cargo NÃO existe porque não existe backend de lead,
- *    e formulário que finge gravar é a lição do ContactForm ("Mensagem enviada
- *    com sucesso!" sem backend). A associação pessoa→escritório vive no runbook
- *    manual do contrato (a casa manda a lista de e-mails, nós rodamos mcp:tier).
+ * SÓ O LOGIN MORA AQUI. O cadastro da empresa em si (o nome do escritório) é
+ * a primeira tela do /business/chaves, e a divisão é deliberada: pedir e-mail
+ * e nome do escritório na mesma tela obrigaria a segurar o nome durante todo
+ * o vaivém do código de acesso, e um refresh no meio perderia o que a pessoa
+ * digitou. Aqui: identidade. Lá dentro: a empresa.
+ *
+ * SEM AUTH PRÓPRIA, de propósito: é o handoff documentado do /login (?email=
+ * pré-preenche, ?redirect= traz de volta) — o mesmo padrão da
+ * NuNewsletterBand e do hero do /mercado. Reimplementar PIN/WhatsApp/Google
+ * aqui seria duplicar 400 linhas delicadas.
  *
  * Quem já está logado não vê form: middleware manda direto pra /business/chaves
  * (mesmo gesto do /login). Por variar por cookie, a rota é private/no-store no
@@ -43,8 +45,9 @@ function seguir() {
 }
 
 const PASSOS = [
-  { t: 'Conta', d: 'Cada pessoa do time cria a própria conta, com o e-mail do trabalho. Sem senha: o acesso chega por código.' },
-  { t: 'Chave', d: 'Na área de chaves, cada pessoa gera a própria chave MCP. Ela aparece uma vez e é sua.' },
+  { t: 'Acesso', d: 'Você entra com o e-mail do trabalho. Sem senha: o código chega na hora.' },
+  { t: 'Escritório', d: 'Dá o nome da casa. A conta fica registrada e é liberada quando o contrato fecha.' },
+  { t: 'Chaves', d: 'Até cinco, cada uma com nome. A chave aparece uma vez, e o painel mostra o uso de todas.' },
   { t: 'Conexão', d: 'Claude Desktop, Claude Code ou Cursor: cola a configuração e pergunta. O guia mostra os três.' },
 ]
 </script>
@@ -54,11 +57,11 @@ const PASSOS = [
     <div class="rbcd__cols">
       <div class="rbcd__intro">
         <NuSectionHeading eyebrow="Ativar acesso">
-          Uma conta<br>por pessoa.
+          Uma conta<br>para a casa.
           <template #dek>
-            O acesso do escritório é individual: cada pessoa do time tem a
-            própria conta e a própria chave, <strong>revogável sem derrubar o
-            resto</strong>. Comece pelo e-mail do trabalho.
+            O escritório tem uma conta só, e dentro dela até cinco chaves
+            nomeadas: <strong>uma por pessoa ou por mesa, cada uma revogável
+            sem derrubar as outras</strong>. Comece pelo seu e-mail do trabalho.
           </template>
         </NuSectionHeading>
 
@@ -75,19 +78,21 @@ const PASSOS = [
               class="rbcd__input"
             >
             <button type="submit" class="rbcd__cta" :disabled="!ready">
-              Criar conta
+              Continuar
             </button>
           </div>
           <p class="rbcd__help">
-            Você vai receber um código de acesso e volta direto pra área de
-            chaves. Já tem conta? O mesmo caminho entra.
+            Você recebe um código de acesso e volta direto pro painel do
+            escritório, onde dá o nome da casa e gera as chaves. Já tem conta?
+            O mesmo caminho entra.
           </p>
         </form>
 
         <p class="rbcd__nota">
-          Ainda não fechou com a gente? A ativação do plano do escritório
-          acontece no <a href="/business#contato" class="rbcd__link">setup de 1 hora</a>.
-          A conta criada aqui funciona desde já no plano gratuito.
+          Ainda não fechou com a gente? Pode criar a conta agora: ela fica
+          registrada e é liberada no
+          <a href="/business#contato" class="rbcd__link">setup de 1 hora</a>.
+          Cadastrar não cobra nada e não libera nada sozinho.
         </p>
       </div>
 

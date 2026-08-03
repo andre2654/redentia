@@ -33,7 +33,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Preciso trocar de sistema para usar?',
-        a: 'Não. Você não abre a Redentia, você pergunta de dentro do assistente que já usa. Cada pessoa da casa recebe uma chave, e a partir daí a conversa acontece onde o time já trabalha.',
+        a: 'Não. Você não abre a Redentia, você pergunta de dentro do assistente que já usa. O escritório gera as chaves e distribui, e a partir daí a conversa acontece onde o time já trabalha.',
       },
       {
         q: 'Quais assistentes funcionam hoje?',
@@ -58,7 +58,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'A IA pode administrar acessos?',
-        a: 'Não, e isso é deliberado. Ligar, desligar, rotacionar e mudar o escopo de uma chave só acontece na área autenticada da Redentia, por quem é dono dela. Assim uma instrução escondida dentro de uma notícia ou de um extrato nunca consegue virar uma mudança de acesso.',
+        a: 'Não, e isso é deliberado. Ligar, desligar e revogar uma chave só acontece no painel do escritório, por quem entrou com login. Assim uma instrução escondida dentro de uma notícia ou de um extrato nunca consegue virar uma mudança de acesso. Escopo não é configurável no plano para escritórios: ele é fixo, e é o catálogo de mercado.',
       },
     ],
   },
@@ -108,11 +108,19 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Quem na minha equipe vê o quê?',
-        a: 'A intenção é escopo por pessoa e por família, com chave individual e validade obrigatória. Hoje o produto ainda não tem organização nem assento, a chave é uma por pessoa física, e isso é parte do que a implantação constrói.',
+        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam a mesma coisa: o catálogo de mercado. Escopo diferente por pessoa ou por família ainda não existe, e é parte do que a implantação constrói. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
+      },
+      {
+        q: 'Quantas chaves o escritório tem, e quem cria?',
+        a: 'Até cinco chaves ativas por escritório, criadas no painel da conta por quem administra a casa. Cada uma leva um nome, seu ou da mesa, e o painel mostra quanto cada chave usou hoje e nos últimos trinta dias. Chave revogada libera a vaga, e o uso dela continua no histórico.',
+      },
+      {
+        q: 'Existe limite de uso?',
+        a: 'Sim, e ele é do escritório inteiro, não de cada chave: cinco mil chamadas por dia e cento e vinte por minuto, somando as cinco. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
       },
       {
         q: 'Como eu revogo o acesso de quem saiu?',
-        a: 'Hoje, com a própria pessoa: cada uma gera, desliga e rotaciona a chave dela na área autenticada da Redentia. A revogação por um administrador da casa, sem depender de quem saiu, depende do modelo de organização, que ainda não existe e está no roteiro do plano para escritórios. Vale saber também que a chave revogada para de valer em até um minuto, não no ato, porque o servidor guarda a validação por sessenta segundos.',
+        a: 'No painel do escritório: quem criou a conta revoga a chave daquela pessoa, sem depender dela. As outras chaves continuam funcionando, e o uso da revogada fica no histórico. A chave revogada para de valer em até um minuto, não no ato, porque o servidor guarda a validação por sessenta segundos. Como o painel abre com um login só, mantenha esse login com alguém que fica na casa.',
       },
       {
         q: 'Existe trilha de auditoria?',
@@ -141,7 +149,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Quanto custa?',
-        a: 'R$ 2.500 por mês por escritório, com uma chave para cada pessoa do time, sem custo por assento. O plano é mensal, sem contrato anual.',
+        a: 'R$ 2.500 por mês por escritório, com até cinco chaves para o time, sem custo por assento. O plano é mensal, sem contrato anual.',
       },
       {
         q: 'Como funciona a implantação?',

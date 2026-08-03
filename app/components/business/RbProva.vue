@@ -5,7 +5,7 @@
  * SEM "PROVA DE CONCEITO" NA SUPERFÍCIE PÚBLICA (decisão do dono 2026-08-01:
  * "isso de POC era relevante apenas para as calls"). A página diz o que o
  * cliente paga e leva: R$ 2.500/mês por escritório, mensal, sem contrato
- * anual, chaves pro time sem custo por assento. O enquadramento de prova de
+ * anual, até cinco chaves pro time sem custo por assento. O enquadramento de prova de
  * conceito continua existindo NA CONVERSA comercial, não aqui.
  *
  * ÚNICA BANDA NAVY DA PÁGINA. O plano dá três pisos e só (creme é a página,
@@ -38,8 +38,8 @@
 const INCLUI = [
   {
     rotulo: 'Chaves',
-    valor: 'Todo o time',
-    nota: 'Uma chave por pessoa do escritório, individual e revogável, sem custo por assento.',
+    valor: 'Até cinco',
+    nota: 'Cinco chaves nomeadas para a casa, geradas e revogadas no painel do escritório, sem custo por assento.',
   },
   {
     rotulo: 'Setup',
@@ -61,7 +61,7 @@ const INCLUI = [
         <NuSectionHeading dark eyebrow="O plano">
           Mensal, sem<br>contrato anual.
           <template #dek>
-            Um preço por escritório, com o time inteiro dentro e
+            Um preço por escritório, com até cinco chaves dentro e
             <strong>um número no fim de cada mês</strong>. Se o número não
             aparecer, você cancela no mês seguinte, não em dois anos.
           </template>
