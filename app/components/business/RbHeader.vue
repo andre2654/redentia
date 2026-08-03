@@ -21,9 +21,21 @@
  *     inteiro: sem nav não há o que colapsar. A navegação da página é a
  *     rolagem; "Para investidores" vive no footer.
  *
- * Sem busca, sem pill de IA, sem avatar: o console é outro app
- * (console.redentia.com.br) e não tem sessão compartilhada com esta página.
+ * ACESSO DA EMPRESA (2026-08-03): além do CTA comercial, o header leva a
+ * porta de entrada da conta. Deslogado mostra "Entrar"; logado, "Minha conta",
+ * que vai direto pro painel de chaves.
+ *
+ * A TROCA SÓ ACONTECE DEPOIS DO MOUNT, e isso não é detalhe: /business é
+ * cacheada na borda por uma hora (`public, s-maxage=3600` no nuxt.config), e
+ * o CDN não varia por cookie. Renderizar "Minha conta" no SSR faria o
+ * primeiro visitante logado envenenar o cache pra todo prospect deslogado da
+ * hora seguinte. O SSR sai idêntico pra todo mundo; o cliente ajusta depois.
+ * É o mesmo gesto do CTA da /mcp.
  */
+const { isAuthenticated } = useAuthState()
+const montado = ref(false)
+onMounted(() => { montado.value = true })
+const logado = computed(() => montado.value && isAuthenticated.value)
 
 /* ——— shrink on scroll ———
    Portado verbatim do NuHeader, histerese inclusa: limiar único oscilava na
@@ -62,7 +74,13 @@ watch(shrunk, (s) => {
         </NuxtLink>
       </div>
 
-      <a href="#contato" class="rbh__cta">Falar com a gente</a>
+      <div class="rbh__acoes">
+        <NuxtLink
+          :to="logado ? '/business/chaves' : '/business/cadastro'"
+          class="rbh__entrar"
+        >{{ logado ? 'Minha conta' : 'Entrar' }}</NuxtLink>
+        <a href="#contato" class="rbh__cta">Falar com a gente</a>
+      </div>
     </div>
   </div>
 </template>
@@ -112,6 +130,17 @@ watch(shrunk, (s) => {
 .rbh-wrap--shrunk .rbh__suffix { font-size: 17.5px; }
 
 /* ——— o único botão da página acima da dobra ——— */
+.rbh__acoes { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+/* o acesso é link de texto, não segundo botão: a página já gasta o azul
+   chapado no CTA comercial, e duas pílulas lado a lado brigam entre si */
+.rbh__entrar {
+  display: inline-flex; align-items: center; padding: 12px 14px;
+  color: var(--nu-gray-2); font-size: 15px; font-weight: 700; white-space: nowrap;
+  border-radius: var(--nu-r-pill); transition: color .2s, background .2s;
+}
+.rbh__entrar:hover { color: var(--nu-ink); background: var(--nu-cream); }
+.rbh__entrar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+
 .rbh__cta {
   display: inline-flex; align-items: center; flex-shrink: 0;
   background: var(--nu-blue); color: var(--nu-white);
@@ -134,6 +163,9 @@ watch(shrunk, (s) => {
    linhas de 15px cabem dentro dele sem esticar o header. */
 @media (max-width: 760px) {
   .rbh { gap: 10px; padding-right: 14px; }
+  /* fica visível no estreito: escondê-lo deixava o celular SEM nenhum
+     caminho pro painel. O que encolhe é o padding, não o link. */
+  .rbh__entrar { padding: 12px 8px; font-size: 14px; }
   .rbh__brand { gap: 11px; }
   .rbh__lockup { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.12; }
   .rbh__name, .rbh__suffix { font-size: 15px; }

@@ -31,7 +31,7 @@
 const PASSOS = [
   '<strong>Captura.</strong> Você manda o arquivo do custodiante do jeito que ele exporta. A Redentia aprende o formato dele, não o contrário: ninguém do seu time vira tradutor de planilha.',
   '<strong>Conciliação.</strong> Cada linha vira posição normalizada por uma regra escrita uma vez, que passa a valer pro portfólio inteiro. Todo valor consolidado guarda o rastro até a linha do documento de origem.',
-  '<strong>Relatório.</strong> O mês fechado sai com a marca do escritório, pronto pra reunião com a família. A tecnologia não aparece em lugar nenhum.',
+  '<strong>Relatório.</strong> O mês fechado sai com a marca do escritório, pronto pra reunião com a família. A geração do PDF é entrega da implantação, e ainda não existe.',
 ]
 </script>
 
