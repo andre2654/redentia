@@ -1,6 +1,12 @@
 <script setup lang="ts">
 /**
- * "Prova de conceito" — a oferta comercial.
+ * "O plano" — a oferta comercial.
+ *
+ * SEM "PROVA DE CONCEITO" NA SUPERFÍCIE PÚBLICA (decisão do dono 2026-08-01:
+ * "isso de POC era relevante apenas para as calls"). A página diz o que o
+ * cliente paga e leva: R$ 2.500/mês por escritório, mensal, sem contrato
+ * anual, chaves pro time sem custo por assento. O enquadramento de prova de
+ * conceito continua existindo NA CONVERSA comercial, não aqui.
  *
  * ÚNICA BANDA NAVY DA PÁGINA. O plano dá três pisos e só (creme é a página,
  * navy é o outro lado, branco é artefato), e gasta o navy aqui: é o momento
@@ -25,25 +31,25 @@
  * duas chances de mentir.
  *
  * O QUE A SEÇÃO NÃO PROMETE: o deck anuncia "10 dias úteis recuperados" como
- * retorno. Aqui os 10 dias são o que a POC vai MEDIR, no fechamento do próprio
- * escritório. A diferença entre medir e prometer é a diferença entre um piloto
- * e uma devolução de dinheiro.
+ * retorno. Aqui os 10 dias são o que a implantação vai MEDIR, no fechamento do
+ * próprio escritório. A diferença entre medir e prometer é a diferença entre
+ * um piloto e uma devolução de dinheiro.
  */
-const CONTRATO = [
+const INCLUI = [
   {
-    rotulo: 'Ciclo',
-    valor: '60 a 90 dias',
-    nota: 'Tempo suficiente pra atravessar dois ou três fechamentos de verdade, que é onde o número aparece.',
+    rotulo: 'Chaves',
+    valor: 'Todo o time',
+    nota: 'Uma chave por pessoa do escritório, individual e revogável, sem custo por assento.',
   },
   {
-    rotulo: 'Escopo',
-    valor: 'Uma tese só',
-    nota: 'Escolhemos junto a etapa mais cara do seu mês e atacamos ela. Prova de conceito que tenta tudo não prova nada.',
+    rotulo: 'Setup',
+    valor: '1 hora',
+    nota: 'Reunião técnica pra mapear as fontes de dado da casa e conectar os assistentes do time.',
   },
   {
-    rotulo: 'Objetivo',
-    valor: 'Um número',
-    nota: 'Quantos dias o seu ciclo de fechamento encurtou, medido no seu próprio calendário, contra o mês que você tem hoje.',
+    rotulo: 'Foco',
+    valor: 'Uma tese',
+    nota: 'Escolhemos junto a etapa mais cara do seu mês e atacamos ela primeiro. Quem tenta tudo de uma vez não fecha nada.',
   },
 ]
 </script>
@@ -52,17 +58,17 @@ const CONTRATO = [
   <section id="prova" class="rbpv">
     <div class="rbpv__cols">
       <div class="rbpv__intro">
-        <NuSectionHeading dark eyebrow="Prova de conceito">
-          Antes de virar<br>fornecedor.
+        <NuSectionHeading dark eyebrow="O plano">
+          Mensal, sem<br>contrato anual.
           <template #dek>
-            Um ciclo curto, pago, com escopo de uma tese e
-            <strong>um número no fim</strong>. Se o número não aparecer, você
-            descobre em 90 dias e não em dois anos de contrato.
+            Um preço por escritório, com o time inteiro dentro e
+            <strong>um número no fim de cada mês</strong>. Se o número não
+            aparecer, você cancela no mês seguinte, não em dois anos.
           </template>
         </NuSectionHeading>
 
         <p class="rbpv__cap">
-          Rodamos cinco provas de conceito por trimestre, porque cada uma tem
+          Ativamos cinco escritórios por trimestre, porque cada implantação tem
           gente da Redentia dentro do seu fechamento.
         </p>
       </div>
@@ -74,7 +80,7 @@ const CONTRATO = [
         </p>
 
         <dl class="rbpv__lista">
-          <div v-for="c in CONTRATO" :key="c.rotulo" class="rbpv__linha">
+          <div v-for="c in INCLUI" :key="c.rotulo" class="rbpv__linha">
             <dt class="rbpv__linha-topo">
               <span class="rbpv__rotulo">{{ c.rotulo }}</span>
               <span class="rbpv__valor-linha">{{ c.valor }}</span>
@@ -86,8 +92,8 @@ const CONTRATO = [
         <a href="#contato" class="rbpv__cta">Começar pelo setup de 1 hora</a>
         <p class="rbpv__rodape">
           O setup é uma reunião técnica pra mapear suas fontes de dado e
-          escolher a tese. Sai dela o cronograma, ou a conclusão de que ainda
-          não é hora.
+          escolher por onde começar. Sai dela o cronograma, ou a conclusão de
+          que ainda não é hora.
         </p>
       </div>
     </div>

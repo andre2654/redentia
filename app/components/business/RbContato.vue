@@ -23,7 +23,7 @@ const EMAIL = 'contato@redentia.com'
 const ANTECEDE = [
   'Quantas famílias você atende e por quantos custodiantes o patrimônio delas está espalhado.',
   'Um extrato de exemplo, anonimizado se quiser. É o que diz se a captura funciona no seu caso.',
-  'Qual etapa do fechamento dói mais hoje. É ela que vira a tese da prova de conceito.',
+  'Qual etapa do fechamento dói mais hoje. É por ela que a implantação começa.',
 ]
 </script>
 

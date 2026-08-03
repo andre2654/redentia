@@ -37,7 +37,7 @@
 const FATOS = [
   {
     rotulo: 'Banco separado',
-    texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito da primeira prova de conceito com dado real, não um upgrade vendido depois.',
+    texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito para dado real de escritório entrar, não um upgrade vendido depois.',
   },
   {
     rotulo: 'Chave por assento, com prazo',

@@ -108,6 +108,12 @@ export default defineNuxtConfig({
     // pode ser público na borda. A página está noindex até o PR5 — ver a trava
     // no topo de components/business/RbSeguranca.vue.
     '/business': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // PR-F do MVP B2B: cadastro e chaves VARIAM por cookie (cadastro redireciona
+    // logado pra /business/chaves; chaves é autenticada) → private/no-store,
+    // pela regra "CDN não varia por cookie". O guia de conexão é estático.
+    '/business/cadastro': { headers: { 'cache-control': 'private, no-store' } },
+    '/business/chaves': { headers: { 'cache-control': 'private, no-store' } },
+    '/business/comecar': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
