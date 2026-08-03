@@ -41,7 +41,7 @@ const FATOS = [
   },
   {
     rotulo: 'Chave por assento, com prazo',
-    texto: 'Cada pessoa do time acessa com a própria chave, e toda chave tem validade obrigatória. Quando alguém sai do escritório, revogar a chave dela não derruba o resto do time.',
+    texto: 'Cada pessoa do time acessa com a própria chave, ligada e desligada por quem é dona dela. Quando alguém sai do escritório, desligar a chave dessa pessoa não derruba o resto do time. Validade com prazo obrigatório entra junto com o modelo de organização.',
   },
   {
     rotulo: 'Somente leitura',
