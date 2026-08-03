@@ -26,6 +26,7 @@ import { CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE } from '~/content/guias/conectar-car
 import { MCP_PARA_INVESTIMENTOS_GUIDE } from '~/content/guias/mcp-para-investimentos'
 import { RESERVA_DE_EMERGENCIA_GUIDE } from '~/content/guias/reserva-de-emergencia'
 import { COMO_ANALISAR_UMA_ACAO_GUIDE } from '~/content/guias/como-analisar-uma-acao'
+import { COMO_INVESTIR_EM_ETF_GUIDE } from '~/content/guias/como-investir-em-etf'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -58,6 +59,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [MCP_PARA_INVESTIMENTOS_GUIDE.slug]: MCP_PARA_INVESTIMENTOS_GUIDE,
   [RESERVA_DE_EMERGENCIA_GUIDE.slug]: RESERVA_DE_EMERGENCIA_GUIDE,
   [COMO_ANALISAR_UMA_ACAO_GUIDE.slug]: COMO_ANALISAR_UMA_ACAO_GUIDE,
+  [COMO_INVESTIR_EM_ETF_GUIDE.slug]: COMO_INVESTIR_EM_ETF_GUIDE,
 }
 
 /**
@@ -171,6 +173,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Análise',
     minutes: 11,
     slug: 'como-analisar-uma-acao',
+  },
+  {
+    title: 'ETFs: o que são e como investir',
+    description: 'O fundo de índice que se compra como ação: tipos, custos, imposto e o que ele não resolve.',
+    tag: 'Ações',
+    minutes: 10,
+    slug: 'como-investir-em-etf',
   },
 ]
 
