@@ -2,23 +2,33 @@
 /**
  * /business/cadastro — a porta de entrada da conta do escritório.
  *
- * SÓ O LOGIN MORA AQUI. O cadastro da empresa em si (o nome do escritório) é
- * a primeira tela do /business/chaves, e a divisão é deliberada: pedir e-mail
- * e nome do escritório na mesma tela obrigaria a segurar o nome durante todo
- * o vaivém do código de acesso, e um refresh no meio perderia o que a pessoa
- * digitou. Aqui: identidade. Lá dentro: a empresa.
+ * MESMA CASCA DO /login (direção do dono 2026-08-03: "deixe parecida com a
+ * nossa tela de /login, com uma pegada mais B2B, talvez mudando o card animado
+ * à direita"). Reusa o `NuAuthLayout` inteiro: split-screen, logo flush no
+ * topo, miolo centralizado a 440px, painel dark à direita que some em 1020px.
+ * Reusa também os mesmos componentes de formulário do login (`NuFieldLabel`,
+ * `NuUnderlineInput`, `NuPillButton`, `NuTextDivider`, `NuInlineTextToggle`),
+ * então as duas telas envelhecem juntas em vez de divergirem.
+ *
+ * O QUE MUDA É O PAINEL DA DIREITA: no login é a orbe "Redentia lendo o
+ * mercado", que fala com o investidor. Aqui é o `RbAuthAside`, com a mesa do
+ * escritório perguntando. Entrou pelo slot `panel` que o layout ganhou, o que
+ * deixa o /login intocado.
  *
  * SEM AUTH PRÓPRIA, de propósito: é o handoff documentado do /login (?email=
- * pré-preenche, ?redirect= traz de volta) — o mesmo padrão da
- * NuNewsletterBand e do hero do /mercado. Reimplementar PIN/WhatsApp/Google
- * aqui seria duplicar 400 linhas delicadas.
+ * pré-preenche, ?redirect= traz de volta). Reimplementar PIN, WhatsApp e
+ * Google aqui seria duplicar 400 linhas delicadas, e é a razão de esta tela
+ * pedir só o e-mail.
  *
- * Quem já está logado não vê form: middleware manda direto pra /business/chaves
- * (mesmo gesto do /login). Por variar por cookie, a rota é private/no-store no
- * nuxt.config.
+ * O NOME DO ESCRITÓRIO NÃO É PEDIDO AQUI, e isso é escolha: ele viria antes do
+ * código de acesso e se perderia no vaivém do login. Ele é a primeira tela do
+ * /business/chaves, depois que a sessão existe.
+ *
+ * Quem já está logado não vê form: o middleware manda direto pro painel. Por
+ * variar por cookie, a rota é private/no-store no nuxt.config.
  */
 definePageMeta({
-  layout: 'business',
+  layout: false,
   middleware: [
     () => {
       const token = useCookie<string | null>('nu:token')
@@ -30,153 +40,112 @@ definePageMeta({
 
 usePageSeo({
   title: 'Ativar acesso · Redentia For Business',
-  description: 'Crie a conta e gere a chave MCP do seu escritório na Redentia For Business.',
+  description: 'Crie a conta do seu escritório e gere as chaves MCP da Redentia.',
   path: '/business/cadastro',
   robots: 'noindex, follow',
 })
 useHead({ titleTemplate: null })
 
-const email = ref('')
-const ready = computed(() => /.+@.+\..+/.test(email.value))
+const route = useRoute()
+const email = ref(typeof route.query.email === 'string' ? route.query.email.trim() : '')
+const enviando = ref(false)
+
+const pronto = computed(() => /.+@.+\..+/.test(email.value.trim()))
 
 function seguir() {
-  if (!ready.value) return
+  if (!pronto.value || enviando.value) return
+  enviando.value = true
+  // O /login é quem manda o código e cria a sessão; ?redirect= devolve a
+  // pessoa no painel do escritório, que é onde o cadastro de fato acontece.
   navigateTo(`/login?email=${encodeURIComponent(email.value.trim())}&redirect=${encodeURIComponent('/business/chaves')}`)
 }
-
-const PASSOS = [
-  { t: 'Acesso', d: 'Você entra com o e-mail do trabalho. Sem senha: o código chega na hora.' },
-  { t: 'Escritório', d: 'Dá o nome da casa. A conta fica registrada e é liberada quando o contrato fecha.' },
-  { t: 'Chaves', d: 'Até cinco, cada uma com nome. A chave aparece uma vez, e o painel mostra o uso de todas.' },
-  { t: 'Conexão', d: 'Claude Desktop, Claude Code ou Cursor: cola a configuração e pergunta. O guia mostra os três.' },
-]
 </script>
 
 <template>
-  <section class="rbcd">
-    <div class="rbcd__cols">
-      <div class="rbcd__intro">
-        <NuSectionHeading eyebrow="Ativar acesso">
-          Uma conta<br>para a casa.
-          <template #dek>
-            O escritório tem uma conta só, e dentro dela até cinco chaves
-            nomeadas: <strong>uma por pessoa ou por mesa, cada uma revogável
-            sem derrubar as outras</strong>. Comece pelo seu e-mail do trabalho.
-          </template>
-        </NuSectionHeading>
+  <NuAuthLayout logo-to="/business">
+    <template #panel>
+      <RbAuthAside />
+    </template>
 
-        <form class="rbcd__form" @submit.prevent="seguir">
-          <label class="rbcd__label" for="rbcd-email">Seu e-mail do trabalho</label>
-          <div class="rbcd__row">
-            <input
-              id="rbcd-email"
-              v-model="email"
-              type="email"
-              name="email"
-              autocomplete="email"
-              placeholder="voce@escritorio.com.br"
-              class="rbcd__input"
-            >
-            <button type="submit" class="rbcd__cta" :disabled="!ready">
-              Continuar
-            </button>
-          </div>
-          <p class="rbcd__help">
-            Você recebe um código de acesso e volta direto pro painel do
-            escritório, onde dá o nome da casa e gera as chaves. Já tem conta?
-            O mesmo caminho entra.
-          </p>
-        </form>
+    <div class="rbcd">
+      <span class="rbcd__eyebrow">Redentia For Business</span>
+      <h1 class="rbcd__h1">A conta é do escritório.</h1>
+      <p class="rbcd__sub">
+        Uma conta para a casa inteira, com até cinco chaves nomeadas e o uso de
+        todas no mesmo painel. Comece pelo seu e-mail do trabalho.
+      </p>
 
-        <p class="rbcd__nota">
-          Ainda não fechou com a gente? Pode criar a conta agora: ela fica
-          registrada e é liberada no
-          <a href="/business#contato" class="rbcd__link">setup de 1 hora</a>.
-          Cadastrar não cobra nada e não libera nada sozinho.
-        </p>
-      </div>
+      <form @submit.prevent="seguir">
+        <div class="rbcd__label">
+          <NuFieldLabel label="Seu e-mail do trabalho" help="Você recebe um código de acesso. Não existe senha." />
+        </div>
+        <NuUnderlineInput
+          v-model="email"
+          type="email"
+          name="email"
+          placeholder="voce@escritorio.com.br"
+          autocomplete="email"
+        />
+        <NuPillButton class="rbcd__cta" type="submit" :disabled="!pronto" :loading="enviando">
+          Continuar
+        </NuPillButton>
+      </form>
 
-      <div class="rbcd__aside">
-        <span class="rbcd__aside-label">O caminho inteiro</span>
-        <ol class="rbcd__passos">
-          <li v-for="(p, i) in PASSOS" :key="p.t" class="rbcd__passo">
-            <span class="rbcd__num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <div>
-              <h3 class="rbcd__passo-t">{{ p.t }}</h3>
-              <p class="rbcd__passo-d">{{ p.d }}</p>
-            </div>
-          </li>
-        </ol>
-        <p class="rbcd__aside-nota">
-          Guia de conexão completo em
-          <NuxtLink to="/business/comecar" class="rbcd__link">/business/comecar</NuxtLink>.
-        </p>
-      </div>
+      <NuTextDivider class="rbcd__divider" label="depois" />
+
+      <ol class="rbcd__passos">
+        <li v-for="(p, i) in [
+          'Você dá o nome do escritório no painel.',
+          'A conta é liberada quando o contrato fecha.',
+          'As chaves saem na hora, uma por pessoa ou por mesa.',
+        ]" :key="i" class="rbcd__passo">
+          <span class="rbcd__n">{{ i + 1 }}</span>
+          <span>{{ p }}</span>
+        </li>
+      </ol>
+
+      <p class="rbcd__nota">
+        Cadastrar não cobra nada e não libera nada sozinho. Uma conta por
+        escritório: se alguém da casa já criou, peça a sua chave para essa pessoa.
+      </p>
+
+      <NuInlineTextToggle
+        class="rbcd__footer"
+        label="Procurando a Redentia para investir?"
+        cta="Ir para o app"
+        @click="navigateTo('/')"
+      />
     </div>
-  </section>
+  </NuAuthLayout>
 </template>
 
 <style scoped>
-.rbcd {
-  background: var(--nu-cream);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
-  animation: nu-fade .5s ease both;
-  min-height: 60vh;
-}
-.rbcd__cols {
-  display: flex; gap: clamp(32px, 5vw, 76px);
-  align-items: flex-start; flex-wrap: wrap;
-}
-.rbcd__intro { flex: 1.15 1 460px; min-width: min(300px, 100%); }
-.rbcd__aside { flex: 1 1 380px; min-width: min(300px, 100%); }
+/* Espelha o ritmo vertical do /login (lg__*): mesmos clamps de respiro, pra
+   as duas telas ficarem alinhadas quando abertas lado a lado. */
+.rbcd { animation: nu-fade .5s ease both; }
 
-.rbcd__form { margin-top: clamp(28px, 3.5vw, 40px); max-width: 560px; }
-.rbcd__label {
-  display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 10px;
+.rbcd__eyebrow { display: block; color: var(--nu-blue); font-size: 14.5px; font-weight: 800; letter-spacing: -.01em; }
+.rbcd__h1 {
+  margin: 10px 0 0; color: var(--nu-ink);
+  font-size: clamp(32px, 3.4vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
 }
-.rbcd__row { display: flex; gap: 10px; flex-wrap: wrap; }
-.rbcd__input {
-  flex: 1 1 260px; min-width: min(240px, 100%);
-  background: var(--nu-white); border: 1px solid var(--nu-cream-line);
-  border-radius: 14px; padding: 15px 18px;
-  color: var(--nu-ink); font-size: 16px; font-weight: 600; font-family: inherit;
-}
-.rbcd__input::placeholder { color: var(--nu-gray); font-weight: 500; }
-.rbcd__input:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
-.rbcd__cta {
-  flex-shrink: 0; border: none; cursor: pointer;
-  background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px;
-  font-size: 16px; font-weight: 800; font-family: inherit; transition: background .2s, opacity .2s;
-}
-.rbcd__cta:disabled { opacity: .45; cursor: default; }
-.rbcd__cta:not(:disabled):hover { background: var(--nu-blue-hover); }
-.rbcd__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
-.rbcd__help { margin: 14px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; max-width: 480px; }
+.rbcd__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; }
 
-.rbcd__nota {
-  margin: clamp(28px, 3.5vw, 40px) 0 0; padding-top: 22px;
-  border-top: 1px solid var(--nu-cream-line);
-  color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.65; max-width: 520px;
-}
-.rbcd__link { color: var(--nu-blue); font-weight: 700; }
-.rbcd__link:hover { color: var(--nu-blue-hover); }
+.rbcd__label { margin-top: clamp(28px, 4vh, 44px); }
+.rbcd__cta { margin-top: clamp(32px, 4.5vh, 48px); }
+.rbcd__divider { margin-top: 30px; }
 
-.rbcd__aside-label {
-  display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 1.4px;
+/* os três passos: é o que a pessoa precisa saber ANTES de entregar o e-mail,
+   e por isso vive acima da dobra em vez de virar nota de rodapé */
+.rbcd__passos { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rbcd__passo { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+.rbcd__n {
+  width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--nu-tile-blue-bg); color: var(--nu-blue); border-radius: 7px;
+  font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
 }
-.rbcd__passos { margin: 22px 0 0; padding: 0; list-style: none; }
-.rbcd__passo {
-  display: flex; gap: 18px; align-items: flex-start;
-  padding: 18px 0; border-top: 1px solid var(--nu-cream-line);
-}
-.rbcd__num {
-  color: var(--nu-blue); font-size: 14px; font-weight: 800;
-  font-variant-numeric: tabular-nums; flex-shrink: 0; padding-top: 2px;
-}
-.rbcd__passo-t { margin: 0; color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
-.rbcd__passo-d { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.rbcd__aside-nota { margin: 20px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+
+.rbcd__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.rbcd__footer { margin-top: clamp(28px, 4vh, 44px); }
 </style>

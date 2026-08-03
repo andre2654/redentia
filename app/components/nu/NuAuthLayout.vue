@@ -4,6 +4,12 @@
 // centralizado com paddings fluidos) + painel dark com a orbe (flex 1 1
 // 460px, some <=1020px via NuAuthAsidePanel). Sem header/nav/footer — quem
 // usa este layout declara `definePageMeta({ layout: false })`.
+//
+// O painel da direita é TROCÁVEL pelo slot `panel` (2026-08-03): a
+// /business/cadastro precisa da mesma casca com um painel B2B, e forkar o
+// layout inteiro por causa de uma coluna duplicaria o split, os paddings e o
+// breakpoint de 1020px. Sem o slot, cai no NuAuthAsidePanel de sempre e o
+// /login não muda em nada.
 withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/' })
 </script>
 
@@ -17,9 +23,11 @@ withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/' })
         </div>
       </div>
     </div>
-    <NuAuthAsidePanel>
-      <slot name="aside">Todos os seus investimentos.<br>Uma IA do seu lado.</slot>
-    </NuAuthAsidePanel>
+    <slot name="panel">
+      <NuAuthAsidePanel>
+        <slot name="aside">Todos os seus investimentos.<br>Uma IA do seu lado.</slot>
+      </NuAuthAsidePanel>
+    </slot>
   </div>
 </template>
 
