@@ -14,7 +14,10 @@
 definePageMeta({ layout: 'business' })
 
 const ENDPOINT = 'https://redentia-api.saraivada.com/mcp'
-const KEY = 'rdt_mcp_SUA_CHAVE'
+// Chave de ESCRITÓRIO (rdt_biz_), não a pessoal (rdt_mcp_): esta página é
+// do business, e mostrar o prefixo errado manda o cliente colar a credencial
+// que o plano dele não usa.
+const KEY = 'rdt_biz_SUA_CHAVE'
 
 usePageSeo({
   title: 'Conectar · Redentia For Business',
@@ -94,7 +97,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
       <NuSectionHeading eyebrow="Conectar">
         Da chave à primeira<br>pergunta.
         <template #dek>
-          Troque <strong>rdt_mcp_SUA_CHAVE</strong> pela chave gerada em
+          Troque <strong>rdt_biz_SUA_CHAVE</strong> pela chave gerada em
           <NuxtLink to="/business/chaves" class="rbcm__link">/business/chaves</NuxtLink>
           e cole no seu assistente. A conexão leva minutos.
         </template>

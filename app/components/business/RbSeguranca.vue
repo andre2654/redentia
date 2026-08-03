@@ -40,8 +40,8 @@ const FATOS = [
     texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito para dado real de escritório entrar, não um upgrade vendido depois.',
   },
   {
-    rotulo: 'Chave por assento, com prazo',
-    texto: 'Cada pessoa do time acessa com a própria chave, ligada e desligada por quem é dona dela. Quando alguém sai do escritório, desligar a chave dessa pessoa não derruba o resto do time. Validade com prazo obrigatório entra junto com o modelo de organização.',
+    rotulo: 'Chave nomeada, revogável pela casa',
+    texto: 'O escritório tem uma conta com até cinco chaves, cada uma com o nome de quem usa. Quem criou a conta liga, desliga e revoga qualquer uma delas sem depender da pessoa, e derrubar uma não derruba as outras. O painel abre com esse login só: assento por pessoa, segundo administrador e validade com prazo entram junto com o modelo de organização, e ainda não existem.',
   },
   {
     rotulo: 'Somente leitura',

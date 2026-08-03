@@ -18,10 +18,12 @@
  *     estrangula setInterval pra ~1 tick/s e os relógios se atropelam.
  *
  * ⚠️ A tool do card é `get_portfolio`, que é a que EXISTE no mcp-service. Ela
- * fica no escopo carteira, que o plano do dia 1 não inclui: o card mostra o
- * destino da implantação, e é por isso que a nota ao lado diz que hoje as
- * chaves respondem pelo mercado. Nunca invente nome de tool aqui: o comprador
- * abre o Claude na reunião e pergunta exatamente o que viu na tela.
+ * fica no escopo carteira, que o plano do dia 1 NÃO inclui — uma chave
+ * `rdt_biz_` recebe "O plano para escritórios não inclui dados de carteira"
+ * se tentar. O card mostra o destino da implantação, e a nota logo abaixo diz
+ * isso com todas as letras: sem ela o comprador abre o Claude na reunião,
+ * repete o que viu na tela e leva uma recusa. Se você mexer no card, mexa na
+ * nota junto. Nunca invente nome de tool aqui.
  *
  * Os números são os mesmos do exemplo fictício de toda a página B2B (Família
  * Bittencourt, R$ 1.284.902.117, Marina Duarte) — se mudar aqui, mudou no
@@ -117,8 +119,10 @@ onBeforeUnmount(clearAll)
         </NuSectionHeading>
         <p class="rbas__nota">
           Claude Desktop, Claude Code e Cursor conectam hoje, cada pessoa com a
-          própria chave e somente leitura. No ChatGPT ainda não. As mesmas
-          chaves respondem pelo mercado brasileiro inteiro, não só pela carteira.
+          chave que o escritório gerou pra ela, e somente leitura. No ChatGPT
+          ainda não. A carteira consolidada acima é onde a implantação chega;
+          a chave do primeiro dia responde pelo mercado brasileiro: cotação,
+          busca de ativo, resumo do dia, teses e notícias.
         </p>
       </div>
 
