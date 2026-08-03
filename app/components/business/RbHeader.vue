@@ -62,7 +62,7 @@ watch(shrunk, (s) => {
 </script>
 
 <template>
-  <div class="rbh-wrap" :class="{ 'rbh-wrap--shrunk': shrunk }">
+  <div class="rbh-wrap" :class="{ 'rbh-wrap--shrunk': shrunk, 'rbh-wrap--logado': logado }">
     <div class="rbh">
       <div class="rbh__brand">
         <NuxtLink to="/" class="rbh__mark" aria-label="Voltar para a Redentia">
@@ -134,7 +134,7 @@ watch(shrunk, (s) => {
 /* o acesso é link de texto, não segundo botão: a página já gasta o azul
    chapado no CTA comercial, e duas pílulas lado a lado brigam entre si */
 .rbh__entrar {
-  display: inline-flex; align-items: center; padding: 12px 14px;
+  display: inline-flex; align-items: center; padding: 12px 14px; min-height: 44px;
   color: var(--nu-gray-2); font-size: 15px; font-weight: 700; white-space: nowrap;
   border-radius: var(--nu-r-pill); transition: color .2s, background .2s;
 }
@@ -163,9 +163,21 @@ watch(shrunk, (s) => {
    linhas de 15px cabem dentro dele sem esticar o header. */
 @media (max-width: 760px) {
   .rbh { gap: 10px; padding-right: 14px; }
-  /* fica visível no estreito: escondê-lo deixava o celular SEM nenhum
-     caminho pro painel. O que encolhe é o padding, não o link. */
-  .rbh__entrar { padding: 12px 8px; font-size: 14px; }
+  /* A 375px o lockup tem 146px e o botão comercial ~143: os dois cabem, os
+     TRÊS não (medido: o CTA terminava em x=405 numa tela de 375). Então no
+     estreito é um ou outro, e quem já entrou vê a conta:
+       deslogado → só "Falar com a gente"
+       logado    → só "Minha conta", com a cara do botão
+     `logado` só é verdade depois do mount, então o SSR sai igual pra todo
+     mundo e o cache da borda continua servindo a mesma coisa pra todos. */
+  .rbh__entrar { display: none; }
+  .rbh-wrap--logado .rbh__cta { display: none; }
+  .rbh-wrap--logado .rbh__entrar {
+    display: inline-flex;
+    background: var(--nu-blue); color: var(--nu-white);
+    padding: 10px 16px; font-size: 14px;
+  }
+  .rbh-wrap--logado .rbh__entrar:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
   .rbh__brand { gap: 11px; }
   .rbh__lockup { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.12; }
   .rbh__name, .rbh__suffix { font-size: 15px; }
