@@ -30,7 +30,7 @@ usePageSeo({
     inDefinedTermSet: {
       '@type': 'DefinedTermSet',
       name: 'Glossário do investidor Redentia',
-      url: `${useRequestURL().origin}/glossario`,
+      url: `${useSiteOrigin()}/glossario`,
     },
     inLanguage: 'pt-BR',
   }],

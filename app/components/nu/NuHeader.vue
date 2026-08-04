@@ -28,10 +28,16 @@ const NAV: NavItem[] = [
     children: [
       { label: 'Calculadoras', to: '/calculadoras' },
       { label: 'Redentia MCP', to: '/mcp' },
-      { label: 'Rankings de Ações', to: '/rankings?classe=acoes' },
-      { label: 'Rankings de FIIs', to: '/rankings?classe=fiis' },
-      { label: 'Rankings de BDRs', to: '/rankings?classe=bdrs' },
-      { label: 'Ranking de Renda Fixa', to: '/ranking/tesouro-direto' },
+      // Eram 3 links pra /rankings?classe=... — query string não é URL
+      // indexável separada (o canonical do hub colapsa as três numa só), então
+      // o header gastava 3 slots e distribuía equity pra uma URL única. Agora
+      // aponta pros rankings que JÁ têm demanda medida no Search Console:
+      // maiores-dividend-yield 8.240 impr, mais-baratas-graham 310 (CTR 5,16%),
+      // mais-baratas-bazin 239 (CTR 3,35%). O filtro por classe segue no hub.
+      { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield' },
+      { label: 'Mais baratas por Graham', to: '/ranking/mais-baratas-graham' },
+      { label: 'Mais baratas por Bazin', to: '/ranking/mais-baratas-bazin' },
+      { label: 'Todos os rankings', to: '/rankings' },
     ],
   },
   {

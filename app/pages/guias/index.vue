@@ -21,8 +21,7 @@ const showFeatured = computed(() => tab.value === 'Tudo' || tab.value === 'Guia 
 const filtered = computed(() => GUIDES.filter((g) => tab.value === 'Tudo' || g.tag === tab.value))
 
 // ——— SEO ———
-const url = useRequestURL()
-const origin = `${url.protocol}//${url.host}`
+const origin = useSiteOrigin()
 const listable = [
   { name: FEATURED_GUIDE.title, url: `${origin}/guias/${FEATURED_GUIDE.slug}` },
   ...GUIDES

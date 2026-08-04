@@ -11,6 +11,7 @@
 // Path antigo mantido (/calculadora/preco-teto) — preserva URL equity,
 // inclusive os deep-links ?ticker= das ações populares.
 import type { NuFaqItem } from '~/types/market'
+import { PRECO_TETO_METODOS } from '~/content/calculadoras/preco-teto-metodos'
 
 const route = useRoute()
 
@@ -209,58 +210,27 @@ watch(queryTicker, (t, old) => {
   }
 }, { immediate: true })
 
-interface MethodResult {
-  fairPrice: number
-  margin: number
-  ratio: number
-}
+// A matemática (porte exato de calculateFairPrice do FairPrice.vue antigo) saiu
+// daqui pra app/utils/preco-teto.ts em 03/08/2026, sem mudar um número: as
+// páginas /calculadora/preco-teto/{metodo} usam a MESMA conta, e fórmula de
+// valuation duplicada em dois arquivos é divergência silenciosa esperando
+// acontecer entre duas páginas que prometem o mesmo resultado.
+// Links pras páginas por método. Derivados do registry pra não duplicar lista.
+const metodoLinks = Object.values(PRECO_TETO_METODOS).map((mm) => ({
+  slug: mm.slug,
+  rotulo: mm.h1,
+  formula: mm.formula,
+}))
 
-// porte exato de calculateFairPrice (FairPrice.vue) — reativo, sem botão
-const results = computed(() => {
-  const currentPrice = price.value
-  if (!currentPrice || currentPrice <= 0) return null
-
-  const grahamPrice = lpa.value > 0 && vpa.value > 0 ? Math.sqrt(22.5 * lpa.value * vpa.value) : 0
-  const bazinPrice = dividend.value > 0 ? dividend.value / 0.06 : 0
-  const plSectorPrice = lpa.value > 0 && sectorPL.value > 0 ? lpa.value * sectorPL.value : 0
-  const bookValuePrice = vpa.value > 0 ? vpa.value * 1.5 : 0
-
-  const calculateMetrics = (fairPrice: number): MethodResult => {
-    const margin = fairPrice > 0 ? (fairPrice - currentPrice) / currentPrice : 0
-    const ratio = fairPrice > 0 ? currentPrice / fairPrice : 0
-    return { fairPrice, margin, ratio }
-  }
-
-  const validPrices = [grahamPrice, bazinPrice, plSectorPrice, bookValuePrice].filter((p) => p > 0)
-  const averageFairPrice =
-    validPrices.length > 0 ? validPrices.reduce((a, b) => a + b, 0) / validPrices.length : 0
-  const averageMargin =
-    averageFairPrice > 0 ? (averageFairPrice - currentPrice) / currentPrice : 0
-
-  let recommendation = 'Neutro'
-  let explanation = ''
-  if (averageMargin > 0.2) {
-    recommendation = 'Comprar'
-    explanation =
-      'A ação está negociando com boa margem de segurança abaixo do preço teto médio. Pode ser uma oportunidade interessante, mas valide também endividamento, ROE e perspectivas do setor.'
-  } else if (averageMargin >= 0) {
-    recommendation = 'Neutro'
-    explanation =
-      'A ação está próxima do preço teto médio. Avalie outros fundamentos antes de decidir e considere esperar uma janela com mais margem de segurança.'
-  } else {
-    recommendation = 'Caro'
-    explanation =
-      'A ação está negociando acima do preço teto médio. Pode estar cara no momento, a menos que haja um catalisador claro de crescimento que justifique o prêmio.'
-  }
-
-  return {
-    graham: calculateMetrics(grahamPrice),
-    bazin: calculateMetrics(bazinPrice),
-    plSector: calculateMetrics(plSectorPrice),
-    bookValue: calculateMetrics(bookValuePrice),
-    consensus: { averageFairPrice, averageMargin, recommendation, explanation },
-  }
-})
+const results = computed(() =>
+  computeAll({
+    price: price.value,
+    lpa: lpa.value,
+    vpa: vpa.value,
+    dividend: dividend.value,
+    sectorPL: sectorPL.value,
+  }),
+)
 
 function formatCurrency(value: number): string {
   if (!Number.isFinite(value)) value = 0
@@ -451,7 +421,6 @@ usePageSeo({
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de preço teto para ações da B3. Calcula Graham, Bazin, P/L setorial e valor patrimonial automaticamente a partir do ticker.',
@@ -818,6 +787,24 @@ usePageSeo({
           <h4 class="pt__h4 pt__h4--accent">{{ c.title }}</h4>
           <p class="pt__card-p">{{ c.body }}</p>
         </div>
+      </div>
+    </CalcBand>
+
+    <!-- ============ Métodos, um por página ============
+         Esta banda é PRÉ-REQUISITO das 5 URLs de /calculadora/preco-teto/{metodo}
+         estarem no sitemap. Regra aprendida com as 13 páginas de cenário: elas
+         entraram no sitemap em 12/07 com ~940 palavras únicas cada e ficaram com
+         ZERO impressão em 92 dias, porque nenhuma recebia link interno. Publicar
+         URL sem link de entrada é publicar no vazio. -->
+    <CalcBand tone="white" title="Cada método, em detalhe">
+      <template #dek>
+        <p>A fórmula, de onde vem cada constante, onde o método falha e um exemplo numérico fechado.</p>
+      </template>
+      <div class="pt__grid-cards pt__grid-cards--three">
+        <NuxtLink v-for="mm in metodoLinks" :key="mm.slug" :to="`/calculadora/preco-teto/${mm.slug}`" class="pt__card-link">
+          <h3 class="pt__card-link-title">{{ mm.rotulo }}</h3>
+          <p class="pt__card-p">{{ mm.formula }}</p>
+        </NuxtLink>
       </div>
     </CalcBand>
 

@@ -53,8 +53,7 @@ const tese = computed(() => data.value!)
 // sem o relatório, e o do logado vem completo.
 const { isAuthenticated } = useAuthState()
 
-const pageUrl = useRequestURL()
-const origin = `${pageUrl.protocol}//${pageUrl.host}`
+const origin = useSiteOrigin()
 const ogImage = tese.value.seo.image ? `${origin}${tese.value.seo.image}` : undefined
 
 // Article (página editorial): headline + datas REAIS das revalidações

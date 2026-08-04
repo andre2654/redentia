@@ -1,7 +1,10 @@
 /**
  * SEO por página (padrão herdado do Frontend, o composable mais maduro do repo):
  *  - useSeoMeta completo (title/description/og/twitter)
- *  - canonical no HOST REAL da request (useRequestURL — nunca hardcodar domínio)
+ *  - canonical na origem CANÔNICA do site (useSiteOrigin), não no host que
+ *    atendeu a request. Era o contrário até 08/2026, e foi assim que
+ *    whitelabel.redentia.com.br (231 URLs) e estudo.redentia.com.br viraram
+ *    clones indexados do site inteiro. Ver useSiteOrigin.ts pro histórico.
  *  - JSON-LD normalizado (Article/FAQPage/BreadcrumbList ganham defaults
  *    obrigatórios pra ninguém esquecer campo de rich snippet)
  */
@@ -26,9 +29,8 @@ interface PageSeoInput {
 }
 
 export function usePageSeo(input: PageSeoInput) {
-  const url = useRequestURL()
   const route = useRoute()
-  const origin = `${url.protocol}//${url.host}`
+  const origin = useSiteOrigin()
   const path = input.path ?? route.path
   const canonical = `${origin}${path}`
   const image = input.image ?? `${origin}/og-default.png`

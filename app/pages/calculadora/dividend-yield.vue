@@ -376,10 +376,22 @@ const faqItems = [
   { q: 'Posso usar essa calculadora para qualquer ativo?', a: 'Sim, a fórmula DY = Dividendos ÷ Preço funciona pra qualquer ativo gerador de renda: ações brasileiras, FIIs, ETFs (cuidado com reinvestimento automático), BDRs (cota de empresa estrangeira), até REITs americanos. Para ETFs de dividendos (DIVO11, BOVA11), considere o yield distribuído líquido. Para investimentos no exterior, lembre da tributação local + tratado de bitributação. A calculadora cobre o caso brasileiro padrão; para outros mercados, ajuste o input manualmente.' },
 ]
 
+// CANIBALIZAÇÃO (experimento do portão A, 03/08/2026). A consulta nº1 do site
+// em impressão é "calculadora de dividendos" (2.557 impr/tri, pos 7,08) e quem
+// aparecia nela era o ARTIGO /guias/calculadora-de-dividendos, que tinha o match
+// exato do title (6.991 impr, CTR 0,69%). Esta página, que é a ferramenta que a
+// pessoa procura, se chamava "Dividend Yield" e ficava atrás com 2.527 impr —
+// mas convertendo 4,6x melhor (CTR 3,17%). Trocamos o substantivo-cabeça de
+// lugar: a ferramenta assume "Calculadora de Dividendos", o guia vira "Como
+// calcular dividendos" (content/guias/calculadora-de-dividendos.ts:20).
+// "Dividend Yield" segue como H2 no corpo, o termo não sai da página.
+// CRITÉRIO DE REVERSÃO, escrito antes: se em 8 semanas esta página não sair de
+// 2.527 pra mais de 6.000 impressões/trimestre, a tese de que consolidar título
+// move IMPRESSÃO (e não só CTR) está errada. Reverter os dois titles.
 usePageSeo({
-  title: 'Calculadora de Dividend Yield 2026 - Grátis',
+  title: 'Calculadora de Dividendos 2026: quanto você recebe por mês',
   description:
-    'Calcule DY atual, projetado e on cost de qualquer ação ou FII da B3. FIIs com dividendos mensais, tributação 2026, melhores pagadores. Grátis.',
+    'Calcule quanto vai receber de dividendos por mês em qualquer ação ou FII da B3. DY atual, on cost e projetado, com dividendos mensais de FIIs e tributação 2026. Grátis.',
   path: '/calculadora/dividend-yield',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -393,7 +405,6 @@ usePageSeo({
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de dividend yield com 3 modos de cálculo: simples (DY atual), on cost (sobre o preço de compra) e projeção (DY futuro com LPA, payout e crescimento). Cobre ações e FIIs da B3 com pré-seleção via URL.',
@@ -406,7 +417,11 @@ usePageSeo({
         'Cálculo de dividendos mensais e ganho total anual',
         'Cenários populares pré-preenchidos via URL (deep-link)',
         'Compatível com BDRs, ETFs e REITs (input manual)',
-        'Sem cadastro, sem propaganda, gratuito',
+        // Era "Sem cadastro, sem propaganda, gratuito". featureList é a lista de
+        // FUNCIONALIDADES do dado estruturado, não slot de argumento de venda:
+        // ausência de cadastro não é feature, e ocupava uma das 9 vagas que o
+        // Google lê pra entender o que a ferramenta faz.
+        'Dividend yield atual, on cost e projetado',
       ],
     },
     // FAQPage schema é emitido pelo NuFaqAccordion via useHead — fonte única.

@@ -10,7 +10,7 @@
 import { FEATURED_TICKERS } from '../utils/site-pages'
 
 export default defineEventHandler(async (event) => {
-  const origin = getRequestURL(event).origin
+  const origin = siteOrigin(event)
   const sections = await getSiteSections()
 
   const lines: string[] = [

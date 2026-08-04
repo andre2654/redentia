@@ -41,16 +41,31 @@ const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 const lastUpdatedISO = lastUpdated.toISOString()
 
-// Cenários populares — long-tail SEO via deep-links (texto/URLs verbatim).
+// Cenários populares.
+//
+// O comentário antigo aqui dizia "long-tail SEO via deep-links". Não era: os
+// deep-links são `?initial=&monthly=&rate=&years=`, e o canonical desta página é
+// fixo, então as 12 variantes colapsam numa URL só. Long-tail de verdade são as
+// 5 páginas em /calculadora/juros-compostos/{slug}, com ~940 palavras únicas
+// cada — que estavam no sitemap desde 12/07 e, medidas em 03/08/2026, tinham
+// ZERO impressão em 92 dias (12 das 13 páginas de cenário do site inteiro).
+// A causa é simples: nenhuma delas recebia um único link interno. As 39 vagas
+// de link das 3 páginas-mãe iam todas pra query string da própria URL.
+// Agora as reais vêm primeiro; os deep-links seguem depois porque continuam
+// bons de UX (pré-preenchem a calculadora), só não são páginas.
 const popularScenarios = [
+  // Páginas reais, indexáveis (ordem = prioridade de link).
+  { label: 'Quanto rende R$ 500 por mês', sub: 'Em 20 e 30 anos', to: '/calculadora/juros-compostos/500-reais-por-mes' },
+  { label: 'Quanto rende R$ 1.000 por mês', sub: 'Em 20 e 30 anos', to: '/calculadora/juros-compostos/1000-reais-por-mes' },
+  { label: 'Como juntar R$ 1 milhão', sub: 'Aporte por horizonte', to: '/calculadora/juros-compostos/aposentar-com-1-milhao' },
+  { label: 'Como juntar R$ 100 mil em 5 anos', sub: 'Meta de curto prazo', to: '/calculadora/juros-compostos/100-mil-em-5-anos' },
+  { label: 'Em quantos anos meu dinheiro dobra', sub: 'Regra de 72', to: '/calculadora/juros-compostos/dobrar-dinheiro-regra-72' },
+  // Deep-links que ainda não têm página própria.
   { label: 'R$ 100/mês por 30 anos', sub: 'Começando do zero', to: '/calculadora/juros-compostos?initial=0&monthly=100&rate=10.5&years=30' },
-  { label: 'R$ 500/mês por 20 anos', sub: 'Cenário clássico', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=10.5&years=20' },
-  { label: 'R$ 1.000/mês por 10 anos', sub: 'Médio prazo', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=10.5&years=10' },
   { label: 'R$ 2.000/mês por 15 anos', sub: 'Acelerado', to: '/calculadora/juros-compostos?initial=0&monthly=2000&rate=10.5&years=15' },
   { label: 'R$ 10.000 inicial + R$ 500/mês', sub: 'Com capital inicial', to: '/calculadora/juros-compostos?initial=10000&monthly=500&rate=10.5&years=20' },
   { label: 'R$ 50.000 inicial sem aporte', sub: 'Renda passiva', to: '/calculadora/juros-compostos?initial=50000&monthly=0&rate=10.5&years=20' },
   { label: 'Aposentadoria, R$ 1.000/mês 35 anos', sub: 'Começando aos 30', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=10.5&years=35' },
-  { label: '1 milhão em 20 anos', sub: 'Quanto investir por mês', to: '/calculadora/juros-compostos?initial=0&monthly=1300&rate=10.5&years=20' },
   { label: 'Tesouro Selic, R$ 500/mês', sub: 'Taxa ~12% a.a.', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=12&years=20' },
   { label: 'Reserva de emergência', sub: 'R$ 300/mês por 2 anos', to: '/calculadora/juros-compostos?initial=0&monthly=300&rate=12&years=2' },
   { label: 'CDB 110% CDI, R$ 1.000/mês', sub: 'Taxa ~13% a.a.', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=13&years=10' },
@@ -151,7 +166,6 @@ usePageSeo({
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de juros compostos com aportes mensais. Mostra evolução patrimonial em gráfico interativo, tabela comparativa por horizonte (5, 10, 20, 30 anos), comparação simples vs compostos e cenários populares pré-preenchidos via URL.',
