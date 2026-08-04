@@ -13,7 +13,7 @@
  *    são POSIÇÕES por ranking, não sub-scores 0-100.
  */
 
-import type { NuDir, NuNewsFeaturedItem, NuNewsRowItem } from '~/types/market'
+import type { NuDir, NuFaqItem, NuNewsFeaturedItem, NuNewsRowItem } from '~/types/market'
 
 /* ————— shapes da API ————— */
 
@@ -187,8 +187,27 @@ export interface EditorialApi {
   description: string | null
   thesis_pros: string | null // PROSA longa (não bullets — gotcha)
   thesis_cons: string | null
+  /**
+   * Estes dois SEMPRE existiram no banco (migration
+   * 2026_05_04_120000_create_asset_editorials_table) e a API SEMPRE os devolveu
+   * (AssetEditorialController::show), mas faltavam aqui — e o que não está no
+   * tipo é descartado em silêncio na borda. Resultado medido em 03/08/2026:
+   * ~2.150 palavras por ativo escritas, pagas, persistidas e buscadas no SSR,
+   * das quais o site renderizava 220 caracteres (useAcao.ts:614 e :624).
+   */
+  peers_comparison: string | null
+  history_summary: string | null
   faq_extended: { question: string; answer: string }[] | null
   generated_at: string | null
+}
+
+/** Bloco editorial pronto pra render (prosa longa por seção + FAQ visível). */
+export interface AcaoEditorialVM {
+  /** Seções com corpo de verdade. Seção sem texto não entra (nada de H2 vazio). */
+  sections: { id: string; heading: string; body: string }[]
+  faq: NuFaqItem[]
+  /** ISO date de geração, pra linha de "atualizado em". */
+  generatedAt: string | null
 }
 
 /** GET /api/theses/{slug} → data.companies[] (papel do ativo por empresa). */
@@ -367,6 +386,8 @@ export interface AcaoPayload {
   dividends: AcaoDividendsVM | null
   ai: AcaoAiVM | null
   news: AcaoNewsVM | null
+  /** Prosa editorial longa por ativo. null quando não há editorial gerado. */
+  editorial: AcaoEditorialVM | null
   seo: {
     title: string
     description: string

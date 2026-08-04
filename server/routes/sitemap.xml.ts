@@ -2,14 +2,15 @@
  * /sitemap.xml — hand-rolled, sem módulo (decisão PR-A: zero dependência nova).
  * Lista de URLs = server/utils/site-pages.ts (compartilhada com /llms-full.txt).
  *
- * Host: origin da própria request (funciona no preview da Vercel e no domínio
- * final sem env). O handler NÃO é cacheado no Nitro de propósito — o cache por
- * rota ignoraria o host e vazaria o origin de um deploy pro outro; quem cacheia
- * é a CDN via s-maxage (per-host). Os fetches pesados do backend já são
- * cacheados 1h dentro do util.
+ * Host: origem CANÔNICA do site (siteOrigin), nunca o host da request. Sitemap é
+ * uma declaração sobre o SITE, não sobre quem respondeu: publicar URLs do host
+ * que atendeu foi o que fez whitelabel.redentia.com.br listar 231 URLs clonadas
+ * e o Google indexá-las. O handler NÃO é cacheado no Nitro de propósito (o cache
+ * por rota ignoraria variação de deploy); quem cacheia é a CDN via s-maxage. Os
+ * fetches pesados do backend já são cacheados 1h dentro do util.
  */
 export default defineEventHandler(async (event) => {
-  const origin = getRequestURL(event).origin
+  const origin = siteOrigin(event)
   const sections = await getSiteSections()
 
   const urls = sections

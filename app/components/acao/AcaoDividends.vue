@@ -32,12 +32,24 @@ const incomePill = computed(() => {
         </div>
         <div v-if="incomePill" class="adv__income">{{ incomePill }}</div>
         <div class="adv__cta-row">
-          <!-- leva pra landing de proventos do ticker (histórico completo + FAQ) -->
-          <NuxtLink :to="`/dividendos/${ticker}`" class="adv__cta adv__cta--primary">
+          <!--
+            Leva pra landing de proventos do ticker (histórico completo + FAQ).
+            CONDICIONAL de propósito: este componente renderiza em ~1.674 páginas
+            de ativo, mas o sitemap publica só 32 /dividendos/{TICKER}, e a página
+            de destino dá 404 quando o backend não tem histórico
+            (dividendos/[ticker].vue:42-50). Linkar incondicionalmente é o que
+            fazia o Googlebot descobrir ~1.600 URLs fora do sitemap e gastar
+            crawl em 404: das 1.000 URLs do relatório, 446 tinham impressão SEM
+            estar no sitemap. Sem barras não há histórico, então não há link.
+          -->
+          <NuxtLink v-if="dividends.bars.length > 0" :to="`/dividendos/${ticker}`" class="adv__cta adv__cta--primary">
             Ver histórico de dividendos
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </NuxtLink>
-          <NuxtLink to="/calculadora/dividend-yield" class="adv__cta">Simular renda com {{ ticker }}</NuxtLink>
+          <!-- ?ticker= porque a calculadora sabe hidratar por ticker
+               (dividend-yield.vue:97). Sem o param, o link prometia contexto do
+               ativo e entregava a calculadora em branco. -->
+          <NuxtLink :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="adv__cta">Simular renda com {{ ticker }}</NuxtLink>
         </div>
       </div>
       <div class="adv__right">

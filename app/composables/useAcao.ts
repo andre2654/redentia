@@ -16,6 +16,7 @@ import type {
   AcaoAiVM,
   AcaoConsensusVM,
   AcaoDividendsVM,
+  AcaoEditorialVM,
   AcaoFundCard,
   AcaoFundInfoVM,
   AcaoHeroVM,
@@ -683,6 +684,47 @@ function buildNews(items: NewsApi[], profile: Pick<TickerProfileApi, 'ticker' | 
   }
 }
 
+/* ————— EDITORIAL ————— */
+
+/**
+ * Monta o bloco de prosa longa do ativo.
+ *
+ * O editorial já era buscado no SSR desde sempre (acaoFetchEditorial na
+ * Promise.allSettled abaixo), mas o único consumo era `firstSentence(..., 110)`
+ * em buildAiRead: 220 caracteres de ~2.150 palavras. `peers_comparison` e
+ * `history_summary` nem chegavam ao frontend, porque faltavam no EditorialApi.
+ * A FAQ existia SÓ dentro do JSON-LD, sem conteúdo visível correspondente, o
+ * que além de desperdiçar 8 respostas escritas é emitir FAQPage sem lastro.
+ *
+ * Seção sem corpo não entra: página de ativo com H2 vazio é pior que página
+ * sem H2, e a maior parte do balde "Rastreada mas não indexada" do Search
+ * Console (1.708 URLs) é justamente /asset servindo 206 a 648 palavras.
+ */
+function buildEditorial(editorial: EditorialApi | null, name: string, isFii: boolean): AcaoEditorialVM | null {
+  if (!editorial) return null
+
+  const candidatas: { id: string; heading: string; body: string | null }[] = [
+    { id: 'sobre', heading: `Sobre ${name}`, body: editorial.description },
+    { id: 'tese', heading: 'A tese de investimento', body: editorial.thesis_pros },
+    { id: 'riscos', heading: 'Os riscos', body: editorial.thesis_cons },
+    { id: 'pares', heading: isFii ? 'Como se compara com outros fundos' : 'Como se compara com os pares', body: editorial.peers_comparison },
+    { id: 'historia', heading: 'A história do papel', body: editorial.history_summary },
+  ]
+
+  const sections = candidatas
+    .map((s) => ({ ...s, body: (s.body ?? '').trim() }))
+    .filter((s): s is { id: string; heading: string; body: string } => s.body.length > 0)
+
+  const faq = (editorial.faq_extended ?? [])
+    .filter((q) => q.question && q.answer)
+    .slice(0, 8)
+    .map((q) => ({ q: q.question, a: q.answer }))
+
+  if (!sections.length && !faq.length) return null
+
+  return { sections, faq, generatedAt: editorial.generated_at }
+}
+
 /* ————— SEO ————— */
 
 /** Title/description por tipo — Score/consenso só existem pra ações, então a
@@ -991,6 +1033,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     dividends: buildDividends(ok(dividendsR)?.data ?? [], profile.market_price, ticker),
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
+    editorial: buildEditorial(editorial, name, isFii),
     seo: buildSeo(kind, ticker, name, profile, f, editorial),
   }
 }
@@ -1136,6 +1179,8 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     dividends: null,
     ai: null,
     news: buildNews(ok(newsR)?.data ?? [], { ticker: sym, change_percent: c.change_24h_pct }, series),
+    // Cripto não tem editorial gerado (o pipeline cobre tickers da B3).
+    editorial: null,
     seo: buildCryptoSeo(c, sym),
   }
 }

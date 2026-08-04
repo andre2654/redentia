@@ -9,8 +9,7 @@
 // routeRules '/glossario' cacheia 86400s (conteúdo estável).
 import { allTerms, byLetter, LETTERS, ALPHABET, TERM_COUNT } from '~/content/glossario'
 
-const url = useRequestURL()
-const origin = `${url.protocol}//${url.host}`
+const origin = useSiteOrigin()
 
 usePageSeo({
   title: `Glossário do investidor: ${TERM_COUNT} termos da bolsa explicados`,

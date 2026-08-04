@@ -285,7 +285,6 @@ usePageSeo({
       applicationSubCategory: 'Planejamento financeiro',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description: scenario.metaDescription,
     },

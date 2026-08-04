@@ -101,7 +101,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     slug: 'nunca-tiveram-prejuizo',
     title: 'Nunca Tiveram Prejuízo',
     endpoint: 'never-loss',
-    metaTitle: 'Empresas Nunca Tiveram Prejuízo B3',
+    metaTitle: 'Empresas que Nunca Tiveram Prejuízo na B3 2026',
     metaDescription:
       'Empresas da B3 que mantiveram lucro líquido positivo todos os anos nos últimos 5+ anos. Ativos resilientes ao ciclo econômico. Top 50.',
     h1: 'Empresas que Nunca Tiveram Prejuízo (Últimos 5+ Anos)',
@@ -294,7 +294,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     slug: 'crescimento-receita-5-anos',
     title: 'Crescimento Receita (5 anos)',
     endpoint: 'revenue-growth-5y',
-    metaTitle: 'Maior Crescimento de Receita 5 Anos B3',
+    metaTitle: 'Maior Crescimento de Receita em 5 Anos na B3 2026',
     metaDescription:
       'Empresas da B3 que mais cresceram em receita nos últimos 5 anos. CAGR calculado a partir de balanços anuais oficiais. Top 50 atualizados.',
     h1: 'Empresas com Maior Crescimento de Receita em 5 Anos',
@@ -312,7 +312,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     slug: 'crescimento-lucro-5-anos',
     title: 'Crescimento Lucro (5 anos)',
     endpoint: 'net-income-growth-5y',
-    metaTitle: 'Maior Crescimento de Lucro 5 Anos B3',
+    metaTitle: 'Maior Crescimento de Lucro em 5 Anos na B3 2026',
     metaDescription:
       'Empresas que mais cresceram em lucro líquido nos últimos 5 anos na B3. Ranking pelo CAGR calculado de balanços anuais. Top 50 atualizados.',
     h1: 'Empresas com Maior Crescimento de Lucro em 5 Anos',
@@ -334,7 +334,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     title: 'Maiores Altas (30 dias)',
     endpoint: 'monthly-change',
     extraParams: { side: 'top' },
-    metaTitle: 'Maiores Altas do Mês na Bolsa Brasileira',
+    metaTitle: 'Maiores Altas do Mês na Bolsa Brasileira 2026',
     metaDescription:
       'Ranking das 50 ações e FIIs que mais subiram nos últimos 30 dias na B3. Top gainers, momentum, comparativo com Ibovespa. Atualizado diário.',
     h1: 'Maiores Altas do Mês: Ações que Mais Subiram na Bolsa B3 2026',
@@ -354,7 +354,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     title: 'Maiores Baixas (30 dias)',
     endpoint: 'monthly-change',
     extraParams: { side: 'bottom' },
-    metaTitle: 'Maiores Baixas do Mês na Bolsa Brasileira',
+    metaTitle: 'Maiores Baixas do Mês na Bolsa Brasileira 2026',
     metaDescription:
       'Ranking das 50 ações e FIIs que mais caíram nos últimos 30 dias na B3. Oportunidades de compra ou value traps? Análise + comparativo Ibov.',
     h1: 'Maiores Baixas do Mês: Ações que Mais Caíram na Bolsa B3 2026',
@@ -414,7 +414,7 @@ export const RANKINGS: Record<string, RankingMeta> = {
     title: 'Mais Aparece em Notícias',
     endpoint: 'news-mentions',
     extraParams: { days: '30' },
-    metaTitle: 'Tickers Mais Citados em Notícias B3',
+    metaTitle: 'Ações Mais Citadas em Notícias da B3 2026',
     metaDescription:
       'Ações e FIIs mais mencionados em notícias do mercado financeiro brasileiro nos últimos 30 dias. Termômetro de atenção do investidor.',
     h1: 'Tickers Mais Mencionados em Notícias (Últimos 30 Dias)',

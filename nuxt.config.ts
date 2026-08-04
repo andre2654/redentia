@@ -37,7 +37,12 @@ export default defineNuxtConfig({
       // Browser SEMPRE fala com same-origin (/api/backend, /api/chat) — zero CORS.
       // chatDirectUrl: escape hatch se o proxy Vercel bufferizar SSE (lição do Atlas).
       chatDirectUrl: process.env.NUXT_PUBLIC_CHAT_DIRECT_URL || '',
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://redentia.com.br',
+      // Origem CANÔNICA do site. É a fonte única de verdade pra canonical, og:url,
+      // sitemap, robots e llms-full (ver useSiteOrigin / server/utils/site-origin).
+      // Precisa do `www`: o apex 301a pra www em produção, e o Search Console
+      // indexa www.redentia.com.br. Sem o www aqui, o canonical apontava pro
+      // destino de um 301 — o Google resolve, mas gasta crawl e enfraquece o sinal.
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br',
       // Google OAuth Web client ID (público por design — o browser precisa
       // dele pro Google Identity Services emitir o id_token; o secret vive
       // só no Laravel, que valida via tokeninfo + aud). ENV-ONLY, sem
@@ -177,6 +182,32 @@ export default defineNuxtConfig({
     '/legal/terms': { redirect: { to: '/institucional/terms', statusCode: 301 } },
     '/legal/privacy': { redirect: { to: '/institucional/privacy', statusCode: 301 } },
     '/legal/cookies': { redirect: { to: '/institucional/cookies', statusCode: 301 } },
+
+    // ——— Cutover Redentia antiga → Nu, 2ª leva (Search Console 03/08/2026) ———
+    // O levantamento do PR-A cobriu o top-30 orgânico da ANTIGA e passou batido
+    // pelos guias. Estes 9 paths estavam 404 ao vivo somando 11.314 impressões
+    // no trimestre. Não é alavanca (renderam 39 cliques), é higiene: 404 herdado
+    // é sinal de site abandonado, e o Search Console contava 751 deles.
+    '/guias/melhores-fiis-para-investir-em-2026': { redirect: { to: '/guias/melhores-fiis-2026', statusCode: 301 } },
+    // Editorial de análise → guia de método, NÃO /asset/PETR4: mandar quem busca
+    // "vale a pena investir" pra uma página de cotação é soft 404 de intenção.
+    '/guias/analise-petr4-vale-a-pena-investir': { redirect: { to: '/guias/como-analisar-uma-acao', statusCode: 301 } },
+    '/guias/petr4-vs-vale3-vs-itub4': { redirect: { to: '/guias/como-analisar-uma-acao', statusCode: 301 } },
+    '/guias/redent-score-0-100-explicado': { redirect: { to: '/metodologia', statusCode: 301 } },
+    '/guias/raio-x-da-carteira-em-crise': { redirect: { to: '/', statusCode: 301 } },
+    // /api-portal tinha o 2º melhor CTR do site (7,83%) e é docs de integração:
+    // vai pro /mcp, que é a superfície equivalente no Nu E é indexável.
+    // /whitelabel e /pricing vão pro /business, topicamente correto. Ele está
+    // `noindex` por TRAVA DE COMPLIANCE (RbSeguranca.vue:11-13, some no PR5), então
+    // hoje o 301 serve o usuário e consolida sinal; passa a ranquear quando a trava cair.
+    '/api-portal': { redirect: { to: '/mcp', statusCode: 301 } },
+    '/api-portal/**': { redirect: { to: '/mcp', statusCode: 301 } },
+    '/whitelabel': { redirect: { to: '/business', statusCode: 301 } },
+    '/pricing': { redirect: { to: '/business', statusCode: 301 } },
+    '/download': { redirect: { to: '/', statusCode: 301 } },
+    // Achado do cruzamento de Páginas.csv: 3 URLs de /embed/ ainda rankeiam em
+    // posição 3,8 a 4,1 (77 impressões) e todas dão 404. O Nu não tem embed.
+    '/embed/**': { redirect: { to: '/calculadoras', statusCode: 301 } },
   },
 
   nitro: {

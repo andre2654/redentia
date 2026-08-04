@@ -52,6 +52,7 @@ const primaryLabel = computed(() => {
 // ItemList: top 10 → /asset/<t> (só equity; tesouro não tem página de ativo).
 // Vive num useHead REATIVO próprio: o usePageSeo serializa structuredData no
 // setup, ANTES das rows resolverem — o computed garante o ItemList no SSR.
+const rankingOrigin = useSiteOrigin()
 const itemListScript = computed(() => {
   const top = rows.value.slice(0, 10)
   if (!top.length) return []
@@ -66,11 +67,20 @@ const itemListScript = computed(() => {
         ? 'https://schema.org/ItemListOrderAscending'
         : 'https://schema.org/ItemListOrderDescending',
       numberOfItems: top.length,
+      // Sinal de frescor: os rankings recalculam todo pregão e o dado estruturado
+      // não dizia isso em lugar nenhum. Data, e não hora, porque a rota cacheia
+      // 900s na borda e um timestamp cheio só geraria ruído entre réplicas.
+      dateModified: new Date().toISOString().slice(0, 10),
       itemListElement: top.map((row, idx) => ({
         '@type': 'ListItem',
         position: idx + 1,
         name: `${rankingTicker(row)}${rankingName(row) ? ` - ${rankingName(row)}` : ''}`,
-        url: `/asset/${rankingTicker(row)}`,
+        // URL ABSOLUTA: era relativa ("/asset/PETR4"). schema.org espera URL
+        // resolvível, e o Google não garante resolução de caminho relativo em
+        // JSON-LD — na prática os 10 itens de cada um dos 22 rankings viravam
+        // referência morta. Maiúscula porque o canônico do ativo é maiúsculo
+        // (asset/[ticker].vue:42 faz 301 de caixa).
+        url: `${rankingOrigin}/asset/${rankingTicker(row).toUpperCase()}`,
       })),
     }),
   }]
@@ -94,7 +104,6 @@ usePageSeo({
       applicationSubCategory: 'Ranking de ativos',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       description: meta.metaDescription,
     },
   ],

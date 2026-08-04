@@ -60,8 +60,7 @@ if (error.value || !data.value) {
 
 const acao = computed(() => data.value!)
 
-const pageUrl = useRequestURL()
-const assetUrl = `${pageUrl.protocol}//${pageUrl.host}/asset/${ticker}`
+const assetUrl = `${useSiteOrigin()}/asset/${ticker}`
 // JSON-LD por tipo: Corporation (ação/BDR), InvestmentFund (FII/ETF) e
 // WebPage pra cripto (schema.org não tem tipo honesto pra criptoativo).
 const kind = acao.value.kind
@@ -72,16 +71,12 @@ const structuredData: Record<string, unknown>[] = [
       ? { '@type': 'InvestmentFund', name: acao.value.name, tickerSymbol: ticker, url: assetUrl }
       : { '@type': 'Corporation', name: acao.value.name, tickerSymbol: ticker, url: assetUrl },
 ]
-if (acao.value.seo.faq.length) {
-  structuredData.push({
-    '@type': 'FAQPage',
-    mainEntity: acao.value.seo.faq.map((q) => ({
-      '@type': 'Question',
-      name: q.question,
-      acceptedAnswer: { '@type': 'Answer', text: q.answer },
-    })),
-  })
-}
+// FAQPage NÃO é emitido aqui desde 03/08/2026. Ele vinha de `seo.faq`, que sai
+// do mesmo `editorial.faq_extended` que agora alimenta o AcaoEditorial visível,
+// e o NuFaqAccordion já emite o FAQPage por conta própria. Manter os dois era
+// schema duplicado — e, antes disso, era FAQPage sem NENHUM conteúdo visível
+// correspondente na página, que é justamente o que o Google trata como sinal
+// vazio. Ver app/components/acao/AcaoEditorial.vue.
 
 usePageSeo({
   title: acao.value.seo.title,
@@ -118,6 +113,10 @@ usePageSeo({
     <AcaoDividends v-if="acao.dividends" :ticker="acao.ticker" :dividends="acao.dividends" :position="position" />
 
     <AcaoAiAnalysis v-if="acao.ai" :ticker="acao.ticker" :ai="acao.ai" />
+
+    <!-- Prosa longa + FAQ visível. Fica entre a banda azul da IA e a branca das
+         notícias pra manter a alternância de tom (creme entre azul e branco). -->
+    <AcaoEditorial v-if="acao.editorial" :ticker="acao.ticker" :editorial="acao.editorial" />
 
     <AcaoNews v-if="acao.news" :ticker="acao.ticker" :news="acao.news" />
   </div>

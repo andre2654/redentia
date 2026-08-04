@@ -9,7 +9,10 @@
  *  - Teses, ativos, tesouro, cripto e dividendos: fetch do backend real com
  *    try/catch — se o backend falhar, a seção é omitida (sitemap parcial >
  *    sitemap 500).
- *  - Ativos /asset/{TICKER}: STOCK, REIT, BDR e ETF (a página suporta os 4).
+ *  - Ativos /asset/{TICKER}: STOCK, REIT, BDR e ETF (a página suporta os 4) E
+ *    presentes em INDEXABLE_ASSETS (poda fase 1, 03/08/2026). O sitemap deixou
+ *    de publicar os ~1.674 tickers do backend porque 1.509 deles não tinham UMA
+ *    impressão em 92 dias. Critério e como atualizar: app/content/seo/indexable-assets.ts.
  *  - Dividendos /dividendos/{TICKER}: 12 clássicos + top 20 do ranking de DY
  *    (dedupe). Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} idem, do
  *    backend. As rotas /tesouro e /dividendos estão em construção em frentes
@@ -19,6 +22,8 @@ import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
+import { INDEXABLE_ASSETS } from '../../app/content/seo/indexable-assets'
+import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 
 export interface SitePage {
   path: string
@@ -72,6 +77,18 @@ const CALCULADORA_PAGES: SitePage[] = [
   { path: '/calculadora/planejamento', title: 'Planejamento Patrimonial', description: 'Carteira recomendada da B3 baseada em dados históricos reais.' },
   { path: '/calculadora/acoes', title: 'Simulador de Ações', description: 'Backtest com PETR4, ITUB4, VALE3 e dividendos reinvestidos.' },
 ]
+
+// Métodos de preço teto: /calculadora/preco-teto/{metodo}. Derivados do registry
+// (app/content/calculadoras/preco-teto-metodos.ts) pra não haver lista duplicada.
+// Demanda medida no Search Console: modificador de MÉTODO vale 2.956 impressões
+// no cluster de preço teto contra 190 do modificador de TICKER (15,6x).
+function precoTetoMetodoPages(): SitePage[] {
+  return Object.values(PRECO_TETO_METODOS).map((m) => ({
+    path: `/calculadora/preco-teto/${m.slug}`,
+    title: m.metaTitle,
+    description: m.metaDescription,
+  }))
+}
 
 // Slugs = chaves dos maps `scenarios` em app/pages/calculadora/*/[scenario].vue
 const CENARIO_PAGES: SitePage[] = [
@@ -145,7 +162,17 @@ const fetchThesisPages = defineCachedFunction(
       return [] // backend fora → omite a seção, sitemap continua de pé
     }
   },
-  { name: 'site-pages-theses', maxAge: 3600, swr: true, getKey: () => 'all' },
+  {
+    name: 'site-pages-theses',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    // Sem validate, um timeout do backend gravava lista VAZIA no cache e o
+    // sitemap servia a seção inteira ausente por 1 hora. Como as seções são
+    // omitidas em silêncio (o catch devolve []), isso derrubava o sitemap de
+    // ~1.950 para ~180 URLs sem nenhum erro aparecer em lugar nenhum.
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
 )
 
 /**
@@ -165,7 +192,14 @@ const fetchAssetPages = defineCachedFunction(
           (t): t is TickerApiItem & { ticker: string } =>
             typeof t.ticker === 'string' &&
             /^[A-Z][A-Z0-9]{3}\d{1,2}$/.test(t.ticker.toUpperCase()) &&
-            (t.type === 'STOCK' || t.type === 'REIT' || t.type === 'BDR' || t.type === 'ETF'),
+            (t.type === 'STOCK' || t.type === 'REIT' || t.type === 'BDR' || t.type === 'ETF') &&
+            // PODA FASE 1 (03/08/2026): só entra no sitemap ativo com demanda
+            // demonstrada ou editorial escrito. Antes daqui iam TODOS os ~1.674
+            // tickers que o backend devolvesse, e 1.509 deles não tinham UMA
+            // impressão em 92 dias. Ver app/content/seo/indexable-assets.ts pra
+            // o critério e pra como atualizar. A página em si NÃO deixa de
+            // existir: some do sitemap, segue navegável e linkável.
+            INDEXABLE_ASSETS.has(t.ticker.toUpperCase()),
         )
         // Ordem alfabética de propósito: o market_cap do /tickers-full vem em
         // escalas misturadas e mutáveis (raw R$, milhões e um número pequeno
@@ -184,7 +218,17 @@ const fetchAssetPages = defineCachedFunction(
       return []
     }
   },
-  { name: 'site-pages-assets', maxAge: 3600, swr: true, getKey: () => 'all' },
+  {
+    name: 'site-pages-assets',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    // Sem validate, um timeout do backend gravava lista VAZIA no cache e o
+    // sitemap servia a seção inteira ausente por 1 hora. Como as seções são
+    // omitidas em silêncio (o catch devolve []), isso derrubava o sitemap de
+    // ~1.950 para ~180 URLs sem nenhum erro aparecer em lugar nenhum.
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
 )
 
 interface TesouroApiItem {
@@ -214,7 +258,17 @@ const fetchTesouroPages = defineCachedFunction(
       return []
     }
   },
-  { name: 'site-pages-tesouro', maxAge: 3600, swr: true, getKey: () => 'all' },
+  {
+    name: 'site-pages-tesouro',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    // Sem validate, um timeout do backend gravava lista VAZIA no cache e o
+    // sitemap servia a seção inteira ausente por 1 hora. Como as seções são
+    // omitidas em silêncio (o catch devolve []), isso derrubava o sitemap de
+    // ~1.950 para ~180 URLs sem nenhum erro aparecer em lugar nenhum.
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
 )
 
 interface CryptoApiItem {
@@ -242,7 +296,17 @@ const fetchCryptoPages = defineCachedFunction(
       return []
     }
   },
-  { name: 'site-pages-crypto', maxAge: 3600, swr: true, getKey: () => 'all' },
+  {
+    name: 'site-pages-crypto',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    // Sem validate, um timeout do backend gravava lista VAZIA no cache e o
+    // sitemap servia a seção inteira ausente por 1 hora. Como as seções são
+    // omitidas em silêncio (o catch devolve []), isso derrubava o sitemap de
+    // ~1.950 para ~180 URLs sem nenhum erro aparecer em lugar nenhum.
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
 )
 
 /**
@@ -283,7 +347,17 @@ const fetchDividendPages = defineCachedFunction(
       description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${t}.`,
     }))
   },
-  { name: 'site-pages-dividends', maxAge: 3600, swr: true, getKey: () => 'all' },
+  {
+    name: 'site-pages-dividends',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    // Sem validate, um timeout do backend gravava lista VAZIA no cache e o
+    // sitemap servia a seção inteira ausente por 1 hora. Como as seções são
+    // omitidas em silêncio (o catch devolve []), isso derrubava o sitemap de
+    // ~1.950 para ~180 URLs sem nenhum erro aparecer em lugar nenhum.
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
 )
 
 /** Guias escritos → /guias/{slug}, derivados do registry (fonte única). */
@@ -340,7 +414,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       id: 'calculadoras',
       title: 'Calculadoras financeiras',
       description: 'Fórmula e exemplo numérico no topo de cada página.',
-      pages: CALCULADORA_PAGES,
+      pages: [...CALCULADORA_PAGES, ...precoTetoMetodoPages()],
     },
     {
       id: 'cenarios',
