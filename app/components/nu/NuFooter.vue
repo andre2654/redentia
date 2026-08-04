@@ -6,11 +6,22 @@ const CARDS = [
   { title: 'Redentia AI', desc: 'Seu assessor de investimentos, disponível 24h para qualquer pergunta.', to: '/busca' },
   { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva: resultados em segundos.', to: '/calculadoras' },
 ]
+// REDISTRIBUIÇÃO DE LINK INTERNO (03/08/2026). O footer é sitewide, então é o
+// maior distribuidor de equity do site, e estava mal alocado:
+//  - "Ações" apontava pro hardcoded /asset/PETR4, URL que nem aparece no
+//    top-1000 do Search Console, enquanto /rankings (hub real) não tinha link.
+//  - /calculadora/preco-teto e /calculadora/acoes fazem 73% dos cliques do site
+//    (3.641 de 4.992 no trimestre) e não recebiam UM link direto: o footer
+//    parava no hub /calculadoras, que sozinho faz 225 impressões.
+//  - /busca recebia 6 links no site (4 no header, 2 aqui) e não é indexável.
+//  - /setor, /glossario e /tesouro só eram descobertos pelo sitemap.
 const COLUMNS = [
   // fusão home+carteira (2026-07-13): /mercado e /carteira viraram '/' — o
   // link único "Mercado" cobre os dois (logado, '/' É a carteira).
-  { title: 'Produto', links: [{ label: 'Ações', to: '/asset/PETR4' }, { label: 'Mercado', to: '/' }, { label: 'Teses', to: '/teses' }, { label: 'Calculadoras', to: '/calculadoras' }, { label: 'Redentia MCP', to: '/mcp' }] },
-  { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Busca', to: '/busca' }, { label: 'Guias', to: '/guias' }] },
+  { title: 'Produto', links: [{ label: 'Mercado', to: '/' }, { label: 'Rankings', to: '/rankings' }, { label: 'Teses', to: '/teses' }, { label: 'Redentia MCP', to: '/mcp' }] },
+  // Direto pras calculadoras, não só pro hub: são as URLs que sustentam o site.
+  { title: 'Calculadoras', links: [{ label: 'Preço teto', to: '/calculadora/preco-teto' }, { label: 'Simulador de ações', to: '/calculadora/acoes' }, { label: 'Dividendos', to: '/calculadora/dividend-yield' }, { label: 'Juros compostos', to: '/calculadora/juros-compostos' }, { label: 'Imposto de renda', to: '/calculadora/imposto-renda' }] },
+  { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Guias', to: '/guias' }, { label: 'Glossário', to: '/glossario' }, { label: 'Setores da B3', to: '/setor' }, { label: 'Tesouro Direto', to: '/tesouro' }] },
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
 ]

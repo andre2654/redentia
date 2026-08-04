@@ -58,11 +58,17 @@ const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit'
 const lastUpdatedISO = lastUpdated.toISOString().slice(0, 10)
 
 // Cenários populares — long-tail SEO via deep-links (texto/URLs verbatim).
+// As 4 primeiras são PÁGINAS reais (/calculadora/quanto-investir/{slug}). Mesmo
+// diagnóstico de juros-compostos/index.vue: existiam, estavam no sitemap, tinham
+// ~940 palavras únicas e zero impressão, porque os 17 links desta página
+// apontavam todos pra query string da própria URL.
 const popularScenarios = [
-  { label: 'R$ 100 mil em 5 anos', sub: 'Curto prazo, meta concreta', to: '/calculadora/quanto-investir?goal=100000&years=5&rate=10' },
+  { label: 'Quanto investir pra juntar R$ 1 milhão', sub: 'Aporte por horizonte', to: '/calculadora/quanto-investir/juntar-1-milhao' },
+  { label: 'Quanto investir pra ter R$ 100 mil em 5 anos', sub: 'Meta de curto prazo', to: '/calculadora/quanto-investir/juntar-100-mil' },
+  { label: 'Quanto investir pra dar entrada em imóvel', sub: 'R$ 80 mil em 4 anos', to: '/calculadora/quanto-investir/entrada-imovel' },
+  { label: 'Quanto investir pra aposentar com R$ 2 milhões', sub: 'Acumulação por prazo', to: '/calculadora/quanto-investir/aposentadoria-2-milhoes' },
   { label: 'R$ 500 mil em 10 anos', sub: 'Cenário clássico', to: '/calculadora/quanto-investir?goal=500000&years=10&rate=10' },
   { label: 'R$ 1 milhão em 15 anos', sub: 'Médio prazo agressivo', to: '/calculadora/quanto-investir?goal=1000000&years=15&rate=10' },
-  { label: 'R$ 1 milhão em 20 anos', sub: 'Plano consistente', to: '/calculadora/quanto-investir?goal=1000000&years=20&rate=10' },
   { label: 'R$ 2 milhões em 20 anos', sub: 'Patrimônio expressivo', to: '/calculadora/quanto-investir?goal=2000000&years=20&rate=10' },
   { label: 'Aposentadoria R$ 800 mil 25 anos', sub: 'Complemento INSS', to: '/calculadora/quanto-investir?goal=800000&years=25&rate=10' },
   { label: 'Liberdade R$ 3 milhões 30 anos', sub: 'FIRE clássico', to: '/calculadora/quanto-investir?goal=3000000&years=30&rate=11' },
@@ -185,7 +191,6 @@ usePageSeo({
       applicationSubCategory: 'Planejamento financeiro',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita que descobre o aporte mensal necessário pra atingir uma meta financeira em determinado prazo. Considera patrimônio inicial, taxa de retorno, ajuste pela inflação e cenários alternativos (esticar prazo, alterar aporte). Deep-link compartilhável com inputs pré-preenchidos.',

@@ -114,7 +114,6 @@ usePageSeo({
       'applicationCategory': 'FinanceApplication',
       'operatingSystem': 'Web',
       'description': 'Servidor MCP (Model Context Protocol) da Redentia: carteira da B3 via Open Finance, cotações, teses de investimento e notícias para assistentes de IA.',
-      'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'BRL' },
     },
     {
       '@type': 'FAQPage',

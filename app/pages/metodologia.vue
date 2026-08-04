@@ -222,8 +222,7 @@ const sections: MetSection[] = [
 // SEO — mesmos title/description/breadcrumbs/JSON-LD da página antiga. O title vai
 // BARE: app.vue sufixa "· Redentia" em todo <title> (house style Nu). A antiga era
 // "Metodologia e fontes de dados | Redentia" — mesmas palavras, separador Nu.
-const url = useRequestURL()
-const origin = `${url.protocol}//${url.host}`
+const origin = useSiteOrigin()
 
 const CONTENT_VERSION = '2026-05-05'
 const lastUpdatedISO = new Date(CONTENT_VERSION).toISOString()

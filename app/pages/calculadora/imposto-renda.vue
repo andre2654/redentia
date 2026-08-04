@@ -297,7 +297,6 @@ usePageSeo({
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de IR sobre ações com geração de informações para DARF, compensação de prejuízos acumulados, verificação de isenção de R$ 20 mil/mês em swing trade e cálculo automático do vencimento.',

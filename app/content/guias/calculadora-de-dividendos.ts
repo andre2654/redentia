@@ -17,7 +17,13 @@ import type { GuideDoc } from '~/types/guias'
 export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
   slug: 'calculadora-de-dividendos',
   tag: 'Dividendos',
-  title: 'Calculadora de dividendos',
+  // SLUG PRESERVADO de propósito (a URL tem equity: 6.991 impressões/tri).
+  // Só o TITLE muda. Este guia estava com o match exato de "calculadora de
+  // dividendos" e ranqueava ACIMA da ferramenta que a consulta procura,
+  // convertendo 0,69% contra os 3,17% dela. Um artigo não é o destino certo
+  // de uma consulta de intenção de ferramenta. Ver o bloco de canibalização
+  // em app/pages/calculadora/dividend-yield.vue.
+  title: 'Como calcular dividendos: a fórmula',
   dek: 'O que é dividend yield, como transformar um aporte em renda passiva estimada e como usar a calculadora da Redentia para simular sem chute.',
   description:
     'Calculadora de dividendos: entenda o dividend yield (DY), calcule quanto investir para atingir sua meta de renda passiva e simule o DY real de qualquer ação ou FII com a calculadora da Redentia. Guia claro, sem promessa de rendimento.',
