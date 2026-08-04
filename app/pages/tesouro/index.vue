@@ -64,7 +64,6 @@ usePageSeo({
       applicationSubCategory: 'Taxas do Tesouro Direto',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       description: 'Todas as taxas do Tesouro Direto em uma tabela, com filtro por indexador e página de detalhe por título.',
     },
   ],

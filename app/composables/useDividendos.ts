@@ -386,7 +386,16 @@ function buildPayload(c: Core): DividendosPayload {
     edu,
     faq,
     seo: {
-      title: `Dividendos ${c.ticker} ${year}: histórico, DY e próximos pagamentos`,
+      // TITLE NUMÉRICO (03/08/2026). O title genérico custava caro: as 124 URLs
+      // de /dividendos e /tesouro somam 18.165 impressões/mês e devolvem 75
+      // cliques (CTR 0,41%). O padrão de consulta é literal e pede um NÚMERO —
+      // "taee11 dividendos últimos 12 meses valor por unit" fez 455 impressões
+      // na posição 8,2 com ZERO clique, e existem 6 variações da mesma pergunta.
+      // A resposta já estava na página (heroSub, acima), só não estava no title,
+      // que é o que a pessoa lê na SERP antes de decidir clicar.
+      title: c.sum12 > 0
+        ? `Dividendos ${c.ticker} ${year}: ${sum12Fmt} por ${unit} em 12 meses${dyFmt ? ` (DY ${dyFmt})` : ''}`
+        : `Dividendos ${c.ticker} ${year}: histórico, DY e próximos pagamentos`,
       description: descBits.join(' '),
     },
   }

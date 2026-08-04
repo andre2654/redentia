@@ -300,7 +300,14 @@ function buildSeo(t: TesouroApi): TesouroPayload['seo'] {
   if (t.maturity_date) bits.push(`Vencimento em ${maturityFmt(t.maturity_date)}.`)
   bits.push('Veja o histórico de preço e taxa, a leitura do título e perguntas frequentes.')
   return {
-    title: `${t.name}: taxa de hoje, preço e histórico`,
+    // TITLE NUMÉRICO: mesma correção do /dividendos. As consultas de Tesouro
+    // pedem o valor explicitamente e algumas trazem o número na própria busca
+    // ("tesouro ipca+ 2040 taxa 7,23%" fez 111 impressões, "tesouro selic 2031
+    // valor hoje" 30, "preço tesouro selic 2031" 44), todas com zero clique.
+    // Um title que diz "taxa de hoje" sem dizer QUAL taxa perde pra quem diz.
+    title: t.rate_numeric != null || t.price_buy != null
+      ? `${t.name}: taxa ${rateHero} hoje${t.price_buy != null ? `, ${moneyFmt(t.price_buy)}` : ''}`
+      : `${t.name}: taxa de hoje, preço e histórico`,
     description: bits.join(' '),
   }
 }

@@ -165,7 +165,6 @@ usePageSeo({
       applicationSubCategory: 'Simulador histórico de ações',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Simulador gratuito de investimento em ações com dados históricos reais da B3, incluindo dividendos, JCP e reinvestimento automático. Compara múltiplos ativos no mesmo gráfico e exporta histórico de proventos.',

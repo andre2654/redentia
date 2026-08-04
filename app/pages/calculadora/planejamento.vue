@@ -129,7 +129,6 @@ usePageSeo({
       applicationSubCategory: 'Planejamento patrimonial',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de planejamento patrimonial com carteira sugerida (pesos por ativo) baseada em dados históricos reais da B3. Calcula tempo até a meta, aportes totais, ganho projetado e compara com performance histórica.',

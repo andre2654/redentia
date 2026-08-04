@@ -48,9 +48,16 @@ const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit'
 const lastUpdatedISO = lastUpdated.toISOString().slice(0, 10)
 
 // Cenários populares — long-tail SEO via deep-links (texto/URLs verbatim).
+// As 4 primeiras são PÁGINAS reais (/calculadora/aposentadoria/{slug}, ~940
+// palavras únicas cada). Estavam no sitemap e com zero impressão em 92 dias
+// porque não recebiam link interno nenhum: os 16 links desta página iam todos
+// pra query string da própria URL, que o canonical fixo colapsa. Ver o bloco
+// equivalente em juros-compostos/index.vue.
 const popularScenarios = [
-  { label: 'Aposentar com R$ 5.000/mês', sub: 'Padrão classe média', to: '/calculadora/aposentadoria?age=35&retire=65&income=5000&monthly=1500&rate=10' },
-  { label: 'Aposentar com R$ 10.000/mês', sub: 'Renda confortável', to: '/calculadora/aposentadoria?age=35&retire=65&income=10000&monthly=3000&rate=10' },
+  { label: 'Quanto preciso pra aposentar com R$ 5.000/mês', sub: 'Regra dos 4% aplicada', to: '/calculadora/aposentadoria/aposentar-com-5000-mes' },
+  { label: 'Como aposentar com R$ 10.000/mês', sub: 'Renda confortável', to: '/calculadora/aposentadoria/aposentar-com-10000-mes' },
+  { label: 'Regra dos 4% explicada', sub: 'Trinity Study', to: '/calculadora/aposentadoria/regra-dos-4-por-cento' },
+  { label: 'FIRE no Brasil: aposentar aos 45', sub: 'Lean, Regular e Fat', to: '/calculadora/aposentadoria/aposentadoria-fire-aos-45' },
   { label: 'Aposentar aos 50 anos', sub: 'FIRE antecipado', to: '/calculadora/aposentadoria?age=30&retire=50&income=6000&monthly=4000&rate=11' },
   { label: 'Lean FIRE, R$ 3.000/mês', sub: 'Vida frugal', to: '/calculadora/aposentadoria?age=30&retire=50&income=3000&monthly=2500&rate=11' },
   { label: 'Fat FIRE, R$ 20.000/mês', sub: 'Alto padrão', to: '/calculadora/aposentadoria?age=30&retire=45&income=20000&monthly=12000&rate=12' },
@@ -192,7 +199,6 @@ usePageSeo({
       applicationSubCategory: 'Planejamento de aposentadoria',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL' },
       dateModified: lastUpdatedISO,
       description:
         'Calculadora gratuita de aposentadoria com regra dos 4% (Safe Withdrawal Rate), considerando idade, expectativa de vida, INSS, ajuste pela inflação e duas fases (acumulação e fruição). Projeta viabilidade do plano, duração do patrimônio e cenários FIRE (Lean, Regular, Fat). Deep-link compartilhável.',

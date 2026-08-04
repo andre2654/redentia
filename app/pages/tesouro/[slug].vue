@@ -75,8 +75,7 @@ const sideCards = computed(() => {
 })
 
 /* ————— SEO ————— */
-const pageUrl = useRequestURL()
-const origin = `${pageUrl.protocol}//${pageUrl.host}`
+const origin = useSiteOrigin()
 const structuredData: Record<string, unknown>[] = [
   {
     '@type': 'FinancialProduct',
@@ -85,17 +84,16 @@ const structuredData: Record<string, unknown>[] = [
     category: 'Government Bond',
     identifier: slug,
     url: `${origin}/tesouro/${slug}`,
-    provider: { '@type': 'Organization', name: 'Redentia', url: origin },
-    ...(titulo.value.raw.price_buy != null
-      ? {
-          offers: {
-            '@type': 'Offer',
-            priceCurrency: 'BRL',
-            price: String(titulo.value.raw.price_buy),
-            availability: 'https://schema.org/InStock',
-          },
-        }
-      : {}),
+    // O emissor é o Tesouro Nacional. A Redentia informa sobre o título, não o
+    // distribui: declarar `provider: Redentia` era afirmação falsa em dado
+    // estruturado, do mesmo tipo que a trava de RbSeguranca.vue evita na copy.
+    provider: { '@type': 'GovernmentOrganization', name: 'Tesouro Nacional', url: 'https://www.tesourodireto.com.br' },
+    // `offers` REMOVIDO (2026-08-03). Declarava availability InStock e um preço
+    // de compra num produto que este site não vende. Além de falso, era o que
+    // fazia o Google renderizar a página como snippet de produto: o relatório de
+    // Aspecto da pesquisa do trimestre tem UMA linha, "Snippets do produto",
+    // com 1.858 impressões e 5 cliques (CTR 0,27%, posição 14,93). Os outros 14
+    // blocos de Offer do site declaravam price '0' e saíram no mesmo commit.
   },
 ]
 
