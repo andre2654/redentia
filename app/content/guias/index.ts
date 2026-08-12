@@ -27,6 +27,7 @@ import { MCP_PARA_INVESTIMENTOS_GUIDE } from '~/content/guias/mcp-para-investime
 import { RESERVA_DE_EMERGENCIA_GUIDE } from '~/content/guias/reserva-de-emergencia'
 import { COMO_ANALISAR_UMA_ACAO_GUIDE } from '~/content/guias/como-analisar-uma-acao'
 import { COMO_INVESTIR_EM_ETF_GUIDE } from '~/content/guias/como-investir-em-etf'
+import { COMO_INVESTIR_EM_BDR_GUIDE } from '~/content/guias/como-investir-em-bdr'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -60,6 +61,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [RESERVA_DE_EMERGENCIA_GUIDE.slug]: RESERVA_DE_EMERGENCIA_GUIDE,
   [COMO_ANALISAR_UMA_ACAO_GUIDE.slug]: COMO_ANALISAR_UMA_ACAO_GUIDE,
   [COMO_INVESTIR_EM_ETF_GUIDE.slug]: COMO_INVESTIR_EM_ETF_GUIDE,
+  [COMO_INVESTIR_EM_BDR_GUIDE.slug]: COMO_INVESTIR_EM_BDR_GUIDE,
 }
 
 /**
@@ -180,6 +182,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Ações',
     minutes: 10,
     slug: 'como-investir-em-etf',
+  },
+  {
+    title: 'BDRs: o que são e como investir',
+    description: 'A empresa estrangeira negociada na B3 em reais: paridade, câmbio embutido, dividendo e o imposto que não é o da ação.',
+    tag: 'Ações',
+    minutes: 10,
+    slug: 'como-investir-em-bdr',
   },
 ]
 
