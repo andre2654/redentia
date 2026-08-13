@@ -76,6 +76,13 @@ const FATOS = [
 const ativo = ref(0)
 const passos = ref<HTMLElement[]>([])
 let io: IntersectionObserver | null = null
+/* ⚠️ O ÍNDICE MORA NUM MAPA, NÃO NUM indexOf DO ARRAY DE REF.
+   `ref="passos"` num v-for é RECRIADO a cada re-render, e trocar `ativo`
+   dispara re-render: o callback do observer chegava a rodar com o array vazio,
+   `indexOf` devolvia -1 e o passo simplesmente não avançava. O sintoma era
+   assimétrico e por isso enganava: descendo funcionava, subindo travava no
+   último. O mapa é montado uma vez e não depende do ciclo de render. */
+const indicePorEl = new WeakMap<Element, number>()
 
 /* IntersectionObserver e não listener de scroll: a regra da casa é um motor de
    scroll só (useNuScrollFrame), e a forma de respeitar isso aqui é não abrir um
@@ -83,12 +90,13 @@ let io: IntersectionObserver | null = null
    rootMargin recorta a viewport numa faixa central: o passo vira ativo quando
    cruza o meio da tela, que é onde a coluna fixa está olhando. */
 onMounted(() => {
+  passos.value.forEach((el, i) => { if (el) indicePorEl.set(el, i) })
   io = new IntersectionObserver(
     (entradas) => {
       for (const e of entradas) {
         if (!e.isIntersecting) continue
-        const i = passos.value.indexOf(e.target as HTMLElement)
-        if (i >= 0) ativo.value = i
+        const i = indicePorEl.get(e.target)
+        if (i !== undefined) ativo.value = i
       }
     },
     { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
@@ -355,7 +363,13 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 .rbsg__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* ——— a coluna que rola ——— */
-.rbsg__trilha { margin: 0; padding: 0; list-style: none; }
+/* O padding-bottom NÃO é respiro, é o que mantém o sticky grudado até o fim.
+   A conta: a cena tem (100vh - nuh) de altura e o sticky solta quando o scroll
+   passa de (fim da trilha - altura da cena). Centralizar o 4º passo exige rolar
+   até (3,5 x 76vh - 50vh) do topo da trilha; sem folga isso cai 5vh DEPOIS do
+   ponto de soltura e a cena sobe junto com a página no último passo (medido:
+   topo em -50px em vez de 58). 16vh cobre a diferença com margem. */
+.rbsg__trilha { margin: 0; padding: 0 0 16vh; list-style: none; }
 /* A altura de cada passo é o que dá curso ao scroll travado. 76vh e não 100:
    com 100 o último passo precisa da tela inteira e a seção passa a terminar com
    um vão morto embaixo da cena. */
