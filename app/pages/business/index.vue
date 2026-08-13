@@ -29,7 +29,7 @@ useHead({ titleTemplate: null })
   <div>
     <RbCapacidade />
     <RbHero />
-    <RbComoFunciona />
+    <RbDivisao />
     <RbSeguranca />
     <RbAssistente />
     <RbProva />

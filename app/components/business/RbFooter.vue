@@ -35,7 +35,7 @@ const COLUMNS = [
     title: 'A página',
     links: [
       { label: 'O gargalo', to: '/business#gargalo' },
-      { label: 'Como funciona', to: '/business#como-funciona' },
+      { label: 'A divisão do trabalho', to: '/business#divisao' },
       { label: 'Segurança', to: '/business#seguranca' },
       { label: 'O plano', to: '/business#prova' },
       { label: 'Ativar acesso', to: '/business/cadastro' },
