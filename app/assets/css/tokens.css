@@ -331,4 +331,12 @@
      --nu-green-soft(-22); o FAQ reusa --nu-gray-2/--nu-ink-75. Só o NOVO aqui. */
   --nu-teses-hero-sub: #5C564B;   /* parágrafo do hero "Invista em ideias" */
   --nu-teses-benefit: #1E48B5;    /* cards do grid "Sua jornada com mais vantagens" */
+
+  /* ——— /business (painel de credibilidade do hero) ———
+     Degrau novo na rampa de ink que já existe (75, 30, 16, 14, 10, 04). Nasce
+     porque --nu-ink-30 dá 2,01:1 sobre branco e 2,01 sobre creme, abaixo do
+     piso de 3:1 que a SC 1.4.11 exige de LIMITE DE CONTROLE — e o quadrado do
+     calendário e a borda do botão de contorno carregam informação, não são
+     moldura. Medido: 3,15:1 sobre branco, 3,10:1 sobre creme. */
+  --nu-ink-45: rgba(10, 10, 12, 0.45);
 }

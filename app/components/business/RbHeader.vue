@@ -79,7 +79,14 @@ watch(shrunk, (s) => {
           :to="logado ? '/business/chaves' : '/business/cadastro'"
           class="rbh__entrar"
         >{{ logado ? 'Minha conta' : 'Entrar' }}</NuxtLink>
-        <a href="#contato" class="rbh__cta">Falar com a gente</a>
+        <!-- Dois rótulos, e o oculto sai por display:none (não por classe de
+             esconder visualmente): senão o nome acessível vira "Falar com a
+             gente Falar agora" e o leitor de tela anuncia os dois. É o mesmo
+             idioma que o base.css já usa no breakpoint de 760. -->
+        <a href="#contato" class="rbh__cta">
+          <span class="rbh__cta-longo">Falar com a gente</span>
+          <span class="rbh__cta-curto">Falar agora</span>
+        </a>
       </div>
     </div>
   </div>
@@ -125,7 +132,12 @@ watch(shrunk, (s) => {
   transition: font-size .28s ease;
 }
 .rbh__name { color: var(--nu-ink); }
-.rbh__suffix { color: var(--nu-blue); }
+/* blue-deep e não blue: #2F6BFF sobre branco dá 4,4988:1, e o sufixo só
+   qualificaria como texto grande no desktop em repouso (20px/800). Nos outros
+   três estados medidos reprova AA: desktop shrunk 17,5px, mobile 15px, mobile
+   shrunk 13,5px. #2456C9 dá 6,4618:1 e passa em qualquer tamanho, mantendo o
+   acento de marca que distingue a linha de produto do nome. */
+.rbh__suffix { color: var(--nu-blue-deep); }
 .rbh-wrap--shrunk .rbh__name,
 .rbh-wrap--shrunk .rbh__suffix { font-size: 17.5px; }
 
@@ -141,21 +153,47 @@ watch(shrunk, (s) => {
 .rbh__entrar:hover { color: var(--nu-ink); background: var(--nu-cream); }
 .rbh__entrar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
+/* CONTORNO, NÃO SÓLIDO. O sólido da primeira dobra é um só, e é o do hero, que
+   aponta para o mesmo #contato. Dois botões chapados para o mesmo destino é
+   indecisão. A borda é --nu-ink-45 e não --nu-ink-30: a borda passa a ser a
+   ÚNICA coisa que identifica o controle, então vale o piso de 3:1 da SC 1.4.11,
+   e ink-30 dá 2,0096:1 sobre creme. ink-45 dá 3,0983:1.
+   min-height: 44px é a convenção medida da casa (9 usos em app/, inclusive no
+   .rbh__entrar desta mesma folha): as quatro alturas de hoje são 43,5 / 36 /
+   37,5 / 33px, todas resíduo de padding, nenhuma decidida por ninguém. */
 .rbh__cta {
   display: inline-flex; align-items: center; flex-shrink: 0;
-  background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 12px 22px;
+  background: transparent; color: var(--nu-ink);
+  box-shadow: inset 0 0 0 1px var(--nu-ink-45);
+  border-radius: 12px; padding: 12px 22px; min-height: 44px;
   font-size: 15.5px; font-weight: 700; white-space: nowrap;
-  transition: background .2s, padding .28s ease, font-size .28s ease;
+  transition: background .2s, box-shadow .2s, padding .28s ease, font-size .28s ease;
 }
 .rbh-wrap--shrunk .rbh__cta { padding: 9px 18px; font-size: 14.5px; }
-.rbh__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.rbh__cta:hover {
+  background: var(--nu-cream); color: var(--nu-ink);
+  box-shadow: inset 0 0 0 1px var(--nu-ink);
+}
+/* o rótulo curto só existe no estreito, onde o longo estoura a viewport */
+.rbh__cta-curto { display: none; }
 
 /* foco visível: o app não tem regra global (dívida conhecida), então o
    componente novo já nasce com ela em vez de herdar o buraco */
 .rbh__mark:focus-visible,
 .rbh__lockup:focus-visible,
 .rbh__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+
+/* ROTULO CURTO ABAIXO DE 360px. Medido: a 320px o .rbh__cta ia de left=183 a
+   right=334 numa viewport de 320, e o overflow-x: clip do shell CORTA em vez de
+   deixar rolar, então a ponta do botão sumia sem recuperação. Falha de SC 1.4.10,
+   acima da dobra, e 320px é o mínimo obrigatório (é também 400% de zoom num
+   monitor de 1280). A causa é flex-shrink:0 nos dois lados mais nowrap.
+   Testada e descartada a alternativa preguiçosa de só encolher a tipografia:
+   173,07 + 10 + 143,05 = 326,12 contra 306 de caixa, continua estourando 20px. */
+@media (max-width: 359.98px) {
+  .rbh__cta-longo { display: none; }
+  .rbh__cta-curto { display: inline; }
+}
 
 /* Mobile: o lockup EMPILHA em duas linhas. Medido, não estimado — em uma linha
    a soma dá 434px numa tela de 375 e o botão cobre "For Business". Empilhado
@@ -172,12 +210,15 @@ watch(shrunk, (s) => {
      mundo e o cache da borda continua servindo a mesma coisa pra todos. */
   .rbh__entrar { display: none; }
   .rbh-wrap--logado .rbh__cta { display: none; }
+  /* No estreito logado este é o ÚNICO botão da tela, então ele é o sólido, e
+     sólido nesta página é ink. Antes era azul chapado, que a 14px/700 dava
+     4,4988:1 e reprovava AA. Sobre ink: 19,78:1. */
   .rbh-wrap--logado .rbh__entrar {
     display: inline-flex;
-    background: var(--nu-blue); color: var(--nu-white);
-    padding: 10px 16px; font-size: 14px;
+    background: var(--nu-ink); color: var(--nu-white);
+    border-radius: 12px; padding: 10px 16px; font-size: 14px;
   }
-  .rbh-wrap--logado .rbh__entrar:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+  .rbh-wrap--logado .rbh__entrar:hover { background: var(--nu-ink-hover); color: var(--nu-white); }
   .rbh__brand { gap: 11px; }
   .rbh__lockup { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.12; }
   .rbh__name, .rbh__suffix { font-size: 15px; }
