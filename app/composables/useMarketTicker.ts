@@ -61,7 +61,7 @@ export function useMarketTicker() {
       const petr = petrQ?.data
       if (petr?.market_price != null) next.push({ n: 'PETR4', v: `R$ ${nf2.format(petr.market_price)}`, ...pctFmt(petr.change_percent) })
       const btcData = btc?.data ?? btc
-      if (btcData?.price_brl != null) next.push({ n: 'Bitcoin', v: `R$ ${nf0.format(btcData.price_brl)}`, ...pctFmt(btcData.change_24h) })
+      if (btcData?.price_brl != null) next.push({ n: 'Bitcoin', v: `R$ ${nf0.format(btcData.price_brl)}`, ...pctFmt(btcData.change_24h_pct ?? btcData.change_24h) })
       // GOTCHA (verificado em prod 2026-07-11, PR7): macro.cdi vem em % AO DIA
       // (label '% a.d.') — sem anualizar, a faixa mostrava 'CDI 0,05% a.a.'.
       const cdiA = cdiAnnualPct(snap?.macro?.cdi)

@@ -29,7 +29,7 @@ export function marketFetchMovers(kind: 'stocks' | 'reits' | 'bdrs', side: 'top'
   return $fetch<{ data: TickerApi[] }>(`${base}/top-${kind}?side=${side}`, json)
 }
 
-/** GET /crypto — lista com change_24h (movers de cripto derivados no front). */
+/** GET /crypto — lista com change_24h_pct (movers de cripto derivados no front). */
 export function marketFetchCrypto(limit = 200) {
   return $fetch<{ data: CryptoApi[] }>(`${base}/crypto?limit=${limit}`, json)
 }

@@ -6,6 +6,7 @@
  * shapes em types/market.ts. Contrato de UX: designs/Redentia Mercado Nu.dc.html.
  */
 import type {
+  CryptoApi,
   NuBriefing,
   NuDir,
   NuFaqItem,
@@ -29,6 +30,7 @@ import type {
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const nf4 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
 
 function pctFmt(n: number): string {
   return `${n > 0 ? '+' : ''}${nf2.format(n)}%`
@@ -225,8 +227,8 @@ const MOVERS_SEED: Record<NuMoverTab, NuMoversClass> = {
     losers: seedRows([['XPLG11', 'XP Log', 'R$ 98,45', -0.92], ['BTLG11', 'BTG Logística', 'R$ 102,60', -0.64], ['HGRU11', 'CSHG Renda Urbana', 'R$ 124,15', -0.41], ['RECT11', 'REC Renda', 'R$ 48,20', -0.38], ['MALL11', 'Malls Brasil', 'R$ 96,74', -0.22]]),
   },
   'Cripto': {
-    gainers: seedRows([['SOL', 'Solana', 'R$ 890', 3.42], ['BTC', 'Bitcoin', 'R$ 612 mil', 1.84], ['ADA', 'Cardano', 'R$ 4,12', 1.12], ['XRP', 'XRP', 'R$ 12,40', 0.88], ['DOT', 'Polkadot', 'R$ 38,20', 0.54]]),
-    losers: seedRows([['DOGE', 'Dogecoin', 'R$ 0,92', -1.84], ['LINK', 'Chainlink', 'R$ 98,40', -1.10], ['AVAX', 'Avalanche', 'R$ 142,10', -0.92], ['MATIC', 'Polygon', 'R$ 3,84', -0.64], ['ETH', 'Ethereum', 'R$ 18,4 mil', -0.52]]),
+    gainers: seedRows([['SOL', 'Solana', 'R$ 394', 3.42], ['BTC', 'Bitcoin', 'R$ 330 mil', 1.84], ['ADA', 'Cardano', 'R$ 0,95', 1.12], ['XRP', 'XRP', 'R$ 5,23', 0.88], ['DOT', 'Polkadot', 'R$ 4,05', 0.54]]),
+    losers: seedRows([['DOGE', 'Dogecoin', 'R$ 0,37', -1.84], ['LINK', 'Chainlink', 'R$ 45,40', -1.10], ['AVAX', 'Avalanche', 'R$ 33,10', -0.92], ['BNB', 'BNB', 'R$ 3.172', -0.64], ['ETH', 'Ethereum', 'R$ 9.781', -0.52]]),
   },
   'BDRs': {
     gainers: seedRows([['NVDC34', 'Nvidia', 'R$ 48,12', 2.45], ['AAPL34', 'Apple', 'R$ 62,40', 1.32], ['MSFT34', 'Microsoft', 'R$ 94,15', 1.10], ['AMZO34', 'Amazon', 'R$ 58,72', 0.94], ['GOGL34', 'Alphabet', 'R$ 52,18', 0.71]]),
@@ -251,12 +253,13 @@ function mapTickerRow(t: TickerApi, i: number): NuMoverRow | null {
   }
 }
 
-/** 612000 → 'R$ 612 mil' · 18400 → 'R$ 18,4 mil' · 98.4 → 'R$ 98,40'. */
+/** 330000 → 'R$ 330 mil' · 18400 → 'R$ 18,4 mil' · 98.4 → 'R$ 98,40' · 0.0047 → 'R$ 0,0047'. */
 function cryptoPrice(v: number): string {
   if (v >= 10_000) {
     const mil = v / 1000
     return `R$ ${(mil >= 100 ? nf0 : nf1).format(mil)} mil`
   }
+  if (v < 0.05) return `R$ ${nf4.format(v)}`
   return `R$ ${nf2.format(v)}`
 }
 
@@ -304,17 +307,19 @@ export function useNuMovers() {
         if (gainers && losers) next[tab] = { gainers, losers }
       }
 
-      // Cripto: backend não tem endpoint de movers — deriva de /crypto (change_24h).
+      // Cripto: backend não tem endpoint de movers — deriva de /crypto
+      // (change_24h_pct; change_24h é legado e vem null).
       if (cr.status === 'fulfilled') {
-        const coins = (cr.value?.data ?? []).filter((c) => c.price_brl != null && c.change_24h != null)
-        const sorted = [...coins].sort((a, b) => (b.change_24h ?? 0) - (a.change_24h ?? 0))
+        const chg24 = (c: CryptoApi): number | null => c.change_24h_pct ?? c.change_24h ?? null
+        const coins = (cr.value?.data ?? []).filter((c) => c.price_brl != null && chg24(c) != null)
+        const sorted = [...coins].sort((a, b) => (chg24(b) ?? 0) - (chg24(a) ?? 0))
         const toRow = (c: (typeof coins)[number], i: number): NuMoverRow => ({
           rank: i + 1,
           ticker: c.symbol.toUpperCase(),
           name: c.name,
           price: cryptoPrice(c.price_brl as number),
-          pct: pctFmt(c.change_24h as number),
-          dir: dirOf(c.change_24h as number),
+          pct: pctFmt(chg24(c) as number),
+          dir: dirOf(chg24(c) as number),
         })
         const gainers = sorted.slice(0, 5).map(toRow)
         const losers = sorted.slice(-5).reverse().map(toRow)

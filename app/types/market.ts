@@ -46,7 +46,9 @@ export interface CryptoApi {
   symbol: string
   name: string
   price_brl: number | null
-  change_24h: number | null
+  /** Campo real do backend hoje; change_24h é legado e vem null. */
+  change_24h_pct: number | null
+  change_24h?: number | null
 }
 
 /**
