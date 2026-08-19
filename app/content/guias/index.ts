@@ -29,6 +29,7 @@ import { COMO_ANALISAR_UMA_ACAO_GUIDE } from '~/content/guias/como-analisar-uma-
 import { COMO_INVESTIR_EM_ETF_GUIDE } from '~/content/guias/como-investir-em-etf'
 import { CDB_LCI_LCA_GUIDE } from '~/content/guias/cdb-lci-lca'
 import { COMO_INVESTIR_EM_BDR_GUIDE } from '~/content/guias/como-investir-em-bdr'
+import { TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE } from '~/content/guias/tesouro-renda-mais-educa-mais'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -64,6 +65,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [COMO_INVESTIR_EM_ETF_GUIDE.slug]: COMO_INVESTIR_EM_ETF_GUIDE,
   [CDB_LCI_LCA_GUIDE.slug]: CDB_LCI_LCA_GUIDE,
   [COMO_INVESTIR_EM_BDR_GUIDE.slug]: COMO_INVESTIR_EM_BDR_GUIDE,
+  [TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE.slug]: TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE,
 }
 
 /**
@@ -198,6 +200,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Ações',
     minutes: 10,
     slug: 'como-investir-em-bdr',
+  },
+  {
+    title: 'Tesouro Renda+ e Educa+: os títulos que pagam renda mensal',
+    description: 'A data de conversão, as parcelas mensais corrigidas pela inflação e por que esses títulos oscilam mais que qualquer outro do Tesouro.',
+    tag: 'Renda fixa',
+    minutes: 10,
+    slug: 'tesouro-renda-mais-educa-mais',
   },
 ]
 
