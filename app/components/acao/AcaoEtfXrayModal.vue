@@ -94,7 +94,14 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
             </div>
           </template>
           <div v-if="modal.topAssets.length" class="axm__rows">
-            <div v-for="a in modal.topAssets" :key="a.rank" class="axm__row">
+            <component
+              :is="a.ticker ? 'a' : 'div'"
+              v-for="a in modal.topAssets"
+              :key="a.rank"
+              v-bind="a.ticker ? { href: `/asset/${a.ticker}` } : {}"
+              class="axm__row"
+              :class="{ 'axm__row--link': a.ticker }"
+            >
               <span class="axm__row-rank">{{ a.rank }}</span>
               <span class="axm__row-name">
                 <b v-if="a.ticker">{{ a.ticker }}</b>
@@ -103,7 +110,10 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
               </span>
               <span class="axm__row-bar"><span class="axm__row-fill axm__row-fill--exp" :style="{ width: `${(a.pct / maxAssetPct) * 100}%` }" /></span>
               <span class="axm__row-pct">{{ a.pctLabel }}</span>
-            </div>
+              <span v-if="a.ticker" class="axm__go" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              </span>
+            </component>
           </div>
         </div>
 
@@ -163,6 +173,9 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
               <span class="axm__row-type">{{ h.typeLabel }}</span>
               <span class="axm__row-bar"><span class="axm__row-fill" :style="{ width: `${(h.pct / maxHoldingPct) * 100}%` }" /></span>
               <span class="axm__row-pct">{{ h.pctLabel }}</span>
+              <span v-if="h.ticker" class="axm__go" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              </span>
             </component>
           </div>
         </div>
@@ -240,6 +253,12 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 .axm__row-fill { display: block; height: 100%; background: var(--nu-blue); border-radius: var(--nu-r-pill); }
 .axm__row-fill--exp { background: var(--nu-alloc-fixed); }
 .axm__row-pct { color: var(--nu-ink); font-size: 13.5px; font-weight: 800; min-width: 58px; text-align: right; font-variant-numeric: tabular-nums; }
+/* botão azul da Redentia (mesmo dos movers da home): a linha leva pro ativo */
+.axm__go {
+  width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
+  display: flex; align-items: center; justify-content: center; transition: background .16s;
+}
+.axm__row--link:hover .axm__go { background: var(--nu-blue-hover); }
 
 .axm__corr-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .axm__toggle { display: inline-flex; background: var(--nu-cream); border-radius: var(--nu-r-pill); padding: 3px; }

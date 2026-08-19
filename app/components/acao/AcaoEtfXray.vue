@@ -55,6 +55,9 @@ const open = ref(false)
               </span>
               <span class="axb__row-bar"><span class="axb__row-fill" :style="{ width: `${(h.pct / Math.max(xray.top[0]?.pct ?? 1, 0.01)) * 100}%` }" /></span>
               <span class="axb__row-pct">{{ h.pctLabel }}</span>
+              <span v-if="h.ticker" class="axb__go" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+              </span>
             </component>
           </div>
 
@@ -149,6 +152,12 @@ const open = ref(false)
 .axb__row-bar { flex: 1; height: 6px; background: var(--nu-cream-2); border-radius: var(--nu-r-pill); overflow: hidden; min-width: 70px; }
 .axb__row-fill { display: block; height: 100%; background: var(--nu-blue); border-radius: var(--nu-r-pill); }
 .axb__row-pct { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; min-width: 60px; text-align: right; font-variant-numeric: tabular-nums; }
+/* botão azul da Redentia (mesmo dos movers da home): a linha leva pro ativo */
+.axb__go {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
+  display: flex; align-items: center; justify-content: center; transition: background .16s;
+}
+.axb__row--link:hover .axb__go { background: var(--nu-blue-hover); }
 
 .axb__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
 .axb__more-label { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
