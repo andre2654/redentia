@@ -460,20 +460,38 @@ export interface EtfXrayMatrix {
   matrix: (number | null)[][]
 }
 
+/**
+ * Layout "duas bandas finas" (Opção B, escolhida pelo dono em 19/08/2026):
+ * banda branca (composição) + banda creme (custo e movimento), cada uma com
+ * H2 à esquerda no padrão das outras seções; o detalhe completo (carteira
+ * inteira, exposição look-through, matriz, ficha) abre num modal.
+ */
 export interface AcaoEtfXrayVM {
   asOfLabel: string // 'Carteira de julho/2026 · CVM'
   stale: boolean
+  /** sub da banda 1: '83 posições reportadas à CVM. As 5 maiores são 36% do fundo.' */
+  subLine: string
   compBar: EtfXraySeg[]
-  holdings: EtfXrayRow[]
+  /** top-5 na página; a lista completa vive em modalHoldings */
+  top: EtfXrayRow[]
+  moreCount: number
   totalPositions: number
-  sectorBar: EtfXraySeg[]
-  topAssets: EtfXrayRow[]
   feeCards: AcaoMetricCard[]
   feeNested: AcaoStatRow[]
   feeNote: string | null
-  corr: { rows12: EtfXrayCorrRow[]; rows90: EtfXrayCorrRow[]; matrix12: EtfXrayMatrix | null; matrix90: EtfXrayMatrix | null } | null
-  fundInfoRows: AcaoStatRow[]
-  warnings: string[]
+  /** correlação da página: só 12m, até 4 linhas (o resto no modal) */
+  pageCorr: EtfXrayCorrRow[]
+  modal: {
+    holdings: EtfXrayRow[]
+    sectorBar: EtfXraySeg[]
+    topAssets: EtfXrayRow[]
+    rows12: EtfXrayCorrRow[]
+    rows90: EtfXrayCorrRow[]
+    matrix12: EtfXrayMatrix | null
+    matrix90: EtfXrayMatrix | null
+    fundInfoRows: AcaoStatRow[]
+    warnings: string[]
+  }
 }
 
 export interface AcaoPayload {

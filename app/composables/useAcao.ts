@@ -398,7 +398,7 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
   const typeLabel = (t: string) => XRAY_TYPE_LABEL[t] ?? t
   const typeColor = (t: string) => XRAY_TYPE_COLOR[t] ?? 'var(--nu-alloc-cash)'
 
-  // 1. Composição direta — barra por tipo + lista ranqueada.
+  // Banda 1 — composição: barra por tipo + top-5 (lista completa no modal).
   const compBar = xraySegs(
     x.composition.groups.map((g) => ({ label: typeLabel(g.type), weight: g.weight })),
     (_, i) => typeColor(x.composition.groups[i]?.type ?? 'outro'),
@@ -414,9 +414,13 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
       pctLabel: `${nf2.format((h.weight ?? 0) * 100)}%`,
       via: [],
     }))
+  const top = holdings.slice(0, 5)
+  const top5Pct = top.reduce((a, h) => a + h.pct, 0)
+  const subLine = top.length >= 5
+    ? `${x.composition.total_positions} posições reportadas à CVM. As cinco maiores são ${nf0.format(top5Pct)}% do fundo.`
+    : `${x.composition.total_positions} posições reportadas à CVM.`
 
-  // 2. Exposição look-through — onde o dinheiro está NO FIM (atravessa
-  //    ETFs aninhados; responde "todos são bancos?").
+  // Modal — exposição look-through (atravessa ETFs aninhados; "via NASD11").
   const sectorBar = xraySegs(
     x.exposure.by_sector.slice(0, 6).map((s) => ({ label: s.sector, weight: s.weight })),
     (_, i) => XRAY_SECTOR_PALETTE[i % XRAY_SECTOR_PALETTE.length]!,
@@ -434,7 +438,7 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
       via: a.via ?? [],
     }))
 
-  // 3. Custos — cards + breakdown taxa-sobre-taxa.
+  // Banda 2 — custos: cards (taxa, custo efetivo, "10 anos") + taxa-sobre-taxa.
   const feeCards: AcaoMetricCard[] = []
   if (x.fees.management_fee != null) {
     feeCards.push({
@@ -451,23 +455,28 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
       value: `${nf2.format(x.fees.total_expense_ratio)}% a.a.`,
       tag: tagFee(x.fees.total_expense_ratio),
     })
+    // R$ 10 mil × 10 anos × taxa, sem compostos — número que o leitor sente.
+    feeCards.push({
+      kind: 'metric',
+      label: 'Em 10 anos, R$ 10 mil pagam',
+      value: `~R$ ${nf0.format((x.fees.total_expense_ratio / 100) * 10_000 * 10)}`,
+      tag: null,
+    })
   }
   const feeNested: AcaoStatRow[] = x.fees.nested.map((n) => ({
-    l: `${n.fund}${n.via !== x.ticker ? ` · via ${n.via}` : ''} (${nf1.format(n.weight * 100)}% × ${nf2.format(n.fee)}%)`,
+    // "via" só quando difere do fundo (num ETF aninhado direto, fund === via).
+    l: `${n.fund}${n.via !== x.ticker && n.via !== n.fund ? ` · via ${n.via}` : ''} (${nf1.format(n.weight * 100)}% × ${nf2.format(n.fee)}%)`,
     v: `+${nf2.format(n.contribution)}%`,
   }))
   const feeNote = x.fees.unmapped_fund_weight > 0.001
     ? `${nf1.format(x.fees.unmapped_fund_weight * 100)}% da carteira está em fundos sem taxa mapeada — o custo efetivo é um piso, não o total.`
     : null
 
-  // 4. Correlação — barras divergentes vs benchmarks + matriz dos holdings.
+  // Correlação: 4 linhas de 12m na página; tudo (12m/90d + matriz) no modal.
   const rows12 = xrayCorrRows(x, '12m')
   const rows90 = xrayCorrRows(x, '90d')
   const matrix12: EtfXrayMatrix | null = x.correlations.holdings_matrix.find((m) => m.period === '12m') ?? null
   const matrix90: EtfXrayMatrix | null = x.correlations.holdings_matrix.find((m) => m.period === '90d') ?? null
-  const corr = rows12.length || rows90.length || matrix12 || matrix90
-    ? { rows12, rows90, matrix12, matrix90 }
-    : null
 
   // Staleness: carteira mais velha que ~3 meses ganha aviso explícito.
   const asOfMs = Date.parse(`${x.as_of}T12:00:00-03:00`)
@@ -476,17 +485,26 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
   return {
     asOfLabel: xrayAsOfLabel(x.as_of),
     stale,
+    subLine,
     compBar,
-    holdings,
+    top,
+    moreCount: Math.max(0, holdings.length - top.length),
     totalPositions: x.composition.total_positions,
-    sectorBar,
-    topAssets,
     feeCards,
     feeNested,
     feeNote,
-    corr,
-    fundInfoRows: fundInfo?.rows ?? [],
-    warnings: x.profile?.warnings ?? [],
+    pageCorr: rows12.slice(0, 4),
+    modal: {
+      holdings,
+      sectorBar,
+      topAssets,
+      rows12,
+      rows90,
+      matrix12,
+      matrix90,
+      fundInfoRows: fundInfo?.rows ?? [],
+      warnings: x.profile?.warnings ?? [],
+    },
   }
 }
 
