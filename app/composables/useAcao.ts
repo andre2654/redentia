@@ -17,6 +17,7 @@ import type {
   AcaoConsensusVM,
   AcaoDividendsVM,
   AcaoEditorialVM,
+  AcaoEtfXrayVM,
   AcaoFundCard,
   AcaoFundInfoVM,
   AcaoHeroVM,
@@ -35,6 +36,11 @@ import type {
   CryptoPricePointApi,
   DividendApi,
   EditorialApi,
+  EtfXrayApi,
+  EtfXrayCorrRow,
+  EtfXrayMatrix,
+  EtfXrayRow,
+  EtfXraySeg,
   FundamentalsOverviewApi,
   PricePointApi,
   ScoreRowApi,
@@ -296,6 +302,191 @@ function buildEtfFundInfo(e: EtfInfo | null): AcaoFundInfoVM | null {
     heading: ['O fundo', 'por dentro.'],
     sub: 'Dados cadastrais do fundo na B3',
     rows,
+  }
+}
+
+/* ————— Raio-X de ETF (carteira CVM + taxas em cascata + correlação) ————— */
+
+const XRAY_TYPE_LABEL: Record<string, string> = {
+  acao: 'Ações',
+  bdr: 'BDRs',
+  etf_b3: 'ETFs',
+  fundo_cota: 'Fundos',
+  fundo_exterior: 'Fundos no exterior',
+  exterior: 'Exterior',
+  titulo_publico: 'Títulos públicos',
+  caixa: 'Caixa',
+  derivativo: 'Derivativos',
+  ajuste: 'Ajustes',
+  confidencial: 'Confidencial',
+  outro: 'Outros',
+}
+
+const XRAY_TYPE_COLOR: Record<string, string> = {
+  acao: 'var(--nu-alloc-stock)',
+  bdr: 'var(--nu-alloc-stock)',
+  etf_b3: 'var(--nu-alloc-fii)',
+  fundo_cota: 'var(--nu-alloc-fii)',
+  fundo_exterior: 'var(--nu-alloc-crypto)',
+  exterior: 'var(--nu-alloc-crypto)',
+  titulo_publico: 'var(--nu-alloc-fixed)',
+  caixa: 'var(--nu-alloc-cash)',
+}
+
+const XRAY_SECTOR_PALETTE = [
+  'var(--nu-alloc-stock)',
+  'var(--nu-alloc-fixed)',
+  'var(--nu-alloc-crypto)',
+  'var(--nu-alloc-fii)',
+  'var(--nu-alloc-cash)',
+] as const
+
+const XRAY_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'] as const
+
+/** '2026-07-31' → 'Carteira de julho/2026 · CVM'. */
+function xrayAsOfLabel(asOf: string): string {
+  const m = asOf.match(/^(\d{4})-(\d{2})/)
+  if (!m) return `Carteira de ${asOf} · CVM`
+  const mes = XRAY_MESES[Number(m[2]) - 1] ?? m[2]
+  return `Carteira de ${mes}/${m[1]} · CVM`
+}
+
+/** Régua da taxa efetiva total (% a.a.) — cortes fixos, zero LLM. */
+function tagFee(total: number): AcaoTag {
+  if (total <= 0.3) return { text: 'Baixa pro mercado BR', variant: 'green' }
+  if (total <= 0.7) return { text: 'Na média do mercado', variant: 'gray' }
+  return { text: 'Acima da média', variant: 'amber' }
+}
+
+/** Régua de correlação: |c|≥0,8 anda junto; <0,5 diversifica de verdade. */
+function tagCorr(c: number): AcaoTag {
+  const a = Math.abs(c)
+  if (a >= 0.8) return { text: 'Anda junto', variant: 'gray' }
+  if (a >= 0.5) return { text: 'Correlação média', variant: 'amber' }
+  return { text: 'Diversifica', variant: 'green' }
+}
+
+function xraySegs(entries: { label: string; weight: number }[], colorOf: (label: string, i: number) => string): EtfXraySeg[] {
+  return entries
+    .filter((e) => e.weight > 0.0005)
+    .map((e, i) => ({
+      label: e.label,
+      pct: Math.max(0.6, e.weight * 100),
+      pctLabel: `${nf1.format(e.weight * 100)}%`,
+      color: colorOf(e.label, i),
+    }))
+}
+
+function xrayCorrRows(x: EtfXrayApi, period: string): EtfXrayCorrRow[] {
+  return x.correlations.benchmarks
+    .filter((b) => b.period === period)
+    .sort((a, b) => Math.abs(b.corr) - Math.abs(a.corr))
+    .slice(0, 8)
+    .map((b) => ({
+      symbol: b.symbol,
+      corr: b.corr,
+      magPct: Math.min(100, Math.abs(b.corr) * 100),
+      neg: b.corr < 0,
+      corrLabel: nf2.format(b.corr),
+      tag: tagCorr(b.corr),
+    }))
+}
+
+function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): AcaoEtfXrayVM | null {
+  if (!x) return null
+
+  const typeLabel = (t: string) => XRAY_TYPE_LABEL[t] ?? t
+  const typeColor = (t: string) => XRAY_TYPE_COLOR[t] ?? 'var(--nu-alloc-cash)'
+
+  // 1. Composição direta — barra por tipo + lista ranqueada.
+  const compBar = xraySegs(
+    x.composition.groups.map((g) => ({ label: typeLabel(g.type), weight: g.weight })),
+    (_, i) => typeColor(x.composition.groups[i]?.type ?? 'outro'),
+  )
+  const holdings: EtfXrayRow[] = x.composition.holdings
+    .filter((h) => h.weight != null && h.weight > 0)
+    .map((h, i) => ({
+      rank: i + 1,
+      ticker: h.ticker,
+      name: h.name ?? h.ticker ?? '—',
+      typeLabel: typeLabel(h.type),
+      pct: (h.weight ?? 0) * 100,
+      pctLabel: `${nf2.format((h.weight ?? 0) * 100)}%`,
+      via: [],
+    }))
+
+  // 2. Exposição look-through — onde o dinheiro está NO FIM (atravessa
+  //    ETFs aninhados; responde "todos são bancos?").
+  const sectorBar = xraySegs(
+    x.exposure.by_sector.slice(0, 6).map((s) => ({ label: s.sector, weight: s.weight })),
+    (_, i) => XRAY_SECTOR_PALETTE[i % XRAY_SECTOR_PALETTE.length]!,
+  )
+  const topAssets: EtfXrayRow[] = x.exposure.top_assets
+    .filter((a) => a.weight > 0.001)
+    .slice(0, 10)
+    .map((a, i) => ({
+      rank: i + 1,
+      ticker: a.ticker,
+      name: a.name ?? a.ticker ?? '—',
+      typeLabel: typeLabel(a.type),
+      pct: a.weight * 100,
+      pctLabel: `${nf2.format(a.weight * 100)}%`,
+      via: a.via ?? [],
+    }))
+
+  // 3. Custos — cards + breakdown taxa-sobre-taxa.
+  const feeCards: AcaoMetricCard[] = []
+  if (x.fees.management_fee != null) {
+    feeCards.push({
+      kind: 'metric',
+      label: 'Taxa de administração',
+      value: `${nf2.format(x.fees.management_fee)}% a.a.`,
+      tag: null,
+    })
+  }
+  if (x.fees.total_expense_ratio != null) {
+    feeCards.push({
+      kind: 'metric',
+      label: 'Custo efetivo total',
+      value: `${nf2.format(x.fees.total_expense_ratio)}% a.a.`,
+      tag: tagFee(x.fees.total_expense_ratio),
+    })
+  }
+  const feeNested: AcaoStatRow[] = x.fees.nested.map((n) => ({
+    l: `${n.fund}${n.via !== x.ticker ? ` · via ${n.via}` : ''} (${nf1.format(n.weight * 100)}% × ${nf2.format(n.fee)}%)`,
+    v: `+${nf2.format(n.contribution)}%`,
+  }))
+  const feeNote = x.fees.unmapped_fund_weight > 0.001
+    ? `${nf1.format(x.fees.unmapped_fund_weight * 100)}% da carteira está em fundos sem taxa mapeada — o custo efetivo é um piso, não o total.`
+    : null
+
+  // 4. Correlação — barras divergentes vs benchmarks + matriz dos holdings.
+  const rows12 = xrayCorrRows(x, '12m')
+  const rows90 = xrayCorrRows(x, '90d')
+  const matrix12: EtfXrayMatrix | null = x.correlations.holdings_matrix.find((m) => m.period === '12m') ?? null
+  const matrix90: EtfXrayMatrix | null = x.correlations.holdings_matrix.find((m) => m.period === '90d') ?? null
+  const corr = rows12.length || rows90.length || matrix12 || matrix90
+    ? { rows12, rows90, matrix12, matrix90 }
+    : null
+
+  // Staleness: carteira mais velha que ~3 meses ganha aviso explícito.
+  const asOfMs = Date.parse(`${x.as_of}T12:00:00-03:00`)
+  const stale = Number.isFinite(asOfMs) && Date.now() - asOfMs > 100 * 24 * 3600 * 1000
+
+  return {
+    asOfLabel: xrayAsOfLabel(x.as_of),
+    stale,
+    compBar,
+    holdings,
+    totalPositions: x.composition.total_positions,
+    sectorBar,
+    topAssets,
+    feeCards,
+    feeNested,
+    feeNote,
+    corr,
+    fundInfoRows: fundInfo?.rows ?? [],
+    warnings: x.profile?.warnings ?? [],
   }
 }
 
@@ -729,14 +920,14 @@ function buildEditorial(editorial: EditorialApi | null, name: string, isFii: boo
 
 /** Title/description por tipo — Score/consenso só existem pra ações, então a
  * promessa da description muda junto com o que a página realmente mostra. */
-function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<TickerProfileApi, 'market_price' | 'change_percent'>, f: Fund | null, editorial: EditorialApi | null): AcaoPayload['seo'] {
+function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<TickerProfileApi, 'market_price' | 'change_percent'>, f: Fund | null, editorial: EditorialApi | null, xray: EtfXrayApi | null = null): AcaoPayload['seo'] {
   const price = profile.market_price
   const priceFmt = price != null ? `R$ ${nf2.format(price)}` : ''
   const TAIL: Record<AssetKind, string> = {
     stock: 'dividendos, fundamentos e análise',
     fii: 'rendimentos e P/VP',
     bdr: 'fundamentos e análise do BDR',
-    etf: 'variação e dados do fundo',
+    etf: 'composição, taxas e correlação',
     crypto: 'preço, variação e gráfico', // não usado (cripto tem builder próprio)
   }
   const title = price != null
@@ -755,11 +946,21 @@ function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<T
   if (kind === 'fii' && f?.pvp != null) facts.push(`P/VP ${nf2.format(f.pvp)}`)
   if (f?.roe != null && kind !== 'fii') facts.push(`ROE ${nf1.format(f.roe)}%`)
   if (facts.length) bits.push(`${facts.join(', ').replace(/^./, (c) => c.toUpperCase())}.`)
+  // ETF com raio-X: a taxa REAL e a maior posição entram na description (o
+  // guia de ETF ensina o conceito; a página de ativo mostra o número).
+  if (kind === 'etf' && xray) {
+    const feeBits: string[] = []
+    if (xray.fees.management_fee != null) feeBits.push(`Taxa de administração de ${nf2.format(xray.fees.management_fee)}% a.a.`)
+    if (xray.fees.total_expense_ratio != null && xray.fees.nested.length) feeBits.push(`(custo efetivo ~${nf2.format(xray.fees.total_expense_ratio)}% com os fundos investidos)`)
+    const top = xray.composition.holdings.find((h) => h.weight != null && h.weight > 0)
+    if (top) feeBits.push(`; maior posição: ${top.name ?? top.ticker} (${nf1.format((top.weight ?? 0) * 100)}%)`)
+    if (feeBits.length) bits.push(`${feeBits.join(' ').replace(/\s+;/, ';')}.`)
+  }
   const CLOSER: Record<AssetKind, string> = {
     stock: 'Veja gráfico de 12 meses, histórico de dividendos, Redentia Score, consenso de analistas, notícias e a leitura da Redentia AI.',
     fii: 'Veja gráfico de 12 meses, histórico de rendimentos, indicadores do fundo, notícias e a leitura da Redentia AI.',
     bdr: 'Veja gráfico de 12 meses, fundamentos da matriz em dólar, notícias e a leitura da Redentia AI.',
-    etf: 'Veja gráfico de 12 meses, variação, cotistas e os dados cadastrais do fundo.',
+    etf: 'Veja a composição da carteira (CVM), taxas incluindo os fundos investidos, correlações e o gráfico de 12 meses.',
     crypto: 'Veja preço em reais, gráfico de 12 meses e variações por janela.',
   }
   bits.push(CLOSER[kind])
@@ -845,6 +1046,7 @@ function petr4Seed(): AcaoPayload {
     fundHeading: ['Os números', 'da empresa.'],
     fundSub: 'Últimos 12 meses · dados da B3 e balanços',
     fundInfo: null,
+    etfXray: null,
     fcards: [
       { kind: 'metric', label: 'ROE', value: '24,2%', tag: g('Excelente') },
       { kind: 'metric', label: 'Dividend Yield', value: '6,95%', tag: g('Excelente') },
@@ -993,6 +1195,11 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
   const theses = ok(thesesR)?.data ? await buildTheses(base, ticker, ok(thesesR)!.data) : []
 
+  // Raio-X de ETF: roundtrip extra SÓ pra ETF (o tipo só é conhecido depois
+  // do overview; a API cacheia 1h e a carteira é mensal). 404/erro → null e
+  // a seção some — mesma política do editorial.
+  const etfXrayApi = kind === 'etf' ? await acaoFetchEtfXray(base, ticker).catch(() => null) : null
+
   const score = buildScore(ok(scoreR)?.data ?? [], ticker, f)
   const consensus = buildConsensus(ok(consensusR))
   const read = buildAiRead(f, editorial, ticker)
@@ -1029,12 +1236,13 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     fundSub,
     fcards: buildFundCards(f, ticker),
     fundInfo: kind === 'etf' ? buildEtfFundInfo(etf) : null,
+    etfXray: buildEtfXray(etfXrayApi, kind === 'etf' ? buildEtfFundInfo(etf) : null),
     theses,
     dividends: buildDividends(ok(dividendsR)?.data ?? [], profile.market_price, ticker),
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
-    seo: buildSeo(kind, ticker, name, profile, f, editorial),
+    seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
   }
 }
 
@@ -1175,6 +1383,7 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     fundSub: 'Janelas de variação · preço em reais',
     fcards: buildCryptoCards(c),
     fundInfo: null,
+    etfXray: null,
     theses: [],
     dividends: null,
     ai: null,

@@ -108,7 +108,12 @@ usePageSeo({
 
     <AcaoFundamentals :heading="acao.fundHeading" :sub="acao.fundSub" :perfil="acao.perfil" :fcards="acao.fcards" />
 
-    <AcaoFundInfo v-if="acao.fundInfo" :info="acao.fundInfo" />
+    <!-- Raio-X de ETF (carteira CVM + taxas em cascata + correlação) ocupa o
+         slot onde os fundamentos de empresa somem pra ETF; a ficha cadastral
+         (AcaoFundInfo) é absorvida por ele e só renderiza como fallback. -->
+    <AcaoEtfXray v-if="acao.etfXray" :ticker="acao.ticker" :xray="acao.etfXray" />
+
+    <AcaoFundInfo v-if="acao.fundInfo && !acao.etfXray" :info="acao.fundInfo" />
 
     <AcaoDividends v-if="acao.dividends" :ticker="acao.ticker" :dividends="acao.dividends" :position="position" />
 

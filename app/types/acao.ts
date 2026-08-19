@@ -228,6 +228,63 @@ export interface ThesisDetailApi {
   companies?: ThesisCompanyApi[]
 }
 
+/**
+ * GET /api/etfs/{ticker}/xray → flat (sem wrapper `data`). Carteira mensal
+ * da CVM (as_of = fim do mês de competência), exposição look-through, taxas
+ * em cascata e correlações pré-computadas. Pesos em fração 0..1; taxas em
+ * % a.a. 404 = não-ETF ou carteira não ingerida (front esconde a seção).
+ */
+export interface EtfXrayApi {
+  ticker: string
+  name: string | null
+  as_of: string
+  source: string
+  profile: {
+    underlying_index: string | null
+    geography: string | null
+    asset_class: string | null
+    hedge: string | null
+    factor: string | null
+    description: string | null
+    cnpj: string | null
+    situation: string | null
+    warnings: string[]
+  } | null
+  composition: {
+    total_positions: number
+    coverage_weight: number
+    groups: { type: string; weight: number }[]
+    holdings: {
+      rank: number
+      ticker: string | null
+      name: string | null
+      type: string
+      weight: number | null
+      market_value: number | null
+      isin: string | null
+    }[]
+  }
+  exposure: {
+    by_sector: { sector: string; weight: number }[]
+    top_assets: { ticker: string | null; name: string | null; type: string; weight: number; via: string[] }[]
+  }
+  fees: {
+    management_fee: number | null
+    management_fee_source: string | null
+    total_expense_ratio: number | null
+    nested: { via: string; fund: string; kind: string; weight: number; fee: number; contribution: number }[]
+    unmapped_fund_weight: number
+    incomplete: boolean
+    note: string
+  }
+  correlations: {
+    period_default: string
+    benchmarks: { symbol: string; period: string; corr: number; n_obs: number }[]
+    holdings_matrix: { period: string; symbols: string[]; matrix: (number | null)[][] }[]
+  }
+  refreshed_at: string
+}
+
 /* ————— view-models (shape do design) ————— */
 
 /**
@@ -367,6 +424,58 @@ export interface AcaoFundInfoVM {
   rows: AcaoStatRow[]
 }
 
+/* ————— Raio-X de ETF (seção AcaoEtfXray) ————— */
+
+export interface EtfXraySeg {
+  label: string
+  pct: number // 0..100 (largura da barra)
+  pctLabel: string // '61,4%'
+  color: string // var(--nu-alloc-*)
+}
+
+export interface EtfXrayRow {
+  rank: number
+  ticker: string | null
+  name: string
+  typeLabel: string
+  pct: number
+  pctLabel: string
+  /** por quais ETFs aninhados a exposição chega (look-through) */
+  via: string[]
+}
+
+export interface EtfXrayCorrRow {
+  symbol: string
+  corr: number
+  /** |corr| em 0..100 pra largura da barra divergente */
+  magPct: number
+  neg: boolean
+  corrLabel: string // '0,99'
+  tag: AcaoTag
+}
+
+export interface EtfXrayMatrix {
+  period: string
+  symbols: string[]
+  matrix: (number | null)[][]
+}
+
+export interface AcaoEtfXrayVM {
+  asOfLabel: string // 'Carteira de julho/2026 · CVM'
+  stale: boolean
+  compBar: EtfXraySeg[]
+  holdings: EtfXrayRow[]
+  totalPositions: number
+  sectorBar: EtfXraySeg[]
+  topAssets: EtfXrayRow[]
+  feeCards: AcaoMetricCard[]
+  feeNested: AcaoStatRow[]
+  feeNote: string | null
+  corr: { rows12: EtfXrayCorrRow[]; rows90: EtfXrayCorrRow[]; matrix12: EtfXrayMatrix | null; matrix90: EtfXrayMatrix | null } | null
+  fundInfoRows: AcaoStatRow[]
+  warnings: string[]
+}
+
 export interface AcaoPayload {
   ticker: string
   name: string
@@ -382,6 +491,8 @@ export interface AcaoPayload {
   fcards: AcaoFundCard[]
   /** só ETF: dados cadastrais do fundo (null pros demais tipos) */
   fundInfo: AcaoFundInfoVM | null
+  /** só ETF: raio-X (carteira CVM + taxas em cascata + correlação); null = sem carteira ingerida */
+  etfXray: AcaoEtfXrayVM | null
   theses: AcaoThesisRowVM[]
   dividends: AcaoDividendsVM | null
   ai: AcaoAiVM | null

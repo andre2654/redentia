@@ -14,6 +14,7 @@ import type {
   PriceMode,
   DividendApi,
   EditorialApi,
+  EtfXrayApi,
   FundamentalsOverviewApi,
   PricePointApi,
   ScoreRowApi,
@@ -46,6 +47,15 @@ export function acaoFetchIbovPrices(base: string, mode: PriceMode) {
 /** GET /fundamentals/{t}/overview — consolidado (key-stats + scrape_extras). */
 export function acaoFetchOverview(base: string, ticker: string) {
   return $fetch<{ data: FundamentalsOverviewApi }>(`${base}/fundamentals/${ticker}/overview`, json)
+}
+
+/**
+ * GET /etfs/{t}/xray — raio-X de ETF (carteira CVM + taxas + correlação).
+ * Flat, sem wrapper `data`. 404 = não-ETF ou carteira não ingerida — o
+ * useAcao trata como null e a seção some (padrão do editorial).
+ */
+export function acaoFetchEtfXray(base: string, ticker: string) {
+  return $fetch<EtfXrayApi>(`${base}/etfs/${ticker}/xray`, json)
 }
 
 /** GET /rankings/redentia-score — universo ranqueado (cap real de 100 linhas). */
