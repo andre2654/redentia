@@ -33,7 +33,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 
 | Ferramenta | O que devolve | Pergunte, por exemplo |
 |---|---|---|
-| `get_quote` | último preço, variação do dia, `as_of`, e se o ativo saiu da B3 | "cotação da PETR4" · "quanto fechou o HGLG11?" · "a AZUL4 ainda é negociada?" |
+| `get_quote` | último preço, variação do dia, `as_of`, moeda e se o ativo saiu da B3. Cobre B3 E ações/ETFs americanos do universo S&P 500 + Nasdaq-100 (`currency: "USD"`) | "cotação da PETR4" · "quanto fechou a AAPL?" · "a AZUL4 ainda é negociada?" |
 | `get_etf_composition` | raio-x do ETF: carteira mensal reportada à CVM, custo com taxa sobre taxa, exposição final por transparência, correlações. Resumo por padrão (top-15 + `assets_count`); `detail: "completo"` traz a carteira inteira ponderada e a árvore de fundos aninhados | "o que tem dentro do HASH11?" · "qual o custo real do IVVB11, com a taxa do fundo americano?" · "quanto de Petrobras eu carrego via BOVA11?" (use `detail: "completo"`) · "abre a árvore do GOAT11" |
 | `search_assets` | busca por nome ou tema, com tipo e preço | "qual o ticker do Itaú?" · "tem ETF de small cap na B3?" |
 | `get_market_snapshot` | IBOV, IFIX, dólar, Selic meta, CDI, IPCA, juro real e maiores altas/baixas do dia | "como está o mercado?" · "Selic e dólar agora" |
@@ -62,6 +62,8 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do 
 
 **Dá:**
 - Cotação do último fechamento de ação, FII, ETF e BDR da B3 (com a data no `as_of`).
+- Cotação de referência de ações e ETFs AMERICANOS do universo S&P 500 + Nasdaq-100 (AAPL, MSFT, NVDA…) em US$ — derivada do BDR e do câmbio, com o campo `currency` dizendo a moeda.
+- Raio-x de ETF americano coberto (IVV, VOO, SPY — carteira publicada pela gestora) e o look-through do ETF B3 que ATRAVESSA a fronteira: "quanto de Apple tem no IVVB11?" responde com número.
 - Busca de ativo por nome ou tema.
 - Raio-x mensal de ETF: a carteira inteira reportada à CVM, custo efetivo com taxa sobre taxa, exposição final atravessando fundos aninhados, correlações contra os benchmarks da casa.
 - Panorama macro (Selic, CDI, IPCA, dólar, juro real) e índices.
@@ -77,7 +79,7 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do 
 - Fundamentos de empresa (P/L, dividend yield, ROE) — o MCP não os expõe.
 - Dividendos futuros anunciados.
 - Preço médio, quantidade ou o número total de posições da carteira (vêm as 10 maiores).
-- Ativos fora da B3.
+- Ativos fora da B3 E fora do universo americano (S&P 500 + Nasdaq-100 + ETFs grandes). Dentro do universo US, nem todos têm preço: a cotação vem derivada do BDR (× paridade ÷ câmbio) — **ação sem BDR na B3 fica sem preço**, e o número é REFERÊNCIA, não o fechamento oficial da NYSE (diga isso quando precisão importar).
 - Qualquer escrita: o MCP é somente leitura, não altera nada na Redentia.
 - PDF pronto — o Claude formata texto e tabelas; exportar é com você.
 

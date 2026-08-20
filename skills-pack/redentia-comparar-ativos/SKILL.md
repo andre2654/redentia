@@ -1,6 +1,6 @@
 ---
 name: redentia-comparar-ativos
-description: Compara 2 a 4 ativos da B3 lado a lado (ações, FIIs, BDRs e ETFs) com preço e variação do dia, notícias recentes e presença em teses; para ETFs adiciona custo efetivo com taxa sobre taxa, carteira mensal da CVM, sobreposição de holdings por transparência e correlações contra os benchmarks da Redentia. Usa get_quote, get_etf_composition, list_news e list_theses do MCP da Redentia. Use quando o usuário pedir "BOVA11 ou IVVB11?", "compara PETR4 com PRIO3", "qual desses ETFs é mais caro?", "esses dois fundos se sobrepõem?". Se vier um ativo só, pergunte contra o que comparar; mais de quatro, peça pra recortar. NÃO usar pra decidir qual comprar ou vender, pra analisar a carteira inteira (redentia-carteira) nem pra explicar o movimento de um ativo só (redentia-por-que-moveu).
+description: Compara 2 a 4 ativos lado a lado — B3 (ações, FIIs, BDRs, ETFs) e americanos (AAPL, IVV; até BR×US tipo AAPL34 vs AAPL ou IVVB11 vs IVV) com preço e variação do dia, notícias recentes e presença em teses; para ETFs adiciona custo efetivo com taxa sobre taxa, carteira mensal da CVM, sobreposição de holdings por transparência e correlações contra os benchmarks da Redentia. Usa get_quote, get_etf_composition, list_news e list_theses do MCP da Redentia. Use quando o usuário pedir "BOVA11 ou IVVB11?", "compara PETR4 com PRIO3", "qual desses ETFs é mais caro?", "esses dois fundos se sobrepõem?". Se vier um ativo só, pergunte contra o que comparar; mais de quatro, peça pra recortar. NÃO usar pra decidir qual comprar ou vender, pra analisar a carteira inteira (redentia-carteira) nem pra explicar o movimento de um ativo só (redentia-por-que-moveu).
 ---
 
 # Comparar ativos
@@ -30,6 +30,7 @@ O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlaçõe
 ## Passo 1 — Feche a lista
 
 - 1 ativo só: "comparar com o quê?" (sugira um par natural se o usuário quiser: o benchmark da classe).
+- Ativos AMERICANOS entram (AAPL vs AAPL34, IVVB11 vs IVV): **nunca compare preço absoluto entre moedas** — variação %, custo % a.a. e composição comparam; preço em R$ vs US$ não. IVV/VOO/SPY têm raio-x (carteira da gestora; IVV/SPY espelham o VOO, o warning do payload diz). Preço US é referência derivada do BDR — cite quando o comparativo for fino.
 - Mais de 4: "recorta pra até 4 — o raio-x de ETF é pesado e o comparativo perde leitura".
 - Pedido vago ("qual é melhor?"): pergunte o critério que pesa mais — custo, sobreposição, correlação ou notícia — só pra ORDENAR o relatório; todos os blocos saem mesmo assim.
 

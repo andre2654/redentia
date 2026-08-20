@@ -40,7 +40,7 @@ Aceite o que o assessor colar, com tolerância:
 - `BOVA11 25%` (peso: o relatório sai em pesos relativos, sem R$)
 - lista solta de tickers (sem valores: o relatório cobre movimento, notícias e teses, e diz que concentração exige valores)
 
-Parseie vírgula ou ponto, "50k", "1,2mi". Se vier preço médio ou data de compra, use pra calcular resultado — **senão, não existe resultado acumulado: não invente**. Tesouro e renda fixa não têm cotação no MCP: a linha entra no relatório como "sem cotação na Redentia" e fica fora da variação do dia, com o valor informado somando no total.
+Parseie vírgula ou ponto, "50k", "1,2mi". Se vier preço médio ou data de compra, use pra calcular resultado — **senão, não existe resultado acumulado: não invente**. Posições AMERICANAS (AAPL, NVDA) cotam em US$ pelo `get_quote` (referência derivada do BDR): a variação % por posição vale normal, mas o TOTAL exige moeda única — carteira misturando R$ e US$, peça os valores todos numa moeda ou apresente em dois blocos, sem somar moedas. Tesouro e renda fixa não têm cotação no MCP: a linha entra no relatório como "sem cotação na Redentia" e fica fora da variação do dia, com o valor informado somando no total.
 
 Se nada foi informado ainda, UMA pergunta compacta:
 
