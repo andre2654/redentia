@@ -25,10 +25,10 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 | Chave | Limite | Custo desta skill por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 4 a 7 chamadas |
+| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 4 a 9 chamadas |
 | Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta inteira divide) | idem |
 
-Com 3 ativos na mesma rodada você usa até 7 chamadas — cabe no minuto de qualquer chave. Não repita chamadas que já fez na conversa.
+Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — ainda cabe no minuto da chave pessoal, sem folga pra repetição. Não repita chamadas que já fez na conversa.
 
 ## Passo 1 — Colete o que falta ANTES de chamar qualquer ferramenta
 
@@ -49,21 +49,21 @@ Nesta ordem, pulando o que não for necessário:
 | # | Ferramenta | Quantas | Pra quê |
 |---|---|---|---|
 | 1 | `get_quote{ticker}` | 1 por ativo | preço, `change_percent`, `as_of`, `delisted` |
-| 2 | `list_news{limit: 20}` | 1 | notícias com leitura editorial; filtre você mesmo: `tickers[]` contém o ticker E `published_at` dentro da janela |
+| 2 | `list_news{ticker, limit: 10}` | 1 por ativo | notícias do ativo, filtradas no servidor; a janela é sua: cheque `published_at` |
 | 3 | `get_market_snapshot{}` | 1 | moldura do dia: IBOV e IFIX (`change_pct`), dólar (`macro.usd_brl.delta_pct`), Selic meta |
 | 4 | `list_theses{}` | 0-1 | só se o passo 2 não achou notícia direta, ou pra 1 frase de contexto; procure o ticker em `theses[].tickers[]` |
 | 5 | `get_thesis{slug}` | 0-1 | só se o ticker pertence a uma tese E a notícia foi insuficiente. Payload enorme: no máximo 1 por rodada; use apenas `verdicts` e o `catalyst`/`status` da empresa em `companies[]` |
 
-**Não existe filtro de notícia por ticker no servidor.** Puxe 20 e filtre pelo array `tickers` de cada item. O campo `reading` é a leitura editorial da Redentia — quando existir, é a sua melhor matéria-prima; pode ser null.
+**Passe sempre o `ticker` no `list_news`** — sem ele o feed devolve só as mais recentes do mercado inteiro (poucas horas) e o seu ativo some. O campo `reading` é a leitura editorial da Redentia — quando existir, é a sua melhor matéria-prima; pode ser null.
 
 ## Passo 3 — Cheque estrutural na web (antes de ranquear)
 
 O MCP da Redentia NÃO carrega situação societária: recuperação judicial ou
 extrajudicial, falência, grupamento reverso, fechamento de capital, fraude em
-investigação. E as 20 notícias do `list_news` cobrem poucas horas de feed —
-silêncio ali não é evidência de que não houve fato. Já saiu texto explicando o
-dia de um papel em recuperação como se fosse mercado; é o erro mais caro que
-esta skill pode cometer.
+investigação. E o feed de notícias guarda só takes recentes, mesmo filtrado
+por ticker — uma recuperação instalada há meses não aparece nele. Já saiu
+texto explicando o dia de um papel em recuperação como se fosse mercado; é o
+erro mais caro que esta skill pode cometer.
 
 **Sinais que OBRIGAM uma busca na web antes do texto** (qualquer um basta):
 

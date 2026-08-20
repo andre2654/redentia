@@ -40,7 +40,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 | `get_daily_briefing` | o resumo editorial do pregão escrito pela Redentia (placar, o que puxou, o que ficou, a leitura) | "me dá o resumo do dia" · "o que aconteceu na bolsa ontem?" |
 | `list_theses` | as 10 teses de investimento vivas da casa, com convicção 0-100 e retorno desde a publicação | "quais teses a Redentia acompanha?" |
 | `get_thesis` | uma tese completa: argumento, veredictos, empresas com papel e catalisador, estudos diários | "abre a tese de dividendos" · "o que a tese de fibra diz sobre a Desktop?" |
-| `list_news` | as 20 notícias mais recentes com a leitura editorial e os tickers citados | "notícias de hoje" · "saiu algo sobre a VALE3?" (puxa 20 e filtra) |
+| `list_news` | notícias com a leitura editorial e os tickers citados; aceita `ticker` pra filtrar no servidor | "notícias de hoje" · "saiu algo sobre a VALE3?" (passe `ticker: "VALE3"`) |
 | `get_portfolio` | a carteira do usuário: valor, variação do dia, 10 maiores posições, proventos de hoje — **só chave pessoal com escopo carteira** | "como está minha carteira hoje?" |
 
 ## Teste guiado: 3 chamadas baratas
@@ -67,15 +67,14 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do 
 - Panorama macro (Selic, CDI, IPCA, dólar, juro real) e índices.
 - O resumo editorial do pregão (pode ser do pregão anterior — confira o campo `date`).
 - As 10 teses completas da casa, com estudos diários.
-- As 20 notícias mais recentes com leitura editorial e tickers.
+- Notícias com leitura editorial e tickers — o feed geral ou filtrado por ativo (`ticker`).
 - Na chave pessoal com escopo: carteira com as 10 maiores posições e proventos do dia.
 
 **Não dá (e a resposta honesta é dizer isso):**
-- Situação societária: recuperação judicial ou extrajudicial, grupamento, fato relevante — nenhuma ferramenta carrega isso, e as 20 notícias cobrem poucas horas de feed. Papel em centavos, queda forte ou silêncio total na base: complemente com uma busca na web antes de explicar qualquer movimento.
+- Situação societária: recuperação judicial ou extrajudicial, grupamento, fato relevante — nenhuma ferramenta carrega isso, e o feed guarda só takes recentes mesmo filtrado por `ticker`. Papel em centavos, queda forte ou silêncio total na base: complemente com uma busca na web antes de explicar qualquer movimento.
 - Tempo real ou dado intradiário garantido — é o último fechamento coletado.
 - Série histórica de preços ou retorno de uma janela (semana, mês, ano).
 - Fundamentos de empresa (P/L, dividend yield, ROE) — o MCP não os expõe.
-- Filtrar notícia por ticker no servidor — puxa-se 20 e filtra-se na conversa.
 - Dividendos futuros anunciados.
 - Preço médio, quantidade ou o número total de posições da carteira (vêm as 10 maiores).
 - Ativos fora da B3.

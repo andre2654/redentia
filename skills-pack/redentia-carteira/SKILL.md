@@ -47,7 +47,7 @@ Parseie com tolerância (vírgula ou ponto, "50k", "12%"). No Caminho B, os tota
 |---|---|---|---|
 | 1 | `get_portfolio{}` OU `get_quote{ticker}`×N | 1 OU N | posições e variação do dia |
 | 2 | `get_market_snapshot{}` | 1 | IBOV, IFIX, dólar, Selic meta — a moldura do dia |
-| 3 | `list_news{limit: 20}` | 1 | filtre você mesmo: itens cujo `tickers[]` intersecta as posições |
+| 3 | `list_news{limit: 20}` | 1 | feed geral; filtre: itens cujo `tickers[]` intersecta as posições. Pra sondar UMA posição específica, `list_news{ticker}` filtra no servidor |
 | 4 | `list_theses{}` | 1 | cruzamento: posições que aparecem em `theses[].tickers[]` |
 | 5 | `get_thesis{slug}` | 0-2 | só pros cruzamentos mais relevantes (payload enorme); use `conviction`, `companies[].status` e `catalyst` do ticker |
 | 6 | `get_etf_composition{ticker}` | 0-2 | só pra ETFs na carteira e SÓ com confirmação: "quer o raio-x dos ETFs (o que tem dentro, custo, correlações)? custa 1 chamada pesada por ETF" |
@@ -56,9 +56,10 @@ Parseie com tolerância (vírgula ou ponto, "50k", "12%"). No Caminho B, os tota
 carrega situação societária — recuperação judicial ou extrajudicial,
 grupamento, falência. Se qualquer posição tiver preço abaixo de R$ 1,00,
 variação do dia de 8% ou mais sem notícia na base, ou `delisted`/
-`delisted_since` preenchido, busque na web `{TICKER} {empresa} recuperação
-judicial OR grupamento OR fato relevante {ano}` (confira a data da fonte) e
-traga o achado pra linha da posição no relatório. Uma posição em recuperação
+`delisted_since` preenchido: sonde primeiro `list_news{ticker}` (filtro no
+servidor) e depois busque na web `{TICKER} {empresa} recuperação judicial OR
+grupamento OR fato relevante {ano}` (confira a data da fonte), trazendo o
+achado pra linha da posição no relatório. Uma posição em recuperação
 descrita como "andou com o mercado" é o pior erro deste relatório. Sem acesso
 à busca, diga isso e marque a posição pro assessor confirmar.
 

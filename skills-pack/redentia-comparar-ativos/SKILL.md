@@ -22,7 +22,7 @@ Envelope de toda resposta:
 
 | Chave | Limite | Custo por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 4 a 8 chamadas (4 ativos com 2 ETFs = 8) |
+| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 5 a 11 chamadas (4 ativos com 2 ETFs = 11; divida em dois minutos) |
 | Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta divide) | sem aperto |
 
 O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlações). **Na chave pessoal, no máximo 2 raio-x por minuto**; com 3 ou 4 ETFs, rode em dois minutos e avise.
@@ -39,7 +39,7 @@ O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlaçõe
 |---|---|---|---|
 | 1 | `get_quote{ticker}` | 1 por ativo | preço, variação do dia, `as_of`, tipo implícito |
 | 2 | `get_etf_composition{ticker}` | 1 por ETF (máx 2/min na pessoal) | carteira CVM, custos, exposição, correlações |
-| 3 | `list_news{limit: 20}` | 1 | filtre por QUALQUER um dos tickers comparados |
+| 3 | `list_news{ticker, limit: 5}` | 1 por ativo | notícias de cada comparado, filtradas no servidor |
 | 4 | `list_theses{}` | 1 | em quais teses cada ativo aparece |
 
 Chame o raio-x quando: o usuário disse que é ETF, o ticker é de fundo de índice conhecido, ou a comparação pede custo/sobreposição/correlação. O erro de "sem raio-x" resolve a dúvida na prática: não veio, não é ETF coberto — siga sem o bloco.
