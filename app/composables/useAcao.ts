@@ -1240,7 +1240,11 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
         ? 'etf'
         : assetType
           ? 'stock'
-          : profile.type === 'REIT' ? 'fii' : profile.type === 'ETF' ? 'etf' : profile.type === 'BDR' ? 'bdr' : 'stock'
+          : profile.type === 'REIT' ? 'fii'
+            : profile.type === 'ETF' || profile.type === 'US_ETF' ? 'etf'
+              : profile.type === 'BDR' ? 'bdr' : 'stock'
+  // US_STOCK cai em 'stock' de propósito (US0): a página renderiza as mesmas
+  // seções e degrada onde não há dado; moeda/kind próprios chegam no US1.
   const isFii = kind === 'fii'
   const name = kind === 'etf' && etf?.name ? etf.name : prettyName(profile.name, f?.fiiName)
   // flat, sem wrapper `data` (gotcha documentado no service)
@@ -1467,15 +1471,26 @@ export async function useAcao(ticker: string) {
   const { authFetch } = useApi()
   const { isAuthenticated } = useAuthState()
 
-  // Cripto = símbolo curto A-Z (2-6) que NÃO casa o formato B3 (que sempre tem
-  // dígito). Mesmas regexes do middleware de pages/asset/[ticker].vue — manter
-  // os dois em sincronia ao mexer.
-  const isCrypto = !/^[A-Z][A-Z0-9]{3}\d{1,2}$/.test(ticker) && /^[A-Z]{2,6}$/.test(ticker)
+  // A forma vem do util único (tickerClass.ts). Formato 'flex' (AAPL, BTC,
+  // AMP) não decide a classe — o DADO decide: se o símbolo existe em
+  // `tickers` (universo US do plano US0), é ativo US e segue o fluxo B3-like;
+  // 404 na sonda → cripto. Precedência tickers > cripto é deliberada
+  // (Ameriprise ganha do token AMP numa plataforma de investimentos).
+  const shape = symbolShape(ticker)
 
   const { data, error } = await useAsyncData<AcaoPayload>(
     `acao:${ticker}`,
-    () => (isCrypto ? loadCrypto : loadAcao)(import.meta.server ? serverBase : clientBase, ticker),
+    async () => {
+      const base = import.meta.server ? serverBase : clientBase
+      if (shape === 'b3') return loadAcao(base, ticker)
+      const probe = await acaoFetchProfile(base, ticker).catch(() => null)
+      return probe?.data ? loadAcao(base, ticker) : loadCrypto(base, ticker)
+    },
   )
+
+  // A classe resolvida vem do PAYLOAD (não de variável do callback): na
+  // hidratação o callback não roda de novo, o payload SSR é a verdade.
+  const isCrypto = data.value?.kind === 'crypto'
 
   /* tabs 1M/6M/12M: 12M vem do payload SSR; 1M/6M são buscados sob demanda
      no client e cacheados; erro de fetch mantém o range anterior (degrade). */

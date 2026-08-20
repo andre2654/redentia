@@ -22,19 +22,17 @@
 // BreadcrumbList + FAQPage (editorial). routeRules '/asset/**' cacheia 120s.
 
 // Formatos aceitos (as MESMAS regexes vivem no useAcao, que decide o fluxo
-// B3 × cripto — mantê-las em sincronia ao mexer):
-//  - B3: 4 chars iniciados por letra + 1-2 dígitos (PETR4, MXRF11, E1TN34…)
-//  - cripto: símbolo curto só letras, 2-6 chars (BTC, ETH, SOL, DOGE…)
+// A forma do símbolo vive em app/utils/tickerClass.ts (fonte única):
+// 'b3' (PETR4, AAPL34) e 'flex' (AAPL, BTC, BRK-B) passam; 'flex' tem a
+// CLASSE decidida por dado no useAcao (US em tickers > cripto no 404).
 // Fora disso → 404 antes de qualquer fetch.
-const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
-const CRYPTO_RE = /^[A-Z]{2,6}$/
 
 definePageMeta({
   middleware: [
     (to) => {
       const raw = String(to.params.ticker ?? '')
       const upper = raw.toUpperCase()
-      if (!TICKER_RE.test(upper) && !CRYPTO_RE.test(upper)) {
+      if (symbolShape(upper) === 'invalid') {
         return abortNavigation(createError({ statusCode: 404, statusMessage: 'Ativo não encontrado' }))
       }
       // Canonical maiúsculo: /asset/petr4 → 301 /asset/PETR4 (e /asset/btc → /asset/BTC)
