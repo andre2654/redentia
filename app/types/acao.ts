@@ -267,7 +267,11 @@ export interface EtfXrayApi {
   exposure: {
     by_sector: { sector: string; weight: number }[]
     top_assets: { ticker: string | null; name: string | null; type: string; weight: number; via: string[] }[]
+    /** consolidada COMPLETA (mesmo shape do top_assets, sem o corte de 15). Ausente em cache antigo do CDN. */
+    assets?: { ticker: string | null; name: string | null; type: string; weight: number; via: string[] }[]
   }
+  /** árvore de fundos aninhados; ausente em cache antigo do CDN (até 1h após o deploy) */
+  tree?: EtfXrayTreeNodeApi[]
   fees: {
     management_fee: number | null
     management_fee_source: string | null
@@ -283,6 +287,22 @@ export interface EtfXrayApi {
     holdings_matrix: { period: string; symbols: string[]; matrix: (number | null)[][] }[]
   }
   refreshed_at: string
+}
+
+/** nó da árvore de look-through: weight é fração do PAI, eff_weight fração do ETF raiz */
+export interface EtfXrayTreeNodeApi {
+  key: string
+  ticker: string | null
+  name: string | null
+  type: string
+  weight: number | null
+  eff_weight: number | null
+  market_value: number | null
+  children: EtfXrayTreeNodeApi[]
+  /** etf_b3 cuja carteira ainda não foi ingerida — a UI diz isso, não finge folha */
+  unopened?: boolean
+  /** o fundo reaparece acima no caminho (ex.: TECX11↔PKIN11) */
+  cycle?: boolean
 }
 
 /* ————— view-models (shape do design) ————— */
@@ -485,6 +505,10 @@ export interface AcaoEtfXrayVM {
     holdings: EtfXrayRow[]
     sectorBar: EtfXraySeg[]
     topAssets: EtfXrayRow[]
+    /** consolidada completa (todos os ativos finais ponderados); cai pro topAssets em cache antigo */
+    assetsAll: EtfXrayRow[]
+    /** árvore expansível; vazia em cache antigo do CDN */
+    tree: EtfXrayTreeNodeVM[]
     rows12: EtfXrayCorrRow[]
     rows90: EtfXrayCorrRow[]
     matrix12: EtfXrayMatrix | null
@@ -492,6 +516,24 @@ export interface AcaoEtfXrayVM {
     fundInfoRows: AcaoStatRow[]
     warnings: string[]
   }
+}
+
+/** nó da árvore no VM: percentuais prontos pro template */
+export interface EtfXrayTreeNodeVM {
+  key: string
+  ticker: string | null
+  name: string
+  typeLabel: string
+  /** fração do pai, 0..100 */
+  pctLocal: number | null
+  pctLocalLabel: string
+  /** fração do ETF raiz, 0..100 — normaliza a barra */
+  pctEff: number | null
+  pctEffLabel: string | null
+  expandable: boolean
+  /** nota honesta: 'carteira ainda não ingerida' | 'já aparece acima' | 'fundo fora da bolsa' */
+  note: string | null
+  children: EtfXrayTreeNodeVM[]
 }
 
 export interface AcaoPayload {

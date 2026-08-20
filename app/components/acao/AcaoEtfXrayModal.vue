@@ -47,8 +47,25 @@ const matrix = computed<EtfXrayMatrix | null>(() =>
   (period.value === '12m' ? props.modal.matrix12 : props.modal.matrix90),
 )
 
-const maxHoldingPct = computed(() => Math.max(1e-6, ...props.modal.holdings.map((h) => h.pct)))
-const maxAssetPct = computed(() => Math.max(1e-6, ...props.modal.topAssets.map((h) => h.pct)))
+// As duas visualizações do look-through: a consolidada (todos os ativos
+// finais já ponderados) e a árvore (nível a nível). Cache antigo do CDN pode
+// vir sem a árvore — aí o toggle nem aparece e fica só a consolidada.
+const view = ref<'consolidada' | 'arvore'>('consolidada')
+const hasTree = computed(() => props.modal.tree.length > 0)
+
+// Normaliza as barras da consolidada pelo maior ativo final.
+const maxAssetPct = computed(() => Math.max(1e-6, ...props.modal.assetsAll.map((h) => h.pct)))
+const maxTreeEff = computed(() => {
+  let max = 1e-6
+  const walk = (nodes: typeof props.modal.tree) => {
+    for (const n of nodes) {
+      if (n.pctEff !== null && n.pctEff > max) max = n.pctEff
+      if (n.children.length) walk(n.children)
+    }
+  }
+  walk(props.modal.tree)
+  return max
+})
 
 /** Célula da matriz: verde/vermelho com alpha pela magnitude. */
 function cellStyle(v: number | null): Record<string, string> {
@@ -81,8 +98,14 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 
         <div class="axm__divider" />
 
-        <div v-if="modal.sectorBar.length || modal.topAssets.length" class="axm__block">
-          <div class="axm__lbl">No fim, onde seu dinheiro está</div>
+        <div v-if="modal.sectorBar.length || modal.assetsAll.length" class="axm__block">
+          <div class="axm__corr-head">
+            <div class="axm__lbl">No fim, onde seu dinheiro está</div>
+            <div v-if="hasTree" class="axm__toggle">
+              <button type="button" class="axm__toggle-btn" :class="{ 'axm__toggle-btn--on': view === 'consolidada' }" @click="view = 'consolidada'">Consolidada</button>
+              <button type="button" class="axm__toggle-btn" :class="{ 'axm__toggle-btn--on': view === 'arvore' }" @click="view = 'arvore'">Árvore</button>
+            </div>
+          </div>
           <template v-if="modal.sectorBar.length">
             <div class="axm__bar">
               <span v-for="s in modal.sectorBar" :key="s.label" class="axm__bar-seg" :style="{ width: `${s.pct}%`, background: s.color }" />
@@ -93,28 +116,39 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
               </span>
             </div>
           </template>
-          <div v-if="modal.topAssets.length" class="axm__rows">
-            <component
-              :is="a.ticker ? 'a' : 'div'"
-              v-for="a in modal.topAssets"
-              :key="a.rank"
-              v-bind="a.ticker ? { href: `/asset/${a.ticker}` } : {}"
-              class="axm__row"
-              :class="{ 'axm__row--link': a.ticker }"
-            >
-              <span class="axm__row-rank">{{ a.rank }}</span>
-              <span class="axm__row-name">
-                <b v-if="a.ticker">{{ a.ticker }}</b>
-                <span class="axm__row-sub">{{ a.name }}</span>
-                <span v-for="v in a.via" :key="v" class="axm__via">via {{ v }}</span>
-              </span>
-              <span class="axm__row-bar"><span class="axm__row-fill axm__row-fill--exp" :style="{ width: `${(a.pct / maxAssetPct) * 100}%` }" /></span>
-              <span class="axm__row-pct">{{ a.pctLabel }}</span>
-              <span v-if="a.ticker" class="axm__go" aria-hidden="true">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-              </span>
-            </component>
-          </div>
+
+          <template v-if="view === 'consolidada' || !hasTree">
+            <div class="axm__viewsub">{{ modal.assetsAll.length }} ativos finais, já ponderados pela transparência — fundo dentro de fundo vira o peso real de cada papel.</div>
+            <div v-if="modal.assetsAll.length" class="axm__rows axm__scroll">
+              <component
+                :is="a.ticker ? 'a' : 'div'"
+                v-for="a in modal.assetsAll"
+                :key="a.rank"
+                v-bind="a.ticker ? { href: `/asset/${a.ticker}` } : {}"
+                class="axm__row"
+                :class="{ 'axm__row--link': a.ticker }"
+              >
+                <span class="axm__row-rank">{{ a.rank }}</span>
+                <span class="axm__row-name">
+                  <b v-if="a.ticker">{{ a.ticker }}</b>
+                  <span class="axm__row-sub">{{ a.name }}</span>
+                  <span v-for="v in a.via" :key="v" class="axm__via">via {{ v }}</span>
+                </span>
+                <span class="axm__row-bar"><span class="axm__row-fill axm__row-fill--exp" :style="{ width: `${(a.pct / maxAssetPct) * 100}%` }" /></span>
+                <span class="axm__row-pct">{{ a.pctLabel }}</span>
+                <span v-if="a.ticker" class="axm__go" aria-hidden="true">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+                </span>
+              </component>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="axm__viewsub">{{ modal.tree.length }} posições diretas — abra os fundos pra descer de nível. O peso forte é a fração do pai; o "% do ETF" é quanto chega de verdade no seu bolso.</div>
+            <div class="axm__scroll">
+              <AcaoEtfXrayTree :nodes="modal.tree" :max-eff="maxTreeEff" />
+            </div>
+          </template>
         </div>
 
         <div v-if="corrRows.length || matrix" class="axm__block">
@@ -151,32 +185,6 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-
-        <div v-if="modal.holdings.length" class="axm__block">
-          <div class="axm__lbl">Todas as {{ modal.holdings.length }} posições</div>
-          <div class="axm__rows">
-            <component
-              :is="h.ticker ? 'a' : 'div'"
-              v-for="h in modal.holdings"
-              :key="h.rank"
-              v-bind="h.ticker ? { href: `/asset/${h.ticker}` } : {}"
-              class="axm__row"
-              :class="{ 'axm__row--link': h.ticker }"
-            >
-              <span class="axm__row-rank">{{ h.rank }}</span>
-              <span class="axm__row-name">
-                <b v-if="h.ticker">{{ h.ticker }}</b>
-                <span class="axm__row-sub">{{ h.ticker && h.name === h.ticker ? h.typeLabel : h.name }}</span>
-              </span>
-              <span class="axm__row-type">{{ h.typeLabel }}</span>
-              <span class="axm__row-bar"><span class="axm__row-fill" :style="{ width: `${(h.pct / maxHoldingPct) * 100}%` }" /></span>
-              <span class="axm__row-pct">{{ h.pctLabel }}</span>
-              <span v-if="h.ticker" class="axm__go" aria-hidden="true">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-              </span>
-            </component>
           </div>
         </div>
 
@@ -238,6 +246,9 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 .axm__legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
 .axm__rows { margin-top: 10px; }
+.axm__viewsub { margin-top: 8px; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.5; }
+/* Lista longa rola dentro do próprio bloco — o card do modal não vira um poço. */
+.axm__scroll { max-height: 420px; overflow-y: auto; padding-right: 6px; margin-top: 10px; }
 .axm__row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--nu-day-divider); text-decoration: none; }
 .axm__row--link:hover .axm__row-name b { color: var(--nu-blue); }
 .axm__row-rank { color: var(--nu-gray); font-size: 12.5px; font-weight: 800; width: 24px; flex-shrink: 0; font-variant-numeric: tabular-nums; }

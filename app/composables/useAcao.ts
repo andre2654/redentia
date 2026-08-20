@@ -41,6 +41,8 @@ import type {
   EtfXrayMatrix,
   EtfXrayRow,
   EtfXraySeg,
+  EtfXrayTreeNodeApi,
+  EtfXrayTreeNodeVM,
   FundamentalsOverviewApi,
   PricePointApi,
   ScoreRowApi,
@@ -425,18 +427,26 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
     x.exposure.by_sector.slice(0, 6).map((s) => ({ label: s.sector, weight: s.weight })),
     (_, i) => XRAY_SECTOR_PALETTE[i % XRAY_SECTOR_PALETTE.length]!,
   )
+  const mapAsset = (a: { ticker: string | null, name: string | null, type: string, weight: number, via: string[] }, i: number): EtfXrayRow => ({
+    rank: i + 1,
+    ticker: a.ticker,
+    name: a.name ?? a.ticker ?? '—',
+    typeLabel: typeLabel(a.type),
+    pct: a.weight * 100,
+    pctLabel: `${nf2.format(a.weight * 100)}%`,
+    via: a.via ?? [],
+  })
   const topAssets: EtfXrayRow[] = x.exposure.top_assets
     .filter((a) => a.weight > 0.001)
     .slice(0, 10)
-    .map((a, i) => ({
-      rank: i + 1,
-      ticker: a.ticker,
-      name: a.name ?? a.ticker ?? '—',
-      typeLabel: typeLabel(a.type),
-      pct: a.weight * 100,
-      pctLabel: `${nf2.format(a.weight * 100)}%`,
-      via: a.via ?? [],
-    }))
+    .map(mapAsset)
+  // Consolidada COMPLETA. Cache antigo do CDN (até 1h após o deploy do
+  // backend) ainda não manda `assets`/`tree` — cai pro top_assets e árvore
+  // vazia em vez de quebrar o modal.
+  const assetsAll: EtfXrayRow[] = (x.exposure.assets ?? x.exposure.top_assets)
+    .filter((a) => a.weight > 0.0005)
+    .map(mapAsset)
+  const tree = (x.tree ?? []).map(mapTreeNode)
 
   // Banda 2 — custos: cards (taxa, custo efetivo, "10 anos") + taxa-sobre-taxa.
   const feeCards: AcaoMetricCard[] = []
@@ -498,6 +508,8 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
       holdings,
       sectorBar,
       topAssets,
+      assetsAll,
+      tree,
       rows12,
       rows90,
       matrix12,
@@ -505,6 +517,34 @@ function buildEtfXray(x: EtfXrayApi | null, fundInfo: AcaoFundInfoVM | null): Ac
       fundInfoRows: fundInfo?.rows ?? [],
       warnings: x.profile?.warnings ?? [],
     },
+  }
+}
+
+/**
+ * Nó da árvore de look-through pro template: weight é fração do PAI,
+ * eff_weight fração do ETF raiz — os dois viram percentuais prontos.
+ * As três situações sem filhos ganham a nota honesta em vez de fingir folha.
+ */
+function mapTreeNode(n: EtfXrayTreeNodeApi): EtfXrayTreeNodeVM {
+  const children = (n.children ?? []).map(mapTreeNode)
+  const pctLocal = n.weight !== null ? n.weight * 100 : null
+  const pctEff = n.eff_weight !== null ? n.eff_weight * 100 : null
+  let note: string | null = null
+  if (n.cycle) note = 'já aparece acima na árvore'
+  else if (n.unopened) note = 'carteira ainda não ingerida'
+  else if ((n.type === 'fundo_cota' || n.type === 'fundo_exterior') && !children.length) note = 'fundo fora da bolsa — não abre'
+  return {
+    key: n.key,
+    ticker: n.ticker,
+    name: n.name ?? n.ticker ?? '—',
+    typeLabel: XRAY_TYPE_LABEL[n.type] ?? 'Outros',
+    pctLocal,
+    pctLocalLabel: pctLocal !== null ? `${nf2.format(pctLocal)}%` : '—',
+    pctEff,
+    pctEffLabel: pctEff !== null && pctEff !== pctLocal ? `${nf2.format(pctEff)}% do ETF` : null,
+    expandable: children.length > 0,
+    note,
+    children,
   }
 }
 
