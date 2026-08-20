@@ -27,7 +27,7 @@ import { FEATURED_GUIDE, GUIDES, guideCardTo } from '~/content/guias/index'
 
 /* ————— tipos de ativo (pills do dono) ————— */
 
-export type BuscaType = 'todos' | 'acoes' | 'fiis' | 'bdrs' | 'etfs' | 'cripto' | 'tesouro'
+export type BuscaType = 'todos' | 'acoes' | 'fiis' | 'bdrs' | 'etfs' | 'eua' | 'cripto' | 'tesouro'
 
 export const BUSCA_TIPOS: readonly { key: BuscaType; label: string }[] = [
   { key: 'todos', label: 'Todos' },
@@ -35,16 +35,19 @@ export const BUSCA_TIPOS: readonly { key: BuscaType; label: string }[] = [
   { key: 'fiis', label: 'FIIs' },
   { key: 'bdrs', label: 'BDRs' },
   { key: 'etfs', label: 'ETFs' },
+  { key: 'eua', label: 'EUA' },
   { key: 'cripto', label: 'Cripto' },
   { key: 'tesouro', label: 'Tesouro Direto' },
 ] as const
 
-/** tipo da pill ↔ `type` do /tickers-full (só as classes B3 têm mapa). */
-const TYPE_BACKEND: Partial<Record<BuscaType, string>> = {
-  acoes: 'STOCK',
-  fiis: 'REIT',
-  bdrs: 'BDR',
-  etfs: 'ETF',
+/** tipo da pill ↔ `type`(s) do /tickers-full (só as classes de tickers têm
+ *  mapa). 'eua' cobre ação E ETF americanos numa pill só. */
+const TYPE_BACKEND: Partial<Record<BuscaType, string[]>> = {
+  acoes: ['STOCK'],
+  fiis: ['REIT'],
+  bdrs: ['BDR'],
+  etfs: ['ETF'],
+  eua: ['US_STOCK', 'US_ETF'],
 }
 
 /** tipo da pill ↔ ?classe= do /rankings (deep-link "Ver ranking completo"). */
@@ -479,7 +482,7 @@ export function useBuscaIndex() {
       const universe = assets.value.length ? assets.value : movers.value
       const scored: { a: RawAsset; s: number }[] = []
       for (const a of universe) {
-        if (backendType && a.type !== backendType) continue
+        if (backendType && !backendType.includes(a.type)) continue
         const t = norm(a.ticker)
         const n = norm(a.name)
         let s = -1
@@ -597,18 +600,23 @@ export function useBuscaIndex() {
       }
     }
 
-    // Ações / FIIs / BDRs a partir do /tickers-full
-    const backendType = TYPE_BACKEND[type]
+    // Ações / FIIs / BDRs / EUA a partir do /tickers-full
+    const backendType = TYPE_BACKEND[type] ?? []
     const loading = assetsStatus.value === 'idle' || assetsStatus.value === 'loading'
-    const list = assets.value.filter((a) => a.type === backendType)
+    const list = assets.value.filter((a) => backendType.includes(a.type))
     // market_cap desc quando houver; empate/ausência → alfabético
     list.sort((a, b) => (b.cap ?? 0) - (a.cap ?? 0) || a.ticker.localeCompare(b.ticker))
     const shown = list.slice(0, limit)
     const classe = TYPE_CLASSE[type]
-    const label = type === 'acoes' ? 'Ações da B3' : type === 'fiis' ? 'Fundos imobiliários' : type === 'etfs' ? 'ETFs da B3' : 'BDRs'
+    const label = type === 'acoes' ? 'Ações da B3'
+      : type === 'fiis' ? 'Fundos imobiliários'
+        : type === 'etfs' ? 'ETFs da B3'
+          : type === 'eua' ? 'Ações e ETFs americanos' : 'BDRs'
     // Rankings excluem ETF por decisão (registry) — a saída da pill ETFs é o
-    // guia, que carrega a tabela viva de custo real.
+    // guia com a tabela viva; a da pill EUA, por ora, o guia de BDR (a ponte
+    // que o investidor BR conhece — hub US próprio é fase posterior do plano).
     const etfs = type === 'etfs'
+    const eua = type === 'eua'
     return {
       type,
       label,
@@ -616,8 +624,10 @@ export function useBuscaIndex() {
       tesouro: [],
       total: list.length,
       hasMore: list.length > shown.length,
-      moreHref: etfs ? '/guias/como-investir-em-etf' : classe ? `/rankings?classe=${classe}` : '/rankings',
-      moreLabel: etfs ? 'Como escolher um ETF' : 'Ver ranking completo',
+      moreHref: etfs ? '/guias/como-investir-em-etf'
+        : eua ? '/guias/como-investir-em-bdr'
+          : classe ? `/rankings?classe=${classe}` : '/rankings',
+      moreLabel: etfs ? 'Como escolher um ETF' : eua ? 'Como investir dos EUA pela B3' : 'Ver ranking completo',
       loading,
       empty: !loading && list.length === 0,
       unavailable: assetsStatus.value === 'error' && list.length === 0,
