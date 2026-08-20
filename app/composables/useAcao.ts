@@ -311,8 +311,10 @@ function buildEtfFundInfo(e: EtfInfo | null): AcaoFundInfoVM | null {
 
 const XRAY_TYPE_LABEL: Record<string, string> = {
   acao: 'Ações',
+  acao_us: 'Ações EUA',
   bdr: 'BDRs',
   etf_b3: 'ETFs',
+  etf_us: 'ETFs EUA',
   fundo_cota: 'Fundos',
   fundo_exterior: 'Fundos no exterior',
   exterior: 'Exterior',
@@ -326,8 +328,10 @@ const XRAY_TYPE_LABEL: Record<string, string> = {
 
 const XRAY_TYPE_COLOR: Record<string, string> = {
   acao: 'var(--nu-alloc-stock)',
+  acao_us: 'var(--nu-alloc-stock)',
   bdr: 'var(--nu-alloc-stock)',
   etf_b3: 'var(--nu-alloc-fii)',
+  etf_us: 'var(--nu-alloc-fii)',
   fundo_cota: 'var(--nu-alloc-fii)',
   fundo_exterior: 'var(--nu-alloc-crypto)',
   exterior: 'var(--nu-alloc-crypto)',
