@@ -17,7 +17,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 
 | | Pessoal `rdt_mcp_` | Escritório `rdt_biz_` |
 |---|---|---|
-| Limites | 60 chamadas/min · 50/dia | 300/min, sem limite diário — o minuto é da conta inteira (até 5 chaves) |
+<!-- @partial:limites-linha-onboarding -->
 | Escopos | mercado, teses, notícias e carteira — cada um com toggle em Configurações, seção MCP, na Redentia | mercado, teses e notícias — fixos; **carteira não entra no plano, por desenho** |
 | Onde gerencia | redentia.com.br/conta (seção MCP) | redentia.com.br/business/chaves |
 
@@ -33,7 +33,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 
 | Ferramenta | O que devolve | Pergunte, por exemplo |
 |---|---|---|
-| `get_quote` | último preço, variação do dia, `as_of`, moeda e se o ativo saiu da B3. Cobre B3 E ações/ETFs americanos do universo S&P 500 + Nasdaq-100 (`currency: "USD"`) | "cotação da PETR4" · "quanto fechou a AAPL?" · "a AZUL4 ainda é negociada?" |
+| `get_quote` | último preço, variação do dia, `as_of`, moeda e se o ativo saiu da B3 — mais a leitura editorial da casa quando existe take recente (`reading`, com data) e a referência de tese (`thesis_ref`). Cobre B3 E ações/ETFs americanos do universo S&P 500 + Nasdaq-100 (`currency: "USD"`) | "cotação da PETR4" · "quanto fechou a AAPL?" · "a AZUL4 ainda é negociada?" |
 | `get_etf_composition` | raio-x do ETF: carteira mensal reportada à CVM, custo com taxa sobre taxa, exposição final por transparência, correlações. Resumo por padrão (top-15 + `assets_count`); `detail: "completo"` traz a carteira inteira ponderada e a árvore de fundos aninhados | "o que tem dentro do HASH11?" · "qual o custo real do IVVB11, com a taxa do fundo americano?" · "quanto de Petrobras eu carrego via BOVA11?" (use `detail: "completo"`) · "abre a árvore do GOAT11" |
 | `search_assets` | busca por nome ou tema, com tipo e preço | "qual o ticker do Itaú?" · "tem ETF de small cap na B3?" |
 | `get_market_snapshot` | IBOV, IFIX, dólar, Selic meta, CDI, IPCA, juro real e maiores altas/baixas do dia | "como está o mercado?" · "Selic e dólar agora" |
@@ -41,7 +41,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 | `list_theses` | as 10 teses de investimento vivas da casa, com convicção 0-100 e retorno desde a publicação | "quais teses a Redentia acompanha?" |
 | `get_thesis` | uma tese completa: argumento, veredictos, empresas com papel e catalisador, estudos diários | "abre a tese de dividendos" · "o que a tese de fibra diz sobre a Desktop?" |
 | `list_news` | notícias com a leitura editorial e os tickers citados; aceita `ticker` pra filtrar no servidor | "notícias de hoje" · "saiu algo sobre a VALE3?" (passe `ticker: "VALE3"`) |
-| `get_portfolio` | a carteira do usuário: valor, variação do dia, 10 maiores posições, proventos de hoje — **só chave pessoal com escopo carteira** | "como está minha carteira hoje?" |
+| `get_portfolio` | a carteira do usuário: valor, variação do dia, 10 maiores posições, proventos de hoje e a leitura da análise da casa (1 força e 1 risco, com data) — **só chave pessoal com escopo carteira** | "como está minha carteira hoje?" |
 
 ## Teste guiado: 3 chamadas baratas
 

@@ -24,12 +24,9 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 ### Orçamento de chamadas desta skill
 
-| Chave | Limite | Custo por rodada |
-|---|---|---|
-| Pessoal (`rdt_mcp_`) | 60/min · 50/dia | 1 cotação por posição + 3 a 5 fixas — 12 posições ≈ 17 chamadas, cabe no minuto |
-| Escritório (`rdt_biz_`) | 300/min, sem limite diário (o minuto é da conta inteira) | sem aperto prático |
+<!-- @partial:limites-mcp -->
 
-Acima de 12 posições, peça um recorte pros maiores valores — o relatório perde leitura e, na chave pessoal, uma rodada grande come boa parte das 50 chamadas do dia (12 posições ≈ 17 chamadas; diga isso se o usuário insistir).
+Custo desta skill: 1 cotação por posição + 3 a 5 chamadas fixas — 12 posições ≈ 17, cabe no minuto de qualquer chave. Acima de 12 posições, peça um recorte pros maiores valores — o relatório perde leitura e, na chave pessoal, uma rodada grande come boa parte das 50 chamadas do dia (12 posições ≈ 17 chamadas; diga isso se o usuário insistir).
 
 ## Passo 1 — Colete e normalize as posições
 
@@ -50,10 +47,10 @@ Se nada foi informado ainda, UMA pergunta compacta:
 
 | # | Ferramenta | Quantas | Pra quê |
 |---|---|---|---|
-| 1 | `get_quote{ticker}` | 1 por posição | preço, `change_percent`, `as_of`, `delisted` |
+| 1 | `get_quote{ticker}` | 1 por posição | preço, `change_percent`, `as_of`, `delisted` — e a Camada de Leitura: `reading` (take editorial ≤72h, com data), `reading_note` (movimento forte sem leitura na base — obedeça a instrução dele) e `thesis_ref` (a posição está em tese viva) |
 | 2 | `get_market_snapshot{}` | 1 | IBOV, IFIX, dólar, Selic meta — a moldura do dia |
 | 3 | `list_news{limit: 20}` | 1 | feed geral; filtre: itens cujo `tickers[]` intersecta as posições. Pra sondar UMA posição específica, `list_news{ticker}` filtra no servidor |
-| 4 | `list_theses{}` | 1 | cruzamento: posições que aparecem em `theses[].tickers[]` |
+| 4 | `list_theses{}` | 0-1 | o cruzamento por posição JÁ vem no `thesis_ref` de cada quote — chame só se quiser o panorama das 10 teses além das posições |
 | 5 | `get_thesis{slug}` | 0-2 | só pros cruzamentos mais relevantes (payload enorme); use `conviction`, `companies[].status` e `catalyst` do ticker |
 | 6 | `get_etf_composition{ticker}` | 0-2 | só pra ETFs na carteira e SÓ com confirmação: "quer o raio-x dos ETFs (o que tem dentro, custo, correlações)? custa 1 chamada pesada por ETF". Pra "quanto de {ativo} eu carrego via ETFs", chame com `detail: "completo"` e cruze as posições com `exposure.assets` (a lista completa — o top-15 do resumo dá falso negativo pra ativo pequeno) |
 
@@ -74,6 +71,18 @@ A aritmética é sua, sobre o que foi informado: valor total = soma dos valores;
 efeito do dia por posição = valor × `change_percent`/100; dia da carteira =
 soma dos efeitos ÷ total (posições sem cotação ficam fora do numerador E do
 denominador da variação). Pesos = valor ÷ total.
+
+**Checklist de pré-entrega** — copie e marque ANTES de montar; item aberto = relatório não sai:
+
+```
+[ ] Aritmética conferida (soma das posições = total; pesos somam 100%)
+[ ] Posição sem cotação fora do numerador E do denominador da variação do dia
+[ ] Cheque estrutural feito quando havia sinal (Passo 2)
+[ ] Zero termo banido e zero julgamento (boa/ruim/adequada/arriscada)
+[ ] Data das cotações no título (o as_of mais antigo entre as posições)
+[ ] Moeda única no total — ou dois blocos, sem somar R$ com US$
+[ ] Nomes limpos, sem emoji, sem exclamação
+```
 
 ```markdown
 ## Carteira informada — {data de hoje} (cotações de {as_of})
@@ -104,7 +113,7 @@ da conta do dia.}
 
 ### Cruzamento com as teses Redentia
 - {TICKER} aparece na tese "{title}" (convicção {conviction}/100){, como {status}, com catalisador: {catalyst}}
-{sem cruzamento: "Nenhuma posição informada aparece nas 10 teses ativas."}
+{a fonte primária é o `thesis_ref` dos quotes; sem cruzamento: "Nenhuma posição informada aparece nas 10 teses ativas."}
 
 ### Contexto de mercado ({as_of_date do snapshot})
 IBOV {value} ({change_pct}%) · IFIX {change_pct}% · Dólar R$ {value} ({delta_pct}%) · Selic meta {selic_meta}% a.a.

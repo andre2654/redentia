@@ -1,6 +1,6 @@
 ---
 name: redentia-por-que-moveu
-description: Explica por que um ativo da B3 ou uma ação americana (AAPL, NVDA — universo S&P 500/Nasdaq-100) subiu ou caiu e entrega texto pronto pro cliente final (WhatsApp e e-mail) na voz do assessor, usando o MCP da Redentia (get_quote, list_news, get_market_snapshot, list_theses, get_thesis) mais um cheque estrutural na web quando o papel dá sinal de estresse (preço em centavos, queda forte, silêncio na base — recuperação judicial e grupamento não estão no MCP). Use quando o usuário pedir "por que a PETR4 caiu?", "por que a AAPL subiu?", "o que aconteceu com o HGLG11 hoje?", "cliente perguntou da VALE3, me dá um texto". Se faltar o ativo, a janela (hoje, semana, mês) ou o formato (WhatsApp, e-mail, ambos), pergunte ANTES de chamar qualquer ferramenta. NÃO usar pra análise completa de carteira (redentia-carteira), pra comparar ativos entre si (redentia-comparar-ativos), nem pra opinar se o cliente deve comprar, vender ou manter.
+description: Explica por que um ativo da B3 ou uma ação americana (AAPL, NVDA — universo S&P 500/Nasdaq-100) subiu ou caiu e entrega texto pronto pro cliente final (WhatsApp e e-mail) na voz do assessor, usando o MCP da Redentia (get_quote, list_news, get_market_snapshot, list_theses, get_thesis) mais um cheque estrutural na web quando o papel dá sinal de estresse (centavos, queda forte, silêncio na base — recuperação judicial não está no MCP). Use quando o usuário pedir "por que a PETR4 caiu?", "por que a AAPL subiu?", "cliente perguntou da VALE3, me dá um texto". Faltando ativo, janela ou formato, pergunte ANTES de chamar ferramenta. FRONTEIRA com a skill-irmã: 2+ ativos COM comparação entre eles ("A ou B?", "qual é mais caro?", "se sobrepõem?") → redentia-comparar-ativos; explicar o movimento de 2-3 ativos INDEPENDENTES ("por que A e B caíram?") → esta skill. NÃO usar pra análise completa de carteira (redentia-carteira) nem pra opinar se o cliente deve comprar, vender ou manter.
 ---
 
 # Por que meu ativo subiu ou caiu
@@ -23,12 +23,9 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 ### Orçamento de chamadas desta skill
 
-| Chave | Limite | Custo desta skill por rodada |
-|---|---|---|
-| Pessoal (`rdt_mcp_`) | 60/min · 50/dia | 4 a 9 chamadas |
-| Escritório (`rdt_biz_`) | 300/min, sem limite diário (o minuto é da conta inteira) | idem |
+<!-- @partial:limites-mcp -->
 
-Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — cabe com folga no minuto de qualquer chave. O que aperta na chave pessoal é o limite DIÁRIO: 50 chamadas ≈ 5 rodadas cheias. Não repita chamadas que já fez na conversa.
+Custo desta skill: 4 a 9 chamadas por rodada. Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — cabe com folga no minuto de qualquer chave. O que aperta na chave pessoal é o limite DIÁRIO: 50 chamadas ≈ 5 rodadas cheias. Não repita chamadas que já fez na conversa.
 
 ## Passo 1 — Colete o que falta ANTES de chamar qualquer ferramenta
 
@@ -48,13 +45,13 @@ Nesta ordem, pulando o que não for necessário:
 
 | # | Ferramenta | Quantas | Pra quê |
 |---|---|---|---|
-| 1 | `get_quote{ticker}` | 1 por ativo | preço, `change_percent`, `as_of`, `delisted` |
-| 2 | `list_news{ticker, limit: 10}` | 1 por ativo | notícias do ativo, filtradas no servidor; a janela é sua: cheque `published_at` |
-| 3 | `get_market_snapshot{}` | 1 | moldura do dia: IBOV e IFIX (`change_pct`), dólar (`macro.usd_brl.delta_pct`), Selic meta |
-| 4 | `list_theses{}` | 0-1 | só se o passo 2 não achou notícia direta, ou pra 1 frase de contexto; procure o ticker em `theses[].tickers[]` |
-| 5 | `get_thesis{slug}` | 0-1 | só se o ticker pertence a uma tese E a notícia foi insuficiente. Payload enorme: no máximo 1 por rodada; use apenas `verdicts` e o `catalyst`/`status` da empresa em `companies[]` |
+| 1 | `get_quote{ticker}` | 1 por ativo | preço, `change_percent`, `as_of`, `delisted` — E a Camada de Leitura: `reading` (take editorial ≤72h com data), `reading_note` (movimento forte sem leitura na base) e `thesis_ref` (tese viva) já vêm JUNTO |
+| 2 | `list_news{ticker, limit: 10}` | 0-1 por ativo | **só se o `quote.reading` não bastar** (movimento antigo, precisa de mais de uma notícia, ou janela semana/mês). Se o reading do quote já explica o dia, PULE esta chamada |
+| 3 | `get_market_snapshot{}` | 1 | moldura do dia: IBOV e IFIX (`change_pct`), dólar (`macro.usd_brl.delta_pct`), Selic meta — e `reading` do pregão quando o briefing é de hoje |
+| 4 | `list_theses{}` | 0-1 | só se o quote não trouxe `thesis_ref` e você ainda precisa de contexto de tese |
+| 5 | `get_thesis{slug}` | 0-1 | só se `thesis_ref` apontou tese E o catalisador importa pra resposta. Payload enorme: no máximo 1 por rodada; use apenas `verdicts` e o `catalyst`/`status` da empresa em `companies[]` |
 
-**Passe sempre o `ticker` no `list_news`** — sem ele o feed devolve só as mais recentes do mercado inteiro (poucas horas) e o seu ativo some. O campo `reading` é a leitura editorial da Redentia — quando existir, é a sua melhor matéria-prima; pode ser null.
+**O `quote.reading` é a sua matéria-prima número 1** — é a take editorial da casa, com `published_at` e fonte; cite-a como leitura da Redentia, com a data. Se vier `reading_note`, OBEDEÇA a instrução dele (é o servidor dizendo que o silêncio não é resposta). No `list_news`, passe sempre o `ticker` — sem ele o feed devolve só as mais recentes do mercado inteiro e o seu ativo some.
 
 ## Passo 3 — Cheque estrutural na web (antes de ranquear)
 
@@ -82,6 +79,12 @@ Sem acesso à busca na web (desligada no plano ou no cliente): diga isso na
 leitura, escreva o texto sem causa e marque pro assessor confirmar a situação
 da empresa antes de enviar.
 
+**Trava anti-racionalização**: NÃO escreva o texto do cliente sem ter feito o
+cheque quando houver sinal — sem exceção. "O movimento parece pequeno", "o
+ativo é conhecido", "provavelmente é só o mercado" NÃO são motivos pra pular:
+foi exatamente essa racionalização que produziu o texto da Casas Bahia sem a
+recuperação judicial. Sinal presente = cheque feito, sempre.
+
 ## Passo 4 — Ranqueie a causa (nesta ordem, sem pular níveis)
 
 1. **Situação estrutural** (do cheque do Passo 3): recuperação judicial ou extrajudicial, grupamento, fato relevante. Quando existir, é a moldura do texto inteiro — a variação do dia se lê DENTRO dela, nunca no lugar dela.
@@ -92,7 +95,21 @@ da empresa antes de enviar.
 
 **Linguagem de correlação, nunca de causalidade forte.** Escreva "na esteira de", "no dia em que", "acompanhou o índice". Não escreva "caiu porque" a menos que a notícia seja explícita e específica do ativo (fato relevante, resultado, decisão regulatória).
 
-## Passo 5 — Estruture a resposta no chat
+## Passo 5 — Checklist de pré-entrega (marque ANTES dos blocos copiáveis)
+
+Copie e marque — item aberto = texto não sai:
+
+```
+[ ] Data do dado no texto ("hoje" só se as_of é hoje; senão "no pregão de DD/MM")
+[ ] Causa com nível declarado (estrutural/notícia/setor-tese/mercado/sem causa mapeada)
+[ ] Cheque estrutural feito quando havia sinal (trava acima)
+[ ] Zero termo banido (recomendação, o que comprar, sugestão de alocação, research…)
+[ ] Moeda certa (US$ pra ativo americano, com a nota de preço de referência)
+[ ] Nome limpo (nunca "PETROBRAS   PN      N2" no texto do cliente)
+[ ] Sem emoji, sem exclamação, sem promessa de retorno
+```
+
+## Passo 6 — Estruture a resposta no chat
 
 Nesta ordem:
 

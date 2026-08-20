@@ -1,6 +1,6 @@
 ---
 name: redentia-comparar-ativos
-description: Compara 2 a 4 ativos lado a lado — B3 (ações, FIIs, BDRs, ETFs) e americanos (AAPL, IVV; até BR×US tipo AAPL34 vs AAPL ou IVVB11 vs IVV) com preço e variação do dia, notícias recentes e presença em teses; para ETFs adiciona custo efetivo com taxa sobre taxa, carteira mensal da CVM, sobreposição de holdings por transparência e correlações contra os benchmarks da Redentia. Usa get_quote, get_etf_composition, list_news e list_theses do MCP da Redentia. Use quando o usuário pedir "BOVA11 ou IVVB11?", "compara PETR4 com PRIO3", "qual desses ETFs é mais caro?", "esses dois fundos se sobrepõem?". Se vier um ativo só, pergunte contra o que comparar; mais de quatro, peça pra recortar. NÃO usar pra decidir qual comprar ou vender, pra analisar a carteira inteira (redentia-carteira) nem pra explicar o movimento de um ativo só (redentia-por-que-moveu).
+description: Compara 2 a 4 ativos lado a lado — B3 (ações, FIIs, BDRs, ETFs) e americanos (AAPL, IVV; até BR×US tipo AAPL34 vs AAPL ou IVVB11 vs IVV) com preço e variação do dia, notícias recentes e presença em teses; para ETFs adiciona custo efetivo com taxa sobre taxa, carteira mensal da CVM, sobreposição de holdings por transparência e correlações contra os benchmarks da Redentia. Usa get_quote, get_etf_composition, list_news e list_theses do MCP da Redentia. Use quando o usuário pedir "BOVA11 ou IVVB11?", "compara PETR4 com PRIO3", "qual desses ETFs é mais caro?", "esses dois fundos se sobrepõem?". Se vier um ativo só, pergunte contra o que comparar; mais de quatro, peça pra recortar. FRONTEIRA com a skill-irmã: o usuário quer os ativos LADO A LADO (custo, sobreposição, correlação, "qual é melhor?") → esta skill; quer entender POR QUE se moveram (mesmo sendo 2-3 ativos) → redentia-por-que-moveu. NÃO usar pra decidir qual comprar ou vender nem pra analisar a carteira inteira (redentia-carteira).
 ---
 
 # Comparar ativos
@@ -20,12 +20,9 @@ Envelope de toda resposta:
 
 ### Orçamento de chamadas desta skill
 
-| Chave | Limite | Custo por rodada |
-|---|---|---|
-| Pessoal (`rdt_mcp_`) | 60/min · 50/dia | 5 a 11 chamadas (4 ativos com 2 ETFs = 11 — cabe no minuto) |
-| Escritório (`rdt_biz_`) | 300/min, sem limite diário (o minuto é da conta inteira) | sem aperto |
+<!-- @partial:limites-mcp -->
 
-O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlações) — chame 1 por ETF comparado e não repita o mesmo raio-x na conversa; a comparação de 4 ativos cabe no minuto de qualquer chave.
+Custo desta skill: 5 a 11 chamadas por rodada (4 ativos com 2 ETFs = 11 — cabe no minuto de qualquer chave). O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlações) — chame 1 por ETF comparado e não repita o mesmo raio-x na conversa; a comparação de 4 ativos cabe no minuto de qualquer chave.
 
 ## Passo 1 — Feche a lista
 
@@ -38,10 +35,10 @@ O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlaçõe
 
 | # | Ferramenta | Quantas | Pra quê |
 |---|---|---|---|
-| 1 | `get_quote{ticker}` | 1 por ativo | preço, variação do dia, `as_of`, tipo implícito |
+| 1 | `get_quote{ticker}` | 1 por ativo | preço, variação do dia, `as_of`, tipo implícito — e a Camada de Leitura: `reading` (take ≤72h, com data), `reading_note` e `thesis_ref` |
 | 2 | `get_etf_composition{ticker, detail: "completo"}` | 1 por ETF | carteira CVM, custos, correlações, `exposure.assets` (lista completa ponderada) e `tree` (árvore de fundos aninhados) |
-| 3 | `list_news{ticker, limit: 5}` | 1 por ativo | notícias de cada comparado, filtradas no servidor |
-| 4 | `list_theses{}` | 1 | em quais teses cada ativo aparece |
+| 3 | `list_news{ticker, limit: 5}` | 0-1 por ativo | só se o `quote.reading` não cobrir o comparado (movimento antigo ou precisa de mais de uma notícia) |
+| 4 | `list_theses{}` | 0-1 | o `thesis_ref` de cada quote já diz em qual tese o ativo está — chame só se precisar da lista completa |
 
 Chame o raio-x quando: o usuário disse que é ETF, o ticker é de fundo de índice conhecido, ou a comparação pede custo/sobreposição/correlação. O erro de "sem raio-x" resolve a dúvida na prática: não veio, não é ETF coberto — siga sem o bloco.
 
@@ -62,7 +59,7 @@ inverte a leitura inteira. Sem acesso à busca, diga isso na resposta.
 - Senão, reporte a correlação de CADA um contra um benchmark comum (ex.: ambos vs IBOV), nos dois períodos (90d e 12m) e com `n_obs`, e **declare que é proxy, não o par**.
 - `holdings_matrix` só entra se os dois tickers aparecem em `symbols`. Não aparecem, omita — nunca estime correlação de cabeça.
 
-**Sobreposição de carteira.** Interseção dos `exposure.assets` dos dois ETFs — a lista COMPLETA de ativos finais por transparência (por isso o `detail: "completo"`). Some `min(weight)` dos ativos em comum (case pelo `ticker`; sem ticker, pelo nome idêntico) e escreva:
+**Sobreposição de carteira.** Interseção dos `exposure.assets` dos dois ETFs — a lista COMPLETA de ativos finais por transparência (por isso o `detail: "completo"`). **Com execução de código disponível, USE o script** (a conta de 500 ativos no contexto erra): salve os dois retornos em `a.json`/`b.json` e rode `python3 scripts/overlap.py a.json b.json` — ele devolve Σmin, contagem de comuns e cobertura direcional exatos. Sem execução de código, some `min(weight)` dos ativos em comum manualmente (case pelo `ticker`; sem ticker, pelo nome idêntico) e escreva:
 
 > Sobreposição de {X}% entre as carteiras completas por transparência. {Se algum dos dois tiver fundo não aberto (nó com `unopened` na `tree` ou `fees.unmapped_fund_weight` > 0): "Parte da carteira de {ETF} está em fundo ainda não aberto — a sobreposição não enxerga esse pedaço."}
 
@@ -70,7 +67,19 @@ inverte a leitura inteira. Sem acesso à busca, diga isso na resposta.
 
 **Custo.** `fees.management_fee` é a taxa de administração; `fees.total_expense_ratio` soma as taxas dos fundos investidos (taxa sobre taxa). Se `fees.unmapped_fund_weight` for maior que zero ou `fees.incomplete` for true, o custo efetivo é **piso** — escreva "{X}% a.a. (piso)" e cite a `fees.note` em uma frase.
 
-## Passo 4 — Template do comparativo
+## Passo 4 — Checklist de pré-entrega e template
+
+**Checklist** — copie e marque ANTES de preencher; item aberto = comparativo não sai:
+
+```
+[ ] as_of de cada comparado na tabela (divergência entre eles declarada)
+[ ] Correlação com período + n_obs; "proxy" declarado quando não é o par direto
+[ ] Sobreposição pelo script quando há execução de código (senão, conta manual declarada)
+[ ] Custo com "(piso)" quando unmapped_fund_weight > 0 ou incomplete
+[ ] Cheque estrutural feito quando havia sinal (Passo 2)
+[ ] Zero termo banido; "qual é melhor?" devolvido ao escritório
+[ ] Preço absoluto nunca comparado entre moedas diferentes
+```
 
 ```markdown
 ## {A} vs {B}{ vs C…} — {data de hoje}
