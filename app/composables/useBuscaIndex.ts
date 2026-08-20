@@ -27,13 +27,14 @@ import { FEATURED_GUIDE, GUIDES, guideCardTo } from '~/content/guias/index'
 
 /* ————— tipos de ativo (pills do dono) ————— */
 
-export type BuscaType = 'todos' | 'acoes' | 'fiis' | 'bdrs' | 'cripto' | 'tesouro'
+export type BuscaType = 'todos' | 'acoes' | 'fiis' | 'bdrs' | 'etfs' | 'cripto' | 'tesouro'
 
 export const BUSCA_TIPOS: readonly { key: BuscaType; label: string }[] = [
   { key: 'todos', label: 'Todos' },
   { key: 'acoes', label: 'Ações' },
   { key: 'fiis', label: 'FIIs' },
   { key: 'bdrs', label: 'BDRs' },
+  { key: 'etfs', label: 'ETFs' },
   { key: 'cripto', label: 'Cripto' },
   { key: 'tesouro', label: 'Tesouro Direto' },
 ] as const
@@ -43,6 +44,7 @@ const TYPE_BACKEND: Partial<Record<BuscaType, string>> = {
   acoes: 'STOCK',
   fiis: 'REIT',
   bdrs: 'BDR',
+  etfs: 'ETF',
 }
 
 /** tipo da pill ↔ ?classe= do /rankings (deep-link "Ver ranking completo"). */
@@ -603,7 +605,10 @@ export function useBuscaIndex() {
     list.sort((a, b) => (b.cap ?? 0) - (a.cap ?? 0) || a.ticker.localeCompare(b.ticker))
     const shown = list.slice(0, limit)
     const classe = TYPE_CLASSE[type]
-    const label = type === 'acoes' ? 'Ações da B3' : type === 'fiis' ? 'Fundos imobiliários' : 'BDRs'
+    const label = type === 'acoes' ? 'Ações da B3' : type === 'fiis' ? 'Fundos imobiliários' : type === 'etfs' ? 'ETFs da B3' : 'BDRs'
+    // Rankings excluem ETF por decisão (registry) — a saída da pill ETFs é o
+    // guia, que carrega a tabela viva de custo real.
+    const etfs = type === 'etfs'
     return {
       type,
       label,
@@ -611,8 +616,8 @@ export function useBuscaIndex() {
       tesouro: [],
       total: list.length,
       hasMore: list.length > shown.length,
-      moreHref: classe ? `/rankings?classe=${classe}` : '/rankings',
-      moreLabel: 'Ver ranking completo',
+      moreHref: etfs ? '/guias/como-investir-em-etf' : classe ? `/rankings?classe=${classe}` : '/rankings',
+      moreLabel: etfs ? 'Como escolher um ETF' : 'Ver ranking completo',
       loading,
       empty: !loading && list.length === 0,
       unavailable: assetsStatus.value === 'error' && list.length === 0,

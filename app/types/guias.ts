@@ -42,6 +42,9 @@ export type GuideBlock =
   | { kind: 'stats'; items: GuideStat[] }
   | { kind: 'steps'; items: string[] }
   | { kind: 'checks'; items: string[] }
+  /** tabela viva de custo real de ETFs (fetch do x-ray no SSR) — número que
+   *  envelheceria hardcoded passa a vir da carteira CVM do mês */
+  | { kind: 'etf-costs'; tickers: string[] }
 
 export interface GuideSection {
   id: string

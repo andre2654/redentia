@@ -16,7 +16,7 @@
 import { BUSCA_SUGESTOES } from '~/composables/useBuscaIndex'
 import type { BuscaType } from '~/composables/useBuscaIndex'
 
-const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'cripto', 'tesouro']
+const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'cripto', 'tesouro']
 
 usePageSeo({
   title: 'Busca',

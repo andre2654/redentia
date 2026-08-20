@@ -141,6 +141,13 @@ export const COMO_INVESTIR_EM_ETF_GUIDE: GuideDoc = {
           kind: 'p',
           html: 'Aqui mora a diferença que mais pega o investidor de surpresa, e ela é a favor da ação. As regras a seguir são o desenho geral vigente há anos, mas tributação muda por lei: trate como referência e confirme a regra do exercício atual antes de calcular o seu.',
         },
+        // Tabela VIVA: custo real dos ETFs mais procurados, calculado pela
+        // Redentia da carteira CVM do mês (taxa sobre taxa incluída). Número
+        // hardcoded aqui envelheceria — esse bloco atualiza sozinho.
+        {
+          kind: 'etf-costs',
+          tickers: ['BOVA11', 'IVVB11', 'SMAL11', 'IMAB11', 'HASH11'],
+        },
         {
           kind: 'checks',
           items: [

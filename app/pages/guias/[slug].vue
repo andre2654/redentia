@@ -83,6 +83,7 @@ usePageSeo({
               </div>
               <NuStepsTimeline v-else-if="b.kind === 'steps'" :steps="b.items" class="gdp__steps" />
               <NuCheckList v-else-if="b.kind === 'checks'" :items="b.items" class="gdp__checks" />
+              <GuiasEtfCostTable v-else-if="b.kind === 'etf-costs'" :tickers="b.tickers" />
             </template>
           </section>
 
