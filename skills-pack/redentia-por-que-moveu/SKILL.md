@@ -34,7 +34,7 @@ Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias po
 
 Três informações definem a rodada. Cheque as três; o que faltar vira UMA pergunta única e compacta:
 
-1. **Ativo(s)**: até 3 tickers por rodada. Mais que isso, peça um recorte ("a chave pessoal permite 10 chamadas por minuto; me diga os 3 mais urgentes"). Se o usuário disser "minha carteira", tente `get_portfolio` uma vez; se vier recusa de escopo ou de plano, mostre a mensagem recebida e peça os tickers.
+1. **Ativo(s)**: até 3 tickers por rodada. Mais que isso, peça um recorte ("a chave pessoal permite 10 chamadas por minuto; me diga os 3 mais urgentes"). Se o usuário disser "a carteira" sem tickers, peça os tickers — e se ele quiser o relatório completo da carteira colada, aponte a skill redentia-carteira.
 2. **Janela**: hoje (padrão), semana ou mês. Avise o que a janela muda: o número de variação disponível no MCP é sempre **o do dia** (`change_percent`); não existe série histórica. Pra semana e mês, a janela filtra as notícias e o texto trata o período de forma qualitativa — a menos que o assessor forneça o número dele.
 3. **Formato**: WhatsApp, e-mail ou ambos (padrão: ambos).
 

@@ -97,7 +97,7 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do 
 | Skill | Chame quando |
 |---|---|
 | `redentia-por-que-moveu` | "por que a PETR4 caiu?" — explica o movimento e entrega texto pronto pro cliente (WhatsApp e e-mail) |
-| `redentia-carteira` | "analisa minha carteira" — relatório de mesa com posições, notícias que as tocam, teses e contexto |
+| `redentia-carteira` | "cliente tem PETR4, HGLG11 e BOVA11 — analisa" — cole as posições e receba o relatório de mesa (a carteira da CONTA Redentia é a tool get_portfolio, direto) |
 | `redentia-comparar-ativos` | "BOVA11 ou IVVB11?" — comparativo lado a lado, com custo, sobreposição e correlação nos ETFs |
 
 ## Regras duras

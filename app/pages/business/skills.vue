@@ -50,9 +50,9 @@ const SKILLS: SkillCard[] = [
   {
     slug: 'redentia-carteira',
     nome: 'Análise da carteira',
-    faz: 'Relatório de mesa: valor, movimento do dia, maiores posições, proventos, concentração, notícias que tocam as posições e cruzamento com as teses da casa.',
-    exemplo: 'Analisa minha carteira e me diz se alguma notícia de hoje toca as posições.',
-    nota: 'A carteira via MCP exige chave pessoal com o escopo ligado. Com a chave de escritório, a skill pede as posições coladas e segue com as cotações.',
+    faz: 'Cole as posições do cliente e receba o relatório de mesa: valor, movimento do dia, concentração, notícias que tocam a carteira e cruzamento com as teses da casa.',
+    exemplo: 'Cliente tem PETR4, HGLG11 e BOVA11. Analisa e me diz se alguma notícia de hoje toca as posições.',
+    nota: 'A carteira vem da conversa, não da conta Redentia — funciona com qualquer chave e nada é salvo.',
   },
   {
     slug: 'redentia-comparar-ativos',
