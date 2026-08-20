@@ -22,7 +22,9 @@ export interface TickerProfileApi {
   ticker: string
   name: string
   logo: string | null
-  type: string // 'STOCK' | 'REIT' | 'ETF' | 'BDR'
+  type: string // 'STOCK' | 'REIT' | 'ETF' | 'BDR' | 'US_STOCK' | 'US_ETF'
+  /** 'BRL' na B3, 'USD' nos tipos US — o formatador R$/US$ decide por AQUI (us0) */
+  currency?: string
   market_price: number | null
   change_percent: number | null
   price_at: string | null // 'd/m' SEM ano (gotcha documentado)

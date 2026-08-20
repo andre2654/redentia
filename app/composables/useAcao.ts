@@ -553,23 +553,30 @@ function mapTreeNode(n: EtfXrayTreeNodeApi): EtfXrayTreeNodeVM {
 function buildHero(profile: TickerProfileApi, name: string): AcaoHeroVM {
   const price = profile.market_price
   const chg = profile.change_percent
+  // Moeda vem do DADO (us0): USD nos ativos americanos, R$ no resto.
+  const cur = profile.currency === 'USD' ? 'US$' : 'R$'
   let changeLine: string | null = null
   let metaLine = ''
   if (price != null && chg != null) {
     const prev = price / (1 + chg / 100)
     const abs = Math.abs(price - prev)
-    changeLine = `${chg < 0 ? '-' : '+'}R$ ${nf2.format(abs)} (${nf2.format(Math.abs(chg))}%) hoje`
-    metaLine = `fech. anterior R$ ${nf2.format(prev)}`
+    changeLine = `${chg < 0 ? '-' : '+'}${cur} ${nf2.format(abs)} (${nf2.format(Math.abs(chg))}%) hoje`
+    metaLine = `fech. anterior ${cur} ${nf2.format(prev)}`
   }
   // price_at vem 'd/m' SEM ano (gotcha) — usamos como veio, sem parsear.
   if (profile.price_at) metaLine += `${metaLine ? ' · ' : ''}atualizado em ${profile.price_at}`
+  if (profile.currency === 'USD') {
+    metaLine += `${metaLine ? ' · ' : ''}preço de referência derivado do BDR e do câmbio`
+  }
   return {
     companyLine: `${name} · ${profile.ticker}`,
     ticker: profile.ticker,
-    priceFmt: price != null ? `R$ ${nf2.format(price)}` : '—',
+    priceFmt: price != null ? `${cur} ${nf2.format(price)}` : '—',
     changeLine,
     dir: dirOf(chg ?? 0),
     metaLine,
+    // Sem isso o badge cai no default 'B3' — mentira pra ativo americano.
+    exchangeLabel: profile.currency === 'USD' ? 'EUA' : undefined,
   }
 }
 
@@ -978,9 +985,10 @@ function buildEditorial(editorial: EditorialApi | null, name: string, isFii: boo
 
 /** Title/description por tipo — Score/consenso só existem pra ações, então a
  * promessa da description muda junto com o que a página realmente mostra. */
-function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<TickerProfileApi, 'market_price' | 'change_percent'>, f: Fund | null, editorial: EditorialApi | null, xray: EtfXrayApi | null = null): AcaoPayload['seo'] {
+function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<TickerProfileApi, 'market_price' | 'change_percent' | 'currency'>, f: Fund | null, editorial: EditorialApi | null, xray: EtfXrayApi | null = null): AcaoPayload['seo'] {
   const price = profile.market_price
-  const priceFmt = price != null ? `R$ ${nf2.format(price)}` : ''
+  const usd = profile.currency === 'USD'
+  const priceFmt = price != null ? `${usd ? 'US$' : 'R$'} ${nf2.format(price)}` : ''
   const TAIL: Record<AssetKind, string> = {
     stock: 'dividendos, fundamentos e análise',
     fii: 'rendimentos e P/VP',
@@ -996,7 +1004,7 @@ function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<T
     const chg = profile.change_percent != null ? ` (${pctFmt(profile.change_percent)})` : ''
     bits.push(`Cotação de ${name} (${ticker}) hoje: ${priceFmt}${chg}.`)
   } else {
-    bits.push(`${name} (${ticker}) na B3.`)
+    bits.push(`${name} (${ticker}) ${usd ? 'no mercado americano' : 'na B3'}.`)
   }
   const facts: string[] = []
   if (f?.dy != null) facts.push(`dividend yield ${nf2.format(f.dy)}%`)
