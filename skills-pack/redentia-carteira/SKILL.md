@@ -26,10 +26,10 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 | Chave | Limite | Custo por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 1 cotação por posição + 3 a 5 fixas — 6 posições ≈ 10 chamadas (o minuto inteiro) |
+| Pessoal (`rdt_mcp_`) | 30/min · 50/dia | 1 cotação por posição + 3 a 5 fixas — 12 posições ≈ 17 chamadas, cabe no minuto |
 | Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta divide) | sem aperto prático |
 
-Na chave pessoal, **cap de 6 cotações por minuto**: com mais de 6 posições, rode em duas levas e avise ("vou em duas levas pra respeitar o limite da chave"). Acima de 12 posições, peça um recorte pros maiores valores — o minuto duplo estoura e o relatório perde leitura.
+Acima de 12 posições, peça um recorte pros maiores valores — o relatório perde leitura e, na chave pessoal, uma rodada grande come boa parte das 50 chamadas do dia (12 posições ≈ 17 chamadas; diga isso se o usuário insistir).
 
 ## Passo 1 — Colete e normalize as posições
 

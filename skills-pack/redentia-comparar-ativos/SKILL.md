@@ -22,10 +22,10 @@ Envelope de toda resposta:
 
 | Chave | Limite | Custo por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 5 a 11 chamadas (4 ativos com 2 ETFs = 11; divida em dois minutos) |
+| Pessoal (`rdt_mcp_`) | 30/min · 50/dia | 5 a 11 chamadas (4 ativos com 2 ETFs = 11 — cabe no minuto) |
 | Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta divide) | sem aperto |
 
-O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlações). **Na chave pessoal, no máximo 2 raio-x por minuto**; com 3 ou 4 ETFs, rode em dois minutos e avise.
+O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlações) — chame 1 por ETF comparado e não repita o mesmo raio-x na conversa; a comparação de 4 ativos cabe no minuto de qualquer chave.
 
 ## Passo 1 — Feche a lista
 

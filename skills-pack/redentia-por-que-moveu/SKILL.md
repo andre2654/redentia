@@ -25,16 +25,16 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 | Chave | Limite | Custo desta skill por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 10/min · 50/dia | 4 a 9 chamadas |
+| Pessoal (`rdt_mcp_`) | 30/min · 50/dia | 4 a 9 chamadas |
 | Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta inteira divide) | idem |
 
-Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — ainda cabe no minuto da chave pessoal, sem folga pra repetição. Não repita chamadas que já fez na conversa.
+Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — cabe com folga no minuto de qualquer chave. O que aperta na chave pessoal é o limite DIÁRIO: 50 chamadas ≈ 5 rodadas cheias. Não repita chamadas que já fez na conversa.
 
 ## Passo 1 — Colete o que falta ANTES de chamar qualquer ferramenta
 
 Três informações definem a rodada. Cheque as três; o que faltar vira UMA pergunta única e compacta:
 
-1. **Ativo(s)**: até 3 tickers por rodada. Mais que isso, peça um recorte ("a chave pessoal permite 10 chamadas por minuto; me diga os 3 mais urgentes"). Se o usuário disser "a carteira" sem tickers, peça os tickers — e se ele quiser o relatório completo da carteira colada, aponte a skill redentia-carteira.
+1. **Ativo(s)**: até 3 tickers por rodada. Mais que isso, peça um recorte ("acima de 3 a explicação vira lista rasa; me diga os 3 mais urgentes"). Se o usuário disser "a carteira" sem tickers, peça os tickers — e se ele quiser o relatório completo da carteira colada, aponte a skill redentia-carteira.
 2. **Janela**: hoje (padrão), semana ou mês. Avise o que a janela muda: o número de variação disponível no MCP é sempre **o do dia** (`change_percent`); não existe série histórica. Pra semana e mês, a janela filtra as notícias e o texto trata o período de forma qualitativa — a menos que o assessor forneça o número dele.
 3. **Formato**: WhatsApp, e-mail ou ambos (padrão: ambos).
 
