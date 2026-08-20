@@ -37,13 +37,13 @@
  *    sensível na LGPD (art. 5º, II). Erra pra cima na frente de quem lê contrato.
  */
 
-/* As oito ferramentas são as que EXISTEM no mcp-service, com o nome exato.
+/* As ferramentas listadas são as que EXISTEM no mcp-service, com o nome exato.
    Nunca invente nome de tool aqui: o comprador roda e confere. get_portfolio
    existe mas está FORA do escopo do plano de escritório, e é por isso que ela
    aparece marcada, não escondida. */
 const TOOLS = [
   'get_quote', 'search_assets', 'get_market_snapshot', 'list_news',
-  'get_thesis', 'list_theses', 'get_daily_briefing',
+  'get_thesis', 'list_theses', 'get_daily_briefing', 'get_etf_composition',
 ]
 
 const FATOS = [

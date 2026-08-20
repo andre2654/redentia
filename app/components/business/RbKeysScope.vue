@@ -151,6 +151,11 @@ const BLOCOS = computed(() => [
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13H11l-1 9 8.5-11H12z" /></svg>
         Conectar ao assistente
       </NuxtLink>
+
+      <NuxtLink to="/business/skills" class="rbks__btn2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3zM4 12.5L12 17l8-4.5M4 17l8 4.5 8-4.5" /></svg>
+        Skills prontas pro Claude
+      </NuxtLink>
     </div>
 
     <NuDayModal

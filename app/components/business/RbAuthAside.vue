@@ -13,7 +13,7 @@
  * ferramenta que ela usou. É o que o escritório compra, e é o que o painel de
  * uso vai mostrar depois que ele conectar.
  *
- * NADA AQUI É INVENTADO. As sete ferramentas são as que existem no servidor
+ * NADA AQUI É INVENTADO. As ferramentas do feed são as que existem no servidor
  * (foram exercitadas em produção), os rótulos de chave são os que a própria
  * tela sugere como exemplo, e a última linha é a recusa de carteira com a
  * mensagem que o servidor devolve de verdade. Mostrar uma tool que não existe
@@ -31,6 +31,7 @@ const FEED: Linha[] = [
   { chave: 'Alocação', tool: 'get_market_snapshot', ok: 'IBOV 177.999' },
   { chave: 'Mesa', tool: 'list_news', alvo: 'DASA3', ok: '8 notícias' },
   { chave: 'Análise', tool: 'get_thesis', alvo: 'água-virou-ativo', ok: 'tese aberta' },
+  { chave: 'Alocação', tool: 'get_etf_composition', alvo: 'IVVB11', ok: 'carteira aberta' },
   { chave: 'João', tool: 'get_daily_briefing', ok: 'fechamento de ontem' },
   { chave: 'Mesa', tool: 'get_portfolio', ok: 'fora do plano', nega: true },
 ]

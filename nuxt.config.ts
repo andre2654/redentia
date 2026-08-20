@@ -118,6 +118,7 @@ export default defineNuxtConfig({
     // pela regra "CDN não varia por cookie". O guia de conexão é estático.
     '/business/cadastro': { headers: { 'cache-control': 'private, no-store' } },
     '/business/chaves': { headers: { 'cache-control': 'private, no-store' } },
+    '/business/skills': { headers: { 'cache-control': 'private, no-store' } },
     '/business/comecar': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo

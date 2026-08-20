@@ -270,7 +270,21 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
       </div>
     </section>
 
-    <!-- D. o teste -->
+    <!-- D. o pack de skills: fecha o cold-start de quem acabou de conectar -->
+    <section class="rbcm-skl">
+      <div class="rbcm-skl__txt">
+        <h2 class="rbcm-skl__t">Conectou? O pack de<br>skills vem pronto.</h2>
+        <p class="rbcm-skl__p">
+          Quatro skills que ensinam o Claude a usar o MCP direito: explicar por que um ativo
+          se moveu com texto pronto pro cliente, analisar carteira, comparar ativos com custo
+          e sobreposição de ETFs, e um guia de bordo das ferramentas. Baixa, sobe no Claude
+          e a mesa inteira usa.
+        </p>
+      </div>
+      <NuxtLink to="/business/skills" class="rbcm-skl__cta">Ver o pack de skills</NuxtLink>
+    </section>
+
+    <!-- E. o teste -->
     <section class="rbcm-fim">
       <h2 class="rbcm-fim__t">Conectou? Pergunte<br>isso.</h2>
       <p class="rbcm-fim__q">"Como está o mercado hoje?"</p>
@@ -406,6 +420,22 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
    AZUL e não navy: o RbFooter é navy, e uma banda navy encostada nele vira uma
    mancha escura só, sem fronteira. O azul dá o corte e ainda repete o par que
    a /business/chaves usa no fecho. */
+.rbcm-skl {
+  background: var(--nu-white); padding: clamp(56px, 7vw, 92px) clamp(22px, 5.5vw, 80px);
+  display: flex; align-items: center; justify-content: space-between; gap: clamp(24px, 4vw, 56px);
+  flex-wrap: wrap; animation: nu-fade .5s ease both;
+}
+.rbcm-skl__txt { max-width: 620px; }
+.rbcm-skl__t { margin: 0; color: var(--nu-ink); font-size: clamp(26px, 3.2vw, 40px); font-weight: 800; letter-spacing: -.03em; line-height: 1.06; }
+.rbcm-skl__p { margin: 16px 0 0; color: var(--nu-gray-2); font-size: 15.5px; font-weight: 600; line-height: 1.6; }
+.rbcm-skl__cta {
+  display: inline-flex; align-items: center; flex-shrink: 0;
+  background: var(--nu-ink); color: var(--nu-white); border-radius: var(--nu-r-pill);
+  padding: 16px 30px; font-size: 16px; font-weight: 800; transition: background .2s, transform .15s;
+}
+.rbcm-skl__cta:hover { background: var(--nu-ink-hover); color: var(--nu-white); transform: translateY(-1px); }
+.rbcm-skl__cta:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 3px; }
+
 .rbcm-fim { background: var(--nu-blue); padding: clamp(64px, 8vw, 104px) clamp(22px, 5.5vw, 80px); text-align: center; animation: nu-fade .5s ease both; }
 .rbcm-fim__t { margin: 0; color: var(--nu-cream-text); font-size: clamp(30px, 4vw, 50px); font-weight: 800; letter-spacing: -.035em; line-height: 1.04; }
 .rbcm-fim__q {

@@ -122,7 +122,9 @@ onBeforeUnmount(clearAll)
           chave que o escritório gerou pra ela, e somente leitura. No ChatGPT
           ainda não. A carteira consolidada acima é onde a implantação chega;
           a chave do primeiro dia responde pelo mercado brasileiro: cotação,
-          busca de ativo, resumo do dia, teses e notícias.
+          busca de ativo, resumo do dia, teses e notícias. E o
+          <NuxtLink to="/business/skills" class="rbas__nota-link">pack de skills</NuxtLink>
+          já sai pronto pra mesa usar.
         </p>
       </div>
 
@@ -216,6 +218,8 @@ onBeforeUnmount(clearAll)
   margin: clamp(24px, 3vw, 34px) 0 0; max-width: 480px;
   color: var(--nu-gray); font-size: 14.5px; font-weight: 600; line-height: 1.6;
 }
+.rbas__nota-link { color: var(--nu-blue); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.rbas__nota-link:hover { color: var(--nu-blue-hover); }
 
 /* ——— o artefato: a janela do assistente. Hairline, não sombra. ——— */
 .rbas__card {
