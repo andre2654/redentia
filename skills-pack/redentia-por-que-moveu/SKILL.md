@@ -25,8 +25,8 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 | Chave | Limite | Custo desta skill por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 30/min · 50/dia | 4 a 9 chamadas |
-| Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta inteira divide) | idem |
+| Pessoal (`rdt_mcp_`) | 60/min · 50/dia | 4 a 9 chamadas |
+| Escritório (`rdt_biz_`) | 300/min, sem limite diário (o minuto é da conta inteira) | idem |
 
 Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — cabe com folga no minuto de qualquer chave. O que aperta na chave pessoal é o limite DIÁRIO: 50 chamadas ≈ 5 rodadas cheias. Não repita chamadas que já fez na conversa.
 

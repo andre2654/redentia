@@ -26,8 +26,8 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 | Chave | Limite | Custo por rodada |
 |---|---|---|
-| Pessoal (`rdt_mcp_`) | 30/min · 50/dia | 1 cotação por posição + 3 a 5 fixas — 12 posições ≈ 17 chamadas, cabe no minuto |
-| Escritório (`rdt_biz_`) | 120/min · 5.000/dia (a conta divide) | sem aperto prático |
+| Pessoal (`rdt_mcp_`) | 60/min · 50/dia | 1 cotação por posição + 3 a 5 fixas — 12 posições ≈ 17 chamadas, cabe no minuto |
+| Escritório (`rdt_biz_`) | 300/min, sem limite diário (o minuto é da conta inteira) | sem aperto prático |
 
 Acima de 12 posições, peça um recorte pros maiores valores — o relatório perde leitura e, na chave pessoal, uma rodada grande come boa parte das 50 chamadas do dia (12 posições ≈ 17 chamadas; diga isso se o usuário insistir).
 

@@ -88,8 +88,14 @@ const ultimo = computed(() => geometria.value.barras[geometria.value.barras.leng
       <NuSectionHeading dark eyebrow="Consumo">
         {{ janela }} dias de<br>chamadas.
         <template #dek>
-          A quota de {{ num(conta.quota.day) }} chamadas por dia vale para o escritório inteiro,
-          somando todas as chaves. O limite por minuto é de {{ num(conta.quota.minute) }}.
+          <template v-if="conta.quota.day">
+            A quota de {{ num(conta.quota.day) }} chamadas por dia vale para o escritório inteiro,
+            somando todas as chaves. O limite por minuto é de {{ num(conta.quota.minute) }}.
+          </template>
+          <template v-else>
+            Sem limite diário: o teto é {{ num(conta.quota.minute) }} chamadas por minuto,
+            do escritório inteiro somando todas as chaves.
+          </template>
         </template>
       </NuSectionHeading>
 

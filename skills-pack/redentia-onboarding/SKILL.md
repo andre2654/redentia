@@ -17,7 +17,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 
 | | Pessoal `rdt_mcp_` | Escritório `rdt_biz_` |
 |---|---|---|
-| Limites | 30 chamadas/min · 50/dia | 120/min · 5.000/dia — a conta inteira divide (até 5 chaves) |
+| Limites | 60 chamadas/min · 50/dia | 300/min, sem limite diário — o minuto é da conta inteira (até 5 chaves) |
 | Escopos | mercado, teses, notícias e carteira — cada um com toggle em Configurações, seção MCP, na Redentia | mercado, teses e notícias — fixos; **carteira não entra no plano, por desenho** |
 | Onde gerencia | redentia.com.br/conta (seção MCP) | redentia.com.br/business/chaves |
 
@@ -86,11 +86,10 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do 
 | Se a resposta contém | Significa | Faça |
 |---|---|---|
 | "Chave MCP ausente ou inválida. Configure Authorization: Bearer" | a chave não chegou no header | confira a config do conector; o valor precisa ser "Bearer rdt_..." com o espaço depois de Bearer |
-| "Muitas chamadas por minuto. Aguarde um instante e tente de novo." | 30/min na pessoal, 120/min no escritório | espere cerca de 60 segundos e repita só a chamada que falhou |
+| "Muitas chamadas por minuto. Aguarde um instante e tente de novo." | 60/min na pessoal, 300/min no escritório | espere cerca de 60 segundos e repita só a chamada que falhou |
 | "Sua chave MCP não tem permissão de {escopo}. Ative em Configurações" | toggle desligado na chave pessoal | Redentia → Conta → seção MCP → ligar o escopo (vale em até 1 minuto) |
 | "O plano para escritórios não inclui {escopo}." | chave de escritório pedindo carteira | é desenho do plano, não erro: escopos de escritório são fixos (mercado, teses, notícias); carteira só na chave pessoal |
 | "Limite diário de chamadas da chave gratuita atingido." | 50/dia da chave pessoal | renova à meia-noite (horário de São Paulo) |
-| "Limite diário de chamadas do plano atingido." | 5.000/dia da conta de escritório (as chaves dividem) | renova à meia-noite; se for recorrente, contato@redentia.com |
 
 ## As outras skills do pack
 

@@ -36,7 +36,7 @@ export interface BusinessAccountStatus {
     denials: number
     window_days?: number
   }
-  quota: { day: number, minute: number }
+  quota: { day: number | null, minute: number }
   scopes?: string[]
 }
 

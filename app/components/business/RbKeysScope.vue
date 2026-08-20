@@ -64,8 +64,8 @@ const CARDS = computed(() => [
   {
     icon: 'gauge',
     stat: null,
-    titulo: `${num(props.conta.quota.day)} por dia.`,
-    blurb: `A quota é do escritório inteiro, somando as chaves. O limite por minuto é de ${num(props.conta.quota.minute)}.`,
+    titulo: props.conta.quota.day ? `${num(props.conta.quota.day)} por dia.` : 'Sem teto diário.',
+    blurb: `O limite é por minuto: ${num(props.conta.quota.minute)} chamadas do escritório inteiro, somando as chaves.`,
   },
   {
     icon: 'clock',
@@ -110,7 +110,9 @@ const BLOCOS = computed(() => [
   {
     label: 'Quota e revogação',
     color: 'var(--nu-gray)',
-    html: `São ${num(props.conta.quota.day)} chamadas por dia e ${num(props.conta.quota.minute)} por minuto, `
+    html: (props.conta.quota.day
+      ? `São ${num(props.conta.quota.day)} chamadas por dia e ${num(props.conta.quota.minute)} por minuto, `
+      : `Sem limite diário; o teto é ${num(props.conta.quota.minute)} chamadas por minuto, `)
       + 'para o escritório inteiro somando todas as chaves. Cinco chaves não são cinco planos. '
       + 'Desligar, renomear ou revogar acontece no painel, e vale em até um minuto.',
   },

@@ -28,9 +28,12 @@ const temHoje = computed(() => props.conta.usage.calls_today != null)
 const semUso = computed(() => props.conta.usage.calls === 0)
 
 const heroNum = computed(() => num(temHoje.value ? props.conta.usage.calls_today : props.conta.usage.calls))
-const heroSufixo = computed(() =>
-  temHoje.value ? `de ${num(props.conta.quota.day)} hoje` : `chamadas em ${props.janela} dias`,
-)
+// Plano sem limite diário manda quota.day null: o sufixo vira só "hoje" —
+// imprimir "de 0 hoje" inventaria um teto que não existe.
+const heroSufixo = computed(() => {
+  if (!temHoje.value) return `chamadas em ${props.janela} dias`
+  return props.conta.quota.day ? `de ${num(props.conta.quota.day)} hoje` : 'chamadas hoje'
+})
 
 /** Saturação da quota do dia. Sem quota declarada não há percentual honesto. */
 const pct = computed(() => {
