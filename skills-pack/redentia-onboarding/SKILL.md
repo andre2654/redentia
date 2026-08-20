@@ -71,6 +71,7 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do 
 - Na chave pessoal com escopo: carteira com as 10 maiores posições e proventos do dia.
 
 **Não dá (e a resposta honesta é dizer isso):**
+- Situação societária: recuperação judicial ou extrajudicial, grupamento, fato relevante — nenhuma ferramenta carrega isso, e as 20 notícias cobrem poucas horas de feed. Papel em centavos, queda forte ou silêncio total na base: complemente com uma busca na web antes de explicar qualquer movimento.
 - Tempo real ou dado intradiário garantido — é o último fechamento coletado.
 - Série histórica de preços ou retorno de uma janela (semana, mês, ano).
 - Fundamentos de empresa (P/L, dividend yield, ROE) — o MCP não os expõe.

@@ -1,6 +1,6 @@
 ---
 name: redentia-por-que-moveu
-description: Explica por que um ativo da B3 subiu ou caiu e entrega texto pronto pro cliente final (WhatsApp e e-mail) na voz do assessor, usando o MCP da Redentia (get_quote, list_news, get_market_snapshot, list_theses, get_thesis). Use quando o usuário pedir "por que a PETR4 caiu?", "o que aconteceu com o HGLG11 hoje?", "cliente perguntou da VALE3, me dá um texto", "explica a alta do IVVB11 pro cliente". Se faltar o ativo, a janela (hoje, semana, mês) ou o formato (WhatsApp, e-mail, ambos), pergunte ANTES de chamar qualquer ferramenta. NÃO usar pra análise completa de carteira (redentia-carteira), pra comparar ativos entre si (redentia-comparar-ativos), nem pra opinar se o cliente deve comprar, vender ou manter.
+description: Explica por que um ativo da B3 subiu ou caiu e entrega texto pronto pro cliente final (WhatsApp e e-mail) na voz do assessor, usando o MCP da Redentia (get_quote, list_news, get_market_snapshot, list_theses, get_thesis) mais um cheque estrutural na web quando o papel dá sinal de estresse (preço em centavos, queda forte, silêncio na base — recuperação judicial e grupamento não estão no MCP). Use quando o usuário pedir "por que a PETR4 caiu?", "o que aconteceu com o HGLG11 hoje?", "cliente perguntou da VALE3, me dá um texto". Se faltar o ativo, a janela (hoje, semana, mês) ou o formato (WhatsApp, e-mail, ambos), pergunte ANTES de chamar qualquer ferramenta. NÃO usar pra análise completa de carteira (redentia-carteira), pra comparar ativos entre si (redentia-comparar-ativos), nem pra opinar se o cliente deve comprar, vender ou manter.
 ---
 
 # Por que meu ativo subiu ou caiu
@@ -56,16 +56,43 @@ Nesta ordem, pulando o que não for necessário:
 
 **Não existe filtro de notícia por ticker no servidor.** Puxe 20 e filtre pelo array `tickers` de cada item. O campo `reading` é a leitura editorial da Redentia — quando existir, é a sua melhor matéria-prima; pode ser null.
 
-## Passo 3 — Ranqueie a causa (nesta ordem, sem pular níveis)
+## Passo 3 — Cheque estrutural na web (antes de ranquear)
 
-1. **Notícia do ativo**: existe notícia na janela citando o ticker. Use o título, a fonte, a data e o `reading`.
-2. **Setor ou tese**: o ativo pertence a uma tese da Redentia com catalisador ou estudo recente, ou as notícias da janela batem no setor dele.
-3. **Macro e mercado**: o ativo andou na direção do mercado. Compare o sinal e a magnitude do `change_percent` com o IBOV (ou IFIX, se FII) do snapshot; cite dólar ou juros apenas se o snapshot sustentar.
-4. **Sem causa mapeada**: nada acima explica. Diga isso com todas as letras e entregue um texto neutro de movimento. **Inventar causa é proibido.**
+O MCP da Redentia NÃO carrega situação societária: recuperação judicial ou
+extrajudicial, falência, grupamento reverso, fechamento de capital, fraude em
+investigação. E as 20 notícias do `list_news` cobrem poucas horas de feed —
+silêncio ali não é evidência de que não houve fato. Já saiu texto explicando o
+dia de um papel em recuperação como se fosse mercado; é o erro mais caro que
+esta skill pode cometer.
+
+**Sinais que OBRIGAM uma busca na web antes do texto** (qualquer um basta):
+
+- preço abaixo de R$ 1,00 (na B3, quase sempre é empresa em reestruturação);
+- `|change_percent|` de 8% ou mais sem notícia do ticker na base;
+- `delisted: true` ou `delisted_since` preenchido;
+- o ativo não aparece em NENHUMA notícia nem tese da Redentia (a base cobre
+  bem o IBOV e as teses da casa; fora disso o silêncio é fraco).
+
+Busque: `{TICKER} {nome da empresa} recuperação judicial OR grupamento OR fato relevante {ano}`.
+Confira a DATA da fonte antes de usar (busca devolve artigo velho com cara de
+atual). O que for estrutural entra na leitura do assessor E no texto do
+cliente — um papel em recuperação se explica pela recuperação, não pelo IBOV.
+
+Sem acesso à busca na web (desligada no plano ou no cliente): diga isso na
+leitura, escreva o texto sem causa e marque pro assessor confirmar a situação
+da empresa antes de enviar.
+
+## Passo 4 — Ranqueie a causa (nesta ordem, sem pular níveis)
+
+1. **Situação estrutural** (do cheque do Passo 3): recuperação judicial ou extrajudicial, grupamento, fato relevante. Quando existir, é a moldura do texto inteiro — a variação do dia se lê DENTRO dela, nunca no lugar dela.
+2. **Notícia do ativo**: existe notícia na janela citando o ticker. Use o título, a fonte, a data e o `reading`.
+3. **Setor ou tese**: o ativo pertence a uma tese da Redentia com catalisador ou estudo recente, ou as notícias da janela batem no setor dele.
+4. **Macro e mercado**: o ativo andou na direção do mercado. Compare o sinal e a magnitude do `change_percent` com o IBOV (ou IFIX, se FII) do snapshot; cite dólar ou juros apenas se o snapshot sustentar.
+5. **Sem causa mapeada**: nada acima explica — e o cheque estrutural foi feito. Diga isso com todas as letras e entregue um texto neutro de movimento. **Inventar causa é proibido.**
 
 **Linguagem de correlação, nunca de causalidade forte.** Escreva "na esteira de", "no dia em que", "acompanhou o índice". Não escreva "caiu porque" a menos que a notícia seja explícita e específica do ativo (fato relevante, resultado, decisão regulatória).
 
-## Passo 4 — Estruture a resposta no chat
+## Passo 5 — Estruture a resposta no chat
 
 Nesta ordem:
 

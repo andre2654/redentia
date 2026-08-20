@@ -44,6 +44,15 @@ O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlaçõe
 
 Chame o raio-x quando: o usuário disse que é ETF, o ticker é de fundo de índice conhecido, ou a comparação pede custo/sobreposição/correlação. O erro de "sem raio-x" resolve a dúvida na prática: não veio, não é ETF coberto — siga sem o bloco.
 
+**Cheque estrutural na web (obrigatório quando houver sinal).** O MCP não
+carrega situação societária. Se qualquer comparado tiver preço abaixo de
+R$ 1,00, variação de 8% ou mais sem notícia na base, ou `delisted`/
+`delisted_since` preenchido, busque na web `{TICKER} {empresa} recuperação
+judicial OR grupamento OR fato relevante {ano}` (confira a data da fonte)
+antes de montar a tabela — e o achado vira uma linha "Situação societária" no
+comparativo. Comparar um papel em recuperação com um saudável sem dizer isso
+inverte a leitura inteira. Sem acesso à busca, diga isso na resposta.
+
 ## Passo 3 — Regras de leitura dos dados de ETF
 
 **Correlação par a par.** `correlations.benchmarks` de cada ETF cobre só a lista fixa: IBOV, IFIX, BOVA11, IVVB11, SMAL11, DIVO11, IMAB11, B5P211, HASH11, GOLD11, XFIX11. Logo:

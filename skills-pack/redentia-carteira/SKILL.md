@@ -52,6 +52,16 @@ Parseie com tolerância (vírgula ou ponto, "50k", "12%"). No Caminho B, os tota
 | 5 | `get_thesis{slug}` | 0-2 | só pros cruzamentos mais relevantes (payload enorme); use `conviction`, `companies[].status` e `catalyst` do ticker |
 | 6 | `get_etf_composition{ticker}` | 0-2 | só pra ETFs na carteira e SÓ com confirmação: "quer o raio-x dos ETFs (o que tem dentro, custo, correlações)? custa 1 chamada pesada por ETF" |
 
+**Cheque estrutural na web (obrigatório quando houver sinal).** O MCP não
+carrega situação societária — recuperação judicial ou extrajudicial,
+grupamento, falência. Se qualquer posição tiver preço abaixo de R$ 1,00,
+variação do dia de 8% ou mais sem notícia na base, ou `delisted`/
+`delisted_since` preenchido, busque na web `{TICKER} {empresa} recuperação
+judicial OR grupamento OR fato relevante {ano}` (confira a data da fonte) e
+traga o achado pra linha da posição no relatório. Uma posição em recuperação
+descrita como "andou com o mercado" é o pior erro deste relatório. Sem acesso
+à busca, diga isso e marque a posição pro assessor confirmar.
+
 ## Passo 3 — Monte o relatório neste template
 
 ```markdown
