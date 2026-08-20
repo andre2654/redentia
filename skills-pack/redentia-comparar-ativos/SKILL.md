@@ -38,7 +38,7 @@ O raio-x de ETF é a chamada mais pesada do MCP (carteira inteira + correlaçõe
 | # | Ferramenta | Quantas | Pra quê |
 |---|---|---|---|
 | 1 | `get_quote{ticker}` | 1 por ativo | preço, variação do dia, `as_of`, tipo implícito |
-| 2 | `get_etf_composition{ticker}` | 1 por ETF (máx 2/min na pessoal) | carteira CVM, custos, exposição, correlações |
+| 2 | `get_etf_composition{ticker, detail: "completo"}` | 1 por ETF | carteira CVM, custos, correlações, `exposure.assets` (lista completa ponderada) e `tree` (árvore de fundos aninhados) |
 | 3 | `list_news{ticker, limit: 5}` | 1 por ativo | notícias de cada comparado, filtradas no servidor |
 | 4 | `list_theses{}` | 1 | em quais teses cada ativo aparece |
 
@@ -61,9 +61,11 @@ inverte a leitura inteira. Sem acesso à busca, diga isso na resposta.
 - Senão, reporte a correlação de CADA um contra um benchmark comum (ex.: ambos vs IBOV), nos dois períodos (90d e 12m) e com `n_obs`, e **declare que é proxy, não o par**.
 - `holdings_matrix` só entra se os dois tickers aparecem em `symbols`. Não aparecem, omita — nunca estime correlação de cabeça.
 
-**Sobreposição de carteira.** Interseção dos `exposure.top_assets` dos dois ETFs (transparência: atravessa fundos aninhados, limitada aos 15 maiores ativos finais de cada um). Some `min(weight)` dos tickers comuns e escreva:
+**Sobreposição de carteira.** Interseção dos `exposure.assets` dos dois ETFs — a lista COMPLETA de ativos finais por transparência (por isso o `detail: "completo"`). Some `min(weight)` dos ativos em comum (case pelo `ticker`; sem ticker, pelo nome idêntico) e escreva:
 
-> Sobreposição estimada de pelo menos {X}% (piso: calculada sobre os 15 maiores ativos finais de cada fundo).
+> Sobreposição de {X}% entre as carteiras completas por transparência. {Se algum dos dois tiver fundo não aberto (nó com `unopened` na `tree` ou `fees.unmapped_fund_weight` > 0): "Parte da carteira de {ETF} está em fundo ainda não aberto — a sobreposição não enxerga esse pedaço."}
+
+**Estrutura aninhada.** Quando a pergunta for sobre a estrutura ("o que tem dentro do fundo X que está dentro do Y?"), use a `tree`: cada nó traz o peso local (fração do pai) e o efetivo (fração do ETF), com `unopened: true` onde a carteira do filho ainda não foi ingerida e `cycle: true` onde um fundo reaparece acima — diga isso em vez de tratar como folha.
 
 **Custo.** `fees.management_fee` é a taxa de administração; `fees.total_expense_ratio` soma as taxas dos fundos investidos (taxa sobre taxa). Se `fees.unmapped_fund_weight` for maior que zero ou `fees.incomplete` for true, o custo efetivo é **piso** — escreva "{X}% a.a. (piso)" e cite a `fees.note` em uma frase.
 
@@ -88,7 +90,7 @@ inverte a leitura inteira. Sem acesso à busca, diga isso na resposta.
 {par direto quando existir; senão ambos vs benchmark comum, declarado como proxy}
 
 ### Sobreposição de carteira
-{frase do piso, ou "não se aplica (nenhum dos dois é ETF coberto)"}
+{frase da sobreposição sobre as carteiras completas, ou "não se aplica (nenhum dos dois é ETF coberto)"}
 
 ### Notícias recentes de cada um
 - {A}: {título} ({fonte}, {DD/MM}) — {reading quando houver}

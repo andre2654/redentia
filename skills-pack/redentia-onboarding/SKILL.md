@@ -34,7 +34,7 @@ Isso muda duas coisas: os limites e o acesso à carteira.
 | Ferramenta | O que devolve | Pergunte, por exemplo |
 |---|---|---|
 | `get_quote` | último preço, variação do dia, `as_of`, e se o ativo saiu da B3 | "cotação da PETR4" · "quanto fechou o HGLG11?" · "a AZUL4 ainda é negociada?" |
-| `get_etf_composition` | raio-x do ETF: carteira mensal reportada à CVM, custo com taxa sobre taxa, exposição final por transparência, correlações | "o que tem dentro do HASH11?" · "qual o custo real do IVVB11, com a taxa do fundo americano?" · "quanto de Petrobras eu carrego via BOVA11?" |
+| `get_etf_composition` | raio-x do ETF: carteira mensal reportada à CVM, custo com taxa sobre taxa, exposição final por transparência, correlações. Resumo por padrão (top-15 + `assets_count`); `detail: "completo"` traz a carteira inteira ponderada e a árvore de fundos aninhados | "o que tem dentro do HASH11?" · "qual o custo real do IVVB11, com a taxa do fundo americano?" · "quanto de Petrobras eu carrego via BOVA11?" (use `detail: "completo"`) · "abre a árvore do GOAT11" |
 | `search_assets` | busca por nome ou tema, com tipo e preço | "qual o ticker do Itaú?" · "tem ETF de small cap na B3?" |
 | `get_market_snapshot` | IBOV, IFIX, dólar, Selic meta, CDI, IPCA, juro real e maiores altas/baixas do dia | "como está o mercado?" · "Selic e dólar agora" |
 | `get_daily_briefing` | o resumo editorial do pregão escrito pela Redentia (placar, o que puxou, o que ficou, a leitura) | "me dá o resumo do dia" · "o que aconteceu na bolsa ontem?" |

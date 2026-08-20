@@ -55,7 +55,7 @@ Se nada foi informado ainda, UMA pergunta compacta:
 | 3 | `list_news{limit: 20}` | 1 | feed geral; filtre: itens cujo `tickers[]` intersecta as posições. Pra sondar UMA posição específica, `list_news{ticker}` filtra no servidor |
 | 4 | `list_theses{}` | 1 | cruzamento: posições que aparecem em `theses[].tickers[]` |
 | 5 | `get_thesis{slug}` | 0-2 | só pros cruzamentos mais relevantes (payload enorme); use `conviction`, `companies[].status` e `catalyst` do ticker |
-| 6 | `get_etf_composition{ticker}` | 0-2 | só pra ETFs na carteira e SÓ com confirmação: "quer o raio-x dos ETFs (o que tem dentro, custo, correlações)? custa 1 chamada pesada por ETF" |
+| 6 | `get_etf_composition{ticker}` | 0-2 | só pra ETFs na carteira e SÓ com confirmação: "quer o raio-x dos ETFs (o que tem dentro, custo, correlações)? custa 1 chamada pesada por ETF". Pra "quanto de {ativo} eu carrego via ETFs", chame com `detail: "completo"` e cruze as posições com `exposure.assets` (a lista completa — o top-15 do resumo dá falso negativo pra ativo pequeno) |
 
 **Cheque estrutural na web (obrigatório quando houver sinal).** O MCP não
 carrega situação societária — recuperação judicial ou extrajudicial,
