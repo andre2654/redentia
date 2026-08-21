@@ -16,7 +16,22 @@ const route = useRoute()
 // (ação a R$ 25 pagando R$ 1,50/ano; on cost comprou a R$ 20, vale R$ 30;
 // projeção LPA 3 / payout 50 / crescimento 10 — placeholders da antiga).
 // ====================================================================
-type Mode = 'simple' | 'onCost' | 'projection'
+// MODOS 'income' e 'target' (20/08/2026): o title desta página já é
+// "Calculadora de Dividendos 2026: quanto você recebe por mês" desde a
+// consolidação de canibalização de 03/08 — mas o número-herói era um
+// PERCENTUAL nos três modos. A consulta que o title promete é de renda em
+// reais, e a página respondia com uma métrica. Medida do Search Console
+// (92 dias até 03/08) que justifica os dois modos novos:
+//   simulador de dividendos          2.124 impr, pos 5,71
+//   calculadora de dividendos mensais  413 impr, pos 6,48
+//   simulador de dividendos mensais     61 impr, pos 5,23
+//   calculadora de dividendos reinvestidos 93 impr, pos 2,69
+// e o inverso ("quanto preciso pra viver de dividendos") é a página que
+// investimentos.com.br ranqueia e a Redentia não tinha.
+// Deliberadamente NÃO se criou /calculadora/dividendos: esta URL já carrega
+// 2.527 impressões a 3,17% de CTR e o 03/08 consolidou o cluster aqui.
+// URL nova re-dividiria o sinal que aquele commit acabou de juntar.
+type Mode = 'simple' | 'onCost' | 'projection' | 'income' | 'target'
 const mode = ref<Mode>('simple')
 
 // Simples
@@ -31,6 +46,16 @@ const pPrice = ref(25)
 const pLpa = ref(3)
 const pPayout = ref(50)
 const pGrowth = ref(10)
+// Renda mensal (income): patrimônio + DY médio + aporte → R$/mês
+const iPatrimonio = ref(100000)
+const iDy = ref(8)
+const iAporte = ref(1000)
+const iAnos = ref(10)
+// Quanto preciso (target): renda desejada + DY médio → patrimônio necessário
+const tRenda = ref(5000)
+const tDy = ref(8)
+const tAporte = ref(1000)
+const tInicial = ref(50000)
 
 // ====================================================================
 // Deep-link via query params — porte do applyQueryParams antigo.
@@ -67,17 +92,37 @@ function applyQueryParams() {
   const lpa = parseNumberParam(q.lpa)
   const payout = parseNumberParam(q.payout)
   const growth = parseNumberParam(q.growth)
+  const patrimonio = parseNumberParam(q.patrimonio)
+  const dy = parseNumberParam(q.dy)
+  const aporte = parseNumberParam(q.aporte)
+  const anos = parseNumberParam(q.anos)
+  const renda = parseNumberParam(q.renda)
+  const inicial = parseNumberParam(q.inicial)
   const m = parseStringParam(q.mode)
 
   // Modo: prioriza ?mode= explícito; senão infere pelos params presentes
-  // (mesma regra da página antiga).
-  if (m === 'simple' || m === 'onCost' || m === 'projection') {
+  // (mesma regra da página antiga; 'income' e 'target' entram na inferência
+  // pelos params exclusivos de cada um — ?renda= só existe no target).
+  if (m === 'simple' || m === 'onCost' || m === 'projection' || m === 'income' || m === 'target') {
     mode.value = m
+  } else if (renda !== null) {
+    mode.value = 'target'
+  } else if (patrimonio !== null) {
+    mode.value = 'income'
   } else if (purchase !== null || current !== null || div !== null) {
     mode.value = 'onCost'
   } else if (lpa !== null || payout !== null || growth !== null) {
     mode.value = 'projection'
   }
+
+  if (patrimonio !== null) iPatrimonio.value = patrimonio
+  if (renda !== null) tRenda.value = renda
+  if (inicial !== null) tInicial.value = inicial
+  // ?dy= e ?aporte= servem aos dois modos de renda — aplica nos dois pra o
+  // deep-link funcionar independente de qual modo o ?mode= escolher.
+  if (dy !== null) { iDy.value = dy; tDy.value = dy }
+  if (aporte !== null) { iAporte.value = aporte; tAporte.value = aporte }
+  if (anos !== null) iAnos.value = anos
 
   if (price !== null) {
     sPrice.value = price
@@ -93,7 +138,7 @@ function applyQueryParams() {
 
   // ?ticker= → dados reais (client-side; se houver QUALQUER param numérico
   // explícito, ele manda e o backend não sobrescreve)
-  const anyNumeric = [price, dividend, purchase, current, div, lpa, payout, growth].some((v) => v !== null)
+  const anyNumeric = [price, dividend, purchase, current, div, lpa, payout, growth, patrimonio, dy, aporte, anos, renda, inicial].some((v) => v !== null)
   const ticker = parseStringParam(q.ticker)?.toUpperCase()
   if (import.meta.client && ticker && !anyNumeric) seedFromBackend(ticker)
 }
@@ -207,6 +252,84 @@ const projSeries = computed(() => {
 })
 const projXLabels = computed<[string, string, string]>(() => ['hoje', `+${PROJ_YEARS / 2} anos`, `+${PROJ_YEARS} anos`])
 
+// ====================================================================
+// Modos de RENDA (income / target) — a conta em reais.
+//
+// Premissa declarada na página, e o motivo dela: só o REINVESTIMENTO dos
+// dividendos compõe. Preço da cota entra como constante, valorização NÃO é
+// projetada. Modelar valorização aqui viraria promessa de rendimento, que é
+// exatamente o que o resto do conteúdo desta página se recusa a fazer (ver
+// o cabeçalho de app/content/guias/calculadora-de-dividendos.ts). O número
+// que sai é conservador de propósito.
+//
+// Taxa mensal equivalente ao DY anual: (1+dy)^(1/12) - 1, não dy/12. A
+// divisão simples superestima ~4% em 8% a.a. ao longo de 20 anos.
+// ====================================================================
+function monthlyRate(annualPct: number): number {
+  return Math.pow(1 + annualPct / 100, 1 / 12) - 1
+}
+
+/** FV = P0(1+i)^n + PMT·((1+i)^n − 1)/i, com i=0 tratado (senão divide por zero). */
+function futureValue(p0: number, pmt: number, i: number, months: number): number {
+  if (months <= 0) return p0
+  if (i <= 0) return p0 + pmt * months
+  const g = Math.pow(1 + i, months)
+  return p0 * g + pmt * ((g - 1) / i)
+}
+
+const income = computed(() => {
+  const dy = iDy.value / 100
+  const rendaAnual = iPatrimonio.value * dy
+  const rendaMensal = rendaAnual / 12
+  const i = monthlyRate(iDy.value)
+  const meses = Math.round(iAnos.value * 12)
+  const patrimonioFuturo = futureValue(iPatrimonio.value, iAporte.value, i, meses)
+  const rendaMensalFutura = (patrimonioFuturo * dy) / 12
+  const totalAportado = iPatrimonio.value + iAporte.value * meses
+  return { rendaMensal, rendaAnual, patrimonioFuturo, rendaMensalFutura, totalAportado }
+})
+
+/** Série da renda mensal ano a ano — mesma fórmula, n variando. */
+const incomeSeries = computed(() => {
+  const i = monthlyRate(iDy.value)
+  const dy = iDy.value / 100
+  const out: number[] = []
+  for (let ano = 0; ano <= iAnos.value; ano++) {
+    out.push((futureValue(iPatrimonio.value, iAporte.value, i, ano * 12) * dy) / 12)
+  }
+  return out
+})
+const incomeXLabels = computed<[string, string, string]>(() => [
+  'hoje',
+  `+${Math.round(iAnos.value / 2)} anos`,
+  `+${iAnos.value} anos`,
+])
+
+const target = computed(() => {
+  const dy = tDy.value / 100
+  // Patrimônio necessário: renda anual desejada ÷ DY. DY 0 = meta inalcançável
+  // por dividendos (Infinity), tratado na formatação.
+  const patrimonioNecessario = dy > 0 ? (tRenda.value * 12) / dy : Infinity
+  const i = monthlyRate(tDy.value)
+  const faltam = Math.max(0, patrimonioNecessario - tInicial.value)
+
+  // Tempo até a meta: resolve n em FV. n = ln((FV·i + PMT)/(P0·i + PMT))/ln(1+i).
+  // Sem aporte e sem juros o denominador zera — devolve null e a UI diz que
+  // não chega, em vez de imprimir Infinity.
+  let meses: number | null = null
+  if (!Number.isFinite(patrimonioNecessario)) meses = null
+  else if (faltam <= 0) meses = 0
+  else if (i <= 0) meses = tAporte.value > 0 ? faltam / tAporte.value : null
+  else {
+    const num = patrimonioNecessario * i + tAporte.value
+    const den = tInicial.value * i + tAporte.value
+    meses = den > 0 && num > 0 ? Math.log(num / den) / Math.log(1 + i) : null
+  }
+  if (meses !== null && (!Number.isFinite(meses) || meses > 1200)) meses = null // >100 anos = não chega
+
+  return { patrimonioNecessario, faltam, meses }
+})
+
 // ——— formatação (pt-BR, tabular no CSS) ———
 function money(v: number): string {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
@@ -218,22 +341,47 @@ function pctSigned(v: number): string {
   return (v >= 0 ? '+' : '') + v.toFixed(1).replace('.', ',') + '%'
 }
 
-// DY do número-herói por modo (mesmo results.dy da página antiga).
+// DY do número-herói nos 3 modos de MÉTRICA (mesmo results.dy da página
+// antiga). Nos modos de renda o herói é em reais — ver heroValue.
 const heroDy = computed(() => {
-  if (mode.value === 'simple') return simple.value.dy
   if (mode.value === 'onCost') return onCost.value.dyOnCost
-  return projection.value.currentDY
+  if (mode.value === 'projection') return projection.value.currentDY
+  return simple.value.dy
+})
+
+/** Meses → "8 anos e 3 meses" (arredonda pra mês inteiro). */
+function anosMeses(meses: number): string {
+  const t = Math.max(0, Math.round(meses))
+  const a = Math.floor(t / 12)
+  const m = t % 12
+  if (a === 0) return `${m} ${m === 1 ? 'mês' : 'meses'}`
+  if (m === 0) return `${a} ${a === 1 ? 'ano' : 'anos'}`
+  return `${a} ${a === 1 ? 'ano' : 'anos'} e ${m} ${m === 1 ? 'mês' : 'meses'}`
+}
+
+// Número-herói já formatado: percentual nos modos de métrica, REAIS nos
+// modos de renda (era pct() em todos, e o title da página promete reais).
+const heroValue = computed(() => {
+  if (mode.value === 'income') return money(income.value.rendaMensal)
+  if (mode.value === 'target') {
+    return Number.isFinite(target.value.patrimonioNecessario) ? money(target.value.patrimonioNecessario) : '—'
+  }
+  return pct(heroDy.value)
 })
 
 const resultCaption = computed(() => {
   if (mode.value === 'simple') return `Com base no preço de ${money(sPrice.value)}, o DY anual é de`
   if (mode.value === 'onCost') return 'Seu retorno anual real considerando seu preço de compra'
+  if (mode.value === 'income') return `Com ${money(iPatrimonio.value)} investidos a ${pct(iDy.value)} de DY, você recebe por mês`
+  if (mode.value === 'target') return `Pra receber ${money(tRenda.value)} por mês a ${pct(tDy.value)} de DY, você precisa de`
   return `Baseado em crescimento de ${String(pGrowth.value).replace('.', ',')}% a.a. do lucro, o DY atual é de`
 })
 
 const resultLabel = computed(() => {
   if (mode.value === 'simple') return 'Dividend Yield Atual'
   if (mode.value === 'onCost') return 'Dividend Yield On Cost'
+  if (mode.value === 'income') return 'Renda mensal de dividendos'
+  if (mode.value === 'target') return 'Patrimônio necessário'
   return 'Projeção de Dividend Yield'
 })
 
@@ -253,6 +401,28 @@ const legendItems = computed(() => {
       { label: 'Ganho total anual (DY + valorização)', value: pct(onCost.value.totalReturn), accent: true },
     ]
   }
+  if (mode.value === 'income') {
+    const r = income.value
+    return [
+      { label: 'Renda anual', value: money(r.rendaAnual) },
+      { dot: 'var(--nu-blue)', label: `Renda mensal em ${iAnos.value} anos`, value: money(r.rendaMensalFutura), accent: true },
+      { dot: 'var(--nu-navy)', label: `Patrimônio em ${iAnos.value} anos`, value: money(r.patrimonioFuturo) },
+      { label: 'Total aportado no período', value: money(r.totalAportado) },
+    ]
+  }
+  if (mode.value === 'target') {
+    const t = target.value
+    return [
+      { label: 'Renda anual desejada', value: money(tRenda.value * 12) },
+      { dot: 'var(--nu-navy)', label: 'Quanto falta juntar', value: Number.isFinite(t.faltam) ? money(t.faltam) : '—' },
+      {
+        dot: 'var(--nu-blue)',
+        label: `Tempo aportando ${money(tAporte.value)}/mês`,
+        value: t.meses === null ? 'não chega' : t.meses === 0 ? 'meta atingida' : anosMeses(t.meses),
+        accent: true,
+      },
+    ]
+  }
   return [
     { dot: 'var(--nu-navy)', label: 'DY atual', value: pct(projection.value.currentDY) },
     { dot: 'var(--nu-blue)', label: 'DY projetado (1 ano)', value: pct(projection.value.projectedDY1y), accent: true },
@@ -262,6 +432,21 @@ const legendItems = computed(() => {
 
 // Análise automática — textos verbatim da calculadora antiga.
 const analysisText = computed(() => {
+  if (mode.value === 'income') {
+    const r = income.value
+    const mult = r.rendaMensal > 0 ? r.rendaMensalFutura / r.rendaMensal : 0
+    if (iAporte.value === 0) {
+      return `Sem aportes novos, só reinvestindo os dividendos, a renda mensal multiplica por ${mult.toFixed(1).replace('.', ',')}x em ${iAnos.value} anos. É o efeito da bola de neve sobre o preço de compra travado.`
+    }
+    return `Aportando ${money(iAporte.value)} por mês e reinvestindo tudo, a renda sai de ${money(r.rendaMensal)} para ${money(r.rendaMensalFutura)} por mês em ${iAnos.value} anos. A projeção considera só o reinvestimento dos dividendos, sem valorização da cota.`
+  }
+  if (mode.value === 'target') {
+    const t = target.value
+    if (!Number.isFinite(t.patrimonioNecessario)) return 'Com DY zero não há renda de dividendos. Ajuste o yield médio da carteira pra ver a conta.'
+    if (t.meses === 0) return 'Seu patrimônio atual já cobre essa meta de renda no DY informado. Vale checar a sustentabilidade do payout das pagadoras antes de contar com ela.'
+    if (t.meses === null) return `Com o aporte atual a meta não é alcançada em prazo razoável. Aumente o aporte mensal ou reveja a renda desejada.`
+    return `Reserve uma margem de 15-20% acima disso: dividendo não é contratual, e corte de payout numa pagadora derruba a renda sem aviso. Diversificar em 10-15 pagadoras reduz esse risco específico.`
+  }
   const dy = heroDy.value
   if (dy < 3) return 'DY abaixo de 3% é considerado baixo. Pode indicar empresa de crescimento ou ação cara.'
   if (dy < 6) return 'DY entre 3-6% é considerado bom para ações. Equilibra dividendos e crescimento.'
@@ -270,9 +455,17 @@ const analysisText = computed(() => {
 })
 
 const modeOptions = [
+  { value: 'income' as Mode, label: 'Renda mensal' },
+  { value: 'target' as Mode, label: 'Quanto preciso' },
   { value: 'simple' as Mode, label: 'Cálculo Simples' },
   { value: 'onCost' as Mode, label: 'DY On Cost' },
   { value: 'projection' as Mode, label: 'Projeção' },
+]
+
+const dyPresets = [
+  { label: 'Ações 6%', value: 6 },
+  { label: 'Mista 8%', value: 8 },
+  { label: 'FIIs 10%', value: 10 },
 ]
 
 const payoutPresets = [
@@ -288,13 +481,23 @@ const growthPresets = [
 ]
 
 // Data de atualização dinâmica (sinal de frescor — portado da página antiga).
-const CONTENT_VERSION = '2026-05-01'
+const CONTENT_VERSION = '2026-08-21'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 const lastUpdatedISO = lastUpdated.toISOString()
 
 // Cenários populares — long-tail SEO via deep-links (texto/URLs verbatim).
 const popularScenarios = [
+  // Cenários de RENDA primeiro: são a intenção que o title da página promete
+  // ("quanto você recebe por mês") e as consultas de maior volume do cluster.
+  { label: 'Quanto rende R$ 100 mil em dividendos', sub: 'Carteira mista a 8% de DY', to: '/calculadora/dividend-yield?mode=income&patrimonio=100000&dy=8&aporte=1000&anos=10' },
+  { label: 'Quanto preciso pra viver de dividendos', sub: 'Meta de R$ 5.000 por mês', to: '/calculadora/dividend-yield?mode=target&renda=5000&dy=8&inicial=50000&aporte=1000' },
+  { label: 'Quanto rende R$ 1 milhão em dividendos', sub: 'Renda mensal a 8% de DY', to: '/calculadora/dividend-yield?mode=income&patrimonio=1000000&dy=8&aporte=0&anos=10' },
+  { label: 'Renda de R$ 10 mil por mês', sub: 'Patrimônio necessário e prazo', to: '/calculadora/dividend-yield?mode=target&renda=10000&dy=8&inicial=100000&aporte=3000' },
+  { label: 'Dividendos mensais com FIIs', sub: 'R$ 100 mil a 10% de DY', to: '/calculadora/dividend-yield?mode=income&patrimonio=100000&dy=10&aporte=1000&anos=10' },
+  { label: 'Primeira renda: R$ 1.000 por mês', sub: 'Começando do zero', to: '/calculadora/dividend-yield?mode=target&renda=1000&dy=8&inicial=0&aporte=1000' },
+  { label: 'Dividendos reinvestidos por 20 anos', sub: 'R$ 50 mil + R$ 1.000/mês', to: '/calculadora/dividend-yield?mode=income&patrimonio=50000&dy=8&aporte=1000&anos=20' },
+  { label: 'Aposentar com R$ 15 mil de dividendos', sub: 'Meta de longo prazo', to: '/calculadora/dividend-yield?mode=target&renda=15000&dy=8&inicial=200000&aporte=5000' },
   { label: 'DY de ITUB4', sub: 'Banco Itaú', to: '/calculadora/dividend-yield?ticker=ITUB4' },
   { label: 'DY de PETR4', sub: 'Petrobras', to: '/calculadora/dividend-yield?ticker=PETR4' },
   { label: 'DY de BBAS3', sub: 'Banco do Brasil', to: '/calculadora/dividend-yield?ticker=BBAS3' },
@@ -362,6 +565,12 @@ const relatedRankings = [
 // FAQs verbatim da página antiga (12). O FAQPage JSON-LD é emitido pelo
 // NuFaqAccordion — fonte única, mesmo padrão do app antigo.
 const faqItems = [
+  // As 3 primeiras cobrem a intenção de RENDA (a que o title promete). Ficam
+  // no topo porque o NuFaqAccordion abre a primeira por padrão e o Google
+  // costuma puxar as primeiras entradas do FAQPage pro rich result.
+  { q: 'Quanto rende R$ 100 mil em dividendos por mês?', a: 'Depende do dividend yield médio da carteira. A conta é Renda mensal = (Patrimônio × DY) ÷ 12. Com R$ 100.000 numa carteira a 8% de DY ao ano, são cerca de R$ 667 por mês. A 6%, R$ 500 por mês. A 10% (perfil mais carregado em FIIs), R$ 833 por mês. Esses números são ilustrativos: o DY de uma carteira real oscila conforme o payout das empresas e o preço das cotas, e dividendo não é contratual. Use o modo Renda mensal da calculadora acima pra rodar com o seu patrimônio e o seu yield.' },
+  { q: 'Quanto preciso investir pra viver de dividendos?', a: 'Divida a renda anual desejada pelo dividend yield médio esperado: Patrimônio = (Renda mensal × 12) ÷ DY. Pra R$ 5.000 por mês a 8% de DY, são R$ 750.000. A 6%, R$ 1 milhão. A 10%, R$ 600.000. Duas ressalvas importantes: reserve uma margem de 15-20% acima do número, porque corte de payout numa pagadora derruba a renda sem aviso; e diversifique em 10-15 pagadoras pra reduzir o risco de depender de uma só. O modo Quanto preciso da calculadora mostra também em quanto tempo você chega lá com o seu aporte mensal.' },
+  { q: 'A projeção considera a valorização das ações?', a: 'Não, e isso é proposital. A projeção aplica apenas o reinvestimento dos dividendos, usando a taxa mensal equivalente ao DY anual sobre o patrimônio acumulado mais os aportes. O preço da cota entra como constante. Projetar valorização transformaria a simulação em promessa de rendimento, e preço de ação não é previsível. O resultado é conservador de propósito: uma carteira de boas pagadoras tende a somar valorização a esse número no mundo real, mas também pode sofrer cortes de dividendo que a conta não antecipa.' },
   { q: 'Qual é um bom Dividend Yield?', a: 'Para ações: 4-8% é considerado bom no Brasil. Menos de 3% é baixo (típico de empresas growth). Acima de 10% levanta suspeitas, pode ser ação em forte queda ou dividendo extraordinário não recorrente. Para FIIs: 8-12% é a média histórica. FIIs de papel pagam mais (9-13%) que FIIs de tijolo (8-12%). Acima de 13% num FII, investigue se é sustentável (vacância alta, distribuição de receita não recorrente).' },
   { q: 'DY alto é sempre melhor?', a: 'Não. DY muito alto pode indicar três armadilhas: 1) Preço da ação caiu muito por algum problema na empresa (DY virou alto matematicamente, mas o ativo está em crise); 2) Dividendo extraordinário pontual que não vai se repetir (venda de ativo, distribuição de reserva); 3) Payout insustentável, empresa distribui mais do que deveria e vai cortar dividendo no próximo ciclo. Sempre verifique payout ratio, lucro recorrente e dívida líquida antes de comprar por DY alto.' },
   { q: 'O que é Payout Ratio e qual o ideal?', a: 'Payout é a porcentagem do lucro líquido que a empresa distribui em dividendos. Payout = (Dividendos ÷ Lucro Líquido) × 100. Para ações: 40-60% é o ideal (a empresa equilibra dividendos com reinvestimento no negócio). Para FIIs: 95% ou mais é obrigatório por lei (Lei 8.668/93). Payout acima de 80% em ação tradicional é um sinal de alerta, qualquer queda no lucro força um corte do dividendo.' },
@@ -407,14 +616,15 @@ usePageSeo({
       inLanguage: 'pt-BR',
       dateModified: lastUpdatedISO,
       description:
-        'Calculadora gratuita de dividend yield com 3 modos de cálculo: simples (DY atual), on cost (sobre o preço de compra) e projeção (DY futuro com LPA, payout e crescimento). Cobre ações e FIIs da B3 com pré-seleção via URL.',
+        'Calculadora gratuita de dividendos com 5 modos: renda mensal em reais, patrimônio necessário pra viver de dividendos, DY simples, DY on cost e projeção de DY. Cobre ações e FIIs da B3 com pré-seleção via URL.',
       featureList: [
+        'Renda mensal de dividendos em reais a partir do patrimônio e do DY',
+        'Patrimônio necessário pra viver de dividendos (conta inversa)',
+        'Projeção de renda com dividendos reinvestidos e aporte mensal',
         'DY atual com preço e dividendos reais do ticker (deep-link)',
         'DY on cost (rentabilidade sobre o preço de compra)',
         'Projeção de DY em 1 e 3 anos via LPA + payout + crescimento',
-        '17 ações e FIIs populares com cálculo pronto em 1 clique',
         'Análise automática (DY baixo / bom / excelente / suspeito)',
-        'Cálculo de dividendos mensais e ganho total anual',
         'Cenários populares pré-preenchidos via URL (deep-link)',
         'Compatível com BDRs, ETFs e REITs (input manual)',
         // Era "Sem cadastro, sem propaganda, gratuito". featureList é a lista de
@@ -432,14 +642,20 @@ usePageSeo({
 <template>
   <div>
     <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Calcule o DY atual, on cost e projetado de qualquer ativo.">
-      DY Atual, Projetado e On Cost de Ações e
+    <!-- H1 alinhado ao title desde 20/08: o title virou "Calculadora de
+         Dividendos 2026: quanto você recebe por mês" na consolidação de
+         canibalização de 03/08, mas o H1 seguia falando só de DY. Title
+         prometendo renda e H1 prometendo métrica é sinal misturado pro
+         Google e promessa quebrada pra quem clica. Os termos de DY não
+         saíram, desceram pro desc e pro corpo. -->
+    <CalcHero desc="Quanto sua carteira paga por mês, quanto você precisa pra viver de dividendos e o DY atual, on cost e projetado de qualquer ativo.">
+      Calculadora de Dividendos: quanto você recebe por mês em Ações e
       <em>FIIs.</em>
     </CalcHero>
 
     <!-- ============ Calculadora interativa (design) ============ -->
     <CalcShell eyebrow="Calculadora" section-id="dy">
-      <template #title>Dividend yield.</template>
+      <template #title>Dividendos.</template>
       <template #controls>
         <div class="dy__modes" role="group" aria-label="Modo de cálculo">
           <button
@@ -470,6 +686,32 @@ usePageSeo({
           </div>
         </template>
 
+        <template v-else-if="mode === 'income'">
+          <CalcSliderField v-model="iPatrimonio" label="Patrimônio investido" :min="0" :max="1000000" :step="5000" :value-text="money(iPatrimonio)" />
+          <div class="dy__gap">
+            <CalcSliderField v-model="iDy" label="Dividend yield médio da carteira" :min="0" :max="15" :step="0.25" :value-text="pct(iDy)" :presets="dyPresets" />
+          </div>
+          <div class="dy__gap">
+            <CalcSliderField v-model="iAporte" label="Aporte mensal" :min="0" :max="10000" :step="100" :value-text="money(iAporte)" />
+          </div>
+          <div class="dy__gap">
+            <CalcSliderField v-model="iAnos" label="Período" :min="1" :max="40" :step="1" :value-text="iAnos + (iAnos === 1 ? ' ano' : ' anos')" />
+          </div>
+        </template>
+
+        <template v-else-if="mode === 'target'">
+          <CalcSliderField v-model="tRenda" label="Renda mensal desejada" :min="500" :max="30000" :step="500" :value-text="money(tRenda)" />
+          <div class="dy__gap">
+            <CalcSliderField v-model="tDy" label="Dividend yield médio da carteira" :min="0" :max="15" :step="0.25" :value-text="pct(tDy)" :presets="dyPresets" />
+          </div>
+          <div class="dy__gap">
+            <CalcSliderField v-model="tInicial" label="Patrimônio que já tenho" :min="0" :max="1000000" :step="5000" :value-text="money(tInicial)" />
+          </div>
+          <div class="dy__gap">
+            <CalcSliderField v-model="tAporte" label="Aporte mensal" :min="0" :max="10000" :step="100" :value-text="money(tAporte)" />
+          </div>
+        </template>
+
         <template v-else>
           <CalcSliderField v-model="pPrice" label="Preço da ação" :min="1" :max="priceMax" :step="0.5" :value-text="money(pPrice)" />
           <div class="dy__gap">
@@ -484,10 +726,13 @@ usePageSeo({
         </template>
       </template>
       <template #result>
-        <CalcResultPanel :caption="resultCaption" :value="pct(heroDy)" :items="legendItems">
+        <CalcResultPanel :caption="resultCaption" :value="heroValue" :items="legendItems">
           <div class="dy__result-label">{{ resultLabel }}</div>
           <div v-if="mode === 'projection'" class="dy__chart">
             <CalcAreaChart :values="projSeries" :x-labels="projXLabels" :format-y="(v: number) => v.toFixed(1).replace('.', ',') + '%'" />
+          </div>
+          <div v-else-if="mode === 'income'" class="dy__chart">
+            <CalcAreaChart :values="incomeSeries" :x-labels="incomeXLabels" :format-y="(v: number) => money(v)" />
           </div>
           <div class="dy__insight">{{ analysisText }}</div>
           <div class="dy__insight dy__insight--tip">
@@ -499,8 +744,8 @@ usePageSeo({
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
-      label="Calculadora · Dividend Yield"
-      :chips="['100% gratuito', 'Cálculo instantâneo', 'Ações e FIIs', 'DY on cost + projeção']"
+      label="Calculadora · Dividendos"
+      :chips="['100% gratuito', 'Renda mensal em reais', 'Ações e FIIs', 'DY on cost + projeção']"
       :updated="lastUpdatedText"
     />
 
@@ -524,6 +769,41 @@ usePageSeo({
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
         <p>Dividend Yield (DY) é o percentual de dividendos pagos em relação ao preço da ação: <strong>DY = (Dividendos Anuais ÷ Preço) × 100</strong>. Exemplo: ITUB4 a R$ 28,00 com R$ 1,80 anual tem DY de 6,4%. Considerado bom: 4-8% para ações, 8-12% para FIIs. Esta calculadora mostra DY atual, projetado e on cost (no seu preço de compra).</p>
         <p>Use a calculadora acima para simular o DY de qualquer ação ou FII da B3 em segundos. Ideal pra comparar pagadoras antes de montar a carteira de renda passiva.</p>
+      </div>
+    </CalcSplit>
+
+    <!-- ============ Modos de renda: a conta em reais (SEO do cluster
+         "calculadora de dividendos mensais" / "quanto preciso pra viver de
+         dividendos") ============ -->
+    <CalcSplit tone="cream">
+      <template #title>Quanto você recebe de dividendos por mês</template>
+      <template #dek>
+        <p>O dividend yield responde em percentual, mas a pergunta de quem investe pra renda é em reais: quanto cai na conta todo mês. Os modos <strong>Renda mensal</strong> e <strong>Quanto preciso</strong> da calculadora fazem as duas pontas dessa conta.</p>
+      </template>
+      <div class="dy__formula-block">
+        <CalcFormulaCard
+          tone="white"
+          :terms="[
+            { sym: 'Patrimônio', desc: 'total investido em ações e FIIs pagadores' },
+            { sym: 'DY médio', desc: 'dividend yield ponderado da carteira, ao ano' },
+          ]"
+        >Renda mensal = (Patrimônio × DY) ÷ 12</CalcFormulaCard>
+        <div class="dy__formula-example">
+          <p><strong>Exemplo ilustrativo:</strong> R$ 100.000 numa carteira com DY médio de 8% ao ano</p>
+          <p class="dy__formula-accent">Renda = (100.000 × 0,08) ÷ 12 = R$ 666,67 por mês</p>
+        </div>
+      </div>
+      <div class="dy__prose dy__prose--mt">
+        <p>A conta inversa é a que responde "quanto preciso pra viver de dividendos": divida a renda anual que você quer pelo DY médio esperado. Pra R$ 5.000 por mês (R$ 60.000 por ano) a 8% de DY, o patrimônio necessário é de R$ 750.000. A 6%, sobe pra R$ 1 milhão. A 10%, cai pra R$ 600.000. O yield que você assume muda a meta em centenas de milhares de reais, e é por isso que ele é um slider e não um número fixo.</p>
+      </div>
+    </CalcSplit>
+
+    <CalcSplit tone="white" title-tag="h3" size="sm">
+      <template #title>Dividendos reinvestidos: como a projeção é feita</template>
+      <div class="dy__prose">
+        <p>Quando você reinveste os dividendos, cada pagamento compra mais cotas, que passam a pagar dividendos também. A projeção da calculadora aplica a taxa mensal equivalente ao DY anual, <strong>(1 + DY)<sup>1/12</sup> − 1</strong>, sobre o patrimônio acumulado mais os aportes do período.</p>
+        <p>Uma escolha deliberada: a projeção considera <strong>apenas o reinvestimento dos dividendos</strong>. A valorização da cota não entra na conta. Projetar valorização transformaria a simulação em promessa de rendimento, e o preço de uma ação não é previsível. O número que sai é conservador de propósito: no mundo real, uma carteira de boas pagadoras tende a somar valorização a esse resultado, mas também pode ter cortes de dividendo que a conta não antecipa.</p>
+        <p>Duas coisas que a calculadora não desconta e você deve considerar: JCP tem 15% de imposto retido na fonte (dividendos e rendimentos de FII são isentos pra pessoa física hoje), e o DY médio de uma carteira real oscila ano a ano conforme o payout das empresas.</p>
       </div>
     </CalcSplit>
 
@@ -621,8 +901,19 @@ usePageSeo({
       <NuFaqAccordion :items="faqItems" surface="white" />
     </CalcSplit>
 
+    <!-- ============ Termos do glossário (link interno — ver o cabeçalho de
+         CalcGlossaryLinks.vue pro número que motivou) ============ -->
+    <CalcBand tone="white" title="Termos usados neste cálculo">
+      <template #dek>
+        <p>O que cada conceito da calculadora significa, explicado em uma página só.</p>
+      </template>
+      <div class="dy__band-body">
+        <CalcGlossaryLinks :slugs="['dividend-yield', 'proventos', 'payout', 'jscp', 'fii', 'fundos-tijolo', 'fundos-papel', 'come-cotas']" />
+      </div>
+    </CalcBand>
+
     <!-- ============ Rankings + outras ferramentas + E-E-A-T + CTA ============ -->
-    <CalcBand tone="white" title="Rankings Relacionados">
+    <CalcBand tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -634,7 +925,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Ferramentas">
+    <CalcBand tone="white" title="Outras Ferramentas">
       <div class="dy__grid-cards">
         <NuxtLink to="/calculadora/planejamento" class="dy__card-link">
           <h3 class="dy__card-link-title">Planejamento Patrimonial</h3>

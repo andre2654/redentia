@@ -24,12 +24,33 @@ import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_ASSETS } from '../../app/content/seo/indexable-assets'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
+// fonte única compartilhada com as páginas (dateModified do JSON-LD)
+import { ultimoPregao } from '../../app/utils/pregao'
 
 export interface SitePage {
   path: string
   title: string
   description?: string
+  /**
+   * Data da última modificação real, YYYY-MM-DD. Vira <lastmod> no sitemap.
+   *
+   * REGRA DURA: só preencher quando a data é VERDADE verificável. O Google
+   * ignora lastmod de sitemap que ele considera não-confiável, e uma vez
+   * desacreditado o campo inteiro deixa de contar — inclusive nas URLs em que
+   * ele estava certo. Por isso página sem data conhecida (glossário, setores,
+   * institucional) fica SEM o campo, e não com a data do build.
+   *
+   * Fontes por seção:
+   *  - guias:              dateModified do GUIDE_DOCS (data editorial real)
+   *  - calculadoras:       CONTENT_VERSION de cada página
+   *  - rankings, tesouro,
+   *    ativos, dividendos,
+   *    cripto, teses, home: último pregão (o dado É refeito todo dia útil)
+   *  - resto:              ausente
+   */
+  lastmod?: string
 }
+
 
 export interface SiteSection {
   id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos'
@@ -41,9 +62,9 @@ export interface SiteSection {
 const CORE_PAGES: SitePage[] = [
   // fusão home+carteira (2026-07-13): /mercado morreu (301 → '/') e a home
   // pública herdou o panorama do mercado — 1 entrada só.
-  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.' },
-  { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.' },
-  { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.' },
+  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.', lastmod: ultimoPregao() },
+  { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.', lastmod: ultimoPregao() },
+  { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.', lastmod: ultimoPregao() },
   { path: '/guias', title: 'Guias', description: 'Conteúdo educacional sobre investimentos no Brasil.' },
   // Guias individuais /guias/{slug}: derivados de GUIDE_DOCS (fonte única do
   // hub e das páginas). Só entra guia com doc escrito e registrado, então
@@ -68,14 +89,14 @@ const INSTITUCIONAL_PAGES: SitePage[] = [
 ]
 
 const CALCULADORA_PAGES: SitePage[] = [
-  { path: '/calculadora/juros-compostos', title: 'Calculadora de Juros Compostos', description: 'Simulador com aportes mensais. Fórmula M = C×(1+i)^n aplicada com gráfico e tabela.' },
-  { path: '/calculadora/preco-teto', title: 'Calculadora de Preço Teto', description: 'Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3.' },
-  { path: '/calculadora/dividend-yield', title: 'Calculadora de Dividend Yield', description: 'DY atual, projetado e on cost. Fórmula DY = (Dividendos Anuais / Preço) × 100.' },
-  { path: '/calculadora/imposto-renda', title: 'Calculadora de IR sobre Ações', description: '15% swing trade, 20% day trade, isenção de R$ 20 mil/mês (códigos DARF 6015 e 8523).' },
-  { path: '/calculadora/aposentadoria', title: 'Calculadora de Aposentadoria', description: 'Regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE).' },
-  { path: '/calculadora/quanto-investir', title: 'Calculadora: Quanto Investir por Mês', description: 'Quanto aportar pra atingir uma meta financeira em prazo definido.' },
-  { path: '/calculadora/planejamento', title: 'Planejamento Patrimonial', description: 'Carteira recomendada da B3 baseada em dados históricos reais.' },
-  { path: '/calculadora/acoes', title: 'Simulador de Ações', description: 'Backtest com PETR4, ITUB4, VALE3 e dividendos reinvestidos.' },
+  { path: '/calculadora/juros-compostos', title: 'Calculadora de Juros Compostos', description: 'Simulador com aportes mensais. Fórmula M = C×(1+i)^n aplicada com gráfico e tabela.', lastmod: '2026-05-01' },
+  { path: '/calculadora/preco-teto', title: 'Calculadora de Preço Teto', description: 'Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3.', lastmod: '2026-06-08' },
+  { path: '/calculadora/dividend-yield', title: 'Calculadora de Dividend Yield', description: 'DY atual, projetado e on cost. Fórmula DY = (Dividendos Anuais / Preço) × 100.', lastmod: '2026-08-21' },
+  { path: '/calculadora/imposto-renda', title: 'Calculadora de IR sobre Ações', description: '15% swing trade, 20% day trade, isenção de R$ 20 mil/mês (códigos DARF 6015 e 8523).', lastmod: '2026-05-01' },
+  { path: '/calculadora/aposentadoria', title: 'Calculadora de Aposentadoria', description: 'Regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE).', lastmod: '2026-05-01' },
+  { path: '/calculadora/quanto-investir', title: 'Calculadora: Quanto Investir por Mês', description: 'Quanto aportar pra atingir uma meta financeira em prazo definido.', lastmod: '2026-05-01' },
+  { path: '/calculadora/planejamento', title: 'Planejamento Patrimonial', description: 'Carteira recomendada da B3 baseada em dados históricos reais.', lastmod: '2026-05-01' },
+  { path: '/calculadora/acoes', title: 'Simulador de Ações', description: 'Backtest com PETR4, ITUB4, VALE3 e dividendos reinvestidos.', lastmod: '2026-05-01' },
 ]
 
 // Métodos de preço teto: /calculadora/preco-teto/{metodo}. Derivados do registry
@@ -157,6 +178,7 @@ const fetchThesisPages = defineCachedFunction(
           path: `/tese/${t.id}`,
           title: t.title || t.id,
           description: t.description || undefined,
+          lastmod: ultimoPregao(), // convicção é revalidada a cada pregão
         }))
     } catch {
       return [] // backend fora → omite a seção, sitemap continua de pé
@@ -213,6 +235,7 @@ const fetchAssetPages = defineCachedFunction(
           title: t.name
             ? `${t.ticker.toUpperCase()} (${t.name.replace(/\s+/g, ' ').trim()})`
             : t.ticker.toUpperCase(),
+          lastmod: ultimoPregao(), // cotação, variação e fundamentos do pregão
         }))
     } catch {
       return []
@@ -253,6 +276,7 @@ const fetchTesouroPages = defineCachedFunction(
           path: `/tesouro/${t.slug}`,
           title: t.name || t.slug,
           description: t.rate ? `Taxa do dia: ${t.rate}${t.indexer ? ` (${t.indexer})` : ''}.` : undefined,
+          lastmod: ultimoPregao(), // taxa e preço unitário mudam todo dia útil
         }))
     } catch {
       return []
@@ -291,6 +315,7 @@ const fetchCryptoPages = defineCachedFunction(
         .map((c) => ({
           path: `/asset/${c.symbol.toUpperCase()}`,
           title: c.name ? `${c.symbol.toUpperCase()} (${c.name})` : c.symbol.toUpperCase(),
+          lastmod: ultimoPregao(),
         }))
     } catch {
       return []
@@ -345,6 +370,7 @@ const fetchDividendPages = defineCachedFunction(
       path: `/dividendos/${t}`,
       title: `Dividendos de ${t}`,
       description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${t}.`,
+      lastmod: ultimoPregao(), // DY acompanha o preço, que muda todo pregão
     }))
   },
   {
@@ -366,14 +392,17 @@ function guideDocPages(): SitePage[] {
     path: `/guias/${g.slug}`,
     title: g.title,
     description: g.description,
+    lastmod: g.dateModified, // data editorial real do registry
   }))
 }
 
 function rankingPages(): SitePage[] {
+  const lastmod = ultimoPregao()
   return Object.values(RANKINGS).map((r) => ({
     path: `/ranking/${r.slug}`,
     title: r.title,
     description: r.metaDescription,
+    lastmod, // a ordem dos 22 rankings é recalculada após cada pregão
   }))
 }
 

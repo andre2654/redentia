@@ -17,11 +17,16 @@ const logoFailed = ref(false)
   <section class="ahr">
     <div class="ahr__badges">
       <img v-if="hero.logo && !logoFailed" :src="hero.logo" alt="" class="ahr__logo" @error="logoFailed = true">
-      <span class="ahr__company">{{ hero.companyLine }}</span>
+      <!-- H1 = empresa · ticker, NÃO o preço (20/08/2026). O preço era o h1
+           das ~460 páginas de ativo do sitemap: "R$ 44,39" é o título que o
+           Google lia como assunto da página, num template que disputa
+           consultas de ticker ("itub4", "petr4 cotação"). O preço segue com
+           a mesma classe e o mesmo tamanho — nada muda visualmente, só a tag. -->
+      <h1 class="ahr__company">{{ hero.companyLine }}</h1>
       <span class="ahr__exchange">{{ hero.exchangeLabel || 'B3' }}</span>
       <span v-if="position" class="ahr__position">Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</span>
     </div>
-    <h1 class="ahr__price">{{ hero.priceFmt }}</h1>
+    <div class="ahr__price">{{ hero.priceFmt }}</div>
     <div class="ahr__variation">
       <span v-if="hero.changeLine" class="ahr__delta" :class="`ahr__delta--${hero.dir}`">
         <svg width="11" height="11" viewBox="0 0 10 10" class="ahr__tri" :class="{ 'ahr__tri--down': hero.dir === 'down' }"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>{{ hero.changeLine }}
@@ -46,7 +51,9 @@ const logoFailed = ref(false)
   width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block;
   background: var(--nu-white); flex-shrink: 0;
 }
-.ahr__company { color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
+/* margin: 0 explícito — virou h1 e o UA aplica margem de bloco por padrão,
+   o que quebraria o alinhamento da linha de badges (flex). */
+.ahr__company { margin: 0; color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
 .ahr__exchange {
   display: inline-flex; align-items: center; border: 2px solid var(--nu-ink-14);
   color: var(--nu-gray); font-size: 13px; font-weight: 800; padding: 5px 13px;

@@ -81,6 +81,7 @@ usePageSeo({
   description: acao.value.seo.description,
   path: `/asset/${ticker}`,
   structuredData,
+  dateModified: ultimoPregao(),
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: ticker, path: `/asset/${ticker}` },

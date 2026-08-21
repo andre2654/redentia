@@ -411,8 +411,19 @@ usePageSeo({
       </div>
     </CalcBand>
 
+    <!-- ============ Termos do glossário (link interno — ver o cabeçalho de
+         CalcGlossaryLinks.vue pro número que motivou) ============ -->
+    <CalcBand tone="white" title="Termos usados neste cálculo">
+      <template #dek>
+        <p>Os conceitos que aparecem na simulação, cada um com a definição completa.</p>
+      </template>
+      <div class="sa__band-body">
+        <CalcGlossaryLinks :slugs="['acoes-on-pn', 'dividendos', 'jscp', 'bonificacao', 'buy-and-hold', 'diversificacao', 'blue-chips', 'small-caps']" />
+      </div>
+    </CalcBand>
+
     <!-- ============ Rankings + outras ferramentas + CTA ============ -->
-    <CalcBand tone="white" title="Rankings Relacionados">
+    <CalcBand tone="cream" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -424,7 +435,7 @@ usePageSeo({
       </div>
     </CalcBand>
 
-    <CalcBand tone="cream" title="Outras Ferramentas">
+    <CalcBand tone="white" title="Outras Ferramentas">
       <div class="sa__grid-cards">
         <NuxtLink to="/calculadora/juros-compostos" class="sa__card-link">
           <h3 class="sa__card-link-title">Calculadora de Juros Compostos</h3>

@@ -293,6 +293,17 @@ function buildFaq(t: TesouroApi): { q: string; a: string }[] {
   ]
 }
 
+/**
+ * Junta base + extra só enquanto o title inteiro couber no que o SERP mostra.
+ * TETO_SERP conta o sufixo ' · Redentia' que o titleTemplate (app.vue) soma
+ * depois — por isso 65 aqui vira ~76 no <title>, que é o limite prático antes
+ * do Google truncar ou reescrever.
+ */
+const TETO_SERP = 65
+function tituloQueCabe(base: string, extra: string): string {
+  return extra && base.length + extra.length <= TETO_SERP ? base + extra : base
+}
+
 function buildSeo(t: TesouroApi): TesouroPayload['seo'] {
   const rateHero = tesouroRateFmt(t)
   const bits: string[] = [`${t.name} hoje: taxa ${rateHero}${t.rate_numeric != null ? ' ao ano' : ''}.`]
@@ -305,8 +316,16 @@ function buildSeo(t: TesouroApi): TesouroPayload['seo'] {
     // ("tesouro ipca+ 2040 taxa 7,23%" fez 111 impressões, "tesouro selic 2031
     // valor hoje" 30, "preço tesouro selic 2031" 44), todas com zero clique.
     // Um title que diz "taxa de hoje" sem dizer QUAL taxa perde pra quem diz.
+    //
+    // O PREÇO SÓ ENTRA SE COUBER (21/08/2026). O sufixo ' · Redentia' (11
+    // chars) é somado pelo titleTemplate do app.vue, e títulos como
+    // "Tesouro IPCA+ com Juros Semestrais 2026" chegavam a 88 caracteres —
+    // o Google corta perto de 65 e, pior, tende a REESCREVER o title quando
+    // ele estoura, o que joga fora justamente o número que a auditoria de
+    // 03/08 colocou ali de propósito. Cabendo, o número fica; não cabendo,
+    // sai o preço (menos buscado) e a TAXA — o termo da consulta — sobrevive.
     title: t.rate_numeric != null || t.price_buy != null
-      ? `${t.name}: taxa ${rateHero} hoje${t.price_buy != null ? `, ${moneyFmt(t.price_buy)}` : ''}`
+      ? tituloQueCabe(`${t.name}: taxa ${rateHero} hoje`, t.price_buy != null ? `, ${moneyFmt(t.price_buy)}` : '')
       : `${t.name}: taxa de hoje, preço e histórico`,
     description: bits.join(' '),
   }

@@ -26,6 +26,23 @@ interface PageSeoInput {
    * Vence o default 'noindex, nofollow' do flag noindex.
    */
   robots?: string
+  /**
+   * Data ISO da última atualização do CONTEÚDO desta página. Emite um nó
+   * WebPage com dateModified.
+   *
+   * POR QUE EXISTE (21/08/2026). Auditoria encontrou o sinal invertido: as
+   * páginas ESTÁTICAS (guias, calculadoras) declaravam dateModified e as
+   * DIÁRIAS não — home, /asset/{ticker}, /dividendos/{ticker} e /tesouro/{slug}
+   * saíam sem nenhuma marca de frescor. É o oposto do necessário: numa consulta
+   * sensível a tempo ("cotação PETR4 hoje"), buscador com IA e LLM precisam
+   * saber de quando é o dado, e a ausência do campo numa página de cotação pesa
+   * contra na hora de escolher o que citar.
+   *
+   * Vai em WebPage, não no Corporation/FinancialProduct da página:
+   * dateModified é propriedade de CreativeWork, e Organization não é
+   * CreativeWork — declarar lá seria schema inválido.
+   */
+  dateModified?: string
 }
 
 export function usePageSeo(input: PageSeoInput) {
@@ -66,6 +83,19 @@ export function usePageSeo(input: PageSeoInput) {
       normalized.publisher ??= { '@type': 'Organization', name: 'Redentia', logo: { '@type': 'ImageObject', url: `${origin}/logo-azul.svg` } }
     }
     ld.push(normalized)
+  }
+
+  if (input.dateModified) {
+    ld.push({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': canonical,
+      url: canonical,
+      name: input.title,
+      dateModified: input.dateModified,
+      inLanguage: 'pt-BR',
+      isPartOf: { '@type': 'WebSite', name: 'Redentia', url: origin },
+    })
   }
 
   if (input.breadcrumbs?.length) {

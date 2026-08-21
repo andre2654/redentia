@@ -555,7 +555,12 @@ usePageSeo({
             </template>
           </div>
 
-          <NuxtLink :to="`/asset/${activeTicker.toLowerCase()}`" class="pt__asset-link">
+          <!-- UPPERCASE (20/08/2026): /asset/{ticker} minúsculo 301a pro
+               maiúsculo. Este link saía em minúscula na página que mais recebe
+               clique do site inteiro, então TODA renderização mandava o Google
+               num redirect em vez de na URL canônica. Alimentava as 1.073
+               "Página com redirecionamento" do relatório de cobertura. -->
+          <NuxtLink :to="`/asset/${activeTicker.toUpperCase()}`" class="pt__asset-link">
             Ver análise completa de {{ activeTicker }} →
           </NuxtLink>
 
@@ -808,8 +813,19 @@ usePageSeo({
       </div>
     </CalcBand>
 
+    <!-- ============ Termos do glossário (link interno — ver o cabeçalho de
+         CalcGlossaryLinks.vue pro número que motivou) ============ -->
+    <CalcBand tone="cream" title="Termos usados neste cálculo">
+      <template #dek>
+        <p>Os indicadores que entram em cada fórmula de preço teto, explicados um a um.</p>
+      </template>
+      <div class="pt__band-body">
+        <CalcGlossaryLinks :slugs="['analise-fundamentalista', 'lpa', 'vpa', 'p-l', 'p-vp', 'dividend-yield', 'payout', 'blue-chips']" />
+      </div>
+    </CalcBand>
+
     <!-- ============ Rankings relacionados ============ -->
-    <CalcBand tone="cream" title="Rankings Relacionados">
+    <CalcBand tone="white" title="Rankings Relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -822,7 +838,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Outras ferramentas + CTA ============ -->
-    <CalcBand tone="white" title="Outras Ferramentas">
+    <CalcBand tone="cream" title="Outras Ferramentas">
       <div class="pt__grid-cards">
         <NuxtLink to="/calculadora/dividend-yield" class="pt__card-link">
           <h3 class="pt__card-link-title">Calculadora de Dividend Yield</h3>

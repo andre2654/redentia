@@ -70,6 +70,7 @@ usePageSeo({
   title: div.value.seo.title,
   description: div.value.seo.description,
   path: `/dividendos/${ticker}`,
+  dateModified: ultimoPregao(),
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: ticker, path: `/asset/${ticker}` },

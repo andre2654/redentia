@@ -5,12 +5,13 @@
 // hero → "Grandes ideias." → banner Redentia AI → "Estratégias de
 // investidores." → "Melhores pesquisas." → vantagens (#explorar) → FAQ.
 // Dados: useTesesPage (seed do design → /theses real → degrade).
-const { ideias, pesquisas, estrategias, loading } = useTesesPage()
+const { ideias, pesquisas, estrategias, loading } = await useTesesPage()
 
 usePageSeo({
   title: 'Teses de investimento',
   description: 'Cada tese é uma leitura do mundo transformada em ações: estudada a fundo em centenas de fontes, montada como carteira e revalidada por IA quando os fatos mudam.',
   path: '/teses',
+  dateModified: ultimoPregao(), // convicção revalidada a cada pregão
   breadcrumbs: [{ name: 'Teses', path: '/teses' }],
 })
 </script>

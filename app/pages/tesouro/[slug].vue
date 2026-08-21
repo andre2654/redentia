@@ -102,6 +102,7 @@ usePageSeo({
   description: titulo.value.seo.description,
   path: `/tesouro/${slug}`,
   structuredData,
+  dateModified: ultimoPregao(),
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: 'Tesouro Direto', path: '/tesouro' },

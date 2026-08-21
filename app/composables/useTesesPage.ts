@@ -1,8 +1,13 @@
 /**
- * Dados da página /teses (padrão seed→real→degrade do useMercado): cada
- * carrossel nasce com o SEED exato do design (a página nunca renderiza vazia,
- * inclusive no SSR), hidrata com o backend real no onMounted e QUALQUER erro
- * degrada de volta pro seed.
+ * Dados da página /teses. SSR-FIRST desde 21/08/2026: a lista pública de teses
+ * é buscada no SERVIDOR via useAsyncData (mesma convenção de useAcao e
+ * useDividendos), então o HTML da 1ª resposta já sai com as teses reais e com
+ * os links pra /tese/{slug}. Antes o fetch só rodava no onMounted e o servidor
+ * entregava 164 skeletons — as 10 teses ficavam órfãs e invisíveis pra crawler
+ * de IA, que não executa JS. O SEED do design continua como degrade de outage.
+ *
+ * Só os FAVORITOS seguem client-only: dependem de auth e a rota é cacheada na
+ * CDN (ver a advertência dentro de useTesesPage).
  *
  * As 3 prateleiras saem TODAS do mesmo GET /theses, agrupadas pelo campo
  * `shelf` (contrato: string nullable em investment_theses, na resposta toCard;
@@ -72,7 +77,7 @@ function stripCat(sector: string): string {
   return sector.replace(/^Tese\s*·\s*/u, '').trim() || sector
 }
 
-function mapCard(c: ThesisCardApi, unlockedSlug: string | null, favs: Set<string>, authed: boolean): TesesCardVM {
+function mapCard(c: ThesisCardApi, favs: Set<string>): TesesCardVM {
   return {
     slug: c.id,
     cat: stripCat(c.sector ?? ''),
@@ -88,14 +93,23 @@ function mapCard(c: ThesisCardApi, unlockedSlug: string | null, favs: Set<string
     // Capa real da tese; null (ex.: tese sem cover) → o card degrada pro
     // gradiente navy no componente (fallback padrão do projeto).
     image: teseCover(c.image),
-    // Gating espelhado do /mercado (useNuTheses): a 1ª tese da lista abre a
-    // página; as demais convidam pro login — só pra ANÔNIMO. Logado vai
-    // direto pra tese.
-    href: authed || c.id === unlockedSlug ? `/tese/${c.id}` : '/login',
+    // LINK SEMPRE PRO DESTINO REAL (21/08/2026). Antes, o anônimo via 9 dos
+    // 10 cards apontando pra /login — e como crawler é anônimo, as 9 teses
+    // ficavam sem UM link interno no site inteiro. Medido: 10 no sitemap, 3
+    // com impressão, ZERO clique.
+    //
+    // O gate não protegia nada: /tese/{slug} já responde 200 com ~1.600
+    // palavras pra visitante deslogado (verificado nas 4 teses testadas), e o
+    // sitemap já mandava indexar as 10. Era um gate que custava SEO sem
+    // entregar exclusividade.
+    //
+    // A conversão não se perde: o CTA de criar conta vive DENTRO da página da
+    // tese. Sai do caminho do link e vira um clique depois.
+    href: `/tese/${c.id}`,
   }
 }
 
-export function useTesesPage() {
+export async function useTesesPage() {
   // Estado = cards CRUS da API + favoritos; os VMs saem de computeds porque o
   // href das teses travadas depende de isAuthenticated (reage a login/logout
   // sem re-fetch). SSR-safe: apiCards só é preenchido no onMounted, então o
@@ -110,18 +124,41 @@ export function useTesesPage() {
   const { isAuthenticated } = useAuthState()
   const { authFetch } = useApi()
 
-  // Gating global: a 1ª tese da prateleira-herói 'Grandes ideias.' abre pra
-  // anônimo; o resto convida pro login. Vale pras 3 prateleiras (o desbloqueio
-  // é por tese, não por seção). Fixamos a tese aberta na prateleira-herói (e
-  // não no apiCards[0]) porque /theses ordena por sort_order asc e o 1º card
-  // pode ser de 'estrategias' (ex.: 'bancos-brasileiros', sort_order 1) — se
-  // desbloqueássemos o cru [0], a única tese grátis sairia do hero e a
-  // 'Grandes ideias.' ficaria 100% travada pro anônimo, divergindo do seed/SSR.
-  // Fallback pro cru [0] só no estado degenerado sem nenhuma tese em 'grandes-ideias'.
-  const unlockedSlug = computed(() => {
-    const cards = apiCards.value
-    return (cards.find((c) => shelfOf(c) === 'grandes-ideias') ?? cards[0])?.id ?? null
+  // ⚠️ NADA DEPENDENTE DE AUTH PODE ENTRAR NO RENDER DO SSR AQUI.
+  // /teses é servida com `public, s-maxage=300` (nuxt.config), então o HTML do
+  // servidor é reaproveitado pela CDN entre visitantes diferentes — e o cookie
+  // `nu:token` É visível no SSR. Renderizar a variante logada gravaria o estado
+  // de UM usuário no cache de TODOS.
+  //
+  // Hoje isso está garantido por construção: o href é igual pra todo mundo e
+  // `favSlugs` nasce vazio (useState), só sendo preenchido no onMounted. Se
+  // algum dia voltar a existir variação por login neste render, ela precisa de
+  // um gate `mounted && isAuthenticated` — nunca `isAuthenticated` cru.
+
+  // ═══ SSR-FIRST das teses PÚBLICAS (21/08/2026) ═══
+  //
+  // Antes: apiCards só era preenchido no onMounted, então o HTML do servidor
+  // saía com 164 skeletons e NENHUM link pra /tese/{slug}. As 10 teses viviam
+  // só no sitemap — medido: 10 publicadas, 3 com impressão, ZERO clique. E
+  // crawler de IA (GPTBot, ClaudeBot, PerplexityBot) não executa JS, então pra
+  // eles o hub e as 10 teses simplesmente não existiam, apesar de cada tese ter
+  // ~1.600 palavras de conteúdo próprio.
+  //
+  // useAsyncData resolve no servidor E serializa no payload, então o 1º render
+  // do cliente usa o MESMO dado — sem mismatch e sem refetch.
+  const { data: ssrCards } = await useAsyncData('teses:cards', () => marketFetchTheses(), {
+    // Só a lista pública entra aqui. Favorito e desbloqueio dependem de auth e
+    // continuam client-only (favSlugs só é preenchido no onMounted).
+    transform: (res) => (res?.data ?? []) as ThesisCardApi[],
+    default: () => [] as ThesisCardApi[],
   })
+  if (ssrCards.value?.length && !apiCards.value.length) {
+    apiCards.value = ssrCards.value
+    loading.value = false
+  }
+
+
+
 
   const ideias = computed<TesesCardVM[]>(() => {
     const cards = apiCards.value
@@ -129,7 +166,7 @@ export function useTesesPage() {
     const favs = new Set(favSlugs.value)
     const mine = cards.filter((c) => shelfOf(c) === 'grandes-ideias')
     if (!mine.length) return IDEIAS_SEED // shelf vazia num estado estranho → seed
-    return mine.map((c) => mapCard(c, unlockedSlug.value, favs, isAuthenticated.value))
+    return mine.map((c) => mapCard(c, favs))
   })
 
   // Prateleira derivada do shelf 'estrategias'. Sem seed no estado hidratado:
@@ -142,7 +179,7 @@ export function useTesesPage() {
     const favs = new Set(favSlugs.value)
     return cards
       .filter((c) => shelfOf(c) === 'estrategias')
-      .map((c) => mapCard(c, unlockedSlug.value, favs, isAuthenticated.value))
+      .map((c) => mapCard(c, favs))
   })
 
   const pesquisas = computed<TesesCardVM[]>(() => {
@@ -160,7 +197,7 @@ export function useTesesPage() {
     if (ranked.length < 2) return PESQUISAS_SEED
     const favs = new Set(favSlugs.value)
     return ranked.map((c, i) => ({
-      ...mapCard(c, unlockedSlug.value, favs, isAuthenticated.value),
+      ...mapCard(c, favs),
       pill: `Nº ${i + 1}`,
     }))
   })
@@ -168,6 +205,18 @@ export function useTesesPage() {
   async function hydrate() {
     if (started.value) return
     started.value = true
+
+    // O SSR já trouxe a lista pública. Só faltam os favoritos (auth), então
+    // pula o refetch de /theses e busca apenas o que o servidor não podia ver.
+    if (apiCards.value.length >= 2) {
+      loading.value = false
+      if (isAuthenticated.value) {
+        favSlugs.value = await authFetch<{ favorites: string[] }>('/thesis-favorites', {}, { redirectOnAuthError: false })
+          .then((r) => r?.favorites ?? [])
+          .catch(() => [])
+      }
+      return
+    }
 
     // Favoritos em paralelo (só logado); falha silenciosa = nenhum "Seguindo"
     // falso-positivo. Client-only por construção (roda no onMounted).

@@ -16,6 +16,8 @@ usePageSeo({
   description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações e FIIs, Tesouro Direto, notícias e o briefing de fechamento por IA. Grátis, sem conta.',
   path: '/',
   breadcrumbs: [{ name: 'Início', path: '/' }],
+  // painel do dia é refeito a cada pregão — ver app/utils/pregao.ts
+  dateModified: ultimoPregao(),
 })
 </script>
 

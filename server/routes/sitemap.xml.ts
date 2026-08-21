@@ -13,9 +13,16 @@ export default defineEventHandler(async (event) => {
   const origin = siteOrigin(event)
   const sections = await getSiteSections()
 
+  // <lastmod> só sai quando a página TEM data conhecida (ver o contrato do
+  // campo em site-pages.ts). Emitir data de build nas que não têm é o caminho
+  // mais rápido pro Google descredibilizar o lastmod do sitemap inteiro.
   const urls = sections
     .flatMap((s) => s.pages)
-    .map((p) => `  <url><loc>${escapeXml(origin + p.path)}</loc></url>`)
+    .map((p) => {
+      const loc = `<loc>${escapeXml(origin + p.path)}</loc>`
+      const mod = p.lastmod ? `<lastmod>${escapeXml(p.lastmod)}</lastmod>` : ''
+      return `  <url>${loc}${mod}</url>`
+    })
     .join('\n')
 
   setHeader(event, 'content-type', 'application/xml; charset=utf-8')
