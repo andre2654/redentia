@@ -45,7 +45,15 @@ const copy: RankingCopy = {
         { linkText: 'BBDC4', href: '/asset/BBDC4', text: ' (Bradesco): DY 5-7%, banco privado com payout consistente. Estratégia mais conservadora que ITUB4.' },
         { linkText: 'TAEE11', href: '/asset/TAEE11', text: ' (Taesa): Transmissão elétrica, contratos longos indexados ao IPCA. DY 7-10%, baixa volatilidade.' },
         { linkText: 'CMIG4', href: '/asset/CMIG4', text: ' (Cemig): Geração e distribuição de energia em Minas Gerais. DY variável 6-12% conforme tarifa e dívida.' },
-        { linkText: 'TRPL4', href: '/asset/TRPL4', text: ' (Transmissão Paulista): Transmissão de energia, fluxo previsível. DY 8-11%, perfil parecido com Taesa.' },
+        // SEM LINK de propósito (21/08/2026): /asset/TRPL4 devolve 404 porque
+        // o ticker não existe em GET /api/tickers/TRPL4 — é lacuna de dado do
+        // backend, não da página. Enquanto o ativo não existir, a menção
+        // editorial fica (é correta) e o link sai. Texto renderizado idêntico:
+        // o formato { linkText, href, text } concatena linkText + text, então
+        // a string abaixo produz exatamente a mesma frase.
+        // Quando o backend passar a servir TRPL4, é só voltar pro formato com
+        // href — mesmo caso do GUAR3, que entra pelo ranking ao vivo.
+        'TRPL4 (Transmissão Paulista): Transmissão de energia, fluxo previsível. DY 8-11%, perfil parecido com Taesa.',
         { linkText: 'ABEV3', href: '/asset/ABEV3', text: ' (Ambev): Defensiva clássica, líder de cervejas. DY 4-6%, payout regular, geração de caixa robusta.' },
       ],
     },
