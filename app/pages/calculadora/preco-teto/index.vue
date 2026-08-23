@@ -606,7 +606,49 @@ usePageSeo({
       </div>
     </CalcSplit>
 
+    <!-- ============================================================
+         "Como calcular o preço teto de uma ação" — passo a passo.
+         Medido no Search Console (28 dias até 20/08/2026): esta página serve
+         as consultas de MÉTODO em posição 1-3, mas as de COMO CALCULAR ficam
+         em 3,4-3,8 e convertem 4-8%:
+           como calcular o preço teto de uma ação   266 impr · pos 3,8 · 11 cliq
+           como calcular preço teto de uma ação     192 impr · pos 3,4 · 16 cliq
+           como calcular preco teto de acao          52 impr · pos 3,3 ·  5 cliq
+           como saber o preço teto de uma ação       40 impr · pos 2,7 ·  1 cliq
+         Pela curva de CTR do próprio site (1º = 40,8%, 3º = 5,1%), levar essas
+         quatro ao topo vale ~+180 cliques/28d — 10% do tráfego orgânico do site
+         inteiro, numa página só.
+         A causa era de rótulo, não de conteúdo: a página EXPLICA como calcular
+         (Metodologias, Exemplos Práticos), mas nenhum heading dizia "como
+         calcular". O h2 mais próximo era "Como Usar a Calculadora", que é sobre
+         operar a ferramenta, não sobre a conta. Esta seção entra ANTES de "O que
+         é Preço Teto?" porque resposta-primeiro é o formato que ganha consulta
+         com intenção de instrução.
+         ============================================================ -->
     <CalcSplit tone="cream">
+      <template #title>Como calcular o preço teto de uma ação</template>
+      <template #dek>
+        <p>A conta mais usada no Brasil é a de Décio Bazin: <strong>divida o dividendo anual da ação por 0,06</strong>. Uma ação que pagou R$ 3,00 por ação em 12 meses tem preço teto de R$ 50,00 (3 ÷ 0,06). Acima disso, o dividend yield cai abaixo dos 6% que o método exige. Os outros três métodos partem de lucro, patrimônio ou do múltiplo do setor, e a calculadora acima roda os quatro de uma vez em qualquer ação da B3.</p>
+      </template>
+      <div class="pt__band-body">
+        <CalcSteps
+          :steps="[
+            { title: 'Escolha o método pelo tipo de empresa', html: 'Pagadora consistente de dividendos (bancos, energia, saneamento) pede <strong>Bazin</strong>. Empresa com lucro estável e patrimônio relevante pede <strong>Graham</strong>. Setor com múltiplo bem definido pede <strong>P/L setorial</strong>. Empresa cíclica ou com lucro negativo pede <strong>valor patrimonial</strong>.' },
+            { title: 'Levante os números dos últimos 12 meses', html: 'Bazin precisa do <strong>dividendo por ação</strong> pago em 12 meses. Graham precisa de <strong>LPA</strong> (lucro por ação) e <strong>VPA</strong> (valor patrimonial por ação). Todos vêm do balanço, e a calculadora acima busca sozinha ao digitar o ticker.' },
+            { title: 'Aplique a fórmula', html: 'Bazin: <strong>dividendo ÷ 0,06</strong>. Graham: <strong>√(22,5 × LPA × VPA)</strong>. P/L setorial: <strong>LPA × múltiplo do setor</strong>. Valor patrimonial: <strong>VPA × 1,5</strong>.' },
+            { title: 'Compare com o preço de hoje', html: 'Preço de mercado abaixo do teto significa margem de segurança positiva. Acima do teto, o papel está caro <strong>pela régua daquele método</strong> — não em termos absolutos.' },
+            { title: 'Cruze os métodos antes de decidir', html: 'Um número sozinho engana. Quando Bazin e Graham apontam para a mesma faixa, a leitura é mais firme. Quando divergem muito, geralmente há um detalhe do balanço (dividendo extraordinário, prejuízo pontual, ativo reavaliado) que merece ser olhado antes de qualquer decisão.' },
+          ]"
+        />
+        <div class="pt__prose pt__prose--gap">
+          <p><strong>Exemplo completo, com números redondos:</strong> uma ação cotada a R$ 42,00 que pagou R$ 3,00 de dividendos em 12 meses, com LPA de R$ 4,00 e VPA de R$ 28,00.</p>
+          <p>Por Bazin, o preço teto é 3,00 ÷ 0,06 = <strong>R$ 50,00</strong>. Por Graham, é √(22,5 × 4 × 28) = √2.520 = <strong>R$ 50,20</strong>. Os dois métodos convergem perto de R$ 50, e o papel negocia a R$ 42 — cerca de 16% de margem de segurança. Números ilustrativos, escolhidos para mostrar a mecânica.</p>
+          <p>Vale a ressalva de sempre: preço teto é régua de disciplina, não previsão. Ele diz quanto <em>você</em> aceita pagar dado o que a empresa entrega hoje. Não diz que a ação vai subir, nem protege de uma tese que se deteriora.</p>
+        </div>
+      </div>
+    </CalcSplit>
+
+    <CalcSplit tone="white">
       <template #title>O que é Preço Teto?</template>
       <div class="pt__prose">
         <p>O preço teto é o valor máximo que você deveria pagar por uma ação, considerando seus fundamentos e uma margem de segurança. É um conceito fundamental da análise fundamentalista, popularizado por Benjamin Graham (o "pai do value investing") e adaptado por investidores brasileiros como Décio Bazin.</p>
