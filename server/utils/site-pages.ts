@@ -254,6 +254,38 @@ const fetchAssetPages = defineCachedFunction(
   },
 )
 
+/**
+ * Universo CRU de tickers do backend, SEM a poda do INDEXABLE_ASSETS.
+ *
+ * Existe só pra a guarda anti-404 do /dividendos (ver getSiteSections). Não dá
+ * pra reaproveitar `fetchAssetPages` ali: aquela lista já passou pela poda por
+ * demanda, e ticker podado do /asset PODE ter /dividendos válido — BBSE3,
+ * EVEN3, CGRA3, CGRA4, CEBR3 e CEBR6 são exatamente esse caso. Usar a lista
+ * podada como régua removia as 6 pra pegar 1 inválido.
+ */
+const fetchTickerUniverse = defineCachedFunction(
+  async (): Promise<string[]> => {
+    try {
+      const res = await $fetch<{ data?: TickerApiItem[] }>('/tickers-full', {
+        baseURL: backendBase(),
+        timeout: 20_000,
+      })
+      const items = Array.isArray(res?.data) ? res.data : []
+      return items
+        .map((t) => (typeof t.ticker === 'string' ? t.ticker.toUpperCase() : ''))
+        .filter(Boolean)
+    }
+    catch { return [] }
+  },
+  {
+    name: 'site-pages-ticker-universe',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
+)
+
 interface TesouroApiItem {
   slug?: string
   name?: string
@@ -429,13 +461,32 @@ function glossarioPages(): SitePage[] {
  * seção a seção (e corta a cauda de ativos).
  */
 export async function getSiteSections(): Promise<SiteSection[]> {
-  const [teses, ativos, tesouro, cripto, dividendos] = await Promise.all([
+  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru] = await Promise.all([
     fetchThesisPages(),
     fetchAssetPages(),
     fetchTesouroPages(),
     fetchCryptoPages(),
     fetchDividendPages(),
+    fetchTickerUniverse(),
   ])
+
+  // GUARDA ANTI-404 NO SITEMAP (23/08/2026). fetchDividendPages monta a lista
+  // a partir do ranking /rankings/top-dividend-yield, e o ranking devolve
+  // ticker que o /tickers-full do MESMO backend não conhece — GUAR3 é o caso
+  // vivo. A página /dividendos/{T} 404a quando o profile não existe, então o
+  // sitemap estava publicando um 404. Um só, mas sitemap com 404 é reportado
+  // pelo Google e derruba a confiança no arquivo inteiro.
+  //
+  // A régua é o universo CRU (fetchTickerUniverse), NÃO a lista de `ativos`:
+  // aquela já passou pela poda por demanda, e ticker podado do /asset pode ter
+  // /dividendos válido. Medido: usar a lista podada removia BBSE3, EVEN3,
+  // CGRA3, CGRA4, CEBR3 e CEBR6 — todas 200 — pra pegar um único GUAR3.
+  // Só filtra quando o universo veio de fato: backend fora devolve [] e aí
+  // filtrar apagaria a seção inteira, que é pior que um 404.
+  const universo = new Set(universoCru)
+  const dividendos = universo.size > 0
+    ? dividendosCru.filter((p) => universo.has(p.path.split('/').pop()!.toUpperCase()))
+    : dividendosCru
 
   const sections: SiteSection[] = [
     { id: 'core', title: 'Páginas principais', pages: CORE_PAGES },
