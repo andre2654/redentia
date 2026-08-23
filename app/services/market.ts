@@ -19,9 +19,15 @@ import type {
 const base = '/api/backend'
 const json = { headers: { Accept: 'application/json' } }
 
-/** GET /theses — cartões de tese ordenados pelo retorno real do backtest. */
+/**
+ * GET /theses — cartões de tese ordenados pelo retorno real do backtest.
+ *
+ * Aponta pra /api/theses (espelho CACHEADO no Nitro), não pro proxy cru
+ * /api/backend/theses: o upstream leva 3,0-3,2s e estava no caminho quente de
+ * toda página de ativo. Ver server/utils/theses-feed.ts.
+ */
 export function marketFetchTheses() {
-  return $fetch<{ data: ThesisCardApi[] }>(`${base}/theses`, json)
+  return $fetch<{ data: ThesisCardApi[] }>('/api/theses', json)
 }
 
 /** GET /top-{stocks|reits|bdrs}?side=top|worst — movers do dia por classe. */

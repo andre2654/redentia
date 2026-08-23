@@ -81,9 +81,17 @@ export function acaoFetchEditorial(base: string, ticker: string) {
   return $fetch<EditorialApi>(`${base}/assets/${ticker}/editorial`, json)
 }
 
-/** GET /theses — cards (tickers visíveis; composição completa só no detail). */
-export function acaoFetchTheses(base: string) {
-  return $fetch<{ data: ThesisCardApi[] }>(`${base}/theses`, json)
+/**
+ * GET /theses — cards (tickers visíveis; composição completa só no detail).
+ *
+ * IGNORA `base` de propósito e vai no /api/theses (espelho CACHEADO no Nitro).
+ * O upstream leva 3,0-3,2s e esta chamada mora no Promise.allSettled de TODA
+ * página de ativo, então sozinha definia o piso de ~3,3s das 460 URLs de
+ * /asset/*. No SSR o Nitro resolve a rota internamente, sem roundtrip.
+ * Ver server/utils/theses-feed.ts pra medição e pro motivo.
+ */
+export function acaoFetchTheses(_base: string) {
+  return $fetch<{ data: ThesisCardApi[] }>('/api/theses', json)
 }
 
 /** GET /theses/{slug} — detail com companies[] (papel do ativo por empresa). */
