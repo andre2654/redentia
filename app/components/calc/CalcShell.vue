@@ -15,7 +15,11 @@ defineProps<{
 <template>
   <section :id="sectionId" class="csh" :class="{ 'csh--cream': bg === 'cream' }">
     <div v-if="eyebrow" class="csh__eyebrow">{{ eyebrow }}</div>
-    <component :is="headingTag ?? 'h2'" class="csh__title"><slot name="title" /></component>
+    <div class="csh__titlerow">
+      <component :is="headingTag ?? 'h2'" class="csh__title"><slot name="title" /></component>
+      <!-- utilitário ao lado do título (ex.: botão Histórico das simulações) -->
+      <div v-if="$slots['title-side']" class="csh__title-side"><slot name="title-side" /></div>
+    </div>
     <div v-if="$slots.lead" class="csh__lead"><slot name="lead" /></div>
     <div class="csh__cols">
       <div class="csh__controls">
@@ -51,6 +55,11 @@ defineProps<{
 }
 /* .csh__below sem margem própria: quem espaça é o conteúdo (a faixa pode
    renderizar vazia — deslogado/sem itens — e margem aqui viraria vão fantasma) */
+.csh__titlerow {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px 20px; flex-wrap: wrap;
+}
+.csh__title-side { flex-shrink: 0; }
 .csh__controls { flex: 1 1 320px; min-width: min(300px, 100%); max-width: 460px; }
 .csh__card { background: var(--nu-cream); border-radius: var(--nu-r-card-lg); padding: 28px; }
 .csh--cream .csh__card { background: var(--nu-white); }

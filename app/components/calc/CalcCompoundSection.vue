@@ -86,6 +86,9 @@ function applySim(p: Record<string, number>) {
 <template>
   <CalcShell :eyebrow="eyebrow ?? 'Calculadora'" :bg="bg" :section-id="sectionId ?? 'juros'">
     <template #title><slot name="title">Juros compostos.</slot></template>
+    <template #title-side>
+      <CalcSimSaves variant="history" calculator="juros-compostos" :format-value="brl" @apply="applySim" />
+    </template>
     <template #controls>
       <CalcSliderField v-model="ji" label="Aporte inicial" :min="0" :max="100000" :step="500" :value-text="jiTxt" />
       <div class="ccs__gap">
@@ -97,6 +100,10 @@ function applySim(p: Record<string, number>) {
       <div class="ccs__gap">
         <CalcSliderField v-model="jp" label="Prazo" :min="1" :max="40" :step="1" :value-text="jpTxt" />
       </div>
+      <CalcSimSaves
+        variant="save" calculator="juros-compostos"
+        :params="simParams" :label="simLabel" :result="simResult"
+      />
     </template>
     <template #result>
       <CalcResultPanel
@@ -107,24 +114,12 @@ function applySim(p: Record<string, number>) {
           { dot: 'var(--nu-blue)', label: 'Juros renderam', value: brl(proj.juros), accent: true },
         ]"
       >
-        <template #actions>
-          <CalcSimSaves
-            variant="action" calculator="juros-compostos"
-            :params="simParams" :label="simLabel" :result="simResult"
-          />
-        </template>
         <div class="ccs__bar"><CalcStackedBar :segments="barSegments" /></div>
         <div class="ccs__chart">
           <CalcAreaChart :values="proj.series" :secondary="proj.aporteSeries" :x-labels="xLabels" :format-y="brl" />
         </div>
         <div class="ccs__insight">{{ insight }}</div>
       </CalcResultPanel>
-    </template>
-    <template #below>
-      <CalcSimSaves
-        variant="list" calculator="juros-compostos"
-        :format-value="brl" @apply="applySim"
-      />
     </template>
   </CalcShell>
 </template>
