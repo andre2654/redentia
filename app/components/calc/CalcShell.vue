@@ -23,6 +23,8 @@ defineProps<{
       </div>
       <div class="csh__result"><slot name="result" /></div>
     </div>
+    <!-- faixa sob as duas colunas (ex.: "Minhas simulações") -->
+    <div v-if="$slots.below" class="csh__below"><slot name="below" /></div>
   </section>
 </template>
 
@@ -47,6 +49,8 @@ defineProps<{
   display: flex; gap: clamp(28px, 5vw, 72px);
   align-items: flex-start; flex-wrap: wrap; margin-top: 44px;
 }
+/* .csh__below sem margem própria: quem espaça é o conteúdo (a faixa pode
+   renderizar vazia — deslogado/sem itens — e margem aqui viraria vão fantasma) */
 .csh__controls { flex: 1 1 320px; min-width: min(300px, 100%); max-width: 460px; }
 .csh__card { background: var(--nu-cream); border-radius: var(--nu-r-card-lg); padding: 28px; }
 .csh--cream .csh__card { background: var(--nu-white); }

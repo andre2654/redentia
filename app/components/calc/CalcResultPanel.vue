@@ -14,7 +14,12 @@ defineProps<{
 
 <template>
   <div class="crp">
-    <div v-if="caption" class="crp__caption">{{ caption }}</div>
+    <!-- linha de topo: frase à esquerda + ações (ex.: salvar simulação) à
+         direita — a ação fica colada no resultado sem roubar altura -->
+    <div v-if="caption || $slots.actions" class="crp__top">
+      <div v-if="caption" class="crp__caption">{{ caption }}</div>
+      <div v-if="$slots.actions" class="crp__actions"><slot name="actions" /></div>
+    </div>
     <div class="crp__value">{{ value }}</div>
     <div v-if="items?.length" class="crp__legend">
       <span v-for="it in items" :key="it.label" class="crp__item">
@@ -28,7 +33,9 @@ defineProps<{
 </template>
 
 <style scoped>
+.crp__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; }
 .crp__caption { color: var(--nu-gray); font-size: 16px; font-weight: 600; }
+.crp__actions { flex-shrink: 0; }
 .crp__value {
   color: var(--nu-ink);
   font-size: clamp(44px, 5vw, 76px);

@@ -37,15 +37,20 @@ export function useSimulations(calculator: string) {
   const { authFetch } = useApi()
   const { isAuthenticated } = useAuthState()
 
-  const items = ref<SimulationVM[]>([])
+  // Estado COMPARTILHADO por calculadora (useState): o botão de salvar vive
+  // no painel de resultado e a lista numa faixa própria — duas instâncias do
+  // componente, um estado só (salvou lá em cima, a faixa reage na hora).
+  const items = useState<SimulationVM[]>(`nu:sims-${calculator}`, () => [])
+  const hydrated = useState<boolean>(`nu:sims-hyd-${calculator}`, () => false)
   const loading = ref(false)
-  const busy = ref(false)
-  const error = ref('')
+  const busy = useState<boolean>(`nu:sims-busy-${calculator}`, () => false)
+  const error = useState<string>(`nu:sims-err-${calculator}`, () => '')
   /** id da última salva/deduplicada — a lista destaca a linha. */
-  const lastSavedId = ref<number | null>(null)
+  const lastSavedId = useState<number | null>(`nu:sims-last-${calculator}`, () => null)
 
   async function hydrate() {
-    if (!isAuthenticated.value) return
+    if (!isAuthenticated.value || hydrated.value) return
+    hydrated.value = true
     loading.value = true
     error.value = ''
     try {
@@ -56,6 +61,7 @@ export function useSimulations(calculator: string) {
       )
       items.value = res?.simulations ?? []
     } catch {
+      hydrated.value = false // deixa tentar de novo na próxima montagem
       error.value = 'Não conseguimos carregar suas simulações agora.'
     } finally {
       loading.value = false

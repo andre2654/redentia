@@ -107,17 +107,24 @@ function applySim(p: Record<string, number>) {
           { dot: 'var(--nu-blue)', label: 'Juros renderam', value: brl(proj.juros), accent: true },
         ]"
       >
+        <template #actions>
+          <CalcSimSaves
+            variant="action" calculator="juros-compostos"
+            :params="simParams" :label="simLabel" :result="simResult"
+          />
+        </template>
         <div class="ccs__bar"><CalcStackedBar :segments="barSegments" /></div>
         <div class="ccs__chart">
           <CalcAreaChart :values="proj.series" :secondary="proj.aporteSeries" :x-labels="xLabels" :format-y="brl" />
         </div>
         <div class="ccs__insight">{{ insight }}</div>
-        <CalcSimSaves
-          calculator="juros-compostos"
-          :params="simParams" :label="simLabel" :result="simResult"
-          :format-value="brl" @apply="applySim"
-        />
       </CalcResultPanel>
+    </template>
+    <template #below>
+      <CalcSimSaves
+        variant="list" calculator="juros-compostos"
+        :format-value="brl" @apply="applySim"
+      />
     </template>
   </CalcShell>
 </template>
