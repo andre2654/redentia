@@ -14,7 +14,15 @@
 // intermediario/avancado). Erro de rede não bloqueia navegação à toa: sem
 // resposta do /me, o modal NÃO abre (na dúvida, não pune o usuário).
 // /login fica de fora (a sessão nasce lá; o modal pega na primeira página).
+//
+// BUSINESS fica de fora (dono, 24/08): o onboarding é de INVESTIDOR e a
+// pergunta não faz sentido pra quem veio pro produto de escritório. Duas
+// camadas: (1) em /business/* o gate nem roda (visitante ou não — a rota
+// watcher pega quando ele sair de lá); (2) usuário DONO de conta business
+// (GET /me/business → has_account, o 1:1 de business_accounts) nunca vê,
+// em página nenhuma.
 import type { MeResponse } from '~/types/auth'
+import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
 
 const { isAuthenticated, firstName } = useAuthState()
 const { authFetch } = useApi()
@@ -55,14 +63,20 @@ watch(open, (o) => {
 })
 
 async function check() {
-  if (!isAuthenticated.value || route.path === '/login') return
+  if (!isAuthenticated.value || route.path === '/login' || route.path.startsWith('/business')) return
   if (gate.value !== 'unknown') {
     open.value = gate.value === 'needed'
     return
   }
   try {
     const me = await authFetch<MeResponse>('/auth/me', {}, { redirectOnAuthError: false })
-    gate.value = me?.user && !me.user.investor_goal ? 'needed' : 'done'
+    if (!me?.user || me.user.investor_goal) {
+      gate.value = 'done'
+    } else {
+      // sem resposta de investidor: só abre se NÃO for conta de escritório
+      const biz = await authFetch<BusinessAccountStatus>('/me/business', {}, { redirectOnAuthError: false })
+      gate.value = biz?.has_account ? 'done' : 'needed'
+    }
   } catch {
     gate.value = 'done' // sem resposta do servidor, não bloqueia o app
   }
@@ -76,6 +90,11 @@ watch(isAuthenticated, (v) => {
   } else {
     open.value = false
   }
+})
+// quem ENTROU por /login ou /business/* (gate nem rodou) é avaliado ao
+// navegar pra qualquer outra página
+watch(() => route.path, () => {
+  if (gate.value === 'unknown') void check()
 })
 
 function pickGoal(v: string) {
