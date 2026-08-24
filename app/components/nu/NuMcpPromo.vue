@@ -22,7 +22,7 @@ let timer: ReturnType<typeof setTimeout> | undefined
 // aporte — 2 overlays juntos = Escape ambíguo e scrim dobrado) ou se ele está
 // DENTRO do chat (/busca?chat=1). Re-tenta até a via estar livre.
 function busyContext(): boolean {
-  if (document.querySelector('.ndm, .nbm, .nam')) return true
+  if (document.querySelector('.ndm, .nbm, .nam, .nob')) return true
   if (route.path === '/busca' && route.query.chat) return true
   // /mcp É a página do produto anunciado: modal ali é redundante e cobre a doc
   if (route.path === '/mcp') return true

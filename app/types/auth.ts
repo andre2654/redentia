@@ -57,6 +57,8 @@ export interface MeResponse {
     email: string | null
     celular?: string | null
     role?: string
+    investor_goal?: string | null
+    investor_experience?: string | null
     updated_at?: string | null
     password_changed_at?: string | null
     [key: string]: unknown
