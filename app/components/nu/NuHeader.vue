@@ -16,37 +16,47 @@ const route = useRoute()
 // Mercado auth-aware) · Carteira (logado — página separada) · Teses ·
 // Ferramentas (drawer: calculadoras + rankings) · Informações (drawer:
 // guias + notícias). Mesma estrutura no menu mobile (grupos expansíveis).
-interface NavChild { label: string; to: string }
-interface NavItem { label: string; to?: string; children?: NavChild[]; authOnly?: boolean }
+// Painel de preview no hover (referência do dono, 2026-08-20, estilo lista +
+// vinheta): cada filho carrega `desc` (uma linha do que é) e `vig` (qual
+// vinheta ilustrativa o NuNavVignette mostra à direita). Links diretos que
+// merecem preview (Teses, Carteira) ganham `panel` com a mesma anatomia.
+interface NavChild { label: string; to: string; desc: string; vig: string }
+interface NavItem { label: string; to?: string; children?: NavChild[]; authOnly?: boolean; panel?: { desc: string; vig: string } }
 
 const NAV: NavItem[] = [
   { label: 'Início', to: '/' },
-  { label: 'Carteira', to: '/carteira', authOnly: true },
-  { label: 'Teses', to: '/teses' },
+  {
+    label: 'Carteira', to: '/carteira', authOnly: true,
+    panel: { desc: 'Suas posições conectadas por Open Finance, com o dia explicado pela leitura da casa.', vig: 'carteira' },
+  },
+  {
+    label: 'Teses', to: '/teses',
+    panel: { desc: 'As teses vivas da Redentia, com convicção, estudos diários e catalisadores.', vig: 'teses' },
+  },
   {
     label: 'Ferramentas',
     children: [
-      { label: 'Calculadoras', to: '/calculadoras' },
-      { label: 'Redentia MCP', to: '/mcp' },
+      { label: 'Calculadoras', to: '/calculadoras', desc: 'Juros compostos, renda passiva, primeiro milhão — as contas prontas.', vig: 'calculadoras' },
+      { label: 'Redentia MCP', to: '/mcp', desc: 'Os dados e a leitura da Redentia dentro do seu Claude ou ChatGPT.', vig: 'mcp' },
       // Eram 3 links pra /rankings?classe=... — query string não é URL
       // indexável separada (o canonical do hub colapsa as três numa só), então
       // o header gastava 3 slots e distribuía equity pra uma URL única. Agora
       // aponta pros rankings que JÁ têm demanda medida no Search Console:
       // maiores-dividend-yield 8.240 impr, mais-baratas-graham 310 (CTR 5,16%),
       // mais-baratas-bazin 239 (CTR 3,35%). O filtro por classe segue no hub.
-      { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield' },
-      { label: 'Mais baratas por Graham', to: '/ranking/mais-baratas-graham' },
-      { label: 'Mais baratas por Bazin', to: '/ranking/mais-baratas-bazin' },
-      { label: 'Todos os rankings', to: '/rankings' },
+      { label: 'Maiores dividend yields', to: '/ranking/maiores-dividend-yield', desc: 'As maiores pagadoras da bolsa, ranqueadas por yield.', vig: 'rank-yield' },
+      { label: 'Mais baratas por Graham', to: '/ranking/mais-baratas-graham', desc: 'O preço justo clássico contra o preço de tela.', vig: 'rank-graham' },
+      { label: 'Mais baratas por Bazin', to: '/ranking/mais-baratas-bazin', desc: 'O filtro de renda do método Bazin.', vig: 'rank-bazin' },
+      { label: 'Todos os rankings', to: '/rankings', desc: 'Todos os cortes, por classe e por critério.', vig: 'rank-todos' },
     ],
   },
   {
     label: 'Informações',
     children: [
-      { label: 'Guias', to: '/guias' },
-      { label: 'Notícias', to: '/noticias' },
-      { label: 'Setores', to: '/setor' },
-      { label: 'Glossário', to: '/glossario' },
+      { label: 'Guias', to: '/guias', desc: 'Do primeiro aporte ao raio-x de ETF, passo a passo.', vig: 'guias' },
+      { label: 'Notícias', to: '/noticias', desc: 'O noticiário do dia com a leitura editorial da casa.', vig: 'noticias' },
+      { label: 'Setores', to: '/setor', desc: 'O mapa da bolsa, setor por setor.', vig: 'setores' },
+      { label: 'Glossário', to: '/glossario', desc: 'Os termos do mercado em português claro.', vig: 'glossario' },
     ],
   },
 ]
@@ -62,24 +72,65 @@ function isParentActive(item: NavItem): boolean {
   return (item.children ?? []).some((c) => isActive(c.to))
 }
 
-/* ——— drawers da nav (desktop) ———
+/* ——— painéis de preview da nav (desktop) ———
    O painel é position:FIXED ancorado no botão (não absolute): a nav tem
    overflow-x:auto (scroll em telas estreitas) e um absolute lá dentro é
    CLIPADO pelo overflow — o drawer abria invisível. Fixed escapa do clip;
-   fecha ao rolar (o header encolhe e a âncora muda). */
+   fecha ao rolar (o header encolhe e a âncora muda).
+
+   UX do dono (2026-08-20, referência estilo Anthropic): abre no HOVER com
+   timer de intenção (evita abrir de passagem), fecha com carência (cobre o
+   vão de 10px entre botão e painel), e dentro do painel o hover em cada item
+   troca a vinheta da direita com crossfade. Click continua togglando (toque/
+   teclado); Escape, click-fora e scroll fecham como antes. */
+const MEGA_W = 700 // largura do painel (lista + vinheta) — clampa na borda
 const openDrawer = ref<string | null>(null)
 const drawerPos = ref({ left: 0, top: 0 })
-function toggleDrawer(label: string, ev: MouseEvent) {
-  if (openDrawer.value === label) {
+const activeChild = ref<NavChild | null>(null) // item destacado → vinheta
+let megaOpenT: ReturnType<typeof setTimeout> | null = null
+let megaCloseT: ReturnType<typeof setTimeout> | null = null
+
+// filhos do painel: drawers usam children; link direto (Teses/Carteira) vira
+// painel de item único com o próprio destino
+function megaChildren(item: NavItem): NavChild[] {
+  if (item.children) return item.children
+  return [{ label: item.label, to: item.to!, desc: item.panel!.desc, vig: item.panel!.vig }]
+}
+const megaItem = computed(() => nav.value.find((i) => i.label === openDrawer.value) ?? null)
+
+function clearMegaTimers() {
+  if (megaOpenT) { clearTimeout(megaOpenT); megaOpenT = null }
+  if (megaCloseT) { clearTimeout(megaCloseT); megaCloseT = null }
+}
+function openMega(item: NavItem, anchor: HTMLElement) {
+  const r = anchor.getBoundingClientRect()
+  drawerPos.value = {
+    left: Math.max(8, Math.min(r.left, window.innerWidth - MEGA_W - 8)),
+    top: r.bottom + 10,
+  }
+  openDrawer.value = item.label
+  activeChild.value = megaChildren(item)[0] ?? null
+}
+function megaEnter(item: NavItem, ev: MouseEvent) {
+  const anchor = ev.currentTarget as HTMLElement
+  clearMegaTimers()
+  if (openDrawer.value) { openMega(item, anchor); return } // já aberto: troca direto
+  megaOpenT = setTimeout(() => openMega(item, anchor), 90)
+}
+function megaLeave() {
+  clearMegaTimers()
+  megaCloseT = setTimeout(() => { openDrawer.value = null }, 170)
+}
+function megaPanelEnter() {
+  clearMegaTimers()
+}
+function toggleDrawer(item: NavItem, ev: MouseEvent) {
+  clearMegaTimers()
+  if (openDrawer.value === item.label) {
     openDrawer.value = null
     return
   }
-  const r = (ev.currentTarget as HTMLElement).getBoundingClientRect()
-  drawerPos.value = {
-    left: Math.max(8, Math.min(r.left, window.innerWidth - 246)), // clampa na borda
-    top: r.bottom + 8,
-  }
-  openDrawer.value = label
+  openMega(item, ev.currentTarget as HTMLElement)
 }
 function onNavDocClick(e: MouseEvent) {
   const nav = document.querySelector('.nuh__nav')
@@ -201,6 +252,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   if (raf) cancelAnimationFrame(raf)
+  clearMegaTimers()
   document.removeEventListener('click', onNavDocClick, true)
   document.removeEventListener('keydown', onNavKey)
   document.removeEventListener('click', onAccountDocClick, true)
@@ -219,35 +271,61 @@ onBeforeUnmount(() => {
 
       <nav class="nuh__nav" data-nu-nav>
         <template v-for="item in nav" :key="item.label">
-          <!-- link direto -->
+          <!-- link direto sem preview (Início) -->
           <NuxtLink
-            v-if="item.to" :to="item.to"
+            v-if="item.to && !item.panel" :to="item.to"
             class="nuh__navitem" :class="{ 'nuh__navitem--active': isActive(item.to) }"
           >{{ item.label }}</NuxtLink>
 
-          <!-- drawer (Ferramentas / Informações) -->
-          <div v-else class="nuh__drawer-wrap">
+          <!-- link direto COM preview no hover (Teses / Carteira) -->
+          <div v-else-if="item.to" class="nuh__drawer-wrap" @mouseleave="megaLeave">
+            <NuxtLink
+              :to="item.to"
+              class="nuh__navitem" :class="{ 'nuh__navitem--active': isActive(item.to), 'nuh__navitem--open': openDrawer === item.label }"
+              @mouseenter="megaEnter(item, $event)"
+            >{{ item.label }}</NuxtLink>
+          </div>
+
+          <!-- drawer (Ferramentas / Informações) — abre no hover, click toggla -->
+          <div v-else class="nuh__drawer-wrap" @mouseleave="megaLeave">
             <button
               type="button" class="nuh__navitem nuh__navitem--drawer"
               :class="{ 'nuh__navitem--active': isParentActive(item), 'nuh__navitem--open': openDrawer === item.label }"
               :aria-expanded="openDrawer === item.label" aria-haspopup="menu"
-              @click="toggleDrawer(item.label, $event)"
+              @mouseenter="megaEnter(item, $event)"
+              @click="toggleDrawer(item, $event)"
             >
               {{ item.label }}
               <svg class="nuh__drawer-chev" :class="{ 'nuh__drawer-chev--open': openDrawer === item.label }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
             </button>
-            <div
-              v-if="openDrawer === item.label" class="nuh__drawer" role="menu"
-              :style="{ left: `${drawerPos.left}px`, top: `${drawerPos.top}px` }"
-            >
-              <NuxtLink
-                v-for="c in item.children" :key="c.to" :to="c.to" role="menuitem"
-                class="nuh__drawer-item" :class="{ 'nuh__drawer-item--active': isActive(c.to) }"
-                @click="openDrawer = null"
-              >{{ c.label }}</NuxtLink>
-            </div>
           </div>
         </template>
+
+        <!-- painel compartilhado: lista à esquerda, vinheta à direita (referência
+             do dono) — um só nó pro hover entre itens da nav trocar sem repaint -->
+        <div
+          v-if="megaItem" class="nuh__mega" role="menu"
+          :style="{ left: `${drawerPos.left}px`, top: `${drawerPos.top}px` }"
+          @mouseenter="megaPanelEnter" @mouseleave="megaLeave"
+        >
+          <div class="nuh__mega-list">
+            <NuxtLink
+              v-for="c in megaChildren(megaItem)" :key="c.to" :to="c.to" role="menuitem"
+              class="nuh__mega-item"
+              :class="{ 'nuh__mega-item--hot': activeChild?.to === c.to, 'nuh__mega-item--active': isActive(c.to) }"
+              @mouseenter="activeChild = c" @focus="activeChild = c"
+              @click="openDrawer = null"
+            >
+              <span class="nuh__mega-label">{{ c.label }}</span>
+              <span class="nuh__mega-desc">{{ c.desc }}</span>
+            </NuxtLink>
+          </div>
+          <div class="nuh__mega-view" aria-hidden="true">
+            <Transition name="nuhv">
+              <NuNavVignette :key="activeChild?.vig ?? ''" :name="activeChild?.vig ?? ''" />
+            </Transition>
+          </div>
+        </div>
       </nav>
 
       <div class="nuh__right" :class="{ 'nuh__right--auth': isAuthenticated }">
@@ -413,6 +491,36 @@ onBeforeUnmount(() => {
 }
 .nuh__drawer-item:hover { background: var(--nu-cream-hover); color: var(--nu-ink); }
 .nuh__drawer-item--active { color: var(--nu-blue); background: var(--nu-blue-tint); }
+
+/* ——— painel de preview (lista + vinheta), referência do dono ——— */
+.nuh__mega {
+  /* fixed pela mesma razão do .nuh__drawer (overflow-x da nav clipa absolute) */
+  position: fixed; z-index: 60;
+  width: 700px; padding: 10px;
+  background: var(--nu-white); border-radius: var(--nu-r-panel);
+  box-shadow: 0 24px 54px -22px rgba(12, 21, 36, 0.35), 0 2px 8px rgba(12, 21, 36, 0.08);
+  display: flex; align-items: stretch; gap: 10px;
+  animation: nu-fade .22s ease both;
+}
+.nuh__mega-list { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 4px; }
+.nuh__mega-item {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 14px; border-radius: 14px; transition: background .15s;
+}
+.nuh__mega-item--hot { background: var(--nu-cream-hover); }
+.nuh__mega-label { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -0.01em; }
+.nuh__mega-item--active .nuh__mega-label { color: var(--nu-blue); }
+.nuh__mega-desc { color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.4; }
+.nuh__mega-view {
+  width: 400px; min-height: 296px; flex-shrink: 0;
+  border-radius: var(--nu-r-tile); background: var(--nu-cream);
+  position: relative; overflow: hidden;
+}
+/* crossfade das vinhetas (os .nuv são absolute inset:0 — sobrepõem na troca) */
+.nuhv-enter-active { transition: opacity .3s ease, transform .3s ease; }
+.nuhv-leave-active { transition: opacity .16s ease; }
+.nuhv-enter-from { opacity: 0; transform: translateY(8px) scale(0.985); }
+.nuhv-leave-to { opacity: 0; }
 .nuh__right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .nuh__right--auth { gap: 14px; }
 .nuh__search {
