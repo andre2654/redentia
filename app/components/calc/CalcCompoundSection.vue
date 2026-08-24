@@ -57,6 +57,30 @@ const barSegments = computed(() => [
   { pct: 100 - proj.value.pctJ, color: 'var(--nu-navy)' },
   { pct: proj.value.pctJ, color: 'var(--nu-blue)' },
 ])
+
+// ——— Minhas simulações (CalcSimSaves) ———
+// params no MESMO vocabulário do deep-link (?initial=&monthly=&rate=&years=)
+// — salvar/reabrir e o redirect pós-login reusam a hidratação que já existe.
+const simParams = computed<Record<string, number>>(() => ({
+  initial: ji.value, monthly: jm.value, rate: jt.value, years: jp.value,
+}))
+const simLabel = computed(() => {
+  const parts = []
+  if (ji.value > 0) parts.push(`${brl(ji.value)} inicial`)
+  parts.push(`${brl(jm.value)}/mês`, jpTxt.value, jtTxt.value)
+  return parts.join(' · ')
+})
+const simResult = computed<Record<string, number>>(() => ({
+  total: Math.round(proj.value.total),
+  aportado: Math.round(proj.value.aportado),
+  juros: Math.round(proj.value.juros),
+}))
+function applySim(p: Record<string, number>) {
+  if (Number.isFinite(p.initial)) ji.value = p.initial!
+  if (Number.isFinite(p.monthly)) jm.value = p.monthly!
+  if (Number.isFinite(p.rate)) jt.value = p.rate!
+  if (Number.isFinite(p.years)) jp.value = Math.max(1, Math.min(40, Math.round(p.years!)))
+}
 </script>
 
 <template>
@@ -88,6 +112,11 @@ const barSegments = computed(() => [
           <CalcAreaChart :values="proj.series" :secondary="proj.aporteSeries" :x-labels="xLabels" :format-y="brl" />
         </div>
         <div class="ccs__insight">{{ insight }}</div>
+        <CalcSimSaves
+          calculator="juros-compostos"
+          :params="simParams" :label="simLabel" :result="simResult"
+          :format-value="brl" @apply="applySim"
+        />
       </CalcResultPanel>
     </template>
   </CalcShell>
