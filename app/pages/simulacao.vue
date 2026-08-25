@@ -331,10 +331,17 @@ const readingHtml = computed(() => {
   transition: left 1s cubic-bezier(0.22, 0.61, 0.36, 1), top 1s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 1s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease;
 }
-/* passo 2: o orb VARRE a tela em diagonal (alto-direita → baixo-esquerda) —
-   a viagem é o que faz a troca de passo ser sentida (feedback do dono) */
-.sim__wiz--shock .sim__wiz-orb { left: 10%; top: 78%; transform: translate(-50%, -50%) scale(0.58); opacity: 0.85; }
+/* passo 2 (v2 do feedback): orb DESCE pela borda direita até o canto
+   inferior; o drama fica com a troca suave de fundo creme→branco */
+.sim__wiz--shock { background: var(--nu-white); }
+.sim__wiz--shock .sim__wiz-orb { left: 87%; top: 80%; transform: translate(-50%, -50%) scale(0.6); opacity: 0.9; }
 .sim__wiz--film .sim__wiz-orb { left: 50%; top: 42%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+/* regra 2 do DS: card sobre branco é creme (o painel de choques troca de
+   pele junto com o fundo) */
+.sim__wiz--shock :deep(.ssp__card) { background: var(--nu-cream); box-shadow: none; }
+.sim__wiz--shock :deep(.ssp__chip) { background: var(--nu-white); border-color: var(--nu-white); }
+.sim__wiz--shock :deep(.ssp__chip:hover) { border-color: var(--nu-blue); }
+.sim__wiz--shock :deep(.ssp__chip--on) { background: var(--nu-ink); border-color: var(--nu-ink); }
 .sim__wiz-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .sim__wiz-letter {
   color: var(--nu-cream-text); font-size: 26px; font-weight: 800; font-style: normal;
