@@ -16,6 +16,7 @@ import {
   runMockSimulation, buildClientSummary, fmtBRL, fmtBRLFull, shocksTitle,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
+  type SimScheduledScenario,
 } from '~/components/sim/simMock'
 
 definePageMeta({ layout: 'default' })
@@ -54,7 +55,11 @@ const filmSteps = computed(() => {
     `Lendo sua carteira — ${n} ${n === 1 ? 'posição' : 'posições'}, ${fmtBRL(portfolioTotal.value)}`,
     'Calibrando o beta contra 5 anos de IBOV',
     'Rodando 2.000 caminhos, mês a mês, por 10 anos',
-    hasShocks.value ? `Aplicando o cenário: ${shocksTitle(shocks.value).toLowerCase()}` : 'Cenário base — compondo o caminho',
+    fullSchedule.value.length > 1
+      ? `Aplicando ${fullSchedule.value.length} cenários pela década`
+      : fullSchedule.value.length === 1
+        ? `Aplicando o cenário de ${fullSchedule.value[0]!.year}: ${shocksTitle(fullSchedule.value[0]!.shocks).toLowerCase()}`
+        : 'Cenário base — compondo o caminho',
   ]
 })
 // CONSEQUÊNCIA AO VIVO no passo 2 (motor é puro e barato — roda por ajuste)
@@ -68,6 +73,32 @@ const liveTotal = computed(() => {
 })
 // o orb SENTE o choque (vermelho machuca, verde ajuda)
 const orbMood = computed(() => (phase.value === 'shock' ? Math.max(-1, Math.min(1, liveTotal.value / 22)) : 0))
+
+// ——— A DÉCADA (dono 25/08: "cenários que acontecem em momentos diferentes"):
+// cada cenário desenhado ganha um ANO; dá pra guardar e desenhar outro. ———
+const DECADE_YEARS = [2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035]
+const scheduleYear = ref(2027)
+const scheduled = ref<SimScheduledScenario[]>([])
+function stashScenario() {
+  if (!hasShocks.value) return
+  scheduled.value = [
+    ...scheduled.value.filter((s) => s.year !== scheduleYear.value),
+    { shocks: shocks.value, year: scheduleYear.value },
+  ].sort((a, b) => a.year - b.year)
+  dials.value = { ...DIAL_DEFAULTS }
+  const next = DECADE_YEARS.find((y) => y > scheduleYear.value && !scheduled.value.some((s) => s.year === y))
+  if (next) scheduleYear.value = next
+}
+function removeScheduled(year: number) {
+  scheduled.value = scheduled.value.filter((s) => s.year !== year)
+}
+/** agenda completa: os guardados + o que está nos dials agora */
+const fullSchedule = computed<SimScheduledScenario[]>(() => {
+  const list = scheduled.value.filter((s) => s.year !== scheduleYear.value || !hasShocks.value)
+  return hasShocks.value ? [...list, { shocks: shocks.value, year: scheduleYear.value }] : list
+})
+// a agenda usada na última simulação (o what-if roda a MESMA)
+const lastSchedule = ref<SimScheduledScenario[]>([])
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
 // MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
@@ -101,7 +132,7 @@ function clearWhatif() {
   portfolioB.value = null
 }
 const resultB = computed(() =>
-  result.value && portfolioB.value?.length ? runMockSimulation(result.value.shocks, portfolioB.value) : null,
+  result.value && portfolioB.value?.length ? runMockSimulation(result.value.shocks, portfolioB.value, lastSchedule.value) : null,
 )
 
 // ——— RESUMO PRO CLIENTE + PDF (gap nº5, 25/08): dois botões, decisão do
@@ -168,6 +199,7 @@ function backToAssets() {
 }
 function run() {
   if (!canRun.value) return
+  lastSchedule.value = fullSchedule.value
   phase.value = 'film'
   blocksIn.value = false
   window.scrollTo({ top: 0, behavior: reduceMotion.value ? 'auto' : 'smooth' })
@@ -175,7 +207,7 @@ function run() {
 
 const finalP50 = ref(0)
 function onFilmDone() {
-  const r = runMockSimulation(shocks.value, portfolio.value)
+  const r = runMockSimulation(shocks.value, portfolio.value, lastSchedule.value)
   result.value = r
   Object.assign(display, JSON.parse(JSON.stringify(r.series)))
   drawing.value = true
@@ -258,6 +290,25 @@ const readingHtml = computed(() => {
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
             <div class="sim__shockgrid">
               <SimShockPanel v-model="dials" />
+
+              <!-- a DÉCADA: quando o cenário bate + guardar e desenhar outro -->
+              <div v-if="hasShocks || scheduled.length" class="sim__decade">
+                <template v-if="hasShocks">
+                  <label class="sim__decade-when">
+                    Acontece em
+                    <select v-model.number="scheduleYear" class="sim__decade-select">
+                      <option v-for="y in DECADE_YEARS" :key="y" :value="y">{{ y }}</option>
+                    </select>
+                  </label>
+                  <button type="button" class="sim__decade-add" @click="stashScenario">Guardar e desenhar outro</button>
+                </template>
+                <span v-for="s in scheduled" :key="s.year" class="sim__dchip">
+                  <b>{{ s.year }}</b> {{ shocksTitle(s.shocks) }}
+                  <button type="button" class="sim__dchip-del" :aria-label="`Remover o cenário de ${s.year}`" @click="removeScheduled(s.year)">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                  </button>
+                </span>
+              </div>
             </div>
             <div class="sim__wiz-nav">
               <button type="button" class="sim__back" @click="backToAssets">Voltar</button>
@@ -505,6 +556,43 @@ const readingHtml = computed(() => {
 }
 .sim__back:hover { background: var(--nu-cream); transform: translateY(-1px); }
 .sim__shockgrid { max-width: 880px; }
+
+/* a década: ano do cenário + agenda de cenários guardados */
+.sim__decade { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sim__decade-when {
+  display: inline-flex; align-items: center; gap: 9px;
+  color: var(--nu-gray-2); font-size: 13.5px; font-weight: 700;
+}
+.sim__decade-select {
+  appearance: none; -webkit-appearance: none;
+  border: none; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-ink);
+  padding: 11px 34px 11px 18px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230A0A0C' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.sim__decade-add {
+  border: none; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-ink);
+  padding: 12px 18px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: background 0.15s, transform 0.15s;
+}
+.sim__decade-add:hover { background: var(--nu-cream); transform: translateY(-1px); }
+.sim__dchip {
+  display: inline-flex; align-items: center; gap: 7px;
+  border-radius: var(--nu-r-pill);
+  background: color-mix(in srgb, var(--nu-amber) 24%, var(--nu-white));
+  color: var(--nu-ink); padding: 10px 10px 10px 16px;
+  font-size: 13px; font-weight: 600;
+}
+.sim__dchip b { font-weight: 800; }
+.sim__dchip-del {
+  width: 20px; height: 20px; border: none; border-radius: 50%;
+  background: transparent; color: var(--nu-gray-2); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.sim__dchip-del:hover { background: var(--nu-white); color: var(--nu-red); }
 @media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
 .sim__dots { display: inline-flex; gap: 7px; }
 .sim__dot {

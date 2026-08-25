@@ -177,8 +177,8 @@ export interface SimResult {
   events: SimEvent[]
   annual: SimAnnual[]
   positions: SimPositionImpact[]
-  /** resumo do envelope aplicado (vale, duração, recuperação) — null sem choque */
-  shockSummary: { totalPct: number; durationMonths: number; recoveryMonths: number } | null
+  /** resumo do cenário mais severo (vale, duração, recuperação, ano) — null no base */
+  shockSummary: { totalPct: number; durationMonths: number; recoveryMonths: number; year: number } | null
   assumptions: { anchor: number; anchorDate: string; beta: number; cdiPct: number; carryPct: number; erpPp: number; volPct: number; paths: number }
 }
 
@@ -250,28 +250,39 @@ function shockEnvelope(s: SimEnvelope, i: number): number {
   return shape === 'l' ? 1 + depth * 0.45 : 1
 }
 
-function buildSeries(env: SimEnvelope | null, seedKey: string, anchor: number, vol: number, carry: number, baseCarry: number): SimSeries {
+function buildSeries(envs: SimEnvelope[], seedKey: string, anchor: number, vol: number, carrySegs: { from: number; m: number }[], baseCarry: number): SimSeries {
   const dates: string[] = []
   const p10: number[] = []; const p50: number[] = []; const p90: number[] = []
   const base: number[] = []; const sample: number[] = []
-  // carrego LÍQUIDO ponderado da carteira (por posição — RF tem drift próprio)
-  const driftM = Math.pow(1 + carry, 1 / 12) - 1
+  // carrego LÍQUIDO por TRECHO (cada cenário com Selic muda o regime a partir
+  // do mês em que bate — persistência de regime, não choque pontual)
+  const driftAt = (i: number): number => {
+    let m = carrySegs[0]!.m
+    for (const seg of carrySegs) { if (i >= seg.from) m = seg.m }
+    return m
+  }
   const baseDriftM = Math.pow(1 + baseCarry, 1 / 12) - 1 // baseline com a Selic de hoje
   const rnd = mulberry32(seedKey.length * 7919 + 42)
   let samp = anchor
+  let level = anchor
   for (let i = 0; i < HORIZON_MONTHS; i++) {
     dates.push(monthLabel(i))
-    const growth = Math.pow(1 + driftM, i + 1)
-    // envelope já vem em nível de CARTEIRA (Σ peso×impacto) — não reescala por beta
-    const envM = env ? shockEnvelope(env, i) : 1
-    const mid = anchor * growth * envM
+    const driftM = driftAt(i)
+    level *= 1 + driftM
+    // envelopes já vêm em nível de CARTEIRA (Σ peso×impacto); vários cenários
+    // = produto dos envelopes de cada um
+    let envM = 1
+    for (const env of envs) envM *= shockEnvelope(env, i)
+    const mid = level * envM
     const sd = vol * Math.sqrt((i + 1) / 12)
     base.push(Math.round(anchor * Math.pow(1 + baseDriftM, i + 1)))
     p50.push(Math.round(mid))
     p90.push(Math.round(mid * Math.exp(1.2816 * sd)))
     p10.push(Math.round(mid * Math.exp(-1.2816 * sd)))
-    const shockKick = env && i >= env.startMonth && i < env.startMonth + env.durationMonths
-      ? (env.depthPct / 100) / env.durationMonths : 0
+    let shockKick = 0
+    for (const env of envs) {
+      if (i >= env.startMonth && i < env.startMonth + env.durationMonths) shockKick += (env.depthPct / 100) / env.durationMonths
+    }
     samp *= 1 + driftM + shockKick + (rnd() - 0.5) * (vol / Math.sqrt(12)) * 2
     sample.push(Math.round(samp))
   }
@@ -360,11 +371,23 @@ function assetShockDetail(asset: SimAsset, factorShocks: Record<string, number>)
   return { total: Math.round(Math.max(-60, Math.min(40, s))), lines }
 }
 
-export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInput[] = EXAMPLE_PORTFOLIO): SimResult {
-  const key = shocksKey(shocks)
-  const title = shocksTitle(shocks)
-  const { factors, rules } = factorShocksFrom(shocks)
-  const isBase = Object.keys(factors).length === 0
+/** um cenário AGENDADO na década (dono 25/08: "cenários que acontecem em
+ * momentos diferentes") — o ano diz quando ele bate */
+export interface SimScheduledScenario { shocks: SimShocks; year: number }
+
+/** mês (índice da série, base set/2026) em que o cenário do ano Y bate */
+function monthOfYear(year: number): number {
+  return Math.max(2, (year - START_YEAR) * 12 - 2) // ~julho do ano
+}
+
+export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInput[] = EXAMPLE_PORTFOLIO, schedule?: SimScheduledScenario[]): SimResult {
+  // a agenda da década: lista explícita OU o cenário único (compat)
+  const items = (schedule?.length
+    ? [...schedule].sort((a, b) => a.year - b.year)
+    : (Object.keys(shocksFromNonEmpty(shocks)).length ? [{ shocks, year: START_YEAR + 1 }] : [])
+  )
+  const key = items.map((it) => `${it.year}@${shocksKey(it.shocks)}`).join('||')
+  const isBase = items.length === 0
 
   const held = portfolio
     .map((p) => ({ ...p, asset: ASSET_CATALOG.find((a) => a.ticker === p.ticker) }))
@@ -373,15 +396,40 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
   const beta = held.reduce((s, p) => s + (p.value / anchor) * p.asset.beta, 0)
   const vol = 0.02 + 0.18 * beta // vol escala com o beta (RF pura ≈ 2% a.a.)
 
-  // carrego LÍQUIDO ponderado — no cenário (Selic do choque) e no base (hoje)
-  const selicShocked = shocks.selic ?? MACRO_NOW.selic
-  const carry = held.reduce((s, p) => s + (p.value / anchor) * carryOf(p.asset, selicShocked), 0) || 0.1
-  const baseCarry = held.reduce((s, p) => s + (p.value / anchor) * carryOf(p.asset, MACRO_NOW.selic), 0) || 0.1
+  // por cenário: fatores, regras, impacto agregado e envelope no SEU momento
+  const computed = items.map((it) => {
+    const { factors, rules } = factorShocksFrom(it.shocks)
+    const total = held.reduce((s, p) => s + (p.value / anchor) * assetShockDetail(p.asset, factors).total, 0)
+    const startMonth = monthOfYear(it.year)
+    const env: SimEnvelope | null = Math.abs(total) < 0.5
+      ? null
+      : {
+          startMonth,
+          depthPct: Math.round(total * 10) / 10,
+          durationMonths: 6,
+          recoveryMonths: total < 0 ? 24 : 4,
+          shape: total < 0 ? 'u' : 'v',
+        }
+    return { ...it, factors, rules, total, startMonth, env }
+  })
+  const envs = computed.map((c) => c.env).filter((e): e is SimEnvelope => !!e)
+  // o cenário MAIS SEVERO manda no "quem sangra" e no resumo
+  const severest = [...computed].sort((a, b) => Math.abs(b.total) - Math.abs(a.total))[0] ?? null
 
-  // impacto por posição (regras × cargas), com a conta aberta linha a linha
+  // carrego por REGIME: a Selic de cada cenário vale DALI EM DIANTE
+  const carryWeighted = (selicPct: number) => held.reduce((s, p) => s + (p.value / anchor) * carryOf(p.asset, selicPct), 0) || 0.1
+  const selicSegs: { from: number; selic: number }[] = [{ from: 0, selic: MACRO_NOW.selic }]
+  for (const c of computed) if (c.shocks.selic !== undefined) selicSegs.push({ from: c.startMonth, selic: c.shocks.selic })
+  const carrySegs = selicSegs.map((seg) => ({ from: seg.from, m: Math.pow(1 + carryWeighted(seg.selic), 1 / 12) - 1 }))
+  const selicFinal = selicSegs[selicSegs.length - 1]!.selic
+  const carryFinal = carryWeighted(selicFinal)
+  const baseCarry = carryWeighted(MACRO_NOW.selic)
+
+  // impacto por posição, com a conta aberta — do cenário mais severo
+  const severeFactors = severest?.factors ?? {}
   const positions: SimPositionImpact[] = held
     .map((p) => {
-      const detail = assetShockDetail(p.asset, factors)
+      const detail = assetShockDetail(p.asset, severeFactors)
       const t = taxInfo(p.asset)
       return {
         ticker: p.ticker,
@@ -391,7 +439,7 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
         shockPct: detail.total,
         beta: p.asset.beta,
         factors: detail.lines,
-        carryPct: Math.round(carryOf(p.asset, selicShocked) * 1000) / 10,
+        carryPct: Math.round(carryOf(p.asset, selicFinal) * 1000) / 10,
         tax: t.tax,
         taxLabel: t.label,
         rfNote: p.asset.rf?.durationYears
@@ -402,18 +450,8 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
       }
     })
     .sort((a, b) => b.weight - a.weight)
-  const totalShock = positions.reduce((s, p) => s + p.weight * p.shockPct, 0)
 
-  const env: SimEnvelope | null = isBase || Math.abs(totalShock) < 0.5
-    ? null
-    : {
-        startMonth: 2,
-        depthPct: Math.round(totalShock * 10) / 10,
-        durationMonths: 6,
-        recoveryMonths: totalShock < 0 ? 24 : 4,
-        shape: totalShock < 0 ? 'u' : 'v',
-      }
-  const series = buildSeries(env, key || 'base', anchor, vol, carry, baseCarry)
+  const series = buildSeries(envs, key || 'base', anchor, vol, carrySegs, baseCarry)
   const last = HORIZON_MONTHS - 1
 
   let events: SimEvent[] = [
@@ -421,54 +459,73 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
     { at: 49, kind: 'eleicao', label: 'Eleições 2030' },
     { at: 97, kind: 'eleicao', label: 'Eleições 2034' },
   ]
-  if (env) {
-    events = events.filter((e) => Math.abs(e.at - env.startMonth) > 6)
-    events.push({ at: env.startMonth, kind: 'choque', label: title })
-  }
+  // eleições encostadas em algum cenário saem; cada cenário vira marcador
+  // âmbar com o ANO como rótulo (identifica a linha amarela — dono 25/08)
+  events = events.filter((e) => computed.every((c) => Math.abs(e.at - c.startMonth) > 6))
+  for (const c of computed) if (c.env) events.push({ at: c.startMonth, kind: 'choque', label: String(c.year) })
+
   const annual: SimAnnual[] = []
   for (let i = 11; i < HORIZON_MONTHS; i += 12) {
     annual.push({ year: START_YEAR + Math.ceil((START_MONTH + i) / 12) - 1, p10: series.p10[i]!, p50: series.p50[i]!, p90: series.p90[i]! })
   }
 
-  // leitura TEMPLATED: números só do motor, regras viram os chips
-  const lead = isBase
-    ? 'No cenário base, o tempo é o único protagonista.'
-    : `A conta do cenário desenhado: ${fmtSigned(totalShock)}% na carteira, no ${totalShock < 0 ? 'vale' : 'pico'}.`
+  // leitura TEMPLATED: números só do motor
+  const title = isBase
+    ? 'Cenário base'
+    : items.length === 1
+      ? shocksTitle(items[0]!.shocks)
+      : `${items.length} cenários na década`
   const worst = [...positions].sort((a, b) => a.shockPct - b.shockPct)[0]
   const best = [...positions].sort((a, b) => b.shockPct - a.shockPct)[0]
-  // o CUSTO do cenário em R$ (a informação que a linha tracejada tentava
-  // dar — dono 25/08: a linha saiu, o número entra na leitura)
   const cost10y = series.baseline[last]! - series.p50[last]!
   const costTxt = Math.abs(cost10y) > anchor * 0.005
     ? ` Em 10 anos, isso ${cost10y > 0 ? `custa {mark}${fmtBRL(cost10y)} da mediana{/mark}` : `acrescenta {mark}${fmtBRL(-cost10y)} à mediana{/mark}`} contra o caminho de hoje.`
     : ''
+  const whoTxt = `${worst && worst.shockPct < 0 ? ` Quem mais sente é {mark}${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%){/mark}` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ' '}quem segura é {mark}${best.ticker} (${fmtSigned(best.shockPct, 0)}%){/mark}` : ''}${(worst && worst.shockPct < 0) || (best && best.shockPct > 0) ? '.' : ''}`
+
+  const lead = isBase
+    ? 'No cenário base, o tempo é o único protagonista.'
+    : items.length === 1
+      ? `A conta do cenário desenhado: ${fmtSigned(severest!.total)}% na carteira, no ${severest!.total < 0 ? 'vale' : 'pico'}.`
+      : `Uma década, ${items.length} cenários — o mais fundo leva ${fmtSigned(severest!.total)}%.`
   const narrative = isBase
     ? 'A carteira compõe {mark}CDI mais o prêmio de risco{/mark} escalado pelo beta. Em 10 anos, a diferença entre o pessimista e o otimista vem inteira da volatilidade — e é por isso que {mark}a faixa abre com o tempo{/mark}.'
-    : `Com ${title.toLowerCase()}, as regras do motor dão {mark}${fmtSigned(totalShock)}% na carteira{/mark}, aplicados ao longo de 6 meses${totalShock < 0 ? ' com recuperação em U' : ''}.${costTxt} ${worst && worst.shockPct < 0 ? `Quem mais sente é {mark}${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%){/mark}` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ''}quem segura é {mark}${best.ticker} (${fmtSigned(best.shockPct, 0)}%){/mark}` : ''}. Cada regra usada está aberta aqui embaixo — mude o cenário e a conta refaz.`
-  const filmLine = isBase ? 'cenário base — só o tempo e os juros' : title.toLowerCase()
+    : items.length === 1
+      ? `Com ${shocksTitle(items[0]!.shocks).toLowerCase()} em ${items[0]!.year}, as regras do motor dão {mark}${fmtSigned(severest!.total)}% na carteira{/mark}, aplicados ao longo de 6 meses${severest!.total < 0 ? ' com recuperação em U' : ''}.${costTxt}${whoTxt} Cada regra usada está aberta aqui embaixo — mude o cenário e a conta refaz.`
+      : `${computed.map((c, ix) => `${ix === 0 ? 'Em' : 'em'} {mark}${c.year}{/mark}, ${shocksTitle(c.shocks).toLowerCase()} dá ${fmtSigned(c.total)}% na carteira`).join('; ')}.${costTxt}${whoTxt}`
+  const filmLine = isBase
+    ? 'cenário base — só o tempo e os juros'
+    : items.length === 1 ? title.toLowerCase() : `${items.length} cenários pela década`
 
   return {
     shocks,
     scenario: {
-      key, title, lead, narrative, filmLine,
-      sources: isBase ? ['Modelo: CDI + prêmio × beta', 'Vol: IBOV 5 anos'] : rules,
+      key: key || 'base', title, lead, narrative, filmLine,
+      sources: isBase ? ['Modelo: CDI + prêmio × beta', 'Vol: IBOV 5 anos'] : computed.flatMap((c) => c.rules),
     },
     series,
     final: { p10: series.p10[last]!, p50: series.p50[last]!, p90: series.p90[last]! },
     events: events.sort((a, b) => a.at - b.at),
     annual,
     positions,
-    shockSummary: env
-      ? { totalPct: env.depthPct, durationMonths: env.durationMonths, recoveryMonths: env.recoveryMonths }
+    shockSummary: severest?.env
+      ? { totalPct: severest.env.depthPct, durationMonths: severest.env.durationMonths, recoveryMonths: severest.env.recoveryMonths, year: severest.year }
       : null,
     assumptions: {
       anchor: Math.round(anchor), anchorDate: '2026-08-24',
       beta: Math.round(beta * 100) / 100,
-      cdiPct: Math.round((selicShocked / 100) * 1000) / 10,
-      carryPct: Math.round(carry * 1000) / 10,
+      cdiPct: Math.round((selicFinal / 100) * 1000) / 10,
+      carryPct: Math.round(carryFinal * 1000) / 10,
       erpPp: ERP * 100, volPct: Math.round(vol * 1000) / 10, paths: 2000,
     },
   }
+}
+
+/** choques efetivos (sem chaves undefined) — pro caso single de compat */
+function shocksFromNonEmpty(s: SimShocks): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const [k, v] of Object.entries(s)) if (v !== undefined) out[k] = v as number
+  return out
 }
 
 export const fmtBRL = (v: number): string =>
@@ -493,7 +550,7 @@ export function buildClientSummary(r: SimResult): SimClientSummary {
   const s = r.shockSummary
 
   const choqueTxt = s
-    ? ` No curto prazo, esse cenário custaria ${fmtSigned(s.totalPct)}% no vale, com recuperação estimada em ~${s.recoveryMonths} meses.${worst && worst.shockPct < 0 ? ` Quem mais sentiria é ${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%)` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ' '}quem seguraria é ${best.ticker} (${fmtSigned(best.shockPct, 0)}%)` : ''}.`
+    ? ` No pior momento (cenário de ${s.year}), custaria ${fmtSigned(s.totalPct)}% no vale, com recuperação estimada em ~${s.recoveryMonths} meses.${worst && worst.shockPct < 0 ? ` Quem mais sentiria é ${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%)` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ' '}quem seguraria é ${best.ticker} (${fmtSigned(best.shockPct, 0)}%)` : ''}.`
     : ''
 
   const whatsapp
