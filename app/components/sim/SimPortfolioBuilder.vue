@@ -281,23 +281,22 @@ function onSearchEnter() {
 .spb__prow-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
 .spb__prow-ticker { color: var(--nu-ink); font-size: 13px; font-weight: 800; }
 .spb__prow-weight { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
-/* valor com cara explícita de CAMPO (dono, 25/08: "deixar claro que pode
-   ser alterado"): borda de input + hover azul + lápis */
+/* valor editável SUAVE (v2 do feedback, 25/08: a caixa com borda tampava o
+   peso e pesou) — sublinhado pontilhado + lápis discreto, acende no hover */
 .spb__prow-val {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--nu-cream); border: 1.5px solid var(--nu-cream-2);
-  border-radius: 10px; padding: 5px 8px 5px 10px;
-  cursor: text; transition: border-color 0.15s, background 0.15s;
+  display: inline-flex; align-items: baseline; gap: 4px;
+  border-bottom: 1.5px dashed var(--nu-sand);
+  padding: 0 1px 2px;
+  cursor: text; transition: border-color 0.15s;
 }
-.spb__prow-val:hover { border-color: var(--nu-blue); }
-.spb__prow-val:focus-within { border-color: var(--nu-blue); background: var(--nu-white); }
-.spb__prow-val:focus-within .spb__prow-pen, .spb__prow-val:hover .spb__prow-pen { color: var(--nu-blue); }
+.spb__prow-val:hover, .spb__prow-val:focus-within { border-color: var(--nu-blue); }
+.spb__prow-val:hover .spb__prow-pen, .spb__prow-val:focus-within .spb__prow-pen { color: var(--nu-blue); }
 .spb__prow-rs { color: var(--nu-gray); font-size: 10.5px; font-weight: 700; }
 .spb__prow-input {
-  width: 56px; border: none; background: transparent; outline: none; text-align: right;
+  width: 58px; border: none; background: transparent; outline: none; text-align: right;
   color: var(--nu-ink); font-size: 13px; font-weight: 800; font-family: inherit; font-variant-numeric: tabular-nums;
 }
-.spb__prow-pen { color: var(--nu-sand); flex-shrink: 0; transition: color 0.15s; }
+.spb__prow-pen { color: var(--nu-sand); flex-shrink: 0; align-self: center; transition: color 0.15s; }
 .spb__prow-del {
   width: 20px; height: 20px; flex-shrink: 0; border: none; border-radius: 50%;
   background: transparent; color: var(--nu-sand); cursor: pointer;
