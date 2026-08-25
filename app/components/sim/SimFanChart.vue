@@ -194,8 +194,9 @@ const fmt = fmtBRL
 .sfc__macro { animation: nu-fade 0.5s ease both; }
 .sfc__tip-row--macro { border-top: 1px solid var(--nu-cream-text-12); padding-top: 4px; margin-top: 2px; }
 .sfc__tip-row--macro ~ .sfc__tip-row--macro { border-top: none; padding-top: 0; margin-top: 0; }
-.sfc__line { stroke-dasharray: 1; stroke-dashoffset: 0; }
-.sfc__line--draw { animation: sfc-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
+/* dasharray SÓ durante o desenho: mantido permanente, o arredondamento do
+   pathLength normalizado deixava o rabo da linha sem pintar (dono 25/08) */
+.sfc__line--draw { stroke-dasharray: 1; animation: sfc-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .sfc__event {
   position: absolute; top: -4px; transform: translateX(-50%);
