@@ -119,7 +119,9 @@ export default defineNuxtConfig({
     '/business/cadastro': { headers: { 'cache-control': 'private, no-store' } },
     '/business/chaves': { headers: { 'cache-control': 'private, no-store' } },
     '/business/skills': { headers: { 'cache-control': 'private, no-store' } },
-    '/business/comecar': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // O guia de conexão virou o modal do painel de chaves (dono 2026-08-25,
+    // "menos é mais"): 301 exato, mesmo padrão do '/calculadora'.
+    '/business/comecar': { redirect: { to: '/business/chaves', statusCode: 301 } },
     // PR10: hub mudou de /calculadora pro /calculadoras (301 preserva o link
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.

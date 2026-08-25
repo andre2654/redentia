@@ -129,7 +129,7 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
     },
     {
       q: 'Quais assistentes suportam MCP hoje?',
-      a: 'Cursor, Claude Code e Raycast conectam direto com a chave; o Claude Desktop conecta pela ponte mcp-remote; no claude.ai web o campo de chave está em liberação gradual. No ChatGPT, conectores personalizados ainda exigem OAuth (no roadmap da Redentia).',
+      a: 'O claude.ai conecta como conector personalizado (cole a URL, clique em Connect e autorize com a chave); o ChatGPT, pelo modo desenvolvedor da OpenAI, do mesmo jeito. Cursor, Claude Code e Raycast conectam direto com a chave, e o Claude Desktop pela ponte mcp-remote.',
     },
     {
       q: 'A IA consegue movimentar a minha carteira?',

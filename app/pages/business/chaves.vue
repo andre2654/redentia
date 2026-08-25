@@ -107,16 +107,39 @@ async function cadastrar() {
   await agir(() => createAccount(nomeEmpresa.value.trim()))
 }
 
+/**
+ * O modal de conexão (RbConexaoModal) substitui a página /business/comecar
+ * (2026-08-25): gerar chave abre o passo a passo com a chave já interpolada.
+ * O segredo CONTINUA na tabela — mesma ref plainKey, uma fonte, duas
+ * superfícies — e o scroll até ele migrou pro FECHAMENTO do modal, porque
+ * scrollIntoView com o scroll-lock do modal ativo não anda.
+ */
+const conexaoAberta = ref(false)
+
 async function gerar() {
   if (busy.value || rotulo.value.trim().length < 2) return
   await agir(async () => {
     await createKey(rotulo.value.trim())
     rotulo.value = ''
   })
-  // A chave em claro nasce ACIMA do gerador: sem isto ela podia aparecer fora
-  // da viewport, no único momento em que ela existe.
+  if (erro.value) return
   await nextTick()
-  tabela.value?.mostrarSegredo()
+  conexaoAberta.value = true
+}
+
+function fecharConexao() {
+  conexaoAberta.value = false
+  // A chave em claro nasce ACIMA do gerador: sem isto ela podia aparecer fora
+  // da viewport, no único momento em que ela existe. O nextTick roda depois
+  // de o lock de scroll soltar, então o smooth scroll funciona.
+  if (plainKey.value) nextTick(() => tabela.value?.mostrarSegredo())
+}
+
+// 'gerar' vindo do modal aberto SEM chave (CTA das bandas): fecha e foca o
+// gerador. O nextTick roda depois da restauração de foco do useModalA11y.
+function gerarDoModal() {
+  conexaoAberta.value = false
+  nextTick(() => tabela.value?.focarGerador())
 }
 
 /**
@@ -167,6 +190,18 @@ onBeforeUnmount(() => {
 const conta = computed(() => status.value)
 const janela = computed(() => conta.value?.usage.window_days ?? 30)
 const liberada = computed(() => Boolean(conta.value?.has_account && conta.value.enabled))
+
+// ?conectar=1 (vindo do /business/skills; sobrevive ao redirect de login
+// porque a guarda usa o fullPath): abre o modal quando a conta hidratar
+// liberada, e limpa a query pra um reload não reabrir sozinho.
+const route = useRoute()
+const router = useRouter()
+watch(liberada, (ok) => {
+  if (ok && route.query.conectar !== undefined) {
+    conexaoAberta.value = true
+    router.replace({ query: {} })
+  }
+})
 
 const num = (n: number | null | undefined) => (n ?? 0).toLocaleString('pt-BR')
 
@@ -222,7 +257,7 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
     />
 
     <template v-else>
-      <RbKeysHero :conta="conta" :janela="janela" @gerar="tabela?.focarGerador()" />
+      <RbKeysHero :conta="conta" :janela="janela" @gerar="tabela?.focarGerador()" @conectar="conexaoAberta = true" />
       <RbKeysUsage v-if="temGrafico" :conta="conta" :janela="janela" :resumo="resumoGrafico" />
       <RbKeysTable
         ref="tabela"
@@ -243,8 +278,10 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         @abrir-rename="abrirRename"
         @cancelar-rename="renomeando = null"
         @salvar-rename="salvarRename"
+        @conectar="conexaoAberta = true"
       />
-      <RbKeysScope :conta="conta" />
+      <RbKeysScope :conta="conta" @conectar="conexaoAberta = true" />
+      <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" @close="fecharConexao" @gerar="gerarDoModal" />
     </template>
   </template>
 

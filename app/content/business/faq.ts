@@ -37,11 +37,11 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Quais assistentes funcionam hoje?',
-        a: 'Claude Desktop, Claude Code e Cursor conectam com a chave. O Claude Desktop usa a ponte mcp-remote, porque a configuração dele é local. Claude Code e Cursor aceitam o cabeçalho de autorização direto.',
+        a: 'O claude.ai conecta como conector personalizado: você cola a URL do servidor, clica em Connect e autoriza com a chave do escritório, sem editar arquivo. O ChatGPT conecta pelo modo desenvolvedor da OpenAI, do mesmo jeito: URL, OAuth e a chave na página de autorização. Claude Desktop, Claude Code e Cursor conectam com a chave no cabeçalho, e o Desktop usa a ponte mcp-remote porque a configuração dele é local.',
       },
       {
         q: 'Funciona no ChatGPT?',
-        a: 'Ainda não. Conector personalizado no ChatGPT exige OAuth 2.1, que não existe no nosso servidor hoje e está no roteiro. Se a sua casa usa ChatGPT Enterprise, isso é uma pergunta de qualificação antes de começarmos, não uma surpresa depois.',
+        a: 'Funciona, pelo modo desenvolvedor da OpenAI (Settings → Apps & Connectors → Advanced → Developer mode, em plano pago): você cria o conector com a URL do servidor, escolhe OAuth, e autoriza com a chave do escritório na página da Redentia. O passo a passo abre no painel de chaves junto com a chave.',
       },
       {
         q: 'Como eu conecto ao Claude Desktop?',

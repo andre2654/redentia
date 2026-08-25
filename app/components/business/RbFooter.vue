@@ -39,7 +39,7 @@ const COLUMNS = [
       { label: 'Segurança', to: '/business#seguranca' },
       { label: 'O plano', to: '/business#prova' },
       { label: 'Ativar acesso', to: '/business/cadastro' },
-      { label: 'Conectar', to: '/business/comecar' },
+      { label: 'Conectar', to: '/business/chaves' },
     ],
   },
   {

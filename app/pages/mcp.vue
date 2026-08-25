@@ -26,7 +26,7 @@ const TABS: { id: TabId; label: string; soon?: boolean }[] = [
   { id: 'claude-code', label: 'Claude Code' },
   { id: 'cursor', label: 'Cursor' },
   { id: 'raycast', label: 'Raycast' },
-  { id: 'chatgpt', label: 'ChatGPT', soon: true },
+  { id: 'chatgpt', label: 'ChatGPT' },
 ]
 const tab = ref<TabId>('claude-web')
 
@@ -84,7 +84,7 @@ const FAQS = [
   { q: 'Quanto custa?', a: 'Nada. A chave é gratuita: basta ter uma conta na Redentia, gerar a chave em Configurações e colar a configuração no seu assistente.' },
   { q: 'Existe limite de uso?', a: 'Sim, um limite de uso justo: 50 consultas por dia e 60 por minuto por chave, que renovam sozinhos. É bem mais do que uma conversa sobre a sua carteira consome, e existe pra manter a chave gratuita de pé pra todo mundo. Escritório que usa o MCP como ferramenta de trabalho tem plano próprio, com limite muito maior: redentia.com.br/business.' },
   { q: 'A IA consegue mexer na minha carteira?', a: 'Não. O acesso é somente leitura por design: o MCP responde consultas (posições, proventos, cotações, teses, notícias) e não executa nenhuma ação. Não existe ferramenta de compra, venda ou alteração de dados.' },
-  { q: 'Quais assistentes funcionam hoje?', a: 'Cursor, Claude Code e Raycast conectam direto com a chave. Claude Desktop conecta pela ponte mcp-remote (instruções nesta página). No claude.ai web o suporte a chave está em liberação gradual pela Anthropic. No ChatGPT, conectores personalizados exigem OAuth, que está no nosso roadmap.' },
+  { q: 'Quais assistentes funcionam hoje?', a: 'O claude.ai conecta como conector personalizado: cole a URL, clique em Connect e autorize com a sua chave. O ChatGPT conecta pelo modo desenvolvedor da OpenAI, do mesmo jeito. Cursor, Claude Code e Raycast conectam direto com a chave; o Claude Desktop, pela ponte mcp-remote (instruções nesta página).' },
   { q: 'De onde vem a minha carteira?', a: 'Do Open Finance, a conexão oficial regulada pelo Banco Central. Você conecta corretoras e bancos (XP, Nubank, Itaú, BTG e mais de 200 instituições) e a Redentia importa suas posições automaticamente, sempre somente leitura.' },
   { q: 'Como revogo o acesso?', a: 'Em Configurações, seção MCP: desligue o interruptor, gere uma nova chave (a antiga para de valer) ou desligue escopos individuais, como carteira, mantendo o resto. A mudança vale em até um minuto, porque o servidor guarda a validação da chave por sessenta segundos.' },
 ]
@@ -234,8 +234,7 @@ usePageSeo({
           <li class="mdoc__item">
             <span class="mdoc__n">3</span>
             <div class="mdoc__item-body">
-              <p class="mdoc__p">Em <strong>Configurações avançadas → Request headers</strong>, adicione o header <code class="mdoc__inline">Authorization</code> com o valor <code class="mdoc__inline">Bearer {{ KEY }}</code> (com o espaço depois de Bearer) e conclua.</p>
-              <p class="mdoc__note">O campo de headers está em liberação gradual pela Anthropic. Se ainda não aparecer na sua conta, use a aba <button type="button" class="mdoc__link mdoc__link--btn" @click="tab = 'claude-desktop'">Claude Desktop</button>, que funciona pra todo mundo.</p>
+              <p class="mdoc__p">Conclua com <strong>Add</strong> e clique em <strong>Connect</strong>. A página de autorização da Redentia abre: cole a sua chave e clique em <strong>Autorizar</strong>. A aba volta pro Claude já conectada.</p>
             </div>
           </li>
         </ol>
@@ -309,9 +308,11 @@ usePageSeo({
       <!-- ChatGPT -->
       <div v-show="tab === 'chatgpt'" class="mdoc__panel" role="tabpanel">
         <p class="mdoc__p">
-          Conectores personalizados no ChatGPT exigem autenticação OAuth, que está no roadmap do Redentia MCP.
-          Enquanto isso, a <NuxtLink to="/busca" class="mdoc__link">Redentia AI</NuxtLink> dentro da plataforma responde
-          as mesmas perguntas com os seus dados.
+          Em <strong>Settings → Apps &amp; Connectors → Advanced settings</strong>, ligue o
+          <strong>Developer mode</strong> (plano pago da OpenAI). Clique em <strong>Create</strong>, nomeie
+          <code class="mdoc__inline">Redentia</code>, cole a URL do servidor acima e escolha
+          <strong>OAuth</strong> na autenticação. Na autorização, a página da Redentia abre: cole a sua
+          chave e clique em <strong>Autorizar</strong>.
         </p>
       </div>
       </div>

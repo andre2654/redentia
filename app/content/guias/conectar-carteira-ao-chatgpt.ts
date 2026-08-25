@@ -101,13 +101,13 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
           items: [
             'Cursor, Claude Code e Raycast conectam direto com a chave, sem passo extra.',
             'Claude Desktop conecta pela ponte mcp-remote (instruções na página do MCP).',
-            'No claude.ai (web), o campo de chave está em liberação gradual pela Anthropic.',
-            'No ChatGPT, conectores personalizados exigem autenticação OAuth, que está no roadmap da Redentia. Enquanto isso, a Redentia AI dentro da plataforma responde as mesmas perguntas com os seus dados.',
+            'No claude.ai (web), conecta como conector personalizado: cole a URL do servidor, clique em Connect e autorize com a sua chave na página da Redentia.',
+            'No ChatGPT, conecta pelo modo desenvolvedor da OpenAI (plano pago): crie o conector com a URL do servidor, escolha OAuth e autorize com a sua chave na página da Redentia.',
           ],
         },
         {
           kind: 'p',
-          html: 'Vale a honestidade: se o seu único assistente é o ChatGPT web, o caminho por chave ainda não está aberto lá. Mas se você usa Claude, Cursor ou Raycast, funciona hoje, e a própria Redentia AI cobre o caso do ChatGPT enquanto o OAuth não chega.',
+          html: 'Vale registrar o requisito: no ChatGPT o conector vive atrás do modo desenvolvedor, que pede plano pago da OpenAI. No claude.ai, no Cursor, no Claude Code e no Raycast o caminho é direto, e a Redentia AI dentro da plataforma cobre quem não usa assistente nenhum.',
         },
       ],
     },
@@ -135,7 +135,7 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
   faq: [
     {
       q: 'O ChatGPT consegue ver a minha carteira brasileira?',
-      a: 'Pelo recurso oficial da OpenAI, não: o ChatGPT Finances funciona via Plaid e cobre instituições dos Estados Unidos. No Brasil, o caminho é o Open Finance com o Redentia MCP. No ChatGPT web, o conector por chave ainda depende de OAuth (no roadmap da Redentia); no Claude, no Cursor e no Raycast já funciona hoje.',
+      a: 'Pelo recurso oficial da OpenAI, não: o ChatGPT Finances funciona via Plaid e cobre instituições dos Estados Unidos. No Brasil, o caminho é o Open Finance com o Redentia MCP — e o conector funciona no ChatGPT pelo modo desenvolvedor (OAuth com a sua chave), além do claude.ai, do Cursor e do Raycast.',
     },
     {
       q: 'Preciso pagar alguma coisa?',

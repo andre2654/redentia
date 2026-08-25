@@ -29,6 +29,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'copiar'): void
+  (e: 'conectar'): void
   (e: 'gerar'): void
   (e: 'revogar', id: number): void
   (e: 'toggle', id: number, enabled: boolean): void
@@ -99,6 +100,7 @@ defineExpose({
         <button type="button" class="rbkc__copy" @click="emit('copiar')">
           {{ copiado ? 'Copiada' : 'Copiar' }}
         </button>
+        <button type="button" class="rbkc__how" @click="emit('conectar')">Como conectar</button>
         <p class="rbkc__warn">Ela não aparece de novo. Se perder, revogue essa e gere outra.</p>
       </div>
 
@@ -237,6 +239,15 @@ defineExpose({
 }
 .rbkc__copy:hover { background: var(--nu-blue-hover); }
 .rbkc__copy:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 2px; }
+/* irmão ghost do Copiar: reabre o modal de conexão com esta chave */
+.rbkc__how {
+  margin-top: 14px; margin-left: 10px; min-height: 44px; padding: 0 22px; cursor: pointer;
+  background: transparent; border: 1.5px solid var(--nu-cream-text-22); color: var(--nu-cream-text);
+  border-radius: var(--nu-r-pill); font-size: 14px; font-weight: 800; font-family: inherit;
+  transition: background .2s;
+}
+.rbkc__how:hover { background: var(--nu-cream-text-12); }
+.rbkc__how:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 2px; }
 .rbkc__warn { margin: 14px 0 0; color: var(--nu-cream-text-70); font-size: 13.5px; font-weight: 600; line-height: 1.55; }
 
 /* ——— o painel ——— */

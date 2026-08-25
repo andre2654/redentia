@@ -34,6 +34,8 @@ const escopos = computed(() => props.conta.scopes ?? [])
 const NOMES: Record<string, string> = { mercado: 'Mercado', teses: 'Teses', news: 'Notícias', carteira: 'Carteira' }
 const escoposLegiveis = computed(() => escopos.value.map(s => NOMES[s] ?? s).join(', '))
 
+defineEmits<{ (e: 'conectar'): void }>()
+
 const aberto = ref(false)
 const gatilho = ref<HTMLButtonElement | null>(null)
 
@@ -149,10 +151,11 @@ const BLOCOS = computed(() => [
         Ver o que cada escopo faz<span class="rbks__btn-arrow">→</span>
       </button>
 
-      <NuxtLink to="/business/comecar" class="rbks__btn2">
+      <!-- era link pra /business/comecar; a página morreu, o guia é o modal -->
+      <button type="button" class="rbks__btn2" @click="$emit('conectar')">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13H11l-1 9 8.5-11H12z" /></svg>
         Conectar ao assistente
-      </NuxtLink>
+      </button>
 
       <NuxtLink to="/business/skills" class="rbks__btn2">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3zM4 12.5L12 17l8-4.5M4 17l8 4.5 8-4.5" /></svg>
@@ -201,7 +204,7 @@ const BLOCOS = computed(() => [
 .rbks__btn-arrow { font-size: 19px; line-height: 1; }
 
 .rbks__btn2 {
-  display: inline-flex; align-items: center; gap: 9px;
+  display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-family: inherit;
   background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
   border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: 15.5px; font-weight: 800;
   transition: background .15s, border-color .15s;

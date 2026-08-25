@@ -15,7 +15,7 @@
 import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
 
 const props = defineProps<{ conta: BusinessAccountStatus, janela: number }>()
-defineEmits<{ (e: 'gerar'): void }>()
+defineEmits<{ (e: 'gerar'): void, (e: 'conectar'): void }>()
 
 const num = (n: number | null | undefined) => (n ?? 0).toLocaleString('pt-BR')
 
@@ -129,7 +129,8 @@ const PASSOS = [
           <button v-if="(conta.remaining_keys ?? 0) > 0" type="button" class="rbkh__cta" @click="$emit('gerar')">
             Gerar chave
           </button>
-          <NuxtLink to="/business/comecar" class="rbkh__cta-outline">Conectar ao assistente</NuxtLink>
+          <!-- era link pra /business/comecar; a página morreu, o guia é o modal -->
+          <button type="button" class="rbkh__cta-outline" @click="$emit('conectar')">Conectar ao assistente</button>
         </div>
       </div>
 
@@ -218,7 +219,7 @@ const PASSOS = [
 }
 .rbkh__cta:hover { background: var(--nu-blue-hover); transform: translateY(-2px); }
 .rbkh__cta-outline {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-family: inherit;
   background: transparent; color: var(--nu-blue); border: 2px solid var(--nu-blue);
   border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: 16.5px; font-weight: 700;
   transition: background .2s;

@@ -14,7 +14,13 @@
  *   3. Lint roda sobre o PROCESSADO (o que o usuário recebe).
  *   4. Zips em public/downloads/skills/:
  *      <slug>.zip               — SKILL.md na RAIZ + scripts/ (formato claude.ai)
- *      redentia-skills-pack.zip — bundle <slug>/… (pra .claude/skills/)
+ *      redentia-skills-pack.zip — ZIP DE ZIPS: LEIA-ME.txt + os 4 <slug>.zip
+ *                                 (claude.ai instala um zip por vez; Claude
+ *                                 Code descompacta cada um em
+ *                                 .claude/skills/<slug>/ — o LEIA-ME repete
+ *                                 o passo a passo). O bundle de PASTAS
+ *                                 morreu junto com /business/comecar
+ *                                 (dono, 2026-08-25).
  *
  * Os zips são COMMITADOS (Vercel serve estático). Editou SKILL.md ou
  * partial → rode o build e commite os zips junto.
@@ -131,10 +137,39 @@ for (const slug of slugs) {
   execFileSync('zip', ['-X', '-r', zipPath, '.'], { cwd: join(STAGE, slug), stdio: 'pipe' })
 }
 
+// ——— bundle: ZIP DE ZIPS ———
+// O claude.ai só instala skill em zip individual, então o pack principal
+// carrega os 4 zips prontos + LEIA-ME.txt. -0 = store (zip dentro de zip
+// não comprime de novo); -j = tudo na raiz, sem caminhos. Slugs ordenados
+// pra listagem estável no diff.
+const LEIAME = `Redentia Skills Pack
+====================
+
+Cada skill está no próprio arquivo .zip — é o formato que o claude.ai aceita.
+
+No claude.ai
+  1. Abra Configurações e procure por Skills (em geral dentro de
+     Capacidades; o caminho pode variar com a versão).
+  2. Envie UM zip por vez. A skill aparece pelo nome e ativa sozinha
+     quando a pergunta combina com ela.
+  3. Repita pra cada skill que a mesa for usar.
+
+No Claude Code
+  1. Crie .claude/skills/ no projeto (ou ~/.claude/skills/ pra valer em tudo).
+  2. Descompacte cada zip numa pasta com o nome da skill:
+     .claude/skills/redentia-carteira/, e assim por diante.
+
+As skills usam a conexão MCP que você já configurou — nenhuma chave nova,
+nenhum acesso além do que a sua chave já alcança.
+`
 const bundle = join(OUT, 'redentia-skills-pack.zip')
 rmSync(bundle, { force: true })
-// Bundle preserva <slug>/… — destino é .claude/skills/ do Claude Code.
-execFileSync('zip', ['-X', '-r', bundle, '.'], { cwd: STAGE, stdio: 'pipe' })
+const leiame = join(STAGE, 'LEIA-ME.txt')
+writeFileSync(leiame, LEIAME)
+execFileSync('zip', ['-X', '-0', '-j', bundle,
+  leiame,
+  ...[...slugs].sort().map((s) => join(OUT, `${s}.zip`)),
+], { stdio: 'pipe' })
 
 rmSync(STAGE, { recursive: true, force: true })
 

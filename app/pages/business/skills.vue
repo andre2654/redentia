@@ -115,7 +115,7 @@ const SKILLS: SkillCard[] = [
           <div class="rbsk__col">
             <div class="rbsk__col-tag">No claude.ai</div>
             <ol class="rbsk__steps">
-              <li>Baixe o zip da skill (um por skill — o pack completo não sobe no claude.ai).</li>
+              <li>Baixe o pack completo — dentro vêm os quatro zips, um por skill — ou só o zip da skill que a mesa vai usar.</li>
               <li>No Claude, abra Configurações e procure por Skills (em geral dentro de Capacidades; o caminho pode variar com a versão).</li>
               <li>Envie o zip. A skill aparece pelo nome e ativa sozinha quando a pergunta combina com ela.</li>
               <li>Repita pra cada skill que a mesa for usar.</li>
@@ -124,9 +124,9 @@ const SKILLS: SkillCard[] = [
           <div class="rbsk__col">
             <div class="rbsk__col-tag">No Claude Code / Cursor</div>
             <ol class="rbsk__steps">
-              <li>Baixe o pack completo (redentia-skills-pack.zip).</li>
-              <li>Descompacte dentro de <code>.claude/skills/</code> do projeto — ou <code>~/.claude/skills/</code> pra valer em tudo.</li>
-              <li>As quatro entram juntas; invoque pelo nome ou deixe o contexto ativar.</li>
+              <li>Baixe o pack completo (redentia-skills-pack.zip) e descompacte.</li>
+              <li>Dentro de <code>.claude/skills/</code> do projeto — ou <code>~/.claude/skills/</code> pra valer em tudo — descompacte cada zip numa pasta com o nome da skill. O LEIA-ME dentro do pack repete o passo a passo.</li>
+              <li>Invoque pelo nome ou deixe o contexto ativar.</li>
             </ol>
           </div>
         </div>
@@ -141,10 +141,12 @@ const SKILLS: SkillCard[] = [
       <div class="rbsk__wrap rbsk__foot">
         <div>
           <h2 class="rbsk__foot-title">Ainda não conectou o MCP?</h2>
-          <p class="rbsk__foot-sub">O guia de conexão leva uns dois minutos, e as chaves do escritório ficam no painel.</p>
+          <p class="rbsk__foot-sub">Gere a chave no painel e o passo a passo abre na hora — leva uns dois minutos.</p>
         </div>
         <div class="rbsk__foot-links">
-          <NuxtLink to="/business/comecar" class="rbsk__btn">Guia de conexão</NuxtLink>
+          <!-- ?conectar=1 abre o modal de conexão do painel; sobrevive ao
+               redirect de login porque a guarda usa o fullPath -->
+          <NuxtLink to="/business/chaves?conectar=1" class="rbsk__btn">Como conectar</NuxtLink>
           <NuxtLink to="/business/chaves" class="rbsk__btn rbsk__btn--ghost">Minhas chaves</NuxtLink>
         </div>
       </div>
