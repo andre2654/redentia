@@ -82,17 +82,17 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
 
 <style scoped>
 .ssp__replays { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+/* mesma anatomia do "Voltar"/"Gerar resumo" (dono 25/08): pill sólida
+   branca sem borda, texto ink, hover creme + lift */
 .ssp__replay {
   display: inline-flex; align-items: baseline; gap: 7px;
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
+  border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-ink);
-  padding: 9px 15px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, transform 0.15s;
+  padding: 14px 24px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: background 0.15s, transform 0.15s;
 }
-.ssp__replay:hover { border-color: var(--nu-blue); transform: translateY(-1px); }
-.ssp__replay em { color: var(--nu-gray); font-size: 11px; font-weight: 600; font-style: normal; }
-.ssp__replay--reset { color: var(--nu-gray-2); }
-.ssp__replay--reset:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
+.ssp__replay:hover { background: var(--nu-cream); transform: translateY(-1px); }
+.ssp__replay em { color: var(--nu-gray); font-size: 11.5px; font-weight: 600; font-style: normal; }
 
 .ssp__cards {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
