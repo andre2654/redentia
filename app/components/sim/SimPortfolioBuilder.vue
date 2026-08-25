@@ -61,6 +61,27 @@ const allocation = computed(() => {
     .map(([k, v]) => ({ klass: k, pct: (v / total.value) * 100, color: CLASS_COLOR[k] ?? 'var(--nu-sand)' }))
     .sort((a, b) => b.pct - a.pct)
 })
+
+// carteira agrupada por classe (feedback do dono, 25/08: tags em grupos,
+// não lista) — mesma ordem da barra de alocação (maior classe primeiro)
+const PLURAL: Record<string, string> = { 'Ação': 'Ações', 'FII': 'FIIs', 'ETF': 'ETFs', 'BDR': 'BDRs' }
+const grouped = computed(() => {
+  const byClass = new Map<string, SimPortfolioInput[]>()
+  for (const p of model.value) {
+    const k = meta(p.ticker)?.klass ?? 'Ação'
+    if (!byClass.has(k)) byClass.set(k, [])
+    byClass.get(k)!.push(p)
+  }
+  return [...byClass.entries()]
+    .map(([k, items]) => ({
+      klass: k,
+      label: PLURAL[k] ?? k,
+      color: CLASS_COLOR[k] ?? 'var(--nu-sand)',
+      value: items.reduce((s, p) => s + p.value, 0),
+      items,
+    }))
+    .sort((a, b) => b.value - a.value)
+})
 const fmt = fmtBRLFull
 
 /* ——— modal de busca (padrão da casa) ——— */
@@ -119,23 +140,31 @@ function onSearchEnter() {
         <i v-for="a in allocation" :key="a.klass" :style="{ width: `${a.pct}%`, background: a.color }" :title="`${a.klass} ${Math.round(a.pct)}%`" />
       </div>
 
-      <div v-for="p in model" :key="p.ticker" class="spb__row">
-        <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="CLASS_COLOR[meta(p.ticker)?.klass ?? 'Ação'] ?? 'var(--nu-sand)'" tile-fg="var(--nu-white)" :size="30" :radius="9" />
-        <span class="spb__row-main">
-          <b class="spb__row-ticker">{{ p.ticker }}</b>
-          <em class="spb__row-weight">{{ weightPct(p) }}</em>
-        </span>
-        <label class="spb__row-value">
-          <span class="spb__row-rs">R$</span>
-          <input
-            class="spb__row-input" type="text" inputmode="numeric"
-            :value="p.value.toLocaleString('pt-BR')"
-            @change="setValue(p.ticker, ($event.target as HTMLInputElement).value)"
-          >
-        </label>
-        <button type="button" class="spb__row-del" aria-label="Remover" @click="remove(p.ticker)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
+      <div v-for="g in grouped" :key="g.klass" class="spb__group">
+        <div class="spb__group-head">
+          <i class="spb__group-dot" :style="{ background: g.color }" aria-hidden="true" />
+          <span class="spb__group-name">{{ g.label }}</span>
+          <span class="spb__group-pct">{{ Math.round((g.value / total) * 100) }}%</span>
+        </div>
+        <div class="spb__tags">
+          <span v-for="p in g.items" :key="p.ticker" class="spb__tag">
+            <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="g.color" tile-fg="var(--nu-white)" :size="22" :radius="7" />
+            <b class="spb__tag-ticker">{{ p.ticker }}</b>
+            <em class="spb__tag-weight">{{ weightPct(p) }}</em>
+            <label class="spb__tag-val">
+              <span class="spb__tag-rs">R$</span>
+              <input
+                class="spb__tag-input" type="text" inputmode="numeric"
+                :value="p.value.toLocaleString('pt-BR')"
+                :aria-label="`Valor em ${p.ticker}`"
+                @change="setValue(p.ticker, ($event.target as HTMLInputElement).value)"
+              >
+            </label>
+            <button type="button" class="spb__tag-del" aria-label="Remover" @click="remove(p.ticker)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -224,30 +253,36 @@ function onSearchEnter() {
   display: flex; background: var(--nu-cream-3);
 }
 .spb__alloc i { display: block; height: 100%; transition: width 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); }
-.spb__row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 4px; border-top: 1px solid var(--nu-cream);
+/* grupos por classe, posições como tags */
+.spb__group { margin-top: 14px; }
+.spb__group-head { display: flex; align-items: baseline; gap: 7px; padding: 0 4px 8px; }
+.spb__group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; align-self: center; }
+.spb__group-name { color: var(--nu-gray-2); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.spb__group-pct { color: var(--nu-gray); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.spb__tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.spb__tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--nu-cream); border-radius: var(--nu-r-pill);
+  padding: 7px 8px 7px 9px;
 }
-.spb__row:first-of-type { border-top: none; }
-.spb__row-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; }
-.spb__row-ticker { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }
-.spb__row-weight { color: var(--nu-gray); font-size: 12px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
-.spb__row-value {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--nu-cream); border-radius: var(--nu-r-chip); padding: 7px 11px;
+.spb__tag-ticker { color: var(--nu-ink); font-size: 13px; font-weight: 800; }
+.spb__tag-weight { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
+.spb__tag-val {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--nu-white); border-radius: var(--nu-r-pill); padding: 4px 9px;
 }
-.spb__row-rs { color: var(--nu-gray); font-size: 12px; font-weight: 700; }
-.spb__row-input {
-  width: 74px; border: none; background: transparent; outline: none; text-align: right;
-  color: var(--nu-ink); font-size: 14px; font-weight: 800; font-family: inherit; font-variant-numeric: tabular-nums;
+.spb__tag-rs { color: var(--nu-gray); font-size: 10.5px; font-weight: 700; }
+.spb__tag-input {
+  width: 52px; border: none; background: transparent; outline: none; text-align: right;
+  color: var(--nu-ink); font-size: 12.5px; font-weight: 800; font-family: inherit; font-variant-numeric: tabular-nums;
 }
-.spb__row-del {
-  width: 28px; height: 28px; flex-shrink: 0; border: none; border-radius: 50%;
+.spb__tag-del {
+  width: 20px; height: 20px; flex-shrink: 0; border: none; border-radius: 50%;
   background: transparent; color: var(--nu-sand); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
-.spb__row-del:hover { background: var(--nu-cream); color: var(--nu-red); }
+.spb__tag-del:hover { background: var(--nu-white); color: var(--nu-red); }
 
 .spb__cart-actions { display: flex; }
 .spb__ghost {
