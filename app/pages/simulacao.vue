@@ -304,7 +304,7 @@ const readingHtml = computed(() => {
       </div>
     </section>
 
-    <!-- ============ ANO A ANO + PREMISSAS (creme) ============ -->
+    <!-- ============ ANO A ANO (creme) ============ -->
     <section v-if="phase === 'result' && result" class="sim__band sim__band--cream">
       <NuSectionHeading eyebrow="A década, ano a ano">
         Cada ano é uma faixa,<br>não um número.
@@ -312,15 +312,6 @@ const readingHtml = computed(() => {
       </NuSectionHeading>
       <div class="sim__block sim__block--full">
         <SimAnnualBands :annual="result.annual" :active="blocksIn" />
-      </div>
-
-      <div class="sim__subsection">
-        <NuSectionHeading eyebrow="Como a conta é feita">
-          As premissas,<br>abertas.
-        </NuSectionHeading>
-      </div>
-      <div class="sim__block">
-        <SimAssumptions :assumptions="result.assumptions" />
       </div>
 
       <div class="sim__again">
@@ -530,7 +521,6 @@ const readingHtml = computed(() => {
 .sim__block--full { max-width: none; }
 /* respiro entre sub-seções da mesma banda (a legenda das faixas colava no
    eyebrow "Como a conta é feita" — feedback do dono) */
-.sim__subsection { margin-top: clamp(64px, 8vw, 104px); }
 .sim__again { margin-top: 54px; }
 .sim__again-btn {
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
