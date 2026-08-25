@@ -185,6 +185,13 @@ const readingHtml = computed(() => {
           <SimOrbFeed />
         </div>
       </Transition>
+      <!-- filme: a palavra vive DENTRO do orb (mesmo padrão do feed — overlay
+           nas coordenadas do orb, sem herdar o scale); os passos ficam embaixo -->
+      <div v-if="phase === 'film'" class="sim__wiz-wordwrap" aria-hidden="true">
+        <span class="sim__wiz-word">
+          <i v-for="(l, i) in 'Simulando'.split('')" :key="i" class="sim__wiz-letter" :style="{ animationDelay: `${i * 0.1}s` }">{{ l }}</i>
+        </span>
+      </div>
 
       <div class="sim__wiz-body">
         <!-- SEM out-in: o passo que sai vira absolute e desliza POR CIMA
@@ -221,10 +228,6 @@ const readingHtml = computed(() => {
           </div>
 
           <div v-else-if="phase === 'film'" key="film" class="sim__step sim__step--film">
-            <!-- a palavra fica ABAIXO do orb, não sobreposta (dono, 25/08) -->
-            <span class="sim__wiz-word" aria-label="Simulando">
-              <i v-for="(l, i) in 'Simulando'.split('')" :key="i" class="sim__wiz-letter" :style="{ animationDelay: `${i * 0.1}s` }">{{ l }}</i>
-            </span>
             <SimFilm :steps="filmSteps" @done="onFilmDone" />
           </div>
         </Transition>
@@ -355,8 +358,15 @@ const readingHtml = computed(() => {
 .sim__wiz--shock :deep(.ssp__chip) { background: var(--nu-white); border-color: var(--nu-white); }
 .sim__wiz--shock :deep(.ssp__chip:hover) { border-color: var(--nu-blue); }
 .sim__wiz--shock :deep(.ssp__chip--on) { background: var(--nu-ink); border-color: var(--nu-ink); }
+/* a palavra no CENTRO do orb do filme (coords da coreografia --film, sem
+   herdar o scale — texto em tamanho real) */
+.sim__wiz-wordwrap {
+  position: absolute; z-index: 1; pointer-events: none;
+  left: 50%; top: 30%;
+  transform: translate(-50%, -50%);
+}
 .sim__wiz-word { display: inline-flex; justify-content: center; }
-.sim__step--film { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.sim__step--film { display: flex; flex-direction: column; align-items: center; }
 .sim__wiz-letter {
   color: var(--nu-cream-text); font-size: 26px; font-weight: 800; font-style: normal;
   letter-spacing: 0.02em;
