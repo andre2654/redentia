@@ -13,7 +13,8 @@
 // séries, contadores e stagger fazem parte do produto desta tela.
 // ============================================================================
 import {
-  runMockSimulation, buildClientSummary, buildMacroPaths, fmtBRL, fmtBRLFull, shocksTitle,
+  runMockSimulation, buildClientSummary, buildMacroPaths, buildCorrelation, buildSeeThrough,
+  fmtBRL, fmtBRLFull, shocksTitle,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
   type SimScheduledScenario, type SimMacroKey,
@@ -111,6 +112,12 @@ function toggleMacro(k: SimMacroKey) {
 const macroVisible = computed(() =>
   macroPaths.value.filter((p) => macroChecked.value.has(p.key)).map((p) => ({ ...p, color: MACRO_COLOR[p.key] })),
 )
+
+// ——— CORRELAÇÃO + SEE-THROUGH (dono 25/08: "já temos na Redentia — vale
+// pôr aqui?"): heatmap derivado dos loadings do motor + exposição real
+// somando o que está dentro dos ETFs. ———
+const correlation = computed(() => (result.value ? buildCorrelation(portfolio.value) : null))
+const seeThrough = computed(() => (result.value ? buildSeeThrough(portfolio.value) : []))
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
 // MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
@@ -386,6 +393,18 @@ const readingHtml = computed(() => {
       <div class="sim__block sim__block--full">
         <SimPositionsImpact :positions="result.positions" :active="blocksIn" />
       </div>
+
+      <!-- correlação + sobreposição (a Redentia já tem — aqui em mock coerente) -->
+      <template v-if="correlation">
+        <div class="sim__subsection">
+          <NuSectionHeading eyebrow="Correlação e sobreposição">
+            Por que sangra<br>junto.
+          </NuSectionHeading>
+        </div>
+        <div class="sim__block sim__block--full">
+          <SimCorrelation :corr="correlation" :see-through="seeThrough" :active="blocksIn" />
+        </div>
+      </template>
     </section>
 
     <!-- ============ ANO A ANO (creme) ============ -->
@@ -724,6 +743,7 @@ const readingHtml = computed(() => {
 }
 /* ——— bandas claras ——— */
 .sim__band { padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); animation: nu-fade 0.5s ease both; }
+.sim__subsection { margin-top: clamp(64px, 8vw, 104px); }
 .sim__band--white { background: var(--nu-white); }
 .sim__band--cream { background: var(--nu-cream); }
 .sim__block { margin-top: 38px; max-width: 900px; }

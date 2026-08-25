@@ -706,3 +706,123 @@ export function fmtMacro(key: SimMacroKey, v: number): string {
   if (key === 'bolsa') return `${Math.round(v / 1000).toLocaleString('pt-BR')} mil pts`
   return `US$ ${Math.round(v)}`
 }
+
+/**
+ * CORRELAÇÃO E SOBREPOSIÇÃO (dono 25/08): a Redentia já tem correlação de
+ * ativos e composição de ETFs — aqui o MOCK deriva a correlação dos MESMOS
+ * loadings de fatores do motor (dois ativos com os mesmos fatores = alta
+ * correlação), então o heatmap explica exatamente a conta do "quem sangra".
+ * No real: matriz de correlação da plataforma + cda_fie da CVM.
+ */
+export interface SimCorrelationOut { tickers: string[]; matrix: number[][]; avgPct: number }
+
+function exposureVector(a: SimAsset): Record<string, number> {
+  if (a.rf) {
+    if (a.rf.indexer === 'pos') return { carry: 1 }
+    return { juros: a.factors.juros ?? 0.5, carry: 0.35 }
+  }
+  return { ...a.factors, beta: a.beta * 0.8 }
+}
+function cosSim(u: Record<string, number>, v: Record<string, number>): number {
+  let dot = 0
+  for (const k of Object.keys(u)) dot += u[k]! * (v[k] ?? 0)
+  const nu = Math.sqrt(Object.values(u).reduce((s, x) => s + x * x, 0))
+  const nv = Math.sqrt(Object.values(v).reduce((s, x) => s + x * x, 0))
+  return nu && nv ? dot / (nu * nv) : 0
+}
+
+export function buildCorrelation(portfolio: SimPortfolioInput[]): SimCorrelationOut | null {
+  const held = portfolio
+    .map((p) => ({ ...p, asset: ASSET_CATALOG.find((a) => a.ticker === p.ticker) }))
+    .filter((p): p is typeof p & { asset: SimAsset } => !!p.asset && p.value > 0)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8) // heatmap com mais que isso vira tapete
+  if (held.length < 2) return null
+  const total = held.reduce((s, p) => s + p.value, 0)
+  const vecs = held.map((p) => exposureVector(p.asset))
+  const matrix = held.map((_, i) => held.map((_2, j) => Math.round(cosSim(vecs[i]!, vecs[j]!) * 100)))
+  let num = 0
+  let den = 0
+  for (let i = 0; i < held.length; i++) {
+    for (let j = 0; j < i; j++) {
+      const w = (held[i]!.value / total) * (held[j]!.value / total)
+      num += matrix[i]![j]! * w
+      den += w
+    }
+  }
+  return { tickers: held.map((p) => p.ticker), matrix, avgPct: den ? Math.round(num / den) : 0 }
+}
+
+/** composição mock dos ETFs (no real: cda_fie/CVM, que a Redentia já lê) */
+const ETF_HOLDINGS: Record<string, { code: string; name: string; pct: number }[]> = {
+  IVVB11: [
+    { code: 'AAPL', name: 'Apple', pct: 7 },
+    { code: 'MSFT', name: 'Microsoft', pct: 6.5 },
+    { code: 'NVDA', name: 'NVIDIA', pct: 6 },
+    { code: 'GOOGL', name: 'Alphabet', pct: 3.6 },
+  ],
+  NASD11: [
+    { code: 'AAPL', name: 'Apple', pct: 8.5 },
+    { code: 'NVDA', name: 'NVIDIA', pct: 8 },
+    { code: 'MSFT', name: 'Microsoft', pct: 8 },
+    { code: 'GOOGL', name: 'Alphabet', pct: 5 },
+  ],
+  BOVA11: [
+    { code: 'VALE3', name: 'Vale', pct: 11 },
+    { code: 'ITUB4', name: 'Itaú', pct: 8 },
+    { code: 'PETR4', name: 'Petrobras', pct: 7 },
+    { code: 'BBAS3', name: 'Banco do Brasil', pct: 3 },
+  ],
+  SMAL11: [],
+  GOLD11: [],
+}
+/** posição direta → empresa (BDR = a própria empresa lá fora) */
+const DIRECT_CODE: Record<string, string> = {
+  AAPL34: 'AAPL', NVDC34: 'NVDA', GOGL34: 'GOOGL',
+  PETR4: 'PETR4', VALE3: 'VALE3', ITUB4: 'ITUB4', BBAS3: 'BBAS3', WEGE3: 'WEGE3', PRIO3: 'PRIO3', TAEE11: 'TAEE11',
+}
+
+export interface SimSeeThroughItem {
+  code: string
+  name: string
+  directPct: number
+  directVia: string | null
+  viaEtf: { etf: string; pct: number }[]
+  totalPct: number
+}
+
+/** exposição REAL por empresa: direta + escondida dentro dos ETFs */
+export function buildSeeThrough(portfolio: SimPortfolioInput[]): SimSeeThroughItem[] {
+  const held = portfolio
+    .map((p) => ({ ...p, asset: ASSET_CATALOG.find((a) => a.ticker === p.ticker) }))
+    .filter((p): p is typeof p & { asset: SimAsset } => !!p.asset && p.value > 0)
+  const total = held.reduce((s, p) => s + p.value, 0)
+  if (!total) return []
+  const map = new Map<string, SimSeeThroughItem>()
+  const get = (code: string, name: string): SimSeeThroughItem => {
+    if (!map.has(code)) map.set(code, { code, name, directPct: 0, directVia: null, viaEtf: [], totalPct: 0 })
+    return map.get(code)!
+  }
+  for (const p of held) {
+    const w = (p.value / total) * 100
+    const direct = DIRECT_CODE[p.ticker]
+    if (direct) {
+      const it = get(direct, p.asset.name.replace(/ (PN|ON|UNT|BDR)$/, ''))
+      it.directPct += w
+      it.directVia = p.ticker
+    }
+    for (const h of ETF_HOLDINGS[p.ticker] ?? []) {
+      const it = get(h.code, h.name)
+      it.viaEtf.push({ etf: p.ticker, pct: Math.round(w * h.pct) / 100 })
+    }
+  }
+  const items = [...map.values()].map((it) => ({
+    ...it,
+    directPct: Math.round(it.directPct * 10) / 10,
+    totalPct: Math.round((it.directPct + it.viaEtf.reduce((s, v) => s + v.pct, 0)) * 10) / 10,
+  }))
+  // o caso VENDEDOR: sobreposição direta + escondida; fallback: maiores escondidas
+  const overlap = items.filter((it) => it.directPct > 0 && it.viaEtf.length).sort((a, b) => b.totalPct - a.totalPct)
+  if (overlap.length) return overlap.slice(0, 4)
+  return items.filter((it) => it.viaEtf.length && it.totalPct >= 1).sort((a, b) => b.totalPct - a.totalPct).slice(0, 3)
+}
