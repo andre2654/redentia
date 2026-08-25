@@ -184,7 +184,10 @@ const readingHtml = computed(() => {
       </div>
 
       <div class="sim__wiz-body">
-        <Transition :name="stepDir === 'fwd' ? 'wstep' : 'wstepb'" mode="out-in">
+        <!-- SEM out-in: o passo que sai vira absolute e desliza POR CIMA
+             enquanto o novo já entra no fluxo — mata o frame vazio que
+             colapsava a altura (o "glitch" do dono, 25/08) -->
+        <Transition :name="stepDir === 'fwd' ? 'wstep' : 'wstepb'">
           <div v-if="phase === 'assets'" key="assets" class="sim__step">
             <span class="sim__proto">Protótipo · dados ilustrativos</span>
             <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
@@ -355,10 +358,15 @@ const readingHtml = computed(() => {
   40% { opacity: 0.7; transform: translateY(0); }
 }
 .sim__wiz-body { position: relative; z-index: 1; }
-/* slide direcional dos passos: avançar empurra pra ESQUERDA; voltar devolve
-   pra DIREITA — casa com a varredura do orb no sentido oposto */
-.wstep-enter-active, .wstepb-enter-active { transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1); }
-.wstep-leave-active, .wstepb-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
+/* slide direcional SOBREPOSTO: o que sai fica absolute (sem colapsar a
+   altura) e desliza por cima; o que entra já ocupa o fluxo com um delay
+   mínimo — sem frame vazio, sem pulo de layout */
+.wstep-enter-active, .wstepb-enter-active { transition: opacity 0.5s ease 0.08s, transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) 0.08s; }
+.wstep-leave-active, .wstepb-leave-active {
+  position: absolute; top: 0; left: 0; width: 100%;
+  transition: opacity 0.32s ease, transform 0.32s ease;
+  pointer-events: none;
+}
 .wstep-enter-from { opacity: 0; transform: translateX(56px); }
 .wstep-leave-to { opacity: 0; transform: translateX(-44px); }
 .wstepb-enter-from { opacity: 0; transform: translateX(-56px); }
