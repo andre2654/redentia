@@ -18,7 +18,23 @@ export interface SimSeries {
   baseline: number[]
 }
 export interface SimEvent { at: number; kind: string; label: string }
-export interface SimPositionImpact { ticker: string; name: string; weight: number; shockPct: number; factors: string[] }
+/** a conta linha a linha de um fator na posição (auditabilidade navegável) */
+export interface SimFactorLine { name: string; load: number; contributionPct: number }
+export interface SimPositionImpact {
+  ticker: string
+  name: string
+  klass: string
+  weight: number
+  shockPct: number
+  beta: number
+  factors: SimFactorLine[]
+  /** carrego anual LÍQUIDO da posição no cenário (drift próprio) */
+  carryPct: number
+  tax: 'isento' | 'ir15'
+  taxLabel: string
+  /** linha extra de RF: "duration 2,6 anos × Δjuros" */
+  rfNote?: string
+}
 export interface SimAnnual { year: number; p10: number; p50: number; p90: number }
 /**
  * PIVÔ (dono, 25/08): o ASSESSOR define os choques em variáveis macro
@@ -129,6 +145,7 @@ function factorShocksFrom(s: SimShocks): { factors: Record<string, number>; rule
     add('juros', cl(-4.2 * d, 18)); add('imobiliario', cl(-2.4 * d, 12)); add('mercado', cl(-1.6 * d, 8)); add('domestico', cl(-1.2 * d, 8))
     rules.push(`Selic ${fmtSigned(d)} p.p. → sensíveis a juros ${fmtSigned(cl(-4.2 * d, 18), 0)}%`)
     rules.push(`CDI âncora passa a ${s.selic.toLocaleString('pt-BR')}%`)
+    rules.push('Δjuros → marcação por duration nos pré/IPCA+; pós carrega a Selic nova')
   }
   if (s.bolsa !== undefined) {
     const d = s.bolsa
@@ -168,16 +185,45 @@ export interface SimResult {
   events: SimEvent[]
   annual: SimAnnual[]
   positions: SimPositionImpact[]
-  assumptions: { anchor: number; anchorDate: string; beta: number; cdiPct: number; erpPp: number; volPct: number; paths: number }
+  /** resumo do envelope aplicado (vale, duração, recuperação) — null sem choque */
+  shockSummary: { totalPct: number; durationMonths: number; recoveryMonths: number } | null
+  assumptions: { anchor: number; anchorDate: string; beta: number; cdiPct: number; carryPct: number; erpPp: number; volPct: number; paths: number }
 }
 
 interface SimEnvelope { startMonth: number; depthPct: number; durationMonths: number; recoveryMonths: number; shape: 'v' | 'u' | 'l' }
 
 export const HORIZON_MONTHS = 120
-const CDI = 0.139
 const ERP = 0.04
+const IPCA_PROXY = 0.04 // inflação de referência dos IPCA+ (ilustrativo)
+const TAX_RATE = 0.15 // IR estimado dos tributados (regressiva >2 anos / RV)
 const START_YEAR = 2026
 const START_MONTH = 9 // set/2026
+
+/** isento vs tributado (gap tributário, 25/08): FII rende isento; LCI e
+ * incentivadas isentas; o resto paga IR estimado de 15% sobre o ganho. */
+function taxInfo(a: SimAsset): { tax: 'isento' | 'ir15'; label: string } {
+  if (a.rf) return a.rf.isento ? { tax: 'isento', label: 'isenta de IR' } : { tax: 'ir15', label: 'IR 15%' }
+  if (a.klass === 'FII') return { tax: 'isento', label: 'rendimentos isentos' }
+  return { tax: 'ir15', label: 'IR 15%' }
+}
+
+/**
+ * CARREGO anual LÍQUIDO por posição (drift próprio, gap RF):
+ *  - pós: Selic VIGENTE × mult (choque de Selic muda o carrego)
+ *  - pré: taxa CONTRATADA, travada — não acompanha o choque
+ *  - ipca: inflação de referência + taxa real contratada
+ *  - RV/FII: Selic vigente + beta × prêmio de risco
+ * Líquido = ganho × (1 − 15%) nos tributados; isentos sem desconto.
+ */
+function carryOf(a: SimAsset, selicPct: number): number {
+  const net = (gross: number, isento: boolean) => (isento ? gross : gross * (1 - TAX_RATE))
+  if (a.rf) {
+    if (a.rf.indexer === 'pos') return net((selicPct / 100) * (a.rf.cdiMult ?? 1), !!a.rf.isento)
+    if (a.rf.indexer === 'pre') return net(a.rf.ratePct / 100, !!a.rf.isento)
+    return net(IPCA_PROXY + a.rf.ratePct / 100, !!a.rf.isento)
+  }
+  return net(selicPct / 100 + a.beta * ERP, taxInfo(a).tax === 'isento')
+}
 
 // PRNG determinístico (mulberry32) — o sample path é o MESMO em todo load
 function mulberry32(seed: number) {
@@ -212,12 +258,13 @@ function shockEnvelope(s: SimEnvelope, i: number): number {
   return shape === 'l' ? 1 + depth * 0.45 : 1
 }
 
-function buildSeries(env: SimEnvelope | null, seedKey: string, anchor: number, beta: number, vol: number, cdi: number): SimSeries {
+function buildSeries(env: SimEnvelope | null, seedKey: string, anchor: number, vol: number, carry: number, baseCarry: number): SimSeries {
   const dates: string[] = []
   const p10: number[] = []; const p50: number[] = []; const p90: number[] = []
   const base: number[] = []; const sample: number[] = []
-  const driftM = Math.pow(1 + cdi + beta * ERP, 1 / 12) - 1
-  const baseDriftM = Math.pow(1 + CDI + beta * ERP, 1 / 12) - 1 // baseline sem choque de CDI
+  // carrego LÍQUIDO ponderado da carteira (por posição — RF tem drift próprio)
+  const driftM = Math.pow(1 + carry, 1 / 12) - 1
+  const baseDriftM = Math.pow(1 + baseCarry, 1 / 12) - 1 // baseline com a Selic de hoje
   const rnd = mulberry32(seedKey.length * 7919 + 42)
   let samp = anchor
   for (let i = 0; i < HORIZON_MONTHS; i++) {
@@ -248,9 +295,23 @@ function buildSeries(env: SimEnvelope | null, seedKey: string, anchor: number, b
 export interface SimAsset {
   ticker: string
   name: string
-  klass: 'Ação' | 'FII' | 'ETF' | 'BDR'
+  klass: 'Ação' | 'FII' | 'ETF' | 'BDR' | 'Renda fixa'
   beta: number
   factors: Record<string, number>
+  /**
+   * RENDA FIXA (gap nº1 da demo, 25/08): indexador define o CARREGO; a
+   * marcação a mercado entra pelo sistema de fatores existente — carga de
+   * `juros` = duration/4.2 (a regra de juros dá −4,2%/p.p. por carga 1),
+   * com sensibilidade nominal 0,65 pros IPCA+. `ratePct` é a taxa contratada
+   * (nominal no pré, REAL no ipca). Pós não marca (duration ~0).
+   */
+  rf?: {
+    indexer: 'pos' | 'pre' | 'ipca'
+    ratePct: number
+    cdiMult?: number
+    durationYears?: number
+    isento?: boolean
+  }
 }
 export const ASSET_CATALOG: SimAsset[] = [
   { ticker: 'IVVB11', name: 'ETF S&P 500', klass: 'ETF', beta: 0.7, factors: { internacional: 1, tech: 0.35, dolar: 1 } },
@@ -271,6 +332,14 @@ export const ASSET_CATALOG: SimAsset[] = [
   { ticker: 'AAPL34', name: 'Apple BDR', klass: 'BDR', beta: 0.8, factors: { internacional: 1, tech: 0.9, dolar: 1 } },
   { ticker: 'NVDC34', name: 'NVIDIA BDR', klass: 'BDR', beta: 1.4, factors: { internacional: 1, tech: 1.4, dolar: 1 } },
   { ticker: 'GOGL34', name: 'Alphabet BDR', klass: 'BDR', beta: 0.9, factors: { internacional: 1, tech: 0.9, dolar: 1 } },
+  // ——— renda fixa (cargas de juros = duration/4.2; IPCA+ com 0,65 de
+  // sensibilidade nominal). Taxas ilustrativas coerentes com Selic 13,9%. ———
+  { ticker: 'TSELIC29', name: 'Tesouro Selic 2029', klass: 'Renda fixa', beta: 0, factors: {}, rf: { indexer: 'pos', ratePct: 0, cdiMult: 1 } },
+  { ticker: 'CDB105', name: 'CDB 105% do CDI', klass: 'Renda fixa', beta: 0, factors: {}, rf: { indexer: 'pos', ratePct: 0, cdiMult: 1.05 } },
+  { ticker: 'LCI92', name: 'LCI 92% do CDI', klass: 'Renda fixa', beta: 0, factors: {}, rf: { indexer: 'pos', ratePct: 0, cdiMult: 0.92, isento: true } },
+  { ticker: 'PRE29', name: 'Tesouro Prefixado 2029', klass: 'Renda fixa', beta: 0, factors: { juros: 0.62 }, rf: { indexer: 'pre', ratePct: 13.4, durationYears: 2.6 } },
+  { ticker: 'IPCA35', name: 'Tesouro IPCA+ 2035', klass: 'Renda fixa', beta: 0, factors: { juros: 1.08 }, rf: { indexer: 'ipca', ratePct: 7, durationYears: 7 } },
+  { ticker: 'DEBI32', name: 'Debênture incentivada IPCA+', klass: 'Renda fixa', beta: 0, factors: { juros: 0.77 }, rf: { indexer: 'ipca', ratePct: 6.6, durationYears: 5, isento: true } },
 ]
 
 export interface SimPortfolioInput { ticker: string; value: number }
@@ -285,10 +354,18 @@ export const EXAMPLE_PORTFOLIO: SimPortfolioInput[] = [
   { ticker: 'BOVA11', value: 15_000 },
 ]
 
-function assetShock(asset: SimAsset, factorShocks: Record<string, number>): number {
+/** a conta por posição, linha a linha — cada fator com carga e contribuição
+ * (auditabilidade navegável: é o que o accordion do "quem sangra" abre) */
+function assetShockDetail(asset: SimAsset, factorShocks: Record<string, number>): { total: number; lines: SimFactorLine[] } {
   let s = 0
-  for (const [f, load] of Object.entries(asset.factors)) s += (factorShocks[f] ?? 0) * load
-  return Math.round(Math.max(-60, Math.min(40, s)))
+  const lines: SimFactorLine[] = []
+  for (const [f, load] of Object.entries(asset.factors)) {
+    const contribution = (factorShocks[f] ?? 0) * load
+    s += contribution
+    if (contribution !== 0) lines.push({ name: f, load, contributionPct: Math.round(contribution * 10) / 10 })
+  }
+  lines.sort((a, b) => Math.abs(b.contributionPct) - Math.abs(a.contributionPct))
+  return { total: Math.round(Math.max(-60, Math.min(40, s))), lines }
 }
 
 export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInput[] = EXAMPLE_PORTFOLIO): SimResult {
@@ -301,18 +378,37 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
     .map((p) => ({ ...p, asset: ASSET_CATALOG.find((a) => a.ticker === p.ticker) }))
     .filter((p): p is typeof p & { asset: SimAsset } => !!p.asset && p.value > 0)
   const anchor = held.reduce((s, p) => s + p.value, 0) || 1
-  const beta = held.reduce((s, p) => s + (p.value / anchor) * p.asset.beta, 0) || 1
-  const vol = 0.06 + 0.14 * beta // vol da carteira escala com o beta (ilustrativo)
+  const beta = held.reduce((s, p) => s + (p.value / anchor) * p.asset.beta, 0)
+  const vol = 0.02 + 0.18 * beta // vol escala com o beta (RF pura ≈ 2% a.a.)
 
-  // impacto por posição (regras × cargas) e o agregado — que VIRA o envelope
-  const positions = held
-    .map((p) => ({
-      ticker: p.ticker,
-      name: p.asset.name,
-      weight: p.value / anchor,
-      factors: Object.keys(p.asset.factors),
-      shockPct: assetShock(p.asset, factors),
-    }))
+  // carrego LÍQUIDO ponderado — no cenário (Selic do choque) e no base (hoje)
+  const selicShocked = shocks.selic ?? MACRO_NOW.selic
+  const carry = held.reduce((s, p) => s + (p.value / anchor) * carryOf(p.asset, selicShocked), 0) || 0.1
+  const baseCarry = held.reduce((s, p) => s + (p.value / anchor) * carryOf(p.asset, MACRO_NOW.selic), 0) || 0.1
+
+  // impacto por posição (regras × cargas), com a conta aberta linha a linha
+  const positions: SimPositionImpact[] = held
+    .map((p) => {
+      const detail = assetShockDetail(p.asset, factors)
+      const t = taxInfo(p.asset)
+      return {
+        ticker: p.ticker,
+        name: p.asset.name,
+        klass: p.asset.klass,
+        weight: p.value / anchor,
+        shockPct: detail.total,
+        beta: p.asset.beta,
+        factors: detail.lines,
+        carryPct: Math.round(carryOf(p.asset, selicShocked) * 1000) / 10,
+        tax: t.tax,
+        taxLabel: t.label,
+        rfNote: p.asset.rf?.durationYears
+          ? `marcação ≈ −duration ${p.asset.rf.durationYears.toLocaleString('pt-BR')} anos × Δjuros${p.asset.rf.indexer === 'ipca' ? ' (sensibilidade nominal 0,65)' : ''}`
+          : p.asset.rf
+            ? 'pós-fixado: sem marcação relevante — o efeito é no carrego'
+            : undefined,
+      }
+    })
     .sort((a, b) => b.weight - a.weight)
   const totalShock = positions.reduce((s, p) => s + p.weight * p.shockPct, 0)
 
@@ -325,8 +421,7 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
         recoveryMonths: totalShock < 0 ? 24 : 4,
         shape: totalShock < 0 ? 'u' : 'v',
       }
-  const cdi = shocks.selic !== undefined ? shocks.selic / 100 : CDI
-  const series = buildSeries(env, key || 'base', anchor, beta, vol, cdi)
+  const series = buildSeries(env, key || 'base', anchor, vol, carry, baseCarry)
   const last = HORIZON_MONTHS - 1
 
   let events: SimEvent[] = [
@@ -365,10 +460,15 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
     events: events.sort((a, b) => a.at - b.at),
     annual,
     positions,
+    shockSummary: env
+      ? { totalPct: env.depthPct, durationMonths: env.durationMonths, recoveryMonths: env.recoveryMonths }
+      : null,
     assumptions: {
       anchor: Math.round(anchor), anchorDate: '2026-08-24',
       beta: Math.round(beta * 100) / 100,
-      cdiPct: Math.round(cdi * 1000) / 10, erpPp: ERP * 100, volPct: Math.round(vol * 1000) / 10, paths: 2000,
+      cdiPct: Math.round((selicShocked / 100) * 1000) / 10,
+      carryPct: Math.round(carry * 1000) / 10,
+      erpPp: ERP * 100, volPct: Math.round(vol * 1000) / 10, paths: 2000,
     },
   }
 }
@@ -378,3 +478,39 @@ export const fmtBRL = (v: number): string =>
     ? `R$ ${(v / 1_000_000).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} mi`
     : `R$ ${Math.round(v / 1000).toLocaleString('pt-BR')} mil`
 export const fmtBRLFull = (v: number): string => `R$ ${Math.round(v).toLocaleString('pt-BR')}`
+
+/**
+ * RESUMO PRO CLIENTE (gap nº5, 25/08) — 100% templetizado do resultado do
+ * motor, no formato da skill redentia-por-que-moveu: bloco WhatsApp (1ª
+ * pessoa do assessor, 2-3 frases), bloco e-mail (assunto + parágrafo denso)
+ * e rodapé de compliance. A FAIXA aparece em todo bloco — nunca só a mediana.
+ */
+export interface SimClientSummary { whatsapp: string; emailSubject: string; emailBody: string; footer: string }
+export function buildClientSummary(r: SimResult): SimClientSummary {
+  const hoje = new Date().toLocaleDateString('pt-BR')
+  const anchor = fmtBRLFull(r.assumptions.anchor)
+  const faixa = `${fmtBRL(r.final.p10)} no pessimista e ${fmtBRL(r.final.p90)} no otimista`
+  const worst = [...r.positions].sort((a, b) => a.shockPct - b.shockPct)[0]
+  const best = [...r.positions].sort((a, b) => b.shockPct - a.shockPct)[0]
+  const s = r.shockSummary
+
+  const choqueTxt = s
+    ? ` No curto prazo, esse cenário custaria ${fmtSigned(s.totalPct)}% no vale, com recuperação estimada em ~${s.recoveryMonths} meses.${worst && worst.shockPct < 0 ? ` Quem mais sentiria é ${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%)` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ' '}quem seguraria é ${best.ticker} (${fmtSigned(best.shockPct, 0)}%)` : ''}.`
+    : ''
+
+  const whatsapp
+    = `Rodei uma simulação de 10 anos da sua carteira (${anchor}) no cenário "${r.scenario.title}". `
+      + `O caminho central termina em ${fmtBRL(r.final.p50)} — mas o honesto é a faixa: entre ${faixa}.`
+      + `${choqueTxt} Os números já são líquidos de IR estimado. Te mostro as premissas quando quiser.`
+
+  const emailSubject = `Simulação da sua carteira — ${r.scenario.title}`
+  const emailBody
+    = `Simulei o comportamento da sua carteira (${anchor} hoje) ao longo de 10 anos no cenário "${r.scenario.title}". `
+      + `A mediana da simulação termina em ${fmtBRL(r.final.p50)}, com a faixa estatística entre ${faixa} — a faixa é o dado; a mediana é só o meio dela.`
+      + `${choqueTxt} O carrego líquido estimado da carteira nesse cenário é de ${r.assumptions.carryPct.toLocaleString('pt-BR')}% ao ano, com beta ${r.assumptions.beta.toLocaleString('pt-BR')} contra o IBOV. `
+      + `Posso abrir a conta posição a posição na nossa próxima conversa.`
+
+  const footer = `Simulação de ${hoje} · protótipo Redentia · faixa estatística com premissas explícitas — não é previsão nem recomendação de investimento · valores líquidos de IR estimado (isentos sem desconto).`
+
+  return { whatsapp, emailSubject, emailBody, footer }
+}
