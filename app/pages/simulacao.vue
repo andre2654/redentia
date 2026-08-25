@@ -540,13 +540,15 @@ const readingHtml = computed(() => {
 .wstepb-leave-to { opacity: 0; transform: translateX(44px); }
 .sim__wiz--film .sim__wiz-body { padding-bottom: 6vh; }
 .sim__wiz-nav { margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+/* sólido branco (dono 25/08: "igual ao gerar resumo") — o outline sumia
+   no fundo azul-gelo do passo 2 */
 .sim__back {
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-gray-2);
-  padding: 13px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, color 0.15s;
+  border: none; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-ink);
+  padding: 14px 24px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: background 0.15s, transform 0.15s;
 }
-.sim__back:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
+.sim__back:hover { background: var(--nu-cream); transform: translateY(-1px); }
 .sim__shockgrid { max-width: 880px; }
 @media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
 .sim__dots { display: inline-flex; gap: 7px; }
