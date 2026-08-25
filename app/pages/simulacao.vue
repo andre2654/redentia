@@ -22,7 +22,7 @@ import {
 definePageMeta({ layout: 'default' })
 usePageSeo({
   title: 'Simulação — o futuro da sua carteira',
-  description: 'Simule cenários de 10 anos: eleições, bolhas, juros. Protótipo.',
+  description: 'Simule cenários de 10 anos na sua carteira. Protótipo.',
   path: '/simulacao',
   noindex: true,
 })

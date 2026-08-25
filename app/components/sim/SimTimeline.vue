@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// PROTÓTIPO /simulacao — a régua do tempo 2026→2036: eventos (eleições,
+// PROTÓTIPO /simulacao — a régua do tempo 2026→2036: eventos (cenários
 // choque do cenário) e cursor ARRASTÁVEL sincronizado com o fan chart
 // (v-model:cursor compartilhado). Pointer events puros, sem lib.
 import type { SimEvent } from './simMock'

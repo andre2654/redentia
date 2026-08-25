@@ -454,14 +454,10 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
   const series = buildSeries(envs, key || 'base', anchor, vol, carrySegs, baseCarry)
   const last = HORIZON_MONTHS - 1
 
-  let events: SimEvent[] = [
-    { at: 1, kind: 'eleicao', label: 'Eleições 2026' },
-    { at: 49, kind: 'eleicao', label: 'Eleições 2030' },
-    { at: 97, kind: 'eleicao', label: 'Eleições 2034' },
-  ]
-  // eleições encostadas em algum cenário saem; cada cenário vira marcador
-  // âmbar com o ANO como rótulo (identifica a linha amarela — dono 25/08)
-  events = events.filter((e) => computed.every((c) => Math.abs(e.at - c.startMonth) > 6))
+  // eventos = SÓ os cenários desenhados (dono 25/08: fora as eleições
+  // automáticas — marcador sem efeito no motor não é nada). Cada cenário
+  // vira a linha âmbar com o ANO como rótulo.
+  const events: SimEvent[] = []
   for (const c of computed) if (c.env) events.push({ at: c.startMonth, kind: 'choque', label: String(c.year) })
 
   const annual: SimAnnual[] = []
