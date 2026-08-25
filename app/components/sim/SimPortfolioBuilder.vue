@@ -140,30 +140,37 @@ function onSearchEnter() {
         <i v-for="a in allocation" :key="a.klass" :style="{ width: `${a.pct}%`, background: a.color }" :title="`${a.klass} ${Math.round(a.pct)}%`" />
       </div>
 
-      <div v-for="g in grouped" :key="g.klass" class="spb__group">
-        <div class="spb__group-head">
-          <i class="spb__group-dot" :style="{ background: g.color }" aria-hidden="true" />
-          <span class="spb__group-name">{{ g.label }}</span>
-          <span class="spb__group-pct">{{ Math.round((g.value / total) * 100) }}%</span>
-        </div>
-        <div class="spb__tags">
-          <span v-for="p in g.items" :key="p.ticker" class="spb__tag">
-            <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="g.color" tile-fg="var(--nu-white)" :size="22" :radius="7" />
-            <b class="spb__tag-ticker">{{ p.ticker }}</b>
-            <em class="spb__tag-weight">{{ weightPct(p) }}</em>
-            <label class="spb__tag-val">
-              <span class="spb__tag-rs">R$</span>
+      <!-- containers lado a lado, um por classe, fundo tingido na cor do
+           tipo (feedback do dono, 25/08) -->
+      <div class="spb__groups">
+        <div
+          v-for="g in grouped" :key="g.klass" class="spb__group"
+          :style="{ background: `color-mix(in srgb, ${g.color} 10%, var(--nu-white))` }"
+        >
+          <div class="spb__group-head">
+            <span class="spb__group-name" :style="{ color: g.color }">{{ g.label }}</span>
+            <span class="spb__group-pct">{{ Math.round((g.value / total) * 100) }}%</span>
+          </div>
+          <div v-for="p in g.items" :key="p.ticker" class="spb__prow">
+            <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="g.color" tile-fg="var(--nu-white)" :size="24" :radius="8" />
+            <span class="spb__prow-main">
+              <b class="spb__prow-ticker">{{ p.ticker }}</b>
+              <em class="spb__prow-weight">{{ weightPct(p) }}</em>
+            </span>
+            <label class="spb__prow-val" :title="`Editar o valor em ${p.ticker}`">
+              <span class="spb__prow-rs">R$</span>
               <input
-                class="spb__tag-input" type="text" inputmode="numeric"
+                class="spb__prow-input" type="text" inputmode="numeric"
                 :value="p.value.toLocaleString('pt-BR')"
                 :aria-label="`Valor em ${p.ticker}`"
                 @change="setValue(p.ticker, ($event.target as HTMLInputElement).value)"
               >
+              <svg class="spb__prow-pen" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg>
             </label>
-            <button type="button" class="spb__tag-del" aria-label="Remover" @click="remove(p.ticker)">
+            <button type="button" class="spb__prow-del" aria-label="Remover" @click="remove(p.ticker)">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
-          </span>
+          </div>
         </div>
       </div>
     </div>
@@ -225,7 +232,10 @@ function onSearchEnter() {
 </template>
 
 <style scoped>
-.spb { max-width: 640px; display: flex; flex-direction: column; gap: 14px; }
+/* 880px = mesma largura do grid de choques (passo 2); o gatilho de busca
+   fica mais curto pra não virar um campo comprido demais */
+.spb { max-width: 880px; display: flex; flex-direction: column; gap: 14px; }
+.spb__trigger { max-width: 640px; }
 
 /* input-gatilho: cara de campo de busca, abre o modal */
 .spb__trigger {
@@ -253,36 +263,48 @@ function onSearchEnter() {
   display: flex; background: var(--nu-cream-3);
 }
 .spb__alloc i { display: block; height: 100%; transition: width 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); }
-/* grupos por classe, posições como tags */
-.spb__group { margin-top: 14px; }
-.spb__group-head { display: flex; align-items: baseline; gap: 7px; padding: 0 4px 8px; }
-.spb__group-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; align-self: center; }
-.spb__group-name { color: var(--nu-gray-2); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.spb__group-pct { color: var(--nu-gray); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.spb__tags { display: flex; flex-wrap: wrap; gap: 7px; }
-.spb__tag {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: var(--nu-cream); border-radius: var(--nu-r-pill);
-  padding: 7px 8px 7px 9px;
+/* containers horizontais por classe, fundo na cor do tipo */
+.spb__groups { margin-top: 12px; display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+.spb__group {
+  flex: 1 1 0; min-width: 232px;
+  border-radius: var(--nu-r-tile); padding: 12px;
 }
-.spb__tag-ticker { color: var(--nu-ink); font-size: 13px; font-weight: 800; }
-.spb__tag-weight { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
-.spb__tag-val {
-  display: inline-flex; align-items: center; gap: 3px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill); padding: 4px 9px;
+.spb__group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 7px; padding: 2px 4px 10px; }
+.spb__group-name { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.spb__group-pct { color: var(--nu-gray-2); font-size: 11.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.spb__prow {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--nu-white); border-radius: 12px;
+  padding: 7px 8px; margin-top: 6px;
 }
-.spb__tag-rs { color: var(--nu-gray); font-size: 10.5px; font-weight: 700; }
-.spb__tag-input {
-  width: 52px; border: none; background: transparent; outline: none; text-align: right;
-  color: var(--nu-ink); font-size: 12.5px; font-weight: 800; font-family: inherit; font-variant-numeric: tabular-nums;
+.spb__prow:first-of-type { margin-top: 0; }
+.spb__prow-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
+.spb__prow-ticker { color: var(--nu-ink); font-size: 13px; font-weight: 800; }
+.spb__prow-weight { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
+/* valor com cara explícita de CAMPO (dono, 25/08: "deixar claro que pode
+   ser alterado"): borda de input + hover azul + lápis */
+.spb__prow-val {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--nu-cream); border: 1.5px solid var(--nu-cream-2);
+  border-radius: 10px; padding: 5px 8px 5px 10px;
+  cursor: text; transition: border-color 0.15s, background 0.15s;
 }
-.spb__tag-del {
+.spb__prow-val:hover { border-color: var(--nu-blue); }
+.spb__prow-val:focus-within { border-color: var(--nu-blue); background: var(--nu-white); }
+.spb__prow-val:focus-within .spb__prow-pen, .spb__prow-val:hover .spb__prow-pen { color: var(--nu-blue); }
+.spb__prow-rs { color: var(--nu-gray); font-size: 10.5px; font-weight: 700; }
+.spb__prow-input {
+  width: 56px; border: none; background: transparent; outline: none; text-align: right;
+  color: var(--nu-ink); font-size: 13px; font-weight: 800; font-family: inherit; font-variant-numeric: tabular-nums;
+}
+.spb__prow-pen { color: var(--nu-sand); flex-shrink: 0; transition: color 0.15s; }
+.spb__prow-del {
   width: 20px; height: 20px; flex-shrink: 0; border: none; border-radius: 50%;
   background: transparent; color: var(--nu-sand); cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
-.spb__tag-del:hover { background: var(--nu-white); color: var(--nu-red); }
+.spb__prow-del:hover { background: var(--nu-cream); color: var(--nu-red); }
 
 .spb__cart-actions { display: flex; }
 .spb__ghost {
