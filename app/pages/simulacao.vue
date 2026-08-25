@@ -278,7 +278,6 @@ const readingHtml = computed(() => {
       <template v-if="result">
         <div class="sim__result-head">
           <div>
-            <p class="sim__navy-eyebrow">{{ result.scenario.title }}</p>
             <h2 class="sim__navy-title">Daqui a 10 anos, a mediana diz<br><span class="sim__counter">{{ fmtFull(finalP50) }}</span></h2>
             <p class="sim__range">entre <b class="sim__range-lo">{{ fmt(result.final.p10) }}</b> e <b class="sim__range-hi">{{ fmt(result.final.p90) }}</b></p>
           </div>
@@ -536,7 +535,6 @@ const readingHtml = computed(() => {
   padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 90px);
 }
 .sim__result-head { display: flex; justify-content: space-between; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
-.sim__navy-eyebrow { margin: 0; color: var(--nu-blue-soft); font-size: 13px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
 .sim__navy-title {
   margin: 10px 0 0; color: var(--nu-cream-text);
   font-size: clamp(28px, 3.4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08;
