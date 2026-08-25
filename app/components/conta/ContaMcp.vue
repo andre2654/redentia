@@ -1,12 +1,14 @@
 <script setup lang="ts">
 // Seção Redentia MCP de /conta. Card do design do dono (Claude Design
 // "Redentia Configuracoes Nu.dc.html", #sec-mcp): gradiente azul + glow
-// verde, toggle mint, chips dos apps, chave mascarada, permissões e JSON de
-// config. Cores exatas do design (não os tokens --nu-*, pra bater pixel a
-// pixel). LIGADO no backend real (/api/me/mcp via useMcp): gera/rotaciona
-// chave (mostrada 1x), permissões por escopo e endpoint público do MCP.
-// Estado real via backend (/api/me/mcp). A chave em claro só existe UMA
-// vez, no retorno do rotate — depois disso, só o mascarado.
+// verde, toggle mint, chips dos apps, chave mascarada e permissões. Cores
+// exatas do design (não os tokens --nu-*, pra bater pixel a pixel). LIGADO
+// no backend real (/api/me/mcp via useMcp): gera/rotaciona chave (mostrada
+// 1x) e permissões por escopo. A chave em claro só existe UMA vez, no
+// retorno do rotate — depois disso, só o mascarado; por isso Copiar só
+// aparece com a chave em claro, e gerar abre o wizard de conexão
+// (RbConexaoModal, origem "mcp") no lugar do antigo JSON de configuração
+// (direção do dono 2026-08-25).
 const { status, plainKey, hydrate, rotate, setEnabled, setPermissions, busy, loading } = useMcp()
 
 // GET /me/mcp falhou → sem estado de erro, o card ficava num "gere sua chave"
@@ -35,17 +37,10 @@ watch(() => status.value?.permissions, (p) => { if (p) Object.assign(perms, p) }
 const reveal = ref(false)
 // Texto da chave: a recém-gerada (revelável) senão o mascarado do banco.
 const tokenText = computed(() => (reveal.value && plainKey.value ? plainKey.value : keyMasked.value))
-const bearer = computed(() => plainKey.value ?? keyMasked.value ?? 'rdt_mcp_...')
-const cfgText = computed(() => `{
-  "mcpServers": {
-    "redentia": {
-      "url": "https://redentia-api.saraivada.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${bearer.value}"
-      }
-    }
-  }
-}`)
+
+// Wizard de conexão (o mesmo do B2B/mcp): abre sozinho quando uma chave é
+// gerada — é a única janela em que a chave em claro existe pra interpolar.
+const conexaoAberta = ref(false)
 
 function relTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime()
@@ -70,7 +65,7 @@ const metaText = computed(() => {
 async function onToggleMain() {
   if (pending.value) return
   try {
-    if (!hasKey.value) { await rotate(); reveal.value = true; return }
+    if (!hasKey.value) { await rotate(); reveal.value = true; conexaoAberta.value = true; return }
     await setEnabled(!mcpOn.value)
   } catch { await hydrate().catch(() => {}) } // falhou → re-sincroniza com o banco
 }
@@ -89,24 +84,18 @@ async function onRotate() {
   try {
     await rotate()
     reveal.value = true // revela a nova — única chance de copiar
+    conexaoAberta.value = true
   } catch { /* mantém a chave atual na tela */ }
 }
 
 const copiedToken = ref(false)
-const copiedCfg = ref(false)
 let tTimer: ReturnType<typeof setTimeout> | undefined
-let cTimer: ReturnType<typeof setTimeout> | undefined
 async function copyToken() {
-  try { await navigator.clipboard?.writeText(bearer.value) } catch { /* bloqueado */ }
+  if (!plainKey.value) return // depois do reload só existe o mascarado — nada a copiar
+  try { await navigator.clipboard?.writeText(plainKey.value) } catch { /* bloqueado */ }
   copiedToken.value = true
   clearTimeout(tTimer)
   tTimer = setTimeout(() => (copiedToken.value = false), 1600)
-}
-async function copyCfg() {
-  try { await navigator.clipboard?.writeText(cfgText.value) } catch { /* bloqueado */ }
-  copiedCfg.value = true
-  clearTimeout(cTimer)
-  cTimer = setTimeout(() => (copiedCfg.value = false), 1600)
 }
 
 // Logos reais (marcas transparentes → tile branco por trás no CSS).
@@ -117,7 +106,7 @@ const apps = [
   { name: 'Raycast', logo: '/icons/logo-raycast.webp' },
 ]
 
-onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
+onBeforeUnmount(() => { clearTimeout(tTimer) })
 </script>
 
 <template>
@@ -154,7 +143,8 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
         <div class="mcp__key-row">
           <code class="mcp__key">{{ tokenText }}</code>
           <button v-if="plainKey" type="button" class="mcp__reveal" @click="reveal = !reveal">{{ reveal ? 'Ocultar' : 'Revelar' }}</button>
-          <button type="button" class="mcp__copy" :class="{ 'mcp__copy--done': copiedToken }" @click="copyToken">{{ copiedToken ? 'Copiado' : 'Copiar' }}</button>
+          <!-- sem a chave em claro (depois do reload), copiar copiaria o mascarado — some -->
+          <button v-if="plainKey" type="button" class="mcp__copy" :class="{ 'mcp__copy--done': copiedToken }" @click="copyToken">{{ copiedToken ? 'Copiado' : 'Copiar' }}</button>
         </div>
         <p v-if="plainKey" class="mcp__key-warn">Copie agora — por segurança, não mostramos a chave de novo.</p>
         <div class="mcp__key-foot">
@@ -207,18 +197,12 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
       </div>
     </div>
 
-    <div class="mcp__panel mcp__panel--cfg">
-      <div class="mcp__cfg-head">
-        <span class="mcp__panel-label">Configuração</span>
-        <button type="button" class="mcp__cfg-copy" @click="copyCfg">{{ copiedCfg ? 'Copiado' : 'Copiar' }}</button>
-      </div>
-      <pre class="mcp__code">{{ cfgText }}</pre>
-    </div>
-
     <NuxtLink to="/mcp" class="mcp__docs">
       Ver documentação do MCP
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9" /></svg>
     </NuxtLink>
+
+    <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" origem="mcp" @close="conexaoAberta = false" />
   </section>
 </template>
 
@@ -319,15 +303,6 @@ onBeforeUnmount(() => { clearTimeout(tTimer); clearTimeout(cTimer) })
 .mcp__perm-txt { flex: 1; min-width: 0; }
 .mcp__perm-name { color: #fff; font-size: 15.5px; font-weight: 800; }
 .mcp__perm-desc { color: rgba(245, 241, 234, .65); font-size: 13px; font-weight: 600; margin-top: 2px; }
-
-.mcp__panel--cfg { padding: 18px 20px; }
-.mcp__cfg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.mcp__cfg-copy {
-  background: rgba(255, 255, 255, .14); border: none; color: #fff; font-size: 12.5px; font-weight: 800;
-  cursor: pointer; padding: 8px 13px; border-radius: 10px; transition: background .2s;
-}
-.mcp__cfg-copy:hover { background: rgba(255, 255, 255, .24); }
-.mcp__code { margin: 12px 0 0; color: #C9D8FF; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; line-height: 1.65; white-space: pre; overflow-x: auto; }
 
 .mcp__docs { position: relative; display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 14.5px; font-weight: 800; margin-top: 20px; transition: opacity .2s; }
 .mcp__docs:hover { opacity: .75; color: #fff; }

@@ -43,7 +43,6 @@ const TOTAL = 5
 const NOME: Record<Assistente, string> = { claude: 'Claude', chatgpt: 'ChatGPT' }
 
 const TITULOS: Record<string, string> = {
-  escolha: 'Onde a sua mesa pergunta?',
   'prep-claude': 'Abra os conectores.',
   'prep-chatgpt': 'Ligue o modo desenvolvedor.',
   url: 'Crie o conector.',
@@ -55,7 +54,11 @@ const telaId = computed(() => {
   const passo = ['prep', 'url', 'chave', 'fim'][idx.value - 1]
   return passo === 'prep' ? `prep-${assistente.value}` : passo!
 })
-const titulo = computed(() => TITULOS[telaId.value] ?? '')
+// "mesa" é vocabulário do escritório; no B2C (/mcp e /conta) a pergunta é pessoal
+const titulo = computed(() => {
+  if (telaId.value === 'escolha') return props.origem === 'business' ? 'Onde a sua mesa pergunta?' : 'Onde você pergunta?'
+  return TITULOS[telaId.value] ?? ''
+})
 
 function escolher(a: Assistente) {
   assistente.value = a
@@ -117,7 +120,7 @@ onBeforeUnmount(() => {
       <div ref="cardRef" class="rbcx__card" role="dialog" aria-modal="true" :aria-labelledby="titleId" tabindex="-1" @click.stop>
         <div class="rbcx__head">
           <span class="rbcx__eyebrow">
-            {{ assistente ? `Conectar · ${NOME[assistente]}` : 'Conectar · Redentia For Business' }}
+            {{ assistente ? `Conectar · ${NOME[assistente]}` : (origem === 'business' ? 'Conectar · Redentia For Business' : 'Conectar · Redentia MCP') }}
           </span>
           <button type="button" class="rbcx__close" aria-label="Fechar" @click="emit('close')">✕</button>
         </div>
