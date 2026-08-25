@@ -178,9 +178,6 @@ const readingHtml = computed(() => {
            centro grande com "Simulando" dentro, a cena da referência) -->
       <div class="sim__wiz-orb" aria-hidden="true">
         <SimOrb :state="phase === 'film' ? 'thinking' : 'idle'" :size="460" />
-        <span v-if="phase === 'film'" class="sim__wiz-word">
-          <i v-for="(l, i) in 'Simulando'.split('')" :key="i" class="sim__wiz-letter" :style="{ animationDelay: `${i * 0.1}s` }">{{ l }}</i>
-        </span>
       </div>
 
       <div class="sim__wiz-body">
@@ -217,7 +214,13 @@ const readingHtml = computed(() => {
             </div>
           </div>
 
-          <SimFilm v-else-if="phase === 'film'" key="film" :steps="filmSteps" @done="onFilmDone" />
+          <div v-else-if="phase === 'film'" key="film" class="sim__step sim__step--film">
+            <!-- a palavra fica ABAIXO do orb, não sobreposta (dono, 25/08) -->
+            <span class="sim__wiz-word" aria-label="Simulando">
+              <i v-for="(l, i) in 'Simulando'.split('')" :key="i" class="sim__wiz-letter" :style="{ animationDelay: `${i * 0.1}s` }">{{ l }}</i>
+            </span>
+            <SimFilm :steps="filmSteps" @done="onFilmDone" />
+          </div>
         </Transition>
       </div>
       <p v-if="phase !== 'film'" class="sim__honest">Projeção estatística com premissas explícitas — não é previsão nem promessa de retorno.</p>
@@ -338,14 +341,16 @@ const readingHtml = computed(() => {
    inferior; o drama fica com a troca suave de fundo creme→branco */
 .sim__wiz--shock { background: var(--nu-white); }
 .sim__wiz--shock .sim__wiz-orb { left: 87%; top: 80%; transform: translate(-50%, -50%) scale(0.6); opacity: 0.9; }
-.sim__wiz--film .sim__wiz-orb { left: 50%; top: 42%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+/* filme: orb um pouco menor, mais alto — a palavra fica embaixo dele */
+.sim__wiz--film .sim__wiz-orb { left: 50%; top: 30%; transform: translate(-50%, -50%) scale(0.74); opacity: 1; }
 /* regra 2 do DS: card sobre branco é creme (o painel de choques troca de
    pele junto com o fundo) */
 .sim__wiz--shock :deep(.ssp__card) { background: var(--nu-cream); box-shadow: none; }
 .sim__wiz--shock :deep(.ssp__chip) { background: var(--nu-white); border-color: var(--nu-white); }
 .sim__wiz--shock :deep(.ssp__chip:hover) { border-color: var(--nu-blue); }
 .sim__wiz--shock :deep(.ssp__chip--on) { background: var(--nu-ink); border-color: var(--nu-ink); }
-.sim__wiz-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.sim__wiz-word { display: inline-flex; justify-content: center; }
+.sim__step--film { display: flex; flex-direction: column; align-items: center; gap: 28px; }
 .sim__wiz-letter {
   color: var(--nu-cream-text); font-size: 26px; font-weight: 800; font-style: normal;
   letter-spacing: 0.02em;
