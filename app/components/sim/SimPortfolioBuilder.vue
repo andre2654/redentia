@@ -7,17 +7,11 @@ import { ASSET_CATALOG, EXAMPLE_PORTFOLIO, fmtBRLFull, type SimPortfolioInput } 
 
 const model = defineModel<SimPortfolioInput[]>({ required: true })
 
+// sem busca: 18 ativos com filtro por classe já se acham no olho
+// (simplificação pedida pelo dono, 25/08 — "tire botões que não usamos")
 const CLASSES = ['Todos', 'Ação', 'FII', 'ETF', 'BDR'] as const
 const klass = ref<(typeof CLASSES)[number]>('Todos')
-const search = ref('')
-const filtered = computed(() => {
-  const q = search.value.trim().toLowerCase()
-  return ASSET_CATALOG.filter((a) => {
-    if (klass.value !== 'Todos' && a.klass !== klass.value) return false
-    if (!q) return true
-    return a.ticker.toLowerCase().includes(q) || a.name.toLowerCase().includes(q)
-  })
-})
+const filtered = computed(() => ASSET_CATALOG.filter((a) => klass.value === 'Todos' || a.klass === klass.value))
 
 const DEFAULT_VALUE = 25_000
 const held = computed(() => new Set(model.value.map((p) => p.ticker)))
@@ -34,9 +28,6 @@ function remove(ticker: string) {
 }
 function loadExample() {
   model.value = [...EXAMPLE_PORTFOLIO]
-}
-function clearAll() {
-  model.value = []
 }
 
 const total = computed(() => model.value.reduce((s, p) => s + p.value, 0))
@@ -71,18 +62,12 @@ const fmt = fmtBRLFull
   <div class="spb">
     <!-- catálogo -->
     <div class="spb__catalog">
-      <div class="spb__toolbar">
-        <div class="spb__search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.2-3.2" /></svg>
-          <input v-model="search" type="text" class="spb__search-input" placeholder="Buscar ativo…">
-        </div>
-        <div class="spb__filters">
-          <button
-            v-for="c in CLASSES" :key="c" type="button"
-            class="spb__filter" :class="{ 'spb__filter--on': klass === c }"
-            @click="klass = c"
-          >{{ c === 'Todos' ? 'Todos' : c + 's' }}</button>
-        </div>
+      <div class="spb__filters">
+        <button
+          v-for="c in CLASSES" :key="c" type="button"
+          class="spb__filter" :class="{ 'spb__filter--on': klass === c }"
+          @click="klass = c"
+        >{{ c === 'Todos' ? 'Todos' : c + 's' }}</button>
       </div>
 
       <div class="spb__grid">
@@ -102,7 +87,6 @@ const fmt = fmtBRLFull
           </span>
         </button>
       </div>
-      <p v-if="!filtered.length" class="spb__empty-search">Nada com "{{ search }}" {{ klass !== 'Todos' ? `em ${klass}s` : '' }} neste protótipo.</p>
     </div>
 
     <!-- a carteira montada -->
@@ -136,11 +120,10 @@ const fmt = fmtBRLFull
           </button>
         </div>
       </template>
-      <p v-else class="spb__cart-empty">Toque nos ativos ao lado — ou comece pelo atalho:</p>
+      <p v-else class="spb__cart-empty">Toque num ativo pra começar.</p>
 
-      <div class="spb__cart-actions">
-        <button type="button" class="spb__ghost" @click="loadExample">Usar carteira de exemplo</button>
-        <button v-if="model.length" type="button" class="spb__ghost spb__ghost--danger" @click="clearAll">Limpar</button>
+      <div v-if="!model.length" class="spb__cart-actions">
+        <button type="button" class="spb__ghost" @click="loadExample">Carteira de exemplo</button>
       </div>
     </div>
   </div>
@@ -151,17 +134,6 @@ const fmt = fmtBRLFull
 
 /* catálogo */
 .spb__catalog { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 16px; box-shadow: var(--nu-shadow-card); }
-.spb__toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.spb__search {
-  flex: 1; min-width: 180px; display: flex; align-items: center; gap: 9px;
-  background: var(--nu-cream); border-radius: var(--nu-r-pill);
-  padding: 10px 15px; color: var(--nu-gray);
-}
-.spb__search-input {
-  flex: 1; min-width: 0; border: none; background: transparent; outline: none;
-  color: var(--nu-ink); font-size: 14px; font-weight: 600; font-family: inherit;
-}
-.spb__search-input::placeholder { color: var(--nu-sand); }
 .spb__filters { display: flex; gap: 5px; flex-wrap: wrap; }
 .spb__filter {
   border: none; border-radius: var(--nu-r-pill); background: transparent;
@@ -197,7 +169,6 @@ const fmt = fmtBRLFull
 .spb__asset:hover .spb__asset-act { color: var(--nu-blue); }
 .spb__asset-act--held { background: var(--nu-blue); color: var(--nu-white); }
 .spb__asset:hover .spb__asset-act--held { color: var(--nu-white); }
-.spb__empty-search { margin: 14px 4px 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
 
 /* carteira */
 .spb__cart { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 16px; box-shadow: var(--nu-shadow-card); }
@@ -243,7 +214,6 @@ const fmt = fmtBRLFull
   transition: border-color 0.15s, color 0.15s;
 }
 .spb__ghost:hover { border-color: var(--nu-blue); color: var(--nu-blue); }
-.spb__ghost--danger:hover { border-color: var(--nu-red); color: var(--nu-red); }
 
 @media (max-width: 900px) { .spb { grid-template-columns: 1fr; } }
 </style>

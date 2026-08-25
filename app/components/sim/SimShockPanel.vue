@@ -1,72 +1,102 @@
 <script setup lang="ts">
-// PROTÓTIPO /simulacao — o assessor DESENHA o choque (pivô do dono, 25/08):
-// cards por variável macro (Dólar, Selic, Bolsa, Petróleo) com o valor de
-// hoje e alvos pré-definidos em chips. "Hoje" = sem choque naquela variável.
-// Vários choques empilham; o motor propaga por regra declarada.
-import { SHOCK_VARS, shocksTitle, type SimShocks } from './simMock'
+// PROTÓTIPO /simulacao — painel de choques v4 (referência do dono, 25/08):
+// cada variável é um DIAL-CARD escuro com número gigante, chip de delta,
+// régua de ticks e fundo vivo que intensifica conforme sai de "hoje" — cada
+// um com sua personalidade de cor. Replays históricos puxam os 4 de uma vez.
+import { MACRO_NOW, REPLAYS, DIAL_DEFAULTS, type SimDials } from './simMock'
 
-const model = defineModel<SimShocks>({ required: true })
+const model = defineModel<SimDials>({ required: true })
 
-function pick(key: keyof SimShocks, value: number | null) {
-  const next = { ...model.value }
-  if (value === null || next[key] === value) delete next[key]
-  else next[key] = value
-  model.value = next
+function set<K extends keyof SimDials>(key: K, v: number) {
+  model.value = { ...model.value, [key]: v }
 }
-const summary = computed(() => shocksTitle(model.value))
-const hasShock = computed(() => Object.keys(model.value).length > 0)
+function applyReplay(d: SimDials) {
+  model.value = { ...d }
+}
+function resetToday() {
+  model.value = { ...DIAL_DEFAULTS }
+}
+const isToday = computed(() =>
+  Math.abs(model.value.dolar - DIAL_DEFAULTS.dolar) < 0.03
+  && Math.abs(model.value.selic - DIAL_DEFAULTS.selic) < 0.2
+  && Math.abs(model.value.bolsa) < 1
+  && Math.abs(model.value.petroleo) < 2,
+)
+
+const fmt = (v: number, dec = 2) => v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec })
+const signPct = (v: number) => `${v > 0 ? '+' : ''}${Math.round(v)}% vs hoje`
+
+// deltas e intensidades (0..1 = distância de hoje sobre o curso do dial)
+const dolarDelta = computed(() => (model.value.dolar / MACRO_NOW.dolar - 1) * 100)
+const dolarTxt = computed(() => (Math.abs(dolarDelta.value) < 0.6 ? 'hoje' : `${dolarDelta.value > 0 ? '+' : ''}${fmt(dolarDelta.value, 1)}% vs hoje`))
+const selicDelta = computed(() => model.value.selic - MACRO_NOW.selic)
+const selicTxt = computed(() => (Math.abs(selicDelta.value) < 0.2 ? 'hoje' : `${selicDelta.value > 0 ? '+' : ''}${fmt(selicDelta.value, 1)} p.p. vs hoje`))
+const bolsaTxt = computed(() => (Math.abs(model.value.bolsa) < 1 ? 'hoje' : signPct(model.value.bolsa)))
+const petroleoTxt = computed(() => (Math.abs(model.value.petroleo) < 2 ? 'hoje' : signPct(model.value.petroleo)))
+
+const iDolar = computed(() => Math.abs(model.value.dolar - MACRO_NOW.dolar) / 1.85)
+const iSelic = computed(() => Math.abs(selicDelta.value) / 7.9)
+const iBolsa = computed(() => Math.abs(model.value.bolsa) / 45)
+const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
 </script>
 
 <template>
   <div class="ssp">
-    <div class="ssp__grid">
-      <div v-for="v in SHOCK_VARS" :key="v.key" class="ssp__card" :class="{ 'ssp__card--on': model[v.key] !== undefined }">
-        <div class="ssp__head">
-          <span class="ssp__label">{{ v.label }}</span>
-          <span class="ssp__now">{{ v.now }}</span>
-        </div>
-        <div class="ssp__chips">
-          <button
-            type="button" class="ssp__chip"
-            :class="{ 'ssp__chip--on': model[v.key] === undefined }"
-            @click="pick(v.key, null)"
-          >Hoje</button>
-          <button
-            v-for="p in v.presets" :key="p.label" type="button"
-            class="ssp__chip" :class="{ 'ssp__chip--on': model[v.key] === p.value }"
-            @click="pick(v.key, p.value)"
-          >{{ p.label }}</button>
-        </div>
-      </div>
+    <div class="ssp__replays">
+      <button
+        v-for="r in REPLAYS" :key="r.label" type="button" class="ssp__replay"
+        :title="r.sub" @click="applyReplay(r.dials)"
+      >{{ r.label }}<em>{{ r.sub }}</em></button>
+      <button v-if="!isToday" type="button" class="ssp__replay ssp__replay--reset" @click="resetToday">↺ hoje</button>
     </div>
-    <p class="ssp__summary">
-      <span class="ssp__summary-label">{{ hasShock ? 'Choque desenhado:' : 'Nenhum choque —' }}</span>
-      {{ hasShock ? summary : 'a simulação roda o caminho base.' }}
-    </p>
+
+    <div class="ssp__cards">
+      <SimDialCard
+        label="Dólar" personality="dolar"
+        :model-value="model.dolar" :min="4.4" :max="7" :step="0.05"
+        :value-text="`R$ ${fmt(model.dolar)}`" :delta-text="dolarTxt"
+        :intensity="iDolar" @update:model-value="set('dolar', $event)"
+      />
+      <SimDialCard
+        label="Selic" personality="selic"
+        :model-value="model.selic" :min="6" :max="20" :step="0.25"
+        :value-text="`${fmt(model.selic, 1)}%`" :delta-text="selicTxt"
+        :intensity="iSelic" @update:model-value="set('selic', $event)"
+      />
+      <SimDialCard
+        label="Bolsa (IBOV)" personality="bolsa"
+        :model-value="model.bolsa" :min="-45" :max="45" :step="1"
+        :value-text="`${model.bolsa > 0 ? '+' : ''}${Math.round(model.bolsa)}%`" :delta-text="bolsaTxt"
+        :intensity="iBolsa" :direction="model.bolsa < 0 ? -1 : model.bolsa > 0 ? 1 : 0"
+        @update:model-value="set('bolsa', $event)"
+      />
+      <SimDialCard
+        label="Petróleo" personality="petroleo"
+        :model-value="model.petroleo" :min="-60" :max="60" :step="2"
+        :value-text="`${model.petroleo > 0 ? '+' : ''}${Math.round(model.petroleo)}%`" :delta-text="petroleoTxt"
+        :intensity="iPetroleo" @update:model-value="set('petroleo', $event)"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.ssp__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 12px; }
-.ssp__card {
-  background: var(--nu-white); border: 1.5px solid transparent; border-radius: var(--nu-r-tile);
-  padding: 16px 18px; box-shadow: var(--nu-shadow-card);
-  transition: border-color 0.2s;
-}
-.ssp__card--on { border-color: var(--nu-blue); }
-.ssp__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.ssp__label { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -0.01em; }
-.ssp__now { color: var(--nu-gray); font-size: 11.5px; font-weight: 700; }
-.ssp__chips { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
-.ssp__chip {
+.ssp__replays { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.ssp__replay {
+  display: inline-flex; align-items: baseline; gap: 7px;
   border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-gray-2);
-  padding: 7px 13px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
-  font-variant-numeric: tabular-nums;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  background: var(--nu-white); color: var(--nu-ink);
+  padding: 9px 15px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: border-color 0.15s, transform 0.15s;
 }
-.ssp__chip:hover { border-color: var(--nu-blue); color: var(--nu-blue); }
-.ssp__chip--on { background: var(--nu-ink); border-color: var(--nu-ink); color: var(--nu-white); }
-.ssp__summary { margin: 16px 0 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 700; }
-.ssp__summary-label { color: var(--nu-gray); font-weight: 800; text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.07em; margin-right: 6px; }
+.ssp__replay:hover { border-color: var(--nu-blue); transform: translateY(-1px); }
+.ssp__replay em { color: var(--nu-gray); font-size: 11px; font-weight: 600; font-style: normal; }
+.ssp__replay--reset { color: var(--nu-gray-2); }
+.ssp__replay--reset:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
+
+.ssp__cards {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 700px) { .ssp__cards { grid-template-columns: 1fr; } }
 </style>

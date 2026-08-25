@@ -6,9 +6,21 @@
 // com tokens da casa; os offsets escalam com o tamanho via --u (size/10).
 // `state` muda o ritmo: idle gira lento (~9s), thinking acelera (~2s).
 // prefers-reduced-motion congela via regra global do base.css.
-withDefaults(defineProps<{ state?: 'idle' | 'thinking'; size?: number }>(), {
+// `mood` (-1..1): o orb SENTE o choque desenhado — tinge de vermelho quando
+// machuca, verde quando ajuda (overlay radial com opacidade proporcional).
+const props = withDefaults(defineProps<{ state?: 'idle' | 'thinking'; size?: number; mood?: number }>(), {
   state: 'idle',
   size: 320,
+  mood: 0,
+})
+const moodStyle = computed(() => {
+  const m = Math.max(-1, Math.min(1, props.mood))
+  return {
+    background: m < 0
+      ? 'radial-gradient(circle at 50% 62%, var(--nu-red) 0%, transparent 68%)'
+      : 'radial-gradient(circle at 50% 62%, var(--nu-green-soft) 0%, transparent 68%)',
+    opacity: String(Math.abs(m) * 0.5),
+  }
 })
 </script>
 
@@ -19,6 +31,7 @@ withDefaults(defineProps<{ state?: 'idle' | 'thinking'; size?: number }>(), {
     aria-hidden="true"
   >
     <div class="orb__core" />
+    <div class="orb__mood" :style="moodStyle" />
     <svg class="orb__grain" width="100%" height="100%">
       <filter id="orb-noise">
         <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
@@ -62,6 +75,11 @@ withDefaults(defineProps<{ state?: 'idle' | 'thinking'; size?: number }>(), {
       0 calc(var(--u) * 2) calc(var(--u) * 3) 0 var(--nu-blue-soft) inset,
       0 calc(var(--u) * 6) calc(var(--u) * 6) 0 var(--nu-blue-hover-3) inset;
   }
+}
+.orb__mood {
+  position: absolute; inset: 0; border-radius: 50%;
+  transition: opacity 0.6s ease, background 0.6s ease;
+  pointer-events: none;
 }
 .orb__grain {
   position: absolute; inset: 0; border-radius: 50%;

@@ -14,7 +14,8 @@
 // ============================================================================
 import {
   runMockSimulation, fmtBRL, fmtBRLFull, QUICK_COMBOS, shocksKey, shocksTitle,
-  HORIZON_MONTHS, type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks,
+  shocksFromDials, dialsFromShocks, DIAL_DEFAULTS, HORIZON_MONTHS,
+  type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
 } from '~/components/sim/simMock'
 
 definePageMeta({ layout: 'default' })
@@ -32,8 +33,9 @@ type Phase = 'assets' | 'shock' | 'film' | 'result'
 const phase = ref<Phase>('assets')
 // a carteira MONTADA (pivô 24/08: concreto > texto abstrato)
 const portfolio = ref<SimPortfolioInput[]>([])
-// os CHOQUES desenhados pelo assessor (pivô 25/08: dólar/Selic/bolsa/petróleo)
-const shocks = ref<SimShocks>({})
+// os DIALS do assessor (v3: sliders que começam em hoje) → choques derivados
+const dials = ref<SimDials>({ ...DIAL_DEFAULTS })
+const shocks = computed<SimShocks>(() => shocksFromDials(dials.value))
 const result = ref<SimResult | null>(null)
 const drawing = ref(false)
 const blocksIn = ref(false)
@@ -55,6 +57,18 @@ const filmSteps = computed(() => {
     hasShocks.value ? `Aplicando o choque: ${shocksTitle(shocks.value).toLowerCase()}` : 'Sem choque — compondo o caminho base',
   ]
 })
+// CONSEQUÊNCIA AO VIVO no passo 2 (motor é puro e barato — roda por ajuste)
+const liveResult = computed(() =>
+  phase.value === 'shock' && canRun.value ? runMockSimulation(shocks.value, portfolio.value) : null,
+)
+const liveTotal = computed(() => {
+  const r = liveResult.value
+  if (!r) return 0
+  return Math.round(r.positions.reduce((s2, p2) => s2 + p2.weight * p2.shockPct, 0) * 10) / 10
+})
+// o orb SENTE o choque (vermelho machuca, verde ajuda)
+const orbMood = computed(() => (phase.value === 'shock' ? Math.max(-1, Math.min(1, liveTotal.value / 22)) : 0))
+
 // pills do resultado: os combos rápidos + o choque customizado atual
 const morphCombos = computed(() => {
   const current = result.value?.shocks ?? shocks.value
@@ -72,10 +86,11 @@ onMounted(async () => {
   gsap = mod.gsap
 })
 
-const WIZ_COPY: Record<string, { eyebrow: string; title: string; dek: string }> = {
-  assets: { eyebrow: 'Redentia Simulação · passo 1 de 2', title: 'Monte a carteira.', dek: 'Escolha os ativos e defina os valores — a simulação nasce do que você montar.' },
-  shock: { eyebrow: 'Redentia Simulação · passo 2 de 2', title: 'Agora, desenhe o choque.', dek: 'Alvos concretos — dólar, Selic, bolsa, petróleo. O motor propaga por regras abertas.' },
-  film: { eyebrow: '', title: '', dek: '' },
+// copy mínima (pedido do dono, 25/08: "tão intuitivo que não precise ler")
+const WIZ_COPY: Record<string, { title: string }> = {
+  assets: { title: 'Monte a carteira.' },
+  shock: { title: 'Desenhe o choque.' },
+  film: { title: '' },
 }
 const wizCopy = computed(() => WIZ_COPY[phase.value] ?? WIZ_COPY.assets!)
 
@@ -122,7 +137,7 @@ function animateCounter(to: number, dur: number) {
 /** troca de choque no resultado = MORPH da curva, nunca redesenho seco */
 function morphTo(next: SimShocks) {
   if (!result.value || shocksKey(next) === shocksKey(result.value.shocks)) return
-  shocks.value = next
+  dials.value = dialsFromShocks(next)
   const target = runMockSimulation(next, portfolio.value)
   result.value = target
   animateCounter(target.final.p50, 1.1)
@@ -177,7 +192,7 @@ const readingHtml = computed(() => {
       <!-- o orb: UMA instância, coreografada por fase (direita → esquerda →
            centro grande com "Simulando" dentro, a cena da referência) -->
       <div class="sim__wiz-orb" aria-hidden="true">
-        <SimOrb :state="phase === 'film' ? 'thinking' : 'idle'" :size="460" />
+        <SimOrb :state="phase === 'film' ? 'thinking' : 'idle'" :size="460" :mood="orbMood" />
       </div>
       <!-- passo 2: manchetes REAIS derivando pro orb ("considera o noticiário") -->
       <Transition name="nu-soft">
@@ -199,31 +214,26 @@ const readingHtml = computed(() => {
              colapsava a altura (o "glitch" do dono, 25/08) -->
         <Transition :name="stepDir === 'fwd' ? 'wstep' : 'wstepb'">
           <div v-if="phase === 'assets'" key="assets" class="sim__step">
-            <span class="sim__proto">Protótipo · dados ilustrativos</span>
-            <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
+            <span class="sim__dots" aria-hidden="true"><i class="sim__dot sim__dot--on" /><i class="sim__dot" /></span>
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
-            <p class="sim__dek">{{ wizCopy.dek }}</p>
             <div class="sim__builder">
               <SimPortfolioBuilder v-model="portfolio" />
             </div>
             <div class="sim__wiz-nav">
-              <button type="button" class="sim__run" :disabled="!canRun" @click="goShock">Continuar — desenhar o choque</button>
-              <span v-if="!canRun" class="sim__wiz-hint">adicione ao menos 1 ativo</span>
+              <button type="button" class="sim__run" :disabled="!canRun" @click="goShock">Continuar</button>
             </div>
           </div>
 
           <div v-else-if="phase === 'shock'" key="shock" class="sim__step">
-            <span class="sim__proto">Protótipo · dados ilustrativos</span>
-            <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
+            <span class="sim__dots" aria-hidden="true"><i class="sim__dot sim__dot--on" /><i class="sim__dot sim__dot--on" /></span>
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
-            <p class="sim__dek">{{ wizCopy.dek }}</p>
-            <p class="sim__wiz-cart">Simulando sobre <b>{{ fmtBRL(portfolioTotal) }}</b> em <b>{{ portfolio.length }} {{ portfolio.length === 1 ? 'posição' : 'posições' }}</b></p>
-            <div class="sim__shockpanel">
-              <SimShockPanel v-model="shocks" />
+            <div class="sim__shockgrid">
+              <SimShockPanel v-model="dials" />
+              <SimShockLive :total="liveTotal" :positions="liveResult?.positions ?? []" :has-shock="hasShocks" />
             </div>
             <div class="sim__wiz-nav">
-              <button type="button" class="sim__back" @click="backToAssets">Ajustar a carteira</button>
-              <button type="button" class="sim__run" @click="run">Rodar a simulação · 10 anos</button>
+              <button type="button" class="sim__back" @click="backToAssets">Voltar</button>
+              <button type="button" class="sim__run" @click="run">Simular · 10 anos</button>
             </div>
           </div>
 
@@ -352,12 +362,6 @@ const readingHtml = computed(() => {
 .sim__wiz--shock .sim__wiz-orb { left: 87%; top: 80%; transform: translate(-50%, -50%) scale(0.6); opacity: 0.9; }
 /* filme: orb um pouco menor, mais alto — a palavra fica embaixo dele */
 .sim__wiz--film .sim__wiz-orb { left: 50%; top: 30%; transform: translate(-50%, -50%) scale(0.74); opacity: 1; }
-/* regra 2 do DS: card sobre branco é creme (o painel de choques troca de
-   pele junto com o fundo) */
-.sim__wiz--shock :deep(.ssp__card) { background: var(--nu-cream); box-shadow: none; }
-.sim__wiz--shock :deep(.ssp__chip) { background: var(--nu-white); border-color: var(--nu-white); }
-.sim__wiz--shock :deep(.ssp__chip:hover) { border-color: var(--nu-blue); }
-.sim__wiz--shock :deep(.ssp__chip--on) { background: var(--nu-ink); border-color: var(--nu-ink); }
 /* a palavra no CENTRO do orb do filme (coords da coreografia --film, sem
    herdar o scale — texto em tamanho real) */
 .sim__wiz-wordwrap {
@@ -406,9 +410,6 @@ const readingHtml = computed(() => {
 .wstepb-leave-to { opacity: 0; transform: translateX(44px); }
 .sim__wiz--film .sim__wiz-body { padding-bottom: 6vh; }
 .sim__wiz-nav { margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.sim__wiz-hint { color: var(--nu-gray); font-size: 13px; font-weight: 600; }
-.sim__wiz-cart { margin: 0 0 18px; color: var(--nu-gray-2); font-size: 15px; font-weight: 600; }
-.sim__wiz-cart b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .sim__back {
   border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-gray-2);
@@ -416,73 +417,34 @@ const readingHtml = computed(() => {
   transition: border-color 0.15s, color 0.15s;
 }
 .sim__back:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
-.sim__shockpanel { max-width: 1080px; }
+.sim__shockgrid {
+  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+  gap: 16px; align-items: start; max-width: 1180px;
+}
+@media (max-width: 980px) { .sim__shockgrid { grid-template-columns: 1fr; } }
 @media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
-.sim__proto {
-  display: inline-flex; padding: 6px 13px; border-radius: var(--nu-r-pill);
-  background: var(--nu-sand-2); color: var(--nu-gray-2);
-  font-size: 11.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+.sim__dots { display: inline-flex; gap: 7px; }
+.sim__dot {
+  width: 9px; height: 9px; border-radius: 999px;
+  background: var(--nu-cream-3); transition: background 0.3s ease;
 }
-.sim__eyebrow { margin: 22px 0 0; color: var(--nu-blue); font-size: 13px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+.sim__dot--on { background: var(--nu-blue); }
 .sim__title {
-  margin: 10px 0 0; color: var(--nu-ink);
-  font-size: clamp(38px, 4.8vw, 62px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
+  margin: 12px 0 22px; color: var(--nu-ink);
+  font-size: clamp(34px, 4.2vw, 54px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.sim__dek { margin: 16px 0 0; max-width: 560px; color: var(--nu-gray-2); font-size: 17px; font-weight: 500; line-height: 1.5; }
-.sim__ask {
-  margin-top: 30px; display: flex; gap: 10px; max-width: 720px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill); padding: 8px 8px 8px 24px;
-  box-shadow: var(--nu-shadow-card);
-}
-.sim__input {
-  flex: 1; min-width: 0; border: none; background: transparent; outline: none;
-  color: var(--nu-ink); font-size: 16.5px; font-weight: 600; font-family: inherit;
-}
-.sim__input::placeholder { color: var(--nu-sand); }
-.sim__go {
-  border: none; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white);
-  padding: 13px 26px; font-size: 15.5px; font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: background 0.2s;
-}
-.sim__go:hover { background: var(--nu-blue-hover); }
-.sim__go:disabled { opacity: 0.5; cursor: default; }
-.sim__examples { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; max-width: 760px; }
-.sim__example {
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-gray-2);
-  padding: 9px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, color 0.15s, transform 0.15s;
-}
-.sim__example:hover { border-color: var(--nu-blue); color: var(--nu-blue); transform: translateY(-1px); }
 .sim__honest { margin: 14px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
 /* builder + passo dos choques */
-.sim__builder { margin-top: 30px; position: relative; }
-.sim__scenario-step { margin-top: 30px; transition: opacity 0.3s ease; }
-.sim__scenario-step--off { opacity: 0.45; }
-.sim__shocks { border: none; padding: 0; margin: 0; min-width: 0; }
-.sim__run { margin-top: 20px; }
-.sim__echo-lead { margin: 0 0 10px; color: var(--nu-gray-2); font-size: 14px; font-weight: 700; }
-.sim__echo-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-.sim__chip {
-  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-ink);
-  padding: 10px 17px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-}
-.sim__chip--fixed { background: var(--nu-blue-tint); color: var(--nu-blue); border-color: transparent; cursor: default; }
-.sim__chip--on { background: var(--nu-ink); color: var(--nu-white); border-color: var(--nu-ink); }
+.sim__builder { position: relative; }
 .sim__run {
-  margin-top: 18px; border: none; border-radius: var(--nu-r-pill);
+  border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-ink); color: var(--nu-white);
   padding: 15px 30px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit;
   transition: transform 0.15s, background 0.2s;
 }
 .sim__run:hover { transform: translateY(-2px); }
 .sim__run:disabled { opacity: 0.45; cursor: default; transform: none; }
-/* na linha de navegação os dois botões alinham pelo centro — sem margem própria */
-.sim__wiz-nav .sim__run { margin-top: 0; }
-.sim__chip:disabled { cursor: default; }
 
 /* ——— navy ——— */
 .sim__navy {

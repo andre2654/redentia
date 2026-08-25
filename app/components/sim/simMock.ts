@@ -75,6 +75,33 @@ export const QUICK_COMBOS: { label: string; shocks: SimShocks }[] = [
   { label: 'Bolsa −10%', shocks: { bolsa: -10 } },
 ]
 
+/** DIALS: o painel v3 é de sliders que COMEÇAM em hoje — mexeu, virou choque */
+export interface SimDials { dolar: number; selic: number; bolsa: number; petroleo: number }
+export const DIAL_DEFAULTS: SimDials = { dolar: MACRO_NOW.dolar, selic: MACRO_NOW.selic, bolsa: 0, petroleo: 0 }
+export function shocksFromDials(d: SimDials): SimShocks {
+  const s: SimShocks = {}
+  if (Math.abs(d.dolar - MACRO_NOW.dolar) >= 0.03) s.dolar = Math.round(d.dolar * 100) / 100
+  if (Math.abs(d.selic - MACRO_NOW.selic) >= 0.2) s.selic = Math.round(d.selic * 4) / 4
+  if (Math.abs(d.bolsa) >= 1) s.bolsa = Math.round(d.bolsa)
+  if (Math.abs(d.petroleo) >= 2) s.petroleo = Math.round(d.petroleo)
+  return s
+}
+export function dialsFromShocks(s: SimShocks): SimDials {
+  return {
+    dolar: s.dolar ?? DIAL_DEFAULTS.dolar,
+    selic: s.selic ?? DIAL_DEFAULTS.selic,
+    bolsa: s.bolsa ?? DIAL_DEFAULTS.bolsa,
+    petroleo: s.petroleo ?? DIAL_DEFAULTS.petroleo,
+  }
+}
+
+/** replays históricos de 1 toque — calibração ILUSTRATIVA dos precedentes */
+export const REPLAYS: { label: string; sub: string; dials: SimDials }[] = [
+  { label: '2008', sub: 'crise global', dials: { dolar: 6.7, selic: 13.75, bolsa: -41, petroleo: -54 } },
+  { label: 'COVID', sub: 'mar/2020', dials: { dolar: 6.65, selic: MACRO_NOW.selic, bolsa: -37, petroleo: -60 } },
+  { label: '2022', sub: 'choque fiscal', dials: { dolar: 5.55, selic: 15.5, bolsa: -8, petroleo: 0 } },
+]
+
 export function shocksKey(s: SimShocks): string {
   return [s.dolar ?? '', s.selic ?? '', s.bolsa ?? '', s.petroleo ?? ''].join('|')
 }
@@ -96,8 +123,11 @@ function factorShocksFrom(s: SimShocks): { factors: Record<string, number>; rule
   }
   if (s.selic !== undefined) {
     const d = s.selic - MACRO_NOW.selic
-    add('juros', -4.2 * d); add('imobiliario', -2.4 * d); add('mercado', -1.6 * d); add('domestico', -1.2 * d)
-    rules.push(`Selic ${fmtSigned(d)} p.p. → sensíveis a juros ${fmtSigned(-4.2 * d, 0)}%`)
+    // clamps: a resposta a juros satura em movimentos extremos (o modelo é
+    // linear — sem clamp, uma Selic despencando "venceria" qualquer crash)
+    const cl = (v: number, lim: number) => Math.max(-lim, Math.min(lim, v))
+    add('juros', cl(-4.2 * d, 18)); add('imobiliario', cl(-2.4 * d, 12)); add('mercado', cl(-1.6 * d, 8)); add('domestico', cl(-1.2 * d, 8))
+    rules.push(`Selic ${fmtSigned(d)} p.p. → sensíveis a juros ${fmtSigned(cl(-4.2 * d, 18), 0)}%`)
     rules.push(`CDI âncora passa a ${s.selic.toLocaleString('pt-BR')}%`)
   }
   if (s.bolsa !== undefined) {
