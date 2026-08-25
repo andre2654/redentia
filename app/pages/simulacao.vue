@@ -344,12 +344,6 @@ const readingHtml = computed(() => {
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
 
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
-
-        <!-- entregável do assessor: resumo copiável + PDF (dois botões, dono 25/08) -->
-        <div class="sim__share">
-          <button type="button" class="sim__share-btn" @click="summaryOpen = true">Gerar resumo</button>
-          <button type="button" class="sim__share-btn sim__share-btn--ghost" @click="printDoc">Gerar PDF</button>
-        </div>
       </template>
     </section>
 
@@ -360,6 +354,16 @@ const readingHtml = computed(() => {
         <p class="sim__blue-lead">{{ result.scenario.lead }}</p>
         <!-- eslint-disable-next-line vue/no-v-html — escapeHtml aplicado no computed -->
         <p class="sim__blue-text" v-html="readingHtml" />
+      </div>
+      <!-- entregável do assessor, no layout do "O dia no mercado" (dono 25/08) -->
+      <div class="sim__blue-cta">
+        <button type="button" class="sim__blue-btn" @click="summaryOpen = true">
+          Gerar resumo<span class="sim__blue-btn-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="sim__blue-btn2" @click="printDoc">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v5h5" /><path d="M19 8v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7Z" /><path d="M9 13h6M9 17h6" /></svg>
+          Gerar PDF
+        </button>
       </div>
     </section>
 
@@ -635,20 +639,23 @@ const readingHtml = computed(() => {
 .simw__foot { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
 .simw__card--summary { width: min(640px, 100%); }
 
-/* botões do entregável (fim da seção navy) */
-.sim__share { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; }
-.sim__share-btn {
-  border: none; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-navy);
-  padding: 13px 24px; font-size: 14.5px; font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: background 0.15s, transform 0.15s;
+/* botões do entregável na banda azul — anatomia dos CTAs do "O dia no
+   mercado" (NuDaySection): pill creme sólida com seta + pill ghost com ícone */
+.sim__blue-cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(36px, 4vw, 44px); }
+.sim__blue-btn {
+  display: inline-flex; align-items: center; gap: 11px; background: var(--nu-cream); color: var(--nu-day-btn-ink);
+  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: 17px; font-weight: 800;
+  letter-spacing: -0.01em; cursor: pointer; font-family: inherit; transition: transform 0.15s ease, background 0.15s ease;
 }
-.sim__share-btn:hover { background: var(--nu-white); transform: translateY(-1px); }
-.sim__share-btn--ghost {
-  background: transparent; color: var(--nu-cream-text);
-  border: 1.5px solid var(--nu-cream-text-22);
+.sim__blue-btn:hover { background: var(--nu-white); transform: translateY(-1px); }
+.sim__blue-btn-arrow { font-size: 19px; line-height: 1; }
+.sim__blue-btn2 {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
+  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: 15.5px; font-weight: 800;
+  cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s;
 }
-.sim__share-btn--ghost:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }
+.sim__blue-btn2:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }
 
 /* blocos do resumo */
 .sims__block { margin-top: 18px; background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px; }
