@@ -52,16 +52,17 @@ const CLASS_COLOR: Record<string, string> = {
   'Renda fixa': 'var(--nu-alloc-fixed)',
 }
 
-/** badge tributária (gap do "erro do Gorila"): isenta vs IR 15%; nos pós
- * isentos, o sub mostra o equivalente-BRUTO pra comparação honesta */
-function taxBadge(a: SimAsset): { label: string; isento: boolean } {
-  if (a.rf) return a.rf.isento ? { label: 'isenta de IR', isento: true } : { label: 'IR 15%', isento: false }
-  if (a.klass === 'FII') return { label: 'rend. isentos', isento: true }
-  return { label: 'IR 15%', isento: false }
+/** IR por ativo (v2 do gap tributário, dono 25/08: menos informação na
+ * tela) — bolsinha "IR" só nos TRIBUTADOS, detalhe no tooltip; isento fica
+ * limpo. O equivalente-BRUTO dos pós isentos segue no sub (anti-Gorila). */
+function taxTip(a: SimAsset): string | null {
+  if (a.rf) return a.rf.isento ? null : 'IR de 15% sobre o ganho — tabela regressiva, acima de 2 anos'
+  if (a.klass === 'FII') return null
+  return 'IR estimado de 15% sobre o ganho'
 }
 function assetSub(a: SimAsset): string {
   if (a.rf?.indexer === 'pos' && a.rf.isento && a.rf.cdiMult)
-    return `${a.name} · ≈ ${Math.round((a.rf.cdiMult / 0.85) * 100)}% do CDI bruto equivalente`
+    return `${a.name} · isenta ≈ ${Math.round((a.rf.cdiMult / 0.85) * 100)}% do CDI bruto`
   return a.name
 }
 const allocation = computed(() => {
@@ -171,7 +172,7 @@ function onSearchEnter() {
             <span class="spb__prow-main">
               <b class="spb__prow-ticker">{{ p.ticker }}</b>
               <em class="spb__prow-weight">{{ weightPct(p) }}</em>
-              <em v-if="meta(p.ticker)?.rf" class="spb__prow-tax" :class="{ 'spb__prow-tax--free': meta(p.ticker)?.rf?.isento }">{{ meta(p.ticker)?.rf?.isento ? 'isenta' : 'IR 15%' }}</em>
+              <SimTaxMark v-if="meta(p.ticker) && taxTip(meta(p.ticker)!)" :text="taxTip(meta(p.ticker)!)!" />
             </span>
             <label class="spb__prow-val" :title="`Editar o valor em ${p.ticker}`">
               <span class="spb__prow-rs">R$</span>
@@ -215,7 +216,7 @@ function onSearchEnter() {
               v-for="c in CLASSES" :key="c" type="button"
               class="spbm__filter" :class="{ 'spbm__filter--on': klass === c }"
               @click="klass = c"
-            >{{ c === 'Todos' || c === 'Renda fixa' ? c : c + 's' }}</button>
+            >{{ c === 'Todos' ? c : PLURAL[c] ?? c }}</button>
           </div>
 
           <div class="spbm__list">
@@ -228,7 +229,7 @@ function onSearchEnter() {
               <span class="spbm__asset-main">
                 <span class="spbm__asset-row1">
                   <b class="spbm__asset-ticker">{{ a.ticker }}</b>
-                  <em class="spbm__asset-tax" :class="{ 'spbm__asset-tax--free': taxBadge(a).isento }">{{ taxBadge(a).label }}</em>
+                  <SimTaxMark v-if="taxTip(a)" :text="taxTip(a)!" @click.stop />
                 </span>
                 <span class="spbm__asset-name">{{ assetSub(a) }}</span>
               </span>
@@ -300,11 +301,6 @@ function onSearchEnter() {
 .spb__prow-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
 .spb__prow-ticker { color: var(--nu-ink); font-size: 13px; font-weight: 800; }
 .spb__prow-weight { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
-.spb__prow-tax {
-  color: var(--nu-gray); font-size: 9.5px; font-weight: 800; font-style: normal;
-  letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
-}
-.spb__prow-tax--free { color: var(--nu-green); }
 /* valor editável SUAVE (v2 do feedback, 25/08: a caixa com borda tampava o
    peso e pesou) — sublinhado pontilhado + lápis discreto, acende no hover */
 .spb__prow-val {
@@ -392,11 +388,6 @@ function onSearchEnter() {
 .spbm__asset-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .spbm__asset-row1 { display: flex; align-items: baseline; gap: 8px; }
 .spbm__asset-ticker { color: var(--nu-ink); font-size: 14px; font-weight: 800; }
-.spbm__asset-tax {
-  color: var(--nu-gray); font-size: 9.5px; font-weight: 800; font-style: normal;
-  letter-spacing: 0.05em; text-transform: uppercase;
-}
-.spbm__asset-tax--free { color: var(--nu-green); }
 .spbm__asset-name { color: var(--nu-gray); font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .spbm__asset-act {
   width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
