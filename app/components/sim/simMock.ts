@@ -20,22 +20,119 @@ export interface SimSeries {
 export interface SimEvent { at: number; kind: string; label: string }
 export interface SimPositionImpact { ticker: string; name: string; weight: number; shockPct: number; factors: string[] }
 export interface SimAnnual { year: number; p10: number; p50: number; p90: number }
-export interface SimScenarioDef {
-  slug: string
+/**
+ * PIVÔ (dono, 25/08): o ASSESSOR define os choques em variáveis macro
+ * concretas — dólar a R$ 5,80, Selic a 12%, bolsa −10% — e o motor propaga
+ * DETERMINISTICAMENTE por regras declaradas (variável → fatores → posições).
+ * As regras viram chips de premissa na leitura: nada de caixa-preta.
+ */
+export interface SimShocks { dolar?: number; selic?: number; bolsa?: number; petroleo?: number }
+
+export const MACRO_NOW = { dolar: 5.15, selic: 13.9 }
+
+export interface ShockVarDef {
+  key: keyof SimShocks
+  label: string
+  now: string
+  presets: { label: string; value: number }[]
+}
+export const SHOCK_VARS: ShockVarDef[] = [
+  {
+    key: 'dolar', label: 'Dólar', now: 'hoje R$ 5,15',
+    presets: [
+      { label: 'R$ 4,80', value: 4.8 }, { label: 'R$ 5,50', value: 5.5 },
+      { label: 'R$ 5,80', value: 5.8 }, { label: 'R$ 6,30', value: 6.3 },
+    ],
+  },
+  {
+    key: 'selic', label: 'Selic', now: 'hoje 13,9% a.a.',
+    presets: [
+      { label: '10%', value: 10 }, { label: '12%', value: 12 },
+      { label: '15%', value: 15 }, { label: '17%', value: 17 },
+    ],
+  },
+  {
+    key: 'bolsa', label: 'Bolsa (IBOV)', now: 'variação sobre hoje',
+    presets: [
+      { label: '−25%', value: -25 }, { label: '−10%', value: -10 },
+      { label: '+10%', value: 10 }, { label: '+20%', value: 20 },
+    ],
+  },
+  {
+    key: 'petroleo', label: 'Petróleo', now: 'variação sobre hoje',
+    presets: [
+      { label: '−30%', value: -30 }, { label: '−15%', value: -15 },
+      { label: '+20%', value: 20 }, { label: '+40%', value: 40 },
+    ],
+  },
+]
+
+/** combos de 1 toque pro morph no resultado */
+export const QUICK_COMBOS: { label: string; shocks: SimShocks }[] = [
+  { label: 'Sem choque', shocks: {} },
+  { label: 'Dólar a R$ 5,80', shocks: { dolar: 5.8 } },
+  { label: 'Selic a 12%', shocks: { selic: 12 } },
+  { label: 'Bolsa −10%', shocks: { bolsa: -10 } },
+]
+
+export function shocksKey(s: SimShocks): string {
+  return [s.dolar ?? '', s.selic ?? '', s.bolsa ?? '', s.petroleo ?? ''].join('|')
+}
+
+const fmtSigned = (v: number, dec = 1) => `${v > 0 ? '+' : ''}${v.toLocaleString('pt-BR', { maximumFractionDigits: dec })}`
+
+/**
+ * As REGRAS do motor (variável macro → choque por fator), declaradas num
+ * lugar só — cada regra ativa vira um chip visível na leitura.
+ */
+function factorShocksFrom(s: SimShocks): { factors: Record<string, number>; rules: string[] } {
+  const factors: Record<string, number> = {}
+  const rules: string[] = []
+  const add = (k: string, v: number) => { factors[k] = (factors[k] ?? 0) + v }
+  if (s.dolar !== undefined) {
+    const d = (s.dolar / MACRO_NOW.dolar - 1) * 100
+    add('dolar', 0.8 * d); add('internacional', 0.45 * d); add('domestico', -0.2 * d)
+    rules.push(`Dólar ${fmtSigned(d)}% → dolarizados ${fmtSigned(0.8 * d, 0)}%`)
+  }
+  if (s.selic !== undefined) {
+    const d = s.selic - MACRO_NOW.selic
+    add('juros', -4.2 * d); add('imobiliario', -2.4 * d); add('mercado', -1.6 * d); add('domestico', -1.2 * d)
+    rules.push(`Selic ${fmtSigned(d)} p.p. → sensíveis a juros ${fmtSigned(-4.2 * d, 0)}%`)
+    rules.push(`CDI âncora passa a ${s.selic.toLocaleString('pt-BR')}%`)
+  }
+  if (s.bolsa !== undefined) {
+    const d = s.bolsa
+    add('mercado', d); add('domestico', 0.5 * d); add('tech', 0.3 * d); add('defensivo', -0.15 * d)
+    rules.push(`IBOV ${fmtSigned(d)}% → carga de mercado × beta`)
+  }
+  if (s.petroleo !== undefined) {
+    const d = s.petroleo
+    add('petroleo', 0.9 * d); add('commodity', 0.3 * d)
+    rules.push(`Petróleo ${fmtSigned(d)}% → petroleiras ${fmtSigned(0.9 * d, 0)}%`)
+  }
+  return { factors, rules }
+}
+
+/** título humano do conjunto de choques ("Dólar a R$ 5,80 · Selic a 12%") */
+export function shocksTitle(s: SimShocks): string {
+  const parts: string[] = []
+  if (s.dolar !== undefined) parts.push(`Dólar a R$ ${s.dolar.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`)
+  if (s.selic !== undefined) parts.push(`Selic a ${s.selic.toLocaleString('pt-BR')}%`)
+  if (s.bolsa !== undefined) parts.push(`Bolsa ${fmtSigned(s.bolsa, 0)}%`)
+  if (s.petroleo !== undefined) parts.push(`Petróleo ${fmtSigned(s.petroleo, 0)}%`)
+  return parts.length ? parts.join(' · ') : 'Sem choque — caminho base'
+}
+export interface SimScenarioOut {
+  key: string
   title: string
-  kind: 'base' | 'bolha_ia' | 'eleicao' | 'macro'
-  chip: string
-  shock: { startMonth: number; depthPct: number; durationMonths: number; recoveryMonths: number; shape: 'v' | 'u' | 'l' } | null
-  /** manchete da leitura (1 frase de efeito) */
   lead: string
-  /** corpo — {mark}…{/mark} vira destaque (padrão do briefing) */
   narrative: string
-  /** precedentes/fontes exibidos como chips */
   sources: string[]
   filmLine: string
 }
 export interface SimResult {
-  scenario: SimScenarioDef
+  shocks: SimShocks
+  scenario: SimScenarioOut
   series: SimSeries
   final: { p10: number; p50: number; p90: number }
   events: SimEvent[]
@@ -43,6 +140,8 @@ export interface SimResult {
   positions: SimPositionImpact[]
   assumptions: { anchor: number; anchorDate: string; beta: number; cdiPct: number; erpPp: number; volPct: number; paths: number }
 }
+
+interface SimEnvelope { startMonth: number; depthPct: number; durationMonths: number; recoveryMonths: number; shape: 'v' | 'u' | 'l' }
 
 export const HORIZON_MONTHS = 120
 const CDI = 0.139
@@ -67,7 +166,7 @@ function monthLabel(i: number): string {
 }
 
 /** envelope do choque: multiplicador ≤1 ao longo dos meses (formas v/u/l) */
-function shockEnvelope(s: NonNullable<SimScenarioDef['shock']>, i: number): number {
+function shockEnvelope(s: SimEnvelope, i: number): number {
   const { startMonth: a, depthPct, durationMonths: dur, recoveryMonths: rec, shape } = s
   const depth = depthPct / 100
   if (i < a) return 1
@@ -83,25 +182,27 @@ function shockEnvelope(s: NonNullable<SimScenarioDef['shock']>, i: number): numb
   return shape === 'l' ? 1 + depth * 0.45 : 1
 }
 
-function buildSeries(def: SimScenarioDef, anchor: number, beta: number, vol: number): SimSeries {
+function buildSeries(env: SimEnvelope | null, seedKey: string, anchor: number, beta: number, vol: number, cdi: number): SimSeries {
   const dates: string[] = []
   const p10: number[] = []; const p50: number[] = []; const p90: number[] = []
   const base: number[] = []; const sample: number[] = []
-  const driftM = Math.pow(1 + CDI + beta * ERP, 1 / 12) - 1
-  const rnd = mulberry32(def.slug.length * 7919 + 42)
+  const driftM = Math.pow(1 + cdi + beta * ERP, 1 / 12) - 1
+  const baseDriftM = Math.pow(1 + CDI + beta * ERP, 1 / 12) - 1 // baseline sem choque de CDI
+  const rnd = mulberry32(seedKey.length * 7919 + 42)
   let samp = anchor
   for (let i = 0; i < HORIZON_MONTHS; i++) {
     dates.push(monthLabel(i))
     const growth = Math.pow(1 + driftM, i + 1)
-    const env = def.shock ? 1 + ((shockEnvelope(def.shock, i) - 1) * beta) : 1
-    const mid = anchor * growth * env
+    // envelope já vem em nível de CARTEIRA (Σ peso×impacto) — não reescala por beta
+    const envM = env ? shockEnvelope(env, i) : 1
+    const mid = anchor * growth * envM
     const sd = vol * Math.sqrt((i + 1) / 12)
-    base.push(Math.round(anchor * growth))
+    base.push(Math.round(anchor * Math.pow(1 + baseDriftM, i + 1)))
     p50.push(Math.round(mid))
     p90.push(Math.round(mid * Math.exp(1.2816 * sd)))
     p10.push(Math.round(mid * Math.exp(-1.2816 * sd)))
-    const shockKick = def.shock && i >= def.shock.startMonth && i < def.shock.startMonth + def.shock.durationMonths
-      ? (def.shock.depthPct / 100) * beta / def.shock.durationMonths : 0
+    const shockKick = env && i >= env.startMonth && i < env.startMonth + env.durationMonths
+      ? (env.depthPct / 100) / env.durationMonths : 0
     samp *= 1 + driftM + shockKick + (rnd() - 0.5) * (vol / Math.sqrt(12)) * 2
     sample.push(Math.round(samp))
   }
@@ -142,15 +243,6 @@ export const ASSET_CATALOG: SimAsset[] = [
   { ticker: 'GOGL34', name: 'Alphabet BDR', klass: 'BDR', beta: 0.9, factors: { internacional: 1, tech: 0.9, dolar: 1 } },
 ]
 
-/** choques por fator de cada cenário (em %, no vale) */
-const FACTOR_SHOCKS: Record<string, Record<string, number>> = {
-  'base': {},
-  'bolha-ia-estoura': { tech: -22, internacional: -12, mercado: -10, dolar: 3, juros: -3, defensivo: 2 },
-  'eleicao-2026-expansao': { juros: -14, imobiliario: -4, estatal: -8, mercado: -9, domestico: -6, dolar: 9, internacional: 7, defensivo: 2 },
-  'eleicao-2026-consolidacao': { juros: 11, imobiliario: 4, estatal: 6, mercado: 7, domestico: 6, dolar: -3, internacional: -2 },
-  'selic-mais-3pp': { juros: -12, imobiliario: -6, mercado: -7, domestico: -5, dolar: 2, defensivo: 2, tech: -2 },
-}
-
 export interface SimPortfolioInput { ticker: string; value: number }
 export const EXAMPLE_PORTFOLIO: SimPortfolioInput[] = [
   { ticker: 'IVVB11', value: 55_000 },
@@ -163,100 +255,90 @@ export const EXAMPLE_PORTFOLIO: SimPortfolioInput[] = [
   { ticker: 'BOVA11', value: 15_000 },
 ]
 
-function assetShock(asset: SimAsset, slug: string): number {
-  const shocks = FACTOR_SHOCKS[slug] ?? {}
+function assetShock(asset: SimAsset, factorShocks: Record<string, number>): number {
   let s = 0
-  for (const [f, load] of Object.entries(asset.factors)) s += (shocks[f] ?? 0) * load
+  for (const [f, load] of Object.entries(asset.factors)) s += (factorShocks[f] ?? 0) * load
   return Math.round(Math.max(-60, Math.min(40, s)))
 }
 
-export const SCENARIOS: SimScenarioDef[] = [
-  {
-    slug: 'base', title: 'Caminho base', kind: 'base', chip: 'Base',
-    shock: null,
-    filmLine: 'nenhum choque — só o tempo e os juros',
-    lead: 'Sem choque no caminho, o tempo é o único protagonista.',
-    narrative: 'A carteira compõe {mark}CDI mais o prêmio de risco{/mark} escalado pelo beta. Em 10 anos, a diferença entre o pessimista e o otimista vem inteira da volatilidade — e é por isso que {mark}a faixa abre com o tempo{/mark}.',
-    sources: ['Modelo: CDI + prêmio × beta', 'Vol: IBOV 5 anos'],
-  },
-  {
-    slug: 'bolha-ia-estoura', title: 'A bolha de IA estoura', kind: 'bolha_ia', chip: 'Bolha de IA',
-    shock: { startMonth: 42, depthPct: -32, durationMonths: 8, recoveryMonths: 26, shape: 'u' },
-    filmLine: 'choque: techs globais -32% ao longo de 8 meses',
-    lead: 'O golpe entraria quase todo por uma porta: a exposição internacional.',
-    narrative: 'Num estouro como o modelado ({mark}techs globais caindo um terço em 8 meses{/mark}, recuperação em U), uma carteira com esse perfil teria sentido o baque via {mark}IVVB11 — a maior parte da perda{/mark}. Nas quedas de tech de 2000 e 2022, quem carregava caixa e renda doméstica atravessou melhor.',
-    sources: ['Precedente: Nasdaq 2000 (-78%)', 'Precedente: techs 2022 (-33%)'],
-  },
-  {
-    slug: 'eleicao-2026-expansao', title: 'Eleições 2026: expansão fiscal', kind: 'eleicao', chip: 'Eleições: expansão',
-    shock: { startMonth: 2, depthPct: -17, durationMonths: 6, recoveryMonths: 30, shape: 'l' },
-    filmLine: 'choque: prêmio de risco fiscal + juros longos abrindo',
-    lead: 'Juros longos abrindo cobram primeiro de quem vive de juros baixos.',
-    narrative: 'Num desfecho de expansão fiscal pós-out/2026, o precedente é {mark}nov/2022{/mark}: bancos e fundos imobiliários teriam sofrido primeiro, e {mark}parte da perda não se recupera{/mark} no horizonte — o mercado reprecifica o risco Brasil. Dolarizados amortecem.',
-    sources: ['Precedente: nov/2022 · juros longos +2,5pp', 'Cicatriz: re-rating do risco fiscal'],
-  },
-  {
-    slug: 'eleicao-2026-consolidacao', title: 'Eleições 2026: consolidação fiscal', kind: 'eleicao', chip: 'Eleições: consolidação',
-    shock: { startMonth: 2, depthPct: 11, durationMonths: 5, recoveryMonths: 0, shape: 'v' },
-    filmLine: 'choque positivo: compressão de juros longos',
-    lead: 'Consolidação fiscal historicamente paga na pata doméstica.',
-    narrative: 'O precedente é {mark}2016-2017{/mark}: compressão dos juros longos e {mark}re-rating de bancos e fundos imobiliários{/mark}. Uma carteira com esse perfil teria capturado a alta principalmente pelos sensíveis a juros.',
-    sources: ['Precedente: 2016-17 · IBOV +65% em 24 meses'],
-  },
-  {
-    slug: 'selic-mais-3pp', title: 'Selic +3 pontos', kind: 'macro', chip: 'Selic +3pp',
-    shock: { startMonth: 6, depthPct: -13, durationMonths: 7, recoveryMonths: 22, shape: 'u' },
-    filmLine: 'choque: aperto monetário de 3 p.p.',
-    lead: 'Aperto de juros morde os imobiliários — e engorda o caixa.',
-    narrative: 'Com a Selic 3 pontos acima, o precedente do {mark}ciclo 2021-22{/mark} diz que {mark}FIIs e utilities teriam liderado a queda{/mark}, enquanto o caixa passa a render mais e amortece o total. A recuperação depende de quanto o aperto dura.',
-    sources: ['Precedente: ciclo 2021-22 · Selic 2%→13,75%'],
-  },
-]
+export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInput[] = EXAMPLE_PORTFOLIO): SimResult {
+  const key = shocksKey(shocks)
+  const title = shocksTitle(shocks)
+  const { factors, rules } = factorShocksFrom(shocks)
+  const isBase = Object.keys(factors).length === 0
 
-export function runMockSimulation(slug: string, portfolio: SimPortfolioInput[] = EXAMPLE_PORTFOLIO): SimResult {
-  const def = SCENARIOS.find((s) => s.slug === slug) ?? SCENARIOS[0]!
   const held = portfolio
     .map((p) => ({ ...p, asset: ASSET_CATALOG.find((a) => a.ticker === p.ticker) }))
     .filter((p): p is typeof p & { asset: SimAsset } => !!p.asset && p.value > 0)
   const anchor = held.reduce((s, p) => s + p.value, 0) || 1
   const beta = held.reduce((s, p) => s + (p.value / anchor) * p.asset.beta, 0) || 1
   const vol = 0.06 + 0.14 * beta // vol da carteira escala com o beta (ilustrativo)
-  const series = buildSeries(def, anchor, beta, vol)
+
+  // impacto por posição (regras × cargas) e o agregado — que VIRA o envelope
+  const positions = held
+    .map((p) => ({
+      ticker: p.ticker,
+      name: p.asset.name,
+      weight: p.value / anchor,
+      factors: Object.keys(p.asset.factors),
+      shockPct: assetShock(p.asset, factors),
+    }))
+    .sort((a, b) => b.weight - a.weight)
+  const totalShock = positions.reduce((s, p) => s + p.weight * p.shockPct, 0)
+
+  const env: SimEnvelope | null = isBase || Math.abs(totalShock) < 0.5
+    ? null
+    : {
+        startMonth: 2,
+        depthPct: Math.round(totalShock * 10) / 10,
+        durationMonths: 6,
+        recoveryMonths: totalShock < 0 ? 24 : 4,
+        shape: totalShock < 0 ? 'u' : 'v',
+      }
+  const cdi = shocks.selic !== undefined ? shocks.selic / 100 : CDI
+  const series = buildSeries(env, key || 'base', anchor, beta, vol, cdi)
   const last = HORIZON_MONTHS - 1
+
   let events: SimEvent[] = [
     { at: 1, kind: 'eleicao', label: 'Eleições 2026' },
     { at: 49, kind: 'eleicao', label: 'Eleições 2030' },
     { at: 97, kind: 'eleicao', label: 'Eleições 2034' },
   ]
-  if (def.shock) {
-    // o marco âmbar ENGOLE eleição vizinha (rótulos coincidentes se atropelam
-    // na borda — feedback do dono 24/08)
-    events = events.filter((e) => Math.abs(e.at - def.shock!.startMonth) > 6)
-    events.push({ at: def.shock.startMonth, kind: 'choque', label: def.title })
+  if (env) {
+    events = events.filter((e) => Math.abs(e.at - env.startMonth) > 6)
+    events.push({ at: env.startMonth, kind: 'choque', label: title })
   }
   const annual: SimAnnual[] = []
   for (let i = 11; i < HORIZON_MONTHS; i += 12) {
     annual.push({ year: START_YEAR + Math.ceil((START_MONTH + i) / 12) - 1, p10: series.p10[i]!, p50: series.p50[i]!, p90: series.p90[i]! })
   }
+
+  // leitura TEMPLATED: números só do motor, regras viram os chips
+  const lead = isBase
+    ? 'Sem choque, o tempo é o único protagonista.'
+    : `A conta do choque desenhado: ${fmtSigned(totalShock)}% na carteira, no ${totalShock < 0 ? 'vale' : 'pico'}.`
+  const worst = [...positions].sort((a, b) => a.shockPct - b.shockPct)[0]
+  const best = [...positions].sort((a, b) => b.shockPct - a.shockPct)[0]
+  const narrative = isBase
+    ? 'A carteira compõe {mark}CDI mais o prêmio de risco{/mark} escalado pelo beta. Em 10 anos, a diferença entre o pessimista e o otimista vem inteira da volatilidade — e é por isso que {mark}a faixa abre com o tempo{/mark}.'
+    : `Com ${title.toLowerCase()}, as regras do motor dão {mark}${fmtSigned(totalShock)}% na carteira{/mark}, aplicados ao longo de 6 meses${totalShock < 0 ? ' com recuperação em U' : ''}. ${worst && worst.shockPct < 0 ? `Quem mais sente é {mark}${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%){/mark}` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ''}quem segura é {mark}${best.ticker} (${fmtSigned(best.shockPct, 0)}%){/mark}` : ''}. Cada regra usada está aberta aqui embaixo — mude o choque e a conta refaz.`
+  const filmLine = isBase ? 'nenhum choque — só o tempo e os juros' : title.toLowerCase()
+
   return {
-    scenario: def,
+    shocks,
+    scenario: {
+      key, title, lead, narrative, filmLine,
+      sources: isBase ? ['Modelo: CDI + prêmio × beta', 'Vol: IBOV 5 anos'] : rules,
+    },
     series,
     final: { p10: series.p10[last]!, p50: series.p50[last]!, p90: series.p90[last]! },
     events: events.sort((a, b) => a.at - b.at),
     annual,
-    positions: held
-      .map((p) => ({
-        ticker: p.ticker,
-        name: p.asset.name,
-        weight: p.value / anchor,
-        factors: Object.keys(p.asset.factors),
-        shockPct: assetShock(p.asset, def.slug),
-      }))
-      .sort((a, b) => b.weight - a.weight),
+    positions,
     assumptions: {
       anchor: Math.round(anchor), anchorDate: '2026-08-24',
       beta: Math.round(beta * 100) / 100,
-      cdiPct: CDI * 100, erpPp: ERP * 100, volPct: Math.round(vol * 1000) / 10, paths: 2000,
+      cdiPct: Math.round(cdi * 1000) / 10, erpPp: ERP * 100, volPct: Math.round(vol * 1000) / 10, paths: 2000,
     },
   }
 }

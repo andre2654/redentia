@@ -13,8 +13,8 @@
 // séries, contadores e stagger fazem parte do produto desta tela.
 // ============================================================================
 import {
-  SCENARIOS, runMockSimulation, fmtBRL, fmtBRLFull,
-  HORIZON_MONTHS, type SimResult, type SimSeries, type SimPortfolioInput,
+  runMockSimulation, fmtBRL, fmtBRLFull, QUICK_COMBOS, shocksKey, shocksTitle,
+  HORIZON_MONTHS, type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks,
 } from '~/components/sim/simMock'
 
 definePageMeta({ layout: 'default' })
@@ -27,9 +27,10 @@ usePageSeo({
 
 type Phase = 'build' | 'film' | 'result'
 const phase = ref<Phase>('build')
-// a carteira MONTADA (pivô do dono 24/08: concreto > texto abstrato)
+// a carteira MONTADA (pivô 24/08: concreto > texto abstrato)
 const portfolio = ref<SimPortfolioInput[]>([])
-const scenarioSlug = ref('bolha-ia-estoura')
+// os CHOQUES desenhados pelo assessor (pivô 25/08: dólar/Selic/bolsa/petróleo)
+const shocks = ref<SimShocks>({})
 const result = ref<SimResult | null>(null)
 const drawing = ref(false)
 const blocksIn = ref(false)
@@ -41,15 +42,22 @@ const display = reactive<SimSeries>({ dates: [], p10: [], p50: [], p90: [], samp
 
 const portfolioTotal = computed(() => portfolio.value.reduce((s, p) => s + p.value, 0))
 const canRun = computed(() => portfolio.value.length > 0 && portfolioTotal.value > 0)
+const hasShocks = computed(() => Object.keys(shocks.value).length > 0)
 const filmSteps = computed(() => {
-  const s = SCENARIOS.find((x) => x.slug === scenarioSlug.value)
   const n = portfolio.value.length
   return [
     `Lendo sua carteira — ${n} ${n === 1 ? 'posição' : 'posições'}, ${fmtBRL(portfolioTotal.value)}`,
     'Calibrando o beta contra 5 anos de IBOV',
     'Rodando 2.000 caminhos, mês a mês, por 10 anos',
-    `Aplicando o cenário: ${s?.filmLine ?? ''}`,
+    hasShocks.value ? `Aplicando o choque: ${shocksTitle(shocks.value).toLowerCase()}` : 'Sem choque — compondo o caminho base',
   ]
+})
+// pills do resultado: os combos rápidos + o choque customizado atual
+const morphCombos = computed(() => {
+  const current = result.value?.shocks ?? shocks.value
+  const currentKey = shocksKey(current)
+  const inCombos = QUICK_COMBOS.some((c) => shocksKey(c.shocks) === currentKey)
+  return inCombos ? QUICK_COMBOS : [{ label: 'Seu choque', shocks: current }, ...QUICK_COMBOS]
 })
 
 // ——— GSAP lazy (só esta rota paga o bundle) ———
@@ -69,7 +77,7 @@ function run() {
 
 const finalP50 = ref(0)
 function onFilmDone() {
-  const r = runMockSimulation(scenarioSlug.value, portfolio.value)
+  const r = runMockSimulation(shocks.value, portfolio.value)
   result.value = r
   Object.assign(display, JSON.parse(JSON.stringify(r.series)))
   drawing.value = true
@@ -87,11 +95,11 @@ function animateCounter(to: number, dur: number) {
   gsap.to(obj, { v: to, duration: dur, ease: 'power2.out', onUpdate: () => { finalP50.value = Math.round(obj.v) } })
 }
 
-/** troca de cenário no resultado = MORPH da curva, nunca redesenho seco */
-function morphTo(slug: string) {
-  if (!result.value || slug === result.value.scenario.slug) return
-  scenarioSlug.value = slug
-  const target = runMockSimulation(slug, portfolio.value)
+/** troca de choque no resultado = MORPH da curva, nunca redesenho seco */
+function morphTo(next: SimShocks) {
+  if (!result.value || shocksKey(next) === shocksKey(result.value.shocks)) return
+  shocks.value = next
+  const target = runMockSimulation(next, portfolio.value)
   result.value = target
   animateCounter(target.final.p50, 1.1)
   // re-dispara os staggers dos blocos
@@ -152,19 +160,13 @@ const readingHtml = computed(() => {
         <SimPortfolioBuilder v-model="portfolio" />
       </div>
 
-      <!-- passo 2: o cenário -->
+      <!-- passo 2: os choques (o assessor desenha; o motor propaga por regra) -->
       <div class="sim__scenario-step" :class="{ 'sim__scenario-step--off': !canRun }">
-        <p class="sim__echo-lead">{{ canRun ? 'Agora, o cenário — e se…' : 'Monte a carteira acima pra escolher o cenário.' }}</p>
-        <div class="sim__echo-chips">
-          <button
-            v-for="s in SCENARIOS" :key="s.slug" type="button"
-            class="sim__chip" :class="{ 'sim__chip--on': scenarioSlug === s.slug }"
-            :disabled="!canRun"
-            @click="scenarioSlug = s.slug"
-          >{{ s.chip }}</button>
-          <span class="sim__chip sim__chip--fixed">10 anos</span>
-        </div>
-        <button type="button" class="sim__run" :disabled="!canRun || phase === 'film'" @click="run">Rodar a simulação</button>
+        <p class="sim__echo-lead">{{ canRun ? 'Agora, desenhe o choque — e se…' : 'Monte a carteira acima pra desenhar o choque.' }}</p>
+        <fieldset class="sim__shocks" :disabled="!canRun">
+          <SimShockPanel v-model="shocks" />
+        </fieldset>
+        <button type="button" class="sim__run" :disabled="!canRun || phase === 'film'" @click="run">Rodar a simulação · 10 anos</button>
       </div>
       <p class="sim__honest">Projeção estatística com premissas explícitas — não é previsão nem promessa de retorno.</p>
     </section>
@@ -182,10 +184,10 @@ const readingHtml = computed(() => {
           </div>
           <div class="sim__pills">
             <button
-              v-for="s in SCENARIOS" :key="s.slug" type="button"
-              class="sim__pill" :class="{ 'sim__pill--on': result.scenario.slug === s.slug }"
-              @click="morphTo(s.slug)"
-            >{{ s.chip }}</button>
+              v-for="c in morphCombos" :key="c.label" type="button"
+              class="sim__pill" :class="{ 'sim__pill--on': shocksKey(c.shocks) === shocksKey(result.shocks) }"
+              @click="morphTo(c.shocks)"
+            >{{ c.label }}</button>
           </div>
         </div>
 
@@ -208,7 +210,7 @@ const readingHtml = computed(() => {
           <div class="sim__reading-head">
             <span class="sim__reading-badge"><img src="/logo-branca.svg" alt="" class="sim__reading-logo"></span>
             <span class="sim__reading-label">Leitura da Redentia</span>
-            <span class="sim__reading-date">cenário atualizado em 24/08/2026</span>
+            <span class="sim__reading-date">regras do motor abertas abaixo · dados de 24/08/2026</span>
           </div>
           <p class="sim__reading-lead">{{ result.scenario.lead }}</p>
           <!-- eslint-disable-next-line vue/no-v-html — escapeHtml aplicado no computed -->
@@ -312,10 +314,12 @@ const readingHtml = computed(() => {
 .sim__example:hover { border-color: var(--nu-blue); color: var(--nu-blue); transform: translateY(-1px); }
 .sim__honest { margin: 14px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
 
-/* builder + passo do cenário */
+/* builder + passo dos choques */
 .sim__builder { margin-top: 30px; position: relative; }
-.sim__scenario-step { margin-top: 26px; transition: opacity 0.3s ease; }
+.sim__scenario-step { margin-top: 30px; transition: opacity 0.3s ease; }
 .sim__scenario-step--off { opacity: 0.45; }
+.sim__shocks { border: none; padding: 0; margin: 0; min-width: 0; }
+.sim__run { margin-top: 20px; }
 .sim__echo-lead { margin: 0 0 10px; color: var(--nu-gray-2); font-size: 14px; font-weight: 700; }
 .sim__echo-chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .sim__chip {
