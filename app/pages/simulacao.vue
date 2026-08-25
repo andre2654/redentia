@@ -273,24 +273,24 @@ const readingHtml = computed(() => {
         </div>
 
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
-
-        <!-- a leitura editorial, anatomia do briefing: selo + manchete grande +
-             corpo com {mark} destacado + precedentes em chips (v3, feedback do
-             dono — parágrafo solto não tem presença) -->
-        <div class="sim__reading">
-          <div class="sim__reading-head">
-            <span class="sim__reading-badge"><img src="/logo-branca.svg" alt="" class="sim__reading-logo"></span>
-            <span class="sim__reading-label">Leitura da Redentia</span>
-            <span class="sim__reading-date">regras do motor abertas abaixo · dados de 24/08/2026</span>
-          </div>
-          <p class="sim__reading-lead">{{ result.scenario.lead }}</p>
-          <!-- eslint-disable-next-line vue/no-v-html — escapeHtml aplicado no computed -->
-          <p class="sim__reading-text" v-html="readingHtml" />
-          <div class="sim__reading-sources">
-            <span v-for="s in result.scenario.sources" :key="s" class="sim__reading-src">{{ s }}</span>
-          </div>
-        </div>
       </template>
+    </section>
+
+    <!-- ============ LEITURA DA REDENTIA (azul, anatomia do "O dia no
+         mercado" — pedido do dono, 25/08) ============ -->
+    <section v-if="phase === 'result' && result" class="sim__blue">
+      <div class="sim__blue-head">
+        <h2 class="sim__blue-title">Leitura da Redentia.</h2>
+        <div class="sim__blue-sub">regras do motor abertas · dados de 24/08/2026</div>
+      </div>
+      <div class="sim__blue-body">
+        <p class="sim__blue-lead">{{ result.scenario.lead }}</p>
+        <!-- eslint-disable-next-line vue/no-v-html — escapeHtml aplicado no computed -->
+        <p class="sim__blue-text" v-html="readingHtml" />
+        <div class="sim__blue-sources">
+          <span v-for="s in result.scenario.sources" :key="s" class="sim__blue-src">{{ s }}</span>
+        </div>
+      </div>
     </section>
 
     <!-- ============ QUEM SANGRA, QUEM SEGURA (branco) ============ -->
@@ -470,48 +470,45 @@ const readingHtml = computed(() => {
 .sim__chart { margin-top: 38px; height: clamp(300px, 42vw, 400px); }
 .sim__chart-legend { margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap; color: var(--nu-cream-text-55); font-size: 12.5px; font-weight: 600; }
 .sim__chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
-/* a leitura editorial: card navy-2, anatomia do briefing */
-.sim__reading {
-  margin-top: 52px;
-  background: var(--nu-navy-2); border-radius: var(--nu-r-panel);
-  padding: clamp(26px, 3vw, 40px) clamp(24px, 3.2vw, 44px);
-  max-width: 980px;
-}
-.sim__reading-head { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; }
-.sim__reading-badge {
-  width: 30px; height: 30px; border-radius: 9px; background: var(--nu-blue);
-  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.sim__reading-logo { width: 16px; height: 16px; display: block; }
-.sim__reading-label {
-  color: var(--nu-blue-soft); font-size: 12.5px; font-weight: 800;
-  letter-spacing: 0.09em; text-transform: uppercase;
-}
-.sim__reading-date { color: var(--nu-cream-text-45); font-size: 12.5px; font-weight: 700; }
-.sim__reading-lead {
-  margin: 20px 0 0; color: var(--nu-cream-text);
-  font-size: clamp(22px, 2.6vw, 31px); font-weight: 800;
-  letter-spacing: -0.03em; line-height: 1.12;
-}
-.sim__reading-text {
-  margin: 16px 0 0; color: var(--nu-cream-text-75);
-  font-size: 16.5px; font-weight: 500; line-height: 1.7; max-width: 820px;
-}
-.sim__reading-text :deep(.sim__mark) {
-  background: var(--nu-blue-soft-35); color: var(--nu-cream-text);
-  border-radius: 6px; padding: 1px 6px; font-weight: 700;
-}
-.sim__reading-sources { margin-top: 22px; display: flex; gap: 8px; flex-wrap: wrap; }
-.sim__reading-src {
-  display: inline-flex; padding: 7px 14px; border-radius: var(--nu-r-pill);
-  background: var(--nu-navy-3); color: var(--nu-cream-text-70);
-  font-size: 12.5px; font-weight: 700;
-}
 .sim__leg { width: 14px; height: 4px; border-radius: 999px; }
 .sim__leg--band { background: var(--nu-blue-soft-35); height: 10px; }
 .sim__leg--p50 { background: var(--nu-blue-soft); }
 .sim__leg--base { background: var(--nu-cream-text-45); }
 .sim__leg--ev { background: var(--nu-amber); width: 4px; height: 12px; }
+
+/* ——— leitura da Redentia: banda AZUL, anatomia do "O dia no mercado" ——— */
+.sim__blue {
+  background: var(--nu-blue);
+  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  animation: nu-fade 0.5s ease both;
+}
+.sim__blue-head { text-align: center; max-width: 760px; margin: 0 auto; }
+.sim__blue-title {
+  margin: 0; color: var(--nu-cream-text);
+  font-size: clamp(40px, 4.8vw, 56px); font-weight: 800;
+  letter-spacing: -0.04em; line-height: 0.98;
+}
+.sim__blue-sub { margin-top: 16px; color: var(--nu-cream-text-72); font-size: 15px; font-weight: 700; letter-spacing: 0.2px; }
+.sim__blue-body { max-width: 860px; margin: clamp(36px, 4.5vw, 56px) auto 0; }
+.sim__blue-lead {
+  margin: 0; color: var(--nu-cream-text); text-align: center;
+  font-size: clamp(22px, 2.6vw, 31px); font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.14;
+}
+.sim__blue-text {
+  margin: 20px auto 0; color: var(--nu-cream-text-78);
+  font-size: 17px; font-weight: 500; line-height: 1.7; max-width: 780px;
+}
+.sim__blue-text :deep(.sim__mark) {
+  background: var(--nu-cream-text-12); color: var(--nu-white);
+  border-radius: 6px; padding: 1px 6px; font-weight: 700;
+}
+.sim__blue-sources { margin-top: 26px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.sim__blue-src {
+  display: inline-flex; padding: 7px 14px; border-radius: var(--nu-r-pill);
+  border: 1.5px solid var(--nu-cream-text-22); color: var(--nu-cream-text-78);
+  font-size: 12.5px; font-weight: 700;
+}
 
 /* ——— bandas claras ——— */
 .sim__band { padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); animation: nu-fade 0.5s ease both; }
