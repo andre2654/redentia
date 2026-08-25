@@ -4,8 +4,10 @@
 // marcos de evento e cursor compartilhado com a timeline (v-model:cursor).
 // Entrada: desenho de path (técnica do error.vue). Troca de cenário: MORPH —
 // o pai tweena os arrays (GSAP) e os computed recomputam o `d`.
-import type { SimSeries, SimEvent } from './simMock'
-import { fmtBRL } from './simMock'
+import type { SimSeries, SimEvent, SimMacroKey, SimMacroAnchor } from './simMock'
+import { fmtBRL, fmtMacro } from './simMock'
+
+interface MacroOverlay { key: SimMacroKey; label: string; color: string; values: number[]; anchors: SimMacroAnchor[] }
 
 const props = defineProps<{
   series: SimSeries
@@ -13,6 +15,9 @@ const props = defineProps<{
   drawing: boolean
   /** what-if (25/08): mediana da carteira PROPOSTA sobreposta em amber */
   compare?: SimSeries | null
+  /** trajetórias macro SOBREPOSTAS (dono 25/08) — normalizadas por série:
+   * mostram FORMA; os números vivem no tooltip */
+  macro?: MacroOverlay[]
 }>()
 const cursor = defineModel<number | null>('cursor', { default: null })
 
@@ -48,6 +53,18 @@ const bandPath = computed(() => {
 })
 const p50Path = computed(() => line(props.series.p50))
 const comparePath = computed(() => (props.compare && props.compare.p50.length === props.series.p50.length ? line(props.compare.p50) : null))
+
+// trajetórias macro: cada série normalizada na PRÓPRIA escala, numa banda
+// interna do gráfico (forma, não valor — o valor vive no tooltip)
+const macroLines = computed(() => (props.macro ?? []).map((p) => {
+  const lo = Math.min(...p.values)
+  const hi = Math.max(...p.values)
+  const span = hi - lo || 1
+  const y = (i: number) => 30 + (1 - (p.values[i]! - lo) / span) * (H - 84)
+  let d = ''
+  p.values.forEach((_, i) => { d += `${i ? 'L' : 'M'}${X(i).toFixed(1)},${y(i).toFixed(1)}` })
+  return { key: p.key, color: p.color, d, anchors: p.anchors.map((a) => ({ x: X(a.at), y: y(a.at) })) }
+}))
 
 const grid = computed(() => {
   const { lo, hi } = domain.value
@@ -111,6 +128,11 @@ const fmt = fmtBRL
     <svg class="sfc__svg" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" aria-hidden="true">
       <line v-for="g in grid" :key="g.y" x1="0" :y1="g.y" x2="1000" :y2="g.y" stroke="var(--nu-cream-text-12)" stroke-width="1" vector-effect="non-scaling-stroke" />
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.14" class="sfc__band" :class="{ 'sfc__band--in': !drawing }" />
+      <!-- trajetórias macro (atrás da mediana, finas) -->
+      <g v-for="m in macroLines" :key="'mac' + m.key" class="sfc__macro">
+        <path :d="m.d" fill="none" :stroke="m.color" stroke-width="1.7" opacity="0.75" vector-effect="non-scaling-stroke" />
+        <circle v-for="(a, i) in m.anchors" :key="i" :cx="a.x" :cy="a.y" r="4.2" :fill="m.color" stroke="var(--nu-navy)" stroke-width="1.8" />
+      </g>
       <!-- marcos de evento -->
       <line
         v-for="ev in events" :key="ev.label + ev.at"
@@ -154,6 +176,11 @@ const fmt = fmtBRL
       <span class="sfc__tip-row"><i class="sfc__dot sfc__dot--hi" />otimista <b>{{ fmt(cursorInfo.p90) }}</b></span>
       <span class="sfc__tip-row"><i class="sfc__dot sfc__dot--mid" />mediana <b>{{ fmt(cursorInfo.p50) }}</b></span>
       <span class="sfc__tip-row"><i class="sfc__dot sfc__dot--lo" />pessimista <b>{{ fmt(cursorInfo.p10) }}</b></span>
+      <template v-if="macro?.length && cursorIdx !== null">
+        <span v-for="p in macro" :key="'t' + p.key" class="sfc__tip-row sfc__tip-row--macro">
+          <i class="sfc__dot" :style="{ background: p.color }" />{{ p.label }} <b>{{ fmtMacro(p.key, p.values[cursorIdx]!) }}</b>
+        </span>
+      </template>
     </div>
   </div>
 </template>
@@ -164,6 +191,9 @@ const fmt = fmtBRL
 .sfc__band { opacity: 0; transition: opacity 1.1s ease 0.9s; }
 .sfc__band--in { opacity: 0.14; }
 .sfc__cmp { animation: nu-fade 0.5s ease both; }
+.sfc__macro { animation: nu-fade 0.5s ease both; }
+.sfc__tip-row--macro { border-top: 1px solid var(--nu-cream-text-12); padding-top: 4px; margin-top: 2px; }
+.sfc__tip-row--macro ~ .sfc__tip-row--macro { border-top: none; padding-top: 0; margin-top: 0; }
 .sfc__line { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .sfc__line--draw { animation: sfc-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }

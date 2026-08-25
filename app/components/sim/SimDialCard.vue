@@ -16,11 +16,17 @@ const props = withDefaults(defineProps<{
   personality: 'dolar' | 'selic' | 'bolsa' | 'petroleo'
   intensity: number
   direction?: -1 | 0 | 1
-}>(), { direction: 0 })
-const emit = defineEmits<{ 'update:modelValue': [v: number] }>()
+  /** "acontece em" POR VARIÁVEL (dono 25/08) — aparece quando o dial sai de hoje */
+  year?: number
+  years?: number[]
+}>(), { direction: 0, year: undefined, years: undefined })
+const emit = defineEmits<{ 'update:modelValue': [v: number]; 'update:year': [y: number] }>()
 
 function onInput(e: Event) {
   emit('update:modelValue', Number((e.target as HTMLInputElement).value))
+}
+function onYear(e: Event) {
+  emit('update:year', Number((e.target as HTMLSelectElement).value))
 }
 
 const FX: Record<string, { a: string; b: string }> = {
@@ -52,6 +58,13 @@ const style = computed(() => ({
     <span class="sdc__label">{{ label }}</span>
     <span class="sdc__value">{{ valueText }}</span>
     <span class="sdc__delta" :class="{ 'sdc__delta--live': intensity > 0.02 }">{{ deltaText }}</span>
+
+    <label v-if="years && intensity > 0.02" class="sdc__year">
+      em
+      <select class="sdc__year-select" :value="year" :aria-label="`Ano do cenário de ${label}`" @change="onYear">
+        <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
+      </select>
+    </label>
 
     <div class="sdc__ruler">
       <div class="sdc__ticks" aria-hidden="true" />
@@ -114,6 +127,22 @@ const style = computed(() => ({
   transition: color 0.3s, border-color 0.3s;
 }
 .sdc__delta--live { color: var(--nu-cream-text); border-color: var(--nu-cream-text-45); }
+
+/* "acontece em [ano]" — só quando o dial saiu de hoje */
+.sdc__year {
+  position: relative; display: inline-flex; align-items: center; gap: 5px;
+  color: var(--nu-cream-text-60); font-size: 12px; font-weight: 700;
+  animation: nu-fade 0.25s ease both;
+}
+.sdc__year-select {
+  appearance: none; -webkit-appearance: none;
+  border: none; border-bottom: 1.5px dashed var(--nu-cream-text-45); border-radius: 0;
+  background: transparent; color: var(--nu-cream-text);
+  padding: 1px 16px 2px 2px; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23F5F1EA' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 2px center;
+}
+.sdc__year-select option { color: var(--nu-ink); background: var(--nu-white); }
 
 /* a régua: ticks + thumb de linha */
 .sdc__ruler { position: relative; width: 100%; height: 40px; margin-top: 8px; }

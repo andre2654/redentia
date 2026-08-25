@@ -13,10 +13,10 @@
 // séries, contadores e stagger fazem parte do produto desta tela.
 // ============================================================================
 import {
-  runMockSimulation, buildClientSummary, fmtBRL, fmtBRLFull, shocksTitle,
+  runMockSimulation, buildClientSummary, buildMacroPaths, fmtBRL, fmtBRLFull, shocksTitle,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
-  type SimScheduledScenario,
+  type SimScheduledScenario, type SimMacroKey,
 } from '~/components/sim/simMock'
 
 definePageMeta({ layout: 'default' })
@@ -74,31 +74,43 @@ const liveTotal = computed(() => {
 // o orb SENTE o choque (vermelho machuca, verde ajuda)
 const orbMood = computed(() => (phase.value === 'shock' ? Math.max(-1, Math.min(1, liveTotal.value / 22)) : 0))
 
-// ——— A DÉCADA (dono 25/08: "cenários que acontecem em momentos diferentes"):
-// cada cenário desenhado ganha um ANO; dá pra guardar e desenhar outro. ———
-const DECADE_YEARS = [2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035]
-const scheduleYear = ref(2027)
-const scheduled = ref<SimScheduledScenario[]>([])
-function stashScenario() {
-  if (!hasShocks.value) return
-  scheduled.value = [
-    ...scheduled.value.filter((s) => s.year !== scheduleYear.value),
-    { shocks: shocks.value, year: scheduleYear.value },
-  ].sort((a, b) => a.year - b.year)
-  dials.value = { ...DIAL_DEFAULTS }
-  const next = DECADE_YEARS.find((y) => y > scheduleYear.value && !scheduled.value.some((s) => s.year === y))
-  if (next) scheduleYear.value = next
-}
-function removeScheduled(year: number) {
-  scheduled.value = scheduled.value.filter((s) => s.year !== year)
-}
-/** agenda completa: os guardados + o que está nos dials agora */
+// ——— A DÉCADA (dono 25/08, v2: "selecionar quando acontece CADA COISA
+// separadamente") — cada variável tem o próprio ano no dial-card; a agenda
+// de cenários é DERIVADA agrupando as variáveis ativas por ano. ———
+const dialYears = ref<Record<keyof SimDials, number>>({ dolar: 2027, selic: 2027, bolsa: 2027, petroleo: 2027 })
 const fullSchedule = computed<SimScheduledScenario[]>(() => {
-  const list = scheduled.value.filter((s) => s.year !== scheduleYear.value || !hasShocks.value)
-  return hasShocks.value ? [...list, { shocks: shocks.value, year: scheduleYear.value }] : list
+  const s = shocks.value
+  const byYear = new Map<number, SimShocks>()
+  for (const k of Object.keys(s) as (keyof SimDials)[]) {
+    const y = dialYears.value[k]
+    if (!byYear.has(y)) byYear.set(y, {})
+    ;(byYear.get(y) as Record<string, number>)[k] = s[k]!
+  }
+  return [...byYear.entries()].map(([year, sh]) => ({ year, shocks: sh })).sort((a, b) => a.year - b.year)
 })
 // a agenda usada na última simulação (o what-if roda a MESMA)
 const lastSchedule = ref<SimScheduledScenario[]>([])
+
+// ——— TRAJETÓRIAS MACRO sobrepostas no fan chart (dono 25/08: "tem que
+// sobrepor no mesmo gráfico") — checks na legenda, pré-marcados nos
+// indicadores tocados na etapa 2. IBOV em teal (a mediana é azul). ———
+const MACRO_COLOR: Record<SimMacroKey, string> = {
+  dolar: 'var(--nu-green-soft)',
+  selic: 'var(--nu-alloc-fii)',
+  bolsa: 'color-mix(in srgb, var(--nu-class-etf) 55%, var(--nu-white))',
+  petroleo: 'color-mix(in srgb, var(--nu-class-bdr) 78%, var(--nu-white))',
+}
+const macroPaths = computed(() => (result.value ? buildMacroPaths(lastSchedule.value) : []))
+const macroChecked = ref<Set<SimMacroKey>>(new Set())
+function toggleMacro(k: SimMacroKey) {
+  const next = new Set(macroChecked.value)
+  if (next.has(k)) next.delete(k)
+  else next.add(k)
+  macroChecked.value = next
+}
+const macroVisible = computed(() =>
+  macroPaths.value.filter((p) => macroChecked.value.has(p.key)).map((p) => ({ ...p, color: MACRO_COLOR[p.key] })),
+)
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
 // MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
@@ -209,6 +221,8 @@ const finalP50 = ref(0)
 function onFilmDone() {
   const r = runMockSimulation(shocks.value, portfolio.value, lastSchedule.value)
   result.value = r
+  // checks macro nascem marcados nos indicadores TOCADOS na etapa 2
+  macroChecked.value = new Set(buildMacroPaths(lastSchedule.value).filter((p) => p.touched).map((p) => p.key))
   Object.assign(display, JSON.parse(JSON.stringify(r.series)))
   drawing.value = true
   phase.value = 'result'
@@ -289,26 +303,7 @@ const readingHtml = computed(() => {
             <span class="sim__dots" aria-hidden="true"><i class="sim__dot sim__dot--on" /><i class="sim__dot sim__dot--on" /></span>
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
             <div class="sim__shockgrid">
-              <SimShockPanel v-model="dials" />
-
-              <!-- a DÉCADA: quando o cenário bate + guardar e desenhar outro -->
-              <div v-if="hasShocks || scheduled.length" class="sim__decade">
-                <template v-if="hasShocks">
-                  <label class="sim__decade-when">
-                    Acontece em
-                    <select v-model.number="scheduleYear" class="sim__decade-select">
-                      <option v-for="y in DECADE_YEARS" :key="y" :value="y">{{ y }}</option>
-                    </select>
-                  </label>
-                  <button type="button" class="sim__decade-add" @click="stashScenario">Guardar e desenhar outro</button>
-                </template>
-                <span v-for="s in scheduled" :key="s.year" class="sim__dchip">
-                  <b>{{ s.year }}</b> {{ shocksTitle(s.shocks) }}
-                  <button type="button" class="sim__dchip-del" :aria-label="`Remover o cenário de ${s.year}`" @click="removeScheduled(s.year)">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
-                  </button>
-                </span>
-              </div>
+              <SimShockPanel v-model="dials" v-model:years="dialYears" />
             </div>
             <div class="sim__wiz-nav">
               <button type="button" class="sim__back" @click="backToAssets">Voltar</button>
@@ -338,21 +333,27 @@ const readingHtml = computed(() => {
         </div>
 
         <div class="sim__chart">
-          <SimFanChart v-model:cursor="cursor" :series="display" :events="result.events" :drawing="drawing" :compare="resultB?.series ?? null" />
+          <SimFanChart v-model:cursor="cursor" :series="display" :events="result.events" :drawing="drawing" :compare="resultB?.series ?? null" :macro="macroVisible" />
         </div>
         <div class="sim__chart-legend">
           <span><i class="sim__leg sim__leg--band" />faixa provável</span>
           <span><i class="sim__leg sim__leg--p50" />mediana</span>
           <span v-if="resultB"><i class="sim__leg sim__leg--b" />proposta</span>
           <span><i class="sim__leg sim__leg--ev" />cenário</span>
+          <!-- checks das trajetórias macro, no mesmo gráfico -->
+          <button
+            v-for="p in macroPaths" :key="p.key" type="button"
+            class="sim__leg-check" :class="{ 'sim__leg-check--on': macroChecked.has(p.key) }"
+            :aria-pressed="macroChecked.has(p.key)" @click="toggleMacro(p.key)"
+          >
+            <i class="sim__leg-dot" :style="{ background: macroChecked.has(p.key) ? MACRO_COLOR[p.key] : 'transparent', borderColor: MACRO_COLOR[p.key] }" />
+            {{ p.label }}
+          </button>
         </div>
 
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
 
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
-
-        <!-- as trajetórias macro da década, com checks por indicador -->
-        <SimMacroPaths v-model:cursor="cursor" :dates="display.dates" :schedule="lastSchedule" :events="result.events" />
       </template>
     </section>
 
@@ -560,42 +561,6 @@ const readingHtml = computed(() => {
 .sim__back:hover { background: var(--nu-cream); transform: translateY(-1px); }
 .sim__shockgrid { max-width: 880px; }
 
-/* a década: ano do cenário + agenda de cenários guardados */
-.sim__decade { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.sim__decade-when {
-  display: inline-flex; align-items: center; gap: 9px;
-  color: var(--nu-gray-2); font-size: 13.5px; font-weight: 700;
-}
-.sim__decade-select {
-  appearance: none; -webkit-appearance: none;
-  border: none; border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-ink);
-  padding: 11px 34px 11px 18px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230A0A0C' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center;
-}
-.sim__decade-add {
-  border: none; border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-ink);
-  padding: 12px 18px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: background 0.15s, transform 0.15s;
-}
-.sim__decade-add:hover { background: var(--nu-cream); transform: translateY(-1px); }
-.sim__dchip {
-  display: inline-flex; align-items: center; gap: 7px;
-  border-radius: var(--nu-r-pill);
-  background: color-mix(in srgb, var(--nu-amber) 24%, var(--nu-white));
-  color: var(--nu-ink); padding: 10px 10px 10px 16px;
-  font-size: 13px; font-weight: 600;
-}
-.sim__dchip b { font-weight: 800; }
-.sim__dchip-del {
-  width: 20px; height: 20px; border: none; border-radius: 50%;
-  background: transparent; color: var(--nu-gray-2); cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  transition: background 0.15s, color 0.15s;
-}
-.sim__dchip-del:hover { background: var(--nu-white); color: var(--nu-red); }
 @media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
 .sim__dots { display: inline-flex; gap: 7px; }
 .sim__dot {
@@ -652,6 +617,18 @@ const readingHtml = computed(() => {
 .sim__leg--p50 { background: var(--nu-blue-soft); }
 .sim__leg--b { background: var(--nu-amber); }
 .sim__leg--ev { background: var(--nu-amber); width: 4px; height: 12px; }
+
+/* checks das trajetórias macro na legenda */
+.sim__leg-check {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill);
+  background: transparent; color: var(--nu-cream-text-55);
+  padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sim__leg-check--on { color: var(--nu-cream-text); border-color: var(--nu-cream-text-22); }
+.sim__leg-check:hover { border-color: var(--nu-cream-text-45); }
+.sim__leg-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid; transition: background 0.15s; }
 
 /* pill de abrir o what-if — outline amber pra casar com a linha B */
 .sim__pill--whatif { border-color: var(--nu-amber); color: var(--nu-amber); }
