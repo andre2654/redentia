@@ -454,10 +454,14 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
   const series = buildSeries(envs, key || 'base', anchor, vol, carrySegs, baseCarry)
   const last = HORIZON_MONTHS - 1
 
-  // eventos = SÓ os cenários desenhados (dono 25/08: fora as eleições
-  // automáticas — marcador sem efeito no motor não é nada). Cada cenário
-  // vira a linha âmbar com o ANO como rótulo.
-  const events: SimEvent[] = []
+  // eleições como contexto de calendário (dono 25/08: "são bacanas") +
+  // cada cenário desenhado vira a linha âmbar com o ANO como rótulo
+  let events: SimEvent[] = [
+    { at: 1, kind: 'eleicao', label: 'Eleições 2026' },
+    { at: 49, kind: 'eleicao', label: 'Eleições 2030' },
+    { at: 97, kind: 'eleicao', label: 'Eleições 2034' },
+  ]
+  events = events.filter((e) => computed.every((c) => Math.abs(e.at - c.startMonth) > 6))
   for (const c of computed) if (c.env) events.push({ at: c.startMonth, kind: 'choque', label: String(c.year) })
 
   const annual: SimAnnual[] = []
@@ -564,4 +568,141 @@ export function buildClientSummary(r: SimResult): SimClientSummary {
   const footer = `Simulação de ${hoje} · protótipo Redentia · faixa estatística com premissas explícitas — não é previsão nem recomendação de investimento · valores líquidos de IR estimado (isentos sem desconto).`
 
   return { whatsapp, emailSubject, emailBody, footer }
+}
+
+/**
+ * TRAJETÓRIAS MACRO (dono 25/08): a base "histórica de 20 anos" de cada
+ * indicador (MOCK — parâmetros plausíveis, não dado real) vira uma série
+ * mensal de 10 anos. Cada cenário agendado é uma ÂNCORA: a curva caminha
+ * pela dinâmica histórica, ATINGE o alvo no ano marcado e depois volta a
+ * seguir a base a partir dali (dólar a R$ 3 → retoma a subida histórica).
+ * Indicadores NÃO definidos num cenário reagem por CORRELAÇÃO histórica
+ * mock (solavanco transitório que decai em ~1 ano).
+ */
+export type SimMacroKey = 'dolar' | 'selic' | 'bolsa' | 'petroleo'
+export interface SimMacroAnchor { at: number; value: number }
+export interface SimMacroPath {
+  key: SimMacroKey
+  label: string
+  touched: boolean
+  values: number[]
+  anchors: SimMacroAnchor[]
+}
+
+const IBOV_NOW = 173_000
+const BRENT_NOW = 78
+
+// dinâmica histórica mock: drift anual, reversão à média, textura (wiggle)
+const MACRO_DYN: Record<SimMacroKey, { start: number; driftY: number; revert: number; mean: number; wig: number; seed: number; additive?: boolean }> = {
+  dolar: { start: MACRO_NOW.dolar, driftY: 0.045, revert: 0, mean: 0, wig: 0.012, seed: 11 },
+  selic: { start: MACRO_NOW.selic, driftY: 0, revert: 0.035, mean: 11, wig: 0.08, seed: 23, additive: true },
+  bolsa: { start: IBOV_NOW, driftY: 0.085, revert: 0, mean: 0, wig: 0.02, seed: 37 },
+  petroleo: { start: BRENT_NOW, driftY: 0.02, revert: 0.012, mean: 80, wig: 0.03, seed: 53 },
+}
+
+// correlação histórica mock: choque na FONTE → efeito transitório no destino
+// (fontes multiplicativas em % por 1%; selic como fonte usa p.p.)
+const MACRO_CORR: Record<SimMacroKey, Partial<Record<SimMacroKey, number>>> = {
+  dolar: { bolsa: -0.35, selic: 0.03 },
+  bolsa: { dolar: -0.3, petroleo: 0.15 },
+  petroleo: { bolsa: 0.35, dolar: -0.25 },
+  selic: { bolsa: -1.6, dolar: -0.8 },
+}
+
+/** choque da fonte em % (ou p.p. na selic) num cenário */
+function macroShockOf(key: SimMacroKey, s: SimShocks): number | null {
+  if (key === 'dolar') return s.dolar !== undefined ? (s.dolar / MACRO_NOW.dolar - 1) * 100 : null
+  if (key === 'selic') return s.selic !== undefined ? s.selic - MACRO_NOW.selic : null
+  if (key === 'bolsa') return s.bolsa ?? null
+  return s.petroleo ?? null
+}
+
+/** alvo ABSOLUTO do indicador num cenário (null = não definido) */
+function macroTargetOf(key: SimMacroKey, s: SimShocks): number | null {
+  if (key === 'dolar') return s.dolar ?? null
+  if (key === 'selic') return s.selic ?? null
+  if (key === 'bolsa') return s.bolsa !== undefined ? IBOV_NOW * (1 + s.bolsa / 100) : null
+  return s.petroleo !== undefined ? BRENT_NOW * (1 + s.petroleo / 100) : null
+}
+
+/** perfil do solavanco de correlação: sobe em ~3 meses, decai em ~1 ano */
+function bumpShape(dt: number): number {
+  if (dt < 0) return 0
+  if (dt < 3) return (dt + 1) / 3
+  return Math.exp(-(dt - 3) / 12)
+}
+
+export function buildMacroPaths(schedule: SimScheduledScenario[]): SimMacroPath[] {
+  const items = [...schedule].sort((a, b) => a.year - b.year)
+  const KEYS: SimMacroKey[] = ['dolar', 'selic', 'bolsa', 'petroleo']
+  const LABELS: Record<SimMacroKey, string> = { dolar: 'Dólar', selic: 'Selic', bolsa: 'IBOV', petroleo: 'Petróleo' }
+
+  return KEYS.map((key) => {
+    const dyn = MACRO_DYN[key]
+    const anchors: SimMacroAnchor[] = []
+    // solavancos vindos dos OUTROS indicadores dos cenários onde este não
+    // tem alvo próprio
+    const bumps: { at: number; pct: number }[] = []
+    for (const it of items) {
+      const target = macroTargetOf(key, it.shocks)
+      const at = monthOfYear(it.year)
+      if (target !== null) {
+        anchors.push({ at, value: target })
+        continue
+      }
+      let pct = 0
+      for (const src of KEYS) {
+        if (src === key) continue
+        const shock = macroShockOf(src, it.shocks)
+        if (shock === null) continue
+        pct += (MACRO_CORR[src][key] ?? 0) * shock
+      }
+      if (Math.abs(pct) > 0.4) bumps.push({ at, pct })
+    }
+
+    // série base: dinâmica histórica + puxão exato até cada âncora; depois
+    // da última âncora, base histórica pura A PARTIR do alvo
+    const rnd = mulberry32(dyn.seed * 1013 + 7)
+    const values: number[] = []
+    let v = dyn.start
+    let ai = 0
+    for (let i = 0; i < HORIZON_MONTHS; i++) {
+      // passo histórico
+      const noise = (rnd() - 0.5) * 2 * dyn.wig
+      if (dyn.additive) {
+        v = v + dyn.revert * (dyn.mean - v) + noise
+      }
+      else {
+        const revertTerm = dyn.revert ? dyn.revert * ((dyn.mean - v) / dyn.mean) : 0
+        v = v * (1 + dyn.driftY / 12 + revertTerm + noise / 6)
+      }
+      // puxão pro alvo do segmento atual (chega EXATO no mês da âncora)
+      const anchor = anchors[ai]
+      if (anchor && i <= anchor.at) {
+        const remaining = anchor.at - i + 1
+        v = v + (anchor.value - v) / remaining
+        if (i === anchor.at) ai++
+      }
+      values.push(v)
+    }
+
+    // solavancos de correlação por cima (multiplicativo; selic em p.p.)
+    for (const b of bumps) {
+      for (let i = 0; i < HORIZON_MONTHS; i++) {
+        const f = bumpShape(i - b.at)
+        if (f <= 0) continue
+        if (dyn.additive) values[i] = values[i]! + b.pct * f
+        else values[i] = values[i]! * (1 + (b.pct / 100) * f)
+      }
+    }
+
+    return { key, label: LABELS[key], touched: anchors.length > 0, values, anchors }
+  })
+}
+
+export function fmtMacro(key: SimMacroKey, v: number): string {
+  if (key === 'dolar') return `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  if (key === 'selic') return `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`
+  if (key === 'bolsa') return `${Math.round(v / 1000).toLocaleString('pt-BR')} mil pts`
+  return `US$ ${Math.round(v)}`
 }

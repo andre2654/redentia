@@ -350,6 +350,9 @@ const readingHtml = computed(() => {
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
 
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
+
+        <!-- as trajetórias macro da década, com checks por indicador -->
+        <SimMacroPaths v-model:cursor="cursor" :dates="display.dates" :schedule="lastSchedule" :events="result.events" />
       </template>
     </section>
 
