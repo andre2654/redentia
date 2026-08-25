@@ -179,6 +179,12 @@ const readingHtml = computed(() => {
       <div class="sim__wiz-orb" aria-hidden="true">
         <SimOrb :state="phase === 'film' ? 'thinking' : 'idle'" :size="460" />
       </div>
+      <!-- passo 2: manchetes REAIS derivando pro orb ("considera o noticiário") -->
+      <Transition name="nu-soft">
+        <div v-if="phase === 'shock'" class="sim__orbfeed">
+          <SimOrbFeed />
+        </div>
+      </Transition>
 
       <div class="sim__wiz-body">
         <!-- SEM out-in: o passo que sai vira absolute e desliza POR CIMA
@@ -363,6 +369,17 @@ const readingHtml = computed(() => {
   40% { opacity: 0.7; transform: translateY(0); }
 }
 .sim__wiz-body { position: relative; z-index: 1; }
+.sim__orbfeed {
+  /* o corredor vazio à esquerda do orb (faixa de baixo) — as manchetes
+     derivam PRA DENTRO dele, sem colidir com os cards de choque */
+  position: absolute; z-index: 1; pointer-events: none;
+  right: clamp(250px, 26%, 430px); bottom: 27%; top: auto;
+  width: min(320px, 30vw);
+}
+.nu-soft-enter-active { transition: opacity 0.6s ease 0.5s; }
+.nu-soft-leave-active { transition: opacity 0.25s ease; }
+.nu-soft-enter-from, .nu-soft-leave-to { opacity: 0; }
+@media (max-width: 1100px) { .sim__orbfeed { display: none; } }
 /* slide direcional SOBREPOSTO: o que sai fica absolute (sem colapsar a
    altura) e desliza por cima; o que entra já ocupa o fluxo com um delay
    mínimo — sem frame vazio, sem pulo de layout */
