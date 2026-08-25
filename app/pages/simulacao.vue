@@ -279,17 +279,10 @@ const readingHtml = computed(() => {
     <!-- ============ LEITURA DA REDENTIA (azul, anatomia do "O dia no
          mercado" — pedido do dono, 25/08) ============ -->
     <section v-if="phase === 'result' && result" class="sim__blue">
-      <div class="sim__blue-head">
-        <h2 class="sim__blue-title">Leitura da Redentia.</h2>
-        <div class="sim__blue-sub">regras do motor abertas · dados de 24/08/2026</div>
-      </div>
       <div class="sim__blue-body">
         <p class="sim__blue-lead">{{ result.scenario.lead }}</p>
         <!-- eslint-disable-next-line vue/no-v-html — escapeHtml aplicado no computed -->
         <p class="sim__blue-text" v-html="readingHtml" />
-        <div class="sim__blue-sources">
-          <span v-for="s in result.scenario.sources" :key="s" class="sim__blue-src">{{ s }}</span>
-        </div>
       </div>
     </section>
 
@@ -482,14 +475,7 @@ const readingHtml = computed(() => {
   padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade 0.5s ease both;
 }
-.sim__blue-head { text-align: center; max-width: 760px; margin: 0 auto; }
-.sim__blue-title {
-  margin: 0; color: var(--nu-cream-text);
-  font-size: clamp(40px, 4.8vw, 56px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 0.98;
-}
-.sim__blue-sub { margin-top: 16px; color: var(--nu-cream-text-72); font-size: 15px; font-weight: 700; letter-spacing: 0.2px; }
-.sim__blue-body { max-width: 860px; margin: clamp(36px, 4.5vw, 56px) auto 0; }
+.sim__blue-body { max-width: 860px; margin: 0 auto; }
 .sim__blue-lead {
   margin: 0; color: var(--nu-cream-text); text-align: center;
   font-size: clamp(22px, 2.6vw, 31px); font-weight: 800;
@@ -503,13 +489,6 @@ const readingHtml = computed(() => {
   background: var(--nu-cream-text-12); color: var(--nu-white);
   border-radius: 6px; padding: 1px 6px; font-weight: 700;
 }
-.sim__blue-sources { margin-top: 26px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-.sim__blue-src {
-  display: inline-flex; padding: 7px 14px; border-radius: var(--nu-r-pill);
-  border: 1.5px solid var(--nu-cream-text-22); color: var(--nu-cream-text-78);
-  font-size: 12.5px; font-weight: 700;
-}
-
 /* ——— bandas claras ——— */
 .sim__band { padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); animation: nu-fade 0.5s ease both; }
 .sim__band--white { background: var(--nu-white); }
