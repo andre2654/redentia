@@ -358,7 +358,10 @@ const readingHtml = computed(() => {
 /* passo 2 (v3 do feedback, 25/08): orb maior, no corredor DIREITO, com o
    centro vertical alinhado ao centro dos dial-cards (~450px do topo da
    seção — px porque a altura da seção varia com o conteúdo abaixo) */
-.sim__wiz--shock { background: var(--nu-white); }
+/* fundo frio claro (não branco, pedido do dono 25/08): mistura de dois
+   tokens frios — os dial-cards navy saltam e a progressão de cor fica
+   creme quente → azul frio → navy do filme */
+.sim__wiz--shock { background: color-mix(in srgb, var(--nu-score-track) 76%, var(--nu-blue-soft) 24%); }
 .sim__wiz--shock .sim__wiz-orb {
   left: 85%;
   top: 450px;
