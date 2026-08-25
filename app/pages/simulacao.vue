@@ -79,10 +79,18 @@ const WIZ_COPY: Record<string, { eyebrow: string; title: string; dek: string }> 
 }
 const wizCopy = computed(() => WIZ_COPY[phase.value] ?? WIZ_COPY.assets!)
 
+// direção da navegação → o slide do conteúdo acompanha (fwd empurra pra
+// esquerda; back devolve pra direita)
+const stepDir = ref<'fwd' | 'back'>('fwd')
 function goShock() {
   if (!canRun.value) return
+  stepDir.value = 'fwd'
   phase.value = 'shock'
   window.scrollTo({ top: 0, behavior: reduceMotion.value ? 'auto' : 'smooth' })
+}
+function backToAssets() {
+  stepDir.value = 'back'
+  phase.value = 'assets'
 }
 function run() {
   if (!canRun.value) return
@@ -176,35 +184,38 @@ const readingHtml = computed(() => {
       </div>
 
       <div class="sim__wiz-body">
-        <template v-if="phase !== 'film'">
-          <span class="sim__proto">Protótipo · dados ilustrativos</span>
-          <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
-          <h1 class="sim__title">{{ wizCopy.title }}</h1>
-          <p class="sim__dek">{{ wizCopy.dek }}</p>
-        </template>
+        <Transition :name="stepDir === 'fwd' ? 'wstep' : 'wstepb'" mode="out-in">
+          <div v-if="phase === 'assets'" key="assets" class="sim__step">
+            <span class="sim__proto">Protótipo · dados ilustrativos</span>
+            <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
+            <h1 class="sim__title">{{ wizCopy.title }}</h1>
+            <p class="sim__dek">{{ wizCopy.dek }}</p>
+            <div class="sim__builder">
+              <SimPortfolioBuilder v-model="portfolio" />
+            </div>
+            <div class="sim__wiz-nav">
+              <button type="button" class="sim__run" :disabled="!canRun" @click="goShock">Continuar — desenhar o choque</button>
+              <span v-if="!canRun" class="sim__wiz-hint">adicione ao menos 1 ativo</span>
+            </div>
+          </div>
 
-        <template v-if="phase === 'assets'">
-          <div class="sim__builder">
-            <SimPortfolioBuilder v-model="portfolio" />
+          <div v-else-if="phase === 'shock'" key="shock" class="sim__step">
+            <span class="sim__proto">Protótipo · dados ilustrativos</span>
+            <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
+            <h1 class="sim__title">{{ wizCopy.title }}</h1>
+            <p class="sim__dek">{{ wizCopy.dek }}</p>
+            <p class="sim__wiz-cart">Simulando sobre <b>{{ fmtBRL(portfolioTotal) }}</b> em <b>{{ portfolio.length }} {{ portfolio.length === 1 ? 'posição' : 'posições' }}</b></p>
+            <div class="sim__shockpanel">
+              <SimShockPanel v-model="shocks" />
+            </div>
+            <div class="sim__wiz-nav">
+              <button type="button" class="sim__back" @click="backToAssets">Ajustar a carteira</button>
+              <button type="button" class="sim__run" @click="run">Rodar a simulação · 10 anos</button>
+            </div>
           </div>
-          <div class="sim__wiz-nav">
-            <button type="button" class="sim__run" :disabled="!canRun" @click="goShock">Continuar — desenhar o choque</button>
-            <span v-if="!canRun" class="sim__wiz-hint">adicione ao menos 1 ativo</span>
-          </div>
-        </template>
 
-        <template v-else-if="phase === 'shock'">
-          <p class="sim__wiz-cart">Simulando sobre <b>{{ fmtBRL(portfolioTotal) }}</b> em <b>{{ portfolio.length }} {{ portfolio.length === 1 ? 'posição' : 'posições' }}</b></p>
-          <div class="sim__shockpanel">
-            <SimShockPanel v-model="shocks" />
-          </div>
-          <div class="sim__wiz-nav">
-            <button type="button" class="sim__back" @click="phase = 'assets'">Ajustar a carteira</button>
-            <button type="button" class="sim__run" @click="run">Rodar a simulação · 10 anos</button>
-          </div>
-        </template>
-
-        <SimFilm v-else-if="phase === 'film'" :steps="filmSteps" @done="onFilmDone" />
+          <SimFilm v-else-if="phase === 'film'" key="film" :steps="filmSteps" @done="onFilmDone" />
+        </Transition>
       </div>
       <p v-if="phase !== 'film'" class="sim__honest">Projeção estatística com premissas explícitas — não é previsão nem promessa de retorno.</p>
     </section>
@@ -320,7 +331,9 @@ const readingHtml = computed(() => {
   transition: left 1s cubic-bezier(0.22, 0.61, 0.36, 1), top 1s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 1s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease;
 }
-.sim__wiz--shock .sim__wiz-orb { left: 88%; top: 68%; transform: translate(-50%, -50%) scale(0.5); opacity: 0.75; }
+/* passo 2: o orb VARRE a tela em diagonal (alto-direita → baixo-esquerda) —
+   a viagem é o que faz a troca de passo ser sentida (feedback do dono) */
+.sim__wiz--shock .sim__wiz-orb { left: 10%; top: 78%; transform: translate(-50%, -50%) scale(0.58); opacity: 0.85; }
 .sim__wiz--film .sim__wiz-orb { left: 50%; top: 42%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
 .sim__wiz-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .sim__wiz-letter {
@@ -335,6 +348,14 @@ const readingHtml = computed(() => {
   40% { opacity: 0.7; transform: translateY(0); }
 }
 .sim__wiz-body { position: relative; z-index: 1; }
+/* slide direcional dos passos: avançar empurra pra ESQUERDA; voltar devolve
+   pra DIREITA — casa com a varredura do orb no sentido oposto */
+.wstep-enter-active, .wstepb-enter-active { transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1); }
+.wstep-leave-active, .wstepb-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
+.wstep-enter-from { opacity: 0; transform: translateX(56px); }
+.wstep-leave-to { opacity: 0; transform: translateX(-44px); }
+.wstepb-enter-from { opacity: 0; transform: translateX(-56px); }
+.wstepb-leave-to { opacity: 0; transform: translateX(44px); }
 .sim__wiz--film .sim__wiz-body { padding-bottom: 6vh; }
 .sim__wiz-nav { margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .sim__wiz-hint { color: var(--nu-gray); font-size: 13px; font-weight: 600; }
