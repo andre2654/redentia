@@ -229,7 +229,6 @@ const readingHtml = computed(() => {
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
             <div class="sim__shockgrid">
               <SimShockPanel v-model="dials" />
-              <SimShockLive :total="liveTotal" :positions="liveResult?.positions ?? []" :has-shock="hasShocks" />
             </div>
             <div class="sim__wiz-nav">
               <button type="button" class="sim__back" @click="backToAssets">Voltar</button>
@@ -417,11 +416,7 @@ const readingHtml = computed(() => {
   transition: border-color 0.15s, color 0.15s;
 }
 .sim__back:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
-.sim__shockgrid {
-  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
-  gap: 16px; align-items: start; max-width: 1180px;
-}
-@media (max-width: 980px) { .sim__shockgrid { grid-template-columns: 1fr; } }
+.sim__shockgrid { max-width: 880px; }
 @media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
 .sim__dots { display: inline-flex; gap: 7px; }
 .sim__dot {
