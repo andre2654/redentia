@@ -3,11 +3,11 @@
 // a tela mostra só a CARTEIRA; um input-gatilho abre o modal de busca com os
 // ativos (busca + pills de classe, toggle sem fechar — monta com vários
 // toques). Modal no padrão da casa: Teleport + useModalA11y + Esc/scrim/X.
-import { ASSET_CATALOG, EXAMPLE_PORTFOLIO, fmtBRLFull, type SimPortfolioInput } from './simMock'
+import { ASSET_CATALOG, EXAMPLE_PORTFOLIO, fmtBRLFull, type SimAsset, type SimPortfolioInput } from './simMock'
 
 const model = defineModel<SimPortfolioInput[]>({ required: true })
 
-const CLASSES = ['Todos', 'Ação', 'FII', 'ETF', 'BDR'] as const
+const CLASSES = ['Todos', 'Ação', 'FII', 'ETF', 'BDR', 'Renda fixa'] as const
 const klass = ref<(typeof CLASSES)[number]>('Todos')
 const search = ref('')
 const filtered = computed(() => {
@@ -49,6 +49,20 @@ const CLASS_COLOR: Record<string, string> = {
   'FII': 'var(--nu-alloc-fii)',
   'ETF': 'var(--nu-class-etf)',
   'BDR': 'var(--nu-class-bdr)',
+  'Renda fixa': 'var(--nu-alloc-fixed)',
+}
+
+/** badge tributária (gap do "erro do Gorila"): isenta vs IR 15%; nos pós
+ * isentos, o sub mostra o equivalente-BRUTO pra comparação honesta */
+function taxBadge(a: SimAsset): { label: string; isento: boolean } {
+  if (a.rf) return a.rf.isento ? { label: 'isenta de IR', isento: true } : { label: 'IR 15%', isento: false }
+  if (a.klass === 'FII') return { label: 'rend. isentos', isento: true }
+  return { label: 'IR 15%', isento: false }
+}
+function assetSub(a: SimAsset): string {
+  if (a.rf?.indexer === 'pos' && a.rf.isento && a.rf.cdiMult)
+    return `${a.name} · ≈ ${Math.round((a.rf.cdiMult / 0.85) * 100)}% do CDI bruto equivalente`
+  return a.name
 }
 const allocation = computed(() => {
   if (total.value <= 0) return []
@@ -64,7 +78,7 @@ const allocation = computed(() => {
 
 // carteira agrupada por classe (feedback do dono, 25/08: tags em grupos,
 // não lista) — mesma ordem da barra de alocação (maior classe primeiro)
-const PLURAL: Record<string, string> = { 'Ação': 'Ações', 'FII': 'FIIs', 'ETF': 'ETFs', 'BDR': 'BDRs' }
+const PLURAL: Record<string, string> = { 'Ação': 'Ações', 'FII': 'FIIs', 'ETF': 'ETFs', 'BDR': 'BDRs', 'Renda fixa': 'Renda fixa' }
 const grouped = computed(() => {
   const byClass = new Map<string, SimPortfolioInput[]>()
   for (const p of model.value) {
@@ -156,6 +170,7 @@ function onSearchEnter() {
             <span class="spb__prow-main">
               <b class="spb__prow-ticker">{{ p.ticker }}</b>
               <em class="spb__prow-weight">{{ weightPct(p) }}</em>
+              <em v-if="meta(p.ticker)?.rf" class="spb__prow-tax" :class="{ 'spb__prow-tax--free': meta(p.ticker)?.rf?.isento }">{{ meta(p.ticker)?.rf?.isento ? 'isenta' : 'IR 15%' }}</em>
             </span>
             <label class="spb__prow-val" :title="`Editar o valor em ${p.ticker}`">
               <span class="spb__prow-rs">R$</span>
@@ -199,7 +214,7 @@ function onSearchEnter() {
               v-for="c in CLASSES" :key="c" type="button"
               class="spbm__filter" :class="{ 'spbm__filter--on': klass === c }"
               @click="klass = c"
-            >{{ c === 'Todos' ? 'Todos' : c + 's' }}</button>
+            >{{ c === 'Todos' || c === 'Renda fixa' ? c : c + 's' }}</button>
           </div>
 
           <div class="spbm__list">
@@ -210,8 +225,11 @@ function onSearchEnter() {
             >
               <NuAssetLogo :ticker="a.ticker" :letter="a.ticker[0]!" :tile-bg="CLASS_COLOR[a.klass] ?? 'var(--nu-sand)'" tile-fg="var(--nu-white)" :size="34" :radius="10" />
               <span class="spbm__asset-main">
-                <b class="spbm__asset-ticker">{{ a.ticker }}</b>
-                <span class="spbm__asset-name">{{ a.name }}</span>
+                <span class="spbm__asset-row1">
+                  <b class="spbm__asset-ticker">{{ a.ticker }}</b>
+                  <em class="spbm__asset-tax" :class="{ 'spbm__asset-tax--free': taxBadge(a).isento }">{{ taxBadge(a).label }}</em>
+                </span>
+                <span class="spbm__asset-name">{{ assetSub(a) }}</span>
               </span>
               <span class="spbm__asset-act" :class="{ 'spbm__asset-act--held': held.has(a.ticker) }" aria-hidden="true">
                 <svg v-if="held.has(a.ticker)" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l5 5L20 7" /></svg>
@@ -281,6 +299,11 @@ function onSearchEnter() {
 .spb__prow-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
 .spb__prow-ticker { color: var(--nu-ink); font-size: 13px; font-weight: 800; }
 .spb__prow-weight { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-style: normal; font-variant-numeric: tabular-nums; }
+.spb__prow-tax {
+  color: var(--nu-gray); font-size: 9.5px; font-weight: 800; font-style: normal;
+  letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+}
+.spb__prow-tax--free { color: var(--nu-green); }
 /* valor editável SUAVE (v2 do feedback, 25/08: a caixa com borda tampava o
    peso e pesou) — sublinhado pontilhado + lápis discreto, acende no hover */
 .spb__prow-val {
@@ -366,7 +389,13 @@ function onSearchEnter() {
 .spbm__asset:hover { border-color: var(--nu-blue); }
 .spbm__asset--held { background: var(--nu-blue-tint); border-color: var(--nu-blue); }
 .spbm__asset-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.spbm__asset-row1 { display: flex; align-items: baseline; gap: 8px; }
 .spbm__asset-ticker { color: var(--nu-ink); font-size: 14px; font-weight: 800; }
+.spbm__asset-tax {
+  color: var(--nu-gray); font-size: 9.5px; font-weight: 800; font-style: normal;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.spbm__asset-tax--free { color: var(--nu-green); }
 .spbm__asset-name { color: var(--nu-gray); font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .spbm__asset-act {
   width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
