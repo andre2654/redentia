@@ -370,11 +370,12 @@ const readingHtml = computed(() => {
 }
 .sim__wiz-body { position: relative; z-index: 1; }
 .sim__orbfeed {
-  /* o corredor vazio à esquerda do orb (faixa de baixo) — as manchetes
-     derivam PRA DENTRO dele, sem colidir com os cards de choque */
+  /* v2: sobre o CENTRO do orb do passo 2 (left/top espelham a coreografia
+     .sim__wiz--shock do orb, sem herdar o scale — texto em tamanho real) */
   position: absolute; z-index: 1; pointer-events: none;
-  right: clamp(250px, 26%, 430px); bottom: 27%; top: auto;
-  width: min(320px, 30vw);
+  left: 87%; top: 80%;
+  transform: translate(-50%, -50%);
+  width: 224px;
 }
 .nu-soft-enter-active { transition: opacity 0.6s ease 0.5s; }
 .nu-soft-leave-active { transition: opacity 0.25s ease; }

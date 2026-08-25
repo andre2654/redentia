@@ -32,38 +32,36 @@ onBeforeUnmount(() => { if (timer) clearInterval(timer) })
 
 <template>
   <div v-if="items.length" class="sof" aria-hidden="true">
-    <span class="sof__label">
-      <i class="sof__dot" />
-      lendo o noticiário de hoje
-    </span>
-    <p :key="idx" class="sof__line" :class="{ 'sof__line--static': reduce }">{{ items[idx] }}</p>
+    <div :key="idx" class="sof__slide" :class="{ 'sof__slide--static': reduce }">
+      <span class="sof__eyebrow">No radar hoje</span>
+      <p class="sof__line">{{ items[idx] }}</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.sof { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; pointer-events: none; }
-.sof__label {
-  display: inline-flex; align-items: center; gap: 7px;
-  color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
-  letter-spacing: 0.08em; text-transform: uppercase;
+/* v2 (dono, 25/08): a manchete vive no CENTRO do orb — nasce, respira e se
+   dissolve ali, sem deriva. Branco com sombra sutil pra atravessar as fases
+   claras/escuras da esfera. */
+.sof { display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.sof__slide {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  text-align: center;
+  animation: sof-breathe 3.6s ease-in-out both;
 }
-.sof__dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue);
-  animation: sof-pulse 1.6s ease-in-out infinite;
+.sof__slide--static { animation: none; }
+.sof__eyebrow {
+  color: var(--nu-white-75); font-size: 10px; font-weight: 800;
+  letter-spacing: 0.12em; text-transform: uppercase;
 }
-@keyframes sof-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 .sof__line {
-  margin: 0; max-width: 100%;
-  color: var(--nu-gray-2); font-size: 13.5px; font-weight: 600; line-height: 1.45;
-  text-align: right;
-  /* deriva em direção ao orb (baixo-direita) e some nele */
-  animation: sof-drift 3.4s ease-in-out both;
+  margin: 0; color: var(--nu-white); font-size: 13.5px; font-weight: 700; line-height: 1.4;
+  text-shadow: 0 1px 14px var(--nu-ink-30);
 }
-.sof__line--static { animation: none; }
-@keyframes sof-drift {
-  0% { opacity: 0; transform: translate(-10px, -12px); }
-  16% { opacity: 1; transform: translate(0, 0); }
-  72% { opacity: 0.9; transform: translate(14px, 26px) scale(0.98); }
-  100% { opacity: 0; transform: translate(34px, 58px) scale(0.92); }
+@keyframes sof-breathe {
+  0% { opacity: 0; transform: scale(0.95); }
+  14% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.97); }
 }
 </style>
