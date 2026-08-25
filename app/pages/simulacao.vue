@@ -480,6 +480,8 @@ const readingHtml = computed(() => {
 }
 .sim__run:hover { transform: translateY(-2px); }
 .sim__run:disabled { opacity: 0.45; cursor: default; transform: none; }
+/* na linha de navegação os dois botões alinham pelo centro — sem margem própria */
+.sim__wiz-nav .sim__run { margin-top: 0; }
 .sim__chip:disabled { cursor: default; }
 
 /* ——— navy ——— */
