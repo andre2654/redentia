@@ -355,10 +355,16 @@ const readingHtml = computed(() => {
   transition: left 1s cubic-bezier(0.22, 0.61, 0.36, 1), top 1s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 1s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease;
 }
-/* passo 2 (v2 do feedback): orb DESCE pela borda direita até o canto
-   inferior; o drama fica com a troca suave de fundo creme→branco */
+/* passo 2 (v3 do feedback, 25/08): orb maior, no corredor DIREITO, com o
+   centro vertical alinhado ao centro dos dial-cards (~450px do topo da
+   seção — px porque a altura da seção varia com o conteúdo abaixo) */
 .sim__wiz--shock { background: var(--nu-white); }
-.sim__wiz--shock .sim__wiz-orb { left: 87%; top: 80%; transform: translate(-50%, -50%) scale(0.6); opacity: 0.9; }
+.sim__wiz--shock .sim__wiz-orb {
+  left: 85%;
+  top: 450px;
+  transform: translate(-50%, -50%) scale(0.92);
+  opacity: 0.9;
+}
 /* filme: orb um pouco menor, mais alto — a palavra fica embaixo dele */
 .sim__wiz--film .sim__wiz-orb { left: 50%; top: 30%; transform: translate(-50%, -50%) scale(0.74); opacity: 1; }
 /* a palavra no CENTRO do orb do filme (coords da coreografia --film, sem
@@ -386,7 +392,8 @@ const readingHtml = computed(() => {
   /* v2: sobre o CENTRO do orb do passo 2 (left/top espelham a coreografia
      .sim__wiz--shock do orb, sem herdar o scale — texto em tamanho real) */
   position: absolute; z-index: 1; pointer-events: none;
-  left: 87%; top: 80%;
+  left: 85%;
+  top: 450px;
   transform: translate(-50%, -50%);
   width: 224px;
 }
