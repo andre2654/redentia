@@ -11,6 +11,8 @@ const props = defineProps<{
   series: SimSeries
   events: SimEvent[]
   drawing: boolean
+  /** what-if (25/08): mediana da carteira PROPOSTA sobreposta em amber */
+  compare?: SimSeries | null
 }>()
 const cursor = defineModel<number | null>('cursor', { default: null })
 
@@ -18,8 +20,9 @@ const W = 1000
 const H = 340
 
 const domain = computed(() => {
-  const lo = Math.min(...props.series.p10)
-  const hi = Math.max(...props.series.p90)
+  const cmp = props.compare?.p50 ?? []
+  const lo = Math.min(...props.series.p10, ...cmp)
+  const hi = Math.max(...props.series.p90, ...cmp)
   const span = hi - lo || 1
   return { lo: lo - span * 0.06, hi: hi + span * 0.08 }
 })
@@ -45,6 +48,7 @@ const bandPath = computed(() => {
 })
 const p50Path = computed(() => line(props.series.p50))
 const basePath = computed(() => line(props.series.baseline))
+const comparePath = computed(() => (props.compare && props.compare.p50.length === props.series.p50.length ? line(props.compare.p50) : null))
 
 const grid = computed(() => {
   const { lo, hi } = domain.value
@@ -118,6 +122,8 @@ const fmt = fmtBRL
       <!-- mediana: glow + linha, com desenho de entrada (pathLength) -->
       <path :d="p50Path" fill="none" stroke="var(--nu-blue)" stroke-width="9" opacity="0.28" vector-effect="non-scaling-stroke" pathLength="1" class="sfc__line" :class="{ 'sfc__line--draw': drawing }" />
       <path :d="p50Path" fill="none" stroke="var(--nu-blue-soft)" stroke-width="2.6" vector-effect="non-scaling-stroke" pathLength="1" class="sfc__line" :class="{ 'sfc__line--draw': drawing }" />
+      <!-- mediana da carteira PROPOSTA (what-if) -->
+      <path v-if="comparePath" :d="comparePath" fill="none" stroke="var(--nu-amber)" stroke-width="2.2" vector-effect="non-scaling-stroke" class="sfc__cmp" />
       <!-- cursor -->
       <line v-if="cursorInfo" :x1="(cursorInfo.x / 100) * W" y1="10" :x2="(cursorInfo.x / 100) * W" :y2="H - 26" stroke="var(--nu-cream-text-60)" stroke-width="1.2" vector-effect="non-scaling-stroke" />
     </svg>
@@ -157,6 +163,7 @@ const fmt = fmtBRL
 .sfc__svg { display: block; width: 100%; height: calc(100% - 26px); overflow: visible; }
 .sfc__band { opacity: 0; transition: opacity 1.1s ease 0.9s; }
 .sfc__band--in { opacity: 0.14; }
+.sfc__cmp { animation: nu-fade 0.5s ease both; }
 .sfc__line { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .sfc__line--draw { animation: sfc-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }

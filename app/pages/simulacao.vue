@@ -13,7 +13,7 @@
 // séries, contadores e stagger fazem parte do produto desta tela.
 // ============================================================================
 import {
-  runMockSimulation, fmtBRL, fmtBRLFull, QUICK_COMBOS, shocksKey, shocksTitle,
+  runMockSimulation, buildClientSummary, fmtBRL, fmtBRLFull, QUICK_COMBOS, shocksKey, shocksTitle,
   shocksFromDials, dialsFromShocks, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
 } from '~/components/sim/simMock'
@@ -76,6 +76,73 @@ const morphCombos = computed(() => {
   const inCombos = QUICK_COMBOS.some((c) => shocksKey(c.shocks) === currentKey)
   return inCombos ? QUICK_COMBOS : [{ label: 'Seu choque', shocks: current }, ...QUICK_COMBOS]
 })
+
+// ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
+// MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
+const portfolioB = ref<SimPortfolioInput[] | null>(null)
+const whatifDraft = ref<SimPortfolioInput[]>([])
+const whatifOpen = ref(false)
+const whatifCardRef = ref<HTMLElement | null>(null)
+useModalA11y(whatifCardRef, whatifOpen)
+function onWhatifKey(e: KeyboardEvent) {
+  // Esc com a BUSCA aberta fecha só ela (o listener do builder cuida)
+  if (e.key === 'Escape' && !document.querySelector('.spbm')) whatifOpen.value = false
+}
+watch(whatifOpen, (o) => {
+  if (!import.meta.client) return
+  document.documentElement.style.overflow = o ? 'hidden' : ''
+  if (o) document.addEventListener('keydown', onWhatifKey)
+  else document.removeEventListener('keydown', onWhatifKey)
+})
+onBeforeUnmount(() => {
+  if (import.meta.client) document.removeEventListener('keydown', onWhatifKey)
+})
+function openWhatif() {
+  whatifDraft.value = (portfolioB.value ?? portfolio.value).map((p) => ({ ...p }))
+  whatifOpen.value = true
+}
+function applyWhatif() {
+  portfolioB.value = whatifDraft.value.filter((p) => p.value > 0)
+  whatifOpen.value = false
+}
+function clearWhatif() {
+  portfolioB.value = null
+}
+const resultB = computed(() =>
+  result.value && portfolioB.value?.length ? runMockSimulation(result.value.shocks, portfolioB.value) : null,
+)
+
+// ——— RESUMO PRO CLIENTE + PDF (gap nº5, 25/08): dois botões, decisão do
+// dono. Resumo = modal com blocos copiáveis; PDF = window.print() sobre o
+// SimPrintDoc (o @media print esconde o resto da página). ———
+const clientSummary = computed(() => (result.value ? buildClientSummary(result.value) : null))
+const summaryOpen = ref(false)
+const summaryCardRef = ref<HTMLElement | null>(null)
+useModalA11y(summaryCardRef, summaryOpen)
+function onSummaryKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') summaryOpen.value = false
+}
+watch(summaryOpen, (o) => {
+  if (!import.meta.client) return
+  document.documentElement.style.overflow = o ? 'hidden' : ''
+  if (o) document.addEventListener('keydown', onSummaryKey)
+  else document.removeEventListener('keydown', onSummaryKey)
+})
+onBeforeUnmount(() => {
+  if (import.meta.client) document.removeEventListener('keydown', onSummaryKey)
+})
+const copiedKey = ref<string | null>(null)
+async function copyBlock(key: string, text: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedKey.value = key
+    setTimeout(() => { if (copiedKey.value === key) copiedKey.value = null }, 1600)
+  }
+  catch { /* clipboard bloqueado — sem estado de erro no protótipo */ }
+}
+function printDoc() {
+  window.print()
+}
 
 // ——— GSAP lazy (só esta rota paga o bundle) ———
 let gsap: typeof import('gsap').gsap | null = null
@@ -259,20 +326,30 @@ const readingHtml = computed(() => {
               class="sim__pill" :class="{ 'sim__pill--on': shocksKey(c.shocks) === shocksKey(result.shocks) }"
               @click="morphTo(c.shocks)"
             >{{ c.label }}</button>
+            <button v-if="!resultB" type="button" class="sim__pill sim__pill--whatif" @click="openWhatif">Testar realocação</button>
           </div>
         </div>
 
         <div class="sim__chart">
-          <SimFanChart v-model:cursor="cursor" :series="display" :events="result.events" :drawing="drawing" />
+          <SimFanChart v-model:cursor="cursor" :series="display" :events="result.events" :drawing="drawing" :compare="resultB?.series ?? null" />
         </div>
         <div class="sim__chart-legend">
           <span><i class="sim__leg sim__leg--band" />faixa p10–p90</span>
           <span><i class="sim__leg sim__leg--p50" />mediana do cenário</span>
           <span><i class="sim__leg sim__leg--base" />caminho sem choque</span>
+          <span v-if="resultB"><i class="sim__leg sim__leg--b" />carteira proposta</span>
           <span><i class="sim__leg sim__leg--ev" />ruptura</span>
         </div>
 
+        <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
+
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
+
+        <!-- entregável do assessor: resumo copiável + PDF (dois botões, dono 25/08) -->
+        <div class="sim__share">
+          <button type="button" class="sim__share-btn" @click="summaryOpen = true">Gerar resumo</button>
+          <button type="button" class="sim__share-btn sim__share-btn--ghost" @click="printDoc">Gerar PDF</button>
+        </div>
       </template>
     </section>
 
@@ -311,6 +388,62 @@ const readingHtml = computed(() => {
         <button type="button" class="sim__again-btn" @click="reset">Fazer outra pergunta</button>
       </div>
     </section>
+
+    <!-- o documento do "Gerar PDF" — invisível na tela, único visível no print -->
+    <SimPrintDoc v-if="result && clientSummary" :result="result" :summary="clientSummary" />
+
+    <!-- ——— modal do RESUMO pro cliente: blocos copiáveis ——— -->
+    <Teleport to="body">
+      <div v-if="summaryOpen && clientSummary" class="simw" role="presentation" @click.self="summaryOpen = false">
+        <div ref="summaryCardRef" class="simw__card simw__card--summary" role="dialog" aria-modal="true" aria-label="Resumo pro cliente" tabindex="-1">
+          <div class="simw__head">
+            <b class="simw__title">Resumo pro cliente</b>
+            <button type="button" class="simw__close" aria-label="Fechar" @click="summaryOpen = false">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </div>
+
+          <div class="sims__block">
+            <div class="sims__block-head">
+              <span class="sims__block-label">WhatsApp</span>
+              <button type="button" class="sims__copy" @click="copyBlock('wa', clientSummary.whatsapp)">{{ copiedKey === 'wa' ? 'Copiado ✓' : 'Copiar' }}</button>
+            </div>
+            <p class="sims__text">{{ clientSummary.whatsapp }}</p>
+          </div>
+
+          <div class="sims__block">
+            <div class="sims__block-head">
+              <span class="sims__block-label">E-mail</span>
+              <button type="button" class="sims__copy" @click="copyBlock('mail', `${clientSummary.emailSubject}\n\n${clientSummary.emailBody}`)">{{ copiedKey === 'mail' ? 'Copiado ✓' : 'Copiar' }}</button>
+            </div>
+            <p class="sims__subject">{{ clientSummary.emailSubject }}</p>
+            <p class="sims__text">{{ clientSummary.emailBody }}</p>
+          </div>
+
+          <p class="sims__footer">{{ clientSummary.footer }}</p>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- ——— modal do what-if: monta a carteira PROPOSTA (padrão da casa) ——— -->
+    <Teleport to="body">
+      <div v-if="whatifOpen" class="simw" role="presentation" @click.self="whatifOpen = false">
+        <div ref="whatifCardRef" class="simw__card" role="dialog" aria-modal="true" aria-label="Testar uma realocação" tabindex="-1">
+          <div class="simw__head">
+            <b class="simw__title">Testar uma realocação</b>
+            <button type="button" class="simw__close" aria-label="Fechar" @click="whatifOpen = false">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+          </div>
+          <p class="simw__sub">O mesmo choque roda nas duas carteiras.</p>
+          <SimPortfolioBuilder v-model="whatifDraft" />
+          <div class="simw__foot">
+            <button type="button" class="sim__back" @click="whatifOpen = false">Cancelar</button>
+            <button type="button" class="sim__run" :disabled="!whatifDraft.some((p) => p.value > 0)" @click="applyWhatif">Comparar</button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -467,7 +600,77 @@ const readingHtml = computed(() => {
 .sim__leg--band { background: var(--nu-blue-soft-35); height: 10px; }
 .sim__leg--p50 { background: var(--nu-blue-soft); }
 .sim__leg--base { background: var(--nu-cream-text-45); }
+.sim__leg--b { background: var(--nu-amber); }
 .sim__leg--ev { background: var(--nu-amber); width: 4px; height: 12px; }
+
+/* pill de abrir o what-if — outline amber pra casar com a linha B */
+.sim__pill--whatif { border-color: var(--nu-amber); color: var(--nu-amber); }
+.sim__pill--whatif:hover { background: var(--nu-amber); color: var(--nu-navy); }
+
+/* modal do what-if (anatomia da casa: scrim + card dia, largura do builder) */
+.simw {
+  position: fixed; inset: 0; z-index: 120;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: clamp(18px, 6vh, 64px) 18px 18px;
+  background: var(--nu-day-backdrop);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  animation: nu-fade 0.22s ease both;
+}
+.simw__card {
+  width: min(940px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
+  background: var(--nu-cream); border-radius: var(--nu-r-card-lg);
+  padding: 26px 28px 22px; box-shadow: var(--nu-shadow-day-modal);
+  outline: none; animation: nu-fade 0.28s ease both;
+}
+.simw__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.simw__title { color: var(--nu-ink); font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+.simw__close {
+  width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 50%;
+  background: var(--nu-white); color: var(--nu-ink); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.simw__close:hover { background: var(--nu-cream-hover); }
+.simw__sub { margin: 4px 0 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.simw__foot { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
+.simw__card--summary { width: min(640px, 100%); }
+
+/* botões do entregável (fim da seção navy) */
+.sim__share { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; }
+.sim__share-btn {
+  border: none; border-radius: var(--nu-r-pill);
+  background: var(--nu-cream); color: var(--nu-navy);
+  padding: 13px 24px; font-size: 14.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: background 0.15s, transform 0.15s;
+}
+.sim__share-btn:hover { background: var(--nu-white); transform: translateY(-1px); }
+.sim__share-btn--ghost {
+  background: transparent; color: var(--nu-cream-text);
+  border: 1.5px solid var(--nu-cream-text-22);
+}
+.sim__share-btn--ghost:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }
+
+/* blocos do resumo */
+.sims__block { margin-top: 18px; background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px; }
+.sims__block-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.sims__block-label { color: var(--nu-gray); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sims__copy {
+  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
+  background: transparent; color: var(--nu-blue);
+  padding: 7px 14px; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.sims__copy:hover { border-color: var(--nu-blue); background: var(--nu-blue-tint-2); }
+.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: 14px; font-weight: 800; }
+.sims__text { margin: 0; color: var(--nu-gray-3); font-size: 14px; font-weight: 500; line-height: 1.65; }
+.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: 11.5px; font-weight: 600; line-height: 1.55; }
+
+/* ——— GERAR PDF: no print, só o documento existe ——— */
+@media print {
+  :global(body *) { visibility: hidden; }
+  :global(.spd), :global(.spd *) { visibility: visible; }
+  :global(.spd) { position: absolute; left: 0; top: 0; width: 100%; }
+}
 
 /* ——— leitura da Redentia: banda AZUL, anatomia do "O dia no mercado" ——— */
 .sim__blue {

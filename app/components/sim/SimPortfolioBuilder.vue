@@ -108,7 +108,8 @@ function onKey(e: KeyboardEvent) {
 }
 watch(open, (o) => {
   if (!import.meta.client) return
-  document.documentElement.style.overflow = o ? 'hidden' : ''
+  // fechar a busca NÃO devolve o scroll se o modal do what-if segue aberto
+  document.documentElement.style.overflow = o || document.querySelector('.simw') ? 'hidden' : ''
   if (o) {
     document.addEventListener('keydown', onKey)
     search.value = ''
