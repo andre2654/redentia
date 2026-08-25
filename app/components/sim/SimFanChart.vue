@@ -64,10 +64,12 @@ const xLabels = computed(() => {
   return out.filter((_, k) => k % 2 === 0)
 })
 
-// rótulos vizinhos (<14% de distância) sobem uma linha — nada se atropela
+// rótulos vizinhos (<14% de distância) sobem uma linha — nada se atropela.
+// O CHOQUE não ganha texto (o título já vive no eyebrow e a linha âmbar +
+// legenda bastam — simplificação do dono, 25/08).
 const eventLabels = computed(() => {
   const n = props.series.p50.length - 1
-  const sorted = [...props.events].sort((a, b) => a.at - b.at)
+  const sorted = [...props.events].filter((e) => e.kind !== 'choque').sort((a, b) => a.at - b.at)
   let lastPct = -100
   let lastRow = 1
   return sorted.map((ev) => {

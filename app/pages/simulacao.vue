@@ -13,8 +13,8 @@
 // séries, contadores e stagger fazem parte do produto desta tela.
 // ============================================================================
 import {
-  runMockSimulation, buildClientSummary, fmtBRL, fmtBRLFull, QUICK_COMBOS, shocksKey, shocksTitle,
-  shocksFromDials, dialsFromShocks, DIAL_DEFAULTS, HORIZON_MONTHS,
+  runMockSimulation, buildClientSummary, fmtBRL, fmtBRLFull, shocksTitle,
+  shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
 } from '~/components/sim/simMock'
 
@@ -68,14 +68,6 @@ const liveTotal = computed(() => {
 })
 // o orb SENTE o choque (vermelho machuca, verde ajuda)
 const orbMood = computed(() => (phase.value === 'shock' ? Math.max(-1, Math.min(1, liveTotal.value / 22)) : 0))
-
-// pills do resultado: os combos rápidos + o choque customizado atual
-const morphCombos = computed(() => {
-  const current = result.value?.shocks ?? shocks.value
-  const currentKey = shocksKey(current)
-  const inCombos = QUICK_COMBOS.some((c) => shocksKey(c.shocks) === currentKey)
-  return inCombos ? QUICK_COMBOS : [{ label: 'Seu choque', shocks: current }, ...QUICK_COMBOS]
-})
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
 // MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
@@ -201,36 +193,6 @@ function animateCounter(to: number, dur: number) {
   gsap.to(obj, { v: to, duration: dur, ease: 'power2.out', onUpdate: () => { finalP50.value = Math.round(obj.v) } })
 }
 
-/** troca de choque no resultado = MORPH da curva, nunca redesenho seco */
-function morphTo(next: SimShocks) {
-  if (!result.value || shocksKey(next) === shocksKey(result.value.shocks)) return
-  dials.value = dialsFromShocks(next)
-  const target = runMockSimulation(next, portfolio.value)
-  result.value = target
-  animateCounter(target.final.p50, 1.1)
-  // re-dispara os staggers dos blocos
-  blocksIn.value = false
-  setTimeout(() => { blocksIn.value = true }, 60)
-  if (!gsap || reduceMotion.value) {
-    Object.assign(display, JSON.parse(JSON.stringify(target.series)))
-    return
-  }
-  const from = { p10: [...display.p10], p50: [...display.p50], p90: [...display.p90], baseline: [...display.baseline] }
-  const to = target.series
-  display.dates = to.dates
-  display.sample = to.sample
-  const state = { t: 0 }
-  gsap.to(state, {
-    t: 1, duration: 1.15, ease: 'power2.inOut',
-    onUpdate: () => {
-      const t = state.t
-      for (const k of ['p10', 'p50', 'p90', 'baseline'] as const) {
-        display[k] = from[k].map((v, i) => v + ((to[k][i] ?? v) - v) * t)
-      }
-    },
-  })
-}
-
 function reset() {
   // volta pro wizard MANTENDO carteira e choques (re-simular é o caso comum)
   phase.value = 'assets'
@@ -318,14 +280,9 @@ const readingHtml = computed(() => {
           <div>
             <p class="sim__navy-eyebrow">{{ result.scenario.title }}</p>
             <h2 class="sim__navy-title">Daqui a 10 anos, a mediana diz<br><span class="sim__counter">{{ fmtFull(finalP50) }}</span></h2>
-            <p class="sim__range">entre <b class="sim__range-lo">{{ fmt(result.final.p10) }}</b> (pessimista) e <b class="sim__range-hi">{{ fmt(result.final.p90) }}</b> (otimista) — a faixa é o dado; a mediana é só o meio dela.</p>
+            <p class="sim__range">entre <b class="sim__range-lo">{{ fmt(result.final.p10) }}</b> e <b class="sim__range-hi">{{ fmt(result.final.p90) }}</b></p>
           </div>
           <div class="sim__pills">
-            <button
-              v-for="c in morphCombos" :key="c.label" type="button"
-              class="sim__pill" :class="{ 'sim__pill--on': shocksKey(c.shocks) === shocksKey(result.shocks) }"
-              @click="morphTo(c.shocks)"
-            >{{ c.label }}</button>
             <button v-if="!resultB" type="button" class="sim__pill sim__pill--whatif" @click="openWhatif">Testar realocação</button>
           </div>
         </div>
@@ -334,11 +291,11 @@ const readingHtml = computed(() => {
           <SimFanChart v-model:cursor="cursor" :series="display" :events="result.events" :drawing="drawing" :compare="resultB?.series ?? null" />
         </div>
         <div class="sim__chart-legend">
-          <span><i class="sim__leg sim__leg--band" />faixa p10–p90</span>
-          <span><i class="sim__leg sim__leg--p50" />mediana do cenário</span>
-          <span><i class="sim__leg sim__leg--base" />caminho sem choque</span>
-          <span v-if="resultB"><i class="sim__leg sim__leg--b" />carteira proposta</span>
-          <span><i class="sim__leg sim__leg--ev" />ruptura</span>
+          <span><i class="sim__leg sim__leg--band" />faixa provável</span>
+          <span><i class="sim__leg sim__leg--p50" />mediana</span>
+          <span><i class="sim__leg sim__leg--base" />sem choque</span>
+          <span v-if="resultB"><i class="sim__leg sim__leg--b" />proposta</span>
+          <span><i class="sim__leg sim__leg--ev" />choque</span>
         </div>
 
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />

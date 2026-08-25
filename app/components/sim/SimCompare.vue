@@ -21,29 +21,6 @@ const anchorGap = computed(() => {
   return Math.abs(a - b) / a > 0.01 ? { a, b } : null
 })
 
-/** a posição cuja sensibilidade mais muda entre as duas carteiras */
-const biggestChange = computed(() => {
-  const mapA = new Map(props.a.positions.map((p) => [p.ticker, p]))
-  const mapB = new Map(props.b.positions.map((p) => [p.ticker, p]))
-  const tickers = new Set([...mapA.keys(), ...mapB.keys()])
-  let best: { ticker: string; from: string; to: string; diff: number } | null = null
-  for (const t of tickers) {
-    const ia = mapA.get(t)
-    const ib = mapB.get(t)
-    const ca = ia ? ia.weight * ia.shockPct : 0
-    const cb = ib ? ib.weight * ib.shockPct : 0
-    const diff = Math.abs(cb - ca)
-    if (!best || diff > best.diff) {
-      best = {
-        ticker: t,
-        from: ia ? fmtPct(ia.shockPct) : 'fora',
-        to: ib ? fmtPct(ib.shockPct) : 'fora',
-        diff,
-      }
-    }
-  }
-  return best
-})
 </script>
 
 <template>
@@ -63,13 +40,6 @@ const biggestChange = computed(() => {
         <i class="scp__arrow" aria-hidden="true">→</i>
         <b class="scp__b">{{ fmtBRL(b.final.p50) }}</b>
         <em class="scp__delta" :class="deltaFinal < 0 ? 'scp__down' : 'scp__up'">{{ deltaFinal > 0 ? '+' : '−' }}{{ fmtBRL(Math.abs(deltaFinal)) }}</em>
-      </span>
-    </div>
-    <div v-if="biggestChange" class="scp__cell">
-      <span class="scp__label">Maior mudança</span>
-      <span class="scp__vals">
-        <b>{{ biggestChange.ticker }}</b>
-        <em class="scp__change">{{ biggestChange.from }} <i class="scp__arrow" aria-hidden="true">→</i> {{ biggestChange.to }}</em>
       </span>
     </div>
     <div class="scp__actions">
@@ -97,7 +67,6 @@ const biggestChange = computed(() => {
 .scp__b { color: var(--nu-amber); }
 .scp__arrow { color: var(--nu-cream-text-45); font-style: normal; font-size: 13px; }
 .scp__delta { font-size: 13px; font-weight: 800; font-style: normal; }
-.scp__change { color: var(--nu-cream-text-70); font-size: 13.5px; font-weight: 700; font-style: normal; }
 .scp__down { color: var(--nu-red-soft); }
 .scp__up { color: var(--nu-green-soft); }
 .scp__actions { margin-left: auto; display: flex; gap: 8px; }

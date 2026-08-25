@@ -57,7 +57,6 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
         <em class="stl__cursor-label">{{ cursorLabel }}</em>
       </span>
     </div>
-    <p class="stl__hint">Arraste pelo tempo — os marcos âmbar são as rupturas do cenário; os cinzas, as eleições.</p>
   </div>
 </template>
 
@@ -84,5 +83,4 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
   color: var(--nu-cream-text); font-size: 11.5px; font-weight: 800; font-style: normal;
   white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.stl__hint { margin: 8px 0 0; color: var(--nu-cream-text-45); font-size: 12.5px; font-weight: 600; }
 </style>
