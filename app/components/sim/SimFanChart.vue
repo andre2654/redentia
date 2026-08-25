@@ -47,7 +47,6 @@ const bandPath = computed(() => {
   return d + 'Z'
 })
 const p50Path = computed(() => line(props.series.p50))
-const basePath = computed(() => line(props.series.baseline))
 const comparePath = computed(() => (props.compare && props.compare.p50.length === props.series.p50.length ? line(props.compare.p50) : null))
 
 const grid = computed(() => {
@@ -112,7 +111,6 @@ const fmt = fmtBRL
     <svg class="sfc__svg" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" aria-hidden="true">
       <line v-for="g in grid" :key="g.y" x1="0" :y1="g.y" x2="1000" :y2="g.y" stroke="var(--nu-cream-text-12)" stroke-width="1" vector-effect="non-scaling-stroke" />
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.14" class="sfc__band" :class="{ 'sfc__band--in': !drawing }" />
-      <path :d="basePath" fill="none" stroke="var(--nu-cream-text-45)" stroke-width="1.6" stroke-dasharray="5 6" vector-effect="non-scaling-stroke" />
       <!-- marcos de evento -->
       <line
         v-for="ev in events" :key="ev.label + ev.at"

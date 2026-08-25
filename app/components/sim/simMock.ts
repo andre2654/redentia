@@ -83,14 +83,6 @@ export const SHOCK_VARS: ShockVarDef[] = [
   },
 ]
 
-/** combos de 1 toque pro morph no resultado */
-export const QUICK_COMBOS: { label: string; shocks: SimShocks }[] = [
-  { label: 'Sem choque', shocks: {} },
-  { label: 'Dólar a R$ 5,80', shocks: { dolar: 5.8 } },
-  { label: 'Selic a 12%', shocks: { selic: 12 } },
-  { label: 'Bolsa −10%', shocks: { bolsa: -10 } },
-]
-
 /** DIALS: o painel v3 é de sliders que COMEÇAM em hoje — mexeu, virou choque */
 export interface SimDials { dolar: number; selic: number; bolsa: number; petroleo: number }
 export const DIAL_DEFAULTS: SimDials = { dolar: MACRO_NOW.dolar, selic: MACRO_NOW.selic, bolsa: 0, petroleo: 0 }
@@ -167,7 +159,7 @@ export function shocksTitle(s: SimShocks): string {
   if (s.selic !== undefined) parts.push(`Selic a ${s.selic.toLocaleString('pt-BR')}%`)
   if (s.bolsa !== undefined) parts.push(`Bolsa ${fmtSigned(s.bolsa, 0)}%`)
   if (s.petroleo !== undefined) parts.push(`Petróleo ${fmtSigned(s.petroleo, 0)}%`)
-  return parts.length ? parts.join(' · ') : 'Sem choque — caminho base'
+  return parts.length ? parts.join(' · ') : 'Cenário base'
 }
 export interface SimScenarioOut {
   key: string
@@ -440,14 +432,20 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
 
   // leitura TEMPLATED: números só do motor, regras viram os chips
   const lead = isBase
-    ? 'Sem choque, o tempo é o único protagonista.'
-    : `A conta do choque desenhado: ${fmtSigned(totalShock)}% na carteira, no ${totalShock < 0 ? 'vale' : 'pico'}.`
+    ? 'No cenário base, o tempo é o único protagonista.'
+    : `A conta do cenário desenhado: ${fmtSigned(totalShock)}% na carteira, no ${totalShock < 0 ? 'vale' : 'pico'}.`
   const worst = [...positions].sort((a, b) => a.shockPct - b.shockPct)[0]
   const best = [...positions].sort((a, b) => b.shockPct - a.shockPct)[0]
+  // o CUSTO do cenário em R$ (a informação que a linha tracejada tentava
+  // dar — dono 25/08: a linha saiu, o número entra na leitura)
+  const cost10y = series.baseline[last]! - series.p50[last]!
+  const costTxt = Math.abs(cost10y) > anchor * 0.005
+    ? ` Em 10 anos, isso ${cost10y > 0 ? `custa {mark}${fmtBRL(cost10y)} da mediana{/mark}` : `acrescenta {mark}${fmtBRL(-cost10y)} à mediana{/mark}`} contra o caminho de hoje.`
+    : ''
   const narrative = isBase
     ? 'A carteira compõe {mark}CDI mais o prêmio de risco{/mark} escalado pelo beta. Em 10 anos, a diferença entre o pessimista e o otimista vem inteira da volatilidade — e é por isso que {mark}a faixa abre com o tempo{/mark}.'
-    : `Com ${title.toLowerCase()}, as regras do motor dão {mark}${fmtSigned(totalShock)}% na carteira{/mark}, aplicados ao longo de 6 meses${totalShock < 0 ? ' com recuperação em U' : ''}. ${worst && worst.shockPct < 0 ? `Quem mais sente é {mark}${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%){/mark}` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ''}quem segura é {mark}${best.ticker} (${fmtSigned(best.shockPct, 0)}%){/mark}` : ''}. Cada regra usada está aberta aqui embaixo — mude o choque e a conta refaz.`
-  const filmLine = isBase ? 'nenhum choque — só o tempo e os juros' : title.toLowerCase()
+    : `Com ${title.toLowerCase()}, as regras do motor dão {mark}${fmtSigned(totalShock)}% na carteira{/mark}, aplicados ao longo de 6 meses${totalShock < 0 ? ' com recuperação em U' : ''}.${costTxt} ${worst && worst.shockPct < 0 ? `Quem mais sente é {mark}${worst.ticker} (${fmtSigned(worst.shockPct, 0)}%){/mark}` : ''}${best && best.shockPct > 0 ? `${worst && worst.shockPct < 0 ? '; ' : ''}quem segura é {mark}${best.ticker} (${fmtSigned(best.shockPct, 0)}%){/mark}` : ''}. Cada regra usada está aberta aqui embaixo — mude o cenário e a conta refaz.`
+  const filmLine = isBase ? 'cenário base — só o tempo e os juros' : title.toLowerCase()
 
   return {
     shocks,

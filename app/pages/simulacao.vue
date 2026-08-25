@@ -21,7 +21,7 @@ import {
 definePageMeta({ layout: 'default' })
 usePageSeo({
   title: 'Simulação — o futuro da sua carteira',
-  description: 'Simule cenários de 10 anos: eleições, bolhas, choques de juros. Protótipo.',
+  description: 'Simule cenários de 10 anos: eleições, bolhas, juros. Protótipo.',
   path: '/simulacao',
   noindex: true,
 })
@@ -54,7 +54,7 @@ const filmSteps = computed(() => {
     `Lendo sua carteira — ${n} ${n === 1 ? 'posição' : 'posições'}, ${fmtBRL(portfolioTotal.value)}`,
     'Calibrando o beta contra 5 anos de IBOV',
     'Rodando 2.000 caminhos, mês a mês, por 10 anos',
-    hasShocks.value ? `Aplicando o choque: ${shocksTitle(shocks.value).toLowerCase()}` : 'Sem choque — compondo o caminho base',
+    hasShocks.value ? `Aplicando o cenário: ${shocksTitle(shocks.value).toLowerCase()}` : 'Cenário base — compondo o caminho',
   ]
 })
 // CONSEQUÊNCIA AO VIVO no passo 2 (motor é puro e barato — roda por ajuste)
@@ -148,7 +148,7 @@ onMounted(async () => {
 // copy mínima (pedido do dono, 25/08: "tão intuitivo que não precise ler")
 const WIZ_COPY: Record<string, { title: string }> = {
   assets: { title: 'Monte a carteira.' },
-  shock: { title: 'Desenhe o choque.' },
+  shock: { title: 'Desenhe o cenário.' },
   film: { title: '' },
 }
 const wizCopy = computed(() => WIZ_COPY[phase.value] ?? WIZ_COPY.assets!)
@@ -293,9 +293,8 @@ const readingHtml = computed(() => {
         <div class="sim__chart-legend">
           <span><i class="sim__leg sim__leg--band" />faixa provável</span>
           <span><i class="sim__leg sim__leg--p50" />mediana</span>
-          <span><i class="sim__leg sim__leg--base" />sem choque</span>
           <span v-if="resultB"><i class="sim__leg sim__leg--b" />proposta</span>
-          <span><i class="sim__leg sim__leg--ev" />choque</span>
+          <span><i class="sim__leg sim__leg--ev" />cenário</span>
         </div>
 
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
@@ -326,7 +325,7 @@ const readingHtml = computed(() => {
 
     <!-- ============ QUEM SANGRA, QUEM SEGURA (branco) ============ -->
     <section v-if="phase === 'result' && result" class="sim__band sim__band--white">
-      <NuSectionHeading eyebrow="O choque, posição a posição">
+      <NuSectionHeading eyebrow="O cenário, posição a posição">
         Quem sangra,<br>quem segura.
         <template #dek>Impacto estimado do cenário em cada posição, pelo mapa de fatores da carteira — peso × sensibilidade.</template>
       </NuSectionHeading>
@@ -396,7 +395,7 @@ const readingHtml = computed(() => {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
           </div>
-          <p class="simw__sub">O mesmo choque roda nas duas carteiras.</p>
+          <p class="simw__sub">O mesmo cenário roda nas duas carteiras.</p>
           <SimPortfolioBuilder v-model="whatifDraft" />
           <div class="simw__foot">
             <button type="button" class="sim__back" @click="whatifOpen = false">Cancelar</button>
@@ -562,7 +561,6 @@ const readingHtml = computed(() => {
 .sim__leg { width: 14px; height: 4px; border-radius: 999px; }
 .sim__leg--band { background: var(--nu-blue-soft-35); height: 10px; }
 .sim__leg--p50 { background: var(--nu-blue-soft); }
-.sim__leg--base { background: var(--nu-cream-text-45); }
 .sim__leg--b { background: var(--nu-amber); }
 .sim__leg--ev { background: var(--nu-amber); width: 4px; height: 12px; }
 

@@ -44,14 +44,14 @@ function clampNote(p: SimPositionImpact): string | null {
 
 <template>
   <div class="spi">
-    <!-- o número-herói do bloco: quanto o choque tira (ou põe) na carteira -->
+    <!-- o número-herói do bloco: quanto o cenário tira (ou põe) da carteira -->
     <div class="spi__hero" :class="{ 'spi__hero--in': active }">
       <template v-if="!isFlat">
-        <span class="spi__hero-label">Efeito do choque na carteira, no vale</span>
+        <span class="spi__hero-label">Efeito do cenário na carteira, no vale</span>
         <span class="spi__hero-value" :class="total < 0 ? 'spi__val--down' : 'spi__val--up'">{{ fmtPct(total) }}</span>
       </template>
       <template v-else>
-        <span class="spi__hero-label">Cenário base — sem choque</span>
+        <span class="spi__hero-label">Cenário base — sem mudanças</span>
         <span class="spi__hero-value spi__val--flat">as posições seguem o mercado</span>
       </template>
     </div>
@@ -99,12 +99,12 @@ function clampNote(p: SimPositionImpact): string | null {
               <span class="spi__line-val" :class="`spi__val--${dir(l.contributionPct)}`">{{ fmtPct(l.contributionPct) }}</span>
             </div>
             <div class="spi__line spi__line--sum">
-              <span class="spi__line-name">soma no choque</span>
+              <span class="spi__line-name">soma no cenário</span>
               <span class="spi__line-math">{{ clampNote(p) ?? 'peso × sensibilidade, por regra aberta' }}</span>
               <span class="spi__line-val" :class="`spi__val--${dir(p.shockPct)}`">{{ fmtPct(p.shockPct) }}</span>
             </div>
           </template>
-          <p v-else class="spi__none">Sem exposição aos fatores deste choque — o efeito desta posição está no carrego.</p>
+          <p v-else class="spi__none">Sem exposição aos fatores deste cenário — o efeito desta posição está no carrego.</p>
           <p v-if="p.rfNote" class="spi__rfnote">{{ p.rfNote }}</p>
         </div>
       </div>

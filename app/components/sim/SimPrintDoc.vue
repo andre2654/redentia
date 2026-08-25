@@ -59,17 +59,16 @@ const bandPath = computed(() => {
       mediana em <b>{{ fmtBRL(result.final.p50) }}</b>, faixa entre
       <b>{{ fmtBRL(result.final.p10) }}</b> (pessimista) e <b>{{ fmtBRL(result.final.p90) }}</b> (otimista).
       <template v-if="result.shockSummary">
-        No curto prazo, o choque custaria {{ fmtPct(result.shockSummary.totalPct) }} no vale,
+        No curto prazo, o cenário custaria {{ fmtPct(result.shockSummary.totalPct) }} no vale,
         com recuperação estimada em ~{{ result.shockSummary.recoveryMonths }} meses.
       </template>
     </p>
 
     <svg class="spd__chart" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none">
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.3" />
-      <path :d="line(result.series.baseline)" fill="none" stroke="var(--nu-sand)" stroke-width="1.2" stroke-dasharray="4 5" />
       <path :d="line(result.series.p50)" fill="none" stroke="var(--nu-blue)" stroke-width="2.2" />
     </svg>
-    <div class="spd__chart-legend">faixa p10–p90 · mediana · tracejado = sem choque</div>
+    <div class="spd__chart-legend">faixa p10–p90 · mediana</div>
 
     <table class="spd__table">
       <thead>
