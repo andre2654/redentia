@@ -25,8 +25,11 @@ usePageSeo({
   noindex: true,
 })
 
-type Phase = 'build' | 'film' | 'result'
-const phase = ref<Phase>('build')
+// WIZARD (dono, 25/08): carteira → choque → simulando → resultado, com o orb
+// persistente mudando de posição e o fundo cream→navy na transição — a cena
+// "Simulando" da referência é a fase film (orb central grande com a palavra).
+type Phase = 'assets' | 'shock' | 'film' | 'result'
+const phase = ref<Phase>('assets')
 // a carteira MONTADA (pivô 24/08: concreto > texto abstrato)
 const portfolio = ref<SimPortfolioInput[]>([])
 // os CHOQUES desenhados pelo assessor (pivô 25/08: dólar/Selic/bolsa/petróleo)
@@ -69,10 +72,23 @@ onMounted(async () => {
   gsap = mod.gsap
 })
 
+const WIZ_COPY: Record<string, { eyebrow: string; title: string; dek: string }> = {
+  assets: { eyebrow: 'Redentia Simulação · passo 1 de 2', title: 'Monte a carteira.', dek: 'Escolha os ativos e defina os valores — a simulação nasce do que você montar.' },
+  shock: { eyebrow: 'Redentia Simulação · passo 2 de 2', title: 'Agora, desenhe o choque.', dek: 'Alvos concretos — dólar, Selic, bolsa, petróleo. O motor propaga por regras abertas.' },
+  film: { eyebrow: '', title: '', dek: '' },
+}
+const wizCopy = computed(() => WIZ_COPY[phase.value] ?? WIZ_COPY.assets!)
+
+function goShock() {
+  if (!canRun.value) return
+  phase.value = 'shock'
+  window.scrollTo({ top: 0, behavior: reduceMotion.value ? 'auto' : 'smooth' })
+}
 function run() {
   if (!canRun.value) return
   phase.value = 'film'
   blocksIn.value = false
+  window.scrollTo({ top: 0, behavior: reduceMotion.value ? 'auto' : 'smooth' })
 }
 
 const finalP50 = ref(0)
@@ -126,11 +142,12 @@ function morphTo(next: SimShocks) {
 }
 
 function reset() {
-  // volta pro builder MANTENDO a carteira montada (re-simular é o caso comum)
-  phase.value = 'build'
+  // volta pro wizard MANTENDO carteira e choques (re-simular é o caso comum)
+  phase.value = 'assets'
   result.value = null
   cursor.value = null
   finalP50.value = 0
+  window.scrollTo({ top: 0, behavior: reduceMotion.value ? 'auto' : 'smooth' })
 }
 
 const fmt = fmtBRL
@@ -147,35 +164,54 @@ const readingHtml = computed(() => {
 
 <template>
   <div class="sim">
-    <!-- ============ HERO-PERGUNTA (creme) — o único bloco do SSR ============ -->
-    <section class="sim__hero">
-      <div class="sim__hero-orb"><SimOrb :state="phase === 'film' ? 'thinking' : 'idle'" :size="360" /></div>
-      <span class="sim__proto">Protótipo · dados ilustrativos</span>
-      <p class="sim__eyebrow">Redentia Simulação</p>
-      <h1 class="sim__title">Monte a carteira.<br>Pergunte ao futuro.</h1>
-      <p class="sim__dek">Escolha os ativos, defina os valores e teste a década contra eleições, bolhas e choques de juros.</p>
-
-      <!-- passo 1: o montador -->
-      <div class="sim__builder">
-        <SimPortfolioBuilder v-model="portfolio" />
+    <!-- ============ WIZARD (orb persistente + fundo que transiciona) ============ -->
+    <section v-if="phase !== 'result'" class="sim__wiz" :class="`sim__wiz--${phase}`">
+      <!-- o orb: UMA instância, coreografada por fase (direita → esquerda →
+           centro grande com "Simulando" dentro, a cena da referência) -->
+      <div class="sim__wiz-orb" aria-hidden="true">
+        <SimOrb :state="phase === 'film' ? 'thinking' : 'idle'" :size="460" />
+        <span v-if="phase === 'film'" class="sim__wiz-word">
+          <i v-for="(l, i) in 'Simulando'.split('')" :key="i" class="sim__wiz-letter" :style="{ animationDelay: `${i * 0.1}s` }">{{ l }}</i>
+        </span>
       </div>
 
-      <!-- passo 2: os choques (o assessor desenha; o motor propaga por regra) -->
-      <div class="sim__scenario-step" :class="{ 'sim__scenario-step--off': !canRun }">
-        <p class="sim__echo-lead">{{ canRun ? 'Agora, desenhe o choque — e se…' : 'Monte a carteira acima pra desenhar o choque.' }}</p>
-        <fieldset class="sim__shocks" :disabled="!canRun">
-          <SimShockPanel v-model="shocks" />
-        </fieldset>
-        <button type="button" class="sim__run" :disabled="!canRun || phase === 'film'" @click="run">Rodar a simulação · 10 anos</button>
+      <div class="sim__wiz-body">
+        <template v-if="phase !== 'film'">
+          <span class="sim__proto">Protótipo · dados ilustrativos</span>
+          <p class="sim__eyebrow">{{ wizCopy.eyebrow }}</p>
+          <h1 class="sim__title">{{ wizCopy.title }}</h1>
+          <p class="sim__dek">{{ wizCopy.dek }}</p>
+        </template>
+
+        <template v-if="phase === 'assets'">
+          <div class="sim__builder">
+            <SimPortfolioBuilder v-model="portfolio" />
+          </div>
+          <div class="sim__wiz-nav">
+            <button type="button" class="sim__run" :disabled="!canRun" @click="goShock">Continuar — desenhar o choque</button>
+            <span v-if="!canRun" class="sim__wiz-hint">adicione ao menos 1 ativo</span>
+          </div>
+        </template>
+
+        <template v-else-if="phase === 'shock'">
+          <p class="sim__wiz-cart">Simulando sobre <b>{{ fmtBRL(portfolioTotal) }}</b> em <b>{{ portfolio.length }} {{ portfolio.length === 1 ? 'posição' : 'posições' }}</b></p>
+          <div class="sim__shockpanel">
+            <SimShockPanel v-model="shocks" />
+          </div>
+          <div class="sim__wiz-nav">
+            <button type="button" class="sim__back" @click="phase = 'assets'">Ajustar a carteira</button>
+            <button type="button" class="sim__run" @click="run">Rodar a simulação · 10 anos</button>
+          </div>
+        </template>
+
+        <SimFilm v-else-if="phase === 'film'" :steps="filmSteps" @done="onFilmDone" />
       </div>
-      <p class="sim__honest">Projeção estatística com premissas explícitas — não é previsão nem promessa de retorno.</p>
+      <p v-if="phase !== 'film'" class="sim__honest">Projeção estatística com premissas explícitas — não é previsão nem promessa de retorno.</p>
     </section>
 
-    <!-- ============ FILME + RESULTADO (navy) ============ -->
-    <section v-if="phase === 'film' || phase === 'result'" id="sim-resultado" class="sim__navy">
-      <SimFilm v-if="phase === 'film'" :steps="filmSteps" @done="onFilmDone" />
-
-      <template v-else-if="result">
+    <!-- ============ RESULTADO (navy) ============ -->
+    <section v-if="phase === 'result'" id="sim-resultado" class="sim__navy">
+      <template v-if="result">
         <div class="sim__result-head">
           <div>
             <p class="sim__navy-eyebrow">{{ result.scenario.title }}</p>
@@ -262,20 +298,57 @@ const readingHtml = computed(() => {
 <style scoped>
 .sim { background: var(--nu-white); }
 
-/* ——— hero ——— */
-.sim__hero {
+/* ——— wizard (fundo e orb coreografados por fase) ——— */
+.sim__wiz {
   position: relative; overflow: hidden;
   background: var(--nu-cream);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(60px, 8vw, 100px);
+  padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  transition: background-color 0.9s ease;
   animation: nu-fade 0.5s ease both;
 }
-.sim__hero-orb {
-  /* junto do título (o hero cresceu com o builder — no meio ele sumia) */
-  position: absolute; right: clamp(-60px, 2vw, 90px); top: clamp(40px, 5vw, 76px);
-  pointer-events: none;
+.sim__wiz--film {
+  background: var(--nu-navy);
+  min-height: 82vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
-.sim__hero > *:not(.sim__hero-orb) { position: relative; }
-@media (max-width: 1080px) { .sim__hero-orb { opacity: 0.35; right: -140px; } }
+/* o orb: sempre left/top + translate + scale → todas as fases transicionam */
+.sim__wiz-orb {
+  position: absolute; z-index: 0; pointer-events: none;
+  left: 86%; top: 30%;
+  transform: translate(-50%, -50%) scale(0.68);
+  opacity: 0.95;
+  transition: left 1s cubic-bezier(0.22, 0.61, 0.36, 1), top 1s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 1s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.6s ease;
+}
+.sim__wiz--shock .sim__wiz-orb { left: 88%; top: 68%; transform: translate(-50%, -50%) scale(0.5); opacity: 0.75; }
+.sim__wiz--film .sim__wiz-orb { left: 50%; top: 42%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.sim__wiz-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.sim__wiz-letter {
+  color: var(--nu-cream-text); font-size: 26px; font-weight: 800; font-style: normal;
+  letter-spacing: 0.02em;
+  animation: sim-letter 2s ease-in-out infinite;
+  opacity: 0.4;
+}
+@keyframes sim-letter {
+  0%, 100% { opacity: 0.4; transform: translateY(0); }
+  20% { opacity: 1; transform: scale(1.15); }
+  40% { opacity: 0.7; transform: translateY(0); }
+}
+.sim__wiz-body { position: relative; z-index: 1; }
+.sim__wiz--film .sim__wiz-body { padding-bottom: 6vh; }
+.sim__wiz-nav { margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.sim__wiz-hint { color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.sim__wiz-cart { margin: 0 0 18px; color: var(--nu-gray-2); font-size: 15px; font-weight: 600; }
+.sim__wiz-cart b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.sim__back {
+  border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
+  background: transparent; color: var(--nu-gray-2);
+  padding: 13px 22px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+.sim__back:hover { border-color: var(--nu-ink); color: var(--nu-ink); }
+.sim__shockpanel { max-width: 1080px; }
+@media (max-width: 1080px) { .sim__wiz-orb { opacity: 0.3; } .sim__wiz--film .sim__wiz-orb { opacity: 1; } }
 .sim__proto {
   display: inline-flex; padding: 6px 13px; border-radius: var(--nu-r-pill);
   background: var(--nu-sand-2); color: var(--nu-gray-2);

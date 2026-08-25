@@ -91,7 +91,7 @@ const fmt = fmtBRLFull
           class="spb__asset" :class="{ 'spb__asset--held': held.has(a.ticker) }"
           @click="toggle(a.ticker)"
         >
-          <span class="spb__asset-dot" :style="{ background: CLASS_COLOR[a.klass] }" aria-hidden="true" />
+          <NuAssetLogo :ticker="a.ticker" :letter="a.ticker[0]!" :tile-bg="CLASS_COLOR[a.klass] ?? 'var(--nu-sand)'" tile-fg="var(--nu-white)" :size="34" :radius="10" />
           <span class="spb__asset-main">
             <b class="spb__asset-ticker">{{ a.ticker }}</b>
             <span class="spb__asset-name">{{ a.name }}</span>
@@ -118,7 +118,7 @@ const fmt = fmtBRLFull
 
       <template v-if="model.length">
         <div v-for="p in model" :key="p.ticker" class="spb__row">
-          <span class="spb__row-dot" :style="{ background: CLASS_COLOR[meta(p.ticker)?.klass ?? 'Ação'] }" aria-hidden="true" />
+          <NuAssetLogo :ticker="p.ticker" :letter="p.ticker[0]!" :tile-bg="CLASS_COLOR[meta(p.ticker)?.klass ?? 'Ação'] ?? 'var(--nu-sand)'" tile-fg="var(--nu-white)" :size="30" :radius="9" />
           <span class="spb__row-main">
             <b class="spb__row-ticker">{{ p.ticker }}</b>
             <em class="spb__row-weight">{{ weightPct(p) }}</em>
@@ -210,7 +210,7 @@ const fmt = fmtBRLFull
 }
 .spb__alloc i { display: block; height: 100%; transition: width 0.4s ease; }
 .spb__row {
-  display: grid; grid-template-columns: 9px minmax(0, 1fr) 116px 26px;
+  display: grid; grid-template-columns: 30px minmax(0, 1fr) 116px 26px;
   gap: 10px; align-items: center; padding: 10px 0;
 }
 .spb__row + .spb__row { border-top: 1.5px solid var(--nu-cream-2); }
