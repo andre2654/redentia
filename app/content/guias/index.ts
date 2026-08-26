@@ -30,6 +30,7 @@ import { COMO_INVESTIR_EM_ETF_GUIDE } from '~/content/guias/como-investir-em-etf
 import { CDB_LCI_LCA_GUIDE } from '~/content/guias/cdb-lci-lca'
 import { COMO_INVESTIR_EM_BDR_GUIDE } from '~/content/guias/como-investir-em-bdr'
 import { TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE } from '~/content/guias/tesouro-renda-mais-educa-mais'
+import { IMPOSTO_SOBRE_DIVIDENDOS_GUIDE } from '~/content/guias/imposto-sobre-dividendos'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -66,6 +67,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [CDB_LCI_LCA_GUIDE.slug]: CDB_LCI_LCA_GUIDE,
   [COMO_INVESTIR_EM_BDR_GUIDE.slug]: COMO_INVESTIR_EM_BDR_GUIDE,
   [TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE.slug]: TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE,
+  [IMPOSTO_SOBRE_DIVIDENDOS_GUIDE.slug]: IMPOSTO_SOBRE_DIVIDENDOS_GUIDE,
 }
 
 /**
@@ -207,6 +209,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Renda fixa',
     minutes: 10,
     slug: 'tesouro-renda-mais-educa-mais',
+  },
+  {
+    title: 'Imposto sobre dividendos: quem paga, quanto e o que mudou',
+    description: 'A regra dos R$ 50 mil por mês, o efeito degrau, por que JCP é tributado diferente e por que o rendimento de FII é um regime à parte.',
+    tag: 'Dividendos',
+    minutes: 10,
+    slug: 'imposto-sobre-dividendos',
   },
 ]
 
