@@ -44,6 +44,12 @@ usePageSeo({
 // WIZARD (dono, 25/08): carteira → choque → simulando → resultado, com o orb
 // persistente mudando de posição e o fundo cream→navy na transição — a cena
 // "Simulando" da referência é a fase film (orb central grande com a palavra).
+// A tela abre no BUILDER. O hero de texto livre existe pronto em
+// SimHeroInput.vue + useSimulacao, mas ficou DESLIGADO por decisão do dono
+// (27/08): com a carteira montada à mão, o texto só escolheria o slug do
+// cenário — e os chips fazem isso em um clique, sem LLM no caminho. Volta a
+// entrar na pauta no fim do plano, quando houver algo que só ele resolva
+// (colar carteira em texto é o candidato).
 type Phase = 'assets' | 'shock' | 'film' | 'result'
 const phase = ref<Phase>('assets')
 // a carteira MONTADA (pivô 24/08: concreto > texto abstrato)
