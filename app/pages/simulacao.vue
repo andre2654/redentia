@@ -53,6 +53,17 @@ usePageSeo({
 type Phase = 'assets' | 'shock' | 'film' | 'result'
 const phase = ref<Phase>('assets')
 // a carteira MONTADA (pivô 24/08: concreto > texto abstrato)
+// ——— MACRO REAL (F3): os dials abrem no valor de HOJE, do BCB, em vez do
+// MACRO_NOW fixo do mock. Falhou o fetch → fica o default e a tela abre igual;
+// o que não pode é o dial dizer "hoje" mostrando cotação de semanas atrás. ———
+const { macro, load: loadMacro } = useMacroNow()
+onMounted(async () => {
+  const m = await loadMacro()
+  if (!m) return
+  if (typeof m.dolar === 'number') dials.value.dolar = Math.round(m.dolar * 100) / 100
+  if (typeof m.selic === 'number') dials.value.selic = m.selic
+})
+
 const portfolio = ref<SimPortfolioInput[]>([])
 // os DIALS do assessor (v3: sliders que começam em hoje) → choques derivados
 const dials = ref<SimDials>({ ...DIAL_DEFAULTS })
