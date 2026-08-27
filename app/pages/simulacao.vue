@@ -20,7 +20,20 @@ import {
   type SimScheduledScenario, type SimMacroKey,
 } from '~/components/sim/simMock'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default',
+  // AUTH OBRIGATÓRIA (diretriz do dono: /simulacao é só pra logado). Mesmo
+  // padrão inline de carteira.vue:21-24 — anônimo vai pro /login preservando
+  // o destino. Até 27/08 a rota estava só com noindex e era publicamente
+  // acessível, o que não sustenta uma tela que gera peça pra cliente.
+  middleware: [
+    (to) => {
+      const token = useCookie<string | null>('nu:token')
+      if (token.value) return
+      return navigateTo(`/login?redirect=${encodeURIComponent(to.fullPath)}`, { replace: true })
+    },
+  ],
+})
 usePageSeo({
   title: 'Simulação — o futuro da sua carteira',
   description: 'Simule cenários de 10 anos na sua carteira. Protótipo.',

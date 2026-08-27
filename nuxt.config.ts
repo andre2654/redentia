@@ -84,6 +84,10 @@ export default defineNuxtConfig({
     '/raio-x': { redirect: { to: '/', statusCode: 301 } },
     '/raio-x/**': { redirect: { to: '/', statusCode: 301 } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
+    // /simulacao: pessoal e atrás de login (guard inline na página). O
+    // resultado é da carteira de quem pediu — não pode encostar em cache
+    // compartilhado de CDN.
+    '/simulacao': { headers: { 'cache-control': 'private, no-store' } },
     // Configurações: pessoal e atrás de login → private/no-store (a página já é
     // noindex). Página única com seções ancoradas (sem sub-rotas).
     '/conta': { headers: { 'cache-control': 'private, no-store' } },
