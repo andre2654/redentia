@@ -1,8 +1,7 @@
 /**
  * PROTÓTIPO /simulacao — dados 100% ILUSTRATIVOS, gerados deterministicamente
  * neste módulo (nenhuma chamada de rede). Existe pra o dono avaliar a UX/UI
- * antes do motor real (plano: ScenarioEngineService no Laravel + interpretador
- * no chat-service). Nada aqui é dado de mercado; a página estampa "protótipo".
+ * antes do motor real (ScenarioEngineService no Laravel). Nada aqui é dado de mercado; a página estampa "protótipo".
  *
  * A matemática imita o SHAPE do contrato real do plano (series mensais
  * p10/p50/p90 + baseline, events, annual, positions_impact, assumptions),

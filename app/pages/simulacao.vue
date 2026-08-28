@@ -2,10 +2,9 @@
 // ============================================================================
 // PROTÓTIPO /simulacao — Redentia Simulação (avaliação de UX/UI do dono).
 //
-// TUDO AQUI É MOCK: dados ilustrativos de simMock.ts, interpretador por
-// palavra-chave, nenhum fetch. O plano real (aprovado 24/08) troca as peças:
-// interpretador → chat-service (gpt-4o-mini) · motor → Laravel
-// ScenarioEngineService (MC mensal índice+beta) · biblioteca → tabela
+// O resultado vem do MOTOR (POST /simulations/run); simMock.ts sobrou como
+// fallback ilustrativo quando o motor não responde. O plano real (aprovado 24/08) troca as peças:
+// motor → Laravel ScenarioEngineService (MC mensal índice+beta) · biblioteca → tabela
 // simulation_scenarios + rotina semanal · auth gate (padrão carteira.vue).
 //
 // EXCEÇÃO DE MOVIMENTO SANCIONADA PELO DONO: esta rota usa GSAP (lazy,
@@ -45,12 +44,7 @@ usePageSeo({
 // WIZARD (dono, 25/08): carteira → choque → simulando → resultado, com o orb
 // persistente mudando de posição e o fundo cream→navy na transição — a cena
 // "Simulando" da referência é a fase film (orb central grande com a palavra).
-// A tela abre no BUILDER. O hero de texto livre existe pronto em
-// SimHeroInput.vue + useSimulacao, mas ficou DESLIGADO por decisão do dono
-// (27/08): com a carteira montada à mão, o texto só escolheria o slug do
-// cenário — e os chips fazem isso em um clique, sem LLM no caminho. Volta a
-// entrar na pauta no fim do plano, quando houver algo que só ele resolva
-// (colar carteira em texto é o candidato).
+// A tela abre no BUILDER e segue assets → shock → film → result.
 type Phase = 'assets' | 'shock' | 'film' | 'result'
 const phase = ref<Phase>('assets')
 // a carteira MONTADA (pivô 24/08: concreto > texto abstrato)
