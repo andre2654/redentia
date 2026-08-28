@@ -37,6 +37,8 @@ export interface SimCatalogItem {
   event_date?: string | null
   refreshed_at?: string | null
   sources?: string[]
+  /** Posição dos controles que representa o cenário — preset de UI. */
+  dials?: { dolar?: number, selic?: number, bolsa?: number, petroleo?: number, year?: number } | null
 }
 
 export interface SimSeriesApi {

@@ -4,6 +4,52 @@
 // régua de ticks e fundo vivo que intensifica conforme sai de "hoje" — cada
 // um com sua personalidade de cor. Replays históricos puxam os 4 de uma vez.
 import { MACRO_NOW, REPLAYS, DIAL_DEFAULTS, type SimDials } from './simMock'
+import type { SimCatalogItem } from '~/composables/useSimulacao'
+
+/**
+ * Os chips vêm da BIBLIOTECA (GET /simulations/scenarios), não de constantes.
+ * Cada cenário traz `dials` — a posição dos controles que o representa. Clicar
+ * posiciona os sliders e a pessoa ajusta a partir dali.
+ *
+ * É o que reconcilia o plano com o layout: a biblioteca deixou de competir com
+ * os dials e passou a alimentá-los. O gesto de desenhar o cenário continua, só
+ * que ancorado em precedente histórico em vez de partir do zero.
+ *
+ * Catálogo indisponível → cai nos REPLAYS locais. A tela nunca fica sem chips.
+ */
+const catalogo = ref<SimCatalogItem[]>([])
+const { publicFetch } = useApi()
+onMounted(async () => {
+  try {
+    const r = await publicFetch<{ data: SimCatalogItem[] }>('/simulations/scenarios')
+    catalogo.value = (r?.data ?? []).filter((c) => c.dials && Object.keys(c.dials).length > 0)
+  }
+  catch { catalogo.value = [] }
+})
+
+/** Chips exibidos: biblioteca quando houver, senão os replays locais. */
+const chips = computed(() => {
+  if (catalogo.value.length) {
+    return catalogo.value.slice(0, 4).map((c) => ({
+      label: c.title,
+      sub: c.eyebrow ?? '',
+      dials: dialsFromCatalog(c),
+      year: (c.dials as { year?: number })?.year ?? null,
+    }))
+  }
+  return REPLAYS.map((r) => ({ label: r.label, sub: r.sub, dials: r.dials, year: null }))
+})
+
+/** Preset do catálogo → SimDials. Ausente vira o valor de hoje, não zero. */
+function dialsFromCatalog(c: SimCatalogItem): SimDials {
+  const d = (c.dials ?? {}) as Record<string, number>
+  return {
+    dolar: typeof d.dolar === 'number' ? d.dolar : MACRO_NOW.dolar,
+    selic: typeof d.selic === 'number' ? d.selic : MACRO_NOW.selic,
+    bolsa: typeof d.bolsa === 'number' ? d.bolsa : 0,
+    petroleo: typeof d.petroleo === 'number' ? d.petroleo : 0,
+  }
+}
 
 const model = defineModel<SimDials>({ required: true })
 /** ano de CADA variável ("acontece em", dono 25/08) */
@@ -50,7 +96,7 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
   <div class="ssp">
     <div class="ssp__replays">
       <button
-        v-for="r in REPLAYS" :key="r.label" type="button" class="ssp__replay"
+        v-for="r in chips" :key="r.label" type="button" class="ssp__replay"
         :title="r.sub" @click="applyReplay(r.dials)"
       >{{ r.label }}<em>{{ r.sub }}</em></button>
       <button v-if="!isToday" type="button" class="ssp__replay ssp__replay--reset" @click="resetToday">↺ hoje</button>
