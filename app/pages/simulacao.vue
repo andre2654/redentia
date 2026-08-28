@@ -16,7 +16,7 @@ import {
   fmtBRL, fmtBRLFull, shocksTitle,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
-  type SimScheduledScenario, type SimMacroKey,
+  type SimScheduledScenario, type SimMacroKey, type SimCorrelationOut,
 } from '~/components/sim/simMock'
 import { adaptResult } from '~/components/sim/simAdapter'
 
@@ -141,7 +141,45 @@ const macroVisible = computed(() =>
 // ——— CORRELAÇÃO + SEE-THROUGH (dono 25/08: "já temos na Redentia — vale
 // pôr aqui?"): heatmap derivado dos loadings do motor + exposição real
 // somando o que está dentro dos ETFs. ———
-const correlation = computed(() => (result.value ? buildCorrelation(portfolio.value) : null))
+/**
+ * Correlacao REAL: GET /correlations devolve PARES {base, other, corr} com
+ * corr em -1..1 e n_obs. A tela consome matriz triangular 0-100, entao a
+ * conversao acontece aqui: |corr| x 100, porque o que a secao responde e
+ * "andam juntas?" — anticorrelacao forte tambem e movimento acoplado.
+ *
+ * Par ausente (sem historico em comum) vira 0 e NAO entra na media: contar
+ * ausencia como "descorrelacionado" inflaria a nota de diversificacao.
+ */
+const correlationApi = ref<SimCorrelationOut | null>(null)
+
+async function loadCorrelation() {
+  const syms = portfolio.value.map((p) => p.ticker).filter(Boolean)
+  if (syms.length < 2) { correlationApi.value = null; return }
+  try {
+    const { publicFetch } = useApi()
+    const r = await publicFetch<{ data: { base: string, other: string, corr: number }[] }>(
+      `/correlations?symbols=${encodeURIComponent(syms.join(','))}&period=12m`,
+    )
+    const pares = new Map<string, number>()
+    for (const d of r?.data ?? []) {
+      if (typeof d?.corr === 'number') pares.set([d.base, d.other].sort().join('|'), Math.abs(d.corr) * 100)
+    }
+    if (!pares.size) { correlationApi.value = null; return }
+    const matrix = syms.map((a) => syms.map((b) => (a === b ? 100 : Math.round(pares.get([a, b].sort().join('|')) ?? 0))))
+    const vals = [...pares.values()]
+    correlationApi.value = {
+      tickers: syms,
+      matrix,
+      avgPct: Math.round(vals.reduce((x, y) => x + y, 0) / vals.length),
+    }
+  }
+  catch { correlationApi.value = null }
+}
+
+// Sem dado real cai no derivado dos fatores — a secao nunca some do resultado.
+const correlation = computed(() =>
+  result.value ? (correlationApi.value ?? buildCorrelation(portfolio.value)) : null,
+)
 const seeThrough = computed(() => (result.value ? buildSeeThrough(portfolio.value) : []))
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
@@ -168,16 +206,34 @@ function openWhatif() {
   whatifDraft.value = (portfolioB.value ?? portfolio.value).map((p) => ({ ...p }))
   whatifOpen.value = true
 }
-function applyWhatif() {
+async function applyWhatif() {
   portfolioB.value = whatifDraft.value.filter((p) => p.value > 0)
   whatifOpen.value = false
+  // re-roda contra o motor pra trazer o compare; sem isso a B nunca chega
+  try {
+    const r = await fetchResult()
+    result.value = r
+    Object.assign(display, JSON.parse(JSON.stringify(r.series)))
+  }
+  catch { /* mantém o resultado atual; o botão continua disponível */ }
 }
 function clearWhatif() {
   portfolioB.value = null
+  resultBApi.value = null
+  anchorGap.value = null
 }
-const resultB = computed(() =>
-  result.value && portfolioB.value?.length ? runMockSimulation(result.value.shocks, portfolioB.value, lastSchedule.value) : null,
-)
+/**
+ * A carteira B vem do MOTOR, dentro do mesmo payload da A. Antes rodava
+ * runMockSimulation aqui — o resultado principal era real e a coluna de
+ * comparação era mock, lado a lado, sem nada indicando a diferença. E o selo
+ * de "dados ilustrativos" só cobria o principal. Era a única parte da tela
+ * que mostrava número de mock sem avisar, justamente na hora em que a pessoa
+ * decide realocar.
+ *
+ * No fallback de mock (motor fora do ar) o que-if fica indisponível em vez de
+ * inventar: melhor não oferecer a comparação do que oferecer uma falsa.
+ */
+const resultB = computed(() => (usingMock.value ? null : resultBApi.value))
 
 // ——— RESUMO PRO CLIENTE + PDF (gap nº5, 25/08): dois botões, decisão do
 // dono. Resumo = modal com blocos copiáveis; PDF = window.print() sobre o
@@ -262,6 +318,10 @@ const finalP50 = ref(0)
 const usingMock = ref(false)
 const simExtra = ref<import('~/components/sim/simAdapter').SimResultExtra | null>(null)
 
+/** Resultado da carteira B, vindo do MESMO payload — nunca do mock. */
+const resultBApi = ref<SimResult | null>(null)
+const anchorGap = ref<number | null>(null)
+
 async function fetchResult(): Promise<SimResult> {
   const dials: Record<string, number> = {}
   for (const [k, v] of Object.entries(shocks.value)) {
@@ -269,6 +329,12 @@ async function fetchResult(): Promise<SimResult> {
   }
   const body = {
     positions: portfolio.value.map((p) => ({ ticker: p.ticker, value: p.value })),
+    // What-if no MESMO request: o motor roda a carteira B com a MESMA seed
+    // (common random numbers), então a diferença entre A e B é efeito da
+    // realocação, não do sorteio de Monte Carlo.
+    ...(portfolioB.value?.length
+      ? { positions_b: portfolioB.value.map((p) => ({ ticker: p.ticker, value: p.value })) }
+      : {}),
     horizon_years: 10,
     ...(Object.keys(dials).length ? { custom_shocks: dials, shock_month: monthOfFirstScenario() } : {}),
   }
@@ -280,6 +346,18 @@ async function fetchResult(): Promise<SimResult> {
   const { result: r, extra } = adaptResult(api)
   simExtra.value = extra
   usingMock.value = false
+
+  // compare vem pronto do motor: série, final e impacto por posição da B
+  if (api.compare) {
+    const { result: rb } = adaptResult({ ...api, series: api.compare.series, final: api.compare.final, positions_impact: api.compare.positions_impact })
+    resultBApi.value = rb
+    // carteiras de tamanhos diferentes é maçã-laranja; a UI precisa avisar
+    anchorGap.value = api.compare.anchor_gap
+  }
+  else {
+    resultBApi.value = null
+    anchorGap.value = null
+  }
   return r
 }
 
@@ -301,6 +379,8 @@ async function onFilmDone() {
     usingMock.value = true
   }
   result.value = r
+  // correlação real em paralelo: não bloqueia o desenho do gráfico
+  loadCorrelation()
   // checks macro nascem marcados nos indicadores TOCADOS na etapa 2
   macroChecked.value = new Set(buildMacroPaths(lastSchedule.value).filter((p) => p.touched).map((p) => p.key))
   Object.assign(display, JSON.parse(JSON.stringify(r.series)))
@@ -440,6 +520,9 @@ const readingHtml = computed(() => {
           </button>
         </div>
 
+        <!-- Comparar carteiras de tamanhos diferentes e maca-laranja: parte do
+             delta vem do aporte, nao da realocacao. O motor marca; a tela avisa. -->
+        <p v-if="anchorGap" class="sim__flag">As duas carteiras diferem {{ anchorGap }}% em tamanho — parte da diferença vem disso, não da realocação</p>
         <SimCompare v-if="resultB" :a="result" :b="resultB" @edit="openWhatif" @clear="clearWhatif" />
 
         <SimTimeline v-model:cursor="cursor" :months="HORIZON_MONTHS" :dates="display.dates" :events="result.events" />
