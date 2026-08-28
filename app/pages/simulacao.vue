@@ -19,6 +19,7 @@ import {
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
   type SimScheduledScenario, type SimMacroKey,
 } from '~/components/sim/simMock'
+import { adaptResult } from '~/components/sim/simAdapter'
 
 definePageMeta({
   layout: 'default',
@@ -255,8 +256,56 @@ function run() {
 }
 
 const finalP50 = ref(0)
-function onFilmDone() {
-  const r = runMockSimulation(shocks.value, portfolio.value, lastSchedule.value)
+/**
+ * O resultado passa a vir do MOTOR (Laravel), não do mock. O adapter traduz o
+ * payload pra forma que os componentes já consomem — a tela não muda de forma
+ * por causa da troca de fonte.
+ *
+ * Falhou a chamada → cai no mock e MARCA isso em `usingMock`, pra tela poder
+ * dizer que aquilo é ilustrativo. Resultado silenciosamente falso é pior que
+ * erro visível numa tela que gera peça pra cliente.
+ */
+const usingMock = ref(false)
+const simExtra = ref<import('~/components/sim/simAdapter').SimResultExtra | null>(null)
+
+async function fetchResult(): Promise<SimResult> {
+  const dials: Record<string, number> = {}
+  for (const [k, v] of Object.entries(shocks.value)) {
+    if (typeof v === 'number') dials[k] = v
+  }
+  const body = {
+    positions: portfolio.value.map((p) => ({ ticker: p.ticker, value: p.value })),
+    horizon_years: 10,
+    ...(Object.keys(dials).length ? { custom_shocks: dials, shock_month: monthOfFirstScenario() } : {}),
+  }
+  const { authFetch } = useApi()
+  const api = await authFetch<import('~/composables/useSimulacao').SimResultApi>('/simulations/run', {
+    method: 'POST',
+    body,
+  })
+  const { result: r, extra } = adaptResult(api)
+  simExtra.value = extra
+  usingMock.value = false
+  return r
+}
+
+/** Mês em que o primeiro cenário agendado bate (a agenda vive nos dial-cards). */
+function monthOfFirstScenario(): number {
+  const first = fullSchedule.value[0]
+  if (!first) return 12
+  return Math.max(0, Math.min(119, (first.year - new Date().getFullYear()) * 12))
+}
+
+async function onFilmDone() {
+  let r: SimResult
+  try {
+    r = await fetchResult()
+  }
+  catch {
+    r = runMockSimulation(shocks.value, portfolio.value, lastSchedule.value)
+    simExtra.value = null
+    usingMock.value = true
+  }
   result.value = r
   // checks macro nascem marcados nos indicadores TOCADOS na etapa 2
   macroChecked.value = new Set(buildMacroPaths(lastSchedule.value).filter((p) => p.touched).map((p) => p.key))
@@ -362,7 +411,16 @@ const readingHtml = computed(() => {
         <div class="sim__result-head">
           <div>
             <h2 class="sim__navy-title">Daqui a 10 anos, a mediana diz<br><span class="sim__counter">{{ fmtFull(finalP50) }}</span></h2>
+            <!-- O rótulo de unidade só vale pro número do MOTOR. O mock é
+                 nominal; carimbar "poder de compra" nele seria mentir sobre o
+                 dado justamente na linha que existe pra ser honesta. -->
+            <p v-if="!usingMock" class="sim__unit">em poder de compra de hoje</p>
             <p class="sim__range">entre <b class="sim__range-lo">{{ fmt(result.final.p10) }}</b> e <b class="sim__range-hi">{{ fmt(result.final.p90) }}</b></p>
+            <!-- Proveniência: cenário da biblioteca foi estudado e tem fonte;
+                 montado nos dials, não. E resultado de mock nunca pode passar
+                 por número real numa tela que gera peça pra cliente. -->
+            <p v-if="usingMock" class="sim__flag sim__flag--mock">Dados ilustrativos — o motor não respondeu</p>
+            <p v-else-if="simExtra && !simExtra.calibrated" class="sim__flag">Cenário que você montou — sem precedente histórico calibrado</p>
           </div>
           <div class="sim__pills">
             <button v-if="!resultB" type="button" class="sim__pill sim__pill--whatif" @click="openWhatif">Testar realocação</button>
@@ -645,6 +703,18 @@ const readingHtml = computed(() => {
   font-size: clamp(28px, 3.4vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08;
 }
 .sim__counter { color: var(--nu-blue-soft); font-variant-numeric: tabular-nums; }
+.sim__unit {
+  margin: 6px 0 0; font-size: 14px; font-weight: 600;
+  color: var(--nu-cream-text-70); letter-spacing: -0.01em;
+}
+.sim__flag {
+  margin: 12px 0 0; display: inline-flex; align-items: center;
+  font-size: 12.5px; font-weight: 700; letter-spacing: 0.01em;
+  padding: 6px 13px; border-radius: var(--nu-r-pill);
+  background: var(--nu-blue-soft-35); color: var(--nu-cream-text);
+}
+.sim__flag--mock { background: rgba(255, 179, 184, 0.28); }
+
 .sim__range { margin: 14px 0 0; color: var(--nu-cream-text-70); font-size: 15px; font-weight: 600; max-width: 560px; }
 .sim__range b { font-variant-numeric: tabular-nums; }
 .sim__range-lo { color: var(--nu-red-soft); }
