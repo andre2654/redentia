@@ -7,12 +7,83 @@ import { ASSET_CATALOG, EXAMPLE_PORTFOLIO, fmtBRLFull, type SimAsset, type SimPo
 
 const model = defineModel<SimPortfolioInput[]>({ required: true })
 
+/**
+ * UNIVERSO DE ATIVOS — vem de GET /tickers, não das 24 constantes do mock.
+ *
+ * O catálogo local (ASSET_CATALOG) tinha 24 ativos escritos à mão. Numa tela
+ * que diz "monte a carteira", 24 opções é a maior distância entre o que a
+ * promessa sugere e o que a tela entrega.
+ *
+ * Carregado SOB DEMANDA, na primeira abertura do modal — não no mount da
+ * página. São ~2.000 tickers; pagar esse payload em quem só quer ver a
+ * carteira de exemplo seria desperdício.
+ *
+ * `beta` e `factors` não vêm da API porque o MOTOR os calcula no servidor
+ * (β por regressão contra o ^BVSP, fatores via ticker_factor_tags). Aqui
+ * entram como placeholder e só afetam o fallback de mock, nunca o resultado
+ * real. Os ativos de RENDA FIXA continuam vindo do catálogo local: não são
+ * tickers, são instrumentos parametrizados.
+ *
+ * Falhou o fetch → fica o catálogo local. A busca nunca fica vazia.
+ */
+const remoteAssets = ref<SimAsset[] | null>(null)
+const loadingAssets = ref(false)
+const { publicFetch } = useApi()
+
+// Tipos REAIS que a API devolve, conferidos contra produção:
+// BDR · STOCK · US_STOCK · REIT · US_ETF · ETF · UNKNOWN — maiúsculos.
+// Minha primeira tabela chutou 'stock'/'fund' minúsculos e 5 dos 7 tipos caíam
+// em 'Ação': HGLG11, que é FII, aparecia como ação. FII vem como REIT aqui.
+// US_STOCK cai em BDR por ser o balde existente mais próximo de renda variável
+// estrangeira — a tela não tem classe 'internacional'.
+const TYPE_TO_KLASS: Record<string, SimAsset['klass']> = {
+  STOCK: 'Ação',
+  REIT: 'FII',
+  ETF: 'ETF',
+  US_ETF: 'ETF',
+  BDR: 'BDR',
+  US_STOCK: 'BDR',
+}
+async function loadUniverse() {
+  if (remoteAssets.value || loadingAssets.value) return
+  loadingAssets.value = true
+  try {
+    // `/tickers` (sem -full) devolve 10 itens fixos e IGNORA limit, per_page,
+    // search e q — verificado contra produção. Só `/tickers-full` traz o
+    // universo inteiro (1.881 ativos, com PETR4/BOVA11/HGLG11).
+    const r = await publicFetch<{ data: { ticker: string, name: string, type?: string }[] }>('/tickers-full')
+    const rf = ASSET_CATALOG.filter((a) => a.rf)
+    const mapped: SimAsset[] = (r?.data ?? [])
+      .filter((t) => t?.ticker && t?.name)
+      .map((t) => ({
+        ticker: t.ticker,
+        name: t.name,
+        // UNKNOWN e qualquer tipo novo caem em 'Ação' — a classe só filtra a
+        // busca; o motor não usa esse campo pra calcular nada.
+        klass: TYPE_TO_KLASS[(t.type ?? '').toUpperCase()] ?? 'Ação',
+        beta: 1,
+        factors: {},
+      }))
+    // renda fixa do catálogo local entra junto: não são tickers da B3
+    remoteAssets.value = mapped.length ? [...mapped, ...rf] : null
+  }
+  catch {
+    remoteAssets.value = null
+  }
+  finally {
+    loadingAssets.value = false
+  }
+}
+
+/** Universo em uso: o remoto quando carregou, senão as 24 do mock. */
+const universe = computed<SimAsset[]>(() => remoteAssets.value ?? ASSET_CATALOG)
+
 const CLASSES = ['Todos', 'Ação', 'FII', 'ETF', 'BDR', 'Renda fixa'] as const
 const klass = ref<(typeof CLASSES)[number]>('Todos')
 const search = ref('')
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase()
-  return ASSET_CATALOG.filter((a) => {
+  return universe.value.filter((a) => {
     if (klass.value !== 'Todos' && a.klass !== klass.value) return false
     if (!q) return true
     return a.ticker.toLowerCase().includes(q) || a.name.toLowerCase().includes(q)
@@ -38,7 +109,7 @@ function loadExample() {
 
 const total = computed(() => model.value.reduce((s, p) => s + p.value, 0))
 function meta(ticker: string) {
-  return ASSET_CATALOG.find((a) => a.ticker === ticker)
+  return universe.value.find((a) => a.ticker === ticker)
 }
 function weightPct(p: SimPortfolioInput): string {
   return total.value > 0 ? `${Math.round((p.value / total.value) * 100)}%` : '—'
@@ -137,7 +208,7 @@ function onSearchEnter() {
 
 <template>
   <div class="spb">
-    <button type="button" class="spb__trigger" @click="open = true">
+    <button type="button" class="spb__trigger" @click="open = true; loadUniverse()">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.2-3.2" /></svg>
       <span class="spb__trigger-txt">Buscar ativo…</span>
       <span class="spb__trigger-add" aria-hidden="true">
