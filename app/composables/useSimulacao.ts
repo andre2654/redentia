@@ -54,6 +54,26 @@ export interface SimPositionImpactApi {
   rf_note: string | null
 }
 
+/**
+ * Uma trajetória macro sobreposta ao fan chart, como o MOTOR a emite.
+ *
+ * São as linhas do gráfico, e elas saem do MESMO run que aplica o choque nas
+ * posições — foi a última parte da tela que ainda projetava número por conta
+ * própria. Petróleo não vem: sem série de preço ligada, não há t0 pra ancorar.
+ */
+export interface SimMacroPathApi {
+  key: 'dolar' | 'selic' | 'bolsa'
+  label: string
+  unit: string
+  touched: boolean
+  values: number[]
+  anchors: { at: number, value: number }[]
+  source: string
+  t0: number | null
+  t0_as_of: string | null
+  t0_reference: { label: string, value: number, as_of: string | null, source: string } | null
+}
+
 export interface SimResultApi {
   spec: Record<string, unknown>
   scenario: {
@@ -77,7 +97,21 @@ export interface SimResultApi {
     positions_impact: SimPositionImpactApi[]
     anchor_gap: number | null
   } | null
+  /** vazio quando o motor não pôde ancorar nenhuma linha em fonte */
+  macro_paths: SimMacroPathApi[]
   client_summary: { whatsapp: string; email_subject: string; email_body: string; footer: string }
   disclaimer: string
-  meta: { engine_version: string; engine_ms: number; unit: string }
+  meta: {
+    engine_version: string
+    engine_ms: number
+    unit: string
+    /**
+     * As linhas macro saem em NOMINAL — são os insumos que a pessoa girou no
+     * dial (R$ 6,30 é cotação nominal, e deflacionar contradiria o controle).
+     * A faixa da carteira continua em poder de compra de hoje (`unit`).
+     */
+    macro_unit: string
+    /** por que uma linha não veio: `dolar_indisponivel`, `dolar_sem_alvo_no_cenario`, `ibov_sem_historico` */
+    macro_warnings: string[]
+  }
 }

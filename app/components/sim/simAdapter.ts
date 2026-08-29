@@ -18,8 +18,8 @@
  *     nominal. Quem exibir tem que dizer isso — `meta.unit` carrega o rótulo
  *     e `nominalP50` fica disponível pra quem quiser mostrar os dois.
  */
-import type { SimResultApi } from '~/composables/useSimulacao'
-import type { SimResult, SimSeries, SimPositionImpact, SimEvent, SimAnnual } from './simMock'
+import type { SimResultApi, SimMacroPathApi } from '~/composables/useSimulacao'
+import type { SimResult, SimSeries, SimPositionImpact, SimEvent, SimAnnual, SimMacroPath } from './simMock'
 
 /** O que o motor manda além do que o mock tinha — a tela pode usar ou ignorar. */
 export interface SimResultExtra {
@@ -34,6 +34,42 @@ export interface SimResultExtra {
   disclaimer: string
   clientSummary: SimResultApi['client_summary']
   assumptionsRaw: SimResultApi['assumptions']
+  /**
+   * As trajetórias macro do fan chart, do MESMO run que chocou a carteira.
+   * Vazio quando o motor não conseguiu ancorar nenhuma linha em fonte — e aí a
+   * tela não desenha nada, em vez de projetar por conta própria.
+   */
+  macroPaths: SimMacroPath[]
+  /** unidade das linhas macro; `meta.unit` continua sendo a da carteira */
+  macroUnit: string
+  macroWarnings: string[]
+}
+
+/**
+ * As linhas chegam prontas — aqui só se troca snake_case por camelCase. Nada
+ * de recalcular, reinterpolar ou completar: o que o motor não mandou é porque
+ * não tinha fonte, e inventar aqui seria refazer o buildMacroPaths que morreu.
+ */
+function adaptMacroPaths(rows: SimMacroPathApi[] | undefined): SimMacroPath[] {
+  return (rows ?? []).map((p) => ({
+    key: p.key,
+    label: p.label,
+    unit: p.unit,
+    touched: !!p.touched,
+    values: p.values ?? [],
+    anchors: p.anchors ?? [],
+    source: p.source,
+    t0: p.t0 ?? null,
+    t0AsOf: p.t0_as_of ?? null,
+    t0Reference: p.t0_reference
+      ? {
+          label: p.t0_reference.label,
+          value: p.t0_reference.value,
+          asOf: p.t0_reference.as_of ?? null,
+          source: p.t0_reference.source,
+        }
+      : null,
+  }))
 }
 
 function num(v: unknown, fallback = 0): number {
@@ -132,6 +168,9 @@ export function adaptResult(api: SimResultApi): { result: SimResult; extra: SimR
     disclaimer: api.disclaimer ?? '',
     clientSummary: api.client_summary,
     assumptionsRaw: api.assumptions ?? {},
+    macroPaths: adaptMacroPaths(api.macro_paths),
+    macroUnit: api.meta?.macro_unit ?? 'nominal',
+    macroWarnings: api.meta?.macro_warnings ?? [],
   }
 
   return { result, extra }

@@ -570,140 +570,56 @@ export function buildClientSummary(r: SimResult): SimClientSummary {
 }
 
 /**
- * TRAJETÓRIAS MACRO (dono 25/08): a base "histórica de 20 anos" de cada
- * indicador (MOCK — parâmetros plausíveis, não dado real) vira uma série
- * mensal de 10 anos. Cada cenário agendado é uma ÂNCORA: a curva caminha
- * pela dinâmica histórica, ATINGE o alvo no ano marcado e depois volta a
- * seguir a base a partir dali (dólar a R$ 3 → retoma a subida histórica).
- * Indicadores NÃO definidos num cenário reagem por CORRELAÇÃO histórica
- * mock (solavanco transitório que decai em ~1 ano).
+ * TRAJETÓRIAS MACRO — aqui ficaram só os TIPOS. A projeção saiu do front.
+ *
+ * Até 28/08 este arquivo trazia um `buildMacroPaths` que projetava as linhas
+ * por conta própria: 24 constantes de dinâmica histórica (MACRO_DYN) e 8 de
+ * correlação (MACRO_CORR), todas inventadas, mais IBOV_NOW = 173000 e
+ * BRENT_NOW = 78 chutados como ponto de partida.
+ *
+ * O problema não era só "é mock". A tela deixa escolher um ANO POR DIAL, e o
+ * motor recebe um `shock_month` único (`monthOfFirstScenario`). Dava pra
+ * desenhar o dólar chegando a R$ 6,30 em 2031 com a carteira chocada em 2027:
+ * o gráfico e o cálculo contando histórias diferentes, com cara de precisão.
+ *
+ * Agora as linhas chegam em `macro_paths[]`, emitidas pelo motor NO MESMO run
+ * que aplica o choque nas posições (ScenarioEngineService::macroPaths). A
+ * Selic é o próprio caminho de juros que cobra carrego e marca a RF; o IBOV é
+ * o caminho mediano do índice daquele run; o dólar é o degrau que o cenário
+ * declarou.
+ *
+ * PETRÓLEO NÃO TEM LINHA. Não há série de preço ligada no monorepo, então não
+ * há t0 pra ancorar — e trajetória sem fonte não se desenha. O DIAL continua
+ * existindo: ele alimenta `petroleo_exposto` e `commodity`, que são fatores
+ * reais em `ticker_factor_tags`.
  */
-export type SimMacroKey = 'dolar' | 'selic' | 'bolsa' | 'petroleo'
+export type SimMacroKey = 'dolar' | 'selic' | 'bolsa'
 export interface SimMacroAnchor { at: number; value: number }
 export interface SimMacroPath {
   key: SimMacroKey
   label: string
+  /** unidade de exibição: 'R$', '% a.a.' ou 'pontos' */
+  unit: string
+  /** o cenário mexeu nesta variável — a legenda nasce marcada nas tocadas */
   touched: boolean
   values: number[]
   anchors: SimMacroAnchor[]
-}
-
-const IBOV_NOW = 173_000
-const BRENT_NOW = 78
-
-// dinâmica histórica mock: drift anual, reversão à média, textura (wiggle)
-const MACRO_DYN: Record<SimMacroKey, { start: number; driftY: number; revert: number; mean: number; wig: number; seed: number; additive?: boolean }> = {
-  dolar: { start: MACRO_NOW.dolar, driftY: 0.045, revert: 0, mean: 0, wig: 0.012, seed: 11 },
-  selic: { start: MACRO_NOW.selic, driftY: 0, revert: 0.035, mean: 11, wig: 0.08, seed: 23, additive: true },
-  bolsa: { start: IBOV_NOW, driftY: 0.085, revert: 0, mean: 0, wig: 0.02, seed: 37 },
-  petroleo: { start: BRENT_NOW, driftY: 0.02, revert: 0.012, mean: 80, wig: 0.03, seed: 53 },
-}
-
-// correlação histórica mock: choque na FONTE → efeito transitório no destino
-// (fontes multiplicativas em % por 1%; selic como fonte usa p.p.)
-const MACRO_CORR: Record<SimMacroKey, Partial<Record<SimMacroKey, number>>> = {
-  dolar: { bolsa: -0.35, selic: 0.03 },
-  bolsa: { dolar: -0.3, petroleo: 0.15 },
-  petroleo: { bolsa: 0.35, dolar: -0.25 },
-  selic: { bolsa: -1.6, dolar: -0.8 },
-}
-
-/** choque da fonte em % (ou p.p. na selic) num cenário */
-function macroShockOf(key: SimMacroKey, s: SimShocks): number | null {
-  if (key === 'dolar') return s.dolar !== undefined ? (s.dolar / MACRO_NOW.dolar - 1) * 100 : null
-  if (key === 'selic') return s.selic !== undefined ? s.selic - MACRO_NOW.selic : null
-  if (key === 'bolsa') return s.bolsa ?? null
-  return s.petroleo ?? null
-}
-
-/** alvo ABSOLUTO do indicador num cenário (null = não definido) */
-function macroTargetOf(key: SimMacroKey, s: SimShocks): number | null {
-  if (key === 'dolar') return s.dolar ?? null
-  if (key === 'selic') return s.selic ?? null
-  if (key === 'bolsa') return s.bolsa !== undefined ? IBOV_NOW * (1 + s.bolsa / 100) : null
-  return s.petroleo !== undefined ? BRENT_NOW * (1 + s.petroleo / 100) : null
-}
-
-/** perfil do solavanco de correlação: sobe em ~3 meses, decai em ~1 ano */
-function bumpShape(dt: number): number {
-  if (dt < 0) return 0
-  if (dt < 3) return (dt + 1) / 3
-  return Math.exp(-(dt - 3) / 12)
-}
-
-export function buildMacroPaths(schedule: SimScheduledScenario[]): SimMacroPath[] {
-  const items = [...schedule].sort((a, b) => a.year - b.year)
-  const KEYS: SimMacroKey[] = ['dolar', 'selic', 'bolsa', 'petroleo']
-  const LABELS: Record<SimMacroKey, string> = { dolar: 'Dólar', selic: 'Selic', bolsa: 'IBOV', petroleo: 'Petróleo' }
-
-  return KEYS.map((key) => {
-    const dyn = MACRO_DYN[key]
-    const anchors: SimMacroAnchor[] = []
-    // solavancos vindos dos OUTROS indicadores dos cenários onde este não
-    // tem alvo próprio
-    const bumps: { at: number; pct: number }[] = []
-    for (const it of items) {
-      const target = macroTargetOf(key, it.shocks)
-      const at = monthOfYear(it.year)
-      if (target !== null) {
-        anchors.push({ at, value: target })
-        continue
-      }
-      let pct = 0
-      for (const src of KEYS) {
-        if (src === key) continue
-        const shock = macroShockOf(src, it.shocks)
-        if (shock === null) continue
-        pct += (MACRO_CORR[src][key] ?? 0) * shock
-      }
-      if (Math.abs(pct) > 0.4) bumps.push({ at, pct })
-    }
-
-    // série base: dinâmica histórica + puxão exato até cada âncora; depois
-    // da última âncora, base histórica pura A PARTIR do alvo
-    const rnd = mulberry32(dyn.seed * 1013 + 7)
-    const values: number[] = []
-    let v = dyn.start
-    let ai = 0
-    for (let i = 0; i < HORIZON_MONTHS; i++) {
-      // passo histórico
-      const noise = (rnd() - 0.5) * 2 * dyn.wig
-      if (dyn.additive) {
-        v = v + dyn.revert * (dyn.mean - v) + noise
-      }
-      else {
-        const revertTerm = dyn.revert ? dyn.revert * ((dyn.mean - v) / dyn.mean) : 0
-        v = v * (1 + dyn.driftY / 12 + revertTerm + noise / 6)
-      }
-      // puxão pro alvo do segmento atual (chega EXATO no mês da âncora)
-      const anchor = anchors[ai]
-      if (anchor && i <= anchor.at) {
-        const remaining = anchor.at - i + 1
-        v = v + (anchor.value - v) / remaining
-        if (i === anchor.at) ai++
-      }
-      values.push(v)
-    }
-
-    // solavancos de correlação por cima (multiplicativo; selic em p.p.)
-    for (const b of bumps) {
-      for (let i = 0; i < HORIZON_MONTHS; i++) {
-        const f = bumpShape(i - b.at)
-        if (f <= 0) continue
-        if (dyn.additive) values[i] = values[i]! + b.pct * f
-        else values[i] = values[i]! * (1 + (b.pct / 100) * f)
-      }
-    }
-
-    return { key, label: LABELS[key], touched: anchors.length > 0, values, anchors }
-  })
+  /** de onde o número saiu. Nenhuma linha chega sem isto. */
+  source: string
+  t0: number | null
+  t0AsOf: string | null
+  /**
+   * Outro número, da mesma família, que a tela precisa poder citar sem se
+   * contradizer. Na Selic: a linha desenha o CDI implícito na curva DI, e a
+   * meta Copom de hoje vem aqui — são objetos diferentes e a diferença é real.
+   */
+  t0Reference: { label: string; value: number; asOf: string | null; source: string } | null
 }
 
 export function fmtMacro(key: SimMacroKey, v: number): string {
   if (key === 'dolar') return `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   if (key === 'selic') return `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`
-  if (key === 'bolsa') return `${Math.round(v / 1000).toLocaleString('pt-BR')} mil pts`
-  return `US$ ${Math.round(v)}`
+  return `${Math.round(v / 1000).toLocaleString('pt-BR')} mil pts`
 }
 
 /**

@@ -12,7 +12,7 @@
 // séries, contadores e stagger fazem parte do produto desta tela.
 // ============================================================================
 import {
-  runMockSimulation, buildClientSummary, buildMacroPaths, buildCorrelation, buildSeeThrough,
+  runMockSimulation, buildClientSummary, buildCorrelation, buildSeeThrough,
   fmtBRL, fmtBRLFull, shocksTitle,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
@@ -119,14 +119,27 @@ const lastSchedule = ref<SimScheduledScenario[]>([])
 
 // ——— TRAJETÓRIAS MACRO sobrepostas no fan chart (dono 25/08: "tem que
 // sobrepor no mesmo gráfico") — checks na legenda, pré-marcados nos
-// indicadores tocados na etapa 2. IBOV em teal (a mediana é azul). ———
+// indicadores tocados na etapa 2. IBOV em teal (a mediana é azul).
+//
+// AS LINHAS VÊM DO MOTOR (28/08), no MESMO run que aplica o choque nas
+// posições. Antes o `buildMacroPaths` do mock as projetava aqui, com dinâmica
+// e correlação inventadas, usando o ANO DE CADA DIAL — enquanto o motor recebe
+// um `shock_month` único. Dava pra desenhar o dólar chegando a R$ 6,30 em 2031
+// com a carteira chocada em 2027: o gráfico e o cálculo contando histórias
+// diferentes, com cara de precisão.
+//
+// A LINHA DE PETRÓLEO SAIU. Não existe série de preço ligada no monorepo, e o
+// que não tem fonte não se desenha. O dial de petróleo fica: ele alimenta
+// fatores reais em `ticker_factor_tags`.
+//
+// No fallback de mock (motor fora do ar) não há linha nenhuma — mesma regra do
+// what-if: melhor não oferecer do que oferecer uma falsa. ———
 const MACRO_COLOR: Record<SimMacroKey, string> = {
   dolar: 'var(--nu-green-soft)',
   selic: 'var(--nu-alloc-fii)',
   bolsa: 'color-mix(in srgb, var(--nu-class-etf) 55%, var(--nu-white))',
-  petroleo: 'color-mix(in srgb, var(--nu-class-bdr) 78%, var(--nu-white))',
 }
-const macroPaths = computed(() => (result.value ? buildMacroPaths(lastSchedule.value) : []))
+const macroPaths = computed(() => (result.value ? (simExtra.value?.macroPaths ?? []) : []))
 const macroChecked = ref<Set<SimMacroKey>>(new Set())
 function toggleMacro(k: SimMacroKey) {
   const next = new Set(macroChecked.value)
@@ -482,8 +495,9 @@ async function onFilmDone() {
   // correlação real em paralelo: não bloqueia o desenho do gráfico
   loadCorrelation()
   loadSeeThrough()
-  // checks macro nascem marcados nos indicadores TOCADOS na etapa 2
-  macroChecked.value = new Set(buildMacroPaths(lastSchedule.value).filter((p) => p.touched).map((p) => p.key))
+  // checks macro nascem marcados nos indicadores TOCADOS pelo cenário — o
+  // motor é quem diz quais foram, no mesmo payload das linhas
+  macroChecked.value = new Set(macroPaths.value.filter((p) => p.touched).map((p) => p.key))
   Object.assign(display, JSON.parse(JSON.stringify(r.series)))
   drawing.value = true
   phase.value = 'result'
