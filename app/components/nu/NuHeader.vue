@@ -20,7 +20,10 @@ const route = useRoute()
 // vinheta): cada filho carrega `desc` (uma linha do que é) e `vig` (qual
 // vinheta ilustrativa o NuNavVignette mostra à direita). Links diretos que
 // merecem preview (Teses, Carteira) ganham `panel` com a mesma anatomia.
-interface NavChild { label: string; to: string; desc: string; vig: string }
+// `tag` é o selo ao lado do label (ex.: 'novo'); `authOnly` no FILHO segue a
+// mesma regra do pai (Carteira): destino que exige login não aparece deslogado
+// — item de nav que bate em /login é promessa quebrada.
+interface NavChild { label: string; to: string; desc: string; vig: string; tag?: string; authOnly?: boolean }
 interface NavItem { label: string; to?: string; children?: NavChild[]; authOnly?: boolean; panel?: { desc: string; vig: string } }
 
 const NAV: NavItem[] = [
@@ -36,6 +39,7 @@ const NAV: NavItem[] = [
   {
     label: 'Ferramentas',
     children: [
+      { label: 'Simulação', to: '/simulacao', tag: 'novo', authOnly: true, desc: 'Dez anos de cenários na sua carteira, em poder de compra de hoje.', vig: 'simulacao' },
       { label: 'Calculadoras', to: '/calculadoras', desc: 'Juros compostos, renda passiva, primeiro milhão — as contas prontas.', vig: 'calculadoras' },
       { label: 'Redentia MCP', to: '/mcp', desc: 'Os dados e a leitura da Redentia dentro do seu Claude ou ChatGPT.', vig: 'mcp' },
       // Eram 3 links pra /rankings?classe=... — query string não é URL
@@ -60,7 +64,9 @@ const NAV: NavItem[] = [
     ],
   },
 ]
-const nav = computed(() => NAV.filter((i) => !i.authOnly || isAuthenticated.value))
+const nav = computed<NavItem[]>(() => NAV
+  .filter((i) => !i.authOnly || isAuthenticated.value)
+  .map((i) => (i.children ? { ...i, children: i.children.filter((c) => !c.authOnly || isAuthenticated.value) } : i)))
 
 function isActive(to: string): boolean {
   if (to === '/') return route.path === '/'
@@ -316,7 +322,10 @@ onBeforeUnmount(() => {
               @mouseenter="activeChild = c" @focus="activeChild = c"
               @click="openDrawer = null"
             >
-              <span class="nuh__mega-label">{{ c.label }}</span>
+              <span class="nuh__mega-label">
+                {{ c.label }}
+                <span v-if="c.tag" class="nuh__tag">{{ c.tag }}</span>
+              </span>
               <span class="nuh__mega-desc">{{ c.desc }}</span>
             </NuxtLink>
           </div>
@@ -411,7 +420,10 @@ onBeforeUnmount(() => {
                   class="num__subitem" :class="{ 'num__subitem--active': isActive(c.to) }"
                   @click="toggleMenu(false)"
                 >
-                  <span>{{ c.label }}</span>
+                  <span>
+                    {{ c.label }}
+                    <span v-if="c.tag" class="nuh__tag">{{ c.tag }}</span>
+                  </span>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
                 </NuxtLink>
               </div>
@@ -508,7 +520,17 @@ onBeforeUnmount(() => {
   padding: 12px 14px; border-radius: 14px; transition: background .15s;
 }
 .nuh__mega-item--hot { background: var(--nu-cream-hover); }
-.nuh__mega-label { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -0.01em; }
+.nuh__mega-label {
+  color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -0.01em;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+/* selo 'novo' — mesmo pill do DS, em azul tint. Serve os dois menus. */
+.nuh__tag {
+  display: inline-flex; align-items: center; flex-shrink: 0;
+  padding: 2px 8px; border-radius: var(--nu-r-pill);
+  background: var(--nu-blue-tint); color: var(--nu-blue);
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+}
 .nuh__mega-item--active .nuh__mega-label { color: var(--nu-blue); }
 .nuh__mega-desc { color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.4; }
 .nuh__mega-view {
@@ -616,6 +638,8 @@ onBeforeUnmount(() => {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding: 13px 4px 13px 18px; color: var(--nu-gray-2); font-size: 18px; font-weight: 700;
 }
+.num__subitem > span { display: inline-flex; align-items: center; gap: 9px; }
+.num__subitem .nuh__tag { font-size: 11px; }
 .num__subitem svg { color: var(--nu-gray); flex-shrink: 0; }
 .num__subitem--active { color: var(--nu-blue); }
 .num__subitem--active svg { color: var(--nu-blue); }

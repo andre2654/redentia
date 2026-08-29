@@ -39,6 +39,40 @@ defineProps<{ name: string }>()
     </div>
   </div>
 
+  <!-- Simulação: o fan chart — a mediana com o cone de cenários em volta e o
+       choque marcado. Abstrato: nenhum eixo numerado, nenhum valor. -->
+  <div v-else-if="name === 'simulacao'" class="nuv nuv--sim">
+    <div class="nuv__card">
+      <div class="nuv__chiprow">
+        <span class="nuv__chip nuv__chip--blue">cenário</span>
+        <span class="nuv__chip">poder de compra de hoje</span>
+      </div>
+      <svg class="nuv__fan" viewBox="0 0 320 150" fill="none" aria-hidden="true">
+        <!-- cone externo (a cauda) e interno (o miolo provável) -->
+        <path
+          class="nuv__fanband"
+          d="M8 110 C 60 104, 110 88, 150 80 C 162 78, 166 92, 178 92 C 230 84, 268 48, 312 12
+             L312 104 C 268 108, 230 126, 178 128 C 166 128, 162 114, 150 112 C 110 114, 60 114, 8 114 Z"
+        />
+        <path
+          class="nuv__fanband nuv__fanband--in"
+          d="M8 111 C 60 107, 110 96, 150 90 C 162 88, 166 102, 178 102 C 230 96, 268 66, 312 30
+             L312 72 C 268 86, 230 106, 178 118 C 166 118, 162 106, 150 104 C 110 108, 60 111, 8 113 Z"
+        />
+        <!-- o mês do choque: o vinco que a mediana leva -->
+        <path d="M164 10 L164 138" stroke="var(--nu-sand)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 7" />
+        <path
+          d="M8 112 C 60 108, 110 100, 150 96 C 162 95, 166 110, 178 110 C 230 106, 268 78, 312 44"
+          stroke="var(--nu-blue)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+        />
+        <circle cx="178" cy="110" r="5" fill="var(--nu-sand)" stroke="var(--nu-white)" stroke-width="3" />
+        <circle cx="312" cy="44" r="6" fill="var(--nu-blue)" />
+        <circle cx="312" cy="44" r="11" fill="var(--nu-blue)" opacity=".18" />
+      </svg>
+      <div class="nuv__axis" />
+    </div>
+  </div>
+
   <!-- Dividend yields: pódio onde cada linha paga — pílula verde no fim -->
   <div v-else-if="name === 'rank-yield'" class="nuv nuv--rank">
     <div class="nuv__card nuv__card--pad">
@@ -245,6 +279,12 @@ defineProps<{ name: string }>()
 .nuv--calc .nuv__card { padding: 16px 16px 12px; width: min(340px, 100%); }
 .nuv__curve { display: block; width: 100%; height: auto; }
 .nuv__axis { height: 2px; border-radius: 999px; background: var(--nu-cream-2); margin-top: 4px; }
+
+/* ——— Simulação (fan chart) ——— */
+.nuv--sim .nuv__card { padding: 16px 16px 12px; width: min(340px, 100%); }
+.nuv__fan { display: block; width: 100%; height: auto; margin-top: 4px; }
+.nuv__fanband { fill: var(--nu-blue-tint); }
+.nuv__fanband--in { fill: var(--nu-blue); opacity: 0.16; }
 
 /* ——— Dividend yields (pódio que paga) ——— */
 .nuv--rank .nuv__card { width: min(340px, 100%); gap: 14px; }
