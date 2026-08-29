@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // Faixa "Mercado agora" — presente em todas as telas dos designs.
-// Dados via useMarketTicker (seed do design → hidrata real, nunca quebra).
+// Dados via useMarketTicker (skeleton → hidrata real). Sem dado real a faixa
+// NÃO é desenhada: até 2026-08-29 ela degradava pra um seed de cotações do
+// design e mostrava número inventado sob o carimbo "B3" em todas as telas.
 // Ajustes do dono do design (2026-07-11): a faixa é STICKY no topo ao rolar,
 // e as cotações giram num marquee contínuo e lento (pausa no hover;
 // prefers-reduced-motion desliga). Loop sem emenda: o track duplica os itens
@@ -12,7 +14,9 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 </script>
 
 <template>
-  <div class="nut-wrap">
+  <!-- items vazio = hidratou e nada real chegou: a faixa some (some, não
+       mente). loading ainda true = skeleton, o estado normal do SSR. -->
+  <div v-if="loading || items.length" class="nut-wrap">
     <div class="nut">
       <span class="nut__label">Mercado agora</span>
       <div class="nut__marquee">
