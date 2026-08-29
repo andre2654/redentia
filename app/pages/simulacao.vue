@@ -312,7 +312,33 @@ const resultB = computed(() => (usingMock.value ? null : resultBApi.value))
 // ——— RESUMO PRO CLIENTE + PDF (gap nº5, 25/08): dois botões, decisão do
 // dono. Resumo = modal com blocos copiáveis; PDF = window.print() sobre o
 // SimPrintDoc (o @media print esconde o resto da página). ———
-const clientSummary = computed(() => (result.value ? buildClientSummary(result.value) : null))
+/**
+ * O resumo pro cliente vem do MOTOR (`client_summary` no payload), nao do
+ * mock. E a peca que o F1 construiu com cuidado justamente pra garantir que
+ * nenhum numero passe por LLM e que a FAIXA esteja sempre presente — a tela
+ * estava ignorando e templetizando por conta propria.
+ *
+ * Importa mais que as outras trocas porque este texto sai da tela: vira
+ * mensagem de WhatsApp e PDF entregues a um investidor. O motor tambem manda
+ * o `disclaimer` no mesmo payload, pelo mesmo motivo (o front nao pode
+ * esquecer de exibir).
+ *
+ * As chaves diferem: o motor manda snake_case, a tela consome camelCase.
+ * Fallback no mock so quando o motor nao respondeu — e ai o selo de "dados
+ * ilustrativos" ja esta na tela avisando.
+ */
+const clientSummary = computed(() => {
+  const api = simExtra.value?.clientSummary
+  if (api) {
+    return {
+      whatsapp: api.whatsapp,
+      emailSubject: api.email_subject,
+      emailBody: api.email_body,
+      footer: api.footer,
+    }
+  }
+  return result.value ? buildClientSummary(result.value) : null
+})
 const summaryOpen = ref(false)
 const summaryCardRef = ref<HTMLElement | null>(null)
 useModalA11y(summaryCardRef, summaryOpen)
