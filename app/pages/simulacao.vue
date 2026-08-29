@@ -16,7 +16,7 @@ import {
   fmtBRL, fmtBRLFull, shocksTitle,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
-  type SimScheduledScenario, type SimMacroKey, type SimCorrelationOut,
+  type SimScheduledScenario, type SimMacroKey, type SimCorrelationOut, type SimSeeThroughItem,
 } from '~/components/sim/simMock'
 import { adaptResult } from '~/components/sim/simAdapter'
 
@@ -180,7 +180,81 @@ async function loadCorrelation() {
 const correlation = computed(() =>
   result.value ? (correlationApi.value ?? buildCorrelation(portfolio.value)) : null,
 )
-const seeThrough = computed(() => (result.value ? buildSeeThrough(portfolio.value) : []))
+/**
+ * SEE-THROUGH REAL: quanto da carteira esta em cada empresa somando o que
+ * esta DENTRO dos ETFs.
+ *
+ * Fonte: GET /etfs/{ticker}/xray, que devolve `tree` com os holdings e
+ * `eff_weight` como FRACAO (0.108 = 10,8%) — contrato conferido contra
+ * producao antes de escrever isto, porque chutar chave de API ja produziu
+ * dois bugs silenciosos nesta sessao.
+ *
+ * A conta: exposicao indireta = peso do ETF na carteira x eff_weight do
+ * holding. Somada a posicao direta, da o total real por empresa — que e
+ * exatamente o ponto da secao: quem tem PETR4 e BOVA11 tem mais Petrobras
+ * do que pensa.
+ */
+const seeThroughApi = ref<SimSeeThroughItem[] | null>(null)
+
+async function loadSeeThrough() {
+  const r = result.value
+  if (!r) { seeThroughApi.value = null; return }
+  const total = portfolio.value.reduce((x, p) => x + p.value, 0)
+  if (total <= 0) { seeThroughApi.value = null; return }
+
+  const etfs = r.positions.filter((p) => (p.klass ?? '').toUpperCase().includes('ETF'))
+  const acc = new Map<string, SimSeeThroughItem>()
+
+  // posicoes diretas
+  for (const p of portfolio.value) {
+    const meta = r.positions.find((x) => x.ticker === p.ticker)
+    const pct = (p.value / total) * 100
+    acc.set(p.ticker, {
+      code: p.ticker,
+      name: meta?.name ?? p.ticker,
+      directPct: Math.round(pct * 10) / 10,
+      directVia: p.ticker,
+      viaEtf: [],
+      totalPct: pct,
+    })
+  }
+
+  const { publicFetch } = useApi()
+  await Promise.all(etfs.map(async (etf) => {
+    try {
+      const x = await publicFetch<{ tree?: { ticker?: string, name?: string, eff_weight?: number }[] }>(
+        `/etfs/${encodeURIComponent(etf.ticker)}/xray`,
+      )
+      for (const h of x?.tree ?? []) {
+        const code = (h.ticker ?? '').toUpperCase()
+        if (!code || typeof h.eff_weight !== 'number') continue
+        // peso do ETF na carteira x peso do papel dentro do ETF
+        const pct = etf.weight * h.eff_weight * 100
+        if (pct < 0.05) continue // ruido: some da lista em vez de poluir
+        const cur = acc.get(code) ?? {
+          code, name: h.name ?? code, directPct: 0, directVia: null, viaEtf: [], totalPct: 0,
+        }
+        cur.viaEtf.push({ etf: etf.ticker, pct: Math.round(pct * 100) / 100 })
+        cur.totalPct += pct
+        acc.set(code, cur)
+      }
+    }
+    catch { /* ETF sem raio-x publicado: entra so pela posicao direta */ }
+  }))
+
+  const out = [...acc.values()]
+    .map((i) => ({ ...i, totalPct: Math.round(i.totalPct * 10) / 10 }))
+    .filter((i) => i.viaEtf.length > 0)
+    .sort((a, b) => b.totalPct - a.totalPct)
+    .slice(0, 8)
+
+  seeThroughApi.value = out.length ? out : null
+}
+
+// Sem raio-x publicado cai no derivado do mock — a secao nunca some.
+const seeThrough = computed(() =>
+  result.value ? (seeThroughApi.value ?? buildSeeThrough(portfolio.value)) : [],
+)
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
 // MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
@@ -381,6 +455,7 @@ async function onFilmDone() {
   result.value = r
   // correlação real em paralelo: não bloqueia o desenho do gráfico
   loadCorrelation()
+  loadSeeThrough()
   // checks macro nascem marcados nos indicadores TOCADOS na etapa 2
   macroChecked.value = new Set(buildMacroPaths(lastSchedule.value).filter((p) => p.touched).map((p) => p.key))
   Object.assign(display, JSON.parse(JSON.stringify(r.series)))
