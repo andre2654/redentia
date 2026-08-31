@@ -36,11 +36,15 @@ const TOP = 5
 const top = computed(() => pairs.value.filter((p) => p.v >= 0).slice(0, TOP))
 /** os que PROTEGEM: correlacao negativa relevante, do mais protetor pro menos */
 const protectors = computed(() => pairs.value.filter((p) => p.v <= -20).sort((x, y) => x.v - y.v).slice(0, 3))
-/** contrapeso: o melhor protetor; sem protetor real, o par menos parecido */
+/** contrapeso: o melhor protetor; sem protetor real, o par de MENOR |corr|
+ * (um -8 e menos parentesco que um +12 — o sinal fraco tambem conta) */
 const guard = computed(() => {
   if (protectors.value.length) return null // a lista de protecao ja conta essa historia
-  const rest = pairs.value.filter((p) => p.v >= 0)
-  return rest.length > TOP ? rest.at(-1)! : null
+  if (pairs.value.length <= TOP) return null
+  const shown = new Set(top.value)
+  const rest = pairs.value.filter((p) => !shown.has(p))
+  if (!rest.length) return null
+  return [...rest].sort((x, y) => Math.abs(x.v) - Math.abs(y.v))[0]!
 })
 
 type Tone = 'hi' | 'mid' | 'lo' | 'neg'
