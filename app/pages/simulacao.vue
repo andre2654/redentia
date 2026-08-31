@@ -142,8 +142,22 @@ const MACRO_COLOR: Record<SimMacroKey, string> = {
   dolar: 'var(--nu-green-soft)',
   selic: 'var(--nu-alloc-fii)',
   bolsa: 'color-mix(in srgb, var(--nu-class-etf) 55%, var(--nu-white))',
+  petroleo: 'var(--nu-amber)',
 }
 const macroPaths = computed(() => (result.value ? (simExtra.value?.macroPaths ?? []) : []))
+/** bloco "regras aplicadas" do PDF — os limites do motor, exportáveis (E5) */
+const pdfRules = computed<string[]>(() => {
+  const a = (simExtra.value?.assumptionsRaw ?? {}) as Record<string, unknown>
+  if (!a.block_mode) return []
+  const n = (v: unknown, d = 2) => (typeof v === 'number' ? v.toLocaleString('pt-BR', { maximumFractionDigits: d }) : '—')
+  return [
+    `beta da carteira ${n(a.beta)} (janela até ${Math.round(((a.beta_window_days as number) ?? 9600) / 365)} anos) · resposta por posição limitada a −60/+40 (valor pré-limite aberto no relatório)`,
+    `bloco conjunto de 63 dias (IBOV+PTAX+Selic+Brent, 2007→hoje) · piso de −95% ao mês declarado · cargas de tilt 0,15/0,10`,
+    `dólar: funil gate ${n(a.fx_gate)} · Selic: ciclo com nível travado 1,9%–30% · Brent: reversão κ=${n(a.brent_kappa_monthly)} · inflação com piso −2% a.a.`,
+    `dado: pool ${String(a.vol_source ?? '')} · curva DI ${String(a.drift_as_of ?? '')} · ${n(a.paths, 0)} caminhos (ruído da mediana ~${n(a.mc_median_se_pct)}%)`,
+  ]
+})
+
 /** curva DI vencida: flag calculada pelo MOTOR (drift_stale), exibida aqui e no PDF */
 const driftStale = computed(() => (simExtra.value?.assumptionsRaw as Record<string, unknown> | undefined)?.drift_stale === true)
 const driftAsOf = computed(() => String((simExtra.value?.assumptionsRaw as Record<string, unknown> | undefined)?.drift_as_of ?? ''))
@@ -158,6 +172,7 @@ const limitsData = computed(() => {
     anos: Math.round((num(a.beta_window_days) ?? 9600) / 365),
     gap: num(a.median_vs_mean_gap_pp)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? '2,2',
     fxVivo: a.fx_model === 'ancora+funil+desvio-bootstrapado',
+    selicViva: a.selic_model === 'ciclo-por-caminho-sobre-curva-di',
     fxGate: num(a.fx_gate)?.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) ?? '0,30',
     fxDrift: num(a.fx_drift_pp_aa)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? '1,9',
   }
@@ -775,7 +790,9 @@ const readingHtml = computed(() => {
         <ul class="sim__limits-list">
           <li v-if="limitsData.fxVivo">"Historicamente o dólar sempre sobe" é falso: o drift nominal de +4,06% a.a. em 26 anos não é estatisticamente significativo, e 54,8% das janelas de 10 anos têm drift REAL negativo. O modelo usa paridade de inflação (+{{ limitsData.fxDrift }}% a.a. nominal — em poder de compra o dólar perde ~2,5% a.a.), e o funil da âncora (gate {{ limitsData.fxGate }}) é o que garante FAIXA no ano do alvo: sem ele o cenário viraria número único, e número único é proibido.</li>
           <li v-else>O dólar é degrau (salta para o alvo no mês do cenário) — dinâmica própria chega nas próximas versões do motor.</li>
-          <li>O petróleo não desenha linha própria e a Selic segue a curva DI da casa — dinâmica própria dessas duas chega nas próximas versões do motor.</li>
+          <li v-if="limitsData.selicViva">A Selic de cada caminho tem ciclo próprio sobre a curva DI (nível travado em 1,90%–30%), e cada caminho é deflacionado pela SUA inflação — mas a meia-vida do ciclo NÃO é identificada nos dados (30 a 77 meses conforme o modelo). O Brent reverte à média com κ=0,03/mês, escolha fixa dentro de uma faixa larga (meia-vida de 11 a 69 meses); livre, a faixa de 10 anos iria de US$ 8 a 767.</li>
+          <li v-else>O petróleo não desenha linha própria e a Selic segue a curva DI da casa — dinâmica própria dessas duas chega nas próximas versões do motor.</li>
+          <li v-if="limitsData.selicViva">Cada mês de cada caminho tem piso de −95% — o truncamento da cauda extrema é declarado, não silencioso — e a inflação implícita tem piso de −2% a.a. (deflação moderada existe; piso zero daria retorno real de graça aos caminhos de juro baixo).</li>
           <li>O prêmio de risco de {{ limitsData.erp }} p.p. é premissa editorial, não estimativa: o intervalo de confiança do dado histórico vai de −15,2 a +8,2 p.p. — o dado não distingue −3 de +6.</li>
           <li>A cauda da faixa se apoia em 4 grandes episódios de crise{{ limitsData.vol ? ` (vol do índice: ${limitsData.vol}% a.a. na série 2001→hoje)` : '' }}; 2008 sozinho responde por 133 dos 211 dias de maior volatilidade da série.</li>
           <li>Nenhum ajuste de reversão à média foi aplicado ao índice: o teste de variância (VR 252/21 = 0,664, p = 0,114) não sustenta nem exige o ajuste.</li>
@@ -793,6 +810,7 @@ const readingHtml = computed(() => {
       v-if="result && clientSummary" :result="result" :summary="clientSummary"
       :drift-warning="driftStale ? `Curva de juros da projeção datada de ${driftAsOf} — premissa da casa com mais de 90 dias.` : null"
       :fx-note="limitsData.fxVivo ? `Dólar simulado por âncora + funil (gate ${limitsData.fxGate}) + desvio histórico — parâmetro de compliance carimbado.` : null"
+      :engine-rules="pdfRules"
     />
 
     <!-- ——— modal do RESUMO pro cliente: blocos copiáveis ——— -->

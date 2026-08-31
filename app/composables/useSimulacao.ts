@@ -74,7 +74,7 @@ export interface SimPositionImpactApi {
  * própria. Petróleo não vem: sem série de preço ligada, não há t0 pra ancorar.
  */
 export interface SimMacroPathApi {
-  key: 'dolar' | 'selic' | 'bolsa'
+  key: 'dolar' | 'selic' | 'bolsa' | 'petroleo'
   label: string
   unit: string
   touched: boolean

@@ -13,6 +13,8 @@ const props = defineProps<{
   driftWarning?: string | null
   /** carimbo do funil do dólar (gate) — o único parâmetro de compliance do câmbio */
   fxNote?: string | null
+  /** bloco "regras aplicadas": os limites do motor, por extenso, no papel */
+  engineRules?: string[]
 }>()
 
 const hoje = new Date().toLocaleDateString('pt-BR')
@@ -95,6 +97,11 @@ const bandPath = computed(() => {
       </tbody>
     </table>
 
+    <div v-if="engineRules?.length" class="spd__rules">
+      <b class="spd__rules-title">Regras aplicadas pelo motor</b>
+      <p v-for="(r, i) in engineRules" :key="i" class="spd__rule">{{ r }}</p>
+    </div>
+
     <p class="spd__disclaimer">{{ summary.footer }}</p>
   </div>
 </template>
@@ -135,6 +142,9 @@ const bandPath = computed(() => {
   .spd__table td b { font-weight: 800; margin-right: 6px; }
   .spd__down { color: var(--nu-red); font-weight: 800; }
   .spd__up { color: var(--nu-green); font-weight: 800; }
+  .spd__rules { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--nu-cream-3); }
+  .spd__rules-title { display: block; font-size: 9px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--nu-gray); margin-bottom: 4px; }
+  .spd__rule { margin: 0 0 3px; font-size: 9px; color: var(--nu-gray-2); line-height: 1.45; }
   .spd__disclaimer { margin-top: 16px; font-size: 9.5px; color: var(--nu-gray); line-height: 1.5; }
 }
 </style>

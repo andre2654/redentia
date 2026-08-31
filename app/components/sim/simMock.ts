@@ -608,7 +608,7 @@ export function buildClientSummary(r: SimResult): SimClientSummary {
  * existindo: ele alimenta `petroleo_exposto` e `commodity`, que são fatores
  * reais em `ticker_factor_tags`.
  */
-export type SimMacroKey = 'dolar' | 'selic' | 'bolsa'
+export type SimMacroKey = 'dolar' | 'selic' | 'bolsa' | 'petroleo'
 export interface SimMacroAnchor { at: number; value: number }
 export interface SimMacroPath {
   key: SimMacroKey
@@ -634,6 +634,7 @@ export interface SimMacroPath {
 export function fmtMacro(key: SimMacroKey, v: number): string {
   if (key === 'dolar') return `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   if (key === 'selic') return `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`
+  if (key === 'petroleo') return `US$ ${v.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`
   return `${Math.round(v / 1000).toLocaleString('pt-BR')} mil pts`
 }
 
