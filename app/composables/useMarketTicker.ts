@@ -1,8 +1,15 @@
 /**
  * Faixa "Mercado agora" (presente em todas as telas dos designs).
- * Padrão swap real+fallback (herdado do Atlas): começa com o seed do design
- * (nunca vazio), hidrata com dados reais no client, e QUALQUER erro degrada
- * de volta pro seed — a faixa nunca quebra uma página.
+ * Começa VAZIA (skeleton), hidrata com dado real no client e, se nada real
+ * chegar, a faixa simplesmente não é desenhada.
+ *
+ * O padrão anterior (herdado do Atlas) trazia um SEED com as cotações do
+ * design — IBOV 131.480, dólar R$ 5,42, CDI 10,75% a.a. — e degradava pra ele
+ * em qualquer falha. Como o `finally` zerava o loading SEMPRE, API fora do ar
+ * significava a faixa exibindo esses números em todas as páginas do site, com
+ * o rodapé afirmando "B3 · dados com atraso de 15 min". Não é mock de
+ * protótipo: é número errado com carimbo de fonte, degradando em silêncio.
+ * Regra da casa: sem dado, sem número — a faixa some (2026-08-29).
  *
  * Fontes: GET /market/snapshot (IBOV/IFIX/macro) · GET /tickers/PETR4 (Laravel,
  * MESMA rota das páginas de ativo — o snapshot do chat ficava stale) ·
@@ -15,15 +22,6 @@ export interface TickerItem {
   dir: 'up' | 'down' | 'flat'
 }
 
-const SEED: TickerItem[] = [
-  { n: 'IBOV', v: '131.480', pct: '+0,45%', dir: 'up' },
-  { n: 'IFIX', v: '3.412', pct: '+0,12%', dir: 'up' },
-  { n: 'Dólar', v: 'R$ 5,42', pct: '-0,31%', dir: 'down' },
-  { n: 'PETR4', v: 'R$ 38,25', pct: '+0,76%', dir: 'up' },
-  { n: 'Bitcoin', v: 'R$ 512.340', pct: '+1,24%', dir: 'up' },
-  { n: 'CDI', v: '10,75% a.a.', pct: null, dir: 'flat' },
-]
-
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -35,10 +33,10 @@ function pctFmt(x: unknown): { pct: string | null; dir: TickerItem['dir'] } {
 }
 
 export function useMarketTicker() {
-  const items = useState<TickerItem[]>('nu:ticker', () => SEED)
+  const items = useState<TickerItem[]>('nu:ticker', () => [])
   const loaded = useState<boolean>('nu:ticker-loaded', () => false)
   // loading = ainda não tentou hidratar (SSR + antes do fetch). A faixa mostra
-  // skeleton em vez do seed; vira false no fim do hydrate (sucesso OU degrade).
+  // skeleton nesse intervalo; vira false no fim do hydrate, com dado ou sem.
   const loading = useState<boolean>('nu:ticker-loading', () => true)
   const { publicFetch } = useApi()
 
@@ -67,13 +65,15 @@ export function useMarketTicker() {
       const cdiA = cdiAnnualPct(snap?.macro?.cdi)
       if (cdiA != null) next.push({ n: 'CDI', v: `${nf2.format(cdiA)}% a.a.`, pct: null, dir: 'flat' })
 
-      // Só troca o seed se veio conteúdo suficiente pra faixa não ficar rala.
-      if (next.length >= 3) {
-        items.value = next
-        loaded.value = true
-      }
+      // Sem gate de quantidade: entra o que veio REAL. Duas cotações
+      // verdadeiras valem mais que seis inventadas, e nenhuma cotação é um
+      // estado legítimo — o componente esconde a faixa quando items fica
+      // vazio. `loaded` só trava o retry quando algo de fato chegou.
+      items.value = next
+      loaded.value = next.length > 0
     } catch {
-      /* mantém o seed — a faixa nunca quebra a página */
+      // a faixa continua sem quebrar a página: ela some, não mente
+      items.value = []
     }
     finally {
       loading.value = false
