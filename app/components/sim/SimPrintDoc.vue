@@ -6,7 +6,12 @@
 import type { SimResult, SimClientSummary } from './simMock'
 import { fmtBRL, fmtBRLFull } from './simMock'
 
-const props = defineProps<{ result: SimResult; summary: SimClientSummary }>()
+const props = defineProps<{
+  result: SimResult
+  summary: SimClientSummary
+  /** aviso de premissa vencida (curva DI > 90 dias) — o PDF não pode sair sem ele */
+  driftWarning?: string | null
+}>()
 
 const hoje = new Date().toLocaleDateString('pt-BR')
 const fmtPct = (v: number) => `${v > 0 ? '+' : ''}${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`
@@ -64,6 +69,8 @@ const bandPath = computed(() => {
       </template>
     </p>
 
+    <p v-if="driftWarning" class="spd__stale">{{ driftWarning }}</p>
+
     <svg class="spd__chart" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none">
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.3" />
       <path :d="line(result.series.p50)" fill="none" stroke="var(--nu-blue)" stroke-width="2.2" />
@@ -72,7 +79,7 @@ const bandPath = computed(() => {
 
     <table class="spd__table">
       <thead>
-        <tr><th>Posição</th><th>Peso</th><th>Choque</th><th>Carrego líq./ano</th><th>Tributação</th></tr>
+        <tr><th>Posição</th><th>Peso</th><th>Choque</th><th>Carrego/ano</th><th>Tributação</th></tr>
       </thead>
       <tbody>
         <tr v-for="p in sorted" :key="p.ticker">
@@ -109,7 +116,12 @@ const bandPath = computed(() => {
   .spd__lead { margin: 0 0 14px; font-size: 13px; line-height: 1.55; color: var(--nu-gray-3); max-width: 640px; }
   .spd__lead b { font-weight: 800; }
   .spd__chart { width: 100%; height: 170px; }
-  .spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 600; }
+  .spd__stale {
+  margin: 0 0 10px; padding: 8px 12px;
+  background: var(--nu-amber-bg); color: var(--nu-amber-text);
+  border-radius: 6px; font-size: 11px; font-weight: 700;
+}
+.spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 600; }
   .spd__table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
   .spd__table th {
     text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--nu-ink);

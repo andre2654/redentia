@@ -144,6 +144,10 @@ const MACRO_COLOR: Record<SimMacroKey, string> = {
   bolsa: 'color-mix(in srgb, var(--nu-class-etf) 55%, var(--nu-white))',
 }
 const macroPaths = computed(() => (result.value ? (simExtra.value?.macroPaths ?? []) : []))
+/** curva DI vencida: flag calculada pelo MOTOR (drift_stale), exibida aqui e no PDF */
+const driftStale = computed(() => (simExtra.value?.assumptionsRaw as Record<string, unknown> | undefined)?.drift_stale === true)
+const driftAsOf = computed(() => String((simExtra.value?.assumptionsRaw as Record<string, unknown> | undefined)?.drift_as_of ?? ''))
+
 /** números do painel de limites, direto das premissas do run (nunca chumbados) */
 const limitsData = computed(() => {
   const a = (simExtra.value?.assumptionsRaw ?? {}) as Record<string, unknown>
@@ -488,7 +492,7 @@ async function fetchResult(): Promise<SimResult> {
       ? { positions_b: portfolioB.value.map((p) => ({ ticker: p.ticker, value: p.value })) }
       : {}),
     horizon_years: 10,
-    ...(Object.keys(dials).length ? { custom_shocks: dials, shock_month: monthOfFirstScenario() } : {}),
+    ...(Object.keys(dials).length ? { custom_shocks: dials, shock_month: shockMonthMap() } : {}),
   }
   const { authFetch } = useApi()
   const api = await authFetch<import('~/composables/useSimulacao').SimResultApi>('/simulations/run', {
@@ -513,11 +517,19 @@ async function fetchResult(): Promise<SimResult> {
   return r
 }
 
-/** Mês em que o primeiro cenário agendado bate (a agenda vive nos dial-cards). */
-function monthOfFirstScenario(): number {
-  const first = fullSchedule.value[0]
-  if (!first) return 12
-  return Math.max(0, Math.min(119, (first.year - new Date().getFullYear()) * 12))
+/**
+ * O ANO DE CADA DIAL vira mês por variável (E3). Antes ia só o mês do
+ * PRIMEIRO cenário (monthOfFirstScenario) e o motor rodava "dólar 2027 +
+ * bolsa 2031" inteiro em 2027 — o controle de ano existia na UI desde
+ * 25/08 e era descartado no caminho.
+ */
+function shockMonthMap(): Record<string, number> {
+  const toMonth = (year: number) => Math.max(0, Math.min(119, (year - new Date().getFullYear()) * 12))
+  const out: Record<string, number> = {}
+  for (const k of Object.keys(shocks.value) as (keyof SimDials)[]) {
+    out[k] = toMonth(dialYears.value[k])
+  }
+  return out
 }
 
 async function onFilmDone() {
@@ -657,6 +669,10 @@ const readingHtml = computed(() => {
                  por número real numa tela que gera peça pra cliente. -->
             <p v-if="usingMock" class="sim__flag sim__flag--mock">Dados ilustrativos — o motor não respondeu</p>
             <p v-else-if="simExtra && !simExtra.calibrated" class="sim__flag">Cenário que você montou — sem precedente histórico calibrado</p>
+            <!-- A curva DI é digitada à mão e ancora TODO o drift; vencida,
+                 o PDF sai com âncora velha sem ninguém notar. O motor manda
+                 a flag; a tela obedece. -->
+            <p v-if="!usingMock && driftStale" class="sim__flag">Curva de juros da projeção datada de {{ driftAsOf }} — premissa com mais de 90 dias, peça atualização</p>
           </div>
           <div class="sim__pills">
             <button v-if="!resultB" type="button" class="sim__pill sim__pill--whatif" @click="openWhatif">Testar realocação</button>
@@ -768,7 +784,10 @@ const readingHtml = computed(() => {
     </section>
 
     <!-- o documento do "Gerar PDF" — invisível na tela, único visível no print -->
-    <SimPrintDoc v-if="result && clientSummary" :result="result" :summary="clientSummary" />
+    <SimPrintDoc
+      v-if="result && clientSummary" :result="result" :summary="clientSummary"
+      :drift-warning="driftStale ? `Curva de juros da projeção datada de ${driftAsOf} — premissa da casa com mais de 90 dias.` : null"
+    />
 
     <!-- ——— modal do RESUMO pro cliente: blocos copiáveis ——— -->
     <Teleport to="body">
