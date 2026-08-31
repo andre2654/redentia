@@ -160,8 +160,13 @@ const macroVisible = computed(() =>
  * conversao acontece aqui: |corr| x 100, porque o que a secao responde e
  * "andam juntas?" — anticorrelacao forte tambem e movimento acoplado.
  *
- * Par ausente (sem historico em comum) vira 0 e NAO entra na media: contar
- * ausencia como "descorrelacionado" inflaria a nota de diversificacao.
+ * PAR AUSENTE VIRA -1, nunca 0: a tabela de correlacoes nao e
+ * todos-contra-todos (medido em producao: carteira de 6 ativos = 15 pares
+ * esperados, 4 existentes). Com 0, a legenda traduzia ausencia de dado como
+ * "se defendem" e o par sem historico podia virar O CONTRAPESO da carteira
+ * — afirmar diversificacao por falta de informacao, na secao que e o
+ * argumento contra o Gorila. O componente tira os -1 da conta e declara
+ * quantos pares ficaram de fora.
  */
 const correlationApi = ref<SimCorrelationOut | null>(null)
 
@@ -178,21 +183,32 @@ async function loadCorrelation() {
       if (typeof d?.corr === 'number') pares.set([d.base, d.other].sort().join('|'), Math.abs(d.corr) * 100)
     }
     if (!pares.size) { correlationApi.value = null; return }
-    const matrix = syms.map((a) => syms.map((b) => (a === b ? 100 : Math.round(pares.get([a, b].sort().join('|')) ?? 0))))
+    const matrix = syms.map((a) => syms.map((b) => {
+      if (a === b) return 100
+      const v = pares.get([a, b].sort().join('|'))
+      return v === undefined ? -1 : Math.round(v)
+    }))
     const vals = [...pares.values()]
+    const totalPairs = (syms.length * (syms.length - 1)) / 2
     correlationApi.value = {
       tickers: syms,
       matrix,
       avgPct: Math.round(vals.reduce((x, y) => x + y, 0) / vals.length),
+      missingPairs: Math.max(0, totalPairs - pares.size),
+      totalPairs,
     }
   }
   catch { correlationApi.value = null }
 }
 
-// Sem dado real cai no derivado dos fatores — a secao nunca some do resultado.
-const correlation = computed(() =>
-  result.value ? (correlationApi.value ?? buildCorrelation(portfolio.value)) : null,
-)
+// Sem dado real a secao NAO desenha (fallback mudo pro mock era numero
+// inventado — cosseno de vetores de fator do catalogo — no bloco-herói e no
+// PDF, sem nenhum selo). O mock so existe em dev, pra trabalhar na UI.
+const correlation = computed(() => {
+  if (!result.value) return null
+  if (correlationApi.value) return correlationApi.value
+  return import.meta.dev ? buildCorrelation(portfolio.value) : null
+})
 /**
  * SEE-THROUGH REAL: quanto da carteira esta em cada empresa somando o que
  * esta DENTRO dos ETFs.
@@ -261,13 +277,19 @@ async function loadSeeThrough() {
     .sort((a, b) => b.totalPct - a.totalPct)
     .slice(0, 8)
 
-  seeThroughApi.value = out.length ? out : null
+  // [] e um resultado VALIDO: "carregou e nao ha sobreposicao relevante" —
+  // a secao some com honestidade. null continua sendo "nao carregou".
+  // Antes, [] caia no ?? e servia os holdings CHUMBADOS do mock pra
+  // qualquer carteira sem ETF.
+  seeThroughApi.value = out
 }
 
-// Sem raio-x publicado cai no derivado do mock — a secao nunca some.
-const seeThrough = computed(() =>
-  result.value ? (seeThroughApi.value ?? buildSeeThrough(portfolio.value)) : [],
-)
+// Sem dado real nao desenha; mock so em dev.
+const seeThrough = computed(() => {
+  if (!result.value) return []
+  if (seeThroughApi.value !== null) return seeThroughApi.value
+  return import.meta.dev ? buildSeeThrough(portfolio.value) : []
+})
 
 // ——— WHAT-IF de realocação (gap nº4, 25/08): carteira PROPOSTA roda no
 // MESMO cenário; mediana B entra no fan chart + painel de deltas. ———
@@ -674,7 +696,8 @@ const readingHtml = computed(() => {
         <SimPositionsImpact :positions="result.positions" :active="blocksIn" />
       </div>
 
-      <!-- correlação + sobreposição (a Redentia já tem — aqui em mock coerente) -->
+      <!-- correlação + sobreposição — dado REAL (/correlations); sem dado a
+           seção declara indisponibilidade em vez de desenhar número inventado -->
       <template v-if="correlation">
         <div class="sim__subsection">
           <NuSectionHeading eyebrow="Correlação e sobreposição">
@@ -685,6 +708,9 @@ const readingHtml = computed(() => {
           <SimCorrelation :corr="correlation" :see-through="seeThrough" :active="blocksIn" />
         </div>
       </template>
+      <p v-else-if="!usingMock" class="sim__corr-off">
+        Correlação indisponível para esta carteira — sem histórico em comum suficiente entre os ativos.
+      </p>
     </section>
 
     <!-- ============ ANO A ANO (creme) ============ -->
@@ -1040,6 +1066,8 @@ const readingHtml = computed(() => {
 .sim__band--cream { background: var(--nu-cream); }
 .sim__block { margin-top: 38px; max-width: 900px; }
 .sim__block--full { max-width: none; }
+/* correlação sem dado: uma linha honesta no lugar da seção */
+.sim__corr-off { margin: 26px auto 0; max-width: 640px; text-align: center; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
 /* respiro entre sub-seções da mesma banda (a legenda das faixas colava no
    eyebrow "Como a conta é feita" — feedback do dono) */
 .sim__again { margin-top: 54px; }

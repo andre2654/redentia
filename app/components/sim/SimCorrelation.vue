@@ -15,15 +15,23 @@ const props = defineProps<{ corr: SimCorrelationOut; seeThrough: SimSeeThroughIt
 
 interface SimPair { a: string; b: string; v: number }
 
-/** todos os pares (i>j do triângulo), do mais colado ao mais independente */
+/** todos os pares (i>j do triângulo), do mais colado ao mais independente.
+ * v = -1 e SEM DADO (a tabela de correlacoes nao e todos-contra-todos) e sai
+ * da conta — antes o par sem historico virava 0 = "se defendem" e podia ser
+ * eleito O CONTRAPESO da carteira: diversificacao afirmada por ausencia de
+ * informacao. */
 const pairs = computed<SimPair[]>(() => {
   const t = props.corr.tickers
   const out: SimPair[] = []
   for (let i = 0; i < t.length; i++) {
-    for (let j = 0; j < i; j++) out.push({ a: t[i]!, b: t[j]!, v: props.corr.matrix[i]![j]! })
+    for (let j = 0; j < i; j++) {
+      const v = props.corr.matrix[i]![j]!
+      if (v >= 0) out.push({ a: t[i]!, b: t[j]!, v })
+    }
   }
   return out.sort((x, y) => y.v - x.v)
 })
+const missing = computed(() => props.corr.missingPairs ?? 0)
 const TOP = 5
 const top = computed(() => pairs.value.slice(0, TOP))
 /** o contrapeso: o par que menos anda junto — só faz sentido se sobrou par fora do topo */
@@ -107,6 +115,9 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
           <span><i class="sco__dot sco__dot--mid" />45 a 69 · andam parecido</span>
           <span><i class="sco__dot sco__dot--hi" />70 a 100 · praticamente o mesmo ativo</span>
         </p>
+        <p v-if="missing > 0" class="sco__coverage">
+          {{ missing }} de {{ corr.totalPairs }} pares sem histórico em comum suficiente — ficam fora da conta.
+        </p>
       </div>
 
       <!-- see-through: a exposição REAL, direta + dentro do ETF -->
@@ -154,6 +165,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__tag--hi { background: var(--nu-red-tint); color: var(--nu-red-2); }
 .sco__tag--mid { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .sco__tag--lo { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.sco__coverage { margin: 10px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 600; }
 .sco__hero-line { max-width: 56ch; margin: 10px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.45; }
 
 /* ——— dois painéis do MESMO material: creme sobre a banda branca ——— */

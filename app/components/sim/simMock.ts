@@ -629,7 +629,15 @@ export function fmtMacro(key: SimMacroKey, v: number): string {
  * correlação), então o heatmap explica exatamente a conta do "quem sangra".
  * No real: matriz de correlação da plataforma + cda_fie da CVM.
  */
-export interface SimCorrelationOut { tickers: string[]; matrix: number[][]; avgPct: number }
+export interface SimCorrelationOut {
+  tickers: string[]
+  /** -1 = par SEM historico em comum (o componente tira da conta e avisa) */
+  matrix: number[][]
+  avgPct: number
+  /** cobertura real: a tabela de correlacoes NAO e todos-contra-todos */
+  missingPairs?: number
+  totalPairs?: number
+}
 
 function exposureVector(a: SimAsset): Record<string, number> {
   if (a.rf) {

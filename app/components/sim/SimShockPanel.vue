@@ -130,6 +130,7 @@ const iPetroleo = computed(() => Math.abs(model.value.petroleo) / 60)
         :model-value="model.petroleo" :min="-60" :max="60" :step="2"
         :value-text="`${model.petroleo > 0 ? '+' : ''}${Math.round(model.petroleo)}%`" :delta-text="petroleoTxt"
         :intensity="iPetroleo" :year="years.petroleo" :years="DECADE_YEARS"
+        note="afeta as posições; a linha no gráfico ainda não é desenhada"
         @update:model-value="set('petroleo', $event)" @update:year="setYear('petroleo', $event)"
       />
     </div>

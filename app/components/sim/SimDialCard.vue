@@ -19,7 +19,9 @@ const props = withDefaults(defineProps<{
   /** "acontece em" POR VARIÁVEL (dono 25/08) — aparece quando o dial sai de hoje */
   year?: number
   years?: number[]
-}>(), { direction: 0, year: undefined, years: undefined })
+  /** honestidade de escopo (ex.: petróleo afeta as posições mas não desenha linha) */
+  note?: string
+}>(), { direction: 0, year: undefined, years: undefined, note: undefined })
 const emit = defineEmits<{ 'update:modelValue': [v: number]; 'update:year': [y: number] }>()
 
 function onInput(e: Event) {
@@ -58,6 +60,8 @@ const style = computed(() => ({
     <span class="sdc__label">{{ label }}</span>
     <span class="sdc__value">{{ valueText }}</span>
     <span class="sdc__delta" :class="{ 'sdc__delta--live': intensity > 0.02 }">{{ deltaText }}</span>
+
+    <span v-if="note && intensity > 0.02" class="sdc__note">{{ note }}</span>
 
     <label v-if="years && intensity > 0.02" class="sdc__year">
       em
@@ -127,6 +131,13 @@ const style = computed(() => ({
   transition: color 0.3s, border-color 0.3s;
 }
 .sdc__delta--live { color: var(--nu-cream-text); border-color: var(--nu-cream-text-45); }
+
+.sdc__note {
+  position: relative;
+  color: var(--nu-cream-text-60); font-size: 11px; font-weight: 600;
+  text-align: center; max-width: 210px; line-height: 1.35;
+  animation: nu-fade 0.25s ease both;
+}
 
 /* "acontece em [ano]" — só quando o dial saiu de hoje */
 .sdc__year {
