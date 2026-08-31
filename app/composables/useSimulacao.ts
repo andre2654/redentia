@@ -52,6 +52,16 @@ export interface SimPositionImpactApi {
   carry_net_pct: number
   tax: 'isento' | 'ir15'
   rf_note: string | null
+  // ——— E2 (engine >= 2.2.0): diagnóstico do beta e a conta do carrego ———
+  shock_pct_raw?: number
+  saturated?: boolean
+  beta_window_days?: number | null
+  beta_pairs?: number | null
+  beta_corporate_actions?: number | null
+  beta_data_errors?: number | null
+  beta_stress?: number | null
+  beta_suspect?: boolean
+  carry_components?: { cdi_mean_pct: number; beta_erp_pp: number } | null
 }
 
 /**

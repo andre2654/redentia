@@ -163,7 +163,7 @@ const fmt = fmtBRL
             : 'translateX(-50%)',
       }"
     >
-      {{ ev.label }}
+      <span class="sfc__event-text" :title="ev.label">{{ ev.label }}</span>
     </div>
 
     <div v-for="g in grid" :key="'g' + g.y" class="sfc__ylabel" :style="{ top: `${(g.y / H) * 100}%` }">{{ fmt(g.v) }}</div>
@@ -204,6 +204,9 @@ const fmt = fmtBRL
   letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
 }
 .sfc__event--choque { color: var(--nu-amber); }
+/* título de biblioteca pode ser longo ("CONSOLIDAÇÃO FISCAL PÓS-2026") e
+   atropelava o rótulo vizinho: trunca com reticências, título no hover */
+.sfc__event-text { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .sfc__ylabel {
   position: absolute; right: 0; transform: translateY(-120%);
   color: var(--nu-cream-text-45); font-size: 12px; font-weight: 700;

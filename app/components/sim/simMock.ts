@@ -33,6 +33,18 @@ export interface SimPositionImpact {
   taxLabel: string
   /** linha extra de RF: "duration 2,6 anos × Δjuros" */
   rfNote?: string
+  // ——— diagnóstico do motor real (E2); ausentes no mock ———
+  /** soma ANTES do clamp -60/+40 — quando difere de shockPct, saturou */
+  shockPctRaw?: number
+  saturated?: boolean
+  betaWindowDays?: number
+  betaPairs?: number
+  /** beta nos 10% piores dias do índice — divulgação, nunca entra na conta */
+  betaStress?: number
+  /** fora da faixa típica da classe — verificar antes de apresentar */
+  betaSuspect?: boolean
+  /** a conta do carrego que o motor aplica: CDI médio + β·ERP */
+  carryComponents?: { cdiMeanPct: number; betaErpPp: number }
 }
 export interface SimAnnual { year: number; p10: number; p50: number; p90: number }
 /**
@@ -631,8 +643,12 @@ export function fmtMacro(key: SimMacroKey, v: number): string {
  */
 export interface SimCorrelationOut {
   tickers: string[]
-  /** -1 = par SEM historico em comum (o componente tira da conta e avisa) */
-  matrix: number[][]
+  /** correlação ASSINADA em pontos (-100..100); null = par SEM histórico em
+   * comum (o componente tira da conta e avisa). O sinal importa: -80 é par
+   * que anda em direções opostas = proteção, não "quase sem parentesco". */
+  matrix: (number | null)[][]
+  /** média de |corr| — INTENSIDADE de co-movimento (com sinal, um par -0,8 e
+   * um +0,8 se cancelariam e a carteira viraria "boa diversificação") */
   avgPct: number
   /** cobertura real: a tabela de correlacoes NAO e todos-contra-todos */
   missingPairs?: number

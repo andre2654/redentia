@@ -35,10 +35,21 @@ const FACTOR_LABEL: Record<string, string> = {
 function factorShockOf(line: { load: number; contributionPct: number }): number {
   return line.load ? Math.round((line.contributionPct / line.load) * 10) / 10 : 0
 }
-/** nota de clamp: quando a soma bruta das linhas passa do teto (−60/+40) */
+/** nota de clamp: o motor manda o valor PRE-clamp (saturated/shockPctRaw);
+ * o fallback reconstruido das linhas so vale pro mock, que nao manda */
 function clampNote(p: SimPositionImpact): string | null {
+  if (p.saturated && typeof p.shockPctRaw === 'number') {
+    return `no limite do modelo linear: a soma dava ${fmtPct(p.shockPctRaw)}, exibida ${fmtPct(p.shockPct)}`
+  }
   const raw = p.factors.reduce((s, l) => s + l.contributionPct, 0)
   return Math.abs(raw - p.shockPct) > 0.6 ? `soma bruta ${fmtPct(Math.round(raw * 10) / 10)}, limitada a ${fmtPct(p.shockPct)}` : null
+}
+/** "janela ~26 anos · 6.137 pregões vs IBOV" — só quando o motor mandou */
+function betaMeta(p: SimPositionImpact): string | null {
+  if (!p.betaWindowDays) return null
+  const anos = Math.round(p.betaWindowDays / 365)
+  const pares = p.betaPairs ? ` · ${p.betaPairs.toLocaleString('pt-BR')} pregões` : ''
+  return `janela ~${anos} anos vs IBOV${pares}`
 }
 </script>
 
@@ -87,11 +98,19 @@ function clampNote(p: SimPositionImpact): string | null {
         <!-- a FICHA: a conta aberta, linha a linha -->
         <div v-if="openTicker === p.ticker" :id="`spi-detail-${p.ticker}`" class="spi__detail">
           <div class="spi__meta">
-            <span v-if="p.klass === 'Renda fixa'">renda fixa · beta <b>0</b></span>
-            <span v-else>beta <b>{{ fmtNum(p.beta) }}</b> · janela 5 anos vs IBOV (ilustrativo)</span>
-            <span>carrego líquido <b>{{ fmtNum(p.carryPct, 1) }}% a.a.</b> neste cenário</span>
+            <span v-if="p.klass === 'Renda fixa' || p.klass === 'RF'">renda fixa · beta <b>0</b></span>
+            <span v-else>beta <b>{{ fmtNum(p.beta) }}</b> · {{ betaMeta(p) ?? 'ilustrativo (mock)' }}</span>
+            <span v-if="p.carryComponents">
+              carrego base <b>{{ fmtNum(p.carryPct, 1) }}% a.a.</b>
+              = CDI médio {{ fmtNum(p.carryComponents.cdiMeanPct, 1) }}% + β·ERP {{ fmtNum(p.carryComponents.betaErpPp, 1) }} p.p., bruto — o que o motor compõe
+            </span>
+            <span v-else>carrego líquido <b>{{ fmtNum(p.carryPct, 1) }}% a.a.</b> neste cenário</span>
             <span :class="{ 'spi__meta--free': p.tax === 'isento' }">{{ p.taxLabel }}</span>
           </div>
+          <p v-if="typeof p.betaStress === 'number'" class="spi__stress">
+            Nos 10% piores dias do índice desde 2001, este papel se moveu com β ≈ <b>{{ fmtNum(p.betaStress) }}</b> — em estresse o acoplamento muda; a conta acima usa o β da janela cheia.
+          </p>
+          <p v-if="p.betaSuspect" class="spi__suspect">β fora da faixa típica desta classe — confira a liquidez do papel antes de apresentar.</p>
           <template v-if="p.factors.length">
             <div v-for="l in p.factors" :key="l.name" class="spi__line">
               <span class="spi__line-name">{{ FACTOR_LABEL[l.name] ?? l.name }}</span>
@@ -187,6 +206,9 @@ function clampNote(p: SimPositionImpact): string | null {
 .spi__line-val { text-align: right; font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .spi__line--sum { border-top: 1px dashed var(--nu-cream-3); margin-top: 4px; padding-top: 10px; }
 .spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.45; }
+.spi__stress b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
+.spi__suspect { margin: 6px 0 0; color: var(--nu-amber-text); font-size: 12.5px; font-weight: 700; }
 .spi__rfnote { margin: 8px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 700; }
 
 @media (max-width: 760px) {

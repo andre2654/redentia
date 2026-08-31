@@ -15,33 +15,41 @@ const props = defineProps<{ corr: SimCorrelationOut; seeThrough: SimSeeThroughIt
 
 interface SimPair { a: string; b: string; v: number }
 
-/** todos os pares (i>j do triângulo), do mais colado ao mais independente.
- * v = -1 e SEM DADO (a tabela de correlacoes nao e todos-contra-todos) e sai
- * da conta — antes o par sem historico virava 0 = "se defendem" e podia ser
- * eleito O CONTRAPESO da carteira: diversificacao afirmada por ausencia de
- * informacao. */
+/** todos os pares COM DADO (i>j do triângulo), v ASSINADO em -100..100.
+ * null = sem historico em comum, fica fora da conta e da nota de cobertura
+ * — par ausente como 0 ja elegeu "contrapeso" sem dado (E1), e |corr| sem
+ * sinal ja exibiu -0,61 como "andam parecido" (E2). */
 const pairs = computed<SimPair[]>(() => {
   const t = props.corr.tickers
   const out: SimPair[] = []
   for (let i = 0; i < t.length; i++) {
     for (let j = 0; j < i; j++) {
-      const v = props.corr.matrix[i]![j]!
-      if (v >= 0) out.push({ a: t[i]!, b: t[j]!, v })
+      const v = props.corr.matrix[i]![j]
+      if (typeof v === 'number') out.push({ a: t[i]!, b: t[j]!, v })
     }
   }
   return out.sort((x, y) => y.v - x.v)
 })
 const missing = computed(() => props.corr.missingPairs ?? 0)
 const TOP = 5
-const top = computed(() => pairs.value.slice(0, TOP))
-/** o contrapeso: o par que menos anda junto — só faz sentido se sobrou par fora do topo */
-const guard = computed(() => (pairs.value.length > TOP ? pairs.value.at(-1)! : null))
+/** os que ANDAM JUNTOS: correlacao positiva, do mais colado pro menos */
+const top = computed(() => pairs.value.filter((p) => p.v >= 0).slice(0, TOP))
+/** os que PROTEGEM: correlacao negativa relevante, do mais protetor pro menos */
+const protectors = computed(() => pairs.value.filter((p) => p.v <= -20).sort((x, y) => x.v - y.v).slice(0, 3))
+/** contrapeso: o melhor protetor; sem protetor real, o par menos parecido */
+const guard = computed(() => {
+  if (protectors.value.length) return null // a lista de protecao ja conta essa historia
+  const rest = pairs.value.filter((p) => p.v >= 0)
+  return rest.length > TOP ? rest.at(-1)! : null
+})
 
-type Tone = 'hi' | 'mid' | 'lo'
-/** escala de RISCO (não de alta/baixa): colado → parecido → se defende */
-const toneOf = (v: number): Tone => (v >= 70 ? 'hi' : v >= 45 ? 'mid' : 'lo')
+type Tone = 'hi' | 'mid' | 'lo' | 'neg'
+/** escala de RISCO pela MAGNITUDE; negativo relevante tem tom proprio */
+const toneOf = (v: number): Tone => (v <= -20 ? 'neg' : Math.abs(v) >= 70 ? 'hi' : Math.abs(v) >= 45 ? 'mid' : 'lo')
+const fmtSignedV = (v: number) => (v < 0 ? `−${Math.abs(v)}` : String(v))
 
 const heroTone = computed(() => (props.corr.avgPct >= 65 ? 'hi' : props.corr.avgPct >= 45 ? 'mid' : 'lo'))
+const nProtect = computed(() => pairs.value.filter((p) => p.v <= -20).length)
 const heroTag = computed(() =>
   heroTone.value === 'hi' ? 'Sangra junto' : heroTone.value === 'mid' ? 'Diversificação moderada' : 'Boa diversificação',
 )
@@ -59,12 +67,13 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
   <div class="sco">
     <!-- o número-herói: grau de parentesco, em hierarquia vertical -->
     <div class="sco__hero" :class="{ 'sco__hero--in': active }">
-      <span class="sco__hero-label">Grau de parentesco da carteira</span>
+      <span class="sco__hero-label">Intensidade de co-movimento</span>
       <div class="sco__hero-row">
         <span class="sco__hero-value">{{ corr.avgPct }}<i class="sco__hero-unit">/100</i></span>
         <span class="sco__hero-tag" :class="`sco__tag--${heroTone}`">{{ heroTag }}</span>
       </div>
       <p class="sco__hero-line">{{ heroLine }}</p>
+      <p v-if="nProtect" class="sco__hero-sub">{{ nProtect }} {{ nProtect === 1 ? 'par anda' : 'pares andam' }} em direções opostas — proteção de verdade, listada abaixo.</p>
     </div>
 
     <div class="sco__grid">
@@ -86,34 +95,57 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
             <span class="sco__track">
               <i
                 class="sco__fill" :class="`sco__fill--${toneOf(p.v)}`"
-                :style="{ width: active ? `${p.v}%` : '0%', transitionDelay: `${120 + i * 60}ms` }"
+                :style="{ width: active ? `${Math.abs(p.v)}%` : '0%', transitionDelay: `${120 + i * 60}ms` }"
               />
             </span>
-            <span class="sco__val" :class="`sco__val--${toneOf(p.v)}`">{{ p.v }}</span>
+            <span class="sco__val" :class="`sco__val--${toneOf(p.v)}`">{{ fmtSignedV(p.v) }}</span>
           </div>
         </div>
 
-        <!-- o outro lado da pergunta: o par que se defende -->
-        <div v-if="guard" class="sco__row sco__row--guard" :class="{ 'sco__row--in': active }">
+        <!-- o outro lado da pergunta: quem PROTEGE (correlação negativa) -->
+        <template v-if="protectors.length">
+          <span class="sco__panel-label sco__panel-label--protect">Os que andam em direções opostas</span>
+          <div
+            v-for="(p, i) in protectors" :key="'pr' + p.a + p.b"
+            class="sco__row sco__row--guard" :class="{ 'sco__row--in': active }"
+            :style="{ transitionDelay: active ? `${(TOP + i) * 60}ms` : '0ms' }"
+          >
+            <span class="sco__who">
+              <b class="sco__tk">{{ p.a }}</b>
+              <i class="sco__x" aria-hidden="true">×</i>
+              <b class="sco__tk">{{ p.b }}</b>
+              <em v-if="i === 0" class="sco__note">o contrapeso da carteira</em>
+            </span>
+            <span class="sco__track">
+              <i
+                class="sco__fill sco__fill--neg"
+                :style="{ width: active ? `${Math.abs(p.v)}%` : '0%', transitionDelay: `${120 + (TOP + i) * 60}ms` }"
+              />
+            </span>
+            <span class="sco__val sco__val--neg">{{ fmtSignedV(p.v) }}</span>
+          </div>
+        </template>
+        <div v-else-if="guard" class="sco__row sco__row--guard" :class="{ 'sco__row--in': active }">
           <span class="sco__who">
             <b class="sco__tk">{{ guard.a }}</b>
             <i class="sco__x" aria-hidden="true">×</i>
             <b class="sco__tk">{{ guard.b }}</b>
-            <em class="sco__note">o contrapeso da carteira</em>
+            <em class="sco__note">o par menos parecido — nenhum anda em direção oposta</em>
           </span>
           <span class="sco__track">
             <i
               class="sco__fill sco__fill--lo"
-              :style="{ width: active ? `${guard.v}%` : '0%', transitionDelay: `${120 + TOP * 60}ms` }"
+              :style="{ width: active ? `${Math.abs(guard.v)}%` : '0%', transitionDelay: `${120 + TOP * 60}ms` }"
             />
           </span>
-          <span class="sco__val sco__val--lo">{{ guard.v }}</span>
+          <span class="sco__val sco__val--lo">{{ fmtSignedV(guard.v) }}</span>
         </div>
 
         <p class="sco__legend">
-          <span><i class="sco__dot sco__dot--lo" />0 a 44 · se defendem</span>
+          <span><i class="sco__dot sco__dot--lo" />0 a 44 · pouco parentesco</span>
           <span><i class="sco__dot sco__dot--mid" />45 a 69 · andam parecido</span>
           <span><i class="sco__dot sco__dot--hi" />70 a 100 · praticamente o mesmo ativo</span>
+          <span><i class="sco__dot sco__dot--neg" />negativo · direções opostas (proteção)</span>
         </p>
         <p v-if="missing > 0" class="sco__coverage">
           {{ missing }} de {{ corr.totalPairs }} pares sem histórico em comum suficiente — ficam fora da conta.
@@ -167,6 +199,8 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__tag--lo { background: var(--nu-blue-tint); color: var(--nu-blue); }
 .sco__coverage { margin: 10px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 600; }
 .sco__hero-line { max-width: 56ch; margin: 10px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.45; }
+.sco__hero-sub { max-width: 56ch; margin: 6px 0 0; color: var(--nu-green-2); font-size: 13.5px; font-weight: 700; }
+.sco__panel-label--protect { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--nu-sand-3); }
 
 /* ——— dois painéis do MESMO material: creme sobre a banda branca ——— */
 .sco__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr); gap: 20px; align-items: start; }
@@ -203,11 +237,13 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__fill--hi { background: var(--nu-red); }
 .sco__fill--mid { background: var(--nu-amber-fill); }
 .sco__fill--lo { background: var(--nu-blue-soft); }
+.sco__fill--neg { background: var(--nu-green); }
 
 .sco__val { text-align: right; font-size: 17px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .sco__val--hi { color: var(--nu-red); }
 .sco__val--mid { color: var(--nu-amber-text); }
 .sco__val--lo { color: var(--nu-gray-2); }
+.sco__val--neg { color: var(--nu-green-2); }
 
 /* a escala, dita uma vez — o que a matriz nunca dizia */
 .sco__legend {
@@ -220,6 +256,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 .sco__dot--hi { background: var(--nu-red); }
 .sco__dot--mid { background: var(--nu-amber-fill); }
 .sco__dot--lo { background: var(--nu-blue-soft); }
+.sco__dot--neg { background: var(--nu-green); }
 
 /* ——— see-through (preservado) ——— */
 .sco__th-item { display: flex; flex-direction: column; gap: 5px; }

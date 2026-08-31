@@ -64,6 +64,10 @@ const portfolio = ref<SimPortfolioInput[]>([])
 const dials = ref<SimDials>({ ...DIAL_DEFAULTS })
 const shocks = computed<SimShocks>(() => shocksFromDials(dials.value))
 const result = ref<SimResult | null>(null)
+// 422 do motor (ticker fora do universo, choque fora da faixa): a MENSAGEM
+// volta pro construtor — cair no mock esconderia exatamente o que a pessoa
+// precisa corrigir, com um resultado de mentira por cima.
+const runError = ref<string | null>(null)
 const drawing = ref(false)
 const blocksIn = ref(false)
 const cursor = ref<number | null>(null)
@@ -140,6 +144,17 @@ const MACRO_COLOR: Record<SimMacroKey, string> = {
   bolsa: 'color-mix(in srgb, var(--nu-class-etf) 55%, var(--nu-white))',
 }
 const macroPaths = computed(() => (result.value ? (simExtra.value?.macroPaths ?? []) : []))
+/** números do painel de limites, direto das premissas do run (nunca chumbados) */
+const limitsData = computed(() => {
+  const a = (simExtra.value?.assumptionsRaw ?? {}) as Record<string, unknown>
+  const num = (v: unknown) => (typeof v === 'number' ? v : null)
+  return {
+    erp: num(a.erp_pp) ?? 4,
+    vol: num(a.index_vol_annual_pct)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? null,
+    anos: Math.round((num(a.beta_window_days) ?? 9600) / 365),
+    gap: num(a.median_vs_mean_gap_pp)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? '2,2',
+  }
+})
 const macroChecked = ref<Set<SimMacroKey>>(new Set())
 function toggleMacro(k: SimMacroKey) {
   const next = new Set(macroChecked.value)
@@ -156,17 +171,18 @@ const macroVisible = computed(() =>
 // somando o que está dentro dos ETFs. ———
 /**
  * Correlacao REAL: GET /correlations devolve PARES {base, other, corr} com
- * corr em -1..1 e n_obs. A tela consome matriz triangular 0-100, entao a
- * conversao acontece aqui: |corr| x 100, porque o que a secao responde e
- * "andam juntas?" — anticorrelacao forte tambem e movimento acoplado.
+ * corr em -1..1 e n_obs.
  *
- * PAR AUSENTE VIRA -1, nunca 0: a tabela de correlacoes nao e
+ * O SINAL AGORA VIAJA INTEIRO (E2): a matriz guarda corr x 100 ASSINADO.
+ * O |corr| x 100 de antes gravava -0,61 como 61 = "andam parecido" — a
+ * anticorrelacao mais forte da tabela exibida como parentesco. O bloco
+ * separa "anda junto" (+) de "protege" (-); |corr| so ordena magnitude.
+ *
+ * PAR AUSENTE VIRA null, nunca 0: a tabela de correlacoes nao e
  * todos-contra-todos (medido em producao: carteira de 6 ativos = 15 pares
  * esperados, 4 existentes). Com 0, a legenda traduzia ausencia de dado como
- * "se defendem" e o par sem historico podia virar O CONTRAPESO da carteira
- * — afirmar diversificacao por falta de informacao, na secao que e o
- * argumento contra o Gorila. O componente tira os -1 da conta e declara
- * quantos pares ficaram de fora.
+ * "se defendem" e o par sem historico podia virar O CONTRAPESO da carteira.
+ * (Era -1 como sentinela na E1; com sinal legitimo, -1 e valor real.)
  */
 const correlationApi = ref<SimCorrelationOut | null>(null)
 
@@ -180,20 +196,21 @@ async function loadCorrelation() {
     )
     const pares = new Map<string, number>()
     for (const d of r?.data ?? []) {
-      if (typeof d?.corr === 'number') pares.set([d.base, d.other].sort().join('|'), Math.abs(d.corr) * 100)
+      if (typeof d?.corr === 'number') pares.set([d.base, d.other].sort().join('|'), d.corr * 100)
     }
     if (!pares.size) { correlationApi.value = null; return }
     const matrix = syms.map((a) => syms.map((b) => {
       if (a === b) return 100
       const v = pares.get([a, b].sort().join('|'))
-      return v === undefined ? -1 : Math.round(v)
+      return v === undefined ? null : Math.round(v)
     }))
     const vals = [...pares.values()]
     const totalPairs = (syms.length * (syms.length - 1)) / 2
     correlationApi.value = {
       tickers: syms,
       matrix,
-      avgPct: Math.round(vals.reduce((x, y) => x + y, 0) / vals.length),
+      // media de |corr|: INTENSIDADE (com sinal, -0,8 e +0,8 se cancelariam)
+      avgPct: Math.round(vals.reduce((x, y) => x + Math.abs(y), 0) / vals.length),
       missingPairs: Math.max(0, totalPairs - pares.size),
       totalPairs,
     }
@@ -504,11 +521,18 @@ function monthOfFirstScenario(): number {
 }
 
 async function onFilmDone() {
+  runError.value = null
   let r: SimResult
   try {
     r = await fetchResult()
   }
-  catch {
+  catch (e) {
+    const err = e as { statusCode?: number; status?: number; data?: { message?: string } }
+    if ((err?.statusCode ?? err?.status) === 422) {
+      runError.value = err?.data?.message ?? 'A carteira não pôde ser simulada — confira os ativos.'
+      phase.value = 'assets'
+      return
+    }
     r = runMockSimulation(shocks.value, portfolio.value, lastSchedule.value)
     simExtra.value = null
     usingMock.value = true
@@ -588,6 +612,7 @@ const readingHtml = computed(() => {
           <div v-if="phase === 'assets'" key="assets" class="sim__step">
             <span class="sim__dots" aria-hidden="true"><i class="sim__dot sim__dot--on" /><i class="sim__dot" /></span>
             <h1 class="sim__title">{{ wizCopy.title }}</h1>
+            <p v-if="runError" class="sim__run-error" role="alert">{{ runError }}</p>
             <div class="sim__builder">
               <SimPortfolioBuilder v-model="portfolio" />
             </div>
@@ -721,6 +746,20 @@ const readingHtml = computed(() => {
       </NuSectionHeading>
       <div class="sim__block sim__block--full">
         <SimAnnualBands :annual="result.annual" :active="blocksIn" />
+      </div>
+
+      <!-- o painel de limites (E2): divulgar a incerteza SÓ dos modelos que
+           rodam — falar de meia-vida de Selic implicaria rodar Selic. Por
+           isso o texto muda por etapa do motor, e no mock não aparece. -->
+      <div v-if="!usingMock" class="sim__limits sim__block sim__block--full">
+        <b class="sim__limits-title">O que este número não sabe</b>
+        <ul class="sim__limits-list">
+          <li>O dólar é degrau (salta para o alvo no mês do cenário), o petróleo não desenha linha própria e a Selic segue a curva DI da casa — dinâmica própria dessas variáveis chega nas próximas versões do motor.</li>
+          <li>O prêmio de risco de {{ limitsData.erp }} p.p. é premissa editorial, não estimativa: o intervalo de confiança do dado histórico vai de −15,2 a +8,2 p.p. — o dado não distingue −3 de +6.</li>
+          <li>A cauda da faixa se apoia em 4 grandes episódios de crise{{ limitsData.vol ? ` (vol do índice: ${limitsData.vol}% a.a. na série 2001→hoje)` : '' }}; 2008 sozinho responde por 133 dos 211 dias de maior volatilidade da série.</li>
+          <li>Nenhum ajuste de reversão à média foi aplicado ao índice: o teste de variância (VR 252/21 = 0,664, p = 0,114) não sustenta nem exige o ajuste.</li>
+          <li>O beta de cada papel usa todo o histórico disponível (até {{ limitsData.anos }} anos; a janela real de cada um está no bloco "Quem sangra", com pregões e o beta de estresse). A mediana fica ~{{ limitsData.gap }} p.p. a.a. abaixo do retorno médio esperado: é a matemática do caminho do meio, não pessimismo.</li>
+        </ul>
       </div>
 
       <div class="sim__again">
@@ -1068,6 +1107,19 @@ const readingHtml = computed(() => {
 .sim__block--full { max-width: none; }
 /* correlação sem dado: uma linha honesta no lugar da seção */
 .sim__corr-off { margin: 26px auto 0; max-width: 640px; text-align: center; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+
+/* 422 do motor: a mensagem acionável, no lugar onde se corrige */
+.sim__run-error {
+  margin: 0 0 18px; padding: 12px 18px;
+  background: var(--nu-red-tint); color: var(--nu-red-2); border-radius: var(--nu-r-tile);
+  font-size: 14px; font-weight: 700; line-height: 1.45;
+}
+
+/* painel de limites: discreto, tipografia de nota — não compete com os blocos */
+.sim__limits { margin-top: 34px; padding: 22px 26px; background: var(--nu-cream); border-radius: var(--nu-r-panel); }
+.sim__limits-title { display: block; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sim__limits-list { margin: 12px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+.sim__limits-list li { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 600; line-height: 1.5; }
 /* respiro entre sub-seções da mesma banda (a legenda das faixas colava no
    eyebrow "Como a conta é feita" — feedback do dono) */
 .sim__again { margin-top: 54px; }

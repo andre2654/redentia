@@ -103,6 +103,15 @@ function adaptPositions(rows: SimResultApi['positions_impact']): SimPositionImpa
       contributionPct: num(f.contribution_pct),
     })),
     carryPct: num(p.carry_net_pct),
+    shockPctRaw: typeof p.shock_pct_raw === 'number' ? p.shock_pct_raw : undefined,
+    saturated: p.saturated === true,
+    betaWindowDays: typeof p.beta_window_days === 'number' ? p.beta_window_days : undefined,
+    betaPairs: typeof p.beta_pairs === 'number' ? p.beta_pairs : undefined,
+    betaStress: typeof p.beta_stress === 'number' ? p.beta_stress : undefined,
+    betaSuspect: p.beta_suspect === true,
+    carryComponents: p.carry_components && typeof p.carry_components.cdi_mean_pct === 'number'
+      ? { cdiMeanPct: p.carry_components.cdi_mean_pct, betaErpPp: num(p.carry_components.beta_erp_pp) }
+      : undefined,
     tax: p.tax,
     // o motor manda o código; o rótulo legível é decisão de UI
     taxLabel: p.tax === 'isento' ? 'isento de IR' : 'IR 15%',
