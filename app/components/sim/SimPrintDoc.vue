@@ -11,6 +11,8 @@ const props = defineProps<{
   summary: SimClientSummary
   /** aviso de premissa vencida (curva DI > 90 dias) — o PDF não pode sair sem ele */
   driftWarning?: string | null
+  /** carimbo do funil do dólar (gate) — o único parâmetro de compliance do câmbio */
+  fxNote?: string | null
 }>()
 
 const hoje = new Date().toLocaleDateString('pt-BR')
@@ -70,6 +72,7 @@ const bandPath = computed(() => {
     </p>
 
     <p v-if="driftWarning" class="spd__stale">{{ driftWarning }}</p>
+    <p v-if="fxNote" class="spd__fxnote">{{ fxNote }}</p>
 
     <svg class="spd__chart" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none">
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.3" />
@@ -121,6 +124,7 @@ const bandPath = computed(() => {
   background: var(--nu-amber-bg); color: var(--nu-amber-text);
   border-radius: 6px; font-size: 11px; font-weight: 700;
 }
+.spd__fxnote { margin: 0 0 10px; color: var(--nu-gray-2); font-size: 10.5px; font-weight: 600; }
 .spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 600; }
   .spd__table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
   .spd__table th {

@@ -157,6 +157,9 @@ const limitsData = computed(() => {
     vol: num(a.index_vol_annual_pct)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? null,
     anos: Math.round((num(a.beta_window_days) ?? 9600) / 365),
     gap: num(a.median_vs_mean_gap_pp)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? '2,2',
+    fxVivo: a.fx_model === 'ancora+funil+desvio-bootstrapado',
+    fxGate: num(a.fx_gate)?.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) ?? '0,30',
+    fxDrift: num(a.fx_drift_pp_aa)?.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) ?? '1,9',
   }
 })
 const macroChecked = ref<Set<SimMacroKey>>(new Set())
@@ -770,7 +773,9 @@ const readingHtml = computed(() => {
       <div v-if="!usingMock" class="sim__limits sim__block sim__block--full">
         <b class="sim__limits-title">O que este número não sabe</b>
         <ul class="sim__limits-list">
-          <li>O dólar é degrau (salta para o alvo no mês do cenário), o petróleo não desenha linha própria e a Selic segue a curva DI da casa — dinâmica própria dessas variáveis chega nas próximas versões do motor.</li>
+          <li v-if="limitsData.fxVivo">"Historicamente o dólar sempre sobe" é falso: o drift nominal de +4,06% a.a. em 26 anos não é estatisticamente significativo, e 54,8% das janelas de 10 anos têm drift REAL negativo. O modelo usa paridade de inflação (+{{ limitsData.fxDrift }}% a.a. nominal — em poder de compra o dólar perde ~2,5% a.a.), e o funil da âncora (gate {{ limitsData.fxGate }}) é o que garante FAIXA no ano do alvo: sem ele o cenário viraria número único, e número único é proibido.</li>
+          <li v-else>O dólar é degrau (salta para o alvo no mês do cenário) — dinâmica própria chega nas próximas versões do motor.</li>
+          <li>O petróleo não desenha linha própria e a Selic segue a curva DI da casa — dinâmica própria dessas duas chega nas próximas versões do motor.</li>
           <li>O prêmio de risco de {{ limitsData.erp }} p.p. é premissa editorial, não estimativa: o intervalo de confiança do dado histórico vai de −15,2 a +8,2 p.p. — o dado não distingue −3 de +6.</li>
           <li>A cauda da faixa se apoia em 4 grandes episódios de crise{{ limitsData.vol ? ` (vol do índice: ${limitsData.vol}% a.a. na série 2001→hoje)` : '' }}; 2008 sozinho responde por 133 dos 211 dias de maior volatilidade da série.</li>
           <li>Nenhum ajuste de reversão à média foi aplicado ao índice: o teste de variância (VR 252/21 = 0,664, p = 0,114) não sustenta nem exige o ajuste.</li>
@@ -787,6 +792,7 @@ const readingHtml = computed(() => {
     <SimPrintDoc
       v-if="result && clientSummary" :result="result" :summary="clientSummary"
       :drift-warning="driftStale ? `Curva de juros da projeção datada de ${driftAsOf} — premissa da casa com mais de 90 dias.` : null"
+      :fx-note="limitsData.fxVivo ? `Dólar simulado por âncora + funil (gate ${limitsData.fxGate}) + desvio histórico — parâmetro de compliance carimbado.` : null"
     />
 
     <!-- ——— modal do RESUMO pro cliente: blocos copiáveis ——— -->

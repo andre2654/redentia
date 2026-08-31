@@ -45,6 +45,9 @@ export interface SimPositionImpact {
   betaSuspect?: boolean
   /** a conta do carrego que o motor aplica: CDI médio + β·ERP */
   carryComponents?: { cdiMeanPct: number; betaErpPp: number }
+  /** E4: quanto do choque está realizado ao fim de cada ano (o dólar CHEGA
+   * ao alvo no ano da âncora — a tabela deixou de debitar tudo no mês 1) */
+  impactByYear?: number[]
 }
 export interface SimAnnual { year: number; p10: number; p50: number; p90: number }
 /**

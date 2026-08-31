@@ -44,6 +44,18 @@ function clampNote(p: SimPositionImpact): string | null {
   const raw = p.factors.reduce((s, l) => s + l.contributionPct, 0)
   return Math.abs(raw - p.shockPct) > 0.6 ? `soma bruta ${fmtPct(Math.round(raw * 10) / 10)}, limitada a ${fmtPct(p.shockPct)}` : null
 }
+/** o choque se espalha no tempo (E4)? só mostra quando a trajetória difere
+ * do degrau — ano 1 ≈ total significa choque imediato, sem linha extra */
+function timelineNote(p: SimPositionImpact): string | null {
+  const tl = p.impactByYear
+  if (!tl || tl.length < 3 || p.shockPct === 0) return null
+  const y1 = tl[0]!
+  if (Math.abs(y1 - p.shockPct) < Math.max(1, Math.abs(p.shockPct) * 0.15)) return null
+  const peak = tl.reduce((a, b) => (Math.abs(b) > Math.abs(a) ? b : a), 0)
+  const yPeak = tl.findIndex((v) => v === peak) + 1
+  return `como o choque chega: ano 1 ${fmtPct(y1)} → ano ${yPeak} ${fmtPct(peak)} → ano ${tl.length} ${fmtPct(tl.at(-1)!)}`
+}
+
 /** "janela ~26 anos · 6.137 pregões vs IBOV" — só quando o motor mandou */
 function betaMeta(p: SimPositionImpact): string | null {
   if (!p.betaWindowDays) return null
@@ -107,6 +119,7 @@ function betaMeta(p: SimPositionImpact): string | null {
             <span v-else>carrego líquido <b>{{ fmtNum(p.carryPct, 1) }}% a.a.</b> neste cenário</span>
             <span :class="{ 'spi__meta--free': p.tax === 'isento' }">{{ p.taxLabel }}</span>
           </div>
+          <p v-if="timelineNote(p)" class="spi__timeline">{{ timelineNote(p) }}</p>
           <p v-if="typeof p.betaStress === 'number'" class="spi__stress">
             Nos 10% piores dias do índice desde 2001, este papel se moveu com β ≈ <b>{{ fmtNum(p.betaStress) }}</b> — em estresse o acoplamento muda; a conta acima usa o β da janela cheia.
           </p>
@@ -206,6 +219,7 @@ function betaMeta(p: SimPositionImpact): string | null {
 .spi__line-val { text-align: right; font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .spi__line--sum { border-top: 1px dashed var(--nu-cream-3); margin-top: 4px; padding-top: 10px; }
 .spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.spi__timeline { margin: 8px 0 0; color: var(--nu-blue); font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.45; }
 .spi__stress b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .spi__suspect { margin: 6px 0 0; color: var(--nu-amber-text); font-size: 12.5px; font-weight: 700; }

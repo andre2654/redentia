@@ -112,6 +112,7 @@ function adaptPositions(rows: SimResultApi['positions_impact']): SimPositionImpa
     carryComponents: p.carry_components && typeof p.carry_components.cdi_mean_pct === 'number'
       ? { cdiMeanPct: p.carry_components.cdi_mean_pct, betaErpPp: num(p.carry_components.beta_erp_pp) }
       : undefined,
+    impactByYear: Array.isArray(p.impact_by_year) ? p.impact_by_year : undefined,
     tax: p.tax,
     // o motor manda o código; o rótulo legível é decisão de UI
     taxLabel: p.tax === 'isento' ? 'isento de IR' : 'IR 15%',

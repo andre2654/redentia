@@ -62,6 +62,8 @@ export interface SimPositionImpactApi {
   beta_stress?: number | null
   beta_suspect?: boolean
   carry_components?: { cdi_mean_pct: number; beta_erp_pp: number } | null
+  // E4 (engine >= 3.0.0): o choque espalhado no tempo
+  impact_by_year?: number[] | null
 }
 
 /**
