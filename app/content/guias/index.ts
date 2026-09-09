@@ -31,6 +31,7 @@ import { CDB_LCI_LCA_GUIDE } from '~/content/guias/cdb-lci-lca'
 import { COMO_INVESTIR_EM_BDR_GUIDE } from '~/content/guias/como-investir-em-bdr'
 import { TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE } from '~/content/guias/tesouro-renda-mais-educa-mais'
 import { IMPOSTO_SOBRE_DIVIDENDOS_GUIDE } from '~/content/guias/imposto-sobre-dividendos'
+import { DATA_COM_E_DATA_EX_GUIDE } from '~/content/guias/data-com-e-data-ex'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -68,6 +69,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [COMO_INVESTIR_EM_BDR_GUIDE.slug]: COMO_INVESTIR_EM_BDR_GUIDE,
   [TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE.slug]: TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE,
   [IMPOSTO_SOBRE_DIVIDENDOS_GUIDE.slug]: IMPOSTO_SOBRE_DIVIDENDOS_GUIDE,
+  [DATA_COM_E_DATA_EX_GUIDE.slug]: DATA_COM_E_DATA_EX_GUIDE,
 }
 
 /**
@@ -216,6 +218,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Dividendos',
     minutes: 10,
     slug: 'imposto-sobre-dividendos',
+  },
+  {
+    title: 'Data com e data ex: quando o dividendo passa a ser seu',
+    description: 'As quatro datas de um provento, até quando comprar para receber e por que a queda do dia ex não é prejuízo.',
+    tag: 'Dividendos',
+    minutes: 10,
+    slug: 'data-com-e-data-ex',
   },
 ]
 
