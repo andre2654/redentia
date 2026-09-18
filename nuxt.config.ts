@@ -124,6 +124,9 @@ export default defineNuxtConfig({
     '/business/cadastro': { headers: { 'cache-control': 'private, no-store' } },
     '/business/chaves': { headers: { 'cache-control': 'private, no-store' } },
     '/business/skills': { headers: { 'cache-control': 'private, no-store' } },
+    // Convite de chave: página pública que mostra um SEGREDO uma vez (a chave
+    // nasce na tela de quem abriu o link). Nunca na borda.
+    '/business/convite/**': { headers: { 'cache-control': 'private, no-store' } },
     // O guia de conexão virou o modal do painel de chaves (dono 2026-08-25,
     // "menos é mais"): 301 exato, mesmo padrão do '/calculadora'.
     '/business/comecar': { redirect: { to: '/business/chaves', statusCode: 301 } },

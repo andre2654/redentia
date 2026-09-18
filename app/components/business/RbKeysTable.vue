@@ -25,6 +25,9 @@ const props = defineProps<{
   confirmando: number | null
   renomeando: number | null
   copiado: boolean
+  /** O link do convite recém-emitido. Só existe uma vez, como a chave. */
+  inviteUrl: string | null
+  copiadoConvite: boolean
 }>()
 
 const emit = defineEmits<{
@@ -36,13 +39,20 @@ const emit = defineEmits<{
   (e: 'abrirRename', id: number, label: string): void
   (e: 'cancelarRename'): void
   (e: 'salvarRename', id: number): void
+  (e: 'convidar'): void
+  (e: 'cancelarConvite', id: number): void
+  (e: 'copiarConvite'): void
 }>()
 
 const rotulo = defineModel<string>('rotulo', { required: true })
 const novoRotulo = defineModel<string>('novoRotulo', { required: true })
+const nomeConvite = defineModel<string>('nomeConvite', { required: true })
 
 const num = (n: number | null | undefined) => (n ?? 0).toLocaleString('pt-BR')
 const restantes = computed(() => props.conta.remaining_keys ?? 0)
+const pendentes = computed(() => props.conta.invites ?? [])
+/** Vaga de convite = chaves que cabem menos convites já emitidos e ainda não abertos (regra do servidor). */
+const vagasConvite = computed(() => restantes.value - pendentes.value.length)
 
 /**
  * A COLUNA "PESO" TEM DOIS NÚMEROS DIFERENTES DE PROPÓSITO, e a distinção
@@ -203,6 +213,61 @@ defineExpose({
                   </p>
                 </td>
               </tr>
+
+              <!-- o convite: a chave nasce na tela de quem vai usar, sem conta e
+                   sem o dono do login por perto. O link é segredo como a chave:
+                   aparece uma vez, na resposta que o criou. -->
+              <tr>
+                <td :colspan="conta.keys.length ? 7 : 1">
+                  <div class="rbkc__convite">
+                    <strong class="rbkc__convite-t">Ou mande um convite.</strong>
+                    <p class="rbkc__convite-d">
+                      Um link de uso único, que vale 7 dias: quem abre dá o nome e sai com a própria
+                      chave, sem conta na Redentia. O segredo nasce na tela de quem vai usar, não
+                      passa pelo chat.
+                    </p>
+
+                    <form v-if="vagasConvite > 0" class="rbkc__nova" @submit.prevent="emit('convidar')">
+                      <label for="rbk-convite" class="rbk-sr">Nome de quem recebe o convite</label>
+                      <input
+                        id="rbk-convite"
+                        v-model="nomeConvite"
+                        type="text"
+                        maxlength="40"
+                        placeholder="Nome de quem vai receber (opcional)"
+                      >
+                      <button type="submit" :disabled="busy">
+                        {{ busy ? 'Gerando…' : 'Gerar link de convite' }}
+                      </button>
+                    </form>
+                    <p v-else class="rbkc__lotada">
+                      Sem vaga para convite: cada convite pendente reserva uma das chaves. Cancele um
+                      convite ou revogue uma chave.
+                    </p>
+
+                    <div v-if="inviteUrl" class="rbkc__link" role="status">
+                      <span class="rbkc__link-l">Convite pronto</span>
+                      <code class="rbkc__link-code">{{ inviteUrl }}</code>
+                      <button type="button" class="rbkc__link-copy" @click="emit('copiarConvite')">
+                        {{ copiadoConvite ? 'Copiado' : 'Copiar link' }}
+                      </button>
+                      <p class="rbkc__link-warn">
+                        O link aparece uma vez. Mande direto para a pessoa: ele vale 7 dias e gera uma chave só.
+                      </p>
+                    </div>
+
+                    <ul v-if="pendentes.length" class="rbkc__pendentes">
+                      <li v-for="i in pendentes" :key="i.id" class="rbkc__pend">
+                        <span class="rbkc__pend-nome">{{ i.label ?? 'Sem nome' }}</span>
+                        <span class="rbkc__pend-ate">aguardando · vale até {{ quando(i.expires_at) }}</span>
+                        <button type="button" class="rbk-act" :disabled="busy" @click="emit('cancelarConvite', i.id)">
+                          Cancelar
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
             </tfoot>
           </table>
         </div>
@@ -322,6 +387,35 @@ defineExpose({
 .rbkc__nova button:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 2px; }
 .rbkc__resta { color: var(--nu-gray); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .rbkc__lotada { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; line-height: 1.6; max-width: 60ch; }
+
+/* ——— o convite: segunda linha do rodapé ——— */
+.rbkc__convite { display: flex; flex-direction: column; gap: 14px; }
+.rbkc__convite-t { color: var(--nu-ink); font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
+.rbkc__convite-d { margin: -6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; line-height: 1.6; max-width: 66ch; }
+/* o link é o segredo desta linha: sub-card creme, como a chave usa o navy */
+.rbkc__link {
+  background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 18px 20px;
+  animation: nu-fade .45s ease both;
+}
+.rbkc__link-l { display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; }
+.rbkc__link-code {
+  display: block; margin-top: 10px; color: var(--nu-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px; line-height: 1.5; word-break: break-all;
+}
+.rbkc__link-copy {
+  margin-top: 12px; min-height: 44px; padding: 0 22px; border: none; cursor: pointer;
+  background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
+  font-size: 14px; font-weight: 800; font-family: inherit; transition: background .2s;
+}
+.rbkc__link-copy:hover { background: var(--nu-blue-hover); }
+.rbkc__link-copy:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 2px; }
+.rbkc__link-warn { margin: 12px 0 0; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 600; line-height: 1.55; }
+.rbkc__pendentes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rbkc__pend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.rbkc__pend-nome { color: var(--nu-ink); font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+.rbkc__pend-ate { color: var(--nu-gray); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rbkc__pend .rbk-act { margin-left: auto; }
 .rbkc__erro { margin: 18px 0 0; color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.55; }
 
 .rbk-sr {

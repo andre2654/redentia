@@ -22,6 +22,14 @@ export interface BusinessKeyVM {
   calls_period: number
 }
 
+/** Convite pendente, como o painel enxerga: sem o token (ele só existiu na resposta que o criou). */
+export interface BusinessInviteVM {
+  id: number
+  label: string | null
+  expires_at: string
+  created_at: string | null
+}
+
 export interface BusinessAccountStatus {
   has_account: boolean
   enabled: boolean
@@ -29,6 +37,7 @@ export interface BusinessAccountStatus {
   max_keys: number
   remaining_keys?: number
   keys: BusinessKeyVM[]
+  invites?: BusinessInviteVM[]
   usage: {
     days: Array<{ day: string, calls: number }>
     calls: number
@@ -45,6 +54,7 @@ export function useBusinessAccount() {
 
   const status = ref<BusinessAccountStatus | null>(null)
   const plainKey = ref<string | null>(null) // só após gerar; some no reload
+  const inviteUrl = ref<string | null>(null) // só após emitir; some no reload
   // Nasce TRUE: a carga é disparada no onMounted, e com `false` o primeiro
   // paint não casava nenhum ramo da página — nem skeleton, nem conteúdo, nem
   // erro. Dava um bloco vazio de 60vh e dois saltos de layout.
@@ -132,5 +142,37 @@ export function useBusinessAccount() {
     }
   }
 
-  return { status, plainKey, loading, busy, hydrate, createAccount, createKey, setKeyEnabled, renameKey, revokeKey }
+  /**
+   * Emite um convite: link de uso único, 7 dias, pra alguém da mesa gerar a
+   * própria chave sem conta. Mesma regra do segredo: a URL com o token só
+   * existe UMA vez, no retorno do POST; o painel lista os pendentes sem ela.
+   */
+  async function createInvite(label: string): Promise<string | null> {
+    busy.value = true
+    try {
+      const nome = label.trim()
+      const res = await authFetch<BusinessAccountStatus & { invite?: { url: string } }>('/me/business/invites', {
+        method: 'POST',
+        body: nome ? { label: nome } : {},
+      })
+      status.value = { ...res }
+      inviteUrl.value = res.invite?.url ?? null
+      return inviteUrl.value
+    }
+    finally {
+      busy.value = false
+    }
+  }
+
+  async function cancelInvite(id: number) {
+    busy.value = true
+    try {
+      status.value = await authFetch<BusinessAccountStatus>(`/me/business/invites/${id}`, { method: 'DELETE' })
+    }
+    finally {
+      busy.value = false
+    }
+  }
+
+  return { status, plainKey, inviteUrl, loading, busy, hydrate, createAccount, createKey, setKeyEnabled, renameKey, revokeKey, createInvite, cancelInvite }
 }

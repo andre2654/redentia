@@ -50,13 +50,15 @@ usePageSeo({
 })
 useHead({ titleTemplate: null })
 
-const { status, plainKey, loading, busy, hydrate, createAccount, createKey, setKeyEnabled, renameKey, revokeKey } = useBusinessAccount()
+const { status, plainKey, inviteUrl, loading, busy, hydrate, createAccount, createKey, setKeyEnabled, renameKey, revokeKey, createInvite, cancelInvite } = useBusinessAccount()
 
 const erro = ref<string | null>(null)
 const copiado = ref(false)
 const nomeEmpresa = ref('')
 const rotulo = ref('')
 const novoRotulo = ref('')
+const nomeConvite = ref('')
+const copiadoConvite = ref(false)
 const confirmando = ref<number | null>(null)
 const renomeando = ref<number | null>(null)
 const tabela = ref<{ focarGerador: () => void, mostrarSegredo: () => void } | null>(null)
@@ -172,6 +174,34 @@ async function salvarRename(id: number) {
   if (!erro.value) renomeando.value = null
 }
 
+/**
+ * Convite: o caminho pra quem usa a chave gerar a própria sem conta e sem o
+ * dono do login por perto (a conta é do sócio, a mesa é quem usa). O link é
+ * o único segredo desta tela além da chave, e segue a mesma regra: aparece
+ * uma vez, na resposta que o criou.
+ */
+async function convidar() {
+  if (busy.value) return
+  await agir(async () => {
+    await createInvite(nomeConvite.value)
+    nomeConvite.value = ''
+  })
+}
+
+function cancelarConvite(id: number) {
+  return agir(() => cancelInvite(id))
+}
+
+let copiaConviteTimer: ReturnType<typeof setTimeout> | undefined
+async function copiarConvite() {
+  if (!inviteUrl.value) return
+  try { await navigator.clipboard?.writeText(inviteUrl.value) }
+  catch { /* clipboard bloqueado */ }
+  copiadoConvite.value = true
+  clearTimeout(copiaConviteTimer)
+  copiaConviteTimer = setTimeout(() => { copiadoConvite.value = false }, 1600)
+}
+
 let copiaTimer: ReturnType<typeof setTimeout> | undefined
 async function copiar() {
   if (!plainKey.value) return
@@ -184,6 +214,7 @@ async function copiar() {
 
 onBeforeUnmount(() => {
   clearTimeout(copiaTimer)
+  clearTimeout(copiaConviteTimer)
   clearTimeout(armaTimer)
 })
 
@@ -263,9 +294,12 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         ref="tabela"
         v-model:rotulo="rotulo"
         v-model:novo-rotulo="novoRotulo"
+        v-model:nome-convite="nomeConvite"
         :conta="conta"
         :janela="janela"
         :plain-key="plainKey"
+        :invite-url="inviteUrl"
+        :copiado-convite="copiadoConvite"
         :busy="busy"
         :erro="erro"
         :confirmando="confirmando"
@@ -279,6 +313,9 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         @cancelar-rename="renomeando = null"
         @salvar-rename="salvarRename"
         @conectar="conexaoAberta = true"
+        @convidar="convidar"
+        @cancelar-convite="cancelarConvite"
+        @copiar-convite="copiarConvite"
       />
       <RbKeysScope :conta="conta" @conectar="conexaoAberta = true" />
       <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" @close="fecharConexao" @gerar="gerarDoModal" />
