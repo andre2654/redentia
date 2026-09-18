@@ -1,31 +1,70 @@
 <script setup lang="ts">
 /**
- * Página de erro (404 e afins) — dentro do chrome normal do site
+ * Página de erro (404, 410 e afins) — dentro do chrome normal do site
  * (NuxtLayout dá header + ticker "Mercado agora" + footer). O conceito é
  * um ativo que despencou no pregão: o número gigante e a linha vermelha de
  * queda vivem no MESMO SVG, então escalam juntos e nunca dão overflow. A
  * linha desenha a si mesma no load. Copy sem travessão (vírgula).
+ *
+ * Os três casos têm copy PRÓPRIA porque dizem coisas diferentes:
+ *  - 404: nunca existiu (ou o link quebrou);
+ *  - 410: existiu e saiu da B3 (papel deslistado — /asset/{TICKER} dos 372
+ *    marcados em 18/09/2026). Aqui NÃO se oferece "tente de novo": o dado não
+ *    volta, e o convite certo é ranking ou busca;
+ *  - resto: o nosso lado caiu e volta.
  */
-const props = defineProps<{ error?: { statusCode?: number, message?: string } }>()
+const props = defineProps<{
+  error?: {
+    statusCode?: number
+    statusMessage?: string
+    message?: string
+    /** 410 do /asset: o useAcao manda ticker e data já resolvidos. */
+    data?: { ticker?: string, delistedAt?: string | null }
+  }
+}>()
 
 const code = computed(() => props.error?.statusCode ?? 404)
 const isNotFound = computed(() => code.value === 404)
+const isGone = computed(() => code.value === 410)
 
-const title = computed(() => (isNotFound.value ? 'Essa página saiu do pregão.' : 'O pregão travou por um instante.'))
-const dek = computed(() =>
-  isNotFound.value
+/** Ticker do 410: vem no `data`; a frase do statusMessage é o plano B. */
+const goneTicker = computed(() => {
+  const fromData = props.error?.data?.ticker
+  if (fromData) return fromData.toUpperCase()
+  const frase = props.error?.statusMessage || props.error?.message || ''
+  return /^([A-Z][A-Z0-9]{3}\d{1,2})\b/.exec(frase)?.[1] ?? ''
+})
+const goneDate = computed(() => delistedDateLabel(props.error?.data?.delistedAt))
+
+const title = computed(() => {
+  if (isGone.value) return goneTicker.value ? `${goneTicker.value} saiu da B3.` : 'Esse ativo saiu da B3.'
+  return isNotFound.value ? 'Essa página saiu do pregão.' : 'O pregão travou por um instante.'
+})
+const dek = computed(() => {
+  if (isGone.value) {
+    const quem = goneTicker.value || 'Esse papel'
+    const quando = goneDate.value ? ` em ${goneDate.value}` : ''
+    // Sem "tente de novo" de propósito: a página saiu porque o ativo saiu.
+    return `${quem} foi deslistado da B3${quando}, então a página com cotação, fundamentos e proventos saiu do ar junto. Não é falha nossa, o dado parou de existir. O resto do mercado segue de pé.`
+  }
+  return isNotFound.value
     ? 'O link que você seguiu despencou 100% e não existe mais, ou nunca abriu capital. Mas o resto do mercado segue de pé.'
-    : 'Algo do nosso lado saiu do ar por um instante. O resto do mercado segue de pé, é só voltar e tentar de novo.',
-)
+    : 'Algo do nosso lado saiu do ar por um instante. O resto do mercado segue de pé, é só voltar e tentar de novo.'
+})
 
 useHead({
-  title: isNotFound.value ? 'Página não encontrada' : 'Erro',
+  title: isGone.value
+    ? (goneTicker.value ? `${goneTicker.value} foi deslistado da B3` : 'Ativo deslistado da B3')
+    : isNotFound.value ? 'Página não encontrada' : 'Erro',
   meta: [{ name: 'robots', content: 'noindex, follow' }],
 })
 
 // clearError zera o estado de erro antes de navegar (padrão Nuxt).
 const goHome = () => clearError({ redirect: '/' })
 const goSearch = () => clearError({ redirect: '/busca' })
+// 410: quem chegou aqui queria UM ativo, então o convite primário é a lista de
+// ativos vivos (rankings), não a home.
+const goRankings = () => clearError({ redirect: '/rankings' })
 </script>
 
 <template>
@@ -70,8 +109,14 @@ const goSearch = () => clearError({ redirect: '/busca' })
         <p class="nf__dek">{{ dek }}</p>
 
         <div class="nf__actions">
-          <button type="button" class="nf__cta" @click="goHome">Voltar pro mercado</button>
-          <button type="button" class="nf__ghost" @click="goSearch">Buscar um ativo</button>
+          <template v-if="isGone">
+            <button type="button" class="nf__cta" @click="goRankings">Ver os rankings da B3</button>
+            <button type="button" class="nf__ghost" @click="goSearch">Buscar outro ativo</button>
+          </template>
+          <template v-else>
+            <button type="button" class="nf__cta" @click="goHome">Voltar pro mercado</button>
+            <button type="button" class="nf__ghost" @click="goSearch">Buscar um ativo</button>
+          </template>
         </div>
       </div>
     </section>

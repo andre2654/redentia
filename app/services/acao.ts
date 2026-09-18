@@ -22,12 +22,20 @@ import type {
   TickerProfileApi,
 } from '~/types/acao'
 import type { NewsApi, ThesisCardApi } from '~/types/market'
+import type { TickerMetaEnvelope } from '~/utils/delisted'
 
 const json = { headers: { Accept: 'application/json' } }
 
-/** GET /tickers/{t} — perfil + cotação (404 quando o ticker não existe). */
+/**
+ * GET /tickers/{t} — perfil + cotação (404 quando o ticker não existe).
+ *
+ * Único endpoint por ticker que NÃO responde 410 pra papel deslistado (o MCP
+ * depende dele): ele segue 200 e anexa o envelope de metadados irmão de `data`
+ * com `delisted: true`. Ver app/utils/delisted.ts pro contrato e pro gotcha da
+ * chave (`meta` ao vivo, `_meta` no contrato escrito).
+ */
 export function acaoFetchProfile(base: string, ticker: string) {
-  return $fetch<{ data: TickerProfileApi }>(`${base}/tickers/${ticker}`, json)
+  return $fetch<{ data: TickerProfileApi } & TickerMetaEnvelope>(`${base}/tickers/${ticker}`, json)
 }
 
 /** GET /tickers/{t}/prices?mode= — série histórica (`mode` é OBRIGATÓRIO). */
