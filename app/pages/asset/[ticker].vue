@@ -20,6 +20,8 @@
 // lowercase, JSON-LD por tipo (Corporation pra ação/BDR, InvestmentFund pra
 // FII/ETF, WebPage simples pra cripto — não inventar tipo financeiro) +
 // BreadcrumbList + FAQPage (editorial). routeRules '/asset/**' cacheia 120s.
+// Papel deslistado da B3 (372 em 18/09/2026) responde 410 no SSR e cai na
+// app/error.vue — nunca 404 (o ativo existiu) e nunca 503 (não volta).
 
 // Formatos aceitos (as MESMAS regexes vivem no useAcao, que decide o fluxo
 // A forma do símbolo vive em app/utils/tickerClass.ts (fonte única):
@@ -48,7 +50,22 @@ const ticker = String(useRoute().params.ticker ?? '').toUpperCase()
 const { data, error, activeRange, setRange, rangeLoading, currentSeries, position } = await useAcao(ticker)
 
 if (error.value || !data.value) {
-  const status = (error.value as { statusCode?: number } | null)?.statusCode
+  const err = error.value as { statusCode?: number, statusMessage?: string, data?: unknown } | null
+  const status = err?.statusCode
+  // 404 e 410 são VEREDITOS sobre o ativo e atravessam inteiros: 404 "nunca
+  // existiu", 410 "existiu e saiu da B3" (papel deslistado — ver
+  // app/utils/delisted.ts). Traduzir o 410 em 503, como era até 18/09/2026,
+  // dizia ao Google "volte depois" sobre 372 páginas que não voltam.
+  // Qualquer outro erro é transitório e vira 503: um 404/410 por backend fora
+  // do ar envenenaria o índice de papel vivo.
+  if (status === 410) {
+    throw createError({
+      statusCode: 410,
+      statusMessage: err?.statusMessage || delistedMessage(ticker, null),
+      data: err?.data ?? { ticker, delistedAt: null },
+      fatal: true,
+    })
+  }
   throw createError({
     statusCode: status === 404 ? 404 : 503,
     statusMessage: status === 404 ? `Ativo ${ticker} não encontrado` : 'Dados temporariamente indisponíveis',

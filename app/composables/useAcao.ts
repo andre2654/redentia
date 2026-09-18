@@ -10,6 +10,11 @@
  *
  * Regras determinísticas (tags, sub-scores, insights) vivem aqui com os cortes
  * documentados — zero chamada de LLM nesta página.
+ *
+ * DESLISTADO (18/09/2026): papel que saiu da B3 não degrada por seção, ele
+ * some — a carga aborta com 410 e a página de erro assume. Os três gatilhos
+ * (envelope `delisted` do perfil, 410 no perfil, 410 na série) estão marcados
+ * no loadAcao; o contrato inteiro mora em app/utils/delisted.ts.
  */
 import type {
   AcaoAiReadVM,
@@ -1208,14 +1213,35 @@ function statusOf(e: unknown): number | null {
   return err?.statusCode ?? err?.status ?? err?.response?.status ?? null
 }
 
+/**
+ * 410 Gone do papel deslistado. `fatal` + `data` porque quem renderiza é o
+ * app/error.vue: o statusMessage vira o status HTTP (o que o Google lê) e o
+ * `data` carrega ticker e data pra copy, sem a página de erro ter que
+ * reparsear frase.
+ */
+function delistedError(ticker: string, delistedAt: string | null) {
+  return createError({
+    statusCode: 410,
+    statusMessage: delistedMessage(ticker, delistedAt),
+    data: { ticker, delistedAt },
+    fatal: true,
+  })
+}
+
 async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
-  let profile: TickerProfileApi
+  let res: Awaited<ReturnType<typeof acaoFetchProfile>>
   try {
-    profile = (await acaoFetchProfile(base, ticker)).data
+    res = await acaoFetchProfile(base, ticker)
   } catch (e) {
     const status = statusOf(e)
     if (status === 404) {
       throw createError({ statusCode: 404, statusMessage: `Ativo ${ticker} não encontrado` })
+    }
+    // O perfil NÃO deveria 410 (é o endpoint que o MCP usa), mas se o backend
+    // mudar de ideia o veredito é o mesmo — melhor honrar o 410 do que traduzir
+    // "saiu da B3" em "nosso servidor caiu".
+    if (status === 410) {
+      throw delistedError(ticker, delistedAtOfError(e))
     }
     // Backend fora do ar: PETR4 (a página de referência do design) degrada pro
     // seed completo; qualquer outro ticker responde 503 (temporário, não 404 —
@@ -1223,6 +1249,15 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     if (ticker === 'PETR4') return petr4Seed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
+
+  // SINAL PRIMÁRIO do deslistado (18/09/2026): o perfil responde 200 e o
+  // envelope de metadados traz `delisted: true`. Sem esta checagem a página
+  // renderizaria a cotação congelada do último pregão do papel (CIEL3 ainda
+  // devolve R$ 5,83 "de 28/08") com cara de pregão de hoje.
+  if (isDelistedEnvelope(res)) {
+    throw delistedError(ticker, delistedAtOf(res))
+  }
+  const profile = res.data
 
   // Regex estrita do endpoint /news/ticker (tickers como B3SA3 ficam de fora).
   const newsStrict = /^[A-Z]{4}\d{1,2}$/.test(ticker)
@@ -1238,6 +1273,18 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     newsStrict ? acaoFetchNewsByTicker(base, ticker) : acaoFetchNewsFiltered(base, ticker),
   ])
   const ok = <X>(r: PromiseSettledResult<X>): X | null => (r.status === 'fulfilled' ? r.value : null)
+
+  // CINTO-E-SUSPENSÓRIO do 410. O envelope `delisted` do perfil só existe pra
+  // quem o backend consegue marcar; se um papel for marcado apenas nos
+  // endpoints de DADO, a SÉRIE é quem denuncia — e série é a espinha da página
+  // (hero + gráfico 12M, acima da dobra). Sem ela sobraria uma casca vazia, que
+  // pro Google é pior que um 410 honesto.
+  // Os outros oito fetches são seções abaixo da dobra: um 410 ali NÃO derruba a
+  // página, só esconde a seção — o `ok()` acima já devolve null pra qualquer
+  // rejeição e cada builder degrada escondendo (política documentada no topo).
+  if (pricesR.status === 'rejected' && statusOf(pricesR.reason) === 410) {
+    throw delistedError(ticker, delistedAtOfError(pricesR.reason))
+  }
 
   const overview = ok(overviewR)?.data ?? null
   const f = extractFund(overview)
