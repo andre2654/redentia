@@ -13,6 +13,8 @@ defineProps<{
   subtitle: string
   rows: AcaoStatRow[]
   bars: AcaoDividendBar[]
+  /** rodapé das barras (renda por ano, ou amortização quando o papel só devolveu capital) */
+  barsNote?: string
 }>()
 </script>
 
@@ -31,8 +33,9 @@ defineProps<{
       </div>
       <div class="dvr__right">
         <NuDividendBars
+          v-if="bars.length"
           :bars="bars"
-          :footnote="`${isFii ? 'Rendimentos' : 'Dividendos + JCP'} por ${isFii ? 'cota' : 'ação'}, por ano · ${bars[bars.length - 1]?.year ?? ''} considera os últimos 12 meses`"
+          :footnote="barsNote ?? `${isFii ? 'Rendimentos' : 'Dividendos + JCP'} por ${isFii ? 'cota' : 'ação'}, por ano · ${bars[bars.length - 1]?.year ?? ''} considera os últimos 12 meses`"
         />
       </div>
     </div>

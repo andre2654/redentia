@@ -39,7 +39,6 @@ import type {
   ConsensusApi,
   CryptoDetailApi,
   CryptoPricePointApi,
-  DividendApi,
   EditorialApi,
   EtfXrayApi,
   EtfXrayCorrRow,
@@ -55,6 +54,7 @@ import type {
   TickerProfileApi,
 } from '~/types/acao'
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
+import type { ProventoRow, SiteDy } from '~/utils/proventos'
 
 /* ————— helpers de formatação ————— */
 
@@ -681,7 +681,10 @@ function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
     insights.push({ kind: 'insight', insight: text, cta: 'Perguntar sobre o valuation', href: '/busca' })
   }
   if (f.dy != null) {
-    const text = f.dy >= 6 && f.fcf != null && f.fcf > 0
+    // DY 0 = histórico sem provento de renda com data-com em 12 meses (resolveSiteDy)
+    const text = f.dy === 0
+      ? `${ticker} não distribuiu ${f.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, então o DY de 12 meses é zero: aqui o retorno depende só do preço.`
+      : f.dy >= 6 && f.fcf != null && f.fcf > 0
       ? `O DY de ${nf2.format(f.dy)}% vem acompanhado de ${moneyBig(f.fcf, 1, cur)} em caixa livre, o fluxo que banca os proventos.`
       : f.dy >= 6
         ? `O DY de ${nf2.format(f.dy)}% coloca ${ticker} entre as boas pagadoras de proventos${f.isBdr ? '' : ' da B3'}.`
@@ -728,68 +731,58 @@ async function buildTheses(base: string, ticker: string, list: ThesisCardApi[]):
   })
 }
 
-function buildDividends(divs: DividendApi[], price: number | null, ticker: string): AcaoDividendsVM | null {
-  const today = localISODate()
-  const rows = divs
-    .map((d) => ({ date: d.payment_date, rate: num(d.rate) ?? 0 }))
-    .filter((d) => !!d.date && d.rate > 0)
+/**
+ * Seção de dividendos do /asset. Soma, contagem, barras e DY saem de
+ * app/utils/proventos.ts, a MESMA leitura do /dividendos: a data-com decide a
+ * janela, só renda entra na soma, a amortização aparece à parte, e o DY é o do
+ * site (o mesmo do card de fundamentos, dos insights e da meta description).
+ */
+function buildDividends(rows: ProventoRow[], ticker: string, isFii: boolean, dy: SiteDy): AcaoDividendsVM | null {
   if (!rows.length) return null
-
-  const cutoff12 = localISODate(new Date(Date.now() - 365 * 86_400_000))
-  const cutoff24 = localISODate(new Date(Date.now() - 730 * 86_400_000))
-  const last12 = rows.filter((d) => d.date > cutoff12 && d.date <= today)
-  const last24 = rows.filter((d) => d.date > cutoff24 && d.date <= today)
+  const today = spISODate()
   // Ativo que não paga há 24 meses não ganha a seção (esconder > seed errado).
-  if (!last24.length) return null
+  const cutoff24 = isoMinusDays(today, 730)
+  if (!rows.some((r) => r.date >= cutoff24 && r.date <= today)) return null
 
-  const sum12 = last12.reduce((a, d) => a + d.rate, 0)
-  const dy12 = price != null && price > 0 && sum12 > 0 ? (sum12 / price) * 100 : null
-
+  const unit = isFii ? 'cota' : 'ação'
+  const w = proventos12m(rows, today)
   const statRows: AcaoStatRow[] = []
-  if (dy12 != null) statRows.push({ l: 'Dividend Yield (12M)', v: `${nf2.format(dy12)}%` })
-  // Payout: não vem em nenhum endpoint público hoje — linha OMITIDA (design a tem).
-  // Frequência (heurística da cadência dos últimos 12M): ≥10 Mensal · ≥4 Trimestral · ≥2 Semestral · 1 Anual.
-  if (last12.length) {
-    const freq = last12.length >= 10 ? 'Mensal' : last12.length >= 4 ? 'Trimestral' : last12.length >= 2 ? 'Semestral' : 'Anual'
-    statRows.push({ l: 'Frequência', v: freq })
-  }
-  const future = rows.filter((d) => d.date > today).sort((a, b) => a.date.localeCompare(b.date))[0]
-  if (future) statRows.push({ l: 'Próximo pagamento', v: dateShortPt(future.date) })
+  if (dy.value != null) statRows.push({ l: 'Dividend Yield (12M)', v: `${nf2.format(dy.value)}%` })
+  // Amortização devolve capital: fora da soma e do DY, mas à vista (BRIP11,
+  // RBLG11). Payout não vem em nenhum endpoint público hoje: linha OMITIDA.
+  if (w.capital12 > 0) statRows.push({ l: `Amortização por ${unit} (12M)`, v: `R$ ${nf2.format(w.capital12)}` })
+  // Cadência pelos proventos de RENDA distintos (um por data-com): renda e
+  // amortização da mesma data-com chegam em linhas separadas (Backend #54).
+  const freq = proventosFrequency(w.events12)
+  if (freq) statRows.push({ l: 'Frequência', v: freq })
+  const future = rows.filter((d) => d.payDate > today).sort((a, b) => a.payDate.localeCompare(b.payDate))[0]
+  if (future) statRows.push({ l: 'Próximo pagamento', v: dateShortPt(future.payDate) })
 
   // Barras por ano (design: ano corrente = últimos 12 meses, footnote explica).
-  const cy = new Date().getFullYear()
-  const byYear = new Map<string, number>()
-  for (const d of rows.filter((r) => r.date <= today)) {
-    const y = d.date.slice(0, 4)
-    byYear.set(y, (byYear.get(y) ?? 0) + d.rate)
-  }
-  const bars: { year: string; val: number }[] = []
-  for (let y = cy - 5; y <= cy; y++) {
-    const val = y === cy ? sum12 : byYear.get(String(y)) ?? 0
-    if (val > 0) bars.push({ year: String(y), val })
-  }
-  const max = Math.max(...bars.map((b) => b.val), 0)
-  if (!bars.length || max <= 0) return null
+  // Quem só devolveu capital em 12 meses mostra a amortização, com rodapé próprio.
+  const incomeBars = proventosBars(rows, w.income12, true, today)
+  const capitalOnly = !incomeBars.length && w.capital12 > 0
+  const bars = capitalOnly ? proventosBars(rows, w.capital12, false, today) : incomeBars
+  if (!bars.length) return null
 
-  const heading: [string, string] = dy12 != null && dy12 >= 6
+  const dyv = dy.value
+  const heading: [string, string] = dyv != null && dyv >= 6
     ? ['Uma máquina', 'de dividendos.']
-    : dy12 != null && dy12 >= 2
+    : dyv != null && dyv >= 2
       ? ['Os dividendos', `de ${ticker}.`]
       : ['Os proventos', `de ${ticker}.`]
 
   return {
     heading,
-    subtitle: sum12 > 0
-      ? `R$ ${nf2.format(sum12)} por ação nos últimos 12 meses`
-      : 'Sem pagamentos nos últimos 12 meses',
+    subtitle: w.income12 > 0
+      ? `R$ ${nf2.format(w.income12)} por ${unit} nos últimos 12 meses`
+      : capitalOnly
+        ? `Sem ${isFii ? 'rendimentos' : 'dividendos'} nos últimos 12 meses, e R$ ${nf2.format(w.capital12)} por ${unit} em amortização`
+        : 'Sem pagamentos nos últimos 12 meses',
     rows: statRows,
-    bars: bars.map((b) => ({
-      year: b.year,
-      valFmt: `R$ ${nf2.format(b.val)}`,
-      hPct: Math.round((b.val / max) * 1000) / 10,
-      current: b.year === String(cy),
-    })),
-    sum12,
+    bars,
+    barsNote: `${capitalOnly ? 'Amortização' : isFii ? 'Rendimentos' : 'Dividendos + JCP'} por ${unit}, por ano · ${bars[bars.length - 1]?.year ?? ''} considera os últimos 12 meses`,
+    sum12: w.income12,
   }
 }
 
@@ -892,7 +885,7 @@ function buildAiRead(f: Fund | null, editorial: EditorialApi | null, ticker: str
   if (f) {
     if (f.debtEbitda != null && f.debtEbitda > 2) cons.push(`Alavancagem elevada, dívida líquida de ${nf2.format(f.debtEbitda)}× o EBITDA`)
     if (f.pl != null && f.pl > 15) cons.push(`Valuation esticado, P/L ${nf2.format(f.pl)}`)
-    if (f.dy != null && f.dy < 2) cons.push(`Dividendos baixos, DY de ${nf2.format(f.dy)}%`)
+    if (f.dy != null && f.dy < 2) cons.push(f.dy === 0 ? 'Sem proventos nos últimos 12 meses' : `Dividendos baixos, DY de ${nf2.format(f.dy)}%`)
     if (f.revCagr != null && f.revCagr < 0) cons.push(`Receita encolhendo ${nf1.format(Math.abs(f.revCagr))}% a.a. em 5 anos`)
     if (f.earnGrowth != null && f.earnGrowth < 0) cons.push(`Lucro em queda, ${nf1.format(Math.abs(f.earnGrowth))}% a.a.`)
     if (f.ytd != null && f.ytd < -10) cons.push(`${ticker} cai ${nf1.format(Math.abs(f.ytd))}% no ano`)
@@ -1016,7 +1009,7 @@ function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<T
     bits.push(`${name} (${ticker}) ${usd ? 'no mercado americano' : 'na B3'}.`)
   }
   const facts: string[] = []
-  if (f?.dy != null) facts.push(`dividend yield ${nf2.format(f.dy)}%`)
+  if (f?.dy != null && f.dy > 0) facts.push(`dividend yield ${nf2.format(f.dy)}%`)
   if (f?.pl != null && f.pl > 0) facts.push(`P/L ${nf2.format(f.pl)}`)
   if (kind === 'fii' && f?.pvp != null) facts.push(`P/VP ${nf2.format(f.pvp)}`)
   if (f?.roe != null && kind !== 'fii') facts.push(`ROE ${nf1.format(f.roe)}%`)
@@ -1156,6 +1149,7 @@ function petr4Seed(): AcaoPayload {
         { year: '2025', valFmt: 'R$ 2,52', hPct: 36.8, current: false },
         { year: '2026', valFmt: 'R$ 2,66', hPct: 38.9, current: true },
       ],
+      barsNote: 'Dividendos + JCP por ação, por ano · 2026 considera os últimos 12 meses',
       sum12: 2.66,
     },
     ai: {
@@ -1274,6 +1268,15 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   const overview = ok(overviewR)?.data ?? null
   const f = extractFund(overview)
   const etf = extractEtf(overview)
+  // UM DY no site (D1, app/utils/proventos.ts): o card de fundamentos, os
+  // insights, a leitura da IA, a meta description e a seção de dividendos leem
+  // f.dy, e o /dividendos chama o mesmo resolveSiteDy com os mesmos insumos.
+  // Em 23/09/2026 a página tinha duas contas: RIAA3 com "Dividend Yield 0,00%"
+  // ao lado de "máquina de dividendos… 34,68%"; EPAR3 com 137,13% (o rendimento
+  // indicado do TradingView) sob "sem pagamentos nos últimos 12 meses".
+  const provRows = dividendsR.status === 'fulfilled' ? parseProventos(dividendsR.value?.data) : null
+  const siteDy = resolveSiteDy({ overviewDy: overviewDyOf(overview), price: profile.market_price, rows: provRows })
+  if (f) f.dy = siteDy.value
   // Tipo: scrape_extras.asset_type manda; sem overview, cai no ProfileResource.
   const assetType = overview?.scrape_extras?.asset_type
   const kind: AssetKind = assetType === 'fii'
@@ -1344,7 +1347,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     fundInfo: kind === 'etf' ? buildEtfFundInfo(etf) : null,
     etfXray: buildEtfXray(etfXrayApi, kind === 'etf' ? buildEtfFundInfo(etf) : null),
     theses,
-    dividends: buildDividends(ok(dividendsR)?.data ?? [], profile.market_price, ticker),
+    dividends: buildDividends(provRows ?? [], ticker, isFii, siteDy),
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),

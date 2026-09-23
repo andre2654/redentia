@@ -5,8 +5,13 @@
  * SSR-FIRST como o /asset: o fetch roda no servidor via useAsyncData pra o
  * HTML da 1ª resposta já sair indexável com números reais. Fontes:
  *  - GET /tickers/{t}            → nome + cotação (404 = ticker não existe)
- *  - GET /fundamentals/{t}/overview → DY 12M + asset_type (fii vs ação)
+ *  - GET /fundamentals/{t}/overview → DY 12M oficial + asset_type (fii vs ação)
  *  - GET /dividends/{t}          → histórico completo de proventos
+ *
+ * DY, soma de 12 meses, contagem e barras saem de app/utils/proventos.ts, a
+ * MESMA leitura do /asset: data-com (`ex_date`) decide a janela, só renda
+ * entra na soma e no DY, amortização aparece à parte, e o DY é o do site
+ * (resolveSiteDy), o mesmo número nas duas páginas.
  *
  * Gotchas herdados do PR2 (types/acao.ts): o payload de /dividends vem com a
  * chave literal `"label "` (espaço no fim) e `rate` como string — tratados
@@ -48,6 +53,8 @@ export interface DividendosPayload {
     subtitle: string
     rows: AcaoStatRow[]
     bars: AcaoDividendBar[]
+    /** rodapé das barras: renda por ano, ou amortização quando o papel só devolveu capital */
+    barsNote: string
   } | null
   /** tabela do histórico real — null quando não há linhas pra mostrar */
   history: {
@@ -98,75 +105,34 @@ function prettyName(raw: string, fiiTradingName?: string | null): string {
 
 /* ————— núcleo de dados (real e seed convergem aqui) ————— */
 
-interface DivRow {
-  date: string // payment_date ISO
-  rate: number
-  label: string
-  /** false = devolução de capital (amortização): vai pra tabela, fica fora da soma de 12M e do DY */
-  income: boolean
-}
-
-/**
- * Amortização de FII ("Amortização", "Amortizacao Rf") e restituição de
- * capital ("Rest Cap Din") devolvem o dinheiro do próprio cotista. Somadas ao
- * rendimento, um fundo que amortizou R$ 10 e rendeu R$ 0,80 a R$ 90 aparecia
- * com 12% de yield: em 23/09/2026, 93 papéis tinham mais de 5% da soma de 12M
- * vindos daí. É a mesma régua do DY do /asset (INCOME_TYPES no
- * fundamentals-scraper, ScrapeDividends::INCOME_TYPES no Backend, que já
- * entrega renda e capital da mesma data-com em linhas separadas). Rótulo
- * desconhecido conta como renda, que é o comportamento de antes.
- */
-const CAPITAL_RE = /amortiza|rest\w* cap|restitui/
-function isCapitalLabel(label: string): boolean {
-  const parts = label
-    .split('+')
-    .map((p) => p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase())
-    .filter(Boolean)
-  return parts.length > 0 && parts.every((p) => CAPITAL_RE.test(p))
-}
-
 interface Core {
   ticker: string
   name: string
   isFii: boolean
   price: number | null
-  /** DY 12M em %: sum12/price sempre que há soma de 12M; o do overview só sem soma */
+  /**
+   * DY 12M em %: o do site (resolveSiteDy, app/utils/proventos.ts), o MESMO
+   * número do /asset. 0 = sem provento de renda com data-com em 12 meses.
+   */
   dy: number | null
+  /** renda com data-com nos últimos 12M (R$ por cota/ação); amortização fora */
   sum12: number
+  /** proventos de renda distintos (um por data-com) nos últimos 12M */
   count12: number
-  /** amortização paga nos últimos 12M (R$ por cota/ação), fora da soma e do DY */
+  /** amortização com data-com nos últimos 12M (R$ por cota/ação), fora da soma e do DY */
   cap12: number
   /** último pagamento efetivado / próximo anunciado (ISO) */
   last: string | null
   next: string | null
   freq: string | null
   bars: AcaoDividendBar[]
+  /** o que as barras somam: renda; amortização só quando o papel não teve renda */
+  barsKind: 'renda' | 'capital'
   strongest: { year: string; valFmt: string } | null
+  /** 'ok' = histórico com linhas · 'vazio' = a API respondeu sem nenhuma · 'indisponivel' = o fetch falhou */
+  hist: 'ok' | 'vazio' | 'indisponivel'
   /** linhas da tabela — null = fetch do histórico falhou (indisponível) */
   historyRows: string[][] | null
-}
-
-/** Barras por ano, mesma régua do /asset: ano corrente = últimos 12 meses. */
-function buildBars(paid: DivRow[], sum12: number): AcaoDividendBar[] {
-  const cy = new Date().getFullYear()
-  const byYear = new Map<string, number>()
-  for (const d of paid) {
-    const y = d.date.slice(0, 4)
-    byYear.set(y, (byYear.get(y) ?? 0) + d.rate)
-  }
-  const bars: { year: string; val: number }[] = []
-  for (let y = cy - 5; y <= cy; y++) {
-    const val = y === cy ? sum12 : byYear.get(String(y)) ?? 0
-    if (val > 0) bars.push({ year: String(y), val })
-  }
-  const max = Math.max(...bars.map((b) => b.val), 0)
-  if (!bars.length || max <= 0) return []
-  return bars.map((b) => ({
-    year: b.year,
-    valFmt: `R$ ${nf2.format(b.val)}`,
-    hPct: Math.round((b.val / max) * 1000) / 10,
-    current: b.year === String(cy),
-  }))
 }
 
 function coreFromApi(
@@ -180,64 +146,41 @@ function coreFromApi(
   const name = prettyName(profile.name, se?.fii?.trading_name ?? null)
   const price = profile.market_price
 
-  // GOTCHA runtime: chave literal `"label "` (espaço) e rate string.
-  const rows: DivRow[] = (dividends ?? [])
-    .map((d) => {
-      const label = String((d.label ?? (d as Record<string, unknown>)['label ']) ?? '').trim()
-      return { date: String(d.payment_date ?? ''), rate: num(d.rate) ?? 0, label, income: !isCapitalLabel(label) }
-    })
-    .filter((d) => !!d.date && d.rate > 0)
-    .sort((a, b) => b.date.localeCompare(a.date))
+  // Data-com quando a API manda (ex_date), rótulo pelas duas chaves e renda
+  // separada de capital: parseProventos (a mesma leitura do /asset).
+  const rows = dividends === null ? null : parseProventos(dividends)
+  const all = rows ?? []
+  const today = spISODate()
+  const w = proventos12m(all, today)
+  // UM DY no site (D1): o /asset chama o mesmo resolveSiteDy com os mesmos
+  // insumos. Até 23/09/2026 o title dizia "R$ 3,10 por ação em 12 meses (DY
+  // 1,10%)" no BBDC4 a R$ 18,44: soma de uma fonte, DY de outra.
+  const site = resolveSiteDy({ overviewDy: overviewDyOf(overview), price, rows, today })
 
-  const today = localISODate()
-  const cutoff12 = localISODate(new Date(Date.now() - 365 * 86_400_000))
-  const paid = rows.filter((d) => d.date <= today)
-  const future = rows.filter((d) => d.date > today)
-  const paidIncome = paid.filter((d) => d.income)
-  const last12 = paidIncome.filter((d) => d.date > cutoff12)
-  const sum12 = last12.reduce((a, d) => a + d.rate, 0)
-  const cap12 = paid
-    .filter((d) => !d.income && d.date > cutoff12)
-    .reduce((a, d) => a + d.rate, 0)
-
-  // DY 12M: a MESMA conta que a página imprime. Title, hero, resumo e FAQ
-  // dizem "pagou R$ X em 12 meses (DY Y%)", e o FAQ ainda cita a cotação; com
-  // o DY do overview (outra fonte, outra janela, outro dia) a frase se
-  // contradizia na SERP: BBDC4 em 23/09/2026 saiu "R$ 3,10 por ação em 12
-  // meses (DY 1,10%)" a R$ 18,44. Com soma de 12M na página, DY = soma ÷
-  // cotação, e sem cotação não há DY (melhor omitir que imprimir um número
-  // que não fecha com a soma ao lado). O DY do overview só entra quando a
-  // página não afirma soma nenhuma (histórico vazio ou indisponível), e o
-  // aviso honesto do histórico diz de onde ele vem.
-  const dyOverview = se?.valuation?.dividend_yield
-    ?? se?.fii?.dividend_yield_12m
-    ?? num(overview?.key_statistics?.dividend_yield)
-  const dy = sum12 > 0
-    ? (price != null && price > 0 ? (sum12 / price) * 100 : null)
-    : dyOverview ?? null
-
-  // Cadência observada (heurística do /asset): ≥10 Mensal · ≥4 Trimestral · ≥2 Semestral · 1 Anual.
-  const freq = last12.length
-    ? last12.length >= 10 ? 'Mensal' : last12.length >= 4 ? 'Trimestral' : last12.length >= 2 ? 'Semestral' : 'Anual'
-    : null
-
-  const bars = buildBars(paidIncome, sum12)
-  // ano mais forte do recorte anual (a mesma régua das barras)
+  // Barras de renda; papel que só devolveu capital em 12 meses (BRIP11,
+  // INFB11, ENJU3...) mostra as barras de amortização, com rodapé próprio,
+  // em vez de perder o bloco inteiro.
+  const incomeBars = proventosBars(all, w.income12, true, today)
+  const bars = incomeBars.length || w.capital12 <= 0 ? incomeBars : proventosBars(all, w.capital12, false, today)
+  // ano mais forte do recorte anual de RENDA (a mesma régua das barras)
   let strongest: Core['strongest'] = null
-  for (const b of bars) {
+  for (const b of incomeBars) {
     const v = Number(b.valFmt.replace(/[^\d,]/g, '').replace(',', '.'))
     if (!strongest || v > Number(strongest.valFmt.replace(/[^\d,]/g, '').replace(',', '.'))) {
       strongest = { year: b.year, valFmt: b.valFmt }
     }
   }
 
-  // Tabela: futuros anunciados primeiro (rows já vem desc), até 16 linhas.
+  // Tabela e último/próximo: pela data de PAGAMENTO, futuros primeiro, até 16 linhas.
+  const byPay = [...all].sort((a, b) => b.payDate.localeCompare(a.payDate))
+  const paid = byPay.filter((d) => d.payDate <= today)
+  const future = byPay.filter((d) => d.payDate > today)
   const fallbackLabel = isFii ? 'Rendimento' : 'Provento'
-  const historyRows: string[][] | null = dividends === null
+  const historyRows: string[][] | null = rows === null
     ? null
-    : rows.slice(0, 16).map((d) => [
-        dateShortPt(d.date),
-        `${d.label || fallbackLabel}${d.date > today ? ' (anunciado)' : ''}`,
+    : byPay.slice(0, 16).map((d) => [
+        dateShortPt(d.payDate),
+        `${d.label || fallbackLabel}${d.payDate > today ? ' (anunciado)' : ''}`,
         `R$ ${nf24.format(d.rate)}`,
       ])
 
@@ -246,15 +189,17 @@ function coreFromApi(
     name,
     isFii,
     price,
-    dy,
-    sum12,
-    count12: last12.length,
-    cap12,
-    last: paid[0]?.date ?? null,
-    next: future.length ? future[future.length - 1]!.date : null,
-    freq,
+    dy: site.value,
+    sum12: w.income12,
+    count12: w.events12,
+    cap12: w.capital12,
+    last: paid[0]?.payDate ?? null,
+    next: future.length ? future[future.length - 1]!.payDate : null,
+    freq: proventosFrequency(w.events12),
     bars,
+    barsKind: incomeBars.length || !bars.length ? 'renda' : 'capital',
     strongest,
+    hist: rows === null ? 'indisponivel' : rows.length ? 'ok' : 'vazio',
     historyRows,
   }
 }
@@ -264,6 +209,8 @@ function coreFromApi(
 function buildPayload(c: Core): DividendosPayload {
   const unit = c.isFii ? 'cota' : 'ação'
   const kind = c.isFii ? 'rendimentos' : 'dividendos'
+  /** "3 proventos" / "1 rendimento" */
+  const evWord = (n: number) => (c.isFii ? (n === 1 ? 'rendimento' : 'rendimentos') : n === 1 ? 'provento' : 'proventos')
   const priceFmt = c.price != null ? `R$ ${nf2.format(c.price)}` : null
   const dyFmt = c.dy != null ? `${nf2.format(c.dy)}%` : null
   const sum12Fmt = c.sum12 > 0 ? `R$ ${nf2.format(c.sum12)}` : null
@@ -273,6 +220,14 @@ function buildPayload(c: Core): DividendosPayload {
   const capOnly = c.sum12 <= 0 && cap12Fmt
     ? `${c.ticker} não distribuiu ${kind} nos últimos 12 meses: os ${cap12Fmt} por ${unit} pagos no período foram amortização, devolução do capital investido.`
     : null
+  // Sem renda em 12 meses, a frase depende do que se SABE do histórico: com
+  // ele fora do ar ou vazio, "não registrou pagamentos" seria afirmação sem base.
+  const noRecent = capOnly
+    ?? (c.hist === 'ok'
+      ? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`
+      : c.hist === 'indisponivel'
+        ? `O histórico de proventos de ${c.ticker} está temporariamente indisponível.`
+        : `Ainda não temos os pagamentos de ${c.ticker} na nossa base de proventos.`)
   const lastFmt = c.last ? dateShortPt(c.last) : null
   const nextFmt = c.next ? dateShortPt(c.next) : null
 
@@ -280,15 +235,18 @@ function buildPayload(c: Core): DividendosPayload {
   const stats: AcaoStatRow[] = []
   if (dyFmt) stats.push({ l: 'Dividend yield (12M)', v: dyFmt })
   if (sum12Fmt) stats.push({ l: c.isFii ? 'Rendimentos (12M)' : 'Proventos (12M)', v: `${sum12Fmt} / ${unit}` })
+  else if (cap12Fmt) stats.push({ l: 'Amortização (12M)', v: `${cap12Fmt} / ${unit}` })
   if (priceFmt) stats.push({ l: 'Cotação', v: priceFmt })
   if (nextFmt) stats.push({ l: 'Próximo pagamento', v: nextFmt, accent: 'green' })
   else if (lastFmt) stats.push({ l: 'Último pagamento', v: lastFmt })
 
   const heroSub = c.sum12 > 0
-    ? `${c.name} pagou ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Veja o histórico completo, as datas e o que esperar dos próximos pagamentos.`
+    ? `${c.name} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Veja o histórico completo, as datas e o que esperar dos próximos pagamentos.`
     : capOnly
       ? `${capOnly} Veja o histórico completo e as datas de cada pagamento.`
-      : `${c.name} não registrou pagamentos nos últimos 12 meses. Veja o histórico completo e o dividend yield do papel na B3.`
+      : c.hist === 'ok'
+        ? `${c.name} não registrou pagamentos nos últimos 12 meses. Veja o histórico completo e o dividend yield do papel na B3.`
+        : `Veja o dividend yield de ${c.name} e o histórico de proventos do papel na B3.`
 
   /* resumo 12M */
   let resumo: DividendosPayload['resumo'] = null
@@ -299,16 +257,22 @@ function buildPayload(c: Core): DividendosPayload {
     if (cap12Fmt) rows.push({ l: `Amortização por ${unit} (12M)`, v: cap12Fmt })
     if (c.isFii && c.sum12 > 0) rows.push({ l: 'Média mensal (12M)', v: `R$ ${nf2.format(c.sum12 / 12)}` })
     if (c.freq) rows.push({ l: 'Frequência', v: c.freq })
-    if (c.count12 > 0) rows.push({ l: 'Pagamentos em 12 meses', v: String(c.count12) })
+    if (c.count12 > 0) rows.push({ l: `${c.isFii ? 'Rendimentos' : 'Proventos'} em 12 meses`, v: String(c.count12) })
     if (nextFmt) rows.push({ l: 'Próximo pagamento', v: nextFmt, accent: 'green' })
     else if (lastFmt) rows.push({ l: 'Último pagamento', v: lastFmt })
+    const lastYear = c.bars[c.bars.length - 1]?.year ?? ''
     resumo = {
-      heading: c.isFii && c.freq === 'Mensal' ? ['Renda que cai', 'todo mês.'] : ['O que pagou', 'em 12 meses.'],
+      heading: c.barsKind === 'capital'
+        ? ['Capital devolvido', 'em 12 meses.']
+        : c.isFii && c.freq === 'Mensal' ? ['Renda que cai', 'todo mês.'] : ['O que pagou', 'em 12 meses.'],
       subtitle: c.sum12 > 0
-        ? `${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}` : ''}`
-        : 'Sem pagamentos nos últimos 12 meses',
+        ? `${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}`
+        : cap12Fmt
+          ? `Sem ${kind} nos últimos 12 meses, e ${cap12Fmt} por ${unit} em amortização`
+          : 'Sem pagamentos nos últimos 12 meses',
       rows,
       bars: c.bars,
+      barsNote: `${c.barsKind === 'capital' ? 'Amortização' : c.isFii ? 'Rendimentos' : 'Dividendos + JCP'} por ${unit}, por ano · ${lastYear} considera os últimos 12 meses`,
     }
   }
 
@@ -338,8 +302,8 @@ function buildPayload(c: Core): DividendosPayload {
       paragraphs: [
         `Por lei (Lei 8.668/93), todo fundo imobiliário distribui no mínimo 95% do lucro apurado no semestre. Na prática, a maioria dos FIIs anuncia um rendimento por cota todos os meses: o fundo divulga o valor, define a data-com (quem tem a cota nesse dia recebe) e paga dias depois, direto na conta da corretora.`,
         c.count12 > 0
-          ? `Nos últimos 12 meses, ${c.ticker} fez ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a cota depois da data-com não recebe o rendimento daquele anúncio, entra no ciclo seguinte.`
-          : `${capOnly ?? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`} Vale conferir os relatórios gerenciais e os fatos relevantes do fundo antes de investir esperando renda mensal.`,
+          ? `Nos últimos 12 meses, ${c.ticker} distribuiu ${c.count12} ${evWord(c.count12)}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a cota depois da data-com não recebe o rendimento daquele anúncio, entra no ciclo seguinte.`
+          : `${noRecent} Vale conferir os relatórios gerenciais e os fatos relevantes do fundo antes de investir esperando renda mensal.`,
       ],
     })
   } else {
@@ -348,14 +312,14 @@ function buildPayload(c: Core): DividendosPayload {
       paragraphs: [
         `A ${c.name} distribui parte do lucro aos acionistas de duas formas: dividendos, isentos de imposto de renda pra pessoa física, e JCP (juros sobre capital próprio), com 15% retidos na fonte. O conselho aprova os pagamentos depois da divulgação dos resultados, define a data-com (quem tem a ação nesse dia recebe) e o valor por ação.`,
         c.count12 > 0
-          ? `Nos últimos 12 meses, ${c.ticker} fez ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a ação depois da data-com não recebe o provento daquele anúncio, entra no ciclo seguinte.`
-          : `${capOnly ?? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`} Isso pode refletir um ciclo de lucro fraco, prioridade de caixa pra reduzir dívida ou mudança na política de distribuição, vale acompanhar os fatos relevantes da empresa.`,
+          ? `Nos últimos 12 meses, ${c.ticker} distribuiu ${c.count12} ${evWord(c.count12)}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a ação depois da data-com não recebe o provento daquele anúncio, entra no ciclo seguinte.`
+          : `${noRecent} Isso pode refletir um ciclo de lucro fraco, prioridade de caixa pra reduzir dívida ou mudança na política de distribuição, vale acompanhar os fatos relevantes da empresa.`,
       ],
     })
   }
   if (c.sum12 > 0) {
-    const p1Bits: string[] = [`Nos últimos 12 meses, ${c.ticker} pagou ${sum12Fmt} por ${unit}`]
-    if (dyFmt) p1Bits.push(`, um dividend yield de ${dyFmt} sobre a cotação atual`)
+    const p1Bits: string[] = [`Nos últimos 12 meses, ${c.ticker} distribuiu ${sum12Fmt} por ${unit}`]
+    if (dyFmt) p1Bits.push(`, um dividend yield de ${dyFmt} sobre a cotação`)
     if (c.isFii) p1Bits.push(`, o equivalente a R$ ${nf2.format(c.sum12 / 12)} por cota ao mês na média`)
     p1Bits.push('.')
     if (c.strongest) p1Bits.push(` No recorte anual recente, o ano mais forte foi ${c.strongest.year}, com ${c.strongest.valFmt} por ${unit}.`)
@@ -387,16 +351,28 @@ function buildPayload(c: Core): DividendosPayload {
 
   /* FAQ (respostas com os dados reais quando existem) */
   const whenA = c.count12 > 0
-    ? `Nos últimos 12 meses, ${c.ticker} fez ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}${freqLower ? `, uma cadência ${freqLower}` : ''}.${lastFmt ? ` O último pagamento foi em ${lastFmt}.` : ''}${nextFmt ? ` O próximo já anunciado tem pagamento em ${nextFmt}.` : ' Novos anúncios saem como fato relevante e aparecem no histórico desta página.'}`
-    : `${capOnly ?? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`} Novos anúncios saem como fato relevante no site de RI e aparecem no histórico desta página.`
-  const dyA = c.dy != null
-    ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}${sum12Fmt && priceFmt ? `, considerando os ${sum12Fmt} pagos por ${unit} e a cotação atual de ${priceFmt}` : ''}. O número muda todos os dias com o preço, então use como referência, não como garantia.`
-    : `Sem pagamentos recentes, o dividend yield de 12 meses de ${c.ticker} fica zerado ou indisponível. Acompanhe a página do ativo pra ver quando a distribuição voltar.`
+    ? `Nos últimos 12 meses, ${c.ticker} distribuiu ${c.count12} ${evWord(c.count12)}${freqLower ? `, uma cadência ${freqLower}` : ''}.${lastFmt ? ` O último pagamento foi em ${lastFmt}.` : ''}${nextFmt ? ` O próximo já anunciado tem pagamento em ${nextFmt}.` : ' Novos anúncios saem como fato relevante e aparecem no histórico desta página.'}`
+    : `${noRecent} Novos anúncios saem como fato relevante no site de RI e aparecem no histórico desta página.`
+  // O DY citado é SEMPRE o mesmo do resto da página e do /asset. A resposta
+  // ramifica pelo que a página sabe: soma de 12 meses sem cotação não pode
+  // virar "sem pagamentos recentes" (a página afirma a soma logo abaixo).
+  const capOut = cap12Fmt ? ` A amortização de ${cap12Fmt} por ${unit} no período fica fora da conta, porque devolve capital.` : ''
+  const dyA = c.dy != null && c.sum12 > 0
+    ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}: os ${sum12Fmt} por ${unit} em ${c.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, divididos pela cotação.${capOut} O número muda todos os dias com o preço, então use como referência, não como garantia.`
+    : c.dy === 0
+      ? `${capOnly ? `${capOnly} Amortização não é rendimento, então` : `${c.ticker} não distribuiu ${kind} com data-com nos últimos 12 meses, então`} o dividend yield de 12 meses de ${c.ticker} é zero. Acompanhe a página do ativo pra ver quando a distribuição voltar.`
+      : c.dy != null
+        ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}, pelos dados consolidados de mercado. ${c.hist === 'indisponivel' ? 'O histórico detalhado de proventos está temporariamente indisponível nesta página.' : `Os pagamentos de ${c.ticker} ainda não estão na nossa base de proventos.`}`
+        : c.sum12 > 0
+          ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Sem a cotação de agora, o dividend yield fica indisponível: ele é essa soma dividida pelo preço da ${unit}.`
+          : `O dividend yield de 12 meses de ${c.ticker} está indisponível agora. Acompanhe a página do ativo pra ver quando o dado voltar.`
   const howMuchA = c.sum12 > 0
-    ? `${c.ticker} pagou ${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, somando ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}` : ''}.${c.isFii ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''}${cap12Fmt ? ` Fora isso, devolveu ${cap12Fmt} por ${unit} em amortização, que é capital de volta e fica fora do dividend yield.` : ''} A tabela desta página lista cada pagamento com data, tipo e valor.`
+    ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}.${c.isFii ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''}${cap12Fmt ? ` Fora isso, devolveu ${cap12Fmt} por ${unit} em amortização, que é capital de volta e fica fora do dividend yield.` : ''} A soma conta pela data-com: quem tinha a ${unit} nesse dia tem direito ao provento, mesmo que o pagamento caia depois. A tabela desta página lista cada pagamento com data, tipo e valor.`
     : capOnly
       ? `${capOnly} Amortização não é rendimento, então fica fora do dividend yield. A tabela desta página lista cada pagamento com data, tipo e valor.`
-      : `${c.ticker} não pagou proventos nos últimos 12 meses. O histórico completo da página mostra os anos anteriores quando existem.`
+      : c.hist === 'ok'
+        ? `${c.ticker} não pagou proventos nos últimos 12 meses. O histórico completo da página mostra os anos anteriores quando existem.`
+        : `${noRecent} Assim que houver pagamento registrado, ele aparece aqui.`
 
   const faq: NuFaqItem[] = [
     { q: `Quando o ${c.ticker} paga ${kind}?`, a: whenA },
@@ -420,7 +396,9 @@ function buildPayload(c: Core): DividendosPayload {
   /* SEO */
   const year = new Date().getFullYear()
   const descBits: string[] = []
-  if (c.sum12 > 0) descBits.push(`${c.ticker} pagou ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${dyFmt ? `, dividend yield de ${dyFmt}` : ''}.`)
+  if (c.sum12 > 0) descBits.push(`${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${dyFmt ? `, dividend yield de ${dyFmt}` : ''}.`)
+  else if (capOnly) descBits.push(capOnly)
+  else if (c.dy === 0) descBits.push(`${c.ticker} não distribuiu ${kind} nos últimos 12 meses.`)
   else if (dyFmt) descBits.push(`Dividend yield de ${c.ticker}: ${dyFmt}.`)
   else descBits.push(`Proventos de ${c.name} (${c.ticker}) na B3.`)
   descBits.push(`Veja o histórico completo, datas e próximos pagamentos de ${c.name}.`)
@@ -463,6 +441,8 @@ function petr4Seed(): DividendosPayload {
     sum12: 2.66,
     count12: 4,
     cap12: 0,
+    barsKind: 'renda',
+    hist: 'indisponivel',
     last: null,
     next: '2026-08-21',
     freq: 'Trimestral',
