@@ -126,8 +126,9 @@ interface Core {
   next: string | null
   freq: string | null
   bars: AcaoDividendBar[]
-  /** o que as barras somam: renda; amortização só quando o papel não teve renda */
+  /** o que as barras somam: renda; amortização só quando o papel não teve renda em 12 meses */
   barsKind: 'renda' | 'capital'
+  barsNote: string
   strongest: { year: string; valFmt: string } | null
   /** 'ok' = histórico com linhas · 'vazio' = a API respondeu sem nenhuma · 'indisponivel' = o fetch falhou */
   hist: 'ok' | 'vazio' | 'indisponivel'
@@ -158,13 +159,12 @@ function coreFromApi(
   const site = resolveSiteDy({ overviewDy: overviewDyOf(overview), price, rows, today })
 
   // Barras de renda; papel que só devolveu capital em 12 meses (BRIP11,
-  // INFB11, ENJU3...) mostra as barras de amortização, com rodapé próprio,
-  // em vez de perder o bloco inteiro.
-  const incomeBars = proventosBars(all, w.income12, true, today)
-  const bars = incomeBars.length || w.capital12 <= 0 ? incomeBars : proventosBars(all, w.capital12, false, today)
+  // INFB11, ENJU3...) mostra as de amortização, com rodapé próprio, em vez de
+  // perder o bloco inteiro (a mesma regra do /asset: proventosChart).
+  const chart = proventosChart(all, w, isFii, today)
   // ano mais forte do recorte anual de RENDA (a mesma régua das barras)
   let strongest: Core['strongest'] = null
-  for (const b of incomeBars) {
+  for (const b of chart.kind === 'renda' ? chart.bars : []) {
     const v = Number(b.valFmt.replace(/[^\d,]/g, '').replace(',', '.'))
     if (!strongest || v > Number(strongest.valFmt.replace(/[^\d,]/g, '').replace(',', '.'))) {
       strongest = { year: b.year, valFmt: b.valFmt }
@@ -196,8 +196,9 @@ function coreFromApi(
     last: paid[0]?.payDate ?? null,
     next: future.length ? future[future.length - 1]!.payDate : null,
     freq: proventosFrequency(w.events12),
-    bars,
-    barsKind: incomeBars.length || !bars.length ? 'renda' : 'capital',
+    bars: chart.bars,
+    barsKind: chart.kind,
+    barsNote: chart.note,
     strongest,
     hist: rows === null ? 'indisponivel' : rows.length ? 'ok' : 'vazio',
     historyRows,
@@ -260,7 +261,6 @@ function buildPayload(c: Core): DividendosPayload {
     if (c.count12 > 0) rows.push({ l: `${c.isFii ? 'Rendimentos' : 'Proventos'} em 12 meses`, v: String(c.count12) })
     if (nextFmt) rows.push({ l: 'Próximo pagamento', v: nextFmt, accent: 'green' })
     else if (lastFmt) rows.push({ l: 'Último pagamento', v: lastFmt })
-    const lastYear = c.bars[c.bars.length - 1]?.year ?? ''
     resumo = {
       heading: c.barsKind === 'capital'
         ? ['Capital devolvido', 'em 12 meses.']
@@ -272,7 +272,7 @@ function buildPayload(c: Core): DividendosPayload {
           : 'Sem pagamentos nos últimos 12 meses',
       rows,
       bars: c.bars,
-      barsNote: `${c.barsKind === 'capital' ? 'Amortização' : c.isFii ? 'Rendimentos' : 'Dividendos + JCP'} por ${unit}, por ano · ${lastYear} considera os últimos 12 meses`,
+      barsNote: c.barsNote,
     }
   }
 
@@ -442,6 +442,7 @@ function petr4Seed(): DividendosPayload {
     count12: 4,
     cap12: 0,
     barsKind: 'renda',
+    barsNote: 'Dividendos + JCP por ação, por ano · 2026 considera os últimos 12 meses',
     hist: 'indisponivel',
     last: null,
     next: '2026-08-21',
