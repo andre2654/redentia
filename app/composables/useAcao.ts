@@ -1213,21 +1213,6 @@ function statusOf(e: unknown): number | null {
   return err?.statusCode ?? err?.status ?? err?.response?.status ?? null
 }
 
-/**
- * 410 Gone do papel deslistado. `fatal` + `data` porque quem renderiza é o
- * app/error.vue: o statusMessage vira o status HTTP (o que o Google lê) e o
- * `data` carrega ticker e data pra copy, sem a página de erro ter que
- * reparsear frase.
- */
-function delistedError(ticker: string, delistedAt: string | null) {
-  return createError({
-    statusCode: 410,
-    statusMessage: delistedMessage(ticker, delistedAt),
-    data: { ticker, delistedAt },
-    fatal: true,
-  })
-}
-
 async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   let res: Awaited<ReturnType<typeof acaoFetchProfile>>
   try {

@@ -99,3 +99,19 @@ export function delistedMessage(ticker: string, raw: string | null | undefined):
     ? `${ticker} foi deslistado da B3 em ${dia}`
     : `${ticker} foi deslistado da B3`
 }
+
+/**
+ * 410 Gone do papel deslistado. `fatal` + `data` porque quem renderiza é o
+ * app/error.vue: o statusMessage vira o status HTTP (o que o Google lê) e o
+ * `data` carrega ticker e data pra copy, sem a página de erro ter que
+ * reparsear frase. Usado pelo /asset (useAcao) e pelo /dividendos
+ * (useDividendos) — as duas páginas por ticker que o Google indexa.
+ */
+export function delistedError(ticker: string, delistedAt: string | null) {
+  return createError({
+    statusCode: 410,
+    statusMessage: delistedMessage(ticker, delistedAt),
+    data: { ticker, delistedAt },
+    fatal: true,
+  })
+}
