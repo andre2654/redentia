@@ -755,8 +755,11 @@ function buildDividends(rows: ProventoRow[], ticker: string, isFii: boolean, dy:
   // amortização da mesma data-com chegam em linhas separadas (Backend #54).
   const freq = proventosFrequency(w.events12)
   if (freq) statRows.push({ l: 'Frequência', v: freq })
-  const future = rows.filter((d) => d.payDate > today).sort((a, b) => a.payDate.localeCompare(b.payDate))[0]
-  if (future) statRows.push({ l: 'Próximo pagamento', v: dateShortPt(future.payDate) })
+  // Só parcela com data de pagamento é "próxima"; a com pagamento a definir
+  // (#54) vira "a definir", nunca a data-com (proventosAgenda).
+  const agenda = proventosAgenda(rows, today)
+  if (agenda.next) statRows.push({ l: 'Próximo pagamento', v: dateShortPt(agenda.next) })
+  else if (agenda.pendingUpcoming) statRows.push({ l: 'Próximo pagamento', v: 'a definir' })
 
   // Barras por ano (design: ano corrente = últimos 12 meses, footnote explica).
   // Quem só devolveu capital em 12 meses mostra a amortização, com rodapé
