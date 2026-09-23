@@ -100,6 +100,27 @@ interface DivRow {
   date: string // payment_date ISO
   rate: number
   label: string
+  /** false = devolução de capital (amortização): vai pra tabela, fica fora da soma de 12M e do DY */
+  income: boolean
+}
+
+/**
+ * Amortização de FII ("Amortização", "Amortizacao Rf") e restituição de
+ * capital ("Rest Cap Din") devolvem o dinheiro do próprio cotista. Somadas ao
+ * rendimento, um fundo que amortizou R$ 10 e rendeu R$ 0,80 a R$ 90 aparecia
+ * com 12% de yield: em 23/09/2026, 93 papéis tinham mais de 5% da soma de 12M
+ * vindos daí. É a mesma régua do DY do /asset (INCOME_TYPES no
+ * fundamentals-scraper, ScrapeDividends::INCOME_TYPES no Backend, que já
+ * entrega renda e capital da mesma data-com em linhas separadas). Rótulo
+ * desconhecido conta como renda, que é o comportamento de antes.
+ */
+const CAPITAL_RE = /amortiza|rest\w* cap|restitui/
+function isCapitalLabel(label: string): boolean {
+  const parts = label
+    .split('+')
+    .map((p) => p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase())
+    .filter(Boolean)
+  return parts.length > 0 && parts.every((p) => CAPITAL_RE.test(p))
 }
 
 interface Core {
@@ -111,6 +132,8 @@ interface Core {
   dy: number | null
   sum12: number
   count12: number
+  /** amortização paga nos últimos 12M (R$ por cota/ação), fora da soma e do DY */
+  cap12: number
   /** último pagamento efetivado / próximo anunciado (ISO) */
   last: string | null
   next: string | null
@@ -157,11 +180,10 @@ function coreFromApi(
 
   // GOTCHA runtime: chave literal `"label "` (espaço) e rate string.
   const rows: DivRow[] = (dividends ?? [])
-    .map((d) => ({
-      date: String(d.payment_date ?? ''),
-      rate: num(d.rate) ?? 0,
-      label: String((d.label ?? (d as Record<string, unknown>)['label ']) ?? '').trim(),
-    }))
+    .map((d) => {
+      const label = String((d.label ?? (d as Record<string, unknown>)['label ']) ?? '').trim()
+      return { date: String(d.payment_date ?? ''), rate: num(d.rate) ?? 0, label, income: !isCapitalLabel(label) }
+    })
     .filter((d) => !!d.date && d.rate > 0)
     .sort((a, b) => b.date.localeCompare(a.date))
 
@@ -169,8 +191,12 @@ function coreFromApi(
   const cutoff12 = localISODate(new Date(Date.now() - 365 * 86_400_000))
   const paid = rows.filter((d) => d.date <= today)
   const future = rows.filter((d) => d.date > today)
-  const last12 = paid.filter((d) => d.date > cutoff12)
+  const paidIncome = paid.filter((d) => d.income)
+  const last12 = paidIncome.filter((d) => d.date > cutoff12)
   const sum12 = last12.reduce((a, d) => a + d.rate, 0)
+  const cap12 = paid
+    .filter((d) => !d.income && d.date > cutoff12)
+    .reduce((a, d) => a + d.rate, 0)
 
   // DY 12M: a MESMA conta que a página imprime. Title, hero, resumo e FAQ
   // dizem "pagou R$ X em 12 meses (DY Y%)", e o FAQ ainda cita a cotação; com
@@ -193,7 +219,7 @@ function coreFromApi(
     ? last12.length >= 10 ? 'Mensal' : last12.length >= 4 ? 'Trimestral' : last12.length >= 2 ? 'Semestral' : 'Anual'
     : null
 
-  const bars = buildBars(paid, sum12)
+  const bars = buildBars(paidIncome, sum12)
   // ano mais forte do recorte anual (a mesma régua das barras)
   let strongest: Core['strongest'] = null
   for (const b of bars) {
@@ -221,6 +247,7 @@ function coreFromApi(
     dy,
     sum12,
     count12: last12.length,
+    cap12,
     last: paid[0]?.date ?? null,
     next: future.length ? future[future.length - 1]!.date : null,
     freq,
@@ -238,6 +265,12 @@ function buildPayload(c: Core): DividendosPayload {
   const priceFmt = c.price != null ? `R$ ${nf2.format(c.price)}` : null
   const dyFmt = c.dy != null ? `${nf2.format(c.dy)}%` : null
   const sum12Fmt = c.sum12 > 0 ? `R$ ${nf2.format(c.sum12)}` : null
+  const cap12Fmt = c.cap12 > 0 ? `R$ ${nf2.format(c.cap12)}` : null
+  // 16 papéis em 23/09/2026 só devolveram capital em 12 meses (BRIP11,
+  // INFB11, ENJU3...): "não registrou pagamentos" seria falso.
+  const capOnly = c.sum12 <= 0 && cap12Fmt
+    ? `${c.ticker} não distribuiu ${kind} nos últimos 12 meses: os ${cap12Fmt} por ${unit} pagos no período foram amortização, devolução do capital investido.`
+    : null
   const lastFmt = c.last ? dateShortPt(c.last) : null
   const nextFmt = c.next ? dateShortPt(c.next) : null
 
@@ -251,7 +284,9 @@ function buildPayload(c: Core): DividendosPayload {
 
   const heroSub = c.sum12 > 0
     ? `${c.name} pagou ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Veja o histórico completo, as datas e o que esperar dos próximos pagamentos.`
-    : `${c.name} não registrou pagamentos nos últimos 12 meses. Veja o histórico completo e o dividend yield do papel na B3.`
+    : capOnly
+      ? `${capOnly} Veja o histórico completo e as datas de cada pagamento.`
+      : `${c.name} não registrou pagamentos nos últimos 12 meses. Veja o histórico completo e o dividend yield do papel na B3.`
 
   /* resumo 12M */
   let resumo: DividendosPayload['resumo'] = null
@@ -259,6 +294,7 @@ function buildPayload(c: Core): DividendosPayload {
     const rows: AcaoStatRow[] = []
     if (dyFmt) rows.push({ l: 'Dividend yield (12M)', v: dyFmt })
     if (sum12Fmt) rows.push({ l: `Total por ${unit} (12M)`, v: sum12Fmt })
+    if (cap12Fmt) rows.push({ l: `Amortização por ${unit} (12M)`, v: cap12Fmt })
     if (c.isFii && c.sum12 > 0) rows.push({ l: 'Média mensal (12M)', v: `R$ ${nf2.format(c.sum12 / 12)}` })
     if (c.freq) rows.push({ l: 'Frequência', v: c.freq })
     if (c.count12 > 0) rows.push({ l: 'Pagamentos em 12 meses', v: String(c.count12) })
@@ -301,7 +337,7 @@ function buildPayload(c: Core): DividendosPayload {
         `Por lei (Lei 8.668/93), todo fundo imobiliário distribui no mínimo 95% do lucro apurado no semestre. Na prática, a maioria dos FIIs anuncia um rendimento por cota todos os meses: o fundo divulga o valor, define a data-com (quem tem a cota nesse dia recebe) e paga dias depois, direto na conta da corretora.`,
         c.count12 > 0
           ? `Nos últimos 12 meses, ${c.ticker} fez ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a cota depois da data-com não recebe o rendimento daquele anúncio, entra no ciclo seguinte.`
-          : `${c.ticker} não registrou pagamentos nos últimos 12 meses. Vale conferir os relatórios gerenciais e os fatos relevantes do fundo antes de investir esperando renda mensal.`,
+          : `${capOnly ?? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`} Vale conferir os relatórios gerenciais e os fatos relevantes do fundo antes de investir esperando renda mensal.`,
       ],
     })
   } else {
@@ -311,7 +347,7 @@ function buildPayload(c: Core): DividendosPayload {
         `A ${c.name} distribui parte do lucro aos acionistas de duas formas: dividendos, isentos de imposto de renda pra pessoa física, e JCP (juros sobre capital próprio), com 15% retidos na fonte. O conselho aprova os pagamentos depois da divulgação dos resultados, define a data-com (quem tem a ação nesse dia recebe) e o valor por ação.`,
         c.count12 > 0
           ? `Nos últimos 12 meses, ${c.ticker} fez ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a ação depois da data-com não recebe o provento daquele anúncio, entra no ciclo seguinte.`
-          : `${c.ticker} não registrou pagamentos nos últimos 12 meses. Isso pode refletir um ciclo de lucro fraco, prioridade de caixa pra reduzir dívida ou mudança na política de distribuição, vale acompanhar os fatos relevantes da empresa.`,
+          : `${capOnly ?? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`} Isso pode refletir um ciclo de lucro fraco, prioridade de caixa pra reduzir dívida ou mudança na política de distribuição, vale acompanhar os fatos relevantes da empresa.`,
       ],
     })
   }
@@ -350,13 +386,15 @@ function buildPayload(c: Core): DividendosPayload {
   /* FAQ (respostas com os dados reais quando existem) */
   const whenA = c.count12 > 0
     ? `Nos últimos 12 meses, ${c.ticker} fez ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}${freqLower ? `, uma cadência ${freqLower}` : ''}.${lastFmt ? ` O último pagamento foi em ${lastFmt}.` : ''}${nextFmt ? ` O próximo já anunciado tem pagamento em ${nextFmt}.` : ' Novos anúncios saem como fato relevante e aparecem no histórico desta página.'}`
-    : `${c.ticker} não registrou pagamentos nos últimos 12 meses. Novos anúncios saem como fato relevante no site de RI e aparecem no histórico desta página.`
+    : `${capOnly ?? `${c.ticker} não registrou pagamentos nos últimos 12 meses.`} Novos anúncios saem como fato relevante no site de RI e aparecem no histórico desta página.`
   const dyA = c.dy != null
     ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}${sum12Fmt && priceFmt ? `, considerando os ${sum12Fmt} pagos por ${unit} e a cotação atual de ${priceFmt}` : ''}. O número muda todos os dias com o preço, então use como referência, não como garantia.`
     : `Sem pagamentos recentes, o dividend yield de 12 meses de ${c.ticker} fica zerado ou indisponível. Acompanhe a página do ativo pra ver quando a distribuição voltar.`
   const howMuchA = c.sum12 > 0
-    ? `${c.ticker} pagou ${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, somando ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}` : ''}.${c.isFii ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''} A tabela desta página lista cada pagamento com data, tipo e valor.`
-    : `${c.ticker} não pagou proventos nos últimos 12 meses. O histórico completo da página mostra os anos anteriores quando existem.`
+    ? `${c.ticker} pagou ${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, somando ${c.count12} ${c.count12 === 1 ? 'pagamento' : 'pagamentos'}` : ''}.${c.isFii ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''}${cap12Fmt ? ` Fora isso, devolveu ${cap12Fmt} por ${unit} em amortização, que é capital de volta e fica fora do dividend yield.` : ''} A tabela desta página lista cada pagamento com data, tipo e valor.`
+    : capOnly
+      ? `${capOnly} Amortização não é rendimento, então fica fora do dividend yield. A tabela desta página lista cada pagamento com data, tipo e valor.`
+      : `${c.ticker} não pagou proventos nos últimos 12 meses. O histórico completo da página mostra os anos anteriores quando existem.`
 
   const faq: NuFaqItem[] = [
     { q: `Quando o ${c.ticker} paga ${kind}?`, a: whenA },
@@ -422,6 +460,7 @@ function petr4Seed(): DividendosPayload {
     dy: 6.95,
     sum12: 2.66,
     count12: 4,
+    cap12: 0,
     last: null,
     next: '2026-08-21',
     freq: 'Trimestral',
