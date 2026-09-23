@@ -14,6 +14,8 @@
  *
  * Regras de existência (thin content é pior que nada):
  *  - profile 404                         → 404
+ *  - papel deslistado (envelope `delisted` do perfil, 410 no perfil ou 410
+ *    no /dividends) → 410, igual ao /asset (app/utils/delisted.ts)
  *  - histórico VAZIO (fetch ok) + sem DY → 404 (nada pra dizer)
  *  - histórico indisponível (fetch falhou) + sem DY → 503 (transitório;
  *    404 transitório envenenaria o índice do Google)
@@ -441,21 +443,47 @@ function statusOf(e: unknown): number | null {
 }
 
 async function loadDividendos(base: string, ticker: string): Promise<DividendosPayload> {
-  let profile: TickerProfileApi
+  let res: Awaited<ReturnType<typeof acaoFetchProfile>>
   try {
-    profile = (await acaoFetchProfile(base, ticker)).data
+    res = await acaoFetchProfile(base, ticker)
   } catch (e) {
-    if (statusOf(e) === 404) {
+    const status = statusOf(e)
+    if (status === 404) {
       throw createError({ statusCode: 404, statusMessage: `Ativo ${ticker} não encontrado` })
+    }
+    // Mesmo veredito do /asset: se o perfil um dia responder 410, "saiu da
+    // B3" não pode virar "nosso servidor caiu".
+    if (status === 410) {
+      throw delistedError(ticker, delistedAtOfError(e))
     }
     if (ticker === 'PETR4') return petr4Seed()
     throw createError({ statusCode: 503, statusMessage: 'Dados temporariamente indisponíveis' })
   }
 
+  // SINAL PRIMÁRIO do deslistado (o mesmo do useAcao): perfil 200 com
+  // `delisted: true` no envelope. Até 23/09/2026 esta página não olhava o
+  // envelope, o /dividends e o /overview respondiam 410, os dois viravam
+  // "indisponível" e a regra de existência abaixo servia 503 — BRFS3, JBSS3,
+  // NEOE3, MOAR3, ELMD3, BCFF11, MFAI11 e AXIA5 diziam ao Google "volte
+  // depois" sobre páginas que não voltam.
+  if (isDelistedEnvelope(res)) {
+    throw delistedError(ticker, delistedAtOf(res))
+  }
+  const profile: TickerProfileApi = res.data
+
   const [overviewR, dividendsR] = await Promise.allSettled([
     acaoFetchOverview(base, ticker),
     acaoFetchDividends(base, ticker),
   ])
+
+  // CINTO-E-SUSPENSÓRIO: o histórico de proventos é a espinha desta página
+  // (o papel da série de preços no /asset). 410 nele é o backend afirmando a
+  // deslistagem mesmo que o envelope do perfil não tenha vindo marcado.
+  // 410 só no overview NÃO derruba: o DY é complemento, e a regra de
+  // existência abaixo já decide o que fazer sem ele.
+  if (dividendsR.status === 'rejected' && statusOf(dividendsR.reason) === 410) {
+    throw delistedError(ticker, delistedAtOfError(dividendsR.reason))
+  }
   const overview = overviewR.status === 'fulfilled' ? overviewR.value?.data ?? null : null
   const dividends = dividendsR.status === 'fulfilled'
     ? ((dividendsR.value?.data ?? []) as unknown as Record<string, unknown>[])

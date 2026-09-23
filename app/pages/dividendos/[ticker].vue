@@ -10,7 +10,8 @@
 // Dados: useDividendos (SSR-first, /tickers + /fundamentals/overview +
 // /dividends). Existência: regex → 404 antes de fetch; lowercase → 301
 // MAIÚSCULO (mesmo padrão do /asset); ticker sem NENHUM provento e sem DY →
-// 404 (thin content é pior que nada).
+// 404 (thin content é pior que nada); papel deslistado da B3 → 410, igual
+// ao /asset.
 //
 // SEO: canonical /dividendos/{TICKER}, title com o ano corrente, FAQPage
 // JSON-LD emitido pelo NuFaqAccordion (fonte única) + BreadcrumbList
@@ -40,7 +41,20 @@ const ticker = String(useRoute().params.ticker ?? '').toUpperCase()
 const { data, error } = await useDividendos(ticker)
 
 if (error.value || !data.value) {
-  const status = (error.value as { statusCode?: number } | null)?.statusCode
+  const err = error.value as { statusCode?: number, statusMessage?: string, data?: unknown } | null
+  const status = err?.statusCode
+  // 404 e 410 atravessam inteiros, como no /asset: 410 é "existiu e saiu da
+  // B3" (app/utils/delisted.ts). Até 23/09/2026 esta linha traduzia o 410 em
+  // 503 e mandava o Google voltar depois. Qualquer outro erro é transitório
+  // e segue 503: um 404/410 por backend fora envenenaria o índice.
+  if (status === 410) {
+    throw createError({
+      statusCode: 410,
+      statusMessage: err?.statusMessage || delistedMessage(ticker, null),
+      data: err?.data ?? { ticker, delistedAt: null },
+      fatal: true,
+    })
+  }
   throw createError({
     statusCode: status === 404 ? 404 : 503,
     statusMessage: status === 404 ? `Sem histórico de proventos para ${ticker}` : 'Dados temporariamente indisponíveis',
