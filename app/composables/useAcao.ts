@@ -797,6 +797,10 @@ function buildDividends(rows: ProventoRow[], ticker: string, isFii: boolean, dy:
   if (!chart.bars.length) return null
 
   const dyv = dy.value
+  // DY oficial, soma de 12 meses e cotação que não fecham entre si (±5%): a
+  // soma sai do subtítulo (a cotação está no topo da página e o DY aqui ao
+  // lado) e as barras ficam marcadas como valor pago, sem ajuste.
+  const openCalc = dyv != null && dyv > 0 && w.income12 > 0 && !dy.sumMatches
   const heading: [string, string] = dyv != null && dyv >= 6
     ? ['Uma máquina', 'de dividendos.']
     : dyv != null && dyv >= 2
@@ -806,13 +810,15 @@ function buildDividends(rows: ProventoRow[], ticker: string, isFii: boolean, dy:
   return {
     heading,
     subtitle: w.income12 > 0
-      ? `R$ ${nf2.format(w.income12)} por ${unit} nos últimos 12 meses`
+      ? openCalc
+        ? `${w.events12} ${isFii ? (w.events12 === 1 ? 'rendimento' : 'rendimentos') : w.events12 === 1 ? 'provento' : 'proventos'} nos últimos 12 meses`
+        : `R$ ${nf2.format(w.income12)} por ${unit} nos últimos 12 meses`
       : w.capital12 > 0
         ? `Sem ${isFii ? 'rendimentos' : 'dividendos'} nos últimos 12 meses, e R$ ${nf2.format(w.capital12)} por ${unit} em amortização`
         : 'Sem pagamentos nos últimos 12 meses',
     rows: statRows,
     bars: chart.bars,
-    barsNote: chart.note,
+    barsNote: openCalc ? `${chart.note} · valores como foram pagos, sem ajuste` : chart.note,
     sum12: w.income12,
   }
 }
