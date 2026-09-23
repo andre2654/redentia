@@ -53,10 +53,7 @@ const incomePill = computed(() => {
         </div>
       </div>
       <div class="adv__right">
-        <NuDividendBars
-          :bars="dividends.bars"
-          :footnote="`Dividendos + JCP por ação, por ano · ${dividends.bars[dividends.bars.length - 1]?.year ?? ''} considera os últimos 12 meses`"
-        />
+        <NuDividendBars :bars="dividends.bars" :footnote="dividends.barsNote" />
       </div>
     </div>
   </section>
