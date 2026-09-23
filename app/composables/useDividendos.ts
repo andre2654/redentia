@@ -237,18 +237,26 @@ function buildPayload(c: Core): DividendosPayload {
         : `Ainda não temos os pagamentos de ${c.ticker} na nossa base de proventos.`)
   const lastFmt = c.last ? dateShortPt(c.last) : null
   const nextFmt = c.next ? dateShortPt(c.next) : null
+  // DY oficial, soma de 12 meses e cotação que não fecham entre si (±5%):
+  // juntos no hero ou no resumo, o leitor divide e acha outro número (BBDC4
+  // "1,09% · R$ 2,64 · R$ 18,03" dá 14,6%). Nesse caso a soma sai do hero e do
+  // resumo, e onde ela aparece vem marcada como valor pago, sem ajuste.
+  const openCalc = c.dy != null && c.dy > 0 && c.sum12 > 0 && !c.dyMatchesSum
+  const asPaid = openCalc ? ', valores como foram pagos, sem ajuste' : ''
 
   /* hero */
   const stats: AcaoStatRow[] = []
   if (dyFmt) stats.push({ l: 'Dividend yield (12M)', v: dyFmt })
-  if (sum12Fmt) stats.push({ l: c.isFii ? 'Rendimentos (12M)' : 'Proventos (12M)', v: `${sum12Fmt} / ${unit}` })
-  else if (cap12Fmt) stats.push({ l: 'Amortização (12M)', v: `${cap12Fmt} / ${unit}` })
+  if (sum12Fmt && !openCalc) stats.push({ l: c.isFii ? 'Rendimentos (12M)' : 'Proventos (12M)', v: `${sum12Fmt} / ${unit}` })
+  else if (cap12Fmt && !sum12Fmt) stats.push({ l: 'Amortização (12M)', v: `${cap12Fmt} / ${unit}` })
   if (priceFmt) stats.push({ l: 'Cotação', v: priceFmt })
   if (nextFmt) stats.push({ l: 'Próximo pagamento', v: nextFmt, accent: 'green' })
   else if (lastFmt) stats.push({ l: 'Último pagamento', v: lastFmt })
 
   const heroSub = c.sum12 > 0
-    ? `${c.name} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Veja o histórico completo, as datas e o que esperar dos próximos pagamentos.`
+    ? openCalc
+      ? `${c.name} distribuiu ${c.count12} ${evWord(c.count12)} nos últimos 12 meses. Veja o histórico completo, as datas e o que esperar dos próximos pagamentos.`
+      : `${c.name} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Veja o histórico completo, as datas e o que esperar dos próximos pagamentos.`
     : capOnly
       ? `${capOnly} Veja o histórico completo e as datas de cada pagamento.`
       : c.hist === 'ok'
@@ -260,9 +268,9 @@ function buildPayload(c: Core): DividendosPayload {
   if (c.bars.length) {
     const rows: AcaoStatRow[] = []
     if (dyFmt) rows.push({ l: 'Dividend yield (12M)', v: dyFmt })
-    if (sum12Fmt) rows.push({ l: `Total por ${unit} (12M)`, v: sum12Fmt })
+    if (sum12Fmt && !openCalc) rows.push({ l: `Total por ${unit} (12M)`, v: sum12Fmt })
     if (cap12Fmt) rows.push({ l: `Amortização por ${unit} (12M)`, v: cap12Fmt })
-    if (c.isFii && c.sum12 > 0) rows.push({ l: 'Média mensal (12M)', v: `R$ ${nf2.format(c.sum12 / 12)}` })
+    if (c.isFii && c.sum12 > 0 && !openCalc) rows.push({ l: 'Média mensal (12M)', v: `R$ ${nf2.format(c.sum12 / 12)}` })
     if (c.freq) rows.push({ l: 'Frequência', v: c.freq })
     if (c.count12 > 0) rows.push({ l: `${c.isFii ? 'Rendimentos' : 'Proventos'} em 12 meses`, v: String(c.count12) })
     if (nextFmt) rows.push({ l: 'Próximo pagamento', v: nextFmt, accent: 'green' })
@@ -272,13 +280,15 @@ function buildPayload(c: Core): DividendosPayload {
         ? ['Capital devolvido', 'em 12 meses.']
         : c.isFii && c.freq === 'Mensal' ? ['Renda que cai', 'todo mês.'] : ['O que pagou', 'em 12 meses.'],
       subtitle: c.sum12 > 0
-        ? `${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}`
+        ? openCalc
+          ? `${c.count12} ${evWord(c.count12)} nos últimos 12 meses`
+          : `${sum12Fmt} por ${unit} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}`
         : cap12Fmt
           ? `Sem ${kind} nos últimos 12 meses, e ${cap12Fmt} por ${unit} em amortização`
           : 'Sem pagamentos nos últimos 12 meses',
       rows,
       bars: c.bars,
-      barsNote: c.barsNote,
+      barsNote: openCalc ? `${c.barsNote} · valores como foram pagos, sem ajuste` : c.barsNote,
     }
   }
 
@@ -324,9 +334,9 @@ function buildPayload(c: Core): DividendosPayload {
     })
   }
   if (c.sum12 > 0) {
-    const p1Bits: string[] = [`Nos últimos 12 meses, ${c.ticker} distribuiu ${sum12Fmt} por ${unit}`]
+    const p1Bits: string[] = [`Nos últimos 12 meses, ${c.ticker} distribuiu ${sum12Fmt} por ${unit}${asPaid}`]
     if (dyFmt && c.dyMatchesSum) p1Bits.push(`, um dividend yield de ${dyFmt} sobre a cotação`)
-    if (c.isFii) p1Bits.push(`, o equivalente a R$ ${nf2.format(c.sum12 / 12)} por cota ao mês na média`)
+    if (c.isFii && !openCalc) p1Bits.push(`, o equivalente a R$ ${nf2.format(c.sum12 / 12)} por cota ao mês na média`)
     p1Bits.push('.')
     if (c.strongest) p1Bits.push(` No recorte anual recente, o ano mais forte foi ${c.strongest.year}, com ${c.strongest.valFmt} por ${unit}.`)
     edu.push({
@@ -367,10 +377,10 @@ function buildPayload(c: Core): DividendosPayload {
   const dyA = c.dy != null && c.sum12 > 0 && c.dyMatchesSum
     ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}: os ${sum12Fmt} por ${unit} em ${c.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, divididos pela cotação.${capOut} O número muda todos os dias com o preço, então use como referência, não como garantia.`
     : c.dy != null && c.dy > 0 && c.sum12 > 0
-      // O oficial não fecha com a soma da página (desdobramento ou grupamento
-      // na janela: a tabela mostra o valor como foi pago). Nada de dizer que
-      // um sai do outro.
-      ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}, o número oficial: ${c.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, ajustados por desdobramento e grupamento, divididos pela cotação. A tabela desta página mostra cada pagamento como ele foi feito, sem esse ajuste.${capOut} O número muda todos os dias com o preço, então use como referência, não como garantia.`
+      // O oficial não fecha com a soma da página. A causa varia (desdobramento
+      // na janela, cotação que andou desde o fechamento, número de outra
+      // fonte), então o texto descreve as duas contas e não afirma o porquê.
+      ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}. O DY oficial é calculado sobre os ${c.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, ajustados, e a cotação do fechamento; a soma da tabela desta página mostra os valores como foram pagos.${capOut} O número muda todos os dias com o preço, então use como referência, não como garantia.`
     : c.dy === 0
       ? `${capOnly ? `${capOnly} Amortização não é rendimento, então` : `${c.ticker} não distribuiu ${kind} com data-com nos últimos 12 meses, então`} o dividend yield de 12 meses de ${c.ticker} é zero. Acompanhe a página do ativo pra ver quando a distribuição voltar.`
       : c.dy != null
@@ -379,7 +389,7 @@ function buildPayload(c: Core): DividendosPayload {
           ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. O dividend yield oficial de 12 meses está indisponível agora. Acompanhe a página do ativo pra ver quando o dado voltar.`
           : `O dividend yield de 12 meses de ${c.ticker} está indisponível agora. Acompanhe a página do ativo pra ver quando o dado voltar.`
   const howMuchA = c.sum12 > 0
-    ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}.${c.isFii ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''}${cap12Fmt ? ` Fora isso, devolveu ${cap12Fmt} por ${unit} em amortização, que é capital de volta e fica fora do dividend yield.` : ''} A soma conta pela data-com: quem tinha a ${unit} nesse dia tem direito ao provento, mesmo que o pagamento caia depois. A tabela desta página lista cada pagamento com data, tipo e valor.`
+    ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${asPaid}${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}.${c.isFii && !openCalc ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''}${cap12Fmt ? ` Fora isso, devolveu ${cap12Fmt} por ${unit} em amortização, que é capital de volta e fica fora do dividend yield.` : ''} A soma conta pela data-com: quem tinha a ${unit} nesse dia tem direito ao provento, mesmo que o pagamento caia depois. A tabela desta página lista cada pagamento com data, tipo e valor.`
     : capOnly
       ? `${capOnly} Amortização não é rendimento, então fica fora do dividend yield. A tabela desta página lista cada pagamento com data, tipo e valor.`
       : c.hist === 'ok'
