@@ -11,7 +11,7 @@
  *  - redentia_score é 0-10 comprimido → display PERCENTIL /100 (×10, mesma
  *    régua do /asset, decisão PR2).
  */
-import type { RankingAssetType, RankingColumnKey, RankingRowApi } from '~/types/rankings'
+import type { RankingAssetType, RankingColumnKey, RankingMeta, RankingRowApi, RankingTypeFilter } from '~/types/rankings'
 
 const nfBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -218,6 +218,11 @@ export const RANKING_API_TYPE: Record<RankingAssetType, 'STOCK' | 'REIT' | 'BDR'
  */
 export function rankingApiTypes(types: RankingAssetType[]): Array<'STOCK' | 'REIT' | 'BDR'> {
   return types.map((t) => RANKING_API_TYPE[t])
+}
+
+/** Colunas da tab ativa: as da classe, se o ranking declarar, senão as padrão. */
+export function rankingColumnsFor(meta: RankingMeta, type: RankingTypeFilter): RankingColumnKey[] {
+  return (type !== 'todos' && meta.columnsByType?.[type]) || meta.columns
 }
 
 /**

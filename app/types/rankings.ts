@@ -71,6 +71,12 @@ export interface RankingMeta {
   chips: string[]
   /** Colunas configuráveis, em ordem (a 1ª é o default do leader). */
   columns: RankingColumnKey[]
+  /**
+   * Colunas de uma tab específica, quando a classe não tem alguma coluna do
+   * padrão (FII não tem P/L). Linha sem coluna sai da tabela
+   * (rankingRowComplete), então sem isto a tab de FIIs ficaria vazia.
+   */
+  columnsByType?: Partial<Record<RankingAssetType, RankingColumnKey[]>>
   /** Métrica do número-herói do RankLeader (nem sempre a 1ª coluna). */
   primaryMetric: RankingColumnKey
   /** Label da coluna change quando não é "Hoje" (ex.: '30d', '12m'). */

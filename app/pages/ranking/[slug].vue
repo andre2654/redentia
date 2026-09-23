@@ -38,7 +38,7 @@ const copy: RankingCopy = loader ? (await loader()).default : EMPTY_COPY
 // ————— dados (SSR, reativo a ?type=) —————
 const {
   rows, tesouroRows, count, pending, unavailable, empty,
-  leader, tesouroLeader, activeType, setType, isTesouro,
+  leader, tesouroLeader, activeType, setType, isTesouro, columns,
 } = useRanking(meta)
 
 const isScore = slug === 'redentia-score'
@@ -170,7 +170,7 @@ usePageSeo({
       </div>
       <RankTesouroTable v-else-if="isTesouro" :rows="tesouroRows" />
       <RankTable
-        v-else :rows="rows" :columns="meta.columns" :change-label="meta.changeLabel"
+        v-else :rows="rows" :columns="columns" :change-label="meta.changeLabel"
         :breakdown="isScore"
       />
 

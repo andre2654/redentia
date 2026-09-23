@@ -69,7 +69,8 @@ export function useRanking(meta: RankingMeta) {
         // DY com FIIs: sem min_cap=0 o filtro default de R$500M zera a lista.
         min_cap: meta.reitMinCapZero && t === 'REIT' ? 0 : undefined,
       })
-      const rows = (resp.data ?? []).filter((r) => rankingRowComplete(r, meta.columns)).slice(0, RANKING_ROWS)
+      const cols = rankingColumnsFor(meta, activeType.value)
+      const rows = (resp.data ?? []).filter((r) => rankingRowComplete(r, cols)).slice(0, RANKING_ROWS)
       return { rows, tesouroRows: [] }
     },
     {
@@ -87,6 +88,8 @@ export function useRanking(meta: RankingMeta) {
    *  estado que não muda sozinho, pede copy própria. */
   const empty = computed(() => !pending.value && count.value === 0 && !error.value)
   const leader = computed(() => rows.value[0] ?? null)
+  /** colunas da tab ativa (ver rankingColumnsFor) */
+  const columns = computed(() => rankingColumnsFor(meta, activeType.value))
   const tesouroLeader = computed(() => tesouroRows.value[0] ?? null)
 
   return {
@@ -102,5 +105,6 @@ export function useRanking(meta: RankingMeta) {
     activeType,
     setType,
     isTesouro,
+    columns,
   }
 }
