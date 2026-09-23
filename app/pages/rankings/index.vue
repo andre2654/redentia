@@ -66,7 +66,7 @@ const { data: scoreTop } = await useAsyncData(
       // mesmo universo e mesma regra de linha completa do /ranking/redentia-score
       const meta = RANKINGS['redentia-score']
       const resp = await fetchRanking('redentia-score', { limit: 10, type: meta ? rankingApiTypes(meta.types) : null })
-      return (resp.data ?? []).filter((r) => !meta || rankingRowComplete(r, meta.columns)).slice(0, 5)
+      return meta ? rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 5).rows : (resp.data ?? []).slice(0, 5)
     } catch {
       return [] // degrade honesto: destaque some, hub continua
     }
@@ -93,8 +93,10 @@ async function loadPreview(slug: string) {
       previews[slug] = rows.slice(0, 3).map((r) => ({ ticker: r.name, value: r.rate }))
       return
     }
-    // a prévia mostra o topo DA PÁGINA: mesmo universo declarado e sem linha
-    // incompleta (senão o card de maiores-lucros prévia BDR e a página, Petrobras)
+    // a prévia mostra o topo DA PÁGINA: mesmo universo declarado e a mesma
+    // seleção de linhas (senão o card de maiores-lucros prévia BDR e a página,
+    // Petrobras). Sem o número da métrica, a linha não vira prévia: "PETR4 —"
+    // não diz nada, e o card fica só com a copy.
     const resp = await fetchRanking(meta.endpoint, {
       limit: 10,
       type: rankingApiTypes(meta.types),
@@ -102,7 +104,10 @@ async function loadPreview(slug: string) {
       days: meta.extraParams?.days ? Number(meta.extraParams.days) : undefined,
     })
     const col = RANKING_COLUMNS[meta.primaryMetric]
-    previews[slug] = (resp.data ?? []).filter((row) => rankingRowComplete(row, meta.columns)).slice(0, 3).map((row) => ({
+    previews[slug] = rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 10).rows
+      .filter((row) => col.raw(row) != null)
+      .slice(0, 3)
+      .map((row) => ({
       ticker: rankingTicker(row),
       value: col.format(row),
     }))

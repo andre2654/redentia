@@ -225,18 +225,73 @@ export function rankingColumnsFor(meta: RankingMeta, type: RankingTypeFilter): R
   return (type !== 'todos' && meta.columnsByType?.[type]) || meta.columns
 }
 
+/** Linha com cotação (market_price ?? close). */
+function rankingRowPriced(row: RankingRowApi): boolean {
+  return num(row.market_price) != null || num(row.close) != null
+}
+
 /**
- * Linha publicável: tem cotação e TODAS as colunas que a página mostra.
+ * Linha completa: tem cotação e TODAS as colunas que a página mostra.
  *
  * Varredura de 23/09/2026: o /ranking/maiores-altas-12-meses saía com 104
  * células "—" e o /ranking/maiores-lucros com "—" no lucro das 50 linhas.
- * Célula vazia numa tabela de dados é sinal de qualidade contra o site; a
- * linha incompleta sai (o useRanking pede mais linhas que exibe pra a tabela
- * continuar cheia) em vez de ser impressa pela metade.
+ * Célula vazia numa tabela de dados é sinal de qualidade contra o site, então
+ * a tabela prefere as linhas completas (ver rankingTable).
  */
 export function rankingRowComplete(row: RankingRowApi, columns: RankingColumnKey[]): boolean {
-  if (num(row.market_price) == null && num(row.close) == null) return false
+  if (!rankingRowPriced(row)) return false
   return columns.every((key) => RANKING_COLUMNS[key].raw(row) != null)
+}
+
+/** Abaixo disso, descartar linha incompleta deixaria a página quase vazia. */
+const MIN_COMPLETE_ROWS = 10
+
+export interface RankingTable {
+  rows: RankingRowApi[]
+  /** colunas exibidas: as da tab, menos as vazias na maioria das linhas (a métrica principal fica) */
+  columns: RankingColumnKey[]
+}
+
+/**
+ * Linhas e colunas que o ranking publica, sempre na ordem da API.
+ *
+ *  1. As linhas completas (rankingRowComplete), quando são pelo menos 10 (ou
+ *     todas as que a API mandou). É o normal com o Backend #56: tabela sem "—".
+ *  2. Senão, a tabela não encolhe até sumir: entram as linhas com cotação e a
+ *     métrica principal e, se nem ela vier, as linhas com cotação.
+ *  3. Coluna vazia em mais da metade das linhas exibidas sai da tabela (a tab
+ *     de FIIs do 30 dias saía com "—" no valor de mercado de 49 das 50); a da
+ *     métrica principal fica, com "—" onde faltar (o que produção já mostra
+ *     hoje no maiores-lucros).
+ *
+ * Por quê: com a API de 23/09/2026, o `yearly-change` não manda DY e o
+ * `top-net-income`, o `top-revenue` e o `top-net-margin` não mandam lucro nem
+ * receita em NENHUMA linha. Só com a regra 1, cinco rankings (maiores-lucros,
+ * maiores-receitas, maiores-margem-liquida e os dois de 12 meses) saíam com 0
+ * linhas no SSR se o front subisse antes do Backend #56, e a tab de FIIs de
+ * outros quatro com 0 ou 2 (FII sem valor de mercado). Ranking vazio no HTML
+ * é pior que "—".
+ */
+export function rankingTable(
+  rows: RankingRowApi[],
+  columns: RankingColumnKey[],
+  primary: RankingColumnKey,
+  limit: number,
+): RankingTable {
+  const priced = rows.filter(rankingRowPriced)
+  const floor = Math.max(1, Math.min(MIN_COMPLETE_ROWS, priced.length))
+  const complete = priced.filter((r) => rankingRowComplete(r, columns))
+  let shown = complete
+  if (complete.length < floor) {
+    const withPrimary = priced.filter((r) => RANKING_COLUMNS[primary].raw(r) != null)
+    shown = withPrimary.length >= floor ? withPrimary : priced
+  }
+  shown = shown.slice(0, limit)
+  return {
+    rows: shown,
+    columns: columns.filter((c) => c === primary
+      || shown.filter((r) => RANKING_COLUMNS[c].raw(r) != null).length * 2 >= shown.length),
+  }
 }
 
 /**

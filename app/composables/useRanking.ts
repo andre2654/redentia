@@ -8,7 +8,10 @@
  * educacional continua servida (o SEO não morre com o backend).
  *
  * Linha sem cotação ou sem alguma das colunas da página não é impressa com
- * "—": sai da lista (rankingRowComplete), e a API é consultada com folga.
+ * "—": sai da lista (rankingRowComplete), e a API é consultada com folga. Se
+ * isso deixasse a página vazia ou quase (a API de antes do Backend #56 não
+ * manda DY no 12 meses nem lucro no maiores-lucros), a tabela fica com as
+ * linhas que existem e "—" onde falta (rankingTable). Nunca SSR vazio.
  * "Todos" manda à API o universo declarado em meta.types (lista de tipos).
  *
  * Caso especial tesouro-direto (endpoint sentinel 'tesouro'): deriva de
@@ -17,6 +20,7 @@
  */
 import type {
   RankingAssetType,
+  RankingColumnKey,
   RankingMeta,
   RankingRowApi,
   RankingTypeFilter,
@@ -27,7 +31,7 @@ import type {
 const RANKING_ROWS = 50
 /**
  * Pedido à API (máx. 100): linha incompleta sai da tabela
- * (rankingRowComplete), e a superamostra mantém as 50.
+ * (rankingTable), e a superamostra mantém as 50.
  */
 const FETCH_LIMIT = 100
 
@@ -52,9 +56,9 @@ export function useRanking(meta: RankingMeta) {
 
   const { data, pending, error } = useAsyncData(
     `ranking-${meta.slug}`,
-    async (): Promise<{ rows: RankingRowApi[]; tesouroRows: TesouroRankingRow[] }> => {
+    async (): Promise<{ rows: RankingRowApi[]; columns: RankingColumnKey[]; tesouroRows: TesouroRankingRow[] }> => {
       if (isTesouro) {
-        return { rows: [], tesouroRows: await fetchTesouroRanking() }
+        return { rows: [], columns: [], tesouroRows: await fetchTesouroRanking() }
       }
       // "Todos" = o universo que o ranking DECLARA (meta.types), não a B3
       // inteira: o maiores-lucros é SO_ACOES e mostrava 50 BDRs com NVDC34 em
@@ -69,13 +73,12 @@ export function useRanking(meta: RankingMeta) {
         // DY com FIIs: sem min_cap=0 o filtro default de R$500M zera a lista.
         min_cap: meta.reitMinCapZero && t === 'REIT' ? 0 : undefined,
       })
-      const cols = rankingColumnsFor(meta, activeType.value)
-      const rows = (resp.data ?? []).filter((r) => rankingRowComplete(r, cols)).slice(0, RANKING_ROWS)
-      return { rows, tesouroRows: [] }
+      const table = rankingTable(resp.data ?? [], rankingColumnsFor(meta, activeType.value), meta.primaryMetric, RANKING_ROWS)
+      return { rows: table.rows, columns: table.columns, tesouroRows: [] }
     },
     {
       watch: [activeType],
-      default: () => ({ rows: [] as RankingRowApi[], tesouroRows: [] as TesouroRankingRow[] }),
+      default: () => ({ rows: [] as RankingRowApi[], columns: [] as RankingColumnKey[], tesouroRows: [] as TesouroRankingRow[] }),
     },
   )
 
@@ -88,8 +91,8 @@ export function useRanking(meta: RankingMeta) {
    *  estado que não muda sozinho, pede copy própria. */
   const empty = computed(() => !pending.value && count.value === 0 && !error.value)
   const leader = computed(() => rows.value[0] ?? null)
-  /** colunas da tab ativa (ver rankingColumnsFor) */
-  const columns = computed(() => rankingColumnsFor(meta, activeType.value))
+  /** colunas exibidas: as da tab ativa (rankingColumnsFor), menos as vazias em todas as linhas (rankingTable) */
+  const columns = computed(() => (data.value?.columns?.length ? data.value.columns : rankingColumnsFor(meta, activeType.value)))
   const tesouroLeader = computed(() => tesouroRows.value[0] ?? null)
 
   return {

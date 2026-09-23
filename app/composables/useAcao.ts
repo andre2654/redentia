@@ -253,6 +253,8 @@ function extractFund(ov: FundamentalsOverviewApi | null): Fund | null {
 interface EtfInfo {
   name: string | null // book_name em title-case ('Ishare Sp500')
   bookName: string | null // bruto ('ISHARE SP500') — linha 'Nome de pregão'
+  /** Perf.Y do scanner do TradingView (série ajustada), em pontos % */
+  change12m: number | null
   shareholders: number | null
   volume: number | null
   lotSize: number | null
@@ -270,6 +272,7 @@ function extractEtf(ov: FundamentalsOverviewApi | null): EtfInfo | null {
     // e o prettyName sobre o ProfileResource mutila ('Ishare Sp500ci').
     name: e.book_name ? titleCasePt(e.book_name) : null,
     bookName: e.book_name ?? null,
+    change12m: e.change_12m ?? null,
     shareholders: e.num_shareholders ?? null,
     volume: e.volume ?? null,
     lotSize: e.lot_size ?? null,
@@ -281,28 +284,34 @@ function extractEtf(ov: FundamentalsOverviewApi | null): EtfInfo | null {
 }
 
 /**
- * Variação de 12 meses tirada do PRÓPRIO gráfico da página (a mesma série), só
- * quando a série cobre de fato 12 meses.
+ * Variação de 12 meses do ETF (card "Variação 12 meses").
  *
- * Por quê (23/09/2026): o card mostrava o `change12m` do TradingView cru. No
- * BRAZ11 ele saiu "+12,69%" com a cota a R$ 12,65–12,69 — o número batia com o
- * preço por coincidência, mas não havia como conferir: a série do ativo aqui
- * tem 18 pregões. Número que a própria página não sustenta, não sai.
+ * Primeiro o número do Backend: o `change_12m` do overview é o Perf.Y do
+ * scanner do TradingView, calculado sobre a série AJUSTADA dele. A série do
+ * gráfico (ticker_historical_prices_si) só é ajustada até 28/08/2026; depois
+ * disso o preço gravado é cru, e um desdobramento no meio vira variação (o
+ * T2TD34, grupamento com data-com em 18/09/2026, leria +2.643,67%).
+ * Sem o número do Backend, a conta pela série só sai com 12 meses de série e
+ * entre metade e o dobro do preço inicial: é o teto que o ranking de 12 meses
+ * do Backend (#56) usa quando não tem referência, porque mexida maior é do
+ * tamanho de um evento que não chegou.
  */
-function seriesChange12m(series: SeriesPoint[]): number | null {
+function etfChange12m(e: EtfInfo, series: SeriesPoint[]): number | null {
+  if (e.change12m != null && Number.isFinite(e.change12m)) return e.change12m
   if (series.length < 2) return null
   const first = series[0]!
   const last = series[series.length - 1]!
   const days = (Date.parse(last.t) - Date.parse(first.t)) / 86_400_000
-  if (!(days >= 350) || !(first.v > 0)) return null
-  return (last.v / first.v - 1) * 100
+  if (!(days >= 350) || !(first.v > 0) || !(last.v > 0)) return null
+  const factor = last.v / first.v
+  return factor >= 0.5 && factor <= 2 ? (factor - 1) * 100 : null
 }
 
 /** Stats dark do chart pra ETF (não existe DRE/valuation de empresa). */
 function buildEtfChartStats(e: EtfInfo | null, series: SeriesPoint[]): AcaoStatRow[] {
   if (!e) return []
   const rows: AcaoStatRow[] = []
-  const change12m = seriesChange12m(series)
+  const change12m = etfChange12m(e, series)
   if (change12m != null) rows.push({ l: 'Variação 12 meses', v: pctFmt(change12m) })
   if (e.shareholders != null) rows.push({ l: 'Cotistas', v: nf0.format(e.shareholders) })
   if (e.volume != null) rows.push({ l: 'Volume diário', v: moneyBig(e.volume, 2) })
