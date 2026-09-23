@@ -8,7 +8,7 @@
  *
  * Os três casos têm copy PRÓPRIA porque dizem coisas diferentes:
  *  - 404: nunca existiu (ou o link quebrou);
- *  - 410: existiu e saiu da B3 (papel deslistado — /asset/{TICKER} dos 372
+ *  - 410: existiu e saiu da B3 (papel deslistado — /asset e /dividendos dos 372
  *    marcados em 18/09/2026). Aqui NÃO se oferece "tente de novo": o dado não
  *    volta, e o convite certo é ranking ou busca;
  *  - resto: o nosso lado caiu e volta.
@@ -18,7 +18,7 @@ const props = defineProps<{
     statusCode?: number
     statusMessage?: string
     message?: string
-    /** 410 do /asset: o useAcao manda ticker e data já resolvidos. */
+    /** 410 do /asset e do /dividendos: delistedError() manda ticker e data. */
     data?: { ticker?: string, delistedAt?: string | null }
   }
 }>()
