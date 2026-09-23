@@ -107,7 +107,7 @@ interface Core {
   name: string
   isFii: boolean
   price: number | null
-  /** DY 12M em % (overview quando existe; senão sum12/price) */
+  /** DY 12M em %: sum12/price sempre que há soma de 12M; o do overview só sem soma */
   dy: number | null
   sum12: number
   count12: number
@@ -172,11 +172,21 @@ function coreFromApi(
   const last12 = paid.filter((d) => d.date > cutoff12)
   const sum12 = last12.reduce((a, d) => a + d.rate, 0)
 
-  // DY 12M: overview primeiro (número oficial); fallback sum12/price.
+  // DY 12M: a MESMA conta que a página imprime. Title, hero, resumo e FAQ
+  // dizem "pagou R$ X em 12 meses (DY Y%)", e o FAQ ainda cita a cotação; com
+  // o DY do overview (outra fonte, outra janela, outro dia) a frase se
+  // contradizia na SERP: BBDC4 em 23/09/2026 saiu "R$ 3,10 por ação em 12
+  // meses (DY 1,10%)" a R$ 18,44. Com soma de 12M na página, DY = soma ÷
+  // cotação, e sem cotação não há DY (melhor omitir que imprimir um número
+  // que não fecha com a soma ao lado). O DY do overview só entra quando a
+  // página não afirma soma nenhuma (histórico vazio ou indisponível), e o
+  // aviso honesto do histórico diz de onde ele vem.
   const dyOverview = se?.valuation?.dividend_yield
     ?? se?.fii?.dividend_yield_12m
     ?? num(overview?.key_statistics?.dividend_yield)
-  const dy = dyOverview ?? (price != null && price > 0 && sum12 > 0 ? (sum12 / price) * 100 : null)
+  const dy = sum12 > 0
+    ? (price != null && price > 0 ? (sum12 / price) * 100 : null)
+    : dyOverview ?? null
 
   // Cadência observada (heurística do /asset): ≥10 Mensal · ≥4 Trimestral · ≥2 Semestral · 1 Anual.
   const freq = last12.length
