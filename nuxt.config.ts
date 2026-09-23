@@ -186,6 +186,24 @@ export default defineNuxtConfig({
     // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
     // paralela) — os redirects provisórios pro ranking saíram; as regras de
     // cache vivem no bloco de cache acima.
+    //
+    // Slugs FANTASMAS do StatusInvest, apagados do tesouro_direto_si em
+    // 18/09/2026 quando o snapshot passou pro CSV do Tesouro Transparente, e
+    // desde então 404 com URL já indexada (~140 impressões em 90 dias). Os 8
+    // Renda+ são os MESMOS títulos do CSV com o ano +3 (o SI rotulava errado;
+    // maturity_date idêntica, 2049-12-15…2084-12-15). O NTN-B 2028 nunca foi
+    // ofertado no Tesouro Direto: vai pro degrau mais próximo da escada (2030).
+    // O tesouro-reserva-2036 NÃO entra aqui: é título real (lançado em
+    // 11/05/2026) e voltou pelo CSV de vendas no fundamentals-scraper.
+    '/tesouro/tesouro-renda-aposentadoria-extra-2033': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2030', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2038': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2035', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2043': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2040', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2048': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2045', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2053': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2050', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2058': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2055', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2063': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2060', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2068': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2065', statusCode: 301 } },
+    '/tesouro/tesouro-ipca-com-juros-semestrais-2028': { redirect: { to: '/tesouro/tesouro-ipca-com-juros-semestrais-2030', statusCode: 301 } },
     // direto pra raiz (o /mercado também 301a pra '/' — evita corrente de 301)
     '/mercado-completo': { redirect: { to: '/', statusCode: 301 } },
     // /legal/* → /institucional/* (mesmos 3 slugs; a antiga tinha ~471
