@@ -33,6 +33,11 @@ export default defineNuxtConfig({
     // Server-only: URL direta do Laravel pros fetches SSR (evita loopback do
     // Nitro no próprio proxy). Override: NUXT_BACKEND_DIRECT_BASE.
     backendDirectBase: process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api',
+    // Server-only: chave compartilhada com o Laravel (FRONT_SHARED_KEY lá). Com
+    // ela, o rate limit do backend conta cada VISITANTE em vez do IP de saída
+    // da Vercel. Vazia = desligada. Ver server/plugins/backend-front-key.ts.
+    // Override: NUXT_BACKEND_FRONT_KEY.
+    backendFrontKey: '',
     public: {
       // Browser SEMPRE fala com same-origin (/api/backend, /api/chat) — zero CORS.
       // chatDirectUrl: escape hatch se o proxy Vercel bufferizar SSE (lição do Atlas).
@@ -277,6 +282,9 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // useEvent() fora de handler: o server/plugins/backend-front-key.ts lê o
+    // request em curso de dentro do $fetch do SSR pra carimbar o IP do visitante.
+    experimental: { asyncContext: true },
     // Dev: browser fetches de /api/* vão pro VPS por default (dev funciona sem
     // backend local). Override: NUXT_BACKEND_URL / NUXT_CHAT_SERVICE_URL.
     devProxy: {
