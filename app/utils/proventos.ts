@@ -35,22 +35,18 @@ export interface ProventoRow {
 }
 
 /**
- * Amortização de FII ("Amortização", "Amortizacao Rf") e restituição de
- * capital ("Rest Cap Din") devolvem o dinheiro do próprio cotista. Somadas ao
- * rendimento, um fundo que amortizou R$ 10 e rendeu R$ 0,80 a R$ 90 aparecia
- * com 12% de yield: em 23/09/2026, 93 papéis tinham mais de 5% da soma de 12M
- * vindos daí. A régua é a do INCOME_TYPES do fundamentals-scraper e do
- * ScrapeDividends::INCOME_TYPES do Backend. Rótulo desconhecido conta como
- * renda; rótulo misto ("Rendimento + Amortização", a API de antes do #54)
- * também, porque não dá pra separar o valor.
+ * R1 do Backend (ScrapeDividends::isCapital, rodrigoborges/redentia-api#54) e
+ * do fundamentals-scraper, EXATA: o rótulo inteiro, sem acento e sem caixa, é
+ * CAPITAL se contém `amortiza` ou tem uma palavra começando por `rest` e outra
+ * por `cap` (Amortização, Amortizacao Rf, Rest Cap Din, Restituição de
+ * Capital). Todo o resto é renda. Rótulo misto ("Rendimento + Amortização",
+ * da API de antes do #54) é CAPITAL: contado como renda, levava a amortização
+ * pro yield (KOPA11 saía com DY de 301,97%). Amortização somada ao rendimento
+ * era a origem de 93 papéis com mais de 5% da soma de 12M em 23/09/2026.
  */
-const CAPITAL_RE = /amortiza|rest\w* cap|restitui/
 export function isCapitalLabel(label: string): boolean {
-  const parts = label
-    .split('+')
-    .map((p) => p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase())
-    .filter(Boolean)
-  return parts.length > 0 && parts.every((p) => CAPITAL_RE.test(p))
+  const l = label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  return l.includes('amortiza') || (/\brest/.test(l) && /\bcap/.test(l))
 }
 
 function isoDay(v: unknown): string {
@@ -202,45 +198,44 @@ export function overviewDyOf(ov: {
   return Number.isFinite(n) ? n : null
 }
 
-export type SiteDyBasis = 'oficial' | 'renda-12m' | 'sem-renda'
+export type SiteDyBasis = 'oficial' | 'sem-renda'
 
 export interface SiteDy {
-  /** DY de 12 meses em % — o número que a página imprime em todo lugar; null = não imprime */
+  /** DY de 12 meses em % — o número que a página imprime em todo lugar; null = indisponível */
   value: number | null
   /**
-   * 'oficial' = o do overview · 'renda-12m' = renda com data-com em 12 meses ÷
-   * cotação, calculada aqui · 'sem-renda' = zero, porque o histórico existe e
+   * 'oficial' = o do overview · 'sem-renda' = zero, porque o histórico existe e
    * não tem provento de renda com data-com nos últimos 12 meses.
    */
   basis: SiteDyBasis | null
   /** renda com data-com em 12 meses (R$ por ação/cota); null = histórico indisponível ou vazio */
   income12: number | null
+  /**
+   * A soma de renda de 12 meses ÷ cotação fecha com o DY exibido (±5%). Só
+   * então a página pode escrever que o DY "sai" da soma (title, FAQ, texto).
+   * Quando não fecha — desdobramento na janela (a soma é dos valores como
+   * foram pagos, o oficial é ajustado) ou soma ainda inflada —, a soma aparece
+   * sozinha, sem essa afirmação.
+   */
+  sumMatches: boolean
 }
 
-/**
- * Quanto o DY oficial pode se afastar da renda de 12 meses ÷ cotação antes
- * de a página deixar de imprimi-lo. O oficial é calculado sobre o preço do
- * snapshot do scraper (06h30/18h30); a cotação da página é a de agora, e um
- * pregão comum move bem menos que 5%. Diferença maior é outro número (o
- * rendimento indicado do TradingView quando o histórico do papel parou, ou
- * soma inflada), e a página não imprime um DY que não fecha com a soma de 12
- * meses que ela mesma mostra.
- */
-const DY_TOLERANCE = 0.05
+/** Quanto a renda de 12 meses ÷ cotação pode se afastar do DY exibido e ainda "fechar" com ele. */
+const SUM_MATCH_TOLERANCE = 0.05
 
 /**
  * O DY de 12 meses do site (D1). Mesmos insumos, mesmo número, no /asset e no
  * /dividendos:
- *  - histórico indisponível (fetch falhou) ou vazio: o oficial, se positivo;
- *  - histórico com linhas e SEM renda com data-com em 12 meses: 0 (a página
- *    diz "sem pagamentos" e o DY concorda — era aqui que o indicado do
- *    TradingView vazava: EPAR3 137,13%, COCE6, BSLI4, RAIL3, RAPT4);
- *  - renda em 12 meses: o oficial quando fecha com renda ÷ cotação (±5%);
- *    senão (ausente, zero, ou outro número), a própria conta renda ÷ cotação.
- *
- * Limite conhecido: a soma daqui não é ajustada por desdobramento. Papel com
- * evento de quantidade dentro da janela discorda do oficial e sai com a conta
- * local; o conserto é a API entregar o provento já ajustado.
+ *  - histórico com linhas e SEM renda com data-com em 12 meses: 0, e a página
+ *    diz "sem pagamentos" (era aqui que o indicado do TradingView vazava:
+ *    EPAR3 137,13%, COCE6, BSLI4, RAIL3, RAPT4);
+ *  - renda em 12 meses e oficial > 0: o OFICIAL, sempre. Ele é ajustado por
+ *    desdobramento e a soma daqui não é: trocá-lo pela conta local imprimia
+ *    SBSP3 19,31% (5:1 em 28/04/2026) no lugar de ~2,5%, TEPP11 37,21% no de
+ *    16,4%, BKNG34 13,99% no de ~0,7%;
+ *  - renda em 12 meses sem oficial (null ou 0): indisponível. A conta local
+ *    só serviria sem evento de quantidade na janela, e daqui não dá pra saber;
+ *  - histórico indisponível (fetch falhou) ou vazio: o oficial, se positivo.
  */
 export function resolveSiteDy(input: {
   overviewDy: number | null | undefined
@@ -249,19 +244,19 @@ export function resolveSiteDy(input: {
   rows: readonly ProventoRow[] | null
   today?: string
 }): SiteDy {
-  const official = input.overviewDy != null && Number.isFinite(input.overviewDy) ? input.overviewDy : null
+  const official = input.overviewDy != null && Number.isFinite(input.overviewDy) && input.overviewDy > 0 ? input.overviewDy : null
   const price = input.price != null && input.price > 0 ? input.price : null
   if (input.rows == null || input.rows.length === 0) {
-    return official != null && official > 0
-      ? { value: official, basis: 'oficial', income12: null }
-      : { value: null, basis: null, income12: null }
+    return { value: official, basis: official != null ? 'oficial' : null, income12: null, sumMatches: false }
   }
   const { income12 } = proventos12m(input.rows, input.today)
-  if (income12 <= 0) return { value: 0, basis: 'sem-renda', income12: 0 }
+  if (income12 <= 0) return { value: 0, basis: 'sem-renda', income12: 0, sumMatches: false }
+  if (official == null) return { value: null, basis: null, income12, sumMatches: false }
   const local = price != null ? (income12 / price) * 100 : null
-  if (official != null && official > 0 && (local == null || Math.abs(official - local) <= DY_TOLERANCE * local)) {
-    return { value: official, basis: 'oficial', income12 }
+  return {
+    value: official,
+    basis: 'oficial',
+    income12,
+    sumMatches: local != null && Math.abs(official - local) <= SUM_MATCH_TOLERANCE * local,
   }
-  if (local != null) return { value: local, basis: 'renda-12m', income12 }
-  return { value: null, basis: null, income12 }
 }

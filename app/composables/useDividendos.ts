@@ -115,6 +115,11 @@ interface Core {
    * número do /asset. 0 = sem provento de renda com data-com em 12 meses.
    */
   dy: number | null
+  /**
+   * renda de 12M ÷ cotação fecha com o DY (±5%): só então o texto diz que o DY
+   * sai da soma. Sem fechar (desdobramento na janela), a soma aparece sozinha.
+   */
+  dyMatchesSum: boolean
   /** renda com data-com nos últimos 12M (R$ por cota/ação); amortização fora */
   sum12: number
   /** proventos de renda distintos (um por data-com) nos últimos 12M */
@@ -190,6 +195,7 @@ function coreFromApi(
     isFii,
     price,
     dy: site.value,
+    dyMatchesSum: site.sumMatches,
     sum12: w.income12,
     count12: w.events12,
     cap12: w.capital12,
@@ -319,7 +325,7 @@ function buildPayload(c: Core): DividendosPayload {
   }
   if (c.sum12 > 0) {
     const p1Bits: string[] = [`Nos últimos 12 meses, ${c.ticker} distribuiu ${sum12Fmt} por ${unit}`]
-    if (dyFmt) p1Bits.push(`, um dividend yield de ${dyFmt} sobre a cotação`)
+    if (dyFmt && c.dyMatchesSum) p1Bits.push(`, um dividend yield de ${dyFmt} sobre a cotação`)
     if (c.isFii) p1Bits.push(`, o equivalente a R$ ${nf2.format(c.sum12 / 12)} por cota ao mês na média`)
     p1Bits.push('.')
     if (c.strongest) p1Bits.push(` No recorte anual recente, o ano mais forte foi ${c.strongest.year}, com ${c.strongest.valFmt} por ${unit}.`)
@@ -354,17 +360,23 @@ function buildPayload(c: Core): DividendosPayload {
     ? `Nos últimos 12 meses, ${c.ticker} distribuiu ${c.count12} ${evWord(c.count12)}${freqLower ? `, uma cadência ${freqLower}` : ''}.${lastFmt ? ` O último pagamento foi em ${lastFmt}.` : ''}${nextFmt ? ` O próximo já anunciado tem pagamento em ${nextFmt}.` : ' Novos anúncios saem como fato relevante e aparecem no histórico desta página.'}`
     : `${noRecent} Novos anúncios saem como fato relevante no site de RI e aparecem no histórico desta página.`
   // O DY citado é SEMPRE o mesmo do resto da página e do /asset. A resposta
-  // ramifica pelo que a página sabe: soma de 12 meses sem cotação não pode
-  // virar "sem pagamentos recentes" (a página afirma a soma logo abaixo).
+  // ramifica pelo que a página sabe: a soma só "gera" o DY quando fecha com
+  // ele (dyMatchesSum), e soma de 12 meses sem DY não pode virar "sem
+  // pagamentos recentes" (a página afirma a soma logo abaixo).
   const capOut = cap12Fmt ? ` A amortização de ${cap12Fmt} por ${unit} no período fica fora da conta, porque devolve capital.` : ''
-  const dyA = c.dy != null && c.sum12 > 0
+  const dyA = c.dy != null && c.sum12 > 0 && c.dyMatchesSum
     ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}: os ${sum12Fmt} por ${unit} em ${c.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, divididos pela cotação.${capOut} O número muda todos os dias com o preço, então use como referência, não como garantia.`
+    : c.dy != null && c.dy > 0 && c.sum12 > 0
+      // O oficial não fecha com a soma da página (desdobramento ou grupamento
+      // na janela: a tabela mostra o valor como foi pago). Nada de dizer que
+      // um sai do outro.
+      ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}, o número oficial: ${c.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, ajustados por desdobramento e grupamento, divididos pela cotação. A tabela desta página mostra cada pagamento como ele foi feito, sem esse ajuste.${capOut} O número muda todos os dias com o preço, então use como referência, não como garantia.`
     : c.dy === 0
       ? `${capOnly ? `${capOnly} Amortização não é rendimento, então` : `${c.ticker} não distribuiu ${kind} com data-com nos últimos 12 meses, então`} o dividend yield de 12 meses de ${c.ticker} é zero. Acompanhe a página do ativo pra ver quando a distribuição voltar.`
       : c.dy != null
         ? `O dividend yield de 12 meses de ${c.ticker} é ${dyFmt}, pelos dados consolidados de mercado. ${c.hist === 'indisponivel' ? 'O histórico detalhado de proventos está temporariamente indisponível nesta página.' : `Os pagamentos de ${c.ticker} ainda não estão na nossa base de proventos.`}`
         : c.sum12 > 0
-          ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. Sem a cotação de agora, o dividend yield fica indisponível: ele é essa soma dividida pelo preço da ${unit}.`
+          ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses. O dividend yield oficial de 12 meses está indisponível agora. Acompanhe a página do ativo pra ver quando o dado voltar.`
           : `O dividend yield de 12 meses de ${c.ticker} está indisponível agora. Acompanhe a página do ativo pra ver quando o dado voltar.`
   const howMuchA = c.sum12 > 0
     ? `${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${c.count12 ? `, em ${c.count12} ${evWord(c.count12)}` : ''}.${c.isFii ? ` Na média, R$ ${nf2.format(c.sum12 / 12)} por cota ao mês.` : ''}${cap12Fmt ? ` Fora isso, devolveu ${cap12Fmt} por ${unit} em amortização, que é capital de volta e fica fora do dividend yield.` : ''} A soma conta pela data-com: quem tinha a ${unit} nesse dia tem direito ao provento, mesmo que o pagamento caia depois. A tabela desta página lista cada pagamento com data, tipo e valor.`
@@ -396,7 +408,7 @@ function buildPayload(c: Core): DividendosPayload {
   /* SEO */
   const year = new Date().getFullYear()
   const descBits: string[] = []
-  if (c.sum12 > 0) descBits.push(`${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${dyFmt ? `, dividend yield de ${dyFmt}` : ''}.`)
+  if (c.sum12 > 0) descBits.push(`${c.ticker} distribuiu ${sum12Fmt} por ${unit} em ${kind} nos últimos 12 meses${dyFmt && c.dyMatchesSum ? `, dividend yield de ${dyFmt}` : ''}.`)
   else if (capOnly) descBits.push(capOnly)
   else if (c.dy === 0) descBits.push(`${c.ticker} não distribuiu ${kind} nos últimos 12 meses.`)
   else if (dyFmt) descBits.push(`Dividend yield de ${c.ticker}: ${dyFmt}.`)
@@ -422,7 +434,7 @@ function buildPayload(c: Core): DividendosPayload {
       // A resposta já estava na página (heroSub, acima), só não estava no title,
       // que é o que a pessoa lê na SERP antes de decidir clicar.
       title: c.sum12 > 0
-        ? `Dividendos ${c.ticker} ${year}: ${sum12Fmt} por ${unit} em 12 meses${dyFmt ? ` (DY ${dyFmt})` : ''}`
+        ? `Dividendos ${c.ticker} ${year}: ${sum12Fmt} por ${unit} em 12 meses${dyFmt && c.dyMatchesSum ? ` (DY ${dyFmt})` : ''}`
         : `Dividendos ${c.ticker} ${year}: histórico, DY e próximos pagamentos`,
       description: descBits.join(' '),
     },
@@ -438,6 +450,7 @@ function petr4Seed(): DividendosPayload {
     isFii: false,
     price: 38.25,
     dy: 6.95,
+    dyMatchesSum: true,
     sum12: 2.66,
     count12: 4,
     cap12: 0,
