@@ -63,10 +63,11 @@ const { data: scoreTop } = await useAsyncData(
   'rankings-hub-score-top5',
   async () => {
     try {
-      // mesmo universo e mesma regra de linha completa do /ranking/redentia-score
+      // o mesmo pedido e a mesma seleção de linhas do /ranking/redentia-score
       const meta = RANKINGS['redentia-score']
-      const resp = await fetchRanking('redentia-score', { limit: 10, type: meta ? rankingApiTypes(meta.types) : null })
-      return meta ? rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 5).rows : (resp.data ?? []).slice(0, 5)
+      if (!meta) return []
+      const resp = await fetchRanking('redentia-score', rankingFetchParams(meta, 'todos'))
+      return rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 5).rows
     } catch {
       return [] // degrade honesto: destaque some, hub continua
     }
@@ -97,20 +98,12 @@ async function loadPreview(slug: string) {
     // seleção de linhas (senão o card de maiores-lucros prévia BDR e a página,
     // Petrobras). Sem o número da métrica, a linha não vira prévia: "PETR4 —"
     // não diz nada, e o card fica só com a copy.
-    const resp = await fetchRanking(meta.endpoint, {
-      limit: 10,
-      type: rankingApiTypes(meta.types),
-      side: meta.extraParams?.side as 'top' | 'bottom' | undefined,
-      days: meta.extraParams?.days ? Number(meta.extraParams.days) : undefined,
-    })
+    const resp = await fetchRanking(meta.endpoint, rankingFetchParams(meta, 'todos'))
     const col = RANKING_COLUMNS[meta.primaryMetric]
-    previews[slug] = rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 10).rows
+    previews[slug] = rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 50).rows
       .filter((row) => col.raw(row) != null)
       .slice(0, 3)
-      .map((row) => ({
-      ticker: rankingTicker(row),
-      value: col.format(row),
-    }))
+      .map((row) => ({ ticker: rankingTicker(row), value: col.format(row) }))
   } catch {
     // preview é enriquecimento — falhou, o card fica só com a copy estática
   }

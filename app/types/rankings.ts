@@ -73,8 +73,8 @@ export interface RankingMeta {
   columns: RankingColumnKey[]
   /**
    * Colunas de uma tab específica, quando a classe não tem alguma coluna do
-   * padrão (FII não tem P/L). Linha sem coluna sai da tabela
-   * (rankingRowComplete), então sem isto a tab de FIIs ficaria vazia.
+   * padrão (FII não tem P/L): a tab de FIIs mostra as colunas que a classe tem,
+   * em vez de uma coluna inteira de "—".
    */
   columnsByType?: Partial<Record<RankingAssetType, RankingColumnKey[]>>
   /** Métrica do número-herói do RankLeader (nem sempre a 1ª coluna). */

@@ -231,20 +231,17 @@ function rankingRowPriced(row: RankingRowApi): boolean {
 }
 
 /**
- * Linha completa: tem cotação e TODAS as colunas que a página mostra.
- *
- * Varredura de 23/09/2026: o /ranking/maiores-altas-12-meses saía com 104
- * células "—" e o /ranking/maiores-lucros com "—" no lucro das 50 linhas.
- * Célula vazia numa tabela de dados é sinal de qualidade contra o site, então
- * a tabela prefere as linhas completas (ver rankingTable).
+ * Linha com cotação e com TODAS as colunas pedidas. Pra entrar na tabela
+ * basta a métrica principal (`rankingRowComplete(r, [primary])`, ver
+ * rankingTable); coluna secundária vazia não tira a linha.
  */
 export function rankingRowComplete(row: RankingRowApi, columns: RankingColumnKey[]): boolean {
   if (!rankingRowPriced(row)) return false
   return columns.every((key) => RANKING_COLUMNS[key].raw(row) != null)
 }
 
-/** Abaixo disso, descartar linha incompleta deixaria a página quase vazia. */
-const MIN_COMPLETE_ROWS = 10
+/** Abaixo disso, exigir a métrica principal deixaria a página quase vazia. */
+const MIN_RANKED_ROWS = 10
 
 export interface RankingTable {
   rows: RankingRowApi[]
@@ -253,24 +250,21 @@ export interface RankingTable {
 }
 
 /**
- * Linhas e colunas que o ranking publica, sempre na ordem da API.
+ * Linhas e colunas que o ranking publica. A ORDEM É SEMPRE A DA API: aqui só
+ * se filtra, nunca se reordena.
  *
- *  1. As linhas completas (rankingRowComplete), quando são pelo menos 10 (ou
- *     todas as que a API mandou). É o normal com o Backend #56: tabela sem "—".
- *  2. Senão, a tabela não encolhe até sumir: entram as linhas com cotação e a
- *     métrica principal e, se nem ela vier, as linhas com cotação.
- *  3. Coluna vazia em mais da metade das linhas exibidas sai da tabela (a tab
- *     de FIIs do 30 dias saía com "—" no valor de mercado de 49 das 50); a da
- *     métrica principal fica, com "—" onde faltar (o que produção já mostra
- *     hoje no maiores-lucros).
- *
- * Por quê: com a API de 23/09/2026, o `yearly-change` não manda DY e o
- * `top-net-income`, o `top-revenue` e o `top-net-margin` não mandam lucro nem
- * receita em NENHUMA linha. Só com a regra 1, cinco rankings (maiores-lucros,
- * maiores-receitas, maiores-margem-liquida e os dois de 12 meses) saíam com 0
- * linhas no SSR se o front subisse antes do Backend #56, e a tab de FIIs de
- * outros quatro com 0 ou 2 (FII sem valor de mercado). Ranking vazio no HTML
- * é pior que "—".
+ *  1. Entra a linha com cotação e com a métrica principal do ranking. Coluna
+ *     SECUNDÁRIA vazia não tira ninguém: exigir todas as colunas sumia com o
+ *     1º da API quando ele era FII sem valor de mercado (RCFA11, -58,6%, no
+ *     maiores-baixas-mes, que passava a abrir com AGXY3) e com 21 linhas em 5
+ *     rankings (PINE14, BRBI3/BRBI4, TRXF11, ROXO34...).
+ *  2. Se nem 10 linhas trazem a métrica principal, a tabela não encolhe até
+ *     sumir: entram as linhas com cotação, com "—" onde falta. É o caso do
+ *     maiores-lucros com a API de antes do Backend #56, que não manda lucro em
+ *     linha nenhuma (produção mostra "—" hoje). Ranking vazio no HTML é pior.
+ *  3. Coluna vazia em mais da metade das linhas exibidas sai da tabela (tab
+ *     de FIIs sem valor de mercado, 12 meses sem DY na API de hoje); a da
+ *     métrica principal fica.
  */
 export function rankingTable(
   rows: RankingRowApi[],
@@ -279,14 +273,9 @@ export function rankingTable(
   limit: number,
 ): RankingTable {
   const priced = rows.filter(rankingRowPriced)
-  const floor = Math.max(1, Math.min(MIN_COMPLETE_ROWS, priced.length))
-  const complete = priced.filter((r) => rankingRowComplete(r, columns))
-  let shown = complete
-  if (complete.length < floor) {
-    const withPrimary = priced.filter((r) => RANKING_COLUMNS[primary].raw(r) != null)
-    shown = withPrimary.length >= floor ? withPrimary : priced
-  }
-  shown = shown.slice(0, limit)
+  const ranked = priced.filter((r) => rankingRowComplete(r, [primary]))
+  const floor = Math.max(1, Math.min(MIN_RANKED_ROWS, priced.length))
+  const shown = (ranked.length >= floor ? ranked : priced).slice(0, limit)
   return {
     rows: shown,
     columns: columns.filter((c) => c === primary

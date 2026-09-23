@@ -7,11 +7,10 @@
  * unavailable=true; a página mostra "dados indisponíveis agora" e a copy
  * educacional continua servida (o SEO não morre com o backend).
  *
- * Linha sem cotação ou sem alguma das colunas da página não é impressa com
- * "—": sai da lista (rankingRowComplete), e a API é consultada com folga. Se
- * isso deixasse a página vazia ou quase (a API de antes do Backend #56 não
- * manda DY no 12 meses nem lucro no maiores-lucros), a tabela fica com as
- * linhas que existem e "—" onde falta (rankingTable). Nunca SSR vazio.
+ * Entra na tabela a linha com cotação e com a métrica principal, na ordem da
+ * API; coluna secundária vazia não tira ninguém (rankingTable). Se nem a
+ * métrica principal vier (maiores-lucros com a API de antes do Backend #56),
+ * entram as linhas com cotação e "—" onde falta. Nunca SSR vazio.
  * "Todos" manda à API o universo declarado em meta.types (lista de tipos).
  *
  * Caso especial tesouro-direto (endpoint sentinel 'tesouro'): deriva de
@@ -29,12 +28,6 @@ import type {
 
 /** Linhas exibidas (SSR com a tabela completa no HTML). */
 const RANKING_ROWS = 50
-/**
- * Pedido à API (máx. 100): linha incompleta sai da tabela
- * (rankingTable), e a superamostra mantém as 50.
- */
-const FETCH_LIMIT = 100
-
 export function useRanking(meta: RankingMeta) {
   const route = useRoute()
   const router = useRouter()
@@ -60,19 +53,9 @@ export function useRanking(meta: RankingMeta) {
       if (isTesouro) {
         return { rows: [], columns: [], tesouroRows: await fetchTesouroRanking() }
       }
-      // "Todos" = o universo que o ranking DECLARA (meta.types), não a B3
-      // inteira: o maiores-lucros é SO_ACOES e mostrava 50 BDRs com NVDC34 em
-      // 1º, sob um texto dizendo que Petrobras e Itaú lideram.
-      const declared = rankingApiTypes(meta.types)
-      const t = activeType.value === 'todos' ? (declared.length ? declared : null) : RANKING_API_TYPE[activeType.value]
-      const resp = await fetchRanking(meta.endpoint, {
-        type: t,
-        limit: FETCH_LIMIT,
-        side: meta.extraParams?.side as 'top' | 'bottom' | undefined,
-        days: meta.extraParams?.days ? Number(meta.extraParams.days) : undefined,
-        // DY com FIIs: sem min_cap=0 o filtro default de R$500M zera a lista.
-        min_cap: meta.reitMinCapZero && t === 'REIT' ? 0 : undefined,
-      })
+      // "Todos" = o universo que o ranking declara (rankingFetchParams, o
+      // mesmo pedido da prévia do hub)
+      const resp = await fetchRanking(meta.endpoint, rankingFetchParams(meta, activeType.value))
       const table = rankingTable(resp.data ?? [], rankingColumnsFor(meta, activeType.value), meta.primaryMetric, RANKING_ROWS)
       return { rows: table.rows, columns: table.columns, tesouroRows: [] }
     },
