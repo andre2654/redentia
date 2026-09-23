@@ -8,7 +8,7 @@
  *
  * Os três casos têm copy PRÓPRIA porque dizem coisas diferentes:
  *  - 404: nunca existiu (ou o link quebrou);
- *  - 410: existiu e saiu da B3 (papel deslistado — /asset/{TICKER} dos 372
+ *  - 410: existiu e saiu da B3 (papel deslistado — /asset e /dividendos dos 372
  *    marcados em 18/09/2026). Aqui NÃO se oferece "tente de novo": o dado não
  *    volta, e o convite certo é ranking ou busca;
  *  - resto: o nosso lado caiu e volta.
@@ -18,7 +18,7 @@ const props = defineProps<{
     statusCode?: number
     statusMessage?: string
     message?: string
-    /** 410 do /asset: o useAcao manda ticker e data já resolvidos. */
+    /** 410 do /asset e do /dividendos: delistedError() manda ticker e data. */
     data?: { ticker?: string, delistedAt?: string | null }
   }
 }>()
@@ -52,11 +52,30 @@ const dek = computed(() => {
     : 'Algo do nosso lado saiu do ar por um instante. O resto do mercado segue de pé, é só voltar e tentar de novo.'
 })
 
+// noindex SÓ quando o erro saiu do SERVIDOR e é 4xx (404/410, veredito sobre a
+// URL, com o status HTTP certo junto). Dois casos ficam sem, de propósito:
+//  - 5xx: é transitório. O status já basta pro Google não indexar e voltar
+//    depois; um noindex ali é o que sobra se algo no caminho servir a página
+//    como 200.
+//  - erro nascido no CLIENT (chunk JS que não carregou, exceção na hidratação):
+//    o HTTP já saiu 200 com a página inteira, e o Nuxt troca o DOM pela página
+//    de erro. Com noindex, o renderizador do Google (que lê o DOM final)
+//    registrava "Excluída pela tag noindex" numa página saudável. Reproduzido em
+//    23/09/2026 bloqueando o chunk do /glossario/[slug]: 200 sem robots no HTML,
+//    "noindex, follow" no DOM 426 ms depois.
+// A marca de "veio do servidor" viaja no payload: o useState só nasce true no
+// SSR. Erro criado no client não acha a chave e inicia false. Ao sair da página
+// de erro (clearError), a marca cai, e um erro seguinte no client não herda.
+const renderedOnServer = useState('nu:erro-ssr', () => import.meta.server)
+onBeforeUnmount(() => { renderedOnServer.value = false })
+
 useHead({
   title: isGone.value
     ? (goneTicker.value ? `${goneTicker.value} foi deslistado da B3` : 'Ativo deslistado da B3')
     : isNotFound.value ? 'Página não encontrada' : 'Erro',
-  meta: [{ name: 'robots', content: 'noindex, follow' }],
+  meta: computed(() => (renderedOnServer.value && code.value < 500
+    ? [{ name: 'robots', content: 'noindex, follow' }]
+    : [])),
 })
 
 // clearError zera o estado de erro antes de navegar (padrão Nuxt).

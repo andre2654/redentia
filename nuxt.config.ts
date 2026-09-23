@@ -33,6 +33,11 @@ export default defineNuxtConfig({
     // Server-only: URL direta do Laravel pros fetches SSR (evita loopback do
     // Nitro no próprio proxy). Override: NUXT_BACKEND_DIRECT_BASE.
     backendDirectBase: process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api',
+    // Server-only: chave compartilhada com o Laravel (FRONT_SHARED_KEY lá). Com
+    // ela, o rate limit do backend conta cada VISITANTE em vez do IP de saída
+    // da Vercel. Vazia = desligada. Ver server/plugins/backend-front-key.ts.
+    // Override: NUXT_BACKEND_FRONT_KEY.
+    backendFrontKey: '',
     public: {
       // Browser SEMPRE fala com same-origin (/api/backend, /api/chat) — zero CORS.
       // chatDirectUrl: escape hatch se o proxy Vercel bufferizar SSE (lição do Atlas).
@@ -186,6 +191,24 @@ export default defineNuxtConfig({
     // /tesouro e /tesouro/[slug]: páginas reais em construção (frente
     // paralela) — os redirects provisórios pro ranking saíram; as regras de
     // cache vivem no bloco de cache acima.
+    //
+    // Slugs FANTASMAS do StatusInvest, apagados do tesouro_direto_si em
+    // 18/09/2026 quando o snapshot passou pro CSV do Tesouro Transparente, e
+    // desde então 404 com URL já indexada (~140 impressões em 90 dias). Os 8
+    // Renda+ são os MESMOS títulos do CSV com o ano +3 (o SI rotulava errado;
+    // maturity_date idêntica, 2049-12-15…2084-12-15). O NTN-B 2028 nunca foi
+    // ofertado no Tesouro Direto: vai pro degrau mais próximo da escada (2030).
+    // O tesouro-reserva-2036 NÃO entra aqui: é título real (lançado em
+    // 11/05/2026) e voltou pelo CSV de vendas no fundamentals-scraper.
+    '/tesouro/tesouro-renda-aposentadoria-extra-2033': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2030', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2038': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2035', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2043': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2040', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2048': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2045', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2053': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2050', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2058': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2055', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2063': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2060', statusCode: 301 } },
+    '/tesouro/tesouro-renda-aposentadoria-extra-2068': { redirect: { to: '/tesouro/tesouro-renda-aposentadoria-extra-2065', statusCode: 301 } },
+    '/tesouro/tesouro-ipca-com-juros-semestrais-2028': { redirect: { to: '/tesouro/tesouro-ipca-com-juros-semestrais-2030', statusCode: 301 } },
     // direto pra raiz (o /mercado também 301a pra '/' — evita corrente de 301)
     '/mercado-completo': { redirect: { to: '/', statusCode: 301 } },
     // /legal/* → /institucional/* (mesmos 3 slugs; a antiga tinha ~471
@@ -200,12 +223,18 @@ export default defineNuxtConfig({
     // no trimestre. Não é alavanca (renderam 39 cliques), é higiene: 404 herdado
     // é sinal de site abandonado, e o Search Console contava 751 deles.
     '/guias/melhores-fiis-para-investir-em-2026': { redirect: { to: '/guias/melhores-fiis-2026', statusCode: 301 } },
-    // Editorial de análise → guia de método, NÃO /asset/PETR4: mandar quem busca
-    // "vale a pena investir" pra uma página de cotação é soft 404 de intenção.
-    '/guias/analise-petr4-vale-a-pena-investir': { redirect: { to: '/guias/como-analisar-uma-acao', statusCode: 301 } },
     '/guias/petr4-vs-vale3-vs-itub4': { redirect: { to: '/guias/como-analisar-uma-acao', statusCode: 301 } },
     '/guias/redent-score-0-100-explicado': { redirect: { to: '/metodologia', statusCode: 301 } },
-    '/guias/raio-x-da-carteira-em-crise': { redirect: { to: '/', statusCode: 301 } },
+    // Análise de UM papel → a página desse papel. Em 03/08 o destino foi o guia
+    // de método porque /asset era página de cotação; hoje /asset/PETR4 tem tese,
+    // riscos, pares, histórico e FAQ. As consultas da URL velha são todas de
+    // PETR4 ("petr4 análise fundamentalista 2026", "petr4 vale a pena"), e o guia
+    // de método não herdou o sinal: a URL fazia 120 a 330 impressões por semana,
+    // caiu a 3 na semana de 24/08, e o guia ganhou 51 em sete semanas. Soft 404.
+    '/guias/analise-petr4-vale-a-pena-investir': { redirect: { to: '/asset/PETR4', statusCode: 301 } },
+    // Proteção da carteira na crise (estrutura, correlação, liquidez) é assunto do
+    // guia de carteira. A home não é destino: 301 pra raiz o Google lê como soft 404.
+    '/guias/raio-x-da-carteira-em-crise': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
     // /api-portal tinha o 2º melhor CTR do site (7,83%) e é docs de integração:
     // vai pro /mcp, que é a superfície equivalente no Nu E é indexável.
     // /whitelabel e /pricing vão pro /business, topicamente correto. Ele está
@@ -219,9 +248,43 @@ export default defineNuxtConfig({
     // Achado do cruzamento de Páginas.csv: 3 URLs de /embed/ ainda rankeiam em
     // posição 3,8 a 4,1 (77 impressões) e todas dão 404. O Nu não tem embed.
     '/embed/**': { redirect: { to: '/calculadoras', statusCode: 301 } },
+
+    // ——— Cutover Redentia antiga → Nu, 3ª leva (Search Console 23/09/2026) ———
+    // Guias da antiga que o Google ainda exibia e que respondiam 404 com noindex.
+    // Critério: só vira 301 a URL cujo destino responde à MESMA pergunta, e a
+    // home nunca é destino. Sem equivalente no Nu, seguem 404 de propósito:
+    // widgets-financeiros-para-site (o Nu não tem embed), seus-agentes (não há
+    // agente autônomo), alertas-watchlist (não há página de watchlist nem de
+    // alerta), hora-certa-de-vender-acoes (nenhum guia trata de venda) e
+    // como-baixar-cei (nenhum guia trata do CEI).
+    '/guias/como-investir-em-acoes-para-iniciantes': { redirect: { to: '/guias/como-investir-em-acoes', statusCode: 301 } },
+    '/guias/como-declarar-acoes-imposto-renda': { redirect: { to: '/guias/como-declarar-investimentos-no-ir', statusCode: 301 } },
+    // Poupança x IPCA+ e a tese de ganho com marcação a mercado no IPCA+ longo:
+    // o guia do Tesouro explica o IPCA+, a marcação e a comparação com a poupança.
+    '/guias/poupanca-vs-tesouro-ipca-mais-2026': { redirect: { to: '/guias/tesouro-direto-para-iniciantes', statusCode: 301 } },
+    '/guias/como-ganhar-40-60-renda-fixa-2026': { redirect: { to: '/guias/tesouro-direto-para-iniciantes', statusCode: 301 } },
+    // Páginas de recurso da antiga → o recurso equivalente no Nu.
+    '/guias/calculadoras': { redirect: { to: '/calculadoras', statusCode: 301 } },
+    '/guias/tesouro-redentia': { redirect: { to: '/tesouro', statusCode: 301 } },
+    // Comparar ativos, no Nu, é o simulador: vários papéis na mesma simulação,
+    // com rentabilidade por ativo.
+    '/guias/comparador-ativos': { redirect: { to: '/calculadora/acoes', statusCode: 301 } },
+    // O assistente de IA da antiga (Redent.IA) é a Redentia AI, que mora na
+    // /busca (mesmo destino do /help). A /busca é noindex: o 301 atende quem
+    // chega pelo link, não carrega ranking.
+    '/guias/pergunte-redentia': { redirect: { to: '/busca', statusCode: 301 } },
+    // Calendário de proventos (data com e pagamento) → o guia das datas do
+    // provento. Não '/dividendos': ele mesmo é 301, e o destino viraria corrente.
+    '/guias/dividendos': { redirect: { to: '/guias/data-com-e-data-ex', statusCode: 301 } },
+    // Os riscos que o Raio-X apontava (concentração, correlação, país) estão na
+    // seção "Diversificação de verdade" do guia de carteira.
+    '/guias/raio-x-carteira': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
   },
 
   nitro: {
+    // useEvent() fora de handler: o server/plugins/backend-front-key.ts lê o
+    // request em curso de dentro do $fetch do SSR pra carimbar o IP do visitante.
+    experimental: { asyncContext: true },
     // Dev: browser fetches de /api/* vão pro VPS por default (dev funciona sem
     // backend local). Override: NUXT_BACKEND_URL / NUXT_CHAT_SERVICE_URL.
     devProxy: {

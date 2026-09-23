@@ -54,6 +54,17 @@ export function tesouroRateFmt(t: Pick<TesouroApi, 'rate' | 'rate_numeric' | 'in
   return `${t.rate}%`
 }
 
+/**
+ * Tesouro Reserva (lançado em 11/05/2026): Selic sem spread, SEM marcação a
+ * mercado, aplicação a partir de R$ 1 e negociação 24x7. As regras genéricas
+ * de Selic abaixo ("oscila pouco", "mínimo de R$ 30") estariam erradas pra
+ * ele — é a página de Tesouro com mais impressão do site. Conferido no CSV
+ * oficial: o PU de venda e o de recompra são o mesmo todo dia.
+ */
+function isTesouroReserva(t: Pick<TesouroApi, 'slug'>): boolean {
+  return t.slug.startsWith('tesouro-reserva')
+}
+
 function moneyFmt(v: number | null): string {
   return v == null || !Number.isFinite(v) ? '—' : nfBrl.format(v)
 }
@@ -230,11 +241,18 @@ function buildReadings(t: TesouroApi): TesouroReadingVM[] {
     const spread = rate != null && rate > 0 ? `, mais ${nf2.format(rate)}% ao ano` : ''
     out.push({
       title: 'O que a taxa significa',
-      body: `A rentabilidade acompanha a taxa Selic${ref}${spread}. É o título público que menos oscila no dia a dia, por isso costuma ser usado como reserva de liquidez.`,
+      body: isTesouroReserva(t)
+        ? `A rentabilidade acompanha a taxa Selic${ref}. O Tesouro Reserva foi criado pra reserva de emergência: aplicação a partir de R$ 1 e negociação a qualquer hora, todos os dias da semana.`
+        : `A rentabilidade acompanha a taxa Selic${ref}${spread}. É o título público que menos oscila no dia a dia, por isso costuma ser usado como reserva de liquidez.`,
     })
   }
 
-  if (idx === 'Selic') {
+  if (isTesouroReserva(t)) {
+    out.push({
+      title: 'Se resgatar antes do vencimento',
+      body: 'O Tesouro Reserva não tem marcação a mercado: o valor só cresce com a Selic acumulada e o resgate sai pelo valor do dia, sem a oscilação que existe no Tesouro Selic.',
+    })
+  } else if (idx === 'Selic') {
     out.push({
       title: 'Se vender antes do vencimento',
       body: 'A marcação a mercado quase não afeta o Tesouro Selic: o preço anda colado na taxa do dia. Na venda antecipada vale o preço de venda do dia, normalmente muito próximo do valor acumulado.',
@@ -278,7 +296,9 @@ function buildFaq(t: TesouroApi): { q: string; a: string }[] {
     },
     {
       q: `O que acontece se eu vender o ${t.name} antes do vencimento?`,
-      a: idx === 'Selic'
+      a: isTesouroReserva(t)
+        ? 'Não há perda por marcação a mercado: o Tesouro Reserva é resgatado pelo valor acumulado do dia, a qualquer hora e em qualquer dia da semana. Sobre o rendimento incidem IR regressivo e, nos primeiros 30 dias, IOF.'
+        : idx === 'Selic'
         ? 'O Tesouro recompra o título pelo preço de venda do dia, que no Tesouro Selic fica muito próximo do valor acumulado. É o título com menor risco de perda na venda antecipada.'
         : 'O Tesouro recompra pelo preço de venda do dia, definido pela marcação a mercado. Se os juros subiram desde a compra, o preço caiu e a venda pode sair com perda; se caíram, pode haver ganho acima da taxa contratada. Levando até o vencimento, a taxa da compra é garantida.',
     },
@@ -288,7 +308,9 @@ function buildFaq(t: TesouroApi): { q: string; a: string }[] {
     },
     {
       q: `Qual o valor mínimo pra investir no ${t.name}?`,
-      a: `O Tesouro Direto permite comprar frações a partir de 1% do preço do título, respeitando o mínimo de cerca de R$ 30 definido pelo programa. Com o preço de compra atual${t.price_buy != null ? ` de ${moneyFmt(t.price_buy)}` : ''}, a fração de 1% ${t.price_buy != null ? `sai por ${moneyFmt(Math.max(t.price_buy * 0.01, 30))}` : 'define o aporte mínimo'}.`,
+      a: isTesouroReserva(t)
+        ? `O Tesouro Reserva aceita aplicação a partir de R$ 1${t.price_buy != null ? `, e o valor unitário do título hoje é ${moneyFmt(t.price_buy)}` : ''}.`
+        : `O Tesouro Direto permite comprar frações a partir de 1% do preço do título, respeitando o mínimo de cerca de R$ 30 definido pelo programa. Com o preço de compra atual${t.price_buy != null ? ` de ${moneyFmt(t.price_buy)}` : ''}, a fração de 1% ${t.price_buy != null ? `sai por ${moneyFmt(Math.max(t.price_buy * 0.01, 30))}` : 'define o aporte mínimo'}.`,
     },
   ]
 }
