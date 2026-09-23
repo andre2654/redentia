@@ -285,9 +285,13 @@ const fetchAssetPages = defineCachedFunction(
  */
 interface UniverseEntry {
   ticker: string
+  type?: string
   /** pregão do preço do ativo, 'YYYY-MM-DD' */
   priceDate?: string
 }
+
+/** Tipos negociados na B3 — o pregão "mais recente" da home e dos rankings sai só deles. */
+const B3_TYPES = new Set(['STOCK', 'REIT', 'BDR', 'ETF'])
 
 const fetchTickerUniverse = defineCachedFunction(
   async (): Promise<UniverseEntry[]> => {
@@ -299,12 +303,12 @@ const fetchTickerUniverse = defineCachedFunction(
       const items = Array.isArray(res?.data) ? res.data : []
       return items
         .filter((t): t is TickerApiItem & { ticker: string } => typeof t.ticker === 'string' && t.ticker.length > 0)
-        .map((t) => ({ ticker: t.ticker.toUpperCase(), priceDate: isoDate(t.price_date) }))
+        .map((t) => ({ ticker: t.ticker.toUpperCase(), type: t.type, priceDate: isoDate(t.price_date) }))
     }
     catch { return [] }
   },
   {
-    // v2 (23/09/2026): o valor passou de string[] a {ticker, priceDate}[]
+    // v2 (23/09/2026): o valor passou de string[] a {ticker, type, priceDate}[]
     name: 'site-pages-ticker-universe-v2',
     maxAge: 3600,
     swr: true,
@@ -532,7 +536,9 @@ export async function getSiteSections(): Promise<SiteSection[]> {
   // Datas do DADO (não do calendário): pregão de cada ativo e o mais recente
   // de todos, que é de onde saem a home e os 22 rankings.
   const priceDates = new Map(universoCru.map((e) => [e.ticker, e.priceDate]))
-  const marketDate = latestDate(universoCru.map((e) => e.priceDate))
+  // Só papel da B3: US_STOCK/US_ETF do /tickers-full negociam em feriado da B3
+  // (Carnaval, Tiradentes, 20/11) e dariam à home e aos rankings um dia sem pregão.
+  const marketDate = latestDate(universoCru.filter((e) => B3_TYPES.has(e.type ?? '')).map((e) => e.priceDate))
   const coreLastmod: Record<string, string | undefined> = {
     '/': marketDate,
     '/noticias': latestNews ?? undefined,
