@@ -26,7 +26,10 @@ export interface ProventoRow {
   date: string
   /** true quando `date` é a data-com de verdade (a API mandou ex_date) */
   hasExDate: boolean
-  /** pagamento 'YYYY-MM-DD' (tabela, último e próximo pagamento) */
+  /**
+   * pagamento 'YYYY-MM-DD' (tabela, último e próximo pagamento). '' = A
+   * DEFINIR: parcela anunciada sem data de pagamento (`payment_pending`).
+   */
   payDate: string
   rate: number
   label: string
@@ -72,9 +75,14 @@ export function parseProventos(api: readonly unknown[] | null | undefined): Prov
     // GOTCHA runtime: a chave é `"label "` (espaço no fim); lê as duas formas.
     const label = String(d.label ?? d['label '] ?? '').trim()
     const exDate = isoDay(d.ex_date)
-    const payDate = isoDay(d.payment_date) || exDate
+    const rawPay = isoDay(d.payment_date)
+    // Backend #54: parcela sem data de pagamento vem com `payment_pending` e o
+    // `payment_date` REPETINDO a data-com, como marcador. É "a definir", nunca
+    // "paga na data-com" (HBTS3: R$ 4,73 a definir ao lado de R$ 1,83 pago em
+    // 15/06). A janela de 12 meses e o DY seguem pela data-com.
+    const payDate = d.payment_pending === true ? '' : rawPay || exDate
     const rate = Number(d.rate)
-    const date = exDate || payDate
+    const date = exDate || rawPay
     if (!date || !Number.isFinite(rate) || rate <= 0) continue
     out.push({ date, hasExDate: !!exDate, payDate, rate, label, income: !isCapitalLabel(label) })
   }
@@ -109,6 +117,44 @@ export function proventos12m(rows: readonly ProventoRow[], today = spISODate()):
     events12: keys.size,
     capital12: inWindow.filter((r) => !r.income).reduce((a, r) => a + r.rate, 0),
   }
+}
+
+export interface ProventosAgenda {
+  /** último pagamento COM data já feito (ISO); parcela a definir nunca conta */
+  last: string | null
+  /** próximo pagamento COM data (ISO) */
+  next: string | null
+  /** há parcela a definir com data-com dos últimos 12 meses pra frente: "próximo pagamento a definir" */
+  pendingUpcoming: boolean
+  /** há parcela a definir com data-com dentro da janela de 12 meses (entra na soma pela data-com) */
+  pendingIn12: boolean
+}
+
+/**
+ * Último e próximo pagamento das duas páginas. Só parcela com data de
+ * pagamento é "paga" ou "próxima"; a definir fica de fora das datas e vira
+ * "a definir". Parcela a definir com data-com de mais de 12 meses (há 521
+ * linhas pendentes em 204 papéis, a maioria antiga) não vira "próximo".
+ */
+export function proventosAgenda(rows: readonly ProventoRow[], today = spISODate()): ProventosAgenda {
+  const cutoff = isoMinusDays(today, 365)
+  let last: string | null = null
+  let next: string | null = null
+  let pendingUpcoming = false
+  let pendingIn12 = false
+  for (const r of rows) {
+    if (!r.payDate) {
+      if (r.date >= cutoff) pendingUpcoming = true
+      if (r.date >= cutoff && r.date <= today) pendingIn12 = true
+      continue
+    }
+    if (r.payDate <= today) {
+      if (last == null || r.payDate > last) last = r.payDate
+    } else if (next == null || r.payDate < next) {
+      next = r.payDate
+    }
+  }
+  return { last, next, pendingUpcoming, pendingIn12 }
 }
 
 /** Cadência observada em 12 meses: ≥10 Mensal · ≥4 Trimestral · ≥2 Semestral · 1 Anual. */
