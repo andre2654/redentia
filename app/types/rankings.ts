@@ -17,7 +17,7 @@ export type RankingClasse = 'acoes' | 'fiis' | 'bdrs' | 'renda-fixa'
 /** Tab de tipo no detalhe (?type=) — só onde o dado existe ao vivo. */
 export type RankingAssetType = 'acoes' | 'fiis' | 'bdrs'
 
-/** Valor da tab ativa ('todos' = sem filtro de type na API). */
+/** Valor da tab ativa ('todos' = o universo declarado em meta.types, não a B3 inteira). */
 export type RankingTypeFilter = 'todos' | RankingAssetType
 
 /**
@@ -176,6 +176,11 @@ export interface RankingRowApi {
   redentia_score?: number | string | null
   ranking_count?: number | string | null
   ranking_breakdown?: Record<string, number> | null
+  /** pregão do preço da linha, 'YYYY-MM-DD' (Backend desde 23/09/2026) */
+  price_date?: string | null
+  /** só nos rankings de variação: pregão da base e se ela foi ajustada por desdobramento */
+  base_price_date?: string | null
+  split_adjusted?: boolean | null
 }
 
 /** Linha derivada de GET /tesouro ordenada por rate_numeric (renda fixa). */

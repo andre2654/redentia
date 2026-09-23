@@ -70,7 +70,8 @@ usePageSeo({
   title: div.value.seo.title,
   description: div.value.seo.description,
   path: `/dividendos/${ticker}`,
-  dateModified: ultimoPregao(),
+  // pregão da cotação usada no DY (price_date do perfil), nunca o calendário
+  dateModified: div.value.dataDate,
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: ticker, path: `/asset/${ticker}` },

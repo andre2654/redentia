@@ -241,7 +241,22 @@ export async function useTesesPage() {
   }
 
   onMounted(hydrate)
-  return { ideias, pesquisas, estrategias, loading }
+
+  /**
+   * Estudo mais recente entre as teses ('YYYY-MM-DD') — dateModified do hub.
+   * Era o "último pregão" do calendário ("convicção revalidada a cada
+   * pregão"), que seguia dizendo "hoje" nos dias em que a rotina não rodou.
+   */
+  const dataDate = computed<string | null>(() => {
+    let latest: string | null = null
+    for (const c of apiCards.value) {
+      const d = typeof c.lastStudyDate === 'string' ? c.lastStudyDate.slice(0, 10) : null
+      if (d && (latest === null || d > latest)) latest = d
+    }
+    return latest
+  })
+
+  return { ideias, pesquisas, estrategias, loading, dataDate }
 }
 
 /* ═════ FAQ (copy do design; travessões viram vírgula — regra de copy pública) ═════ */

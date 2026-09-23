@@ -28,6 +28,8 @@ export interface ThesisCardApi {
   /** prateleira editorial da /teses (a skill mensal grava): 'grandes-ideias' |
    *  'estrategias'. null/ausente → 'grandes-ideias' (fallback no front). */
   shelf?: string | null
+  /** estudo mais recente da tese, 'YYYY-MM-DD' — o mesmo dateModified da /tese/{slug} */
+  lastStudyDate?: string | null
 }
 
 /** GET /api/top-stocks|top-reits|top-bdrs?side= → data[] (TickerResource). */
@@ -96,6 +98,8 @@ export interface TesouroApi {
   reference_rate: number | null
   reference_rate_label: string | null
   refreshed_at: string | null
+  /** último preço publicado na série do título, 'YYYY-MM-DD' (refreshed_at é a hora da regravação) */
+  price_date?: string | null
 }
 
 /** GET /api/research/news → data[] (NewsTake::toFeedItem). */

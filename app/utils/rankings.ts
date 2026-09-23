@@ -11,7 +11,7 @@
  *  - redentia_score é 0-10 comprimido → display PERCENTIL /100 (×10, mesma
  *    régua do /asset, decisão PR2).
  */
-import type { RankingColumnKey, RankingRowApi } from '~/types/rankings'
+import type { RankingAssetType, RankingColumnKey, RankingRowApi } from '~/types/rankings'
 
 const nfBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -203,6 +203,49 @@ export const RANKING_COLUMNS: Record<RankingColumnKey, RankingColumnDef> = {
       return v == null ? '—' : `${nf0.format(v)} de 15`
     },
   },
+}
+
+/** Tab do registry → tipo da API. */
+export const RANKING_API_TYPE: Record<RankingAssetType, 'STOCK' | 'REIT' | 'BDR'> = {
+  acoes: 'STOCK',
+  fiis: 'REIT',
+  bdrs: 'BDR',
+}
+
+/**
+ * O "Todos" de um ranking: o universo que ele DECLARA em meta.types, na forma
+ * da API (lista). Página e prévia do hub pedem o mesmo universo.
+ */
+export function rankingApiTypes(types: RankingAssetType[]): Array<'STOCK' | 'REIT' | 'BDR'> {
+  return types.map((t) => RANKING_API_TYPE[t])
+}
+
+/**
+ * Linha publicável: tem cotação e TODAS as colunas que a página mostra.
+ *
+ * Varredura de 23/09/2026: o /ranking/maiores-altas-12-meses saía com 104
+ * células "—" e o /ranking/maiores-lucros com "—" no lucro das 50 linhas.
+ * Célula vazia numa tabela de dados é sinal de qualidade contra o site; a
+ * linha incompleta sai (o useRanking pede mais linhas que exibe pra a tabela
+ * continuar cheia) em vez de ser impressa pela metade.
+ */
+export function rankingRowComplete(row: RankingRowApi, columns: RankingColumnKey[]): boolean {
+  if (num(row.market_price) == null && num(row.close) == null) return false
+  return columns.every((key) => RANKING_COLUMNS[key].raw(row) != null)
+}
+
+/**
+ * Data do dado de um ranking ('YYYY-MM-DD'): o pregão mais recente entre as
+ * linhas exibidas. É o dateModified do JSON-LD — nunca a data do calendário
+ * (o `new Date()` que estava aqui dizia "hoje" mesmo com o preço parado).
+ */
+export function rankingDataDate(rows: RankingRowApi[]): string | null {
+  let latest: string | null = null
+  for (const r of rows) {
+    const d = typeof r.price_date === 'string' ? r.price_date.slice(0, 10) : null
+    if (d && /^\d{4}-\d{2}-\d{2}$/.test(d) && (latest === null || d > latest)) latest = d
+  }
+  return latest
 }
 
 /**

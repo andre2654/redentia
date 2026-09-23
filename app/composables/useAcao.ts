@@ -253,7 +253,6 @@ function extractFund(ov: FundamentalsOverviewApi | null): Fund | null {
 interface EtfInfo {
   name: string | null // book_name em title-case ('Ishare Sp500')
   bookName: string | null // bruto ('ISHARE SP500') — linha 'Nome de pregão'
-  change12m: number | null
   shareholders: number | null
   volume: number | null
   lotSize: number | null
@@ -271,7 +270,6 @@ function extractEtf(ov: FundamentalsOverviewApi | null): EtfInfo | null {
     // e o prettyName sobre o ProfileResource mutila ('Ishare Sp500ci').
     name: e.book_name ? titleCasePt(e.book_name) : null,
     bookName: e.book_name ?? null,
-    change12m: e.change_12m ?? null,
     shareholders: e.num_shareholders ?? null,
     volume: e.volume ?? null,
     lotSize: e.lot_size ?? null,
@@ -282,11 +280,30 @@ function extractEtf(ov: FundamentalsOverviewApi | null): EtfInfo | null {
   }
 }
 
+/**
+ * Variação de 12 meses tirada do PRÓPRIO gráfico da página (a mesma série), só
+ * quando a série cobre de fato 12 meses.
+ *
+ * Por quê (23/09/2026): o card mostrava o `change12m` do TradingView cru. No
+ * BRAZ11 ele saiu "+12,69%" com a cota a R$ 12,65–12,69 — o número batia com o
+ * preço por coincidência, mas não havia como conferir: a série do ativo aqui
+ * tem 18 pregões. Número que a própria página não sustenta, não sai.
+ */
+function seriesChange12m(series: SeriesPoint[]): number | null {
+  if (series.length < 2) return null
+  const first = series[0]!
+  const last = series[series.length - 1]!
+  const days = (Date.parse(last.t) - Date.parse(first.t)) / 86_400_000
+  if (!(days >= 350) || !(first.v > 0)) return null
+  return (last.v / first.v - 1) * 100
+}
+
 /** Stats dark do chart pra ETF (não existe DRE/valuation de empresa). */
-function buildEtfChartStats(e: EtfInfo | null): AcaoStatRow[] {
+function buildEtfChartStats(e: EtfInfo | null, series: SeriesPoint[]): AcaoStatRow[] {
   if (!e) return []
   const rows: AcaoStatRow[] = []
-  if (e.change12m != null) rows.push({ l: 'Variação 12 meses', v: pctFmt(e.change12m) })
+  const change12m = seriesChange12m(series)
+  if (change12m != null) rows.push({ l: 'Variação 12 meses', v: pctFmt(change12m) })
   if (e.shareholders != null) rows.push({ l: 'Cotistas', v: nf0.format(e.shareholders) })
   if (e.volume != null) rows.push({ l: 'Volume diário', v: moneyBig(e.volume, 2) })
   if (e.lotSize != null) rows.push({ l: 'Lote padrão', v: nf0.format(e.lotSize) })
@@ -589,6 +606,12 @@ function buildHero(profile: TickerProfileApi, name: string): AcaoHeroVM {
   }
 }
 
+/** 'YYYY-MM-DD' (aceita timestamp ISO), ou null. */
+function isoDateOrNull(v: string | null | undefined): string | null {
+  const d = typeof v === 'string' ? v.slice(0, 10) : ''
+  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null
+}
+
 function toSeries(data: PricePointApi[] | undefined | null): SeriesPoint[] {
   return (data ?? [])
     .filter((p) => p.market_price != null && !!p.price_at)
@@ -728,22 +751,52 @@ async function buildTheses(base: string, ticker: string, list: ThesisCardApi[]):
   })
 }
 
-function buildDividends(divs: DividendApi[], price: number | null, ticker: string): AcaoDividendsVM | null {
+/** Proventos pagos nos últimos 12 meses (R$ por ação) e o DY que eles dão ao preço de hoje. */
+function paidLast12(divs: DividendApi[], price: number | null): { sum12: number; dy12: number | null } {
+  const today = localISODate()
+  const cutoff12 = localISODate(new Date(Date.now() - 365 * 86_400_000))
+  const sum12 = divs
+    .map((d) => ({ date: d.payment_date, rate: num(d.rate) ?? 0 }))
+    .filter((d) => !!d.date && d.rate > 0 && d.date > cutoff12 && d.date <= today)
+    .reduce((a, d) => a + d.rate, 0)
+  const dy12 = price != null && price > 0 && sum12 > 0 ? (sum12 / price) * 100 : null
+  return { sum12, dy12 }
+}
+
+/**
+ * O DY da página é UM número só, usado em todo lugar (card, insight, bullets
+ * da IA, meta description e a seção de dividendos).
+ *
+ * Por quê (varredura de 23/09/2026): RIAA3 mostrava "Dividend Yield 0,00%" nos
+ * fundamentos e "máquina de dividendos… 34,68%" logo abaixo; POMO3, 22,99% e
+ * 24,94%. Eram duas contas: o DY do overview (o mesmo dos rankings) e uma soma
+ * local de pagamentos ÷ preço. Fica o do overview; zero ou ausente com
+ * provento pago nos 12 meses é dado quebrado da fonte (o rendimento INDICADO
+ * do TradingView vem 0 pra quem só pagou extraordinário) e cai na conta local.
+ */
+function resolvePageDy(overviewDy: number | null, dy12: number | null): number | null {
+  if (overviewDy != null && overviewDy > 0) return overviewDy
+  if (dy12 != null && dy12 > 0) return dy12
+  return overviewDy
+}
+
+function buildDividends(divs: DividendApi[], price: number | null, ticker: string, pageDy: number | null): AcaoDividendsVM | null {
   const today = localISODate()
   const rows = divs
     .map((d) => ({ date: d.payment_date, rate: num(d.rate) ?? 0 }))
     .filter((d) => !!d.date && d.rate > 0)
   if (!rows.length) return null
 
-  const cutoff12 = localISODate(new Date(Date.now() - 365 * 86_400_000))
   const cutoff24 = localISODate(new Date(Date.now() - 730 * 86_400_000))
+  const cutoff12 = localISODate(new Date(Date.now() - 365 * 86_400_000))
   const last12 = rows.filter((d) => d.date > cutoff12 && d.date <= today)
   const last24 = rows.filter((d) => d.date > cutoff24 && d.date <= today)
   // Ativo que não paga há 24 meses não ganha a seção (esconder > seed errado).
   if (!last24.length) return null
 
-  const sum12 = last12.reduce((a, d) => a + d.rate, 0)
-  const dy12 = price != null && price > 0 && sum12 > 0 ? (sum12 / price) * 100 : null
+  const { sum12 } = paidLast12(divs, price)
+  // o MESMO DY do resto da página (resolvePageDy), não uma segunda conta
+  const dy12 = pageDy != null && pageDy > 0 ? pageDy : null
 
   const statRows: AcaoStatRow[] = []
   if (dy12 != null) statRows.push({ l: 'Dividend Yield (12M)', v: `${nf2.format(dy12)}%` })
@@ -1088,6 +1141,8 @@ function petr4Seed(): AcaoPayload {
     ticker: 'PETR4',
     name: 'Petrobras',
     kind: 'stock',
+    // seed do design (backend fora): sem data de dado real, sem dateModified
+    dataDate: null,
     hero: {
       companyLine: 'Petrobras · PETR4',
       ticker: 'PETR4',
@@ -1289,6 +1344,11 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   const overview = ok(overviewR)?.data ?? null
   const f = extractFund(overview)
   const etf = extractEtf(overview)
+  const dividendRows = ok(dividendsR)?.data ?? []
+  // Um DY por página (ver resolvePageDy): todos os builders leem f.dy.
+  const { dy12 } = paidLast12(dividendRows, profile.market_price)
+  if (f) f.dy = resolvePageDy(f.dy, dy12)
+  const pageDy = f ? f.dy : dy12
   // Tipo: scrape_extras.asset_type manda; sem overview, cai no ProfileResource.
   const assetType = overview?.scrape_extras?.asset_type
   const kind: AssetKind = assetType === 'fii'
@@ -1347,11 +1407,14 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ticker,
     name,
     kind,
+    // Pregão do dado exibido (YYYY-MM-DD): o price_date do perfil ou, sem
+    // ele, o último ponto do gráfico. Vira o dateModified da página.
+    dataDate: isoDateOrNull(profile.price_date) ?? isoDateOrNull(assetSeries[assetSeries.length - 1]?.t),
     hero: buildHero(profile, name),
     currentPrice: profile.market_price,
     series12,
     // ETF não tem DRE/valuation de empresa: stats do chart vêm do bloco etf.
-    chartStats: kind === 'etf' ? buildEtfChartStats(etf) : buildChartStats(f),
+    chartStats: kind === 'etf' ? buildEtfChartStats(etf, assetSeries) : buildChartStats(f),
     perfil: buildPerfil(f),
     fundHeading: isFii ? ['Os números', 'do fundo.'] : ['Os números', 'da empresa.'],
     fundSub,
@@ -1359,7 +1422,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     fundInfo: kind === 'etf' ? buildEtfFundInfo(etf) : null,
     etfXray: buildEtfXray(etfXrayApi, kind === 'etf' ? buildEtfFundInfo(etf) : null),
     theses,
-    dividends: buildDividends(ok(dividendsR)?.data ?? [], profile.market_price, ticker),
+    dividends: buildDividends(dividendRows, profile.market_price, ticker, pageDy),
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
@@ -1495,6 +1558,8 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     ticker: sym,
     name: c.name,
     kind: 'crypto',
+    // o último ponto diário da série (o `last_updated` do /crypto vem com fuso trocado)
+    dataDate: isoDateOrNull(series[series.length - 1]?.t),
     hero: buildCryptoHero(c, sym),
     currentPrice: c.price_brl,
     series12,

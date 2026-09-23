@@ -16,8 +16,12 @@ usePageSeo({
   description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações e FIIs, Tesouro Direto, notícias e o briefing de fechamento por IA. Grátis, sem conta.',
   path: '/',
   breadcrumbs: [{ name: 'Início', path: '/' }],
-  // painel do dia é refeito a cada pregão — ver app/utils/pregao.ts
-  dateModified: ultimoPregao(),
+  // SEM dateModified de propósito (23/09/2026): o painel do dia (altas,
+  // baixas, briefing) é carregado no cliente e o HTML do servidor sai com o
+  // seed, então não existe data de dado verificável aqui. Antes ia o "último
+  // pregão" do calendário, que no congelamento de 28/08–17/09 dizia "hoje"
+  // sobre números parados. O <lastmod> do sitemap usa o pregão real mais
+  // recente (site-pages.ts).
 })
 </script>
 

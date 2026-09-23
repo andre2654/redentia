@@ -14,8 +14,11 @@ const base = '/api/backend'
 const json = { headers: { Accept: 'application/json' } }
 
 export interface RankingFetchParams {
-  /** null/undefined = sem filtro (Todos). */
-  type?: 'STOCK' | 'REIT' | 'BDR' | null
+  /**
+   * Um tipo ou vários (a API aceita lista: STOCK,REIT,BDR). null/undefined =
+   * sem filtro — o "Todos" das páginas manda o universo declarado no registry.
+   */
+  type?: 'STOCK' | 'REIT' | 'BDR' | Array<'STOCK' | 'REIT' | 'BDR'> | null
   /** default 50 (SSR com tabela completa no HTML). Max backend: 100. */
   limit?: number
   side?: 'top' | 'bottom'
@@ -30,7 +33,8 @@ export async function fetchRanking(
   { type = null, limit = 50, side, days, min_cap }: RankingFetchParams = {},
 ): Promise<{ data: RankingRowApi[] }> {
   const params = new URLSearchParams({ limit: String(limit) })
-  if (type) params.set('type', type)
+  const types = Array.isArray(type) ? type : type ? [type] : []
+  if (types.length) params.set('type', types.join(','))
   if (side) params.set('side', side)
   if (days != null) params.set('days', String(days))
   if (min_cap != null) params.set('min_cap', String(min_cap))
