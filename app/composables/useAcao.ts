@@ -706,7 +706,7 @@ function buildFundCards(f: Fund | null, ticker: string): AcaoFundCard[] {
   if (f.dy != null) {
     // DY 0 = histórico sem provento de renda com data-com em 12 meses (resolveSiteDy)
     const text = f.dy === 0
-      ? `${ticker} não distribuiu ${f.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, então o DY de 12 meses é zero: aqui o retorno depende só do preço.`
+      ? `${ticker} não distribuiu ${f.isFii ? 'rendimentos' : 'proventos'} com data-com nos últimos 12 meses, então o DY de 12 meses é zero.`
       : f.dy >= 6 && f.fcf != null && f.fcf > 0
       ? `O DY de ${nf2.format(f.dy)}% vem acompanhado de ${moneyBig(f.fcf, 1, cur)} em caixa livre, o fluxo que banca os proventos.`
       : f.dy >= 6
@@ -782,11 +782,10 @@ function buildDividends(rows: ProventoRow[], ticker: string, isFii: boolean, dy:
   if (future) statRows.push({ l: 'Próximo pagamento', v: dateShortPt(future.payDate) })
 
   // Barras por ano (design: ano corrente = últimos 12 meses, footnote explica).
-  // Quem só devolveu capital em 12 meses mostra a amortização, com rodapé próprio.
-  const incomeBars = proventosBars(rows, w.income12, true, today)
-  const capitalOnly = !incomeBars.length && w.capital12 > 0
-  const bars = capitalOnly ? proventosBars(rows, w.capital12, false, today) : incomeBars
-  if (!bars.length) return null
+  // Quem só devolveu capital em 12 meses mostra a amortização, com rodapé
+  // próprio (a mesma regra do /dividendos: proventosChart).
+  const chart = proventosChart(rows, w, isFii, today)
+  if (!chart.bars.length) return null
 
   const dyv = dy.value
   const heading: [string, string] = dyv != null && dyv >= 6
@@ -799,12 +798,12 @@ function buildDividends(rows: ProventoRow[], ticker: string, isFii: boolean, dy:
     heading,
     subtitle: w.income12 > 0
       ? `R$ ${nf2.format(w.income12)} por ${unit} nos últimos 12 meses`
-      : capitalOnly
+      : w.capital12 > 0
         ? `Sem ${isFii ? 'rendimentos' : 'dividendos'} nos últimos 12 meses, e R$ ${nf2.format(w.capital12)} por ${unit} em amortização`
         : 'Sem pagamentos nos últimos 12 meses',
     rows: statRows,
-    bars,
-    barsNote: `${capitalOnly ? 'Amortização' : isFii ? 'Rendimentos' : 'Dividendos + JCP'} por ${unit}, por ano · ${bars[bars.length - 1]?.year ?? ''} considera os últimos 12 meses`,
+    bars: chart.bars,
+    barsNote: chart.note,
     sum12: w.income12,
   }
 }

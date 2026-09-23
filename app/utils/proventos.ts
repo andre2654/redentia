@@ -156,6 +156,39 @@ export function proventosBars(
   }))
 }
 
+export interface ProventosChart {
+  /** 'capital' só quando não houve renda em 12 meses e houve amortização */
+  kind: 'renda' | 'capital'
+  bars: AcaoDividendBar[]
+  /** rodapé: o que as barras somam e, se a última é o ano corrente, que ela é a janela de 12 meses */
+  note: string
+}
+
+/**
+ * O gráfico anual das duas páginas. Renda por padrão; papel que só devolveu
+ * capital em 12 meses (BRIP11, INFB11, ENJU3... 16 em 23/09/2026) mostra as
+ * barras de amortização, com rodapé próprio, em vez de um gráfico de renda
+ * sem o ano corrente (ou de nenhum gráfico).
+ */
+export function proventosChart(
+  rows: readonly ProventoRow[],
+  w: Proventos12m,
+  isFii: boolean,
+  today = spISODate(),
+): ProventosChart {
+  const kind: ProventosChart['kind'] = w.income12 <= 0 && w.capital12 > 0 ? 'capital' : 'renda'
+  const bars = kind === 'capital'
+    ? proventosBars(rows, w.capital12, false, today)
+    : proventosBars(rows, w.income12, true, today)
+  const what = kind === 'capital' ? 'Amortização' : isFii ? 'Rendimentos' : 'Dividendos + JCP'
+  const last = bars[bars.length - 1]
+  return {
+    kind,
+    bars,
+    note: `${what} por ${isFii ? 'cota' : 'ação'}, por ano${last?.current ? ` · ${last.year} considera os últimos 12 meses` : ''}`,
+  }
+}
+
 /** O DY do overview (o número oficial do scraper), em %. */
 export function overviewDyOf(ov: {
   scrape_extras?: { valuation?: { dividend_yield?: number | null } | null; fii?: { dividend_yield_12m?: number | null } | null } | null
