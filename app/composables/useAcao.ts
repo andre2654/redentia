@@ -253,6 +253,7 @@ function extractFund(ov: FundamentalsOverviewApi | null): Fund | null {
 interface EtfInfo {
   name: string | null // book_name em title-case ('Ishare Sp500')
   bookName: string | null // bruto ('ISHARE SP500') — linha 'Nome de pregão'
+  /** Perf.Y do scanner do TradingView (série ajustada), em pontos % */
   change12m: number | null
   shareholders: number | null
   volume: number | null
@@ -282,11 +283,36 @@ function extractEtf(ov: FundamentalsOverviewApi | null): EtfInfo | null {
   }
 }
 
+/**
+ * Variação de 12 meses do ETF (card "Variação 12 meses").
+ *
+ * Primeiro o número do Backend: o `change_12m` do overview é o Perf.Y do
+ * scanner do TradingView, calculado sobre a série AJUSTADA dele. A série do
+ * gráfico (ticker_historical_prices_si) só é ajustada até 28/08/2026; depois
+ * disso o preço gravado é cru, e um desdobramento no meio vira variação (o
+ * T2TD34, grupamento com data-com em 18/09/2026, leria +2.643,67%).
+ * Sem o número do Backend, a conta pela série só sai com 12 meses de série e
+ * entre metade e o dobro do preço inicial: é o teto que o ranking de 12 meses
+ * do Backend (#56) usa quando não tem referência, porque mexida maior é do
+ * tamanho de um evento que não chegou.
+ */
+function etfChange12m(e: EtfInfo, series: SeriesPoint[]): number | null {
+  if (e.change12m != null && Number.isFinite(e.change12m)) return e.change12m
+  if (series.length < 2) return null
+  const first = series[0]!
+  const last = series[series.length - 1]!
+  const days = (Date.parse(last.t) - Date.parse(first.t)) / 86_400_000
+  if (!(days >= 350) || !(first.v > 0) || !(last.v > 0)) return null
+  const factor = last.v / first.v
+  return factor >= 0.5 && factor <= 2 ? (factor - 1) * 100 : null
+}
+
 /** Stats dark do chart pra ETF (não existe DRE/valuation de empresa). */
-function buildEtfChartStats(e: EtfInfo | null): AcaoStatRow[] {
+function buildEtfChartStats(e: EtfInfo | null, series: SeriesPoint[]): AcaoStatRow[] {
   if (!e) return []
   const rows: AcaoStatRow[] = []
-  if (e.change12m != null) rows.push({ l: 'Variação 12 meses', v: pctFmt(e.change12m) })
+  const change12m = etfChange12m(e, series)
+  if (change12m != null) rows.push({ l: 'Variação 12 meses', v: pctFmt(change12m) })
   if (e.shareholders != null) rows.push({ l: 'Cotistas', v: nf0.format(e.shareholders) })
   if (e.volume != null) rows.push({ l: 'Volume diário', v: moneyBig(e.volume, 2) })
   if (e.lotSize != null) rows.push({ l: 'Lote padrão', v: nf0.format(e.lotSize) })
@@ -587,6 +613,12 @@ function buildHero(profile: TickerProfileApi, name: string): AcaoHeroVM {
     // Sem isso o badge cai no default 'B3' — mentira pra ativo americano.
     exchangeLabel: profile.currency === 'USD' ? 'EUA' : undefined,
   }
+}
+
+/** 'YYYY-MM-DD' (aceita timestamp ISO), ou null. */
+function isoDateOrNull(v: string | null | undefined): string | null {
+  const d = typeof v === 'string' ? v.slice(0, 10) : ''
+  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null
 }
 
 function toSeries(data: PricePointApi[] | undefined | null): SeriesPoint[] {
@@ -1089,6 +1121,8 @@ function petr4Seed(): AcaoPayload {
     ticker: 'PETR4',
     name: 'Petrobras',
     kind: 'stock',
+    // seed do design (backend fora): sem data de dado real, sem dateModified
+    dataDate: null,
     hero: {
       companyLine: 'Petrobras · PETR4',
       ticker: 'PETR4',
@@ -1343,11 +1377,14 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ticker,
     name,
     kind,
+    // Pregão do dado exibido (YYYY-MM-DD): o price_date do perfil ou, sem
+    // ele, o último ponto do gráfico. Vira o dateModified da página.
+    dataDate: isoDateOrNull(profile.price_date) ?? isoDateOrNull(assetSeries[assetSeries.length - 1]?.t),
     hero: buildHero(profile, name),
     currentPrice: profile.market_price,
     series12,
     // ETF não tem DRE/valuation de empresa: stats do chart vêm do bloco etf.
-    chartStats: kind === 'etf' ? buildEtfChartStats(etf) : buildChartStats(f),
+    chartStats: kind === 'etf' ? buildEtfChartStats(etf, assetSeries) : buildChartStats(f),
     perfil: buildPerfil(f),
     fundHeading: isFii ? ['Os números', 'do fundo.'] : ['Os números', 'da empresa.'],
     fundSub,
@@ -1491,6 +1528,8 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     ticker: sym,
     name: c.name,
     kind: 'crypto',
+    // o último ponto diário da série (o `last_updated` do /crypto vem com fuso trocado)
+    dataDate: isoDateOrNull(series[series.length - 1]?.t),
     hero: buildCryptoHero(c, sym),
     currentPrice: c.price_brl,
     series12,

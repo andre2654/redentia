@@ -41,8 +41,18 @@ interface PageSeoInput {
    * Vai em WebPage, não no Corporation/FinancialProduct da página:
    * dateModified é propriedade de CreativeWork, e Organization não é
    * CreativeWork — declarar lá seria schema inválido.
+   *
+   * TEM que ser a data do DADO que a página mostra (price_date da cotação,
+   * último preço do título, estudo mais recente da tese), nunca a do
+   * calendário. De 21/08 a 23/09/2026 isto recebia o "último pregão" calculado
+   * pela data de hoje: no congelamento do scraper (28/08 → 17/09) a página
+   * dizia "atualizado em 28/08" e o dado estruturado dizia "hoje". Sem data
+   * verificável, não passe nada — o nó WebPage simplesmente não sai.
+   *
+   * Aceita ref/getter porque em várias páginas a data só existe depois que o
+   * dado resolve (ranking, home).
    */
-  dateModified?: string
+  dateModified?: MaybeRefOrGetter<string | null | undefined>
 }
 
 export function usePageSeo(input: PageSeoInput) {
@@ -74,6 +84,7 @@ export function usePageSeo(input: PageSeoInput) {
   })
 
   const ld: Record<string, unknown>[] = []
+  const trailing: Record<string, unknown>[] = []
 
   for (const item of input.structuredData ?? []) {
     const normalized: Record<string, unknown> = { '@context': 'https://schema.org', ...item }
@@ -85,21 +96,8 @@ export function usePageSeo(input: PageSeoInput) {
     ld.push(normalized)
   }
 
-  if (input.dateModified) {
-    ld.push({
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      '@id': canonical,
-      url: canonical,
-      name: input.title,
-      dateModified: input.dateModified,
-      inLanguage: 'pt-BR',
-      isPartOf: { '@type': 'WebSite', name: 'Redentia', url: origin },
-    })
-  }
-
   if (input.breadcrumbs?.length) {
-    ld.push({
+    trailing.push({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: input.breadcrumbs.map((b, i) => ({
@@ -111,8 +109,31 @@ export function usePageSeo(input: PageSeoInput) {
     })
   }
 
+  /** 'YYYY-MM-DD' válido ou nada: data inventada é pior que data ausente. */
+  const dateModified = computed(() => {
+    const raw = toValue(input.dateModified)
+    const d = typeof raw === 'string' ? raw.slice(0, 10) : ''
+    return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null
+  })
+
   useHead({
     link: [{ rel: 'canonical', href: canonical }],
-    script: ld.map((data) => ({ type: 'application/ld+json', innerHTML: JSON.stringify(data) })),
+    script: computed(() => {
+      const nodes = [...ld]
+      if (dateModified.value) {
+        nodes.push({
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          '@id': canonical,
+          url: canonical,
+          name: input.title,
+          dateModified: dateModified.value,
+          inLanguage: 'pt-BR',
+          isPartOf: { '@type': 'WebSite', name: 'Redentia', url: origin },
+        })
+      }
+      nodes.push(...trailing)
+      return nodes.map((data) => ({ type: 'application/ld+json', innerHTML: JSON.stringify(data) }))
+    }),
   })
 }

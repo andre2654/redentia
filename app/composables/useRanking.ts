@@ -7,24 +7,27 @@
  * unavailable=true; a página mostra "dados indisponíveis agora" e a copy
  * educacional continua servida (o SEO não morre com o backend).
  *
+ * Entra na tabela a linha com cotação e com a métrica principal, na ordem da
+ * API; coluna secundária vazia não tira ninguém (rankingTable). Se nem a
+ * métrica principal vier (maiores-lucros com a API de antes do Backend #56),
+ * entram as linhas com cotação e "—" onde falta. Nunca SSR vazio.
+ * "Todos" manda à API o universo declarado em meta.types (lista de tipos).
+ *
  * Caso especial tesouro-direto (endpoint sentinel 'tesouro'): deriva de
  * GET /tesouro ordenando rate_numeric — sem tabs, shape próprio
  * (tesouroRows).
  */
 import type {
   RankingAssetType,
+  RankingColumnKey,
   RankingMeta,
   RankingRowApi,
   RankingTypeFilter,
   TesouroRankingRow,
 } from '~/types/rankings'
 
-const TYPE_TO_API: Record<RankingAssetType, 'STOCK' | 'REIT' | 'BDR'> = {
-  acoes: 'STOCK',
-  fiis: 'REIT',
-  bdrs: 'BDR',
-}
-
+/** Linhas exibidas (SSR com a tabela completa no HTML). */
+const RANKING_ROWS = 50
 export function useRanking(meta: RankingMeta) {
   const route = useRoute()
   const router = useRouter()
@@ -46,24 +49,19 @@ export function useRanking(meta: RankingMeta) {
 
   const { data, pending, error } = useAsyncData(
     `ranking-${meta.slug}`,
-    async (): Promise<{ rows: RankingRowApi[]; tesouroRows: TesouroRankingRow[] }> => {
+    async (): Promise<{ rows: RankingRowApi[]; columns: RankingColumnKey[]; tesouroRows: TesouroRankingRow[] }> => {
       if (isTesouro) {
-        return { rows: [], tesouroRows: await fetchTesouroRanking() }
+        return { rows: [], columns: [], tesouroRows: await fetchTesouroRanking() }
       }
-      const t = activeType.value === 'todos' ? null : TYPE_TO_API[activeType.value]
-      const resp = await fetchRanking(meta.endpoint, {
-        type: t,
-        limit: 50,
-        side: meta.extraParams?.side as 'top' | 'bottom' | undefined,
-        days: meta.extraParams?.days ? Number(meta.extraParams.days) : undefined,
-        // DY com FIIs: sem min_cap=0 o filtro default de R$500M zera a lista.
-        min_cap: meta.reitMinCapZero && t === 'REIT' ? 0 : undefined,
-      })
-      return { rows: resp.data ?? [], tesouroRows: [] }
+      // "Todos" = o universo que o ranking declara (rankingFetchParams, o
+      // mesmo pedido da prévia do hub)
+      const resp = await fetchRanking(meta.endpoint, rankingFetchParams(meta, activeType.value))
+      const table = rankingTable(resp.data ?? [], rankingColumnsFor(meta, activeType.value), meta.primaryMetric, RANKING_ROWS)
+      return { rows: table.rows, columns: table.columns, tesouroRows: [] }
     },
     {
       watch: [activeType],
-      default: () => ({ rows: [] as RankingRowApi[], tesouroRows: [] as TesouroRankingRow[] }),
+      default: () => ({ rows: [] as RankingRowApi[], columns: [] as RankingColumnKey[], tesouroRows: [] as TesouroRankingRow[] }),
     },
   )
 
@@ -76,6 +74,8 @@ export function useRanking(meta: RankingMeta) {
    *  estado que não muda sozinho, pede copy própria. */
   const empty = computed(() => !pending.value && count.value === 0 && !error.value)
   const leader = computed(() => rows.value[0] ?? null)
+  /** colunas exibidas: as da tab ativa (rankingColumnsFor), menos as vazias em todas as linhas (rankingTable) */
+  const columns = computed(() => (data.value?.columns?.length ? data.value.columns : rankingColumnsFor(meta, activeType.value)))
   const tesouroLeader = computed(() => tesouroRows.value[0] ?? null)
 
   return {
@@ -91,5 +91,6 @@ export function useRanking(meta: RankingMeta) {
     activeType,
     setType,
     isTesouro,
+    columns,
   }
 }

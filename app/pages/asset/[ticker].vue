@@ -98,7 +98,8 @@ usePageSeo({
   description: acao.value.seo.description,
   path: `/asset/${ticker}`,
   structuredData,
-  dateModified: ultimoPregao(),
+  // pregão do dado exibido (price_date da cotação), nunca o calendário
+  dateModified: acao.value.dataDate,
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: ticker, path: `/asset/${ticker}` },

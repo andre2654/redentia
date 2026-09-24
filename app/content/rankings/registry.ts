@@ -131,6 +131,8 @@ export const RANKINGS: Record<string, RankingMeta> = {
       'As 50 ações e fundos imobiliários (FIIs) com maiores dividend yields da bolsa brasileira (B3) nos últimos 12 meses (TTM). Inclui dividendos pagos por bancos (BBSE3, ITUB4, BBDC4, BBAS3), seguradoras, energia, saneamento, FIIs de tijolo (HGLG11) e FIIs de papel (MXRF11, KNIP11, KNCR11). Ranking atualizado diariamente após pregão, baseado em dados oficiais. Considera dividendos + JCP (Juros sobre Capital Próprio).',
     chips: ['Top 50 atualizado diário', 'Dados oficiais B3', 'Dividendos + JCP', 'Anti value trap'],
     columns: ['dy', 'pe', 'change', 'marketCap'],
+    // FII não tem P/L: a tab de FIIs troca a coluna em vez de esvaziar
+    columnsByType: { fiis: ['dy', 'change', 'marketCap'] },
     primaryMetric: 'dy',
     types: TODOS,
     classe: ['acoes', 'fiis', 'bdrs'],
@@ -381,7 +383,9 @@ export const RANKINGS: Record<string, RankingMeta> = {
     lead:
       'As 50 ações e FIIs que mais subiram nos últimos 12 meses na B3. Indica quem está em momentum forte e pode entregar continuação ou virar. Atualizado diariamente após pregão.',
     chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Momentum'],
-    columns: ['change', 'marketCap', 'dy', 'pe'],
+    // P/L saiu (23/09/2026): FII não tem P/L, e a página lista ações E FIIs —
+    // com a coluna, todo FII virava "—" ou sumia da tabela.
+    columns: ['change', 'marketCap', 'dy'],
     primaryMetric: 'change',
     changeLabel: '12m',
     types: TODOS,
@@ -401,7 +405,9 @@ export const RANKINGS: Record<string, RankingMeta> = {
     lead:
       'As 50 ações e FIIs que mais caíram nos últimos 12 meses na B3. Pode revelar oportunidades de turnaround ou armadilhas de valor. Atualizado diariamente após pregão.',
     chips: ['Atualizado diariamente', 'Dados B3', 'Top 50', 'Turnaround?'],
-    columns: ['change', 'marketCap', 'dy', 'pe'],
+    // P/L saiu (23/09/2026): FII não tem P/L, e a página lista ações E FIIs —
+    // com a coluna, todo FII virava "—" ou sumia da tabela.
+    columns: ['change', 'marketCap', 'dy'],
     primaryMetric: 'change',
     changeLabel: '12m',
     types: TODOS,

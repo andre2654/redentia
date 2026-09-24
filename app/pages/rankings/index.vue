@@ -63,8 +63,11 @@ const { data: scoreTop } = await useAsyncData(
   'rankings-hub-score-top5',
   async () => {
     try {
-      const resp = await fetchRanking('redentia-score', { limit: 5 })
-      return resp.data ?? []
+      // o mesmo pedido e a mesma seleção de linhas do /ranking/redentia-score
+      const meta = RANKINGS['redentia-score']
+      if (!meta) return []
+      const resp = await fetchRanking('redentia-score', rankingFetchParams(meta, 'todos'))
+      return rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 5).rows
     } catch {
       return [] // degrade honesto: destaque some, hub continua
     }
@@ -91,16 +94,16 @@ async function loadPreview(slug: string) {
       previews[slug] = rows.slice(0, 3).map((r) => ({ ticker: r.name, value: r.rate }))
       return
     }
-    const resp = await fetchRanking(meta.endpoint, {
-      limit: 3,
-      side: meta.extraParams?.side as 'top' | 'bottom' | undefined,
-      days: meta.extraParams?.days ? Number(meta.extraParams.days) : undefined,
-    })
+    // a prévia mostra o topo DA PÁGINA: mesmo universo declarado e a mesma
+    // seleção de linhas (senão o card de maiores-lucros prévia BDR e a página,
+    // Petrobras). Sem o número da métrica, a linha não vira prévia: "PETR4 —"
+    // não diz nada, e o card fica só com a copy.
+    const resp = await fetchRanking(meta.endpoint, rankingFetchParams(meta, 'todos'))
     const col = RANKING_COLUMNS[meta.primaryMetric]
-    previews[slug] = (resp.data ?? []).slice(0, 3).map((row) => ({
-      ticker: rankingTicker(row),
-      value: col.format(row),
-    }))
+    previews[slug] = rankingTable(resp.data ?? [], meta.columns, meta.primaryMetric, 50).rows
+      .filter((row) => col.raw(row) != null)
+      .slice(0, 3)
+      .map((row) => ({ ticker: rankingTicker(row), value: col.format(row) }))
   } catch {
     // preview é enriquecimento — falhou, o card fica só com a copy estática
   }

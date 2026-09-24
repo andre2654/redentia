@@ -62,7 +62,7 @@ const copy: RankingCopy = {
     },
     {
       q: 'Esse ranking funciona pra FIIs?',
-      a: 'FIIs distribuem rendimentos mensais (não tem conceito clássico de prejuízo), então o ranking foca em ações e ETFs. Pra FIIs, o equivalente é checar histórico de distribuição: FIIs que pagaram rendimento todos os meses por 5+ anos sem interrupção tem mesmo perfil de resiliência.',
+      a: 'FIIs distribuem rendimentos mensais (não tem conceito clássico de prejuízo), então o ranking foca em ações. Pra FIIs, o equivalente é checar histórico de distribuição: FIIs que pagaram rendimento todos os meses por 5+ anos sem interrupção tem mesmo perfil de resiliência.',
     },
     {
       q: 'Como saber se uma empresa pode ter prejuízo no futuro?',

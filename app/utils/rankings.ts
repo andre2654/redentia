@@ -11,7 +11,7 @@
  *  - redentia_score é 0-10 comprimido → display PERCENTIL /100 (×10, mesma
  *    régua do /asset, decisão PR2).
  */
-import type { RankingColumnKey, RankingRowApi } from '~/types/rankings'
+import type { RankingAssetType, RankingColumnKey, RankingMeta, RankingRowApi, RankingTypeFilter } from '~/types/rankings'
 
 const nfBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -203,6 +203,98 @@ export const RANKING_COLUMNS: Record<RankingColumnKey, RankingColumnDef> = {
       return v == null ? '—' : `${nf0.format(v)} de 15`
     },
   },
+}
+
+/** Tab do registry → tipo da API. */
+export const RANKING_API_TYPE: Record<RankingAssetType, 'STOCK' | 'REIT' | 'BDR'> = {
+  acoes: 'STOCK',
+  fiis: 'REIT',
+  bdrs: 'BDR',
+}
+
+/**
+ * O "Todos" de um ranking: o universo que ele DECLARA em meta.types, na forma
+ * da API (lista). Página e prévia do hub pedem o mesmo universo.
+ */
+export function rankingApiTypes(types: RankingAssetType[]): Array<'STOCK' | 'REIT' | 'BDR'> {
+  return types.map((t) => RANKING_API_TYPE[t])
+}
+
+/** Colunas da tab ativa: as da classe, se o ranking declarar, senão as padrão. */
+export function rankingColumnsFor(meta: RankingMeta, type: RankingTypeFilter): RankingColumnKey[] {
+  return (type !== 'todos' && meta.columnsByType?.[type]) || meta.columns
+}
+
+/** Linha com cotação (market_price ?? close). */
+function rankingRowPriced(row: RankingRowApi): boolean {
+  return num(row.market_price) != null || num(row.close) != null
+}
+
+/**
+ * Linha com cotação e com TODAS as colunas pedidas. Pra entrar na tabela
+ * basta a métrica principal (`rankingRowComplete(r, [primary])`, ver
+ * rankingTable); coluna secundária vazia não tira a linha.
+ */
+export function rankingRowComplete(row: RankingRowApi, columns: RankingColumnKey[]): boolean {
+  if (!rankingRowPriced(row)) return false
+  return columns.every((key) => RANKING_COLUMNS[key].raw(row) != null)
+}
+
+/** Abaixo disso, exigir a métrica principal deixaria a página quase vazia. */
+const MIN_RANKED_ROWS = 10
+
+export interface RankingTable {
+  rows: RankingRowApi[]
+  /** colunas exibidas: as da tab, menos as vazias na maioria das linhas (a métrica principal fica) */
+  columns: RankingColumnKey[]
+}
+
+/**
+ * Linhas e colunas que o ranking publica. A ORDEM É SEMPRE A DA API: aqui só
+ * se filtra, nunca se reordena.
+ *
+ *  1. Entra a linha com cotação e com a métrica principal do ranking. Coluna
+ *     SECUNDÁRIA vazia não tira ninguém: exigir todas as colunas sumia com o
+ *     1º da API quando ele era FII sem valor de mercado (RCFA11, -58,6%, no
+ *     maiores-baixas-mes, que passava a abrir com AGXY3) e com 21 linhas em 5
+ *     rankings (PINE14, BRBI3/BRBI4, TRXF11, ROXO34...).
+ *  2. Se nem 10 linhas trazem a métrica principal, a tabela não encolhe até
+ *     sumir: entram as linhas com cotação, com "—" onde falta. É o caso do
+ *     maiores-lucros com a API de antes do Backend #56, que não manda lucro em
+ *     linha nenhuma (produção mostra "—" hoje). Ranking vazio no HTML é pior.
+ *  3. Coluna vazia em mais da metade das linhas exibidas sai da tabela (tab
+ *     de FIIs sem valor de mercado, 12 meses sem DY na API de hoje); a da
+ *     métrica principal fica.
+ */
+export function rankingTable(
+  rows: RankingRowApi[],
+  columns: RankingColumnKey[],
+  primary: RankingColumnKey,
+  limit: number,
+): RankingTable {
+  const priced = rows.filter(rankingRowPriced)
+  const ranked = priced.filter((r) => rankingRowComplete(r, [primary]))
+  const floor = Math.max(1, Math.min(MIN_RANKED_ROWS, priced.length))
+  const shown = (ranked.length >= floor ? ranked : priced).slice(0, limit)
+  return {
+    rows: shown,
+    columns: columns.filter((c) => c === primary
+      || shown.filter((r) => RANKING_COLUMNS[c].raw(r) != null).length * 2 >= shown.length),
+  }
+}
+
+/**
+ * Data do dado de um ranking ('YYYY-MM-DD'): o pregão mais recente entre as
+ * linhas exibidas. É o dateModified do JSON-LD — nunca a data do calendário
+ * (o `new Date()` que estava aqui dizia "hoje" mesmo com o preço parado).
+ */
+export function rankingDataDate(rows: RankingRowApi[]): string | null {
+  let latest: string | null = null
+  for (const r of rows) {
+    const d = typeof r.price_date === 'string' ? r.price_date.slice(0, 10) : null
+    if (d && /^\d{4}-\d{2}-\d{2}$/.test(d) && (latest === null || d > latest)) latest = d
+  }
+  return latest
 }
 
 /**

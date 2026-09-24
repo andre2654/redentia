@@ -102,7 +102,9 @@ usePageSeo({
   description: titulo.value.seo.description,
   path: `/tesouro/${slug}`,
   structuredData,
-  dateModified: ultimoPregao(),
+  // último preço publicado na série do título (não o refreshed_at, que é a
+  // hora em que o scraper regravou a linha)
+  dateModified: titulo.value.raw.price_date,
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: 'Tesouro Direto', path: '/tesouro' },

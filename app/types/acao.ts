@@ -28,6 +28,8 @@ export interface TickerProfileApi {
   market_price: number | null
   change_percent: number | null
   price_at: string | null // 'd/m' SEM ano (gotcha documentado)
+  /** a mesma data COM ano, 'YYYY-MM-DD' (Backend desde 23/09/2026) */
+  price_date?: string | null
   market_cap: number | null // NÃO usar: vem truncado (PETR4 = 1.02) — usar fundamentals
   sector: string | null
   industry_category: string | null
@@ -549,6 +551,8 @@ export interface AcaoPayload {
   ticker: string
   name: string
   kind: AssetKind
+  /** pregão do dado exibido, 'YYYY-MM-DD' — o dateModified da página (null = não declara) */
+  dataDate: string | null
   hero: AcaoHeroVM
   currentPrice: number | null
   series12: AcaoSeriesPair | null

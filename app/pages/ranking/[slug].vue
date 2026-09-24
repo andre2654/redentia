@@ -38,7 +38,7 @@ const copy: RankingCopy = loader ? (await loader()).default : EMPTY_COPY
 // ————— dados (SSR, reativo a ?type=) —————
 const {
   rows, tesouroRows, count, pending, unavailable, empty,
-  leader, tesouroLeader, activeType, setType, isTesouro,
+  leader, tesouroLeader, activeType, setType, isTesouro, columns,
 } = useRanking(meta)
 
 const isScore = slug === 'redentia-score'
@@ -53,6 +53,7 @@ const primaryLabel = computed(() => {
 // Vive num useHead REATIVO próprio: o usePageSeo serializa structuredData no
 // setup, ANTES das rows resolverem — o computed garante o ItemList no SSR.
 const rankingOrigin = useSiteOrigin()
+const dataDate = computed(() => rankingDataDate(rows.value))
 const itemListScript = computed(() => {
   const top = rows.value.slice(0, 10)
   if (!top.length) return []
@@ -67,10 +68,11 @@ const itemListScript = computed(() => {
         ? 'https://schema.org/ItemListOrderAscending'
         : 'https://schema.org/ItemListOrderDescending',
       numberOfItems: top.length,
-      // Sinal de frescor: os rankings recalculam todo pregão e o dado estruturado
-      // não dizia isso em lugar nenhum. Data, e não hora, porque a rota cacheia
-      // 900s na borda e um timestamp cheio só geraria ruído entre réplicas.
-      dateModified: new Date().toISOString().slice(0, 10),
+      // Sinal de frescor: o pregão do preço mais recente ENTRE AS LINHAS
+      // exibidas (price_date da API). Era `new Date()`, que dizia "hoje" até
+      // com o preço parado (congelamento de 28/08 a 17/09/2026). Sem data, a
+      // propriedade não sai.
+      ...(dataDate.value ? { dateModified: dataDate.value } : {}),
       itemListElement: top.map((row, idx) => ({
         '@type': 'ListItem',
         position: idx + 1,
@@ -91,6 +93,7 @@ usePageSeo({
   title: meta.metaTitle,
   description: meta.metaDescription,
   path: `/ranking/${slug}`,
+  dateModified: dataDate,
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: 'Rankings', path: '/rankings' },
@@ -146,8 +149,9 @@ usePageSeo({
           <p class="rks__toolbar-eyebrow">Lista completa</p>
           <p class="rks__toolbar-count">{{ count }} {{ isTesouro ? 'títulos' : 'ativos' }} no ranking</p>
         </div>
+        <!-- 1 tipo declarado = "Todos" e a tab seriam a mesma lista -->
         <RankTypeTabs
-          v-if="meta.types.length"
+          v-if="meta.types.length > 1"
           :types="meta.types" :model-value="activeType"
           @update:model-value="setType"
         />
@@ -166,7 +170,7 @@ usePageSeo({
       </div>
       <RankTesouroTable v-else-if="isTesouro" :rows="tesouroRows" />
       <RankTable
-        v-else :rows="rows" :columns="meta.columns" :change-label="meta.changeLabel"
+        v-else :rows="rows" :columns="columns" :change-label="meta.changeLabel"
         :breakdown="isScore"
       />
 

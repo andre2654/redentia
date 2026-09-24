@@ -7,15 +7,19 @@
  * Resource único ~35 campos. Renda fixa NÃO tem ranking no Laravel →
  * fetchTesouroRanking deriva de GET /tesouro ordenando rate_numeric.
  */
-import type { RankingRowApi, TesouroRankingRow } from '~/types/rankings'
+import type { RankingMeta, RankingRowApi, RankingTypeFilter, TesouroRankingRow } from '~/types/rankings'
 import type { TesouroApi } from '~/types/market'
+import { RANKING_API_TYPE, rankingApiTypes } from '~/utils/rankings'
 
 const base = '/api/backend'
 const json = { headers: { Accept: 'application/json' } }
 
 export interface RankingFetchParams {
-  /** null/undefined = sem filtro (Todos). */
-  type?: 'STOCK' | 'REIT' | 'BDR' | null
+  /**
+   * Um tipo ou vários (a API aceita lista: STOCK,REIT,BDR). null/undefined =
+   * sem filtro — o "Todos" das páginas manda o universo declarado no registry.
+   */
+  type?: 'STOCK' | 'REIT' | 'BDR' | Array<'STOCK' | 'REIT' | 'BDR'> | null
   /** default 50 (SSR com tabela completa no HTML). Max backend: 100. */
   limit?: number
   side?: 'top' | 'bottom'
@@ -24,13 +28,37 @@ export interface RankingFetchParams {
   min_cap?: number
 }
 
+/** Linhas pedidas à API (máx. 100): a página publica 50 e a folga cobre linha sem cotação ou sem a métrica. */
+export const RANKING_FETCH_LIMIT = 100
+
+/**
+ * O pedido que a PÁGINA /ranking/<slug> faz pra uma tab. A prévia do hub
+ * (/rankings) usa este mesmo pedido: com o mesmo universo e o mesmo limit, o
+ * Nº 1 da prévia é o Nº 1 da página (limit=10 no hub podia dar outro 1º).
+ * "Todos" = o universo que o ranking DECLARA (meta.types), não a B3 inteira:
+ * o maiores-lucros é só de ações e mostrava 50 BDRs com NVDC34 em 1º.
+ */
+export function rankingFetchParams(meta: RankingMeta, tab: RankingTypeFilter): RankingFetchParams {
+  const declared = rankingApiTypes(meta.types)
+  const type = tab === 'todos' ? (declared.length ? declared : null) : RANKING_API_TYPE[tab]
+  return {
+    type,
+    limit: RANKING_FETCH_LIMIT,
+    side: meta.extraParams?.side as 'top' | 'bottom' | undefined,
+    days: meta.extraParams?.days ? Number(meta.extraParams.days) : undefined,
+    // DY com FIIs: sem min_cap=0 o filtro default de R$500M zera a lista.
+    min_cap: meta.reitMinCapZero && type === 'REIT' ? 0 : undefined,
+  }
+}
+
 /** GET /rankings/<endpoint> — lista ranqueada (limit=50, ?type= opcional). */
 export async function fetchRanking(
   endpoint: string,
   { type = null, limit = 50, side, days, min_cap }: RankingFetchParams = {},
 ): Promise<{ data: RankingRowApi[] }> {
   const params = new URLSearchParams({ limit: String(limit) })
-  if (type) params.set('type', type)
+  const types = Array.isArray(type) ? type : type ? [type] : []
+  if (types.length) params.set('type', types.join(','))
   if (side) params.set('side', side)
   if (days != null) params.set('days', String(days))
   if (min_cap != null) params.set('min_cap', String(min_cap))

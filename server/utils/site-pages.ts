@@ -24,8 +24,6 @@ import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_ASSETS } from '../../app/content/seo/indexable-assets'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
-// fonte única compartilhada com as páginas (dateModified do JSON-LD)
-import { ultimoPregao } from '../../app/utils/pregao'
 
 export interface SitePage {
   path: string
@@ -40,13 +38,19 @@ export interface SitePage {
    * ele estava certo. Por isso página sem data conhecida (glossário, setores,
    * institucional) fica SEM o campo, e não com a data do build.
    *
-   * Fontes por seção:
+   * Fontes por seção (desde 23/09/2026 — antes, tudo que era "diário" recebia
+   * o "último pregão" do CALENDÁRIO, e no congelamento do scraper de 28/08 a
+   * 17/09 o sitemap dizia "mudou hoje" sobre página que mostrava "atualizado
+   * em 28/08"):
    *  - guias:              dateModified do GUIDE_DOCS (data editorial real)
    *  - calculadoras:       CONTENT_VERSION de cada página
-   *  - rankings, tesouro,
-   *    ativos, dividendos,
-   *    cripto, teses, home: último pregão (o dado É refeito todo dia útil)
-   *  - resto:              ausente
+   *  - ativos, dividendos: `price_date` do ativo no /tickers-full (o pregão do
+   *                        preço que a página mostra)
+   *  - tesouro:            `price_date` do título (último preço da série)
+   *  - teses:              `lastStudyDate` (o mesmo dateModified da /tese/{slug})
+   *  - home, rankings:     o pregão mais recente com preço no /tickers-full
+   *  - /teses, /noticias:  estudo mais recente / notícia mais recente
+   *  - cripto e o resto:   ausente
    */
   lastmod?: string
 }
@@ -62,9 +66,10 @@ export interface SiteSection {
 const CORE_PAGES: SitePage[] = [
   // fusão home+carteira (2026-07-13): /mercado morreu (301 → '/') e a home
   // pública herdou o panorama do mercado — 1 entrada só.
-  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.', lastmod: ultimoPregao() },
-  { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.', lastmod: ultimoPregao() },
-  { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.', lastmod: ultimoPregao() },
+  // lastmod de '/', '/noticias' e '/teses' sai do dado em getSiteSections
+  { path: '/', title: 'Home', description: 'Panorama diário do mercado brasileiro: índices, altas, baixas, Tesouro Direto, notícias e a IA da Redentia.' },
+  { path: '/noticias', title: 'Notícias', description: 'Notícias do mercado financeiro brasileiro curadas e comentadas.' },
+  { path: '/teses', title: 'Teses de investimento', description: 'Teses temáticas com empresas, score de convicção e fontes, revalidadas diariamente.' },
   { path: '/guias', title: 'Guias', description: 'Conteúdo educacional sobre investimentos no Brasil.' },
   // Guias individuais /guias/{slug}: derivados de GUIDE_DOCS (fonte única do
   // hub e das páginas). Só entra guia com doc escrito e registrado, então
@@ -146,6 +151,8 @@ interface ThesisApiItem {
   id?: string
   title?: string
   description?: string
+  /** estudo mais recente, 'YYYY-MM-DD' (Backend desde 23/09/2026) */
+  lastStudyDate?: string | null
 }
 
 interface TickerApiItem {
@@ -153,6 +160,19 @@ interface TickerApiItem {
   name?: string
   type?: string
   market_cap?: number | null
+  /** pregão do preço, 'YYYY-MM-DD' (o `price_at` vem 'd/m', sem ano) */
+  price_date?: string | null
+}
+
+/** 'YYYY-MM-DD' válido ou undefined — lastmod inventado derruba o sitemap inteiro. */
+function isoDate(v: unknown): string | undefined {
+  const d = typeof v === 'string' ? v.slice(0, 10) : ''
+  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : undefined
+}
+
+/** O mais recente de uma lista de 'YYYY-MM-DD' (undefined se nenhum). */
+function latestDate(dates: Array<string | undefined>): string | undefined {
+  return dates.reduce<string | undefined>((a, d) => (d && (!a || d > a) ? d : a), undefined)
 }
 
 /** Base direta do Laravel (mesma fonte do resto do app: runtimeConfig). */
@@ -178,7 +198,7 @@ const fetchThesisPages = defineCachedFunction(
           path: `/tese/${t.id}`,
           title: t.title || t.id,
           description: t.description || undefined,
-          lastmod: ultimoPregao(), // convicção é revalidada a cada pregão
+          lastmod: isoDate(t.lastStudyDate), // estudo mais recente (= dateModified da página)
         }))
     } catch {
       return [] // backend fora → omite a seção, sitemap continua de pé
@@ -235,7 +255,7 @@ const fetchAssetPages = defineCachedFunction(
           title: t.name
             ? `${t.ticker.toUpperCase()} (${t.name.replace(/\s+/g, ' ').trim()})`
             : t.ticker.toUpperCase(),
-          lastmod: ultimoPregao(), // cotação, variação e fundamentos do pregão
+          lastmod: isoDate(t.price_date), // pregão do preço do próprio ativo
         }))
     } catch {
       return []
@@ -263,8 +283,18 @@ const fetchAssetPages = defineCachedFunction(
  * EVEN3, CGRA3, CGRA4, CEBR3 e CEBR6 são exatamente esse caso. Usar a lista
  * podada como régua removia as 6 pra pegar 1 inválido.
  */
+interface UniverseEntry {
+  ticker: string
+  type?: string
+  /** pregão do preço do ativo, 'YYYY-MM-DD' */
+  priceDate?: string
+}
+
+/** Tipos negociados na B3 — o pregão "mais recente" da home e dos rankings sai só deles. */
+const B3_TYPES = new Set(['STOCK', 'REIT', 'BDR', 'ETF'])
+
 const fetchTickerUniverse = defineCachedFunction(
-  async (): Promise<string[]> => {
+  async (): Promise<UniverseEntry[]> => {
     try {
       const res = await $fetch<{ data?: TickerApiItem[] }>('/tickers-full', {
         baseURL: backendBase(),
@@ -272,13 +302,14 @@ const fetchTickerUniverse = defineCachedFunction(
       })
       const items = Array.isArray(res?.data) ? res.data : []
       return items
-        .map((t) => (typeof t.ticker === 'string' ? t.ticker.toUpperCase() : ''))
-        .filter(Boolean)
+        .filter((t): t is TickerApiItem & { ticker: string } => typeof t.ticker === 'string' && t.ticker.length > 0)
+        .map((t) => ({ ticker: t.ticker.toUpperCase(), type: t.type, priceDate: isoDate(t.price_date) }))
     }
     catch { return [] }
   },
   {
-    name: 'site-pages-ticker-universe',
+    // v2 (23/09/2026): o valor passou de string[] a {ticker, type, priceDate}[]
+    name: 'site-pages-ticker-universe-v2',
     maxAge: 3600,
     swr: true,
     getKey: () => 'all',
@@ -291,6 +322,8 @@ interface TesouroApiItem {
   name?: string
   indexer?: string
   rate?: string
+  /** último preço publicado na série, 'YYYY-MM-DD' */
+  price_date?: string | null
 }
 
 /** Títulos do Tesouro Direto → /tesouro/{slug} (~70 títulos vivos). */
@@ -308,7 +341,7 @@ const fetchTesouroPages = defineCachedFunction(
           path: `/tesouro/${t.slug}`,
           title: t.name || t.slug,
           description: t.rate ? `Taxa do dia: ${t.rate}${t.indexer ? ` (${t.indexer})` : ''}.` : undefined,
-          lastmod: ultimoPregao(), // taxa e preço unitário mudam todo dia útil
+          lastmod: isoDate(t.price_date), // último preço publicado do título
         }))
     } catch {
       return []
@@ -347,7 +380,8 @@ const fetchCryptoPages = defineCachedFunction(
         .map((c) => ({
           path: `/asset/${c.symbol.toUpperCase()}`,
           title: c.name ? `${c.symbol.toUpperCase()} (${c.name})` : c.symbol.toUpperCase(),
-          lastmod: ultimoPregao(),
+          // sem lastmod: o /crypto não tem data de dado confiável (timestamps
+          // com fuso trocado) — ausente é melhor que inventado
         }))
     } catch {
       return []
@@ -402,7 +436,7 @@ const fetchDividendPages = defineCachedFunction(
       path: `/dividendos/${t}`,
       title: `Dividendos de ${t}`,
       description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${t}.`,
-      lastmod: ultimoPregao(), // DY acompanha o preço, que muda todo pregão
+      // lastmod = price_date do ativo, preenchido em getSiteSections (universo)
     }))
   },
   {
@@ -418,6 +452,35 @@ const fetchDividendPages = defineCachedFunction(
   },
 )
 
+/** Data ('YYYY-MM-DD', fuso de São Paulo) da notícia mais recente → <lastmod> do /noticias. */
+const fetchLatestNewsDate = defineCachedFunction(
+  async (): Promise<string | null> => {
+    try {
+      const res = await $fetch<{ data?: Array<{ published_at?: string | null }> }>('/news/latest?limit=1', {
+        baseURL: backendBase(),
+        timeout: 10_000,
+      })
+      const raw = res?.data?.[0]?.published_at
+      if (!raw) return null
+      const ms = Date.parse(raw)
+      if (!Number.isFinite(ms)) return null
+      // en-CA formata YYYY-MM-DD
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit',
+      }).format(new Date(ms))
+    } catch {
+      return null
+    }
+  },
+  {
+    name: 'site-pages-latest-news',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'latest',
+    validate: (entry) => typeof entry.value === 'string',
+  },
+)
+
 /** Guias escritos → /guias/{slug}, derivados do registry (fonte única). */
 function guideDocPages(): SitePage[] {
   return Object.values(GUIDE_DOCS).map((g) => ({
@@ -428,13 +491,12 @@ function guideDocPages(): SitePage[] {
   }))
 }
 
-function rankingPages(): SitePage[] {
-  const lastmod = ultimoPregao()
+function rankingPages(marketDate: string | undefined): SitePage[] {
   return Object.values(RANKINGS).map((r) => ({
     path: `/ranking/${r.slug}`,
     title: r.title,
     description: r.metaDescription,
-    lastmod, // a ordem dos 22 rankings é recalculada após cada pregão
+    lastmod: marketDate, // o pregão mais recente com preço: é dele que os rankings saem
   }))
 }
 
@@ -461,14 +523,28 @@ function glossarioPages(): SitePage[] {
  * seção a seção (e corta a cauda de ativos).
  */
 export async function getSiteSections(): Promise<SiteSection[]> {
-  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru] = await Promise.all([
+  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews] = await Promise.all([
     fetchThesisPages(),
     fetchAssetPages(),
     fetchTesouroPages(),
     fetchCryptoPages(),
     fetchDividendPages(),
     fetchTickerUniverse(),
+    fetchLatestNewsDate(),
   ])
+
+  // Datas do DADO (não do calendário): pregão de cada ativo e o mais recente
+  // de todos, que é de onde saem a home e os 22 rankings.
+  const priceDates = new Map(universoCru.map((e) => [e.ticker, e.priceDate]))
+  // Só papel da B3: US_STOCK/US_ETF do /tickers-full negociam em feriado da B3
+  // (Carnaval, Tiradentes, 20/11) e dariam à home e aos rankings um dia sem pregão.
+  const marketDate = latestDate(universoCru.filter((e) => B3_TYPES.has(e.type ?? '')).map((e) => e.priceDate))
+  const coreLastmod: Record<string, string | undefined> = {
+    '/': marketDate,
+    '/noticias': latestNews ?? undefined,
+    '/teses': latestDate(teses.map((t) => t.lastmod)),
+  }
+  const corePages = CORE_PAGES.map((p) => (p.path in coreLastmod ? { ...p, lastmod: coreLastmod[p.path] } : p))
 
   // GUARDA ANTI-404 NO SITEMAP (23/08/2026). fetchDividendPages monta a lista
   // a partir do ranking /rankings/top-dividend-yield, e o ranking devolve
@@ -483,13 +559,14 @@ export async function getSiteSections(): Promise<SiteSection[]> {
   // CGRA3, CGRA4, CEBR3 e CEBR6 — todas 200 — pra pegar um único GUAR3.
   // Só filtra quando o universo veio de fato: backend fora devolve [] e aí
   // filtrar apagaria a seção inteira, que é pior que um 404.
-  const universo = new Set(universoCru)
-  const dividendos = universo.size > 0
+  const universo = new Set(universoCru.map((e) => e.ticker))
+  const dividendos = (universo.size > 0
     ? dividendosCru.filter((p) => universo.has(p.path.split('/').pop()!.toUpperCase()))
     : dividendosCru
+  ).map((p) => ({ ...p, lastmod: priceDates.get(p.path.split('/').pop()!.toUpperCase()) }))
 
   const sections: SiteSection[] = [
-    { id: 'core', title: 'Páginas principais', pages: CORE_PAGES },
+    { id: 'core', title: 'Páginas principais', pages: corePages },
     {
       id: 'calculadoras',
       title: 'Calculadoras financeiras',
@@ -506,7 +583,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       id: 'rankings',
       title: 'Rankings',
       description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto, atualizados diariamente após o pregão.',
-      pages: rankingPages(),
+      pages: rankingPages(marketDate),
     },
     {
       id: 'setores',

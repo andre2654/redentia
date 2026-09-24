@@ -40,6 +40,11 @@ export interface DivEduSection {
 }
 
 export interface DividendosPayload {
+  /**
+   * Pregão da cotação usada no DY, 'YYYY-MM-DD' (price_date do perfil). É o
+   * dateModified da página — nunca o calendário. null = não declara.
+   */
+  dataDate?: string | null
   ticker: string
   name: string
   isFii: boolean
@@ -563,7 +568,8 @@ async function loadDividendos(base: string, ticker: string): Promise<DividendosP
     throw createError({ statusCode: 404, statusMessage: `${ticker} não tem histórico de proventos` })
   }
 
-  return buildPayload(core)
+  const priceDate = typeof profile.price_date === 'string' ? profile.price_date.slice(0, 10) : ''
+  return { ...buildPayload(core), dataDate: /^\d{4}-\d{2}-\d{2}$/.test(priceDate) ? priceDate : null }
 }
 
 /* ————— composable ————— */
