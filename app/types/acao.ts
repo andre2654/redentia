@@ -180,7 +180,12 @@ export interface ConsensusApi {
 export interface DividendApi {
   ticker: string
   payment_date: string // 'YYYY-MM-DD'
+  /** data-com 'YYYY-MM-DD' (Backend PR #54); sem ela, a janela usa o pagamento */
+  ex_date?: string | null
   rate: string
+  /** GOTCHA runtime: a chave vem como `"label "` (espaço no fim) — ver parseProventos */
+  'label '?: string | null
+  label?: string | null
 }
 
 /** GET /api/assets/{t}/editorial → data (404 = não gerado). */
@@ -397,7 +402,9 @@ export interface AcaoDividendsVM {
   subtitle: string
   rows: AcaoStatRow[]
   bars: AcaoDividendBar[]
-  /** soma por ação nos últimos 12M (pra pill personalizada qty × sum) */
+  /** rodapé das barras: renda por ano, ou amortização quando o papel só devolveu capital */
+  barsNote: string
+  /** renda por ação/cota com data-com nos últimos 12M (pra pill personalizada qty × sum) */
   sum12: number
 }
 

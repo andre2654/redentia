@@ -110,6 +110,7 @@ usePageSeo({
       :subtitle="div.resumo.subtitle"
       :rows="div.resumo.rows"
       :bars="div.resumo.bars"
+      :bars-note="div.resumo.barsNote"
     />
 
     <!-- ============ Histórico real: tabela pagamento a pagamento ============ -->
