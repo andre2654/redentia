@@ -31,6 +31,7 @@
 import type { AcaoDividendBar, AcaoStatRow, TickerProfileApi } from '~/types/acao'
 import type { NuFaqItem } from '~/types/market'
 import type { ProventoRow } from '~/utils/proventos'
+import type { RenamedRota } from '~/utils/delisted'
 
 /* ————— tipos do payload ————— */
 
@@ -509,6 +510,24 @@ function statusOf(e: unknown): number | null {
   return err?.statusCode ?? err?.status ?? err?.response?.status ?? null
 }
 
+/**
+ * Pra onde vai o 301 do código trocado no /dividendos: o /dividendos do código
+ * novo só se ele tiver provento. Sem provento, aquela página é 404 com noindex
+ * (REAG3 → ARND3 em 29/09/2026: /dividends/ARND3 = `{data: []}`), então o 301
+ * vai pro /asset do código novo. 1 GET dos dividends do DESTINO; 404/410 dele
+ * também é "sem provento". Checagem que falhou (rede, 5xx, 429) mantém o
+ * /dividendos: erro transitório não decide rota.
+ */
+async function rotaDoCodigoNovo(base: string, novo: string): Promise<RenamedRota> {
+  try {
+    const r = await acaoFetchDividends(base, novo)
+    return parseProventos(r?.data).length > 0 ? 'mesma' : 'asset'
+  } catch (e) {
+    const status = statusOf(e)
+    return status === 404 || status === 410 ? 'asset' : 'mesma'
+  }
+}
+
 async function loadDividendos(base: string, ticker: string): Promise<DividendosPayload> {
   let res: Awaited<ReturnType<typeof acaoFetchProfile>>
   try {
@@ -536,10 +555,11 @@ async function loadDividendos(base: string, ticker: string): Promise<DividendosP
   if (isDelistedEnvelope(res)) {
     throw delistedError(ticker, delistedAtOf(res))
   }
-  // Código trocado (rename/merger): 301 pro /dividendos do código novo, mesma
-  // regra do /asset (app/utils/delisted.ts → renamedTargetOf).
+  // Código trocado (rename/merger): 301 pro código novo, mesma regra do /asset
+  // (app/utils/delisted.ts → renamedTargetOf). A página de destino depende de
+  // o código novo ter provento: ver rotaDoCodigoNovo.
   const renamedTo = renamedTargetOf(res, ticker)
-  if (renamedTo) throw renamedError(ticker, renamedTo)
+  if (renamedTo) throw renamedError(ticker, renamedTo, await rotaDoCodigoNovo(base, renamedTo))
   const profile: TickerProfileApi = res.data
 
   const [overviewR, dividendsR] = await Promise.allSettled([

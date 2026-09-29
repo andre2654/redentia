@@ -143,17 +143,31 @@ export function renamedTargetOf(
 }
 
 /**
+ * Página de destino do 301 de código trocado: a mesma página do código novo
+ * ('mesma'), ou o /asset dele — o caso do /dividendos cujo código novo não tem
+ * provento, onde a mesma página seria um 404.
+ */
+export type RenamedRota = 'mesma' | 'asset'
+
+/**
  * Sinal de 301 que sai do loader SSR (useAcao/useDividendos) pra página: o
  * useAsyncData só devolve `data` ou `error`, então o redirect viaja no canal
- * de erro, com o destino em `data.renamedTo`. NÃO é fatal: a página lê,
- * chama navigateTo(…, { redirectCode: 301 }) e não renderiza nada.
+ * de erro, com o destino em `data.renamedTo` (e a página em `data.renamedRota`).
+ * NÃO é fatal: a página lê, chama navigateTo(…, { redirectCode: 301 }) e não
+ * renderiza nada.
  */
-export function renamedError(from: string, to: string) {
+export function renamedError(from: string, to: string, rota: RenamedRota = 'mesma') {
   return createError({
     statusCode: 301,
     statusMessage: `${from} agora negocia como ${to}`,
-    data: { renamedFrom: from, renamedTo: to },
+    data: { renamedFrom: from, renamedTo: to, renamedRota: rota },
   })
+}
+
+/** Página do 301 carregada por renamedError ('mesma' quando não veio). */
+export function renamedRotaOfError(e: unknown): RenamedRota {
+  const rota = (e as { data?: { renamedRota?: unknown } } | null)?.data?.renamedRota
+  return rota === 'asset' ? 'asset' : 'mesma'
 }
 
 /** Destino do 301 carregado por renamedError (null pra qualquer outro erro). */

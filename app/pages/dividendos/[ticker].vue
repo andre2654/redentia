@@ -46,10 +46,13 @@ const ticker = String(route.params.ticker ?? '').toUpperCase()
 const { data, error } = await useDividendos(ticker)
 
 // Código trocado → 301 (query preservada + `?de=`); o render segue vazio.
+// Destino: o /dividendos do código novo, ou o /asset dele quando o código
+// novo não tem provento (useDividendos → rotaDoCodigoNovo).
 const renamedTo = renamedTargetOfError(error.value)
 if (renamedTo) {
+  const pagina = renamedRotaOfError(error.value) === 'asset' ? 'asset' : 'dividendos'
   await navigateTo(
-    { path: `/dividendos/${renamedTo}`, query: { ...route.query, de: ticker } },
+    { path: `/${pagina}/${renamedTo}`, query: { ...route.query, de: ticker } },
     { redirectCode: 301, replace: true },
   )
 } else if (error.value || !data.value) {
