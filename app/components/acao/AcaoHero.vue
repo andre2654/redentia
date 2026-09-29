@@ -7,7 +7,8 @@
 import type { AcaoHeroVM } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 
-defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null }>()
+// `renamedFrom`: faixa discreta no destino do 301 de código trocado.
+defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const logoFailed = ref(false)
@@ -15,6 +16,7 @@ const logoFailed = ref(false)
 
 <template>
   <section class="ahr">
+    <p v-if="renamedFrom" class="ahr__renamed">{{ renamedFrom }} agora negocia como {{ hero.ticker }}.</p>
     <div class="ahr__badges">
       <img v-if="hero.logo && !logoFailed" :src="hero.logo" alt="" class="ahr__logo" @error="logoFailed = true">
       <!-- H1 = empresa · ticker, NÃO o preço (20/08/2026). O preço era o h1
@@ -45,6 +47,11 @@ const logoFailed = ref(false)
   background: var(--nu-cream);
   padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 88px);
   animation: nu-fade .5s ease both;
+}
+.ahr__renamed {
+  display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px; border-radius: var(--nu-r-pill);
+  background: var(--nu-sand-2); color: var(--nu-gray-tag); font-size: 13.5px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 .ahr__badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .ahr__logo {

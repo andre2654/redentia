@@ -536,6 +536,10 @@ async function loadDividendos(base: string, ticker: string): Promise<DividendosP
   if (isDelistedEnvelope(res)) {
     throw delistedError(ticker, delistedAtOf(res))
   }
+  // Código trocado (rename/merger): 301 pro /dividendos do código novo, mesma
+  // regra do /asset (app/utils/delisted.ts → renamedTargetOf).
+  const renamedTo = renamedTargetOf(res, ticker)
+  if (renamedTo) throw renamedError(ticker, renamedTo)
   const profile: TickerProfileApi = res.data
 
   const [overviewR, dividendsR] = await Promise.allSettled([

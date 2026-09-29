@@ -22,6 +22,8 @@
 // BreadcrumbList + FAQPage (editorial). routeRules '/asset/**' cacheia 120s.
 // Papel deslistado da B3 (372 em 18/09/2026) responde 410 no SSR e cai na
 // app/error.vue — nunca 404 (o ativo existiu) e nunca 503 (não volta).
+// Código TROCADO (rename/merger: EMBR3 → EMBJ3) responde 301 pro código novo
+// com `?de=` (a faixa do hero confirma o par; canonical segue a URL limpa).
 
 // Formatos aceitos (as MESMAS regexes vivem no useAcao, que decide o fluxo
 // A forma do símbolo vive em app/utils/tickerClass.ts (fonte única):
@@ -45,11 +47,21 @@ definePageMeta({
   ],
 })
 
-const ticker = String(useRoute().params.ticker ?? '').toUpperCase()
+const route = useRoute()
+const ticker = String(route.params.ticker ?? '').toUpperCase()
 
 const { data, error, activeRange, setRange, rangeLoading, currentSeries, position } = await useAcao(ticker)
 
-if (error.value || !data.value) {
+// Código trocado → 301 pro /asset do código novo (preserva a query, soma
+// `?de=` pra faixa do destino). Sem throw depois: o render segue vazio
+// (v-if abaixo) e o servidor responde o redirect no lugar do HTML.
+const renamedTo = renamedTargetOfError(error.value)
+if (renamedTo) {
+  await navigateTo(
+    { path: `/asset/${renamedTo}`, query: { ...route.query, de: ticker } },
+    { redirectCode: 301, replace: true },
+  )
+} else if (error.value || !data.value) {
   const err = error.value as { statusCode?: number, statusMessage?: string, data?: unknown } | null
   const status = err?.statusCode
   // 404 e 410 são VEREDITOS sobre o ativo e atravessam inteiros: 404 "nunca
@@ -74,42 +86,47 @@ if (error.value || !data.value) {
 }
 
 const acao = computed(() => data.value!)
+// "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
+const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
-const assetUrl = `${useSiteOrigin()}/asset/${ticker}`
-// JSON-LD por tipo: Corporation (ação/BDR), InvestmentFund (FII/ETF) e
-// WebPage pra cripto (schema.org não tem tipo honesto pra criptoativo).
-const kind = acao.value.kind
-const structuredData: Record<string, unknown>[] = [
-  kind === 'crypto'
-    ? { '@type': 'WebPage', name: `${acao.value.name} (${ticker})`, url: assetUrl }
-    : kind === 'fii' || kind === 'etf'
-      ? { '@type': 'InvestmentFund', name: acao.value.name, tickerSymbol: ticker, url: assetUrl }
-      : { '@type': 'Corporation', name: acao.value.name, tickerSymbol: ticker, url: assetUrl },
-]
-// FAQPage NÃO é emitido aqui desde 03/08/2026. Ele vinha de `seo.faq`, que sai
-// do mesmo `editorial.faq_extended` que agora alimenta o AcaoEditorial visível,
-// e o NuFaqAccordion já emite o FAQPage por conta própria. Manter os dois era
-// schema duplicado — e, antes disso, era FAQPage sem NENHUM conteúdo visível
-// correspondente na página, que é justamente o que o Google trata como sinal
-// vazio. Ver app/components/acao/AcaoEditorial.vue.
+if (data.value) {
+  const assetUrl = `${useSiteOrigin()}/asset/${ticker}`
+  // JSON-LD por tipo: Corporation (ação/BDR), InvestmentFund (FII/ETF) e
+  // WebPage pra cripto (schema.org não tem tipo honesto pra criptoativo).
+  const kind = acao.value.kind
+  const structuredData: Record<string, unknown>[] = [
+    kind === 'crypto'
+      ? { '@type': 'WebPage', name: `${acao.value.name} (${ticker})`, url: assetUrl }
+      : kind === 'fii' || kind === 'etf'
+        ? { '@type': 'InvestmentFund', name: acao.value.name, tickerSymbol: ticker, url: assetUrl }
+        : { '@type': 'Corporation', name: acao.value.name, tickerSymbol: ticker, url: assetUrl },
+  ]
+  // FAQPage NÃO é emitido aqui desde 03/08/2026. Ele vinha de `seo.faq`, que sai
+  // do mesmo `editorial.faq_extended` que agora alimenta o AcaoEditorial visível,
+  // e o NuFaqAccordion já emite o FAQPage por conta própria. Manter os dois era
+  // schema duplicado — e, antes disso, era FAQPage sem NENHUM conteúdo visível
+  // correspondente na página, que é justamente o que o Google trata como sinal
+  // vazio. Ver app/components/acao/AcaoEditorial.vue.
 
-usePageSeo({
-  title: acao.value.seo.title,
-  description: acao.value.seo.description,
-  path: `/asset/${ticker}`,
-  structuredData,
-  // pregão do dado exibido (price_date da cotação), nunca o calendário
-  dateModified: acao.value.dataDate,
-  breadcrumbs: [
-    { name: 'Início', path: '/' },
-    { name: ticker, path: `/asset/${ticker}` },
-  ],
-})
+  usePageSeo({
+    title: acao.value.seo.title,
+    description: acao.value.seo.description,
+    // path, nunca a query: ?de= e ?seguir= têm canonical pra URL limpa
+    path: `/asset/${ticker}`,
+    structuredData,
+    // pregão do dado exibido (price_date da cotação), nunca o calendário
+    dateModified: acao.value.dataDate,
+    breadcrumbs: [
+      { name: 'Início', path: '/' },
+      { name: ticker, path: `/asset/${ticker}` },
+    ],
+  })
+}
 </script>
 
 <template>
-  <div>
-    <AcaoHero :hero="acao.hero" :position="position" />
+  <div v-if="data">
+    <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" />
 
     <AcaoChartSection
       :ticker="acao.ticker"

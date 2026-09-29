@@ -1278,6 +1278,11 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   if (isDelistedEnvelope(res)) {
     throw delistedError(ticker, delistedAtOf(res))
   }
+  // Código trocado (EMBR3 → EMBJ3, MRFG3 → MBRF3): o perfil resolve o alias e
+  // devolve o papel novo. A página vira 301 pro código novo ANTES dos outros
+  // oito fetches — nada de montar a página inteira na URL velha.
+  const renamedTo = renamedTargetOf(res, ticker)
+  if (renamedTo) throw renamedError(ticker, renamedTo)
   const profile = res.data
 
   // Regex estrita do endpoint /news/ticker (tickers como B3SA3 ficam de fora).
