@@ -24,6 +24,9 @@
 // app/error.vue — nunca 404 (o ativo existiu) e nunca 503 (não volta).
 // Código TROCADO (rename/merger: EMBR3 → EMBJ3) responde 301 pro código novo
 // com `?de=` (a faixa do hero confirma o par; canonical segue a URL limpa).
+//
+// "Seguir" (29/09/2026): a estrela do hero e o gancho do primeiro uso são
+// client-only — o HTML cacheado na borda é o mesmo pra logado e anônimo.
 
 // Formatos aceitos (as MESMAS regexes vivem no useAcao, que decide o fluxo
 // A forma do símbolo vive em app/utils/tickerClass.ts (fonte única):

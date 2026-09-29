@@ -11,13 +11,13 @@ export default defineNuxtPlugin(() => {
   const { token, displayName, user, setSession } = useAuthState()
   if (!token.value || displayName.value) return
 
-  const { authFetch } = useApi()
-  void authFetch<MeResponse>('/auth/me', {}, { redirectOnAuthError: false })
-    .then((me) => {
-      const u = me?.user
-      if (!u) return
-      if (u.name) setSession(token.value!, { id: u.id, name: u.name, email: u.email ?? undefined })
-      else user.value = { id: u.id, name: u.name ?? '', email: u.email ?? undefined }
-    })
-    .catch(() => { /* token morto: interceptor já limpou a sessão */ })
+  // Mesma promessa do gancho do "Seguir" (useMeCliente): 1 GET /auth/me por
+  // carga de página, não um por consumidor. Token morto → null (o interceptor
+  // já limpou a sessão).
+  void useMeCliente().load().then((me: MeResponse | null) => {
+    const u = me?.user
+    if (!u || !token.value) return
+    if (u.name) setSession(token.value, { id: u.id, name: u.name, email: u.email ?? undefined })
+    else user.value = { id: u.id, name: u.name ?? '', email: u.email ?? undefined }
+  })
 })

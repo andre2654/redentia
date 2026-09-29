@@ -19,7 +19,8 @@
 // '/dividendos/**' já configurado no nuxt.config (s-maxage=3600).
 //
 // Código TROCADO (EMBR3 → EMBJ3) responde 301 pro /dividendos do código novo
-// com `?de=`, mesma regra do /asset.
+// com `?de=`, mesma regra do /asset. A estrela "Seguir" do hero é client-only
+// (o HTML cacheado é o mesmo pra logado e anônimo).
 
 const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 
@@ -117,6 +118,10 @@ if (data.value) {
       <template #title>Dividendos de {{ ticker }}.</template>
       <p v-if="renamedFrom" class="dvt__renamed">{{ renamedFrom }} agora negocia como {{ ticker }}.</p>
       <DividendosStats v-if="div.hero.stats.length" :items="div.hero.stats" />
+      <!-- Seguir: estrela + retorno curto (client-only; SSR sempre "Seguir") -->
+      <div class="dvt__follow">
+        <SeguirAtivo :ticker="ticker" :path="`/dividendos/${ticker}`" />
+      </div>
     </NuPageHero>
 
     <!-- ============ Resumo 12M: stats + barras anuais (NuDividendBars) ============ -->
@@ -194,12 +199,14 @@ if (data.value) {
 <style scoped>
 .dvt__band-body { margin-top: clamp(30px, 4vw, 48px); }
 
-/* hero: faixa do código trocado (destino do 301 com ?de=) */
+/* hero: faixa do código trocado + fileira do "Seguir" (a linha de retorno do
+   SeguirAtivo quebra pra baixo do botão via flex-basis 100%) */
 .dvt__renamed {
   display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px;
   border-radius: var(--nu-r-pill); background: var(--nu-sand-2); color: var(--nu-gray-tag);
   font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums;
 }
+.dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
 
 /* aviso honesto no lugar da tabela (histórico vazio ou indisponível) */
 .dvt__notice {

@@ -50,6 +50,11 @@ function guiaScroll(d: number) {
          branco da direita (logado); anônimo/indisponível → animação intacta -->
     <MercadoHero :resumo="resumo" />
 
+    <!-- logado: "Seus ativos." (os que a pessoa segue, com a cotação) e o
+         gancho do primeiro uso. Carga client-only; sem ativo seguido e sem
+         gancho a faixa nem aparece. -->
+    <SeguirFaixa v-if="isAuthenticated" />
+
     <!-- anônimo: banda de marketing do Open Finance · logado: patrimônio
          centralizado + atalhos pra /carteira (ou convite de conexão);
          resumo indisponível → nada -->

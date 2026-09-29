@@ -7,11 +7,17 @@
 import type { AcaoHeroVM } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 
+// "Seguir" (29/09/2026): estrela na fileira de CTAs (SeguirAtivo) e, abaixo
+// dela, o gancho do primeiro uso (SeguirGancho) — os dois client-only, o SSR
+// sai igual pra logado e anônimo (página cacheada na borda). O mount grava o
+// ativo em "vistos por último" (localStorage), que vira chip do gancho.
 // `renamedFrom`: faixa discreta no destino do 301 de código trocado.
-defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null }>()
+const props = defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const logoFailed = ref(false)
+
+onMounted(() => registrarAtivoVisto(props.hero.ticker))
 </script>
 
 <template>
@@ -37,8 +43,10 @@ const logoFailed = ref(false)
     </div>
     <div class="ahr__ctas">
       <NuxtLink to="/busca" class="ahr__primary">Perguntar à Redentia AI</NuxtLink>
+      <SeguirAtivo :ticker="hero.ticker" :path="`/asset/${hero.ticker}`" />
       <NuxtLink to="/" class="ahr__outline">Adicionar à carteira</NuxtLink>
     </div>
+    <SeguirGancho :atual="hero.ticker" surface="cream" />
   </section>
 </template>
 
