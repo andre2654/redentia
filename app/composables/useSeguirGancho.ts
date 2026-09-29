@@ -141,8 +141,10 @@ export function useSeguirGancho(atual?: MaybeRefOrGetter<string | null | undefin
     if (userId) gravarMarca(userId, 'concluido')
     timer = setTimeout(() => { fase.value = 'oculto' }, 6000)
   })
+  // sessão assumida depois da hidratação (HIT da borda) ou encerrada: reavalia
   watch(isAuthenticated, (v) => {
-    if (!v) fase.value = 'oculto'
+    if (v) void avaliar()
+    else fase.value = 'oculto'
   })
 
   function dispensar() {

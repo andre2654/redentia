@@ -341,18 +341,29 @@ export function useSeguirAtivo(ticker: MaybeRefOrGetter<string>, path: MaybeRefO
     await act(!following.value, false)
   }
 
+  // Intenção do ?seguir=1 fica guardada até existir sessão: no HIT da borda
+  // (HTML anônimo em cache servido a quem tem cookie) a sessão só é assumida
+  // DEPOIS da hidratação (useAuthState), ou seja, depois deste onMounted.
+  let intencao = false
+  async function comSessao() {
+    await wl.load()
+    if (!intencao) return
+    intencao = false
+    if (wl.isFollowing(t.value)) show(`Você está seguindo ${t.value}`, 'ok')
+    else await act(true, true)
+  }
+
   onMounted(async () => {
-    const wants = route.query.seguir === '1'
-    if (wants) {
+    intencao = route.query.seguir === '1'
+    if (intencao) {
       const rest = { ...route.query }
       delete rest.seguir
       await router.replace({ path: route.path, query: rest, hash: route.hash })
     }
-    if (!isAuthenticated.value) return
-    await wl.load()
-    if (!wants) return
-    if (wl.isFollowing(t.value)) show(`Você está seguindo ${t.value}`, 'ok')
-    else await act(true, true)
+    if (isAuthenticated.value) await comSessao()
+  })
+  watch(isAuthenticated, (v) => {
+    if (v) void comSessao()
   })
   onBeforeUnmount(() => clearTimeout(timer))
 
