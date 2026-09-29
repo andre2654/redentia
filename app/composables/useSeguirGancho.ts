@@ -131,8 +131,10 @@ export function useSeguirGancho(atual?: MaybeRefOrGetter<string | null | undefin
   onMounted(avaliar)
   onBeforeUnmount(() => clearTimeout(timer))
 
-  // chegou a 3 (pelos chips OU pelo botão do hero): confirma e sai de cena
-  watch(() => wl.count.value, (n) => {
+  // chegou a 3 CONFIRMADOS (pelos chips OU pelo botão do hero): confirma e
+  // sai de cena. O progresso na tela é otimista; a conclusão, não — um follow
+  // barrado (limite do plano, rede) volta a barra pra 2/3 e o card fica.
+  watch(() => wl.settledCount.value, (n) => {
     if (fase.value !== 'ativo' || n < META) return
     quando.value = proximoResumo()
     fase.value = 'pronto'

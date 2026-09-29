@@ -115,6 +115,13 @@ export function useWatchlist() {
     state.value.token && state.value.token === token.value ? state.value.items : null)
   const ready = computed(() => items.value !== null)
   const count = computed(() => items.value?.length ?? 0)
+  /**
+   * Seguidos CONFIRMADOS pelo backend: fora o que está com request em voo. O
+   * `count` é otimista (a estrela acende antes da resposta); quem decide algo
+   * irreversível — o "Pronto" do gancho grava a conclusão — espera este aqui,
+   * senão um 3º follow barrado pelo limite do plano concluía o gancho.
+   */
+  const settledCount = computed(() => (items.value ?? []).filter((i) => !state.value.pending.includes(i.ticker)).length)
   const followed = computed(() => new Set((items.value ?? []).map((i) => i.ticker)))
 
   function isFollowing(ticker: string): boolean {
@@ -282,7 +289,7 @@ export function useWatchlist() {
     await Promise.all([worker(), worker(), worker()])
   }
 
-  return { items, ready, count, status: computed(() => state.value.status), isFollowing, isPending, load, follow, unfollow, enrich }
+  return { items, ready, count, settledCount, status: computed(() => state.value.status), isFollowing, isPending, load, follow, unfollow, enrich }
 }
 
 /**
