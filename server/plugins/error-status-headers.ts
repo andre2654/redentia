@@ -7,11 +7,12 @@
  * inteiro:
  *  - `Retry-After`: diz ao crawler QUANDO voltar (RFC 9110). Sem ele, 503 em
  *    sequência vira sinal de site instável e o Google corta o ritmo de crawl.
- *  - `Cache-Control: no-store`: o routeRules de /asset/** e /glossario/** manda
- *    `public, s-maxage=...` pra TODA resposta da rota, erro incluído. A Vercel
- *    não guarda 5xx na borda, mas o header continua chegando no browser e em
- *    qualquer cache no caminho. Header da função vence o do routeRules (docs
- *    da Vercel), então dá pra corrigir aqui.
+ *  - `Cache-Control: no-store`: /asset/** e /glossario/** mandam
+ *    `public, s-maxage=...` pra TODA resposta anônima da rota, erro incluído
+ *    (desde 29/09/2026 o valor sai de server/middleware/cache-sessao.ts, que
+ *    roda antes do render — este hook vem depois e vence). A Vercel não guarda
+ *    5xx na borda, mas o header continua chegando no browser e em qualquer
+ *    cache no caminho.
  *
  * Por que 'render:response' e a query: quem desenha a página de erro é um
  * render interno de `/__nuxt_error?statusCode=...`, cuja resposta própria pode

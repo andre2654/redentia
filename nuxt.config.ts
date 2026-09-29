@@ -74,6 +74,13 @@ export default defineNuxtConfig({
     },
     // Cache por rota. Regra dura (lição do Frontend): rota com variante
     // logada/deslogada = private/no-store — CDN não varia por cookie.
+    // Aqui ficam SÓ as rotas que são private/no-store pra todo mundo. As
+    // públicas (`public, s-maxage=…`) saíram daqui no hotfix de 29/09/2026: o
+    // valor delas depende do cookie de sessão (anônimo → público; logado →
+    // private, no-store) e é decidido por request em
+    // server/middleware/cache-sessao.ts. Não devolva cache-control público pro
+    // routeRules: o preset vercel o transforma em rota estática da borda, que
+    // não olha cookie e pode vencer o header da função.
     '/': { headers: { 'cache-control': 'private, no-store' } },
     '/busca': { headers: { 'cache-control': 'private, no-store' } },
     // /login redireciona SSR-side quem já tem cookie de sessão e lê
@@ -97,32 +104,9 @@ export default defineNuxtConfig({
     // Configurações: pessoal e atrás de login → private/no-store (a página já é
     // noindex). Página única com seções ancoradas (sem sub-rotas).
     '/conta': { headers: { 'cache-control': 'private, no-store' } },
-    '/noticias': { headers: { 'cache-control': 'public, s-maxage=180, stale-while-revalidate=600' } },
-    '/asset/**': { headers: { 'cache-control': 'public, s-maxage=120, stale-while-revalidate=600' } },
-    // Tesouro e dividendos: páginas próprias (em construção em frentes
-    // paralelas) — cache já configurado pra quando entrarem no ar.
-    '/tesouro': { headers: { 'cache-control': 'public, s-maxage=600, stale-while-revalidate=3600' } },
-    '/tesouro/**': { headers: { 'cache-control': 'public, s-maxage=600, stale-while-revalidate=3600' } },
-    '/dividendos/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
-    // '/guias/**' não casa a base — o hub precisa da regra exata (PR4).
-    '/guias': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
-    '/guias/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
-    // Glossário (KIT 2026-07-14): conteúdo estável (dicionário) → cache longo.
-    // Hub /glossario e cada termo /glossario/{slug} cacheiam 24h na borda.
-    '/glossario': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
-    '/glossario/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
-    '/tese/**': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
-    // /teses: SSR 100% público (seed do design; favoritos hidratam client-side).
-    '/teses': { headers: { 'cache-control': 'public, s-maxage=300, stale-while-revalidate=600' } },
-    '/calculadoras': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
-    // /mcp: docs públicas do servidor MCP — conteúdo estático (o CTA troca de
-    // destino client-side pós-mount, o SSR é idêntico pra todo mundo).
-    '/mcp': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
-    // /business: landing da Redentia for Business. Conteúdo estático e SEM
-    // variante logada (o console é outro app, sem sessão compartilhada), então
-    // pode ser público na borda. A página está noindex até o PR5 — ver a trava
-    // no topo de components/business/RbSeguranca.vue.
-    '/business': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // /noticias, /asset/**, /tesouro(/**), /dividendos/**, /guias(/**),
+    // /glossario(/**), /tese/**, /teses, /calculadoras, /mcp e /business:
+    // cache público por request em server/middleware/cache-sessao.ts.
     // PR-F do MVP B2B: cadastro e chaves VARIAM por cookie (cadastro redireciona
     // logado pra /business/chaves; chaves é autenticada) → private/no-store,
     // pela regra "CDN não varia por cookie". O guia de conexão é estático.
@@ -139,14 +123,13 @@ export default defineNuxtConfig({
     // equity do hub antigo); as calculadoras individuais MANTÊM o path antigo
     // /calculadora/<slug> — conteúdo estático + interação client-side, cache longo.
     '/calculadora': { redirect: { to: '/calculadoras', statusCode: 301 } },
-    '/calculadora/**': { headers: { 'cache-control': 'public, s-maxage=3600, stale-while-revalidate=86400' } },
+    // '/calculadora/**': cache público por request (server/middleware/cache-sessao.ts).
     // Rankings (kit PLANO-RANKINGS.md): hub novo /rankings + detalhe nos
     // slugs ANTIGOS /ranking/<slug> (equity de SEO). O 301 do hub antigo é
     // EXATO ('/ranking' não casa '/ranking/**' no Nitro — mesma lição do
     // '/calculadora' acima). Backend cacheia 15 min → s-maxage=900 na borda.
     '/ranking': { redirect: { to: '/rankings', statusCode: 301 } },
-    '/ranking/**': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
-    '/rankings': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
+    // '/ranking/**' e '/rankings': cache público por request (server/middleware/cache-sessao.ts).
     // Rotas antigas por classe morrem (stub [classe].vue deletado): as 3 de
     // equity viram filtro do hub; renda-fixa vira o detalhe do tesouro.
     '/rankings/acoes': { redirect: { to: '/rankings?classe=acoes', statusCode: 301 } },
@@ -156,12 +139,8 @@ export default defineNuxtConfig({
     // Setores (SEO programático /setor): hub /setor + detalhe /setor/{ptSlug}.
     // Audit: os slugs ingleses do /setor antigo não tinham tráfego relevante →
     // sem 301. Backend (GET /sectors) cacheia igual aos rankings → s-maxage=900.
-    '/setor': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
-    '/setor/**': { headers: { 'cache-control': 'public, s-maxage=900, stale-while-revalidate=3600' } },
-    // Páginas estáticas/legais (institucional + metodologia): conteúdo jurídico/
-    // editorial que quase nunca muda — cache longo na borda + SWR de 1 dia.
-    '/institucional/**': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
-    '/metodologia': { headers: { 'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800' } },
+    // '/setor', '/setor/**', '/institucional/**' e '/metodologia': cache
+    // público por request (server/middleware/cache-sessao.ts).
 
     // ——— Migração redentia.com.br → Nu (PR-A do PLANO-REFINO-POS-ATLAS) ———
     // 301s dos paths da Redentia antiga; cobrem 100% do top-30 orgânico real.
