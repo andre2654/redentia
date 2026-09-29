@@ -21,11 +21,13 @@
 // watcher pega quando ele sair de lá); (2) usuário DONO de conta business
 // (GET /me/business → has_account, o 1:1 de business_accounts) nunca vê,
 // em página nenhuma.
-import type { MeResponse } from '~/types/auth'
 import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
 
 const { isAuthenticated, firstName } = useAuthState()
 const { authFetch } = useApi()
+// /auth/me dividido com o gancho do "Seguir" e o plugin auth-user: 1 GET por
+// sessão por carga de página, não um por consumidor (useMeCliente).
+const meCliente = useMeCliente()
 const route = useRoute()
 
 interface Opt { value: string; label: string; desc: string }
@@ -69,7 +71,8 @@ async function check() {
     return
   }
   try {
-    const me = await authFetch<MeResponse>('/auth/me', {}, { redirectOnAuthError: false })
+    // null = sem resposta (rede ou token morto) → mesma saída do catch
+    const me = await meCliente.load()
     if (!me?.user || me.user.investor_goal) {
       gate.value = 'done'
     } else {

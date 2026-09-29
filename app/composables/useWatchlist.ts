@@ -341,9 +341,14 @@ export function useSeguirAtivo(ticker: MaybeRefOrGetter<string>, path: MaybeRefO
     await act(!following.value, false)
   }
 
-  // Intenção do ?seguir=1 fica guardada até existir sessão: no HIT da borda
-  // (HTML anônimo em cache servido a quem tem cookie) a sessão só é assumida
-  // DEPOIS da hidratação (useAuthState), ou seja, depois deste onMounted.
+  // Intenção do ?seguir=1 fica guardada até existir sessão. No HIT da borda
+  // (HTML anônimo em cache servido a quem tem cookie) a sessão é assumida no
+  // fim da hidratação (app.vue → assumirSessaoAdiada), antes deste onMounted,
+  // e o watcher ainda roda depois dele: as duas chamadas dividem o mesmo
+  // GET /watchlist (dedupe do load) e só a primeira consome a intenção
+  // (`intencao = false` é síncrono logo depois do await) → 1 GET e 1 POST.
+  // Sem guarda por token aqui de propósito: ela perderia a intenção se o
+  // watcher rodasse antes do onMounted marcá-la.
   let intencao = false
   async function comSessao() {
     await wl.load()
