@@ -26,7 +26,7 @@
  *
  * NÃO confundir com `alias_resolved_from` (rename/merger, EMBR3→EMBJ3): ali o
  * papel está VIVO com outro código, o envelope não tem `delisted` e a página
- * segue 200.
+ * responde 301 pro código novo (renamedTargetOf, no fim deste arquivo).
  */
 
 /** Envelope de metadados do `GET /tickers/{t}` (irmão de `data`, não filho). */
@@ -114,4 +114,66 @@ export function delistedError(ticker: string, delistedAt: string | null) {
     data: { ticker, delistedAt },
     fatal: true,
   })
+}
+
+/* ————— código trocado (rename/merger): o papel está VIVO com outro código ————— */
+
+/**
+ * Código novo quando o perfil respondeu por um ALIAS (29/09/2026).
+ *
+ * `GET /tickers/EMBR3` devolve 200 com `data.ticker = 'EMBJ3'` e
+ * `meta.alias_resolved_from = 'EMBR3'` (MRFG3 → MBRF3 é o outro caso vivo, por
+ * fusão). Até aqui a página renderizava a Embraer inteira na URL velha: duas
+ * URLs com o mesmo conteúdo, e a antiga sem canonical pra nova. O veredito
+ * certo é 301 pra mesma página do código novo — nunca 410 (o papel negocia) e
+ * nunca 404.
+ *
+ * Só com as DUAS pistas (envelope com alias + `data.ticker` diferente do
+ * pedido e com forma de ticker): a comparação protege de loop quando o backend
+ * anexa o envelope sem trocar o código.
+ */
+export function renamedTargetOf(
+  res: ({ data?: { ticker?: string | null } | null } & TickerMetaEnvelope) | null | undefined,
+  requested: string,
+): string | null {
+  if (!metaOf(res)?.alias_resolved_from) return null
+  const to = String(res?.data?.ticker ?? '').trim().toUpperCase()
+  if (!to || to === requested.trim().toUpperCase()) return null
+  return symbolShape(to) === 'invalid' ? null : to
+}
+
+/**
+ * Página de destino do 301 de código trocado: a mesma página do código novo
+ * ('mesma'), ou o /asset dele — o caso do /dividendos cujo código novo não tem
+ * provento, onde a mesma página seria um 404.
+ */
+export type RenamedRota = 'mesma' | 'asset'
+
+/**
+ * Sinal de 301 que sai do loader SSR (useAcao/useDividendos) pra página: o
+ * useAsyncData só devolve `data` ou `error`, então o redirect viaja no canal
+ * de erro, com o destino em `data.renamedTo` (e a página em `data.renamedRota`).
+ * NÃO é fatal: a página lê, chama navigateTo(…, { redirectCode: 301 }) e não
+ * renderiza nada.
+ */
+export function renamedError(from: string, to: string, rota: RenamedRota = 'mesma') {
+  return createError({
+    statusCode: 301,
+    statusMessage: `${from} agora negocia como ${to}`,
+    data: { renamedFrom: from, renamedTo: to, renamedRota: rota },
+  })
+}
+
+/** Página do 301 carregada por renamedError ('mesma' quando não veio). */
+export function renamedRotaOfError(e: unknown): RenamedRota {
+  const rota = (e as { data?: { renamedRota?: unknown } } | null)?.data?.renamedRota
+  return rota === 'asset' ? 'asset' : 'mesma'
+}
+
+/** Destino do 301 carregado por renamedError (null pra qualquer outro erro). */
+export function renamedTargetOfError(e: unknown): string | null {
+  const err = e as { statusCode?: number; data?: { renamedTo?: unknown } } | null
+  if (err?.statusCode !== 301) return null
+  const to = typeof err.data?.renamedTo === 'string' ? err.data.renamedTo.trim().toUpperCase() : ''
+  return to && symbolShape(to) !== 'invalid' ? to : null
 }

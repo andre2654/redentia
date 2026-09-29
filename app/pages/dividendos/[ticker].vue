@@ -17,6 +17,10 @@
 // JSON-LD emitido pelo NuFaqAccordion (fonte única) + BreadcrumbList
 // Início → /asset/{T} → Dividendos via usePageSeo. Cache: routeRules
 // '/dividendos/**' já configurado no nuxt.config (s-maxage=3600).
+//
+// Código TROCADO (EMBR3 → EMBJ3) responde 301 pro /dividendos do código novo
+// com `?de=`, mesma regra do /asset. A estrela "Seguir" do hero é client-only
+// (o HTML cacheado é o mesmo pra logado e anônimo).
 
 const TICKER_RE = /^[A-Z][A-Z0-9]{3}\d{1,2}$/
 
@@ -28,19 +32,31 @@ definePageMeta({
       if (!TICKER_RE.test(upper)) {
         return abortNavigation(createError({ statusCode: 404, statusMessage: 'Ativo não encontrado' }))
       }
-      // Canonical maiúsculo: /dividendos/petr4 → 301 /dividendos/PETR4
+      // Canonical maiúsculo: /dividendos/petr4 → 301 /dividendos/PETR4, com a
+      // query junto (mesma regra do /asset).
       if (raw !== upper) {
-        return navigateTo(`/dividendos/${upper}`, { redirectCode: 301, replace: true })
+        return navigateTo({ path: `/dividendos/${upper}`, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
       }
     },
   ],
 })
 
-const ticker = String(useRoute().params.ticker ?? '').toUpperCase()
+const route = useRoute()
+const ticker = String(route.params.ticker ?? '').toUpperCase()
 
 const { data, error } = await useDividendos(ticker)
 
-if (error.value || !data.value) {
+// Código trocado → 301 (query preservada + `?de=`); o render segue vazio.
+// Destino: o /dividendos do código novo, ou o /asset dele quando o código
+// novo não tem provento (useDividendos → rotaDoCodigoNovo).
+const renamedTo = renamedTargetOfError(error.value)
+if (renamedTo) {
+  const pagina = renamedRotaOfError(error.value) === 'asset' ? 'asset' : 'dividendos'
+  await navigateTo(
+    { path: `/${pagina}/${renamedTo}`, query: { ...route.query, de: ticker } },
+    { redirectCode: 301, replace: true },
+  )
+} else if (error.value || !data.value) {
   const err = error.value as { statusCode?: number, statusMessage?: string, data?: unknown } | null
   const status = err?.statusCode
   // 404 e 410 atravessam inteiros, como no /asset: 410 é "existiu e saiu da
@@ -63,15 +79,17 @@ if (error.value || !data.value) {
 }
 
 const div = computed(() => data.value!)
+// "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
+const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
 // Alternância de bandas: o histórico vem depois do resumo (branco) quando ele
 // existe; sem resumo, o histórico encosta no hero (creme) e inverte o ciclo.
-const histTone = computed<'cream' | 'white'>(() => (div.value.resumo ? 'cream' : 'white'))
+const histTone = computed<'cream' | 'white'>(() => (div.value?.resumo ? 'cream' : 'white'))
 const flip = (t: 'cream' | 'white'): 'cream' | 'white' => (t === 'cream' ? 'white' : 'cream')
 const eduTones = computed(() => {
   const tones: ('cream' | 'white')[] = []
   let t = histTone.value
-  for (let i = 0; i < div.value.edu.length; i++) {
+  for (let i = 0; i < (div.value?.edu.length ?? 0); i++) {
     t = flip(t)
     tones.push(t)
   }
@@ -80,26 +98,34 @@ const eduTones = computed(() => {
 const faqTone = computed(() => flip(eduTones.value[eduTones.value.length - 1] ?? histTone.value))
 const crossTone = computed(() => flip(faqTone.value))
 
-usePageSeo({
-  title: div.value.seo.title,
-  description: div.value.seo.description,
-  path: `/dividendos/${ticker}`,
-  // pregão da cotação usada no DY (price_date do perfil), nunca o calendário
-  dateModified: div.value.dataDate,
-  breadcrumbs: [
-    { name: 'Início', path: '/' },
-    { name: ticker, path: `/asset/${ticker}` },
-    { name: 'Dividendos', path: `/dividendos/${ticker}` },
-  ],
-})
+if (data.value) {
+  usePageSeo({
+    title: div.value.seo.title,
+    description: div.value.seo.description,
+    // path, nunca a query: ?de= e ?seguir= têm canonical pra URL limpa
+    path: `/dividendos/${ticker}`,
+    // pregão da cotação usada no DY (price_date do perfil), nunca o calendário
+    dateModified: div.value.dataDate,
+    breadcrumbs: [
+      { name: 'Início', path: '/' },
+      { name: ticker, path: `/asset/${ticker}` },
+      { name: 'Dividendos', path: `/dividendos/${ticker}` },
+    ],
+  })
+}
 </script>
 
 <template>
-  <div>
+  <div v-if="data">
     <!-- ============ Hero: nome + DY 12M + preço + próximo pagamento ============ -->
     <NuPageHero :eyebrow="div.hero.companyLine" :subtitle="div.hero.sub">
       <template #title>Dividendos de {{ ticker }}.</template>
+      <p v-if="renamedFrom" class="dvt__renamed">{{ renamedFrom }} agora negocia como {{ ticker }}.</p>
       <DividendosStats v-if="div.hero.stats.length" :items="div.hero.stats" />
+      <!-- Seguir: estrela + retorno curto (client-only; SSR sempre "Seguir") -->
+      <div class="dvt__follow">
+        <SeguirAtivo :ticker="ticker" :path="`/dividendos/${ticker}`" />
+      </div>
     </NuPageHero>
 
     <!-- ============ Resumo 12M: stats + barras anuais (NuDividendBars) ============ -->
@@ -176,6 +202,15 @@ usePageSeo({
 
 <style scoped>
 .dvt__band-body { margin-top: clamp(30px, 4vw, 48px); }
+
+/* hero: faixa do código trocado + fileira do "Seguir" (a linha de retorno do
+   SeguirAtivo quebra pra baixo do botão via flex-basis 100%) */
+.dvt__renamed {
+  display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px;
+  border-radius: var(--nu-r-pill); background: var(--nu-sand-2); color: var(--nu-gray-tag);
+  font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
 
 /* aviso honesto no lugar da tabela (histórico vazio ou indisponível) */
 .dvt__notice {

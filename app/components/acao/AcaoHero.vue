@@ -7,14 +7,31 @@
 import type { AcaoHeroVM } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 
-defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null }>()
+// "Seguir" (29/09/2026): estrela na fileira de CTAs (SeguirAtivo) e, abaixo
+// dela, o gancho do primeiro uso (SeguirGancho) — os dois client-only, o SSR
+// sai igual pra logado e anônimo (página cacheada na borda). O mount grava o
+// ativo em "vistos por último" (localStorage), que vira chip do gancho.
+// `renamedFrom`: faixa discreta no destino do 301 de código trocado.
+//
+// `seguivel`: só o que existe em `tickers` pode ser seguido. A watchlist do
+// Backend recusa o resto (POST → 422 "Não encontramos o ativo BTC."), e a
+// cripto mora em outra tabela: GET /tickers/BTC e /tickers/ETH dão 404, contra
+// 200 em AAPL (US_STOCK), AAPL34 (BDR), HGLG11 (REIT), BOVA11 e IVVB11 (ETF),
+// conferido na API pública em 29/09/2026. Cripto fica sem estrela, sem gancho
+// e fora dos "vistos" (senão vira chip que falha em outra página).
+const props = defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null; seguivel: boolean }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const logoFailed = ref(false)
+
+onMounted(() => {
+  if (props.seguivel) registrarAtivoVisto(props.hero.ticker)
+})
 </script>
 
 <template>
   <section class="ahr">
+    <p v-if="renamedFrom" class="ahr__renamed">{{ renamedFrom }} agora negocia como {{ hero.ticker }}.</p>
     <div class="ahr__badges">
       <img v-if="hero.logo && !logoFailed" :src="hero.logo" alt="" class="ahr__logo" @error="logoFailed = true">
       <!-- H1 = empresa · ticker, NÃO o preço (20/08/2026). O preço era o h1
@@ -35,8 +52,10 @@ const logoFailed = ref(false)
     </div>
     <div class="ahr__ctas">
       <NuxtLink to="/busca" class="ahr__primary">Perguntar à Redentia AI</NuxtLink>
+      <SeguirAtivo v-if="seguivel" :ticker="hero.ticker" :path="`/asset/${hero.ticker}`" />
       <NuxtLink to="/" class="ahr__outline">Adicionar à carteira</NuxtLink>
     </div>
+    <SeguirGancho v-if="seguivel" :atual="hero.ticker" surface="cream" />
   </section>
 </template>
 
@@ -45,6 +64,11 @@ const logoFailed = ref(false)
   background: var(--nu-cream);
   padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 88px);
   animation: nu-fade .5s ease both;
+}
+.ahr__renamed {
+  display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px; border-radius: var(--nu-r-pill);
+  background: var(--nu-sand-2); color: var(--nu-gray-tag); font-size: 13.5px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 .ahr__badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .ahr__logo {

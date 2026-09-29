@@ -1278,6 +1278,11 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   if (isDelistedEnvelope(res)) {
     throw delistedError(ticker, delistedAtOf(res))
   }
+  // Código trocado (EMBR3 → EMBJ3, MRFG3 → MBRF3): o perfil resolve o alias e
+  // devolve o papel novo. A página vira 301 pro código novo ANTES dos outros
+  // oito fetches — nada de montar a página inteira na URL velha.
+  const renamedTo = renamedTargetOf(res, ticker)
+  if (renamedTo) throw renamedError(ticker, renamedTo)
   const profile = res.data
 
   // Regex estrita do endpoint /news/ticker (tickers como B3SA3 ficam de fora).
@@ -1635,7 +1640,11 @@ export async function useAcao(ticker: string) {
   onMounted(async () => {
     if (!isAuthenticated.value) return
     try {
-      const res = await authFetch<{ positions?: Record<string, unknown>[] }>('/portfolio')
+      // redirectOnAuthError:false — página PÚBLICA que só enriquece com sessão:
+      // token vencido limpa a sessão em silêncio em vez de expulsar o visitante
+      // pro /login (P0 do DESIGN-SYSTEM §14). Quem leva pro login é a ação que
+      // a pessoa pediu, não um enriquecimento em segundo plano.
+      const res = await authFetch<{ positions?: Record<string, unknown>[] }>('/portfolio', {}, { redirectOnAuthError: false })
       const pos = (res?.positions ?? []).find((p) => String(p.ticker ?? '').toUpperCase() === ticker)
       const qty = Number(pos?.quantity ?? pos?.qty ?? pos?.shares ?? NaN)
       if (Number.isFinite(qty) && qty > 0) position.value = { qty }
