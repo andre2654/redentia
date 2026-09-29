@@ -34,11 +34,31 @@ interface SessaoDoApp {
   token: Ref<string | null>
   user: Ref<NuUser | null>
   displayName: Ref<string | null>
+  /** HIT da borda com cookie: o token do cookie esperando a hidratação acabar */
+  adiado: string | null
 }
 
 // Chave = instância do app (1 por request no servidor, 1 no client). WeakMap:
 // a entrada morre junto com o request, e nenhum request enxerga a de outro.
 const SESSOES = new WeakMap<object, SessaoDoApp>()
+
+function assumir(sessao: SessaoDoApp) {
+  if (sessao.adiado != null && sessao.token.value == null) sessao.token.value = sessao.adiado
+  sessao.adiado = null
+}
+
+/**
+ * Fim da hidratação: assume a sessão que o HIT anônimo da borda adiou. O
+ * app.vue chama no 1º onMounted da árvore, que roda depois de TODA a
+ * hidratação e ANTES dos onMounted de layout e páginas. Assim um
+ * `onMounted(() => { if (isAuthenticated.value) ... })` enxerga o login (o
+ * `useThesisFollow` da /tese, por exemplo). O app:suspense:resolve só dispara
+ * depois desses onMounted.
+ */
+export function assumirSessaoAdiada() {
+  const sessao = SESSOES.get(useNuxtApp())
+  if (sessao) assumir(sessao)
+}
 
 export function useAuthState() {
   const cookie = useCookie<string | null>('nu:token', {
@@ -80,12 +100,11 @@ export function useAuthState() {
       token: ref<string | null>(adiar ? null : doCookie),
       user: ref<NuUser | null>(null),
       displayName: ref<string | null>(nameCookie.value ?? null),
+      adiado: adiar ? doCookie : null,
     }
-    if (adiar) {
-      nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
-        if (novo.token.value == null) novo.token.value = doCookie
-      })
-    }
+    // Quem assume é o app.vue (assumirSessaoAdiada); isto é a garantia pra
+    // quando ele não monta (error.vue).
+    if (adiar) nuxtApp.hooks.hookOnce('app:suspense:resolve', () => assumir(novo))
     SESSOES.set(nuxtApp, novo)
     sessao = novo
   }

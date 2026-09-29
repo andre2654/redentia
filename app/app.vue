@@ -19,10 +19,21 @@ useHead({
     }),
   }],
 })
+
+// Sessão adiada pelo HIT anônimo da borda (ver assumirSessaoAdiada). Precisa
+// ser o 1º filho do template: o onMounted dele é o 1º da árvore a rodar,
+// depois de TODA a hidratação e antes dos onMounted do layout e das páginas.
+const AssumirSessao = defineComponent({
+  setup() {
+    onMounted(assumirSessaoAdiada)
+    return () => null
+  },
+})
 </script>
 
 <template>
   <div>
+    <AssumirSessao />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
