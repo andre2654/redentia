@@ -61,6 +61,11 @@ export interface MeResponse {
     investor_experience?: string | null
     /** ISO8601 do cadastro (UserResource) — o gancho do "Seguir" mira contas de até 7 dias */
     created_at?: string | null
+    /**
+     * E-mail verificado (Backend #57). O resumo dos ativos seguidos só sai pra
+     * e-mail verificado: ausente conta como NÃO verificado.
+     */
+    email_verified?: boolean
     updated_at?: string | null
     password_changed_at?: string | null
     [key: string]: unknown

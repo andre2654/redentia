@@ -8,9 +8,16 @@
  * NÃO aparece: não se pune o usuário com um pedido que talvez não valha.
  *
  * Uma coisa só: o card não pede nome, e-mail nem nada além do toque no chip.
- * Quem entrou por celular não tem e-mail, e o resumo do Backend sai por
- * e-mail: pra essa pessoa a promessa troca pela que o produto cumpre (a lista
- * na página inicial), em vez de prometer um e-mail que nunca chega.
+ *
+ * A PROMESSA DE E-MAIL só aparece quando o Backend vai cumpri-la. O resumo
+ * (watchlist:send-digest) só sai pra e-mail VERIFICADO e com o tópico
+ * `watchlist` de e-mail ligado — que o 1º follow liga sozinho, a não ser que
+ * a pessoa já tenha recusado e-mail (descadastro, tópico desligado em /conta).
+ * Então: `email_verified === true` no /auth/me (campo ausente = não
+ * verificado) E, depois de um follow, `watchlist.email === true` no
+ * GET /me/notification-preferences. Fora disso a copy troca pela que o
+ * produto cumpre (a lista na página inicial). Quem ainda não segue nada vê
+ * essa copy até o 1º follow confirmar o tópico.
  *
  * Chips: o ativo da página (no /asset), os últimos /asset visitados
  * (localStorage, gravado pelo AcaoHero) e, na falta, os populares. Cada toque
@@ -93,18 +100,33 @@ export function proximoResumo(now = new Date()): string {
   return 'amanhã às 19h'
 }
 
+/** GET /me/notification-preferences — só o tópico que o gancho promete. */
+interface PrefsNotificacao {
+  watchlist?: { email?: boolean }
+}
+
 export function useSeguirGancho(atual?: MaybeRefOrGetter<string | null | undefined>) {
   const wl = useWatchlist()
-  const { isAuthenticated } = useAuthState()
+  const { isAuthenticated, token } = useAuthState()
+  const { authFetch } = useApi()
   const me = useMeCliente()
 
   const fase = ref<'oculto' | 'ativo' | 'pronto'>('oculto')
-  const comEmail = ref(false)
+  const emailVerificado = ref(false)
+  /** `watchlist.email` lido DEPOIS de um follow; null = ainda não conferido */
+  const topicoEmail = ref<boolean | null>(null)
+  const comEmail = computed(() => emailVerificado.value && topicoEmail.value === true)
   const chips = ref<string[]>([])
   const erro = ref('')
   const quando = ref('')
   let userId: number | null = null
   let timer: ReturnType<typeof setTimeout> | undefined
+  // 1 avaliação por sessão: a virada da sessão adiada (HIT da borda) chega
+  // antes do onMounted e o watcher de isAuthenticated rodaria de novo.
+  let avaliadoPara: string | null = null
+  // 1 leitura do tópico por página: depois do 1º follow ele não muda sozinho
+  // (o auto opt-in do Backend só age sem linha do tópico).
+  let topicoPedido: Promise<void> | null = null
 
   const progresso = computed(() => Math.min(wl.count.value, META))
 
@@ -114,16 +136,29 @@ export function useSeguirGancho(atual?: MaybeRefOrGetter<string | null | undefin
     chips.value = [...new Set(ordem)].slice(0, MAX_CHIPS)
   }
 
+  /** Lê `watchlist.email` (1x). Erro ou tópico ausente → sem promessa. */
+  function conferirTopico(): Promise<void> {
+    if (!emailVerificado.value) return Promise.resolve()
+    topicoPedido ??= authFetch<PrefsNotificacao>('/me/notification-preferences', {}, { redirectOnAuthError: false })
+      .then((r) => { topicoEmail.value = r?.watchlist?.email === true })
+      .catch(() => { topicoEmail.value = false })
+    return topicoPedido
+  }
+
   async function avaliar() {
+    const tk = token.value
+    if (!isAuthenticated.value || !tk || avaliadoPara === tk) return
+    avaliadoPara = tk
     fase.value = 'oculto'
-    if (!isAuthenticated.value) return
     const u = (await me.load())?.user
     if (!u?.id) return
     userId = u.id
-    comEmail.value = typeof u.email === 'string' && u.email.includes('@')
+    emailVerificado.value = u.email_verified === true
     if (lerMarca(u.id) || !contaRecente(u.created_at)) return
     await wl.load()
     if (!wl.ready.value || wl.count.value >= META) return
+    // já segue algum: o 1º follow já passou, o tópico já diz se o e-mail vai
+    if (wl.settledCount.value > 0) await conferirTopico()
     montarChips()
     fase.value = 'ativo'
   }
@@ -134,17 +169,26 @@ export function useSeguirGancho(atual?: MaybeRefOrGetter<string | null | undefin
   // chegou a 3 CONFIRMADOS (pelos chips OU pelo botão do hero): confirma e
   // sai de cena. O progresso na tela é otimista; a conclusão, não — um follow
   // barrado (limite do plano, rede) volta a barra pra 2/3 e o card fica.
-  watch(() => wl.settledCount.value, (n) => {
-    if (fase.value !== 'ativo' || n < META) return
+  // O 1º follow confirmado dispara a leitura do tópico (é ele que liga o
+  // resumo); o "Pronto" espera essa leitura pra escolher a copy certa.
+  watch(() => wl.settledCount.value, async (n) => {
+    if (fase.value !== 'ativo') return
+    if (n > 0) void conferirTopico()
+    if (n < META) return
+    await conferirTopico()
+    if (fase.value !== 'ativo' || wl.settledCount.value < META) return
     quando.value = proximoResumo()
     fase.value = 'pronto'
     if (userId) gravarMarca(userId, 'concluido')
     timer = setTimeout(() => { fase.value = 'oculto' }, 6000)
   })
-  // sessão assumida depois da hidratação (HIT da borda) ou encerrada: reavalia
+  // sessão que entra depois do mount ou que se encerra
   watch(isAuthenticated, (v) => {
     if (v) void avaliar()
-    else fase.value = 'oculto'
+    else {
+      fase.value = 'oculto'
+      avaliadoPara = null
+    }
   })
 
   function dispensar() {
