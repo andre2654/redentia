@@ -82,14 +82,19 @@ async function check() {
   }
   open.value = gate.value === 'needed'
 }
-onMounted(check)
-watch(isAuthenticated, (v) => {
-  if (v) {
-    gate.value = 'unknown'
-    void check()
-  } else {
-    open.value = false
-  }
+onMounted(() => {
+  void check()
+  // Registrado no mount, não no setup: no HIT da borda a sessão é assumida
+  // logo antes deste onMounted (app.vue), e um watcher do setup veria essa
+  // virada como login e chamaria o /auth/me pela 2ª vez.
+  watch(isAuthenticated, (v) => {
+    if (v) {
+      gate.value = 'unknown'
+      void check()
+    } else {
+      open.value = false
+    }
+  })
 })
 // quem ENTROU por /login ou /business/* (gate nem rodou) é avaliado ao
 // navegar pra qualquer outra página
