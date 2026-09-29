@@ -82,22 +82,57 @@ function contaRecente(createdAt: unknown, now = Date.now()): boolean {
 }
 
 /**
- * Quando sai o próximo resumo: dias úteis às 19h, no fuso de São Paulo (o
- * contrato do Backend). Feriado da B3 fica de fora — o front não tem o
- * calendário de pregão, e o caso comum é o dia útil.
+ * Dias úteis SEM pregão na B3 em 2026 — Quadro A do Ofício Circular
+ * 003/2026-VNC, de 08/01/2026 (errata que revogou o 054/2025-VNC), o
+ * calendário OFICIAL:
+ * https://www.b3.com.br/data/files/FC/55/3B/12/7FE9B9109B5E99B9AC094EA8/OC%20003-2026-VNC%20ERRATA_CALENDARIO%20DE%20FERIADOS%20EM%202026%20E%20FUNCIONAMENTO%20DA%20B3%20EM%2018022026%20QUARTAFEIRA%20DE%20CINZAS_PT.pdf
+ * (o mesmo quadro está em https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/calendario-de-negociacao/feriados/).
+ * Entram 24/12 e 31/12, que são "sem sessão de negociação". Ficam de fora os
+ * feriados só de São Paulo (Quadro B: a B3 funciona normalmente) e a
+ * Quarta-feira de Cinzas, que tem pregão à tarde.
+ *
+ * 2027: a B3 ainda NÃO publicou o calendário (conferido em 29/09/2026; o de
+ * 2026 saiu em 04/12/2025). Quando sair, some o ano em ANOS_COM_CALENDARIO e
+ * as datas aqui. Até lá, qualquer conta que atravesse um ano sem calendário
+ * responde "no próximo pregão, às 19h" em vez de chutar o dia.
+ */
+const SEM_PREGAO_B3 = new Set([
+  '2026-01-01', '2026-02-16', '2026-02-17', '2026-04-03', '2026-04-21', '2026-05-01', '2026-06-04',
+  '2026-09-07', '2026-10-12', '2026-11-02', '2026-11-20', '2026-12-24', '2026-12-25', '2026-12-31',
+])
+const ANOS_COM_CALENDARIO = new Set([2026])
+const DIA_DA_SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'] as const
+const DIA_MS = 86_400_000
+
+/**
+ * Quando sai o próximo resumo. O Backend manda às 19h (fuso de São Paulo) só
+ * em dia de pregão: o próximo pregão pula fim de semana e SEM_PREGAO_B3.
+ * Hoje antes das 19h → "hoje às 19h"; o dia seguinte → "amanhã às 19h"; mais
+ * longe → "na terça às 19h"; fora do calendário publicado → "no próximo
+ * pregão, às 19h".
  */
 export function proximoResumo(now = new Date()): string {
   const p = Object.fromEntries(
-    new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', weekday: 'short', hour: 'numeric', hourCycle: 'h23' })
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', hourCycle: 'h23',
+    })
       .formatToParts(now)
       .map((x) => [x.type, x.value]),
   ) as Record<string, string>
-  const dia = p.weekday ?? ''
-  const hora = Number(p.hour)
-  const util = dia !== 'Sat' && dia !== 'Sun'
-  if (util && hora < 19) return 'hoje às 19h'
-  if (dia === 'Fri' || dia === 'Sat') return 'na segunda às 19h'
-  return 'amanhã às 19h'
+  const hoje = Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day))
+  const hora = Number(p.hour) % 24
+  for (let i = 0; i <= 14; i++) {
+    const dia = new Date(hoje + i * DIA_MS)
+    if (!ANOS_COM_CALENDARIO.has(dia.getUTCFullYear())) break
+    const semana = dia.getUTCDay()
+    if (semana === 0 || semana === 6 || SEM_PREGAO_B3.has(dia.toISOString().slice(0, 10))) continue
+    if (i === 0) {
+      if (hora < 19) return 'hoje às 19h'
+      continue
+    }
+    return i === 1 ? 'amanhã às 19h' : `na ${DIA_DA_SEMANA[semana]} às 19h`
+  }
+  return 'no próximo pregão, às 19h'
 }
 
 /** GET /me/notification-preferences — só o tópico que o gancho promete. */
