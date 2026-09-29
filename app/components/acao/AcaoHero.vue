@@ -12,12 +12,21 @@ import type { AcaoPosition } from '~/composables/useAcao'
 // sai igual pra logado e anônimo (página cacheada na borda). O mount grava o
 // ativo em "vistos por último" (localStorage), que vira chip do gancho.
 // `renamedFrom`: faixa discreta no destino do 301 de código trocado.
-const props = defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null }>()
+//
+// `seguivel`: só o que existe em `tickers` pode ser seguido. A watchlist do
+// Backend recusa o resto (POST → 422 "Não encontramos o ativo BTC."), e a
+// cripto mora em outra tabela: GET /tickers/BTC e /tickers/ETH dão 404, contra
+// 200 em AAPL (US_STOCK), AAPL34 (BDR), HGLG11 (REIT), BOVA11 e IVVB11 (ETF),
+// conferido na API pública em 29/09/2026. Cripto fica sem estrela, sem gancho
+// e fora dos "vistos" (senão vira chip que falha em outra página).
+const props = defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null; seguivel: boolean }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const logoFailed = ref(false)
 
-onMounted(() => registrarAtivoVisto(props.hero.ticker))
+onMounted(() => {
+  if (props.seguivel) registrarAtivoVisto(props.hero.ticker)
+})
 </script>
 
 <template>
@@ -43,10 +52,10 @@ onMounted(() => registrarAtivoVisto(props.hero.ticker))
     </div>
     <div class="ahr__ctas">
       <NuxtLink to="/busca" class="ahr__primary">Perguntar à Redentia AI</NuxtLink>
-      <SeguirAtivo :ticker="hero.ticker" :path="`/asset/${hero.ticker}`" />
+      <SeguirAtivo v-if="seguivel" :ticker="hero.ticker" :path="`/asset/${hero.ticker}`" />
       <NuxtLink to="/" class="ahr__outline">Adicionar à carteira</NuxtLink>
     </div>
-    <SeguirGancho :atual="hero.ticker" surface="cream" />
+    <SeguirGancho v-if="seguivel" :atual="hero.ticker" surface="cream" />
   </section>
 </template>
 

@@ -129,7 +129,8 @@ if (data.value) {
 
 <template>
   <div v-if="data">
-    <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" />
+    <!-- cripto não está em `tickers`: a watchlist não a aceita (ver AcaoHero) -->
+    <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" :seguivel="acao.kind !== 'crypto'" />
 
     <AcaoChartSection
       :ticker="acao.ticker"
