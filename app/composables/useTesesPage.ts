@@ -126,14 +126,13 @@ export async function useTesesPage() {
 
   // ⚠️ NADA DEPENDENTE DE AUTH PODE ENTRAR NO RENDER DO SSR AQUI.
   // /teses é servida com `public, s-maxage=300` (nuxt.config), então o HTML do
-  // servidor é reaproveitado pela CDN entre visitantes diferentes — e o cookie
-  // `nu:token` É visível no SSR. Renderizar a variante logada gravaria o estado
-  // de UM usuário no cache de TODOS.
+  // servidor é reaproveitado pela CDN entre visitantes diferentes. Desde
+  // 29/09/2026 o servidor nem enxerga o `nu:token` nesta rota
+  // (server/plugins/session-cookie-public-cache.ts), e o `isAuthenticated` só
+  // vira true depois da hidratação (useAuthState).
   //
-  // Hoje isso está garantido por construção: o href é igual pra todo mundo e
-  // `favSlugs` nasce vazio (useState), só sendo preenchido no onMounted. Se
-  // algum dia voltar a existir variação por login neste render, ela precisa de
-  // um gate `mounted && isAuthenticated` — nunca `isAuthenticated` cru.
+  // O href é igual pra todo mundo e `favSlugs` nasce vazio (useState), só
+  // sendo preenchido no onMounted.
 
   // ═══ SSR-FIRST das teses PÚBLICAS (21/08/2026) ═══
   //

@@ -82,14 +82,19 @@ async function check() {
   }
   open.value = gate.value === 'needed'
 }
-onMounted(check)
-watch(isAuthenticated, (v) => {
-  if (v) {
-    gate.value = 'unknown'
-    void check()
-  } else {
-    open.value = false
-  }
+onMounted(() => {
+  void check()
+  // Registrado no mount, não no setup: em rota de cache público o SSR sai
+  // anônimo e o isAuthenticated vira true logo depois da hidratação. Isso não
+  // é login, e um watcher do setup chamaria o /auth/me duas vezes.
+  watch(isAuthenticated, (v) => {
+    if (v) {
+      gate.value = 'unknown'
+      void check()
+    } else {
+      open.value = false
+    }
+  })
 })
 // quem ENTROU por /login ou /business/* (gate nem rodou) é avaliado ao
 // navegar pra qualquer outra página

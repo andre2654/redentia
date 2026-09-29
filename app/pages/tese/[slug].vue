@@ -49,8 +49,9 @@ const tese = computed(() => data.value!)
 
 // Paywall (dono 2026-07-14): pro ANÔNIMO o relatório completo NÃO é renderizado
 // (o gate da avaliação por ativo é a parede) e os drivers entram embaçados.
-// useAuthState resolve o login no servidor (cookie) → o SSR do anônimo já vem
-// sem o relatório, e o do logado vem completo.
+// O SSR é sempre o do anônimo, sem o relatório: /tese/** tem cache público na
+// borda e o servidor nem enxerga o cookie (ver useAuthState). Pro logado, o
+// relatório entra depois da hidratação.
 const { isAuthenticated } = useAuthState()
 
 const origin = useSiteOrigin()

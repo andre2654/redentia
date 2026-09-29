@@ -19,10 +19,21 @@ useHead({
     }),
   }],
 })
+
+// Fim da hidratação pro useAuthState (ver markAuthHydrated). Precisa ser o 1º
+// filho do template: o onMounted dele é o 1º da árvore a rodar, depois de
+// TODA a hidratação e antes dos onMounted do layout e das páginas.
+const AuthHydrated = defineComponent({
+  setup() {
+    onMounted(markAuthHydrated)
+    return () => null
+  },
+})
 </script>
 
 <template>
   <div>
+    <AuthHydrated />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
