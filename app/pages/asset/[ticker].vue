@@ -42,9 +42,11 @@ definePageMeta({
       if (symbolShape(upper) === 'invalid') {
         return abortNavigation(createError({ statusCode: 404, statusMessage: 'Ativo não encontrado' }))
       }
-      // Canonical maiúsculo: /asset/petr4 → 301 /asset/PETR4 (e /asset/btc → /asset/BTC)
+      // Canonical maiúsculo: /asset/petr4 → 301 /asset/PETR4 (e /asset/btc → /asset/BTC).
+      // A query vai junto (utm_*, ?seguir=1 da volta do login): até 29/09/2026
+      // /asset/embr3?utm_source=x caía em /asset/EMBR3 sem ela.
       if (raw !== upper) {
-        return navigateTo(`/asset/${upper}`, { redirectCode: 301, replace: true })
+        return navigateTo({ path: `/asset/${upper}`, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
       }
     },
   ],

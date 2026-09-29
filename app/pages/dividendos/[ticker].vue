@@ -32,9 +32,10 @@ definePageMeta({
       if (!TICKER_RE.test(upper)) {
         return abortNavigation(createError({ statusCode: 404, statusMessage: 'Ativo não encontrado' }))
       }
-      // Canonical maiúsculo: /dividendos/petr4 → 301 /dividendos/PETR4
+      // Canonical maiúsculo: /dividendos/petr4 → 301 /dividendos/PETR4, com a
+      // query junto (mesma regra do /asset).
       if (raw !== upper) {
-        return navigateTo(`/dividendos/${upper}`, { redirectCode: 301, replace: true })
+        return navigateTo({ path: `/dividendos/${upper}`, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
       }
     },
   ],
