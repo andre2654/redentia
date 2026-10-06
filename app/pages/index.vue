@@ -11,10 +11,29 @@
 // indexável; pro logado a variação de seção NÃO muda o head. O routeRules já
 // serve '/' com private/no-store (rota com variante logada — CDN não varia
 // por cookie, regra dura documentada).
+//
+// WebSite só na home (06/10/2026): é dele que o Google tira o NOME do site
+// nos resultados, e a home não declarava nenhum. O SearchAction aponta pro
+// /busca?q=, que já abre com a consulta preenchida. O Google aposentou a
+// caixa de busca nos sitelinks em 11/2024, então o SearchAction não muda o
+// resultado do Google; fica por ser schema válido e verdadeiro.
+const siteOrigin = useSiteOrigin()
 usePageSeo({
   title: 'Mercado hoje: ações, FIIs e análise com IA',
   description: 'Acompanhe o mercado em tempo real: maiores altas e baixas de ações e FIIs, Tesouro Direto, notícias e o briefing de fechamento por IA. Grátis, sem conta.',
   path: '/',
+  structuredData: [{
+    '@type': 'WebSite',
+    '@id': `${siteOrigin}/#website`,
+    name: 'Redentia',
+    url: `${siteOrigin}/`,
+    inLanguage: 'pt-BR',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: `${siteOrigin}/busca?q={search_term_string}` },
+      'query-input': 'required name=search_term_string',
+    },
+  }],
   breadcrumbs: [{ name: 'Início', path: '/' }],
   // SEM dateModified de propósito (23/09/2026): o painel do dia (altas,
   // baixas, briefing) é carregado no cliente e o HTML do servidor sai com o
