@@ -123,7 +123,8 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
         <!-- logado: saudação com o primeiro nome (cookie nu:name, SSR sem
              flash; sem nome conhecido cai em "Olá." até o plugin hidratar) -->
         <h1 v-if="isAuthenticated" class="mh__title">Olá{{ firstName ? `, ${firstName}` : '' }}.</h1>
-        <h1 v-else class="mh__title">Invista com uma<br>IA do seu lado.</h1>
+        <!-- espaço antes do <br>: sem ele o texto extraído vira "umaIA" -->
+        <h1 v-else class="mh__title">Invista com uma <br>IA do seu lado.</h1>
         <div class="mh__dek">Análise fundamentalista pronta, alertas do que afeta a sua carteira e respostas na hora. Sem planilha, sem economês.</div>
         <!-- anônimo: captura de e-mail · logado: boas-vindas + CTA pra carteira -->
         <form v-if="!isAuthenticated" class="mh__card" @submit.prevent="submit">

@@ -19,11 +19,15 @@ export default defineEventHandler((event) => {
   // faltava era APONTAR o llms.txt: ele existia desde 08/2026 e não era
   // referenciado em lugar nenhum, nem aqui nem no <head>, então só achava
   // quem chutasse a convenção.
+  //
+  // SEM Disallow de /login e /carteira (06/10/2026). Bloquear no robots
+  // impedia o Google de LER o noindex dessas páginas: URL bloqueada pode ser
+  // indexada sem conteúdo, a partir de link. O /login responde 200 com
+  // `noindex, follow` no HTML do SSR, e o /carteira anônimo dá 302 pro
+  // /login, então liberar o rastreio é o que faz as duas saírem do índice.
   return [
     'User-agent: *',
     'Allow: /',
-    'Disallow: /carteira',
-    'Disallow: /login',
     '',
     `Sitemap: ${origin}/sitemap.xml`,
     '',
