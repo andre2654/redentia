@@ -9,7 +9,8 @@
  * ⚠️ TRAVA DE PUBLICAÇÃO, HERDADA E AINDA VÁLIDA: esta seção descreve a
  * arquitetura decidida no PLANO-REDENTIA-FOR-BUSINESS e parte dela ainda NÃO
  * EXISTE. O `pg-biz` é o PR5. Tirar o noindex antes disso continua decisão do
- * dono, não desta copy.
+ * dono, não desta copy. Na tela, a etiqueta do pg-biz diz "na implantação"
+ * (número de PR é jargão interno) e continua dizendo que ele ainda não existe.
  *
  * ⚠️ DUAS AFIRMAÇÕES FORAM CORRIGIDAS AQUI, e não por gosto:
  *
@@ -44,8 +45,8 @@
    mcp-service 0.5.0 (out/2026): o plano ganhou o escopo `cenarios`
    (list_scenarios, simulate_scenario) e, para conta com Clientes do escritório
    ligado, as quatro do escopo `clientes`. Elas aparecem marcadas, porque só
-   existem na chave de uma conta com o recurso ligado, e hoje ele só roda em
-   demonstração. create_client_invite é a ÚNICA que escreve: cria um link
+   existem na chave de uma conta com o recurso habilitado (liberado pela
+   Redentia, escritório a escritório). create_client_invite é a ÚNICA que escreve: cria um link
    inerte, que não dá acesso a nada até o cliente consentir. A copy do fato
    'leitura' diz isso com todas as letras. */
 const TOOLS = [
@@ -58,8 +59,8 @@ const TOOLS_CLIENTES = ['list_clients', 'create_client_invite', 'get_client_port
 const FATOS = [
   {
     id: 'banco',
-    rotulo: 'Banco separado, antes do dado real',
-    texto: 'O dado real de carteira de escritório só entra depois de um banco separado do produto de pessoa física, com isolamento entre organizações aplicado no próprio banco. É pré-requisito, não um upgrade vendido depois. Por isso Clientes do escritório roda hoje em demonstração: a carteira é fictícia, gerada pela Redentia. O que fica guardado hoje é o nome do cliente que o escritório digita e a prova do aceite (data, versão do termo, IP e navegador).',
+    rotulo: 'Banco separado, antes da carteira',
+    texto: 'A carteira que vem da instituição do cliente só entra depois de um banco separado do produto de pessoa física, com isolamento entre organizações aplicado no próprio banco. É pré-requisito, não um upgrade vendido depois. Por isso a conexão de Clientes do escritório com a instituição do cliente é habilitada escritório a escritório, na implantação. Do consentimento, fica guardada a prova do aceite (data, versão do termo, IP e navegador).',
     verifica: 'Pergunte na reunião em que banco a sua base vai morar, e peça a data.',
   },
   {
@@ -155,7 +156,7 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
         O que dá<br>pra verificar.
         <template #dek>
           Quatro afirmações que sobrevivem a uma <strong>due diligence</strong>,
-          porque cada uma se checa olhando a arquitetura ou rodando um teste.
+          porque cada uma se confere na arquitetura ou na prática.
           Nenhuma delas é selo ou adjetivo.
         </template>
       </NuSectionHeading>
@@ -190,7 +191,7 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 
               <dl v-if="f.id === 'banco'" class="rbsg__linhas">
                 <div><dt>pg-app</dt><dd>pessoa física</dd></div>
-                <div><dt>pg-biz</dt><dd>escritórios <span class="rbsg__tag">no PR5</span></dd></div>
+                <div><dt>pg-biz</dt><dd>escritórios <span class="rbsg__tag">na implantação</span></dd></div>
               </dl>
 
               <dl v-else-if="f.id === 'chaves'" class="rbsg__linhas">
@@ -201,7 +202,7 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 
               <ul v-else-if="f.id === 'leitura'" class="rbsg__tools">
                 <li v-for="t in TOOLS" :key="t">{{ t }}</li>
-                <li v-for="t in TOOLS_CLIENTES" :key="t">{{ t }} <span class="rbsg__tag">{{ t === 'create_client_invite' ? 'só o link' : 'demonstração' }}</span></li>
+                <li v-for="t in TOOLS_CLIENTES" :key="t">{{ t }} <span class="rbsg__tag">{{ t === 'create_client_invite' ? 'só o link' : 'conta habilitada' }}</span></li>
                 <li class="rbsg__tool-fora">get_portfolio <span class="rbsg__tag">fora do plano</span></li>
               </ul>
 
