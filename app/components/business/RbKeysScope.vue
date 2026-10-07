@@ -49,7 +49,7 @@ function prosa(lista: string[]): string {
   return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`
 }
 
-/** Clientes do escritório: ligado só por console; ausente = desligado. */
+/** Clientes do escritório: ligado pela Redentia, conta a conta; ausente = desligado. */
 const modoClientes = computed(() => props.conta.clients_mode ?? 'off')
 const clientesLigado = computed(() => modoClientes.value !== 'off')
 
@@ -84,7 +84,7 @@ const CARDS = computed(() => [
     stat: null,
     titulo: 'Carteira, só com consentimento.',
     blurb: clientesLigado.value
-      ? 'A chave só lê a carteira de um cliente que consentiu pelo próprio link, e ele revoga quando quiser. Hoje o recurso roda em demonstração, com carteira fictícia.'
+      ? 'A chave só lê a carteira de um cliente que consentiu pelo próprio link, e ele revoga quando quiser. Cada leitura fica no registro de acesso.'
       : 'Só existe carteira de cliente com o consentimento do próprio cliente. Sem isso, o servidor recusa dado de carteira nessas chaves.',
   },
   {
@@ -136,11 +136,11 @@ const BLOCOS = computed(() => [
   },
   clientesLigado.value
     ? {
-        label: 'Clientes do escritório · em demonstração',
+        label: 'Clientes do escritório',
         color: 'var(--nu-gray)',
         html: 'list_clients, create_client_invite, get_client_portfolio e simulate_client_scenario. '
           + 'Só existe carteira de cliente com o consentimento do próprio cliente: o convite é um link inerte até ele ler o termo e aceitar, e ele revoga pelo link de gestão quando quiser. '
-          + '<strong>Hoje é demonstração:</strong> nenhuma conta do cliente é conectada e a carteira é fictícia, gerada pela Redentia. Toda resposta do servidor sobre ela chega com o aviso de demonstração no topo, e o assistente é instruído a repeti-lo; confira antes de repassar.',
+          + 'Cada leitura e cada simulação ficam no registro de acesso, com a chave e a data, e o cliente vê o próprio registro pelo link de gestão.',
       }
     : {
         label: 'O que fica de fora',

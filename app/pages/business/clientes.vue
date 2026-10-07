@@ -8,10 +8,10 @@
  * o cliente lê o termo e aceita em /cliente/convite/[token], e revoga quando
  * quiser em /cliente/acesso/[token].
  *
- * HOJE É DEMONSTRAÇÃO (clients_mode = 'demo', ligado por console, conta a
- * conta): quando o cliente aceita, a Redentia gera uma carteira FICTÍCIA. Este
- * painel nunca mostra valor de carteira — só status, responsável, datas e o
- * registro de acesso —, e todo cliente de demonstração leva o selo.
+ * O recurso é ligado pela Redentia, conta a conta, e o painel recebe só
+ * on/off (`clients_mode`): de onde vem a carteira é dado de operação, não
+ * desta tela. O painel nunca mostra valor de carteira — só status,
+ * responsável, instituição, datas e o registro de acesso.
  *
  * Estados: carregando | falha | conta não pronta | recurso não habilitado
  * (clients_mode = 'off', ou a rota de clientes ainda não existe no servidor)
@@ -93,8 +93,9 @@ onMounted(carregar)
 const conta = computed(() => contaApi.status.value)
 const contaPronta = computed(() => Boolean(conta.value?.has_account && conta.value.enabled))
 const modo = computed(() => conta.value?.clients_mode ?? lista.value?.mode ?? 'off')
-const habilitado = computed(() => !semRecurso.value && modo.value !== 'off')
-const ehDemo = computed(() => modo.value === 'demo')
+// Qualquer valor diferente de 'off' lê como ligado (servidor de outra versão);
+// `enabled: false` na lista desliga, fail-closed.
+const habilitado = computed(() => !semRecurso.value && modo.value !== 'off' && lista.value?.enabled !== false)
 const clientes = computed(() => lista.value?.clients ?? [])
 const maxClientes = computed(() => lista.value?.max_clients ?? conta.value?.max_clients ?? null)
 const chaves = computed(() => (conta.value?.keys ?? []).filter(k => k.enabled))
@@ -250,8 +251,8 @@ onBeforeUnmount(() => {
     <h1 class="rbcl-msg__h">O recurso não está habilitado nesta conta.</h1>
     <p class="rbcl-msg__txt">
       Clientes do escritório deixa o assistente ler a carteira de um cliente só com o consentimento do
-      próprio cliente. Hoje ele roda em demonstração, com carteira fictícia, e é ligado pela Redentia conta
-      a conta. Se a sua casa quer testar, escreva pra contato@redentia.com.
+      próprio cliente. O recurso é liberado por convite, escritório a escritório. Para habilitar na sua casa,
+      escreva pra contato@redentia.com.
     </p>
     <NuxtLink to="/business/chaves" class="rbcl-btn rbcl-btn--ghost">Voltar para as chaves</NuxtLink>
   </section>
@@ -269,15 +270,7 @@ onBeforeUnmount(() => {
               Sem o aceite, o link não dá acesso a nada.
             </template>
           </NuSectionHeading>
-          <NuBadge v-if="ehDemo" variant="neutral" size="label" class="rbcl-selo">Demonstração</NuBadge>
         </div>
-
-        <p v-if="ehDemo" class="rbcl-demo" role="note">
-          <strong>Em demonstração.</strong> Quando o cliente aceita, a Redentia gera uma carteira fictícia para o
-          escritório testar o fluxo. Nenhuma conta dele é conectada e nenhuma carteira real entra. Toda resposta do servidor
-          sobre essa carteira chega com o aviso de demonstração no topo, e o assistente é instruído a repeti-lo na
-          primeira linha. Confira antes de repassar qualquer texto.
-        </p>
 
         <div class="rbcl-card">
           <form class="rbcl-nova" @submit.prevent="criar">
@@ -321,7 +314,6 @@ onBeforeUnmount(() => {
             <div class="rbcl-item__top">
               <div class="rbcl-item__nome">
                 <strong>{{ c.name }}</strong>
-                <NuBadge v-if="c.source === 'demonstracao'" variant="neutral" size="label">Demonstração</NuBadge>
                 <NuBadge v-if="c.shared_with_office" variant="blue" size="label">Compartilhado</NuBadge>
               </div>
               <button
@@ -398,7 +390,7 @@ onBeforeUnmount(() => {
               <p v-else-if="!(logs[c.id] as ClientLogEntry[] | undefined)?.length" class="rbcl-ajuda">Ainda não há registro.</p>
               <ol v-else class="rbcl-log">
                 <li v-for="(l, i) in (logs[c.id] as ClientLogEntry[])" :key="i">
-                  <span class="rbcl-log__a">{{ clientActionLabel(l.action, c.source === 'demonstracao') }}</span>
+                  <span class="rbcl-log__a">{{ clientActionLabel(l.action) }}</span>
                   <span class="rbcl-log__m">
                     {{ clientActorLabel(l.actor) }}<template v-if="chaveDoRegistro(l)"> ({{ chaveDoRegistro(l) }})</template>
                     <template v-if="l.at"> · <span class="rbcl-num">{{ dataHora(l.at) }}</span></template>
@@ -443,13 +435,6 @@ onBeforeUnmount(() => {
 .rbcl-back { display: inline-block; margin-bottom: 22px; color: var(--nu-gray-2); font-size: 14px; font-weight: 800; }
 .rbcl-back:hover { color: var(--nu-ink); }
 .rbcl-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
-.rbcl-selo { margin-top: 6px; }
-.rbcl-demo {
-  margin: 24px 0 0; max-width: 760px; padding: 16px 20px; border-radius: var(--nu-r-card);
-  background: var(--nu-white); border: 1.5px solid var(--nu-cream-line);
-  color: var(--nu-ink); font-size: 15px; font-weight: 500; line-height: 1.6;
-}
-.rbcl-demo strong { font-weight: 800; }
 
 .rbcl-card {
   margin-top: clamp(26px, 3.5vw, 40px); background: var(--nu-white); border-radius: var(--nu-r-card-lg);

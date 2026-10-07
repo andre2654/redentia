@@ -40,7 +40,7 @@ const ACTION_LABEL: Record<string, string> = {
   consent_granted: 'Consentimento dado',
   connection_added: 'Conexão criada',
   portfolio_read: 'Carteira consultada',
-  simulation_run: 'Simulação rodada sobre a carteira',
+  simulation_run: 'Simulação de cenário sobre a carteira',
   reassigned: 'Responsável trocado',
   shared: 'Compartilhado com o escritório',
   unshared: 'Deixou de ser compartilhado',
@@ -49,15 +49,7 @@ const ACTION_LABEL: Record<string, string> = {
   expired: 'Consentimento venceu',
 }
 
-/** Na demonstração, "conexão" é a carteira fictícia: o rótulo diz isso. */
-const ACTION_LABEL_DEMO: Record<string, string> = {
-  connection_added: 'Carteira de demonstração gerada',
-  portfolio_read: 'Carteira de demonstração consultada',
-  simulation_run: 'Simulação rodada sobre a carteira de demonstração',
-}
-
-export function clientActionLabel(action: string, demo = false): string {
-  if (demo && ACTION_LABEL_DEMO[action]) return ACTION_LABEL_DEMO[action]
+export function clientActionLabel(action: string): string {
   return ACTION_LABEL[action] ?? action
 }
 
@@ -99,7 +91,7 @@ export function dataHora(iso: string | null | undefined): string {
 export const CLIENT_TOKEN_RE = /^[a-f0-9]{48}$/
 
 /*
- * Leitura das respostas do servidor (Contrato C). Funções puras, com teste em
+ * Leitura das respostas do servidor (Contrato C). Funções puras, cobertas por
  * tests/clientes-contrato.test.ts contra os corpos REAIS que o Laravel devolveu
  * no e2e de 07/10/2026 — foi lá que estes três descasamentos apareceram.
  */

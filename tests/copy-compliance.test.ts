@@ -42,13 +42,11 @@ test('CV-10: o promo não fala em "golpe" nem promete ordem no tempo', () => {
   assert.match(promo, /quem mais sente o choque/)
 })
 
-test('CV-11: o rótulo de demonstração é do servidor; repetir é instrução ao assistente, não garantia', () => {
-  for (const f of ['pages/business/clientes.vue', 'components/business/RbKeysScope.vue']) {
-    const src = plano(f)
-    assert.doesNotMatch(src, /rótulo de demonstração em toda resposta|toda resposta do assistente leva/, f)
-    assert.match(src, /instruído a repeti-lo/, f)
-  }
-})
+/*
+ * CV-11 (o aviso de demonstração repetido pelo assistente) saiu: a marca de
+ * demonstração deixou de existir em toda a experiência (decisão do dono,
+ * 07/10/2026). O CV-18 trava a ausência.
+ */
 
 test('CV-14: sem "quota do dia" num plano sem teto diário; Clientes é ligado pela Redentia', () => {
   const src = plano('components/business/RbKeysScope.vue')

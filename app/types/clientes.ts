@@ -19,8 +19,22 @@
  * se o nome do campo do painel do dono divergir. Faltando, o elemento some.
  */
 
-/** Modo do recurso na conta (só muda por console no servidor). */
-export type ClientsMode = 'off' | 'demo' | 'pluggy'
+/**
+ * O recurso na conta, como o painel do dono o recebe: ligado ou desligado
+ * (quem liga é a Redentia, conta a conta). Valor diferente de 'off' lê como
+ * ligado, por tolerância a um servidor de outra versão.
+ */
+export type ClientsMode = 'on' | 'off'
+
+/**
+ * C5 — o fluxo de conexão que a página do cliente deve rodar. Só escolhe o
+ * fluxo e NUNCA aparece na tela. 'demo': o servidor gera a carteira no
+ * consentimento (só existe em conta interna da Redentia) e a espera pela
+ * autorização avança sozinha. 'pluggy': ainda não existe no servidor (o C6
+ * responde 409 mode_unavailable), e a página mostra o estado de conexão
+ * indisponível antes do fluxo.
+ */
+export type ClientInviteMode = 'demo' | 'pluggy'
 
 export type ClientStatus = 'pending' | 'active' | 'revoked' | 'expired'
 
@@ -34,7 +48,7 @@ export interface ClientInviteInfo {
   office: { name: string } | null
   advisor_label: string | null
   client_name: string | null
-  mode: ClientsMode
+  mode: ClientInviteMode
   expires_at: string | null
   terms_version: string
   terms_text: string
@@ -44,14 +58,13 @@ export interface ClientInviteInfo {
 }
 
 /**
- * C6 — resposta do consentimento (modo demo). O corpo do POST leva
+ * C6 — resposta do consentimento. O corpo do POST leva
  * `accept`, `terms_version`, `terms_sha256` e, opcional, `institution`
  * (slug da lista de app/content/instituicoes.ts, validado no servidor).
  * O CPF que a página pede NÃO faz parte do contrato.
  */
 export interface ClientConsentResult {
   status: 'connected' | string
-  demo: boolean
   manage_url: string
   /** modo pluggy (futuro): o token que abre o widget real no mesmo lugar */
   connect_token?: string
@@ -78,7 +91,6 @@ export interface ClientAccessInfo {
   until: string | null
   /** quando o acesso foi revogado (null enquanto ativo) */
   revoked_at?: string | null
-  demo: boolean
   /** o NOME da instituição escolhida na conexão (null depois de revogar: a conexão é apagada) */
   institution?: string | null
   log: ClientLogEntry[]
@@ -89,7 +101,6 @@ export interface BusinessClientRow {
   id: string
   name: string
   status: ClientStatus | string
-  source: 'demonstracao' | 'open_finance' | null
   /** instituição da conexão (o banco que o cliente escolheu); null sem conexão */
   institution?: string | null
   connected_at: string | null
@@ -113,6 +124,8 @@ export interface BusinessClientRow {
 
 export interface BusinessClientsList {
   mode?: ClientsMode
+  /** o recurso está ligado nesta conta (false = painel em "não habilitado") */
+  enabled?: boolean
   max_clients?: number
   /** vagas livres no teto (pendentes + ativos ocupam; revogado e vencido liberam) */
   remaining_clients?: number

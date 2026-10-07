@@ -11,6 +11,8 @@
  * troca o estado pela resposta em vez de refazer o GET. Um round-trip a menos
  * por clique, e nenhuma janela em que a tela mostra o estado velho.
  */
+import type { ClientsMode } from '~/types/clientes'
+
 export interface BusinessKeyVM {
   id: number
   label: string
@@ -48,12 +50,12 @@ export interface BusinessAccountStatus {
   quota: { day: number | null, minute: number }
   scopes?: string[]
   /**
-   * Clientes do escritório (Contrato C). Só muda por console no servidor:
-   * 'off' esconde o recurso, 'demo' liga com carteira fictícia, 'pluggy' é a
-   * conexão real, que ainda não existe. Opcional porque o front pode subir
-   * antes do backend; ausente lê como 'off'.
+   * Clientes do escritório: 'on' ou 'off', ligado pela Redentia conta a
+   * conta. O painel só precisa saber se o recurso existe. Ausente lê como
+   * 'off'; qualquer valor diferente de 'off' lê como ligado (tolerância a um
+   * servidor de outra versão).
    */
-  clients_mode?: 'off' | 'demo' | 'pluggy'
+  clients_mode?: ClientsMode
   max_clients?: number
 }
 

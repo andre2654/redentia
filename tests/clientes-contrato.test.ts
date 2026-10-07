@@ -36,12 +36,12 @@ test('C6: convite já usado (410 invite_invalid) vira o estado "usado", não "te
   assert.equal(motivoDaRecusaDoConsentimento(429, { error: 'rate_limited' }), null)
 })
 
+// Sem `source` e `demo`, que saíram do contrato do painel; `institution` entrou.
 const linhaDoPainel = {
   id: '01m4bfbh1hhfv78wav0mvs3wkg',
   name: 'Joana Front',
   status: 'revoked',
-  source: 'demonstracao' as const,
-  demo: true,
+  institution: 'Nubank',
   assigned_key: { id: 2, label: 'Mesa B', revoked: false },
   shared_with_office: false,
   connected_at: '2026-10-07T12:23:13-03:00',
@@ -58,7 +58,7 @@ test('painel: a chave da última leitura sai de last_read_by', () => {
 
 test('painel: a chave de cada linha do registro sai de key.label', () => {
   const lidaPelaChave = { action: 'portfolio_read', actor: 'key', key: { id: 1, label: 'Mesa A' }, meta: { tool: 'get_client_portfolio', detail: 'resumo' }, at: '2026-10-07T12:24:10-03:00' }
-  const doCliente = { action: 'consent_granted', actor: 'client', key: null, meta: { mode: 'demo' }, at: '2026-10-07T12:23:13-03:00' }
+  const doCliente = { action: 'consent_granted', actor: 'client', key: null, meta: {}, at: '2026-10-07T12:23:13-03:00' }
   assert.equal(chaveDoRegistro(lidaPelaChave), 'Mesa A')
   assert.equal(chaveDoRegistro(doCliente), null)
 })
@@ -74,4 +74,15 @@ test('painel: vagas em uso vêm de max_clients − remaining_clients', () => {
 test('registro: invite_canceled (grafia do servidor) tem rótulo', () => {
   assert.equal(clientActionLabel('invite_canceled'), 'Convite cancelado')
   assert.equal(clientActionLabel('unshared'), 'Deixou de ser compartilhado')
+})
+
+test('registro: um rótulo só por ação, o mesmo no painel e na página do cliente', () => {
+  // A variante "de demonstração" dos rótulos saiu (decisão do dono, 07/10/2026):
+  // a função não recebe mais modo, e a carteira não leva adjetivo.
+  assert.equal(clientActionLabel.length, 1)
+  assert.equal(clientActionLabel('connection_added'), 'Conexão criada')
+  assert.equal(clientActionLabel('portfolio_read'), 'Carteira consultada')
+  assert.equal(clientActionLabel('simulation_run'), 'Simulação de cenário sobre a carteira')
+  // slug desconhecido passa como veio, em vez de sumir
+  assert.equal(clientActionLabel('acao_nova'), 'acao_nova')
 })
