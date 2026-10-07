@@ -274,7 +274,7 @@ onBeforeUnmount(() => {
 
         <p v-if="ehDemo" class="rbcl-demo" role="note">
           <strong>Em demonstração.</strong> Quando o cliente aceita, a Redentia gera uma carteira fictícia para o
-          escritório testar o fluxo. Nenhuma conta dele é conectada e nenhum dado real entra; toda resposta do
+          escritório testar o fluxo. Nenhuma conta dele é conectada e nenhuma carteira real entra; toda resposta do
           assistente leva o rótulo de demonstração.
         </p>
 

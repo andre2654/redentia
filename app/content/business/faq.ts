@@ -104,7 +104,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Onde os dados ficam armazenados?',
-        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para dado real de escritório entrar. É por isso que Clientes do escritório roda hoje só em demonstração: a carteira é fictícia, gerada pela Redentia, e nenhum dado real de cliente entra antes do banco separado. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
+        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para dado real de escritório entrar. É por isso que Clientes do escritório roda hoje só em demonstração: a carteira é fictícia, gerada pela Redentia, e nenhuma carteira real de cliente entra antes do banco separado; hoje ficam só o nome que o escritório cadastra e a prova do consentimento. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
       },
       {
         q: 'Algum modelo de IA treina com os dados dos meus clientes?',

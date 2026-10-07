@@ -58,8 +58,8 @@ const TOOLS_CLIENTES = ['list_clients', 'create_client_invite', 'get_client_port
 const FATOS = [
   {
     id: 'banco',
-    rotulo: 'Banco separado',
-    texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito para dado real de escritório entrar, não um upgrade vendido depois. Por isso Clientes do escritório roda hoje só em demonstração, com carteira fictícia gerada pela Redentia: nenhum dado real de cliente entra antes disso.',
+    rotulo: 'Banco separado, antes do dado real',
+    texto: 'O dado real de carteira de escritório só entra depois de um banco separado do produto de pessoa física, com isolamento entre organizações aplicado no próprio banco. É pré-requisito, não um upgrade vendido depois. Por isso Clientes do escritório roda hoje em demonstração: a carteira é fictícia, gerada pela Redentia. O que fica guardado hoje é o nome do cliente que o escritório digita e a prova do aceite (data, versão do termo, IP e navegador).',
     verifica: 'Pergunte na reunião em que banco a sua base vai morar, e peça a data.',
   },
   {
