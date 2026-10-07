@@ -7,7 +7,7 @@ description: Roda uma carteira num cenário com o motor de projeções da Redent
 
 Você roda a carteira num cenário com o motor de projeções da Redentia e traduz o resultado sem exagero: uma faixa de resultados sob premissas declaradas, o choque de cada ativo explicado, e de onde o cenário veio. O motor não diz o que vai acontecer. Ele mostra o que acontece com ESTA carteira SE o cenário acontecer, com a dispersão que a história dos ativos sustenta. A decisão sobre a carteira é do escritório.
 
-A carteira vem da conversa e fica na conversa: nada é salvo. Se a carteira é de um cliente conectado ao escritório (chave de escritório, cliente com consentimento), quem roda é a skill redentia-clientes, com `simulate_client_scenario` — as posições saem do servidor e não precisam ser coladas.
+A carteira vem da conversa e fica na conversa: nada é salvo. Se a carteira é de um cliente conectado ao escritório (chave de escritório, cliente com consentimento), quem roda é a skill redentia-clientes, com `simulate_client_scenario`: as posições saem do servidor e não precisam ser coladas.
 
 ## O vocabulário vem antes de tudo
 
@@ -19,7 +19,7 @@ A carteira vem da conversa e fica na conversa: nada é salvo. Se a carteira é d
 | "cenário montado na hora, sem precedente histórico que o ancore" | "cenário realista", "cenário mais provável" |
 | mediana (o meio da faixa) | "o número", "a aposta", "a meta" |
 
-O motor sorteia milhares de trajetórias. O p50 é só a trajetória do meio; a informação está na LARGURA da faixa entre p10 e p90. Quem lê só o p50 transforma uma faixa em promessa — é o erro que esta skill existe pra evitar.
+O motor sorteia milhares de trajetórias. O p50 é só a trajetória do meio; a informação está na LARGURA da faixa entre p10 e p90. Quem lê só o p50 transforma uma faixa em promessa; é o erro que esta skill existe pra evitar.
 
 ## Fonte de verdade: o MCP da Redentia
 
@@ -31,15 +31,16 @@ Toda resposta de ferramenta vem num envelope JSON:
 
 Erros chegam como TEXTO em português. Trate por conteúdo:
 
-- **Ticker desconhecido** (a mensagem nomeia o ticker): chame `search_assets{query}` com o nome da empresa, troque pelo ticker certo e repita a simulação UMA vez. Cripto não roda no motor: tire da carteira e diga que ficou de fora.
-- **Valor de choque fora da faixa** ("shocks.dolar fora da faixa: aceita de 3 a 10…" — a mensagem traz o campo, o mínimo e o máximo): ajuste pro limite só se o usuário concordar; senão diga que fora dessa faixa o motor não roda o cenário.
+- **Ticker desconhecido** (a mensagem nomeia o ticker e termina com "erro: invalid_portfolio"): chame `search_assets{query}` com o nome da empresa, troque pelo ticker certo e repita a simulação UMA vez. Cripto não roda no motor: tire da carteira e diga que ficou de fora.
+- **"informe ticker (ação, FII, ETF, BDR) ou kind: 'rf'"**: uma posição saiu sem ticker e sem `kind: "rf"`. Corrija a posição indicada (`positions[i]`) e repita.
+- **Valor de choque fora da faixa** ("shocks.dolar fora da faixa: aceita de 3 a 10…"; a mensagem traz o campo, o mínimo e o máximo): ajuste pro limite só se o usuário concordar; senão diga que fora dessa faixa o motor não roda o cenário.
 - **Mês do choque fora da janela** ("shock_month = 12 cai fora da janela de 12 meses…"): o choque pedido não caberia no horizonte. Use um mês dentro da faixa que a mensagem dá, ou aumente `horizon_years` se o usuário quer o choque mais adiante.
 - **"Use scenario_slug OU custom_shocks, não os dois"**: um cenário estudado não aceita choque por cima. Para "o evento X e mais PETR4 −30%", monte tudo em `shocks` (os dials do evento, que estão no `list_scenarios`, mais `assets`) e rotule como montado na hora.
-- **Cenário que não existe no catálogo**: você inventou ou digitou errado o slug. Volte ao `list_scenarios` — slug só sai de lá.
+- **Cenário que não existe no catálogo** ("erro: scenario_not_found"): você inventou ou digitou errado o slug. Volte ao `list_scenarios`; slug só sai de lá.
 - **"Muitas chamadas por minuto"**, "Limite de simulações por minuto" ou "Muitas simulações em sequência" (o teto do próprio motor): espere cerca de 60 segundos e retome do passo em que parou. Não recomece a rodada.
 - **"Limite diário"**: pare, diga quantas simulações faltavam e que o limite renova à meia-noite de São Paulo.
-- **Motor indisponível**: não repita em laço. Diga que o motor não respondeu e ofereça tentar em alguns minutos.
-- **A recusa diz "não tem permissão de cenários e projeções"** (as duas tools de cenários aparecem em toda chave; quem recusa é o servidor): na chave pessoal o escopo vem DESLIGADO por padrão — o usuário liga em Redentia → Conta → seção MCP (vale em até 1 minuto). Na chave de escritório o plano já inclui cenários; se mesmo assim faltar, o caminho é contato@redentia.com.
+- **Motor indisponível** ou "não respondeu dentro de 30 segundos": não repita em laço. Diga que o motor não respondeu e ofereça tentar em alguns minutos, ou com menos posições.
+- **A recusa diz "não tem permissão de cenários e projeções"** (as duas tools de cenários aparecem em toda chave; quem recusa é o servidor): na chave pessoal o escopo vem DESLIGADO por padrão; o usuário liga em Redentia → Conta → seção MCP (vale em até 1 minuto). Na chave de escritório o plano já inclui cenários; se mesmo assim faltar, o caminho é contato@redentia.com.
 
 ### Orçamento de chamadas desta skill
 
@@ -66,42 +67,42 @@ Frase obrigatória quando você assumiu a base:
 
 | Título | Posição |
 |---|---|
-| Tesouro Selic, CDB/LCI/LCA pós | `{kind: "rf", indexer: "pos", value, cdi_mult}` — 110% do CDI é `cdi_mult: 1.1` |
-| Prefixado | `{kind: "rf", indexer: "pre", value, rate_pct, duration_years}` — 12,5% a.a. é `rate_pct: 12.5` |
-| IPCA+ | `{kind: "rf", indexer: "ipca", value, rate_pct, duration_years}` — IPCA + 6% é `rate_pct: 6` |
+| Tesouro Selic, CDB/LCI/LCA pós | `{kind: "rf", indexer: "pos", value, cdi_mult}`; 110% do CDI é `cdi_mult: 1.1` |
+| Prefixado | `{kind: "rf", indexer: "pre", value, rate_pct, duration_years}`; 12,5% a.a. é `rate_pct: 12.5` |
+| IPCA+ | `{kind: "rf", indexer: "ipca", value, rate_pct, duration_years}`; IPCA + 6% é `rate_pct: 6` |
 
-LCI, LCA e debênture incentivada levam `isento: true`. Prazo desconhecido no prefixado ou IPCA+: pergunte — sem `duration_years` o motor não aplica a marcação a mercado do choque de juros, e a linha sai mais estável do que é. `label` dá nome legível à linha ("CDB Banco X").
+LCI, LCA e debênture incentivada levam `isento: true`. Prazo desconhecido no prefixado ou IPCA+: pergunte. Sem `duration_years` o motor não aplica a marcação a mercado do choque de juros, e a linha sai mais estável do que é. `label` dá nome legível à linha ("CDB Banco X").
 
 Limites: 1 a 60 posições. Acima de 60, peça um recorte ou agrupe a cauda.
 
 Se nada foi informado, UMA pergunta compacta:
 
-> Me manda a carteira, uma posição por linha ("TICKER — valor" ou "TICKER — %"), e o cenário que você quer testar. Exemplo: PETR4 — R$ 50.000
+> Me manda a carteira, uma posição por linha ("TICKER — valor" ou "TICKER — %"), e o cenário que você quer rodar. Exemplo: PETR4 — R$ 50.000
 
 ## Passo 2 — Escolha o cenário
 
 Chame `list_scenarios{}` uma vez por conversa. Ele devolve:
 
-- `scenarios[]` — a biblioteca: `slug`, `title`, `kind`, `eyebrow`, `event_date`, `dials` (os choques que o cenário aplica) e `provenance: "library"`;
-- `dials` — cada choque que você pode montar na hora, com `min`, `max`, `unit` e `label`;
-- `assets` e `sector_limits` — a faixa do choque por ativo e por setor (`min`, `max`, `unit`);
-- `sectors[]` — os setores que aceitam choque, com `slug`, `label` e `tickers_count`;
-- `horizon` — `min`, `max` e `default_mcp` (1 ano).
+- `scenarios[]`: a biblioteca, com `slug`, `title`, `kind`, `eyebrow`, `event_date`, `dials` (os choques que o cenário aplica) e `provenance: "library"`;
+- `dials`: cada choque que você pode montar na hora, com `min`, `max`, `unit` e `label`;
+- `assets` e `sector_limits`: a faixa do choque por ativo e por setor (`min`, `max`, `unit`);
+- `sectors[]`: os setores que aceitam choque, com `slug`, `label` e `tickers_count`;
+- `horizon`: `min`, `max` e `default_mcp` (1 ano).
 
 **Pedido que casa com a biblioteca** ("e se repetir 2020?", "dólar a R$ 7") → use o `slug` da lista. Mais de um candidato: mostre os títulos e pergunte qual. Nunca escreva um slug de memória.
 
-**Pedido sem cenário pronto** → monte na hora com `shocks`. Leia a UNIDADE de cada dial no catálogo antes de preencher — não presuma:
+**Pedido sem cenário pronto** → monte na hora com `shocks`. Leia a UNIDADE de cada dial no catálogo antes de preencher; não presuma:
 
-- Dial em nível (`unit` "R$" ou "% a.a."): entra o PATAMAR de chegada, não a variação. Com o dólar em "R$", "dólar a R$ 7" é `dolar: 7` e "dólar sobe 20%" exige o nível de hoje — `get_market_snapshot{}`, `macro.usd_brl.value` × 1,2. Com a Selic em "% a.a.", "Selic +3 pontos" é `selic_meta` + 3. O IPCA em "% a.a." é o patamar de inflação do caminho.
-- Dial em variação (`unit` "%"): entra a variação. Bolsa e petróleo costumam vir assim; commodities e global também, e são choques só de fator, sem série de mercado ancorada — a regra declarada na resposta diz isso; repita.
-- Choque num ativo: `shocks.assets: {TICKER: pct}`. O ticker PRECISA estar na carteira. Esse choque é ADICIONAL ao efeito do beta × Ibovespa — "PETR4 −30%" num cenário sem choque de bolsa é a PETR4 caindo 30% a mais do que o mercado a levaria. Diga isso.
+- Dial em nível (`unit` "R$" ou "% a.a."): entra o PATAMAR de chegada, não a variação. Com o dólar em "R$", "dólar a R$ 7" é `dolar: 7` e "dólar sobe 20%" exige o nível de hoje: `get_market_snapshot{}`, `macro.usd_brl.value` × 1,2. Com a Selic em "% a.a.", "Selic +3 pontos" é `macro.selic_meta.value` + 3. O IPCA em "% a.a." é o patamar de inflação do caminho.
+- Dial em variação (`unit` "%"): entra a variação. Bolsa e petróleo costumam vir assim; commodities e global também, e são choques só de fator, sem série de mercado ancorada: a regra declarada na resposta diz isso; repita.
+- Choque num ativo: `shocks.assets: {TICKER: pct}`. O ticker PRECISA estar na carteira. Esse choque é ADICIONAL ao efeito do beta × Ibovespa: "PETR4 −30%" num cenário sem choque de bolsa é a PETR4 caindo 30% a mais do que o mercado a levaria. Diga isso.
 - Choque num setor: `shocks.sectors: {slug: pct}`, com o slug do `sectors[]` do catálogo.
 
 Choque de biblioteca + ajuste seu = cenário montado na hora. Não misture e chame de biblioteca.
 
-**Horizonte**: 1 ano por padrão (`horizon_years` omitido). Mude só se o usuário pedir, dentro do `horizon` do catálogo. Com horizonte de até 2 anos o choque cai no começo do caminho; se um cenário da biblioteca tem o choque marcado pra depois da janela, o motor antecipa e declara isso em `rules[]` — cite.
+**Horizonte**: 1 ano por padrão (`horizon_years` omitido). Mude só se o usuário pedir, dentro do `horizon` do catálogo. Com horizonte de até 2 anos o choque cai no começo do caminho; se um cenário da biblioteca tem o choque marcado pra depois da janela, o motor antecipa e declara isso em `rules[]`: cite.
 
-**Variações**: no máximo 3 simulações por pergunta. "Testa dólar a 6, 7, 8, 9 e 10" → escolha 3 que cubram a faixa (6, 8, 10) e diga que o resto fica pra outra pergunta. Comparar duas carteiras no MESMO cenário é uma simulação só: a segunda vai em `compare_with`.
+**Variações**: no máximo 3 simulações por pergunta. "Roda dólar a 6, 7, 8, 9 e 10" → escolha 3 que cubram a faixa (6, 8, 10) e diga que o resto fica pra outra pergunta. Comparar duas carteiras no MESMO cenário é uma simulação só: a segunda vai em `compare_with`.
 
 ## Passo 3 — Rode
 
@@ -124,12 +125,12 @@ O schema da tool é a fonte de verdade dos nomes dos campos: se ele divergir des
 | `final.p05`, `final.p95` | as caudas: uma trajetória em vinte termina abaixo do p05 |
 | `final.nominal_p50` | o mesmo p50 em reais correntes, sem descontar a inflação |
 | `annual[]` | a faixa ano a ano (horizonte acima de 1 ano) |
-| `drawdown_p50_pct` | a queda máxima no caminho da trajetória do meio — o tombo que se atravessa antes de chegar ao fim |
-| `positions[]` | as 12 posições que mais pesam no resultado (peso × choque), com `shock_pct`, `beta`, `factors[]` e `why`; a renda fixa pré/IPCA+ traz a marcação a mercado em `rf_mark_pct`. `positions_total` diz quantas a carteira tem |
+| `drawdown_p50_pct` | a queda máxima no caminho da trajetória do meio: o tombo que se atravessa antes de chegar ao fim |
+| `positions[]` | as 12 posições que mais pesam no resultado (peso × choque), com `shock_pct`, `beta`, `factors[]` e `why`; a renda fixa pré/IPCA+ traz a marcação a mercado em `rf_mark_pct`, com `shock_pct` zero (a marcação é o número que conta). `positions_total` diz quantas a carteira tem |
 | `excluded[]` | o que ficou fora e por quê. Sempre declarado |
 | `assumptions` | inflação, CDI, beta, número de trajetórias e `engine_version`. `drift_stale: true` = a âncora de tendência está velha (data em `drift_as_of`): avise |
 | `compare` | a carteira B no mesmo cenário. `anchor_gap` diferente de zero = as duas partem de valores diferentes: compare em %, não em reais |
-| `client_summary`, `disclaimer` | a base do texto pro cliente e o aviso que o fecha |
+| `client_summary`, `disclaimer` | a base do texto pro cliente (`whatsapp`, `email_subject`, `email_body`, `footer`) e o aviso que o fecha |
 
 Faixa em %: `p10 ÷ anchor_brl − 1` e `p90 ÷ anchor_brl − 1`. Conta sua, conferida.
 
@@ -177,20 +178,20 @@ Valores em reais de hoje (poder de compra). 80% das trajetórias simuladas termi
 {drift_stale: "A âncora de tendência é de {drift_as_of} e está defasada."}
 
 ### Ficou de fora
-{excluded[]: ticker e motivo — ou "Nenhuma posição ficou de fora."}
+{excluded[]: ticker e motivo, ou "Nenhuma posição ficou de fora."}
 
 ### Fontes do cenário
-{sources[] — só cenário da biblioteca}
+{sources[], só cenário da biblioteca}
 ```
 
 Com `compare`, acrescente uma tabela de duas colunas (carteira A × carteira B) com a faixa em % de cada uma, e pare aí: dizer qual das duas é "melhor" é decisão do escritório.
 
 ### Texto pro cliente (bloco copiável, só se pedido)
 
-Parta do `client_summary`, ajuste pra voz do assessor, mantenha a faixa (nunca só o meio) e o rótulo de procedência em linguagem simples, e feche com o `disclaimer` LITERAL do payload. Exemplo de forma (números ilustrativos — rode a simulação pra ter os seus):
+Parta do `client_summary`, ajuste pra voz do assessor, mantenha a faixa (nunca só o meio) e o rótulo de procedência em linguagem simples, e feche com o `disclaimer` LITERAL do payload. Exemplo de forma (números ilustrativos; rode a simulação pra ter os seus):
 
 ```
-Testei a sua carteira num cenário de dólar a R$ 7,00 em 12 meses — um cenário
+Rodei a sua carteira num cenário de dólar a R$ 7,00 em 12 meses, um cenário
 montado na hora, sem precedente histórico que o ancore. Nas simulações do motor
 da Redentia, 80% dos caminhos terminaram entre −9% e +6% em poder de compra de
 hoje. O que mais pesa é a parte exportadora, que ganha com o dólar, contra a
@@ -200,16 +201,16 @@ parte doméstica, que sente o juro. {disclaimer}
 ## Regras duras
 
 - **NUNCA** escreva "previsão", "prever", "calibrado", "cenário provável", "o mercado vai", "retorno esperado". Nunca prometa retorno. Nunca "recomendação", "o que comprar", "sugestão de alocação", "assessoria", "consultoria", "research", "análise de valores mobiliários".
-- **NUNCA** sugira peso, rebalanceamento, proteção ("hedge"), aporte ou resgate a partir do resultado — nem "só pra pensar". O motor descreve; o escritório decide.
+- **NUNCA** sugira peso, rebalanceamento, proteção ("hedge"), aporte ou resgate a partir do resultado, nem "só pra pensar". O motor descreve; o escritório decide.
 - **NUNCA** atribua probabilidade a um cenário. O motor mede a dispersão DENTRO do cenário, não a chance de ele acontecer.
 - O rótulo biblioteca × montado na hora aparece em toda resposta e em todo texto pro cliente.
-- Nome de ativo vem cru da B3 ("PETROBRAS   PN      N2") — limpe sempre.
+- Nome de ativo vem cru da B3 ("PETROBRAS   PN      N2"): limpe sempre.
 - Sem emoji, sem exclamação, tom sóbrio. Tabelas markdown pra dados.
 
 ## O que esta skill recusa
 
-- "Qual cenário vai acontecer?" ou "qual é o mais provável?" — explique em uma frase que o motor não estima a chance do cenário, só o efeito dele na carteira.
-- "Então eu vendo a PETR4?" — a skill descreve o efeito; a decisão é do escritório.
-- Mais de 3 variações numa pergunta — escolha 3 e diga o que ficou de fora.
-- Guardar a carteira ou o resultado pra "próxima conversa" — o dado vive só aqui.
-- Rodar cenário em carteira de cliente conectado colando as posições à mão quando a chave é de escritório — use redentia-clientes, que lê a carteira com o consentimento registrado.
+- "Qual cenário vai acontecer?" ou "qual é o mais provável?": explique em uma frase que o motor não estima a chance do cenário, só o efeito dele na carteira.
+- "Então eu vendo a PETR4?": a skill descreve o efeito; a decisão é do escritório.
+- Mais de 3 variações numa pergunta: escolha 3 e diga o que ficou de fora.
+- Guardar a carteira ou o resultado pra "próxima conversa": o dado vive só aqui.
+- Rodar cenário em carteira de cliente conectado colando as posições à mão quando a chave é de escritório: use redentia-clientes, que lê a carteira com o consentimento registrado.

@@ -52,7 +52,7 @@ const SKILLS: SkillCard[] = [
     nome: 'Análise da carteira',
     faz: 'Cole as posições do cliente e receba o relatório de mesa: valor, movimento do dia, concentração, notícias que tocam a carteira e cruzamento com as teses da casa.',
     exemplo: 'Cliente tem PETR4, HGLG11 e BOVA11. Analisa e me diz se alguma notícia de hoje toca as posições.',
-    nota: 'A carteira vem da conversa, não da conta Redentia — funciona com qualquer chave e nada é salvo.',
+    nota: 'A carteira vem da conversa, não da conta Redentia. Funciona com qualquer chave e nada é salvo.',
   },
   {
     slug: 'redentia-comparar-ativos',
@@ -72,19 +72,19 @@ const SKILLS: SkillCard[] = [
     nome: 'Clientes do escritório',
     faz: 'Convida o cliente com um link de consentimento, mostra quem já conectou, lê a carteira consentida e monta o relatório descritivo pra enviar, com cenário se você pedir.',
     exemplo: 'Gera o convite pro João. Quando ele aceitar, monta o relatório da carteira dele.',
-    nota: 'Em demonstração: o Open Finance é simulado e a carteira é fictícia. O servidor manda o aviso no topo de cada resposta, e a skill instrui o assistente a repeti-lo na primeira linha. Só existe carteira de cliente com o consentimento do próprio cliente.',
+    nota: 'Só existe carteira de cliente com o consentimento do próprio cliente: o convite abre o termo, ele escolhe a instituição e revoga quando quiser. Nada do cliente fica fora da conversa.',
   },
   {
     slug: 'redentia-relatorio-cliente',
     nome: 'Relatório do cliente em PDF',
-    faz: 'Pergunta para qual cliente conectado gerar, junta a carteira completa, os cenários de 12 meses e o mercado do dia, e entrega um PDF de 4 páginas pronto para revisar e enviar.',
-    exemplo: 'Gera o relatório em PDF de um dos meus clientes.',
-    nota: 'Precisa de execução de código no Claude (no claude.ai e no Claude Desktop já vem ligada). Só descreve a carteira e os cenários: não recomenda compra, venda nem peso. Em demonstração, o PDF sai marcado como tal.',
+    faz: 'Pergunta para qual cliente conectado gerar, junta a carteira completa, os cenários de 12 meses e o mercado do dia, e entrega um PDF pronto para revisar e enviar.',
+    exemplo: 'Gera o relatório em PDF da Marina, com o logo e as cores do escritório.',
+    nota: 'Esse é o modelo da Redentia. Como roda no Claude, o relatório pode ser do escritório: logo, cores, seções e tom. Precisa de execução de código (no claude.ai e no Claude Desktop já vem ligada). Só descreve a carteira e os cenários: não recomenda compra, venda nem peso.',
   },
   {
     slug: 'redentia-onboarding',
     nome: 'Primeiros passos',
-    faz: 'O guia de bordo: o que cada ferramenta responde (11 ou 15, conforme a chave), teste de conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
+    faz: 'O guia de bordo: o que cada ferramenta responde (11 ou 15, conforme a chave), verificação da conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
     exemplo: 'Acabei de conectar a Redentia. O que dá pra fazer?',
   },
 ]
@@ -99,7 +99,7 @@ const SKILLS: SkillCard[] = [
         <p class="rbsk__sub">
           Sete skills que ensinam o Claude a usar o MCP do jeito certo: perguntar antes de gastar
           chamada, respeitar os limites da chave, citar a data de cada dado, mostrar a faixa em vez
-          de chutar um número e entregar texto pronto pro cliente na voz de quem assina — o escritório.
+          de chutar um número e entregar texto pronto pro cliente na voz de quem assina: o escritório.
         </p>
         <div class="rbsk__meta">
           <span class="rbsk__pill">7 skills</span>
@@ -136,7 +136,7 @@ const SKILLS: SkillCard[] = [
           <div class="rbsk__col">
             <div class="rbsk__col-tag">No claude.ai</div>
             <ol class="rbsk__steps">
-              <li>Baixe o pack completo — dentro vêm os sete zips, um por skill — ou só o zip da skill que a mesa vai usar.</li>
+              <li>Baixe o pack completo (dentro vêm os sete zips, um por skill) ou só o zip da skill que a mesa vai usar.</li>
               <li>No Claude, abra Configurações e procure por Skills (em geral dentro de Capacidades; o caminho pode variar com a versão).</li>
               <li>Envie o zip. A skill aparece pelo nome e ativa sozinha quando a pergunta combina com ela.</li>
               <li>Repita pra cada skill que a mesa for usar.</li>
@@ -146,13 +146,13 @@ const SKILLS: SkillCard[] = [
             <div class="rbsk__col-tag">No Claude Code / Cursor</div>
             <ol class="rbsk__steps">
               <li>Baixe o pack completo (redentia-skills-pack.zip) e descompacte.</li>
-              <li>Dentro de <code>.claude/skills/</code> do projeto — ou <code>~/.claude/skills/</code> pra valer em tudo — descompacte cada zip numa pasta com o nome da skill. O LEIA-ME dentro do pack repete o passo a passo.</li>
+              <li>Dentro de <code>.claude/skills/</code> do projeto, ou <code>~/.claude/skills/</code> pra valer em tudo, descompacte cada zip numa pasta com o nome da skill. O LEIA-ME dentro do pack repete o passo a passo.</li>
               <li>Invoque pelo nome ou deixe o contexto ativar.</li>
             </ol>
           </div>
         </div>
         <p class="rbsk__navy-note">
-          As skills usam a conexão MCP que você já configurou — nenhuma chave nova, nenhum acesso
+          As skills usam a conexão MCP que você já configurou: nenhuma chave nova, nenhum acesso
           além do que a sua chave já alcança.
         </p>
       </div>
@@ -161,8 +161,8 @@ const SKILLS: SkillCard[] = [
     <section class="rbsk rbsk--cream">
       <div class="rbsk__wrap rbsk__foot">
         <div>
-          <h2 class="rbsk__foot-title">Ainda não conectou o MCP?</h2>
-          <p class="rbsk__foot-sub">Gere a chave no painel e o passo a passo abre na hora — leva uns dois minutos.</p>
+          <h2 class="rbsk__foot-title">Falta conectar o MCP?</h2>
+          <p class="rbsk__foot-sub">Gere a chave no painel e o passo a passo abre na hora. Leva uns dois minutos.</p>
         </div>
         <div class="rbsk__foot-links">
           <!-- ?conectar=1 abre o modal de conexão do painel; sobrevive ao

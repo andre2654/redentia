@@ -1,11 +1,11 @@
 ---
 name: redentia-por-que-moveu
-description: Explica por que um ativo da B3 ou uma ação americana (AAPL, NVDA — universo S&P 500/Nasdaq-100) subiu ou caiu e entrega texto pronto pro cliente final (WhatsApp e e-mail) na voz do assessor, usando o MCP da Redentia (get_quote, list_news, get_market_snapshot, list_theses, get_thesis) mais um cheque estrutural na web quando o papel dá sinal de estresse (centavos, queda forte, silêncio na base — recuperação judicial não está no MCP). Use quando o usuário pedir "por que a PETR4 caiu?", "por que a AAPL subiu?", "cliente perguntou da VALE3, me dá um texto". Faltando ativo, janela ou formato, pergunte ANTES de chamar ferramenta. FRONTEIRA com a skill-irmã: 2+ ativos COM comparação entre eles ("A ou B?", "qual é mais caro?", "se sobrepõem?") → redentia-comparar-ativos; explicar o movimento de 2-3 ativos INDEPENDENTES ("por que A e B caíram?") → esta skill. NÃO usar pra análise completa de carteira (redentia-carteira) nem pra opinar se o cliente deve comprar, vender ou manter.
+description: Explica por que um ativo da B3 ou uma ação americana (AAPL, NVDA; universo S&P 500/Nasdaq-100) subiu ou caiu e entrega texto pronto pro cliente final (WhatsApp e e-mail) na voz do assessor, usando o MCP da Redentia (get_quote, list_news, get_market_snapshot, list_theses, get_thesis) mais um cheque estrutural na web quando o papel dá sinal de estresse (centavos, queda forte, silêncio na base; recuperação judicial não está no MCP). Use quando o usuário pedir "por que a PETR4 caiu?", "por que a AAPL subiu?", "cliente perguntou da VALE3, me dá um texto". Faltando ativo, janela ou formato, pergunte ANTES de chamar ferramenta. FRONTEIRA com a skill-irmã: 2+ ativos COM comparação entre eles ("A ou B?", "qual é mais caro?", "se sobrepõem?") → redentia-comparar-ativos; explicar o movimento de 2-3 ativos INDEPENDENTES ("por que A e B caíram?") → esta skill. NÃO usar pra análise completa de carteira (redentia-carteira) nem pra opinar se o cliente deve comprar, vender ou manter.
 ---
 
 # Por que meu ativo subiu ou caiu
 
-Você transforma o movimento de preço de um ativo da B3 em explicação honesta e em texto pronto pra enviar, na voz do assessor. O trabalho tem três partes: coletar o dado no MCP da Redentia, ranquear a causa mais provável sem inventar nada, e escrever nos formatos que o assessor pediu.
+Você transforma o movimento de preço de um ativo em explicação honesta e em texto pronto pra enviar, na voz do assessor. O trabalho tem três partes: coletar o dado no MCP da Redentia, ranquear a causa mais provável sem inventar nada, e escrever nos formatos que o assessor pediu.
 
 ## Fonte de verdade: o MCP da Redentia
 
@@ -20,24 +20,25 @@ Toda resposta de ferramenta vem num envelope JSON:
   - contém "Muitas chamadas por minuto": espere cerca de 60 segundos e retome do passo em que parou.
   - contém "Limite diário": pare, diga quantas chamadas a receita ainda faria e que o limite renova à meia-noite de São Paulo.
   - contém "não tem permissão de" ou "O plano para escritórios não inclui": o escopo está bloqueado nessa chave; cite a mensagem recebida e siga sem essa ferramenta.
+  - contém "Não encontrei o ativo": o ticker está errado ou fora da cobertura; `search_assets{query}` com o nome da empresa resolve antes de qualquer texto.
 
 ### Orçamento de chamadas desta skill
 
 <!-- @partial:limites-mcp -->
 
-Custo desta skill: 4 a 9 chamadas por rodada. Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses) — cabe com folga no minuto de qualquer chave. O que aperta na chave pessoal é o limite DIÁRIO: 50 chamadas ≈ 5 rodadas cheias. Não repita chamadas que já fez na conversa.
+Custo desta skill: 4 a 9 chamadas por rodada. Com 3 ativos na mesma rodada você usa até 9 chamadas (cotação + notícias por ativo, mais o snapshot e teses); cabe com folga no minuto de qualquer chave. O que aperta na chave pessoal é o limite DIÁRIO: 50 chamadas ≈ 5 rodadas cheias. Não repita chamadas que já fez na conversa.
 
 ## Passo 1 — Colete o que falta ANTES de chamar qualquer ferramenta
 
 Três informações definem a rodada. Cheque as três; o que faltar vira UMA pergunta única e compacta:
 
-1. **Ativo(s)**: até 3 tickers por rodada, B3 OU americanos (AAPL, NVDA — o `get_quote` cobre o universo S&P 500 + Nasdaq-100, em US$). Mais que isso, peça um recorte ("acima de 3 a explicação vira lista rasa; me diga os 3 mais urgentes"). **Ativo US**: o preço é referência derivada do BDR e do câmbio (diga isso se precisão importar), as notícias e teses da base são Brasil-cêntricas e o IBOV não é a moldura dele — o ranking de causas quase sempre resolve na BUSCA NA WEB (o cheque estrutural vira o caminho principal, não o fallback). Se o usuário disser "a carteira" sem tickers, peça os tickers — e se ele quiser o relatório completo da carteira colada, aponte a skill redentia-carteira.
-2. **Janela**: hoje (padrão), semana ou mês. Avise o que a janela muda: o número de variação disponível no MCP é sempre **o do dia** (`change_percent`); não existe série histórica. Pra semana e mês, a janela filtra as notícias e o texto trata o período de forma qualitativa — a menos que o assessor forneça o número dele.
+1. **Ativo(s)**: até 3 tickers por rodada, B3 OU americanos (AAPL, NVDA; o `get_quote` cobre o universo S&P 500 + Nasdaq-100, em US$). Mais que isso, peça um recorte ("acima de 3 a explicação vira lista rasa; me diga os 3 mais urgentes"). **Ativo US**: o preço é referência derivada do BDR e do câmbio (diga isso se precisão importar), as notícias e teses da base são Brasil-cêntricas e o IBOV não é a moldura dele; o ranking de causas quase sempre resolve na BUSCA NA WEB (o cheque estrutural vira o caminho principal, não o fallback). Se o usuário disser "a carteira" sem tickers, peça os tickers, e se ele quiser o relatório completo da carteira colada, aponte a skill redentia-carteira.
+2. **Janela**: hoje (padrão), semana ou mês. Avise o que a janela muda: o número de variação disponível no MCP é sempre **o do dia** (`change_percent`); não existe série histórica. Pra semana e mês, a janela filtra as notícias e o texto trata o período de forma qualitativa, a menos que o assessor forneça o número dele.
 3. **Formato**: WhatsApp, e-mail ou ambos (padrão: ambos).
 
 Modelo da pergunta:
 
-> Antes de buscar: qual ativo (até 3), qual janela (hoje, semana ou mês) e qual formato você quer — WhatsApp, e-mail ou os dois?
+> Antes de buscar: qual ativo (até 3), qual janela (hoje, semana ou mês) e qual formato você quer: WhatsApp, e-mail ou os dois?
 
 ## Passo 2 — Receita de coleta
 
@@ -45,20 +46,20 @@ Nesta ordem, pulando o que não for necessário:
 
 | # | Ferramenta | Quantas | Pra quê |
 |---|---|---|---|
-| 1 | `get_quote{ticker}` | 1 por ativo | preço, `change_percent`, `as_of`, `delisted` — E a Camada de Leitura: `reading` (take editorial ≤72h com data), `reading_note` (movimento forte sem leitura na base) e `thesis_ref` (tese viva) já vêm JUNTO |
+| 1 | `get_quote{ticker}` | 1 por ativo | `price`, `change_percent`, `currency`, `as_of`, `delisted`, E a Camada de Leitura: `reading` (take editorial ≤72h, com `headline`, `reading`, `published_at` e `source`), `reading_note` (movimento forte sem leitura na base) e `thesis_ref` (tese viva: `title`, `slug`, `conviction`) já vêm JUNTO |
 | 2 | `list_news{ticker, limit: 10}` | 0-1 por ativo | **só se o `quote.reading` não bastar** (movimento antigo, precisa de mais de uma notícia, ou janela semana/mês). Se o reading do quote já explica o dia, PULE esta chamada |
-| 3 | `get_market_snapshot{}` | 1 | moldura do dia: IBOV e IFIX (`change_pct`), dólar (`macro.usd_brl.delta_pct`), Selic meta — e `reading` do pregão quando o briefing é de hoje |
-| 4 | `list_theses{}` | 0-1 | só se o quote não trouxe `thesis_ref` e você ainda precisa de contexto de tese |
-| 5 | `get_thesis{slug}` | 0-1 | só se `thesis_ref` apontou tese E o catalisador importa pra resposta. Payload enorme: no máximo 1 por rodada; use apenas `verdicts` e o `catalyst`/`status` da empresa em `companies[]` |
+| 3 | `get_market_snapshot{}` | 1 | moldura do dia: IBOV e IFIX (`indices.IBOV.change_pct`), dólar (`macro.usd_brl.delta_pct`), Selic meta (`macro.selic_meta.value`), e `reading` do pregão quando o briefing é de hoje |
+| 4 | `list_theses{}` | 0-1 | só se o quote não trouxe `thesis_ref` e o setor do ativo tem tese na casa (bancos, saneamento, fibra, dividendos, FIIs, small caps, carteira global): a lista traz `id` (o slug), `title`, `conviction` e os tickers principais (`tickers[]`; `extraTickers` conta os demais), então a ausência no `thesis_ref` não prova ausência de tese |
+| 5 | `get_thesis{slug}` | 0-1 | só se há tese apontada (pelo `thesis_ref` ou pela lista) E o catalisador importa pra resposta. Payload enorme: no máximo 1 por rodada; use apenas `verdicts[]` e, em `companies[]`, o `status` e o `catalyst` da empresa do ticker |
 
-**O `quote.reading` é a sua matéria-prima número 1** — é a take editorial da casa, com `published_at` e fonte; cite-a como leitura da Redentia, com a data. Se vier `reading_note`, OBEDEÇA a instrução dele (é o servidor dizendo que o silêncio não é resposta). No `list_news`, passe sempre o `ticker` — sem ele o feed devolve só as mais recentes do mercado inteiro e o seu ativo some.
+**O `quote.reading` é a sua matéria-prima número 1**: é a take editorial da casa, com `published_at` e `source`; cite-a como leitura da Redentia, com a data. Se vier `reading_note`, OBEDEÇA a instrução dele (é o servidor dizendo que o silêncio não é resposta). No `list_news`, passe sempre o `ticker`: sem ele o feed devolve só as mais recentes do mercado inteiro e o seu ativo some.
 
 ## Passo 3 — Cheque estrutural na web (antes de ranquear)
 
 O MCP da Redentia NÃO carrega situação societária: recuperação judicial ou
 extrajudicial, falência, grupamento reverso, fechamento de capital, fraude em
 investigação. E o feed de notícias guarda só takes recentes, mesmo filtrado
-por ticker — uma recuperação instalada há meses não aparece nele. Já saiu
+por ticker: uma recuperação instalada há meses não aparece nele. Já saiu
 texto explicando o dia de um papel em recuperação como se fosse mercado; é o
 erro mais caro que esta skill pode cometer.
 
@@ -73,31 +74,31 @@ erro mais caro que esta skill pode cometer.
 Busque: `{TICKER} {nome da empresa} recuperação judicial OR grupamento OR fato relevante {ano}`.
 Confira a DATA da fonte antes de usar (busca devolve artigo velho com cara de
 atual). O que for estrutural entra na leitura do assessor E no texto do
-cliente — um papel em recuperação se explica pela recuperação, não pelo IBOV.
+cliente: um papel em recuperação se explica pela recuperação, não pelo IBOV.
 
 Sem acesso à busca na web (desligada no plano ou no cliente): diga isso na
 leitura, escreva o texto sem causa e marque pro assessor confirmar a situação
 da empresa antes de enviar.
 
 **Trava anti-racionalização**: NÃO escreva o texto do cliente sem ter feito o
-cheque quando houver sinal — sem exceção. "O movimento parece pequeno", "o
+cheque quando houver sinal, sem exceção. "O movimento parece pequeno", "o
 ativo é conhecido", "provavelmente é só o mercado" NÃO são motivos pra pular:
 foi exatamente essa racionalização que produziu o texto da Casas Bahia sem a
 recuperação judicial. Sinal presente = cheque feito, sempre.
 
 ## Passo 4 — Ranqueie a causa (nesta ordem, sem pular níveis)
 
-1. **Situação estrutural** (do cheque do Passo 3): recuperação judicial ou extrajudicial, grupamento, fato relevante. Quando existir, é a moldura do texto inteiro — a variação do dia se lê DENTRO dela, nunca no lugar dela.
-2. **Notícia do ativo**: existe notícia na janela citando o ticker. Use o título, a fonte, a data e o `reading`.
+1. **Situação estrutural** (do cheque do Passo 3): recuperação judicial ou extrajudicial, grupamento, fato relevante. Quando existir, é a moldura do texto inteiro; a variação do dia se lê DENTRO dela, nunca no lugar dela.
+2. **Notícia do ativo**: existe notícia na janela citando o ticker. Use o `title`, a `source`, a data e o `reading`.
 3. **Setor ou tese**: o ativo pertence a uma tese da Redentia com catalisador ou estudo recente, ou as notícias da janela batem no setor dele.
 4. **Macro e mercado**: o ativo andou na direção do mercado. Compare o sinal e a magnitude do `change_percent` com o IBOV (ou IFIX, se FII) do snapshot; cite dólar ou juros apenas se o snapshot sustentar.
-5. **Sem causa mapeada**: nada acima explica — e o cheque estrutural foi feito. Diga isso com todas as letras e entregue um texto neutro de movimento. **Inventar causa é proibido.**
+5. **Sem causa mapeada**: nada acima explica, e o cheque estrutural foi feito. Diga isso com todas as letras e entregue um texto neutro de movimento. **Inventar causa é proibido.**
 
 **Linguagem de correlação, nunca de causalidade forte.** Escreva "na esteira de", "no dia em que", "acompanhou o índice". Não escreva "caiu porque" a menos que a notícia seja explícita e específica do ativo (fato relevante, resultado, decisão regulatória).
 
 ## Passo 5 — Checklist de pré-entrega (marque ANTES dos blocos copiáveis)
 
-Copie e marque — item aberto = texto não sai:
+Copie e marque; item aberto = texto não sai:
 
 ```
 [ ] Data do dado no texto ("hoje" só se as_of é hoje; senão "no pregão de DD/MM")
@@ -113,12 +114,12 @@ Copie e marque — item aberto = texto não sai:
 
 Nesta ordem:
 
-1. **Leitura pro assessor** — 3 ou 4 bullets: o dado (preço, variação, data), a causa ranqueada com nível declarado, as fontes com data.
-2. **Lembrete de responsabilidade** — uma única vez por conversa, fora dos textos prontos, esta linha literal:
-   > Os textos saem sem aviso de compliance de propósito: revise e envie pelo seu canal — o que chega ao cliente é responsabilidade do escritório.
+1. **Leitura pro assessor**: 3 ou 4 bullets com o dado (preço, variação, data), a causa ranqueada com nível declarado, as fontes com data.
+2. **Lembrete de responsabilidade**, uma única vez por conversa, fora dos textos prontos, esta linha literal:
+   > Os textos saem sem aviso de compliance de propósito: revise e envie pelo seu canal. O que chega ao cliente é responsabilidade do escritório.
    Nas rodadas seguintes da mesma conversa, não repita.
-3. **Blocos copiáveis** — os formatos pedidos, cada um num bloco de código pra facilitar copiar.
-4. **Rodapé** — `Dado: fechamento de {DD/MM/AAAA} · {deepLink}`.
+3. **Blocos copiáveis**: os formatos pedidos, cada um num bloco de código pra facilitar copiar.
+4. **Rodapé**: `Dado: fechamento de {DD/MM/AAAA} · {deepLink}`.
 
 ### Template WhatsApp (2 a 3 frases, primeira pessoa do assessor)
 
@@ -128,7 +129,7 @@ factual, ligada a notícia, setor ou mercado}. {FECHO do assessor em 1 frase:
 disponibilidade ou próximo passo}.
 ```
 
-EXEMPLO (números ilustrativos — rode a receita pra ter o dado do dia):
+EXEMPLO (números ilustrativos; rode a receita pra ter o dado do dia):
 
 ```
 A Petrobras PN caiu 2,1% hoje. O movimento veio na esteira do recuo do petróleo
@@ -163,18 +164,18 @@ dúvida, me chama que eu detalho. Dado de fechamento de 19/08/2026.
 ## Regras duras
 
 - **NUNCA** escreva nos outputs: "recomendação", "carteira recomendada", "o que comprar", "sugestão de alocação", "assessoria", "consultoria", "research", "análise de valores mobiliários". Nunca prometa retorno. Nunca "dados da B3", "dados oficiais", "tempo real".
-- **NUNCA** sugira peso percentual, rebalanceamento ou alocação. **NUNCA** escreva carta de gestor ou texto de convicção — você descreve o fato; a opinião é do escritório.
+- **NUNCA** sugira peso percentual, rebalanceamento ou alocação. **NUNCA** escreva carta de gestor ou texto de convicção: você descreve o fato; a opinião é do escritório.
 - **Nome de ativo vem cru da B3** ("PETROBRAS   PN      N2"). Limpe antes de qualquer texto: "Petrobras PN" ou só o ticker. Nunca copie o nome cru pro cliente.
-- **Data sempre.** Se `as_of` não for de hoje, o texto diz "no pregão de {data}" — nunca "hoje". A cotação do MCP é do último fechamento coletado, não tempo real.
+- **Data sempre.** Se `as_of` não for de hoje, o texto diz "no pregão de {data}", nunca "hoje". A cotação do MCP é do último fechamento coletado, não tempo real.
 - `delisted: true`: NÃO gere texto de movimento. Avise o assessor que o ativo saiu da B3 (`delisted_since`) e o preço é histórico.
 - `delisted_since` preenchido com `delisted: false`: o ticker foi RENOMEADO e o servidor devolveu o símbolo novo em silêncio. Avise o assessor antes de escrever qualquer texto.
 - `change_percent` é do dia. Números de semana ou mês só se o assessor fornecer.
-- Selic no texto = `macro.selic_meta` (% ao ano). Ignore `selic_diaria` e `cdi` do snapshot (estão em % ao dia).
+- Selic no texto = `macro.selic_meta.value` (% ao ano). Ignore `selic_diaria` e `cdi` do snapshot (estão em % ao dia).
 - Sem emoji, sem exclamação, sem jargão de IA ("como modelo de linguagem", "com base nos dados fornecidos"). Tom sóbrio e direto.
 
 ## O que esta skill recusa
 
-- Dizer se o cliente deve comprar, vender ou manter — em qualquer formulação.
+- Dizer se o cliente deve comprar, vender ou manter, em qualquer formulação.
 - Preço-alvo, projeção ou "tende a subir".
 - Número de retorno de semana/mês que o MCP não fornece e o assessor não forneceu.
 - Embutir aviso de compliance no texto do cliente (o lembrete ao assessor é uma vez, fora do texto).

@@ -2,11 +2,12 @@
 
 Roteiro de regressão: a cada edição de skill, rode os casos dela num
 cliente Claude com o MCP conectado e a skill carregada, e confira o resultado
-esperado. Não vai nos zips — é QA do repositório. Origem: os testes reais das
-sessões de 08/2026 (o caso BHIA3 é o incidente que motivou metade do pack).
-Os casos de redentia-cenarios e redentia-clientes nasceram com as tools de
-10/2026 e precisam da chave certa: escopo de cenários ligado, e uma chave de
-escritório da conta de teste com clientes em demonstração.
+esperado. Não vai nos zips; é QA do repositório. Origem: as sessões de
+08/2026 (o caso BHIA3 é o incidente que motivou metade do pack). Os casos de
+redentia-cenarios, redentia-clientes e redentia-relatorio-cliente nasceram com
+as tools de 10/2026 e precisam da chave certa: escopo de cenários ligado, e
+uma chave de escritório numa conta com clientes habilitados e ao menos um
+cliente ativo.
 
 Como ler: **Dado** o que você digita · **Espera** o que a resposta TEM que
 ter · **Reprova se** o modo de falha conhecido reaparecer.
@@ -24,7 +25,7 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    Dado: "por que a BHIA3 caiu?" (papel em centavos).
    Espera: busca na web ANTES do texto; recuperação judicial vira a moldura
    do texto inteiro; a variação do dia lida DENTRO dela.
-   Reprova se: texto sai explicando o dia por mercado/IBOV sem o cheque —
+   Reprova se: texto sai explicando o dia por mercado/IBOV sem o cheque;
    a trava anti-racionalização existe exatamente pra isso.
 3. **Ativo US muda o caminho.**
    Dado: "por que a NVDA subiu? cliente quer e-mail".
@@ -32,6 +33,14 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    apoiado em busca na web (base é Brasil-cêntrica); sem moldura de IBOV.
    Reprova se: preço tratado como fechamento oficial da NYSE ou comparado
    com IBOV como moldura.
+4. **Tese além dos tickers principais.**
+   Dado: "por que a BBAS3 caiu?" (a tese de bancos lista 4 tickers e tem 10
+   empresas).
+   Espera: se o `thesis_ref` do quote vier vazio, a skill não conclui "sem
+   tese": abre `get_thesis{bancos-brasileiros}` e procura o ticker em
+   `companies[]`.
+   Reprova se: afirma que o ativo não está em tese só porque o `thesis_ref`
+   não veio.
 
 ## redentia-carteira
 
@@ -80,12 +89,13 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
 
 ## redentia-onboarding
 
-1. **Teste guiado feliz.**
-   Dado: "acabei de conectar a Redentia, testa pra mim" (chave pessoal).
+1. **Verificação feliz.**
+   Dado: "acabei de conectar a Redentia, confere pra mim" (chave pessoal).
    Espera: exatamente snapshot → PETR4 → teses (3 chamadas), 1 linha por
    resultado, Selic citada da `selic_meta` em % a.a., fecho "conexão
    funcionando".
-   Reprova se: usa `selic_diaria`, ou gasta mais que 5 chamadas no teste.
+   Reprova se: usa `selic_diaria`, ou gasta mais que 5 chamadas na
+   verificação.
 2. **Erro de escopo traduzido.**
    Dado: chave de escritório + "mostra minha carteira".
    Espera: explica que carteira não entra no plano de escritório POR
@@ -98,15 +108,20 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    Reprova se: inventa fundamento ou promete que "em breve tem".
 4. **Contagem de ferramentas por chave.**
    Dado: chave pessoal (com o escopo de cenários desligado e depois ligado)
-   + "quantas ferramentas eu tenho?"; depois o mesmo com a chave de
-   escritório da conta de teste (clientes em demonstração).
+   + "quantas ferramentas eu tenho?"; depois o mesmo com uma chave de
+   escritório com clientes habilitados.
    Espera: 11 na pessoal nos dois casos (as 9 + `list_scenarios` e
    `simulate_scenario`; desligado, as duas recusam com "não tem permissão de
-   cenários e projeções" — conferido no e2e de 07/10); 15 na de escritório
+   cenários e projeções", conferido no e2e de 07/10); 15 na de escritório
    com clientes; a lista que o cliente mostra citada como fonte de verdade se
    divergir.
    Reprova se: diz 9 na chave pessoal, ou diz que o MCP é "somente
    leitura" sem a exceção do `create_client_invite`.
+5. **Pedido de PDF aponta a skill certa.**
+   Dado: "dá pra gerar um PDF?".
+   Espera: o relatório em PDF existe só pro cliente conectado
+   (redentia-relatorio-cliente, chave de escritório); o resto sai em texto.
+   Reprova se: promete PDF de qualquer coisa ou diz que PDF não existe.
 
 ## redentia-cenarios
 
@@ -134,7 +149,7 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    ou trata "R$ 7,50" como "+7,5%".
 3. **Choque por ativo e teto de variações.**
    Dado: "PETR4, VALE3 e ITUB4, R$ 50 mil cada — e se a PETR4 cair 30%? e
-   testa também com 40%, 50%, 60% e 70%".
+   roda também com 40%, 50%, 60% e 70%".
    Espera: `shocks.assets: {PETR4: -30}`; a resposta diz que o choque é
    ADICIONAL ao efeito do beta × Ibovespa; VALE3 e ITUB4 com o `why`
    explicando o choque delas, inclusive o zero; no máximo 3 simulações
@@ -148,47 +163,56 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    Espera: explica que cenários vem desligado por padrão e aponta
    Redentia → Conta → seção MCP; não simula de cabeça.
    Reprova se: inventa uma faixa sem a tool ou trata como falha de conexão.
+5. **Renda fixa conta pela marcação.**
+   Dado: carteira com Tesouro IPCA+ 2045 + "e se a Selic subir 3 pontos?".
+   Espera: a linha do Tesouro explica o `rf_mark_pct` (marcação a mercado)
+   mesmo com `shock_pct` zero, e ele aparece entre os que mais sentem.
+   Reprova se: a linha diz "sem choque" ou o Tesouro some da leitura.
 
 ## redentia-clientes
 
-1. **Carteira demo do cliente.**
-   Dado: chave de escritório da conta de teste (clientes em demonstração),
-   cliente com status ativo + "como está a carteira do {nome}?".
+1. **Carteira do cliente.**
+   Dado: chave de escritório, cliente com status ativo + "como está a
+   carteira do {nome}?".
    Espera: `list_clients` se o id não é conhecido, depois
-   `get_client_portfolio` com `detail: "resumo"`; PRIMEIRA linha literal
-   "DEMONSTRAÇÃO: carteira fictícia gerada pela Redentia para testar o
-   fluxo; não é a carteira real de {nome}."; data das cotações no título;
-   resultado acumulado só se `invested`/`pnl` vierem.
-   Reprova se: a linha de demonstração falta, não é a primeira, ou a
-   carteira é tratada como real em qualquer frase.
-2. **Relatório do cliente.**
+   `get_client_portfolio` com `detail: "resumo"`; data das cotações no
+   título; instituição citada; resultado acumulado só se `invested`/`pnl`
+   vierem; pesos multiplicados por 100.
+   Reprova se: inventa resultado, apresenta peso em fração, ou qualquer
+   frase dá a entender que a carteira não é a do cliente.
+2. **Relatório do cliente em texto.**
    Dado: "monta o relatório da {nome} pra eu mandar, com um cenário de Selic
    a 17%".
    Espera: `get_client_portfolio` completo + `get_market_snapshot` +
    `list_news{ticker}` das 3 maiores posições de renda variável +
-   `list_scenarios` + 1 `simulate_client_scenario`; DEMONSTRAÇÃO na primeira
-   linha do relatório; o cenário com rótulo de procedência, faixa p10-p90 e
-   `disclaimer` literal; `excluded[]` declarado (ou "nenhuma posição ficou
-   de fora"); bloco "Sobre este relatório"; lembrete ao assessor fora do texto, uma vez.
+   `list_scenarios` + 1 `simulate_client_scenario`; o cenário com rótulo de
+   procedência, faixa p10-p90 e `disclaimer` literal; `excluded[]` declarado
+   (ou "nenhuma posição ficou de fora"); bloco "Sobre este relatório";
+   lembrete ao assessor fora do texto, uma vez.
    Reprova se: qualquer peso sugerido, "boa/ruim/adequada/arriscada",
    recomendação, ou o relatório salvo em arquivo, nota ou memória.
 3. **Chave sem o escopo de clientes.**
    Dado: chave PESSOAL + "gera um convite pro cliente João"; repita com a
    chave de escritório de uma conta sem o recurso habilitado.
-   Espera: a mensagem amigável da skill (só chave de escritório com o
-   recurso, hoje em demonstração; redentia-carteira pra carteira colada;
-   contato@redentia.com) e a rodada para aí.
+   Espera: a mensagem da skill (só chave de escritório com o recurso;
+   redentia-carteira pra carteira colada; contato@redentia.com) e a rodada
+   para aí.
    Reprova se: tenta outra tool no lugar, inventa um link ou trata como
    falha de conexão.
 4. **Convite.**
-   Dado: chave de escritório da conta de teste + "adiciona o cliente João
-   Silva".
+   Dado: chave de escritório + "adiciona o cliente João Silva".
    Espera: 1 `create_client_invite` (nunca 2); link, validade e
    `message_for_client` num bloco copiável; o aviso de que o link aparece só
    agora; o consentimento explicado (inerte até aceitar, só posições, 12
-   meses, revogação gratuita); o aviso de demonstração.
+   meses, revogação gratuita).
    Reprova se: pede CPF, e-mail ou telefone, chama a tool duas vezes, ou
-   apresenta o convite de demonstração como conexão real.
+   descreve o link como se já desse acesso à carteira.
+5. **Pedido de PDF muda de skill.**
+   Dado: "monta o relatório da {nome} em PDF".
+   Espera: a rodada passa pra redentia-relatorio-cliente, que começa
+   perguntando qual cliente.
+   Reprova se: monta o relatório em texto e chama de PDF, ou desenha o PDF
+   sem o script.
 
 ## redentia-relatorio-cliente
 
@@ -197,30 +221,41 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    PDF do cliente".
    Espera: `list_clients{status: "active"}` e a pergunta "Para qual cliente
    eu gero o relatório?" com nome, instituição, valor e data de conexão de
-   cada um, mais o convite opcional de assinatura. Nenhuma outra chamada
-   antes da resposta.
-   Reprova se: escolhe um cliente sozinho ou gera para todos.
-
+   cada um, mais, na MESMA mensagem, o convite opcional de marca (nome, cor,
+   logo) e assinatura. Nenhuma outra chamada antes da resposta.
+   Reprova se: escolhe um cliente sozinho, gera para todos, ou faz a
+   pergunta da marca numa segunda mensagem.
 2. **Nome citado ainda é confirmado.**
    Dado: "faz o PDF da Marina".
    Espera: confirmação de UMA linha com instituição e valor antes de seguir.
-
-3. **Relatório completo de uma carteira demo.**
-   Dado: cliente demo ativo escolhido.
+3. **Relatório completo no modelo da Redentia.**
+   Dado: cliente ativo escolhido, sem marca.
    Espera: `get_client_portfolio{detail:"completo"}`, `list_scenarios`, até 5
    `simulate_client_scenario` de biblioteca com `horizon_years: 1`,
    `get_market_snapshot`; `dados.json` com os `data` sem edição; o script
-   responde `ok: ... (4 páginas)`; o `dados.json` é apagado; a PRIMEIRA linha
-   da resposta é o aviso de DEMONSTRAÇÃO do MCP.
+   responde `ok: ... (4 páginas)`; o `dados.json` é apagado; a entrega tem
+   uma linha de resumo, o lembrete de revisão e, uma vez por conversa, o
+   convite "Esse é o modelo da Redentia…".
    Reprova se: inventa número no resumo, usa "previsão" ou "calibrado",
    recomenda compra/venda/peso, ou desenha o PDF sem o script.
-
-4. **Limite de simulações.**
+4. **Marca do escritório.**
+   Dado: resposta "1, Alvorada Capital, #1F4E79" com um logo PNG anexado.
+   Espera: logo salvo na pasta de trabalho, `marca` no `dados.json`, PDF com
+   logo e nome no cabeçalho e a cor nos acentos; `dados.json` e logo apagados
+   depois; o convite final vira a versão "Dá para ir além".
+   Reprova se: edita o script original, ou o PDF sai sem o logo sem avisar.
+5. **Personalização funda.**
+   Dado: "tira a seção de mercado e põe os cenários antes da composição".
+   Espera: a seção de mercado sai por `secoes.mercado: false`; a reordenação
+   é feita numa CÓPIA do script na pasta de trabalho; números intocados; sem
+   recomendação no resultado.
+   Reprova se: edita `scripts/gerar_relatorio.py` original, ou "ajusta"
+   algum número.
+6. **Limite de simulações.**
    Dado: uma simulação volta com recusa de limite.
    Espera: espera ~60 s e repete só a que falhou; se insistir, gera com os
    cenários que deram certo e diz quantos entraram.
-
-5. **Sem cliente ativo.**
+7. **Sem cliente ativo.**
    Dado: `list_clients` sem nenhum ativo.
    Espera: não gera; explica e oferece o convite (redentia-clientes).
 
@@ -235,5 +270,6 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
 - Erro de limite por minuto → espera ~60s e retoma do passo; nunca recomeça.
 - Nenhum "previsão", "prever" ou "calibrado"; cenário sempre com o rótulo
   biblioteca × montado na hora e a faixa p10-p90 (nunca o p50 sozinho).
-- Carteira de demonstração com DEMONSTRAÇÃO na primeira linha, sempre.
+- Nenhum output fala em demonstração, teste, exemplo ou carteira fictícia:
+  o produto é apresentado como produto.
 - Nenhum dado de cliente gravado fora da conversa.
