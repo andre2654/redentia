@@ -31,8 +31,11 @@ const mcpOn = computed(() => status.value?.enabled ?? false)
 const keyMasked = computed(() => status.value?.key_masked ?? '')
 
 // Permissões locais espelhando o backend (sincroniza no hydrate/rotate).
-const perms = reactive({ carteira: true, mercado: true, teses: true, news: true })
+// `cenarios` só entra quando o backend devolve a chave: front antes do backend
+// = linha escondida, e o PUT não manda um escopo que o banco não conhece.
+const perms = reactive<McpPermissions>({ carteira: true, mercado: true, teses: true, news: true })
 watch(() => status.value?.permissions, (p) => { if (p) Object.assign(perms, p) }, { immediate: true })
+const hasCenarios = computed(() => typeof status.value?.permissions?.cenarios === 'boolean')
 
 const reveal = ref(false)
 // Texto da chave: a recém-gerada (revelável) senão o mascarado do banco.
@@ -69,9 +72,10 @@ async function onToggleMain() {
     await setEnabled(!mcpOn.value)
   } catch { await hydrate().catch(() => {}) } // falhou → re-sincroniza com o banco
 }
-async function onTogglePerm(k: 'carteira' | 'mercado' | 'teses' | 'news') {
+async function onTogglePerm(k: keyof McpPermissions) {
+  if (k === 'cenarios' && !hasCenarios.value) return
   if (pending.value || !hasKey.value) return
-  const prev = perms[k]
+  const prev = !!perms[k]
   perms[k] = !perms[k] // otimista…
   try {
     await setPermissions({ ...perms })
@@ -194,6 +198,13 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
           <div class="mcp__perm-desc">Notícias analisadas e relatórios da Redentia.</div>
         </div>
         <button type="button" class="msw" :class="{ 'msw--on': perms.news }" role="switch" :aria-checked="perms.news" aria-label="Permissão notícias e pesquisa" @click="onTogglePerm('news')"><span class="msw__knob" /></button>
+      </div>
+      <div v-if="hasCenarios" class="mcp__perm">
+        <div class="mcp__perm-txt">
+          <div class="mcp__perm-name">Cenários e projeções</div>
+          <div class="mcp__perm-desc">O motor de projeções da Redentia roda dentro da sua IA: dólar, Selic, bolsa, petróleo e inflação sobre a carteira que você descrever na conversa. Vem desligado; ligue se quiser usar.</div>
+        </div>
+        <button type="button" class="msw" :class="{ 'msw--on': perms.cenarios }" role="switch" :aria-checked="!!perms.cenarios" aria-label="Permissão cenários e projeções" @click="onTogglePerm('cenarios')"><span class="msw__knob" /></button>
       </div>
     </div>
 
