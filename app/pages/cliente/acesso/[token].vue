@@ -162,8 +162,8 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
           </button>
           <p class="cla__hint">
             {{ armado
-              ? 'Clique de novo em até 5 segundos para confirmar. O escritório perde o acesso e as posições são apagadas na hora.'
-              : 'É de graça e vale na hora: o escritório perde o acesso e as posições guardadas são apagadas.' }}
+              ? 'Clique de novo em até 5 segundos para confirmar. O escritório perde o acesso e as posições guardadas na Redentia são apagadas na hora.'
+              : 'É de graça e vale na hora: o escritório perde o acesso e as posições guardadas na Redentia são apagadas. O que ele já consultou no assistente de IA dele não é apagado pela Redentia; peça isso ao escritório.' }}
           </p>
           <p v-if="erroAcao" class="cla__erro" role="alert">{{ erroAcao }}</p>
         </div>

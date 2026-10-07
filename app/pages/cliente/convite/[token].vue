@@ -128,7 +128,9 @@ async function consentir() {
   try {
     const r = await publicFetch<ClientConsentResult>(`/business/client-invites/${token.value}/consent`, {
       method: 'POST',
-      body: { accept: true, terms_version: info.value.terms_version },
+      // o hash do texto MOSTRADO: se o termo mudou entre abrir e aceitar
+      // (outra chave, outro nome do escritório), o servidor recusa com 409
+      body: { accept: true, terms_version: info.value.terms_version, terms_sha256: info.value.terms_sha256 },
     })
     manageUrl.value = r.manage_url ?? null
     demoConectado.value = Boolean(r.demo)

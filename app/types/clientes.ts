@@ -38,6 +38,8 @@ export interface ClientInviteInfo {
   expires_at: string | null
   terms_version: string
   terms_text: string
+  /** sha256 do termo mostrado: volta no C6 para provar que o aceito é o lido */
+  terms_sha256?: string
   scope: ClientScope[]
 }
 
