@@ -3,7 +3,7 @@
  * /business/skills — o pack de skills do escritório (área logada).
  *
  * A entrega que fecha a lacuna entre "conectou a chave" e "extraiu valor":
- * seis Agent Skills prontas pra subir no Claude, que ensinam o assistente a
+ * sete Agent Skills prontas pra subir no Claude, que ensinam o assistente a
  * usar o MCP direito — perguntar antes de gastar chamada, respeitar quota,
  * citar a data do dado e entregar texto pronto pro cliente na voz do assessor.
  *
@@ -75,6 +75,13 @@ const SKILLS: SkillCard[] = [
     nota: 'Em demonstração: o Open Finance é simulado e a carteira é fictícia. O servidor manda o aviso no topo de cada resposta, e a skill instrui o assistente a repeti-lo na primeira linha. Só existe carteira de cliente com o consentimento do próprio cliente.',
   },
   {
+    slug: 'redentia-relatorio-cliente',
+    nome: 'Relatório do cliente em PDF',
+    faz: 'Pergunta para qual cliente conectado gerar, junta a carteira completa, os cenários de 12 meses e o mercado do dia, e entrega um PDF de 4 páginas pronto para revisar e enviar.',
+    exemplo: 'Gera o relatório em PDF de um dos meus clientes.',
+    nota: 'Precisa de execução de código no Claude (no claude.ai e no Claude Desktop já vem ligada). Só descreve a carteira e os cenários: não recomenda compra, venda nem peso. Em demonstração, o PDF sai marcado como tal.',
+  },
+  {
     slug: 'redentia-onboarding',
     nome: 'Primeiros passos',
     faz: 'O guia de bordo: o que cada ferramenta responde (11 ou 15, conforme a chave), teste de conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
@@ -90,12 +97,12 @@ const SKILLS: SkillCard[] = [
         <div class="rbsk__eyebrow">Redentia For Business</div>
         <h1 class="rbsk__title">Skills prontas<br>pra sua mesa.</h1>
         <p class="rbsk__sub">
-          Seis skills que ensinam o Claude a usar o MCP do jeito certo: perguntar antes de gastar
+          Sete skills que ensinam o Claude a usar o MCP do jeito certo: perguntar antes de gastar
           chamada, respeitar os limites da chave, citar a data de cada dado, mostrar a faixa em vez
           de chutar um número e entregar texto pronto pro cliente na voz de quem assina — o escritório.
         </p>
         <div class="rbsk__meta">
-          <span class="rbsk__pill">6 skills</span>
+          <span class="rbsk__pill">7 skills</span>
           <span class="rbsk__pill rbsk__pill--soft">instala em 2 minutos</span>
           <a href="/downloads/skills/redentia-skills-pack.zip" download class="rbsk__bundle">
             Baixar o pack completo
@@ -129,7 +136,7 @@ const SKILLS: SkillCard[] = [
           <div class="rbsk__col">
             <div class="rbsk__col-tag">No claude.ai</div>
             <ol class="rbsk__steps">
-              <li>Baixe o pack completo — dentro vêm os seis zips, um por skill — ou só o zip da skill que a mesa vai usar.</li>
+              <li>Baixe o pack completo — dentro vêm os sete zips, um por skill — ou só o zip da skill que a mesa vai usar.</li>
               <li>No Claude, abra Configurações e procure por Skills (em geral dentro de Capacidades; o caminho pode variar com a versão).</li>
               <li>Envie o zip. A skill aparece pelo nome e ativa sozinha quando a pergunta combina com ela.</li>
               <li>Repita pra cada skill que a mesa for usar.</li>

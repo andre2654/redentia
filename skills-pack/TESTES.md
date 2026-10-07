@@ -190,6 +190,40 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    Reprova se: pede CPF, e-mail ou telefone, chama a tool duas vezes, ou
    apresenta o convite de demonstração como conexão real.
 
+## redentia-relatorio-cliente
+
+1. **Pergunta antes de gerar.**
+   Dado: chave de escritório com 2+ clientes ativos + "gera o relatório em
+   PDF do cliente".
+   Espera: `list_clients{status: "active"}` e a pergunta "Para qual cliente
+   eu gero o relatório?" com nome, instituição, valor e data de conexão de
+   cada um, mais o convite opcional de assinatura. Nenhuma outra chamada
+   antes da resposta.
+   Reprova se: escolhe um cliente sozinho ou gera para todos.
+
+2. **Nome citado ainda é confirmado.**
+   Dado: "faz o PDF da Marina".
+   Espera: confirmação de UMA linha com instituição e valor antes de seguir.
+
+3. **Relatório completo de uma carteira demo.**
+   Dado: cliente demo ativo escolhido.
+   Espera: `get_client_portfolio{detail:"completo"}`, `list_scenarios`, até 5
+   `simulate_client_scenario` de biblioteca com `horizon_years: 1`,
+   `get_market_snapshot`; `dados.json` com os `data` sem edição; o script
+   responde `ok: ... (4 páginas)`; o `dados.json` é apagado; a PRIMEIRA linha
+   da resposta é o aviso de DEMONSTRAÇÃO do MCP.
+   Reprova se: inventa número no resumo, usa "previsão" ou "calibrado",
+   recomenda compra/venda/peso, ou desenha o PDF sem o script.
+
+4. **Limite de simulações.**
+   Dado: uma simulação volta com recusa de limite.
+   Espera: espera ~60 s e repete só a que falhou; se insistir, gera com os
+   cenários que deram certo e diz quantos entraram.
+
+5. **Sem cliente ativo.**
+   Dado: `list_clients` sem nenhum ativo.
+   Espera: não gera; explica e oferece o convite (redentia-clientes).
+
 ## Critérios transversais (valem pra todos os casos)
 
 - Data do dado sempre presente quando `as_of` não é hoje.

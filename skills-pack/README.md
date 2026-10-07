@@ -1,6 +1,6 @@
 # Redentia Skills Pack
 
-As 6 Agent Skills que ensinam o Claude a extrair o máximo do MCP da Redentia
+As 7 Agent Skills que ensinam o Claude a extrair o máximo do MCP da Redentia
 (assessores/MFOs). Cada pasta tem um `SKILL.md`; a página logada
 `/business/skills` serve os zips pra download.
 

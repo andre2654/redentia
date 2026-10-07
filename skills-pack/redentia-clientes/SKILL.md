@@ -15,7 +15,7 @@ Você opera a carteira dos clientes do escritório com o consentimento de cada u
 | Escritório, conta sem o recurso | as tools não aparecem |
 | Pessoal (`rdt_mcp_`) | as tools não existem, por desenho — nenhuma chave pessoal lê carteira de terceiro |
 
-**O recurso está em demonstração.** O Open Finance é simulado: quando o cliente aceita o convite, a Redentia gera uma carteira FICTÍCIA com ativos reais e preços do último pregão, de uma "Instituição de demonstração". Nenhuma conta do cliente é conectada e nenhuma posição dele é lida; ficam registrados só o nome que o escritório cadastrou e a prova do aceite (data, versão do termo, IP e navegador). Serve pra testar o fluxo de ponta a ponta antes da conexão real.
+**O recurso está em demonstração.** O Open Finance é simulado: quando o cliente aceita o convite, a Redentia gera uma carteira FICTÍCIA com ativos reais e preços do último pregão, ligada à instituição que o cliente escolheu na página de conexão (o banco aparece em `institution`, como vai aparecer com a conexão real). Nenhuma conta do cliente é conectada e nenhuma posição dele é lida; ficam registrados só o nome que o escritório cadastrou e a prova do aceite (data, versão do termo, IP e navegador). Serve pra testar o fluxo de ponta a ponta antes da conexão real.
 
 Se as tools de clientes não estão disponíveis nesta sessão, responda assim e pare:
 
@@ -25,7 +25,7 @@ Nunca contorne: não peça a chave de outra pessoa, não peça print do extrato 
 
 ## Regra zero: o dado do cliente vive só na conversa
 
-- **Não grave** carteira, nome ou resultado de cliente em arquivo, memória, nota, projeto, planilha ou artefato. Não "lembre pra próxima conversa". Se o assessor quiser guardar, ele copia pelo canal do escritório.
+- **Não grave** carteira, nome ou resultado de cliente em arquivo, memória, nota, projeto, planilha ou artefato. Não "lembre pra próxima conversa". Se o assessor quiser guardar, ele copia pelo canal do escritório. A única exceção é o relatório em PDF que o assessor pedir (skill redentia-relatorio-cliente): o PDF é o entregável, e o arquivo de dados intermediário é apagado logo depois.
 - **Peça só o nome** (ou um apelido) pra convidar. Nunca peça nem envie CPF, e-mail, telefone ou número de conta.
 - **Não leve o dado pra fora**: nada de mandar a carteira pra outra ferramenta, busca na web ou serviço por conta própria. A busca na web, quando necessária, leva só o ticker e o nome da empresa.
 - **Uma carteira por vez** no relatório. Não misture posições de clientes diferentes numa tabela.
@@ -126,6 +126,8 @@ Sem exceção — nem em resposta curta, nem em texto pro cliente. Se vier `avis
 `weight`, os pesos de `allocation` e `concentration` (inclusive o `hhi`) vêm em FRAÇÃO de 0 a 1: multiplique por 100 antes de exibir como % (0,2607 = 26,1%).
 
 ## Fluxo 4 — Relatório pro cliente
+
+Se o assessor pedir o relatório em **PDF** (ou "pra mandar", "pra imprimir"), use a skill redentia-relatorio-cliente: ela pergunta qual cliente, junta os dados e gera um PDF de 4 páginas. A receita abaixo é o relatório em texto, na própria conversa.
 
 Receita:
 
