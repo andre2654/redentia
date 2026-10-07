@@ -190,8 +190,9 @@ Que chave cada skill pede
   redentia-cenarios: escopo de Cenários e projeções. Na chave pessoal ele
   vem desligado; ligue em redentia.com.br/conta, seção MCP. No plano de
   escritório ele já vem incluído.
-  redentia-clientes: só chave de escritório numa conta com Clientes do
-  escritório habilitado (hoje em demonstração, com carteira fictícia).
+  redentia-clientes e redentia-relatorio-cliente: só chave de escritório
+  numa conta com Clientes do escritório habilitado. O relatório em PDF
+  precisa de execução de código no Claude.
 
 As skills usam a conexão MCP que você já configurou — nenhuma chave nova,
 nenhum acesso além do que a sua chave já alcança.
