@@ -1,15 +1,23 @@
 <script setup lang="ts">
-// NuMcpPromo — modal de anúncio do Redentia MCP (design do dono, foto de
-// referência). Montado 1x no layout default → aparece pra TODO usuário
-// (logado e anônimo) 5s depois de entrar na plataforma. Fechar (X / "Agora
-// não" / Escape / clique fora) OU "Ativar agora" grava em localStorage e
-// nunca mais exibe. "Ativar agora": logado → /conta (card MCP); anônimo →
-// /login (com redirect pro card). Segue a base dos modais Nu (NuAmountModal):
-// Teleport pro body, scrim + blur, scroll-lock, animações, SSR-safe.
+// NuMcpPromo — modal de anúncio. Out/2026: deixou de anunciar o MCP em geral
+// e passou a anunciar o MOTOR DE PROJEÇÕES dentro do MCP (escopo `cenarios`,
+// "Cenários e projeções"). A casca é a mesma do anúncio original (design do
+// dono): montado 1x no layout default → aparece pra TODO usuário (logado e
+// anônimo) 5s depois de entrar. Fechar (X / "Agora não" / Escape / clique
+// fora) OU qualquer CTA grava em localStorage e nunca mais exibe.
+// STORAGE_KEY novo de propósito: quem fechou o anúncio do MCP vê este uma vez.
+// "Ligar no meu Claude": logado → /conta#mcp (o escopo vem DESLIGADO e é ali
+// que se liga); anônimo → /login com redirect pro card. Logado ganha também
+// "ver na Redentia" → /simulacao (a página é só pra logado).
+// COMPLIANCE: nunca "previsão"/"prever"/"calibrado" nem promessa de retorno.
+// Os números do mock são ILUSTRATIVOS e estão rotulados "exemplo" na tela;
+// o rodapé repete o disclaimer do próprio motor.
+// Segue a base dos modais Nu (NuAmountModal): Teleport pro body, scrim +
+// blur, scroll-lock, animações, SSR-safe.
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
 
-const STORAGE_KEY = 'redentia_mcp_promo_v1'
+const STORAGE_KEY = 'redentia_cenarios_promo_v1'
 const DELAY_MS = 5000
 const RETRY_MS = 15000
 
@@ -26,8 +34,9 @@ function busyContext(): boolean {
   // de cada vez — o promo espera o card sair (3/3 ou "Agora não").
   if (document.querySelector('.ndm, .nbm, .nam, .nob, .sgg')) return true
   if (route.path === '/busca' && route.query.chat) return true
-  // /mcp É a página do produto anunciado: modal ali é redundante e cobre a doc
-  if (route.path === '/mcp') return true
+  // /mcp é a doc do produto, /simulacao é o motor anunciado e /conta é o
+  // destino do CTA (onde o escopo se liga): modal ali é redundante e cobre a tela.
+  if (['/mcp', '/simulacao', '/conta'].includes(route.path)) return true
   return false
 }
 
@@ -74,6 +83,15 @@ function activate() {
   )
 }
 
+// Só pra logado: a /simulacao é a mesma conta, dentro da Redentia.
+function verNaRedentia() {
+  markDismissed()
+  open.value = false
+  lockScroll(false)
+  document.removeEventListener('keydown', onKey, true)
+  navigateTo('/simulacao')
+}
+
 function tryOpen() {
   if (alreadyDismissed()) return
   if (busyContext()) {
@@ -115,7 +133,7 @@ const apps = [
 
         <!-- topo: badge + fechar -->
         <div class="mpr__top">
-          <span class="mpr__badge"><span class="mpr__badge-dot" />Novidade · Grátis</span>
+          <span class="mpr__badge"><span class="mpr__badge-dot" />Novo no Redentia MCP</span>
           <button type="button" class="mpr__close" aria-label="Fechar" @click="close">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19" /></svg>
           </button>
@@ -128,25 +146,25 @@ const apps = [
           <span class="mpr__tile mpr__tile--app"><img src="/icons/logo-claude.webp" alt="" class="mpr__tile-img"></span>
         </div>
 
-        <h2 id="mpr-title" class="mpr__title">Sua carteira agora<br>fala com a sua IA</h2>
-        <p class="mpr__desc">Chegou o <strong>Redentia MCP</strong>. Pergunte sobre seus investimentos direto no Claude, ChatGPT ou Cursor, e receba respostas com <strong>os seus dados reais</strong>, não genéricos.</p>
+        <h2 id="mpr-title" class="mpr__title">E se o dólar for a R$ 7?<br>Pergunte pro seu Claude.</h2>
+        <p class="mpr__desc">O <strong>motor de projeções da Redentia</strong> agora roda dentro da sua IA. Choque de dólar, Selic, bolsa ou petróleo em cima da sua carteira: sai a <strong>faixa em reais de hoje</strong> e quem sente o golpe primeiro.</p>
 
         <!-- mock de conversa (fiel à foto) -->
         <div class="mpr__chat">
           <div class="mpr__chat-head">
             <span class="mpr__chat-ava"><img src="/icons/logo-claude.webp" alt="" class="mpr__chat-ava-img"></span>
             <span class="mpr__chat-name">Claude</span>
-            <span class="mpr__chat-model">Sonnet 4.5</span>
+            <span class="mpr__chat-model">Exemplo</span>
           </div>
-          <div class="mpr__chat-user">Como está a minha carteira hoje?</div>
+          <div class="mpr__chat-user">Se a Selic for a 18%, como fica a minha carteira em 1 ano?</div>
           <div class="mpr__chat-ai">
             <span class="mpr__chat-ava mpr__chat-ava--sm"><img src="/icons/logo-claude.webp" alt="" class="mpr__chat-ava-img"></span>
             <div class="mpr__chat-col">
               <span class="mpr__tool">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M8 7v13M16 7v13M4 20h16" /></svg>
-                redentia · <span class="mpr__tool-fn">get_portfolio</span>
+                redentia · <span class="mpr__tool-fn">simulate_scenario</span>
               </span>
-              <p class="mpr__chat-txt">Você tem <strong>R$ 84.732</strong>, alta de <strong class="mpr__up">+0,91%</strong> hoje. O maior peso é <strong>PETR4 (18%)</strong>, que se aproxima do seu preço-teto de R$ 42.</p>
+              <p class="mpr__chat-txt">Em 1 ano, a faixa vai de <strong>R$ 88 mil a R$ 109 mil</strong>, em reais de hoje <span class="mpr__ex">números de exemplo</span>. Quem mais sente: varejo e construtoras. O Tesouro Selic segura a ponta de baixo.</p>
             </div>
           </div>
           <div class="mpr__chat-dots" aria-hidden="true"><span /><span /><span class="mpr__chat-dot--on" /></div>
@@ -162,14 +180,17 @@ const apps = [
         <!-- ações -->
         <div class="mpr__foot">
           <button type="button" class="mpr__cta" @click="activate">
-            Ativar agora
+            Ligar no meu Claude
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
           </button>
           <button type="button" class="mpr__later" @click="close">Agora não</button>
         </div>
+        <button v-if="isAuthenticated" type="button" class="mpr__sim" @click="verNaRedentia">
+          ou ver na Redentia
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg>
+        </button>
         <p class="mpr__secure">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /></svg>
-          100% seguro e criptografado.
+          Faixa estatística com premissas abertas. Não é previsão nem promessa de retorno.
         </p>
       </div>
     </div>
@@ -268,7 +289,11 @@ const apps = [
 .mpr__tool-fn { font-weight: 800; }
 .mpr__chat-txt { margin: 9px 0 0; color: var(--nu-ink); font-size: 14px; font-weight: 500; line-height: 1.5; }
 .mpr__chat-txt strong { font-weight: 800; }
-.mpr__up { color: var(--nu-green-2); }
+.mpr__ex {
+  display: inline-block; margin-left: 4px; padding: 1px 7px; border-radius: 6px; vertical-align: 1px;
+  background: var(--nu-cream-line); color: var(--nu-gray);
+  font-size: 10.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap;
+}
 .mpr__chat-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
 .mpr__chat-dots span { width: 6px; height: 6px; border-radius: 50%; background: rgba(12, 21, 36, .16); }
 .mpr__chat-dot--on { background: #D97757 !important; }
@@ -298,9 +323,19 @@ const apps = [
   transition: color .2s;
 }
 .mpr__later:hover { color: #fff; }
+.mpr__sim {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin: 10px auto 0; padding: 8px 12px; background: transparent; border: none; cursor: pointer;
+  color: var(--nu-white); font-size: 14px; font-weight: 800; font-family: inherit;
+  text-decoration: underline; text-underline-offset: 3px; transition: opacity .2s;
+}
+.mpr__sim:hover { opacity: .8; }
+.mpr__sim:focus-visible, .mpr__cta:focus-visible, .mpr__later:focus-visible, .mpr__close:focus-visible {
+  outline: 2px solid var(--nu-white); outline-offset: 3px;
+}
 .mpr__secure {
-  position: relative; display: flex; align-items: center; justify-content: center; gap: 7px;
-  margin: 16px 0 0; color: rgba(245, 241, 234, .55); font-size: 12.5px; font-weight: 600;
+  position: relative; text-align: center; text-wrap: balance;
+  margin: 14px 0 0; color: rgba(245, 241, 234, .7); font-size: 12.5px; font-weight: 600; line-height: 1.45;
 }
 
 @keyframes mprfade { from { opacity: 0; } to { opacity: 1; } }
