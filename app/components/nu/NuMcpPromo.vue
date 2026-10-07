@@ -146,7 +146,7 @@ const apps = [
           <span class="mpr__tile mpr__tile--app"><img src="/icons/logo-claude.webp" alt="" class="mpr__tile-img"></span>
         </div>
 
-        <h2 id="mpr-title" class="mpr__title">E se o dólar for a R$ 7?<br>Pergunte pro seu Claude.</h2>
+        <h2 id="mpr-title" class="mpr__title">E se o dólar for a R$&nbsp;7?<br>Pergunte pro seu Claude.</h2>
         <p class="mpr__desc">O <strong>motor de projeções da Redentia</strong> agora roda dentro da sua IA. Choque de dólar, Selic, bolsa ou petróleo em cima da sua carteira: sai a <strong>faixa em reais de hoje</strong> e quem sente o golpe primeiro.</p>
 
         <!-- mock de conversa (fiel à foto) -->
