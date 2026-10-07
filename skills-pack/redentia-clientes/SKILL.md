@@ -41,6 +41,7 @@ Toda resposta de ferramenta vem num envelope JSON:
 Erros chegam como TEXTO em português. Trate por conteúdo:
 
 - **Cliente não encontrado**: a mesma resposta cobre id errado, cliente de outra chave não compartilhado, convite ainda pendente e consentimento revogado ou vencido — de propósito, pra não vazar quem existe. Não adivinhe a causa: chame `list_clients{}` e mostre o status do cliente.
+- **Cliente já ativo** ("já está com o acesso ativo até…"): não precisa de convite novo; a renovação abre nos últimos 30 dias do prazo.
 - **Teto de clientes ou de convites**: a conta tem um máximo de clientes (50 por padrão); cada chave tem no máximo 20 convites pendentes e 50 convites por dia. Cite a mensagem e diga qual teto bateu.
 - **"Muitas chamadas por minuto"**, "Limite de simulações por minuto" ou "Muitas simulações em sequência": espere cerca de 60 segundos e retome do passo em que parou.
 - **Valor de choque fora da faixa ou cenário inexistente** (só na simulação): mesma correção da skill redentia-cenarios — ajuste ao limite com a concordância do usuário, slug só do `list_scenarios`.
@@ -73,7 +74,7 @@ Seguido de `message_for_client` num bloco de código copiável. Depois, em 2 fra
 
 5. **Explique o consentimento ao assessor** (uma vez por conversa):
 
-> Até o cliente aceitar, o link é inerte: nada é lido. Ao abrir, ele vê o nome do escritório e do assessor, o termo completo e o escopo — só posições de investimento, pra acompanhamento, relatórios e simulações, com consulta por assistente de IA de terceiro, possivelmente fora do Brasil. O consentimento vale 12 meses. Ao aceitar, ele recebe um link de gestão pra ver o histórico de acessos e revogar quando quiser, de graça; revogou, as posições são apagadas na hora.
+> Até o cliente aceitar, o link é inerte: nada é lido. Ao abrir, ele vê o nome do escritório e do assessor, o termo completo e o escopo — só posições de investimento, pra acompanhamento, relatórios e simulações, com consulta por assistente de IA de terceiro, possivelmente fora do Brasil. O consentimento vale 12 meses. Ao aceitar, ele recebe um link de gestão pra ver o histórico de acessos e revogar quando quiser, de graça; revogou, as posições guardadas na Redentia são apagadas na hora (o que você já consultou no assistente não some sozinho: se ele pedir, apague).
 
 6. **Em demonstração** (`mode: "demo"`), acrescente:
 
