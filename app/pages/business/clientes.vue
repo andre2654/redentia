@@ -158,7 +158,8 @@ function expira(c: BusinessClientRow): string {
 function ultimaLeitura(c: BusinessClientRow): string {
   if (!('last_read_at' in c)) return ''
   if (!c.last_read_at) return c.status === 'active' ? 'Ainda não lida' : ''
-  return `${dataHora(c.last_read_at)}${c.last_read_key_label ? ` · ${c.last_read_key_label}` : ''}`
+  const chave = chaveDaUltimaLeitura(c)
+  return `${dataHora(c.last_read_at)}${chave ? ` · ${chave}` : ''}`
 }
 
 async function alternar(c: BusinessClientRow) {
@@ -294,7 +295,7 @@ onBeforeUnmount(() => {
           </form>
           <p class="rbcl-ajuda">
             Só a chave responsável vê o cliente no assistente, a menos que você o compartilhe com o escritório.
-            <template v-if="maxClientes"> <span class="rbcl-num">{{ clientes.length }} de {{ maxClientes }}</span> clientes.</template>
+            <template v-if="maxClientes"> <span class="rbcl-num">{{ clientesOcupados(lista) }} de {{ maxClientes }}</span> vagas de cliente em uso (pendentes e ativos).</template>
           </p>
           <p v-if="erro && erroLinha === null" class="rbcl-erro" role="alert">{{ erro }}</p>
 
@@ -334,7 +335,8 @@ onBeforeUnmount(() => {
               <div><dt>Status</dt><dd :class="`rbcl-st rbcl-st--${c.status}`">{{ clientStatusLabel(c.status) }}</dd></div>
               <div><dt>Chave responsável</dt><dd>{{ responsavel(c) }}</dd></div>
               <div v-if="c.connected_at"><dt>Conectado em</dt><dd class="rbcl-num">{{ dataCurta(c.connected_at) }}</dd></div>
-              <div v-if="expira(c)"><dt>Expira em</dt><dd class="rbcl-num">{{ expira(c) }}</dd></div>
+              <div v-if="c.status === 'revoked' && c.revoked_at"><dt>Revogado em</dt><dd class="rbcl-num">{{ dataCurta(c.revoked_at) }}</dd></div>
+              <div v-else-if="expira(c)"><dt>Expira em</dt><dd class="rbcl-num">{{ expira(c) }}</dd></div>
               <div v-if="ultimaLeitura(c)"><dt>Última leitura</dt><dd class="rbcl-num">{{ ultimaLeitura(c) }}</dd></div>
             </dl>
 
@@ -396,7 +398,7 @@ onBeforeUnmount(() => {
                 <li v-for="(l, i) in (logs[c.id] as ClientLogEntry[])" :key="i">
                   <span class="rbcl-log__a">{{ clientActionLabel(l.action, c.source === 'demonstracao') }}</span>
                   <span class="rbcl-log__m">
-                    {{ clientActorLabel(l.actor) }}<template v-if="l.key_label"> ({{ l.key_label }})</template>
+                    {{ clientActorLabel(l.actor) }}<template v-if="chaveDoRegistro(l)"> ({{ chaveDoRegistro(l) }})</template>
                     <template v-if="l.at"> · <span class="rbcl-num">{{ dataHora(l.at) }}</span></template>
                   </span>
                 </li>

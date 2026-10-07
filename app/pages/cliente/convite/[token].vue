@@ -135,11 +135,12 @@ async function consentir() {
     estado.value = 'pronto'
   }
   catch (e: unknown) {
-    const err = e as { response?: { status?: number }, data?: { error?: string, message?: string } }
+    const err = e as { response?: { status?: number }, data?: { error?: string, message?: string, reason?: string | null } }
     const st = err.response?.status
     const code = err.data?.error ?? ''
-    if (code === 'mode_unavailable') return invalido('mode_unavailable')
-    if (st === 404) return invalido('used')
+    // 410 invite_invalid {reason} = link usado/vencido/cancelado: não adianta tentar de novo.
+    const recusa = motivoDaRecusaDoConsentimento(st, err.data)
+    if (recusa) return invalido(recusa)
     if (MOTIVOS[code] && code !== 'erro') return invalido(code)
     // Termo mudou entre abrir e aceitar: a pessoa precisa ler o novo.
     estado.value = 'consentimento'

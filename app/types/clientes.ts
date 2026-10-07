@@ -54,6 +54,8 @@ export interface ClientLogEntry {
   at: string
   /** tolerado: rótulo da chave que agiu, quando o servidor mandar */
   key_label?: string | null
+  /** painel do dono: a chave que agiu, como o servidor manda (null quando não foi chave) */
+  key?: { id: number, label: string } | null
 }
 
 /** C7 — a página de gestão do cliente final. */
@@ -65,6 +67,8 @@ export interface ClientAccessInfo {
   scope: ClientScope[]
   since: string | null
   until: string | null
+  /** quando o acesso foi revogado (null enquanto ativo) */
+  revoked_at?: string | null
   demo: boolean
   log: ClientLogEntry[]
 }
@@ -85,6 +89,10 @@ export interface BusinessClientRow {
   /** tolerado: última leitura (carteira ou simulação) e por qual chave */
   last_read_at?: string | null
   last_read_key_label?: string | null
+  /** quando foi revogado (pelo cliente, pelo escritório ou pela operação) */
+  revoked_at?: string | null
+  /** como o servidor manda a chave da última leitura */
+  last_read_by?: { id: number, label: string } | null
   /** tolerado: convite pendente (sem o token, que só existiu na criação) */
   pending_invite?: { id: number | string, expires_at: string | null } | null
   created_at?: string | null
@@ -93,6 +101,8 @@ export interface BusinessClientRow {
 export interface BusinessClientsList {
   mode?: ClientsMode
   max_clients?: number
+  /** vagas livres no teto (pendentes + ativos ocupam; revogado e vencido liberam) */
+  remaining_clients?: number
   clients: BusinessClientRow[]
 }
 

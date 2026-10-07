@@ -152,7 +152,8 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
             </dd>
           </div>
           <div v-if="info.since"><dt>Desde</dt><dd class="cla__num">{{ dataCurta(info.since) }}</dd></div>
-          <div v-if="info.until"><dt>{{ ativo ? 'Vale até' : 'Até' }}</dt><dd class="cla__num">{{ dataCurta(info.until) }}</dd></div>
+          <div v-if="!ativo && info.revoked_at"><dt>Revogado em</dt><dd class="cla__num">{{ dataCurta(info.revoked_at) }}</dd></div>
+          <div v-else-if="info.until"><dt>{{ ativo ? 'Vale até' : 'Até' }}</dt><dd class="cla__num">{{ dataCurta(info.until) }}</dd></div>
         </dl>
 
         <div v-if="ativo" class="cla__revogar">
