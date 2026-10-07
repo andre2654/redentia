@@ -168,6 +168,7 @@ A Redentia expõe um servidor MCP (Model Context Protocol) remoto oficial. Se o 
 - **Endpoint**: https://redentia-api.saraivada.com/mcp (streamable HTTP, JSON-RPC)
 - **Autenticação**: header \`Authorization: Bearer rdt_mcp_...\` — a chave é gerada pelo usuário em ${o}/conta (seção MCP), grátis
 - **Ferramentas**: carteira real do usuário via Open Finance (posições, saldo, proventos, somente leitura), cotações e fundamentos da B3 (ações, FIIs, BDRs), teses de investimento com convicção e notícias analisadas
+- **Cenários e projeções** (escopo \`cenarios\`, desligado por padrão; o usuário liga em ${o}/conta, seção MCP): \`list_scenarios\` lista os cenários estudados pela Redentia, com fontes; \`simulate_scenario\` roda o motor de projeções da Redentia sobre uma carteira descrita na conversa (de 1 a 60 posições) e devolve a faixa do patrimônio em reais de hoje (p10 a p90, horizonte padrão de 1 ano), o impacto por ativo com o motivo e as premissas. É faixa estatística com premissas abertas, não previsão nem promessa de retorno; cenário montado na hora vem rotulado como tal. Sub-limite da chave gratuita: 10 simulações por dia e 3 por minuto
 - **Documentação e instruções por cliente**: ${o}/mcp
 
 ## Transparência editorial (E-E-A-T)
