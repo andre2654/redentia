@@ -1,6 +1,6 @@
 ---
 name: redentia-onboarding
-description: Guia de primeiros passos do Redentia MCP dentro do Claude — mostra o que cada ferramenta faz com perguntas-exemplo (9 de base; 11 com cenários e projeções; 15 na chave de escritório com clientes), roda um teste guiado de 3 chamadas baratas pra confirmar que a chave funciona, explica o que dá e o que não dá pra fazer, traduz as mensagens de erro (limite por minuto, limite diário, limite de simulações, escopo, plano de escritório, chave inválida) e aponta as outras skills do pack. Use quando o usuário pedir "o que dá pra fazer com o MCP da Redentia?", "acabei de conectar a Redentia, e agora?", "que perguntas posso fazer?", "testa se a conexão está funcionando", "por que deu erro de permissão?". NÃO usar quando o pedido já é específico — movimento de um ativo (redentia-por-que-moveu), carteira (redentia-carteira), comparação (redentia-comparar-ativos), cenário (redentia-cenarios) ou cliente do escritório (redentia-clientes).
+description: Guia de primeiros passos do Redentia MCP dentro do Claude — mostra o que cada ferramenta faz com perguntas-exemplo (11 em toda chave pessoal e na de escritório, 9 de base mais as 2 de cenários e projeções; 15 na chave de escritório com clientes), roda um teste guiado de 3 chamadas baratas pra confirmar que a chave funciona, explica o que dá e o que não dá pra fazer, traduz as mensagens de erro (limite por minuto, limite diário, limite de simulações, escopo, plano de escritório, chave inválida) e aponta as outras skills do pack. Use quando o usuário pedir "o que dá pra fazer com o MCP da Redentia?", "acabei de conectar a Redentia, e agora?", "que perguntas posso fazer?", "testa se a conexão está funcionando", "por que deu erro de permissão?". NÃO usar quando o pedido já é específico — movimento de um ativo (redentia-por-que-moveu), carteira (redentia-carteira), comparação (redentia-comparar-ativos), cenário (redentia-cenarios) ou cliente do escritório (redentia-clientes).
 ---
 
 # O que dá pra fazer com o Redentia MCP
@@ -34,8 +34,8 @@ Isso muda três coisas: os limites, o acesso à carteira e os clientes do escrit
 
 | Chave | Ferramentas |
 |---|---|
-| Pessoal, escopo de cenários desligado (o padrão) | 9 — as de base |
-| Pessoal, escopo de cenários ligado | 11 — as 9 + `list_scenarios` e `simulate_scenario` |
+| Pessoal, escopo de cenários desligado (o padrão) | 11 — as 9 de base + `list_scenarios` e `simulate_scenario`, que aparecem mas recusam com "não tem permissão de cenários e projeções" até o escopo ser ligado |
+| Pessoal, escopo de cenários ligado | 11 — as mesmas, agora respondendo |
 | Escritório, sem clientes do escritório | 11 — o plano já inclui cenários |
 | Escritório, com clientes do escritório | 15 — as 11 + `list_clients`, `create_client_invite`, `get_client_portfolio` e `simulate_client_scenario` |
 
@@ -89,7 +89,7 @@ Se as três passaram: "Conexão funcionando. Os escopos de mercado e teses estã
 
 4. `list_news{limit: 5}` — valida o escopo de notícias.
 5. Só chave pessoal, avisando antes: `get_portfolio{}` — se vier recusa, a mensagem é o diagnóstico (veja a tabela abaixo), não uma falha do teste.
-6. Se as ferramentas de cenários aparecem: `list_scenarios{}` — mostre dois títulos da biblioteca. Não rode `simulate_scenario` no teste: ela gasta do sub-limite de simulações.
+6. `list_scenarios{}` — mostre dois títulos da biblioteca; na chave pessoal com o escopo desligado vem a recusa de permissão, e ela é o diagnóstico (ligar em Configurações, seção MCP). Não rode `simulate_scenario` no teste: ela gasta do sub-limite de simulações.
 7. Se as ferramentas de clientes aparecem: `list_clients{}` — mostre quantos clientes e o modo (demonstração ou não).
 
 Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total do teste: 3 a 7 chamadas.

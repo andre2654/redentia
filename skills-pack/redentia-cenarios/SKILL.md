@@ -32,9 +32,9 @@ Toda resposta de ferramenta vem num envelope JSON:
 Erros chegam como TEXTO em português. Trate por conteúdo:
 
 - **Ticker desconhecido** (a mensagem nomeia o ticker): chame `search_assets{query}` com o nome da empresa, troque pelo ticker certo e repita a simulação UMA vez. Cripto não roda no motor: tire da carteira e diga que ficou de fora.
-- **Valor de choque fora da faixa** (a mensagem traz o mínimo e o máximo): ajuste pro limite só se o usuário concordar; senão diga que acima disso o motor não tem precedente que sustente o número.
+- **Valor de choque fora da faixa** ("shocks.dolar fora da faixa: aceita de 3 a 10…" — a mensagem traz o campo, o mínimo e o máximo): ajuste pro limite só se o usuário concordar; senão diga que acima disso o motor não tem precedente que sustente o número.
 - **Cenário que não existe no catálogo**: você inventou ou digitou errado o slug. Volte ao `list_scenarios` — slug só sai de lá.
-- **"Muitas chamadas por minuto"** ou recusa por limite de simulações: espere cerca de 60 segundos e retome do passo em que parou. Não recomece a rodada.
+- **"Muitas chamadas por minuto"**, "Limite de simulações por minuto" ou "Muitas simulações em sequência" (o teto do próprio motor): espere cerca de 60 segundos e retome do passo em que parou. Não recomece a rodada.
 - **"Limite diário"**: pare, diga quantas simulações faltavam e que o limite renova à meia-noite de São Paulo.
 - **Motor indisponível**: não repita em laço. Diga que o motor não respondeu e ofereça tentar em alguns minutos.
 - **As tools de cenários não aparecem**, ou a recusa diz "não tem permissão de cenários e projeções": na chave pessoal o escopo vem DESLIGADO por padrão — o usuário liga em Redentia → Conta → seção MCP (vale em até 1 minuto). Na chave de escritório o plano já inclui cenários; se mesmo assim faltar, o caminho é contato@redentia.com.
@@ -82,6 +82,7 @@ Chame `list_scenarios{}` uma vez por conversa. Ele devolve:
 
 - `scenarios[]` — a biblioteca: `slug`, `title`, `kind`, `eyebrow`, `event_date`, `dials` (os choques que o cenário aplica) e `provenance: "library"`;
 - `dials` — cada choque que você pode montar na hora, com `min`, `max`, `unit` e `label`;
+- `assets` e `sector_limits` — a faixa do choque por ativo e por setor (`min`, `max`, `unit`);
 - `sectors[]` — os setores que aceitam choque, com `slug`, `label` e `tickers_count`;
 - `horizon` — `min`, `max` e `default_mcp` (1 ano).
 

@@ -97,13 +97,15 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    não existem no MCP), sem prometer nem improvisar número.
    Reprova se: inventa fundamento ou promete que "em breve tem".
 4. **Contagem de ferramentas por chave.**
-   Dado: chave pessoal com o escopo de cenários ligado + "quantas
-   ferramentas eu tenho?"; depois o mesmo com a chave de escritório da conta
-   de teste (clientes em demonstração).
-   Espera: 11 na pessoal (as 9 + `list_scenarios` e `simulate_scenario`);
-   15 na de escritório com clientes; a lista que o cliente mostra citada
-   como fonte de verdade se divergir.
-   Reprova se: diz 9 com cenários ligado, ou diz que o MCP é "somente
+   Dado: chave pessoal (com o escopo de cenários desligado e depois ligado)
+   + "quantas ferramentas eu tenho?"; depois o mesmo com a chave de
+   escritório da conta de teste (clientes em demonstração).
+   Espera: 11 na pessoal nos dois casos (as 9 + `list_scenarios` e
+   `simulate_scenario`; desligado, as duas recusam com "não tem permissão de
+   cenários e projeções" — conferido no e2e de 07/10); 15 na de escritório
+   com clientes; a lista que o cliente mostra citada como fonte de verdade se
+   divergir.
+   Reprova se: diz 9 na chave pessoal, ou diz que o MCP é "somente
    leitura" sem a exceção do `create_client_invite`.
 
 ## redentia-cenarios

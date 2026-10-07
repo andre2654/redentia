@@ -42,7 +42,7 @@ Erros chegam como TEXTO em português. Trate por conteúdo:
 
 - **Cliente não encontrado**: a mesma resposta cobre id errado, cliente de outra chave não compartilhado, convite ainda pendente e consentimento revogado ou vencido — de propósito, pra não vazar quem existe. Não adivinhe a causa: chame `list_clients{}` e mostre o status do cliente.
 - **Teto de clientes ou de convites**: a conta tem um máximo de clientes (50 por padrão); cada chave tem no máximo 20 convites pendentes e 50 convites por dia. Cite a mensagem e diga qual teto bateu.
-- **"Muitas chamadas por minuto"** ou recusa por limite de simulações: espere cerca de 60 segundos e retome do passo em que parou.
+- **"Muitas chamadas por minuto"**, "Limite de simulações por minuto" ou "Muitas simulações em sequência": espere cerca de 60 segundos e retome do passo em que parou.
 - **Valor de choque fora da faixa ou cenário inexistente** (só na simulação): mesma correção da skill redentia-cenarios — ajuste ao limite com a concordância do usuário, slug só do `list_scenarios`.
 
 ### Orçamento de chamadas desta skill
@@ -122,7 +122,7 @@ Sem exceção — nem em resposta curta, nem em texto pro cliente. Se vier `avis
 | `concentration` | `top1_weight` (maior posição), `top5_weight` (cinco maiores), `hhi` (índice de concentração de Herfindahl; cite o número com o nome, sem traduzir em julgamento) |
 | `upcoming_dividends[]` | proventos com data ex (`ex_date`) e pagamento; `estimated_total` é estimativa pela quantidade atual |
 
-Confira se os pesos somam 1 (fração) ou 100 (percentual) antes de exibir.
+`weight`, os pesos de `allocation` e `concentration` (inclusive o `hhi`) vêm em FRAÇÃO de 0 a 1: multiplique por 100 antes de exibir como % (0,2607 = 26,1%).
 
 ## Fluxo 4 — Relatório pro cliente
 

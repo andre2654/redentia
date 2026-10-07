@@ -77,7 +77,7 @@ const SKILLS: SkillCard[] = [
   {
     slug: 'redentia-onboarding',
     nome: 'Primeiros passos',
-    faz: 'O guia de bordo: o que cada ferramenta responde (9, 11 ou 15, conforme a chave), teste de conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
+    faz: 'O guia de bordo: o que cada ferramenta responde (11 ou 15, conforme a chave), teste de conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
     exemplo: 'Acabei de conectar a Redentia. O que dá pra fazer?',
   },
 ]
