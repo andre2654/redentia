@@ -43,11 +43,18 @@ export interface ClientInviteInfo {
   scope: ClientScope[]
 }
 
-/** C6 — resposta do consentimento (modo demo). */
+/**
+ * C6 — resposta do consentimento (modo demo). O corpo do POST leva
+ * `accept`, `terms_version`, `terms_sha256` e, opcional, `institution`
+ * (slug da lista de app/content/instituicoes.ts, validado no servidor).
+ * O CPF que a página pede NÃO faz parte do contrato.
+ */
 export interface ClientConsentResult {
   status: 'connected' | string
   demo: boolean
   manage_url: string
+  /** modo pluggy (futuro): o token que abre o widget real no mesmo lugar */
+  connect_token?: string
 }
 
 export interface ClientLogEntry {
@@ -72,6 +79,8 @@ export interface ClientAccessInfo {
   /** quando o acesso foi revogado (null enquanto ativo) */
   revoked_at?: string | null
   demo: boolean
+  /** o NOME da instituição escolhida na conexão (null depois de revogar: a conexão é apagada) */
+  institution?: string | null
   log: ClientLogEntry[]
 }
 
