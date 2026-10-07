@@ -47,6 +47,14 @@ export interface BusinessAccountStatus {
   }
   quota: { day: number | null, minute: number }
   scopes?: string[]
+  /**
+   * Clientes do escritório (Contrato C). Só muda por console no servidor:
+   * 'off' esconde o recurso, 'demo' liga com carteira fictícia, 'pluggy' é a
+   * conexão real, que ainda não existe. Opcional porque o front pode subir
+   * antes do backend; ausente lê como 'off'.
+   */
+  clients_mode?: 'off' | 'demo' | 'pluggy'
+  max_clients?: number
 }
 
 export function useBusinessAccount() {

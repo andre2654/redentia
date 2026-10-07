@@ -120,10 +120,12 @@ onBeforeUnmount(clearAll)
         <p class="rbas__nota">
           O claude.ai e o ChatGPT conectam pela chave com um clique em
           Autorizar; Claude Desktop, Claude Code e Cursor, pela configuração.
-          Cada pessoa com a chave que o escritório gerou pra ela, e somente
-          leitura. A carteira consolidada acima é onde a implantação chega;
-          a chave do primeiro dia responde pelo mercado brasileiro: cotação,
-          busca de ativo, resumo do dia, teses e notícias. E o
+          Cada pessoa com a chave que o escritório gerou pra ela, e de
+          leitura; a única exceção é o convite de cliente, um link inerte até
+          o cliente consentir. A carteira consolidada acima é onde a
+          implantação chega; a chave do primeiro dia responde pelo mercado
+          brasileiro: cotação, busca de ativo, resumo do dia, teses, notícias
+          e cenários e projeções. E o
           <NuxtLink to="/business/skills" class="rbas__nota-link">pack de skills</NuxtLink>
           já sai pronto pra mesa usar.
         </p>

@@ -30,18 +30,21 @@ const COMPARE: { q: string; cells: [Cell, Cell, Cell, Cell] }[] = [
   { q: 'Enxergar concentração e risco antes de aportar', cells: ['no', 'partial', 'no', 'yes'] },
   { q: 'Funcionar dentro do Claude e do Cursor', cells: ['no', 'no', 'na', 'yes'] },
   { q: 'Notícias do dia com leitura de IA sobre os seus ativos', cells: ['no', 'no', 'partial', 'yes'] },
+  { q: '"E se o dólar for a R$ 7?" com a faixa em reais de hoje, por ativo', cells: ['no', 'no', 'no', 'yes'] },
   { q: 'Somente leitura, revogável em um clique', cells: ['na', 'yes', 'na', 'yes'] },
 ]
 
 /* ——— FAQ (accordion padrão do site + FAQPage no JSON-LD) ——— */
 const FAQS = [
-  { q: 'O que é o Redentia MCP?', a: 'MCP (Model Context Protocol) é o padrão aberto que conecta assistentes de IA a fontes de dados externas. O Redentia MCP é o servidor oficial da Redentia nesse padrão: com ele, o Claude, o Cursor e outros clientes compatíveis respondem sobre a sua carteira, cotações da B3, teses e notícias com dados reais, não genéricos.' },
+  { q: 'O que é o Redentia MCP?', a: 'MCP (Model Context Protocol) é o padrão aberto que conecta assistentes de IA a fontes de dados externas. O Redentia MCP é o servidor oficial da Redentia nesse padrão: com ele, o Claude, o Cursor e outros clientes compatíveis respondem sobre a sua carteira, cotações da B3, teses e notícias com dados reais, não genéricos, e rodam o motor de projeções da Redentia sobre uma carteira.' },
+  { q: 'O que são os cenários e projeções?', a: 'É o motor de projeções da Redentia dentro da sua IA, em duas ferramentas: list_scenarios lista os cenários estudados pela Redentia, com fontes, e simulate_scenario aplica um cenário (ou um choque de dólar, Selic, bolsa, petróleo ou inflação montado na hora) sobre a carteira que você descreve na conversa e devolve a faixa do patrimônio em reais de hoje, com quem mais sente o choque e por quê. O escopo vem desligado: ligue em Configurações, seção MCP, em Cenários e projeções.' },
+  { q: 'A Redentia prevê o mercado?', a: 'Não. Ela mostra a faixa do que pode acontecer com uma carteira num cenário, da ponta de baixo (p10) à de cima (p90), em reais de hoje e com as premissas abertas. Cenário estudado pela Redentia vem com fontes; cenário montado na hora vem rotulado assim, sem precedente histórico que o ancore. É faixa estatística, não previsão nem promessa de retorno, e não é recomendação.' },
   { q: 'Quanto custa?', a: 'Nada. A chave é gratuita: basta ter uma conta na Redentia, gerar a chave em Configurações e colar a configuração no seu assistente.' },
-  { q: 'Existe limite de uso?', a: 'Sim, um limite de uso justo: 50 consultas por dia e 60 por minuto por chave, que renovam sozinhos. É bem mais do que uma conversa sobre a sua carteira consome, e existe pra manter a chave gratuita de pé pra todo mundo. Escritório que usa o MCP como ferramenta de trabalho tem plano próprio, com limite muito maior: redentia.com.br/business.' },
+  { q: 'Existe limite de uso?', a: 'Sim, um limite de uso justo: 50 consultas por dia e 60 por minuto por chave, que renovam sozinhos. A simulação de cenário é cálculo pesado e tem um sub-limite próprio, de 10 por dia e 3 por minuto, que também conta nas 50 do dia. É bem mais do que uma conversa sobre a sua carteira consome, e existe pra manter a chave gratuita de pé pra todo mundo. Escritório que usa o MCP como ferramenta de trabalho tem plano próprio, com limite muito maior: redentia.com.br/business.' },
   { q: 'A IA consegue mexer na minha carteira?', a: 'Não. O acesso é somente leitura por design: o MCP responde consultas (posições, proventos, cotações, teses, notícias) e não executa nenhuma ação. Não existe ferramenta de compra, venda ou alteração de dados.' },
   { q: 'Quais assistentes funcionam hoje?', a: 'O claude.ai conecta como conector personalizado: cole a URL, clique em Connect e autorize com a sua chave. O ChatGPT conecta pelo modo desenvolvedor da OpenAI, do mesmo jeito. Cursor, Claude Code e Raycast conectam direto com a chave; o Claude Desktop, pela ponte mcp-remote.' },
   { q: 'De onde vem a minha carteira?', a: 'Do Open Finance, a conexão oficial regulada pelo Banco Central. Você conecta corretoras e bancos (XP, Nubank, Itaú, BTG e mais de 200 instituições) e a Redentia importa suas posições automaticamente, sempre somente leitura.' },
-  { q: 'Como revogo o acesso?', a: 'Em Configurações, seção MCP: desligue o interruptor, gere uma nova chave (a antiga para de valer) ou desligue escopos individuais, como carteira, mantendo o resto. A mudança vale em até um minuto, porque o servidor guarda a validação da chave por sessenta segundos.' },
+  { q: 'Como revogo o acesso?', a: 'Em Configurações, seção MCP: desligue o interruptor, gere uma nova chave (a antiga para de valer) ou desligue escopos individuais, como carteira ou cenários, mantendo o resto. A mudança vale em até um minuto, porque o servidor guarda a validação da chave por sessenta segundos.' },
 ]
 
 usePageSeo({
@@ -83,8 +86,8 @@ usePageSeo({
           <h1 class="mdoc__h1">Sua carteira,<br>dentro da sua IA.</h1>
           <p class="mdoc__sub">
             Conecte a Redentia ao Claude, ao Cursor e a outros assistentes compatíveis.
-            Sua IA passa a responder com a sua carteira, cotações da B3, teses e notícias.
-            Grátis, somente leitura e revogável a qualquer momento.
+            Sua IA passa a responder com a sua carteira, cotações da B3, teses e notícias,
+            e a rodar cenários sobre ela. Grátis, somente leitura e revogável a qualquer momento.
           </p>
           <NuxtLink :to="ctaTo" class="mdoc__cta">Gerar minha chave</NuxtLink>
         </div>

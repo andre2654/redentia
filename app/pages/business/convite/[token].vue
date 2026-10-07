@@ -221,8 +221,10 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
         </ol>
 
         <p class="rbcv__nota">
-          O acesso é somente leitura: mercado, teses e notícias. O escritório vê o uso da sua
-          chave e pode revogá-la quando quiser.
+          A chave lê mercado, teses, notícias e cenários. Carteira de cliente, só de quem
+          consentiu pelo próprio link, e só se o escritório tiver Clientes do escritório ligado.
+          A única coisa que ela cria é o convite de cliente, um link inerte até o cliente consentir.
+          O escritório vê o uso da sua chave e pode revogá-la quando quiser.
         </p>
       </template>
 
@@ -234,7 +236,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
 
         <div class="rbcv__secret" role="status">
           <span class="rbcv__secret-l">Chave de {{ nome }} · {{ empresa }}</span>
-          <code class="rbcv__code">{{ chave }}</code>
+          <code class="rbcv__code" data-clarity-mask="true">{{ chave }}</code>
           <div class="rbcv__acoes">
             <button type="button" class="rbcv__copy" @click="copiar">
               {{ copiado ? 'Copiada' : 'Copiar' }}
@@ -244,7 +246,8 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
         </div>
 
         <p class="rbcv__nota">
-          Somente leitura: mercado, teses e notícias. O escritório pode revogar a chave a qualquer momento.
+          Leitura de mercado, teses, notícias e cenários; carteira de cliente só com o consentimento
+          do próprio cliente. O escritório pode revogar a chave a qualquer momento.
         </p>
       </template>
     </div>

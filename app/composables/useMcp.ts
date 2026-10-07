@@ -9,6 +9,11 @@ export interface McpPermissions {
   mercado: boolean
   teses: boolean
   news: boolean
+  // Cenários e projeções (motor de projeções no MCP). Opcional porque o front
+  // pode subir antes do backend: sem a chave no GET /me/mcp, a linha some em
+  // /conta#mcp em vez de mostrar um toggle que não grava nada. Default do
+  // backend: DESLIGADO (opt-in), em chave nova e antiga.
+  cenarios?: boolean
 }
 
 export interface McpStatus {

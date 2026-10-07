@@ -29,7 +29,13 @@
  * acionador "Alteração no histórico" do GTM enxerga cada página sem push manual.
  *
  * ID em runtimeConfig.public.gtmId. NUXT_PUBLIC_GTM_ID= vazio desliga num env.
+ *
+ * NÃO carrega (nem o noscript do SSR) em rota com token no path
+ * (/cliente/convite, /cliente/acesso, /business/convite): o container é de
+ * agência e as tags dele leem a URL. Ver utils/analytics-privacy.ts.
  */
+import { isSecretTokenPath } from '~/utils/analytics-privacy'
+
 const GTM_ID_FORMAT = /^GTM-[A-Z0-9]+$/
 
 // Google (gclid, gbraid, wbraid), Meta (fbclid), Microsoft (msclkid),
@@ -46,6 +52,8 @@ export default defineNuxtPlugin(() => {
   const gtmId = (useRuntimeConfig().public as Record<string, unknown>).gtmId as string | undefined
   // O ID entra cru no innerHTML do noscript: só passa o formato do Google.
   if (!gtmId || !GTM_ID_FORMAT.test(gtmId)) return
+  const path = import.meta.server ? useRequestURL().pathname : window.location.pathname
+  if (isSecretTokenPath(path)) return
 
   // Registrado nos dois lados com a mesma entrada: no client o noscript é
   // inerte, e o estado do head fica igual ao HTML que o SSR entregou.

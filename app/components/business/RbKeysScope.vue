@@ -31,8 +31,27 @@ const escopos = computed(() => props.conta.scopes ?? [])
  * log e no runbook. Na tela ele vira o nome em português, sem deixar de ser o
  * mesmo escopo. Um slug desconhecido passa direto, em vez de sumir.
  */
-const NOMES: Record<string, string> = { mercado: 'Mercado', teses: 'Teses', news: 'Notícias', carteira: 'Carteira' }
-const escoposLegiveis = computed(() => escopos.value.map(s => NOMES[s] ?? s).join(', '))
+const NOMES: Record<string, string> = { mercado: 'Mercado', teses: 'Teses', news: 'Notícias', cenarios: 'Cenários', carteira: 'Carteira', clientes: 'Clientes' }
+/**
+ * `clientes` não conta como escopo do PLANO: ele depende do recurso Clientes
+ * do escritório da conta (clients_mode), e tem bloco próprio abaixo. Se o
+ * servidor mandar o slug junto, ele sai da contagem e da lista.
+ */
+const escoposPlano = computed(() => escopos.value.filter(s => s !== 'clientes'))
+const escoposLegiveis = computed(() => escoposPlano.value.map(s => NOMES[s] ?? s).join(', '))
+const POR_EXTENSO: Record<number, string> = { 1: 'Um escopo', 2: 'Dois escopos', 3: 'Três escopos', 4: 'Quatro escopos', 5: 'Cinco escopos', 6: 'Seis escopos' }
+const nEscopos = computed(() => escoposPlano.value.length)
+
+/** Lista em prosa: "Mercado, teses, notícias e cenários." */
+function prosa(lista: string[]): string {
+  const nomes = lista.map((s, i) => (i === 0 ? (NOMES[s] ?? s) : (NOMES[s] ?? s).toLowerCase()))
+  if (nomes.length <= 1) return nomes.join('')
+  return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`
+}
+
+/** Clientes do escritório: ligado só por console; ausente = desligado. */
+const modoClientes = computed(() => props.conta.clients_mode ?? 'off')
+const clientesLigado = computed(() => modoClientes.value !== 'off')
 
 defineEmits<{ (e: 'conectar'): void }>()
 
@@ -53,15 +72,20 @@ function fechar() {
 const CARDS = computed(() => [
   {
     icon: 'trend',
-    stat: `${escopos.value.length || 3} escopos`,
-    titulo: null,
-    blurb: 'Mercado, teses e notícias. É o catálogo da Redentia inteiro, em modo somente leitura.',
+    // Sem a lista do servidor, o card não inventa contagem: diz o catálogo.
+    stat: nEscopos.value ? `${nEscopos.value} ${nEscopos.value === 1 ? 'escopo' : 'escopos'}` : null,
+    titulo: nEscopos.value ? null : 'O catálogo.',
+    blurb: nEscopos.value
+      ? `${prosa(escoposPlano.value)}. É o catálogo da Redentia inteiro, de leitura, e os cenários são faixa com premissas abertas, não previsão.`
+      : 'O catálogo da Redentia, de leitura. Os escopos exatos aparecem aqui quando o painel carregar.',
   },
   {
     icon: 'lock',
     stat: null,
-    titulo: 'Carteira, não.',
-    blurb: 'O servidor recusa dado de carteira nessas chaves. Não é um botão que alguém possa ligar.',
+    titulo: 'Carteira, só com consentimento.',
+    blurb: clientesLigado.value
+      ? 'A chave só lê a carteira de um cliente que consentiu pelo próprio link, e ele revoga quando quiser. Hoje o recurso roda em demonstração, com carteira fictícia.'
+      : 'Só existe carteira de cliente com o consentimento do próprio cliente. Sem isso, o servidor recusa dado de carteira nessas chaves.',
   },
   {
     icon: 'gauge',
@@ -103,12 +127,27 @@ const BLOCOS = computed(() => [
       + 'Serve para o assistente responder "o que aconteceu com esse papel" sem sair da conversa.',
   },
   {
-    label: 'O que fica de fora',
-    color: 'var(--nu-red-2)',
-    html: '<strong>Carteira.</strong> Se o assistente tentar, a resposta é "o plano para escritórios não inclui dados de carteira". '
-      + 'A recusa acontece no servidor, e ela não consome a sua quota do dia. '
-      + 'Consolidação de carteira dos clientes é o que a implantação constrói, e ainda não existe.',
+    label: 'Cenários e projeções',
+    color: 'var(--nu-blue)',
+    html: 'O motor de projeções da Redentia sobre uma carteira descrita na conversa: list_scenarios traz os cenários estudados pela casa, com fontes, '
+      + 'e simulate_scenario devolve a faixa do patrimônio em reais de hoje, da ponta de baixo à de cima, e quem mais sente o choque. '
+      + 'Cenário montado na hora vem rotulado como montado na hora, sem precedente histórico que o ancore. '
+      + 'Faixa estatística com premissas abertas: não é previsão nem promessa de retorno.',
   },
+  clientesLigado.value
+    ? {
+        label: 'Clientes do escritório · em demonstração',
+        color: 'var(--nu-gray)',
+        html: 'list_clients, create_client_invite, get_client_portfolio e simulate_client_scenario. '
+          + 'Só existe carteira de cliente com o consentimento do próprio cliente: o convite é um link inerte até ele ler o termo e aceitar, e ele revoga pelo link de gestão quando quiser. '
+          + '<strong>Hoje é demonstração:</strong> nenhuma conta do cliente é conectada e a carteira é fictícia, gerada pela Redentia. Toda resposta do servidor sobre ela chega com o aviso de demonstração no topo, e o assistente é instruído a repeti-lo; confira antes de repassar.',
+      }
+    : {
+        label: 'O que fica de fora',
+        color: 'var(--nu-red-2)',
+        html: '<strong>Carteira.</strong> Só existe carteira de cliente com o consentimento do próprio cliente, pelo recurso Clientes do escritório, que não está ligado nesta conta. '
+          + 'Se o assistente tentar ler uma carteira, a recusa acontece no servidor e conta só no limite por minuto.',
+      },
   {
     label: 'Quota e revogação',
     color: 'var(--nu-gray)',
@@ -126,7 +165,8 @@ const BLOCOS = computed(() => [
     <div class="rbks__head">
       <h2 class="rbks__title">O que a chave alcança.</h2>
       <p class="rbks__sub">
-        Três escopos, e nada além deles. O resto o servidor recusa, não é uma configuração que alguém pode ligar.
+        {{ POR_EXTENSO[nEscopos] ?? 'Os escopos do plano' }}, e nada além deles: o escritório não liga outro escopo por configuração.
+        Carteira de cliente só entra pelo recurso Clientes do escritório, ligado pela Redentia, e com o consentimento do próprio cliente.
       </p>
     </div>
 
@@ -157,6 +197,11 @@ const BLOCOS = computed(() => [
         Conectar ao assistente
       </button>
 
+      <NuxtLink v-if="clientesLigado" to="/business/clientes" class="rbks__btn2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6" /></svg>
+        Clientes do escritório
+      </NuxtLink>
+
       <NuxtLink to="/business/skills" class="rbks__btn2">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5-8 4.5-8-4.5L12 3zM4 12.5L12 17l8-4.5M4 17l8 4.5 8-4.5" /></svg>
         Skills prontas pro Claude
@@ -167,7 +212,7 @@ const BLOCOS = computed(() => [
       :open="aberto"
       eyebrow="Plano para escritórios"
       title="O que a chave alcança"
-      :date-line="`${escoposLegiveis} · somente leitura`"
+      :date-line="clientesLigado ? `${escoposLegiveis} · leitura, mais o convite de cliente` : `${escoposLegiveis} · somente leitura`"
       :blocks="BLOCOS"
       @close="fechar"
     />

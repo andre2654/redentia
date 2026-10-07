@@ -116,6 +116,20 @@ export default defineNuxtConfig({
     // Convite de chave: página pública que mostra um SEGREDO uma vez (a chave
     // nasce na tela de quem abriu o link). Nunca na borda.
     '/business/convite/**': { headers: { 'cache-control': 'private, no-store' } },
+    // Clientes do escritório (Contrato E, 07/10/2026). O painel do dono mostra
+    // o link de convite do cliente UMA vez; as páginas do cliente final levam
+    // o token (convite ou gestão) na URL. Nenhuma das três encosta em cache de
+    // borda, e o token não pode sair no Referer de link nenhum. As páginas do
+    // cliente também são noindex/nofollow no header (além da meta), porque
+    // existem só por link pessoal. '/cliente/**' cobre convite e acesso.
+    '/business/clientes': { headers: { 'cache-control': 'private, no-store', 'referrer-policy': 'no-referrer' } },
+    '/cliente/**': {
+      headers: {
+        'cache-control': 'private, no-store',
+        'referrer-policy': 'no-referrer',
+        'x-robots-tag': 'noindex, nofollow',
+      },
+    },
     // O guia de conexão virou o modal do painel de chaves (dono 2026-08-25,
     // "menos é mais"): 301 exato, mesmo padrão do '/calculadora'.
     '/business/comecar': { redirect: { to: '/business/chaves', statusCode: 301 } },
