@@ -1,5 +1,5 @@
 /**
- * FAQ da Redentia for Business — 29 perguntas em 5 grupos.
+ * FAQ da Redentia for Business — 32 perguntas em 5 grupos.
  *
  * A copy veio da landing prototipada em docs/redentia-business/ e passou por
  * três rodadas de revisão adversarial (docs/redentia-business/revisoes/), com
@@ -25,7 +25,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'O que é o MCP da Redentia?',
-        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, comparações de fundos, teses e notícias. A consulta às carteiras consolidadas dos seus clientes é o que a implantação constrói.',
+        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, comparações de fundos, teses, notícias e cenários e projeções sobre uma carteira. A carteira de um cliente só entra com o consentimento do próprio cliente, pelo recurso Clientes do escritório, que hoje roda em demonstração, com carteira fictícia. A consolidação com dado real é o que a implantação constrói.',
       },
       {
         q: 'O que é MCP?',
@@ -54,11 +54,15 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'A IA pode movimentar patrimônio?',
-        a: 'Não. O acesso é somente leitura por desenho: as ferramentas respondem consultas e não executam nenhuma ação. Não existe ferramenta de compra, de venda, de transferência ou de alteração de dado.',
+        a: 'Não. As ferramentas respondem consultas e não executam nenhuma ação sobre patrimônio. Todas são de leitura, menos create_client_invite, que só cria um link inerte até o cliente consentir. Não existe ferramenta de compra, de venda, de transferência ou de alteração de dado.',
       },
       {
         q: 'A IA pode administrar acessos?',
-        a: 'Não, e isso é deliberado. Ligar, desligar e revogar uma chave só acontece no painel do escritório, por quem entrou com login. Assim uma instrução escondida dentro de uma notícia ou de um extrato nunca consegue virar uma mudança de acesso. Escopo não é configurável no plano para escritórios: ele é fixo, e é o catálogo de mercado.',
+        a: 'Não, e isso é deliberado. Ligar, desligar e revogar uma chave só acontece no painel do escritório, por quem entrou com login. Assim uma instrução escondida dentro de uma notícia ou de um extrato nunca consegue virar uma mudança de acesso. O mais perto disso que a IA chega é o convite de cliente: create_client_invite gera um link inerte, que não dá acesso a nada até o próprio cliente ler o termo e consentir. Revogar o acesso de um cliente é do cliente, pelo link dele, ou do escritório, no painel; nenhuma ferramenta da IA revoga, reatribui ou cancela. Escopo não é configurável no plano para escritórios: ele é fixo, e é o catálogo de mercado mais os cenários.',
+      },
+      {
+        q: 'A Redentia prevê o mercado?',
+        a: 'Não. Ela mostra a faixa do que pode acontecer com uma carteira num cenário, da ponta de baixo (p10) à de cima (p90), em reais de hoje e com as premissas abertas. Cenário estudado pela Redentia vem com fontes; cenário montado na hora, na conversa, vem rotulado como montado na hora, sem precedente histórico que o ancore. Não é previsão nem promessa de retorno.',
       },
     ],
   },
@@ -100,7 +104,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Onde os dados ficam armazenados?',
-        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para dado real de escritório entrar. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
+        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para dado real de escritório entrar. É por isso que Clientes do escritório roda hoje só em demonstração: a carteira é fictícia, gerada pela Redentia, e nenhum dado real de cliente entra antes do banco separado. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
       },
       {
         q: 'Algum modelo de IA treina com os dados dos meus clientes?',
@@ -108,7 +112,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Quem na minha equipe vê o quê?',
-        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam a mesma coisa: o catálogo de mercado. Escopo diferente por pessoa ou por família ainda não existe, e é parte do que a implantação constrói. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
+        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório (hoje em demonstração), cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por família, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
       },
       {
         q: 'Quantas chaves o escritório tem, e quem cria?',
@@ -116,7 +120,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Existe limite de uso?',
-        a: 'Sim, e ele é do escritório inteiro, não de cada chave: cinco mil chamadas por dia e cento e vinte por minuto, somando as cinco. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
+        a: 'Sim, e ele é do escritório inteiro, não de cada chave: trezentas chamadas por minuto, somando as cinco, sem teto diário. As duas simulações (simulate_scenario e simulate_client_scenario) têm um sub-limite próprio de vinte por minuto para o escritório, porque cada uma é cálculo pesado, e elas contam também no limite geral. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
       },
       {
         q: 'Como eu revogo o acesso de quem saiu?',
@@ -124,7 +128,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Existe trilha de auditoria?',
-        a: 'É um item do MVP e ainda não existe. Quando existir, registra cada chamada com quem, quando, qual ferramenta, quais argumentos, qual cliente e qual resultado, com exportação pelo próprio cliente e retenção declarada.',
+        a: 'Em parte. Para Clientes do escritório ela já existe: cada convite, consentimento, leitura de carteira, simulação e revogação fica registrado com a chave e a data, sem as posições, e o cliente vê o próprio registro pelo link de gestão. A trilha de toda chamada, com argumentos, resultado, exportação e retenção declarada, é um item do MVP e ainda não existe.',
       },
       {
         q: 'A Redentia é controladora ou operadora dos dados?',
@@ -132,7 +136,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'A Redentia faz recomendação de investimento?',
-        a: 'Não. A Redentia é fornecedora de software: entrega dado, cálculo e formatação. A opinião, a adequação e a recomendação são do seu escritório, que é registrado para isso. Nada sai para o cliente final sem ação de alguém da sua casa.',
+        a: 'Não. A Redentia é fornecedora de software: entrega dado, cálculo e formatação. Cenários e projeções são faixa estatística com premissas abertas, não previsão nem promessa de retorno. A opinião, a adequação e a recomendação são do seu escritório, que é registrado para isso. Nada sai para o cliente final sem ação de alguém da sua casa.',
       },
       {
         q: 'O relatório sai com a minha marca?',

@@ -143,7 +143,7 @@ export const CONECTAR_CARTEIRA_AO_CHATGPT_GUIDE: GuideDoc = {
     },
     {
       q: 'A IA pode comprar ou vender por mim?',
-      a: 'Não. O acesso é somente leitura: a IA consulta posições, proventos, cotações, teses e notícias, mas não executa nenhuma ordem. Não existe ferramenta de escrita no servidor.',
+      a: 'Não. O acesso é somente leitura: a IA consulta posições, proventos, cotações, teses e notícias, mas não executa nenhuma ordem. Não existe ferramenta de escrita na chave pessoal.',
     },
     {
       q: 'Como eu desconecto?',

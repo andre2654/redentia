@@ -40,17 +40,26 @@
 /* As ferramentas listadas são as que EXISTEM no mcp-service, com o nome exato.
    Nunca invente nome de tool aqui: o comprador roda e confere. get_portfolio
    existe mas está FORA do escopo do plano de escritório, e é por isso que ela
-   aparece marcada, não escondida. */
+   aparece marcada, não escondida.
+   mcp-service 0.5.0 (out/2026): o plano ganhou o escopo `cenarios`
+   (list_scenarios, simulate_scenario) e, para conta com Clientes do escritório
+   ligado, as quatro do escopo `clientes`. Elas aparecem marcadas, porque só
+   existem na chave de uma conta com o recurso ligado, e hoje ele só roda em
+   demonstração. create_client_invite é a ÚNICA que escreve: cria um link
+   inerte, que não dá acesso a nada até o cliente consentir. A copy do fato
+   'leitura' diz isso com todas as letras. */
 const TOOLS = [
   'get_quote', 'search_assets', 'get_market_snapshot', 'list_news',
   'get_thesis', 'list_theses', 'get_daily_briefing', 'get_etf_composition',
+  'list_scenarios', 'simulate_scenario',
 ]
+const TOOLS_CLIENTES = ['list_clients', 'create_client_invite', 'get_client_portfolio', 'simulate_client_scenario']
 
 const FATOS = [
   {
     id: 'banco',
     rotulo: 'Banco separado',
-    texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito para dado real de escritório entrar, não um upgrade vendido depois.',
+    texto: 'Os dados do seu escritório entram em banco separado do produto de pessoa física, com o isolamento entre organizações aplicado no próprio banco. É pré-requisito para dado real de escritório entrar, não um upgrade vendido depois. Por isso Clientes do escritório roda hoje só em demonstração, com carteira fictícia gerada pela Redentia: nenhum dado real de cliente entra antes disso.',
     verifica: 'Pergunte na reunião em que banco a sua base vai morar, e peça a data.',
   },
   {
@@ -61,8 +70,8 @@ const FATOS = [
   },
   {
     id: 'leitura',
-    rotulo: 'Somente leitura',
-    texto: 'Todas as ferramentas do servidor são de leitura. Não existe ferramenta de compra, de venda, de transferência nem de correção de lançamento. O que entra na sua base continua entrando por você.',
+    rotulo: 'Leitura, com uma exceção declarada',
+    texto: 'Todas as ferramentas do servidor são de leitura, menos create_client_invite, que só cria um link inerte até o cliente consentir: sem o aceite dele, o link não dá acesso a nada. Não existe ferramenta de compra, de venda, de transferência nem de correção de lançamento. O que entra na sua base continua entrando por você.',
     verifica: 'Peça a lista de ferramentas ao seu assistente e leia os nomes.',
   },
   {
@@ -192,6 +201,7 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 
               <ul v-else-if="f.id === 'leitura'" class="rbsg__tools">
                 <li v-for="t in TOOLS" :key="t">{{ t }}</li>
+                <li v-for="t in TOOLS_CLIENTES" :key="t">{{ t }} <span class="rbsg__tag">{{ t === 'create_client_invite' ? 'só o link' : 'demonstração' }}</span></li>
                 <li class="rbsg__tool-fora">get_portfolio <span class="rbsg__tag">fora do plano</span></li>
               </ul>
 
@@ -320,9 +330,11 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 .rbsg__linhas dd { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 800; }
 .rbsg__off { color: var(--nu-gray) !important; text-decoration: line-through; }
 
+/* Duas colunas quando cabe: com cenários e clientes a lista passou de 9 para
+   15 nomes, e numa coluna só ela estourava a altura do card. */
 .rbsg__tools {
   margin: 14px 0 0; padding: 0; list-style: none;
-  display: flex; flex-direction: column; gap: 5px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr)); gap: 5px 14px;
 }
 .rbsg__tools li {
   color: var(--nu-gray-2); font-size: 12px; font-weight: 700;
