@@ -72,7 +72,7 @@ const SKILLS: SkillCard[] = [
     nome: 'Clientes do escritório',
     faz: 'Convida o cliente com um link de consentimento, mostra quem já conectou, lê a carteira consentida e monta o relatório descritivo pra enviar, com cenário se você pedir.',
     exemplo: 'Gera o convite pro João. Quando ele aceitar, monta o relatório da carteira dele.',
-    nota: 'Em demonstração: o Open Finance é simulado e a carteira é fictícia, com o aviso na primeira linha. Só existe carteira de cliente com o consentimento do próprio cliente.',
+    nota: 'Em demonstração: o Open Finance é simulado e a carteira é fictícia. O servidor manda o aviso no topo de cada resposta, e a skill instrui o assistente a repeti-lo na primeira linha. Só existe carteira de cliente com o consentimento do próprio cliente.',
   },
   {
     slug: 'redentia-onboarding',
