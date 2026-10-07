@@ -1,10 +1,11 @@
 <script setup lang="ts">
 /**
- * /cliente/acesso/[token] — a página de gestão do CLIENTE FINAL.
+ * /cliente/acesso/[token] — a página de gestão do CLIENTE FINAL, no mesmo
+ * cartão do widget de conexão (ClienteConnect), sem voltar nem fechar.
  *
- * O link chega uma vez, na tela de "pronto" do consentimento
- * (/cliente/convite/[token]). Por ele o cliente vê o status do acesso, o que
- * o escritório alcança, desde quando e até quando, e o registro de quem
+ * O link chega uma vez, na tela de sucesso do widget (/cliente/convite). Por
+ * ele o cliente vê o status do acesso, a instituição que escolheu, o que o
+ * escritório alcança, desde quando e até quando, e o registro de quem
  * consultou (sem as posições: o log do servidor nunca guarda carteira). E
  * revoga com um clique: o servidor apaga posições e conexões na hora e grava
  * a revogação no log (Contrato C, rotas C7 e C8).
@@ -17,6 +18,7 @@
  * no-referrer e noindex/nofollow vêm do nuxt.config (/cliente/**).
  */
 import type { ClientAccessInfo } from '~/types/clientes'
+import { instituicaoPorNome, type Instituicao } from '~/content/instituicoes'
 
 definePageMeta({ layout: false })
 
@@ -67,6 +69,13 @@ const escritorio = computed(() => {
 })
 const ativo = computed(() => info.value?.status === 'active')
 
+/** A instituição que a pessoa escolheu na conexão (o C7 manda o nome); sem logo, iniciais. */
+const inst = computed<Instituicao | null>(() => {
+  const nome = info.value?.institution
+  if (!nome) return null
+  return instituicaoPorNome(nome) ?? { slug: '', name: nome, logo: false, tipo: 'banco' }
+})
+
 const TITULO: Record<string, string> = {
   active: 'O acesso está ligado.',
   pending: 'O acesso ainda não foi ligado.',
@@ -105,37 +114,48 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
 </script>
 
 <template>
-  <NuAuthLayout logo-to="/">
-    <template #panel><ClienteAside /></template>
-
-    <div class="cla">
-      <span class="cla__eyebrow">Seu acesso</span>
-
+  <ClienteConnect :passo="estado" :demo="Boolean(info?.demo)" rotulo="Gestão do acesso">
+    <section class="cla">
       <template v-if="estado === 'carregando'">
-        <h1 class="cla__h1">Abrindo.</h1>
-        <div class="cla__skel">
-          <NuSkeleton variant="text" :lines="2" />
-          <NuSkeleton variant="block" height="140px" radius="card" />
+        <span class="cla__sr" role="status">Abrindo.</span>
+        <div class="cla__skel" aria-hidden="true">
+          <NuSkeleton variant="text" :lines="2" last-width="60%" />
+          <NuSkeleton variant="block" height="120px" radius="12px" />
           <NuSkeleton variant="text" :lines="4" />
         </div>
       </template>
 
       <template v-else-if="estado === 'invalido'">
-        <h1 class="cla__h1">Este link não abre.</h1>
-        <p class="cla__sub" role="alert">
-          Confira se ele foi colado inteiro, exatamente como apareceu depois do seu consentimento.
+        <div class="cla__glifo cla__glifo--alerta" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+        </div>
+        <h1 data-cc-titulo tabindex="-1" class="cla__h1 cla__h1--centro">Este link não abre.</h1>
+        <p class="cla__p cla__p--centro" role="alert">
+          Confira se ele foi colado inteiro, exatamente como apareceu depois da sua conexão.
           Se perdeu o link, peça ao seu escritório para revogar o acesso pelo painel deles.
         </p>
       </template>
 
       <template v-else-if="estado === 'erro'">
-        <h1 class="cla__h1">Não conseguimos abrir agora.</h1>
-        <p class="cla__sub" role="alert">Tente de novo em instantes. Se seguir assim, escreva pra contato@redentia.com.</p>
-        <button type="button" class="cla__retry" @click="carregar">Tentar de novo</button>
+        <div class="cla__glifo cla__glifo--alerta" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
+        </div>
+        <h1 data-cc-titulo tabindex="-1" class="cla__h1 cla__h1--centro">Não conseguimos abrir agora.</h1>
+        <p class="cla__p cla__p--centro" role="alert">Tente de novo em instantes. Se seguir assim, escreva pra contato@redentia.com.</p>
+        <footer class="cla__foot">
+          <ClienteConnectButton @click="carregar">Tentar de novo</ClienteConnectButton>
+        </footer>
       </template>
 
       <template v-else-if="info">
-        <h1 class="cla__h1">{{ titulo }}</h1>
+        <div class="cla__topo">
+          <ClienteInstLogo v-if="inst" :inst="inst" :size="44" />
+          <div class="cla__topo-t">
+            <h1 data-cc-titulo tabindex="-1" class="cla__h1">{{ titulo }}</h1>
+            <p v-if="inst" class="cla__inst">{{ inst.name }}<template v-if="info.demo"> · demonstração</template></p>
+          </div>
+        </div>
+
         <p v-if="info.demo" class="cla__demo" role="note">
           <strong>Demonstração.</strong> Nenhuma conta sua foi conectada e nenhuma posição sua foi lida: o escritório vê uma carteira fictícia, gerada pela Redentia. Ficam registrados só o seu nome, como o escritório o cadastrou, e a prova do aceite (data, IP e navegador).
         </p>
@@ -157,9 +177,9 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
         </dl>
 
         <div v-if="ativo" class="cla__revogar">
-          <button type="button" class="cla__btn" :class="{ 'cla__btn--armado': armado }" :disabled="revogando" @click="revogar">
+          <ClienteConnectButton variant="danger" :armado="armado" :loading="revogando" @click="revogar">
             {{ revogando ? 'Revogando…' : armado ? 'Confirmar: revogar agora' : 'Revogar acesso' }}
-          </button>
+          </ClienteConnectButton>
           <p class="cla__hint">
             {{ armado
               ? 'Clique de novo em até 5 segundos para confirmar. O escritório perde o acesso e as posições guardadas na Redentia são apagadas na hora.'
@@ -178,59 +198,51 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
         </ol>
         <p class="cla__nota">Mostra os 20 registros mais recentes. O registro nunca guarda as suas posições.</p>
       </template>
-    </div>
-  </NuAuthLayout>
+    </section>
+  </ClienteConnect>
 </template>
 
 <style scoped>
-.cla { animation: nu-fade .5s ease both; }
-.cla__eyebrow { display: block; color: var(--nu-blue); font-size: 14.5px; font-weight: 800; letter-spacing: -.01em; }
-.cla__h1 {
-  margin: 10px 0 0; color: var(--nu-ink);
-  font-size: clamp(30px, 3.2vw, 42px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05; text-wrap: balance;
-}
-.cla__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; }
-.cla__skel { margin-top: clamp(28px, 4vh, 44px); display: flex; flex-direction: column; gap: 18px; }
+.cla { flex: 1 1 auto; display: flex; flex-direction: column; }
+.cla__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cla__skel { display: flex; flex-direction: column; gap: 16px; }
 
-.cla__retry {
-  margin-top: 22px; min-height: 44px; padding: 0 24px; border: none; cursor: pointer;
-  background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  font-size: 15px; font-weight: 800; font-family: inherit;
+.cla__glifo {
+  width: 52px; height: 52px; margin: 26px auto 0; border-radius: 16px; background: var(--nu-cream); color: var(--nu-gray-2);
+  display: flex; align-items: center; justify-content: center;
 }
-.cla__retry:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 2px; }
+.cla__glifo--alerta { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 
-.cla__demo {
-  margin: 20px 0 0; padding: 16px 18px; border-radius: var(--nu-r-card);
-  background: var(--nu-cream); border: 1.5px solid var(--nu-cream-line);
-  color: var(--nu-ink); font-size: 14.5px; font-weight: 500; line-height: 1.55;
-}
-.cla__demo strong { font-weight: 800; }
+.cla__topo { display: flex; align-items: center; gap: 14px; }
+.cla__topo-t { min-width: 0; }
+.cla__h1 { margin: 0; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.03em; line-height: 1.2; outline: none; }
+.cla__h1--centro { margin-top: 18px; text-align: center; text-wrap: balance; }
+.cla__inst { margin: 3px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 700; }
+.cla__p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.55; }
+.cla__p--centro { text-align: center; }
+.cla__foot { margin-top: auto; padding-top: 22px; }
 
-.cla__ficha { margin: 24px 0 0; display: flex; flex-direction: column; gap: 12px; }
-.cla__ficha > div { display: flex; flex-direction: column; gap: 3px; }
-.cla__ficha dt { color: var(--nu-gray); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; }
-.cla__ficha dd { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 700; line-height: 1.5; }
+/* a linha de demonstração em cinza pequeno (o selo do cabeçalho é o outro lugar) */
+.cla__demo { margin: 14px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 500; line-height: 1.5; }
+.cla__demo strong { color: var(--nu-gray-2); font-weight: 800; }
+
+.cla__ficha { margin: 18px 0 0; display: flex; flex-direction: column; gap: 11px; }
+.cla__ficha > div { display: flex; flex-direction: column; gap: 2px; }
+.cla__ficha dt { color: var(--nu-gray); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; }
+.cla__ficha dd { margin: 0; color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.5; }
 .cla__escopo { margin: 0; padding: 0; list-style: none; }
 .cla__escopo li { font-weight: 600; }
 .cla__num { font-variant-numeric: tabular-nums; }
 
-.cla__revogar { margin-top: 28px; }
-.cla__btn {
-  min-height: 48px; padding: 0 26px; cursor: pointer; font-family: inherit;
-  background: var(--nu-white); color: var(--nu-red-2); border: 1.5px solid var(--nu-red-2);
-  border-radius: var(--nu-r-pill); font-size: 15.5px; font-weight: 800; transition: background .2s, color .2s;
-}
-.cla__btn--armado { background: var(--nu-red-2); color: var(--nu-white); }
-.cla__btn:disabled { opacity: .6; cursor: default; }
-.cla__btn:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 2px; }
-.cla__hint { margin: 10px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; line-height: 1.55; }
-.cla__erro { margin: 10px 0 0; color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.55; }
+.cla__revogar { margin-top: 20px; }
+.cla__hint { margin: 10px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.5; }
+.cla__erro { margin: 10px 0 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; line-height: 1.5; }
 
-.cla__h2 { margin: 34px 0 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
-.cla__vazio { margin: 10px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; }
-.cla__log { list-style: none; margin: 12px 0 0; padding: 0; }
-.cla__log-i { display: flex; flex-direction: column; gap: 2px; padding: 11px 0; border-top: 1px solid var(--nu-cream-line); }
-.cla__log-a { color: var(--nu-ink); font-size: 14.5px; font-weight: 700; }
-.cla__log-m { color: var(--nu-gray); font-size: 13px; font-weight: 600; }
-.cla__nota { margin: 14px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 500; line-height: 1.55; }
+.cla__h2 { margin: 26px 0 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+.cla__vazio { margin: 8px 0 0; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; }
+.cla__log { list-style: none; margin: 8px 0 0; padding: 0; }
+.cla__log-i { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px solid var(--nu-cream-2); }
+.cla__log-a { color: var(--nu-ink); font-size: 13.5px; font-weight: 700; }
+.cla__log-m { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.cla__nota { margin: 12px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 500; line-height: 1.5; }
 </style>
