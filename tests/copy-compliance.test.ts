@@ -56,3 +56,7 @@ test('CV-14: sem "quota do dia" num plano sem teto diário; Clientes é ligado p
   assert.match(src, /conta só no limite por minuto/)
   assert.match(src, /ligado pela Redentia/)
 })
+
+test('CV-16: o FAQ de limites cita o teto global do motor (limiter mcp-simulate)', () => {
+  assert.match(plano('content/business/faq.ts'), /teto compartilhado entre todos os usuários/)
+})

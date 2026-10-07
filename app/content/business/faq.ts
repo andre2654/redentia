@@ -120,7 +120,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Existe limite de uso?',
-        a: 'Sim, e ele é do escritório inteiro, não de cada chave: trezentas chamadas por minuto, somando as cinco, sem teto diário. As duas simulações (simulate_scenario e simulate_client_scenario) têm um sub-limite próprio de vinte por minuto para o escritório, porque cada uma é cálculo pesado, e elas contam também no limite geral. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
+        a: 'Sim, e ele é do escritório inteiro, não de cada chave: trezentas chamadas por minuto, somando as cinco, sem teto diário. As duas simulações (simulate_scenario e simulate_client_scenario) têm um sub-limite próprio de vinte por minuto para o escritório, porque cada uma é cálculo pesado, e elas contam também no limite geral. O motor também tem um teto compartilhado entre todos os usuários; em pico, uma simulação pode pedir para esperar alguns segundos mesmo abaixo de vinte. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
       },
       {
         q: 'Como eu revogo o acesso de quem saiu?',
