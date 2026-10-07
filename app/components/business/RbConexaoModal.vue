@@ -10,7 +10,7 @@
  *   2. Preparar (Claude: abrir os conectores · ChatGPT: ligar o dev mode)
  *   3. Criar o conector (nome + URL copiável)
  *   4. Autorizar (a CHAVE REAL copiável; sem chave, aviso + "Gerar a chave")
- *   5. Testar + instalar as skills (pack zip-de-zips) — Concluir
+ *   5. Conferir + instalar as skills (pack zip-de-zips) — Concluir
  *
  * Cursor/Claude Code/Claude Desktop saíram do modal por decisão do dono;
  * as instruções deles continuam vivas na /mcp (B2C).
@@ -217,10 +217,10 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- ——— 5 · testar + skills ——— -->
+        <!-- ——— 5 · conferir + skills ——— -->
         <div v-else class="rbcx__body">
           <p class="rbcx__dek">
-            Teste num chat novo: <strong>"Como está o mercado hoje?"</strong> — se a resposta vier
+            Confira num chat novo: <strong>"Como está o mercado hoje?"</strong> — se a resposta vier
             com dado da Redentia, está de pé. E as skills ensinam o assistente a usar o MCP direito.
           </p>
           <a href="/downloads/skills/redentia-skills-pack.zip" download class="rbcx__acao">

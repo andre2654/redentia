@@ -25,7 +25,7 @@
  * repete o que viu na tela e leva uma recusa. Se você mexer no card, mexa na
  * nota junto. Nunca invente nome de tool aqui.
  *
- * Os números são os mesmos do exemplo fictício de toda a página B2B (Família
+ * Os números são os mesmos do exemplo ilustrativo de toda a página B2B (Família
  * Bittencourt, R$ 1.284.902.117, Marina Duarte) — se mudar aqui, mudou no
  * aria-label também, que é a alternativa textual INTEIRA do card (role="img").
  *
@@ -198,7 +198,7 @@ onBeforeUnmount(clearAll)
             />
           </svg>
         </div>
-        <p class="rbas__legenda">Exemplo. Escritório, nomes e números são fictícios.</p>
+        <p class="rbas__legenda">Exemplo ilustrativo: escritório, nomes e números criados para esta página.</p>
       </div>
     </div>
   </section>
