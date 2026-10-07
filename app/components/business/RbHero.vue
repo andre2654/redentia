@@ -39,7 +39,7 @@
  * ⚠️ NADA AQUI É NÚMERO DE CLIENTE. Os três cards são conceituais: descrevem o
  * que o trabalho FAZ, não resultado que alguém obteve. É deliberado, e a razão
  * está registrada na revisão de 2026-08-13: um número de patrimônio inventado
- * obrigaria uma legenda "valores fictícios" dentro da primeira dobra, e aviso
+ * obrigaria uma legenda de "valores inventados" dentro da primeira dobra, e aviso
  * de ficção acima da dobra é PERDA de credibilidade, não ganho — é a página
  * avisando, no primeiro segundo, que o que você está vendo não aconteceu.
  * Se um cliente autorizar print de tela real um dia, ESTES cards saem.

@@ -25,7 +25,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'O que é o MCP da Redentia?',
-        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, comparações de fundos, teses, notícias e cenários e projeções sobre uma carteira. A carteira de um cliente só entra com o consentimento do próprio cliente, pelo recurso Clientes do escritório, que hoje roda em demonstração, com carteira fictícia. A consolidação com dado real é o que a implantação constrói.',
+        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, comparações de fundos, teses, notícias e cenários e projeções sobre uma carteira. A carteira de um cliente só entra com o consentimento do próprio cliente, pelo recurso Clientes do escritório, liberado por convite, escritório a escritório. A conexão com as instituições dos clientes e a consolidação das carteiras são o que a implantação constrói.',
       },
       {
         q: 'O que é MCP?',
@@ -104,7 +104,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Onde os dados ficam armazenados?',
-        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito para dado real de escritório entrar. É por isso que Clientes do escritório roda hoje só em demonstração: a carteira é fictícia, gerada pela Redentia, e nenhuma carteira real de cliente entra antes do banco separado; hoje ficam só o nome que o escritório cadastra e a prova do consentimento. A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
+        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito: nenhuma carteira vinda da instituição de um cliente entra antes dela. Por isso a conexão de Clientes do escritório com a instituição do cliente é habilitada escritório a escritório, na implantação. Do cliente, ficam guardados o nome que o escritório cadastra e a prova do aceite (data, versão do termo, IP e navegador). A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
       },
       {
         q: 'Algum modelo de IA treina com os dados dos meus clientes?',
@@ -112,7 +112,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Quem na minha equipe vê o quê?',
-        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório (hoje em demonstração), cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por família, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
+        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório, cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por família, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
       },
       {
         q: 'Quantas chaves o escritório tem, e quem cria?',

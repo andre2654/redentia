@@ -2,9 +2,9 @@
 /**
  * Passo 5 — "aguardando sua autorização no banco": o logo da instituição com
  * o anel girando (o pré-loader do Pluggy é um anel de .6 s linear) e um
- * pulso suave. No fluxo real a tela fica assim enquanto a pessoa autoriza no
- * pop-up do banco; no demo ela avança sozinha em alguns segundos (o selo
- * do cabeçalho já diz que é demonstração). "Já autorizei" é o atalho.
+ * pulso suave. No fluxo com o Pluggy a tela fica assim enquanto a pessoa
+ * autoriza no pop-up do banco; no fluxo em que o servidor gera a carteira
+ * ela avança sozinha em alguns segundos. "Já autorizei" é o atalho.
  * Região aria-live para o leitor de tela acompanhar.
  */
 import type { Instituicao } from '~/content/instituicoes'

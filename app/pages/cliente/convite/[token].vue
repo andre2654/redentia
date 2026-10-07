@@ -16,13 +16,12 @@
  * uma vez só, no POST de consentimento (C6) disparado no passo "conectando",
  * com a instituição escolhida. O CPF nunca sai do navegador.
  *
- * DEMONSTRAÇÃO (clients_mode = 'demo'): nenhuma conta do cliente é conectada
- * e nenhuma posição dele é lida (ficam o nome e a prova do aceite); o
- * servidor gera uma carteira fictícia. O widget leva o selo "Demonstração"
- * em todas as telas, diz isso no CPF, no redirecionamento e no sucesso, e
- * não tem marca do Pluggy (seria falso). No modo 'pluggy' (conexão real,
- * ainda não implementada) o servidor responde 409 mode_unavailable e a
- * página mostra o estado de modo indisponível antes do fluxo.
+ * O `mode` do C5 só escolhe o fluxo e nunca aparece na tela. 'demo' (só em
+ * conta interna da Redentia; o servidor trava isso): o servidor gera a
+ * carteira no consentimento e a espera pela autorização avança sozinha. O
+ * widget não leva marca, logo nem nome do Pluggy. 'pluggy' (ainda não
+ * implementado): o servidor responde 409 mode_unavailable, e a página mostra
+ * o estado de conexão indisponível antes do fluxo, não depois do CPF.
  *
  * 100% CLIENT, de propósito: o token está na URL e o link de gestão é
  * segredo. O SSR renderiza só a casca com skeleton; o onMounted consulta o
@@ -80,11 +79,11 @@ const MOTIVOS: Record<string, { titulo: string, texto: string }> = {
   },
   clients_disabled: {
     titulo: 'O escritório não pode receber conexões agora.',
-    texto: 'O recurso de clientes não está ligado na conta do escritório. Fale com quem te mandou o link.',
+    texto: 'A conexão de clientes não está habilitada na conta do escritório. Fale com quem te mandou o link.',
   },
   mode_unavailable: {
     titulo: 'A conexão com a sua instituição ainda não está disponível.',
-    texto: 'Nada foi conectado e nenhuma posição sua foi lida. Avise o seu escritório: o link vai funcionar quando a conexão estiver pronta.',
+    texto: 'Nada foi conectado e nenhuma posição sua foi lida. Avise o seu escritório para combinar o próximo passo.',
   },
   not_found: {
     titulo: 'Este link não abre.',
@@ -95,14 +94,6 @@ const MOTIVOS: Record<string, { titulo: string, texto: string }> = {
     texto: 'Tente de novo em instantes. Se seguir assim, escreva pra contato@redentia.com.',
   },
 }
-
-/**
- * A linha de demonstração da tela de sucesso (o selo do cabeçalho é o outro
- * lugar em que a demonstração aparece). Copy conferida pelo teste de
- * compliance (tests/copy-compliance.test.ts, CV-09): o aceite grava IP e
- * navegador, e o texto declara isso em vez de negar.
- */
-const DEMO_SUCESSO = 'Demonstração: nenhuma conta foi conectada de verdade e os dados mostrados ao assessor são fictícios; ficam só o seu nome e a prova do aceite (data, IP e navegador).'
 
 /** depois de "Concluir": "Tudo certo", ainda com o copiar do link de gestão */
 const fim = ref(false)
@@ -121,7 +112,7 @@ onMounted(async () => {
     const r = await publicFetch<ClientInviteInfo>(`/business/client-invites/${token.value}`)
     info.value = r
     if (!r.valid) return invalido(r.reason ?? 'erro')
-    // Conexão real (Pluggy) ainda não existe: melhor dizer agora do que deixar
+    // A conexão pelo Pluggy ainda não existe: melhor dizer agora do que deixar
     // a pessoa escolher o banco, digitar o CPF e levar o 409 no fim.
     if (r.mode === 'pluggy') return invalido('mode_unavailable')
     if (r.mode !== 'demo') return invalido('clients_disabled')
@@ -134,7 +125,6 @@ onMounted(async () => {
 })
 
 const escritorio = computed(() => info.value?.office?.name ?? null)
-const ehDemo = computed(() => info.value?.mode === 'demo')
 const passo = conexao.passo
 const inst = conexao.instituicao
 
@@ -157,7 +147,7 @@ function recarregar() {
 </script>
 
 <template>
-  <ClienteConnect :passo="chave" :demo="ehDemo" :pode-voltar="podeVoltar" :pode-fechar="podeFechar" @voltar="conexao.voltar" @fechar="fechar">
+  <ClienteConnect :passo="chave" :pode-voltar="podeVoltar" :pode-fechar="podeFechar" @voltar="conexao.voltar" @fechar="fechar">
     <ClienteConnectEstado v-if="estado === 'carregando'" variante="carregando" />
 
     <ClienteConnectEstado v-else-if="estado === 'invalido'" variante="invalido" :titulo="MOTIVOS[motivo]?.titulo" :texto="MOTIVOS[motivo]?.texto" />
@@ -199,8 +189,6 @@ function recarregar() {
         :escritorio="escritorio"
         :assessor="info.advisor_label"
         :manage-url="conexao.resultado.value?.manage_url ?? null"
-        :demo="ehDemo"
-        :demo-texto="DEMO_SUCESSO"
         :fim="fim"
         @concluir="fim = true"
       />
