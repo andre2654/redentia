@@ -146,7 +146,7 @@ const BLOCOS = computed(() => [
         label: 'O que fica de fora',
         color: 'var(--nu-red-2)',
         html: '<strong>Carteira.</strong> Só existe carteira de cliente com o consentimento do próprio cliente, pelo recurso Clientes do escritório, que não está ligado nesta conta. '
-          + 'Se o assistente tentar ler uma carteira, a recusa acontece no servidor e não consome a sua quota do dia.',
+          + 'Se o assistente tentar ler uma carteira, a recusa acontece no servidor e conta só no limite por minuto.',
       },
   {
     label: 'Quota e revogação',
@@ -165,8 +165,8 @@ const BLOCOS = computed(() => [
     <div class="rbks__head">
       <h2 class="rbks__title">O que a chave alcança.</h2>
       <p class="rbks__sub">
-        {{ POR_EXTENSO[nEscopos] ?? 'Os escopos do plano' }}, e nada além deles. O resto o servidor recusa, não é uma configuração que alguém pode ligar.
-        Carteira de cliente só entra com o consentimento do próprio cliente.
+        {{ POR_EXTENSO[nEscopos] ?? 'Os escopos do plano' }}, e nada além deles: o escritório não liga outro escopo por configuração.
+        Carteira de cliente só entra pelo recurso Clientes do escritório, ligado pela Redentia, e com o consentimento do próprio cliente.
       </p>
     </div>
 

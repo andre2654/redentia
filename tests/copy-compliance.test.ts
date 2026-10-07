@@ -48,3 +48,11 @@ test('CV-11: o rótulo de demonstração é do servidor; repetir é instrução 
     assert.match(src, /instruído a repeti-lo/, f)
   }
 })
+
+test('CV-14: sem "quota do dia" num plano sem teto diário; Clientes é ligado pela Redentia', () => {
+  const src = plano('components/business/RbKeysScope.vue')
+  assert.doesNotMatch(src, /quota do dia/)
+  assert.doesNotMatch(src, /não é uma configuração que alguém pode ligar/)
+  assert.match(src, /conta só no limite por minuto/)
+  assert.match(src, /ligado pela Redentia/)
+})
