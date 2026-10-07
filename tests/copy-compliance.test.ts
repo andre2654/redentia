@@ -22,11 +22,12 @@ test('CV-01: banco separado não é afirmado no presente e "nenhum dado real" n�
 })
 
 test('CV-09: ao cliente final, "nenhum dado seu" não volta; IP e navegador do aceite são declarados', () => {
-  for (const f of ['pages/cliente/convite/[token].vue', 'pages/cliente/acesso/[token].vue']) {
-    const src = plano(f)
-    assert.doesNotMatch(src, /nenhum dado (seu|dele)/i, f)
-    assert.match(src, /prova do aceite \(data, IP e navegador\)/, f)
-  }
+  for (const f of ['pages/cliente/convite/[token].vue', 'pages/cliente/acesso/[token].vue'])
+    assert.doesNotMatch(plano(f), /nenhum dado (seu|dele)/i, f)
+  // A página de gestão é onde o cliente confere o que fica guardado. (A linha
+  // da tela de sucesso do convite, que também declarava isso, saiu com a marca
+  // de demonstração; o termo, que vem do servidor, segue declarando.)
+  assert.match(plano('pages/cliente/acesso/[token].vue'), /prova do aceite \(data, IP e navegador\)/)
 })
 
 test('CV-06: o FAQ não diz que nenhuma ferramenta cancela; o link novo cancela o pendente', () => {

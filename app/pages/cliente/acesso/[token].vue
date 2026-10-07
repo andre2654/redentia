@@ -114,7 +114,7 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
 </script>
 
 <template>
-  <ClienteConnect :passo="estado" :demo="Boolean(info?.demo)" rotulo="Gestão do acesso">
+  <ClienteConnect :passo="estado" rotulo="Gestão do acesso">
     <section class="cla">
       <template v-if="estado === 'carregando'">
         <span class="cla__sr" role="status">Abrindo.</span>
@@ -152,13 +152,9 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
           <ClienteInstLogo v-if="inst" :inst="inst" :size="44" />
           <div class="cla__topo-t">
             <h1 data-cc-titulo tabindex="-1" class="cla__h1">{{ titulo }}</h1>
-            <p v-if="inst" class="cla__inst">{{ inst.name }}<template v-if="info.demo"> · demonstração</template></p>
+            <p v-if="inst" class="cla__inst">{{ inst.name }}</p>
           </div>
         </div>
-
-        <p v-if="info.demo" class="cla__demo" role="note">
-          <strong>Demonstração.</strong> Nenhuma conta sua foi conectada e nenhuma posição sua foi lida: o escritório vê uma carteira fictícia, gerada pela Redentia. Ficam registrados só o seu nome, como o escritório o cadastrou, e a prova do aceite (data, IP e navegador).
-        </p>
 
         <dl class="cla__ficha">
           <div v-if="escritorio"><dt>Escritório</dt><dd>{{ escritorio }}</dd></div>
@@ -192,11 +188,14 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
         <p v-if="!info.log?.length" class="cla__vazio">Ainda não há registro de acesso.</p>
         <ol v-else class="cla__log">
           <li v-for="(l, i) in info.log" :key="i" class="cla__log-i">
-            <span class="cla__log-a">{{ clientActionLabel(l.action, info.demo) }}</span>
+            <span class="cla__log-a">{{ clientActionLabel(l.action) }}</span>
             <span class="cla__log-m">{{ clientActorLabel(l.actor, true) }}<template v-if="l.at"> · <span class="cla__num">{{ dataHora(l.at) }}</span></template></span>
           </li>
         </ol>
-        <p class="cla__nota">Mostra os 20 registros mais recentes. O registro nunca guarda as suas posições.</p>
+        <p class="cla__nota">
+          Mostra os 20 registros mais recentes. O registro nunca guarda as suas posições; a prova do aceite (data, IP e navegador)
+          fica guardada pelo prazo descrito no termo.
+        </p>
       </template>
     </section>
   </ClienteConnect>
@@ -221,10 +220,6 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
 .cla__p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.55; }
 .cla__p--centro { text-align: center; }
 .cla__foot { margin-top: auto; padding-top: 22px; }
-
-/* a linha de demonstração em cinza pequeno (o selo do cabeçalho é o outro lugar) */
-.cla__demo { margin: 14px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 500; line-height: 1.5; }
-.cla__demo strong { color: var(--nu-gray-2); font-weight: 800; }
 
 .cla__ficha { margin: 18px 0 0; display: flex; flex-direction: column; gap: 11px; }
 .cla__ficha > div { display: flex; flex-direction: column; gap: 2px; }

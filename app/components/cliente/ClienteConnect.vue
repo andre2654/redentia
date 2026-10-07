@@ -6,13 +6,13 @@
  *  - desktop: cartão branco de 408 px, altura fixa (o conteúdo rola dentro),
  *    centrado sobre fundo escuro, com o bloco de logo da Redentia no canto;
  *  - mobile (≤ 500 px, o mesmo corte do SDK): tela cheia, sem raio nem sombra;
- *  - cabeçalho: voltar | "Conexão via Open Finance" + selo "Demonstração" | fechar;
+ *  - cabeçalho: voltar | "Conexão via Open Finance" | fechar;
  *  - cada passo entra com um fade curto; o foco vai para o título do passo
  *    (marcado com `data-cc-titulo`) a cada troca, e Escape fecha quando o
  *    fechar está disponível.
  *
- * Sem marca do Pluggy de propósito: no demo seria falso. O selo de
- * demonstração é pequeno e fica em TODAS as telas.
+ * Sem marca, logo ou nome do Pluggy de propósito: a marca da casa é a da
+ * Redentia, e o fluxo em que o servidor gera a carteira não passa pelo Pluggy.
  *
  * Quem decide o que entra no cartão (passo, estado de link, página de gestão)
  * é a página: este componente só cuida do chrome e da acessibilidade.
@@ -20,11 +20,10 @@
 withDefaults(defineProps<{
   /** chave do conteúdo atual: muda → transição + foco no título */
   passo: string
-  demo?: boolean
   podeVoltar?: boolean
   podeFechar?: boolean
   rotulo?: string
-}>(), { demo: false, podeVoltar: false, podeFechar: false, rotulo: 'Conexão via Open Finance' })
+}>(), { podeVoltar: false, podeFechar: false, rotulo: 'Conexão via Open Finance' })
 
 const emit = defineEmits<{ voltar: [], fechar: [] }>()
 
@@ -59,7 +58,6 @@ function onKey(e: KeyboardEvent) {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
             {{ rotulo }}
           </span>
-          <span v-if="demo" class="cc__selo">Demonstração</span>
         </div>
 
         <button v-if="podeFechar" type="button" class="cc__icon" aria-label="Fechar" @click="emit('fechar')">
@@ -116,10 +114,6 @@ function onKey(e: KeyboardEvent) {
 .cc__rotulo {
   display: inline-flex; align-items: center; gap: 6px; color: var(--nu-gray);
   font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .9px; white-space: nowrap;
-}
-.cc__selo {
-  display: inline-block; padding: 2px 9px; border-radius: var(--nu-r-pill);
-  background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: 10.5px; font-weight: 800; letter-spacing: .3px;
 }
 
 .cc__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }

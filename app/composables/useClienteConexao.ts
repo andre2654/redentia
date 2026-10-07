@@ -28,7 +28,7 @@ export type PassoConexao = 'intro' | 'instituicao' | 'cpf' | 'redirect' | 'aguar
 export type EtapaStatus = 'pendente' | 'andamento' | 'feito'
 export interface EtapaSync { label: string, status: EtapaStatus }
 
-/** Demo: quanto a tela "aguardando autorização" espera antes de avançar sozinha. */
+/** Fluxo 'demo' (sem janela do banco): quanto a tela "aguardando autorização" espera antes de avançar sozinha. */
 export const DEMO_ESPERA_MS = 4200
 /** Ritmo de cada etapa da sincronização. */
 export const ETAPA_MS = 1000
@@ -57,6 +57,7 @@ export function useClienteConexao(opts: {
   const resultado = ref<ClientConsentResult | null>(null)
   const reduzMovimento = ref(false)
 
+  // 'demo' só escolhe o fluxo (o servidor gera a carteira; não há janela do banco). Nunca vai para a tela.
   const demo = computed(() => opts.info.value?.mode === 'demo')
   // prefers-reduced-motion: as esperas encurtam (o fluxo é o mesmo, sem teatro)
   const ritmo = computed(() => (reduzMovimento.value ? 0.4 : 1))
@@ -199,7 +200,7 @@ export function useClienteConexao(opts: {
   function tentarDeNovo() { void sincronizar() }
 
   return {
-    passo, instituicao, etapas, erro, precisaRecarregar, resultado, demo,
+    passo, instituicao, etapas, erro, precisaRecarregar, resultado,
     continuar, escolher, cpfConfirmado, irParaBanco, autorizado, voltar, tentarDeNovo, reiniciar,
   }
 }

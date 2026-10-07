@@ -7,23 +7,24 @@
  * não aparece em texto. "Concluir" leva ao estado final "Tudo certo", que
  * mantém o copiar: o link aparece SÓ nesta tela, uma vez.
  *
- * No demo, a linha de demonstração (texto da página) diz, em cinza pequeno,
- * que nenhuma conta foi conectada e que os dados do assessor são fictícios.
+ * O subtítulo é o mesmo em qualquer fluxo e não afirma nada sobre a carteira:
+ * diz quem passa a acompanhar e que o acompanhamento é o que a pessoa
+ * autorizou.
  */
 import type { Instituicao } from '~/content/instituicoes'
 
-defineProps<{
+const props = defineProps<{
   inst: Instituicao
   escritorio: string | null
   assessor: string | null
   manageUrl: string | null
-  demo: boolean
-  /** a linha de demonstração (vem da página, onde a copy de compliance é conferida) */
-  demoTexto: string | null
   /** estado final, depois de "Concluir" */
   fim: boolean
 }>()
 const emit = defineEmits<{ concluir: [] }>()
+
+/** Quem passa a acompanhar, abrindo a frase: o assessor, o escritório ou, sem nenhum dos dois, "O escritório". */
+const quem = computed(() => props.assessor?.trim() || props.escritorio?.trim() || 'O escritório')
 
 const copiado = ref(false)
 let timer: ReturnType<typeof setTimeout> | undefined
@@ -46,17 +47,12 @@ onBeforeUnmount(() => clearTimeout(timer))
     <template v-if="!fim">
       <div class="ccok__inst"><ClienteInstLogo :inst="inst" :size="22" /><span>{{ inst.name }}</span></div>
       <h1 data-cc-titulo tabindex="-1" class="ccok__h1">{{ inst.name }} conectado</h1>
-      <p class="ccok__p">
-        <template v-if="demo">A carteira de demonstração já está disponível para {{ assessor ?? escritorio ?? 'o escritório' }}.</template>
-        <template v-else>Seus investimentos já estão disponíveis para {{ assessor ?? escritorio ?? 'o escritório' }}.</template>
-      </p>
+      <p class="ccok__p">{{ quem }} já pode acompanhar as posições de investimento que você autorizou.</p>
     </template>
     <template v-else>
       <h1 data-cc-titulo tabindex="-1" class="ccok__h1 ccok__h1--fim">Tudo certo.</h1>
       <p class="ccok__p">Você já pode fechar esta página.</p>
     </template>
-
-    <p v-if="demo && demoTexto" class="ccok__demo">{{ demoTexto }}</p>
 
     <div v-if="manageUrl" class="ccok__gestao" data-clarity-mask="true">
       <span class="ccok__chave" aria-hidden="true">
@@ -93,7 +89,6 @@ onBeforeUnmount(() => clearTimeout(timer))
 .ccok__h1 { margin: 10px 0 0; color: var(--nu-ink); font-size: 22px; font-weight: 800; letter-spacing: -.03em; line-height: 1.2; outline: none; }
 .ccok__h1--fim { margin-top: 22px; }
 .ccok__p { margin: 8px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.5; }
-.ccok__demo { margin: 12px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 500; line-height: 1.5; }
 
 .ccok__gestao {
   width: 100%; margin-top: 22px; padding: 14px; border-radius: 12px; background: var(--nu-cream);

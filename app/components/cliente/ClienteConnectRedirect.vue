@@ -3,8 +3,7 @@
  * Passo 4 — o aviso de redirecionamento do Open Finance: "vamos te levar para
  * o ambiente do banco" (no Pluggy, a pessoa é levada à página de login Open
  * Finance da instituição num pop-up) com como funciona em três linhas e o
- * botão "Ir para o {banco}". A tela é a mesma no demo: o selo do cabeçalho
- * já diz que é demonstração.
+ * botão "Ir para o {banco}". A tela é a mesma nos dois fluxos de conexão.
  */
 import type { Instituicao } from '~/content/instituicoes'
 
