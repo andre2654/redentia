@@ -44,6 +44,26 @@ const NAME_RE = /^[a-z0-9-]{1,64}$/
 // (U+2190-21FF, ex. "→" de "Conta → MCP") são padrão da casa e ficam de fora.
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2B00}-\u{2BFF}]/u
 
+// Afirmações que o SERVIDOR desmente (revisão de 07/10/2026). Não é lista de
+// termos de compliance: cada regra é um fato do mcp-service/Laravel que uma
+// skill já contradisse. `nunca` reprova se aparecer; `exige` reprova se faltar
+// na skill indicada.
+const FATOS = [
+  {
+    nunca: /nenhum dado (seu|dele|ser[áa] lido)/i,
+    porque: 'o aceite do cliente grava IP e navegador; diga "nenhuma posição será lida"',
+  },
+  {
+    nunca: /(tools|ferramentas) de cen[áa]rios (nem|não) aparecem/i,
+    porque: 'list_scenarios e simulate_scenario são listadas em toda chave; sem o escopo, o servidor recusa',
+  },
+  {
+    slug: 'redentia-clientes',
+    exige: /link anterior para de funcionar/,
+    porque: 'create_client_invite com client_id cancela o convite pendente anterior (ClientInviter)',
+  },
+]
+
 const slugs = readdirSync(ROOT).filter((d) => {
   if (d.startsWith('_') || d.startsWith('.')) return false
   try {
@@ -105,6 +125,11 @@ for (const slug of slugs) {
 
   const emoji = final.match(EMOJI_RE)
   if (emoji) errors.push(`${slug}: emoji/pictograma proibido encontrado (${emoji[0]})`)
+
+  for (const f of FATOS) {
+    if (f.nunca && f.nunca.test(final)) errors.push(`${slug}: "${final.match(f.nunca)[0]}" — ${f.porque}`)
+    if (f.exige && f.slug === slug && !f.exige.test(final)) errors.push(`${slug}: falta ${f.exige} — ${f.porque}`)
+  }
 
   // Marker que sobrou sem resolver = partial esquecido
   if (/<!-- @partial:/.test(final)) errors.push(`${slug}: marker de partial não resolvido no corpo final`)
