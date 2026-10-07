@@ -166,7 +166,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
 
 <template>
   <NuAuthLayout logo-to="/">
-    <template #aside>Você decide quem acompanha<br>a sua carteira. E desliga quando quiser.</template>
+    <template #panel><ClienteAside /></template>
 
     <div class="clc">
       <span class="clc__eyebrow">Convite do seu escritório</span>

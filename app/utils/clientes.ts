@@ -48,8 +48,14 @@ const ACTION_LABEL: Record<string, string> = {
 }
 
 /** Na demonstração, "conexão" é a carteira fictícia: o rótulo diz isso. */
+const ACTION_LABEL_DEMO: Record<string, string> = {
+  connection_added: 'Carteira de demonstração gerada',
+  portfolio_read: 'Carteira de demonstração consultada',
+  simulation_run: 'Simulação rodada sobre a carteira de demonstração',
+}
+
 export function clientActionLabel(action: string, demo = false): string {
-  if (action === 'connection_added' && demo) return 'Carteira de demonstração gerada'
+  if (demo && ACTION_LABEL_DEMO[action]) return ACTION_LABEL_DEMO[action]
   return ACTION_LABEL[action] ?? action
 }
 

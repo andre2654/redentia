@@ -106,7 +106,7 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
 
 <template>
   <NuAuthLayout logo-to="/">
-    <template #aside>Você decide quem acompanha<br>a sua carteira. E desliga quando quiser.</template>
+    <template #panel><ClienteAside /></template>
 
     <div class="cla">
       <span class="cla__eyebrow">Seu acesso</span>
