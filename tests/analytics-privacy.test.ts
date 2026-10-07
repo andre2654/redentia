@@ -49,7 +49,6 @@ test('os quatro plugins de analytics consultam a guarda antes de carregar', () =
 test('link com token e chave na tela vão mascarados para o Clarity', () => {
   for (const f of [
     'components/business/RbClientLink.vue',
-    'pages/cliente/convite/[token].vue',
     'pages/business/convite/[token].vue',
     'components/business/RbKeysTable.vue',
     'components/conta/ContaMcp.vue',
@@ -59,4 +58,12 @@ test('link com token e chave na tela vão mascarados para o Clarity', () => {
     assert.ok(codes.length > 0, `${f}: nenhum <code> de segredo achado`)
     for (const c of codes) assert.match(c, /data-clarity-mask="true"/, `${f}: ${c}`)
   }
+})
+
+test('o bloco do link de gestão na tela de sucesso vai mascarado para o Clarity (a URL não aparece em texto)', () => {
+  const src = readFileSync(new URL('../app/components/cliente/ClienteConnectSucesso.vue', import.meta.url), 'utf8')
+  const blocos = src.match(/<div[^>]*class="ccok__gestao"[^>]*>/g) ?? []
+  assert.ok(blocos.length > 0, 'bloco do link de gestão não achado')
+  for (const b of blocos) assert.match(b, /data-clarity-mask="true"/, b)
+  assert.doesNotMatch(src, /<code/, 'a URL de gestão não deve aparecer em texto')
 })
