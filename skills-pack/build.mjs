@@ -14,7 +14,7 @@
  *   3. Lint roda sobre o PROCESSADO (o que o usuário recebe).
  *   4. Zips em public/downloads/skills/:
  *      <slug>.zip               — SKILL.md na RAIZ + scripts/ (formato claude.ai)
- *      redentia-skills-pack.zip — ZIP DE ZIPS: LEIA-ME.txt + os 4 <slug>.zip
+ *      redentia-skills-pack.zip — ZIP DE ZIPS: LEIA-ME.txt + um <slug>.zip por skill
  *                                 (claude.ai instala um zip por vez; Claude
  *                                 Code descompacta cada um em
  *                                 .claude/skills/<slug>/ — o LEIA-ME repete
@@ -43,6 +43,26 @@ const NAME_RE = /^[a-z0-9-]{1,64}$/
 // Faixas de emoji/pictogramas — proibidos no pack inteiro. Setas tipográficas
 // (U+2190-21FF, ex. "→" de "Conta → MCP") são padrão da casa e ficam de fora.
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2B00}-\u{2BFF}]/u
+
+// Afirmações que o SERVIDOR desmente (revisão de 07/10/2026). Não é lista de
+// termos de compliance: cada regra é um fato do mcp-service/Laravel que uma
+// skill já contradisse. `nunca` reprova se aparecer; `exige` reprova se faltar
+// na skill indicada.
+const FATOS = [
+  {
+    nunca: /nenhum dado (seu|dele|ser[áa] lido)/i,
+    porque: 'o aceite do cliente grava IP e navegador; diga "nenhuma posição será lida"',
+  },
+  {
+    nunca: /(tools|ferramentas) de cen[áa]rios (nem|não) aparecem/i,
+    porque: 'list_scenarios e simulate_scenario são listadas em toda chave; sem o escopo, o servidor recusa',
+  },
+  {
+    slug: 'redentia-clientes',
+    exige: /link anterior para de funcionar/,
+    porque: 'create_client_invite com client_id cancela o convite pendente anterior (ClientInviter)',
+  },
+]
 
 const slugs = readdirSync(ROOT).filter((d) => {
   if (d.startsWith('_') || d.startsWith('.')) return false
@@ -106,6 +126,11 @@ for (const slug of slugs) {
   const emoji = final.match(EMOJI_RE)
   if (emoji) errors.push(`${slug}: emoji/pictograma proibido encontrado (${emoji[0]})`)
 
+  for (const f of FATOS) {
+    if (f.nunca && f.nunca.test(final)) errors.push(`${slug}: "${final.match(f.nunca)[0]}" — ${f.porque}`)
+    if (f.exige && f.slug === slug && !f.exige.test(final)) errors.push(`${slug}: falta ${f.exige} — ${f.porque}`)
+  }
+
   // Marker que sobrou sem resolver = partial esquecido
   if (/<!-- @partial:/.test(final)) errors.push(`${slug}: marker de partial não resolvido no corpo final`)
 }
@@ -139,7 +164,7 @@ for (const slug of slugs) {
 
 // ——— bundle: ZIP DE ZIPS ———
 // O claude.ai só instala skill em zip individual, então o pack principal
-// carrega os 4 zips prontos + LEIA-ME.txt. -0 = store (zip dentro de zip
+// carrega um zip pronto por skill + LEIA-ME.txt. -0 = store (zip dentro de zip
 // não comprime de novo); -j = tudo na raiz, sem caminhos. Slugs ordenados
 // pra listagem estável no diff.
 const LEIAME = `Redentia Skills Pack
@@ -158,6 +183,15 @@ No Claude Code
   1. Crie .claude/skills/ no projeto (ou ~/.claude/skills/ pra valer em tudo).
   2. Descompacte cada zip numa pasta com o nome da skill:
      .claude/skills/redentia-carteira/, e assim por diante.
+
+Que chave cada skill pede
+  redentia-onboarding, redentia-por-que-moveu, redentia-carteira e
+  redentia-comparar-ativos: qualquer chave.
+  redentia-cenarios: escopo de Cenários e projeções. Na chave pessoal ele
+  vem desligado; ligue em redentia.com.br/conta, seção MCP. No plano de
+  escritório ele já vem incluído.
+  redentia-clientes: só chave de escritório numa conta com Clientes do
+  escritório habilitado (hoje em demonstração, com carteira fictícia).
 
 As skills usam a conexão MCP que você já configurou — nenhuma chave nova,
 nenhum acesso além do que a sua chave já alcança.

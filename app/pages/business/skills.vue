@@ -3,7 +3,7 @@
  * /business/skills — o pack de skills do escritório (área logada).
  *
  * A entrega que fecha a lacuna entre "conectou a chave" e "extraiu valor":
- * quatro Agent Skills prontas pra subir no Claude, que ensinam o assistente a
+ * seis Agent Skills prontas pra subir no Claude, que ensinam o assistente a
  * usar o MCP direito — perguntar antes de gastar chamada, respeitar quota,
  * citar a data do dado e entregar texto pronto pro cliente na voz do assessor.
  *
@@ -61,9 +61,23 @@ const SKILLS: SkillCard[] = [
     exemplo: 'BOVA11 ou IVVB11? Quero custo, sobreposição e correlação.',
   },
   {
+    slug: 'redentia-cenarios',
+    nome: 'Cenários e projeções',
+    faz: 'Roda a carteira no motor de projeções da Redentia e devolve a faixa de resultados em 12 meses, o choque de cada ativo com o porquê e a origem do cenário: estudado pela casa, com fontes, ou montado na hora. Sai com texto pro cliente.',
+    exemplo: 'Cliente tem PETR4, VALE3 e BOVA11. E se o dólar for a R$ 7?',
+    nota: 'Faixa estatística com premissas abertas. Não é previsão nem promessa de retorno. Usa o escopo Cenários e projeções, incluído no plano de escritório.',
+  },
+  {
+    slug: 'redentia-clientes',
+    nome: 'Clientes do escritório',
+    faz: 'Convida o cliente com um link de consentimento, mostra quem já conectou, lê a carteira consentida e monta o relatório descritivo pra enviar, com cenário se você pedir.',
+    exemplo: 'Gera o convite pro João. Quando ele aceitar, monta o relatório da carteira dele.',
+    nota: 'Em demonstração: o Open Finance é simulado e a carteira é fictícia. O servidor manda o aviso no topo de cada resposta, e a skill instrui o assistente a repeti-lo na primeira linha. Só existe carteira de cliente com o consentimento do próprio cliente.',
+  },
+  {
     slug: 'redentia-onboarding',
     nome: 'Primeiros passos',
-    faz: 'O guia de bordo: o que cada uma das 9 ferramentas responde, teste de conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
+    faz: 'O guia de bordo: o que cada ferramenta responde (11 ou 15, conforme a chave), teste de conexão em 3 chamadas, o que dá e o que não dá, e a tradução de cada mensagem de erro.',
     exemplo: 'Acabei de conectar a Redentia. O que dá pra fazer?',
   },
 ]
@@ -76,12 +90,12 @@ const SKILLS: SkillCard[] = [
         <div class="rbsk__eyebrow">Redentia For Business</div>
         <h1 class="rbsk__title">Skills prontas<br>pra sua mesa.</h1>
         <p class="rbsk__sub">
-          Quatro skills que ensinam o Claude a usar o MCP do jeito certo: perguntar antes de gastar
-          chamada, respeitar os limites da chave, citar a data de cada dado e entregar texto pronto
-          pro cliente na voz de quem assina — o escritório.
+          Seis skills que ensinam o Claude a usar o MCP do jeito certo: perguntar antes de gastar
+          chamada, respeitar os limites da chave, citar a data de cada dado, mostrar a faixa em vez
+          de chutar um número e entregar texto pronto pro cliente na voz de quem assina — o escritório.
         </p>
         <div class="rbsk__meta">
-          <span class="rbsk__pill">4 skills</span>
+          <span class="rbsk__pill">6 skills</span>
           <span class="rbsk__pill rbsk__pill--soft">instala em 2 minutos</span>
           <a href="/downloads/skills/redentia-skills-pack.zip" download class="rbsk__bundle">
             Baixar o pack completo
@@ -115,7 +129,7 @@ const SKILLS: SkillCard[] = [
           <div class="rbsk__col">
             <div class="rbsk__col-tag">No claude.ai</div>
             <ol class="rbsk__steps">
-              <li>Baixe o pack completo — dentro vêm os quatro zips, um por skill — ou só o zip da skill que a mesa vai usar.</li>
+              <li>Baixe o pack completo — dentro vêm os seis zips, um por skill — ou só o zip da skill que a mesa vai usar.</li>
               <li>No Claude, abra Configurações e procure por Skills (em geral dentro de Capacidades; o caminho pode variar com a versão).</li>
               <li>Envie o zip. A skill aparece pelo nome e ativa sozinha quando a pergunta combina com ela.</li>
               <li>Repita pra cada skill que a mesa for usar.</li>

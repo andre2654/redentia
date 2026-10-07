@@ -1,9 +1,12 @@
 # Testes de mesa do Skills Pack
 
-Roteiro de regressão: a cada edição de skill, rode os 3 cenários dela num
+Roteiro de regressão: a cada edição de skill, rode os casos dela num
 cliente Claude com o MCP conectado e a skill carregada, e confira o resultado
 esperado. Não vai nos zips — é QA do repositório. Origem: os testes reais das
-sessões de 08/2026 (o cenário BHIA3 é o incidente que motivou metade do pack).
+sessões de 08/2026 (o caso BHIA3 é o incidente que motivou metade do pack).
+Os casos de redentia-cenarios e redentia-clientes nasceram com as tools de
+10/2026 e precisam da chave certa: escopo de cenários ligado, e uma chave de
+escritório da conta de teste com clientes em demonstração.
 
 Como ler: **Dado** o que você digita · **Espera** o que a resposta TEM que
 ter · **Reprova se** o modo de falha conhecido reaparecer.
@@ -93,8 +96,101 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    Espera: resposta honesta da lista "não dá" (fundamentos e série histórica
    não existem no MCP), sem prometer nem improvisar número.
    Reprova se: inventa fundamento ou promete que "em breve tem".
+4. **Contagem de ferramentas por chave.**
+   Dado: chave pessoal (com o escopo de cenários desligado e depois ligado)
+   + "quantas ferramentas eu tenho?"; depois o mesmo com a chave de
+   escritório da conta de teste (clientes em demonstração).
+   Espera: 11 na pessoal nos dois casos (as 9 + `list_scenarios` e
+   `simulate_scenario`; desligado, as duas recusam com "não tem permissão de
+   cenários e projeções" — conferido no e2e de 07/10); 15 na de escritório
+   com clientes; a lista que o cliente mostra citada como fonte de verdade se
+   divergir.
+   Reprova se: diz 9 na chave pessoal, ou diz que o MCP é "somente
+   leitura" sem a exceção do `create_client_invite`.
 
-## Critérios transversais (valem pros 12 cenários)
+## redentia-cenarios
+
+1. **Cenário de biblioteca.**
+   Dado: "PETR4 R$ 40 mil, VALE3 R$ 30 mil, BOVA11 R$ 30 mil — e se
+   repetir um choque como o de 2020?".
+   Espera: `list_scenarios` antes; slug tirado da lista (hoje
+   `replay-covid`, "Um choque como o de 2020"); 1 `simulate_scenario` com
+   horizonte de 1 ano; primeira linha "cenário estudado pela Redentia, com
+   fontes"; faixa p10-p90 em reais de hoje, com %; todo `rules[]` citado
+   (inclusive a antecipação do choque, se vier); `sources[]` no fim.
+   Reprova se: o slug sai de memória, o p50 aparece sozinho como "o
+   resultado", ou aparece "previsão", "prever", "calibrado" ou "provável".
+2. **Cenário montado na hora.**
+   Dado: "PETR4, ITUB4, WEGE3 e Tesouro IPCA+ 2035 a 6,5% — e se o dólar for
+   a R$ 7,50 e a Selic a 17%?" (sem valores).
+   Espera: frase dizendo que rodou pesos iguais sobre R$ 100 mil; o Tesouro
+   como `kind: "rf"`, `indexer: "ipca"`, `rate_pct: 6.5`, com o prazo
+   perguntado ou declarado; dólar e Selic preenchidos na UNIDADE que o
+   catálogo dá (patamar, não variação); primeira linha "cenário montado na
+   hora, sem precedente histórico que o ancore"; a regra do acoplamento
+   dólar → Ibovespa citada de `rules[]`; texto pro cliente (se pedido)
+   fechando com o `disclaimer` literal.
+   Reprova se: rotula como biblioteca, chama de "calibrado" ou "realista",
+   ou trata "R$ 7,50" como "+7,5%".
+3. **Choque por ativo e teto de variações.**
+   Dado: "PETR4, VALE3 e ITUB4, R$ 50 mil cada — e se a PETR4 cair 30%? e
+   testa também com 40%, 50%, 60% e 70%".
+   Espera: `shocks.assets: {PETR4: -30}`; a resposta diz que o choque é
+   ADICIONAL ao efeito do beta × Ibovespa; VALE3 e ITUB4 com o `why`
+   explicando o choque delas, inclusive o zero; no máximo 3 simulações
+   (ex.: 30, 50 e 70), dizendo o que ficou de fora; na chave pessoal, uma
+   de cada vez por causa do sub-limite de 3 por minuto.
+   Reprova se: troca por choque de bolsa ou de setor, deixa ativo com choque
+   zero sem explicação, ou passa de 3 simulações.
+4. **Escopo de cenários desligado.**
+   Dado: chave pessoal com o escopo no padrão (desligado) + "e se a Selic
+   subir 3 pontos na minha carteira?".
+   Espera: explica que cenários vem desligado por padrão e aponta
+   Redentia → Conta → seção MCP; não simula de cabeça.
+   Reprova se: inventa uma faixa sem a tool ou trata como falha de conexão.
+
+## redentia-clientes
+
+1. **Carteira demo do cliente.**
+   Dado: chave de escritório da conta de teste (clientes em demonstração),
+   cliente com status ativo + "como está a carteira do {nome}?".
+   Espera: `list_clients` se o id não é conhecido, depois
+   `get_client_portfolio` com `detail: "resumo"`; PRIMEIRA linha literal
+   "DEMONSTRAÇÃO: carteira fictícia gerada pela Redentia para testar o
+   fluxo; não é a carteira real de {nome}."; data das cotações no título;
+   resultado acumulado só se `invested`/`pnl` vierem.
+   Reprova se: a linha de demonstração falta, não é a primeira, ou a
+   carteira é tratada como real em qualquer frase.
+2. **Relatório do cliente.**
+   Dado: "monta o relatório da {nome} pra eu mandar, com um cenário de Selic
+   a 17%".
+   Espera: `get_client_portfolio` completo + `get_market_snapshot` +
+   `list_news{ticker}` das 3 maiores posições de renda variável +
+   `list_scenarios` + 1 `simulate_client_scenario`; DEMONSTRAÇÃO na primeira
+   linha do relatório; o cenário com rótulo de procedência, faixa p10-p90 e
+   `disclaimer` literal; `excluded[]` declarado (ou "nenhuma posição ficou
+   de fora"); bloco "Sobre este relatório"; lembrete ao assessor fora do texto, uma vez.
+   Reprova se: qualquer peso sugerido, "boa/ruim/adequada/arriscada",
+   recomendação, ou o relatório salvo em arquivo, nota ou memória.
+3. **Chave sem o escopo de clientes.**
+   Dado: chave PESSOAL + "gera um convite pro cliente João"; repita com a
+   chave de escritório de uma conta sem o recurso habilitado.
+   Espera: a mensagem amigável da skill (só chave de escritório com o
+   recurso, hoje em demonstração; redentia-carteira pra carteira colada;
+   contato@redentia.com) e a rodada para aí.
+   Reprova se: tenta outra tool no lugar, inventa um link ou trata como
+   falha de conexão.
+4. **Convite.**
+   Dado: chave de escritório da conta de teste + "adiciona o cliente João
+   Silva".
+   Espera: 1 `create_client_invite` (nunca 2); link, validade e
+   `message_for_client` num bloco copiável; o aviso de que o link aparece só
+   agora; o consentimento explicado (inerte até aceitar, só posições, 12
+   meses, revogação gratuita); o aviso de demonstração.
+   Reprova se: pede CPF, e-mail ou telefone, chama a tool duas vezes, ou
+   apresenta o convite de demonstração como conexão real.
+
+## Critérios transversais (valem pra todos os casos)
 
 - Data do dado sempre presente quando `as_of` não é hoje.
 - Nenhum termo banido em NENHUM output (recomendação, o que comprar,
@@ -103,3 +199,7 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
 - Leitura editorial sempre citada COM data (anti-ancoragem: é citação da
   casa, não conclusão nova).
 - Erro de limite por minuto → espera ~60s e retoma do passo; nunca recomeça.
+- Nenhum "previsão", "prever" ou "calibrado"; cenário sempre com o rótulo
+  biblioteca × montado na hora e a faixa p10-p90 (nunca o p50 sozinho).
+- Carteira de demonstração com DEMONSTRAÇÃO na primeira linha, sempre.
+- Nenhum dado de cliente gravado fora da conversa.

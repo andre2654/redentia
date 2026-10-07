@@ -1,6 +1,6 @@
 ---
 name: redentia-carteira
-description: Análise completa de uma carteira que o usuário informa na conversa — o assessor cola as posições do cliente ("TICKER — valor", quantidade ou %) e recebe um relatório de mesa com valor, movimento do dia, concentração, notícias que tocam as posições, cruzamento com as teses da Redentia e contexto de mercado, montado com get_quote por posição, list_news, list_theses e get_etf_composition. Funciona com qualquer chave (só usa escopos de mercado, teses e notícias); a carteira nunca sai da conversa. Use quando o usuário pedir "analisa essa carteira", "cliente tem PETR4, HGLG11 e BOVA11", "raio-x da carteira do cliente", "alguma notícia toca essas posições?". NÃO é pra carteira da conta Redentia do próprio usuário (isso é a tool get_portfolio, direto), nem pra sugerir alocação, rebalanceamento ou peso, nem pra explicar um único ativo (redentia-por-que-moveu) ou comparar ativos (redentia-comparar-ativos).
+description: Análise completa de uma carteira que o usuário informa na conversa — o assessor cola as posições do cliente ("TICKER — valor", quantidade ou %) e recebe um relatório de mesa com valor, movimento do dia, concentração, notícias que tocam as posições, cruzamento com as teses da Redentia e contexto de mercado, montado com get_quote por posição, list_news, list_theses e get_etf_composition. Funciona com qualquer chave (só usa escopos de mercado, teses e notícias); a carteira nunca sai da conversa. Use quando o usuário pedir "analisa essa carteira", "cliente tem PETR4, HGLG11 e BOVA11", "raio-x da carteira do cliente", "alguma notícia toca essas posições?". NÃO é pra carteira da conta Redentia do próprio usuário (isso é a tool get_portfolio, direto), nem pra sugerir alocação, rebalanceamento ou peso, nem pra explicar um ativo (redentia-por-que-moveu), comparar ativos (redentia-comparar-ativos), rodar cenário "e se" (redentia-cenarios) ou ler cliente conectado ao escritório (redentia-clientes).
 ---
 
 # Análise da carteira
@@ -8,6 +8,11 @@ description: Análise completa de uma carteira que o usuário informa na convers
 Você monta um relatório de mesa da carteira que o usuário INFORMA na conversa — tipicamente a carteira de um cliente do escritório: o que ela vale, o que mexeu hoje, o que o noticiário e as teses da Redentia tocam nas posições, e o contexto de mercado. Tudo descritivo, com as limitações do dado declaradas. A opinião sobre a carteira é do escritório, nunca sua.
 
 A carteira vem da conversa e fica na conversa: a Redentia não vê essas posições e nada é salvo em lugar nenhum. Se o pedido for a carteira da CONTA Redentia do próprio usuário ("minha carteira na Redentia"), isso é a ferramenta `get_portfolio` (chave pessoal com escopo de carteira) — chame direto, sem esta skill.
+
+Duas fronteiras novas:
+
+- **"E se...?"** ("e se o dólar for a R$ 7?", "quanto essa carteira perde num choque de bolsa?") é cenário, não relatório do dia: a skill é redentia-cenarios, que roda a carteira no motor de projeções e devolve uma faixa sob premissas declaradas. Este relatório não projeta nada.
+- **Cliente conectado ao escritório** (chave de escritório, cliente que consentiu): a carteira se lê pela skill redentia-clientes, direto do servidor e com o consentimento registrado — não peça pro assessor colar. Colar continua valendo pra qualquer carteira que não está conectada.
 
 ## Fonte de verdade: o MCP da Redentia
 
@@ -153,6 +158,10 @@ Depois do relatório, ofereça em uma linha:
 
 > Quer texto pronto pro cliente sobre alguma dessas posições? É a skill redentia-por-que-moveu: me diga o ticker e o formato.
 
+Se o assessor perguntar como a carteira se comportaria num choque, a ponte é outra (uma linha, sem rodar nada aqui):
+
+> Pra ver essa carteira num cenário (dólar, Selic, bolsa, petróleo), a skill é redentia-cenarios: ela devolve uma faixa de resultados com as premissas abertas.
+
 Se for a primeira rodada da conversa, inclua também (uma única vez, nunca dentro de texto pra cliente):
 
 > Os textos pra cliente saem sem aviso de compliance de propósito: revise e envie pelo seu canal — o que chega ao cliente é responsabilidade do escritório.
@@ -172,7 +181,7 @@ Se for a primeira rodada da conversa, inclua também (uma única vez, nunca dent
 
 - Sugerir alocação, rebalanceamento ou peso por ativo — em qualquer formulação, inclusive "só uma ideia".
 - Emitir "carteira recomendada" ou nota de adequação ao perfil (suitability).
-- Projetar retorno ou dizer que a carteira "vai" a algum lugar.
+- Projetar retorno ou dizer que a carteira "vai" a algum lugar — teste de cenário, com faixa e premissas declaradas, é a skill redentia-cenarios.
 - Escrever a carta ou o comentário de convicção do gestor.
 - Guardar a carteira pra "próxima conversa" — o dado vive só aqui.
 
