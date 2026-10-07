@@ -99,7 +99,7 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
       blocks: [
         {
           kind: 'p',
-          html: 'O Redentia MCP é <strong>somente leitura</strong>. Ele responde consultas e não executa nenhuma ação: não existe ferramenta de compra, venda ou transferência. A IA enxerga os seus dados, mas não mexe no seu dinheiro.',
+          html: 'Na chave pessoal, o Redentia MCP é <strong>somente leitura</strong>: responde consultas e não executa nenhuma ação: não existe ferramenta de compra, venda ou transferência. A IA enxerga os seus dados, mas não mexe no seu dinheiro.',
         },
         {
           kind: 'p',
@@ -133,7 +133,7 @@ export const MCP_PARA_INVESTIMENTOS_GUIDE: GuideDoc = {
     },
     {
       q: 'A IA consegue movimentar a minha carteira?',
-      a: 'Não. O acesso é somente leitura por design. O servidor não tem nenhuma ferramenta de compra, venda ou transferência.',
+      a: 'Não. Na chave pessoal, o acesso é somente leitura por design. O servidor não tem nenhuma ferramenta de compra, venda ou transferência.',
     },
   ],
   related: ['Como conectar sua carteira ao ChatGPT e ao Claude', 'Open Finance: sua carteira está espalhada?'],

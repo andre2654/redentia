@@ -60,3 +60,9 @@ test('CV-14: sem "quota do dia" num plano sem teto diário; Clientes é ligado p
 test('CV-16: o FAQ de limites cita o teto global do motor (limiter mcp-simulate)', () => {
   assert.match(plano('content/business/faq.ts'), /teto compartilhado entre todos os usuários/)
 })
+
+test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () => {
+  const g = plano('content/guias/mcp-para-investimentos.ts')
+  assert.doesNotMatch(g, /O Redentia MCP é <strong>somente leitura<\/strong>\./)
+  assert.match(g, /Na chave pessoal, o Redentia MCP é <strong>somente leitura<\/strong>/)
+})
