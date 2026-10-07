@@ -14,7 +14,7 @@
  *   3. Lint roda sobre o PROCESSADO (o que o usuário recebe).
  *   4. Zips em public/downloads/skills/:
  *      <slug>.zip               — SKILL.md na RAIZ + scripts/ (formato claude.ai)
- *      redentia-skills-pack.zip — ZIP DE ZIPS: LEIA-ME.txt + os 4 <slug>.zip
+ *      redentia-skills-pack.zip — ZIP DE ZIPS: LEIA-ME.txt + um <slug>.zip por skill
  *                                 (claude.ai instala um zip por vez; Claude
  *                                 Code descompacta cada um em
  *                                 .claude/skills/<slug>/ — o LEIA-ME repete
@@ -139,7 +139,7 @@ for (const slug of slugs) {
 
 // ——— bundle: ZIP DE ZIPS ———
 // O claude.ai só instala skill em zip individual, então o pack principal
-// carrega os 4 zips prontos + LEIA-ME.txt. -0 = store (zip dentro de zip
+// carrega um zip pronto por skill + LEIA-ME.txt. -0 = store (zip dentro de zip
 // não comprime de novo); -j = tudo na raiz, sem caminhos. Slugs ordenados
 // pra listagem estável no diff.
 const LEIAME = `Redentia Skills Pack
@@ -158,6 +158,15 @@ No Claude Code
   1. Crie .claude/skills/ no projeto (ou ~/.claude/skills/ pra valer em tudo).
   2. Descompacte cada zip numa pasta com o nome da skill:
      .claude/skills/redentia-carteira/, e assim por diante.
+
+Que chave cada skill pede
+  redentia-onboarding, redentia-por-que-moveu, redentia-carteira e
+  redentia-comparar-ativos: qualquer chave.
+  redentia-cenarios: escopo de Cenários e projeções. Na chave pessoal ele
+  vem desligado; ligue em redentia.com.br/conta, seção MCP. No plano de
+  escritório ele já vem incluído.
+  redentia-clientes: só chave de escritório numa conta com Clientes do
+  escritório habilitado (hoje em demonstração, com carteira fictícia).
 
 As skills usam a conexão MCP que você já configurou — nenhuma chave nova,
 nenhum acesso além do que a sua chave já alcança.
