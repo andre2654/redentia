@@ -40,3 +40,11 @@ test('CV-10: o promo não fala em "golpe" nem promete ordem no tempo', () => {
   assert.doesNotMatch(promo, /golpe/i)
   assert.match(promo, /quem mais sente o choque/)
 })
+
+test('CV-11: o rótulo de demonstração é do servidor; repetir é instrução ao assistente, não garantia', () => {
+  for (const f of ['pages/business/clientes.vue', 'components/business/RbKeysScope.vue']) {
+    const src = plano(f)
+    assert.doesNotMatch(src, /rótulo de demonstração em toda resposta|toda resposta do assistente leva/, f)
+    assert.match(src, /instruído a repeti-lo/, f)
+  }
+})

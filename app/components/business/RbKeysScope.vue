@@ -140,7 +140,7 @@ const BLOCOS = computed(() => [
         color: 'var(--nu-gray)',
         html: 'list_clients, create_client_invite, get_client_portfolio e simulate_client_scenario. '
           + 'Só existe carteira de cliente com o consentimento do próprio cliente: o convite é um link inerte até ele ler o termo e aceitar, e ele revoga pelo link de gestão quando quiser. '
-          + '<strong>Hoje é demonstração:</strong> nenhuma conta do cliente é conectada e a carteira é fictícia, gerada pela Redentia, com o rótulo de demonstração em toda resposta.',
+          + '<strong>Hoje é demonstração:</strong> nenhuma conta do cliente é conectada e a carteira é fictícia, gerada pela Redentia. Toda resposta do servidor sobre ela chega com o aviso de demonstração no topo, e o assistente é instruído a repeti-lo; confira antes de repassar.',
       }
     : {
         label: 'O que fica de fora',
