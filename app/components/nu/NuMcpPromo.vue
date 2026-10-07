@@ -147,7 +147,7 @@ const apps = [
         </div>
 
         <h2 id="mpr-title" class="mpr__title">E se o dólar for a R$&nbsp;7?<br>Pergunte pro seu Claude.</h2>
-        <p class="mpr__desc">O <strong>motor de projeções da Redentia</strong> agora roda dentro da sua IA. Choque de dólar, Selic, bolsa ou petróleo em cima da sua carteira: sai a <strong>faixa em reais de hoje</strong> e quem sente o golpe primeiro.</p>
+        <p class="mpr__desc">O <strong>motor de projeções da Redentia</strong> agora roda dentro da sua IA. Choque de dólar, Selic, bolsa ou petróleo em cima da sua carteira: sai a <strong>faixa em reais de hoje</strong> e quem mais sente o choque.</p>
 
         <!-- mock de conversa (fiel à foto) -->
         <div class="mpr__chat">

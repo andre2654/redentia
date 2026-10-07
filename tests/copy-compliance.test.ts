@@ -34,3 +34,9 @@ test('CV-06: o FAQ não diz que nenhuma ferramenta cancela; o link novo cancela 
   assert.doesNotMatch(faq, /revoga, reatribui ou cancela/)
   assert.match(faq, /Um link novo para o mesmo cliente cancela o link pendente anterior/)
 })
+
+test('CV-10: o promo não fala em "golpe" nem promete ordem no tempo', () => {
+  const promo = plano('components/nu/NuMcpPromo.vue')
+  assert.doesNotMatch(promo, /golpe/i)
+  assert.match(promo, /quem mais sente o choque/)
+})
