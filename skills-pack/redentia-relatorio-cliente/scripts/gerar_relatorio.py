@@ -262,8 +262,10 @@ class Doc:
         self.c.setFillColor(CREAM)
         self.c.rect(0, 0, W, H, stroke=0, fill=1)
 
-    def marca_topo(self, x, y, h):
-        """Logo e nome no canto superior esquerdo. Sem marca: Redentia."""
+    def marca_topo(self, x, y, h, maxw=None):
+        """Logo e nome no canto superior esquerdo. Sem marca: Redentia.
+        maxw limita logo + nome juntos (o cabeçalho interno divide a linha
+        com o nome do cliente à direita)."""
         if not self.com_marca:
             self.c.drawImage(str(ASSETS / "logo.png"), x, y, h, h, mask="auto")
             self.text(x + h + 7, y + h * 0.25, "Redentia", "J800", h * 0.72)
@@ -274,9 +276,11 @@ class Doc:
             lw, lh = iw * escala, ih * escala
             self.c.drawImage(self.marca_logo, x, y + (h - lh) / 2, lw, lh, mask="auto")
             x += lw + 8
+            if maxw is not None:
+                maxw -= lw + 8
         if self.marca_nome:
             size = h * 0.72
-            nome = encaixar(self.marca_nome, "J800", size, 290)
+            nome = encaixar(self.marca_nome, "J800", size, 290 if maxw is None else max(40, min(290, maxw)))
             self.text(x, y + h * 0.25, nome, "J800", size)
 
     def rodape(self):
@@ -293,9 +297,12 @@ class Doc:
 
     def cabecalho_interno(self, titulo, sub):
         self.fundo()
-        self.marca_topo(M, H - 62, 18)
-        self.text(W - M, H - 50, encaixar(self.titulo.upper(), "J500", 8, 240), "J500", 8, GRAY, "r")
-        self.text(W - M, H - 62, encaixar(self.cliente, "J700", 9.5, 240), "J700", 9.5, INK, "r")
+        rot = encaixar(self.titulo.upper(), "J500", 8, 220)
+        cli = encaixar(self.cliente, "J700", 9.5, 220)
+        direita = max(largura(rot, "J500", 8), largura(cli, "J700", 9.5))
+        self.marca_topo(M, H - 62, 18, maxw=(W - 2 * M) - direita - 24)
+        self.text(W - M, H - 50, rot, "J500", 8, GRAY, "r")
+        self.text(W - M, H - 62, cli, "J700", 9.5, INK, "r")
         self.c.setStrokeColor(LINE)
         self.c.setLineWidth(0.8)
         self.c.line(M, H - 76, W - M, H - 76)
