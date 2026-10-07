@@ -335,6 +335,7 @@ onBeforeUnmount(() => {
             <dl class="rbcl-meta">
               <div><dt>Status</dt><dd :class="`rbcl-st rbcl-st--${c.status}`">{{ clientStatusLabel(c.status) }}</dd></div>
               <div><dt>Chave responsável</dt><dd>{{ responsavel(c) }}</dd></div>
+              <div v-if="c.institution && c.status !== 'revoked'"><dt>Instituição</dt><dd>{{ c.institution }}</dd></div>
               <div v-if="c.connected_at"><dt>Conectado em</dt><dd class="rbcl-num">{{ dataCurta(c.connected_at) }}</dd></div>
               <div v-if="c.status === 'revoked' && c.revoked_at"><dt>Revogado em</dt><dd class="rbcl-num">{{ dataCurta(c.revoked_at) }}</dd></div>
               <div v-else-if="expira(c)"><dt>Expira em</dt><dd class="rbcl-num">{{ expira(c) }}</dd></div>

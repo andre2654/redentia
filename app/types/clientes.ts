@@ -90,6 +90,8 @@ export interface BusinessClientRow {
   name: string
   status: ClientStatus | string
   source: 'demonstracao' | 'open_finance' | null
+  /** instituição da conexão (o banco que o cliente escolheu); null sem conexão */
+  institution?: string | null
   connected_at: string | null
   consent_expires_at: string | null
   shared_with_office?: boolean
