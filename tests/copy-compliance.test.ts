@@ -28,3 +28,9 @@ test('CV-09: ao cliente final, "nenhum dado seu" não volta; IP e navegador do a
     assert.match(src, /prova do aceite \(data, IP e navegador\)/, f)
   }
 })
+
+test('CV-06: o FAQ não diz que nenhuma ferramenta cancela; o link novo cancela o pendente', () => {
+  const faq = plano('content/business/faq.ts')
+  assert.doesNotMatch(faq, /revoga, reatribui ou cancela/)
+  assert.match(faq, /Um link novo para o mesmo cliente cancela o link pendente anterior/)
+})

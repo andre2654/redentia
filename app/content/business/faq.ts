@@ -58,7 +58,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'A IA pode administrar acessos?',
-        a: 'Não, e isso é deliberado. Ligar, desligar e revogar uma chave só acontece no painel do escritório, por quem entrou com login. Assim uma instrução escondida dentro de uma notícia ou de um extrato nunca consegue virar uma mudança de acesso. O mais perto disso que a IA chega é o convite de cliente: create_client_invite gera um link inerte, que não dá acesso a nada até o próprio cliente ler o termo e consentir. Revogar o acesso de um cliente é do cliente, pelo link dele, ou do escritório, no painel; nenhuma ferramenta da IA revoga, reatribui ou cancela. Escopo não é configurável no plano para escritórios: ele é fixo, e é o catálogo de mercado mais os cenários.',
+        a: 'Não, e isso é deliberado. Ligar, desligar e revogar uma chave só acontece no painel do escritório, por quem entrou com login. Assim uma instrução escondida dentro de uma notícia ou de um extrato nunca consegue virar uma mudança de acesso. O mais perto disso que a IA chega é o convite de cliente: create_client_invite gera um link inerte, que não dá acesso a nada até o próprio cliente ler o termo e consentir. Um link novo para o mesmo cliente cancela o link pendente anterior. Revogar um acesso já dado é do cliente, pelo link dele, ou do escritório, no painel; nenhuma ferramenta da IA revoga ou reatribui. Escopo não é configurável no plano para escritórios: ele é fixo, e é o catálogo de mercado mais os cenários.',
       },
       {
         q: 'A Redentia prevê o mercado?',
