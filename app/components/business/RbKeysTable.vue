@@ -106,7 +106,7 @@ defineExpose({
       <div v-if="plainKey" ref="segredoEl" class="rbkc__secret" role="status">
         <span class="rbkc__secret-l">Chave nova</span>
         <h3 class="rbkc__secret-t">Copie agora.</h3>
-        <code class="rbkc__code">{{ plainKey }}</code>
+        <code class="rbkc__code" data-clarity-mask="true">{{ plainKey }}</code>
         <button type="button" class="rbkc__copy" @click="emit('copiar')">
           {{ copiado ? 'Copiada' : 'Copiar' }}
         </button>
@@ -247,7 +247,7 @@ defineExpose({
 
                     <div v-if="inviteUrl" class="rbkc__link" role="status">
                       <span class="rbkc__link-l">Convite pronto</span>
-                      <code class="rbkc__link-code">{{ inviteUrl }}</code>
+                      <code class="rbkc__link-code" data-clarity-mask="true">{{ inviteUrl }}</code>
                       <button type="button" class="rbkc__link-copy" @click="emit('copiarConvite')">
                         {{ copiadoConvite ? 'Copiado' : 'Copiar link' }}
                       </button>

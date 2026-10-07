@@ -236,7 +236,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
 
         <div class="rbcv__secret" role="status">
           <span class="rbcv__secret-l">Chave de {{ nome }} · {{ empresa }}</span>
-          <code class="rbcv__code">{{ chave }}</code>
+          <code class="rbcv__code" data-clarity-mask="true">{{ chave }}</code>
           <div class="rbcv__acoes">
             <button type="button" class="rbcv__copy" @click="copiar">
               {{ copiado ? 'Copiada' : 'Copiar' }}

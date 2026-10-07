@@ -5,10 +5,17 @@
 //
 // Measurement ID em runtimeConfig.public.gaId. NUXT_PUBLIC_GA_ID= vazio
 // desliga em qualquer env.
+//
+// NÃO carrega em rota com token no path (/cliente/convite, /cliente/acesso,
+// /business/convite): o page_location levaria o segredo ao GA4. Ver
+// utils/analytics-privacy.ts.
+import { isSecretTokenPath } from '~/utils/analytics-privacy'
+
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   const gaId = (config.public as any).gaId as string
   if (!gaId) return
+  if (isSecretTokenPath(window.location.pathname)) return
 
   const installGtag = () => {
     if ((window as any).gtag) return
@@ -39,6 +46,7 @@ export default defineNuxtPlugin(() => {
   const router = useRouter()
   router.afterEach((to) => {
     if (typeof window === 'undefined' || !(window as any).gtag) return
+    if (isSecretTokenPath(to.path)) return
     ;(window as any).gtag('event', 'page_view', {
       page_path: to.fullPath,
       page_location: window.location.href,

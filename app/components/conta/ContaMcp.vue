@@ -145,7 +145,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 
       <template v-else-if="hasKey">
         <div class="mcp__key-row">
-          <code class="mcp__key">{{ tokenText }}</code>
+          <code class="mcp__key" data-clarity-mask="true">{{ tokenText }}</code>
           <button v-if="plainKey" type="button" class="mcp__reveal" @click="reveal = !reveal">{{ reveal ? 'Ocultar' : 'Revelar' }}</button>
           <!-- sem a chave em claro (depois do reload), copiar copiaria o mascarado — some -->
           <button v-if="plainKey" type="button" class="mcp__copy" :class="{ 'mcp__copy--done': copiedToken }" @click="copyToken">{{ copiedToken ? 'Copiado' : 'Copiar' }}</button>

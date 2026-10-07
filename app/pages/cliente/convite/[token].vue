@@ -253,7 +253,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
 
         <div v-if="manageUrl" class="clc__secret" role="status">
           <span class="clc__secret-l">Seu link de gestão</span>
-          <code class="clc__code">{{ manageUrl }}</code>
+          <code class="clc__code" data-clarity-mask="true">{{ manageUrl }}</code>
           <div class="clc__acoes">
             <button type="button" class="clc__copy" @click="copiar">{{ copiado ? 'Copiado' : 'Copiar link' }}</button>
             <a :href="manageUrl" class="clc__how" rel="noreferrer">Abrir</a>

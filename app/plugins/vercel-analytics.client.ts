@@ -10,7 +10,15 @@
 // history API), então cobre o SSR + SPA do Nu sem nada manual.
 //
 // Em localhost o endpoint não existe (404 inofensivo); em prod flui normal.
+//
+// NÃO carrega em rota com token no path (/cliente/convite, /cliente/acesso,
+// /business/convite): o pageview levaria o segredo. Ver
+// utils/analytics-privacy.ts.
+import { isSecretTokenPath } from '~/utils/analytics-privacy'
+
 export default defineNuxtPlugin(() => {
+  if (isSecretTokenPath(window.location.pathname)) return
+
   const w = window as unknown as { va?: (...p: unknown[]) => void, vaq?: unknown[] }
 
   // Fila padrão do SDK: eventos custom (ex.: w.va('event', {...})) disparados

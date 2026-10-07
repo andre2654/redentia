@@ -15,7 +15,7 @@ defineEmits<{ (e: 'copiar'): void }>()
 <template>
   <div class="rbcln" role="status">
     <span class="rbcln__l">Link de convite · {{ link.clientName }}</span>
-    <code class="rbcln__code">{{ link.url }}</code>
+    <code class="rbcln__code" data-clarity-mask="true">{{ link.url }}</code>
     <button type="button" class="rbcln__copy" @click="$emit('copiar')">{{ copiado ? 'Copiado' : 'Copiar link' }}</button>
     <p class="rbcln__warn">
       Ele aparece só agora. Vale uma vez<template v-if="link.expiresAt">, até {{ dataCurta(link.expiresAt) }}</template>.
