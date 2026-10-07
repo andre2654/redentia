@@ -137,7 +137,7 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
       <template v-else-if="info">
         <h1 class="cla__h1">{{ titulo }}</h1>
         <p v-if="info.demo" class="cla__demo" role="note">
-          <strong>Demonstração.</strong> Nenhuma conta sua foi conectada e nenhum dado seu foi lido: o escritório vê uma carteira fictícia, gerada pela Redentia.
+          <strong>Demonstração.</strong> Nenhuma conta sua foi conectada e nenhuma posição sua foi lida: o escritório vê uma carteira fictícia, gerada pela Redentia. Ficam registrados só o seu nome, como o escritório o cadastrou, e a prova do aceite (data, IP e navegador).
         </p>
 
         <dl class="cla__ficha">

@@ -20,3 +20,11 @@ test('CV-01: banco separado não é afirmado no presente e "nenhum dado real" n�
   for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts', 'pages/business/clientes.vue'])
     assert.doesNotMatch(plano(f), /nenhum dado real/i, f)
 })
+
+test('CV-09: ao cliente final, "nenhum dado seu" não volta; IP e navegador do aceite são declarados', () => {
+  for (const f of ['pages/cliente/convite/[token].vue', 'pages/cliente/acesso/[token].vue']) {
+    const src = plano(f)
+    assert.doesNotMatch(src, /nenhum dado (seu|dele)/i, f)
+    assert.match(src, /prova do aceite \(data, IP e navegador\)/, f)
+  }
+})

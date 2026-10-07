@@ -12,7 +12,7 @@
  * pronto (com o link de gestão, mostrado uma vez).
  *
  * DEMONSTRAÇÃO (clients_mode = 'demo'): nenhuma conta do cliente é conectada
- * e nenhum dado dele é lido; o servidor gera uma carteira fictícia. A página
+ * e nenhuma posição dele é lida (ficam o nome e a prova do aceite); o servidor gera uma carteira fictícia. A página
  * diz isso com todas as letras, ANTES do botão e depois do aceite. No modo
  * 'pluggy' (conexão real, ainda não implementada) o servidor responde 409
  * mode_unavailable e a página explica que a conexão não está disponível.
@@ -82,7 +82,7 @@ const MOTIVOS: Record<string, { titulo: string, texto: string }> = {
   },
   mode_unavailable: {
     titulo: 'A conexão com a sua instituição ainda não está disponível.',
-    texto: 'Nada foi conectado e nenhum dado seu foi lido. Avise o seu escritório: o link vai funcionar quando a conexão estiver pronta.',
+    texto: 'Nada foi conectado e nenhuma posição sua foi lida. Avise o seu escritório: o link vai funcionar quando a conexão estiver pronta.',
   },
   not_found: {
     titulo: 'Este link não abre.',
@@ -198,7 +198,8 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
         </p>
 
         <p v-if="ehDemo" class="clc__demo" role="note">
-          <strong>Isto é uma demonstração: nenhuma conta sua será conectada e nenhum dado seu será lido.</strong>
+          <strong>Isto é uma demonstração: nenhuma conta sua será conectada e nenhuma posição sua será lida.</strong>
+          Ficam registrados só o seu nome, como o escritório o cadastrou, e a prova do aceite (data, IP e navegador).
           Se você aceitar, a Redentia gera uma carteira fictícia para o escritório testar o fluxo.
         </p>
 
@@ -244,7 +245,7 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
         <h1 class="clc__h1">{{ demoConectado ? 'Pronto. A demonstração está ligada.' : 'Pronto. O acesso está ligado.' }}</h1>
         <p class="clc__sub">
           <template v-if="demoConectado">
-            {{ escritorio ?? 'O escritório' }} vê agora uma carteira fictícia, gerada pela Redentia. Nenhuma conta sua foi conectada e nenhum dado seu foi lido.
+            {{ escritorio ?? 'O escritório' }} vê agora uma carteira fictícia, gerada pela Redentia. Nenhuma conta sua foi conectada e nenhuma posição sua foi lida.
           </template>
           <template v-else>
             {{ escritorio ?? 'O escritório' }} passa a ver as suas posições de investimento, nos termos que você aceitou.
