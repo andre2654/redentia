@@ -83,7 +83,7 @@ const PASSOS = [
   <section class="rbkh">
     <div class="rbkh__cols">
       <div class="rbkh__main">
-        <span class="rbkh__eyebrow">{{ conta.company_name }}</span>
+        <span class="rbkh__eyebrow" data-clarity-mask="true">{{ conta.company_name }}</span>
 
         <!-- conta liberada e ainda sem uso: o herói vira frase, como o estado
              connect do CarteiraHero. Número zero em 96px não informa nada. -->
@@ -157,7 +157,7 @@ const PASSOS = [
             <dl class="rbkh__legend">
               <div v-for="k in porChave" :key="k.id" class="rbkh__legend-row">
                 <span class="rbkh__legend-dot" :style="{ background: totalChaves > 0 ? k.cor : 'var(--nu-cream-3)' }" />
-                <dt class="rbkh__legend-name">{{ k.label }}</dt>
+                <dt class="rbkh__legend-name" data-clarity-mask="true">{{ k.label }}</dt>
                 <dd class="rbkh__legend-val">{{ num(k.calls) }}</dd>
                 <dd class="rbkh__legend-pct">{{ k.pct }}%</dd>
               </div>

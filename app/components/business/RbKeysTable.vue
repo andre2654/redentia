@@ -138,12 +138,12 @@ defineExpose({
                 <td>
                   <form v-if="renomeando === k.id" class="rbkc__rename" @submit.prevent="emit('salvarRename', k.id)">
                     <label :for="`rbk-rn-${k.id}`" class="rbk-sr">Novo nome da chave</label>
-                    <input :id="`rbk-rn-${k.id}`" v-model="novoRotulo" type="text" maxlength="40">
+                    <input :id="`rbk-rn-${k.id}`" v-model="novoRotulo" type="text" maxlength="40" data-clarity-mask="true">
                     <button type="submit" class="rbk-act" :disabled="busy || novoRotulo.trim().length < 2">Salvar</button>
                     <button type="button" class="rbk-act" @click="emit('cancelarRename')">Cancelar</button>
                   </form>
                   <template v-else>
-                    <strong class="rbkc__name">{{ k.label }}</strong>
+                    <strong :id="`rbk-nm-${k.id}`" class="rbkc__name" data-clarity-mask="true">{{ k.label }}</strong>
                     <code class="rbkc__mask">{{ k.masked }}</code>
                   </template>
                 </td>
@@ -163,10 +163,14 @@ defineExpose({
                 </td>
                 <td data-l="Último uso"><span class="rbkc__quando">{{ quando(k.last_used_at) }}</span></td>
                 <td data-l="Ativa">
+                  <!-- aria-labelledby e não aria-label com o nome: o Clarity
+                       mascara texto, não atributo, e o rótulo da chave costuma
+                       ser o nome de uma pessoa da casa. -->
+                  <span :id="`rbk-tg-${k.id}`" class="rbk-sr">{{ k.enabled ? 'Desativar a chave' : 'Ativar a chave' }}</span>
                   <NuToggle
                     :model-value="k.enabled"
                     :disabled="busy"
-                    :aria-label="k.enabled ? `Desativar a chave ${k.label}` : `Ativar a chave ${k.label}`"
+                    :aria-labelledby="`rbk-tg-${k.id} rbk-nm-${k.id}`"
                     @update:model-value="v => emit('toggle', k.id, v)"
                   />
                 </td>
@@ -200,6 +204,7 @@ defineExpose({
                       v-model="rotulo"
                       type="text"
                       maxlength="40"
+                      data-clarity-mask="true"
                       placeholder="Mesa, Análise, nome de quem vai usar"
                     >
                     <button type="submit" :disabled="busy || rotulo.trim().length < 2">
@@ -234,6 +239,7 @@ defineExpose({
                         v-model="nomeConvite"
                         type="text"
                         maxlength="40"
+                        data-clarity-mask="true"
                         placeholder="Nome de quem vai receber (opcional)"
                       >
                       <button type="submit" :disabled="busy">
@@ -258,7 +264,7 @@ defineExpose({
 
                     <ul v-if="pendentes.length" class="rbkc__pendentes">
                       <li v-for="i in pendentes" :key="i.id" class="rbkc__pend">
-                        <span class="rbkc__pend-nome">{{ i.label ?? 'Sem nome' }}</span>
+                        <span class="rbkc__pend-nome" data-clarity-mask="true">{{ i.label ?? 'Sem nome' }}</span>
                         <span class="rbkc__pend-ate">aguardando · vale até {{ quando(i.expires_at) }}</span>
                         <button type="button" class="rbk-act" :disabled="busy" @click="emit('cancelarConvite', i.id)">
                           Cancelar

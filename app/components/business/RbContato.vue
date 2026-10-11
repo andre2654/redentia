@@ -9,21 +9,24 @@
  * existir endpoint de verdade, esta seção ganha o form; até lá, o e-mail é
  * honesto e funciona.
  *
- * A lista do "o que ajuda mandar junto" não é enfeite: são três das sete
- * verificações bloqueantes do plano (V5 forma do portfólio, V7 o relatório
- * cabe num template, e o alvo da POC). Perguntar isso no primeiro e-mail
- * antecipa a qualificação em uma reunião inteira.
+ * A lista do "o que ajuda mandar junto" é qualificação antecipada: cada item
+ * decide o que a primeira hora mostra. TROCADA EM 11/10/2026: pedia "quantas
+ * famílias, por quantos custodiantes", "um extrato de exemplo" e "qual etapa
+ * do fechamento dói", que eram as perguntas da consolidação (Tese 1). Agora
+ * pede o que o setup usa de fato: a lista da mesa, uma carteira em pesos (sem
+ * nome de cliente, que é o que uma assessoria vinculada pode mandar) e o tipo
+ * de casa, que decide se Clientes do escritório entra na conversa.
  *
- * COPY REVISADA (2026-08-01): só o item 2 ("anonimizado se quiser"). O "a
- * gente" do dek FICA de propósito: é a voz desta página (Fale com a gente),
- * diferente da landing prototipada, que conjugava 1ª do plural.
+ * COPY REVISADA (2026-08-01): o "a gente" do dek FICA de propósito: é a voz
+ * desta página (Fale com a gente), diferente da landing prototipada, que
+ * conjugava 1ª do plural.
  */
 const EMAIL = 'contato@redentia.com'
 
 const ANTECEDE = [
-  'Quantas famílias você atende e por quantos custodiantes o patrimônio delas está espalhado.',
-  'Um extrato de exemplo, anonimizado se quiser. É o que diz se a captura funciona no seu caso.',
-  'Qual etapa do fechamento dói mais hoje. É por ela que a implantação começa.',
+  'Os ativos que a mesa acompanha, em lista. É por eles que o assistente começa a responder.',
+  'Uma carteira-modelo em pesos, sem nome de cliente. É ela que roda no primeiro cenário.',
+  'Se a casa é assessoria vinculada, family office ou gestora. Muda o que entra no primeiro dia.',
 ]
 </script>
 
@@ -35,8 +38,9 @@ const ANTECEDE = [
           Uma hora<br>pra saber se dá.
           <template #dek>
             O setup é uma reunião técnica, não uma apresentação comercial. A gente
-            olha de onde vem o seu dado hoje, escolhe a tese e monta o cronograma.
-            <strong>Se não fizer sentido, a reunião termina com isso.</strong>
+            conecta o Claude ou o ChatGPT da mesa, roda a sua lista e uma carteira
+            da casa num cenário. <strong>Se não fizer sentido, a reunião termina
+            com isso.</strong>
           </template>
         </NuSectionHeading>
 

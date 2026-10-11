@@ -14,7 +14,7 @@ defineEmits<{ (e: 'copiar'): void }>()
 
 <template>
   <div class="rbcln" role="status">
-    <span class="rbcln__l">Link de convite · {{ link.clientName }}</span>
+    <span class="rbcln__l">Link de convite · <span data-clarity-mask="true">{{ link.clientName }}</span></span>
     <code class="rbcln__code" data-clarity-mask="true">{{ link.url }}</code>
     <button type="button" class="rbcln__copy" @click="$emit('copiar')">{{ copiado ? 'Copiado' : 'Copiar link' }}</button>
     <p class="rbcln__warn">

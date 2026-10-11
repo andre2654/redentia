@@ -47,7 +47,9 @@ const connectLabel = computed(() =>
 </script>
 
 <template>
-  <div class="ccp" aria-label="Contas conectadas">
+  <!-- data-clarity-mask: a pílula leva instituição e patrimônio, e o logo
+       (src com o nome do banco) também some da gravação com a máscara. -->
+  <div class="ccp" aria-label="Contas conectadas" data-clarity-mask="true">
     <template v-if="loading">
       <NuSkeleton variant="line" width="172px" height="44px" radius="pill" />
       <NuSkeleton variant="line" width="144px" height="44px" radius="pill" />
@@ -58,14 +60,18 @@ const connectLabel = computed(() =>
         v-for="c in connections" :key="c.id"
         to="/conta#open-finance"
         class="ccp__pill"
-        :aria-label="`${c.institution_name}: ${pillTotal(c)}, ${pillAtivos(c)}. Gerenciar conexões.`"
       >
+        <!-- O nome acessível sai do TEXTO (mascarado) e não de aria-label:
+             o Clarity mascara texto, não atributo. Lido: "Itaú: R$ X · N ativos.
+             Gerenciar conexões." -->
+        <span class="ccp__sr">{{ c.institution_name }}: </span>
         <span class="ccp__logo" aria-hidden="true">
           <img v-if="c.institution_logo" :src="c.institution_logo" alt="" class="ccp__logo-img" loading="lazy" width="26" height="26">
           <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V7l6-4 6 4v14" /></svg>
         </span>
         <span class="ccp__total">{{ pillTotal(c) }}</span>
         <span class="ccp__ativos">· {{ pillAtivos(c) }}</span>
+        <span class="ccp__sr">. Gerenciar conexões.</span>
       </NuxtLink>
 
       <button
@@ -82,6 +88,11 @@ const connectLabel = computed(() =>
 </template>
 
 <style scoped>
+/* texto só para leitor de tela (o nome da instituição e a ação da pílula) */
+.ccp__sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 .ccp { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
 
 .ccp__pill {

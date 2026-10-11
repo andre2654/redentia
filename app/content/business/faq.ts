@@ -1,5 +1,5 @@
 /**
- * FAQ da Redentia for Business — 32 perguntas em 5 grupos.
+ * FAQ da Redentia for Business — 29 perguntas em 5 grupos.
  *
  * A copy veio da landing prototipada em docs/redentia-business/ e passou por
  * três rodadas de revisão adversarial (docs/redentia-business/revisoes/), com
@@ -11,6 +11,25 @@
  * dado"). Os grupos vêm da landing e hoje NÃO são renderizados: o RbFaq
  * espelha o FAQ da home, que é um accordion único, e achata com flatMap. A
  * estrutura fica porque é a ordem editorial das perguntas.
+ *
+ * REVISÃO DE 11/10/2026 (o que está no ar, para as calls de venda). Saíram as
+ * respostas da tese de consolidação, que o produto não entrega: "o valor é o
+ * do custodiante", "a divergência vira exceção aberta", "quem confere o
+ * fechamento", "você recebe o livro consolidado exportado", "atendemos cinco
+ * escritórios por trimestre" e o "banco separado" da pergunta de
+ * armazenamento. Cada resposta nova foi conferida no código em origin/main
+ * (Backend e mcp-service) no mesmo dia:
+ *  - carteira colada não é gravada: ScenarioSimulationController::mcpSimulate
+ *    não persiste, e o log do mcp-service guarda o nome da ferramenta, não os
+ *    argumentos (tools.ts, função log);
+ *  - classes da carteira conectada: enum asset_class de
+ *    business_client_positions (STOCK, REIT, ETF, BDR, TREASURY, CRYPTO);
+ *  - instituições: config/business_clients.php `institutions`;
+ *  - consentimento: business_client_consents (granted_at, terms_version,
+ *    terms_sha256, user_agent; o IP só quando a origem é provada, ver
+ *    RbSeguranca), 12 meses (consent_months), revogação apaga as posições;
+ *  - controlador e operador: o próprio termo (cláusula 1);
+ *  - relatório: a skill redentia-relatorio-cliente (skills-pack/).
  */
 import type { NuFaqItem } from '~/types/market'
 
@@ -25,7 +44,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'O que é o MCP da Redentia?',
-        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, comparações de fundos, teses, notícias e cenários e projeções sobre uma carteira. A carteira de um cliente só entra com o consentimento do próprio cliente, pelo recurso Clientes do escritório, liberado por convite, escritório a escritório. A conexão com as instituições dos clientes e a consolidação das carteiras são o que a implantação constrói.',
+        a: 'É o servidor oficial da Redentia no Model Context Protocol. Com ele, o assistente de IA que a sua casa já usa passa a responder sobre o mercado brasileiro com dado real, em vez de dado genérico ou inventado: cotações, notícias com a leitura da Redentia, teses, comparação de fundos e cenários e projeções sobre uma carteira. A carteira de um cliente só entra com o consentimento do próprio cliente, pelo recurso Clientes do escritório, liberado por convite, escritório a escritório.',
       },
       {
         q: 'O que é MCP?',
@@ -62,40 +81,32 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'A Redentia prevê o mercado?',
-        a: 'Não. Ela mostra a faixa do que pode acontecer com uma carteira num cenário, da ponta de baixo (p10) à de cima (p90), em reais de hoje e com as premissas abertas. Cenário estudado pela Redentia vem com fontes; cenário montado na hora, na conversa, vem rotulado como montado na hora, sem precedente histórico que o ancore. Não é previsão nem promessa de retorno.',
+        a: 'Não. Ela mostra a faixa do que pode acontecer com uma carteira num cenário, da ponta de baixo (p10) à de cima (p90), em reais de hoje e com as premissas abertas. Cenário estudado pela Redentia vem com fontes; cenário montado na hora, na conversa, vem rotulado como montado na hora, sem precedente histórico que o ancore. É uma faixa, não um ponto: não promete retorno nem aposta num resultado único.',
       },
     ],
   },
   {
-    grupo: 'O dado',
+    grupo: 'Cenários e carteiras',
     itens: [
       {
-        q: 'De onde vem o dado das carteiras?',
-        a: 'Do Open Finance, a conexão regulada pelo Banco Central, e de arquivos de extrato do custodiante quando o Open Finance não cobre. Nos dois caminhos o acesso é somente leitura, e o payload original fica guardado.',
+        q: 'Preciso conectar cliente para rodar um cenário?',
+        a: 'Não. Cole a carteira na conversa, em valores ou em pesos, sem nome de cliente, e o motor devolve a faixa do patrimônio e o choque de cada ativo com o porquê. Nada da carteira colada fica guardado: o servidor registra que a ferramenta foi chamada, não o que entrou nela. É o caminho de quem é assessor vinculado e não compartilha carteira de cliente fora da corretora.',
       },
       {
-        q: 'Quais instituições estão cobertas?',
-        a: 'As instituições brasileiras alcançáveis por Open Finance, que hoje passam de duzentas entre bancos e corretoras, incluindo XP, BTG, Itaú, Bradesco, Santander, Nubank e Inter.',
+        q: 'De onde vem a carteira de um cliente conectado?',
+        a: 'Do Open Finance, a conexão regulada pelo Banco Central, autorizada pelo próprio cliente num link que o escritório manda. O acesso é de leitura e cobre posições de investimento: ação, FII, ETF, BDR, Tesouro Direto e cripto. Saldo de conta corrente, cartão e extrato de transações não entram.',
+      },
+      {
+        q: 'Quais instituições o cliente consegue conectar?',
+        a: 'Na tela de conexão o cliente escolhe o banco ou a corretora numa lista com as principais do país, entre elas XP Investimentos, BTG Pactual, Itaú, Bradesco, Santander, Banco do Brasil, Nubank e Inter. A conexão com a instituição do cliente é habilitada escritório a escritório, na implantação.',
       },
       {
         q: 'Vocês cobrem offshore?',
-        a: 'Não. Banco privado internacional, fundo exclusivo, previdência, FIP e imóvel estão fora do escopo atual, e isso precisa ser dito na primeira conversa. Se boa parte do patrimônio das suas famílias mora nessas classes, o ganho é menor do que parece.',
-      },
-      {
-        q: 'O valor da posição é o do custodiante ou vocês remarcam?',
-        a: 'É o que o custodiante reportou. A Redentia consolida, normaliza e concilia, e não faz marcação própria de renda fixa. Se a sua casa remarca com curva própria hoje, isso continua sendo trabalho seu.',
+        a: 'Não. Banco privado internacional, fundo exclusivo, previdência, FIP e imóvel estão fora do escopo, e isso precisa ser dito na primeira conversa. Se boa parte do patrimônio dos seus clientes mora nessas classes, o ganho é menor do que parece.',
       },
       {
         q: 'Como eu sei de onde veio um número?',
-        a: 'Cada valor guarda a origem: a instituição, o documento, a data e a regra de normalização que o transformou. A trilha até a linha do extrato é o que estamos construindo para ser clicável de dentro do assistente.',
-      },
-      {
-        q: 'E se o número não bater com o extrato?',
-        a: 'A divergência aparece como exceção aberta, e enquanto ela existir o aviso viaja junto com o número, nunca o número limpo. O fechamento que trava o mês até a exceção ser resolvida ou justificada ainda não existe e é construído na implantação, junto com a sua casa.',
-      },
-      {
-        q: 'Quem confere o fechamento?',
-        a: 'Uma pessoa da sua casa. O registro de quem conferiu, quando e quantas exceções foram justificadas entra junto com a trilha de auditoria, que ainda não existe.',
+        a: 'Toda resposta diz a data do dado e de onde ele veio: a cotação com a data do preço, a notícia com a fonte e a data, e o cenário com a origem (estudado pela Redentia, com fontes, ou montado na hora) e as premissas que o motor usou.',
       },
     ],
   },
@@ -103,16 +114,16 @@ export const RB_FAQ: RbFaqGrupo[] = [
     grupo: 'Segurança, LGPD e responsabilidade',
     itens: [
       {
-        q: 'Onde os dados ficam armazenados?',
-        a: 'O plano de produto prevê banco separado para o dado de escritório, com isolamento por organização aplicado no próprio banco, e essa separação é pré-requisito: nenhuma carteira vinda da instituição de um cliente entra antes dela. Por isso a conexão de Clientes do escritório com a instituição do cliente é habilitada escritório a escritório, na implantação. Do cliente, ficam guardados o nome que o escritório cadastra e a prova do aceite (data, versão do termo, IP e navegador). A região de hospedagem e a matriz de subprocessadores entram no contrato e são fechadas na reunião técnica.',
+        q: 'Onde os dados dos clientes ficam armazenados?',
+        a: 'No banco de dados da Redentia, em tabelas exclusivas do recurso Clientes do escritório, sem cruzar com o cadastro de pessoa física. A separação entre escritórios é feita pela aplicação: antes de cada leitura, o servidor confere a conta, a chave e o consentimento, e responde igual para cliente de outro escritório e para cliente que não existe. Do cliente ficam o nome que o escritório cadastra, as posições enquanto o consentimento vale e a prova do aceite (data, versão do termo, hash do texto aceito e navegador). Revogado ou vencido o consentimento, as posições são apagadas. A região de hospedagem e a lista de subprocessadores entram no contrato.',
       },
       {
         q: 'Algum modelo de IA treina com os dados dos meus clientes?',
-        a: 'A Redentia não treina modelo nenhum com o dado dos seus clientes, e não coloca modelo próprio no caminho. O dado trafega para o modelo que a sua casa escolheu, rodando na sua conta do Claude ou do Cursor, sob o contrato que você já assinou com eles, e é lá que a política de treino é definida. Nós entregamos o dado, não escolhemos nem hospedamos o modelo.',
+        a: 'A Redentia não treina modelo nenhum com o dado dos seus clientes, e não coloca modelo próprio no caminho. O dado trafega para o modelo que a sua casa escolheu, rodando na sua conta do Claude, do ChatGPT ou do Cursor, sob o contrato que você já assinou com eles, e é lá que a política de treino é definida. Nós entregamos o dado, não escolhemos nem hospedamos o modelo.',
       },
       {
         q: 'Quem na minha equipe vê o quê?',
-        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório, cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por família, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
+        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório, cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por cliente, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
       },
       {
         q: 'Quantas chaves o escritório tem, e quem cria?',
@@ -128,19 +139,19 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Existe trilha de auditoria?',
-        a: 'Em parte. Para Clientes do escritório ela já existe: cada convite, consentimento, leitura de carteira, simulação e revogação fica registrado com a chave e a data, sem as posições, e o cliente vê o próprio registro pelo link de gestão. A trilha de toda chamada, com argumentos, resultado, exportação e retenção declarada, é um item do MVP e ainda não existe.',
+        a: 'Em parte. Para Clientes do escritório ela já existe: cada convite, consentimento, leitura de carteira, simulação e revogação fica registrado com a chave e a data, sem as posições, e o cliente vê o próprio registro pelo link de gestão. A trilha de toda chamada, com argumentos, resultado, exportação e retenção declarada, ainda não existe.',
       },
       {
         q: 'A Redentia é controladora ou operadora dos dados?',
-        a: 'Operadora, nos termos da LGPD. Quem determina a finalidade do tratamento é o seu escritório, e o contrato prevê anexo de proteção de dados, matriz de subprocessadores e notificação de incidente.',
+        a: 'Operadora, nos termos da LGPD. Quem determina a finalidade do tratamento é o seu escritório, e o termo que o cliente aceita diz isso com todas as letras: o controlador é o escritório que mandou o convite, e a Redentia guarda e processa os dados em nome dele e segundo as instruções dele.',
       },
       {
         q: 'A Redentia faz recomendação de investimento?',
-        a: 'Não. A Redentia é fornecedora de software: entrega dado, cálculo e formatação. Cenários e projeções são faixa estatística com premissas abertas, não previsão nem promessa de retorno. A opinião, a adequação e a recomendação são do seu escritório, que é registrado para isso. Nada sai para o cliente final sem ação de alguém da sua casa.',
+        a: 'Não. A Redentia é fornecedora de software: entrega dado, cálculo e formatação. Cenários e projeções são faixa estatística com premissas abertas, não promessa de retorno. A opinião, a adequação e a recomendação são do seu escritório, que é registrado para isso. Nada sai para o cliente final sem ação de alguém da sua casa.',
       },
       {
         q: 'O relatório sai com a minha marca?',
-        a: 'Sim, com a ressalva de que a geração do PDF ainda não existe e é uma das entregas da implantação. Logo, cor, CNPJ e domínio do escritório, sem nenhuma menção à Redentia, e o rodapé traz de quantas contas veio, de quantas instituições, quem conferiu e quando.',
+        a: 'Sai. A skill de relatório gera o PDF dentro do Claude, a partir da carteira de um cliente conectado, dos cenários e do mercado do dia, e o modelo aceita o logo, as cores e o tom do escritório. Ela descreve a carteira e os cenários e não recomenda compra, venda nem peso. Precisa de execução de código, que no claude.ai e no Claude Desktop já vem ligada. Se a sua casa é assessoria vinculada, leia antes a RCVM 178: o art. 25, VII, veda ao assessor enviar ao cliente extrato com posições.',
       },
       {
         q: 'A carta do gestor é escrita por IA?',
@@ -157,19 +168,15 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Como funciona a implantação?',
-        a: 'Uma reunião técnica de uma hora mapeia as fontes de dado da casa e escolhemos juntos por onde começar. A conexão dos assistentes leva minutos; o que leva tempo é o dado, e a implantação é acompanhada por gente da Redentia.',
+        a: 'Uma reunião técnica de uma hora: conectamos o assistente de cada chave, instalamos as skills e rodamos uma carteira de vocês num cenário. Clientes do escritório, quando entra, é ligado depois, escritório a escritório, com gente da Redentia acompanhando.',
       },
       {
         q: 'Em quanto tempo eu começo a usar?',
-        a: 'A conexão de um assistente leva minutos. O que leva tempo é a implantação do dado, que depende de quais custodiantes a sua casa usa e de quanto histórico precisa entrar.',
-      },
-      {
-        q: 'Quantos escritórios vocês atendem por trimestre?',
-        a: 'Cinco, e o limite é de atendimento, não de marketing. A implantação é acompanhada de perto e nós preferimos entregar bem para poucos a mal para muitos.',
+        a: 'No dia em que a conta é liberada. A chave conecta em minutos, e mercado, notícias e cenários respondem na hora. Clientes do escritório depende da implantação.',
       },
       {
         q: 'O que acontece com os meus dados se eu cancelar?',
-        a: 'Você recebe o livro consolidado exportado e depois o dado é eliminado, com comprovação escrita e prazo definido em contrato. Exportar antes de destruir é parte do procedimento, não um favor.',
+        a: 'As chaves param de responder e os clientes conectados deixam de ser lidos. As posições dos clientes são apagadas quando o acesso termina; a prova do aceite e o registro de acesso ficam guardados, sem posição, pelo prazo que o termo informa ao cliente.',
       },
     ],
   },

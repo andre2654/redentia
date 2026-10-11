@@ -20,6 +20,11 @@
  * Autenticada como /business/chaves (nu:token → /login?redirect=), layout
  * business, private/no-store e Referrer-Policy no-referrer no nuxt.config:
  * o link do convite aparece nesta tela UMA vez.
+ *
+ * CLARITY (11/10/2026): o Clarity grava sessão nesta rota, e o nome do cliente,
+ * a instituição e a chave responsável apareciam sem máscara nas gravações.
+ * Todo dado de cliente leva data-clarity-mask="true" (texto e input), e nenhum
+ * atributo carrega o nome: o Clarity mascara texto, mas não aria-label.
  */
 import type { BusinessClientRow, ClientLogEntry } from '~/types/clientes'
 
@@ -276,11 +281,11 @@ onBeforeUnmount(() => {
           <form class="rbcl-nova" @submit.prevent="criar">
             <div class="rbcl-campo rbcl-campo--nome">
               <label for="rbcl-nome" class="rbcl-l">Nome do cliente</label>
-              <input id="rbcl-nome" v-model="nome" type="text" maxlength="80" placeholder="Como o escritório chama o cliente" autocomplete="off">
+              <input id="rbcl-nome" v-model="nome" type="text" maxlength="80" placeholder="Como o escritório chama o cliente" autocomplete="off" data-clarity-mask="true">
             </div>
             <div class="rbcl-campo">
               <label for="rbcl-chave" class="rbcl-l">Chave responsável</label>
-              <select id="rbcl-chave" v-model="chaveNova">
+              <select id="rbcl-chave" v-model="chaveNova" data-clarity-mask="true">
                 <option value="">Sem chave por enquanto</option>
                 <option v-for="k in chaves" :key="k.id" :value="String(k.id)">{{ k.label }}</option>
               </select>
@@ -313,7 +318,7 @@ onBeforeUnmount(() => {
           <li v-for="c in clientes" :key="c.id" class="rbcl-item">
             <div class="rbcl-item__top">
               <div class="rbcl-item__nome">
-                <strong>{{ c.name }}</strong>
+                <strong :id="`rbcl-nm-${c.id}`" data-clarity-mask="true">{{ c.name }}</strong>
                 <NuBadge v-if="c.shared_with_office" variant="blue" size="label">Compartilhado</NuBadge>
               </div>
               <button
@@ -326,12 +331,12 @@ onBeforeUnmount(() => {
 
             <dl class="rbcl-meta">
               <div><dt>Status</dt><dd :class="`rbcl-st rbcl-st--${c.status}`">{{ clientStatusLabel(c.status) }}</dd></div>
-              <div><dt>Chave responsável</dt><dd>{{ responsavel(c) }}</dd></div>
-              <div v-if="c.institution && c.status !== 'revoked'"><dt>Instituição</dt><dd>{{ c.institution }}</dd></div>
+              <div><dt>Chave responsável</dt><dd data-clarity-mask="true">{{ responsavel(c) }}</dd></div>
+              <div v-if="c.institution && c.status !== 'revoked'"><dt>Instituição</dt><dd data-clarity-mask="true">{{ c.institution }}</dd></div>
               <div v-if="c.connected_at"><dt>Conectado em</dt><dd class="rbcl-num">{{ dataCurta(c.connected_at) }}</dd></div>
               <div v-if="c.status === 'revoked' && c.revoked_at"><dt>Revogado em</dt><dd class="rbcl-num">{{ dataCurta(c.revoked_at) }}</dd></div>
               <div v-else-if="expira(c)"><dt>Expira em</dt><dd class="rbcl-num">{{ expira(c) }}</dd></div>
-              <div v-if="ultimaLeitura(c)"><dt>Última leitura</dt><dd class="rbcl-num">{{ ultimaLeitura(c) }}</dd></div>
+              <div v-if="ultimaLeitura(c)"><dt>Última leitura</dt><dd class="rbcl-num" data-clarity-mask="true">{{ ultimaLeitura(c) }}</dd></div>
             </dl>
 
             <div v-if="aberto === c.id" :id="`rbcl-det-${c.id}`" class="rbcl-det">
@@ -357,7 +362,7 @@ onBeforeUnmount(() => {
 
               <div class="rbcl-det__linha">
                 <label :for="`rbcl-re-${c.id}`" class="rbcl-l">Reatribuir</label>
-                <select :id="`rbcl-re-${c.id}`" v-model="reatribuir[c.id]">
+                <select :id="`rbcl-re-${c.id}`" v-model="reatribuir[c.id]" data-clarity-mask="true">
                   <option value="">Sem chave</option>
                   <option v-for="k in chaves" :key="k.id" :value="String(k.id)">{{ k.label }}</option>
                 </select>
@@ -371,9 +376,12 @@ onBeforeUnmount(() => {
 
               <div class="rbcl-det__linha">
                 <span class="rbcl-l" :id="`rbcl-sh-${c.id}`">Compartilhar com o escritório</span>
+                <!-- aria-labelledby e não aria-label: o Clarity grava atributo
+                     sem máscara, e o nome do cliente iria junto na gravação. O
+                     nome acessível continua "Compartilhar com o escritório <nome>". -->
                 <NuToggle
                   :model-value="Boolean(c.shared_with_office)" :disabled="busy"
-                  :aria-label="`Compartilhar ${c.name} com todas as chaves do escritório`"
+                  :aria-labelledby="`rbcl-sh-${c.id} rbcl-nm-${c.id}`"
                   @update:model-value="v => compartilhar(c, v)"
                 />
                 <span class="rbcl-ajuda rbcl-ajuda--inline">Todas as chaves ativas passam a ver este cliente.</span>
@@ -391,7 +399,7 @@ onBeforeUnmount(() => {
               <ol v-else class="rbcl-log">
                 <li v-for="(l, i) in (logs[c.id] as ClientLogEntry[])" :key="i">
                   <span class="rbcl-log__a">{{ clientActionLabel(l.action) }}</span>
-                  <span class="rbcl-log__m">
+                  <span class="rbcl-log__m" data-clarity-mask="true">
                     {{ clientActorLabel(l.actor) }}<template v-if="chaveDoRegistro(l)"> ({{ chaveDoRegistro(l) }})</template>
                     <template v-if="l.at"> · <span class="rbcl-num">{{ dataHora(l.at) }}</span></template>
                   </span>
