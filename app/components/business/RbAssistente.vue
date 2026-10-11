@@ -205,9 +205,9 @@ onBeforeUnmount(clearAll)
           O claude.ai e o ChatGPT conectam pela chave com um clique em
           Autorizar; Claude Desktop, Claude Code e Cursor, pela configuração.
           Cada pessoa usa a chave que o escritório gerou pra ela. A carteira do
-          cenário vem colada na conversa, em valores ou em pesos, e o servidor
-          não guarda; ou vem de um cliente conectado, com o consentimento dele,
-          quando o escritório tem Clientes do escritório. E o
+          cenário vem colada na conversa, em valores ou em pesos, sem nome e
+          sem ficar salva na conta; ou vem de um cliente conectado, com o
+          consentimento dele, quando o escritório tem Clientes do escritório. E o
           <NuxtLink to="/business/skills" class="rbas__nota-link">pack de skills</NuxtLink>
           já sai pronto pra mesa usar.
         </p>

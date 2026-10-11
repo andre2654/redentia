@@ -51,7 +51,13 @@
    registradas para a chave de escritório com Clientes do escritório, e só
    create_client_invite escreve (um link que não abre nada sem o aceite). Se o
    servidor ganhar ou perder ferramenta, mude as duas constantes juntas, e a
-   lista do RbSeguranca também. */
+   lista do RbSeguranca também.
+   ⚠️ 15 SÓ NA CONTA COM CLIENTES LIGADO. A chave de um escritório sem o recurso
+   (o padrão, e o caso de toda assessoria vinculada) lista 11: as 4 de clientes
+   só são registradas com `clientes` no plano (temClientes em tools.ts). Por
+   isso o sub diz "em toda chave" para o núcleo e "quando a casa liga" para
+   clientes: o comprador que contar 11 no assistente dele não pega a página
+   mentindo (revisão de 11/10/2026). */
 const TOOLS_TOTAL = 15
 const TOOLS_LEITURA = 14
 
@@ -82,7 +88,7 @@ const SLIDES = [
     // Só o número no valor: "15 ferramentas" quebrava em duas linhas no
     // tamanho do card e esticava os três (eles dividem a mesma célula).
     valor: `${TOOLS_TOTAL}`,
-    sub: 'ferramentas no Claude ou no ChatGPT: cotação, notícia com leitura, tese, cenário sobre a carteira e clientes.',
+    sub: 'ferramentas no servidor: cotação, notícia com leitura, tese e cenário em toda chave; clientes, quando a casa liga.',
     ticks: { total: TOOLS_TOTAL, on: TOOLS_LEITURA },
     legenda: 'só leem',
     nota: 'A outra cria o convite do cliente, um link que não abre nada sem o aceite dele. Nenhuma compra, venda ou transferência.',
@@ -160,8 +166,9 @@ onBeforeUnmount(parar)
         </h1>
         <p class="rbh0__dek">
           Cotação, notícia com leitura, tese e cenário sobre a carteira, dentro
-          do Claude ou do ChatGPT que a sua equipe já usa. A carteira colada não
-          fica guardada; a do cliente só entra com o consentimento dele.
+          do Claude ou do ChatGPT que a sua equipe já usa. A carteira colada vai
+          sem nome e não fica salva na conta; a do cliente só entra com o
+          consentimento dele.
         </p>
         <a href="#contato" class="rbh0__cta">Agendar o setup de 1 hora</a>
       </div>

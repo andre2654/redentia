@@ -132,3 +132,25 @@ test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () =
   assert.doesNotMatch(g, /O Redentia MCP é <strong>somente leitura<\/strong>\./)
   assert.match(g, /Na chave pessoal, o Redentia MCP é <strong>somente leitura<\/strong>/)
 })
+
+/*
+ * CV-20 (revisão de 11/10/2026). A carteira colada em simulate_scenario NÃO
+ * passa no_cache: o ScenarioEngineService guarda o resultado do motor (ticker
+ * e valor) no cache do Laravel, por hash do pedido, sem chave nem conta. Só a
+ * carteira de cliente (C4) é no_cache. Então "não fica guardada" / "nada
+ * guardado" é falso; o verdadeiro é "não fica salva na conta". E a contagem de
+ * 15 ferramentas só vale na conta com Clientes ligado (sem ele são 11), então o
+ * card do hero não pode dizer "15 ferramentas no Claude" sem a condição.
+ * Se o mcp-service passar no_cache no simulate_scenario, esta trava pode cair.
+ */
+test('CV-20: a landing não afirma que a carteira colada não fica guardada, e não promete 15 ferramentas a toda chave', () => {
+  const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
+  const landing = ['RbHero', 'RbDivisao', 'RbAssistente', 'RbSeguranca', 'RbProva', 'RbCapacidade']
+    .map(c => `components/business/${c}.vue`).concat('content/business/faq.ts')
+  for (const f of landing) {
+    assert.doesNotMatch(visivel(f), /n[aã]o fica guardad|nada guardado|nada da carteira colada fica guardado|servidor n[aã]o guarda/i, f)
+    assert.doesNotMatch(visivel(f), /Sem slide/i, f)
+  }
+  assert.doesNotMatch(visivel('components/business/RbHero.vue'), /ferramentas no Claude ou no ChatGPT: cotação, notícia com leitura, tese, cenário sobre a carteira e clientes/)
+  assert.match(visivel('content/business/faq.ts'), /cache técnico, sem nome e sem chave/)
+})

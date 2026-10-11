@@ -16,9 +16,14 @@
  * de quem acabou de sair de uma call de venda e vai conferir. A regra agora é a
  * do resto da página: só entra aqui o que o dono prova AO VIVO numa call.
  *
- * O que entrou é exatamente isso: a call roda no Claude ou no ChatGPT, com a
- * chave do escritório e o dado do dia. Quem lê confere na própria reunião, e a
- * frase não envelhece (não tem número que precise de atualização manual).
+ * O que entrou é exatamente isso: a pergunta da mesa roda no Claude ou no
+ * ChatGPT, com o dado do dia. Quem lê confere na própria reunião, e a frase
+ * não envelhece (não tem número que precise de atualização manual).
+ *
+ * REVISÃO DE 11/10/2026: a primeira versão terminava em "Sem slide.", que é
+ * promessa sobre o FORMATO da call, e o dono tem deck. Quem já viu um slide na
+ * reunião e abre a página leria a página desmentindo a própria call. O trilho
+ * agora convida a trazer a pergunta, que é o que a call de fato faz.
  *
  * Se um dia o placar voltar, ele volta com fonte: contrato assinado que o
  * cliente autorizou citar. Nunca com "vagas abertas" como escassez de enfeite.
@@ -32,11 +37,11 @@
   <a
     href="#contato"
     class="rbcp"
-    aria-label="Ao vivo: a apresentação roda no Claude ou no ChatGPT, com dado do dia. Marcar a call."
+    aria-label="Ao vivo: traga uma pergunta da sua mesa e veja a resposta no Claude ou no ChatGPT, com dado do dia. Marcar a call."
   >
     <span class="rbcp__row" aria-hidden="true">
       <span class="rbcp__label">Ao vivo</span>
-      <span class="rbcp__fact">A apresentação roda no Claude ou no ChatGPT, com dado do dia. Sem slide.</span>
+      <span class="rbcp__fact">Traga uma pergunta da sua mesa: a resposta sai no Claude ou no ChatGPT, com dado do dia.</span>
       <span class="rbcp__end">
         Marcar a call
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>

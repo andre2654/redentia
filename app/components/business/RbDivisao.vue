@@ -18,7 +18,7 @@
  *     informações sobre as operações realizadas ou posições em aberto". O medo
  *     é "isso vai me pôr em problema com o compliance da XP". A resposta é o
  *     caminho sem dado de cliente: lista, notícia e cenário sobre carteira
- *     colada, que o servidor não guarda.
+ *     colada, sem nome e sem ficar salva na conta do escritório.
  *  2. FAMILY OFFICE E GESTORA. Querem o cliente dentro. O medo é "o dado do
  *     meu cliente vai parar onde?". A resposta é o consentimento do próprio
  *     cliente, o registro de cada leitura e o relatório com a marca da casa.
@@ -27,9 +27,13 @@
  * (mercado, notícias, cenários). Continua 100% decorativo: o título já diz.
  *
  * ⚠️ O QUE CADA LINHA AFIRMA FOI CONFERIDO NO CÓDIGO (Backend e mcp-service,
- * origin/main de 11/10/2026): a carteira colada vai ao motor e não é gravada
- * (ScenarioSimulationController::mcpSimulate não persiste, e o log do
- * mcp-service guarda o nome da ferramenta, não os argumentos); cada leitura de
+ * origin/main de 11/10/2026): a carteira colada vai ao motor sem nome e não é
+ * gravada em conta nenhuma (mcpSimulate não persiste, e o log do mcp-service
+ * guarda o nome da ferramenta, não os argumentos). ⚠️ "Nada guardado" é FALSO:
+ * o ScenarioEngineService põe o resultado (com ticker e valor) no cache de 30
+ * min do Laravel, por hash do pedido e sem chave; só a carteira de cliente
+ * (C4) passa no_cache. Por isso a linha diz "sem ficar salva na conta", e não
+ * "sem nada guardado" (revisão de 11/10/2026). Cada leitura de
  * cliente grava `portfolio_read`/`simulation_run` no business_client_access_log;
  * o relatório em PDF é a skill redentia-relatorio-cliente, que roda no Claude.
  * A conexão de cliente por Open Finance leva a etiqueta "na implantação" porque
@@ -38,7 +42,7 @@
  */
 const ASSESSORIA = [
   { t: 'O que mudou hoje nos ativos da sua lista, com a leitura da Redentia', tag: '' },
-  { t: 'Cenário sobre uma carteira colada em pesos, sem nome de cliente e sem nada guardado', tag: '' },
+  { t: 'Cenário sobre uma carteira colada em pesos, sem nome de cliente e sem ficar salva na conta do escritório', tag: '' },
   { t: 'Por que um ativo subiu ou caiu, com a notícia e a data', tag: '' },
   { t: 'Nada que vire extrato de posição para o cliente, o que a RCVM 178 veda ao assessor', tag: '' },
 ]

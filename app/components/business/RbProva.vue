@@ -54,7 +54,7 @@ const INCLUI = [
   {
     rotulo: 'Skills',
     valor: 'Sete',
-    nota: 'Prontas para o Claude: cenário, carteira, comparação de ativos, por que o ativo moveu, clientes e relatório em PDF.',
+    nota: 'Prontas para o Claude: primeiros passos, cenário, carteira, comparação de ativos, por que o ativo moveu, clientes e relatório em PDF.',
   },
   {
     rotulo: 'Clientes',

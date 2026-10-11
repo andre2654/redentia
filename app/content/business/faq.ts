@@ -19,9 +19,15 @@
  * escritórios por trimestre" e o "banco separado" da pergunta de
  * armazenamento. Cada resposta nova foi conferida no código em origin/main
  * (Backend e mcp-service) no mesmo dia:
- *  - carteira colada não é gravada: ScenarioSimulationController::mcpSimulate
- *    não persiste, e o log do mcp-service guarda o nome da ferramenta, não os
- *    argumentos (tools.ts, função log);
+ *  - carteira colada não é gravada em conta: ScenarioSimulationController::
+ *    mcpSimulate não persiste, e o log do mcp-service guarda o nome da
+ *    ferramenta, não os argumentos (tools.ts, função log). MAS o resultado do
+ *    motor, com ticker e valor, fica no cache do Laravel (ScenarioEngineService
+ *    ::run, chave = hash do pedido, sem chave nem conta, TTL 30 min; produção
+ *    usa CACHE_STORE=file). Só a carteira de cliente (C4) passa no_cache. Daí
+ *    a resposta dizer "cache técnico, sem nome e sem chave", e não "nada fica
+ *    guardado" (revisão de 11/10/2026). Se o mcp-service passar no_cache também
+ *    no simulate_scenario, a frase pode ficar mais curta;
  *  - classes da carteira conectada: enum asset_class de
  *    business_client_positions (STOCK, REIT, ETF, BDR, TREASURY, CRYPTO);
  *  - instituições: config/business_clients.php `institutions`;
@@ -90,7 +96,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Preciso conectar cliente para rodar um cenário?',
-        a: 'Não. Cole a carteira na conversa, em valores ou em pesos, sem nome de cliente, e o motor devolve a faixa do patrimônio e o choque de cada ativo com o porquê. Nada da carteira colada fica guardado: o servidor registra que a ferramenta foi chamada, não o que entrou nela. É o caminho de quem é assessor vinculado e não compartilha carteira de cliente fora da corretora.',
+        a: 'Não. Cole a carteira na conversa, em valores ou em pesos, sem nome de cliente, e o motor devolve a faixa do patrimônio e o choque de cada ativo com o porquê. A carteira colada não fica salva na conta do escritório: o servidor registra que a ferramenta foi chamada, por qual chave e quando, não o que entrou nela. O cálculo fica num cache técnico, sem nome e sem chave, só para a mesma pergunta não rodar de novo. É o caminho de quem é assessor vinculado e não compartilha carteira de cliente fora da corretora.',
       },
       {
         q: 'De onde vem a carteira de um cliente conectado?',
