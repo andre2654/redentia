@@ -35,9 +35,9 @@
  *  - LISTA: list_news sobre três ativos de uma lista de mesa.
  *
  * ⚠️ OS NÚMEROS SÃO RESPOSTAS REAIS DO SERVIDOR, não invenção de copy:
- *  - cenário: MCP de produção em 11/10/2026, motor 3.3.0, R$ 1.000.000 em
+ *  - cenário: MCP de produção em 12/10/2026, motor 3.4.1, R$ 1.000.000 em
  *    CDB pós 100% CDI 300k, PETR4 150k, VALE3 150k, IVVB11 150k, WEGE3 100k e
- *    LREN3 150k, 1 ano. final.p10 844.897 e p90 1.123.605 (reais de hoje);
+ *    LREN3 150k, 1 ano. final.p10 875.395 e p90 1.164.300 (reais de hoje; no 3.3.0 eram 844.897 e 1.123.605);
  *    LREN3 −30,37% (beta×IBOV −18,4 + consumo doméstico −12,0); IVVB11 +9,45%
  *    (dólar +4,5, exterior +6,0).
  *  - lista: list_news de 09/10/2026 (feed com a leitura da Redentia): JCP do
@@ -77,7 +77,7 @@ const CENAS: Cena[] = [
     fetchMeio: 'Rodando 2.000 caminhos em Expansão fiscal pós-2026…',
     fetchFim: 'Cenário estudado pela Redentia, com fontes · 1 ano',
     ans: [
-      { trechos: [{ t: 'Em 80% dos caminhos, a carteira termina o ano entre ' }, { t: 'R$\u00a0845\u00a0mil e R$\u00a01,12\u00a0milhão', b: true }, { t: ', em reais de hoje. ' }] },
+      { trechos: [{ t: 'Em 80% dos caminhos, a carteira termina o ano entre ' }, { t: 'R$\u00a0875\u00a0mil e R$\u00a01,16\u00a0milhão', b: true }, { t: ', em reais de hoje. ' }] },
       { trechos: [{ t: 'Pesa mais ' }, { t: 'LREN3 (−30%)', b: true }, { t: ', pelo índice e pelo consumo doméstico; segura ' }, { t: 'IVVB11 (+9%)', b: true }, { t: ', com dólar e exterior. ' }] },
       { trechos: [{ t: 'Faixa com premissas abertas, não promessa de retorno.' }], fonte: true },
     ],
@@ -220,7 +220,7 @@ onBeforeUnmount(clearAll)
           aria-label="Duas conversas dentro do Claude. Na primeira, a pergunta sobre como uma
             carteira colada de R$ 1 milhão fica se o fiscal piorar depois da eleição aciona a
             ferramenta redentia simulate_scenario: em 80% dos caminhos a carteira termina o ano
-            entre R$ 845 mil e R$ 1,12 milhão, em reais de hoje; LREN3 cai 30% e IVVB11 sobe 9%.
+            entre R$ 875 mil e R$ 1,16 milhão, em reais de hoje; LREN3 cai 30% e IVVB11 sobe 9%.
             Na segunda, a pergunta sobre o que mudou em SANB11, IVVB11 e MRVE3 aciona list_news:
             o Santander aprovou JCP com corte em 20/10, o IVVB11 fecha a semana no vermelho em
             reais com o dólar 4,4% mais baixo, e MRVE3 subiu 22% com o caixa vindo da venda de ativos."
@@ -307,8 +307,8 @@ onBeforeUnmount(clearAll)
           </button>
         </div>
         <p class="rbas__legenda">
-          Respostas do servidor da Redentia: o cenário rodou em 11/10/2026, no
-          motor 3.3.0, e as notícias são de 09/10/2026. A carteira e a lista
+          Respostas do servidor da Redentia: o cenário rodou em 12/10/2026, no
+          motor 3.4.1, e as notícias são de 09/10/2026. A carteira e a lista
           foram montadas para esta página.
         </p>
       </div>
