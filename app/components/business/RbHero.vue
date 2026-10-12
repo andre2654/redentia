@@ -36,16 +36,30 @@
  */
 
 /**
- * ⚠️ NADA AQUI É NÚMERO DE CLIENTE. Os três cards são conceituais: descrevem o
- * que o trabalho FAZ, não resultado que alguém obteve. É deliberado, e a razão
- * está registrada na revisão de 2026-08-13: um número de patrimônio inventado
- * obrigaria uma legenda de "valores inventados" dentro da primeira dobra, e aviso
- * de ficção acima da dobra é PERDA de credibilidade, não ganho — é a página
- * avisando, no primeiro segundo, que o que você está vendo não aconteceu.
- * Se um cliente autorizar print de tela real um dia, ESTES cards saem.
+ * ⚠️ NADA AQUI É NÚMERO DE CLIENTE, e nada é promessa de resultado. Cada card
+ * afirma um fato do produto que o comprador confere sozinho: o servidor, o
+ * preço e o primeiro encontro. Um número de patrimônio inventado obrigaria uma
+ * legenda de "valores criados" dentro da primeira dobra, e aviso de ficção
+ * acima da dobra é perda de credibilidade (revisão de 2026-08-13).
+ *
+ * TROCA DE 11/10/2026: o primeiro card dizia "10 dias por mês, o fechamento
+ * cai de 15 para 5". Era a tese de consolidação (Tese 1), que o produto não
+ * entrega: o escritório não fecha o mês na Redentia. Virou o que está no ar e
+ * se confere em 30 segundos pedindo ao assistente a lista de ferramentas.
  */
-const DIAS_TOTAL = 15
-const DIAS_FECHAMENTO = 5
+/* AS FERRAMENTAS SÃO AS DO mcp-service 0.5.0 (src/tools.ts, out/2026): 15
+   registradas para a chave de escritório com Clientes do escritório, e só
+   create_client_invite escreve (um link que não abre nada sem o aceite). Se o
+   servidor ganhar ou perder ferramenta, mude as duas constantes juntas, e a
+   lista do RbSeguranca também.
+   ⚠️ 15 SÓ NA CONTA COM CLIENTES LIGADO. A chave de um escritório sem o recurso
+   (o padrão, e o caso de toda assessoria vinculada) lista 11: as 4 de clientes
+   só são registradas com `clientes` no plano (temClientes em tools.ts). Por
+   isso o sub diz "em toda chave" para o núcleo e "quando a casa liga" para
+   clientes: o comprador que contar 11 no assistente dele não pega a página
+   mentindo (revisão de 11/10/2026). */
+const TOOLS_TOTAL = 15
+const TOOLS_LEITURA = 14
 
 /* CADA CARD É UM NÚMERO SÓ, e os três juntos são o funil inteiro: o que você
    ganha, o que você paga, o que você faz agora. Essa é a razão de eles serem
@@ -56,9 +70,9 @@ const DIAS_FECHAMENTO = 5
    É a mesma anatomia dos cards da Decade, e é o único gesto dela que atravessa
    o nosso sistema sem foto, sem serifa e sem inventar dado. */
 /* A RÉGUA É A MESMA GRAMÁTICA NOS TRÊS, e os traços acesos são LITERALMENTE o
-   número do card: 10 de 15 dias, 5 de 5 chaves, 1 de 8 horas. Não é enfeite e
-   não é gráfico de dado inventado — é o próprio número desenhado. Se o número
-   mudar, `on` muda junto, senão a régua mente em silêncio. */
+   número do card: 14 de 15 ferramentas, 5 de 5 chaves, 1 de 8 horas. Não é
+   enfeite e não é gráfico de dado inventado — é o próprio número desenhado. Se
+   o número mudar, `on` muda junto, senão a régua mente em silêncio. */
 /* A FOTO É FUNDO, NÃO ASSUNTO, e por isso ela não tem alt: quem enxerga vê um
    escritório em preto e branco, quem escuta não perde nada, porque o card na
    frente carrega a informação inteira. alt="" é o certo aqui, e é o mesmo que o
@@ -69,13 +83,15 @@ const DIAS_FECHAMENTO = 5
    reconhecível e ficam fora até alguém confirmar direito de imagem. */
 const SLIDES = [
   {
-    id: 'devolve', bg: 'var(--nu-navy)', foto: '/business-hero/lounge.webp',
-    rotulo: 'O que volta pro escritório',
-    valor: `${DIAS_TOTAL - DIAS_FECHAMENTO} dias`,
-    sub: `por mês. O fechamento cai de ${DIAS_TOTAL} para ${DIAS_FECHAMENTO}.`,
-    ticks: { total: DIAS_TOTAL, on: DIAS_TOTAL - DIAS_FECHAMENTO },
-    legenda: 'dias úteis de um mês',
-    nota: `Os ${DIAS_TOTAL} dias são o que ouvimos de dezenas de gestores e líderes de MFO em 2026. Os ${DIAS_FECHAMENTO} são a meta que medimos no seu fechamento, não promessa de resultado.`,
+    id: 'servidor', bg: 'var(--nu-navy)', foto: '/business-hero/lounge.webp',
+    rotulo: 'No assistente da mesa',
+    // Só o número no valor: "15 ferramentas" quebrava em duas linhas no
+    // tamanho do card e esticava os três (eles dividem a mesma célula).
+    valor: `${TOOLS_TOTAL}`,
+    sub: 'ferramentas no servidor: cotação, notícia com leitura, tese e cenário em toda chave; clientes, quando a casa liga.',
+    ticks: { total: TOOLS_TOTAL, on: TOOLS_LEITURA },
+    legenda: 'só leem',
+    nota: 'A outra cria o convite do cliente, um link que não abre nada sem o aceite dele. Nenhuma compra, venda ou transferência.',
   },
   {
     id: 'preco', bg: 'var(--nu-orb-deep)', foto: '/business-hero/anotando.webp',
@@ -84,7 +100,7 @@ const SLIDES = [
     sub: 'por mês, por escritório. Mensal, sem contrato anual.',
     ticks: { total: 5, on: 5 },
     legenda: 'chaves nomeadas, sem custo por assento',
-    nota: 'Se o número não aparecer, você cancela no mês seguinte, não em dois anos.',
+    nota: 'Se o assistente não virar rotina da mesa, você cancela no mês seguinte, não em dois anos.',
   },
   {
     id: 'setup', bg: 'var(--nu-navy-2)', foto: '/business-hero/sala-vidro.webp',
@@ -93,7 +109,7 @@ const SLIDES = [
     sub: 'Uma reunião técnica, não uma apresentação comercial.',
     ticks: { total: 8, on: 1 },
     legenda: 'de um dia de trabalho',
-    nota: 'Sai dela o cronograma, ou a conclusão de que ainda não é hora.',
+    nota: 'Sai dela o assistente da mesa conectado e uma carteira de vocês rodada num cenário, ou a conclusão de que ainda não é hora.',
   },
 ] as const
 
@@ -145,13 +161,14 @@ onBeforeUnmount(parar)
         <!-- quebra manual: a medida do título é decisão de composição, não do
              navegador (mesma razão do NuSectionHeading usar slot) -->
         <h1 class="rbh0__title">
-          Entregamos os dados<br>
-          que o seu escritório precisa.
+          O mercado de hoje<br>
+          no assistente da mesa.
         </h1>
         <p class="rbh0__dek">
-          A infraestrutura de dados para escritórios que consolidam patrimônio
-          de famílias. A Redentia captura, normaliza e concilia, e o mês volta
-          fechado com rastro até a fonte.
+          Cotação, notícia com leitura, tese e cenário sobre a carteira, dentro
+          do Claude ou do ChatGPT que a sua equipe já usa. A carteira colada vai
+          sem nome e não fica salva na conta; a do cliente só entra com o
+          consentimento dele.
         </p>
         <a href="#contato" class="rbh0__cta">Agendar o setup de 1 hora</a>
       </div>

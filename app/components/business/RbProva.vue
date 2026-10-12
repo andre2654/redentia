@@ -23,17 +23,22 @@
  * "O preço", porque eufemismo de pitch-deck destoa de uma página que constrói
  * confiança falando seco. A anáfora de "número" (4x) é deliberada e FICA.
  *
- * CAPACIDADE SEM CONTADOR *NESTA SEÇÃO* (decisão do dono + PLANO §6.1): o deck
- * fecha com "3 de 5 vagas restantes"; aqui capacidade é fato de atendimento,
- * dito uma vez. O placar EXISTE na página, mas mora num lugar só — o trilho
- * RbCapacidade do topo, que o dono pediu de volta em 2026-08-01 e que carrega
- * a regra de atualização manual. Não duplique o número aqui: dois placares é
- * duas chances de mentir.
+ * CAPACIDADE: SEM CONTADOR E SEM COTA (11/10/2026). A seção dizia "Ativamos
+ * cinco escritórios por trimestre" e o trilho do topo, "3 de 5 já fecharam".
+ * Nenhum dos dois se provava numa call (havia um pagante), então os dois
+ * saíram. A escassez que fica é a honesta: a implantação tem gente da
+ * Redentia, e isso se vê no primeiro encontro.
  *
- * O QUE A SEÇÃO NÃO PROMETE: o deck anuncia "10 dias úteis recuperados" como
- * retorno. Aqui os 10 dias são o que a implantação vai MEDIR, no fechamento do
- * próprio escritório. A diferença entre medir e prometer é a diferença entre
- * um piloto e uma devolução de dinheiro.
+ * O QUE A SEÇÃO NÃO PROMETE: a versão anterior prometia "um número no fim de
+ * cada mês" (dias de fechamento recuperados), que era a tese de consolidação.
+ * O escritório não fecha o mês na Redentia; ele pergunta ao assistente todo
+ * dia. Então o critério de cancelamento virou o que o comprador mede sozinho:
+ * a mesa usa ou não usa (o painel de chaves mostra o uso de cada uma).
+ *
+ * As linhas do card são o que o escritório leva, conferido no código: 5 chaves
+ * (BusinessAccount::DEFAULT_MAX_KEYS), cenários no plano (BusinessKey::
+ * PLAN_SCOPES inclui `cenarios`), 7 skills (skills-pack/) e Clientes do
+ * escritório ligado conta a conta (business:conta --clientes).
  */
 const INCLUI = [
   {
@@ -42,14 +47,19 @@ const INCLUI = [
     nota: 'Cinco chaves nomeadas para a casa, geradas e revogadas no painel do escritório, sem custo por assento.',
   },
   {
-    rotulo: 'Setup',
-    valor: '1 hora',
-    nota: 'Reunião técnica pra mapear as fontes de dado da casa e conectar os assistentes do time.',
+    rotulo: 'Cenários',
+    valor: 'No plano',
+    nota: 'O motor de projeções em todas as chaves: cenários estudados pela Redentia, com fontes, ou montados na conversa.',
   },
   {
-    rotulo: 'Foco',
-    valor: 'Uma tese',
-    nota: 'Escolhemos junto a etapa mais cara do seu mês e atacamos ela primeiro. Quem tenta tudo de uma vez não fecha nada.',
+    rotulo: 'Skills',
+    valor: 'Sete',
+    nota: 'Prontas para o Claude: primeiros passos, cenário, carteira, comparação de ativos, por que o ativo moveu, clientes e relatório em PDF.',
+  },
+  {
+    rotulo: 'Clientes',
+    valor: 'Na implantação',
+    nota: 'Clientes conectados por Open Finance, cada um com o próprio consentimento, liberados escritório a escritório.',
   },
 ]
 </script>
@@ -61,15 +71,15 @@ const INCLUI = [
         <NuSectionHeading dark eyebrow="O plano">
           Mensal, sem<br>contrato anual.
           <template #dek>
-            Um preço por escritório, com até cinco chaves dentro e
-            <strong>um número no fim de cada mês</strong>. Se o número não
-            aparecer, você cancela no mês seguinte, não em dois anos.
+            Um preço por escritório, com até cinco chaves e os cenários dentro.
+            <strong>Se o assistente não virar rotina da mesa</strong>, você
+            cancela no mês seguinte, não em dois anos.
           </template>
         </NuSectionHeading>
 
         <p class="rbpv__cap">
-          Ativamos cinco escritórios por trimestre, porque cada implantação tem
-          gente da Redentia dentro do seu fechamento.
+          A implantação tem gente da Redentia junto: a conexão de cada chave, as
+          skills instaladas e a primeira carteira da casa rodada num cenário.
         </p>
       </div>
 
@@ -91,9 +101,9 @@ const INCLUI = [
 
         <a href="#contato" class="rbpv__cta">Começar pelo setup de 1 hora</a>
         <p class="rbpv__rodape">
-          O setup é uma reunião técnica pra mapear suas fontes de dado e
-          escolher por onde começar. Sai dela o cronograma, ou a conclusão de
-          que ainda não é hora.
+          O setup é uma reunião técnica: conectamos o assistente da mesa e
+          rodamos uma carteira de vocês num cenário. Sai dela a mesa usando, ou
+          a conclusão de que ainda não é hora.
         </p>
       </div>
     </div>

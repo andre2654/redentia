@@ -197,7 +197,7 @@ onBeforeUnmount(() => {
           <template v-if="temChave">
             <div class="rbcx__code-wrap">
               <button type="button" class="rbcx__copy" @click="copiar('chave', plainKey!)">{{ copiado === 'chave' ? 'Copiada' : 'Copiar' }}</button>
-              <pre class="rbcx__code rbcx__code--wrap"><code>{{ plainKey }}</code></pre>
+              <pre class="rbcx__code rbcx__code--wrap" data-clarity-mask="true"><code>{{ plainKey }}</code></pre>
             </div>
             <p class="rbcx__nota">Ela não aparece de novo depois que você sair do painel. Se perder, revogue e gere outra.</p>
           </template>

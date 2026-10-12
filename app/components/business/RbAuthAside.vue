@@ -19,6 +19,12 @@
  * mensagem que o servidor devolve de verdade. Mostrar uma tool que não existe
  * faria o comprador pedir na reunião algo que não vai funcionar.
  *
+ * SEM PREÇO NA SAÍDA (revisão de 11/10/2026): o feed mostrava a cotação da
+ * PETR4 e o IBOV de agosto (177 mil pontos, com o índice perto de 209 mil em
+ * outubro). Preço fixo numa animação envelhece em silêncio e vira número
+ * errado na frente de quem acabou de sair da call; a saída agora diz O QUE
+ * volta, não quanto. Entrou também simulate_scenario, no plano desde 07/10.
+ *
  * SSR/perf: o servidor renderiza o estado final (todas as linhas visíveis),
  * o loop só começa no onMounted e é limpo no unmount. Com
  * prefers-reduced-motion o feed fica estático, sem loop.
@@ -26,11 +32,12 @@
 type Linha = { chave: string, tool: string, alvo?: string, ok: string, nega?: boolean }
 
 const FEED: Linha[] = [
-  { chave: 'Mesa', tool: 'get_quote', alvo: 'PETR4', ok: 'R$ 43,42' },
+  { chave: 'Mesa', tool: 'get_quote', alvo: 'PETR4', ok: 'preço e leitura' },
   { chave: 'Análise', tool: 'search_assets', alvo: 'saneamento', ok: '6 ativos' },
-  { chave: 'Alocação', tool: 'get_market_snapshot', ok: 'IBOV 177.999' },
+  { chave: 'Alocação', tool: 'get_market_snapshot', ok: 'IBOV, dólar e Selic' },
   { chave: 'Mesa', tool: 'list_news', alvo: 'DASA3', ok: '8 notícias' },
   { chave: 'Análise', tool: 'get_thesis', alvo: 'água-virou-ativo', ok: 'tese aberta' },
+  { chave: 'Alocação', tool: 'simulate_scenario', ok: 'faixa de 1 ano' },
   { chave: 'Alocação', tool: 'get_etf_composition', alvo: 'IVVB11', ok: 'carteira aberta' },
   { chave: 'João', tool: 'get_daily_briefing', ok: 'fechamento de ontem' },
   { chave: 'Mesa', tool: 'get_portfolio', ok: 'fora do plano', nega: true },

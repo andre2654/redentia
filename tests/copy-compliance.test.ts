@@ -14,11 +14,24 @@ const ler = (f: string) => readFileSync(new URL(`../app/${f}`, import.meta.url),
 // Junta quebras de linha do template para a frase não escapar do grep.
 const plano = (f: string) => ler(f).replace(/\s+/g, ' ')
 
-test('CV-01: banco separado não é afirmado no presente e "nenhum dado real" não volta', () => {
-  const seg = plano('components/business/RbSeguranca.vue')
-  assert.doesNotMatch(seg, /Os dados do seu escritório entram em banco separado/)
-  assert.match(seg, /só entra depois de um banco separado/)
-  assert.match(seg, /prova do aceite \(data, versão do termo, IP e navegador\)/)
+/*
+ * CV-01 mudou em 11/10/2026. Antes travava a promessa "só entra depois de um
+ * banco separado", que era o plano (pg-biz) e não o produto: o dado de cliente
+ * mora no PostgreSQL da Redentia, em tabelas próprias, isolado por escritório
+ * na aplicação. A seção de segurança passou a afirmar só o que o código faz, e
+ * o teste trava a volta da promessa. Pelo mesmo motivo, a prova do aceite não
+ * cita o IP: ele só é gravado quando o Laravel prova a origem
+ * (FrontOrigin::visitorIp, que depende da FRONT_SHARED_KEY nos dois lados), e
+ * em 11/10 a prova deu negativo em produção. Ligada a chave, o IP pode voltar
+ * para a frase, e esta asserção muda junto.
+ */
+test('CV-01: banco separado não é afirmado (não existe), a prova do aceite é a gravada, e "nenhum dado real" não volta', () => {
+  const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
+  for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts'])
+    assert.doesNotMatch(visivel(f), /banco separado/i, f)
+  const seg = visivel('components/business/RbSeguranca.vue')
+  assert.match(seg, /a data, a versão do termo, o hash do texto que o cliente leu e o navegador/)
+  assert.doesNotMatch(seg, /\bIP\b/)
   for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts', 'pages/business/clientes.vue'])
     assert.doesNotMatch(plano(f), /nenhum dado real/i, f)
 })
@@ -118,4 +131,26 @@ test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () =
   const g = plano('content/guias/mcp-para-investimentos.ts')
   assert.doesNotMatch(g, /O Redentia MCP é <strong>somente leitura<\/strong>\./)
   assert.match(g, /Na chave pessoal, o Redentia MCP é <strong>somente leitura<\/strong>/)
+})
+
+/*
+ * CV-20 (revisão de 11/10/2026). A carteira colada em simulate_scenario NÃO
+ * passa no_cache: o ScenarioEngineService guarda o resultado do motor (ticker
+ * e valor) no cache do Laravel, por hash do pedido, sem chave nem conta. Só a
+ * carteira de cliente (C4) é no_cache. Então "não fica guardada" / "nada
+ * guardado" é falso; o verdadeiro é "não fica salva na conta". E a contagem de
+ * 15 ferramentas só vale na conta com Clientes ligado (sem ele são 11), então o
+ * card do hero não pode dizer "15 ferramentas no Claude" sem a condição.
+ * Se o mcp-service passar no_cache no simulate_scenario, esta trava pode cair.
+ */
+test('CV-20: a landing não afirma que a carteira colada não fica guardada, e não promete 15 ferramentas a toda chave', () => {
+  const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
+  const landing = ['RbHero', 'RbDivisao', 'RbAssistente', 'RbSeguranca', 'RbProva', 'RbCapacidade']
+    .map(c => `components/business/${c}.vue`).concat('content/business/faq.ts')
+  for (const f of landing) {
+    assert.doesNotMatch(visivel(f), /n[aã]o fica guardad|nada guardado|nada da carteira colada fica guardado|servidor n[aã]o guarda/i, f)
+    assert.doesNotMatch(visivel(f), /Sem slide/i, f)
+  }
+  assert.doesNotMatch(visivel('components/business/RbHero.vue'), /ferramentas no Claude ou no ChatGPT: cotação, notícia com leitura, tese, cenário sobre a carteira e clientes/)
+  assert.match(visivel('content/business/faq.ts'), /cache técnico, sem nome e sem chave/)
 })

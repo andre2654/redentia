@@ -11,6 +11,13 @@
  * cor é o separador. Autenticada com a mesma guarda (nu:token → /login).
  * Os zips vivem em public/downloads/skills/ (estático; fonte e build em
  * Frontend/skills-pack/ — editou SKILL.md, rode npm run skills:build).
+ *
+ * "TODAS AS SKILLS" NUM ARQUIVO (11/10/2026): o build já gera
+ * redentia-skills-pack.zip, um zip com os sete zips e um LEIA-ME. Ele ganhou um
+ * card na grade, ao lado dos sete, porque só aparecia como botão no topo. NÃO
+ * vire um zip de pastas nem uma skill única: o claude.ai instala UMA skill por
+ * zip (o pack de pastas morreu com /business/comecar, dono, 25/08/2026), e
+ * fundir sete SKILL.md numa só quebraria a ativação de cada uma pelo assunto.
  */
 definePageMeta({
   layout: 'business',
@@ -65,7 +72,7 @@ const SKILLS: SkillCard[] = [
     nome: 'Cenários e projeções',
     faz: 'Roda a carteira no motor de projeções da Redentia e devolve a faixa de resultados em 12 meses, o choque de cada ativo com o porquê e a origem do cenário: estudado pela casa, com fontes, ou montado na hora. Sai com texto pro cliente.',
     exemplo: 'Cliente tem PETR4, VALE3 e BOVA11. E se o dólar for a R$ 7?',
-    nota: 'Faixa estatística com premissas abertas. Não é previsão nem promessa de retorno. Usa o escopo Cenários e projeções, incluído no plano de escritório.',
+    nota: 'Faixa estatística com premissas abertas, não promessa de retorno. Usa o escopo Cenários e projeções, incluído no plano de escritório.',
   },
   {
     slug: 'redentia-clientes',
@@ -105,7 +112,7 @@ const SKILLS: SkillCard[] = [
           <span class="rbsk__pill">7 skills</span>
           <span class="rbsk__pill rbsk__pill--soft">instala em 2 minutos</span>
           <a href="/downloads/skills/redentia-skills-pack.zip" download class="rbsk__bundle">
-            Baixar o pack completo
+            Baixar as sete num arquivo
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M6.5 10.5L12 16l5.5-5.5M4.5 20h15" /></svg>
           </a>
         </div>
@@ -122,6 +129,24 @@ const SKILLS: SkillCard[] = [
             <p v-if="s.nota" class="rbsk__card-nota">{{ s.nota }}</p>
             <a :href="`/downloads/skills/${s.slug}.zip`" download class="rbsk__dl">
               Baixar {{ s.slug }}.zip
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M6.5 10.5L12 16l5.5-5.5M4.5 20h15" /></svg>
+            </a>
+          </article>
+
+          <!-- o pack: as sete num arquivo, no mesmo lugar onde a pessoa baixa
+               as individuais (antes ele só existia como botão no topo) -->
+          <article class="rbsk__card rbsk__card--pack">
+            <h2 class="rbsk__card-title">Todas as skills</h2>
+            <p class="rbsk__card-faz">
+              As sete num arquivo só: um zip por skill e um LEIA-ME com a instalação, para
+              quem vai subir o pack inteiro na mesa de uma vez.
+            </p>
+            <p class="rbsk__card-nota">
+              O claude.ai instala uma skill por zip: abra o pack e envie os sete, um de cada vez.
+              No Claude Code, descompacte cada um em .claude/skills/.
+            </p>
+            <a href="/downloads/skills/redentia-skills-pack.zip" download class="rbsk__dl rbsk__dl--pack">
+              Baixar redentia-skills-pack.zip
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M6.5 10.5L12 16l5.5-5.5M4.5 20h15" /></svg>
             </a>
           </article>
@@ -218,6 +243,11 @@ const SKILLS: SkillCard[] = [
   padding: 11px 20px; border-radius: var(--nu-r-pill); text-decoration: none; transition: background .16s;
 }
 .rbsk__dl:hover { background: var(--nu-ink-hover); }
+/* o card do pack: contorno em vez de creme, para ler como "o conjunto" e não
+   como uma oitava skill; o botão é o azul do topo, o mesmo destino */
+.rbsk__card--pack { background: var(--nu-white); border: 1.5px dashed var(--nu-ink-14); }
+.rbsk__dl--pack { background: var(--nu-blue); }
+.rbsk__dl--pack:hover { background: var(--nu-blue-hover); }
 
 .rbsk__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr)); gap: 18px; }
 .rbsk__col { background: var(--nu-navy-2); border-radius: var(--nu-r-card); padding: clamp(24px, 2.6vw, 32px); }

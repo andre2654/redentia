@@ -52,15 +52,20 @@ onMounted(() => {
 </script>
 
 <template>
+  <!-- CLARITY (11/10/2026): o Clarity grava sessão em /carteira, e patrimônio,
+       posições, proventos, movimentações e instituições iam sem máscara para as
+       gravações. Toda seção com dado da pessoa leva data-clarity-mask="true"
+       (o atributo cai na <section> raiz de cada uma). O hero mascara por dentro,
+       só o que é dado: o estado "conecte sua carteira" segue legível no funil. -->
   <div>
     <CarteiraHero :hero="payload.hero" :allocation="payload.allocation" @connected="emit('connected')" />
-    <NuPortfolioChart v-if="payload.chart" id="desempenho" class="car-sec" :chart="payload.chart" />
-    <CarteiraPositions v-if="payload.groups.length && payload.positionsSub" id="posicoes" class="car-sec" :sub="payload.positionsSub" :groups="payload.groups" />
+    <NuPortfolioChart v-if="payload.chart" id="desempenho" class="car-sec" :chart="payload.chart" data-clarity-mask="true" />
+    <CarteiraPositions v-if="payload.groups.length && payload.positionsSub" id="posicoes" class="car-sec" :sub="payload.positionsSub" :groups="payload.groups" data-clarity-mask="true" />
     <CarteiraMcpBanner v-if="payload.hero.state === 'patrimonio'" />
-    <CarteiraRaioX v-if="payload.raiox" id="raio-x" class="car-sec" :raiox="payload.raiox" />
-    <CarteiraIncome v-if="payload.income" id="renda-passiva" class="car-sec" :income="payload.income" />
-    <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="car-sec" :movements="payload.movements" />
-    <CarteiraHeatmap v-if="payload.heatmap" id="pnl" class="car-sec" :heatmap="payload.heatmap" />
+    <CarteiraRaioX v-if="payload.raiox" id="raio-x" class="car-sec" :raiox="payload.raiox" data-clarity-mask="true" />
+    <CarteiraIncome v-if="payload.income" id="renda-passiva" class="car-sec" :income="payload.income" data-clarity-mask="true" />
+    <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="car-sec" :movements="payload.movements" data-clarity-mask="true" />
+    <CarteiraHeatmap v-if="payload.heatmap" id="pnl" class="car-sec" :heatmap="payload.heatmap" data-clarity-mask="true" />
   </div>
 </template>
 

@@ -1,53 +1,57 @@
 <script setup lang="ts">
 /**
- * "A divisão do trabalho" — a seção logo abaixo do hero.
+ * "Para quem é" — a seção logo abaixo do hero.
  *
- * SUBSTITUI O RbComoFunciona (direção do dono 2026-08-13, olhando a seção
- * pós-hero da Decade: "ela n faz sentido"). O diagnóstico aceito tem duas
- * partes:
+ * ESTRUTURA HERDADA DA "DIVISÃO DO TRABALHO" (direção do dono 2026-08-13,
+ * olhando a seção pós-hero da Decade): cabeçalho centrado, duas colunas que se
+ * encontram e um Venn decorativo no meio. A seção pós-hero da Decade não é
+ * processo, é posicionamento: responde a um medo e diz o que o produto é.
  *
- *  1. O hero MUDOU. Ele dizia "Fechar o mês leva 15 dias. Deveria levar 5", e
- *     "Do arquivo ao mês fechado" era o mecanismo que resolvia aquilo. O hero
- *     novo já afirma a entrega, então a seção seguinte repetia "a gente faz o
- *     trabalho" em vez de avançar.
- *  2. A seção pós-hero da Decade NÃO É PROCESSO, É POSICIONAMENTO. Ela não
- *     explica como funciona, ela responde a um medo ("se eu usar IA, perco o
- *     humano?") e diz o que o produto é. A nossa pulava direto pro encanamento,
- *     explicando o COMO antes de o leitor saber o que ele mantém.
+ * O CONTEÚDO MUDOU EM 11/10/2026, e o medo também. A versão anterior falava
+ * com quem consolida patrimônio de famílias ("Captura o arquivo do custodiante",
+ * "Concilia o que não bate"), que é a Tese 1 e não é o que está no ar. Quem
+ * entra nas calls agora são dois compradores com regras opostas:
  *
- * O MEDO DO COMPRADOR DE MFO NÃO É HUMANO CONTRA IA. É "o que sobra pro meu
- * time?" e "eu continuo dono da relação com a família?". Esta seção responde
- * essas duas, e o mecanismo do Venn é o mesmo: duas coisas que se encontram.
+ *  1. ASSESSORIA VINCULADA (XP, BTG). Não pode compartilhar carteira de cliente
+ *     fora da plataforma da corretora, e a RCVM 178, art. 25, VII, veda ao
+ *     assessor "confeccionar e enviar para os clientes extratos contendo
+ *     informações sobre as operações realizadas ou posições em aberto". O medo
+ *     é "isso vai me pôr em problema com o compliance da XP". A resposta é o
+ *     caminho sem dado de cliente: lista, notícia e cenário sobre carteira
+ *     colada, sem nome e sem ficar salva na conta do escritório.
+ *  2. FAMILY OFFICE E GESTORA. Querem o cliente dentro. O medo é "o dado do
+ *     meu cliente vai parar onde?". A resposta é o consentimento do próprio
+ *     cliente, o registro de cada leitura e o relatório com a marca da casa.
  *
- * ⚠️ A TESE JÁ ESTAVA NA PÁGINA, NA FORMA ERRADA. O dek do RbComoFunciona dizia
- * "Três passos, e o escritório só participa do primeiro. Dali em diante o
- * trabalho é nosso". Isso é estrutura, não legenda. Esta seção promove aquela
- * frase a forma. Os três passos não se perderam: viraram a coluna da direita.
+ * O Venn agora são os DOIS COMPRADORES, e a lente é o núcleo que os dois usam
+ * (mercado, notícias, cenários). Continua 100% decorativo: o título já diz.
  *
- * ⚠️ RbComoFunciona.vue CONTINUA NO REPO E NÃO É MAIS USADO por página nenhuma.
- * Não apaguei porque este diretório NÃO é repositório git e a exclusão seria
- * irreversível. Se for apagar, confira antes que nada mais o importa.
- *
- * O QUE FICA MARCADO COMO FUTURO, e por quê: conciliação e rastro estão em
- * construção, e o FAQ já diz isso com todas as letras ("A trilha até a linha do
- * extrato é o que estamos construindo", "O fechamento que trava o mês ainda não
- * existe e é construído na implantação"). Marcar aqui é o enquadramento da casa
- * virando forma: a página vende construção conjunta, e numa venda dessas a lista
- * do que falta é a especificação, não a confissão. Se um dia existirem, tire a
- * etiqueta nos DOIS lugares, aqui e no faq.ts.
+ * ⚠️ O QUE CADA LINHA AFIRMA FOI CONFERIDO NO CÓDIGO (Backend e mcp-service,
+ * origin/main de 11/10/2026): a carteira colada vai ao motor sem nome e não é
+ * gravada em conta nenhuma (mcpSimulate não persiste, e o log do mcp-service
+ * guarda o nome da ferramenta, não os argumentos). ⚠️ "Nada guardado" é FALSO:
+ * o ScenarioEngineService põe o resultado (com ticker e valor) no cache de 30
+ * min do Laravel, por hash do pedido e sem chave; só a carteira de cliente
+ * (C4) passa no_cache. Por isso a linha diz "sem ficar salva na conta", e não
+ * "sem nada guardado" (revisão de 11/10/2026). Cada leitura de
+ * cliente grava `portfolio_read`/`simulation_run` no business_client_access_log;
+ * o relatório em PDF é a skill redentia-relatorio-cliente, que roda no Claude.
+ * A conexão de cliente por Open Finance leva a etiqueta "na implantação" porque
+ * é ligada pela Redentia conta a conta (business:conta --clientes), não no
+ * cadastro. Se isso mudar, a etiqueta sai aqui e no faq.ts.
  */
-const ESCRITORIO = [
-  'A relação com a família',
-  'O julgamento de alocação',
-  'A decisão de investir, ou de não investir',
-  'A palavra final sobre cada número',
+const ASSESSORIA = [
+  { t: 'O que mudou hoje nos ativos da sua lista, com a leitura da Redentia', tag: '' },
+  { t: 'Cenário sobre uma carteira colada em pesos, sem nome de cliente e sem ficar salva na conta do escritório', tag: '' },
+  { t: 'Por que um ativo subiu ou caiu, com a notícia e a data', tag: '' },
+  { t: 'Nada que vire extrato de posição para o cliente, o que a RCVM 178 veda ao assessor', tag: '' },
 ]
 
-const REDENTIA = [
-  { t: 'Captura o arquivo do custodiante', futuro: false },
-  { t: 'Normaliza cada linha em posição', futuro: false },
-  { t: 'Concilia o que não bate', futuro: true },
-  { t: 'Guarda o rastro até a origem', futuro: true },
+const FAMILY = [
+  { t: 'Clientes conectados por Open Finance, cada um com o próprio consentimento', tag: 'na implantação' },
+  { t: 'Cenário sobre a carteira conectada do cliente, com o porquê de cada ativo', tag: '' },
+  { t: 'Relatório em PDF com a marca do escritório, gerado no Claude', tag: '' },
+  { t: 'Cada leitura registrada, à vista do escritório e do cliente', tag: '' },
 ]
 
 /* id derivado, nunca literal: dois SVG com o mesmo id de pattern na mesma página
@@ -59,35 +63,37 @@ const hachura = `rbdv-hachura-${uid}`
 <template>
   <section id="divisao" class="rbdv">
     <div class="rbdv__head">
-      <NuSectionHeading eyebrow="A divisão do trabalho">
-        O escritório decide.<br>A Redentia carrega.
+      <NuSectionHeading eyebrow="Para quem é">
+        O mesmo assistente.<br>Duas regras do jogo.
         <template #dek>
-          O que o seu escritório faz de mais caro não é montar planilha. A
-          Redentia assume o meio do caminho, e <strong>o que exige julgamento
-          continua com quem tem o relacionamento</strong>.
+          Assessoria vinculada não tira carteira de cliente da corretora. Family
+          office e gestora querem o cliente dentro. <strong>A Redentia atende
+          os dois sem pedir que ninguém quebre a própria regra.</strong>
         </template>
       </NuSectionHeading>
     </div>
 
     <div class="rbdv__quadro">
       <div class="rbdv__col">
-        <h3 class="rbdv__col-titulo">O escritório</h3>
+        <h3 class="rbdv__col-titulo">Assessoria ligada a XP ou BTG</h3>
         <ul class="rbdv__lista">
-          <li v-for="t in ESCRITORIO" :key="t" class="rbdv__item">{{ t }}</li>
+          <li v-for="r in ASSESSORIA" :key="r.t" class="rbdv__item">
+            {{ r.t }}
+            <span v-if="r.tag" class="rbdv__tag">{{ r.tag }}</span>
+          </li>
         </ul>
       </div>
 
       <!-- 100% DECORATIVO (direção do dono 2026-08-13: tirar o texto do meio).
-           O desenho não carrega informação nenhuma sozinho, e não precisa: o que
-           os dois lados produzem juntos já está dito no título da seção. Por
-           isso a coluna inteira é aria-hidden e some no empilhado, em vez de
-           virar um bloco vazio com fio em cima. -->
+           Os dois círculos são os dois compradores e a lente é o que os dois
+           usam igual; o título da seção já diz isso. Por isso a coluna inteira
+           é aria-hidden e some no empilhado, em vez de virar um bloco vazio. -->
       <div class="rbdv__meio" aria-hidden="true">
         <!-- GEOMETRIA MEDIDA, não estimada. A primeira tentativa tinha r=100 com
              centros a 60 de distância: a sobreposição comia 80% de cada círculo
              e o desenho lia como UM círculo hachurado, não como dois que se
              encontram. Com r=88 e centros a 72 a lente fica com 104 de largura,
-             que é onde o texto cabe, e cada círculo mantém metade de si de fora.
+             e cada círculo mantém metade de si de fora.
              Os pontos de interseção saem de x=130 e y=120±sqrt(88²-36²)=±80,3. -->
         <svg class="rbdv__venn" viewBox="0 0 260 240" fill="none" aria-hidden="true">
           <defs>
@@ -106,19 +112,20 @@ const hachura = `rbdv-hachura-${uid}`
       </div>
 
       <div class="rbdv__col rbdv__col--dir">
-        <h3 class="rbdv__col-titulo">A Redentia</h3>
+        <h3 class="rbdv__col-titulo">Family office e gestora</h3>
         <ul class="rbdv__lista">
-          <li v-for="r in REDENTIA" :key="r.t" class="rbdv__item">
+          <li v-for="r in FAMILY" :key="r.t" class="rbdv__item">
             {{ r.t }}
-            <span v-if="r.futuro" class="rbdv__tag">na implantação</span>
+            <span v-if="r.tag" class="rbdv__tag">{{ r.tag }}</span>
           </li>
         </ul>
       </div>
     </div>
 
     <p class="rbdv__rodape">
-      Os dois últimos ainda não existem e são construídos com você, no seu
-      próprio fechamento. A lista inteira do que falta está no
+      Mercado, notícias e cenários respondem no primeiro dia, em qualquer uma
+      das cinco chaves. A conexão com a instituição do cliente é liberada
+      escritório a escritório, na implantação. O detalhe está no
       <a href="#faq">FAQ desta página</a>.
     </p>
 

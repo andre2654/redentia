@@ -24,7 +24,7 @@ const nome = defineModel<string>('nome', { required: true })
 
         <NuSectionHeading :eyebrow="mode === 'cadastro' ? 'Cadastro' : 'Conta criada'">
           <template v-if="mode === 'cadastro'">A conta é do<br>escritório.</template>
-          <template v-else>{{ companyName }}</template>
+          <template v-else><span data-clarity-mask="true">{{ companyName }}</span></template>
           <template #dek>
             <template v-if="mode === 'cadastro'">
               Uma conta para a casa inteira, com até cinco chaves nomeadas e o uso
@@ -50,6 +50,7 @@ const nome = defineModel<string>('nome', { required: true })
             maxlength="120"
             placeholder="Escritório Exemplo Investimentos"
             class="rbkst__input"
+            data-clarity-mask="true"
           >
           <button type="submit" class="rbkst__cta" :disabled="busy || nome.trim().length < 2">
             {{ busy ? 'Criando…' : 'Criar a conta' }}

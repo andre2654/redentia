@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
- * Redentia for Business — landing do produto B2B (MFO, gestora, consultoria).
+ * Redentia for Business — landing do produto B2B (assessoria vinculada,
+ * family office, gestora, consultoria).
  *
  * Ritmo das bandas, e ele é intencional: trilho navy/azul (capacidade) →
  * creme (a página) → branco (artefato) → creme → branco (o assistente) →
@@ -8,15 +9,18 @@
  * pisos e só; o navy de banda continua gasto uma vez no meio, na oferta, e
  * uma no fim — o trilho do topo é régua fina, não banda.
  *
- * ⚠️ NOINDEX ATÉ O PR5. A seção de segurança afirma "banco separado", que é o
- * `pg-biz` e ainda não existe. Ver a trava no topo de RbSeguranca.vue. Tirar o
- * noindex antes disso é publicar afirmação falsa.
+ * ⚠️ O NOINDEX FICA, POR DECISÃO DO DONO. Ele nasceu como trava de compliance
+ * enquanto a seção de segurança afirmava "banco separado" (o `pg-biz`, que não
+ * existe). Em 11/10/2026 a página foi reescrita para o que está no ar e essa
+ * afirmação saiu (ver o topo de RbSeguranca.vue), mas tirar o noindex continua
+ * sendo decisão do dono, não da copy. A página é destino de call de venda, não
+ * de busca orgânica.
  */
 definePageMeta({ layout: 'business' })
 
 usePageSeo({
   title: 'Redentia For Business',
-  description: 'A infraestrutura de dados para escritórios que consolidam patrimônio de famílias.',
+  description: 'O mercado brasileiro no Claude ou no ChatGPT do escritório: notícias com leitura, cenários sobre a carteira e clientes conectados com consentimento. R$ 2.500 por mês.',
   path: '/business',
   robots: 'noindex, follow',
 })

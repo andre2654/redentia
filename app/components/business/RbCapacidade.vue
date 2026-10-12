@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Trilho de capacidade — a régua fina entre o header e o hero.
+ * Trilho do topo — a régua fina entre o header e o hero.
  *
  * HISTÓRICO DO DESENHO (pra ninguém ressuscitar o que já morreu): nasceu como
  * a V5 do estudo de variações (corte diagonal, docs/redentia-business/
@@ -8,37 +8,42 @@
  * 2026-08-01 ("ainda não gosto do design desse banner"). Diagnóstico aceito:
  * era o elemento mais barulhento da página carregando a mensagem menos
  * importante, terceira massa azul da primeira dobra, e a diagonal sem barra
- * de referência lia como decoração. Virou o trilho fino, que é onde as três
- * rodadas de crítica da landing prototipada também tinham chegado.
+ * de referência lia como decoração. Virou o trilho fino.
  *
- * COPY REVISADA E APROVADA (2026-08-01, revisão de conversão):
- *  - "já fecharam com a gente": sem o objeto, "escritórios fecharam" lê como
- *    FALIRAM na primeira passada de 1 segundo. O objeto mata a ambiguidade e
- *    "com a gente" já é a voz da página (o CTA é "Falar com a gente").
- *  - O trilho inteiro é LINK para #contato: escassez sem porta é frustração.
- *    A seta na ponta diz que ele anda.
+ * ⚠️ O PLACAR "3 DE 5 ESCRITÓRIOS JÁ FECHARAM" SAIU (11/10/2026), e não volta
+ * sem prova. Em outubro havia um escritório pagante, não três, e o número era
+ * manual: placar que ninguém atualiza é a página mentindo em público, na frente
+ * de quem acabou de sair de uma call de venda e vai conferir. A regra agora é a
+ * do resto da página: só entra aqui o que o dono prova AO VIVO numa call.
  *
- * ⚠️ O NÚMERO É MANUAL. Fechou ou perdeu um escritório, atualiza FECHADOS
- * aqui no mesmo dia — placar desatualizado é a página mentindo em público.
- * O comentário do RbProva aponta pra cá como o único lugar do placar.
+ * O que entrou é exatamente isso: a pergunta da mesa roda no Claude ou no
+ * ChatGPT, com o dado do dia. Quem lê confere na própria reunião, e a frase
+ * não envelhece (não tem número que precise de atualização manual).
+ *
+ * REVISÃO DE 11/10/2026: a primeira versão terminava em "Sem slide.", que é
+ * promessa sobre o FORMATO da call, e o dono tem deck. Quem já viu um slide na
+ * reunião e abre a página leria a página desmentindo a própria call. O trilho
+ * agora convida a trazer a pergunta, que é o que a call de fato faz.
+ *
+ * Se um dia o placar voltar, ele volta com fonte: contrato assinado que o
+ * cliente autorizou citar. Nunca com "vagas abertas" como escassez de enfeite.
+ *
+ * O trilho inteiro continua LINK para #contato: frase sem porta é frustração.
+ * A seta na ponta diz que ele anda.
  */
-const FECHADOS = 3
-const TOTAL = 5
-const VAGAS = TOTAL - FECHADOS
 </script>
 
 <template>
   <a
     href="#contato"
     class="rbcp"
-    :aria-label="`Capacidade: ${FECHADOS} de ${TOTAL} escritórios já fecharam com a gente,
-      ${VAGAS} vagas abertas. Falar com a gente`"
+    aria-label="Ao vivo: traga uma pergunta da sua mesa e veja a resposta no Claude ou no ChatGPT, com dado do dia. Marcar a call."
   >
     <span class="rbcp__row" aria-hidden="true">
-      <span class="rbcp__label">Capacidade</span>
-      <span class="rbcp__fact">{{ FECHADOS }} de {{ TOTAL }} escritórios já fecharam com a gente.</span>
+      <span class="rbcp__label">Ao vivo</span>
+      <span class="rbcp__fact">Traga uma pergunta da sua mesa: a resposta sai no Claude ou no ChatGPT, com dado do dia.</span>
       <span class="rbcp__end">
-        {{ VAGAS }} vagas abertas
+        Marcar a call
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
       </span>
     </span>

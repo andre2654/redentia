@@ -6,49 +6,63 @@
  * direita rola. A cada passo que entra em cena, o texto da direita avança e a
  * cena da esquerda troca junto: fundo geométrico e o artefato de produto.
  *
- * ⚠️ TRAVA DE PUBLICAÇÃO, HERDADA E AINDA VÁLIDA: esta seção descreve a
- * arquitetura decidida no PLANO-REDENTIA-FOR-BUSINESS e parte dela ainda NÃO
- * EXISTE. O `pg-biz` é o PR5. Tirar o noindex antes disso continua decisão do
- * dono, não desta copy. Na tela, a etiqueta do pg-biz diz "na implantação"
- * (número de PR é jargão interno) e continua dizendo que ele ainda não existe.
+ * ⚠️ REESCRITA EM 11/10/2026: SÓ O QUE É VERDADE HOJE E SE CONFERE.
+ * O primeiro fato dizia que a carteira do cliente "só entra depois de um banco
+ * separado do produto de pessoa física" e mandava o comprador "perguntar em que
+ * banco a sua base vai morar e pedir a data". Isso era o plano (o `pg-biz`), não
+ * o produto: o dado de cliente mora no mesmo PostgreSQL da Redentia, em tabelas
+ * próprias (business_client_*), isolado por escritório NA APLICAÇÃO. Frase de
+ * plano numa seção que promete "sobreviver a uma due diligence" é a primeira
+ * coisa que um compliance de XP derruba. Cada fato abaixo foi conferido no
+ * código em origin/main (Backend rodrigoborges/redentia-api e mcp-service
+ * andre2654/redentia-mcp) no dia da troca:
  *
- * ⚠️ DUAS AFIRMAÇÕES FORAM CORRIGIDAS AQUI, e não por gosto:
- *
- *  FATO 3 dizia "A integração lê a sua base e gera relatório". Falso nas DUAS
- *  metades hoje: o escopo do plano de escritório é ['mercado','teses','news']
- *  (BusinessKey.php:42), sem carteira, então a chave não alcança base nenhuma
- *  do escritório; e a geração de PDF não existe, coisa que o FAQ desta mesma
- *  página admite (faq.ts:139). Era a única das quatro afirmações NÃO marcada
- *  como futura e simplesmente falsa, dentro de um bloco cujo dek promete
- *  "sobreviver a uma due diligence". Virou o que é verificável: as oito
- *  ferramentas do servidor são todas de leitura, e os nomes estão na tela.
- *
- *  FATO 4 dizia "não coloca modelo de IA nenhum no caminho do seu dado". O
- *  PLANO §5.2 proíbe essa frase com todas as letras, porque em MCP o resultado
- *  da tool entra no contexto do modelo POR DEFINIÇÃO, e prescreve "modelo
- *  PRÓPRIO". O FAQ já usava a versão certa (faq.ts:107); a seção de segurança
- *  tinha perdido a palavra. Uma palavra é a diferença entre verdadeiro e falso.
+ *  chaves      BusinessAccount::DEFAULT_MAX_KEYS = 5; revogar grava revoked_at
+ *              e desliga a chave (BusinessAccountController); o mcp-service
+ *              guarda a validação por 60 s (auth.ts, TTL_MS), daí "em até um
+ *              minuto".
+ *  leitura     15 ferramentas em src/tools.ts; só create_client_invite escreve,
+ *              e o convite não dá acesso a nada sem o consentimento.
+ *  modelo      nenhuma chamada de LLM no mcp-service nem no caminho do motor
+ *              (ScenarioEngineService: "Não há LLM em nenhum ponto do caminho").
+ *  isolamento  BusinessClient::scopeVisibleTo filtra por business_account_id e
+ *              pela chave (ou compartilhado); ClientAccess devolve o MESMO "não
+ *              encontrado" para cliente de outra conta. Cada leitura grava
+ *              portfolio_read / simulation_run com a chave e a hora, sem as
+ *              posições (BusinessClientMcpController).
+ *  aceite      business_client_consents guarda granted_at, terms_version,
+ *              terms_sha256 e user_agent; revogar apaga as posições (purged no
+ *              log); o consentimento vence em 12 meses (consent_months).
+ *              ⚠️ O IP NÃO ESTÁ NA COPY DE PROPÓSITO: a coluna existe, mas só é
+ *              gravada quando o Laravel consegue provar a origem
+ *              (FrontOrigin::visitorIp), e isso depende da FRONT_SHARED_KEY nos
+ *              dois lados. Em 11/10/2026 a prova deu negativo
+ *              (x-ratelimit-limit 600 pelo proxy, e não 1200), então o IP sai
+ *              nulo em produção. Configurada a chave, o IP pode voltar à frase.
+ *  implantação clients_mode é ligado pela Redentia, conta a conta, por console
+ *              (business:conta --clientes); o painel só lê on/off.
  *
  * O QUE O DECK DIZ E ESTA SEÇÃO CONTINUA NÃO REPETINDO, as três da lista de
  * afirmações falsas do parecer de compliance:
  *  - "Criptografia de ponta a ponta": TLS e disco cifrado não são E2E.
- *  - "Os dados nunca cruzam com terceiros": hoje são 8 de 72 tabelas com tenant
- *    num banco único.
+ *  - "Os dados nunca cruzam com terceiros": o modelo de IA do escritório recebe
+ *    o resultado da ferramenta por definição, e o banco é um só.
  *  - "Tratando patrimônio como dados médicos": dado financeiro NÃO é dado
  *    sensível na LGPD (art. 5º, II). Erra pra cima na frente de quem lê contrato.
+ *
+ * O NOINDEX DA PÁGINA CONTINUA (pages/business/index.vue): era trava desta
+ * seção enquanto ela afirmava o banco separado. A afirmação saiu; tirar o
+ * noindex é decisão do dono, não desta copy.
  */
 
 /* As ferramentas listadas são as que EXISTEM no mcp-service, com o nome exato.
    Nunca invente nome de tool aqui: o comprador roda e confere. get_portfolio
-   existe mas está FORA do escopo do plano de escritório, e é por isso que ela
-   aparece marcada, não escondida.
-   mcp-service 0.5.0 (out/2026): o plano ganhou o escopo `cenarios`
-   (list_scenarios, simulate_scenario) e, para conta com Clientes do escritório
-   ligado, as quatro do escopo `clientes`. Elas aparecem marcadas, porque só
-   existem na chave de uma conta com o recurso habilitado (liberado pela
-   Redentia, escritório a escritório). create_client_invite é a ÚNICA que escreve: cria um link
-   inerte, que não dá acesso a nada até o cliente consentir. A copy do fato
-   'leitura' diz isso com todas as letras. */
+   existe mas está FORA do escopo do plano de escritório (é a carteira PESSOAL
+   do dono da chave), e é por isso que ela aparece marcada, não escondida.
+   As quatro do escopo `clientes` só existem na chave de uma conta com o
+   recurso habilitado (liberado pela Redentia, escritório a escritório).
+   create_client_invite é a ÚNICA que escreve: cria um link inerte, que não dá
+   acesso a nada até o cliente consentir. */
 const TOOLS = [
   'get_quote', 'search_assets', 'get_market_snapshot', 'list_news',
   'get_thesis', 'list_theses', 'get_daily_briefing', 'get_etf_composition',
@@ -58,28 +72,34 @@ const TOOLS_CLIENTES = ['list_clients', 'create_client_invite', 'get_client_port
 
 const FATOS = [
   {
-    id: 'banco',
-    rotulo: 'Banco separado, antes da carteira',
-    texto: 'A carteira que vem da instituição do cliente só entra depois de um banco separado do produto de pessoa física, com isolamento entre organizações aplicado no próprio banco. É pré-requisito, não um upgrade vendido depois. Por isso a conexão de Clientes do escritório com a instituição do cliente é habilitada escritório a escritório, na implantação. Do consentimento, fica guardada a prova do aceite (data, versão do termo, IP e navegador).',
-    verifica: 'Pergunte na reunião em que banco a sua base vai morar, e peça a data.',
-  },
-  {
     id: 'chaves',
     rotulo: 'Chave nomeada, revogável pela casa',
-    texto: 'O escritório tem uma conta com até cinco chaves, cada uma com o nome de quem usa. Quem criou a conta liga, desliga e revoga qualquer uma delas sem depender da pessoa, e derrubar uma não derruba as outras.',
-    verifica: 'Gere duas chaves, revogue uma, e veja a outra continuar respondendo.',
+    texto: 'O escritório tem uma conta com até cinco chaves, cada uma com o nome de quem usa. Quem administra a conta liga, desliga e revoga qualquer uma delas sem depender da pessoa, e derrubar uma não derruba as outras. A revogada para de responder em até um minuto.',
+    verifica: 'Gere duas chaves, revogue uma e veja a outra continuar respondendo.',
   },
   {
     id: 'leitura',
     rotulo: 'Leitura, com uma exceção declarada',
-    texto: 'Todas as ferramentas do servidor são de leitura, menos create_client_invite, que só cria um link inerte até o cliente consentir: sem o aceite dele, o link não dá acesso a nada. Não existe ferramenta de compra, de venda, de transferência nem de correção de lançamento. O que entra na sua base continua entrando por você.',
+    texto: 'Das 15 ferramentas do servidor, 14 só leem. A exceção é create_client_invite, que cria um link de convite: sem o aceite do cliente, ele não dá acesso a nada. Não existe ferramenta de compra, de venda, de transferência nem de alteração de dado.',
     verifica: 'Peça a lista de ferramentas ao seu assistente e leia os nomes.',
   },
   {
     id: 'modelo',
     rotulo: 'O modelo é seu',
-    texto: 'A Redentia não coloca modelo próprio no caminho do seu dado, e não treina nada com ele. Quando o seu time pergunta pelo assistente, o modelo é o seu, rodando sob o seu contrato, com o seu registro de uso.',
+    texto: 'A Redentia não coloca modelo de IA próprio no caminho do seu dado e não treina nada com ele. Quando o time pergunta, quem responde é o Claude ou o ChatGPT do escritório, sob o contrato que a casa já tem com eles e com o registro de uso dela.',
     verifica: 'Olhe a fatura do seu provedor de IA: a chamada é sua, não nossa.',
+  },
+  {
+    id: 'clientes',
+    rotulo: 'Cada escritório vê só os próprios clientes',
+    texto: 'Cada cliente pertence a um escritório, e dentro dele só a chave responsável o enxerga, a menos que a casa o compartilhe com todas. O servidor confere conta, chave e consentimento antes de cada leitura, e responde igual para cliente de outro escritório e para cliente que não existe. Cada leitura de carteira e cada cenário rodado sobre ela ficam registrados com a chave e a hora, sem as posições.',
+    verifica: 'No painel de clientes, abra um cliente: o registro de acesso lista cada leitura, com a chave e a hora.',
+  },
+  {
+    id: 'aceite',
+    rotulo: 'O aceite do cliente fica provado',
+    texto: 'O consentimento guarda a data, a versão do termo, o hash do texto que o cliente leu e o navegador usado. Vale 12 meses; o cliente revoga quando quiser, pelo próprio link, e com a revogação as posições são apagadas. A conexão com a instituição do cliente é habilitada escritório a escritório, na implantação.',
+    verifica: 'O cliente recebe um link de gestão: ali ele vê o registro de acesso e revoga sem falar com ninguém.',
   },
 ] as const
 
@@ -155,8 +175,8 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
       <NuSectionHeading eyebrow="Segurança">
         O que dá<br>pra verificar.
         <template #dek>
-          Quatro afirmações que sobrevivem a uma <strong>due diligence</strong>,
-          porque cada uma se confere na arquitetura ou na prática.
+          Cinco afirmações que sobrevivem a uma <strong>due diligence</strong>,
+          porque cada uma se confere no painel, no assistente ou na fatura.
           Nenhuma delas é selo ou adjetivo.
         </template>
       </NuSectionHeading>
@@ -189,12 +209,7 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
             <div v-for="(f, i) in FATOS" :key="f.id" class="rbsg__card" :class="{ 'rbsg__card--on': i === ativo }" :inert="i !== ativo">
               <span class="rbsg__card-label">{{ f.rotulo }}</span>
 
-              <dl v-if="f.id === 'banco'" class="rbsg__linhas">
-                <div><dt>pg-app</dt><dd>pessoa física</dd></div>
-                <div><dt>pg-biz</dt><dd>escritórios <span class="rbsg__tag">na implantação</span></dd></div>
-              </dl>
-
-              <dl v-else-if="f.id === 'chaves'" class="rbsg__linhas">
+              <dl v-if="f.id === 'chaves'" class="rbsg__linhas">
                 <div><dt>mesa</dt><dd>ativa</dd></div>
                 <div><dt>alocação</dt><dd>ativa</dd></div>
                 <div><dt>backoffice</dt><dd class="rbsg__off">revogada</dd></div>
@@ -206,10 +221,27 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
                 <li class="rbsg__tool-fora">get_portfolio <span class="rbsg__tag">fora do plano</span></li>
               </ul>
 
-              <dl v-else class="rbsg__linhas">
+              <dl v-else-if="f.id === 'modelo'" class="rbsg__linhas">
                 <div><dt>a chave</dt><dd>sua</dd></div>
                 <div><dt>o assistente</dt><dd>seu</dd></div>
                 <div><dt>a fatura do modelo</dt><dd>sua</dd></div>
+              </dl>
+
+              <!-- Os rótulos vêm do painel (utils/clientes.ts, ACTION_LABEL),
+                   encurtados para caber, para o comprador reconhecer a peça
+                   quando abrir o registro de acesso de um cliente. -->
+              <dl v-else-if="f.id === 'clientes'" class="rbsg__linhas">
+                <div><dt>mesa · 14:02</dt><dd>Carteira consultada</dd></div>
+                <div><dt>mesa · 14:03</dt><dd>Simulação de cenário</dd></div>
+                <div><dt>outra conta</dt><dd class="rbsg__nada">não encontrado</dd></div>
+              </dl>
+
+              <dl v-else class="rbsg__linhas">
+                <div><dt>data e hora</dt><dd>registradas</dd></div>
+                <div><dt>versão do termo</dt><dd>registrada</dd></div>
+                <div><dt>hash do texto</dt><dd>sha256</dd></div>
+                <div><dt>navegador</dt><dd>registrado</dd></div>
+                <div><dt>validade</dt><dd>12 meses</dd></div>
               </dl>
 
               <p class="rbsg__verifica">{{ f.verifica }}</p>
@@ -218,7 +250,7 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
         </div>
 
         <!-- posição na sequência, e é controle: clicar leva ao passo -->
-        <div class="rbsg__nav" role="group" aria-label="Ir para uma das quatro verificações">
+        <div class="rbsg__nav" role="group" aria-label="Ir para uma das cinco verificações">
           <button
             v-for="(f, i) in FATOS" :key="f.id" type="button"
             class="rbsg__dot" :class="{ 'rbsg__dot--on': i === ativo }" :aria-pressed="i === ativo"
@@ -330,6 +362,8 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 }
 .rbsg__linhas dd { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 800; }
 .rbsg__off { color: var(--nu-gray) !important; text-decoration: line-through; }
+/* a recusa não é um estado riscado (como a chave revogada): é a resposta */
+.rbsg__nada { color: var(--nu-gray) !important; }
 
 /* Duas colunas quando cabe: com cenários e clientes a lista passou de 9 para
    15 nomes, e numa coluna só ela estourava a altura do card. */
@@ -378,10 +412,12 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 /* ——— a coluna que rola ——— */
 /* O padding-bottom NÃO é respiro, é o que mantém o sticky grudado até o fim.
    A conta: a cena tem (100vh - nuh) de altura e o sticky solta quando o scroll
-   passa de (fim da trilha - altura da cena). Centralizar o 4º passo exige rolar
-   até (3,5 x 76vh - 50vh) do topo da trilha; sem folga isso cai 5vh DEPOIS do
-   ponto de soltura e a cena sobe junto com a página no último passo (medido:
-   topo em -50px em vez de 58). 16vh cobre a diferença com margem. */
+   passa de (fim da trilha - altura da cena). Centralizar o último passo exige
+   rolar até ((N - 0,5) x 76vh - 50vh) do topo da trilha; sem folga isso cai
+   DEPOIS do ponto de soltura e a cena sobe junto com a página no último passo
+   (medido com 4 passos: topo em -50px em vez de 58). A folga mínima sai 12vh
+   e NÃO depende de N (o N cancela na conta), então os 5 passos de 11/10/2026
+   cabem nos mesmos 16vh. */
 .rbsg__trilha { margin: 0; padding: 0 0 16vh; list-style: none; }
 /* A altura de cada passo é o que dá curso ao scroll travado. 76vh e não 100:
    com 100 o último passo precisa da tela inteira e a seção passa a terminar com
@@ -408,14 +444,14 @@ onBeforeUnmount(() => { if (raf) cancelAnimationFrame(raf); raf = 0 })
 }
 .rbsg__como strong { color: var(--nu-ink); font-weight: 800; }
 /* O passo fora de foco apaga, mas não some: quem lê rápido continua vendo os
-   quatro, e quem está no meio sabe onde está. */
+   cinco, e quem está no meio sabe onde está. */
 .rbsg__passo { opacity: .38; transition: opacity .4s ease; }
 .rbsg__passo--on { opacity: 1; }
 
 /* ——— empilhado: sem travar nada ———
    Scroll travado no celular é o pior lugar pra ele: a tela é curta, a cena
    comeria metade dela e o polegar disputa com o sticky. Vira lista simples, com
-   os quatro passos abertos e sem apagar nenhum.
+   os cinco passos abertos e sem apagar nenhum.
    ⚠️ A CENA SOME INTEIRA no celular, e com ela os artefatos (a lista de tools, o
    estado das chaves). É perda real e consciente: o texto de cada passo carrega a
    afirmação e o "como conferir", que é o que precisa sobreviver. Se um dia

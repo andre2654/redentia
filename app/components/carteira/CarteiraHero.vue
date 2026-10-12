@@ -40,17 +40,17 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
 
         <template v-if="hero.state === 'patrimonio'">
           <div class="chr__row">
-            <h1 ref="valueEl" class="chr__value chr__value--fit">{{ patrimonio }}</h1>
+            <h1 ref="valueEl" class="chr__value chr__value--fit" data-clarity-mask="true">{{ patrimonio }}</h1>
             <NuEyeButton class="chr__eye" />
           </div>
-          <div class="chr__meta">
+          <div class="chr__meta" data-clarity-mask="true">
             <span v-if="hojeTxt" class="chr__badge" :class="`chr__badge--${hero.hojeDir}`">
               <svg width="11" height="11" viewBox="0 0 10 10" :class="{ 'chr__tri--down': hero.hojeDir === 'down' }"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>
               {{ hojeTxt }}
             </span>
             <span v-if="hero.metaLine" class="chr__meta-line">{{ hero.metaLine }}</span>
           </div>
-          <div v-if="hero.stats.length" class="chr__stats">
+          <div v-if="hero.stats.length" class="chr__stats" data-clarity-mask="true">
             <span v-for="s in hero.stats" :key="s.label">
               <span class="chr__stat-label">{{ s.label }}</span>
               <span class="chr__stat-value" :class="`chr__stat-value--${s.tone}`">{{ statValue(s) }}</span>
@@ -94,7 +94,7 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
               :style="{ width: `${a.pctNum}%`, background: a.color }"
             />
           </div>
-          <div class="chr__legend">
+          <div class="chr__legend" data-clarity-mask="true">
             <div v-for="a in allocation" :key="a.name" class="chr__legend-row">
               <span class="chr__legend-dot" :style="{ background: a.color }" />
               <span class="chr__legend-name">{{ a.name }}</span>
