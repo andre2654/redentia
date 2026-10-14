@@ -129,15 +129,15 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Quem na minha equipe vê o quê?',
-        a: 'Hoje o escritório tem uma conta com até cinco chaves nomeadas, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório, cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por cliente, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
+        a: 'Hoje o escritório tem uma conta com uma chave nomeada por pessoa, e todas enxergam o mesmo catálogo: mercado, teses, notícias e cenários. Em Clientes do escritório, cada chave vê os clientes que ela convidou; quem administra a conta vê todos, reatribui e pode compartilhar um cliente com o escritório inteiro. Escopo diferente por pessoa ou por cliente, fora isso, ainda não existe. O que já dá para separar é quem usa qual chave, porque o painel mostra o uso de cada uma. Vale saber que o painel abre com um login só, o de quem criou a conta: assento por pessoa e segundo administrador ainda não existem.',
       },
       {
         q: 'Quantas chaves o escritório tem, e quem cria?',
-        a: 'Até cinco chaves ativas por escritório, criadas no painel da conta por quem administra a casa. Cada uma leva um nome, seu ou da mesa, e o painel mostra quanto cada chave usou hoje e nos últimos trinta dias. Chave revogada libera a vaga, e o uso dela continua no histórico.',
+        a: 'Quantas a casa contratar, uma por pessoa. O escritório começa com uma e ativa ou desativa chaves quando quiser; a mensalidade conta as chaves ativas no início de cada mês. Elas são criadas no painel da conta por quem administra a casa. Cada uma leva um nome, seu ou da mesa, e o painel mostra quanto cada chave usou hoje e nos últimos trinta dias. Chave revogada libera a vaga, e o uso dela continua no histórico.',
       },
       {
         q: 'Existe limite de uso?',
-        a: 'Sim, e ele é do escritório inteiro, não de cada chave: trezentas chamadas por minuto, somando as cinco, sem teto diário. As duas simulações (simulate_scenario e simulate_client_scenario) têm um sub-limite próprio de vinte por minuto para o escritório, porque cada uma é cálculo pesado, e elas contam também no limite geral. O motor também tem um teto compartilhado entre todos os usuários; em pico, uma simulação pode pedir para esperar alguns segundos mesmo abaixo de vinte. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
+        a: 'Sim, e ele é do escritório inteiro, não de cada chave: trezentas chamadas por minuto, somando todas as chaves, sem teto diário. As duas simulações (simulate_scenario e simulate_client_scenario) têm um sub-limite próprio de vinte por minuto para o escritório, porque cada uma é cálculo pesado, e elas contam também no limite geral. O motor também tem um teto compartilhado entre todos os usuários; em pico, uma simulação pode pedir para esperar alguns segundos mesmo abaixo de vinte. É uso justo, dimensionado para uma mesa trabalhando o dia todo, e o painel mostra quanto foi consumido. Se a sua casa precisa de mais, isso se resolve em conversa, não em surpresa no meio do mês.',
       },
       {
         q: 'Como eu revogo o acesso de quem saiu?',
@@ -170,7 +170,11 @@ export const RB_FAQ: RbFaqGrupo[] = [
     itens: [
       {
         q: 'Quanto custa?',
-        a: 'R$ 2.500 por mês por escritório, com até cinco chaves para o time, sem custo por assento. O plano é mensal, sem contrato anual.',
+        a: 'Por chave ativa, em faixas: R$ 500 por chave da 1ª à 10ª, R$ 300 da 11ª à 25ª, R$ 200 da 26ª à 50ª e R$ 150 a partir da 51ª. Cada chave paga o preço da faixa em que cai, então 10 chaves custam R$ 5.000 por mês, 25 custam R$ 9.500 e 50 custam R$ 14.500. O pagamento é mensal e antecipado, por boleto ou Pix, com vencimento no dia 10 e nota fiscal, e os preços são reajustados uma vez por ano pelo IPCA. A calculadora da seção O plano faz a conta para o tamanho da sua mesa.',
+      },
+      {
+        q: 'Tem fidelidade?',
+        a: 'Três meses de prazo mínimo, contados da ativação da primeira chave; depois, o contrato renova mês a mês, e qualquer lado encerra com 30 dias de aviso, sem multa. E tem garantia: se a casa cancelar nos primeiros 30 dias, devolvemos tudo o que foi pago e o restante do prazo mínimo não é cobrado.',
       },
       {
         q: 'Como funciona a implantação?',
