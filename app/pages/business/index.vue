@@ -20,7 +20,7 @@ definePageMeta({ layout: 'business' })
 
 usePageSeo({
   title: 'Redentia For Business',
-  description: 'O mercado brasileiro no Claude ou no ChatGPT do escritório: notícias com leitura, cenários sobre a carteira e clientes conectados com consentimento. R$ 2.500 por mês.',
+  description: 'O mercado brasileiro no Claude ou no ChatGPT do escritório: notícias com leitura, cenários sobre a carteira e clientes conectados com consentimento. A partir de R$ 500 por mês.',
   path: '/business',
   robots: 'noindex, follow',
 })

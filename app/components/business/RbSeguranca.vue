@@ -74,7 +74,7 @@ const FATOS = [
   {
     id: 'chaves',
     rotulo: 'Chave nomeada, revogável pela casa',
-    texto: 'O escritório tem uma conta com até cinco chaves, cada uma com o nome de quem usa. Quem administra a conta liga, desliga e revoga qualquer uma delas sem depender da pessoa, e derrubar uma não derruba as outras. A revogada para de responder em até um minuto.',
+    texto: 'O escritório tem uma conta com uma chave por pessoa, cada uma com o nome de quem usa. Quem administra a conta liga, desliga e revoga qualquer uma delas sem depender da pessoa, e derrubar uma não derruba as outras. A revogada para de responder em até um minuto.',
     verifica: 'Gere duas chaves, revogue uma e veja a outra continuar respondendo.',
   },
   {

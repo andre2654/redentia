@@ -70,7 +70,7 @@ const TOOLS_LEITURA = 14
    É a mesma anatomia dos cards da Decade, e é o único gesto dela que atravessa
    o nosso sistema sem foto, sem serifa e sem inventar dado. */
 /* A RÉGUA É A MESMA GRAMÁTICA NOS TRÊS, e os traços acesos são LITERALMENTE o
-   número do card: 14 de 15 ferramentas, 5 de 5 chaves, 1 de 8 horas. Não é
+   número do card: 14 de 15 ferramentas, 1 de 10 chaves da primeira faixa, 1 de 8 horas. Não é
    enfeite e não é gráfico de dado inventado — é o próprio número desenhado. Se
    o número mudar, `on` muda junto, senão a régua mente em silêncio. */
 /* A FOTO É FUNDO, NÃO ASSUNTO, e por isso ela não tem alt: quem enxerga vê um
@@ -96,11 +96,11 @@ const SLIDES = [
   {
     id: 'preco', bg: 'var(--nu-orb-deep)', foto: '/business-hero/anotando.webp',
     rotulo: 'O plano',
-    valor: 'R$ 2.500',
-    sub: 'por mês, por escritório. Mensal, sem contrato anual.',
-    ticks: { total: 5, on: 5 },
-    legenda: 'chaves nomeadas, sem custo por assento',
-    nota: 'Se o assistente não virar rotina da mesa, você cancela no mês seguinte, não em dois anos.',
+    valor: 'R$ 500',
+    sub: 'por chave, por mês, para começar. A partir da 11ª, cada chave sai mais barata.',
+    ticks: { total: 10, on: 1 },
+    legenda: 'chaves na faixa de R$ 500',
+    nota: 'Garantia de 30 dias: se a mesa não usar, devolvemos tudo. Prazo mínimo de 3 meses, depois mês a mês.',
   },
   {
     id: 'setup', bg: 'var(--nu-navy-2)', foto: '/business-hero/sala-vidro.webp',

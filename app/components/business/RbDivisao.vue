@@ -123,8 +123,8 @@ const hachura = `rbdv-hachura-${uid}`
     </div>
 
     <p class="rbdv__rodape">
-      Mercado, notícias e cenários respondem no primeiro dia, em qualquer uma
-      das cinco chaves. A conexão com a instituição do cliente é liberada
+      Mercado, notícias e cenários respondem no primeiro dia, em qualquer
+      chave da casa. A conexão com a instituição do cliente é liberada
       escritório a escritório, na implantação. O detalhe está no
       <a href="#faq">FAQ desta página</a>.
     </p>
