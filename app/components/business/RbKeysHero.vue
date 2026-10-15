@@ -199,29 +199,29 @@ const PASSOS = [
   display: inline-flex; align-items: center; gap: 7px;
   background: var(--nu-white); color: var(--nu-ink);
   border-radius: var(--nu-r-pill); padding: 9px 17px;
-  font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums;
 }
 .rbkh__pill--alta { background: var(--nu-red-pill-bg); color: var(--nu-red-2); }
-.rbkh__meta-line { color: var(--nu-gray); font-size: 15px; font-weight: 600; }
+.rbkh__meta-line { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .rbkh__meta-line--solta { display: block; margin: 22px 0 0; max-width: 30ch; line-height: 1.55; }
 
 .rbkh__stats { display: flex; align-items: flex-start; gap: clamp(22px, 3vw, 40px); flex-wrap: wrap; margin: 28px 0 0; }
-.rbkh__stat-label { display: block; color: var(--nu-gray); font-size: 14px; font-weight: 700; }
-.rbkh__stat-value { display: block; margin: 4px 0 0; color: var(--nu-ink); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.rbkh__stat-sub { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.rbkh__stat-label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rbkh__stat-value { display: block; margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.rbkh__stat-sub { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 .rbkh__ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
 .rbkh__cta {
   display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 16px 28px; font-size: 16.5px; font-weight: 700; font-family: inherit;
+  padding: 16px 28px; font-size: var(--nu-fs-md); font-weight: 700; font-family: inherit;
   transition: background .2s, transform .15s;
 }
 .rbkh__cta:hover { background: var(--nu-blue-hover); transform: translateY(-2px); }
 .rbkh__cta-outline {
   display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-family: inherit;
   background: transparent; color: var(--nu-blue); border: 2px solid var(--nu-blue);
-  border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: 16.5px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   transition: background .2s;
 }
 .rbkh__cta-outline:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
@@ -230,8 +230,8 @@ const PASSOS = [
 /* o artefato: elevação de verdade, raio de card do app, sem hairline */
 .rbkh__card { background: var(--nu-white); border-radius: var(--nu-r-card); padding: 28px; box-shadow: var(--nu-shadow-card); }
 .rbkh__card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.rbkh__card-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
-.rbkh__card-count { color: var(--nu-gray); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rbkh__card-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.02em; }
+.rbkh__card-count { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 .rbkh__passos { margin-top: 20px; }
 
 .rbkh__bar { display: flex; height: 14px; border-radius: var(--nu-r-pill); overflow: hidden; gap: 3px; margin-top: 22px; background: var(--nu-cream-3); }
@@ -239,7 +239,7 @@ const PASSOS = [
 .rbkh__legend { margin: 16px 0 0; }
 .rbkh__legend-row { display: flex; align-items: center; gap: 11px; padding: 11px 0; border-top: 1px solid var(--nu-cream-2); }
 .rbkh__legend-dot { width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0; }
-.rbkh__legend-name { flex: 1; min-width: 0; color: var(--nu-ink); font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rbkh__legend-val { margin: 0; color: var(--nu-gray); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.rbkh__legend-pct { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; }
+.rbkh__legend-name { flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rbkh__legend-val { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.rbkh__legend-pct { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; }
 </style>

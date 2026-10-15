@@ -93,7 +93,7 @@ const ANTECEDE = [
 .rbct__mail:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 4px; }
 
 .rbct__label {
-  display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.4px;
 }
 .rbct__lista { margin: 22px 0 0; padding: 0; list-style: none; }
@@ -102,12 +102,12 @@ const ANTECEDE = [
   padding: 18px 0; border-top: 1px solid var(--nu-cream-line);
 }
 .rbct__num {
-  color: var(--nu-blue); font-size: 14px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
   font-variant-numeric: tabular-nums; flex-shrink: 0; padding-top: 2px;
 }
-.rbct__texto { color: var(--nu-gray-2); font-size: 15.5px; font-weight: 500; line-height: 1.62; }
+.rbct__texto { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.62; }
 .rbct__nota {
   margin: 20px 0 0; color: var(--nu-gray);
-  font-size: 13.5px; font-weight: 600; line-height: 1.55;
+  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
 }
 </style>

@@ -45,19 +45,19 @@ defineProps<{
 .ctc__scroll { overflow-x: auto; }
 .ctc__table { width: 100%; border-collapse: collapse; min-width: 520px; }
 .ctc__table th {
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1px; text-transform: uppercase; text-align: left;
   padding: 10px 18px 12px 0; white-space: nowrap;
 }
 .ctc__table td {
-  color: var(--nu-gray-2); font-size: 15.5px; font-weight: 600;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
   padding: 14px 18px 14px 0; border-top: 1.5px solid var(--nu-cream-line-2);
   font-variant-numeric: tabular-nums; line-height: 1.5;
 }
 .ctc__table td:first-child { color: var(--nu-ink); font-weight: 800; }
 .ctc__td--accent { color: var(--nu-blue) !important; font-weight: 800 !important; }
 .ctc__note {
-  margin: 18px 0 0; color: var(--nu-gray); font-size: 13.5px;
+  margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm);
   font-weight: 500; line-height: 1.6;
 }
 </style>

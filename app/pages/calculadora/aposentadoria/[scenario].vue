@@ -412,7 +412,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
 }
 .aps__status {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-bottom: 22px;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-bottom: 22px;
 }
 .aps__live { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-weight: 700; }
 .aps__live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); flex-shrink: 0; }
@@ -420,7 +420,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   display: inline-flex; align-items: center; gap: 9px;
   background: var(--nu-white); color: var(--nu-ink);
   border-radius: var(--nu-r-pill); padding: 11px 20px;
-  font-size: 14.5px; font-weight: 700;
+  font-size: var(--nu-fs-sm); font-weight: 700;
   transition: transform .18s, box-shadow .2s;
 }
 .aps__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
@@ -438,19 +438,19 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
 .aps__chips li {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 9px 15px; color: var(--nu-ink); font-size: 13.5px; font-weight: 700;
+  padding: 9px 15px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .aps__chip-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .aps__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .aps__prose p:last-child { margin-bottom: 0; }
 
 /* ——— sub-heading dentro da coluna direita do split ——— */
-.aps__sub { margin: 0 0 14px; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.aps__sub { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
 
 /* ——— cenários relacionados (grid de cards-link) ——— */
 .aps__grid-cards {
@@ -464,13 +464,13 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   transition: transform .18s, box-shadow .2s;
 }
 .aps__rel-card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.aps__rel-title { color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; line-height: 1.3; }
-.aps__rel-sub { color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.aps__rel-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; line-height: 1.3; }
+.aps__rel-sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
 /* ——— pills / CTA ——— */
 .aps__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s, color .2s;
 }
 .aps__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -480,7 +480,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/aposentadoria' }] })
   max-width: 1080px; margin: 0 auto;
 }
 .aps__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.aps__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.aps__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .aps__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .aps__cta .aps__pill { margin-top: 0; }
 .aps__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

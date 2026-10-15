@@ -63,7 +63,7 @@ const emit = defineEmits<{ reabrir: [] }>()
   display: flex; align-items: center; justify-content: center;
 }
 .cce__glifo--alerta { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.cce__h1 { margin: 18px 0 0; text-align: center; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.03em; line-height: 1.22; text-wrap: balance; outline: none; }
-.cce__p { margin: 10px 0 0; text-align: center; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.55; }
+.cce__h1 { margin: 18px 0 0; text-align: center; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.03em; line-height: 1.22; text-wrap: balance; outline: none; }
+.cce__p { margin: 10px 0 0; text-align: center; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .cce__foot { margin-top: auto; padding-top: 22px; }
 </style>

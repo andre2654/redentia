@@ -34,7 +34,7 @@ defineProps<{
 
 <style scoped>
 .crp__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; }
-.crp__caption { color: var(--nu-gray); font-size: 16px; font-weight: 600; }
+.crp__caption { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .crp__actions { flex-shrink: 0; }
 .crp__value {
   color: var(--nu-ink);
@@ -48,7 +48,7 @@ defineProps<{
 .crp__legend { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 22px; }
 .crp__item { display: inline-flex; align-items: center; gap: 9px; }
 .crp__dot { width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0; }
-.crp__label { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
-.crp__num { color: var(--nu-ink); font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.crp__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.crp__num { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .crp__num--accent { color: var(--nu-blue); }
 </style>

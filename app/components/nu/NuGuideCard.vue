@@ -28,14 +28,14 @@ defineProps<{ card: NuGuideCardItem }>()
 .ngc--2 { background: linear-gradient(165deg, var(--nu-blue) 0%, var(--nu-blue-deep) 45%, var(--nu-navy) 100%); }
 .ngc--3 { background: linear-gradient(205deg, var(--nu-grad-blue-2) 0%, var(--nu-blue-deep) 55%, var(--nu-navy) 95%); }
 .ngc__content { position: relative; z-index: 1; display: block; }
-.ngc__tag { display: block; color: var(--nu-white-90); font-size: 15px; font-weight: 700; }
+.ngc__tag { display: block; color: var(--nu-white-90); font-size: var(--nu-fs-md); font-weight: 700; }
 .ngc__title {
-  display: block; color: var(--nu-white); font-size: clamp(21px, 1.8vw, 25px);
+  display: block; color: var(--nu-white); font-size: var(--nu-fs-2xl);
   font-weight: 800; letter-spacing: -.3px; line-height: 1.22; margin-top: 10px;
 }
 .ngc__pill {
   display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--nu-white-85);
   color: var(--nu-white); border-radius: var(--nu-r-pill); padding: 11px 20px;
-  font-size: 14.5px; font-weight: 700; margin-top: 20px;
+  font-size: var(--nu-fs-sm); font-weight: 700; margin-top: 20px;
 }
 </style>

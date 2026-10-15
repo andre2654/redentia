@@ -32,7 +32,7 @@ defineProps<{
   display: inline-flex; align-items: center; gap: 9px;
   background: var(--nu-white); color: var(--nu-ink);
   border-radius: var(--nu-r-pill); padding: 11px 20px;
-  font-size: 14.5px; font-weight: 700;
+  font-size: var(--nu-fs-sm); font-weight: 700;
   transition: transform .18s, box-shadow .2s;
 }
 .chr__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
@@ -44,7 +44,7 @@ defineProps<{
 .chr__h1 :deep(em) { font-style: italic; }
 .chr__desc {
   margin: 16px 0 0; color: var(--nu-gray-2);
-  font-size: clamp(16px, 1.7vw, 19px); font-weight: 600; line-height: 1.55;
+  font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55;
   max-width: 640px;
 }
 </style>

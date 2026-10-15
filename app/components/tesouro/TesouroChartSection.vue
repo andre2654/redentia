@@ -84,12 +84,12 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 .tcs__modes { display: flex; gap: 4px; background: var(--nu-cream-text-12); border-radius: var(--nu-r-pill); padding: 4px; }
 .tcs__mode {
   padding: 8px 16px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: 14px; font-weight: 700; cursor: pointer;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   transition: color .2s, background .2s;
 }
 .tcs__mode:hover { color: var(--nu-cream-text-85); }
 .tcs__mode--active { background: var(--nu-cream); color: var(--nu-navy); font-weight: 800; }
-.tcs__legend { margin: 18px 0 0; color: var(--nu-cream-text-50); font-size: 14px; font-weight: 600; }
+.tcs__legend { margin: 18px 0 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 500; }
 .tcs__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: stretch; margin-top: 32px; flex-wrap: wrap; }
 .tcs__stats { flex: 0 1 300px; min-width: min(260px, 100%); }
 .tcs__chart {
@@ -100,7 +100,7 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 }
 .tcs__state {
   margin: 0; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  color: var(--nu-cream-text-50); font-size: 15px; font-weight: 600; text-align: center;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 500; text-align: center;
   padding: 0 clamp(22px, 5.5vw, 80px);
 }
 </style>

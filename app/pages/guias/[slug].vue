@@ -117,7 +117,7 @@ usePageSeo({
 .gdp__h2--first { margin-top: 0; }
 
 .gdp__p {
-  margin: 18px 0 0; color: var(--nu-gray-3); font-size: 17.5px;
+  margin: 18px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg);
   font-weight: 500; line-height: 1.75;
 }
 .gdp__p + .gdp__p { margin-top: 16px; }

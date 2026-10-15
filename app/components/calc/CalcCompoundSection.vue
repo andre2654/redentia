@@ -134,7 +134,7 @@ function applySim(p: Record<string, number>) {
   padding: 18px 22px;
   margin-top: 26px;
   color: var(--nu-gray-2);
-  font-size: 15.5px;
+  font-size: var(--nu-fs-md);
   font-weight: 500;
   line-height: 1.6;
 }

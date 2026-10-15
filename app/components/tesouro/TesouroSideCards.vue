@@ -32,7 +32,7 @@ defineProps<{ cards: TesouroSideCardVM[] }>()
 }
 .tsc__card { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 34px); }
 .tsc__label {
-  margin: 0; color: var(--nu-blue); font-size: 12px; font-weight: 800;
+  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .tsc__price {
@@ -40,8 +40,8 @@ defineProps<{ cards: TesouroSideCardVM[] }>()
   font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .tsc__rate {
-  margin: 8px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 700;
+  margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.tsc__note { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.55; }
+.tsc__note { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 </style>

@@ -331,7 +331,7 @@ onBeforeUnmount(clearAll)
 .rbas__right { flex: 1 1 420px; min-width: min(300px, 100%); }
 .rbas__nota {
   margin: clamp(24px, 3vw, 34px) 0 0; max-width: 480px;
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 600; line-height: 1.6;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 .rbas__nota-link { color: var(--nu-blue); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .rbas__nota-link:hover { color: var(--nu-blue-hover); }
@@ -345,7 +345,7 @@ onBeforeUnmount(clearAll)
 }
 .rbas__legenda {
   margin: 10px 0 0; width: min(468px, 100%); margin-left: auto;
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.5; text-align: left;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; text-align: left;
 }
 /* As abas: controle segmentado sob a janela, com alvo de 44px. Contorno, não
    chapado: o azul chapado da página já está gasto no header e no card do plano. */
@@ -358,7 +358,7 @@ onBeforeUnmount(clearAll)
   min-height: 44px; padding: 10px 16px; border-radius: 10px;
   background: var(--nu-white); color: var(--nu-gray-2);
   border: 1px solid var(--nu-ink-14);
-  font-size: 13.5px; font-weight: 800; transition: background .2s, color .2s, border-color .2s;
+  font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, color .2s, border-color .2s;
 }
 .rbas__aba:hover { color: var(--nu-ink); border-color: var(--nu-ink); }
 .rbas__aba--on { background: var(--nu-ink); color: var(--nu-white); border-color: var(--nu-ink); }
@@ -376,11 +376,11 @@ onBeforeUnmount(clearAll)
 }
 .rbas__app {
   display: inline-flex; align-items: center; gap: 7px;
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .rbas__applogo { width: 18px; height: 18px; border-radius: 4px; display: block; }
 .rbas__model {
-  margin-left: auto; color: var(--nu-gray); font-size: 11px; font-weight: 800;
+  margin-left: auto; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 4px 10px; border-radius: 5px; box-shadow: inset 0 0 0 1px var(--nu-ink-14);
 }
 
@@ -403,7 +403,7 @@ onBeforeUnmount(clearAll)
 
 .rbas__user {
   align-self: flex-end; max-width: 86%;
-  color: var(--nu-ink); font-size: 13.5px; font-weight: 600; line-height: 1.45;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45;
   padding: 10px 14px; border-radius: 10px 10px 3px 10px;
   box-shadow: inset 0 0 0 1px var(--nu-ink-14);
   opacity: 0; transform: translateY(6px);
@@ -414,14 +414,14 @@ onBeforeUnmount(clearAll)
 .rbas__anexo {
   display: block; margin-top: 8px; padding: 6px 10px; border-radius: 7px;
   background: var(--nu-cream); color: var(--nu-gray-2);
-  font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 
 .rbas__tool {
   display: inline-flex; align-items: center; gap: 7px; align-self: flex-start;
   color: var(--nu-blue-deep);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px; font-weight: 700; padding: 7px 12px; border-radius: 6px;
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 7px 12px; border-radius: 6px;
   border: 1px solid var(--nu-blue-soft);
   animation: rbas-pop .35s cubic-bezier(.34, 1.4, .6, 1) both;
 }
@@ -443,8 +443,8 @@ onBeforeUnmount(clearAll)
 .rbas__dot3 i:nth-child(3) { animation-delay: .36s; }
 @keyframes rbas-blink { 50% { opacity: .25; } }
 
-.rbas__fetch { margin: -4px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 600; }
-.rbas__ans { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 500; line-height: 1.55; }
+.rbas__fetch { margin: -4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.rbas__ans { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .rbas__ans strong { font-weight: 800; font-variant-numeric: tabular-nums; }
 .rbas__src { color: var(--nu-gray); }
 
@@ -454,7 +454,7 @@ onBeforeUnmount(clearAll)
   padding: 11px 8px 11px 16px; min-height: 42px;
 }
 .rbas__txt {
-  flex: 1; color: var(--nu-ink); font-size: 13px; font-weight: 600;
+  flex: 1; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 500;
   white-space: nowrap; overflow: hidden;
 }
 .rbas__ph { color: var(--nu-gray); font-weight: 500; }
@@ -484,6 +484,6 @@ onBeforeUnmount(clearAll)
   /* a 375px as duas abas não cabem lado a lado no tamanho do desktop e cada
      uma caía numa linha; dividindo a largura, o rótulo quebra dentro do botão */
   .rbas__abas { flex-wrap: nowrap; }
-  .rbas__aba { flex: 1 1 0; padding: 9px 10px; font-size: 13px; line-height: 1.25; }
+  .rbas__aba { flex: 1 1 0; padding: 9px 10px; font-size: var(--nu-fs-dense); line-height: 1.25; }
 }
 </style>

@@ -474,14 +474,14 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.ap__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
+.ap__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .ap__h4--accent { color: var(--nu-blue); }
 .ap__link { text-decoration: underline; }
 .ap__link:hover { color: var(--nu-blue); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .ap__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .ap__prose p:last-child { margin-bottom: 0; }
@@ -502,8 +502,8 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .ap__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ap__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
-.ap__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.ap__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.ap__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .ap__tiles {
@@ -519,17 +519,17 @@ usePageSeo({
 :global(.cbd--cream) .ap__tile { background: var(--nu-white); }
 :global(.csp--cream) .ap__tile { background: var(--nu-white); }
 .ap__tile--push { margin-top: 22px; }
-.ap__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.ap__card-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.6; }
-.ap__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
+.ap__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.ap__card-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.6; }
+.ap__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .ap__list strong { color: var(--nu-ink); font-weight: 800; }
 .ap__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
-.ap__result-main { margin: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 600; line-height: 1.55; font-variant-numeric: tabular-nums; }
+.ap__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 
 /* ——— exemplos da fórmula (coluna direita do split) ——— */
 .ap__examples { margin-top: 18px; }
 .ap__examples p {
-  margin: 10px 0 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500;
+  margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.65;
 }
 .ap__examples strong { color: var(--nu-ink); font-weight: 800; }
@@ -540,7 +540,7 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.ap__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.ap__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .ap__ex-card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
 :global(.cbd--cream) .ap__ex-card { background: var(--nu-white); }
 
@@ -556,12 +556,12 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .ap__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.ap__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.ap__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .ap__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .ap__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -569,16 +569,16 @@ usePageSeo({
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.ap__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
-.ap__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
-.ap__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.ap__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.ap__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
+.ap__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .ap__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .ap__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.ap__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.ap__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .ap__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .ap__cta .ap__pill { margin-top: 0; }
 .ap__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

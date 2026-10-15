@@ -45,7 +45,7 @@ const label = computed(() => {
 .nfb {
   pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
   border: none; border-radius: var(--nu-r-pill); padding: 15px 28px;
-  font-size: 15.5px; font-weight: 800; cursor: pointer;
+  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer;
   background: var(--nu-cream); color: var(--nu-navy);
   transition: background .2s, color .2s, transform .15s;
 }
@@ -54,7 +54,7 @@ const label = computed(() => {
 /* ativo sobre o creme (card sobre creme é branco — regra 2 do design system) */
 .nfb--cream {
   background: var(--nu-white); color: var(--nu-ink);
-  padding: 17px 26px; font-size: 17px; font-weight: 700;
+  padding: 17px 26px; font-size: var(--nu-fs-lg); font-weight: 700;
 }
 .nfb--cream:hover { transform: translateY(-2px); }
 .nfb--cream.nfb--on { background: var(--nu-blue-bg); color: var(--nu-blue); }

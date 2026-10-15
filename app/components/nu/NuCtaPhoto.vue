@@ -51,21 +51,21 @@ const mediaStyle = computed(() => ({
 .ncp__scrim--v { background: var(--nu-cta-scrim-v); }
 .ncp__inner { position: relative; z-index: 2; max-width: 660px; }
 .ncp__title {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(40px, 5.5vw, 76px);
+  margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.03;
 }
-.ncp__sub { color: var(--nu-cream-text-82); font-size: clamp(16px, 1.7vw, 19px); font-weight: 600; margin-top: 18px; }
+.ncp__sub { color: var(--nu-cream-text-82); font-size: var(--nu-fs-dek); font-weight: 500; margin-top: 18px; }
 .ncp__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
 .ncp__primary {
   display: inline-flex; align-items: center; gap: 10px; background: var(--nu-cream); color: var(--nu-navy);
-  border-radius: var(--nu-r-pill); padding: 17px 30px; font-size: 17px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 17px 30px; font-size: var(--nu-fs-lg); font-weight: 800;
   transition: background .2s, transform .15s;
 }
 .ncp__primary:hover { background: var(--nu-white); color: var(--nu-navy); transform: translateY(-2px); }
 .ncp__secondary {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
   border: 2px solid var(--nu-cream-text-45); border-radius: var(--nu-r-pill); padding: 15px 28px;
-  font-size: 17px; font-weight: 700; transition: background .2s, border-color .2s;
+  font-size: var(--nu-fs-lg); font-weight: 700; transition: background .2s, border-color .2s;
 }
 .ncp__secondary:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-80); color: var(--nu-cream-text); }
 </style>

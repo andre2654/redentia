@@ -51,8 +51,8 @@ const fmt = fmtBRL
 .sab__range { position: relative; width: 100%; max-width: 88px; flex: 1; background: var(--nu-white); border-radius: 16px; overflow: hidden; }
 .sab__band { position: absolute; left: 9px; right: 9px; border-radius: 999px; background: var(--nu-blue-tint); }
 .sab__mid { position: absolute; left: 0; right: 0; height: 4.5px; border-radius: 999px; background: var(--nu-blue); }
-.sab__year { color: var(--nu-gray); font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.sab__legend { margin-top: 16px; display: flex; gap: 22px; flex-wrap: wrap; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.sab__year { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.sab__legend { margin-top: 16px; display: flex; gap: 22px; flex-wrap: wrap; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .sab__legend span { display: inline-flex; align-items: center; gap: 7px; }
 .sab__dot { width: 12px; height: 12px; border-radius: 4px; }
 .sab__dot--band { background: var(--nu-blue-tint); }

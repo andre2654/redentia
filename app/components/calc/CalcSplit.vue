@@ -40,12 +40,12 @@ defineProps<{
 .csp__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .csp__title {
   margin: 0; color: var(--nu-ink);
-  font-size: clamp(38px, 4.8vw, 62px); font-weight: 800;
+  font-size: var(--nu-fs-h2); font-weight: 800;
   letter-spacing: -0.04em; line-height: 1.02;
 }
-.csp__title--sm { font-size: clamp(30px, 3.4vw, 46px); }
+.csp__title--sm { font-size: var(--nu-fs-h2-sm); }
 .csp__dek {
-  color: var(--nu-gray-2); font-size: 17px; font-weight: 500;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.65; margin-top: 22px; max-width: 420px;
 }
 .csp__dek :deep(p) { margin: 0 0 14px; }

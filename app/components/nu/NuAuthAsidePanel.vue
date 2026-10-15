@@ -59,7 +59,7 @@ const docText = ref('1.240')
 .nap__docs {
   margin: 8px 0 0; padding-left: 24px;
   color: var(--nu-cream-text-50);
-  font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 @keyframes nap-pulse {
   0%, 100% { transform: scale(1); opacity: 1; }

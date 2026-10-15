@@ -178,7 +178,7 @@ onBeforeUnmount(() => {
 }
 .btf__pills { display: flex; gap: 8px; flex-wrap: wrap; }
 .btf__pill {
-  padding: 9px 16px; border-radius: var(--nu-r-pill); font-size: 14px; font-weight: 700;
+  padding: 9px 16px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700;
   cursor: pointer; border: 2px solid var(--nu-sand-border); background: var(--nu-white);
   color: var(--nu-gray-2); transition: all .2s; white-space: nowrap;
 }
@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
   display: inline-flex; align-items: center; gap: 8px;
   background: transparent; color: var(--nu-blue);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  padding: 9px 16px; font-size: 14px; font-weight: 800; cursor: pointer;
+  padding: 9px 16px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   white-space: nowrap; transition: background .2s;
 }
 .btf__adv-btn:hover, .btf__adv-btn--open { background: var(--nu-blue-tint-2); }
@@ -212,13 +212,13 @@ onBeforeUnmount(() => {
   animation: nu-fade .18s ease both;
 }
 .btf__panel-label {
-  color: var(--nu-gray); font-size: 11px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1.1px; text-transform: uppercase; padding: 8px 12px 6px;
 }
 .btf__panel-item {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 11px 12px; border-radius: 12px;
-  color: var(--nu-ink); font-size: 14px; font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   transition: background .15s;
 }
 .btf__panel-item svg { color: var(--nu-gray); flex-shrink: 0; }

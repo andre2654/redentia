@@ -42,7 +42,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .sfm__steps { display: flex; flex-direction: column; gap: 13px; min-height: 132px; }
 .sfm__step {
   display: inline-flex; align-items: center; gap: 10px;
-  color: var(--nu-cream-text-78); font-size: 15.5px; font-weight: 600;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
   opacity: 0; transform: translateY(8px);
   transition: opacity 0.45s ease, transform 0.45s ease;
 }

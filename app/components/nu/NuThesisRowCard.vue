@@ -44,18 +44,18 @@ const imgFailed = ref(false)
 .ntr__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .ntr__body { flex: 1; min-width: 0; padding: 20px 22px; display: flex; flex-direction: column; }
 .ntr__top { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
-.ntr__title { color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.ntr__title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .ntr__conv {
-  display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 4px 11px; border-radius: var(--nu-r-pill); white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 .ntr__conv--green { background: var(--nu-green-bg); color: var(--nu-green-2); }
 .ntr__conv--neutral { background: var(--nu-sand-2); color: var(--nu-gray-2); }
-.ntr__role { color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.55; margin-top: 8px; }
+.ntr__role { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 8px; }
 .ntr__strong { font-weight: 800; color: var(--nu-ink); }
 .ntr__link {
   display: inline-flex; align-items: center; gap: 7px; color: var(--nu-blue);
-  font-size: 13.5px; font-weight: 800; margin-top: auto; padding-top: 14px;
+  font-size: var(--nu-fs-sm); font-weight: 700; margin-top: auto; padding-top: 14px;
 }
 </style>

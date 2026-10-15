@@ -33,7 +33,7 @@ function select(value: AcaoRange) {
 .nrt { display: flex; gap: 6px; flex-shrink: 0; }
 .nrt__tab {
   padding: 11px 20px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: 15px; font-weight: 700; cursor: pointer;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
   transition: color .2s, background .2s;
 }
 .nrt__tab:hover { color: var(--nu-cream-text-85); }

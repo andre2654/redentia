@@ -14,7 +14,7 @@ defineProps<{ tag: AcaoTag; block?: boolean }>()
 
 <style scoped>
 .ntp {
-  display: inline-flex; align-items: center; font-size: 12.5px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-dense); font-weight: 700;
   padding: 5px 13px; border-radius: var(--nu-r-pill); white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }

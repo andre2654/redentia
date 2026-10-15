@@ -251,30 +251,30 @@ function cardTypes(meta: RankingMeta): string[] {
 .rkh__spot-eyebrow {
   display: inline-flex; background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
 }
 .rkh__spot-title {
   margin: 16px 0 0; color: var(--nu-cream-text);
   font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -.04em; line-height: 1.04;
 }
 .rkh__spot-sub {
-  margin: 14px 0 0; color: var(--nu-cream-text-78); font-size: 16px; font-weight: 500;
+  margin: 14px 0 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.6; max-width: 460px;
 }
-.rkh__spot-cta { display: inline-block; margin-top: 20px; color: var(--nu-blue-soft); font-size: 15px; font-weight: 800; }
+.rkh__spot-cta { display: inline-block; margin-top: 20px; color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: 800; }
 .rkh__spot-list { flex: 1 1 340px; min-width: min(300px, 100%); margin: 0; padding: 0; list-style: none; }
 .rkh__spot-row {
   display: flex; align-items: center; gap: 14px; padding: 13px 0;
   font-variant-numeric: tabular-nums;
 }
 .rkh__spot-row + .rkh__spot-row { border-top: 1px solid var(--nu-cream-text-12); }
-.rkh__spot-pos { width: 22px; color: var(--nu-cream-text-55); font-size: 13.5px; font-weight: 800; }
-.rkh__spot-ticker { color: var(--nu-cream-text); font-size: 16px; font-weight: 800; letter-spacing: -.1px; }
+.rkh__spot-pos { width: 22px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rkh__spot-ticker { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px; }
 .rkh__spot-name {
-  flex: 1; min-width: 0; color: var(--nu-cream-text-60); font-size: 13px; font-weight: 600;
+  flex: 1; min-width: 0; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 500;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rkh__spot-score { color: var(--nu-green-soft); font-size: 16px; font-weight: 800; }
+.rkh__spot-score { color: var(--nu-green-soft); font-size: var(--nu-fs-md); font-weight: 800; }
 
 /* ——— grid por tema ——— */
 .rkh__grid-wrap {
@@ -301,11 +301,11 @@ function cardTypes(meta: RankingMeta): string[] {
 .rkh__card-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .rkh__card-chip {
   background: var(--nu-white); color: var(--nu-gray-2); border-radius: var(--nu-r-chip);
-  padding: 4px 10px; font-size: 11.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
 }
-.rkh__card-title { margin: 2px 0 0; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.rkh__card-title { margin: 2px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .rkh__card-desc {
-  margin: 0; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.55;
+  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .rkh__card-preview { margin: 6px 0 0; padding: 4px 0 0; list-style: none; border-top: 1px solid var(--nu-cream-line); }
@@ -313,13 +313,13 @@ function cardTypes(meta: RankingMeta): string[] {
   display: flex; align-items: center; gap: 10px; padding: 7px 0;
   font-variant-numeric: tabular-nums;
 }
-.rkh__card-preview-pos { width: 16px; color: var(--nu-gray); font-size: 12px; font-weight: 800; }
+.rkh__card-preview-pos { width: 16px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
 .rkh__card-preview-ticker {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: 800;
+  flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rkh__card-preview-value { color: var(--nu-blue); font-size: 13.5px; font-weight: 800; }
-.rkh__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue); font-size: 14px; font-weight: 800; }
+.rkh__card-preview-value { color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rkh__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
 /* (CTA final = NuCtaPhoto full-bleed, estilos no componente; o grid acima
    fecha com o próprio padding-bottom) */
 </style>

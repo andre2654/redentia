@@ -146,11 +146,11 @@ onBeforeUnmount(() => {
    próprio foco de teclado. Mesma regra do NuDayModal/NuBriefingModal. */
 .nam__card:focus { outline: none; }
 .nam__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-.nam__title { margin: 0; color: var(--nu-ink); font-size: 24px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
-.nam__sub { margin: 9px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.5; }
+.nam__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
+.nam__sub { margin: 9px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .nam__close {
   flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; border: none;
-  background: var(--nu-day-close); color: var(--nu-ink); font-size: 15px; font-weight: 800;
+  background: var(--nu-day-close); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
   cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s;
 }
 .nam__close:hover { background: var(--nu-day-close-hover); }
@@ -163,25 +163,25 @@ onBeforeUnmount(() => {
 }
 .nam__field:focus-within { border-color: var(--nu-blue); }
 .nam__field--err { border-color: var(--nu-red); }
-.nam__prefix { color: var(--nu-gray); font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.nam__prefix { color: var(--nu-gray); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; }
 .nam__input {
   flex: 1; min-width: 0; border: none; outline: none; background: transparent;
   color: var(--nu-ink); font-size: 32px; font-weight: 800; letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums; font-family: inherit;
 }
 .nam__input::placeholder { color: var(--nu-gray); opacity: .5; }
-.nam__err { margin: 10px 2px 0; color: var(--nu-red-2); font-size: 13.5px; font-weight: 700; }
+.nam__err { margin: 10px 2px 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 700; }
 
 .nam__foot { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 28px; }
 .nam__cancel {
   background: transparent; color: var(--nu-gray-2); border: none;
-  border-radius: var(--nu-r-pill); padding: 13px 20px; font-size: 15px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 13px 20px; font-size: var(--nu-fs-md); font-weight: 800;
   font-family: inherit; cursor: pointer; transition: color .2s;
 }
 .nam__cancel:hover { color: var(--nu-ink); }
 .nam__confirm {
   background: var(--nu-blue); color: var(--nu-white); border: none;
-  border-radius: var(--nu-r-pill); padding: 13px 24px; font-size: 15px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
   font-family: inherit; cursor: pointer; transition: background .2s, transform .15s;
 }
 .nam__confirm:hover { background: var(--nu-blue-hover); transform: translateY(-1px); }

@@ -124,12 +124,12 @@ function seguir() {
    as duas telas ficarem alinhadas quando abertas lado a lado. */
 .rbcd { animation: nu-fade .5s ease both; }
 
-.rbcd__eyebrow { display: block; color: var(--nu-blue); font-size: 14.5px; font-weight: 800; letter-spacing: -.01em; }
+.rbcd__eyebrow { display: block; color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.01em; }
 .rbcd__h1 {
   margin: 10px 0 0; color: var(--nu-ink);
   font-size: clamp(32px, 3.4vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
 }
-.rbcd__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; }
+.rbcd__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 
 .rbcd__label { margin-top: clamp(28px, 4vh, 44px); }
 .rbcd__cta { margin-top: clamp(32px, 4.5vh, 48px); }
@@ -138,14 +138,14 @@ function seguir() {
 /* os três passos: é o que a pessoa precisa saber ANTES de entregar o e-mail,
    e por isso vive acima da dobra em vez de virar nota de rodapé */
 .rbcd__passos { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.rbcd__passo { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+.rbcd__passo { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .rbcd__n {
   width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px;
   display: flex; align-items: center; justify-content: center;
   background: var(--nu-tile-blue-bg); color: var(--nu-blue); border-radius: 7px;
-  font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 
-.rbcd__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.rbcd__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .rbcd__footer { margin-top: clamp(28px, 4vh, 44px); }
 </style>

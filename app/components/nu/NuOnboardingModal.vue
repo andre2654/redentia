@@ -205,10 +205,10 @@ async function finish(navigate: boolean) {
   padding: 40px 42px 34px; box-shadow: var(--nu-shadow-day-modal);
   outline: none; animation: nu-fade .3s ease both;
 }
-.nob__eyebrow { margin: 0; color: var(--nu-blue); font-size: 12px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
+.nob__eyebrow { margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 .nob__title { margin: 9px 0 0; color: var(--nu-ink); font-size: clamp(24px, 3.4vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-.nob__dek { margin: 8px 0 0; color: var(--nu-gray-2); font-size: 15.5px; font-weight: 500; line-height: 1.45; }
-.nob__dek--done { font-size: 17px; }
+.nob__dek { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.nob__dek--done { font-size: var(--nu-fs-lg); }
 
 .nob__opts { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
 .nob__opt {
@@ -219,13 +219,13 @@ async function finish(navigate: boolean) {
 }
 .nob__opt:hover { border-color: var(--nu-blue); background: var(--nu-blue-tint-2); transform: translateY(-1px); }
 .nob__opt:disabled { opacity: 0.6; cursor: default; transform: none; }
-.nob__opt-label { color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -0.01em; }
-.nob__opt-desc { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+.nob__opt-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em; }
+.nob__opt-desc { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
-.nob__error { margin: 14px 0 0; color: var(--nu-red); font-size: 14px; font-weight: 700; }
+.nob__error { margin: 14px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
 .nob__back {
   margin-top: 16px; align-self: flex-start; border: none; background: transparent;
-  padding: 4px 0; color: var(--nu-gray); font-size: 14px; font-weight: 700;
+  padding: 4px 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
   cursor: pointer; font-family: inherit;
 }
 .nob__back:hover { color: var(--nu-ink); }
@@ -235,7 +235,7 @@ async function finish(navigate: boolean) {
   display: flex; align-items: center; justify-content: center;
   padding: 15px 24px; border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-blue); color: var(--nu-white);
-  font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit;
+  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
   transition: background .2s;
 }
 .nob__cta:hover { background: var(--nu-blue-hover); }
@@ -243,7 +243,7 @@ async function finish(navigate: boolean) {
   display: flex; align-items: center; justify-content: center;
   padding: 12px 24px; border: none; border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-gray-2);
-  font-size: 14.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: background .15s;
 }
 .nob__ghost:hover { background: var(--nu-cream-hover); color: var(--nu-ink); }

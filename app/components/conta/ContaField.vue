@@ -41,12 +41,12 @@ const id = useId()
 
 <style scoped>
 .cfl { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
-.cfl__label { color: var(--nu-gray-2); font-size: 14px; font-weight: 700; letter-spacing: -.1px; }
+.cfl__label { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
 .cfl__box { position: relative; display: flex; align-items: center; }
 .cfl__input {
   width: 100%; background: var(--nu-cream); color: var(--nu-ink);
   border: 1.5px solid transparent; border-radius: var(--nu-r-input);
-  padding: 15px 18px; font-family: var(--nu-font); font-size: 16px; font-weight: 600;
+  padding: 15px 18px; font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.4; outline: none;
   transition: background .18s, border-color .18s, box-shadow .18s;
 }
@@ -55,5 +55,5 @@ const id = useId()
 .cfl__box--ro .cfl__input { color: var(--nu-gray-2); cursor: default; }
 .cfl__box--ro .cfl__input:focus { background: var(--nu-cream); border-color: transparent; box-shadow: none; }
 .cfl__trailing { position: absolute; right: 16px; display: inline-flex; align-items: center; }
-.cfl__hint { color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.5; }
+.cfl__hint { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 </style>

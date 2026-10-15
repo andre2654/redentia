@@ -166,26 +166,26 @@ usePageSeo({
 }
 .tsh__toolbar { display: flex; flex-direction: column; gap: 3px; }
 .tsh__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue); font-size: 12px; font-weight: 800;
+  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .tsh__toolbar-count {
-  margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 700;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums; letter-spacing: -.1px;
 }
 .tsh__state {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-2); font-size: 15.5px; font-weight: 600;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
 }
 .tsh__answer {
   margin: clamp(8px, 1.5vw, 16px) auto 0; max-width: 68ch; text-align: center;
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
 }
 
 /* ——— prosa educacional (mesma família das calculadoras/rankings) ——— */
 .tsh__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.7;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
 .tsh__prose p:last-child { margin-bottom: 0; }
 .tsh__prose strong { color: var(--nu-ink); font-weight: 800; }
@@ -202,8 +202,8 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .tsh__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsh__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
-.tsh__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.tsh__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.tsh__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
 /* (CTA final = NuCtaPhoto full-bleed, estilos no componente) */
 </style>

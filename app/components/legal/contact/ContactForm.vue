@@ -207,13 +207,13 @@ function onSubmit() {
 .ctf__form { display: flex; flex-direction: column; gap: 20px; }
 
 .ctf__field { display: flex; flex-direction: column; gap: 8px; }
-.ctf__label { color: var(--nu-gray-2); font-size: 14px; font-weight: 700; letter-spacing: -.1px; }
+.ctf__label { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
 
 .ctf__input {
   width: 100%; background: var(--nu-white);
   border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-input);
   outline: none; padding: 13px 16px; color: var(--nu-ink);
-  font-family: var(--nu-font); font-size: 16px; font-weight: 500; line-height: 1.4;
+  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.4;
   transition: border-color .2s, box-shadow .2s;
 }
 .ctf__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
@@ -240,7 +240,7 @@ function onSubmit() {
   appearance: auto; width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0;
   accent-color: var(--nu-blue); cursor: pointer;
 }
-.ctf__check-text { color: var(--nu-gray-3); font-size: 14px; font-weight: 500; line-height: 1.55; }
+.ctf__check-text { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .ctf__link {
   color: var(--nu-blue); text-decoration: underline;
   text-underline-offset: 2px; text-decoration-thickness: 1px; transition: color .2s;
@@ -250,22 +250,22 @@ function onSubmit() {
 .ctf__submit {
   margin-top: 4px; background: var(--nu-blue); color: var(--nu-white);
   border: none; border-radius: var(--nu-r-input); padding: 15px 24px;
-  font-family: var(--nu-font); font-size: 16px; font-weight: 800; letter-spacing: -.1px;
+  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px;
   cursor: pointer; transition: background .2s;
 }
 .ctf__submit:hover { background: var(--nu-blue-hover); }
 .ctf__submit:disabled { opacity: .7; cursor: default; }
 
-.ctf__err { color: var(--nu-red); font-size: 13px; font-weight: 600; }
+.ctf__err { color: var(--nu-red); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 .ctf__done {
   background: var(--nu-green-soft); border-radius: var(--nu-r-panel);
   padding: 28px 30px; text-align: center;
 }
-.ctf__done-title { color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
-.ctf__done-sub { margin-top: 6px; color: var(--nu-ink-75); font-size: 15px; font-weight: 500; }
+.ctf__done-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.ctf__done-sub { margin-top: 6px; color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: 500; }
 
 @media (max-width: 760px) {
-  .ctf__input { font-size: 16px; }
+  .ctf__input { font-size: var(--nu-fs-md); }
 }
 </style>

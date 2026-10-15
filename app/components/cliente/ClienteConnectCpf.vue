@@ -86,16 +86,16 @@ onBeforeUnmount(() => { cpf.value = '' })
 
 <style scoped>
 .ccc { flex: 1 1 auto; display: flex; flex-direction: column; }
-.ccc__h1 { margin: 0; color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -.02em; line-height: 1.3; outline: none; }
+.ccc__h1 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.02em; line-height: 1.3; outline: none; }
 
 .ccc__inst {
   margin-top: 16px; display: flex; align-items: center; gap: 12px; padding: 10px 12px;
   border-radius: 12px; background: var(--nu-cream);
 }
-.ccc__inst-n { flex: 1 1 auto; min-width: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 700; }
+.ccc__inst-n { flex: 1 1 auto; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ccc__trocar {
   padding: 6px 10px; border: none; border-radius: 8px; background: none; color: var(--nu-blue);
-  font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: background .2s;
+  font-family: inherit; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; transition: background .2s;
 }
 .ccc__trocar:hover { background: var(--nu-blue-tint-2); }
 .ccc__trocar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
@@ -108,13 +108,13 @@ onBeforeUnmount(() => { cpf.value = '' })
 }
 .ccc__campo:focus-within { border-color: var(--nu-blue); }
 .ccc__campo--erro { border-color: var(--nu-red-2); }
-.ccc__label { color: var(--nu-gray); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; }
+.ccc__label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .8px; }
 .ccc__input {
   width: 100%; border: none; padding: 0; background: none; color: var(--nu-ink); outline: none;
-  font-size: 20px; font-weight: 700; letter-spacing: .02em; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: .02em; font-variant-numeric: tabular-nums;
 }
-.ccc__input::placeholder { color: var(--nu-placeholder); font-weight: 600; }
-.ccc__erro { margin: 8px 2px 0; color: var(--nu-red-2); font-size: 13px; font-weight: 700; line-height: 1.45; }
-.ccc__hint { margin: 10px 2px 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 500; line-height: 1.5; }
+.ccc__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
+.ccc__erro { margin: 8px 2px 0; color: var(--nu-red-2); font-size: var(--nu-fs-dense); font-weight: 700; line-height: 1.45; }
+.ccc__hint { margin: 10px 2px 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 .ccc__foot { margin-top: auto; padding-top: 22px; }
 </style>

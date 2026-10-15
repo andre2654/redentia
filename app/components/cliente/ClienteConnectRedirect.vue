@@ -51,14 +51,14 @@ const emit = defineEmits<{ ir: [] }>()
 
 .ccr__h1 {
   margin: 18px 0 0; text-align: center; color: var(--nu-ink);
-  font-size: 18px; font-weight: 800; letter-spacing: -.025em; line-height: 1.28; text-wrap: balance; outline: none;
+  font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.025em; line-height: 1.28; text-wrap: balance; outline: none;
 }
 .ccr__passos { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.ccr__passos li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.ccr__passos li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .ccr__n {
   width: 24px; height: 24px; flex-shrink: 0; border-radius: 8px; margin-top: -1px;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nu-cream); color: var(--nu-ink); font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .ccr__foot { margin-top: auto; padding-top: 22px; }
 </style>

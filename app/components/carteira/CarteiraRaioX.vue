@@ -71,30 +71,30 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.crx__sub { color: var(--nu-gray); font-size: 17px; font-weight: 600; line-height: 1.5; margin-top: 22px; }
+.crx__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .crx__score { display: flex; align-items: flex-end; gap: 9px; margin-top: 38px; }
 .crx__score-num {
   color: var(--nu-ink); font-size: clamp(64px, 6vw, 92px); font-weight: 800;
   letter-spacing: -3px; line-height: .85; font-variant-numeric: tabular-nums;
 }
-.crx__score-max { color: var(--nu-gray); font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.crx__score-max { color: var(--nu-gray); font-size: var(--nu-fs-2xl); font-weight: 700; margin-bottom: 6px; }
 .crx__track { height: 10px; border-radius: var(--nu-r-pill); background: var(--nu-cream-2); overflow: hidden; margin-top: 20px; max-width: 360px; }
 .crx__fill { height: 100%; border-radius: var(--nu-r-pill); background: var(--nu-blue); }
 .crx__badge {
   display: inline-flex; align-items: center; background: var(--nu-amber-bg); color: var(--nu-amber-text);
-  font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: var(--nu-r-pill); margin-top: 18px;
+  font-size: var(--nu-fs-dense); font-weight: 700; padding: 6px 14px; border-radius: var(--nu-r-pill); margin-top: 18px;
 }
 .crx__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 .crx__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 14px; }
 .crx__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
-.crx__card-label { color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+.crx__card-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
 .crx__card-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 .crx__card-value {
   color: var(--nu-ink); font-size: clamp(23px, 1.9vw, 28px); font-weight: 800;
   letter-spacing: -.5px; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 .crx__tag {
-  display: inline-flex; align-items: center; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 4px 11px; border-radius: var(--nu-r-pill); white-space: nowrap; flex-shrink: 0;
 }
 .crx__tag--green { background: var(--nu-green-bg); color: var(--nu-green-2); }
@@ -103,7 +103,7 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
 .crx__card-fill { height: 100%; border-radius: var(--nu-r-pill); }
 .crx__card-fill--green { background: var(--nu-hm-green); }
 .crx__card-fill--amber { background: var(--nu-amber-fill); }
-.crx__card-note { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; line-height: 1.5; margin-top: 12px; }
+.crx__card-note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; margin-top: 12px; }
 .crx__banner {
   display: flex; align-items: center; gap: 18px; background: var(--nu-blue);
   border-radius: var(--nu-r-panel); padding: 24px 26px; margin-top: 14px; cursor: pointer;
@@ -112,10 +112,10 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
 .crx__banner:hover { background: var(--nu-blue-hover); transform: translateY(-2px); }
 .crx__banner-main { flex: 1; min-width: 0; }
 .crx__banner-eyebrow {
-  display: block; color: var(--nu-white-75); font-size: 11.5px; font-weight: 800;
+  display: block; color: var(--nu-white-75); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1.3px; text-transform: uppercase;
 }
-.crx__banner-text { display: block; color: var(--nu-white); font-size: 16px; font-weight: 600; line-height: 1.55; margin-top: 10px; }
+.crx__banner-text { display: block; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; margin-top: 10px; }
 .crx__banner-circle {
   width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%; background: var(--nu-cream);
   display: flex; align-items: center; justify-content: center;

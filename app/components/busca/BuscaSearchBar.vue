@@ -49,18 +49,18 @@ defineExpose({
 .bsb__lupa { flex-shrink: 0; color: var(--nu-ink); }
 .bsb__input {
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
-  color: var(--nu-ink); font-size: clamp(16px, 1.6vw, 18px); font-weight: 600; padding: 12px 0;
+  color: var(--nu-ink); font-size: clamp(16px, 1.6vw, 18px); font-weight: 500; padding: 12px 0;
 }
 .bsb__input::placeholder { color: var(--nu-gray); font-weight: 500; }
 .bsb__kbd {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 700; flex-shrink: 0;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; flex-shrink: 0;
   border: 1.5px solid var(--nu-cream-3); border-radius: 8px; padding: 4px 9px;
 }
 .bsb__cta {
   display: inline-flex; align-items: center; gap: 9px;
   background: var(--nu-blue); color: var(--nu-white); border: none;
   border-radius: var(--nu-r-pill); padding: 14px 24px;
-  font-size: 15px; font-weight: 800; cursor: pointer; white-space: nowrap;
+  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; white-space: nowrap;
   flex-shrink: 0; transition: background .2s;
 }
 .bsb__cta:hover { background: var(--nu-blue-hover); }

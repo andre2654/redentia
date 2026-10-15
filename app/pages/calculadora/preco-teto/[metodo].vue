@@ -190,19 +190,19 @@ usePageSeo({
 .ptm__faq { background: var(--nu-white); }
 .ptm__outros { background: var(--nu-cream); }
 
-.ptm__back { color: var(--nu-blue); font-size: 15px; font-weight: 700; }
+.ptm__back { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700; }
 .ptm__h1 {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4.6vw, 58px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; max-width: 20ch;
 }
 .ptm__lead {
-  margin: 22px 0 0; color: var(--nu-gray); font-size: 18px;
+  margin: 22px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-lg);
   font-weight: 500; line-height: 1.6; max-width: 68ch;
 }
 .ptm__formula {
   display: inline-block; margin-top: 26px; padding: 14px 20px;
   background: var(--nu-white); border-radius: var(--nu-r-card, 14px);
-  color: var(--nu-ink); font-size: 16px; font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
 }
 .ptm__h2 {
   margin: 0; color: var(--nu-ink); font-size: clamp(24px, 2.8vw, 34px);
@@ -213,32 +213,32 @@ usePageSeo({
   gap: 18px; margin-top: 26px; max-width: 780px;
 }
 .ptm__field { display: flex; flex-direction: column; gap: 8px; }
-.ptm__field span { color: var(--nu-gray); font-size: 14px; font-weight: 700; }
+.ptm__field span { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ptm__field input {
   padding: 13px 15px; border: 2px solid var(--nu-cream); border-radius: 12px;
-  background: var(--nu-cream); color: var(--nu-ink); font-size: 17px; font-weight: 700;
+  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .ptm__field input:focus { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
 .ptm__out { margin-top: 32px; }
-.ptm__out-label { color: var(--nu-gray); font-size: 14px; font-weight: 700; }
+.ptm__out-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ptm__out-value {
   color: var(--nu-ink); font-size: clamp(44px, 6vw, 72px); font-weight: 800;
   letter-spacing: -0.04em; line-height: 1; margin-top: 8px; font-variant-numeric: tabular-nums;
 }
 .ptm__verdict {
   display: inline-block; margin-top: 18px; padding: 12px 18px; border-radius: 999px;
-  font-size: 15px; font-weight: 700;
+  font-size: var(--nu-fs-md); font-weight: 700;
 }
 .ptm__verdict--ok { background: var(--nu-green-soft, #e6f6ec); color: var(--nu-green, #147a3d); }
 .ptm__verdict--neutro { background: var(--nu-blue-tint, #eaf1ff); color: var(--nu-blue); }
 .ptm__verdict--alerta { background: #fdecec; color: #b3261e; }
-.ptm__cross { margin: 28px 0 0; color: var(--nu-gray); font-size: 16px; font-weight: 600; }
+.ptm__cross { margin: 28px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .ptm__cross a { color: var(--nu-blue); font-weight: 800; }
 
 .ptm__block { max-width: 68ch; }
 .ptm__block + .ptm__block { margin-top: clamp(38px, 4.5vw, 60px); }
-.ptm__p { color: var(--nu-gray); font-size: 17px; font-weight: 500; line-height: 1.65; margin: 16px 0 0; }
+.ptm__p { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.65; margin: 16px 0 0; }
 .ptm__exemplo { max-width: 68ch; margin-top: clamp(44px, 5vw, 68px); }
 .ptm__exemplo-list {
   margin: 20px 0 0; padding: 22px 26px; list-style: none;
@@ -246,7 +246,7 @@ usePageSeo({
   display: flex; flex-direction: column; gap: 11px;
 }
 .ptm__exemplo-list li {
-  color: var(--nu-ink); font-size: 16px; font-weight: 600;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .ptm__faq .ptm__h2 { margin-bottom: 24px; }
@@ -260,7 +260,7 @@ usePageSeo({
   transition: transform .2s;
 }
 .ptm__card:hover { transform: translateY(-2px); }
-.ptm__card-title { color: var(--nu-ink); font-size: 17px; font-weight: 800; line-height: 1.25; }
-.ptm__card-formula { color: var(--nu-gray); font-size: 14px; font-weight: 600; }
-.ptm__updated { margin: clamp(36px, 4vw, 56px) 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 600; opacity: .8; }
+.ptm__card-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; line-height: 1.25; }
+.ptm__card-formula { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.ptm__updated { margin: clamp(36px, 4vw, 56px) 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; opacity: .8; }
 </style>

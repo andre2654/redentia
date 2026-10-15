@@ -54,6 +54,26 @@
   /* tipografia */
   --nu-font: 'Plus Jakarta Sans', system-ui, sans-serif;
 
+  /* Escala única (out/2026). Antes eram 32 tamanhos em px espalhados pelos
+     componentes (13,5, 14,5, 15,5...), e cada página tinha 17 a 29 deles.
+     Texto usa SÓ estes 7 passos; título usa os papéis fluidos abaixo.
+     Pesos: 500 texto, 700 destaque e interface, 800 título e número grande. */
+  --nu-fs-xs: 12px;      /* rótulo, eyebrow em caixa alta, nota legal */
+  --nu-fs-dense: 13px;   /* tabela e lista densa (cotação, ranking) */
+  --nu-fs-sm: 14px;      /* texto secundário, legenda, botão compacto */
+  --nu-fs-md: 16px;      /* corpo */
+  --nu-fs-lg: 18px;      /* lead, título de card */
+  --nu-fs-xl: 20px;      /* subtítulo */
+  --nu-fs-2xl: 24px;     /* título de bloco */
+
+  /* Papéis de título (fluidos). Um padrão só: eyebrow azul + título + dek. */
+  --nu-fs-eyebrow: clamp(16px, 1.5vw, 19px);
+  --nu-fs-dek: clamp(16px, 1.7vw, 20px);
+  --nu-fs-h3: clamp(24px, 2.6vw, 32px);   /* título dentro de seção, card grande */
+  --nu-fs-h2-sm: clamp(30px, 3.4vw, 46px); /* seção secundária, CTA */
+  --nu-fs-h2: clamp(38px, 4.8vw, 62px);   /* título de seção (NuSectionHeading) */
+  --nu-fs-hero: clamp(44px, 6.4vw, 88px); /* H1 de página */
+
   /* sombras (dos designs) */
   --nu-shadow-card: 0 24px 60px -30px rgba(12, 21, 36, 0.18);
   --nu-shadow-float: 0 30px 64px -24px rgba(5, 10, 25, 0.6);

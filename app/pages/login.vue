@@ -370,12 +370,12 @@ async function onGoogleCredential(idToken: string) {
   letter-spacing: -0.04em; line-height: 1.05;
 }
 .lg__label { margin-top: clamp(36px, 5vh, 56px); }
-.lg__error { margin: 12px 0 0; color: var(--nu-red); font-size: 14px; font-weight: 600; }
+.lg__error { margin: 12px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lg__error--tight { margin-top: 10px; }
-.lg__notice { margin: 12px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 600; }
+.lg__notice { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lg__cta { margin-top: clamp(36px, 5vh, 52px); }
 .lg__divider { margin-top: 30px; }
 .lg__alts { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
-.lg__google-state { margin: 10px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 600; }
+.lg__google-state { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lg__footer { margin-top: clamp(32px, 5vh, 52px); }
 </style>

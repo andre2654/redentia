@@ -113,7 +113,7 @@ function onKey(e: KeyboardEvent) {
 .cc__centro { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; text-align: center; }
 .cc__rotulo {
   display: inline-flex; align-items: center; gap: 6px; color: var(--nu-gray);
-  font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .9px; white-space: nowrap;
+  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .9px; white-space: nowrap;
 }
 
 .cc__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }

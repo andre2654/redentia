@@ -70,9 +70,9 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.chm__sub { color: var(--nu-gray); font-size: 17px; font-weight: 600; margin-top: 14px; }
+.chm__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 14px; }
 .chm__legend { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.chm__legend-lbl { color: var(--nu-gray); font-size: 12.5px; font-weight: 700; }
+.chm__legend-lbl { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
 .chm__swatches { display: flex; gap: 4px; }
 .chm__swatch { width: 22px; height: 16px; border-radius: 5px; }
 .chm__swatch--r85 { background: rgba(var(--nu-hm-red-rgb), 0.85); }
@@ -84,16 +84,16 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 .chm__matrix { min-width: 920px; }
 .chm__grid { display: grid; grid-template-columns: 56px repeat(12, 1fr) 96px; gap: 6px; }
 .chm__grid--row { margin-top: 6px; align-items: stretch; }
-.chm__month { text-align: center; color: var(--nu-gray); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
+.chm__month { text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
 .chm__month--ano { color: var(--nu-ink); }
-.chm__year { display: flex; align-items: center; color: var(--nu-ink); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.chm__year { display: flex; align-items: center; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .chm__cell {
   display: flex; align-items: center; justify-content: center; height: 46px;
-  border-radius: 10px; font-size: 12.5px; font-weight: 800;
+  border-radius: 10px; font-size: var(--nu-fs-dense); font-weight: 700;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.chm__cell--ano { color: var(--nu-white); font-size: 13px; }
+.chm__cell--ano { color: var(--nu-white); font-size: var(--nu-fs-dense); }
 .chm__cell--ano-pos { background: var(--nu-hm-green); }
 .chm__cell--ano-neg { background: var(--nu-red); }
-.chm__note { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-top: 22px; }
+.chm__note { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 22px; }
 </style>

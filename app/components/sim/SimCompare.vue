@@ -61,7 +61,7 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
 .scp__dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .scp__dot--a { background: var(--nu-blue-soft); }
 .scp__dot--b { background: var(--nu-amber); }
-.scp__name { color: var(--nu-cream-text-70); font-size: 12.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+.scp__name { color: var(--nu-cream-text-70); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
 
 .scp__big {
   color: var(--nu-cream-text); font-size: clamp(24px, 2.6vw, 32px); font-weight: 800;
@@ -69,15 +69,15 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
   display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
 }
 .scp__big--b { color: var(--nu-amber); }
-.scp__delta { font-size: 13.5px; font-weight: 800; font-style: normal; letter-spacing: 0; }
+.scp__delta { font-size: var(--nu-fs-sm); font-weight: 700; font-style: normal; letter-spacing: 0; }
 .scp__delta--down { color: var(--nu-red-soft); }
 .scp__delta--up { color: var(--nu-green-soft); }
-.scp__sub { color: var(--nu-cream-text-55); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.scp__sub { color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 .scp__acts { margin-left: auto; display: inline-flex; gap: 12px; }
 .scp__act {
   border: none; background: transparent; padding: 0;
-  color: var(--nu-cream-text-55); font-size: 12px; font-weight: 800;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
   cursor: pointer; font-family: inherit;
   text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-cream-text-22);
   transition: color 0.15s;

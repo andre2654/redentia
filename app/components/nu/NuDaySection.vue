@@ -117,8 +117,8 @@ function closeBriefing() {
 .nds--home { background: var(--nu-navy); }
 
 .nds__head { text-align: center; max-width: 760px; margin: 0 auto; }
-.nds__title { margin: 0; color: var(--nu-cream-text); font-size: clamp(40px, 4.8vw, 56px); font-weight: 800; letter-spacing: -0.04em; line-height: 0.98; }
-.nds__sub { margin-top: 16px; color: var(--nu-cream-text-72); font-size: 15px; font-weight: 700; letter-spacing: 0.2px; }
+.nds__title { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 0.98; }
+.nds__sub { margin-top: 16px; color: var(--nu-cream-text-72); font-size: var(--nu-fs-md); font-weight: 700; letter-spacing: 0.2px; }
 
 .nds__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-top: clamp(40px, 4.5vw, 52px); }
 .nds__card { background: var(--nu-day-card-navy); border-radius: var(--nu-r-card-lg); padding: 34px 30px 32px; min-height: 300px; display: flex; flex-direction: column; }
@@ -126,24 +126,24 @@ function closeBriefing() {
 .nds__icon svg { display: block; }
 .nds__body { margin-top: 38px; }
 .nds__stat { color: var(--nu-white); font-size: clamp(38px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.95; font-variant-numeric: tabular-nums; }
-.nds__card-title { color: var(--nu-white); font-size: clamp(26px, 2.5vw, 30px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.04; }
-.nds__blurb { margin: 14px 0 0; color: var(--nu-white-75); font-size: 16.5px; font-weight: 600; line-height: 1.5; text-wrap: pretty; }
+.nds__card-title { color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.04; }
+.nds__blurb { margin: 14px 0 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
 .nds__body--stat .nds__blurb { margin-top: 16px; }
 
 .nds__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(36px, 4vw, 44px); }
 .nds__btn {
   display: inline-flex; align-items: center; gap: 11px; background: var(--nu-cream); color: var(--nu-day-btn-ink);
-  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: 17px; font-weight: 800;
+  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: var(--nu-fs-lg); font-weight: 800;
   letter-spacing: -0.01em; cursor: pointer; transition: transform .15s ease, background .15s ease;
 }
 .nds__btn:hover { background: var(--nu-white); transform: translateY(-1px); }
-.nds__btn-arrow { font-size: 19px; line-height: 1; }
+.nds__btn-arrow { font-size: var(--nu-fs-lg); line-height: 1; }
 
 /* 2º gatilho: pílula ghost sobre a banda escura; verde quando o resumo está ativo */
 .nds__btn2 {
   display: inline-flex; align-items: center; gap: 9px;
   background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
-  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: 15.5px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: var(--nu-fs-md); font-weight: 800;
   cursor: pointer; transition: background .15s, border-color .15s, color .15s;
 }
 .nds__btn2:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }

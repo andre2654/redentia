@@ -248,17 +248,17 @@ defineProps<{ name: string }>()
 .nuv__chiprow { display: flex; gap: 6px; }
 .nuv__chip {
   display: inline-flex; align-self: flex-start; padding: 4px 10px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-gray-2); font-size: 11.5px; font-weight: 700;
+  background: var(--nu-cream); color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700;
 }
 .nuv__chip--blue { background: var(--nu-blue-tint); color: var(--nu-blue); }
-.nuv__brandword { color: var(--nu-blue); font-size: 11.5px; font-weight: 800; letter-spacing: 0.01em; }
+.nuv__brandword { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.01em; }
 
 /* ——— MCP (chat) ——— */
 .nuv--mcp { align-items: stretch; justify-content: center; }
 .nuv__bubble {
   max-width: 78%; padding: 11px 15px; border-radius: 16px;
   background: var(--nu-white); box-shadow: 0 10px 26px -16px rgba(12, 21, 36, 0.24);
-  font-size: 13.5px; font-weight: 600; color: var(--nu-gray-3); line-height: 1.35;
+  font-size: var(--nu-fs-sm); font-weight: 500; color: var(--nu-gray-3); line-height: 1.35;
 }
 .nuv__bubble--user { align-self: flex-end; border-bottom-right-radius: 6px; }
 .nuv__bubble--ai {
@@ -292,7 +292,7 @@ defineProps<{ name: string }>()
 .nuv__rankpos {
   width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--nu-cream); color: var(--nu-gray-2); font-size: 12.5px; font-weight: 800;
+  background: var(--nu-cream); color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700;
 }
 .nuv__rankpos--top { background: var(--nu-blue-tint); color: var(--nu-blue); }
 .nuv__ranklabel { height: 9px; border-radius: 999px; background: var(--nu-ink-14); flex-shrink: 0; }
@@ -355,7 +355,7 @@ defineProps<{ name: string }>()
   width: 29px; height: 29px; border-radius: 50%; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-cream); color: var(--nu-gray-2);
-  font-size: 12.5px; font-weight: 800;
+  font-size: var(--nu-fs-dense); font-weight: 700;
   box-shadow: 0 0 0 3px var(--nu-white);
 }
 .nuv__stepdot--done { background: var(--nu-blue); color: var(--nu-white); }
@@ -381,13 +381,13 @@ defineProps<{ name: string }>()
 /* ——— Glossário (termos do dia a dia, um aberto) ——— */
 .nuv--gloss { gap: 12px; }
 .nuv__glosschips { display: flex; gap: 7px; }
-.nuv__chip--lg { padding: 7px 14px; font-size: 13px; font-weight: 800; }
+.nuv__chip--lg { padding: 7px 14px; font-size: var(--nu-fs-dense); font-weight: 700; }
 .nuv__glosscard { width: min(290px, 100%); }
 .nuv__glossterm {
-  color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -0.01em;
+  color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em;
   display: flex; align-items: baseline; gap: 8px;
 }
-.nuv__glossterm em { font-style: normal; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.nuv__glossterm em { font-style: normal; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— Teses ——— */
 .nuv--teses .nuv__card { width: min(320px, 100%); }
@@ -397,7 +397,7 @@ defineProps<{ name: string }>()
 .nuv__tiles i:nth-child(3) { opacity: 0.45; }
 .nuv__tiles i:nth-child(4) { opacity: 0.3; }
 .nuv__convrow { display: flex; align-items: center; gap: 10px; }
-.nuv__convlabel { font-size: 11.5px; font-weight: 800; color: var(--nu-gray-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.nuv__convlabel { font-size: var(--nu-fs-xs); font-weight: 700; color: var(--nu-gray-2); text-transform: uppercase; letter-spacing: 0.06em; }
 .nuv__convbar { flex: 1; height: 10px; border-radius: 999px; background: var(--nu-cream); overflow: hidden; }
 .nuv__convbar i { display: block; height: 100%; width: 82%; border-radius: 999px; background: var(--nu-blue); }
 
@@ -419,6 +419,6 @@ defineProps<{ name: string }>()
 .nuv__up {
   margin-top: 2px; display: inline-flex; align-items: center; gap: 4px; align-self: flex-start;
   padding: 3px 9px; border-radius: var(--nu-r-pill); background: var(--nu-green-bg);
-  color: var(--nu-green-2); font-size: 11px; font-weight: 800;
+  color: var(--nu-green-2); font-size: var(--nu-fs-xs); font-weight: 700;
 }
 </style>

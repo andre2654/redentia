@@ -127,13 +127,13 @@ onBeforeUnmount(clearAll)
 .mid__bar { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-bottom: 1.5px solid var(--nu-cream-2); }
 .mid__dots { display: flex; gap: 5px; }
 .mid__dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-cream-2); }
-.mid__title { color: var(--nu-ink); font-size: 13.5px; font-weight: 800; }
-.mid__of { margin-left: auto; background: var(--nu-green-bg, rgba(31, 156, 88, .1)); color: var(--nu-green-2); font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 999px; }
+.mid__title { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.mid__of { margin-left: auto; background: var(--nu-green-bg, rgba(31, 156, 88, .1)); color: var(--nu-green-2); font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 9px; border-radius: 999px; }
 
 .mid__search {
   display: flex; align-items: center; gap: 9px; margin: 12px 14px 0;
   background: var(--nu-cream); color: var(--nu-gray);
-  font-size: 13px; font-weight: 600; padding: 11px 14px; border-radius: 12px;
+  font-size: var(--nu-fs-dense); font-weight: 500; padding: 11px 14px; border-radius: 12px;
 }
 
 .mid__list-clip { height: 236px; overflow: hidden; margin-top: 6px; }
@@ -146,7 +146,7 @@ onBeforeUnmount(clearAll)
 .mid__row--hover { background: var(--nu-cream); }
 .mid__row--on { background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .08)); }
 .mid__logo { width: 26px; height: 26px; flex-shrink: 0; border-radius: 7px; object-fit: contain; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-cream-2); padding: 2px; }
-.mid__name { flex: 1; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mid__name { flex: 1; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mid__check {
   width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%;
   border: 1.5px solid var(--nu-cream-2); color: transparent;
@@ -158,7 +158,7 @@ onBeforeUnmount(clearAll)
 .mid__btn {
   margin: 10px 14px 14px; border: 0; cursor: default;
   background: var(--nu-cream-2); color: var(--nu-gray);
-  border-radius: var(--nu-r-pill); padding: 13px 18px; font-size: 14px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 13px 18px; font-size: var(--nu-fs-sm); font-weight: 700;
   transition: background .25s ease, color .25s ease, transform .15s ease;
 }
 .mid__btn--ready { background: var(--nu-blue); color: var(--nu-white); }
@@ -175,8 +175,8 @@ onBeforeUnmount(clearAll)
   width: 54px; height: 54px; border-radius: 50%; background: #8FF0B5; color: #0A2050;
   display: flex; align-items: center; justify-content: center;
 }
-.mid__done-t { margin-top: 14px; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
-.mid__done-p { margin-top: 6px; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.mid__done-t { margin-top: 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
+.mid__done-p { margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 /* cursor: coreografia por fase (posições em % da janela) */
 .mid__cursor {

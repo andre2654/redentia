@@ -346,11 +346,11 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
 .rbk-load__aside { flex: 1 1 380px; min-width: min(320px, 100%); max-width: 520px; }
 
 .rbk-falha { max-width: 640px; }
-.rbk-falha__msg { margin: 0 0 20px; color: var(--nu-ink); font-size: 15.5px; font-weight: 600; line-height: 1.6; }
+.rbk-falha__msg { margin: 0 0 20px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 .rbk-falha__btn {
   min-height: 44px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 13px 26px; font-size: 16px; font-weight: 800; font-family: inherit;
+  padding: 13px 26px; font-size: var(--nu-fs-md); font-weight: 800; font-family: inherit;
   transition: background .2s, opacity .2s;
 }
 .rbk-falha__btn:hover:not(:disabled) { background: var(--nu-blue-hover); }

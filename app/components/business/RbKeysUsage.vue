@@ -160,14 +160,14 @@ const ultimo = computed(() => geometria.value.barras[geometria.value.barras.leng
 .rbku__in { max-width: 1120px; }
 
 .rbku__leg { display: flex; gap: clamp(22px, 3vw, 44px); flex-wrap: wrap; margin: clamp(28px, 3.2vw, 36px) 0 0; }
-.rbku__leg dt { color: var(--nu-cream-text-50); font-size: 14px; font-weight: 700; }
-.rbku__leg dd { margin: 5px 0 0; color: var(--nu-cream-text-85); font-size: 22px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.rbku__leg dt { color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rbku__leg dd { margin: 5px 0 0; color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 
 .rbku__chart-head {
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   margin: clamp(28px, 3.2vw, 38px) 0 12px;
   color: var(--nu-cream-text-50);
-  font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;
+  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -182,7 +182,7 @@ const ultimo = computed(() => geometria.value.barras[geometria.value.barras.leng
 .rbku__grid i { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-cream-text-08); }
 .rbku__grid b {
   position: absolute; right: clamp(22px, 5.5vw, 80px); padding-bottom: 4px;
-  color: var(--nu-cream-text-35); font-size: 11.5px; font-weight: 700;
+  color: var(--nu-cream-text-35); font-size: var(--nu-fs-xs); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .rbku__quota-line {
@@ -193,7 +193,7 @@ const ultimo = computed(() => geometria.value.barras[geometria.value.barras.leng
    gráfico, e uma etiqueta acima dela invadia o cabeçalho da seção */
 .rbku__quota-lab {
   position: absolute; left: clamp(22px, 5.5vw, 80px); transform: translateY(100%); padding-top: 5px;
-  color: var(--nu-cream-text-50); font-size: 11.5px; font-weight: 800; letter-spacing: .4px;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .4px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -213,8 +213,8 @@ const ultimo = computed(() => geometria.value.barras[geometria.value.barras.leng
   background: var(--nu-cream); border-radius: 14px; padding: 9px 12px; white-space: nowrap;
   box-shadow: var(--nu-shadow-chart-tip); opacity: 0; pointer-events: none; transition: opacity .15s ease; z-index: 2;
 }
-.rbku__tip-l { display: block; color: var(--nu-navy-55); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
-.rbku__tip-v { display: block; color: var(--nu-navy); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rbku__tip-l { display: block; color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.rbku__tip-v { display: block; color: var(--nu-navy); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .rbku__bar:hover .rbku__tip { opacity: 1; }
 /* as pontas ancoram na borda pra não vazar do gráfico */
 .rbku__bar:first-child .rbku__tip { left: 0; transform: none; }
@@ -226,7 +226,7 @@ const ultimo = computed(() => geometria.value.barras[geometria.value.barras.leng
   .rbku__chart { height: 140px; }
   .rbku__alt {
     display: block; margin: 0; padding: 18px 0 clamp(28px, 5vw, 40px);
-    color: var(--nu-cream-text-70); font-size: 15px; font-weight: 600; line-height: 1.55; max-width: 560px;
+    color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; max-width: 560px;
   }
 }
 </style>

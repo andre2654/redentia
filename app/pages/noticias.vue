@@ -117,12 +117,12 @@ usePageSeo({
   font-weight: 800; letter-spacing: -0.03em; line-height: 1.14;
 }
 .nof__empty-sub {
-  color: var(--nu-gray); font-size: 15.5px; font-weight: 600; line-height: 1.6;
+  color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
   margin: 14px auto 0; max-width: 460px;
 }
 .nof__empty-cta {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: 15.5px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 14px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 26px; transition: background .2s;
 }
 .nof__empty-cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }

@@ -169,7 +169,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
   animation: nu-fade .5s ease both;
 }
 .trp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.trp__meta { color: var(--nu-gray); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.trp__meta { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 /* duas colunas no padrão dos guias: índice sticky (NuTocSidebar) à esquerda +
    artigo longo à direita (mesma medida de 760px do corpo dos guias). */
@@ -187,7 +187,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 .trp__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .trp__lead {
   margin: 16px 0 0; color: var(--nu-ink);
-  font-size: clamp(19px, 2vw, 22px); font-weight: 600; line-height: 1.6;
+  font-size: clamp(19px, 2vw, 22px); font-weight: 500; line-height: 1.6;
   letter-spacing: -0.012em;
 }
 .trp__lead + .trp__lead { margin-top: 18px; }
@@ -202,7 +202,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 /* prosa (mesma voz do editorial da tese) */
 .trp__p {
   margin: 18px 0 0; color: var(--nu-gray-3);
-  font-size: 17.5px; font-weight: 500; line-height: 1.75;
+  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.75;
 }
 .trp__lead :deep(.tse-hi),
 .trp__p :deep(.tse-hi),
@@ -221,10 +221,10 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
   background: var(--nu-cream); border-radius: 20px; padding: 20px 22px;
 }
 .trp__pillar-idx {
-  color: var(--nu-blue); font-size: 15px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
 }
-.trp__pillar-txt { color: var(--nu-ink); font-size: 16.5px; font-weight: 600; line-height: 1.55; }
+.trp__pillar-txt { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 
 /* riscos — card vermelho suave */
 .trp__risks {
@@ -237,14 +237,14 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
   width: 8px; height: 8px; border-radius: 50%; background: var(--nu-red-2);
   flex-shrink: 0; margin-top: 8px;
 }
-.trp__risk-txt { color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.6; }
+.trp__risk-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 
 /* fontes-chip no fim de cada parte */
 .trp__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .trp__chip {
   display: inline-flex; align-items: center; gap: 7px;
   background: var(--nu-cream); border-radius: var(--nu-r-pill); padding: 8px 14px;
-  color: var(--nu-gray-2); font-size: 12.5px; font-weight: 700;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700;
   transition: background .2s, color .2s;
 }
 a.trp__chip:hover { background: var(--nu-cream-hover); color: var(--nu-blue); }
@@ -253,7 +253,7 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 
 /* rótulo pequeno dos cards internos */
 .trp__card-lbl {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.3px; text-transform: uppercase;
 }
 
@@ -263,12 +263,12 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 .trp__assump-row:first-of-type { border-top: none; margin-top: 12px; padding-top: 0; }
 .trp__assump-row:last-child { padding-bottom: 0; }
 .trp__assump-top { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
-.trp__assump-label { color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
+.trp__assump-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .trp__assump-value {
-  color: var(--nu-ink); font-size: 15.5px; font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.trp__assump-note { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.55; margin-top: 5px; }
+.trp__assump-note { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 5px; }
 
 /* valuation — contas numeradas */
 .trp__math { margin-top: 18px; }
@@ -279,11 +279,11 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   border-bottom: 1.5px solid var(--nu-cream-2); padding: 14px 0;
 }
 .trp__math-idx {
-  color: var(--nu-blue); font-size: 14px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
   font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
 }
 .trp__math-txt {
-  color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
   font-variant-numeric: tabular-nums;
 }
 
@@ -293,7 +293,7 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   padding: clamp(26px, 3.5vw, 38px); margin-top: 22px;
 }
 .trp__fair-lbl {
-  color: var(--nu-cream-text-55); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.3px; text-transform: uppercase;
 }
 .trp__fair-value {
@@ -302,7 +302,7 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   font-variant-numeric: tabular-nums;
 }
 .trp__fair-vs {
-  color: var(--nu-cream-text-78); font-size: 15px; font-weight: 600;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.55; margin-top: 10px; font-variant-numeric: tabular-nums;
 }
 
@@ -311,11 +311,11 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 .trp__miles { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 24px 26px; margin-top: 22px; }
 .trp__mile { display: flex; align-items: flex-start; gap: 13px; margin-top: 14px; }
 .trp__mile-icon { flex-shrink: 0; margin-top: 2px; color: var(--nu-blue); }
-.trp__mile-txt { color: var(--nu-gray-3); font-size: 15.5px; font-weight: 600; line-height: 1.55; }
+.trp__mile-txt { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 
 /* fontes consolidadas (mesma anatomia das fontes do diário) */
 .trp__sources-lbl {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.3px; text-transform: uppercase;
 }
 .trp__sources {
@@ -327,7 +327,7 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   border-bottom: 1.5px solid var(--nu-cream-2);
 }
 .trp__source-title {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 700;
+  flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   line-height: 1.4; transition: color .2s;
 }
 a.trp__source:hover .trp__source-title { color: var(--nu-blue); }

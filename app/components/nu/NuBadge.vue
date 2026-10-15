@@ -24,11 +24,11 @@ defineProps<{
   display: inline-flex; align-items: center; gap: 7px; font-weight: 800;
   border-radius: var(--nu-r-pill); white-space: nowrap; font-variant-numeric: tabular-nums;
 }
-.nb--s-hero { font-size: 13px; padding: 7px 14px; gap: 6px; }
-.nb--s-card { font-size: 12.5px; padding: 7px 15px; }
-.nb--s-row { font-size: 12.5px; padding: 6px 13px; }
-.nb--s-eval { font-size: 12px; padding: 6px 13px; }
-.nb--s-label { font-size: 11.5px; padding: 6px 13px; letter-spacing: 1px; text-transform: uppercase; }
+.nb--s-hero { font-size: var(--nu-fs-dense); padding: 7px 14px; gap: 6px; }
+.nb--s-card { font-size: var(--nu-fs-dense); padding: 7px 15px; }
+.nb--s-row { font-size: var(--nu-fs-dense); padding: 6px 13px; }
+.nb--s-eval { font-size: var(--nu-fs-xs); padding: 6px 13px; }
+.nb--s-label { font-size: var(--nu-fs-xs); padding: 6px 13px; letter-spacing: 1px; text-transform: uppercase; }
 .nb--dark { background: var(--nu-cream-text-12); color: var(--nu-cream-text); }
 .nb--green-soft { background: var(--nu-green-soft-16); color: var(--nu-green-soft); }
 .nb--green { background: var(--nu-green-bg); color: var(--nu-green-2); }

@@ -20,5 +20,5 @@ defineProps<{ stat: GuideStat }>()
   color: var(--nu-ink); font-size: clamp(26px, 2.4vw, 34px); font-weight: 800;
   letter-spacing: -1px; font-variant-numeric: tabular-nums;
 }
-.nsc__label { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-top: 6px; }
+.nsc__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 6px; }
 </style>

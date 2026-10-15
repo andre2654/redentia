@@ -101,8 +101,8 @@ const barPct = (n: EtfXrayTreeNodeVM) =>
 .axt__dot::before { content: '·'; color: var(--nu-gray); font-weight: 800; }
 
 .axt__name { flex: 1.4; min-width: 0; display: flex; flex-direction: column; }
-.axt__name b { color: var(--nu-ink); font-size: 13.5px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.axt__sub { color: var(--nu-gray); font-size: 11.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.axt__name b { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.axt__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .axt__note { color: var(--nu-gray-tag); font-style: normal; font-weight: 700; }
 .axt__note::before { content: ' · '; }
 
@@ -110,8 +110,8 @@ const barPct = (n: EtfXrayTreeNodeVM) =>
 .axt__fill { height: 100%; border-radius: 999px; background: var(--nu-blue); }
 
 .axt__pcts { flex-shrink: 0; min-width: 118px; text-align: right; display: flex; flex-direction: column; }
-.axt__pct { color: var(--nu-ink); font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.axt__eff { color: var(--nu-gray); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.axt__pct { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
+.axt__eff { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .axt__go {
   flex-shrink: 0; width: 26px; height: 26px; border-radius: 999px;

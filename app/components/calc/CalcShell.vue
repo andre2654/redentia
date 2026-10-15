@@ -39,14 +39,14 @@ defineProps<{
   animation: nu-fade .5s ease both;
 }
 .csh--cream { background: var(--nu-cream); }
-.csh__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.csh__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
 .csh__title {
   margin: 12px 0 0; color: var(--nu-ink);
-  font-size: clamp(38px, 4.8vw, 62px); font-weight: 800;
+  font-size: var(--nu-fs-h2); font-weight: 800;
   letter-spacing: -0.04em; line-height: 1.02;
 }
 .csh__lead {
-  color: var(--nu-gray-2); font-size: 17px; font-weight: 500;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.65; margin-top: 20px; max-width: 720px;
 }
 .csh__cols {

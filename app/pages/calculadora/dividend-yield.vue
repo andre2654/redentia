@@ -967,8 +967,8 @@ usePageSeo({
 .dy__mode {
   padding: 9px 15px;
   border-radius: var(--nu-r-pill);
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: var(--nu-fs-dense);
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   border: 2px solid var(--nu-sand-border);
@@ -984,7 +984,7 @@ usePageSeo({
 .dy__gap { margin-top: 36px; }
 .dy__result-label {
   margin-top: 16px; color: var(--nu-blue);
-  font-size: 13px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase;
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
 }
 .dy__chart { margin-top: 30px; }
 .dy__insight {
@@ -993,7 +993,7 @@ usePageSeo({
   padding: 18px 22px;
   margin-top: 26px;
   color: var(--nu-gray-2);
-  font-size: 15.5px;
+  font-size: var(--nu-fs-md);
   font-weight: 500;
   line-height: 1.6;
 }
@@ -1001,14 +1001,14 @@ usePageSeo({
 .dy__insight strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— tipografia compartilhada (classes do exemplar jc__, mesmos valores) ——— */
-.dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
+.dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .dy__h4--accent { color: var(--nu-blue); }
 .dy__link { text-decoration: underline; }
 .dy__link:hover { color: var(--nu-blue); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .dy__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .dy__prose p:last-child { margin-bottom: 0; }
@@ -1016,7 +1016,7 @@ usePageSeo({
 .dy__prose--mt { margin-top: 18px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.dy__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.dy__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .dy__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -1032,23 +1032,23 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .dy__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dy__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
-.dy__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.dy__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.dy__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (cards do conteúdo; creme em banda branca, branco em banda creme) ——— */
 .dy__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 :global(.cbd--cream) .dy__tile,
 :global(.csp--cream) .dy__tile { background: var(--nu-white); }
-.dy__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.dy__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .dy__card-p--mt { margin-top: 12px; }
-.dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
+.dy__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .dy__list li + li { margin-top: 8px; }
 .dy__list :deep(strong) { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— fórmula (exemplo centrado abaixo do card) ——— */
 .dy__formula-block { margin-top: 22px; }
 .dy__formula-example { margin-top: 14px; text-align: center; }
-.dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.6; }
+.dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 .dy__formula-example p strong { color: var(--nu-ink); font-weight: 800; }
 .dy__formula-accent { color: var(--nu-blue) !important; font-weight: 700 !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
 
@@ -1065,12 +1065,12 @@ usePageSeo({
 }
 :global(.cbd--cream) .dy__card-link { background: var(--nu-white); }
 .dy__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.dy__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .dy__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .dy__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -1078,16 +1078,16 @@ usePageSeo({
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
-.dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
-.dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
+.dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .dy__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .dy__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.dy__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.dy__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .dy__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .dy__cta .dy__pill { margin-top: 0; }
 .dy__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

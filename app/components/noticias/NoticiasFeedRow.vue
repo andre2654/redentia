@@ -45,12 +45,12 @@ defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
 }
 .nfr__content { flex: 1.1 1 340px; min-width: min(300px, 100%); }
 .nfr__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.nfr__veiculo { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }
-.nfr__dot { color: var(--nu-gray); font-size: 13px; font-weight: 700; }
-.nfr__tempo { color: var(--nu-gray); font-size: 14px; font-weight: 600; }
+.nfr__veiculo { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nfr__dot { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
+.nfr__tempo { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .nfr__badge {
   display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue);
-  font-size: 11.5px; font-weight: 800; padding: 4px 11px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 11px; border-radius: var(--nu-r-pill);
 }
 .nfr__title {
   display: block; color: var(--nu-ink); font-size: clamp(24px, 2.8vw, 38px);

@@ -157,7 +157,7 @@ const totalShown = computed(() => filtered.value.length)
 
 /* hero extras (busca dentro do slot de ações do NuPageHero) */
 .glx__hero-sub {
-  color: var(--nu-gray); font-size: clamp(17px, 1.8vw, 21px); font-weight: 600;
+  color: var(--nu-gray); font-size: clamp(17px, 1.8vw, 21px); font-weight: 500;
   line-height: 1.55; max-width: 620px;
 }
 .glx__search {
@@ -170,7 +170,7 @@ const totalShown = computed(() => filtered.value.length)
 .glx__search-ic { color: var(--nu-gray-2); flex-shrink: 0; }
 .glx__search-input {
   flex: 1; min-width: 0; border: none; outline: none; background: transparent;
-  font-family: inherit; font-size: 16.5px; font-weight: 600; color: var(--nu-ink);
+  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-ink);
   padding: 14px 0;
 }
 .glx__search-input::placeholder { color: var(--nu-gray-2); font-weight: 500; }
@@ -194,7 +194,7 @@ const totalShown = computed(() => filtered.value.length)
 .glx__az-item {
   min-width: 30px; height: 30px; padding: 0 4px;
   display: inline-flex; align-items: center; justify-content: center;
-  color: var(--nu-ink); font-size: 14.5px; font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   border-radius: 9px; transition: background .15s, color .15s;
   font-variant-numeric: tabular-nums;
 }
@@ -206,10 +206,10 @@ const totalShown = computed(() => filtered.value.length)
   padding: clamp(32px, 5vw, 56px) clamp(20px, 5vw, 48px) clamp(64px, 8vw, 110px);
 }
 .glx__count {
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 700;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums; margin-bottom: 12px;
 }
-.glx__empty { color: var(--nu-gray); font-size: 17px; font-weight: 600; margin-top: 24px; }
+.glx__empty { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
 .glx__empty-link { color: var(--nu-blue); font-weight: 800; }
 
 .glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 60px); }
@@ -230,9 +230,9 @@ const totalShown = computed(() => filtered.value.length)
   animation: nu-fade .4s ease both;
 }
 .glx__card:hover { background: var(--nu-cream-hover); transform: translateY(-2px); }
-.glx__card-term { color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+.glx__card-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
 .glx__card-short {
-  color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.55;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
   display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .glx__card-arrow {

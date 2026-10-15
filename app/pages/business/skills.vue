@@ -207,19 +207,19 @@ const SKILLS: SkillCard[] = [
 .rbsk--navy { background: var(--nu-navy); }
 .rbsk__wrap { max-width: 1180px; margin: 0 auto; }
 
-.rbsk__eyebrow { color: var(--nu-gray); font-size: 12.5px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
+.rbsk__eyebrow { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 .rbsk__title {
   margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 60px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
 .rbsk__title--navy { color: var(--nu-cream-text); margin: 0 0 30px; font-size: clamp(30px, 3.4vw, 42px); }
-.rbsk__sub { color: var(--nu-gray-2); font-size: 17px; font-weight: 600; line-height: 1.6; margin: 20px 0 0; max-width: 640px; }
+.rbsk__sub { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin: 20px 0 0; max-width: 640px; }
 .rbsk__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
-.rbsk__pill { background: var(--nu-ink); color: var(--nu-white); font-size: 12.5px; font-weight: 800; padding: 7px 14px; border-radius: var(--nu-r-pill); }
+.rbsk__pill { background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700; padding: 7px 14px; border-radius: var(--nu-r-pill); }
 .rbsk__pill--soft { background: var(--nu-sand-2); color: var(--nu-gray-tag); }
 .rbsk__bundle {
   display: inline-flex; align-items: center; gap: 9px; background: var(--nu-blue); color: var(--nu-white);
-  font-size: 14px; font-weight: 800; padding: 12px 22px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-sm); font-weight: 700; padding: 12px 22px; border-radius: var(--nu-r-pill);
   text-decoration: none; transition: background .16s;
 }
 .rbsk__bundle:hover { background: var(--nu-blue-hover); }
@@ -231,15 +231,15 @@ const SKILLS: SkillCard[] = [
 }
 .rbsk__card:hover { transform: translateY(-2px); }
 .rbsk__card-title { margin: 0; color: var(--nu-ink); font-size: clamp(20px, 2vw, 24px); font-weight: 800; letter-spacing: -0.02em; }
-.rbsk__card-faz { margin: 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.6; }
+.rbsk__card-faz { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 .rbsk__card-ex {
   margin: 0; background: var(--nu-white); border-radius: 16px; padding: 14px 18px;
-  color: var(--nu-ink); font-size: 14.5px; font-weight: 700; line-height: 1.5;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5;
 }
-.rbsk__card-nota { margin: 0; color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.55; }
+.rbsk__card-nota { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
 .rbsk__dl {
   margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: 800;
+  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700;
   padding: 11px 20px; border-radius: var(--nu-r-pill); text-decoration: none; transition: background .16s;
 }
 .rbsk__dl:hover { background: var(--nu-ink-hover); }
@@ -251,19 +251,19 @@ const SKILLS: SkillCard[] = [
 
 .rbsk__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr)); gap: 18px; }
 .rbsk__col { background: var(--nu-navy-2); border-radius: var(--nu-r-card); padding: clamp(24px, 2.6vw, 32px); }
-.rbsk__col-tag { color: var(--nu-cream-text-55); font-size: 12.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+.rbsk__col-tag { color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
 .rbsk__steps { margin: 16px 0 0; padding: 0 0 0 20px; display: flex; flex-direction: column; gap: 10px; }
-.rbsk__steps li { color: var(--nu-cream-text-78); font-size: 15px; font-weight: 600; line-height: 1.55; }
-.rbsk__steps code { background: rgba(245, 241, 234, 0.12); border-radius: 6px; padding: 2px 7px; font-size: 13.5px; color: var(--nu-cream-text); }
-.rbsk__navy-note { color: var(--nu-cream-text-55); font-size: 13.5px; font-weight: 600; margin: 22px 0 0; }
+.rbsk__steps li { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.rbsk__steps code { background: rgba(245, 241, 234, 0.12); border-radius: 6px; padding: 2px 7px; font-size: var(--nu-fs-sm); color: var(--nu-cream-text); }
+.rbsk__navy-note { color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; margin: 22px 0 0; }
 
 .rbsk__foot { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .rbsk__foot-title { margin: 0; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px); font-weight: 800; letter-spacing: -0.02em; }
-.rbsk__foot-sub { margin: 8px 0 0; color: var(--nu-gray); font-size: 15px; font-weight: 600; }
+.rbsk__foot-sub { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .rbsk__foot-links { display: flex; gap: 10px; flex-wrap: wrap; }
 .rbsk__btn {
   display: inline-flex; align-items: center; background: var(--nu-ink); color: var(--nu-white);
-  font-size: 14px; font-weight: 800; padding: 13px 24px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-sm); font-weight: 700; padding: 13px 24px; border-radius: var(--nu-r-pill);
   text-decoration: none; transition: background .16s;
 }
 .rbsk__btn:hover { background: var(--nu-ink-hover); }

@@ -34,6 +34,6 @@ defineProps<{ info: AcaoFundInfoVM }>()
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.afi__sub { color: var(--nu-gray); font-size: 17px; font-weight: 600; line-height: 1.5; margin-top: 22px; }
+.afi__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .afi__rows { flex: 1.2 1 380px; min-width: min(320px, 100%); }
 </style>

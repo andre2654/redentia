@@ -84,11 +84,11 @@ onBeforeUnmount(() => clearTimeout(timer))
 .ccok__traco { stroke-dasharray: 30; stroke-dashoffset: 30; animation: ccok-traco .45s ease-out .25s forwards; }
 @keyframes ccok-pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes ccok-traco { to { stroke-dashoffset: 0; } }
-.ccok__inst { margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray); font-size: 12.5px; font-weight: 700; }
+.ccok__inst { margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
 
-.ccok__h1 { margin: 10px 0 0; color: var(--nu-ink); font-size: 22px; font-weight: 800; letter-spacing: -.03em; line-height: 1.2; outline: none; }
+.ccok__h1 { margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.03em; line-height: 1.2; outline: none; }
 .ccok__h1--fim { margin-top: 22px; }
-.ccok__p { margin: 8px 0 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.5; }
+.ccok__p { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .ccok__gestao {
   width: 100%; margin-top: 22px; padding: 14px; border-radius: 12px; background: var(--nu-cream);
@@ -99,15 +99,15 @@ onBeforeUnmount(() => clearTimeout(timer))
   display: inline-flex; align-items: center; justify-content: center;
 }
 .ccok__gestao-c { min-width: 0; flex: 1 1 auto; }
-.ccok__gestao-t { margin: 0; color: var(--nu-ink); font-size: 13px; font-weight: 600; line-height: 1.45; }
+.ccok__gestao-t { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.45; }
 .ccok__acoes { margin-top: 10px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .ccok__copiar {
   min-height: 36px; padding: 0 14px; border: 1.5px solid var(--nu-cream-line); border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: background .2s;
+  background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; transition: background .2s;
 }
 .ccok__copiar:hover { background: var(--nu-cream-2); }
 .ccok__copiar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.ccok__abrir { color: var(--nu-blue); font-size: 13px; font-weight: 800; }
+.ccok__abrir { color: var(--nu-blue); font-size: var(--nu-fs-dense); font-weight: 700; }
 .ccok__abrir:hover { color: var(--nu-blue-hover); }
 .ccok__abrir:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 3px; }
 

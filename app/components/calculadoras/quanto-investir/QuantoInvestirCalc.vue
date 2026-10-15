@@ -286,7 +286,7 @@ const barSegments = computed(() => [
 .qic__toggle {
   display: inline-flex; align-items: center; gap: 9px;
   padding: 10px 16px; border-radius: var(--nu-r-pill);
-  font-size: 13px; font-weight: 800; cursor: pointer; text-align: left;
+  font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; text-align: left;
   border: 2px solid var(--nu-sand-border); background: var(--nu-white);
   color: var(--nu-gray-2); transition: all .2s;
 }
@@ -296,18 +296,18 @@ const barSegments = computed(() => [
 
 .qic__invalid {
   background: var(--nu-red-tint); border-radius: var(--nu-r-panel);
-  padding: 22px 26px; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; line-height: 1.6;
+  padding: 22px 26px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.6;
   max-width: 560px;
 }
 
-.qic__sub { margin: 10px 0 0; color: var(--nu-gray); font-size: 16px; font-weight: 600; }
+.qic__sub { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .qic__hl { color: var(--nu-blue); font-weight: 800; }
 
 .qic__legend { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 22px; }
 .qic__item { display: inline-flex; align-items: center; gap: 9px; }
 .qic__dot { width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0; }
-.qic__label { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
-.qic__num { color: var(--nu-ink); font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.qic__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.qic__num { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .qic__num--accent { color: var(--nu-blue); }
 
 .qic__comp { margin-top: 22px; }
@@ -315,7 +315,7 @@ const barSegments = computed(() => [
 .qic__bar { margin-top: 12px; }
 .qic__chart { margin-top: 30px; }
 
-.qic__subtitle { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -.2px; }
+.qic__subtitle { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 
 .qic__card {
   background: var(--nu-cream); border-radius: 18px;
@@ -327,12 +327,12 @@ const barSegments = computed(() => [
   padding: 12px 0; border-top: 1.5px solid var(--nu-cream-line-2);
 }
 .qic__scenario:first-child { border-top: none; padding-top: 0; }
-.qic__sc-title { margin: 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }
-.qic__sc-sub { margin: 3px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.qic__sc-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.qic__sc-sub { margin: 3px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .qic__sc-right { text-align: right; }
-.qic__sc-value { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.qic__sc-value { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .qic__sc-value--neutral { color: var(--nu-gray-2); }
-.qic__sc-delta { margin: 3px 0 0; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.qic__sc-delta { margin: 3px 0 0; font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
 .qic__sc-delta--positive { color: var(--nu-green); }
 .qic__sc-delta--negative { color: var(--nu-red); }
 
@@ -340,12 +340,12 @@ const barSegments = computed(() => [
 .qic__table { width: 100%; border-collapse: collapse; min-width: 380px; }
 .qic__table th {
   text-align: left; padding: 10px 12px 10px 0;
-  color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .8px; text-transform: uppercase;
   border-bottom: 1.5px solid var(--nu-cream-line-2); white-space: nowrap;
 }
 .qic__table td {
-  padding: 10px 12px 10px 0; color: var(--nu-gray-3); font-size: 14px; font-weight: 600;
+  padding: 10px 12px 10px 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500;
   border-bottom: 1.5px solid var(--nu-cream-line-2); font-variant-numeric: tabular-nums;
 }
 .qic__table tbody tr:last-child td { border-bottom: none; }
@@ -355,7 +355,7 @@ const barSegments = computed(() => [
 .qic__callout {
   background: var(--nu-blue-tint); border-radius: 18px;
   padding: 18px 22px; margin-top: 22px; max-width: 640px;
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
 }
 .qic__callout strong { color: var(--nu-ink); font-weight: 800; }
 </style>

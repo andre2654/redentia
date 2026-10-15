@@ -74,7 +74,7 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
   margin: 0; color: var(--nu-cream-text); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.aai__sub { color: var(--nu-cream-text-60); font-size: 16px; font-weight: 600; margin-top: 14px; }
+.aai__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 14px; }
 .aai__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 40px; }
 .aai__card {
   background: var(--nu-blue-deep); border-radius: var(--nu-r-card-lg); padding: 28px;
@@ -83,11 +83,11 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
 .aai__card:hover { transform: translateY(-3px); }
 .aai__card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .aai__card-label {
-  color: var(--nu-cream-text-60); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.4px; text-transform: uppercase;
 }
 .aai__rec {
-  display: inline-flex; align-items: center; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .8px; padding: 6px 14px; border-radius: var(--nu-r-pill);
 }
 .aai__rec--green { background: var(--nu-green-soft); color: var(--nu-navy); }
@@ -97,7 +97,7 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
   color: var(--nu-green-soft); font-size: clamp(34px, 3vw, 44px); font-weight: 800;
   letter-spacing: -1px; line-height: 1; margin-top: 24px; font-variant-numeric: tabular-nums;
 }
-.aai__upside-sub { color: var(--nu-cream-text-60); font-size: 15.5px; font-weight: 600; margin-top: 7px; }
+.aai__upside-sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 7px; }
 .aai__range { position: relative; height: 8px; border-radius: var(--nu-r-pill); background: var(--nu-cream-text-18); margin-top: 26px; }
 .aai__range-fill {
   position: absolute; top: 0; bottom: 0;
@@ -116,11 +116,11 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
 .aai__range-labels { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; }
 .aai__range-mid { text-align: center; }
 .aai__range-end { text-align: right; }
-.aai__price { display: block; color: var(--nu-cream-text); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.aai__price { display: block; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .aai__price--green { color: var(--nu-green-soft); }
-.aai__price-sub { display: block; color: var(--nu-cream-text-55); font-size: 12px; font-weight: 600; margin-top: 2px; }
-.aai__footnote { color: var(--nu-cream-text-78); font-size: 14.5px; font-weight: 500; line-height: 1.6; margin-top: auto; padding-top: 20px; }
-.aai__read-head { font-size: 13.5px; font-weight: 800; margin-top: 22px; }
+.aai__price-sub { display: block; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 500; margin-top: 2px; }
+.aai__footnote { color: var(--nu-cream-text-78); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; margin-top: auto; padding-top: 20px; }
+.aai__read-head { font-size: var(--nu-fs-sm); font-weight: 700; margin-top: 22px; }
 .aai__read-head--pros { color: var(--nu-green-soft); }
 .aai__read-head--cons { color: var(--nu-amber-soft); }
 .aai__read-list { display: flex; flex-direction: column; gap: 11px; margin-top: 12px; }
@@ -128,7 +128,7 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
 .aai__icon { flex-shrink: 0; margin-top: 2px; }
 .aai__icon--check { color: var(--nu-green-soft); }
 .aai__icon--warn { color: var(--nu-amber-soft); }
-.aai__read-text { color: var(--nu-cream-text-85); font-size: 14.5px; font-weight: 500; line-height: 1.45; }
+.aai__read-text { color: var(--nu-cream-text-85); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 .aai__chat { display: inline-flex; align-items: center; gap: 14px; margin-top: 40px; transition: gap .2s; }
 .aai__chat:hover { gap: 19px; }
 .aai__chat-circle {
@@ -136,5 +136,5 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .aai__chat-chevron { color: var(--nu-blue); }
-.aai__chat-label { color: var(--nu-cream-text); font-size: 18px; font-weight: 800; }
+.aai__chat-label { color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: 800; }
 </style>

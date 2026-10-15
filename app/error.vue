@@ -227,7 +227,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   border: none;
   cursor: pointer;
   font-family: inherit;
-  font-size: 16px;
+  font-size: var(--nu-fs-md);
   font-weight: 800;
   padding: 15px 26px;
   border-radius: var(--nu-r-pill);

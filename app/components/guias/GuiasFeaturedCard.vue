@@ -49,7 +49,7 @@ defineProps<{
 .gfc__badge {
   position: absolute; top: 24px; left: 28px;
   display: inline-flex; align-items: center; background: var(--nu-white-18);
-  color: var(--nu-white); font-size: 12px; font-weight: 800; letter-spacing: 1px;
+  color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; padding: 6px 13px; border-radius: var(--nu-r-pill);
 }
 .gfc__logo { width: 76px; height: 76px; display: block; object-fit: contain; }
@@ -60,22 +60,22 @@ defineProps<{
 .gfc__meta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .gfc__tag {
   display: inline-flex; align-items: center; background: var(--nu-white);
-  color: var(--nu-gray-2); font-size: 12px; font-weight: 800;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 5px 13px; border-radius: var(--nu-r-pill);
 }
-.gfc__meta { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.gfc__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .gfc__title {
   color: var(--nu-ink); font-size: clamp(26px, 3vw, 42px); font-weight: 800;
   letter-spacing: -0.03em; line-height: 1.08; margin-top: 18px;
 }
 .gfc__summary {
-  color: var(--nu-gray-2); font-size: 16.5px; font-weight: 500;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.6; margin-top: 14px; max-width: 640px;
 }
 .gfc__cta-row { display: inline-flex; align-items: center; gap: 11px; margin-top: auto; padding-top: 26px; }
 .gfc__cta {
   display: inline-flex; align-items: center; background: var(--nu-blue);
   color: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 13px 24px; font-size: 15px; font-weight: 800;
+  padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
 }
 </style>

@@ -21,7 +21,7 @@ defineProps<{ card: AcaoMetricCard }>()
   transition: transform .15s;
 }
 .nmc:hover { transform: translateY(-2px); }
-.nmc__label { color: var(--nu-gray); font-size: 14px; font-weight: 700; }
+.nmc__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .nmc__value {
   color: var(--nu-ink); font-size: clamp(26px, 2.2vw, 32px); font-weight: 800;
   letter-spacing: -1px; line-height: 1; margin-top: 12px; font-variant-numeric: tabular-nums;

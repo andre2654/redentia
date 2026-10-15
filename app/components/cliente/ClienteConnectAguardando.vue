@@ -46,7 +46,7 @@ const emit = defineEmits<{ autorizei: [] }>()
 @keyframes cca-gira { to { transform: rotate(360deg); } }
 @keyframes cca-pulso { 0% { transform: scale(.8); opacity: .9; } 100% { transform: scale(1.25); opacity: 0; } }
 
-.cca__h1 { margin: 24px 0 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.025em; line-height: 1.28; text-wrap: balance; outline: none; }
-.cca__p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
+.cca__h1 { margin: 24px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.025em; line-height: 1.28; text-wrap: balance; outline: none; }
+.cca__p { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .cca__foot { width: 100%; margin-top: auto; padding-top: 22px; }
 </style>

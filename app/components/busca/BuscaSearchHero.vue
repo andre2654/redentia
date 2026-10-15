@@ -81,18 +81,18 @@ defineExpose({
   display: inline-flex; align-items: center; gap: 9px;
   background: transparent; color: var(--nu-blue);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  padding: 12px 22px; font-size: 15px; font-weight: 800; cursor: pointer;
+  padding: 12px 22px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer;
   white-space: nowrap; transition: background .2s;
 }
 .bsh__open:hover { background: var(--nu-blue-tint-2); }
 .bsh__open:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
 .bsh__sugs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
-.bsh__sugs-label { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; margin-right: 4px; }
+.bsh__sugs-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; margin-right: 4px; }
 .bsh__chip {
   background: var(--nu-white); color: var(--nu-gray-2);
   border: 1.5px solid var(--nu-cream-3); border-radius: var(--nu-r-pill);
-  padding: 9px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  padding: 9px 16px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   transition: border-color .2s, color .2s;
 }
 .bsh__chip:hover { border-color: var(--nu-blue); color: var(--nu-blue); }
@@ -100,7 +100,7 @@ defineExpose({
 
 .bsh__recents { margin-top: 30px; }
 .bsh__recents-label {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;
 }
 .bsh__recents-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
@@ -112,8 +112,8 @@ defineExpose({
 .bsh__recent:hover { transform: translateY(-1px); }
 .bsh__recent:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bsh__recent-title {
-  color: var(--nu-ink); font-size: 14px; font-weight: 700; max-width: 320px;
+  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; max-width: 320px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.bsh__recent-time { color: var(--nu-gray); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.bsh__recent-time { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap; }
 </style>

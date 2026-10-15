@@ -28,7 +28,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
 }
 .nph__sub {
-  color: var(--nu-gray); font-size: clamp(16px, 1.7vw, 20px); font-weight: 600;
+  color: var(--nu-gray); font-size: clamp(16px, 1.7vw, 20px); font-weight: 500;
   line-height: 1.55; margin-top: 20px; max-width: 620px;
 }
 .nph__actions { margin-top: 32px; }

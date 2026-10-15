@@ -13,10 +13,10 @@ defineEmits<{ click: [] }>()
 </template>
 
 <style scoped>
-.nitt { color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; }
+.nitt { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 .nitt__btn {
   background: transparent; border: none; padding: 0;
-  color: var(--nu-blue); font-size: 14.5px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
   cursor: pointer; font-family: inherit;
 }
 </style>

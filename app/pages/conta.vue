@@ -121,7 +121,7 @@ usePageSeo({
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 9px;
   background: var(--nu-white); color: var(--nu-ink); border: none; cursor: pointer;
   border-radius: var(--nu-r-pill); padding: 12px 22px;
-  font-family: var(--nu-font); font-size: 15px; font-weight: 800; transition: background .18s;
+  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; transition: background .18s;
 }
 .conta__logout:hover { background: var(--nu-cream-hover); }
 

@@ -44,7 +44,7 @@ withDefaults(defineProps<{
 <style scoped>
 .lgb__p {
   margin: 16px 0 0; color: var(--nu-gray-3);
-  font-size: 16.5px; font-weight: 500; line-height: 1.7;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
 }
 .lgb__p--lede {
   color: var(--nu-gray-2); font-size: clamp(17px, 1.5vw, 18px); line-height: 1.65;
@@ -59,7 +59,7 @@ withDefaults(defineProps<{
   margin: 12px 0 4px; list-style: lower-alpha; gap: 8px;
 }
 .lgb__li {
-  color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
   padding-left: 4px;
 }
 .lgb__li::marker { color: var(--nu-gray); font-weight: 700; }

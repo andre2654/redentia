@@ -28,7 +28,7 @@ const { following, pending, toggle, feedback } = useSeguirAtivo(() => props.tick
 .sga__msg--on {
   position: static; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none;
   white-space: normal; order: 1; flex-basis: 100%;
-  color: var(--nu-green-2); font-size: 15px; font-weight: 700; line-height: 1.5;
+  color: var(--nu-green-2); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.5;
   animation: nu-fade .2s ease both;
 }
 .sga__msg--err { color: var(--nu-red-2); }

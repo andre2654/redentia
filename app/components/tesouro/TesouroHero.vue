@@ -48,6 +48,6 @@ defineProps<{ hero: TesouroHeroVM }>()
 .thr__rate-suffix { color: var(--nu-gray); font-size: clamp(16px, 1.8vw, 21px); font-weight: 700; }
 .thr__meta {
   margin: 16px 0 0; color: var(--nu-gray); font-size: clamp(15px, 1.6vw, 18px);
-  font-weight: 600; font-variant-numeric: tabular-nums;
+  font-weight: 500; font-variant-numeric: tabular-nums;
 }
 </style>

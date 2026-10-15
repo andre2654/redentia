@@ -83,15 +83,15 @@ const emit = defineEmits<{ (e: 'more'): void }>()
   animation: nu-fade .5s ease both;
 }
 .bbl__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.bbl__label { color: var(--nu-ink); font-size: 17px; font-weight: 800; }
+.bbl__label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 .bbl__deep {
   display: inline-flex; align-items: center; gap: 5px;
-  color: var(--nu-blue); font-size: 13.5px; font-weight: 800; white-space: nowrap;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
 }
 .bbl__deep:hover { text-decoration: underline; }
 .bbl__deep:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
-.bbl__state { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; margin-top: 20px; }
+.bbl__state { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 20px; }
 
 .bbl__grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
@@ -103,25 +103,25 @@ const emit = defineEmits<{ (e: 'more'): void }>()
 }
 .bbl__row:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bbl__row-main { flex: 1; min-width: 0; }
-.bbl__ticker { display: block; color: var(--nu-ink); font-size: 16px; font-weight: 800; white-space: nowrap; }
-.bbl__ticker--wrap { overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
+.bbl__ticker { display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; }
+.bbl__ticker--wrap { overflow: hidden; text-overflow: ellipsis; font-size: var(--nu-fs-md); }
 .bbl__name {
-  display: block; color: var(--nu-gray); font-size: 13px; font-weight: 600; margin-top: 1px;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bbl__quote { text-align: right; flex-shrink: 0; }
 .bbl__price {
-  display: block; color: var(--nu-ink); font-size: 15px; font-weight: 800;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
-.bbl__pct { display: block; font-size: 12.5px; font-weight: 800; margin-top: 1px; font-variant-numeric: tabular-nums; }
+.bbl__pct { display: block; font-size: var(--nu-fs-dense); font-weight: 700; margin-top: 1px; font-variant-numeric: tabular-nums; }
 .bbl__pct--up { color: var(--nu-green-2); }
 .bbl__pct--down { color: var(--nu-red-2); }
 .bbl__chev { flex-shrink: 0; color: var(--nu-gray); }
 .bbl__tag {
   display: inline-flex; align-items: center; flex-shrink: 0;
   background: var(--nu-cream); color: var(--nu-gray);
-  font-size: 11.5px; font-weight: 800; padding: 5px 11px;
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 5px 11px;
   border-radius: var(--nu-r-pill); white-space: nowrap;
 }
 
@@ -129,7 +129,7 @@ const emit = defineEmits<{ (e: 'more'): void }>()
   margin-top: 26px;
   background: var(--nu-white); color: var(--nu-blue);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  padding: 11px 26px; font-size: 14.5px; font-weight: 800; cursor: pointer;
+  padding: 11px 26px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   transition: background .2s;
 }
 .bbl__more:hover { background: var(--nu-blue-tint-2); }

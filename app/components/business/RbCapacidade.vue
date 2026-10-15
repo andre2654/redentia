@@ -61,17 +61,17 @@
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px;
 }
 .rbcp__label {
-  color: var(--nu-cream-text-55); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.4px;
 }
 .rbcp__fact {
-  color: var(--nu-cream-text); font-size: 15px; font-weight: 700;
+  color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 /* a ponta é a ação: no hover ela acende e a seta anda */
 .rbcp__end {
   margin-left: auto; display: inline-flex; align-items: center; gap: 7px;
-  color: var(--nu-blue-soft); font-size: 14.5px; font-weight: 800;
+  color: var(--nu-blue-soft); font-size: var(--nu-fs-sm); font-weight: 700;
   white-space: nowrap; font-variant-numeric: tabular-nums;
   transition: color .2s;
 }

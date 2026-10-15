@@ -22,6 +22,6 @@ defineProps<{
   flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
   font-weight: 800;
 }
-.ntt--sm { width: 22px; height: 22px; border-radius: 7px; font-size: 11px; }
-.ntt--lg { width: 48px; height: 48px; border-radius: 14px; font-size: 17px; }
+.ntt--sm { width: 22px; height: 22px; border-radius: 7px; font-size: var(--nu-fs-xs); }
+.ntt--lg { width: 48px; height: 48px; border-radius: 14px; font-size: var(--nu-fs-lg); }
 </style>

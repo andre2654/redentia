@@ -124,7 +124,7 @@ onBeforeUnmount(() => clearInterval(timer))
   background: var(--nu-blue); animation: rbaa-pulse 1.5s ease-in-out infinite;
 }
 .rbaa__title { color: var(--nu-cream-text); font-size: clamp(19px, 1.9vw, 25px); font-weight: 800; letter-spacing: -.025em; line-height: 1.04; }
-.rbaa__docs { margin: 8px 0 0; padding-left: 24px; color: var(--nu-cream-text-50); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rbaa__docs { margin: 8px 0 0; padding-left: 24px; color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 @keyframes rbaa-pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.4); opacity: .5; }
@@ -143,21 +143,21 @@ onBeforeUnmount(() => clearInterval(timer))
   to { opacity: 1; transform: none; }
 }
 
-.rbaa__chave { color: var(--nu-cream-text); font-size: 13.5px; font-weight: 800; letter-spacing: -.01em; }
-.rbaa__seta { color: var(--nu-cream-text-35); font-size: 15px; font-weight: 800; line-height: 1; }
+.rbaa__chave { color: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.01em; }
+.rbaa__seta { color: var(--nu-cream-text-35); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1; }
 .rbaa__tool {
   color: var(--nu-blue-soft);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12.5px; font-weight: 600;
+  font-size: var(--nu-fs-dense); font-weight: 500;
 }
 .rbaa__alvo {
   background: var(--nu-cream-text-08); border-radius: 7px; padding: 2px 7px;
   color: var(--nu-cream-text-72);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11.5px; font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--nu-fs-xs); font-weight: 500;
 }
 .rbaa__ok {
   margin-left: auto; color: var(--nu-green-soft);
-  font-size: 12.5px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap;
+  font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 
 /* a recusa de carteira: é a linha que mais importa nesta tela, e ela não pode

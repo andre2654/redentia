@@ -37,11 +37,11 @@ defineProps<{ score: AcaoScoreVM }>()
 .nsc:hover { transform: translateY(-3px); }
 .nsc__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .nsc__label {
-  color: var(--nu-cream-text-60); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.4px; text-transform: uppercase;
 }
 .nsc__pill {
-  display: inline-flex; align-items: center; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 6px 12px; border-radius: var(--nu-r-pill);
 }
 .nsc__pill--green { background: var(--nu-green-soft-18); color: var(--nu-green-soft); }
@@ -52,7 +52,7 @@ defineProps<{ score: AcaoScoreVM }>()
   color: var(--nu-cream-text); font-size: clamp(44px, 4vw, 58px); font-weight: 800;
   letter-spacing: -2px; line-height: 0.9; font-variant-numeric: tabular-nums;
 }
-.nsc__num-max { color: var(--nu-cream-text-50); font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+.nsc__num-max { color: var(--nu-cream-text-50); font-size: var(--nu-fs-lg); font-weight: 700; margin-bottom: 4px; }
 .nsc__track {
   height: 10px; border-radius: var(--nu-r-pill); background: var(--nu-cream-text-18);
   overflow: hidden; margin-top: 18px;
@@ -63,6 +63,6 @@ defineProps<{ score: AcaoScoreVM }>()
   display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
   padding: 9px 0; border-top: 1px solid var(--nu-cream-text-14);
 }
-.nsc__sub-name { color: var(--nu-cream-text-60); font-size: 14px; font-weight: 600; }
-.nsc__sub-val { color: var(--nu-cream-text); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.nsc__sub-name { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: 500; }
+.nsc__sub-val { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 </style>

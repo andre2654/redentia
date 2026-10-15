@@ -78,7 +78,7 @@ useHead({ titleTemplate: null })
 }
 .hw__desc {
   margin: 8px 0 0; color: var(--nu-gray-2);
-  font-size: 16.5px; font-weight: 500; line-height: 1.65;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65;
 }
 
 @media (max-width: 760px) {

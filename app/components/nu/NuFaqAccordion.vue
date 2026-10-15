@@ -65,11 +65,11 @@ useHead({
   display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;
   width: 100%; background: transparent; border: none; padding: 0; cursor: pointer; text-align: left;
 }
-.nfa__q-text { color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
+.nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; line-height: 1.35; }
 .nfa__icon { width: 21px; height: 21px; transform: rotate(0deg); transition: transform .25s; flex-shrink: 0; margin-top: 3px; }
 .nfa__icon--open { transform: rotate(45deg); }
 .nfa__a {
-  color: var(--nu-ink-75); font-size: 15.5px; font-weight: 500; line-height: 1.7;
+  color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
   margin-top: 16px;
 }
 .nfa__a--open { animation: nu-fade .3s ease both; }
@@ -81,7 +81,7 @@ useHead({
 .nfa--compact { gap: 12px; }
 .nfa--compact .nfa__item { padding: 22px 24px; }
 .nfa--compact .nfa__q { gap: 18px; }
-.nfa--compact .nfa__q-text { font-size: 17px; }
+.nfa--compact .nfa__q-text { font-size: var(--nu-fs-lg); }
 .nfa--compact .nfa__icon { width: 19px; height: 19px; margin-top: 2px; }
-.nfa--compact .nfa__a { font-size: 15px; margin-top: 14px; }
+.nfa--compact .nfa__a { font-size: var(--nu-fs-md); margin-top: 14px; }
 </style>

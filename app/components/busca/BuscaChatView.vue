@@ -142,7 +142,7 @@ async function abrirSessao(id: string) {
   color: var(--nu-cream-text); font-size: clamp(21px, 2.2vw, 26px);
   font-weight: 800; margin-top: 18px;
 }
-.bcv__empty-sub { color: var(--nu-cream-text-55); font-size: 15px; font-weight: 500; margin-top: 8px; }
+.bcv__empty-sub { color: var(--nu-cream-text-55); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 8px; }
 .bcv__empty-sugs {
   display: flex; align-items: center; justify-content: center; gap: 9px;
   flex-wrap: wrap; margin-top: 26px;
@@ -150,7 +150,7 @@ async function abrirSessao(id: string) {
 .bcv__chip {
   background: transparent; color: var(--nu-cream-text);
   border: 1.5px solid var(--nu-cream-text-35); border-radius: var(--nu-r-pill);
-  padding: 10px 18px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  padding: 10px 18px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   transition: background .2s, border-color .2s;
 }
 .bcv__chip:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-70); }

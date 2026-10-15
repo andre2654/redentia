@@ -70,7 +70,7 @@ const hiddenCitations = computed(() =>
 .bcm--user { display: flex; justify-content: flex-end; margin: 16px 0; }
 .bcm__bubble {
   background: var(--nu-cream); color: var(--nu-navy);
-  font-size: 15.5px; font-weight: 700; padding: 13px 20px;
+  font-size: var(--nu-fs-md); font-weight: 700; padding: 13px 20px;
   border-radius: 18px 18px 4px 18px; max-width: min(560px, 86%);
   line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
 }
@@ -86,13 +86,13 @@ const hiddenCitations = computed(() =>
 
 .bcm__body :deep(p) {
   margin: 0 0 12px; color: var(--nu-cream-text-90);
-  font-size: 15.5px; font-weight: 500; line-height: 1.7; max-width: 720px;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7; max-width: 720px;
   overflow-wrap: break-word;
 }
 .bcm__body :deep(ul),
 .bcm__body :deep(ol) {
   margin: 0 0 12px; padding-left: 22px; color: var(--nu-cream-text-90);
-  font-size: 15.5px; font-weight: 500; line-height: 1.7; max-width: 720px;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7; max-width: 720px;
 }
 .bcm__body :deep(li) { margin: 0 0 4px; }
 .bcm__body :deep(strong) { font-weight: 800; color: var(--nu-cream-text); }
@@ -100,25 +100,25 @@ const hiddenCitations = computed(() =>
 .bcm__body :deep(.md-table) { overflow-x: auto; margin: 0 0 12px; max-width: 720px; }
 .bcm__body :deep(table) { border-collapse: collapse; min-width: 420px; }
 .bcm__body :deep(th) {
-  text-align: left; color: var(--nu-cream-text-55); font-size: 11.5px; font-weight: 800;
+  text-align: left; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .8px; text-transform: uppercase; padding: 8px 16px 8px 0; white-space: nowrap;
 }
 .bcm__body :deep(td) {
-  color: var(--nu-cream-text-90); font-size: 14px; font-weight: 500; line-height: 1.55;
+  color: var(--nu-cream-text-90); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
   padding: 8px 16px 8px 0; border-top: 1px solid var(--nu-cream-text-10);
   font-variant-numeric: tabular-nums;
 }
 .bcm__body :deep(code) {
   background: var(--nu-cream-text-10); border-radius: 6px; padding: 1px 6px;
-  font-size: 13.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--nu-fs-sm); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-.bcm__error { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 0 10px; color: var(--nu-red-soft); font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+.bcm__error { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 2px 0 10px; color: var(--nu-red-soft); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .bcm__login {
   display: inline-flex; align-items: center;
   color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-35);
   border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: 12.5px; font-weight: 800; transition: background .2s, border-color .2s;
+  font-size: var(--nu-fs-dense); font-weight: 700; transition: background .2s, border-color .2s;
 }
 .bcm__login:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-70); color: var(--nu-cream-text); }
 
@@ -126,7 +126,7 @@ const hiddenCitations = computed(() =>
 .bcm__source {
   display: inline-block;
   background: var(--nu-cream-text-10); color: var(--nu-cream-text-75);
-  font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 5px 12px; border-radius: var(--nu-r-pill);
   max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   border: none;
 }
@@ -138,7 +138,7 @@ const hiddenCitations = computed(() =>
 .bcm__chip {
   background: transparent; color: var(--nu-cream-text);
   border: 1.5px solid var(--nu-cream-text-35); border-radius: var(--nu-r-pill);
-  padding: 8px 15px; font-size: 13px; font-weight: 700; cursor: pointer;
+  padding: 8px 15px; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer;
   transition: background .2s, border-color .2s;
 }
 .bcm__chip:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-70); }

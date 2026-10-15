@@ -86,7 +86,7 @@ const PASSOS = [
 .rbcf__link {
   display: inline-flex; align-items: center; gap: 7px;
   margin-top: 28px; color: var(--nu-blue);
-  font-size: 15.5px; font-weight: 800; transition: color .2s;
+  font-size: var(--nu-fs-md); font-weight: 800; transition: color .2s;
 }
 .rbcf__link svg { transition: transform .2s; }
 .rbcf__link:hover { color: var(--nu-blue-hover); }

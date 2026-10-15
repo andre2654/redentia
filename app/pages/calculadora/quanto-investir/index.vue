@@ -477,7 +477,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
+.qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .qi__h4--accent { color: var(--nu-blue); }
 .qi__link { text-decoration: underline; }
 .qi__link:hover { color: var(--nu-blue); }
@@ -486,7 +486,7 @@ usePageSeo({
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .qi__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .qi__prose p:last-child { margin-bottom: 0; }
@@ -506,8 +506,8 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .qi__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.qi__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
-.qi__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.qi__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.qi__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .qi__tiles {
@@ -517,8 +517,8 @@ usePageSeo({
 }
 .qi__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 :global(.cbd--cream) .qi__tile { background: var(--nu-white); }
-.qi__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.qi__card-note { margin: 10px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.qi__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.qi__card-note { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— reserva de emergência (card creme com hairlines na banda branca) ——— */
 .qi__reserve {
@@ -527,7 +527,7 @@ usePageSeo({
 }
 .qi__reserve li {
   padding: 12px 0; border-top: 1.5px solid var(--nu-cream-line-2);
-  color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
 }
 .qi__reserve li:first-child { border-top: none; padding-top: 0; }
 .qi__reserve li:last-child { padding-bottom: 0; }
@@ -540,8 +540,8 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .qi__meta-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
-.qi__meta-title { margin: 0 0 10px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
-.qi__meta-p { margin: 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.65; }
+.qi__meta-title { margin: 0 0 10px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.qi__meta-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
 
 /* ——— cards-link (rankings / outras calculadoras) ——— */
 .qi__grid-cards {
@@ -555,13 +555,13 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .qi__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.qi__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .qi__card-link .qi__card-p { margin: 0; }
 
 /* ——— pills / E-E-A-T / CTA ——— */
 .qi__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .qi__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -569,16 +569,16 @@ usePageSeo({
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(24px, 3vw, 36px); margin: clamp(44px, 6vw, 72px) auto 0; max-width: 980px;
 }
-.qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; }
-.qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
-.qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
+.qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .qi__cta {
   background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .qi__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.qi__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.qi__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .qi__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .qi__cta .qi__pill { margin-top: 0; }
 .qi__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

@@ -53,14 +53,14 @@ const terms = computed(() =>
 }
 .cgl__term {
   color: var(--nu-blue);
-  font-size: 15.5px;
+  font-size: var(--nu-fs-md);
   font-weight: 800;
   letter-spacing: -.2px;
 }
 .cgl__short {
   color: var(--nu-gray-2);
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: var(--nu-fs-sm);
+  font-weight: 500;
   line-height: 1.5;
 }
 </style>

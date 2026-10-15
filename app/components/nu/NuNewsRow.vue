@@ -23,12 +23,12 @@ defineProps<{ item: NuNewsRowItem }>()
 .nnr { display: flex; align-items: center; gap: 18px; padding: 21px 0; border-top: 1.5px solid var(--nu-cream-2); }
 .nnr__main { flex: 1; min-width: 0; }
 .nnr__title {
-  display: block; color: var(--nu-ink); font-size: 18.5px; font-weight: 800;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800;
   letter-spacing: -.2px; line-height: 1.3; transition: color .2s;
 }
 .nnr:hover .nnr__title { color: var(--nu-blue); }
-.nnr__source { display: block; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-top: 5px; }
-.nnr__pct { font-size: 15px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.nnr__source { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 5px; }
+.nnr__pct { font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .nnr__pct--up { color: var(--nu-green-2); }
 .nnr__pct--down { color: var(--nu-red-2); }
 .nnr__circle {

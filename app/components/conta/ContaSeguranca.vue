@@ -137,16 +137,16 @@ function relativeTimePt(iso: string): string {
 
 <style scoped>
 .sg-block__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.sg-block__title { margin: 0; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
-.sg-block__meta { color: var(--nu-gray); font-size: 14px; font-weight: 500; }
+.sg-block__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.sg-block__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .sg-form { margin-top: 18px; display: flex; flex-direction: column; gap: clamp(16px, 2.2vw, 22px); }
 .sg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(16px, 2.2vw, 22px); }
-.sg-err { margin: 0; color: var(--nu-red); font-size: 14px; font-weight: 600; }
+.sg-err { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
 .sg-actions { display: flex; }
 .sg-save {
   background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;
   border-radius: var(--nu-r-pill); padding: 14px 28px;
-  font-family: var(--nu-font); font-size: 15.5px; font-weight: 800; letter-spacing: -.1px;
+  font-family: var(--nu-font); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px;
   transition: background .18s, opacity .18s;
 }
 .sg-save:hover:not(:disabled) { background: var(--nu-blue-hover); }
@@ -161,8 +161,8 @@ function relativeTimePt(iso: string): string {
   display: inline-flex; align-items: center; justify-content: center;
 }
 .sg-session__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.sg-session__dev { color: var(--nu-ink); font-size: 16px; font-weight: 800; }
-.sg-session__sub { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; }
+.sg-session__dev { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.sg-session__sub { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 @media (max-width: 620px) {
   .sg-grid { grid-template-columns: 1fr; }
