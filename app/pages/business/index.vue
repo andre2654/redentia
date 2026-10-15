@@ -24,7 +24,7 @@ definePageMeta({ layout: 'business' })
 
 usePageSeo({
   title: 'Redentia For Business',
-  description: 'O mercado de hoje, antes da sua reunião. A Redentia lê o mercado, testa a carteira do cliente e deixa a conversa pronta, no Claude ou no ChatGPT da mesa. A partir de R$ 500 por pessoa.',
+  description: 'Consolide a carteira do seu cliente com 1 clique. O cliente autoriza pelo Open Finance, e a Redentia lê o mercado e deixa a conversa pronta, no Claude ou no ChatGPT da mesa. A partir de R$ 500 por pessoa.',
   path: '/business',
   robots: 'noindex, follow',
 })
