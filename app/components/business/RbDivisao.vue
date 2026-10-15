@@ -58,6 +58,8 @@ const FAMILY = [
    fazem o segundo resolver no primeiro, e o app já pagou por isso (§14.18). */
 const uid = useId()
 const hachura = `rbdv-hachura-${uid}`
+const esmaece = `rbdv-esmaece-${uid}`
+const mascara = `rbdv-mascara-${uid}`
 </script>
 
 <template>
@@ -95,18 +97,29 @@ const hachura = `rbdv-hachura-${uid}`
              encontram. Com r=88 e centros a 72 a lente fica com 104 de largura,
              e cada círculo mantém metade de si de fora.
              Os pontos de interseção saem de x=130 e y=120±sqrt(88²-36²)=±80,3. -->
+        <!-- TRAÇO VISÍVEL (15/10/2026). Os círculos eram --nu-cream-2 sobre branco
+             e a hachura tinha 20% de opacidade: na auditoria o desenho lia como
+             vazio. Agora o traço é --nu-sand e a lente é hachura em tinta que
+             esmaece do centro para as bordas, que é o gesto da lente da Decade
+             adaptado ao fundo claro (lá é traço claro sobre preto). -->
         <svg class="rbdv__venn" viewBox="0 0 260 240" fill="none" aria-hidden="true">
           <defs>
             <pattern :id="hachura" width="4" height="4" patternUnits="userSpaceOnUse">
-              <line x1="2" y1="0" x2="2" y2="4" stroke="var(--nu-blue-deep)" stroke-width="1.1" />
+              <line x1="2" y1="0" x2="2" y2="4" stroke="var(--nu-ink)" stroke-width="1" />
             </pattern>
+            <radialGradient :id="esmaece" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="var(--nu-white)" stop-opacity="1" />
+              <stop offset="100%" stop-color="var(--nu-white)" stop-opacity=".12" />
+            </radialGradient>
+            <mask :id="mascara" maskContentUnits="userSpaceOnUse">
+              <path d="M130,39.7 A88,88 0 0,1 130,200.3 A88,88 0 0,1 130,39.7" :fill="`url(#${esmaece})`" />
+            </mask>
           </defs>
-          <circle cx="94" cy="120" r="88" stroke="var(--nu-cream-2)" stroke-width="1" />
-          <circle cx="166" cy="120" r="88" stroke="var(--nu-cream-2)" stroke-width="1" />
+          <circle cx="94" cy="120" r="88" stroke="var(--nu-sand)" stroke-width="1.2" />
+          <circle cx="166" cy="120" r="88" stroke="var(--nu-sand)" stroke-width="1.2" />
           <path
             d="M130,39.7 A88,88 0 0,1 130,200.3 A88,88 0 0,1 130,39.7"
-            :fill="`url(#${hachura})`" fill-opacity=".2"
-            stroke="var(--nu-cream-2)" stroke-width="1"
+            :fill="`url(#${hachura})`" fill-opacity=".55" :mask="`url(#${mascara})`"
           />
         </svg>
       </div>
@@ -156,6 +169,9 @@ const hachura = `rbdv-hachura-${uid}`
   gap: clamp(18px, 2.5vw, 40px);
 }
 
+/* As duas colunas começam no topo (o Venn, no meio, centraliza sozinho): com
+   align-items: center as listas de alturas diferentes desalinhavam os títulos. */
+.rbdv__col { align-self: start; }
 .rbdv__col-titulo {
   margin: 0; color: var(--nu-ink);
   font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em;
