@@ -2,140 +2,113 @@
 /**
  * "O plano" — a oferta comercial.
  *
- * SEM "PROVA DE CONCEITO" NA SUPERFÍCIE PÚBLICA (decisão do dono 2026-08-01:
- * "isso de POC era relevante apenas para as calls"). A página diz o que o
- * cliente paga e leva. O enquadramento de prova de conceito continua existindo
- * NA CONVERSA comercial, não aqui.
+ * DOIS CARDS, COMO O PREÇO DA DECADE (15/10/2026, à noite). O dono achou a
+ * página com "MUITA informação". A seção tinha calculadora com régua e atalhos,
+ * tabela de faixas, quatro itens com nota, quatro condições e dois rodapés.
+ * Virou o desenho da Decade: um card claro com o preço e uma lista curta, e um
+ * card escuro para o caso especial. Os dois perfis de comprador, que eram o
+ * bloco RbRegras, moram aqui:
+ *  - card claro: o plano de toda mesa, e a linha "Funciona sem dado de
+ *    cliente" é a resposta da assessoria ligada a XP ou BTG (a RCVM 178, art.
+ *    25, VII, veda ao assessor enviar extrato de posições);
+ *  - card escuro: family office e gestora, com o cliente dentro. A frase de
+ *    status é a que o CV-19 trava ("habilitada escritório a escritório, na
+ *    implantação"): Clientes é ligado pela Redentia conta a conta.
+ * Não escrever "sem comissão": a /metodologia declara links de afiliado no site
+ * de investidores.
  *
- * PREÇO POR CHAVE, EM FAIXAS (14/10/2026). A tabela é a do contrato de
- * assinatura da Redentia For Business (versão de 13/10/2026, cláusula 4):
- * cada chave ativa paga o preço da faixa em que cai, e a conta é progressiva
- * como imposto de renda, não um preço único para o total. 10 chaves = R$ 5.000;
- * 25 = R$ 9.500; 50 = R$ 14.500 (os exemplos do próprio contrato, que a
- * calculadora tem de reproduzir). Saiu o preço anterior (R$ 2.500 por
- * escritório, até cinco chaves, mensal sem contrato anual): o contrato tem
- * prazo mínimo de 3 meses, garantia de 30 dias, reajuste anual pelo IPCA e
- * vencimento no dia 10. Mudou o contrato, muda FAIXAS e CONDICOES aqui, o FAQ
- * "Quanto custa?" e o card "O plano" do RbHero.
+ * SEM "PROVA DE CONCEITO" NA SUPERFÍCIE PÚBLICA (decisão do dono 2026-08-01:
+ * "isso de POC era relevante apenas para as calls").
+ *
+ * PREÇO POR PESSOA (CHAVE), EM FAIXAS (14/10/2026). A tabela é a do contrato
+ * de assinatura da Redentia For Business (versão de 13/10/2026, cláusula 4):
+ * cada pessoa ativa paga o preço da faixa em que cai, e a conta é progressiva
+ * como imposto de renda, não um preço único para o total. 10 pessoas =
+ * R$ 5.000; 25 = R$ 9.500; 50 = R$ 14.500 (os exemplos do próprio contrato,
+ * que a calculadora tem de reproduzir). O contrato tem prazo mínimo de 3
+ * meses, garantia de 30 dias, reajuste anual pelo IPCA e vencimento no dia 10
+ * (este último só no FAQ "Quanto custa?"). Mudou o contrato, muda FAIXAS aqui,
+ * o FAQ e o card "Por pessoa da mesa" do RbHero.
  *
  * PREÇO VISÍVEL (decisão do dono 2026-07-30): filtra quem não tem orçamento
- * antes da reunião. A calculadora vai além: a casa vê o número dela.
+ * antes da reunião. A calculadora (pedido do dono, 14/10/2026) mostra o número
+ * da casa e a conta por faixa, numa linha.
  *
- * ÚNICA BANDA NAVY DA PÁGINA. O plano dá três pisos e só (creme é a página,
- * navy é o outro lado, branco é artefato), e gasta o navy aqui: é o momento
- * em que a página para de explicar e faz uma proposta.
- *
- * A calculadora começa em 5 chaves (R$ 2.500), que é o tamanho de mesa mais
+ * A calculadora começa em 5 pessoas (R$ 2.500), que é o tamanho de mesa mais
  * comum nas calls. Nada de window no setup: o SSR rende o mesmo número que o
  * cliente vê antes de hidratar.
  */
 const FAIXAS = [
-  { de: 1, ate: 10, preco: 500, rotulo: '1ª à 10ª' },
-  { de: 11, ate: 25, preco: 300, rotulo: '11ª à 25ª' },
-  { de: 26, ate: 50, preco: 200, rotulo: '26ª à 50ª' },
-  { de: 51, ate: Infinity, preco: 150, rotulo: '51ª em diante' },
+  { de: 1, ate: 10, preco: 500, rotulo: '1ª a 10ª' },
+  { de: 11, ate: 25, preco: 300, rotulo: '11ª a 25ª' },
+  { de: 26, ate: 50, preco: 200, rotulo: '26ª a 50ª' },
+  { de: 51, ate: Infinity, preco: 150, rotulo: '51ª ou mais' },
 ] as const
 
 const MIN = 1
 const MAX = 100
-const ATALHOS = [1, 10, 25, 50] as const
-
-const CONDICOES = [
-  { rotulo: 'Prazo mínimo', valor: '3 meses, depois renova mês a mês' },
-  { rotulo: 'Garantia', valor: 'Cancelou nos primeiros 30 dias, devolvemos tudo' },
-  { rotulo: 'Pagamento', valor: 'Mensal, dia 10, boleto ou Pix, com nota fiscal' },
-  { rotulo: 'Reajuste', valor: 'Uma vez por ano, pelo IPCA' },
-] as const
 
 const INCLUI = [
-  {
-    rotulo: 'Acesso',
-    valor: 'Um por pessoa',
-    nota: 'Cada pessoa da mesa entra com o próprio acesso, ligado e desligado no painel do escritório. A mensalidade conta quem está ativo no início do mês.',
-  },
-  {
-    rotulo: 'Cenários',
-    valor: 'Para toda a mesa',
-    nota: 'O motor de projeções: cenários estudados pela Redentia, com fontes, ou montados na conversa.',
-  },
-  {
-    rotulo: 'Rotinas prontas',
-    valor: 'Sete',
-    nota: 'Prontas para o Claude: primeiros passos, cenário, carteira, comparação de ativos, por que o ativo moveu, clientes e relatório em PDF.',
-  },
-  {
-    rotulo: 'Clientes',
-    valor: 'Na implantação',
-    nota: 'Clientes conectados por Open Finance, cada um com o próprio consentimento, liberados escritório a escritório.',
-  },
+  'Um acesso por pessoa da mesa',
+  'Cenários para toda a mesa',
+  'Sete rotinas prontas no Claude',
+  'Funciona sem dado de cliente',
+  'Garantia de 30 dias',
 ] as const
 
-const chaves = ref(5)
+const pessoas = ref(5)
 
 function normaliza(v: unknown): number {
   const n = Math.round(Number(v))
   if (!Number.isFinite(n)) return MIN
   return Math.min(MAX, Math.max(MIN, n))
 }
-function definir(v: unknown) { chaves.value = normaliza(v) }
-function passo(d: number) { definir(chaves.value + d) }
+function definir(v: unknown) { pessoas.value = normaliza(v) }
+function passo(d: number) { definir(pessoas.value + d) }
 
-/** Quantas chaves caem em cada faixa e quanto cada faixa soma. */
+/** Quantas pessoas caem em cada faixa e quanto cada faixa soma. */
 const linhas = computed(() => FAIXAS.map((f) => {
-  const qtd = Math.max(0, Math.min(chaves.value, f.ate) - (f.de - 1))
+  const qtd = Math.max(0, Math.min(pessoas.value, f.ate) - (f.de - 1))
   return { ...f, qtd, subtotal: qtd * f.preco }
 }))
 const total = computed(() => linhas.value.reduce((s, l) => s + l.subtotal, 0))
-const media = computed(() => Math.round(total.value / chaves.value))
 
 const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 })
+/** A conta por faixa numa linha: "10 × R$ 500 + 5 × R$ 300". */
+const conta = computed(() => linhas.value
+  .filter((l) => l.qtd > 0)
+  .map((l) => `${l.qtd} × R$ ${brl(l.preco)}`)
+  .join(' + '))
+const rotuloPessoas = (n: number) => `${n} ${n === 1 ? 'pessoa' : 'pessoas'}`
 </script>
 
 <template>
   <section id="prova" class="rbpv">
-    <div class="rbpv__cols">
-      <div class="rbpv__intro">
-        <NuSectionHeading dark eyebrow="O plano">
-          Sem produto<br>pra empurrar.
-          <template #dek>
-            A Redentia não distribui investimento: o preço é fixo por pessoa da
-            mesa e não muda com o que o seu cliente compra. R$ 500 por mês para
-            começar, e cada nova pessoa sai mais barata. <strong>Se a mesa não
-            usar nos primeiros 30 dias</strong>, devolvemos tudo o que foi pago.
-          </template>
-        </NuSectionHeading>
+    <div class="rbpv__head">
+      <NuSectionHeading eyebrow="O plano">
+        Sem produto pra empurrar.
+        <template #dek>
+          O preço é por pessoa da mesa e não muda com o que o seu cliente compra.
+        </template>
+      </NuSectionHeading>
+    </div>
 
-        <dl class="rbpv__lista">
-          <div v-for="c in INCLUI" :key="c.rotulo" class="rbpv__linha">
-            <dt class="rbpv__linha-topo">
-              <span class="rbpv__rotulo">{{ c.rotulo }}</span>
-              <span class="rbpv__valor-linha">{{ c.valor }}</span>
-            </dt>
-            <dd class="rbpv__nota">{{ c.nota }}</dd>
-          </div>
-        </dl>
-
-        <p class="rbpv__cap">
-          A implantação tem gente da Redentia junto: o assistente de cada pessoa
-          conectado, as rotinas instaladas e a primeira carteira da casa testada
-          num cenário.
-        </p>
-      </div>
-
+    <div class="rbpv__cards">
+      <!-- ——— o plano, com a calculadora ——— -->
       <div class="rbpv__card">
-        <span id="rbpv-calc" class="rbpv__label">Quanto custa para a sua mesa</span>
+        <span id="rbpv-calc" class="rbpv__nome">Redentia For Business</span>
 
         <p class="rbpv__preco" aria-live="polite" aria-atomic="true">
           <span class="rbpv__moeda">R$</span><span class="rbpv__valor">{{ brl(total) }}</span><span class="rbpv__periodo">/mês</span>
         </p>
-        <p class="rbpv__media">
-          {{ chaves }} {{ chaves === 1 ? 'pessoa' : 'pessoas' }} · média de R$ {{ brl(media) }} por pessoa
+        <p class="rbpv__conta">
+          {{ rotuloPessoas(pessoas) }} · {{ conta }}
         </p>
 
         <div class="rbpv__controle" role="group" aria-labelledby="rbpv-calc">
           <div class="rbpv__stepper">
             <button
-              type="button" class="rbpv__passo" :disabled="chaves <= MIN"
+              type="button" class="rbpv__passo" :disabled="pessoas <= MIN"
               aria-label="Uma pessoa a menos" @click="passo(-1)"
             >
               −
@@ -144,14 +117,14 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
               <span class="rbpv__sr">Pessoas na mesa</span>
               <input
                 class="rbpv__input" type="number" inputmode="numeric"
-                :min="MIN" :max="MAX" step="1" :value="chaves"
+                :min="MIN" :max="MAX" step="1" :value="pessoas"
                 @change="definir(($event.target as HTMLInputElement).value)"
                 @input="(($event.target as HTMLInputElement).value !== '') && definir(($event.target as HTMLInputElement).value)"
               >
-              <span class="rbpv__unidade" aria-hidden="true">{{ chaves === 1 ? 'pessoa' : 'pessoas' }}</span>
+              <span class="rbpv__unidade" aria-hidden="true">{{ pessoas === 1 ? 'pessoa' : 'pessoas' }}</span>
             </label>
             <button
-              type="button" class="rbpv__passo" :disabled="chaves >= MAX"
+              type="button" class="rbpv__passo" :disabled="pessoas >= MAX"
               aria-label="Uma pessoa a mais" @click="passo(1)"
             >
               +
@@ -160,60 +133,48 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 
           <input
             class="rbpv__range" type="range" :min="MIN" :max="MAX" step="1"
-            :value="chaves" aria-label="Pessoas na mesa"
-            :aria-valuetext="`${chaves} ${chaves === 1 ? 'pessoa' : 'pessoas'}, R$ ${brl(total)} por mês`"
+            :value="pessoas" aria-label="Pessoas na mesa"
+            :aria-valuetext="`${rotuloPessoas(pessoas)}, R$ ${brl(total)} por mês`"
             @input="definir(($event.target as HTMLInputElement).value)"
           >
-
-          <div class="rbpv__atalhos">
-            <button
-              v-for="a in ATALHOS" :key="a" type="button" class="rbpv__atalho"
-              :class="{ 'rbpv__atalho--on': chaves === a }" :aria-pressed="chaves === a"
-              @click="definir(a)"
-            >
-              {{ a }} {{ a === 1 ? 'pessoa' : 'pessoas' }}
-            </button>
-          </div>
         </div>
 
-        <table class="rbpv__faixas">
-          <caption class="rbpv__sr">Preço por pessoa, por faixa, e quanto cada faixa soma no total escolhido</caption>
-          <thead>
-            <tr>
-              <th scope="col">Pessoas</th>
-              <th scope="col">Por pessoa</th>
-              <th scope="col" class="rbpv__num">Na sua conta</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="l in linhas" :key="l.rotulo" :class="{ 'rbpv__faixa--on': l.qtd > 0 }">
-              <th scope="row">{{ l.rotulo }}</th>
-              <td>R$ {{ brl(l.preco) }}</td>
-              <td class="rbpv__num">
-                <template v-if="l.qtd > 0">
-                  <span class="rbpv__conta">{{ l.qtd }} × {{ brl(l.preco) }} =</span> R$ {{ brl(l.subtotal) }}
-                </template>
-                <template v-else>
-                  —
-                </template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- As faixas do contrato, em quatro casas: a que entra na conta acende. -->
+        <ul class="rbpv__faixas" aria-label="Preço por pessoa, por faixa">
+          <li v-for="l in linhas" :key="l.rotulo" class="rbpv__faixa" :class="{ 'rbpv__faixa--on': l.qtd > 0 }">
+            <span class="rbpv__faixa-de">{{ l.rotulo }}</span>
+            <span class="rbpv__faixa-preco">R$ {{ brl(l.preco) }}</span>
+          </li>
+        </ul>
 
-        <dl class="rbpv__condicoes">
-          <div v-for="c in CONDICOES" :key="c.rotulo" class="rbpv__cond">
-            <dt>{{ c.rotulo }}</dt>
-            <dd>{{ c.valor }}</dd>
-          </div>
-        </dl>
+        <ul class="rbpv__inclui">
+          <li v-for="item in INCLUI" :key="item" class="rbpv__item">
+            <svg class="rbpv__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+            {{ item }}
+          </li>
+        </ul>
 
         <a href="#contato" class="rbpv__cta">Agendar 1 hora com a gente</a>
-        <p class="rbpv__rodape">
-          O escritório começa com uma pessoa e ativa as outras quando quiser. Na
-          primeira hora a gente conecta o assistente da mesa e testa uma carteira
-          de vocês num cenário.
+        <p class="rbpv__fino">Prazo mínimo de 3 meses, depois mês a mês. Reajuste anual pelo IPCA.</p>
+      </div>
+
+      <!-- ——— o caso especial, no card escuro (o "Decade Wealth" de lá) ——— -->
+      <div class="rbpv__card rbpv__card--navy">
+        <span class="rbpv__nome">Family office e gestora</span>
+        <p class="rbpv__titulo">Com o cliente dentro.</p>
+        <p class="rbpv__status">
+          <span class="rbpv__ponto" aria-hidden="true" />
+          Habilitada escritório a escritório, na implantação.
         </p>
+        <p class="rbpv__texto">
+          A carteira de cada cliente conectada por Open Finance, com o
+          consentimento dele. O cenário roda sobre ela, e o relatório sai com a
+          marca da casa.
+        </p>
+        <a href="#contato" class="rbpv__cta rbpv__cta--contorno">Falar com a gente</a>
+        <!-- O fio vertical que esmaece é o fundo do card escuro da Decade, e
+             rima com a hachura do Venn. Ocupa a sobra do card ao lado do plano. -->
+        <span class="rbpv__textura" aria-hidden="true" />
       </div>
     </div>
   </section>
@@ -222,151 +183,148 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 <style scoped>
 .rbpv {
   scroll-margin-top: calc(var(--nuh-h, 76px) + 24px);
-  background: var(--nu-navy);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-cream);
+  padding: clamp(72px, 9vw, 128px) clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.rbpv__cols {
-  display: flex; gap: clamp(32px, 5vw, 76px);
-  align-items: flex-start; flex-wrap: wrap;
-}
-.rbpv__intro { flex: 1 1 440px; min-width: min(300px, 100%); }
-.rbpv__card { flex: 1 1 440px; min-width: min(300px, 100%); }
+/* Cabeçalho centrado e curto, como o "Pricing that's 100% aligned with you". */
+.rbpv__head { max-width: 760px; margin-inline: auto; text-align: center; }
+.rbpv__head :deep(.nsh__dek) { margin-inline: auto; }
 
-.rbpv__cap {
-  margin: clamp(24px, 3vw, 32px) 0 0; max-width: 480px;
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
+.rbpv__cards {
+  margin: clamp(40px, 5vw, 60px) auto 0; max-width: 960px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 24px);
+  align-items: stretch;
 }
-
-/* O que vem em toda chave: lista na coluna de texto, para o card ficar só
-   com a conta. */
-.rbpv__lista { margin: clamp(26px, 3vw, 36px) 0 0; max-width: 520px; }
-.rbpv__linha { padding: 16px 0; border-top: 1px solid var(--nu-cream-text-10); }
-.rbpv__linha-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
-.rbpv__rotulo { color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
-.rbpv__valor-linha { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; }
-.rbpv__nota {
-  margin: 6px 0 0; color: var(--nu-cream-text-70);
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
-}
-
-/* Card sobre navy = --nu-navy-2, a regra de superfície do sistema. Hairline
-   de creme translúcido no lugar de sombra. */
 .rbpv__card {
-  background: var(--nu-navy-2); border: 1px solid var(--nu-cream-text-10);
-  border-radius: 16px; padding: clamp(24px, 3.2vw, 38px);
+  display: flex; flex-direction: column;
+  background: var(--nu-white); border: 1px solid var(--nu-cream-line);
+  border-radius: 16px; padding: clamp(24px, 3vw, 36px);
 }
-.rbpv__label {
-  display: block; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1.4px;
-}
+.rbpv__nome { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
+
 .rbpv__preco {
   margin: 14px 0 0; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap;
-  color: var(--nu-cream-text); font-variant-numeric: tabular-nums;
+  color: var(--nu-ink); font-variant-numeric: tabular-nums;
 }
-.rbpv__moeda { font-size: clamp(20px, 2vw, 26px); font-weight: 800; }
-.rbpv__valor { font-size: clamp(44px, 5vw, 64px); font-weight: 800; letter-spacing: -0.04em; }
-.rbpv__periodo {
-  margin-left: 4px; color: var(--nu-cream-text-55);
-  font-size: clamp(16px, 1.6vw, 19px); font-weight: 700;
-}
-.rbpv__media {
-  margin: 6px 0 0; color: var(--nu-cream-text-70);
+.rbpv__moeda { font-size: var(--nu-fs-2xl); font-weight: 800; }
+.rbpv__valor { font-size: clamp(40px, 4.4vw, 56px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.rbpv__periodo { margin-left: 4px; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 700; }
+.rbpv__conta {
+  margin: 8px 0 0; color: var(--nu-gray);
   font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums;
 }
 
-/* Controles: stepper com campo, régua e atalhos com os exemplos do contrato. */
-.rbpv__controle { margin: clamp(20px, 2.6vw, 26px) 0 0; display: grid; gap: 16px; }
+/* Controles: stepper com campo e régua. */
+.rbpv__controle { margin: 20px 0 0; display: grid; gap: 14px; }
 .rbpv__stepper { display: flex; align-items: center; gap: 10px; }
 .rbpv__passo {
   flex: none; width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid var(--nu-cream-text-22); background: transparent;
-  color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 700; line-height: 1;
+  border: 1px solid var(--nu-ink-14); background: transparent;
+  color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 700; line-height: 1;
   cursor: pointer; transition: background .2s, border-color .2s;
 }
-.rbpv__passo:hover:not(:disabled) { background: var(--nu-cream-text-08); border-color: var(--nu-cream-text-40); }
-.rbpv__passo:disabled { opacity: .35; cursor: not-allowed; }
-.rbpv__passo:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
+.rbpv__passo:hover:not(:disabled) { background: var(--nu-cream); border-color: var(--nu-ink-30); }
+.rbpv__passo:active:not(:disabled) { transform: translateY(1px); }
+.rbpv__passo:disabled { opacity: .4; cursor: not-allowed; }
+.rbpv__passo:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 .rbpv__campo {
   flex: 1 1 auto; display: flex; align-items: baseline; justify-content: center; gap: 8px;
   height: 44px; padding: 0 14px; border-radius: 12px;
-  border: 1px solid var(--nu-cream-text-22); background: var(--nu-cream-text-08);
+  border: 1px solid var(--nu-ink-14); background: var(--nu-cream);
 }
-.rbpv__campo:focus-within { border-color: var(--nu-blue-soft); }
+.rbpv__campo:focus-within { border-color: var(--nu-blue); }
 .rbpv__input {
   width: 4ch; min-width: 0; border: 0; background: transparent; text-align: right;
-  color: var(--nu-cream-text); font: inherit; font-size: var(--nu-fs-xl); font-weight: 800;
+  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-xl); font-weight: 800;
   font-variant-numeric: tabular-nums; line-height: 42px; outline: none;
   -moz-appearance: textfield; appearance: textfield;
 }
 .rbpv__input::-webkit-outer-spin-button,
 .rbpv__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.rbpv__unidade { color: var(--nu-cream-text-55); font-size: var(--nu-fs-md); font-weight: 700; }
+.rbpv__unidade { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 700; }
 
 .rbpv__range { width: 100%; accent-color: var(--nu-blue); cursor: pointer; margin: 0; }
-.rbpv__range:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 4px; }
+.rbpv__range:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 4px; }
 
-.rbpv__atalhos { display: flex; flex-wrap: wrap; gap: 8px; }
-.rbpv__atalho {
-  border: 1px solid var(--nu-cream-text-22); background: transparent; color: var(--nu-cream-text-80);
-  border-radius: var(--nu-r-pill); padding: 8px 14px; min-height: 36px;
-  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, color .2s, border-color .2s;
-}
-.rbpv__atalho:hover { background: var(--nu-cream-text-08); color: var(--nu-cream-text); }
-.rbpv__atalho--on { background: var(--nu-blue); border-color: var(--nu-blue); color: var(--nu-white); }
-.rbpv__atalho--on:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.rbpv__atalho:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
-
-/* Tabela das faixas: a faixa que entra na conta acende; a que não entra fica
-   apagada, para a progressão ficar visível sem legenda. */
+/* As quatro faixas: a que entra na conta fica em tinta, a que não entra fica
+   apagada, e a progressão aparece sem legenda. */
 .rbpv__faixas {
-  width: 100%; margin: clamp(22px, 2.8vw, 28px) 0 0; border-collapse: collapse;
+  margin: 18px 0 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
   font-variant-numeric: tabular-nums;
 }
-.rbpv__faixas th, .rbpv__faixas td {
-  padding: 11px 0; text-align: left; border-top: 1px solid var(--nu-cream-text-10);
-  font-size: var(--nu-fs-sm); color: var(--nu-cream-text-40); font-weight: 500;
+.rbpv__faixa {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 10px 9px; border-radius: 10px; border: 1px solid var(--nu-cream-line);
 }
-.rbpv__faixas thead th {
-  border-top: 0; padding-top: 0; color: var(--nu-cream-text-55);
-  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
-}
-.rbpv__faixas tbody th { font-weight: 700; }
-.rbpv__faixa--on th, .rbpv__faixa--on td { color: var(--nu-cream-text); }
-.rbpv__faixa--on td.rbpv__num { font-weight: 800; }
-.rbpv__num { text-align: right !important; white-space: nowrap; }
-.rbpv__conta { color: var(--nu-cream-text-55); font-weight: 500; }
+.rbpv__faixa-de { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.rbpv__faixa-preco { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rbpv__faixa--on { border-color: var(--nu-ink-30); background: var(--nu-cream); }
+.rbpv__faixa--on .rbpv__faixa-preco { color: var(--nu-ink); font-weight: 800; }
 
-.rbpv__condicoes {
-  margin: clamp(20px, 2.6vw, 26px) 0 0; display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px 22px;
+.rbpv__inclui { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.rbpv__item {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.4;
 }
-.rbpv__cond dt {
-  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1.2px;
-}
-.rbpv__cond dd { margin: 4px 0 0; color: var(--nu-cream-text-80); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.rbpv__check { flex: none; color: var(--nu-blue-deep); }
 
-/* O estilo do CTA principal da página inteira (hero, divisão, plano e FAQ). */
+/* O estilo do CTA principal da página inteira: azul, pílula, 16px/800. */
 .rbpv__cta {
-  display: flex; align-items: center; justify-content: center; margin: clamp(24px, 3vw, 30px) 0 0;
+  display: flex; align-items: center; justify-content: center; margin: 26px 0 0;
   background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 16px 26px;
+  border-radius: var(--nu-r-pill); padding: 16px 26px; min-height: 44px;
   font-size: var(--nu-fs-md); font-weight: 800; text-align: center; transition: background .2s;
 }
 .rbpv__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.rbpv__cta:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
-.rbpv__rodape {
-  margin: 16px 0 0; color: var(--nu-cream-text-55);
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
+.rbpv__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
+.rbpv__fino {
+  margin: 12px 0 0; text-align: center; color: var(--nu-gray);
+  font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5;
 }
+
+/* ——— o card escuro ——— */
+.rbpv__card--navy { background: var(--nu-navy); border-color: var(--nu-navy); overflow: clip; }
+.rbpv__card--navy .rbpv__nome { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 700; }
+.rbpv__titulo {
+  margin: 12px 0 0; color: var(--nu-cream-text);
+  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+}
+.rbpv__status {
+  margin: 14px 0 0; display: flex; align-items: flex-start; gap: 8px;
+  color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
+}
+/* alinhado à primeira linha, não ao meio do bloco: no celular a frase quebra */
+.rbpv__ponto { flex: none; width: 7px; height: 7px; margin-top: 7px; border-radius: 50%; background: var(--nu-blue-soft); }
+.rbpv__texto {
+  margin: 20px 0 0; color: var(--nu-cream-text-80);
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
+}
+/* O CTA do card escuro é de contorno: o botão chapado da seção é o do plano. */
+.rbpv__cta--contorno {
+  background: transparent; color: var(--nu-cream-text);
+  border: 1px solid var(--nu-cream-text-40);
+}
+.rbpv__textura {
+  flex: 1 1 auto; min-height: 0;
+  margin: 32px calc(-1 * clamp(24px, 3vw, 36px)) calc(-1 * clamp(24px, 3vw, 36px));
+  background: repeating-linear-gradient(90deg, var(--nu-cream-text-12) 0 1px, transparent 1px 7px);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+}
+.rbpv__cta--contorno:hover { background: var(--nu-cream-text-08); color: var(--nu-white); }
+.rbpv__cta--contorno:focus-visible { outline-color: var(--nu-blue-soft); }
 
 .rbpv__sr {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
+@media (max-width: 820px) {
+  .rbpv__cards { grid-template-columns: 1fr; max-width: 520px; }
+}
 @media (max-width: 420px) {
-  .rbpv__conta { display: none; }
+  .rbpv__faixas { grid-template-columns: 1fr 1fr; }
 }
 </style>

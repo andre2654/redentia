@@ -50,17 +50,21 @@
  * é ligada pela Redentia conta a conta (business:conta --clientes), não no
  * cadastro. Se isso mudar, a etiqueta sai aqui e no faq.ts.
  */
+/* ENXUGADO EM 15/10/2026, à noite: linhas de 3 a 6 palavras, como as da
+   Decade ("Acts with responsibility", "Monitors markets and portfolios 24/7"),
+   e o título sozinho, sem eyebrow nem dek. O detalhe de cada linha está no
+   scroll logo abaixo. */
 const ASSESSOR = [
-  'Conhece o cliente pelo nome e pela história',
-  'Decide o que cabe no perfil de cada um',
-  'Segura a conversa quando o mercado cai',
+  'Conhece o cliente pelo nome',
+  'Decide o que cabe em cada perfil',
+  'Segura a conversa na queda',
   'Assina a recomendação',
 ]
 
 const REDENTIA = [
-  'Lê notícias, fatos relevantes e balanços o dia todo',
-  'Testa a carteira contra dólar, Selic e eleição em segundos',
-  'Explica por que cada ativo mexeu, com a fonte',
+  'Lê o mercado o dia inteiro',
+  'Testa a carteira em segundos',
+  'Explica cada movimento, com fonte',
   'Deixa a pauta da reunião pronta',
 ]
 
@@ -75,12 +79,8 @@ const mascara = `rbdv-mascara-${uid}`
 <template>
   <section id="divisao" class="rbdv">
     <div class="rbdv__head">
-      <NuSectionHeading eyebrow="Como funciona">
+      <NuSectionHeading>
         O assessor decide.<br>A Redentia prepara.
-        <template #dek>
-          A relação, o julgamento e a assinatura continuam com quem conhece o
-          cliente. <strong>Ler, cruzar e testar fica com a Redentia.</strong>
-        </template>
       </NuSectionHeading>
     </div>
 
@@ -153,7 +153,6 @@ const mascara = `rbdv-mascara-${uid}`
    não narrativa de duas colunas. É também o único cabeçalho centrado da página,
    e é assim de propósito, porque é a única seção que fala do arranjo inteiro. */
 .rbdv__head { max-width: 760px; margin-inline: auto; text-align: center; }
-.rbdv__head :deep(.nsh__dek) { margin-inline: auto; }
 
 /* O quadro é o contêiner do diagrama: fio, não sombra, e raio de documento. */
 .rbdv__quadro {

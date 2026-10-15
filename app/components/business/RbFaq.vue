@@ -15,6 +15,9 @@
  *  - no desktop a coluna da esquerda (título, CTA e abas) fica sticky
  *    enquanto a lista rola.
  *
+ * ENXUGADO EM 15/10/2026, à noite: saíram a frase de apoio e o botão
+ * "Confira perguntas frequentes", que apontava para a própria seção.
+ *
  * AS ABAS SÃO UMA LISTA VERTICAL, e não uma fileira de pílulas: o nome de um
  * grupo é frase ("Segurança, LGPD e responsabilidade"), e cinco delas lado a
  * lado não cabem nem na coluna da direita do desktop (~740px) nem no celular,
@@ -72,17 +75,10 @@ function teclado(e: KeyboardEvent, i: number) {
 </script>
 
 <template>
-  <!-- id="faq": a CTA da coluna esquerda ancora no topo da própria seção,
-       mesmo truque da home -->
   <section id="faq" class="rbfq">
     <div class="rbfq__cols">
       <div class="rbfq__left">
         <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
-        <div class="rbfq__copy">
-          Encontre respostas para as principais dúvidas sobre a Redentia
-          For Business.
-        </div>
-        <a href="#faq" class="rbfq__cta">Confira perguntas frequentes</a>
 
         <div class="rbfq__abas" role="tablist" aria-label="Assuntos das perguntas frequentes" aria-orientation="vertical">
           <button
@@ -119,24 +115,13 @@ function teclado(e: KeyboardEvent, i: number) {
   animation: nu-fade .5s ease both;
 }
 .rbfq__cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); }
-.rbfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin-top: 24px; max-width: 420px; }
 
-/* O CTA principal da página inteira tem um estilo só (o do RbProva): azul,
-   pílula, 16px. */
-.rbfq__cta {
-  display: inline-flex; align-items: center; margin-top: 32px;
-  background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 16px 26px;
-  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
-}
-.rbfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.rbfq__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 
 /* ——— as abas ———
    Trilho creme com os segmentos dentro: lê como UM controle, e o creme rima
    com os cards do accordion ao lado. */
 .rbfq__abas {
-  display: flex; flex-direction: column; gap: 4px; margin-top: 24px; max-width: 420px;
+  display: flex; flex-direction: column; gap: 4px; margin-top: 32px; max-width: 420px;
   padding: 4px; background: var(--nu-cream); border-radius: 16px;
 }
 .rbfq__aba {
