@@ -129,10 +129,7 @@ const hachura = `rbdv-hachura-${uid}`
       <a href="#faq">FAQ desta página</a>.
     </p>
 
-    <a href="#contato" class="rbdv__cta">
-      Começar pelo setup de 1 hora
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
-    </a>
+    <a href="#contato" class="rbdv__cta">Começar pelo setup de 1 hora</a>
   </section>
 </template>
 
@@ -192,15 +189,17 @@ const hachura = `rbdv-hachura-${uid}`
 .rbdv__rodape a:hover { color: var(--nu-blue-hover); }
 .rbdv__rodape a:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 
-/* link de texto, não terceira mancha de tinta chapada */
+/* CTA principal com o estilo único da página (o do RbProva: azul, pílula,
+   16px). Era link de texto até 15/10/2026, quando o dono pediu uma cor e um
+   estilo só para todo CTA principal. */
 .rbdv__cta {
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  margin: 26px auto 0; min-height: 44px;
-  color: var(--nu-blue-deep); font-size: var(--nu-fs-md); font-weight: 800; transition: color .2s;
+  display: flex; width: fit-content; align-items: center; justify-content: center;
+  margin: 32px auto 0; min-height: 44px;
+  background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 16px 26px;
+  font-size: var(--nu-fs-md); font-weight: 800; text-align: center; transition: background .2s;
 }
-.rbdv__cta svg { transition: transform .2s; }
-.rbdv__cta:hover { color: var(--nu-blue-hover); }
-.rbdv__cta:hover svg { transform: translateX(3px); }
+.rbdv__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbdv__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 
 /* Empilhado o desenho SOME por inteiro, e não vira uma faixa entre as listas:

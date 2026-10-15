@@ -2,8 +2,10 @@
 // Accordion de FAQ single-open (inicia com o 1º aberto; clicar no aberto
 // fecha; defaultOpen=-1 = tudo fechado). Ícone '+' rotaciona 45° e a resposta
 // entra com nu-fade .3s — comportamento e valores exatos do design. Emite o
-// JSON-LD FAQPage via useHead (rich snippet), pra qualquer tela que use o
-// componente. variant="compact" (PR4): escala do FAQ do guia (Redentia Guia
+// JSON-LD FAQPage (useFaqSchema), pra qualquer tela que use o componente;
+// `:schema="false"` desliga, para quem divide um FAQ em vários accordions e
+// emite um bloco só (o RbFaq, um accordion por aba).
+// variant="compact" (PR4): escala do FAQ do guia (Redentia Guia
 // Open Finance.dc.html) — cards 22x24, pergunta 17px, ícone 19, gap 12.
 import type { NuFaqItem } from '~/types/market'
 
@@ -14,8 +16,10 @@ const props = withDefaults(
     variant?: 'compact'
     /** 'white' = cards brancos (banda creme, design das calculadoras) */
     surface?: 'white'
+    /** false = não emite o JSON-LD; quem chama emite um só (useFaqSchema) */
+    schema?: boolean
   }>(),
-  { defaultOpen: 0, variant: undefined, surface: undefined },
+  { defaultOpen: 0, variant: undefined, surface: undefined, schema: true },
 )
 
 const open = ref(props.defaultOpen)
@@ -23,20 +27,7 @@ function toggle(i: number) {
   open.value = open.value === i ? -1 : i
 }
 
-useHead({
-  script: [{
-    type: 'application/ld+json',
-    innerHTML: JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: props.items.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    }),
-  }],
-})
+if (props.schema) useFaqSchema(props.items)
 </script>
 
 <template>

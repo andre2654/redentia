@@ -22,9 +22,6 @@
  * Chips: o ativo da página (no /asset), os últimos /asset visitados
  * (localStorage, gravado pelo AcaoHero) e, na falta, os populares. Cada toque
  * segue ou desfaz. 3/3 → "Pronto: você recebe o resumo …" e o card some.
- *
- * Nunca empilha com o modal do MCP: o NuMcpPromo trata a classe `.sgg` como
- * "via ocupada" e espera o card sair da tela.
  */
 
 const META = 3

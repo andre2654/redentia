@@ -79,9 +79,10 @@ const ANTECEDE = [
 .rbct__intro { flex: 1.15 1 460px; min-width: min(300px, 100%); }
 .rbct__aside { flex: 1 1 380px; min-width: min(300px, 100%); }
 
-/* O e-mail É o botão desta seção. A página já gastou as duas manchas de azul
-   chapado (header e card da POC), então aqui o azul vem como TEXTO grande com
-   sublinhado que engrossa no hover: mesma cor, sem terceira mancha. */
+/* O e-mail É o botão desta seção, e é o destino dos CTAs em pílula da página
+   (hero, divisão e plano). Aqui o azul vem como TEXTO grande com sublinhado
+   que engrossa no hover: é o endereço que a pessoa lê e copia, não mais uma
+   pílula. */
 .rbct__mail {
   display: inline-block; margin-top: clamp(28px, 3.5vw, 40px);
   color: var(--nu-blue); font-size: clamp(22px, 3vw, 38px); font-weight: 800;

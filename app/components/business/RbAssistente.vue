@@ -348,7 +348,7 @@ onBeforeUnmount(clearAll)
   color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; text-align: left;
 }
 /* As abas: controle segmentado sob a janela, com alvo de 44px. Contorno, não
-   chapado: o azul chapado da página já está gasto no header e no card do plano. */
+   chapado: o azul chapado da página é do CTA principal, e aba não é CTA. */
 .rbas__abas {
   display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0;
   width: min(468px, 100%); margin-left: auto;
