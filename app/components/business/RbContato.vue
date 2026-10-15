@@ -37,10 +37,10 @@ const ANTECEDE = [
         <NuSectionHeading eyebrow="Contato">
           Uma hora<br>pra saber se dá.
           <template #dek>
-            O setup é uma reunião técnica, não uma apresentação comercial. A gente
-            conecta o Claude ou o ChatGPT da mesa, roda a sua lista e uma carteira
-            da casa num cenário. <strong>Se não fizer sentido, a reunião termina
-            com isso.</strong>
+            Uma reunião de trabalho, não uma apresentação comercial. A gente
+            conecta o Claude ou o ChatGPT da mesa, responde a sua lista e testa
+            uma carteira da casa num cenário. <strong>Se não fizer sentido, a
+            reunião termina com isso.</strong>
           </template>
         </NuSectionHeading>
 

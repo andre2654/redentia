@@ -49,17 +49,17 @@ const CONDICOES = [
 
 const INCLUI = [
   {
-    rotulo: 'Chaves',
-    valor: 'Uma por pessoa',
-    nota: 'Nomeadas, ativadas e desativadas no painel do escritório. A mensalidade conta as chaves ativas no início de cada mês.',
+    rotulo: 'Acesso',
+    valor: 'Um por pessoa',
+    nota: 'Cada pessoa da mesa entra com o próprio acesso, ligado e desligado no painel do escritório. A mensalidade conta quem está ativo no início do mês.',
   },
   {
     rotulo: 'Cenários',
-    valor: 'Em toda chave',
+    valor: 'Para toda a mesa',
     nota: 'O motor de projeções: cenários estudados pela Redentia, com fontes, ou montados na conversa.',
   },
   {
-    rotulo: 'Skills',
+    rotulo: 'Rotinas prontas',
     valor: 'Sete',
     nota: 'Prontas para o Claude: primeiros passos, cenário, carteira, comparação de ativos, por que o ativo moveu, clientes e relatório em PDF.',
   },
@@ -96,11 +96,12 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
     <div class="rbpv__cols">
       <div class="rbpv__intro">
         <NuSectionHeading dark eyebrow="O plano">
-          Uma chave por<br>pessoa da mesa.
+          Sem produto<br>pra empurrar.
           <template #dek>
-            A primeira custa R$ 500 por mês, e cada nova chave fica mais barata
-            conforme a mesa cresce. <strong>Se a mesa não usar nos primeiros 30
-            dias</strong>, devolvemos tudo o que foi pago.
+            A Redentia não distribui investimento: o preço é fixo por pessoa da
+            mesa e não muda com o que o seu cliente compra. R$ 500 por mês para
+            começar, e cada nova pessoa sai mais barata. <strong>Se a mesa não
+            usar nos primeiros 30 dias</strong>, devolvemos tudo o que foi pago.
           </template>
         </NuSectionHeading>
 
@@ -115,8 +116,9 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
         </dl>
 
         <p class="rbpv__cap">
-          A implantação tem gente da Redentia junto: a conexão de cada chave, as
-          skills instaladas e a primeira carteira da casa rodada num cenário.
+          A implantação tem gente da Redentia junto: o assistente de cada pessoa
+          conectado, as rotinas instaladas e a primeira carteira da casa testada
+          num cenário.
         </p>
       </div>
 
@@ -127,30 +129,30 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
           <span class="rbpv__moeda">R$</span><span class="rbpv__valor">{{ brl(total) }}</span><span class="rbpv__periodo">/mês</span>
         </p>
         <p class="rbpv__media">
-          {{ chaves }} {{ chaves === 1 ? 'chave' : 'chaves' }} · média de R$ {{ brl(media) }} por chave
+          {{ chaves }} {{ chaves === 1 ? 'pessoa' : 'pessoas' }} · média de R$ {{ brl(media) }} por pessoa
         </p>
 
         <div class="rbpv__controle" role="group" aria-labelledby="rbpv-calc">
           <div class="rbpv__stepper">
             <button
               type="button" class="rbpv__passo" :disabled="chaves <= MIN"
-              aria-label="Uma chave a menos" @click="passo(-1)"
+              aria-label="Uma pessoa a menos" @click="passo(-1)"
             >
               −
             </button>
             <label class="rbpv__campo">
-              <span class="rbpv__sr">Número de chaves</span>
+              <span class="rbpv__sr">Pessoas na mesa</span>
               <input
                 class="rbpv__input" type="number" inputmode="numeric"
                 :min="MIN" :max="MAX" step="1" :value="chaves"
                 @change="definir(($event.target as HTMLInputElement).value)"
                 @input="(($event.target as HTMLInputElement).value !== '') && definir(($event.target as HTMLInputElement).value)"
               >
-              <span class="rbpv__unidade" aria-hidden="true">{{ chaves === 1 ? 'chave' : 'chaves' }}</span>
+              <span class="rbpv__unidade" aria-hidden="true">{{ chaves === 1 ? 'pessoa' : 'pessoas' }}</span>
             </label>
             <button
               type="button" class="rbpv__passo" :disabled="chaves >= MAX"
-              aria-label="Uma chave a mais" @click="passo(1)"
+              aria-label="Uma pessoa a mais" @click="passo(1)"
             >
               +
             </button>
@@ -158,8 +160,8 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 
           <input
             class="rbpv__range" type="range" :min="MIN" :max="MAX" step="1"
-            :value="chaves" aria-label="Número de chaves"
-            :aria-valuetext="`${chaves} ${chaves === 1 ? 'chave' : 'chaves'}, R$ ${brl(total)} por mês`"
+            :value="chaves" aria-label="Pessoas na mesa"
+            :aria-valuetext="`${chaves} ${chaves === 1 ? 'pessoa' : 'pessoas'}, R$ ${brl(total)} por mês`"
             @input="definir(($event.target as HTMLInputElement).value)"
           >
 
@@ -169,17 +171,17 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
               :class="{ 'rbpv__atalho--on': chaves === a }" :aria-pressed="chaves === a"
               @click="definir(a)"
             >
-              {{ a }} {{ a === 1 ? 'chave' : 'chaves' }}
+              {{ a }} {{ a === 1 ? 'pessoa' : 'pessoas' }}
             </button>
           </div>
         </div>
 
         <table class="rbpv__faixas">
-          <caption class="rbpv__sr">Preço por chave, por faixa, e quanto cada faixa soma no total escolhido</caption>
+          <caption class="rbpv__sr">Preço por pessoa, por faixa, e quanto cada faixa soma no total escolhido</caption>
           <thead>
             <tr>
-              <th scope="col">Chaves</th>
-              <th scope="col">Por chave</th>
+              <th scope="col">Pessoas</th>
+              <th scope="col">Por pessoa</th>
               <th scope="col" class="rbpv__num">Na sua conta</th>
             </tr>
           </thead>
@@ -206,11 +208,11 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
           </div>
         </dl>
 
-        <a href="#contato" class="rbpv__cta">Começar pelo setup de 1 hora</a>
+        <a href="#contato" class="rbpv__cta">Agendar 1 hora com a gente</a>
         <p class="rbpv__rodape">
-          O escritório começa com uma chave e ativa as outras quando quiser.
-          O setup é uma reunião técnica: conectamos o assistente da mesa e rodamos
-          uma carteira de vocês num cenário.
+          O escritório começa com uma pessoa e ativa as outras quando quiser. Na
+          primeira hora a gente conecta o assistente da mesa e testa uma carteira
+          de vocês num cenário.
         </p>
       </div>
     </div>

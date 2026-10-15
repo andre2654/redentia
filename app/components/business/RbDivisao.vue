@@ -1,6 +1,16 @@
 <script setup lang="ts">
 /**
- * "Para quem é" — a seção logo abaixo do hero.
+ * "Como funciona" — a seção logo abaixo do hero.
+ *
+ * MUDOU EM 15/10/2026 (direção do dono, olhando a Decade de novo): o Venn deixou
+ * de ser os dois COMPRADORES e virou o par da Decade, humano x IA: o assessor
+ * (relação, julgamento, assinatura) e a Redentia (ler, testar, explicar,
+ * preparar). Os dois compradores foram para o bloco curto RbRegras. O rodapé
+ * técnico e o CTA repetido saíram: a página tem CTA no hero e no plano.
+ * Cada linha da Redentia é verdade hoje: leitura editorial contínua (Atlas),
+ * cenário em segundos (simulate_scenario), o `why` por ativo com a fonte, e o
+ * comando preparar-reuniao. O texto abaixo deste parágrafo é o histórico.
+ *
  *
  * ESTRUTURA HERDADA DA "DIVISÃO DO TRABALHO" (direção do dono 2026-08-13,
  * olhando a seção pós-hero da Decade): cabeçalho centrado, duas colunas que se
@@ -40,18 +50,18 @@
  * é ligada pela Redentia conta a conta (business:conta --clientes), não no
  * cadastro. Se isso mudar, a etiqueta sai aqui e no faq.ts.
  */
-const ASSESSORIA = [
-  { t: 'O que mudou hoje nos ativos da sua lista, com a leitura da Redentia', tag: '' },
-  { t: 'Cenário sobre uma carteira colada em pesos, sem nome de cliente e sem ficar salva na conta do escritório', tag: '' },
-  { t: 'Por que um ativo subiu ou caiu, com a notícia e a data', tag: '' },
-  { t: 'Nada que vire extrato de posição para o cliente, o que a RCVM 178 veda ao assessor', tag: '' },
+const ASSESSOR = [
+  'Conhece o cliente pelo nome e pela história',
+  'Decide o que cabe no perfil de cada um',
+  'Segura a conversa quando o mercado cai',
+  'Assina a recomendação',
 ]
 
-const FAMILY = [
-  { t: 'Clientes conectados por Open Finance, cada um com o próprio consentimento', tag: 'na implantação' },
-  { t: 'Cenário sobre a carteira conectada do cliente, com o porquê de cada ativo', tag: '' },
-  { t: 'Relatório em PDF com a marca do escritório, gerado no Claude', tag: '' },
-  { t: 'Cada leitura registrada, à vista do escritório e do cliente', tag: '' },
+const REDENTIA = [
+  'Lê notícias, fatos relevantes e balanços o dia todo',
+  'Testa a carteira contra dólar, Selic e eleição em segundos',
+  'Explica por que cada ativo mexeu, com a fonte',
+  'Deixa a pauta da reunião pronta',
 ]
 
 /* id derivado, nunca literal: dois SVG com o mesmo id de pattern na mesma página
@@ -65,24 +75,20 @@ const mascara = `rbdv-mascara-${uid}`
 <template>
   <section id="divisao" class="rbdv">
     <div class="rbdv__head">
-      <NuSectionHeading eyebrow="Para quem é">
-        O mesmo assistente.<br>Duas regras do jogo.
+      <NuSectionHeading eyebrow="Como funciona">
+        O assessor decide.<br>A Redentia prepara.
         <template #dek>
-          Assessoria vinculada não tira carteira de cliente da corretora. Family
-          office e gestora querem o cliente dentro. <strong>A Redentia atende
-          os dois sem pedir que ninguém quebre a própria regra.</strong>
+          A relação, o julgamento e a assinatura continuam com quem conhece o
+          cliente. <strong>Ler, cruzar e testar fica com a Redentia.</strong>
         </template>
       </NuSectionHeading>
     </div>
 
     <div class="rbdv__quadro">
       <div class="rbdv__col">
-        <h3 class="rbdv__col-titulo">Assessoria ligada a XP ou BTG</h3>
+        <h3 class="rbdv__col-titulo">O assessor</h3>
         <ul class="rbdv__lista">
-          <li v-for="r in ASSESSORIA" :key="r.t" class="rbdv__item">
-            {{ r.t }}
-            <span v-if="r.tag" class="rbdv__tag">{{ r.tag }}</span>
-          </li>
+          <li v-for="r in ASSESSOR" :key="r" class="rbdv__item">{{ r }}</li>
         </ul>
       </div>
 
@@ -125,24 +131,14 @@ const mascara = `rbdv-mascara-${uid}`
       </div>
 
       <div class="rbdv__col rbdv__col--dir">
-        <h3 class="rbdv__col-titulo">Family office e gestora</h3>
+        <h3 class="rbdv__col-titulo">A Redentia</h3>
         <ul class="rbdv__lista">
-          <li v-for="r in FAMILY" :key="r.t" class="rbdv__item">
-            {{ r.t }}
-            <span v-if="r.tag" class="rbdv__tag">{{ r.tag }}</span>
-          </li>
+          <li v-for="r in REDENTIA" :key="r" class="rbdv__item">{{ r }}</li>
         </ul>
       </div>
     </div>
 
-    <p class="rbdv__rodape">
-      Mercado, notícias e cenários respondem no primeiro dia, em qualquer
-      chave da casa. A conexão com a instituição do cliente é liberada
-      escritório a escritório, na implantação. O detalhe está no
-      <a href="#faq">FAQ desta página</a>.
-    </p>
 
-    <a href="#contato" class="rbdv__cta">Começar pelo setup de 1 hora</a>
   </section>
 </template>
 
@@ -186,37 +182,11 @@ const mascara = `rbdv-mascara-${uid}`
    um encontro. É a única inversão de alinhamento da página. */
 .rbdv__col--dir { text-align: right; }
 
-.rbdv__tag {
-  display: inline-block; margin-left: 8px; vertical-align: 1px;
-  padding: 3px 8px; border-radius: 5px;
-  background: var(--nu-cream); color: var(--nu-gray);
-  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
-  white-space: nowrap;
-}
 
 .rbdv__meio { display: grid; place-items: center; min-height: 240px; }
 .rbdv__venn { width: 100%; height: 100%; }
 
-.rbdv__rodape {
-  margin: clamp(26px, 3vw, 34px) auto 0; max-width: 640px; text-align: center;
-  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
-}
-.rbdv__rodape a { color: var(--nu-blue-deep); text-decoration: underline; text-underline-offset: 3px; }
-.rbdv__rodape a:hover { color: var(--nu-blue-hover); }
-.rbdv__rodape a:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 
-/* CTA principal com o estilo único da página (o do RbProva: azul, pílula,
-   16px). Era link de texto até 15/10/2026, quando o dono pediu uma cor e um
-   estilo só para todo CTA principal. */
-.rbdv__cta {
-  display: flex; width: fit-content; align-items: center; justify-content: center;
-  margin: 32px auto 0; min-height: 44px;
-  background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 16px 26px;
-  font-size: var(--nu-fs-md); font-weight: 800; text-align: center; transition: background .2s;
-}
-.rbdv__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.rbdv__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 
 /* Empilhado o desenho SOME por inteiro, e não vira uma faixa entre as listas:
    dois círculos que se cruzam descrevem duas coisas LADO A LADO, e empilhados
