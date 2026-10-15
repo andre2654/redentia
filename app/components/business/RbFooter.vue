@@ -35,9 +35,9 @@ const COLUMNS = [
     title: 'A página',
     links: [
       { label: 'O que é', to: '/business#gargalo' },
-      { label: 'Para quem é', to: '/business#divisao' },
+      { label: 'Como funciona', to: '/business#divisao' },
+      { label: 'Um dia de mesa', to: '/business#dia' },
       { label: 'Segurança', to: '/business#seguranca' },
-      { label: 'O assistente', to: '/business#assistente' },
       { label: 'O plano', to: '/business#prova' },
       { label: 'Ativar acesso', to: '/business/cadastro' },
       { label: 'Conectar', to: '/business/chaves' },
@@ -86,7 +86,7 @@ const COLUMNS = [
       </div>
     </div>
 
-    <h2 class="rbf__hero">O mercado de hoje, antes da reunião</h2>
+    <h2 class="rbf__hero">Sua próxima reunião já começa preparada.</h2>
 
     <div class="rbf__grid">
       <div v-for="col in COLUMNS" :key="col.title" class="rbf__col">

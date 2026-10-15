@@ -149,7 +149,7 @@ function teclado(e: KeyboardEvent, i: number) {
 }
 .rbfq__aba:hover { background: var(--nu-white); color: var(--nu-ink); }
 .rbfq__aba:active { transform: translateY(1px); }
-/* aba ativa = a mesma pele das abas do RbAssistente: tinta cheia */
+/* aba ativa = tinta cheia (a pele das abas do antigo RbAssistente) */
 .rbfq__aba--on, .rbfq__aba--on:hover { background: var(--nu-ink); color: var(--nu-white); }
 .rbfq__aba:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .rbfq__qtd {

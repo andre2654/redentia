@@ -144,6 +144,10 @@ export const RB_FAQ: RbFaqGrupo[] = [
         a: 'No painel do escritório: quem criou a conta revoga a chave daquela pessoa, sem depender dela. As outras chaves continuam funcionando, e o uso da revogada fica no histórico. A chave revogada para de valer em até um minuto, não no ato, porque o servidor guarda a validação por sessenta segundos. Como o painel abre com um login só, mantenha esse login com alguém que fica na casa.',
       },
       {
+        q: 'Como o meu compliance confere o que vocês afirmam?',
+        a: 'Por cinco conferências que não dependem da nossa palavra. Gere duas chaves, revogue uma e veja a outra continuar respondendo. Peça ao assistente a lista de ferramentas e leia os nomes: só a que cria o convite de cliente escreve, e o convite não abre nada sem o aceite dele. Olhe a fatura do seu provedor de IA: a chamada é sua, não nossa, porque a Redentia não põe modelo próprio no caminho do dado. No painel de clientes, abra um cliente: o registro de acesso lista cada leitura, com a chave e a hora. E o cliente recebe um link de gestão, onde vê esse registro e revoga sem falar com ninguém.',
+      },
+      {
         q: 'Existe trilha de auditoria?',
         a: 'Em parte. Para Clientes do escritório ela já existe: cada convite, consentimento, leitura de carteira, simulação e revogação fica registrado com a chave e a data, sem as posições, e o cliente vê o próprio registro pelo link de gestão. A trilha de toda chamada, com argumentos, resultado, exportação e retenção declarada, ainda não existe.',
       },

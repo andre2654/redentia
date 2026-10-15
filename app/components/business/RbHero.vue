@@ -47,20 +47,12 @@
  * entrega: o escritório não fecha o mês na Redentia. Virou o que está no ar e
  * se confere em 30 segundos pedindo ao assistente a lista de ferramentas.
  */
-/* AS FERRAMENTAS SÃO AS DO mcp-service 0.5.0 (src/tools.ts, out/2026): 15
-   registradas para a chave de escritório com Clientes do escritório, e só
-   create_client_invite escreve (um link que não abre nada sem o aceite). Se o
-   servidor ganhar ou perder ferramenta, mude as duas constantes juntas, e
-   confira o texto e a peça do fato "leitura" no RbSeguranca, que citam a
-   contagem e três ferramentas pelo nome.
-   ⚠️ 15 SÓ NA CONTA COM CLIENTES LIGADO. A chave de um escritório sem o recurso
-   (o padrão, e o caso de toda assessoria vinculada) lista 11: as 4 de clientes
-   só são registradas com `clientes` no plano (temClientes em tools.ts). Por
-   isso o sub diz "em toda chave" para o núcleo e "quando a casa liga" para
-   clientes: o comprador que contar 11 no assistente dele não pega a página
-   mentindo (revisão de 11/10/2026). */
-const TOOLS_TOTAL = 15
-const TOOLS_LEITURA = 14
+/* TROCA DE 15/10/2026: o primeiro card dizia "15 ferramentas no servidor, 14 só
+   leem". Era a prova técnica, e o dono achou a página técnica demais (modelo da
+   Decade: card que mostra benefício, não mecanismo). Virou a lista do
+   escritório: get_quotes responde até 50 ativos numa chamada (mcp-service
+   0.6.0), com notícia, data-com e pagamento. A contagem de ferramentas mora no
+   FAQ. Sem régua neste card (ticks: null): 50 traços não leem como número. */
 
 /* CADA CARD É UM NÚMERO SÓ, e os três juntos são o funil inteiro: o que você
    ganha, o que você paga, o que você faz agora. Essa é a razão de eles serem
@@ -84,30 +76,30 @@ const TOOLS_LEITURA = 14
    reconhecível e ficam fora até alguém confirmar direito de imagem. */
 const SLIDES = [
   {
-    id: 'servidor', bg: 'var(--nu-navy)', foto: '/business-hero/lounge.webp',
-    rotulo: 'No assistente da mesa',
+    id: 'lista', bg: 'var(--nu-navy)', foto: '/business-hero/lounge.webp',
+    rotulo: 'Antes do pregão',
     // Só o número no valor: "15 ferramentas" quebrava em duas linhas no
     // tamanho do card e esticava os três (eles dividem a mesma célula).
-    valor: `${TOOLS_TOTAL}`,
-    sub: 'ferramentas no servidor: cotação, notícia com leitura, tese e cenário em toda chave; clientes, quando a casa liga.',
-    ticks: { total: TOOLS_TOTAL, on: TOOLS_LEITURA },
-    legenda: 'só leem',
-    nota: 'A outra cria o convite do cliente, um link que não abre nada sem o aceite dele. Nenhuma compra, venda ou transferência.',
+    valor: '50',
+    sub: 'ativos numa pergunta só: preço, variação, notícia com a leitura da Redentia, data-com e pagamento.',
+    ticks: null,
+    legenda: '',
+    nota: 'A lista do escritório volta respondida antes do primeiro telefonema, no Claude ou no ChatGPT da mesa.',
   },
   {
     id: 'preco', bg: 'var(--nu-orb-deep)', foto: '/business-hero/anotando.webp',
     rotulo: 'O plano',
     valor: 'R$ 500',
-    sub: 'por chave, por mês, para começar. A partir da 11ª, cada chave sai mais barata.',
+    sub: 'por pessoa da mesa, por mês, para começar. A partir da 11ª, cada pessoa sai mais barata.',
     ticks: { total: 10, on: 1 },
-    legenda: 'chaves na faixa de R$ 500',
+    legenda: 'pessoas na faixa de R$ 500',
     nota: 'Garantia de 30 dias: se a mesa não usar, devolvemos tudo. Prazo mínimo de 3 meses, depois mês a mês.',
   },
   {
     id: 'setup', bg: 'var(--nu-navy-2)', foto: '/business-hero/sala-vidro.webp',
     rotulo: 'Para começar',
     valor: '1 hora',
-    sub: 'Uma reunião técnica, não uma apresentação comercial.',
+    sub: 'Uma reunião de trabalho, não uma apresentação comercial.',
     ticks: { total: 8, on: 1 },
     legenda: 'de um dia de trabalho',
     nota: 'Sai dela o assistente da mesa conectado e uma carteira de vocês rodada num cenário, ou a conclusão de que ainda não é hora.',
@@ -162,16 +154,15 @@ onBeforeUnmount(parar)
         <!-- quebra manual: a medida do título é decisão de composição, não do
              navegador (mesma razão do NuSectionHeading usar slot) -->
         <h1 class="rbh0__title">
-          O mercado de hoje<br class="rbh0__br">
-          no assistente da mesa.
+          O mercado de hoje,<br class="rbh0__br">
+          antes da sua reunião.
         </h1>
         <p class="rbh0__dek">
-          Cotação, notícia com leitura, tese e cenário sobre a carteira, dentro
-          do Claude ou do ChatGPT que a sua equipe já usa. A carteira colada vai
-          sem nome e não fica salva na conta; a do cliente só entra com o
-          consentimento dele.
+          A Redentia lê o mercado o dia inteiro, testa a carteira do cliente
+          contra o que pode acontecer e deixa a conversa pronta. Tudo dentro do
+          Claude ou do ChatGPT que a sua mesa já usa.
         </p>
-        <a href="#contato" class="rbh0__cta">Agendar o setup de 1 hora</a>
+        <a href="#contato" class="rbh0__cta">Agendar 1 hora com a gente</a>
       </div>
 
       <div class="rbh0__right" :style="{ background: SLIDES[atual]!.bg }">
@@ -206,13 +197,13 @@ onBeforeUnmount(parar)
 
             <!-- A régua é decorativa: o valor acima e a legenda abaixo já
                  carregam a mesma informação em texto de verdade. -->
-            <div class="rbh0__regua" aria-hidden="true">
+            <div v-if="s.ticks" class="rbh0__regua" aria-hidden="true">
               <span
                 v-for="d in s.ticks.total" :key="d"
                 class="rbh0__tick" :class="{ 'rbh0__tick--on': d <= s.ticks.on }"
               />
             </div>
-            <p class="rbh0__regua-leg">
+            <p v-if="s.ticks" class="rbh0__regua-leg">
               <strong>{{ s.ticks.on }}</strong> de {{ s.ticks.total }} {{ s.legenda }}
             </p>
 
@@ -373,7 +364,7 @@ onBeforeUnmount(parar)
   animation: rbh0-sai .28s cubic-bezier(.4, 0, 1, 1) both;
 }
 /* Aqui animar opacity NO KEYFRAME é seguro porque não existe transition nestas
-   propriedades. Se alguém acrescentar uma, leia a lição nº2 do RbAssistente
+   propriedades. Se alguém acrescentar uma, leia a lição nº2 lá em cima (herdada do RbAssistente, que saiu da página em 15/10/2026 e vive no git)
    antes: com fill-mode both, o keyframe vira dono da propriedade e mata a
    transition em silêncio. */
 /* Os tempos são passagem de bastão, e a conta está aqui para ninguém "suavizar"

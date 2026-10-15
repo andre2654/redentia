@@ -149,7 +149,7 @@ test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () =
  */
 test('CV-20: a landing não afirma que a carteira colada não fica guardada, e não promete 15 ferramentas a toda chave', () => {
   const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
-  const landing = ['RbHero', 'RbDivisao', 'RbAssistente', 'RbSeguranca', 'RbProva', 'RbCapacidade']
+  const landing = ['RbHero', 'RbDivisao', 'RbJornada', 'RbJornadaCard', 'RbFilosofia', 'RbRegras', 'RbSeguranca', 'RbProva', 'RbCapacidade']
     .map(c => `components/business/${c}.vue`).concat('content/business/faq.ts')
   for (const f of landing) {
     assert.doesNotMatch(visivel(f), /n[aã]o fica guardad|nada guardado|nada da carteira colada fica guardado|servidor n[aã]o guarda/i, f)
