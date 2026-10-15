@@ -16,9 +16,11 @@
  *
  * A PEÇA DE CADA FATO, que antes vivia no card sobre a foto, entrou no próprio
  * card, compacta, logo acima do "Como conferir": é o pedaço do produto que o
- * comprador vai reconhecer quando abrir o painel ou o assistente. A do fato da
- * leitura deixou de ser a lista inteira das 15 ferramentas (15 linhas não cabem
- * num card de grade) e mostra só as que têm ressalva, com o nome exato.
+ * comprador vai reconhecer quando abrir o painel ou o assistente. Do tablet
+ * para cima; no celular ela sai, como a cena inteira já saía (ver o @media no
+ * fim). A do fato da leitura deixou de ser a lista inteira das 15 ferramentas
+ * (15 linhas não cabem num card de grade) e mostra só as que têm ressalva,
+ * com o nome exato.
  *
  * ⚠️ REESCRITA EM 11/10/2026: SÓ O QUE É VERDADE HOJE E SE CONFERE.
  * O primeiro fato dizia que a carteira do cliente "só entra depois de um banco
@@ -263,6 +265,13 @@ const FATOS: Fato[] = [
   color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.55;
 }
 .rbsg__como strong { color: var(--nu-ink); font-weight: 700; }
+
+/* No celular a peça sai, como saía a cena inteira antes: o texto e o "Como
+   conferir" já carregam a afirmação, e as peças somavam ~680px (a seção ia de
+   2.556px para 3.232px numa tela de 390). Do tablet para cima elas cabem. */
+@media (max-width: 759.98px) {
+  .rbsg__peca { display: none; }
+}
 
 /* tablet: duas colunas, e o quinto fecha a grade ocupando a linha inteira */
 @media (min-width: 760px) {
