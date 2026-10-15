@@ -345,7 +345,7 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 }
 .rbpv__cond dd { margin: 4px 0 0; color: var(--nu-cream-text-80); font-size: 14px; font-weight: 600; line-height: 1.5; }
 
-/* Segundo e último azul chapado da página (o primeiro é o do header). */
+/* O estilo do CTA principal da página inteira (hero, divisão, plano e FAQ). */
 .rbpv__cta {
   display: flex; align-items: center; justify-content: center; margin: clamp(24px, 3vw, 30px) 0 0;
   background: var(--nu-blue); color: var(--nu-white);

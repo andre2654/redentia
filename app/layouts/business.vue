@@ -4,8 +4,7 @@
  *
  * Deliberadamente MAIS MAGRO que o `default`: sem NuMarketTicker (a faixa de
  * cotações é linguagem do app de investidor, não de infraestrutura para
- * escritório) e sem NuMcpPromo (o pop-up de MCP vende o produto B2C pra quem
- * já está na página do B2B).
+ * escritório).
  */
 </script>
 

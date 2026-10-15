@@ -1,5 +1,5 @@
 /**
- * FAQ da Redentia for Business — 29 perguntas em 5 grupos.
+ * FAQ da Redentia for Business — 30 perguntas em 5 grupos.
  *
  * A copy veio da landing prototipada em docs/redentia-business/ e passou por
  * três rodadas de revisão adversarial (docs/redentia-business/revisoes/), com
@@ -8,9 +8,9 @@
  * a revogação valer "em até um minuto", não no ato. NÃO "melhore" resposta sem
  * reler as rodadas — várias frases estão assim porque a versão bonita era
  * falsa (console de administrador, dado no Brasil, "nenhum modelo recebe o
- * dado"). Os grupos vêm da landing e hoje NÃO são renderizados: o RbFaq
- * espelha o FAQ da home, que é um accordion único, e achata com flatMap. A
- * estrutura fica porque é a ordem editorial das perguntas.
+ * dado"). Os grupos vêm da landing e, desde 15/10/2026, são as abas do RbFaq
+ * (uma aba por grupo, na ordem daqui): o `grupo` é o rótulo da aba, então
+ * nome curto, sem ponto final, e um grupo novo vira uma aba nova.
  *
  * REVISÃO DE 11/10/2026 (o que está no ar, para as calls de venda). Saíram as
  * respostas da tese de consolidação, que o produto não entrega: "o valor é o

@@ -1,12 +1,12 @@
 /**
- * Copy de compliance de /business, /cliente e do promo, conferida contra o
- * que o código faz (revisão de 07/10/2026). Cada caso trava uma frase que
- * afirmava algo falso e a troca que a deixou verdadeira. Lê os arquivos como
- * texto: não depende do Nuxt.
+ * Copy de compliance de /business e /cliente, conferida contra o que o código
+ * faz (revisão de 07/10/2026). Cada caso trava uma frase que afirmava algo
+ * falso e a troca que a deixou verdadeira. Lê os arquivos como texto: não
+ * depende do Nuxt.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const APP = fileURLToPath(new URL('../app/', import.meta.url))
@@ -51,10 +51,14 @@ test('CV-06: o FAQ não diz que nenhuma ferramenta cancela; o link novo cancela 
   assert.match(faq, /Um link novo para o mesmo cliente cancela o link pendente anterior/)
 })
 
-test('CV-10: o promo não fala em "golpe" nem promete ordem no tempo', () => {
-  const promo = plano('components/nu/NuMcpPromo.vue')
-  assert.doesNotMatch(promo, /golpe/i)
-  assert.match(promo, /quem mais sente o choque/)
+/*
+ * CV-10 travava a copy do pop-up de anúncio (NuMcpPromo). O pop-up saiu de vez
+ * em 15/10/2026, a pedido do dono, e a trava passou a ser a ausência dele.
+ */
+test('CV-10: o pop-up de anúncio não volta ao layout', () => {
+  assert.equal(existsSync(new URL('../app/components/nu/NuMcpPromo.vue', import.meta.url)), false)
+  for (const f of ['layouts/default.vue', 'layouts/business.vue'])
+    assert.doesNotMatch(semComentarios(ler(f)), /<NuMcpPromo/, f)
 })
 
 /*

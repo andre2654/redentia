@@ -7,7 +7,6 @@
 //
 // Client-only por construção: a fase nasce 'oculto' no SSR e na hidratação,
 // e só vira 'ativo' depois do /auth/me e do GET /watchlist no mount.
-// A classe raiz `.sgg` é o sinal que o NuMcpPromo lê pra não abrir por cima.
 const props = defineProps<{
   /** ticker da página (/asset) — vira o primeiro chip */
   atual?: string | null

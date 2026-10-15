@@ -7,9 +7,10 @@
 // SSR renderiza o frame inicial sem timers, a animação nasce no onMounted e
 // morre no unmount; prefers-reduced-motion mostra a cena final estática.
 //
-// Conteúdo/estilo do chat = o mockup do NuMcpPromo (contrato visual do MCP):
-// card creme, header Claude + badge, bolha do usuário, chip mono
-// `redentia · get_portfolio`, resposta com números em destaque.
+// Conteúdo/estilo do chat = o contrato visual do MCP (nasceu do mockup do
+// antigo pop-up de anúncio, removido em 15/10/2026): card creme, header
+// Claude + badge, bolha do usuário, chip mono `redentia · get_portfolio`,
+// resposta com números em destaque.
 
 type Phase = 'dock' | 'to-icon' | 'click' | 'open' | 'typing' | 'to-send' | 'send' | 'tool' | 'answer' | 'hold'
 
