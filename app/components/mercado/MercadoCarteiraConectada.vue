@@ -40,7 +40,7 @@ const photoFailed = ref(false)
         <!-- Redentia MCP promovido a card de destaque sóbrio, porém COMPACTO: badge
              + manchete + logos das ferramentas + arrow-link. A carteira conectada
              não fica presa no app; o investidor conversa com ela na própria IA. A
-             prova/chat-mock fica só no modal (NuMcpPromo), aqui seria excesso. Só o
+             prova/chat-mock fica na /mcp (McpHeroDemo), aqui seria excesso. Só o
              arrow-link é clicável, então não compete com o CTA primário abaixo. -->
         <div class="mcc__mcpcard">
           <div class="mcc__mcpcard-head">
@@ -139,7 +139,7 @@ const photoFailed = ref(false)
 
 /* Redentia MCP — card de destaque sóbrio (substitui o teaser tímido de 1 linha).
    Síntese do painel: container de vidro translúcido + chip de tool mono (eco do
-   NuMcpPromo) + rima dos logos com os avatares de banco. Só tokens --nu-*. O acento
+   McpHeroDemo) + rima dos logos com os avatares de banco. Só tokens --nu-*. O acento
    --nu-blue-soft fica restrito a micro detalhes (bolinha do badge, função do chip,
    seta do link) porque só passa AA como detalhe, nunca como preenchimento/corpo. O
    card é um DIV sóbrio (nunca botão preenchido); apenas o arrow-link é clicável,

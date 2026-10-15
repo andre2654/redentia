@@ -14,11 +14,11 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
       <slot />
     </main>
     <NuFooter />
-    <!-- Anúncio do Redentia MCP: aparece 1x, 5s após entrar (logado ou não). -->
-    <NuMcpPromo />
+    <!-- Sem modal de anúncio: o NuMcpPromo (o pop-up que abria 5 s depois de
+         entrar) saiu de vez em 15/10/2026, a pedido do dono. Não remonte
+         anúncio por cima da página sem decisão dele. -->
     <!-- Onboarding obrigatório: logado sem investor_goal responde antes de
-         seguir (decisão do dono, 24/08). Acima do promo por z-index; o promo
-         também se segura enquanto o gate está aberto. -->
+         seguir (decisão do dono, 24/08). -->
     <NuOnboardingModal />
   </div>
 </template>
