@@ -27,37 +27,41 @@
  * A mecânica (IntersectionObserver, mapa de índice, folga do sticky) é a mesma
  * do scroll que esta seção substitui; os comentários de lá valem aqui.
  */
+/* ENXUGADO EM 15/10/2026, à noite ("ficou com MUITA informação"): como na
+   Decade, o scroll começa direto no passo 01, sem cabeçalho, e cada passo é
+   rótulo, título e UMA frase (a Decade usa de 12 a 40 palavras por passo). A
+   legenda de datas saiu de baixo do palco: cada card já diz a própria data. */
 type IdCard = 'lista' | 'porque' | 'cenario' | 'reuniao' | 'cliente'
 const MOMENTOS: { id: IdCard; quando: string; titulo: string; texto: string; tag?: string }[] = [
   {
     id: 'lista',
     quando: 'Antes do pregão',
     titulo: 'O que mudou na sua lista.',
-    texto: 'Uma pergunta e a lista inteira volta respondida: preço, variação, a notícia com a leitura da Redentia, data-com e pagamento. Até 50 ativos de uma vez, antes do primeiro telefonema.',
+    texto: 'Uma pergunta e até 50 ativos voltam com preço, notícia e data-com.',
   },
   {
     id: 'porque',
     quando: 'No meio do dia',
     titulo: 'Por que o ativo mexeu.',
-    texto: 'Quando um papel da carteira dispara ou derrete, a resposta vem com a notícia, a hora e o que muda para quem tem o ativo, em três frases que você repete ao cliente.',
+    texto: 'A notícia, a hora e o que muda para quem tem o papel, em três frases.',
   },
   {
     id: 'cenario',
     quando: 'Quando o cliente liga',
     titulo: 'E se o fiscal piorar depois da eleição?',
-    texto: 'Cole a carteira em pesos, sem nome, e coloque contra o medo da vez: eleição, Selic, dólar, uma crise como a de 2020. Sai a faixa do patrimônio em um ano e quem mais sente o choque.',
+    texto: 'Cole a carteira, sem nome, e veja a faixa do patrimônio em um ano.',
   },
   {
     id: 'reuniao',
     quando: 'Antes da reunião',
     titulo: 'A conversa já chega pronta.',
-    texto: 'Um comando monta a pauta: o que mudou desde a última conversa, os pontos de atenção e o cenário que vale mostrar. Family office e gestora levam também o relatório em PDF com a marca da casa.',
+    texto: 'O que mudou desde a última conversa e o cenário que vale mostrar.',
   },
   {
     id: 'cliente',
     quando: 'Com o cliente dentro',
     titulo: 'A carteira do cliente, com o sim dele.',
-    texto: 'O cliente conecta o banco ou a corretora por Open Finance, autoriza e revoga quando quiser. A carteira chega atualizada, e cada leitura do escritório fica registrada.',
+    texto: 'Ele conecta o banco por Open Finance e revoga quando quiser.',
     tag: 'na implantação',
   },
 ]
@@ -85,18 +89,10 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 </script>
 
 <template>
-  <section id="dia" class="rbjn">
-    <div class="rbjn__head">
-      <NuSectionHeading eyebrow="Um dia de mesa">
-        Do pregão à reunião,<br>com a Redentia junto.
-        <template #dek>
-          Cinco momentos em que a Redentia trabalha pela sua mesa. Você pergunta
-          como perguntaria a um colega; a resposta chega com <strong>número, fonte
-          e data</strong>.
-        </template>
-      </NuSectionHeading>
-    </div>
-
+  <section id="dia" class="rbjn" aria-labelledby="rbjn-titulo">
+    <!-- Sem título visível desde 15/10/2026 (a Decade começa o scroll no 01),
+         mas a seção continua nomeada para quem navega por títulos. -->
+    <h2 id="rbjn-titulo" class="rbjn__sr">Um dia de mesa com a Redentia</h2>
     <div class="rbjn__palco">
       <!-- ——— esquerda: fica ——— -->
       <div class="rbjn__fixa">
@@ -147,26 +143,20 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
         </li>
       </ol>
     </div>
-
-    <p class="rbjn__legenda">
-      Dados dos cards: Redentia, 15/10/2026. O cenário rodou em 12/10/2026, no
-      motor de projeções da casa, sobre uma carteira de R$ 1 milhão colada em pesos.
-    </p>
   </section>
 </template>
 
 <style scoped>
 .rbjn {
-  scroll-margin-top: calc(var(--nuh-h, 76px) + 24px);
+  /* sem cabeçalho, a âncora #dia cai direto no palco: a folga é só o header */
+  scroll-margin-top: var(--nuh-h, 76px);
   background: var(--nu-cream);
-  padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px);
+  /* Sem padding vertical: a foto começa na borda da seção, como a da Decade. */
+  padding: 0 clamp(22px, 5.5vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.rbjn__head { max-width: 820px; margin-inline: auto; text-align: center; }
-.rbjn__head :deep(.nsh__dek) { margin-inline: auto; }
 
 .rbjn__palco {
-  margin-top: clamp(44px, 5vw, 68px);
   display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 76px);
   align-items: start;
 }
@@ -240,13 +230,9 @@ onBeforeUnmount(() => { io?.disconnect(); io = null })
 }
 .rbjn__card-inline { display: none; }
 
-.rbjn__legenda {
-  margin: clamp(20px, 3vw, 32px) auto 0; max-width: 640px; text-align: center;
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.6;
-}
-
 /* empilhado: sem sticky; o card entra dentro do próprio passo */
 @media (max-width: 900px) {
+  .rbjn { padding-block: clamp(28px, 6vw, 48px); }
   .rbjn__palco { grid-template-columns: 1fr; gap: 0; }
   .rbjn__fixa { display: none; }
   .rbjn__passo {

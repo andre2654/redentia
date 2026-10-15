@@ -11,8 +11,9 @@
  *  reuniao   a pauta que o comando preparar-reuniao monta (estrutura, sem número)
  *  cliente   o painel de um cliente conectado da conta da Redentia
  *
- * A legenda da seção data tudo isso. Se trocar um número aqui, troque a data
- * lá (RbJornada, .rbjn__legenda).
+ * Cada card diz a própria data no rótulo (a legenda de datas embaixo do palco
+ * saiu no enxugamento de 15/10/2026). Se trocar um número, troque a data junto.
+ * Enxugados na mesma rodada: quatro linhas na lista, três na pauta e no cliente.
  */
 defineProps<{ id: 'lista' | 'porque' | 'cenario' | 'reuniao' | 'cliente' }>()
 
@@ -21,8 +22,6 @@ const LISTA = [
   { t: 'VALE3', p: '66,55', v: -0.25 },
   { t: 'ITUB4', p: '48,93', v: -0.10 },
   { t: 'HGLG11', p: '156,30', v: 0.19, ev: 'paga R$ 1,17 hoje' },
-  { t: 'MXRF11', p: '9,39', v: 0.32, ev: 'paga R$ 0,10 hoje' },
-  { t: 'IVVB11', p: '440,12', v: 0.32 },
 ]
 const pct = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2).replace('.', ',')}%`
 </script>
@@ -46,15 +45,14 @@ const pct = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toF
       <p class="rjc__head">−1,06% às 11h10, com o minério em queda</p>
       <p class="rjc__body">
         Minério em Dalian a 671,5 yuans, pressionado pela margem fraca das
-        siderúrgicas chinesas. CSN e Gerdau perdiam perto de 1,5% no mesmo
-        horário.
+        siderúrgicas chinesas.
       </p>
       <p class="rjc__src">Valor Investe · 15/10, 11:16 · leitura da Redentia</p>
     </template>
 
     <template v-else-if="id === 'cenario'">
-      <span class="rjc__label">Carteira colada · R$ 1 milhão · 1 ano</span>
-      <p class="rjc__cen">Expansão fiscal pós-2026</p>
+      <span class="rjc__label">Carteira de R$ 1 milhão · 12/10</span>
+      <p class="rjc__cen">Expansão fiscal pós-2026, em 1 ano</p>
       <p class="rjc__faixa">R$ 875 mil a R$ 1,16 milhão</p>
       <p class="rjc__faixa-leg">em 80% dos caminhos, em reais de hoje</p>
       <ul class="rjc__rows">
@@ -66,10 +64,9 @@ const pct = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toF
     <template v-else-if="id === 'reuniao'">
       <span class="rjc__label">Pauta · Mariana · 16/10</span>
       <ol class="rjc__pauta">
-        <li>O que mudou na carteira desde a última conversa</li>
-        <li>Os FIIs que pagam rendimento esta semana</li>
-        <li>A carteira no cenário fiscal depois da eleição</li>
-        <li>As perguntas que ela deve trazer</li>
+        <li>O que mudou desde a última conversa</li>
+        <li>Os FIIs que pagam esta semana</li>
+        <li>A carteira no cenário fiscal</li>
       </ol>
     </template>
 
@@ -78,7 +75,6 @@ const pct = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toF
       <p class="rjc__head">Mariana Ribeiro Costa</p>
       <dl class="rjc__dl">
         <div><dt>instituição</dt><dd>Nubank</dd></div>
-        <div><dt>posições</dt><dd>14</dd></div>
         <div><dt>consentimento</dt><dd>até 07/10/2027</dd></div>
         <div><dt>última leitura</dt><dd>hoje, 09:12</dd></div>
       </dl>

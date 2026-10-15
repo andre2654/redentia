@@ -13,9 +13,9 @@
  * a fundo claro e a fundo escuro sem virar vidro ilegível.
  *
  * O QUE SAIU DA ESQUERDA, e é o pedido de "mais simples": o eyebrow "O gargalo"
- * e a nota de procedência solta embaixo do botão. A procedência NÃO sumiu, ela
- * foi para dentro do card que carrega o número (regra de voz da casa: nota de
- * frescor e procedência sempre visível, colada no dado que ela qualifica).
+ * e a nota de procedência solta embaixo do botão. Os cards afirmam fatos do
+ * produto e do contrato, sem dado de mercado datado, então não pedem nota de
+ * frescor; o dado datado mora nos cards do scroll (RbJornadaCard).
  *
  * TRÊS LIÇÕES HERDADAS DO RbAssistente, que já pagou por elas:
  *  1. REPOUSO = ESTADO FINAL. O primeiro slide está no markup que o SSR serve.
@@ -52,7 +52,7 @@
    Decade: card que mostra benefício, não mecanismo). Virou a lista do
    escritório: get_quotes responde até 50 ativos numa chamada (mcp-service
    0.6.0), com notícia, data-com e pagamento. A contagem de ferramentas mora no
-   FAQ. Sem régua neste card (ticks: null): 50 traços não leem como número. */
+   FAQ. */
 
 /* CADA CARD É UM NÚMERO SÓ, e os três juntos são o funil inteiro: o que você
    ganha, o que você paga, o que você faz agora. Essa é a razão de eles serem
@@ -62,10 +62,6 @@
    Anatomia, na ordem: rótulo pequeno, NÚMERO grande, uma linha de qualificação.
    É a mesma anatomia dos cards da Decade, e é o único gesto dela que atravessa
    o nosso sistema sem foto, sem serifa e sem inventar dado. */
-/* A RÉGUA É A MESMA GRAMÁTICA NOS TRÊS, e os traços acesos são LITERALMENTE o
-   número do card: 14 de 15 ferramentas, 1 de 10 chaves da primeira faixa, 1 de 8 horas. Não é
-   enfeite e não é gráfico de dado inventado — é o próprio número desenhado. Se
-   o número mudar, `on` muda junto, senão a régua mente em silêncio. */
 /* A FOTO É FUNDO, NÃO ASSUNTO, e por isso ela não tem alt: quem enxerga vê um
    escritório em preto e branco, quem escuta não perde nada, porque o card na
    frente carrega a informação inteira. alt="" é o certo aqui, e é o mesmo que o
@@ -74,35 +70,28 @@
    em `sala-vidro` a grade da janela e a granulação cobrem os rostos. As outras
    duas de docs/redentia-business/hero-fontes/ (`mesa` e `reuniao`) têm gente
    reconhecível e ficam fora até alguém confirmar direito de imagem. */
+/* ENXUGADO EM 15/10/2026, à noite ("ficou com MUITA informação", olhando a
+   home da Decade): cada card tem três linhas e mais nada, como o card da
+   Decade (rótulo, número, uma linha). Saíram a régua com legenda e a nota no
+   pé do card; a garantia foi para o lado do botão e as condições para o plano. */
 const SLIDES = [
   {
     id: 'lista', bg: 'var(--nu-navy)', foto: '/business-hero/lounge.webp',
     rotulo: 'Antes do pregão',
-    // Só o número no valor: "15 ferramentas" quebrava em duas linhas no
-    // tamanho do card e esticava os três (eles dividem a mesma célula).
-    valor: '50',
-    sub: 'ativos numa pergunta só: preço, variação, notícia com a leitura da Redentia, data-com e pagamento.',
-    ticks: null,
-    legenda: '',
-    nota: 'A lista do escritório volta respondida antes do primeiro telefonema, no Claude ou no ChatGPT da mesa.',
+    valor: '50 ativos',
+    sub: 'numa pergunta só, com preço, notícia e data-com.',
   },
   {
     id: 'preco', bg: 'var(--nu-orb-deep)', foto: '/business-hero/anotando.webp',
-    rotulo: 'O plano',
+    rotulo: 'Por pessoa da mesa',
     valor: 'R$ 500',
-    sub: 'por pessoa da mesa, por mês, para começar. A partir da 11ª, cada pessoa sai mais barata.',
-    ticks: { total: 10, on: 1 },
-    legenda: 'pessoas na faixa de R$ 500',
-    nota: 'Garantia de 30 dias: se a mesa não usar, devolvemos tudo. Prazo mínimo de 3 meses, depois mês a mês.',
+    sub: 'por mês. A partir da 11ª pessoa, sai mais barato.',
   },
   {
     id: 'setup', bg: 'var(--nu-navy-2)', foto: '/business-hero/sala-vidro.webp',
     rotulo: 'Para começar',
     valor: '1 hora',
-    sub: 'Uma reunião de trabalho, não uma apresentação comercial.',
-    ticks: { total: 8, on: 1 },
-    legenda: 'de um dia de trabalho',
-    nota: 'Sai dela o assistente da mesa conectado e uma carteira de vocês rodada num cenário, ou a conclusão de que ainda não é hora.',
+    sub: 'de trabalho com a sua mesa, não de apresentação.',
   },
 ] as const
 
@@ -158,11 +147,13 @@ onBeforeUnmount(parar)
           antes da sua reunião.
         </h1>
         <p class="rbh0__dek">
-          A Redentia lê o mercado o dia inteiro, testa a carteira do cliente
-          contra o que pode acontecer e deixa a conversa pronta. Tudo dentro do
-          Claude ou do ChatGPT que a sua mesa já usa.
+          A Redentia lê o mercado, testa a carteira e deixa a conversa pronta,
+          no Claude ou no ChatGPT da sua mesa.
         </p>
-        <a href="#contato" class="rbh0__cta">Agendar 1 hora com a gente</a>
+        <div class="rbh0__acao">
+          <a href="#contato" class="rbh0__cta">Agendar 1 hora com a gente</a>
+          <span class="rbh0__garantia">Garantia de 30 dias</span>
+        </div>
       </div>
 
       <div class="rbh0__right" :style="{ background: SLIDES[atual]!.bg }">
@@ -194,20 +185,6 @@ onBeforeUnmount(parar)
             <span class="rbh0__card-label">{{ s.rotulo }}</span>
             <p class="rbh0__valor">{{ s.valor }}</p>
             <p class="rbh0__sub">{{ s.sub }}</p>
-
-            <!-- A régua é decorativa: o valor acima e a legenda abaixo já
-                 carregam a mesma informação em texto de verdade. -->
-            <div v-if="s.ticks" class="rbh0__regua" aria-hidden="true">
-              <span
-                v-for="d in s.ticks.total" :key="d"
-                class="rbh0__tick" :class="{ 'rbh0__tick--on': d <= s.ticks.on }"
-              />
-            </div>
-            <p v-if="s.ticks" class="rbh0__regua-leg">
-              <strong>{{ s.ticks.on }}</strong> de {{ s.ticks.total }} {{ s.legenda }}
-            </p>
-
-            <p class="rbh0__nota">{{ s.nota }}</p>
           </div>
         </div>
 
@@ -300,6 +277,14 @@ onBeforeUnmount(parar)
     margin-right: calc(-1 * clamp(22px, 5.5vw, 80px));
     margin-block: calc(-1 * clamp(56px, 8vw, 104px));
   }
+  /* UMA TELA, COMO A DECADE (15/10/2026, à noite): lado a lado, o hero ocupa a
+     dobra inteira e o Venn começa na rolagem. O teto de 860px segura monitor
+     alto. As colunas crescem com a seção (flex: 1) e o painel acompanha. */
+  .rbh0 {
+    min-height: min(calc(100svh - var(--nuh-h, 76px)), 860px);
+    display: flex; flex-direction: column;
+  }
+  .rbh0__cols { flex: 1; }
 }
 /* Abaixo do ponto de quebra o painel é banda horizontal e sangra dos dois lados. */
 @media (max-width: 1071.98px) {
@@ -328,9 +313,12 @@ onBeforeUnmount(parar)
    aqui.
    O CTA do header aponta para o MESMO #contato e continua de contorno: dois
    botões chapados para o mesmo destino é indecisão, não reforço. */
+/* A linha de ação é a da Decade: o botão e, ao lado, a frase que tira o risco
+   ("30-day trial period after invitation" lá; a garantia do contrato aqui). */
+.rbh0__acao { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 20px; margin: 32px 0 0; }
+.rbh0__garantia { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .rbh0__cta {
-  align-self: flex-start;
-  display: inline-flex; align-items: center; margin: 32px 0 0;
+  display: inline-flex; align-items: center;
   background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 16px 26px; min-height: 44px;
   font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
@@ -340,9 +328,9 @@ onBeforeUnmount(parar)
 
 /* ——— o painel que cicla ——— */
 /* Os três cards na MESMA célula: a altura é a do maior e nunca oscila.
-   O teto de 460px é para a banda quebrada: sem ele o card esticava para 824px a
-   900 de viewport e o calendário de 340px nadava dentro dele. */
-.rbh0__stack { display: grid; width: 100%; max-width: 460px; margin-inline: auto; }
+   O teto (380px desde o enxugamento de 15/10/2026, com três linhas por card) é
+   também o da banda quebrada: sem ele o card esticava a largura toda. */
+.rbh0__stack { display: grid; width: 100%; max-width: 380px; margin-inline: auto; }
 .rbh0__card {
   grid-area: 1 / 1;
   background: var(--nu-white); border: 1px solid var(--nu-cream-line);
@@ -394,55 +382,17 @@ onBeforeUnmount(parar)
   letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .rbh0__sub {
-  margin: 10px 0 0; color: var(--nu-gray-2);
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
-}
-
-/* A régua: os traços acesos são o número do card, desenhado. blue-deep e não
-   blue porque a rodada 1 da landing já tinha decidido #2456C9 por medição e o
-   código no ar nunca obedeceu. Os apagados usam --nu-ink-45 (3,15:1 sobre
-   branco) e não --nu-cream-line (1,31:1), porque o traço apagado CARREGA
-   informação (é o resto), não é moldura, então vale o piso de 3:1 da SC 1.4.11.
-   `gap` em % e não em px: com 5, 8 e 15 traços na mesma largura, um gap fixo
-   come 56px do card de 15 e 16px do card de 5, e as três réguas deixam de
-   parecer a mesma peça. */
-.rbh0__regua { margin-top: 20px; display: flex; gap: 1.4%; }
-.rbh0__tick {
-  flex: 1; height: 8px; border-radius: 2px;
-  background: var(--nu-ink-14); transform-origin: left center;
-}
-.rbh0__tick--on { background: var(--nu-blue-deep); }
-/* A régua se desenha da esquerda TODA VEZ que o card entra, e não uma vez no
-   mount: por isso o seletor pende de --on, que é a classe que vai e volta.
-   O delay de .12s deixa o card assentar antes de o número se desenhar. */
-.rbh0__card--on .rbh0__tick {
-  animation: rbh0-tick .55s cubic-bezier(.22, .8, .24, 1) .12s both;
-}
-@keyframes rbh0-tick { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
-.rbh0__regua-leg {
-  margin: 10px 0 0; color: var(--nu-gray);
-  font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums;
-}
-.rbh0__regua-leg strong { color: var(--nu-ink); font-weight: 800; }
-
-/* margin-top: auto ancora a nota no PÉ do card. Como os três dividem a mesma
-   célula de grid, a altura é a do maior, e sem isso os menores sobrariam com um
-   vão branco embaixo. Ancorando, os três ficam compostos de topo a base sem que
-   nenhum mude de altura. */
-.rbh0__nota {
-  margin: 22px 0 0; margin-top: auto; padding-top: 18px;
-  border-top: 1px solid var(--nu-cream-line);
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5;
+  margin: 12px 0 0; color: var(--nu-gray-2);
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5;
 }
 
 /* ——— os indicadores, que são controle e não enfeite ——— */
-/* Centrados sob o card e com a MESMA caixa dele (460px, margin-inline auto),
+/* Centrados sob o card e com a MESMA caixa dele (380px, margin-inline auto),
    para que o eixo dos passadores seja o eixo do card e não o do painel — os
    dois não coincidem, porque o painel tem padding assimétrico. */
 .rbh0__nav {
   display: flex; justify-content: center; gap: 4px; margin-top: 20px;
-  width: 100%; max-width: 460px; margin-inline: auto;
+  width: 100%; max-width: 380px; margin-inline: auto;
 }
 /* O botão é fino na tela e tem 44px de alvo: o traço é o filho pintado, e o
    `padding` do pai carrega a área tocável, que é o mesmo idioma que o resto da
@@ -468,11 +418,8 @@ onBeforeUnmount(parar)
 @media (max-width: 760px) {
   .rbh0__cols { gap: 34px; }
   .rbh0__cta { width: 100%; justify-content: center; }
-  /* O card encolheu e a reordenação que existia aqui deixou de ser necessária:
-     antes o calendário de 3 linhas empurrava a legenda para y=889 com a dobra em
-     812, e a legenda precisava subir na frente. Agora rótulo, número e linha de
-     qualificação cabem juntos acima da dobra, e a régua é decorativa. */
-  .rbh0__nota { padding-top: 16px; }
+  .rbh0__acao { flex-direction: column; align-items: stretch; gap: 12px; }
+  .rbh0__garantia { text-align: center; }
   /* A quebra manual do título é do desktop; no celular ela deixava "mesa."
      sozinha. Sem ela, o text-wrap: balance do base.css equilibra as linhas. */
   .rbh0__br { display: none; }
