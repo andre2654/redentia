@@ -50,8 +50,9 @@
 /* AS FERRAMENTAS SÃO AS DO mcp-service 0.5.0 (src/tools.ts, out/2026): 15
    registradas para a chave de escritório com Clientes do escritório, e só
    create_client_invite escreve (um link que não abre nada sem o aceite). Se o
-   servidor ganhar ou perder ferramenta, mude as duas constantes juntas, e a
-   lista do RbSeguranca também.
+   servidor ganhar ou perder ferramenta, mude as duas constantes juntas, e
+   confira o texto e a peça do fato "leitura" no RbSeguranca, que citam a
+   contagem e três ferramentas pelo nome.
    ⚠️ 15 SÓ NA CONTA COM CLIENTES LIGADO. A chave de um escritório sem o recurso
    (o padrão, e o caso de toda assessoria vinculada) lista 11: as 4 de clientes
    só são registradas com `clientes` no plano (temClientes em tools.ts). Por
@@ -326,21 +327,24 @@ onBeforeUnmount(parar)
   margin: 26px 0 0; max-width: 52ch; color: var(--nu-gray);
   font-size: clamp(16px, 1.7vw, 19px); font-weight: 600; line-height: 1.6;
 }
-/* O ÚNICO BOTÃO SÓLIDO DA PRIMEIRA DOBRA, e ele é quase preto.
-   1. Branco sobre --nu-blue dá 4,4988:1 e REPROVA AA a 16,5px/800 (o limiar de
-      bold large text é 18,667px). Sobre --nu-ink dá 19,78:1.
-   2. O CTA do header aponta para o MESMO #contato. Dois botões chapados para o
-      mesmo destino é indecisão, não reforço: o do header virou contorno.
-   Raio 12px e não 999px: o PLANO §6.1 já mandava "raio de documento 16/12/10/6/3"
-   desde o início, e o botão da Decade, medido no screenshot, não é pílula. */
+/* O ÚNICO BOTÃO SÓLIDO DA PRIMEIRA DOBRA, e ele é AZUL desde 15/10/2026.
+   Era quase preto, com raio 12px, enquanto os outros CTAs principais da página
+   eram azuis. O dono pediu uma cor de CTA: este segue o do RbProva (azul,
+   pílula, 16px/800), e o da divisão e o do FAQ também.
+   ⚠️ Branco sobre --nu-blue mede 4,4988:1, um fio abaixo do 4,5:1 do AA para
+   texto normal (foi um dos motivos de ele ter virado preto). É a medida de
+   todo CTA azul do app; se for corrigir, corrija no token (tokens.css), não
+   aqui.
+   O CTA do header aponta para o MESMO #contato e continua de contorno: dois
+   botões chapados para o mesmo destino é indecisão, não reforço. */
 .rbh0__cta {
   align-self: flex-start;
   display: inline-flex; align-items: center; margin: 32px 0 0;
-  background: var(--nu-ink); color: var(--nu-white);
-  border-radius: 12px; padding: 16px 28px; min-height: 44px;
-  font-size: 16.5px; font-weight: 800; transition: background .2s;
+  background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 16px 26px; min-height: 44px;
+  font-size: 16px; font-weight: 800; transition: background .2s;
 }
-.rbh0__cta:hover { background: var(--nu-ink-hover); color: var(--nu-white); }
+.rbh0__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbh0__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 
 /* ——— o painel que cicla ——— */

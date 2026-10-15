@@ -210,9 +210,10 @@ watch(shrunk, (s) => {
      mundo e o cache da borda continua servindo a mesma coisa pra todos. */
   .rbh__entrar { display: none; }
   .rbh-wrap--logado .rbh__cta { display: none; }
-  /* No estreito logado este é o ÚNICO botão da tela, então ele é o sólido, e
-     sólido nesta página é ink. Antes era azul chapado, que a 14px/700 dava
-     4,4988:1 e reprovava AA. Sobre ink: 19,78:1. */
+  /* No estreito logado este é o ÚNICO botão da tela, então ele é o sólido.
+     Fica ink, e não o azul dos CTAs de venda da página: é a porta da conta de
+     quem já é cliente, e a 14px/700 o branco sobre azul dava 4,4988:1, abaixo
+     do AA. Sobre ink: 19,78:1. */
   .rbh-wrap--logado .rbh__entrar {
     display: inline-flex;
     background: var(--nu-ink); color: var(--nu-white);
