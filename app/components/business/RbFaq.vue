@@ -119,7 +119,7 @@ function teclado(e: KeyboardEvent, i: number) {
   animation: nu-fade .5s ease both;
 }
 .rbfq__cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); }
-.rbfq__copy { color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; margin-top: 24px; max-width: 420px; }
+.rbfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin-top: 24px; max-width: 420px; }
 
 /* O CTA principal da página inteira tem um estilo só (o do RbProva): azul,
    pílula, 16px. */
@@ -127,7 +127,7 @@ function teclado(e: KeyboardEvent, i: number) {
   display: inline-flex; align-items: center; margin-top: 32px;
   background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 16px 26px;
-  font-size: 16px; font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
 }
 .rbfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbfq__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
@@ -144,7 +144,7 @@ function teclado(e: KeyboardEvent, i: number) {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   width: 100%; min-height: 44px; padding: 8px 16px; border-radius: 12px;
   background: transparent; color: var(--nu-gray-2);
-  font-size: 16px; font-weight: 700; line-height: 1.3;
+  font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.3;
   transition: background .2s, color .2s;
 }
 .rbfq__aba:hover { background: var(--nu-white); color: var(--nu-ink); }
@@ -154,7 +154,7 @@ function teclado(e: KeyboardEvent, i: number) {
 .rbfq__aba:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .rbfq__qtd {
   flex-shrink: 0; color: var(--nu-gray);
-  font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .rbfq__aba--on .rbfq__qtd { color: var(--nu-white-75); }
 

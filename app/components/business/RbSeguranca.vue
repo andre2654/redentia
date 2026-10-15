@@ -225,17 +225,17 @@ const FATOS: Fato[] = [
 }
 .rbsg__topo { display: flex; flex-direction: column; gap: 8px; }
 .rbsg__n {
-  color: var(--nu-blue-deep); font-size: 14px; font-weight: 700;
+  color: var(--nu-blue-deep); font-size: var(--nu-fs-sm); font-weight: 700;
   font-variant-numeric: tabular-nums; letter-spacing: 1px;
 }
 .rbsg__rotulo {
   margin: 0; color: var(--nu-ink);
-  font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.25;
+  font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.25;
 }
 /* Corpo em --nu-gray-2 sobre branco: 7,7:1. */
 .rbsg__texto {
   margin: 0; color: var(--nu-gray-2);
-  font-size: 16px; font-weight: 500; line-height: 1.6;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
 }
 
 .rbsg__pe { margin-top: auto; display: flex; flex-direction: column; gap: 16px; }
@@ -248,12 +248,12 @@ const FATOS: Fato[] = [
 }
 .rbsg__peca > div + div { border-top: 1px solid var(--nu-cream-line); }
 .rbsg__peca dt {
-  color: var(--nu-gray-2); font-size: 13px; font-weight: 500;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 /* margin-left auto: quando a linha não cabe (card estreito, celular de 320px)
    o estado desce e continua encostado à direita, como na linha inteira */
-.rbsg__peca dd { margin: 0 0 0 auto; color: var(--nu-ink); font-size: 13px; font-weight: 700; }
+.rbsg__peca dd { margin: 0 0 0 auto; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; }
 /* --nu-gray sobre creme dá 4,97:1: o estado apagado continua legível. */
 .rbsg__peca .rbsg__off { color: var(--nu-gray); text-decoration: line-through; }
 /* a recusa não é um estado riscado (como a chave revogada): é a resposta */
@@ -262,7 +262,7 @@ const FATOS: Fato[] = [
 /* --nu-gray sobre branco: 5,6:1. */
 .rbsg__como {
   margin: 0; padding-top: 16px; border-top: 1px solid var(--nu-cream-line);
-  color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.55;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55;
 }
 .rbsg__como strong { color: var(--nu-ink); font-weight: 700; }
 

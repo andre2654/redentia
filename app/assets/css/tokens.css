@@ -15,7 +15,7 @@
   --nu-navy-3: #1C2C4A;       /* hover de cards sobre navy */
 
   /* marca */
-  --nu-blue: #2F6BFF;         /* primário */
+  --nu-blue: #2F6AFF;         /* primário. Era #2F6BFF: branco sobre ele dava 4,499:1, um fio abaixo do AA (4,5:1) em todo CTA; #2F6AFF dá 4,54:1 e o olho não vê a diferença */
   --nu-blue-hover: #2258DB;
   --nu-blue-deep: #2456C9;    /* cards de ação em seção azul */
   --nu-blue-soft: #9EC8FF;    /* acentos sobre navy, linhas de gráfico */

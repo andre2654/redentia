@@ -11,6 +11,9 @@ body {
   color: var(--nu-ink);
 }
 button, input { font-family: inherit; }
+/* Títulos equilibram as linhas: sem palavra órfã na última ("...da / mesa.").
+   Respeita os <br> manuais; navegador sem suporte só ignora. */
+h1, h2, h3 { text-wrap: balance; }
 a { color: inherit; text-decoration: none; }
 a:hover { color: inherit; }
 
