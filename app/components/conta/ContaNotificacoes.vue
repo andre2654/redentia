@@ -77,8 +77,8 @@ const em = computed({
 
 <style scoped>
 .nt__topic { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 22px 24px; }
-.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
-.nt__topic-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+.nt__topic-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.nt__topic-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .nt__channels { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 .nt__ch {
@@ -89,8 +89,8 @@ const em = computed({
 .nt__ch-ic--wa { background: var(--nu-green-bg); color: var(--nu-green); }
 .nt__ch-ic--mail { background: var(--nu-blue-bg); color: var(--nu-blue); }
 .nt__ch-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.nt__ch-name { color: var(--nu-ink); font-size: 15.5px; font-weight: 800; }
-.nt__ch-meta { color: var(--nu-gray); font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nt__ch-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.nt__ch-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.nt__note { margin: 16px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 500; }
+.nt__note { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 </style>

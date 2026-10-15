@@ -178,21 +178,21 @@ function dateTxt(s: SimulationVM): string {
   display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
   padding: 13px 20px; border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-blue);
-  font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
+  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
   transition: background .2s;
 }
 .csv__btn:hover { background: var(--nu-blue-tint-2); }
 .csv__btn:disabled { opacity: 0.6; cursor: default; }
 .csv__btn--saved { background: var(--nu-blue-tint); border-color: transparent; }
-.csv__hint { margin: 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; text-align: center; }
-.csv__error { margin: 0; color: var(--nu-red); font-size: 13px; font-weight: 700; text-align: center; }
+.csv__hint { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
+.csv__error { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-dense); font-weight: 700; text-align: center; }
 
 /* ——— botão histórico (ao lado do título da seção) ——— */
 .csh-btn {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 9px 16px; border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-gray-2);
-  font-size: 13.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
   white-space: nowrap; transition: border-color .15s, color .15s;
 }
 .csh-btn:hover { border-color: var(--nu-blue); color: var(--nu-blue); }
@@ -200,7 +200,7 @@ function dateTxt(s: SimulationVM): string {
   min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--nu-r-pill);
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-blue-tint); color: var(--nu-blue);
-  font-size: 11.5px; font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 
 /* ——— modal ——— */
@@ -218,8 +218,8 @@ function dateTxt(s: SimulationVM): string {
   outline: none; animation: nu-fade .28s ease both;
 }
 .cshm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.cshm__eyebrow { margin: 0; color: var(--nu-blue); font-size: 12px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
-.cshm__title { margin: 7px 0 0; color: var(--nu-ink); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+.cshm__eyebrow { margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.cshm__title { margin: 7px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; }
 .cshm__close {
   width: 38px; height: 38px; flex-shrink: 0; border: none; border-radius: 50%;
   background: var(--nu-cream); color: var(--nu-ink); cursor: pointer;
@@ -236,8 +236,8 @@ function dateTxt(s: SimulationVM): string {
   text-align: left; padding: 11px 14px; border: none; background: transparent;
   cursor: pointer; font-family: inherit;
 }
-.cshm__row-label { color: var(--nu-ink); font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cshm__row-meta { color: var(--nu-gray); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cshm__row-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cshm__row-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 .cshm__row-meta strong { color: var(--nu-blue); font-weight: 800; }
 .cshm__row-del {
   width: 34px; height: 34px; flex-shrink: 0; margin-right: 6px;
@@ -246,9 +246,9 @@ function dateTxt(s: SimulationVM): string {
   transition: background .15s, color .15s;
 }
 .cshm__row-del:hover { background: var(--nu-red-tint); color: var(--nu-red); }
-.cshm__empty { margin: 22px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 500; }
-.cshm__error { margin: 12px 0 0; color: var(--nu-red); font-size: 13.5px; font-weight: 700; }
-.cshm__foot { margin: 18px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.cshm__empty { margin: 22px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
+.cshm__error { margin: 12px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cshm__foot { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 @media (max-width: 760px) {
   .cshm { padding: 12px; align-items: flex-end; }

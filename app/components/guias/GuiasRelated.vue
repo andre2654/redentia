@@ -44,7 +44,7 @@ defineProps<{ items: { title: string; tag: GuideTag; minutes: number; to: string
 }
 .grl__all { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; transition: gap .2s; }
 .grl__all:hover { gap: 16px; }
-.grl__all-label { color: var(--nu-ink); font-size: 16px; font-weight: 800; }
+.grl__all-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .grl__all-circle {
   width: 44px; height: 44px; border-radius: 50%; background: var(--nu-blue);
   color: var(--nu-white); display: flex; align-items: center; justify-content: center;

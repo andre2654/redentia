@@ -918,7 +918,7 @@ const readingHtml = computed(() => {
 .sim__wiz-word { display: inline-flex; justify-content: center; }
 .sim__step--film { display: flex; flex-direction: column; align-items: center; }
 .sim__wiz-letter {
-  color: var(--nu-cream-text); font-size: 26px; font-weight: 800; font-style: normal;
+  color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; font-style: normal;
   letter-spacing: 0.02em;
   animation: sim-letter 2s ease-in-out infinite;
   opacity: 0.4;
@@ -962,7 +962,7 @@ const readingHtml = computed(() => {
 .sim__back {
   border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-ink);
-  padding: 14px 24px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 14px 24px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: background 0.15s, transform 0.15s;
 }
 .sim__back:hover { background: var(--nu-cream); transform: translateY(-1px); }
@@ -979,14 +979,14 @@ const readingHtml = computed(() => {
   margin: 12px 0 22px; color: var(--nu-ink);
   font-size: clamp(34px, 4.2vw, 54px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.sim__honest { margin: 14px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.sim__honest { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* builder + passo dos choques */
 .sim__builder { position: relative; }
 .sim__run {
   border: none; border-radius: var(--nu-r-pill);
   background: var(--nu-ink); color: var(--nu-white);
-  padding: 15px 30px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 15px 30px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
   transition: transform 0.15s, background 0.2s;
 }
 .sim__run:hover { transform: translateY(-2px); }
@@ -1004,18 +1004,18 @@ const readingHtml = computed(() => {
 }
 .sim__counter { color: var(--nu-blue-soft); font-variant-numeric: tabular-nums; }
 .sim__unit {
-  margin: 6px 0 0; font-size: 14px; font-weight: 600;
+  margin: 6px 0 0; font-size: var(--nu-fs-sm); font-weight: 500;
   color: var(--nu-cream-text-70); letter-spacing: -0.01em;
 }
 .sim__flag {
   margin: 12px 0 0; display: inline-flex; align-items: center;
-  font-size: 12.5px; font-weight: 700; letter-spacing: 0.01em;
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.01em;
   padding: 6px 13px; border-radius: var(--nu-r-pill);
   background: var(--nu-blue-soft-35); color: var(--nu-cream-text);
 }
 .sim__flag--mock { background: rgba(255, 179, 184, 0.28); }
 
-.sim__range { margin: 14px 0 0; color: var(--nu-cream-text-70); font-size: 15px; font-weight: 600; max-width: 560px; }
+.sim__range { margin: 14px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; max-width: 560px; }
 .sim__range b { font-variant-numeric: tabular-nums; }
 .sim__range-lo { color: var(--nu-red-soft); }
 .sim__range-hi { color: var(--nu-green-soft); }
@@ -1023,13 +1023,13 @@ const readingHtml = computed(() => {
 .sim__pill {
   border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-cream-text-70);
-  padding: 9px 16px; font-size: 13.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 9px 16px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .sim__pill:hover { border-color: var(--nu-blue-soft); color: var(--nu-cream-text); }
 .sim__pill--on { background: var(--nu-blue-soft); border-color: var(--nu-blue-soft); color: var(--nu-navy); }
 .sim__chart { margin-top: 38px; height: clamp(300px, 42vw, 400px); }
-.sim__chart-legend { margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap; color: var(--nu-cream-text-55); font-size: 12.5px; font-weight: 600; }
+.sim__chart-legend { margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap; color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 500; }
 .sim__chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
 .sim__leg { width: 14px; height: 4px; border-radius: 999px; }
 .sim__leg--band { background: var(--nu-blue-soft-35); height: 10px; }
@@ -1042,7 +1042,7 @@ const readingHtml = computed(() => {
   display: inline-flex; align-items: center; gap: 7px;
   border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-cream-text-55);
-  padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 6px 12px; font-size: var(--nu-fs-xs); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: color 0.15s, border-color 0.15s;
 }
 .sim__leg-check--on { color: var(--nu-cream-text); border-color: var(--nu-cream-text-22); }
@@ -1069,7 +1069,7 @@ const readingHtml = computed(() => {
   outline: none; animation: nu-fade 0.28s ease both;
 }
 .simw__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-.simw__title { color: var(--nu-ink); font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+.simw__title { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .simw__close {
   width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 50%;
   background: var(--nu-white); color: var(--nu-ink); cursor: pointer;
@@ -1077,7 +1077,7 @@ const readingHtml = computed(() => {
   transition: background 0.15s;
 }
 .simw__close:hover { background: var(--nu-cream-hover); }
-.simw__sub { margin: 4px 0 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.simw__sub { margin: 4px 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .simw__foot { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
 .simw__card--summary { width: min(640px, 100%); }
 
@@ -1086,15 +1086,15 @@ const readingHtml = computed(() => {
 .sim__blue-cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(36px, 4vw, 44px); }
 .sim__blue-btn {
   display: inline-flex; align-items: center; gap: 11px; background: var(--nu-cream); color: var(--nu-day-btn-ink);
-  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: 17px; font-weight: 800;
+  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: var(--nu-fs-lg); font-weight: 800;
   letter-spacing: -0.01em; cursor: pointer; font-family: inherit; transition: transform 0.15s ease, background 0.15s ease;
 }
 .sim__blue-btn:hover { background: var(--nu-white); transform: translateY(-1px); }
-.sim__blue-btn-arrow { font-size: 19px; line-height: 1; }
+.sim__blue-btn-arrow { font-size: var(--nu-fs-lg); line-height: 1; }
 .sim__blue-btn2 {
   display: inline-flex; align-items: center; gap: 9px;
   background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
-  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: 15.5px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: var(--nu-fs-md); font-weight: 800;
   cursor: pointer; font-family: inherit; transition: background 0.15s, border-color 0.15s;
 }
 .sim__blue-btn2:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); }
@@ -1102,17 +1102,17 @@ const readingHtml = computed(() => {
 /* blocos do resumo */
 .sims__block { margin-top: 18px; background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 16px 18px; }
 .sims__block-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-.sims__block-label { color: var(--nu-gray); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sims__block-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .sims__copy {
   border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-blue);
-  padding: 7px 14px; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 7px 14px; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: border-color 0.15s, background 0.15s;
 }
 .sims__copy:hover { border-color: var(--nu-blue); background: var(--nu-blue-tint-2); }
-.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: 14px; font-weight: 800; }
-.sims__text { margin: 0; color: var(--nu-gray-3); font-size: 14px; font-weight: 500; line-height: 1.65; }
-.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: 11.5px; font-weight: 600; line-height: 1.55; }
+.sims__subject { margin: 0 0 6px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.sims__text { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
+.sims__footer { margin: 16px 2px 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.55; }
 
 /* ——— GERAR PDF: no print, só o documento existe ——— */
 @media print {
@@ -1135,7 +1135,7 @@ const readingHtml = computed(() => {
 }
 .sim__blue-text {
   margin: 20px auto 0; color: var(--nu-cream-text-78);
-  font-size: 17px; font-weight: 500; line-height: 1.7; max-width: 780px;
+  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7; max-width: 780px;
 }
 .sim__blue-text :deep(.sim__mark) {
   background: var(--nu-cream-text-12); color: var(--nu-white);
@@ -1149,27 +1149,27 @@ const readingHtml = computed(() => {
 .sim__block { margin-top: 38px; max-width: 900px; }
 .sim__block--full { max-width: none; }
 /* correlação sem dado: uma linha honesta no lugar da seção */
-.sim__corr-off { margin: 26px auto 0; max-width: 640px; text-align: center; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.sim__corr-off { margin: 26px auto 0; max-width: 640px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 /* 422 do motor: a mensagem acionável, no lugar onde se corrige */
 .sim__run-error {
   margin: 0 0 18px; padding: 12px 18px;
   background: var(--nu-red-tint); color: var(--nu-red-2); border-radius: var(--nu-r-tile);
-  font-size: 14px; font-weight: 700; line-height: 1.45;
+  font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.45;
 }
 
 /* painel de limites: discreto, tipografia de nota — não compete com os blocos */
 .sim__limits { margin-top: 34px; padding: 22px 26px; background: var(--nu-cream); border-radius: var(--nu-r-panel); }
-.sim__limits-title { display: block; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sim__limits-title { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .sim__limits-list { margin: 12px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
-.sim__limits-list li { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+.sim__limits-list li { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 /* respiro entre sub-seções da mesma banda (a legenda das faixas colava no
    eyebrow "Como a conta é feita" — feedback do dono) */
 .sim__again { margin-top: 54px; }
 .sim__again-btn {
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
   background: transparent; color: var(--nu-blue);
-  padding: 14px 28px; font-size: 15.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 14px 28px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
   transition: background 0.2s;
 }
 .sim__again-btn:hover { background: var(--nu-blue-tint-2); }

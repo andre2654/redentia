@@ -65,11 +65,11 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 }
 .the__crumb {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  color: var(--nu-cream-text-65); font-size: 14px; font-weight: 600;
+  color: var(--nu-cream-text-65); font-size: var(--nu-fs-sm); font-weight: 500;
 }
 .the__crumb-link { pointer-events: auto; transition: color .2s; }
 .the__crumb-link:hover { color: var(--nu-white); }
-.the__crumb-cat { letter-spacing: 1.5px; text-transform: uppercase; font-size: 12.5px; font-weight: 800; }
+.the__crumb-cat { letter-spacing: 1.5px; text-transform: uppercase; font-size: var(--nu-fs-dense); font-weight: 700; }
 .the__title {
   margin: 18px 0 0; color: var(--nu-cream-text);
   font-size: clamp(42px, 6.2vw, 92px); font-weight: 800;
@@ -81,7 +81,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 }
 .the__sub {
   color: var(--nu-cream-text-78); font-size: clamp(17px, 1.9vw, 22px);
-  font-weight: 600; line-height: 1.5; margin-top: 18px; max-width: 680px;
+  font-weight: 500; line-height: 1.5; margin-top: 18px; max-width: 680px;
 }
 .the__badges { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-top: 26px; }
 .the__ctas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
@@ -89,7 +89,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
   pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
   background: transparent; color: var(--nu-cream-text);
   border: 2px solid var(--nu-cream-text-40); border-radius: var(--nu-r-pill);
-  padding: 13px 26px; font-size: 15.5px; font-weight: 700;
+  padding: 13px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   transition: background .2s, border-color .2s;
 }
 .the__ask:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-70); }

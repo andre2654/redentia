@@ -67,19 +67,19 @@ const apps = [
 .cmb__badge {
   display: inline-flex; align-items: center;
   background: rgba(255, 255, 255, .16); backdrop-filter: blur(6px); color: #fff;
-  font-size: 10.5px; font-weight: 800; letter-spacing: 1.3px; text-transform: uppercase;
+  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
   padding: 4px 10px; border-radius: 999px;
 }
-.cmb__brand { color: rgba(245, 241, 234, .72); font-size: 12.5px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
+.cmb__brand { color: rgba(245, 241, 234, .72); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
 .cmb__title { margin: 12px 0 0; color: #fff; font-size: clamp(22px, 2.4vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
-.cmb__sub { margin: 8px 0 0; color: rgba(245, 241, 234, .8); font-size: 15px; font-weight: 600; line-height: 1.55; text-wrap: pretty; }
+.cmb__sub { margin: 8px 0 0; color: rgba(245, 241, 234, .8); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; text-wrap: pretty; }
 
 .cmb__side { position: relative; display: flex; align-items: center; gap: clamp(16px, 2vw, 26px); flex-wrap: wrap; }
 /* chips dos apps (logo real + nome) — mesmos do card MCP de /conta */
 .cmb__apps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cmb__app {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255, 255, 255, .12); color: #fff; font-size: 13.5px; font-weight: 700;
+  background: rgba(255, 255, 255, .12); color: #fff; font-size: var(--nu-fs-sm); font-weight: 700;
   padding: 9px 15px; border-radius: 12px;
 }
 .cmb__app-ic {
@@ -92,7 +92,7 @@ const apps = [
 .cmb__cta {
   display: inline-flex; align-items: center; gap: 9px;
   background: #fff; color: #123A8F;
-  border-radius: 999px; padding: 13px 24px; font-size: 15px; font-weight: 800;
+  border-radius: 999px; padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
   white-space: nowrap; transition: background .18s ease;
 }
 .cmb__card:hover .cmb__cta { background: #8FF0B5; color: #0A2050; }

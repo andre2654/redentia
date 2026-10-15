@@ -261,30 +261,30 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
    /login: as três telas ficam alinhadas quando abertas lado a lado. */
 .rbcv { animation: nu-fade .5s ease both; }
 
-.rbcv__eyebrow { display: block; color: var(--nu-blue); font-size: 14.5px; font-weight: 800; letter-spacing: -.01em; }
+.rbcv__eyebrow { display: block; color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.01em; }
 .rbcv__h1 {
   margin: 10px 0 0; color: var(--nu-ink);
   font-size: clamp(32px, 3.4vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05;
 }
-.rbcv__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; }
+.rbcv__sub { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 
 .rbcv__skel { margin-top: clamp(28px, 4vh, 44px); display: flex; flex-direction: column; gap: 18px; }
 
 .rbcv__label { margin-top: clamp(28px, 4vh, 44px); }
-.rbcv__erro { margin: 14px 0 0; color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.55; }
+.rbcv__erro { margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.55; }
 .rbcv__cta { margin-top: clamp(32px, 4.5vh, 48px); }
 .rbcv__divider { margin-top: 30px; }
 
 .rbcv__passos { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.rbcv__passo { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+.rbcv__passo { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .rbcv__n {
   width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px;
   display: flex; align-items: center; justify-content: center;
   background: var(--nu-tile-blue-bg); color: var(--nu-blue); border-radius: 7px;
-  font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 
-.rbcv__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6; }
+.rbcv__nota { margin: 26px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .rbcv__footer { margin-top: clamp(28px, 4vh, 44px); }
 
 /* o segredo: o mesmo artefato navy do painel (RbKeysTable .rbkc__secret) */
@@ -293,26 +293,26 @@ onBeforeUnmount(() => clearTimeout(copiaTimer))
   background: var(--nu-navy); border-radius: var(--nu-r-card-lg); padding: clamp(22px, 3vw, 30px);
   box-shadow: var(--nu-shadow-card); animation: nu-fade .45s ease both;
 }
-.rbcv__secret-l { display: block; color: var(--nu-cream-text-50); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; }
+.rbcv__secret-l { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
 .rbcv__code {
   display: block; margin-top: 14px;
   background: var(--nu-navy-2); border: 1px solid var(--nu-cream-text-12); border-radius: var(--nu-r-input);
   padding: 16px 18px; color: var(--nu-cream-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13.5px; line-height: 1.5; word-break: break-all;
+  font-size: var(--nu-fs-sm); line-height: 1.5; word-break: break-all;
 }
 .rbcv__acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .rbcv__copy {
   min-height: 44px; padding: 0 22px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  font-size: 14px; font-weight: 800; font-family: inherit; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: 700; font-family: inherit; transition: background .2s;
 }
 .rbcv__copy:hover { background: var(--nu-blue-hover); }
 .rbcv__copy:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 2px; }
 .rbcv__how {
   min-height: 44px; padding: 0 22px; cursor: pointer;
   background: transparent; border: 1.5px solid var(--nu-cream-text-22); color: var(--nu-cream-text);
-  border-radius: var(--nu-r-pill); font-size: 14px; font-weight: 800; font-family: inherit;
+  border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700; font-family: inherit;
   transition: background .2s;
 }
 .rbcv__how:hover { background: var(--nu-cream-text-12); }

@@ -52,7 +52,7 @@ const hasBenchmark = computed(() => !!props.numbers.chart.benchmark)
 .tnu__legend-item { display: inline-flex; align-items: center; gap: 8px; }
 .tnu__swatch-line { width: 22px; height: 4px; border-radius: 3px; background: var(--nu-blue); }
 .tnu__swatch-dash { width: 22px; height: 0; border-top: 2.5px dashed var(--nu-cream-text-60); }
-.tnu__legend-lbl { color: var(--nu-cream-text-70); font-size: 14px; font-weight: 700; }
+.tnu__legend-lbl { color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; }
 .tnu__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: stretch; margin-top: 36px; flex-wrap: wrap; }
 .tnu__stats { flex: 0 1 300px; min-width: min(260px, 100%); }
 .tnu__chart {

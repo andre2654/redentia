@@ -56,14 +56,14 @@ const emit = defineEmits<{
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .bch__tile-img { width: 21px; height: 21px; display: block; object-fit: contain; }
-.bch__name { display: block; color: var(--nu-cream-text); font-size: 15.5px; font-weight: 800; }
-.bch__sub { display: block; color: var(--nu-cream-text-50); font-size: 12.5px; font-weight: 600; margin-top: 1px; }
+.bch__name { display: block; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; }
+.bch__sub { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 1px; }
 .bch__actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .bch__pill {
   display: inline-flex; align-items: center; gap: 8px;
   background: transparent; color: var(--nu-cream-text);
   border: 1.5px solid var(--nu-cream-text-35); border-radius: var(--nu-r-pill);
-  padding: 9px 18px; font-size: 13.5px; font-weight: 800; cursor: pointer;
+  padding: 9px 18px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   white-space: nowrap; transition: background .2s, border-color .2s;
 }
 .bch__pill:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-70); }

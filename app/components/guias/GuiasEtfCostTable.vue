@@ -97,22 +97,22 @@ const asOfLine = computed(() => {
 <style scoped>
 .getc { margin-top: 28px; background: var(--nu-cream); border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px); }
 .getc__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.getc__kicker { color: var(--nu-ink); font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-.getc__asof { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.getc__kicker { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.getc__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .getc__scroll { overflow-x: auto; margin-top: 14px; }
 .getc__table { width: 100%; border-collapse: collapse; min-width: 420px; }
 .getc__table th {
-  text-align: left; color: var(--nu-gray-tag); font-size: 11.5px; font-weight: 800;
+  text-align: left; color: var(--nu-gray-tag); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 0.07em; text-transform: uppercase; padding: 0 12px 8px 0;
 }
-.getc__table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--nu-ink-14); font-size: 15px; font-weight: 600; color: var(--nu-gray-2); }
+.getc__table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--nu-ink-14); font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-gray-2); }
 .getc__tk { color: var(--nu-blue); font-weight: 800; text-decoration: none; }
 .getc__tk:hover { text-decoration: underline; text-underline-offset: 2px; }
 .getc__num { font-variant-numeric: tabular-nums; color: var(--nu-ink); font-weight: 700; }
 .getc__piso {
   margin-left: 8px; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 2px 8px; border-radius: var(--nu-r-pill);
   vertical-align: 1px;
 }
-.getc__note { margin: 14px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.55; }
+.getc__note { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
 </style>

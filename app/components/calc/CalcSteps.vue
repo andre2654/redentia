@@ -60,7 +60,7 @@ const nums = computed(() => props.steps.map((_, i) => String(i + 1).padStart(2, 
   width: 52px; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .cst__body { max-width: 840px; padding-top: 3px; }
-.cst__title { margin: 0 0 4px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; }
-.cst__text { margin: 0; color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500; line-height: 1.65; }
+.cst__title { margin: 0 0 4px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.cst__text { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
 .cst__text :deep(strong) { font-weight: 800; color: var(--nu-ink); }
 </style>

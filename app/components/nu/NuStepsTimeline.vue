@@ -51,7 +51,7 @@ const nums = computed(() => props.steps.map((_, i) => String(i + 1).padStart(2, 
   width: 44px; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .nst__text {
-  color: var(--nu-gray-3); font-size: 16.5px; font-weight: 500;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.65; padding-top: 2px;
 }
 .nst__text :deep(strong) { font-weight: 800; }

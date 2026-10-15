@@ -88,7 +88,7 @@ usePageSeo({
 }
 .tsh__sub {
   color: var(--nu-teses-hero-sub); font-size: clamp(17px, 1.8vw, 21px);
-  font-weight: 600; line-height: 1.55; margin: 22px 0 0; max-width: 640px;
+  font-weight: 500; line-height: 1.55; margin: 22px 0 0; max-width: 640px;
 }
 
 /* ——— FAQ ——— */
@@ -99,10 +99,10 @@ usePageSeo({
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.tsf__copy { color: var(--nu-gray-2); font-size: 17px; font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
+.tsf__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
 .tsf__cta {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .tsf__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }

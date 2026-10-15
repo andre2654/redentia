@@ -48,7 +48,7 @@ const heading = computed(() =>
 }
 .ats__all { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; transition: gap .2s; }
 .ats__all:hover { gap: 16px; }
-.ats__all-label { color: var(--nu-ink); font-size: 16px; font-weight: 800; }
+.ats__all-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
 .ats__all-circle {
   width: 44px; height: 44px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;

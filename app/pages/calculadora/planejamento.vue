@@ -436,21 +436,21 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada ——— */
-.pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
+.pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .pl__h4--accent { color: var(--nu-blue); }
 .pl__h4--positive { color: var(--nu-green); }
 .pl__h4--negative { color: var(--nu-red); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pl__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .pl__prose p:last-child { margin-bottom: 0; }
 .pl__prose strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.pl__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.pl__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .pl__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -466,8 +466,8 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .pl__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pl__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
-.pl__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.pl__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.pl__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do exemplar) ——— */
 .pl__tiles {
@@ -485,13 +485,13 @@ usePageSeo({
    neste setup — descendente é dropado — então fica o descendente scoped puro,
    que casa porque só o último elemento do seletor recebe o data-v). */
 .cbd--cream .pl__tile { background: var(--nu-white); }
-.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.pl__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .pl__card-p--strong { color: var(--nu-ink); font-weight: 700; margin-top: 14px; }
-.pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
+.pl__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .pl__list--plain { list-style: none; padding-left: 0; }
 .pl__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
-.pl__result-main { margin: 0; color: var(--nu-ink); font-size: 15px; font-weight: 800; }
-.pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pl__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.pl__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 /* ——— ex-grid (cards com título h3 acima, família dos exemplos do exemplar) ——— */
 .pl__ex-grid {
@@ -499,7 +499,7 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pl__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.pl__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .pl__ex-card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
 .cbd--cream .pl__ex-card { background: var(--nu-white); }
 
@@ -516,12 +516,12 @@ usePageSeo({
 }
 .cbd--cream .pl__card-link { background: var(--nu-white); }
 .pl__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pl__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.pl__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .pl__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .pl__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -531,7 +531,7 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .pl__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.pl__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.pl__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .pl__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .pl__cta .pl__pill { margin-top: 0; }
 .pl__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

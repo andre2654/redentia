@@ -128,7 +128,7 @@ watch(shrunk, (s) => {
 .rbh__lockup { display: flex; align-items: baseline; gap: 7px; }
 .rbh__name,
 .rbh__suffix {
-  font-size: 20px; font-weight: 800; letter-spacing: -0.03em; white-space: nowrap;
+  font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.03em; white-space: nowrap;
   transition: font-size .28s ease;
 }
 .rbh__name { color: var(--nu-ink); }
@@ -139,7 +139,7 @@ watch(shrunk, (s) => {
    acento de marca que distingue a linha de produto do nome. */
 .rbh__suffix { color: var(--nu-blue-deep); }
 .rbh-wrap--shrunk .rbh__name,
-.rbh-wrap--shrunk .rbh__suffix { font-size: 17.5px; }
+.rbh-wrap--shrunk .rbh__suffix { font-size: var(--nu-fs-lg); }
 
 /* ——— o único botão da página acima da dobra ——— */
 .rbh__acoes { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
@@ -147,7 +147,7 @@ watch(shrunk, (s) => {
    chapado no CTA comercial, e duas pílulas lado a lado brigam entre si */
 .rbh__entrar {
   display: inline-flex; align-items: center; padding: 12px 14px; min-height: 44px;
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 700; white-space: nowrap;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
   border-radius: var(--nu-r-pill); transition: color .2s, background .2s;
 }
 .rbh__entrar:hover { color: var(--nu-ink); background: var(--nu-cream); }
@@ -166,10 +166,10 @@ watch(shrunk, (s) => {
   background: transparent; color: var(--nu-ink);
   box-shadow: inset 0 0 0 1px var(--nu-ink-45);
   border-radius: 12px; padding: 12px 22px; min-height: 44px;
-  font-size: 15.5px; font-weight: 700; white-space: nowrap;
+  font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
   transition: background .2s, box-shadow .2s, padding .28s ease, font-size .28s ease;
 }
-.rbh-wrap--shrunk .rbh__cta { padding: 9px 18px; font-size: 14.5px; }
+.rbh-wrap--shrunk .rbh__cta { padding: 9px 18px; font-size: var(--nu-fs-sm); }
 .rbh__cta:hover {
   background: var(--nu-cream); color: var(--nu-ink);
   box-shadow: inset 0 0 0 1px var(--nu-ink);
@@ -217,14 +217,14 @@ watch(shrunk, (s) => {
   .rbh-wrap--logado .rbh__entrar {
     display: inline-flex;
     background: var(--nu-ink); color: var(--nu-white);
-    border-radius: 12px; padding: 10px 16px; font-size: 14px;
+    border-radius: 12px; padding: 10px 16px; font-size: var(--nu-fs-sm);
   }
   .rbh-wrap--logado .rbh__entrar:hover { background: var(--nu-ink-hover); color: var(--nu-white); }
   .rbh__brand { gap: 11px; }
   .rbh__lockup { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.12; }
-  .rbh__name, .rbh__suffix { font-size: 15px; }
-  .rbh-wrap--shrunk .rbh__name, .rbh-wrap--shrunk .rbh__suffix { font-size: 13.5px; }
-  .rbh__cta { padding: 10px 16px; font-size: 14px; }
-  .rbh-wrap--shrunk .rbh__cta { padding: 8px 14px; font-size: 13.5px; }
+  .rbh__name, .rbh__suffix { font-size: var(--nu-fs-md); }
+  .rbh-wrap--shrunk .rbh__name, .rbh-wrap--shrunk .rbh__suffix { font-size: var(--nu-fs-sm); }
+  .rbh__cta { padding: 10px 16px; font-size: var(--nu-fs-sm); }
+  .rbh-wrap--shrunk .rbh__cta { padding: 8px 14px; font-size: var(--nu-fs-sm); }
 }
 </style>

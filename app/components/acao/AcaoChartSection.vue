@@ -75,9 +75,9 @@ const legend = computed(() => {
 }
 .acs__legend { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; margin-top: 20px; }
 .acs__legend-item { display: inline-flex; align-items: baseline; gap: 9px; }
-.acs__legend-label { color: var(--nu-cream-text-50); font-size: 15px; font-weight: 700; }
+.acs__legend-label { color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; }
 .acs__legend-pct {
-  color: var(--nu-cream-text-85); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-85); font-size: var(--nu-fs-2xl); font-weight: 800; font-variant-numeric: tabular-nums;
 }
 .acs__legend-pct--down { color: var(--nu-red-soft); }
 .acs__legend-pct--up { color: var(--nu-green-soft); }

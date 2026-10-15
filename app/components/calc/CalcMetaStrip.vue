@@ -32,15 +32,15 @@ defineProps<{
   background: var(--nu-white);
   padding: 16px clamp(22px, 5.5vw, 80px) 26px;
 }
-.cms__label { color: var(--nu-gray); font-size: 13.5px; font-weight: 800; white-space: nowrap; }
+.cms__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
 .cms__chips { list-style: none; display: flex; gap: 8px; flex-wrap: wrap; margin: 0; padding: 0; }
 .cms__chips li {
   display: inline-flex; align-items: center; gap: 7px;
   background: var(--nu-cream); border-radius: var(--nu-r-pill);
-  padding: 7px 13px; color: var(--nu-ink); font-size: 12.5px; font-weight: 700;
+  padding: 7px 13px; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
 }
 .cms__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-blue); flex-shrink: 0; }
 .cms__dot--positive { background: var(--nu-green); }
 .cms__spacer { flex: 1; }
-.cms__updated { color: var(--nu-gray); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.cms__updated { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; white-space: nowrap; }
 </style>

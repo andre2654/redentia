@@ -45,7 +45,7 @@ const showImg = computed(() => !!props.src && !failed.value)
   animation: nu-fade .35s ease both;
 }
 .nni__logo { width: 88px; max-width: 42%; height: auto; opacity: .38; }
-.nni__msg { color: var(--nu-gray); font-size: 13px; font-weight: 600; line-height: 1.4; }
+.nni__msg { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.4; }
 /* sobre navy o gray afunda; sobe pro texto-sobre-navy translúcido da paleta */
 .nni--dark .nni__msg { color: var(--nu-cream-text-60); }
 </style>

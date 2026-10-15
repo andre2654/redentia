@@ -200,7 +200,7 @@ const fmt = fmtBRL
 @keyframes sfc-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .sfc__event {
   position: absolute; top: -4px; transform: translateX(-50%);
-  color: var(--nu-cream-text-55); font-size: 10.5px; font-weight: 800;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
 }
 .sfc__event--choque { color: var(--nu-amber); }
@@ -209,13 +209,13 @@ const fmt = fmtBRL
 .sfc__event-text { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .sfc__ylabel {
   position: absolute; right: 0; transform: translateY(-120%);
-  color: var(--nu-cream-text-45); font-size: 12px; font-weight: 700;
+  color: var(--nu-cream-text-45); font-size: var(--nu-fs-xs); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .sfc__xrow { position: relative; height: 22px; }
 .sfc__xlabel {
   position: absolute; transform: translateX(-50%);
-  color: var(--nu-cream-text-45); font-size: 12px; font-weight: 700;
+  color: var(--nu-cream-text-45); font-size: var(--nu-fs-xs); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .sfc__tip {
@@ -225,8 +225,8 @@ const fmt = fmtBRL
   box-shadow: 0 16px 40px -18px rgba(5, 10, 25, 0.8);
   pointer-events: none;
 }
-.sfc__tip-date { color: var(--nu-cream-text-60); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-.sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-cream-text-78); font-size: 12.5px; font-weight: 600; }
+.sfc__tip-date { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.sfc__tip-row { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: 500; }
 .sfc__tip-row b { color: var(--nu-cream-text); font-variant-numeric: tabular-nums; }
 .sfc__dot { width: 8px; height: 8px; border-radius: 50%; }
 .sfc__dot--hi { background: var(--nu-green-soft); }

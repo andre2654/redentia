@@ -74,20 +74,20 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
 
 .cci__h1 {
   margin: 22px 0 0; text-align: center; color: var(--nu-ink);
-  font-size: 21px; font-weight: 700; letter-spacing: -.03em; line-height: 1.22; text-wrap: balance; outline: none;
+  font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -.03em; line-height: 1.22; text-wrap: balance; outline: none;
 }
 .cci__h1 strong { font-weight: 800; }
-.cci__sub { margin: 8px 0 0; text-align: center; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.5; }
+.cci__sub { margin: 8px 0 0; text-align: center; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .cci__lista { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.cci__lista li { display: flex; align-items: center; gap: 12px; color: var(--nu-ink); font-size: 14px; font-weight: 600; line-height: 1.4; }
+.cci__lista li { display: flex; align-items: center; gap: 12px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
 .cci__ico {
   width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; background: var(--nu-cream); color: var(--nu-blue);
   display: inline-flex; align-items: center; justify-content: center;
 }
 
 .cci__foot { margin-top: auto; padding-top: 22px; }
-.cci__termos { margin: 0 0 12px; text-align: center; color: var(--nu-gray); font-size: 12px; font-weight: 600; line-height: 1.5; }
+.cci__termos { margin: 0 0 12px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .cci__link {
   padding: 0; border: none; background: none; color: var(--nu-blue); font: inherit; font-weight: 800; cursor: pointer;
   text-decoration: underline; text-decoration-color: var(--nu-blue-30); text-underline-offset: 2px;

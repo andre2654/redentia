@@ -54,7 +54,7 @@ function fmtMaturity(iso: string | null): string {
 .rkt__table { width: 100%; min-width: 680px; border-collapse: collapse; }
 .rkt__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
   border-bottom: 1px solid var(--nu-cream-2);
 }
@@ -66,12 +66,12 @@ function fmtMaturity(iso: string | null): string {
 .rkt__row + .rkt__row .rkt__cell { border-top: 1px solid var(--nu-cream-2); }
 .rkt__cell {
   padding: 14px 16px; text-align: right; white-space: nowrap;
-  color: var(--nu-ink); font-size: 15px; font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .rkt__cell--pos {
   width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .rkt__cell--asset { text-align: left; font-weight: 800; letter-spacing: -.1px; }
 .rkt__link { color: var(--nu-ink); }
@@ -80,6 +80,6 @@ function fmtMaturity(iso: string | null): string {
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .rkt__badge {
   display: inline-flex; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: 12px; font-weight: 800;
+  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
 }
 </style>

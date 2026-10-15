@@ -44,7 +44,7 @@ defineProps<{ rows: TesouroRowVM[] }>()
 .ttb__table { width: 100%; min-width: 680px; border-collapse: collapse; }
 .ttb__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
   border-bottom: 1px solid var(--nu-cream-2);
 }
@@ -55,7 +55,7 @@ defineProps<{ rows: TesouroRowVM[] }>()
 .ttb__row + .ttb__row .ttb__cell { border-top: 1px solid var(--nu-cream-2); }
 .ttb__cell {
   padding: 14px 16px; text-align: right; white-space: nowrap;
-  color: var(--nu-ink); font-size: 15px; font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .ttb__cell--asset { text-align: left; padding-left: clamp(16px, 2vw, 28px); }
@@ -65,6 +65,6 @@ defineProps<{ rows: TesouroRowVM[] }>()
 .ttb__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .ttb__badge {
   display: inline-flex; background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: 12px; font-weight: 800;
+  border-radius: var(--nu-r-chip); padding: 4px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
 }
 </style>

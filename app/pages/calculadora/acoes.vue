@@ -461,15 +461,15 @@ usePageSeo({
 
 <style scoped>
 /* ——— tipografia compartilhada (mesmos valores do exemplar jc__) ——— */
-.sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
+.sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .sa__h4--accent { color: var(--nu-blue); }
 .sa__h4--positive { color: var(--nu-green); }
-.sa__small { margin: 14px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: 500; line-height: 1.6; }
+.sa__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .sa__small--center { margin: 22px auto 0; max-width: 680px; text-align: center; }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .sa__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .sa__prose p:last-child { margin-bottom: 0; }
@@ -477,7 +477,7 @@ usePageSeo({
 .sa__prose--gap { margin-top: 22px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.sa__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.sa__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .sa__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -494,8 +494,8 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .sa__scenario:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sa__scenario-label { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
-.sa__scenario-sub { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.sa__scenario-label { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.sa__scenario-sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— tiles (grid de cards pequenos, mesma família do hub) ——— */
 .sa__tiles {
@@ -510,12 +510,12 @@ usePageSeo({
 .sa__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 :global(.cbd--cream) .sa__tile { background: var(--nu-white); }
 .sa__tile--positive { background: color-mix(in srgb, var(--nu-green-bg) 45%, var(--nu-white)); }
-.sa__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.sa__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
+.sa__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.sa__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .sa__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 14px; }
 .sa__result-box--negative { background: var(--nu-red-tint); }
-.sa__result-main { margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.sa__result-note { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; }
+.sa__result-main { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.sa__result-note { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 .sa__result-note:first-child { margin-top: 0; }
 .sa__result-note--spaced { margin-top: 8px; }
 
@@ -525,12 +525,12 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.sa__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+.sa__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .sa__ex-title--center { text-align: center; margin: clamp(36px, 5vw, 56px) 0 0; }
 .sa__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
 .sa__ex-note {
   margin: 22px auto 0; max-width: 680px; text-align: center;
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.6;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
 }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
@@ -546,12 +546,12 @@ usePageSeo({
 }
 :global(.cbd--cream) .sa__card-link { background: var(--nu-white); }
 .sa__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sa__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.sa__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .sa__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .sa__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -561,7 +561,7 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .sa__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.sa__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.sa__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .sa__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .sa__cta .sa__pill { margin-top: 0; }
 .sa__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

@@ -49,13 +49,13 @@ defineProps<{
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.afd__sub { color: var(--nu-gray); font-size: 17px; font-weight: 600; line-height: 1.5; margin-top: 22px; }
+.afd__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .afd__perfil { margin-top: 26px; }
 .afd__dim {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   padding: 13px 0; border-top: 1px solid var(--nu-cream-2);
 }
-.afd__dim-name { color: var(--nu-ink); font-size: 16px; font-weight: 700; }
+.afd__dim-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .afd__grid {
   flex: 1.6 1 480px; min-width: min(340px, 100%);
   display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px;

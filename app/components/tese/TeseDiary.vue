@@ -150,7 +150,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
   animation: nu-fade .5s ease both;
 }
 .tdi__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.tdi__meta { color: var(--nu-gray); font-size: 16px; font-weight: 600; }
+.tdi__meta { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 
 .tdi__card {
   background: var(--nu-white); border-radius: 28px; padding: clamp(26px, 4vw, 44px); margin-top: 40px;
@@ -166,7 +166,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
   letter-spacing: -0.03em; line-height: 1.15; max-width: 920px;
 }
 .tdi__summary {
-  margin: 16px 0 0; color: var(--nu-gray-2); font-size: 16.5px; font-weight: 500;
+  margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
   line-height: 1.7; max-width: 920px;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
@@ -174,7 +174,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 .tdi__foot { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-top: 26px; }
 .tdi__cta {
   display: inline-flex; align-items: center; gap: 9px; border: none; font-family: inherit;
-  background: var(--nu-ink); color: var(--nu-white); font-size: 14.5px; font-weight: 800;
+  background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700;
   padding: 13px 24px; border-radius: var(--nu-r-pill); cursor: pointer; transition: background .2s;
 }
 .tdi__cta:hover { background: var(--nu-ink-hover); }
@@ -185,7 +185,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
   display: inline-flex; align-items: center; justify-content: center;
 }
 .tdi__sig-logo { width: 15px; height: 15px; display: block; object-fit: contain; }
-.tdi__sig-txt { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.tdi__sig-txt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .tdi__rows { margin-top: 16px; }
 .tdi__row {
@@ -196,18 +196,18 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 }
 .tdi__row:hover { transform: translateY(-2px); }
 .tdi__row-date {
-  color: var(--nu-gray); font-size: 13px; font-weight: 800; width: 52px; flex-shrink: 0;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; width: 52px; flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
 .tdi__row-title {
-  flex: 1; min-width: 0; color: var(--nu-ink); font-size: 15.5px; font-weight: 700;
+  flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .tdi__row-chevron { flex-shrink: 0; stroke: var(--nu-sand); }
 .tdi__more { text-align: center; margin-top: 20px; }
 .tdi__more-btn {
   display: inline-flex; align-items: center; border: none; font-family: inherit;
-  background: var(--nu-sand-2); color: var(--nu-gray-2); font-size: 14px; font-weight: 800;
+  background: var(--nu-sand-2); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700;
   padding: 11px 22px; border-radius: var(--nu-r-pill); cursor: pointer; transition: background .2s;
 }
 .tdi__more-btn:hover { background: var(--nu-sand-hover); }

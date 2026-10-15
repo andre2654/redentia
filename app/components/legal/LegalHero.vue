@@ -48,7 +48,7 @@ const updatedText = computed(() => {
   letter-spacing: -0.045em; line-height: 1.02;
 }
 .lgh__updated {
-  margin-top: 20px; color: var(--nu-gray); font-size: 14.5px; font-weight: 600;
+  margin-top: 20px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 </style>

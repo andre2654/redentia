@@ -23,7 +23,7 @@ defineProps<{ title: string }>()
   display: inline-flex; align-items: center;
   background: var(--nu-blue-tint); color: var(--nu-blue);
   border-radius: var(--nu-r-pill); padding: 8px 16px;
-  font-size: 13px; font-weight: 800; letter-spacing: 0.4px;
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.4px;
 }
 .stub__title {
   margin: 18px 0 0; color: var(--nu-ink);
@@ -32,6 +32,6 @@ defineProps<{ title: string }>()
 }
 .stub__dek {
   color: var(--nu-gray); font-size: clamp(16px, 1.8vw, 20px);
-  font-weight: 600; line-height: 1.55; margin-top: 18px; max-width: 560px;
+  font-weight: 500; line-height: 1.55; margin-top: 18px; max-width: 560px;
 }
 </style>

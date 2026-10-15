@@ -56,8 +56,8 @@ function onKey(e: KeyboardEvent) {
 }
 @keyframes cct-sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .cct__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 18px 12px 22px; border-bottom: 1px solid var(--nu-cream-2); }
-.cct__h2 { margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 800; letter-spacing: -.02em; }
-.cct__v { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cct__h2 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.02em; }
+.cct__v { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
 .cct__fechar {
   width: 36px; height: 36px; flex-shrink: 0; border: none; border-radius: 10px; background: transparent; color: var(--nu-ink);
   display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s;
@@ -66,7 +66,7 @@ function onKey(e: KeyboardEvent) {
 .cct__fechar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .cct__texto {
   flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 16px 22px; white-space: pre-wrap; overflow-wrap: anywhere;
-  color: var(--nu-gray-3); font-size: 13.5px; font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 .cct__foot { padding: 12px 18px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--nu-cream-2); }
 

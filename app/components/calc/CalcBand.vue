@@ -39,17 +39,17 @@ defineProps<{
 .cbd--tight { padding-top: clamp(36px, 5vw, 60px); padding-bottom: clamp(36px, 5vw, 60px); }
 .cbd__kicker {
   margin: 0 auto 14px; max-width: 980px; text-align: center;
-  color: var(--nu-blue); font-size: 12px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .cbd__title {
   margin: 0 auto; max-width: 980px;
-  color: var(--nu-ink); font-size: clamp(32px, 4vw, 54px); font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
   letter-spacing: -0.04em; line-height: 1.06; text-align: center;
 }
 .cbd__dek {
   margin: 18px auto 0; max-width: 680px; text-align: center;
-  color: var(--nu-gray-2); font-size: 17px; font-weight: 500; line-height: 1.65;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.65;
 }
 .cbd__dek :deep(p) { margin: 0; }
 </style>

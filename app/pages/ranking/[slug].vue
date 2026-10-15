@@ -264,7 +264,7 @@ usePageSeo({
 .rks__chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .rks__chip {
   background: var(--nu-white); color: var(--nu-gray-2); border-radius: var(--nu-r-pill);
-  padding: 8px 16px; font-size: 13.5px; font-weight: 700;
+  padding: 8px 16px; font-size: var(--nu-fs-sm); font-weight: 700;
 }
 
 /* ——— corpo (leader + toolbar + tabela) sobre creme ——— */
@@ -280,21 +280,21 @@ usePageSeo({
 }
 .rks__toolbar-meta { display: flex; flex-direction: column; gap: 3px; }
 .rks__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue); font-size: 12px; font-weight: 800;
+  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .rks__toolbar-count {
-  margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 700;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums; letter-spacing: -.1px;
 }
 .rks__state {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-2); font-size: 15.5px; font-weight: 600;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
 }
 .rks__answer {
   margin: clamp(8px, 1.5vw, 16px) auto 0; max-width: 68ch; text-align: center;
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
 }
 
 /* ——— líder do tesouro ——— */
@@ -302,7 +302,7 @@ usePageSeo({
 .rks__tleader-crown {
   display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue);
   border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: 12.5px; font-weight: 800; letter-spacing: .2px; text-transform: uppercase;
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
 }
 .rks__tleader-main {
   display: flex; align-items: center; justify-content: space-between;
@@ -310,28 +310,28 @@ usePageSeo({
 }
 .rks__tleader-who { display: flex; flex-direction: column; gap: 2px; }
 .rks__tleader-name { color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.3px; }
-.rks__tleader-sub { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
+.rks__tleader-sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .rks__tleader-rate {
   color: var(--nu-blue); font-size: clamp(32px, 4vw, 48px); font-weight: 800;
   letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums;
 }
-.rks__tleader-label { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
+.rks__tleader-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 
 /* ——— prosa educacional (mesma família das calculadoras) ——— */
 .rks__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.7;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
 .rks__prose p:last-child { margin-bottom: 0; }
 .rks__h3 {
   margin: 26px 0 12px; color: var(--nu-ink);
-  font-size: 20px; font-weight: 800; letter-spacing: -.3px;
+  font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px;
 }
 .rks__prose .rks__h3:first-child { margin-top: 0; }
 .rks__ul { margin: 0 0 16px; padding-left: 22px; }
 .rks__ul li {
   margin: 0 0 8px; color: var(--nu-gray-3);
-  font-size: 17px; font-weight: 500; line-height: 1.7;
+  font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
 .rks__prose-link { color: var(--nu-blue); font-weight: 800; }
 .rks__prose-link:hover { text-decoration: underline; }
@@ -344,12 +344,12 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .rks__step { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; }
-.rks__step-title { margin: 0 0 8px; color: var(--nu-blue); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
-.rks__step-body { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.rks__step-title { margin: 0 0 8px; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.rks__step-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .rks__formula { margin: 24px auto 0; max-width: 680px; text-align: center; }
 .rks__formula code {
   display: inline-block; background: var(--nu-white); border-radius: var(--nu-r-input);
-  padding: 14px 20px; color: var(--nu-ink); font-size: 15px; font-weight: 700;
+  padding: 14px 20px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -365,13 +365,13 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .rks__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.rks__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
-.rks__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.rks__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.rks__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
 /* ——— pills / CTA (mesma família das calculadoras) ——— */
 .rks__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .rks__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -381,7 +381,7 @@ usePageSeo({
   max-width: 1080px; margin: 0 auto;
 }
 .rks__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.rks__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.rks__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .rks__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .rks__cta .rks__pill { margin-top: 0; }
 .rks__pill--light { background: var(--nu-cream); color: var(--nu-blue); }

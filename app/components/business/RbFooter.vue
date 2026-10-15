@@ -130,7 +130,7 @@ const COLUMNS = [
 .rbf__top { display: flex; gap: clamp(28px, 5vw, 70px); align-items: flex-start; flex-wrap: wrap; }
 .rbf__title {
   margin: 0; flex: 1 1 240px; min-width: min(220px, 100%); color: var(--nu-cream-text);
-  font-size: clamp(28px, 2.7vw, 40px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14;
+  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14;
 }
 .rbf__cards {
   flex: 2.4 1 480px; min-width: min(320px, 100%);
@@ -143,28 +143,28 @@ const COLUMNS = [
 }
 .rbf__card:hover { background: var(--nu-navy-3); transform: translateY(-3px); }
 .rbf__card:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
-.rbf__card-title { color: var(--nu-cream-text); font-size: 20px; font-weight: 800; }
-.rbf__card-desc { color: var(--nu-cream-text-70); font-size: 16px; font-weight: 500; line-height: 1.55; margin-top: 12px; max-width: 320px; }
+.rbf__card-title { color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; }
+.rbf__card-desc { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; margin-top: 12px; max-width: 320px; }
 .rbf__card-arrow {
   margin-top: auto; width: 46px; height: 46px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
 }
 .rbf__hero {
   margin: clamp(72px, 10vw, 140px) 0 0; color: var(--nu-cream-text);
-  font-size: clamp(42px, 7vw, 102px); font-weight: 800; letter-spacing: -0.045em; line-height: 1.03;
+  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.045em; line-height: 1.03;
 }
 .rbf__grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
   gap: clamp(40px, 4vw, 64px) clamp(28px, 4vw, 56px); margin-top: clamp(56px, 8vw, 100px);
 }
 .rbf__col { min-width: 130px; }
-.rbf__col-title { color: var(--nu-blue-soft); font-size: 15px; font-weight: 800; margin-bottom: 18px; }
+.rbf__col-title { color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: 800; margin-bottom: 18px; }
 .rbf__col-links { display: flex; flex-direction: column; gap: 13px; }
-.rbf__link { color: var(--nu-cream-text-78); font-size: 15px; font-weight: 600; transition: color .2s; }
+.rbf__link { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; transition: color .2s; }
 .rbf__link:hover { color: var(--nu-white); }
-.rbf__mail { color: var(--nu-cream-text); font-size: 15px; font-weight: 700; transition: color .2s; }
+.rbf__mail { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 700; transition: color .2s; }
 .rbf__mail:hover { color: var(--nu-white); }
-.rbf__hours { color: var(--nu-cream-text-55); font-size: 14px; font-weight: 500; line-height: 1.55; }
+.rbf__hours { color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .rbf__link:focus-visible,
 .rbf__mail:focus-visible,
 .rbf__soc:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
@@ -182,7 +182,7 @@ const COLUMNS = [
 .rbf__bottom-link:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .rbf__bottom-logo { width: 27px; height: 27px; display: block; object-fit: contain; }
 /* o nome por extenso: é a diferença que o dono pediu entre os dois footers */
-.rbf__bottom-name { color: var(--nu-cream-text); font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+.rbf__bottom-name { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.02em; }
 .rbf__bottom-suffix { color: var(--nu-blue-soft); }
-.rbf__copy { color: var(--nu-cream-text-60); font-size: 14px; font-weight: 500; }
+.rbf__copy { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: 500; }
 </style>

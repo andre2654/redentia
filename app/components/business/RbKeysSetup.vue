@@ -91,12 +91,12 @@ const nome = defineModel<string>('nome', { required: true })
 .rbkst__badge { margin-bottom: 18px; }
 
 .rbkst__card { background: var(--nu-white); border-radius: var(--nu-r-card); padding: clamp(24px, 3vw, 32px); box-shadow: var(--nu-shadow-card); }
-.rbkst__label { display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 16px; }
+.rbkst__label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 16px; }
 
 .rbkst__input {
   display: block; width: 100%; margin-bottom: 16px;
   background: var(--nu-cream); border: none; border-radius: var(--nu-r-input);
-  padding: 15px 18px; color: var(--nu-ink); font-size: 16px; font-weight: 700; font-family: inherit;
+  padding: 15px 18px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-family: inherit;
 }
 .rbkst__input::placeholder { color: var(--nu-gray); font-weight: 500; }
 .rbkst__input:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 1px; }
@@ -105,18 +105,18 @@ const nome = defineModel<string>('nome', { required: true })
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 44px; border: none; cursor: pointer;
   background: var(--nu-blue); color: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 14px 26px; font-size: 16px; font-weight: 800; font-family: inherit;
+  padding: 14px 26px; font-size: var(--nu-fs-md); font-weight: 800; font-family: inherit;
   transition: background .2s, opacity .2s;
 }
 .rbkst__cta:hover:not(:disabled) { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbkst__cta:disabled { opacity: .5; cursor: default; }
 .rbkst__cta:focus-visible { outline: 2px solid var(--nu-ink); outline-offset: 2px; }
 
-.rbkst__texto { margin: 0 0 20px; color: var(--nu-gray-2); font-size: 15.5px; font-weight: 600; line-height: 1.6; }
-.rbkst__erro { margin: 16px 0 0; color: var(--nu-ink); font-size: 14px; font-weight: 700; line-height: 1.55; }
+.rbkst__texto { margin: 0 0 20px; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
+.rbkst__erro { margin: 16px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.55; }
 .rbkst__nota {
   margin: 20px 0 0; padding-top: 18px; border-top: 1px solid var(--nu-cream-2);
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 .rbkst__link { color: var(--nu-blue); font-weight: 700; }
 .rbkst__link:hover { color: var(--nu-blue-hover); }

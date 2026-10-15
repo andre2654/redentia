@@ -120,20 +120,20 @@ const bandPath = computed(() => {
   .spd__head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
   .spd__logo { width: 30px; height: 30px; }
   .spd__head-txt { display: flex; flex-direction: column; line-height: 1.25; }
-  .spd__head-txt b { font-size: 14px; font-weight: 800; }
-  .spd__head-txt span { font-size: 11px; color: var(--nu-gray); font-weight: 600; }
-  .spd__title { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
-  .spd__lead { margin: 0 0 14px; font-size: 13px; line-height: 1.55; color: var(--nu-gray-3); max-width: 640px; }
+  .spd__head-txt b { font-size: var(--nu-fs-sm); font-weight: 700; }
+  .spd__head-txt span { font-size: var(--nu-fs-xs); color: var(--nu-gray); font-weight: 500; }
+  .spd__title { margin: 0 0 8px; font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; }
+  .spd__lead { margin: 0 0 14px; font-size: var(--nu-fs-dense); line-height: 1.55; color: var(--nu-gray-3); max-width: 640px; }
   .spd__lead b { font-weight: 800; }
   .spd__chart { width: 100%; height: 170px; }
   .spd__stale {
   margin: 0 0 10px; padding: 8px 12px;
   background: var(--nu-amber-bg); color: var(--nu-amber-text);
-  border-radius: 6px; font-size: 11px; font-weight: 700;
+  border-radius: 6px; font-size: var(--nu-fs-xs); font-weight: 700;
 }
-.spd__fxnote { margin: 0 0 10px; color: var(--nu-gray-2); font-size: 10.5px; font-weight: 600; }
-.spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 600; }
-  .spd__table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.spd__fxnote { margin: 0 0 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; }
+.spd__chart-legend { margin: 4px 0 16px; font-size: 10px; color: var(--nu-gray); font-weight: 500; }
+  .spd__table { width: 100%; border-collapse: collapse; font-size: var(--nu-fs-xs); }
   .spd__table th {
     text-align: left; padding: 6px 8px; border-bottom: 1.5px solid var(--nu-ink);
     font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;

@@ -39,7 +39,7 @@ useNuScrollFrame(() => {
    cima dos 32px do design — o mock não tem a faixa). */
 .ntoc { width: 250px; flex-shrink: 0; position: sticky; top: 84px; }
 .ntoc__label {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;
 }
 .ntoc__list {
@@ -49,7 +49,7 @@ useNuScrollFrame(() => {
 .ntoc__item {
   display: block; padding: 9px 0 9px 18px; margin-left: -2px;
   border-left: 2.5px solid transparent;
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 600; line-height: 1.35;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.35;
   transition: color .2s, border-color .2s;
 }
 .ntoc__item--active {

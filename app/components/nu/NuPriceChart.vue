@@ -174,7 +174,7 @@ const hov = computed(() => {
 .npc__gridline { position: absolute; left: 0; right: 0; height: 1px; background: var(--nu-cream-text-08); }
 .npc__gridlbl {
   position: absolute; right: 18px; transform: translateY(-120%);
-  color: var(--nu-cream-text-35); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums;
+  color: var(--nu-cream-text-35); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums;
 }
 .npc__enddot {
   position: absolute; right: -1px; width: 13px; height: 13px; border-radius: 50%;
@@ -187,11 +187,11 @@ const hov = computed(() => {
   white-space: nowrap; box-shadow: var(--nu-shadow-chart-pill);
 }
 .npc__endpill-label {
-  display: block; color: var(--nu-navy-55); font-size: 10.5px; font-weight: 800;
+  display: block; color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .5px; text-transform: uppercase;
 }
 .npc__endpill-val {
-  display: block; color: var(--nu-navy); font-size: 15px; font-weight: 800;
+  display: block; color: var(--nu-navy); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; margin-top: 2px;
 }
 .npc__cross {
@@ -209,12 +209,12 @@ const hov = computed(() => {
   background: var(--nu-cream); border-radius: var(--nu-r-tile); padding: 12px 17px;
   box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; z-index: 4; white-space: nowrap;
 }
-.npc__tip-date { color: var(--nu-navy-55); font-size: 12px; font-weight: 700; }
+.npc__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700; }
 .npc__tip-val {
-  color: var(--nu-navy); font-size: 21px; font-weight: 800; margin-top: 3px;
+  color: var(--nu-navy); font-size: var(--nu-fs-xl); font-weight: 800; margin-top: 3px;
   font-variant-numeric: tabular-nums;
 }
-.npc__tip-delta { font-size: 13px; font-weight: 800; margin-top: 2px; }
+.npc__tip-delta { font-size: var(--nu-fs-dense); font-weight: 700; margin-top: 2px; }
 .npc__tip-delta--up { color: var(--nu-green-2); }
 .npc__tip-delta--down { color: var(--nu-red-2); }
 

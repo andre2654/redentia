@@ -55,7 +55,7 @@ onBeforeUnmount(() => { if (timer) clearInterval(timer) })
   letter-spacing: 0.12em; text-transform: uppercase;
 }
 .sof__line {
-  margin: 0; color: var(--nu-white); font-size: 13.5px; font-weight: 700; line-height: 1.4;
+  margin: 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4;
   text-shadow: 0 1px 14px var(--nu-ink-30);
 }
 @keyframes sof-breathe {

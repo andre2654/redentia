@@ -57,10 +57,10 @@ function brl(n: number): string {
   width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0;
   background: var(--nu-alloc-cash); align-self: center;
 }
-.csc__title { color: var(--nu-ink); font-size: 16.5px; font-weight: 800; }
-.csc__sub { color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.csc__title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.csc__sub { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .csc__total {
-  margin-left: auto; color: var(--nu-ink); font-size: 18px; font-weight: 800;
+  margin-left: auto; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 .csc__chips { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 13px; }
@@ -75,6 +75,6 @@ function brl(n: number): string {
   display: inline-flex; align-items: center; justify-content: center;
 }
 .csc__logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.csc__chip-name { color: var(--nu-gray-2); font-size: 13px; font-weight: 700; }
-.csc__chip-val { color: var(--nu-ink); font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.csc__chip-name { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700; }
+.csc__chip-val { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 </style>

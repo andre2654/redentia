@@ -48,7 +48,7 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
   transition: top .28s ease;
 }
 .nut { display: flex; align-items: center; gap: 26px; padding: 14px 22px; }
-.nut__label { color: var(--nu-ink); font-size: 15px; font-weight: 800; white-space: nowrap; flex-shrink: 0; }
+.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; flex-shrink: 0; }
 .nut__marquee { flex: 1; min-width: 0; overflow: hidden; }
 .nut__sk { display: flex; align-items: center; gap: 26px; }
 .nut__track { display: inline-flex; width: max-content; animation: nut-scroll 55s linear infinite; }
@@ -56,12 +56,12 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 .nut__group { display: inline-flex; align-items: center; gap: 26px; padding-right: 26px; }
 @keyframes nut-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .nut__item { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.nut__name { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; white-space: nowrap; }
-.nut__value { color: var(--nu-ink); font-size: 14px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.nut__pct { font-size: 13.5px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.nut__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
+.nut__value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.nut__pct { font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .nut__pct--up { color: var(--nu-green); }
 .nut__pct--down { color: var(--nu-red); }
-.nut__note { color: var(--nu-gray); font-size: 12.5px; white-space: nowrap; flex-shrink: 0; }
+.nut__note { color: var(--nu-gray); font-size: var(--nu-fs-dense); white-space: nowrap; flex-shrink: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .nut__track { animation: none; }

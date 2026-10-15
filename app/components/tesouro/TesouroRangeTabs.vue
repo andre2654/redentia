@@ -36,7 +36,7 @@ function select(value: TesouroRange) {
 .trt { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
 .trt__tab {
   padding: 11px 20px; border-radius: var(--nu-r-pill); border: none; background: transparent;
-  color: var(--nu-cream-text-50); font-size: 15px; font-weight: 700; cursor: pointer;
+  color: var(--nu-cream-text-50); font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer;
   transition: color .2s, background .2s;
 }
 .trt__tab:hover { color: var(--nu-cream-text-85); }
@@ -46,6 +46,6 @@ function select(value: TesouroRange) {
 .trt__tab--active:hover { color: var(--nu-navy); }
 
 @media (max-width: 760px) {
-  .trt__tab { padding: 9px 14px; font-size: 14px; }
+  .trt__tab { padding: 9px 14px; font-size: var(--nu-fs-sm); }
 }
 </style>

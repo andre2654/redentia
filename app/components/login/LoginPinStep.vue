@@ -164,7 +164,7 @@ onMounted(() => focusCell(0))
   font-size: clamp(32px, 3.4vw, 44px); font-weight: 800;
   letter-spacing: -0.04em; line-height: 1.05;
 }
-.lps__sent { margin: 14px 0 0; color: var(--nu-gray-2); font-size: 15px; font-weight: 600; line-height: 1.5; }
+.lps__sent { margin: 14px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .lps__label { margin-top: clamp(36px, 5vh, 56px); }
 .lps__cells { display: flex; gap: 10px; }
 .lps__cell {
@@ -179,15 +179,15 @@ onMounted(() => focusCell(0))
 }
 .lps__cell:focus { border-bottom-color: var(--nu-blue); }
 .lps__cell--error { border-bottom-color: var(--nu-red); }
-.lps__error { margin: 12px 0 0; color: var(--nu-red); font-size: 14px; font-weight: 600; }
+.lps__error { margin: 12px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lps__cta { margin-top: clamp(36px, 5vh, 52px); }
 .lps__resend { margin-top: 26px; }
 .lps__resend-btn {
   background: transparent; border: none; padding: 0;
-  color: var(--nu-blue); font-size: 14.5px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
   cursor: pointer; font-family: inherit;
 }
 .lps__resend-btn:disabled { color: var(--nu-gray); cursor: default; }
-.lps__resend-wait { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
+.lps__resend-wait { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lps__back { margin-top: clamp(32px, 5vh, 52px); }
 </style>

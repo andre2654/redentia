@@ -59,7 +59,7 @@ const tone = computed(() => {
 .rkl__crown {
   display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue);
   border-radius: var(--nu-r-pill); padding: 6px 14px;
-  font-size: 12.5px; font-weight: 800; letter-spacing: .2px; text-transform: uppercase;
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
 }
 .rkl__main {
   display: flex; align-items: center; justify-content: space-between;
@@ -68,8 +68,8 @@ const tone = computed(() => {
 .rkl__id { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .rkl__who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .rkl__ticker { color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px); font-weight: 800; letter-spacing: -.4px; }
-.rkl__name { color: var(--nu-gray-2); font-size: 14.5px; font-weight: 600; }
-.rkl__sector { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.rkl__name { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
+.rkl__sector { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .rkl__metric { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .rkl__value {
   color: var(--nu-ink); font-size: clamp(38px, 4.5vw, 56px); font-weight: 800;
@@ -77,8 +77,8 @@ const tone = computed(() => {
 }
 .rkl__value--up { color: var(--nu-green); }
 .rkl__value--down { color: var(--nu-red); }
-.rkl__label { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
-.rkl__price { color: var(--nu-gray-2); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rkl__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rkl__price { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 @media (max-width: 760px) {
   .rkl__metric { align-items: flex-start; }

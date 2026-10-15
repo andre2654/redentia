@@ -43,7 +43,7 @@ defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
 }
 .ndb__bar--current { background: var(--nu-blue); }
 .ndb__years { display: flex; gap: clamp(10px, 1.6vw, 22px); margin-top: 12px; }
-.ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: 14px; font-weight: 600; }
+.ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .ndb__year--current { color: var(--nu-ink); font-weight: 800; }
-.ndb__footnote { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-top: 22px; }
+.ndb__footnote { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 22px; }
 </style>

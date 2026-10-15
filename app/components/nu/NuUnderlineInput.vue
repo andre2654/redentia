@@ -52,10 +52,10 @@ function onInput(e: Event) {
   border: none; border-bottom: 2px solid var(--nu-underline);
   outline: none; border-radius: 0;
   padding: 12px 0 14px; color: var(--nu-ink);
-  font-size: clamp(20px, 2vw, 24px); font-weight: 600;
+  font-size: clamp(20px, 2vw, 24px); font-weight: 500;
   transition: border-color .2s;
 }
 .nui--tabular { font-variant-numeric: tabular-nums; }
-.nui::placeholder { color: var(--nu-placeholder); font-weight: 600; }
+.nui::placeholder { color: var(--nu-placeholder); font-weight: 500; }
 .nui:focus { border-bottom-color: var(--nu-blue); }
 </style>

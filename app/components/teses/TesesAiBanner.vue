@@ -44,7 +44,7 @@ const photoFailed = ref(false)
 .tab__cta {
   display: inline-flex; align-items: center; gap: 9px; background: transparent; color: var(--nu-white);
   border: 2px solid var(--nu-white-85); border-radius: var(--nu-r-pill); padding: 15px 30px;
-  font-size: 16.5px; font-weight: 800; margin-top: clamp(26px, 3vw, 36px); transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: 800; margin-top: clamp(26px, 3vw, 36px); transition: background .2s;
 }
 .tab__cta:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

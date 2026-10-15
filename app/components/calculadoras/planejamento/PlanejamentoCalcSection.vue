@@ -297,10 +297,10 @@ const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
 </template>
 
 <style scoped>
-.pcs__form-label { margin: 0 0 22px; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
+.pcs__form-label { margin: 0 0 22px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
 .pcs__gap { margin-top: 36px; }
 .pcs__gap:first-of-type { margin-top: 0; }
-.pcs__label { display: block; color: var(--nu-gray); font-size: 14px; font-weight: 700; }
+.pcs__label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 
 /* segmented no estilo dos chips do kit (ativo = pill preta) */
 .pcs__segmented { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
@@ -308,8 +308,8 @@ const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
   flex: 1 1 auto;
   padding: 11px 14px;
   border-radius: var(--nu-r-pill);
-  font-size: 13.5px;
-  font-weight: 800;
+  font-size: var(--nu-fs-sm);
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   border: 2px solid var(--nu-sand-border);
@@ -322,13 +322,13 @@ const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
   background: var(--nu-ink);
   color: var(--nu-white);
 }
-.pcs__help { margin: 12px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.55; }
+.pcs__help { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
 
 .pcs__cta {
   display: block; width: 100%; margin-top: 26px;
   background: var(--nu-blue); color: var(--nu-white);
   border: none; border-radius: var(--nu-r-pill);
-  padding: 16px 26px; font-size: 16px; font-weight: 800; font-family: inherit;
+  padding: 16px 26px; font-size: var(--nu-fs-md); font-weight: 800; font-family: inherit;
   cursor: pointer; transition: background .2s;
 }
 .pcs__cta:hover { background: var(--nu-blue-hover); }
@@ -337,15 +337,15 @@ const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
 .pcs__error {
   margin-top: 16px; padding: 14px 16px;
   background: var(--nu-red-tint); border-radius: var(--nu-r-input);
-  color: var(--nu-red-2); font-size: 14px; font-weight: 700; line-height: 1.5;
+  color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5;
 }
 
-.pcs__until { margin: 16px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 600; }
+.pcs__until { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
 .pcs__until strong { color: var(--nu-ink); font-weight: 800; }
 .pcs__gain { color: var(--nu-green); font-weight: 800; font-variant-numeric: tabular-nums; }
 
 .pcs__chart { margin-top: 30px; }
-.pcs__chart-label { margin: 0 0 14px; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
+.pcs__chart-label { margin: 0 0 14px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
 
 .pcs__subcard {
   background: var(--nu-cream);
@@ -353,40 +353,40 @@ const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
   padding: 24px;
   margin-top: 26px;
 }
-.pcs__subcard-title { margin: 0; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
-.pcs__subcard-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.55; }
+.pcs__subcard-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.pcs__subcard-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 
 .pcs__kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 18px; }
 .pcs__kpi { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
-.pcs__kpi-label { color: var(--nu-gray); font-size: 12px; font-weight: 700; }
-.pcs__kpi-value { color: var(--nu-ink); font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pcs__kpi-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.pcs__kpi-value { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
 .pcs__kpi-value--accent { color: var(--nu-blue); }
 .pcs__kpi-value--positive { color: var(--nu-green); }
 
 .pcs__assets { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 12px; margin-top: 18px; }
 .pcs__asset { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 18px; }
 .pcs__asset-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-.pcs__asset-cat { margin: 0; color: var(--nu-gray); font-size: 11px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; }
-.pcs__asset-ticker { margin: 4px 0 0; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.3px; }
+.pcs__asset-cat { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
+.pcs__asset-ticker { margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.3px; }
 .pcs__asset-weight { text-align: right; }
-.pcs__asset-weight-label { display: block; color: var(--nu-gray); font-size: 11px; font-weight: 700; }
-.pcs__asset-weight-value { display: block; color: var(--nu-blue); font-size: 21px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pcs__asset-weight-label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
+.pcs__asset-weight-value { display: block; color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
 .pcs__asset-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 16px; }
-.pcs__metric-label { margin: 0; color: var(--nu-gray); font-size: 11.5px; font-weight: 600; }
-.pcs__metric-value { margin: 2px 0 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pcs__metric-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.pcs__metric-value { margin: 2px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .pcs__metric-value--positive { color: var(--nu-green); }
 .pcs__metric-value--negative { color: var(--nu-red); }
 
 .pcs__callout {
   margin-top: 26px; padding: 18px 22px;
   background: var(--nu-cream); border-radius: 18px;
-  color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 
 .pcs__empty {
   background: var(--nu-cream); border-radius: var(--nu-r-card-lg);
   padding: clamp(32px, 5vw, 56px);
 }
-.pcs__empty-eyebrow { margin: 0; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
-.pcs__empty-text { margin: 12px 0 0; color: var(--nu-gray-2); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 460px; }
+.pcs__empty-eyebrow { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+.pcs__empty-text { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 460px; }
 </style>

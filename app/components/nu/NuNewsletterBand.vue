@@ -42,7 +42,7 @@ function submit() {
   font-size: clamp(34px, 4.2vw, 56px); font-weight: 800;
   letter-spacing: -0.04em; line-height: 1.05;
 }
-.nnb__sub { color: var(--nu-cream-text-70); font-size: 17px; font-weight: 600; margin-top: 16px; }
+.nnb__sub { color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 16px; }
 .nnb__right { flex: 1 1 340px; min-width: min(300px, 100%); }
 .nnb__pill {
   display: flex; gap: 10px; background: var(--nu-white);
@@ -50,11 +50,11 @@ function submit() {
 }
 .nnb__input {
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
-  color: var(--nu-ink); font-size: 16px; font-weight: 600; padding: 10px 0;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; padding: 10px 0;
 }
 .nnb__cta {
   background: var(--nu-blue); color: var(--nu-white); border: none;
-  border-radius: var(--nu-r-pill); padding: 13px 24px; font-size: 15px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
   cursor: pointer; white-space: nowrap; transition: background .2s;
 }
 .nnb__cta:hover { background: var(--nu-blue-hover); }

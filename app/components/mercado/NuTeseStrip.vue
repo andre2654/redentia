@@ -162,9 +162,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .tstz { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.tstz__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
-.tstz__title { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
-.tstz__dek { color: var(--nu-gray); font-size: clamp(16px, 1.7vw, 20px); font-weight: 600; line-height: 1.55; margin-top: 20px; max-width: 620px; }
+.tstz__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.tstz__title { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
+.tstz__dek { color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; margin-top: 20px; max-width: 620px; }
 .tstz__dek strong { color: var(--nu-ink); font-weight: 800; }
 
 .tstz__wrap { margin-top: 44px; }
@@ -183,7 +183,7 @@ onBeforeUnmount(() => {
 /* rótulo vertical da categoria (só painel FECHADO) */
 .tstz__vlabel {
   position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%) rotate(180deg);
-  writing-mode: vertical-rl; color: var(--nu-white); font-size: 13px; font-weight: 800;
+  writing-mode: vertical-rl; color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; pointer-events: none;
   opacity: 1; transition: opacity .3s;
 }
@@ -198,19 +198,19 @@ onBeforeUnmount(() => {
 .tstz__over-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .tstz__cat {
   display: inline-flex; align-items: center; background: var(--nu-white-18);
-  backdrop-filter: blur(8px); color: var(--nu-white); font-size: 12px; font-weight: 800;
+  backdrop-filter: blur(8px); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1.6px; text-transform: uppercase; padding: 8px 15px;
   border-radius: var(--nu-r-pill); white-space: nowrap;
 }
 .tstz__perf {
   display: inline-flex; align-items: center; gap: 7px; background: var(--nu-green-soft);
-  color: var(--nu-navy); font-size: 14px; font-weight: 800; padding: 6px 14px;
+  color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: 700; padding: 6px 14px;
   border-radius: var(--nu-r-pill); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .tstz__over-bottom { margin-top: auto; }
-.tstz__perf-label { color: var(--nu-white-72); font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+.tstz__perf-label { color: var(--nu-white-72); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 .tstz__panel-title {
-  display: block; color: var(--nu-white); font-size: clamp(26px, 2.6vw, 40px); font-weight: 800;
+  display: block; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800;
   line-height: 1.08; letter-spacing: -.5px; margin-top: 10px; max-width: 640px;
 }
 .tstz__hi { background: var(--nu-blue); padding: 1px 10px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
@@ -219,10 +219,10 @@ onBeforeUnmount(() => {
 .tstz__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; margin-top: 30px; }
 .tstz__foot-left { flex: 1 1 460px; min-width: min(320px, 100%); }
 .tstz__foot-anim { animation: nu-fade .5s ease both; }
-.tstz__desc { color: var(--nu-gray-2); font-size: clamp(17px, 1.75vw, 21px); font-weight: 500; line-height: 1.55; max-width: 660px; }
+.tstz__desc { color: var(--nu-gray-2); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; max-width: 660px; }
 .tstz__cta {
   display: inline-flex; align-items: center; gap: 10px; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 30px; font-size: 16px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 15px 30px; font-size: var(--nu-fs-md); font-weight: 800;
   margin-top: 22px; transition: background .2s, transform .15s;
 }
 .tstz__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }

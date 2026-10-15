@@ -120,13 +120,13 @@ usePageSeo({
 }
 .sth__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .sth__card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.sth__card-title { margin: 0; color: var(--nu-ink); font-size: 21px; font-weight: 800; letter-spacing: -.3px; }
+.sth__card-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
 .sth__card-count {
-  color: var(--nu-blue); font-size: 13px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-dense); font-weight: 700;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sth__card-desc {
-  margin: 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.6;
+  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
-.sth__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue); font-size: 14px; font-weight: 800; }
+.sth__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
 </style>

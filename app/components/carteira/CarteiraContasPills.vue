@@ -112,15 +112,15 @@ a.ccp__pill:focus-visible, button.ccp__pill:focus-visible { outline: 2px solid v
 }
 .ccp__logo-img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-.ccp__total { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.ccp__ativos { color: var(--nu-gray); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.ccp__total { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.ccp__ativos { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; white-space: nowrap; }
 
 /* pill pontilhada de conectar: quieta, vira convite no hover */
 .ccp__pill--add {
   gap: 7px; padding: 8px 16px; cursor: pointer;
   background: transparent; box-shadow: none;
   border: 1.5px dashed var(--nu-sand-border);
-  color: var(--nu-gray-2); font-family: inherit; font-size: 13.5px; font-weight: 700;
+  color: var(--nu-gray-2); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
   transition: border-color .18s, color .18s, background .18s;
 }
 .ccp__pill--add:hover:not(:disabled) { border-color: var(--nu-blue); color: var(--nu-blue); background: var(--nu-blue-tint-2); }

@@ -29,7 +29,7 @@ withDefaults(
   display: flex; align-items: center; justify-content: center; width: 100%;
   border: none; border-radius: var(--nu-r-pill); padding: 17px 24px;
   background: var(--nu-blue); color: var(--nu-white);
-  font-size: 16.5px; font-weight: 800; cursor: pointer;
+  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer;
   transition: background .2s, color .2s, transform .15s;
 }
 .npb--off { background: var(--nu-cream-2); color: var(--nu-gray); pointer-events: none; cursor: default; }

@@ -226,7 +226,7 @@ const BLOCOS = computed(() => [
 
 .rbks__head { text-align: center; max-width: 760px; margin: 0 auto; }
 .rbks__title { margin: 0; color: var(--nu-cream-text); font-size: clamp(40px, 4.8vw, 56px); font-weight: 800; letter-spacing: -0.04em; line-height: 0.98; }
-.rbks__sub { margin: 16px auto 0; max-width: 640px; color: var(--nu-cream-text-72); font-size: 15px; font-weight: 700; letter-spacing: 0.2px; line-height: 1.55; }
+.rbks__sub { margin: 16px auto 0; max-width: 640px; color: var(--nu-cream-text-72); font-size: var(--nu-fs-md); font-weight: 700; letter-spacing: 0.2px; line-height: 1.55; }
 
 .rbks__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-top: clamp(40px, 4.5vw, 52px); }
 .rbks__card { background: var(--nu-day-card-navy); border-radius: var(--nu-r-card-lg); padding: 34px 30px 32px; min-height: 300px; display: flex; flex-direction: column; }
@@ -235,23 +235,23 @@ const BLOCOS = computed(() => [
 .rbks__body { margin-top: 38px; }
 .rbks__stat { color: var(--nu-white); font-size: clamp(38px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.95; font-variant-numeric: tabular-nums; }
 .rbks__card-title { color: var(--nu-white); font-size: clamp(26px, 2.5vw, 30px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.04; font-variant-numeric: tabular-nums; }
-.rbks__blurb { margin: 14px 0 0; color: var(--nu-white-75); font-size: 16.5px; font-weight: 600; line-height: 1.5; text-wrap: pretty; }
+.rbks__blurb { margin: 14px 0 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
 .rbks__body--stat .rbks__blurb { margin-top: 16px; }
 
 .rbks__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: clamp(36px, 4vw, 44px); }
 .rbks__btn {
   display: inline-flex; align-items: center; gap: 11px; background: var(--nu-cream); color: var(--nu-day-btn-ink);
-  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: 17px; font-weight: 800;
+  border: none; border-radius: var(--nu-r-pill); padding: 18px 32px; font-size: var(--nu-fs-lg); font-weight: 800;
   letter-spacing: -0.01em; cursor: pointer; transition: transform .15s ease, background .15s ease;
 }
 .rbks__btn:hover { background: var(--nu-white); transform: translateY(-1px); }
 .rbks__btn:focus-visible { outline: 2px solid var(--nu-cream-text); outline-offset: 3px; }
-.rbks__btn-arrow { font-size: 19px; line-height: 1; }
+.rbks__btn-arrow { font-size: var(--nu-fs-lg); line-height: 1; }
 
 .rbks__btn2 {
   display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-family: inherit;
   background: transparent; color: var(--nu-cream-text); border: 1.5px solid var(--nu-cream-text-22);
-  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: 15.5px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 17px 26px; font-size: var(--nu-fs-md); font-weight: 800;
   transition: background .15s, border-color .15s;
 }
 .rbks__btn2:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text-45); color: var(--nu-cream-text); }

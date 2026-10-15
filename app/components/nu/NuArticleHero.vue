@@ -45,7 +45,7 @@ defineProps<{
 .nah__inner { max-width: 920px; }
 .nah__crumbs {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  color: var(--nu-gray); font-size: 14px; font-weight: 600;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
 }
 .nah__crumb { transition: color .2s; }
 .nah__crumb:hover { color: var(--nu-blue); }
@@ -64,6 +64,6 @@ defineProps<{
   display: flex; align-items: center; justify-content: center;
 }
 .nah__avatar-logo { width: 22px; height: 22px; display: block; object-fit: contain; }
-.nah__author { display: block; color: var(--nu-ink); font-size: 14.5px; font-weight: 800; }
-.nah__meta { display: block; color: var(--nu-gray); font-size: 13px; font-weight: 600; margin-top: 1px; }
+.nah__author { display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nah__meta { display: block; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 1px; }
 </style>

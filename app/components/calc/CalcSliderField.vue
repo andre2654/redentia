@@ -157,7 +157,7 @@ function cancel() {
 
 <style scoped>
 .csf__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.csf__label { color: var(--nu-gray); font-size: 14px; font-weight: 700; }
+.csf__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 
 /* valor = campo editável: box levemente mais clara que o creme + arredondada,
    sinalizando "passe o mouse e troque". Idle = branco suave + lapiseira quieta;
@@ -168,7 +168,7 @@ function cancel() {
   margin: 0; padding: 3px 11px; border: 1.5px solid transparent; border-radius: 10px;
   background: var(--nu-white-75);
   font-family: inherit; color: var(--nu-ink);
-  font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.15;
+  font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.15;
   transition: background .18s, border-color .18s, color .18s;
 }
 button.csf__value { cursor: pointer; }
@@ -231,8 +231,8 @@ button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edi
 .csf__chip {
   padding: 8px 14px;
   border-radius: var(--nu-r-pill);
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: var(--nu-fs-dense);
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   border: 2px solid var(--nu-sand-border);

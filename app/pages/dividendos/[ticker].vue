@@ -208,7 +208,7 @@ if (data.value) {
 .dvt__renamed {
   display: flex; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 7px 14px;
   border-radius: var(--nu-r-pill); background: var(--nu-sand-2); color: var(--nu-gray-tag);
-  font-size: 13.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
 }
 .dvt__follow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
 
@@ -220,7 +220,7 @@ if (data.value) {
   max-width: 1080px;
   margin: 0 auto;
   color: var(--nu-gray-2);
-  font-size: 16px;
+  font-size: var(--nu-fs-md);
   font-weight: 500;
   line-height: 1.65;
   text-align: center;
@@ -229,14 +229,14 @@ if (data.value) {
 
 /* prosa das bandas educacionais (mesma escala da calculadora de DY) */
 .dvt__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .dvt__prose p:last-child { margin-bottom: 0; }
 
 .dvt__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .dvt__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -254,8 +254,8 @@ if (data.value) {
 }
 .dvt__card-link--white { background: var(--nu-white); }
 .dvt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
-.dvt__card-p { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.dvt__card-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
 .dvt__cta { max-width: 980px; margin: clamp(24px, 3vw, 36px) auto 0; }
 

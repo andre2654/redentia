@@ -116,7 +116,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 .rkt__table { width: 100%; min-width: 720px; border-collapse: collapse; }
 .rkt__th {
   padding: 18px 16px 14px; text-align: right; white-space: nowrap;
-  color: var(--nu-gray); font-size: 12px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
   border-bottom: 1px solid var(--nu-cream-2);
 }
@@ -132,12 +132,12 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 
 .rkt__cell {
   padding: 13px 16px; text-align: right; white-space: nowrap;
-  color: var(--nu-ink); font-size: 15px; font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 .rkt__cell--pos {
   width: 52px; text-align: left; padding-left: clamp(16px, 2vw, 28px);
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .rkt__cell--asset { text-align: left; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
@@ -147,7 +147,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 /* ——— breakdown expansível (redentia-score) ——— */
 .rkt__toggle {
   background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--nu-blue); font-size: 13.5px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
   font-family: inherit; white-space: nowrap;
 }
 .rkt__toggle:hover { text-decoration: underline; }
@@ -157,7 +157,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 }
 .rkt__breakdown-label {
   display: block; margin-bottom: 12px;
-  color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .12em;
 }
 .rkt__breakdown-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -165,18 +165,18 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--nu-white); border: 1px solid var(--nu-cream-2);
   border-radius: var(--nu-r-pill); padding: 7px 14px;
-  color: var(--nu-ink); font-size: 13px; font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700;
   white-space: nowrap; transition: border-color .15s;
 }
 .rkt__chip:hover { border-color: var(--nu-blue); }
 .rkt__chip-pos { color: var(--nu-blue); font-weight: 800; font-variant-numeric: tabular-nums; }
-.rkt__breakdown-empty { margin: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; }
+.rkt__breakdown-empty { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .rkt__asset { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .rkt__asset-id { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.rkt__asset-ticker { color: var(--nu-ink); font-size: 15px; font-weight: 800; letter-spacing: -.1px; }
+.rkt__asset-ticker { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.1px; }
 .rkt__asset-name {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 600;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
   max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 

@@ -14,7 +14,7 @@ defineEmits<{ (e: 'more'): void }>()
 <style scoped>
 .nlm {
   display: inline-flex; align-items: center; background: var(--nu-sand-2); color: var(--nu-gray-2);
-  font-size: 14px; font-weight: 800; padding: 12px 24px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-sm); font-weight: 700; padding: 12px 24px; border-radius: var(--nu-r-pill);
   border: none; cursor: pointer; transition: background .2s;
 }
 .nlm:hover { background: var(--nu-sand-hover); }

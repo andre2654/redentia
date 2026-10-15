@@ -233,7 +233,7 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 
 .rbpv__cap {
   margin: clamp(24px, 3vw, 32px) 0 0; max-width: 480px;
-  color: var(--nu-cream-text-55); font-size: 14.5px; font-weight: 600; line-height: 1.6;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 
 /* O que vem em toda chave: lista na coluna de texto, para o card ficar só
@@ -241,11 +241,11 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 .rbpv__lista { margin: clamp(26px, 3vw, 36px) 0 0; max-width: 520px; }
 .rbpv__linha { padding: 16px 0; border-top: 1px solid var(--nu-cream-text-10); }
 .rbpv__linha-topo { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; }
-.rbpv__rotulo { color: var(--nu-cream-text-55); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; }
-.rbpv__valor-linha { color: var(--nu-cream-text); font-size: 16px; font-weight: 800; white-space: nowrap; }
+.rbpv__rotulo { color: var(--nu-cream-text-55); font-size: var(--nu-fs-dense); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
+.rbpv__valor-linha { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; }
 .rbpv__nota {
   margin: 6px 0 0; color: var(--nu-cream-text-70);
-  font-size: 14.5px; font-weight: 500; line-height: 1.6;
+  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 
 /* Card sobre navy = --nu-navy-2, a regra de superfície do sistema. Hairline
@@ -255,7 +255,7 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
   border-radius: 16px; padding: clamp(24px, 3.2vw, 38px);
 }
 .rbpv__label {
-  display: block; color: var(--nu-cream-text-55); font-size: 11.5px; font-weight: 800;
+  display: block; color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.4px;
 }
 .rbpv__preco {
@@ -270,7 +270,7 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 }
 .rbpv__media {
   margin: 6px 0 0; color: var(--nu-cream-text-70);
-  font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums;
 }
 
 /* Controles: stepper com campo, régua e atalhos com os exemplos do contrato. */
@@ -279,7 +279,7 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 .rbpv__passo {
   flex: none; width: 44px; height: 44px; border-radius: 50%;
   border: 1px solid var(--nu-cream-text-22); background: transparent;
-  color: var(--nu-cream-text); font-size: 22px; font-weight: 700; line-height: 1;
+  color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 700; line-height: 1;
   cursor: pointer; transition: background .2s, border-color .2s;
 }
 .rbpv__passo:hover:not(:disabled) { background: var(--nu-cream-text-08); border-color: var(--nu-cream-text-40); }
@@ -293,13 +293,13 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 .rbpv__campo:focus-within { border-color: var(--nu-blue-soft); }
 .rbpv__input {
   width: 4ch; min-width: 0; border: 0; background: transparent; text-align: right;
-  color: var(--nu-cream-text); font: inherit; font-size: 20px; font-weight: 800;
+  color: var(--nu-cream-text); font: inherit; font-size: var(--nu-fs-xl); font-weight: 800;
   font-variant-numeric: tabular-nums; line-height: 42px; outline: none;
   -moz-appearance: textfield; appearance: textfield;
 }
 .rbpv__input::-webkit-outer-spin-button,
 .rbpv__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.rbpv__unidade { color: var(--nu-cream-text-55); font-size: 15px; font-weight: 700; }
+.rbpv__unidade { color: var(--nu-cream-text-55); font-size: var(--nu-fs-md); font-weight: 700; }
 
 .rbpv__range { width: 100%; accent-color: var(--nu-blue); cursor: pointer; margin: 0; }
 .rbpv__range:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 4px; }
@@ -308,7 +308,7 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 .rbpv__atalho {
   border: 1px solid var(--nu-cream-text-22); background: transparent; color: var(--nu-cream-text-80);
   border-radius: var(--nu-r-pill); padding: 8px 14px; min-height: 36px;
-  font-size: 13.5px; font-weight: 700; cursor: pointer; transition: background .2s, color .2s, border-color .2s;
+  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, color .2s, border-color .2s;
 }
 .rbpv__atalho:hover { background: var(--nu-cream-text-08); color: var(--nu-cream-text); }
 .rbpv__atalho--on { background: var(--nu-blue); border-color: var(--nu-blue); color: var(--nu-white); }
@@ -323,40 +323,40 @@ const brl = (n: number) => n.toLocaleString('pt-BR', { maximumFractionDigits: 0 
 }
 .rbpv__faixas th, .rbpv__faixas td {
   padding: 11px 0; text-align: left; border-top: 1px solid var(--nu-cream-text-10);
-  font-size: 14.5px; color: var(--nu-cream-text-40); font-weight: 600;
+  font-size: var(--nu-fs-sm); color: var(--nu-cream-text-40); font-weight: 500;
 }
 .rbpv__faixas thead th {
   border-top: 0; padding-top: 0; color: var(--nu-cream-text-55);
-  font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;
+  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
 }
 .rbpv__faixas tbody th { font-weight: 700; }
 .rbpv__faixa--on th, .rbpv__faixa--on td { color: var(--nu-cream-text); }
 .rbpv__faixa--on td.rbpv__num { font-weight: 800; }
 .rbpv__num { text-align: right !important; white-space: nowrap; }
-.rbpv__conta { color: var(--nu-cream-text-55); font-weight: 600; }
+.rbpv__conta { color: var(--nu-cream-text-55); font-weight: 500; }
 
 .rbpv__condicoes {
   margin: clamp(20px, 2.6vw, 26px) 0 0; display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px 22px;
 }
 .rbpv__cond dt {
-  color: var(--nu-cream-text-55); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.2px;
 }
-.rbpv__cond dd { margin: 4px 0 0; color: var(--nu-cream-text-80); font-size: 14px; font-weight: 600; line-height: 1.5; }
+.rbpv__cond dd { margin: 4px 0 0; color: var(--nu-cream-text-80); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 /* O estilo do CTA principal da página inteira (hero, divisão, plano e FAQ). */
 .rbpv__cta {
   display: flex; align-items: center; justify-content: center; margin: clamp(24px, 3vw, 30px) 0 0;
   background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 16px 26px;
-  font-size: 16px; font-weight: 800; text-align: center; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: 800; text-align: center; transition: background .2s;
 }
 .rbpv__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbpv__cta:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .rbpv__rodape {
   margin: 16px 0 0; color: var(--nu-cream-text-55);
-  font-size: 13.5px; font-weight: 500; line-height: 1.6;
+  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 
 .rbpv__sr {

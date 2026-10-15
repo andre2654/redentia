@@ -162,7 +162,7 @@ onBeforeUnmount(parar)
         <!-- quebra manual: a medida do título é decisão de composição, não do
              navegador (mesma razão do NuSectionHeading usar slot) -->
         <h1 class="rbh0__title">
-          O mercado de hoje<br>
+          O mercado de hoje<br class="rbh0__br">
           no assistente da mesa.
         </h1>
         <p class="rbh0__dek">
@@ -320,12 +320,12 @@ onBeforeUnmount(parar)
    linhas se mantém. Não baixe o mínimo "por segurança". */
 .rbh0__title {
   margin: 0; color: var(--nu-ink);
-  font-size: clamp(30px, 7.4vw, 54px); font-weight: 800;
+  font-size: var(--nu-fs-h2); font-weight: 800;
   letter-spacing: -0.045em; line-height: 1.05;
 }
 .rbh0__dek {
   margin: 26px 0 0; max-width: 52ch; color: var(--nu-gray);
-  font-size: clamp(16px, 1.7vw, 19px); font-weight: 600; line-height: 1.6;
+  font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.6;
 }
 /* O ÚNICO BOTÃO SÓLIDO DA PRIMEIRA DOBRA, e ele é AZUL desde 15/10/2026.
    Era quase preto, com raio 12px, enquanto os outros CTAs principais da página
@@ -342,7 +342,7 @@ onBeforeUnmount(parar)
   display: inline-flex; align-items: center; margin: 32px 0 0;
   background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 16px 26px; min-height: 44px;
-  font-size: 16px; font-weight: 800; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: 800; transition: background .2s;
 }
 .rbh0__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbh0__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
@@ -392,7 +392,7 @@ onBeforeUnmount(parar)
 }
 
 .rbh0__card-label {
-  display: block; color: var(--nu-gray); font-size: 11.5px; font-weight: 800;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.4px;
 }
 
@@ -404,7 +404,7 @@ onBeforeUnmount(parar)
 }
 .rbh0__sub {
   margin: 10px 0 0; color: var(--nu-gray-2);
-  font-size: 14.5px; font-weight: 600; line-height: 1.5;
+  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
 }
 
 /* A régua: os traços acesos são o número do card, desenhado. blue-deep e não
@@ -431,7 +431,7 @@ onBeforeUnmount(parar)
 
 .rbh0__regua-leg {
   margin: 10px 0 0; color: var(--nu-gray);
-  font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums;
 }
 .rbh0__regua-leg strong { color: var(--nu-ink); font-weight: 800; }
 
@@ -442,7 +442,7 @@ onBeforeUnmount(parar)
 .rbh0__nota {
   margin: 22px 0 0; margin-top: auto; padding-top: 18px;
   border-top: 1px solid var(--nu-cream-line);
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 600; line-height: 1.5;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5;
 }
 
 /* ——— os indicadores, que são controle e não enfeite ——— */
@@ -482,5 +482,8 @@ onBeforeUnmount(parar)
      812, e a legenda precisava subir na frente. Agora rótulo, número e linha de
      qualificação cabem juntos acima da dobra, e a régua é decorativa. */
   .rbh0__nota { padding-top: 16px; }
+  /* A quebra manual do título é do desktop; no celular ela deixava "mesa."
+     sozinha. Sem ela, o text-wrap: balance do base.css equilibra as linhas. */
+  .rbh0__br { display: none; }
 }
 </style>

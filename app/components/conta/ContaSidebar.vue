@@ -66,7 +66,7 @@ function go(e: MouseEvent, id: string) {
 .csb__item {
   display: flex; align-items: center; gap: 13px;
   padding: 13px 16px; border-radius: var(--nu-r-input);
-  color: var(--nu-gray-2); font-size: 15.5px; font-weight: 700;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
   transition: background .18s, color .18s, box-shadow .18s;
 }
 .csb__item:hover { color: var(--nu-ink); background: var(--nu-cream-hover); }

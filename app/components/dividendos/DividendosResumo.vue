@@ -54,13 +54,13 @@ defineProps<{
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.dvr__sub { color: var(--nu-gray); font-size: 17px; font-weight: 600; line-height: 1.5; margin-top: 22px; }
+.dvr__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .dvr__stats { margin-top: 26px; }
 .dvr__cta-row { margin-top: 28px; }
 .dvr__cta {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 14px 26px;
-  font-size: 16px; font-weight: 700; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
 }
 .dvr__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
 .dvr__right { flex: 1.6 1 460px; min-width: min(320px, 100%); }

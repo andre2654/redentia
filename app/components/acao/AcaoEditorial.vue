@@ -73,13 +73,13 @@ const updatedLine = computed(() => {
   font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
 }
 .aed__p {
-  color: var(--nu-gray); font-size: 17px; font-weight: 500;
+  color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.65; margin: 18px 0 0;
 }
 .aed__faq { margin-top: clamp(48px, 6vw, 80px); }
 .aed__faq .aed__h2 { margin-bottom: 26px; }
 .aed__updated {
   margin: clamp(40px, 5vw, 64px) 0 0; color: var(--nu-gray);
-  font-size: 14px; font-weight: 600; opacity: .8;
+  font-size: var(--nu-fs-sm); font-weight: 500; opacity: .8;
 }
 </style>

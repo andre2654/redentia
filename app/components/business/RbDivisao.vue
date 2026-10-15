@@ -158,13 +158,13 @@ const hachura = `rbdv-hachura-${uid}`
 
 .rbdv__col-titulo {
   margin: 0; color: var(--nu-ink);
-  font-size: 16px; font-weight: 800; letter-spacing: -0.01em;
+  font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em;
 }
 .rbdv__lista { margin: 22px 0 0; padding: 0; list-style: none; }
 /* Fio entre linhas: é a régua de documento que o B2B usa em vez de card. */
 .rbdv__item {
   padding: 15px 0; border-top: 1px solid var(--nu-cream-line);
-  color: var(--nu-gray-2); font-size: 15.5px; font-weight: 500; line-height: 1.5;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5;
 }
 /* A coluna da direita espelha: o texto encosta no centro, como os dois lados de
    um encontro. É a única inversão de alinhamento da página. */
@@ -174,7 +174,7 @@ const hachura = `rbdv-hachura-${uid}`
   display: inline-block; margin-left: 8px; vertical-align: 1px;
   padding: 3px 8px; border-radius: 5px;
   background: var(--nu-cream); color: var(--nu-gray);
-  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px;
+  font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
   white-space: nowrap;
 }
 
@@ -183,7 +183,7 @@ const hachura = `rbdv-hachura-${uid}`
 
 .rbdv__rodape {
   margin: clamp(26px, 3vw, 34px) auto 0; max-width: 640px; text-align: center;
-  color: var(--nu-gray); font-size: 13.5px; font-weight: 600; line-height: 1.6;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 .rbdv__rodape a { color: var(--nu-blue-deep); text-decoration: underline; text-underline-offset: 3px; }
 .rbdv__rodape a:hover { color: var(--nu-blue-hover); }
@@ -197,7 +197,7 @@ const hachura = `rbdv-hachura-${uid}`
   margin: 32px auto 0; min-height: 44px;
   background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 16px 26px;
-  font-size: 16px; font-weight: 800; text-align: center; transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: 800; text-align: center; transition: background .2s;
 }
 .rbdv__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .rbdv__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }

@@ -55,7 +55,7 @@ function onKey(e: KeyboardEvent) {
 }
 .bcc__input {
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
-  color: var(--nu-ink); font-size: 15.5px; font-weight: 600; padding: 11px 0;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; padding: 11px 0;
 }
 .bcc__input::placeholder { color: var(--nu-gray); font-weight: 500; }
 .bcc__send {
@@ -70,6 +70,6 @@ function onKey(e: KeyboardEvent) {
 .bcc__send:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
 .bcc__disclaimer {
   max-width: 880px; margin: 9px auto 0;
-  color: var(--nu-cream-text-35); font-size: 11.5px; font-weight: 600; text-align: center;
+  color: var(--nu-cream-text-35); font-size: var(--nu-fs-xs); font-weight: 500; text-align: center;
 }
 </style>

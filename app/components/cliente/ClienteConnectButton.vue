@@ -37,7 +37,7 @@ withDefaults(defineProps<{
 .ccb {
   display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px;
   padding: 0 20px; border-radius: 12px; border: 1.5px solid transparent;
-  font-family: inherit; font-size: 15.5px; font-weight: 800; letter-spacing: -.01em; line-height: 1.2;
+  font-family: inherit; font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.01em; line-height: 1.2;
   cursor: pointer; text-decoration: none; text-align: center;
   transition: background .2s, color .2s, border-color .2s, transform .15s;
 }

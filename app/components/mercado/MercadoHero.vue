@@ -210,40 +210,40 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
   flex: 1.1 1 460px; min-width: min(320px, 100%);
   display: flex; flex-direction: column; justify-content: center;
 }
-.mh__eyebrow { color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
+.mh__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
 .mh__title {
   margin: 16px 0 0; color: var(--nu-ink);
-  font-size: clamp(44px, 5.4vw, 84px); font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
+  font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
 }
 .mh__dek {
-  color: var(--nu-gray); font-size: clamp(17px, 1.8vw, 21px); font-weight: 600;
+  color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500;
   line-height: 1.55; margin-top: 24px; max-width: 640px;
 }
 .mh__card {
   background: var(--nu-white); border-radius: var(--nu-r-card); padding: 26px;
   max-width: 480px; margin-top: 44px; box-shadow: var(--nu-shadow-card);
 }
-.mh__card-title { color: var(--nu-ink); font-size: 17px; font-weight: 800; }
+.mh__card-title { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 .mh__input {
   width: 100%; background: var(--nu-cream); border: none; outline: none;
   border-radius: var(--nu-r-input); padding: 16px 18px; color: var(--nu-ink);
-  font-size: 16px; font-weight: 600; margin-top: 16px;
+  font-size: var(--nu-fs-md); font-weight: 500; margin-top: 16px;
 }
 .mh__cta {
   display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;
   background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 16px 24px; font-size: 16.5px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 16px 24px; font-size: var(--nu-fs-md); font-weight: 800;
   margin-top: 12px; transition: background .2s;
 }
 .mh__cta:hover { background: var(--nu-blue-hover); }
-.mh__micro { color: var(--nu-gray); font-size: 13px; font-weight: 600; margin-top: 14px; }
+.mh__micro { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 14px; }
 
 /* bloco compacto de boas-vindas (logado) — ocupa o slot do card de signup */
 .mh__welcome {
   background: var(--nu-white); border-radius: var(--nu-r-card); padding: 26px;
   max-width: 480px; margin-top: 44px; box-shadow: var(--nu-shadow-card);
 }
-.mh__welcome-text { color: var(--nu-ink); font-size: 17px; font-weight: 700; line-height: 1.5; }
+.mh__welcome-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; line-height: 1.5; }
 .mh__cta--pill {
   display: inline-flex; width: auto; margin-top: 18px; padding: 14px 28px;
   border-radius: var(--nu-r-pill);
@@ -271,7 +271,7 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
 }
 .mh__anim-title {
   color: var(--nu-ink);
-  font-size: clamp(22px, 2.4vw, 30px); font-weight: 800;
+  font-size: var(--nu-fs-h3); font-weight: 800;
   letter-spacing: -0.025em; line-height: 1.04;
 }
 .mh__anim-docs {
@@ -317,12 +317,12 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
   display: flex; align-items: center; justify-content: center;
 }
 .mh__dcard-pill {
-  display: inline-flex; align-items: center; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 4px 11px; border-radius: var(--nu-r-pill); white-space: nowrap;
 }
 .mh__dcard-pill--green { background: var(--nu-green-bg); color: var(--nu-green-2); }
 .mh__dcard-pill--amber { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.mh__dcard-label { color: var(--nu-gray); font-size: 13px; font-weight: 700; line-height: 1.4; }
+.mh__dcard-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; line-height: 1.4; }
 .mh__dcard-label--green { color: var(--nu-green-2); }
 
 /* ——— convite compacto (logado sem Open Finance) ——— */
@@ -331,11 +331,11 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
   padding: clamp(24px, 3vw, 34px) clamp(24px, 3.2vw, 36px);
 }
 .mh__dconnect-title {
-  color: var(--nu-ink); font-size: clamp(26px, 2.6vw, 34px); font-weight: 800;
+  color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800;
   letter-spacing: -0.035em; line-height: 1.05;
 }
 .mh__dconnect-dek {
-  color: var(--nu-gray); font-size: 15.5px; font-weight: 600; line-height: 1.55;
+  color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55;
   margin-top: 14px; max-width: 400px;
 }
 

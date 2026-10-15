@@ -117,11 +117,11 @@ const photoFailed = ref(false)
 .mcc__cols { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 64px); align-items: center; }
 .mcc__left { min-width: 0; }
 .mcc__title {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(40px, 5vw, 74px);
+  margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
 }
 .mcc__dek {
-  color: var(--nu-cream-text-82); font-size: clamp(16px, 1.6vw, 20px); font-weight: 500;
+  color: var(--nu-cream-text-82); font-size: var(--nu-fs-dek); font-weight: 500;
   line-height: 1.62; margin-top: 26px; max-width: 480px;
 }
 .mcc__banks { display: flex; align-items: center; margin-top: 28px; }
@@ -134,7 +134,7 @@ const photoFailed = ref(false)
 .mcc__bank--overlap { margin-left: -14px; }
 .mcc__bank--more {
   background: var(--nu-cream-text-22); color: var(--nu-cream-text);
-  font-size: 12.5px; font-weight: 800;
+  font-size: var(--nu-fs-dense); font-weight: 700;
 }
 
 /* Redentia MCP — card de destaque sóbrio (substitui o teaser tímido de 1 linha).
@@ -157,7 +157,7 @@ const photoFailed = ref(false)
 .mcc__mcpcard-badge {
   display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
   background: var(--nu-cream-text-14); color: var(--nu-cream-text);
-  font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
   padding: 5px 11px 5px 9px; border-radius: var(--nu-r-pill);
 }
 .mcc__mcpcard-badge::before {
@@ -168,13 +168,13 @@ const photoFailed = ref(false)
 /* -82 (não -70): iguala o nível de texto secundário do dek nesta banda de baixo
    contraste por design; -70 sobre o azul vivo cairia abaixo do dek vizinho. */
 .mcc__mcpcard-kicker {
-  color: var(--nu-cream-text-82); font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px;
+  color: var(--nu-cream-text-82); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.2px;
 }
 
 /* manchete curta e confiante — cream CHEIO garante o melhor contraste possível aqui */
 .mcc__mcpcard-copy {
   margin: 10px 0 0; max-width: 34ch; color: var(--nu-cream-text);
-  font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -0.01em;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.4; letter-spacing: -0.01em;
 }
 
 /* rodapé: tiles dos logos reais (rima com os avatares de banco) + arrow-link */
@@ -193,7 +193,7 @@ const photoFailed = ref(false)
 /* micro-CTA próprio do MCP: única zona clicável, texto+seta, nunca um botão cheio */
 .mcc__mcpcard-link {
   display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
-  color: var(--nu-cream-text); font-size: 14px; font-weight: 700; text-decoration: none;
+  color: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: none;
   padding: 4px 2px; border-radius: 6px;
   transition: gap .18s ease;
 }
@@ -205,13 +205,13 @@ const photoFailed = ref(false)
 /* coluna estreita (~320px): tiles e link caem em linhas próprias sem estourar */
 @media (max-width: 400px) {
   .mcc__mcpcard { padding: 14px 15px; }
-  .mcc__mcpcard-copy { font-size: 15.5px; }
+  .mcc__mcpcard-copy { font-size: var(--nu-fs-md); }
   .mcc__mcpcard-foot { gap: 12px; }
 }
 .mcc__cta {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
   border: 1.6px solid var(--nu-cream-text-55); border-radius: var(--nu-r-pill); padding: 16px 34px;
-  font-size: 16.5px; font-weight: 800; margin-top: 34px;
+  font-size: var(--nu-fs-md); font-weight: 800; margin-top: 34px;
   transition: background .2s, border-color .2s, transform .15s;
 }
 .mcc__cta:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text); color: var(--nu-cream-text); transform: translateY(-2px); }

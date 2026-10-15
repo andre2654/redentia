@@ -117,7 +117,7 @@ usePageSeo({
   padding: clamp(44px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 52px);
   animation: nu-fade .5s ease both;
 }
-.gt__crumbs { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; }
+.gt__crumbs { display: flex; align-items: center; gap: 10px; font-size: var(--nu-fs-md); font-weight: 800; }
 .gt__crumb { color: var(--nu-blue); }
 .gt__crumb--here { color: var(--nu-gray-2); }
 .gt__crumb-sep { color: var(--nu-gray); }
@@ -128,7 +128,7 @@ usePageSeo({
 }
 .gt__short {
   margin: 18px 0 0; color: var(--nu-gray); font-size: clamp(17px, 1.9vw, 22px);
-  font-weight: 600; line-height: 1.5; max-width: 680px;
+  font-weight: 500; line-height: 1.5; max-width: 680px;
 }
 
 .gt__body {
@@ -136,7 +136,7 @@ usePageSeo({
   padding: clamp(40px, 5.5vw, 72px) clamp(22px, 5.5vw, 40px) clamp(64px, 8vw, 110px);
 }
 .gt__article { max-width: 760px; }
-.gt__p { margin: 0; color: var(--nu-gray-3); font-size: 18px; font-weight: 500; line-height: 1.78; }
+.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.78; }
 .gt__p + .gt__p { margin-top: 18px; }
 .gt__p :deep(strong) { color: var(--nu-ink); font-weight: 800; }
 .gt__article :deep(a) {
@@ -155,7 +155,7 @@ usePageSeo({
 .gt__chip {
   display: inline-flex; align-items: center; padding: 10px 18px;
   background: var(--nu-cream); border-radius: var(--nu-r-pill);
-  color: var(--nu-ink); font-size: 15px; font-weight: 700;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   transition: background .16s, color .16s;
 }
 .gt__chip:hover { background: var(--nu-blue-tint); color: var(--nu-blue); }
@@ -170,7 +170,7 @@ usePageSeo({
 }
 .gt__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
 .gt__cta-text { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
-.gt__cta-kicker { font-size: 13.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.72; }
+.gt__cta-kicker { font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.72; }
 .gt__cta-label { font-size: clamp(19px, 2.2vw, 25px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
 .gt__cta-arrow {
   flex-shrink: 0; width: 52px; height: 52px; border-radius: 50%;
@@ -195,12 +195,12 @@ usePageSeo({
 .gt__nav-item:hover { background: var(--nu-cream-hover); }
 .gt__nav-item--next { text-align: right; align-items: flex-end; }
 .gt__nav-spacer { flex: 1; }
-.gt__nav-dir { color: var(--nu-blue); font-size: 13.5px; font-weight: 800; }
-.gt__nav-term { color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+.gt__nav-dir { color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
+.gt__nav-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
 
 .gt__back {
   display: inline-block; margin-top: clamp(32px, 4vw, 44px);
-  color: var(--nu-blue); font-size: 16px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800;
   text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-blue-soft);
 }
 .gt__back:hover { text-decoration-color: var(--nu-blue); }

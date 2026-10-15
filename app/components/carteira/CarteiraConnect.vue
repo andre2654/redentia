@@ -43,11 +43,11 @@ function connect() {
 .cct { display: inline-flex; flex-direction: column; gap: 12px; }
 .cct__btn {
   display: inline-flex; align-items: center; gap: 10px; background: var(--nu-blue); color: var(--nu-white);
-  border: none; border-radius: var(--nu-r-pill); padding: 16px 28px; font-size: 16.5px; font-weight: 700;
+  border: none; border-radius: var(--nu-r-pill); padding: 16px 28px; font-size: var(--nu-fs-md); font-weight: 700;
   cursor: pointer; transition: background .2s, transform .15s;
 }
 .cct__btn:hover:not(:disabled) { background: var(--nu-blue-hover); transform: translateY(-2px); }
 .cct__btn:disabled { opacity: .7; cursor: default; }
-.cct__ok { margin: 0; color: var(--nu-green-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; max-width: 460px; }
-.cct__error { margin: 0; color: var(--nu-red-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; max-width: 460px; }
+.cct__ok { margin: 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
+.cct__error { margin: 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; max-width: 460px; }
 </style>

@@ -115,7 +115,7 @@ const style = computed(() => ({
 
 .sdc__label {
   position: relative;
-  color: var(--nu-cream-text-60); font-size: 12px; font-weight: 800;
+  color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase;
 }
 .sdc__value {
@@ -126,7 +126,7 @@ const style = computed(() => ({
 .sdc__delta {
   position: relative;
   padding: 6px 14px; border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill);
-  color: var(--nu-cream-text-60); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 700;
   font-variant-numeric: tabular-nums;
   transition: color 0.3s, border-color 0.3s;
 }
@@ -134,7 +134,7 @@ const style = computed(() => ({
 
 .sdc__note {
   position: relative;
-  color: var(--nu-cream-text-60); font-size: 11px; font-weight: 600;
+  color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 500;
   text-align: center; max-width: 210px; line-height: 1.35;
   animation: nu-fade 0.25s ease both;
 }
@@ -142,14 +142,14 @@ const style = computed(() => ({
 /* "acontece em [ano]" — só quando o dial saiu de hoje */
 .sdc__year {
   position: relative; display: inline-flex; align-items: center; gap: 5px;
-  color: var(--nu-cream-text-60); font-size: 12px; font-weight: 700;
+  color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 700;
   animation: nu-fade 0.25s ease both;
 }
 .sdc__year-select {
   appearance: none; -webkit-appearance: none;
   border: none; border-bottom: 1.5px dashed var(--nu-cream-text-45); border-radius: 0;
   background: transparent; color: var(--nu-cream-text);
-  padding: 1px 16px 2px 2px; font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+  padding: 1px 16px 2px 2px; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; font-family: inherit;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23F5F1EA' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 2px center;
 }

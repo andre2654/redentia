@@ -67,7 +67,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 .gdc__banner--g3 { background: linear-gradient(205deg, var(--nu-grad-blue-2) 0%, var(--nu-blue-deep) 55%, var(--nu-navy) 95%); }
 .gdc__tag {
   display: inline-flex; align-items: center; background: var(--nu-white-20);
-  color: var(--nu-white); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .8px; text-transform: uppercase;
   padding: 5px 12px; border-radius: var(--nu-r-pill);
 }
@@ -76,10 +76,10 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 .gdc--hub .gdc__body { padding: 22px 24px 24px; }
 .gdc--related .gdc__body { padding: 20px 22px 22px; }
 .gdc__title { color: var(--nu-ink); font-weight: 800; letter-spacing: -.3px; line-height: 1.25; }
-.gdc--hub .gdc__title { font-size: 20px; }
-.gdc--related .gdc__title { font-size: 19px; }
+.gdc--hub .gdc__title { font-size: var(--nu-fs-xl); }
+.gdc--related .gdc__title { font-size: var(--nu-fs-lg); }
 .gdc__desc {
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 500;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
   line-height: 1.55; margin-top: 8px;
 }
 .gdc__foot {
@@ -88,7 +88,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 }
 .gdc--hub .gdc__foot { padding-top: 20px; }
 .gdc--related .gdc__foot { padding-top: 16px; }
-.gdc__min { color: var(--nu-gray); font-size: 13px; font-weight: 700; }
+.gdc__min { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
 .gdc__arrow {
   border-radius: 50%; background: var(--nu-blue); color: var(--nu-white);
   display: flex; align-items: center; justify-content: center;
@@ -100,7 +100,7 @@ const tagName = computed(() => (props.to ? resolveComponent('NuxtLink') : 'div')
 /* estado "em breve" (linguagem do design: pill areia como as tags neutras) */
 .gdc__soon {
   display: inline-flex; align-items: center; background: var(--nu-sand-2);
-  color: var(--nu-gray-tag); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-gray-tag); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .8px; text-transform: uppercase;
   padding: 6px 13px; border-radius: var(--nu-r-pill);
 }

@@ -99,7 +99,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 /* tabela de atualização (§5) — cabeçalho creme, linhas alternadas, números tabulares */
 .met-doc__tablewrap { margin: 20px 0 0; overflow-x: auto; }
 .met-doc__table {
-  width: 100%; border-collapse: collapse; font-size: 15px;
+  width: 100%; border-collapse: collapse; font-size: var(--nu-fs-md);
   min-width: 520px;
 }
 .met-doc__table th,
@@ -109,7 +109,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 }
 .met-doc__table th {
   background: var(--nu-cream); color: var(--nu-ink);
-  font-weight: 800; font-size: 13.5px; letter-spacing: -0.01em;
+  font-weight: 700; font-size: var(--nu-fs-sm); letter-spacing: -0.01em;
 }
 .met-doc__table td {
   color: var(--nu-gray-3); font-weight: 500; line-height: 1.55;
@@ -127,7 +127,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 .met-doc__callout :deep(.lgb__p:first-child) { margin-top: 0; }
 
 @media (max-width: 760px) {
-  .met-doc__table { font-size: 14px; }
+  .met-doc__table { font-size: var(--nu-fs-sm); }
   .met-doc__table th,
   .met-doc__table td { padding: 9px 11px; }
 }

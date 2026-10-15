@@ -21,20 +21,20 @@ defineProps<{ item: NuNewsFeaturedItem }>()
 .nnf { display: block; }
 .nnf__meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .nnf__badge {
-  display: inline-flex; align-items: center; font-size: 13.5px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-sm); font-weight: 700;
   padding: 7px 15px; border-radius: var(--nu-r-pill); white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 .nnf__badge--up { background: var(--nu-green-tint); color: var(--nu-green-2); }
 .nnf__badge--down { background: var(--nu-red-tint); color: var(--nu-red-2); }
-.nnf__source { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
+.nnf__source { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .nnf__title {
-  display: block; color: var(--nu-ink); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800;
   letter-spacing: -0.03em; line-height: 1.1; margin-top: 16px; max-width: 1000px; transition: color .2s;
 }
 .nnf:hover .nnf__title { color: var(--nu-blue); }
 .nnf__dek {
-  display: block; color: var(--nu-gray); font-size: 17px; font-weight: 600;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.6; margin-top: 14px; max-width: 760px;
 }
 </style>

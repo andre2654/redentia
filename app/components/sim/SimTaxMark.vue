@@ -28,7 +28,7 @@ defineProps<{ text: string }>()
 .stm__tip {
   position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translate(-50%, 3px);
   background: var(--nu-ink); color: var(--nu-white);
-  font-size: 11.5px; font-weight: 700; line-height: 1.4; white-space: nowrap;
+  font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap;
   padding: 7px 11px; border-radius: 9px;
   box-shadow: var(--nu-shadow-card);
   opacity: 0; pointer-events: none;

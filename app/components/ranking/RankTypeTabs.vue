@@ -33,7 +33,7 @@ const tabs = computed<{ value: RankingTypeFilter; label: string }[]>(() => [
 <style scoped>
 .rtt { display: flex; gap: 8px; flex-wrap: wrap; }
 .rtt__pill {
-  padding: 10px 18px; border-radius: var(--nu-r-pill); font-size: 14.5px; font-weight: 700;
+  padding: 10px 18px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700;
   cursor: pointer; border: 2px solid var(--nu-sand-border); background: var(--nu-white);
   color: var(--nu-gray-2); transition: all .2s; white-space: nowrap;
 }

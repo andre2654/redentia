@@ -26,10 +26,10 @@ defineProps<{ card: AcaoInsightCard }>()
 }
 .nai:hover { transform: translateY(-2px); background: var(--nu-blue-hover); color: var(--nu-white); }
 .nai__label {
-  color: var(--nu-white-75); font-size: 11.5px; font-weight: 800;
+  color: var(--nu-white-75); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1.3px; text-transform: uppercase;
 }
-.nai__text { color: var(--nu-white); font-size: 15.5px; font-weight: 600; line-height: 1.5; margin-top: 12px; }
+.nai__text { color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; margin-top: 12px; }
 .nai__cta { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 18px; }
-.nai__cta-label { color: var(--nu-white); font-size: 14px; font-weight: 800; }
+.nai__cta-label { color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; }
 </style>

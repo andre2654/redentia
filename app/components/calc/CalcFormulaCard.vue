@@ -48,7 +48,7 @@ defineProps<{
   display: flex; align-items: baseline; gap: 16px;
   padding: 12px 0; border-top: 1.5px solid var(--nu-cream-line-2);
 }
-.cfc__sym { color: var(--nu-blue); font-size: 16px; font-weight: 800; width: 26px; flex-shrink: 0; }
-.cfc__eq { color: var(--nu-gray-2); font-size: 15px; font-weight: 500; flex-shrink: 0; }
-.cfc__desc { color: var(--nu-gray-2); font-size: 15px; font-weight: 500; }
+.cfc__sym { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; width: 26px; flex-shrink: 0; }
+.cfc__eq { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; flex-shrink: 0; }
+.cfc__desc { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
 </style>

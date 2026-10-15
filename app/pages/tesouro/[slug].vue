@@ -189,8 +189,8 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
-.tsd__reading-title { margin: 0 0 8px; color: var(--nu-blue); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
-.tsd__reading-body { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.65; }
+.tsd__reading-title { margin: 0 0 8px; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.tsd__reading-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 
 /* ——— ferramentas relacionadas ——— */
 .tsd__grid-cards {
@@ -204,13 +204,13 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .tsd__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
-.tsd__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.tsd__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.tsd__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
 /* ——— pills / CTA (mesma família dos rankings/calculadoras) ——— */
 .tsd__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .tsd__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }

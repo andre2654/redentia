@@ -19,11 +19,11 @@ defineProps<{ kicker: string; text: string; to: string }>()
 }
 .napc:hover { background: var(--nu-cream-4); }
 .napc__kicker {
-  display: block; color: var(--nu-blue); font-size: 11.5px; font-weight: 800;
+  display: block; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;
 }
 .napc__text {
-  display: block; color: var(--nu-ink); font-size: 14.5px; font-weight: 700;
+  display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   line-height: 1.45; margin-top: 8px;
 }
 </style>

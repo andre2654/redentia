@@ -52,5 +52,5 @@
 }
 .tvt__icon { flex-shrink: 0; }
 .tvt__h3 { margin: 22px 0 0; color: var(--nu-white); font-size: clamp(21px, 1.9vw, 25px); font-weight: 800; letter-spacing: -.3px; line-height: 1.15; }
-.tvt__p { margin: 14px 0 0; color: var(--nu-white-72); font-size: 16px; font-weight: 500; line-height: 1.55; }
+.tvt__p { margin: 14px 0 0; color: var(--nu-white-72); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 </style>

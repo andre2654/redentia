@@ -258,8 +258,8 @@ const methods = computed(() => {
   return [
     { key: 'graham', title: 'Fórmula de Graham', formula: '√(22.5 × LPA × VPA)', res: r.graham },
     { key: 'bazin', title: 'Método Bazin', formula: 'Dividendo ÷ 0.06 (DY mín 6%)', res: r.bazin },
-    { key: 'plSector', title: 'P/L Setorial', formula: 'LPA × P/L Médio do Setor', res: r.plSector },
-    { key: 'bookValue', title: 'Valor Patrimonial', formula: 'VPA × 1.5 (margem Graham)', res: r.bookValue },
+    { key: 'plSector', title: 'P/L setorial', formula: 'LPA × P/L Médio do Setor', res: r.plSector },
+    { key: 'bookValue', title: 'Valor patrimonial', formula: 'VPA × 1.5 (margem Graham)', res: r.bookValue },
   ]
 })
 
@@ -271,8 +271,8 @@ const visualMethods = computed(() => {
   return [
     { key: 'graham', label: 'Graham', fairPrice: r.graham.fairPrice, color: 'var(--nu-green)' },
     { key: 'bazin', label: 'Bazin', fairPrice: r.bazin.fairPrice, color: 'var(--nu-blue)' },
-    { key: 'plSector', label: 'P/L Setorial', fairPrice: r.plSector.fairPrice, color: 'var(--nu-blue)' },
-    { key: 'bookValue', label: 'Valor Patrimonial', fairPrice: r.bookValue.fairPrice, color: 'var(--nu-red)' },
+    { key: 'plSector', label: 'P/L setorial', fairPrice: r.plSector.fairPrice, color: 'var(--nu-blue)' },
+    { key: 'bookValue', label: 'Valor patrimonial', fairPrice: r.bookValue.fairPrice, color: 'var(--nu-red)' },
   ]
 })
 
@@ -337,8 +337,8 @@ const exampleItub = {
   boxes: [
     { label: 'Graham', value: '√(22.5 × 3.50 × 18) = R$ 35,55' },
     { label: 'Bazin', value: '1.80 ÷ 0.06 = R$ 30,00' },
-    { label: 'P/L Setorial', value: '3.50 × 10 = R$ 35,00' },
-    { label: 'Valor Patrimonial', value: '18 × 1.5 = R$ 27,00' },
+    { label: 'P/L setorial', value: '3.50 × 10 = R$ 35,00' },
+    { label: 'Valor patrimonial', value: '18 × 1.5 = R$ 27,00' },
   ],
   resultMain: 'Preço Teto Médio: R$ 31,89',
   resultSub: 'Preço atual (R$ 28,00) está 12% abaixo do teto médio. Boa margem de segurança!',
@@ -349,35 +349,35 @@ const examplePetr = {
   boxes: [
     { label: 'Graham', value: '√(22.5 × 8 × 35) = R$ 79,37' },
     { label: 'Bazin', value: '5 ÷ 0.06 = R$ 83,33' },
-    { label: 'P/L Setorial', value: '8 × 6 = R$ 48,00' },
-    { label: 'Valor Patrimonial', value: '35 × 1.5 = R$ 52,50' },
+    { label: 'P/L setorial', value: '8 × 6 = R$ 48,00' },
+    { label: 'Valor patrimonial', value: '35 × 1.5 = R$ 52,50' },
   ],
   resultMain: 'Preço Teto Médio: R$ 65,80',
   resultSub: 'Preço atual (R$ 38,00) está 42% abaixo do teto médio. Excelente oportunidade segundo as métricas!',
 }
 
 const howToSteps = [
-  { title: 'Reúna os Dados da Ação', html: 'Use a própria página do ativo aqui na Redentia ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
-  { title: 'Preencha os Campos', html: 'Insira ticker, preço atual e os indicadores. Use valores dos últimos 12 meses (TTM - Trailing Twelve Months) para maior precisão.' },
-  { title: 'Analise as 4 Metodologias', html: 'Cada método tem seus pontos fortes. Graham é conservador, Bazin foca dividendos, P/L setorial contextualiza, e VPA é bom para empresas com ativos.' },
-  { title: 'Veja o Consenso', html: 'A média das metodologias fornece uma visão balanceada. Se a maioria indicar "Barato", a ação pode estar em bom momento de compra.' },
-  { title: 'Analise Outros Fundamentos', html: 'Preço teto é um filtro, não a decisão final. Avalie também: endividamento, ROE, crescimento de receita, perspectivas do setor e qualidade da gestão.' },
+  { title: 'Reúna os dados da ação', html: 'Use a própria página do ativo aqui na Redentia ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
+  { title: 'Preencha os campos', html: 'Insira ticker, preço atual e os indicadores. Use valores dos últimos 12 meses (TTM - Trailing Twelve Months) para maior precisão.' },
+  { title: 'Analise as 4 metodologias', html: 'Cada método tem seus pontos fortes. Graham é conservador, Bazin foca dividendos, P/L setorial contextualiza, e VPA é bom para empresas com ativos.' },
+  { title: 'Veja o consenso', html: 'A média das metodologias fornece uma visão balanceada. Se a maioria indicar "Barato", a ação pode estar em bom momento de compra.' },
+  { title: 'Analise outros fundamentos', html: 'Preço teto é um filtro, não a decisão final. Avalie também: endividamento, ROE, crescimento de receita, perspectivas do setor e qualidade da gestão.' },
 ]
 
 const limitCards = [
-  { title: 'Empresas de Crescimento (Growth)', body: 'Empresas como Magazine Luiza, Mercado Livre, que crescem rápido mas têm lucro baixo ou prejuízo, não funcionam bem com essas fórmulas. Prefira análise de múltiplos de receita ou fluxo de caixa descontado.' },
-  { title: 'Empresas com Prejuízo', body: 'Se o LPA é negativo, as fórmulas não funcionam. A empresa pode estar em reestruturação ou em setor cíclico no momento ruim.' },
-  { title: 'Setores Muito Cíclicos', body: 'Commodities (mineração, siderurgia) têm lucros que variam muito. Use LPA médio de vários anos ou análise de ciclos.' },
-  { title: 'Empresas com Dívida Altíssima', body: 'Se a empresa está super endividada, o valor patrimonial pode estar inflado. Verifique Dívida Líquida / EBITDA antes.' },
+  { title: 'Empresas de crescimento (growth)', body: 'Empresas como Magazine Luiza, Mercado Livre, que crescem rápido mas têm lucro baixo ou prejuízo, não funcionam bem com essas fórmulas. Prefira análise de múltiplos de receita ou fluxo de caixa descontado.' },
+  { title: 'Empresas com prejuízo', body: 'Se o LPA é negativo, as fórmulas não funcionam. A empresa pode estar em reestruturação ou em setor cíclico no momento ruim.' },
+  { title: 'Setores muito cíclicos', body: 'Commodities (mineração, siderurgia) têm lucros que variam muito. Use LPA médio de vários anos ou análise de ciclos.' },
+  { title: 'Empresas com dívida altíssima', body: 'Se a empresa está super endividada, o valor patrimonial pode estar inflado. Verifique Dívida Líquida / EBITDA antes.' },
 ]
 
 const tipCards = [
-  { title: '1. Use Como Filtro Inicial', body: 'Calcule o preço teto de 10-20 ações que você gosta. Descarte as que estão muito acima do teto. Foque análise profunda nas que estão abaixo.' },
-  { title: '2. Combine com Outros Indicadores', body: 'Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA < 3, Crescimento de receita > 5% a.a., Payout sustentável.' },
-  { title: '3. Exija Margem de Segurança', body: 'Nunca compre no preço teto ou acima. Espere pelo menos 20% de margem. Em momentos de crise, você pode conseguir 40-50% de desconto.' },
-  { title: '4. Reavalie Periodicamente', body: 'Fundamentos mudam. Uma ação que estava barata pode ficar cara se o lucro cair. Recalcule após cada balanço trimestral.' },
-  { title: '5. Entenda o "Por Quê"', body: 'Se uma ação está 50% abaixo do preço teto, investigue o porquê. Pode ser oportunidade ou problema real que o mercado já precificou.' },
-  { title: '6. Seja Paciente', body: 'Value investing exige paciência. Pode levar meses ou anos para o mercado reconhecer o valor. Não espere ganhos rápidos.' },
+  { title: '1. Use como filtro inicial', body: 'Calcule o preço teto de 10-20 ações que você gosta. Descarte as que estão muito acima do teto. Foque análise profunda nas que estão abaixo.' },
+  { title: '2. Combine com outros indicadores', body: 'Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA < 3, Crescimento de receita > 5% a.a., Payout sustentável.' },
+  { title: '3. Exija margem de segurança', body: 'Nunca compre no preço teto ou acima. Espere pelo menos 20% de margem. Em momentos de crise, você pode conseguir 40-50% de desconto.' },
+  { title: '4. Reavalie periodicamente', body: 'Fundamentos mudam. Uma ação que estava barata pode ficar cara se o lucro cair. Recalcule após cada balanço trimestral.' },
+  { title: '5. Entenda o porquê', body: 'Se uma ação está 50% abaixo do preço teto, investigue o porquê. Pode ser oportunidade ou problema real que o mercado já precificou.' },
+  { title: '6. Seja paciente', body: 'Value investing exige paciência. Pode levar meses ou anos para o mercado reconhecer o valor. Não espere ganhos rápidos.' },
 ]
 
 // Rankings relacionados — listas atualizadas que ampliam a analise do
@@ -649,7 +649,7 @@ usePageSeo({
     </CalcSplit>
 
     <CalcSplit tone="white">
-      <template #title>O que é Preço Teto?</template>
+      <template #title>O que é preço teto?</template>
       <div class="pt__prose">
         <p>O preço teto é o valor máximo que você deveria pagar por uma ação, considerando seus fundamentos e uma margem de segurança. É um conceito fundamental da análise fundamentalista, popularizado por Benjamin Graham (o "pai do value investing") e adaptado por investidores brasileiros como Décio Bazin.</p>
         <p>Diferente de apenas olhar o preço atual da ação, o preço teto considera indicadores como lucro, patrimônio, dividendos e múltiplos do setor para determinar um valor justo. Se a ação estiver abaixo do preço teto, pode ser uma boa oportunidade de compra. Se estiver acima, pode estar cara.</p>
@@ -658,7 +658,7 @@ usePageSeo({
 
     <!-- ============ Metodologias (splits de fórmula do design) ============ -->
     <CalcSplit tone="white">
-      <template #title>Metodologias de Cálculo</template>
+      <template #title>Metodologias de cálculo</template>
       <template #left>
         <h3 class="pt__sub">1. Fórmula de Benjamin Graham</h3>
       </template>
@@ -677,7 +677,7 @@ usePageSeo({
     </CalcSplit>
 
     <CalcSplit tone="cream" title-tag="h3" size="sm">
-      <template #title>2. Método Bazin (Dividendos)</template>
+      <template #title>2. Método Bazin (dividendos)</template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
           tone="white"
@@ -693,7 +693,7 @@ usePageSeo({
     </CalcSplit>
 
     <CalcSplit tone="white" title-tag="h3" size="sm">
-      <template #title>3. P/L Setorial</template>
+      <template #title>3. P/L setorial</template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
           :terms="[
@@ -707,7 +707,7 @@ usePageSeo({
     </CalcSplit>
 
     <CalcSplit tone="cream" title-tag="h3" size="sm">
-      <template #title>4. Valor Patrimonial (Graham Modificado)</template>
+      <template #title>4. Valor patrimonial (Graham modificado)</template>
       <div class="pt__formula-wrap">
         <CalcFormulaCard
           tone="white"
@@ -736,7 +736,7 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Exemplos práticos (banda creme + cards brancos, anatomia do exemplar) ============ -->
-    <CalcBand tone="cream" title="Exemplos Práticos">
+    <CalcBand tone="cream" title="Exemplos práticos">
       <div class="pt__ex-grid">
         <div>
           <h3 class="pt__ex-title">Exemplo 1: Itaú Unibanco (ITUB4)</h3>
@@ -780,26 +780,26 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Como usar (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
-    <CalcBand tone="cream" title="Como Usar a Calculadora">
+    <CalcBand tone="cream" title="Como usar a calculadora">
       <div class="pt__band-body"><CalcSteps :steps="howToSteps" /></div>
     </CalcBand>
 
     <!-- ============ Value vs Growth (split: título à esquerda, tiles à direita) ============ -->
     <CalcSplit tone="white">
-      <template #title>Value Investing vs Growth Investing</template>
+      <template #title>Value investing vs. growth investing</template>
       <template #dek>
         <p>A calculadora de preço teto é uma ferramenta clássica do value investing, escola que busca empresas negociadas abaixo do valor intrínseco. Antes de aplicar as fórmulas, vale entender se o ativo analisado faz sentido pra essa filosofia ou se ele pertence ao outro lado, growth investing.</p>
       </template>
       <div class="pt__tiles pt__tiles--two">
         <div class="pt__tile">
-          <h4 class="pt__h4 pt__h4--accent">Value Investing</h4>
+          <h4 class="pt__h4">Value investing</h4>
           <p class="pt__card-p">
             Foco em preço teto, fórmulas Graham e Bazin, dividendos consistentes, ROE alto, P/L baixo e margem de segurança. O investidor procura empresas maduras pagando bom dividendo, com lucro previsível e múltiplos esticados pra baixo. Resultado costuma vir devagar, com renda recorrente.
           </p>
           <p class="pt__card-small">Exemplos clássicos na B3: ITUB4, BBAS3, TAEE11.</p>
         </div>
         <div class="pt__tile">
-          <h4 class="pt__h4 pt__h4--accent">Growth Investing</h4>
+          <h4 class="pt__h4">Growth investing</h4>
           <p class="pt__card-p">
             Foco em receita crescente, reinvestimento de lucros e expansão de margem futura. P/L alto é tolerado quando justificado por crescimento de dois dígitos por vários anos. As fórmulas tradicionais subestimam essas empresas porque o lucro presente é pequeno comparado ao potencial. Para essas, prefira múltiplos de receita (P/S, EV/Sales) ou fluxo de caixa descontado (DCF).
           </p>
@@ -809,10 +809,10 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Limitações (banda com grid de tiles) ============ -->
-    <CalcBand tone="cream" title="Limitações e Quando NÃO Usar">
+    <CalcBand tone="cream" title="Limitações e quando não usar">
       <div class="pt__tiles">
         <div v-for="c in limitCards" :key="c.title" class="pt__tile pt__tile--negative">
-          <h4 class="pt__h4 pt__h4--negative">{{ c.title }}</h4>
+          <h4 class="pt__h4">{{ c.title }}</h4>
           <p class="pt__card-p">{{ c.body }}</p>
         </div>
       </div>
@@ -820,7 +820,7 @@ usePageSeo({
 
     <!-- ============ FAQ (anatomia EXATA do design: banda creme, cards brancos, pill IA) ============ -->
     <CalcSplit tone="cream" wide>
-      <template #title>Perguntas Frequentes</template>
+      <template #title>Perguntas frequentes</template>
       <template #left>
         <NuxtLink to="/busca" class="pt__pill">Perguntar à Redentia AI</NuxtLink>
       </template>
@@ -828,10 +828,10 @@ usePageSeo({
     </CalcSplit>
 
     <!-- ============ Dicas (texto verbatim) ============ -->
-    <CalcBand tone="white" title="Dicas para Investir com Preço Teto">
+    <CalcBand tone="white" title="Dicas para investir com preço teto">
       <div class="pt__tiles">
         <div v-for="c in tipCards" :key="c.title" class="pt__tile">
-          <h4 class="pt__h4 pt__h4--accent">{{ c.title }}</h4>
+          <h4 class="pt__h4">{{ c.title }}</h4>
           <p class="pt__card-p">{{ c.body }}</p>
         </div>
       </div>
@@ -867,7 +867,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Rankings relacionados ============ -->
-    <CalcBand tone="white" title="Rankings Relacionados">
+    <CalcBand tone="white" title="Rankings relacionados">
       <template #dek>
         <p>Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.</p>
       </template>
@@ -880,7 +880,7 @@ usePageSeo({
     </CalcBand>
 
     <!-- ============ Outras ferramentas + CTA ============ -->
-    <CalcBand tone="cream" title="Outras Ferramentas">
+    <CalcBand tone="cream" title="Outras ferramentas">
       <div class="pt__grid-cards">
         <NuxtLink to="/calculadora/dividend-yield" class="pt__card-link">
           <h3 class="pt__card-link-title">Calculadora de Dividend Yield</h3>
@@ -908,43 +908,43 @@ usePageSeo({
 /* ——— controles da calculadora ——— */
 .pt__gap { margin-top: 36px; }
 .pt__examples { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.pt__examples-label { color: var(--nu-gray); font-size: 14px; font-weight: 700; margin-right: 4px; }
+.pt__examples-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; margin-right: 4px; }
 /* chips no MESMO estilo visual do kit (csf__chip do CalcSliderField) */
 .pt__chip-btn {
   padding: 8px 14px; border-radius: var(--nu-r-pill);
-  font-size: 12.5px; font-weight: 800; white-space: nowrap; cursor: pointer;
+  font-size: var(--nu-fs-dense); font-weight: 700; white-space: nowrap; cursor: pointer;
   border: 2px solid var(--nu-sand-border); background: var(--nu-white);
   color: var(--nu-gray-2); transition: all .2s;
 }
 .pt__chip-btn--active { border-color: var(--nu-ink); background: var(--nu-ink); color: var(--nu-white); }
-.pt__controls-note { margin: 22px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.55; }
+.pt__controls-note { margin: 22px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
 
 /* ——— seletor de ativo (busca, mesmo padrão da calc de ações) ——— */
 .pt__search { position: relative; margin-bottom: 22px; }
-.pt__search-label { display: block; color: var(--nu-gray); font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.pt__search-label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; margin-bottom: 10px; }
 .pt__search-input {
   width: 100%; padding: 13px 16px;
   background: var(--nu-white); border: 2px solid var(--nu-sand-border);
   border-radius: var(--nu-r-input); color: var(--nu-ink);
-  font-size: 15px; font-weight: 700; font-family: var(--nu-font); outline: none;
+  font-size: var(--nu-fs-md); font-weight: 700; font-family: var(--nu-font); outline: none;
   transition: border-color .2s;
 }
-.pt__search-input::placeholder { color: var(--nu-placeholder); font-weight: 600; }
+.pt__search-input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
 .pt__search-input:focus { border-color: var(--nu-blue); }
 .pt__dropdown {
   position: absolute; left: 0; right: 0; top: 100%; z-index: 30; margin-top: 6px;
   background: var(--nu-white); border-radius: var(--nu-r-tile);
   box-shadow: var(--nu-shadow-card); max-height: 280px; overflow-y: auto; padding: 6px;
 }
-.pt__search-hint { margin: 8px 0; padding: 0 12px; color: var(--nu-gray); font-size: 13px; font-weight: 600; }
+.pt__search-hint { margin: 8px 0; padding: 0 12px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 .pt__option {
   display: flex; align-items: baseline; gap: 10px; width: 100%;
   background: transparent; border: none; text-align: left; cursor: pointer;
   padding: 10px 12px; border-radius: 10px; transition: background .15s;
 }
 .pt__option:hover { background: var(--nu-cream); }
-.pt__option-ticker { color: var(--nu-ink); font-size: 14px; font-weight: 800; flex-shrink: 0; }
-.pt__option-name { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt__option-ticker { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; flex-shrink: 0; }
+.pt__option-name { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ——— resultado ——— */
 .pt__reco {
@@ -957,10 +957,10 @@ usePageSeo({
 .pt__reco--neutral .pt__reco-value { color: var(--nu-blue); }
 .pt__reco--negative { background: var(--nu-red-tint); }
 .pt__reco--negative .pt__reco-value { color: var(--nu-red); }
-.pt__reco-label { color: var(--nu-gray-2); font-size: 13px; font-weight: 700; }
-.pt__reco-value { font-size: 15px; font-weight: 800; }
+.pt__reco-label { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700; }
+.pt__reco-value { font-size: var(--nu-fs-md); font-weight: 800; }
 .pt__reco-explain {
-  margin: 14px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500;
+  margin: 14px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
   line-height: 1.6; max-width: 640px;
 }
 
@@ -973,24 +973,24 @@ usePageSeo({
 .pt__method--neutral { background: var(--nu-blue-tint); }
 .pt__method--negative { background: var(--nu-red-tint); }
 .pt__method-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.pt__method-title { color: var(--nu-ink); font-size: 14px; font-weight: 800; letter-spacing: -.1px; }
+.pt__method-title { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
 .pt__method-badge {
   background: var(--nu-white); border-radius: var(--nu-r-pill);
-  padding: 4px 10px; color: var(--nu-gray-2); font-size: 11px; font-weight: 800;
+  padding: 4px 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .4px; text-transform: uppercase; white-space: nowrap;
 }
 .pt__method-value {
-  margin: 12px 0 0; color: var(--nu-ink); font-size: 24px; font-weight: 800;
+  margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
   letter-spacing: -.03em; font-variant-numeric: tabular-nums;
 }
-.pt__method-margin { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.pt__method-formula { margin: 10px 0 0; color: var(--nu-gray); font-size: 12px; font-weight: 700; }
+.pt__method-margin { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
+.pt__method-formula { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
 
 .pt__bars { margin-top: 28px; max-width: 640px; }
 .pt__bar-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 14px; }
 .pt__bar-row:first-child { margin-top: 0; }
-.pt__bar-label { color: var(--nu-gray); font-size: 13.5px; font-weight: 700; }
-.pt__bar-value { color: var(--nu-ink); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__bar-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.pt__bar-value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .pt__bar-track {
   height: 10px; border-radius: var(--nu-r-pill); background: var(--nu-sand-2);
   margin-top: 6px; overflow: hidden;
@@ -999,23 +999,24 @@ usePageSeo({
 
 .pt__asset-link {
   display: inline-flex; margin-top: 24px;
-  color: var(--nu-blue); font-size: 14.5px; font-weight: 800;
+  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .pt__asset-link:hover { color: var(--nu-blue-hover); }
 .pt__insight {
   background: var(--nu-cream); border-radius: 18px; padding: 18px 22px; margin-top: 20px;
-  color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.6;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
 .pt__insight strong { color: var(--nu-ink); font-weight: 800; }
 
 /* ——— tipografia compartilhada ——— */
-.pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: 16.5px; font-weight: 800; letter-spacing: -.2px; }
-.pt__h4--accent { color: var(--nu-blue); }
-.pt__h4--negative { color: var(--nu-red); }
+/* Um padrão de card só na página (out/2026): título 18/800 em tinta, sem
+   cor de destaque no título. O sinal de "limitação" é o filete vermelho do
+   card, não o título vermelho nem o fundo rosa. */
+.pt__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pt__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.7;
 }
 .pt__prose p:last-child { margin-bottom: 0; }
@@ -1023,7 +1024,7 @@ usePageSeo({
 .pt__prose--gap { margin-top: 20px; }
 
 /* ——— sub-heading dentro da coluna esquerda do split ——— */
-.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.pt__sub { margin: clamp(24px, 3vw, 34px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
 
 /* ——— corpo de banda centrada (card 1080 do design) ——— */
 .pt__band-body { margin-top: clamp(30px, 4vw, 48px); }
@@ -1039,8 +1040,8 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .pt__ticker:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__ticker-code { color: var(--nu-ink); font-size: 14.5px; font-weight: 800; letter-spacing: -.1px; }
-.pt__ticker-name { color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+.pt__ticker-code { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; letter-spacing: -.1px; }
+.pt__ticker-name { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— fórmulas ——— */
 /* termos longos (Dividendo Anual, P/L Médio) — a coluna fixa de 26px do kit
@@ -1059,15 +1060,21 @@ usePageSeo({
 }
 .pt__tile { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px; }
 :global(.cbd--cream) .pt__tile { background: var(--nu-white); }
-.pt__tile--negative { background: var(--nu-red-tint); }
-:global(.cbd--cream) .pt__tile--negative { background: var(--nu-red-tint); }
-.pt__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
-.pt__card-small { margin: 10px 0 0; color: var(--nu-gray); font-size: 12.5px; font-weight: 600; }
+/* Limitações moram numa banda creme: card branco explícito (o :global acima
+   não vence o escopo do card) e o sinal é um traço vermelho curto sobre o
+   título, não fundo rosa nem filete que dobra no raio do canto. */
+.pt__tile--negative { background: var(--nu-white); }
+.pt__tile--negative::before {
+  content: ''; display: block; width: 24px; height: 3px; margin-bottom: 12px;
+  border-radius: var(--nu-r-pill); background: var(--nu-red);
+}
+.pt__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
+.pt__card-small { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— card de lista dos indicadores (coluna direita do split) ——— */
 .pt__card { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px; }
-.pt__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.7; }
-.pt__ind-list { margin: 0; padding-left: 18px; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.75; }
+.pt__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
+.pt__ind-list { margin: 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.75; }
 .pt__ind-list li + li { margin-top: 8px; }
 .pt__ind-list strong { color: var(--nu-ink); font-weight: 800; }
 
@@ -1077,20 +1084,20 @@ usePageSeo({
   gap: 18px; margin-top: clamp(30px, 4vw, 48px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__ex-title { margin: 0 0 14px; color: var(--nu-ink); font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
-.pt__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
+.pt__ex-title { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.pt__ex-card { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; }
 .pt__ex-boxes {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 12px; margin-top: 16px;
 }
 .pt__ex-box { background: var(--nu-cream); border-radius: var(--nu-r-input); padding: 14px 16px; }
-.pt__ex-label { margin: 0; color: var(--nu-gray); font-size: 12px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; }
-.pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pt__ex-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }
+.pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .pt__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 16px; }
 .pt__result-box--positive { background: var(--nu-green-tint); }
-.pt__result-main { margin: 0; color: var(--nu-blue); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__result-main { margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
 .pt__result-main--positive { color: var(--nu-green); }
-.pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: 12.5px; font-weight: 600; }
+.pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
 .pt__grid-cards {
@@ -1100,18 +1107,18 @@ usePageSeo({
 }
 .pt__grid-cards--three { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
 .pt__card-link {
-  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
-  display: flex; flex-direction: column; gap: 6px;
+  background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 24px;
+  display: flex; flex-direction: column; gap: 8px;
   transition: transform .18s, box-shadow .2s;
 }
 :global(.cbd--cream) .pt__card-link { background: var(--nu-white); }
 .pt__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
+.pt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 
 /* ——— pills / CTA ——— */
 .pt__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .pt__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -1120,8 +1127,8 @@ usePageSeo({
   padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
-.pt__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.pt__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: 16px; font-weight: 500; line-height: 1.6; max-width: 560px; }
+.pt__cta-title { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.pt__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .pt__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .pt__cta .pt__pill { margin-top: 0; }
 .pt__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
@@ -1132,6 +1139,6 @@ usePageSeo({
 /* breakpoint padrão do app */
 @media (max-width: 760px) {
   .pt__methods { grid-template-columns: 1fr 1fr; }
-  .pt__method-value { font-size: 20px; }
+  .pt__method-value { font-size: var(--nu-fs-xl); }
 }
 </style>

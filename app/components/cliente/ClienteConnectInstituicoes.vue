@@ -74,13 +74,13 @@ const buscaId = useId()
 
 <style scoped>
 .ccl { flex: 1 1 auto; display: flex; flex-direction: column; }
-.ccl__h1 { margin: 0; color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -.02em; outline: none; }
+.ccl__h1 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.02em; outline: none; }
 
 .ccl__busca { position: relative; margin-top: 14px; }
 .ccl__input {
   width: 100%; height: 44px; padding: 0 40px 0 14px; border-radius: 10px;
   border: 1.5px solid var(--nu-cream-line); background: var(--nu-white); color: var(--nu-ink);
-  font-size: 14px; font-weight: 600; outline: none; transition: border-color .2s;
+  font-size: var(--nu-fs-sm); font-weight: 500; outline: none; transition: border-color .2s;
   -webkit-appearance: none; appearance: none;
 }
 .ccl__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
@@ -91,7 +91,7 @@ const buscaId = useId()
 .ccl__abas { margin-top: 10px; display: flex; gap: 2px; border-bottom: 1px solid var(--nu-cream-line); }
 .ccl__aba {
   position: relative; padding: 9px 10px 10px; border: none; background: none; color: var(--nu-gray);
-  font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: color .2s;
+  font-family: inherit; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; transition: color .2s;
 }
 .ccl__aba::after {
   content: ''; position: absolute; left: 6px; right: 6px; bottom: -1px; height: 2px; border-radius: 2px;
@@ -110,8 +110,8 @@ const buscaId = useId()
 .ccl__lista li + li .ccl__item { box-shadow: inset 0 1px 0 var(--nu-cream-2); }
 .ccl__item:hover { background: var(--nu-cream); }
 .ccl__item:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
-.ccl__nome { flex: 1 1 auto; min-width: 0; font-size: 14.5px; font-weight: 600; }
+.ccl__nome { flex: 1 1 auto; min-width: 0; font-size: var(--nu-fs-sm); font-weight: 500; }
 .ccl__seta { color: var(--nu-sand); flex-shrink: 0; }
 
-.ccl__vazio { margin: 22px 4px 0; color: var(--nu-gray-2); font-size: 14px; font-weight: 500; line-height: 1.55; }
+.ccl__vazio { margin: 22px 4px 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 </style>

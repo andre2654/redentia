@@ -143,21 +143,21 @@ async function deixar(t: string) {
 .sgf__link { display: flex; flex-direction: column; gap: 14px; padding: 20px 20px 18px; min-height: 100%; }
 .sgf__top { display: flex; align-items: center; gap: 12px; padding-right: 30px; min-width: 0; }
 .sgf__id { display: flex; flex-direction: column; min-width: 0; }
-.sgf__ticker { color: var(--nu-ink); font-size: 17px; font-weight: 800; letter-spacing: -.2px; font-variant-numeric: tabular-nums; }
-.sgf__name { color: var(--nu-gray); font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sgf__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; font-variant-numeric: tabular-nums; }
+.sgf__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sgf__price {
-  color: var(--nu-ink); font-size: 26px; font-weight: 800; letter-spacing: -.5px;
+  color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.5px;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sgf__sk { display: block; }
 .sgf__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sgf__chg {
-  display: inline-flex; align-items: center; font-size: 13.5px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-sm); font-weight: 700;
   padding: 5px 11px; border-radius: var(--nu-r-pill); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .sgf__chg--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
 .sgf__chg--down { background: var(--nu-red-bg); color: var(--nu-red-2); }
-.sgf__date { color: var(--nu-gray); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sgf__date { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 
 .sgf__unstar {
   position: absolute; top: 14px; right: 12px; width: 36px; height: 36px;
@@ -169,7 +169,7 @@ async function deixar(t: string) {
 .sgf__unstar[aria-busy='true'] { cursor: progress; }
 .sgf__unstar:focus-visible, .sgf__link:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
 
-.sgf__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+.sgf__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .sgf__gancho { margin-top: clamp(24px, 3vw, 36px); }
 .sgf__gancho:empty, .sgf__gancho--solo { margin-top: 0; }

@@ -181,7 +181,7 @@ function guiaScroll(d: number) {
 .mex { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
 .mex__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .mex__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.mex__sub { color: var(--nu-gray); font-size: 17px; font-weight: 600; line-height: 1.5; margin-top: 22px; }
+.mex__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .mex__rows { flex: 1.5 1 480px; min-width: min(340px, 100%); display: flex; flex-direction: column; gap: 14px; }
 .mex__row {
   display: flex; align-items: center; gap: 18px; background: var(--nu-cream);
@@ -190,8 +190,8 @@ function guiaScroll(d: number) {
 }
 .mex__row:hover { background: var(--nu-cream-4); transform: translateY(-2px); }
 .mex__row-main { flex: 1; min-width: 0; }
-.mex__row-title { display: block; color: var(--nu-ink); font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
-.mex__row-desc { display: block; color: var(--nu-gray); font-size: 15px; font-weight: 600; line-height: 1.5; margin-top: 6px; }
+.mex__row-title { display: block; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.mex__row-desc { display: block; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; margin-top: 6px; }
 .mex__row-circle {
   width: 46px; height: 46px; flex-shrink: 0; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
@@ -210,7 +210,7 @@ function guiaScroll(d: number) {
   width: 52px; height: 52px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.mnw__all-label { color: var(--nu-ink); font-size: 18px; font-weight: 800; }
+.mnw__all-label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 
 /* ——— Blog / Guias ——— */
 .mbg {
@@ -221,12 +221,12 @@ function guiaScroll(d: number) {
 .mbg__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: center; flex-wrap: wrap; }
 .mbg__left { flex: 0 1 360px; min-width: min(280px, 100%); padding-right: 22px; }
 .mbg__title {
-  margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.6vw, 58px);
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.06; max-width: 360px;
 }
 .mbg__cta {
   display: inline-flex; align-items: center; gap: 9px; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .mbg__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
@@ -243,10 +243,10 @@ function guiaScroll(d: number) {
 .mfq { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
 .mfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .mfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.mfq__copy { color: var(--nu-gray-2); font-size: 17px; font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
+.mfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
 .mfq__cta {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .mfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }

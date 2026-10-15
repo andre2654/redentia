@@ -87,8 +87,8 @@ function titleOf(s: NuChatSession): string {
 @keyframes nu-qslide { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 .bhd__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 24px 24px 6px; }
-.bhd__title { display: block; color: var(--nu-navy); font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
-.bhd__count { display: block; color: var(--nu-gray-hist); font-size: 12.5px; font-weight: 600; margin-top: 3px; }
+.bhd__title { display: block; color: var(--nu-navy); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.3px; }
+.bhd__count { display: block; color: var(--nu-gray-hist); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: 3px; }
 .bhd__close {
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--nu-navy-07); border: none; color: var(--nu-navy);
@@ -103,7 +103,7 @@ function titleOf(s: NuChatSession): string {
   display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
   background: var(--nu-blue); color: var(--nu-white); border: none;
   border-radius: var(--nu-r-pill); padding: 13px 18px;
-  font-size: 14px; font-weight: 800; cursor: pointer; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s;
 }
 .bhd__cta:hover { background: var(--nu-blue-hover-3); }
 .bhd__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
@@ -128,9 +128,9 @@ function titleOf(s: NuChatSession): string {
 .bhd__item--active:hover { background: var(--nu-white); }
 .bhd__item-title {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  color: var(--nu-navy); font-size: 14px; font-weight: 700; line-height: 1.45;
+  color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.45;
 }
-.bhd__item-meta { display: block; color: var(--nu-gray-hist); font-size: 12px; font-weight: 600; margin-top: 4px; }
+.bhd__item-meta { display: block; color: var(--nu-gray-hist); font-size: var(--nu-fs-xs); font-weight: 500; margin-top: 4px; }
 .bhd__del {
   position: absolute; top: 12px; right: 10px; width: 28px; height: 28px;
   border-radius: 50%; background: transparent; border: none; color: var(--nu-gray-hist);

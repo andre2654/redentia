@@ -24,12 +24,12 @@ defineProps<{ rows: AcaoStatRow[]; dark?: boolean }>()
 .nsl__row--dark { border-top: 1px solid var(--nu-cream-text-10); }
 .nsl__row--first { border-top: none; }
 .nsl__row--light { border-top: 1px solid var(--nu-cream-line); }
-.nsl__label { font-weight: 600; }
-.nsl__label--dark { color: var(--nu-cream-text-50); font-size: 13.5px; }
-.nsl__label--light { color: var(--nu-gray); font-size: 14.5px; }
+.nsl__label { font-weight: 500; }
+.nsl__label--dark { color: var(--nu-cream-text-50); font-size: var(--nu-fs-sm); }
+.nsl__label--light { color: var(--nu-gray); font-size: var(--nu-fs-sm); }
 .nsl__value { font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.nsl__value--dark { color: var(--nu-cream-text); font-size: 16.5px; }
-.nsl__value--light { color: var(--nu-ink); font-size: 17px; }
+.nsl__value--dark { color: var(--nu-cream-text); font-size: var(--nu-fs-md); }
+.nsl__value--light { color: var(--nu-ink); font-size: var(--nu-fs-lg); }
 /* PR5: valor com destaque (ex.: 'Desde o lançamento' na tese) */
 .nsl__value--dark.nsl__value--green { color: var(--nu-green-soft); }
 .nsl__value--light.nsl__value--green { color: var(--nu-green-2); }

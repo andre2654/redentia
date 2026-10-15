@@ -469,11 +469,11 @@ onBeforeUnmount(() => {
   overflow-x: auto; padding: 0 14px;
 }
 .nuh__navitem {
-  padding: 10px 14px; color: var(--nu-ink); font-size: 16px; font-weight: 700;
+  padding: 10px 14px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   white-space: nowrap; border-radius: var(--nu-r-chip);
   transition: background .2s, font-size .28s ease, padding .28s ease;
 }
-.nuh-wrap--shrunk .nuh__navitem { font-size: 14.5px; padding: 8px 12px; }
+.nuh-wrap--shrunk .nuh__navitem { font-size: var(--nu-fs-sm); padding: 8px 12px; }
 .nuh__navitem:hover { background: var(--nu-cream-hover); }
 .nuh__navitem--active { color: var(--nu-blue); background: var(--nu-blue-tint); }
 .nuh__navitem--active:hover { background: var(--nu-blue-tint); }
@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
 }
 .nuh__drawer-item {
   display: block; padding: 11px 14px; border-radius: 10px;
-  color: var(--nu-ink); font-size: 15px; font-weight: 700; white-space: nowrap;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
   transition: background .15s;
 }
 .nuh__drawer-item:hover { background: var(--nu-cream-hover); color: var(--nu-ink); }
@@ -521,7 +521,7 @@ onBeforeUnmount(() => {
 }
 .nuh__mega-item--hot { background: var(--nu-cream-hover); }
 .nuh__mega-label {
-  color: var(--nu-ink); font-size: 15.5px; font-weight: 800; letter-spacing: -0.01em;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em;
   display: inline-flex; align-items: center; gap: 8px;
 }
 /* selo 'novo' — mesmo pill do DS, em azul tint. Serve os dois menus. */
@@ -529,10 +529,10 @@ onBeforeUnmount(() => {
   display: inline-flex; align-items: center; flex-shrink: 0;
   padding: 2px 8px; border-radius: var(--nu-r-pill);
   background: var(--nu-blue-tint); color: var(--nu-blue);
-  font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
 }
 .nuh__mega-item--active .nuh__mega-label { color: var(--nu-blue); }
-.nuh__mega-desc { color: var(--nu-gray); font-size: 13px; font-weight: 500; line-height: 1.4; }
+.nuh__mega-desc { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.4; }
 .nuh__mega-view {
   width: 400px; min-height: 296px; flex-shrink: 0;
   border-radius: var(--nu-r-tile); background: var(--nu-cream);
@@ -555,33 +555,33 @@ onBeforeUnmount(() => {
 .nuh__enter {
   display: inline-flex; align-items: center; background: transparent; color: var(--nu-blue);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 10px 22px;
-  font-size: 15.5px; font-weight: 700; white-space: nowrap;
+  font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
   transition: background .2s, padding .28s ease, font-size .28s ease;
 }
-.nuh-wrap--shrunk .nuh__enter { padding: 7px 18px; font-size: 14.5px; }
+.nuh-wrap--shrunk .nuh__enter { padding: 7px 18px; font-size: var(--nu-fs-sm); }
 .nuh__enter:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
 .nuh__cta {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 12px 22px;
-  font-size: 15.5px; font-weight: 700; white-space: nowrap;
+  font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
   transition: background .2s, padding .28s ease, font-size .28s ease;
 }
-.nuh-wrap--shrunk .nuh__cta { padding: 9px 18px; font-size: 14.5px; }
+.nuh-wrap--shrunk .nuh__cta { padding: 9px 18px; font-size: var(--nu-fs-sm); }
 .nuh__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .nuh__ai {
   display: inline-flex; align-items: center; gap: 9px; background: var(--nu-blue); color: var(--nu-white);
   border-radius: var(--nu-r-pill); padding: 12px 22px;
-  font-size: 15.5px; font-weight: 700; white-space: nowrap;
+  font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
   transition: background .2s, padding .28s ease, font-size .28s ease;
 }
-.nuh-wrap--shrunk .nuh__ai { padding: 9px 18px; font-size: 14.5px; }
+.nuh-wrap--shrunk .nuh__ai { padding: 9px 18px; font-size: var(--nu-fs-sm); }
 .nuh__ai:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .nuh__account { position: relative; flex-shrink: 0; display: flex; }
 .nuh__avatar {
   width: 42px; height: 42px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
   border: none; padding: 0; cursor: pointer; font-family: inherit;
-  color: var(--nu-white); font-size: 14.5px; font-weight: 700;
+  color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700;
   transition: background .2s, width .28s ease, height .28s ease;
 }
 .nuh__avatar:hover { background: var(--nu-blue-hover); }
@@ -626,7 +626,7 @@ onBeforeUnmount(() => {
 .num__list { flex: 1; overflow-y: auto; padding: 26px 24px 12px; display: flex; flex-direction: column; }
 .num__item {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 19px 4px; color: var(--nu-ink); font-size: 27px; font-weight: 800;
+  padding: 19px 4px; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800;
   letter-spacing: -0.03em;
 }
 .num__item--active { color: var(--nu-blue); }
@@ -636,10 +636,10 @@ onBeforeUnmount(() => {
 .num__sublist { display: flex; flex-direction: column; padding: 0 0 8px; }
 .num__subitem {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  padding: 13px 4px 13px 18px; color: var(--nu-gray-2); font-size: 18px; font-weight: 700;
+  padding: 13px 4px 13px 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 700;
 }
 .num__subitem > span { display: inline-flex; align-items: center; gap: 9px; }
-.num__subitem .nuh__tag { font-size: 11px; }
+.num__subitem .nuh__tag { font-size: var(--nu-fs-xs); }
 .num__subitem svg { color: var(--nu-gray); flex-shrink: 0; }
 .num__subitem--active { color: var(--nu-blue); }
 .num__subitem--active svg { color: var(--nu-blue); }
@@ -651,18 +651,18 @@ onBeforeUnmount(() => {
 .num__cta {
   display: flex; align-items: center; justify-content: center; background: var(--nu-blue);
   color: var(--nu-white); border-radius: var(--nu-r-pill); padding: 17px 24px;
-  font-size: 16.5px; font-weight: 800;
+  font-size: var(--nu-fs-md); font-weight: 800;
 }
 .num__cta-outline {
   display: flex; align-items: center; justify-content: center; background: transparent;
   color: var(--nu-blue); border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  padding: 15px 24px; font-size: 16.5px; font-weight: 800;
+  padding: 15px 24px; font-size: var(--nu-fs-md); font-weight: 800;
 }
 .num__logout {
   display: flex; align-items: center; justify-content: center; background: transparent;
   border: none; cursor: pointer; font-family: inherit;
   color: var(--nu-red); border-radius: var(--nu-r-pill);
-  padding: 13px 24px; font-size: 15.5px; font-weight: 800;
+  padding: 13px 24px; font-size: var(--nu-fs-md); font-weight: 800;
 }
 .num__logout:hover { background: var(--nu-red-tint); }
 

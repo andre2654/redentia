@@ -91,7 +91,7 @@ const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = us
 
 /* ——— estado conectado (centralizado) ——— */
 .msc__center { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.msc__eyebrow { color: var(--nu-cream-text-82); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; letter-spacing: -.2px; }
+.msc__eyebrow { color: var(--nu-cream-text-82); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
 .msc__value {
   color: var(--nu-cream-text); font-size: clamp(44px, 5.4vw, 76px);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.02;
@@ -99,7 +99,7 @@ const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = us
 }
 .msc__hoje {
   display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
-  font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums;
 }
 .msc__hoje--up { color: var(--nu-green-soft); }
 .msc__hoje--down { color: var(--nu-red-soft); }
@@ -114,7 +114,7 @@ const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = us
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: var(--nu-cream); color: var(--nu-blue);
   border: none; border-radius: var(--nu-r-pill); padding: 14px 26px;
-  font-size: 15.5px; font-weight: 800; white-space: nowrap; font-family: inherit;
+  font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-family: inherit;
   transition: transform .15s, background .2s;
 }
 button.msc__atalho { cursor: pointer; }
@@ -127,17 +127,17 @@ a.msc__atalho--warn:hover { color: var(--nu-amber-text); }
 .msc__connect { display: flex; align-items: center; justify-content: space-between; gap: clamp(24px, 4vw, 60px); flex-wrap: wrap; }
 .msc__connect-main { flex: 1 1 380px; min-width: min(300px, 100%); }
 .msc__connect-title {
-  margin: 0; color: var(--nu-cream-text); font-size: clamp(34px, 4vw, 54px);
+  margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.02;
 }
 .msc__connect-dek {
-  color: var(--nu-cream-text-82); font-size: clamp(16px, 1.6vw, 19px); font-weight: 500;
+  color: var(--nu-cream-text-82); font-size: var(--nu-fs-dek); font-weight: 500;
   line-height: 1.6; margin-top: 16px; max-width: 520px;
 }
 .msc__connect-cta {
   display: inline-flex; align-items: center; gap: 10px; background: var(--nu-cream);
   color: var(--nu-blue); border-radius: var(--nu-r-pill); padding: 16px 34px;
-  font-size: 16.5px; font-weight: 800; flex-shrink: 0;
+  font-size: var(--nu-fs-md); font-weight: 800; flex-shrink: 0;
   transition: transform .15s, background .2s;
 }
 .msc__connect-cta:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }

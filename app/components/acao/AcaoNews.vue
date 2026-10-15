@@ -44,5 +44,5 @@ defineProps<{ ticker: string; news: AcaoNewsVM }>()
   width: 52px; height: 52px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.anw__all-label { color: var(--nu-ink); font-size: 18px; font-weight: 800; }
+.anw__all-label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 </style>

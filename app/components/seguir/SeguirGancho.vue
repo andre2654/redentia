@@ -101,7 +101,7 @@ const pronto = computed(() => (comEmail.value
 .sgg__chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 .sgg__chip {
   display: inline-flex; align-items: center; gap: 7px; border: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); padding: 11px 16px; font-size: 15px; font-weight: 800;
+  border-radius: var(--nu-r-pill); padding: 11px 16px; font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; color: var(--nu-ink);
   transition: background .2s, color .2s, transform .15s;
 }
@@ -112,17 +112,17 @@ const pronto = computed(() => (comEmail.value
 .sgg__chip[aria-busy='true'] { cursor: progress; }
 .sgg__chip:focus-visible, .sgg__later:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
 
-.sgg__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: 14.5px; font-weight: 600; line-height: 1.5; }
+.sgg__err { margin: 14px 0 0; color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .sgg__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
 .sgg__prog { display: inline-flex; align-items: center; gap: 6px; }
 .sgg__seg { width: 30px; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-cream-3); transition: background .2s; }
 .sgg--on-white .sgg__seg { background: var(--nu-sand-2); }
 .sgg .sgg__seg--on { background: var(--nu-blue); }
-.sgg__count { margin-left: 6px; color: var(--nu-gray); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.sgg__count { margin-left: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .sgg__later {
   background: none; border: none; cursor: pointer; padding: 8px 4px;
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 700;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .sgg__later:hover { color: var(--nu-ink); text-decoration: underline; }
 

@@ -128,7 +128,7 @@ function gradFor(i: number) {
 .tcr__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: center; flex-wrap: wrap; }
 .tcr__head { flex: 0 1 380px; min-width: min(300px, 100%); padding-right: 22px; }
 .tcr__title { margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.6vw, 60px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; }
-.tcr__sub { color: var(--nu-gray); font-size: 16px; font-weight: 600; margin-top: 16px; line-height: 1.5; max-width: 340px; }
+.tcr__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 16px; line-height: 1.5; max-width: 340px; }
 
 .tcr__right { flex: 1 1 480px; min-width: min(320px, 100%); }
 .tcr__car { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 22px 10px 2px; }
@@ -146,30 +146,30 @@ function gradFor(i: number) {
 
 .tcr__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .tcr__top-l { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.tcr__cat { color: var(--nu-white-92); font-size: 14.5px; font-weight: 800; }
+.tcr__cat { color: var(--nu-white-92); font-size: var(--nu-fs-sm); font-weight: 700; }
 .tcr__follow {
   display: inline-flex; align-items: center; background: var(--nu-green-soft-22); color: var(--nu-green-soft);
-  font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: var(--nu-r-pill); white-space: nowrap;
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 9px; border-radius: var(--nu-r-pill); white-space: nowrap;
 }
 .tcr__pill {
   display: inline-flex; align-items: center; background: var(--nu-white-16); color: var(--nu-white);
-  font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-xs); font-weight: 700; padding: 5px 10px; border-radius: var(--nu-r-pill);
   white-space: nowrap; font-variant-numeric: tabular-nums;
 }
 .tcr__name { display: block; color: var(--nu-white); font-size: clamp(23px, 2vw, 27px); font-weight: 800; letter-spacing: -.4px; line-height: 1.16; margin-top: auto; }
-.tcr__eyebrow { display: block; color: var(--nu-white-60); font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 20px; }
+.tcr__eyebrow { display: block; color: var(--nu-white-60); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 20px; }
 .tcr__chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
 .tcr__chip {
   display: inline-flex; align-items: center; padding: 6px 11px; border-radius: 9px;
-  font-size: 12.5px; font-weight: 800; letter-spacing: .3px; background: var(--nu-white-16);
+  font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .3px; background: var(--nu-white-16);
   color: var(--nu-white); font-variant-numeric: tabular-nums;
 }
 .tcr__bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--nu-white-18); }
-.tcr__ret { display: block; color: var(--nu-green-soft); font-size: 27px; font-weight: 800; letter-spacing: -.5px; line-height: 1; font-variant-numeric: tabular-nums; }
-.tcr__since { display: block; color: var(--nu-white-62); font-size: 12px; font-weight: 600; margin-top: 5px; }
+.tcr__ret { display: block; color: var(--nu-green-soft); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+.tcr__since { display: block; color: var(--nu-white-62); font-size: var(--nu-fs-xs); font-weight: 500; margin-top: 5px; }
 .tcr__ver {
   display: inline-flex; align-items: center; gap: 7px; border: 1.5px solid var(--nu-white-85); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 10px 17px; font-size: 13.5px; font-weight: 800; white-space: nowrap; flex-shrink: 0;
+  border-radius: var(--nu-r-pill); padding: 10px 17px; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; flex-shrink: 0;
 }
 
 /* skeleton card (mesma anatomia, tone navy) */

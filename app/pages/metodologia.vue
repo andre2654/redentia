@@ -308,7 +308,7 @@ usePageSeo({
 .met-author__icon svg { width: 24px; height: 24px; }
 .met-author__body p {
   margin: 0; color: var(--nu-gray-3);
-  font-size: 15px; font-weight: 500; line-height: 1.6;
+  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
 }
 .met-author__body p + p { margin-top: 8px; }
 .met-author__body a {

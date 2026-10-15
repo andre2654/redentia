@@ -266,7 +266,7 @@ usePageSeo({
   display: flex; flex-direction: column; gap: 8px;
 }
 .sts__stat-label {
-  color: var(--nu-gray); font-size: 12.5px; font-weight: 800;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
   text-transform: uppercase; letter-spacing: .08em;
 }
 .sts__stat-value {
@@ -279,28 +279,28 @@ usePageSeo({
 .sts__toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .sts__toolbar-meta { display: flex; flex-direction: column; gap: 3px; }
 .sts__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue); font-size: 12px; font-weight: 800;
+  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .sts__toolbar-count {
-  margin: 0; color: var(--nu-ink); font-size: 16px; font-weight: 700;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   font-variant-numeric: tabular-nums; letter-spacing: -.1px;
 }
 .sts__state {
   background: var(--nu-white); border-radius: var(--nu-r-card-lg);
   padding: clamp(32px, 4vw, 48px); text-align: center;
-  color: var(--nu-gray-2); font-size: 15.5px; font-weight: 600;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
 }
 .sts__inline-link { color: var(--nu-blue); font-weight: 800; }
 .sts__inline-link:hover { text-decoration: underline; }
 .sts__answer {
   margin: clamp(8px, 1.5vw, 16px) auto 0; max-width: 68ch; text-align: center;
-  color: var(--nu-gray-2); font-size: 15px; font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
 }
 
 /* ——— prosa educacional (família das calculadoras/rankings) ——— */
 .sts__prose p {
-  margin: 0 0 16px; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.7;
+  margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
 .sts__prose p:last-child { margin-bottom: 0; }
 .sts__prose-link { color: var(--nu-blue); font-weight: 800; }
@@ -318,13 +318,13 @@ usePageSeo({
   transition: transform .18s, box-shadow .2s;
 }
 .sts__card-link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.sts__card-link-title { margin: 0; color: var(--nu-ink); font-size: 18px; font-weight: 800; letter-spacing: -.2px; }
-.sts__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: 14.5px; font-weight: 500; line-height: 1.6; }
+.sts__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.sts__card-link-desc { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
 /* ——— pill do FAQ ——— */
 .sts__pill {
   display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: 16px; font-weight: 700;
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
   margin-top: 30px; transition: background .2s;
 }
 .sts__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }

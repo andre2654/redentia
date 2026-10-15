@@ -84,7 +84,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   margin: 0; color: var(--nu-ink); font-size: clamp(38px, 4.8vw, 62px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.cmv__sub { color: var(--nu-gray); font-size: 16px; font-weight: 600; margin-top: 14px; }
+.cmv__sub { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 14px; }
 .cmv__saldo--up { color: var(--nu-green-2); font-weight: 800; }
 .cmv__saldo--down { color: var(--nu-ink); font-weight: 800; }
 .cmv__list { margin-top: 26px; }
@@ -94,25 +94,25 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   background: var(--nu-cream); display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
-.cmv__date-d { color: var(--nu-ink); font-size: 15px; font-weight: 800; line-height: 1; }
+.cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1; }
 .cmv__date-m { color: var(--nu-gray); font-size: 9px; font-weight: 800; letter-spacing: .5px; margin-top: 2px; }
 .cmv__main { flex: 1; min-width: 0; overflow: hidden; }
 .cmv__ticker-row { display: flex; align-items: center; gap: 10px; }
-.cmv__ticker { color: var(--nu-ink); font-size: 17px; font-weight: 800; white-space: nowrap; }
+.cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; }
 .cmv__badge {
-  display: inline-flex; align-items: center; font-size: 11px; font-weight: 800;
+  display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
   padding: 3px 10px; border-radius: var(--nu-r-pill); white-space: nowrap; flex-shrink: 0;
 }
 .cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-2); }
 .cmv__badge--compra { background: var(--nu-blue-tint); color: var(--nu-blue); }
 .cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .cmv__desc {
-  display: block; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; margin-top: 3px;
+  display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.cmv__val { color: var(--nu-ink); font-size: 17px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.cmv__val { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .cmv__val--pos { color: var(--nu-green-2); }
-.cmv__empty { color: var(--nu-gray); font-size: 15px; font-weight: 600; padding: 22px 0; border-top: 1.5px solid var(--nu-cream-2); }
+.cmv__empty { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; padding: 22px 0; border-top: 1.5px solid var(--nu-cream-2); }
 .cmv__more {
   display: inline-flex; align-items: center; gap: 14px; margin-top: 34px;
   background: transparent; border: none; padding: 0; cursor: pointer; transition: gap .2s;
@@ -122,5 +122,5 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   width: 52px; height: 52px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.cmv__more-label { color: var(--nu-ink); font-size: 18px; font-weight: 800; }
+.cmv__more-label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 </style>
