@@ -57,7 +57,7 @@ const sections: MetSection[] = [
         { kind: 'p', text: 'Regulação de fundos de investimento, FIIs, ofertas públicas, demonstrações financeiras padronizadas (DFP, ITR), comunicados a mercado, fato relevante, instruções normativas (CVM 555 para fundos abertos, CVM 472 para FIIs). Usamos a CVM como fonte de regras de tributação de fundos e dos prospectos exigidos por instrução. Frequência: instruções publicadas conforme calendário regulatório, dados de fundos diariamente.' },
       ] },
       { kind: 'subsection', title: 'Receita Federal do Brasil', blocks: [
-        { kind: 'p', text: 'Tabelas vigentes do IRPF, alíquotas de IR sobre ganho de capital em renda variável (15% swing trade, 20% day trade), códigos DARF (6015 para swing trade, 8523 para day trade), regras de isenção (vendas mensais até R$ 20.000 em ações, dividendos isentos), tributação regressiva de renda fixa (22,5% até 180d, 20% até 360d, 17,5% até 720d, 15% acima), instruções de declaração anual.' },
+        { kind: 'p', text: 'Tabelas vigentes do IRPF, alíquotas de IR sobre ganho de capital em renda variável (15% swing trade, 20% day trade), código DARF 6015 para swing trade e day trade de pessoa física, regras de isenção (vendas mensais de até R$ 20.000 em ações), tributação de dividendos (desde 01/01/2026, pela Lei 15.270/2025, retenção de 10% na fonte quando uma mesma empresa paga mais de R$ 50.000 no mês à mesma pessoa física; abaixo disso, sem retenção), tributação regressiva de renda fixa (22,5% até 180d, 20% até 360d, 17,5% até 720d, 15% acima), instruções de declaração anual.' },
       ] },
       { kind: 'subsection', title: 'IBGE (Instituto Brasileiro de Geografia e Estatística)', blocks: [
         { kind: 'p', text: 'IPCA (Índice Nacional de Preços ao Consumidor Amplo), IPCA-15, INPC, INCC e demais índices de inflação oficiais, PIB trimestral, indicadores demográficos, séries históricas via Sidra. Em qualquer simulação que considera inflação, IPCA é a referência usada. Para projeções futuras, usamos a meta de inflação (3% com banda de 1,5pp) ou o consenso Focus.' },
@@ -105,11 +105,9 @@ const sections: MetSection[] = [
           { text: '15% de IR sobre swing trade', bold: true },
           { text: ' (vendas em pregão diferente da compra), ' },
           { text: '20% sobre day trade', bold: true },
-          { text: ' (compra e venda no mesmo pregão), isenção para vendas mensais somadas até R$ 20.000 em ações comuns (não vale para day trade, FIIs, ETFs ou BDRs). Códigos DARF: ' },
+          { text: ' (compra e venda no mesmo pregão), isenção para vendas mensais somadas até R$ 20.000 em ações comuns, inclusive (não vale para day trade, FIIs, ETFs ou BDRs). Código DARF: ' },
           { text: '6015', bold: true },
-          { text: ' para swing trade, ' },
-          { text: '8523', bold: true },
-          { text: ' para day trade. Compensação de prejuízo permitida na mesma modalidade, sem prazo de validade.' },
+          { text: ' para swing trade e day trade. Vencimento no último dia útil do mês seguinte: se o fim do mês cair em fim de semana ou feriado bancário, o prazo antecipa. Compensação de prejuízo permitida na mesma modalidade, sem prazo de validade.' },
         ] },
       ] },
       { kind: 'subsection', title: 'Aposentadoria', blocks: [
@@ -224,7 +222,7 @@ const sections: MetSection[] = [
 // "Metodologia e fontes de dados | Redentia" — mesmas palavras, separador Nu.
 const origin = useSiteOrigin()
 
-const CONTENT_VERSION = '2026-05-05'
+const CONTENT_VERSION = '2026-10-15'
 const lastUpdatedISO = new Date(CONTENT_VERSION).toISOString()
 
 const pageDescription =
