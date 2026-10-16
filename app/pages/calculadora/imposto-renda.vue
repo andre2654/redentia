@@ -6,10 +6,13 @@
 // (Frontend/app/pages/calculadora/imposto-renda.vue + components/calculator/
 // IncomeTax.vue) verbatim, na MESMA ordem de tags (h1 → h2/h3/h4 → p → li →
 // FAQ). Muda o visual. Path antigo mantido — preserva URL equity.
-// Matemática EXATA do IncomeTax.vue antigo (15% swing / 20% day, isenção
-// < R$ 20 mil, compensação de prejuízos, DARF 6015/8523, vencimento no
-// último dia do mês seguinte).
+// Matemática em utils/ir-acoes.ts. Veio do IncomeTax.vue antigo e foi
+// corrigida em 15/10/2026 contra a fonte oficial: isenção ATÉ R$ 20 mil
+// (inclusive), DARF 6015 para swing e day trade, vencimento no último dia
+// ÚTIL do mês seguinte. O texto sobre dividendos tratava a lei como projeto
+// no Senado; agora segue a Lei 15.270/2025, em vigor desde 01/01/2026.
 import { brl } from '~/components/calc/compound-math'
+import { calcularIrAcoes, vencimentoDarf } from '~/utils/ir-acoes'
 
 const route = useRoute()
 
@@ -84,89 +87,25 @@ watch(
 )
 
 // ====================================================================
-// Matemática — porte EXATO do calculate() do IncomeTax.vue antigo.
+// Matemática — utils/ir-acoes.ts (regras e fontes no cabeçalho de lá).
 // ====================================================================
-interface Results {
-  taxDue: number
-  taxRate: number
-  message: string
-  darfCode: string
-  dueDate: string
-  exempt: boolean
-  compensatedLoss: number
-  newAccumulatedLoss: number
-}
+const results = computed(() => ({
+  ...calcularIrAcoes({
+    tipo: operationType.value,
+    vendas: totalSales.value,
+    lucro: profitLoss.value,
+    prejuizoAcumulado: accumulatedLoss.value,
+  }),
+  dueDate: formatDueDate(month.value),
+}))
 
-const results = computed<Results>(() => {
-  const sales = totalSales.value
-  const profit = profitLoss.value
-  const accLoss = operationType.value === 'swing' ? accumulatedLoss.value : 0
-
-  let taxDue = 0
-  let taxRate = 0
-  let message = ''
-  let exempt = false
-  let compensatedLoss = 0
-  let newAccumulatedLoss = accLoss
-
-  if (operationType.value === 'swing') {
-    taxRate = 15
-
-    // Verifica isenção (vendas < 20k)
-    if (sales < 20000) {
-      exempt = true
-      message = 'Isento de IR - vendas abaixo de R$ 20.000 no mês'
-    } else if (profit <= 0) {
-      // Prejuízo - acumula para compensação futura
-      newAccumulatedLoss += Math.abs(profit)
-      message = 'Prejuízo no mês - não há IR a pagar. Prejuízo pode ser compensado nos próximos meses.'
-    } else {
-      // Lucro - calcula IR com compensação de prejuízos
-      let taxableProfit = profit
-
-      if (accLoss > 0) {
-        const toCompensate = Math.min(accLoss, profit)
-        compensatedLoss = toCompensate
-        taxableProfit -= toCompensate
-        newAccumulatedLoss = accLoss - toCompensate
-      }
-
-      taxDue = taxableProfit * 0.15
-      message = taxDue > 0
-        ? 'IR devido sobre o lucro do mês'
-        : 'Lucro totalmente compensado por prejuízos acumulados'
-    }
-  } else {
-    // Day Trade
-    taxRate = 20
-
-    if (profit <= 0) {
-      message = 'Prejuízo no mês - não há IR a pagar'
-    } else {
-      taxDue = profit * 0.20
-      message = 'IR devido sobre o lucro de day trade'
-    }
-  }
-
-  return {
-    taxDue,
-    taxRate,
-    message,
-    darfCode: operationType.value === 'swing' ? '6015' : '8523',
-    dueDate: month.value ? calculateDueDate(month.value) : '—',
-    exempt,
-    compensatedLoss,
-    newAccumulatedLoss,
-  }
-})
-
-// Vencimento (último dia útil do mês seguinte) — porte exato.
-function calculateDueDate(monthStr: string): string {
-  const [year, m] = monthStr.split('-').map(Number)
-  const nextMonth = m === 12 ? 1 : (m as number) + 1
-  const nextYear = m === 12 ? (year as number) + 1 : (year as number)
-  const lastDay = new Date(nextYear, nextMonth, 0)
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(lastDay)
+// Vencimento: último dia útil do mês seguinte, já antecipado quando o fim do
+// mês cai em fim de semana ou feriado bancário.
+function formatDueDate(monthStr: string): string {
+  const iso = monthStr ? vencimentoDarf(monthStr) : null
+  if (!iso) return '—'
+  const [y, m, d] = iso.split('-')
+  return `${d}/${m}/${y}`
 }
 
 function formatMonth(monthStr: string): string {
@@ -193,7 +132,7 @@ const salesPresets = [
 ]
 
 // Data de atualização dinâmica (sinal de frescor — portado da página antiga).
-const CONTENT_VERSION = '2026-05-01'
+const CONTENT_VERSION = '2026-10-15'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 const lastUpdatedISO = lastUpdated.toISOString()
@@ -222,7 +161,7 @@ const ruleCards = [
       'Isenção: Vendas até <strong>R$ 20.000/mês</strong>',
       'Código DARF: <strong>6015</strong>',
       'Pode compensar prejuízos',
-      'Dividendos são isentos',
+      'Dividendos: 10% retidos só acima de R$ 50 mil/mês da mesma empresa',
     ],
   },
   {
@@ -231,7 +170,7 @@ const ruleCards = [
     items: [
       'Alíquota: <strong>20%</strong> sobre o lucro',
       '<strong>Sem isenção</strong> (qualquer valor)',
-      'Código DARF: <strong>8523</strong>',
+      'Código DARF: <strong>6015</strong> (o mesmo do swing)',
       '1% retido na fonte (crédito no IR)',
       'Mais complexo de controlar',
     ],
@@ -244,7 +183,7 @@ const darfSteps = [
   { title: 'Calcule o Lucro do Mês', html: 'Some todas as vendas e subtraia os custos de compra. Inclua corretagem, emolumentos B3 e taxas, eles abatem o lucro tributável.' },
   { title: 'Verifique a Isenção (R$ 20 mil)', html: 'No swing trade, se as vendas totais do mês forem até R$ 20 mil, o lucro é isento de IR. Atenção: a isenção é sobre VENDAS, não sobre lucro. Day trade não tem essa regra.' },
   { title: 'Compense Prejuízos Acumulados', html: 'Se você teve prejuízo em meses anteriores (na mesma modalidade), pode abater do lucro atual antes de calcular o IR. Prejuízo não tem prazo de validade.' },
-  { title: 'Gere e Pague o DARF até o Vencimento', html: 'Acesse o Sicalc Web da Receita Federal ou seu banco. Use código 6015 (swing) ou 8523 (day trade). Vencimento é o último dia útil do mês seguinte ao das operações.' },
+  { title: 'Gere e Pague o DARF até o Vencimento', html: 'Acesse o Sicalc Web da Receita Federal ou seu banco. Use o código 6015, que vale pra swing trade e day trade de pessoa física. Vencimento é o último dia útil do mês seguinte ao das operações. Se o fim do mês cair em fim de semana ou feriado, o prazo antecipa pro dia útil anterior.' },
 ]
 
 // Erros que caem na malha fina / erros comuns (cards vermelhos verbatim)
@@ -256,7 +195,7 @@ const avoidCards = [
 ]
 
 const relatedRankings = [
-  { to: '/ranking/maiores-dividend-yield', title: 'Dividendos isentos de IR', sub: 'Maiores DY pra renda passiva sem IR' },
+  { to: '/ranking/maiores-dividend-yield', title: 'Maiores pagadoras de dividendos', sub: 'Maiores DY pra montar renda passiva' },
   { to: '/ranking/maiores-altas-mes', title: 'Maiores altas (planejar venda)', sub: 'Top performers nos últimos 30 dias' },
 ]
 
@@ -268,22 +207,22 @@ const faqItems = [
   { q: 'Posso compensar prejuízos de meses anteriores?', a: 'Sim, e indefinidamente. Prejuízos no swing trade compensam lucros futuros do swing trade (gaveta separada). Prejuízos do day trade compensam lucros do day trade. Não cruzam: prejuízo de swing não abate lucro de day trade. Exemplo: prejuízo de R$ 3 mil em janeiro, lucro de R$ 5 mil em fevereiro = IR de 15% sobre apenas R$ 2 mil = R$ 300. Mantenha controle rigoroso, a Receita exige histórico.' },
   { q: 'Tenho que declarar operações isentas no IRPF?', a: 'Sim, mesmo operações isentas (vendas abaixo de R$ 20 mil) precisam constar no IRPF anual. Você declara: 1) saldo de ações em 31/12 (ficha "Bens e Direitos"); 2) operações realizadas no ano (ficha "Renda Variável"); 3) dividendos recebidos (ficha "Rendimentos Isentos"); 4) prejuízos acumulados (ficha "Prejuízos Acumulados"). A Receita cruza com a declaração das corretoras (e-Financeira), omissão é detectada e cai na malha fina.' },
   { q: 'Corretagem e taxas podem ser deduzidas do lucro?', a: 'Sim. Corretagem, emolumentos B3, taxa de custódia, ISS sobre corretagem e qualquer custo direto da operação são deduzidos do lucro tributável. Mantenha as notas de corretagem organizadas por mês. Exemplo: vendeu por R$ 10.000, comprou por R$ 8.000, pagou R$ 100 em custos totais. Lucro tributável = R$ 10.000 menos R$ 8.000 menos R$ 100, dá R$ 1.900. IR de 15% = R$ 285.' },
-  { q: 'Qual a diferença entre swing trade e day trade pra fins de IR?', a: 'Day trade é a operação aberta e fechada no MESMO PREGÃO (mesmo dia, mesma corretora, mesmo ativo). Tudo o mais é swing trade, mesmo que você feche no dia seguinte. Swing: 15% de IR + isenção de R$ 20 mil/mês em vendas + DARF 6015. Day: 20% de IR + sem isenção + DARF 8523 + 1% retido na fonte como antecipação (você abate no DARF). São apurados separadamente, prejuízos não cruzam entre si.' },
-  { q: 'Quando vence o DARF de IR sobre ações?', a: 'Último dia útil do mês seguinte ao das operações. Operações de janeiro = DARF vence em 28 de fevereiro (ou último dia útil). Operações de novembro = DARF vence em 31 de dezembro. Se o último dia cair em sábado/domingo/feriado, vai pro próximo dia útil. Atenção em dezembro, se o último dia útil cair antes de 31, conte com isso. Pague antes via Sicalc Web ou no internet banking, sem stress.' },
-  { q: 'Como gerar o DARF na prática?', a: 'Três caminhos: 1) Sicalc Web da Receita Federal (gov.br/receitafederal), você preenche código (6015 ou 8523), valor, mês de competência e gera o boleto; 2) app do seu banco (Itaú, Bradesco, Nubank, etc), vá em "Pagar > Tributos" e siga; 3) gerador automático em corretoras (XP, Rico, NuInvest) que já calculam pra você. Use a calculadora desta página pra confirmar o valor antes.' },
-  { q: 'IR de FIIs é diferente de IR de ações?', a: 'Sim. FIIs têm dividendos isentos de IR (igual ações), mas o ganho de capital tem alíquota de 20% (não 15%) e SEM isenção dos R$ 20 mil. Toda venda de FII com lucro paga IR de 20% sobre o ganho. Código DARF é 6015 também (mesmo de swing trade de ações), mas a alíquota é diferente. Prejuízos de FII compensam só lucros de FII, não cruzam com ações.' },
-  { q: 'IR sobre dividendos: tenho que pagar?', a: 'Atualmente não. Dividendos de ações e FIIs são isentos de IR pra pessoa física no Brasil, é um dos atrativos da bolsa brasileira. Atenção: JCP (Juros sobre Capital Próprio) tem 15% retido na fonte, mas ainda compensa porque a empresa abate como despesa dedutível e paga menos IR corporativo (você recebe líquido, sem mais imposto a recolher). Reformas tributárias podem mudar a regra, sempre cheque a legislação vigente.' },
+  { q: 'Qual a diferença entre swing trade e day trade pra fins de IR?', a: 'Day trade é a operação aberta e fechada no MESMO PREGÃO (mesmo dia, mesma corretora, mesmo ativo). Tudo o mais é swing trade, mesmo que você feche no dia seguinte. Swing: 15% de IR + isenção de R$ 20 mil/mês em vendas. Day: 20% de IR + sem isenção + 1% retido na fonte como antecipação (você abate no DARF). Os dois usam o mesmo código de DARF, 6015, mas são apurados separadamente e os prejuízos não cruzam entre si.' },
+  { q: 'Quando vence o DARF de IR sobre ações?', a: 'Último dia útil do mês seguinte ao das operações. Se o último dia do mês cair em sábado, domingo ou feriado, o prazo antecipa pro dia útil anterior, nunca adia. Operações de janeiro de 2026 = DARF venceu em 27 de fevereiro, porque 28/02/2026 caiu num sábado. Operações de novembro de 2026 = DARF vence em 30 de dezembro, porque em 31/12 não há expediente bancário. Pague antes via Sicalc Web ou no internet banking, sem stress.' },
+  { q: 'Como gerar o DARF na prática?', a: 'Três caminhos: 1) Sicalc Web da Receita Federal (gov.br/receitafederal), você preenche o código 6015 (swing ou day trade), valor, mês de competência e gera o boleto; 2) app do seu banco (Itaú, Bradesco, Nubank, etc), vá em "Pagar > Tributos" e siga; 3) gerador automático em corretoras (XP, Rico, NuInvest) que já calculam pra você. Use a calculadora desta página pra confirmar o valor antes.' },
+  { q: 'IR de FIIs é diferente de IR de ações?', a: 'Sim. Os rendimentos mensais de FIIs são isentos de IR pra pessoa física (nas condições da lei), mas o ganho de capital tem alíquota de 20% (não 15%) e SEM isenção dos R$ 20 mil. Toda venda de FII com lucro paga IR de 20% sobre o ganho. Código DARF é 6015 também (mesmo de swing trade de ações), mas a alíquota é diferente. Prejuízos de FII compensam só lucros de FII, não cruzam com ações.' },
+  { q: 'IR sobre dividendos: tenho que pagar?', a: 'Depende do valor. Desde 1º de janeiro de 2026 (Lei 15.270/2025), quando uma mesma empresa paga a você mais de R$ 50.000 em dividendos num mesmo mês, ela retém 10% de IR na fonte sobre o total pago no mês. Até R$ 50.000 por empresa por mês, não há retenção. Lucros apurados até 2025, com distribuição aprovada até 31/12/2025, ficam fora da regra. Rendimentos de FIIs seguem isentos pra pessoa física, nas condições da lei. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025).' },
   { q: 'O que acontece se eu vender ações no exterior?', a: 'Outras regras. Ganho de capital em ações estrangeiras (incluindo BDRs sem regime de fundos) tem alíquota progressiva de 15% a 22,5% conforme o lucro acumulado anual. BDRs negociados na B3 seguem regras de ações brasileiras (15% + isenção). REITs americanos têm dividendos com retenção na fonte de 30% (parte recuperável via tratado), e ganho de capital tributado pela tabela progressiva. Esta calculadora é focada em ações da B3, para o exterior consulte um contador.' },
-  { q: 'Como declarar dividendos no IRPF?', a: 'Dividendos são rendimentos isentos. Declare em "Rendimentos Isentos e Não Tributáveis" linha 9 (lucros e dividendos recebidos). JCP entra em "Rendimentos Sujeitos à Tributação Exclusiva" linha 6. Some os valores recebidos durante o ano por empresa, com CNPJ do pagador. Os informes de rendimentos das corretoras já trazem essa separação.' },
+  { q: 'Como declarar dividendos no IRPF?', a: 'Na declaração de 2026 (ano-base 2025), dividendos são rendimentos isentos. Declare em "Rendimentos Isentos e Não Tributáveis" linha 9 (lucros e dividendos recebidos). JCP entra em "Rendimentos Sujeitos à Tributação Exclusiva" linha 6. Some os valores recebidos durante o ano por empresa, com CNPJ do pagador. Os informes de rendimentos das corretoras já trazem essa separação.' },
   { q: 'FIIs têm IR sobre os dividendos?', a: 'Não. Dividendos mensais de FIIs negociados em bolsa são ISENTOS de IR pra pessoa física, desde que o FII tenha 50+ cotistas e o investidor não detenha mais de 10% das cotas. O ganho de capital na venda da cota tem 20% de IR (sem isenção R$ 20k que vale só pra ações). DARF código 6015.' },
   { q: 'Como funciona o IR sobre criptomoedas no Brasil?', a: 'Vendas até R$ 35.000/mês são isentas. Acima, alíquota progressiva: 15% até R$ 5M, 17,5% até R$ 10M, 20% até R$ 30M, 22,5% acima. DARF código 4600, vence no último dia útil do mês seguinte. Saldo acima de R$ 5.000 em 31/12 deve constar em Bens e Direitos (código 81 BTC, 82 ETH, 89 outras).' },
-  { q: 'Como funciona a tributação de dividendos a partir de 2026?', a: 'O PL 1.087/2025 propõe 10% retidos na fonte sobre dividendos pagos a PF acima de R$ 50.000 por mês. Investidores menores não seriam afetados. O PL foi aprovado na Câmara em 2025 e segue em discussão no Senado em 2026. Se aprovado, a vigência mais provável é 2027. FIIs continuam isentos no texto atual.' },
+  { q: 'Como funciona a tributação de dividendos a partir de 2026?', a: 'A Lei 15.270/2025, sancionada em 26/11/2025, vale desde 1º de janeiro de 2026. Quando uma mesma empresa paga a uma mesma pessoa física mais de R$ 50.000 em lucros e dividendos num mesmo mês, retém 10% de IR na fonte sobre o total pago. Até esse valor, não há retenção. A lei também criou a tributação mínima anual pra quem recebe mais de R$ 600 mil no ano, a partir da declaração de 2027, e o IR retido nos dividendos é abatido nesse acerto. Rendimentos de FIIs e Fiagros listados seguem isentos pra pessoa física, nas condições da lei.' },
 ]
 
 usePageSeo({
   title: 'Calculadora de IR sobre Ações 2026 - Day e Swing',
   description:
-    'Calcule IR sobre swing trade e day trade. DARF 6015 e 8523, isenção R$ 20k, declaração IRPF, FIIs, criptomoedas, PL dividendos 2026. Grátis.',
+    'Calcule IR sobre swing trade e day trade. DARF 6015, isenção R$ 20k, declaração IRPF, FIIs, criptomoedas, IR sobre dividendos 2026. Grátis.',
   path: '/calculadora/imposto-renda',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -305,7 +244,7 @@ usePageSeo({
         'Cálculo de IR para day trade (alíquota 20%)',
         'Verificação automática da isenção de R$ 20 mil/mês',
         'Compensação de prejuízos acumulados em swing trade',
-        'Geração de informações para DARF (códigos 6015 e 8523)',
+        'Geração de informações para DARF (código 6015, swing e day trade)',
         'Cálculo do vencimento do DARF (último dia útil do mês seguinte)',
         'Cenários populares pré-preenchidos via URL (deep-link)',
         'Cobertura das regras vigentes da Receita Federal',
@@ -410,7 +349,7 @@ usePageSeo({
 
             <div v-if="operationType === 'swing' && results.exempt" class="ir__exempt">
               <h4 class="ir__exempt-title">Isento de IR</h4>
-              <p class="ir__exempt-msg">Vendas totais abaixo de R$ 20.000 no mês. Você está isento de pagar imposto sobre este lucro, mas ainda precisa declarar no IRPF anual.</p>
+              <p class="ir__exempt-msg">Vendas totais de até R$ 20.000 no mês. Você está isento de pagar imposto sobre este lucro, mas ainda precisa declarar no IRPF anual.</p>
             </div>
 
             <div class="ir__subcard">
@@ -442,7 +381,7 @@ usePageSeo({
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
       label="Calculadora · IR sobre Ações"
-      :chips="['100% gratuito', 'Cálculo instantâneo', 'DARF pronto (6015 / 8523)', 'Compensa prejuízos']"
+      :chips="['100% gratuito', 'Cálculo instantâneo', 'DARF pronto (6015)', 'Compensa prejuízos']"
       :updated="lastUpdatedText"
     />
 
@@ -488,29 +427,29 @@ usePageSeo({
       </div>
     </CalcSplit>
 
-    <CalcBand tone="white" title="Tributação de Dividendos: Mudanças com a Nova Lei (PL 1.087/2025)">
+    <CalcBand tone="white" title="Tributação de Dividendos: o que Mudou com a Lei 15.270/2025">
       <template #dek>
-        <p>A grande dúvida do investidor brasileiro em 2026 é a tributação de dividendos. Vale a pena entender o que vale hoje e o que pode mudar nos próximos anos pra organizar a estratégia da carteira.</p>
+        <p>A grande dúvida do investidor brasileiro em 2026 é a tributação de dividendos. A regra nova já vale desde 1º de janeiro de 2026, e entender o limite de R$ 50 mil por mês ajuda a organizar a carteira.</p>
       </template>
       <div class="ir__tiles ir__tiles--duo">
         <div class="ir__tile">
-          <h3 class="ir__tile-title">Status Atual (vigente em 2026)</h3>
-          <p class="ir__card-p">Dividendos de ações e FIIs continuam isentos de IR para pessoa física. JCP (Juros sobre Capital Próprio) tem 15% retidos na fonte, antes do crédito cair na conta. Essa estrutura está em vigor desde 1996 (Lei 9.249/1995) e é um dos atrativos históricos da bolsa brasileira para o investidor pessoa física.</p>
+          <h3 class="ir__tile-title">Regra Vigente desde 2026</h3>
+          <p class="ir__card-p">Lucros e dividendos pagos por uma mesma empresa a uma mesma pessoa física acima de R$ 50.000 num mesmo mês têm 10% de IR retido na fonte, calculado sobre o total pago no mês, sem deduções. Até R$ 50.000 por empresa por mês, o dividendo segue sem retenção. JCP (Juros sobre Capital Próprio) tem 17,5% retidos na fonte desde 2026 (Lei Complementar 224/2025).</p>
         </div>
         <div class="ir__tile">
-          <h3 class="ir__tile-title">O que o PL 1.087/2025 Propõe</h3>
-          <p class="ir__card-p">O Projeto de Lei 1.087/2025 propõe a retenção de 10% na fonte sobre dividendos pagos a pessoa física acima de R$ 50.000 por mês. Investidores que recebem menos do que esse limite mensal por empresa pagadora não seriam afetados na prática. O investidor médio brasileiro, que recebe poucos milhares de reais em dividendos por mês, não entra na regra.</p>
+          <h3 class="ir__tile-title">Quem Entra na Retenção</h3>
+          <p class="ir__card-p">O limite é por empresa pagadora e por mês. O investidor médio brasileiro, que recebe poucos milhares de reais em dividendos por mês de cada empresa, não entra na retenção. Lucros apurados até 2025, com distribuição aprovada até 31/12/2025 e pagos nos termos aprovados, ficam de fora mesmo quando pagos depois.</p>
         </div>
         <div class="ir__tile">
-          <h3 class="ir__tile-title">Status Legislativo</h3>
-          <p class="ir__card-p">O PL foi aprovado na Câmara dos Deputados em 2025 e segue em apreciação no Senado em 2026. Se aprovado e sancionado neste ano, a vigência mais provável é janeiro de 2027 (pelo princípio da anterioridade nonagesimal e anual aplicável a tributos federais sobre a renda).</p>
+          <h3 class="ir__tile-title">Tributação Mínima Anual</h3>
+          <p class="ir__card-p">A mesma lei criou a tributação mínima do IRPF pra quem recebe mais de R$ 600 mil no ano, a partir da declaração de 2027 (ano-base 2026). A alíquota sobe até 10% a partir de R$ 1,2 milhão. O IR retido nos dividendos é antecipação e é abatido nesse acerto anual.</p>
         </div>
         <div class="ir__tile">
-          <h3 class="ir__tile-title">Estratégia Possível</h3>
-          <p class="ir__card-p">FIIs continuam isentos no texto atual do PL. Concentrar parte da carteira em FIIs que pagam dividendos mensais e em empresas com bom payout via JCP (que já tem retenção, mas a empresa abate como despesa dedutível e paga menos IR corporativo) pode mitigar o impacto futuro caso a regra entre em vigor. Importante: o cenário ainda está em construção e qualquer decisão tributária deve ser revisada conforme a tramitação avança.</p>
+          <h3 class="ir__tile-title">FIIs e Fiagros</h3>
+          <p class="ir__card-p">Rendimentos de FIIs e Fiagros com cotas negociadas em bolsa seguem isentos pra pessoa física, nas condições da lei, e não entram na retenção de 10% sobre dividendos. O ganho de capital na venda das cotas continua tributado em 20%.</p>
         </div>
       </div>
-      <p class="ir__note">Aviso: a situação está em evolução. Acompanhe a tramitação no Senado e a sanção presidencial antes de tomar decisões definitivas. Esta calculadora trabalha com as regras vigentes em 2026.</p>
+      <p class="ir__note">Aviso: esta calculadora trata do IR sobre a venda de ações e não calcula a retenção sobre dividendos. Base legal: Lei 15.270/2025, em vigor desde 1º de janeiro de 2026.</p>
     </CalcBand>
 
     <!-- ============ Passo a passo do DARF (anatomia EXATA do design: banda creme + card branco de steps) ============ -->
@@ -547,7 +486,7 @@ usePageSeo({
           <h3 class="ir__tile-title">Ferramentas Oficiais</h3>
           <ul class="ir__list">
             <li><strong>GCAP:</strong> programa da Receita Federal pra calcular ganho de capital fora da bolsa, gera arquivo que importa direto no IRPF.</li>
-            <li><strong>Sicalc Web:</strong> ferramenta oficial para gerar DARF mensal (códigos 6015 e 8523).</li>
+            <li><strong>Sicalc Web:</strong> ferramenta oficial para gerar DARF mensal (código 6015, swing e day trade).</li>
             <li><strong>Programa IRPF:</strong> baixe o programa do ano-base 2026 no site da Receita Federal pra preencher e transmitir a declaração.</li>
           </ul>
         </div>

@@ -97,7 +97,7 @@ const CALCULADORA_PAGES: SitePage[] = [
   { path: '/calculadora/juros-compostos', title: 'Calculadora de Juros Compostos', description: 'Simulador com aportes mensais. Fórmula M = C×(1+i)^n aplicada com gráfico e tabela.', lastmod: '2026-05-01' },
   { path: '/calculadora/preco-teto', title: 'Calculadora de Preço Teto', description: 'Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3.', lastmod: '2026-06-08' },
   { path: '/calculadora/dividend-yield', title: 'Calculadora de Dividend Yield', description: 'DY atual, projetado e on cost. Fórmula DY = (Dividendos Anuais / Preço) × 100.', lastmod: '2026-08-21' },
-  { path: '/calculadora/imposto-renda', title: 'Calculadora de IR sobre Ações', description: '15% swing trade, 20% day trade, isenção de R$ 20 mil/mês (códigos DARF 6015 e 8523).', lastmod: '2026-05-01' },
+  { path: '/calculadora/imposto-renda', title: 'Calculadora de IR sobre Ações', description: '15% swing trade, 20% day trade, isenção de até R$ 20 mil/mês (DARF 6015 nos dois casos).', lastmod: '2026-10-15' },
   { path: '/calculadora/aposentadoria', title: 'Calculadora de Aposentadoria', description: 'Regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE).', lastmod: '2026-05-01' },
   { path: '/calculadora/quanto-investir', title: 'Calculadora: Quanto Investir por Mês', description: 'Quanto aportar pra atingir uma meta financeira em prazo definido.', lastmod: '2026-05-01' },
   { path: '/calculadora/planejamento', title: 'Planejamento Patrimonial', description: 'Carteira recomendada da B3 baseada em dados históricos reais.', lastmod: '2026-05-01' },
