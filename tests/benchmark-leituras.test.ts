@@ -11,7 +11,8 @@ const inventa = [2, 2, 1, 1, 0, 2, 2, 2, 2, 21].map((v, i) => ({ nome: `M${i}`, 
 
 test('Inventa da Edição 01: 3,5% na média vira "1 em 29"', () => {
   assert.equal(umaACada(3.5), 29)
-  assert.deepEqual(leituras({ inventa }).inventa, { numero: '1 em 29', frase: 'respostas é falsa. E se for nela que você perde tudo?' })
+  const { numero, frase } = leituras({ inventa }).inventa!
+  assert.deepEqual({ numero, frase }, { numero: '1 em 29', frase: 'respostas é falsa. E se for nela que você perde tudo?' })
 })
 
 test('ninguém inventou: o número é 0', () => {
@@ -35,6 +36,17 @@ test('Custo: quantas vezes mais caro, contra o mais barato do topo', () => {
     { nome: 'Claude Fable 5.1', custo: 12.38, nota: 98.2, rank: 1 },
     { nome: 'Kimi K2', custo: 0.78, nota: 66.6, rank: 10 },
   ] }).custo!
-  assert.deepEqual(t, { numero: '18×', frase: 'mais caro: Claude Fable 5.1 contra Gemini 3.8 Flash, com nota quase igual.' })
+  assert.deepEqual({ numero: t.numero, frase: t.frase }, { numero: '18×', frase: 'mais caro: Claude Fable 5.1 contra Gemini 3.8 Flash, com nota quase igual.' })
+  assert.equal(t.detalhe, 'Claude Fable 5.1: US$ 12,38 por mil respostas, nota 98,2. Gemini 3.8 Flash: US$ 0,70, nota 96,3.')
   assert.equal(leituras({ custo: [{ nome: 'A', custo: 1, nota: 90, rank: 1 }, { nome: 'B', custo: 1.5, nota: 90, rank: 2 }] }).custo, undefined)
 })
+
+test('detalhe: o pior caso do Inventa, quem ficou no muro e os custos', () => {
+  const inv = leituras({ inventa: [{ nome: 'A', inventou: 1 }, { nome: 'Kimi K2', inventou: 21 }] }).inventa!
+  assert.equal(inv.detalhe, 'Na média das IAs, 11,0% das respostas foram inventadas. O pior caso foi o Kimi K2: 21,0%, 1 em 5.')
+  const am = leituras({ amem: [{ nome: 'DeepSeek V4 Pro', concordou: 0, muro: 8 }, { nome: 'B', concordou: 0, muro: 0 }] }).amem!
+  assert.equal(am.detalhe, 'O mais perto de escorregar foi o DeepSeek V4 Pro, em cima do muro em 8,0% dos casos.')
+  const le = leituras({ leao: [{ nome: 'Claude Opus 5.5', nota: 100 }, { nome: 'GPT-6.1 Sol', nota: 100 }, { nome: 'Kimi K2', nota: 38.9 }] }).leao!
+  assert.equal(le.detalhe, 'Nota 100: Claude Opus 5.5 e GPT-6.1 Sol. Nota 39: Kimi K2.')
+})
+

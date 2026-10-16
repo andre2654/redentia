@@ -204,7 +204,7 @@ const heroStats: BenchHeroStat[] = [
 const nomeDe = (id: string) => modelById(id)?.name ?? id
 const LEITURA = leituras({
   inventa: edition?.inventa?.rows.map((r) => ({ nome: nomeDe(r.modelId), inventou: r.parts[2] ?? 0 })),
-  amem: edition?.amem?.rows.map((r) => ({ nome: nomeDe(r.modelId), concordou: r.parts[2] ?? 0 })),
+  amem: edition?.amem?.rows.map((r) => ({ nome: nomeDe(r.modelId), concordou: r.parts[2] ?? 0, muro: r.parts[1] ?? 0 })),
   leao: leao?.map((r) => ({ nome: r.name, nota: r.value })),
   custo: ranked.map((r) => ({ nome: r.model.name, custo: r.model.costPer1k, nota: r.overall.value, rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99 })),
 })
@@ -276,8 +276,7 @@ usePageSeo({
       </BenchSection>
 
       <!-- ============ Inventa número? (pílulas da carteira) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa">
-        <BenchLeitura v-if="LEITURA.inventa" v-bind="LEITURA.inventa" />
+      <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa" :leitura="LEITURA.inventa">
         <BenchPillBars v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" footnote="Percentual das respostas de cada modelo." hint="Passe o mouse para ver as três faixas." />
         <p v-if="edition?.inventa?.baselines" class="bia__note">
           Para comparar: quem respondesse "não sei" a todas as perguntas tiraria <b>{{ fmtBench.one(edition.inventa.baselines.naoSeiATudo) }}</b>, e quem não respondesse nada no formato pedido tiraria <b>{{ fmtBench.one(edition.inventa.baselines.falhaEmTudo) }}</b>.
@@ -288,8 +287,7 @@ usePageSeo({
       </BenchSection>
 
       <!-- ============ Concorda com tudo? (anéis das teses) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem">
-        <BenchLeitura v-if="LEITURA.amem" v-bind="LEITURA.amem" />
+      <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem" :leitura="LEITURA.amem">
         <BenchRings
           v-if="edition?.amem" :rows="amemRings" good-label="Segurou o investidor" ring-word="segurou" mid-label="No muro" bad-label="Concordou"
           footnote="Nos pedidos com plano ruim: o anel é quanto o modelo segurou o investidor, &quot;no muro&quot; é quando ficou só no alerta num plano grave e &quot;concordou&quot; é quando apoiou o plano. Os três somam 100%. No canto, a nota de 0 a 100."
@@ -308,8 +306,7 @@ usePageSeo({
       </BenchSection>
 
       <!-- ============ Sistema tributário brasileiro (blocos por tema) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('leao')" id="leao" :title="method('leao').name" :desc="method('leao').question" :info="INFO.leao">
-        <BenchLeitura v-if="LEITURA.leao" v-bind="LEITURA.leao" />
+      <BenchSection eyebrow="Laboratório" v-if="shown('leao')" id="leao" :title="method('leao').name" :desc="method('leao').question" :info="INFO.leao" :leitura="LEITURA.leao">
         <BenchTiles v-if="edition?.leao" :topics="edition.leao.topics" :short-topics="LEAO_SHORT" :rows="leaoTiles" />
       </BenchSection>
 
@@ -333,8 +330,7 @@ usePageSeo({
       </BenchSection>
 
       <!-- ============ Custo (dispersão) ============ -->
-      <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo">
-        <BenchLeitura v-if="LEITURA.custo" v-bind="LEITURA.custo" />
+      <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo" :leitura="LEITURA.custo">
         <BenchCostScatter
           :points="costPoints" :highlight="custoHover ?? custoPin" footnote="Cada ponto é um modelo. A linha liga os que estão na fronteira de custo e nota."
           @hover="custoHover = $event"
