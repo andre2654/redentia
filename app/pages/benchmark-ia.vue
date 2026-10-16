@@ -67,6 +67,23 @@ const longo = edition?.longo
     }))
   : null
 const longoAte = edition?.longo?.atualizadoEm ? new Date(`${edition.longo.atualizadoEm}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : ''
+// marco do começo da arena: "Começou hoje" no dia em que as carteiras foram
+// montadas, depois a data. O 1º rótulo de data ("16 out") é o dia da 1ª rodada;
+// o ano vem da última data da série (ou da edição)
+const MES_CURTO = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+const longoMarcos = (() => {
+  const l = edition?.longo
+  const m = /^(\d{1,2}) ([a-z]{3})$/.exec(l?.labels[1] ?? '')
+  // (não chame de `ref`: a variável local esconde o auto-import do Vue no arquivo todo)
+  const ultimo = l?.atualizadoEm ?? edition?.dateIso
+  if (!l || !m || !ultimo) return []
+  const mes = MES_CURTO.indexOf(m[2]!) + 1
+  if (!mes) return []
+  const ano = Number(ultimo.slice(0, 4)) - (mes > Number(ultimo.slice(5, 7)) ? 1 : 0)
+  const iso = `${ano}-${String(mes).padStart(2, '0')}-${m[1]!.padStart(2, '0')}`
+  const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
+  return [{ i: 0, label: iso === hoje ? 'Começou hoje' : `Começou em ${iso.slice(8, 10)}/${iso.slice(5, 7)}` }]
+})()
 const longoNota = `Retorno total acumulado desde a primeira rodada, com proventos e custos${longoAte ? `, até o fechamento de ${longoAte}` : ''}. Na lista, a diferença para o Ibovespa.`
 // em formação (menos rodadas que o mínimo do método): sem posição na lista, porque
 // a diferença entre os modelos ainda é só o custo de montar a carteira
@@ -276,7 +293,7 @@ usePageSeo({
         <BenchLineNavy
           v-if="edition?.longo" :model-value="longoHover ?? longoSel" @update:model-value="longoSel = $event"
           :labels="edition.longo.labels" :ibov="edition.longo.ibov" :selic="edition.longo.selic"
-          :series="longoSeries" :footnote="longoNota"
+          :series="longoSeries" :marcos="longoMarcos" :footnote="longoNota"
         />
         <BenchRankList
           v-if="longo" :rows="longo" :format="fmtBench.signedPp" :numbered="!longoFormacao" interactive :active-id="longoHover ?? longoSel"

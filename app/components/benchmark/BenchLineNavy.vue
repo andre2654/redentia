@@ -9,11 +9,14 @@
 // (clipPath que cresce); trocar de modelo faz a linha nova surgir; no hover
 // (mouse ou toque: o toque simples já abre o cursor) um cursor vertical mostra
 // data, modelo, Ibovespa e Tesouro Selic.
+// Marcos: ponto fixo na linha em destaque com uma etiqueta (o começo da arena;
+// depois, as rodadas mensais), para quem chega saber de onde a conta parte.
 const props = defineProps<{
   labels: string[]
   ibov: number[]
   selic: number[]
   series: { id: string; name: string; values: number[] }[]
+  marcos?: { i: number; label: string }[]
   footnote?: string
 }>()
 const selected = defineModel<string>({ required: true })
@@ -59,6 +62,17 @@ const pills = computed(() => {
   const mid = (a + b) / 2
   return a < b ? { sel: mid - gap / 2, ibov: mid + gap / 2 } : { sel: mid + gap / 2, ibov: mid - gap / 2 }
 })
+
+const marks = computed(() => (props.marcos ?? [])
+  .filter((m) => m.i >= 0 && m.i < n.value)
+  .map((m) => ({
+    key: `${m.i}-${m.label}`,
+    label: m.label,
+    left: `${(X(m.i) / 10).toFixed(2)}%`,
+    top: `${((Y(sel.value?.values[m.i] ?? 0) / H) * 100).toFixed(2)}%`,
+    // perto da borda direita a etiqueta abre para a esquerda
+    flip: m.i / Math.max(1, n.value - 1) > 0.6,
+  })))
 
 const hov = ref(-1)
 function onMove(e: PointerEvent) {
@@ -142,6 +156,10 @@ const tip = computed(() => {
         <span class="blv__end-lbl">Ibovespa</span>
         <span class="blv__end-val">{{ fmtBench.signedPct(endIbov) }}</span>
       </div>
+      <div v-for="m in marks" :key="m.key" class="blv__mark" :class="{ 'blv__mark--flip': m.flip }" :style="{ left: m.left, top: m.top }">
+        <span class="blv__mark-dot" />
+        <span class="blv__mark-lbl">{{ m.label }}</span>
+      </div>
       <template v-if="tip">
         <div class="blv__cross" :style="{ left: tip.left }" />
         <div class="blv__dot" :style="{ left: tip.left, top: tip.top }" />
@@ -213,6 +231,16 @@ const tip = computed(() => {
   position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--nu-white); border: 3px solid var(--nu-blue);
   box-shadow: 0 0 0 6px var(--nu-blue-28); transform: translate(-50%, -50%); pointer-events: none;
 }
+.blv__mark { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 2; }
+.blv__mark-dot {
+  position: absolute; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: var(--nu-cream); border: 3px solid var(--nu-blue); box-shadow: 0 0 0 5px var(--nu-blue-28);
+}
+.blv__mark-lbl {
+  position: absolute; left: 12px; top: 12px; white-space: nowrap; border-radius: var(--nu-r-pill); padding: 4px 10px;
+  background: var(--nu-cream); color: var(--nu-navy); font-size: var(--nu-fs-xs); font-weight: 700; box-shadow: var(--nu-shadow-chart-pill);
+}
+.blv__mark--flip .blv__mark-lbl { left: auto; right: 12px; }
 .blv__tip {
   position: absolute; top: 4px; transform: translateX(-50%); z-index: 3; background: var(--nu-cream);
   border-radius: var(--nu-r-tile); padding: 10px 14px; box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; white-space: nowrap;
@@ -227,7 +255,8 @@ const tip = computed(() => {
 .blv__clip { transform-box: fill-box; transform-origin: left; }
 .is-pending .blv__clip { transform: scaleX(0); }
 .is-in .blv__clip { transform: scaleX(1); transition: transform 1.4s cubic-bezier(.45, .05, .2, 1); }
-.is-pending .blv__end { opacity: 0; }
+.is-pending .blv__end, .is-pending .blv__mark { opacity: 0; }
+.is-in .blv__mark { transition: opacity .4s ease .3s; }
 .is-in .blv__end { transition: opacity .4s ease 1.1s, top .4s ease; }
 .blv__selg { animation: blv-pop .45s ease; }
 @keyframes blv-pop { from { opacity: 0; } to { opacity: 1; } }
