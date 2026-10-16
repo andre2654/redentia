@@ -211,6 +211,23 @@ defineProps<{ name: string }>()
   </div>
 
   <!-- Carteira: composição + o dia lido pela casa -->
+  <!-- Ranking de IAs: o placar em colunas, com o traço da margem de erro em cada
+       uma e o grupo empatado na frente em azul. Sem nome nem nota (regra 7). -->
+  <div v-else-if="name === 'ranking-ias'" class="nuv nuv--ias">
+    <div class="nuv__card nuv__card--pad">
+      <span class="nuv__chip nuv__chip--blue">margem de erro</span>
+      <div class="nuv__iascols" aria-hidden="true">
+        <span
+          v-for="(h, i) in [88, 84, 80, 64, 56, 44]" :key="i" class="nuv__iascol"
+          :class="{ 'nuv__iascol--top': i < 3 }" :style="{ height: `${h}%` }"
+        ><i class="nuv__iaswhisk" /></span>
+      </div>
+      <div class="nuv__iaslabels" aria-hidden="true">
+        <span v-for="i in 6" :key="i" class="nuv__line nuv__line--soft" />
+      </div>
+    </div>
+  </div>
+
   <div v-else-if="name === 'carteira'" class="nuv nuv--port">
     <div class="nuv__card nuv__card--pad nuv__portcard">
       <span class="nuv__donut" aria-hidden="true"><i /></span>
@@ -288,6 +305,18 @@ defineProps<{ name: string }>()
 
 /* ——— Dividend yields (pódio que paga) ——— */
 .nuv--rank .nuv__card { width: min(340px, 100%); gap: 14px; }
+/* Ranking de IAs: colunas do placar com o traço da margem */
+.nuv--ias .nuv__card { width: min(340px, 100%); gap: 14px; }
+.nuv__iascols { height: 118px; display: flex; align-items: flex-end; gap: 12px; padding-top: 14px; }
+.nuv__iascol { position: relative; flex: 1; border-radius: 8px 8px 4px 4px; background: var(--nu-cream-3); }
+.nuv__iascol--top { background: var(--nu-blue); }
+.nuv__iaswhisk {
+  position: absolute; left: 50%; top: -9px; width: 10px; height: 18px; transform: translateX(-50%);
+  border-top: 2px solid var(--nu-ink-30); border-bottom: 2px solid var(--nu-ink-30);
+}
+.nuv__iaswhisk::before { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px; background: var(--nu-ink-30); }
+.nuv__iaslabels { display: flex; gap: 12px; }
+.nuv__iaslabels .nuv__line { flex: 1; }
 .nuv__rankrow { display: flex; align-items: center; gap: 12px; }
 .nuv__rankpos {
   width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;

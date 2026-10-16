@@ -81,6 +81,7 @@ const CORE_PAGES: SitePage[] = [
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   { path: '/setor', title: 'Hub de setores', description: 'Os setores da B3 com empresas, valor de mercado somado e variação do dia.' },
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
+  { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
 ]
 
