@@ -89,7 +89,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
       { label: 'Nota', text: 'Retorno total, com proventos das ações da B3, contra o Ibovespa e o Tesouro Selic. Ao lado: a maior queda da carteira no caminho.' },
     ],
     why: 'Mesmo dinheiro, mesmas regras e o mesmo preço para todos. A IA não lembra de nada entre uma rodada e outra: o que ela anota é tudo o que leva para o mês seguinte, como um gestor que precisa justificar cada posição. O placar fica "em formação" até a sexta rodada.',
-    cadence: 'Uma rodada por mês, disparada pela Redentia',
+    cadence: 'Uma rodada por mês, disparada pela Redentia. Entre uma e outra, o valor da carteira anda a cada pregão',
     cost: 'De US$ 0,02 a US$ 0,70 por modelo por rodada',
   },
   {
@@ -353,10 +353,10 @@ export const BENCH_CHART_INFO: Record<'geral' | 'inventa' | 'amem' | 'golpe' | '
   },
   longo: {
     titulo: 'Carteira própria',
-    sub: 'R$ 10 mil por modelo, uma rodada por mês',
+    sub: 'R$ 10 mil por modelo, uma rodada por mês, valor de todo pregão',
     blocos: bloco(
-      'O retorno de cada carteira desde a primeira rodada, com custos e proventos, ao lado do Ibovespa (tracejado) e do Tesouro Selic (pontilhado) no mesmo período.',
-      'Escolha um modelo nas pílulas para destacar a linha dele. Na lista, o número grande é a diferença para o Ibovespa, em pontos percentuais; embaixo, o retorno total.',
+      'O retorno de cada carteira desde a primeira rodada, com custos e proventos, ao lado do Ibovespa (tracejado) e do Tesouro Selic (pontilhado) no mesmo período. As carteiras só mudam nas rodadas mensais; entre uma e outra, o valor anda a cada pregão, com o preço de fechamento.',
+      'Escolha um modelo nas pílulas para destacar a linha dele. Na lista, o número grande é a diferença para o Ibovespa, em pontos percentuais; embaixo, o retorno total e a maior queda no caminho.',
       'A arena fica "em formação" até a sexta rodada: no começo, a diferença entre os modelos é quase só o custo de montar a carteira. A página nunca mostra quais ativos cada IA escolheu.',
     ),
   },

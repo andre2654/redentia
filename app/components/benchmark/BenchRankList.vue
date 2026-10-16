@@ -85,7 +85,8 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
 .brl__prov { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .brl__num { display: flex; flex-direction: column; align-items: flex-end; }
 .brl__val { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
-.brl__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* `pre`: não quebra sozinho, mas o \n do `extra` vira linha (Carteira própria: total e maior queda) */
+.brl__sub { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
 
 /* linha que conversa com o gráfico: realce no hover e selo azul no modelo em destaque */
 .brl--live .brl__row {

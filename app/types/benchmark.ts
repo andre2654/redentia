@@ -72,6 +72,8 @@ export interface BenchArenaLongo {
   /** rodadas feitas / mínimo para sair de "em formação" */
   sample: number
   minSample: number
+  /** último pregão da série (AAAA-MM-DD), quando vem do backend */
+  atualizadoEm?: string
 }
 
 /** Previsão de futuro: IC médio por rodada com intervalo de 95% */
