@@ -129,7 +129,9 @@ export function buildPreviewEdition(variant: 'full' | 'ed01' = 'full'): BenchEdi
   const selic = cum(Array.from({ length: N }, () => 0.0108))
   const series = base.map((b, i) => {
     const alpha = (b.skill - 0.76) * 0.012 + gauss() * 0.003
-    return { modelId: models[i]!.id, values: cum(ibovMonthly.map((r) => r * 0.7 + 0.004 + alpha + gauss() * 0.02)) }
+    // uma rodada por ponto, menos o último: a 1ª monta a carteira, as outras mexem em 0 a ~6 posições
+    const rodadas = Array.from({ length: N }, (_, k) => ({ i: k, n: k + 1, alteracoes: k ? Math.min(9, Math.abs(Math.round(gauss() * 3))) : 8 }))
+    return { modelId: models[i]!.id, values: cum(ibovMonthly.map((r) => r * 0.7 + 0.004 + alpha + gauss() * 0.02)), rodadas }
   })
 
   /* ——— Previsão de futuro: IC médio por rodada ——— */

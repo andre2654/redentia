@@ -68,12 +68,21 @@ export interface BenchArenaLongo {
   ibov: number[]
   /** Tesouro Selic no mesmo período: a régua de quem deixou o dinheiro parado no seguro */
   selic: number[]
-  series: { modelId: string; values: number[] }[]
+  series: { modelId: string; values: number[]; rodadas?: BenchRodadaMarco[] }[]
   /** rodadas feitas / mínimo para sair de "em formação" */
   sample: number
   minSample: number
   /** último pregão da série (AAAA-MM-DD), quando vem do backend */
   atualizadoEm?: string
+}
+
+/** uma rodada da Carteira no eixo do gráfico: só quantas ordens o modelo executou, nunca de quê */
+export interface BenchRodadaMarco {
+  /** índice em `labels` (0 = "Início", a 1ª rodada) */
+  i: number
+  n: number
+  alteracoes: number | null
+  falhou?: boolean
 }
 
 /** Previsão de futuro: IC médio por rodada com intervalo de 95% */

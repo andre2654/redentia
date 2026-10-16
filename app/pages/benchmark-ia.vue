@@ -17,7 +17,7 @@
 // produção: o composable só a devolve com import.meta.dev.
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
 import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchComoMedimos } from '~/content/benchmark-ia/metodologia'
-import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow } from '~/types/benchmark'
+import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
 // a Carteira própria anda todo pregão: a série vem do backend e cobre a da edição
 const { edition, isPreview, ranked, modelById } = useBenchmarkIa(await useBenchCarteiraViva())
@@ -119,7 +119,20 @@ const leaoTiles = (leao ?? []).map((r) => ({ ...r, cells: edition?.leao?.rows.fi
 // rótulos curtos das colunas no celular, na ordem dos blocos que o report.ts publica
 const LEAO_SHORT = ['Div.', 'Aç.', 'DARF', 'FII', 'RF', 'Ext.', 'Nov.']
 // Carteira própria: linha navy, pílulas na ordem do ranking
-const longoSeries = (longo ?? []).map((r) => ({ id: r.id, name: r.name, values: edition?.longo?.series.find((s) => s.modelId === r.id)?.values ?? [] }))
+// rodadas mensais (da 2ª em diante; a 1ª é o "Começou") viram marco na linha do
+// modelo: só quantas ordens ele executou, nunca o que comprou ou vendeu
+const marcoRodada = (r: BenchRodadaMarco) => `Rodada ${r.n}: ${
+  r.falhou ? 'não respondeu, carteira mantida'
+  : r.alteracoes == null ? 'carteira revista'
+  : r.alteracoes === 0 ? 'manteve a carteira'
+  : `${r.alteracoes} ${r.alteracoes === 1 ? 'alteração' : 'alterações'}`}`
+const longoSeries = (longo ?? []).map((r) => {
+  const s = edition?.longo?.series.find((x) => x.modelId === r.id)
+  return {
+    id: r.id, name: r.name, values: s?.values ?? [],
+    marcos: (s?.rodadas ?? []).filter((x) => x.n > 1).map((x) => ({ i: x.i, label: marcoRodada(x) })),
+  }
+})
 const longoSel = ref(longoSeries[0]?.id ?? '')
 // passar o mouse numa linha da lista mostra aquele modelo no gráfico só enquanto
 // durar o hover (dono, 16/10); o clique (ou o toque, no celular) fixa a escolha

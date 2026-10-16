@@ -9,13 +9,15 @@
 // (clipPath que cresce); trocar de modelo faz a linha nova surgir; no hover
 // (mouse ou toque: o toque simples já abre o cursor) um cursor vertical mostra
 // data, modelo, Ibovespa e Tesouro Selic.
-// Marcos: ponto fixo na linha em destaque com uma etiqueta (o começo da arena;
-// depois, as rodadas mensais), para quem chega saber de onde a conta parte.
+// Marcos: ponto fixo na linha em destaque. O do começo da arena (`marcos`) leva
+// etiqueta ao lado do ponto. Os das rodadas mensais vêm em cada série (o número
+// de alterações é de cada modelo): régua tracejada até o pé do gráfico, etiqueta
+// só na rodada mais recente e as outras no cursor, para não amontoar.
 const props = defineProps<{
   labels: string[]
   ibov: number[]
   selic: number[]
-  series: { id: string; name: string; values: number[] }[]
+  series: { id: string; name: string; values: number[]; marcos?: { i: number; label: string }[] }[]
   marcos?: { i: number; label: string }[]
   footnote?: string
 }>()
@@ -63,16 +65,23 @@ const pills = computed(() => {
   return a < b ? { sel: mid - gap / 2, ibov: mid + gap / 2 } : { sel: mid + gap / 2, ibov: mid - gap / 2 }
 })
 
-const marks = computed(() => (props.marcos ?? [])
-  .filter((m) => m.i >= 0 && m.i < n.value)
-  .map((m) => ({
-    key: `${m.i}-${m.label}`,
-    label: m.label,
-    left: `${(X(m.i) / 10).toFixed(2)}%`,
-    top: `${((Y(sel.value?.values[m.i] ?? 0) / H) * 100).toFixed(2)}%`,
-    // perto da borda direita a etiqueta abre para a esquerda
-    flip: m.i / Math.max(1, n.value - 1) > 0.6,
-  })))
+const marks = computed(() => {
+  const proprios = (sel.value?.marcos ?? []).filter((m) => m.i >= 0 && m.i < n.value)
+  const todos = [
+    ...(props.marcos ?? []).map((m) => ({ ...m, rodada: false, etiqueta: true })),
+    ...proprios.map((m, k) => ({ ...m, rodada: true, etiqueta: k === proprios.length - 1 })),
+  ]
+  return todos
+    .filter((m) => m.i >= 0 && m.i < n.value)
+    .map((m) => ({
+      ...m,
+      key: `${sel.value?.id}-${m.i}-${m.label}`,
+      left: `${(X(m.i) / 10).toFixed(2)}%`,
+      top: `${((Y(sel.value?.values[m.i] ?? 0) / H) * 100).toFixed(2)}%`,
+      // perto da borda direita a etiqueta abre para a esquerda
+      flip: m.i / Math.max(1, n.value - 1) > 0.6,
+    }))
+})
 
 const hov = ref(-1)
 function onMove(e: PointerEvent) {
@@ -91,6 +100,7 @@ const tip = computed(() => {
     sel: fmtBench.signedPct(sel.value.values[i] ?? 0),
     ibov: fmtBench.signedPct(props.ibov[i] ?? 0),
     selic: fmtBench.signedPct(props.selic[i] ?? 0),
+    marco: marks.value.find((m) => m.i === i)?.label ?? '',
   }
 })
 </script>
@@ -156,15 +166,20 @@ const tip = computed(() => {
         <span class="blv__end-lbl">Ibovespa</span>
         <span class="blv__end-val">{{ fmtBench.signedPct(endIbov) }}</span>
       </div>
-      <div v-for="m in marks" :key="m.key" class="blv__mark" :class="{ 'blv__mark--flip': m.flip }" :style="{ left: m.left, top: m.top }">
-        <span class="blv__mark-dot" />
-        <span class="blv__mark-lbl">{{ m.label }}</span>
-      </div>
+      <template v-for="m in marks" :key="m.key">
+        <div v-if="m.rodada" class="blv__rule" :style="{ left: m.left, top: m.top }" />
+        <div class="blv__mark" :class="{ 'blv__mark--flip': m.flip }" :style="{ left: m.left, top: m.top }">
+          <span class="blv__mark-dot" />
+          <span v-if="m.etiqueta && !m.rodada" class="blv__mark-lbl">{{ m.label }}</span>
+        </div>
+        <span v-if="m.etiqueta && m.rodada" class="blv__mark-foot" :class="{ 'blv__mark-foot--flip': m.flip }" :style="{ left: m.left }">{{ m.label }}</span>
+      </template>
       <template v-if="tip">
         <div class="blv__cross" :style="{ left: tip.left }" />
         <div class="blv__dot" :style="{ left: tip.left, top: tip.top }" />
         <div class="blv__tip" :style="{ left: tip.tipLeft }">
           <div class="blv__tip-date">{{ tip.date }}</div>
+          <div v-if="tip.marco" class="blv__tip-marco">{{ tip.marco }}</div>
           <div class="blv__tip-main">{{ tip.sel }}</div>
           <div class="blv__tip-row">Ibovespa {{ tip.ibov }}</div>
           <div class="blv__tip-row">Tesouro Selic {{ tip.selic }}</div>
@@ -241,6 +256,14 @@ const tip = computed(() => {
   background: var(--nu-cream); color: var(--nu-navy); font-size: var(--nu-fs-xs); font-weight: 700; box-shadow: var(--nu-shadow-chart-pill);
 }
 .blv__mark--flip .blv__mark-lbl { left: auto; right: 12px; }
+.blv__rule { position: absolute; bottom: 0; width: 0; border-left: 1px dashed var(--nu-cream-text-30); pointer-events: none; }
+.blv__mark-foot {
+  position: absolute; bottom: 6px; transform: translateX(8px); white-space: nowrap; pointer-events: none; z-index: 2;
+  border-radius: var(--nu-r-pill); padding: 3px 9px; background: var(--nu-navy-2); color: var(--nu-cream-text);
+  font-size: var(--nu-fs-xs); font-weight: 700;
+}
+.blv__mark-foot--flip { transform: translateX(calc(-100% - 8px)); }
+.blv__tip-marco { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; margin-top: 2px; }
 .blv__tip {
   position: absolute; top: 4px; transform: translateX(-50%); z-index: 3; background: var(--nu-cream);
   border-radius: var(--nu-r-tile); padding: 10px 14px; box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; white-space: nowrap;
@@ -255,8 +278,8 @@ const tip = computed(() => {
 .blv__clip { transform-box: fill-box; transform-origin: left; }
 .is-pending .blv__clip { transform: scaleX(0); }
 .is-in .blv__clip { transform: scaleX(1); transition: transform 1.4s cubic-bezier(.45, .05, .2, 1); }
-.is-pending .blv__end, .is-pending .blv__mark { opacity: 0; }
-.is-in .blv__mark { transition: opacity .4s ease .3s; }
+.is-pending .blv__end, .is-pending .blv__mark, .is-pending .blv__rule, .is-pending .blv__mark-foot { opacity: 0; }
+.is-in .blv__mark, .is-in .blv__rule, .is-in .blv__mark-foot { transition: opacity .4s ease .3s; }
 .is-in .blv__end { transition: opacity .4s ease 1.1s, top .4s ease; }
 .blv__selg { animation: blv-pop .45s ease; }
 @keyframes blv-pop { from { opacity: 0; } to { opacity: 1; } }
