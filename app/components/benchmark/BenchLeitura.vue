@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // "Leitura da Redentia": a opinião da casa sobre o número da seção, separada do
-// dado (o gráfico vem logo abaixo e não muda). Mesma anatomia do card "A
-// leitura da IA" das notícias (NuAtlasTake): cartão macio, selo azul com a
-// marca, rótulo espaçado e texto em cinza; aqui a superfície acompanha a faixa
-// (creme na branca, branca na creme) e a largura é de nota editorial. O texto
+// dado (o gráfico vem logo abaixo e não muda). Tipografia de editorial, como a
+// prosa de "A tese" (TeseEditorial): sem cartão nem borda, frase em tamanho de
+// lead e cinza, número no destaque azul da casa (o mesmo .tse-hi: fundo azul
+// .16, tinta, peso 800) e a assinatura embaixo, com o selo da marca. O texto
 // sai de content/benchmark-ia/leituras.ts; `**...**` vira destaque, sem v-html.
 const props = defineProps<{ texto: string }>()
 const partes = computed(() =>
@@ -13,27 +13,33 @@ const partes = computed(() =>
 </script>
 
 <template>
-  <aside class="ble" aria-label="Leitura da Redentia">
-    <div class="ble__head">
-      <span class="ble__badge" aria-hidden="true"><img src="/logo-branca.svg" alt="" class="ble__logo" width="14" height="14"></span>
-      <span class="ble__label">Leitura da Redentia</span>
-    </div>
-    <p class="ble__txt"><template v-for="(p, i) in partes" :key="i"><strong v-if="p.b">{{ p.t }}</strong><template v-else>{{ p.t }}</template></template></p>
-  </aside>
+  <figure class="ble">
+    <blockquote class="ble__txt"><template v-for="(p, i) in partes" :key="i"><mark v-if="p.b" class="ble__hi">{{ p.t }}</mark><template v-else>{{ p.t }}</template></template></blockquote>
+    <figcaption class="ble__sign">
+      <span class="ble__badge" aria-hidden="true"><img src="/logo-branca.svg" alt="" class="ble__logo" width="12" height="12"></span>
+      Leitura da Redentia
+    </figcaption>
+  </figure>
 </template>
 
 <style scoped>
-.ble {
-  max-width: 720px; margin: 0 0 28px; padding: 20px 22px; border-radius: 20px;
-  background: var(--b-surface, var(--nu-cream));
+.ble { max-width: 760px; margin: 0 0 clamp(28px, 3vw, 40px); }
+.ble__txt {
+  margin: 0; color: var(--nu-gray-3);
+  font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.7;
 }
-.ble__head { display: flex; align-items: center; gap: 9px; }
+.ble__hi {
+  background: var(--nu-blue-16); color: var(--nu-ink); font-weight: 800;
+  padding: 1px 6px; border-radius: 4px;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.ble__sign {
+  display: flex; align-items: center; gap: 8px; margin-top: 14px;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;
+}
 .ble__badge {
-  width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--nu-blue);
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 7px; background: var(--nu-blue);
   display: inline-flex; align-items: center; justify-content: center;
 }
-.ble__logo { width: 14px; height: 14px; display: block; object-fit: contain; }
-.ble__label { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
-.ble__txt { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; }
-.ble__txt strong { color: var(--nu-ink); font-weight: 700; }
+.ble__logo { width: 12px; height: 12px; display: block; object-fit: contain; }
 </style>
