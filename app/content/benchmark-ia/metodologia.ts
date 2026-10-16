@@ -80,7 +80,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     id: 'longo',
     kind: 'arena',
     name: 'Carteira própria',
-    question: 'Cada IA recebe R$ 10 mil para investir e cuida da própria carteira, mês a mês. Ela faz mais com o dinheiro do que o Ibovespa ou o Tesouro Selic? Aqui aparece a nota, nunca a carteira.',
+    question: 'R$ 10 mil para cada IA. Quem rende mais que o Ibovespa?',
     measures: 'O retorno total da carteira de cada modelo, desde a primeira rodada, contra o Ibovespa e o Tesouro Selic no mesmo período.',
     steps: [
       { label: 'O que a IA recebe', text: 'A própria carteira, o preço do dia de cada ativo disponível na Redentia (ações e BDRs da B3, ações dos EUA, Tesouro Direto e cripto), Selic, IPCA, dólar e Ibovespa, os fundamentos das ações do Ibovespa e as anotações que ela mesma deixou na rodada anterior. Antes de decidir, pode pesquisar na Redentia: fundamentos, histórico de preço, proventos, notícias com a leitura da casa, teses e o resumo do dia, até 8 consultas por rodada, com as mesmas ferramentas e o mesmo limite para todas. A 1ª rodada, de 16/10, foi só com o enunciado.' },
@@ -96,7 +96,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     id: 'curto',
     kind: 'arena',
     name: 'Previsão de futuro',
-    question: 'Em cada rodada, cada IA põe as ações do Ibovespa em ordem para o mês seguinte. Essa ordem acerta mais do que uma ordem sorteada?',
+    question: 'Qual IA acerta a ordem das ações do Ibovespa no mês seguinte?',
     measures: 'Se a ordem em que a IA coloca as ações do Ibovespa bate com a ordem real de retorno nos 21 pregões seguintes.',
     steps: [
       { label: 'O que a IA recebe', text: 'As ações do Ibovespa com preço de fechamento, variação em 1 e 3 meses, setor, peso no índice e fundamentos (P/L, P/VP, ROE, DY, margem e dívida), mais Selic, IPCA e dólar, num retrato congelado no dia da rodada. Antes de dar as notas, pode pesquisar na Redentia, até 8 consultas. A 1ª rodada, de 16/10, foi sem fundamentos e sem pesquisa.' },
@@ -112,7 +112,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     id: 'golpe',
     kind: 'laboratorio',
     name: 'Cai em golpes financeiros?',
-    question: 'A IA reconhece um golpe financeiro sem acusar a oferta verdadeira?',
+    question: 'A IA reconhece o golpe sem acusar a oferta verdadeira?',
     measures: 'Se o modelo separa golpe de oferta legítima sem sair acusando tudo.',
     steps: [
       { label: 'A prova', text: '40 situações descritas em texto: ligação do banco, oferta no Instagram, CDB no aplicativo, convite de um colega. Metade golpe, metade legítima, no mesmo formato e do mesmo tamanho.' },
@@ -128,7 +128,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     id: 'leao',
     kind: 'laboratorio',
     name: 'Sistema tributário brasileiro',
-    question: 'A IA acerta o imposto do investidor brasileiro, inclusive as regras novas de 2026?',
+    question: 'A IA acerta o imposto do investidor, inclusive as regras de 2026?',
     measures: 'Cálculo e regra de IR em ações, FIIs, ETFs, renda fixa, fundos, exterior e nas mudanças de 2026.',
     steps: [
       { label: 'A prova', text: '36 questões, quase todas com resposta em reais: IR retido no dividendo, DARF do mês, imposto do resgate, vencimento do DARF. Um quarto cobra as regras de 2024 a 2026.' },
@@ -159,7 +159,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     id: 'amem',
     kind: 'laboratorio',
     name: 'Concorda com tudo?',
-    question: 'O investidor chega com um plano ruim, como pôr a reserva de emergência em ações ou alavancar para recuperar uma perda. A IA segura ou diz o que ele quer ouvir?',
+    question: 'O investidor chega com um plano ruim. A IA segura ou diz o que ele quer ouvir?',
     measures: 'Se o modelo segura o investidor quando o pedido traz um erro grave embutido.',
     steps: [
       { label: 'A prova', text: '120 pedidos. Exemplos: pôr a reserva de emergência em ação, entrar no investimento "que um amigo indicou e paga 5% ao mês", alavancar para recuperar perda, concentrar o patrimônio num setor às vésperas da aposentadoria.' },
@@ -273,6 +273,32 @@ export function benchComoMedimos(): { titulo: string; paragrafos: BenchParagrafo
       ],
     },
   ]
+}
+
+/**
+ * FAQ da página (dono, 16/10: "use o FAQ da Redentia, no mesmo estilo"): o
+ * método de "Como medimos" em perguntas, no NuFaqAccordion das outras telas,
+ * mais as perguntas de BENCH_FAQ que o método não cobre. Fechado por padrão: o
+ * texto inteiro fica na página (busca, JSON-LD de FAQ e compliance), longe do olho.
+ */
+export function benchFaqPagina(): NuFaqItem[] {
+  const ponto = (t: string) => (/[?.!]$/.test(t) ? t : `${t}.`)
+  const secao = (titulo: string) => (benchComoMedimos().find((b) => b.titulo === titulo)?.paragrafos ?? [])
+    .map((p) => (typeof p === 'string' ? p : `${ponto(p.lead)} ${p.text}`)).join(' ')
+  const faq = (q: string) => BENCH_FAQ.find((f) => f.q === q)
+  return [
+    faq('Qual é a melhor IA para investir?'),
+    { q: 'O que exatamente é medido?', a: secao('O que é medido') },
+    { q: 'Como funciona cada índice?', a: secao('Os índices') },
+    { q: 'Por que duas IAs dividem a mesma posição?', a: secao('Margem de erro e empate') },
+    faq('Vocês divulgam as ações que as IAs escolheram?'),
+    { q: 'Como saber que vocês não mexeram no resultado?', a: secao('Integridade') },
+    faq('Por que vocês não testam as IAs com dados do passado?'),
+    { q: 'De quanto em quanto tempo o ranking muda?', a: secao('Frescor') },
+    { q: 'Quanto custa rodar o benchmark?', a: secao('Custo') },
+    { q: 'O que este ranking não diz?', a: secao('Como ler este ranking') },
+    faq('Posso sugerir um modelo ou uma questão?'),
+  ].filter((f): f is NuFaqItem => !!f && !!f.a)
 }
 
 /**

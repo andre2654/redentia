@@ -16,7 +16,7 @@
 // sem linha de aviso na tela a pedido do dono (15/10). Ela nunca chega à
 // produção: o composable só a devolve com import.meta.dev.
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
-import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchComoMedimos } from '~/content/benchmark-ia/metodologia'
+import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchFaqPagina } from '~/content/benchmark-ia/metodologia'
 import { leituras } from '~/content/benchmark-ia/leituras'
 import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
@@ -85,7 +85,7 @@ const longoMarcos = (() => {
   const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
   return [{ i: 0, label: iso === hoje ? 'Começou hoje' : `Começou em ${iso.slice(8, 10)}/${iso.slice(5, 7)}` }]
 })()
-const longoNota = `Retorno total acumulado desde a primeira rodada, com proventos e custos${longoAte ? `, até o fechamento de ${longoAte}` : ''}. Na lista, a diferença para o Ibovespa.`
+const longoNota = longoAte ? `Até o fechamento de ${longoAte}.` : ''
 // em formação (menos rodadas que o mínimo do método): sem posição na lista, porque
 // a diferença entre os modelos ainda é só o custo de montar a carteira
 const longoFormacao = !!edition?.longo && edition.longo.sample < edition.longo.minSample
@@ -154,18 +154,15 @@ const dados = edition?.inventaDados?.length
       com: edition.inventaDados.reduce((a, r) => a + r.comDados, 0) / edition.inventaDados.length,
     }
   : null
-const travou = edition?.amemControle?.length
-  ? edition.amemControle.reduce((a, r) => a + r.travouControle, 0) / edition.amemControle.length
-  : null
 
 /* ——— índices: o que tem resultado vira seção; o resto vai para "Próximos índices" ——— */
 type IndexSection = { id: BenchIndexId; label: string; icon: string; on: boolean; next: string }
 const NOVA = edition ? 'Fora desta edição.' : 'Entra na primeira edição.'
-const ARENA = 'Arena: começa na primeira rodada mensal e fica "em formação" até a sexta.'
+const ARENA = 'Começa na primeira rodada mensal.'
 const diaMes = (iso: string) => iso.slice(8, 10) + '/' + iso.slice(5, 7)
 const st = edition?.curtoStatus
 const CURTO_NEXT = st?.proximaCorrecao
-  ? `${st.rodadas === 1 ? 'Primeira rodada feita' : `${st.rodadas} rodadas feitas`} em ${diaMes(st.primeira)}. A primeira nota sai depois do fechamento de ${diaMes(st.proximaCorrecao)}, quando completam 21 pregões.`
+  ? `Primeira nota em ${diaMes(st.proximaCorrecao)}.`
   : ARENA
 const indices: IndexSection[] = [
   { id: 'inventa', label: method('inventa').name, icon: 'ghost', on: !!inventa, next: NOVA },
@@ -183,10 +180,10 @@ const nomes = (list: string[]) => (list.length < 2 ? list.join('') : `${list.sli
 const ponto = (s: string) => (/[?.!]$/.test(s) ? s : `${s}.`)
 const labsDaMedia = indices
   .filter((x) => x.on && ['inventa', 'amem', 'golpe', 'leao'].includes(x.id) && !edition?.foraDoGeral?.includes(x.id))
-  .map((x) => x.label)
+  .map((x) => ({ inventa: 'Inventa', amem: 'Concorda', golpe: 'Golpes', leao: 'Tributário' } as Record<string, string>)[x.id] ?? x.label)
 // quem não completou uma prova que está fora da média (ex.: "Claude Fable 5.1")
 const faltou = (id: BenchIndexId) => nomes((edition?.incompletos?.[id] ?? []).map((m) => modelById(m)?.name ?? m))
-const geralDesc = ponto(`Média simples das notas de 0 a 100 nos laboratórios desta edição: ${nomes(labsDaMedia)}`)
+const geralDesc = ponto(`Média de ${nomes(labsDaMedia)}, de 0 a 100`)
 
 /* ——— topo navy: até três números da edição, cada um leva à sua seção ——— */
 const media = (stack: { rows: { parts: number[] }[] } | undefined, i: number) =>
@@ -231,11 +228,11 @@ const fresh = !edition
   ? 'Primeira edição em breve. O método já está publicado no fim da página.'
   : isPreview ? null : `Dados da ${edition.label}, de ${dataBR}.`
 // conta aberta: o custo total da edição sai na seção de custo
-const custoDesc = `Quanto cada modelo custou, em dólar, a cada mil respostas desta edição. Menor é melhor.${edition && !isPreview ? ` A edição inteira custou ${fmtBench.usd(edition.spendUsd)}.` : ''}`
+const custoDesc = 'Quanto custa cada mil respostas, em dólar. Menor é melhor.'
 const proximosDesc = edition
-  ? 'O que ainda não tem resultado nesta edição, e o que falta para cada um.'
-  : 'Os índices do ranking e o que falta para cada um sair.'
-const comoMedimos = benchComoMedimos()
+  ? 'O que ainda não tem nota.'
+  : 'Os índices do ranking.'
+const faq = benchFaqPagina()
 const icon = (k: string) => BENCH_ICONS[k] ?? BENCH_ICONS.trophy
 
 usePageSeo({
@@ -255,7 +252,7 @@ usePageSeo({
       <BenchHero :stats="heroStats" @go="go">
         <h1 class="bia__h1">Ranking de IAs em finanças</h1>
         <p class="bia__lead">
-          Qual IA entende de dinheiro no Brasil? Dez modelos fazem a mesma prova, corrigida por gabarito, com margem de erro.
+          Dez IAs, a mesma prova de finanças, corrigida por gabarito.
           <a href="#metodologia" class="bia__link" @click.prevent="go('metodologia')">Como medimos</a>
         </p>
         <p v-if="fresh" class="bia__fresh">{{ fresh }}</p>
@@ -265,7 +262,6 @@ usePageSeo({
       <BenchSection eyebrow="Placar" v-if="geral" id="geral" title="Placar geral" :desc="geralDesc" :info="INFO.geral">
         <BenchColumns
           :items="cols(geral)" :highlight="geralHover ?? geralPin"
-          footnote="Nota de 0 a 100. O traço em cada barra é a margem de erro de 95%: quando as margens se cruzam, é empate técnico."
           @hover="geralHover = $event"
         />
         <BenchRankList
@@ -277,10 +273,7 @@ usePageSeo({
 
       <!-- ============ Inventa número? (pílulas da carteira) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa" :leitura="LEITURA.inventa">
-        <BenchPillBars v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" footnote="Percentual das respostas de cada modelo." hint="Passe o mouse para ver as três faixas." />
-        <p v-if="edition?.inventa?.baselines" class="bia__note">
-          Para comparar: quem respondesse "não sei" a todas as perguntas tiraria <b>{{ fmtBench.one(edition.inventa.baselines.naoSeiATudo) }}</b>, e quem não respondesse nada no formato pedido tiraria <b>{{ fmtBench.one(edition.inventa.baselines.falhaEmTudo) }}</b>.
-        </p>
+        <BenchPillBars v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" />
         <p v-if="dados" class="bia__note">
           Com os dados da Redentia no enunciado, a invenção média cai de <b>{{ fmtBench.pct(dados.sem) }}</b> para <b>{{ fmtBench.pct(dados.com) }}</b>. Essa rodada fica fora do ranking.
         </p>
@@ -290,13 +283,9 @@ usePageSeo({
       <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem" :leitura="LEITURA.amem">
         <BenchRings
           v-if="edition?.amem" :rows="amemRings" good-label="Segurou o investidor" ring-word="segurou" mid-label="No muro" bad-label="Concordou"
-          footnote="Nos pedidos com plano ruim: o anel é quanto o modelo segurou o investidor, &quot;no muro&quot; é quando ficou só no alerta num plano grave e &quot;concordou&quot; é quando apoiou o plano. Os três somam 100%. No canto, a nota de 0 a 100."
         />
-        <p v-if="travou != null" class="bia__note">
-          Nos casos de controle, em que o plano era razoável, os modelos desaconselharam em média <b>{{ fmtBench.pct(travou) }}</b> das vezes.
-        </p>
         <p v-if="edition?.foraDoGeral?.includes('amem')" class="bia__note">
-          {{ faltou('amem') }} ainda não completou esta prova. Por isso, ela fica fora da média do placar geral.
+          {{ faltou('amem') }} não completou: fica fora da média geral.
         </p>
       </BenchSection>
 
@@ -326,13 +315,13 @@ usePageSeo({
 
       <BenchSection eyebrow="Arena ao vivo" v-if="shown('curto')" id="curto" :title="method('curto').name" :desc="method('curto').question" :info="INFO.curto">
         <p v-if="curtoAcaso" class="bia__headline">Nenhum modelo se distinguiu do acaso nesta edição.</p>
-        <BenchDots v-if="curto" :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="IC médio por rodada com intervalo de 95%. Ponto cinza: o intervalo cruza o zero, sem evidência de habilidade." />
+        <BenchDots v-if="curto" :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="Ponto cinza: sem evidência de habilidade." />
       </BenchSection>
 
       <!-- ============ Custo (dispersão) ============ -->
       <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo" :leitura="LEITURA.custo">
         <BenchCostScatter
-          :points="costPoints" :highlight="custoHover ?? custoPin" footnote="Cada ponto é um modelo. A linha liga os que estão na fronteira de custo e nota."
+          :points="costPoints" :highlight="custoHover ?? custoPin"
           @hover="custoHover = $event"
         />
         <BenchRankList
@@ -357,15 +346,8 @@ usePageSeo({
 
       <!-- ============ Como medimos ============ -->
       <BenchSection eyebrow="Método" id="metodologia" title="Como medimos">
-        <div class="bia__prose">
-          <section v-for="b in comoMedimos" :key="b.titulo">
-            <h3>{{ b.titulo }}</h3>
-            <p v-for="(p, i) in b.paragrafos" :key="i">
-              <template v-if="typeof p === 'string'">{{ p }}</template>
-              <template v-else><strong>{{ ponto(p.lead) }}</strong> {{ p.text }}</template>
-            </p>
-          </section>
-        </div>
+        <!-- o FAQ da casa (NuFaqAccordion, o das outras telas), fechado: o método inteiro fica na página e no JSON-LD -->
+        <NuFaqAccordion :items="faq" :default-open="-1" />
         <p class="bia__disclaimer">{{ BENCH_DISCLAIMER }}</p>
       </BenchSection>
 
@@ -409,10 +391,6 @@ usePageSeo({
 .bia__next-q { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 .bia__next-status { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 
-.bia__prose { margin-top: 8px; max-width: 78ch; }
-.bia__prose h3 { margin: 24px 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -.1px; }
-.bia__prose p { margin: 0 0 10px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7; }
-.bia__prose strong { color: var(--nu-ink); font-weight: 700; }
 
 .bia__disclaimer {
   margin: 32px 0 0; padding-top: 24px; border-top: 1px solid var(--nu-ink-10);

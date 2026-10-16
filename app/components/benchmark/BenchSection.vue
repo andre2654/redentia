@@ -110,7 +110,7 @@ const blocksLeitura = computed<NuDayBlock[]>(() => (props.leitura
 .bse__leitura:hover { color: var(--nu-blue); transform: translateY(-1px); }
 .bse__leitura:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bse__badge {
-  width: 24px; height: 24px; border-radius: 8px; background: var(--nu-blue);
+  width: 24px; height: 24px; border-radius: 50%; background: var(--nu-blue);
   display: inline-flex; align-items: center; justify-content: center;
 }
 .bse__badge img { width: 12px; height: 12px; display: block; object-fit: contain; }
