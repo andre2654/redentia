@@ -19,7 +19,8 @@
 import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchComoMedimos } from '~/content/benchmark-ia/metodologia'
 import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow } from '~/types/benchmark'
 
-const { edition, isPreview, ranked, modelById } = useBenchmarkIa()
+// a Carteira própria anda todo pregão: a série vem do backend e cobre a da edição
+const { edition, isPreview, ranked, modelById } = useBenchmarkIa(await useBenchCarteiraViva())
 const method = (id: BenchIndexId) => BENCH_INDICES.find((m) => m.id === id)!
 
 /* ——— linhas ranqueadas ——— */
@@ -46,13 +47,27 @@ const leao = labRows('leao')
 // Carteira: a posição sai do excesso sobre o Ibovespa, em pontos percentuais;
 // o retorno total (o número da pílula no fim da linha) vai embaixo, para a
 // lista e o gráfico nunca mostrarem dois números diferentes sem nome
+// e a maior queda no caminho (do pico ao vale, sobre o valor da carteira)
+function maiorQueda(values: number[]): number {
+  let pico = 1
+  let pior = 0
+  for (const v of values) {
+    const x = 1 + v / 100
+    pico = Math.max(pico, x)
+    pior = Math.min(pior, x / pico - 1)
+  }
+  return pior * 100
+}
 const longo = edition?.longo
   ? rows(edition.longo.series.map((s) => {
       const total = s.values.at(-1) ?? 0
       const v = total - (edition.longo!.ibov.at(-1) ?? 0)
-      return { id: s.modelId, value: v, lo: v, hi: v, extra: `${fmtBench.signedPct(total)} no total` }
+      const queda = maiorQueda(s.values)
+      return { id: s.modelId, value: v, lo: v, hi: v, extra: `${fmtBench.signedPct(total)} no total\n${queda < -0.05 ? `maior queda de ${fmtBench.pct(-queda)}` : 'sem queda'}` }
     }))
   : null
+const longoAte = edition?.longo?.atualizadoEm ? new Date(`${edition.longo.atualizadoEm}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : ''
+const longoNota = `Retorno total acumulado desde a primeira rodada, com proventos e custos${longoAte ? `, até o fechamento de ${longoAte}` : ''}. Na lista, a diferença para o Ibovespa.`
 // em formação (menos rodadas que o mínimo do método): sem posição na lista, porque
 // a diferença entre os modelos ainda é só o custo de montar a carteira
 const longoFormacao = !!edition?.longo && edition.longo.sample < edition.longo.minSample
@@ -261,7 +276,7 @@ usePageSeo({
         <BenchLineNavy
           v-if="edition?.longo" :model-value="longoHover ?? longoSel" @update:model-value="longoSel = $event"
           :labels="edition.longo.labels" :ibov="edition.longo.ibov" :selic="edition.longo.selic"
-          :series="longoSeries" footnote="Retorno total acumulado desde a primeira rodada, com proventos e custos. Na lista, a diferença para o Ibovespa."
+          :series="longoSeries" :footnote="longoNota"
         />
         <BenchRankList
           v-if="longo" :rows="longo" :format="fmtBench.signedPp" :numbered="!longoFormacao" interactive :active-id="longoHover ?? longoSel"
