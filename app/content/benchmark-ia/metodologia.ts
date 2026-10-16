@@ -83,7 +83,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     question: 'Cada IA recebe R$ 10 mil para investir e cuida da própria carteira, mês a mês. Ela faz mais com o dinheiro do que o Ibovespa ou o Tesouro Selic? Aqui aparece a nota, nunca a carteira.',
     measures: 'O retorno total da carteira de cada modelo, desde a primeira rodada, contra o Ibovespa e o Tesouro Selic no mesmo período.',
     steps: [
-      { label: 'O que a IA recebe', text: 'A própria carteira, o preço do dia de cada ativo disponível na Redentia (ações e BDRs da B3, ações dos EUA, Tesouro Direto e cripto), Selic, IPCA, dólar e Ibovespa, e as anotações que ela mesma deixou na rodada anterior.' },
+      { label: 'O que a IA recebe', text: 'A própria carteira, o preço do dia de cada ativo disponível na Redentia (ações e BDRs da B3, ações dos EUA, Tesouro Direto e cripto), Selic, IPCA, dólar e Ibovespa, os fundamentos das ações do Ibovespa e as anotações que ela mesma deixou na rodada anterior. Antes de decidir, pode pesquisar na Redentia: fundamentos, histórico de preço, proventos, notícias com a leitura da casa, teses e o resumo do dia, até 8 consultas por rodada, com as mesmas ferramentas e o mesmo limite para todas. A 1ª rodada, de 16/10, foi só com o enunciado.' },
       { label: 'O que ela devolve', text: 'Ordens de compra e venda com o motivo de cada uma, ou nada, para manter tudo. E anotações para a próxima rodada: por que tem cada posição e o que a faria vender.' },
       { label: 'Regras', text: 'Ação da B3 em quantidade inteira. Custo por operação declarado: 0,03% na B3, 1% de câmbio nas ações dos EUA, 0,5% em cripto, preço de compra e de venda no Tesouro. Caixa parado não rende. Sem alavancagem e sem imposto.' },
       { label: 'Nota', text: 'Retorno total, com proventos das ações da B3, contra o Ibovespa e o Tesouro Selic. Ao lado: a maior queda da carteira no caminho.' },
@@ -99,7 +99,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     question: 'Em cada rodada, cada IA põe as ações do Ibovespa em ordem para o mês seguinte. Essa ordem acerta mais do que uma ordem sorteada?',
     measures: 'Se a ordem em que a IA coloca as ações do Ibovespa bate com a ordem real de retorno nos 21 pregões seguintes.',
     steps: [
-      { label: 'O que a IA recebe', text: 'As ações do Ibovespa com preço de fechamento, variação em 1 e 3 meses, setor e peso no índice, mais Selic, IPCA e dólar, num retrato congelado no dia da rodada.' },
+      { label: 'O que a IA recebe', text: 'As ações do Ibovespa com preço de fechamento, variação em 1 e 3 meses, setor, peso no índice e fundamentos (P/L, P/VP, ROE, DY, margem e dívida), mais Selic, IPCA e dólar, num retrato congelado no dia da rodada. Antes de dar as notas, pode pesquisar na Redentia, até 8 consultas. A 1ª rodada, de 16/10, foi sem fundamentos e sem pesquisa.' },
       { label: 'O que ela devolve', text: 'Uma nota de -5 a +5 para cada ação do índice, para os próximos 21 pregões.' },
       { label: 'Gabarito', text: 'Retorno do fechamento do dia da rodada ao fechamento do 21º pregão seguinte, com os proventos do período.' },
       { label: 'Nota', text: 'IC de Spearman: a correlação de ordem entre a nota e o retorno, média das rodadas, com intervalo de 95%.' },
@@ -231,6 +231,7 @@ export function benchComoMedimos(): { titulo: string; paragrafos: BenchParagrafo
       titulo: 'O que é medido',
       paragrafos: [
         'Cada modelo responde às mesmas provas, com o mesmo enunciado, o mesmo dado e sem internet. As respostas são corrigidas por gabarito, de forma automática, sem outra IA no meio. Duas provas são arenas ao vivo, em que o modelo decide antes de o resultado existir; as demais são laboratórios com gabarito fechado.',
+        'Nas arenas, desde a 2ª rodada, o enunciado traz os fundamentos das ações do Ibovespa e o modelo pode pesquisar na Redentia antes de decidir: fundamentos, histórico de preço, proventos, notícias com a leitura da casa, teses e o resumo do dia, até 8 consultas por rodada. As ferramentas e o limite são os mesmos para todos, e toda consulta fica registrada.',
       ],
     },
     {
@@ -255,7 +256,7 @@ export function benchComoMedimos(): { titulo: string; paragrafos: BenchParagrafo
     {
       titulo: 'Frescor',
       paragrafos: [
-        'A data no topo é a da correção da edição, não a da publicação da página. A Redentia roda a suíte quando há modelo novo ou prova nova. As arenas, quando estiverem no ar, atualizam uma vez por mês.',
+        'A data no topo é a da correção da edição, não a da publicação da página. A Redentia roda a suíte quando há modelo novo ou prova nova. Nas arenas, as decisões são revistas uma vez por mês, e o valor da Carteira própria é atualizado a cada pregão.',
       ],
     },
     {
