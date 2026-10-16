@@ -73,10 +73,12 @@ async function loadCarteiraViva(base: string): Promise<BenchArenaLongo | null> {
 
 /** série diária da Carteira própria; null quando o backend não responde */
 export async function useBenchCarteiraViva(): Promise<BenchArenaLongo | null> {
-  const config = useRuntimeConfig()
-  // servidor: Laravel direto; cliente: proxy same-origin /api/backend
-  const serverBase = (config.backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
-  const { data } = await useAsyncData('benchmark-ia:carteira', () => loadCarteiraViva(import.meta.server ? serverBase : '/api/backend'), { default: () => null })
+  // servidor: Laravel direto; cliente: proxy same-origin /api/backend (o
+  // backendDirectBase só existe no servidor: ler no cliente gera aviso)
+  const base = import.meta.server
+    ? (useRuntimeConfig().backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
+    : '/api/backend'
+  const { data } = await useAsyncData('benchmark-ia:carteira', () => loadCarteiraViva(base), { default: () => null })
   return data.value ?? null
 }
 
