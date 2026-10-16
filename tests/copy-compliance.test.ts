@@ -29,9 +29,12 @@ test('CV-01: banco separado não é afirmado (não existe), a prova do aceite é
   const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
   for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts'])
     assert.doesNotMatch(visivel(f), /banco separado/i, f)
-  const seg = visivel('components/business/RbSeguranca.vue')
-  assert.match(seg, /a data, a versão do termo, o hash do texto que o cliente leu e o navegador/)
-  assert.doesNotMatch(seg, /\bIP\b/)
+  // Desde o enxugamento da landing (15/10/2026, à noite) a prova do aceite por
+  // extenso mora no FAQ; o card de segurança diz só que o aceite fica
+  // registrado. Nenhum dos dois cita o IP.
+  assert.match(visivel('content/business/faq.ts'), /prova do aceite \(data, versão do termo, hash do texto aceito e navegador\)/)
+  for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts'])
+    assert.doesNotMatch(visivel(f), /\bIP\b/, f)
   for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts', 'pages/business/clientes.vue'])
     assert.doesNotMatch(plano(f), /nenhum dado real/i, f)
 })
@@ -112,8 +115,10 @@ test('CV-18: nenhuma marca de demonstração ou de teste na experiência de Clie
 test('CV-19: Clientes do escritório é apresentado como liberado escritório a escritório, sem afirmar carteira real', () => {
   assert.match(plano('pages/business/clientes.vue'), /liberado por convite, escritório a escritório/)
   assert.match(plano('content/business/faq.ts'), /liberado por convite, escritório a escritório/)
-  for (const f of ['content/business/faq.ts', 'components/business/RbSeguranca.vue'])
-    assert.match(plano(f), /habilitada escritório a escritório, na implantação/, f)
+  // Na landing, a frase acompanha o card de family office e gestora (RbProva),
+  // que é onde a conexão do cliente é oferecida desde 15/10/2026.
+  for (const f of ['content/business/faq.ts', 'components/business/RbProva.vue'])
+    assert.match(plano(f), /habilitada escritório a escritório, na implantação/i, f)
   // Omitir a marca não autoriza afirmar o contrário dela.
   for (const f of UI_CLIENTES)
     assert.doesNotMatch(semComentarios(ler(f)), /carteira real|conectad[ao] de verdade|seus investimentos reais/i, f)
@@ -149,7 +154,7 @@ test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () =
  */
 test('CV-20: a landing não afirma que a carteira colada não fica guardada, e não promete 15 ferramentas a toda chave', () => {
   const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
-  const landing = ['RbHero', 'RbDivisao', 'RbAssistente', 'RbSeguranca', 'RbProva', 'RbCapacidade']
+  const landing = ['RbHero', 'RbDivisao', 'RbJornada', 'RbJornadaCard', 'RbSeguranca', 'RbProva', 'RbContato']
     .map(c => `components/business/${c}.vue`).concat('content/business/faq.ts')
   for (const f of landing) {
     assert.doesNotMatch(visivel(f), /n[aã]o fica guardad|nada guardado|nada da carteira colada fica guardado|servidor n[aã]o guarda/i, f)

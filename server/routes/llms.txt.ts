@@ -125,7 +125,7 @@ Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histór
 - [Calculadora de Juros Compostos](${o}/calculadora/juros-compostos): simulador com aportes mensais. Fórmula M = C×(1+i)^n. Exemplo: R$ 500/mês a 10,5% a.a. por 20 anos = R$ 410 mil
 - [Calculadora de Preço Teto](${o}/calculadora/preco-teto): Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3
 - [Calculadora de Dividendos](${o}/calculadora/dividend-yield): quanto sua carteira paga por mês em reais, quanto você precisa pra viver de dividendos, e o DY atual, on cost e projetado
-- [Calculadora de IR sobre Ações](${o}/calculadora/imposto-renda): 15% swing trade, 20% day trade, isenção de R$ 20 mil/mês (códigos DARF 6015 e 8523)
+- [Calculadora de IR sobre Ações](${o}/calculadora/imposto-renda): 15% swing trade, 20% day trade, isenção de até R$ 20 mil/mês (DARF 6015 nos dois casos)
 - [Calculadora de Aposentadoria](${o}/calculadora/aposentadoria): regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE)
 - [Calculadora: Quanto Investir por Mês](${o}/calculadora/quanto-investir): quanto aportar pra atingir uma meta em prazo definido
 - [Planejamento Patrimonial](${o}/calculadora/planejamento): carteira recomendada da B3 baseada em dados históricos reais
