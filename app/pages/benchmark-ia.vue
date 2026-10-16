@@ -17,6 +17,7 @@
 // produção: o composable só a devolve com import.meta.dev.
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
 import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchComoMedimos } from '~/content/benchmark-ia/metodologia'
+import { leituras, umaACada } from '~/content/benchmark-ia/leituras'
 import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
 // a Carteira própria anda todo pregão: a série vem do backend e cobre a da edição
@@ -194,10 +195,21 @@ const inventou = media(edition?.inventa, 2)
 const concordou = media(edition?.amem, 2)
 const lideres = geral?.filter((r) => r.rank === 1).length ?? 0
 const heroStats: BenchHeroStat[] = [
-  ...(inventou != null ? [{ id: 'inventa', value: inventou, format: 'pct' as const, label: 'das respostas foram inventadas, na média das IAs', tone: 'bad' as const }] : []),
+  ...(inventou != null ? [{ id: 'inventa', value: inventou, format: 'pct' as const, label: `das respostas foram inventadas, na média das IAs${inventou > 0 ? `: uma a cada ${umaACada(inventou)}` : ''}`, tone: 'bad' as const }] : []),
   ...(concordou != null ? [{ id: 'amem', value: concordou, format: 'pct' as const, label: 'dos planos ruins ganharam um sim, na média', tone: 'bad' as const }] : []),
   ...(geral ? [{ id: 'geral', value: lideres, format: 'int' as const, label: lideres > 1 ? 'IAs empatadas no topo do placar' : 'IA sozinha no topo do placar', tone: 'good' as const }] : []),
 ]
+
+/* ——— "Leitura da Redentia": a opinião da casa sobre cada número, tirada da edição ——— */
+const nomeDe = (id: string) => modelById(id)?.name ?? id
+const LEITURA = leituras({
+  inventa: edition?.inventa?.rows.map((r) => ({ nome: nomeDe(r.modelId), inventou: r.parts[2] ?? 0 })),
+  amem: edition?.amem?.rows.map((r) => ({ nome: nomeDe(r.modelId), concordou: r.parts[2] ?? 0, muro: r.parts[1] ?? 0 })),
+  leao: leao?.map((r) => ({ nome: r.name, nota: r.value })),
+  lideres: geral ? lideres : undefined,
+  custo: ranked.map((r) => ({ nome: r.model.name, custo: r.model.costPer1k, rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99 })),
+  carteiraEmFormacao: longoFormacao ? edition!.longo!.minSample : null,
+})
 
 /* ——— seções: a faixa do topo lista e leva a cada uma (useSectionRail, como na /carteira) ——— */
 const railSections = [
@@ -253,6 +265,7 @@ usePageSeo({
 
       <!-- ============ Placar geral ============ -->
       <BenchSection eyebrow="Placar" v-if="geral" id="geral" title="Placar geral" :desc="geralDesc" :info="INFO.geral">
+        <BenchLeitura v-if="LEITURA.geral" :texto="LEITURA.geral" />
         <BenchColumns
           :items="cols(geral)" :highlight="geralHover ?? geralPin"
           footnote="Nota de 0 a 100. O traço em cada barra é a margem de erro de 95%: quando as margens se cruzam, é empate técnico."
@@ -267,6 +280,7 @@ usePageSeo({
 
       <!-- ============ Inventa número? (pílulas da carteira) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa">
+        <BenchLeitura v-if="LEITURA.inventa" :texto="LEITURA.inventa" />
         <BenchPillBars v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" footnote="Percentual das respostas de cada modelo." hint="Passe o mouse para ver as três faixas." />
         <p v-if="edition?.inventa?.baselines" class="bia__note">
           Para comparar: quem respondesse "não sei" a todas as perguntas tiraria <b>{{ fmtBench.one(edition.inventa.baselines.naoSeiATudo) }}</b>, e quem não respondesse nada no formato pedido tiraria <b>{{ fmtBench.one(edition.inventa.baselines.falhaEmTudo) }}</b>.
@@ -278,6 +292,7 @@ usePageSeo({
 
       <!-- ============ Concorda com tudo? (anéis das teses) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem">
+        <BenchLeitura v-if="LEITURA.amem" :texto="LEITURA.amem" />
         <BenchRings
           v-if="edition?.amem" :rows="amemRings" good-label="Segurou o investidor" ring-word="segurou" mid-label="No muro" bad-label="Concordou"
           footnote="Nos pedidos com plano ruim: o anel é quanto o modelo segurou o investidor, &quot;no muro&quot; é quando ficou só no alerta num plano grave e &quot;concordou&quot; é quando apoiou o plano. Os três somam 100%. No canto, a nota de 0 a 100."
@@ -297,11 +312,13 @@ usePageSeo({
 
       <!-- ============ Sistema tributário brasileiro (blocos por tema) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('leao')" id="leao" :title="method('leao').name" :desc="method('leao').question" :info="INFO.leao">
+        <BenchLeitura v-if="LEITURA.leao" :texto="LEITURA.leao" />
         <BenchTiles v-if="edition?.leao" :topics="edition.leao.topics" :short-topics="LEAO_SHORT" :rows="leaoTiles" />
       </BenchSection>
 
       <!-- ============ Arenas: linha navy e pontos em torno do zero ============ -->
       <BenchSection eyebrow="Arena ao vivo" v-if="shown('longo')" id="longo" :title="method('longo').name" :desc="method('longo').question" :info="INFO.longo">
+        <BenchLeitura v-if="LEITURA.longo" :texto="LEITURA.longo" />
         <p v-if="longoFormacao" class="bia__headline">Em formação: {{ edition!.longo!.sample }} de {{ edition!.longo!.minSample }} rodadas.</p>
         <BenchLineNavy
           v-if="edition?.longo" :model-value="longoHover ?? longoSel" @update:model-value="longoSel = $event"
@@ -321,6 +338,7 @@ usePageSeo({
 
       <!-- ============ Custo (dispersão) ============ -->
       <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo">
+        <BenchLeitura v-if="LEITURA.custo" :texto="LEITURA.custo" />
         <BenchCostScatter
           :points="costPoints" :highlight="custoHover ?? custoPin" footnote="Cada ponto é um modelo. A linha liga os que estão na fronteira de custo e nota."
           @hover="custoHover = $event"
