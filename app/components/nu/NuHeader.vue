@@ -61,6 +61,7 @@ const NAV: NavItem[] = [
       { label: 'Notícias', to: '/noticias', desc: 'O noticiário do dia com a leitura editorial da casa.', vig: 'noticias' },
       { label: 'Setores', to: '/setor', desc: 'O mapa da bolsa, setor por setor.', vig: 'setores' },
       { label: 'Glossário', to: '/glossario', desc: 'Os termos do mercado em português claro.', vig: 'glossario' },
+      { label: 'Ranking de IAs', to: '/benchmark-ia', tag: 'novo', desc: 'Dez IAs na mesma prova de finanças, com margem de erro.', vig: 'ranking-ias' },
     ],
   },
 ]
