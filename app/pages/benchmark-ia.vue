@@ -140,7 +140,7 @@ const indices: IndexSection[] = [
   { id: 'inventa', label: method('inventa').name, icon: 'ghost', on: !!inventa, next: NOVA },
   { id: 'amem', label: method('amem').name, icon: 'hand', on: !!amem, next: NOVA },
   { id: 'golpe', label: method('golpe').name, icon: 'shield', on: !!golpe, next: edition ? NOVA : 'Em construção.' },
-  { id: 'leao', label: method('leao').name, icon: 'receipt', on: !!leao, next: 'Entra quando o gabarito tiver a revisão e a assinatura de um contador.' },
+  { id: 'leao', label: method('leao').name, icon: 'receipt', on: !!leao, next: edition ? NOVA : 'Em construção.' },
   { id: 'longo', label: method('longo').name, icon: 'trend', on: !!longo, next: ARENA },
   { id: 'curto', label: method('curto').name, icon: 'zap', on: !!curto, next: CURTO_NEXT },
 ]

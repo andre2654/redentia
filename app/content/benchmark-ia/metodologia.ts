@@ -133,7 +133,7 @@ export const BENCH_INDICES: BenchIndexMethod[] = [
     steps: [
       { label: 'A prova', text: '36 questões, quase todas com resposta em reais: IR retido no dividendo, DARF do mês, imposto do resgate, vencimento do DARF. Um quarto cobra as regras de 2024 a 2026.' },
       { label: 'Exemplos de pegadinha', text: 'A empresa pagou R$ 60 mil de dividendos num mês de 2026: são R$ 6 mil retidos, 10% sobre o total, não sobre o que passou de R$ 50 mil (Lei 15.270/2025). Duas empresas pagando R$ 30 mil cada: nada. JCP agora retém 17,5%. A isenção de R$ 20 mil não vale para BDR, ETF, FII nem day trade.' },
-      { label: 'Gabarito', text: 'Calculado pela Redentia com a base legal citada em cada questão e revisado por um contador que assina a edição. Toda questão tem data de vigência.' },
+      { label: 'Gabarito', text: 'Calculado pela Redentia com a base legal citada em cada questão. Toda questão tem data de vigência.' },
       { label: 'Nota', text: 'Percentual de acerto por tema, com tolerância de R$ 1 nas contas. As questões das regras de 2026 formam, à parte, a nota de atualização.' },
     ],
     cadence: 'Quando a Redentia roda a suíte, e sempre que a lei muda',
@@ -348,7 +348,7 @@ export const BENCH_CHART_INFO: Record<'geral' | 'inventa' | 'amem' | 'golpe' | '
     blocos: bloco(
       'Cada bloco é o acerto do modelo num tema: dividendos e JCP de 2026, ações e day trade, DARF, BDR, ETF e FII, renda fixa e exterior. "Regras novas" junta as questões sobre leis de 2024 a 2026.',
       'Quanto mais azul, mais acerto. A coluna "Nota" é o acerto em todas as questões. Como "Regras novas" repete questões de outros temas, a nota não é a média das colunas.',
-      'Nas contas, vale diferença de até R$ 1. O gabarito cita a lei de cada questão e passa por um contador antes de a nota ir ao ar.',
+      'Nas contas, vale diferença de até R$ 1. O gabarito cita a lei de cada questão e a data de vigência.',
     ),
   },
   longo: {

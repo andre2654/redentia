@@ -2,7 +2,7 @@
  * Benchmark de IA da Redentia: Edição 01 (2026-10-16).
  * GERADO por chat-service/bench/report.ts. Não edite à mão: rode o report de novo.
  * Só agregados; questões e respostas ficam no repositório privado do chat-service.
- * Lacre SHA-256 das respostas: bb8e0ebca4d8a1e98cf9ed8ab60bcfc1ccff7897454b8f50a4c1f66894dc7047
+ * Lacre SHA-256 das respostas: 45a249e5494b738a0cfa0eb2d89f71fed72249767ff27cfbe7bb55ed0043fbe6
  */
 import type { BenchEdition } from '~/types/benchmark'
 
@@ -10,11 +10,11 @@ export const EDICAO_01: BenchEdition = {
   "number": 1,
   "label": "Edição 01",
   "dateIso": "2026-10-16",
-  "spendUsd": 11.28,
-  "decisions": 3220,
-  "questions": 334,
-  "seal": "bb8e0ebca4d8a1e98cf9ed8ab60bcfc1ccff7897454b8f50a4c1f66894dc7047",
-  "failureRate": 0.2,
+  "spendUsd": 12.79,
+  "decisions": 3580,
+  "questions": 370,
+  "seal": "45a249e5494b738a0cfa0eb2d89f71fed72249767ff27cfbe7bb55ed0043fbe6",
+  "failureRate": 0.1,
   "auditoria": {
     "excluidos": 1,
     "confirmados": 5
@@ -26,7 +26,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "OpenAI",
       "tier": "fronteira",
       "openWeights": false,
-      "costPer1k": 2.09
+      "costPer1k": 2.02
     },
     {
       "id": "anthropic/claude-fable-5.1",
@@ -34,7 +34,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Anthropic",
       "tier": "fronteira",
       "openWeights": false,
-      "costPer1k": 12.2
+      "costPer1k": 12.38
     },
     {
       "id": "anthropic/claude-opus-5.5",
@@ -42,7 +42,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Anthropic",
       "tier": "fronteira",
       "openWeights": false,
-      "costPer1k": 7.49
+      "costPer1k": 7.35
     },
     {
       "id": "google/gemini-4-argon",
@@ -50,7 +50,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Google",
       "tier": "fronteira",
       "openWeights": false,
-      "costPer1k": 2.32
+      "costPer1k": 2.24
     },
     {
       "id": "x-ai/grok-4.7",
@@ -58,7 +58,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "xAI",
       "tier": "fronteira",
       "openWeights": false,
-      "costPer1k": 5.11
+      "costPer1k": 5.37
     },
     {
       "id": "qwen/qwen3.8-max-0902",
@@ -66,7 +66,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Alibaba",
       "tier": "fronteira",
       "openWeights": false,
-      "costPer1k": 3.07
+      "costPer1k": 3.27
     },
     {
       "id": "meta/muse-spark-1.3",
@@ -74,7 +74,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Meta",
       "tier": "intermediario",
       "openWeights": false,
-      "costPer1k": 3.7
+      "costPer1k": 3.82
     },
     {
       "id": "deepseek/deepseek-v4-pro-0813",
@@ -82,7 +82,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "DeepSeek",
       "tier": "intermediario",
       "openWeights": true,
-      "costPer1k": 0.68
+      "costPer1k": 0.66
     },
     {
       "id": "google/gemini-3.8-flash",
@@ -90,7 +90,7 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Google",
       "tier": "economico",
       "openWeights": false,
-      "costPer1k": 0.68
+      "costPer1k": 0.7
     },
     {
       "id": "moonshotai/kimi-k2-0905",
@@ -98,15 +98,15 @@ export const EDICAO_01: BenchEdition = {
       "provider": "Moonshot AI",
       "tier": "economico",
       "openWeights": false,
-      "costPer1k": 0.81
+      "costPer1k": 0.78
     }
   ],
   "leaderboard": [
     {
       "modelId": "anthropic/claude-opus-5.5",
       "overall": {
-        "value": 99.3,
-        "lo": 98.5,
+        "value": 99.6,
+        "lo": 99,
         "hi": 100,
         "rank": 1
       },
@@ -128,31 +128,8 @@ export const EDICAO_01: BenchEdition = {
           "lo": 100,
           "hi": 100,
           "rank": 1
-        }
-      }
-    },
-    {
-      "modelId": "meta/muse-spark-1.3",
-      "overall": {
-        "value": 98.9,
-        "lo": 97.7,
-        "hi": 99.7,
-        "rank": 1
-      },
-      "byIndex": {
-        "inventa": {
-          "value": 97.7,
-          "lo": 95.4,
-          "hi": 99.4,
-          "rank": 1
         },
-        "amem": {
-          "value": 100,
-          "lo": 100,
-          "hi": 100,
-          "rank": 1
-        },
-        "golpe": {
+        "leao": {
           "value": 100,
           "lo": 100,
           "hi": 100,
@@ -163,9 +140,9 @@ export const EDICAO_01: BenchEdition = {
     {
       "modelId": "openai/gpt-6.1-sol",
       "overall": {
-        "value": 98.8,
-        "lo": 97.6,
-        "hi": 99.7,
+        "value": 99.2,
+        "lo": 98.4,
+        "hi": 99.8,
         "rank": 1
       },
       "byIndex": {
@@ -186,14 +163,20 @@ export const EDICAO_01: BenchEdition = {
           "lo": 100,
           "hi": 100,
           "rank": 1
+        },
+        "leao": {
+          "value": 100,
+          "lo": 100,
+          "hi": 100,
+          "rank": 1
         }
       }
     },
     {
       "modelId": "anthropic/claude-fable-5.1",
       "overall": {
-        "value": 98.8,
-        "lo": 97.6,
+        "value": 98.2,
+        "lo": 95.9,
         "hi": 99.6,
         "rank": 1
       },
@@ -209,16 +192,22 @@ export const EDICAO_01: BenchEdition = {
           "lo": 100,
           "hi": 100,
           "rank": 1
+        },
+        "leao": {
+          "value": 97.2,
+          "lo": 91.7,
+          "hi": 100,
+          "rank": 1
         }
       }
     },
     {
       "modelId": "google/gemini-3.8-flash",
       "overall": {
-        "value": 98.7,
-        "lo": 97.5,
-        "hi": 99.6,
-        "rank": 1
+        "value": 96.3,
+        "lo": 92.7,
+        "hi": 98.9,
+        "rank": 3
       },
       "byIndex": {
         "inventa": {
@@ -238,16 +227,22 @@ export const EDICAO_01: BenchEdition = {
           "lo": 100,
           "hi": 100,
           "rank": 1
+        },
+        "leao": {
+          "value": 91.7,
+          "lo": 80.6,
+          "hi": 100,
+          "rank": 1
         }
       }
     },
     {
       "modelId": "google/gemini-4-argon",
       "overall": {
-        "value": 98.3,
-        "lo": 95.5,
-        "hi": 99.9,
-        "rank": 1
+        "value": 96.1,
+        "lo": 92.3,
+        "hi": 99,
+        "rank": 3
       },
       "byIndex": {
         "inventa": {
@@ -267,15 +262,91 @@ export const EDICAO_01: BenchEdition = {
           "lo": 91.7,
           "hi": 100,
           "rank": 1
+        },
+        "leao": {
+          "value": 91.7,
+          "lo": 80.6,
+          "hi": 100,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "modelId": "meta/muse-spark-1.3",
+      "overall": {
+        "value": 92.8,
+        "lo": 88.1,
+        "hi": 96.8,
+        "rank": 5
+      },
+      "byIndex": {
+        "inventa": {
+          "value": 97.7,
+          "lo": 95.4,
+          "hi": 99.4,
+          "rank": 1
+        },
+        "amem": {
+          "value": 100,
+          "lo": 100,
+          "hi": 100,
+          "rank": 1
+        },
+        "golpe": {
+          "value": 100,
+          "lo": 100,
+          "hi": 100,
+          "rank": 1
+        },
+        "leao": {
+          "value": 80.6,
+          "lo": 66.7,
+          "hi": 91.7,
+          "rank": 6
+        }
+      }
+    },
+    {
+      "modelId": "x-ai/grok-4.7",
+      "overall": {
+        "value": 92,
+        "lo": 87.4,
+        "hi": 95.8,
+        "rank": 6
+      },
+      "byIndex": {
+        "inventa": {
+          "value": 92.5,
+          "lo": 90.2,
+          "hi": 94.8,
+          "rank": 7
+        },
+        "amem": {
+          "value": 100,
+          "lo": 100,
+          "hi": 100,
+          "rank": 1
+        },
+        "golpe": {
+          "value": 97.5,
+          "lo": 91.7,
+          "hi": 100,
+          "rank": 1
+        },
+        "leao": {
+          "value": 86.1,
+          "lo": 75,
+          "hi": 94.4,
+          "rank": 4
         }
       }
     },
     {
       "modelId": "qwen/qwen3.8-max-0902",
       "overall": {
-        "value": 96.1,
-        "lo": 94.7,
-        "hi": 97.3,
+        "value": 91.8,
+        "lo": 87.4,
+        "hi": 95.6,
         "rank": 6
       },
       "byIndex": {
@@ -296,44 +367,21 @@ export const EDICAO_01: BenchEdition = {
           "lo": 100,
           "hi": 100,
           "rank": 1
-        }
-      }
-    },
-    {
-      "modelId": "x-ai/grok-4.7",
-      "overall": {
-        "value": 95,
-        "lo": 92,
-        "hi": 97.1,
-        "rank": 7
-      },
-      "byIndex": {
-        "inventa": {
-          "value": 92.5,
-          "lo": 90.2,
-          "hi": 94.8,
-          "rank": 7
         },
-        "amem": {
-          "value": 100,
-          "lo": 100,
-          "hi": 100,
-          "rank": 1
-        },
-        "golpe": {
-          "value": 97.5,
-          "lo": 91.7,
-          "hi": 100,
-          "rank": 1
+        "leao": {
+          "value": 83.3,
+          "lo": 69.4,
+          "hi": 94.4,
+          "rank": 4
         }
       }
     },
     {
       "modelId": "deepseek/deepseek-v4-pro-0813",
       "overall": {
-        "value": 87.4,
-        "lo": 86.1,
-        "hi": 88.6,
+        "value": 75.8,
+        "lo": 70.3,
+        "hi": 81.3,
         "rank": 9
       },
       "byIndex": {
@@ -354,15 +402,21 @@ export const EDICAO_01: BenchEdition = {
           "lo": 100,
           "hi": 100,
           "rank": 1
+        },
+        "leao": {
+          "value": 52.8,
+          "lo": 36.1,
+          "hi": 69.4,
+          "rank": 9
         }
       }
     },
     {
       "modelId": "moonshotai/kimi-k2-0905",
       "overall": {
-        "value": 80.4,
-        "lo": 74.6,
-        "hi": 85.6,
+        "value": 66.6,
+        "lo": 60.1,
+        "hi": 73.2,
         "rank": 10
       },
       "byIndex": {
@@ -383,6 +437,12 @@ export const EDICAO_01: BenchEdition = {
           "lo": 79.9,
           "hi": 97.9,
           "rank": 8
+        },
+        "leao": {
+          "value": 38.9,
+          "lo": 22.2,
+          "hi": 55.6,
+          "rank": 9
         }
       }
     }
@@ -669,6 +729,139 @@ export const EDICAO_01: BenchEdition = {
       "falseAlarm": 5
     }
   ],
+  "leao": {
+    "topics": [
+      "Dividendos e JCP em 2026",
+      "Ações e day trade",
+      "DARF e prazo",
+      "BDR, ETF e FII",
+      "Renda fixa e fundos",
+      "Exterior",
+      "Regras novas"
+    ],
+    "rows": [
+      {
+        "modelId": "openai/gpt-6.1-sol",
+        "cells": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ]
+      },
+      {
+        "modelId": "anthropic/claude-fable-5.1",
+        "cells": [
+          89,
+          100,
+          100,
+          100,
+          100,
+          100,
+          93
+        ]
+      },
+      {
+        "modelId": "anthropic/claude-opus-5.5",
+        "cells": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ]
+      },
+      {
+        "modelId": "google/gemini-4-argon",
+        "cells": [
+          67,
+          100,
+          100,
+          100,
+          100,
+          100,
+          79
+        ]
+      },
+      {
+        "modelId": "x-ai/grok-4.7",
+        "cells": [
+          56,
+          100,
+          100,
+          80,
+          100,
+          100,
+          64
+        ]
+      },
+      {
+        "modelId": "qwen/qwen3.8-max-0902",
+        "cells": [
+          56,
+          100,
+          100,
+          60,
+          100,
+          100,
+          64
+        ]
+      },
+      {
+        "modelId": "meta/muse-spark-1.3",
+        "cells": [
+          67,
+          100,
+          100,
+          80,
+          40,
+          100,
+          79
+        ]
+      },
+      {
+        "modelId": "deepseek/deepseek-v4-pro-0813",
+        "cells": [
+          56,
+          33,
+          25,
+          60,
+          80,
+          75,
+          57
+        ]
+      },
+      {
+        "modelId": "google/gemini-3.8-flash",
+        "cells": [
+          67,
+          100,
+          100,
+          100,
+          100,
+          100,
+          79
+        ]
+      },
+      {
+        "modelId": "moonshotai/kimi-k2-0905",
+        "cells": [
+          44,
+          33,
+          25,
+          0,
+          60,
+          75,
+          50
+        ]
+      }
+    ]
+  },
   "longo": {
     "labels": [
       "Início",
