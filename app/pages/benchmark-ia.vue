@@ -16,8 +16,9 @@
 // sem linha de aviso na tela a pedido do dono (15/10). Ela nunca chega à
 // produção: o composable só a devolve com import.meta.dev.
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
-import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchComoMedimos } from '~/content/benchmark-ia/metodologia'
-import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
+import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchFaqPagina } from '~/content/benchmark-ia/metodologia'
+import { leituras } from '~/content/benchmark-ia/leituras'
+import type { BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
 // a Carteira própria anda todo pregão: a série vem do backend e cobre a da edição
 const { edition, isPreview, ranked, modelById } = useBenchmarkIa(await useBenchCarteiraViva())
@@ -27,8 +28,6 @@ const method = (id: BenchIndexId) => BENCH_INDICES.find((m) => m.id === id)!
 function rows(list: { id: string; value: number; lo: number; hi: number; extra?: string }[]): BenchRankingRow[] {
   return rankByScore(list).map((r) => ({ ...r, name: modelById(r.id)?.name ?? r.id, provider: modelById(r.id)?.provider ?? '' }))
 }
-const cols = (r: BenchRankingRow[] | null): BenchColumnItem[] =>
-  (r ?? []).map((x) => ({ id: x.id, label: x.name, value: x.value, lo: x.lo, hi: x.hi, rank: x.rank, tied: x.tied }))
 const labRows = (id: BenchIndexId, extra?: (modelId: string) => string | undefined) => {
   const list = ranked.filter((r) => r.byIndex[id]).map((r) => ({ id: r.model.id, ...r.byIndex[id]!, extra: extra?.(r.model.id) }))
   return list.length ? rows(list) : null
@@ -84,7 +83,7 @@ const longoMarcos = (() => {
   const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
   return [{ i: 0, label: iso === hoje ? 'Começou hoje' : `Começou em ${iso.slice(8, 10)}/${iso.slice(5, 7)}` }]
 })()
-const longoNota = `Retorno total acumulado desde a primeira rodada, com proventos e custos${longoAte ? `, até o fechamento de ${longoAte}` : ''}. Na lista, a diferença para o Ibovespa.`
+const longoNota = longoAte ? `Até o fechamento de ${longoAte}.` : ''
 // em formação (menos rodadas que o mínimo do método): sem posição na lista, porque
 // a diferença entre os modelos ainda é só o custo de montar a carteira
 const longoFormacao = !!edition?.longo && edition.longo.sample < edition.longo.minSample
@@ -104,7 +103,7 @@ const partsOf = (stack: { rows: { modelId: string; parts: number[] }[] } | undef
   stack?.rows.find((s) => s.modelId === id)?.parts ?? [0, 0, 0]
 // Inventa número?: pílulas da carteira, na ordem da nota
 const inventaPills = (inventa ?? []).map((r) => ({ ...r, parts: partsOf(edition?.inventa, r.id) }))
-// Concorda com tudo?: cartões com anel (segurou) e o quanto concordou
+// Concorda com tudo?: o muro (disse não, no muro, disse sim)
 const amemRings = (amem ?? []).map((r) => {
   const p = partsOf(edition?.amem, r.id)
   return { ...r, good: p[0] ?? 0, mid: p[1] ?? 0, bad: p[2] ?? 0 }
@@ -137,15 +136,8 @@ const longoSel = ref(longoSeries[0]?.id ?? '')
 // passar o mouse numa linha da lista mostra aquele modelo no gráfico só enquanto
 // durar o hover (dono, 16/10); o clique (ou o toque, no celular) fixa a escolha
 const longoHover = ref<string | null>(null)
-// custo: o mesmo gesto na dispersão. Hover na lista (ou no ponto) acende o
-// modelo; o clique na lista fixa o destaque, e clicar de novo solta
-const custoHover = ref<string | null>(null)
-// placar geral: o mesmo gesto nas colunas
-const geralHover = ref<string | null>(null)
-const geralPin = ref<string | null>(null)
-const custoPin = ref<string | null>(null)
-// Custo: dispersão custo x nota
-const costPoints = ranked.map((r) => ({ id: r.model.id, name: r.model.name, cost: r.model.costPer1k, score: r.overall.value }))
+// Custo: esferas com área proporcional ao custo, cor pela posição no placar geral
+const costPoints = ranked.map((r) => ({ id: r.model.id, name: r.model.name, cost: r.model.costPer1k, rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99 }))
 
 const dados = edition?.inventaDados?.length
   ? {
@@ -153,18 +145,15 @@ const dados = edition?.inventaDados?.length
       com: edition.inventaDados.reduce((a, r) => a + r.comDados, 0) / edition.inventaDados.length,
     }
   : null
-const travou = edition?.amemControle?.length
-  ? edition.amemControle.reduce((a, r) => a + r.travouControle, 0) / edition.amemControle.length
-  : null
 
 /* ——— índices: o que tem resultado vira seção; o resto vai para "Próximos índices" ——— */
 type IndexSection = { id: BenchIndexId; label: string; icon: string; on: boolean; next: string }
 const NOVA = edition ? 'Fora desta edição.' : 'Entra na primeira edição.'
-const ARENA = 'Arena: começa na primeira rodada mensal e fica "em formação" até a sexta.'
+const ARENA = 'Começa na primeira rodada mensal.'
 const diaMes = (iso: string) => iso.slice(8, 10) + '/' + iso.slice(5, 7)
 const st = edition?.curtoStatus
 const CURTO_NEXT = st?.proximaCorrecao
-  ? `${st.rodadas === 1 ? 'Primeira rodada feita' : `${st.rodadas} rodadas feitas`} em ${diaMes(st.primeira)}. A primeira nota sai depois do fechamento de ${diaMes(st.proximaCorrecao)}, quando completam 21 pregões.`
+  ? `Primeira nota em ${diaMes(st.proximaCorrecao)}.`
   : ARENA
 const indices: IndexSection[] = [
   { id: 'inventa', label: method('inventa').name, icon: 'ghost', on: !!inventa, next: NOVA },
@@ -182,10 +171,8 @@ const nomes = (list: string[]) => (list.length < 2 ? list.join('') : `${list.sli
 const ponto = (s: string) => (/[?.!]$/.test(s) ? s : `${s}.`)
 const labsDaMedia = indices
   .filter((x) => x.on && ['inventa', 'amem', 'golpe', 'leao'].includes(x.id) && !edition?.foraDoGeral?.includes(x.id))
-  .map((x) => x.label)
-// quem não completou uma prova que está fora da média (ex.: "Claude Fable 5.1")
-const faltou = (id: BenchIndexId) => nomes((edition?.incompletos?.[id] ?? []).map((m) => modelById(m)?.name ?? m))
-const geralDesc = ponto(`Média simples das notas de 0 a 100 nos laboratórios desta edição: ${nomes(labsDaMedia)}`)
+  .map((x) => ({ inventa: 'Inventa', amem: 'Concorda', golpe: 'Golpes', leao: 'Tributário' } as Record<string, string>)[x.id] ?? x.label)
+const geralDesc = ponto(`Média de ${nomes(labsDaMedia)}, de 0 a 100`)
 
 /* ——— topo navy: até três números da edição, cada um leva à sua seção ——— */
 const media = (stack: { rows: { parts: number[] }[] } | undefined, i: number) =>
@@ -199,13 +186,22 @@ const heroStats: BenchHeroStat[] = [
   ...(geral ? [{ id: 'geral', value: lideres, format: 'int' as const, label: lideres > 1 ? 'IAs empatadas no topo do placar' : 'IA sozinha no topo do placar', tone: 'good' as const }] : []),
 ]
 
+/* ——— "Leitura da Redentia": a opinião da casa sobre cada número, tirada da edição ——— */
+const nomeDe = (id: string) => modelById(id)?.name ?? id
+const LEITURA = leituras({
+  inventa: edition?.inventa?.rows.map((r) => ({ nome: nomeDe(r.modelId), inventou: r.parts[2] ?? 0 })),
+  amem: edition?.amem?.rows.map((r) => ({ nome: nomeDe(r.modelId), concordou: r.parts[2] ?? 0, muro: r.parts[1] ?? 0 })),
+  leao: leao?.map((r) => ({ nome: r.name, nota: r.value })),
+  custo: ranked.map((r) => ({ nome: r.model.name, custo: r.model.costPer1k, nota: r.overall.value, rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99 })),
+})
+
 /* ——— seções: a faixa do topo lista e leva a cada uma (useSectionRail, como na /carteira) ——— */
 const railSections = [
   ...(geral ? [{ id: 'geral', label: 'Placar geral' }] : []),
   ...indices.filter((x) => x.on).map((x) => ({ id: x.id, label: x.label })),
   ...(custo ? [{ id: 'custo', label: 'Custo por mil respostas' }] : []),
   ...(proximos.length ? [{ id: 'proximos', label: 'Próximos índices' }] : []),
-  { id: 'metodologia', label: 'Como medimos' },
+  { id: 'metodologia', label: 'Dúvidas' },
 ]
 useSectionRail(railSections, { pageLabel: 'Ranking de IAs' })
 
@@ -221,11 +217,11 @@ const fresh = !edition
   ? 'Primeira edição em breve. O método já está publicado no fim da página.'
   : isPreview ? null : `Dados da ${edition.label}, de ${dataBR}.`
 // conta aberta: o custo total da edição sai na seção de custo
-const custoDesc = `Quanto cada modelo custou, em dólar, a cada mil respostas desta edição. Menor é melhor.${edition && !isPreview ? ` A edição inteira custou ${fmtBench.usd(edition.spendUsd)}.` : ''}`
+const custoDesc = 'Quanto custa cada mil respostas, em dólar. Menor é melhor.'
 const proximosDesc = edition
-  ? 'O que ainda não tem resultado nesta edição, e o que falta para cada um.'
-  : 'Os índices do ranking e o que falta para cada um sair.'
-const comoMedimos = benchComoMedimos()
+  ? 'O que ainda não tem nota.'
+  : 'Os índices do ranking.'
+const faq = benchFaqPagina()
 const icon = (k: string) => BENCH_ICONS[k] ?? BENCH_ICONS.trophy
 
 usePageSeo({
@@ -245,7 +241,7 @@ usePageSeo({
       <BenchHero :stats="heroStats" @go="go">
         <h1 class="bia__h1">Ranking de IAs em finanças</h1>
         <p class="bia__lead">
-          Qual IA entende de dinheiro no Brasil? Dez modelos fazem a mesma prova, corrigida por gabarito, com margem de erro.
+          Dez IAs, a mesma prova de finanças, corrigida por gabarito.
           <a href="#metodologia" class="bia__link" @click.prevent="go('metodologia')">Como medimos</a>
         </p>
         <p v-if="fresh" class="bia__fresh">{{ fresh }}</p>
@@ -253,41 +249,21 @@ usePageSeo({
 
       <!-- ============ Placar geral ============ -->
       <BenchSection eyebrow="Placar" v-if="geral" id="geral" title="Placar geral" :desc="geralDesc" :info="INFO.geral">
-        <BenchColumns
-          :items="cols(geral)" :highlight="geralHover ?? geralPin"
-          footnote="Nota de 0 a 100. O traço em cada barra é a margem de erro de 95%: quando as margens se cruzam, é empate técnico."
-          @hover="geralHover = $event"
-        />
-        <BenchRankList
-          :rows="geral" interactive :active-id="geralHover ?? geralPin"
-          @hover="geralHover = $event" @pick="geralPin = geralPin === $event ? null : $event; geralHover = null"
-        />
+        <BenchRange :rows="geral" />
         <p v-if="edition?.seal" class="bia__seal">Respostas lacradas (SHA-256): <code>{{ edition.seal }}</code></p>
       </BenchSection>
 
       <!-- ============ Inventa número? (pílulas da carteira) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa">
-        <BenchPillBars v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" footnote="Percentual das respostas de cada modelo." hint="Passe o mouse para ver as três faixas." />
-        <p v-if="edition?.inventa?.baselines" class="bia__note">
-          Para comparar: quem respondesse "não sei" a todas as perguntas tiraria <b>{{ fmtBench.one(edition.inventa.baselines.naoSeiATudo) }}</b>, e quem não respondesse nada no formato pedido tiraria <b>{{ fmtBench.one(edition.inventa.baselines.falhaEmTudo) }}</b>.
-        </p>
+      <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa" :leitura="LEITURA.inventa">
+        <BenchWaffle v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" />
         <p v-if="dados" class="bia__note">
           Com os dados da Redentia no enunciado, a invenção média cai de <b>{{ fmtBench.pct(dados.sem) }}</b> para <b>{{ fmtBench.pct(dados.com) }}</b>. Essa rodada fica fora do ranking.
         </p>
       </BenchSection>
 
-      <!-- ============ Concorda com tudo? (anéis das teses) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem">
-        <BenchRings
-          v-if="edition?.amem" :rows="amemRings" good-label="Segurou o investidor" ring-word="segurou" mid-label="No muro" bad-label="Concordou"
-          footnote="Nos pedidos com plano ruim: o anel é quanto o modelo segurou o investidor, &quot;no muro&quot; é quando ficou só no alerta num plano grave e &quot;concordou&quot; é quando apoiou o plano. Os três somam 100%. No canto, a nota de 0 a 100."
-        />
-        <p v-if="travou != null" class="bia__note">
-          Nos casos de controle, em que o plano era razoável, os modelos desaconselharam em média <b>{{ fmtBench.pct(travou) }}</b> das vezes.
-        </p>
-        <p v-if="edition?.foraDoGeral?.includes('amem')" class="bia__note">
-          {{ faltou('amem') }} ainda não completou esta prova. Por isso, ela fica fora da média do placar geral.
-        </p>
+      <!-- ============ Concorda com tudo? (o muro) ============ -->
+      <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem" :leitura="LEITURA.amem">
+        <BenchWall v-if="edition?.amem" :rows="amemRings" />
       </BenchSection>
 
       <!-- ============ Cai em golpes financeiros? (borboleta) ============ -->
@@ -296,7 +272,7 @@ usePageSeo({
       </BenchSection>
 
       <!-- ============ Sistema tributário brasileiro (blocos por tema) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('leao')" id="leao" :title="method('leao').name" :desc="method('leao').question" :info="INFO.leao">
+      <BenchSection eyebrow="Laboratório" v-if="shown('leao')" id="leao" :title="method('leao').name" :desc="method('leao').question" :info="INFO.leao" :leitura="LEITURA.leao">
         <BenchTiles v-if="edition?.leao" :topics="edition.leao.topics" :short-topics="LEAO_SHORT" :rows="leaoTiles" />
       </BenchSection>
 
@@ -316,19 +292,12 @@ usePageSeo({
 
       <BenchSection eyebrow="Arena ao vivo" v-if="shown('curto')" id="curto" :title="method('curto').name" :desc="method('curto').question" :info="INFO.curto">
         <p v-if="curtoAcaso" class="bia__headline">Nenhum modelo se distinguiu do acaso nesta edição.</p>
-        <BenchDots v-if="curto" :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="IC médio por rodada com intervalo de 95%. Ponto cinza: o intervalo cruza o zero, sem evidência de habilidade." />
+        <BenchDots v-if="curto" :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="Ponto cinza: sem evidência de habilidade." />
       </BenchSection>
 
-      <!-- ============ Custo (dispersão) ============ -->
-      <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo">
-        <BenchCostScatter
-          :points="costPoints" :highlight="custoHover ?? custoPin" footnote="Cada ponto é um modelo. A linha liga os que estão na fronteira de custo e nota."
-          @hover="custoHover = $event"
-        />
-        <BenchRankList
-          :rows="custo" :format="fmtBench.usd" :numbered="false" interactive :active-id="custoHover ?? custoPin"
-          @hover="custoHover = $event" @pick="custoPin = custoPin === $event ? null : $event; custoHover = null"
-        />
+      <!-- ============ Custo (esferas) ============ -->
+      <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo" :leitura="LEITURA.custo">
+        <BenchBubbles :points="costPoints" />
       </BenchSection>
 
       <!-- ============ Próximos índices (tudo que ainda não tem resultado) ============ -->
@@ -345,19 +314,21 @@ usePageSeo({
         </ul>
       </BenchSection>
 
-      <!-- ============ Como medimos ============ -->
-      <BenchSection eyebrow="Método" id="metodologia" title="Como medimos">
-        <div class="bia__prose">
-          <section v-for="b in comoMedimos" :key="b.titulo">
-            <h3>{{ b.titulo }}</h3>
-            <p v-for="(p, i) in b.paragrafos" :key="i">
-              <template v-if="typeof p === 'string'">{{ p }}</template>
-              <template v-else><strong>{{ ponto(p.lead) }}</strong> {{ p.text }}</template>
-            </p>
-          </section>
+      <!-- ============ Dúvidas: o FAQ padrão da casa (home e /teses), duas colunas ============ -->
+      <!-- id "metodologia": o "Como medimos" do topo e a faixa de seções levam aqui -->
+      <section id="metodologia" class="bfq">
+        <div class="bfq__cols">
+          <div class="bfq__left">
+            <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
+            <div class="bfq__copy">Como o ranking é feito, o que ele mede e o que ele não diz.</div>
+            <NuxtLink to="/busca" class="bfq__cta">Perguntar à Redentia AI</NuxtLink>
+          </div>
+          <div class="bfq__right">
+            <NuFaqAccordion :items="faq" />
+          </div>
         </div>
         <p class="bia__disclaimer">{{ BENCH_DISCLAIMER }}</p>
-      </BenchSection>
+      </section>
 
   </div>
 </template>
@@ -382,6 +353,20 @@ usePageSeo({
 .bia__seal { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow-wrap: anywhere; }
 .bia__seal code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--nu-gray-3); }
 
+/* FAQ: o mesmo da home (.mfq em MercadoContent) e da /teses */
+.bfq { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
+.bfq__cols { max-width: 1240px; margin: 0 auto; display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+.bfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
+.bfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
+.bfq__cta {
+  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
+  margin-top: 30px; transition: background .2s;
+}
+.bfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.bfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
+.bfq .bia__disclaimer { max-width: 1240px; margin-left: auto; margin-right: auto; }
+
 /* próximos índices: uma linha por índice, ícone, nome, pergunta e o que falta */
 .bia__next { list-style: none; margin: 0; padding: 0; border-radius: var(--nu-r-tile); background: var(--b-surface, var(--nu-cream)); }
 .bia__next-item {
@@ -399,10 +384,6 @@ usePageSeo({
 .bia__next-q { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 .bia__next-status { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 
-.bia__prose { margin-top: 8px; max-width: 78ch; }
-.bia__prose h3 { margin: 24px 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -.1px; }
-.bia__prose p { margin: 0 0 10px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7; }
-.bia__prose strong { color: var(--nu-ink); font-weight: 700; }
 
 .bia__disclaimer {
   margin: 32px 0 0; padding-top: 24px; border-top: 1px solid var(--nu-ink-10);
