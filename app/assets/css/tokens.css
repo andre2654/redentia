@@ -173,6 +173,17 @@
   --nu-green-soft-16: rgba(143, 240, 181, 0.16); /* bg do badge de convicção no hero */
   --nu-cream-text-88: rgba(245, 241, 234, 0.88); /* bullets dos driver cards */
   --nu-cream-text-65: rgba(245, 241, 234, 0.65); /* breadcrumb, linha IBOV, footer do risco */
+  /* ——— /benchmark-ia: uma cor por modelo nas linhas da tela cheia (sobre navy) ——— */
+  --nu-serie-1: #5A8CFF;   /* azul */
+  --nu-serie-2: #FFB547;   /* âmbar */
+  --nu-serie-3: #4FD1A5;   /* menta */
+  --nu-serie-4: #FF6B8A;   /* rosa */
+  --nu-serie-5: #B48CFF;   /* violeta */
+  --nu-serie-6: #5FD3F3;   /* ciano */
+  --nu-serie-7: #F5E07A;   /* amarelo */
+  --nu-serie-8: #FF8F5A;   /* laranja */
+  --nu-serie-9: #9BE15D;   /* lima */
+  --nu-serie-10: #E9A3E8;  /* orquídea */
   --nu-cream-text-40: rgba(245, 241, 234, 0.4);  /* borda do CTA outline do hero */
   --nu-cream-text-16: rgba(245, 241, 234, 0.16); /* hairline do footer do risco central */
   --nu-navy-60: rgba(12, 21, 36, 0.6);           /* valor do IBOV no tooltip do chart */
