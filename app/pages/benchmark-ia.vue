@@ -103,7 +103,7 @@ const partsOf = (stack: { rows: { modelId: string; parts: number[] }[] } | undef
   stack?.rows.find((s) => s.modelId === id)?.parts ?? [0, 0, 0]
 // Inventa número?: pílulas da carteira, na ordem da nota
 const inventaPills = (inventa ?? []).map((r) => ({ ...r, parts: partsOf(edition?.inventa, r.id) }))
-// Concorda com tudo?: medidor grande (média) e um selo por modelo
+// Concorda com tudo?: o muro (disse não, no muro, disse sim)
 const amemRings = (amem ?? []).map((r) => {
   const p = partsOf(edition?.amem, r.id)
   return { ...r, good: p[0] ?? 0, mid: p[1] ?? 0, bad: p[2] ?? 0 }
@@ -172,8 +172,6 @@ const ponto = (s: string) => (/[?.!]$/.test(s) ? s : `${s}.`)
 const labsDaMedia = indices
   .filter((x) => x.on && ['inventa', 'amem', 'golpe', 'leao'].includes(x.id) && !edition?.foraDoGeral?.includes(x.id))
   .map((x) => ({ inventa: 'Inventa', amem: 'Concorda', golpe: 'Golpes', leao: 'Tributário' } as Record<string, string>)[x.id] ?? x.label)
-// quem não completou uma prova que está fora da média (ex.: "Claude Fable 5.1")
-const faltou = (id: BenchIndexId) => nomes((edition?.incompletos?.[id] ?? []).map((m) => modelById(m)?.name ?? m))
 const geralDesc = ponto(`Média de ${nomes(labsDaMedia)}, de 0 a 100`)
 
 /* ——— topo navy: até três números da edição, cada um leva à sua seção ——— */
@@ -263,12 +261,9 @@ usePageSeo({
         </p>
       </BenchSection>
 
-      <!-- ============ Concorda com tudo? (anéis das teses) ============ -->
+      <!-- ============ Concorda com tudo? (o muro) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem" :leitura="LEITURA.amem">
-        <BenchGauge v-if="edition?.amem" :rows="amemRings" />
-        <p v-if="edition?.foraDoGeral?.includes('amem')" class="bia__note">
-          {{ faltou('amem') }} não completou: fica fora da média geral.
-        </p>
+        <BenchWall v-if="edition?.amem" :rows="amemRings" />
       </BenchSection>
 
       <!-- ============ Cai em golpes financeiros? (borboleta) ============ -->

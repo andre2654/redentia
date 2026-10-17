@@ -6,6 +6,9 @@
 // o resto em azul-claro. A escala começa no menor lo, arredondado para baixo de 10
 // em 10, para a diferença aparecer; o eixo embaixo diz onde começa.
 // Movimento: as faixas crescem da esquerda, uma depois da outra, ao entrar na tela.
+// Hover (dono, 16/10): a linha em foco acende e as outras esmaecem; o ponto cresce
+// e uma etiqueta junto dele diz a margem de erro em número. Só em quem tem mouse,
+// para o toque não deixar a lista presa esmaecida.
 import type { BenchRankingRow } from '~/types/benchmark'
 
 const props = defineProps<{ rows: BenchRankingRow[] }>()
@@ -42,6 +45,7 @@ const lideres = computed(() => props.rows.filter((r) => r.rank === 1).length)
           <span class="bra__fill" :style="{ width: `${pos(r.value)}%` }" />
           <span class="bra__err" :style="{ left: `${pos(r.lo)}%`, width: `${Math.max(0.6, pos(r.hi) - pos(r.lo))}%` }" />
           <span class="bra__dot" :style="{ left: `${pos(r.value)}%` }" />
+          <span class="bra__tip" :class="{ 'bra__tip--end': pos(r.value) > 55 }" :style="{ left: `${pos(r.value)}%` }">margem de <b>{{ fmtBench.one(r.lo) }}</b> a <b>{{ fmtBench.one(r.hi) }}</b></span>
         </span>
         <span class="bra__val" aria-hidden="true">{{ fmtBench.one(r.value) }}</span>
       </li>
@@ -104,8 +108,36 @@ const lideres = computed(() => props.rows.filter((r) => r.rank === 1).length)
 /* entrada: as barras crescem da esquerda em sequência; ponto e margem aparecem depois */
 .is-pending .bra__fill { transform: scaleX(0); }
 .is-pending .bra__dot, .is-pending .bra__err { opacity: 0; }
-.is-in .bra__fill { transform: scaleX(1); transition: transform .9s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * 70ms); }
-.is-in .bra__dot, .is-in .bra__err { opacity: 1; transition: opacity .4s ease calc(var(--i) * 70ms + .6s); }
+.is-in .bra__fill { transform: scaleX(1); transition: transform .9s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * 70ms), box-shadow .2s ease, filter .2s ease; }
+.is-in .bra__dot, .is-in .bra__err { opacity: 1; transition: opacity .4s ease calc(var(--i) * 70ms + .6s), transform .2s ease; }
+
+/* hover: a linha em foco acende, as outras esmaecem, a margem aparece em número */
+.bra__tip { display: none; }
+@media (hover: hover) {
+  .bra__row { position: relative; isolation: isolate; transition: opacity .2s ease; }
+  .bra__row::before {
+    content: ''; position: absolute; inset: 0 -12px; z-index: -1; border-radius: 14px;
+    background: var(--nu-blue-tint); opacity: 0; transition: opacity .2s ease;
+  }
+  .bra__list:hover .bra__row:not(:hover) { opacity: .4; }
+  .bra__row:hover::before { opacity: 1; }
+  .bra__tile, .bra__val { transition: transform .2s ease; }
+  .bra__row:hover .bra__tile { transform: scale(1.12); }
+  .bra__row:hover .bra__val { transform: scale(1.12); transform-origin: right center; color: var(--nu-blue); }
+  .bra__row:hover .bra__fill { box-shadow: 0 6px 22px var(--nu-blue-28); filter: saturate(1.35); }
+  .bra__row:hover .bra__dot { transform: translate(-50%, -50%) scale(1.3); }
+  .bra__tip {
+    display: block; position: absolute; bottom: calc(100% + 12px); z-index: 2; white-space: nowrap; pointer-events: none;
+    padding: 6px 10px; border-radius: var(--nu-r-pill); background: var(--nu-navy); color: var(--nu-white);
+    font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums;
+    box-shadow: 0 8px 20px var(--nu-navy-14);
+    opacity: 0; transform: translate(-14px, 4px); transition: opacity .18s ease, transform .18s ease;
+  }
+  .bra__tip b { font-weight: 800; }
+  .bra__tip--end { transform: translate(calc(-100% + 14px), 4px); }
+  .bra__row:hover .bra__tip { opacity: 1; transform: translate(-14px, 0); }
+  .bra__row:hover .bra__tip--end { transform: translate(calc(-100% + 14px), 0); }
+}
 
 @container (max-width: 560px) {
   .bra { --cols: 26px minmax(0, 118px) minmax(0, 1fr) 44px; }
