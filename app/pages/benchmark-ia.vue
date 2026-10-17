@@ -103,7 +103,7 @@ const partsOf = (stack: { rows: { modelId: string; parts: number[] }[] } | undef
   stack?.rows.find((s) => s.modelId === id)?.parts ?? [0, 0, 0]
 // Inventa número?: pílulas da carteira, na ordem da nota
 const inventaPills = (inventa ?? []).map((r) => ({ ...r, parts: partsOf(edition?.inventa, r.id) }))
-// Concorda com tudo?: cartões com anel (segurou) e o quanto concordou
+// Concorda com tudo?: medidor grande (média) e um selo por modelo
 const amemRings = (amem ?? []).map((r) => {
   const p = partsOf(edition?.amem, r.id)
   return { ...r, good: p[0] ?? 0, mid: p[1] ?? 0, bad: p[2] ?? 0 }
@@ -265,9 +265,7 @@ usePageSeo({
 
       <!-- ============ Concorda com tudo? (anéis das teses) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem" :leitura="LEITURA.amem">
-        <BenchRings
-          v-if="edition?.amem" :rows="amemRings" good-label="Segurou o investidor" ring-word="segurou" mid-label="No muro" bad-label="Concordou"
-        />
+        <BenchGauge v-if="edition?.amem" :rows="amemRings" />
         <p v-if="edition?.foraDoGeral?.includes('amem')" class="bia__note">
           {{ faltou('amem') }} não completou: fica fora da média geral.
         </p>
