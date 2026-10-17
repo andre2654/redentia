@@ -212,7 +212,7 @@ const railSections = [
   ...indices.filter((x) => x.on).map((x) => ({ id: x.id, label: x.label })),
   ...(custo ? [{ id: 'custo', label: 'Custo por mil respostas' }] : []),
   ...(proximos.length ? [{ id: 'proximos', label: 'Próximos índices' }] : []),
-  { id: 'metodologia', label: 'Como medimos' },
+  { id: 'metodologia', label: 'Dúvidas' },
 ]
 useSectionRail(railSections, { pageLabel: 'Ranking de IAs' })
 
@@ -344,12 +344,21 @@ usePageSeo({
         </ul>
       </BenchSection>
 
-      <!-- ============ Como medimos ============ -->
-      <BenchSection eyebrow="Método" id="metodologia" title="Como medimos">
-        <!-- o FAQ da casa (NuFaqAccordion, o das outras telas), fechado: o método inteiro fica na página e no JSON-LD -->
-        <NuFaqAccordion :items="faq" :default-open="-1" />
+      <!-- ============ Dúvidas: o FAQ padrão da casa (home e /teses), duas colunas ============ -->
+      <!-- id "metodologia": o "Como medimos" do topo e a faixa de seções levam aqui -->
+      <section id="metodologia" class="bfq">
+        <div class="bfq__cols">
+          <div class="bfq__left">
+            <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
+            <div class="bfq__copy">Como o ranking é feito, o que ele mede e o que ele não diz.</div>
+            <NuxtLink to="/busca" class="bfq__cta">Perguntar à Redentia AI</NuxtLink>
+          </div>
+          <div class="bfq__right">
+            <NuFaqAccordion :items="faq" />
+          </div>
+        </div>
         <p class="bia__disclaimer">{{ BENCH_DISCLAIMER }}</p>
-      </BenchSection>
+      </section>
 
   </div>
 </template>
@@ -373,6 +382,20 @@ usePageSeo({
 .bia__headline { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.4; }
 .bia__seal { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow-wrap: anywhere; }
 .bia__seal code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--nu-gray-3); }
+
+/* FAQ: o mesmo da home (.mfq em MercadoContent) e da /teses */
+.bfq { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
+.bfq__cols { max-width: 1240px; margin: 0 auto; display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+.bfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
+.bfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
+.bfq__cta {
+  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
+  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
+  margin-top: 30px; transition: background .2s;
+}
+.bfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
+.bfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
+.bfq .bia__disclaimer { max-width: 1240px; margin-left: auto; margin-right: auto; }
 
 /* próximos índices: uma linha por índice, ícone, nome, pergunta e o que falta */
 .bia__next { list-style: none; margin: 0; padding: 0; border-radius: var(--nu-r-tile); background: var(--b-surface, var(--nu-cream)); }
