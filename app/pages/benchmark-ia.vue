@@ -18,7 +18,7 @@
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
 import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchFaqPagina } from '~/content/benchmark-ia/metodologia'
 import { leituras } from '~/content/benchmark-ia/leituras'
-import type { BenchColumnItem, BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
+import type { BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
 // a Carteira própria anda todo pregão: a série vem do backend e cobre a da edição
 const { edition, isPreview, ranked, modelById } = useBenchmarkIa(await useBenchCarteiraViva())
@@ -28,8 +28,6 @@ const method = (id: BenchIndexId) => BENCH_INDICES.find((m) => m.id === id)!
 function rows(list: { id: string; value: number; lo: number; hi: number; extra?: string }[]): BenchRankingRow[] {
   return rankByScore(list).map((r) => ({ ...r, name: modelById(r.id)?.name ?? r.id, provider: modelById(r.id)?.provider ?? '' }))
 }
-const cols = (r: BenchRankingRow[] | null): BenchColumnItem[] =>
-  (r ?? []).map((x) => ({ id: x.id, label: x.name, value: x.value, lo: x.lo, hi: x.hi, rank: x.rank, tied: x.tied }))
 const labRows = (id: BenchIndexId, extra?: (modelId: string) => string | undefined) => {
   const list = ranked.filter((r) => r.byIndex[id]).map((r) => ({ id: r.model.id, ...r.byIndex[id]!, extra: extra?.(r.model.id) }))
   return list.length ? rows(list) : null
@@ -138,15 +136,8 @@ const longoSel = ref(longoSeries[0]?.id ?? '')
 // passar o mouse numa linha da lista mostra aquele modelo no gráfico só enquanto
 // durar o hover (dono, 16/10); o clique (ou o toque, no celular) fixa a escolha
 const longoHover = ref<string | null>(null)
-// custo: o mesmo gesto na dispersão. Hover na lista (ou no ponto) acende o
-// modelo; o clique na lista fixa o destaque, e clicar de novo solta
-const custoHover = ref<string | null>(null)
-// placar geral: o mesmo gesto nas colunas
-const geralHover = ref<string | null>(null)
-const geralPin = ref<string | null>(null)
-const custoPin = ref<string | null>(null)
-// Custo: dispersão custo x nota
-const costPoints = ranked.map((r) => ({ id: r.model.id, name: r.model.name, cost: r.model.costPer1k, score: r.overall.value }))
+// Custo: esferas com área proporcional ao custo, cor pela posição no placar geral
+const costPoints = ranked.map((r) => ({ id: r.model.id, name: r.model.name, cost: r.model.costPer1k, rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99 }))
 
 const dados = edition?.inventaDados?.length
   ? {
@@ -260,20 +251,13 @@ usePageSeo({
 
       <!-- ============ Placar geral ============ -->
       <BenchSection eyebrow="Placar" v-if="geral" id="geral" title="Placar geral" :desc="geralDesc" :info="INFO.geral">
-        <BenchColumns
-          :items="cols(geral)" :highlight="geralHover ?? geralPin"
-          @hover="geralHover = $event"
-        />
-        <BenchRankList
-          :rows="geral" interactive :active-id="geralHover ?? geralPin"
-          @hover="geralHover = $event" @pick="geralPin = geralPin === $event ? null : $event; geralHover = null"
-        />
+        <BenchRange :rows="geral" />
         <p v-if="edition?.seal" class="bia__seal">Respostas lacradas (SHA-256): <code>{{ edition.seal }}</code></p>
       </BenchSection>
 
       <!-- ============ Inventa número? (pílulas da carteira) ============ -->
       <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa" :leitura="LEITURA.inventa">
-        <BenchPillBars v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" />
+        <BenchWaffle v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" />
         <p v-if="dados" class="bia__note">
           Com os dados da Redentia no enunciado, a invenção média cai de <b>{{ fmtBench.pct(dados.sem) }}</b> para <b>{{ fmtBench.pct(dados.com) }}</b>. Essa rodada fica fora do ranking.
         </p>
@@ -318,16 +302,9 @@ usePageSeo({
         <BenchDots v-if="curto" :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="Ponto cinza: sem evidência de habilidade." />
       </BenchSection>
 
-      <!-- ============ Custo (dispersão) ============ -->
+      <!-- ============ Custo (esferas) ============ -->
       <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo" :leitura="LEITURA.custo">
-        <BenchCostScatter
-          :points="costPoints" :highlight="custoHover ?? custoPin"
-          @hover="custoHover = $event"
-        />
-        <BenchRankList
-          :rows="custo" :format="fmtBench.usd" :numbered="false" interactive :active-id="custoHover ?? custoPin"
-          @hover="custoHover = $event" @pick="custoPin = custoPin === $event ? null : $event; custoHover = null"
-        />
+        <BenchBubbles :points="costPoints" />
       </BenchSection>
 
       <!-- ============ Próximos índices (tudo que ainda não tem resultado) ============ -->
