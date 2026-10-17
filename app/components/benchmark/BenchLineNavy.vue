@@ -116,9 +116,11 @@ const altura = ref(0)
 // 'vt': View Transition em curso (o painel leva o nome da transição);
 // 'fade': navegador sem a API, o painel só entra num fade curto
 const modo = ref<'' | 'vt' | 'fade'>('')
-type DocVT = Document & { startViewTransition?: (cb: () => Promise<void>) => { finished: Promise<void> } }
+type DocVT = Document & { startViewTransition?: (cb: () => Promise<void>) => { ready: Promise<void>; finished: Promise<void> } }
+// mesma duração e curva do CSS da transição (::view-transition-group)
+const VT_MS = 420
+const VT_CURVA = 'cubic-bezier(.32, .72, 0, 1)'
 async function alternar() {
-  const raiz = document.documentElement
   const abrir = !cheia.value
   const troca = async () => {
     if (abrir) {
@@ -127,25 +129,31 @@ async function alternar() {
     }
     hov.value = -1
     cheia.value = abrir
-    // o raio da caixa anima junto com ela (28px do painel até 0 na tela, e volta)
-    raiz.classList.add(abrir ? 'blv-vt-abre' : 'blv-vt-fecha')
     await nextTick()
   }
   const doc = document as DocVT
   if (!doc.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
     modo.value = 'fade'
     await troca()
-    raiz.classList.remove('blv-vt-abre', 'blv-vt-fecha')
     setTimeout(() => { modo.value = '' }, 400)
     return
   }
   modo.value = 'vt'
   await nextTick()
   try {
-    await doc.startViewTransition(troca).finished
+    const vt = doc.startViewTransition(troca)
+    // o raio anima só na caixa da transição (22px do painel até 0 na tela, e
+    // volta). Antes vinha de uma variável animada no html, que recalculava o
+    // estilo da página inteira a cada quadro e travava a animação.
+    vt.ready.then(() => {
+      document.documentElement.animate(
+        { borderRadius: abrir ? ['22px', '0px'] : ['0px', '22px'] },
+        { duration: VT_MS, easing: VT_CURVA, pseudoElement: '::view-transition-group(blv-cheia)' },
+      )
+    }).catch(() => {})
+    await vt.finished
   } finally {
     modo.value = ''
-    raiz.classList.remove('blv-vt-abre', 'blv-vt-fecha')
   }
 }
 function onKey(e: KeyboardEvent) {
@@ -357,6 +365,10 @@ const tip = computed(() => {
 
 /* tela cheia: o painel ocupa a janela e o gráfico cresce no espaço que sobra */
 .blv--vt { view-transition-name: blv-cheia; }
+/* durante a troca nada anima dentro do painel: a imagem nova da transição é ao
+   vivo, e cada mudança (ícone girando, linhas surgindo, pílula do Ibovespa
+   deslizando) redesenhava o painel inteiro a cada quadro */
+.blv--vt *, .blv--vt *::before, .blv--vt *::after { transition: none !important; animation: none !important; }
 .blv--cheia {
   position: fixed; inset: 0; z-index: 9990; border-radius: 0; display: flex; flex-direction: column;
   padding: max(24px, env(safe-area-inset-top)) clamp(20px, 4vw, 64px) max(24px, env(safe-area-inset-bottom));
@@ -514,22 +526,16 @@ const tip = computed(() => {
    A caixa cresce do painel até a tela; o conteúdo não estica, é revelado. */
 html.blv-travada { overflow: hidden; }
 /* a caixa é navy sólida: nada da página vaza enquanto ela cresce ou encolhe.
-   O raio vem de --blv-r, animado no html (a árvore da transição herda dele):
-   22px do painel até 0 ao abrir, o inverso ao fechar. Raio fixo deixava os
-   cantos redondos na tela inteira, com o fundo da página aparecendo. */
-@property --blv-r { syntax: '<length>'; inherits: true; initial-value: 0px; }
-html.blv-vt-abre { animation: blv-r-abre .6s cubic-bezier(.22, 1, .36, 1) both; }
-html.blv-vt-fecha { animation: blv-r-fecha .6s cubic-bezier(.22, 1, .36, 1) both; }
-@keyframes blv-r-abre { from { --blv-r: 22px; } to { --blv-r: 0px; } }
-@keyframes blv-r-fecha { from { --blv-r: 0px; } to { --blv-r: 22px; } }
+   O raio (22px → 0 e volta) é animado por JS só nesta caixa (VT_MS, VT_CURVA). */
 ::view-transition-group(blv-cheia) {
-  animation-duration: .6s; animation-timing-function: cubic-bezier(.22, 1, .36, 1);
-  border-radius: var(--blv-r, 0px); overflow: clip; background: var(--nu-navy);
+  animation-duration: .42s; animation-timing-function: cubic-bezier(.32, .72, 0, 1);
+  overflow: clip; background: var(--nu-navy);
 }
 /* troca cruzada sem vão: os dois fades correm juntos e somam (plus-lighter),
-   então o conteúdo nunca some no meio; antes havia um intervalo e piscava */
+   então o conteúdo nunca some no meio */
 ::view-transition-old(blv-cheia), ::view-transition-new(blv-cheia) {
-  height: 100%; object-fit: none; object-position: left top; animation-duration: .35s;
+  height: 100%; object-fit: none; object-position: left top; animation-duration: .26s;
 }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: .45s; }
+/* a página por trás não muda à vista: sem crossfade dela, menos camada animando */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 </style>
