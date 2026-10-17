@@ -5,7 +5,9 @@
 // ficou em cima do muro em parte dos casos, com o quanto numa etiqueta. Cada
 // modelo aparece uma vez, no pior lugar em que esteve: quem concordou alguma vez
 // vai para o "sim", quem só ficou no muro senta no muro, o resto fica no "não".
-// O lado vazio diz sozinho que ninguém concordou.
+// O lado vazio diz sozinho que ninguém concordou. No celular (dono, 16/10: "melhorar
+// o design no mobile"), as três colunas não cabem: empilha Não, muro e Sim, e o
+// muro deita numa faixa entre os dois lados, com quem ficou nele sentado em cima.
 // Movimento: os modelos descem para o lugar deles ao entrar na tela.
 const props = defineProps<{
   rows: { id: string; name: string; good: number; mid?: number; bad: number }[]
@@ -17,20 +19,24 @@ const muro = computed(() => props.rows.filter((r) => r.bad === 0 && (r.mid ?? 0)
 const nao = computed(() => props.rows.filter((r) => r.bad === 0 && !((r.mid ?? 0) > 0)))
 const pct = (v: number) => `${Math.round(v)}%`
 
-// tijolos do muro (viewBox 160 × 132): fileiras de 13 de altura, desencontradas
-const TIJOLOS = (() => {
+// tijolos do muro: fileiras de 13 de altura (passo 16,5), desencontradas.
+// Alto no desktop (viewBox 160 × 132), faixa larga no celular (340 × 66).
+function tijolos(largura: number, fileiras: number) {
   const out: { x: number; y: number; w: number; t: number }[] = []
-  for (let row = 0; row < 8; row++) {
-    const y = 132 - (row + 1) * 16.5
+  const altura = fileiras * 16.5
+  for (let row = 0; row < fileiras; row++) {
+    const y = altura - (row + 1) * 16.5
     const off = row % 2 ? -17 : 0
-    for (let x = off; x < 160; x += 34) {
+    for (let x = off; x < largura; x += 34) {
       const x0 = Math.max(0, x)
-      const x1 = Math.min(160, x + 31)
+      const x1 = Math.min(largura, x + 31)
       if (x1 - x0 > 4) out.push({ x: x0, y, w: x1 - x0, t: (((row * 7 + Math.round(x)) % 3) + 3) % 3 })
     }
   }
   return out
-})()
+}
+const TIJOLOS = tijolos(160, 8)
+const FAIXA = tijolos(340, 4)
 </script>
 
 <template>
@@ -64,8 +70,11 @@ const TIJOLOS = (() => {
             <span class="bwl__face"><img v-if="benchLogo(r.id)" :src="benchLogo(r.id)!" alt="" width="24" height="24" loading="lazy" decoding="async"></span>
           </li>
         </ul>
-        <svg viewBox="0 0 160 132" class="bwl__wall" preserveAspectRatio="none">
+        <svg viewBox="0 0 160 132" class="bwl__wall bwl__wall--alto" preserveAspectRatio="none">
           <rect v-for="(t, k) in TIJOLOS" :key="k" :x="t.x" :y="t.y" :width="t.w" height="13" rx="2.5" class="bwl__brick" :class="`bwl__brick--${t.t}`" />
+        </svg>
+        <svg viewBox="0 0 340 66" class="bwl__wall bwl__wall--faixa" preserveAspectRatio="none">
+          <rect v-for="(t, k) in FAIXA" :key="k" :x="t.x" :y="t.y" :width="t.w" height="13" rx="2.5" class="bwl__brick" :class="`bwl__brick--${t.t}`" />
         </svg>
       </div>
 
@@ -130,6 +139,7 @@ const TIJOLOS = (() => {
 .bwl__sitters { list-style: none; margin: auto 0 -10px; padding: 18px 0 0; display: flex; justify-content: center; align-items: flex-end; gap: 6px; position: relative; z-index: 1; }
 .bwl__ia--sit { width: 84px; }
 .bwl__wall { display: block; width: 100%; height: 150px; filter: drop-shadow(0 -4px 12px var(--nu-amber-bg)); }
+.bwl__wall--faixa { display: none; }
 .bwl__brick--0 { fill: var(--nu-amber-fill); }
 .bwl__brick--1 { fill: color-mix(in srgb, var(--nu-amber-fill) 70%, var(--nu-amber-soft)); }
 .bwl__brick--2 { fill: color-mix(in srgb, var(--nu-amber-fill) 82%, var(--nu-amber-text)); }
@@ -143,23 +153,26 @@ const TIJOLOS = (() => {
 .is-in .bwl__wall { transition: opacity .5s ease, transform .5s ease; }
 
 @container (max-width: 640px) {
-  .bwl__scene { grid-template-columns: minmax(0, 1fr) 118px minmax(0, 1fr); gap: 6px; min-height: 0; }
-  .bwl__side { padding: 12px 8px 14px; }
-  .bwl__mid { padding-top: 12px; }
-  .bwl__head { gap: 6px; min-height: 28px; }
-  .bwl__title { font-size: var(--nu-fs-md); }
+  .bwl__scene { grid-template-columns: minmax(0, 1fr); gap: 14px; min-height: 0; }
+  .bwl__side { border-radius: var(--nu-r-tile); padding: 14px 14px 16px; }
+  .bwl__head { gap: 8px; min-height: 32px; }
+  .bwl__title { font-size: var(--nu-fs-lg); }
   .bwl__count { font-size: var(--nu-fs-xl); }
-  .bwl__icon { width: 22px; height: 22px; flex-shrink: 0; }
-  .bwl__icon svg { width: 12px; height: 12px; }
-  .bwl__crowd { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 8px; padding-top: 14px; }
-  .bwl__crowd .bwl__ia { flex-direction: row; flex-wrap: wrap; width: auto; gap: 4px 6px; }
-  .bwl__crowd .bwl__name { flex: 1; min-width: 0; text-align: left; }
+  .bwl__icon { width: 24px; height: 24px; flex-shrink: 0; }
+  .bwl__icon svg { width: 13px; height: 13px; }
+  .bwl__crowd { margin: 0; padding-top: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+  .bwl__crowd .bwl__ia { flex-direction: row; width: auto; min-width: 0; gap: 8px; }
+  .bwl__crowd .bwl__name { flex: 1; min-width: 0; text-align: left; font-size: var(--nu-fs-sm); }
   .bwl__crowd .bwl__tag { order: 3; }
-  .bwl__face { width: 30px; height: 30px; flex-shrink: 0; box-shadow: 0 3px 10px var(--nu-navy-09), inset 0 0 0 1px var(--nu-cream-2); }
-  .bwl__face img { width: 16px; height: 16px; }
-  .bwl__sitters { gap: 2px; padding-top: 14px; }
-  .bwl__ia--sit { width: 58px; gap: 4px; }
-  .bwl__wall { height: 96px; }
-  .bwl__empty { width: 78px; height: 78px; font-size: var(--nu-fs-sm); }
+  .bwl__crowd .bwl__face { width: 34px; height: 34px; flex-shrink: 0; box-shadow: 0 3px 10px var(--nu-navy-09), inset 0 0 0 1px var(--nu-cream-2); }
+  .bwl__crowd .bwl__face img { width: 18px; height: 18px; }
+  .bwl__empty { margin: 12px 0 0; width: auto; height: auto; padding: 10px; border-radius: 12px; font-size: var(--nu-fs-sm); }
+  /* o muro deita: vira a faixa entre o Não e o Sim, e quem ficou em cima senta nela */
+  .bwl__mid { padding-top: 4px; }
+  .bwl__sitters { margin: 0 0 -8px; padding-top: 12px; gap: 18px; }
+  .bwl__ia--sit { width: 112px; }
+  .bwl__wall--alto { display: none; }
+  .bwl__wall--faixa { display: block; height: 58px; }
+  .bwl__ground { display: none; }
 }
 </style>
