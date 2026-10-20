@@ -58,9 +58,10 @@ const normalizedAssets = computed<AssetItem[]>(() => {
     .filter((a) => {
       // página antiga filtrava STOCK|FUND; no runtime atual do /tickers-full
       // FIIs vêm como REIT (sem ele, HGLG11/KNCR11 não resolvem) e ETFs como
-      // ETF (cenários BOVA11/SMAL11 já existiam na página antiga)
-      const type = String(a.type ?? '').toUpperCase()
-      return type === 'STOCK' || type === 'FUND' || type === 'REIT' || type === 'ETF'
+      // ETF (cenários BOVA11/SMAL11 já existiam na página antiga). A lista vive
+      // em utils/simulador.ts porque /asset e /dividendos só linkam pra cá os
+      // tipos que ela cobre.
+      return SIMULADOR_TYPES.has(String(a.type ?? '').toUpperCase())
     })
     .map((a) => {
       const ticker = (a.ticker || a.stock) as string | undefined
@@ -139,9 +140,18 @@ const deepLinkApplied = ref(false)
 const pendingTickers = ref<string[]>([])
 const pendingAutoFire = ref(false)
 
+// Query manda (cenários populares e links antigos). Sem query, lê o fragmento,
+// que é como /asset e /dividendos linkam: #tickers=PETR4&reinvest=1 (o porquê
+// do fragmento está em utils/simulador.ts).
+function deepLinkParams(): Record<string, unknown> {
+  if (Object.keys(route.query).length) return route.query
+  const hash = route.hash.replace(/^#/, '')
+  return hash.includes('=') ? Object.fromEntries(new URLSearchParams(hash)) : {}
+}
+
 function applyQueryParams() {
   if (!import.meta.client) return
-  const q = route.query
+  const q = deepLinkParams()
   const initial = parseNumberParam(q.initial)
   const monthly = parseNumberParam(q.monthly)
   const years = parseNumberParam(q.years)
@@ -190,7 +200,14 @@ function scrollToCalc() {
   })
 }
 
-onMounted(applyQueryParams)
+onMounted(() => {
+  applyQueryParams()
+  // O fragmento de parâmetros não é id de elemento: o scrollBehavior do router
+  // procura #tickers=… na página, não acha e NÃO rola, então quem chega do
+  // meio de um /asset abria o simulador no meio da página. Volta pro topo, onde
+  // o hero compacto deixa a calculadora na primeira dobra.
+  if (route.hash.includes('=')) window.scrollTo({ top: 0 })
+})
 
 watch(
   () => route.query,

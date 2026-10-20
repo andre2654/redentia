@@ -73,6 +73,8 @@ export interface DividendosPayload {
   historyNotice: string | null
   edu: DivEduSection[]
   faq: NuFaqItem[]
+  /** simulador de /calculadora/acoes com o ativo preenchido; null se o tipo não é coberto (utils/simulador.ts) */
+  simuladorHref: string | null
   seo: { title: string; description: string }
 }
 
@@ -116,6 +118,8 @@ interface Core {
   ticker: string
   name: string
   isFii: boolean
+  /** type do ProfileResource (STOCK, REIT, BDR…), decide se o simulador cobre o ativo */
+  type: string | null
   price: number | null
   /**
    * DY 12M em %: o do site (resolveSiteDy, app/utils/proventos.ts), o MESMO
@@ -224,6 +228,7 @@ function coreFromApi(
     strongest,
     hist: rows === null ? 'indisponivel' : rows.length ? 'ok' : 'vazio',
     historyRows,
+    type: profile.type ?? null,
   }
 }
 
@@ -453,6 +458,7 @@ function buildPayload(c: Core): DividendosPayload {
     historyNotice,
     edu,
     faq,
+    simuladorHref: simuladorAcoesHref(c.ticker, c.type),
     seo: {
       // TITLE NUMÉRICO (03/08/2026). O title genérico custava caro: as 124 URLs
       // de /dividendos e /tesouro somam 18.165 impressões/mês e devolvem 75
@@ -476,6 +482,7 @@ function petr4Seed(): DividendosPayload {
     ticker: 'PETR4',
     name: 'Petrobras',
     isFii: false,
+    type: 'STOCK',
     price: 38.25,
     dy: 6.95,
     dyMatchesSum: true,

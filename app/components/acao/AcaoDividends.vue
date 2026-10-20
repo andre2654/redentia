@@ -11,6 +11,8 @@ const props = defineProps<{
   ticker: string
   dividends: AcaoDividendsVM
   position: AcaoPosition | null
+  /** simulador de /calculadora/acoes com o ativo preenchido; null = tipo não coberto */
+  simuladorHref?: string | null
 }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
@@ -46,10 +48,20 @@ const incomePill = computed(() => {
             Ver histórico de dividendos
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </NuxtLink>
-          <!-- ?ticker= porque a calculadora sabe hidratar por ticker
-               (dividend-yield.vue:97). Sem o param, o link prometia contexto do
-               ativo e entregava a calculadora em branco. -->
-          <NuxtLink :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="adv__cta">Simular renda com {{ ticker }}</NuxtLink>
+          <!--
+            "Simulador de dividendos" leva pra DONA do cluster, a
+            /calculadora/acoes (bloco DONO DO CLUSTER em
+            pages/calculadora/acoes.vue). Até 23/09/2026 este botão era
+            "Simular renda com {TICKER}" pra dividend-yield: o bloco de
+            dividendos de ~1.700 páginas de ativo apontava pra página que
+            nunca passou da posição ~45 em "calculadora de dividendos", e não
+            pra que ficava na 5. O texto é o nome da ferramenta, sem ticker,
+            porque âncora é o sinal que as páginas mandam pro Google.
+            Tipo que o simulador não cobre (BDR, US) segue na calculadora de
+            DY, que aceita valor manual (?ticker= hidrata, dividend-yield.vue).
+          -->
+          <NuxtLink v-if="simuladorHref" :to="simuladorHref" class="adv__cta">Simulador de dividendos</NuxtLink>
+          <NuxtLink v-else :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="adv__cta">Simular renda com {{ ticker }}</NuxtLink>
         </div>
       </div>
       <div class="adv__right">

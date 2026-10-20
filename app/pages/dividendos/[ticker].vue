@@ -177,9 +177,17 @@ if (data.value) {
       <NuFaqAccordion :items="div.faq" :surface="faqTone === 'cream' ? 'white' : undefined" />
     </CalcSplit>
 
-    <!-- ============ Cross-links: calculadora (deep-link), ranking, /asset ============ -->
+    <!-- ============ Cross-links: simulador + calculadora (deep-links), ranking, /asset ============ -->
     <CalcBand :tone="crossTone" title="Continue a análise.">
       <div class="dvt__grid-cards">
+        <!-- Âncora "Simulador de dividendos" pra DONA do cluster, a
+             /calculadora/acoes (bloco DONO DO CLUSTER em
+             pages/calculadora/acoes.vue). Vem primeiro de propósito. O card de
+             DY ao lado segue com a âncora de DY, que é o termo da página dele. -->
+        <NuxtLink v-if="div.simuladorHref" :to="div.simuladorHref" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
+          <h3 class="dvt__card-link-title">Simulador de dividendos</h3>
+          <p class="dvt__card-p">Quanto {{ ticker }} teria rendido com os {{ div.isFii ? 'rendimentos' : 'proventos' }} reinvestidos, no histórico real da B3</p>
+        </NuxtLink>
         <NuxtLink :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Calculadora de dividend yield</h3>
           <p class="dvt__card-p">Simule o DY de {{ ticker }} com preço e proventos reais, já preenchidos</p>
@@ -245,7 +253,8 @@ if (data.value) {
 .dvt__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 16px; margin-top: clamp(30px, 4vw, 48px);
-  max-width: 980px; margin-left: auto; margin-right: auto;
+  /* 1080 cabe os 3 cards (3 × 320 + gaps) numa linha só */
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .dvt__card-link {
   background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;
@@ -257,7 +266,7 @@ if (data.value) {
 .dvt__card-link-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .dvt__card-p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 
-.dvt__cta { max-width: 980px; margin: clamp(24px, 3vw, 36px) auto 0; }
+.dvt__cta { max-width: 1080px; margin: clamp(24px, 3vw, 36px) auto 0; }
 
 @media (max-width: 760px) {
   .dvt__card-link { padding: 20px; }
