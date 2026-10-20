@@ -141,6 +141,7 @@ if (data.value) {
       :range="activeRange"
       :range-loading="rangeLoading"
       :current-label="acao.hero.priceFmt"
+      :simulador-href="acao.simuladorHref"
       @update:range="setRange"
     />
 
@@ -155,7 +156,7 @@ if (data.value) {
 
     <AcaoFundInfo v-if="acao.fundInfo && !acao.etfXray" :info="acao.fundInfo" />
 
-    <AcaoDividends v-if="acao.dividends" :ticker="acao.ticker" :dividends="acao.dividends" :position="position" />
+    <AcaoDividends v-if="acao.dividends" :ticker="acao.ticker" :dividends="acao.dividends" :position="position" :simulador-href="acao.simuladorHref" />
 
     <AcaoAiAnalysis v-if="acao.ai" :ticker="acao.ticker" :ai="acao.ai" />
 

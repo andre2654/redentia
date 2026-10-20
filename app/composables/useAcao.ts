@@ -1234,6 +1234,7 @@ function petr4Seed(): AcaoPayload {
         { href: '/noticias', title: 'Produção no pré-sal bate recorde no 2º trimestre', source: 'Reuters · ontem', ticker: { text: 'PETR4 +1,10%', dir: 'up' } },
       ],
     },
+    simuladorHref: simuladorAcoesHref('PETR4', 'STOCK'),
     seo: {
       title: 'PETR4 hoje: cotação R$ 38,25, dividendos, fundamentos e análise',
       description: 'Cotação de Petrobras (PETR4) hoje: R$ 38,25 (+0,76%). Dividend yield 6,95%, P/L 4,55, ROE 24,2%. Veja gráfico de 12 meses, histórico de dividendos, Redentia Score, consenso de analistas, notícias e a leitura da Redentia AI.',
@@ -1401,6 +1402,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
+    simuladorHref: simuladorAcoesHref(ticker, profile.type),
     seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
   }
 }
@@ -1551,6 +1553,7 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     news: buildNews(ok(newsR)?.data ?? [], { ticker: sym, change_percent: c.change_24h_pct }, series),
     // Cripto não tem editorial gerado (o pipeline cobre tickers da B3).
     editorial: null,
+    simuladorHref: null,
     seo: buildCryptoSeo(c, sym),
   }
 }

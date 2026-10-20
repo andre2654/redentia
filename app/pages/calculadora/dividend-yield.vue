@@ -31,6 +31,11 @@ const route = useRoute()
 // Deliberadamente NÃO se criou /calculadora/dividendos: esta URL já carrega
 // 2.527 impressões a 3,17% de CTR e o 03/08 consolidou o cluster aqui.
 // URL nova re-dividiria o sinal que aquele commit acabou de juntar.
+// CORREÇÃO (23/09/2026): as quatro linhas acima são da dimensão CONSULTA, sem
+// página. Cruzadas com a página, essas impressões e posições eram da
+// /calculadora/acoes; esta aqui aparecia na posição ~45. Os modos de renda
+// ficam (respondem em reais, que é o que a pessoa pergunta), mas o cluster
+// "calculadora/simulador de dividendos" é da acoes (bloco DONO DO CLUSTER lá).
 type Mode = 'simple' | 'onCost' | 'projection' | 'income' | 'target'
 const mode = ref<Mode>('simple')
 
@@ -481,7 +486,7 @@ const growthPresets = [
 ]
 
 // Data de atualização dinâmica (sinal de frescor — portado da página antiga).
-const CONTENT_VERSION = '2026-08-21'
+const CONTENT_VERSION = '2026-10-20'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 const lastUpdatedISO = lastUpdated.toISOString()
@@ -585,22 +590,23 @@ const faqItems = [
   { q: 'Posso usar essa calculadora para qualquer ativo?', a: 'Sim, a fórmula DY = Dividendos ÷ Preço funciona pra qualquer ativo gerador de renda: ações brasileiras, FIIs, ETFs (cuidado com reinvestimento automático), BDRs (cota de empresa estrangeira), até REITs americanos. Para ETFs de dividendos (DIVO11, BOVA11), considere o yield distribuído líquido. Para investimentos no exterior, lembre da tributação local + tratado de bitributação. A calculadora cobre o caso brasileiro padrão; para outros mercados, ajuste o input manualmente.' },
 ]
 
-// CANIBALIZAÇÃO (experimento do portão A, 03/08/2026). A consulta nº1 do site
-// em impressão é "calculadora de dividendos" (2.557 impr/tri, pos 7,08) e quem
-// aparecia nela era o ARTIGO /guias/calculadora-de-dividendos, que tinha o match
-// exato do title (6.991 impr, CTR 0,69%). Esta página, que é a ferramenta que a
-// pessoa procura, se chamava "Dividend Yield" e ficava atrás com 2.527 impr —
-// mas convertendo 4,6x melhor (CTR 3,17%). Trocamos o substantivo-cabeça de
-// lugar: a ferramenta assume "Calculadora de Dividendos", o guia vira "Como
-// calcular dividendos" (content/guias/calculadora-de-dividendos.ts:20).
-// "Dividend Yield" segue como H2 no corpo, o termo não sai da página.
-// CRITÉRIO DE REVERSÃO, escrito antes: se em 8 semanas esta página não sair de
-// 2.527 pra mais de 6.000 impressões/trimestre, a tese de que consolidar título
-// move IMPRESSÃO (e não só CTR) está errada. Reverter os dois titles.
+// CANIBALIZAÇÃO, DESFEITA em 23/09/2026. Em 03/08 esta página assumiu
+// "Calculadora de Dividendos" (e o H1 seguiu em 20/08) pra tomar o termo do
+// guia /guias/calculadora-de-dividendos, com critério de reversão escrito
+// antes: passar de 2.527 pra mais de 6.000 impressões/trimestre em 8 semanas.
+// Não passou: 3.694 no trimestre até 20/09, de 0 a 4 cliques por semana, e
+// posição 45–59 em "calculadora de dividendos". O diagnóstico de 03/08 olhou
+// a página errada: por consulta × página, quem tinha o termo na posição ~6 até
+// o cutover era a /calculadora/acoes, não o guia (que ficava em ~40). A
+// dona do cluster agora é ela (bloco DONO DO CLUSTER em
+// pages/calculadora/acoes.vue) e esta página volta pro termo dela, dividend
+// yield. O title volta ao de antes de 03/08, como o critério mandava. O guia
+// NÃO volta a "Calculadora de dividendos": seria o terceiro candidato ao
+// mesmo termo; fica "Como calcular dividendos", intenção de artigo.
 usePageSeo({
-  title: 'Calculadora de Dividendos 2026: quanto você recebe por mês',
+  title: 'Calculadora de Dividend Yield 2026 - Grátis',
   description:
-    'Calcule quanto vai receber de dividendos por mês em qualquer ação ou FII da B3. DY atual, on cost e projetado, com dividendos mensais de FIIs e tributação 2026. Grátis.',
+    'Calcule o dividend yield atual, on cost e projetado de qualquer ação ou FII da B3, e quanto a carteira paga por mês em reais. Tributação 2026. Grátis.',
   path: '/calculadora/dividend-yield',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -616,7 +622,7 @@ usePageSeo({
       inLanguage: 'pt-BR',
       dateModified: lastUpdatedISO,
       description:
-        'Calculadora gratuita de dividendos com 5 modos: renda mensal em reais, patrimônio necessário pra viver de dividendos, DY simples, DY on cost e projeção de DY. Cobre ações e FIIs da B3 com pré-seleção via URL.',
+        'Calculadora gratuita de dividend yield com 5 modos: renda mensal em reais, patrimônio necessário pra viver de dividendos, DY simples, DY on cost e projeção de DY. Cobre ações e FIIs da B3 com pré-seleção via URL.',
       featureList: [
         'Renda mensal de dividendos em reais a partir do patrimônio e do DY',
         'Patrimônio necessário pra viver de dividendos (conta inversa)',
@@ -642,20 +648,18 @@ usePageSeo({
 <template>
   <div>
     <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <!-- H1 alinhado ao title desde 20/08: o title virou "Calculadora de
-         Dividendos 2026: quanto você recebe por mês" na consolidação de
-         canibalização de 03/08, mas o H1 seguia falando só de DY. Title
-         prometendo renda e H1 prometendo métrica é sinal misturado pro
-         Google e promessa quebrada pra quem clica. Os termos de DY não
-         saíram, desceram pro desc e pro corpo. -->
-    <CalcHero desc="Quanto sua carteira paga por mês, quanto você precisa pra viver de dividendos e o DY atual, on cost e projetado de qualquer ativo.">
-      Calculadora de Dividendos: quanto você recebe por mês em Ações e
+    <!-- H1 alinhado ao title: os dois dizem "Calculadora de Dividend Yield"
+         desde 23/09 (o bloco CANIBALIZAÇÃO acima conta por quê). "Calculadora
+         de dividendos" é o termo da /calculadora/acoes. Os modos de renda
+         mensal não saíram, seguem na linha de apoio e no corpo. -->
+    <CalcHero desc="DY atual, on cost e projetado de qualquer ativo, e quanto a sua carteira paga por mês em reais.">
+      Calculadora de Dividend Yield de Ações e
       <em>FIIs.</em>
     </CalcHero>
 
     <!-- ============ Calculadora interativa (design) ============ -->
     <CalcShell eyebrow="Calculadora" section-id="dy">
-      <template #title>Dividendos.</template>
+      <template #title>Dividend yield.</template>
       <template #controls>
         <div class="dy__modes" role="group" aria-label="Modo de cálculo">
           <button
@@ -744,7 +748,7 @@ usePageSeo({
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
-      label="Calculadora · Dividendos"
+      label="Calculadora · Dividend Yield"
       :chips="['100% gratuito', 'Renda mensal em reais', 'Ações e FIIs', 'DY on cost + projeção']"
       :updated="lastUpdatedText"
     />
@@ -927,6 +931,12 @@ usePageSeo({
 
     <CalcBand tone="white" title="Outras Ferramentas">
       <div class="dy__grid-cards">
+        <!-- A dona de "calculadora/simulador de dividendos" (bloco DONO DO
+             CLUSTER em pages/calculadora/acoes.vue), com a âncora dela. -->
+        <NuxtLink to="/calculadora/acoes" class="dy__card-link">
+          <h3 class="dy__card-link-title">Simulador de Dividendos</h3>
+          <p class="dy__card-p">Quanto uma ação teria rendido com dividendos reinvestidos</p>
+        </NuxtLink>
         <NuxtLink to="/calculadora/planejamento" class="dy__card-link">
           <h3 class="dy__card-link-title">Planejamento Patrimonial</h3>
           <p class="dy__card-p">Carteira com foco em dividendos</p>
@@ -1056,7 +1066,8 @@ usePageSeo({
 .dy__grid-cards {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 16px; margin-top: clamp(30px, 4vw, 48px);
-  max-width: 980px; margin-left: auto; margin-right: auto;
+  /* 1080 cabe os 3 cards (3 × 320 + gaps) numa linha só */
+  max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .dy__card-link {
   background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 26px;

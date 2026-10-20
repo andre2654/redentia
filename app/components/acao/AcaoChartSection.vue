@@ -14,6 +14,8 @@ const props = defineProps<{
   range: AcaoRange
   rangeLoading: boolean
   currentLabel: string
+  /** simulador de /calculadora/acoes com o ativo preenchido; null = tipo não coberto */
+  simuladorHref?: string | null
 }>()
 
 const emit = defineEmits<{ 'update:range': [AcaoRange] }>()
@@ -52,8 +54,17 @@ const legend = computed(() => {
       </span>
     </div>
     <div class="acs__cols">
-      <div v-if="stats.length" class="acs__stats">
-        <NuStatList :rows="stats" dark />
+      <div v-if="stats.length || simuladorHref" class="acs__stats">
+        <NuStatList v-if="stats.length" :rows="stats" dark />
+        <!-- Âncora "Simulador de ações" pra DONA do cluster (bloco DONO DO
+             CLUSTER em pages/calculadora/acoes.vue). O texto do link é o nome
+             da ferramenta, igual ao title e ao H1 dela, de propósito: é o
+             sinal que ~1.700 páginas de ativo mandam pro Google. -->
+        <NuxtLink v-if="simuladorHref" :to="simuladorHref" class="acs__sim">
+          Simulador de ações
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+        </NuxtLink>
+        <p v-if="simuladorHref" class="acs__sim-note">Quanto {{ ticker }} teria rendido com dividendos reinvestidos, no histórico real da B3.</p>
       </div>
       <div class="acs__chart">
         <NuPriceChart :points="series.asset" :ticker="ticker" :current-label="currentLabel" />
@@ -83,6 +94,15 @@ const legend = computed(() => {
 .acs__legend-pct--up { color: var(--nu-green-soft); }
 .acs__cols { display: flex; gap: clamp(28px, 4vw, 60px); align-items: stretch; margin-top: 36px; flex-wrap: wrap; }
 .acs__stats { flex: 0 1 300px; min-width: min(260px, 100%); }
+/* pílula ghost sobre navy (mesma anatomia do .ncp__secondary do NuCtaPhoto) */
+.acs__sim {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 26px;
+  background: transparent; color: var(--nu-cream-text);
+  border: 2px solid var(--nu-cream-text-45); border-radius: var(--nu-r-pill); padding: 13px 24px;
+  font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s, border-color .2s;
+}
+.acs__sim:hover { background: var(--nu-cream-text-10); border-color: var(--nu-cream-text-80); color: var(--nu-cream-text); }
+.acs__sim-note { margin: 12px 0 0; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .acs__chart {
   flex: 1 1 420px; min-width: min(320px, 100%); position: relative;
   height: clamp(280px, 32vw, 420px);

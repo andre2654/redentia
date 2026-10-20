@@ -572,6 +572,12 @@ export interface AcaoPayload {
   news: AcaoNewsVM | null
   /** Prosa editorial longa por ativo. null quando não há editorial gerado. */
   editorial: AcaoEditorialVM | null
+  /**
+   * Link pro simulador de /calculadora/acoes com o ativo preenchido
+   * (utils/simulador.ts). null quando o simulador não cobre o tipo
+   * (BDR, US, cripto): link que abre a calculadora vazia é promessa quebrada.
+   */
+  simuladorHref: string | null
   seo: {
     title: string
     description: string

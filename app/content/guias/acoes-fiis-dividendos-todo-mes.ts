@@ -214,5 +214,5 @@ export const ACOES_FIIS_DIVIDENDOS_TODO_MES_GUIDE: GuideDoc = {
       a: 'Os dois se complementam. FIIs costumam pagar rendimento mensal e, para pessoa física, com isenção de IR, sendo a base da renda recorrente. Ações pagam de forma mais espaçada, mas somam potencial de valorização. Uma escada bem montada usa os dois para estabilizar a renda ao longo do ano.',
     },
   ],
-  related: ['Melhores FIIs 2026', 'Calculadora de dividendos', 'Como declarar investimentos no IR'],
+  related: ['Melhores FIIs 2026', 'Como calcular dividendos', 'Como declarar investimentos no IR'],
 }

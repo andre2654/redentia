@@ -15,12 +15,16 @@ const CARDS = [
 //    parava no hub /calculadoras, que sozinho faz 225 impressões.
 //  - /busca recebia 6 links no site (4 no header, 2 aqui) e não é indexável.
 //  - /setor, /glossario e /tesouro só eram descobertos pelo sitemap.
+// ÂNCORAS DAS CALCULADORAS (23/09/2026): cada link diz o termo da página que
+// recebe. "Dividendos" apontava pra dividend-yield, a página errada pro termo:
+// a dona de "calculadora/simulador de dividendos" é a /calculadora/acoes
+// (bloco DONO DO CLUSTER em pages/calculadora/acoes.vue).
 const COLUMNS = [
   // fusão home+carteira (2026-07-13): /mercado e /carteira viraram '/' — o
   // link único "Mercado" cobre os dois (logado, '/' É a carteira).
   { title: 'Produto', links: [{ label: 'Mercado', to: '/' }, { label: 'Rankings', to: '/rankings' }, { label: 'Teses', to: '/teses' }, { label: 'Redentia MCP', to: '/mcp' }] },
   // Direto pras calculadoras, não só pro hub: são as URLs que sustentam o site.
-  { title: 'Calculadoras', links: [{ label: 'Preço teto', to: '/calculadora/preco-teto' }, { label: 'Simulador de ações', to: '/calculadora/acoes' }, { label: 'Dividendos', to: '/calculadora/dividend-yield' }, { label: 'Juros compostos', to: '/calculadora/juros-compostos' }, { label: 'Imposto de renda', to: '/calculadora/imposto-renda' }] },
+  { title: 'Calculadoras', links: [{ label: 'Preço teto', to: '/calculadora/preco-teto' }, { label: 'Simulador de ações e dividendos', to: '/calculadora/acoes' }, { label: 'Dividend yield', to: '/calculadora/dividend-yield' }, { label: 'Juros compostos', to: '/calculadora/juros-compostos' }, { label: 'Imposto de renda', to: '/calculadora/imposto-renda' }] },
   { title: 'Recursos', links: [{ label: 'Notícias', to: '/noticias' }, { label: 'Guias', to: '/guias' }, { label: 'Glossário', to: '/glossario' }, { label: 'Setores da B3', to: '/setor' }, { label: 'Tesouro Direto', to: '/tesouro' }] },
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
