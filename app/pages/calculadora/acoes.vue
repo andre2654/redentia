@@ -9,7 +9,7 @@
 // (?initial=&monthly=&years=&reinvest=&tickers=), lidos pelo simulador.
 
 // Data de atualização dinâmica (sinal de frescor — portado da página antiga).
-const CONTENT_VERSION = '2026-05-01'
+const CONTENT_VERSION = '2026-10-20'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
 const lastUpdatedISO = lastUpdated.toISOString().slice(0, 10)
@@ -147,22 +147,53 @@ const faqItems = [
   { q: 'Como meu retorno se compara ao Ibovespa?', a: 'O Ibovespa rende historicamente ~14% a.a. nos últimos 30 anos. Use como benchmark: se sua carteira rende menos que o Ibovespa por 3+ anos consecutivos, vale revisar. Bater o índice consistentemente é difícil mesmo pra gestores profissionais (apenas ~30% conseguem em 10 anos). Se o objetivo é só acompanhar o índice, considere ETFs como BOVA11 — sem o trabalho de gerir papel a papel, mas com taxa de administração (0,54% a.a. no BOVA11).' },
 ]
 
+// DONO DO CLUSTER (23/09/2026). Esta página é a dona ÚNICA de "calculadora de
+// dividendos", "simulador de dividendos" e "simulador de ações". Não é
+// escolha de gosto, é o que o Google já tinha decidido: de 04/05 a 12/07/2026
+// ela ficava com ~99% das impressões nomeadas desse cluster, na posição ~6
+// ("calculadora de dividendos": 2.219 impressões, 81 cliques), sem ter a
+// palavra "calculadora de dividendos" em lugar nenhum. A dividend-yield nunca
+// passou da posição ~45 nessas consultas. Em 18/07, 2,5 dias depois do
+// cutover do Nu, esta página caiu pra 11–16 (hoje 22–26) e ninguém herdou o
+// cluster. Em 03/08 (937e7ff) a dividend-yield se declarou "Calculadora de
+// Dividendos" pra disputar o termo e ficou em 45–59: o sinal só se dividiu.
+//
+// O que foi alinhado no mesmo commit, pra que title, H1 e âncoras digam uma
+// coisa só:
+//  - aqui: title, H1, description, breadcrumb, 1º H2 e o nome do
+//    WebApplication levam "simulador de ações e dividendos" / "calculadora de
+//    dividendos";
+//  - dividend-yield volta a ser "Calculadora de Dividend Yield" (o critério de
+//    reversão escrito lá em 03/08 falhou: 3.694 impressões/tri contra a meta
+//    de 6.000);
+//  - âncoras "Simulador de ações" e "Simulador de dividendos" saem de /asset e
+//    /dividendos pra cá (utils/simulador.ts: por fragmento, sem query); o
+//    footer, o hub e o guia param de chamar a dividend-yield de "Dividendos".
+//
+// MEDIÇÃO, escrita antes do deploy: `node scripts/gsc-painel.mjs --desde
+// <dia do deploy>`. Painel FIXO de 36 consultas × página com peso fixo (a
+// posição média da página mente aqui: 75–87% das impressões do site são
+// consultas anônimas). Lê a média das semanas 3 e 4 depois do deploy:
+// SUCESSO se o grupo DIV voltar à posição fixa ≤ 10 com cobertura ≥ 40%, ou a
+// 10 cliques/semana (base 23/09: posição 22–26, 0 clique; referência: 6,1 e
+// 34/semana). Se o grupo SIM piorar mais de 3 posições, volte este title e o
+// H1, mantendo as âncoras. Sem efeito não reverte a dividend-yield.
 usePageSeo({
-  title: 'Simulador de Ações da B3 com Dividendos 2026',
+  title: 'Simulador de Ações e Dividendos da B3 2026',
   description:
-    'Simule investimento em PETR4, ITUB4, VALE3, BBAS3, WEGE3 e qualquer ação da B3. Buy and hold com dividendos reinvestidos. Compare com Ibovespa. Grátis.',
+    'Simulador e calculadora de dividendos com histórico real da B3: quanto PETR4, ITUB4, VALE3 ou qualquer ação teria rendido com dividendos reinvestidos. Grátis.',
   path: '/calculadora/acoes',
   breadcrumbs: [
     { name: 'Home', path: '/' },
     { name: 'Calculadoras', path: '/calculadoras' },
-    { name: 'Simulador de Ações', path: '/calculadora/acoes' },
+    { name: 'Simulador de Ações e Dividendos', path: '/calculadora/acoes' },
   ],
   structuredData: [
     {
       '@type': 'WebApplication',
-      name: 'Simulador de Investimento em Ações Redentia',
+      name: 'Simulador de Ações e Dividendos Redentia',
       applicationCategory: 'FinanceApplication',
-      applicationSubCategory: 'Simulador histórico de ações',
+      applicationSubCategory: 'Simulador histórico de ações e dividendos',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
       dateModified: lastUpdatedISO,
@@ -196,9 +227,13 @@ usePageSeo({
 <template>
   <div>
     <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Veja quanto teria rendido investir em ações reais da B3.">
-      Histórico real da B3 com
-      <em>Dividendos.</em>
+    <!-- H1 = o nome da ferramenta, igual ao title e às âncoras (bloco DONO DO
+         CLUSTER acima). Até 23/09 era "Histórico real da B3 com Dividendos.",
+         que não tinha nenhum dos termos que a página ranqueava; a frase desceu
+         pra linha de apoio. -->
+    <CalcHero desc="Histórico real da B3: quanto teria rendido investir em qualquer ação ou FII, com dividendos e JCP reinvestidos.">
+      Simulador de ações e
+      <em>dividendos.</em>
     </CalcHero>
 
     <!-- ============ Simulador interativo (design + kit) ============ -->
@@ -206,7 +241,7 @@ usePageSeo({
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
-      label="Simulador · Investimento em Ações"
+      label="Simulador · Ações e Dividendos"
       :chips="['100% gratuito', 'Cálculo instantâneo', 'Dados reais da B3', 'Dividendos e JCP reinvestidos']"
       :updated="lastUpdatedText"
     />
@@ -226,7 +261,7 @@ usePageSeo({
 
     <!-- ============ Conteúdo educacional (texto verbatim, bandas do design) ============ -->
     <CalcSplit tone="white">
-      <template #title>Calculadora de Investimento em Ações Online</template>
+      <template #title>Calculadora de Dividendos e Investimento em Ações Online</template>
       <template #left>
         <h2 class="sa__sub">Como Funciona o Simulador de Ações</h2>
       </template>

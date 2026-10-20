@@ -44,7 +44,8 @@ const calculators = [
   {
     to: '/calculadora/acoes',
     eyebrow: 'Backtest',
-    title: 'Investimento em Ações',
+    // nome da ferramenta = title/H1 dela (bloco DONO DO CLUSTER em calculadora/acoes.vue)
+    title: 'Simulador de Ações e Dividendos',
     body: 'Quanto teria ganho investindo em ações específicas? Análise com dados históricos reais e dividendos reinvestidos.',
     cta: 'Usar simulador',
   },
