@@ -267,5 +267,5 @@ export const IMPOSTO_SOBRE_DIVIDENDOS_GUIDE: GuideDoc = {
       a: 'É uma apuração anual que busca garantir uma alíquota efetiva mínima para quem soma renda total alta no ano, alcançando, como regra geral, quem passa de R$ 600 mil de rendimentos no ano-calendário, com alíquota crescendo até o teto de 10%. Ela olha a renda total, incluindo a isenta, e é apurada na declaração, não retida mês a mês.',
     },
   ],
-  related: ['Como declarar investimentos no IR', 'Dividendos todo mês', 'Calculadora de dividendos'],
+  related: ['Como declarar investimentos no IR', 'Dividendos todo mês', 'Como calcular dividendos'],
 }

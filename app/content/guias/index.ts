@@ -150,7 +150,11 @@ export const GUIDES: GuideMeta[] = [
   },
   {
     // Vira guia real (antes apontava pra /calculadoras); href removido.
-    title: 'Calculadora de dividendos',
+    // Título = o do guia desde 03/08 ("Como calcular dividendos: a fórmula").
+    // Este registro é a âncora do hub /guias e dos cards "related": com
+    // "Calculadora de dividendos" ele mandava o termo da /calculadora/acoes
+    // pra um artigo (bloco DONO DO CLUSTER em pages/calculadora/acoes.vue).
+    title: 'Como calcular dividendos',
     description: 'Quanto investir para atingir sua meta de renda passiva.',
     tag: 'Dividendos',
     minutes: 7,

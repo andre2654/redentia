@@ -704,7 +704,7 @@ export const MERCADO_GUIDES: NuGuideCardItem[] = [
   { tag: 'FIIs', title: 'Melhores FIIs 2026', href: '/guias', variant: 3 },
   { tag: 'Análise', title: 'Análise PETR4', href: '/guias', variant: 1 },
   { tag: 'Ações', title: 'Small caps: guia completo', href: '/guias', variant: 2 },
-  { tag: 'Dividendos', title: 'Calculadora de dividendos', href: '/guias', variant: 3 },
+  { tag: 'Dividendos', title: 'Como calcular dividendos', href: '/guias', variant: 3 },
 ]
 
 export const MERCADO_FAQS: NuFaqItem[] = [

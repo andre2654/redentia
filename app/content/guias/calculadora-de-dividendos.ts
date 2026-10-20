@@ -72,7 +72,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Existe ainda o <strong>yield on cost</strong>, que é o DY calculado sobre o preço que <strong>você</strong> pagou, não sobre o preço atual. Quem comprou barato há anos e viu os proventos crescerem costuma ter um yield on cost bem acima do DY que aparece na tela hoje. A <a href="/calculadora/dividend-yield">calculadora de dividendos da Redentia</a> tem um modo dedicado a essa conta.',
+          html: 'Existe ainda o <strong>yield on cost</strong>, que é o DY calculado sobre o preço que <strong>você</strong> pagou, não sobre o preço atual. Quem comprou barato há anos e viu os proventos crescerem costuma ter um yield on cost bem acima do DY que aparece na tela hoje. A <a href="/calculadora/dividend-yield">calculadora de dividend yield da Redentia</a> tem um modo dedicado a essa conta.',
         },
       ],
     },
@@ -113,7 +113,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: 'Para dimensionar o aporte e ver o patrimônio crescer com reinvestimento, combine a calculadora de dividendos com as demais <a href="/calculadoras">calculadoras da Redentia</a>, como a de juros compostos. Meta e prazo viram número, e o número vira plano.',
+          html: 'Para ver o que o reinvestimento fez de verdade, rode o papel no <a href="/calculadora/acoes">simulador de dividendos</a>: ele refaz o histórico real da B3 com cada provento comprando mais cotas. Para dimensionar o aporte daqui pra frente, combine com as demais <a href="/calculadoras">calculadoras da Redentia</a>, como a de juros compostos. Meta e prazo viram número, e o número vira plano.',
         },
       ],
     },
@@ -169,7 +169,7 @@ export const CALCULADORA_DE_DIVIDENDOS_GUIDE: GuideDoc = {
   faq: [
     {
       q: 'Como calcular o dividend yield de uma ação?',
-      a: 'Divida os proventos pagos por cota no ano pelo preço atual da cota e multiplique por 100. Por exemplo, R$ 6 de proventos sobre um preço de R$ 100 dá um DY de 6% (valores ilustrativos). O modo simples da calculadora de dividendos da Redentia faz essa conta para você a partir do preço e dos proventos.',
+      a: 'Divida os proventos pagos por cota no ano pelo preço atual da cota e multiplique por 100. Por exemplo, R$ 6 de proventos sobre um preço de R$ 100 dá um DY de 6% (valores ilustrativos). O modo simples da calculadora de dividend yield da Redentia faz essa conta para você a partir do preço e dos proventos.',
     },
     {
       q: 'Quanto preciso investir para viver de dividendos?',
