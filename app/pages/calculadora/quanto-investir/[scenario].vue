@@ -366,15 +366,15 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
 
     <!-- ============ CTA (texto verbatim) ============ -->
     <CalcBand tone="white">
-      <div class="qis__cta">
-        <h2 class="qis__cta-title">Acompanhe sua meta na Redentia</h2>
-        <p class="qis__cta-sub">Cadastre-se para monitorar o progresso da sua meta com gráficos e análises em tempo real.</p>
-        <div class="qis__cta-actions">
-          <NuxtLink to="/login" class="qis__pill qis__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/calculadora/quanto-investir" class="qis__pill qis__pill--outline">Voltar para a calculadora</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Acompanhe sua meta na Redentia"
+      texto="Cadastre-se para monitorar o progresso da sua meta com gráficos e análises em tempo real."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Voltar para a calculadora', to: '/calculadora/quanto-investir' }"
+    />
   </div>
 </template>
 
@@ -446,17 +446,4 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/quanto-investir' }] })
   margin-top: 30px; transition: background .2s, color .2s;
 }
 .qis__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.qis__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center;
-  max-width: 1080px; margin: 0 auto;
-}
-.qis__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.qis__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.qis__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.qis__cta .qis__pill { margin-top: 0; }
-.qis__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.qis__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.qis__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.qis__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

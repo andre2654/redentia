@@ -355,28 +355,14 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
     </template>
 
     <template #depois>
-      <div v-if="results" class="crs__ese">
-        <div class="crs__ese-item">
-          <p class="crs__ese-titulo">Trabalhar mais 3 anos</p>
-          <p class="crs__ese-sub">Aposentar aos {{ retirementAge + 3 }}</p>
-          <p class="crs__ese-valor">{{ formatCurrency(results.scenarios.work3More) }}</p>
-        </div>
-        <div class="crs__ese-item">
-          <p class="crs__ese-titulo">Guardar 20% a mais</p>
-          <p class="crs__ese-sub">{{ formatCurrency(monthlyContribution * 1.2) }} por mês</p>
-          <p class="crs__ese-valor">{{ formatCurrency(results.scenarios.increase20Percent) }}</p>
-        </div>
-        <div class="crs__ese-item">
-          <p class="crs__ese-titulo">Viver com 20% menos</p>
-          <p class="crs__ese-sub">{{ formatCurrency(monthlyIncome * 0.8) }} por mês: você precisaria de</p>
-          <p class="crs__ese-valor">{{ formatCurrency(results.scenarios.reduce20Percent) }}</p>
-        </div>
-        <div class="crs__ese-item">
-          <p class="crs__ese-titulo">Regra dos 4%</p>
-          <p class="crs__ese-sub">Sacando 4% do patrimônio por ano</p>
-          <p class="crs__ese-valor">{{ formatCurrency(results.projectedWealth * 0.04 / 12) }}/mês</p>
-        </div>
-      </div>
+      <!-- "E se…" em cápsulas pequenas (dono, 21/10/2026): a situação concreta e o resultado curto -->
+      <ul v-if="results" class="crs__ese" aria-label="E se você mudar a conta">
+        <li class="crs__ese-rotulo" aria-hidden="true">E se…</li>
+        <li class="crs__capsula">Aposentar aos {{ retirementAge + 3 }} <b>{{ brlCurto(results.scenarios.work3More) }}</b></li>
+        <li class="crs__capsula">Guardar {{ brl(monthlyContribution * 1.2) }}/mês <b>{{ brlCurto(results.scenarios.increase20Percent) }}</b></li>
+        <li class="crs__capsula">Viver com {{ brl(monthlyIncome * 0.8) }}/mês <b>precisa de {{ brlCurto(results.scenarios.reduce20Percent) }}</b></li>
+        <li class="crs__capsula">Sacar 4% ao ano <b>{{ brl(results.projectedWealth * 0.04 / 12) }}/mês</b></li>
+      </ul>
       <p class="crs__aviso">É uma projeção, não uma promessa. Revise a conta todo ano e ajuste quando a vida mudar.</p>
     </template>
   </CalcConta>
@@ -399,17 +385,22 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
 .crs__invalido { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-md); font-weight: 700; }
 .crs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 
-/* "E se…": os cenários da conta, embaixo do cartão */
-.crs__ese { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.crs__ese-item { padding: 20px 22px; border-radius: 22px; background: var(--nu-white); }
-.crs__ese-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
-.crs__ese-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.crs__ese-valor { margin: 12px 0 0; color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.crs__aviso { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
+/* "E se…": os cenários da conta em cápsulas, embaixo do cartão */
+.crs__ese {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+  margin: 0; padding: 0; list-style: none;
+}
+.crs__ese-rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.crs__capsula {
+  display: inline-flex; align-items: baseline; gap: 8px; padding: 9px 16px; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap;
+}
+.crs__capsula b { color: var(--nu-blue); font-weight: 800; font-variant-numeric: tabular-nums; }
+.crs__aviso { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
 
-@media (max-width: 1100px) { .crs__ese { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
   .crs__frase { line-height: 1.7; }
-  .crs__ese { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .crs__ese { justify-content: flex-start; gap: 8px; }
+  .crs__ese-rotulo { width: 100%; }
 }
 </style>

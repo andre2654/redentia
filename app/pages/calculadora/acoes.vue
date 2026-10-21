@@ -481,16 +481,15 @@ usePageSeo({
           <p class="sa__card-p">Crie estratégia para suas metas</p>
         </NuxtLink>
       </div>
-
-      <div class="sa__cta">
-        <h2 class="sa__cta-title">Descubra as melhores ações para investir</h2>
-        <p class="sa__cta-sub">Use a Redentia para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira.</p>
-        <div class="sa__cta-actions">
-          <NuxtLink to="/login" class="sa__pill sa__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/" class="sa__pill sa__pill--outline">Ver ações em alta</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Descubra as melhores ações para investir"
+      texto="Use a Redentia para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver ações em alta', to: '/' }"
+    />
   </div>
 </template>
 
@@ -590,17 +589,4 @@ usePageSeo({
   margin-top: 30px; transition: background .2s;
 }
 .sa__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.sa__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.sa__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.sa__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.sa__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.sa__cta .sa__pill { margin-top: 0; }
-.sa__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.sa__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.sa__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.sa__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

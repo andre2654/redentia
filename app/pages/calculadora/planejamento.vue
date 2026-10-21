@@ -421,16 +421,15 @@ usePageSeo({
           <p class="pl__card-p">Analise histórico real de ativos da B3</p>
         </NuxtLink>
       </div>
-
-      <div class="pl__cta">
-        <h2 class="pl__cta-title">Acompanhe seu progresso na Redentia</h2>
-        <p class="pl__cta-sub">Crie sua conta e monitore sua carteira real, receba alertas personalizados e análises com IA.</p>
-        <div class="pl__cta-actions">
-          <NuxtLink to="/login" class="pl__pill pl__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/guias" class="pl__pill pl__pill--outline">Ver mais guias</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Acompanhe seu progresso na Redentia"
+      texto="Crie sua conta e monitore sua carteira real, receba alertas personalizados e análises com IA."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver mais guias', to: '/guias' }"
+    />
   </div>
 </template>
 
@@ -525,17 +524,4 @@ usePageSeo({
   margin-top: 30px; transition: background .2s;
 }
 .pl__pill:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.pl__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.pl__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.pl__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.pl__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.pl__cta .pl__pill { margin-top: 0; }
-.pl__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.pl__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.pl__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.pl__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

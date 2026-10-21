@@ -613,16 +613,15 @@ usePageSeo({
           <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm" target="_blank" rel="noopener nofollow" class="ir__link">Lei 11.033/2004</a>.
         </p>
       </aside>
-
-      <div class="ir__cta">
-        <h2 class="ir__cta-title">Controle seus investimentos na Redentia</h2>
-        <p class="ir__cta-sub">Acompanhe sua carteira, receba alertas e tenha relatórios prontos para o IR.</p>
-        <div class="ir__cta-actions">
-          <NuxtLink to="/login" class="ir__pill ir__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/calculadoras" class="ir__pill ir__pill--outline">Ver mais calculadoras</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Controle seus investimentos na Redentia"
+      texto="Acompanhe sua carteira, receba alertas e tenha relatórios prontos para o IR."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
+    />
   </div>
 </template>
 
@@ -782,17 +781,4 @@ usePageSeo({
 .ir__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .ir__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .ir__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.ir__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.ir__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.ir__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.ir__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.ir__cta .ir__pill { margin-top: 0; }
-.ir__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.ir__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.ir__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.ir__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

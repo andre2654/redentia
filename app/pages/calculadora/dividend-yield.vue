@@ -958,16 +958,15 @@ usePageSeo({
           <a href="https://www.bcb.gov.br" target="_blank" rel="noopener nofollow" class="dy__link">Banco Central do Brasil</a>.
         </p>
       </aside>
-
-      <div class="dy__cta">
-        <h2 class="dy__cta-title">Encontre as melhores pagadoras de dividendos</h2>
-        <p class="dy__cta-sub">Compare dividend yield de todas as ações e FIIs da B3 em tempo real.</p>
-        <div class="dy__cta-actions">
-          <NuxtLink to="/ranking/maiores-dividend-yield" class="dy__pill dy__pill--light">Ver ranking de dividendos</NuxtLink>
-          <NuxtLink to="/login" class="dy__pill dy__pill--outline">Criar conta grátis</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Encontre as melhores pagadoras de dividendos"
+      texto="Compare dividend yield de todas as ações e FIIs da B3 em tempo real."
+      :primario="{ label: 'Ver ranking de dividendos', to: '/ranking/maiores-dividend-yield' }"
+      :secundario="{ label: 'Criar conta grátis', to: '/login' }"
+    />
   </div>
 </template>
 
@@ -1092,17 +1091,4 @@ usePageSeo({
 .dy__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .dy__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .dy__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.dy__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.dy__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.dy__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.dy__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.dy__cta .dy__pill { margin-top: 0; }
-.dy__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.dy__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.dy__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.dy__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>
