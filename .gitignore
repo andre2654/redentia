@@ -25,3 +25,4 @@ logs
 .vercel
 .env*
 .claude/launch.json
+newsletter-rascunhos/
