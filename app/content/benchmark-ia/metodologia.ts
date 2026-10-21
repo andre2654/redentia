@@ -332,7 +332,7 @@ const bloco = (mostra: string, ler: string, cuidado: string) => [
   { rotulo: 'Cuidado', texto: cuidado },
 ]
 
-export const BENCH_CHART_INFO: Record<'geral' | 'inventa' | 'amem' | 'golpe' | 'leao' | 'longo' | 'curto' | 'custo', BenchChartInfo> = {
+export const BENCH_CHART_INFO: Record<'geral' | 'inventa' | 'amem' | 'golpe' | 'leao' | 'longo' | 'curto' | 'curtoParcial' | 'custo', BenchChartInfo> = {
   geral: {
     titulo: 'Placar geral',
     sub: 'A média dos laboratórios que todos os modelos completaram',
@@ -394,6 +394,15 @@ export const BENCH_CHART_INFO: Record<'geral' | 'inventa' | 'amem' | 'golpe' | '
       'Cada ponto é a correlação média entre a ordem que o modelo deu às ações e a ordem real de retorno (IC de Spearman).',
       'Zero é o mesmo que sortear a ordem. Acima de zero, o modelo ordenou melhor que o acaso. O traço é a margem de erro: se ele cruza o zero, ainda não há evidência de habilidade.',
       'Um mês de bolsa tem muito acaso. Com poucas rodadas, a margem é larga e o placar fica "em formação".',
+    ),
+  },
+  curtoParcial: {
+    titulo: 'Previsão de futuro',
+    sub: 'Placar parcial, a cada fechamento',
+    blocos: bloco(
+      'Cada linha é uma IA. A cada pregão, o quanto a ordem que ela deu às ações do Ibovespa bate com a ordem real de retorno desde a rodada (IC de Spearman).',
+      'Zero é o mesmo que sortear a ordem. +1 seria acertar a ordem inteira; −1, a ordem invertida.',
+      'É parcial: com poucos pregões, um movimento só do mercado mexe em tudo. A nota que vale sai no 21º pregão, e até lá não há posição.',
     ),
   },
   custo: {

@@ -76,6 +76,29 @@ export interface BenchArenaLongo {
   atualizadoEm?: string
 }
 
+/**
+ * Previsão de futuro em formação: o IC de Spearman de cada modelo a cada
+ * pregão depois da rodada, até o 21º (a nota oficial). Vem do backend
+ * (`/ai-benchmark/previsao`); a nota de cada ação nunca sai de lá.
+ */
+export interface BenchPrevisaoParcial {
+  rodada: number
+  /** dia do retrato da rodada (AAAA-MM-DD) */
+  dataRef: string
+  /** pregões até a nota oficial */
+  horizonte: number
+  /** data prevista da nota oficial (AAAA-MM-DD) */
+  fimPrevisto: string | null
+  /** pregões que já fecharam */
+  pregoes: number
+  completo: boolean
+  /** "Início" e um rótulo por pregão fechado */
+  labels: string[]
+  /** IC de −1 a +1 por pregão; o "Início" é 0 */
+  series: { modelId: string; values: (number | null)[] }[]
+  atualizadoEm: string
+}
+
 /** uma rodada da Carteira no eixo do gráfico: só quantas ordens o modelo executou, nunca de quê */
 export interface BenchRodadaMarco {
   /** índice em `labels` (0 = "Início", a 1ª rodada) */

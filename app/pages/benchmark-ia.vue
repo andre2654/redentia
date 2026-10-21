@@ -20,8 +20,11 @@ import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchFaqPagi
 import { leituras } from '~/content/benchmark-ia/leituras'
 import type { BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
-// a Carteira própria anda todo pregão: a série vem do backend e cobre a da edição
-const { edition, isPreview, ranked, modelById } = useBenchmarkIa(await useBenchCarteiraViva())
+// as arenas andam todo pregão: a série da Carteira vem do backend e cobre a da
+// edição; a Previsão, sem nota até o 21º pregão, mostra o placar em formação.
+// As duas buscas saem juntas, num await só.
+const [carteiraViva, previsaoViva] = await Promise.all([useBenchCarteiraViva(), useBenchPrevisaoViva()])
+const { edition, isPreview, ranked, modelById } = useBenchmarkIa(carteiraViva)
 const method = (id: BenchIndexId) => BENCH_INDICES.find((m) => m.id === id)!
 
 /* ——— linhas ranqueadas ——— */
@@ -90,6 +93,11 @@ const longoFormacao = !!edition?.longo && edition.longo.sample < edition.longo.m
 const curto = edition?.curto ? rows(edition.curto.rows.map((r) => ({ id: r.modelId, value: r.value, lo: r.lo, hi: r.hi }))) : null
 // ninguém fora do acaso: a manchete da seção é essa, não dez "1º"
 const curtoAcaso = !!curto && curto.every((r) => r.lo <= 0 && r.hi >= 0)
+// sem nota publicada: o placar em formação do backend (só com edição real, nunca na prévia)
+const curtoParcial = !curto && !isPreview && previsaoViva ? previsaoViva : null
+const curtoParcialSeries = curtoParcial
+  ? curtoParcial.series.map((s) => ({ id: s.modelId, name: modelById(s.modelId)?.name ?? s.modelId, values: s.values }))
+  : []
 const custo = ranked.length
   ? [...ranked].sort((a, b) => a.model.costPer1k - b.model.costPer1k).map((r, i) => ({
       id: r.model.id, name: r.model.name, provider: r.model.provider,
@@ -161,7 +169,7 @@ const indices: IndexSection[] = [
   { id: 'golpe', label: method('golpe').name, icon: 'shield', on: !!golpe, next: edition ? NOVA : 'Em construção.' },
   { id: 'leao', label: method('leao').name, icon: 'receipt', on: !!leao, next: edition ? NOVA : 'Em construção.' },
   { id: 'longo', label: method('longo').name, icon: 'trend', on: !!longo, next: ARENA },
-  { id: 'curto', label: method('curto').name, icon: 'zap', on: !!curto, next: CURTO_NEXT },
+  { id: 'curto', label: method('curto').name, icon: 'zap', on: !!curto || !!curtoParcial, next: CURTO_NEXT },
 ]
 const shown = (id: BenchIndexId) => indices.find((x) => x.id === id)!.on
 const proximos = indices.filter((x) => !x.on)
@@ -290,9 +298,18 @@ usePageSeo({
         />
       </BenchSection>
 
-      <BenchSection eyebrow="Arena ao vivo" v-if="shown('curto')" id="curto" :title="method('curto').name" :desc="method('curto').question" :info="INFO.curto">
-        <p v-if="curtoAcaso" class="bia__headline">Nenhum modelo se distinguiu do acaso nesta edição.</p>
-        <BenchDots v-if="curto" :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="Ponto cinza: sem evidência de habilidade." />
+      <BenchSection eyebrow="Arena ao vivo" v-if="shown('curto')" id="curto" :title="method('curto').name" :desc="method('curto').question" :info="curto ? INFO.curto : INFO.curtoParcial">
+        <template v-if="curto">
+          <p v-if="curtoAcaso" class="bia__headline">Nenhum modelo se distinguiu do acaso nesta edição.</p>
+          <BenchDots :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="Ponto cinza: sem evidência de habilidade." />
+        </template>
+        <template v-else-if="curtoParcial">
+          <p class="bia__headline">
+            <template v-if="curtoParcial.completo">Os {{ curtoParcial.horizonte }} pregões fecharam. A nota oficial entra na próxima edição.</template>
+            <template v-else>Em formação: pregão {{ curtoParcial.pregoes }} de {{ curtoParcial.horizonte }}.{{ curtoParcial.fimPrevisto ? ` Nota oficial em ${diaMes(curtoParcial.fimPrevisto)}.` : '' }}</template>
+          </p>
+          <BenchIcLines :labels="curtoParcial.labels" :series="curtoParcialSeries" :horizonte="curtoParcial.horizonte" :fim="curtoParcial.fimPrevisto ? diaMes(curtoParcial.fimPrevisto) : null" />
+        </template>
       </BenchSection>
 
       <!-- ============ Custo (esferas) ============ -->
