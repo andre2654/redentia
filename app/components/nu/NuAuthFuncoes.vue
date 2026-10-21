@@ -2,10 +2,11 @@
 // O lado direito do /login e do cadastro (dono, 21/10/2026: "no login e no
 // registro, tente mostrar essas outras features também"). As quatro coisas que
 // a conta abre se revezam, cada uma com o herói da folha de cadastro e com dado
-// de verdade: a pergunta respondida (a maior alta do dia), a linha do mês da
-// mesma ação com o porquê, o céu das 7h30 com a frase do resumo e a bola de
-// neve dos juros compostos. Uma legenda curta e os pontos de progresso, como
-// nas páginas de produto da Apple. Os pontos trocam de cena e param o rodízio.
+// de verdade: a pergunta que se escreve e é respondida como no herói da home
+// (a maior alta do dia), a linha do mês de uma ação com o porquê, o céu das
+// 7h30 com a frase do resumo e a bola de neve dos juros compostos. Uma legenda
+// curta e os pontos de progresso, como nas páginas de produto da Apple. Os
+// pontos trocam de cena e param o rodízio.
 import type { DadosAtivo, DadosMaiorAlta, DadosResumo } from '~/composables/useCadastroDados'
 
 const dados = useCadastroDados()
@@ -32,23 +33,37 @@ const resposta = computed(() => (alta.value
   ? `${alta.value.nome} (${alta.value.ticker}), com ${pctTexto(alta.value.variacao)} ${quando}. A maior alta da bolsa.`
   : `A 10,75% ao ano, viram ${brlInteiro(totalJuros(CONTA))}. Você põe R$ 60 mil; os juros fazem o resto.`))
 
-// 6 s por cena: em modo painel os heróis contam a história nesse tempo, uma
-// vez, e param no quadro final. Mudou aqui, mude o --*-ciclo deles.
-let relogio: ReturnType<typeof setInterval> | null = null
-function rodar() {
-  relogio = setInterval(() => { cena.value = (cena.value + 1) % CENAS.length }, 6000)
+// 10 s para a pergunta, que se escreve, pensa e responde palavra por palavra
+// (dono, 21/10: "pode fazer essa primeira seção durar mais"), e 6 s para as
+// outras: em modo painel esses heróis contam a história nesse tempo, uma vez,
+// e param no quadro final. Mudou aqui, mude o --*-ciclo deles.
+const DURACAO = [10000, 6000, 6000, 6000]
+let relogio: ReturnType<typeof setTimeout> | null = null
+let parado = false
+function agendar() {
+  if (parado) return
+  relogio = setTimeout(() => {
+    cena.value = (cena.value + 1) % CENAS.length
+    agendar()
+  }, DURACAO[cena.value] ?? 6000)
 }
 function irPara(i: number) {
   cena.value = i
-  if (relogio) clearInterval(relogio)
+  parado = true
+  if (relogio) clearTimeout(relogio)
   relogio = null
 }
 
+// a pergunta só começa a se escrever com a maior alta na mão, ou sem ela
+// passados 2,5 s: se o dado chegasse no meio, a digitação recomeçaria
+const pronta = ref(false)
+
 onMounted(async () => {
-  rodar()
-  const [a, r] = await Promise.all([dados.maiorAlta(), dados.resumo()])
+  void dados.resumo().then((r) => { resumo.value = r })
+  const a = await Promise.race([dados.maiorAlta(), new Promise<null>((ok) => setTimeout(() => ok(null), 2500))])
   alta.value = a
-  resumo.value = r
+  pronta.value = true
+  agendar()
   // a linha do mês é da mesma ação da pergunta quando ela tem o porquê do dia.
   // A maior alta costuma ser papel pequeno, sem notícia própria (LUPA3 em
   // 21/10), e a cena promete o porquê: aí tenta Petrobras e Vale, uma de cada
@@ -65,17 +80,21 @@ onMounted(async () => {
   }
   ativo.value = primeira
 })
-onBeforeUnmount(() => { if (relogio) clearInterval(relogio) })
+onBeforeUnmount(() => {
+  parado = true
+  if (relogio) clearTimeout(relogio)
+})
 </script>
 
 <template>
   <div class="naf">
     <div class="naf__palco">
       <Transition name="naf-cena" mode="out-in">
-        <CadastroHeroiPergunta v-if="cena === 0" key="pergunta" painel :pergunta="pergunta" :resposta="resposta" />
+        <!-- ramos explícitos: enquanto a pergunta espera o dado, o palco fica vazio -->
+        <CadastroHeroiPergunta v-if="cena === 0 && pronta" key="pergunta" painel :pergunta="pergunta" :resposta="resposta" />
         <CadastroHeroiAtivo v-else-if="cena === 1" key="ativo" painel :dados="ativo" />
         <CadastroHeroiResumo v-else-if="cena === 2" key="resumo" painel :frase="resumo?.frase ?? null" />
-        <CadastroHeroiSimulacao v-else key="simulacao" painel :conta="CONTA" />
+        <CadastroHeroiSimulacao v-else-if="cena === 3" key="simulacao" painel :conta="CONTA" />
       </Transition>
     </div>
     <div class="naf__legenda" aria-live="polite">

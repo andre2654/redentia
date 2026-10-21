@@ -37,41 +37,13 @@ const nomeLimpo = (raw: string | null | undefined, ticker: string) => {
 }
 
 const pares = ref<Par[]>([...FIXOS])
-const i = ref(0)
-const digitado = ref(FIXOS[0]!.q)
-const fase = ref<'digitando' | 'pensando' | 'respondendo' | 'lendo' | 'apagando'>('lendo')
-const resposta = computed(() => pares.value[i.value]?.a ?? '')
-const palavras = computed(() => resposta.value.split(' '))
+// o ritmo da demonstração (escrever, pensar, responder palavra por palavra)
+// fica no usePerguntaDemo, que a cena da pergunta do painel do login também usa
+const { i, digitado, fase, palavras, rodar, mostrar, parar } = usePerguntaDemo(pares)
 // a pessoa clicou: a demonstração para e a barra vira campo de verdade
 const texto = ref('')
 const usando = ref(false)
 const campo = ref<HTMLInputElement | null>(null)
-
-let timer: ReturnType<typeof setTimeout> | null = null
-const esperar = (ms: number) => new Promise<void>((ok) => { timer = setTimeout(ok, ms) })
-let vivo = true
-
-async function ciclo() {
-  while (vivo && !usando.value) {
-    const par = pares.value[i.value]!
-    fase.value = 'digitando'
-    digitado.value = ''
-    for (const ch of par.q) {
-      if (!vivo || usando.value) return
-      digitado.value += ch
-      await esperar(ch === ' ' ? 55 : 34)
-    }
-    fase.value = 'pensando'
-    await esperar(900)
-    fase.value = 'respondendo'
-    await esperar(palavras.value.length * 55 + 500)
-    fase.value = 'lendo'
-    await esperar(3400)
-    fase.value = 'apagando'
-    await esperar(450)
-    i.value = (i.value + 1) % pares.value.length
-  }
-}
 
 onMounted(async () => {
   const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -85,17 +57,16 @@ onMounted(async () => {
   } catch { /* fica com as respostas fixas */ }
   if (calmo) {
     i.value = 0
-    digitado.value = pares.value[0]!.q
+    mostrar()
     return
   }
-  ciclo()
+  void rodar()
 })
-onBeforeUnmount(() => { vivo = false; if (timer) clearTimeout(timer) })
 
 function usar() {
   if (usando.value) return
   usando.value = true
-  if (timer) clearTimeout(timer)
+  parar()
   nextTick(() => campo.value?.focus())
 }
 const { isAuthenticated } = useAuthState()
