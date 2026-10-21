@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // Hero da home para quem não está logado, como a Apple faria (dono, 20/10:
 // "se inspire na APPLE, como ela teria esse hero?"). Ordem de página de produto:
-// o nome (Redentia AI), o título e uma linha de apoio; embaixo, o "produto" em
-// si: uma barra de pergunta com o brilho iridescente girando na borda (a
-// linguagem da Apple para IA) e a resposta surgindo palavra por palavra.
-// O par "Começar grátis" / "Ver como funciona" e a linha "Grátis para começar ·
-// sem cartão de crédito" saíram em 21/10, a pedido do dono: a barra é a chamada
-// e o header já tem "Criar conta grátis".
+// o nome, o título e uma linha de apoio; embaixo, o "produto" em si: uma barra
+// de pergunta com o brilho iridescente girando na borda (a linguagem da Apple
+// para IA) e a resposta surgindo palavra por palavra.
+// Em 21/10, a pedido do dono: o nome passou de "Redentia AI" para "Redentia", e
+// saíram o par "Começar grátis" / "Ver como funciona" e a linha "Grátis para
+// começar · sem cartão de crédito" (a barra é a chamada; o header já tem
+// "Criar conta grátis").
 // As perguntas se escrevem sozinhas e as respostas saem de dado de verdade: a
 // maior alta da bolsa vem dos movers do dia (a mesma fonte do /mercado), a dos
 // juros compostos é conta exata e a do dividend yield é definição. Sem frase
@@ -107,7 +108,7 @@ function enviar() {
   <section class="mhp">
     <div class="mhp__aura" aria-hidden="true" />
 
-    <p class="mhp__produto"><img src="/logo-azul.svg" alt="" width="20" height="20">Redentia AI</p>
+    <p class="mhp__produto"><img src="/logo-azul.svg" alt="" width="20" height="20">Redentia</p>
     <h1 class="mhp__titulo">Invista com uma IA <br>do seu lado.</h1>
     <p class="mhp__dek">Pergunte qualquer coisa sobre ações, FIIs e a sua carteira. A resposta vem em português, na hora.</p>
 
