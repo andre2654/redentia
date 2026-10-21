@@ -5,7 +5,9 @@
  * A única diferença é ONDE roda: aqui a simulação executa no client contra o
  * proxy same-origin /api/backend (mesmos endpoints Laravel que o antigo
  * getMarketData consumia: /tickers/{t}/prices?mode=full e /dividends/{t}).
- * Nenhuma constante, peso ou fórmula foi alterada.
+ * Nenhuma constante, peso ou fórmula foi alterada. O calculatePlanning antigo
+ * virou duas partes (21/10/2026): analisarCarteira, que lê a B3, e
+ * projetarPlanejamento, o resto da conta, sem rede.
  */
 
 export type PlanningStrategy = 'rentabilidade' | 'seguranca'
@@ -97,7 +99,7 @@ function cleanDividends(data: unknown) {
 
 // --- Helpers (verbatim de calculators.ts) ---
 
-function computeMonthsToGoal(goal: number, monthly: number, monthlyRate: number) {
+export function computeMonthsToGoal(goal: number, monthly: number, monthlyRate: number) {
   if (monthlyRate <= 0) {
     if (monthly <= 0) return 9999
     return Math.ceil(goal / monthly)
@@ -335,18 +337,22 @@ async function simulateAssetPerformance(
   }
 }
 
-// --- Calculadora principal (verbatim de calculatePlanning) ---
+// --- Calculadora principal (verbatim de calculatePlanning, em duas partes) ---
+// Desde 21/10/2026 a conta reage à frase, sem o botão "Calcular": a parte que
+// lê a B3 (a carteira da estratégia e o retorno médio dela) roda uma vez por
+// estratégia, e o resto, sem rede, a cada mudança na meta ou no aporte.
 
-export async function calculatePlanning(
-  base: string,
-  goalValue: number,
-  monthlyContribution: number,
-  strategy: PlanningStrategy,
-): Promise<PlanningResult | null> {
+/** A carteira da estratégia e o retorno mensal médio dela, com os preços e os dividendos da B3. */
+export interface PlanningCarteira {
+  strategy: PlanningStrategy
+  recommendedAssets: PlanningRecommendedAsset[]
+  monthlyReturnRate: number
+}
+
+export async function analisarCarteira(base: string, strategy: PlanningStrategy): Promise<PlanningCarteira | null> {
   try {
     let recommendedAssets: PlanningRecommendedAsset[] = []
     let monthlyReturnRate = 0
-    const analysisYears = 5
 
     if (strategy === 'rentabilidade') {
       // Rule: Use fixed high-performance assets for consistency
@@ -422,35 +428,42 @@ export async function calculatePlanning(
       recommendedAssets[0]!.weight = 1 / totalParts
     }
 
-    const monthsToGoal = computeMonthsToGoal(goalValue, monthlyContribution, monthlyReturnRate)
-    const totals = computeProjectionTotals(monthlyContribution, monthsToGoal, monthlyReturnRate)
-
-    const periodMonths = Math.max(Math.round(analysisYears * 12), 1)
-    const historicalTotals = computeProjectionTotals(monthlyContribution, periodMonths, monthlyReturnRate)
-
-    const targetDate = new Date()
-    targetDate.setMonth(targetDate.getMonth() + monthsToGoal)
-
-    return {
-      strategy,
-      goalValue,
-      monthlyContribution,
-      monthsToGoal,
-      targetDateLabel: targetDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
-      totalInvestedUntilGoal: totals.totalInvested,
-      estimatedFinalValue: totals.finalValue,
-      estimatedProfit: totals.finalValue - totals.totalInvested,
-      monthlyReturnRate,
-      recommendedAssets,
-      historicalFinalValue: historicalTotals.finalValue,
-      historicalInvested: historicalTotals.totalInvested,
-      historicalProfit: historicalTotals.finalValue - historicalTotals.totalInvested,
-      historicalYears: analysisYears,
-      chartData: buildProjectionChart(monthsToGoal, monthlyContribution, monthlyReturnRate),
-    }
+    return { strategy, recommendedAssets, monthlyReturnRate }
   } catch (error) {
     console.error('Planning calculation error:', error)
     return null
+  }
+}
+
+/** O resto da conta, sem rede: o tempo até a meta, os totais, os últimos 5 anos e o gráfico. */
+export function projetarPlanejamento(goalValue: number, monthlyContribution: number, carteira: PlanningCarteira): PlanningResult {
+  const { strategy, recommendedAssets, monthlyReturnRate } = carteira
+  const analysisYears = 5
+  const monthsToGoal = computeMonthsToGoal(goalValue, monthlyContribution, monthlyReturnRate)
+  const totals = computeProjectionTotals(monthlyContribution, monthsToGoal, monthlyReturnRate)
+
+  const periodMonths = Math.max(Math.round(analysisYears * 12), 1)
+  const historicalTotals = computeProjectionTotals(monthlyContribution, periodMonths, monthlyReturnRate)
+
+  const targetDate = new Date()
+  targetDate.setMonth(targetDate.getMonth() + monthsToGoal)
+
+  return {
+    strategy,
+    goalValue,
+    monthlyContribution,
+    monthsToGoal,
+    targetDateLabel: targetDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+    totalInvestedUntilGoal: totals.totalInvested,
+    estimatedFinalValue: totals.finalValue,
+    estimatedProfit: totals.finalValue - totals.totalInvested,
+    monthlyReturnRate,
+    recommendedAssets,
+    historicalFinalValue: historicalTotals.finalValue,
+    historicalInvested: historicalTotals.totalInvested,
+    historicalProfit: historicalTotals.finalValue - historicalTotals.totalInvested,
+    historicalYears: analysisYears,
+    chartData: buildProjectionChart(monthsToGoal, monthlyContribution, monthlyReturnRate),
   }
 }
 

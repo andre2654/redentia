@@ -8,7 +8,7 @@
  * (tests/cadastro.test.ts): os textos de cada gesto e as contas dos gráficos.
  */
 
-export type CadastroGesto = 'seguir' | 'resumo' | 'simulacao' | 'aposentadoria' | 'pergunta'
+export type CadastroGesto = 'seguir' | 'resumo' | 'simulacao' | 'aposentadoria' | 'conta' | 'pergunta'
 
 export type CadastroIcone =
   | 'envelope' | 'jornal' | 'calendario' | 'relogio' | 'conversa'
@@ -33,14 +33,15 @@ export interface CadastroTexto {
 
 /**
  * Os textos da folha para cada gesto. O ticker vai sem artigo ("Siga WEGE3."): não sabemos o gênero do nome.
- * As duas calculadoras (simulação de juros e aposentadoria) usam o texto da
- * folha que sobe depois de mexer na conta (dono, 21/10/2026: "saiba como essa
- * conta pode se adaptar à sua vida com a Redentia"): guardar, conectar a
- * carteira pelo Open Finance (existe no /carteira) e perguntar à Redentia.
+ * As calculadoras (a simulação de juros, a aposentadoria e as outras, pelo gesto
+ * `conta`, que traz a pergunta pronta) usam o texto da folha que sobe depois de
+ * mexer na conta (dono, 21/10/2026: "saiba como essa conta pode se adaptar à
+ * sua vida com a Redentia"): guardar, conectar a carteira pelo Open Finance
+ * (existe no /carteira) e perguntar à Redentia.
  */
 export function textoDoGesto(
   gesto: CadastroGesto,
-  dados: { ticker?: string; minutos?: number | null; aposentaAos?: number; mensal?: number } = {},
+  dados: { ticker?: string; minutos?: number | null; aposentaAos?: number; mensal?: number; pergunta?: string } = {},
 ): CadastroTexto {
   if (gesto === 'seguir') {
     const t = (dados.ticker ?? '').toUpperCase()
@@ -70,10 +71,12 @@ export function textoDoGesto(
       aceite: 'Ao confirmar, você cria sua conta grátis e passa a receber o resumo diário. Cancele quando quiser.',
     }
   }
-  if (gesto === 'simulacao' || gesto === 'aposentadoria') {
-    const pergunta = gesto === 'aposentadoria'
-      ? (dados.aposentaAos && dados.aposentaAos > 32 ? `“E se eu me aposentar aos ${dados.aposentaAos - 2}?”` : '“E se eu me aposentar mais cedo?”')
-      : (dados.mensal && dados.mensal > 0 ? `“E se eu guardar ${brlInteiro(dados.mensal * 2)} por mês?”` : '“Quanto preciso guardar por mês?”')
+  if (gesto === 'simulacao' || gesto === 'aposentadoria' || gesto === 'conta') {
+    const pergunta = gesto === 'conta'
+      ? (dados.pergunta || '“Como chego lá mais rápido?”')
+      : gesto === 'aposentadoria'
+        ? (dados.aposentaAos && dados.aposentaAos > 32 ? `“E se eu me aposentar aos ${dados.aposentaAos - 2}?”` : '“E se eu me aposentar mais cedo?”')
+        : (dados.mensal && dados.mensal > 0 ? `“E se eu guardar ${brlInteiro(dados.mensal * 2)} por mês?”` : '“Quanto preciso guardar por mês?”')
     return {
       titulo: 'Essa conta pode virar o seu plano.',
       apoio: 'Guarde a conta e veja como ela se adapta à sua vida, com os seus números de verdade.',

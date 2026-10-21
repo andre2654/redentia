@@ -23,18 +23,26 @@ const props = defineProps<{
   calculator: string
   /** params ATUAIS dos sliders — o que o salvar grava e o deep-link aceita */
   params?: Record<string, number>
+  /** os params em texto, que vão junto (os tickers do simulador de ações) */
+  textos?: Record<string, string>
   /** rótulo pronto pra gravar (a calculadora sabe descrever seus campos) */
   label?: string
   /** snapshot de resultado pra lista (ex.: { total, aportado, juros }) */
   result?: Record<string, number>
   /** formata o número-destaque da lista (ex.: brl) */
   formatValue?: (v: number) => string
+  /** no lugar do formatValue, quando a unidade muda com a conta (o dividend yield: % ou R$, pelo modo) */
+  formatResult?: (result: Record<string, number>) => string | null
   /** sem conta: a folha de cadastro que sobe, com o herói desta conta; sem ela, vai para o /login */
   folha?: CadastroContexto
   /** o caminho que reabre a conta (as páginas de cenário reabrem na calculadora principal) */
   caminho?: string
 }>()
-const emit = defineEmits<{ apply: [params: Record<string, number>] }>()
+const emit = defineEmits<{
+  apply: [params: Record<string, number>]
+  /** os params em texto da conta reaberta, depois do `apply` */
+  applyTextos: [textos: Record<string, string>]
+}>()
 
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
@@ -56,8 +64,10 @@ watch(isAuthenticated, (v) => {
 
 function deepLink(): string {
   const base = props.caminho ?? route.path
-  const q = Object.entries(props.params ?? {})
-    .filter(([, v]) => Number.isFinite(v))
+  const q = [
+    ...Object.entries(props.params ?? {}).filter(([, v]) => Number.isFinite(v)),
+    ...Object.entries(props.textos ?? {}).filter(([, v]) => v !== ''),
+  ]
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
   return q ? `${base}?${q}` : base
@@ -73,7 +83,7 @@ function deepLink(): string {
  */
 async function pedir(origem: 'botao' | 'convite' = 'botao') {
   if (!props.params || !props.label) return
-  const sim = { label: props.label, params: props.params, result: props.result }
+  const sim = { label: props.label, params: { ...props.params, ...props.textos }, result: props.result }
   if (isAuthenticated.value) {
     const ok = await sims.save(sim)
     if (ok) savedNow.value = true
@@ -92,7 +102,7 @@ async function pedir(origem: 'botao' | 'convite' = 'botao') {
 }
 defineExpose({ pedir })
 // mexeu na conta depois de salvar: o botão volta a oferecer o salvar
-watch(() => JSON.stringify(props.params ?? {}), () => { savedNow.value = false })
+watch(() => JSON.stringify([props.params ?? {}, props.textos ?? {}]), () => { savedNow.value = false })
 
 /* ——— modal do histórico ——— */
 const open = ref(false)
@@ -115,11 +125,19 @@ onBeforeUnmount(() => {
 })
 
 function applyAndClose(s: SimulationVM) {
-  emit('apply', s.params)
+  const numeros: Record<string, number> = {}
+  const textos: Record<string, string> = {}
+  for (const [k, v] of Object.entries(s.params)) {
+    if (typeof v === 'string') textos[k] = v
+    else numeros[k] = v
+  }
+  emit('apply', numeros)
+  if (Object.keys(textos).length) emit('applyTextos', textos)
   open.value = false
 }
 
 function highlightValue(s: SimulationVM): string | null {
+  if (props.formatResult && s.result) return props.formatResult(s.result)
   const v = s.result?.total
   if (v === undefined || v === null || !Number.isFinite(v)) return null
   return props.formatValue ? props.formatValue(v) : String(v)

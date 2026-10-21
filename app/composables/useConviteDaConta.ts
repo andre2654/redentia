@@ -42,11 +42,11 @@ export function useConviteDaConta(calculadora: string, fonte: WatchSource<unknow
   // Fechou sem criar conta: o "Agora não" vale por 7 dias.
   watch(() => folha.aberta.value, (agora, antes) => {
     const g = agora?.contexto.gesto
-    if (g === 'simulacao' || g === 'aposentadoria') {
+    if (g === 'simulacao' || g === 'aposentadoria' || g === 'conta') {
       gravar(visto, '1', true)
       gravar(CONTA_CONVITE_VISTO, '1', true)
     }
-    const eraDaConta = antes?.contexto.gesto === 'simulacao' || antes?.contexto.gesto === 'aposentadoria'
+    const eraDaConta = ['simulacao', 'aposentadoria', 'conta'].includes(antes?.contexto.gesto ?? '')
     if (!agora && eraDaConta && !isAuthenticated.value) gravar(FECHOU, String(Date.now()))
   })
 
