@@ -461,7 +461,7 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
   // Entrega. O login do site é por código no WhatsApp (o principal), no e-mail
   // ou pelo Google, e o aviso sai no e-mail das 19h, que só vai para e-mail
   // verificado. Quem entrou pelo celular confirma um e-mail ali mesmo, pelo
-  // "contact gate" do Backend (me/email/*-pin, que marca o e-mail como
+  // "contact gate" do Backend (auth/me/email/*-pin, que marca o e-mail como
   // verificado); quem desligou o resumo liga de novo. Sem isto o alerta
   // existia e o aviso nunca chegava.
   const etapa = ref<'email' | 'codigo'>('email')
@@ -471,8 +471,11 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
   const erroEntrega = ref<string | null>(null)
 
   function mensagem(e: unknown, fallback: string): string {
-    const m = (e as { data?: { message?: unknown } } | null)?.data?.message
-    return typeof m === 'string' && m.trim() ? m.trim() : fallback
+    const err = e as { statusCode?: number; status?: number; data?: { message?: unknown } } | null
+    if ((err?.statusCode ?? err?.status) === 429) return 'Muitas tentativas. Aguarde um instante e tente de novo.'
+    const m = err?.data?.message
+    // 422 de validação do Laravel pode vir com a chave crua ('validation.email').
+    return typeof m === 'string' && m.trim() && !/^validation\./.test(m) ? m.trim() : fallback
   }
   async function entregaPor(acao: () => Promise<unknown>, fallback: string): Promise<boolean> {
     erroEntrega.value = null
@@ -493,7 +496,7 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
   async function pedirCodigo(email: string) {
     const e = email.trim().toLowerCase()
     const ok = await entregaPor(
-      () => authFetch('/me/email/request-pin', { method: 'POST', body: { email: e } }, { redirectOnAuthError: false }),
+      () => authFetch('/auth/me/email/request-pin', { method: 'POST', body: { email: e } }, { redirectOnAuthError: false }),
       'Não conseguimos enviar o código agora. Tente de novo em instantes.',
     )
     if (ok) {
@@ -504,7 +507,7 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
 
   async function confirmarCodigo(pin: string) {
     const ok = await entregaPor(
-      () => authFetch('/me/email/verify-pin', { method: 'POST', body: { email: emailPendente.value, pin: pin.trim() } }, { redirectOnAuthError: false }),
+      () => authFetch('/auth/me/email/verify-pin', { method: 'POST', body: { email: emailPendente.value, pin: pin.trim() } }, { redirectOnAuthError: false }),
       'Não conseguimos confirmar o código. Tente de novo.',
     )
     if (ok && criado.value) {
@@ -515,7 +518,7 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
 
   async function ligarResumo() {
     const ok = await entregaPor(
-      () => authFetch('/notification-preferences', { method: 'PUT', body: { topic: 'watchlist', email: true, whatsapp: false } }, { redirectOnAuthError: false }),
+      () => authFetch('/me/notification-preferences', { method: 'PUT', body: { topic: 'watchlist', email: true, whatsapp: false } }, { redirectOnAuthError: false }),
       'Não conseguimos ligar o resumo agora. Tente de novo em instantes.',
     )
     if (ok && criado.value) criado.value = { ...criado.value, entrega: 'email' }

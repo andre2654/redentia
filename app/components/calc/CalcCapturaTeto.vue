@@ -4,9 +4,10 @@
 //  - o alerta "avise quando cruzar o preço teto" pede conta e sai no e-mail das
 //    19h dos ativos seguidos, no pregão em que o fechamento cruzar o alvo
 //    (useAlertaPrecoTeto, Backend: WatchlistDigestComposer);
-//  - a newsletter da semana pede só o e-mail e mora no beehiiv
-//    (server/api/newsletter.post.ts). Sem a conta ligada, o formulário não
-//    aparece: a página não promete um e-mail que não sai.
+//  - a newsletter da semana ("O mercado da semana", toda sexta) pede o e-mail
+//    e um código, que cria a conta de quem não tem (useNewsletter). O envio é
+//    do newsletter:enviar do Backend, que o dono dispara.
+//    NUXT_PUBLIC_NEWSLETTER_LIGADA=false esconde o formulário.
 // Título, H1, URL e os rótulos do resultado não mudam: o dono liberou mexer
 // na página só para isto. O HTML cacheado na borda é o mesmo para todo mundo;
 // sessão, alerta criado e inscrição só existem depois do mount.
@@ -31,22 +32,17 @@ const confirmado = computed(() => !!criado.value && criado.value.ticker === pape
 const alvoMudou = computed(() => confirmado.value && props.alvo != null && Math.abs(criado.value!.alvo - props.alvo) >= 0.005)
 
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
-const email = ref('')
+const { isAuthenticated } = useAuthState()
+const nl = useNewsletter()
+const { pronto: nlPronto, emailDaConta, assinante, etapa: nlEtapa, emailPendente: nlEmail, enviando: nlEnviando, erro: nlErro, confirmacao: nlConfirmacao } = nl
+const emailNews = ref('')
+const codigoNews = ref('')
+// Quem não tem conta fica sabendo, antes do código, que ele cria uma.
+const legalNews = computed(() => isAuthenticated.value
+  ? 'Mandamos um código para confirmar o e-mail, que fica na sua conta. Ao confirmar, você aceita receber o e-mail semanal da Redentia.'
+  : 'Mandamos um código para confirmar o e-mail. Ao confirmar, você cria sua conta grátis na Redentia e aceita receber o e-mail semanal.')
 /** isca para robô: gente não vê nem preenche */
 const isca = ref('')
-const estado = ref<'idle' | 'enviando' | 'ok' | 'erro'>('idle')
-
-async function assinar() {
-  if (estado.value === 'enviando') return
-  estado.value = 'enviando'
-  try {
-    await $fetch('/api/newsletter', { method: 'POST', body: { email: email.value.trim(), origem: 'preco-teto', site: isca.value } })
-    estado.value = 'ok'
-  }
-  catch {
-    estado.value = 'erro'
-  }
-}
 </script>
 
 <template>
@@ -79,31 +75,39 @@ async function assinar() {
       <p v-if="erro" class="cct__erro" role="alert">{{ erro }}</p>
     </div>
 
-    <form v-if="newsletterLigada" class="cct__bloco" @submit.prevent="assinar">
+    <div v-if="newsletterLigada" class="cct__bloco">
       <p class="cct__titulo">O mercado da semana no seu e-mail</p>
       <p class="cct__texto">Toda sexta, o resumo da semana na bolsa. Dá para sair em um clique.</p>
-      <p v-if="estado === 'ok'" class="cct__ok" role="status">Inscrição feita. Confira sua caixa de entrada.</p>
-      <template v-else>
+
+      <p v-if="nlEtapa === 'ok'" class="cct__ok" role="status">{{ nlConfirmacao }}</p>
+      <p v-else-if="assinante" class="cct__ok" role="status">Você já recebe O mercado da semana{{ emailDaConta ? ` em ${emailDaConta}` : '' }}, toda sexta.</p>
+      <template v-else-if="isAuthenticated && !nlPronto" />
+
+      <!-- Logado com e-mail confirmado: um clique. -->
+      <template v-else-if="isAuthenticated && emailDaConta && nlEtapa === 'email'">
+        <button type="button" class="cct__btn" :disabled="nlEnviando" @click="nl.assinarComConta()">
+          {{ nlEnviando ? 'Assinando…' : `Assinar com ${emailDaConta}` }}
+        </button>
+        <p class="cct__legal">Ao assinar, você aceita receber o e-mail semanal da Redentia. <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
+      </template>
+
+      <!-- E-mail → código. Para quem não tem conta, o código cria a conta. -->
+      <form v-else-if="nlEtapa === 'email'" @submit.prevent="nl.pedirCodigo(emailNews, isca)">
         <div class="cct__linha">
-          <input
-            v-model="email"
-            type="email"
-            required
-            autocomplete="email"
-            inputmode="email"
-            placeholder="seu@email.com"
-            aria-label="Seu e-mail"
-            class="cct__input"
-          >
-          <button type="submit" class="cct__btn cct__btn--linha" :disabled="estado === 'enviando'">
-            {{ estado === 'enviando' ? 'Enviando…' : 'Assinar' }}
-          </button>
+          <input v-model="emailNews" type="email" required autocomplete="email" inputmode="email" placeholder="seu@email.com" aria-label="Seu e-mail" class="cct__input">
+          <button type="submit" class="cct__btn cct__btn--linha" :disabled="nlEnviando">{{ nlEnviando ? 'Enviando…' : 'Assinar' }}</button>
         </div>
         <input v-model="isca" type="text" name="site" tabindex="-1" autocomplete="off" aria-hidden="true" class="cct__isca">
-        <p class="cct__legal">Ao assinar, você aceita receber o e-mail semanal da Redentia. <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
-        <p v-if="estado === 'erro'" class="cct__erro" role="alert">Não conseguimos inscrever agora. Tente de novo em instantes.</p>
-      </template>
-    </form>
+        <p class="cct__legal">{{ legalNews }} <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
+      </form>
+      <form v-else class="cct__linha" @submit.prevent="nl.confirmarCodigo(codigoNews)">
+        <p class="cct__texto cct__texto--cheio">Mandamos um código para {{ nlEmail }}. Ele vale 10 minutos.</p>
+        <input v-model="codigoNews" type="text" required inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 dígitos" aria-label="Código" class="cct__input">
+        <button type="submit" class="cct__btn cct__btn--linha" :disabled="nlEnviando">{{ nlEnviando ? 'Confirmando…' : 'Confirmar' }}</button>
+        <button type="button" class="cct__trocar" @click="nl.trocarEmail()">Trocar o e-mail</button>
+      </form>
+      <p v-if="nlErro" class="cct__erro" role="alert">{{ nlErro }}</p>
+    </div>
   </div>
 </template>
 
@@ -138,4 +142,9 @@ async function assinar() {
 .cct__texto--cheio { flex: 1 1 100%; margin: 0; }
 .cct__erro { margin: 10px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
 .cct__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.cct__trocar {
+  flex: 1 1 100%; justify-self: start; margin: 0; padding: 0; background: none; border: none;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700; text-align: left;
+  text-decoration: underline; cursor: pointer;
+}
 </style>

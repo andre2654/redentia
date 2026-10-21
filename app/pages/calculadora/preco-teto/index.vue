@@ -565,7 +565,7 @@ usePageSeo({
           </NuxtLink>
 
           <!-- Captura (21/10/2026): o alerta "avise quando cruzar o preço teto"
-               e, com a conta do beehiiv ligada, a newsletter da semana. O dono
+               e a newsletter de sexta, O mercado da semana. O dono
                liberou mexer na página só para isto: título, H1, URL e rótulos
                ficam. Ver app/components/calc/CalcCapturaTeto.vue. -->
           <CalcCapturaTeto :ticker="activeTicker" :alvo="results.consensus.averageFairPrice" />

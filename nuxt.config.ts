@@ -38,11 +38,6 @@ export default defineNuxtConfig({
     // da Vercel. Vazia = desligada. Ver server/plugins/backend-front-key.ts.
     // Override: NUXT_BACKEND_FRONT_KEY.
     backendFrontKey: '',
-    // Server-only: a newsletter semanal mora no beehiiv (21/10/2026). A rota
-    // server/api/newsletter.post.ts inscreve por aqui. Vazias = desligada.
-    // Override: NUXT_BEEHIIV_API_KEY e NUXT_BEEHIIV_PUBLICATION_ID ('pub_…').
-    beehiivApiKey: '',
-    beehiivPublicationId: '',
     public: {
       // Browser SEMPRE fala com same-origin (/api/backend, /api/chat) — zero CORS.
       // chatDirectUrl: escape hatch se o proxy Vercel bufferizar SSE (lição do Atlas).
@@ -66,10 +61,10 @@ export default defineNuxtConfig({
       gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-F2QGZNWJTM', // Google Analytics 4
       clarityProjectId: process.env.NUXT_PUBLIC_CLARITY_PROJECT_ID || 'wmh9pyc3io', // Microsoft Clarity
       gtmId: process.env.NUXT_PUBLIC_GTM_ID || 'GTM-M9KBJN7Q', // Google Tag Manager
-      // O formulário da newsletter só aparece com ela ligada: sem a conta do
-      // beehiiv, a página não promete um e-mail que não sai. Liga com
-      // NUXT_PUBLIC_NEWSLETTER_LIGADA=true, junto das duas chaves acima.
-      newsletterLigada: false,
+      // O formulário da newsletter de sexta na preço teto (useNewsletter). A
+      // inscrição e o envio são do Backend (tópico `newsletter` e
+      // newsletter:enviar). NUXT_PUBLIC_NEWSLETTER_LIGADA=false esconde.
+      newsletterLigada: true,
     },
   },
 
