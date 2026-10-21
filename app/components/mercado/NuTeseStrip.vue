@@ -252,7 +252,8 @@ const id = useId()
   .tstz__capa { aspect-ratio: 16 / 9; min-height: 0; }
   .tstz__escolha { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; margin-left: calc(-1 * clamp(22px, 5.5vw, 80px)); margin-right: calc(-1 * clamp(22px, 5.5vw, 80px)); padding-left: clamp(22px, 5.5vw, 80px); padding-right: clamp(22px, 5.5vw, 80px); scrollbar-width: none; }
   .tstz__escolha::-webkit-scrollbar { display: none; }
-  .tstz__escolha { scroll-padding-inline: clamp(22px, 5.5vw, 80px); }
+  /* a rolagem lateral também corta em cima e embaixo: a folga cabe a borda e a sombra da aba ativa */
+  .tstz__escolha { scroll-padding-inline: clamp(22px, 5.5vw, 80px); padding-top: 8px; padding-bottom: 28px; margin-top: 8px; margin-bottom: -24px; }
   .tstz__aba { flex: none; width: min(78vw, 300px); scroll-snap-align: start; }
   .tstz__numeros { gap: 14px 28px; }
 }
