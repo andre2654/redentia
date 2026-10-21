@@ -8,7 +8,7 @@
 // docs/redentia-nu/designs/Redentia Acoes Nu.dc.html. O layout default já
 // renderiza NuHeader + NuMarketTicker + NuFooter; aqui vive o miolo na ordem
 // do design: hero → gráfico 12M (dark) → teses → fundamentos → dividendos →
-// análise IA (banda azul) → notícias.
+// análise IA (banda azul) → notícias → outras empresas do setor (só ação).
 //
 // TIPOS DE ATIVO (2026-07-13): a mesma página serve ação, FII, BDR, ETF e
 // CRIPTO — cada seção degrada por payload (vazio → some), então o template é
@@ -165,5 +165,9 @@ if (data.value) {
     <AcaoEditorial v-if="acao.editorial" :ticker="acao.ticker" :editorial="acao.editorial" />
 
     <AcaoNews v-if="acao.news" :ticker="acao.ticker" :news="acao.news" />
+
+    <!-- Outras empresas do setor + link pro /setor (só ação). Creme depois do
+         branco das notícias, antes do navy do rodapé. -->
+    <AcaoPares v-if="acao.pares" :pares="acao.pares" />
   </div>
 </template>

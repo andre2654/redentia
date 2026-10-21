@@ -27,6 +27,7 @@ import type {
   AcaoFundInfoVM,
   AcaoHeroVM,
   AcaoMetricCard,
+  AcaoParesVM,
   AcaoPayload,
   AcaoPerfilRow,
   AcaoRange,
@@ -55,6 +56,7 @@ import type {
 } from '~/types/acao'
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
+import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
 
 /* ————— helpers de formatação ————— */
 
@@ -1229,6 +1231,7 @@ function petr4Seed(): AcaoPayload {
         { href: '/noticias', title: 'Produção no pré-sal bate recorde no 2º trimestre', source: 'Reuters · ontem', ticker: { text: 'PETR4 +1,10%', dir: 'up' } },
       ],
     },
+    pares: null,
     simuladorHref: simuladorAcoesHref('PETR4', 'STOCK'),
     seo: {
       title: 'PETR4 hoje: cotação R$ 38,25, dividendos, fundamentos e análise',
@@ -1236,6 +1239,12 @@ function petr4Seed(): AcaoPayload {
       faq: [],
     },
   }
+}
+
+/** Com menos de 3 pares o bloco não se sustenta (setor pequeno no sitemap): some. */
+function buildPares(setor: SetorEntry | null, itens: { ticker: string; nome: string }[] | null | undefined): AcaoParesVM | null {
+  if (!setor || !itens || itens.length < 3) return null
+  return { setor: { nome: setor.name, href: `/setor/${setor.ptSlug}` }, itens }
 }
 
 /* ————— carga SSR ————— */
@@ -1283,7 +1292,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
   // Regex estrita do endpoint /news/ticker (tickers como B3SA3 ficam de fora).
   const newsStrict = /^[A-Z]{4}\d{1,2}$/.test(ticker)
-  const [pricesR, ibovR, overviewR, scoreR, consensusR, dividendsR, editorialR, thesesR, newsR] = await Promise.allSettled([
+  // Pares do setor, só pra ação: o perfil já traz o setor ('Energy'), então a
+  // chamada entra no mesmo bloco paralelo. Setor fora do registry → sem bloco.
+  const setor = profile.type === 'STOCK' ? SETORES_BY_API[apiSlugDoSetor(profile.sector) ?? ''] ?? null : null
+  const [pricesR, ibovR, overviewR, scoreR, consensusR, dividendsR, editorialR, thesesR, newsR, paresR] = await Promise.allSettled([
     acaoFetchPrices(base, ticker, '12mo'),
     acaoFetchIbovPrices(base, '12mo'),
     acaoFetchOverview(base, ticker),
@@ -1293,6 +1305,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     acaoFetchEditorial(base, ticker),
     acaoFetchTheses(base),
     newsStrict ? acaoFetchNewsByTicker(base, ticker) : acaoFetchNewsFiltered(base, ticker),
+    setor ? acaoFetchPares(setor.ptSlug, ticker) : Promise.resolve(null),
   ])
   const ok = <X>(r: PromiseSettledResult<X>): X | null => (r.status === 'fulfilled' ? r.value : null)
 
@@ -1399,6 +1412,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
+    pares: kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null,
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
   }
@@ -1550,6 +1564,7 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     news: buildNews(ok(newsR)?.data ?? [], { ticker: sym, change_percent: c.change_24h_pct }, series),
     // Cripto não tem editorial gerado (o pipeline cobre tickers da B3).
     editorial: null,
+    pares: null,
     simuladorHref: null,
     seo: buildCryptoSeo(c, sym),
   }

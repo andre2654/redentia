@@ -443,6 +443,13 @@ export interface AcaoAiVM {
   read: AcaoAiReadVM | null
 }
 
+/** Bloco "Outras empresas do setor" no fim do /asset (AcaoPares.vue). */
+export interface AcaoParesVM {
+  /** nome do registry ('Serviços financeiros') e a página do setor */
+  setor: { nome: string; href: string }
+  itens: { ticker: string; nome: string }[]
+}
+
 export interface AcaoNewsVM {
   featured: NuNewsFeaturedItem
   rows: NuNewsRowItem[]
@@ -577,6 +584,8 @@ export interface AcaoPayload {
   news: AcaoNewsVM | null
   /** Prosa editorial longa por ativo. null quando não há editorial gerado. */
   editorial: AcaoEditorialVM | null
+  /** Outras empresas do setor (só ação, com 3 pares ou mais; ver utils/paresDoSetor.ts). */
+  pares: AcaoParesVM | null
   /**
    * Link pro simulador de /calculadora/acoes com o ativo preenchido
    * (utils/simulador.ts). null quando o simulador não cobre o tipo
