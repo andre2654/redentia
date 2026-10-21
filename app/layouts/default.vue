@@ -21,6 +21,10 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
          no canto, aberto por interesse e nunca na chegada. As regras estão no
          componente. -->
     <NuNewsletterConvite />
+    <!-- A folha de cadastro (21/10/2026): o que pedia conta abre esta folha em
+         vez de mandar para o /login. Fechada até um gatilho chamar
+         useCadastroFolha().abrir(). -->
+    <CadastroFolha />
     <!-- Onboarding obrigatório: logado sem investor_goal responde antes de
          seguir (decisão do dono, 24/08). -->
     <NuOnboardingModal />

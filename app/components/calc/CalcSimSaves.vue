@@ -34,6 +34,7 @@ const emit = defineEmits<{ apply: [params: Record<string, number>] }>()
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
 const sims = useSimulations(props.calculator)
+const folha = useCadastroFolha()
 
 const savedNow = ref(false)
 onMounted(async () => {
@@ -60,6 +61,19 @@ async function onSave() {
   if (!props.params || !props.label) return
   if (!isAuthenticated.value) {
     sims.stashPending({ label: props.label, params: props.params, result: props.result })
+    // Sem conta (21/10/2026): a folha de cadastro sobe com a bola de neve da
+    // própria conta; confirmado o código, salva a simulação estacionada. A
+    // folha desenha a conta de juros compostos; outra calculadora segue pelo
+    // /login, que salva a estacionada na volta.
+    const { initial, monthly, rate, years } = props.params
+    if (props.calculator === 'juros-compostos' && monthly != null && rate != null && years != null) {
+      folha.abrir({ gesto: 'simulacao', inicial: initial ?? 0, mensal: monthly, taxa: rate, anos: years }, async () => {
+        const ok = await sims.savePending()
+        if (ok) savedNow.value = true
+        return ok
+      }, deepLink())
+      return
+    }
     await navigateTo(`/login?redirect=${encodeURIComponent(deepLink())}`)
     return
   }

@@ -30,18 +30,9 @@ const { authFetch } = useApi()
 const meCliente = useMeCliente()
 const route = useRoute()
 
-interface Opt { value: string; label: string; desc: string }
-const GOALS: Opt[] = [
-  { value: 'acompanhar-carteira', label: 'Acompanhar minha carteira', desc: 'Seu patrimônio, o dia e o porquê de cada movimento.' },
-  { value: 'decidir-aportes', label: 'Decidir meus próximos aportes', desc: 'Teses, rankings e comparativos com dados.' },
-  { value: 'aprender', label: 'Aprender a investir', desc: 'Guias passo a passo e o glossário em português claro.' },
-  { value: 'ferramentas', label: 'Usar as ferramentas', desc: 'Calculadoras, raio-x de ETF e o MCP pra usar com IA.' },
-]
-const EXPS: Opt[] = [
-  { value: 'iniciante', label: 'Estou começando', desc: 'Explica tudo, sem pressa.' },
-  { value: 'intermediario', label: 'Já invisto', desc: 'Direto ao ponto, com contexto.' },
-  { value: 'avancado', label: 'Invisto há anos', desc: 'Só o dado e a leitura.' },
-]
+// as perguntas ficam em utils/onboarding.ts: a folha de cadastro faz as mesmas
+const GOALS = ONBOARDING_OBJETIVOS
+const EXPS = ONBOARDING_EXPERIENCIAS
 // tela final por objetivo — a resposta precisa mudar o que vem depois,
 // senão o usuário aprende que o modal era burocracia
 const DONE: Record<string, { line: string; cta: string; to: string }> = {
@@ -52,6 +43,10 @@ const DONE: Record<string, { line: string; cta: string; to: string }> = {
 }
 
 const gate = useState<'unknown' | 'needed' | 'done'>('nu:onb-gate', () => 'unknown')
+// A folha de cadastro (CadastroFolha, 21/10/2026) faz as mesmas perguntas no
+// fim do cadastro: enquanto ela está aberta, este modal não abre por cima.
+// Se a pessoa fechar a folha antes de responder, o gate volta a valer aqui.
+const naFolha = useState<boolean>('nu:onb-na-folha', () => false)
 const open = ref(false)
 const step = ref<1 | 2 | 3>(1)
 const goal = ref<string | null>(null)
@@ -65,6 +60,7 @@ watch(open, (o) => {
 })
 
 async function check() {
+  if (naFolha.value) return
   if (!isAuthenticated.value || route.path === '/login' || route.path.startsWith('/business')) return
   if (gate.value !== 'unknown') {
     open.value = gate.value === 'needed'
@@ -103,6 +99,10 @@ onMounted(() => {
 // navegar pra qualquer outra página
 watch(() => route.path, () => {
   if (gate.value === 'unknown') void check()
+})
+// a folha de cadastro fechou: respondeu lá (gate 'done') ou saiu antes (vale aqui)
+watch(naFolha, (v) => {
+  if (!v && isAuthenticated.value) void check()
 })
 
 function pickGoal(v: string) {
