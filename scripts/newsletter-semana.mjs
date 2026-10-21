@@ -882,10 +882,21 @@ function montarPreheader(dados) {
 }
 
 // ——— e-mail (HTML com estilo inline) ———
+//
+// A mesma base visual dos e-mails do Backend (App\Mail\Visual e os componentes
+// <x-email.*>, versão 2 aprovada pelo dono em 21/10/2026): branco, tudo
+// centrado, a fonte do sistema, o herói escuro com o brilho e as barras da
+// semana, blocos cinza e um azul. O <style> do <head> é o mesmo da casca do
+// Backend (celular e modo escuro do Apple Mail); o resto é inline.
 
-const COR = { navy: '#0E1A2B', creme: '#F4F0E8', azul: '#2F6AFF', branco: '#FFFFFF', corpo: '#3A3733', cinza: '#6E675B', linha: '#E9E3D7', verde: '#148F4E', vermelho: '#D6323B', cremeTexto: 'rgba(244,240,232,0.72)' }
-const FONTE = "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
-const corVar = (v) => (v > 0 ? COR.verde : v < 0 ? COR.vermelho : COR.navy)
+const COR = {
+  branco: '#FFFFFF', bloco: '#F5F5F7', tinta: '#1D1D1F', texto: '#424245', apoio: '#6E6E73', nota: '#86868B',
+  linha: '#E5E5EA', linhaBloco: '#DCDCE1', azul: '#2F6AFF', heroi: '#0A1020', heroiApoio: '#A1A1A6', heroiTinta: '#F5F5F7',
+  alta: '#15803D', queda: '#C9302C', barraAlta: '#30D158', barraQueda: '#FF6961',
+}
+const FONTE = "-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif"
+const LOGO = `${SITE}/email-logo.png`
+const BRILHO = `${SITE}/email/brilho.jpg`
 /** Comentário HTML com a fonte do número; "--" dentro de comentário quebra o HTML. */
 const comentario = (t) => `<!-- ${String(t).replace(/-{2,}/g, (m) => m.split('').join(' '))} -->`
 /** "data-com" quebrava no hífen na coluna estreita do celular. */
@@ -894,80 +905,170 @@ const semQuebra = (html) => html.replace(/\b(data-com|datas-com)\b/gi, '<span st
 /** "R$" e "US$" não ficam sozinhos no fim da linha ("giro de R$ / 29 bilhões"). */
 const moedaColada = (html) => html.replace(/\b(R\$|US\$) (?=\d)/g, '$1&nbsp;')
 
+/** O <style> da casca do Backend (resources/views/components/email/layout.blade.php). */
+const ESTILO = `:root { color-scheme: light dark; supported-color-schemes: light dark; }
+body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+img { border: 0; outline: none; text-decoration: none; }
+a { text-decoration: none; }
+@media only screen and (max-width: 620px) {
+  .rd-h1 { font-size: 36px !important; }
+  .rd-num { font-size: 52px !important; }
+  .rd-heroi-pad { padding: 38px 20px 34px !important; }
+  .rd-lista-pad { padding: 2px 18px !important; }
+  .rd-cartao-pad { padding: 22px 20px !important; }
+}
+@media (prefers-color-scheme: dark) {
+  .rd-fundo { background: #000000 !important; }
+  .rd-bloco { background: #1C1C1E !important; }
+  .rd-tinta { color: #F5F5F7 !important; }
+  .rd-texto { color: #E5E5EA !important; }
+  .rd-apoio { color: #A1A1A6 !important; }
+  .rd-nota { color: #8E8E93 !important; }
+  .rd-linha { border-color: #38383A !important; }
+  .rd-azul { color: #5E8BFF !important; }
+}`
+
 function htmlEmail(dados) {
   return moedaColada(montarHtml(dados))
 }
 
 function montarHtml(dados) {
   const { sem, ibov, noticias, proventos, redentia } = dados
-  const eyebrow = (t) => `<div style="font-family:${FONTE};font-size:12px;line-height:16px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:${COR.azul};">${esc(t)}</div>`
-  const nota = (t) => `<p style="margin:12px 0 0;font-family:${FONTE};font-size:12px;line-height:18px;font-weight:500;color:${COR.cinza};">${esc(t)}</p>`
-  const secao = (primeira, miolo, nota0) => `
-          <tr><td style="padding:${primeira ? '32px' : '28px'} 32px 4px;${primeira ? '' : `border-top:1px solid ${COR.linha};`}">${nota0 ? `\n            ${comentario(nota0)}` : ''}
-            ${miolo}
-          </td></tr>`
-  const blocos = []
+  const fonte = `font-family:${FONTE};`
+  const linhas = []
+  const linha = (padding, miolo) => linhas.push(`
+        <tr><td style="padding:${padding};">${miolo}
+        </td></tr>`)
+  const secaoTitulo = (t, apoio) => `
+          <h2 class="rd-tinta" style="margin:0;${fonte}font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;color:${COR.tinta};">${esc(t)}</h2>${apoio ? `
+          <p class="rd-apoio" style="margin:8px 0 0;${fonte}font-size:17px;line-height:1.45;color:${COR.apoio};">${apoio}</p>` : ''}
+          <div style="height:16px;line-height:16px;font-size:0;">&nbsp;</div>`
+  const bloco = (tipo, miolo, extra = '') => `
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rd-bloco" style="border-collapse:separate;background:${COR.bloco};border-radius:24px;${extra}">
+            <tr><td class="${tipo === 'cartao' ? 'rd-cartao-pad' : 'rd-lista-pad'}" style="padding:${tipo === 'cartao' ? '26px' : '4px 24px'};">${miolo}
+            </td></tr>
+          </table>`
+  const nota = (t) => `
+          <p class="rd-nota" style="margin:12px 0 0;${fonte}font-size:12px;line-height:1.5;color:${COR.nota};">${esc(t)}</p>`
+  const linkSeta = (url, t) => `<a href="${esc(url)}" class="rd-azul" style="${fonte}font-size:17px;line-height:1.4;color:${COR.azul};text-decoration:none;">${esc(t)}&nbsp;›</a>`
 
+  // a marca e o título
+  linha('0 0 36px', `<img src="${LOGO}" width="30" height="30" alt="Redentia" style="display:block;margin:0 auto;width:30px;height:30px;border:0;">`)
+  const partes = []
+  if (ibov.ok) partes.push('o Ibovespa')
+  if (noticias.ok) partes.push('as notícias que mexeram na bolsa')
+  if (proventos.ok) partes.push('os proventos da semana que vem')
+  const apoio = partes.length ? `${partes.length > 1 ? `${partes.slice(0, -1).join(', ')} e ${partes.at(-1)}` : partes[0]}.`.replace(/^./, (c) => c.toUpperCase()) : 'O que mexeu com a bolsa na semana.'
+  linhas.push(`
+        <tr><td align="center" style="padding:0 20px;">
+          <div class="rd-azul" style="${fonte}font-size:15px;line-height:1.35;font-weight:600;color:${COR.azul};">O mercado da semana</div>
+          <h1 class="rd-h1 rd-tinta" style="margin:10px 0 0;${fonte}font-size:48px;line-height:1.07;font-weight:600;letter-spacing:-0.03em;color:${COR.tinta};">${esc(intervaloLongo(sem.seg, sem.sex).replace(/ de \d{4}$/, ''))}</h1>
+          <p class="rd-apoio" style="margin:14px auto 0;max-width:460px;${fonte}font-size:19px;line-height:1.45;color:${COR.apoio};">${esc(apoio)}</p>
+        </td></tr>`)
+
+  // o herói: a semana do Ibovespa, com as barras de cada pregão
   if (ibov.ok) {
     const f = frasesIbov(ibov)
-    const tiras = f.dias.map((d) => `<span style="white-space:nowrap;">${esc(d.rot)} <strong style="font-weight:700;color:${d.var === null ? COR.cinza : corVar(d.var)};">${esc(d.txt)}</strong></span>`).join(`<span style="color:${COR.linha};"> &nbsp;|&nbsp; </span>`)
-    blocos.push(secao(true, `${eyebrow('A semana em uma frase')}
-            <p style="margin:12px 0 0;font-family:${FONTE};font-size:21px;line-height:31px;font-weight:700;color:${COR.navy};">${esc(f.frase.antes)}<span style="color:${corVar(f.frase.pct)};white-space:nowrap;">${esc(pctSemSinal(f.frase.pct))}</span>${esc(f.frase.depois)}${f.dolar ? ` ${esc(f.dolar)}` : ''}</p>
-            <p style="margin:14px 0 0;font-family:${FONTE};font-size:13px;line-height:22px;font-weight:500;color:${COR.cinza};">${tiras}</p>
-            ${nota(f.fonte)}`, `fonte: ${API}/indices/IBOV/prices — ${dataBr(ibov.referencia.data)} ${pontos2(ibov.referencia.valor)} e ${dataBr(ibov.fechamento.data)} ${pontos2(ibov.fechamento.valor)}; variação ${pct(ibov.variacao, 4)}${ibov.dolar ? `; PTAX ${dataBr(ibov.dolar.data)} R$ ${NF4.format(ibov.dolar.valor)} (${API}/macro/snapshot)` : ''}`))
+    const seg = segundaDe(ibov.fechamento.data)
+    const diasSemana = [0, 1, 2, 3, 4].map((i) => {
+      const d = soma(seg, i)
+      const x = ibov.diarios.find((y) => y.data === d)
+      return { d, rot: DIAS[diaDaSemana(d)].slice(0, 3), var: x ? x.var : null, feriado: !x && SEM_PREGAO_B3.has(d), futuro: !x && !SEM_PREGAO_B3.has(d) }
+    })
+    const maior = Math.max(...diasSemana.map((x) => Math.abs(x.var ?? 0)), 0.01)
+    const altura = (v) => Math.max(4, Math.round((Math.abs(v) / maior) * 56))
+    const coluna = (x) => {
+      const ultimo = x.d === ibov.fechamento.data
+      const rotulo = `<div style="${fonte}font-size:12px;line-height:1.3;${ultimo ? 'font-weight:600;' : ''}color:${x.var === null ? '#636366' : ultimo ? COR.heroiTinta : COR.heroiApoio};">${esc(x.feriado ? 'feriado' : x.rot)}</div>`
+      const valor = x.var === null ? '' : `<div style="${fonte}font-size:12px;line-height:1.3;font-weight:600;color:${COR.heroiTinta};white-space:nowrap;">${esc(pct(x.var))}</div>`
+      const barra = (cor) => `<div style="width:28px;height:${altura(x.var)}px;line-height:0;font-size:0;border-radius:6px;background:${cor};margin:0 auto;">&nbsp;</div>`
+      const cima = x.var !== null && x.var >= 0 ? `${valor}<div style="height:5px;line-height:5px;font-size:0;">&nbsp;</div>${barra(COR.barraAlta)}` : ''
+      const baixo = x.var !== null && x.var < 0 ? `${barra(COR.barraQueda)}<div style="height:5px;line-height:5px;font-size:0;">&nbsp;</div>${valor}` : ''
+      return `<td width="56" align="center" style="width:56px;padding:0 6px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr><td align="center" valign="bottom" style="height:84px;">${cima}</td></tr>
+                    <tr><td style="height:1px;line-height:1px;font-size:0;background:rgba(245,245,247,0.22);">&nbsp;</td></tr>
+                    <tr><td align="center" valign="top" style="height:34px;">${baixo}</td></tr>
+                    <tr><td align="center" style="padding-top:6px;">${rotulo}</td></tr>
+                  </table>
+                </td>`
+    }
+    const sub = [`${pontos(ibov.fechamento.valor)} pontos`, ibov.dolar ? `R$ ${NF4.format(ibov.dolar.valor)} o dólar` : null].filter(Boolean).join(' · ')
+    linhas.push(`
+        <tr><td style="padding:36px 0 0;">
+          ${comentario(`fonte: ${API}/indices/IBOV/prices — ${dataBr(ibov.referencia.data)} ${pontos2(ibov.referencia.valor)} e ${dataBr(ibov.fechamento.data)} ${pontos2(ibov.fechamento.valor)}; variação ${pct(ibov.variacao, 4)}${ibov.dolar ? `; PTAX ${dataBr(ibov.dolar.data)} R$ ${NF4.format(ibov.dolar.valor)} (${API}/macro/snapshot)` : ''}`)}
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:${COR.heroi};background-image:url('${BRILHO}');background-repeat:no-repeat;background-position:center top;background-size:600px auto;border-radius:28px;">
+            <tr><td align="center" class="rd-heroi-pad" style="padding:44px 32px 38px;border-radius:28px;">
+              <div style="${fonte}font-size:15px;line-height:1.35;font-weight:500;color:${COR.heroiApoio};">Ibovespa na semana${ibov.parcial ? `, até ${esc(diaNome(ibov.fechamento.data))}` : ''}</div>
+              <div class="rd-num" style="margin-top:10px;${fonte}font-size:80px;line-height:1;font-weight:300;letter-spacing:-0.045em;color:${COR.heroiTinta};white-space:nowrap;">${esc(pct(ibov.variacao))}</div>
+              <div style="margin-top:10px;${fonte}font-size:17px;line-height:1.4;color:${COR.heroiApoio};">${esc(sub)}</div>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px auto 0;">
+                <tr>
+                ${diasSemana.map(coluna).join('\n                ')}
+                </tr>
+              </table>
+              <div style="margin-top:22px;${fonte}font-size:12px;line-height:1.5;color:${COR.nota};">${esc(f.fonte)}</div>
+            </td></tr>
+          </table>
+        </td></tr>`)
   }
 
+  // o que mexeu com a bolsa: um bloco por notícia
   if (noticias.ok) {
-    const itens = noticias.escolhidas.map((e, i) => {
+    const itens = noticias.escolhidas.map((e) => {
       const t = e.t
       return `
-            <div style="margin-top:${i === 0 ? '14px' : '24px'};">
-              ${comentario(`fonte: ${t.url} · /research/news id ${t.id} · ${t.publishedAt}`)}
-              <div style="font-family:${FONTE};font-size:12px;line-height:16px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:${COR.cinza};">${esc(nomeFonte(t.source))} · ${esc(diaNome(e.quando.data))}, ${esc(dataCurta(e.quando.data))}</div>
-              <a href="${esc(t.url)}" style="display:block;margin-top:6px;font-family:${FONTE};font-size:17px;line-height:25px;font-weight:700;color:${COR.navy};text-decoration:none;">${esc(t.title)}</a>
-              <p style="margin:8px 0 0;font-family:${FONTE};font-size:15px;line-height:24px;font-weight:500;color:${COR.corpo};"><span style="font-weight:700;color:${COR.azul};">A leitura da IA:</span> ${esc(e.leitura)}</p>
-            </div>`
+          ${comentario(`fonte: ${t.url} · /research/news id ${t.id} · ${t.publishedAt}`)}${bloco('cartao', `
+              <div class="rd-nota" style="${fonte}font-size:13px;line-height:1.35;font-weight:600;color:${COR.nota};">${esc(nomeFonte(t.source))} · ${esc(diaNome(e.quando.data))}, ${esc(dataCurta(e.quando.data))}</div>
+              <a href="${esc(t.url)}" class="rd-tinta" style="display:block;margin-top:8px;${fonte}font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:${COR.tinta};text-decoration:none;">${esc(t.title)}</a>
+              <p class="rd-texto" style="margin:10px 0 0;${fonte}font-size:16px;line-height:1.5;color:${COR.texto};"><span class="rd-azul" style="font-weight:600;color:${COR.azul};">A leitura da IA</span> · ${esc(e.leitura)}</p>`, 'margin-bottom:12px;')}`
     }).join('')
-    blocos.push(secao(!blocos.length, `${eyebrow('O que mexeu com a bolsa')}${itens}
-            ${nota('Títulos e fatos: os veículos citados, com a data da publicação. A leitura é da IA da Redentia.')}`))
+    linha('56px 0 0', `${secaoTitulo('O que mexeu com a bolsa')}${itens}${nota('Títulos e fatos: os veículos citados, com a data da publicação. A leitura é da IA da Redentia.')}`)
   }
 
+  // proventos da semana que vem: datas-com e pagamentos, em listas
   if (proventos.ok) {
-    const th = (t, alinha = 'left') => `<th align="${alinha}" style="padding:8px 6px 8px 0;font-family:${FONTE};font-size:11px;line-height:14px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:${COR.cinza};border-bottom:1px solid ${COR.linha};">${t}</th>`
-    const td = (t, extra = '') => `<td style="padding:9px 6px 9px 0;font-family:${FONTE};font-size:14px;line-height:20px;font-weight:500;color:${COR.corpo};border-bottom:1px solid ${COR.linha};vertical-align:top;${extra}">${t}</td>`
-    const papel = (x) => `<strong style="font-weight:700;color:${COR.navy};">${esc(x.ticker)}</strong>${x.nome ? `<br><span style="font-size:12px;color:${COR.cinza};">${esc(x.nome)}</span>` : ''}`
-    const tabela = (titulo, explica, linhas, chave) => linhas.length ? `
-            <div style="margin-top:16px;font-family:${FONTE};font-size:15px;line-height:22px;font-weight:700;color:${COR.navy};">${semQuebra(esc(titulo))}</div>
-            <div style="margin-top:2px;font-family:${FONTE};font-size:13px;line-height:19px;font-weight:500;color:${COR.cinza};">${semQuebra(esc(explica))}</div>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:6px;border-collapse:collapse;">
-              <tr>${th('Papel')}${th('Provento')}${th('R$ por ação ou cota', 'right')}${th(chave === 'dataCom' ? 'Pagamento' : '<span style="white-space:nowrap;">Data-com</span>', 'right')}</tr>
-              ${linhas.map((x) => `${comentario(`fonte: ${x.fonte} · ${x.rotulo} ${x.valor} · data-com ${x.dataCom ?? '—'} · pagamento ${x.pagamento ?? 'a definir'}`)}<tr>${td(papel(x))}${td(esc(x.rotulo))}${td(esc(NF24.format(x.valor)), 'text-align:right;white-space:nowrap;')}${td(esc(chave === 'dataCom' ? (x.pagamento ? dataCurta(x.pagamento) : 'a definir') : (x.dataCom ? dataCurta(x.dataCom) : '—')), 'text-align:right;white-space:nowrap;')}</tr>`).join('\n              ')}
-            </table>` : ''
-    const porDia = (lista, campo) => {
-      const grupos = []
-      for (const x of lista) {
-        const g = grupos.at(-1)
-        if (g && g.data === x[campo]) g.linhas.push(x)
-        else grupos.push({ data: x[campo], linhas: [x] })
-      }
-      return grupos
+    const linhaProvento = (x, ultima, chave) => {
+      const quando = chave === 'dataCom'
+        ? `data-com ${diaNome(x.dataCom).slice(0, 3)}, ${dataCurta(x.dataCom)}`
+        : `paga ${diaNome(x.pagamento).slice(0, 3)}, ${dataCurta(x.pagamento)}`
+      return `
+              ${comentario(`fonte: ${x.fonte} · ${x.rotulo} ${x.valor} · data-com ${x.dataCom ?? '—'} · pagamento ${x.pagamento ?? 'a definir'}`)}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td class="rd-linha" style="padding:18px 0;${ultima ? '' : `border-bottom:1px solid ${COR.linhaBloco};`}">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                  <td valign="middle"><div class="rd-tinta" style="${fonte}font-size:17px;line-height:1.35;font-weight:600;color:${COR.tinta};">${esc(x.ticker)}</div>${x.nome ? `<div class="rd-apoio" style="margin-top:2px;${fonte}font-size:14px;line-height:1.35;color:${COR.apoio};">${esc(x.nome)}</div>` : ''}</td>
+                  <td align="right" valign="middle" style="padding-left:16px;white-space:nowrap;"><div class="rd-tinta" style="${fonte}font-size:17px;line-height:1.35;font-weight:600;color:${COR.tinta};">R$ ${esc(NF24.format(x.valor))}</div><div class="rd-apoio" style="margin-top:2px;${fonte}font-size:14px;line-height:1.35;color:${COR.apoio};">${semQuebra(esc(`${x.rotulo} · ${quando}`))}</div></td>
+                </tr></table>
+              </td></tr></table>`
     }
-    const blocoCom = porDia(proventos.datasCom, 'dataCom').map((g) => tabela(`Data-com ${diaNome(g.data)}, ${dataCurta(g.data)}`, 'Quem tiver o papel no fim deste pregão recebe.', g.linhas, 'dataCom')).join('')
-    const blocoPag = porDia(proventos.pagamentos, 'pagamento').map((g) => tabela(`Pagamento ${diaNome(g.data)}, ${dataCurta(g.data)}`, 'Cai na conta de quem tinha o papel na data-com.', g.linhas, 'pagamento')).join('')
-    blocos.push(secao(!blocos.length, `${eyebrow('Proventos da semana que vem')}
-            <p style="margin:12px 0 0;font-family:${FONTE};font-size:15px;line-height:24px;font-weight:500;color:${COR.corpo};">${semQuebra('Datas-com')} e pagamentos de ${esc(intervaloLongo(proventos.prox.seg, proventos.prox.sex))}, entre as ações do Ibovespa e os fundos imobiliários mais conhecidos.</p>${blocoCom}${blocoPag}
-            ${nota(`Fonte: comunicados das empresas e dos fundos à B3, compilados pela Redentia em ${dataBr(AGORA.hoje)}. Valor bruto, antes do imposto quando há.`)}`))
+    const lista = (titulo, itens, chave) => itens.length ? `
+          <div class="rd-nota" style="margin:${titulo === 'Pagamentos' && proventos.datasCom.length ? '20px' : '0'} 0 8px;${fonte}font-size:13px;line-height:1.35;font-weight:600;color:${COR.nota};">${semQuebra(esc(titulo))}</div>${bloco('lista', itens.map((x, i) => linhaProvento(x, i === itens.length - 1, chave)).join(''))}` : ''
+    linha('56px 0 0', `${secaoTitulo('Proventos da semana que vem', `${semQuebra('Datas-com')} e pagamentos de ${esc(intervaloLongo(proventos.prox.seg, proventos.prox.sex))}, entre as ações do Ibovespa e os fundos imobiliários mais conhecidos.`)}${lista('Datas-com', proventos.datasCom, 'dataCom')}${lista('Pagamentos', proventos.pagamentos, 'pagamento')}${nota(`Fonte: comunicados das empresas e dos fundos à B3, compilados pela Redentia em ${dataBr(AGORA.hoje)}. Valor bruto por ação ou cota, antes do imposto quando há.`)}`)
   }
 
-  blocos.push(secao(!blocos.length, `${eyebrow('Da Redentia')}
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;border-collapse:separate;">
-              <tr><td style="background-color:${COR.creme};border-left:4px solid ${COR.azul};border-radius:12px;padding:18px 20px;">
-                <div style="font-family:${FONTE};font-size:12px;line-height:16px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:${COR.cinza};">${esc(redentia.tipo)}</div>
-                <a href="${esc(redentia.url)}" style="display:block;margin-top:6px;font-family:${FONTE};font-size:17px;line-height:25px;font-weight:800;color:${COR.navy};text-decoration:none;">${esc(redentia.titulo)}</a>
-                <p style="margin:6px 0 0;font-family:${FONTE};font-size:14px;line-height:22px;font-weight:500;color:${COR.corpo};">${esc(redentia.texto)}</p>
-                <a href="${esc(redentia.url)}" style="display:inline-block;margin-top:12px;font-family:${FONTE};font-size:14px;line-height:20px;font-weight:700;color:${COR.azul};text-decoration:none;">${redentia.tipo === 'Guia' ? 'Ler o guia' : 'Abrir a ferramenta'} &rarr;</a>
-              </td></tr>
-            </table>`))
+  // da Redentia: um guia ou ferramenta
+  linha('56px 0 0', `${secaoTitulo('Da Redentia')}${bloco('cartao', `
+              <div class="rd-nota" style="${fonte}font-size:13px;line-height:1.35;font-weight:600;color:${COR.nota};">${esc(redentia.tipo)}</div>
+              <a href="${esc(redentia.url)}" class="rd-tinta" style="display:block;margin-top:8px;${fonte}font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-0.01em;color:${COR.tinta};text-decoration:none;">${esc(redentia.titulo)}</a>
+              <p class="rd-apoio" style="margin:8px 0 0;${fonte}font-size:16px;line-height:1.5;color:${COR.apoio};">${esc(redentia.texto)}</p>
+              <p style="margin:12px 0 0;">${linkSeta(redentia.url, redentia.tipo === 'Guia' ? 'Ler o guia' : 'Abrir a ferramenta')}</p>`)}`)
+
+  // o rodapé: a prévia fica entre as marcas; no envio, o Backend troca pelo
+  // rodapé de cada assinante (NewsletterMail::comRodape, o <x-email.rodape>)
+  linhas.push(`
+        <tr><td>
+          <!--rodape-assinante-->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:64px 0 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td class="rd-linha rd-nota" style="border-top:1px solid ${COR.linha};padding-top:20px;${fonte}font-size:12px;line-height:1.5;color:${COR.nota};">
+                <p style="margin:0;">Você recebe este e-mail porque assinou O mercado da semana. <span style="color:${COR.apoio};text-decoration:underline;">Cancelar inscrição</span></p>
+                <p style="margin:10px 0 0;">Conteúdo educacional. Não é recomendação de investimento.</p>
+                <p style="margin:10px 0 0;">Redentia Tecnologia S.A. · <a href="${SITE}" style="color:${COR.apoio};text-decoration:underline;">redentia.com.br</a></p>
+              </td>
+            </tr></table>
+          </td></tr></table>
+          <!--/rodape-assinante-->
+        </td></tr>`)
 
   return `<!doctype html>
 <html lang="pt-BR">
@@ -975,30 +1076,19 @@ function montarHtml(dados) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <title>${esc(dados.assunto)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+${ESTILO}
+</style>
 </head>
-<body style="margin:0;padding:0;background-color:${COR.creme};-webkit-text-size-adjust:100%;">
-<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:${COR.creme};opacity:0;">${esc(dados.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${COR.creme};">
-  <tr><td align="center" style="padding:24px 12px 40px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
-      <tr><td style="background-color:${COR.navy};border-radius:16px 16px 0 0;padding:28px 32px 30px;">
-        <div style="font-family:${FONTE};font-size:13px;line-height:16px;font-weight:800;letter-spacing:3px;color:${COR.creme};">REDENTIA</div>
-        <div style="margin-top:22px;width:32px;height:3px;background-color:${COR.azul};line-height:3px;font-size:0;">&nbsp;</div>
-        <div style="margin-top:14px;font-family:${FONTE};font-size:12px;line-height:16px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:${COR.cremeTexto};">O mercado da semana</div>
-        <div style="margin-top:6px;font-family:${FONTE};font-size:24px;line-height:31px;font-weight:800;color:${COR.creme};">${esc(intervaloLongo(sem.seg, sem.sex))}</div>
-      </td></tr>
-      <tr><td style="background-color:${COR.branco};border-radius:0 0 16px 16px;padding:0 0 28px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${blocos.join('')}
-        </table>
-      </td></tr>
-      <tr><td style="padding:22px 32px 0;text-align:center;">
-        <p style="margin:0;font-family:${FONTE};font-size:12px;line-height:18px;font-weight:700;color:${COR.navy};">Conteúdo educacional. Não é recomendação de investimento.</p>
-        <p style="margin:6px 0 0;font-family:${FONTE};font-size:12px;line-height:18px;font-weight:500;color:${COR.cinza};"><a href="${SITE}" style="color:${COR.cinza};text-decoration:underline;">redentia.com.br</a></p>
-        <!--rodape-assinante-->
-      </td></tr>
+<body class="rd-fundo" style="margin:0;padding:0;background:${COR.branco};">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${COR.branco};opacity:0;">${esc(dados.preheader)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="rd-fundo" style="background:${COR.branco};">
+  <tr><td align="center" style="padding:56px 20px 48px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">${linhas.join('')}
     </table>
   </td></tr>
 </table>
