@@ -84,3 +84,27 @@ test('copy: o /dividendos/{TICKER} segue a Lei 15.270, o JCP a 17,5% e os 100 co
   assert.match(div, /17,5% retidos na fonte/)
   assert.match(div, /100 cotistas/)
 })
+
+test('copy: glossário, ranking de DY e calculadoras seguem a Lei 15.270, o JCP a 17,5% e os 100 cotistas', () => {
+  // as duas calculadoras do cluster de dividendos (acoes, dividend-yield)
+  // ficam de fora até o fim da medição; o preço-teto, por veto do dono
+  for (const f of [
+    'app/content/rankings/copy/maiores-dividend-yield.ts',
+    'app/content/glossario/grupo-1.ts',
+    'app/content/glossario/grupo-2.ts',
+    'app/content/glossario/grupo-4.ts',
+    'app/pages/calculadora/juros-compostos/index.vue',
+    'app/pages/calculadora/imposto-renda.vue',
+  ]) {
+    const t = ler(f)
+    assert.doesNotMatch(t, /PL 1\.087/, f)
+    assert.doesNotMatch(t, /15% (de IR )?retid/, f)
+    assert.doesNotMatch(t, /\b50\+? (ou mais )?cotistas/, f)
+    assert.doesNotMatch(t, /[Aa]tualmente (são )?(ISENTOS|isentos)/, f)
+  }
+  assert.match(ler('app/content/glossario/grupo-2.ts'), /17,5% de IR retido na fonte/)
+  assert.match(ler('app/content/rankings/copy/maiores-dividend-yield.ts'), /Lei 15\.270\/2025/)
+  // onde o erro era "isento" sem limite, o limite tem de estar escrito
+  for (const f of ['app/content/glossario/grupo-1.ts', 'app/content/glossario/grupo-4.ts', 'app/pages/calculadora/juros-compostos/index.vue'])
+    assert.match(ler(f), /até R\$ 50 mil por mês/, f)
+})

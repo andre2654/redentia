@@ -87,10 +87,10 @@ const copy: RankingCopy = {
       h2: 'Dividendos vs JCP (Juros sobre Capital Próprio)',
       paragraphs: [
         'As empresas brasileiras podem remunerar acionistas de duas formas, e ambas contam pro dividend yield deste ranking.',
-        'Dividendos: distribuição direta de lucro líquido. Atualmente ISENTOS de Imposto de Renda pra pessoa física no recebimento (regra desde 1996).',
-        'JCP (Juros sobre Capital Próprio): remuneração que a empresa pode deduzir da base do IR corporativo (IRPJ + CSLL), gerando economia tributária. Ao acionista chega líquido com 15% de IR retido na fonte, mas como a empresa pagou menos imposto, o efeito combinado costuma ser melhor que dividendo puro.',
+        'Dividendos: distribuição direta de lucro líquido. Isentos de Imposto de Renda pra pessoa física de 1996 a 2025; desde 2026 (Lei 15.270/2025), a isenção vale até R$ 50 mil por mês recebidos da mesma empresa, e acima disso a empresa retém 10% sobre o total.',
+        'JCP (Juros sobre Capital Próprio): remuneração que a empresa pode deduzir da base do IR corporativo (IRPJ + CSLL), gerando economia tributária. Ao acionista chega líquido com 17,5% de IR retido na fonte (15% até 2025), mas como a empresa pagou menos imposto, o efeito combinado costuma ser melhor que dividendo puro.',
         'Por que bancos usam tanto JCP: Itaú, Bradesco, Santander e BB têm caixa de sobra e patrimônio líquido alto, então maximizam o JCP pra reduzir IR corporativo. Por isso aparecem todo mês com DY consistente.',
-        'Tributação 2026: o PL 1.087/2025 propõe alíquota de 10% sobre dividendos recebidos acima de R$ 50 mil/mês por pessoa física. Está em discussão no Senado, vigência provável a partir de 2027 caso aprovado. Não afeta investidores de renda passiva comum, mas muda o cálculo pra grandes patrimônios.',
+        'Tributação desde 2026: pela Lei 15.270/2025, quando uma mesma empresa paga mais de R$ 50 mil no mês à mesma pessoa física, retém 10% de IR na fonte sobre o total. Lucros apurados até 2025, com distribuição aprovada até 31/12/2025, ficam fora da regra. Não afeta investidores de renda passiva comum, mas muda o cálculo pra grandes patrimônios, que também entram na tributação mínima anual acima de R$ 600 mil de renda.',
       ],
     },
     {
@@ -123,7 +123,7 @@ const copy: RankingCopy = {
       paragraphs: [
         'DY (Dividend Yield): Percentual de dividendos pagos nos últimos 12 meses dividido pelo preço atual. Mostra rentabilidade em proventos.',
         'TTM (Trailing Twelve Months): Janela móvel dos últimos 12 meses. Usada pra calcular DY, lucro, receita.',
-        'JCP (Juros sobre Capital Próprio): Forma de remuneração ao acionista que a empresa pode deduzir do IR corporativo. Tem 15% de IR retido na fonte.',
+        'JCP (Juros sobre Capital Próprio): Forma de remuneração ao acionista que a empresa pode deduzir do IR corporativo. Tem 17,5% de IR retido na fonte desde 2026.',
         'Payout: Percentual do lucro líquido distribuído como dividendo. Acima de 80% pra ações é arriscado.',
         'Value Trap: Ação com DY artificialmente alto porque o preço caiu por problemas fundamentais. Dividendos futuros podem ser cortados.',
         'Data-com / Data-ex: Data-com: último dia pra ter direito ao dividendo. Data-ex: dia em que a ação passa a ser negociada sem direito ao provento.',
@@ -169,11 +169,11 @@ const copy: RankingCopy = {
     },
     {
       q: 'Qual a diferença entre dividendos e JCP?',
-      a: 'Dividendos vêm direto do lucro líquido e atualmente são isentos de IR pra pessoa física no recebimento. JCP (Juros sobre Capital Próprio) é uma forma de remuneração que a empresa pode deduzir do IR corporativo, mas tem 15% retido na fonte ao chegar no acionista. Bancos como Itaú e Bradesco usam muito JCP por economia tributária. Ambos contam para o cálculo do DY neste ranking.',
+      a: 'Dividendos vêm direto do lucro líquido e são isentos de IR pra pessoa física até R$ 50 mil por mês recebidos da mesma empresa (acima disso, desde 2026, há retenção de 10% sobre o total). JCP (Juros sobre Capital Próprio) é uma forma de remuneração que a empresa pode deduzir do IR corporativo, mas tem 17,5% retidos na fonte ao chegar no acionista. Bancos como Itaú e Bradesco usam muito JCP por economia tributária. Ambos contam para o cálculo do DY neste ranking.',
     },
     {
       q: 'Como funciona a tributação de dividendos a partir de 2026?',
-      a: 'O PL 1.087/2025 propõe alíquota de 10% sobre dividendos recebidos acima de R$ 50 mil por mês por pessoa física. Está em apreciação no Senado, vigência provável a partir de 2027 caso aprovado. Para investidor de renda passiva comum (abaixo do limite mensal), continua isento. Para grandes patrimônios muda significativamente o cálculo de retorno líquido.',
+      a: 'Desde 1º de janeiro de 2026, pela Lei 15.270/2025, quando uma mesma empresa paga a uma mesma pessoa física mais de R$ 50 mil em dividendos num mês, ela retém 10% de IR na fonte sobre o total pago. Para o investidor de renda passiva comum, abaixo do limite mensal, o dividendo continua isento. Para grandes patrimônios muda o cálculo de retorno líquido, e quem recebe mais de R$ 600 mil no ano entra também na tributação mínima anual, a partir da declaração de 2027.',
     },
     {
       q: 'O que é value trap em dividendos?',

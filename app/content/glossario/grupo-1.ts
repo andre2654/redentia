@@ -402,11 +402,11 @@ export const GRUPO_1: GlossaryTerm[] = [
     faq: [
       {
         q: 'Dividendos pagam imposto de renda?',
-        a: 'No Brasil, os dividendos costumam ser isentos de imposto de renda para a pessoa física, enquanto os juros sobre capital próprio (JCP) têm retenção na fonte. As regras tributárias podem mudar, então confirme a legislação vigente antes de planejar.',
+        a: 'Até R$ 50 mil por mês recebidos da mesma empresa, não: o dividendo segue isento para a pessoa física. Acima disso, desde 2026 (Lei 15.270/2025), a empresa retém 10% de IR na fonte sobre o total do mês. Os juros sobre capital próprio (JCP) têm 17,5% retidos na fonte. As regras tributárias podem mudar, então confirme a legislação vigente antes de planejar.',
       },
       {
         q: 'Qual a diferença entre dividendos e JCP?',
-        a: 'Ambos remuneram o acionista, mas têm tratamento fiscal diferente. O dividendo costuma ser isento para a pessoa física; o JCP sofre retenção de imposto na fonte, ainda que costume ser dedutível para a empresa que o paga.',
+        a: 'Ambos remuneram o acionista, mas têm tratamento fiscal diferente. O dividendo é isento para a pessoa física até R$ 50 mil por mês da mesma empresa; o JCP sofre 17,5% de retenção na fonte, ainda que costume ser dedutível para a empresa que o paga.',
       },
       {
         q: 'O que são data com e data ex?',
