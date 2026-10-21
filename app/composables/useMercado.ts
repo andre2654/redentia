@@ -21,6 +21,7 @@ import type {
   NuTesouroGroup,
   NuTesouroHighlight,
   NuThesis,
+  TeseTrajetoria,
   ThesisCardApi,
   TickerApi,
 } from '~/types/market'
@@ -174,6 +175,12 @@ function mapThesis(c: ThesisCardApi, i: number, authed: boolean): NuThesis {
     leftDesc: c.conviction != null ? `${c.description} Convicção ${c.conviction}/100.` : c.description,
     cta: unlocked ? 'Ver a tese completa' : 'Criar conta para desbloquear',
     ctaHref: href,
+    conviction: c.conviction,
+    tickerList: c.tickers ?? [],
+    extraTickers: c.extraTickers,
+    sourcesCount: c.sourcesCount,
+    lastStudyDate: c.lastStudyDate ?? null,
+    rank: c.rankLabel,
   }
 }
 
@@ -207,6 +214,31 @@ export function useNuTheses() {
 
   onMounted(hydrate)
   return { theses, loading }
+}
+
+/**
+ * A trajetória das teses da faixa da home (21/10/2026): a convicção dia a dia
+ * e o desempenho, numa requisição só ao /api/theses-trajetoria (cacheado na
+ * borda). Só no navegador e só para as teses da API: o seed não tem trajetória,
+ * e sem ela a faixa mostra os números da lista.
+ */
+export function useNuTesesTrajetoria(slugs: Ref<string[]>) {
+  const porSlug = shallowRef<Record<string, TeseTrajetoria | null>>({})
+  let pedido = ''
+  async function buscar(lista: string[]) {
+    const chave = lista.join(',')
+    if (!chave || chave === pedido) return
+    pedido = chave
+    try {
+      const res = await $fetch<{ data: Record<string, TeseTrajetoria | null> }>(`/api/theses-trajetoria?slugs=${encodeURIComponent(chave)}`)
+      if (pedido === chave) porSlug.value = res?.data ?? {}
+    }
+    catch { /* a faixa fica com os números da lista */ }
+  }
+  onMounted(() => {
+    watch(slugs, (s) => void buscar(s), { immediate: true })
+  })
+  return { porSlug }
 }
 
 /* ═════ Movers ("O mercado hoje") ═════ */
