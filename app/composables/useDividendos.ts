@@ -97,19 +97,10 @@ function dateShortPt(iso: string): string {
   return `${Number(d)} ${MONTHS_PT[Number(m) - 1] ?? m} ${y}`
 }
 
-const SMALL_WORDS = new Set(['de', 'do', 'da', 'dos', 'das', 'e'])
-/** 'PETROBRAS   PN   N2' → 'Petrobras' (mesma regra do useAcao). */
+/** 'PETROBRAS   PN   N2' → 'Petrobras' (a regra é a do useAcao: utils/nomeB3.ts). */
 function prettyName(raw: string, fiiTradingName?: string | null): string {
   if (fiiTradingName) return fiiTradingName
-  const head = (raw.split(/\s{2,}/)[0] ?? raw)
-    .replace(/\s+(ON|PN[AB]?|UNT|UNS|N1|N2|NM|MA|MB|EJ|ED|ER|ES)$/i, '')
-    .trim()
-  if (!head) return raw
-  return head
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => (SMALL_WORDS.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
-    .join(' ')
+  return nomeDaEmpresa(raw)
 }
 
 /* ————— núcleo de dados (real e seed convergem aqui) ————— */

@@ -111,18 +111,13 @@ function titleCasePt(s: string): string {
     .join(' ')
 }
 /**
- * 'PETROBRAS   PN      N2' → 'Petrobras'. O ProfileResource devolve o nome
- * bruto da B3 (colunas separadas por espaços múltiplos + sufixo de classe);
- * FIIs usam o trading_name do fundamentals quando existe (title-case: vem
- * MAIÚSCULO do scraper).
+ * 'PETROBRAS   PN      N2' → 'Petrobras'. A regra (e o caso da classe grudada
+ * no campo de 12 caracteres, 'ITAUUNIBANCOPN' → 'Itaú Unibanco') mora em
+ * utils/nomeB3.ts, que o useDividendos também usa. FIIs usam o trading_name do
+ * fundamentals quando existe (title-case: vem MAIÚSCULO do scraper).
  */
 function prettyName(raw: string, fiiTradingName?: string | null): string {
-  if (fiiTradingName) return titleCasePt(fiiTradingName)
-  const head = (raw.split(/\s{2,}/)[0] ?? raw)
-    .replace(/\s+(ON|PN[AB]?|UNT|UNS|N1|N2|NM|MA|MB|EJ|ED|ER|ES)$/i, '')
-    .trim()
-  if (!head) return raw
-  return titleCasePt(head)
+  return nomeDaEmpresa(raw, fiiTradingName)
 }
 
 /* ————— motor de regras (cortes documentados; zero LLM) ————— */
