@@ -22,6 +22,18 @@ export function watchlistAdd(base: string, headers: AuthHeaders, ticker: string)
   return $fetch<WatchlistStoreApi>(`${base}/watchlist`, { method: 'POST', headers, body: { ticker } })
 }
 
+/**
+ * POST /watchlist {ticker, alert_price, alert_source} — segue (se ainda não
+ * seguia) e grava o alerta de preço; gravar de novo troca o alvo e arma de novo.
+ */
+export function watchlistSetAlert(base: string, headers: AuthHeaders, ticker: string, alertPrice: number, source = 'preco-teto') {
+  return $fetch<WatchlistStoreApi>(`${base}/watchlist`, {
+    method: 'POST',
+    headers,
+    body: { ticker, alert_price: Math.round(alertPrice * 100) / 100, alert_source: source },
+  })
+}
+
 /** DELETE /watchlist/{ticker} — 404 quando o ticker já não estava na lista. */
 export function watchlistRemove(base: string, headers: AuthHeaders, ticker: string) {
   return $fetch<{ message?: string }>(`${base}/watchlist/${encodeURIComponent(ticker)}`, { method: 'DELETE', headers })

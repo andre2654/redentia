@@ -61,6 +61,10 @@ export default defineNuxtConfig({
       gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-F2QGZNWJTM', // Google Analytics 4
       clarityProjectId: process.env.NUXT_PUBLIC_CLARITY_PROJECT_ID || 'wmh9pyc3io', // Microsoft Clarity
       gtmId: process.env.NUXT_PUBLIC_GTM_ID || 'GTM-M9KBJN7Q', // Google Tag Manager
+      // O formulário da newsletter de sexta na preço teto (useNewsletter). A
+      // inscrição e o envio são do Backend (tópico `newsletter` e
+      // newsletter:enviar). NUXT_PUBLIC_NEWSLETTER_LIGADA=false esconde.
+      newsletterLigada: true,
     },
   },
 

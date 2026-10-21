@@ -564,6 +564,12 @@ usePageSeo({
             Ver análise completa de {{ activeTicker }} →
           </NuxtLink>
 
+          <!-- Captura (21/10/2026): o alerta "avise quando cruzar o preço teto"
+               e a newsletter de sexta, O mercado da semana. O dono
+               liberou mexer na página só para isto: título, H1, URL e rótulos
+               ficam. Ver app/components/calc/CalcCapturaTeto.vue. -->
+          <CalcCapturaTeto :ticker="activeTicker" :alvo="results.consensus.averageFairPrice" />
+
           <div class="pt__insight">
             <strong>Fonte dos dados:</strong> preço e fundamentos calculados com dados públicos da B3, fechamento do último pregão. O preço teto é uma referência, não uma garantia. Analise sempre os fundamentos da empresa, perspectivas futuras e seu perfil de risco antes de investir.
           </div>

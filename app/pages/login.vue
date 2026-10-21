@@ -15,7 +15,7 @@
 // vira o default e o submit por celular é bloqueado com aviso inline (sem
 // isso o request 200-anti-enum "engole" e o código nunca chega).
 //
-// Query params: ?email= (handoff do hero do /mercado e da NuNewsletterBand)
+// Query params: ?email= (handoff do hero do /mercado)
 // pré-seleciona e-mail; ?redirect= (sanitizado — só path interno) é o
 // destino pós-auth e também viaja no redirect_to dos requests de PIN.
 import type {

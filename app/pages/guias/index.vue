@@ -88,7 +88,7 @@ usePageSeo({
       placeholder="Seu melhor e-mail"
       cta="Assinar"
     >
-      <template #title>Os melhores guias,<br>toda semana.</template>
+      <template #title>O mercado da semana,<br>toda sexta.</template>
     </NuNewsletterBand>
   </div>
 </template>
