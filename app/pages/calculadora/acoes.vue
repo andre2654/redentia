@@ -246,6 +246,15 @@ usePageSeo({
       :updated="lastUpdatedText"
     />
 
+    <!-- a seção de CTA logo depois da conta e das tags (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      compacta
+      titulo="Veja como essa conta se adapta à sua vida."
+      texto="Com a conta grátis da Redentia, você guarda as suas contas, conecta a carteira e vê tudo com os seus números de verdade."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
+    />
+
     <!-- ============ Cenários populares (deep-links, texto verbatim) ============ -->
     <CalcBand tone="cream" title="Cenários populares de simulação">
       <template #dek>

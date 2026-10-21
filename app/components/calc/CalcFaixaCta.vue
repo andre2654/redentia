@@ -9,6 +9,9 @@
 // o que a conta dá. Tudo isso existe: contas guardadas, o resumo das 7h30, a
 // carteira pelo Open Finance (no /carteira) e o chat. A preço-teto segue com o
 // cartão dela (veto do dono).
+// Ela aparece duas vezes nas calculadoras: compacta, logo depois da conta e das
+// tags ("coloque uma seção CTA abaixo dos cards das calculadoras, abaixo das
+// tags"), e inteira no fim da página.
 defineProps<{
   titulo: string
   texto: string
@@ -16,6 +19,8 @@ defineProps<{
   primario: { label: string; to: string }
   /** o botão de contorno */
   secundario: { label: string; to: string }
+  /** a versão do meio da página, logo depois da conta e das tags: menos alta */
+  compacta?: boolean
 }>()
 
 // a entrada (título, texto, botões e cápsulas subindo do desfoque) acontece
@@ -47,7 +52,7 @@ const BENEFICIOS = [
 </script>
 
 <template>
-  <section ref="raiz" class="cft" :class="entrada && `cft--${entrada}`">
+  <section ref="raiz" class="cft" :class="[entrada && `cft--${entrada}`, { 'cft--compacta': compacta }]">
     <div class="cft__aurora" aria-hidden="true">
       <span class="cft__luz cft__luz--azul" />
       <span class="cft__luz cft__luz--violeta" />
@@ -81,6 +86,11 @@ const BENEFICIOS = [
   background: var(--nu-blue);
   color: var(--nu-white);
 }
+
+/* a do meio da página (logo depois da conta e das tags): menos alta, título um tom abaixo */
+.cft--compacta { padding: clamp(52px, 6vw, 84px) clamp(22px, 5.5vw, 80px) clamp(46px, 5.4vw, 76px); }
+.cft--compacta .cft__titulo { font-size: var(--nu-fs-h2-sm); }
+.cft--compacta .cft__beneficios { margin-top: 32px; }
 
 /* a luz: três manchas borradas, branca e azul-clara, que andam devagar atrás do título */
 .cft__aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
