@@ -74,6 +74,8 @@ export interface FundamentalsOverviewApi {
       market_cap: number | null
     } | null
     leverage?: { net_debt_to_ebitda: number | null } | null
+    /** mínima e máxima de 52 semanas (a trava da variação do ano, utils/variacaoNoAno.ts) */
+    market?: { min_price_52_weeks: number | null; max_price_52_weeks: number | null } | null
     growth?: { revenue_cagr_5y: number | null; earnings_cagr_5y: number | null } | null
     quality?: {
       return_on_equity: number | null

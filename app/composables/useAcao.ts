@@ -195,6 +195,7 @@ interface Fund {
   revCagr: number | null
   earnGrowth: number | null
   fcf: number | null
+  /** % no ano pela série de preços (utils/variacaoNoAno.ts), preenchido no loadAcao */
   ytd: number | null
   fiiVpCota: number | null
   fiiRendaMedia: number | null
@@ -232,7 +233,9 @@ function extractFund(ov: FundamentalsOverviewApi | null): Fund | null {
     revCagr: se?.growth?.revenue_cagr_5y ?? null,
     earnGrowth: num(ks?.earnings_annual_growth) != null ? num(ks?.earnings_annual_growth)! * 100 : null,
     fcf: num(fd?.free_cashflow),
-    ytd: num(ks?.ytd_return) != null ? num(ks?.ytd_return)! * 100 : null,
+    // NÃO do `ks.ytd_return`: veio em escalas misturadas e errado (PETR4
+    // -0.121 com a ação em +92% no ano). O loadAcao calcula pela série.
+    ytd: null,
     fiiVpCota: fii?.book_value_per_share ?? null,
     fiiRendaMedia: fii?.monthly_income_avg_24m ?? null,
     fiiIfixShare: fii?.ifix_share ?? null,
@@ -1357,6 +1360,12 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
   const assetSeries = toSeries(ok(pricesR)?.data)
   const ibovSeries = toSeries(ok(ibovR)?.data)
+  // "cai X% no ano" da Leitura da IA: pela série, com as travas de evento
+  // não ajustado (salto de pregão e faixa de 52 semanas do overview).
+  if (f) {
+    const mercado = overview?.scrape_extras?.market
+    f.ytd = variacaoNoAno(assetSeries, { min: mercado?.min_price_52_weeks ?? null, max: mercado?.max_price_52_weeks ?? null })
+  }
   // Sem série do ativo → seção do gráfico some inteira (nada de linha inventada).
   const series12: AcaoSeriesPair | null = assetSeries.length >= 2 ? { asset: assetSeries, ibov: ibovSeries } : null
 
