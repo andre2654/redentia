@@ -23,6 +23,8 @@ import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_ASSETS } from '../../app/content/seo/indexable-assets'
+import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
+import { symbolShape } from '../../app/utils/tickerClass'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 
 export interface SitePage {
@@ -82,6 +84,9 @@ const CORE_PAGES: SitePage[] = [
   // compliance). lastmod = a última mudança de conteúdo da página.
   { path: '/business', title: 'Redentia For Business', description: 'Para escritórios de investimento: a carteira do cliente consolidada por Open Finance, com o consentimento dele, no Claude ou no ChatGPT da mesa.', lastmod: '2026-10-15' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
+  // O hub do Tesouro estava fora do sitemap (só os títulos entravam) e teve
+  // 2.446 impressões de 19/07 a 18/10/2026. lastmod = o preço mais novo dos títulos.
+  { path: '/tesouro', title: 'Tesouro Direto hoje', description: 'As taxas de todos os títulos do Tesouro Direto, com preço e vencimento.' },
   { path: '/setor', title: 'Hub de setores', description: 'Os setores da B3 com empresas, valor de mercado somado e variação do dia.' },
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
   { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
@@ -379,7 +384,11 @@ const fetchCryptoPages = defineCachedFunction(
       })
       const items = Array.isArray(res?.data) ? res.data : []
       return items
-        .filter((c): c is CryptoApiItem & { symbol: string } => typeof c.symbol === 'string' && c.symbol.length > 0)
+        // Só símbolo que a página de ativo aceita: FIGR_HELOC (top 20 em
+        // 20/10/2026) tem `_`, a rota /asset/[ticker] responde 404 antes de
+        // qualquer fetch e o sitemap publicava esse 404.
+        .filter((c): c is CryptoApiItem & { symbol: string } =>
+          typeof c.symbol === 'string' && c.symbol.length > 0 && symbolShape(c.symbol) !== 'invalid')
         .slice(0, 20)
         .map((c) => ({
           path: `/asset/${c.symbol.toUpperCase()}`,
@@ -418,10 +427,13 @@ interface RankingRowApiLite {
   name?: string
 }
 
-/** /dividendos/{TICKER}: 12 clássicos + top 20 do ranking de DY (dedupe). */
+/**
+ * /dividendos/{TICKER}: 12 clássicos + os que têm demanda medida
+ * (app/content/seo/indexable-dividends.ts) + top 20 do ranking de DY (dedupe).
+ */
 const fetchDividendPages = defineCachedFunction(
   async (): Promise<SitePage[]> => {
-    const tickers = new Set<string>(DIVIDEND_CLASSICS)
+    const tickers = new Set<string>([...DIVIDEND_CLASSICS, ...INDEXABLE_DIVIDENDS])
     try {
       const res = await $fetch<{ data?: RankingRowApiLite[] }>('/rankings/top-dividend-yield?limit=20', {
         baseURL: backendBase(),
@@ -547,6 +559,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     '/': marketDate,
     '/noticias': latestNews ?? undefined,
     '/teses': latestDate(teses.map((t) => t.lastmod)),
+    '/tesouro': latestDate(tesouro.map((t) => t.lastmod)),
   }
   const corePages = CORE_PAGES.map((p) => (p.path in coreLastmod ? { ...p, lastmod: coreLastmod[p.path] } : p))
 
