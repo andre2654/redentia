@@ -85,6 +85,8 @@ function toEntry(api: WatchlistItemApi): WatchlistEntry {
     price: numOrNull(api.market_price),
     changePct: numOrNull(api.change_percent),
     priceAt: strOrNull(api.price_at),
+    // só o alerta ainda armado conta: o que já disparou é história
+    alertPrice: api.alert_triggered_at ? null : numOrNull(api.alert_price),
   }
 }
 
@@ -248,6 +250,41 @@ export function useWatchlist() {
   }
 
   /**
+   * Segue (se ainda não seguia) e grava o alerta de preço, o "avise quando
+   * cruzar o preço teto" da calculadora. Mesmo otimismo e rollback do follow.
+   */
+  async function alert(raw: string, price: number): Promise<SeguirResult> {
+    const t = raw.trim().toUpperCase()
+    const tk = token.value
+    if (!tk) return { ok: false, status: 401, message: '', auth: true }
+    const had = isFollowing(t)
+    const known = listOf(tk)
+    if (!had && known) setList(tk, [blankEntry(t), ...known])
+    setPending(t, true)
+    try {
+      const res = await watchlistSetAlert(CLIENT_BASE, headers(tk), t, price)
+      const now = listOf(tk)
+      if (now && res?.item) {
+        const fresh = toEntry(res.item)
+        setList(tk, now.map((i) => (i.ticker === t ? mergeEntry(i, { ...fresh, ticker: t }) : i)))
+      }
+      if (!known) void load(true)
+      // Backend sem o alerta (deploy fora de ordem): ele segue o ativo e ignora
+      // o alvo. Sem o alvo de volta, a tela não diz "alerta criado".
+      if (numOrNull(res?.item?.alert_price) == null) {
+        return { ok: false, status: null, message: `Você passou a seguir ${t}, mas o alerta ainda não está disponível. Tente de novo mais tarde.`, auth: false }
+      }
+      return { ok: true, following: true }
+    } catch (e) {
+      const now = listOf(tk)
+      if (!had && now) setList(tk, now.filter((i) => i.ticker !== t))
+      return failure(e, `Não conseguimos criar o alerta de ${t} agora. Tente de novo em instantes.`)
+    } finally {
+      setPending(t, false)
+    }
+  }
+
+  /**
    * Degradação até o Backend enriquecer o GET /watchlist: item sem cotação
    * busca o perfil público (GET /tickers/{t}, o mesmo do /asset), 3 por
    * vez e uma vez por ticker na sessão. Falhou → o card fica só com o ticker
@@ -289,7 +326,7 @@ export function useWatchlist() {
     await Promise.all([worker(), worker(), worker()])
   }
 
-  return { items, ready, count, settledCount, status: computed(() => state.value.status), isFollowing, isPending, load, follow, unfollow, enrich }
+  return { items, ready, count, settledCount, status: computed(() => state.value.status), isFollowing, isPending, load, follow, unfollow, alert, enrich }
 }
 
 /**
@@ -373,4 +410,81 @@ export function useSeguirAtivo(ticker: MaybeRefOrGetter<string>, path: MaybeRefO
   onBeforeUnmount(() => clearTimeout(timer))
 
   return { following, pending, toggle, feedback }
+}
+
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+
+/**
+ * Alerta "avise quando cruzar o preço teto" da calculadora (21/10/2026). O
+ * aviso sai no e-mail das 19h dos ativos seguidos, no pregão em que o
+ * fechamento cruzar o alvo (Backend: WatchlistDigestComposer), uma vez.
+ *  - anônimo: vai pro /login levando o papel e o alvo que a pessoa viu
+ *    (`?ticker=T&alerta=31.89`). O alvo vai na URL porque os sliders da
+ *    calculadora podem chegar diferentes depois do recarregamento;
+ *  - volta logado com `?alerta=`: cria UMA vez e tira o parâmetro antes de
+ *    qualquer await, como o `?seguir=1` do useSeguirAtivo;
+ *  - sessão morta no meio (401/403): mesmo caminho do anônimo.
+ * Client-only, como o resto deste arquivo: a página é cacheada na borda.
+ */
+export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: MaybeRefOrGetter<number | null>) {
+  const wl = useWatchlist()
+  const { isAuthenticated } = useAuthState()
+  const route = useRoute()
+  const router = useRouter()
+
+  const t = computed(() => toValue(ticker).trim().toUpperCase())
+  const pending = computed(() => wl.isPending(t.value))
+  /** alvo do alerta criado nesta visita (o botão vira confirmação) */
+  const criado = ref<{ ticker: string; alvo: number } | null>(null)
+  const erro = ref<string | null>(null)
+
+  function toLogin(valor: number, papel: string) {
+    const q = new URLSearchParams({ ticker: papel, alerta: valor.toFixed(2) })
+    return navigateTo(`/login?redirect=${encodeURIComponent(`${route.path}?${q}`)}`)
+  }
+
+  async function criar(valor: number | null = toValue(alvo), papel: string = t.value) {
+    if (valor == null || !(valor > 0) || !papel) return
+    erro.value = null
+    if (!isAuthenticated.value) {
+      await toLogin(valor, papel)
+      return
+    }
+    if (wl.isPending(papel)) return
+    const res = await wl.alert(papel, valor)
+    if (res.ok) criado.value = { ticker: papel, alvo: valor }
+    else if (res.auth) await toLogin(valor, papel)
+    else erro.value = res.message
+  }
+
+  // Intenção do ?alerta= guardada até existir sessão (mesma razão do useSeguirAtivo).
+  let intencao: { ticker: string; alvo: number } | null = null
+  async function comSessao() {
+    if (!intencao) return
+    const i = intencao
+    intencao = null
+    await criar(i.alvo, i.ticker)
+  }
+
+  onMounted(async () => {
+    if (route.query.alerta != null) {
+      const v = Number(route.query.alerta)
+      const papel = String(route.query.ticker ?? t.value).trim().toUpperCase()
+      intencao = Number.isFinite(v) && v > 0 && papel ? { ticker: papel, alvo: v } : null
+      const rest = { ...route.query }
+      delete rest.alerta
+      await router.replace({ path: route.path, query: rest, hash: route.hash })
+    }
+    if (isAuthenticated.value) await comSessao()
+  })
+  watch(isAuthenticated, (v) => {
+    if (v) void comSessao()
+  })
+
+  /** "Alerta criado: você recebe um e-mail no fim do pregão em que PETR4 cruzar R$ 31,89." */
+  const confirmacao = computed(() => criado.value
+    ? `Alerta criado. Você recebe um e-mail no fim do pregão em que ${criado.value.ticker} cruzar ${brl.format(criado.value.alvo)}.`
+    : null)
+
+  return { pending, criar, criado, confirmacao, erro }
 }

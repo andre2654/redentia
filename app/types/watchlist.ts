@@ -8,6 +8,9 @@
  *                                   limite do plano: { message, plan_required,
  *                                   limit_key, limit } — hoje sai como 422
  *  - DELETE /watchlist/{ticker}   → 200 | 404 (já não estava na lista)
+ *  - POST   /watchlist {ticker, alert_price, alert_source}
+ *                                 → segue e grava o alerta de preço (21/10/2026)
+ *  - DELETE /watchlist/{ticker}/alert → 200 { item } (continua seguindo) | 404
  *
  * Os campos opcionais (name, logo, type, market_price, change_percent,
  * price_at) são o enriquecimento combinado com o Backend em 29/09/2026. Até o
@@ -27,6 +30,12 @@ export interface WatchlistItemApi {
   change_percent?: number | null
   /** pregão da cotação — 'd/m' no ProfileResource, 'YYYY-MM-DD' se vier completo */
   price_at?: string | null
+  /** alerta de preço: alvo, 'below' (avisa na queda até ele) ou 'above', origem e disparo */
+  alert_price?: number | null
+  alert_direction?: 'below' | 'above' | null
+  alert_source?: string | null
+  alert_set_at?: string | null
+  alert_triggered_at?: string | null
 }
 
 export interface WatchlistListApi {
@@ -55,6 +64,8 @@ export interface WatchlistEntry {
   price: number | null
   changePct: number | null
   priceAt: string | null
+  /** alvo do alerta de preço ainda armado (null = sem alerta ou já disparou) */
+  alertPrice?: number | null
 }
 
 /** Resultado de seguir/deixar de seguir — quem chama decide o que mostrar. */
