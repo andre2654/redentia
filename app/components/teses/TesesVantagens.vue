@@ -16,7 +16,7 @@
       <div class="tvt__card">
         <svg class="tvt__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4l1.7 4.8L17.5 10.5l-4.8 1.7L11 17l-1.7-4.8L4.5 10.5l4.8-1.7L11 4z" /><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z" /></svg>
         <h3 class="tvt__h3">Redentia AI</h3>
-        <p class="tvt__p">Um assessor 24 horas que leu as centenas de fontes de cada tese e responde qualquer dúvida em segundos.</p>
+        <p class="tvt__p">Um assistente 24 horas que leu as centenas de fontes de cada tese e responde qualquer dúvida em segundos.</p>
       </div>
       <div class="tvt__card">
         <svg class="tvt__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></svg>

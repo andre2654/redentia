@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
 
   return `# Redentia
 
-> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assessor com IA do lado do investidor. Também operada como white-label para marcas que queiram lançar sua própria plataforma.
+> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assistente com IA do lado do investidor. Também operada como white-label para marcas que queiram lançar sua própria plataforma.
 
 ## Identidade
 

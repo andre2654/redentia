@@ -13,7 +13,7 @@ const steps = [
   { title: 'Crie sua conta grátis', description: 'Cadastro rápido, sem cartão de crédito. Comece em menos de 1 minuto.' },
   { title: 'Explore o mercado', description: 'Acompanhe cotações em tempo real, analise fundamentos e compare ativos.' },
   { title: 'Simule seus investimentos', description: 'Use as calculadoras para planejar aposentadoria, calcular preço teto e mais.' },
-  { title: 'Pergunte à IA', description: 'Tire dúvidas com o Assessor Redentia, disponível 24/7 com respostas em segundos.' },
+  { title: 'Pergunte à IA', description: 'Tire dúvidas com a Redentia AI, disponível 24/7 com respostas em segundos.' },
 ]
 
 usePageSeo({

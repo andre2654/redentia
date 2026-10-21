@@ -3,7 +3,7 @@
 // colunas de links, redes sociais e copyright.
 // Contrato de UX: designs/Redentia Mercado Nu.dc.html (footer, linhas 521-589).
 const CARDS = [
-  { title: 'Redentia AI', desc: 'Seu assessor de investimentos, disponível 24h para qualquer pergunta.', to: '/busca' },
+  { title: 'Redentia AI', desc: 'Seu assistente de investimentos, disponível 24h para qualquer pergunta.', to: '/busca' },
   { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva: resultados em segundos.', to: '/calculadoras' },
 ]
 // REDISTRIBUIÇÃO DE LINK INTERNO (03/08/2026). O footer é sitewide, então é o
