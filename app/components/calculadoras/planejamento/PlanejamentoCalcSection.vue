@@ -1,86 +1,86 @@
+<script lang="ts">
+import type { PlanningCarteira, PlanningStrategy } from './planning-math'
+
+// a carteira de cada estratégia sai da B3 uma vez por visita (a meta e o
+// aporte não mudam a carteira, só o resto da conta). Só no client; o que
+// falhou não fica guardado, para o "Tentar de novo" pedir de novo.
+const carteiras = new Map<PlanningStrategy, Promise<PlanningCarteira | null>>()
+</script>
+
 <script setup lang="ts">
-// PR10 — seção interativa da calculadora de Planejamento Patrimonial.
-// Visual = kit das calculadoras Nu (CalcShell + sliders + número-herói +
-// gráfico de área); matemática = porte EXATO do backend antigo
-// (planning-math.ts, dados reais da B3 via /api/backend). A estratégia
-// (segmented) e o botão "Calcular Planejamento" são controles próprios no
-// mesmo estilo visual do kit (chips/pills) — sem tocar no kit.
+// Seção interativa da calculadora de Planejamento Patrimonial. Desde
+// 21/10/2026 (dono: "tem algumas que têm MUITA configuração, isso afasta
+// usuário") ela é uma frase com a meta e o aporte (CalcFraseCampo) e a
+// escolha da carteira embaixo, no cartão CalcConta: sai o botão "Calcular
+// Planejamento", a conta aparece sozinha e muda na hora. O "Salvar esta conta"
+// fica à vista (antes esta calculadora não salvava) e a folha de cadastro sobe
+// uma vez depois de mexer (useConviteDaConta). A carteira sugerida e os
+// cenários "E se…" ficam embaixo do cartão.
+// Matemática = porte EXATO do backend antigo (planning-math.ts, dados reais
+// da B3 via /api/backend): analisarCarteira lê a B3 uma vez por estratégia e
+// projetarPlanejamento faz o resto, sem rede.
 import { brl } from '~/components/calc/compound-math'
 import {
-  calculatePlanning,
+  analisarCarteira,
+  computeMonthsToGoal,
   formatTimeLabel,
-  type PlanningResult,
-  type PlanningStrategy,
+  projetarPlanejamento,
 } from './planning-math'
 
 const props = defineProps<{ sectionId?: string }>()
 
 const route = useRoute()
+// os ativos da carteira levam à página deles; a renda fixa não tem página
+const NuxtLink = resolveComponent('NuxtLink')
 
 // defaults da página antiga (goalValue: 500000, monthlyContribution: 1500)
 const goal = ref(500000)
 const monthly = ref(1500)
 const strategy = ref<PlanningStrategy>('rentabilidade')
 
-const loading = ref(false)
-const error = ref('')
-const result = ref<PlanningResult | null>(null)
-const timeToGoalLabel = ref('')
+const carteira = shallowRef<PlanningCarteira | null>(null)
+const carregando = ref(false)
+const erro = ref(false)
 
-const goalTxt = computed(() => brl(goal.value))
-const monthlyTxt = computed(() => brl(monthly.value) + '/mês')
-
-const goalPresets = [
-  { label: 'R$ 150 mil', value: 150000 },
-  { label: 'R$ 500 mil', value: 500000 },
-  { label: 'R$ 1 milhão', value: 1000000 },
-  { label: 'R$ 2 milhões', value: 2000000 },
-]
-const monthlyPresets = [
-  { label: 'R$ 500', value: 500 },
-  { label: 'R$ 1.500', value: 1500 },
-  { label: 'R$ 3.000', value: 3000 },
-]
-
-const strategyOptions: { value: PlanningStrategy; label: string }[] = [
-  { value: 'rentabilidade', label: 'Maior rentabilidade' },
-  { value: 'seguranca', label: 'Maior segurança' },
-]
-
-async function calculate() {
-  const goalValue = Number(goal.value) || 0
-  const monthlyContribution = Number(monthly.value) || 0
-
-  if (goalValue <= 0) {
-    error.value = 'Informe uma meta financeira válida.'
-    return
+function lerCarteira(s: PlanningStrategy) {
+  let pedido = carteiras.get(s)
+  if (!pedido) {
+    pedido = analisarCarteira('/api/backend', s).then((c) => {
+      if (!c) carteiras.delete(s)
+      return c
+    })
+    carteiras.set(s, pedido)
   }
-  if (monthlyContribution <= 0) {
-    error.value = 'Informe um aporte mensal válido.'
-    return
-  }
-
-  loading.value = true
-  error.value = ''
-  result.value = null
-
-  try {
-    const r = await calculatePlanning('/api/backend', goalValue, monthlyContribution, strategy.value)
-    if (!r) throw new Error('Não foi possível calcular o planejamento. Tente novamente.')
-    result.value = r
-    timeToGoalLabel.value = formatTimeLabel(r.monthsToGoal)
-  } catch (e) {
-    error.value =
-      e instanceof Error && e.message ? e.message : 'Não foi possível calcular o planejamento. Tente novamente.'
-  } finally {
-    loading.value = false
-  }
+  return pedido
 }
+
+let ultimo = 0
+async function carregar() {
+  if (import.meta.server) return
+  const s = strategy.value
+  const este = ++ultimo
+  carregando.value = true
+  erro.value = false
+  const c = await lerCarteira(s)
+  if (este !== ultimo) return
+  carregando.value = false
+  if (c) carteira.value = c
+  else erro.value = true
+}
+
+// a conta da frase: só com a carteira da estratégia escolhida já lida
+const result = computed(() => {
+  const c = carteira.value
+  if (!c || c.strategy !== strategy.value || goal.value <= 0 || monthly.value <= 0) return null
+  return projetarPlanejamento(goal.value, monthly.value, c)
+})
 
 // ====================================================================
 // Deep-link via query params — comportamento portado do Planning.vue
-// antigo: ?goal= ?monthly= ?strategy= (e ?auto=1) pré-preenchem e
-// disparam o cálculo; clique num cenário popular re-aplica + scrolla.
+// antigo: ?goal= ?monthly= ?strategy= pré-preenchem (a conta aparece sozinha;
+// o ?auto=1 dos links antigos não precisa de mais nada). O ?seguranca=1 é o
+// link das contas salvas (os params salvos são só números). Clique num
+// cenário popular re-aplica + scrolla.
 // ====================================================================
 function parseNumberParam(value: unknown): number | null {
   if (value === undefined || value === null) return null
@@ -103,16 +103,12 @@ function applyQueryParams() {
   const q = route.query
   const g = parseNumberParam(q.goal)
   const m = parseNumberParam(q.monthly)
-  const s = parseStrategyParam(q.strategy)
+  const seg = parseNumberParam(q.seguranca)
+  const s = parseStrategyParam(q.strategy) ?? (seg === null ? null : seg ? 'seguranca' : 'rentabilidade')
 
   if (g !== null && g > 0) goal.value = g
   if (m !== null && m > 0) monthly.value = m
   if (s !== null) strategy.value = s
-
-  const hasAnyInput = g !== null || m !== null || s !== null
-  if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
-    nextTick(() => calculate())
-  }
 }
 
 function scrollToCalc() {
@@ -127,7 +123,9 @@ function scrollToCalc() {
 
 onMounted(() => {
   applyQueryParams()
+  void carregar()
 })
+watch(strategy, () => void carregar())
 
 watch(
   () => route.query,
@@ -138,255 +136,223 @@ watch(
   { deep: true },
 )
 
-const chartValues = computed(() => result.value?.chartData.map((p) => p.value) ?? [])
-const xLabels = computed<[string, string, string]>(() => {
-  const months = result.value?.monthsToGoal ?? 0
-  if (months < 24) return ['hoje', `+${Math.round(months / 2)} meses`, `+${months} meses`]
-  const years = Math.round(months / 12)
-  return ['hoje', `+${Math.round(years / 2)} anos`, `+${years} anos`]
+/* ——— a frase (21/10/2026) ——— */
+const CAMINHO = '/calculadora/planejamento'
+const metaAtalho = [
+  { label: 'R$ 150 mil', value: 150000 },
+  { label: 'R$ 500 mil', value: 500000 },
+  { label: 'R$ 1 milhão', value: 1000000 },
+  { label: 'R$ 2 milhões', value: 2000000 },
+]
+const aporteAtalho = [500, 1500, 3000, 5000].map((v) => ({ label: brl(v), value: v }))
+const strategyOptions: { value: PlanningStrategy; label: string }[] = [
+  { value: 'rentabilidade', label: 'Rentabilidade' },
+  { value: 'seguranca', label: 'Segurança' },
+]
+const dicaDaCarteira = computed(() => (strategy.value === 'rentabilidade'
+  ? 'Ações de alta performance de três setores: PRIO3, VALE3 e WEGE3.'
+  : 'Setores defensivos, FIIs consolidados e renda fixa: TAEE11, ITUB4, HGLG11 e VISC11.'))
+
+const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
+const pct2 = (v: number) => (v * 100).toFixed(2).replace('.', ',') + '%'
+// "14 anos" grande e "e 3 meses" menor, colado
+function tempoPartido(meses: number): { valor: string; unidade: string } {
+  const anos = Math.floor(meses / 12)
+  const resto = meses % 12
+  if (anos <= 0) return { valor: formatTimeLabel(meses), unidade: '' }
+  return { valor: `${anos} ${anos === 1 ? 'ano' : 'anos'}`, unidade: resto > 0 ? ` e ${resto} ${resto === 1 ? 'mês' : 'meses'}` : '' }
+}
+const numero = computed(() => {
+  const r = result.value
+  if (!r) return null
+  return {
+    legenda: 'Você chega lá em',
+    ...tempoPartido(r.monthsToGoal),
+    selo: `Em ${r.targetDateLabel}`,
+    explica: `Guardando ${brl(monthly.value)} por mês numa carteira que rendeu em média ${pct2(r.monthlyReturnRate)} ao mês nos últimos 5 anos, você põe ${brl(r.totalInvestedUntilGoal)} e a carteira faz os outros ${brl(r.estimatedProfit)}.`,
+  }
 })
 
-const pct2 = (v: number) => (v * 100).toFixed(2).replace('.', ',') + '%'
-const pct1 = (v: number) => (v * 100).toFixed(1).replace('.', ',') + '%'
+const ese = computed(() => {
+  const r = result.value
+  if (!r) return []
+  const tempo = (aporte: number) => formatTimeLabel(computeMonthsToGoal(goal.value, aporte, r.monthlyReturnRate))
+  return [
+    { texto: `Guardar ${brl(monthly.value * 1.2)}/mês`, valor: tempo(monthly.value * 1.2) },
+    { texto: `Guardar ${brl(monthly.value * 2)}/mês`, valor: tempo(monthly.value * 2) },
+    { texto: `Nos últimos ${r.historicalYears} anos`, valor: `${brlCurto(r.historicalInvested)} viraram ${brlCurto(r.historicalFinalValue)}` },
+  ]
+})
+
+/* ——— salvar, compartilhar e reabrir ——— */
+// os params salvos são só números: a carteira vai como seguranca=0/1
+const simParams = computed<Record<string, number>>(() => ({
+  goal: goal.value,
+  monthly: monthly.value,
+  seguranca: strategy.value === 'seguranca' ? 1 : 0,
+}))
+const simLabel = computed(() => `${brlCurto(goal.value)} guardando ${brl(monthly.value)}/mês · ${strategy.value === 'seguranca' ? 'maior segurança' : 'maior rentabilidade'}`)
+const simResult = computed<Record<string, number> | undefined>(() => (result.value
+  ? { total: result.value.monthsToGoal, final: Math.round(result.value.estimatedFinalValue) }
+  : undefined))
+const link = computed(() => `${CAMINHO}?goal=${goal.value}&monthly=${monthly.value}&strategy=${strategy.value}`)
+const folhaConta = computed(() => {
+  const r = result.value
+  if (!r) return undefined
+  return {
+    gesto: 'conta' as const,
+    rotulo: `Meta de ${brlCurto(goal.value)}, guardando ${brl(monthly.value)}/mês`,
+    valor: formatTimeLabel(r.monthsToGoal),
+    selo: `Em ${r.targetDateLabel}`,
+    serie: r.chartData.map((p) => p.value),
+    meta: goal.value,
+    rotuloMeta: `a meta, ${brlCurto(goal.value)}`,
+    rotulos: ['hoje', r.targetDateLabel] as [string, string],
+    pergunta: `“E se eu guardar ${brl(monthly.value * 1.5)} por mês?”`,
+  }
+})
+function aplicar(p: Record<string, number>) {
+  if (Number.isFinite(p.goal)) goal.value = p.goal!
+  if (Number.isFinite(p.monthly)) monthly.value = p.monthly!
+  if (Number.isFinite(p.seguranca)) strategy.value = p.seguranca ? 'seguranca' : 'rentabilidade'
+}
+
+// depois de mexer na conta, a folha sobe sozinha uma vez (useConviteDaConta)
+const salvar = ref<{ pedir: (origem?: 'botao' | 'convite') => Promise<void> } | null>(null)
+useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
+  if (result.value) void salvar.value?.pedir('convite')
+})
 </script>
 
 <template>
-  <CalcShell eyebrow="Calculadora" :section-id="sectionId ?? 'planejamento'">
-    <template #title><slot name="title">Planejamento patrimonial.</slot></template>
-    <template #controls>
-      <p class="pcs__form-label">{{ result ? 'Ajustar simulação' : 'Configure sua simulação' }}</p>
-      <div class="pcs__gap">
-        <CalcSliderField
-          v-model="goal"
-          label="Meta financeira (R$)"
-          :min="50000"
-          :max="3000000"
-          :step="10000"
-          :value-text="goalTxt"
-          :presets="goalPresets"
-        />
+  <CalcConta :section-id="sectionId ?? 'planejamento'">
+    <template #title><slot name="title">Planejamento patrimonial</slot></template>
+    <template #topo>
+      <CalcSimSaves variant="history" calculator="planejamento" :format-value="formatTimeLabel" @apply="aplicar" />
+    </template>
+    <template #frase>
+      <CalcFrase>
+        Minha meta é <CalcFraseCampo
+          v-model="goal" rotulo="A sua meta" :min="50000" :max="3000000" :passo="10000"
+          :texto="brl(goal)" prefixo="R$" :atalhos="metaAtalho"
+        /> e consigo guardar <CalcFraseCampo
+          v-model="monthly" rotulo="Quanto você guarda por mês" :min="100" :max="10000" :passo="50"
+          :texto="brl(monthly)" prefixo="R$" :atalhos="aporteAtalho"
+        /> por mês.
+      </CalcFrase>
+      <div class="pcs__carteira-escolha">
+        <CalcEscolha v-model="strategy" rotulo="Prioridade" mostrar-rotulo :opcoes="strategyOptions" />
+        <p class="pcs__dica">{{ dicaDaCarteira }}</p>
       </div>
-      <div class="pcs__gap">
-        <CalcSliderField
-          v-model="monthly"
-          label="Aporte mensal (R$)"
-          :min="100"
-          :max="10000"
-          :step="50"
-          :value-text="monthlyTxt"
-          :presets="monthlyPresets"
-        />
-      </div>
-      <div class="pcs__gap">
-        <span class="pcs__label">Estratégia</span>
-        <div class="pcs__segmented" role="group" aria-label="Estratégia de planejamento">
-          <button
-            v-for="o in strategyOptions"
-            :key="o.value"
-            type="button"
-            class="pcs__seg"
-            :class="{ 'pcs__seg--active': strategy === o.value }"
-            :aria-pressed="strategy === o.value"
-            @click="strategy = o.value"
-          >{{ o.label }}</button>
-        </div>
-        <p class="pcs__help">
-          Escolha entre maximizar ganhos com ativos de alta performance ou priorizar estabilidade com setores defensivos, FIIs consolidados e 10% de renda fixa.
-        </p>
-      </div>
-      <button type="button" class="pcs__cta" :disabled="loading" @click="calculate">
-        {{ loading ? 'Calculando…' : 'Calcular Planejamento' }}
-      </button>
-      <div v-if="error" class="pcs__error" role="alert">{{ error }}</div>
     </template>
 
-    <template #result>
-      <CalcResultPanel
-        v-if="result"
-        caption="Tempo estimado para alcançar a meta"
-        :value="timeToGoalLabel"
-        :items="[
-          { dot: 'var(--nu-navy)', label: 'Aportes até a meta', value: brl(result.totalInvestedUntilGoal) },
-          { dot: 'var(--nu-blue)', label: 'Resultado projetado', value: brl(result.estimatedFinalValue), accent: true },
-          { dot: 'var(--nu-green)', label: 'Retorno mensal médio', value: pct2(result.monthlyReturnRate) },
-        ]"
+    <template #resultado>
+      <CalcNumero v-if="numero" v-bind="numero" />
+      <div v-else-if="erro" class="pcs__erro" role="alert">
+        <p class="pcs__erro-texto">Não deu para ler os dados da B3 agora.</p>
+        <button type="button" class="pcs__de-novo" @click="carregar">Tentar de novo</button>
+      </div>
+      <div v-else class="pcs__lendo" aria-busy="true">
+        <p class="pcs__lendo-legenda">Você chega lá em</p>
+        <span class="pcs__esqueleto" aria-hidden="true" />
+        <p class="pcs__lendo-texto"><span class="pcs__pulso" aria-hidden="true" /> Lendo 5 anos de preços e dividendos da B3…</p>
+      </div>
+    </template>
+
+    <template #acoes>
+      <CalcSimSaves
+        ref="salvar" variant="save" calculator="planejamento" :caminho="CAMINHO"
+        :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <p class="pcs__until">
-          até <strong>{{ result.targetDateLabel }}</strong>
-          · <span class="pcs__gain">+{{ brl(result.estimatedProfit) }}</span> de ganho
-        </p>
-
-        <div class="pcs__chart">
-          <p class="pcs__chart-label">Projeção de patrimônio</p>
-          <CalcAreaChart :values="chartValues" :x-labels="xLabels" :format-y="brl" />
-        </div>
-
-        <div class="pcs__subcard">
-          <h4 class="pcs__subcard-title">Se tivesse investido nos últimos {{ result.historicalYears.toFixed(1) }} anos</h4>
-          <p class="pcs__subcard-desc">Considerando o mesmo aporte mensal e a carteira recomendada.</p>
-          <div class="pcs__kpis">
-            <div class="pcs__kpi">
-              <span class="pcs__kpi-label">Total investido</span>
-              <span class="pcs__kpi-value">{{ brl(result.historicalInvested) }}</span>
-            </div>
-            <div class="pcs__kpi">
-              <span class="pcs__kpi-label">Valor final</span>
-              <span class="pcs__kpi-value pcs__kpi-value--accent">{{ brl(result.historicalFinalValue) }}</span>
-            </div>
-            <div class="pcs__kpi">
-              <span class="pcs__kpi-label">Lucro histórico</span>
-              <span class="pcs__kpi-value pcs__kpi-value--positive">{{ brl(result.historicalProfit) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pcs__subcard">
-          <h4 class="pcs__subcard-title">Carteira sugerida</h4>
-          <p class="pcs__subcard-desc">Distribuição baseada no desempenho histórico e nos critérios da estratégia escolhida.</p>
-          <div class="pcs__assets">
-            <div
-              v-for="asset in result.recommendedAssets"
-              :key="`${asset.ticker}-${asset.category}`"
-              class="pcs__asset"
-            >
-              <div class="pcs__asset-head">
-                <div>
-                  <p class="pcs__asset-cat">{{ asset.category }}</p>
-                  <p class="pcs__asset-ticker">{{ asset.ticker }}</p>
-                </div>
-                <div class="pcs__asset-weight">
-                  <span class="pcs__asset-weight-label">Peso</span>
-                  <span class="pcs__asset-weight-value">{{ (asset.weight * 100).toFixed(0) }}%</span>
-                </div>
-              </div>
-              <div class="pcs__asset-metrics">
-                <div>
-                  <p class="pcs__metric-label">Retorno {{ result.historicalYears.toFixed(0) }} anos</p>
-                  <p class="pcs__metric-value" :class="asset.totalReturn >= 0 ? 'pcs__metric-value--positive' : 'pcs__metric-value--negative'">{{ pct1(asset.totalReturn) }}</p>
-                </div>
-                <div>
-                  <p class="pcs__metric-label">CAGR anual</p>
-                  <p class="pcs__metric-value">{{ pct1(asset.cagr) }}</p>
-                </div>
-                <div>
-                  <p class="pcs__metric-label">Retorno mensal</p>
-                  <p class="pcs__metric-value">{{ pct2(asset.monthlyRate) }}</p>
-                </div>
-                <div>
-                  <p class="pcs__metric-label">Dividendos reinvestidos</p>
-                  <p class="pcs__metric-value pcs__metric-value--positive">{{ brl(asset.totalDividends) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pcs__callout">
-          Recomendação baseada em dados históricos. Rentabilidades passadas não garantem resultados futuros. Ajuste sempre sua carteira conforme o seu perfil de risco.
-        </div>
-      </CalcResultPanel>
-
-      <div v-else class="pcs__empty">
-        <p class="pcs__empty-eyebrow">Tempo estimado</p>
-        <p class="pcs__empty-text">
-          {{ loading ? 'Analisando o histórico real dos ativos da B3…' : 'Preencha os dados ao lado e clique em "Calcular Planejamento".' }}
-        </p>
-      </div>
+        <CalcCompartilhar :link="link" titulo="O meu planejamento, na Redentia" />
+      </CalcSimSaves>
     </template>
-  </CalcShell>
+
+    <template #grafico>
+      <CalcCurva
+        v-if="result"
+        :valores="result.chartData.map((p) => p.value)"
+        :meta="goal"
+        :rotulo-meta="`a meta, ${brlCurto(goal)}`"
+        :rotulos="['hoje', result.targetDateLabel]"
+      />
+    </template>
+
+    <template #depois>
+      <CalcEse
+        :itens="ese"
+        aviso="Recomendação baseada em dados históricos. Rentabilidades passadas não garantem resultados futuros. Ajuste sempre sua carteira conforme o seu perfil de risco."
+      >
+        <!-- a carteira sugerida: o que esta calculadora tem de próprio -->
+        <div v-if="result" class="pcs__carteira">
+          <h3 class="pcs__carteira-titulo">Carteira sugerida</h3>
+          <p class="pcs__carteira-desc">Distribuição baseada no desempenho histórico e nos critérios da estratégia escolhida, com os dividendos reinvestidos.</p>
+          <ul class="pcs__ativos">
+            <li v-for="a in result.recommendedAssets" :key="`${a.ticker}-${a.category}`">
+              <component
+                :is="a.ticker === 'Renda Fixa' ? 'div' : NuxtLink"
+                :to="a.ticker === 'Renda Fixa' ? undefined : `/asset/${a.ticker}`"
+                class="pcs__ativo"
+              >
+                <span class="pcs__ativo-cat">{{ a.category }}</span>
+                <span class="pcs__ativo-ticker">{{ a.ticker }}</span>
+                <span class="pcs__ativo-peso">{{ (a.weight * 100).toFixed(0) }}%</span>
+                <span class="pcs__ativo-ret" :class="a.totalReturn >= 0 ? 'pcs__ativo-ret--alta' : 'pcs__ativo-ret--queda'">
+                  {{ a.totalReturn >= 0 ? '+' : '' }}{{ pct1(a.totalReturn) }} em {{ result.historicalYears }} anos · {{ pct1(a.cagr) }} a.a.
+                </span>
+              </component>
+            </li>
+          </ul>
+        </div>
+      </CalcEse>
+    </template>
+  </CalcConta>
 </template>
 
 <style scoped>
-.pcs__form-label { margin: 0 0 22px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-.pcs__gap { margin-top: 36px; }
-.pcs__gap:first-of-type { margin-top: 0; }
-.pcs__label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.pcs__carteira-escolha { margin-top: 18px; }
+.pcs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 
-/* segmented no estilo dos chips do kit (ativo = pill preta) */
-.pcs__segmented { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-.pcs__seg {
-  flex: 1 1 auto;
-  padding: 11px 14px;
-  border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-sm);
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-  border: 2px solid var(--nu-sand-border);
-  background: var(--nu-white);
-  color: var(--nu-gray-2);
-  transition: all .2s;
+/* enquanto a carteira sai da B3 (~2 s) */
+.pcs__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
+.pcs__esqueleto {
+  display: block; width: min(320px, 80%); height: 56px; margin-top: 8px; border-radius: 16px;
+  background: linear-gradient(90deg, var(--nu-cream) 0%, var(--nu-cream-2) 50%, var(--nu-cream) 100%);
+  background-size: 200% 100%; animation: pcs-brilha 1.4s ease-in-out infinite;
 }
-.pcs__seg--active {
-  border-color: var(--nu-ink);
-  background: var(--nu-ink);
-  color: var(--nu-white);
-}
-.pcs__help { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.55; }
-
-.pcs__cta {
-  display: block; width: 100%; margin-top: 26px;
-  background: var(--nu-blue); color: var(--nu-white);
-  border: none; border-radius: var(--nu-r-pill);
-  padding: 16px 26px; font-size: var(--nu-fs-md); font-weight: 800; font-family: inherit;
-  cursor: pointer; transition: background .2s;
-}
-.pcs__cta:hover { background: var(--nu-blue-hover); }
-.pcs__cta:disabled { opacity: .6; cursor: wait; }
-
-.pcs__error {
-  margin-top: 16px; padding: 14px 16px;
-  background: var(--nu-red-tint); border-radius: var(--nu-r-input);
-  color: var(--nu-red-2); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5;
+.pcs__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.pcs__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-blue); animation: pcs-pulsa 1.2s ease-in-out infinite; }
+@keyframes pcs-brilha { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes pcs-pulsa { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) {
+  .pcs__esqueleto, .pcs__pulso { animation: none; }
 }
 
-.pcs__until { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
-.pcs__until strong { color: var(--nu-ink); font-weight: 800; }
-.pcs__gain { color: var(--nu-green); font-weight: 800; font-variant-numeric: tabular-nums; }
-
-.pcs__chart { margin-top: 30px; }
-.pcs__chart-label { margin: 0 0 14px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-
-.pcs__subcard {
-  background: var(--nu-cream);
-  border-radius: var(--nu-r-panel);
-  padding: 24px;
-  margin-top: 26px;
+.pcs__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.pcs__de-novo {
+  margin-top: 14px; padding: 10px 18px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
+  background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
 }
-.pcs__subcard-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.pcs__subcard-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.pcs__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
 
-.pcs__kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 18px; }
-.pcs__kpi { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
-.pcs__kpi-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
-.pcs__kpi-value { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
-.pcs__kpi-value--accent { color: var(--nu-blue); }
-.pcs__kpi-value--positive { color: var(--nu-green); }
-
-.pcs__assets { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 12px; margin-top: 18px; }
-.pcs__asset { background: var(--nu-white); border-radius: var(--nu-r-tile); padding: 18px; }
-.pcs__asset-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-.pcs__asset-cat { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .7px; text-transform: uppercase; }
-.pcs__asset-ticker { margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.3px; }
-.pcs__asset-weight { text-align: right; }
-.pcs__asset-weight-label { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
-.pcs__asset-weight-value { display: block; color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
-.pcs__asset-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 16px; }
-.pcs__metric-label { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
-.pcs__metric-value { margin: 2px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.pcs__metric-value--positive { color: var(--nu-green); }
-.pcs__metric-value--negative { color: var(--nu-red); }
-
-.pcs__callout {
-  margin-top: 26px; padding: 18px 22px;
-  background: var(--nu-cream); border-radius: 18px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
+/* a carteira sugerida, embaixo das cápsulas */
+.pcs__carteira { max-width: 1080px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
+.pcs__carteira-titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; text-align: center; }
+.pcs__carteira-desc { margin: 6px auto 0; max-width: 560px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; text-align: center; }
+.pcs__ativos {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 10px;
+  margin: 20px 0 0; padding: 0; list-style: none;
 }
-
-.pcs__empty {
-  background: var(--nu-cream); border-radius: var(--nu-r-card-lg);
-  padding: clamp(32px, 5vw, 56px);
+.pcs__ativo {
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: "cat peso" "ticker peso" "ret ret";
+  row-gap: 2px; column-gap: 12px; height: 100%; padding: 16px 18px; border-radius: 20px;
+  background: var(--nu-white); color: inherit; transition: box-shadow .2s ease;
 }
-.pcs__empty-eyebrow { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-.pcs__empty-text { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 460px; }
+a.pcs__ativo:hover { box-shadow: 0 0 0 1.5px var(--nu-blue); }
+.pcs__ativo-cat { grid-area: cat; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+.pcs__ativo-ticker { grid-area: ticker; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
+.pcs__ativo-peso { grid-area: peso; align-self: center; color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pcs__ativo-ret { grid-area: ret; margin-top: 8px; font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pcs__ativo-ret--alta { color: var(--nu-green); }
+.pcs__ativo-ret--queda { color: var(--nu-red); }
 </style>

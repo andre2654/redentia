@@ -221,16 +221,14 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Defina a meta e veja o aporte mensal exato pra chegar lá.">
-      Quanto Investir por Mês para Sua
-      <em>Meta.</em>
-    </CalcHero>
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
+    <!-- "calculadora de aporte mensal" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
+    <CalcTopo desc="Responda quatro coisas e veja quanto guardar por mês.">
+      Quanto investir por mês para chegar à sua meta?
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design) ============ -->
-    <QuantoInvestirCalc :seed="seed" section-id="aporte">
-      <template #title>Aporte mensal.</template>
-    </QuantoInvestirCalc>
+    <!-- ============ Calculadora na frase ============ -->
+    <QuantoInvestirCalc :seed="seed" section-id="aporte" />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip

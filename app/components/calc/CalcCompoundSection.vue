@@ -99,7 +99,7 @@ useConviteDaConta('juros-compostos', () => JSON.stringify(simParams.value), () =
       <CalcSimSaves variant="history" calculator="juros-compostos" :format-value="brl" @apply="applySim" />
     </template>
     <template #frase>
-      <p class="ccs__frase">
+      <CalcFrase>
         Começo com <CalcFraseCampo
           v-model="ji" rotulo="Quanto você tem para começar" :min="0" :max="100000" :passo="500"
           :texto="brl(ji)" prefixo="R$" :atalhos="inicialAtalho"
@@ -113,14 +113,11 @@ useConviteDaConta('juros-compostos', () => JSON.stringify(simParams.value), () =
           v-model="jt" rotulo="Rendimento por ano" :min="1" :max="20" :passo="0.25"
           :texto="jtTxt" sufixo="% a.a." :atalhos="ratePresets"
         />
-      </p>
+      </CalcFrase>
     </template>
 
     <template #resultado>
-      <p class="ccs__legenda">{{ legenda }}</p>
-      <p class="ccs__valor">{{ brl(proj.total) }}</p>
-      <span class="ccs__selo">{{ selo }}</span>
-      <p class="ccs__explica">{{ explicacao }}</p>
+      <CalcNumero :legenda="legenda" :valor="brl(proj.total)" :selo="selo" :explica="explicacao" />
     </template>
 
     <template #acoes>
@@ -138,31 +135,8 @@ useConviteDaConta('juros-compostos', () => JSON.stringify(simParams.value), () =
         :secundaria="proj.aporteSeries"
         :rotulo-fim="`${brlCurto(proj.total)} em ${jpTxt}`"
         :rotulos="['hoje', `daqui a ${jpTxt}`]"
+        legenda-secundaria="o que você guardou"
       />
-      <p class="ccs__legenda-curva"><span class="ccs__traco" aria-hidden="true" /> o que você guardou</p>
     </template>
   </CalcConta>
 </template>
-
-<style scoped>
-/* o "a.a." do rendimento fecha a frase: sem um segundo ponto depois dele */
-.ccs__frase { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.55; text-wrap: pretty; }
-.ccs__legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
-.ccs__valor {
-  margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
-  letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums;
-}
-.ccs__selo {
-  display: inline-flex; margin-top: 16px; padding: 7px 14px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue-tint); color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
-}
-.ccs__explica { margin: 14px 0 0; max-width: 470px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
-.ccs__legenda-curva {
-  display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 6px 0 0;
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
-}
-.ccs__traco { width: 22px; height: 0; border-top: 2px dashed color-mix(in srgb, var(--nu-ink) 55%, transparent); }
-@media (max-width: 640px) {
-  .ccs__frase { line-height: 1.7; }
-}
-</style>

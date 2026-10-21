@@ -266,6 +266,18 @@ useConviteDaConta('aposentadoria', () => JSON.stringify(simParams.value), () => 
   if (results.value) void salvar.value?.pedir('convite')
 })
 
+// "E se…" em cápsulas pequenas (dono, 21/10/2026): a situação concreta e o resultado curto
+const ese = computed(() => {
+  const r = results.value
+  if (!r) return []
+  return [
+    { texto: `Aposentar aos ${retirementAge.value + 3}`, valor: brlCurto(r.scenarios.work3More) },
+    { texto: `Guardar ${brl(monthlyContribution.value * 1.2)}/mês`, valor: brlCurto(r.scenarios.increase20Percent) },
+    { texto: `Viver com ${brl(monthlyIncome.value * 0.8)}/mês`, valor: `precisa de ${brlCurto(r.scenarios.reduce20Percent)}` },
+    { texto: 'Sacar 4% ao ano', valor: `${brl(r.projectedWealth * 0.04 / 12)}/mês` },
+  ]
+})
+
 // textos das premissas
 const lifeTxt = computed(() => `${lifeExpectancy.value} anos`)
 const wealthTxt = computed(() => brl(currentWealth.value))
@@ -282,7 +294,7 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
       <CalcSimSaves variant="history" calculator="aposentadoria" :format-value="brl" @apply="aplicar" />
     </template>
     <template #frase>
-      <p class="crs__frase">
+      <CalcFrase>
         Tenho <CalcFraseCampo
           v-model="currentAge" rotulo="Sua idade hoje" :min="18" :max="99" :passo="1"
           :texto="`${currentAge} anos`" sufixo="anos"
@@ -296,16 +308,18 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
           v-model="monthlyContribution" rotulo="Quanto você guarda por mês" :min="0" :max="20000" :passo="100"
           :texto="brl(monthlyContribution)" prefixo="R$" :atalhos="aporteAtalho"
         /> por mês.
-      </p>
+      </CalcFrase>
     </template>
 
     <template #resultado>
-      <template v-if="results">
-        <p class="crs__legenda">Aos {{ retirementAge }} anos, você terá</p>
-        <p class="crs__valor">{{ formatCurrency(results.projectedWealth) }}</p>
-        <span class="crs__selo" :class="results.viable ? 'crs__selo--ok' : 'crs__selo--falta'">{{ selo }}</span>
-        <p class="crs__explica">{{ explicacao }}</p>
-      </template>
+      <CalcNumero
+        v-if="results"
+        :legenda="`Aos ${retirementAge} anos, você terá`"
+        :valor="formatCurrency(results.projectedWealth)"
+        :selo="selo"
+        :tom="results.viable ? 'ok' : 'falta'"
+        :explica="explicacao"
+      />
       <p v-else class="crs__invalido">A idade de se aposentar precisa ser maior que a sua idade hoje.</p>
     </template>
 
@@ -355,52 +369,12 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
     </template>
 
     <template #depois>
-      <!-- "E se…" em cápsulas pequenas (dono, 21/10/2026): a situação concreta e o resultado curto -->
-      <ul v-if="results" class="crs__ese" aria-label="E se você mudar a conta">
-        <li class="crs__ese-rotulo" aria-hidden="true">E se…</li>
-        <li class="crs__capsula">Aposentar aos {{ retirementAge + 3 }} <b>{{ brlCurto(results.scenarios.work3More) }}</b></li>
-        <li class="crs__capsula">Guardar {{ brl(monthlyContribution * 1.2) }}/mês <b>{{ brlCurto(results.scenarios.increase20Percent) }}</b></li>
-        <li class="crs__capsula">Viver com {{ brl(monthlyIncome * 0.8) }}/mês <b>precisa de {{ brlCurto(results.scenarios.reduce20Percent) }}</b></li>
-        <li class="crs__capsula">Sacar 4% ao ano <b>{{ brl(results.projectedWealth * 0.04 / 12) }}/mês</b></li>
-      </ul>
-      <p class="crs__aviso">É uma projeção, não uma promessa. Revise a conta todo ano e ajuste quando a vida mudar.</p>
+      <CalcEse :itens="ese" aviso="É uma projeção, não uma promessa. Revise a conta todo ano e ajuste quando a vida mudar." />
     </template>
   </CalcConta>
 </template>
 
 <style scoped>
-.crs__frase { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.55; text-wrap: pretty; }
-.crs__legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
-.crs__valor {
-  margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
-  letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums;
-}
-.crs__selo {
-  display: inline-flex; margin-top: 16px; padding: 7px 14px; border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-sm); font-weight: 700;
-}
-.crs__selo--ok { background: color-mix(in srgb, var(--nu-green) 12%, var(--nu-white)); color: var(--nu-green); }
-.crs__selo--falta { background: color-mix(in srgb, var(--nu-red) 10%, var(--nu-white)); color: var(--nu-red); }
-.crs__explica { margin: 14px 0 0; max-width: 470px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .crs__invalido { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-md); font-weight: 700; }
 .crs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
-
-/* "E se…": os cenários da conta em cápsulas, embaixo do cartão */
-.crs__ese {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
-  margin: 0; padding: 0; list-style: none;
-}
-.crs__ese-rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-.crs__capsula {
-  display: inline-flex; align-items: baseline; gap: 8px; padding: 9px 16px; border-radius: var(--nu-r-pill);
-  background: var(--nu-white); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap;
-}
-.crs__capsula b { color: var(--nu-blue); font-weight: 800; font-variant-numeric: tabular-nums; }
-.crs__aviso { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
-
-@media (max-width: 640px) {
-  .crs__frase { line-height: 1.7; }
-  .crs__ese { justify-content: flex-start; gap: 8px; }
-  .crs__ese-rotulo { width: 100%; }
-}
 </style>

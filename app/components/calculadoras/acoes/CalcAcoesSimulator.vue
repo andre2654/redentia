@@ -1,20 +1,55 @@
+<script lang="ts">
+import { cleanChart, cleanDividends } from './stock-math'
+
+/** O histórico de um ativo: os preços e os proventos, como a matemática pede. */
+interface Historico {
+  precos: ReturnType<typeof cleanChart>
+  proventos: ReturnType<typeof cleanDividends>
+}
+
+// o histórico de cada ativo sai da B3 uma vez por visita: o valor, o aporte, o
+// período e o reinvestimento não mudam o que se lê, só a conta. Só no client;
+// o que falhou não fica guardado, para tentar de novo.
+const historicos = new Map<string, Promise<Historico | null>>()
+const AO_BACKEND = { timeout: 15_000, headers: { Accept: 'application/json' } }
+
+function lerHistorico(ticker: string): Promise<Historico | null> {
+  let pedido = historicos.get(ticker)
+  if (!pedido) {
+    pedido = Promise.all([
+      $fetch<unknown>(`/api/backend/tickers/${ticker}/prices?mode=full`, AO_BACKEND),
+      // sem proventos → segue sem reinvestimento (comportamento antigo)
+      $fetch<unknown>(`/api/backend/dividends/${ticker}`, AO_BACKEND).catch(() => null),
+    ])
+      .then(([precos, proventos]) => ({ precos: cleanChart(precos), proventos: proventos ? cleanDividends(proventos) : [] }))
+      .catch(() => null)
+      .then((h) => {
+        if (!h) historicos.delete(ticker)
+        return h
+      })
+    historicos.set(ticker, pedido)
+  }
+  return pedido
+}
+</script>
+
 <script setup lang="ts">
-// PR10 — seção interativa do simulador de ações (/calculadora/acoes).
+// Seção interativa do simulador de ações (/calculadora/acoes). Desde
+// 21/10/2026 (dono: "tem algumas que têm MUITA configuração, isso afasta
+// usuário") é uma frase: "Se eu tivesse investido [R$ 10.000] em [ITUB4] há
+// [2 anos], guardando [R$ 500] por mês e [reinvestindo] os proventos." Sai o
+// botão "Calcular Histórico": o histórico real de cada ativo é lido uma vez e a
+// conta muda na hora, no cartão CalcConta, com o "Salvar esta conta" à vista
+// (antes este simulador não salvava) e a folha de cadastro subindo uma vez
+// depois de mexer (useConviteDaConta). Começa em ITUB4, o primeiro cenário da
+// página, para a conta já aparecer pronta.
 // Comportamento portado do Calculator/Stock.vue antigo: busca multi-ativo
-// (STOCK/FUND/REIT via GET /tickers-full), aporte inicial/mensal/período,
-// reinvestimento de proventos, botão "Calcular Histórico" (não é reativo — o
-// cálculo busca histórico real por ticker), deep-links ?initial=&monthly=
-// &years=&reinvest=&tickers= com auto-fire, e resultados stale ao editar.
-// Matemática EXATA em ./stock-math (porte do server antigo). Visual = kit
-// da fase 1 (CalcShell/CalcSliderField/CalcResultPanel/CalcAreaChart).
+// (STOCK/FUND/REIT/ETF via GET /tickers-full), aporte inicial/mensal/período,
+// reinvestimento de proventos, deep-links ?initial=&monthly=&years=&reinvest=
+// &tickers= (e o fragmento #tickers= de /asset e /dividendos).
+// Matemática EXATA em ./stock-math (porte do server antigo).
 import { brl } from '~/components/calc/compound-math'
-import {
-  cleanChart,
-  cleanDividends,
-  mergeChartData,
-  simulateStock,
-  type StockSimulation,
-} from './stock-math'
+import { mergeChartData, simulateStock, type StockSimulation } from './stock-math'
 
 interface AssetItem {
   id: string
@@ -23,23 +58,16 @@ interface AssetItem {
 }
 
 const route = useRoute()
-const cur = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
-/* ——— form (defaults exatos da página antiga) ——— */
+/* ——— a conta (defaults da página antiga; o ativo é o primeiro cenário) ——— */
 const initialInvestment = ref(10000)
 const monthlyInvestment = ref(500)
 const periodYears = ref(2)
 const reinvestDividends = ref(true)
+const ATIVO_INICIAL = 'ITUB4'
+const portfolioAssets = ref<AssetItem[]>([{ id: ATIVO_INICIAL, label: ATIVO_INICIAL }])
 
-const portfolioAssets = ref<AssetItem[]>([])
-const searchTerm = ref('')
-const searchOpen = ref(false)
-const calculating = ref(false)
-const stockError = ref('')
-const resultsStale = ref(false)
-const results = ref<(StockSimulation & { name?: string })[]>([])
-
-/* ——— lista de ativos (client-only; mesma fonte /tickers-full do app antigo) ——— */
+/* ——— lista de ativos da busca (client-only; mesma fonte /tickers-full do app antigo) ——— */
 const { data: assetsData, pending: assetsLoading } = useAsyncData(
   'calc-acoes-tickers-full',
   () => $fetch<unknown>('/api/backend/tickers-full', { headers: { Accept: 'application/json' } }),
@@ -71,43 +99,16 @@ const normalizedAssets = computed<AssetItem[]>(() => {
     .filter((a): a is AssetItem => Boolean(a))
     .sort((a, b) => a.label.localeCompare(b.label))
 })
-
-const filteredAssets = computed(() => {
-  const term = searchTerm.value.trim().toLowerCase()
-  const selected = new Set(portfolioAssets.value.map((a) => a.id))
-  const pool = normalizedAssets.value.filter((a) => !selected.has(a.id))
-  if (!term) return pool.slice(0, 30)
-  return pool
-    .filter((a) => a.label.toLowerCase().includes(term) || (a.suffix ?? '').toLowerCase().includes(term))
-    .slice(0, 30)
-})
-
-function markResultsStale() {
-  if (results.value.length) resultsStale.value = true
-}
-
-function addAsset(item: AssetItem) {
-  if (portfolioAssets.value.some((a) => a.id === item.id)) return
-  portfolioAssets.value.push(item)
-  stockError.value = ''
-  markResultsStale()
-  searchTerm.value = ''
-  searchOpen.value = false
-}
-
-function removeAsset(ticker: string) {
-  const index = portfolioAssets.value.findIndex((a) => a.id === ticker)
-  if (index !== -1) {
-    portfolioAssets.value.splice(index, 1)
-    results.value = results.value.filter((r) => r.ticker !== ticker)
-    markResultsStale()
+// os ativos escolhidos ganham o nome quando a lista chega (o do link vem só com o ticker)
+watch(normalizedAssets, (lista) => {
+  const porId = new Map(lista.map((a) => [a.id, a]))
+  if (portfolioAssets.value.some((a) => !a.suffix && porId.get(a.id)?.suffix)) {
+    portfolioAssets.value = portfolioAssets.value.map((a) => (a.suffix ? a : { ...a, suffix: porId.get(a.id)?.suffix }))
   }
-}
+})
+const SUGERIDOS = ['ITUB4', 'PETR4', 'VALE3', 'WEGE3', 'BBAS3', 'TAEE11', 'HGLG11', 'BOVA11']
 
-watch([initialInvestment, monthlyInvestment, periodYears, reinvestDividends], markResultsStale)
-watch(() => portfolioAssets.value.map((a) => a.id).join(','), markResultsStale)
-
-/* ——— deep-links (?initial=&monthly=&years=&reinvest=&tickers=&auto=) ——— */
+/* ——— deep-links (?initial=&monthly=&years=&reinvest=&tickers=) ——— */
 function parseNumberParam(value: unknown): number | null {
   if (value === undefined || value === null) return null
   const raw = Array.isArray(value) ? value[0] : value
@@ -130,27 +131,23 @@ function parseTickersParam(value: unknown): string[] {
   if (value === undefined || value === null) return []
   const raw = Array.isArray(value) ? value[0] : value
   if (typeof raw !== 'string') return []
-  return raw
+  return [...new Set(raw
     .split(',')
     .map((t) => t.trim().toUpperCase())
-    .filter((t) => t.length > 0)
+    .filter((t) => /^[A-Z0-9]{4,7}$/.test(t)))].slice(0, 10)
 }
-
-const deepLinkApplied = ref(false)
-const pendingTickers = ref<string[]>([])
-const pendingAutoFire = ref(false)
 
 // Query manda (cenários populares e links antigos). Sem query, lê o fragmento,
 // que é como /asset e /dividendos linkam: #tickers=PETR4&reinvest=1 (o porquê
-// do fragmento está em utils/simulador.ts).
+// do fragmento está em utils/simulador.ts). O fragmento só existe no navegador.
 function deepLinkParams(): Record<string, unknown> {
   if (Object.keys(route.query).length) return route.query
+  if (import.meta.server) return {}
   const hash = route.hash.replace(/^#/, '')
   return hash.includes('=') ? Object.fromEntries(new URLSearchParams(hash)) : {}
 }
 
 function applyQueryParams() {
-  if (!import.meta.client) return
   const q = deepLinkParams()
   const initial = parseNumberParam(q.initial)
   const monthly = parseNumberParam(q.monthly)
@@ -162,36 +159,12 @@ function applyQueryParams() {
   if (monthly !== null) monthlyInvestment.value = monthly
   if (years !== null && years > 0) periodYears.value = Math.max(1, Math.min(30, Math.round(years)))
   if (reinvest !== null) reinvestDividends.value = reinvest
-
-  pendingTickers.value = tickers
-  const hasAnyInput =
-    initial !== null || monthly !== null || years !== null || reinvest !== null || tickers.length > 0
-  pendingAutoFire.value = hasAnyInput || q.auto === '1' || q.auto === 'true'
-  deepLinkApplied.value = false
-  tryResolvePendingTickers()
-}
-
-function tryResolvePendingTickers() {
-  if (deepLinkApplied.value) return
-  if (!pendingTickers.value.length && !pendingAutoFire.value) return
-  if (pendingTickers.value.length && !normalizedAssets.value.length) return
-
-  const tickerSet = new Set(pendingTickers.value)
-  if (tickerSet.size > 0) {
-    const matches = normalizedAssets.value.filter((a) => tickerSet.has(a.id.toUpperCase()))
-    if (matches.length > 0) portfolioAssets.value = matches
-  }
-
-  deepLinkApplied.value = true
-
-  if (pendingAutoFire.value && portfolioAssets.value.length) {
-    nextTick(() => {
-      calculateStockHistory()
-    })
+  if (tickers.length) {
+    const porId = new Map(normalizedAssets.value.map((a) => [a.id, a]))
+    portfolioAssets.value = tickers.map((t) => porId.get(t) ?? { id: t, label: t })
   }
 }
-
-watch(normalizedAssets, tryResolvePendingTickers)
+applyQueryParams()
 
 function scrollToCalc() {
   if (typeof window === 'undefined') return
@@ -201,11 +174,13 @@ function scrollToCalc() {
 }
 
 onMounted(() => {
-  applyQueryParams()
+  // o fragmento (#tickers=…) só chega aqui
+  if (!Object.keys(route.query).length && route.hash.includes('=')) applyQueryParams()
+  carregar()
   // O fragmento de parâmetros não é id de elemento: o scrollBehavior do router
   // procura #tickers=… na página, não acha e NÃO rola, então quem chega do
   // meio de um /asset abria o simulador no meio da página. Volta pro topo, onde
-  // o hero compacto deixa a calculadora na primeira dobra.
+  // o topo compacto deixa a calculadora na primeira dobra.
   if (route.hash.includes('=')) window.scrollTo({ top: 0 })
 })
 
@@ -218,100 +193,37 @@ watch(
   { deep: true },
 )
 
-/* ——— cálculo (fetch + matemática exata portada) ——— */
-async function simulateAsset(
-  asset: AssetItem,
-  perInitial: number,
-  perMonthly: number,
-  years: number,
-  reinvest: boolean,
-): Promise<(StockSimulation & { name?: string }) | null> {
-  try {
-    const pricesRaw = await $fetch<unknown>(`/api/backend/tickers/${asset.id}/prices?mode=full`, {
-      timeout: 15_000,
-      headers: { Accept: 'application/json' },
+/* ——— o histórico de cada ativo, lido uma vez ——— */
+const lidos = shallowRef<Record<string, Historico | null>>({})
+const lendo = new Set<string>()
+function carregar() {
+  if (import.meta.server) return
+  for (const { id } of portfolioAssets.value) {
+    if (lidos.value[id] || lendo.has(id)) continue
+    lendo.add(id)
+    void lerHistorico(id).then((h) => {
+      lendo.delete(id)
+      lidos.value = { ...lidos.value, [id]: h }
     })
-    const priceHistory = cleanChart(pricesRaw)
-
-    let dividendsRaw: { date: unknown; value: unknown; type: unknown }[] = []
-    if (reinvest) {
-      try {
-        dividendsRaw = cleanDividends(
-          await $fetch<unknown>(`/api/backend/dividends/${asset.id}`, {
-            timeout: 15_000,
-            headers: { Accept: 'application/json' },
-          }),
-        )
-      } catch {
-        /* sem proventos → segue sem reinvestimento (comportamento antigo) */
-      }
-    }
-
-    const sim = simulateStock(asset.id, priceHistory, dividendsRaw, perInitial, perMonthly, years, reinvest)
-    if (!sim) return null
-    return { ...sim, name: asset.suffix }
-  } catch {
-    return null
   }
 }
+watch(() => portfolioAssets.value.map((a) => a.id).join(','), carregar)
 
-async function calculateStockHistory() {
-  if (!portfolioAssets.value.length) {
-    stockError.value = 'Adicione pelo menos um ativo para calcular.'
-    return
+/* ——— a conta (matemática exata portada; o aporte se divide igual entre os ativos) ——— */
+function simular(ativos: AssetItem[], total: number, mensal: number, anos: number, reinvest: boolean) {
+  const tickerCount = ativos.length
+  const perInitial = tickerCount > 0 ? total / tickerCount : 0
+  const perMonthly = tickerCount > 0 ? mensal / tickerCount : 0
+  const validos: (StockSimulation & { name?: string })[] = []
+  const falhos: string[] = []
+  for (const a of ativos) {
+    const h = lidos.value[a.id]
+    const sim = h ? simulateStock(a.id, h.precos, reinvest ? h.proventos : [], perInitial, perMonthly, anos, reinvest) : null
+    if (sim) validos.push({ ...sim, name: a.suffix })
+    else falhos.push(a.label)
   }
-
-  calculating.value = true
-  stockError.value = ''
-  results.value = []
-
-  try {
-    const tickerCount = portfolioAssets.value.length
-    const totalInitial = Number(initialInvestment.value) || 0
-    const totalMonthly = Number(monthlyInvestment.value) || 0
-    const years = Number(periodYears.value) || 0
-
-    if (!Number.isFinite(years) || years <= 0) {
-      stockError.value = 'Informe um período em anos válido'
-      return
-    }
-
-    const perInitial = tickerCount > 0 ? totalInitial / tickerCount : 0
-    const perMonthly = tickerCount > 0 ? totalMonthly / tickerCount : 0
-    const reinvest = Boolean(reinvestDividends.value)
-
-    const failed: string[] = []
-    const simulations = await Promise.all(
-      portfolioAssets.value.map(async (asset) => {
-        const result = await simulateAsset(asset, perInitial, perMonthly, years, reinvest)
-        if (!result) failed.push(asset.label)
-        return result
-      }),
-    )
-
-    const valid = simulations.filter((r): r is StockSimulation & { name?: string } => Boolean(r))
-    if (!valid.length) {
-      stockError.value = 'Não foi possível calcular com os ativos selecionados.'
-      return
-    }
-
-    results.value = valid
-    resultsStale.value = false
-    stockError.value = failed.length
-      ? `Alguns ativos foram ignorados por falta de dados: ${failed.join(', ')}`
-      : ''
-  } catch (error) {
-    stockError.value =
-      error instanceof Error && error.message ? error.message : 'Erro ao calcular. Tente novamente.'
-  } finally {
-    calculating.value = false
-  }
-}
-
-/* ——— agregado consolidado (porte do aggregatedSummary antigo) ——— */
-const aggregatedSummary = computed(() => {
-  if (!results.value.length) return null
-  const totals = results.value.reduce(
+  // agregado consolidado (porte do aggregatedSummary antigo)
+  const totals = validos.reduce(
     (acc, r) => {
       acc.totalInvested += r.totalInvested
       acc.finalValue += r.finalValue
@@ -320,255 +232,237 @@ const aggregatedSummary = computed(() => {
     },
     { totalInvested: 0, finalValue: 0, totalDividends: 0 },
   )
-  const totalReturn =
-    totals.totalInvested > 0 ? ((totals.finalValue - totals.totalInvested) / totals.totalInvested) * 100 : 0
-  return { ...totals, return: totalReturn, assetCount: results.value.length }
+  const totalReturn = totals.totalInvested > 0 ? ((totals.finalValue - totals.totalInvested) / totals.totalInvested) * 100 : 0
+  return { validos, falhos, resumo: { ...totals, return: totalReturn, assetCount: validos.length } }
+}
+
+const calculo = computed(() => {
+  const ativos = portfolioAssets.value
+  if (!ativos.length) return { estado: 'vazio' as const }
+  if (ativos.some((a) => !(a.id in lidos.value))) return { estado: 'lendo' as const }
+  const conta = simular(ativos, Number(initialInvestment.value) || 0, Number(monthlyInvestment.value) || 0, Number(periodYears.value) || 1, reinvestDividends.value)
+  if (!conta.validos.length) return { estado: 'sem-dados' as const, falhos: conta.falhos }
+  return { estado: 'pronto' as const, ...conta, curva: mergeChartData(conta.validos) }
+})
+const pronto = computed(() => (calculo.value.estado === 'pronto' ? calculo.value : null))
+
+/* ——— a frase (21/10/2026) ——— */
+const CAMINHO = '/calculadora/acoes'
+const anosTxt = (n: number) => `${n} ${n === 1 ? 'ano' : 'anos'}`
+const pct = (v: number) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(1).replace('.', ',')}%`
+const inicialAtalho = [1000, 5000, 10000, 50000].map((v) => ({ label: brl(v), value: v }))
+const mensalAtalho = [0, 200, 500, 1000].map((v) => ({ label: brl(v), value: v }))
+const anosAtalho = [1, 2, 5, 10].map((v) => ({ label: anosTxt(v), value: v }))
+const reinvestirOpcoes = [
+  { value: 'reinvestindo', label: 'reinvestindo' },
+  { value: 'sacando', label: 'sacando' },
+]
+const reinvestir = computed({
+  get: () => (reinvestDividends.value ? 'reinvestindo' : 'sacando'),
+  set: (v: string) => { reinvestDividends.value = v === 'reinvestindo' },
+})
+const ativosTxt = computed(() => {
+  const t = portfolioAssets.value.map((a) => a.label)
+  if (t.length <= 1) return t[0] ?? ''
+  return `${t.slice(0, -1).join(', ')} e ${t[t.length - 1]}`
 })
 
-const mergedChart = computed(() => (results.value.length ? mergeChartData(results.value) : []))
-const chartValues = computed(() => mergedChart.value.map((p) => p.value))
-const chartXLabels = computed<[string, string, string]>(() => {
-  const pts = mergedChart.value
-  return [
-    pts[0]?.date ?? '',
-    pts[Math.floor((pts.length - 1) / 2)]?.date ?? '',
-    pts[pts.length - 1]?.date ?? '',
-  ]
+const numero = computed(() => {
+  const c = pronto.value
+  if (!c) return null
+  const r = c.resumo
+  const divididos = r.assetCount > 1 ? ` Os aportes se dividem igualmente entre os ${r.assetCount} ativos.` : ''
+  const ignorados = c.falhos.length ? ` Sem dados de ${c.falhos.join(', ')}, que ficaram de fora.` : ''
+  const proventos = reinvestDividends.value
+    ? (r.totalDividends > 0 ? `, e ${brl(r.totalDividends)} em proventos voltaram para a carteira` : '')
+    : ''
+  const semReinvestir = reinvestDividends.value ? '' : ' Sem reinvestir, os proventos não entram nesta conta.'
+  return {
+    legenda: 'Hoje você teria',
+    valor: brl(r.finalValue),
+    selo: `${pct(r.return)} sobre ${brl(r.totalInvested)} investidos`,
+    tom: r.return >= 0 ? ('ok' as const) : ('falta' as const),
+    explica: `Você teria posto ${brl(r.totalInvested)}${proventos}.${semReinvestir}${divididos}${ignorados}`,
+  }
 })
 
-const jiTxt = computed(() => brl(initialInvestment.value))
-const jmTxt = computed(() => brl(monthlyInvestment.value) + '/mês')
-const jpTxt = computed(() => periodYears.value + (periodYears.value === 1 ? ' ano' : ' anos'))
+// "E se…": três contas a mais por mudança, então elas esperam a pessoa parar de arrastar
+const ese = shallowRef<{ texto: string; valor: string }[]>([])
+let eseRelogio: ReturnType<typeof setTimeout> | null = null
+watch([pronto, initialInvestment, monthlyInvestment, periodYears, reinvestDividends], () => {
+  if (import.meta.server) return
+  if (eseRelogio) clearTimeout(eseRelogio)
+  if (!pronto.value) {
+    ese.value = []
+    return
+  }
+  eseRelogio = setTimeout(() => {
+    const ativos = portfolioAssets.value
+    const total = Number(initialInvestment.value) || 0
+    const mensal = Number(monthlyInvestment.value) || 0
+    const anos = Number(periodYears.value) || 1
+    const final = (t: number, m: number, a: number, rv: boolean) => brlCurto(simular(ativos, t, m, a, rv).resumo.finalValue)
+    const maisMensal = Math.max(mensal * 2, 500)
+    const maisAnos = Math.min(30, anos + 3)
+    ese.value = [
+      { texto: reinvestDividends.value ? 'Sem reinvestir os proventos' : 'Reinvestindo os proventos', valor: final(total, mensal, anos, !reinvestDividends.value) },
+      { texto: `Guardando ${brl(maisMensal)}/mês`, valor: final(total, maisMensal, anos, reinvestDividends.value) },
+      ...(maisAnos > anos ? [{ texto: `Começando há ${anosTxt(maisAnos)}`, valor: final(total, mensal, maisAnos, reinvestDividends.value) }] : []),
+    ]
+  }, 250)
+}, { immediate: true })
+onBeforeUnmount(() => { if (eseRelogio) clearTimeout(eseRelogio) })
+
+/* ——— salvar, compartilhar e reabrir (o mesmo vocabulário do deep-link) ——— */
+const simParams = computed<Record<string, number>>(() => ({
+  initial: initialInvestment.value,
+  monthly: monthlyInvestment.value,
+  years: periodYears.value,
+  reinvest: reinvestDividends.value ? 1 : 0,
+}))
+// os ativos vão em texto ("ITUB4,VALE3"): o backend aceita só essa chave em texto, só aqui
+const simTextos = computed<Record<string, string>>(() => ({ tickers: portfolioAssets.value.map((a) => a.id).join(',') }))
+const simLabel = computed(() => `${ativosTxt.value || 'Sem ativo'} · ${brl(initialInvestment.value)} + ${brl(monthlyInvestment.value)}/mês · ${anosTxt(periodYears.value)}`)
+const simResult = computed<Record<string, number> | undefined>(() => (pronto.value
+  ? { total: Math.round(pronto.value.resumo.finalValue), investido: Math.round(pronto.value.resumo.totalInvested) }
+  : undefined))
+const link = computed(() => `${CAMINHO}?initial=${initialInvestment.value}&monthly=${monthlyInvestment.value}&years=${periodYears.value}&reinvest=${reinvestDividends.value ? 1 : 0}&tickers=${encodeURIComponent(simTextos.value.tickers!)}`)
+const folhaConta = computed(() => {
+  const c = pronto.value
+  const n = numero.value
+  if (!c || !n) return undefined
+  // a curva do herói não precisa de todos os pontos semanais
+  const pontos = c.curva.map((p) => p.value)
+  const passo = Math.max(1, Math.ceil(pontos.length / 60))
+  const serie = pontos.filter((_, i) => i % passo === 0 || i === pontos.length - 1)
+  return {
+    gesto: 'conta' as const,
+    rotulo: `${ativosTxt.value} há ${anosTxt(periodYears.value)}`,
+    valor: n.valor,
+    selo: n.selo,
+    seloFalta: n.tom === 'falta',
+    serie,
+    rotulos: [c.curva[0]?.date ?? '', 'hoje'] as [string, string],
+    pergunta: `“E se eu tivesse posto ${brl(Math.max(monthlyInvestment.value * 2, 500))} por mês?”`,
+  }
+})
+function aplicar(p: Record<string, number>) {
+  if (Number.isFinite(p.initial)) initialInvestment.value = p.initial!
+  if (Number.isFinite(p.monthly)) monthlyInvestment.value = p.monthly!
+  if (Number.isFinite(p.years)) periodYears.value = Math.max(1, Math.min(30, Math.round(p.years!)))
+  if (Number.isFinite(p.reinvest)) reinvestDividends.value = Boolean(p.reinvest)
+}
+function aplicarTextos(t: Record<string, string>) {
+  const tickers = parseTickersParam(t.tickers)
+  if (!tickers.length) return
+  const porId = new Map(normalizedAssets.value.map((a) => [a.id, a]))
+  portfolioAssets.value = tickers.map((x) => porId.get(x) ?? { id: x, label: x })
+}
+
+// depois de mexer na conta, a folha sobe sozinha uma vez (useConviteDaConta)
+const salvar = ref<{ pedir: (origem?: 'botao' | 'convite') => Promise<void> } | null>(null)
+useConviteDaConta('acoes', () => JSON.stringify([simParams.value, simTextos.value]), () => {
+  if (simResult.value) void salvar.value?.pedir('convite')
+})
 </script>
 
 <template>
-  <CalcShell eyebrow="Simulador" section-id="simulador">
-    <template #title>Investimento em ações.</template>
-    <template #controls>
-      <p class="cas__section-label">{{ aggregatedSummary && !resultsStale ? 'Ajustar análise' : 'Configure a simulação' }}</p>
+  <CalcConta section-id="simulador">
+    <template #title><slot name="title">Simulador de ações</slot></template>
+    <template #topo>
+      <CalcSimSaves variant="history" calculator="acoes" :format-value="brl" @apply="aplicar" @apply-textos="aplicarTextos" />
+    </template>
+    <template #frase>
+      <CalcFrase>
+        Se eu tivesse investido <CalcFraseCampo
+          v-model="initialInvestment" rotulo="Quanto você teria posto no começo" :min="0" :max="100000" :passo="500"
+          :texto="brl(initialInvestment)" prefixo="R$" :atalhos="inicialAtalho"
+        /> em <CalcFraseAtivos
+          v-model="portfolioAssets" :ativos="normalizedAssets" :carregando="assetsLoading" :sugeridos="SUGERIDOS"
+        /> há <CalcFraseCampo
+          v-model="periodYears" rotulo="Há quanto tempo" :min="1" :max="30" :passo="1"
+          :texto="anosTxt(periodYears)" sufixo="anos" :atalhos="anosAtalho"
+        />, guardando <CalcFraseCampo
+          v-model="monthlyInvestment" rotulo="Quanto você guardaria por mês" :min="0" :max="10000" :passo="50"
+          :texto="brl(monthlyInvestment)" prefixo="R$" :atalhos="mensalAtalho"
+        /> por mês e <CalcFraseOpcao v-model="reinvestir" rotulo="Os proventos" :opcoes="reinvestirOpcoes" /> os proventos.
+      </CalcFrase>
+    </template>
 
-      <!-- busca de ativos (controle no estilo do kit; input não-numérico) -->
-      <div class="cas__search">
-        <div class="cas__row">
-          <span class="cas__label">Selecione os ativos</span>
-        </div>
-        <input
-          v-model="searchTerm"
-          type="text"
-          class="cas__input"
-          placeholder="Buscar ação ou FII..."
-          aria-label="Selecione os ativos"
-          @focus="searchOpen = true"
-          @blur="searchOpen = false"
-        >
-        <div v-if="searchOpen && (filteredAssets.length || assetsLoading)" class="cas__dropdown">
-          <p v-if="assetsLoading" class="cas__hint">Carregando ativos…</p>
-          <button
-            v-for="a in filteredAssets"
-            :key="a.id"
-            type="button"
-            class="cas__option"
-            @mousedown.prevent="addAsset(a)"
-          >
-            <span class="cas__option-ticker">{{ a.label }}</span>
-            <span v-if="a.suffix" class="cas__option-name">{{ a.suffix }}</span>
-          </button>
-        </div>
+    <template #resultado>
+      <CalcNumero v-if="numero" v-bind="numero" />
+      <p v-else-if="calculo.estado === 'vazio'" class="cas__aviso">Escolha pelo menos um ativo na frase para ver a conta.</p>
+      <div v-else-if="calculo.estado === 'sem-dados'" class="cas__erro" role="alert">
+        <p class="cas__erro-texto">Não deu para ler o histórico de {{ calculo.falhos.join(', ') }} agora.</p>
+        <button type="button" class="cas__de-novo" @click="carregar">Tentar de novo</button>
       </div>
-
-      <div v-if="portfolioAssets.length" class="cas__pills">
-        <span v-for="asset in portfolioAssets" :key="asset.id" class="cas__pill">
-          <span class="cas__pill-ticker">{{ asset.label }}</span>
-          <button type="button" class="cas__pill-x" aria-label="Remover ativo" @click="removeAsset(asset.id)">×</button>
-        </span>
-      </div>
-      <p v-else class="cas__hint">Adicione pelo menos um ativo para realizar o cálculo.</p>
-
-      <div class="cas__gap">
-        <CalcSliderField v-model="initialInvestment" label="Valor Inicial de Aporte (R$)" :min="0" :max="100000" :step="500" :value-text="jiTxt" />
-      </div>
-      <div class="cas__gap">
-        <CalcSliderField v-model="monthlyInvestment" label="Aporte Mensal (R$)" :min="0" :max="10000" :step="50" :value-text="jmTxt" />
-      </div>
-      <div class="cas__gap">
-        <CalcSliderField v-model="periodYears" label="Período (anos)" :min="1" :max="30" :step="1" :value-text="jpTxt" />
-      </div>
-
-      <button
-        type="button"
-        class="cas__toggle"
-        role="switch"
-        :aria-checked="reinvestDividends"
-        @click="reinvestDividends = !reinvestDividends"
-      >
-        <span class="cas__toggle-track" :class="{ 'cas__toggle-track--on': reinvestDividends }">
-          <span class="cas__toggle-thumb" />
-        </span>
-        <span class="cas__toggle-label">Reinvestir proventos automaticamente</span>
-      </button>
-
-      <button
-        type="button"
-        class="cas__cta"
-        :disabled="!portfolioAssets.length || calculating"
-        @click="calculateStockHistory"
-      >
-        {{ calculating ? 'Calculando…' : 'Calcular Histórico' }}
-      </button>
-
-      <div v-if="stockError" class="cas__alert cas__alert--error">{{ stockError }}</div>
-      <div v-if="resultsStale" class="cas__alert cas__alert--warn">
-        <strong>Resultados desatualizados.</strong>
-        Clique em "Calcular Histórico" para atualizar as projeções após as alterações.
+      <div v-else class="cas__lendo" aria-busy="true">
+        <p class="cas__lendo-legenda">Hoje você teria</p>
+        <span class="cas__esqueleto" aria-hidden="true" />
+        <p class="cas__lendo-texto"><span class="cas__pulso" aria-hidden="true" /> Lendo o histórico de {{ ativosTxt }} na B3…</p>
       </div>
     </template>
 
-    <template #result>
-      <template v-if="aggregatedSummary && !resultsStale">
-        <CalcResultPanel
-          caption="Valor final consolidado"
-          :value="cur.format(aggregatedSummary.finalValue)"
-          :items="[
-            { dot: 'var(--nu-navy)', label: 'Total investido', value: cur.format(aggregatedSummary.totalInvested) },
-            { dot: 'var(--nu-blue)', label: 'Total de proventos', value: cur.format(aggregatedSummary.totalDividends), accent: true },
-          ]"
-        >
-          <div class="cas__return" :class="aggregatedSummary.return >= 0 ? 'cas__return--pos' : 'cas__return--neg'">
-            Rentabilidade {{ aggregatedSummary.return >= 0 ? '+' : '' }}{{ aggregatedSummary.return.toFixed(2) }}%
-          </div>
-          <div v-if="chartValues.length >= 2" class="cas__chart">
-            <CalcAreaChart :values="chartValues" :x-labels="chartXLabels" :format-y="brl" />
-          </div>
-          <div v-if="aggregatedSummary.assetCount > 1" class="cas__insight">
-            Aportes distribuídos igualmente entre {{ aggregatedSummary.assetCount }} ativos.
-          </div>
-          <div class="cas__details">
-            <CalcAcoesAssetResult
-              v-for="result in results"
-              :key="result.ticker"
-              :result="result"
-              :reinvest="reinvestDividends"
-            />
-          </div>
-        </CalcResultPanel>
-      </template>
-      <div v-else class="cas__empty">
-        <p class="cas__empty-eyebrow">Resultado consolidado</p>
-        <p class="cas__empty-text">Adicione ativos e clique em "Calcular Histórico" pra simular.</p>
-        <p class="cas__empty-text cas__empty-text--sub">Chart e tabela de proventos aparecem após o cálculo.</p>
-      </div>
+    <template #acoes>
+      <CalcSimSaves
+        ref="salvar" variant="save" calculator="acoes" :caminho="CAMINHO"
+        :params="simParams" :textos="simTextos" :label="simLabel" :result="simResult" :folha="folhaConta"
+      >
+        <CalcCompartilhar :link="link" titulo="A minha simulação de ações, na Redentia" />
+      </CalcSimSaves>
     </template>
-  </CalcShell>
+
+    <template #grafico>
+      <CalcCurva
+        v-if="pronto && pronto.curva.length >= 2"
+        :valores="pronto.curva.map((p) => p.value)"
+        :rotulo-fim="brlCurto(pronto.resumo.finalValue)"
+        :rotulos="[pronto.curva[0]!.date, 'hoje']"
+      />
+    </template>
+
+    <template #depois>
+      <CalcEse :itens="ese" aviso="Histórico real da B3. Rentabilidade passada não garante rentabilidade futura.">
+        <!-- ativo por ativo: composição e proventos (com mais de um, o resultado de cada um) -->
+        <div v-if="pronto" class="cas__detalhes">
+          <CalcAcoesAssetResult
+            v-for="result in pronto.validos"
+            :key="result.ticker"
+            :result="result"
+            :reinvest="reinvestDividends"
+            :resumido="pronto.validos.length === 1"
+            branco
+          />
+        </div>
+      </CalcEse>
+    </template>
+  </CalcConta>
 </template>
 
 <style scoped>
-.cas__section-label { margin: 0 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-.cas__gap { margin-top: 36px; }
+.cas__aviso { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700; }
 
-/* busca */
-.cas__search { position: relative; }
-.cas__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.cas__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.cas__input {
-  width: 100%; margin-top: 12px; padding: 13px 16px;
-  background: var(--nu-white); border: 2px solid var(--nu-sand-border);
-  border-radius: var(--nu-r-input); color: var(--nu-ink);
-  font-size: var(--nu-fs-md); font-weight: 700; font-family: var(--nu-font); outline: none;
-  transition: border-color .2s;
+/* enquanto o histórico sai da B3 */
+.cas__lendo-legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
+.cas__esqueleto {
+  display: block; width: min(320px, 80%); height: 56px; margin-top: 8px; border-radius: 16px;
+  background: linear-gradient(90deg, var(--nu-cream) 0%, var(--nu-cream-2) 50%, var(--nu-cream) 100%);
+  background-size: 200% 100%; animation: cas-brilha 1.4s ease-in-out infinite;
 }
-.cas__input::placeholder { color: var(--nu-placeholder); font-weight: 500; }
-.cas__input:focus { border-color: var(--nu-blue); }
-.cas__dropdown {
-  position: absolute; left: 0; right: 0; top: 100%; z-index: 30; margin-top: 6px;
-  background: var(--nu-white); border-radius: var(--nu-r-tile);
-  box-shadow: var(--nu-shadow-card); max-height: 280px; overflow-y: auto; padding: 6px;
+.cas__lendo-texto { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cas__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-blue); animation: cas-pulsa 1.2s ease-in-out infinite; }
+@keyframes cas-brilha { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes cas-pulsa { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) {
+  .cas__esqueleto, .cas__pulso { animation: none; }
 }
-.cas__option {
-  display: flex; align-items: baseline; gap: 10px; width: 100%;
-  background: transparent; border: none; text-align: left; cursor: pointer;
-  padding: 10px 12px; border-radius: 10px; transition: background .15s;
-}
-.cas__option:hover { background: var(--nu-cream); }
-.cas__option-ticker { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; flex-shrink: 0; }
-.cas__option-name { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cas__hint { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
-/* pills de ativos selecionados */
-.cas__pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.cas__pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--nu-ink); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 7px 8px 7px 14px;
-  font-size: var(--nu-fs-dense); font-weight: 700;
+.cas__erro-texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.cas__de-novo {
+  margin-top: 14px; padding: 10px 18px; border-radius: var(--nu-r-pill); border: 1.5px solid var(--nu-ink);
+  background: var(--nu-white); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
 }
-.cas__pill-x {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: var(--nu-white-18); color: var(--nu-white);
-  border: none; cursor: pointer; font-size: var(--nu-fs-sm); line-height: 1;
-  transition: background .2s;
-}
-.cas__pill-x:hover { background: var(--nu-white-35); }
+.cas__de-novo:hover { background: var(--nu-ink); color: var(--nu-white); }
 
-/* toggle de reinvestimento */
-.cas__toggle {
-  display: flex; align-items: center; gap: 12px; margin-top: 26px;
-  background: transparent; border: none; padding: 0; cursor: pointer; text-align: left;
-}
-.cas__toggle-track {
-  width: 44px; height: 26px; border-radius: var(--nu-r-pill);
-  background: var(--nu-sand-2); position: relative; flex-shrink: 0;
-  transition: background .2s;
-}
-.cas__toggle-track--on { background: var(--nu-blue); }
-.cas__toggle-thumb {
-  position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-  border-radius: 50%; background: var(--nu-white);
-  box-shadow: var(--nu-shadow-slider-thumb); transition: transform .2s;
-}
-.cas__toggle-track--on .cas__toggle-thumb { transform: translateX(18px); }
-.cas__toggle-label { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-
-/* CTA */
-.cas__cta {
-  width: 100%; margin-top: 26px; padding: 16px 24px;
-  background: var(--nu-blue); color: var(--nu-white);
-  border: none; border-radius: var(--nu-r-pill); cursor: pointer;
-  font-size: var(--nu-fs-md); font-weight: 800; font-family: var(--nu-font);
-  transition: background .2s, opacity .2s;
-}
-.cas__cta:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.cas__cta:disabled { opacity: .45; cursor: not-allowed; }
-
-/* alerts */
-.cas__alert {
-  margin-top: 16px; border-radius: var(--nu-r-input); padding: 13px 16px;
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
-}
-.cas__alert strong { font-weight: 800; }
-.cas__alert--error { background: var(--nu-red-tint); color: var(--nu-red-2); }
-.cas__alert--warn { background: var(--nu-warning-bg); color: var(--nu-gray-3); }
-
-/* resultado */
-.cas__return {
-  display: inline-flex; margin-top: 16px; border-radius: var(--nu-r-pill);
-  padding: 7px 14px; font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
-}
-.cas__return--pos { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.cas__return--neg { background: var(--nu-red-bg); color: var(--nu-red-2); }
-.cas__chart { margin-top: 30px; }
-.cas__insight {
-  background: var(--nu-cream); border-radius: 18px; padding: 18px 22px; margin-top: 26px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
-}
-.cas__details { display: flex; flex-direction: column; gap: 16px; margin-top: 30px; }
-
-/* vazio */
-.cas__empty {
-  background: var(--nu-cream); border-radius: var(--nu-r-card-lg);
-  padding: clamp(28px, 4vw, 44px);
-}
-.cas__empty-eyebrow { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
-.cas__empty-text { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
-.cas__empty-text--sub { margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cas__detalhes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 16px; max-width: 1180px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
 </style>

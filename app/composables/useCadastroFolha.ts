@@ -13,6 +13,22 @@ export type CadastroContexto =
   | { gesto: 'resumo' }
   | { gesto: 'simulacao'; inicial: number; mensal: number; taxa: number; anos: number }
   | { gesto: 'aposentadoria'; idade: number; aposentaAos: number; total: number; necessario: number; serie: number[] }
+  // as outras calculadoras (21/10/2026): o número da conta, o selo e, quando há, a curva com a meta
+  | {
+    gesto: 'conta'
+    /** no alto do herói ("Meta de R$ 500 mil em 10 anos") */
+    rotulo: string
+    /** o número grande, já formatado ("R$ 2.457/mês") */
+    valor: string
+    selo?: string
+    seloFalta?: boolean
+    serie?: number[]
+    meta?: number | null
+    rotuloMeta?: string
+    rotulos?: [string, string]
+    /** a pergunta de exemplo do "Pergunte à Redentia", com aspas */
+    pergunta: string
+  }
   | { gesto: 'pergunta'; pergunta: string }
 
 /** Como a conta saiu: o canal do código e se ela é nova. */

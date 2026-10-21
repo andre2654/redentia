@@ -10,6 +10,10 @@ import type { StockSimulation } from './stock-math'
 const props = defineProps<{
   result: StockSimulation & { name?: string }
   reinvest: boolean
+  /** com um ativo só, o cartão da conta já mostra o valor e a curva: aqui ficam a composição e os proventos (21/10/2026) */
+  resumido?: boolean
+  /** em cima do creme da seção, o cartão fica branco */
+  branco?: boolean
 }>()
 
 const cur = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -41,10 +45,11 @@ const avgPerPayment = computed(() =>
 </script>
 
 <template>
-  <div class="car">
+  <div class="car" :class="{ 'car--branco': branco }">
     <h3 class="car__title">Resultado, {{ result.ticker }}</h3>
     <p v-if="result.name" class="car__name">{{ result.name }}</p>
 
+    <template v-if="!resumido">
     <p class="car__eyebrow">Valor final</p>
     <div class="car__value">{{ cur.format(result.finalValue) }}</div>
 
@@ -62,6 +67,7 @@ const avgPerPayment = computed(() =>
         <span class="car__kpi-value car__pos">{{ cur.format(result.totalDividends) }}</span>
       </div>
     </div>
+    </template>
 
     <div class="car__sub">
       <h4 class="car__sub-title">Composição da carteira</h4>
@@ -77,7 +83,7 @@ const avgPerPayment = computed(() =>
       </div>
     </div>
 
-    <div class="car__chart">
+    <div v-if="!resumido" class="car__chart">
       <p class="car__chart-label">Evolução do investimento</p>
       <CalcAreaChart :values="chartValues" :x-labels="xLabels" :format-y="brl" />
     </div>
@@ -134,6 +140,9 @@ const avgPerPayment = computed(() =>
   border-radius: var(--nu-r-card-lg);
   padding: clamp(22px, 3vw, 32px);
 }
+.car--branco { background: var(--nu-white); }
+.car--branco .car__kpi { background: var(--nu-cream); }
+.car--branco .car__table-wrap { box-shadow: inset 0 0 0 1.5px var(--nu-cream-2); }
 .car__title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.3px; }
 .car__name { margin: 3px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .car__eyebrow { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }

@@ -16,7 +16,8 @@ export interface SimulationVM {
   id: number
   calculator: string
   label: string
-  params: Record<string, number>
+  /** números; o simulador de ações guarda também os ativos em `tickers`, em texto ("ITUB4,VALE3") */
+  params: Record<string, number | string>
   result: Record<string, number> | null
   created_at: string | null
 }
@@ -29,7 +30,7 @@ const PENDING_KEY = 'nu:sim-pending'
 interface PendingSim {
   calculator: string
   label: string
-  params: Record<string, number>
+  params: Record<string, number | string>
   result?: Record<string, number>
 }
 

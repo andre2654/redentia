@@ -15,6 +15,8 @@ const props = defineProps<{
   rotuloFim?: string
   /** os rótulos do eixo: início e fim */
   rotulos?: [string, string]
+  /** a legenda da série tracejada, embaixo do gráfico ("o que você guardou") */
+  legendaSecundaria?: string
 }>()
 
 const W = 520
@@ -54,6 +56,9 @@ const id = useId()
       <text class="ccv__eixo" x="512" y="190" text-anchor="end">{{ rotulos[1] }}</text>
     </template>
   </svg>
+  <p v-if="curva && legendaSecundaria && linhaSecundaria" class="ccv__legenda">
+    <span class="ccv__traco" aria-hidden="true" /> {{ legendaSecundaria }}
+  </p>
 </template>
 
 <style scoped>
@@ -71,6 +76,11 @@ const id = useId()
 .ccv__ponto { fill: var(--nu-blue); }
 .ccv__rotulo, .ccv__eixo { fill: var(--nu-gray); font-size: 13px; font-weight: 700; }
 .ccv__fim { fill: var(--nu-ink); font-size: 14px; font-weight: 800; }
+.ccv__legenda {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 6px 0 0;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
+}
+.ccv__traco { width: 22px; height: 0; border-top: 2px dashed color-mix(in srgb, var(--nu-ink) 55%, transparent); }
 @keyframes ccv-desenha { from { stroke-dashoffset: 100; } }
 @keyframes ccv-surge { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {

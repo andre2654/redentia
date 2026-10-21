@@ -55,6 +55,7 @@ const texto = computed(() => {
     minutos: resumo.value?.minutos,
     aposentaAos: c?.gesto === 'aposentadoria' ? c.aposentaAos : undefined,
     mensal: c?.gesto === 'simulacao' ? c.mensal : undefined,
+    pergunta: c?.gesto === 'conta' ? c.pergunta : undefined,
   })
 })
 const ehWhats = computed(() => cad.canal.value === 'whatsapp')
@@ -207,6 +208,7 @@ const fimDoCodigo = computed(() => ({
   resumo: 'o resumo fica ligado',
   simulacao: 'a conta fica guardada',
   aposentadoria: 'a conta fica guardada',
+  conta: 'a conta fica guardada',
   pergunta: 'a pergunta segue para a Redentia',
 }[gesto.value]))
 
@@ -221,6 +223,7 @@ const pronto = computed(() => {
     resumo: { titulo: 'Pronto. O resumo chega às 7h30.', linha: `A partir do próximo dia útil, ${onde}.` },
     simulacao: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     aposentadoria: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
+    conta: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     pergunta: { titulo: 'Pronto. Sua conta está criada.', linha: 'A resposta abre assim que você continuar.' },
   }[gesto.value]
 })
@@ -248,6 +251,11 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
             <CadastroHeroiAposentadoria
               v-else-if="ctx?.gesto === 'aposentadoria'"
               :conta="{ idade: ctx.idade, aposentaAos: ctx.aposentaAos, total: ctx.total, necessario: ctx.necessario, serie: ctx.serie }"
+              :guardada="etapa === 'pronto' && !acaoFalhou"
+            />
+            <CadastroHeroiConta
+              v-else-if="ctx?.gesto === 'conta'"
+              :conta="ctx"
               :guardada="etapa === 'pronto' && !acaoFalhou"
             />
             <CadastroHeroiPergunta v-else-if="ctx?.gesto === 'pergunta'" :pergunta="ctx.pergunta" />

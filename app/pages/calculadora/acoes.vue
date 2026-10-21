@@ -226,17 +226,16 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
     <!-- H1 = o nome da ferramenta, igual ao title e às âncoras (bloco DONO DO
-         CLUSTER acima). Até 23/09 era "Histórico real da B3 com Dividendos.",
-         que não tinha nenhum dos termos que a página ranqueava; a frase desceu
-         pra linha de apoio. -->
-    <CalcHero desc="Histórico real da B3: quanto teria rendido investir em qualquer ação ou FII, com dividendos e JCP reinvestidos.">
-      Simulador de ações e
-      <em>dividendos.</em>
-    </CalcHero>
+         CLUSTER acima), por isso não vira pergunta como nas outras. Até 23/09
+         era "Histórico real da B3 com Dividendos.", que não tinha nenhum dos
+         termos que a página ranqueava; a frase desceu pra linha de apoio. -->
+    <CalcTopo desc="Histórico real da B3: quanto teria rendido investir em qualquer ação ou FII, com dividendos e JCP reinvestidos.">
+      Simulador de ações e dividendos
+    </CalcTopo>
 
-    <!-- ============ Simulador interativo (design + kit) ============ -->
+    <!-- ============ Simulador na frase ============ -->
     <CalcAcoesSimulator />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->

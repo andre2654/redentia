@@ -16,8 +16,8 @@ const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', { day: '2-digit'
 const lastUpdatedISO = lastUpdated.toISOString().slice(0, 10)
 
 // Cenários populares — long-tail SEO via deep-links (texto/URLs verbatim da
-// página antiga; o PlanejamentoCalcSection lê ?goal=&monthly=&strategy= e
-// dispara o cálculo sozinho, igual o Planning.vue antigo).
+// página antiga; o PlanejamentoCalcSection lê ?goal=&monthly=&strategy= e a
+// conta aparece sozinha, como em toda mudança na frase).
 const popularScenarios = [
   { label: 'R$ 1 milhão em 20 anos', sub: 'Aporte de R$ 1.500/mês', to: '/calculadora/planejamento?goal=1000000&monthly=1500&strategy=rentabilidade' },
   { label: 'R$ 500 mil em 10 anos', sub: 'Médio prazo, perfil agressivo', to: '/calculadora/planejamento?goal=500000&monthly=2500&strategy=rentabilidade' },
@@ -159,16 +159,14 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Monte o plano de patrimônio pra sua meta, com dados reais da B3.">
-      Caminho para a liberdade
-      <em>financeira.</em>
-    </CalcHero>
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
+    <!-- "calculadora de planejamento" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
+    <CalcTopo desc="Diga a sua meta e quanto guarda por mês. A carteira sai dos dados reais da B3.">
+      Quanto tempo falta para a sua liberdade financeira?
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design + matemática antiga) ============ -->
-    <PlanejamentoCalcSection section-id="planejamento">
-      <template #title>Planejamento patrimonial.</template>
-    </PlanejamentoCalcSection>
+    <!-- ============ Calculadora na frase (matemática antiga) ============ -->
+    <PlanejamentoCalcSection section-id="planejamento" />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
