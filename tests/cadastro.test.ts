@@ -6,7 +6,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { brlInteiro, curvaJuros, linhaDoMes, motivoCurto, pctTexto, pontoNaPolilinha, primeiraFrase, textoDoGesto, totalJuros } from '../app/utils/cadastro.ts'
+import { brlInteiro, citaOutroPapel, curvaJuros, linhaDoMes, motivoCurto, pctTexto, pontoNaPolilinha, primeiraFrase, quandoDoPregao, textoDoGesto, totalJuros } from '../app/utils/cadastro.ts'
 import { compoundProjection } from '../app/components/calc/compound-math.ts'
 
 test('cada gesto tem título, até três motivos, botão com a ação e o aceite', () => {
@@ -45,6 +45,17 @@ test('primeira frase do briefing e o porquê pela manchete', () => {
   )
   const longo = motivoCurto('Palavra '.repeat(30), 'XPTO3', 40)
   assert.ok(longo && longo.length <= 41 && longo.endsWith('…'))
+})
+
+test('resumo do dia não vira o porquê, e o "hoje" só vale com o pregão aberto', () => {
+  assert.equal(citaOutroPapel('Petrobras, WEG (WEGE3) e Cosan (CSAN3) são alguns dos destaques desta quarta-feira (21)', 'PETR4'), true)
+  assert.equal(citaOutroPapel('Petrobras (PETR3; PETR4) aprova dividendos', 'PETR4'), false)
+  assert.equal(citaOutroPapel('WEG lucra R$ 1,67 bilhão no 3T e fica abaixo das projeções', 'WEGE3'), false)
+  // 21/10/2026 é quarta: 10h em Brasília são 13h UTC
+  assert.equal(quandoDoPregao(new Date('2026-10-21T13:00:00Z')), 'hoje')
+  assert.equal(quandoDoPregao(new Date('2026-10-21T12:59:00Z')), 'no último pregão')
+  assert.equal(quandoDoPregao(new Date('2026-10-22T02:30:00Z')), 'hoje') // quarta, 23h30 em Brasília
+  assert.equal(quandoDoPregao(new Date('2026-10-24T15:00:00Z')), 'no último pregão') // sábado
 })
 
 test('a linha do mês separa o trecho de hoje e marca o fechamento de ontem', () => {

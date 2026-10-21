@@ -53,11 +53,17 @@ const texto = computed(() => (props.frase ? `Bom dia. ${props.frase}` : 'Bom dia
 }
 
 /* o laço (10 s): noite → amanhecer. Parado, fica o céu claro com a frase. */
-.chr__noite { animation: chr-noite 10s ease infinite; }
-.chr__estrela { animation: chr-estrela 10s ease infinite; }
-.chr__sol { animation: chr-sol 10s cubic-bezier(.2, .7, .2, 1) infinite; }
-.chr__relogio { animation: chr-relogio 10s ease infinite; }
-.chr__frase { animation: chr-frase 10s ease infinite; }
+.chr { --chr-ciclo: 10s; }
+.chr__noite { animation: chr-noite var(--chr-ciclo) ease infinite; }
+.chr__estrela { animation: chr-estrela var(--chr-ciclo) ease infinite; }
+.chr__sol { animation: chr-sol var(--chr-ciclo) cubic-bezier(.2, .7, .2, 1) infinite; }
+.chr__relogio { animation: chr-relogio var(--chr-ciclo) ease infinite; }
+.chr__frase { animation: chr-frase var(--chr-ciclo) ease infinite; }
+/* no painel do login o amanhecer roda uma vez, nos 6 s da cena do
+   NuAuthFuncoes, e para em 92%: o céu claro com a frase, antes de a noite voltar */
+.chr--painel { --chr-ciclo: 6s; }
+.chr--painel .chr__noite, .chr--painel .chr__estrela, .chr--painel .chr__sol, .chr--painel .chr__relogio,
+.chr--painel .chr__frase { animation-iteration-count: .92; animation-fill-mode: forwards; }
 @keyframes chr-noite { 0% { opacity: .62; } 38%, 92% { opacity: 0; } 100% { opacity: .62; } }
 @keyframes chr-estrela { 0%, 8% { opacity: .9; } 34%, 94% { opacity: 0; } 100% { opacity: .9; } }
 @keyframes chr-sol { 0% { transform: translateY(70px); opacity: .5; } 40%, 92% { transform: none; opacity: 1; } 100% { transform: translateY(70px); opacity: .5; } }

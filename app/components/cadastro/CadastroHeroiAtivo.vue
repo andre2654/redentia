@@ -18,7 +18,7 @@ const linha = computed(() => (props.dados ? linhaDoMes(props.dados.serie, 456, 9
 const variacao = computed(() => props.dados?.variacao ?? null)
 const sobe = computed(() => (variacao.value ?? (linha.value?.subiu ? 1 : -1)) >= 0)
 const preco = computed(() => (props.dados?.preco != null ? brlCentavos(props.dados.preco) : null))
-const variacaoTexto = computed(() => (variacao.value != null ? `${pctTexto(variacao.value)} hoje` : ''))
+const variacaoTexto = computed(() => (variacao.value != null ? `${pctTexto(variacao.value)} ${quandoDoPregao()}` : ''))
 const tamanhos = computed(() => ({
   '--cha-corpo': String(linha.value?.comprimentoCorpo ?? 0),
   '--cha-queda': String(linha.value?.comprimentoQueda ?? 0),
@@ -110,17 +110,23 @@ const id = useId()
 
 /* o laço (9 s): a linha se desenha, hoje cai ou sobe, o porquê aparece e o
    "Seguindo" entra. Cada keyframe parte do escondido; parado, fica o final. */
-.cha { animation: cha-volta 9s ease infinite; }
-.cha__linha { stroke-dasharray: var(--cha-corpo); stroke-dashoffset: 0; animation: cha-linha 9s cubic-bezier(.5, 0, .2, 1) infinite; }
-.cha__hoje { stroke-dasharray: var(--cha-queda); stroke-dashoffset: 0; animation: cha-hoje 9s ease-in infinite; }
-.cha__area { animation: cha-surge 9s ease infinite; }
-.cha__ponto { animation: cha-ponto 9s ease infinite; }
-.cha__guia { animation: cha-guia 9s ease infinite; }
-.cha__porque { animation: cha-porque 9s cubic-bezier(.2, .8, .2, 1) infinite; }
-.cha__seguindo { animation: cha-seguindo 9s ease infinite; }
+.cha { --cha-ciclo: 9s; animation: cha-volta var(--cha-ciclo) ease infinite; }
+.cha__linha { stroke-dasharray: var(--cha-corpo); stroke-dashoffset: 0; animation: cha-linha var(--cha-ciclo) cubic-bezier(.5, 0, .2, 1) infinite; }
+.cha__hoje { stroke-dasharray: var(--cha-queda); stroke-dashoffset: 0; animation: cha-hoje var(--cha-ciclo) ease-in infinite; }
+.cha__area { animation: cha-surge var(--cha-ciclo) ease infinite; }
+.cha__ponto { animation: cha-ponto var(--cha-ciclo) ease infinite; }
+.cha__guia { animation: cha-guia var(--cha-ciclo) ease infinite; }
+.cha__porque { animation: cha-porque var(--cha-ciclo) cubic-bezier(.2, .8, .2, 1) infinite; }
+.cha__seguindo { animation: cha-seguindo var(--cha-ciclo) ease infinite; }
 /* depois do cadastro o herói para no quadro final, com o "Seguindo" fixo */
 .cha--seguindo, .cha--seguindo .cha__linha, .cha--seguindo .cha__hoje, .cha--seguindo .cha__area,
 .cha--seguindo .cha__ponto, .cha--seguindo .cha__guia, .cha--seguindo .cha__porque, .cha--seguindo .cha__seguindo { animation: none; }
+/* no painel do login a história roda uma vez, nos 6 s da cena do
+   NuAuthFuncoes, e para no quadro final. A cena entra e sai pela Transition de
+   lá: o esmaecer do laço venceria a opacidade dela e a cena sumiria seca. */
+.cha--painel { --cha-ciclo: 6s; animation: none; }
+.cha--painel .cha__linha, .cha--painel .cha__hoje, .cha--painel .cha__area, .cha--painel .cha__ponto,
+.cha--painel .cha__guia, .cha--painel .cha__porque, .cha--painel .cha__seguindo { animation-iteration-count: 1; }
 
 @keyframes cha-volta { 0% { opacity: 0; } 3%, 93% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes cha-linha { 0% { stroke-dashoffset: var(--cha-corpo); } 26%, 100% { stroke-dashoffset: 0; } }

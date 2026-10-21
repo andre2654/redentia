@@ -54,8 +54,10 @@ export function useCadastroDados() {
     // /news/ticker devolve matéria marcada com dezenas de tickers, e o resumo
     // de um "Tesouro Direto: taxas andam de lado" citava a WEG (saiu como o
     // porquê dela no teste). Vale o código (WEGE3) ou o nome da empresa (o da
-    // B3, antes do "ON"/"PN"). Entre as que falam, a notícia só daquele papel
-    // ganha da que cita vários; depois, a mais recente.
+    // B3, antes do "ON"/"PN"). Manchete que cita o código de outro papel é
+    // resumo do dia e fica de fora (utils/cadastro.ts → citaOutroPapel). Entre
+    // as que sobram, a notícia só daquele papel ganha da que cita vários;
+    // depois, a mais recente.
     const empresa = (q?.name ?? '').split(/\s{2,}|\s(?:ON|PN|PNA|PNB|UNT|CI)\b/)[0]?.trim().toUpperCase() ?? ''
     const nomeRe = empresa.length >= 3 ? new RegExp(`(^|[^A-ZÀ-Ú])${empresa.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^A-ZÀ-Ú]|$)`) : null
     const falaDoPapel = (titulo: string) => {
@@ -66,7 +68,7 @@ export function useCadastroDados() {
     const quando = (n: { published_at: string | null }) => new Date(n.published_at!).getTime()
     const lista = noticias.status === 'fulfilled' ? (noticias.value?.data ?? []) : []
     const recente = lista
-      .filter((n) => n.published_at && Date.now() - quando(n) < 1.5 * DIA_MS && falaDoPapel(n.title))
+      .filter((n) => n.published_at && Date.now() - quando(n) < 1.5 * DIA_MS && falaDoPapel(n.title) && !citaOutroPapel(n.title, ticker))
       .sort((a, b) => peso(a) - peso(b) || quando(b) - quando(a))[0]
     return {
       ticker,

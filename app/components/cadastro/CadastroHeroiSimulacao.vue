@@ -22,14 +22,21 @@ const sub = computed(() => {
   return partes.join(' · ')
 })
 
-// o laço de 9 s: parada no início, rola de 7% a 40% do ciclo, fica no fim
-const CICLO = 9000
+// o laço: parada no início, rola de 7% a 40% do ciclo, fica no fim. Na folha
+// são 9 s, em volta; no painel do login roda uma vez, nos 6 s da cena do
+// NuAuthFuncoes, e para no fim.
+const ciclo = props.painel ? 6000 : 9000
 const p = ref(1)
 let quadro = 0
 let inicio = 0
 function passo(agora: number) {
-  const t = (agora - inicio) % CICLO
-  p.value = t < 630 ? 0 : t < 3600 ? (t - 630) / 2970 : 1
+  const decorrido = agora - inicio
+  if (props.painel && decorrido >= ciclo * 0.4) {
+    p.value = 1
+    return
+  }
+  const f = (decorrido % ciclo) / ciclo
+  p.value = f < 0.07 ? 0 : f < 0.4 ? (f - 0.07) / 0.33 : 1
   quadro = requestAnimationFrame(passo)
 }
 onMounted(() => {
@@ -103,11 +110,18 @@ const id = useId()
 .chs__curva { stroke: #C9B6FF; filter: drop-shadow(0 0 6px rgba(201, 182, 255, 0.55)); }
 .chs__bola { filter: drop-shadow(0 0 10px rgba(185, 162, 255, 0.8)); }
 
-/* o selo entra quando a bola chega (o laço é de 9 s, como o rAF da bola) */
-.chs__selo { animation: chs-selo 9s cubic-bezier(.2, .8, .2, 1) infinite; }
-.chs--guardada .chs__selo { animation: none; }
+/* o ciclo é o mesmo do rAF da bola: o selo entra quando ela chega e, na
+   virada da folha, o herói apaga e volta, para a bola não saltar do fim ao
+   começo. No painel roda uma vez; a cena sai pela Transition do NuAuthFuncoes
+   (o esmaecer do laço venceria a opacidade dela), então lá o herói não apaga. */
+.chs { --chs-ciclo: 9s; animation: chs-volta var(--chs-ciclo) ease infinite; }
+.chs__selo { animation: chs-selo var(--chs-ciclo) cubic-bezier(.2, .8, .2, 1) infinite; }
+.chs--painel { --chs-ciclo: 6s; }
+.chs--painel .chs__selo { animation-iteration-count: 1; }
+.chs--painel, .chs--guardada, .chs--guardada .chs__selo { animation: none; }
+@keyframes chs-volta { 0% { opacity: 0; } 3%, 93% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes chs-selo { 0%, 42% { opacity: 0; transform: translateY(6px); } 48%, 100% { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .chs__selo { animation: none; }
+  .chs, .chs__selo { animation: none; }
 }
 </style>

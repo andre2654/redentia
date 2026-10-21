@@ -138,6 +138,28 @@ export function motivoCurto(titulo: string | null | undefined, ticker: string, m
   return `${corte.replace(/[,;:.\s]+$/, '')}…`
 }
 
+/**
+ * A manchete cita outro papel? "Petrobras, WEG (WEGE3) e Cosan (CSAN3) são
+ * alguns dos destaques desta quarta-feira" (21/10) é resumo do dia, não o
+ * porquê da Petrobras. PETR3 numa manchete da PETR4 é a mesma empresa.
+ */
+export function citaOutroPapel(titulo: string, ticker: string): boolean {
+  const raiz = ticker.toUpperCase().slice(0, 4)
+  return (titulo.toUpperCase().match(/\b[A-Z]{4}\d{1,2}\b/g) ?? []).some((c) => c.slice(0, 4) !== raiz)
+}
+
+/**
+ * "hoje" quando o pregão do dia já abriu (dia útil, a partir das 10h de
+ * Brasília); antes disso e no fim de semana, a variação e a maior alta são as
+ * do último pregão. Feriado da B3 passa por dia útil.
+ */
+export function quandoDoPregao(agora: Date = new Date()): 'hoje' | 'no último pregão' {
+  const brasilia = new Date(agora.getTime() - 3 * 3_600_000)
+  const dia = brasilia.getUTCDay()
+  const minutos = brasilia.getUTCHours() * 60 + brasilia.getUTCMinutes()
+  return dia >= 1 && dia <= 5 && minutos >= 600 ? 'hoje' : 'no último pregão'
+}
+
 /* ————— gráficos ————— */
 
 type Ponto = [number, number]

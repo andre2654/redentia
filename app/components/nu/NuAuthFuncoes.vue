@@ -25,11 +25,15 @@ const alta = ref<DadosMaiorAlta | null>(null)
 const ativo = ref<DadosAtivo | null>(null)
 const resumo = ref<DadosResumo | null>(null)
 
-const pergunta = computed(() => (alta.value ? 'Qual ação mais subiu hoje?' : 'Quanto rendem R$ 500 por mês em 10 anos?'))
+// "hoje" só com o pregão do dia aberto; antes das 10h e no fim de semana, "no último pregão"
+const quando = quandoDoPregao()
+const pergunta = computed(() => (alta.value ? `Qual ação mais subiu ${quando}?` : 'Quanto rendem R$ 500 por mês em 10 anos?'))
 const resposta = computed(() => (alta.value
-  ? `${alta.value.nome} (${alta.value.ticker}), com ${pctTexto(alta.value.variacao)} no último pregão. A maior alta da bolsa.`
+  ? `${alta.value.nome} (${alta.value.ticker}), com ${pctTexto(alta.value.variacao)} ${quando}. A maior alta da bolsa.`
   : `A 10,75% ao ano, viram ${brlInteiro(totalJuros(CONTA))}. Você põe R$ 60 mil; os juros fazem o resto.`))
 
+// 6 s por cena: em modo painel os heróis contam a história nesse tempo, uma
+// vez, e param no quadro final. Mudou aqui, mude o --*-ciclo deles.
 let relogio: ReturnType<typeof setInterval> | null = null
 function rodar() {
   relogio = setInterval(() => { cena.value = (cena.value + 1) % CENAS.length }, 6000)
@@ -45,8 +49,21 @@ onMounted(async () => {
   const [a, r] = await Promise.all([dados.maiorAlta(), dados.resumo()])
   alta.value = a
   resumo.value = r
-  // a linha do mês é da mesma ação da pergunta; sem alta no dia, a da Petrobras
-  ativo.value = await dados.ativo(a?.ticker ?? 'PETR4')
+  // a linha do mês é da mesma ação da pergunta quando ela tem o porquê do dia.
+  // A maior alta costuma ser papel pequeno, sem notícia própria (LUPA3 em
+  // 21/10), e a cena promete o porquê: aí tenta Petrobras e Vale, uma de cada
+  // vez. Nenhuma com notícia, fica a primeira, só com a variação.
+  const candidatos = [...new Set([a?.ticker, 'PETR4', 'VALE3'].filter((t): t is string => !!t))]
+  let primeira: DadosAtivo | null = null
+  for (const t of candidatos) {
+    const d = await dados.ativo(t)
+    primeira ??= d
+    if (d.motivo) {
+      ativo.value = d
+      return
+    }
+  }
+  ativo.value = primeira
 })
 onBeforeUnmount(() => { if (relogio) clearInterval(relogio) })
 </script>
