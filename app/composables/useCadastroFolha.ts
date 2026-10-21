@@ -29,6 +29,8 @@ export type CadastroContexto =
     /** a pergunta de exemplo do "Pergunte à Redentia", com aspas */
     pergunta: string
   }
+  // conectar a carteira (banda da home): depois do código, segue para o /carteira
+  | { gesto: 'carteira' }
   | { gesto: 'pergunta'; pergunta: string }
 
 /** Como a conta saiu: o canal do código e se ela é nova. */

@@ -8,11 +8,11 @@
  * (tests/cadastro.test.ts): os textos de cada gesto e as contas dos gráficos.
  */
 
-export type CadastroGesto = 'seguir' | 'resumo' | 'simulacao' | 'aposentadoria' | 'conta' | 'pergunta'
+export type CadastroGesto = 'seguir' | 'resumo' | 'simulacao' | 'aposentadoria' | 'conta' | 'carteira' | 'pergunta'
 
 export type CadastroIcone =
   | 'envelope' | 'jornal' | 'calendario' | 'relogio' | 'conversa'
-  | 'carteira' | 'marcador' | 'ajuste' | 'brilho' | 'grafico' | 'historico'
+  | 'carteira' | 'marcador' | 'ajuste' | 'brilho' | 'grafico' | 'historico' | 'cadeado'
 
 export interface CadastroLinha {
   icone: CadastroIcone
@@ -69,6 +69,21 @@ export function textoDoGesto(
       ],
       botao: 'Receber às 7h30',
       aceite: 'Ao confirmar, você cria sua conta grátis e passa a receber o resumo diário. Cancele quando quiser.',
+    }
+  }
+  // conectar a carteira (banda da home, 21/10/2026): o que o /carteira dá de verdade,
+  // e a objeção de quem conecta o banco respondida com a promessa dele
+  if (gesto === 'carteira') {
+    return {
+      titulo: 'Junte seus bancos numa carteira só.',
+      apoio: 'Crie a conta grátis e autorize no app do seu banco, pelo Open Finance.',
+      linhas: [
+        { icone: 'carteira', titulo: 'Tudo num lugar só', texto: 'Ações, FIIs, renda fixa e ETFs de mais de 110 bancos e corretoras.' },
+        { icone: 'cadeado', titulo: 'Só leitura', texto: 'Regulado pelo Banco Central. A Redentia não movimenta o seu dinheiro.' },
+        { icone: 'relogio', titulo: 'O resumo fala da sua carteira', texto: 'Às 7h30, o que mexeu no que é seu.' },
+      ],
+      botao: 'Conectar minha carteira',
+      aceite: 'Ao confirmar, você cria sua conta grátis na Redentia.',
     }
   }
   if (gesto === 'simulacao' || gesto === 'aposentadoria' || gesto === 'conta') {

@@ -72,6 +72,7 @@ const ICONES: Record<CadastroIcone, string[]> = {
   brilho: ['M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z', 'M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'],
   grafico: ['M4 19h16', 'M5 15l4-4 3 3 6-7'],
   historico: ['M4 12a8 8 0 1 0 2.4-5.7', 'M4 4v4h4', 'M12 8v4l3 2'],
+  cadeado: ['M7.5 10.5h9a2.5 2.5 0 0 1 2.5 2.5v5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18v-5a2.5 2.5 0 0 1 2.5-2.5z', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'],
 }
 
 /* ——— abrir: zera a folha e busca o dado do herói ——— */
@@ -209,6 +210,7 @@ const fimDoCodigo = computed(() => ({
   simulacao: 'a conta fica guardada',
   aposentadoria: 'a conta fica guardada',
   conta: 'a conta fica guardada',
+  carteira: 'você segue para conectar a carteira',
   pergunta: 'a pergunta segue para a Redentia',
 }[gesto.value]))
 
@@ -224,10 +226,11 @@ const pronto = computed(() => {
     simulacao: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     aposentadoria: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     conta: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
+    carteira: { titulo: 'Pronto. Agora é conectar.', linha: 'Na sua carteira, toque em "Conectar pelo Open Finance" e autorize no app do seu banco.' },
     pergunta: { titulo: 'Pronto. Sua conta está criada.', linha: 'A resposta abre assim que você continuar.' },
   }[gesto.value]
 })
-const botaoFinal = computed(() => (gesto.value === 'pergunta' ? 'Ver a resposta' : 'Continuar'))
+const botaoFinal = computed(() => (gesto.value === 'pergunta' ? 'Ver a resposta' : gesto.value === 'carteira' ? 'Ir para a carteira' : 'Continuar'))
 const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.value)}`)
 </script>
 
@@ -258,6 +261,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
               :conta="ctx"
               :guardada="etapa === 'pronto' && !acaoFalhou"
             />
+            <CadastroHeroiCarteira v-else-if="ctx?.gesto === 'carteira'" :pronta="etapa === 'pronto' && !acaoFalhou" />
             <CadastroHeroiPergunta v-else-if="ctx?.gesto === 'pergunta'" :pergunta="ctx.pergunta" />
             <button type="button" class="ncf__fechar" aria-label="Fechar" @click="fechar">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
