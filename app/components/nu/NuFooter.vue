@@ -4,6 +4,16 @@
 // com a frase grande no céu e o copyright na base da serra.
 // Redesenho do dono em 20/10/2026 ("deixar meu footer mais foda", com rodapés
 // ilustrados de referência). Antes: designs/Redentia Mercado Nu.dc.html (linhas 521-589).
+// Desde 21/10/2026, entre os cards e o mapa, a assinatura de O mercado da
+// semana, para "onde eu assino?" ter resposta em qualquer página. Fica fora
+// das páginas que já têm o formulário delas: o /guias, que fecha com a faixa
+// azul logo acima do rodapé, e a preço teto, que tem o bloco no resultado e o
+// veto do dono (o rodapé dela segue como estava).
+import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
+
+const route = useRoute()
+const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
+const assinaturaNoRodape = computed(() => newsletterLigada && !rodapeSemAssinatura(route.path))
 const CARDS = [
   { title: 'Redentia AI', desc: 'Seu assistente de investimentos, disponível 24h para qualquer pergunta.', to: '/busca' },
   { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva: resultados em segundos.', to: '/calculadoras' },
@@ -48,6 +58,14 @@ const COLUMNS = [
           </NuxtLink>
         </div>
       </div>
+
+      <section v-if="assinaturaNoRodape" class="nuf__news" aria-labelledby="nuf-news-titulo">
+        <div class="nuf__news-texto">
+          <h2 id="nuf-news-titulo" class="nuf__news-titulo">O mercado da semana, toda sexta.</h2>
+          <p class="nuf__news-sub">O Ibovespa da semana, as notícias que mexeram nele e os proventos da semana que vem, num e-mail só.</p>
+        </div>
+        <NuNewsletterForm class="nuf__news-form" origem="rodape" />
+      </section>
 
       <div class="nuf__mapa">
         <div class="nuf__marca">
@@ -112,6 +130,17 @@ const COLUMNS = [
   margin-top: auto; width: 46px; height: 46px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
 }
+
+/* a assinatura da newsletter: o painel navy-2 dos cards, de ponta a ponta */
+.nuf__news {
+  display: flex; gap: clamp(24px, 4vw, 64px); align-items: center; flex-wrap: wrap;
+  margin-top: 18px; padding: clamp(28px, 3.4vw, 44px);
+  background: var(--nu-navy-2); border-radius: var(--nu-r-panel);
+}
+.nuf__news-texto { flex: 1.3 1 360px; min-width: min(280px, 100%); }
+.nuf__news-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; }
+.nuf__news-sub { margin: 12px 0 0; max-width: 52ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.nuf__news-form { flex: 1 1 340px; min-width: min(280px, 100%); }
 
 /* a marca à esquerda, as colunas à direita */
 .nuf__mapa {

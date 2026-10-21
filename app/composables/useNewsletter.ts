@@ -1,5 +1,8 @@
 import type { MagicLinkVerifyResponse } from '~/types/auth'
 
+/** Gravado no aparelho de quem assina: o convite do canto não volta para ele. */
+export const NEWSLETTER_ASSINOU = 'nu:newsletter-assinou'
+
 /**
  * "O mercado da semana", a newsletter de sexta. Fica em casa desde 21/10/2026
  * (o beehiiv saiu antes de entrar): a inscrição é o tópico `newsletter` das
@@ -13,8 +16,12 @@ import type { MagicLinkVerifyResponse } from '~/types/auth'
  *    pelo contact gate (/auth/me/email/*-pin) e liga.
  * Client-only: a página é cacheada na borda e a sessão só existe depois do
  * mount.
+ *
+ * `origem` diz de onde veio a inscrição no evento `newsletter_assinatura` do
+ * GA4: bloco (preço teto), guias, rodape ou convite. É o que mostra qual lugar
+ * traz assinante.
  */
-export function useNewsletter() {
+export function useNewsletter(origem = 'bloco') {
   const { isAuthenticated, setSession } = useAuthState()
   const { publicFetch, authFetch } = useApi()
   const { load: carregarConta } = useMeCliente()
@@ -84,12 +91,21 @@ export function useNewsletter() {
     return authFetch('/me/notification-preferences', { method: 'PUT', body: { topic: 'newsletter', email: true, whatsapp: false } }, { redirectOnAuthError: false })
   }
 
+  function concluir() {
+    etapa.value = 'ok'
+    try {
+      localStorage.setItem(NEWSLETTER_ASSINOU, '1')
+    }
+    catch { /* modo privado: o convite só não fica sabendo */ }
+    ;(window as any).gtag?.('event', 'newsletter_assinatura', { origem, conta: fim.value })
+  }
+
   async function assinarComConta() {
     if (enviando.value || !emailDaConta.value) return
     if (await passo(ligarTopico, 'Não conseguimos fazer a inscrição agora. Tente de novo em instantes.')) {
       emailPendente.value = emailDaConta.value
       fim.value = 'logado'
-      etapa.value = 'ok'
+      concluir()
     }
   }
 
@@ -139,7 +155,7 @@ export function useNewsletter() {
     // tópico falhar agora, sobra o botão de um clique com a conta.
     emailDaConta.value = emailPendente.value
     fim.value = entrou
-    if (await passo(ligarTopico, 'O e-mail está confirmado, mas a inscrição não foi feita. Tente de novo.')) etapa.value = 'ok'
+    if (await passo(ligarTopico, 'O e-mail está confirmado, mas a inscrição não foi feita. Tente de novo.')) concluir()
     else etapa.value = 'email'
   }
 

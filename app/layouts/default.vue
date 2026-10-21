@@ -17,6 +17,10 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
     <!-- Sem modal de anúncio: o NuMcpPromo (o pop-up que abria 5 s depois de
          entrar) saiu de vez em 15/10/2026, a pedido do dono. Não remonte
          anúncio por cima da página sem decisão dele. -->
+    <!-- O convite da newsletter foi decisão dele (21/10/2026): cartão pequeno
+         no canto, aberto por interesse e nunca na chegada. As regras estão no
+         componente. -->
+    <NuNewsletterConvite />
     <!-- Onboarding obrigatório: logado sem investor_goal responde antes de
          seguir (decisão do dono, 24/08). -->
     <NuOnboardingModal />
