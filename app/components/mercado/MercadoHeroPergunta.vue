@@ -1,9 +1,12 @@
 <script setup lang="ts">
 // Hero da home para quem não está logado, como a Apple faria (dono, 20/10:
 // "se inspire na APPLE, como ela teria esse hero?"). Ordem de página de produto:
-// o nome (Redentia AI), o título, uma linha de apoio e o par de botões; embaixo,
-// o "produto" em si: uma barra de pergunta com o brilho iridescente girando na
-// borda (a linguagem da Apple para IA) e a resposta surgindo palavra por palavra.
+// o nome (Redentia AI), o título e uma linha de apoio; embaixo, o "produto" em
+// si: uma barra de pergunta com o brilho iridescente girando na borda (a
+// linguagem da Apple para IA) e a resposta surgindo palavra por palavra.
+// O par "Começar grátis" / "Ver como funciona" e a linha "Grátis para começar ·
+// sem cartão de crédito" saíram em 21/10, a pedido do dono: a barra é a chamada
+// e o header já tem "Criar conta grátis".
 // As perguntas se escrevem sozinhas e as respostas saem de dado de verdade: a
 // maior alta da bolsa vem dos movers do dia (a mesma fonte do /mercado), a dos
 // juros compostos é conta exata e a do dividend yield é definição. Sem frase
@@ -107,10 +110,6 @@ function enviar() {
     <p class="mhp__produto"><img src="/logo-azul.svg" alt="" width="20" height="20">Redentia AI</p>
     <h1 class="mhp__titulo">Invista com uma IA <br>do seu lado.</h1>
     <p class="mhp__dek">Pergunte qualquer coisa sobre ações, FIIs e a sua carteira. A resposta vem em português, na hora.</p>
-    <div class="mhp__ctas">
-      <NuxtLink to="/login" class="mhp__cta">Começar grátis</NuxtLink>
-      <NuxtLink to="/institucional/how-works" class="mhp__link">Ver como funciona <span aria-hidden="true">›</span></NuxtLink>
-    </div>
 
     <!-- o produto: a barra de pergunta com o brilho na borda -->
     <form class="mhp__barra" :class="[`mhp__barra--${fase}`, { 'mhp__barra--usando': usando }]" @submit.prevent="enviar" @click="usar">
@@ -137,7 +136,6 @@ function enviar() {
       </p>
       <p v-if="usando" class="mhp__dica">Escreva a sua pergunta e aperte Enter. Para ver a resposta, entre ou crie a sua conta grátis.</p>
     </div>
-    <p class="mhp__fino">Grátis para começar · sem cartão de crédito</p>
   </section>
 </template>
 
@@ -162,15 +160,6 @@ function enviar() {
   letter-spacing: -0.05em; line-height: .98; text-wrap: balance;
 }
 .mhp__dek { margin: 20px 0 0; max-width: 44ch; color: var(--nu-gray-2); font-size: var(--nu-fs-xl); font-weight: 500; line-height: 1.45; }
-.mhp__ctas { display: flex; align-items: center; justify-content: center; gap: 22px; flex-wrap: wrap; margin-top: 26px; }
-.mhp__cta {
-  display: inline-flex; align-items: center; height: 48px; padding: 0 24px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 700;
-  transition: transform .2s ease, background .2s ease;
-}
-.mhp__cta:hover { background: var(--nu-blue-deep); transform: translateY(-1px); }
-.mhp__link { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700; }
-.mhp__link:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* a barra: anel iridescente girando (camada composta), brilho difuso atrás, fundo branco */
 .mhp__barra {
@@ -222,7 +211,6 @@ function enviar() {
 .mhp__pensando i:nth-child(2) { animation-delay: .15s; }
 .mhp__pensando i:nth-child(3) { animation-delay: .3s; }
 .mhp__dica { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
-.mhp__fino { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 @keyframes mhp-gira { to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes mhp-respira { 50% { opacity: .3; } }
@@ -232,15 +220,14 @@ function enviar() {
 @keyframes mhp-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
 
 /* entrada da página: título e apoio sobem saindo do desfoque */
-.mhp__produto, .mhp__titulo, .mhp__dek, .mhp__ctas, .mhp__barra { animation: mhp-entra .9s cubic-bezier(.22, 1, .36, 1) backwards; }
+.mhp__produto, .mhp__titulo, .mhp__dek, .mhp__barra { animation: mhp-entra .9s cubic-bezier(.22, 1, .36, 1) backwards; }
 .mhp__titulo { animation-delay: .08s; }
 .mhp__dek { animation-delay: .18s; }
-.mhp__ctas { animation-delay: .26s; }
-.mhp__barra { animation-delay: .4s; }
+.mhp__barra { animation-delay: .32s; }
 @keyframes mhp-entra { from { opacity: 0; filter: blur(10px); transform: translateY(14px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .mhp__anel::before, .mhp__brilho, .mhp__cursor, .mhp__palavra, .mhp__produto, .mhp__titulo, .mhp__dek, .mhp__ctas, .mhp__barra { animation: none; }
+  .mhp__anel::before, .mhp__brilho, .mhp__cursor, .mhp__palavra, .mhp__produto, .mhp__titulo, .mhp__dek, .mhp__barra { animation: none; }
 }
 @media (max-width: 640px) {
   .mhp__titulo br { display: none; }
