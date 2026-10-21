@@ -1,240 +1,96 @@
 <script setup lang="ts">
-// "Sua carteira, conectada." (PR-R5): banda azul que substitui os value-props
-// antigos ("Investir com a Redentia é diferente"). Coluna esquerda com h2 + dek
-// + fileira de avatares de banco (CSS puro, sem imagem) + CTA outline pro /login;
-// coluna direita com imagem lifestyle (aspect 4/3). Copy e cores exatas do
-// contrato: designs-v2/Redentia Mercado Nu.dc.html.
-//
-// Avatares = logos reais das marcas (tiles cheios em public/icons/*.webp),
-// clipados em círculo (object-fit:cover), sobrepostos com margin negativo e
-// borda 3px da cor da banda (--nu-blue). O "+110" segue como círculo de texto.
-const banks = [
-  { name: 'Nubank', logo: '/icons/logo-nubank.webp' },
-  { name: 'Itaú', logo: '/icons/logo-itau.webp' },
-  { name: 'Bradesco', logo: '/icons/logo-bradesco.webp' },
-  { name: 'Santander', logo: '/icons/logo-santander.webp' },
-] as const
+// "Seus bancos. Uma carteira." (21/10/2026): a banda azul da home
+// para quem ainda não tem conta, refeita no jeito das páginas de produto da
+// Apple (dono: "pense o que um profissional sênior de produto e um designer
+// sênior da Apple fariam aqui"). Uma ideia só, conectar a carteira, e o
+// produto como objeto: a miniatura do /carteira se montando banco a banco
+// (CarteiraMontagem), no lugar da foto de banco de imagem (1,6 MB, um terço do
+// peso da home na auditoria de 15/10). O card do Redentia MCP saiu daqui:
+// disputava a mesma banda com outra ideia, e o MCP tem a página dele.
+// A linha de segurança responde a objeção de quem conecta o banco, com o que o
+// próprio /carteira promete (leitura regulada pelo Banco Central, sem mexer no
+// dinheiro). O botão abre a folha de cadastro (gesto 'carteira'); sem
+// JavaScript, o link leva ao /login e volta ao /carteira.
+const { isAuthenticated } = useAuthState()
+const folha = useCadastroFolha()
 
-// Imagem lifestyle real: solte o arquivo em public/img/mercado/carteira-conectada.webp.
-// Enquanto o arquivo não existir, o @error cai pro placeholder on-brand embaixo.
-const photoFailed = ref(false)
+function conectar() {
+  if (isAuthenticated.value) return navigateTo('/carteira')
+  folha.abrir({ gesto: 'carteira' }, () => true, '/carteira', () => navigateTo('/carteira'))
+}
 </script>
 
 <template>
-  <section class="mcc">
+  <section class="mcc" aria-labelledby="mcc-titulo">
+    <div class="mcc__luz" aria-hidden="true" />
     <div class="mcc__cols">
-      <div class="mcc__left">
-        <h2 class="mcc__title">Sua carteira,<br>conectada.</h2>
-        <div class="mcc__dek">Conecte contas de qualquer banco ou corretora e a Redentia importa seus ativos automaticamente, sem planilha.</div>
-        <div class="mcc__banks">
-          <span
-            v-for="(b, i) in banks" :key="b.name"
-            class="mcc__bank"
-            :class="{ 'mcc__bank--overlap': i > 0 }"
-          >
-            <img :src="b.logo" :alt="b.name" class="mcc__bank-img" width="46" height="46">
-          </span>
-          <span class="mcc__bank mcc__bank--overlap mcc__bank--more">+110</span>
-        </div>
-
-        <!-- Redentia MCP promovido a card de destaque sóbrio, porém COMPACTO: badge
-             + manchete + logos das ferramentas + arrow-link. A carteira conectada
-             não fica presa no app; o investidor conversa com ela na própria IA. A
-             prova/chat-mock fica na /mcp (McpHeroDemo), aqui seria excesso. Só o
-             arrow-link é clicável, então não compete com o CTA primário abaixo. -->
-        <div class="mcc__mcpcard">
-          <div class="mcc__mcpcard-head">
-            <span class="mcc__mcpcard-badge">Novo</span>
-            <span class="mcc__mcpcard-kicker">Redentia MCP</span>
-          </div>
-
-          <p class="mcc__mcpcard-copy">Converse com a sua carteira direto na sua IA, com os seus números reais.</p>
-
-          <div class="mcc__mcpcard-foot">
-            <span class="mcc__mcpcard-tools" aria-hidden="true">
-              <span class="mcc__mcpcard-tile"><img src="/icons/logo-claude.webp" alt="" width="28" height="28"></span>
-              <span class="mcc__mcpcard-tile"><img src="/icons/logo-chatgpt.webp" alt="" width="28" height="28"></span>
-              <span class="mcc__mcpcard-tile"><img src="/icons/logo-cursor.webp" alt="" width="28" height="28"></span>
-            </span>
-            <NuxtLink
-              to="/login?redirect=%2Fconta%23mcp"
-              class="mcc__mcpcard-link"
-              aria-label="Conheça o Redentia MCP: converse com a sua carteira no Claude, ChatGPT ou Cursor, com os seus números reais."
-            >
-              Ver como funciona<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
-            </NuxtLink>
-          </div>
-        </div>
-
-        <NuxtLink to="/login" class="mcc__cta">
-          Conectar minha carteira<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
-        </NuxtLink>
+      <div class="mcc__texto">
+        <h2 id="mcc-titulo" class="mcc__title">Seus bancos.<br>Uma carteira.</h2>
+        <p class="mcc__dek">
+          Sem planilha e sem digitar nada. Conecte pelo Open Finance e a Redentia junta ações, FIIs, renda fixa e ETFs de mais de 110 bancos e corretoras, com o que mexeu hoje.
+        </p>
+        <!-- <a> e não NuxtLink: o RouterLink navegaria mesmo com o .prevent, e a folha fecharia -->
+        <a href="/login?redirect=%2Fcarteira" class="mcc__cta" @click.prevent="conectar">
+          Conectar minha carteira
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+        <p class="mcc__seguro">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" /></svg>
+          Só leitura, pelo Open Finance regulado pelo Banco Central. A Redentia não movimenta o seu dinheiro.
+        </p>
       </div>
-
-      <div class="mcc__right">
-        <!-- TODO(asset): imagem lifestyle real "carteira conectada" (André). Até
-             lá, placeholder on-brand: gradiente navy/azul + glow + glifo de
-             carteira/conexão. Mantém o aspect-ratio 4/3 do design. -->
-        <div class="mcc__media" role="img" aria-label="Ilustração: carteira conectada">
-          <!-- foto real quando existir; some pro placeholder se faltar o arquivo -->
-          <!-- :src dinâmico (não estático) — senão o Vite tenta resolver o asset
-               em build e falha enquanto o arquivo não existe em public/ -->
-          <img
-            v-show="!photoFailed" :src="'/img/mercado/carteira-conectada.webp'" alt=""
-            class="mcc__media-photo" loading="lazy" @error="photoFailed = true"
-          >
-          <div class="mcc__media-glow" aria-hidden="true" />
-          <svg class="mcc__media-art" viewBox="0 0 260 200" fill="none" aria-hidden="true">
-            <!-- nós de conta orbitando -->
-            <g stroke="var(--nu-blue-soft)" stroke-width="1.4" opacity="0.5">
-              <path d="M70 62 L130 100" />
-              <path d="M190 58 L130 100" />
-              <path d="M64 138 L130 100" />
-              <path d="M196 142 L130 100" />
-            </g>
-            <g fill="var(--nu-blue-soft)" opacity="0.85">
-              <circle cx="70" cy="62" r="7" />
-              <circle cx="190" cy="58" r="7" />
-              <circle cx="64" cy="138" r="7" />
-              <circle cx="196" cy="142" r="7" />
-            </g>
-            <!-- carteira central -->
-            <rect x="96" y="78" width="68" height="46" rx="9" fill="var(--nu-white-14)" stroke="var(--nu-cream-text)" stroke-width="2" />
-            <rect x="96" y="90" width="68" height="10" fill="var(--nu-cream-text)" opacity="0.9" />
-            <circle cx="150" cy="107" r="4.5" fill="var(--nu-cream-text)" />
-          </svg>
-        </div>
+      <div class="mcc__objeto">
+        <CarteiraMontagem />
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.mcc { background: var(--nu-blue); padding: clamp(60px, 8vw, 104px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-/* grid determinístico: 1 coluna no mobile (conteúdo primeiro no DOM → empilha
-   conteúdo em cima, foto embaixo), 2 colunas no desktop com ZIG-ZAG (a foto vai
-   pra ESQUERDA, alternando com o hero acima que tem o visual à direita). */
-.mcc__cols { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 64px); align-items: center; }
-.mcc__left { min-width: 0; }
+.mcc {
+  position: relative; isolation: isolate; overflow: hidden;
+  padding: clamp(64px, 8vw, 112px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-blue); color: var(--nu-white);
+}
+/* uma luz só, atrás da carteira */
+.mcc__luz {
+  position: absolute; z-index: -1; right: -8%; top: 50%; width: min(820px, 90vw); aspect-ratio: 1; transform: translateY(-50%);
+  border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.32), rgba(158, 200, 255, 0.16) 55%, transparent);
+  filter: blur(20px); pointer-events: none;
+}
+.mcc__cols {
+  display: grid; grid-template-columns: 1fr; gap: clamp(40px, 5vw, 72px); align-items: center;
+  max-width: 1180px; margin: 0 auto;
+}
+.mcc__texto { min-width: 0; max-width: 520px; }
 .mcc__title {
-  margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
-  font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;
+  margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h2); font-weight: 800;
+  letter-spacing: -0.045em; line-height: 1.02;
 }
-.mcc__dek {
-  color: var(--nu-cream-text-82); font-size: var(--nu-fs-dek); font-weight: 500;
-  line-height: 1.62; margin-top: 26px; max-width: 480px;
-}
-.mcc__banks { display: flex; align-items: center; margin-top: 28px; }
-.mcc__bank {
-  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-  display: inline-flex; align-items: center; justify-content: center;
-  overflow: hidden; background: var(--nu-cream); border: 3px solid var(--nu-blue);
-}
-.mcc__bank-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mcc__bank--overlap { margin-left: -14px; }
-.mcc__bank--more {
-  background: var(--nu-cream-text-22); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-dense); font-weight: 700;
-}
-
-/* Redentia MCP — card de destaque sóbrio (substitui o teaser tímido de 1 linha).
-   Síntese do painel: container de vidro translúcido + chip de tool mono (eco do
-   McpHeroDemo) + rima dos logos com os avatares de banco. Só tokens --nu-*. O acento
-   --nu-blue-soft fica restrito a micro detalhes (bolinha do badge, função do chip,
-   seta do link) porque só passa AA como detalhe, nunca como preenchimento/corpo. O
-   card é um DIV sóbrio (nunca botão preenchido); apenas o arrow-link é clicável,
-   então não rivaliza em superfície de toque nem em peso com o CTA primário. */
-.mcc__mcpcard {
-  max-width: 480px; margin-top: 26px;
-  padding: 15px 18px; border-radius: 14px;
-  background: var(--nu-cream-text-08);
-  border: 1px solid var(--nu-cream-text-14);
-  animation: nu-fade .6s ease both;
-}
-
-/* cabeçalho: badge de status + kicker da feature */
-.mcc__mcpcard-head { display: flex; align-items: center; gap: 10px; }
-.mcc__mcpcard-badge {
-  display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
-  background: var(--nu-cream-text-14); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
-  padding: 5px 11px 5px 9px; border-radius: var(--nu-r-pill);
-}
-.mcc__mcpcard-badge::before {
-  content: ""; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--nu-blue-soft); flex-shrink: 0;
-  box-shadow: 0 0 0 3px var(--nu-cream-text-10);
-}
-/* -82 (não -70): iguala o nível de texto secundário do dek nesta banda de baixo
-   contraste por design; -70 sobre o azul vivo cairia abaixo do dek vizinho. */
-.mcc__mcpcard-kicker {
-  color: var(--nu-cream-text-82); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.2px;
-}
-
-/* manchete curta e confiante — cream CHEIO garante o melhor contraste possível aqui */
-.mcc__mcpcard-copy {
-  margin: 10px 0 0; max-width: 34ch; color: var(--nu-cream-text);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.4; letter-spacing: -0.01em;
-}
-
-/* rodapé: tiles dos logos reais (rima com os avatares de banco) + arrow-link */
-.mcc__mcpcard-foot {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; flex-wrap: wrap; margin-top: 13px;
-}
-.mcc__mcpcard-tools { display: inline-flex; align-items: center; gap: 7px; }
-.mcc__mcpcard-tile {
-  width: 28px; height: 28px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
-  background: var(--nu-cream); border: 1px solid var(--nu-cream-text-16);
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.mcc__mcpcard-tile img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
-
-/* micro-CTA próprio do MCP: única zona clicável, texto+seta, nunca um botão cheio */
-.mcc__mcpcard-link {
-  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
-  color: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: none;
-  padding: 4px 2px; border-radius: 6px;
-  transition: gap .18s ease;
-}
-.mcc__mcpcard-link svg { color: var(--nu-blue-soft); transition: transform .18s ease; }
-.mcc__mcpcard-link:hover { gap: 9px; }
-.mcc__mcpcard-link:hover svg { transform: translateX(3px); }
-.mcc__mcpcard-link:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
-
-/* coluna estreita (~320px): tiles e link caem em linhas próprias sem estourar */
-@media (max-width: 400px) {
-  .mcc__mcpcard { padding: 14px 15px; }
-  .mcc__mcpcard-copy { font-size: var(--nu-fs-md); }
-  .mcc__mcpcard-foot { gap: 12px; }
-}
+.mcc__dek { margin: 22px 0 0; color: var(--nu-white-75); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.55; }
 .mcc__cta {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-cream-text);
-  border: 1.6px solid var(--nu-cream-text-55); border-radius: var(--nu-r-pill); padding: 16px 34px;
-  font-size: var(--nu-fs-md); font-weight: 800; margin-top: 34px;
-  transition: background .2s, border-color .2s, transform .15s;
+  display: inline-flex; align-items: center; gap: 10px; height: 56px; margin-top: 32px; padding: 0 28px;
+  border-radius: var(--nu-r-pill); background: var(--nu-white); color: var(--nu-blue);
+  font-size: var(--nu-fs-md); font-weight: 700; box-shadow: 0 14px 40px -12px rgba(10, 16, 48, 0.45);
+  transition: transform .2s ease, box-shadow .25s ease, color .2s ease;
 }
-.mcc__cta:hover { background: var(--nu-cream-text-12); border-color: var(--nu-cream-text); color: var(--nu-cream-text); transform: translateY(-2px); }
-
-.mcc__right { min-width: 0; }
-.mcc__media {
-  /* sem border-radius: o design usa um retângulo full-bleed */
-  position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden;
-  background: var(--nu-img-placeholder);
-  display: flex; align-items: center; justify-content: center;
+.mcc__cta svg { transition: transform .2s ease; }
+.mcc__cta:hover { color: var(--nu-blue-hover); transform: translateY(-1px); box-shadow: 0 18px 48px -12px rgba(10, 16, 48, 0.55); }
+.mcc__cta:hover svg { transform: translateX(3px); }
+.mcc__cta:focus-visible { outline: 3px solid var(--nu-white); outline-offset: 3px; }
+.mcc__seguro {
+  display: flex; align-items: flex-start; gap: 8px; max-width: 440px; margin: 18px 0 0;
+  color: var(--nu-white-75); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
 }
-.mcc__media-photo { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: cover; display: block; }
-.mcc__media-glow { position: absolute; inset: 0; background: var(--nu-img-glow); pointer-events: none; }
-.mcc__media-art { position: relative; width: min(60%, 320px); height: auto; }
+.mcc__seguro svg { flex: none; margin-top: 2px; }
+.mcc__objeto { min-width: 0; width: 100%; max-width: 520px; justify-self: center; }
 
-/* desktop: 2 colunas + zig-zag. Foto na coluna 1 (esquerda), conteúdo na 2
-   (direita); o conteúdo continua primeiro no DOM (bom pro mobile). align-items
-   stretch faz a coluna da foto acompanhar a altura do conteúdo → foto editorial
-   full-height (não mais um bloco 4/3 flutuando centralizado). */
-@media (min-width: 880px) {
-  .mcc__cols { grid-template-columns: 1.05fr 1fr; align-items: stretch; }
-  .mcc__right { grid-column: 1; grid-row: 1; }
-  .mcc__left { grid-column: 2; grid-row: 1; align-self: center; }
-  .mcc__media { aspect-ratio: auto; height: 100%; min-height: 440px; }
+@media (min-width: 960px) {
+  .mcc__cols { grid-template-columns: minmax(0, 1fr) minmax(0, 520px); }
+  .mcc__objeto { justify-self: end; }
+}
+@media (max-width: 640px) {
+  .mcc__luz { right: -40%; top: 72%; }
+  .mcc__cta { width: 100%; justify-content: center; }
 }
 </style>
