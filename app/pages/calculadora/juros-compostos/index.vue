@@ -195,16 +195,15 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Simule quanto seu dinheiro vira com aportes mensais e tempo.">
-      Calculadora de Juros Compostos 2026: Simulador com Aportes
-      <em>Mensais.</em>
-    </CalcHero>
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
+    <!-- o h1 guarda as palavras do título de SEO de antes, em duas camadas -->
+    <CalcTopo produto="Juros compostos" icone="curva" desc="Quatro números e a conta sai na hora.">
+      <template #prefixo>Calculadora de Juros Compostos 2026</template>
+      Simulador com aportes mensais.
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design) ============ -->
-    <CalcCompoundSection :seed="seed" section-id="juros">
-      <template #title>Juros compostos.</template>
-    </CalcCompoundSection>
+    <!-- ============ Calculadora na frase ============ -->
+    <CalcCompoundSection :seed="seed" section-id="juros" />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip

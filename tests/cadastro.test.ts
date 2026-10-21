@@ -10,7 +10,7 @@ import { brlInteiro, citaOutroPapel, curvaJuros, linhaDoMes, motivoCurto, pctTex
 import { compoundProjection } from '../app/components/calc/compound-math.ts'
 
 test('cada gesto tem título, até três motivos, botão com a ação e o aceite', () => {
-  for (const g of ['seguir', 'resumo', 'simulacao', 'pergunta'] as const) {
+  for (const g of ['seguir', 'resumo', 'simulacao', 'aposentadoria', 'pergunta'] as const) {
     const t = textoDoGesto(g, { ticker: 'wege3', minutos: 3 })
     assert.ok(t.titulo.endsWith('.'), g)
     assert.ok(t.linhas.length > 0 && t.linhas.length <= 3, g)
@@ -24,6 +24,10 @@ test('cada gesto tem título, até três motivos, botão com a ação e o aceite
   assert.match(s.aceite, /resumo das 19h/)
   assert.equal(textoDoGesto('resumo', { minutos: 3 }).apoio, 'Três minutos de leitura antes de o pregão abrir.')
   assert.equal(textoDoGesto('resumo', {}).apoio, 'Uma leitura curta antes de o pregão abrir.')
+  // as calculadoras: a pergunta de exemplo usa a conta da pessoa
+  assert.equal(textoDoGesto('aposentadoria', { aposentaAos: 60 }).linhas[2]!.texto, '“E se eu me aposentar aos 58?”, com os seus números.')
+  assert.equal(textoDoGesto('simulacao', { mensal: 500 }).linhas[2]!.texto, '“E se eu guardar R$ 1.000 por mês?”, com os seus números.')
+  assert.equal(textoDoGesto('aposentadoria').botao, 'Guardar a minha conta')
 })
 
 test('variação e dinheiro no formato da casa', () => {

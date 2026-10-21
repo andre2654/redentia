@@ -15,10 +15,14 @@
 // É o banner pequeno que o Google recomenda no lugar do diálogo que cobre o
 // conteúdo, e a newsletter é um dos usos que ele cita
 // (developers.google.com/search/docs/appearance/avoid-intrusive-interstitials).
+import { CONTA_CONVITE_VISTO } from '~/composables/useConviteDaConta'
 import { NEWSLETTER_ASSINOU } from '~/composables/useNewsletter'
 import { conviteForaDaPagina, convitePausado, fracaoLida } from '~/utils/newsletter-lugares'
 
 const { isAuthenticated } = useAuthState()
+// a folha de cadastro vem antes: com ela aberta, ou depois de a folha de uma
+// calculadora subir nesta visita, o convite da newsletter espera a próxima
+const folhaCadastro = useCadastroFolha()
 const route = useRoute()
 const ligada = useRuntimeConfig().public.newsletterLigada === true
 
@@ -54,6 +58,8 @@ function gravar(chave: string, valor: string, sessao = false) {
 function pode(): boolean {
   return ligada
     && !isAuthenticated.value
+    && !folhaCadastro.aberta.value
+    && !ler(CONTA_CONVITE_VISTO, true)
     && !conviteForaDaPagina(route.path)
     && !ler(NEWSLETTER_ASSINOU)
     && !ler(VISTO, true)

@@ -229,16 +229,15 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Descubra quanto investir por mês pra se aposentar do seu jeito.">
-      Calculadora de Aposentadoria 2026: Quanto Preciso para me
-      <em>Aposentar?</em>
-    </CalcHero>
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
+    <!-- o h1 guarda as palavras do título de SEO de antes, em duas camadas -->
+    <CalcTopo produto="Aposentadoria" icone="relogio" desc="Responda quatro coisas. O resto já vem preenchido com valores de mercado.">
+      <template #prefixo>Calculadora de Aposentadoria 2026</template>
+      Quanto preciso para me aposentar?
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design) ============ -->
-    <CalcRetirementSection :seed="seed" section-id="aposentadoria">
-      <template #title>Aposentadoria.</template>
-    </CalcRetirementSection>
+    <!-- ============ Calculadora na frase ============ -->
+    <CalcRetirementSection :seed="seed" section-id="aposentadoria" />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip

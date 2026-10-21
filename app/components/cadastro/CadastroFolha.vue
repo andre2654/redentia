@@ -48,7 +48,15 @@ const resumo = ref<DadosResumo | null>(null)
 const OBJETIVOS = ONBOARDING_OBJETIVOS
 const EXPERIENCIAS = ONBOARDING_EXPERIENCIAS
 
-const texto = computed(() => textoDoGesto(gesto.value, { ticker: ticker.value, minutos: resumo.value?.minutos }))
+const texto = computed(() => {
+  const c = ctx.value
+  return textoDoGesto(gesto.value, {
+    ticker: ticker.value,
+    minutos: resumo.value?.minutos,
+    aposentaAos: c?.gesto === 'aposentadoria' ? c.aposentaAos : undefined,
+    mensal: c?.gesto === 'simulacao' ? c.mensal : undefined,
+  })
+})
 const ehWhats = computed(() => cad.canal.value === 'whatsapp')
 
 const ICONES: Record<CadastroIcone, string[]> = {
@@ -197,7 +205,8 @@ async function concluir() {
 const fimDoCodigo = computed(() => ({
   seguir: `${ticker.value} fica seguida`,
   resumo: 'o resumo fica ligado',
-  simulacao: 'a simulação fica guardada',
+  simulacao: 'a conta fica guardada',
+  aposentadoria: 'a conta fica guardada',
   pergunta: 'a pergunta segue para a Redentia',
 }[gesto.value]))
 
@@ -210,7 +219,8 @@ const pronto = computed(() => {
   return {
     seguir: { titulo: `Pronto. Você segue ${ticker.value}.`, linha: `O resumo das 19h chega ${onde}, no fim de cada pregão.` },
     resumo: { titulo: 'Pronto. O resumo chega às 7h30.', linha: `A partir do próximo dia útil, ${onde}.` },
-    simulacao: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica em Suas simulações, nesta calculadora.' },
+    simulacao: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
+    aposentadoria: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     pergunta: { titulo: 'Pronto. Sua conta está criada.', linha: 'A resposta abre assim que você continuar.' },
   }[gesto.value]
 })
@@ -233,6 +243,11 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
             <CadastroHeroiSimulacao
               v-else-if="ctx?.gesto === 'simulacao'"
               :conta="{ inicial: ctx.inicial, mensal: ctx.mensal, taxa: ctx.taxa, anos: ctx.anos }"
+              :guardada="etapa === 'pronto' && !acaoFalhou"
+            />
+            <CadastroHeroiAposentadoria
+              v-else-if="ctx?.gesto === 'aposentadoria'"
+              :conta="{ idade: ctx.idade, aposentaAos: ctx.aposentaAos, total: ctx.total, necessario: ctx.necessario, serie: ctx.serie }"
               :guardada="etapa === 'pronto' && !acaoFalhou"
             />
             <CadastroHeroiPergunta v-else-if="ctx?.gesto === 'pergunta'" :pergunta="ctx.pergunta" />
