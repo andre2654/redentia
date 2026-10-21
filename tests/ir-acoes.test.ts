@@ -73,3 +73,14 @@ test('copy: 8523 não volta como código de day trade, e o PL 1.087 não aparece
   assert.match(ir, /Lei 15\.270\/2025/)
   assert.match(ler('app/pages/metodologia.vue'), /Lei 15\.270\/2025/)
 })
+
+test('copy: o /dividendos/{TICKER} segue a Lei 15.270, o JCP a 17,5% e os 100 cotistas do FII', () => {
+  const div = ler('app/composables/useDividendos.ts')
+  assert.doesNotMatch(div, /PL 1\.087/)
+  assert.doesNotMatch(div, /15% (de IR )?retidos?/)
+  assert.doesNotMatch(div, /50 (ou mais )?cotistas/)
+  assert.doesNotMatch(div, /sem limite de valor/)
+  assert.match(div, /Lei 15\.270\/2025/)
+  assert.match(div, /17,5% retidos na fonte/)
+  assert.match(div, /100 cotistas/)
+})
