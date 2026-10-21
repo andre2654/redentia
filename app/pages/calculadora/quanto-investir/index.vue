@@ -462,16 +462,15 @@ usePageSeo({
           <a href="https://www.ibge.gov.br" target="_blank" rel="noopener nofollow" class="qi__link">IBGE</a>.
         </p>
       </aside>
-
-      <div class="qi__cta">
-        <h2 class="qi__cta-title">Acompanhe suas metas na Redentia</h2>
-        <p class="qi__cta-sub">Monitore o progresso das suas metas financeiras com gráficos e análises em tempo real.</p>
-        <div class="qi__cta-actions">
-          <NuxtLink to="/login" class="qi__pill qi__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/calculadoras" class="qi__pill qi__pill--outline">Ver mais calculadoras</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Acompanhe suas metas na Redentia"
+      texto="Monitore o progresso das suas metas financeiras com gráficos e análises em tempo real."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
+    />
   </div>
 </template>
 
@@ -572,17 +571,4 @@ usePageSeo({
 .qi__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .qi__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .qi__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.qi__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.qi__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.qi__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.qi__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.qi__cta .qi__pill { margin-top: 0; }
-.qi__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.qi__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.qi__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.qi__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

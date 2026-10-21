@@ -12,6 +12,7 @@ export type CadastroContexto =
   | { gesto: 'seguir'; ticker: string }
   | { gesto: 'resumo' }
   | { gesto: 'simulacao'; inicial: number; mensal: number; taxa: number; anos: number }
+  | { gesto: 'aposentadoria'; idade: number; aposentaAos: number; total: number; necessario: number; serie: number[] }
   | { gesto: 'pergunta'; pergunta: string }
 
 /** Como a conta saiu: o canal do código e se ela é nova. */

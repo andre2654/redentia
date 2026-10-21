@@ -195,16 +195,15 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Simule quanto seu dinheiro vira com aportes mensais e tempo.">
-      Calculadora de Juros Compostos 2026: Simulador com Aportes
-      <em>Mensais.</em>
-    </CalcHero>
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
+    <!-- sem o prefixo, o termo "juros compostos" vai na própria pergunta do h1;
+         "calculadora de juros compostos" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
+    <CalcTopo desc="Quatro números e a conta sai na hora.">
+      Quanto o seu dinheiro rende com juros compostos?
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design) ============ -->
-    <CalcCompoundSection :seed="seed" section-id="juros">
-      <template #title>Juros compostos.</template>
-    </CalcCompoundSection>
+    <!-- ============ Calculadora na frase ============ -->
+    <CalcCompoundSection :seed="seed" section-id="juros" />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
@@ -464,16 +463,15 @@ usePageSeo({
           <a href="https://www.ibge.gov.br" target="_blank" rel="noopener nofollow" class="jc__link">IBGE</a>.
         </p>
       </aside>
-
-      <div class="jc__cta">
-        <h2 class="jc__cta-title">Quer acompanhar seus investimentos reais?</h2>
-        <p class="jc__cta-sub">Cadastre-se na Redentia e monitore sua carteira com análises em tempo real e IA.</p>
-        <div class="jc__cta-actions">
-          <NuxtLink to="/login" class="jc__pill jc__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/guias" class="jc__pill jc__pill--outline">Ver mais guias</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Quer acompanhar seus investimentos reais?"
+      texto="Cadastre-se na Redentia e monitore sua carteira com análises em tempo real e IA."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver mais guias', to: '/guias' }"
+    />
   </div>
 </template>
 
@@ -577,17 +575,4 @@ usePageSeo({
 .jc__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .jc__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .jc__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.jc__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.jc__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.jc__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.jc__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.jc__cta .jc__pill { margin-top: 0; }
-.jc__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.jc__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.jc__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.jc__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

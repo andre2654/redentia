@@ -15,6 +15,7 @@
 //
 // O modal segue o padrão da casa (Teleport + useModalA11y + Esc/scrim/X) —
 // este é dismissível, ao contrário do onboarding.
+import type { CadastroContexto } from '~/composables/useCadastroFolha'
 import type { SimulationVM } from '~/composables/useSimulations'
 
 const props = defineProps<{
@@ -28,6 +29,10 @@ const props = defineProps<{
   result?: Record<string, number>
   /** formata o número-destaque da lista (ex.: brl) */
   formatValue?: (v: number) => string
+  /** sem conta: a folha de cadastro que sobe, com o herói desta conta; sem ela, vai para o /login */
+  folha?: CadastroContexto
+  /** o caminho que reabre a conta (as páginas de cenário reabrem na calculadora principal) */
+  caminho?: string
 }>()
 const emit = defineEmits<{ apply: [params: Record<string, number>] }>()
 
@@ -50,36 +55,44 @@ watch(isAuthenticated, (v) => {
 })
 
 function deepLink(): string {
+  const base = props.caminho ?? route.path
   const q = Object.entries(props.params ?? {})
     .filter(([, v]) => Number.isFinite(v))
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
-  return q ? `${route.path}?${q}` : route.path
+  return q ? `${base}?${q}` : base
 }
 
-async function onSave() {
+/**
+ * Salvar a conta. Sem conta (21/10/2026), a folha de cadastro sobe com o
+ * herói desta conta (o `folha` que a calculadora passa); confirmado o código,
+ * a conta é salva. Pelo botão, ela também fica estacionada, para quem prefere
+ * entrar pelo /login (Google, celular) achá-la salva na volta. Pelo convite
+ * que sobe sozinho (useConviteDaConta) nada fica estacionado: quem não pediu
+ * para salvar não ganha uma conta salva de surpresa ao entrar mais tarde.
+ */
+async function pedir(origem: 'botao' | 'convite' = 'botao') {
   if (!props.params || !props.label) return
-  if (!isAuthenticated.value) {
-    sims.stashPending({ label: props.label, params: props.params, result: props.result })
-    // Sem conta (21/10/2026): a folha de cadastro sobe com a bola de neve da
-    // própria conta; confirmado o código, salva a simulação estacionada. A
-    // folha desenha a conta de juros compostos; outra calculadora segue pelo
-    // /login, que salva a estacionada na volta.
-    const { initial, monthly, rate, years } = props.params
-    if (props.calculator === 'juros-compostos' && monthly != null && rate != null && years != null) {
-      folha.abrir({ gesto: 'simulacao', inicial: initial ?? 0, mensal: monthly, taxa: rate, anos: years }, async () => {
-        const ok = await sims.savePending()
-        if (ok) savedNow.value = true
-        return ok
-      }, deepLink())
-      return
-    }
-    await navigateTo(`/login?redirect=${encodeURIComponent(deepLink())}`)
+  const sim = { label: props.label, params: props.params, result: props.result }
+  if (isAuthenticated.value) {
+    const ok = await sims.save(sim)
+    if (ok) savedNow.value = true
     return
   }
-  const ok = await sims.save({ label: props.label, params: props.params, result: props.result })
-  if (ok) savedNow.value = true
+  if (origem === 'botao') sims.stashPending(sim)
+  if (props.folha) {
+    folha.abrir(props.folha, async () => {
+      const ok = origem === 'botao' ? await sims.savePending() : await sims.save(sim)
+      if (ok) savedNow.value = true
+      return ok
+    }, deepLink())
+    return
+  }
+  if (origem === 'botao') await navigateTo(`/login?redirect=${encodeURIComponent(deepLink())}`)
 }
+defineExpose({ pedir })
+// mexeu na conta depois de salvar: o botão volta a oferecer o salvar
+watch(() => JSON.stringify(props.params ?? {}), () => { savedNow.value = false })
 
 /* ——— modal do histórico ——— */
 const open = ref(false)
@@ -119,16 +132,19 @@ function dateTxt(s: SimulationVM): string {
 </script>
 
 <template>
-  <!-- ——— botão de salvar no pé do card de controles ——— -->
+  <!-- ——— "Salvar esta conta", à vista ao lado do resultado (o slot põe o Compartilhar ao lado) ——— -->
   <div v-if="variant === 'save'" class="csv">
-    <button
-      type="button" class="csv__btn" :class="{ 'csv__btn--saved': savedNow }"
-      :disabled="sims.busy.value" @click="onSave"
-    >
-      <svg width="15" height="15" viewBox="0 0 24 24" :fill="savedNow ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
-      {{ sims.busy.value ? 'Salvando…' : (savedNow ? 'Simulação salva' : 'Salvar esta simulação') }}
-    </button>
-    <p v-if="!isAuthenticated" class="csv__hint">Grátis — entra com seu e-mail e ela fica na sua conta.</p>
+    <div class="csv__botoes">
+      <button
+        type="button" class="csv__btn" :class="{ 'csv__btn--saved': savedNow }"
+        :disabled="sims.busy.value" @click="pedir('botao')"
+      >
+        <svg width="17" height="17" viewBox="0 0 24 24" :fill="savedNow ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
+        {{ sims.busy.value ? 'Salvando…' : (savedNow ? 'Conta salva' : 'Salvar esta conta') }}
+      </button>
+      <slot />
+    </div>
+    <p v-if="!isAuthenticated" class="csv__hint">Grátis. Fica salva para você reabrir quando quiser.</p>
     <p v-if="sims.error.value" class="csv__error">{{ sims.error.value }}</p>
   </div>
 
@@ -186,20 +202,30 @@ function dateTxt(s: SimulationVM): string {
 </template>
 
 <style scoped>
-/* ——— save (pé do card de controles) ——— */
-.csv { margin-top: 30px; display: flex; flex-direction: column; gap: 7px; }
+/* ——— save (ao lado do resultado) ——— */
+.csv { display: flex; flex-direction: column; gap: 8px; }
+.csv__botoes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .csv__btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
-  padding: 13px 20px; border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-blue);
-  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
-  transition: background .2s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 52px;
+  padding: 0 24px; border: 0; border-radius: var(--nu-r-pill);
+  background: var(--nu-blue); color: var(--nu-white); white-space: nowrap;
+  font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background .2s, transform .18s;
 }
-.csv__btn:hover { background: var(--nu-blue-tint-2); }
+.csv__btn:hover { background: var(--nu-blue-hover); }
+.csv__btn:active { transform: scale(.98); }
 .csv__btn:disabled { opacity: 0.6; cursor: default; }
-.csv__btn--saved { background: var(--nu-blue-tint); border-color: transparent; }
-.csv__hint { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
-.csv__error { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-dense); font-weight: 700; text-align: center; }
+.csv__btn--saved { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.csv__btn--saved:hover { background: var(--nu-blue-tint); }
+.csv__btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--nu-blue) 45%, transparent); outline-offset: 2px; }
+.csv__hint { margin: 0; padding-left: 4px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.csv__error { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-dense); font-weight: 700; }
+/* no celular o salvar vive numa barra fina grudada no pé da tela: uma linha só */
+@media (max-width: 900px) {
+  .csv__botoes { flex-wrap: nowrap; }
+  .csv__btn { flex: 1 1 auto; }
+  .csv__hint { display: none; }
+}
 
 /* ——— botão histórico (ao lado do título da seção) ——— */
 .csh-btn {

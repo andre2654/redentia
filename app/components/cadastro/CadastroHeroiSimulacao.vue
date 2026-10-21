@@ -8,7 +8,7 @@ import type { ContaJuros } from '~/utils/cadastro'
 
 const props = withDefaults(defineProps<{
   conta: ContaJuros
-  /** depois do cadastro: "Simulação guardada" fixo, bola parada no fim */
+  /** depois do cadastro: "Conta guardada" fixo, bola parada no fim */
   guardada?: boolean
   painel?: boolean
 }>(), { guardada: false, painel: false })
@@ -70,7 +70,7 @@ const id = useId()
         <div class="chs__valor">{{ valor }}</div>
         <div class="chs__sub">{{ sub }}</div>
       </div>
-      <span class="chs__selo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Simulação guardada</span>
+      <span class="chs__selo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</span>
     </div>
     <svg v-if="curva" class="chs__grafico" viewBox="0 0 456 120">
       <defs>

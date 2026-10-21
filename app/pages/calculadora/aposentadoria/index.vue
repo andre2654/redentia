@@ -229,16 +229,14 @@ usePageSeo({
 
 <template>
   <div>
-    <!-- ============ Hero compacto (direção André: botão + h1 + 1 linha) ============ -->
-    <CalcHero desc="Descubra quanto investir por mês pra se aposentar do seu jeito.">
-      Calculadora de Aposentadoria 2026: Quanto Preciso para me
-      <em>Aposentar?</em>
-    </CalcHero>
+    <!-- ============ Topo e conta na primeira tela (dono, 21/10/2026: "inspirado na Apple") ============ -->
+    <!-- "calculadora de aposentadoria" fica no <title>, no JSON-LD e na faixa "Como Usar…" -->
+    <CalcTopo desc="Responda quatro coisas. O resto já vem preenchido com valores de mercado.">
+      Quanto preciso para me aposentar?
+    </CalcTopo>
 
-    <!-- ============ Calculadora interativa (design) ============ -->
-    <CalcRetirementSection :seed="seed" section-id="aposentadoria">
-      <template #title>Aposentadoria.</template>
-    </CalcRetirementSection>
+    <!-- ============ Calculadora na frase ============ -->
+    <CalcRetirementSection :seed="seed" section-id="aposentadoria" />
 
     <!-- eyebrow antigo + chips + atualizado (saíram do hero, texto preservado) -->
     <CalcMetaStrip
@@ -459,16 +457,15 @@ usePageSeo({
           <a href="https://www.b3.com.br" target="_blank" rel="noopener nofollow" class="ap__link">B3</a>.
         </p>
       </aside>
-
-      <div class="ap__cta">
-        <h2 class="ap__cta-title">Acompanhe seus investimentos pra aposentadoria</h2>
-        <p class="ap__cta-sub">Monitore seu progresso rumo à independência financeira na Redentia com análises em tempo real e IA.</p>
-        <div class="ap__cta-actions">
-          <NuxtLink to="/login" class="ap__pill ap__pill--light">Criar conta grátis</NuxtLink>
-          <NuxtLink to="/calculadoras" class="ap__pill ap__pill--outline">Ver mais calculadoras</NuxtLink>
-        </div>
-      </div>
     </CalcBand>
+
+    <!-- a faixa azul de ponta a ponta, fora da última faixa de texto (dono, 21/10/2026) -->
+    <CalcFaixaCta
+      titulo="Acompanhe seus investimentos pra aposentadoria"
+      texto="Monitore seu progresso rumo à independência financeira na Redentia com análises em tempo real e IA."
+      :primario="{ label: 'Criar conta grátis', to: '/login' }"
+      :secundario="{ label: 'Ver mais calculadoras', to: '/calculadoras' }"
+    />
   </div>
 </template>
 
@@ -572,17 +569,4 @@ usePageSeo({
 .ap__eeat-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .ap__eeat-p { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 .ap__eeat-small { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
-.ap__cta {
-  background: var(--nu-blue); border-radius: var(--nu-r-card-lg);
-  padding: clamp(34px, 5vw, 60px); text-align: center; margin-top: clamp(44px, 6vw, 72px);
-  max-width: 1080px; margin-left: auto; margin-right: auto;
-}
-.ap__cta-title { margin: 0; color: var(--nu-white); font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-.ap__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
-.ap__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
-.ap__cta .ap__pill { margin-top: 0; }
-.ap__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
-.ap__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
-.ap__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
-.ap__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }
 </style>

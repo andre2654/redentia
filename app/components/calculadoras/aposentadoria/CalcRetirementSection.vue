@@ -1,6 +1,10 @@
 <script setup lang="ts">
-// PR10 — seção interativa da calculadora de aposentadoria, montada com o kit
-// da fase 1 (CalcShell + CalcSliderField + CalcResultPanel + CalcAreaChart).
+// Seção interativa da calculadora de aposentadoria. Desde 21/10/2026 (dono:
+// "tem algumas que têm MUITA configuração, isso afasta usuário") os dez
+// controles viraram uma frase com quatro campos (CalcFraseCampo) e seis
+// premissas fechadas (CalcPremissas), no cartão CalcConta, com o "Salvar esta
+// conta" à vista e a folha de cadastro subindo uma vez depois de mexer
+// (useConviteDaConta). Os cenários "E se…" ficam embaixo do cartão.
 // A MATEMÁTICA é porte EXATO de Frontend/app/components/calculator/
 // Retirement.vue (acumulação mês a mês com returnRate/12, renda ajustada pela
 // inflação mensal, patrimônio necessário = renda líquida anual ÷ taxa de
@@ -171,207 +175,232 @@ const results = computed<Results | null>(() => {
   }
 })
 
-const caption = computed(
-  () => `Aos ${retirementAge.value} anos, aportando ${brl(monthlyContribution.value)} por mês, você terá`,
-)
-const xLabels = computed<[string, string, string]>(() => {
-  const y = results.value?.yearsToRetirement ?? 0
-  return ['hoje', `+${Math.round(y / 2)} anos`, `+${y} anos`]
-})
-const legendItems = computed(() => {
+
+/* ——— a frase (21/10/2026) ———
+   As quatro respostas que mudam a conta ficam na frase; o resto vai para as
+   premissas, já preenchido. Nada muda na matemática acima. */
+const CAMINHO = '/calculadora/aposentadoria'
+const PADRAO = { life: 85, wealth: 50000, rate: 10, withdrawal: 6, inflation: 4, inss: 0 }
+const idadesAtalho = [55, 60, 62, 65].map((v) => ({ label: String(v), value: v }))
+const rendaAtalho = [3000, 5000, 10000, 20000].map((v) => ({ label: brl(v), value: v }))
+const aporteAtalho = [500, 1000, 2000, 5000].map((v) => ({ label: brl(v), value: v }))
+const pct = (v: number) => `${String(v).replace('.', ',')}%`
+
+const sobra = computed(() => (results.value ? results.value.projectedWealth - results.value.requiredWealth : 0))
+const selo = computed(() => {
   const r = results.value
-  if (!r) return []
-  return [
-    { label: 'Anos até aposentar', value: `${r.yearsToRetirement} anos` },
-    { dot: 'var(--nu-navy)', label: 'Total investido', value: formatCurrency(r.totalInvested) },
-    { dot: 'var(--nu-blue)', label: 'Patrimônio necessário', value: formatCurrency(r.requiredWealth), accent: true },
-  ]
+  if (!r) return ''
+  if (r.viable) return `✓ ${formatCurrency(sobra.value)} acima do que você precisa`
+  const falta = r.requiredWealth - r.projectedWealth
+  return `Faltam ${formatCurrency(falta)} (${String(((falta / r.requiredWealth) * 100).toFixed(1)).replace('.', ',')}%)`
+})
+const explicacao = computed(() => {
+  const r = results.value
+  if (!r) return ''
+  const hoje = formatCurrency(monthlyIncome.value)
+  if (inss.value > 0) {
+    return `Para completar os ${formatCurrency(r.adjustedIncome)} por mês (os ${hoje} de hoje, corrigidos pela inflação) com o INSS de ${formatCurrency(inss.value)}, você precisa de ${formatCurrency(r.requiredWealth)}.`
+  }
+  return `Para tirar ${formatCurrency(r.adjustedIncome)} por mês (os ${hoje} de hoje, corrigidos pela inflação), você precisa de ${formatCurrency(r.requiredWealth)}.`
+})
+const resumoPremissas = computed(() => [
+  `retorno de ${pct(returnRate.value)} a.a. até lá e ${pct(withdrawalRate.value)} depois`,
+  `inflação de ${pct(inflation.value)}`,
+  `patrimônio de hoje ${brlCurto(currentWealth.value)}`,
+  `vida até ${lifeExpectancy.value}`,
+  `INSS ${brl(inss.value)}`,
+].join(' · '))
+function restaurar() {
+  lifeExpectancy.value = PADRAO.life
+  currentWealth.value = PADRAO.wealth
+  returnRate.value = PADRAO.rate
+  withdrawalRate.value = PADRAO.withdrawal
+  inflation.value = PADRAO.inflation
+  inss.value = PADRAO.inss
+}
+
+/* ——— salvar, compartilhar e reabrir (mesmo vocabulário do deep-link ?age=&retire=…) ——— */
+const simParams = computed<Record<string, number>>(() => ({
+  age: currentAge.value,
+  retire: retirementAge.value,
+  life: lifeExpectancy.value,
+  income: monthlyIncome.value,
+  wealth: currentWealth.value,
+  monthly: monthlyContribution.value,
+  rate: returnRate.value,
+  withdrawal: withdrawalRate.value,
+  inflation: inflation.value,
+  inss: inss.value,
+}))
+const simLabel = computed(() => `Aos ${retirementAge.value} · ${brl(monthlyIncome.value)}/mês de renda · guardando ${brl(monthlyContribution.value)}/mês`)
+const simResult = computed<Record<string, number> | undefined>(() => (results.value
+  ? { total: Math.round(results.value.projectedWealth), necessario: Math.round(results.value.requiredWealth) }
+  : undefined))
+const link = computed(() => `${CAMINHO}?${Object.entries(simParams.value).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`)
+const folhaConta = computed(() => (results.value
+  ? {
+      gesto: 'aposentadoria' as const,
+      idade: currentAge.value,
+      aposentaAos: retirementAge.value,
+      total: Math.round(results.value.projectedWealth),
+      necessario: Math.round(results.value.requiredWealth),
+      serie: results.value.series,
+    }
+  : undefined))
+function aplicar(p: Record<string, number>) {
+  if (Number.isFinite(p.age)) currentAge.value = p.age!
+  if (Number.isFinite(p.retire)) retirementAge.value = p.retire!
+  if (Number.isFinite(p.life)) lifeExpectancy.value = p.life!
+  if (Number.isFinite(p.income)) monthlyIncome.value = p.income!
+  if (Number.isFinite(p.wealth)) currentWealth.value = p.wealth!
+  if (Number.isFinite(p.monthly)) monthlyContribution.value = p.monthly!
+  if (Number.isFinite(p.rate)) returnRate.value = p.rate!
+  if (Number.isFinite(p.withdrawal)) withdrawalRate.value = p.withdrawal!
+  if (Number.isFinite(p.inflation)) inflation.value = p.inflation!
+  if (Number.isFinite(p.inss)) inss.value = p.inss!
+}
+
+// depois de mexer na conta, a folha sobe sozinha uma vez (useConviteDaConta)
+const salvar = ref<{ pedir: (origem?: 'botao' | 'convite') => Promise<void> } | null>(null)
+useConviteDaConta('aposentadoria', () => JSON.stringify(simParams.value), () => {
+  if (results.value) void salvar.value?.pedir('convite')
 })
 
-// textos dos sliders
-const ageTxt = computed(() => `${currentAge.value} anos`)
-const retireTxt = computed(() => `${retirementAge.value} anos`)
+// textos das premissas
 const lifeTxt = computed(() => `${lifeExpectancy.value} anos`)
-const incomeTxt = computed(() => brl(monthlyIncome.value) + '/mês')
 const wealthTxt = computed(() => brl(currentWealth.value))
-const monthlyTxt = computed(() => brl(monthlyContribution.value) + '/mês')
-const rateTxt = computed(() => String(returnRate.value).replace('.', ',') + '% a.a.')
-const withdrawalTxt = computed(() => String(withdrawalRate.value).replace('.', ',') + '% a.a.')
-const inflationTxt = computed(() => String(inflation.value).replace('.', ',') + '% a.a.')
+const rateTxt = computed(() => pct(returnRate.value) + ' a.a.')
+const withdrawalTxt = computed(() => pct(withdrawalRate.value) + ' a.a.')
+const inflationTxt = computed(() => pct(inflation.value) + ' a.a.')
 const inssTxt = computed(() => brl(inss.value) + '/mês')
 </script>
 
 <template>
-  <CalcShell :eyebrow="eyebrow ?? 'Calculadora'" :bg="bg" :section-id="sectionId ?? 'aposentadoria'">
-    <template #title><slot name="title">Aposentadoria.</slot></template>
-    <template #controls>
-      <CalcSliderField v-model="currentAge" label="Idade Atual" :min="18" :max="100" :step="1" :value-text="ageTxt" />
-      <div class="crs__gap">
-        <CalcSliderField v-model="retirementAge" label="Idade Desejada de Aposentadoria" :min="30" :max="100" :step="1" :value-text="retireTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="lifeExpectancy" label="Expectativa de Vida (anos)" :min="50" :max="120" :step="1" :value-text="lifeTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="monthlyIncome" label="Renda Mensal Desejada (R$)" :min="0" :max="30000" :step="250" :value-text="incomeTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="currentWealth" label="Patrimônio Atual (R$)" :min="0" :max="1000000" :step="5000" :value-text="wealthTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="monthlyContribution" label="Aporte Mensal (R$)" :min="0" :max="20000" :step="100" :value-text="monthlyTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="returnRate" label="Retorno na Acumulação (% a.a.)" :min="0" :max="30" :step="0.25" :value-text="rateTxt" :presets="ratePresets" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="withdrawalRate" label="Retorno na Fruição (% a.a.)" :min="1" :max="20" :step="0.25" :value-text="withdrawalTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="inflation" label="Inflação Anual (%)" :min="0" :max="20" :step="0.25" :value-text="inflationTxt" />
-      </div>
-      <div class="crs__gap">
-        <CalcSliderField v-model="inss" label="INSS Mensal (R$)" :min="0" :max="8000" :step="100" :value-text="inssTxt" />
-      </div>
+  <CalcConta :section-id="sectionId ?? 'aposentadoria'" :bg="bg">
+    <template #title><slot name="title">Calculadora de aposentadoria</slot></template>
+    <template #topo>
+      <CalcSimSaves variant="history" calculator="aposentadoria" :format-value="brl" @apply="aplicar" />
     </template>
-    <template #result>
-      <CalcResultPanel
-        v-if="results"
-        :caption="caption"
-        :value="formatCurrency(results.projectedWealth)"
-        :items="legendItems"
+    <template #frase>
+      <p class="crs__frase">
+        Tenho <CalcFraseCampo
+          v-model="currentAge" rotulo="Sua idade hoje" :min="18" :max="99" :passo="1"
+          :texto="`${currentAge} anos`" sufixo="anos"
+        />, quero me aposentar aos <CalcFraseCampo
+          v-model="retirementAge" rotulo="Idade para se aposentar" :min="30" :max="100" :passo="1"
+          :texto="String(retirementAge)" sufixo="anos" :atalhos="idadesAtalho"
+        /> e viver com <CalcFraseCampo
+          v-model="monthlyIncome" rotulo="Renda por mês, em valores de hoje" :min="0" :max="30000" :passo="250"
+          :texto="brl(monthlyIncome)" prefixo="R$" :atalhos="rendaAtalho"
+        /> por mês. Hoje guardo <CalcFraseCampo
+          v-model="monthlyContribution" rotulo="Quanto você guarda por mês" :min="0" :max="20000" :passo="100"
+          :texto="brl(monthlyContribution)" prefixo="R$" :atalhos="aporteAtalho"
+        /> por mês.
+      </p>
+    </template>
+
+    <template #resultado>
+      <template v-if="results">
+        <p class="crs__legenda">Aos {{ retirementAge }} anos, você terá</p>
+        <p class="crs__valor">{{ formatCurrency(results.projectedWealth) }}</p>
+        <span class="crs__selo" :class="results.viable ? 'crs__selo--ok' : 'crs__selo--falta'">{{ selo }}</span>
+        <p class="crs__explica">{{ explicacao }}</p>
+      </template>
+      <p v-else class="crs__invalido">A idade de se aposentar precisa ser maior que a sua idade hoje.</p>
+    </template>
+
+    <template #acoes>
+      <CalcSimSaves
+        ref="salvar" variant="save" calculator="aposentadoria" :caminho="CAMINHO"
+        :params="simParams" :label="simLabel" :result="simResult" :folha="folhaConta"
       >
-        <div class="crs__chart">
-          <CalcAreaChart :values="results.series" :secondary="results.investedSeries" :x-labels="xLabels" :format-y="brl" />
-        </div>
-
-        <div class="crs__status" :class="results.viable ? 'crs__status--positive' : 'crs__status--negative'">
-          <span class="crs__status-title">{{ results.viable ? 'Plano Viável!' : 'Ajustes Necessários' }}</span>
-          <span class="crs__status-msg">{{ results.message }}</span>
-        </div>
-
-        <div class="crs__subcard">
-          <h4 class="crs__subcard-title">Renda na Aposentadoria</h4>
-          <div class="crs__kpis crs__kpis--3">
-            <div class="crs__kpi">
-              <span class="crs__kpi-label">Renda Desejada (hoje)</span>
-              <span class="crs__kpi-value">{{ formatCurrency(monthlyIncome) }}/mês</span>
-            </div>
-            <div class="crs__kpi">
-              <span class="crs__kpi-label">Renda Ajustada (futuro)</span>
-              <span class="crs__kpi-value crs__kpi-value--accent">{{ formatCurrency(results.adjustedIncome) }}/mês</span>
-              <span class="crs__kpi-caption">Corrigida pela inflação</span>
-            </div>
-            <div class="crs__kpi">
-              <span class="crs__kpi-label">INSS Estimado</span>
-              <span class="crs__kpi-value">{{ formatCurrency(inss) }}/mês</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="crs__subcard">
-          <h4 class="crs__subcard-title">Regra dos 4%</h4>
-          <p class="crs__subcard-desc">
-            Você pode sacar 4% do patrimônio por ano mantendo o capital com ajuste pela inflação.
-          </p>
-          <div class="crs__kpis crs__kpis--2">
-            <div class="crs__kpi">
-              <span class="crs__kpi-label">Com seu patrimônio projetado</span>
-              <span class="crs__kpi-value">{{ formatCurrency(results.projectedWealth * 0.04 / 12) }}/mês</span>
-            </div>
-            <div class="crs__kpi">
-              <span class="crs__kpi-label">Duração estimada</span>
-              <span class="crs__kpi-value crs__kpi-value--accent">{{ results.wealthDuration }} anos</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="crs__subcard">
-          <h4 class="crs__subcard-title">Cenários Alternativos</h4>
-          <div class="crs__scenarios">
-            <div class="crs__scenario">
-              <div>
-                <p class="crs__scenario-title">Trabalhar mais 3 anos</p>
-                <p class="crs__scenario-sub">Aposentar aos {{ retirementAge + 3 }}</p>
-              </div>
-              <p class="crs__scenario-value">{{ formatCurrency(results.scenarios.work3More) }}</p>
-            </div>
-            <div class="crs__scenario">
-              <div>
-                <p class="crs__scenario-title">Aumentar aporte em 20%</p>
-                <p class="crs__scenario-sub">Investir {{ formatCurrency(monthlyContribution * 1.2) }}/mês</p>
-              </div>
-              <p class="crs__scenario-value">{{ formatCurrency(results.scenarios.increase20Percent) }}</p>
-            </div>
-            <div class="crs__scenario">
-              <div>
-                <p class="crs__scenario-title">Reduzir renda em 20%</p>
-                <p class="crs__scenario-sub">Viver com {{ formatCurrency(monthlyIncome * 0.8) }}/mês</p>
-              </div>
-              <p class="crs__scenario-value">{{ formatCurrency(results.scenarios.reduce20Percent) }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="crs__callout">
-          <strong>Lembre-se:</strong> Esta é uma projeção. Revise anualmente e ajuste conforme necessário.
-        </div>
-      </CalcResultPanel>
-      <div v-else class="crs__invalid">
-        A idade de aposentadoria deve ser maior que a idade atual
-      </div>
+        <CalcCompartilhar :link="link" titulo="A minha aposentadoria, na Redentia" />
+      </CalcSimSaves>
     </template>
-  </CalcShell>
+
+    <template #grafico>
+      <CalcCurva
+        v-if="results"
+        :valores="results.series"
+        :meta="results.requiredWealth"
+        :rotulo-meta="`você precisa de ${brlCurto(results.requiredWealth)}`"
+        :rotulo-fim="`${brlCurto(results.projectedWealth)} aos ${retirementAge}`"
+        :rotulos="[`hoje, ${currentAge} anos`, `${retirementAge} anos`]"
+      />
+    </template>
+
+    <template #premissas>
+      <CalcPremissas :resumo="resumoPremissas" @restaurar="restaurar">
+        <div class="cpr-item">
+          <CalcSliderField v-model="returnRate" label="Retorno até se aposentar" :min="0" :max="30" :step="0.25" :value-text="rateTxt" :presets="ratePresets" />
+        </div>
+        <div class="cpr-item">
+          <CalcSliderField v-model="withdrawalRate" label="Retorno depois" :min="1" :max="20" :step="0.25" :value-text="withdrawalTxt" />
+          <p class="crs__dica">Depois de se aposentar. Mais conservador: é o que você saca para viver.</p>
+        </div>
+        <div class="cpr-item">
+          <CalcSliderField v-model="inflation" label="Inflação" :min="0" :max="20" :step="0.25" :value-text="inflationTxt" />
+          <p class="crs__dica">Corrige a renda que você quer até o dia de se aposentar.</p>
+        </div>
+        <div class="cpr-item">
+          <CalcSliderField v-model="currentWealth" label="Patrimônio de hoje" :min="0" :max="1000000" :step="5000" :value-text="wealthTxt" />
+        </div>
+        <div class="cpr-item">
+          <CalcSliderField v-model="lifeExpectancy" label="Vida até" :min="50" :max="120" :step="1" :value-text="lifeTxt" />
+        </div>
+        <div class="cpr-item">
+          <CalcSliderField v-model="inss" label="INSS por mês" :min="0" :max="8000" :step="100" :value-text="inssTxt" />
+        </div>
+      </CalcPremissas>
+    </template>
+
+    <template #depois>
+      <!-- "E se…" em cápsulas pequenas (dono, 21/10/2026): a situação concreta e o resultado curto -->
+      <ul v-if="results" class="crs__ese" aria-label="E se você mudar a conta">
+        <li class="crs__ese-rotulo" aria-hidden="true">E se…</li>
+        <li class="crs__capsula">Aposentar aos {{ retirementAge + 3 }} <b>{{ brlCurto(results.scenarios.work3More) }}</b></li>
+        <li class="crs__capsula">Guardar {{ brl(monthlyContribution * 1.2) }}/mês <b>{{ brlCurto(results.scenarios.increase20Percent) }}</b></li>
+        <li class="crs__capsula">Viver com {{ brl(monthlyIncome * 0.8) }}/mês <b>precisa de {{ brlCurto(results.scenarios.reduce20Percent) }}</b></li>
+        <li class="crs__capsula">Sacar 4% ao ano <b>{{ brl(results.projectedWealth * 0.04 / 12) }}/mês</b></li>
+      </ul>
+      <p class="crs__aviso">É uma projeção, não uma promessa. Revise a conta todo ano e ajuste quando a vida mudar.</p>
+    </template>
+  </CalcConta>
 </template>
 
 <style scoped>
-.crs__gap { margin-top: 36px; }
-.crs__chart { margin-top: 30px; }
-
-.crs__status {
-  display: flex; flex-direction: column; gap: 4px;
-  border-radius: 18px; padding: 18px 22px; margin-top: 26px;
+.crs__frase { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.55; text-wrap: pretty; }
+.crs__legenda { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
+.crs__valor {
+  margin: 4px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
+  letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums;
 }
-.crs__status--positive { background: var(--nu-green-tint); }
-.crs__status--negative { background: var(--nu-red-tint); }
-.crs__status-title { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.crs__status-msg { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
-
-.crs__subcard {
-  background: var(--nu-cream);
-  border-radius: 18px; padding: 18px 22px; margin-top: 16px;
+.crs__selo {
+  display: inline-flex; margin-top: 16px; padding: 7px 14px; border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-sm); font-weight: 700;
 }
-.crs__subcard-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.crs__subcard-desc { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.crs__selo--ok { background: color-mix(in srgb, var(--nu-green) 12%, var(--nu-white)); color: var(--nu-green); }
+.crs__selo--falta { background: color-mix(in srgb, var(--nu-red) 10%, var(--nu-white)); color: var(--nu-red); }
+.crs__explica { margin: 14px 0 0; max-width: 470px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.crs__invalido { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-md); font-weight: 700; }
+.crs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 
-.crs__kpis { display: grid; gap: 12px; margin-top: 14px; }
-.crs__kpis--3 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-.crs__kpis--2 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-.crs__kpi { display: flex; flex-direction: column; gap: 2px; }
-.crs__kpi-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
-.crs__kpi-value { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.2px; }
-.crs__kpi-value--accent { color: var(--nu-blue); }
-.crs__kpi-caption { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
-
-.crs__scenarios { display: flex; flex-direction: column; margin-top: 6px; }
-.crs__scenario {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 12px 0; border-bottom: 1.5px solid var(--nu-cream-line-2);
+/* "E se…": os cenários da conta em cápsulas, embaixo do cartão */
+.crs__ese {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+  margin: 0; padding: 0; list-style: none;
 }
-.crs__scenario:last-child { border-bottom: none; padding-bottom: 2px; }
-.crs__scenario-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
-.crs__scenario-sub { margin: 2px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.crs__scenario-value { margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-.crs__callout {
-  background: var(--nu-blue-tint); border-radius: 18px;
-  padding: 16px 22px; margin-top: 16px;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
+.crs__ese-rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.crs__capsula {
+  display: inline-flex; align-items: baseline; gap: 8px; padding: 9px 16px; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap;
 }
-.crs__callout strong { color: var(--nu-ink); font-weight: 800; }
+.crs__capsula b { color: var(--nu-blue); font-weight: 800; font-variant-numeric: tabular-nums; }
+.crs__aviso { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
 
-.crs__invalid {
-  background: var(--nu-red-tint); border-radius: 18px; padding: 18px 22px;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500;
+@media (max-width: 640px) {
+  .crs__frase { line-height: 1.7; }
+  .crs__ese { justify-content: flex-start; gap: 8px; }
+  .crs__ese-rotulo { width: 100%; }
 }
 </style>
