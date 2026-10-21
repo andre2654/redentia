@@ -169,6 +169,20 @@ export interface NuThesis {
   leftDesc: string
   cta: string
   ctaHref: string
+  /** a faixa da home (21/10/2026): os números da tese como número, não só em texto */
+  conviction?: number | null
+  tickerList?: string[]
+  extraTickers?: number
+  sourcesCount?: number
+  /** 'YYYY-MM-DD' do estudo mais recente */
+  lastStudyDate?: string | null
+  rank?: string | null
+}
+
+/** GET /api/theses-trajetoria → data[slug]: a convicção dia a dia e o desempenho desde o lançamento. */
+export interface TeseTrajetoria {
+  conviccao: { atual: number; inicio: number; desde: string | null; serie: number[] } | null
+  desempenho: { serie: number[]; deltaPct: number | null; desde: string | null } | null
 }
 
 export interface NuMoverRow {

@@ -1,255 +1,263 @@
 <script setup lang="ts">
-// Seção "Invista com Teses." (design Mercado Nu v2): FAIXA de painéis-imagem
-// expansíveis. O painel selecionado cresce (flex-grow 8) e mostra o overlay
-// completo (pill de categoria glass + badge de perf + título com palavra
-// destacada); os demais viram tiras de 82px com o rótulo da categoria na
-// vertical. Rodapé: descrição + CTA da tese atual à esquerda; controles à
-// direita (prev / dots / play-pause com anel de progresso / next).
-//
-// Substitui o MercadoTeses vertical. Porta a mecânica do anel do MercadoTeses
-// (RING=131.95, timer de 50ms) — MAS a cadência da faixa é 8000ms/slide
-// (_tProg += 50/8000, valor exato do design v2). Dados: useNuTheses (os mesmos
-// de antes — só muda a apresentação). Capa quebrada/ausente degrada pro navy
-// do painel (bg já é navy + scrim), sem ícone de imagem partida.
+// "Toda tese, revisada todo dia." (21/10/2026): a faixa de teses da home
+// refeita no jeito da Apple (dono: "refatore essa seção com um olhar da
+// Apple"). Saem os painéis-imagem sanfonados, com o rótulo na vertical e o
+// carrossel automático de 8 s. Fica um objeto só: a tese em destaque como um
+// cartão vivo, com a capa, o desempenho desde o lançamento e a convicção dia a
+// dia, desenhando a linha que sobe e desce com os fatos (a promessa da faixa:
+// "revalidadas todos os dias, com convicção que sobe e desce conforme os
+// fatos"). Embaixo, as quatro teses para escolher, sem rodar sozinhas.
+// Dados: useNuTheses (a lista, a mesma de antes) e useNuTesesTrajetoria (a
+// convicção e o desempenho, cacheados no servidor). Sem trajetória, o cartão
+// mostra só os números da lista. O gating é o de antes: a 1ª tese abre a
+// página dela; as outras convidam a criar conta (logado, abre direto).
 const { theses, loading } = useNuTheses()
+const slugs = computed(() => (loading.value ? [] : theses.value.map((t) => t.slug)))
+const { porSlug } = useNuTesesTrajetoria(slugs)
 
 const idx = ref(0)
-const paused = ref(false)
-const ringRef = ref<SVGCircleElement | null>(null)
-const failed = ref<Record<string, boolean>>({})
+const atual = computed(() => theses.value[idx.value] ?? theses.value[0]!)
+const trajeto = computed(() => porSlug.value[atual.value.slug] ?? null)
+const capaFalhou = ref<Record<string, boolean>>({})
+watch(() => theses.value.length, () => { if (idx.value >= theses.value.length) idx.value = 0 })
 
-const RING = 131.95
-let progress = 0
-let timer: ReturnType<typeof setInterval> | null = null
+const nome = (t: (typeof theses.value)[number]) => `${t.titlePre}${t.titleHi}${t.titlePost}`.trim()
 
-const count = computed(() => theses.value.length)
-const current = computed(() => theses.value[idx.value] ?? theses.value[0]!)
-
-function setRing() {
-  ringRef.value?.setAttribute('stroke-dashoffset', String(RING * (1 - progress)))
+const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+function diaCurto(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const [, m, d] = iso.split('-')
+  return `${Number(d)} ${MESES[Number(m) - 1] ?? ''}`
 }
-function go(i: number) {
-  progress = 0
-  setRing()
-  idx.value = ((i % count.value) + count.value) % count.value
+// "Revisada hoje": o dia do estudo contra o dia de hoje em Brasília (só no navegador: a lista da API só chega lá)
+function revisada(iso: string | null | undefined): string | null {
+  if (!iso) return null
+  const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+  const ontem = new Date(Date.now() - 86_400_000).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+  if (iso === hoje) return 'Revisada hoje'
+  if (iso === ontem) return 'Revisada ontem'
+  return `Revisada em ${diaCurto(iso)}`
 }
-function prev() { go(idx.value - 1) }
-function next() { go(idx.value + 1) }
-function togglePause() { paused.value = !paused.value }
 
-// geometria do painel (valores exatos do design: flex-grow 8/1, min-width por
-// estado, transição .8s). O selecionado expande; o resto vira tira.
-function panelStyle(i: number) {
-  const sel = i === idx.value
-  return {
-    flexGrow: sel ? 8 : 1,
-    minWidth: sel ? 'min(260px, 78vw)' : '82px',
+const conviccao = computed(() => trajeto.value?.conviccao ?? (atual.value.conviction != null ? { atual: atual.value.conviction, inicio: null, desde: null, serie: [] as number[] } : null))
+const delta = computed(() => {
+  const c = conviccao.value
+  if (!c || c.inicio == null) return null
+  const d = c.atual - c.inicio
+  return { d, txt: `${d > 0 ? '▲' : d < 0 ? '▼' : '='} ${d === 0 ? 'igual' : Math.abs(d)} desde ${diaCurto(c.desde)}`, dir: d > 0 ? 'alta' : d < 0 ? 'queda' : 'igual' }
+})
+const desdeDesempenho = computed(() => trajeto.value?.desempenho?.desde ?? null)
+
+/* ——— a linha da convicção: degraus (ela muda de patamar quando um fato muda) ——— */
+const W = 560
+const H = 132
+const M = 6
+const linha = computed(() => {
+  const s = conviccao.value?.serie ?? []
+  if (s.length < 2) return null
+  const lo = Math.min(...s) - 2
+  const hi = Math.max(...s) + 2
+  const x = (i: number) => M + ((W - 2 * M) * i) / (s.length - 1)
+  const y = (v: number) => M + ((H - 2 * M) * (hi - v)) / (hi - lo)
+  let d = `M${x(0).toFixed(1)} ${y(s[0]!).toFixed(1)}`
+  for (let i = 1; i < s.length; i++) {
+    d += ` H${x(i).toFixed(1)}`
+    if (s[i] !== s[i - 1]) d += ` V${y(s[i]!).toFixed(1)}`
   }
-}
-
-onMounted(() => {
-  // 8000ms por slide (design v2) — o MercadoTeses antigo usava 5000ms.
-  timer = setInterval(() => {
-    if (paused.value) return
-    progress += 50 / 8000
-    if (progress >= 1) {
-      progress = 0
-      idx.value = (idx.value + 1) % count.value
-    }
-    setRing()
-  }, 50)
+  const fim: [number, number] = [x(s.length - 1), y(s[s.length - 1]!)]
+  return { d, area: `${d} V${H} H${M} Z`, fim, mudancas: s.slice(1).filter((v, i) => v !== s[i]).length }
 })
-onBeforeUnmount(() => {
-  if (timer) clearInterval(timer)
-})
+const id = useId()
 </script>
 
 <template>
   <!-- âncora #teses: destino do link 'Explorar teses' da Home -->
-  <section id="teses" class="tstz">
-    <div class="tstz__eyebrow">Teses Redentia</div>
-    <h2 class="tstz__title">Invista com Teses.</h2>
-    <div class="tstz__dek">
-      Carteiras temáticas com pesquisa profunda, estudadas e revalidadas <strong>todos os dias</strong> por IA, com convicção que sobe e desce conforme os fatos.
+  <section id="teses" class="tstz" aria-labelledby="tstz-titulo">
+    <div class="tstz__cabeca">
+      <div class="tstz__eyebrow">Teses Redentia</div>
+      <h2 id="tstz-titulo" class="tstz__title">Toda tese,<br>revisada todo dia.</h2>
+      <p class="tstz__dek">
+        Pesquisa profunda que não fica velha: a IA da Redentia relê os fatos de cada tese <strong>todos os dias</strong>, e a convicção sobe ou desce com eles.
+      </p>
     </div>
 
-    <div class="tstz__wrap">
-      <template v-if="loading">
-        <div class="tstz__strip">
-          <div
-            v-for="i in 5" :key="`skp${i}`" class="tstz__panel tstz__panel--sk"
-            :style="{ flexGrow: i === 1 ? 8 : 1, minWidth: i === 1 ? 'min(260px, 78vw)' : '82px' }"
-          >
-            <NuSkeleton tone="navy" variant="block" width="100%" height="100%" radius="card" />
-          </div>
-        </div>
-        <div class="tstz__foot">
-          <div class="tstz__foot-left">
-            <NuSkeleton variant="text" :lines="2" last-width="72%" height="19px" />
-            <NuSkeleton variant="line" width="210px" height="50px" radius="pill" style="margin-top: 22px" />
-          </div>
-        </div>
-      </template>
-      <template v-else>
-      <div class="tstz__strip">
-        <button
-          v-for="(t, i) in theses" :key="t.slug" type="button"
-          class="tstz__panel" :class="i === idx ? 'tstz__panel--on' : 'tstz__panel--off'"
-          :style="panelStyle(i)" :aria-pressed="i === idx"
-          :aria-label="`Tese: ${t.leftTitle}`" @click="go(i)"
-        >
+    <div v-if="loading" class="tstz__cartao tstz__cartao--sk" aria-hidden="true">
+      <NuSkeleton tone="navy" variant="block" width="100%" height="100%" radius="card" />
+    </div>
+    <template v-else>
+      <article :id="`${id}-tese`" class="tstz__cartao" role="tabpanel" :aria-label="nome(atual)">
+        <div class="tstz__capa">
           <img
-            v-if="t.image && !failed[t.slug]" :src="t.image" :alt="t.cat"
-            class="tstz__img" loading="lazy" @error="failed[t.slug] = true"
+            v-if="atual.image && !capaFalhou[atual.slug]" :key="atual.slug" :src="atual.image" alt=""
+            class="tstz__img" loading="lazy" @error="capaFalhou[atual.slug] = true"
           >
-          <span class="tstz__scrim" />
-          <span class="tstz__vlabel">{{ t.cat }}</span>
-          <span class="tstz__overlay">
-            <span class="tstz__over-top">
-              <span class="tstz__cat">{{ t.cat }}</span>
-              <span v-if="t.perf" class="tstz__perf">
-                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>{{ t.perf }}
-              </span>
+        </div>
+        <div :key="atual.slug" class="tstz__corpo">
+          <div class="tstz__topo">
+            <span class="tstz__cat">{{ atual.cat }}</span>
+            <span v-if="atual.rank" class="tstz__rank">{{ atual.rank }}</span>
+          </div>
+          <h3 class="tstz__nome">{{ nome(atual) }}</h3>
+          <p class="tstz__desc">{{ atual.desc }}</p>
+
+          <div class="tstz__numeros">
+            <div v-if="atual.perf" class="tstz__numero">
+              <span class="tstz__valor tstz__valor--alta">{{ atual.perf }}</span>
+              <span class="tstz__rotulo">{{ desdeDesempenho ? `desde ${desdeDesempenho}` : 'desde o lançamento' }}</span>
+            </div>
+            <div v-if="conviccao" class="tstz__numero">
+              <span class="tstz__valor">{{ conviccao.atual }}<small>/100</small></span>
+              <span class="tstz__rotulo">convicção hoje</span>
+              <b v-if="delta" class="tstz__delta" :class="`tstz__delta--${delta.dir}`">{{ delta.txt }}</b>
+            </div>
+          </div>
+
+          <figure v-if="linha" class="tstz__trajeto" :aria-label="`Convicção de ${conviccao!.inicio} a ${conviccao!.atual}, com ${linha.mudancas} mudanças desde ${diaCurto(conviccao!.desde)}`">
+            <div class="tstz__plot">
+            <svg :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" class="tstz__grafico" aria-hidden="true">
+              <defs>
+                <linearGradient :id="`${id}-area`" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" class="tstz__stop-alto" />
+                  <stop offset="1" class="tstz__stop-baixo" />
+                </linearGradient>
+              </defs>
+              <path :d="linha.area" :fill="`url(#${id}-area)`" class="tstz__area" />
+              <path :d="linha.d" class="tstz__linha" vector-effect="non-scaling-stroke" />
+            </svg>
+            <span class="tstz__ponto" :style="{ left: `${(linha.fim[0] / W) * 100}%`, top: `${(linha.fim[1] / H) * 100}%` }" aria-hidden="true" />
+            </div>
+            <figcaption class="tstz__eixo"><span>{{ diaCurto(conviccao!.desde) }}</span><span>hoje</span></figcaption>
+          </figure>
+
+          <div class="tstz__pe">
+            <ul v-if="atual.tickerList?.length" class="tstz__tickers" aria-label="Ativos da tese">
+              <li v-for="tk in atual.tickerList.slice(0, 4)" :key="tk">{{ tk }}</li>
+              <li v-if="atual.extraTickers" class="tstz__mais">+{{ atual.extraTickers }}</li>
+            </ul>
+            <span v-if="revisada(atual.lastStudyDate)" class="tstz__revisada">
+              <span class="tstz__pulso" aria-hidden="true" />{{ revisada(atual.lastStudyDate) }}<template v-if="atual.sourcesCount"> · {{ atual.sourcesCount }} fontes</template>
             </span>
-            <span class="tstz__over-bottom">
-              <span class="tstz__perf-label">{{ t.perfLabel }}</span>
-              <!-- span de destaque SÓ com palavra marcada — a API real não marca
-                   (titleHi vazio) e span vazio com padding vira caixinha azul -->
-              <span class="tstz__panel-title">{{ t.titlePre }}<span v-if="t.titleHi" class="tstz__hi">{{ t.titleHi }}</span>{{ t.titlePost }}</span>
-            </span>
+          </div>
+          <NuxtLink :to="atual.ctaHref" class="tstz__cta">
+            {{ atual.cta }}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </NuxtLink>
+        </div>
+      </article>
+
+      <!-- as teses, para escolher: quem manda é a pessoa, nada roda sozinho -->
+      <div class="tstz__escolha" role="tablist" aria-label="Teses">
+        <button
+          v-for="(t, i) in theses" :key="t.slug" type="button" role="tab"
+          class="tstz__aba" :class="{ 'tstz__aba--on': i === idx }"
+          :aria-selected="i === idx" :aria-controls="`${id}-tese`" @click="idx = i"
+        >
+          <span class="tstz__miniatura">
+            <img v-if="t.image && !capaFalhou[t.slug]" :src="t.image" alt="" loading="lazy" @error="capaFalhou[t.slug] = true">
           </span>
+          <span class="tstz__aba-nome">{{ nome(t) }}</span>
+          <b v-if="t.perf" class="tstz__aba-perf">{{ t.perf }}</b>
         </button>
       </div>
-
-      <div class="tstz__foot">
-        <div class="tstz__foot-left">
-          <div :key="idx" class="tstz__foot-anim">
-            <div class="tstz__desc">{{ current.leftDesc }}</div>
-            <NuxtLink :to="current.ctaHref" class="tstz__cta">
-              {{ current.cta }}<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div class="tstz__ctrls">
-          <button type="button" class="tstz__arrow" aria-label="Tese anterior" @click="prev">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--nu-ink)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-          </button>
-          <div class="tstz__dots">
-            <button
-              v-for="(t, i) in theses" :key="t.slug" type="button"
-              class="tstz__dot" :class="{ 'tstz__dot--active': i === idx }"
-              :aria-label="`Ir para a tese ${i + 1}`" @click="go(i)"
-            />
-          </div>
-          <button type="button" class="tstz__play" :aria-label="paused ? 'Retomar' : 'Pausar'" @click="togglePause">
-            <svg width="48" height="48" viewBox="0 0 48 48" class="tstz__ring">
-              <circle cx="24" cy="24" r="21" fill="none" stroke="var(--nu-ink-16)" stroke-width="3" />
-              <circle ref="ringRef" cx="24" cy="24" r="21" fill="none" stroke="var(--nu-blue)" stroke-width="3" stroke-linecap="round" stroke-dasharray="131.95" stroke-dashoffset="131.95" transform="rotate(-90 24 24)" />
-            </svg>
-            <svg v-if="!paused" width="14" height="14" viewBox="0 0 24 24" fill="var(--nu-white)"><rect x="6" y="4.5" width="4" height="15" rx="1.4" /><rect x="14" y="4.5" width="4" height="15" rx="1.4" /></svg>
-            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="var(--nu-white)"><path d="M7 4.8v14.4c0 .9 1 1.5 1.8 1L20 13a1.2 1.2 0 0 0 0-2L8.8 3.8c-.8-.5-1.8.1-1.8 1z" /></svg>
-          </button>
-          <button type="button" class="tstz__arrow" aria-label="Próxima tese" @click="next">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--nu-ink)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-          </button>
-        </div>
-      </div>
-      </template>
-    </div>
+    </template>
   </section>
 </template>
 
 <style scoped>
-.tstz { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+.tstz { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
+.tstz__cabeca { max-width: 1180px; margin: 0 auto; }
 .tstz__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
 .tstz__title { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
-.tstz__dek { color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; margin-top: 20px; max-width: 620px; }
+.tstz__dek { color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; margin: 20px 0 0; max-width: 620px; }
 .tstz__dek strong { color: var(--nu-ink); font-weight: 800; }
 
-.tstz__wrap { margin-top: 44px; }
-.tstz__strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 2px; }
+/* ——— o cartão da tese ——— */
+.tstz__cartao {
+  display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); max-width: 1180px; min-height: 480px;
+  margin: clamp(32px, 4vw, 48px) auto 0; overflow: hidden; border-radius: 32px; background: var(--nu-white);
+  box-shadow: 0 30px 80px -40px rgba(10, 10, 12, 0.35), 0 0 0 1px var(--nu-cream-2);
+}
+.tstz__cartao--sk { display: block; height: 480px; box-shadow: none; }
+.tstz__capa { position: relative; min-height: 260px; background: var(--nu-navy); overflow: hidden; }
+.tstz__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: tstz-surge .7s ease both; }
+.tstz__corpo { display: flex; flex-direction: column; min-width: 0; padding: clamp(26px, 3vw, 40px) clamp(24px, 3.2vw, 44px); animation: tstz-entra .6s cubic-bezier(.22, 1, .36, 1) both; }
+.tstz__topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tstz__cat { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+.tstz__rank { padding: 5px 11px; border-radius: var(--nu-r-pill); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; }
+.tstz__nome { margin: 8px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.tstz__desc { margin: 10px 0 0; max-width: 46ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 
-.tstz__panel {
-  position: relative; height: clamp(360px, 52vh, 560px); border-radius: var(--nu-r-card);
-  overflow: hidden; cursor: pointer; background: var(--nu-navy); border: none; padding: 0;
-  flex-shrink: 1; flex-basis: 0; text-align: left;
-  transition: flex-grow .8s cubic-bezier(.55, 0, .25, 1), min-width .8s cubic-bezier(.55, 0, .25, 1);
-}
-.tstz__panel--sk { cursor: default; }
-.tstz__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.tstz__scrim { position: absolute; inset: 0; background: var(--nu-tese-strip-scrim); pointer-events: none; }
+.tstz__numeros { display: flex; flex-wrap: wrap; gap: 14px 40px; margin-top: 26px; }
+.tstz__numero { display: flex; flex-direction: column; }
+.tstz__valor { color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.tstz__valor small { margin-left: 2px; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: 0; }
+.tstz__valor--alta { color: var(--nu-green); }
+.tstz__rotulo { margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.tstz__delta { margin-top: 2px; font-size: var(--nu-fs-sm); font-weight: 700; }
+.tstz__delta--alta { color: var(--nu-green); }
+.tstz__delta--queda { color: var(--nu-red); }
 
-/* rótulo vertical da categoria (só painel FECHADO) */
-.tstz__vlabel {
-  position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%) rotate(180deg);
-  writing-mode: vertical-rl; color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; pointer-events: none;
-  opacity: 1; transition: opacity .3s;
+/* a convicção dia a dia: degraus que sobem e descem com os fatos, desenhados na chegada */
+.tstz__trajeto { margin: 22px 0 0; }
+.tstz__plot { position: relative; height: 118px; animation: tstz-revela 1.6s cubic-bezier(.5, 0, .2, 1) .15s both; }
+.tstz__grafico { display: block; width: 100%; height: 100%; overflow: visible; }
+.tstz__stop-alto { stop-color: var(--nu-blue); stop-opacity: 0.16; }
+.tstz__stop-baixo { stop-color: var(--nu-blue); stop-opacity: 0; }
+.tstz__linha { fill: none; stroke: var(--nu-blue); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.tstz__ponto {
+  position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--nu-blue);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--nu-blue) 18%, transparent); animation: tstz-surge .4s ease 1.6s both;
 }
-.tstz__panel--on .tstz__vlabel { opacity: 0; }
+.tstz__eixo { display: flex; justify-content: space-between; margin-top: 8px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
 
-/* overlay completo (só painel ABERTO) */
-.tstz__overlay {
-  position: absolute; inset: 0; padding: clamp(22px, 2.4vw, 30px); display: flex;
-  flex-direction: column; pointer-events: none; opacity: 0; transition: opacity .5s;
-}
-.tstz__panel--on .tstz__overlay { opacity: 1; transition: opacity .5s .12s; }
-.tstz__over-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.tstz__cat {
-  display: inline-flex; align-items: center; background: var(--nu-white-18);
-  backdrop-filter: blur(8px); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700;
-  letter-spacing: 1.6px; text-transform: uppercase; padding: 8px 15px;
-  border-radius: var(--nu-r-pill); white-space: nowrap;
-}
-.tstz__perf {
-  display: inline-flex; align-items: center; gap: 7px; background: var(--nu-green-soft);
-  color: var(--nu-navy); font-size: var(--nu-fs-sm); font-weight: 700; padding: 6px 14px;
-  border-radius: var(--nu-r-pill); font-variant-numeric: tabular-nums; white-space: nowrap;
-}
-.tstz__over-bottom { margin-top: auto; }
-.tstz__perf-label { color: var(--nu-white-72); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-.tstz__panel-title {
-  display: block; color: var(--nu-white); font-size: var(--nu-fs-h3); font-weight: 800;
-  line-height: 1.08; letter-spacing: -.5px; margin-top: 10px; max-width: 640px;
-}
-.tstz__hi { background: var(--nu-blue); padding: 1px 10px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-
-/* rodapé: descrição + CTA à esquerda, controles à direita */
-.tstz__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; margin-top: 30px; }
-.tstz__foot-left { flex: 1 1 460px; min-width: min(320px, 100%); }
-.tstz__foot-anim { animation: nu-fade .5s ease both; }
-.tstz__desc { color: var(--nu-gray-2); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; max-width: 660px; }
+.tstz__pe { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 22px; }
+.tstz__tickers { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tstz__tickers li { padding: 6px 11px; border-radius: var(--nu-r-pill); background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; }
+.tstz__tickers .tstz__mais { background: transparent; color: var(--nu-gray); box-shadow: inset 0 0 0 1.5px var(--nu-cream-2); }
+.tstz__revisada { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
+.tstz__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 0 rgba(20, 143, 78, 0.45); animation: tstz-pulsa 2.2s ease-out infinite; }
 .tstz__cta {
-  display: inline-flex; align-items: center; gap: 10px; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 30px; font-size: var(--nu-fs-md); font-weight: 800;
-  margin-top: 22px; transition: background .2s, transform .15s;
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 24px;
+  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700;
 }
-.tstz__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
+.tstz__cta svg { transition: transform .2s ease; }
+.tstz__cta:hover { color: var(--nu-blue-hover); }
+.tstz__cta:hover svg { transform: translateX(3px); }
 
-.tstz__ctrls { display: flex; align-items: center; gap: 13px; flex-shrink: 0; }
-.tstz__arrow {
-  width: 44px; height: 44px; border-radius: 50%; background: var(--nu-cream-5); border: none;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s;
+/* ——— as teses para escolher ——— */
+.tstz__escolha {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 1180px; margin: 16px auto 0;
 }
-.tstz__arrow:hover { background: var(--nu-cream-5-hover); }
-.tstz__dots { display: flex; align-items: center; gap: 9px; }
-.tstz__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--nu-sand-3); border: none; padding: 0; cursor: pointer; transition: all .2s; }
-.tstz__dot--active { width: 9px; height: 9px; background: var(--nu-ink); }
-.tstz__play {
-  position: relative; width: 48px; height: 48px; border-radius: 50%; background: var(--nu-ink);
-  border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;
+.tstz__aba {
+  display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 14px 10px 10px; border: 0; border-radius: 20px; cursor: pointer;
+  background: var(--nu-cream); color: var(--nu-gray-2); text-align: left; font: inherit;
+  transition: background .2s ease, box-shadow .2s ease, color .2s ease;
 }
-.tstz__ring { position: absolute; inset: 0; pointer-events: none; }
+.tstz__aba:hover { color: var(--nu-ink); }
+.tstz__aba--on { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 10px 30px -16px rgba(10, 10, 12, 0.35), 0 0 0 1.5px var(--nu-ink); }
+.tstz__aba:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.tstz__miniatura { flex: none; width: 44px; height: 44px; overflow: hidden; border-radius: 12px; background: var(--nu-navy); }
+.tstz__miniatura img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tstz__aba-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--nu-fs-sm); font-weight: 700; }
+.tstz__aba-perf { flex: none; color: var(--nu-green); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-/* Mobile (padrão app: 760; o design v2 colapsava em 680): a faixa vira 1
-   painel por vez — os fechados somem, o aberto ocupa 100%; o rodapé centraliza
-   e os controles ganham a largura toda. */
-@media (max-width: 760px) {
-  .tstz__panel--off { display: none !important; }
-  .tstz__panel--on { min-width: 100% !important; flex-grow: 1 !important; }
-  .tstz__foot { justify-content: center; }
-  .tstz__foot-left { flex-basis: 100%; }
-  .tstz__ctrls { width: 100%; justify-content: center; }
+/* a linha se revela da esquerda para a direita, do primeiro dia até hoje */
+@keyframes tstz-revela { from { clip-path: inset(-12px 100% -12px 0); } to { clip-path: inset(-12px -12px -12px 0); } }
+@keyframes tstz-surge { from { opacity: 0; } }
+@keyframes tstz-entra { from { opacity: 0; transform: translateY(8px); } }
+@keyframes tstz-pulsa { 70% { box-shadow: 0 0 0 7px rgba(20, 143, 78, 0); } 100% { box-shadow: 0 0 0 0 rgba(20, 143, 78, 0); } }
+
+@media (max-width: 960px) {
+  .tstz__cartao { grid-template-columns: 1fr; min-height: 0; }
+  .tstz__capa { aspect-ratio: 16 / 9; min-height: 0; }
+  .tstz__escolha { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; margin-left: calc(-1 * clamp(22px, 5.5vw, 80px)); margin-right: calc(-1 * clamp(22px, 5.5vw, 80px)); padding-left: clamp(22px, 5.5vw, 80px); padding-right: clamp(22px, 5.5vw, 80px); scrollbar-width: none; }
+  .tstz__escolha::-webkit-scrollbar { display: none; }
+  /* a rolagem lateral também corta em cima e embaixo: a folga cabe a borda e a sombra da aba ativa */
+  .tstz__escolha { scroll-padding-inline: clamp(22px, 5.5vw, 80px); padding-top: 8px; padding-bottom: 28px; margin-top: 8px; margin-bottom: -24px; }
+  .tstz__aba { flex: none; width: min(78vw, 300px); scroll-snap-align: start; }
+  .tstz__numeros { gap: 14px 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tstz__img, .tstz__corpo, .tstz__plot, .tstz__ponto, .tstz__pulso { animation: none; }
 }
 </style>
