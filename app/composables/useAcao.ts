@@ -1336,7 +1336,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   // US_STOCK cai em 'stock' de propósito (US0): a página renderiza as mesmas
   // seções e degrada onde não há dado; moeda/kind próprios chegam no US1.
   const isFii = kind === 'fii'
-  const name = kind === 'etf' && etf?.name ? etf.name : prettyName(profile.name, f?.fiiName)
+  // BDR: o nome inteiro da matriz. O da B3 corta em 12 ('PALANTIRTECHDRN').
+  const bdrName = kind === 'bdr' ? nomeDoBdr(overview?.scrape_extras?.identity?.company_name) : null
+  const name = kind === 'etf' && etf?.name ? etf.name : bdrName ?? prettyName(profile.name, f?.fiiName)
   // flat, sem wrapper `data` (gotcha documentado no service)
   const editorial = ok(editorialR) ?? null
 

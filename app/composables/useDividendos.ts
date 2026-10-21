@@ -155,7 +155,9 @@ function coreFromApi(
 ): Core {
   const se = overview?.scrape_extras ?? null
   const isFii = se?.asset_type === 'fii' || profile.type === 'REIT'
-  const name = prettyName(profile.name, se?.fii?.trading_name ?? null)
+  // BDR: o nome inteiro da matriz, como no /asset (ver utils/nomeB3.ts).
+  const bdrName = se?.asset_type === 'bdr' || profile.type === 'BDR' ? nomeDoBdr(se?.identity?.company_name) : null
+  const name = bdrName ?? prettyName(profile.name, se?.fii?.trading_name ?? null)
   const price = profile.market_price
 
   // Data-com quando a API manda (ex_date), rótulo pelas duas chaves e renda
