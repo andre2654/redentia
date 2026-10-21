@@ -115,7 +115,9 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
 </script>
 
 <template>
-  <section class="mh">
+  <!-- anônimo: o hero no jeito Apple (MercadoHeroPergunta); logado: o de sempre -->
+  <MercadoHeroPergunta v-if="!isAuthenticated" />
+  <section v-else class="mh">
     <div class="mh__cols">
       <div class="mh__left">
         <!-- logado vê a data de hoje; anônimo, a proposta de valor -->

@@ -13,8 +13,13 @@
  * do Laravel (só percentuais, calculados com o fechamento do dia, como o
  * desempenho das teses) e, quando vem, substitui o `longo` da edição publicada.
  * Sem resposta, fica o da edição: a seção nunca some por causa do backend.
+ *
+ * A Previsão de futuro também: até o 21º pregão de cada rodada não há nota,
+ * mas useBenchPrevisaoViva lê `/ai-benchmark/previsao` (o IC de cada modelo a
+ * cada fechamento, nunca a nota de uma ação) e a página mostra o placar em
+ * formação no lugar do "Próximos índices".
  */
-import type { BenchArenaLongo, BenchEdition, BenchModel, BenchScore } from '~/types/benchmark'
+import type { BenchArenaLongo, BenchEdition, BenchModel, BenchPrevisaoParcial, BenchScore } from '~/types/benchmark'
 import { buildPreviewEdition } from '~/content/benchmark-ia/previa'
 import { EDICOES } from '~/content/benchmark-ia/edicoes'
 
@@ -79,6 +84,27 @@ export async function useBenchCarteiraViva(): Promise<BenchArenaLongo | null> {
     ? (useRuntimeConfig().backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
     : '/api/backend'
   const { data } = await useAsyncData('benchmark-ia:carteira', () => loadCarteiraViva(base), { default: () => null })
+  return data.value ?? null
+}
+
+async function loadPrevisaoViva(base: string): Promise<BenchPrevisaoParcial | null> {
+  try {
+    const r = await $fetch<{ data: BenchPrevisaoParcial | null }>(`${base}/ai-benchmark/previsao`, { timeout: 8000 })
+    const d = r?.data
+    const ok = !!d && d.labels?.length > 1 && d.series?.length > 0 && d.horizonte > 0
+      && d.series.every((s) => s.values?.length === d.labels.length)
+    return ok ? d : null
+  } catch {
+    return null
+  }
+}
+
+/** placar parcial da Previsão de futuro; null quando o backend não responde ou não há pregão fechado */
+export async function useBenchPrevisaoViva(): Promise<BenchPrevisaoParcial | null> {
+  const base = import.meta.server
+    ? (useRuntimeConfig().backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
+    : '/api/backend'
+  const { data } = await useAsyncData('benchmark-ia:previsao', () => loadPrevisaoViva(base), { default: () => null })
   return data.value ?? null
 }
 
