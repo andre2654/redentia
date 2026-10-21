@@ -32,14 +32,26 @@ function closeModal() {
 // "Ativar resumo diário" (dono 2026-07-14): 2º gatilho ao lado do "Ler o resumo
 // do dia". Logado + sem canal → "Ativar"; logado + com canal → "Resumo ativo ·
 // canais" (pílula verde); deslogado → CTA "Receba o resumo no email ou
-// WhatsApp". Todos abrem o NuBriefingModal (que trata logado vs anônimo).
+// WhatsApp". Logado abre o NuBriefingModal; deslogado, desde 21/10/2026, abre
+// a folha de cadastro com o céu das 7h30, que cria a conta pelo código e já
+// liga o resumo no canal em que ele chegou.
 const { isAuthenticated } = useAuthState()
-const { enabled, channelsLabel, hydrate } = useBriefingPrefs()
+const { enabled, channelsLabel, hydrate, save } = useBriefingPrefs()
+const folha = useCadastroFolha()
 onMounted(hydrate)
 
 const briefingOpen = ref(false)
 const briefingTriggerRef = ref<HTMLButtonElement | null>(null)
-function openBriefing() { briefingOpen.value = true }
+function openBriefing() {
+  if (!isAuthenticated.value) {
+    folha.abrir({ gesto: 'resumo' }, async (f) => {
+      await save({ whatsapp: f.canal === 'whatsapp', email: f.canal === 'email' })
+      return true
+    }, '/')
+    return
+  }
+  briefingOpen.value = true
+}
 function closeBriefing() {
   briefingOpen.value = false
   nextTick(() => briefingTriggerRef.value?.focus())

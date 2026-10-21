@@ -343,6 +343,8 @@ export function useWatchlist() {
 export function useSeguirAtivo(ticker: MaybeRefOrGetter<string>, path: MaybeRefOrGetter<string>) {
   const wl = useWatchlist()
   const { isAuthenticated } = useAuthState()
+  const { authFetch } = useApi()
+  const folha = useCadastroFolha()
   const route = useRoute()
   const router = useRouter()
 
@@ -371,7 +373,17 @@ export function useSeguirAtivo(ticker: MaybeRefOrGetter<string>, path: MaybeRefO
 
   async function toggle() {
     if (!isAuthenticated.value) {
-      await toLogin()
+      // Sem conta (21/10/2026): sobe a folha de cadastro com o ativo, e não o
+      // /login. Confirmado o código, segue pela mesma intenção do ?seguir=1 e
+      // liga o resumo das 19h, que o aceite da folha anuncia. Quem preferir o
+      // /login (Google, celular) volta com o ?seguir=1 de sempre.
+      folha.abrir({ gesto: 'seguir', ticker: t.value }, async () => {
+        intencao = true
+        await comSessao()
+        if (!wl.isFollowing(t.value)) return false
+        await authFetch('/me/notification-preferences', { method: 'PUT', body: { topic: 'watchlist', email: true, whatsapp: false } }, { redirectOnAuthError: false }).catch(() => null)
+        return true
+      }, `${toValue(path)}?seguir=1`)
       return
     }
     if (pending.value) return

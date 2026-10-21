@@ -12,8 +12,10 @@
 // maior alta da bolsa vem dos movers do dia (a mesma fonte do /mercado), a dos
 // juros compostos é conta exata e a do dividend yield é definição. Sem frase
 // inventada sobre o mercado.
-// A barra funciona: clicar para a demonstração, e o que a pessoa digitar vai
-// para /busca?q=, que pede o login e depois envia a pergunta ao chat sozinho.
+// A barra funciona: clicar para a demonstração, e o que a pessoa digitar sobe
+// a folha de cadastro (21/10/2026) com a pergunta guardada. Confirmado o
+// código, vai para /busca?chat=1&q=, que envia a pergunta ao chat sozinho.
+// Antes ia para /busca?q= sem o chat=1 e a pergunta se perdia na busca.
 // Movimento reduzido: sem digitação nem giro, a primeira pergunta já respondida.
 import { marketFetchMovers } from '~/services/market'
 
@@ -96,11 +98,15 @@ function usar() {
   if (timer) clearTimeout(timer)
   nextTick(() => campo.value?.focus())
 }
+const { isAuthenticated } = useAuthState()
+const folha = useCadastroFolha()
 function enviar() {
   const q = texto.value.trim()
   if (!usando.value) { usar(); return }
   if (!q) { campo.value?.focus(); return }
-  navigateTo(`/busca?q=${encodeURIComponent(q)}`)
+  const chat = `/busca?chat=1&q=${encodeURIComponent(q)}`
+  if (isAuthenticated.value) { navigateTo(chat); return }
+  folha.abrir({ gesto: 'pergunta', pergunta: q }, () => true, chat, () => navigateTo(chat))
 }
 </script>
 
