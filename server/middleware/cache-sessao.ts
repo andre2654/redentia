@@ -46,8 +46,7 @@ const EXATAS: Record<string, string> = {
   '/calculadoras': HORA,
   // /mcp: docs públicas (o CTA troca de destino client-side pós-mount).
   '/mcp': HORA,
-  // /business: landing sem variante logada. Está noindex até o PR5 — trava de
-  // compliance no topo de components/business/RbSeguranca.vue. Cadastro,
+  // /business: landing sem variante logada, indexável desde 20/10/2026. Cadastro,
   // chaves, skills e convite seguem private/no-store no nuxt.config.ts.
   '/business': HORA,
   // Rankings e setores: o backend cacheia 15 min → s-maxage=900.

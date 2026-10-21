@@ -230,9 +230,9 @@ export default defineNuxtConfig({
     '/guias/raio-x-da-carteira-em-crise': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
     // /api-portal tinha o 2º melhor CTR do site (7,83%) e é docs de integração:
     // vai pro /mcp, que é a superfície equivalente no Nu E é indexável.
-    // /whitelabel e /pricing vão pro /business, topicamente correto. Ele está
-    // `noindex` por TRAVA DE COMPLIANCE (RbSeguranca.vue:11-13, some no PR5), então
-    // hoje o 301 serve o usuário e consolida sinal; passa a ranquear quando a trava cair.
+    // /whitelabel e /pricing vão pro /business, topicamente correto. Ele ficou
+    // `noindex` por trava de compliance até 20/10/2026; desde então é indexável
+    // (decisão do dono) e o 301 também passa o sinal.
     '/api-portal': { redirect: { to: '/mcp', statusCode: 301 } },
     '/api-portal/**': { redirect: { to: '/mcp', statusCode: 301 } },
     '/whitelabel': { redirect: { to: '/business', statusCode: 301 } },
