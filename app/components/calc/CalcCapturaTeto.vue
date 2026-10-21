@@ -34,13 +34,9 @@ const alvoMudou = computed(() => confirmado.value && props.alvo != null && Math.
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const { isAuthenticated } = useAuthState()
 const nl = useNewsletter()
-const { pronto: nlPronto, emailDaConta, assinante, etapa: nlEtapa, emailPendente: nlEmail, enviando: nlEnviando, erro: nlErro, confirmacao: nlConfirmacao } = nl
+const { pronto: nlPronto, emailDaConta, assinante, etapa: nlEtapa, emailPendente: nlEmail, enviando: nlEnviando, erro: nlErro, confirmacao: nlConfirmacao, legal: nlLegal } = nl
 const emailNews = ref('')
 const codigoNews = ref('')
-// Quem não tem conta fica sabendo, antes do código, que ele cria uma.
-const legalNews = computed(() => isAuthenticated.value
-  ? 'Mandamos um código para confirmar o e-mail, que fica na sua conta. Ao confirmar, você aceita receber o e-mail semanal da Redentia.'
-  : 'Mandamos um código para confirmar o e-mail. Ao confirmar, você cria sua conta grátis na Redentia e aceita receber o e-mail semanal.')
 /** isca para robô: gente não vê nem preenche */
 const isca = ref('')
 </script>
@@ -88,7 +84,7 @@ const isca = ref('')
         <button type="button" class="cct__btn" :disabled="nlEnviando" @click="nl.assinarComConta()">
           {{ nlEnviando ? 'Assinando…' : `Assinar com ${emailDaConta}` }}
         </button>
-        <p class="cct__legal">Ao assinar, você aceita receber o e-mail semanal da Redentia. <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
+        <p class="cct__legal">{{ nlLegal }} <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
       </template>
 
       <!-- E-mail → código. Para quem não tem conta, o código cria a conta. -->
@@ -98,7 +94,7 @@ const isca = ref('')
           <button type="submit" class="cct__btn cct__btn--linha" :disabled="nlEnviando">{{ nlEnviando ? 'Enviando…' : 'Assinar' }}</button>
         </div>
         <input v-model="isca" type="text" name="site" tabindex="-1" autocomplete="off" aria-hidden="true" class="cct__isca">
-        <p class="cct__legal">{{ legalNews }} <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
+        <p class="cct__legal">{{ nlLegal }} <NuxtLink to="/institucional/privacy">Privacidade</NuxtLink>.</p>
       </form>
       <form v-else class="cct__linha" @submit.prevent="nl.confirmarCodigo(codigoNews)">
         <p class="cct__texto cct__texto--cheio">Mandamos um código para {{ nlEmail }}. Ele vale 10 minutos.</p>

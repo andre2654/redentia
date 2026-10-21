@@ -155,6 +155,13 @@ export function useNewsletter() {
     return `Pronto. O mercado da semana chega em ${e} toda sexta.`
   })
 
+  /** O aviso de consentimento. Quem não tem conta fica sabendo, antes do código, que ele cria uma. */
+  const legal = computed(() => {
+    if (!isAuthenticated.value) return 'Mandamos um código para confirmar o e-mail. Ao confirmar, você cria sua conta grátis na Redentia e aceita receber o e-mail semanal.'
+    if (emailDaConta.value) return 'Ao assinar, você aceita receber o e-mail semanal da Redentia.'
+    return 'Mandamos um código para confirmar o e-mail, que fica na sua conta. Ao confirmar, você aceita receber o e-mail semanal da Redentia.'
+  })
+
   onMounted(() => {
     void conhecerConta()
   })
@@ -163,5 +170,5 @@ export function useNewsletter() {
     if (etapa.value !== 'ok' && !enviando.value) void conhecerConta()
   })
 
-  return { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, erro, confirmacao, assinarComConta, pedirCodigo, confirmarCodigo, trocarEmail }
+  return { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, erro, confirmacao, legal, assinarComConta, pedirCodigo, confirmarCodigo, trocarEmail }
 }
