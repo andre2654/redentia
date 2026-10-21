@@ -97,19 +97,10 @@ function dateShortPt(iso: string): string {
   return `${Number(d)} ${MONTHS_PT[Number(m) - 1] ?? m} ${y}`
 }
 
-const SMALL_WORDS = new Set(['de', 'do', 'da', 'dos', 'das', 'e'])
-/** 'PETROBRAS   PN   N2' → 'Petrobras' (mesma regra do useAcao). */
+/** 'PETROBRAS   PN   N2' → 'Petrobras' (a regra é a do useAcao: utils/nomeB3.ts). */
 function prettyName(raw: string, fiiTradingName?: string | null): string {
   if (fiiTradingName) return fiiTradingName
-  const head = (raw.split(/\s{2,}/)[0] ?? raw)
-    .replace(/\s+(ON|PN[AB]?|UNT|UNS|N1|N2|NM|MA|MB|EJ|ED|ER|ES)$/i, '')
-    .trim()
-  if (!head) return raw
-  return head
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => (SMALL_WORDS.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
-    .join(' ')
+  return nomeDaEmpresa(raw)
 }
 
 /* ————— núcleo de dados (real e seed convergem aqui) ————— */
@@ -164,7 +155,9 @@ function coreFromApi(
 ): Core {
   const se = overview?.scrape_extras ?? null
   const isFii = se?.asset_type === 'fii' || profile.type === 'REIT'
-  const name = prettyName(profile.name, se?.fii?.trading_name ?? null)
+  // BDR: o nome inteiro da matriz, como no /asset (ver utils/nomeB3.ts).
+  const bdrName = se?.asset_type === 'bdr' || profile.type === 'BDR' ? nomeDoBdr(se?.identity?.company_name) : null
+  const name = bdrName ?? prettyName(profile.name, se?.fii?.trading_name ?? null)
   const price = profile.market_price
 
   // Data-com quando a API manda (ex_date), rótulo pelas duas chaves e renda
@@ -236,6 +229,8 @@ function coreFromApi(
 
 function buildPayload(c: Core): DividendosPayload {
   const unit = c.isFii ? 'cota' : 'ação'
+  // BDR tem texto próprio de pagamento e de imposto: sem JCP e sem a isenção do dividendo daqui
+  const isBdr = !c.isFii && c.type === 'BDR'
   const kind = c.isFii ? 'rendimentos' : 'dividendos'
   /** "3 proventos" / "1 rendimento" */
   const evWord = (n: number) => (c.isFii ? (n === 1 ? 'rendimento' : 'rendimentos') : n === 1 ? 'provento' : 'proventos')
@@ -324,7 +319,9 @@ function buildPayload(c: Core): DividendosPayload {
       rows: c.historyRows,
       note: c.isFii
         ? 'Valores brutos por cota informados pelo fundo à B3. Rendimentos de FIIs são isentos de IR pra pessoa física dentro das regras do segmento.'
-        : 'Valores brutos por ação informados à B3. JCP tem 15% de IR retido na fonte; dividendos são isentos pra pessoa física.',
+        : isBdr
+          ? 'Valores por BDR informados à B3. BDR não paga JCP, e o dividendo dele não tem a isenção do dividendo de ação brasileira.'
+          : 'Valores brutos por ação informados à B3. JCP tem 17,5% de IR retido na fonte; dividendos são isentos pra pessoa física até R$ 50 mil por mês de cada empresa.',
     }
   } else if (c.historyRows) {
     historyNotice = `Ainda não temos os pagamentos de ${c.ticker} na nossa base de proventos. ${dyFmt ? `O dividend yield de ${dyFmt} acima vem dos dados consolidados de mercado.` : 'Assim que houver anúncio novo, ele aparece aqui.'}`
@@ -349,7 +346,9 @@ function buildPayload(c: Core): DividendosPayload {
     edu.push({
       title: `Como funciona o pagamento de dividendos de ${c.ticker}`,
       paragraphs: [
-        `A ${c.name} distribui parte do lucro aos acionistas de duas formas: dividendos, isentos de imposto de renda pra pessoa física, e JCP (juros sobre capital próprio), com 15% retidos na fonte. O conselho aprova os pagamentos depois da divulgação dos resultados, define a data-com (quem tem a ação nesse dia recebe) e o valor por ação.`,
+        isBdr
+          ? `${c.name} paga os dividendos no país de origem, e a instituição depositária repassa o valor a quem tem o BDR, convertido em reais e depois do imposto retido lá fora. Por isso o valor por BDR não bate com o anunciado no exterior, e o crédito chega dias depois. BDR não paga JCP, que é figura da lei brasileira.`
+          : `${c.name} distribui parte do lucro aos acionistas de duas formas: dividendos, isentos de imposto de renda pra pessoa física até R$ 50 mil por mês de cada empresa, e JCP (juros sobre capital próprio), com 17,5% retidos na fonte. O conselho aprova os pagamentos depois da divulgação dos resultados, define a data-com (quem tem a ação nesse dia recebe) e o valor por ação.`,
         c.count12 > 0
           ? `Nos últimos 12 meses, ${c.ticker} distribuiu ${c.count12} ${evWord(c.count12)}${freqLower ? `, uma cadência ${freqLower}` : ''}. Quem compra a ação depois da data-com não recebe o provento daquele anúncio, entra no ciclo seguinte.`
           : `${noRecent} Isso pode refletir um ciclo de lucro fraco, prioridade de caixa pra reduzir dívida ou mudança na política de distribuição, vale acompanhar os fatos relevantes da empresa.`,
@@ -370,22 +369,35 @@ function buildPayload(c: Core): DividendosPayload {
       ],
     })
   }
+  // Imposto conferido na fonte em 15/10/2026 (PR #68; o guia
+  // imposto-sobre-dividendos é a referência): Lei 15.270/2025 desde 01/01/2026
+  // (10% sobre o total acima de R$ 50 mil/mês da mesma empresa), JCP a 17,5%
+  // (LC 224/2025) e FII isento só com 100 cotistas ou mais. BDR segue o guia
+  // como-investir-em-bdr: sem JCP e sem a isenção do dividendo daqui.
   edu.push(
     c.isFii
       ? {
           title: 'Rendimentos isentos de imposto de renda',
           paragraphs: [
-            `Rendimentos mensais de FIIs são isentos de IR pra pessoa física desde que o fundo seja negociado em bolsa, tenha pelo menos 50 cotistas e o investidor detenha menos de 10% das cotas, condições que os grandes fundos listados na B3 cumprem com folga.`,
-            `A isenção vale pro rendimento mensal. Ganho de capital na venda das cotas paga 20% sobre o lucro, sem faixa de isenção. O PL 1.087/2025, que discute taxar dividendos de ações, mantém os FIIs isentos no texto atual.`,
+            `Rendimentos mensais de FIIs são isentos de IR pra pessoa física desde que o fundo seja negociado em bolsa, tenha pelo menos 100 cotistas e o investidor detenha menos de 10% das cotas, condições que os grandes fundos listados na B3 cumprem com folga.`,
+            `A isenção vale pro rendimento mensal. Ganho de capital na venda das cotas paga 20% sobre o lucro, sem faixa de isenção. A retenção sobre dividendos de ações acima de R$ 50 mil por mês, em vigor desde 2026, não alcança o rendimento de FII.`,
           ],
         }
-      : {
-          title: 'Dividendos, JCP e imposto de renda',
-          paragraphs: [
-            `Dividendos de ações são isentos de IR pra pessoa física pela legislação atual, sem limite de valor. JCP tem 15% retidos na fonte, mas no agregado costuma compensar, porque a empresa abate o pagamento como despesa e paga menos imposto corporativo.`,
-            `O PL 1.087/2025 propõe taxar dividendos acima de R$ 50 mil por mês em 10% na fonte. O texto foi aprovado na Câmara e segue em discussão no Senado, com vigência provável a partir de 2027 se aprovado. Pra maioria dos investidores, nada muda por enquanto.`,
-          ],
-        },
+      : isBdr
+        ? {
+            title: 'Dividendos de BDR e imposto de renda',
+            paragraphs: [
+              `O dividendo de BDR não tem a isenção do dividendo de ação brasileira. É rendimento vindo do exterior, com regra própria de tributação e de declaração no Brasil, depois do imposto já retido no país de origem.`,
+              `Como a regra muda por lei e pelo país da empresa, confirme a vigente antes de calcular. A venda do BDR com lucro também paga IR, sem a isenção de vendas de até R$ 20 mil por mês que vale pras ações.`,
+            ],
+          }
+        : {
+            title: 'Dividendos, JCP e imposto de renda',
+            paragraphs: [
+              `Desde 2026 (Lei 15.270/2025), dividendos de ações seguem isentos de IR pra pessoa física até R$ 50 mil por mês pagos pela mesma empresa. Acima disso, a empresa retém 10% sobre o total do mês. JCP nunca foi isento: são 17,5% retidos na fonte desde 2026, sem esse limite, mas no agregado costuma compensar, porque a empresa abate o pagamento como despesa e paga menos imposto corporativo.`,
+              `Pra maioria dos investidores, nada muda: R$ 50 mil por mês de uma só empresa fica muito acima do que a carteira típica recebe. Quem soma mais de R$ 600 mil de renda no ano entra também na tributação mínima, apurada na declaração anual.`,
+            ],
+          },
   )
 
   /* FAQ (respostas com os dados reais quando existem) */
@@ -426,11 +438,13 @@ function buildPayload(c: Core): DividendosPayload {
     c.isFii
       ? {
           q: `Os rendimentos de ${c.ticker} são isentos de IR?`,
-          a: `Sim. Rendimentos de FIIs são isentos de imposto de renda pra pessoa física desde que o fundo seja listado em bolsa, tenha 50 ou mais cotistas e o investidor detenha menos de 10% das cotas. A isenção vale pro rendimento mensal; ganho de capital na venda das cotas paga 20%, sem faixa de isenção.`,
+          a: `Sim. Rendimentos de FIIs são isentos de imposto de renda pra pessoa física desde que o fundo seja listado em bolsa, tenha 100 ou mais cotistas e o investidor detenha menos de 10% das cotas. A isenção vale pro rendimento mensal; ganho de capital na venda das cotas paga 20%, sem faixa de isenção.`,
         }
       : {
           q: `Os dividendos de ${c.ticker} pagam imposto de renda?`,
-          a: `Dividendos são isentos de IR pra pessoa física pela legislação atual. JCP tem 15% retidos na fonte. O PL 1.087/2025 propõe taxar dividendos acima de R$ 50 mil por mês em 10%, mas ainda está em discussão no Senado e não vigora.`,
+          a: isBdr
+            ? `Sim. O dividendo de BDR não tem a isenção do dividendo de ação brasileira: chega depois do imposto retido no país de origem e entra como rendimento do exterior, com regra própria de tributação e de declaração no Brasil. BDR não paga JCP.`
+            : `Até R$ 50 mil por mês pagos pela mesma empresa, não: o dividendo segue isento pra pessoa física. Acima disso, desde 2026 (Lei 15.270/2025), a empresa retém 10% sobre o total do mês. JCP tem 17,5% retidos na fonte, sem limite de isenção.`,
         },
     {
       q: `Onde acompanhar os próximos pagamentos de ${c.ticker}?`,

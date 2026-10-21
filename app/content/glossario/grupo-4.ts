@@ -546,7 +546,7 @@ export const GRUPO_4: GlossaryTerm[] = [
       'Proventos são todas as formas de remuneração que o acionista recebe de uma empresa: dividendos, juros sobre capital próprio, bonificações e direitos de subscrição. É o termo guarda-chuva da distribuição ao investidor.',
     body: [
       'Os <strong>proventos</strong> são o termo guarda-chuva para tudo o que uma empresa distribui aos seus acionistas. Sempre que você ouvir falar em remuneração ao investidor por deter uma ação ou uma cota, provavelmente está diante de algum tipo de provento.',
-      'Os principais são quatro. Os <a href="/glossario/dividendos">dividendos</a>, parcela do lucro distribuída em dinheiro e isenta de imposto de renda para a pessoa física. O <a href="/glossario/jscp">JCP</a> (juros sobre capital próprio), semelhante em dinheiro, mas sujeito a imposto na fonte. A <a href="/glossario/bonificacao">bonificação</a>, distribuição de ações novas. E o direito de subscrição, a preferência para comprar novas ações, geralmente com desconto, que pode ser exercido ou vendido.',
+      'Os principais são quatro. Os <a href="/glossario/dividendos">dividendos</a>, parcela do lucro distribuída em dinheiro e isenta de imposto de renda para a pessoa física até R$ 50 mil por mês da mesma empresa. O <a href="/glossario/jscp">JCP</a> (juros sobre capital próprio), semelhante em dinheiro, mas com 17,5% de imposto retido na fonte. A <a href="/glossario/bonificacao">bonificação</a>, distribuição de ações novas. E o direito de subscrição, a preferência para comprar novas ações, geralmente com desconto, que pode ser exercido ou vendido.',
       'Os proventos seguem um calendário próprio, com datas que vale conhecer: a data com (último dia para comprar e ter direito), a data ex (a partir da qual a ação passa a negociar sem o provento) e a data de pagamento (quando o valor efetivamente cai na conta). Fundos imobiliários, por regra, distribuem a maior parte do resultado com frequência costumeiramente mensal.',
       'Reinvestir proventos é uma das formas mais poderosas de acelerar o crescimento do patrimônio no longo prazo, pelo efeito dos juros compostos. Indicadores como <a href="/glossario/dividend-yield">dividend yield</a> e <a href="/glossario/payout">payout</a> ajudam a avaliar quanto uma empresa distribui e se essa distribuição é sustentável.',
     ],
@@ -562,7 +562,7 @@ export const GRUPO_4: GlossaryTerm[] = [
       },
       {
         q: 'Todo provento paga imposto de renda?',
-        a: 'Não. Os dividendos são isentos de imposto de renda para a pessoa física, enquanto os juros sobre capital próprio sofrem retenção na fonte. A bonificação em geral só gera imposto na venda futura das ações. As regras variam conforme o tipo de provento e a classe do ativo.',
+        a: 'Não. Os dividendos são isentos de imposto de renda para a pessoa física até R$ 50 mil por mês da mesma empresa (acima disso, desde 2026, há retenção de 10% sobre o total), enquanto os juros sobre capital próprio sofrem 17,5% de retenção na fonte. A bonificação em geral só gera imposto na venda futura das ações. As regras variam conforme o tipo de provento e a classe do ativo.',
       },
     ],
   },

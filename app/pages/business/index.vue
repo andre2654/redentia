@@ -13,12 +13,13 @@
  * da mesa) → branco (segurança) → creme com um card navy (o plano) → branco
  * (FAQ) → foto escura (o fecho) → navy (footer).
  *
- * ⚠️ O NOINDEX FICA, POR DECISÃO DO DONO. Ele nasceu como trava de compliance
- * enquanto a seção de segurança afirmava "banco separado" (o `pg-biz`, que não
- * existe). Em 11/10/2026 a página foi reescrita para o que está no ar e essa
- * afirmação saiu (ver o topo de RbSeguranca.vue), mas tirar o noindex continua
- * sendo decisão do dono, não da copy. A página é destino de call de venda, não
- * de busca orgânica.
+ * INDEXÁVEL DESDE 20/10/2026, POR DECISÃO DO DONO. O noindex nasceu como trava
+ * de compliance enquanto a seção de segurança afirmava "banco separado" (o
+ * `pg-biz`, que não existe). Essa afirmação saiu em 11/10, quando a página foi
+ * reescrita para o que está no ar (ver o topo de RbSeguranca.vue). Em 20/10 o
+ * texto foi relido antes de abrir: a conexão do cliente segue marcada "na
+ * implantação" e cada frase de segurança está conferida no código. Frase nova
+ * aqui precisa ser verdade hoje, porque agora o Google e as IAs leem a página.
  */
 definePageMeta({ layout: 'business' })
 
@@ -26,7 +27,6 @@ usePageSeo({
   title: 'Redentia For Business',
   description: 'Consolide a carteira do seu cliente com 1 clique. O cliente autoriza pelo Open Finance, e a Redentia lê o mercado e deixa a conversa pronta, no Claude ou no ChatGPT da mesa. A partir de R$ 500 por pessoa.',
   path: '/business',
-  robots: 'noindex, follow',
 })
 // Opt-out do sufixo global (mesmo caso do /login): o título já traz a marca e
 // "Redentia For Business · Redentia" repete a palavra duas vezes.

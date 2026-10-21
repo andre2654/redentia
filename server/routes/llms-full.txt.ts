@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const lines: string[] = [
     '# Redentia',
     '',
-    '> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings, teses de investimento, calculadoras financeiras gratuitas e um assessor com IA. Este arquivo lista as páginas públicas indexáveis com uma descrição por página. Versão curada e mais curta: /llms.txt.',
+    '> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings, teses de investimento, calculadoras financeiras gratuitas e um assistente com IA. Este arquivo lista as páginas públicas indexáveis com uma descrição por página. Versão curada e mais curta: /llms.txt.',
     '',
   ]
 

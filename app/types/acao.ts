@@ -80,6 +80,11 @@ export interface FundamentalsOverviewApi {
       return_on_assets: number | null
       net_margin: number | null
     } | null
+    /**
+     * Cadastro da empresa. No BDR, company_name é o nome inteiro da matriz
+     * ('Palantir Technologies Inc. Shs -A-'), que a coluna da B3 corta em 12.
+     */
+    identity?: { company_name: string | null } | null
     /** presente só em FIIs (asset_type: 'fii') */
     fii?: {
       dividend_yield_12m: number | null
@@ -438,6 +443,13 @@ export interface AcaoAiVM {
   read: AcaoAiReadVM | null
 }
 
+/** Bloco "Outras empresas do setor" no fim do /asset (AcaoPares.vue). */
+export interface AcaoParesVM {
+  /** nome do registry ('Serviços financeiros') e a página do setor */
+  setor: { nome: string; href: string }
+  itens: { ticker: string; nome: string }[]
+}
+
 export interface AcaoNewsVM {
   featured: NuNewsFeaturedItem
   rows: NuNewsRowItem[]
@@ -572,6 +584,8 @@ export interface AcaoPayload {
   news: AcaoNewsVM | null
   /** Prosa editorial longa por ativo. null quando não há editorial gerado. */
   editorial: AcaoEditorialVM | null
+  /** Outras empresas do setor (só ação, com 3 pares ou mais; ver utils/paresDoSetor.ts). */
+  pares: AcaoParesVM | null
   /**
    * Link pro simulador de /calculadora/acoes com o ativo preenchido
    * (utils/simulador.ts). null quando o simulador não cobre o tipo

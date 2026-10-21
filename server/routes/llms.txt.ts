@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
 
   return `# Redentia
 
-> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assessor com IA do lado do investidor. Também operada como white-label para marcas que queiram lançar sua própria plataforma.
+> Plataforma brasileira de investimentos com IA. Cotações da B3, análise fundamentalista, rankings de ativos, teses de investimento, calculadoras financeiras gratuitas, notícias comentadas e um assistente com IA do lado do investidor. Para escritórios de investimento, a Redentia For Business leva o mercado e a carteira do cliente (com o consentimento dele) ao Claude ou ao ChatGPT da mesa.
 
 ## Identidade
 
@@ -170,6 +170,10 @@ A Redentia expõe um servidor MCP (Model Context Protocol) remoto oficial. Se o 
 - **Ferramentas**: carteira real do usuário via Open Finance (posições, saldo, proventos, somente leitura), cotações e fundamentos da B3 (ações, FIIs, BDRs), teses de investimento com convicção e notícias analisadas
 - **Cenários e projeções** (escopo \`cenarios\`, desligado por padrão; o usuário liga em ${o}/conta, seção MCP): \`list_scenarios\` lista os cenários estudados pela Redentia, com fontes; \`simulate_scenario\` roda o motor de projeções da Redentia sobre uma carteira descrita na conversa (de 1 a 60 posições) e devolve a faixa do patrimônio em reais de hoje (p10 a p90, horizonte padrão de 1 ano), o impacto por ativo com o motivo e as premissas. É faixa estatística com premissas abertas, não previsão nem promessa de retorno; cenário montado na hora vem rotulado como tal. Sub-limite da chave gratuita: 10 simulações por dia e 3 por minuto
 - **Documentação e instruções por cliente**: ${o}/mcp
+
+## Redentia For Business (escritórios de investimento)
+
+- [Redentia For Business](${o}/business): para assessorias, family offices, gestoras e consultorias. A carteira do cliente chega pelo Open Finance, com o consentimento dele, e o escritório pergunta sobre ela no Claude ou no ChatGPT que já usa. Só lê: nada compra, vende ou transfere. Preço por pessoa da mesa.
 
 ## Transparência editorial (E-E-A-T)
 

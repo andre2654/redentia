@@ -172,13 +172,13 @@ export const GRUPO_2: GlossaryTerm[] = [
     term: 'Juros sobre Capital Próprio (JCP)',
     letter: 'J',
     short:
-      'JCP (Juros sobre Capital Próprio) é uma forma de a empresa remunerar acionistas parecida com dividendo, mas dedutível pra companhia e tributada em 15% de IR na fonte pro investidor.',
+      'JCP (Juros sobre Capital Próprio) é uma forma de a empresa remunerar acionistas parecida com dividendo, mas dedutível pra companhia e tributada em 17,5% de IR na fonte pro investidor.',
     body: [
       'Os <strong>Juros sobre Capital Próprio</strong>, ou <strong>JCP</strong>, são uma forma de a empresa remunerar os acionistas como se pagasse juros sobre o capital que eles investiram nela. Na prática, é um tipo de <a href="/glossario/proventos">provento</a>, primo dos <a href="/glossario/dividendos">dividendos</a>, mas com regras fiscais próprias.',
-      'A diferença central é tributária. O <strong>dividendo é pago do lucro já tributado e chega isento de IR</strong> pra pessoa física; o <strong>JCP é dedutível pra empresa</strong> (reduz a base de cálculo do imposto dela) mas sofre <strong>15% de IR retido na fonte</strong> pro investidor. Ou seja, o mesmo real distribuído tem eficiência fiscal diferente pros dois lados.',
-      'Pra decisão da companhia, o JCP costuma ser vantajoso porque o abatimento no imposto compensa. Pro investidor, o que chega é o valor líquido dos 15%, e por isso o JCP entra na conta do <a href="/glossario/dividend-yield">dividend yield</a> e do <a href="/glossario/payout">payout</a> ao lado dos dividendos, formando o total de proventos.',
-      '<strong>Exemplo ilustrativo:</strong> se a empresa decide destinar R$ 100 por lote de ações, pagando como dividendo você receberia R$ 100 isentos; pagando como JCP você receberia R$ 85 (R$ 100 menos 15% de IR na fonte), enquanto a empresa deduz os R$ 100 da base do imposto dela. Os números são redondos só pra mostrar o mecanismo.',
-      'Ressalva honesta: <strong>o IR do JCP já sai retido, mas ainda precisa ser declarado</strong> no ajuste anual, na ficha de rendimentos sujeitos à tributação exclusiva. E como a legislação de tributação de proventos pode mudar, comparar dividendo e JCP sempre depende das regras vigentes no momento.',
+      'A diferença central é tributária. O <strong>dividendo é pago do lucro já tributado e chega isento de IR</strong> pra pessoa física até R$ 50 mil por mês da mesma empresa (acima disso, desde 2026, a empresa retém 10% sobre o total); o <strong>JCP é dedutível pra empresa</strong> (reduz a base de cálculo do imposto dela) mas sofre <strong>17,5% de IR retido na fonte</strong> pro investidor, sem limite de isenção. Ou seja, o mesmo real distribuído tem eficiência fiscal diferente pros dois lados.',
+      'Pra decisão da companhia, o JCP costuma ser vantajoso porque o abatimento no imposto compensa. Pro investidor, o que chega é o valor líquido dos 17,5%, e por isso o JCP entra na conta do <a href="/glossario/dividend-yield">dividend yield</a> e do <a href="/glossario/payout">payout</a> ao lado dos dividendos, formando o total de proventos.',
+      '<strong>Exemplo ilustrativo:</strong> se a empresa decide destinar R$ 100 por lote de ações, pagando como dividendo você receberia R$ 100 isentos; pagando como JCP você receberia R$ 82,50 (R$ 100 menos 17,5% de IR na fonte), enquanto a empresa deduz os R$ 100 da base do imposto dela. Os números são redondos só pra mostrar o mecanismo.',
+      'Ressalva honesta: <strong>o IR do JCP já sai retido, mas ainda precisa ser declarado</strong> no ajuste anual, na ficha de rendimentos sujeitos à tributação exclusiva. E como a legislação de tributação de proventos muda (a retenção do JCP passou de 15% para 17,5% em 2026), comparar dividendo e JCP sempre depende das regras vigentes no momento.',
     ],
     related: ['dividendos', 'proventos', 'dividend-yield', 'payout', 'lucro-liquido'],
     backlink: {
@@ -188,11 +188,11 @@ export const GRUPO_2: GlossaryTerm[] = [
     faq: [
       {
         q: 'Qual a diferença entre JCP e dividendos?',
-        a: 'Dividendos são pagos do lucro já tributado e chegam isentos de IR pra pessoa física. JCP é dedutível pra empresa, mas sofre 15% de IR retido na fonte pro investidor. Na prática ambos são proventos, com tratamento fiscal diferente pros dois lados.',
+        a: 'Dividendos são pagos do lucro já tributado e chegam isentos de IR pra pessoa física até R$ 50 mil por mês da mesma empresa. JCP é dedutível pra empresa, mas sofre 17,5% de IR retido na fonte pro investidor. Na prática ambos são proventos, com tratamento fiscal diferente pros dois lados.',
       },
       {
         q: 'JCP paga imposto de renda?',
-        a: 'Sim. Sobre o JCP incidem 15% de IR retidos na fonte no momento do pagamento. Esse valor precisa ser informado na declaração anual, na ficha de rendimentos com tributação exclusiva na fonte.',
+        a: 'Sim. Sobre o JCP incidem 17,5% de IR retidos na fonte no momento do pagamento (eram 15% até 2025). Esse valor precisa ser informado na declaração anual, na ficha de rendimentos com tributação exclusiva na fonte.',
       },
       {
         q: 'JCP conta no dividend yield?',

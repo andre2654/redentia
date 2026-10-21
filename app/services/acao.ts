@@ -102,6 +102,15 @@ export function acaoFetchTheses(_base: string) {
   return $fetch<{ data: ThesisCardApi[] }>('/api/theses', json)
 }
 
+/**
+ * GET /api/setor/{ptSlug}/pares?ticker= — as maiores ações do setor, sem a
+ * própria empresa, já com o nome limpo. Rota do Nitro com o setor cacheado
+ * (server/api/setor/[slug]/pares.get.ts); como o acaoFetchTheses, não usa `base`.
+ */
+export function acaoFetchPares(ptSlug: string, ticker: string) {
+  return $fetch<{ data: { ticker: string; nome: string }[] }>(`/api/setor/${ptSlug}/pares`, { ...json, query: { ticker } })
+}
+
 /** GET /theses/{slug} — detail com companies[] (papel do ativo por empresa). */
 export function acaoFetchThesisDetail(base: string, slug: string) {
   return $fetch<{ data: ThesisDetailApi }>(`${base}/theses/${slug}`, json)
