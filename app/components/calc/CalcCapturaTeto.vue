@@ -20,7 +20,10 @@ const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' 
 const papel = computed(() => props.ticker.trim().toUpperCase())
 const alvoFmt = computed(() => (props.alvo != null && props.alvo > 0 ? brl.format(props.alvo) : null))
 
-const { pending, criar, criado, confirmacao, erro } = useAlertaPrecoTeto(papel, () => props.alvo)
+const { pending, criar, criado, confirmacao, erro, etapa, emailPendente, enviando, erroEntrega, pedirCodigo, confirmarCodigo, ligarResumo } = useAlertaPrecoTeto(papel, () => props.alvo)
+const emailAlerta = ref('')
+const codigo = ref('')
+const entrega = computed(() => criado.value?.entrega ?? null)
 // O alerta deste papel foi criado nesta visita: a confirmação fica. Se o alvo
 // da calculadora já é outro (slider mexido, ou a volta do login recalculou),
 // aparece também a troca para o valor de agora.
@@ -51,7 +54,25 @@ async function assinar() {
     <div v-if="alvoFmt" class="cct__bloco">
       <p class="cct__titulo">Avise quando {{ papel }} cruzar {{ alvoFmt }}</p>
       <p class="cct__texto">Um e-mail no fim do pregão em que a cotação passar o preço teto que você calculou. Grátis, com a sua conta.</p>
-      <p v-if="confirmado" class="cct__ok" role="status">{{ confirmacao }}</p>
+      <p v-if="confirmado" :class="entrega === 'email' ? 'cct__ok' : 'cct__nota'" role="status">{{ confirmacao }}</p>
+
+      <!-- Sem e-mail confirmado (entrou pelo celular): confirma um aqui. -->
+      <template v-if="confirmado && entrega === 'sem-email'">
+        <form v-if="etapa === 'email'" class="cct__linha" @submit.prevent="pedirCodigo(emailAlerta)">
+          <input v-model="emailAlerta" type="email" required autocomplete="email" inputmode="email" placeholder="seu@email.com" aria-label="Seu e-mail" class="cct__input">
+          <button type="submit" class="cct__btn cct__btn--linha" :disabled="enviando">{{ enviando ? 'Enviando…' : 'Enviar código' }}</button>
+        </form>
+        <form v-else class="cct__linha" @submit.prevent="confirmarCodigo(codigo)">
+          <p class="cct__texto cct__texto--cheio">Mandamos um código para {{ emailPendente }}. Ele vale 10 minutos.</p>
+          <input v-model="codigo" type="text" required inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Código de 6 dígitos" aria-label="Código" class="cct__input">
+          <button type="submit" class="cct__btn cct__btn--linha" :disabled="enviando">{{ enviando ? 'Confirmando…' : 'Confirmar' }}</button>
+        </form>
+      </template>
+      <button v-if="confirmado && entrega === 'desligado'" type="button" class="cct__btn" :disabled="enviando" @click="ligarResumo()">
+        {{ enviando ? 'Ligando…' : 'Ligar o resumo por e-mail' }}
+      </button>
+      <p v-if="erroEntrega" class="cct__erro" role="alert">{{ erroEntrega }}</p>
+
       <button v-if="!confirmado || alvoMudou" type="button" class="cct__btn" :disabled="pending" @click="criar()">
         {{ pending ? 'Criando o alerta…' : alvoMudou ? `Trocar o alerta para ${alvoFmt}` : 'Criar alerta' }}
       </button>
@@ -113,6 +134,8 @@ async function assinar() {
 .cct__legal { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; }
 .cct__legal a { color: inherit; text-decoration: underline; }
 .cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5; }
+.cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5; }
+.cct__texto--cheio { flex: 1 1 100%; margin: 0; }
 .cct__erro { margin: 10px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
 .cct__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 </style>

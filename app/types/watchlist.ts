@@ -42,8 +42,18 @@ export interface WatchlistListApi {
   items?: WatchlistItemApi[]
 }
 
+/**
+ * O aviso do alerta vai chegar? (POST /watchlist com alert_price; regras do
+ * resumo das 19h no Backend): 'email' sim; 'sem-email' falta e-mail
+ * verificado (quem entrou pelo celular); 'desligado' resumo desligado ou
+ * descadastro; 'indisponivel' conta que não recebe o resumo.
+ */
+export type AlertaEntrega = 'email' | 'sem-email' | 'desligado' | 'indisponivel'
+
 export interface WatchlistStoreApi {
   item?: WatchlistItemApi
+  /** só quando o POST gravou um alerta */
+  alert_delivery?: AlertaEntrega
 }
 
 /** Corpo de erro do POST (422 de validação ou limite do plano). */
@@ -70,5 +80,5 @@ export interface WatchlistEntry {
 
 /** Resultado de seguir/deixar de seguir — quem chama decide o que mostrar. */
 export type SeguirResult =
-  | { ok: true; following: boolean }
+  | { ok: true; following: boolean; entrega?: AlertaEntrega }
   | { ok: false; status: number | null; message: string; auth: boolean }

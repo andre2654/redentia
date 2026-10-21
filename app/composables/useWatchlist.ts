@@ -19,7 +19,7 @@
  *  - Mensagem de erro: limite do plano e 422 saem COMO A API MANDOU; o resto
  *    vira frase em português com a saída (DESIGN-SYSTEM §7.3).
  */
-import type { SeguirResult, WatchlistEntry, WatchlistErrorApi, WatchlistItemApi } from '~/types/watchlist'
+import type { AlertaEntrega, SeguirResult, WatchlistEntry, WatchlistErrorApi, WatchlistItemApi } from '~/types/watchlist'
 import type { TickerProfileApi } from '~/types/acao'
 
 const CLIENT_BASE = '/api/backend'
@@ -274,7 +274,7 @@ export function useWatchlist() {
       if (numOrNull(res?.item?.alert_price) == null) {
         return { ok: false, status: null, message: `Você passou a seguir ${t}, mas o alerta ainda não está disponível. Tente de novo mais tarde.`, auth: false }
       }
-      return { ok: true, following: true }
+      return { ok: true, following: true, entrega: res?.alert_delivery }
     } catch (e) {
       const now = listOf(tk)
       if (!had && now) setList(tk, now.filter((i) => i.ticker !== t))
@@ -434,8 +434,9 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
 
   const t = computed(() => toValue(ticker).trim().toUpperCase())
   const pending = computed(() => wl.isPending(t.value))
-  /** alvo do alerta criado nesta visita (o botão vira confirmação) */
-  const criado = ref<{ ticker: string; alvo: number } | null>(null)
+  const { authFetch } = useApi()
+  /** alerta criado nesta visita (o botão vira confirmação) e se o aviso vai chegar */
+  const criado = ref<{ ticker: string; alvo: number; entrega: AlertaEntrega } | null>(null)
   const erro = ref<string | null>(null)
 
   function toLogin(valor: number, papel: string) {
@@ -452,9 +453,72 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
     }
     if (wl.isPending(papel)) return
     const res = await wl.alert(papel, valor)
-    if (res.ok) criado.value = { ticker: papel, alvo: valor }
+    if (res.ok) criado.value = { ticker: papel, alvo: valor, entrega: res.entrega ?? 'email' }
     else if (res.auth) await toLogin(valor, papel)
     else erro.value = res.message
+  }
+
+  // Entrega. O login do site é por código no WhatsApp (o principal), no e-mail
+  // ou pelo Google, e o aviso sai no e-mail das 19h, que só vai para e-mail
+  // verificado. Quem entrou pelo celular confirma um e-mail ali mesmo, pelo
+  // "contact gate" do Backend (me/email/*-pin, que marca o e-mail como
+  // verificado); quem desligou o resumo liga de novo. Sem isto o alerta
+  // existia e o aviso nunca chegava.
+  const etapa = ref<'email' | 'codigo'>('email')
+  const emailPendente = ref('')
+  const emailConfirmado = ref<string | null>(null)
+  const enviando = ref(false)
+  const erroEntrega = ref<string | null>(null)
+
+  function mensagem(e: unknown, fallback: string): string {
+    const m = (e as { data?: { message?: unknown } } | null)?.data?.message
+    return typeof m === 'string' && m.trim() ? m.trim() : fallback
+  }
+  async function entregaPor(acao: () => Promise<unknown>, fallback: string): Promise<boolean> {
+    erroEntrega.value = null
+    enviando.value = true
+    try {
+      await acao()
+      return true
+    }
+    catch (e) {
+      erroEntrega.value = mensagem(e, fallback)
+      return false
+    }
+    finally {
+      enviando.value = false
+    }
+  }
+
+  async function pedirCodigo(email: string) {
+    const e = email.trim().toLowerCase()
+    const ok = await entregaPor(
+      () => authFetch('/me/email/request-pin', { method: 'POST', body: { email: e } }, { redirectOnAuthError: false }),
+      'Não conseguimos enviar o código agora. Tente de novo em instantes.',
+    )
+    if (ok) {
+      emailPendente.value = e
+      etapa.value = 'codigo'
+    }
+  }
+
+  async function confirmarCodigo(pin: string) {
+    const ok = await entregaPor(
+      () => authFetch('/me/email/verify-pin', { method: 'POST', body: { email: emailPendente.value, pin: pin.trim() } }, { redirectOnAuthError: false }),
+      'Não conseguimos confirmar o código. Tente de novo.',
+    )
+    if (ok && criado.value) {
+      emailConfirmado.value = emailPendente.value
+      criado.value = { ...criado.value, entrega: 'email' }
+    }
+  }
+
+  async function ligarResumo() {
+    const ok = await entregaPor(
+      () => authFetch('/notification-preferences', { method: 'PUT', body: { topic: 'watchlist', email: true, whatsapp: false } }, { redirectOnAuthError: false }),
+      'Não conseguimos ligar o resumo agora. Tente de novo em instantes.',
+    )
+    if (ok && criado.value) criado.value = { ...criado.value, entrega: 'email' }
   }
 
   // Intenção do ?alerta= guardada até existir sessão (mesma razão do useSeguirAtivo).
@@ -481,10 +545,24 @@ export function useAlertaPrecoTeto(ticker: MaybeRefOrGetter<string>, alvo: Maybe
     if (v) void comSessao()
   })
 
-  /** "Alerta criado: você recebe um e-mail no fim do pregão em que PETR4 cruzar R$ 31,89." */
-  const confirmacao = computed(() => criado.value
-    ? `Alerta criado. Você recebe um e-mail no fim do pregão em que ${criado.value.ticker} cruzar ${brl.format(criado.value.alvo)}.`
-    : null)
+  /** O texto do alerta criado, pelo que se sabe da entrega. */
+  const confirmacao = computed(() => {
+    const c = criado.value
+    if (!c) return null
+    const alvoFmt = brl.format(c.alvo)
+    switch (c.entrega) {
+      case 'sem-email':
+        return `Alerta criado para ${c.ticker} em ${alvoFmt}. O aviso sai por e-mail, e a sua conta ainda não tem um e-mail confirmado. Confirme um aqui:`
+      case 'desligado':
+        return `Alerta criado para ${c.ticker} em ${alvoFmt}, mas o resumo dos ativos seguidos por e-mail está desligado na sua conta.`
+      case 'indisponivel':
+        return `Alerta criado para ${c.ticker} em ${alvoFmt}. O aviso por e-mail ainda não está disponível para a sua conta.`
+      default:
+        return emailConfirmado.value
+          ? `Pronto. O aviso chega em ${emailConfirmado.value} no fim do pregão em que ${c.ticker} cruzar ${alvoFmt}.`
+          : `Alerta criado. Você recebe um e-mail no fim do pregão em que ${c.ticker} cruzar ${alvoFmt}.`
+    }
+  })
 
-  return { pending, criar, criado, confirmacao, erro }
+  return { pending, criar, criado, confirmacao, erro, etapa, emailPendente, enviando, erroEntrega, pedirCodigo, confirmarCodigo, ligarResumo }
 }
