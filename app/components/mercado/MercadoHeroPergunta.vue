@@ -17,6 +17,8 @@
 // código, vai para /busca?chat=1&q=, que envia a pergunta ao chat sozinho.
 // Antes ia para /busca?q= sem o chat=1 e a pergunta se perdia na busca.
 // Movimento reduzido: sem digitação nem giro, a primeira pergunta já respondida.
+// Em 23/10, a pedido do dono: ações conhecidas flutuando em volta, com a logo
+// redonda e a variação do dia (MercadoHeroAtivos).
 import { marketFetchMovers } from '~/services/market'
 
 interface Par { q: string; a: string }
@@ -114,6 +116,9 @@ function enviar() {
       </p>
       <p v-if="usando" class="mhp__dica">Escreva a sua pergunta e aperte Enter. Para ver a resposta, entre ou crie a sua conta grátis.</p>
     </div>
+
+    <!-- as ações flutuando em volta: nas laterais no computador, embaixo no celular -->
+    <MercadoHeroAtivos />
   </section>
 </template>
 
