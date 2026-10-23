@@ -9,6 +9,8 @@
 // - mobile (≤760): nav e CTAs saem; ficam busca + avatar (logado) + hambúrguer
 //   que abre um menu full-screen (itens grandes com chevron, ativo em azul,
 //   CTAs de rodapé) — referência visual enviada pelo dono.
+// - tablet (761–1023, 23/10/2026): a nav já vai para o hambúrguer, porque não
+//   cabe inteira; Entrar/Criar conta (ou a pílula da IA e o avatar) ficam.
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
 
@@ -599,13 +601,19 @@ onBeforeUnmount(() => {
   align-items: center; justify-content: center; cursor: pointer; border-radius: 50%;
 }
 
-/* ——— mobile: só busca + avatar + hambúrguer (referência do dono) ——— */
-@media (max-width: 760px) {
+/* ——— tablet: a nav vai para o hambúrguer, os botões ficam ———
+   A nav inteira só cabe a partir de ~930px deslogado e ~1010px logado (Carteira
+   e a pílula da IA). Abaixo disso ela rolava escondida (overflow-x com a barra
+   invisível) e cortava "Informações" no meio; em 820px faltavam 105px. */
+@media (max-width: 1023px) {
   .nuh__nav { display: none; }
-  .nuh__desktop-only { display: none; }
   .nuh__burger { display: flex; }
   /* a nav (display:none) era o espaçador flex — empurra os ícones pra direita */
   .nuh__right { margin-left: auto; }
+}
+/* ——— mobile: só busca + avatar + hambúrguer (referência do dono) ——— */
+@media (max-width: 760px) {
+  .nuh__desktop-only { display: none; }
 }
 
 /* ——— menu full-screen ——— */
