@@ -51,8 +51,9 @@
   --nu-r-input: 14px;
   --nu-r-chip: 12px;
 
-  /* tipografia */
-  --nu-font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* tipografia. A 'Jakarta Reserva' (base.css) é a Arial com as medidas da
+     Jakarta: ocupa o lugar dela até a fonte chegar, e a troca não mexe a página */
+  --nu-font: 'Plus Jakarta Sans', 'Jakarta Reserva', system-ui, sans-serif;
 
   /* Escala única (out/2026). Antes eram 32 tamanhos em px espalhados pelos
      componentes (13,5, 14,5, 15,5...), e cada página tinha 17 a 29 deles.
