@@ -13,6 +13,8 @@ useHead({
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'Redentia',
+      legalName: EMPRESA.razaoSocial,
+      taxID: EMPRESA.cnpj,
       url: site,
       logo: `${site}/logo-azul.svg`,
       description: 'Plataforma brasileira de análise de investimentos com IA: ações, FIIs, notícias, teses e carteira.',

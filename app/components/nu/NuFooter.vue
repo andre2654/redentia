@@ -96,7 +96,7 @@ const COLUMNS = [
       <template #base>
         <div class="nuf__bottom">
         <img src="/logo-branca.svg" alt="Redentia" class="nuf__bottom-logo">
-        <span class="nuf__copy">© 2026 Redentia Tecnologia S.A.</span>
+        <span class="nuf__copy">© 2026 Redentia · {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
         <!-- a entrada do B2B no app (direção do dono 2026-08-01): botão discreto
              no rodapé, não item de coluna — é outro produto, não outra página -->
         <NuxtLink to="/business" class="nuf__biz">For Business</NuxtLink>

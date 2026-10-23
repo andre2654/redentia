@@ -118,7 +118,7 @@ const COLUMNS = [
         <img src="/logo-branca.svg" alt="" class="rbf__bottom-logo">
       </NuxtLink>
       <span class="rbf__bottom-name">Redentia <span class="rbf__bottom-suffix">For Business</span></span>
-      <span class="rbf__copy">© 2026 Redentia Tecnologia S.A.</span>
+      <span class="rbf__copy">© 2026 {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
     </div>
   </footer>
 </template>

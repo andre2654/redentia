@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
 
 ## Identidade
 
-- **Nome legal**: Redentia Tecnologia Ltda.
+- **Nome legal**: ${EMPRESA.razaoSocial} (CNPJ ${EMPRESA.cnpj}), que opera a Redentia
 - **País**: Brasil (pt-BR)
 - **Categoria**: Fintech, plataforma de investimentos com IA
 - **Fundação**: 2024

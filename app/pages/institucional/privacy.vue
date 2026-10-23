@@ -19,6 +19,12 @@ const doc: LegalDocData = {
       { text: 'Redentia', bold: true },
       { text: ' por meio da Plataforma e seu aplicativo.' },
     ] },
+    // a empresa que opera a Redentia (shared/utils/empresa.ts), desde 23/10/2026
+    { kind: 'p', text: [
+      { text: 'A ' },
+      { text: 'Redentia', bold: true },
+      { text: ` é operada pela ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}, controladora dos Dados Pessoais tratados na Plataforma e no aplicativo.` },
+    ] },
     { kind: 'p', text: 'Esta política descreve as formas como coletamos, armazenamos e protegemos os Dados Pessoais dos usuários da Plataforma e do aplicativo.' },
     { kind: 'p', text: [
       { text: 'O usuário dos nossos serviços pode a qualquer momento deixar de receber comunicações da nossa Plataforma. Para tanto, basta clicar nos links “remover” ou “descadastramento”, contidos ao final de cada e-mail enviado aos Usuários ou enviar um e-mail para o nosso suporte ' },
@@ -223,7 +229,7 @@ const doc: LegalDocData = {
             { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
             { text: '.' },
           ] },
-          { text: 'Todas as empresas do Grupo Redentia são controladoras e responsáveis pelos Dados Pessoais dos Usuários.' },
+          { text: `A ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}, é a controladora e responsável pelos Dados Pessoais dos Usuários.` },
         ] },
       ],
     },
