@@ -17,6 +17,12 @@ const doc: LegalDocData = {
       { text: 'Redentia', bold: true },
       { text: ' por meio da Plataforma.' },
     ] },
+    // a empresa que opera a Redentia (shared/utils/empresa.ts), desde 23/10/2026
+    { kind: 'p', text: [
+      { text: 'A ' },
+      { text: 'Redentia', bold: true },
+      { text: ` é operada pela ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}.` },
+    ] },
     { kind: 'p', text: [
       { text: 'POR FAVOR, LEIA COM ATENÇÃO ESTES TERMOS DE USO.', bold: true },
       { text: ' Eles abrangem informações relevantes sobre o serviço prestados pela ' },
@@ -54,7 +60,7 @@ const doc: LegalDocData = {
           { text: [{ text: '"Plataforma"', bold: true }, { text: ' – significa o Site, bem como os seus diversos ambientes que o Usuário terá acesso após o Cadastro ou contratação de um Plano.' }] },
           { text: [{ text: '"Política de Privacidade"', bold: true }, { text: ' – significa a política de privacidade da ' }, { text: 'Redentia', bold: true }, { text: ' prevista em seu Site.' }] },
           { text: [{ text: '"Site"', bold: true }, { text: ' – significa o endereço da rede mundial de computadores denominado ' }, { text: 'redentia.com.br', href: 'https://redentia.com.br', external: true }, { text: '.' }] },
-          { text: [{ text: '"Redentia"', bold: true }, { text: ' – significa a empresa responsável pela prestação dos serviços.' }] },
+          { text: [{ text: '"Redentia"', bold: true }, { text: ` – significa a ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}, responsável pela prestação dos serviços.` }] },
           { text: [{ text: '"Termos de Uso"', bold: true }, { text: ' – significa estes Termos e Condições de Uso e Serviços.' }] },
           { text: [{ text: '"Usuário"', bold: true }, { text: ' – significa toda pessoa física ou jurídica que acessa a Plataforma.' }] },
         ] },
