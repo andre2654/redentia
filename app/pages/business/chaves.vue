@@ -13,23 +13,28 @@
  * LANDING de venda (fio de 1px, raio de documento, tipografia pequena) pra
  * dentro de um PAINEL, onde essa contenção não protege nada.
  *
- * Agora são QUATRO BANDAS full-bleed, cada uma pintando o próprio fundo e
- * carregando o próprio respiro vertical — a troca de cor É o separador, que é
- * como a /carteira e a /asset se organizam:
+ * PAINEL NOVO (24/10/2026, pedido do dono: "precisa ser modernizada e
+ * entregar mais valor", e depois "mais layout Redentia, com seções mais
+ * definidas"). Bandas inteiras de fundo alternado, com chamada azul e título
+ * grande, como a /carteira; dentro, painéis e listas no idioma das telas do
+ * MCP. As seções respondem, em ordem, o que o dono vem perguntar:
  *
- *   A. creme  RbKeysHero    o número do dia + consumo por chave
- *   B. navy   RbKeysUsage   30 dias de chamadas
- *   C. creme  RbKeysTable   as chaves, o segredo e o gerador
- *   D. branco RbKeysScope   escopos, limites e o próximo passo
+ *   RbPainelTopo      a equipe está usando? (perguntas da semana)
+ *   RbPainelComece    o que eu digo no assistente? (frases no lugar das skills)
+ *   RbPainelEquipe    quem usa, quem parou, e chamar mais alguém
+ *   RbPainelUso       como foi o mês
+ *   RbPainelClientes  os clientes conectados e o consentimento ┐ banda
+ *   RbPainelPlano     o que está incluído e como conectar      ┘ "Conta"
  *
- * A PÁGINA NÃO TEM CSS DE LAYOUT. Ela guarda o estado e as regras (o mapa de
- * códigos de erro, o desarme de 5s do revogar, os timers), e as bandas são
- * burras. Foi assim que a lógica já validada ponta a ponta atravessou a
- * refatoração sem ser reescrita.
+ * A PÁGINA CONTINUA SEM CSS DE CONTEÚDO. Ela guarda o estado e as regras (o
+ * mapa de códigos de erro, o desarme de 5s do revogar, os timers), e as
+ * seções são burras: a lógica validada ponta a ponta atravessou sem mudar.
  *
  * Autenticada: mesma guarda do /conta (nu:token → /login?redirect=). A rota é
  * private/no-store no nuxt.config.
  */
+import { frasesProntas } from '~/content/business/frases'
+
 definePageMeta({
   layout: 'business',
   middleware: [
@@ -219,10 +224,26 @@ onBeforeUnmount(() => {
 })
 
 const conta = computed(() => status.value)
+
+/**
+ * O resumo dos clientes e a frase com o nome de um cliente de verdade. Falha
+ * aqui não derruba o painel: a seção mostra só o caminho para a tela de
+ * clientes, e as frases saem com o lugar do nome.
+ */
+const clientesApi = useBusinessClients()
+const clientesLigado = computed(() => (conta.value?.clients_mode ?? 'off') !== 'off')
+watch(clientesLigado, (ligado) => {
+  if (ligado) clientesApi.hydrate().catch(() => {})
+}, { immediate: true })
+const clientes = computed(() => (clientesLigado.value ? clientesApi.lista.value : null))
+const frases = computed(() => {
+  const primeiro = clientes.value?.clients.find(c => c.status === 'active')?.name ?? null
+  return frasesProntas(clientesLigado.value, primeiro)
+})
 const janela = computed(() => conta.value?.usage.window_days ?? 30)
 const liberada = computed(() => Boolean(conta.value?.has_account && conta.value.enabled))
 
-// ?conectar=1 (vindo do /business/skills; sobrevive ao redirect de login
+// ?conectar=1 (vindo de um link de "conectar"; sobrevive ao redirect de login
 // porque a guarda usa o fullPath): abre o modal quando a conta hidratar
 // liberada, e limpa a query pra um reload não reabrir sozinho.
 const route = useRoute()
@@ -242,13 +263,12 @@ const resumoGrafico = computed(() => {
   if (!dias.length) return ''
   const total = conta.value?.usage.calls ?? 0
   if (total === 0) {
-    return `Nenhuma chamada nos últimos ${janela.value} dias. O número aparece aqui no minuto seguinte ao primeiro uso.`
+    return `Nenhuma pergunta nos últimos ${janela.value} dias. O número aparece aqui no minuto seguinte ao primeiro uso.`
   }
   const pico = dias.reduce((a, b) => (b.calls > a.calls ? b : a))
   const ativos = dias.filter(d => d.calls > 0).length
   const dia = new Date(`${pico.day}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-  return `Uso por dia nos últimos ${janela.value} dias: ${num(total)} chamadas em ${ativos} ${ativos === 1 ? 'dia' : 'dias'}. `
-    + `Maior dia: ${dia}, com ${num(pico.calls)}.`
+  return `Alguém da casa perguntou em ${ativos} dos ${janela.value} dias. O maior dia foi ${dia}, com ${num(pico.calls)}.`
 })
 
 /** Banda B não renderiza sem uso: gráfico vazio não é informação, é moldura. */
@@ -287,10 +307,10 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
       :erro="erro"
     />
 
-    <template v-else>
-      <RbKeysHero :conta="conta" :janela="janela" @gerar="tabela?.focarGerador()" @conectar="conexaoAberta = true" />
-      <RbKeysUsage v-if="temGrafico" :conta="conta" :janela="janela" :resumo="resumoGrafico" />
-      <RbKeysTable
+    <div v-else class="rbp">
+      <RbPainelTopo :conta="conta" :janela="janela" :clientes="clientes" @gerar="tabela?.focarGerador()" @conectar="conexaoAberta = true" />
+      <RbPainelComece :frases="frases" />
+      <RbPainelEquipe
         ref="tabela"
         v-model:rotulo="rotulo"
         v-model:novo-rotulo="novoRotulo"
@@ -317,9 +337,15 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         @cancelar-convite="cancelarConvite"
         @copiar-convite="copiarConvite"
       />
-      <RbKeysScope :conta="conta" @conectar="conexaoAberta = true" />
-      <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" @close="fecharConexao" @gerar="gerarDoModal" />
-    </template>
+      <RbPainelUso v-if="temGrafico" :conta="conta" :janela="janela" :resumo="resumoGrafico" />
+      <RbPainelSecao tom="branco" eyebrow="Conta" titulo="Clientes e plano.">
+        <div class="rbp__duas">
+          <RbPainelClientes :ligado="clientesLigado" :clientes="clientes" />
+          <RbPainelPlano :conta="conta" @conectar="conexaoAberta = true" />
+        </div>
+      </RbPainelSecao>
+      <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" :frases="frases" @close="fecharConexao" @gerar="gerarDoModal" />
+    </div>
   </template>
 
   <section v-else class="rbk-falha">
@@ -333,8 +359,12 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
 </template>
 
 <style scoped>
-/* Só o carregando e a falha têm CSS aqui: são cascas de banda, não conteúdo.
-   Todo o resto do layout vive nos cinco componentes de banda. */
+/* O painel são bandas inteiras (RbPainelSecao); só a grade de duas colunas
+   da banda "Conta" mora aqui. */
+.rbp__duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+@media (max-width: 900px) { .rbp__duas { grid-template-columns: 1fr; } }
+
+/* O carregando e a falha são cascas, não conteúdo. */
 .rbk-load,
 .rbk-falha {
   background: var(--nu-cream);

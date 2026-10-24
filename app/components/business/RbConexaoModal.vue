@@ -10,7 +10,11 @@
  *   2. Preparar (Claude: abrir os conectores · ChatGPT: ligar o dev mode)
  *   3. Criar o conector (nome + URL copiável)
  *   4. Autorizar (a CHAVE REAL copiável; sem chave, aviso + "Gerar a chave")
- *   5. Conferir + instalar as skills (pack zip-de-zips) — Concluir
+ *   5. Testar com uma frase pronta — Concluir
+ *
+ * O passo 5 era instalar o pack de skills; saiu em 24/10/2026: o servidor MCP
+ * já ensina o assistente na conexão e devolve telas prontas. A frase do
+ * passo 5 é a primeira de `frases` (app/content/business/frases.ts).
  *
  * Cursor/Claude Code/Claude Desktop saíram do modal por decisão do dono;
  * as instruções deles continuam vivas na /mcp (B2C).
@@ -18,13 +22,17 @@
  * Shell forkado do padrão AcaoEtfXrayModal (Teleport + useModalA11y +
  * Escape + scroll-lock). plainKey null = aberto por CTA sem chave nova.
  */
+import { frasesProntas, type FrasePronta } from '~/content/business/frases'
+
 const props = withDefaults(defineProps<{
   open: boolean
   plainKey: string | null
   /** 'business' = painel de chaves (aviso emite 'gerar'); 'mcp' = página
    *  B2C, onde a chave pessoal vive em /conta e o aviso vira link pra lá. */
   origem?: 'business' | 'mcp'
-}>(), { origem: 'business' })
+  /** As frases para começar; a primeira é a do teste no passo 5. */
+  frases?: FrasePronta[]
+}>(), { origem: 'business', frases: () => frasesProntas(false) })
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -47,7 +55,7 @@ const TITULOS: Record<string, string> = {
   'prep-chatgpt': 'Ligue o modo desenvolvedor.',
   url: 'Crie o conector.',
   chave: 'Autorize com a chave.',
-  fim: 'Pronto. Agora as skills.',
+  fim: 'Pronto. Agora é só perguntar.',
 }
 const telaId = computed(() => {
   if (idx.value === 0) return 'escolha'
@@ -217,20 +225,19 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <!-- ——— 5 · conferir + skills ——— -->
+        <!-- ——— 5 · testar com uma frase pronta ——— -->
         <div v-else class="rbcx__body">
           <p class="rbcx__dek">
-            Confira num chat novo: <strong>"Como está o mercado hoje?"</strong> — se a resposta vier
-            com dado da Redentia, está de pé. E as skills ensinam o assistente a usar o MCP direito.
+            Abra uma conversa nova e cole a frase abaixo. O {{ assistente ? NOME[assistente] : 'assistente' }} já sabe
+            quando chamar a Redentia, e a resposta vem pronta. Não precisa instalar nada.
           </p>
-          <a href="/downloads/skills/redentia-skills-pack.zip" download class="rbcx__acao">
-            Baixar o pack de skills
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M6.5 10.5L12 16l5.5-5.5M4.5 20h15" /></svg>
-          </a>
+          <div class="rbcx__code-wrap">
+            <button type="button" class="rbcx__copy" @click="copiar('frase', frases[0]!.texto)">{{ copiado === 'frase' ? 'Copiada' : 'Copiar' }}</button>
+            <pre class="rbcx__code rbcx__code--wrap"><code>{{ frases[0]!.texto }}</code></pre>
+          </div>
           <p class="rbcx__nota">
-            Dentro vêm quatro zips, um por skill — no claude.ai, envie um zip por vez em
-            Configurações → Skills. O LEIA-ME do pack repete o passo a passo.
-            <NuxtLink v-if="origem === 'business'" to="/business/skills" class="rbcx__link" @click="emit('close')">Ver as skills em detalhe</NuxtLink>
+            {{ frases[0]!.resultado }}
+            <template v-if="origem === 'business'">Mais frases ficam no painel, em “Comece por aqui”.</template>
           </p>
         </div>
 

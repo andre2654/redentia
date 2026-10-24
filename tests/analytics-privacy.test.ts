@@ -50,7 +50,7 @@ test('link com token e chave na tela vão mascarados para o Clarity', () => {
   for (const f of [
     'components/business/RbClientLink.vue',
     'pages/business/convite/[token].vue',
-    'components/business/RbKeysTable.vue',
+    'components/business/RbPainelEquipe.vue',
     'components/conta/ContaMcp.vue',
   ]) {
     const src = readFileSync(new URL(`../app/${f}`, import.meta.url), 'utf8')
