@@ -34,7 +34,9 @@ onBeforeUnmount(() => clearTimeout(timer))
         <span class="rbpc__n">{{ String(i + 1).padStart(2, '0') }}</span>
         <p class="rbpc__frase">“{{ f.texto }}”</p>
         <p class="rbpc__res">{{ f.resultado }}</p>
-        <button type="button" class="rbpc__copiar" :aria-label="`Copiar a frase ${i + 1}`" @click="copiar(i, f.texto)">
+        <button type="button" class="rbpc__copiar" :class="{ 'rbpc__copiar--ok': copiada === i }" :aria-label="copiada === i ? `Frase ${i + 1} copiada` : `Copiar a frase ${i + 1}`" @click="copiar(i, f.texto)">
+          <svg v-if="copiada === i" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5 6.5 11.5 12.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg v-else viewBox="0 0 16 16" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M3 10.5V4a1.5 1.5 0 0 1 1.5-1.5H11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
           {{ copiada === i ? 'Copiada' : 'Copiar a frase' }}
         </button>
       </article>
@@ -55,4 +57,14 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 .rbpc__copiar:hover { background: var(--nu-gray-3); }
 .rbpc__copiar:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
+
+/* microestados: o cartão sobe no mouse; o botão vira verde com ✓ ao copiar */
+.rbpc__cartao { transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s ease, background .2s; }
+.rbpc__cartao:hover { transform: translateY(-3px); box-shadow: var(--nu-shadow-card); }
+.rbpc__cartao:focus-within { box-shadow: 0 0 0 2px var(--nu-blue-30); }
+.rbpc__copiar { display: inline-flex; align-items: center; gap: 8px; transition: background .2s, transform .12s; }
+.rbpc__copiar svg { width: 15px; height: 15px; }
+.rbpc__copiar:active { transform: scale(.97); }
+.rbpc__copiar--ok, .rbpc__copiar--ok:hover { background: var(--nu-green); }
+@media (prefers-reduced-motion: reduce) { .rbpc__cartao:hover { transform: none; } }
 </style>

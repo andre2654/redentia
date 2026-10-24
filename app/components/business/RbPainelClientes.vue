@@ -33,7 +33,11 @@ const vencendo = computed(() => conectados.value.filter((c) => {
         ? 'Cada cliente conectou a própria carteira por um link e revoga quando quiser.'
         : 'Com o recurso ligado, o cliente conecta a própria carteira por um link, com consentimento, e o assistente da casa passa a ler a carteira dele.' }}
     </p>
-    <template v-if="ligado">
+    <template v-if="ligado && !lista.length">
+      <p class="rbpk__vazio">Nenhum cliente ainda. O primeiro convite leva um minuto: o cliente recebe um link, lê o termo e conecta a carteira.</p>
+      <NuxtLink to="/business/clientes" class="rbpk__btn">Convidar o primeiro cliente</NuxtLink>
+    </template>
+    <template v-else-if="ligado">
       <div class="rbpk__numeros">
         <div><b>{{ conectados.length }}</b><span>{{ conectados.length === 1 ? 'conectado' : 'conectados' }}</span></div>
         <div><b>{{ pendentes }}</b><span>{{ pendentes === 1 ? 'convite esperando' : 'convites esperando' }}</span></div>
@@ -61,4 +65,10 @@ const vencendo = computed(() => conectados.value.filter((c) => {
 .rbpk__numeros + .rbpk__btn, .rbpk__dek + .rbpk__btn { margin-top: 24px; }
 .rbpk__btn:hover { background: var(--nu-blue-hover); }
 .rbpk__btn:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 3px; }
+
+.rbpk__vazio { margin: 22px 0 0; padding: 18px; border-radius: var(--nu-r-tile); background: var(--nu-white); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.rbpk__btn { gap: 8px; transition: background .2s, transform .12s; }
+.rbpk__btn::after { content: '→'; transition: transform .2s ease; }
+.rbpk__btn:hover::after { transform: translateX(3px); }
+.rbpk__btn:active { transform: scale(.98); }
 </style>

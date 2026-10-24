@@ -56,7 +56,8 @@ const linhas = computed(() => [
   margin-top: 14px; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
   color: var(--nu-blue); font: inherit; font-size: var(--nu-fs-md); font-weight: 800;
 }
-.rbpp__link::after { content: ' →'; }
+.rbpp__link::after { content: '→'; display: inline-block; margin-left: 6px; transition: transform .2s ease; }
+.rbpp__link:hover::after { transform: translateX(3px); }
 .rbpp__link:hover { color: var(--nu-blue-hover); }
 .rbpp__link:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 3px; border-radius: 8px; }
 @media (max-width: 560px) { .rbpp__linha { grid-template-columns: 1fr; } }

@@ -29,9 +29,27 @@ const recusas = computed(() => props.conta.usage.denials ?? 0)
 const conectados = computed(() => (props.clientes?.clients ?? []).filter(c => c.status === 'active').length)
 const clientesLigado = computed(() => (props.conta.clients_mode ?? 'off') !== 'off')
 
-/** O herói: número e unidade separados, como o resto do site mostra número. */
+/**
+ * O herói: número e unidade separados, como o resto do site mostra número.
+ * O número entra contando (0,7 s), menos para quem pede menos movimento.
+ */
+const mostrado = ref(0)
+const contando = ref(false)
+onMounted(() => {
+  const alvo = semana.value
+  if (!alvo || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  contando.value = true
+  const t0 = performance.now()
+  const passo = (t: number) => {
+    const p = Math.min(1, (t - t0) / 700)
+    mostrado.value = Math.round(alvo * (1 - (1 - p) ** 3))
+    if (p < 1) requestAnimationFrame(passo)
+    else contando.value = false
+  }
+  requestAnimationFrame(passo)
+})
 const heroi = computed(() => {
-  if (semana.value > 0) return { n: num(semana.value), un: semana.value === 1 ? 'pergunta esta semana' : 'perguntas esta semana' }
+  if (semana.value > 0) return { n: num(contando.value ? mostrado.value : semana.value), un: semana.value === 1 ? 'pergunta esta semana' : 'perguntas esta semana' }
   return null
 })
 const frasePronta = computed(() => {
@@ -124,4 +142,7 @@ const frase = computed(() => {
 .rbpt__rot { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .rbpt__val { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .rbpt__val small { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; }
+
+.rbpt__cartao { transition: box-shadow .25s ease; }
+.rbpt__cartao:hover { box-shadow: 0 30px 70px -30px rgba(12, 21, 36, 0.28); }
 </style>

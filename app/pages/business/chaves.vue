@@ -89,10 +89,11 @@ onMounted(carregar)
  * pessoa pode fazer a respeito. Os códigos vêm do controller; qualquer outra
  * coisa cai na mensagem genérica com o caminho de suporte.
  */
-async function agir(fn: () => Promise<unknown>) {
+async function agir(fn: () => Promise<unknown>, sucesso?: string) {
   erro.value = null
   try {
     await fn()
+    if (sucesso) avisar(sucesso)
   }
   catch (e: unknown) {
     const data = (e as { data?: { error?: string, message?: string } })?.data
@@ -107,6 +108,22 @@ async function agir(fn: () => Promise<unknown>) {
         no_account: 'A conta do escritório não foi encontrada. Atualize a página.',
       }[data?.error ?? ''] ?? 'A ação não completou. Tente de novo; se seguir assim, escreva pra contato@redentia.com.')
   }
+}
+
+/**
+ * O retorno da ação que deu certo, na pílula do pé da tela (RbPainelAviso).
+ * Sem ele, pausar ou renomear só muda um selo, e quem não estava olhando
+ * para a linha não sabe se clicou.
+ */
+const aviso = ref<string | null>(null)
+let avisoTimer: ReturnType<typeof setTimeout> | undefined
+function avisar(texto: string) {
+  aviso.value = null
+  clearTimeout(avisoTimer)
+  nextTick(() => {
+    aviso.value = texto
+    avisoTimer = setTimeout(() => { aviso.value = null }, 2800)
+  })
 }
 
 async function cadastrar() {
@@ -164,7 +181,7 @@ async function revogar(id: number) {
     return
   }
   confirmando.value = null
-  await agir(() => revokeKey(id))
+  await agir(() => revokeKey(id), 'Chave revogada. Ela para de responder em até um minuto.')
 }
 
 function abrirRename(id: number, atual: string) {
@@ -175,7 +192,7 @@ function abrirRename(id: number, atual: string) {
 
 async function salvarRename(id: number) {
   if (busy.value || novoRotulo.value.trim().length < 2) return
-  await agir(() => renameKey(id, novoRotulo.value.trim()))
+  await agir(() => renameKey(id, novoRotulo.value.trim()), 'Nome salvo.')
   if (!erro.value) renomeando.value = null
 }
 
@@ -190,11 +207,11 @@ async function convidar() {
   await agir(async () => {
     await createInvite(nomeConvite.value)
     nomeConvite.value = ''
-  })
+  }, 'Convite pronto. Copie o link e mande para a pessoa.')
 }
 
 function cancelarConvite(id: number) {
-  return agir(() => cancelInvite(id))
+  return agir(() => cancelInvite(id), 'Convite cancelado.')
 }
 
 let copiaConviteTimer: ReturnType<typeof setTimeout> | undefined
@@ -203,6 +220,7 @@ async function copiarConvite() {
   try { await navigator.clipboard?.writeText(inviteUrl.value) }
   catch { /* clipboard bloqueado */ }
   copiadoConvite.value = true
+  avisar('Link copiado.')
   clearTimeout(copiaConviteTimer)
   copiaConviteTimer = setTimeout(() => { copiadoConvite.value = false }, 1600)
 }
@@ -213,6 +231,7 @@ async function copiar() {
   try { await navigator.clipboard?.writeText(plainKey.value) }
   catch { /* clipboard bloqueado */ }
   copiado.value = true
+  avisar('Chave copiada.')
   clearTimeout(copiaTimer)
   copiaTimer = setTimeout(() => { copiado.value = false }, 1600)
 }
@@ -221,6 +240,7 @@ onBeforeUnmount(() => {
   clearTimeout(copiaTimer)
   clearTimeout(copiaConviteTimer)
   clearTimeout(armaTimer)
+  clearTimeout(avisoTimer)
 })
 
 const conta = computed(() => status.value)
@@ -277,16 +297,29 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
 
 <template>
   <!-- carregando: a casca da banda A, com a forma real do que vem -->
-  <section v-if="loading" class="rbk-load">
-    <div class="rbk-load__cols">
-      <div class="rbk-load__main">
-        <NuSkeleton variant="text" :lines="2" width="70%" />
+  <div v-if="loading" aria-busy="true" aria-label="Carregando o painel">
+    <section class="rbk-load">
+      <div class="rbk-load__cols">
+        <div class="rbk-load__main">
+          <NuSkeleton variant="text" width="38%" />
+          <NuSkeleton variant="block" height="72px" width="30%" radius="tile" />
+          <NuSkeleton variant="text" :lines="2" width="70%" />
+        </div>
+        <div class="rbk-load__aside">
+          <NuSkeleton variant="card" height="240px" radius="card" />
+        </div>
       </div>
-      <div class="rbk-load__aside">
-        <NuSkeleton variant="card" height="220px" radius="card" />
+    </section>
+    <section class="rbk-load rbk-load--branca">
+      <div class="rbk-load__in">
+        <NuSkeleton variant="text" width="22%" />
+        <NuSkeleton variant="text" height="48px" width="40%" />
+        <div class="rbk-load__cartoes">
+          <NuSkeleton v-for="i in 3" :key="i" variant="card" height="200px" radius="card" />
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <template v-else-if="conta">
     <RbKeysSetup
@@ -308,6 +341,7 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
     />
 
     <div v-else class="rbp">
+      <RbPainelNovidade />
       <RbPainelTopo :conta="conta" :janela="janela" :clientes="clientes" @gerar="tabela?.focarGerador()" @conectar="conexaoAberta = true" />
       <RbPainelComece :frases="frases" />
       <RbPainelEquipe
@@ -328,7 +362,7 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         @copiar="copiar"
         @gerar="gerar"
         @revogar="revogar"
-        @toggle="(id, v) => agir(() => setKeyEnabled(id, v))"
+        @toggle="(id, v) => agir(() => setKeyEnabled(id, v), v ? 'Chave reativada.' : 'Chave pausada. Ela para de responder em até um minuto.')"
         @abrir-rename="abrirRename"
         @cancelar-rename="renomeando = null"
         @salvar-rename="salvarRename"
@@ -345,6 +379,7 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         </div>
       </RbPainelSecao>
       <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" :frases="frases" @close="fecharConexao" @gerar="gerarDoModal" />
+      <RbPainelAviso :texto="aviso" />
     </div>
   </template>
 
@@ -371,7 +406,11 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
   padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 88px);
   min-height: 60vh;
 }
-.rbk-load__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; max-width: 1120px; }
+.rbk-load__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; max-width: 1120px; margin: 0 auto; }
+.rbk-load__main { display: grid; gap: 14px; }
+.rbk-load--branca { background: var(--nu-white); min-height: 0; }
+.rbk-load__in { max-width: 1120px; margin: 0 auto; display: grid; gap: 14px; }
+.rbk-load__cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
 .rbk-load__main { flex: 1.2 1 460px; min-width: min(320px, 100%); }
 .rbk-load__aside { flex: 1 1 380px; min-width: min(320px, 100%); max-width: 520px; }
 
