@@ -222,7 +222,7 @@ defineExpose({
 .rbpe__lado .rbpe__sub { margin: 4px 0 0; }
 .rbpe__lado .rbpe__item:first-of-type { margin-top: 10px; }
 .rbpe__form--convite { margin-top: 2px; }
-.rbpe__nota--forte { margin-top: 0; color: var(--nu-gray-2); }
+.rbpe__nota--forte { margin-top: 10px; color: var(--nu-gray-2); }
 @media (max-width: 560px) { .rbpe__painel { padding: 4px 18px; } .rbpe__lado { padding-top: 20px; } }
 .rbpe__item { padding: 18px 0; border-top: 1px solid var(--rbp-linha); }
 .rbpe__item:first-child, .rbpe__segredo + .rbpe__item, .rbpe__vazio + .rbpe__item { border-top: 0; }
