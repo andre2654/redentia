@@ -13,23 +13,28 @@
  * LANDING de venda (fio de 1px, raio de documento, tipografia pequena) pra
  * dentro de um PAINEL, onde essa contenção não protege nada.
  *
- * Agora são QUATRO BANDAS full-bleed, cada uma pintando o próprio fundo e
- * carregando o próprio respiro vertical — a troca de cor É o separador, que é
- * como a /carteira e a /asset se organizam:
+ * PAINEL NOVO (24/10/2026, pedido do dono: "precisa ser modernizada e
+ * entregar mais valor", e depois "mais layout Redentia, com seções mais
+ * definidas"). Bandas inteiras de fundo alternado, com chamada azul e título
+ * grande, como a /carteira; dentro, painéis e listas no idioma das telas do
+ * MCP. As seções respondem, em ordem, o que o dono vem perguntar:
  *
- *   A. creme  RbKeysHero    o número do dia + consumo por chave
- *   B. navy   RbKeysUsage   30 dias de chamadas
- *   C. creme  RbKeysTable   as chaves, o segredo e o gerador
- *   D. branco RbKeysScope   escopos, limites e o próximo passo
+ *   RbPainelTopo      a equipe está usando? (perguntas da semana)
+ *   RbPainelComece    o que eu digo no assistente? (frases no lugar das skills)
+ *   RbPainelEquipe    quem usa, quem parou, e chamar mais alguém
+ *   RbPainelUso       como foi o mês
+ *   RbPainelClientes  os clientes conectados e o consentimento ┐ banda
+ *   RbPainelPlano     o que está incluído e como conectar      ┘ "Conta"
  *
- * A PÁGINA NÃO TEM CSS DE LAYOUT. Ela guarda o estado e as regras (o mapa de
- * códigos de erro, o desarme de 5s do revogar, os timers), e as bandas são
- * burras. Foi assim que a lógica já validada ponta a ponta atravessou a
- * refatoração sem ser reescrita.
+ * A PÁGINA CONTINUA SEM CSS DE CONTEÚDO. Ela guarda o estado e as regras (o
+ * mapa de códigos de erro, o desarme de 5s do revogar, os timers), e as
+ * seções são burras: a lógica validada ponta a ponta atravessou sem mudar.
  *
  * Autenticada: mesma guarda do /conta (nu:token → /login?redirect=). A rota é
  * private/no-store no nuxt.config.
  */
+import { frasesProntas } from '~/content/business/frases'
+
 definePageMeta({
   layout: 'business',
   middleware: [
@@ -84,10 +89,11 @@ onMounted(carregar)
  * pessoa pode fazer a respeito. Os códigos vêm do controller; qualquer outra
  * coisa cai na mensagem genérica com o caminho de suporte.
  */
-async function agir(fn: () => Promise<unknown>) {
+async function agir(fn: () => Promise<unknown>, sucesso?: string) {
   erro.value = null
   try {
     await fn()
+    if (sucesso) avisar(sucesso)
   }
   catch (e: unknown) {
     const data = (e as { data?: { error?: string, message?: string } })?.data
@@ -102,6 +108,22 @@ async function agir(fn: () => Promise<unknown>) {
         no_account: 'A conta do escritório não foi encontrada. Atualize a página.',
       }[data?.error ?? ''] ?? 'A ação não completou. Tente de novo; se seguir assim, escreva pra contato@redentia.com.')
   }
+}
+
+/**
+ * O retorno da ação que deu certo, na pílula do pé da tela (RbPainelAviso).
+ * Sem ele, pausar ou renomear só muda um selo, e quem não estava olhando
+ * para a linha não sabe se clicou.
+ */
+const aviso = ref<string | null>(null)
+let avisoTimer: ReturnType<typeof setTimeout> | undefined
+function avisar(texto: string) {
+  aviso.value = null
+  clearTimeout(avisoTimer)
+  nextTick(() => {
+    aviso.value = texto
+    avisoTimer = setTimeout(() => { aviso.value = null }, 2800)
+  })
 }
 
 async function cadastrar() {
@@ -159,7 +181,7 @@ async function revogar(id: number) {
     return
   }
   confirmando.value = null
-  await agir(() => revokeKey(id))
+  await agir(() => revokeKey(id), 'Chave revogada. Ela para de responder em até um minuto.')
 }
 
 function abrirRename(id: number, atual: string) {
@@ -170,7 +192,7 @@ function abrirRename(id: number, atual: string) {
 
 async function salvarRename(id: number) {
   if (busy.value || novoRotulo.value.trim().length < 2) return
-  await agir(() => renameKey(id, novoRotulo.value.trim()))
+  await agir(() => renameKey(id, novoRotulo.value.trim()), 'Nome salvo.')
   if (!erro.value) renomeando.value = null
 }
 
@@ -185,11 +207,11 @@ async function convidar() {
   await agir(async () => {
     await createInvite(nomeConvite.value)
     nomeConvite.value = ''
-  })
+  }, 'Convite pronto. Copie o link e mande para a pessoa.')
 }
 
 function cancelarConvite(id: number) {
-  return agir(() => cancelInvite(id))
+  return agir(() => cancelInvite(id), 'Convite cancelado.')
 }
 
 let copiaConviteTimer: ReturnType<typeof setTimeout> | undefined
@@ -198,6 +220,7 @@ async function copiarConvite() {
   try { await navigator.clipboard?.writeText(inviteUrl.value) }
   catch { /* clipboard bloqueado */ }
   copiadoConvite.value = true
+  avisar('Link copiado.')
   clearTimeout(copiaConviteTimer)
   copiaConviteTimer = setTimeout(() => { copiadoConvite.value = false }, 1600)
 }
@@ -208,6 +231,7 @@ async function copiar() {
   try { await navigator.clipboard?.writeText(plainKey.value) }
   catch { /* clipboard bloqueado */ }
   copiado.value = true
+  avisar('Chave copiada.')
   clearTimeout(copiaTimer)
   copiaTimer = setTimeout(() => { copiado.value = false }, 1600)
 }
@@ -216,13 +240,30 @@ onBeforeUnmount(() => {
   clearTimeout(copiaTimer)
   clearTimeout(copiaConviteTimer)
   clearTimeout(armaTimer)
+  clearTimeout(avisoTimer)
 })
 
 const conta = computed(() => status.value)
+
+/**
+ * O resumo dos clientes e a frase com o nome de um cliente de verdade. Falha
+ * aqui não derruba o painel: a seção mostra só o caminho para a tela de
+ * clientes, e as frases saem com o lugar do nome.
+ */
+const clientesApi = useBusinessClients()
+const clientesLigado = computed(() => (conta.value?.clients_mode ?? 'off') !== 'off')
+watch(clientesLigado, (ligado) => {
+  if (ligado) clientesApi.hydrate().catch(() => {})
+}, { immediate: true })
+const clientes = computed(() => (clientesLigado.value ? clientesApi.lista.value : null))
+const frases = computed(() => {
+  const primeiro = clientes.value?.clients.find(c => c.status === 'active')?.name ?? null
+  return frasesProntas(clientesLigado.value, primeiro)
+})
 const janela = computed(() => conta.value?.usage.window_days ?? 30)
 const liberada = computed(() => Boolean(conta.value?.has_account && conta.value.enabled))
 
-// ?conectar=1 (vindo do /business/skills; sobrevive ao redirect de login
+// ?conectar=1 (vindo de um link de "conectar"; sobrevive ao redirect de login
 // porque a guarda usa o fullPath): abre o modal quando a conta hidratar
 // liberada, e limpa a query pra um reload não reabrir sozinho.
 const route = useRoute()
@@ -242,13 +283,12 @@ const resumoGrafico = computed(() => {
   if (!dias.length) return ''
   const total = conta.value?.usage.calls ?? 0
   if (total === 0) {
-    return `Nenhuma chamada nos últimos ${janela.value} dias. O número aparece aqui no minuto seguinte ao primeiro uso.`
+    return `Nenhuma pergunta nos últimos ${janela.value} dias. O número aparece aqui no minuto seguinte ao primeiro uso.`
   }
   const pico = dias.reduce((a, b) => (b.calls > a.calls ? b : a))
   const ativos = dias.filter(d => d.calls > 0).length
   const dia = new Date(`${pico.day}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-  return `Uso por dia nos últimos ${janela.value} dias: ${num(total)} chamadas em ${ativos} ${ativos === 1 ? 'dia' : 'dias'}. `
-    + `Maior dia: ${dia}, com ${num(pico.calls)}.`
+  return `Alguém da casa perguntou em ${ativos} dos ${janela.value} dias. O maior dia foi ${dia}, com ${num(pico.calls)}.`
 })
 
 /** Banda B não renderiza sem uso: gráfico vazio não é informação, é moldura. */
@@ -257,16 +297,29 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
 
 <template>
   <!-- carregando: a casca da banda A, com a forma real do que vem -->
-  <section v-if="loading" class="rbk-load">
-    <div class="rbk-load__cols">
-      <div class="rbk-load__main">
-        <NuSkeleton variant="text" :lines="2" width="70%" />
+  <div v-if="loading" aria-busy="true" aria-label="Carregando o painel">
+    <section class="rbk-load">
+      <div class="rbk-load__cols">
+        <div class="rbk-load__main">
+          <NuSkeleton variant="text" width="38%" />
+          <NuSkeleton variant="block" height="72px" width="30%" radius="tile" />
+          <NuSkeleton variant="text" :lines="2" width="70%" />
+        </div>
+        <div class="rbk-load__aside">
+          <NuSkeleton variant="card" height="240px" radius="card" />
+        </div>
       </div>
-      <div class="rbk-load__aside">
-        <NuSkeleton variant="card" height="220px" radius="card" />
+    </section>
+    <section class="rbk-load rbk-load--branca">
+      <div class="rbk-load__in">
+        <NuSkeleton variant="text" width="22%" />
+        <NuSkeleton variant="text" height="48px" width="40%" />
+        <div class="rbk-load__cartoes">
+          <NuSkeleton v-for="i in 3" :key="i" variant="card" height="200px" radius="card" />
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <template v-else-if="conta">
     <RbKeysSetup
@@ -287,10 +340,11 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
       :erro="erro"
     />
 
-    <template v-else>
-      <RbKeysHero :conta="conta" :janela="janela" @gerar="tabela?.focarGerador()" @conectar="conexaoAberta = true" />
-      <RbKeysUsage v-if="temGrafico" :conta="conta" :janela="janela" :resumo="resumoGrafico" />
-      <RbKeysTable
+    <div v-else class="rbp">
+      <RbPainelNovidade />
+      <RbPainelTopo :conta="conta" :janela="janela" :clientes="clientes" @gerar="tabela?.focarGerador()" @conectar="conexaoAberta = true" />
+      <RbPainelComece :frases="frases" />
+      <RbPainelEquipe
         ref="tabela"
         v-model:rotulo="rotulo"
         v-model:novo-rotulo="novoRotulo"
@@ -308,7 +362,7 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         @copiar="copiar"
         @gerar="gerar"
         @revogar="revogar"
-        @toggle="(id, v) => agir(() => setKeyEnabled(id, v))"
+        @toggle="(id, v) => agir(() => setKeyEnabled(id, v), v ? 'Chave reativada.' : 'Chave pausada. Ela para de responder em até um minuto.')"
         @abrir-rename="abrirRename"
         @cancelar-rename="renomeando = null"
         @salvar-rename="salvarRename"
@@ -317,9 +371,16 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
         @cancelar-convite="cancelarConvite"
         @copiar-convite="copiarConvite"
       />
-      <RbKeysScope :conta="conta" @conectar="conexaoAberta = true" />
-      <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" @close="fecharConexao" @gerar="gerarDoModal" />
-    </template>
+      <RbPainelUso v-if="temGrafico" :conta="conta" :janela="janela" :resumo="resumoGrafico" />
+      <RbPainelSecao tom="branco" eyebrow="Conta" titulo="Clientes e plano.">
+        <div class="rbp__duas">
+          <RbPainelClientes :ligado="clientesLigado" :clientes="clientes" />
+          <RbPainelPlano :conta="conta" @conectar="conexaoAberta = true" />
+        </div>
+      </RbPainelSecao>
+      <RbConexaoModal :open="conexaoAberta" :plain-key="plainKey" :frases="frases" @close="fecharConexao" @gerar="gerarDoModal" />
+      <RbPainelAviso :texto="aviso" />
+    </div>
   </template>
 
   <section v-else class="rbk-falha">
@@ -333,15 +394,23 @@ const temGrafico = computed(() => (conta.value?.usage.calls ?? 0) > 0)
 </template>
 
 <style scoped>
-/* Só o carregando e a falha têm CSS aqui: são cascas de banda, não conteúdo.
-   Todo o resto do layout vive nos cinco componentes de banda. */
+/* O painel são bandas inteiras (RbPainelSecao); só a grade de duas colunas
+   da banda "Conta" mora aqui. */
+.rbp__duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+@media (max-width: 900px) { .rbp__duas { grid-template-columns: 1fr; } }
+
+/* O carregando e a falha são cascas, não conteúdo. */
 .rbk-load,
 .rbk-falha {
   background: var(--nu-cream);
   padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 88px);
   min-height: 60vh;
 }
-.rbk-load__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; max-width: 1120px; }
+.rbk-load__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; max-width: 1120px; margin: 0 auto; }
+.rbk-load__main { display: grid; gap: 14px; }
+.rbk-load--branca { background: var(--nu-white); min-height: 0; }
+.rbk-load__in { max-width: 1120px; margin: 0 auto; display: grid; gap: 14px; }
+.rbk-load__cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
 .rbk-load__main { flex: 1.2 1 460px; min-width: min(320px, 100%); }
 .rbk-load__aside { flex: 1 1 380px; min-width: min(320px, 100%); max-width: 520px; }
 

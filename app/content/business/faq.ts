@@ -35,7 +35,8 @@
  *    terms_sha256, user_agent; o IP só quando a origem é provada, ver
  *    RbSeguranca), 12 meses (consent_months), revogação apaga as posições;
  *  - controlador e operador: o próprio termo (cláusula 1);
- *  - relatório: a skill redentia-relatorio-cliente (skills-pack/).
+ *  - relatório: o get_client_report do MCP traz o dado e o roteiro, e o
+ *    assistente monta o PDF (a skill redentia-relatorio-cliente saiu em 24/10/2026).
  */
 import type { NuFaqItem } from '~/types/market'
 
@@ -161,7 +162,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'O relatório sai com a minha marca?',
-        a: 'Sai. A skill de relatório gera o PDF dentro do Claude, a partir da carteira de um cliente conectado, dos cenários e do mercado do dia, e o modelo aceita o logo, as cores e o tom do escritório. Ela descreve a carteira e os cenários e não recomenda compra, venda nem peso. Precisa de execução de código, que no claude.ai e no Claude Desktop já vem ligada. Se a sua casa é assessoria vinculada, leia antes a RCVM 178: o art. 25, VII, veda ao assessor enviar ao cliente extrato com posições.',
+        a: 'Sai. Peça o relatório ao assistente, ou toque em Gerar o relatório na tela da carteira: a Redentia entrega a carteira de um cliente conectado, os cenários e o mercado do dia junto com o roteiro do documento, e o assistente monta o PDF. Diga o nome e as cores e mande o logo do escritório, e ele sai com a sua marca. O relatório descreve a carteira e os cenários e não recomenda compra, venda nem peso. Precisa de um assistente que crie arquivos, como o claude.ai e o ChatGPT. Se a sua casa é assessoria vinculada, leia antes a RCVM 178: o art. 25, VII, veda ao assessor enviar ao cliente extrato com posições.',
       },
       {
         q: 'A carta do gestor é escrita por IA?',
@@ -182,7 +183,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'Como funciona a implantação?',
-        a: 'Uma reunião técnica de uma hora: conectamos o assistente de cada chave, instalamos as skills e rodamos uma carteira de vocês num cenário. Clientes do escritório, quando entra, é ligado depois, escritório a escritório, com gente da Redentia acompanhando.',
+        a: 'Uma reunião técnica de uma hora: conectamos o assistente de cada chave e rodamos uma carteira de vocês num cenário. Não há nada para instalar: o assistente aprende a usar a Redentia na conexão. Clientes do escritório, quando entra, é ligado depois, escritório a escritório, com gente da Redentia acompanhando.',
       },
       {
         q: 'Em quanto tempo eu começo a usar?',
