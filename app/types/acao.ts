@@ -485,11 +485,31 @@ export interface SupplyChainApi {
   ticker: string
   compra_de: SupplyLinkApi[]
   vende_para: SupplyLinkApi[]
+  /** receita e custo do ano (DFP da CVM); null sem DFP (banco, seguradora, EUA) */
+  totais: { ano: number; receita: number; custo: number | null; fonte: string; url: string } | null
+  /** o que sobra depois das listadas: valor null quando a conta não fecha */
+  restante: {
+    clientes: SupplyRestApi | null
+    custo: SupplyRestApi | null
+  } | null
+}
+
+export interface SupplyRestApi {
+  valor: number | null
+  /** soma das ligações com listadas que entraram na conta (valor anual em R$ do mesmo ano) */
+  listadas: number
+  /** ligações daquele lado que não entraram (contrato, dólar, sem valor) */
+  fora_da_conta: number
 }
 
 /** Uma linha de "Compra de / Vende para" (AcaoCadeia.vue). */
 export interface AcaoCadeiaItemVM {
+  /** ticker da empresa; nos nós de resto, uma chave ('resto-clientes') */
   ticker: string
+  /** nó "Outros clientes" / "Restante do custo": sem logo e sem link */
+  resto: boolean
+  /** fatia da receita (venda) ou do custo (compra) para a espessura da linha; null = traço fino */
+  peso: number | null
   nome: string
   /** 'nafta', 'transporte ferroviário'; null quando a fonte não diz */
   oQue: string | null
@@ -503,6 +523,8 @@ export interface AcaoCadeiaItemVM {
 
 /** Painel de detalhe de uma ligação (AcaoCadeiaDetalhe.vue). */
 export interface AcaoCadeiaDetalheVM {
+  /** 'Petrobras vende para Braskem' · 'O restante do custo da Braskem' */
+  titulo: string
   /** 'Petrobras' → 'Braskem' (quem vende → quem compra) */
   de: string
   para: string
@@ -510,6 +532,12 @@ export interface AcaoCadeiaDetalheVM {
   oQue: string | null
   /** 'R$ 16,2 bi em 2025 · informado pela Braskem'; vazio = nenhuma fonte disse quanto */
   valores: { valor: string; quando: string; por: string | null }[]
+  /** nós de resto: a conta que dá o valor (receita − listadas = resto) */
+  conta: { sinal: '' | '−' | '='; rotulo: string; valor: string }[] | null
+  /** observação da conta ('inclui 5 ligações sem valor anual de 2025…') */
+  nota: string | null
+  /** de onde veio o total (DFP), com link */
+  fonteConta: { rotulo: string; url: string } | null
   provas: {
     /** 'Relatório anual na SEC (20-F)' · 'Formulário de Referência (CVM)' */
     fonte: string

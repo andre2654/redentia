@@ -1318,10 +1318,14 @@ function cadeiaDetalhe(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeia
   }
   if (l.participacao_receita != null) valores.push({ valor: `${nfc.format(l.participacao_receita * 100)}%`, quando: 'da receita', por: null })
   return {
+    titulo: `${vende ? eu : outro} vende para ${vende ? outro : eu}`,
     de: vende ? eu : outro,
     para: vende ? outro : eu,
     oQue: l.o_que,
     valores,
+    conta: null,
+    nota: null,
+    fonteConta: null,
     provas: l.fontes.map((f) => ({
       fonte: CADEIA_PROVA[f.tipo] ?? 'Documento',
       data: dataBr(f.data),
@@ -1338,9 +1342,22 @@ function cadeiaDetalhe(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeia
   }
 }
 
-function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeiaItemVM {
+/**
+ * Fatia do total do lado (receita para quem compra da empresa, custo para quem
+ * vende a ela) — só valor anual, em real, do mesmo ano da DFP; o resto fica
+ * com o traço fino (contrato pela vigência e dólar não são comparáveis).
+ */
+function cadeiaPeso(l: SupplyLinkApi, totais: SupplyChainApi['totais'], vende: boolean): number | null {
+  const base = vende ? totais?.receita : totais?.custo
+  if (!base || !l.anual || l.anual.moeda !== 'BRL' || l.anual.ano !== totais?.ano) return null
+  return Math.min(1, l.anual.valor / base)
+}
+
+function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean, totais: SupplyChainApi['totais']): AcaoCadeiaItemVM {
   return {
     ticker: l.ticker,
+    resto: false,
+    peso: cadeiaPeso(l, totais, vende),
     nome: nomeDoLink(l),
     oQue: l.o_que,
     valor: cadeiaValor(l)?.[0] ?? null,
@@ -1349,14 +1366,63 @@ function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeiaIte
   }
 }
 
+/**
+ * O nó que fecha a conta com o balanço: "Outros clientes" (receita − vendas a
+ * listadas) ou "Restante do custo" (custo − compras de listadas). Só com a DFP
+ * do ano e com o resto calculado (o backend devolve null quando não fecha).
+ */
+function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'): AcaoCadeiaItemVM | null {
+  const t = api.totais
+  const r = api.restante?.[lado]
+  const base = lado === 'clientes' ? t?.receita : t?.custo
+  if (!t || !r || r.valor == null || !base) return null
+  const pct = nfPct.format((r.valor / base) * 100)
+  const clientes = lado === 'clientes'
+  const total = fmtCompactMoney(base, 'BRL')
+  const fora = r.fora_da_conta
+  return {
+    ticker: clientes ? 'resto-clientes' : 'resto-custo',
+    resto: true,
+    peso: Math.min(1, r.valor / base),
+    nome: clientes ? 'Outros clientes' : 'Restante do custo',
+    oQue: clientes ? `fora da bolsa · ${pct}% da receita` : `fora da bolsa e custos próprios · ${pct}% do custo`,
+    valor: fmtCompactMoney(r.valor, 'BRL'),
+    valorQuando: `em ${t.ano}`,
+    detalhe: {
+      titulo: clientes ? `${eu} vende para outros clientes` : `O restante do custo da ${eu}`,
+      de: clientes ? eu : 'Restante do custo',
+      para: clientes ? 'Outros clientes' : eu,
+      oQue: clientes
+        ? 'Empresas e pessoas fora da bolsa, no Brasil e no exterior. A Redentia não tem o nome de cada uma: é o que sobra da receita depois das vendas a empresas listadas.'
+        : 'Compras de fornecedores fora da bolsa e os custos próprios que entram no custo dos produtos vendidos (pessoal, energia, depreciação). É o que sobra do custo depois das compras de empresas listadas.',
+      valores: [],
+      conta: [
+        { sinal: '', rotulo: clientes ? `Receita de ${t.ano}` : `Custo dos produtos vendidos em ${t.ano}`, valor: total },
+        { sinal: '−', rotulo: clientes ? `vendas a empresas listadas (valor de ${t.ano})` : `compras de empresas listadas (valor de ${t.ano})`, valor: fmtCompactMoney(r.listadas, 'BRL') },
+        { sinal: '=', rotulo: clientes ? 'Outros clientes' : 'Restante do custo', valor: fmtCompactMoney(r.valor, 'BRL') },
+      ],
+      nota: fora > 0
+        ? `${fora === 1 ? 'Uma ligação' : `${fora} ligações`} com listadas ${fora === 1 ? 'não tem' : 'não têm'} valor anual de ${t.ano} em reais (contrato pela vigência, valor em dólar ou indisponível) e ${fora === 1 ? 'fica' : 'ficam'} dentro deste restante.`
+        : null,
+      fonteConta: { rotulo: `${t.fonte}, exercício de ${t.ano}`, url: t.url },
+      provas: [],
+    },
+  }
+}
+
+const nfPct = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
+
 function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCadeiaVM | null {
   if (!api || (!api.compra_de?.length && !api.vende_para?.length)) return null
   const all = [...api.compra_de, ...api.vende_para]
   const kinds = [...new Set(all.flatMap((l) => (l.tipos_fonte ?? []).map((t) => CADEIA_FONTE[t]).filter((x): x is string => !!x)))]
+  if (api.totais) kinds.push('demonstrações anuais (DFP/CVM) para receita e custo')
   const fontes = kinds.length > 1 ? `${kinds.slice(0, -1).join(', ')} e ${kinds[kinds.length - 1]}` : kinds[0] ?? ''
+  const restoCusto = cadeiaResto(api, eu, 'custo')
+  const restoClientes = cadeiaResto(api, eu, 'clientes')
   return {
-    compraDe: api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false)),
-    vendePara: api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true)),
+    compraDe: [...api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false, api.totais)), ...(restoCusto ? [restoCusto] : [])],
+    vendePara: [...api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true, api.totais)), ...(restoClientes ? [restoClientes] : [])],
     fontes,
   }
 }
