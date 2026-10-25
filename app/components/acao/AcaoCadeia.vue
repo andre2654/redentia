@@ -4,16 +4,21 @@
 // grafo — fornecedores à esquerda, a empresa no centro, clientes à direita, e o
 // valor de cada ligação escrito na própria linha. Cartões das pontas com as
 // peças do AcaoPares (logo + ticker + linha cinza); o centro é o único navy da
-// seção (um herói). Sem valor na fonte, a linha não tem etiqueta.
+// seção (um herói). Toda linha tem etiqueta clicável: o valor, ou "Indisponível"
+// quando a fonte provou a ligação sem dizer quanto (AcaoCadeiaDetalhe abre o porquê).
 //
 // Geometria calculada aqui, não medida no browser: cada cartão tem altura fixa
 // (ROW) e o mesmo respiro (GAP), então a altura de cada ponta, o meio da
 // empresa e o y de cada linha saem de conta — o SSR já entrega o desenho
 // pronto, sem salto na hidratação. No celular o grafo inteiro não cabe: vira
 // dois meio-grafos empilhados (compra → empresa, empresa → venda).
-import type { AcaoCadeiaItemVM, AcaoCadeiaVM } from '~/types/acao'
+import type { AcaoCadeiaDetalheVM, AcaoCadeiaItemVM, AcaoCadeiaVM } from '~/types/acao'
 
 const props = defineProps<{ cadeia: AcaoCadeiaVM; nome: string; ticker: string }>()
+
+// A etiqueta de toda linha abre o detalhe — com valor ou "Indisponível" (a
+// fonte provou a ligação, mas não disse quanto). Um painel só para a seção.
+const aberto = ref<AcaoCadeiaDetalheVM | null>(null)
 
 interface Ligacao { item: AcaoCadeiaItemVM; y: number; d: string; ex: number; ey: number }
 interface Ramo { itens: Ligacao[]; top: number }
@@ -85,12 +90,17 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
         </li>
       </ul>
 
-      <div class="acd__fio" :style="{ height: `${total}px` }" aria-hidden="true">
-        <svg :viewBox="`0 0 100 ${total}`" preserveAspectRatio="none">
+      <div class="acd__fio" :style="{ height: `${total}px` }">
+        <svg :viewBox="`0 0 100 ${total}`" preserveAspectRatio="none" aria-hidden="true">
           <path v-for="l in compra.itens" :key="l.item.ticker" :d="l.d" />
         </svg>
         <template v-for="l in compra.itens" :key="`v-${l.item.ticker}`">
-          <span v-if="l.item.valor" class="acd__valor" :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></span>
+          <button
+            type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
+            :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
+            :aria-label="`Detalhes: ${l.item.detalhe.de} vende para ${l.item.detalhe.para}`"
+            @click="aberto = l.item.detalhe"
+          ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
         </template>
       </div>
 
@@ -102,12 +112,17 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
         </div>
       </div>
 
-      <div class="acd__fio" :style="{ height: `${total}px` }" aria-hidden="true">
-        <svg :viewBox="`0 0 100 ${total}`" preserveAspectRatio="none">
+      <div class="acd__fio" :style="{ height: `${total}px` }">
+        <svg :viewBox="`0 0 100 ${total}`" preserveAspectRatio="none" aria-hidden="true">
           <path v-for="l in vende.itens" :key="l.item.ticker" :d="l.d" />
         </svg>
         <template v-for="l in vende.itens" :key="`v-${l.item.ticker}`">
-          <span v-if="l.item.valor" class="acd__valor" :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></span>
+          <button
+            type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
+            :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
+            :aria-label="`Detalhes: ${l.item.detalhe.de} vende para ${l.item.detalhe.para}`"
+            @click="aberto = l.item.detalhe"
+          ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
         </template>
       </div>
 
@@ -144,13 +159,18 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
                 </NuxtLink>
               </li>
             </ul>
-            <div class="acd__fio" :style="{ height: `${r.total}px` }" aria-hidden="true">
+            <div class="acd__fio" :style="{ height: `${r.total}px` }">
               <!-- ramo('vende') já desenha a empresa em x=0: a curva serve como está -->
-              <svg :viewBox="`0 0 100 ${r.total}`" preserveAspectRatio="none">
+              <svg :viewBox="`0 0 100 ${r.total}`" preserveAspectRatio="none" aria-hidden="true">
                 <path v-for="l in r.g.itens" :key="l.item.ticker" :d="l.d" />
               </svg>
               <template v-for="l in r.g.itens" :key="`v-${l.item.ticker}`">
-                <span v-if="l.item.valor" class="acd__valor" :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></span>
+                <button
+            type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
+            :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
+            :aria-label="`Detalhes: ${l.item.detalhe.de} vende para ${l.item.detalhe.para}`"
+            @click="aberto = l.item.detalhe"
+          ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
               </template>
             </div>
             <div class="acd__centro" :style="{ height: `${r.total}px` }">
@@ -163,6 +183,8 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
         </div>
       </template>
     </div>
+
+    <AcaoCadeiaDetalhe :detalhe="aberto" @close="aberto = null" />
 
     <p v-if="cadeia.fontes" class="acd__fonte">
       Fontes: {{ cadeia.fontes }}. Valores como a empresa informou; contratos somam a vigência inteira.
@@ -226,6 +248,14 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
   font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center;
 }
 .acd__valor b { color: var(--nu-ink); font-weight: 700; }
+button.acd__valor {
+  border: none; margin: 0; font-family: inherit; cursor: pointer;
+  transition: box-shadow .2s, color .2s;
+}
+button.acd__valor:hover { box-shadow: 0 0 0 1px var(--nu-navy-14), var(--nu-shadow-card); color: var(--nu-ink); }
+button.acd__valor:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+/* sem valor declarado: mesma etiqueta, tom mais baixo (ainda clicável) */
+.acd__valor--indisp { color: var(--nu-gray); }
 
 /* a empresa: o único navy da seção */
 .acd__centro { display: flex; align-items: center; justify-content: center; }

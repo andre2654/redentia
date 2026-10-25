@@ -19,6 +19,7 @@
 import type {
   AcaoAiReadVM,
   AcaoAiVM,
+  AcaoCadeiaDetalheVM,
   AcaoCadeiaItemVM,
   AcaoCadeiaVM,
   AcaoConsensusVM,
@@ -1280,24 +1281,82 @@ function cadeiaValor(l: SupplyLinkApi): [string, string] | null {
   return null
 }
 
-function cadeiaItem(l: SupplyLinkApi): AcaoCadeiaItemVM {
+/** Uma prova por vez, no singular ("o relatório", não "os relatórios"). */
+const CADEIA_PROVA: Record<string, string> = {
+  cvm_partes_relacionadas: 'Formulário de Referência (CVM)',
+  edgar_10k: 'Relatório anual na SEC (20-F)',
+  nota_explicativa: 'Demonstrações financeiras',
+  fre: 'Formulário de Referência (CVM)',
+  ri: 'Documento de RI',
+  release: 'Release de resultado',
+  contrato: 'Comunicado da empresa',
+  noticia: 'Notícia',
+}
+
+function nomeDoLink(l: SupplyLinkApi): string {
+  return l.nome_b3 ? nomeDaEmpresa(l.nome_b3) : l.nome.replace(/,?\s+(S\.?A\.?|Inc\.?|Corp\.?|Corporation)$/i, '')
+}
+
+function dataBr(iso: string | null): string | null {
+  return iso && /^\d{4}-\d{2}-\d{2}/.test(iso) ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}` : null
+}
+
+/**
+ * O painel que abre ao clicar na etiqueta. `quemInformou` resolve o ticker de
+ * quem publicou o documento para o nome de uma das duas pontas (a outra
+ * empresa, quando o ticker é dela; senão, a própria).
+ */
+function cadeiaDetalhe(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeiaDetalheVM {
+  const outro = nomeDoLink(l)
+  const quem = (t: string | null) => (t == null ? null : l.tickers.includes(t) ? outro : eu)
+  const por = (t: string | null) => { const n = quem(t); return n ? `informado pela ${n}` : null }
+  const valores: AcaoCadeiaDetalheVM['valores'] = []
+  if (l.anual) valores.push({ valor: fmtCompactMoney(l.anual.valor, l.anual.moeda), quando: l.anual.ano ? `em ${l.anual.ano}` : 'por ano', por: por(l.anual.informado_por) })
+  if (l.contratado?.valor) {
+    const n = l.contratado.contratos
+    valores.push({ valor: fmtCompactMoney(l.contratado.valor, l.contratado.moeda), quando: `em ${n} contrato${n === 1 ? '' : 's'} (soma da vigência)`, por: por(l.contratado.informado_por) })
+  }
+  if (l.participacao_receita != null) valores.push({ valor: `${nfc.format(l.participacao_receita * 100)}%`, quando: 'da receita', por: null })
   return {
-    ticker: l.ticker,
-    nome: l.nome_b3 ? nomeDaEmpresa(l.nome_b3) : l.nome.replace(/,?\s+(S\.?A\.?|Inc\.?|Corp\.?|Corporation)$/i, ''),
+    de: vende ? eu : outro,
+    para: vende ? outro : eu,
     oQue: l.o_que,
-    valor: cadeiaValor(l)?.[0] ?? null,
-    valorQuando: cadeiaValor(l)?.[1] ?? null,
+    valores,
+    provas: l.fontes.map((f) => ({
+      fonte: CADEIA_PROVA[f.tipo] ?? 'Documento',
+      data: dataBr(f.data),
+      por: quem(f.informado_por),
+      valor: f.valor == null
+        ? null
+        : f.tipo_valor === 'pct_receita'
+          ? `${nfc.format(f.valor)}% da receita`
+          : `${fmtCompactMoney(f.valor, f.moeda)} ${f.tipo_valor === 'anual' ? (f.ano ? `em ${f.ano}` : 'por ano') : 'em contrato'}`,
+      trecho: f.trecho,
+      emIngles: f.tipo === 'edgar_10k',
+      url: f.url,
+    })),
   }
 }
 
-function buildCadeia(api: SupplyChainApi | null | undefined): AcaoCadeiaVM | null {
+function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeiaItemVM {
+  return {
+    ticker: l.ticker,
+    nome: nomeDoLink(l),
+    oQue: l.o_que,
+    valor: cadeiaValor(l)?.[0] ?? null,
+    valorQuando: cadeiaValor(l)?.[1] ?? null,
+    detalhe: cadeiaDetalhe(l, eu, vende),
+  }
+}
+
+function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCadeiaVM | null {
   if (!api || (!api.compra_de?.length && !api.vende_para?.length)) return null
   const all = [...api.compra_de, ...api.vende_para]
   const kinds = [...new Set(all.flatMap((l) => (l.tipos_fonte ?? []).map((t) => CADEIA_FONTE[t]).filter((x): x is string => !!x)))]
   const fontes = kinds.length > 1 ? `${kinds.slice(0, -1).join(', ')} e ${kinds[kinds.length - 1]}` : kinds[0] ?? ''
   return {
-    compraDe: api.compra_de.slice(0, CADEIA_MAX).map(cadeiaItem),
-    vendePara: api.vende_para.slice(0, CADEIA_MAX).map(cadeiaItem),
+    compraDe: api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false)),
+    vendePara: api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true)),
     fontes,
   }
 }
@@ -1476,7 +1535,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
-    cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR)) : null,
+    cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR), name) : null,
     pares: kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null,
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),

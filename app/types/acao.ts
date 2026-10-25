@@ -466,7 +466,19 @@ export interface SupplyLinkApi {
   participacao_receita: number | null
   /** todos os tipos de prova da ligação ('cvm_partes_relacionadas', 'edgar_10k'…) */
   tipos_fonte: string[]
-  fontes: { tipo: string; url: string; data: string | null; trecho: string; informado_por: string | null }[]
+  /** as provas inteiras (até 8): pesquisa primeiro, contratos da CVM depois */
+  fontes: {
+    tipo: string
+    url: string
+    data: string | null
+    trecho: string
+    informado_por: string | null
+    o_que: string | null
+    valor: number | null
+    moeda: string | null
+    tipo_valor: string | null
+    ano: number | null
+  }[]
 }
 
 export interface SupplyChainApi {
@@ -485,6 +497,32 @@ export interface AcaoCadeiaItemVM {
   valor: string | null
   /** o que o número é: 'em 2025' · 'em contratos' · 'da receita' (vai embaixo no celular) */
   valorQuando: string | null
+  /** o painel que abre ao clicar na etiqueta (valor ou "Indisponível") */
+  detalhe: AcaoCadeiaDetalheVM
+}
+
+/** Painel de detalhe de uma ligação (AcaoCadeiaDetalhe.vue). */
+export interface AcaoCadeiaDetalheVM {
+  /** 'Petrobras' → 'Braskem' (quem vende → quem compra) */
+  de: string
+  para: string
+  /** o que circula, inteiro (na linha do grafo ele corta com reticências) */
+  oQue: string | null
+  /** 'R$ 16,2 bi em 2025 · informado pela Braskem'; vazio = nenhuma fonte disse quanto */
+  valores: { valor: string; quando: string; por: string | null }[]
+  provas: {
+    /** 'Relatório anual na SEC (20-F)' · 'Formulário de Referência (CVM)' */
+    fonte: string
+    /** '09/04/2026' */
+    data: string | null
+    por: string | null
+    /** 'R$ 30,1 bi em contrato'; null quando a prova não traz número */
+    valor: string | null
+    trecho: string
+    /** 20-F e 10-K são em inglês: a tela avisa em vez de traduzir */
+    emIngles: boolean
+    url: string
+  }[]
 }
 
 /** Bloco "De quem compra e para quem vende" do /asset (AcaoCadeia.vue). */
