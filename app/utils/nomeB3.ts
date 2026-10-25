@@ -49,6 +49,7 @@ const NOME_CERTO: Record<string, string> = {
   'JSL': 'JSL',
   'MAGAZ LUIZA': 'Magazine Luiza',
   'MERCANTIL': 'Mercantil do Brasil',
+  'MRS LOGÍSTICA': 'MRS Logística',
   'NORD BRASIL': 'Banco do Nordeste',
   'NORDON MET': 'Nordon',
   'ORANJEBTC': 'OranjeBTC',

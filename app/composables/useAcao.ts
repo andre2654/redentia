@@ -19,6 +19,8 @@
 import type {
   AcaoAiReadVM,
   AcaoAiVM,
+  AcaoCadeiaItemVM,
+  AcaoCadeiaVM,
   AcaoConsensusVM,
   AcaoDividendsVM,
   AcaoEditorialVM,
@@ -30,6 +32,8 @@ import type {
   AcaoParesVM,
   AcaoPayload,
   AcaoPerfilRow,
+  SupplyChainApi,
+  SupplyLinkApi,
   AcaoRange,
   AcaoScoreVM,
   AcaoSeriesPair,
@@ -1234,6 +1238,7 @@ function petr4Seed(): AcaoPayload {
         { href: '/noticias', title: 'Produção no pré-sal bate recorde no 2º trimestre', source: 'Reuters · ontem', ticker: { text: 'PETR4 +1,10%', dir: 'up' } },
       ],
     },
+    cadeia: null,
     pares: null,
     simuladorHref: simuladorAcoesHref('PETR4', 'STOCK'),
     seo: {
@@ -1248,6 +1253,53 @@ function petr4Seed(): AcaoPayload {
 function buildPares(setor: SetorEntry | null, itens: { ticker: string; nome: string }[] | null | undefined): AcaoParesVM | null {
   if (!setor || !itens || itens.length < 3) return null
   return { setor: { nome: setor.name, href: `/setor/${setor.ptSlug}` }, itens }
+}
+
+/**
+ * "De quem compra e para quem vende" (GET /assets/{t}/supply-chain). O valor
+ * que aparece é um só por linha, na ordem de força: um ano de vendas, a soma
+ * dos contratos, a fatia da receita. Sem valor na fonte → linha sem número
+ * (nunca estimado). Nenhuma ligação verificada → o bloco some.
+ */
+const CADEIA_MAX = 8
+const CADEIA_FONTE: Record<string, string> = {
+  cvm_partes_relacionadas: 'Formulário de Referência (CVM)',
+  edgar_10k: 'relatórios anuais na SEC',
+  nota_explicativa: 'demonstrações financeiras',
+  fre: 'Formulário de Referência (CVM)',
+  ri: 'documentos de RI',
+  release: 'releases de resultado',
+  contrato: 'comunicados das empresas',
+  noticia: 'notícias',
+}
+
+function cadeiaValor(l: SupplyLinkApi): [string, string] | null {
+  if (l.anual) return [fmtCompactMoney(l.anual.valor, l.anual.moeda), l.anual.ano ? `em ${l.anual.ano}` : 'por ano']
+  if (l.contratado?.valor) return [fmtCompactMoney(l.contratado.valor, l.contratado.moeda), 'em contratos']
+  if (l.participacao_receita != null) return [`${nfc.format(l.participacao_receita * 100)}%`, 'da receita']
+  return null
+}
+
+function cadeiaItem(l: SupplyLinkApi): AcaoCadeiaItemVM {
+  return {
+    ticker: l.ticker,
+    nome: l.nome_b3 ? nomeDaEmpresa(l.nome_b3) : l.nome.replace(/,?\s+(S\.?A\.?|Inc\.?|Corp\.?|Corporation)$/i, ''),
+    oQue: l.o_que,
+    valor: cadeiaValor(l)?.[0] ?? null,
+    valorQuando: cadeiaValor(l)?.[1] ?? null,
+  }
+}
+
+function buildCadeia(api: SupplyChainApi | null | undefined): AcaoCadeiaVM | null {
+  if (!api || (!api.compra_de?.length && !api.vende_para?.length)) return null
+  const all = [...api.compra_de, ...api.vende_para]
+  const kinds = [...new Set(all.flatMap((l) => (l.tipos_fonte ?? []).map((t) => CADEIA_FONTE[t]).filter((x): x is string => !!x)))]
+  const fontes = kinds.length > 1 ? `${kinds.slice(0, -1).join(', ')} e ${kinds[kinds.length - 1]}` : kinds[0] ?? ''
+  return {
+    compraDe: api.compra_de.slice(0, CADEIA_MAX).map(cadeiaItem),
+    vendePara: api.vende_para.slice(0, CADEIA_MAX).map(cadeiaItem),
+    fontes,
+  }
 }
 
 /* ————— carga SSR ————— */
@@ -1298,7 +1350,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   // Pares do setor, só pra ação: o perfil já traz o setor ('Energy'), então a
   // chamada entra no mesmo bloco paralelo. Setor fora do registry → sem bloco.
   const setor = profile.type === 'STOCK' ? SETORES_BY_API[apiSlugDoSetor(profile.sector) ?? ''] ?? null : null
-  const [pricesR, ibovR, overviewR, scoreR, consensusR, dividendsR, editorialR, thesesR, newsR, paresR] = await Promise.allSettled([
+  // Cadeia de fornecimento: só papel de empresa (o endpoint 404 pra FII/ETF/BDR).
+  const temCadeia = profile.type === 'STOCK' || profile.type === 'US_STOCK'
+  const [pricesR, ibovR, overviewR, scoreR, consensusR, dividendsR, editorialR, thesesR, newsR, paresR, cadeiaR] = await Promise.allSettled([
     acaoFetchPrices(base, ticker, '12mo'),
     acaoFetchIbovPrices(base, '12mo'),
     acaoFetchOverview(base, ticker),
@@ -1309,6 +1363,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     acaoFetchTheses(base),
     newsStrict ? acaoFetchNewsByTicker(base, ticker) : acaoFetchNewsFiltered(base, ticker),
     setor ? acaoFetchPares(setor.ptSlug, ticker) : Promise.resolve(null),
+    temCadeia ? acaoFetchSupplyChain(base, ticker) : Promise.resolve(null),
   ])
   const ok = <X>(r: PromiseSettledResult<X>): X | null => (r.status === 'fulfilled' ? r.value : null)
 
@@ -1421,6 +1476,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
+    cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR)) : null,
     pares: kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null,
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
@@ -1573,6 +1629,7 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     news: buildNews(ok(newsR)?.data ?? [], { ticker: sym, change_percent: c.change_24h_pct }, series),
     // Cripto não tem editorial gerado (o pipeline cobre tickers da B3).
     editorial: null,
+    cadeia: null,
     pares: null,
     simuladorHref: null,
     seo: buildCryptoSeo(c, sym),

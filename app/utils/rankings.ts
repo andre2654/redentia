@@ -40,14 +40,21 @@ export function rankingPrice(row: RankingRowApi): string {
 
 /** 'R$ 3,5 bi' · 'R$ 850,0 mi' · 'R$ 12,0 mil' — dinheiro compacto pt-BR. */
 export function fmtCompactBrl(v: number | string | null | undefined): string {
+  return fmtCompactMoney(v, 'BRL')
+}
+
+/** O mesmo compacto em real ou dólar: 'US$ 459,0 mi' (a cadeia de fornecimento cita 20-F). */
+export function fmtCompactMoney(v: number | string | null | undefined, currency: string | null | undefined): string {
   const n = num(v)
   if (n == null) return '—'
+  if (currency && currency !== 'BRL' && currency !== 'USD') return '—'
+  const sym = currency === 'USD' ? 'US$' : 'R$'
   const abs = Math.abs(n)
-  if (abs >= 1e12) return `R$ ${nf1.format(n / 1e12)} tri`
-  if (abs >= 1e9) return `R$ ${nf1.format(n / 1e9)} bi`
-  if (abs >= 1e6) return `R$ ${nf1.format(n / 1e6)} mi`
-  if (abs >= 1e3) return `R$ ${nf1.format(n / 1e3)} mil`
-  return nfBrl.format(n)
+  if (abs >= 1e12) return `${sym} ${nf1.format(n / 1e12)} tri`
+  if (abs >= 1e9) return `${sym} ${nf1.format(n / 1e9)} bi`
+  if (abs >= 1e6) return `${sym} ${nf1.format(n / 1e6)} mi`
+  if (abs >= 1e3) return `${sym} ${nf1.format(n / 1e3)} mil`
+  return currency === 'USD' ? `US$ ${nf1.format(n)}` : nfBrl.format(n)
 }
 
 /** '+12,3%' / '-4,5%'. 1 casa é decisão da tabela Nu (densidade); a tabela

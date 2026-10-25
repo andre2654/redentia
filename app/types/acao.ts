@@ -452,6 +452,49 @@ export interface AcaoParesVM {
   itens: { ticker: string; nome: string }[]
 }
 
+/** GET /assets/{t}/supply-chain — uma ligação da cadeia (Backend: SupplyChainService::forTicker). */
+export interface SupplyLinkApi {
+  ticker: string
+  tickers: string[]
+  /** nome completo ('Braskem S.A.', 'GE Aerospace') */
+  nome: string
+  /** coluna bruta da B3 do papel ('BRASKEM     PNA     N1'); null nos EUA */
+  nome_b3: string | null
+  o_que: string | null
+  anual: { valor: number; moeda: string; ano: number | null; informado_por: string | null } | null
+  contratado: { valor: number | null; moeda: string | null; contratos: number; informado_por: string | null } | null
+  participacao_receita: number | null
+  /** todos os tipos de prova da ligação ('cvm_partes_relacionadas', 'edgar_10k'…) */
+  tipos_fonte: string[]
+  fontes: { tipo: string; url: string; data: string | null; trecho: string; informado_por: string | null }[]
+}
+
+export interface SupplyChainApi {
+  ticker: string
+  compra_de: SupplyLinkApi[]
+  vende_para: SupplyLinkApi[]
+}
+
+/** Uma linha de "Compra de / Vende para" (AcaoCadeia.vue). */
+export interface AcaoCadeiaItemVM {
+  ticker: string
+  nome: string
+  /** 'nafta', 'transporte ferroviário'; null quando a fonte não diz */
+  oQue: string | null
+  /** 'R$ 16,2 bi' · 'R$ 70,4 bi' · '12%'; null sem valor na fonte */
+  valor: string | null
+  /** o que o número é: 'em 2025' · 'em contratos' · 'da receita' (vai embaixo no celular) */
+  valorQuando: string | null
+}
+
+/** Bloco "De quem compra e para quem vende" do /asset (AcaoCadeia.vue). */
+export interface AcaoCadeiaVM {
+  compraDe: AcaoCadeiaItemVM[]
+  vendePara: AcaoCadeiaItemVM[]
+  /** 'Formulário de Referência (CVM) e relatórios anuais na SEC' */
+  fontes: string
+}
+
 export interface AcaoNewsVM {
   featured: NuNewsFeaturedItem
   rows: NuNewsRowItem[]
@@ -586,6 +629,8 @@ export interface AcaoPayload {
   news: AcaoNewsVM | null
   /** Prosa editorial longa por ativo. null quando não há editorial gerado. */
   editorial: AcaoEditorialVM | null
+  /** De quem a empresa compra e para quem vende (só ação; null sem ligação verificada). */
+  cadeia: AcaoCadeiaVM | null
   /** Outras empresas do setor (só ação, com 3 pares ou mais; ver utils/paresDoSetor.ts). */
   pares: AcaoParesVM | null
   /**
