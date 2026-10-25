@@ -20,6 +20,16 @@ const props = defineProps<{ cadeia: AcaoCadeiaVM; nome: string; ticker: string }
 // fonte provou a ligação, mas não disse quanto). Um painel só para a seção.
 const aberto = ref<AcaoCadeiaDetalheVM | null>(null)
 
+/**
+ * Espessura proporcional ao valor: fatia da receita (venda) ou do custo
+ * (compra), de 1,25px (sem valor comparável) a 15px (o lado inteiro). Raiz
+ * quadrada para a fatia de 3% ainda aparecer ao lado da de 97%. É o que deixa à
+ * vista que a Braskem vende quase tudo para "Outros clientes".
+ */
+function espessura(peso: number | null): string {
+  return `${peso == null ? 1.25 : 1.25 + Math.sqrt(peso) * 13.75}px`
+}
+
 interface Ligacao { item: AcaoCadeiaItemVM; y: number; d: string; ex: number; ey: number }
 interface Ramo { itens: Ligacao[]; top: number }
 
@@ -80,7 +90,14 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
 
       <ul class="acd__nos" :style="{ height: `${total}px`, paddingTop: `${compra.top}px` }">
         <li v-for="l in compra.itens" :key="l.item.ticker">
-          <NuxtLink :to="`/asset/${l.item.ticker}`" class="acd__no">
+          <div v-if="l.item.resto" class="acd__no acd__no--resto">
+            <span class="acd__resto-tile" aria-hidden="true">···</span>
+            <span class="acd__id">
+              <span class="acd__ticker">{{ l.item.nome }}</span>
+              <span class="acd__nome">{{ l.item.oQue }}</span>
+            </span>
+          </div>
+          <NuxtLink v-else :to="`/asset/${l.item.ticker}`" class="acd__no">
             <NuAssetLogo :ticker="l.item.ticker" :letter="l.item.ticker.charAt(0)" tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)" :size="36" :radius="11" />
             <span class="acd__id">
               <span class="acd__ticker">{{ l.item.ticker }}</span>
@@ -92,13 +109,13 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
 
       <div class="acd__fio" :style="{ height: `${total}px` }">
         <svg :viewBox="`0 0 100 ${total}`" preserveAspectRatio="none" aria-hidden="true">
-          <path v-for="l in compra.itens" :key="l.item.ticker" :d="l.d" />
+          <path v-for="l in compra.itens" :key="l.item.ticker" :d="l.d" :style="{ strokeWidth: espessura(l.item.peso) }" />
         </svg>
         <template v-for="l in compra.itens" :key="`v-${l.item.ticker}`">
           <button
             type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
             :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
-            :aria-label="`Detalhes: ${l.item.detalhe.de} vende para ${l.item.detalhe.para}`"
+            :aria-label="`Detalhes: ${l.item.detalhe.titulo}`"
             @click="aberto = l.item.detalhe"
           ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
         </template>
@@ -114,13 +131,13 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
 
       <div class="acd__fio" :style="{ height: `${total}px` }">
         <svg :viewBox="`0 0 100 ${total}`" preserveAspectRatio="none" aria-hidden="true">
-          <path v-for="l in vende.itens" :key="l.item.ticker" :d="l.d" />
+          <path v-for="l in vende.itens" :key="l.item.ticker" :d="l.d" :style="{ strokeWidth: espessura(l.item.peso) }" />
         </svg>
         <template v-for="l in vende.itens" :key="`v-${l.item.ticker}`">
           <button
             type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
             :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
-            :aria-label="`Detalhes: ${l.item.detalhe.de} vende para ${l.item.detalhe.para}`"
+            :aria-label="`Detalhes: ${l.item.detalhe.titulo}`"
             @click="aberto = l.item.detalhe"
           ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
         </template>
@@ -128,7 +145,14 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
 
       <ul class="acd__nos" :style="{ height: `${total}px`, paddingTop: `${vende.top}px` }">
         <li v-for="l in vende.itens" :key="l.item.ticker">
-          <NuxtLink :to="`/asset/${l.item.ticker}`" class="acd__no">
+          <div v-if="l.item.resto" class="acd__no acd__no--resto">
+            <span class="acd__resto-tile" aria-hidden="true">···</span>
+            <span class="acd__id">
+              <span class="acd__ticker">{{ l.item.nome }}</span>
+              <span class="acd__nome">{{ l.item.oQue }}</span>
+            </span>
+          </div>
+          <NuxtLink v-else :to="`/asset/${l.item.ticker}`" class="acd__no">
             <NuAssetLogo :ticker="l.item.ticker" :letter="l.item.ticker.charAt(0)" tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)" :size="36" :radius="11" />
             <span class="acd__id">
               <span class="acd__ticker">{{ l.item.ticker }}</span>
@@ -150,7 +174,14 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
           <div class="acd__ramo-grid">
             <ul class="acd__nos" :style="{ height: `${r.total}px` }">
               <li v-for="l in r.g.itens" :key="l.item.ticker">
-                <NuxtLink :to="`/asset/${l.item.ticker}`" class="acd__no">
+                <div v-if="l.item.resto" class="acd__no acd__no--resto">
+                  <span class="acd__resto-tile" aria-hidden="true">···</span>
+                  <span class="acd__id">
+                    <span class="acd__ticker">{{ l.item.nome }}</span>
+                    <span class="acd__nome">{{ l.item.oQue?.split(' · ')[1] }}</span>
+                  </span>
+                </div>
+                <NuxtLink v-else :to="`/asset/${l.item.ticker}`" class="acd__no">
                   <NuAssetLogo :ticker="l.item.ticker" :letter="l.item.ticker.charAt(0)" tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)" :size="30" :radius="9" />
                   <span class="acd__id">
                     <span class="acd__ticker">{{ l.item.ticker }}</span>
@@ -162,13 +193,13 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
             <div class="acd__fio" :style="{ height: `${r.total}px` }">
               <!-- ramo('vende') já desenha a empresa em x=0: a curva serve como está -->
               <svg :viewBox="`0 0 100 ${r.total}`" preserveAspectRatio="none" aria-hidden="true">
-                <path v-for="l in r.g.itens" :key="l.item.ticker" :d="l.d" />
+                <path v-for="l in r.g.itens" :key="l.item.ticker" :d="l.d" :style="{ strokeWidth: espessura(l.item.peso) }" />
               </svg>
               <template v-for="l in r.g.itens" :key="`v-${l.item.ticker}`">
                 <button
             type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
             :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
-            :aria-label="`Detalhes: ${l.item.detalhe.de} vende para ${l.item.detalhe.para}`"
+            :aria-label="`Detalhes: ${l.item.detalhe.titulo}`"
             @click="aberto = l.item.detalhe"
           ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
               </template>
@@ -227,6 +258,15 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
   transition: transform .18s, box-shadow .2s;
 }
 .acd__no:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+/* o resto (sem nome, sem página): cartão vazado, sem hover de link */
+.acd__no--resto { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-navy-14); }
+.acd__no--resto:hover { transform: none; box-shadow: inset 0 0 0 1.5px var(--nu-navy-14); }
+.acd__resto-tile {
+  flex: 0 0 auto; width: 36px; height: 36px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--nu-navy-06); color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: 1px;
+}
+.acd__ramos .acd__resto-tile { width: 30px; height: 30px; border-radius: 9px; }
 .acd__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .acd__ticker { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .acd__nome {

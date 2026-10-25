@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Painel de uma ligação da cadeia de fornecimento (abre ao clicar na etiqueta
-// do grafo: o valor ou "Indisponível"). Mostra o que circula inteiro, cada
+// do grafo: o valor ou "Indisponível"). Nos nós de resto ("Outros clientes",
+// "Restante do custo") mostra a conta — total da DFP − listadas = resto. Mostra o que circula inteiro, cada
 // valor com quem o informou e as provas — o trecho literal do documento, a
 // data e o link. Sem valor, diz isso com todas as letras: a ligação existe
 // pelas provas, o número é que nenhuma fonte deu.
@@ -53,7 +54,7 @@ onBeforeUnmount(() => {
         <div class="acx__head">
           <div>
             <div class="acx__eyebrow">Cadeia de fornecimento</div>
-            <h4 :id="titleId" class="acx__title">{{ detalhe.de }} vende para {{ detalhe.para }}</h4>
+            <h4 :id="titleId" class="acx__title">{{ detalhe.titulo }}</h4>
             <p v-if="detalhe.oQue" class="acx__oque">{{ detalhe.oQue }}</p>
           </div>
           <button type="button" class="acx__close" aria-label="Fechar" @click="emit('close')">✕</button>
@@ -62,7 +63,22 @@ onBeforeUnmount(() => {
         <div class="acx__divider" />
 
         <div class="acx__label">Valor</div>
-        <ul v-if="detalhe.valores.length" class="acx__valores">
+        <!-- nó de resto: a conta que dá o número, com a fonte do total -->
+        <template v-if="detalhe.conta">
+          <ol class="acx__conta">
+            <li v-for="(c, i) in detalhe.conta" :key="i" :class="{ 'acx__conta--total': c.sinal === '=' }">
+              <span class="acx__sinal">{{ c.sinal }}</span>
+              <span class="acx__crot">{{ c.rotulo }}</span>
+              <span class="acx__cval">{{ c.valor }}</span>
+            </li>
+          </ol>
+          <p v-if="detalhe.nota" class="acx__nota">{{ detalhe.nota }}</p>
+          <p v-if="detalhe.fonteConta" class="acx__nota">
+            Fonte do total:
+            <a :href="detalhe.fonteConta.url" target="_blank" rel="noopener noreferrer" class="acx__link acx__link--inline">{{ detalhe.fonteConta.rotulo }} ↗</a>
+          </p>
+        </template>
+        <ul v-else-if="detalhe.valores.length" class="acx__valores">
           <li v-for="(v, i) in detalhe.valores" :key="i">
             <span class="acx__num">{{ v.valor }}</span>
             <span class="acx__quando">{{ v.quando }}</span>
@@ -74,8 +90,8 @@ onBeforeUnmount(() => {
           <span class="acx__por">Nenhuma das fontes diz quanto. A ligação está provada pelos documentos abaixo; o valor não é estimado.</span>
         </p>
 
-        <div class="acx__label acx__label--provas">{{ detalhe.provas.length > 1 ? 'Provas' : 'Prova' }}</div>
-        <ol class="acx__provas">
+        <div v-if="detalhe.provas.length" class="acx__label acx__label--provas">{{ detalhe.provas.length > 1 ? 'Provas' : 'Prova' }}</div>
+        <ol v-if="detalhe.provas.length" class="acx__provas">
           <li v-for="(p, i) in detalhe.provas" :key="i" class="acx__prova">
             <div class="acx__meta">
               <span class="acx__fonte">{{ p.fonte }}</span>
@@ -140,6 +156,16 @@ onBeforeUnmount(() => {
 .acx__por { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .acx__indisp .acx__por { flex-basis: 100%; }
 
+.acx__conta { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.acx__conta li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: baseline; gap: 8px; }
+.acx__sinal { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 700; }
+.acx__crot { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
+.acx__cval { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.acx__conta--total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--nu-day-divider); }
+.acx__conta--total .acx__crot { color: var(--nu-ink); font-weight: 700; }
+.acx__conta--total .acx__cval { font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; }
+.acx__nota { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.acx__link--inline { margin-left: 0; }
 .acx__provas { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .acx__prova { background: var(--nu-cream); border-radius: var(--nu-r-panel); padding: 16px 18px; }
 .acx__meta { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
