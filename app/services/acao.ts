@@ -18,6 +18,7 @@ import type {
   FundamentalsOverviewApi,
   PricePointApi,
   ScoreRowApi,
+  SupplyChainApi,
   ThesisDetailApi,
   TickerProfileApi,
 } from '~/types/acao'
@@ -109,6 +110,15 @@ export function acaoFetchTheses(_base: string) {
  */
 export function acaoFetchPares(ptSlug: string, ticker: string) {
   return $fetch<{ data: { ticker: string; nome: string }[] }>(`/api/setor/${ptSlug}/pares`, { ...json, query: { ticker } })
+}
+
+/**
+ * GET /assets/{t}/supply-chain — de quem a empresa compra e para quem vende,
+ * entre listadas, com valor e provas. Flat (sem wrapper `data`); listas vazias
+ * quando nada foi verificado; 404 quando o papel não é de empresa.
+ */
+export function acaoFetchSupplyChain(base: string, ticker: string) {
+  return $fetch<SupplyChainApi>(`${base}/assets/${ticker}/supply-chain`, json)
 }
 
 /** GET /theses/{slug} — detail com companies[] (papel do ativo por empresa). */

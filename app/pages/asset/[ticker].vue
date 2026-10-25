@@ -168,6 +168,10 @@ if (data.value) {
 
     <!-- Outras empresas do setor + link pro /setor (só ação). Creme depois do
          branco das notícias, antes do navy do rodapé. -->
-    <AcaoPares v-if="acao.pares" :pares="acao.pares" />
+    <!-- De quem compra e para quem vende (creme). Com ela, os pares do setor
+         abaixo passam a branco pra manter a alternância antes do rodapé. -->
+    <AcaoCadeia v-if="acao.cadeia" :cadeia="acao.cadeia" :nome="acao.name" :ticker="acao.ticker" />
+
+    <AcaoPares v-if="acao.pares" :pares="acao.pares" :tone="acao.cadeia ? 'white' : 'cream'" />
   </div>
 </template>

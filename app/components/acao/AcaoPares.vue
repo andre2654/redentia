@@ -5,12 +5,15 @@
 // quê está em app/utils/paresDoSetor.ts; o bloco só existe com 3 pares ou mais.
 import type { AcaoParesVM } from '~/types/acao'
 
-const props = defineProps<{ pares: AcaoParesVM }>()
+// `tone="white"`: quando a cadeia de fornecimento (AcaoCadeia, creme) vem logo
+// acima, a banda vira branca e o cartão creme — duas bandas creme seguidas
+// virariam uma só, com o dobro do respiro no meio.
+const props = withDefaults(defineProps<{ pares: AcaoParesVM; tone?: 'cream' | 'white' }>(), { tone: 'cream' })
 const setor = computed(() => props.pares.setor.nome.toLowerCase())
 </script>
 
 <template>
-  <section class="apr">
+  <section class="apr" :class="{ 'apr--white': tone === 'white' }">
     <h2 class="apr__title">Outras empresas do setor {{ setor }}.</h2>
     <ul class="apr__grid">
       <li v-for="p in pares.itens" :key="p.ticker">
@@ -54,6 +57,8 @@ const setor = computed(() => props.pares.setor.nome.toLowerCase())
   transition: transform .18s, box-shadow .2s;
 }
 .apr__card:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+.apr--white { background: var(--nu-white); }
+.apr--white .apr__card { background: var(--nu-cream); }
 .apr__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .apr__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .apr__nome {

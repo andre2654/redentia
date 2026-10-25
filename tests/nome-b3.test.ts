@@ -45,6 +45,8 @@ test('nome que a coluna da B3 abrevia', () => {
   assert.equal(nomeDaEmpresa('MAGAZ LUIZA ON      NM'), 'Magazine Luiza')
   assert.equal(nomeDaEmpresa('PETRORIO    ON      NM'), 'PRIO')
   assert.equal(nomeDaEmpresa('WEG         ON  EJ  NM'), 'WEG')
+  // balcão, sem classe na coluna: a sigla não vira "Mrs" (cadeia de fornecimento)
+  assert.equal(nomeDaEmpresa('MRS LOGÍSTICA'), 'MRS Logística')
 })
 
 test('BDR: a classe DRN sai, grudada ou não', () => {
