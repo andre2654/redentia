@@ -32,16 +32,32 @@ usePageSeo({
   title: doc.title,
   description: doc.description,
   path: `/guias/${doc.slug}`,
-  structuredData: [{
-    '@type': 'Article',
-    headline: doc.title,
-    description: doc.description,
-    datePublished: doc.datePublished,
-    dateModified: doc.dateModified,
-    author: { '@type': 'Organization', name: 'Redentia' },
-    articleSection: doc.tag,
-    inLanguage: 'pt-BR',
-  }],
+  structuredData: [
+    {
+      '@type': 'Article',
+      headline: doc.title,
+      description: doc.description,
+      datePublished: doc.datePublished,
+      dateModified: doc.dateModified,
+      author: { '@type': 'Organization', name: 'Redentia' },
+      articleSection: doc.tag,
+      inLanguage: 'pt-BR',
+    },
+    ...(doc.howTo
+      ? [{
+          '@type': 'HowTo',
+          name: doc.howTo.name,
+          description: doc.howTo.description,
+          inLanguage: 'pt-BR',
+          step: doc.howTo.steps.map((step, i) => ({
+            '@type': 'HowToStep',
+            position: i + 1,
+            name: step.name,
+            text: step.text,
+          })),
+        }]
+      : []),
+  ],
   breadcrumbs: [
     { name: 'Início', path: '/' },
     { name: 'Guias', path: '/guias' },
@@ -84,6 +100,7 @@ usePageSeo({
               <NuStepsTimeline v-else-if="b.kind === 'steps'" :steps="b.items" class="gdp__steps" />
               <NuCheckList v-else-if="b.kind === 'checks'" :items="b.items" class="gdp__checks" />
               <GuiasEtfCostTable v-else-if="b.kind === 'etf-costs'" :tickers="b.tickers" />
+              <GuiasPrecoTetoExemplo v-else-if="b.kind === 'preco-teto-vivo'" :ticker="b.ticker" />
             </template>
           </section>
 

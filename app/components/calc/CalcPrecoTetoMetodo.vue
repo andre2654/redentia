@@ -129,6 +129,8 @@ usePageSeo({
       <p class="ptm__cross">
         Quer os quatro métodos lado a lado, com consenso e busca por ticker?
         <NuxtLink to="/calculadora/preco-teto">Use a calculadora completa</NuxtLink>.
+        O passo a passo das cinco fórmulas está no
+        <NuxtLink to="/guias/como-calcular-preco-teto">guia de como calcular preço teto</NuxtLink>.
       </p>
     </section>
 

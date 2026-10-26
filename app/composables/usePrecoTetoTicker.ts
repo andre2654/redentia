@@ -154,6 +154,27 @@ async function loadPrecoTeto(base: string, ticker: string): Promise<PrecoTetoVie
   return view
 }
 
+/**
+ * A mesma carga da página por ticker, sem derrubar quem hospeda o bloco.
+ * Guia e página educativa degradam: dado ausente vira null, não 503.
+ */
+export async function usePrecoTetoTickerOpcional(ticker: string) {
+  const config = useRuntimeConfig()
+  const serverBase = (config.backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'
+  const clientBase = '/api/backend'
+  const { data } = await useAsyncData<PrecoTetoView | null>(
+    `preco-teto-guia:${ticker}`,
+    async () => {
+      try {
+        return await loadPrecoTeto(import.meta.server ? serverBase : clientBase, ticker)
+      } catch {
+        return null
+      }
+    },
+  )
+  return data
+}
+
 export async function usePrecoTetoTicker(ticker: string) {
   const config = useRuntimeConfig()
   const serverBase = (config.backendDirectBase as string) || 'https://redentia-api.saraivada.com/api'

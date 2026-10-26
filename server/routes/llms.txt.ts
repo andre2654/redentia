@@ -155,12 +155,14 @@ Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histór
 - [Preço teto por P/L setorial](${o}/calculadora/preco-teto/pl-setorial)
 - [Preço teto pelo valor patrimonial](${o}/calculadora/preco-teto/valor-patrimonial): VPA × 1,5
 - [Preço teto projetivo](${o}/calculadora/preco-teto/projetivo): com dividendo futuro estimado
+- [Como calcular preço teto](${o}/guias/como-calcular-preco-teto): as cinco fórmulas, exemplo numérico passo a passo, erros comuns e a diferença entre preço teto e preço justo. Não é recomendação de compra ou venda
 - Preço teto por papel, em /calculadora/preco-teto/{TICKER} (${nPrecoTeto} ações e FIIs com LPA ou dividendo): Bazin, Graham, P/L setorial, VPA e a conta com os números do ticker. Exemplo: [PETR4](${o}/calculadora/preco-teto/PETR4)
 
 ### Conteúdo educacional
 
 - [Hub de guias](${o}/guias)
 - [Guia: Open Finance](${o}/guias/open-finance): como conectar corretoras e ver a carteira consolidada
+- [Como calcular preço teto](${o}/guias/como-calcular-preco-teto): fórmulas de Bazin, Graham, P/L setorial, valor patrimonial e projetivo. Não é recomendação de compra ou venda
 - [Glossário do investidor](${o}/glossario): ${nGlossario} termos do mercado brasileiro, cada um com página própria em /glossario/{slug}
 
 ## Redentia MCP (servidor MCP para agentes de IA)
