@@ -9,22 +9,26 @@
  *  - Teses, ativos, tesouro, cripto e dividendos: fetch do backend real com
  *    try/catch — se o backend falhar, a seção é omitida (sitemap parcial >
  *    sitemap 500).
- *  - Ativos /asset/{TICKER}: STOCK, REIT, BDR e ETF (a página suporta os 4) E
- *    presentes em INDEXABLE_ASSETS (poda fase 1, 03/08/2026). O sitemap deixou
- *    de publicar os ~1.674 tickers do backend porque 1.509 deles não tinham UMA
- *    impressão em 92 dias. Critério e como atualizar: app/content/seo/indexable-assets.ts.
- *  - Dividendos /dividendos/{TICKER}: 12 clássicos + top 20 do ranking de DY
- *    (dedupe). Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} idem, do
- *    backend. As rotas /tesouro e /dividendos estão em construção em frentes
- *    paralelas — tudo bem o sitemap já listá-las.
+ *  - Ativos /asset/{TICKER}: o mesmo universo que a página responde 200 —
+ *    STOCK, REIT, BDR e ETF do /tickers-full, símbolo B3 válido, sem alias.
+ *    Alias 301, símbolo inválido 404 e deslistado 410 ficam de fora. A poda
+ *    INDEXABLE_ASSETS (03/08 e 20/10/2026) saiu do sitemap em 26/10/2026:
+ *    ela escondia páginas 200 com demanda (BBDC3, SANB4, ITUB3, …). A lista
+ *    continua valendo só para os pares do setor (app/utils/paresDoSetor.ts).
+ *  - Dividendos /dividendos/{TICKER}: clássicos + demanda medida + top 100 do
+ *    ranking de DY (o endpoint não pagina além de 100). A guarda anti-404
+ *    tira ticker que o /tickers-full não conhece. Não dá para listar todo
+ *    pagador sem um endpoint em massa: página sem provento é 404.
+ *  - Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} (top 20, símbolo válido)
+ *    vêm do backend. O hub /tesouro entra; o hub /dividendos não (é 301).
  */
 import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
-import { INDEXABLE_ASSETS } from '../../app/content/seo/indexable-assets'
 import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
 import { symbolShape } from '../../app/utils/tickerClass'
+import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 
 export interface SitePage {
@@ -150,7 +154,7 @@ const CENARIO_PAGES: SitePage[] = [
 export const FEATURED_TICKERS = [
   'PETR4', 'PETR3', 'VALE3', 'ITUB4', 'BBDC4', 'BBAS3', 'ABEV3', 'WEGE3',
   'B3SA3', 'ITSA4', 'BPAC11', 'SANB11', 'EQTL3', 'RENT3', 'SUZB3', 'RADL3',
-  'PRIO3', 'EMBR3', 'VIVT4', 'TIMS3', 'UGPA3', 'VBBR3', 'CSAN3', 'GGBR4',
+  'PRIO3', 'EMBJ3', 'VIVT4', 'TIMS3', 'UGPA3', 'VBBR3', 'CSAN3', 'GGBR4',
   'CSNA3', 'USIM5', 'CMIG4', 'CPLE6', 'ELET3', 'SBSP3', 'TOTS3', 'LREN3',
   'MGLU3', 'HAPV3', 'RDOR3', 'TAEE11', 'KLBN11', 'BRFS3', 'JBSS3', 'AZUL4',
   'MXRF11', 'HGLG11', 'KNIP11', 'KNCR11', 'XPML11', 'VISC11', 'BTLG11', 'HGRE11',
@@ -171,6 +175,8 @@ interface TickerApiItem {
   market_cap?: number | null
   /** pregão do preço, 'YYYY-MM-DD' (o `price_at` vem 'd/m', sem ano) */
   price_date?: string | null
+  /** preenchido, a URL do código velho é 301 — não entra no sitemap */
+  alias_of?: string | null
 }
 
 /** 'YYYY-MM-DD' válido ou undefined — lastmod inventado derruba o sitemap inteiro. */
@@ -239,19 +245,13 @@ const fetchAssetPages = defineCachedFunction(
       })
       const items = Array.isArray(res?.data) ? res.data : []
       return items
-        .filter(
-          (t): t is TickerApiItem & { ticker: string } =>
-            typeof t.ticker === 'string' &&
-            /^[A-Z][A-Z0-9]{3}\d{1,2}$/.test(t.ticker.toUpperCase()) &&
-            (t.type === 'STOCK' || t.type === 'REIT' || t.type === 'BDR' || t.type === 'ETF') &&
-            // PODA FASE 1 (03/08/2026): só entra no sitemap ativo com demanda
-            // demonstrada ou editorial escrito. Antes daqui iam TODOS os ~1.674
-            // tickers que o backend devolvesse, e 1.509 deles não tinham UMA
-            // impressão em 92 dias. Ver app/content/seo/indexable-assets.ts pra
-            // o critério e pra como atualizar. A página em si NÃO deixa de
-            // existir: some do sitemap, segue navegável e linkável.
-            INDEXABLE_ASSETS.has(t.ticker.toUpperCase()),
-        )
+        .flatMap((t) => {
+          // Mesma régua da página: 200 estável. Alias, símbolo inválido e tipo
+          // fora de STOCK/REIT/BDR/ETF (US, UNKNOWN) não entram — 301, 404 ou
+          // outro universo. Deslistado não vem no /tickers-full.
+          const ticker = tickerDePaginaAtivo(t)
+          return ticker ? [{ ...t, ticker }] : []
+        })
         // Ordem alfabética de propósito: o market_cap do /tickers-full vem em
         // escalas misturadas e mutáveis (raw R$, milhões e um número pequeno
         // normalizado — verificado ao vivo 2026-07-13), então ordenar por ele
@@ -260,10 +260,10 @@ const fetchAssetPages = defineCachedFunction(
         // conhecidos.
         .sort((a, b) => a.ticker.localeCompare(b.ticker))
         .map((t) => ({
-          path: `/asset/${t.ticker.toUpperCase()}`,
+          path: `/asset/${t.ticker}`,
           title: t.name
-            ? `${t.ticker.toUpperCase()} (${t.name.replace(/\s+/g, ' ').trim()})`
-            : t.ticker.toUpperCase(),
+            ? `${t.ticker} (${t.name.replace(/\s+/g, ' ').trim()})`
+            : t.ticker,
           lastmod: isoDate(t.price_date), // pregão do preço do próprio ativo
         }))
     } catch {
@@ -271,7 +271,7 @@ const fetchAssetPages = defineCachedFunction(
     }
   },
   {
-    name: 'site-pages-assets',
+    name: 'site-pages-assets-v3',
     maxAge: 3600,
     swr: true,
     getKey: () => 'all',
@@ -429,26 +429,28 @@ interface RankingRowApiLite {
 
 /**
  * /dividendos/{TICKER}: 12 clássicos + os que têm demanda medida
- * (app/content/seo/indexable-dividends.ts) + top 20 do ranking de DY (dedupe).
+ * (app/content/seo/indexable-dividends.ts) + top 100 do ranking de DY.
+ * O ranking não pagina (limit=1000 devolve os mesmos 100). Símbolo inválido
+ * fica de fora: a página 404a antes do fetch.
  */
 const fetchDividendPages = defineCachedFunction(
   async (): Promise<SitePage[]> => {
     const tickers = new Set<string>([...DIVIDEND_CLASSICS, ...INDEXABLE_DIVIDENDS])
     try {
-      const res = await $fetch<{ data?: RankingRowApiLite[] }>('/rankings/top-dividend-yield?limit=20', {
+      const res = await $fetch<{ data?: RankingRowApiLite[] }>('/rankings/top-dividend-yield?limit=100', {
         baseURL: backendBase(),
         timeout: 10_000,
       })
       const items = Array.isArray(res?.data) ? res.data : []
       for (const row of items) {
-        if (typeof row.ticker === 'string' && row.ticker.length > 0) {
+        if (typeof row.ticker === 'string' && symbolShape(row.ticker) === 'b3') {
           tickers.add(row.ticker.toUpperCase())
         }
       }
     } catch {
       // ranking fora → segue só com os clássicos
     }
-    return [...tickers].map((t) => ({
+    return [...tickers].filter((t) => symbolShape(t) === 'b3').map((t) => ({
       path: `/dividendos/${t}`,
       title: `Dividendos de ${t}`,
       description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${t}.`,
@@ -456,7 +458,7 @@ const fetchDividendPages = defineCachedFunction(
     }))
   },
   {
-    name: 'site-pages-dividends',
+    name: 'site-pages-dividends-v2',
     maxAge: 3600,
     swr: true,
     getKey: () => 'all',

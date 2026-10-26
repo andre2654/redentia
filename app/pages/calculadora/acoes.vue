@@ -179,9 +179,9 @@ const faqItems = [
 // 34/semana). Se o grupo SIM piorar mais de 3 posições, volte este title e o
 // H1, mantendo as âncoras. Sem efeito não reverte a dividend-yield.
 usePageSeo({
-  title: 'Simulador de Ações e Dividendos da B3 2026',
+  title: 'Calculadora de dividendos de ações da B3',
   description:
-    'Simulador e calculadora de dividendos com histórico real da B3: quanto PETR4, ITUB4, VALE3 ou qualquer ação teria rendido com dividendos reinvestidos. Grátis.',
+    'Simule quanto PETR4, ITUB4, VALE3 e outras ações teriam rendido com dividendos reinvestidos. Histórico real da B3, grátis.',
   path: '/calculadora/acoes',
   breadcrumbs: [
     { name: 'Home', path: '/' },

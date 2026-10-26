@@ -305,6 +305,60 @@ const plPresets = [
 
 /* ————— dados de conteúdo (texto verbatim da página antiga) ————— */
 
+// Bloco server-rendered de /asset. A lista de "ações populares" acima abre a
+// calculadora (?ticker=); esta leva o Google às páginas de ativo. Estática de
+// propósito: não depende do fetch client-only de /tickers-full.
+const ACOES_BUSCADAS = [
+  { ticker: 'PETR4', name: 'Petrobras' },
+  { ticker: 'PETR3', name: 'Petrobras ON' },
+  { ticker: 'VALE3', name: 'Vale' },
+  { ticker: 'ITUB4', name: 'Itaú' },
+  { ticker: 'ITUB3', name: 'Itaú ON' },
+  { ticker: 'BBDC4', name: 'Bradesco' },
+  { ticker: 'BBDC3', name: 'Bradesco ON' },
+  { ticker: 'BBAS3', name: 'Banco do Brasil' },
+  { ticker: 'SANB11', name: 'Santander' },
+  { ticker: 'SANB4', name: 'Santander PN' },
+  { ticker: 'ABEV3', name: 'Ambev' },
+  { ticker: 'WEGE3', name: 'WEG' },
+  { ticker: 'B3SA3', name: 'B3' },
+  { ticker: 'ITSA4', name: 'Itaúsa' },
+  { ticker: 'BPAC11', name: 'BTG Pactual' },
+  { ticker: 'BPAC5', name: 'BTG PN' },
+  { ticker: 'BBSE3', name: 'BB Seguridade' },
+  { ticker: 'EQTL3', name: 'Equatorial' },
+  { ticker: 'RENT3', name: 'Localiza' },
+  { ticker: 'SUZB3', name: 'Suzano' },
+  { ticker: 'RADL3', name: 'RaiaDrogasil' },
+  { ticker: 'PRIO3', name: 'PRIO' },
+  { ticker: 'EMBJ3', name: 'Embraer' },
+  { ticker: 'VIVT3', name: 'Telefônica' },
+  { ticker: 'TIMS3', name: 'TIM' },
+  { ticker: 'UGPA3', name: 'Ultrapar' },
+  { ticker: 'VBBR3', name: 'Vibra' },
+  { ticker: 'CSAN3', name: 'Cosan' },
+  { ticker: 'GGBR4', name: 'Gerdau' },
+  { ticker: 'CMIG4', name: 'Cemig' },
+  { ticker: 'CPLE6', name: 'Copel' },
+  { ticker: 'EGIE3', name: 'Engie' },
+  { ticker: 'SBSP3', name: 'Sabesp' },
+  { ticker: 'TOTS3', name: 'Totvs' },
+  { ticker: 'LREN3', name: 'Renner' },
+  { ticker: 'MGLU3', name: 'Magazine Luiza' },
+  { ticker: 'RDOR3', name: 'Rede D\'Or' },
+  { ticker: 'HAPV3', name: 'Hapvida' },
+  { ticker: 'TAEE11', name: 'Taesa' },
+  { ticker: 'KLBN11', name: 'Klabin' },
+  { ticker: 'JBSS3', name: 'JBS' },
+  { ticker: 'DIRR3', name: 'Direcional' },
+  { ticker: 'JHSF3', name: 'JHSF' },
+  { ticker: 'EVEN3', name: 'Even' },
+  { ticker: 'ALUP11', name: 'Alupar' },
+  { ticker: 'CXSE3', name: 'Caixa Seguridade' },
+  { ticker: 'RAIL3', name: 'Rumo' },
+  { ticker: 'MULT3', name: 'Multiplan' },
+]
+
 const popularTickers = [
   { ticker: 'PETR4', name: 'Petrobras' },
   { ticker: 'ITUB4', name: 'Itaú Unibanco' },
@@ -594,6 +648,23 @@ usePageSeo({
           v-for="t in popularTickers"
           :key="t.ticker"
           :to="`/calculadora/preco-teto?ticker=${t.ticker}`"
+          class="pt__ticker"
+        >
+          <span class="pt__ticker-code">{{ t.ticker }}</span>
+          <span class="pt__ticker-name">{{ t.name }}</span>
+        </NuxtLink>
+      </div>
+    </CalcBand>
+
+    <CalcBand tone="white" title="Preço teto das ações mais buscadas">
+      <template #dek>
+        <p>Cotação, dividendos e fundamentos das ações que mais aparecem nesta calculadora.</p>
+      </template>
+      <div class="pt__tickers">
+        <NuxtLink
+          v-for="t in ACOES_BUSCADAS"
+          :key="t.ticker"
+          :to="`/asset/${t.ticker}`"
           class="pt__ticker"
         >
           <span class="pt__ticker-code">{{ t.ticker }}</span>

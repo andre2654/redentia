@@ -1,5 +1,10 @@
 /**
- * Allowlist de ativos que entram no SITEMAP (poda fase 1, 03/08/2026).
+ * Allowlist histórica do SITEMAP (poda fase 1, 03/08/2026).
+ *
+ * Desde 26/10/2026 o sitemap NÃO usa mais esta lista: ele publica todo
+ * /asset que a página responde 200 (ver tickerDePaginaAtivo). A lista segue
+ * como filtro dos pares em app/utils/paresDoSetor.ts — o bloco "outras
+ * empresas" não vira um despejo de toda classe do setor.
  *
  * O PROBLEMA QUE ISSO RESOLVE. `fetchAssetPages` publicava TODO ticker que o
  * backend devolvesse: 1.674 URLs de /asset, 86% do sitemap. Medição do Search

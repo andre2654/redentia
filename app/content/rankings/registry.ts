@@ -5,7 +5,9 @@
  * h1/lead/chips/metaTitle/metaDescription = VERBATIM das páginas antigas
  * (Frontend/app/pages/ranking/*) — contrato de SEO, não reescrever.
  * Exceções documentadas: redentia-score adaptado da escala 0-10 pra /100
- * (decisão PR2 — mesma régua do /asset) e tesouro-direto (ranking novo).
+ * (decisão PR2 — mesma régua do /asset), tesouro-direto (ranking novo) e,
+ * em 26/10/2026, só o metaTitle/metaDescription de maiores-lucros e
+ * maiores-baixas-mes (CTR no Search Console; o h1 visível não mudou).
  *
  * Endpoints validados ao vivo (19 GET /rankings/* + derivação /tesouro):
  * mapeamento tirado do service antigo (Frontend/app/services/assets.ts).
@@ -257,9 +259,9 @@ export const RANKINGS: Record<string, RankingMeta> = {
     slug: 'maiores-lucros',
     title: 'Maiores Lucros',
     endpoint: 'top-net-income',
-    metaTitle: 'Maiores Lucros da Bolsa Brasileira 2026',
+    metaTitle: 'Quem lucrou mais na B3 em 2026',
     metaDescription:
-      'Top 50 empresas com maior lucro líquido anual da B3. Petrobras, Itaú, Vale, Bradesco, BB. Lucro líquido TTM atualizado com últimos balanços oficiais.',
+      'Ranking das empresas com maior lucro líquido na B3: Petrobras, Itaú, Vale e os bancos. Atualizado com o último balanço.',
     h1: 'Maiores Lucros da Bolsa Brasileira',
     lead:
       'As 50 empresas com maior lucro líquido nos últimos 12 meses na B3. Petrobras, Itaú, Vale, Bradesco e Banco do Brasil costumam liderar pela combinação de escala e margem. Atualizado com balanços recentes.',
@@ -356,9 +358,9 @@ export const RANKINGS: Record<string, RankingMeta> = {
     title: 'Maiores Baixas (30 dias)',
     endpoint: 'monthly-change',
     extraParams: { side: 'bottom' },
-    metaTitle: 'Maiores Baixas do Mês na Bolsa Brasileira 2026',
+    metaTitle: 'Ações que mais caíram no mês na B3',
     metaDescription:
-      'Ranking das 50 ações e FIIs que mais caíram nos últimos 30 dias na B3. Oportunidades de compra ou value traps? Análise + comparativo Ibov.',
+      'As 50 ações e FIIs que mais caíram em 30 dias na B3, com a variação e o valor de mercado. Atualizado após o pregão.',
     h1: 'Maiores Baixas do Mês: Ações que Mais Caíram na Bolsa B3 2026',
     lead:
       'As 50 ações e FIIs que mais caíram nos últimos 30 dias na B3, ordenadas por queda percentual. Lista pode revelar oportunidades de compra (ações baratas, value plays) OU armadilhas de valor (value traps). Inclui blue chips em correção (VALE3, BBDC4, ITUB4, ABEV3), FIIs em desconto (HGLG11, MXRF11, KNIP11) e ativos com problemas específicos. Atualizado diariamente após pregão.',

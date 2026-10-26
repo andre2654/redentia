@@ -10,9 +10,6 @@ export const RECADO = {
   escritoEm: 'Escrito na segunda, 26 de outubro',
 }
 
-/** A letra de mão do fecho (Caveat), só nos dias do recado. */
-export const RECADO_LETRA = 'https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap'
-
 export function recadoNoAr(agora = Date.now()): boolean {
   return agora <= RECADO.ate
 }

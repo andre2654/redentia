@@ -18,7 +18,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
   title: 'Como investir em ações',
   dek: 'Da abertura de conta à primeira compra, com passo a passo, critérios de escolha sem chute e os erros que travam quem está começando.',
   description:
-    'Como investir em ações do zero: abrir conta na corretora, escolher uma ação por fundamento, enviar a primeira ordem, quanto começar e o que declarar no Imposto de Renda. Guia claro da Redentia, sem palpite.',
+    'Como investir em ações do zero: abrir conta, escolher a ação por fundamento e enviar a primeira ordem. Guia da Redentia.',
   summary:
     'Investir em ações não é sorte nem palpite. Veja o caminho completo, da conta à primeira ordem, como escolher uma ação por fundamento e os erros que quebram iniciantes.',
   minutes: 8,
@@ -64,7 +64,7 @@ export const COMO_INVESTIR_EM_ACOES_GUIDE: GuideDoc = {
         },
         {
           kind: 'p',
-          html: '<strong>2. Dividendos.</strong> Empresas lucrativas costumam distribuir parte do lucro aos sócios, em dinheiro, direto na sua conta. É a renda que pinga sem você vender nada. Quem monta carteira pensando em <a href="/dividendos">renda passiva</a> olha primeiro para a consistência desses pagamentos, não só para o preço da tela.',
+          html: '<strong>2. Dividendos.</strong> Empresas lucrativas costumam distribuir parte do lucro aos sócios, em dinheiro, direto na sua conta. É a renda que pinga sem você vender nada. Quem monta carteira pensando em <a href="/ranking/maiores-dividend-yield">renda passiva</a> olha primeiro para a consistência desses pagamentos, não só para o preço da tela.',
         },
         {
           kind: 'p',

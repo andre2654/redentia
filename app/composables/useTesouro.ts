@@ -16,6 +16,7 @@
  * nunca recomendação de compra.
  */
 import type { TesouroApi } from '~/types/market'
+import { juntaAte, tituloQueCabe } from '~/utils/serp'
 import type {
   TesouroChartMode,
   TesouroHeroVM,
@@ -316,40 +317,33 @@ function buildFaq(t: TesouroApi): { q: string; a: string }[] {
 }
 
 /**
- * Junta base + extra só enquanto o title inteiro couber no que o SERP mostra.
- * TETO_SERP conta o sufixo ' · Redentia' que o titleTemplate (app.vue) soma
- * depois — por isso 65 aqui vira ~76 no <title>, que é o limite prático antes
- * do Google truncar ou reescrever.
+ * Title com a taxa e sem o preço unitário. "Tesouro Renda+ … 2065: taxa IPCA
+ * + 6,71% hoje" passava de 70 caracteres com o sufixo · Redentia, e o preço
+ * (R$ 20 mil) estourava de vez. Nomes longos perdem o miolo ("Aposentadoria
+ * Extra", "com Juros Semestrais") antes de perder a taxa.
  */
-const TETO_SERP = 65
-function tituloQueCabe(base: string, extra: string): string {
-  return extra && base.length + extra.length <= TETO_SERP ? base + extra : base
+function tituloTesouro(t: TesouroApi): string {
+  const rate = t.rate_numeric != null ? tesouroRateFmt(t) : ''
+  const nome = t.name
+    .replace(/\s+Aposentadoria Extra\b/gi, '')
+    .replace(/\s+com Juros Semestrais\b/gi, ' Juros')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return tituloQueCabe(rate ? `${nome}: ${rate}` : `${nome}: taxa hoje`)
 }
 
 function buildSeo(t: TesouroApi): TesouroPayload['seo'] {
   const rateHero = tesouroRateFmt(t)
-  const bits: string[] = [`${t.name} hoje: taxa ${rateHero}${t.rate_numeric != null ? ' ao ano' : ''}.`]
-  if (t.price_buy != null) bits.push(`Preço de compra ${moneyFmt(t.price_buy)}${t.price_sell != null ? `, venda ${moneyFmt(t.price_sell)}` : ''}.`)
-  if (t.maturity_date) bits.push(`Vencimento em ${maturityFmt(t.maturity_date)}.`)
-  bits.push('Veja o histórico de preço e taxa, a leitura do título e perguntas frequentes.')
   return {
-    // TITLE NUMÉRICO: mesma correção do /dividendos. As consultas de Tesouro
-    // pedem o valor explicitamente e algumas trazem o número na própria busca
-    // ("tesouro ipca+ 2040 taxa 7,23%" fez 111 impressões, "tesouro selic 2031
-    // valor hoje" 30, "preço tesouro selic 2031" 44), todas com zero clique.
-    // Um title que diz "taxa de hoje" sem dizer QUAL taxa perde pra quem diz.
-    //
-    // O PREÇO SÓ ENTRA SE COUBER (21/08/2026). O sufixo ' · Redentia' (11
-    // chars) é somado pelo titleTemplate do app.vue, e títulos como
-    // "Tesouro IPCA+ com Juros Semestrais 2026" chegavam a 88 caracteres —
-    // o Google corta perto de 65 e, pior, tende a REESCREVER o title quando
-    // ele estoura, o que joga fora justamente o número que a auditoria de
-    // 03/08 colocou ali de propósito. Cabendo, o número fica; não cabendo,
-    // sai o preço (menos buscado) e a TAXA — o termo da consulta — sobrevive.
-    title: t.rate_numeric != null || t.price_buy != null
-      ? tituloQueCabe(`${t.name}: taxa ${rateHero} hoje`, t.price_buy != null ? `, ${moneyFmt(t.price_buy)}` : '')
-      : `${t.name}: taxa de hoje, preço e histórico`,
-    description: bits.join(' '),
+    title: tituloTesouro(t),
+    description: juntaAte([
+      `${t.name}: taxa ${rateHero}${t.rate_numeric != null ? ' ao ano' : ''}.`,
+      t.price_buy != null
+        ? `Compra ${moneyFmt(t.price_buy)}${t.price_sell != null ? ` e venda ${moneyFmt(t.price_sell)}` : ''}.`
+        : '',
+      t.maturity_date ? `Vence em ${maturityFmt(t.maturity_date)}.` : '',
+      'Histórico de taxa e preço.',
+    ]),
   }
 }
 

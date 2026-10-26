@@ -137,8 +137,8 @@ const itemListScript = computed(() => {
 useHead({ script: itemListScript })
 
 usePageSeo({
-  title: `Setor ${entry.name} na B3 2026: Empresas, Valor de Mercado e Cotações`,
-  description: `${entry.blurb} Veja as empresas do setor ${entry.name.toLowerCase()} da B3 com cotação, variação do dia e valor de mercado, atualizados diariamente.`,
+  title: tituloSetor(entry.ptSlug, entry.name),
+  description: descricaoQueCabe(entry.blurb),
   path: `/setor/${entry.ptSlug}`,
   breadcrumbs: [
     { name: 'Início', path: '/' },

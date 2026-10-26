@@ -10,7 +10,7 @@
 //  - sai no HTML do servidor enquanto o recado está no ar (sem empurrar a
 //    página depois); no cliente, some para quem fechou e quando o prazo passa.
 import { IBOV_MENSAL } from '~/content/ibov-mensal'
-import { RECADO, RECADO_LETRA, eventoRecado, recadoNoAr } from '~/composables/useRecado'
+import { RECADO, eventoRecado, recadoNoAr } from '~/composables/useRecado'
 
 const FECHOU = `nu:recado-faixa:${RECADO.id}`
 const route = useRoute()
@@ -23,10 +23,6 @@ const foraDaPagina = computed(() => {
   return p === '/calculadora/preco-teto' || p === '/login' || p.startsWith('/business') || p.startsWith('/cliente')
 })
 const visivel = computed(() => noAr.value && !fechada.value && !foraDaPagina.value)
-
-useHead(() => ({
-  link: visivel.value ? [{ key: 'nu-recado-letra', id: 'nu-recado-letra', rel: 'stylesheet', href: RECADO_LETRA }] : [],
-}))
 
 onMounted(() => {
   noAr.value = recadoNoAr()

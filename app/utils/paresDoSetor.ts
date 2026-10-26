@@ -9,8 +9,9 @@
  *
  * SÓ AÇÃO. Em FII o setor não tem valor de mercado (não há como ordenar) e o
  * nome vem cru ('FII HGLG PAXCI'); em BDR o nome da B3 vem cortado em 12
- * caracteres ('Taiwansmfac'). Par só entre os ativos do sitemap
- * (INDEXABLE_ASSETS), para o link levar a página que o Google deve indexar.
+ * caracteres ('Taiwansmfac'). O bloco continua restrito a INDEXABLE_ASSETS:
+ * é uma seleção de pares, não o universo do sitemap. O link para o setor
+ * inteiro sai em AcaoRelacionados.
  *
  * Sem import de valor de propósito: os testes (node --test) importam direto.
  */
