@@ -7,7 +7,7 @@
 import type { NuMoverTab } from '~/types/market'
 
 const { isAuthenticated } = useAuthState()
-const { tabs, movers, indices, loading } = useNuMovers()
+const { tabs, movers, indices, loading } = await useNuMovers()
 const activeTab = ref<NuMoverTab>('Ações')
 const active = computed(() => movers.value[activeTab.value])
 </script>

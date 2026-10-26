@@ -2,15 +2,15 @@
  * Redentia Nu — reset e regras globais (espelho do <style> dos designs).
  */
 
-/* Fonte reserva com as medidas da Plus Jakarta Sans (23/10/2026). A Jakarta vem
-   do Google com display=swap: até ela chegar o texto sai na reserva, e na troca
-   as linhas mudavam de largura e altura. Num navegador de 820×1180 a home
-   inteira descia e reflua (CLS 0,13, com a faixa "Mercado agora" crescendo
-   3px); com a fonte bloqueada, 0. A reserva é a Arial na largura média da
-   Jakarta (size-adjust, medido peso a peso num texto da home) e com o ascent
-   1,04 / descent 0,22 / line gap 0 dela; os overrides são divididos pelo
-   size-adjust porque ele também os escala. Onde não há Arial (Android), a
-   face falha e vale o system-ui, como antes. */
+/* Fonte reserva com as medidas da Plus Jakarta Sans (23/10/2026). A Jakarta é
+   auto-hospedada (jakarta.css) com font-display: swap: até ela chegar o texto
+   sai na reserva, e na troca as linhas mudavam de largura e altura. Num
+   navegador de 820×1180 a home inteira descia e reflua (CLS 0,13, com a faixa
+   "Mercado agora" crescendo 3px); com a fonte bloqueada, 0. A reserva é a
+   Arial na largura média da Jakarta (size-adjust, medido peso a peso num texto
+   da home) e com o ascent 1,04 / descent 0,22 / line gap 0 dela; os overrides
+   são divididos pelo size-adjust porque ele também os escala. Onde não há
+   Arial (Android), a face falha e vale o system-ui, como antes. */
 @font-face {
   font-family: 'Jakarta Reserva'; font-weight: 500;
   src: local('Arial'), local('ArialMT');

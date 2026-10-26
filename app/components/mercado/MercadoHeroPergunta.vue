@@ -88,7 +88,10 @@ function enviar() {
     <div class="mhp__aura" aria-hidden="true" />
 
     <p class="mhp__produto"><img src="/logo-azul.svg" alt="" width="20" height="20">Redentia</p>
-    <h1 class="mhp__titulo">Invista com uma IA <br>do seu lado.</h1>
+    <h1 class="mhp__titulo">
+      <span class="mhp__hoje">Mercado hoje</span>
+      <span class="mhp__linha">Invista com uma IA <br>do seu lado.</span>
+    </h1>
     <p class="mhp__dek">Pergunte qualquer coisa sobre ações, FIIs e a sua carteira. A resposta vem em português, na hora.</p>
 
     <!-- o produto: a barra de pergunta com o brilho na borda -->
@@ -142,6 +145,13 @@ function enviar() {
   margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(44px, 6vw, 86px); font-weight: 800;
   letter-spacing: -0.05em; line-height: .98; text-wrap: balance;
 }
+/* "Mercado hoje" entra no H1 (é o title da página) sem substituir a frase grande. */
+.mhp__hoje {
+  display: block; margin-bottom: 12px; color: var(--nu-blue);
+  font-size: clamp(13px, 1.3vw, 16px); font-weight: 800; letter-spacing: .16em;
+  line-height: 1.2; text-transform: uppercase;
+}
+.mhp__linha { display: block; }
 .mhp__dek { margin: 20px 0 0; max-width: 44ch; color: var(--nu-gray-2); font-size: var(--nu-fs-xl); font-weight: 500; line-height: 1.45; }
 
 /* a barra: anel iridescente girando (camada composta), brilho difuso atrás, fundo branco */
@@ -202,9 +212,9 @@ function enviar() {
 @keyframes mhp-ponto { 50% { transform: translateY(-4px); opacity: .5; } }
 @keyframes mhp-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
 
-/* entrada da página: título e apoio sobem saindo do desfoque */
-.mhp__produto, .mhp__titulo, .mhp__dek, .mhp__barra { animation: mhp-entra .9s cubic-bezier(.22, 1, .36, 1) backwards; }
-.mhp__titulo { animation-delay: .08s; }
+/* Entrada da página. O H1 fica de fora: animation-fill backwards deixava o
+   título em opacity 0 até o CSS chegar, e o Lighthouse media o LCP em ~10 s. */
+.mhp__produto, .mhp__dek, .mhp__barra { animation: mhp-entra .9s cubic-bezier(.22, 1, .36, 1) backwards; }
 .mhp__dek { animation-delay: .18s; }
 .mhp__barra { animation-delay: .32s; }
 @keyframes mhp-entra { from { opacity: 0; filter: blur(10px); transform: translateY(14px); } }
@@ -213,7 +223,7 @@ function enviar() {
   .mhp__anel::before, .mhp__brilho, .mhp__cursor, .mhp__palavra, .mhp__produto, .mhp__titulo, .mhp__dek, .mhp__barra { animation: none; }
 }
 @media (max-width: 640px) {
-  .mhp__titulo br { display: none; }
+  .mhp__linha br { display: none; }
   .mhp__barra { height: 72px; }
   /* a pergunta pode ocupar duas linhas: cortada com reticências ela perdia o sentido */
   .mhp__demo { white-space: normal; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }

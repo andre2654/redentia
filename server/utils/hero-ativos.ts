@@ -9,13 +9,16 @@
  * faz uma só (server/api/hero-ativos.get.ts), cacheada na borda. A ação que
  * falhou fica de fora: sem dado, sem plaquinha.
  */
+import { symbolShape } from '../../app/utils/tickerClass'
+
 export interface HeroAtivo {
   ticker: string
   pct: number
 }
 
-// a ordem é a das posições no hero: três à esquerda, três à direita
-const TICKERS = ['PETR4', 'ITUB4', 'WEGE3', 'VALE3', 'BBAS3', 'EMBR3'] as const
+// a ordem é a das posições no hero: três à esquerda, três à direita.
+// EMBJ3, não EMBR3: o código velho 301 para /asset/EMBJ3?de=EMBR3.
+const TICKERS = ['PETR4', 'ITUB4', 'WEGE3', 'VALE3', 'BBAS3', 'EMBJ3'] as const
 
 function backendBase(): string {
   return useRuntimeConfig().backendDirectBase || 'https://redentia-api.saraivada.com/api'
@@ -25,13 +28,18 @@ export const fetchHeroAtivosCached = defineCachedFunction(
   async (): Promise<HeroAtivo[]> => {
     const out: HeroAtivo[] = []
     for (const ticker of TICKERS) {
-      const d = await $fetch<{ data?: { change_percent?: number | null } }>(`/tickers/${ticker}`, {
+      const d = await $fetch<{ data?: { ticker?: string | null; change_percent?: number | null } }>(`/tickers/${ticker}`, {
         baseURL: backendBase(),
         headers: { Accept: 'application/json' },
         timeout: 6_000,
       }).then((r) => r?.data ?? null).catch(() => null)
       const pct = d?.change_percent
-      if (typeof pct === 'number' && Number.isFinite(pct)) out.push({ ticker, pct })
+      // O link usa o código que o perfil devolve. Pedir um alias (EMBR3)
+      // renderizava /asset/EMBR3, que 301 para a URL com ?de=.
+      const canon = String(d?.ticker ?? ticker).trim().toUpperCase()
+      if (typeof pct === 'number' && Number.isFinite(pct) && symbolShape(canon) !== 'invalid') {
+        out.push({ ticker: canon, pct })
+      }
     }
     return out
   },
@@ -39,7 +47,7 @@ export const fetchHeroAtivosCached = defineCachedFunction(
     name: 'hero-ativos',
     maxAge: 120,
     swr: true,
-    getKey: () => 'v1',
+    getKey: () => 'v2',
     // lista vazia não entra no cache: a próxima visita tenta de novo
     validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
   },

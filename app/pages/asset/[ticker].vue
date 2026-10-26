@@ -173,5 +173,7 @@ if (data.value) {
     <AcaoCadeia v-if="acao.cadeia" :cadeia="acao.cadeia" :nome="acao.name" :ticker="acao.ticker" />
 
     <AcaoPares v-if="acao.pares" :pares="acao.pares" :tone="acao.cadeia ? 'white' : 'cream'" />
+
+    <AcaoRelacionados :links="acao.relacionados" />
   </div>
 </template>

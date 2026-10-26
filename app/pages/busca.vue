@@ -21,7 +21,8 @@ const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'eua
 usePageSeo({
   title: 'Busca',
   description: 'Busque ativos, teses e guias da Redentia, ou pergunte qualquer coisa à Redentia AI.',
-  noindex: true, // página-ferramenta (rota já é private/no-store)
+  // Ferramenta: não rankeia, mas os links internos (ativos, teses) seguem rastreáveis.
+  robots: 'noindex, follow',
 })
 
 const route = useRoute()

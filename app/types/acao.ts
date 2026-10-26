@@ -699,6 +699,8 @@ export interface AcaoPayload {
   cadeia: AcaoCadeiaVM | null
   /** Outras empresas do setor (só ação, com 3 pares ou mais; ver utils/paresDoSetor.ts). */
   pares: AcaoParesVM | null
+  /** Ranking do setor e dividendos do ticker, quando o destino responde 200. */
+  relacionados: { href: string; label: string }[]
   /**
    * Link pro simulador de /calculadora/acoes com o ativo preenchido
    * (utils/simulador.ts). null quando o simulador não cobre o tipo

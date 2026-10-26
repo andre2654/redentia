@@ -20,7 +20,7 @@
 // carregada só quando o bilhete vai abrir) e assinado com a foto do André.
 // Sem recomendação: o texto não diz para vender, segurar nem comprar.
 import { IBOV_MENSAL, IBOV_MENSAL_INICIO } from '~/content/ibov-mensal'
-import { RECADO, RECADO_LETRA, eventoRecado, recadoNoAr } from '~/composables/useRecado'
+import { RECADO, eventoRecado, recadoNoAr } from '~/composables/useRecado'
 
 const VISTO = `nu:recado:${RECADO.id}`
 
@@ -44,16 +44,9 @@ function gravar(chave: string, valor: string) {
   try { localStorage.setItem(chave, valor) }
   catch { /* modo privado: vale só nesta visita */ }
 }
-// A letra de mão só desce para quem vai ver o bilhete; se demorar, o bilhete
-// abre com a reserva (cursiva do sistema) e troca quando ela chegar.
+// A Caveat é auto-hospedada (jakarta.css). Se demorar, o bilhete abre com a
+// reserva (cursiva do sistema) e troca quando ela chegar.
 async function carregarLetra() {
-  if (!document.getElementById('nu-recado-letra')) {
-    const l = document.createElement('link')
-    l.id = 'nu-recado-letra'
-    l.rel = 'stylesheet'
-    l.href = RECADO_LETRA
-    document.head.appendChild(l)
-  }
   try {
     await Promise.race([
       document.fonts.load('700 34px Caveat'),

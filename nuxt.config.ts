@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
-  css: ['~/assets/css/tokens.css', '~/assets/css/base.css'],
+  css: ['~/assets/css/tokens.css', '~/assets/css/jakarta.css', '~/assets/css/base.css'],
 
   app: {
     head: {
@@ -17,12 +17,9 @@ export default defineNuxtConfig({
       // o SSR renderiza o title cru sem sufixo de marca (bug desde o PR0,
       // pego no verify do PR10). O template vive em app.vue via useHead.
       link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap',
-        },
+        // Fonte auto-hospedada (app/assets/css/jakarta.css). Preload do arquivo
+        // único: o H1 da home usa o peso 800 e não pode esperar um CSS de terceiro.
+        { rel: 'preload', href: '/fonts/plus-jakarta-sans-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'icon', type: 'image/svg+xml', href: '/logo-azul.svg' },
       ],
       meta: [{ name: 'theme-color', content: '#2F6BFF' }],

@@ -62,6 +62,7 @@ import type {
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
+import { juntaAte, tituloQueCabe } from '~/utils/serp'
 
 /* ————— helpers de formatação ————— */
 
@@ -1036,50 +1037,44 @@ function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<T
   const price = profile.market_price
   const usd = profile.currency === 'USD'
   const priceFmt = price != null ? `${usd ? 'US$' : 'R$'} ${nf2.format(price)}` : ''
+  // O preço saiu do title: "PETR4 hoje: cotação R$ …, dividendos…" passava de
+  // 70 caracteres com o sufixo · Redentia e o Google reescrevia.
   const TAIL: Record<AssetKind, string> = {
-    stock: 'dividendos, fundamentos e análise',
-    fii: 'rendimentos e P/VP',
-    bdr: 'fundamentos e análise do BDR',
-    etf: 'composição, taxas e correlação',
-    crypto: 'preço, variação e gráfico', // não usado (cripto tem builder próprio)
-  }
-  const title = price != null
-    ? `${ticker} hoje: cotação ${priceFmt}, ${TAIL[kind]}`
-    : `${ticker}: cotação, ${TAIL[kind]}`
-  const bits: string[] = []
-  if (price != null) {
-    const chg = profile.change_percent != null ? ` (${pctFmt(profile.change_percent)})` : ''
-    bits.push(`Cotação de ${name} (${ticker}) hoje: ${priceFmt}${chg}.`)
-  } else {
-    bits.push(`${name} (${ticker}) ${usd ? 'no mercado americano' : 'na B3'}.`)
+    stock: `${ticker} hoje: cotação, dividendos e análise`,
+    fii: `${ticker} hoje: cotação e rendimentos`,
+    bdr: `${ticker} hoje: cotação do BDR`,
+    etf: `${ticker} hoje: cotação e composição`,
+    crypto: `${ticker} hoje: preço e gráfico`,
   }
   const facts: string[] = []
   if (f?.dy != null && f.dy > 0) facts.push(`dividend yield ${nf2.format(f.dy)}%`)
   if (f?.pl != null && f.pl > 0) facts.push(`P/L ${nf2.format(f.pl)}`)
   if (kind === 'fii' && f?.pvp != null) facts.push(`P/VP ${nf2.format(f.pvp)}`)
   if (f?.roe != null && kind !== 'fii') facts.push(`ROE ${nf1.format(f.roe)}%`)
-  if (facts.length) bits.push(`${facts.join(', ').replace(/^./, (c) => c.toUpperCase())}.`)
-  // ETF com raio-X: a taxa REAL e a maior posição entram na description (o
-  // guia de ETF ensina o conceito; a página de ativo mostra o número).
-  if (kind === 'etf' && xray) {
-    const feeBits: string[] = []
-    if (xray.fees.management_fee != null) feeBits.push(`Taxa de administração de ${nf2.format(xray.fees.management_fee)}% a.a.`)
-    if (xray.fees.total_expense_ratio != null && xray.fees.nested.length) feeBits.push(`(custo efetivo ~${nf2.format(xray.fees.total_expense_ratio)}% com os fundos investidos)`)
-    const top = xray.composition.holdings.find((h) => h.weight != null && h.weight > 0)
-    if (top) feeBits.push(`; maior posição: ${top.name ?? top.ticker} (${nf1.format((top.weight ?? 0) * 100)}%)`)
-    if (feeBits.length) bits.push(`${feeBits.join(' ').replace(/\s+;/, ';')}.`)
+  const chg = price != null && profile.change_percent != null ? ` (${pctFmt(profile.change_percent)})` : ''
+  const cotacao = price != null
+    ? `Cotação de ${name} (${ticker}): ${priceFmt}${chg}.`
+    : `${name} (${ticker}) ${usd ? 'no mercado americano' : 'na B3'}.`
+  // ETF com raio-X: a taxa real cabe na description quando sobra espaço.
+  let etfFact = ''
+  if (kind === 'etf' && xray?.fees.management_fee != null) {
+    etfFact = `Taxa de administração de ${nf2.format(xray.fees.management_fee)}% a.a.`
   }
   const CLOSER: Record<AssetKind, string> = {
-    stock: 'Veja gráfico de 12 meses, histórico de dividendos, Redentia Score, consenso de analistas, notícias e a leitura da Redentia AI.',
-    fii: 'Veja gráfico de 12 meses, histórico de rendimentos, indicadores do fundo, notícias e a leitura da Redentia AI.',
-    bdr: 'Veja gráfico de 12 meses, fundamentos da matriz em dólar, notícias e a leitura da Redentia AI.',
-    etf: 'Veja a composição da carteira (CVM), taxas incluindo os fundos investidos, correlações e o gráfico de 12 meses.',
-    crypto: 'Veja preço em reais, gráfico de 12 meses e variações por janela.',
+    stock: 'Gráfico, dividendos e análise.',
+    fii: 'Gráfico, rendimentos e indicadores.',
+    bdr: 'Gráfico e fundamentos da matriz.',
+    etf: 'Composição, taxas e gráfico.',
+    crypto: 'Preço em reais e gráfico.',
   }
-  bits.push(CLOSER[kind])
   return {
-    title,
-    description: bits.join(' '),
+    title: tituloQueCabe(TAIL[kind]),
+    description: juntaAte([
+      cotacao,
+      facts.length ? `${facts.join(', ').replace(/^./, (c) => c.toUpperCase())}.` : '',
+      etfFact,
+      CLOSER[kind],
+    ]),
     faq: (editorial?.faq_extended ?? []).filter((q) => q.question && q.answer).slice(0, 8),
   }
 }
@@ -1241,13 +1236,37 @@ function petr4Seed(): AcaoPayload {
     },
     cadeia: null,
     pares: null,
+    relacionados: [
+      { href: '/setor/energia', label: 'Ranking do setor energia' },
+      { href: '/dividendos/PETR4', label: 'Dividendos de PETR4' },
+    ],
     simuladorHref: simuladorAcoesHref('PETR4', 'STOCK'),
     seo: {
-      title: 'PETR4 hoje: cotação R$ 38,25, dividendos, fundamentos e análise',
-      description: 'Cotação de Petrobras (PETR4) hoje: R$ 38,25 (+0,76%). Dividend yield 6,95%, P/L 4,55, ROE 24,2%. Veja gráfico de 12 meses, histórico de dividendos, Redentia Score, consenso de analistas, notícias e a leitura da Redentia AI.',
+      title: 'PETR4 hoje: cotação, dividendos e análise',
+      description: 'Cotação de Petrobras (PETR4): R$ 38,25 (+0,76%). Dividend yield 6,95%, P/L 4,55, ROE 24,2%.',
       faq: [],
     },
   }
+}
+
+/** Setor e dividendos no fim da página. Só entra destino que a rota responde 200. */
+function linksRelacionados(
+  setor: SetorEntry | null,
+  kind: AssetKind,
+  dividends: AcaoDividendsVM | null,
+  ticker: string,
+): AcaoPayload['relacionados'] {
+  const links: AcaoPayload['relacionados'] = []
+  if (setor) {
+    links.push({ href: `/setor/${setor.ptSlug}`, label: `Ranking do setor ${setor.name.toLowerCase()}` })
+  }
+  else if (kind === 'fii') {
+    links.push({ href: '/setor/imobiliario', label: 'Ranking do setor imobiliário' })
+  }
+  if (dividends && dividends.bars.length > 0) {
+    links.push({ href: `/dividendos/${ticker}`, label: `Dividendos de ${ticker}` })
+  }
+  return links
 }
 
 /** Com menos de 3 pares o bloco não se sustenta (setor pequeno no sitemap): some. */
@@ -1474,7 +1493,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   const newsStrict = /^[A-Z]{4}\d{1,2}$/.test(ticker)
   // Pares do setor, só pra ação: o perfil já traz o setor ('Energy'), então a
   // chamada entra no mesmo bloco paralelo. Setor fora do registry → sem bloco.
-  const setor = profile.type === 'STOCK' ? SETORES_BY_API[apiSlugDoSetor(profile.sector) ?? ''] ?? null : null
+  const setorConhecido = SETORES_BY_API[apiSlugDoSetor(profile.sector) ?? ''] ?? null
+  // Pares só de ação. O link de setor, abaixo, vale para qualquer tipo cujo
+  // setor exista no registry (FII sem setor cai em /setor/imobiliario).
+  const setor = profile.type === 'STOCK' ? setorConhecido : null
   // Cadeia de fornecimento: só papel de empresa (o endpoint 404 pra FII/ETF/BDR).
   const temCadeia = profile.type === 'STOCK' || profile.type === 'US_STOCK'
   const [pricesR, ibovR, overviewR, scoreR, consensusR, dividendsR, editorialR, thesesR, newsR, paresR, cadeiaR] = await Promise.allSettled([
@@ -1578,6 +1600,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
       ? 'Últimos 12 meses · resultados da matriz, em dólar'
       : 'Últimos 12 meses · dados da B3 e balanços'
 
+  const dividends = buildDividends(provRows ?? [], ticker, isFii, siteDy)
+  const setorDoLink = setorConhecido ?? (kind === 'fii' ? SETORES_BY_API['real-estate'] ?? null : null)
+
   return {
     ticker,
     name,
@@ -1597,12 +1622,13 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     fundInfo: kind === 'etf' ? buildEtfFundInfo(etf) : null,
     etfXray: buildEtfXray(etfXrayApi, kind === 'etf' ? buildEtfFundInfo(etf) : null),
     theses,
-    dividends: buildDividends(provRows ?? [], ticker, isFii, siteDy),
+    dividends,
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
     cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR), name) : null,
     pares: kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null,
+    relacionados: linksRelacionados(setorDoLink, kind, dividends, ticker),
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
   }
@@ -1691,22 +1717,22 @@ function buildCryptoCards(c: CryptoDetailApi): AcaoFundCard[] {
 
 function buildCryptoSeo(c: CryptoDetailApi, sym: string): AcaoPayload['seo'] {
   const price = c.price_brl
-  const title = price != null
-    ? `${c.name} (${sym}) hoje: preço ${cryptoBrl(price)}, variação e gráfico`
-    : `${c.name} (${sym}): preço hoje, variação e gráfico`
-  const bits: string[] = []
-  if (price != null) {
-    const chg = c.change_24h_pct != null ? ` (${pctFmt(c.change_24h_pct)} em 24 horas)` : ''
-    bits.push(`Preço de ${c.name} (${sym}) hoje: ${cryptoBrl(price)}${chg}.`)
-  } else {
-    bits.push(`${c.name} (${sym}), preço em reais.`)
-  }
+  const chg = price != null && c.change_24h_pct != null ? ` (${pctFmt(c.change_24h_pct)} em 24 horas)` : ''
+  const cotacao = price != null
+    ? `Preço de ${c.name} (${sym}): ${cryptoBrl(price)}${chg}.`
+    : `${c.name} (${sym}), preço em reais.`
   const facts: string[] = []
   if (c.market_cap_brl != null) facts.push(`valor de mercado ${moneyBig(c.market_cap_brl, 2)}`)
   if (c.volume_24h_brl != null) facts.push(`volume de ${moneyBig(c.volume_24h_brl, 2)} em 24 horas`)
-  if (facts.length) bits.push(`${facts.join(', ').replace(/^./, (ch) => ch.toUpperCase())}.`)
-  bits.push('Veja gráfico de 12 meses e variações em 7 dias, 30 dias e 12 meses, com preços em reais.')
-  return { title, description: bits.join(' '), faq: [] }
+  return {
+    title: tituloQueCabe(`${sym} hoje: preço em reais`),
+    description: juntaAte([
+      cotacao,
+      facts.length ? `${facts.join(', ').replace(/^./, (ch) => ch.toUpperCase())}.` : '',
+      'Gráfico de 12 meses, em reais.',
+    ]),
+    faq: [],
+  }
 }
 
 async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
@@ -1756,6 +1782,7 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     editorial: null,
     cadeia: null,
     pares: null,
+    relacionados: [],
     simuladorHref: null,
     seo: buildCryptoSeo(c, sym),
   }

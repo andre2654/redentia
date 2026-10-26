@@ -104,9 +104,9 @@ const faqItems = [
 ]
 
 usePageSeo({
-  title: 'Calculadora de IR sobre Ações 2026 - Day e Swing',
+  title: 'IR sobre ações: calcule o DARF 2026',
   description:
-    'Calcule IR sobre swing trade e day trade. DARF 6015, isenção R$ 20k, declaração IRPF, FIIs, criptomoedas, IR sobre dividendos 2026. Grátis.',
+    'Swing trade a 15%, day trade a 20% e isenção de R$ 20 mil. Calcule o DARF 6015 do mês. Grátis.',
   path: '/calculadora/imposto-renda',
   breadcrumbs: [
     { name: 'Home', path: '/' },

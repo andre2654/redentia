@@ -6,7 +6,6 @@
  * shapes em types/market.ts. Contrato de UX: designs/Redentia Mercado Nu.dc.html.
  */
 import type {
-  CryptoApi,
   NuBriefing,
   NuDir,
   NuFaqItem,
@@ -23,15 +22,12 @@ import type {
   NuThesis,
   TeseTrajetoria,
   ThesisCardApi,
-  TickerApi,
 } from '~/types/market'
 
 /* ————— helpers de formatação ————— */
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
-const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-const nf4 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
 
 function pctFmt(n: number): string {
   return `${n > 0 ? '+' : ''}${nf2.format(n)}%`
@@ -252,7 +248,7 @@ function seedRows(rows: SeedRow[]): NuMoverRow[] {
 const MOVERS_SEED: Record<NuMoverTab, NuMoversClass> = {
   'Ações': {
     gainers: seedRows([['VALE3', 'Vale', 'R$ 61,20', 3.10], ['NVDC34', 'Nvidia BDR', 'R$ 48,12', 2.45], ['BBAS3', 'Banco do Brasil', 'R$ 27,45', 1.89], ['WEGE3', 'WEG', 'R$ 52,10', 1.72], ['PETR4', 'Petrobras', 'R$ 38,25', 0.76]]),
-    losers: seedRows([['MGLU3', 'Magazine Luiza', 'R$ 11,32', -2.92], ['CVCB3', 'CVC', 'R$ 2,84', -2.10], ['ITUB4', 'Itaú Unibanco', 'R$ 34,80', -0.63], ['AZUL4', 'Azul', 'R$ 4,92', -0.58], ['LREN3', 'Lojas Renner', 'R$ 14,05', -0.44]]),
+    losers: seedRows([['MGLU3', 'Magazine Luiza', 'R$ 11,32', -2.92], ['CVCB3', 'CVC', 'R$ 2,84', -2.10], ['ITUB4', 'Itaú Unibanco', 'R$ 34,80', -0.63], ['PRIO3', 'PRIO', 'R$ 42,10', -0.58], ['LREN3', 'Lojas Renner', 'R$ 14,05', -0.44]]),
   },
   'FIIs': {
     gainers: seedRows([['MXRF11', 'Maxi Renda', 'R$ 10,52', 1.24], ['HGLG11', 'CSHG Logística', 'R$ 162,10', 0.98], ['KNRI11', 'Kinea Renda', 'R$ 144,80', 0.84], ['XPML11', 'XP Malls', 'R$ 118,42', 0.71], ['VISC11', 'Vinci Shopping', 'R$ 112,30', 0.52]]),
@@ -273,29 +269,7 @@ const INDICES_SEED: NuIndexStat[] = [
   { label: 'IFIX', value: '3.412', pct: '+0,24%', dir: 'up' },
 ]
 
-function mapTickerRow(t: TickerApi, i: number): NuMoverRow | null {
-  if (t.market_price == null || t.change_percent == null) return null
-  return {
-    rank: i + 1,
-    ticker: t.ticker,
-    name: t.name,
-    price: `R$ ${nf2.format(t.market_price)}`,
-    pct: pctFmt(t.change_percent),
-    dir: dirOf(t.change_percent),
-  }
-}
-
-/** 330000 → 'R$ 330 mil' · 18400 → 'R$ 18,4 mil' · 98.4 → 'R$ 98,40' · 0.0047 → 'R$ 0,0047'. */
-function cryptoPrice(v: number): string {
-  if (v >= 10_000) {
-    const mil = v / 1000
-    return `R$ ${(mil >= 100 ? nf0 : nf1).format(mil)} mil`
-  }
-  if (v < 0.05) return `R$ ${nf4.format(v)}`
-  return `R$ ${nf2.format(v)}`
-}
-
-export function useNuMovers() {
+export async function useNuMovers() {
   const tabs: NuMoverTab[] = ['Ações', 'FIIs', 'Cripto', 'BDRs']
   const movers = useState<Record<NuMoverTab, NuMoversClass>>('nu:mercado:movers', () => MOVERS_SEED)
   const indices = useState<NuIndexStat[]>('nu:mercado:indices', () => INDICES_SEED)
@@ -306,76 +280,26 @@ export function useNuMovers() {
     if (started.value) return
     started.value = true
     try {
-      const [st, sw, rt, rw, bt, bw, cr, snap] = await Promise.allSettled([
-        marketFetchMovers('stocks', 'top'),
-        marketFetchMovers('stocks', 'worst'),
-        marketFetchMovers('reits', 'top'),
-        marketFetchMovers('reits', 'worst'),
-        marketFetchMovers('bdrs', 'top'),
-        marketFetchMovers('bdrs', 'worst'),
-        marketFetchCrypto(200),
-        marketFetchSnapshot(),
-      ])
-
-      const side = (r: typeof st): NuMoverRow[] | null => {
-        if (r.status !== 'fulfilled') return null
-        const rows = (r.value?.data ?? [])
-          .filter((t) => t.market_price != null && t.change_percent != null)
-          .slice(0, 5)
-          .map(mapTickerRow)
-          .filter((x): x is NuMoverRow => x !== null)
-        return rows.length >= 3 ? rows : null
-      }
-
+      // No servidor esta chamada é interna e cacheada (server/api/mercado-movers).
+      // O HTML da home sai com os /asset das altas e baixas, não com o esqueleto.
+      const res = await $fetch<{
+        movers: Partial<Record<NuMoverTab, NuMoversClass>>
+        indices: NuIndexStat[]
+      }>('/api/mercado-movers')
       const next: Record<NuMoverTab, NuMoversClass> = { ...movers.value }
-      const pairs: [NuMoverTab, typeof st, typeof st][] = [
-        ['Ações', st, sw],
-        ['FIIs', rt, rw],
-        ['BDRs', bt, bw],
-      ]
-      for (const [tab, a, b] of pairs) {
-        const gainers = side(a)
-        const losers = side(b)
-        if (gainers && losers) next[tab] = { gainers, losers }
+      for (const tab of tabs) {
+        const bloco = res?.movers?.[tab]
+        if (bloco && bloco.gainers.length >= 3 && bloco.losers.length >= 3) next[tab] = bloco
       }
-
-      // Cripto: backend não tem endpoint de movers — deriva de /crypto
-      // (change_24h_pct; change_24h é legado e vem null).
-      if (cr.status === 'fulfilled') {
-        const chg24 = (c: CryptoApi): number | null => c.change_24h_pct ?? c.change_24h ?? null
-        const coins = (cr.value?.data ?? []).filter((c) => c.price_brl != null && chg24(c) != null)
-        const sorted = [...coins].sort((a, b) => (chg24(b) ?? 0) - (chg24(a) ?? 0))
-        const toRow = (c: (typeof coins)[number], i: number): NuMoverRow => ({
-          rank: i + 1,
-          ticker: c.symbol.toUpperCase(),
-          name: c.name,
-          price: cryptoPrice(c.price_brl as number),
-          pct: pctFmt(chg24(c) as number),
-          dir: dirOf(chg24(c) as number),
-        })
-        const gainers = sorted.slice(0, 5).map(toRow)
-        const losers = sorted.slice(-5).reverse().map(toRow)
-        if (gainers.length >= 3 && losers.length >= 3) next['Cripto'] = { gainers, losers }
-      }
-
       movers.value = next
-
-      if (snap.status === 'fulfilled') {
-        const out: NuIndexStat[] = []
-        for (const label of ['IBOV', 'IFIX'] as const) {
-          const idx = snap.value?.indices_br?.[label]
-          if (idx?.value != null && idx.change_pct != null) {
-            out.push({ label, value: nf0.format(idx.value), pct: pctFmt(idx.change_pct), dir: dirOf(idx.change_pct) })
-          }
-        }
-        if (out.length) indices.value = out
-      }
+      if (res?.indices?.length) indices.value = res.indices
     }
     catch { /* mantém o seed */ }
     finally { loading.value = false }
   }
 
-  onMounted(hydrate)
+  if (import.meta.server) await hydrate()
+  else onMounted(hydrate)
   return { tabs, movers, indices, loading }
 }
 

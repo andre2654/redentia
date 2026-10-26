@@ -8,7 +8,7 @@
 // e o gradiente placeholder (2ª camada) + scrims mantêm a legibilidade.
 interface CtaAction { label: string; to: string }
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   image?: string
   primary: CtaAction
   secondary?: CtaAction
@@ -16,15 +16,16 @@ const props = withDefaults(defineProps<{
   image: '/img/mercado/cta-pessoas.webp',
   secondary: undefined,
 })
-
-const mediaStyle = computed(() => ({
-  background: `url('${props.image}') center / cover no-repeat, var(--nu-cta-placeholder)`,
-}))
 </script>
 
 <template>
   <section class="ncp">
-    <div class="ncp__media" :style="mediaStyle" aria-hidden="true" />
+    <!-- <img> e não background: o CSS de fundo não aceita loading=lazy, e o
+         arquivo original tinha 1,26 MB no caminho da home. Abaixo da dobra. -->
+    <img
+      class="ncp__foto" :src="image" alt="" width="1199" height="800"
+      loading="lazy" decoding="async" fetchpriority="low"
+    >
     <div class="ncp__scrim ncp__scrim--h" aria-hidden="true" />
     <div class="ncp__scrim ncp__scrim--v" aria-hidden="true" />
     <div class="ncp__inner">
@@ -45,7 +46,10 @@ const mediaStyle = computed(() => ({
   min-height: clamp(320px, 34vw, 430px); display: flex; align-items: center;
   animation: nu-fade .5s ease both;
 }
-.ncp__media { position: absolute; inset: 0; z-index: 0; }
+.ncp__foto {
+  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+}
 .ncp__scrim { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .ncp__scrim--h { background: var(--nu-cta-scrim-h); }
 .ncp__scrim--v { background: var(--nu-cta-scrim-v); }

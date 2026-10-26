@@ -174,9 +174,9 @@ const faqItems = [
 ]
 
 usePageSeo({
-  title: 'Calculadora: Quanto Investir por Mês 2026 - Grátis',
+  title: 'Quanto investir por mês para sua meta',
   description:
-    'Descubra quanto investir por mês para juntar R$ 100 mil, R$ 500 mil ou R$ 1 milhão. Tesouro Direto, CDB, LCI/LCA por perfil. Grátis, sem cadastro.',
+    'Calcule o aporte mensal para juntar R$ 100 mil, R$ 500 mil ou R$ 1 milhão. Com taxa, prazo e patrimônio. Grátis.',
   path: '/calculadora/quanto-investir',
   breadcrumbs: [
     { name: 'Home', path: '/' },
