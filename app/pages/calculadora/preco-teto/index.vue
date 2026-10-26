@@ -46,6 +46,15 @@ const lpa = ref(3.5)
 const vpa = ref(18)
 const dividend = ref(1.8)
 const sectorPL = ref(10)
+// true = o múltiplo entra no consenso (exemplo ilustrativo, média do setor
+// ou número que a pessoa informou). false = sem média publicada: o método
+// fica indisponível. P/L próprio não entra, porque LPA × P/L próprio = cotação.
+const sectorPlConta = ref(true)
+let aplicandoSeed = false
+watch(sectorPL, () => {
+  if (aplicandoSeed) return
+  sectorPlConta.value = true
+}, { flush: 'sync' })
 
 // ticker escolhido no seletor (tem prioridade sobre o deep-link ?ticker=)
 const selectedTicker = ref('')
@@ -59,11 +68,14 @@ const activeTicker = computed(() => selectedTicker.value || queryTicker.value ||
 function seedExample(t: string) {
   const ex = EXAMPLES[t]
   if (!ex) return
+  aplicandoSeed = true
   price.value = ex.price
   lpa.value = ex.lpa
   vpa.value = ex.vpa
   dividend.value = ex.dividend
   sectorPL.value = ex.pl
+  sectorPlConta.value = true
+  aplicandoSeed = false
 }
 
 const round2 = (n: number) => Math.round(n * 100) / 100
@@ -80,9 +92,10 @@ function expandMax(target: Ref<number>, value: number) {
   if (value > target.value * 0.8) target.value = Math.ceil((value * 1.5) / 10) * 10
 }
 
-// Cadeia de P/L setorial portada do FairPrice.vue antigo: média do setor
-// (aggregates.avg_trailing_pe, senão média dos trailing_pe 0<pe<100) →
-// P/L próprio se 0<pe<60 → 12. Lista de setores cacheada no módulo.
+// P/L setorial: só a média do setor (aggregates.avg_trailing_pe, senão média
+// dos trailing_pe 0<pe<100). Sem média, o método fica indisponível. O P/L
+// próprio e o 12 genérico saíram: o primeiro devolve a cotação. Lista de
+// setores cacheada no módulo.
 let sectorsCache: { slug: string; name: string }[] | null = null
 async function fetchSectorPE(sectorName: string): Promise<number | null> {
   try {
@@ -132,16 +145,21 @@ async function seedFromBackend(t: string) {
     }
     if (!annualDividend && dyPct && px) annualDividend = (dyPct / 100) * px
 
-    const ownPE = Number(stats.forward_pe) || Number(valuation.price_to_earnings) || 0
-    let sectorPE = quote?.data?.sector ? await fetchSectorPE(String(quote.data.sector)) : null
-    if (!sectorPE && ownPE > 0 && ownPE < 60) sectorPE = ownPE
-    if (!sectorPE) sectorPE = 12
+    const sectorPE = quote?.data?.sector ? await fetchSectorPE(String(quote.data.sector)) : null
 
     if (px > 0) { expandMax(priceMax, px); price.value = round2(px) }
     if (eps > 0) { expandMax(lpaMax, eps); lpa.value = round2(eps) }
     if (bvps > 0) { expandMax(vpaMax, bvps); vpa.value = round2(bvps) }
     if (annualDividend > 0) { expandMax(dividendMax, annualDividend); dividend.value = round2(annualDividend) }
-    expandMax(plMax, sectorPE); sectorPL.value = round2(sectorPE)
+    aplicandoSeed = true
+    if (sectorPE != null && sectorPE > 0) {
+      expandMax(plMax, sectorPE)
+      sectorPL.value = round2(sectorPE)
+      sectorPlConta.value = true
+    } else {
+      sectorPlConta.value = false
+    }
+    aplicandoSeed = false
   } catch { /* degrade elegante: mantém seed estático */ }
 }
 
@@ -228,7 +246,7 @@ const results = computed(() =>
     lpa: lpa.value,
     vpa: vpa.value,
     dividend: dividend.value,
-    sectorPL: sectorPL.value,
+    sectorPL: sectorPlConta.value ? sectorPL.value : 0,
   }),
 )
 
@@ -256,10 +274,10 @@ const methods = computed(() => {
   const r = results.value
   if (!r) return []
   return [
-    { key: 'graham', title: 'Fórmula de Graham', formula: '√(22.5 × LPA × VPA)', res: r.graham },
-    { key: 'bazin', title: 'Método Bazin', formula: 'Dividendo ÷ 0.06 (DY mín 6%)', res: r.bazin },
-    { key: 'plSector', title: 'P/L setorial', formula: 'LPA × P/L Médio do Setor', res: r.plSector },
-    { key: 'bookValue', title: 'Valor patrimonial', formula: 'VPA × 1.5 (margem Graham)', res: r.bookValue },
+    { key: 'graham', title: 'Fórmula de Graham', formula: '√(22.5 × LPA × VPA)', res: r.graham, ausente: false },
+    { key: 'bazin', title: 'Método Bazin', formula: 'Dividendo ÷ 0.06 (DY mín 6%)', res: r.bazin, ausente: false },
+    { key: 'plSector', title: 'P/L setorial', formula: 'LPA × P/L Médio do Setor', res: r.plSector, ausente: !sectorPlConta.value },
+    { key: 'bookValue', title: 'Valor patrimonial', formula: 'VPA × 1.5 (margem Graham)', res: r.bookValue, ausente: false },
   ]
 })
 
@@ -269,10 +287,10 @@ const visualMethods = computed(() => {
   const r = results.value
   if (!r) return []
   return [
-    { key: 'graham', label: 'Graham', fairPrice: r.graham.fairPrice, color: 'var(--nu-green)' },
-    { key: 'bazin', label: 'Bazin', fairPrice: r.bazin.fairPrice, color: 'var(--nu-blue)' },
-    { key: 'plSector', label: 'P/L setorial', fairPrice: r.plSector.fairPrice, color: 'var(--nu-blue)' },
-    { key: 'bookValue', label: 'Valor patrimonial', fairPrice: r.bookValue.fairPrice, color: 'var(--nu-red)' },
+    { key: 'graham', label: 'Graham', fairPrice: r.graham.fairPrice, color: 'var(--nu-green)', ausente: false },
+    { key: 'bazin', label: 'Bazin', fairPrice: r.bazin.fairPrice, color: 'var(--nu-blue)', ausente: false },
+    { key: 'plSector', label: 'P/L setorial', fairPrice: r.plSector.fairPrice, color: 'var(--nu-blue)', ausente: !sectorPlConta.value },
+    { key: 'bookValue', label: 'Valor patrimonial', fairPrice: r.bookValue.fairPrice, color: 'var(--nu-red)', ausente: false },
   ]
 })
 
@@ -282,8 +300,8 @@ function barWidth(fairPrice: number): string {
 
 const recoClass = computed(() => {
   const rec = results.value?.consensus.recommendation
-  if (rec === 'Comprar') return 'pt__reco--positive'
-  if (rec === 'Caro') return 'pt__reco--negative'
+  if (rec === 'Abaixo do teto') return 'pt__reco--positive'
+  if (rec === 'Acima do teto') return 'pt__reco--negative'
   return 'pt__reco--neutral'
 })
 
@@ -407,14 +425,14 @@ const examplePetr = {
     { label: 'Valor patrimonial', value: '35 × 1.5 = R$ 52,50' },
   ],
   resultMain: 'Preço Teto Médio: R$ 65,80',
-  resultSub: 'Preço atual (R$ 38,00) está 42% abaixo do teto médio. Excelente oportunidade segundo as métricas!',
+  resultSub: 'Preço atual (R$ 38,00) está 42% abaixo do teto médio. A distância é margem em relação à régua, não uma recomendação.',
 }
 
 const howToSteps = [
   { title: 'Reúna os dados da ação', html: 'Use a própria página do ativo aqui na Redentia ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.' },
   { title: 'Preencha os campos', html: 'Insira ticker, preço atual e os indicadores. Use valores dos últimos 12 meses (TTM - Trailing Twelve Months) para maior precisão.' },
   { title: 'Analise as 4 metodologias', html: 'Cada método tem seus pontos fortes. Graham é conservador, Bazin foca dividendos, P/L setorial contextualiza, e VPA é bom para empresas com ativos.' },
-  { title: 'Veja o consenso', html: 'A média das metodologias fornece uma visão balanceada. Se a maioria indicar "Barato", a ação pode estar em bom momento de compra.' },
+  { title: 'Veja o consenso', html: 'A média das metodologias com número é o consenso. Se a maioria ficar abaixo do preço de tela, há margem em relação a essas réguas. Isso não diz se a pessoa deve comprar.' },
   { title: 'Analise outros fundamentos', html: 'Preço teto é um filtro, não a decisão final. Avalie também: endividamento, ROE, crescimento de receita, perspectivas do setor e qualidade da gestão.' },
 ]
 
@@ -428,9 +446,9 @@ const limitCards = [
 const tipCards = [
   { title: '1. Use como filtro inicial', body: 'Calcule o preço teto de 10-20 ações que você gosta. Descarte as que estão muito acima do teto. Foque análise profunda nas que estão abaixo.' },
   { title: '2. Combine com outros indicadores', body: 'Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA < 3, Crescimento de receita > 5% a.a., Payout sustentável.' },
-  { title: '3. Exija margem de segurança', body: 'Nunca compre no preço teto ou acima. Espere pelo menos 20% de margem. Em momentos de crise, você pode conseguir 40-50% de desconto.' },
+  { title: '3. Exija margem de segurança', body: 'Graham tratava a margem como filtro da régua, não como ordem. Uma distância de pelo menos 20% abaixo do teto é a folga que o método pede. Em crise, a distância pode chegar a 40-50%. Continua sendo distância, não recomendação.' },
   { title: '4. Reavalie periodicamente', body: 'Fundamentos mudam. Uma ação que estava barata pode ficar cara se o lucro cair. Recalcule após cada balanço trimestral.' },
-  { title: '5. Entenda o porquê', body: 'Se uma ação está 50% abaixo do preço teto, investigue o porquê. Pode ser oportunidade ou problema real que o mercado já precificou.' },
+  { title: '5. Entenda o porquê', body: 'Se uma ação está 50% abaixo do preço teto, investigue o porquê. A distância pode ser margem na régua ou um problema que o mercado já colocou no preço.' },
   { title: '6. Seja paciente', body: 'Value investing exige paciência. Pode levar meses ou anos para o mercado reconhecer o valor. Não espere ganhos rápidos.' },
 ]
 
@@ -445,11 +463,11 @@ const relatedRankings = [
 // FAQs verbatim da página antiga (11). O FAQPage JSON-LD é emitido pelo
 // NuFaqAccordion — fonte única, mesmo padrão do app antigo.
 const faqItems: NuFaqItem[] = [
-  { q: 'O que é preço teto e por que calcular?', a: 'Preço teto é o valor máximo que um investidor deveria pagar por uma ação considerando seus fundamentos e uma margem de segurança. É a referência central da análise fundamentalista: se a ação estiver negociando abaixo do preço teto, pode estar barata; se estiver acima, pode estar cara.' },
+  { q: 'O que é preço teto e por que calcular?', a: 'Preço teto é o valor máximo que a régua de um método aceita para uma ação, a partir dos fundamentos e de uma margem de segurança. Cotação abaixo do teto significa margem em relação a essa régua; cotação acima significa que o preço passou do teto. Não é recomendação de compra ou venda.' },
   { q: 'Qual a diferença entre preço teto e preço justo?', a: 'São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.' },
   { q: 'Qual a melhor metodologia: Graham ou Bazin?', a: 'Depende do perfil. Bazin é ideal para quem busca renda passiva com dividendos e exige DY mínimo de 6% ao ano. Graham é mais conservador e equilibra lucro e patrimônio líquido, sendo ideal para empresas maduras e rentáveis. Na prática, use as duas e compare com P/L setorial e VPA para ter uma visão completa.' },
-  { q: 'Se a ação está abaixo do preço teto, é garantia de boa compra?', a: 'Não. O preço teto é um filtro inicial, não uma garantia. A ação pode estar barata porque o mercado antecipa problemas: queda de lucro, concorrência, setor em declínio ou mudança regulatória. Sempre investigue o porquê antes de comprar, para evitar caírem uma "value trap" (armadilha de valor).' },
-  { q: 'Como calcular a margem de segurança?', a: 'Margem de Segurança = (Preço Teto − Preço Atual) ÷ Preço Teto × 100. Se o teto é R$ 40 e a ação está R$ 30, a margem é de 25%. Benjamin Graham sugeria no mínimo 20% a 30% de margem para investir com segurança. Quanto maior a margem, menor o risco de erro de análise.' },
+  { q: 'Se a ação está abaixo do preço teto, é garantia de boa compra?', a: 'Não. O preço teto é um filtro inicial, não uma garantia e não uma recomendação. A cotação pode estar abaixo do teto porque o mercado antecipa problemas: queda de lucro, concorrência, setor em declínio ou mudança regulatória. Investigar o porquê evita ler um desconto como margem quando o problema está no balanço.' },
+  { q: 'Como calcular a margem de segurança?', a: 'Margem de Segurança = (Preço Teto − Preço Atual) ÷ Preço Teto × 100. Se o teto é R$ 40 e a ação está R$ 30, a margem é de 25%. Benjamin Graham sugeria no mínimo 20% a 30% de margem como folga da régua. Quanto maior a margem, maior a distância até o teto. Não é recomendação de compra ou venda.' },
   { q: 'A calculadora serve para FIIs (Fundos Imobiliários)?', a: 'Parcialmente. Para FIIs use principalmente o Método Bazin (Dividendo ÷ Yield mínimo) e a análise de P/VP. Um bom FII costuma ter P/VP abaixo de 1,0, DY acima de 8% e vacância baixa. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.' },
   { q: 'E para empresas de crescimento como Magazine Luiza?', a: 'As fórmulas tradicionais de preço teto não capturam bem growth stocks. Empresas que reinvestem todo o lucro têm LPA baixo ou negativo, mas podem ter um futuro excelente. Para essas, prefira múltiplos de receita (P/S ou EV/Sales), fluxo de caixa descontado (DCF) ou comparação com pares de mercado.' },
   { q: 'Com que frequência devo recalcular o preço teto?', a: 'Recalcule trimestralmente, após cada balanço da empresa. LPA, VPA e dividendos mudam a cada trimestre. Se você acompanha a empresa de perto, revise a cada 3 meses. Para investidores de longo prazo, uma vez por ano pode bastar, desde que não haja eventos materiais no meio do caminho.' },
@@ -485,7 +503,7 @@ usePageSeo({
         'P/L Setorial',
         'Valor Patrimonial (VPA x 1.5)',
         'Margem de segurança por metodologia',
-        'Consenso e recomendação de compra',
+        'Consenso dos métodos com número',
         'Comparação visual entre métodos',
       ],
       about: [
@@ -565,11 +583,12 @@ usePageSeo({
           <CalcSliderField v-model="sectorPL" label="P/L Médio do Setor" :min="1" :max="plMax" :step="0.5" :value-text="sectorPLTxt" :presets="plPresets" />
         </div>
         <p class="pt__controls-note">Valores ilustrativos, ajuste com os fundamentos reais da ação (LPA, VPA e dividendos dos últimos 12 meses).</p>
+        <p v-if="!sectorPlConta" class="pt__controls-note">Não há P/L médio publicado para o setor. O método fica indisponível e fora do consenso até você informar um múltiplo neste campo.</p>
       </template>
       <template #result>
         <CalcResultPanel
           v-if="results"
-          caption="Pelas 4 metodologias, com os fundamentos ao lado, o preço teto médio é"
+          caption="Pelas metodologias com número, com os fundamentos ao lado, o preço teto médio é"
           :value="formatCurrency(results.consensus.averageFairPrice)"
           :items="[
             { dot: 'var(--nu-ink)', label: 'Preço atual', value: formatCurrency(price) },
@@ -577,19 +596,19 @@ usePageSeo({
           ]"
         >
           <div class="pt__reco" :class="recoClass">
-            <span class="pt__reco-label">Recomendação consensual</span>
+            <span class="pt__reco-label">Posição em relação ao teto</span>
             <span class="pt__reco-value">{{ results.consensus.recommendation }}</span>
           </div>
           <p class="pt__reco-explain">{{ results.consensus.explanation }}</p>
 
           <div class="pt__methods">
-            <div v-for="m in methods" :key="m.key" class="pt__method" :class="getMethodStatus(m.res.ratio)">
+            <div v-for="m in methods" :key="m.key" class="pt__method" :class="m.ausente ? '' : getMethodStatus(m.res.ratio)">
               <div class="pt__method-head">
                 <span class="pt__method-title">{{ m.title }}</span>
-                <span class="pt__method-badge">{{ getStatusText(m.res.ratio) }}</span>
+                <span class="pt__method-badge">{{ m.ausente ? 'Indisponível' : getStatusText(m.res.ratio) }}</span>
               </div>
-              <p class="pt__method-value">{{ formatCurrency(m.res.fairPrice) }}</p>
-              <p class="pt__method-margin">Margem: {{ (m.res.margin * 100).toFixed(1) }}%</p>
+              <p class="pt__method-value">{{ m.ausente ? 'Indisponível' : formatCurrency(m.res.fairPrice) }}</p>
+              <p class="pt__method-margin">{{ m.ausente ? 'Sem P/L médio do setor. Fora do consenso.' : `Margem: ${(m.res.margin * 100).toFixed(1)}%` }}</p>
               <p class="pt__method-formula">{{ m.formula }}</p>
             </div>
           </div>
@@ -603,9 +622,9 @@ usePageSeo({
             <template v-for="m in visualMethods" :key="m.key">
               <div class="pt__bar-row">
                 <span class="pt__bar-label">{{ m.label }}</span>
-                <span class="pt__bar-value">{{ formatCurrency(m.fairPrice) }}</span>
+                <span class="pt__bar-value">{{ m.ausente ? 'Indisponível' : formatCurrency(m.fairPrice) }}</span>
               </div>
-              <div class="pt__bar-track"><span class="pt__bar-fill" :style="{ width: barWidth(m.fairPrice), background: m.color }" /></div>
+              <div v-if="!m.ausente" class="pt__bar-track"><span class="pt__bar-fill" :style="{ width: barWidth(m.fairPrice), background: m.color }" /></div>
             </template>
           </div>
 
@@ -678,8 +697,8 @@ usePageSeo({
       <template #title>Simulador de preço teto grátis e online</template>
       <div class="pt__prose">
         <!-- 1º parágrafo = lead de SEO que saiu do hero compacto (verbatim) -->
-        <p>O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por <strong>Graham</strong> (√(22.5×LPA×VPA)), <strong>Bazin</strong> (Dividendo÷0,06), <strong>P/L</strong> setorial ou <strong>VPA</strong>×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.</p>
-        <p>Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.</p>
+        <p>O preço teto é o valor máximo que a régua de um método aceita para uma ação, a partir dos fundamentos. Calcula-se por <strong>Graham</strong> (√(22.5×LPA×VPA)), <strong>Bazin</strong> (Dividendo÷0,06), <strong>P/L</strong> setorial ou <strong>VPA</strong>×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55. Cotação abaixo desse número está abaixo da régua. Não é recomendação de compra.</p>
+        <p>Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. O resultado é a distância até a régua, não uma orientação de compra ou venda.</p>
       </div>
     </CalcSplit>
 
@@ -734,7 +753,7 @@ usePageSeo({
       <template #title>O que é preço teto?</template>
       <div class="pt__prose">
         <p>O preço teto é o valor máximo que você deveria pagar por uma ação, considerando seus fundamentos e uma margem de segurança. É um conceito fundamental da análise fundamentalista, popularizado por Benjamin Graham (o "pai do value investing") e adaptado por investidores brasileiros como Décio Bazin.</p>
-        <p>Diferente de apenas olhar o preço atual da ação, o preço teto considera indicadores como lucro, patrimônio, dividendos e múltiplos do setor para determinar um valor justo. Se a ação estiver abaixo do preço teto, pode ser uma boa oportunidade de compra. Se estiver acima, pode estar cara.</p>
+        <p>Diferente de apenas olhar o preço atual da ação, o preço teto considera indicadores como lucro, patrimônio, dividendos e múltiplos do setor para estimar um teto de preço. Se a cotação estiver abaixo desse teto, há margem em relação à régua do método. Se estiver acima, a cotação passou dessa régua. A distância descreve o cálculo. Não é recomendação de compra ou venda.</p>
       </div>
     </CalcSplit>
 
@@ -808,7 +827,7 @@ usePageSeo({
     <CalcSplit tone="white">
       <template #title>Indicadores de análise fundamentalista</template>
       <template #dek>
-        <p>O preço teto é apenas uma parte da análise fundamentalista. Antes de comprar, cruze o resultado com os principais indicadores de qualidade da empresa. Eles dizem se o desconto é real ou se a ação está barata por um motivo legítimo.</p>
+        <p>O preço teto é apenas uma parte da análise fundamentalista. Cruze o resultado com os indicadores de qualidade da empresa. Eles ajudam a ver se a distância até o teto vem do balanço ou de um múltiplo alto. Não é recomendação de compra ou venda.</p>
       </template>
       <div class="pt__card">
         <ul class="pt__ind-list">

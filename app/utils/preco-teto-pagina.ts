@@ -107,7 +107,7 @@ export interface PrecoTetoView {
   dividendoFonte: 'soma' | 'dy' | 'nenhum'
   dyPct: number | null
   sectorPL: number
-  sectorPLFonte: 'setor' | 'proprio' | 'referencia' | 'sem-lpa'
+  sectorPLFonte: 'setor' | 'ausente' | 'sem-lpa'
   graham: number
   bazin: number
   plSetorial: number
@@ -162,6 +162,7 @@ export function vpaDeOverview(ov: OverviewPrecoTeto | null | undefined): number 
   return n > 0 ? n : 0
 }
 
+/** P/L do próprio papel. Não alimenta o método setorial: LPA × esse P/L devolve a cotação. */
 export function peProprioDeOverview(ov: OverviewPrecoTeto | null | undefined): number {
   return num(ov?.key_statistics?.forward_pe) || num(ov?.scrape_extras?.valuation?.price_to_earnings)
 }
@@ -246,17 +247,17 @@ export function setorDoPapel(sector: string | null | undefined): { nome: string;
 }
 
 /**
- * P/L que a calculadora usa: média do setor, senão o P/L do papel se estiver
- * entre 0 e 60, senão 12. Sem LPA o método não roda e o 12 não entra.
+ * P/L setorial só entra com a média do setor. Sem ela o método fica
+ * indisponível: LPA × P/L do próprio papel devolve a cotação, e um 12
+ * genérico fingiria resultado. Sem LPA o método não se aplica.
  */
-export function sectorPlEfetivo(lpa: number, mediaSetor: number | null, peProprio: number): {
+export function sectorPlEfetivo(lpa: number, mediaSetor: number | null): {
   valor: number
   fonte: PrecoTetoView['sectorPLFonte']
 } {
   if (!(lpa > 0)) return { valor: 0, fonte: 'sem-lpa' }
-  if (mediaSetor != null && mediaSetor > 0) return { valor: mediaSetor, fonte: 'setor' }
-  if (peProprio > 0 && peProprio < 60) return { valor: peProprio, fonte: 'proprio' }
-  return { valor: 12, fonte: 'referencia' }
+  if (mediaSetor != null && Number.isFinite(mediaSetor) && mediaSetor > 0) return { valor: mediaSetor, fonte: 'setor' }
+  return { valor: 0, fonte: 'ausente' }
 }
 
 export function tituloPrecoTeto(ticker: string, temGraham: boolean): string {
@@ -312,18 +313,20 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
   const unidade: 'ação' | 'cota' = fii ? 'cota' : 'ação'
   const nome = nomeDaEmpresa(i.nomeBruto, i.fiiTradingName) || ticker
   const setor = setorDoPapel(i.setorBruto)
+  // Só a média publicada do setor entra. P/L próprio devolveria a cotação.
+  const sectorPL = i.sectorPLFonte === 'setor' ? i.sectorPL : 0
   const calc = computeAll({
     price: i.preco,
     lpa: i.lpa,
     vpa: i.vpa,
     dividend: i.dividendo,
-    sectorPL: i.sectorPL,
+    sectorPL,
   })
   if (!calc) return null
 
   const graham = grahamPrice(i.lpa, i.vpa)
   const bazin = bazinPrice(i.dividendo)
-  const plSetorial = plSectorPrice(i.lpa, i.sectorPL)
+  const plSetorial = plSectorPrice(i.lpa, sectorPL)
   const vpaTeto = bookValuePrice(i.vpa)
   const consenso = calc.consensus.averageFairPrice
   const dataISO = /^\d{4}-\d{2}-\d{2}$/.test(String(i.priceDate ?? '').slice(0, 10))
@@ -368,7 +371,7 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
     dividendo: i.dividendo,
     dividendoFonte: i.dividendoFonte,
     dyPct: i.dyPct,
-    sectorPL: i.sectorPL,
+    sectorPL,
     sectorPLFonte: i.sectorPLFonte,
     graham,
     bazin,
@@ -512,17 +515,20 @@ function montarPassos(p: {
     })
   }
 
-  if (p.plSetorial > 0) {
-    const origem = p.sectorPLFonte === 'setor'
-      ? `P/L médio do setor: ${numBr(p.sectorPL)}.`
-      : p.sectorPLFonte === 'proprio'
-        ? `Sem média publicada do setor. Entrou o P/L do próprio papel, ${numBr(p.sectorPL)}, a mesma regra da calculadora quando o múltiplo está entre 0 e 60.`
-        : 'Sem média do setor e sem P/L próprio utilizável. A calculadora usa 12 como referência.'
+  if (p.plSetorial > 0 && p.sectorPLFonte === 'setor') {
     passos.push({
       titulo: 'P/L setorial',
       linhas: [
-        origem,
+        `P/L médio do setor: ${numBr(p.sectorPL)}.`,
         `Preço teto = ${brl(p.lpa)} × ${numBr(p.sectorPL)} = ${brl(p.plSetorial)}.`,
+      ],
+    })
+  } else if (p.sectorPLFonte === 'ausente') {
+    passos.push({
+      titulo: 'P/L setorial',
+      linhas: [
+        'Não há P/L médio publicado para o setor.',
+        'Sem esse múltiplo o método fica indisponível e não entra no consenso. O P/L do próprio papel não substitui: LPA vezes esse P/L devolve a cotação.',
       ],
     })
   }

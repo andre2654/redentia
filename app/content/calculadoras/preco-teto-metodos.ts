@@ -43,7 +43,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
     slug: 'bazin',
     id: 'bazin',
     metaTitle: 'Preço Teto de Bazin: calculadora e fórmula (dividendo ÷ 6%)',
-    metaDescription: 'Calcule o preço teto pelo método Décio Bazin: dividendo dos últimos 12 meses dividido por 6%. Fórmula, exemplo numérico com PETR4 e as três regras que Bazin exigia antes de comprar.',
+    metaDescription: 'Calcule o preço teto pelo método Décio Bazin: dividendo dos últimos 12 meses dividido por 6%. Fórmula, exemplo numérico com PETR4 e as três regras que Bazin exigia do papel.',
     h1: 'Preço teto de Bazin: a conta do dividendo dividido por 6%',
     answerFirst: 'O preço teto de Bazin é o dividendo por ação dos últimos 12 meses dividido por 0,06. Uma ação que pagou R$ 3,00 por ação no período tem preço teto de R$ 50,00 (3 ÷ 0,06). Acima disso, pelo critério de Bazin, o dividend yield cai abaixo dos 6% que ele exigia e a ação sai da lista de compra.',
     formula: 'Preço teto = Dividendo por ação (12 meses) ÷ 0,06',
@@ -100,7 +100,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
     metaTitle: 'Fórmula de Graham: calculadora do preço justo √(22,5 × LPA × VPA)',
     metaDescription: 'Calcule o valor intrínseco de uma ação pela fórmula de Benjamin Graham: raiz de 22,5 × LPA × VPA. De onde vem o 22,5, exemplo numérico e as limitações que o próprio Graham reconhecia.',
     h1: 'Fórmula de Graham: o preço justo pela raiz de 22,5 × LPA × VPA',
-    answerFirst: 'A fórmula de Graham calcula o valor intrínseco como a raiz quadrada de 22,5 multiplicado pelo LPA e pelo VPA. Uma empresa com LPA de R$ 3,50 e VPA de R$ 18,00 tem valor intrínseco de R$ 35,55, porque √(22,5 × 3,50 × 18) = 35,55. Comprar abaixo disso é comprar com margem de segurança.',
+    answerFirst: 'A fórmula de Graham calcula o valor intrínseco como a raiz quadrada de 22,5 multiplicado pelo LPA e pelo VPA. Uma empresa com LPA de R$ 3,50 e VPA de R$ 18,00 tem valor intrínseco de R$ 35,55, porque √(22,5 × 3,50 × 18) = 35,55. Cotação abaixo desse número está abaixo da régua de Graham, o que o método chama de margem de segurança. Não é recomendação de compra.',
     formula: 'Valor intrínseco = √(22,5 × LPA × VPA)',
     inputs: ['price', 'lpa', 'vpa'],
     sections: [
@@ -222,7 +222,7 @@ export const PRECO_TETO_METODOS: Record<string, PrecoTetoMetodo> = {
         body: [
           'Uma ação negociando abaixo do valor patrimonial significa que o mercado precifica a empresa por menos do que o patrimônio contábil dela. Isso pode ser oportunidade, mas com frequência é o mercado dizendo que o patrimônio está superavaliado nos livros.',
           'Os casos típicos: estoque obsoleto ainda registrado a custo, recebível de qualidade duvidosa, ágio de aquisição que não se materializou em resultado, e imobilizado que só vale aquilo enquanto operando (uma planta industrial específica pode valer perto de zero em liquidação).',
-          'Empresas que destroem valor de forma consistente, com ROE abaixo do custo de capital ano após ano, negociam abaixo do VPA com razão: cada ano de operação reduz o patrimônio. Comprar por "estar barato no P/VP" nesse caso é comprar um ativo que encolhe.',
+          'Empresas que destroem valor de forma consistente, com ROE abaixo do custo de capital ano após ano, negociam abaixo do VPA com razão: cada ano de operação reduz o patrimônio. Tratar o P/VP baixo como desconto, nesse caso, é olhar um ativo que encolhe.',
         ],
       },
       {
