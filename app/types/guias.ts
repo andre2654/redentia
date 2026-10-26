@@ -45,6 +45,9 @@ export type GuideBlock =
   /** tabela viva de custo real de ETFs (fetch do x-ray no SSR) — número que
    *  envelheceria hardcoded passa a vir da carteira CVM do mês */
   | { kind: 'etf-costs'; tickers: string[] }
+  /** exemplo vivo de preço teto (mesma carga SSR das páginas por ticker).
+   *  Se o dado falhar, o bloco some: o exemplo ilustrativo do texto fica. */
+  | { kind: 'preco-teto-vivo'; ticker: string }
 
 export interface GuideSection {
   id: string
@@ -56,6 +59,13 @@ export interface GuideCta {
   title: string
   subtitle: string
   to: string
+}
+
+/** Passo a passo visível, espelhado no JSON-LD HowTo. Texto puro, sem HTML. */
+export interface GuideHowTo {
+  name: string
+  description: string
+  steps: { name: string; text: string }[]
 }
 
 /** Documento completo de um guia (página /guias/[slug]). */
@@ -78,6 +88,8 @@ export interface GuideDoc {
   /** meta do featured card do hub: 'atualizado em jul 2026' */
   updatedShort: string
   sections: GuideSection[]
+  /** Quando o guia é um passo a passo, vira JSON-LD HowTo além do Article. */
+  howTo?: GuideHowTo
   /** banner de conversão entre a última seção e o FAQ */
   cta: GuideCta
   faqTitle: string

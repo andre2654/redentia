@@ -32,6 +32,7 @@ import { COMO_INVESTIR_EM_BDR_GUIDE } from '~/content/guias/como-investir-em-bdr
 import { TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE } from '~/content/guias/tesouro-renda-mais-educa-mais'
 import { IMPOSTO_SOBRE_DIVIDENDOS_GUIDE } from '~/content/guias/imposto-sobre-dividendos'
 import { DATA_COM_E_DATA_EX_GUIDE } from '~/content/guias/data-com-e-data-ex'
+import { COMO_CALCULAR_PRECO_TETO_GUIDE } from '~/content/guias/como-calcular-preco-teto'
 
 /** Tabs do hub, na ordem exata do design. */
 export const GUIDE_TABS: readonly ['Tudo', ...GuideTag[]] = [
@@ -70,6 +71,7 @@ export const GUIDE_DOCS: Record<string, GuideDoc> = {
   [TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE.slug]: TESOURO_RENDA_MAIS_EDUCA_MAIS_GUIDE,
   [IMPOSTO_SOBRE_DIVIDENDOS_GUIDE.slug]: IMPOSTO_SOBRE_DIVIDENDOS_GUIDE,
   [DATA_COM_E_DATA_EX_GUIDE.slug]: DATA_COM_E_DATA_EX_GUIDE,
+  [COMO_CALCULAR_PRECO_TETO_GUIDE.slug]: COMO_CALCULAR_PRECO_TETO_GUIDE,
 }
 
 /**
@@ -187,6 +189,13 @@ export const GUIDES: GuideMeta[] = [
     tag: 'Análise',
     minutes: 11,
     slug: 'como-analisar-uma-acao',
+  },
+  {
+    title: 'Como calcular preço teto: fórmulas passo a passo',
+    description: 'Bazin, Graham, P/L setorial, valor patrimonial e projetivo: a conta de cada método, com exemplo.',
+    tag: 'Análise',
+    minutes: 13,
+    slug: 'como-calcular-preco-teto',
   },
   {
     title: 'ETFs: o que são e como investir',

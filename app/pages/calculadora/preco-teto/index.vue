@@ -745,6 +745,7 @@ usePageSeo({
           <p><strong>Graham.</strong> Preço justo igual à raiz de 22,5 × LPA × VPA. O 22,5 é o produto do P/L máximo de 15 pelo P/VP máximo de 1,5, e a conta exige lucro e patrimônio positivos. A fórmula está na <NuxtLink to="/calculadora/preco-teto/graham">página da fórmula de Graham</NuxtLink>.</p>
           <p><strong>Projetivo.</strong> A mesma divisão do Bazin, aplicada ao dividendo estimado do próximo ciclo: (dividendo × (1 + crescimento)) ÷ 0,06. Com crescimento zero, o resultado é idêntico ao Bazin. O crescimento é premissa de quem calcula, não um dado publicado pela empresa. A conta está na <NuxtLink to="/calculadora/preco-teto/projetivo">página do preço teto projetivo</NuxtLink>.</p>
           <p>Nenhuma dessas contas é recomendação de compra ou venda. O preço teto diz até onde a régua do método chega com os números de hoje. Não diz o que fazer com o papel.</p>
+          <p>O passo a passo das cinco fórmulas, os erros comuns e a diferença entre preço teto e preço justo estão no <NuxtLink to="/guias/como-calcular-preco-teto">guia de como calcular preço teto</NuxtLink>.</p>
         </div>
       </div>
     </CalcSplit>
@@ -946,7 +947,7 @@ usePageSeo({
          URL sem link de entrada é publicar no vazio. -->
     <CalcBand tone="white" title="Cada método, em detalhe">
       <template #dek>
-        <p>A fórmula, de onde vem cada constante, onde o método falha e um exemplo numérico fechado.</p>
+        <p>A fórmula, de onde vem cada constante, onde o método falha e um exemplo numérico fechado. O conjunto das cinco contas está no <NuxtLink to="/guias/como-calcular-preco-teto">guia de como calcular preço teto</NuxtLink>.</p>
       </template>
       <div class="pt__grid-cards pt__grid-cards--three">
         <NuxtLink v-for="mm in metodoLinks" :key="mm.slug" :to="`/calculadora/preco-teto/${mm.slug}`" class="pt__card-link">
