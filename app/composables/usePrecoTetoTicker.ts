@@ -14,7 +14,6 @@ import {
   lpaDeOverview,
   montarPrecoTeto,
   paginaPrecoTetoExiste,
-  peProprioDeOverview,
   sectorPlEfetivo,
   vpaDeOverview,
   type PrecoTetoView,
@@ -130,7 +129,7 @@ async function loadPrecoTeto(base: string, ticker: string): Promise<PrecoTetoVie
     throw createError({ statusCode: 404, statusMessage: `${ticker} não tem LPA nem dividendo para preço teto` })
   }
 
-  const pe = sectorPlEfetivo(lpa, lpa > 0 ? await mediaDoSetor(base, profile.sector) : null, peProprioDeOverview(overview))
+  const pe = sectorPlEfetivo(lpa, lpa > 0 ? await mediaDoSetor(base, profile.sector) : null)
   const dyOficial = overviewDyOf(overview)
   const view = montarPrecoTeto({
     ticker,

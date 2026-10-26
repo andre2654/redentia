@@ -55,10 +55,10 @@ const brl = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', c
 const metodos = computed(() => {
   const v = view.value
   return [
-    { nome: 'Bazin', valor: v.bazin, formula: 'Dividendo ÷ 0,06' },
-    { nome: 'Graham', valor: v.graham, formula: '√(22,5 × LPA × VPA)' },
-    { nome: 'P/L setorial', valor: v.plSetorial, formula: 'LPA × P/L do setor' },
-    { nome: 'Valor patrimonial', valor: v.vpaTeto, formula: 'VPA × 1,5' },
+    { nome: 'Bazin', valor: v.bazin, formula: 'Dividendo ÷ 0,06', indisponivel: false },
+    { nome: 'Graham', valor: v.graham, formula: '√(22,5 × LPA × VPA)', indisponivel: false },
+    { nome: 'P/L setorial', valor: v.plSetorial, formula: 'LPA × P/L do setor', indisponivel: v.sectorPLFonte === 'ausente' },
+    { nome: 'Valor patrimonial', valor: v.vpaTeto, formula: 'VPA × 1,5', indisponivel: false },
   ]
 })
 </script>
@@ -87,7 +87,7 @@ const metodos = computed(() => {
         <li v-for="m in metodos" :key="m.nome">
           <span class="ptt__method-name">{{ m.nome }}</span>
           <span class="ptt__method-formula">{{ m.formula }}</span>
-          <span class="ptt__method-value">{{ m.valor > 0 ? brl(m.valor) : 'Não se aplica' }}</span>
+          <span class="ptt__method-value">{{ m.valor > 0 ? brl(m.valor) : (m.indisponivel ? 'Indisponível' : 'Não se aplica') }}</span>
         </li>
       </ul>
       <p class="ptt__aviso">Não é recomendação de compra ou venda. O preço teto é uma régua sobre os números dos últimos 12 meses, não uma previsão e não uma orientação.</p>

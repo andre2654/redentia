@@ -92,7 +92,8 @@ export function priceByMethod(id: MethodId, i: PrecoTetoInputs): number {
 export interface Consensus {
   averageFairPrice: number
   averageMargin: number
-  recommendation: 'Comprar' | 'Neutro' | 'Caro'
+  /** Posição da cotação perante o teto médio. Não é ordem de compra ou venda. */
+  recommendation: 'Abaixo do teto' | 'Na faixa' | 'Acima do teto'
   explanation: string
 }
 
@@ -111,26 +112,26 @@ export function consensusOf(prices: number[], currentPrice: number): Consensus {
     return {
       averageFairPrice,
       averageMargin,
-      recommendation: 'Comprar',
+      recommendation: 'Abaixo do teto',
       explanation:
-        'A ação está negociando com boa margem de segurança abaixo do preço teto médio. Pode ser uma oportunidade interessante, mas valide também endividamento, ROE e perspectivas do setor.',
+        'A cotação está mais de 20% abaixo do preço teto médio. Isso é margem em relação à régua dos métodos, não uma recomendação de compra ou venda.',
     }
   }
   if (averageMargin >= 0) {
     return {
       averageFairPrice,
       averageMargin,
-      recommendation: 'Neutro',
+      recommendation: 'Na faixa',
       explanation:
-        'A ação está próxima do preço teto médio. Avalie outros fundamentos antes de decidir e considere esperar uma janela com mais margem de segurança.',
+        'A cotação está perto do preço teto médio, com margem menor que 20%. A distância descreve a régua. Não diz o que fazer com o papel.',
     }
   }
   return {
     averageFairPrice,
     averageMargin,
-    recommendation: 'Caro',
+    recommendation: 'Acima do teto',
     explanation:
-      'A ação está negociando acima do preço teto médio. Pode estar cara no momento, a menos que haja um catalisador claro de crescimento que justifique o prêmio.',
+      'A cotação está acima do preço teto médio. Pela régua dos métodos, passou do teto. Não é um juízo de que o papel vá cair.',
   }
 }
 

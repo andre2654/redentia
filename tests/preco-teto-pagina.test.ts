@@ -17,6 +17,7 @@ import {
   montarPrecoTeto,
   paginaPrecoTetoExiste,
   setorDoPapel,
+  sectorPlEfetivo,
   tickerDePaginaPrecoTeto,
   mesclarSitemapPrecoTeto,
   tituloCabeNoSerp,
@@ -150,6 +151,25 @@ test('FII sem LPA não promete Graham no título e ainda tem Bazin e VPA', () =>
   assert.equal(view.title.includes('Graham'), false)
   assert.equal(view.unidade, 'cota')
   assert.equal(view.setorHref, '/setor/imobiliario')
+})
+
+test('sem média de setor o P/L setorial fica indisponível e sai do consenso', () => {
+  assert.deepEqual(sectorPlEfetivo(8, null), { valor: 0, fonte: 'ausente' })
+  assert.deepEqual(sectorPlEfetivo(8, 0), { valor: 0, fonte: 'ausente' })
+  assert.deepEqual(sectorPlEfetivo(0, 6), { valor: 0, fonte: 'sem-lpa' })
+  assert.deepEqual(sectorPlEfetivo(8, 6), { valor: 6, fonte: 'setor' })
+
+  const view = montarPrecoTeto({ ...base, sectorPL: 38 / 8, sectorPLFonte: 'ausente' })
+  assert.ok(view)
+  const semSetor = computeAll({ price: 38, lpa: 8, vpa: 35, dividend: 5, sectorPL: 0 })
+  const comProprio = computeAll({ price: 38, lpa: 8, vpa: 35, dividend: 5, sectorPL: 38 / 8 })
+  assert.ok(semSetor && comProprio)
+  assert.equal(view.plSetorial, 0)
+  assert.equal(comProprio.plSector.fairPrice, 38)
+  assert.equal(view.consenso, semSetor.consensus.averageFairPrice)
+  assert.notEqual(view.consenso, comProprio.consensus.averageFairPrice)
+  const passo = view.passos.find((p) => p.titulo === 'P/L setorial')
+  assert.match(passo?.linhas.join(' ') ?? '', /indisponível/i)
 })
 
 test('sem LPA e sem dividendo a montagem devolve null, não uma página vazia', () => {
