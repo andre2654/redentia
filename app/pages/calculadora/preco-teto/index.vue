@@ -19,7 +19,7 @@ const route = useRoute()
 // (novas FAQs, mudanca em metodologia, ano novo). Google usa
 // dateModified como sinal de relevancia, manter mensal evita pagina
 // "envelhecer" no indice.
-const CONTENT_VERSION = '2026-06-08'
+const CONTENT_VERSION = '2026-10-26'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
   day: '2-digit',
@@ -305,9 +305,9 @@ const plPresets = [
 
 /* ————— dados de conteúdo (texto verbatim da página antiga) ————— */
 
-// Bloco server-rendered de /asset. A lista de "ações populares" acima abre a
-// calculadora (?ticker=); esta leva o Google às páginas de ativo. Estática de
-// propósito: não depende do fetch client-only de /tickers-full.
+// Bloco server-rendered. A lista de "ações populares" e esta levam à página
+// /calculadora/preco-teto/{TICKER}. Estática de propósito: não depende do
+// fetch client-only de /tickers-full. A página do ticker aponta para /asset.
 const ACOES_BUSCADAS = [
   { ticker: 'PETR4', name: 'Petrobras' },
   { ticker: 'PETR3', name: 'Petrobras ON' },
@@ -647,7 +647,7 @@ usePageSeo({
         <NuxtLink
           v-for="t in popularTickers"
           :key="t.ticker"
-          :to="`/calculadora/preco-teto?ticker=${t.ticker}`"
+          :to="`/calculadora/preco-teto/${t.ticker}`"
           class="pt__ticker"
         >
           <span class="pt__ticker-code">{{ t.ticker }}</span>
@@ -658,13 +658,13 @@ usePageSeo({
 
     <CalcBand tone="white" title="Preço teto das ações mais buscadas">
       <template #dek>
-        <p>Cotação, dividendos e fundamentos das ações que mais aparecem nesta calculadora.</p>
+        <p>Bazin, Graham e o consenso de cada papel, com a conta passo a passo.</p>
       </template>
       <div class="pt__tickers">
         <NuxtLink
           v-for="t in ACOES_BUSCADAS"
           :key="t.ticker"
-          :to="`/asset/${t.ticker}`"
+          :to="`/calculadora/preco-teto/${t.ticker}`"
           class="pt__ticker"
         >
           <span class="pt__ticker-code">{{ t.ticker }}</span>
@@ -721,6 +721,11 @@ usePageSeo({
           <p><strong>Exemplo completo, com números redondos:</strong> uma ação cotada a R$ 42,00 que pagou R$ 3,00 de dividendos em 12 meses, com LPA de R$ 4,00 e VPA de R$ 28,00.</p>
           <p>Por Bazin, o preço teto é 3,00 ÷ 0,06 = <strong>R$ 50,00</strong>. Por Graham, é √(22,5 × 4 × 28) = √2.520 = <strong>R$ 50,20</strong>. Os dois métodos convergem perto de R$ 50, e o papel negocia a R$ 42 — cerca de 16% de margem de segurança. Números ilustrativos, escolhidos para mostrar a mecânica.</p>
           <p>Vale a ressalva de sempre: preço teto é régua de disciplina, não previsão. Ele diz quanto <em>você</em> aceita pagar dado o que a empresa entrega hoje. Não diz que a ação vai subir, nem protege de uma tese que se deteriora.</p>
+          <p><strong>Bazin.</strong> Dividendo por ação dos últimos 12 meses dividido por 0,06. É a conta do dividend yield mínimo de 6% ao ano. O passo a passo e a fórmula estão na <NuxtLink to="/calculadora/preco-teto/bazin">página do método de Bazin</NuxtLink>.</p>
+          <p><strong>Barsi.</strong> Luiz Barsi trabalha com a mesma régua de 6%: dividendo dividido por 0,06. A aritmética é a do Bazin. O que ele acrescenta não é outra fórmula, e sim o filtro anterior à conta: anos seguidos de dividendo, dívida sob controle e um negócio que ele entende. Por isso não há uma equação separada.</p>
+          <p><strong>Graham.</strong> Preço justo igual à raiz de 22,5 × LPA × VPA. O 22,5 é o produto do P/L máximo de 15 pelo P/VP máximo de 1,5, e a conta exige lucro e patrimônio positivos. A fórmula está na <NuxtLink to="/calculadora/preco-teto/graham">página da fórmula de Graham</NuxtLink>.</p>
+          <p><strong>Projetivo.</strong> A mesma divisão do Bazin, aplicada ao dividendo estimado do próximo ciclo: (dividendo × (1 + crescimento)) ÷ 0,06. Com crescimento zero, o resultado é idêntico ao Bazin. O crescimento é premissa de quem calcula, não um dado publicado pela empresa. A conta está na <NuxtLink to="/calculadora/preco-teto/projetivo">página do preço teto projetivo</NuxtLink>.</p>
+          <p>Nenhuma dessas contas é recomendação de compra ou venda. O preço teto diz até onde a régua do método chega com os números de hoje. Não diz o que fazer com o papel.</p>
         </div>
       </div>
     </CalcSplit>

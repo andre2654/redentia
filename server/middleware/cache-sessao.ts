@@ -28,6 +28,8 @@
  * DEBAIXO de /x/ — não casa a base (a armadilha documentada do '/guias/**').
  */
 
+import { symbolShape } from '../../app/utils/tickerClass'
+
 const DIA = 'public, s-maxage=86400, stale-while-revalidate=604800'
 const HORA = 'public, s-maxage=3600, stale-while-revalidate=86400'
 const QUINZE_MIN = 'public, s-maxage=900, stale-while-revalidate=3600'
@@ -73,6 +75,10 @@ const PREFIXOS: Array<[string, string]> = [
 
 /** Valor público da rota (anônimo), ou null se a rota não é cacheável na borda. */
 function cachePublicoDaRota(pathname: string): string | null {
+  // Página por ticker traz cotação. 15 min, não a hora das calculadoras estáticas.
+  // Método (bazin, graham…) não tem forma de ticker e segue o prefixo geral.
+  const slug = /^\/calculadora\/preco-teto\/([^/]+)$/.exec(pathname)?.[1]
+  if (slug && symbolShape(slug.toUpperCase()) === 'b3') return QUINZE_MIN
   const exata = EXATAS[pathname]
   if (exata) return exata
   for (const [prefixo, valor] of PREFIXOS) {
