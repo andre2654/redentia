@@ -10,6 +10,9 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
     <NuHeader />
     <NuSectionRail v-if="railSections" />
     <NuMarketTicker v-else />
+    <!-- A faixa do recado do André (26/10/2026, pedido do dono): abre a
+         janela NuRecado e some sozinha na data do recado. -->
+    <NuRecadoFaixa />
     <main>
       <slot />
     </main>
@@ -28,6 +31,11 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
     <!-- Onboarding obrigatório: logado sem investor_goal responde antes de
          seguir (decisão do dono, 24/08). -->
     <NuOnboardingModal />
+    <!-- O recado do André (26/10/2026, o dia vermelho depois do 2º turno):
+         decisão do dono. Abre sozinho uma vez para quem está logado, fora das
+         páginas de busca; a faixa acima abre para todo mundo. Some sozinho na
+         data de useRecado. -->
+    <NuRecado />
   </div>
 </template>
 
