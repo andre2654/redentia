@@ -603,3 +603,32 @@ export function tituloVisivel(titulo: string): string {
 export function tituloCabeNoSerp(titulo: string): boolean {
   return tituloVisivel(titulo).length <= TETO_TITULO
 }
+
+export interface ElegivelSitemap {
+  ticker: string
+  lastmod?: string
+}
+
+/**
+ * Junta a checagem desta geração com a lista anterior.
+ * Falha de rede não tira do sitemap quem já estava: um 429 no build
+ * apagaria PETR4 do índice. 'nao' confirmado (sem LPA e sem dividendo) sai.
+ */
+export function mesclarSitemapPrecoTeto(
+  anteriores: ElegivelSitemap[],
+  checagens: { ticker: string; status: 'sim' | 'nao' | 'falha'; lastmod?: string }[],
+): ElegivelSitemap[] {
+  const velho = new Map(anteriores.map((t) => [t.ticker, t]))
+  const saida = new Map<string, ElegivelSitemap>()
+  for (const c of checagens) {
+    if (c.status === 'sim') {
+      const item: ElegivelSitemap = { ticker: c.ticker }
+      if (c.lastmod) item.lastmod = c.lastmod
+      saida.set(c.ticker, item)
+    } else if (c.status === 'falha') {
+      const previo = velho.get(c.ticker)
+      if (previo) saida.set(c.ticker, previo)
+    }
+  }
+  return [...saida.values()].sort((a, b) => a.ticker.localeCompare(b.ticker))
+}

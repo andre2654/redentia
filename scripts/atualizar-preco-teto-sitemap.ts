@@ -14,10 +14,12 @@ import { parseProventos, overviewDyOf } from '../app/utils/proventos.ts'
 import {
   dividendoParaBazin,
   lpaDeOverview,
+  mesclarSitemapPrecoTeto,
   paginaPrecoTetoExiste,
   tickerDePaginaPrecoTeto,
   type OverviewPrecoTeto,
 } from '../app/utils/preco-teto-pagina.ts'
+import { PRECO_TETO_ELEGIVEIS } from '../server/data/preco-teto-elegiveis.ts'
 
 const BASE = process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api'
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../server/data/preco-teto-elegiveis.ts')
@@ -32,12 +34,22 @@ interface Row {
 }
 
 async function getJson(path: string): Promise<unknown> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { Accept: 'application/json', 'User-Agent': 'RedentiaSitemap/1.0' },
-    signal: AbortSignal.timeout(20_000),
-  })
-  if (!res.ok) throw new Error(`${res.status} ${path}`)
-  return res.json()
+  let ultimo: unknown = null
+  for (let tentativa = 1; tentativa <= 3; tentativa++) {
+    try {
+      const res = await fetch(`${BASE}${path}`, {
+        headers: { Accept: 'application/json', 'User-Agent': 'RedentiaSitemap/1.0' },
+        signal: AbortSignal.timeout(20_000),
+      })
+      if (res.status === 404) return null
+      if (!res.ok) throw new Error(`${res.status} ${path}`)
+      return res.json()
+    } catch (e) {
+      ultimo = e
+      if (tentativa < 3) await new Promise((r) => setTimeout(r, 400 * tentativa))
+    }
+  }
+  throw ultimo instanceof Error ? ultimo : new Error(String(ultimo))
 }
 
 async function pool<T, R>(items: T[], n: number, fn: (item: T) => Promise<R>): Promise<R[]> {
@@ -53,34 +65,33 @@ async function pool<T, R>(items: T[], n: number, fn: (item: T) => Promise<R>): P
   return out
 }
 
-async function elegivel(row: Row): Promise<{ ticker: string; lastmod?: string } | null> {
+async function checar(row: Row): Promise<{ ticker: string; status: 'sim' | 'nao' | 'falha'; lastmod?: string } | null> {
   const ticker = tickerDePaginaPrecoTeto(row)
   if (!ticker) return null
+  const lastmod = dataDe(row.price_date)
   let overview: OverviewPrecoTeto | null = null
   try {
-    const body = await getJson(`/fundamentals/${ticker}/overview`) as { data?: OverviewPrecoTeto }
+    const body = await getJson(`/fundamentals/${ticker}/overview`) as { data?: OverviewPrecoTeto } | null
     overview = body?.data ?? null
   } catch {
-    return null
+    return { ticker, status: 'falha', lastmod }
   }
   const lpa = lpaDeOverview(overview)
-  if (lpa > 0) {
-    return { ticker, lastmod: dataDe(row.price_date) }
-  }
+  if (lpa > 0) return { ticker, status: 'sim', lastmod }
   let rows = null as ReturnType<typeof parseProventos> | null
   try {
-    const body = await getJson(`/dividends/${ticker}`) as { data?: unknown[] }
+    const body = await getJson(`/dividends/${ticker}`) as { data?: unknown[] } | null
     rows = parseProventos(body?.data)
   } catch {
-    return null
+    return { ticker, status: 'falha', lastmod }
   }
   const div = dividendoParaBazin({
     overviewDy: overviewDyOf(overview),
     price: Number(row.market_price) || 0,
     rows,
   })
-  if (!paginaPrecoTetoExiste(lpa, div.valor)) return null
-  return { ticker, lastmod: dataDe(row.price_date) }
+  if (!paginaPrecoTetoExiste(lpa, div.valor)) return { ticker, status: 'nao', lastmod }
+  return { ticker, status: 'sim', lastmod }
 }
 
 function dataDe(v: unknown): string | undefined {
@@ -121,14 +132,15 @@ async function main() {
   }
   const candidatos = rows.filter((r) => tickerDePaginaPrecoTeto(r))
   console.log(`preco-teto sitemap: ${candidatos.length} ações e FIIs com cotação, checando LPA e dividendo…`)
-  const saida = (await pool(candidatos, CONCORRENCIA, elegivel)).filter((x): x is { ticker: string; lastmod?: string } => !!x)
-  saida.sort((a, b) => a.ticker.localeCompare(b.ticker))
+  const checagens = (await pool(candidatos, CONCORRENCIA, checar)).filter((x): x is NonNullable<typeof x> => !!x)
+  const falhas = checagens.filter((c) => c.status === 'falha').length
+  const saida = mesclarSitemapPrecoTeto(PRECO_TETO_ELEGIVEIS, checagens)
   if (saida.length === 0) {
     console.warn('preco-teto sitemap: zero tickers com dado, arquivo anterior mantido.')
     return
   }
   emitir(saida)
-  console.log(`preco-teto sitemap: ${saida.length} tickers em ${OUT}`)
+  console.log(`preco-teto sitemap: ${saida.length} tickers (${falhas} falhas de rede reaproveitadas da lista anterior) em ${OUT}`)
 }
 
 main().catch((e) => {

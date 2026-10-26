@@ -18,6 +18,7 @@ import {
   paginaPrecoTetoExiste,
   setorDoPapel,
   tickerDePaginaPrecoTeto,
+  mesclarSitemapPrecoTeto,
   tituloCabeNoSerp,
   tituloPrecoTeto,
   tituloVisivel,
@@ -166,6 +167,20 @@ test('o sitemap gerado traz PETR4, TAEE11 e BBAS3 e deixa BDR e ETF de fora', ()
   assert.equal(tickers.has('AAPL34'), false)
   assert.equal(tickers.has('BOVA11'), false)
   assert.ok(tickers.size > 400 && tickers.size < 800, String(tickers.size))
+})
+
+test('falha de rede no build não tira do sitemap quem já estava', () => {
+  const anterior = [
+    { ticker: 'PETR4', lastmod: '2026-10-23' },
+    { ticker: 'AALR3', lastmod: '2026-10-23' },
+  ]
+  const saida = mesclarSitemapPrecoTeto(anterior, [
+    { ticker: 'PETR4', status: 'falha' },
+    { ticker: 'AALR3', status: 'nao' },
+    { ticker: 'VALE3', status: 'sim', lastmod: '2026-10-23' },
+    { ticker: 'NOVO3', status: 'falha' },
+  ])
+  assert.deepEqual(saida.map((t) => t.ticker), ['PETR4', 'VALE3'])
 })
 
 test('setor inglês conhecido vira o nome da rota /setor', () => {
