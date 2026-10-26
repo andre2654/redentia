@@ -32,6 +32,7 @@ test('ticker de página 200 entra; alias, símbolo inválido e tipo de fora fica
 test('tipo de sitemap aceita o sufixo .xml e rejeita o resto', () => {
   assert.equal(tipoDoSitemap('ativos.xml'), 'ativos')
   assert.equal(tipoDoSitemap('dividendos'), 'dividendos')
+  assert.equal(tipoDoSitemap('preco-teto.xml'), 'preco-teto')
   assert.equal(tipoDoSitemap('busca.xml'), null)
   assert.equal(tipoDoSitemap(undefined), null)
 })

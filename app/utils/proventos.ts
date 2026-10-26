@@ -19,7 +19,7 @@
  * Auto-importado (app/utils é dir padrão do Nuxt).
  */
 import type { AcaoDividendBar } from '~/types/acao'
-import { spISODate } from './format'
+import { spISODate } from './format.ts'
 
 export interface ProventoRow {
   /** 'YYYY-MM-DD' que decide a janela de 12 meses: a data-com ou, sem ela, o pagamento */

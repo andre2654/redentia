@@ -9,7 +9,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { CONVITE_PAUSA_DIAS, conviteForaDaPagina, convitePausado, fracaoLida, rodapeSemAssinatura } from '../app/utils/newsletter-lugares.ts'
 
-const PRECO_TETO = ['/calculadora/preco-teto', '/calculadora/preco-teto/', '/calculadora/preco-teto/graham', '/Calculadora/Preco-Teto']
+const PRECO_TETO = ['/calculadora/preco-teto', '/calculadora/preco-teto/', '/calculadora/preco-teto/graham', '/calculadora/preco-teto/PETR4', '/Calculadora/Preco-Teto']
 
 test('o rodapé fica sem a faixa só onde a página já tem o formulário dela', () => {
   for (const p of [...PRECO_TETO, '/guias', '/guias/']) assert.equal(rodapeSemAssinatura(p), true, p)

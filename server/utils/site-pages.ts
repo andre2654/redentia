@@ -30,6 +30,7 @@ import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
 import { symbolShape } from '../../app/utils/tickerClass'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
+import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
 
 export interface SitePage {
   path: string
@@ -63,7 +64,7 @@ export interface SitePage {
 
 
 export interface SiteSection {
-  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos'
+  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos' | 'preco-teto'
   title: string
   description?: string
   pages: SitePage[]
@@ -108,7 +109,7 @@ const INSTITUCIONAL_PAGES: SitePage[] = [
 
 const CALCULADORA_PAGES: SitePage[] = [
   { path: '/calculadora/juros-compostos', title: 'Calculadora de Juros Compostos', description: 'Simulador com aportes mensais. Fórmula M = C×(1+i)^n aplicada com gráfico e tabela.', lastmod: '2026-05-01' },
-  { path: '/calculadora/preco-teto', title: 'Calculadora de Preço Teto', description: 'Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3.', lastmod: '2026-06-08' },
+  { path: '/calculadora/preco-teto', title: 'Calculadora de Preço Teto', description: 'Graham, Bazin, P/L Setorial e VPA aplicados na hora a qualquer ação da B3.', lastmod: '2026-10-26' },
   { path: '/calculadora/dividend-yield', title: 'Calculadora de Dividend Yield', description: 'DY atual, projetado e on cost. Fórmula DY = (Dividendos Anuais / Preço) × 100.', lastmod: '2026-10-20' },
   { path: '/calculadora/imposto-renda', title: 'Calculadora de IR sobre Ações', description: '15% swing trade, 20% day trade, isenção de até R$ 20 mil/mês (DARF 6015 nos dois casos).', lastmod: '2026-10-15' },
   { path: '/calculadora/aposentadoria', title: 'Calculadora de Aposentadoria', description: 'Regra dos 4% aplicada com inflação, INSS e expectativa de vida (FIRE).', lastmod: '2026-05-01' },
@@ -121,6 +122,20 @@ const CALCULADORA_PAGES: SitePage[] = [
 // (app/content/calculadoras/preco-teto-metodos.ts) pra não haver lista duplicada.
 // Demanda medida no Search Console: modificador de MÉTODO vale 2.956 impressões
 // no cluster de preço teto contra 190 do modificador de TICKER (15,6x).
+/**
+ * /calculadora/preco-teto/{TICKER}. Só papel com LPA ou dividendo de renda
+ * (server/data/preco-teto-elegiveis.ts, gerado no build). Ticker sem dado
+ * não entra: a rota responde 404 e sitemap com 404 derruba o arquivo.
+ */
+function precoTetoTickerPages(): SitePage[] {
+  return PRECO_TETO_ELEGIVEIS.map((t) => ({
+    path: `/calculadora/preco-teto/${t.ticker}`,
+    title: `Preço teto ${t.ticker}`,
+    description: `Preço teto de ${t.ticker} por Bazin, Graham, P/L setorial e valor patrimonial.`,
+    lastmod: t.lastmod,
+  }))
+}
+
 function precoTetoMetodoPages(): SitePage[] {
   return Object.values(PRECO_TETO_METODOS).map((m) => ({
     path: `/calculadora/preco-teto/${m.slug}`,
@@ -656,6 +671,15 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       title: 'Criptomoedas',
       description: 'As 20 maiores criptomoedas com página própria em /asset/{SYMBOL}, preço em reais e dados de mercado.',
       pages: cripto,
+    })
+  }
+
+  if (PRECO_TETO_ELEGIVEIS.length > 0) {
+    sections.push({
+      id: 'preco-teto',
+      title: 'Preço teto por ativo',
+      description: 'Preço teto de cada ação e FII com LPA ou dividendo, em /calculadora/preco-teto/{TICKER}.',
+      pages: precoTetoTickerPages(),
     })
   }
 

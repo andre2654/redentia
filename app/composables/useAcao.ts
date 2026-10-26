@@ -1239,6 +1239,7 @@ function petr4Seed(): AcaoPayload {
     relacionados: [
       { href: '/setor/energia', label: 'Ranking do setor energia' },
       { href: '/dividendos/PETR4', label: 'Dividendos de PETR4' },
+      { href: '/calculadora/preco-teto/PETR4', label: 'Preço teto de PETR4' },
     ],
     simuladorHref: simuladorAcoesHref('PETR4', 'STOCK'),
     seo: {
@@ -1255,6 +1256,7 @@ function linksRelacionados(
   kind: AssetKind,
   dividends: AcaoDividendsVM | null,
   ticker: string,
+  precoTetoHref: string | null,
 ): AcaoPayload['relacionados'] {
   const links: AcaoPayload['relacionados'] = []
   if (setor) {
@@ -1265,6 +1267,11 @@ function linksRelacionados(
   }
   if (dividends && dividends.bars.length > 0) {
     links.push({ href: `/dividendos/${ticker}`, label: `Dividendos de ${ticker}` })
+  }
+  // Só quando a página de preço teto existe (LPA ou dividendo). Link para 404
+  // a partir do /asset reabre o problema que o sitemap acabou de fechar.
+  if (precoTetoHref) {
+    links.push({ href: precoTetoHref, label: `Preço teto de ${ticker}` })
   }
   return links
 }
@@ -1628,7 +1635,22 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     editorial: buildEditorial(editorial, name, isFii),
     cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR), name) : null,
     pares: kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null,
-    relacionados: linksRelacionados(setorDoLink, kind, dividends, ticker),
+    relacionados: linksRelacionados(
+      setorDoLink,
+      kind,
+      dividends,
+      ticker,
+      hrefPrecoTeto({
+        type: profile.type,
+        ticker,
+        lpa: lpaDeOverview(overview),
+        dividendo: dividendoParaBazin({
+          overviewDy: overviewDyOf(overview),
+          price: profile.market_price ?? 0,
+          rows: provRows,
+        }).valor,
+      }),
+    ),
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
   }

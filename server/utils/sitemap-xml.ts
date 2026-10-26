@@ -24,12 +24,13 @@ export const SITEMAP_GRUPOS: Record<string, Array<SiteSection['id']>> = {
   teses: ['teses'],
   tesouro: ['tesouro'],
   dividendos: ['dividendos'],
+  'preco-teto': ['preco-teto'],
   ativos: ['ativos', 'cripto'],
 }
 
 export const SITEMAP_ORDEM = [
   'paginas', 'calculadoras', 'rankings', 'setores', 'glossario',
-  'teses', 'tesouro', 'dividendos', 'ativos',
+  'teses', 'tesouro', 'dividendos', 'preco-teto', 'ativos',
 ] as const
 
 /** 'ativos.xml' → 'ativos'; tipo desconhecido → null. */
