@@ -59,8 +59,8 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 .nut__name { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
 .nut__value { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .nut__pct { font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.nut__pct--up { color: var(--nu-green); }
-.nut__pct--down { color: var(--nu-red); }
+.nut__pct--up { color: var(--nu-green-text); }
+.nut__pct--down { color: var(--nu-red-text); }
 .nut__note { color: var(--nu-gray); font-size: var(--nu-fs-dense); white-space: nowrap; flex-shrink: 0; }
 
 @media (prefers-reduced-motion: reduce) {

@@ -184,7 +184,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 .trp__block:first-child { margin-top: 0; }
 
 /* eyebrow + lead da oportunidade */
-.trp__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.trp__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .trp__lead {
   margin: 16px 0 0; color: var(--nu-ink);
   font-size: clamp(19px, 2vw, 22px); font-weight: 500; line-height: 1.6;
@@ -221,7 +221,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
   background: var(--nu-cream); border-radius: 20px; padding: 20px 22px;
 }
 .trp__pillar-idx {
-  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800;
   font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
 }
 .trp__pillar-txt { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
@@ -247,7 +247,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
   color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700;
   transition: background .2s, color .2s;
 }
-a.trp__chip:hover { background: var(--nu-cream-hover); color: var(--nu-blue); }
+a.trp__chip:hover { background: var(--nu-cream-hover); color: var(--nu-blue-text); }
 .trp__chip-icon { flex-shrink: 0; color: var(--nu-gray); }
 a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
 
@@ -279,7 +279,7 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   border-bottom: 1.5px solid var(--nu-cream-2); padding: 14px 0;
 }
 .trp__math-idx {
-  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
   font-variant-numeric: tabular-nums; margin-top: 2px; flex-shrink: 0;
 }
 .trp__math-txt {
@@ -330,6 +330,6 @@ a.trp__chip:hover .trp__chip-icon { color: var(--nu-blue); }
   flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   line-height: 1.4; transition: color .2s;
 }
-a.trp__source:hover .trp__source-title { color: var(--nu-blue); }
+a.trp__source:hover .trp__source-title { color: var(--nu-blue-text); }
 .trp__source-icon { flex-shrink: 0; stroke: var(--nu-sand); }
 </style>

@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
 @keyframes rbcxrise { from { opacity: 0; transform: translateY(14px) scale(.98); } }
 
 .rbcx__head { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.rbcx__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; }
+.rbcx__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; }
 .rbcx__close {
   flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; cursor: pointer;
   background: var(--nu-day-close); color: var(--nu-gray-2); font-size: var(--nu-fs-md);

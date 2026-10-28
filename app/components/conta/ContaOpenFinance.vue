@@ -299,16 +299,16 @@ function timeSince(iso: string | null): string {
 .of__connect:disabled { opacity: .55; cursor: default; }
 
 .of__notice { margin: 16px 0 0; padding: 12px 16px; border-radius: var(--nu-r-input); font-size: var(--nu-fs-sm); font-weight: 500; }
-.of__notice--success { background: var(--nu-green-bg); color: var(--nu-green); }
-.of__notice--error { background: var(--nu-red-bg); color: var(--nu-red); }
+.of__notice--success { background: var(--nu-green-bg); color: var(--nu-green-text); }
+.of__notice--error { background: var(--nu-red-bg); color: var(--nu-red-text); }
 
 .of__state { display: flex; align-items: center; justify-content: center; padding: 40px 0; }
-.of__error { gap: 14px; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
-.of__retry { background: none; border: none; color: var(--nu-blue); font-weight: 700; font-size: var(--nu-fs-sm); cursor: pointer; font-family: var(--nu-font); text-decoration: underline; }
+.of__error { gap: 14px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
+.of__retry { background: none; border: none; color: var(--nu-blue-text); font-weight: 700; font-size: var(--nu-fs-sm); cursor: pointer; font-family: var(--nu-font); text-decoration: underline; }
 
 .of__empty { text-align: center; padding: 44px 20px 24px; display: flex; flex-direction: column; align-items: center; }
 .of__empty-ic {
-  width: 60px; height: 60px; border-radius: 18px; background: var(--nu-cream); color: var(--nu-blue);
+  width: 60px; height: 60px; border-radius: 18px; background: var(--nu-cream); color: var(--nu-blue-text);
   display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;
 }
 .of__empty-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.2px; }
@@ -332,10 +332,10 @@ function timeSince(iso: string | null): string {
   display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
   padding: 6px 12px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-dense); font-weight: 700;
 }
-.of__status--positive { background: var(--nu-green-bg); color: var(--nu-green); }
+.of__status--positive { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .of__status--neutral { background: var(--nu-amber-bg); color: var(--nu-amber); }
-.of__status--negative { background: var(--nu-red-bg); color: var(--nu-red); }
-.of__status--info { background: var(--nu-blue-bg); color: var(--nu-blue); }
+.of__status--negative { background: var(--nu-red-bg); color: var(--nu-red-text); }
+.of__status--info { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 
 .of__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 .of__dot { color: var(--nu-gray); }
@@ -352,13 +352,13 @@ function timeSince(iso: string | null): string {
 .of__act--primary:hover:not(:disabled) { background: var(--nu-blue-hover); }
 .of__act--ghost { background: var(--nu-white); color: var(--nu-ink); }
 .of__act--ghost:hover:not(:disabled) { border-color: var(--nu-sand-border); }
-.of__act--danger { background: none; color: var(--nu-red); }
+.of__act--danger { background: none; color: var(--nu-red-text); }
 .of__act--danger:hover:not(:disabled) { background: var(--nu-red-bg); }
 
 .of__spin {
   width: 15px; height: 15px; flex-shrink: 0; border-radius: 50%;
   border: 2px solid currentColor; border-top-color: transparent; animation: of-spin .7s linear infinite;
 }
-.of__spin--lg { width: 26px; height: 26px; border-width: 3px; color: var(--nu-blue); }
+.of__spin--lg { width: 26px; height: 26px; border-width: 3px; color: var(--nu-blue-text); }
 @keyframes of-spin { to { transform: rotate(360deg); } }
 </style>

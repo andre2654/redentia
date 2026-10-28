@@ -204,7 +204,7 @@ async function finish(navigate: boolean) {
   padding: 40px 42px 34px; box-shadow: var(--nu-shadow-day-modal);
   outline: none; animation: nu-fade .3s ease both;
 }
-.nob__eyebrow { margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.nob__eyebrow { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 .nob__title { margin: 9px 0 0; color: var(--nu-ink); font-size: clamp(24px, 3.4vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
 .nob__dek { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
 .nob__dek--done { font-size: var(--nu-fs-lg); }
@@ -221,7 +221,7 @@ async function finish(navigate: boolean) {
 .nob__opt-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em; }
 .nob__opt-desc { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
-.nob__error { margin: 14px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
+.nob__error { margin: 14px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .nob__back {
   margin-top: 16px; align-self: flex-start; border: none; background: transparent;
   padding: 4px 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700;

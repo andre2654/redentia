@@ -52,7 +52,7 @@ const terms = computed(() =>
   transform: translateY(-2px);
 }
 .cgl__term {
-  color: var(--nu-blue);
+  color: var(--nu-blue-text);
   font-size: var(--nu-fs-md);
   font-weight: 800;
   letter-spacing: -.2px;

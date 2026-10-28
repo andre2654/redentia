@@ -54,7 +54,7 @@ const linhas = computed(() => [
 .rbpp__d { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .rbpp__link {
   margin-top: 14px; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
-  color: var(--nu-blue); font: inherit; font-size: var(--nu-fs-md); font-weight: 800;
+  color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-md); font-weight: 800;
 }
 .rbpp__link::after { content: '→'; display: inline-block; margin-left: 6px; transition: transform .2s ease; }
 .rbpp__link:hover::after { transform: translateX(3px); }

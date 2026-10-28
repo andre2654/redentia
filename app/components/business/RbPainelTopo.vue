@@ -113,7 +113,7 @@ const frase = computed(() => {
 <style scoped>
 .rbpt { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; animation: nu-fade .5s ease both; }
 .rbpt__main { flex: 1.2 1 460px; min-width: min(320px, 100%); }
-.rbpt__eyebrow { display: block; color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
+.rbpt__eyebrow { display: block; color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
 .rbpt__num {
   margin: 14px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero); font-weight: 800;
   letter-spacing: -.045em; line-height: .98; font-variant-numeric: tabular-nums;

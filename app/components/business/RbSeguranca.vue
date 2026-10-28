@@ -157,7 +157,7 @@ const CARDS = [
 .rbsg__aceite-txt span { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .rbsg__revogar {
   margin-left: auto; flex: none; padding: 5px 10px; border-radius: var(--nu-r-pill);
-  border: 1px solid var(--nu-ink-14); color: var(--nu-red); font-size: var(--nu-fs-xs); font-weight: 700;
+  border: 1px solid var(--nu-ink-14); color: var(--nu-red-text); font-size: var(--nu-fs-xs); font-weight: 700;
 }
 
 /* 03: os dois assistentes que a casa já contratou. */

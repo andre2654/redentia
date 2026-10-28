@@ -147,7 +147,7 @@ function enviar() {
 }
 /* "Mercado hoje" entra no H1 (é o title da página) sem substituir a frase grande. */
 .mhp__hoje {
-  display: block; margin-bottom: 12px; color: var(--nu-blue);
+  display: block; margin-bottom: 12px; color: var(--nu-blue-text);
   font-size: clamp(13px, 1.3vw, 16px); font-weight: 800; letter-spacing: .16em;
   line-height: 1.2; text-transform: uppercase;
 }

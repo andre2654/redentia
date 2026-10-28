@@ -77,8 +77,8 @@ const dir = (n: number) => (n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
 .mha__pilula :deep(.nal) { box-shadow: 0 0 0 1px color-mix(in srgb, var(--nu-ink) 8%, transparent); }
 .mha__tk { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; letter-spacing: -0.01em; }
 .mha__pct { font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
-.mha__pct--up { color: var(--nu-green); }
-.mha__pct--down { color: var(--nu-red); }
+.mha__pct--up { color: var(--nu-green-text); }
+.mha__pct--down { color: var(--nu-red-text); }
 .mha__pct--flat { color: var(--nu-gray); }
 
 .mha__tag:hover { scale: calc(var(--s, 1) * 1.06); }

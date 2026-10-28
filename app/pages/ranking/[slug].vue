@@ -280,7 +280,7 @@ usePageSeo({
 }
 .rks__toolbar-meta { display: flex; flex-direction: column; gap: 3px; }
 .rks__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
+  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .rks__toolbar-count {
@@ -300,7 +300,7 @@ usePageSeo({
 /* ——— líder do tesouro ——— */
 .rks__tleader { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 36px); }
 .rks__tleader-crown {
-  display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue);
+  display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue-text);
   border-radius: var(--nu-r-pill); padding: 6px 14px;
   font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
 }
@@ -313,7 +313,7 @@ usePageSeo({
 .rks__tleader-sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .rks__tleader-metric { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
 .rks__tleader-rate {
-  color: var(--nu-blue); font-size: clamp(32px, 4vw, 48px); font-weight: 800;
+  color: var(--nu-blue-text); font-size: clamp(32px, 4vw, 48px); font-weight: 800;
   letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .rks__tleader-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
@@ -333,7 +333,7 @@ usePageSeo({
   margin: 0 0 8px; color: var(--nu-gray-3);
   font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
-.rks__prose-link { color: var(--nu-blue); font-weight: 800; }
+.rks__prose-link { color: var(--nu-blue-text); font-weight: 800; }
 .rks__prose-link:hover { text-decoration: underline; }
 .rks__prose--band { max-width: 780px; margin: clamp(24px, 3vw, 40px) auto 0; }
 
@@ -344,7 +344,7 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .rks__step { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 24px; }
-.rks__step-title { margin: 0 0 8px; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.rks__step-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .rks__step-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .rks__formula { margin: 24px auto 0; max-width: 680px; text-align: center; }
 .rks__formula code {
@@ -384,7 +384,7 @@ usePageSeo({
 .rks__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .rks__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .rks__cta .rks__pill { margin-top: 0; }
-.rks__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
+.rks__pill--light { background: var(--nu-cream); color: var(--nu-blue-text); }
 .rks__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
 .rks__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
 .rks__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }

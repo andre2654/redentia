@@ -70,7 +70,7 @@ function conectar() {
 .mcc__dek { margin: 22px 0 0; color: var(--nu-white-75); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.55; }
 .mcc__cta {
   display: inline-flex; align-items: center; gap: 10px; height: 56px; margin-top: 32px; padding: 0 28px;
-  border-radius: var(--nu-r-pill); background: var(--nu-white); color: var(--nu-blue);
+  border-radius: var(--nu-r-pill); background: var(--nu-white); color: var(--nu-blue-text);
   font-size: var(--nu-fs-md); font-weight: 700; box-shadow: 0 14px 40px -12px rgba(10, 16, 48, 0.45);
   transition: transform .2s ease, box-shadow .25s ease, color .2s ease;
 }

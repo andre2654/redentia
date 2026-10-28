@@ -154,7 +154,7 @@ useHead({ titleTemplate: null })
 }
 .ctc__channel-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.15px; }
 .ctc__channel-value { margin-top: 5px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.ctc__channel-value--link { color: var(--nu-blue); text-decoration: none; transition: color .2s; }
+.ctc__channel-value--link { color: var(--nu-blue-text); text-decoration: none; transition: color .2s; }
 .ctc__channel-value--link:hover { color: var(--nu-blue-hover); text-decoration: underline; text-underline-offset: 2px; }
 
 /* FAQ — seção padrão (mesmo bloco .mfq do /mercado): 2 colunas, título +

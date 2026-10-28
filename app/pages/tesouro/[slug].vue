@@ -189,7 +189,7 @@ usePageSeo({
   max-width: 1080px; margin-left: auto; margin-right: auto;
 }
 .tsd__reading { background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 26px; }
-.tsd__reading-title { margin: 0 0 8px; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.tsd__reading-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .tsd__reading-body { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.65; }
 
 /* ——— ferramentas relacionadas ——— */

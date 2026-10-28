@@ -318,8 +318,8 @@ function cardTypes(meta: RankingMeta): string[] {
   flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rkh__card-preview-value { color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
-.rkh__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rkh__card-preview-value { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
+.rkh__card-cta { margin-top: auto; padding-top: 6px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 /* (CTA final = NuCtaPhoto full-bleed, estilos no componente; o grid acima
    fecha com o próprio padding-bottom) */
 </style>

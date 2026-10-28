@@ -86,7 +86,7 @@ const emit = defineEmits<{ (e: 'more'): void }>()
 .bbl__label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
 .bbl__deep {
   display: inline-flex; align-items: center; gap: 5px;
-  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
 }
 .bbl__deep:hover { text-decoration: underline; }
 .bbl__deep:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
@@ -127,7 +127,7 @@ const emit = defineEmits<{ (e: 'more'): void }>()
 
 .bbl__more {
   margin-top: 26px;
-  background: var(--nu-white); color: var(--nu-blue);
+  background: var(--nu-white); color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
   padding: 11px 26px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   transition: background .2s;

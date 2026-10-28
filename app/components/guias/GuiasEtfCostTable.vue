@@ -106,7 +106,7 @@ const asOfLine = computed(() => {
   letter-spacing: 0.07em; text-transform: uppercase; padding: 0 12px 8px 0;
 }
 .getc__table td { padding: 10px 12px 10px 0; border-top: 1px solid var(--nu-ink-14); font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-gray-2); }
-.getc__tk { color: var(--nu-blue); font-weight: 800; text-decoration: none; }
+.getc__tk { color: var(--nu-blue-text); font-weight: 800; text-decoration: none; }
 .getc__tk:hover { text-decoration: underline; text-underline-offset: 2px; }
 .getc__num { font-variant-numeric: tabular-nums; color: var(--nu-ink); font-weight: 700; }
 .getc__piso {

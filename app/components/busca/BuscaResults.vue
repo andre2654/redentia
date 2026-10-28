@@ -124,7 +124,7 @@ function coverFailed(slug: string) {
 }
 .bsr__label { color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 700; }
 .bsr__group {
-  color: var(--nu-blue); font-size: var(--nu-fs-dense); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.3px; text-transform: uppercase; margin-top: 28px;
 }
 .bsr__group--far { margin-top: 36px; }

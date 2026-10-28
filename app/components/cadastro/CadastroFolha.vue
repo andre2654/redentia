@@ -414,7 +414,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
 .ncf__botao--fim { width: 100%; margin-top: 24px; }
 .ncf__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .ncf__so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.ncf__erro { margin: 12px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
+.ncf__erro { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ncf__aceite { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; text-align: center; }
 .ncf__aceite a { color: inherit; text-decoration: underline; }
 .ncf__pe {
@@ -422,7 +422,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
   margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--nu-cream-2);
   color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
 }
-.ncf__pe a { color: var(--nu-blue); font-weight: 700; }
+.ncf__pe a { color: var(--nu-blue-text); font-weight: 700; }
 .ncf__agora-nao { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-gray-2); font: inherit; font-weight: 700; }
 
 .ncf__codigo { position: relative; display: flex; gap: 10px; margin-top: 24px; cursor: text; }
@@ -439,7 +439,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
 }
 .ncf__nota { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.45; }
 .ncf__links { display: flex; gap: 20px; margin-top: 22px; }
-.ncf__links button { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; }
+.ncf__links button { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; }
 .ncf__links button:disabled { color: var(--nu-gray); cursor: default; }
 
 .ncf__onb { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--nu-cream-2); }

@@ -267,8 +267,8 @@ defineProps<{ name: string }>()
   display: inline-flex; align-self: flex-start; padding: 4px 10px; border-radius: var(--nu-r-pill);
   background: var(--nu-cream); color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 700;
 }
-.nuv__chip--blue { background: var(--nu-blue-tint); color: var(--nu-blue); }
-.nuv__brandword { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.01em; }
+.nuv__chip--blue { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.nuv__brandword { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.01em; }
 
 /* ——— MCP (chat) ——— */
 .nuv--mcp { align-items: stretch; justify-content: center; }
@@ -323,7 +323,7 @@ defineProps<{ name: string }>()
   display: inline-flex; align-items: center; justify-content: center;
   background: var(--nu-cream); color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700;
 }
-.nuv__rankpos--top { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.nuv__rankpos--top { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .nuv__ranklabel { height: 9px; border-radius: 999px; background: var(--nu-ink-14); flex-shrink: 0; }
 .nuv__rankbar { flex: 1; height: 10px; border-radius: 999px; background: var(--nu-cream); overflow: hidden; }
 .nuv__rankbar i { display: block; height: 100%; border-radius: 999px; background: var(--nu-blue); opacity: 0.9; }
@@ -388,7 +388,7 @@ defineProps<{ name: string }>()
   box-shadow: 0 0 0 3px var(--nu-white);
 }
 .nuv__stepdot--done { background: var(--nu-blue); color: var(--nu-white); }
-.nuv__stepdot--now { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.nuv__stepdot--now { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .nuv__stepdot--goal { background: var(--nu-green-bg); color: var(--nu-green-2); }
 
 /* ——— Notícias ——— */

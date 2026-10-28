@@ -57,7 +57,7 @@ const label = computed(() => {
   padding: 17px 26px; font-size: var(--nu-fs-lg); font-weight: 700;
 }
 .nfb--cream:hover { transform: translateY(-2px); }
-.nfb--cream.nfb--on { background: var(--nu-blue-bg); color: var(--nu-blue); }
+.nfb--cream.nfb--on { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .nfb[aria-busy='true'] { cursor: progress; }
 .nfb:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
 </style>

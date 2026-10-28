@@ -212,7 +212,7 @@ const hojeExtenso = new Intl.DateTimeFormat('pt-BR', {
   flex: 1.1 1 460px; min-width: min(320px, 100%);
   display: flex; flex-direction: column; justify-content: center;
 }
-.mh__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
+.mh__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; letter-spacing: -.2px; }
 .mh__title {
   margin: 16px 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;

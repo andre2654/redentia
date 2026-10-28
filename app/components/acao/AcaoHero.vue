@@ -77,14 +77,14 @@ onMounted(() => {
 }
 /* margin: 0 explícito — virou h1 e o UA aplica margem de bloco por padrão,
    o que quebraria o alinhamento da linha de badges (flex). */
-.ahr__company { margin: 0; color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
+.ahr__company { margin: 0; color: var(--nu-blue-text); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
 .ahr__exchange {
   display: inline-flex; align-items: center; border: 2px solid var(--nu-ink-14);
   color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; padding: 5px 13px;
   border-radius: var(--nu-r-pill);
 }
 .ahr__position {
-  display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue);
+  display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue-text);
   font-size: var(--nu-fs-dense); font-weight: 700; padding: 7px 15px; border-radius: var(--nu-r-pill);
   font-variant-numeric: tabular-nums;
 }
@@ -110,9 +110,9 @@ onMounted(() => {
 }
 .ahr__primary:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
 .ahr__outline {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue);
+  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 15px 28px;
   font-size: var(--nu-fs-lg); font-weight: 700; transition: background .2s;
 }
-.ahr__outline:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
+.ahr__outline:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue-text); }
 </style>

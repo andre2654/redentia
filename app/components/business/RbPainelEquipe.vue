@@ -293,15 +293,15 @@ defineExpose({
 .rbpe__nome { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rbpe__uso { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
 .rbpe__selo { flex: none; padding: 6px 12px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.rbpe__selo--azul { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.rbpe__selo--azul { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .rbpe__selo--neutro { background: var(--rbp-neutro); color: var(--nu-gray-2); }
 .rbpe__selo--aviso { background: var(--rbp-neutro); color: var(--nu-gray-3); }
 
 .rbpe__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 16px; margin-top: 10px; }
 .rbpe__mascara { margin-right: auto; color: var(--nu-gray); font-size: var(--nu-fs-xs); }
-.rbpe__acao { min-height: 32px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; }
+.rbpe__acao { min-height: 32px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; }
 .rbpe__acao:hover:not(:disabled) { color: var(--nu-blue-hover); }
-.rbpe__acao--perigo { color: var(--nu-red); }
+.rbpe__acao--perigo { color: var(--nu-red-text); }
 .rbpe__acao--perigo:hover:not(:disabled) { color: var(--nu-red-2); }
 .rbpe__acao--armado { padding: 0 12px; border-radius: var(--nu-r-pill); background: var(--nu-red); color: var(--nu-white); }
 .rbpe__acao--armado:hover:not(:disabled) { color: var(--nu-white); background: var(--nu-red-2); }
@@ -318,7 +318,7 @@ defineExpose({
   background: var(--nu-blue); color: var(--nu-white); font: inherit; font-size: var(--nu-fs-md); font-weight: 700;
 }
 .rbpe__btn:hover:not(:disabled) { background: var(--nu-blue-hover); }
-.rbpe__btn--claro { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.rbpe__btn--claro { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .rbpe__btn--claro:hover:not(:disabled) { background: var(--nu-blue-30); }
 .rbpe__btn:disabled { opacity: .5; cursor: default; }
 .rbpe__sub, .rbpe__nota { margin: 0 0 12px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
@@ -340,7 +340,7 @@ defineExpose({
 .rbpe__convite code { font-size: var(--nu-fs-sm); word-break: break-all; color: var(--nu-ink); }
 .rbpe__convite small { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .rbpe__convite .rbpe__btn { justify-self: start; }
-.rbpe__erro { margin: 0; padding: 14px 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; border-top: 1px solid var(--rbp-linha); }
+.rbpe__erro { margin: 0; padding: 14px 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; border-top: 1px solid var(--rbp-linha); }
 
 button:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
 .rbp-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
@@ -360,15 +360,15 @@ button:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px
 /* Ações em cinza até a linha ganhar atenção; no toque, sempre coloridas. */
 .rbpe__item--chave .rbpe__acao:not(.rbpe__acao--armado) { color: var(--nu-gray); }
 .rbpe__item--chave:hover .rbpe__acao:not(.rbpe__acao--armado),
-.rbpe__item--chave:focus-within .rbpe__acao:not(.rbpe__acao--armado) { color: var(--nu-blue); }
+.rbpe__item--chave:focus-within .rbpe__acao:not(.rbpe__acao--armado) { color: var(--nu-blue-text); }
 .rbpe__item--chave:hover .rbpe__acao--perigo:not(.rbpe__acao--armado),
-.rbpe__item--chave:focus-within .rbpe__acao--perigo:not(.rbpe__acao--armado) { color: var(--nu-red); }
+.rbpe__item--chave:focus-within .rbpe__acao--perigo:not(.rbpe__acao--armado) { color: var(--nu-red-text); }
 .rbpe__acao { display: inline-flex; align-items: center; gap: 6px; transition: color .15s ease; }
 .rbpe__acao:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 3px; }
-.rbpe__acao--visivel { color: var(--nu-blue); }
+.rbpe__acao--visivel { color: var(--nu-blue-text); }
 @media (hover: none) {
-  .rbpe__item--chave .rbpe__acao:not(.rbpe__acao--armado) { color: var(--nu-blue); }
-  .rbpe__item--chave .rbpe__acao--perigo:not(.rbpe__acao--armado) { color: var(--nu-red); }
+  .rbpe__item--chave .rbpe__acao:not(.rbpe__acao--armado) { color: var(--nu-blue-text); }
+  .rbpe__item--chave .rbpe__acao--perigo:not(.rbpe__acao--armado) { color: var(--nu-red-text); }
 }
 @media (pointer: coarse) { .rbpe__acao { min-height: 44px; } }
 

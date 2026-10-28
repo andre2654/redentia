@@ -31,7 +31,7 @@ defineProps<{ hero: TesouroHeroVM }>()
   animation: nu-fade .5s ease both;
 }
 .thr__eyebrow {
-  display: inline-flex; color: var(--nu-blue);
+  display: inline-flex; color: var(--nu-blue-text);
   font-size: clamp(16px, 1.5vw, 19px); font-weight: 800;
 }
 .thr__eyebrow:hover { color: var(--nu-blue-hover); }
@@ -42,7 +42,7 @@ defineProps<{ hero: TesouroHeroVM }>()
 }
 .thr__rate { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
 .thr__rate-num {
-  color: var(--nu-blue); font-size: clamp(44px, 6.5vw, 92px); font-weight: 800;
+  color: var(--nu-blue-text); font-size: clamp(44px, 6.5vw, 92px); font-weight: 800;
   letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .thr__rate-suffix { color: var(--nu-gray); font-size: clamp(16px, 1.8vw, 21px); font-weight: 700; }

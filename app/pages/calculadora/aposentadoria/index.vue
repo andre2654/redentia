@@ -481,9 +481,9 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .ap__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.ap__h4--accent { color: var(--nu-blue); }
+.ap__h4--accent { color: var(--nu-blue-text); }
 .ap__link { text-decoration: underline; }
-.ap__link:hover { color: var(--nu-blue); }
+.ap__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .ap__prose p {

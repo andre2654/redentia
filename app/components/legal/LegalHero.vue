@@ -39,7 +39,7 @@ const updatedText = computed(() => {
 }
 .lgh__inner { max-width: 920px; }
 .lgh__eyebrow {
-  color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800;
+  color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800;
   letter-spacing: -.2px;
 }
 .lgh__title {

@@ -111,7 +111,7 @@ function relativeTimePt(iso: string): string {
 
 <style scoped>
 .pf__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.5vw, 26px); }
-.pf__err { margin: 18px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
+.pf__err { margin: 18px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
 .pf__actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: clamp(24px, 3vw, 34px); }
 .pf__save {
   background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;

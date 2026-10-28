@@ -95,7 +95,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   display: flex; align-items: flex-start; gap: 12px; text-align: left;
 }
 .ccok__chave {
-  width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; background: var(--nu-white); color: var(--nu-blue);
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; background: var(--nu-white); color: var(--nu-blue-text);
   display: inline-flex; align-items: center; justify-content: center;
 }
 .ccok__gestao-c { min-width: 0; flex: 1 1 auto; }
@@ -107,7 +107,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 .ccok__copiar:hover { background: var(--nu-cream-2); }
 .ccok__copiar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.ccok__abrir { color: var(--nu-blue); font-size: var(--nu-fs-dense); font-weight: 700; }
+.ccok__abrir { color: var(--nu-blue-text); font-size: var(--nu-fs-dense); font-weight: 700; }
 .ccok__abrir:hover { color: var(--nu-blue-hover); }
 .ccok__abrir:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 3px; }
 

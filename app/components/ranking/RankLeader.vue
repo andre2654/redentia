@@ -57,7 +57,7 @@ const tone = computed(() => {
 }
 .rkl:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
 .rkl__crown {
-  display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue);
+  display: inline-flex; background: var(--nu-blue-tint); color: var(--nu-blue-text);
   border-radius: var(--nu-r-pill); padding: 6px 14px;
   font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
 }
@@ -75,8 +75,8 @@ const tone = computed(() => {
   color: var(--nu-ink); font-size: clamp(38px, 4.5vw, 56px); font-weight: 800;
   letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums;
 }
-.rkl__value--up { color: var(--nu-green); }
-.rkl__value--down { color: var(--nu-red); }
+.rkl__value--up { color: var(--nu-green-text); }
+.rkl__value--down { color: var(--nu-red-text); }
 .rkl__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .rkl__price { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 

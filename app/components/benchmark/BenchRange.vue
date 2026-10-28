@@ -99,7 +99,7 @@ const lideres = computed(() => props.rows.filter((r) => r.rank === 1).length)
 }
 .bra__row--top .bra__dot { box-shadow: inset 0 0 0 4px var(--nu-blue), 0 0 0 6px var(--nu-blue-16), 0 2px 10px var(--nu-blue-28); }
 .bra__val { text-align: right; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
-.bra__row--top .bra__val { color: var(--nu-blue); }
+.bra__row--top .bra__val { color: var(--nu-blue-text); }
 
 .bra__axis { display: grid; grid-template-columns: var(--cols); gap: 14px; margin-top: 6px; }
 .bra__axis-in { grid-column: 3; position: relative; height: 18px; }
@@ -123,7 +123,7 @@ const lideres = computed(() => props.rows.filter((r) => r.rank === 1).length)
   .bra__row:hover::before { opacity: 1; }
   .bra__tile, .bra__val { transition: transform .2s ease; }
   .bra__row:hover .bra__tile { transform: scale(1.12); }
-  .bra__row:hover .bra__val { transform: scale(1.12); transform-origin: right center; color: var(--nu-blue); }
+  .bra__row:hover .bra__val { transform: scale(1.12); transform-origin: right center; color: var(--nu-blue-text); }
   .bra__row:hover .bra__fill { box-shadow: 0 6px 22px var(--nu-blue-28); filter: saturate(1.35); }
   .bra__row:hover .bra__dot { transform: translate(-50%, -50%) scale(1.3); }
   .bra__tip {

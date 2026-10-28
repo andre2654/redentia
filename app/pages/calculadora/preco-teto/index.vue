@@ -1056,9 +1056,9 @@ usePageSeo({
 .pt__reco--positive { background: var(--nu-green-bg); }
 .pt__reco--positive .pt__reco-value { color: var(--nu-green-2); }
 .pt__reco--neutral { background: var(--nu-blue-tint); }
-.pt__reco--neutral .pt__reco-value { color: var(--nu-blue); }
+.pt__reco--neutral .pt__reco-value { color: var(--nu-blue-text); }
 .pt__reco--negative { background: var(--nu-red-tint); }
-.pt__reco--negative .pt__reco-value { color: var(--nu-red); }
+.pt__reco--negative .pt__reco-value { color: var(--nu-red-text); }
 .pt__reco-label { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 700; }
 .pt__reco-value { font-size: var(--nu-fs-md); font-weight: 800; }
 .pt__reco-explain {
@@ -1101,7 +1101,7 @@ usePageSeo({
 
 .pt__asset-link {
   display: inline-flex; margin-top: 24px;
-  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .pt__asset-link:hover { color: var(--nu-blue-hover); }
 .pt__insight {
@@ -1197,8 +1197,8 @@ usePageSeo({
 .pt__ex-value { margin: 6px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .pt__result-box { background: var(--nu-blue-tint); border-radius: var(--nu-r-input); padding: 14px 16px; margin-top: 16px; }
 .pt__result-box--positive { background: var(--nu-green-tint); }
-.pt__result-main { margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
-.pt__result-main--positive { color: var(--nu-green); }
+.pt__result-main { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt__result-main--positive { color: var(--nu-green-text); }
 .pt__result-sub { margin: 4px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
@@ -1233,7 +1233,7 @@ usePageSeo({
 .pt__cta-sub { margin: 14px auto 0; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; max-width: 560px; }
 .pt__cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 .pt__cta .pt__pill { margin-top: 0; }
-.pt__pill--light { background: var(--nu-cream); color: var(--nu-blue); }
+.pt__pill--light { background: var(--nu-cream); color: var(--nu-blue-text); }
 .pt__pill--light:hover { background: var(--nu-white); color: var(--nu-blue-hover); }
 .pt__pill--outline { background: transparent; border: 2px solid var(--nu-white-35); color: var(--nu-white); }
 .pt__pill--outline:hover { background: var(--nu-white-14); color: var(--nu-white); }

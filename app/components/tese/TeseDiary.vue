@@ -39,9 +39,9 @@ function openStudy(id: TeseStudyVM['id']) {
 // ————— conteúdo do modal (contrato NuDayBlock do NuDayModal) —————
 
 const DECISION_COLOR: Record<TeseDecisionVariant, string> = {
-  green: 'var(--nu-green)',
-  blue: 'var(--nu-blue)',
-  red: 'var(--nu-red)',
+  green: 'var(--nu-green-text)',
+  blue: 'var(--nu-blue-text)',
+  red: 'var(--nu-red-text)',
   neutral: 'var(--nu-gray)',
 }
 
@@ -62,7 +62,7 @@ const modalDateLine = computed(() => {
 const modalBlocks = computed<NuDayBlock[]>(() => {
   const s = selected.value
   const blocks: NuDayBlock[] = []
-  if (s.summary) blocks.push({ label: 'O estudo', color: 'var(--nu-blue)', html: briefingHtml(s.summary) })
+  if (s.summary) blocks.push({ label: 'O estudo', color: 'var(--nu-blue-text)', html: briefingHtml(s.summary) })
   for (const d of s.decisions) {
     blocks.push({ label: d.tag, color: DECISION_COLOR[d.variant] ?? 'var(--nu-gray)', html: briefingHtml(d.txt) })
   }

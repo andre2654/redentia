@@ -29,6 +29,6 @@ defineProps<{ links: { href: string; label: string }[] }>()
   display: flex; flex-wrap: wrap; gap: 8px 22px;
   list-style: none; margin: 12px 0 0; padding: 0;
 }
-.arl__list a { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; }
+.arl__list a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
 .arl__list a:hover { color: var(--nu-blue-hover); }
 </style>

@@ -141,7 +141,7 @@ function relativeTimePt(iso: string): string {
 .sg-block__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .sg-form { margin-top: 18px; display: flex; flex-direction: column; gap: clamp(16px, 2.2vw, 22px); }
 .sg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(16px, 2.2vw, 22px); }
-.sg-err { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
+.sg-err { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
 .sg-actions { display: flex; }
 .sg-save {
   background: var(--nu-blue); color: var(--nu-white); border: none; cursor: pointer;
@@ -157,7 +157,7 @@ function relativeTimePt(iso: string): string {
 .sg-session { display: flex; align-items: center; gap: 14px; margin-top: 16px; background: var(--nu-cream); border-radius: var(--nu-r-card); padding: 18px 20px; }
 .sg-session__ic {
   flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
-  background: var(--nu-white); color: var(--nu-blue);
+  background: var(--nu-white); color: var(--nu-blue-text);
   display: inline-flex; align-items: center; justify-content: center;
 }
 .sg-session__txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }

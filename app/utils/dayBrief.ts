@@ -109,7 +109,7 @@ export function buildDayTopics(core: DayBriefCore): NuDayTopic[] {
     },
     {
       label: 'A leitura da IA',
-      labelColor: 'var(--nu-blue)',
+      labelColor: 'var(--nu-blue-text)',
       icon: 'compass',
       stat: null,
       cardTitle: txt(s?.leitura?.title) ?? MOCK_CARD.leitura.title,

@@ -484,10 +484,10 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .qi__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.qi__h4--accent { color: var(--nu-blue); }
+.qi__h4--accent { color: var(--nu-blue-text); }
 .qi__link { text-decoration: underline; }
-.qi__link:hover { color: var(--nu-blue); }
-.qi__link--accent { color: var(--nu-blue); font-weight: 700; }
+.qi__link:hover { color: var(--nu-blue-text); }
+.qi__link--accent { color: var(--nu-blue-text); font-weight: 700; }
 .qi__link--accent:hover { color: var(--nu-blue-hover); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */

@@ -49,7 +49,7 @@ defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
 .nfr__dot { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; }
 .nfr__tempo { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .nfr__badge {
-  display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue);
+  display: inline-flex; align-items: center; background: var(--nu-blue-tint); color: var(--nu-blue-text);
   font-size: var(--nu-fs-xs); font-weight: 700; padding: 4px 11px; border-radius: var(--nu-r-pill);
 }
 .nfr__title {
@@ -57,7 +57,7 @@ defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
   font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; margin-top: 14px;
   transition: color .2s;
 }
-.nfr__title:hover { color: var(--nu-blue); }
+.nfr__title:hover { color: var(--nu-blue-text); }
 .nfr__take { margin-top: 22px; }
 .nfr__chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
 </style>

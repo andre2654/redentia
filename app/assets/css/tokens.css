@@ -15,7 +15,7 @@
   --nu-navy-3: #1C2C4A;       /* hover de cards sobre navy */
 
   /* marca */
-  --nu-blue: #2F6AFF;         /* primário. Era #2F6BFF: branco sobre ele dava 4,499:1, um fio abaixo do AA (4,5:1) em todo CTA; #2F6AFF dá 4,54:1 e o olho não vê a diferença */
+  --nu-blue: #2F6AFF;         /* primário: fundos, botões, ícones, gráficos. Era #2F6BFF: branco sobre ele dava 4,499:1, um fio abaixo do AA (4,5:1) em todo CTA; #2F6AFF dá 4,54:1. Texto sobre claro usa --nu-blue-text */
   --nu-blue-hover: #2258DB;
   --nu-blue-deep: #2456C9;    /* cards de ação em seção azul */
   --nu-blue-soft: #9EC8FF;    /* acentos sobre navy, linhas de gráfico */
@@ -35,12 +35,35 @@
   --nu-cream-text-55: rgba(245, 241, 234, 0.55);
   --nu-cream-text-60: rgba(245, 241, 234, 0.6);
 
-  /* semânticas de mercado */
-  --nu-green: #148F4E;        /* variação positiva (texto sobre claro) */
-  --nu-green-2: #0E7A42;      /* texto em badge verde */
+  /* semânticas de mercado — fundo, ícone e gráfico. Como TEXTO, usar os
+     tokens --nu-*-text abaixo: estes hex ficam abaixo de 4,5:1 em fundo claro. */
+  --nu-green: #148F4E;        /* alta (fundo, ícone, gráfico). Texto: --nu-green-text */
+  --nu-green-2: #0E7A42;      /* texto em badge verde que já nasceu mais escuro */
   --nu-green-bg: #DCF2E4;     /* bg de badge verde */
-  --nu-red: #D6323B;          /* variação negativa */
+  --nu-red: #D6323B;          /* queda (fundo, ícone, gráfico). Texto: --nu-red-text */
   --nu-red-2: #C22B34;
+
+  /* Texto da marca e do placar. O azul, o verde e o vermelho de cima continuam
+     nos fundos, botões grandes, ícones e gráficos. Aqui é só a cor da letra:
+     o hex mais claro que ainda fecha 4,60:1 no pior fundo claro em que essa
+     letra aparece (folga pequena sobre 4,5:1). WCAG 2.x, limiar 0,03928.
+     Medido antes, no hex de cima:
+       #2F6AFF sobre creme #F5F1EA = 4,03:1; sobre o tint da nav #EAF0FF = 3,98:1;
+         sobre o número em tile 14% sobre creme (#D9DEED) = 3,38:1 — é este piso
+         que puxa o azul, não o creme sozinho.
+       #148F4E sobre branco = 4,14:1; sobre creme = 3,68:1; sobre o badge
+         #DCF2E4 = 3,52:1 (o piso do verde).
+       #D6323B sobre branco = 4,80:1 (já passava); sobre creme = 4,26:1; sobre
+         o badge #FBE3E4 = 3,93:1 (o piso do vermelho).
+     Com o token:
+       #2A58CF  creme 5,49:1 · branco 6,18:1 · nav #EAF0FF 5,42:1 · tile 14%
+         sobre creme 4,60:1 · badge azul #E8F0FF 5,40:1.
+       #0E7A43  branco 5,41:1 · creme 4,80:1 · vidro #FDFCFB 5,28:1 · badge
+         #DCF2E4 4,60:1.
+       #C42B33  creme 4,99:1 · branco 5,61:1 · badge #FBE3E4 4,60:1. */
+  --nu-blue-text: #2A58CF;
+  --nu-green-text: #0E7A43;
+  --nu-red-text: #C42B33;
 
   /* raios */
   --nu-r-pill: 999px;

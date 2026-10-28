@@ -375,7 +375,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
   transition: transform .18s, box-shadow .2s;
 }
 .jcs__back:hover { transform: translateY(-1px); box-shadow: var(--nu-shadow-card); color: var(--nu-ink); }
-.jcs__eyebrow { margin: 0; color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.jcs__eyebrow { margin: 0; color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .jcs__h1 {
   margin: 12px 0 0; color: var(--nu-ink);
   font-size: clamp(34px, 4.6vw, 64px); font-weight: 800;

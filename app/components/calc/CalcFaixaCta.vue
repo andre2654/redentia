@@ -122,7 +122,7 @@ const BENEFICIOS = [
   font-size: var(--nu-fs-md); font-weight: 700; transition: transform .2s ease, box-shadow .25s ease, background .2s ease;
 }
 .cft__pill--claro {
-  background: var(--nu-white); color: var(--nu-blue);
+  background: var(--nu-white); color: var(--nu-blue-text);
   box-shadow: 0 14px 40px -12px rgba(10, 16, 48, 0.45);
 }
 .cft__pill--claro svg { transition: transform .2s ease; }

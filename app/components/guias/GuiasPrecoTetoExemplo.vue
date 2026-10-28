@@ -77,5 +77,5 @@ const view = computed(() => data.value)
   font-weight: 500; line-height: 1.55;
 }
 .gpt__links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 16px 0 0; }
-.gpt__links a { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700; }
+.gpt__links a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
 </style>

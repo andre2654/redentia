@@ -87,16 +87,16 @@ const incomePill = computed(() => {
 .adv__stats { margin-top: 26px; }
 .adv__income {
   display: inline-flex; align-items: center; gap: 8px; background: var(--nu-blue-tint);
-  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; padding: 11px 18px;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; padding: 11px 18px;
   border-radius: var(--nu-r-pill); margin-top: 24px; font-variant-numeric: tabular-nums;
 }
 .adv__cta-row { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
 .adv__cta {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue);
+  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 14px 26px;
   font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
 }
-.adv__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
+.adv__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue-text); }
 /* primária: leva pra tela dedicada de dividendos do ticker */
 .adv__cta--primary { background: var(--nu-blue); color: var(--nu-white); border-color: var(--nu-blue); font-weight: 800; }
 .adv__cta--primary:hover { background: var(--nu-blue-hover); color: var(--nu-white); }

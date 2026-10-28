@@ -173,10 +173,10 @@ function cancel() {
 }
 button.csf__value { cursor: pointer; }
 button.csf__value:hover, button.csf__value:focus-visible {
-  background: var(--nu-white); border-color: var(--nu-sand-border); color: var(--nu-blue); outline: none;
+  background: var(--nu-white); border-color: var(--nu-sand-border); color: var(--nu-blue-text); outline: none;
 }
 .csf__edit-ic { color: var(--nu-gray); flex-shrink: 0; transition: color .18s; }
-button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edit-ic { color: var(--nu-blue); }
+button.csf__value:hover .csf__edit-ic, button.csf__value:focus-visible .csf__edit-ic { color: var(--nu-blue-text); }
 
 /* editando: box branca com borda azul; input transparente por dentro */
 .csf__value--edit { background: var(--nu-white); border-color: var(--nu-blue); }

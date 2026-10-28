@@ -123,6 +123,6 @@ a.ccp__pill:focus-visible, button.ccp__pill:focus-visible { outline: 2px solid v
   color: var(--nu-gray-2); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
   transition: border-color .18s, color .18s, background .18s;
 }
-.ccp__pill--add:hover:not(:disabled) { border-color: var(--nu-blue); color: var(--nu-blue); background: var(--nu-blue-tint-2); }
+.ccp__pill--add:hover:not(:disabled) { border-color: var(--nu-blue); color: var(--nu-blue-text); background: var(--nu-blue-tint-2); }
 .ccp__pill--add:disabled { opacity: .6; cursor: default; }
 </style>
