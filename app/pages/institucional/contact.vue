@@ -2,7 +2,7 @@
 // /institucional/contact — "Fale com a Redentia" (portada de
 // Frontend/app/pages/institucional/contact.vue). Placeholders de brand
 // resolvidos: brand.name = "Redentia", e-mail de suporte =
-// suporte@redentia.com.br.
+// relacionamento@redentia.com.br.
 //
 // PADRÃO Nu (mesmo sistema visual das legais /institucional/privacy): banda
 // creme do LegalHero (eyebrow + H1) → banda branca com a coluna de artigo.
@@ -11,7 +11,7 @@
 //
 // TEXTO VERBATIM (acentos restaurados): as 3 perguntas do FAQ, as respostas 2
 // e 3, e os rótulos/placeholders/opções do form vêm literais da página antiga.
-// A 1ª resposta troca o CEI pela Área do Investidor da B3. O botão e o painel
+// A 1ª resposta descreve a conexão pelo Open Finance, no app da instituição. O botão e o painel
 // pós-clique do form (ContactForm.vue) não afirmam envio.
 //
 // brand.contact (title/subtitle/channels) vinha do JSONB do tenant no banco
@@ -20,7 +20,7 @@
 // conforme instrução "mantenha canais/horários").
 import type { NuFaqItem } from '~/types/market'
 
-const SUPPORT_EMAIL = 'suporte@redentia.com.br'
+const SUPPORT_EMAIL = 'relacionamento@redentia.com.br'
 
 // FAQ VERBATIM da página antiga (as 3 perguntas em <details>). O
 // NuFaqAccordion emite o JSON-LD FAQPage (rich snippet) — equivalente
@@ -28,7 +28,7 @@ const SUPPORT_EMAIL = 'suporte@redentia.com.br'
 const faqs: NuFaqItem[] = [
   {
     q: 'Como posso conectar minha corretora?',
-    a: 'Você pode conectar sua corretora através da Área do Investidor da B3 ou diretamente com as APIs das principais corretoras do mercado.',
+    a: 'Você pode conectar seus bancos e corretoras pelo Open Finance, autorizando o compartilhamento no aplicativo da própria instituição.',
   },
   {
     q: 'Meus dados estão seguros?',

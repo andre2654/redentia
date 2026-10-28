@@ -8,11 +8,11 @@
 //
 // SEM BACKEND (a página antiga só simulava o envio com um setTimeout + toast).
 // Para o submit NÃO quebrar, o destino é um `mailto:` pré-preenchido para
-// suporte@redentia.com.br (mesmo endereço de suporte do design). Não há envio
+// relacionamento@redentia.com.br (mesmo endereço de suporte do design). Não há envio
 // real: o botão avisa que vai abrir o app de e-mail, e o painel depois do
 // clique confirma só isso — nunca que a mensagem foi enviada.
 const props = withDefaults(defineProps<{ supportEmail?: string }>(), {
-  supportEmail: 'suporte@redentia.com.br',
+  supportEmail: 'relacionamento@redentia.com.br',
 })
 
 // Assuntos VERBATIM da página antiga (label + value).

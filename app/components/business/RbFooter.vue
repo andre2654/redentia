@@ -13,8 +13,8 @@
  * saídas honestas desta página, e é aqui que "Para investidores" mora depois
  * de sair do header.
  *
- * E-MAIL DO BUSINESS (dono, 2026-10-28): relacionamento@redentia.com.br.
- * O app de pessoa física segue em suporte@redentia.com.br.
+ * E-MAIL (dono, 2026-10-28): relacionamento@redentia.com.br,
+ * no Business e no app de pessoa física.
  */
 const { reabrir } = useConsent()
 

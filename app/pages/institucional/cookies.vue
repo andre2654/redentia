@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // /institucional/cookies — Política de Cookies e Privacidade (portada VERBATIM de
 // Frontend/app/pages/institucional/cookies.vue). Placeholders resolvidos:
-// brand.name = "Redentia", suporte/privacidade = suporte@redentia.com.br.
+// brand.name = "Redentia", suporte/privacidade = relacionamento@redentia.com.br.
 // Path e SEO preservados de propósito (mesma URL). Segue o GABARITO privacy.vue:
 // conteúdo é árvore tipada (LegalDocData); LegalHero + LegalDoc renderizam.
 import type { LegalDocData } from '~/types/legal'
@@ -187,7 +187,7 @@ const doc: LegalDocData = {
         { kind: 'list', items: [
           { text: [
             { text: 'Entre em contato conosco pelo e-mail: ' },
-            { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
+            { text: 'relacionamento@redentia.com.br', href: 'mailto:relacionamento@redentia.com.br' },
           ] },
           { text: 'Use o chat de suporte disponível em nossa plataforma' },
           { text: 'Acesse nossa Central de Ajuda para mais informações sobre privacidade e cookies' },
