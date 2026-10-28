@@ -89,30 +89,62 @@ const anima = ref(false) // só vira true no navegador, sem reduced-motion
 
 let timer: ReturnType<typeof setTimeout> | null = null
 let raf = 0
+/* Sobe a cada ciclo. Um quadro antigo, já agendado, não escreve por cima
+   do ciclo novo: o cancelAnimationFrame perde a corrida se o callback já
+   entrou na fila. */
+let geracao = 0
 
+function cancelarQuadro() {
+  geracao++
+  if (raf) { cancelAnimationFrame(raf); raf = 0 }
+}
 function limpar() {
   if (timer) { clearTimeout(timer); timer = null }
-  if (raf) { cancelAnimationFrame(raf); raf = 0 }
+  cancelarQuadro()
 }
 
 /* A contagem de posições sobe de 0 a 14 quando a carteira consolida: é o
-   número que rola do card da Decade, no nosso tamanho. */
+   número que rola do card da Decade, no nosso tamanho.
+
+   O carimbo do requestAnimationFrame pode vir ATRÁS de performance.now():
+   um quadro no Chrome (o card pisca "-1") e segundos inteiros com tempo
+   virtual, quando o quadro trava e o timer segue. A curva `1-(1-t)**3` não
+   tem piso, então esse atraso vira "-8911 posições" e, no ciclo seguinte,
+   "-198424". O quadro não termina (t fica negativo, logo < 1) e o ciclo
+   novo não cancelava o anterior. Cada ciclo cancela o quadro e o timer de
+   antes, recomeça do zero e prende o número entre 0 e 14. */
 function contar() {
+  cancelarQuadro()
+  const minha = geracao
   const inicio = performance.now()
   const dur = 650
   const passo = (agora: number) => {
-    const t = Math.min(1, (agora - inicio) / dur)
-    posicoes.value = Math.round(TOTAL_POSICOES * (1 - (1 - t) ** 3))
+    if (minha !== geracao) return
+    const peloRelogio = performance.now() - inicio
+    const peloQuadro = agora - inicio
+    const decorrido = Math.min(dur, Math.max(0, peloRelogio, peloQuadro))
+    const t = decorrido / dur
+    const n = Math.round(TOTAL_POSICOES * (1 - (1 - t) ** 3))
+    posicoes.value = Math.min(TOTAL_POSICOES, Math.max(0, n))
     if (t < 1) raf = requestAnimationFrame(passo)
+    else raf = 0
   }
   posicoes.value = 0
   raf = requestAnimationFrame(passo)
 }
 
 function agendar(ms: number) {
+  if (timer) clearTimeout(timer)
   timer = setTimeout(avancar, ms)
 }
 function avancar() {
+  /* Fim do compasso consolidado: solta a contagem que ainda estiver no ar
+     e repousa no 14, que é o estado final do ciclo (a saída apaga o card
+     inteiro em cima dele). */
+  if (fase.value === F.consolidada) {
+    cancelarQuadro()
+    posicoes.value = TOTAL_POSICOES
+  }
   fase.value = (fase.value + 1) % FASES.length
   if (fase.value === F.consolidada) contar()
   agendar(FASES[fase.value]!.ms)
