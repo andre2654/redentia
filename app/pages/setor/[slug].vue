@@ -273,13 +273,13 @@ usePageSeo({
   color: var(--nu-ink); font-size: clamp(24px, 3vw, 32px); font-weight: 800;
   letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1;
 }
-.sts__stat-value--up { color: var(--nu-green); }
-.sts__stat-value--down { color: var(--nu-red); }
+.sts__stat-value--up { color: var(--nu-green-text); }
+.sts__stat-value--down { color: var(--nu-red-text); }
 
 .sts__toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .sts__toolbar-meta { display: flex; flex-direction: column; gap: 3px; }
 .sts__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
+  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .sts__toolbar-count {
@@ -291,7 +291,7 @@ usePageSeo({
   padding: clamp(32px, 4vw, 48px); text-align: center;
   color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500;
 }
-.sts__inline-link { color: var(--nu-blue); font-weight: 800; }
+.sts__inline-link { color: var(--nu-blue-text); font-weight: 800; }
 .sts__inline-link:hover { text-decoration: underline; }
 .sts__answer {
   margin: clamp(8px, 1.5vw, 16px) auto 0; max-width: 68ch; text-align: center;
@@ -303,7 +303,7 @@ usePageSeo({
   margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
 .sts__prose p:last-child { margin-bottom: 0; }
-.sts__prose-link { color: var(--nu-blue); font-weight: 800; }
+.sts__prose-link { color: var(--nu-blue-text); font-weight: 800; }
 .sts__prose-link:hover { text-decoration: underline; }
 
 /* ——— ferramentas relacionadas ——— */

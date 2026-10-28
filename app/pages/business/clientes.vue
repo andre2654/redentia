@@ -424,7 +424,7 @@ onBeforeUnmount(() => {
 .rbcl-msg > * { max-width: 680px; }
 .rbcl-msg__h { margin: 0; color: var(--nu-ink); font-size: clamp(30px, 3.6vw, 46px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05; }
 .rbcl-msg__txt { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
-.rbcl-eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; }
+.rbcl-eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
 
 .rbcl-btn {
   align-self: flex-start; display: inline-flex; align-items: center; justify-content: center;
@@ -503,5 +503,5 @@ onBeforeUnmount(() => {
 .rbcl-log li { display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 9px 0; border-top: 1px solid var(--nu-cream-line); }
 .rbcl-log__a { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
 .rbcl-log__m { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.rbcl-link { background: none; border: none; padding: 0; cursor: pointer; color: var(--nu-blue); font: inherit; text-decoration: underline; }
+.rbcl-link { background: none; border: none; padding: 0; cursor: pointer; color: var(--nu-blue-text); font: inherit; text-decoration: underline; }
 </style>

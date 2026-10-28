@@ -41,7 +41,7 @@ const heading = computed(() =>
   animation: nu-fade .5s ease both;
 }
 .ats__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
-.ats__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.ats__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .ats__title {
   margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(30px, 3.6vw, 48px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.04;

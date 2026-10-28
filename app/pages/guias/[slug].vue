@@ -141,7 +141,7 @@ usePageSeo({
 .gdp__p :deep(strong) { font-weight: 800; }
 /* cross-links inline (v-html, href interno) — cor de marca + sublinhado sutil */
 .gdp__article :deep(a) {
-  color: var(--nu-blue); font-weight: 700;
+  color: var(--nu-blue-text); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px;
   text-decoration-thickness: 1px; text-decoration-color: var(--nu-blue-soft);
 }

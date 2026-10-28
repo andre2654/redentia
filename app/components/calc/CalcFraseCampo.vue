@@ -177,7 +177,7 @@ const campoAberto = shallowRef<symbol | null>(null)
 .cfc { position: relative; white-space: nowrap; }
 .cfc__valor {
   display: inline; margin: 0; padding: 0 0.32em 0.08em; border: 0; border-radius: 0.36em; cursor: pointer;
-  font: inherit; letter-spacing: inherit; color: var(--nu-blue);
+  font: inherit; letter-spacing: inherit; color: var(--nu-blue-text);
   background: color-mix(in srgb, var(--nu-blue) 9%, var(--nu-white));
   box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--nu-blue) 55%, transparent);
   transition: background .18s ease, color .18s ease, box-shadow .18s ease;

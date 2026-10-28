@@ -79,7 +79,7 @@ defineExpose({
 }
 .bsh__open {
   display: inline-flex; align-items: center; gap: 9px;
-  background: transparent; color: var(--nu-blue);
+  background: transparent; color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
   padding: 12px 22px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer;
   white-space: nowrap; transition: background .2s;
@@ -95,7 +95,7 @@ defineExpose({
   padding: 9px 16px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   transition: border-color .2s, color .2s;
 }
-.bsh__chip:hover { border-color: var(--nu-blue); color: var(--nu-blue); }
+.bsh__chip:hover { border-color: var(--nu-blue); color: var(--nu-blue-text); }
 .bsh__chip:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
 .bsh__recents { margin-top: 30px; }

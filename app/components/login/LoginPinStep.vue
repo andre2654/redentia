@@ -179,12 +179,12 @@ onMounted(() => focusCell(0))
 }
 .lps__cell:focus { border-bottom-color: var(--nu-blue); }
 .lps__cell--error { border-bottom-color: var(--nu-red); }
-.lps__error { margin: 12px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 500; }
+.lps__error { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lps__cta { margin-top: clamp(36px, 5vh, 52px); }
 .lps__resend { margin-top: 26px; }
 .lps__resend-btn {
   background: transparent; border: none; padding: 0;
-  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
   cursor: pointer; font-family: inherit;
 }
 .lps__resend-btn:disabled { color: var(--nu-gray); cursor: default; }

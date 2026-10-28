@@ -310,7 +310,7 @@ usePageSeo({
 }
 .met-author__body p + p { margin-top: 8px; }
 .met-author__body a {
-  color: var(--nu-blue); text-decoration: underline;
+  color: var(--nu-blue-text); text-decoration: underline;
   text-underline-offset: 2px; text-decoration-thickness: 1px;
 }
 .met-author__body a:hover { color: var(--nu-blue-hover); }

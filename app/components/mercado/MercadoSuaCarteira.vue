@@ -112,13 +112,13 @@ const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = us
 }
 .msc__atalho {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--nu-cream); color: var(--nu-blue);
+  background: var(--nu-cream); color: var(--nu-blue-text);
   border: none; border-radius: var(--nu-r-pill); padding: 14px 26px;
   font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-family: inherit;
   transition: transform .15s, background .2s;
 }
 button.msc__atalho { cursor: pointer; }
-a.msc__atalho:hover, button.msc__atalho:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }
+a.msc__atalho:hover, button.msc__atalho:hover { background: var(--nu-white); color: var(--nu-blue-text); transform: translateY(-2px); }
 .msc__atalho--warn { color: var(--nu-amber-text); }
 a.msc__atalho--warn:hover { color: var(--nu-amber-text); }
 .msc__atalho--ok { color: var(--nu-green-2); cursor: default; }
@@ -136,11 +136,11 @@ a.msc__atalho--warn:hover { color: var(--nu-amber-text); }
 }
 .msc__connect-cta {
   display: inline-flex; align-items: center; gap: 10px; background: var(--nu-cream);
-  color: var(--nu-blue); border-radius: var(--nu-r-pill); padding: 16px 34px;
+  color: var(--nu-blue-text); border-radius: var(--nu-r-pill); padding: 16px 34px;
   font-size: var(--nu-fs-md); font-weight: 800; flex-shrink: 0;
   transition: transform .15s, background .2s;
 }
-.msc__connect-cta:hover { background: var(--nu-white); color: var(--nu-blue); transform: translateY(-2px); }
+.msc__connect-cta:hover { background: var(--nu-white); color: var(--nu-blue-text); transform: translateY(-2px); }
 
 @media (max-width: 760px) {
   .msc__atalhos { display: grid; grid-template-columns: repeat(2, 1fr); width: 100%; }

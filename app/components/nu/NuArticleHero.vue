@@ -48,7 +48,7 @@ defineProps<{
   color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
 }
 .nah__crumb { transition: color .2s; }
-.nah__crumb:hover { color: var(--nu-blue); }
+.nah__crumb:hover { color: var(--nu-blue-text); }
 .nah__title {
   margin: 20px 0 0; color: var(--nu-ink);
   font-size: clamp(36px, 5vw, 68px); font-weight: 800;

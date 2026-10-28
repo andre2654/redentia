@@ -218,7 +218,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 }
 .axm__card:focus { outline: none; }
 .axm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.axm__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.axm__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 .axm__title { margin: 9px 0 0; color: var(--nu-ink); font-size: 28px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
 .axm__date { margin-top: 7px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .axm__close {
@@ -250,7 +250,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 /* Lista longa rola dentro do próprio bloco — o card do modal não vira um poço. */
 .axm__scroll { max-height: 420px; overflow-y: auto; padding-right: 6px; margin-top: 10px; }
 .axm__row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--nu-day-divider); text-decoration: none; }
-.axm__row--link:hover .axm__row-name b { color: var(--nu-blue); }
+.axm__row--link:hover .axm__row-name b { color: var(--nu-blue-text); }
 .axm__row-rank { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; width: 24px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .axm__row-name { flex: 1.3; min-width: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .axm__row-name b { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; transition: color .15s; }
@@ -287,7 +287,7 @@ const nfCell = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximu
 .axm__corr-fill { position: absolute; top: 0; bottom: 0; background: var(--nu-green); border-radius: var(--nu-r-pill); }
 .axm__corr-fill--neg { background: var(--nu-red); }
 .axm__corr-val { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; width: 46px; text-align: right; font-variant-numeric: tabular-nums; }
-.axm__corr-val--neg { color: var(--nu-red); }
+.axm__corr-val--neg { color: var(--nu-red-text); }
 
 .axm__matrix-scroll { overflow-x: auto; margin-top: 14px; }
 .axm__matrix { border-collapse: separate; border-spacing: 3px; min-width: 560px; }

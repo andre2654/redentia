@@ -129,7 +129,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
 .tev__card--hi { border: 2px solid var(--nu-blue); }
 .tev__card--link { transition: transform .15s, box-shadow .2s; }
 .tev__card--link:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tev__card--link:hover .tev__ticker { color: var(--nu-blue); }
+.tev__card--link:hover .tev__ticker { color: var(--nu-blue-text); }
 .tev__card--link:hover .tev__go { background: var(--nu-blue-hover); }
 /* embaçado (anônimo): tease não-interativo */
 .tev__card--locked { filter: blur(5px); opacity: .5; pointer-events: none; user-select: none; }
@@ -149,7 +149,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
 .tev__txt { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 12px; }
 .tev__why { display: flex; gap: 9px; border-top: 1.5px solid var(--nu-cream-2); margin-top: 13px; padding-top: 12px; }
 .tev__why-lbl {
-  color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1px;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; flex-shrink: 0; margin-top: 2px;
 }
 .tev__why-txt { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }

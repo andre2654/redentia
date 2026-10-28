@@ -51,7 +51,7 @@ onBeforeUnmount(() => { if (volta) clearTimeout(volta) })
   font: inherit; font-size: var(--nu-fs-md); font-weight: 700; transition: box-shadow .18s ease, color .18s ease;
 }
 .ccp:hover { box-shadow: inset 0 0 0 2px var(--nu-gray); }
-.ccp--feito { color: var(--nu-green); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--nu-green) 35%, transparent); }
+.ccp--feito { color: var(--nu-green-text); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--nu-green) 35%, transparent); }
 .ccp:focus-visible { outline: 3px solid color-mix(in srgb, var(--nu-blue) 45%, transparent); outline-offset: 2px; }
 /* na barra do celular, só o ícone ao lado do salvar */
 @media (max-width: 900px) {

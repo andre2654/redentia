@@ -39,7 +39,7 @@ defineProps<{
   animation: nu-fade .5s ease both;
 }
 .csh--cream { background: var(--nu-cream); }
-.csh__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.csh__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
 .csh__title {
   margin: 12px 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h2); font-weight: 800;

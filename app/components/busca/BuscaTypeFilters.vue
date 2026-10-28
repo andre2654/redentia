@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
 .btf__adv { position: relative; }
 .btf__adv-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: transparent; color: var(--nu-blue);
+  background: transparent; color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
   padding: 9px 16px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
   white-space: nowrap; transition: background .2s;

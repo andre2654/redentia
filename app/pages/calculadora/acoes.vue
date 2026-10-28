@@ -504,8 +504,8 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada (mesmos valores do exemplar jc__) ——— */
 .sa__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.sa__h4--accent { color: var(--nu-blue); }
-.sa__h4--positive { color: var(--nu-green); }
+.sa__h4--accent { color: var(--nu-blue-text); }
+.sa__h4--positive { color: var(--nu-green-text); }
 .sa__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .sa__small--center { margin: 22px auto 0; max-width: 680px; text-align: center; }
 

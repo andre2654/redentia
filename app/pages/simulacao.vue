@@ -1105,7 +1105,7 @@ const readingHtml = computed(() => {
 .sims__block-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .sims__copy {
   border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-blue);
+  background: transparent; color: var(--nu-blue-text);
   padding: 7px 14px; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -1168,7 +1168,7 @@ const readingHtml = computed(() => {
 .sim__again { margin-top: 54px; }
 .sim__again-btn {
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
-  background: transparent; color: var(--nu-blue);
+  background: transparent; color: var(--nu-blue-text);
   padding: 14px 28px; font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer; font-family: inherit;
   transition: background 0.2s;
 }

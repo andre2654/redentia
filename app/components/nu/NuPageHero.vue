@@ -22,7 +22,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
   padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
-.nph__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.nph__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .nph__title {
   margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(40px, 5.5vw, 76px);
   font-weight: 800; letter-spacing: -0.045em; line-height: 1.0;

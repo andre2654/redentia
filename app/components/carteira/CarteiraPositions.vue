@@ -250,10 +250,10 @@ watch(active, (i) => {
   line-height: 1.65; max-width: 560px;
 }
 .cps2__cta {
-  display: inline-flex; align-items: center; gap: 7px; color: var(--nu-blue);
+  display: inline-flex; align-items: center; gap: 7px; color: var(--nu-blue-text);
   font-size: var(--nu-fs-md); font-weight: 800; margin-top: 14px; transition: gap .2s;
 }
-.cps2__cta:hover { gap: 11px; color: var(--nu-blue); }
+.cps2__cta:hover { gap: 11px; color: var(--nu-blue-text); }
 .cps2__panel {
   margin-top: 20px; background: var(--nu-cream);
   border-radius: var(--nu-r-pos-panel); padding: 6px 22px;

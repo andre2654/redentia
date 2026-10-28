@@ -134,7 +134,7 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
 }
 .chr__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; }
 .chr__main { flex: 1.2 1 460px; min-width: min(320px, 100%); }
-.chr__eyebrow { color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
+.chr__eyebrow { color: var(--nu-blue-text); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
 .chr__row { display: flex; align-items: flex-end; gap: 20px; margin-top: 14px; }
 .chr__value {
   margin: 0; color: var(--nu-ink); font-size: clamp(50px, 7vw, 96px);
@@ -175,11 +175,11 @@ function statValue(s: CarteiraHeroVM['stats'][number]): string {
 }
 .chr__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); transform: translateY(-2px); }
 .chr__cta-outline {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue);
+  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 14px 26px;
   font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
 }
-.chr__cta-outline:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
+.chr__cta-outline:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue-text); }
 .chr__aside { flex: 1 1 380px; min-width: min(320px, 100%); max-width: 520px; }
 .chr__card { background: var(--nu-white); border-radius: var(--nu-r-card); padding: 28px; box-shadow: var(--nu-shadow-card); }
 .chr__card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }

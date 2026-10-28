@@ -379,7 +379,7 @@ const estado = computed(() => {
 }
 /* "com 1 clique." em azul: é a promessa, e texto grande (800, ≥38px) passa o
    piso de 3:1 com folga sobre o creme. */
-.rbh0__destaque { color: var(--nu-blue); white-space: nowrap; }
+.rbh0__destaque { color: var(--nu-blue-text); white-space: nowrap; }
 .rbh0__dek {
   margin: 26px 0 0; max-width: 50ch; color: var(--nu-gray);
   font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.6;
@@ -429,7 +429,7 @@ const estado = computed(() => {
   font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap;
   opacity: 0; transition: opacity .3s ease;
 }
-.rbh0c__pilula--ok { background: var(--nu-green-bg); color: var(--nu-green); }
+.rbh0c__pilula--ok { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .rbh0c__pilula--on { opacity: 1; }
 
 .rbh0c__cliente { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
@@ -449,7 +449,7 @@ const estado = computed(() => {
   transition: transform .14s ease, background .3s ease;
 }
 .rbh0c__botao--clique { transform: scale(.96); background: var(--nu-ink-75); }
-.rbh0c__botao--enviado { background: var(--nu-green-bg); color: var(--nu-green); }
+.rbh0c__botao--enviado { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .rbh0c__botao-txt {
   grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 6px;
   transition: opacity .25s ease, transform .25s ease;

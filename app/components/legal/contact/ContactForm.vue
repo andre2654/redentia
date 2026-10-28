@@ -242,7 +242,7 @@ function onSubmit() {
 }
 .ctf__check-text { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .ctf__link {
-  color: var(--nu-blue); text-decoration: underline;
+  color: var(--nu-blue-text); text-decoration: underline;
   text-underline-offset: 2px; text-decoration-thickness: 1px; transition: color .2s;
 }
 .ctf__link:hover { color: var(--nu-blue-hover); }
@@ -256,7 +256,7 @@ function onSubmit() {
 .ctf__submit:hover { background: var(--nu-blue-hover); }
 .ctf__submit:disabled { opacity: .7; cursor: default; }
 
-.ctf__err { color: var(--nu-red); font-size: var(--nu-fs-dense); font-weight: 500; }
+.ctf__err { color: var(--nu-red-text); font-size: var(--nu-fs-dense); font-weight: 500; }
 
 .ctf__done {
   background: var(--nu-green-soft); border-radius: var(--nu-r-panel);

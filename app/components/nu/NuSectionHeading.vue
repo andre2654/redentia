@@ -17,7 +17,7 @@ defineProps<{ eyebrow?: string; dark?: boolean }>()
 </template>
 
 <style scoped>
-.nsh__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.nsh__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
 /* dark: o par de acento sobre navy é o blue-soft (o --nu-blue afunda no fundo
    escuro). Aditivo — o único consumidor de `dark` hoje (TeseDrivers) não passa
    eyebrow nem dek, então nada muda no app. */

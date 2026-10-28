@@ -166,7 +166,7 @@ usePageSeo({
 }
 .tsh__toolbar { display: flex; flex-direction: column; gap: 3px; }
 .tsh__toolbar-eyebrow {
-  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
+  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .tsh__toolbar-count {

@@ -29,7 +29,7 @@ onMounted(() => { montado.value = true })
 .cfo { position: relative; display: inline-block; white-space: nowrap; }
 .cfo__valor {
   display: inline-block; padding: 0 0.32em 0.08em; border-radius: 0.36em;
-  color: var(--nu-blue); background: color-mix(in srgb, var(--nu-blue) 9%, var(--nu-white));
+  color: var(--nu-blue-text); background: color-mix(in srgb, var(--nu-blue) 9%, var(--nu-white));
   box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--nu-blue) 55%, transparent);
   transition: background .18s ease;
 }

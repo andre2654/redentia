@@ -21,7 +21,7 @@ defineProps<{ title: string }>()
 }
 .stub__pill {
   display: inline-flex; align-items: center;
-  background: var(--nu-blue-tint); color: var(--nu-blue);
+  background: var(--nu-blue-tint); color: var(--nu-blue-text);
   border-radius: var(--nu-r-pill); padding: 8px 16px;
   font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.4px;
 }

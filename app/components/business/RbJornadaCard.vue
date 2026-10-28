@@ -100,8 +100,8 @@ const pct = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toF
 .rjc__tk { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
 .rjc__px { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; text-align: right; }
 .rjc__var { min-width: 64px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; text-align: right; }
-.rjc__var--pos { color: var(--nu-green); }
-.rjc__var--neg { color: var(--nu-red); }
+.rjc__var--pos { color: var(--nu-green-text); }
+.rjc__var--neg { color: var(--nu-red-text); }
 .rjc__ev {
   grid-column: 1 / -1; justify-self: start;
   padding: 2px 8px; border-radius: 5px; background: var(--nu-cream);

@@ -797,7 +797,7 @@ useConviteDaConta('dividend-yield', () => JSON.stringify(simParams.value), () =>
 .dys__regua-titulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .dys__regua-faixa { margin: 2px 0 0; font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
 .dys__regua-faixa--baixo { color: var(--nu-gray-2); }
-.dys__regua-faixa--bom, .dys__regua-faixa--otimo { color: var(--nu-blue); }
+.dys__regua-faixa--bom, .dys__regua-faixa--otimo { color: var(--nu-blue-text); }
 .dys__regua-faixa--alto { color: var(--nu-serie-2); }
 .dys__trilho { position: relative; margin-top: 14px; padding: 54px 0 4px; }
 .dys__marcas { position: absolute; inset: 0; pointer-events: none; }

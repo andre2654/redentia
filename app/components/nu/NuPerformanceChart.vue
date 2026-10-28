@@ -200,7 +200,7 @@ const hov = computed(() => {
 }
 .nperf__tip-date { color: var(--nu-navy-55); font-size: var(--nu-fs-xs); font-weight: 700; }
 .nperf__tip-row { display: flex; align-items: baseline; gap: 10px; margin-top: 4px; }
-.nperf__tip-t { color: var(--nu-blue); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
+.nperf__tip-t { color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: 800; font-variant-numeric: tabular-nums; }
 .nperf__tip-b { color: var(--nu-navy-60); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* mobile: sem o marcador de fim de linha (UX do dono 2026-07-11) */

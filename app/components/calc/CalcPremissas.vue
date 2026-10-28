@@ -39,7 +39,7 @@ const id = useId()
 .cpr__nome { color: var(--nu-gray-2); font-weight: 700; }
 .cpr__botao {
   flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 6px 0; border: 0; cursor: pointer;
-  background: transparent; color: var(--nu-blue); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
+  background: transparent; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
 }
 .cpr__seta { transition: transform .2s ease; }
 .cpr__seta--aberta { transform: rotate(90deg); }
@@ -48,7 +48,7 @@ const id = useId()
 .cpr__nota { flex: 1; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .cpr__restaurar {
   flex: none; padding: 0; border: 0; cursor: pointer; background: transparent;
-  color: var(--nu-blue); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
 }
 .cpr__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
 .cpr__grade :slotted(.cpr-item) { padding: 18px 20px 20px; border-radius: 20px; background: var(--nu-white); }

@@ -118,6 +118,6 @@ const nome = defineModel<string>('nome', { required: true })
   margin: 20px 0 0; padding-top: 18px; border-top: 1px solid var(--nu-cream-2);
   color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6;
 }
-.rbkst__link { color: var(--nu-blue); font-weight: 700; }
+.rbkst__link { color: var(--nu-blue-text); font-weight: 700; }
 .rbkst__link:hover { color: var(--nu-blue-hover); }
 </style>

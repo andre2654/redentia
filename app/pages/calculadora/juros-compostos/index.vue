@@ -487,11 +487,11 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .jc__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.jc__h4--accent { color: var(--nu-blue); }
-.jc__h4--negative { color: var(--nu-red); }
+.jc__h4--accent { color: var(--nu-blue-text); }
+.jc__h4--negative { color: var(--nu-red-text); }
 .jc__small { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .jc__link { text-decoration: underline; }
-.jc__link:hover { color: var(--nu-blue); }
+.jc__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .jc__prose p {

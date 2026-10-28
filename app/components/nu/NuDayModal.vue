@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
 }
 .ndm__card:focus { outline: none; }
 .ndm__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.ndm__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.ndm__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 .ndm__title { margin: 9px 0 0; color: var(--nu-ink); font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
 .ndm__date { margin-top: 7px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ndm__close {

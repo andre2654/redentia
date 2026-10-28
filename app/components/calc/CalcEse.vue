@@ -30,7 +30,7 @@ defineProps<{
   display: inline-flex; align-items: baseline; gap: 8px; padding: 9px 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-white); color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap;
 }
-.cese__capsula b { color: var(--nu-blue); font-weight: 800; font-variant-numeric: tabular-nums; }
+.cese__capsula b { color: var(--nu-blue-text); font-weight: 800; font-variant-numeric: tabular-nums; }
 .cese__aviso { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; text-align: center; }
 @media (max-width: 640px) {
   .cese__lista { justify-content: flex-start; gap: 8px; }

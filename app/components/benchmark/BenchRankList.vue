@@ -80,7 +80,7 @@ const sub = (r: BenchRankingRow) => r.extra ?? (r.hi > r.lo ? `de ${fmt(r.lo)} a
 }
 .brl__tie {
   flex-shrink: 0; border-radius: var(--nu-r-pill); padding: 1px 7px;
-  background: var(--nu-blue-tint); color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0;
+  background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0;
 }
 .brl__prov { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .brl__num { display: flex; flex-direction: column; align-items: flex-end; }

@@ -410,10 +410,10 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .ir__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.ir__h4--accent { color: var(--nu-blue); }
-.ir__h4--negative { color: var(--nu-red); }
+.ir__h4--accent { color: var(--nu-blue-text); }
+.ir__h4--negative { color: var(--nu-red-text); }
 .ir__link { text-decoration: underline; }
-.ir__link:hover { color: var(--nu-blue); }
+.ir__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .ir__prose p {
@@ -461,7 +461,7 @@ usePageSeo({
 :global(.cbd--cream) .ir__tile { background: var(--nu-white); }
 :global(.csp--cream) .ir__tile { background: var(--nu-white); }
 .ir__tile--danger { background: var(--nu-red-tint); }
-.ir__tile-title { margin: 0 0 8px; color: var(--nu-blue); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
+.ir__tile-title { margin: 0 0 8px; color: var(--nu-blue-text); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .ir__card-p { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .ir__list { margin: 8px 0 0; padding-left: 18px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.7; }
 .ir__list :deep(strong), .ir__list strong { color: var(--nu-ink); font-weight: 800; }

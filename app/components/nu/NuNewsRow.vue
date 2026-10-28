@@ -26,7 +26,7 @@ defineProps<{ item: NuNewsRowItem }>()
   display: block; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800;
   letter-spacing: -.2px; line-height: 1.3; transition: color .2s;
 }
-.nnr:hover .nnr__title { color: var(--nu-blue); }
+.nnr:hover .nnr__title { color: var(--nu-blue-text); }
 .nnr__source { display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 5px; }
 .nnr__pct { font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .nnr__pct--up { color: var(--nu-green-2); }

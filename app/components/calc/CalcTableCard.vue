@@ -55,7 +55,7 @@ defineProps<{
   font-variant-numeric: tabular-nums; line-height: 1.5;
 }
 .ctc__table td:first-child { color: var(--nu-ink); font-weight: 800; }
-.ctc__td--accent { color: var(--nu-blue) !important; font-weight: 800 !important; }
+.ctc__td--accent { color: var(--nu-blue-text) !important; font-weight: 800 !important; }
 .ctc__note {
   margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm);
   font-weight: 500; line-height: 1.6;
