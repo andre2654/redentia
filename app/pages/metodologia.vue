@@ -281,7 +281,7 @@ usePageSeo({
         </div>
         <div class="met-author__body">
           <p>Conteúdo produzido e revisado pela equipe editorial da Redentia, com base em fontes públicas (B3, BCB, CVM, Receita Federal, IBGE, ANBIMA).</p>
-          <p>Encontrou divergência ou erro? Reporte em <a href="mailto:contato@redentia.com.br">contato@redentia.com.br</a>.</p>
+          <p>Encontrou divergência ou erro? Reporte em <a href="mailto:relacionamento@redentia.com.br">relacionamento@redentia.com.br</a>.</p>
         </div>
       </aside>
     </MetodologiaDoc>

@@ -13,9 +13,8 @@
  * saídas honestas desta página, e é aqui que "Para investidores" mora depois
  * de sair do header.
  *
- * E-MAIL CONFIRMADO PELO DONO (2026-08-01): contato@redentia.com existe e
- * recebe. É o endereço do deck MFO_Operational_Standard; o app usa
- * suporte@redentia.com.br, e a diferença de domínio é intencional.
+ * E-MAIL DO BUSINESS (dono, 2026-10-28): relacionamento@redentia.com.br.
+ * O app de pessoa física segue em suporte@redentia.com.br.
  */
 const CARDS = [
   {
@@ -98,7 +97,7 @@ const COLUMNS = [
       <div class="rbf__col">
         <div class="rbf__col-title">Fale com a gente</div>
         <div class="rbf__col-links">
-          <a href="mailto:contato@redentia.com" class="rbf__mail">contato@redentia.com</a>
+          <a href="mailto:relacionamento@redentia.com.br" class="rbf__mail">relacionamento@redentia.com.br</a>
           <span class="rbf__hours">Atendimento em dias úteis,<br>das 8h às 18h (Brasília)</span>
         </div>
       </div>

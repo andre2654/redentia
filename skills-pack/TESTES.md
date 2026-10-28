@@ -195,7 +195,7 @@ ter · **Reprova se** o modo de falha conhecido reaparecer.
    Dado: chave PESSOAL + "gera um convite pro cliente João"; repita com a
    chave de escritório de uma conta sem o recurso habilitado.
    Espera: a mensagem da skill (só chave de escritório com o recurso;
-   redentia-carteira pra carteira colada; contato@redentia.com) e a rodada
+   redentia-carteira pra carteira colada; relacionamento@redentia.com.br) e a rodada
    para aí.
    Reprova se: tenta outra tool no lugar, inventa um link ou trata como
    falha de conexão.

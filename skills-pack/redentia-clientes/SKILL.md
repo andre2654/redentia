@@ -19,7 +19,7 @@ Como funciona: o escritório cadastra o nome do cliente e manda o link. O client
 
 Se as tools de clientes não estão disponíveis nesta sessão, responda assim e pare:
 
-> Os clientes do escritório só funcionam com chave de escritório (rdt_biz_) numa conta com o recurso habilitado. Com a carteira em mãos, a skill redentia-carteira analisa as posições coladas na conversa. Pra habilitar na conta do escritório: contato@redentia.com.
+> Os clientes do escritório só funcionam com chave de escritório (rdt_biz_) numa conta com o recurso habilitado. Com a carteira em mãos, a skill redentia-carteira analisa as posições coladas na conversa. Pra habilitar na conta do escritório: relacionamento@redentia.com.br.
 
 Nunca contorne: não peça a chave de outra pessoa, não peça print do extrato do cliente pra "fazer de conta" que conectou.
 

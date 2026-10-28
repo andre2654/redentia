@@ -2,14 +2,15 @@
 // Formulário de contato da página /institucional/contact — portado da página
 // antiga (Frontend/app/pages/institucional/contact.vue), reflowado no design Nu
 // (campos boxed brancos, borda creme, foco azul, tokens --nu-*). Labels,
-// placeholders, opções de assunto, textos de erro e do botão/sucesso são
-// VERBATIM da página antiga (acentos restaurados).
+// placeholders, opções de assunto e textos de erro são VERBATIM da página
+// antiga (acentos restaurados). O botão e o painel pós-clique não: dizem que
+// o app de e-mail abre com a mensagem pronta, sem afirmar que ela foi enviada.
 //
 // SEM BACKEND (a página antiga só simulava o envio com um setTimeout + toast).
 // Para o submit NÃO quebrar, o destino é um `mailto:` pré-preenchido para
-// suporte@redentia.com.br (mesmo endereço de suporte do design). Ao concluir,
-// mostramos o painel de sucesso VERBATIM ("Mensagem enviada com sucesso!" /
-// "Retornaremos seu contato em breve.").
+// suporte@redentia.com.br (mesmo endereço de suporte do design). Não há envio
+// real: o botão avisa que vai abrir o app de e-mail, e o painel depois do
+// clique confirma só isso — nunca que a mensagem foi enviada.
 const props = withDefaults(defineProps<{ supportEmail?: string }>(), {
   supportEmail: 'suporte@redentia.com.br',
 })
@@ -81,7 +82,8 @@ function onSubmit() {
   if (!validate()) return
   submitting.value = true
   // Abre o cliente de e-mail do usuário com a mensagem pré-preenchida.
-  // Não navega a página — apenas dispara o handler mailto.
+  // Não navega a página — apenas dispara o handler mailto. O painel seguinte
+  // só confirma que o e-mail foi aberto; o envio acontece no app de e-mail.
   if (import.meta.client) window.location.href = mailtoHref()
   submitting.value = false
   done.value = true
@@ -90,10 +92,10 @@ function onSubmit() {
 
 <template>
   <div class="ctf">
-    <!-- Painel de sucesso VERBATIM (substitui o toast da página antiga) -->
+    <!-- Painel pós-clique: o mailto abriu; a mensagem ainda não foi enviada. -->
     <div v-if="done" class="ctf__done" role="status">
-      <div class="ctf__done-title">Mensagem enviada com sucesso!</div>
-      <div class="ctf__done-sub">Retornaremos seu contato em breve.</div>
+      <div class="ctf__done-title">Abrimos o seu e-mail com a mensagem pronta.</div>
+      <div class="ctf__done-sub">É só enviar por lá.</div>
     </div>
 
     <form v-else class="ctf__form" novalidate @submit.prevent="onSubmit">
@@ -195,8 +197,8 @@ function onSubmit() {
       </div>
 
       <button type="submit" class="ctf__submit" :disabled="submitting">
-        <span v-if="!submitting">Enviar mensagem</span>
-        <span v-else>Enviando...</span>
+        <span v-if="!submitting">Abrir o app de e-mail com a mensagem pronta</span>
+        <span v-else>Abrindo o app de e-mail...</span>
       </button>
     </form>
   </div>

@@ -22,7 +22,7 @@ export default defineNuxtConfig({
         { rel: 'preload', href: '/fonts/plus-jakarta-sans-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'icon', type: 'image/svg+xml', href: '/logo-azul.svg' },
       ],
-      meta: [{ name: 'theme-color', content: '#2F6BFF' }],
+      meta: [{ name: 'theme-color', content: '#2F6AFF' }],
     },
   },
 
