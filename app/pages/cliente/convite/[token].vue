@@ -91,7 +91,7 @@ const MOTIVOS: Record<string, { titulo: string, texto: string }> = {
   },
   erro: {
     titulo: 'Não conseguimos abrir o convite agora.',
-    texto: 'Tente de novo em instantes. Se seguir assim, escreva pra contato@redentia.com.',
+    texto: 'Tente de novo em instantes. Se seguir assim, escreva pra relacionamento@redentia.com.br.',
   },
 }
 

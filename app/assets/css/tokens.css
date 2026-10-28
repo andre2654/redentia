@@ -210,7 +210,7 @@
   --nu-warning-bg: rgba(255, 194, 77, 0.22); /* badge 'Risco de concentração' (texto --nu-amber-soft) */
 
   /* alocação por classe (barra empilhada de "Suas posições") */
-  --nu-alloc-stock: #2F6BFF;   /* Ações (= --nu-blue, papel próprio) */
+  --nu-alloc-stock: #2F6AFF;   /* Ações (= --nu-blue, papel próprio) */
   --nu-alloc-fii: #7C5FD6;     /* FIIs */
   --nu-alloc-fixed: #0E9E63;   /* Renda Fixa */
   --nu-alloc-crypto: #F2994A;  /* Cripto */
@@ -249,9 +249,9 @@
   --nu-hm-green: #0E9E63;                    /* pill sólida do total anual (papel próprio) */
 
   /* ——— posicoes-v2 "Suas posições." (designs-v2/Redentia Carteira Nu.dc.html) ———
-     Cores por classe: as 5 principais REUSAM --nu-alloc-* (mesmos hex do design
-     — Ações #2F6BFF, FIIs #7C5FD6, Renda Fixa #0E9E63, Cripto #F2994A,
-     Caixa/Outros #B9AE9C); abaixo só as classes NOVAS do mapa clsColors. */
+     Cores por classe: as 5 principais REUSAM --nu-alloc-* (Ações = --nu-blue
+     #2F6AFF; FIIs #7C5FD6, Renda Fixa #0E9E63, Cripto #F2994A, Caixa/Outros
+     #B9AE9C); abaixo só as classes NOVAS do mapa clsColors. */
   --nu-class-bdr: #E0555F;      /* BDRs */
   --nu-class-etf: #1E8A94;      /* ETFs */
   --nu-class-deb: #C77DFF;      /* Debêntures */

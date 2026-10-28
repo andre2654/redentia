@@ -9,10 +9,10 @@
 // O corpo desta página, porém, é interativo (form + canais + FAQ), então usa
 // LegalHero + composição própria em vez do LegalDoc de prosa.
 //
-// TEXTO VERBATIM (acentos restaurados): o FAQ (3 perguntas/respostas), os
-// rótulos/placeholders/opções do form e os textos de botão/sucesso vêm
-// literais da página antiga. Ver legal/contact/ContactForm.vue (auto-import
-// <ContactForm>) para os textos do form.
+// TEXTO VERBATIM (acentos restaurados): as 3 perguntas do FAQ, as respostas 2
+// e 3, e os rótulos/placeholders/opções do form vêm literais da página antiga.
+// A 1ª resposta troca o CEI pela Área do Investidor da B3. O botão e o painel
+// pós-clique do form (ContactForm.vue) não afirmam envio.
 //
 // brand.contact (title/subtitle/channels) vinha do JSONB do tenant no banco
 // (não versionado no repo). Resolvido para a Redentia: título "Fale com a
@@ -28,7 +28,7 @@ const SUPPORT_EMAIL = 'suporte@redentia.com.br'
 const faqs: NuFaqItem[] = [
   {
     q: 'Como posso conectar minha corretora?',
-    a: 'Você pode conectar sua corretora através do CEI (Canal Eletrônico do Investidor) ou diretamente com as APIs das principais corretoras do mercado.',
+    a: 'Você pode conectar sua corretora através da Área do Investidor da B3 ou diretamente com as APIs das principais corretoras do mercado.',
   },
   {
     q: 'Meus dados estão seguros?',

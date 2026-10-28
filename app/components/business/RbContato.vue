@@ -9,9 +9,8 @@
  * antecipada continua existindo sem ocupar a página.
  *
  * SEM FORMULÁRIO, e a razão é técnica: o `ContactForm` do app não tem backend.
- * Ele monta um `mailto:` e mostra "Mensagem enviada com sucesso!" logo depois,
- * tenha o cliente de e-mail aberto ou não. Num lead isso perde a venda em
- * silêncio, e um formulário que mente é pior que nenhum formulário. O endereço
+ * Ele monta um `mailto:` e avisa que o app de e-mail foi aberto, tenha o
+ * cliente aberto ou não. Num lead isso perde a venda em silêncio. O endereço
  * fica escrito ao lado do botão para quem não usa cliente de e-mail.
  *
  * A FOTO É FUNDO, NÃO ASSUNTO (alt=""), e é a `sala-vidro`, uma das três sem
@@ -19,7 +18,7 @@
  * larga ela amplia: o scrim navy denso e a granulação da própria foto fazem
  * disso textura. Se chegar foto em alta, troque aqui.
  */
-const EMAIL = 'contato@redentia.com'
+const EMAIL = 'relacionamento@redentia.com.br'
 
 const ASSUNTO = 'Redentia For Business: 1 hora com a mesa'
 const CORPO = [

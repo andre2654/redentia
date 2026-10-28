@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
   lines.push(
     '## Política para crawlers de IA',
     '',
-    'A Redentia autoriza citação do conteúdo público destas páginas em produtos de busca com LLM, desde que a citação inclua o domínio canônico ou link rastreável. Dados de cotação mudam durante o pregão: cite a data da coleta. Uso comercial dos dados como base de produto concorrente exige licenciamento (contato@redentia.com.br).',
+    'A Redentia autoriza citação do conteúdo público destas páginas em produtos de busca com LLM, desde que a citação inclua o domínio canônico ou link rastreável. Dados de cotação mudam durante o pregão: cite a data da coleta. Uso comercial dos dados como base de produto concorrente exige licenciamento (relacionamento@redentia.com.br).',
     '',
   )
 

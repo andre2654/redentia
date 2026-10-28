@@ -133,7 +133,7 @@ Qualquer falha: procure a mensagem na tabela de erros e siga a ação. Total da 
 | "O plano para escritórios não inclui {escopo}." | chave de escritório pedindo carteira | é desenho do plano, não erro: escopos de escritório são fixos (mercado, teses, notícias, cenários e projeções); carteira só na chave pessoal |
 | "não tem permissão de cenários e projeções" (as ferramentas de cenários aparecem mesmo assim) | o escopo de cenários vem desligado por padrão na chave pessoal | Redentia → Conta → seção MCP → ligar Cenários e projeções |
 | recusa por limite de simulações | sub-limite das duas ferramentas de simulação (veja abaixo) | espere cerca de 60 segundos; na chave pessoal, o diário de simulações renova à meia-noite (São Paulo) |
-| as ferramentas de clientes não aparecem | chave pessoal, ou conta de escritório sem o recurso habilitado | é desenho, não erro: clientes do escritório é só pra chave de escritório com o recurso; contato@redentia.com |
+| as ferramentas de clientes não aparecem | chave pessoal, ou conta de escritório sem o recurso habilitado | é desenho, não erro: clientes do escritório é só pra chave de escritório com o recurso; relacionamento@redentia.com.br |
 | cliente não encontrado | id errado, cliente de outra chave, convite pendente ou consentimento revogado ou vencido; a mesma resposta pra todos, de propósito | `list_clients` mostra o status |
 | "Limite diário de chamadas da chave gratuita atingido." | 50/dia da chave pessoal | renova à meia-noite (horário de São Paulo) |
 

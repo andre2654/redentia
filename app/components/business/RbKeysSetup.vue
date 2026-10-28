@@ -69,7 +69,7 @@ const nome = defineModel<string>('nome', { required: true })
           <p class="rbkst__texto">
             Agende o setup de 1 hora e a gente libera a conta na hora. Se você já
             falou com a gente, escreva pra
-            <a href="mailto:contato@redentia.com" class="rbkst__link">contato@redentia.com</a>
+            <a href="mailto:relacionamento@redentia.com.br" class="rbkst__link">relacionamento@redentia.com.br</a>
             que liberamos hoje.
           </p>
           <NuxtLink to="/business#contato" class="rbkst__cta">Agendar o setup</NuxtLink>

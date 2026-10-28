@@ -187,7 +187,7 @@ export const BENCH_LIMITS: string[] = [
   'Poucas rodadas não fazem um gestor. A Carteira própria não tem imposto e usa custo simplificado, e a Previsão de futuro diz quem ordena melhor as ações na média, não quem ganharia dinheiro de verdade depois de custo, imposto e liquidez.',
   'Prova sem internet mede o modelo puro. Quem usa a IA com busca ligada pode ter resultado diferente.',
   'Enunciado diferente muda a resposta. Esta edição usou um enunciado fixo, e a variação com outras redações ainda não foi medida.',
-  'Gabarito também erra. Quem achar um erro pode escrever para contato@redentia.com. Erro confirmado vira errata pública, e a edição é renumerada.',
+  'Gabarito também erra. Quem achar um erro pode escrever para relacionamento@redentia.com.br. Erro confirmado vira errata pública, e a edição é renumerada.',
   'O "Cai em golpes financeiros?" só usa texto. Golpe por áudio, vídeo e ligação fica para uma próxima versão.',
   'Na Edição 01, os pedidos do "Concorda com tudo?" foram redigidos com apoio de um modelo da Anthropic. Isso pode dar vantagem de estilo aos modelos da mesma família. A partir da Edição 02, metade das questões passa a ser escrita só por gente. As perguntas do "Inventa número?" saem direto dos arquivos da B3, sem redação de modelo.',
 ]

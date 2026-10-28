@@ -40,7 +40,7 @@ Erros chegam como TEXTO em português. Trate por conteúdo:
 - **"Muitas chamadas por minuto"**, "Limite de simulações por minuto" ou "Muitas simulações em sequência" (o teto do próprio motor): espere cerca de 60 segundos e retome do passo em que parou. Não recomece a rodada.
 - **"Limite diário"**: pare, diga quantas simulações faltavam e que o limite renova à meia-noite de São Paulo.
 - **Motor indisponível** ou "não respondeu dentro de 30 segundos": não repita em laço. Diga que o motor não respondeu e ofereça tentar em alguns minutos, ou com menos posições.
-- **A recusa diz "não tem permissão de cenários e projeções"** (as duas tools de cenários aparecem em toda chave; quem recusa é o servidor): na chave pessoal o escopo vem DESLIGADO por padrão; o usuário liga em Redentia → Conta → seção MCP (vale em até 1 minuto). Na chave de escritório o plano já inclui cenários; se mesmo assim faltar, o caminho é contato@redentia.com.
+- **A recusa diz "não tem permissão de cenários e projeções"** (as duas tools de cenários aparecem em toda chave; quem recusa é o servidor): na chave pessoal o escopo vem DESLIGADO por padrão; o usuário liga em Redentia → Conta → seção MCP (vale em até 1 minuto). Na chave de escritório o plano já inclui cenários; se mesmo assim faltar, o caminho é relacionamento@redentia.com.br.
 
 ### Orçamento de chamadas desta skill
 
