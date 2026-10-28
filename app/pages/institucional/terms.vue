@@ -156,7 +156,7 @@ const doc: LegalDocData = {
         ] },
         { kind: 'p', text: 'Em resumo, é disponibilizado, por meio da Plataforma, formas de o Usuário melhor visualizar suas carteiras de investimentos, bem como seu desempenho. Os Conteúdos da Carteira poderão ser pagos ou gratuitos, conforme informações contidas no Site ou aplicativo.' },
         { kind: 'p', text: [
-          { text: 'Para fins de inserção das informações sobre sua carteira de investimentos, o Usuário poderá conectar a Área do Investidor da B3 pelo Open Finance, autorizando o compartilhamento no aplicativo da própria instituição, com o que, caso assim o faça, desde já concorda com o compartilhamento dos dados de posições e de movimentações de investimento obtidos nessa conexão à ' },
+          { text: 'Para fins de inserção das informações sobre sua carteira de investimentos, o Usuário poderá utilizar o seu login e senha do CEI (Canal Eletrônico do Investidor), com o que, caso assim o faça, desde já concorda com o compartilhamento de seus dados contidos no CEI à ' },
           { text: 'Redentia', bold: true },
           { text: ' e à Plataforma e/ou aplicativo.' },
         ] },
@@ -196,8 +196,8 @@ const doc: LegalDocData = {
         { kind: 'list', items: [
           { text: 'Nome completo' },
           { text: 'Endereço de e-mail' },
+          { text: 'Número do Cadastro da Pessoa Física do Ministério da Economia (CPF/ME) ao se realizar a conexão com o CEI e o Novo Portal de B3' },
         ] },
-        { kind: 'p', text: 'A conexão com a Área do Investidor da B3 é feita pelo Open Finance, com autorização no aplicativo da própria instituição. O número do Cadastro da Pessoa Física do Ministério da Economia (CPF/ME) não é enviado à Redentia nessa conexão.' },
         { kind: 'p', text: [
           { text: 'Todos os Dados Pessoais referentes ao Cadastro serão protegidos pela ' },
           { text: 'Redentia', bold: true },

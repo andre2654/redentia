@@ -11,7 +11,7 @@
 //
 // TEXTO VERBATIM (acentos restaurados): as 3 perguntas do FAQ, as respostas 2
 // e 3, e os rótulos/placeholders/opções do form vêm literais da página antiga.
-// A 1ª resposta troca o CEI pela Área do Investidor da B3. O botão e o painel
+// A 1ª resposta descreve a conexão pelo Open Finance, no app da instituição. O botão e o painel
 // pós-clique do form (ContactForm.vue) não afirmam envio.
 //
 // brand.contact (title/subtitle/channels) vinha do JSONB do tenant no banco
@@ -28,7 +28,7 @@ const SUPPORT_EMAIL = 'relacionamento@redentia.com.br'
 const faqs: NuFaqItem[] = [
   {
     q: 'Como posso conectar minha corretora?',
-    a: 'Você pode conectar sua corretora através da Área do Investidor da B3 ou diretamente com as APIs das principais corretoras do mercado.',
+    a: 'Você pode conectar seus bancos e corretoras pelo Open Finance, autorizando o compartilhamento no aplicativo da própria instituição.',
   },
   {
     q: 'Meus dados estão seguros?',
