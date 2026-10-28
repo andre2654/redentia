@@ -2,9 +2,11 @@
  * Microsoft Clarity — session recordings + heatmaps + AI insights.
  * Migrado do Frontend antigo no cutover. Project ID: wmh9pyc3io.
  *
- * Load lazy via requestIdleCallback (fallback setTimeout 500ms pra Safari
- * / IG in-app browser sem rIC), depois do LCP. Pula hosts de dev/preview
- * pra não contaminar o funil de prod com sessões de localhost/preview.
+ * Só depois do consentimento (utils/consent.ts). Sem aceite, o script não
+ * entra e o cookie _clck não nasce. Com aceite, load lazy via
+ * requestIdleCallback (fallback setTimeout 500ms pra Safari / IG in-app
+ * browser sem rIC), depois do LCP. Pula hosts de dev/preview pra não
+ * contaminar o funil de prod com sessões de localhost/preview.
  *
  * Lê de runtimeConfig.public.clarityProjectId. NUXT_PUBLIC_CLARITY_PROJECT_ID=
  * vazio desliga num env.
@@ -14,6 +16,7 @@
  * utils/analytics-privacy.ts.
  */
 import { isSecretTokenPath } from '~/utils/analytics-privacy'
+import { agendarComConsentimento, lerConsentimento } from '~/utils/consent'
 
 export default defineNuxtPlugin(() => {
   if (isSecretTokenPath(window.location.pathname)) return
@@ -40,6 +43,8 @@ export default defineNuxtPlugin(() => {
   }
 
   const installClarity = () => {
+    if (lerConsentimento() !== 'granted') return
+    if (isSecretTokenPath(window.location.pathname)) return
     if ((window as { clarity?: unknown }).clarity) return
 
     ;(function (c: Window & { clarity?: unknown }, l: Document, a: string, r: string, i: string) {
@@ -54,13 +59,9 @@ export default defineNuxtPlugin(() => {
       t.src = `https://www.clarity.ms/tag/${i}`
       const y = l.getElementsByTagName(r)[0] as HTMLScriptElement | undefined
       if (y && y.parentNode) y.parentNode.insertBefore(t, y)
+      else l.head.appendChild(t)
     })(window, document, 'clarity', 'script', projectId)
   }
 
-  if ('requestIdleCallback' in window) {
-    ;(window as Window & { requestIdleCallback: (cb: IdleRequestCallback, opts?: IdleRequestOptions) => number }).requestIdleCallback(installClarity, { timeout: 4000 })
-  }
-  else {
-    setTimeout(installClarity, 500)
-  }
+  agendarComConsentimento(installClarity)
 })

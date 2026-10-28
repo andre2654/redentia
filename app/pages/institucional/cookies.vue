@@ -9,6 +9,7 @@ import type { LegalDocData } from '~/types/legal'
 const doc: LegalDocData = {
   eyebrow: 'Jurídico',
   title: 'Política de Cookies e Privacidade',
+  updated: '2026-10-28',
   intro: [
     { kind: 'p', text: [
       { text: 'Esta Política de Cookies complementa nossa Política de Privacidade e explica como a ' },
@@ -53,7 +54,7 @@ const doc: LegalDocData = {
           ] },
         ] },
         { kind: 'subsection', id: 'cookies-performance', title: '3. Cookies de Performance e Análise', blocks: [
-          { kind: 'p', text: 'Estes cookies nos ajudam a entender como você usa a plataforma para melhorarmos nossos serviços:' },
+          { kind: 'p', text: 'Estes cookies nos ajudam a entender como você usa a plataforma para melhorarmos nossos serviços. Eles só são gravados se você clicar em Aceitar no aviso de cookies:' },
           { kind: 'list', items: [
             { text: [{ text: 'Cookies de analytics', bold: true }, { text: ': Coletam informações sobre como você navega e usa a plataforma' }] },
             { text: [{ text: 'Cookies de performance', bold: true }, { text: ': Monitoram a velocidade e desempenho das páginas' }] },
@@ -62,7 +63,7 @@ const doc: LegalDocData = {
           ] },
         ] },
         { kind: 'subsection', id: 'cookies-marketing', title: '4. Cookies de Marketing e Publicidade', blocks: [
-          { kind: 'p', text: 'Estes cookies são usados para personalizar o conteúdo promocional e medir a eficácia de nossas campanhas:' },
+          { kind: 'p', text: 'Estes cookies personalizam conteúdo promocional e medem campanhas, e só são gravados se você clicar em Aceitar. Em Recusar, as tags de anúncio não carregam:' },
           { kind: 'list', items: [
             { text: [{ text: 'Cookies de segmentação', bold: true }, { text: ': Personalizam ofertas e conteúdo baseados em seu perfil de investidor' }] },
             { text: [{ text: 'Cookies de remarketing', bold: true }, { text: ': Exibem anúncios relevantes em outros sites que você visita' }] },
@@ -89,9 +90,15 @@ const doc: LegalDocData = {
       id: 'cookies-terceiros',
       title: 'Cookies de Terceiros',
       blocks: [
-        { kind: 'p', text: 'Utilizamos serviços de terceiros confiáveis que podem definir seus próprios cookies:' },
+        { kind: 'p', text: 'Ferramentas de análise e anúncio só são carregadas depois que você clica em Aceitar. No Recusar, o navegador não recebe esses scripts e não grava os cookies deles:' },
         { kind: 'list', items: [
-          { text: [{ text: 'Google Analytics', bold: true }, { text: ': Para análise detalhada do comportamento dos usuários' }] },
+          { text: [{ text: 'Google Analytics 4 e Google Tag Manager', bold: true }, { text: ': medem a visita e as campanhas. Sem o Aceitar, o script não é baixado.' }] },
+          { text: [{ text: 'Microsoft Clarity', bold: true }, { text: ': entende o uso da interface. Também fica de fora se você recusar, e não roda em páginas cujo endereço contém um segredo.' }] },
+          { text: [{ text: 'LinkedIn Insight Tag', bold: true }, { text: ': mede campanhas do LinkedIn e só existe quando há um Partner ID configurado. Sem o Aceitar, não carrega.' }] },
+          { text: [{ text: 'Vercel Web Analytics', bold: true }, { text: ': mede audiência sem cookie próprio e, mesmo assim, só carrega depois do Aceitar.' }] },
+        ] },
+        { kind: 'p', text: 'Outros serviços de terceiros podem definir cookies quando você usa a função correspondente, sem depender deste aviso:' },
+        { kind: 'list', items: [
           { text: [{ text: 'Provedores de dados financeiros', bold: true }, { text: ': Para obter informações atualizadas do mercado' }] },
           { text: [{ text: 'Serviços de autenticação', bold: true }, { text: ': Para login seguro via Google, Facebook, etc.' }] },
           { text: [{ text: 'Plataformas de suporte', bold: true }, { text: ': Para chat de atendimento e helpdesk' }] },
@@ -116,11 +123,12 @@ const doc: LegalDocData = {
       title: 'Como Gerenciar Cookies',
       blocks: [
         { kind: 'p', text: 'Você tem controle total sobre os cookies e pode gerenciá-los de várias formas:' },
-        { kind: 'subsection', id: 'config-plataforma', title: 'Configurações da Plataforma', blocks: [
+        { kind: 'subsection', id: 'config-plataforma', title: 'Nesta plataforma', blocks: [
           { kind: 'list', items: [
-            { text: 'Acesse as "Configurações de Privacidade" em sua conta para personalizar suas preferências de cookies' },
-            { text: 'Escolha quais tipos de cookies aceitar ou rejeitar (exceto os essenciais)' },
-            { text: 'Altere suas preferências a qualquer momento nas configurações do seu perfil' },
+            { text: 'Na primeira visita, um aviso pergunta se você aceita cookies de análise e anúncio. Sem essa escolha, esses scripts não carregam.' },
+            { text: 'Aceitar libera esses cookies. Recusar mantém só o que o site precisa para funcionar, como a sessão de quem entrou na conta.' },
+            { text: 'A escolha fica gravada neste navegador e vale nas próximas visitas. Se a versão desta política mudar, o aviso volta.' },
+            { text: 'Para mudar de ideia, use Preferências de cookies no rodapé ou o botão nesta página.' },
           ] },
         ] },
         { kind: 'subsection', id: 'config-navegador', title: 'Configurações do Navegador', blocks: [
@@ -186,7 +194,8 @@ const doc: LegalDocData = {
           { text: 'Nossa equipe de privacidade está disponível para esclarecer qualquer dúvida' },
         ] },
         { kind: 'p', text: [
-          { text: 'Ao continuar usando nossa plataforma, você concorda com o uso de cookies conforme descrito nesta política.', bold: true },
+          { text: 'Seguir navegando não vale como aceite.', bold: true },
+          { text: ' Os cookies de análise e anúncio descritos aqui só entram se você clicar em Aceitar. Em Recusar, nada disso é carregado.' },
         ] },
       ],
     },
@@ -209,6 +218,7 @@ usePageSeo({
 <template>
   <div>
     <LegalHero :eyebrow="doc.eyebrow" :title="doc.title" :updated="doc.updated" />
+    <ConsentPreferencias />
     <LegalDoc :intro="doc.intro" :sections="doc.sections" toc />
   </div>
 </template>
