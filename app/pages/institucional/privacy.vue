@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // /institucional/privacy — Política de Privacidade (portada VERBATIM de
 // Frontend/app/pages/institucional/privacy.vue). Placeholders resolvidos:
-// brand.name = "Redentia", suporte/privacidade = suporte@redentia.com.br,
+// brand.name = "Redentia", suporte/privacidade = relacionamento@redentia.com.br,
 // site = redentia.com.br. Path e SEO preservados de propósito (mesma URL).
 //
 // GABARITO das páginas legais Nu: o conteúdo é uma árvore tipada (LegalDocData);
@@ -28,7 +28,7 @@ const doc: LegalDocData = {
     { kind: 'p', text: 'Esta política descreve as formas como coletamos, armazenamos e protegemos os Dados Pessoais dos usuários da Plataforma e do aplicativo.' },
     { kind: 'p', text: [
       { text: 'O usuário dos nossos serviços pode a qualquer momento deixar de receber comunicações da nossa Plataforma. Para tanto, basta clicar nos links “remover” ou “descadastramento”, contidos ao final de cada e-mail enviado aos Usuários ou enviar um e-mail para o nosso suporte ' },
-      { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
+      { text: 'relacionamento@redentia.com.br', href: 'mailto:relacionamento@redentia.com.br' },
       { text: ' indicando o seu desejo de não mais receber comunicações.' },
     ] },
   ],
@@ -221,12 +221,12 @@ const doc: LegalDocData = {
         { kind: 'list', items: [
           { text: [
             { text: 'O Usuário pode deixar de receber comunicações a qualquer momento clicando em “remover” ou “descadastro” nos e-mails, ou enviando e-mail para ' },
-            { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
+            { text: 'relacionamento@redentia.com.br', href: 'mailto:relacionamento@redentia.com.br' },
             { text: '.' },
           ] },
           { text: [
             { text: 'Para dúvidas ou solicitações sobre Dados Pessoais ou esta Política, entre em contato com nosso Encarregado pelo endereço ' },
-            { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
+            { text: 'relacionamento@redentia.com.br', href: 'mailto:relacionamento@redentia.com.br' },
             { text: '.' },
           ] },
           { text: `A ${EMPRESA.razaoSocial}, inscrita no CNPJ sob o nº ${EMPRESA.cnpj}, é a controladora e responsável pelos Dados Pessoais dos Usuários.` },

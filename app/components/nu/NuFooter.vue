@@ -75,7 +75,7 @@ const COLUMNS = [
             <a href="https://www.linkedin.com/company/redentia" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="LinkedIn"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M7 10v7M7 6.5v.01M11 17v-4a2 2 0 0 1 4 0v4" /></svg></a>
             <a href="https://www.instagram.com/redentia.app/" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="Instagram"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5" /><circle cx="12" cy="12" r="3.6" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>
           </div>
-          <a href="mailto:suporte@redentia.com.br" class="nuf__mail">suporte@redentia.com.br</a>
+          <a href="mailto:relacionamento@redentia.com.br" class="nuf__mail">relacionamento@redentia.com.br</a>
           <span class="nuf__hours">Atendimento em dias úteis, das 8h às 18h (Brasília)</span>
         </div>
         <nav class="nuf__grid" aria-label="Mapa do site">

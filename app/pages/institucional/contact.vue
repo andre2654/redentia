@@ -2,7 +2,7 @@
 // /institucional/contact — "Fale com a Redentia" (portada de
 // Frontend/app/pages/institucional/contact.vue). Placeholders de brand
 // resolvidos: brand.name = "Redentia", e-mail de suporte =
-// suporte@redentia.com.br.
+// relacionamento@redentia.com.br.
 //
 // PADRÃO Nu (mesmo sistema visual das legais /institucional/privacy): banda
 // creme do LegalHero (eyebrow + H1) → banda branca com a coluna de artigo.
@@ -20,7 +20,7 @@
 // conforme instrução "mantenha canais/horários").
 import type { NuFaqItem } from '~/types/market'
 
-const SUPPORT_EMAIL = 'suporte@redentia.com.br'
+const SUPPORT_EMAIL = 'relacionamento@redentia.com.br'
 
 // FAQ VERBATIM da página antiga (as 3 perguntas em <details>). O
 // NuFaqAccordion emite o JSON-LD FAQPage (rich snippet) — equivalente

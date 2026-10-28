@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // /metodologia — Metodologia e fontes de dados (portada VERBATIM de
 // Frontend/app/pages/metodologia.vue). Placeholders resolvidos:
-// brand.name = "Redentia", brand.email = suporte@redentia.com.br, brand.url =
+// brand.name = "Redentia", brand.email = relacionamento@redentia.com.br, brand.url =
 // origin da request. Path e SEO preservados de propósito (mesma URL /metodologia).
 //
 // MESMO padrão do gabarito legal (institucional/privacy): o conteúdo é uma árvore
@@ -193,7 +193,7 @@ const sections: MetSection[] = [
     blocks: [
       { kind: 'p', text: [
         { text: 'Se você identificou divergência entre um número exibido e a fonte oficial, ou um erro de fórmula, ou um conteúdo que precisa ser atualizado, escreva para ' },
-        { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
+        { text: 'relacionamento@redentia.com.br', href: 'mailto:relacionamento@redentia.com.br' },
         { text: ' com o link da página, o trecho em questão e a fonte que sustenta a correção. Resposta em até 5 dias úteis. Quando a correção for aplicada, atualizamos o campo "Última atualização" da página afetada.' },
       ] },
     ],
