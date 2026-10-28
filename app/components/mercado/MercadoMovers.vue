@@ -10,6 +10,12 @@ const { isAuthenticated } = useAuthState()
 const { tabs, movers, indices, loading } = await useNuMovers()
 const activeTab = ref<NuMoverTab>('Ações')
 const active = computed(() => movers.value[activeTab.value])
+
+// "Ver todos" leva ao ranking completo da classe da aba (os de 30 dias, que filtram por ?type=). Cripto não tem
+// ranking: lá o link some.
+const TIPO_DO_RANKING: Partial<Record<NuMoverTab, string>> = { Ações: 'acoes', FIIs: 'fiis', BDRs: 'bdrs' }
+const tipoDoRanking = computed(() => TIPO_DO_RANKING[activeTab.value])
+const verTodos = (slug: string) => ({ path: `/ranking/${slug}`, query: { type: tipoDoRanking.value } })
 </script>
 
 <template>
@@ -39,6 +45,7 @@ const active = computed(() => movers.value[activeTab.value])
         <div class="mmv__card-head">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8FF0B5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8" /><path d="M14 7h7v7" /></svg>
           <span class="mmv__card-title">Maiores altas</span>
+          <NuxtLink v-if="tipoDoRanking" :to="verTodos('maiores-altas-mes')" class="mmv__all">Ver todos</NuxtLink>
         </div>
         <div class="mmv__rows">
           <div v-for="i in (loading ? 5 : 0)" :key="`skg${i}`" class="mmv__row mmv__row--sk">
@@ -70,6 +77,7 @@ const active = computed(() => movers.value[activeTab.value])
         <div class="mmv__card-head">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFB3B8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8" /><path d="M14 17h7v-7" /></svg>
           <span class="mmv__card-title">Maiores baixas</span>
+          <NuxtLink v-if="tipoDoRanking" :to="verTodos('maiores-baixas-mes')" class="mmv__all">Ver todos</NuxtLink>
         </div>
         <div class="mmv__rows">
           <div v-for="i in (loading ? 5 : 0)" :key="`skl${i}`" class="mmv__row mmv__row--sk">
@@ -133,6 +141,11 @@ const active = computed(() => movers.value[activeTab.value])
 .mmv__card { background: var(--nu-navy-2); border-radius: var(--nu-r-card-lg); padding: 28px; }
 .mmv__card-head { display: flex; align-items: center; gap: 10px; }
 .mmv__card-title { color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.mmv__all {
+  margin-left: auto; padding: 7px 14px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-dense); font-weight: 700;
+  color: var(--nu-cream-text-85); background: var(--nu-cream-text-08); white-space: nowrap; transition: background .16s;
+}
+.mmv__all:hover { background: var(--nu-cream-text-12); color: var(--nu-cream-text); }
 .mmv__rows { margin-top: 14px; }
 .mmv__row {
   display: flex; align-items: center; gap: 14px; padding: 13px 12px; margin: 0 -12px;
