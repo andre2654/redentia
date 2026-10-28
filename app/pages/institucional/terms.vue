@@ -156,7 +156,7 @@ const doc: LegalDocData = {
         ] },
         { kind: 'p', text: 'Em resumo, é disponibilizado, por meio da Plataforma, formas de o Usuário melhor visualizar suas carteiras de investimentos, bem como seu desempenho. Os Conteúdos da Carteira poderão ser pagos ou gratuitos, conforme informações contidas no Site ou aplicativo.' },
         { kind: 'p', text: [
-          { text: 'Para fins de inserção das informações sobre sua carteira de investimentos, o Usuário poderá utilizar o seu login e senha do CEI (Canal Eletrônico do Investidor), com o que, caso assim o faça, desde já concorda com o compartilhamento de seus dados contidos no CEI à ' },
+          { text: 'Para fins de inserção das informações sobre sua carteira de investimentos, o Usuário poderá utilizar a conexão com bancos e corretoras pelo Open Finance, com autorização no app da instituição, com o que, caso assim o faça, desde já concorda com o compartilhamento de seus dados contidos nessa conexão à ' },
           { text: 'Redentia', bold: true },
           { text: ' e à Plataforma e/ou aplicativo.' },
         ] },
@@ -168,7 +168,6 @@ const doc: LegalDocData = {
           { text: 'Perfil de investidor' },
           { text: 'Transações' },
         ] },
-        { kind: 'p', text: 'Ao utilizar o CEI e o Novo Portal da B3 para atualização de sua carteira, o Usuário concorda que estará sujeito às limitações deste portal, que só resgata o histórico de transações do usuário de 18 meses, portanto deverá cadastrar manualmente todas as operações realizadas anteriormente, a fim de ter as informações relativas a sua carteira, como preço médio e rentabilidade, calculadas.' },
         { kind: 'p', text: [
           { text: 'Todos os Dados Pessoais referentes aos Conteúdos da Carteira serão protegidos pela ' },
           { text: 'Redentia', bold: true },
@@ -196,7 +195,7 @@ const doc: LegalDocData = {
         { kind: 'list', items: [
           { text: 'Nome completo' },
           { text: 'Endereço de e-mail' },
-          { text: 'Número do Cadastro da Pessoa Física do Ministério da Economia (CPF/ME) ao se realizar a conexão com o CEI e o Novo Portal de B3' },
+          { text: 'Número do Cadastro da Pessoa Física do Ministério da Economia (CPF/ME)' },
         ] },
         { kind: 'p', text: [
           { text: 'Todos os Dados Pessoais referentes ao Cadastro serão protegidos pela ' },
