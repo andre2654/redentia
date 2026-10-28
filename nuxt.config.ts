@@ -3,6 +3,8 @@
 //  - proxies em 3 camadas e routeRules de cache (Frontend)
 //  - deploy git→Vercel e organização por feature (Atlas)
 // Plano mestre: docs/redentia-nu/PLANO-REDENTIA-NU.md (repo raiz).
+import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-11',
   devtools: { enabled: false },
@@ -296,4 +298,16 @@ export default defineNuxtConfig({
 
   components: [{ path: '~/components', pathPrefix: false }],
   imports: { dirs: ['services'] },
+
+  // Prévia do formulário de /business (`?demo=1`). Constante de build: produção
+  // da Vercel grava false, e a env pública não reverte isso. Ver business-lead.ts.
+  vite: {
+    define: {
+      __REDENTIA_BUSINESS_LEAD_DEMO__: JSON.stringify(businessLeadDemoLigadoNoBuild({
+        VERCEL_ENV: process.env.VERCEL_ENV,
+        NODE_ENV: process.env.NODE_ENV,
+        NUXT_PUBLIC_BUSINESS_LEAD_DEMO: process.env.NUXT_PUBLIC_BUSINESS_LEAD_DEMO,
+      })),
+    },
+  },
 })

@@ -35,6 +35,10 @@
 const { isAuthenticated } = useAuthState()
 const montado = ref(false)
 onMounted(() => { montado.value = true })
+/* Entrar leva os identificadores da primeira página (utm_*, li_fat_id, gclid)
+   para /business/cadastro. O href do SSR fica limpo: esta página é cacheada
+   na borda e não pode sair com a campanha de um visitante. */
+const destinoCadastro = useDestinoCadastroBusiness()
 const logado = computed(() => montado.value && isAuthenticated.value)
 
 /* ——— shrink on scroll ———
@@ -76,7 +80,7 @@ watch(shrunk, (s) => {
 
       <div class="rbh__acoes">
         <NuxtLink
-          :to="logado ? '/business/chaves' : '/business/cadastro'"
+          :to="logado ? '/business/chaves' : destinoCadastro"
           class="rbh__entrar"
         >{{ logado ? 'Minha conta' : 'Entrar' }}</NuxtLink>
         <!-- Dois rótulos, e o oculto sai por display:none (não por classe de

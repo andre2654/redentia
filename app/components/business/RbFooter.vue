@@ -17,6 +17,10 @@
  * recebe. É o endereço do deck MFO_Operational_Standard; o app usa
  * suporte@redentia.com.br, e a diferença de domínio é intencional.
  */
+/* "Ativar acesso" é a mesma porta de /business/cadastro. No celular o Entrar
+   do header some, então este link também leva a campanha da sessão. */
+const destinoCadastro = useDestinoCadastroBusiness()
+
 const CARDS = [
   {
     title: 'Redentia para investidores',
@@ -92,7 +96,7 @@ const COLUMNS = [
       <div v-for="col in COLUMNS" :key="col.title" class="rbf__col">
         <div class="rbf__col-title">{{ col.title }}</div>
         <div class="rbf__col-links">
-          <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to" class="rbf__link">{{ l.label }}</NuxtLink>
+          <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to === '/business/cadastro' ? destinoCadastro : l.to" class="rbf__link">{{ l.label }}</NuxtLink>
         </div>
       </div>
       <div class="rbf__col">
