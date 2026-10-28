@@ -163,7 +163,7 @@ watch(() => route.path, (p) => {
 /* abaixo dos painéis do header (60) e dos modais (9999+): o convite nunca
    fica por cima de algo que a pessoa abriu */
 .nnc {
-  position: fixed; right: 24px; bottom: 24px; z-index: 50;
+  position: fixed; right: 24px; bottom: calc(24px + var(--ck-h, 0px)); z-index: 50;
   width: min(392px, calc(100vw - 48px));
   padding: 26px 26px 22px;
   border-radius: var(--nu-r-card);
@@ -209,7 +209,7 @@ watch(() => route.path, (p) => {
 .nnc__abrir:hover { background: var(--nu-blue-hover); }
 
 @media (max-width: 760px) {
-  .nnc { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); width: auto; padding: 22px 18px 18px; }
+  .nnc { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom) + var(--ck-h, 0px)); width: auto; padding: 22px 18px 18px; }
   .nnc--fino { padding: 8px 8px 8px 20px; }
 }
 

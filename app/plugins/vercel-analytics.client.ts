@@ -9,31 +9,50 @@
 // auto-reporta o pageview inicial E as navegações client-side (patcha o
 // history API), então cobre o SSR + SPA do Nu sem nada manual.
 //
+// Cookieless, e mesmo assim atrás do consentimento. Não grava _ga nem
+// _clck, mas manda pageview (caminho, referência) para a Vercel. O aviso
+// pede aceite antes de qualquer rastreio; o script não é necessário para
+// a página funcionar. Sem aceite, o <script> não entra no head.
+//
 // Em localhost o endpoint não existe (404 inofensivo); em prod flui normal.
+// Com o aceite já gravado, carrega na inicialização (ocioso: false), como
+// antes do aviso — não espera o requestIdleCallback.
 //
 // NÃO carrega em rota com token no path (/cliente/convite, /cliente/acesso,
 // /business/convite): o pageview levaria o segredo. Ver
 // utils/analytics-privacy.ts.
 import { isSecretTokenPath } from '~/utils/analytics-privacy'
+import { agendarComConsentimento, lerConsentimento } from '~/utils/consent'
 
 export default defineNuxtPlugin(() => {
   if (isSecretTokenPath(window.location.pathname)) return
 
-  const w = window as unknown as { va?: (...p: unknown[]) => void, vaq?: unknown[] }
+  let carregado = false
 
-  // Fila padrão do SDK: eventos custom (ex.: w.va('event', {...})) disparados
-  // antes do script chegar ficam buffered e são drenados no load.
-  w.va = w.va || function (...params: unknown[]) {
-    (w.vaq = w.vaq || []).push(params)
+  const instalar = () => {
+    if (carregado) return
+    if (lerConsentimento() !== 'granted') return
+    if (isSecretTokenPath(window.location.pathname)) return
+    carregado = true
+
+    const w = window as unknown as { va?: (...p: unknown[]) => void, vaq?: unknown[] }
+
+    // Fila padrão do SDK: eventos custom (ex.: w.va('event', {...})) disparados
+    // antes do script chegar ficam buffered e são drenados no load.
+    w.va = w.va || function (...params: unknown[]) {
+      (w.vaq = w.vaq || []).push(params)
+    }
+
+    useHead({
+      script: [
+        {
+          src: '/_vercel/insights/script.js',
+          defer: true,
+          'data-sdkn': '@vercel/analytics',
+        },
+      ],
+    })
   }
 
-  useHead({
-    script: [
-      {
-        src: '/_vercel/insights/script.js',
-        defer: true,
-        'data-sdkn': '@vercel/analytics',
-      },
-    ],
-  })
+  agendarComConsentimento(instalar, { ocioso: false })
 })

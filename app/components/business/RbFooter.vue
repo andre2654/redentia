@@ -17,6 +17,8 @@
  * recebe. É o endereço do deck MFO_Operational_Standard; o app usa
  * suporte@redentia.com.br, e a diferença de domínio é intencional.
  */
+const { reabrir } = useConsent()
+
 const CARDS = [
   {
     title: 'Redentia para investidores',
@@ -93,6 +95,7 @@ const COLUMNS = [
         <div class="rbf__col-title">{{ col.title }}</div>
         <div class="rbf__col-links">
           <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to" class="rbf__link">{{ l.label }}</NuxtLink>
+        <button v-if="col.title === 'Legal'" type="button" class="rbf__pref" @click="reabrir">Preferências de cookies</button>
         </div>
       </div>
       <div class="rbf__col">
@@ -162,6 +165,12 @@ const COLUMNS = [
 .rbf__col-links { display: flex; flex-direction: column; gap: 13px; }
 .rbf__link { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; transition: color .2s; }
 .rbf__link:hover { color: var(--nu-white); }
+.rbf__pref {
+  margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; transition: color .2s;
+}
+.rbf__pref:hover { color: var(--nu-white); }
+.rbf__pref:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .rbf__mail { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 700; transition: color .2s; }
 .rbf__mail:hover { color: var(--nu-white); }
 .rbf__hours { color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }

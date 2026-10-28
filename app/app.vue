@@ -37,6 +37,10 @@ const AssumirSessao = defineComponent({
   <div>
     <AssumirSessao />
     <NuxtRouteAnnouncer />
+    <!-- Fora do layout de propósito: o aviso vale no default, no business
+         e nas páginas sem layout. No computador é fixed (canto); no celular
+         entra no fluxo, antes da página, para não cobrir texto. -->
+    <ConsentBanner />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

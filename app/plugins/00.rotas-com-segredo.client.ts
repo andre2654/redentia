@@ -1,7 +1,7 @@
 /**
  * Navegação SPA para uma rota com token no path vira navegação cheia.
  *
- * Os plugins de analytics (GA4, GTM, Clarity, Vercel) não carregam quando a
+ * Os plugins de analytics (GA4, GTM, Clarity, Vercel, LinkedIn) não carregam quando a
  * página ABRE numa rota com segredo (utils/analytics-privacy.ts). Mas se a
  * pessoa já estava em outra página do site, os scripts já estão no ar e veem
  * o pushState do Vue Router: o acionador "Alteração no histórico" do GTM, o

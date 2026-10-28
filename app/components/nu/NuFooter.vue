@@ -12,6 +12,7 @@
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
 
 const route = useRoute()
+const { reabrir } = useConsent()
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const assinaturaNoRodape = computed(() => newsletterLigada && !rodapeSemAssinatura(route.path))
 const CARDS = [
@@ -83,6 +84,7 @@ const COLUMNS = [
             <div class="nuf__col-title">{{ col.title }}</div>
             <div class="nuf__col-links">
               <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to" class="nuf__link">{{ l.label }}</NuxtLink>
+              <button v-if="col.title === 'Legal'" type="button" class="nuf__pref" @click="reabrir">Preferências de cookies</button>
             </div>
           </div>
         </nav>
@@ -162,6 +164,12 @@ const COLUMNS = [
 .nuf__col-links { display: flex; flex-direction: column; gap: 13px; }
 .nuf__link { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; transition: color .2s; }
 .nuf__link:hover { color: var(--nu-white); }
+.nuf__pref {
+  margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; transition: color .2s;
+}
+.nuf__pref:hover { color: var(--nu-white); }
+.nuf__pref:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 
 /* a cordilheira: de ponta a ponta, a frase no céu e o copyright na base */
 .nuf__serra { --nfc-pad: var(--pad); margin-top: clamp(56px, 7vw, 100px); }
