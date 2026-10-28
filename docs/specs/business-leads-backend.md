@@ -2,7 +2,7 @@
 
 Spec do endpoint que grava o pedido de hora da `/business`. O front deste PR já envia o POST. A rota **não existe** no Laravel: até existir, o formulário mostra erro e oferece o mailto. Não mesclar o front esperando que o envio funcione.
 
-**Front:** branch `cursor/business-leads-form-d337`, PR draft contra `redentia-v2` (não contra `main`). O número do PR entra no fim deste arquivo quando o GitHub abrir.
+**Front:** PR draft [#113](https://github.com/andre2654/redentia/pull/113), branch `cursor/business-leads-form-d337`, base `redentia-v2` (não `main`).
 
 **E-mail de notificação (padrão, configurável):** `relacionamento@redentia.com.br`
 
@@ -274,3 +274,5 @@ O front não espera e-mail automático de volta. A frase de sucesso é: “A gen
 9. A **tabela basta** como registro, ou o mesmo aviso precisa entrar num CRM?
 
 Não está em aberto o destinatário do aviso de lead novo: o padrão é `relacionamento@redentia.com.br`, e a env `BUSINESS_LEADS_NOTIFY_EMAIL` troca a caixa sem mudar código.
+
+O front que chama este endpoint é o PR draft [#113](https://github.com/andre2654/redentia/pull/113) (`cursor/business-leads-form-d337`).
