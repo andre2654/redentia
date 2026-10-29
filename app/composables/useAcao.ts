@@ -62,7 +62,7 @@ import type {
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
-import { montarResumoAtivo, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
+import { fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
 
 /* ————— helpers de formatação ————— */
 
@@ -1046,6 +1046,28 @@ function serieDoResumo(asset: SeriesPoint[], ibov: SeriesPoint[]): ResumoSerie |
   return { de, ate, variacao: ((b.v - a.v) / a.v) * 100, ibov: ibovVar }
 }
 
+/**
+ * Soma por ano-calendário, pela data-com (ou pelo pagamento, quando a API
+ * não manda a data-com). O ano corrente é o que já houve nele, não os
+ * últimos 12 meses — essa janela móvel fica na frase dos 12 meses.
+ */
+function anosPorDataCom(rows: readonly ProventoRow[], income: boolean, today: string): ResumoAno[] {
+  const cy = Number(today.slice(0, 4))
+  const byYear = new Map<string, number>()
+  for (const r of rows) {
+    if (r.income !== income || r.date > today) continue
+    const y = r.date.slice(0, 4)
+    if (!/^\d{4}$/.test(y)) continue
+    byYear.set(y, (byYear.get(y) ?? 0) + r.rate)
+  }
+  const anos: ResumoAno[] = []
+  for (let y = cy - 5; y <= cy; y++) {
+    const valor = byYear.get(String(y))
+    if (valor != null && valor > 0) anos.push({ ano: String(y), valor, corrente: y === cy })
+  }
+  return anos
+}
+
 function proventosDoResumo(rows: ProventoRow[] | null, isFii: boolean): ResumoProventos | null {
   if (!rows) return null
   const today = spISODate()
@@ -1059,9 +1081,17 @@ function proventosDoResumo(rows: ProventoRow[] | null, isFii: boolean): ResumoPr
     capital12: w.capital12,
     frequencia: proventosFrequency(w.events12),
     proximo: agenda.next ? dateShortPt(agenda.next) : agenda.pendingUpcoming ? 'a definir' : null,
-    anos: chart.bars.flatMap((b) => (typeof b.valor === 'number' && b.valor > 0 ? [{ ano: b.year, valor: b.valor, corrente: b.current }] : [])),
+    anos: anosPorDataCom(rows, chart.kind !== 'capital', today),
     tipo: chart.kind,
   }
+}
+
+/** Uma FAQ só: as perguntas novas entram na editorial quando ela já existe. */
+function faqUnica(editorial: AcaoEditorialVM | null, resumo: AcaoPayload['resumo']): void {
+  if (!editorial?.faq.length || !resumo?.faq.length) return
+  editorial.faq = fundirFaq(editorial.faq, resumo.faq)
+  resumo.faq = []
+  resumo.faqTitulo = null
 }
 
 function seoDeResumo(resumo: NonNullable<AcaoPayload['resumo']>): AcaoPayload['seo'] {
@@ -1659,6 +1689,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     }).valor,
   })
   const media = ok(paresR)?.media
+  const variacaoNaLista = media?.variacaoAtivo
   const dataIso = isoDateOrNull(profile.price_date) ?? isoDateOrNull(assetSeries[assetSeries.length - 1]?.t)
   const min52 = kind === 'fii'
     ? overview?.scrape_extras?.fii?.min_price_52_weeks ?? null
@@ -1708,8 +1739,15 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     min52,
     max52,
     serie: serieDoResumo(assetSeries, ibovSeries),
-    setorMedia: kind === 'stock' && setor && media && Number.isFinite(media.variacao)
-      ? { variacao: media.variacao, papeis: media.papeis ?? null }
+    // Só quando a variação do papel e a média saem da mesma resposta. A
+    // cotação do perfil é outra leitura e não entra nesta conta.
+    setorMedia: kind === 'stock' && setor && media && Number.isFinite(media.variacao) && typeof variacaoNaLista === 'number' && Number.isFinite(variacaoNaLista)
+      ? {
+          variacao: media.variacao,
+          papeis: media.papeis ?? null,
+          variacaoAtivo: variacaoNaLista,
+          data: isoDateOrNull(media.data),
+        }
       : null,
     proventos: proventosDoResumo(provRows, isFii),
     etf: kind === 'etf' && etfXrayApi
@@ -1725,6 +1763,8 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     cripto: null,
     links: linksResumo,
   })
+  const editorialVm = buildEditorial(editorial, name, isFii)
+  faqUnica(editorialVm, resumo)
 
   return {
     ticker,
@@ -1748,14 +1788,19 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     dividends,
     ai,
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
-    editorial: buildEditorial(editorial, name, isFii),
+    editorial: editorialVm,
     cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR), name) : null,
     pares: paresVm,
     relacionados: linksRelacionados(setorDoLink, kind, dividends, ticker, precoTetoHref),
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
     resumo,
     seo: resumo
-      ? seoDeResumo(resumo)
+      ? {
+          title: resumo.title,
+          description: resumo.description,
+          // Com editorial, a FAQ visível é a fundida. Sem ela, é a do resumo.
+          faq: (editorialVm?.faq.length ? editorialVm.faq : resumo.faq).map((f) => ({ question: f.q, answer: f.a })),
+        }
       : { title: `${ticker}: cotação na B3`, description: 'Não é recomendação.', faq: [] },
   }
 }
@@ -1776,7 +1821,7 @@ function cryptoBrl(v: number): string {
   return `R$ ${v >= 1000 ? nf0.format(v) : nf2.format(v)}`
 }
 
-/** 20055443 → '20,06M' (supply circulante/máximo). */
+/** 20055443 → '20,06M' (oferta em circulação / oferta máxima). */
 function compactQty(v: number): string {
   if (v >= 1e9) return `${nfc.format(v / 1e9)}B`
   if (v >= 1e6) return `${nfc.format(v / 1e6)}M`
@@ -1824,8 +1869,8 @@ function buildCryptoStats(c: CryptoDetailApi, sym: string): AcaoStatRow[] {
   if (c.rank != null) rows.push({ l: 'Rank global', v: `#${nf0.format(c.rank)}` })
   if (c.min_52w_brl != null) rows.push({ l: 'Mín. 52 semanas', v: cryptoBrl(c.min_52w_brl) })
   if (c.max_52w_brl != null) rows.push({ l: 'Máx. 52 semanas', v: cryptoBrl(c.max_52w_brl) })
-  if (c.circulating_supply != null) rows.push({ l: 'Supply circulante', v: `${compactQty(c.circulating_supply)} ${sym}` })
-  if (c.max_supply != null) rows.push({ l: 'Supply máximo', v: `${compactQty(c.max_supply)} ${sym}` })
+  if (c.circulating_supply != null) rows.push({ l: 'Oferta em circulação', v: `${compactQty(c.circulating_supply)} ${sym}` })
+  if (c.max_supply != null) rows.push({ l: 'Oferta máxima', v: `${compactQty(c.max_supply)} ${sym}` })
   return rows.slice(0, 8)
 }
 

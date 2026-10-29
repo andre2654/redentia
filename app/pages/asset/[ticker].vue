@@ -134,9 +134,9 @@ if (data.value) {
     <!-- cripto não está em `tickers`: a watchlist não a aceita (ver AcaoHero) -->
     <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" :seguivel="acao.kind !== 'crypto'" />
 
-    <!-- Prosa factual no SSR (mesmos dados do payload). FAQPage só aqui quando
-         o editorial não emite o dele: um bloco por página. -->
-    <AcaoResumo v-if="acao.resumo" :resumo="acao.resumo" :schema="!acao.editorial?.faq.length" />
+    <!-- O H1 fica no topo. O miolo (e a FAQ, quando não há editorial) vem
+         depois do gráfico e dos indicadores, para não empurrar o gráfico. -->
+    <AcaoResumo v-if="acao.resumo" parte="titulo" :resumo="acao.resumo" :schema="false" />
 
     <AcaoChartSection
       :ticker="acao.ticker"
@@ -152,6 +152,10 @@ if (data.value) {
     <AcaoTeses :ticker="acao.ticker" :theses="acao.theses" />
 
     <AcaoFundamentals :heading="acao.fundHeading" :sub="acao.fundSub" :perfil="acao.perfil" :fcards="acao.fcards" />
+
+    <!-- Prosa factual no SSR. FAQPage só aqui quando a editorial não tem a
+         dela: com editorial, as perguntas novas já foram fundidas lá. -->
+    <AcaoResumo v-if="acao.resumo" parte="corpo" :resumo="acao.resumo" :schema="!acao.editorial?.faq.length" />
 
     <!-- Raio-X de ETF (carteira CVM + taxas em cascata + correlação) ocupa o
          slot onde os fundamentos de empresa somem pra ETF; a ficha cadastral

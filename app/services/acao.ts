@@ -109,7 +109,17 @@ export function acaoFetchTheses(_base: string) {
  * (server/api/setor/[slug]/pares.get.ts); como o acaoFetchTheses, não usa `base`.
  */
 export function acaoFetchPares(ptSlug: string, ticker: string) {
-  return $fetch<{ data: { ticker: string; nome: string }[]; media?: { variacao: number; papeis: number | null } | null }>(`/api/setor/${ptSlug}/pares`, { ...json, query: { ticker } })
+  return $fetch<{
+    data: { ticker: string; nome: string }[]
+    media?: {
+      variacao: number
+      papeis: number | null
+      /** variação deste papel na mesma resposta da média; null = fora da lista */
+      variacaoAtivo: number | null
+      /** price_date dessa leitura, 'YYYY-MM-DD' */
+      data: string | null
+    } | null
+  }>(`/api/setor/${ptSlug}/pares`, { ...json, query: { ticker } })
 }
 
 /**

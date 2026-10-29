@@ -57,6 +57,14 @@ export interface ResumoSerie {
 export interface ResumoSetorMedia {
   variacao: number
   papeis: number | null
+  /**
+   * Variação do próprio papel na mesma resposta da média. A cotação do hero
+   * é outra leitura (ao vivo, com atraso de 15 min). Sem este número a
+   * comparação não sai: misturar os dois momentos mente.
+   */
+  variacaoAtivo: number | null
+  /** 'YYYY-MM-DD' dessa leitura, quando a lista traz price_date */
+  data: string | null
 }
 
 export interface ResumoEtf {
@@ -106,7 +114,10 @@ export interface ResumoAtivoInput {
   min52: number | null
   max52: number | null
   serie: ResumoSerie | null
-  /** só quando a lista do setor já veio no SSR (pares). null = omitir */
+  /**
+   * Média do setor e a variação do papel na mesma leitura (lista de pares).
+   * null = omitir. Não usar a variação ao vivo do hero no lugar.
+   */
   setorMedia: ResumoSetorMedia | null
   proventos: ResumoProventos | null
   etf: ResumoEtf | null
@@ -130,6 +141,15 @@ const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFr
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const QUEBRADA = /R\$(?!\s*\d)|US\$(?!\s*\d)|(?:^|\s)%|de\s*%|Fonte:\s*$|Fonte:\s*\.|setor\s*\.|m[eé]dia de\s*%|\(\s*\)|\b(?:undefined|null|NaN)\b/
+
+/**
+ * Carimbo da faixa "Mercado agora" (NuMarketTicker) e da metodologia:
+ * cotações e índices da B3, com atraso de 15 min. Não vale para cripto —
+ * a página de cripto não nomeia provedor.
+ */
+const FONTE_B3 = 'B3 · dados com atraso de 15 min'
+/** Nota do hero quando a moeda do perfil é dólar. */
+const FONTE_USD = 'preço de referência derivado do BDR e do câmbio'
 
 function ok(n: number | null | undefined): n is number {
   return typeof n === 'number' && Number.isFinite(n)
@@ -209,11 +229,20 @@ function linksLimpos(links: ResumoLink[]): ResumoLink[] {
     const href = (l.href ?? '').trim()
     const label = limpa(l.label ?? '')
     if (!href.startsWith('/') || href.includes(' ') || label.length < 2) continue
+    // O preço teto já tem link na página (relacionados e, quando cabe, o gráfico).
+    if (href.startsWith('/calculadora/preco-teto')) continue
     if (vistos.has(href)) continue
     vistos.add(href)
     out.push({ href, label })
   }
   return out
+}
+
+/** Sufixo " Fonte: …" das cotações B3. Cripto devolve vazio: o site não nomeia provedor. */
+function fonteCotacao(i: ResumoAtivoInput): string {
+  if (i.kind === 'crypto') return ''
+  if (i.moeda === 'USD') return ` Fonte: ${FONTE_USD}. Dados da B3 com atraso de 15 min.`
+  return ` Fonte: ${FONTE_B3}.`
 }
 
 function caudaTitulo(i: ResumoAtivoInput): string {
@@ -268,47 +297,59 @@ function paragrafoIdentidade(i: ResumoAtivoInput): string | null {
   else {
     partes.push(`${quem} é ${classe(i)}.`)
     const setor = setorBaixo(i.setor)
-    if (setor && !(i.kind === 'fii' && setor === 'imobiliário')) partes.push(`O setor informado é ${setor}.`)
+    if (setor && !(i.kind === 'fii' && setor === 'imobiliário')) partes.push(`O setor é ${setor}.`)
   }
-  if (ok(i.preco)) {
-    const quando = dataBr(i.data)
-    const variacao = variacaoDiaFrase(i)
-    const extra = variacao ? `, ${variacao}` : ''
-    if (i.kind === 'crypto') {
-      partes.push(quando
-        ? `Em ${quando}, o preço em reais foi de ${precoFmt(i.preco, i.kind, i.moeda)}${extra}.`
-        : `O preço em reais informado é ${precoFmt(i.preco, i.kind, i.moeda)}${extra}.`)
-    }
-    else if (quando) {
-      const fonte = i.moeda === 'USD' ? 'preço em dólar' : 'B3'
-      partes.push(`No pregão de ${quando}, a cotação foi de ${precoFmt(i.preco, i.kind, i.moeda)}${extra}. Fonte: ${fonte}.`)
-    }
-    else {
-      const fonte = i.moeda === 'USD' ? 'preço em dólar' : 'B3'
-      partes.push(`A cotação informada é ${precoFmt(i.preco, i.kind, i.moeda)}${extra}. Fonte: ${fonte}.`)
-    }
-  }
-  const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda)
+  if (ok(i.preco)) partes.push(fraseCotacao(i))
+  const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda, i.kind === 'crypto' ? '' : fonteCotacao(i))
   if (faixa && i.kind !== 'crypto') partes.push(faixa)
   return partes.join(' ')
 }
 
-function faixa52(min: number | null, max: number | null, kind: ResumoKind, moeda: 'BRL' | 'USD'): string | null {
-  const a = ok(min) && min > 0 ? precoFmt(min, kind, moeda) : null
-  const b = ok(max) && max > 0 ? precoFmt(max, kind, moeda) : null
-  if (a && b) return `A mínima de 52 semanas foi ${a} e a máxima foi ${b}.`
-  if (a) return `A mínima de 52 semanas foi ${a}.`
-  if (b) return `A máxima de 52 semanas foi ${b}.`
-  return null
+/**
+ * Cotação ao vivo, não o fechamento de um pregão encerrado. O atraso é o
+ * carimbo que a faixa do site já mostra. Cripto usa o texto do hero
+ * ("mercado 24 horas"), sem inventar provedor.
+ */
+function fraseCotacao(i: ResumoAtivoInput): string {
+  const quando = dataBr(i.data)
+  const variacao = variacaoDiaFrase(i)
+  const extra = variacao ? `, com ${variacao}` : ''
+  const preco = precoFmt(i.preco as number, i.kind, i.moeda)
+  if (i.kind === 'crypto') {
+    const atualizado = quando ? `, atualizado em ${quando}` : ''
+    return `O preço mais recente em reais é ${preco}${extra}. Mercado 24 horas${atualizado}.`
+  }
+  const atualizada = quando ? `, atualizada em ${quando}` : ''
+  return `A cotação mais recente é ${preco}${atualizada}${extra}.${fonteCotacao(i)}`
 }
 
-function indicadoresDe(n: ResumoNumeros, moeda: 'BRL' | 'USD'): string[] {
+function faixa52(min: number | null, max: number | null, kind: ResumoKind, moeda: 'BRL' | 'USD', fonte = ''): string | null {
+  const a = ok(min) && min > 0 ? precoFmt(min, kind, moeda) : null
+  const b = ok(max) && max > 0 ? precoFmt(max, kind, moeda) : null
+  const corpo = a && b
+    ? `A mínima de 52 semanas foi ${a} e a máxima foi ${b}.`
+    : a
+      ? `A mínima de 52 semanas foi ${a}.`
+      : b
+        ? `A máxima de 52 semanas foi ${b}.`
+        : null
+  return corpo ? `${corpo}${fonte}` : null
+}
+
+/** Trailing 12 meses: DY, P/L, ROE e margem. P/VP e valor de mercado ficam de fora. */
+function indicadores12m(n: ResumoNumeros): string[] {
   const partes: string[] = []
   if (ok(n.dy)) partes.push(`dividend yield de ${pctAbs(n.dy)}`)
   if (ok(n.pl)) partes.push(`P/L de ${nf2.format(n.pl)}`)
-  if (ok(n.pvp)) partes.push(`P/VP de ${nf2.format(n.pvp)}`)
   if (ok(n.roe)) partes.push(`ROE de ${pctAbs(n.roe, 1)}`)
   if (ok(n.margem)) partes.push(`margem líquida de ${pctAbs(n.margem, 1)}`)
+  return partes
+}
+
+/** Números de um instante, não de uma janela de 12 meses. */
+function indicadoresPonto(n: ResumoNumeros, moeda: 'BRL' | 'USD'): string[] {
+  const partes: string[] = []
+  if (ok(n.pvp)) partes.push(`P/VP de ${nf2.format(n.pvp)}`)
   if (ok(n.valorMercado) && n.valorMercado > 0) partes.push(`valor de mercado de ${moneyBig(n.valorMercado, moeda)}`)
   if (ok(n.vpCota) && n.vpCota > 0) partes.push(`valor patrimonial por cota de ${precoFmt(n.vpCota, 'fii', 'BRL')}`)
   if (ok(n.rendaMedia24m) && n.rendaMedia24m > 0) partes.push(`renda média por cota em 24 meses de ${precoFmt(n.rendaMedia24m, 'fii', 'BRL')}`)
@@ -318,12 +359,19 @@ function indicadoresDe(n: ResumoNumeros, moeda: 'BRL' | 'USD'): string[] {
 }
 
 function paragrafoIndicadores(i: ResumoAtivoInput): string | null {
-  const partes = indicadoresDe(i.numeros, i.moeda === 'USD' && i.kind !== 'bdr' ? 'USD' : 'BRL')
-  if (!partes.length) return null
-  const quando = dataBr(i.data)
-  const ancora = quando ? `, com a cotação de ${quando}` : ''
-  const fonte = i.fonteIndicadores?.trim() ? ` Fonte: ${i.fonteIndicadores.trim()}.` : ''
-  return `Indicadores dos últimos 12 meses de ${i.ticker}${ancora}: ${juntar(partes)}.${fonte}`
+  const moeda = i.moeda === 'USD' && i.kind !== 'bdr' ? 'USD' : 'BRL'
+  const doze = indicadores12m(i.numeros)
+  const ponto = indicadoresPonto(i.numeros, moeda)
+  if (!doze.length && !ponto.length) return null
+  const frases: string[] = []
+  if (doze.length) frases.push(`Indicadores dos últimos 12 meses de ${i.ticker}: ${juntar(doze)}.`)
+  if (ponto.length) {
+    const texto = juntar(ponto)
+    frases.push(`${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`)
+  }
+  const fonte = i.fonteIndicadores?.trim()
+  if (fonte) frases.push(`Fonte: ${fonte}.`)
+  return frases.join(' ')
 }
 
 function paragrafoSerie(i: ResumoAtivoInput): string | null {
@@ -333,25 +381,32 @@ function paragrafoSerie(i: ResumoAtivoInput): string | null {
   const ate = dataBr(s.ate)
   if (!de || !ate) return null
   const dias = diasEntre(s.de, s.ate)
-  const periodo = dias != null && dias >= 300 ? `Na série de cerca de 12 meses, de ${de} a ${ate}` : `Na série de preços, de ${de} a ${ate}`
-  const ibov = ok(s.ibov) ? ` O Ibovespa, na série pedida no mesmo intervalo, variou ${pctAssinado(s.ibov)}.` : ''
-  return `${periodo}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}`
+  const periodo = dias != null && dias >= 300 ? `Nos cerca de 12 meses de ${de} a ${ate}` : `De ${de} a ${ate}`
+  const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
+  // Cripto: a página não nomeia provedor da série. B3: o mesmo carimbo da faixa.
+  const fonte = i.kind === 'crypto' ? '' : fonteCotacao(i)
+  return `${periodo}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`
 }
 
 function paragrafoSetor(i: ResumoAtivoInput): string | null {
   const setor = setorBaixo(i.setor)
   const media = i.setorMedia
-  if (!setor || !media || !ok(media.variacao) || !ok(i.variacaoDia) || i.kind === 'crypto') return null
-  const n = ok(media.papeis) && media.papeis > 0 ? ` dos ${nf0.format(media.papeis)} papéis` : ''
-  return `No pregão, ${i.ticker} variou ${pctAssinado(i.variacaoDia)}. A média${n} do setor ${setor} nessa lista foi ${pctAssinado(media.variacao)}. Fonte: cotações da B3.`
+  if (!setor || !media || !ok(media.variacao) || !ok(media.variacaoAtivo) || i.kind === 'crypto') return null
+  const quando = dataBr(media.data)
+  const ancora = quando ? `Na leitura de ${quando} do setor ${setor}` : `Na mesma leitura do setor ${setor}`
+  const mediaTxt = ok(media.papeis) && media.papeis > 0
+    ? `a média dos ${nf0.format(media.papeis)} papéis foi ${pctAssinado(media.variacao)}`
+    : `a média do setor foi ${pctAssinado(media.variacao)}`
+  return `${ancora}, ${i.ticker} variou ${pctAssinado(media.variacaoAtivo)} e ${mediaTxt}. Fonte: ${FONTE_B3}.`
 }
 
 function fraseAnos(anos: ResumoAno[], oQue: string): string | null {
   const uteis = anos.filter((a) => ok(a.valor) && a.valor > 0 && /^\d{4}$/.test(a.ano))
   if (!uteis.length) return null
-  const lista = uteis.map((a) => `${a.ano}, ${precoFmt(a.valor, 'stock', 'BRL')}${a.corrente ? ' (últimos 12 meses)' : ''}`)
-  const nota = uteis.some((a) => a.corrente) ? ' O ano corrente reúne os últimos 12 meses, não o ano civil fechado.' : ''
-  return `Por ano, ${oQue}: ${lista.join('; ')}.${nota}`
+  const lista = uteis.map((a) => a.corrente
+    ? `${a.ano} até agora, ${precoFmt(a.valor, 'stock', 'BRL')}`
+    : `${a.ano}, ${precoFmt(a.valor, 'stock', 'BRL')}`)
+  return `Por ano, ${oQue}: ${lista.join('; ')}.`
 }
 
 function paragrafoProventos(i: ResumoAtivoInput): string | null {
@@ -361,12 +416,12 @@ function paragrafoProventos(i: ResumoAtivoInput): string | null {
   const unidade = p.unidade
   if (p.tipo === 'capital' && ok(p.capital12) && p.capital12 > 0) {
     partes.push(`Nos últimos 12 meses, ${i.ticker} não teve provento de renda com data-com. A amortização no período soma ${precoFmt(p.capital12, 'stock', 'BRL')} por ${unidade}. Amortização devolve capital e fica fora do dividend yield.`)
-    const anos = fraseAnos(p.anos, 'a amortização')
+    const anos = fraseAnos(p.anos, 'a amortização com data-com')
     if (anos) partes.push(anos)
   }
   else if (ok(p.renda12) && p.renda12 > 0) {
     const n = ok(p.eventos12) && p.eventos12 > 0
-      ? `, em ${nf0.format(p.eventos12)} ${p.eventos12 === 1 ? 'pagamento' : 'pagamentos'}`
+      ? `, em ${nf0.format(p.eventos12)} ${p.eventos12 === 1 ? 'provento' : 'proventos'}`
       : ''
     const nome = i.kind === 'fii' ? 'rendimentos' : 'proventos de renda'
     partes.push(`Nos últimos 12 meses, a soma dos ${nome} de ${i.ticker} com data-com foi de ${precoFmt(p.renda12, 'stock', 'BRL')} por ${unidade}${n}.`)
@@ -374,12 +429,12 @@ function paragrafoProventos(i: ResumoAtivoInput): string | null {
     if (ok(p.capital12) && p.capital12 > 0) {
       partes.push(`No mesmo período houve ${precoFmt(p.capital12, 'stock', 'BRL')} por ${unidade} em amortização, fora dessa soma.`)
     }
-    const anos = fraseAnos(p.anos, i.kind === 'fii' ? 'os rendimentos' : 'os dividendos e JCP pagos')
+    const anos = fraseAnos(p.anos, i.kind === 'fii' ? 'os rendimentos com data-com' : 'os dividendos e JCP com data-com')
     if (anos) partes.push(anos)
   }
   else if (p.renda12 === 0) {
     partes.push(`Não houve provento de renda com data-com nos últimos 12 meses de ${i.ticker}.`)
-    const anos = fraseAnos(p.anos, i.kind === 'fii' ? 'os rendimentos' : 'os dividendos e JCP pagos')
+    const anos = fraseAnos(p.anos, i.kind === 'fii' ? 'os rendimentos com data-com' : 'os dividendos e JCP com data-com')
     if (anos) partes.push(anos)
   }
   if (p.proximo === 'a definir') partes.push('O próximo pagamento está a definir.')
@@ -419,26 +474,26 @@ function paragrafoCripto(i: ResumoAtivoInput): string | null {
   if (ok(c.valorMercado) && c.valorMercado > 0) dinheiro.push(`valor de mercado de ${moneyBig(c.valorMercado)}`)
   if (ok(c.volume24h) && c.volume24h > 0) dinheiro.push(`volume em 24 horas de ${moneyBig(c.volume24h)}`)
   if (dinheiro.length) partes.push(`Em reais, ${i.nome} tem ${juntar(dinheiro)}.`)
-  if (ok(c.dominancia)) partes.push(`A dominância informada é ${pctAbs(c.dominancia)}.`)
-  if (ok(c.rank) && c.rank > 0) partes.push(`O rank global informado é ${nf0.format(c.rank)}.`)
+  if (ok(c.dominancia)) partes.push(`A dominância é ${pctAbs(c.dominancia)}.`)
+  if (ok(c.rank) && c.rank > 0) partes.push(`A posição no ranking global é ${nf0.format(c.rank)}.`)
   const janelas: string[] = []
   if (ok(c.var7d)) janelas.push(`${pctAssinado(c.var7d)} em 7 dias`)
   if (ok(c.var30d)) janelas.push(`${pctAssinado(c.var30d)} em 30 dias`)
-  if (janelas.length) partes.push(`A variação informada é de ${juntar(janelas)}.`)
+  if (janelas.length) partes.push(`A variação é de ${juntar(janelas)}.`)
   const faixa = faixa52(c.min52, c.max52, 'crypto', 'BRL')
   if (faixa) partes.push(faixa)
   if (ok(c.supplyCirc) && c.supplyCirc > 0 && ok(c.supplyMax) && c.supplyMax > 0) {
-    partes.push(`O supply circulante informado é ${qtd(c.supplyCirc)} ${i.ticker} e o supply máximo é ${qtd(c.supplyMax)} ${i.ticker}.`)
+    partes.push(`A oferta em circulação é ${qtd(c.supplyCirc)} ${i.ticker} e a oferta máxima é ${qtd(c.supplyMax)} ${i.ticker}.`)
   }
   else if (ok(c.supplyCirc) && c.supplyCirc > 0) {
-    partes.push(`O supply circulante informado é ${qtd(c.supplyCirc)} ${i.ticker}.`)
+    partes.push(`A oferta em circulação é ${qtd(c.supplyCirc)} ${i.ticker}.`)
   }
   else if (ok(c.supplyMax) && c.supplyMax > 0) {
-    partes.push(`O supply máximo informado é ${qtd(c.supplyMax)} ${i.ticker}.`)
+    partes.push(`A oferta máxima é ${qtd(c.supplyMax)} ${i.ticker}.`)
   }
   if (!partes.length) return null
   const quando = dataBr(i.data)
-  if (quando) partes.push(`Valores em reais referentes a ${quando}.`)
+  if (quando) partes.push(`Valores em reais, atualizados em ${quando}.`)
   return partes.join(' ')
 }
 
@@ -461,11 +516,11 @@ function descricao(i: ResumoAtivoInput): string {
   const frases: string[] = []
   const quando = dataBr(i.data)
   if (ok(i.preco) && quando) {
-    const oQue = i.kind === 'crypto' ? 'preço em reais' : 'cotação'
+    const oQue = i.kind === 'crypto' ? 'preço mais recente em reais' : 'cotação mais recente'
     frases.push(`${i.ticker} (${i.nome}): ${oQue} de ${precoFmt(i.preco, i.kind, i.moeda)} em ${quando}.`)
   }
   else if (ok(i.preco)) {
-    const oQue = i.kind === 'crypto' ? 'preço em reais' : 'cotação'
+    const oQue = i.kind === 'crypto' ? 'preço mais recente em reais' : 'cotação mais recente'
     frases.push(`${i.ticker} (${i.nome}): ${oQue} de ${precoFmt(i.preco, i.kind, i.moeda)}.`)
   }
   else {
@@ -487,18 +542,20 @@ function faqPreco(i: ResumoAtivoInput): NuFaqItem | null {
   if (!ok(i.preco)) return null
   const quando = dataBr(i.data)
   const variacao = variacaoDiaFrase(i)
-  const extra = variacao ? `, ${variacao}` : ''
+  const extra = variacao ? `, com ${variacao}` : ''
+  const preco = precoFmt(i.preco, i.kind, i.moeda)
   if (i.kind === 'crypto') {
-    const a = quando
-      ? `Em ${quando}, o preço em reais de ${i.nome} (${i.ticker}) foi de ${precoFmt(i.preco, i.kind, i.moeda)}${extra}.`
-      : `O preço em reais informado de ${i.nome} (${i.ticker}) é ${precoFmt(i.preco, i.kind, i.moeda)}${extra}.`
-    return { q: `Qual o preço de ${i.nome} (${i.ticker}) em reais?`, a }
+    const atualizado = quando ? `, atualizado em ${quando}` : ''
+    return {
+      q: `Qual o preço de ${i.nome} (${i.ticker}) em reais?`,
+      a: `O preço mais recente de ${i.nome} (${i.ticker}) em reais é ${preco}${extra}. Mercado 24 horas${atualizado}.`,
+    }
   }
-  const fonte = i.moeda === 'USD' ? 'preço em dólar' : 'B3'
-  const a = quando
-    ? `No pregão de ${quando}, a cotação de ${i.nome} (${i.ticker}) foi de ${precoFmt(i.preco, i.kind, i.moeda)}${extra}. Fonte: ${fonte}.`
-    : `A cotação informada de ${i.nome} (${i.ticker}) é ${precoFmt(i.preco, i.kind, i.moeda)}${extra}. Fonte: ${fonte}.`
-  return { q: `Qual a cotação de ${i.nome} (${i.ticker})?`, a }
+  const atualizada = quando ? `, atualizada em ${quando}` : ''
+  return {
+    q: `Qual a cotação de ${i.nome} (${i.ticker})?`,
+    a: `A cotação mais recente de ${i.nome} (${i.ticker}) é ${preco}${atualizada}${extra}.${fonteCotacao(i)}`,
+  }
 }
 
 function faqDy(i: ResumoAtivoInput): NuFaqItem | null {
@@ -513,15 +570,15 @@ function faqProventos(i: ResumoAtivoInput): NuFaqItem | null {
   if (!p) return null
   const unidade = p.unidade
   if (ok(p.renda12) && p.renda12 > 0) {
-    const n = ok(p.eventos12) && p.eventos12 > 0 ? ` Foram ${nf0.format(p.eventos12)} pagamentos com data-com nessa janela.` : ''
+    const n = ok(p.eventos12) && p.eventos12 > 0 ? ` Foram ${nf0.format(p.eventos12)} proventos com data-com nesse período.` : ''
     return {
-      q: `Quanto ${i.ticker} pagou em proventos nos últimos 12 meses?`,
+      q: `Quanto ${i.ticker} teve em proventos com data-com nos últimos 12 meses?`,
       a: `A soma dos proventos de renda de ${i.ticker} com data-com nos últimos 12 meses foi de ${precoFmt(p.renda12, 'stock', 'BRL')} por ${unidade}.${n} Fonte: avisos de proventos da B3.`,
     }
   }
   if (p.renda12 === 0) {
     return {
-      q: `Quanto ${i.ticker} pagou em proventos nos últimos 12 meses?`,
+      q: `Quanto ${i.ticker} teve em proventos com data-com nos últimos 12 meses?`,
       a: `Não houve provento de renda com data-com nos últimos 12 meses de ${i.ticker}. Fonte: avisos de proventos da B3.`,
     }
   }
@@ -534,10 +591,11 @@ function faqSerie(i: ResumoAtivoInput): NuFaqItem | null {
   const de = dataBr(s.de)
   const ate = dataBr(s.ate)
   if (!de || !ate) return null
-  const ibov = ok(s.ibov) ? ` O Ibovespa variou ${pctAssinado(s.ibov)} na série do mesmo pedido.` : ''
+  const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
+  const fonte = i.kind === 'crypto' ? '' : fonteCotacao(i)
   return {
-    q: `Como ${i.ticker} variou na série de preços recente?`,
-    a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)} na série de preços.${ibov}`,
+    q: `Como ${i.ticker} variou nos últimos 12 meses?`,
+    a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`,
   }
 }
 
@@ -546,7 +604,7 @@ function faqSetor(i: ResumoAtivoInput): NuFaqItem | null {
   const setor = setorBaixo(i.setor)
   if (!texto || !setor) return null
   return {
-    q: `Como a variação de ${i.ticker} no pregão se compara à média do setor ${setor}?`,
+    q: `Como a variação de ${i.ticker} se compara à média do setor ${setor}?`,
     a: texto,
   }
 }
@@ -554,20 +612,20 @@ function faqSetor(i: ResumoAtivoInput): NuFaqItem | null {
 function faqCriptoMercado(i: ResumoAtivoInput): NuFaqItem | null {
   const c = i.cripto
   if (!c || !ok(c.valorMercado) || c.valorMercado <= 0) return null
-  const vol = ok(c.volume24h) && c.volume24h > 0 ? ` O volume em 24 horas foi de ${moneyBig(c.volume24h)}.` : ''
+  const vol = ok(c.volume24h) && c.volume24h > 0 ? ` O volume em 24 horas é de ${moneyBig(c.volume24h)}.` : ''
   return {
     q: `Qual o valor de mercado de ${i.nome} em reais?`,
-    a: `O valor de mercado em reais de ${i.nome} (${i.ticker}) informado é ${moneyBig(c.valorMercado)}.${vol}`,
+    a: `O valor de mercado em reais de ${i.nome} (${i.ticker}) é ${moneyBig(c.valorMercado)}.${vol}`,
   }
 }
 
 function faqRank(i: ResumoAtivoInput): NuFaqItem | null {
   const c = i.cripto
   if (!c || !ok(c.rank) || c.rank <= 0) return null
-  const dom = ok(c.dominancia) ? ` A dominância informada é ${pctAbs(c.dominancia)}.` : ''
+  const dom = ok(c.dominancia) ? ` A dominância é ${pctAbs(c.dominancia)}.` : ''
   return {
     q: `Qual a posição de ${i.nome} no ranking global?`,
-    a: `O rank global informado de ${i.nome} (${i.ticker}) é ${nf0.format(c.rank)}.${dom}`,
+    a: `A posição de ${i.nome} (${i.ticker}) no ranking global é ${nf0.format(c.rank)}.${dom}`,
   }
 }
 
@@ -608,6 +666,21 @@ function faqDe(i: ResumoAtivoInput): NuFaqItem[] {
 const NUMEROS_VAZIOS: ResumoNumeros = {
   dy: null, pl: null, pvp: null, roe: null, margem: null, valorMercado: null,
   vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
+}
+
+/**
+ * Junta as perguntas novas na FAQ editorial. Um título e um JSON-LD ficam
+ * com quem já renderiza a editorial. Pergunta repetida (mesmo texto) não entra.
+ */
+export function fundirFaq(editorial: NuFaqItem[], novas: NuFaqItem[]): NuFaqItem[] {
+  const vistas = new Set(editorial.map((f) => f.q.replace(/\s+/g, ' ').trim().toLowerCase()))
+  const extra = novas.filter((f) => {
+    const q = f.q.replace(/\s+/g, ' ').trim().toLowerCase()
+    if (!q || vistas.has(q)) return false
+    vistas.add(q)
+    return f.a.trim().length > 0
+  })
+  return [...editorial, ...extra]
 }
 
 /**

@@ -27,11 +27,19 @@ export default defineEventHandler(async (event) => {
   try {
     const lista = await fetchSetorLinhasCached(entry.apiSlug)
     const pares = paresDoSetor(lista.linhas, ticker, INDEXABLE_ASSETS, PREFERIDAS)
+    const variacaoAtivo = lista.variacaoPorTicker[ticker]
     return {
       data: pares.map((p) => ({ ticker: p.ticker, nome: nomeDaEmpresa(p.nome) })),
-      // A mesma resposta já traz a variação média do pregão. DY/P/L médios
-      // voltam null no backend, então não saem daqui.
-      media: lista.variacaoMedia == null ? null : { variacao: lista.variacaoMedia, papeis: lista.papeis },
+      // Média e variação do próprio papel saem da MESMA resposta. DY/P/L
+      // médios voltam null no backend, então não saem daqui.
+      media: lista.variacaoMedia == null
+        ? null
+        : {
+            variacao: lista.variacaoMedia,
+            papeis: lista.papeis,
+            variacaoAtivo: typeof variacaoAtivo === 'number' && Number.isFinite(variacaoAtivo) ? variacaoAtivo : null,
+            data: lista.dataPorTicker[ticker] ?? null,
+          },
     }
   }
   catch {

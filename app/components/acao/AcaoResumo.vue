@@ -3,22 +3,36 @@
  * Resumo factual do ativo, no HTML do SSR.
  *
  * O texto vem de app/utils/assetResumo.ts, montado com o que o useAcao já
- * buscou. Perguntas e respostas ficam visíveis (não é accordion): o JSON-LD
- * FAQPage só sai quando `schema` é true e há itens, e o texto do schema é o
- * mesmo da tela. Quando o editorial já emite um FAQPage, a página passa
- * schema=false para não duplicar o bloco.
+ * buscou. A página chama duas vezes: `parte="titulo"` fica no topo (só o H1)
+ * e `parte="corpo"` fica depois do gráfico e dos indicadores. Perguntas e
+ * respostas ficam visíveis (não é accordion). O JSON-LD FAQPage só sai no
+ * corpo, quando `schema` é true e há itens. Quando a editorial já tem FAQ,
+ * as perguntas novas entram nela e este bloco não emite outro.
  */
 import type { AcaoResumoVM } from '~/utils/assetResumo'
 
-const props = withDefaults(defineProps<{ resumo: AcaoResumoVM; schema?: boolean }>(), { schema: true })
+const props = withDefaults(defineProps<{
+  resumo: AcaoResumoVM
+  schema?: boolean
+  parte?: 'titulo' | 'corpo'
+}>(), { schema: true, parte: 'corpo' })
 
-if (props.schema && props.resumo.faq.length) useFaqSchema(props.resumo.faq)
+if (props.parte === 'corpo' && props.schema && props.resumo.faq.length) useFaqSchema(props.resumo.faq)
 </script>
 
 <template>
-  <section class="ars" aria-labelledby="ars-h1">
+  <section
+    v-if="parte === 'titulo'"
+    class="ars ars--titulo"
+    aria-labelledby="ars-h1"
+  >
     <div class="ars__wrap">
       <h1 id="ars-h1" class="ars__h1">{{ resumo.h1 }}</h1>
+    </div>
+  </section>
+
+  <section v-else class="ars" aria-label="Resumo do ativo">
+    <div class="ars__wrap">
       <p v-for="(p, i) in resumo.paragrafos" :key="i" class="ars__p">{{ p }}</p>
 
       <nav v-if="resumo.links.length" class="ars__nav" aria-label="Páginas relacionadas a este ativo">
@@ -47,6 +61,11 @@ if (props.schema && props.resumo.faq.length) useFaqSchema(props.resumo.faq)
 .ars {
   background: var(--nu-cream);
   padding: 8px clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 80px);
+}
+/* Só o H1, colado no hero. O miolo do resumo vem depois do gráfico. */
+.ars--titulo {
+  padding-top: 0;
+  padding-bottom: clamp(28px, 4vw, 40px);
 }
 .ars__wrap { max-width: 68ch; }
 .ars__h1 {
