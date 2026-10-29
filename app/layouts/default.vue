@@ -8,6 +8,9 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
 <template>
   <div class="nu-shell">
     <NuHeader />
+    <!-- Aviso de cookies no fluxo, abaixo do header: não cobre a marca
+         nem o hero do ativo. -->
+    <ConsentBanner />
     <NuSectionRail v-if="railSections" />
     <NuMarketTicker v-else />
     <!-- A faixa do recado do André (26/10/2026, pedido do dono): abre a

@@ -63,15 +63,17 @@ function alturaDe(n: number, row: number, gap: number, min: number) {
   return Math.max(min, Math.max(1, n) * row + Math.max(0, n - 1) * gap)
 }
 
-// desktop: as duas pontas dividem a mesma altura, a empresa no meio
-const ROW = 72
+// desktop: as duas pontas dividem a mesma altura, a empresa no meio.
+// A linha do nome quebra (não corta): a altura cabe ticker + até 4 linhas.
+const ROW = 108
 const GAP = 14
 const total = computed(() => alturaDe(Math.max(props.cadeia.compraDe.length, props.cadeia.vendePara.length), ROW, GAP, 156))
 const compra = computed(() => ramo(props.cadeia.compraDe, total.value, ROW, GAP, 'compra'))
 const vende = computed(() => ramo(props.cadeia.vendePara, total.value, ROW, GAP, 'vende'))
 
-// celular: cada meio-grafo tem a altura da própria ponta
-const ROW_M = 64
+// celular: cada meio-grafo tem a altura da própria ponta.
+// Nomes longos quebram dentro do cartão; a linha precisa caber ticker + 4 linhas.
+const ROW_M = 112
 const GAP_M = 12
 const totalCompraM = computed(() => alturaDe(props.cadeia.compraDe.length, ROW_M, GAP_M, 112))
 const totalVendeM = computed(() => alturaDe(props.cadeia.vendePara.length, ROW_M, GAP_M, 112))
@@ -114,7 +116,7 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
         <template v-for="l in compra.itens" :key="`v-${l.item.ticker}`">
           <button
             type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
-            :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
+            :style="{ top: `${l.ey}px`, left: '50%', transform: 'translate(-50%, -50%)' }"
             :aria-label="`Detalhes: ${l.item.detalhe.titulo}`"
             @click="aberto = l.item.detalhe"
           ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
@@ -136,7 +138,7 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
         <template v-for="l in vende.itens" :key="`v-${l.item.ticker}`">
           <button
             type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
-            :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
+            :style="{ top: `${l.ey}px`, left: '50%', transform: 'translate(-50%, -50%)' }"
             :aria-label="`Detalhes: ${l.item.detalhe.titulo}`"
             @click="aberto = l.item.detalhe"
           ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
@@ -198,7 +200,7 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
               <template v-for="l in r.g.itens" :key="`v-${l.item.ticker}`">
                 <button
             type="button" class="acd__valor" :class="{ 'acd__valor--indisp': !l.item.valor }"
-            :style="{ top: `${l.ey}px`, left: `${l.ex}%`, transform: `translate(-${l.ex}%, -50%)` }"
+            :style="{ top: `${l.ey}px`, left: '50%', transform: 'translate(-50%, -50%)' }"
             :aria-label="`Detalhes: ${l.item.detalhe.titulo}`"
             @click="aberto = l.item.detalhe"
           ><template v-if="l.item.valor"><b>{{ l.item.valor }}</b> <span class="acd__quando">{{ l.item.valorQuando }}</span></template><template v-else>Indisponível</template></button>
@@ -242,6 +244,7 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
   grid-template-rows: auto auto;
   row-gap: 14px;
 }
+.acd__grafo > * { min-width: 0; }
 .acd__label { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
 .acd__label--compra { grid-column: 1; grid-row: 1; }
 .acd__label--vende { grid-column: 5; grid-row: 1; }
@@ -251,10 +254,12 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
   list-style: none; margin: 0; padding: 0; box-sizing: border-box; min-width: 0;
   display: flex; flex-direction: column; gap: var(--gap);
 }
+.acd__nos > li { min-width: 0; max-width: 100%; }
 .acd__no {
-  height: var(--row); box-sizing: border-box;
-  display: flex; align-items: center; gap: 12px;
+  height: var(--row); box-sizing: border-box; min-width: 0; max-width: 100%;
+  display: flex; flex-wrap: wrap; align-items: center; align-content: center; gap: 12px;
   background: var(--nu-white); border-radius: var(--nu-r-panel); padding: 0 16px;
+  overflow: hidden;
   transition: transform .18s, box-shadow .2s;
 }
 .acd__no:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
@@ -267,25 +272,30 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
   background: var(--nu-navy-06); color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: 1px;
 }
 .acd__ramos .acd__resto-tile { width: 30px; height: 30px; border-radius: 9px; }
-.acd__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.acd__ticker { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
+.acd__id { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 0; max-width: 100%; }
+.acd__ticker {
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px;
+  min-width: 0; overflow-wrap: anywhere;
+}
 .acd__nome {
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.25;
+  min-width: 0; max-width: 100%;
+  white-space: normal; overflow-wrap: anywhere;
 }
 
 /* as linhas: SVG esticado na largura da coluna (o traço não engrossa) */
 .acd__fio { position: relative; min-width: 0; }
 .acd__fio svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .acd__fio path { fill: none; stroke: var(--nu-gray); stroke-width: 1.25; vector-effect: non-scaling-stroke; opacity: .55; }
-/* a posição (left/top/translate) vem do ponto da curva, no template: a âncora
-   proporcional (translate de -x%) mantém a etiqueta dentro da coluna */
+/* a etiqueta fica centrada na coluna do fio (left 50% + translate -50%),
+   com max-width 100%, para o valor não invadir o nome do cartão ao lado */
 .acd__valor {
-  position: absolute; width: max-content; box-sizing: border-box;
+  position: absolute; box-sizing: border-box;
+  max-width: calc(100% - 8px); width: max-content;
   padding: 4px 10px; border-radius: 999px;
   background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-navy-06);
   color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.3;
-  font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center;
+  font-variant-numeric: tabular-nums; white-space: normal; overflow-wrap: anywhere; text-align: center;
 }
 .acd__valor b { color: var(--nu-ink); font-weight: 700; }
 button.acd__valor {
@@ -298,21 +308,21 @@ button.acd__valor:focus-visible { outline: 2px solid var(--nu-blue); outline-off
 .acd__valor--indisp { color: var(--nu-gray); }
 
 /* a empresa: o único navy da seção */
-.acd__centro { display: flex; align-items: center; justify-content: center; }
+.acd__centro { display: flex; align-items: center; justify-content: center; min-width: 0; }
 .acd__empresa {
-  width: 100%; box-sizing: border-box;
+  width: 100%; min-width: 0; box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   background: var(--nu-navy); border-radius: var(--nu-r-panel); padding: 20px 14px;
 }
-.acd__empresa-ticker { margin-top: 4px; color: var(--nu-white); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
-.acd__empresa-nome { color: var(--nu-cream); font-size: var(--nu-fs-sm); font-weight: 500; opacity: .75; text-align: center; }
+.acd__empresa-ticker { margin-top: 4px; color: var(--nu-white); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; overflow-wrap: anywhere; }
+.acd__empresa-nome { color: var(--nu-cream); font-size: var(--nu-fs-sm); font-weight: 500; opacity: .75; text-align: center; min-width: 0; overflow-wrap: anywhere; }
 
 /* ——— celular: dois meio-grafos ——— */
 .acd__ramos { display: none; }
 .acd__ramo { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
-.acd__ramo-grid { display: grid; grid-template-columns: minmax(0, 1fr) 124px 80px; }
+.acd__ramo-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(96px, 112px) minmax(68px, 76px); }
 /* na venda a empresa vem primeiro: centro | fio | cartões */
-.acd__ramo--vende .acd__ramo-grid { grid-template-columns: 80px 124px minmax(0, 1fr); }
+.acd__ramo--vende .acd__ramo-grid { grid-template-columns: minmax(68px, 76px) minmax(96px, 112px) minmax(0, 1fr); }
 .acd__ramo--vende .acd__centro { grid-column: 1; grid-row: 1; }
 .acd__ramo--vende .acd__fio { grid-column: 2; grid-row: 1; }
 .acd__ramo--vende .acd__nos { grid-column: 3; grid-row: 1; }

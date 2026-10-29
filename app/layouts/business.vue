@@ -11,6 +11,7 @@
 <template>
   <div class="rb-shell">
     <RbHeader />
+    <ConsentBanner />
     <main>
       <slot />
     </main>
