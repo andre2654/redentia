@@ -16,6 +16,9 @@
  * E-MAIL (dono, 2026-10-28): relacionamento@redentia.com.br,
  * no Business e no app de pessoa física.
  */
+/* "Ativar acesso" é a mesma porta de /business/cadastro. No celular o Entrar
+   do header some, então este link também leva a campanha da sessão. */
+const destinoCadastro = useDestinoCadastroBusiness()
 const { reabrir } = useConsent()
 
 const CARDS = [
@@ -93,7 +96,7 @@ const COLUMNS = [
       <div v-for="col in COLUMNS" :key="col.title" class="rbf__col">
         <div class="rbf__col-title">{{ col.title }}</div>
         <div class="rbf__col-links">
-          <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to" class="rbf__link">{{ l.label }}</NuxtLink>
+          <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to === '/business/cadastro' ? destinoCadastro : l.to" class="rbf__link">{{ l.label }}</NuxtLink>
         <button v-if="col.title === 'Legal'" type="button" class="rbf__pref" @click="reabrir">Preferências de cookies</button>
         </div>
       </div>
