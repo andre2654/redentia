@@ -5,8 +5,7 @@
  * (tests/newsletter-lugares.test.ts).
  */
 
-// a preço teto: veto do dono (15/10/2026) para a faixa do rodapé; ela já tem
-// o bloco no resultado. O convite, bloco no fluxo, entra nela.
+// a preço teto: veto do dono (15/10/2026); ela já tem o bloco no resultado
 const PRECO_TETO = /^\/calculadora\/preco-teto(?:\/|$)/i
 // o /guias fecha com a faixa azul da newsletter
 const GUIAS = /^\/guias\/?$/i
@@ -17,6 +16,7 @@ export function rodapeSemAssinatura(caminho: string): boolean {
 }
 
 const CONVITE_FORA = [
+  PRECO_TETO,
   GUIAS,
   // login, conta e as ferramentas de tela cheia
   /^\/(?:login|conta|carteira|busca|simulacao)(?:\/|$)/i,

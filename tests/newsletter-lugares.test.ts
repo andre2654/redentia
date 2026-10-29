@@ -1,7 +1,7 @@
 /**
  * Onde a assinatura de O mercado da semana aparece além dos formulários das
- * páginas: a faixa do rodapé e o bloco antes dele (21/10/2026). A faixa do
- * rodapé fica fora da preço teto: o dono vetou mexer nela (15/10/2026) e ela traz três
+ * páginas: a faixa do rodapé e o bloco antes dele (21/10/2026). A preço teto
+ * fica fora dos dois: o dono vetou mexer nela (15/10/2026) e ela traz três
  * quartos dos cliques da busca, que o NuMcpPromo cobria quando abria por cima
  * da calculadora.
  */
@@ -26,8 +26,9 @@ test('o rodapé fica sem a faixa só onde a página já tem o formulário dela',
   }
 })
 
-test('o convite fica fora do /guias e das páginas de conta', () => {
+test('o convite fica fora da preço teto, do /guias e das páginas de conta', () => {
   for (const p of [
+    ...PRECO_TETO,
     '/guias',
     '/guias/',
     '/login',
@@ -54,7 +55,6 @@ test('o convite abre no resto do site, inclusive dentro de cada guia', () => {
     '/tesouro',
     '/dividendos/PETR4',
     '/asset/PETR4',
-    ...PRECO_TETO,
     '/guias/data-com-e-data-ex',
     '/glossario/dividend-yield',
     '/noticias',
@@ -99,7 +99,7 @@ test('quem já assinou não vê o convite', () => {
   }
   assert.equal(conviteElegivel(base), true)
   assert.equal(conviteElegivel({ ...base, caminho: '/asset/PETR4' }), true)
-  assert.equal(conviteElegivel({ ...base, caminho: '/calculadora/preco-teto/PETR4' }), true)
+  assert.equal(conviteElegivel({ ...base, caminho: '/calculadora/preco-teto/PETR4' }), false)
   assert.equal(conviteElegivel({ ...base, assinou: true }), false)
   assert.equal(conviteElegivel({ ...base, autenticado: true }), false)
   assert.equal(conviteElegivel({ ...base, caminho: '/guias' }), false)
