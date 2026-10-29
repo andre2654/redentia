@@ -30,9 +30,9 @@ export type ClientsMode = 'on' | 'off'
  * C5 — o fluxo de conexão que a página do cliente deve rodar. Só escolhe o
  * fluxo e NUNCA aparece na tela. 'demo': o servidor gera a carteira no
  * consentimento (só existe em conta interna da Redentia) e a espera pela
- * autorização avança sozinha. 'pluggy': ainda não existe no servidor (o C6
- * responde 409 mode_unavailable), e a página mostra o estado de conexão
- * indisponível antes do fluxo.
+ * autorização avança sozinha. 'pluggy': Open Finance de verdade; o C6
+ * devolve o connect token, o widget oficial da Pluggy conecta e o C6b
+ * (/connection) grava o consentimento com o item que voltou.
  */
 export type ClientInviteMode = 'demo' | 'pluggy'
 
@@ -63,11 +63,19 @@ export interface ClientInviteInfo {
  * (slug da lista de app/content/instituicoes.ts, validado no servidor).
  * O CPF que a página pede NÃO faz parte do contrato.
  */
+/**
+ * C6 e C6b. Demo: o C6 já conecta ({status: 'connected', manage_url}).
+ * Pluggy: o C6 só devolve {status: 'connect', connect_token}, sem gravar
+ * nada; o C6b (/connection, com o item_id do widget) conecta e devolve
+ * {status: 'connected', manage_url, institution}.
+ */
 export interface ClientConsentResult {
-  status: 'connected' | string
-  manage_url: string
-  /** modo pluggy (futuro): o token que abre o widget real no mesmo lugar */
+  status: 'connected' | 'connect' | string
+  manage_url?: string
+  /** modo pluggy: o token que abre o widget da Pluggy */
   connect_token?: string
+  /** C6b: o nome da instituição que a Pluggy conectou */
+  institution?: string | null
 }
 
 export interface ClientLogEntry {

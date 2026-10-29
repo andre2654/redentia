@@ -18,10 +18,13 @@
  *
  * O `mode` do C5 só escolhe o fluxo e nunca aparece na tela. 'demo' (só em
  * conta interna da Redentia; o servidor trava isso): o servidor gera a
- * carteira no consentimento e a espera pela autorização avança sozinha. O
- * widget não leva marca, logo nem nome do Pluggy. 'pluggy' (ainda não
- * implementado): o servidor responde 409 mode_unavailable, e a página mostra
- * o estado de conexão indisponível antes do fluxo, não depois do CPF.
+ * carteira no consentimento e a espera pela autorização avança sozinha, e o
+ * widget não leva marca nem nome da Pluggy. 'pluggy' (Open Finance de
+ * verdade, desde 28/10/2026): a intro abre o widget oficial da Pluggy, que
+ * faz instituição, CPF e autorização no banco; a página volta para
+ * "conectando" e "sucesso" com o item que ele devolveu (C6 → widget → C6b,
+ * ver useClienteConexao). Fechar o widget sem conectar mostra "Conexão
+ * cancelada".
  *
  * 100% CLIENT, de propósito: o token está na URL e o link de gestão é
  * segredo. O SSR renderiza só a casca com skeleton; o onMounted consulta o
@@ -29,7 +32,7 @@
  * noindex/nofollow no nuxt.config (/cliente/**); analytics não carrega aqui
  * (utils/analytics-privacy). Nada do convite entra em useState.
  *
- * Contrato: SPEC Contrato C, rotas C5 e C6.
+ * Contrato: SPEC Contrato C, rotas C5, C6 e C6b.
  */
 import type { ClientInviteInfo } from '~/types/clientes'
 
@@ -103,7 +106,7 @@ function invalido(m: string) {
   estado.value = 'invalido'
 }
 
-const conexao = useClienteConexao({ token, info, onRecusa: invalido })
+const conexao = useClienteConexao({ token, info, onRecusa: invalido, onCancelado: () => { estado.value = 'cancelado' } })
 
 // onMounted registrado ANTES de qualquer await (o await mora dentro dele).
 onMounted(async () => {
@@ -112,10 +115,7 @@ onMounted(async () => {
     const r = await publicFetch<ClientInviteInfo>(`/business/client-invites/${token.value}`)
     info.value = r
     if (!r.valid) return invalido(r.reason ?? 'erro')
-    // A conexão pelo Pluggy ainda não existe: melhor dizer agora do que deixar
-    // a pessoa escolher o banco, digitar o CPF e levar o 409 no fim.
-    if (r.mode === 'pluggy') return invalido('mode_unavailable')
-    if (r.mode !== 'demo') return invalido('clients_disabled')
+    if (r.mode !== 'demo' && r.mode !== 'pluggy') return invalido('clients_disabled')
     estado.value = 'fluxo'
   }
   catch (e: unknown) {
@@ -166,6 +166,8 @@ function recarregar() {
         :escritorio="escritorio"
         :assessor="info.advisor_label"
         :cliente-nome="info.client_name"
+        :ocupado="conexao.abrindo.value"
+        :erro="conexao.erroIntro.value"
         @continuar="conexao.continuar"
         @termo="termoAberto = true"
       />

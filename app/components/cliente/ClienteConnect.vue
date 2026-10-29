@@ -12,7 +12,8 @@
  *    fechar está disponível.
  *
  * Sem marca, logo ou nome do Pluggy de propósito: a marca da casa é a da
- * Redentia, e o fluxo em que o servidor gera a carteira não passa pelo Pluggy.
+ * Redentia. No modo pluggy, quem mostra a marca deles é o widget oficial,
+ * que abre por cima desta casca; aqui dentro ela continua sem aparecer.
  *
  * Quem decide o que entra no cartão (passo, estado de link, página de gestão)
  * é a página: este componente só cuida do chrome e da acessibilidade.

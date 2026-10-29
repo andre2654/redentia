@@ -8,11 +8,17 @@
  * os investimentos, uma frase, três linhas com ícone e UMA linha de rodapé
  * com o link do termo. NÃO existe tela de consentimento separada: o aceite
  * é continuar, como no Pluggy. O termo inteiro abre pelo link.
+ *
+ * No modo pluggy o "Continuar" abre o widget da Pluggy: `ocupado` gira o
+ * botão enquanto o token chega, e `erro` é a frase de uma falha antes do
+ * widget (nada foi conectado).
  */
 defineProps<{
   escritorio: string | null
   assessor: string | null
   clienteNome: string | null
+  ocupado?: boolean
+  erro?: string | null
 }>()
 
 const emit = defineEmits<{ continuar: [], termo: [] }>()
@@ -51,11 +57,12 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
     </ul>
 
     <footer class="cci__foot">
+      <p v-if="erro" class="cci__erro" role="alert">{{ erro }}</p>
       <p class="cci__termos">
         Ao continuar, você concorda com os
         <button type="button" class="cci__link" @click="emit('termo')">Termos de compartilhamento</button>.
       </p>
-      <ClienteConnectButton @click="emit('continuar')">Continuar</ClienteConnectButton>
+      <ClienteConnectButton :loading="ocupado" @click="emit('continuar')">{{ ocupado ? 'Abrindo conexão segura' : 'Continuar' }}</ClienteConnectButton>
     </footer>
   </section>
 </template>
@@ -87,6 +94,7 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
 }
 
 .cci__foot { margin-top: auto; padding-top: 22px; }
+.cci__erro { margin: 0 0 14px; padding: 12px 14px; border-radius: 10px; background: var(--nu-red-tint); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .cci__termos { margin: 0 0 12px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .cci__link {
   padding: 0; border: none; background: none; color: var(--nu-blue-text); font: inherit; font-weight: 800; cursor: pointer;
