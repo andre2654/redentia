@@ -47,7 +47,7 @@ onBeforeUnmount(() => clearTimeout(timer))
     <template v-if="!fim">
       <div class="ccok__inst"><ClienteInstLogo :inst="inst" :size="22" /><span>{{ inst.name }}</span></div>
       <h1 data-cc-titulo tabindex="-1" class="ccok__h1">{{ inst.name }} conectado</h1>
-      <p class="ccok__p">{{ quem }} já pode acompanhar as posições de investimento que você autorizou.</p>
+      <p class="ccok__p">{{ quem }} já pode acompanhar os investimentos e o saldo que você autorizou.</p>
     </template>
     <template v-else>
       <h1 data-cc-titulo tabindex="-1" class="ccok__h1 ccok__h1--fim">Tudo certo.</h1>
