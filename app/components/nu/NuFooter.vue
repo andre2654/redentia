@@ -78,6 +78,7 @@ const COLUMNS = [
           </div>
           <a href="mailto:relacionamento@redentia.com.br" class="nuf__mail">relacionamento@redentia.com.br</a>
           <span class="nuf__hours">Atendimento em dias úteis, das 8h às 18h (Brasília)</span>
+          <NuAcompanheAndre lugar="rodape" tom="escuro" />
         </div>
         <nav class="nuf__grid" aria-label="Mapa do site">
           <div v-for="col in COLUMNS" :key="col.title" class="nuf__col">
