@@ -1003,6 +1003,7 @@ usePageSeo({
         </div>
       </div>
     </CalcBand>
+    <NuAcompanheAndre lugar="calculadora" />
   </div>
 </template>
 

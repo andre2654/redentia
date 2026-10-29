@@ -175,5 +175,8 @@ if (data.value) {
     <AcaoPares v-if="acao.pares" :pares="acao.pares" :tone="acao.cadeia ? 'white' : 'cream'" />
 
     <AcaoRelacionados :links="acao.relacionados" />
+
+    <!-- No fim do miolo, fora do hero. -->
+    <NuAcompanheAndre lugar="asset" />
   </div>
 </template>
