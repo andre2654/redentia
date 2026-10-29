@@ -1,0 +1,33 @@
+{
+  "description": "O Itaú Unibanco Holding S.A. atua em serviços financeiros: banco de varejo, banco de atacado, gestão de fortunas, administração de recursos, seguros, cartões de crédito, mercado de capitais e banco digital. O controle é da Itaúsa, holding das famílias Setubal, Villela e Moreira Salles. O capital é aberto na B3, com recibos negociados na Bolsa de Nova York sob o código ITUB.\n\nO varejo atende pessoas físicas e empresas de pequeno porte, com rede de agências e canal digital. O atacado atende grandes empresas, empresas médias e investidores institucionais, com crédito, mercado de capitais, derivativos e gestão. A tesouraria e as participações estratégicas ficam nas atividades de mercado e de corporação. Há operações no Chile, na Colômbia, na Argentina, no Paraguai e no Uruguai, e a companhia já vendeu participações em parte desses países. ITUB3 são as ações ordinárias, com direito a voto. ITUB4 são as preferenciais, sem voto e com preferência no recebimento de dividendos.",
+  "thesis": "A receita do banco vem da margem financeira, de tarifas, de seguros e da gestão de recursos. A margem se relaciona com a Selic: depósitos à vista não têm custo de captação e financiam parte do balanço, enquanto o crédito é remunerado pelo CDI mais um spread. Queda rápida da Selic comprime a margem no curto prazo. A demanda por crédito entra no outro lado dessa conta.\n\nOs proventos dependem de deliberação e podem sair como dividendos ou juros sobre capital próprio, inclusive proventos extraordinários quando há capital acima do exigido. A política prevê distribuir uma parcela do lucro líquido. Juros sobre capital próprio têm retenção de imposto de renda na fonte. O anúncio traz a data-com e a data-ex e é publicado no site de relações com investidores.",
+  "risks": "O Banco Central regula o setor. O Pix reduziu a receita de TED e de DOC. O Open Finance amplia a concorrência pelo uso de dados dos clientes. Há teto de juros em modalidades como o cartão de crédito rotativo. A inadimplência de pessoas físicas e de pequenas empresas sobe em ciclo de juros altos ou de atividade mais fraca e aumenta as provisões.\n\nNubank, Inter e BTG Pactual concorrem em conta digital, cartão sem anuidade e crédito ao consumidor. O Itaú lançou a conta digital Iti nesse contexto. A ação acompanha o câmbio, ainda que a companhia descreva alguma proteção natural, além do risco fiscal e do debate no Congresso sobre a tributação dos lucros bancários. O controlador é a Itaúsa, e as decisões de governança passam por esse controlador.",
+  "peers": "Na bolsa brasileira, estão o Bradesco, no código BBDC4, e o Banco do Brasil, no código BBAS3. Itaú e Bradesco atuam em varejo e em atacado privados. O Bradesco tem seguradoras, entre elas Bradesco Saúde e Bradesco Auto. O Banco do Brasil é controlado pela União e tem presença no agronegócio e no crédito à pessoa física do setor público.\n\nFora do Brasil, o mesmo tipo de banco aparece em companhias como JPMorgan, Bank of America e HSBC. O Itaú Unibanco opera no Brasil, sob as regras do Banco Central, com operações em outros países da América Latina e com recibos na Bolsa de Nova York. ITUB3 dá direito a voto. ITUB4 não dá voto e tem preferência no recebimento de dividendos.",
+  "history": "O Banco Itaú surgiu em Minas Gerais como Banco Federal de Crédito. O Unibanco veio da Casa Moreira Salles. Os dois cresceram por aquisições. A fusão foi anunciada em meio à crise financeira global e aprovada pelo Banco Central. As famílias Egydio Souza Aranha, nos ramos Setubal e Villela, e Moreira Salles passaram a dividir o controle por meio do Itaú Unibanco Participações.\n\nDepois da fusão, o banco investiu em plataformas digitais, tomou participação no Itaú CorpBanca, no Chile, e vendeu parte da posição na XP Investimentos. A reestruturação digital reduziu a rede de agências. A conta Iti foi lançada como conta digital, voltada à concorrência com Nubank e Inter. A gestão de fortunas cresceu por aquisições e parcerias. A política de proventos extraordinários voltou a ser usada com a normalização do capital regulatório depois da Basileia III.",
+  "faq": [
+    {
+      "q": "Qual a diferença entre ITUB3 e ITUB4?",
+      "a": "ITUB3 são as ações ordinárias e dão direito a voto em assembleia. ITUB4 são as preferenciais: não dão voto e têm preferência no recebimento de dividendos. Os recibos do banco na Bolsa de Nova York usam o código ITUB."
+    },
+    {
+      "q": "Como a ITUB4 distribui proventos?",
+      "a": "Os proventos dependem de deliberação do Itaú Unibanco e podem ser dividendos ou juros sobre capital próprio. A política prevê distribuir uma parcela do lucro líquido e admite proventos extraordinários quando há capital acima do exigido pelo regulador. Juros sobre capital próprio têm retenção de imposto de renda na fonte. As datas saem no site de relações com investidores."
+    },
+    {
+      "q": "Como a Selic se relaciona com a ITUB4?",
+      "a": "A Selic entra na margem financeira do banco. Com a taxa alta, depósitos à vista, que não remuneram o cliente, financiam parte do balanço, e o crédito é remunerado pelo CDI mais um spread. Quando a Selic cai rápido, a margem se comprime no curto prazo. A demanda por crédito pode seguir o caminho inverso."
+    },
+    {
+      "q": "Como o Pix e o Open Finance se relacionam com o Itaú Unibanco?",
+      "a": "O Pix reduziu a receita que o banco obtinha com TED e DOC. O Open Finance permite que dados de clientes circulem entre instituições, o que aumenta a concorrência. O banco também está sujeito a teto de juros em modalidades como o cartão de crédito rotativo. Essas regras são do Banco Central."
+    },
+    {
+      "q": "Quem controla o Itaú Unibanco?",
+      "a": "O controlador é a Itaúsa, holding das famílias Setubal, Villela e Moreira Salles. O controle é exercido por meio do Itaú Unibanco Participações, sobre as ações ordinárias. ITUB4 não dá direito a voto e tem preferência no recebimento de dividendos."
+    },
+    {
+      "q": "Qual a relação entre a ITUB4 e a ITSA4?",
+      "a": "A ITSA4 é a ação preferencial da Itaúsa, holding controladora do Itaú Unibanco. Quem tem ITUB4 tem a ação do banco. Quem tem ITSA4 tem a holding, que participa do banco e também de empresas como Alpargatas, Dexco, Aegea, NTS e Copa Energia. A holding pode negociar com desconto em relação à soma das participações."
+    }
+  ]
+}

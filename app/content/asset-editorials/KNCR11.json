@@ -1,0 +1,33 @@
+{
+  "description": "O Kinea Rendimentos Imobiliários, código KNCR11, é um fundo imobiliário de papel. A gestão é da Kinea Investimentos, ligada ao Itaú Unibanco. O fundo aplica em certificados de recebíveis imobiliários, em geral indexados ao CDI, e também em certificados indexados ao IPCA.\n\nOs devedores citados incluem incorporadoras, holdings imobiliárias, redes de varejo, operadores logísticos e shoppings. As garantias descritas são alienação fiduciária de imóvel, cessão de recebíveis e fiança. O fundo recebe os juros dos certificados, junta o caixa e distribui aos cotistas no mês seguinte.",
+  "thesis": "Quando a Selic sobe, o cupom dos certificados indexados ao CDI sobe junto, e a distribuição mensal acompanha esse cupom. Quando a Selic cai, o cupom cai e a distribuição mensal diminui. O fundo não tem outro indexador que compense essa queda no grosso da carteira.\n\nOs rendimentos são mensais. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. O certificado, no caixa do fundo, também tem tratamento tributário próprio de produto de financiamento imobiliário.",
+  "risks": "O risco de crédito é o de o devedor do certificado atrasar ou deixar de pagar. A garantia pode ser executada, e o processo leva tempo. Um atraso de um devedor grande reduz a distribuição daquele mês e o valor patrimonial da cota.\n\nA marcação a mercado do certificado muda com o spread de crédito pedido pelo mercado. Isso altera o valor patrimonial da cota e o P/VP, mesmo quando o cupom contratado do mês não mudou. Em estresse, a venda da cota no mercado também fica mais difícil.",
+  "peers": "Outros fundos de papel citados no mesmo segmento são o Kinea High Yield, código KNHY11, o Maxi Renda, código MXRF11, o CSHG Recebíveis Imobiliários, código HGCR11, o Valora Recebíveis Imobiliários, código VGIR11, o RBR Rendimento, código RBRR11, e o UBS BR Recebíveis, código RECT11. Cada um combina indexadores e devedores de um jeito.\n\nO P/VP é o preço da cota dividido pelo valor patrimonial da cota. Acima de um, o preço de mercado está acima do patrimônio por cota. Abaixo de um, está abaixo.",
+  "history": "A Kinea, da holding do Itaú Unibanco, lançou o fundo quando havia poucos veículos de recebíveis imobiliários na bolsa. O mandato ficou concentrado em certificados indexados ao CDI.\n\nO portfólio passou por ciclos de crédito, com reestruturações pontuais de devedores. A distribuição segue o caixa dos juros recebidos no mês anterior.",
+  "faq": [
+    {
+      "q": "Como o KNCR11 distribui rendimentos?",
+      "a": "O fundo recebe os juros dos certificados de recebíveis, junta o caixa e distribui aos cotistas no mês seguinte. As datas saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "O que é o P/VP do KNCR11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. A marcação a mercado dos certificados altera o patrimônio, e portanto o P/VP, mesmo quando a distribuição do mês não mudou."
+    },
+    {
+      "q": "Como a Selic se relaciona com o KNCR11?",
+      "a": "A maior parte dos certificados acompanha o CDI, que segue a Selic. Se a taxa básica sobe, o cupom recebido sobe e a distribuição mensal acompanha. Se a taxa básica cai, o cupom e a distribuição diminuem."
+    },
+    {
+      "q": "Qual a diferença entre o KNCR11 e o Tesouro Selic?",
+      "a": "Os dois acompanham a taxa básica. O Tesouro Selic é título público. O KNCR11 é cota de um fundo que aplica em certificados de recebíveis de devedores privados, com risco de crédito e com marcação a mercado. O tratamento tributário do rendimento do fundo, para a pessoa física, segue as regras da Receita Federal para fundos imobiliários."
+    },
+    {
+      "q": "O que é o risco de crédito no KNCR11?",
+      "a": "Cada certificado tem um devedor. Se esse devedor atrasa ou não paga, o fundo deixa de receber aquele fluxo até uma reestruturação ou a execução da garantia. Garantias citadas são alienação fiduciária de imóvel, cessão de recebíveis e fiança. A carteira reúne vários devedores, e um evento em um nome grande ainda assim altera a distribuição e o patrimônio."
+    },
+    {
+      "q": "Como um certificado indexado ao CDI se relaciona com a Selic?",
+      "a": "O CDI acompanha a Selic. O cupom do certificado indexado ao CDI sobe e desce com essa taxa. O certificado indexado ao IPCA, que também existe no fundo em parcela menor, acompanha a inflação mais um spread, e não o CDI."
+    }
+  ]
+}

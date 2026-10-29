@@ -1,0 +1,33 @@
+{
+  "description": "O XP Log Fundo de Investimento Imobiliário, código XPLG11, aplica em galpões logísticos e industriais de padrão classe A. A gestão é da XP Asset Management, do grupo XP Inc. Os imóveis ficam em corredores logísticos, com presença nas regiões metropolitanas de São Paulo e do Rio de Janeiro e em estados como Minas Gerais, Paraná, Goiás, Pernambuco e Bahia.\n\nOs locatários citados incluem varejo digital, indústria de bens de consumo, alimentos, setor automotivo, embalagens e operadores logísticos. Há contratos típicos, pela Lei do Inquilinato, e contratos atípicos, em geral ligados a built-to-suit ou sale-leaseback, com prazo longo e indenização se a rescisão ocorrer antes do termo. A distribuição de rendimentos é mensal. O fundo também compra, desenvolve e vende imóveis, e emite cotas para financiar o portfólio.",
+  "thesis": "Os galpões estão em polos logísticos como Cajamar, Embu, Extrema e Duque de Caxias, além de regiões metropolitanas do Nordeste e do Sul. Parte dos contratos é atípica: prazo longo, reajuste pelo IPCA ou pelo IGP-M e indenização em caso de rescisão antecipada. Outra parte segue a Lei do Inquilinato, que admite ação revisional.\n\nOs rendimentos são mensais. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. O enquadramento depende da legislação vigente e da situação do cotista e do fundo.",
+  "risks": "O preço da cota no mercado muda com a taxa básica de juros. Quando a Selic sobe, títulos públicos pós-fixados passam a remunerar mais, e parte do mercado deixa as cotas. A receita dos aluguéis, por sua vez, segue os contratos, reajustados pelo IPCA ou pelo IGP-M, e não a Selic.\n\nContrato típico pode ser revisto. Contrato atípico chega ao vencimento e precisa ser renovado. Saída de locatário, inadimplência ou recuperação judicial reduz a receita do imóvel. Em mercados como Cajamar e Extrema, oferta de galpões pressiona o aluguel pedido. Emissão de cotas aumenta o número de cotas e muda a participação de quem já estava no fundo. Há taxa de gestão e pode haver taxa de performance. Mudança de equipe ou de mandato altera a política de compras e vendas. Recessão reduz a demanda por espaço logístico, e alteração na tributação dos fundos imobiliários mudaria o tratamento dos rendimentos.",
+  "peers": "No segmento de galpões, também aplicam em galpão logístico o CSHG Logística, código HGLG11, o BTG Pactual Logística, código BTLG11, a Vinci Logística, código VILG11, o VBI Logístico, código LVBI11, e o Bresco Logística, código BRCO11. O BRCO11 tem foco em contratos built-to-suit.\n\nO P/VP é o preço da cota dividido pelo valor patrimonial da cota. Acima de um, o preço de mercado está acima do patrimônio por cota. Abaixo de um, está abaixo. O XPLG11 combina contratos atípicos, contratos típicos e desenvolvimento de imóveis. A gestão é da XP Asset.",
+  "history": "O fundo abriu capital em um período de expansão dos fundos imobiliários e dos galpões, ligado ao comércio eletrônico. A política descrita é comprar galpões já ocupados e, em alguns casos, desenvolver imóveis novos. Houve emissões de cotas para ampliar o portfólio e compras em condomínios do Sudeste, do Sul e do Nordeste.\n\nNa pandemia, a demanda por galpões próximos a centros urbanos aumentou com o comércio eletrônico. No ciclo seguinte de Selic alta, o preço de mercado das cotas de fundos imobiliários caiu em relação ao valor patrimonial, inclusive com os contratos de aluguel ainda em vigor. A gestão manteve o foco em galpões, em contratos reajustados pela inflação e na seleção de novas compras.",
+  "faq": [
+    {
+      "q": "Como o XPLG11 distribui rendimentos?",
+      "a": "O fundo distribui rendimentos aos cotistas todo mês, a partir do caixa do período anterior, formado por aluguéis e outras receitas. As datas de cada pagamento saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. O enquadramento depende da legislação vigente e da situação do cotista e do fundo."
+    },
+    {
+      "q": "O que é o P/VP do XPLG11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. O indicador descreve essa relação de preço e oscila ao longo do ciclo de juros."
+    },
+    {
+      "q": "Como a Selic se relaciona com o XPLG11?",
+      "a": "Quando a taxa básica sobe, títulos públicos pós-fixados passam a remunerar mais e parte do mercado deixa as cotas, o que reduz o preço. Quando a Selic cai, o movimento de preço é o inverso. Os aluguéis do XPLG11 seguem os contratos, reajustados pelo IPCA ou pelo IGP-M."
+    },
+    {
+      "q": "Qual a diferença entre FII de tijolo e FII de papel?",
+      "a": "O XPLG11 é um fundo de tijolo: o patrimônio são imóveis, no caso galpões, e a receita vem de aluguel. Um fundo de papel aplica em recebíveis imobiliários, como certificados de recebíveis imobiliários, e a receita vem dos juros desses títulos. No tijolo, desocupação e renegociação de contrato alteram o aluguel. No papel, o risco citado é o de crédito de quem emitiu o título."
+    },
+    {
+      "q": "O que é vacância no XPLG11?",
+      "a": "Vacância é a parte do portfólio sem locatário. Enquanto o imóvel está vago, não gera o aluguel daquele espaço. O fundo tem contratos atípicos de prazo longo em parte da receita e locatários de setores diferentes. Saída de um locatário, recuperação judicial ou devolução de área aumentam a vacância até um novo contrato."
+    },
+    {
+      "q": "Como o comércio eletrônico se relaciona com o XPLG11?",
+      "a": "O varejo digital usa galpões próximos a centros urbanos para guardar e distribuir mercadorias. Operadores logísticos, varejistas digitais e indústrias de bens de consumo estão entre os locatários do fundo. O XPLG11 aplica em galpões nesses corredores. A ocupação e o aluguel também dependem dos contratos e do consumo."
+    }
+  ]
+}

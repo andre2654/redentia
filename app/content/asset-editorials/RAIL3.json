@@ -1,0 +1,33 @@
+{
+  "description": "A Rumo S.A. opera concessões de ferrovia para carga, com foco no transporte de granéis sólidos. A carga citada é soja, milho, açúcar e farelo, do interior até portos de exportação, em especial Santos. A malha passa por Mato Grosso, Mato Grosso do Sul, São Paulo, Paraná e Santa Catarina.\n\nA operação se divide em malhas. A Malha Norte liga o Mato Grosso à rede. A extensão conhecida como Ferronorte, em direção a Lucas do Rio Verde, está em obra. RAIL3 é o código das ações ordinárias, no Novo Mercado. A Cosan, código CSAN3, é a controladora.",
+  "thesis": "A receita acompanha o volume transportado. Esse volume acompanha a safra de grãos e o uso da ferrovia no lugar do caminhão nas distâncias longas até o porto. Contratos do tipo take-or-pay cobrem parte do volume combinado, mesmo quando a carga do período fica abaixo do previsto.\n\nOs proventos dependem de deliberação da companhia. O anúncio sai em comunicado, com data-com e data-ex, no site de relações com investidores.",
+  "risks": "Quebra de safra, por seca, geada, chuva em excesso ou praga, reduz o volume e a receita. O contrato take-or-pay não cobre todo o efeito de uma safra menor.\n\nA expansão, como a Ferronorte e a duplicação de trechos da Malha Paulista, é financiada com dívida. Com a Selic alta, o serviço dessa dívida pesa sobre o resultado. A concessão ferroviária também depende das regras do contrato com o poder público.",
+  "peers": "A MRS Logística, que não tem ação própria na bolsa, transporta minério para a Vale e para siderúrgicas. A América Latina Logística foi incorporada pela Rumo. A Cosan, código CSAN3, controla a Rumo.\n\nEm logística listada, a Santos Brasil, código STBP3, opera terminal em Santos. A Hidrovias do Brasil, código HBSA3, opera navegação fluvial. A CCR, código CCRO3, opera rodovias. Fora do Brasil, Union Pacific e Norfolk Southern também operam ferrovias de carga.",
+  "history": "A história da Rumo se encontra com a da América Latina Logística. A ALL veio da privatização de malhas da Rede Ferroviária Federal e operava carga no Sul e no Sudeste, com operações que chegaram a Argentina e Bolívia. A Rumo nasceu como braço logístico da Cosan, no transporte de açúcar e na exportação por Santos.\n\nAs duas companhias foram combinadas. A controladora segue sendo a Cosan. A obra da Ferronorte alonga a Malha Norte em direção a Lucas do Rio Verde, no Mato Grosso.",
+  "faq": [
+    {
+      "q": "Por que a RAIL3 não tem ação preferencial?",
+      "a": "A Rumo está no Novo Mercado, em que a ação listada é ordinária. RAIL3 dá direito a voto. Não há ação preferencial. A Cosan, código CSAN3, é a controladora."
+    },
+    {
+      "q": "Como a RAIL3 distribui proventos?",
+      "a": "Os proventos dependem de deliberação da Rumo. O anúncio sai em comunicado, com a data-com e a data-ex, publicadas no site de relações com investidores. A companhia também pode deliberar provento adicional ao ordinário, quando a assembleia ou o conselho assim decidir."
+    },
+    {
+      "q": "Como a safra de grãos se relaciona com a RAIL3?",
+      "a": "A carga principal é grão e derivado, do interior até o porto. Safra menor reduz o volume transportado e a receita. Parte dos contratos é take-or-pay: há um volume combinado que o cliente paga mesmo se embarcar menos. Isso não elimina o efeito de uma quebra de safra sobre o restante do volume."
+    },
+    {
+      "q": "O que é a Ferronorte?",
+      "a": "É a extensão da Malha Norte em direção a Lucas do Rio Verde, no Mato Grosso, região de produção de grãos. A obra liga essa produção à malha que segue até o porto. Enquanto o trecho não entra em operação, não transporta a carga daquele pedaço."
+    },
+    {
+      "q": "Como a Selic se relaciona com a RAIL3?",
+      "a": "A expansão da malha é financiada com dívida. Quando a taxa básica sobe, o serviço dessa dívida pesa mais sobre o resultado. O volume transportado, por sua vez, segue a safra e os contratos, não a Selic."
+    },
+    {
+      "q": "Quem controla a Rumo?",
+      "a": "A controladora é a Cosan, código CSAN3. A Rumo opera as concessões ferroviárias. A ALL, que veio das malhas da Rede Ferroviária Federal, foi incorporada pela Rumo."
+    }
+  ]
+}

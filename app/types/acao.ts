@@ -226,8 +226,11 @@ export interface AcaoEditorialVM {
   /** Seções com corpo de verdade. Seção sem texto não entra (nada de H2 vazio). */
   sections: { id: string; heading: string; body: string }[]
   faq: NuFaqItem[]
-  /** ISO date de geração, pra linha de "atualizado em". */
-  generatedAt: string | null
+  /**
+   * Sempre null na página. O carimbo de geração do banco não é data de
+   * revisão e a seção não o exibe.
+   */
+  generatedAt: null
 }
 
 /** GET /api/theses/{slug} → data.companies[] (papel do ativo por empresa). */

@@ -1,0 +1,33 @@
+{
+  "description": "A Telefônica Brasil, com a marca Vivo, presta telefonia móvel, banda larga fixa, TV por assinatura, telefonia fixa, internet por fibra, serviços a empresas, cibersegurança, internet das coisas e produtos digitais. A operação cobre os estados brasileiros, com presença em São Paulo ligada à privatização da Telebrás. O controle é da Telefónica, da Espanha. VIVT3 é o código das ações ordinárias. A ação integra o Ibovespa e o Índice de Sustentabilidade Empresarial.\n\nA receita se organiza em mobilidade, sob a marca Vivo, em banda larga e fibra, e em serviços a empresas, governo e negócios de menor porte. A fibra compete com Claro, TIM, Oi e operadoras regionais. A área de empresas inclui conectividade, nuvem, cibersegurança e ferramentas digitais. A receita recorrente vem de planos de assinatura.",
+  "thesis": "A receita vem de planos móveis, de fibra e de serviços a empresas. A troca do cobre pela fibra muda a receita média por usuário e o custo de manutenção. O 5G abre ofertas a empresas, como internet das coisas, cidade conectada e computação de borda. Há também produtos digitais, entre eles Vivo Play e Vivo Money, além de saúde digital, segurança residencial e parcerias de comércio e de educação.\n\nOs proventos saem como dividendos ou juros sobre capital próprio, em base semestral ou trimestral. A política considera lucro, fluxo de caixa e o investimento em rede. O anúncio sai depois dos resultados, com data-com e data-ex no site de relações com investidores. O juro sobre capital próprio tem retenção de imposto de renda na fonte para a pessoa física.",
+  "risks": "A Vivo concorre com a Claro, da América Móvil, com a TIM e com operadoras regionais de fibra, como Brisanet, Desktop e Algar. A saída da Oi da telefonia móvel, com divisão dos ativos entre Vivo, Claro e TIM, mudou o desenho da competição nacional. A pressão de preço no pré-pago e em pacotes de móvel, fibra e streaming segue na receita.\n\nO investimento em rede é contínuo, do 4G para o 5G e do cobre para a fibra, inclusive nas frequências leiloadas pela Anatel. Em ciclo de juros altos, o custo da dívida pesa no caixa. A Anatel define qualidade, neutralidade de rede, espectro e cobertura em área remota. A telefonia fixa passou de concessão para autorização, e as obrigações mudaram. Aplicativos de mensagem, vídeo e áudio substituem voz, mensagem de texto e parte da TV e usam a rede da operadora. Equipamento importado põe o câmbio no investimento, e a renda do consumidor entra na receita média por usuário.",
+  "peers": "Na B3, a TIM, no código TIMS3, também opera telefonia móvel. A Oi, no código OIBR3, passou por recuperação judicial, vendeu a operação móvel e ficou com fibra e clientes corporativos. A Brisanet, no código BRIT3, atua em fibra em base regional.\n\nFora do Brasil, operadoras como Verizon, AT&T, T-Mobile, Deutsche Telekom, Vodafone e Orange prestam o mesmo tipo de serviço. A Vivo opera no Brasil, em reais, sob controle da Telefónica. A companhia tem metas de emissão no consumo elétrico de antenas e de centrais de dados, integra o Índice de Sustentabilidade Empresarial e mantém programa de inclusão digital.",
+  "history": "A Telefônica Brasil vem da privatização do sistema Telebrás. A região de São Paulo ficou com o grupo Telefónica, da Espanha, na origem da Telesp. A companhia modernizou a rede de cobre e depois incorporou a Vivo Participações, reunindo a operação móvel na marca Vivo. A integração unificou sistemas, redes e marca.\n\nA compra da GVT ampliou banda larga e telefonia fixa fora de São Paulo, com efeito na rede de transporte e nos clientes corporativos. Depois, a Vivo ficou com parte dos ativos móveis da Oi, em conjunto com TIM e Claro, e adquiriu frequências no leilão de 5G. A expansão de fibra substitui trechos da rede de cobre. Os proventos seguiram em dividendos e em juros sobre capital próprio.",
+  "faq": [
+    {
+      "q": "Qual a diferença entre VIVT3 e VIVT4?",
+      "a": "VIVT3 são as ações ordinárias e dão direito a voto em assembleia. As preferenciais, no código VIVT4, foram convertidas em ordinárias. Hoje a bolsa negocia VIVT3. A conversão reuniu o direito de voto nessa classe."
+    },
+    {
+      "q": "Como a VIVT3 distribui proventos?",
+      "a": "A Telefônica Brasil distribui dividendos e juros sobre capital próprio, em base semestral ou trimestral. A política considera lucro, fluxo de caixa e investimento em rede. O anúncio sai depois dos resultados, com data-com, data-ex e cronograma no site de relações com investidores."
+    },
+    {
+      "q": "A Vivo paga juros sobre capital próprio?",
+      "a": "Sim. A Telefônica Brasil usa juros sobre capital próprio na remuneração, com dedução na apuração do imposto da companhia. A pessoa física recebe esse provento com retenção de imposto de renda na fonte. O dividendo segue outra regra de tributação. A combinação é definida pelo conselho e divulgada em fato relevante."
+    },
+    {
+      "q": "Como o 5G se relaciona com a VIVT3?",
+      "a": "O 5G exigiu investimento em antenas, fibra de conexão das estações e equipamentos de rede, com efeito no caixa. Também abre ofertas a empresas, como internet das coisas e indústria conectada, e planos de receita média mais alta. A frequência veio de leilão da Anatel. A receita nova depende das aplicações que passam a usar a rede."
+    },
+    {
+      "q": "Como a Anatel se relaciona com a VIVT3?",
+      "a": "A Anatel define cobertura, qualidade, neutralidade de rede, leilão de espectro e fiscalização comercial. Decisão sobre tarifa, frequência, portabilidade ou investimento em área remota entra na margem e no investimento da Vivo. A passagem da telefonia fixa de concessão para autorização é uma dessas mudanças de regra."
+    },
+    {
+      "q": "Como a fibra óptica se relaciona com a Vivo?",
+      "a": "A Vivo troca trechos de cobre por fibra até o domicílio. O plano de fibra muda a velocidade contratada e a receita média por usuário. A fibra pede menos manutenção e menos energia do que o cobre. A expansão chega a regiões em que a internet de alta velocidade era limitada."
+    }
+  ]
+}

@@ -63,6 +63,8 @@ import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
 import { FONTE_FUNDAMENTALISTAS, FONTE_SCRAPER, fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
+import { ASSET_EDITORIALS } from '~/content/asset-editorials'
+import { editorialExibido } from '~/utils/assetEditorial'
 
 /* ————— helpers de formatação ————— */
 
@@ -1026,7 +1028,8 @@ function buildEditorial(editorial: EditorialApi | null, name: string, isFii: boo
 
   if (!sections.length && !faq.length) return null
 
-  return { sections, faq, generatedAt: editorial.generated_at }
+  // O carimbo generated_at do banco não é revisão do texto. A seção não mostra data.
+  return { sections, faq, generatedAt: null }
 }
 
 /* ————— resumo factual (SSR) ————— */
@@ -1632,8 +1635,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   // BDR: o nome inteiro da matriz. O da B3 corta em 12 ('PALANTIRTECHDRN').
   const bdrName = kind === 'bdr' ? nomeDoBdr(overview?.scrape_extras?.identity?.company_name) : null
   const name = kind === 'etf' && etf?.name ? etf.name : bdrName ?? prettyName(profile.name, f?.fiiName)
-  // flat, sem wrapper `data` (gotcha documentado no service)
-  const editorial = ok(editorialR) ?? null
+  // flat, sem wrapper `data` (gotcha documentado no service).
+  // O texto exibido é o editorial factual local, quando existe para o ticker.
+  const editorial = editorialExibido(ticker, ok(editorialR) ?? null, ASSET_EDITORIALS)
 
   const assetSeries = toSeries(ok(pricesR)?.data)
   const ibovSeries = toSeries(ok(ibovR)?.data)
@@ -1658,8 +1662,8 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
   const read = buildAiRead(f, editorial, ticker)
   let ai: AcaoAiVM | null = null
   if (score || consensus || read) {
-    // 'atualizada hoje' vem de datas REAIS (consenso re-escrapado / editorial).
-    const dates = [ok(consensusR)?.refreshed_at, editorial?.generated_at].filter((d): d is string => !!d)
+    // Data do consenso re-escrapado. O carimbo do editorial não entra: não é revisão do texto.
+    const dates = [ok(consensusR)?.refreshed_at].filter((d): d is string => !!d)
     const latest = dates.sort().pop()
     const updatedLabel = latest
       ? latest.slice(0, 10) === localISODate() ? 'atualizada hoje' : `atualizada em ${latest.slice(8, 10)}/${latest.slice(5, 7)}`

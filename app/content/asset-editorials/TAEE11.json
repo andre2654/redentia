@@ -1,0 +1,33 @@
+{
+  "description": "A Taesa, Transmissora Aliança de Energia Elétrica, atua só em transmissão de energia. Não opera geração nem distribuição. A atividade é construir, operar e manter linhas de transmissão que ligam usinas a centros de consumo. A receita é a Receita Anual Permitida, a RAP, valor regulado pela Aneel e pago pelas distribuidoras conforme a disponibilidade dos ativos.\n\nAs linhas atravessam vários estados, entre eles São Paulo, Minas Gerais, Goiás, Bahia, Espírito Santo, Pernambuco e a região Sul. As concessões vêm de leilões da Aneel. A companhia também participa de consórcios. TAEE11 é uma unit: reúne uma ação ordinária, TAEE3, e duas preferenciais, TAEE4. O controle já envolveu a Cemig e fundos, com mudanças de composição ao longo do tempo.",
+  "thesis": "A RAP é definida pela Aneel e paga pela disponibilidade da linha, não pelo volume de energia. O contrato reajusta esse valor pelo IPCA ou pelo IGP-M, conforme o caso.\n\nOs proventos dependem de deliberação da companhia e podem sair como dividendos ou juros sobre capital próprio. O anúncio traz a data-com e a data-ex e é publicado no site de relações com investidores.",
+  "risks": "A concessão é regulada pela Aneel. Mudança na forma de calcular a RAP, no fator X ou na revisão tarifária altera a receita permitida. As revisões periódicas recalculam premissas de custo de capital e de eficiência.\n\nNovas linhas dependem de leilões em que também participam outras transmissoras. A obra exige investimento e, enquanto não entra em operação, não gera a RAP daquele ativo. Atraso de licença, de faixa de servidão ou de equipamento adia o início da receita. As linhas também estão sujeitas a clima, queimada e furto de cabos.",
+  "peers": "No mesmo segmento, estão a ISA CTEEP, no código TRPL4, a Alupar, no código ALUP11, e a transmissão da Engie Brasil, no código EGIE3. A ISA CTEEP opera linhas de transmissão, com presença em São Paulo. A Alupar também atua em transmissão. A Engie Brasil atua em geração e em transmissão.\n\nFora do Brasil, o mesmo tipo de atividade regulada de rede elétrica aparece em companhias como American Electric Power, National Grid e Red Eléctrica de España. A Taesa opera no Brasil, sob as regras da Aneel e em reais.",
+  "history": "A Taesa foi constituída como transmissora a partir de uma reorganização de ativos de transmissão do setor elétrico. O desenho regulatório da Aneel separa a receita da linha, pela RAP, do volume de energia transportado, e concede novas linhas em leilão.\n\nA companhia abriu capital na bolsa, expandiu por leilões e por compra de ativos e de participações em consórcios, e fez uma oferta subsequente de ações para financiar projetos. A Cemig já figurou entre os acionistas relevantes. As units fazem parte de índices da B3, entre eles o Ibovespa e o Índice de Sustentabilidade Empresarial.",
+  "faq": [
+    {
+      "q": "O que é a unit TAEE11?",
+      "a": "TAEE11 é uma unit que combina uma ação ordinária, TAEE3, com duas ações preferenciais, TAEE4. Quem detém a unit detém esses papéis nessa proporção. TAEE3 dá direito a voto em assembleia. TAEE4 não dá voto e tem preferência no recebimento de dividendos."
+    },
+    {
+      "q": "Como a TAEE11 distribui proventos?",
+      "a": "Os proventos dependem de deliberação da Taesa e podem ser dividendos ou juros sobre capital próprio. O anúncio sai depois da divulgação de resultados, com a data-com e a data-ex, publicadas no site de relações com investidores."
+    },
+    {
+      "q": "Como funciona a Receita Anual Permitida?",
+      "a": "A RAP é o valor que a transmissora recebe das distribuidoras pela disponibilidade dos ativos de transmissão. A Aneel a define no leilão da concessão, e o contrato prevê reajuste pelo IPCA ou pelo IGP-M. O pagamento não depende do volume de energia que passa pela linha. Indisponibilidade do ativo pode reduzir a RAP, conforme a regra do setor."
+    },
+    {
+      "q": "Como a Aneel se relaciona com a TAEE11?",
+      "a": "A Aneel define a metodologia da RAP, o calendário de leilões de transmissão, as regras de revisão tarifária e a fiscalização do serviço. Decisões sobre o fator X e sobre as premissas da revisão entram no cálculo da receita permitida."
+    },
+    {
+      "q": "Como a RAP se relaciona com a inflação?",
+      "a": "O contrato de concessão reajusta a RAP pelo IPCA ou pelo IGP-M, conforme o caso. O reajuste é uma cláusula do contrato regulado, não um pagamento separado."
+    },
+    {
+      "q": "O que é o fator X?",
+      "a": "O fator X é uma redução aplicada à RAP de concessões mais antigas nas revisões tarifárias. A função regulatória é repassar ganhos de eficiência ao longo da concessão. Concessões mais novas seguem as cláusulas do próprio contrato."
+    }
+  ]
+}

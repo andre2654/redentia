@@ -1,0 +1,33 @@
+{
+  "description": "O Hedge Top FOFII 3, código HFOF11, é um fundo de fundos imobiliários. A gestão é da Hedge Investments. O fundo compra cotas de outros fundos imobiliários listados na B3, de tijolo e de papel.\n\nNo tijolo, as cotas citadas cobrem laje corporativa, galpão logístico, shopping e renda urbana. No papel, são fundos de certificados de recebíveis imobiliários. A composição muda ao longo do tempo. Os relatórios mensais da gestora listam as posições. A distribuição de rendimentos é mensal.",
+  "thesis": "A cota do HFOF11 reúne, num só código, cotas de vários fundos. Vacância de um imóvel ou inadimplência de um devedor fica dentro do fundo investido, e o resultado do HFOF11 acompanha o conjunto.\n\nOs rendimentos são mensais e vêm dos rendimentos que os fundos investidos pagam. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal.",
+  "risks": "O cotista paga a taxa do HFOF11 e, por dentro, as taxas dos fundos investidos, já descontadas antes de eles distribuírem. Quem compra as cotas direto não paga a taxa do fundo de fundos.\n\nO preço das cotas dos fundos investidos muda com a Selic. Quando a taxa básica sobe, o preço de mercado desses fundos cai, e a cota do HFOF11 acompanha. O relatório mensal mostra a carteira. A seleção e a troca de posições são da Hedge.",
+  "peers": "Outros fundos de fundos citados são o BTG Pactual Fundo de Fundos, código BCFF11, o Kinea Fundo de Fundos, código KFOF11, o BB Progressivo II, código BPFF11, e o RBR Alpha, código RBRF11. Todos compram cotas de outros fundos imobiliários. O peso entre tijolo e papel muda de um para outro.\n\nO P/VP é o preço da cota dividido pelo valor patrimonial da cota. Acima de um, o preço de mercado está acima do patrimônio por cota. Abaixo de um, está abaixo. O patrimônio do HFOF11 reflete o das cotas que ele carrega.",
+  "history": "A Hedge Investments lançou o fundo como veículo que compra cotas de outros fundos imobiliários, em vez de imóveis ou certificados direto.\n\nHouve emissões de cotas. Na pandemia, fundos de shopping tiveram queda de receita, e o portfólio do HFOF11 carregava esse segmento junto com os demais. No ciclo de Selic alta, o preço de mercado das cotas de fundos imobiliários caiu em relação ao valor patrimonial, e a cota do fundo de fundos acompanhou.",
+  "faq": [
+    {
+      "q": "Como o HFOF11 distribui rendimentos?",
+      "a": "O fundo recebe os rendimentos dos fundos imobiliários em que aplica e distribui aos cotistas todo mês. As datas saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "O que é o P/VP do HFOF11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. O patrimônio reflete o valor das cotas dos outros fundos que o HFOF11 carrega."
+    },
+    {
+      "q": "Como a Selic se relaciona com o HFOF11?",
+      "a": "Quando a taxa básica sobe, o preço de mercado das cotas de fundos imobiliários cai, e a cota do HFOF11 acompanha porque o patrimônio dele é feito dessas cotas. Quando a Selic cai, o movimento de preço é o inverso. Os rendimentos recebidos dependem do que cada fundo investido distribui."
+    },
+    {
+      "q": "O que é um fundo de fundos imobiliários?",
+      "a": "É um fundo que não compra o imóvel nem o certificado diretamente. Compra cotas de outros fundos imobiliários já listados. O HFOF11 está nesse formato. A gestora escolhe quais cotas entram e quais saem."
+    },
+    {
+      "q": "O que é a dupla taxa no HFOF11?",
+      "a": "A Hedge cobra a taxa do HFOF11. Cada fundo investido já descontou a própria taxa antes de distribuir. O cotista do HFOF11 convive com as duas. Quem compra a cota do fundo investido direto paga só a taxa daquele fundo."
+    },
+    {
+      "q": "Qual a diferença entre o HFOF11 e a compra direta de cotas?",
+      "a": "No HFOF11, uma cota reúne várias outras, e a Hedge faz a seleção. Na compra direta, a pessoa escolhe cada código e não paga a taxa do fundo de fundos. O resultado do HFOF11 é o dos fundos investidos, menos a taxa da Hedge."
+    }
+  ]
+}
