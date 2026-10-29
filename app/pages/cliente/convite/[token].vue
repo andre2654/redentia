@@ -40,7 +40,7 @@ definePageMeta({ layout: false })
 
 usePageSeo({
   title: 'Conectar ao seu escritório · Redentia',
-  description: 'Escolha a instituição e autorize o seu escritório a acompanhar as suas posições de investimento.',
+  description: 'Escolha a instituição e autorize o seu escritório a acompanhar os seus investimentos e o saldo em conta.',
   path: '/cliente/convite',
   robots: 'noindex, nofollow',
 })

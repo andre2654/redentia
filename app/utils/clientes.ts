@@ -24,7 +24,8 @@ export function clientStatusLabel(s: string | null | undefined): string {
 
 /** O que o cliente autoriza, em linguagem de gente. */
 export const CLIENT_SCOPE_LABEL: Record<string, string> = {
-  posicoes_investimento: 'Posições de investimento: quais ativos, a quantidade, o preço médio e o valor. Sem saldo de conta, cartão ou movimentação.',
+  posicoes_investimento: 'Posições de investimento: quais ativos, a quantidade, o preço médio e o valor.',
+  saldo_em_conta: 'Saldo das contas corrente e poupança. Sem cartão, extrato ou movimentação.',
 }
 
 export function clientScopeLabel(s: ClientScope): string {

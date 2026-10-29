@@ -179,7 +179,9 @@ test('invariante: modo pluggy conecta pelo widget e grava só com o item conferi
   assert.match(abrir, /'widget_closed'\) return opts\.onCancelado\?\.\(\)/)
   // o widget pede só investimentos e nunca lista conectores de sandbox
   const widget = conexao.slice(conexao.indexOf('async function abrirWidgetPluggy'))
-  assert.match(widget, /products: \['INVESTMENTS'\]/)
+  // o termo autoriza posições e saldo: nada de cartão ou extrato
+  assert.match(widget, /products: \['INVESTMENTS', 'ACCOUNTS'\]/)
+  assert.doesNotMatch(widget, /CREDIT_CARDS|'TRANSACTIONS'/)
   assert.match(widget, /includeSandbox: false/)
   assert.doesNotMatch(widget, /onError:[^\n]*reject/, 'erro dentro do widget não encerra: a pessoa tenta de novo lá')
   // a página roda os dois fluxos e não trata mais pluggy como indisponível

@@ -101,7 +101,7 @@ export const RB_FAQ: RbFaqGrupo[] = [
       },
       {
         q: 'De onde vem a carteira de um cliente conectado?',
-        a: 'Do Open Finance, a conexão regulada pelo Banco Central, autorizada pelo próprio cliente num link que o escritório manda. O acesso é de leitura e cobre posições de investimento: ação, FII, ETF, BDR, Tesouro Direto e cripto. Saldo de conta corrente, cartão e extrato de transações não entram.',
+        a: 'Do Open Finance, a conexão regulada pelo Banco Central, autorizada pelo próprio cliente num link que o escritório manda. O acesso é de leitura e cobre as posições de investimento (ação, FII, ETF, BDR, Tesouro Direto e renda fixa) e o saldo das contas corrente e poupança. Cartão e extrato de transações não entram.',
       },
       {
         q: 'Quais instituições o cliente consegue conectar?',

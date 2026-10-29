@@ -310,8 +310,9 @@ interface ItemPluggy { id: string, connector?: { name?: string } | null }
  * o clientUserId do cliente, e o servidor confere o item contra ele).
  * Resolve no onSuccess com o item; rejeita com 'widget_closed' se a pessoa
  * fechar antes. O onError NÃO encerra: o widget mostra o erro e deixa tentar
- * de novo lá dentro. Só o produto INVESTMENTS: o termo autoriza só posições
- * de investimento, e o consentimento no banco pede só isso.
+ * de novo lá dentro. Só INVESTMENTS e ACCOUNTS: o termo (2026-10-5) autoriza
+ * posições de investimento e saldo em conta, e o consentimento no banco pede
+ * só isso. Cartão e extrato (CREDIT_CARDS, TRANSACTIONS) ficam de fora.
  *
  * O CPF digitado em outro lugar nunca é repassado (o widget pede o dele).
  * Mesmo import dinâmico do usePluggyConnect: o Pluggy não publica UMD em CDN
@@ -330,7 +331,7 @@ async function abrirWidgetPluggy(connectToken: string): Promise<ItemPluggy> {
       language: 'pt',
       includeSandbox: false,
       allowFullscreen: true,
-      products: ['INVESTMENTS'],
+      products: ['INVESTMENTS', 'ACCOUNTS'],
       onSuccess: ({ item }: { item: ItemPluggy }) => resolve(item),
       onClose: () => reject(new Error('widget_closed')),
     })
