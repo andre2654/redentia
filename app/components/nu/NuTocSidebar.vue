@@ -35,9 +35,13 @@ useNuScrollFrame(() => {
 </template>
 
 <style scoped>
-/* sticky top compensa a faixa "Mercado agora" sticky do layout (~48px por
-   cima dos 32px do design — o mock não tem a faixa). */
-.ntoc { width: 250px; flex-shrink: 0; position: sticky; top: 84px; }
+/* Gruda abaixo do header (--nuh-h: 76px, 58px encolhido) e da faixa
+   "Mercado agora", que cola no header (~49px + folga). 84px fixo entrava
+   debaixo da faixa e o índice sumia sob o header (z-index 50). */
+.ntoc {
+  width: 250px; flex-shrink: 0; position: sticky; z-index: 2;
+  top: calc(var(--nuh-h, 76px) + 60px);
+}
 .ntoc__label {
   color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;

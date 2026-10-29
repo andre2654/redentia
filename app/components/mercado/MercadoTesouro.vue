@@ -80,8 +80,8 @@ const { highlight, groups, loading } = useNuTesouro()
   width: 44px; height: 44px; border-radius: 50%; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
 }
-.mts__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(265px, 1fr)); gap: 16px; margin-top: 40px; }
-.mts__hi { background: var(--nu-blue); border-radius: var(--nu-r-card-lg); padding: 28px; display: flex; flex-direction: column; }
+.mts__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 265px), 1fr)); gap: 16px; margin-top: 40px; }
+.mts__hi { background: var(--nu-blue); border-radius: var(--nu-r-card-lg); padding: 28px; display: flex; flex-direction: column; min-width: 0; }
 .mts__hi-kicker { color: var(--nu-white-75); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; }
 .mts__hi-name { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -.3px; margin-top: 22px; }
 .mts__hi-venc { color: var(--nu-white-65); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 4px; }
@@ -91,7 +91,7 @@ const { highlight, groups, loading } = useNuTesouro()
 }
 .mts__hi-unit { color: var(--nu-white-65); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 6px; }
 .mts__hi-updated { color: var(--nu-white-60); font-size: var(--nu-fs-dense); font-weight: 500; margin-top: auto; padding-top: 22px; }
-.mts__group { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: 26px; }
+.mts__group { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: 26px; min-width: 0; }
 .mts__group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .mts__group-name { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -.2px; }
 .mts__group-count {
@@ -99,15 +99,20 @@ const { highlight, groups, loading } = useNuTesouro()
   font-size: var(--nu-fs-xs); font-weight: 700; padding: 5px 12px; border-radius: var(--nu-r-pill); white-space: nowrap;
 }
 .mts__rows { margin-top: 10px; }
-.mts__row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--nu-cream-2); }
-.mts__row-id { flex: 1; min-width: 0; overflow: hidden; }
-.mts__row-name {
-  display: block; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+/* Nome e taxa em colunas: o nome quebra dentro da célula (minmax 0) e a taxa
+   fica na coluna da direita, sem ellipsis por cima do número. */
+.mts__row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+  column-gap: 12px; padding: 12px 0; border-top: 1px solid var(--nu-cream-2);
 }
-.mts__row-venc { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; margin-top: 1px; }
+.mts__row-id { min-width: 0; }
+.mts__row-name {
+  display: block; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
+  line-height: 1.3; white-space: normal; overflow-wrap: anywhere;
+}
+.mts__row-venc { display: block; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; margin-top: 1px; overflow-wrap: anywhere; }
 .mts__row-rate {
   color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
-  font-variant-numeric: tabular-nums; flex-shrink: 0;
+  font-variant-numeric: tabular-nums; text-align: right; justify-self: end;
 }
 </style>
