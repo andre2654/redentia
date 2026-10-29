@@ -130,6 +130,6 @@ onBeforeUnmount(() => {
 .nsr__row + .nsr__row { border-top: 1px solid var(--nu-cream-2); }
 .nsr__row:hover { background: var(--nu-cream-hover); }
 .nsr__row svg { color: var(--nu-gray); flex-shrink: 0; }
-.nsr__row--active { color: var(--nu-blue); }
+.nsr__row--active { color: var(--nu-blue-text); }
 .nsr__row--active svg { color: var(--nu-blue); }
 </style>

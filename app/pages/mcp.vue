@@ -238,7 +238,7 @@ usePageSeo({
   padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(52px, 7vw, 84px);
   animation: nu-fade .5s ease both;
 }/* duas colunas na anatomia do hero da home (mh__cols): texto + demo */
-.mdoc__cols{ display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; }.mdoc__left{ flex: 1.1 1 460px; min-width: min(320px, 100%); }.mdoc__right{ flex: 1 1 380px; min-width: min(320px, 100%); display: flex; justify-content: center; }.mdoc__eyebrow{ color: var(--nu-blue); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }/* H1 no clamp do hero da home (mh__title): hero de duas colunas divide a
+.mdoc__cols{ display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; }.mdoc__left{ flex: 1.1 1 460px; min-width: min(320px, 100%); }.mdoc__right{ flex: 1 1 380px; min-width: min(320px, 100%); display: flex; justify-content: center; }.mdoc__eyebrow{ color: var(--nu-blue-text); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }/* H1 no clamp do hero da home (mh__title): hero de duas colunas divide a
    largura, o corpo do hub (88px) estourava pra 3 linhas */
 .mdoc__h1{
   margin: 14px 0 0; color: var(--nu-ink);
@@ -283,9 +283,9 @@ usePageSeo({
 }.mdoc__endpoint-note{ color: rgba(245, 241, 234, .6); font-size: var(--nu-fs-dense); font-weight: 500; }.mdoc__endpoint-note code{ color: rgba(245, 241, 234, .85); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }/* ——— como conectar ——— */
 .mdoc__sec{ background: var(--nu-white); padding: clamp(52px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px); }/* banda creme + cartão branco (formato da referência do dono; mesma lógica
    white-on-cream dos cards das calculadoras e do FAQ accordion) */
-.mdoc__sec--band{ background: var(--nu-cream); }.mdoc__h2{ margin: 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }.mdoc__lead{ color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin: 16px 0 0; max-width: 720px; }.mdoc__link{ color: var(--nu-blue); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }.mdoc__n{
+.mdoc__sec--band{ background: var(--nu-cream); }.mdoc__h2{ margin: 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vw, 44px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; }.mdoc__lead{ color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; margin: 16px 0 0; max-width: 720px; }.mdoc__link{ color: var(--nu-blue-text); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }.mdoc__n{
   width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-  background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .12)); color: var(--nu-blue);
+  background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .12)); color: var(--nu-blue-text);
   border-radius: 9px; font-size: var(--nu-fs-sm); font-weight: 700;
 }/* ——— corretoras ——— */
 .mdoc__insts-note{ margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; max-width: 720px; }/* faixa central de avatares sobrepostos + círculo de contagem */
@@ -299,16 +299,16 @@ usePageSeo({
   font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: -0.02em;
 }/* ——— comparativo ——— */
 .mdoc__cmp-head{ text-align: center; max-width: 760px; margin: 0 auto; }.mdoc__chip{
-  display: inline-flex; background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .1)); color: var(--nu-blue);
+  display: inline-flex; background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .1)); color: var(--nu-blue-text);
   font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase;
   padding: 7px 14px; border-radius: 999px;
-}.mdoc__h2--center{ margin-top: 18px; }.mdoc__h2 em{ color: var(--nu-blue); font-style: italic; }.mdoc__lead--center{ margin-left: auto; margin-right: auto; }.mdoc__cmp-card{
+}.mdoc__h2--center{ margin-top: 18px; }.mdoc__h2 em{ color: var(--nu-blue-text); font-style: italic; }.mdoc__lead--center{ margin-left: auto; margin-right: auto; }.mdoc__cmp-card{
   background: var(--nu-white); border-radius: var(--nu-r-card);
   box-shadow: var(--nu-shadow-card); margin: 30px auto 0; max-width: 1080px;
   overflow: hidden;
 }.mdoc__cmp-scroll{ overflow-x: auto; }.mdoc__cmp{ width: 100%; min-width: 720px; border-collapse: collapse; }.mdoc__cmp th{
   color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
   text-align: center; padding: 18px 14px; border-bottom: 1.5px solid var(--nu-cream-2);
-}.mdoc__cmp th.mdoc__cmp-q{ text-align: left; }.mdoc__cmp td{ text-align: center; padding: 15px 14px; border-bottom: 1.5px solid var(--nu-cream-2); }.mdoc__cmp tbody tr:last-child td{ border-bottom: 0; }.mdoc__cmp td.mdoc__cmp-q{ text-align: left; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4; }.mdoc__cmp th.mdoc__cmp-us{ color: var(--nu-blue); }.mdoc__cmp .mdoc__cmp-us{ background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .06)); }.mdoc__yes{ color: var(--nu-blue); display: inline-block; vertical-align: middle; }.mdoc__no{ color: var(--nu-sand, #C9C2B4); display: inline-block; vertical-align: middle; }.mdoc__cell-txt{ color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }/* ——— FAQ + CTA final ——— */
+}.mdoc__cmp th.mdoc__cmp-q{ text-align: left; }.mdoc__cmp td{ text-align: center; padding: 15px 14px; border-bottom: 1.5px solid var(--nu-cream-2); }.mdoc__cmp tbody tr:last-child td{ border-bottom: 0; }.mdoc__cmp td.mdoc__cmp-q{ text-align: left; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4; }.mdoc__cmp th.mdoc__cmp-us{ color: var(--nu-blue-text); }.mdoc__cmp .mdoc__cmp-us{ background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .06)); }.mdoc__yes{ color: var(--nu-blue); display: inline-block; vertical-align: middle; }.mdoc__no{ color: var(--nu-sand, #C9C2B4); display: inline-block; vertical-align: middle; }.mdoc__cell-txt{ color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }/* ——— FAQ + CTA final ——— */
 .mdoc__faq{ max-width: 820px; margin: 0 auto; }.mdoc__faq-list{ margin-top: clamp(28px, 3.5vw, 40px); }.mdoc__final{ background: var(--nu-navy); padding: clamp(64px, 8vw, 104px) clamp(22px, 5.5vw, 80px); text-align: center; }.mdoc__final-t{ margin: 0; color: var(--nu-cream-text); font-size: clamp(30px, 4vw, 50px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.04; }.mdoc__final-p{ margin: 18px 0 0; color: var(--nu-cream-text-72); font-size: clamp(16px, 1.7vw, 19px); font-weight: 500; }.mdoc__cta--big{ margin-top: 28px; padding: 18px 34px; font-size: var(--nu-fs-lg); }
 </style>

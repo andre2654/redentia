@@ -2,17 +2,17 @@
 // /institucional/contact — "Fale com a Redentia" (portada de
 // Frontend/app/pages/institucional/contact.vue). Placeholders de brand
 // resolvidos: brand.name = "Redentia", e-mail de suporte =
-// suporte@redentia.com.br.
+// relacionamento@redentia.com.br.
 //
 // PADRÃO Nu (mesmo sistema visual das legais /institucional/privacy): banda
 // creme do LegalHero (eyebrow + H1) → banda branca com a coluna de artigo.
 // O corpo desta página, porém, é interativo (form + canais + FAQ), então usa
 // LegalHero + composição própria em vez do LegalDoc de prosa.
 //
-// TEXTO VERBATIM (acentos restaurados): o FAQ (3 perguntas/respostas), os
-// rótulos/placeholders/opções do form e os textos de botão/sucesso vêm
-// literais da página antiga. Ver legal/contact/ContactForm.vue (auto-import
-// <ContactForm>) para os textos do form.
+// TEXTO VERBATIM (acentos restaurados): as 3 perguntas do FAQ, as respostas 2
+// e 3, e os rótulos/placeholders/opções do form vêm literais da página antiga.
+// A 1ª resposta descreve a conexão pelo Open Finance, no app da instituição. O botão e o painel
+// pós-clique do form (ContactForm.vue) não afirmam envio.
 //
 // brand.contact (title/subtitle/channels) vinha do JSONB do tenant no banco
 // (não versionado no repo). Resolvido para a Redentia: título "Fale com a
@@ -20,7 +20,7 @@
 // conforme instrução "mantenha canais/horários").
 import type { NuFaqItem } from '~/types/market'
 
-const SUPPORT_EMAIL = 'suporte@redentia.com.br'
+const SUPPORT_EMAIL = 'relacionamento@redentia.com.br'
 
 // FAQ VERBATIM da página antiga (as 3 perguntas em <details>). O
 // NuFaqAccordion emite o JSON-LD FAQPage (rich snippet) — equivalente
@@ -28,7 +28,7 @@ const SUPPORT_EMAIL = 'suporte@redentia.com.br'
 const faqs: NuFaqItem[] = [
   {
     q: 'Como posso conectar minha corretora?',
-    a: 'Você pode conectar sua corretora através do CEI (Canal Eletrônico do Investidor) ou diretamente com as APIs das principais corretoras do mercado.',
+    a: 'Você pode conectar seus bancos e corretoras pelo Open Finance, autorizando o compartilhamento no aplicativo da própria instituição.',
   },
   {
     q: 'Meus dados estão seguros?',
@@ -154,7 +154,7 @@ useHead({ titleTemplate: null })
 }
 .ctc__channel-label { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.15px; }
 .ctc__channel-value { margin-top: 5px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.ctc__channel-value--link { color: var(--nu-blue); text-decoration: none; transition: color .2s; }
+.ctc__channel-value--link { color: var(--nu-blue-text); text-decoration: none; transition: color .2s; }
 .ctc__channel-value--link:hover { color: var(--nu-blue-hover); text-decoration: underline; text-underline-offset: 2px; }
 
 /* FAQ — seção padrão (mesmo bloco .mfq do /mercado): 2 colunas, título +

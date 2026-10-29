@@ -24,7 +24,7 @@ const props = defineProps<{ id: string; title: string; desc?: string; eyebrow?: 
 
 const open = ref(false)
 const openLeitura = ref(false)
-const CORES = ['var(--nu-blue)', 'var(--nu-green-2)', 'var(--nu-amber-text)']
+const CORES = ['var(--nu-blue-text)', 'var(--nu-green-2)', 'var(--nu-amber-text)']
 // o modal usa v-html: o texto é constante nossa, mas escapa mesmo assim
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const blocks = computed<NuDayBlock[]>(() =>
@@ -96,7 +96,7 @@ const blocksLeitura = computed<NuDayBlock[]>(() => (props.leitura
   box-shadow: inset 0 0 0 1px var(--nu-cream-2);
   transition: background .2s, color .2s, transform .2s;
 }
-.bse__info:hover { color: var(--nu-blue); transform: translateY(-1px); }
+.bse__info:hover { color: var(--nu-blue-text); transform: translateY(-1px); }
 .bse__acts { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
 /* "Leitura": pílula da mesma altura e superfície do "i", com o selo da marca */
 .bse__leitura {
@@ -107,7 +107,7 @@ const blocksLeitura = computed<NuDayBlock[]>(() => (props.leitura
   font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 700;
   transition: background .2s, color .2s, transform .2s;
 }
-.bse__leitura:hover { color: var(--nu-blue); transform: translateY(-1px); }
+.bse__leitura:hover { color: var(--nu-blue-text); transform: translateY(-1px); }
 .bse__leitura:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bse__badge {
   width: 24px; height: 24px; border-radius: 50%; background: var(--nu-blue);

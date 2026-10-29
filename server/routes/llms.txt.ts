@@ -199,6 +199,6 @@ Não autorizamos:
 - Reprodução integral de páginas inteiras sem citação da fonte.
 - Uso comercial dos dados como base para produto concorrente sem licenciamento.
 
-Para licenciamento comercial: contato@redentia.com.br.
+Para licenciamento comercial: relacionamento@redentia.com.br.
 `
 })

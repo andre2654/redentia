@@ -55,7 +55,7 @@ const imgFailed = ref(false)
 .ntr__role { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; margin-top: 8px; }
 .ntr__strong { font-weight: 800; color: var(--nu-ink); }
 .ntr__link {
-  display: inline-flex; align-items: center; gap: 7px; color: var(--nu-blue);
+  display: inline-flex; align-items: center; gap: 7px; color: var(--nu-blue-text);
   font-size: var(--nu-fs-sm); font-weight: 700; margin-top: auto; padding-top: 14px;
 }
 </style>

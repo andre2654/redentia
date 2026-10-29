@@ -12,7 +12,7 @@
  *
  *    EXCEÇÃO, visita de anúncio (06/10/2026): quando a URL de entrada traz um
  *    identificador de clique pago (gclid, fbclid…) ou utm_medium pago, o
- *    gtm.js entra na inicialização do app, sem esperar o ocioso. É o tráfego
+ *    gtm.js entra na hora do aceite, sem esperar o ocioso. É o tráfego
  *    que mais rejeita rápido, e um pixel que não dispara antes da saída some
  *    da atribuição de CAC e da otimização da campanha. O orgânico continua
  *    adiado: quem fica alguns segundos (o público de remarketing) é medido
@@ -30,23 +30,19 @@
  *
  * ID em runtimeConfig.public.gtmId. NUXT_PUBLIC_GTM_ID= vazio desliga num env.
  *
+ * Consentimento (utils/consent.ts): sem aceite, nem o gtm.js nem o iframe
+ * noscript. O noscript só entra no HTML quando o cookie first-party já diz
+ * granted — senão quem navega sem JS falaria com o googletagmanager.com
+ * antes de escolher. Visita paga continua imediata, mas só depois do aceite.
+ *
  * NÃO carrega (nem o noscript do SSR) em rota com token no path
  * (/cliente/convite, /cliente/acesso, /business/convite): o container é de
  * agência e as tags dele leem a URL. Ver utils/analytics-privacy.ts.
  */
 import { isSecretTokenPath } from '~/utils/analytics-privacy'
+import { agendarComConsentimento, consentimentoNoCookie, lerConsentimento } from '~/utils/consent'
 
 const GTM_ID_FORMAT = /^GTM-[A-Z0-9]+$/
-
-// Google (gclid, gbraid, wbraid), Meta (fbclid), Microsoft (msclkid),
-// TikTok (ttclid) e LinkedIn (li_fat_id).
-const PAID_CLICK_PARAMS = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid', 'ttclid', 'li_fat_id']
-const PAID_UTM_MEDIUM = /^(cpc|ppc|cpm|display|paid([-_ ]?social)?|paidsocial)$/i
-
-function isPaidLanding(search: string): boolean {
-  const q = new URLSearchParams(search)
-  return PAID_CLICK_PARAMS.some(p => q.has(p)) || PAID_UTM_MEDIUM.test(q.get('utm_medium') ?? '')
-}
 
 export default defineNuxtPlugin(() => {
   const gtmId = (useRuntimeConfig().public as Record<string, unknown>).gtmId as string | undefined
@@ -55,20 +51,28 @@ export default defineNuxtPlugin(() => {
   const path = import.meta.server ? useRequestURL().pathname : window.location.pathname
   if (isSecretTokenPath(path)) return
 
+  const cookieHeader = import.meta.server
+    ? (useRequestHeaders(['cookie']).cookie ?? '')
+    : document.cookie
   // Registrado nos dois lados com a mesma entrada: no client o noscript é
   // inerte, e o estado do head fica igual ao HTML que o SSR entregou.
-  useHead({
-    noscript: [{
-      tagPosition: 'bodyOpen',
-      innerHTML: `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
-    }],
-  })
+  // Só com o cookie de aceite. Sem escolha, o iframe não existe.
+  if (consentimentoNoCookie(cookieHeader) === 'granted') {
+    useHead({
+      noscript: [{
+        tagPosition: 'bodyOpen',
+        innerHTML: `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+      }],
+    })
+  }
 
   if (import.meta.server) return
 
   const w = window as unknown as { dataLayer?: unknown[], __nuGtmLoaded?: boolean }
 
   const installGtm = () => {
+    if (lerConsentimento() !== 'granted') return
+    if (isSecretTokenPath(window.location.pathname)) return
     if (w.__nuGtmLoaded) return
     w.__nuGtmLoaded = true
 
@@ -81,13 +85,6 @@ export default defineNuxtPlugin(() => {
     document.head.appendChild(s)
   }
 
-  if (isPaidLanding(window.location.search)) {
-    installGtm()
-  }
-  else if (typeof window.requestIdleCallback === 'function') {
-    window.requestIdleCallback(installGtm, { timeout: 4000 })
-  }
-  else {
-    setTimeout(installGtm, 500)
-  }
+  // Visita paga: na hora, depois do aceite. Orgânico: idle, como antes.
+  agendarComConsentimento(installGtm, { pagoNaHora: true })
 })

@@ -155,7 +155,7 @@ const metodos = computed(() => {
 .ptt__hero, .ptt__table-sec, .ptt__texto { background: var(--nu-cream); }
 .ptt__nums, .ptt__passos, .ptt__faq { background: var(--nu-white); }
 
-.ptt__back { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700; }
+.ptt__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
 .ptt__h1 {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4.6vw, 58px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; max-width: 18ch;
@@ -216,5 +216,5 @@ const metodos = computed(() => {
 .ptt__faq .ptt__h2 { margin-bottom: 24px; }
 
 .ptt__links { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; }
-.ptt__links a { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; }
+.ptt__links a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
 </style>

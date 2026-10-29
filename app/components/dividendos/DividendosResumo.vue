@@ -58,10 +58,10 @@ defineProps<{
 .dvr__stats { margin-top: 26px; }
 .dvr__cta-row { margin-top: 28px; }
 .dvr__cta {
-  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue);
+  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue-text);
   border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill); padding: 14px 26px;
   font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
 }
-.dvr__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue); }
+.dvr__cta:hover { background: var(--nu-blue-tint-2); color: var(--nu-blue-text); }
 .dvr__right { flex: 1.6 1 460px; min-width: min(320px, 100%); }
 </style>

@@ -50,5 +50,5 @@ defineProps<{
 .crp__dot { width: 11px; height: 11px; border-radius: 4px; flex-shrink: 0; }
 .crp__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .crp__num { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
-.crp__num--accent { color: var(--nu-blue); }
+.crp__num--accent { color: var(--nu-blue-text); }
 </style>

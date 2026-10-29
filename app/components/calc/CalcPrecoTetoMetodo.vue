@@ -176,7 +176,7 @@ usePageSeo({
 .ptm__faq { background: var(--nu-white); }
 .ptm__outros { background: var(--nu-cream); }
 
-.ptm__back { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700; }
+.ptm__back { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
 .ptm__h1 {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(34px, 4.6vw, 58px);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; max-width: 20ch;
@@ -217,10 +217,10 @@ usePageSeo({
   font-size: var(--nu-fs-md); font-weight: 700;
 }
 .ptm__verdict--ok { background: var(--nu-green-soft, #e6f6ec); color: var(--nu-green, #147a3d); }
-.ptm__verdict--neutro { background: var(--nu-blue-tint, #eaf1ff); color: var(--nu-blue); }
+.ptm__verdict--neutro { background: var(--nu-blue-tint, #eaf1ff); color: var(--nu-blue-text); }
 .ptm__verdict--alerta { background: #fdecec; color: #b3261e; }
 .ptm__cross { margin: 28px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
-.ptm__cross a { color: var(--nu-blue); font-weight: 800; }
+.ptm__cross a { color: var(--nu-blue-text); font-weight: 800; }
 
 .ptm__block { max-width: 68ch; }
 .ptm__block + .ptm__block { margin-top: clamp(38px, 4.5vw, 60px); }

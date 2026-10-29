@@ -35,8 +35,8 @@ withDefaults(defineProps<{
   display: inline-flex; margin-top: 16px; padding: 7px 14px; border-radius: var(--nu-r-pill);
   font-size: var(--nu-fs-sm); font-weight: 700;
 }
-.cnu__selo--azul { background: var(--nu-blue-tint); color: var(--nu-blue); }
-.cnu__selo--ok { background: color-mix(in srgb, var(--nu-green) 12%, var(--nu-white)); color: var(--nu-green); }
-.cnu__selo--falta { background: color-mix(in srgb, var(--nu-red) 10%, var(--nu-white)); color: var(--nu-red); }
+.cnu__selo--azul { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
+.cnu__selo--ok { background: color-mix(in srgb, var(--nu-green) 12%, var(--nu-white)); color: var(--nu-green-text); }
+.cnu__selo--falta { background: color-mix(in srgb, var(--nu-red) 10%, var(--nu-white)); color: var(--nu-red-text); }
 .cnu__explica { margin: 14px 0 0; max-width: 470px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 </style>

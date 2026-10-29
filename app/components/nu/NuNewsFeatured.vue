@@ -32,7 +32,7 @@ defineProps<{ item: NuNewsFeaturedItem }>()
   display: block; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800;
   letter-spacing: -0.03em; line-height: 1.1; margin-top: 16px; max-width: 1000px; transition: color .2s;
 }
-.nnf:hover .nnf__title { color: var(--nu-blue); }
+.nnf:hover .nnf__title { color: var(--nu-blue-text); }
 .nnf__dek {
   display: block; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500;
   line-height: 1.6; margin-top: 14px; max-width: 760px;

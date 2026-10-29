@@ -45,7 +45,7 @@ const vencendo = computed(() => conectados.value.filter((c) => {
       </div>
       <NuxtLink to="/business/clientes" class="rbpk__btn">Convidar e acompanhar os clientes</NuxtLink>
     </template>
-    <a v-else href="mailto:contato@redentia.com?subject=Clientes%20do%20escrit%C3%B3rio" class="rbpk__btn">Ligar na implantação</a>
+    <a v-else href="mailto:relacionamento@redentia.com.br?subject=Clientes%20do%20escrit%C3%B3rio" class="rbpk__btn">Ligar na implantação</a>
   </article>
 </template>
 

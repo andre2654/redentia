@@ -6,8 +6,9 @@
  * nuxt.config importa daqui o interruptor da prévia (um build de produção
  * não pode ligá-la, nem com a env pública).
  *
- * A rota ainda não existe no Laravel. Quem chama só pode mostrar "recebido"
- * depois de um 2xx de verdade, ou na prévia (`?demo=1` fora de produção).
+ * A rota é POST /business/leads no Laravel (rodrigoborges/redentia-api#88).
+ * Quem chama só pode mostrar "recebido" depois de um 2xx de verdade, ou na
+ * prévia (`?demo=1` fora de produção).
  */
 import { isSecretTokenPath } from './analytics-privacy.ts'
 

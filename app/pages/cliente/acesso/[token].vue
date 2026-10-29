@@ -104,7 +104,7 @@ async function revogar() {
   }
   catch (e: unknown) {
     const msg = (e as { data?: { message?: string } })?.data?.message
-    erroAcao.value = msg ?? 'Não deu para revogar agora. O acesso continua como estava. Tente de novo; se seguir assim, escreva pra contato@redentia.com.'
+    erroAcao.value = msg ?? 'Não deu para revogar agora. O acesso continua como estava. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.'
   }
   finally {
     revogando.value = false
@@ -141,7 +141,7 @@ onBeforeUnmount(() => clearTimeout(armaTimer))
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></svg>
         </div>
         <h1 data-cc-titulo tabindex="-1" class="cla__h1 cla__h1--centro">Não conseguimos abrir agora.</h1>
-        <p class="cla__p cla__p--centro" role="alert">Tente de novo em instantes. Se seguir assim, escreva pra contato@redentia.com.</p>
+        <p class="cla__p cla__p--centro" role="alert">Tente de novo em instantes. Se seguir assim, escreva pra relacionamento@redentia.com.br.</p>
         <footer class="cla__foot">
           <ClienteConnectButton @click="carregar">Tentar de novo</ClienteConnectButton>
         </footer>

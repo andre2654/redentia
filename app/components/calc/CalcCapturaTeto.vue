@@ -136,7 +136,7 @@ const isca = ref('')
 .cct__ok { margin: 12px 0 0; color: var(--nu-green-2); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5; }
 .cct__nota { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.5; }
 .cct__texto--cheio { flex: 1 1 100%; margin: 0; }
-.cct__erro { margin: 10px 0 0; color: var(--nu-red); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cct__erro { margin: 10px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .cct__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .cct__trocar {
   flex: 1 1 100%; justify-self: start; margin: 0; padding: 0; background: none; border: none;

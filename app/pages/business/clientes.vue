@@ -79,7 +79,7 @@ async function carregar() {
   carregando.value = false
   if (conta.status === 'rejected') {
     if (statusHttp(conta.reason) === 401) return // o authFetch já está indo pro /login
-    falha.value = 'Não conseguimos carregar a conta agora. Tente de novo; se seguir assim, escreva pra contato@redentia.com.'
+    falha.value = 'Não conseguimos carregar a conta agora. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.'
     return
   }
   if (clientes.status === 'rejected') {
@@ -88,7 +88,7 @@ async function carregar() {
     // 404/409 = o servidor não tem o recurso ou ele está desligado nesta
     // conta. Não é falha: é o estado "não habilitado".
     if (st === 404 || st === 409) { semRecurso.value = true; return }
-    falha.value = 'Não conseguimos carregar os clientes agora. Tente de novo; se seguir assim, escreva pra contato@redentia.com.'
+    falha.value = 'Não conseguimos carregar os clientes agora. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.'
   }
 }
 
@@ -120,11 +120,11 @@ async function agir(fn: () => Promise<unknown>, linha: string | null = null) {
         max_clients: 'O escritório chegou ao limite de clientes. Revogue um para convidar outro, ou fale com a gente.',
         pending_limit: 'Há convites demais esperando resposta. Cancele os que não vão ser usados antes de gerar outro.',
         daily_limit: 'O limite de convites de hoje acabou. Amanhã ele renova.',
-        clients_disabled: 'Clientes do escritório não está ligado nesta conta. Fale com a gente em contato@redentia.com.',
+        clients_disabled: 'Clientes do escritório não está ligado nesta conta. Fale com a gente em relacionamento@redentia.com.br.',
         client_not_found: 'Esse cliente não existe mais. Atualize a página para ver a lista atual.',
         not_found: 'Esse item não existe mais. Atualize a página para ver a lista atual.',
         key_not_found: 'Essa chave não está mais ativa. Escolha outra.',
-      }[data?.error ?? ''] ?? 'A ação não completou. Tente de novo; se seguir assim, escreva pra contato@redentia.com.')
+      }[data?.error ?? ''] ?? 'A ação não completou. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.')
   }
 }
 
@@ -257,7 +257,7 @@ onBeforeUnmount(() => {
     <p class="rbcl-msg__txt">
       Clientes do escritório deixa o assistente ler a carteira de um cliente só com o consentimento do
       próprio cliente. O recurso é liberado por convite, escritório a escritório. Para habilitar na sua casa,
-      escreva pra contato@redentia.com.
+      escreva pra relacionamento@redentia.com.br.
     </p>
     <NuxtLink to="/business/chaves" class="rbcl-btn rbcl-btn--ghost">Voltar para as chaves</NuxtLink>
   </section>
@@ -424,7 +424,7 @@ onBeforeUnmount(() => {
 .rbcl-msg > * { max-width: 680px; }
 .rbcl-msg__h { margin: 0; color: var(--nu-ink); font-size: clamp(30px, 3.6vw, 46px); font-weight: 800; letter-spacing: -.04em; line-height: 1.05; }
 .rbcl-msg__txt { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
-.rbcl-eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800; }
+.rbcl-eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800; }
 
 .rbcl-btn {
   align-self: flex-start; display: inline-flex; align-items: center; justify-content: center;
@@ -503,5 +503,5 @@ onBeforeUnmount(() => {
 .rbcl-log li { display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 9px 0; border-top: 1px solid var(--nu-cream-line); }
 .rbcl-log__a { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
 .rbcl-log__m { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.rbcl-link { background: none; border: none; padding: 0; cursor: pointer; color: var(--nu-blue); font: inherit; text-decoration: underline; }
+.rbcl-link { background: none; border: none; padding: 0; cursor: pointer; color: var(--nu-blue-text); font: inherit; text-decoration: underline; }
 </style>

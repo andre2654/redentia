@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
 }
 .acx__card:focus { outline: none; }
 .acx__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-.acx__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.acx__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 .acx__title { margin: 9px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; }
 .acx__oque { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
 .acx__close {
@@ -178,7 +178,7 @@ onBeforeUnmount(() => {
 .acx__lang { display: block; margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .acx__rodape { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-top: 12px; }
 .acx__pvalor { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.acx__link { margin-left: auto; color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
+.acx__link { margin-left: auto; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .acx__link:hover { text-decoration: underline; }
 
 .acx__foot { display: flex; justify-content: flex-end; margin-top: 26px; }

@@ -1,6 +1,8 @@
 # Leads de reunião — Redentia For Business
 
-Spec do endpoint que grava o pedido de hora da `/business`. O front deste PR já envia o POST. A rota **não existe** no Laravel: até existir, o formulário mostra erro e oferece o mailto. Não mesclar o front esperando que o envio funcione.
+Spec do endpoint que grava o pedido de hora da `/business`. O front deste PR envia o POST, e o Laravel tem a rota desde [rodrigoborges/redentia-api#88](https://github.com/rodrigoborges/redentia-api/pull/88), em 28/10/2026.
+
+**Onde o backend diverge desta spec:** sem a chave do front (`FRONT_SHARED_KEY`), todos os visitantes chegam com o IP de saída da Vercel e caem no mesmo balde. Nesse caso o teto é 30 por hora, não 5. Com a chave ligada, o limite volta a ser 5 por hora por visitante. O aviso interno sai com Reply-To de quem pediu.
 
 **Front:** PR draft [#113](https://github.com/andre2654/redentia/pull/113), branch `cursor/business-leads-form-d337`, base `redentia-v2` (não `main`).
 

@@ -89,30 +89,62 @@ const anima = ref(false) // só vira true no navegador, sem reduced-motion
 
 let timer: ReturnType<typeof setTimeout> | null = null
 let raf = 0
+/* Sobe a cada ciclo. Um quadro antigo, já agendado, não escreve por cima
+   do ciclo novo: o cancelAnimationFrame perde a corrida se o callback já
+   entrou na fila. */
+let geracao = 0
 
+function cancelarQuadro() {
+  geracao++
+  if (raf) { cancelAnimationFrame(raf); raf = 0 }
+}
 function limpar() {
   if (timer) { clearTimeout(timer); timer = null }
-  if (raf) { cancelAnimationFrame(raf); raf = 0 }
+  cancelarQuadro()
 }
 
 /* A contagem de posições sobe de 0 a 14 quando a carteira consolida: é o
-   número que rola do card da Decade, no nosso tamanho. */
+   número que rola do card da Decade, no nosso tamanho.
+
+   O carimbo do requestAnimationFrame pode vir ATRÁS de performance.now():
+   um quadro no Chrome (o card pisca "-1") e segundos inteiros com tempo
+   virtual, quando o quadro trava e o timer segue. A curva `1-(1-t)**3` não
+   tem piso, então esse atraso vira "-8911 posições" e, no ciclo seguinte,
+   "-198424". O quadro não termina (t fica negativo, logo < 1) e o ciclo
+   novo não cancelava o anterior. Cada ciclo cancela o quadro e o timer de
+   antes, recomeça do zero e prende o número entre 0 e 14. */
 function contar() {
+  cancelarQuadro()
+  const minha = geracao
   const inicio = performance.now()
   const dur = 650
   const passo = (agora: number) => {
-    const t = Math.min(1, (agora - inicio) / dur)
-    posicoes.value = Math.round(TOTAL_POSICOES * (1 - (1 - t) ** 3))
+    if (minha !== geracao) return
+    const peloRelogio = performance.now() - inicio
+    const peloQuadro = agora - inicio
+    const decorrido = Math.min(dur, Math.max(0, peloRelogio, peloQuadro))
+    const t = decorrido / dur
+    const n = Math.round(TOTAL_POSICOES * (1 - (1 - t) ** 3))
+    posicoes.value = Math.min(TOTAL_POSICOES, Math.max(0, n))
     if (t < 1) raf = requestAnimationFrame(passo)
+    else raf = 0
   }
   posicoes.value = 0
   raf = requestAnimationFrame(passo)
 }
 
 function agendar(ms: number) {
+  if (timer) clearTimeout(timer)
   timer = setTimeout(avancar, ms)
 }
 function avancar() {
+  /* Fim do compasso consolidado: solta a contagem que ainda estiver no ar
+     e repousa no 14, que é o estado final do ciclo (a saída apaga o card
+     inteiro em cima dele). */
+  if (fase.value === F.consolidada) {
+    cancelarQuadro()
+    posicoes.value = TOTAL_POSICOES
+  }
   fase.value = (fase.value + 1) % FASES.length
   if (fase.value === F.consolidada) contar()
   agendar(FASES[fase.value]!.ms)
@@ -379,7 +411,7 @@ const estado = computed(() => {
 }
 /* "com 1 clique." em azul: é a promessa, e texto grande (800, ≥38px) passa o
    piso de 3:1 com folga sobre o creme. */
-.rbh0__destaque { color: var(--nu-blue); white-space: nowrap; }
+.rbh0__destaque { color: var(--nu-blue-text); white-space: nowrap; }
 .rbh0__dek {
   margin: 26px 0 0; max-width: 50ch; color: var(--nu-gray);
   font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.6;
@@ -429,7 +461,7 @@ const estado = computed(() => {
   font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap;
   opacity: 0; transition: opacity .3s ease;
 }
-.rbh0c__pilula--ok { background: var(--nu-green-bg); color: var(--nu-green); }
+.rbh0c__pilula--ok { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .rbh0c__pilula--on { opacity: 1; }
 
 .rbh0c__cliente { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
@@ -449,7 +481,7 @@ const estado = computed(() => {
   transition: transform .14s ease, background .3s ease;
 }
 .rbh0c__botao--clique { transform: scale(.96); background: var(--nu-ink-75); }
-.rbh0c__botao--enviado { background: var(--nu-green-bg); color: var(--nu-green); }
+.rbh0c__botao--enviado { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .rbh0c__botao-txt {
   grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 6px;
   transition: opacity .25s ease, transform .25s ease;

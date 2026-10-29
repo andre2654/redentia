@@ -166,7 +166,7 @@ const id = useId()
 <style scoped>
 .tstz { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
 .tstz__cabeca { max-width: 1180px; margin: 0 auto; }
-.tstz__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.tstz__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
 .tstz__title { margin: 12px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
 .tstz__dek { color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; margin: 20px 0 0; max-width: 620px; }
 .tstz__dek strong { color: var(--nu-ink); font-weight: 800; }
@@ -191,11 +191,11 @@ const id = useId()
 .tstz__numero { display: flex; flex-direction: column; }
 .tstz__valor { color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
 .tstz__valor small { margin-left: 2px; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: 0; }
-.tstz__valor--alta { color: var(--nu-green); }
+.tstz__valor--alta { color: var(--nu-green-text); }
 .tstz__rotulo { margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .tstz__delta { margin-top: 2px; font-size: var(--nu-fs-sm); font-weight: 700; }
-.tstz__delta--alta { color: var(--nu-green); }
-.tstz__delta--queda { color: var(--nu-red); }
+.tstz__delta--alta { color: var(--nu-green-text); }
+.tstz__delta--queda { color: var(--nu-red-text); }
 
 /* a convicção dia a dia: degraus que sobem e descem com os fatos, desenhados na chegada */
 .tstz__trajeto { margin: 22px 0 0; }
@@ -218,7 +218,7 @@ const id = useId()
 .tstz__pulso { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green); box-shadow: 0 0 0 0 rgba(20, 143, 78, 0.45); animation: tstz-pulsa 2.2s ease-out infinite; }
 .tstz__cta {
   align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 24px;
-  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700;
 }
 .tstz__cta svg { transition: transform .2s ease; }
 .tstz__cta:hover { color: var(--nu-blue-hover); }
@@ -239,7 +239,7 @@ const id = useId()
 .tstz__miniatura { flex: none; width: 44px; height: 44px; overflow: hidden; border-radius: 12px; background: var(--nu-navy); }
 .tstz__miniatura img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .tstz__aba-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--nu-fs-sm); font-weight: 700; }
-.tstz__aba-perf { flex: none; color: var(--nu-green); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.tstz__aba-perf { flex: none; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* a linha se revela da esquerda para a direita, do primeiro dia até hoje */
 @keyframes tstz-revela { from { clip-path: inset(-12px 100% -12px 0); } to { clip-path: inset(-12px -12px -12px 0); } }

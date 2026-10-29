@@ -60,8 +60,8 @@ defineProps<{ rows: TesouroRowVM[] }>()
 }
 .ttb__cell--asset { text-align: left; padding-left: clamp(16px, 2vw, 28px); }
 .ttb__link { color: var(--nu-ink); font-weight: 800; letter-spacing: -.1px; }
-.ttb__link:hover { color: var(--nu-blue); }
-.ttb__cell--rate { color: var(--nu-blue); font-weight: 800; }
+.ttb__link:hover { color: var(--nu-blue-text); }
+.ttb__cell--rate { color: var(--nu-blue-text); font-weight: 800; }
 .ttb__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
 .ttb__badge {
   display: inline-flex; background: var(--nu-sand-2); color: var(--nu-gray-tag);

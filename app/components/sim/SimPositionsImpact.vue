@@ -155,8 +155,8 @@ function betaMeta(p: SimPositionImpact): string | null {
 .spi__hero--in { opacity: 1; transform: none; }
 .spi__hero-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
 .spi__hero-value { font-size: clamp(30px, 3.6vw, 46px); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.spi__val--down { color: var(--nu-red); }
-.spi__val--up { color: var(--nu-green); }
+.spi__val--down { color: var(--nu-red-text); }
+.spi__val--up { color: var(--nu-green-text); }
 .spi__val--flat { color: var(--nu-gray-2); font-size: clamp(20px, 2.4vw, 28px); }
 
 /* lista em cards creme, largura inteira — agora accordion */
@@ -209,7 +209,7 @@ function betaMeta(p: SimPositionImpact): string | null {
   color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500;
 }
 .spi__meta b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
-.spi__meta--free { color: var(--nu-green); font-weight: 800; }
+.spi__meta--free { color: var(--nu-green-text); font-weight: 800; }
 .spi__line {
   display: grid; grid-template-columns: minmax(120px, 0.8fr) 1.6fr 78px;
   gap: 14px; align-items: baseline; padding: 6px 0;
@@ -219,7 +219,7 @@ function betaMeta(p: SimPositionImpact): string | null {
 .spi__line-val { text-align: right; font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .spi__line--sum { border-top: 1px dashed var(--nu-cream-3); margin-top: 4px; padding-top: 10px; }
 .spi__none { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
-.spi__timeline { margin: 8px 0 0; color: var(--nu-blue); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
+.spi__timeline { margin: 8px 0 0; color: var(--nu-blue-text); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
 .spi__stress { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.45; }
 .spi__stress b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
 .spi__suspect { margin: 6px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-dense); font-weight: 700; }

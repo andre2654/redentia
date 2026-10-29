@@ -25,7 +25,7 @@ withDefaults(defineProps<{ text: string; label?: string }>(), { label: 'A leitur
 }
 .nat__logo { width: 14px; height: 14px; display: block; object-fit: contain; }
 .nat__label {
-  color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: 1.2px; text-transform: uppercase;
 }
 .nat__body { color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.65; margin-top: 10px; }

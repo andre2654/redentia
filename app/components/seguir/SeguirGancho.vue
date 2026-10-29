@@ -108,7 +108,7 @@ const pronto = computed(() => (comEmail.value
 .sgg--on-cream .sgg__chip { background: var(--nu-cream); }
 .sgg--on-white .sgg__chip { background: var(--nu-white); }
 .sgg__chip:hover { transform: translateY(-2px); }
-.sgg .sgg__chip--on { background: var(--nu-blue-bg); color: var(--nu-blue); }
+.sgg .sgg__chip--on { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .sgg__chip[aria-busy='true'] { cursor: progress; }
 .sgg__chip:focus-visible, .sgg__later:focus-visible { outline: 3px solid var(--nu-blue-30); outline-offset: 2px; }
 

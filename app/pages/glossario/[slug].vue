@@ -118,7 +118,7 @@ usePageSeo({
   animation: nu-fade .5s ease both;
 }
 .gt__crumbs { display: flex; align-items: center; gap: 10px; font-size: var(--nu-fs-md); font-weight: 800; }
-.gt__crumb { color: var(--nu-blue); }
+.gt__crumb { color: var(--nu-blue-text); }
 .gt__crumb--here { color: var(--nu-gray-2); }
 .gt__crumb-sep { color: var(--nu-gray); }
 .gt__title {
@@ -140,7 +140,7 @@ usePageSeo({
 .gt__p + .gt__p { margin-top: 18px; }
 .gt__p :deep(strong) { color: var(--nu-ink); font-weight: 800; }
 .gt__article :deep(a) {
-  color: var(--nu-blue); font-weight: 700;
+  color: var(--nu-blue-text); font-weight: 700;
   text-decoration: underline; text-underline-offset: 2px;
   text-decoration-thickness: 1px; text-decoration-color: var(--nu-blue-soft);
 }
@@ -158,7 +158,7 @@ usePageSeo({
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
   transition: background .16s, color .16s;
 }
-.gt__chip:hover { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.gt__chip:hover { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 
 /* card de backlink forte */
 .gt__cta {
@@ -195,12 +195,12 @@ usePageSeo({
 .gt__nav-item:hover { background: var(--nu-cream-hover); }
 .gt__nav-item--next { text-align: right; align-items: flex-end; }
 .gt__nav-spacer { flex: 1; }
-.gt__nav-dir { color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
+.gt__nav-dir { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .gt__nav-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
 
 .gt__back {
   display: inline-block; margin-top: clamp(32px, 4vw, 44px);
-  color: var(--nu-blue); font-size: var(--nu-fs-md); font-weight: 800;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 800;
   text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-blue-soft);
 }
 .gt__back:hover { text-decoration-color: var(--nu-blue); }

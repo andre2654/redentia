@@ -394,7 +394,7 @@ function onSearchEnter() {
   display: inline-flex; align-items: center; justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
-.spb__prow-del:hover { background: var(--nu-cream); color: var(--nu-red); }
+.spb__prow-del:hover { background: var(--nu-cream); color: var(--nu-red-text); }
 
 .spb__cart-actions { display: flex; }
 .spb__ghost {
@@ -403,7 +403,7 @@ function onSearchEnter() {
   padding: 10px 18px; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; font-family: inherit;
   transition: border-color 0.15s, color 0.15s;
 }
-.spb__ghost:hover { border-color: var(--nu-blue); color: var(--nu-blue); }
+.spb__ghost:hover { border-color: var(--nu-blue); color: var(--nu-blue-text); }
 
 /* ——— modal (anatomia da casa: scrim + card dia) ——— */
 .spbm {

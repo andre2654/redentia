@@ -351,8 +351,8 @@ useConviteDaConta('planejamento', () => JSON.stringify(simParams.value), () => {
 a.pcs__ativo:hover { box-shadow: 0 0 0 1.5px var(--nu-blue); }
 .pcs__ativo-cat { grid-area: cat; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
 .pcs__ativo-ticker { grid-area: ticker; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; }
-.pcs__ativo-peso { grid-area: peso; align-self: center; color: var(--nu-blue); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pcs__ativo-peso { grid-area: peso; align-self: center; color: var(--nu-blue-text); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
 .pcs__ativo-ret { grid-area: ret; margin-top: 8px; font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums; }
-.pcs__ativo-ret--alta { color: var(--nu-green); }
-.pcs__ativo-ret--queda { color: var(--nu-red); }
+.pcs__ativo-ret--alta { color: var(--nu-green-text); }
+.pcs__ativo-ret--queda { color: var(--nu-red-text); }
 </style>

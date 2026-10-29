@@ -32,7 +32,7 @@ defineProps<{ cards: TesouroSideCardVM[] }>()
 }
 .tsc__card { background: var(--nu-white); border-radius: var(--nu-r-card-lg); padding: clamp(24px, 3vw, 34px); }
 .tsc__label {
-  margin: 0; color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
+  margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .tsc__price {

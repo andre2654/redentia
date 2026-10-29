@@ -64,7 +64,7 @@ const onPick = (e: Event) => emit('go', (e.target as HTMLSelectElement).value)
   transition: background .2s, color .2s;
 }
 .bsn__item:hover { background: var(--nu-cream); color: var(--nu-ink); }
-.bsn__item--on, .bsn__item--on:hover { background: var(--nu-blue-tint); color: var(--nu-blue); font-weight: 700; }
+.bsn__item--on, .bsn__item--on:hover { background: var(--nu-blue-tint); color: var(--nu-blue-text); font-weight: 700; }
 .bsn__item:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .bsn__icon { width: 20px; height: 20px; flex-shrink: 0; }
 .bsn__label { flex: 1; min-width: 0; }

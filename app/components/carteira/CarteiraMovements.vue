@@ -104,7 +104,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   padding: 3px 10px; border-radius: var(--nu-r-pill); white-space: nowrap; flex-shrink: 0;
 }
 .cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.cmv__badge--compra { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.cmv__badge--compra { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .cmv__desc {
   display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 3px;

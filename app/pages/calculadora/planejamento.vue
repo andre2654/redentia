@@ -443,9 +443,9 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada ——— */
 .pl__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.pl__h4--accent { color: var(--nu-blue); }
-.pl__h4--positive { color: var(--nu-green); }
-.pl__h4--negative { color: var(--nu-red); }
+.pl__h4--accent { color: var(--nu-blue-text); }
+.pl__h4--positive { color: var(--nu-green-text); }
+.pl__h4--negative { color: var(--nu-red-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .pl__prose p {

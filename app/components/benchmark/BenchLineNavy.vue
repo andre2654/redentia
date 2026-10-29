@@ -472,7 +472,7 @@ const tip = computed(() => {
   font-size: var(--nu-fs-xs); font-weight: 700;
 }
 .blv__mark-foot--flip { transform: translateX(calc(-100% - 8px)); }
-.blv__tip-marco { color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700; margin-top: 2px; }
+.blv__tip-marco { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; margin-top: 2px; }
 .blv__tip {
   position: absolute; top: 4px; transform: translateX(-50%); z-index: 3; background: var(--nu-cream);
   border-radius: var(--nu-r-tile); padding: 10px 14px; box-shadow: var(--nu-shadow-chart-tip); pointer-events: none; white-space: nowrap;

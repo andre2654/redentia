@@ -39,7 +39,7 @@ const MENSAGENS: Record<string, string> = {
   office_limit: 'O escritório chegou ao limite de clientes da conta. Avise o escritório; nada foi conectado.',
   rate_limited: 'Muitas tentativas seguidas. Espere um minuto e tente de novo.',
 }
-const PADRAO = 'Não deu para concluir a conexão agora. Nada foi conectado. Tente de novo; se seguir assim, escreva pra contato@redentia.com.'
+const PADRAO = 'Não deu para concluir a conexão agora. Nada foi conectado. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.'
 
 export function useClienteConexao(opts: {
   token: Ref<string>

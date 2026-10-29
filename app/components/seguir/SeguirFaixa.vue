@@ -163,7 +163,7 @@ async function deixar(t: string) {
   position: absolute; top: 14px; right: 12px; width: 36px; height: 36px;
   display: inline-flex; align-items: center; justify-content: center;
   border: none; border-radius: 50%; cursor: pointer;
-  background: transparent; color: var(--nu-blue); transition: background .2s;
+  background: transparent; color: var(--nu-blue-text); transition: background .2s;
 }
 .sgf__unstar:hover { background: var(--nu-blue-bg); }
 .sgf__unstar[aria-busy='true'] { cursor: progress; }

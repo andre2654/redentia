@@ -140,8 +140,8 @@ const bandPath = computed(() => {
   }
   .spd__table td { padding: 6px 8px; border-bottom: 1px solid var(--nu-sand-2); }
   .spd__table td b { font-weight: 800; margin-right: 6px; }
-  .spd__down { color: var(--nu-red); font-weight: 800; }
-  .spd__up { color: var(--nu-green); font-weight: 800; }
+  .spd__down { color: var(--nu-red-text); font-weight: 800; }
+  .spd__up { color: var(--nu-green-text); font-weight: 800; }
   .spd__rules { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--nu-cream-3); }
   .spd__rules-title { display: block; font-size: 9px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--nu-gray); margin-bottom: 4px; }
   .spd__rule { margin: 0 0 3px; font-size: 9px; color: var(--nu-gray-2); line-height: 1.45; }

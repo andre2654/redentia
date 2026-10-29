@@ -233,7 +233,7 @@ export interface NuBriefing {
 /** Um dos 4 blocos rotulados do modal do resumo (modal burro só recebe isto). */
 export interface NuDayBlock {
   label: string   // "O placar", "O que puxou", …
-  color: string   // var CSS da cor do rótulo (ex.: 'var(--nu-blue)')
+  color: string   // var CSS da cor do rótulo (ex.: 'var(--nu-blue-text)')
   html: string    // parágrafo do bloco (v-html: real escapado ou mock do design)
 }
 

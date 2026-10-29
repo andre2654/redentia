@@ -94,7 +94,7 @@ onBeforeUnmount(() => { cpf.value = '' })
 }
 .ccc__inst-n { flex: 1 1 auto; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; }
 .ccc__trocar {
-  padding: 6px 10px; border: none; border-radius: 8px; background: none; color: var(--nu-blue);
+  padding: 6px 10px; border: none; border-radius: 8px; background: none; color: var(--nu-blue-text);
   font-family: inherit; font-size: var(--nu-fs-dense); font-weight: 700; cursor: pointer; transition: background .2s;
 }
 .ccc__trocar:hover { background: var(--nu-blue-tint-2); }

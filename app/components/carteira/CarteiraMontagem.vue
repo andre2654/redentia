@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
   box-shadow: 0 40px 90px -40px rgba(8, 16, 48, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 .cmo__topo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.cmo__eyebrow { color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cmo__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .cmo__meta { color: var(--cmo-sub); font-size: var(--nu-fs-dense); font-weight: 500; font-variant-numeric: tabular-nums; }
 /* um tom abaixo do título da banda: a frase manda, a carteira prova */
 .cmo__valor {
@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
 }
 .cmo__hoje {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 6px 12px; border-radius: var(--nu-r-pill);
-  background: var(--nu-green-bg); color: var(--nu-green); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums;
+  background: var(--nu-green-bg); color: var(--nu-green-text); font-size: var(--nu-fs-dense); font-weight: 700; font-variant-numeric: tabular-nums;
   transition: opacity .4s ease, transform .5s cubic-bezier(.2, .8, .2, 1);
 }
 .cmo:not(.cmo--pronta) .cmo__hoje { opacity: 0; transform: translateY(6px); }

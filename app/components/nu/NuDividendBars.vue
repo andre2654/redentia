@@ -36,7 +36,7 @@ defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
   color: var(--nu-ink); font-size: clamp(12px, 1.3vw, 15px); font-weight: 800;
   white-space: nowrap; font-variant-numeric: tabular-nums; margin-bottom: 10px;
 }
-.ndb__val--current { color: var(--nu-blue); }
+.ndb__val--current { color: var(--nu-blue-text); }
 .ndb__bar {
   width: 100%; max-width: 86px; min-height: 22px; border-radius: var(--nu-r-tile);
   background: var(--nu-bar-inactive); transition: transform .18s;

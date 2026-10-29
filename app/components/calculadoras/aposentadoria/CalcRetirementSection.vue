@@ -375,6 +375,6 @@ const inssTxt = computed(() => brl(inss.value) + '/mês')
 </template>
 
 <style scoped>
-.crs__invalido { margin: 0; color: var(--nu-red); font-size: var(--nu-fs-md); font-weight: 700; }
+.crs__invalido { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-md); font-weight: 700; }
 .crs__dica { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
 </style>

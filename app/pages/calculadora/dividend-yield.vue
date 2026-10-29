@@ -444,9 +444,9 @@ usePageSeo({
 <style scoped>
 /* ——— tipografia compartilhada (classes do exemplar jc__, mesmos valores) ——— */
 .dy__h4 { margin: 0 0 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
-.dy__h4--accent { color: var(--nu-blue); }
+.dy__h4--accent { color: var(--nu-blue-text); }
 .dy__link { text-decoration: underline; }
-.dy__link:hover { color: var(--nu-blue); }
+.dy__link:hover { color: var(--nu-blue-text); }
 
 /* ——— prosa da coluna direita (bandas split do design) ——— */
 .dy__prose p {
@@ -492,7 +492,7 @@ usePageSeo({
 .dy__formula-example { margin-top: 14px; text-align: center; }
 .dy__formula-example p { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
 .dy__formula-example p strong { color: var(--nu-ink); font-weight: 800; }
-.dy__formula-accent { color: var(--nu-blue) !important; font-weight: 700 !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
+.dy__formula-accent { color: var(--nu-blue-text) !important; font-weight: 700 !important; margin-top: 4px !important; font-variant-numeric: tabular-nums; }
 
 /* ——— cards-link (rankings / outras ferramentas) ——— */
 .dy__grid-cards {

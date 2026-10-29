@@ -162,8 +162,8 @@ const avgPerPayment = computed(() =>
 }
 .car__kpi-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; }
 .car__kpi-value { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
-.car__pos { color: var(--nu-green); }
-.car__neg { color: var(--nu-red); }
+.car__pos { color: var(--nu-green-text); }
+.car__neg { color: var(--nu-red-text); }
 .car__sub { margin-top: 22px; }
 .car__sub-title { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -.2px; }
 .car__chart { margin-top: 22px; }
@@ -191,5 +191,5 @@ const avgPerPayment = computed(() =>
   padding: 3px 10px; font-size: var(--nu-fs-xs); font-weight: 700;
 }
 .car__badge--success { background: var(--nu-green-bg); color: var(--nu-green-2); }
-.car__badge--brand { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.car__badge--brand { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 </style>

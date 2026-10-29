@@ -33,7 +33,7 @@ defineProps<{ title: string; subtitle: string; to: string }>()
 .ncb__sub { display: block; color: var(--nu-white-75); font-size: var(--nu-fs-md); font-weight: 500; margin-top: 8px; }
 .ncb__circle {
   width: 52px; height: 52px; flex-shrink: 0; border-radius: 50%;
-  background: var(--nu-cream); color: var(--nu-blue);
+  background: var(--nu-cream); color: var(--nu-blue-text);
   display: flex; align-items: center; justify-content: center;
 }
 </style>

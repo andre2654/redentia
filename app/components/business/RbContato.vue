@@ -3,8 +3,8 @@
  * Fechamento da /business (#contato). Todos os CTAs da página apontam para cá.
  *
  * Até aqui o botão abria um mailto e nada ficava gravado. O formulário manda
- * POST /api/backend/business/leads (o Laravel, pelo proxy). A rota ainda não
- * existe: se o POST não volta 2xx, a seção diz isso e oferece o mailto de
+ * POST /api/backend/business/leads (o Laravel, pelo proxy; redentia-api#88).
+ * Se o POST não volta 2xx, a seção diz isso e oferece o mailto de
  * relacionamento@redentia.com.br com o que a pessoa preencheu. "Pedido
  * recebido" só aparece depois do await, ou na prévia (`?demo=1` fora de
  * produção), que não chama a rede.

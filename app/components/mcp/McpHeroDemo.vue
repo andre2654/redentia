@@ -217,13 +217,13 @@ onBeforeUnmount(clearAll)
 .mhd__toolrow { display: flex; }
 .mhd__tool {
   display: inline-flex; align-items: center; gap: 7px;
-  background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .1)); color: var(--nu-blue);
+  background: var(--nu-tile-blue-bg, rgba(47, 107, 255, .1)); color: var(--nu-blue-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--nu-fs-xs); font-weight: 700; padding: 7px 12px; border-radius: 10px;
   animation: mhd-pop .35s cubic-bezier(.34, 1.4, .6, 1) both;
 }
 .mhd__tool--live { box-shadow: 0 0 0 0 rgba(143, 240, 181, .65); animation: mhd-pop .35s cubic-bezier(.34, 1.4, .6, 1) both, mhd-pulse 1.1s ease-out .3s infinite; }
-.mhd__diamond { color: var(--nu-blue); }
+.mhd__diamond { color: var(--nu-blue-text); }
 .mhd__tool-dots { display: inline-flex; gap: 3px; }
 .mhd__tool-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: mhd-blink 1s ease-in-out infinite; }
 .mhd__tool-dots i:nth-child(2) { animation-delay: .18s; }

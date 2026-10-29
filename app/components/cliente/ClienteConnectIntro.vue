@@ -68,7 +68,7 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
 }
 .cci__nu { background: var(--nu-blue); }
 .cci__nu img { display: block; }
-.cci__escudo { background: var(--nu-blue-tint); color: var(--nu-blue); }
+.cci__escudo { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .cci__pontos { display: inline-flex; gap: 4px; }
 .cci__pontos i { width: 5px; height: 5px; border-radius: 50%; background: var(--nu-sand); }
 
@@ -89,7 +89,7 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
 .cci__foot { margin-top: auto; padding-top: 22px; }
 .cci__termos { margin: 0 0 12px; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .cci__link {
-  padding: 0; border: none; background: none; color: var(--nu-blue); font: inherit; font-weight: 800; cursor: pointer;
+  padding: 0; border: none; background: none; color: var(--nu-blue-text); font: inherit; font-weight: 800; cursor: pointer;
   text-decoration: underline; text-decoration-color: var(--nu-blue-30); text-underline-offset: 2px;
 }
 .cci__link:hover { color: var(--nu-blue-hover); }

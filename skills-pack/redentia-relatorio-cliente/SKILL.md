@@ -20,7 +20,7 @@ O que o PDF traz (4 páginas na carteira típica; a composição ganha páginas 
 
 Só chave de escritório (`rdt_biz_`) numa conta com Clientes do escritório habilitado: é ela que tem `list_clients`, `get_client_portfolio` e `simulate_client_scenario`. Se essas ferramentas não estão nesta sessão, responda assim e pare:
 
-> O relatório em PDF é feito a partir dos clientes conectados ao escritório, e isso só existe com chave de escritório (rdt_biz_) numa conta com o recurso habilitado. Pra habilitar: contato@redentia.com.
+> O relatório em PDF é feito a partir dos clientes conectados ao escritório, e isso só existe com chave de escritório (rdt_biz_) numa conta com o recurso habilitado. Pra habilitar: relacionamento@redentia.com.br.
 
 Você também precisa rodar Python com a biblioteca reportlab. No claude.ai e no Claude Desktop com execução de código ela já vem instalada. No Claude Code, se o import falhar, rode `pip install reportlab` (ou `python3 -m pip install --user reportlab`) e tente de novo.
 

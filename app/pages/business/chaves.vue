@@ -75,10 +75,10 @@ async function carregar() {
   }
   catch (e: unknown) {
     // 401 é sessão expirada: o authFetch já está navegando pro /login, e
-    // pintar "escreva pra contato@redentia.com" numa página sendo desmontada
+    // pintar "escreva pra relacionamento@redentia.com.br" numa página sendo desmontada
     // transformaria expiração de token em chamado de suporte.
     if ((e as { response?: { status?: number } })?.response?.status === 401) return
-    erro.value = 'Não conseguimos carregar a conta agora. Tente de novo; se seguir assim, escreva pra contato@redentia.com.'
+    erro.value = 'Não conseguimos carregar a conta agora. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.'
   }
 }
 
@@ -100,13 +100,13 @@ async function agir(fn: () => Promise<unknown>, sucesso?: string) {
     erro.value = data?.message
       ?? ({
         max_keys: 'O escritório já está com o número máximo de chaves ativas. Revogue uma antes de gerar outra.',
-        account_disabled: 'A conta ainda não foi liberada. Fale com a gente em contato@redentia.com.',
+        account_disabled: 'A conta ainda não foi liberada. Fale com a gente em relacionamento@redentia.com.br.',
         label_taken: 'Já existe uma chave ativa com esse nome.',
         // 404 do servidor: a chave saiu por baixo (outra aba, outro
         // dispositivo). "Tente de novo" seria conselho que falha pra sempre.
         not_found: 'Essa chave não existe mais. Atualize a página para ver a lista atual.',
         no_account: 'A conta do escritório não foi encontrada. Atualize a página.',
-      }[data?.error ?? ''] ?? 'A ação não completou. Tente de novo; se seguir assim, escreva pra contato@redentia.com.')
+      }[data?.error ?? ''] ?? 'A ação não completou. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.')
   }
 }
 

@@ -75,7 +75,7 @@ const FAIXAS = [{ n: 5, t: '95+' }, { n: 4, t: '85' }, { n: 3, t: '70' }, { n: 2
   padding-right: 8px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .2s;
 }
-.btl__name--on { color: var(--nu-blue); }
+.btl__name--on { color: var(--nu-blue-text); }
 .btl__cell {
   display: grid; place-items: center; height: 42px; border-radius: var(--nu-r-chip); outline: none; cursor: default;
   color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;

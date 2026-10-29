@@ -31,16 +31,39 @@ test('rotas sem token seguem medidas', () => {
     assert.equal(isSecretTokenPath(p as string), false, String(p))
 })
 
-test('os quatro plugins de analytics consultam a guarda antes de carregar', () => {
+test('os plugins de analytics consultam a guarda antes de carregar', () => {
   for (const f of [
     'google-analytics.client.ts',
     'clarity.client.ts',
     'google-tag-manager.ts',
     'vercel-analytics.client.ts',
+    'linkedin-insight.client.ts',
   ]) {
     const src = readFileSync(new URL(`../app/plugins/${f}`, import.meta.url), 'utf8')
     assert.match(src, /isSecretTokenPath\(/, `${f} não consulta isSecretTokenPath`)
   }
+  for (const f of [
+    'google-analytics.client.ts',
+    'clarity.client.ts',
+    'google-tag-manager.ts',
+    'vercel-analytics.client.ts',
+    'linkedin-insight.client.ts',
+  ]) {
+    const src = readFileSync(new URL(`../app/plugins/${f}`, import.meta.url), 'utf8')
+    assert.match(src, /agendarComConsentimento\(/, `${f} não espera o consentimento`)
+    assert.match(src, /lerConsentimento\(\)/, `${f} não relê a escolha na hora de injetar`)
+  }
+  const gtm = readFileSync(new URL('../app/plugins/google-tag-manager.ts', import.meta.url), 'utf8')
+  assert.match(gtm, /consentimentoNoCookie\([^)]*\) === 'granted'/, 'o noscript do GTM precisa do cookie de aceite')
+  assert.match(gtm, /pagoNaHora:\s*true/, 'visita paga deixa de entrar na hora depois do aceite')
+
+  const linkedin = readFileSync(new URL('../app/plugins/linkedin-insight.client.ts', import.meta.url), 'utf8')
+  assert.match(linkedin, /if \(!partnerId/, 'sem Partner ID a Insight Tag não pode carregar')
+  assert.match(linkedin, /snap\.licdn\.com/)
+  assert.doesNotMatch(linkedin, /src\s*=\s*['"]https:\/\/px\.ads\.linkedin\.com/, 'o pixel noscript não pode estar no HTML')
+  const cfg = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
+  assert.match(cfg, /linkedinPartnerId:[\s\S]*?'11192545'/)
+
   const guard = readFileSync(new URL('../app/plugins/00.rotas-com-segredo.client.ts', import.meta.url), 'utf8')
   assert.match(guard, /isSecretTokenPath\(to\.path\)/)
   assert.match(guard, /location\.assign/)

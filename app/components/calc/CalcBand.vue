@@ -39,7 +39,7 @@ defineProps<{
 .cbd--tight { padding-top: clamp(36px, 5vw, 60px); padding-bottom: clamp(36px, 5vw, 60px); }
 .cbd__kicker {
   margin: 0 auto 14px; max-width: 980px; text-align: center;
-  color: var(--nu-blue); font-size: var(--nu-fs-xs); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .14em;
 }
 .cbd__title {

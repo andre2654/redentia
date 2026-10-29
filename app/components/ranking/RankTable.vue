@@ -141,13 +141,13 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
 }
 .rkt__cell--asset { text-align: left; }
 .rkt__cell--num:last-child { padding-right: clamp(16px, 2vw, 28px); }
-.rkt__cell--up { color: var(--nu-green); }
-.rkt__cell--down { color: var(--nu-red); }
+.rkt__cell--up { color: var(--nu-green-text); }
+.rkt__cell--down { color: var(--nu-red-text); }
 
 /* ——— breakdown expansível (redentia-score) ——— */
 .rkt__toggle {
   background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--nu-blue); font-size: var(--nu-fs-sm); font-weight: 700;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700;
   font-family: inherit; white-space: nowrap;
 }
 .rkt__toggle:hover { text-decoration: underline; }
@@ -169,7 +169,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
   white-space: nowrap; transition: border-color .15s;
 }
 .rkt__chip:hover { border-color: var(--nu-blue); }
-.rkt__chip-pos { color: var(--nu-blue); font-weight: 800; font-variant-numeric: tabular-nums; }
+.rkt__chip-pos { color: var(--nu-blue-text); font-weight: 800; font-variant-numeric: tabular-nums; }
 .rkt__breakdown-empty { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
 .rkt__asset { display: flex; align-items: center; gap: 12px; min-width: 0; }

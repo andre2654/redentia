@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // /metodologia — Metodologia e fontes de dados (portada VERBATIM de
 // Frontend/app/pages/metodologia.vue). Placeholders resolvidos:
-// brand.name = "Redentia", brand.email = suporte@redentia.com.br, brand.url =
+// brand.name = "Redentia", brand.email = relacionamento@redentia.com.br, brand.url =
 // origin da request. Path e SEO preservados de propósito (mesma URL /metodologia).
 //
 // MESMO padrão do gabarito legal (institucional/privacy): o conteúdo é uma árvore
@@ -193,7 +193,7 @@ const sections: MetSection[] = [
     blocks: [
       { kind: 'p', text: [
         { text: 'Se você identificou divergência entre um número exibido e a fonte oficial, ou um erro de fórmula, ou um conteúdo que precisa ser atualizado, escreva para ' },
-        { text: 'suporte@redentia.com.br', href: 'mailto:suporte@redentia.com.br' },
+        { text: 'relacionamento@redentia.com.br', href: 'mailto:relacionamento@redentia.com.br' },
         { text: ' com o link da página, o trecho em questão e a fonte que sustenta a correção. Resposta em até 5 dias úteis. Quando a correção for aplicada, atualizamos o campo "Última atualização" da página afetada.' },
       ] },
     ],
@@ -281,7 +281,7 @@ usePageSeo({
         </div>
         <div class="met-author__body">
           <p>Conteúdo produzido e revisado pela equipe editorial da Redentia, com base em fontes públicas (B3, BCB, CVM, Receita Federal, IBGE, ANBIMA).</p>
-          <p>Encontrou divergência ou erro? Reporte em <a href="mailto:contato@redentia.com.br">contato@redentia.com.br</a>.</p>
+          <p>Encontrou divergência ou erro? Reporte em <a href="mailto:relacionamento@redentia.com.br">relacionamento@redentia.com.br</a>.</p>
         </div>
       </aside>
     </MetodologiaDoc>
@@ -310,7 +310,7 @@ usePageSeo({
 }
 .met-author__body p + p { margin-top: 8px; }
 .met-author__body a {
-  color: var(--nu-blue); text-decoration: underline;
+  color: var(--nu-blue-text); text-decoration: underline;
   text-underline-offset: 2px; text-decoration-thickness: 1px;
 }
 .met-author__body a:hover { color: var(--nu-blue-hover); }

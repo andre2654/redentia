@@ -67,7 +67,7 @@ useHead({ titleTemplate: null })
   flex-shrink: 0; width: clamp(44px, 5vw, 54px); height: clamp(44px, 5vw, 54px);
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--nu-r-tile); background: var(--nu-blue-tint);
-  color: var(--nu-blue); font-size: clamp(17px, 1.7vw, 20px); font-weight: 800;
+  color: var(--nu-blue-text); font-size: clamp(17px, 1.7vw, 20px); font-weight: 800;
   letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
 }
 .hw__body { flex: 1; min-width: 0; padding-top: 2px; }

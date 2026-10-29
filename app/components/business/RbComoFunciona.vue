@@ -85,7 +85,7 @@ const PASSOS = [
 /* a saída de quem se convenceu aqui: link de texto, não terceira mancha azul */
 .rbcf__link {
   display: inline-flex; align-items: center; gap: 7px;
-  margin-top: 28px; color: var(--nu-blue);
+  margin-top: 28px; color: var(--nu-blue-text);
   font-size: var(--nu-fs-md); font-weight: 800; transition: color .2s;
 }
 .rbcf__link svg { transition: transform .2s; }

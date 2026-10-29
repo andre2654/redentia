@@ -32,7 +32,7 @@ defineProps<{ editorial: TeseEditorialVM }>()
 }
 .ted__cols { display: flex; gap: clamp(28px, 5vw, 80px); flex-wrap: wrap; }
 .ted__left { flex: 0 1 300px; min-width: min(260px, 100%); }
-.ted__eyebrow { color: var(--nu-blue); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
+.ted__eyebrow { color: var(--nu-blue-text); font-size: clamp(16px, 1.5vw, 19px); font-weight: 800; }
 .ted__title {
   margin: 12px 0 0; color: var(--nu-ink);
   font-size: clamp(30px, 3.4vw, 46px); font-weight: 800;
@@ -50,7 +50,7 @@ defineProps<{ editorial: TeseEditorialVM }>()
 }
 .ted__p :deep(strong) { font-weight: 800; color: var(--nu-ink); }
 .ted__p :deep(a) {
-  color: var(--nu-blue); font-weight: 800;
+  color: var(--nu-blue-text); font-weight: 800;
   border-bottom: 2px solid var(--nu-blue-30); transition: border-color .2s;
 }
 .ted__p :deep(a:hover) { border-bottom-color: var(--nu-blue); }
