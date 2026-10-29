@@ -94,18 +94,6 @@ const dir = (n: number) => (n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
   50% { transform: translateY(-9px) rotate(1.5deg); }
 }
 
-/* com o cartão no canto o miúdo não tem lateral para as plaquinhas: elas
-   descem para baixo da resposta, na fileira que o celular já usa. */
-html.nnc-reserva .mha {
-  position: static; display: grid; grid-template-columns: repeat(3, auto); justify-content: center; align-items: center;
-  gap: 16px 18px; min-height: 0; margin-top: 18px; pointer-events: auto;
-}
-html.nnc-reserva .mha__tag {
-  position: relative; left: auto; top: auto; translate: none; rotate: 0deg; scale: 1;
-}
-html.nnc-reserva .mha__tag:hover { scale: 1.04; }
-html.nnc-reserva .mha__pilula { animation: none; }
-
 /* até 1279px a resposta chega perto das laterais: as duas do pé saem */
 @media (max-width: 1279px) {
   .mha__tag--3, .mha__tag--6 { display: none; }

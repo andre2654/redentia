@@ -1,21 +1,19 @@
 <script setup lang="ts">
-// O convite de O mercado da semana. Dois formatos, a mesma cópia e o mesmo
-// formulário (NuNewsletterForm, origem convite):
-//  - celular (até 760px, o breakpoint do site): bloco no fluxo, imediatamente
-//    antes do rodapé. Sempre presente: sem espera de 12 s e sem rolagem. Some
-//    para quem já assinou, fechou ou está fora da página, como o cartão;
-//  - computador: o cartão no canto. Abre por interesse, nunca na chegada:
-//    depois de 12 s, quando a pessoa rolou além de 60% da página ou quando o
-//    mouse sai pela barra de abas. Enquanto está aberto, o <main> reserva a
-//    largura dele para o texto e os botões não passarem por baixo. Some
-//    quando o rodapé entra na tela (PR #123).
-// Os dois nascem no HTML. O CSS esconde um deles (display: none), para o
-// SSR e o cliente não divergirem e o formulário escondido não receber foco.
-// Não escurece a página, não trava a rolagem e não puxa o foco. Fica fora do
+// O convite de O mercado da semana. A mesma cópia e o mesmo formulário
+// (NuNewsletterForm, origem convite), em três formatos decididos no CSS:
+//  - até 760px: bloco no fluxo, imediatamente antes do rodapé (bloco_mobile);
+//  - acima disso, sem folga lateral que caiba o cartão: o mesmo bloco
+//    (bloco_desktop). O <main> do layout não tem max-width, então a folga é
+//    zero e a página não encolhe quando o convite abre;
+//  - só se (viewport − teto do miúdo) / 2 couber o cartão e as margens: o
+//    cartão fixo dentro dessa folga (card_desktop), depois de 12 s e 60% de
+//    rolagem, ou o mouse saindo pela barra de abas. Some com o rodapé (PR #123).
+// Os blocos nascem no HTML. O que não vale na largura fica display: none, sem
+// foco e sem anúncio. Não escurece a página e não puxa o foco. Fica fora do
 // /guias e das páginas de conta (utils/newsletter-lugares.ts).
 import { CONTA_CONVITE_VISTO } from '~/composables/useConviteDaConta'
 import { NEWSLETTER_ASSINOU } from '~/composables/useNewsletter'
-import { conviteElegivel, conviteForaDaPagina, fracaoLida } from '~/utils/newsletter-lugares'
+import { conviteElegivel, conviteForaDaPagina, fracaoLida, type FormatoConvite } from '~/utils/newsletter-lugares'
 import { exibirConviteFlutuante } from '~/utils/rodape-flutuantes'
 
 const { isAuthenticated } = useAuthState()
@@ -37,6 +35,7 @@ const expandido = ref(true)
 const cardRef = ref<HTMLElement | null>(null)
 /** localStorage e sessão, lidos depois da hidratação para não divergir do SSR */
 const bloqueado = ref(false)
+const blocos: FormatoConvite[] = ['bloco_mobile', 'bloco_desktop']
 let chegada = 0
 let quadro = 0
 let espera: ReturnType<typeof setTimeout> | undefined
@@ -80,20 +79,12 @@ function pode(): boolean {
   return elegivel() && !ler(VISTO, true)
 }
 
-function sincronizarReserva() {
-  if (!import.meta.client) return
-  const desktop = window.matchMedia('(min-width: 761px)').matches
-  const reserva = desktop && exibirConviteFlutuante(aberto.value, rodapeNaTela.value)
-  document.documentElement.classList.toggle('nnc-reserva', reserva)
-}
-
 function abrir() {
   if (aberto.value || Date.now() - chegada < ESPERA_MS || !pode()) return
   expandido.value = !window.matchMedia('(max-width: 760px)').matches
   aberto.value = true
   gravar(VISTO, '1', true)
   desligar()
-  sincronizarReserva()
 }
 
 // Rolagem de verdade além de 60% da página: em página curta, que cabe na
@@ -132,20 +123,17 @@ function fechar() {
   bloqueado.value = true
   clearTimeout(fechaDepois)
   gravar(FECHOU, String(Date.now()))
-  sincronizarReserva()
 }
 function assinou() {
   // a confirmação fica uns segundos na tela e o cartão sai sozinho
   clearTimeout(fechaDepois)
   fechaDepois = setTimeout(() => {
     aberto.value = false
-    sincronizarReserva()
   }, 8000)
 }
 function ocultarAssinante() {
   bloqueado.value = true
   aberto.value = false
-  sincronizarReserva()
 }
 async function expandir() {
   expandido.value = true
@@ -153,52 +141,43 @@ async function expandir() {
   cardRef.value?.querySelector<HTMLInputElement>('input[type=email]')?.focus()
 }
 
-let mqDesktop: MediaQueryList | undefined
-function aoMudarLargura() {
-  sincronizarReserva()
-}
 onMounted(() => {
   chegada = Date.now()
   if (!elegivel()) bloqueado.value = true
   if (ligada) ligar()
-  mqDesktop = window.matchMedia('(min-width: 761px)')
-  mqDesktop.addEventListener('change', aoMudarLargura)
-  sincronizarReserva()
 })
 onBeforeUnmount(() => {
   desligar()
   clearTimeout(fechaDepois)
-  mqDesktop?.removeEventListener('change', aoMudarLargura)
-  document.documentElement.classList.remove('nnc-reserva')
 })
 // foi para uma página de fora (login, guias...) com o convite aberto
 watch(() => route.path, (p) => {
-  if (aberto.value && conviteForaDaPagina(p)) {
-    aberto.value = false
-    sincronizarReserva()
-  }
+  if (aberto.value && conviteForaDaPagina(p)) aberto.value = false
 })
-watch([aberto, rodapeNaTela], sincronizarReserva)
 </script>
 
 <template>
   <section
-    v-if="blocoVisivel"
+    v-for="fmt in blocos"
+    v-show="blocoVisivel"
+    :key="fmt"
     class="nnb"
+    :class="`nnb--${fmt}`"
     data-convite="bloco"
-    aria-labelledby="nnb-titulo"
+    :data-formato="fmt"
+    :aria-labelledby="`nnb-titulo-${fmt}`"
   >
     <div class="nnb__cabeca">
       <div class="nnb__texto">
         <p class="nnb__eyebrow">Newsletter grátis</p>
-        <h2 id="nnb-titulo" class="nnb__titulo">O mercado da semana, toda sexta.</h2>
+        <h2 :id="`nnb-titulo-${fmt}`" class="nnb__titulo">O mercado da semana, toda sexta.</h2>
       </div>
       <button type="button" class="nnb__fechar" aria-label="Fechar" @click="fechar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
       </button>
     </div>
     <p class="nnb__sub">O Ibovespa da semana, as notícias que mexeram nele e os proventos da semana que vem.</p>
-    <NuNewsletterForm class="nnb__form" origem="convite" formato="bloco_mobile" @ja-assinante="ocultarAssinante" />
+    <NuNewsletterForm class="nnb__form" origem="convite" :formato="fmt" @ja-assinante="ocultarAssinante" />
   </section>
   <Transition name="nnc">
     <div
@@ -225,7 +204,7 @@ watch([aberto, rodapeNaTela], sincronizarReserva)
 </template>
 
 <style scoped>
-/* bloco no fluxo: só o celular. Sem fixed, absolute, sticky nem z-index. */
+/* bloco no fluxo. Sem fixed, absolute, sticky nem z-index. */
 .nnb {
   margin: 20px 12px 0;
   padding: 22px 18px 18px;
@@ -233,6 +212,7 @@ watch([aberto, rodapeNaTela], sincronizarReserva)
   background: var(--nu-navy) url('/email/brilho.jpg') center top / cover no-repeat;
   color: var(--nu-cream-text);
 }
+.nnb--bloco_desktop { display: none; }
 .nnb__cabeca { display: flex; align-items: flex-start; gap: 12px; }
 .nnb__texto { flex: 1; min-width: 0; }
 .nnb__eyebrow {
@@ -252,16 +232,24 @@ watch([aberto, rodapeNaTela], sincronizarReserva)
 }
 .nnb__fechar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
 
-/* computador: o bloco não existe na tela, nem no foco, nem no leitor */
+/* acima de 760px o bloco do celular some e entra o bloco do computador.
+   O cartão só substituiria este bloco numa folga lateral real; o main não
+   tem max-width, então essa folga não existe. */
 @media (min-width: 761px) {
-  .nnb { display: none !important; }
+  .nnb--bloco_mobile { display: none; }
+  .nnb--bloco_desktop {
+    display: block;
+    width: min(720px, calc(100% - 48px));
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* abaixo dos painéis do header (60) e dos modais (9999+): o convite nunca
    fica por cima de algo que a pessoa abriu */
 .nnc {
   position: fixed; right: 24px; bottom: calc(24px + var(--ck-h, 0px)); z-index: 50;
-  width: min(392px, calc(100vw - 48px));
+  width: 340px;
   max-height: min(420px, calc(100vh - 220px - var(--ck-h, 0px)));
   overflow: auto;
   padding: 26px 26px 22px;
@@ -308,27 +296,13 @@ watch([aberto, rodapeNaTela], sincronizarReserva)
 }
 .nnc__abrir:hover { background: var(--nu-blue-hover); }
 
-/* celular: o cartão não é desenhado, não recebe foco e não é anunciado */
-@media (max-width: 760px) {
-  .nnc { display: none !important; }
-}
+/* Sem folga no layout atual o cartão não entra em nenhuma largura: não
+   recebe foco e não é anunciado. Não reserva espaço no miúdo. */
+.nnc { display: none; }
 
 .nnc-enter-active, .nnc-leave-active { transition: opacity .3s ease, transform .3s cubic-bezier(.2, .8, .2, 1); }
 .nnc-enter-from, .nnc-leave-to { opacity: 0; transform: translateY(16px); }
 @media (prefers-reduced-motion: reduce) {
   .nnc-enter-from, .nnc-leave-to { transform: none; }
-}
-</style>
-
-<style>
-/* Enquanto o cartão está no canto, o miolo encolhe a largura dele mais a
-   margem e uma folga (392 + 24 + 16). O header, o aviso de cookies e o
-   rodapé continuam na largura da tela: o cartão fica abaixo deles, e o
-   rodapé tira o cartão da tela (exibirConviteFlutuante). */
-@media (min-width: 761px) {
-  html.nnc-reserva main {
-    padding-right: calc(392px + 24px + 16px);
-    overflow-x: clip;
-  }
 }
 </style>

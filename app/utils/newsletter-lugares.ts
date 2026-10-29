@@ -50,13 +50,19 @@ export function fracaoLida(topoDoMain: number, alturaDoMain: number, alturaDaTel
  */
 export const CONVITE_MOBILE_MAX_PX = 760
 
-export const FORMATOS_CONVITE = ['bloco_mobile', 'card_desktop'] as const
+export const FORMATOS_CONVITE = ['bloco_mobile', 'bloco_desktop', 'card_desktop'] as const
 export type FormatoConvite = (typeof FORMATOS_CONVITE)[number]
 
-/** Largura do cartão, margem até a borda da tela e folga até o texto. */
-export const CONVITE_LARGURA_PX = 392
-export const CONVITE_MARGEM_PX = 24
-export const CONVITE_FOLGA_PX = 16
+/**
+ * Teto do miúdo, em px. null: o <main> do layout não tem max-width e ocupa a
+ * viewport (app/layouts/default.vue). A folga lateral é zero e o cartão não
+ * entra. Um número é o max-width real do container.
+ */
+export const CONVITE_CONTEUDO_MAX_PX: number | null = null
+
+/** Cartão um pouco menor que os 392px originais, para caber numa folga de verdade. */
+export const CONVITE_CARD_LARGURA_PX = 340
+export const CONVITE_CARD_MARGEM_PX = 24
 
 export function formatoConviteValido(formato?: string | null): FormatoConvite | null {
   return (FORMATOS_CONVITE as readonly string[]).includes(formato ?? '')
@@ -64,26 +70,49 @@ export function formatoConviteValido(formato?: string | null): FormatoConvite | 
     : null
 }
 
-/** Abaixo ou igual a 760px o convite é o bloco; acima, o cartão. */
-export function formatoConvitePorLargura(larguraPx: number): FormatoConvite {
-  return larguraPx > CONVITE_MOBILE_MAX_PX ? 'card_desktop' : 'bloco_mobile'
+/** Espaço que o cartão ocupa na folga: a largura dele e uma margem de cada lado. */
+export function espacoDoCartao(
+  largura = CONVITE_CARD_LARGURA_PX,
+  margem = CONVITE_CARD_MARGEM_PX,
+): number {
+  return largura + margem * 2
 }
 
-/** padding-right do <main> enquanto o cartão está na tela, em px. */
-export function reservaDoConviteDesktop(): number {
-  return CONVITE_LARGURA_PX + CONVITE_MARGEM_PX + CONVITE_FOLGA_PX
+/** (viewport − teto do miúdo) / 2. Sem teto, o miúdo é a própria viewport. */
+export function folgaLateral(
+  larguraViewport: number,
+  conteudoMax: number | null = CONVITE_CONTEUDO_MAX_PX,
+): number {
+  const limite = conteudoMax == null ? larguraViewport : Math.min(conteudoMax, larguraViewport)
+  return Math.max(0, (larguraViewport - limite) / 2)
+}
+
+export function cabeCartaoNoGutter(
+  larguraViewport: number,
+  conteudoMax: number | null = CONVITE_CONTEUDO_MAX_PX,
+): boolean {
+  return folgaLateral(larguraViewport, conteudoMax) >= espacoDoCartao()
 }
 
 /**
- * O conteúdo termina antes da borda esquerda do cartão, e o cartão guarda a
- * margem direita. Vale para a largura fixa de 392px (telas em que ela cabe).
+ * Menor viewport em que a folga cabe o cartão. null quando o miúdo não tem
+ * teto: nenhuma largura cria folga.
  */
-export function cardSeparadoDoConteudo(larguraViewport: number): boolean {
-  const larguraCard = Math.min(CONVITE_LARGURA_PX, Math.max(0, larguraViewport - CONVITE_MARGEM_PX * 2))
-  const esquerdaCard = larguraViewport - CONVITE_MARGEM_PX - larguraCard
-  const direitaConteudo = larguraViewport - reservaDoConviteDesktop()
-  return direitaConteudo <= esquerdaCard - CONVITE_FOLGA_PX + 0.5
-    && esquerdaCard >= CONVITE_MARGEM_PX
+export function larguraMinimaDoCartao(conteudoMax: number | null = CONVITE_CONTEUDO_MAX_PX): number | null {
+  if (conteudoMax == null || !Number.isFinite(conteudoMax)) return null
+  return Math.ceil(conteudoMax + 2 * espacoDoCartao())
+}
+
+/**
+ * Até 760px, bloco no fluxo. Acima, o cartão só se a folga lateral já existe
+ * e cabe nele; senão, o mesmo bloco no fluxo (formato bloco_desktop).
+ */
+export function formatoConvitePorLargura(
+  larguraPx: number,
+  conteudoMax: number | null = CONVITE_CONTEUDO_MAX_PX,
+): FormatoConvite {
+  if (larguraPx <= CONVITE_MOBILE_MAX_PX) return 'bloco_mobile'
+  return cabeCartaoNoGutter(larguraPx, conteudoMax) ? 'card_desktop' : 'bloco_desktop'
 }
 
 export interface ConviteElegibilidade {

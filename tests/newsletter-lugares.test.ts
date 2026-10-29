@@ -8,18 +8,20 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  CONVITE_FOLGA_PX,
-  CONVITE_LARGURA_PX,
-  CONVITE_MARGEM_PX,
+  CONVITE_CARD_LARGURA_PX,
+  CONVITE_CARD_MARGEM_PX,
+  CONVITE_CONTEUDO_MAX_PX,
   CONVITE_MOBILE_MAX_PX,
   CONVITE_PAUSA_DIAS,
-  cardSeparadoDoConteudo,
+  cabeCartaoNoGutter,
   conviteElegivel,
   conviteForaDaPagina,
   convitePausado,
+  espacoDoCartao,
+  folgaLateral,
   formatoConvitePorLargura,
   fracaoLida,
-  reservaDoConviteDesktop,
+  larguraMinimaDoCartao,
   rodapeSemAssinatura,
 } from '../app/utils/newsletter-lugares.ts'
 
@@ -83,21 +85,37 @@ test('fechou o convite: some por 30 dias e volta depois', () => {
   assert.equal(convitePausado(agora - 30 * dia, agora), false)
 })
 
-test('até 760px o convite é o bloco; acima, o cartão', () => {
+test('até 760px o convite é o bloco do celular', () => {
   assert.equal(CONVITE_MOBILE_MAX_PX, 760)
   assert.equal(formatoConvitePorLargura(390), 'bloco_mobile')
   assert.equal(formatoConvitePorLargura(760), 'bloco_mobile')
-  assert.equal(formatoConvitePorLargura(761), 'card_desktop')
-  assert.equal(formatoConvitePorLargura(1440), 'card_desktop')
 })
 
-test('o cartão reserva a própria largura e não invade o texto', () => {
-  assert.equal(CONVITE_LARGURA_PX, 392)
-  assert.equal(CONVITE_MARGEM_PX, 24)
-  assert.equal(CONVITE_FOLGA_PX, 16)
-  assert.equal(reservaDoConviteDesktop(), 392 + 24 + 16)
-  assert.equal(cardSeparadoDoConteudo(1440), true)
-  assert.equal(cardSeparadoDoConteudo(761), true)
+test('sem teto no miúdo não há folga: 1280, 1440 e 1920 ficam no bloco', () => {
+  assert.equal(CONVITE_CONTEUDO_MAX_PX, null)
+  assert.equal(folgaLateral(1920), 0)
+  assert.equal(cabeCartaoNoGutter(1920), false)
+  assert.equal(larguraMinimaDoCartao(), null)
+  for (const w of [761, 1024, 1280, 1440, 1600, 1920]) {
+    assert.equal(formatoConvitePorLargura(w), 'bloco_desktop', String(w))
+  }
+})
+
+test('o cartão só entra quando a folga lateral já cabe nele', () => {
+  assert.equal(CONVITE_CARD_LARGURA_PX, 340)
+  assert.equal(CONVITE_CARD_MARGEM_PX, 24)
+  assert.equal(espacoDoCartao(), 340 + 48)
+  const teto = 1080
+  assert.equal(folgaLateral(1440, teto), (1440 - 1080) / 2)
+  assert.equal(cabeCartaoNoGutter(1440, teto), false)
+  assert.equal(formatoConvitePorLargura(1280, teto), 'bloco_desktop')
+  assert.equal(formatoConvitePorLargura(1440, teto), 'bloco_desktop')
+  assert.equal(formatoConvitePorLargura(1600, teto), 'bloco_desktop')
+  const minima = larguraMinimaDoCartao(teto)
+  assert.equal(minima, Math.ceil(1080 + 2 * (340 + 48)))
+  assert.equal(formatoConvitePorLargura(minima! - 1, teto), 'bloco_desktop')
+  assert.equal(formatoConvitePorLargura(minima!, teto), 'card_desktop')
+  assert.equal(formatoConvitePorLargura(1920, teto), 'card_desktop')
 })
 
 test('quem já assinou não vê o convite, no bloco e no cartão', () => {
