@@ -4,6 +4,7 @@
 //  - deploy git→Vercel e organização por feature (Atlas)
 // Plano mestre: docs/redentia-nu/PLANO-REDENTIA-NU.md (repo raiz).
 import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
+import { CABECALHOS_JSON_DO_PROXY } from './server/utils/backend-proxy-json.ts'
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-11',
@@ -73,8 +74,15 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Proxies server-to-server (prod/Vercel).
+    // O proxyRequest do h3 descarta o Accept do cliente. Estes headers vão
+    // nas opções do proxy (vencem o mapa filtrado) e fazem o Laravel responder
+    // JSON: 422 na validação, 401 sem login. X-Forwarded-For e a chave do
+    // backend continuam no plugin backend-front-key.
     '/api/backend/**': {
-      proxy: `${process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api'}/**`,
+      proxy: {
+        to: `${process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api'}/**`,
+        headers: { ...CABECALHOS_JSON_DO_PROXY },
+      },
     },
     '/api/chat/**': {
       proxy: `${process.env.NUXT_CHAT_SERVICE_URL ?? 'https://redentia-api.saraivada.com/chat'}/**`,
@@ -291,6 +299,7 @@ export default defineNuxtConfig({
       '/api/backend': {
         target: process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api',
         changeOrigin: true,
+        headers: { ...CABECALHOS_JSON_DO_PROXY },
       },
       '/api/chat': {
         target: process.env.NUXT_CHAT_SERVICE_URL ?? 'https://redentia-api.saraivada.com/chat',
