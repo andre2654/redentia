@@ -1,5 +1,10 @@
 import type { H3Event } from 'h3'
 import type { $Fetch, FetchOptions, FetchRequest } from 'ofetch'
+import {
+  MARCADOR_BUILD_PROXY,
+  MARCADOR_BUILD_PROXY_VALOR,
+  caminhoDoProxyBackend,
+} from '../utils/backend-proxy-json'
 
 /**
  * Carimba a chave do Frontend (`X-Redentia-Front-Key`) e o IP do VISITANTE em
@@ -22,7 +27,11 @@ import type { $Fetch, FetchOptions, FetchRequest } from 'ofetch'
  *     localFetch): o `$fetch` global ganha um embrulho que lê o request em curso
  *     (asyncContext do Nitro) e grava o visitante no X-Forwarded-For.
  *
- * Sem `NUXT_BACKEND_FRONT_KEY` o plugin não faz nada: é o comportamento antigo.
+ * Sem `NUXT_BACKEND_FRONT_KEY` a chave e o IP não são carimbados: é o
+ * comportamento antigo. O marcador `x-redentia-proxy` na resposta do proxy
+ * sai sempre — confirma na prévia qual build está no ar. Accept e
+ * X-Requested-With não passam por aqui: o h3 descarta o Accept, então eles
+ * vão em routeRules.proxy.headers (ver backend-proxy-json.ts).
  * A chave é server-only (fora de runtimeConfig.public) e só vai pra URLs do
  * backend, nunca pra outro host.
  */
@@ -45,19 +54,23 @@ function currentVisitorIp(): string | undefined {
 export default defineNitroPlugin((nitroApp) => {
   const config = useRuntimeConfig()
   const key = String(config.backendFrontKey || '')
-  if (!key) return
 
   const backendBase = `${String(config.backendDirectBase).replace(/\/+$/, '')}/`
 
   // 1. Proxy do browser (e o /api/backend que o SSR chama via localFetch).
+  // O marcador sai mesmo sem a chave. O carimbo do IP/chave, não.
   nitroApp.hooks.hook('request', (event) => {
-    if (!event.path.startsWith(PROXY_PREFIX)) return
+    if (!caminhoDoProxyBackend(event.path)) return
+    setResponseHeader(event, MARCADOR_BUILD_PROXY, MARCADOR_BUILD_PROXY_VALOR)
+    if (!key) return
     const headers = event.node.req.headers
     const ip = requestIp(event)
     if (ip) headers['x-forwarded-for'] = ip
     else delete headers['x-forwarded-for']
     headers[FRONT_KEY_HEADER] = key
   })
+
+  if (!key) return
 
   // 2. SSR: embrulha o $fetch global (o Nitro o cria antes de rodar os plugins).
   const original = globalThis.$fetch as $Fetch
