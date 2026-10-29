@@ -4,6 +4,34 @@ import type { MagicLinkVerifyResponse } from '~/types/auth'
 export const NEWSLETTER_ASSINOU = 'nu:newsletter-assinou'
 
 /**
+ * Versão do texto de aceite LGPD exibido nos formulários da newsletter
+ * (o aviso `legal` daqui). Muda sempre que esse texto de aceite mudar.
+ * O texto atual entrou em 21/10/2026 (34fe7b17, PRs #87–#89).
+ */
+export const NEWSLETTER_CONSENT_VERSION = '2026-10-21'
+
+export const ORIGENS_DA_NEWSLETTER = ['bloco', 'guias', 'rodape', 'convite'] as const
+export type OrigemNewsletter = (typeof ORIGENS_DA_NEWSLETTER)[number]
+
+/** Origem fora da lista vira `bloco`, o padrão seguro (bloco embutido no conteúdo). */
+export function origemDaNewsletter(origem?: string | null): OrigemNewsletter {
+  return (ORIGENS_DA_NEWSLETTER as readonly string[]).includes(origem ?? '')
+    ? origem as OrigemNewsletter
+    : 'bloco'
+}
+
+/** Corpo do PUT /me/notification-preferences que liga o tópico da newsletter. */
+export function corpoInscricaoNewsletter(origem?: string | null) {
+  return {
+    topic: 'newsletter',
+    email: true,
+    whatsapp: false,
+    consent_version: NEWSLETTER_CONSENT_VERSION,
+    consent_source: origemDaNewsletter(origem),
+  }
+}
+
+/**
  * "O mercado da semana", a newsletter de sexta. Fica em casa desde 21/10/2026
  * (o beehiiv saiu antes de entrar): a inscrição é o tópico `newsletter` das
  * preferências de notificação do Backend, e quem envia é o newsletter:enviar,
@@ -17,11 +45,12 @@ export const NEWSLETTER_ASSINOU = 'nu:newsletter-assinou'
  * Client-only: a página é cacheada na borda e a sessão só existe depois do
  * mount.
  *
- * `origem` diz de onde veio a inscrição no evento `newsletter_assinatura` do
- * GA4: bloco (preço teto), guias, rodape ou convite. É o que mostra qual lugar
- * traz assinante.
+ * `origem` diz de onde veio a inscrição, no PUT (`consent_source`) e no
+ * evento `newsletter_assinatura` do GA4: bloco (preço teto), guias, rodape
+ * ou convite. É o que mostra qual lugar traz assinante.
  */
-export function useNewsletter(origem = 'bloco') {
+export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
+  const fonte = origemDaNewsletter(origem)
   const { isAuthenticated, setSession } = useAuthState()
   const { publicFetch, authFetch } = useApi()
   const { load: carregarConta } = useMeCliente()
@@ -88,7 +117,7 @@ export function useNewsletter(origem = 'bloco') {
   }
 
   function ligarTopico() {
-    return authFetch('/me/notification-preferences', { method: 'PUT', body: { topic: 'newsletter', email: true, whatsapp: false } }, { redirectOnAuthError: false })
+    return authFetch('/me/notification-preferences', { method: 'PUT', body: corpoInscricaoNewsletter(fonte) }, { redirectOnAuthError: false })
   }
 
   function concluir() {
@@ -97,7 +126,7 @@ export function useNewsletter(origem = 'bloco') {
       localStorage.setItem(NEWSLETTER_ASSINOU, '1')
     }
     catch { /* modo privado: o convite só não fica sabendo */ }
-    ;(window as any).gtag?.('event', 'newsletter_assinatura', { origem, conta: fim.value })
+    ;(window as any).gtag?.('event', 'newsletter_assinatura', { origem: fonte, source: fonte, conta: fim.value })
   }
 
   async function assinarComConta() {
