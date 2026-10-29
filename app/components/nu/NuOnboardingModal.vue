@@ -1,8 +1,11 @@
 <script setup lang="ts">
-// Onboarding obrigatório — decisão do dono (24/08): TODO usuário logado sem
-// `investor_goal` responde antes de seguir, sem exceção e sem botão de
-// fechar (o gate vale pra conta nova E pra base antiga; 427 de 428 usuários
-// estavam sem a resposta porque o fluxo novo nunca perguntou).
+// Onboarding — decisão do dono (24/08): TODO usuário logado sem
+// `investor_goal` vê as duas perguntas antes de seguir (o gate vale pra conta
+// nova E pra base antiga; 427 de 428 usuários estavam sem a resposta porque o
+// fluxo novo nunca perguntou). Dá para dispensar com Esc, clique no fundo ou
+// no X: a resposta não é gravada, e o modal não volta nesta visita. Também
+// não abre por cima do "Pronto" da newsletter (useNewsletter segura o gate
+// até a próxima navegação ou carga).
 //
 // Desenho que torna o bloqueio aceitável: 2 perguntas, 1 toque cada, e a
 // resposta MUDA a tela final (CTA por objetivo) — setup, não censo. O passo 3
@@ -22,6 +25,7 @@
 // (GET /me/business → has_account, o 1:1 de business_accounts) nunca vê,
 // em página nenhuma.
 import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
+import { NEWSLETTER_SEGURA_ONBOARDING } from '~/utils/newsletter-inscricao'
 
 const { isAuthenticated, firstName } = useAuthState()
 const { authFetch } = useApi()
@@ -43,6 +47,8 @@ const DONE: Record<string, { line: string; cta: string; to: string }> = {
 }
 
 const gate = useState<'unknown' | 'needed' | 'done'>('nu:onb-gate', () => 'unknown')
+const seguraNewsletter = useState(NEWSLETTER_SEGURA_ONBOARDING, () => 0)
+const dispensado = useState('nu:onb-dispensado', () => false)
 // A folha de cadastro (CadastroFolha, 21/10/2026) faz as mesmas perguntas no
 // fim do cadastro: enquanto ela está aberta, este modal não abre por cima.
 // Se a pessoa fechar a folha antes de responder, o gate volta a valer aqui.
@@ -55,15 +61,37 @@ const saveError = ref('')
 
 const cardRef = ref<HTMLElement | null>(null)
 useModalA11y(cardRef, open)
+
+function podeAbrir() {
+  return gate.value === 'needed' && seguraNewsletter.value === 0 && !dispensado.value
+}
+function dispensar() {
+  dispensado.value = true
+  open.value = false
+}
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') dispensar()
+}
 watch(open, (o) => {
-  if (import.meta.client) document.documentElement.style.overflow = o ? 'hidden' : ''
+  if (!import.meta.client) return
+  document.documentElement.style.overflow = o ? 'hidden' : ''
+  if (o) document.addEventListener('keydown', onKey)
+  else document.removeEventListener('keydown', onKey)
+})
+watch(seguraNewsletter, (n) => {
+  if (n > 0) open.value = false
+})
+onBeforeUnmount(() => {
+  if (!import.meta.client) return
+  document.removeEventListener('keydown', onKey)
+  document.documentElement.style.overflow = ''
 })
 
 async function check() {
   if (naFolha.value) return
   if (!isAuthenticated.value || route.path === '/login' || route.path.startsWith('/business')) return
   if (gate.value !== 'unknown') {
-    open.value = gate.value === 'needed'
+    open.value = podeAbrir()
     return
   }
   try {
@@ -79,7 +107,7 @@ async function check() {
   } catch {
     gate.value = 'done' // sem resposta do servidor, não bloqueia o app
   }
-  open.value = gate.value === 'needed'
+  open.value = podeAbrir()
 }
 onMounted(() => {
   void check()
@@ -98,7 +126,13 @@ onMounted(() => {
 // quem ENTROU por /login ou /business/* (gate nem rodou) é avaliado ao
 // navegar pra qualquer outra página
 watch(() => route.path, () => {
+  if (seguraNewsletter.value > 0) {
+    open.value = false
+    return
+  }
+  if (dispensado.value) return
   if (gate.value === 'unknown') void check()
+  else if (gate.value === 'needed') open.value = true
 })
 // a folha de cadastro fechou: respondeu lá (gate 'done') ou saiu antes (vale aqui)
 watch(naFolha, (v) => {
@@ -135,11 +169,14 @@ async function finish(navigate: boolean) {
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="nob" role="presentation">
+    <div v-if="open" class="nob" role="presentation" @click.self="dispensar">
       <div
         ref="cardRef" class="nob__card" role="dialog" aria-modal="true"
         aria-labelledby="nob-title" tabindex="-1"
       >
+        <button type="button" class="nob__x" aria-label="Fechar" @click="dispensar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
         <p class="nob__eyebrow">Sua Redentia</p>
 
         <template v-if="step === 1">
@@ -199,13 +236,23 @@ async function finish(navigate: boolean) {
   animation: nu-fade .25s ease both;
 }
 .nob__card {
+  position: relative;
   width: min(600px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto;
   background: var(--nu-day-card); border-radius: var(--nu-r-card-lg);
   padding: 40px 42px 34px; box-shadow: var(--nu-shadow-day-modal);
   outline: none; animation: nu-fade .3s ease both;
 }
-.nob__eyebrow { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
-.nob__title { margin: 9px 0 0; color: var(--nu-ink); font-size: clamp(24px, 3.4vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.nob__x {
+  position: absolute; top: 16px; right: 16px; z-index: 1;
+  width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--nu-cream-2); color: var(--nu-navy); font-family: inherit;
+  transition: background .15s;
+}
+.nob__x:hover { background: var(--nu-cream-hover); }
+.nob__x:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.nob__eyebrow { margin: 0; padding-right: 48px; color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+.nob__title { margin: 9px 0 0; padding-right: 48px; color: var(--nu-ink); font-size: clamp(24px, 3.4vw, 30px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
 .nob__dek { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
 .nob__dek--done { font-size: var(--nu-fs-lg); }
 
@@ -254,5 +301,6 @@ async function finish(navigate: boolean) {
 @media (max-width: 760px) {
   .nob { padding: 12px; align-items: flex-end; }
   .nob__card { padding: 28px 22px 24px; border-radius: var(--nu-r-card); }
+  .nob__x { top: 12px; right: 12px; }
 }
 </style>

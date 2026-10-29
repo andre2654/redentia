@@ -18,8 +18,10 @@
 import { CONTA_CONVITE_VISTO } from '~/composables/useConviteDaConta'
 import { NEWSLETTER_ASSINOU } from '~/composables/useNewsletter'
 import { conviteForaDaPagina, convitePausado, fracaoLida } from '~/utils/newsletter-lugares'
+import { exibirConviteFlutuante } from '~/utils/rodape-flutuantes'
 
 const { isAuthenticated } = useAuthState()
+const rodapeNaTela = useRodapeNaTela()
 // a folha de cadastro vem antes: com ela aberta, ou depois de a folha de uma
 // calculadora subir nesta visita, o convite da newsletter espera a próxima
 const folhaCadastro = useCadastroFolha()
@@ -112,6 +114,7 @@ function fechar() {
 }
 function assinou() {
   // a confirmação fica uns segundos na tela e o cartão sai sozinho
+  clearTimeout(fechaDepois)
   fechaDepois = setTimeout(() => {
     aberto.value = false
   }, 8000)
@@ -139,14 +142,15 @@ watch(() => route.path, (p) => {
 <template>
   <Transition name="nnc">
     <div
-      v-if="aberto" ref="cardRef" class="nnc" :class="{ 'nnc--fino': !expandido }"
+      v-if="aberto" v-show="exibirConviteFlutuante(aberto, rodapeNaTela)"
+      ref="cardRef" class="nnc" :class="{ 'nnc--fino': !expandido }"
       role="dialog" aria-labelledby="nnc-titulo" @keydown.esc="fechar"
     >
       <template v-if="expandido">
         <p class="nnc__eyebrow">Newsletter grátis</p>
         <h2 id="nnc-titulo" class="nnc__titulo">O mercado da semana, toda sexta.</h2>
         <p class="nnc__sub">O Ibovespa da semana, as notícias que mexeram nele e os proventos da semana que vem.</p>
-        <NuNewsletterForm class="nnc__form" origem="convite" @assinou="assinou" />
+        <NuNewsletterForm class="nnc__form" origem="convite" @assinou="assinou" @ja-assinante="fechar" />
       </template>
       <template v-else>
         <p id="nnc-titulo" class="nnc__fino"><strong>O mercado da semana</strong><span>Toda sexta no seu e-mail</span></p>

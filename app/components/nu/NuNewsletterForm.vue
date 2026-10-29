@@ -12,25 +12,30 @@ const props = withDefaults(defineProps<{
   /** de onde veio a inscrição: consent_source do PUT e o evento do GA4 */
   origem?: OrigemNewsletter
 }>(), { placeholder: 'Seu melhor e-mail', cta: 'Assinar', origem: 'bloco' })
-const emit = defineEmits<{ assinou: [] }>()
+const emit = defineEmits<{ assinou: []; jaAssinante: [] }>()
 
 const { isAuthenticated } = useAuthState()
 const nl = useNewsletter(props.origem)
-const { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, erro, confirmacao, legal } = nl
+const { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, inscricaoEmCurso, erro, confirmacao, legal } = nl
 const email = ref('')
 const codigo = ref('')
 /** isca para robô: gente não vê nem preenche */
 const isca = ref('')
+// "Você já recebe" é a conta que já estava inscrita, não o resultado deste PUT.
+const jaAssina = computed(() => assinante.value && pronto.value && !enviando.value && !inscricaoEmCurso.value && etapa.value === 'email' && !erro.value)
 
 watch(etapa, (v) => {
   if (v === 'ok') emit('assinou')
+})
+watch(jaAssina, (v) => {
+  if (v) emit('jaAssinante')
 })
 </script>
 
 <template>
   <div class="nnf">
     <p v-if="etapa === 'ok'" class="nnf__ok" role="status">{{ confirmacao }}</p>
-    <p v-else-if="assinante" class="nnf__ok" role="status">Você já recebe O mercado da semana{{ emailDaConta ? ` em ${emailDaConta}` : '' }}, toda sexta.</p>
+    <p v-else-if="jaAssina" class="nnf__ok" role="status">Você já recebe O mercado da semana{{ emailDaConta ? ` em ${emailDaConta}` : '' }}, toda sexta.</p>
     <template v-else-if="isAuthenticated && !pronto" />
 
     <template v-else-if="isAuthenticated && emailDaConta && etapa === 'email'">

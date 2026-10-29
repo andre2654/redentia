@@ -125,13 +125,15 @@ const COLUMNS = [
       <span class="rbf__bottom-name">Redentia <span class="rbf__bottom-suffix">For Business</span></span>
       <span class="rbf__copy">© 2026 {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
     </div>
+    <!-- O aviso de cookies senta aqui quando o rodapé está na tela. -->
+    <div id="ancora-cookies" />
   </footer>
 </template>
 
 <style scoped>
 /* Medidas espelhadas do NuFooter (padrão do app). Só o bloco do nome no
    rodapé é novo, porque o footer do app mostra só o losango. */
-.rbf { background: var(--nu-navy); padding: clamp(64px, 8vw, 110px) clamp(22px, 5.5vw, 80px) 0; overflow: hidden; }
+.rbf { position: relative; background: var(--nu-navy); padding: clamp(64px, 8vw, 110px) clamp(22px, 5.5vw, 80px) 0; overflow: hidden; }
 .rbf__top { display: flex; gap: clamp(28px, 5vw, 70px); align-items: flex-start; flex-wrap: wrap; }
 .rbf__title {
   margin: 0; flex: 1 1 240px; min-width: min(220px, 100%); color: var(--nu-cream-text);

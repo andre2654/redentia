@@ -4,12 +4,35 @@
 // da home e do botão da /business. No celular, uma faixa no fluxo, no topo,
 // para não cobrir plaquinha nem o card da /business. Os dois botões têm o
 // mesmo peso de propósito: nenhum é o "certo".
+// Com o rodapé na tela (desktop), o cartão deixa de ser fixed: senta na
+// âncora do rodapé e o rodapé ganha padding-bottom da altura do cartão.
+import { bannerCookiesEmFluxo, folgaDoBannerNoRodape } from '~/utils/rodape-flutuantes'
+
 const { aberto, aceitar, recusar } = useConsent()
 const el = ref<HTMLElement | null>(null)
+const rodapeNaTela = useRodapeNaTela()
+const desktop = ref(true)
+const temAncora = ref(false)
 
 useHead(() => ({
   htmlAttrs: aberto.value ? { 'data-ck': 'open' } : { 'data-ck': undefined },
 }))
+
+const emFluxo = computed(() => bannerCookiesEmFluxo({
+  aberto: aberto.value,
+  rodapeNaTela: rodapeNaTela.value,
+  desktop: desktop.value,
+  temAncora: temAncora.value,
+}))
+
+function ambiente() {
+  desktop.value = window.matchMedia('(min-width: 760px)').matches
+  temAncora.value = !!document.getElementById('ancora-cookies')
+}
+
+function rodape() {
+  return document.querySelector<HTMLElement>('footer.nuf, footer.rbf')
+}
 
 function medir() {
   // No celular a faixa é do fluxo, não cobre a tela: sem folga extra.
@@ -22,29 +45,70 @@ function medir() {
   document.documentElement.style.setProperty('--ck-h', `${Math.ceil(h + 12)}px`)
 }
 
+function aplicarFolga() {
+  const footer = rodape()
+  const folga = folgaDoBannerNoRodape(emFluxo.value, el.value?.offsetHeight ?? 0)
+  if (footer) {
+    if (folga > 0) footer.style.paddingBottom = `${folga}px`
+    else footer.style.removeProperty('padding-bottom')
+  }
+  if (!aberto.value) {
+    document.documentElement.style.removeProperty('--ck-h')
+    return
+  }
+  // No fluxo do rodapé o cartão não é fixed: a folga é o padding, não --ck-h.
+  if (emFluxo.value) document.documentElement.style.setProperty('--ck-h', '0px')
+  else medir()
+}
+
 watch(aberto, async (v, antes) => {
   if (!import.meta.client) return
   if (!v) {
     document.documentElement.style.removeProperty('--ck-h')
+    rodape()?.style.removeProperty('padding-bottom')
     return
   }
   await nextTick()
-  medir()
+  ambiente()
+  aplicarFolga()
   // Reabrir pelo rodapé, no celular, deixa a faixa no topo da página.
   if (antes === false && window.matchMedia('(max-width: 759px)').matches)
     el.value?.scrollIntoView({ block: 'start' })
 })
 
+watch([emFluxo, rodapeNaTela], async () => {
+  if (!import.meta.client) return
+  await nextTick()
+  ambiente()
+  aplicarFolga()
+})
+
+function aoRedimensionar() {
+  ambiente()
+  aplicarFolga()
+}
+
 onMounted(() => {
-  if (aberto.value) medir()
+  // O rodapé monta depois deste aviso: a âncora só existe no tick seguinte.
+  nextTick(() => {
+    ambiente()
+    if (aberto.value) aplicarFolga()
+  })
+  window.addEventListener('resize', aoRedimensionar)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', aoRedimensionar)
+  rodape()?.style.removeProperty('padding-bottom')
 })
 </script>
 
 <template>
+  <Teleport to="#ancora-cookies" :disabled="!emFluxo">
   <aside
     v-if="aberto"
     ref="el"
     class="ck"
+    :class="{ 'ck--fluxo': emFluxo }"
     role="dialog"
     aria-modal="false"
     aria-labelledby="ck-titulo"
@@ -62,6 +126,7 @@ onMounted(() => {
       <button type="button" class="ck__btn" @click="recusar">Recusar</button>
     </div>
   </aside>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -139,6 +204,15 @@ onMounted(() => {
   .ck__txt { flex: 1 1 auto; min-width: 0; font-size: 12px; line-height: 1.25; }
   .ck__acoes { flex: 0 0 auto; gap: 6px; }
   .ck__btn { flex: 0 0 auto; min-width: 0; padding: 6px 9px; font-size: 12px; }
+}
+/* Com o rodapé na tela o cartão ocupa a folga (padding-bottom), sem cobrir texto. */
+.ck.ck--fluxo {
+  position: absolute;
+  left: 12px;
+  right: auto;
+  bottom: 0;
+  z-index: 3;
+  margin: 0;
 }
 </style>
 
