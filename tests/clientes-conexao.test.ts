@@ -168,3 +168,22 @@ test('invariante: /cliente/** é noindex, nofollow e no-store, com Referrer-Poli
     assert.match(src, /name: 'referrer', content: 'no-referrer'/, f)
   }
 })
+
+test('invariante: modo pluggy conecta pelo widget e grava só com o item conferido (C6 → widget → C6b)', () => {
+  const conexao = raiz('app/composables/useClienteConexao.ts')
+  const abrir = conexao.slice(conexao.indexOf('async function abrirPluggy'), conexao.indexOf('function mensagemDaFalha'))
+  // o C6 só pede o token; o item volta pelo C6b com o mesmo aceite do termo
+  assert.match(abrir, /\/consent`, \{ method: 'POST', body: aceite\(\) \}/)
+  assert.match(conexao, /\/connection`, \{\s*method: 'POST',\s*body: \{ \.\.\.aceite\(\), item_id: itemPluggy \}/)
+  // fechar o widget sem conectar não é erro: a página mostra "Conexão cancelada"
+  assert.match(abrir, /'widget_closed'\) return opts\.onCancelado\?\.\(\)/)
+  // o widget pede só investimentos e nunca lista conectores de sandbox
+  const widget = conexao.slice(conexao.indexOf('async function abrirWidgetPluggy'))
+  assert.match(widget, /products: \['INVESTMENTS'\]/)
+  assert.match(widget, /includeSandbox: false/)
+  assert.doesNotMatch(widget, /onError:[^\n]*reject/, 'erro dentro do widget não encerra: a pessoa tenta de novo lá')
+  // a página roda os dois fluxos e não trata mais pluggy como indisponível
+  const pagina = semComentarios(raiz('app/pages/cliente/convite/[token].vue'))
+  assert.doesNotMatch(pagina, /invalido\('mode_unavailable'\)/)
+  assert.match(pagina, /onCancelado: \(\) => \{ estado\.value = 'cancelado' \}/)
+})

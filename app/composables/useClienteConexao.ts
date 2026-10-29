@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { ClientConsentResult, ClientInviteInfo } from '~/types/clientes'
-import type { Instituicao } from '~/content/instituicoes'
+import { instituicaoPorNome, type Instituicao } from '~/content/instituicoes'
 
 /**
  * A máquina de passos do widget de conexão do cliente final
@@ -8,19 +8,29 @@ import type { Instituicao } from '~/content/instituicoes'
  *
  *   intro → instituicao → cpf → redirect → aguardando → sincronizando → sucesso
  *
- * O servidor só entra em UM ponto: o POST de consentimento (C6) disparado no
- * início de "sincronizando", com a instituição escolhida. A animação das
- * etapas corre em paralelo e a última só fecha quando o POST volta; falha
- * vira `erro` com "Tentar de novo". Recusa definitiva do convite (usado,
- * vencido, modo indisponível) sobe por `onRecusa` e a página troca para o
- * estado de link.
+ * Modo demo: o servidor só entra em UM ponto, o POST de consentimento (C6)
+ * disparado no início de "sincronizando", com a instituição escolhida. A
+ * animação das etapas corre em paralelo e a última só fecha quando o POST
+ * volta; falha vira `erro` com "Tentar de novo". Recusa definitiva do convite
+ * (usado, vencido, modo indisponível) sobe por `onRecusa` e a página troca
+ * para o estado de link.
  *
  * O CPF NÃO passa por aqui: fica no componente do passo e morre com ele.
  *
- * Modo pluggy (ainda não ligado no servidor, que responde 409): quando o C6
- * devolver `connect_token`, abrirWidgetPluggy abre o SDK oficial no mesmo
- * lugar, já na instituição escolhida. Estrutura pronta, sem implementação de
- * provider do lado de lá.
+ * Modo pluggy (Open Finance de verdade, desde 28/10/2026): instituição, CPF e
+ * autorização no banco são do widget oficial da Pluggy, então os nossos
+ * passos do meio não existem:
+ *
+ *   intro → [C6: connect_token] → widget da Pluggy → sincronizando → sucesso
+ *
+ * "Continuar" pede o token ao C6 (que não grava nada) e abre o widget por
+ * cima da página. No onSuccess, o item volta ao servidor pelo C6b
+ * (/connection), que confere o item na Pluggy e só então grava o
+ * consentimento; "sincronizando" anima enquanto isso. Fechar o widget sem
+ * conectar sobe por `onCancelado` (nada foi gravado). Falha passageira do C6b
+ * mantém o item: "Tentar de novo" reenvia o mesmo, sem abrir o widget outra
+ * vez. Item recusado (connection_invalid, connection_in_use) é descartado, e
+ * "Tentar de novo" reabre o widget.
  *
  * Nada do convite entra em useState: refs locais da página que chamou.
  */
@@ -38,6 +48,9 @@ const MENSAGENS: Record<string, string> = {
   institution_unknown: 'A instituição escolhida não está na lista. Volte ao início e escolha outra.',
   office_limit: 'O escritório chegou ao limite de clientes da conta. Avise o escritório; nada foi conectado.',
   rate_limited: 'Muitas tentativas seguidas. Espere um minuto e tente de novo.',
+  connection_invalid: 'Não reconhecemos a conexão que voltou da instituição. Nada foi gravado. Volte ao início e conecte de novo.',
+  connection_in_use: 'Esta conta já está conectada em outro lugar da Redentia. Nada foi gravado.',
+  provider_unavailable: 'A conexão com as instituições não respondeu agora. Nada foi gravado. Tente de novo em instantes.',
 }
 const PADRAO = 'Não deu para concluir a conexão agora. Nada foi conectado. Tente de novo; se seguir assim, escreva pra relacionamento@redentia.com.br.'
 
@@ -46,6 +59,8 @@ export function useClienteConexao(opts: {
   info: Ref<ClientInviteInfo | null>
   /** recusa definitiva do servidor: a página mostra o estado do link (usado, vencido, cancelado, modo indisponível) */
   onRecusa: (motivo: string) => void
+  /** modo pluggy: a pessoa fechou o widget sem conectar */
+  onCancelado?: () => void
 }) {
   const { publicFetch } = useApi()
 
@@ -56,9 +71,16 @@ export function useClienteConexao(opts: {
   const precisaRecarregar = ref(false)
   const resultado = ref<ClientConsentResult | null>(null)
   const reduzMovimento = ref(false)
+  /** modo pluggy: pedindo o token e abrindo o widget (o "Continuar" gira) */
+  const abrindo = ref(false)
+  /** modo pluggy: falha antes do widget, mostrada na própria intro */
+  const erroIntro = ref<string | null>(null)
+  /** modo pluggy: o item que o widget devolveu, reenviado no "Tentar de novo" */
+  let itemPluggy: string | null = null
 
   // 'demo' só escolhe o fluxo (o servidor gera a carteira; não há janela do banco). Nunca vai para a tela.
   const demo = computed(() => opts.info.value?.mode === 'demo')
+  const pluggy = computed(() => opts.info.value?.mode === 'pluggy')
   // prefers-reduced-motion: as esperas encurtam (o fluxo é o mesmo, sem teatro)
   const ritmo = computed(() => (reduzMovimento.value ? 0.4 : 1))
 
@@ -87,8 +109,13 @@ export function useClienteConexao(opts: {
     etapas.value = []
     erro.value = null
     precisaRecarregar.value = false
+    erroIntro.value = null
+    itemPluggy = null
   }
-  function continuar() { passo.value = 'instituicao' }
+  function continuar() {
+    if (pluggy.value) return void abrirPluggy()
+    passo.value = 'instituicao'
+  }
   function escolher(i: Instituicao) {
     instituicao.value = i
     passo.value = 'cpf'
@@ -168,68 +195,145 @@ export function useClienteConexao(opts: {
     passo.value = 'sucesso'
   }
 
-  async function consentir(): Promise<ClientConsentResult> {
+  /** O aceite do termo, igual no C6 e no C6b. */
+  function aceite(): Record<string, unknown> {
     const info = opts.info.value
     if (!info) throw new Error('sem convite')
-    const body: Record<string, unknown> = {
+    return {
       accept: true,
       // o hash do texto MOSTRADO: se o termo mudou entre abrir e aceitar, o servidor recusa com 409
       terms_version: info.terms_version,
       terms_sha256: info.terms_sha256,
     }
-    if (instituicao.value) body.institution = instituicao.value.slug
-    const r = await publicFetch<ClientConsentResult>(`/business/client-invites/${opts.token.value}/consent`, { method: 'POST', body })
-    if (r.connect_token) await abrirWidgetPluggy(r.connect_token)
-    return r
   }
 
-  function falhou(e: unknown) {
+  async function consentir(): Promise<ClientConsentResult> {
+    // pluggy: o item já voltou do widget; o C6b confere e grava
+    if (itemPluggy) {
+      return publicFetch<ClientConsentResult>(`/business/client-invites/${opts.token.value}/connection`, {
+        method: 'POST',
+        body: { ...aceite(), item_id: itemPluggy },
+      })
+    }
+    const body = aceite()
+    if (instituicao.value) body.institution = instituicao.value.slug
+    return publicFetch<ClientConsentResult>(`/business/client-invites/${opts.token.value}/consent`, { method: 'POST', body })
+  }
+
+  /** Pluggy: C6 devolve o token, o widget abre por cima; no sucesso, segue para "sincronizando". */
+  async function abrirPluggy() {
+    if (abrindo.value) return
+    limpar()
+    const r = rodada
+    abrindo.value = true
+    erroIntro.value = null
+    let token: string
+    try {
+      const res = await publicFetch<ClientConsentResult>(`/business/client-invites/${opts.token.value}/consent`, { method: 'POST', body: aceite() })
+      if (!res.connect_token) throw new Error('sem_token')
+      token = res.connect_token
+    }
+    catch (e) {
+      abrindo.value = false
+      if (r !== rodada) return
+      const msg = mensagemDaFalha(e)
+      if (msg !== null) erroIntro.value = msg
+      return
+    }
+
+    let item: ItemPluggy
+    try {
+      item = await abrirWidgetPluggy(token)
+    }
+    catch (e) {
+      abrindo.value = false
+      if (r !== rodada) return
+      if ((e as Error)?.message === 'widget_closed') return opts.onCancelado?.()
+      erroIntro.value = 'Não conseguimos abrir a conexão segura agora. Verifique a internet e tente de novo em instantes.'
+      return
+    }
+    abrindo.value = false
+    if (r !== rodada) return
+
+    itemPluggy = item.id
+    const nome = item.connector?.name?.trim() || 'sua instituição'
+    instituicao.value = instituicaoPorNome(nome) ?? { slug: 'conectada', name: nome, logo: false, tipo: 'banco' }
+    void sincronizar()
+  }
+
+  /**
+   * A frase de uma falha do servidor, ou null quando a recusa é definitiva e
+   * a página já trocou para o estado do link.
+   */
+  function mensagemDaFalha(e: unknown): string | null {
     const err = e as { response?: { status?: number }, data?: { error?: string, message?: string, reason?: string | null } }
     const st = err.response?.status
     const code = err.data?.error ?? ''
     // 410 invite_invalid {reason} = link usado/vencido/cancelado: não adianta tentar de novo.
     const recusa = motivoDaRecusaDoConsentimento(st, err.data)
-    if (recusa) return opts.onRecusa(recusa)
-    if (code === 'account_disabled' || code === 'clients_disabled') return opts.onRecusa(code)
-    // a etapa que estava rodando para de girar: erro não é spinner eterno
-    for (const e of etapas.value) if (e.status === 'andamento') e.status = 'pendente'
+    if (recusa) { opts.onRecusa(recusa); return null }
+    if (code === 'account_disabled' || code === 'clients_disabled') { opts.onRecusa(code); return null }
     precisaRecarregar.value = code === 'terms_outdated'
-    erro.value = err.data?.message ?? MENSAGENS[code] ?? PADRAO
+    return err.data?.message ?? MENSAGENS[code] ?? PADRAO
   }
 
-  function tentarDeNovo() { void sincronizar() }
+  function falhou(e: unknown) {
+    const msg = mensagemDaFalha(e)
+    if (msg === null) return
+    // item recusado (não é deste convite, ou já está em uso): reenviar o mesmo
+    // não adianta; "Tentar de novo" abre o widget outra vez
+    const code = (e as { data?: { error?: string } }).data?.error
+    if (code === 'connection_invalid' || code === 'connection_in_use') itemPluggy = null
+    // a etapa que estava rodando para de girar: erro não é spinner eterno
+    for (const et of etapas.value) if (et.status === 'andamento') et.status = 'pendente'
+    erro.value = msg
+  }
+
+  function tentarDeNovo() {
+    if (pluggy.value && !itemPluggy) {
+      reiniciar()
+      return void abrirPluggy()
+    }
+    void sincronizar()
+  }
 
   return {
-    passo, instituicao, etapas, erro, precisaRecarregar, resultado,
+    passo, instituicao, etapas, erro, precisaRecarregar, resultado, abrindo, erroIntro,
     continuar, escolher, cpfConfirmado, irParaBanco, autorizado, voltar, tentarDeNovo, reiniciar,
   }
 }
 
+interface ItemPluggy { id: string, connector?: { name?: string } | null }
+
 /**
- * Modo pluggy (futuro): abre o SDK oficial com o connect token do C6.
- * Resolve no onSuccess do widget; rejeita se a pessoa fechar ou o widget
- * falhar. O CPF digitado na nossa tela NÃO é repassado (o widget pede o
- * dele; o nosso nunca sai do navegador). Mesmo import dinâmico do
- * usePluggyConnect: o Pluggy não publica UMD em CDN e o chunk só baixa aqui.
+ * Abre o widget oficial da Pluggy com o connect token do C6 (o token já leva
+ * o clientUserId do cliente, e o servidor confere o item contra ele).
+ * Resolve no onSuccess com o item; rejeita com 'widget_closed' se a pessoa
+ * fechar antes. O onError NÃO encerra: o widget mostra o erro e deixa tentar
+ * de novo lá dentro. Só o produto INVESTMENTS: o termo autoriza só posições
+ * de investimento, e o consentimento no banco pede só isso.
+ *
+ * O CPF digitado em outro lugar nunca é repassado (o widget pede o dele).
+ * Mesmo import dinâmico do usePluggyConnect: o Pluggy não publica UMD em CDN
+ * e o chunk só baixa aqui.
  */
-async function abrirWidgetPluggy(connectToken: string, connectorId?: number): Promise<void> {
+async function abrirWidgetPluggy(connectToken: string): Promise<ItemPluggy> {
   if (import.meta.server) throw new Error('sdk_ssr')
   const mod = await import('pluggy-connect-sdk') as { PluggyConnect?: unknown, default?: { PluggyConnect?: unknown } } | null
   const PluggyConnect = (mod?.PluggyConnect ?? mod?.default?.PluggyConnect ?? mod?.default) as
     | (new (o: Record<string, unknown>) => { init: () => Promise<void> })
     | undefined
   if (!PluggyConnect) throw new Error('sdk_export')
-  await new Promise<void>((resolve, reject) => {
+  return new Promise<ItemPluggy>((resolve, reject) => {
     const widget = new PluggyConnect({
       connectToken,
       language: 'pt',
       includeSandbox: false,
       allowFullscreen: true,
-      ...(connectorId ? { selectedConnectorId: connectorId } : {}),
-      onSuccess: () => resolve(),
-      onError: (e: { message?: string }) => reject(new Error(e?.message ?? 'widget_error')),
+      products: ['INVESTMENTS'],
+      onSuccess: ({ item }: { item: ItemPluggy }) => resolve(item),
       onClose: () => reject(new Error('widget_closed')),
     })
-    void widget.init()
+    widget.init().catch(() => reject(new Error('widget_init')))
   })
 }
