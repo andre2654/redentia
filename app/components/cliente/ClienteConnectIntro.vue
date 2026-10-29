@@ -48,7 +48,7 @@ const emit = defineEmits<{ continuar: [], termo: [] }>()
       </li>
       <li>
         <span class="cci__ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9" /><path d="M12 3v9h9" /></svg></span>
-        <span>Investimentos e saldo em conta, sem cartão nem extrato</span>
+        <span>Investimentos, movimentações e saldo, sem cartão nem extrato da conta</span>
       </li>
       <li>
         <span class="cci__ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg></span>
