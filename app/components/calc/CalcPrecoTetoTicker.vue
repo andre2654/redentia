@@ -145,6 +145,7 @@ const metodos = computed(() => {
       <NuFaqAccordion :items="view.faq" surface="white" />
       <p v-if="view.dataTexto" class="ptt__updated ptt__updated--end">Atualizado em {{ view.dataTexto }}</p>
     </section>
+    <NuAcompanheAndre lugar="calculadora" />
   </div>
 </template>
 
