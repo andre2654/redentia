@@ -62,7 +62,7 @@ import type {
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
-import { FONTE_FUNDAMENTALISTAS, fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
+import { FONTE_FUNDAMENTALISTAS, FONTE_SCRAPER, fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
 
 /* ————— helpers de formatação ————— */
 
@@ -1667,13 +1667,11 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai = { updatedLabel, score, consensus, read }
   }
 
-  // Subtítulo dos fundamentos por tipo (a copy antiga prometia "balanços" pra
-  // FII e "dados da B3" pra DRE de matriz em dólar — mentiras pequenas, mas mentiras).
-  const fundSub = isFii
-    ? 'Últimos 12 meses · dados da B3 e informes do fundo'
-    : kind === 'bdr'
-      ? 'Últimos 12 meses · resultados da matriz, em dólar'
-      : `Últimos 12 meses · ${FONTE_FUNDAMENTALISTAS}`
+  // FII: scrape_extras.fii. BDR: scrape_extras.valuation/quality. Os dois são
+  // o scraper StatusInvest. DFP/ITR só descreve a DRE da empresa listada.
+  const fundSub = isFii || kind === 'bdr'
+    ? `Últimos 12 meses · ${FONTE_SCRAPER}`
+    : `Últimos 12 meses · ${FONTE_FUNDAMENTALISTAS}`
 
   const dividends = buildDividends(provRows ?? [], ticker, isFii, siteDy)
   const setorDoLink = setorConhecido ?? (kind === 'fii' ? SETORES_BY_API['real-estate'] ?? null : null)
@@ -1729,11 +1727,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
       ifix: f?.fiiIfixShare ?? null,
       cotistas: f?.fiiCotistas ?? null,
     },
-    fonteIndicadores: isFii
-      ? 'dados da B3 e informes do fundo'
-      : kind === 'bdr'
-        ? 'resultados da matriz, em dólar'
-        : FONTE_FUNDAMENTALISTAS,
+    fonteIndicadores: isFii || kind === 'bdr' ? FONTE_SCRAPER : FONTE_FUNDAMENTALISTAS,
     min52,
     max52,
     serie: serieDoResumo(assetSeries, ibovSeries),

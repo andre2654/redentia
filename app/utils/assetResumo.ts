@@ -149,7 +149,15 @@ const QUEBRADA = /R\$(?!\s*\d)|US\$(?!\s*\d)|(?:^|\s)%|de\s*%|Fonte:\s*$|Fonte:\
  */
 export const FONTE_COTACAO = 'Brapi (B3), atualização de 10 a 30 min'
 export const FONTE_SERIE = 'StatusInvest (dados diários)'
+/** Fundamentalistas de empresa listada: tabela de /metodologia (DFP/ITR). */
 export const FONTE_FUNDAMENTALISTAS = 'Scraper StatusInvest, base em DFP/ITR'
+/**
+ * FII (scrape_extras.fii) e BDR (scrape_extras.valuation/quality) vêm do mesmo
+ * scraper. DFP/ITR não descreve informe de fundo nem DRE da matriz em dólar.
+ */
+export const FONTE_SCRAPER = 'Scraper StatusInvest'
+const SELO_COTACAO = 'Dados: Brapi.'
+const SELO_COTACAO_E_FUNDOS = 'Dados: Brapi e StatusInvest.'
 /** Nota do hero quando a moeda do perfil é dólar. */
 const FONTE_USD = 'preço de referência derivado do BDR e do câmbio'
 
@@ -441,16 +449,20 @@ function paragrafoEtf(i: ResumoAtivoInput): string | null {
   return partes.join(' ')
 }
 
-function indicadoresMeta(i: ResumoAtivoInput): string | null {
+/** Frases soltas da description: o que não cabe sai inteiro, a cotação fica. */
+function frasesMeta(i: ResumoAtivoInput): string[] {
   const n = i.numeros
-  const partes: string[] = []
-  if (ok(n.dy)) partes.push(`dividend yield ${pctAbs(n.dy)}`)
-  if (ok(n.pl)) partes.push(`P/L ${nf2.format(n.pl)}`)
-  else if (ok(n.pvp)) partes.push(`P/VP ${nf2.format(n.pvp)}`)
-  if (ok(n.roe)) partes.push(`ROE ${pctAbs(n.roe, 1)}`)
-  if (!partes.length && i.etf && ok(i.etf.taxaAdm)) partes.push(`taxa de administração ${pctAbs(i.etf.taxaAdm)} ao ano`)
-  if (!partes.length) return null
-  return `${juntar(partes).replace(/^./, (c) => c.toUpperCase())}.`
+  const out: string[] = []
+  if (ok(n.dy)) out.push(`Dividend yield ${pctAbs(n.dy)}.`)
+  if (ok(n.pl)) out.push(`P/L ${nf2.format(n.pl)}.`)
+  else if (ok(n.pvp)) out.push(`P/VP ${nf2.format(n.pvp)}.`)
+  if (ok(n.roe)) out.push(`ROE ${pctAbs(n.roe, 1)}.`)
+  if (!out.length && i.etf && ok(i.etf.taxaAdm)) out.push(`Taxa de administração ${pctAbs(i.etf.taxaAdm)} ao ano.`)
+  return out
+}
+
+function comSelo(corpo: string, selo: string): string {
+  return `${corpo} ${selo} ${AVISO_META}`
 }
 
 function descricao(i: ResumoAtivoInput): string {
@@ -462,27 +474,28 @@ function descricao(i: ResumoAtivoInput): string {
     const corpo = juntaAte(frases, TETO_DESCRICAO - AVISO_META.length - 1)
     return corpo ? `${corpo} ${AVISO_META}` : AVISO_META
   }
-  const frases: string[] = []
   const quando = dataBr(i.data)
-  if (ok(i.preco) && quando) {
-    frases.push(`${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)} em ${quando}.`)
-  }
-  else if (ok(i.preco)) {
-    frases.push(`${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)}.`)
-  }
-  else {
-    frases.push(`${i.ticker} (${i.nome}) é ${classe(i)}.`)
-  }
-  const setor = setorBaixo(i.setor)
-  if (setor && i.kind !== 'crypto' && !(i.kind === 'fii' && setor === 'imobiliário')) frases.push(`Setor ${setor}.`)
-  const meta = indicadoresMeta(i)
-  if (meta) frases.push(meta)
-  // A variação do dia sai por último: cabe quando sobra espaço e some inteira
-  // quando o preço, a data e os indicadores já enchem a description.
+  const quote = ok(i.preco) && quando
+    ? `${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)} em ${quando}.`
+    : ok(i.preco)
+      ? `${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)}.`
+      : `${i.ticker} (${i.nome}) é ${classe(i)}.`
+  const metas = (i.kind === 'stock' || i.kind === 'fii' || i.kind === 'bdr') ? frasesMeta(i) : []
   const variacao = variacaoDiaFrase(i)
-  if (variacao) frases.push(`${variacao.charAt(0).toUpperCase()}${variacao.slice(1)}.`)
-  const corpo = juntaAte(frases, TETO_DESCRICAO - AVISO_META.length - 1)
-  return corpo ? `${corpo} ${AVISO_META}` : AVISO_META
+  const variacaoFrase = variacao ? `${variacao.charAt(0).toUpperCase()}${variacao.slice(1)}.` : null
+  if (!ok(i.preco) && !metas.length) {
+    const corpo = juntaAte([quote], TETO_DESCRICAO - AVISO_META.length - 1)
+    return corpo ? `${corpo} ${AVISO_META}` : AVISO_META
+  }
+  // Cotação e variação do dia são Brapi. DY, P/L, P/VP e ROE são StatusInvest.
+  // Indicador que não cabe sai; a cotação permanece.
+  if (metas.length) {
+    const orcamento = TETO_DESCRICAO - ` ${SELO_COTACAO_E_FUNDOS} ${AVISO_META}`.length
+    const corpo = juntaAte([quote, ...metas, variacaoFrase], orcamento)
+    if (metas.some((m) => corpo.includes(m))) return comSelo(corpo, SELO_COTACAO_E_FUNDOS)
+  }
+  const orcamento = TETO_DESCRICAO - ` ${SELO_COTACAO} ${AVISO_META}`.length
+  return comSelo(juntaAte([quote, variacaoFrase], orcamento), SELO_COTACAO)
 }
 
 function faqPreco(i: ResumoAtivoInput): NuFaqItem | null {

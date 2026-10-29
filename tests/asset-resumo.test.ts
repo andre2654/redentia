@@ -149,6 +149,9 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   assert.match(r.description, /PETR4/)
   assert.match(r.description, /R\$ 52,51/)
   assert.match(r.description, /28\/10\/2026/)
+  assert.match(r.description, /Dividend yield 6,96%/)
+  assert.match(r.description, /P\/L 5,07/)
+  assert.match(r.description, /Dados: Brapi e StatusInvest\./)
   assert.match(r.description, /Não é recomendação\.$/)
   const corpo = r.paragrafos.join('\n')
   assert.match(corpo, /cotação mais recente é R\$ 52,51/)
@@ -210,7 +213,7 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
       dy: 9.086, pl: null, pvp: 0.8918, roe: null, margem: null, valorMercado: null,
       vpCota: 165.476, rendaMedia24m: 1.1, ifix: 4.183, cotistas: 613837,
     },
-    fonteIndicadores: 'dados da B3 e informes do fundo',
+    fonteIndicadores: 'Scraper StatusInvest',
     proventos: {
       unidade: 'cota',
       renda12: 12.4,
@@ -235,7 +238,13 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   assert.match(corpo, /a participação no IFIX é 4,18%/)
   assert.match(corpo, /613\.837 cotistas/)
   assert.match(corpo, /por cota/)
-  assert.match(corpo, /Fonte: dados da B3 e informes do fundo/)
+  assert.match(corpo, /Fonte: Scraper StatusInvest\./)
+  assert.match(r.description, /cotação mais recente de R\$ 147,58/)
+  assert.match(r.description, /Dividend yield 9,09%/)
+  assert.match(r.description, /P\/VP 0,89/)
+  assert.match(r.description, /Dados: Brapi e StatusInvest\./)
+  assert.match(r.description, /Não é recomendação\.$/)
+  assert.ok(r.description.length <= TETO_DESCRICAO)
   assert.doesNotMatch(semAviso(textoDe(r)), VERBOS)
 })
 
