@@ -1,0 +1,33 @@
+{
+  "description": "O Vinci Shopping Centers, código VISC11, é um fundo imobiliário de tijolo de shopping centers. A gestão é da Vinci Partners. O fundo aplica em participações em shoppings, com âncoras, lojas satélite e alimentação.\n\nOs empreendimentos ficam em regiões metropolitanas e em cidades de porte médio. A receita do shopping junta aluguel mínimo e aluguel sobre o faturamento do lojista. A distribuição de rendimentos é mensal.",
+  "thesis": "A receita depende de lojista ocupando a loja e de venda no shopping, porque parte do aluguel é um percentual do faturamento. Âncora, alimentação e serviço puxam fluxo. Loja de ticket baixo concorre com a venda online.\n\nOs rendimentos são mensais. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal.",
+  "risks": "Recessão, desemprego e crédito mais caro reduzem a venda do lojista. A inadimplência sobe, a loja vaga e o aluguel sobre faturamento cai. A saída de uma âncora muda o fluxo do empreendimento e pode exigir obra para uma nova ocupação.\n\nO preço da cota também muda com a Selic. Na pandemia, decretos fecharam shoppings, a receita caiu e houve renegociação de contrato. O comércio eletrônico tira venda de algumas categorias e convive com alimentação, lazer e serviço presencial.",
+  "peers": "No segmento de shoppings, os fundos citados são o CSHG Brasil Shopping, código HGBS11, o XP Malls, código XPML11, o HSI Malls, código HSML11, o Malls Brasil Plural, código MALL11, e o Fator Veritá, código VRTA11. São fundos de participação em shopping.\n\nO P/VP é o preço da cota dividido pelo valor patrimonial da cota. Acima de um, o preço de mercado está acima do patrimônio por cota. Abaixo de um, está abaixo.",
+  "history": "O fundo foi constituído para comprar participação em shoppings já em operação. A Vinci Partners é a gestora. Houve compras em capitais e em cidades de porte médio, e emissões de cotas.\n\nNa pandemia, o fechamento dos shoppings derrubou a receita e levou a renegociação com lojistas. Depois, as lojas reabriram e a distribuição foi retomada. No ciclo de Selic alta, o preço de mercado das cotas de fundos imobiliários caiu em relação ao valor patrimonial.",
+  "faq": [
+    {
+      "q": "Como o VISC11 distribui rendimentos?",
+      "a": "O fundo distribui rendimentos aos cotistas todo mês, a partir do caixa dos aluguéis dos shoppings. As datas saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "O que é o P/VP do VISC11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. O indicador descreve essa relação de preço."
+    },
+    {
+      "q": "Como a Selic se relaciona com o VISC11?",
+      "a": "Quando a taxa básica sobe, títulos públicos pós-fixados passam a remunerar mais e o preço de mercado das cotas tende a cair. A Selic alta também encarece o crédito ao consumidor, e a venda do lojista entra na receita do shopping quando o aluguel é um percentual do faturamento."
+    },
+    {
+      "q": "Qual a diferença entre FII de tijolo e FII de papel?",
+      "a": "O VISC11 é um fundo de tijolo: o patrimônio são participações em shoppings, e a receita vem de aluguel. Um fundo de papel aplica em recebíveis imobiliários e a receita vem dos juros desses títulos. No shopping, desocupação e venda do lojista alteram o aluguel."
+    },
+    {
+      "q": "O que é vacância no VISC11?",
+      "a": "Vacância é a loja sem lojista. Enquanto está vaga, não gera o aluguel daquele espaço. Saída de uma âncora, loja grande que puxa fluxo, altera o movimento do shopping e pode exigir obra até uma nova ocupação."
+    },
+    {
+      "q": "Como o comércio eletrônico se relaciona com o VISC11?",
+      "a": "Parte das vendas que antes ocorriam na loja física passou para o canal online, sobretudo em categorias de ticket baixo. Alimentação, lazer, beleza e serviço seguem presenciais e entram no mix do shopping. O aluguel sobre faturamento acompanha a venda que acontece no empreendimento."
+    }
+  ]
+}

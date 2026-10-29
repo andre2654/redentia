@@ -22,7 +22,7 @@
  */
 import type { AcaoEditorialVM } from '~/types/acao'
 
-const props = defineProps<{ ticker: string; editorial: AcaoEditorialVM }>()
+defineProps<{ ticker: string; editorial: AcaoEditorialVM }>()
 
 /** Quebra a prosa longa em parágrafos (o gerador separa por linha em branco). */
 function paragraphs(body: string): string[] {
@@ -32,12 +32,8 @@ function paragraphs(body: string): string[] {
     .filter(Boolean)
 }
 
-const updatedLine = computed(() => {
-  if (!props.editorial.generatedAt) return null
-  const d = new Date(props.editorial.generatedAt)
-  if (Number.isNaN(d.getTime())) return null
-  return `Análise de ${props.ticker} atualizada em ${d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`
-})
+// Sem linha de data. O generated_at do editorial é a data em que o texto foi
+// gravado no banco, não uma revisão verificável do conteúdo.
 </script>
 
 <template>
@@ -52,8 +48,6 @@ const updatedLine = computed(() => {
         <h2 class="aed__h2">Perguntas frequentes sobre {{ ticker }}</h2>
         <NuFaqAccordion :items="editorial.faq" surface="white" />
       </div>
-
-      <p v-if="updatedLine" class="aed__updated">{{ updatedLine }}</p>
     </div>
   </section>
 </template>
@@ -78,8 +72,4 @@ const updatedLine = computed(() => {
 }
 .aed__faq { margin-top: clamp(48px, 6vw, 80px); }
 .aed__faq .aed__h2 { margin-bottom: 26px; }
-.aed__updated {
-  margin: clamp(40px, 5vw, 64px) 0 0; color: var(--nu-gray);
-  font-size: var(--nu-fs-sm); font-weight: 500; opacity: .8;
-}
 </style>

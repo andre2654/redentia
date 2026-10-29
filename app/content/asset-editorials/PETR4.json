@@ -1,0 +1,33 @@
+{
+  "description": "A Petróleo Brasileiro S.A., Petrobras, atua na exploração e produção de petróleo e gás natural, no refino, na comercialização, no transporte, na petroquímica, na distribuição de derivados, na energia elétrica, no gás natural e em biocombustíveis. A companhia é controlada pela União Federal, que detém a maioria das ações ordinárias com direito a voto. O capital é aberto, com ações na B3 e recibos na Bolsa de Nova York.\n\nA operação se organiza em exploração e produção, com presença no pré-sal das bacias de Campos e Santos; refino, transporte e comercialização de combustíveis; e gás e energia, na cadeia de gás natural. PETR4 é o código das ações preferenciais: não dão direito a voto e têm preferência no recebimento de dividendos.",
+  "thesis": "A receita da Petrobras está ligada à produção de petróleo e gás, ao refino e à comercialização de derivados. A companhia descreve reservas no pré-sal e integração entre extração e refino. A distribuição de proventos depende de deliberação, anunciada em comunicado, com data-com e data-ex.\n\nA política de remuneração foi revista para combinar pagamento aos acionistas e reinvestimento, inclusive em outras fontes de energia. O valor e o calendário de cada provento saem no site de relações com investidores.",
+  "risks": "O controlador é a União Federal. Decisões sobre a política de preços dos combustíveis, a administração e as prioridades da companhia passam por esse controlador. A receita também acompanha o preço internacional do petróleo, negociado em dólar, e o câmbio.\n\nA companhia está sujeita a royalties, participação especial e tributos do setor, e a regras que podem ser revistas. Parte dos custos é em reais e há dívida em dólar. O plano da empresa trata, ao lado do petróleo, de renováveis, biocombustíveis e captura de carbono.",
+  "peers": "No mercado brasileiro, a Vale atua em minério de ferro, outro produto com preço formado no mercado internacional e em dólar. No setor de petróleo, o mesmo tipo de atividade aparece em companhias como ExxonMobil, Chevron e Shell.\n\nPETR3 são as ações ordinárias, com direito a voto. PETR4 são as preferenciais, sem voto e com preferência no recebimento de dividendos e na liquidação.",
+  "history": "A Petrobras foi criada no governo de Getúlio Vargas, no contexto da campanha O petróleo é nosso, e operou por um período com monopólio estatal de exploração, refino e transporte. A emenda constitucional que flexibilizou o monopólio e a Lei do Petróleo abriram o setor à concorrência.\n\nAs descobertas do pré-sal nas bacias de Santos e Campos mudaram a área de produção. A companhia passou pela Operação Lava Jato, por uma reestruturação com venda de ativos, entre eles a Vibra Energia, e por mudanças na política de preços e na remuneração dos acionistas. Uma das políticas já adotadas foi o preço de paridade internacional, que seguia o petróleo e o câmbio. Depois, a companhia passou a outra metodologia de reajuste.",
+  "faq": [
+    {
+      "q": "Qual a diferença entre PETR3 e PETR4?",
+      "a": "PETR3 são as ações ordinárias e dão direito a voto em assembleia. PETR4 são as preferenciais: não dão voto e têm preferência no recebimento de dividendos e na liquidação da companhia."
+    },
+    {
+      "q": "Como a PETR4 distribui proventos?",
+      "a": "Os dividendos dependem de deliberação da Petrobras. O anúncio sai em comunicado, com a data-com, que é o corte para ter direito ao provento, e a data-ex, a partir da qual a ação negocia sem esse direito. As datas são publicadas no site de relações com investidores. A companhia também pode deliberar proventos adicionais aos ordinários."
+    },
+    {
+      "q": "Como o preço do petróleo se relaciona com a PETR4?",
+      "a": "O petróleo é negociado em dólar no mercado internacional. A receita da Petrobras acompanha esse preço. A relação com o lucro não é só a do preço do barril, porque a companhia também tem custos, royalties e investimentos."
+    },
+    {
+      "q": "Qual a relação entre a PETR4 e o dólar?",
+      "a": "O petróleo é precificado em dólar, então a receita medida em reais muda com o câmbio. Parte dos custos é em reais, e a companhia tem dívida em dólar. O efeito do câmbio, portanto, não se resume à receita."
+    },
+    {
+      "q": "Quem controla a Petrobras?",
+      "a": "A União Federal detém a maioria das ações ordinárias, que dão direito a voto. As ações preferenciais, no código PETR4, não dão voto e têm preferência no recebimento de dividendos."
+    },
+    {
+      "q": "Como funciona a política de preços da Petrobras?",
+      "a": "A política de preços já foi revisada mais de uma vez. Em um período, vigorou o preço de paridade internacional, que reajustava combustíveis no mercado interno de acordo com o petróleo e o câmbio. Depois, a companhia passou a outra metodologia, com ajustes menos frequentes. Cada mudança é comunicada pela própria Petrobras."
+    }
+  ]
+}

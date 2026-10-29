@@ -1,0 +1,33 @@
+{
+  "description": "O Kinea Renda Imobiliária, código KNRI11, é um fundo imobiliário de tijolo com mandato híbrido. A gestão é da Kinea Investimentos, do conglomerado Itaú Unibanco. O patrimônio junta lajes corporativas e galpões logísticos.\n\nAs lajes citadas ficam em endereços como Faria Lima, Avenida Paulista e no Rio de Janeiro. Os galpões citados ficam em regiões como Cajamar e Pouso Alegre, com locatários de varejo, comércio eletrônico, indústria e serviços. A distribuição de rendimentos é mensal. A gestão compra, vende e emite cotas.",
+  "thesis": "Laje corporativa e galpão logístico não seguem o mesmo ciclo. Escritório reage a emprego, a trabalho remoto e à oferta de lajes. Galpão reage à distribuição de mercadorias e ao comércio eletrônico. O fundo carrega os dois.\n\nOs rendimentos são mensais. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. Parte dos contratos de galpão é atípica, com prazo longo. Parte dos contratos de laje é típica e admite ação revisional.",
+  "risks": "Em laje, saída de locatário e revisão de aluguel reduzem a receita até um novo contrato. Em galpão, inadimplência ou recuperação judicial do locatário faz o mesmo, mesmo em contrato atípico. Emissão de cotas aumenta o número de cotas.\n\nO preço da cota no mercado muda com a Selic. Quando a taxa básica sobe, títulos públicos pós-fixados passam a remunerar mais e parte do mercado deixa as cotas. Mudança na tributação dos fundos imobiliários alteraria o tratamento dos rendimentos.",
+  "peers": "Em lajes, os fundos citados são o CSHG Real Estate, código HGRE11, o Rio Bravo Renda Corporativa, código RCRB11, o JS Real Estate, código JSRE11, e o BTG Pactual Corporate Office, código BRCR11. Em galpões, estão o CSHG Logística, código HGLG11, o XP Log, código XPLG11, o BTG Pactual Logística, código BTLG11, a Vinci Logística, código VILG11, e o VBI Logístico, código LVBI11.\n\nO KNRI11 reúne os dois segmentos no mesmo fundo. Os outros são citados em um segmento só.",
+  "history": "O fundo começou com lajes corporativas e depois passou a incluir galpões, no formato híbrido. A escala permitiu compras e estruturas de coinvestimento.\n\nNa pandemia, o escritório enfrentou o trabalho remoto e o galpão acompanhou o comércio eletrônico. A distribuição mensal seguiu, e o preço da cota refletiu a dúvida sobre lajes. No ciclo de Selic alta, o preço de mercado das cotas de fundos imobiliários caiu em relação ao valor patrimonial.",
+  "faq": [
+    {
+      "q": "Como o KNRI11 distribui rendimentos?",
+      "a": "O fundo distribui rendimentos aos cotistas todo mês, a partir do caixa de aluguéis. As datas saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "O que é o P/VP do KNRI11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. O indicador descreve essa relação de preço."
+    },
+    {
+      "q": "Como a Selic se relaciona com o KNRI11?",
+      "a": "Quando a taxa básica sobe, títulos públicos pós-fixados passam a remunerar mais e o preço de mercado das cotas tende a cair. Os aluguéis seguem os contratos. Laje e galpão não são indexados à Selic."
+    },
+    {
+      "q": "Qual a diferença entre FII de tijolo e FII de papel?",
+      "a": "O KNRI11 é um fundo de tijolo: o patrimônio são imóveis, lajes e galpões, e a receita vem de aluguel. Um fundo de papel aplica em recebíveis imobiliários e a receita vem dos juros desses títulos. No tijolo, desocupação e renegociação alteram o aluguel. No papel, o risco citado é o de crédito de quem emitiu o título."
+    },
+    {
+      "q": "O que é vacância no KNRI11?",
+      "a": "Vacância é a parte dos imóveis sem locatário. Enquanto a área está vaga, não gera o aluguel daquele espaço. Em laje, contrato típico pode ser revisto e a saída de um locatário abre um intervalo até a nova locação. Em galpão, contrato atípico de prazo longo cobre parte da receita, e inadimplência ainda assim interrompe o aluguel."
+    },
+    {
+      "q": "Por que o KNRI11 junta laje e galpão?",
+      "a": "O mandato do fundo é híbrido. Laje corporativa acompanha emprego e o uso de escritório. Galpão logístico acompanha distribuição de mercadorias. Os dois ciclos não são o mesmo, e o fundo carrega os dois no mesmo portfólio."
+    }
+  ]
+}

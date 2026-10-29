@@ -1,0 +1,33 @@
+{
+  "description": "O UBS BR Recebíveis Imobiliários, código RECT11, é um fundo imobiliário de papel. A gestão é da UBS Brasil Asset Management. O fundo aplica em certificados de recebíveis imobiliários de devedores dos setores residencial, comercial, varejo e logística.\n\nAs garantias descritas são alienação fiduciária de imóvel, cessão de recebíveis e fiança. Há operações com faixa sênior e faixa subordinada. O fundo recebe juros e amortizações e distribui aos cotistas. A distribuição é mensal.",
+  "thesis": "O certificado tem cronograma de juros e de amortização. A distribuição mensal segue esse caixa, e não o aluguel de um imóvel. Há papéis indexados ao IPCA e papéis indexados ao CDI.\n\nOs rendimentos são mensais. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. O certificado, no caixa do fundo, tem tratamento tributário de produto de financiamento imobiliário.",
+  "risks": "O risco de crédito é o de o devedor atrasar ou não pagar. A garantia pode ser executada. Um evento em um devedor grande reduz a distribuição e o valor patrimonial da cota.\n\nO papel indexado ao CDI acompanha a Selic: o cupom sobe quando a taxa sobe e cai quando a taxa cai. O papel indexado ao IPCA acompanha a inflação mais um spread. A marcação a mercado muda com a curva de juros, mesmo quando o fluxo contratado do mês não mudou. Taxa de gestão e a seleção dos certificados entram no resultado que chega ao cotista.",
+  "peers": "Outros fundos de papel citados são o Kinea Rendimentos Imobiliários, código KNCR11, o Kinea High Yield, código KNHY11, o Maxi Renda, código MXRF11, o CSHG Recebíveis Imobiliários, código HGCR11, o Valora Recebíveis Imobiliários, código VGIR11, e o RBR Rendimento, código RBRR11. Cada um combina indexadores e devedores de um jeito.\n\nO P/VP é o preço da cota dividido pelo valor patrimonial da cota. Acima de um, o preço de mercado está acima do patrimônio por cota. Abaixo de um, está abaixo.",
+  "history": "A UBS Brasil posicionou o fundo como veículo de certificados de recebíveis, com análise de crédito da gestora. Houve emissões de cotas e ampliação da base de cotistas.\n\nEm ciclo de inflação alta, o cupom dos papéis indexados ao IPCA acompanhou o índice, e a curva de juros pressionou o valor de mercado das cotas. Houve inadimplência pontual de devedores. Papel indexado ao CDI reduz o cupom quando a Selic cai. Papel indexado ao IPCA segue a inflação contratada.",
+  "faq": [
+    {
+      "q": "Como o RECT11 distribui rendimentos?",
+      "a": "O fundo recebe juros e amortizações dos certificados de recebíveis e distribui aos cotistas todo mês. As datas saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "O que é o P/VP do RECT11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. A marcação a mercado dos certificados altera o patrimônio mesmo quando o fluxo contratado do mês não mudou."
+    },
+    {
+      "q": "Como a Selic se relaciona com o RECT11?",
+      "a": "Certificado indexado ao CDI acompanha a Selic: o cupom sobe com a taxa e cai com a taxa. Certificado indexado ao IPCA acompanha a inflação mais um spread. A curva de juros também altera o preço de mercado da cota, pela marcação dos papéis."
+    },
+    {
+      "q": "Qual a diferença entre FII de papel e FII de tijolo?",
+      "a": "O RECT11 é um fundo de papel: o patrimônio são certificados de recebíveis, e a receita vem dos juros desses títulos. Um fundo de tijolo detém imóveis e a receita vem de aluguel. No papel, o risco citado é o de crédito do devedor. No tijolo, desocupação e renegociação alteram o aluguel."
+    },
+    {
+      "q": "O que é o risco de crédito no RECT11?",
+      "a": "Cada certificado tem um devedor. Se ele atrasa ou não paga, o fundo deixa de receber aquele fluxo até uma reestruturação ou a execução da garantia. Garantias citadas são alienação fiduciária de imóvel, cessão de recebíveis e fiança. A carteira reúne vários devedores e setores."
+    },
+    {
+      "q": "Como um CRI indexado ao IPCA difere de um CRI indexado ao CDI?",
+      "a": "O papel indexado ao IPCA reajusta o cupom pela inflação mais um spread. O papel indexado ao CDI reajusta o cupom pela taxa que acompanha a Selic. Os dois podem conviver no mesmo fundo, e a distribuição do mês reflete o caixa que cada um pagou."
+    }
+  ]
+}
