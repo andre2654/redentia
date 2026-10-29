@@ -180,7 +180,7 @@ test('invariante: modo pluggy conecta pelo widget e grava só com o item conferi
   // o widget pede só investimentos e nunca lista conectores de sandbox
   const widget = conexao.slice(conexao.indexOf('async function abrirWidgetPluggy'))
   // o termo autoriza posições e saldo: nada de cartão ou extrato
-  assert.match(widget, /products: \['INVESTMENTS', 'ACCOUNTS'\]/)
+  assert.match(widget, /products: \['INVESTMENTS', 'INVESTMENTS_TRANSACTIONS', 'ACCOUNTS'\]/)
   assert.doesNotMatch(widget, /CREDIT_CARDS|'TRANSACTIONS'/)
   assert.match(widget, /includeSandbox: false/)
   assert.doesNotMatch(widget, /onError:[^\n]*reject/, 'erro dentro do widget não encerra: a pessoa tenta de novo lá')

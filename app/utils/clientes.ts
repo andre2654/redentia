@@ -25,7 +25,8 @@ export function clientStatusLabel(s: string | null | undefined): string {
 /** O que o cliente autoriza, em linguagem de gente. */
 export const CLIENT_SCOPE_LABEL: Record<string, string> = {
   posicoes_investimento: 'Posições de investimento: quais ativos, a quantidade, o preço médio e o valor.',
-  saldo_em_conta: 'Saldo das contas corrente e poupança. Sem cartão, extrato ou movimentação.',
+  saldo_em_conta: 'Saldo das contas corrente e poupança. Sem cartão nem extrato da conta.',
+  movimentacoes_investimento: 'Movimentações dos investimentos de até 24 meses: compras, vendas, resgates, proventos, impostos e taxas.',
 }
 
 export function clientScopeLabel(s: ClientScope): string {
@@ -41,6 +42,7 @@ const ACTION_LABEL: Record<string, string> = {
   consent_granted: 'Consentimento dado',
   connection_added: 'Conexão criada',
   portfolio_read: 'Carteira consultada',
+  transactions_read: 'Movimentações consultadas',
   simulation_run: 'Simulação de cenário sobre a carteira',
   reassigned: 'Responsável trocado',
   shared: 'Compartilhado com o escritório',

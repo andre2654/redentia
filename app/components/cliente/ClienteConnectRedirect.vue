@@ -25,7 +25,7 @@ const emit = defineEmits<{ ir: [] }>()
 
     <ol class="ccr__passos">
       <li><span class="ccr__n">1</span><span>Você entra com as suas credenciais no próprio {{ inst.name }}, nunca aqui.</span></li>
-      <li><span class="ccr__n">2</span><span>Lá você escolhe o que compartilhar: investimentos e saldo em conta.</span></li>
+      <li><span class="ccr__n">2</span><span>Lá você escolhe o que compartilhar: investimentos, movimentações e saldo em conta.</span></li>
       <li><span class="ccr__n">3</span><span>Ao confirmar, você volta para esta tela e a conexão termina sozinha.</span></li>
     </ol>
 

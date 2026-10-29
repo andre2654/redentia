@@ -38,8 +38,8 @@ export type ClientInviteMode = 'demo' | 'pluggy'
 
 export type ClientStatus = 'pending' | 'active' | 'revoked' | 'expired'
 
-/** Escopo do consentimento: posições e, do termo 2026-10-5 em diante, saldo em conta. */
-export type ClientScope = 'posicoes_investimento' | 'saldo_em_conta' | string
+/** Escopo do consentimento: posições; saldo em conta (2026-10-5); movimentações (2026-10-6). */
+export type ClientScope = 'posicoes_investimento' | 'saldo_em_conta' | 'movimentacoes_investimento' | string
 
 /** C5 — o convite como o cliente final o vê. */
 export interface ClientInviteInfo {
