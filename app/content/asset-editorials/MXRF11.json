@@ -1,0 +1,33 @@
+{
+  "description": "O Maxi Renda Fundo de Investimento Imobiliário, código MXRF11, é um fundo híbrido com carteira predominantemente de papel. A gestão é da XP Asset Management. O fundo aplica em certificados de recebíveis imobiliários, letras de crédito imobiliário, cotas de outros fundos imobiliários e, de forma pontual, em imóveis.\n\nOs certificados são lastreados em recebíveis de empreendimentos residenciais, comerciais, logísticos e mistos. Os indexadores citados são IPCA, CDI, IGP-M e taxa prefixada. A carteira se divide por emissor, devedor, setor e indexador. A distribuição de rendimentos é mensal. O fundo emite cotas para ampliar o patrimônio e recompõe a carteira quando um certificado amortiza.",
+  "thesis": "A receita vem dos juros dos certificados de recebíveis e dos outros ativos da carteira. Certificados indexados ao IPCA mais um spread acompanham a inflação. Certificados indexados ao CDI mais um spread acompanham a taxa de juros. Como a carteira reúne várias operações, a inadimplência de um devedor isolado entra diluída no resultado.\n\nOs rendimentos são mensais. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. O enquadramento depende da legislação vigente e da situação do cotista e do fundo.",
+  "risks": "O risco de crédito é o que move a receita. Ela depende do pagamento dos certificados pelos devedores. Inadimplência de construtora ou recuperação judicial de incorporadora reduz a distribuição e pode gerar provisão. A diversificação dilui o efeito de um devedor isolado, sem eliminar o risco de um ciclo ruim para o crédito imobiliário.\n\nCom a Selic alta, os certificados pós-fixados elevam o fluxo nominal, e o preço da cota pode cair porque títulos públicos pós-fixados passam a remunerar mais. Com a Selic baixa, o spread e o fluxo nominal se comprimem. Emissões de cotas ampliam o patrimônio e repõem certificados que amortizam, e a condução dessas emissões depende da gestão. Mudança na tributação dos fundos imobiliários ou no tratamento dos certificados alteraria o rendimento recebido pelo cotista.",
+  "peers": "No segmento de fundos de papel, o texto de mercado cita o Kinea Rendimentos Imobiliários, código KNCR11, o KNHY11, da Kinea, o CSHG Recebíveis Imobiliários, código HGCR11, o Valora Recebíveis Imobiliários, código VGIR11, e o RBR Rendimento High Grade, código RBRR11. A diferença entre eles está no risco de crédito da carteira, no indexador e no tamanho de cada operação.\n\nO MXRF11 combina certificados indexados ao IPCA e ao CDI. O KNCR11 é descrito com foco em CDI. O KNHY11 é descrito com perfil de spread mais elevado. O HGCR11 é descrito com perfil de crédito mais contido. O P/VP é o preço da cota dividido pelo valor patrimonial da cota. Acima de um, o preço de mercado está acima do patrimônio por cota. Abaixo de um, está abaixo.",
+  "history": "O Maxi Renda abriu capital quando a indústria de fundos imobiliários no Brasil ainda começava. A carteira começou em ativos imobiliários diversos, com o objetivo de renda mensal, e foi se concentrando em certificados de recebíveis à medida que esse mercado de crédito cresceu. Ofertas de cotas ampliaram o patrimônio e o número de operações.\n\nA distribuição mensal e o tratamento tributário do fundo imobiliário atraíram pessoas físicas, no período em que as plataformas digitais de investimento se espalharam. Na pandemia, a diversificação da carteira absorveu impactos pontuais e a distribuição mensal seguiu. A inflação alta favoreceu a parcela indexada ao IPCA, e a Selic alta elevou o fluxo nominal da parcela indexada ao CDI. No ciclo de juros altos, o preço da cota ficou sob pressão e a distribuição mensal foi mantida. A gestão manteve a diligência de crédito e a troca da carteira conforme os certificados amortizam.",
+  "faq": [
+    {
+      "q": "Como o MXRF11 distribui rendimentos?",
+      "a": "O fundo distribui rendimentos aos cotistas todo mês, a partir dos juros dos certificados de recebíveis e dos outros ativos da carteira. As datas de cada pagamento saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "O que é o P/VP do MXRF11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. O indicador descreve essa relação de preço."
+    },
+    {
+      "q": "Como a Selic se relaciona com o MXRF11?",
+      "a": "Com a Selic alta, o fluxo nominal dos certificados indexados ao CDI sobe, e o preço da cota pode cair porque títulos públicos pós-fixados passam a remunerar mais. Com a Selic baixa, o fluxo nominal desses certificados cai e a cota pode subir. Os certificados indexados ao IPCA seguem a inflação mais um spread, e não a Selic sozinha."
+    },
+    {
+      "q": "Qual a diferença entre fundo de tijolo e fundo de papel no MXRF11?",
+      "a": "O MXRF11 é um fundo híbrido com perfil de papel: o patrimônio está, de forma predominante, em recebíveis, como certificados de recebíveis imobiliários, e a receita vem dos juros pagos pelos devedores. Um fundo de tijolo aplica em imóveis e a receita vem de aluguel. No papel, o risco citado é o de crédito de quem deve o título. No tijolo, desocupação e renegociação de contrato alteram o aluguel."
+    },
+    {
+      "q": "Como os certificados do MXRF11 são indexados?",
+      "a": "Os certificados da carteira usam indexadores diferentes, conforme a operação. Há papéis pós-fixados no IPCA mais um spread, papéis pós-fixados no CDI mais um spread, papéis prefixados e papéis indexados ao IGP-M. O IPCA acompanha a inflação. O CDI acompanha a taxa básica de juros. O peso de cada indexador muda com as compras e as amortizações da gestão."
+    },
+    {
+      "q": "Qual é o risco de crédito do MXRF11?",
+      "a": "A receita depende de os devedores dos certificados pagarem no prazo. A carteira reúne várias operações, o que dilui o efeito de uma inadimplência isolada. Mesmo assim, um ciclo de estresse de incorporadoras e de construtoras pode gerar provisão e reduzir o rendimento distribuído. A diligência de crédito e o ritmo de reconhecimento dessas perdas são decisões da gestão."
+    }
+  ]
+}

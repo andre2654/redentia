@@ -1,0 +1,33 @@
+{
+  "description": "A PRIO S.A., que usa a marca PetroRio, produz petróleo e gás natural. A atividade é de produção em campos no mar, nas bacias de Campos e do Espírito Santo. A companhia não opera refino, distribuição nem petroquímica.\n\nO modelo descrito é o de redesenvolver campos maduros: a empresa compra ativos em estágio avançado de produção, que operadoras integradas colocam à venda, investe para revitalizá-los e estende a vida das reservas. Os campos citados são Polvo, Tubarão Martelo, Frade, Wahoo, ainda em desenvolvimento, e uma participação em Albacora Leste. A PRIO opera unidades próprias de produção, os FPSOs. PRIO3 é o código das ações ordinárias. A companhia está no Novo Mercado, sem ações preferenciais, e o capital é disperso entre fundos brasileiros e estrangeiros.",
+  "thesis": "A receita da PRIO acompanha o preço internacional do petróleo, porque não há refino nem outra etapa da cadeia para compensar a queda do barril. O petróleo é negociado em dólar. A operação de FPSOs próprios internaliza custo que antes ficava com prestadores de serviço marítimo. A companhia também realoca capital por recompra de ações, por proventos e por novas aquisições de campos.\n\nOs proventos não seguem um calendário fixo. O conselho delibera dividendos ou juros sobre capital próprio quando há caixa, e a gestão tem usado recompra de ações como forma de remunerar o acionista. Datas e condições saem em fato relevante, publicado no site de relações com investidores.",
+  "risks": "O preço do petróleo move a receita inteira. Sem refino, a companhia não captura margem nas etapas posteriores da cadeia quando o barril cai. A produção está em poucos campos. Parada não programada de um FPSO, problema num poço, atraso de perfuração ou evento ambiental e regulatório num desses campos altera o volume. Wahoo e as expansões de ativos comprados exigem investimento alto, e atraso ou estouro de orçamento em projeto no mar empurra a produção para depois.\n\nReservas de petróleo se esgotam com a extração. A PRIO não descreve uma agenda de renováveis no porte das operadoras europeias. Royalties, participação especial e o regime tributário do setor podem ser revistos. Parte dos equipamentos é importada e há dívida em dólar, então o câmbio entra no custo e na despesa financeira, além de entrar na receita.",
+  "peers": "Na bolsa brasileira, o texto de mercado cita a 3R Petroleum, código RRRP3, e a Enauta, código ENAT3, também produtoras que compram e desenvolvem campos. Essas companhias têm receita em dólar, sem refino, e acompanham o preço do petróleo. A Petrobras, código PETR4, atua no mesmo setor, com refino e com controle da União.\n\nFora do Brasil, o mesmo tipo de produtora independente aparece em companhias como Kosmos Energy, Tullow Oil, Africa Oil, EOG Resources e Pioneer Natural Resources. A PRIO opera no Brasil, no Novo Mercado, só com ações ordinárias. PRIO3 dá direito a voto.",
+  "history": "A PRIO foi fundada como HRT Participações em Petróleo, com foco em exploração em bacias na Namíbia e na Bacia do Solimões. Abriu capital na bolsa. As campanhas de exploração não entregaram o que se esperava, e a companhia passou por uma reestruturação. A gestão seguinte trocou o modelo para o redesenvolvimento de campos maduros no mar e adotou o nome PetroRio, depois PRIO.\n\nA primeira compra relevante foi o campo de Polvo, adquirido da BP e revitalizado. Depois vieram Tubarão Martelo, Frade e Wahoo. A operação do FPSO pela própria companhia reduziu custo. A empresa fez recompras de ações, distribuiu proventos em ciclos de petróleo favorável e entrou no Ibovespa. O modelo segue sendo a compra de campos maduros, com reserva e produção já existentes.",
+  "faq": [
+    {
+      "q": "Por que a PRIO só tem o código PRIO3?",
+      "a": "A companhia está no Novo Mercado, segmento que exige ações ordinárias e tag along na alienação de controle. Não há ação preferencial. PRIO3 dá direito a voto aos acionistas. O capital é disperso entre fundos de investimento brasileiros e estrangeiros."
+    },
+    {
+      "q": "Como a PRIO3 distribui proventos?",
+      "a": "Não há calendário fixo de dividendos. O conselho delibera dividendos ou juros sobre capital próprio quando há geração de caixa, e também pode anunciar provento fora da rotina, em fato relevante, com data-com e data-ex. A gestão tem usado recompra de ações como outra forma de devolver capital. Os comunicados saem no site de relações com investidores."
+    },
+    {
+      "q": "Como o preço do petróleo se relaciona com a PRIO3?",
+      "a": "O petróleo é negociado em dólar no mercado internacional. A receita da PRIO acompanha esse preço, porque a companhia não tem refino nem distribuição. A relação com o lucro não é só a do preço do barril, porque a companhia também tem custos, royalties e investimentos."
+    },
+    {
+      "q": "Qual a relação entre a PRIO3 e o dólar?",
+      "a": "A receita é em dólar, porque o petróleo é precificado nessa moeda. Parte dos custos, como fornecedores marítimos e equipamentos, também é em dólar, e há dívida em dólar. O efeito do câmbio, portanto, não se resume à receita."
+    },
+    {
+      "q": "O que é redesenvolvimento de campo maduro na PRIO?",
+      "a": "É a compra de um campo já em produção, que uma operadora integrada coloca à venda, seguida de investimento em poços, intervenções e operação. A PRIO usa esse modelo para somar reserva já conhecida e infraestrutura instalada, sem a etapa de explorar uma área nova. Os campos citados incluem Polvo, Tubarão Martelo, Frade, Wahoo e uma participação em Albacora Leste."
+    },
+    {
+      "q": "Quem são os acionistas da PRIO?",
+      "a": "O capital é disperso entre fundos de investimento brasileiros e estrangeiros. A companhia está no Novo Mercado e emite ações ordinárias, com tag along. PRIO3 é o código desses papéis e dá direito a voto."
+    }
+  ]
+}

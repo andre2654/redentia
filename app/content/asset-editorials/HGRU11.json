@@ -1,0 +1,33 @@
+{
+  "description": "O CSHG Renda Urbana Fundo de Investimento Imobiliário, código HGRU11, aplica em imóveis de renda urbana. A gestão é da Credit Suisse Hedging-Griffo, que passou à estrutura do UBS depois da fusão das duas casas. O fundo detém imóveis comerciais ocupados por redes de varejo e por operadoras urbanas, em especial supermercados, lojas e instituições de ensino.\n\nOs locatários citados incluem Pão de Açúcar, Carrefour, BIG, Sendas e redes de educação privada. Os imóveis ficam em capitais e em cidades de médio porte. Os contratos são, no geral, atípicos e de built-to-suit, modalidade em que o imóvel é feito sob medida para o locatário, com multa se a saída ocorrer antes do prazo. O reajuste segue o IPCA ou o IGP-M. A distribuição de rendimentos é mensal.",
+  "thesis": "Os contratos atípicos e de built-to-suit preveem prazo longo e multa em caso de rescisão antecipada, descrita como equivalente aos aluguéis que faltam até o fim do prazo. O reajuste usa o IPCA ou o IGP-M. A receita do fundo vem desses aluguéis, menos despesas operacionais e a taxa de gestão.\n\nOs rendimentos são mensais e saem do caixa do período anterior. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal. O enquadramento depende da legislação vigente e da situação do cotista e do fundo.",
+  "risks": "A receita pode se concentrar em poucos grupos varejistas, entre eles Pão de Açúcar, o GPA, Carrefour, BIG e o grupo Mateus. Dificuldade financeira de um desses grupos reduz o aluguel daquela parcela, ainda que o contrato atípico preveja multa rescisória. O preço da cota no mercado muda com a taxa básica de juros. Quando a Selic sobe, títulos públicos pós-fixados passam a remunerar mais, e parte do mercado deixa as cotas. Os aluguéis seguem os contratos, reajustados pelo IPCA ou pelo IGP-M, e não a Selic.\n\nGrandes formatos de loja convivem com o comércio eletrônico, e as redes podem rever a estratégia imobiliária. No ensino privado, queda de matrículas em algumas áreas, regulação do setor e ensino a distância podem afetar os locatários. O contrato atípico chega ao vencimento, e a renovação pode alterar o aluguel ou o locatário, com período sem receita daquele imóvel e custo de reforma. Alteração na tributação dos fundos imobiliários mudaria o tratamento dos rendimentos.",
+  "peers": "No varejo e na renda urbana, o texto de mercado cita o Rio Bravo Renda Varejo, código RBVA11, com supermercados, agências bancárias e varejo. Cita a BTG Logística, código BTLG11, com viés de logística, e a Vinci Shopping Centers, código VISC11, de shoppings. Em lajes corporativas, cita o HGRE11, o RBRP11 e o KNRI11.\n\nO HGRU11 aplica em supermercados, lojas e redes de ensino, com contratos atípicos e reajuste pelo IPCA ou pelo IGP-M. O RBVA11 mistura supermercados, agências e varejo. O VISC11 aplica em shopping, com receita ligada ao fluxo de visitantes e ao mix de lojistas. Os fundos de laje citados operam contratos típicos, de prazo mais curto, com empresas de escritório.",
+  "history": "O HGRU11 foi listado na B3 no período em que o mercado de fundos imobiliários se expandiu, com a Selic mais baixa e com mais pessoas físicas comprando cotas. A Credit Suisse Hedging-Griffo, que já geria fundos de outros segmentos, lançou o HGRU11 com foco em renda urbana. O código segue o prefixo HG da casa e o sufixo associado a renda urbana.\n\nO portfólio foi montado com compras de imóveis e com ofertas subsequentes de cotas. Na pandemia, supermercados foram tratados como serviço essencial e seguiram operando, em alguns casos com mais movimento. Os contratos atípicos mantiveram a receita, e a distribuição mensal continuou. No ciclo seguinte de Selic alta, o preço da cota caiu em relação ao valor patrimonial, enquanto a distribuição mensal seguiu. Com o sinal de fim do aperto monetário, o preço passou a se recuperar. A passagem da gestão para a estrutura da UBS, depois da fusão, manteve a equipe e os processos.",
+  "faq": [
+    {
+      "q": "Como o HGRU11 distribui rendimentos?",
+      "a": "O fundo distribui rendimentos aos cotistas todo mês, a partir do caixa do período anterior, formado pelos aluguéis depois das despesas operacionais e da taxa de gestão. As datas de cada pagamento saem nos comunicados do fundo. Rendimentos de fundo imobiliário para pessoa física podem ser isentos de imposto de renda, conforme as regras da Receita Federal."
+    },
+    {
+      "q": "Como a Selic se relaciona com o HGRU11?",
+      "a": "Quando a taxa básica sobe, títulos públicos pós-fixados passam a remunerar mais e parte do mercado deixa as cotas, o que reduz o preço. Quando a Selic cai, o movimento de preço é o inverso. Os aluguéis do HGRU11 seguem os contratos, reajustados pelo IPCA ou pelo IGP-M, e não acompanham a Selic."
+    },
+    {
+      "q": "O que é um contrato atípico no HGRU11?",
+      "a": "É o contrato em que o locatário assume prazo longo. No built-to-suit, o imóvel é construído sob medida para esse locatário. Se a saída ocorrer antes do prazo, a multa é descrita como equivalente aos aluguéis que faltam. Parte da receita do HGRU11 está nesse tipo de contrato, com reajuste pelo IPCA ou pelo IGP-M."
+    },
+    {
+      "q": "Qual a diferença entre o HGRU11 e um fundo de shopping ou de laje?",
+      "a": "O HGRU11 aluga imóveis para supermercados, varejo e redes de ensino, em contratos atípicos de prazo longo. Um fundo de shopping, como o VISC11, tem receita ligada ao fluxo de visitantes e a um mix de lojistas. Um fundo de laje, como o HGRE11 ou o KNRI11, aluga escritórios em contratos típicos, de prazo mais curto."
+    },
+    {
+      "q": "Como a concentração de locatários aparece no HGRU11?",
+      "a": "O portfólio reúne imóveis em várias cidades, e a receita pode depender de poucos grupos, entre eles Pão de Açúcar, o GPA, Carrefour, BIG e o grupo Mateus. Se um desses grupos deixa de pagar, a receita do fundo sente o peso dessa parcela. O contrato atípico prevê multa rescisória, e os relatórios do fundo informam a participação de cada locatário."
+    },
+    {
+      "q": "O que é o P/VP do HGRU11?",
+      "a": "O P/VP é o preço de mercado da cota dividido pelo valor patrimonial da cota. Acima de um, a cota é negociada por mais do que o patrimônio contábil. Abaixo de um, por menos. O indicador descreve essa relação de preço."
+    }
+  ]
+}
