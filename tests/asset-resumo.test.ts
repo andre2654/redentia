@@ -115,7 +115,7 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
       dy: 6.96139, pl: 5.074, pvp: 1.407, roe: 30.306, margem: 24.316, valorMercado: 718.209e9,
       vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
     },
-    fonteIndicadores: 'dados da B3 e balanços',
+    fonteIndicadores: 'Scraper StatusInvest, base em DFP/ITR',
     min52: 29.53,
     max52: 59.68,
     serie: { de: '2025-10-29', ate: '2026-10-28', variacao: 82.07, ibov: 15.99 },
@@ -153,11 +153,11 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   const corpo = r.paragrafos.join('\n')
   assert.match(corpo, /cotação mais recente é R\$ 52,51/)
   assert.match(corpo, /atualizada em 28\/10\/2026/)
-  assert.match(corpo, /atraso de 15 min/)
-  assert.doesNotMatch(corpo, /No pregão de/)
-  assert.match(corpo, /Fonte: B3 · dados com atraso de 15 min/)
+  assert.match(corpo, /Fonte: Brapi \(B3\), atualização de 10 a 30 min/)
+  assert.doesNotMatch(corpo, /No pregão de|atraso de 15 min|mesma leitura/)
   assert.match(corpo, /mínima de 52 semanas foi R\$ 29,53/)
   assert.match(corpo, /máxima foi R\$ 59,68/)
+  assert.match(corpo, /Fonte: StatusInvest \(dados diários\), em 28\/10\/2026/)
   const doze = r.paragrafos.find((p) => p.includes('Indicadores dos últimos 12 meses'))
   assert.ok(doze)
   const frase12 = doze.split('. ')[0] ?? ''
@@ -165,20 +165,17 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   assert.match(frase12, /P\/L de 5,07/)
   assert.match(frase12, /ROE de 30,3%/)
   assert.doesNotMatch(frase12, /P\/VP|valor de mercado/)
-  assert.match(corpo, /P\/VP de 1,41/)
-  assert.match(corpo, /valor de mercado de R\$ 718,21B/)
-  assert.match(corpo, /Fonte: dados da B3 e balanços/)
-  assert.match(corpo, /Nos cerca de 12 meses de 29\/10\/2025 a 28\/10\/2026/)
+  assert.match(corpo, /O P\/VP é 1,41 e o valor de mercado é R\$ 718,21B/)
+  assert.match(corpo, /Fonte: Scraper StatusInvest, base em DFP\/ITR/)
+  assert.match(corpo, /De 29\/10\/2025 a 28\/10\/2026, PETR4 variou \+82,07%/)
   assert.match(corpo, /No mesmo período, o Ibovespa variou \+15,99%/)
-  assert.match(corpo, /leitura de 28\/10\/2026 do setor energia/)
-  assert.match(corpo, /PETR4 variou -0,40%/)
-  assert.match(corpo, /média dos 26 papéis foi -1,57%/)
-  assert.doesNotMatch(corpo, /-0,53% e a média/)
+  assert.doesNotMatch(corpo, /cerca de 12 meses|média dos/)
   assert.match(corpo, /proventos de renda de PETR4 com data-com/)
   assert.match(corpo, /R\$ 3,45 por ação/)
   assert.match(corpo, /2025, R\$ 2,52/)
   assert.match(corpo, /2026 até agora, R\$ 3,45/)
-  assert.doesNotMatch(corpo, /\(últimos 12 meses\)/)
+  assert.match(corpo, /O próximo pagamento previsto é 21 dez 2026/)
+  assert.doesNotMatch(corpo, /\(últimos 12 meses\)|pagamento informado/)
   assert.match(corpo, /Fonte: avisos de proventos da B3/)
   assert.doesNotMatch(textoDe(r), /série pedida|série do mesmo pedido|nessa lista|setor informado|rank global informado|supply|pagou|pagos/i)
   assert.equal(r.links.some((l) => l.href.includes('preco-teto')), false)
@@ -186,12 +183,12 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   const faqPreco = r.faq.find((f) => /cotação/i.test(f.q))
   assert.ok(faqPreco)
   assert.match(faqPreco.a, /cotação mais recente/)
-  assert.match(faqPreco.a, /atraso de 15 min/)
+  assert.match(faqPreco.a, /Brapi \(B3\), atualização de 10 a 30 min/)
   assert.doesNotMatch(faqPreco.a, /pregão de/)
   const faqSerie = r.faq.find((f) => /12 meses/i.test(f.q) && /variou/i.test(f.a))
   assert.ok(faqSerie)
   assert.match(faqSerie.a, /Ibovespa/)
-  assert.match(faqSerie.a, /atraso de 15 min/)
+  assert.match(faqSerie.a, /StatusInvest \(dados diários\), em 28\/10\/2026/)
   assert.doesNotMatch(r.faq.map((f) => f.q).join('\n'), /pagou/)
   assert.equal(r.faqTitulo, 'Perguntas frequentes sobre PETR4')
   assert.ok(r.faq.length >= 4 && r.faq.length <= 5)
@@ -233,9 +230,9 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   assert.doesNotMatch(corpo, /m[eé]dia do setor|m[eé]dia dos \d/)
   assert.doesNotMatch(corpo, /O setor informado é imobiliário/)
   assert.match(corpo, /fundo imobiliário/)
-  assert.match(corpo, /P\/VP de 0,89/)
-  assert.match(corpo, /R\$ 165,48/)
-  assert.match(corpo, /participação no IFIX de 4,18%/)
+  assert.match(corpo, /O P\/VP é 0,89/)
+  assert.match(corpo, /o valor patrimonial por cota é R\$ 165,48/)
+  assert.match(corpo, /a participação no IFIX é 4,18%/)
   assert.match(corpo, /613\.837 cotistas/)
   assert.match(corpo, /por cota/)
   assert.match(corpo, /Fonte: dados da B3 e informes do fundo/)
@@ -271,7 +268,8 @@ test('cripto não cita B3, pregão nem provento, e o preço grande sai sem centa
   assert.match(corpo, /R\$ 427\.525/)
   assert.match(corpo, /em 24 horas/)
   assert.match(corpo, /preço mais recente em reais é R\$ 427\.525/)
-  assert.match(corpo, /Mercado 24 horas, atualizado em 29\/10\/2026/)
+  assert.match(corpo, /Atualizado em 29\/10\/2026/)
+  assert.doesNotMatch(corpo, /Mercado 24 horas|Fonte:/)
   assert.match(corpo, /R\$ 8,60T/)
   assert.match(corpo, /posição no ranking global é 1/)
   assert.match(corpo, /oferta em circulação é 20,11M BTC/)
@@ -282,21 +280,22 @@ test('cripto não cita B3, pregão nem provento, e o preço grande sai sem centa
   assert.ok(faqPreco)
   assert.match(faqPreco.a, /mais recente/)
   assert.match(faqPreco.a, /427\.525/)
-  assert.match(faqPreco.a, /Mercado 24 horas/)
+  assert.match(faqPreco.a, /Atualizado em 29\/10\/2026/)
+  assert.doesNotMatch(faqPreco.a, /Mercado 24 horas|Fonte:/)
   assert.doesNotMatch(textoDe(r), /Fonte:|supply|rank global informado/i)
   assert.doesNotMatch(semAviso(textoDe(r)), VERBOS)
 })
 
-test('média do setor some quando a variação do papel não veio na mesma leitura', () => {
+test('a média do setor não entra: o ranking não traz data da leitura', () => {
   const r = montarResumoAtivo(base({
     setor: 'Energia',
     variacaoDia: -0.53,
     data: '2026-10-28',
     preco: 10,
-    setorMedia: { variacao: -1.57, papeis: 26, variacaoAtivo: null, data: null },
+    setorMedia: { variacao: -1.57, papeis: 26, variacaoAtivo: -0.4, data: '2026-10-28' },
   }))
   assert.ok(r)
-  assert.doesNotMatch(r.paragrafos.join('\n'), /média/)
+  assert.doesNotMatch(r.paragrafos.join('\n'), /média|mesma leitura/)
   assert.match(r.paragrafos.join('\n'), /variação de -0,53% no dia/)
 })
 

@@ -62,7 +62,7 @@ import type {
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
-import { fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
+import { FONTE_FUNDAMENTALISTAS, fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
 
 /* ————— helpers de formatação ————— */
 
@@ -1155,7 +1155,7 @@ function petr4Seed(): AcaoPayload {
     variacaoDia: 0.76,
     data: null,
     numeros: { ...NUMEROS_RESUMO_VAZIOS, dy: 6.95, pl: 4.55, pvp: 1.1, roe: 24.2, margem: 21.6, valorMercado: 493.2e9 },
-    fonteIndicadores: 'dados da B3 e balanços',
+    fonteIndicadores: FONTE_FUNDAMENTALISTAS,
     min52: null,
     max52: null,
     serie: null,
@@ -1222,7 +1222,7 @@ function petr4Seed(): AcaoPayload {
       { name: 'Dividendo', tag: g('Excelente') },
     ],
     fundHeading: ['Os números', 'da empresa.'],
-    fundSub: 'Últimos 12 meses · dados da B3 e balanços',
+    fundSub: `Últimos 12 meses · ${FONTE_FUNDAMENTALISTAS}`,
     fundInfo: null,
     etfXray: null,
     fcards: [
@@ -1673,7 +1673,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ? 'Últimos 12 meses · dados da B3 e informes do fundo'
     : kind === 'bdr'
       ? 'Últimos 12 meses · resultados da matriz, em dólar'
-      : 'Últimos 12 meses · dados da B3 e balanços'
+      : `Últimos 12 meses · ${FONTE_FUNDAMENTALISTAS}`
 
   const dividends = buildDividends(provRows ?? [], ticker, isFii, siteDy)
   const setorDoLink = setorConhecido ?? (kind === 'fii' ? SETORES_BY_API['real-estate'] ?? null : null)
@@ -1688,8 +1688,6 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
       rows: provRows,
     }).valor,
   })
-  const media = ok(paresR)?.media
-  const variacaoNaLista = media?.variacaoAtivo
   const dataIso = isoDateOrNull(profile.price_date) ?? isoDateOrNull(assetSeries[assetSeries.length - 1]?.t)
   const min52 = kind === 'fii'
     ? overview?.scrape_extras?.fii?.min_price_52_weeks ?? null
@@ -1735,20 +1733,13 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
       ? 'dados da B3 e informes do fundo'
       : kind === 'bdr'
         ? 'resultados da matriz, em dólar'
-        : 'dados da B3 e balanços',
+        : FONTE_FUNDAMENTALISTAS,
     min52,
     max52,
     serie: serieDoResumo(assetSeries, ibovSeries),
-    // Só quando a variação do papel e a média saem da mesma resposta. A
-    // cotação do perfil é outra leitura e não entra nesta conta.
-    setorMedia: kind === 'stock' && setor && media && Number.isFinite(media.variacao) && typeof variacaoNaLista === 'number' && Number.isFinite(variacaoNaLista)
-      ? {
-          variacao: media.variacao,
-          papeis: media.papeis ?? null,
-          variacaoAtivo: variacaoNaLista,
-          data: isoDateOrNull(media.data),
-        }
-      : null,
+    // A média do setor vem de um ranking com cache de até 6 h e sem data da
+    // leitura. Sem data e hora reais, a comparação não entra.
+    setorMedia: null,
     proventos: proventosDoResumo(provRows, isFii),
     etf: kind === 'etf' && etfXrayApi
       ? {

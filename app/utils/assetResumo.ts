@@ -58,9 +58,8 @@ export interface ResumoSetorMedia {
   variacao: number
   papeis: number | null
   /**
-   * Variação do próprio papel na mesma resposta da média. A cotação do hero
-   * é outra leitura (ao vivo, com atraso de 15 min). Sem este número a
-   * comparação não sai: misturar os dois momentos mente.
+   * Variação do próprio papel na mesma resposta da média. A comparação não
+   * é publicada: o ranking fica em cache até 6 h e não traz data da leitura.
    */
   variacaoAtivo: number | null
   /** 'YYYY-MM-DD' dessa leitura, quando a lista traz price_date */
@@ -115,8 +114,8 @@ export interface ResumoAtivoInput {
   max52: number | null
   serie: ResumoSerie | null
   /**
-   * Média do setor e a variação do papel na mesma leitura (lista de pares).
-   * null = omitir. Não usar a variação ao vivo do hero no lugar.
+   * Média do setor. O texto não usa este campo: o ranking não tem data da
+   * leitura. null.
    */
   setorMedia: ResumoSetorMedia | null
   proventos: ResumoProventos | null
@@ -143,11 +142,14 @@ const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFr
 const QUEBRADA = /R\$(?!\s*\d)|US\$(?!\s*\d)|(?:^|\s)%|de\s*%|Fonte:\s*$|Fonte:\s*\.|setor\s*\.|m[eé]dia de\s*%|\(\s*\)|\b(?:undefined|null|NaN)\b/
 
 /**
- * Carimbo da faixa "Mercado agora" (NuMarketTicker) e da metodologia:
- * cotações e índices da B3, com atraso de 15 min. Não vale para cripto —
- * a página de cripto não nomeia provedor.
+ * Selos copiados de /metodologia. Cripto não entra: a página não nomeia provedor.
+ * - cotação do pregão: tabela "Cotações intraday", origem Brapi (B3), cron de 10 a 30 min
+ * - faixa de 52 semanas e série (ticker_historical_prices_si, scrape_extras): scrape diário do StatusInvest
+ * - P/L, P/VP, ROE, margens: "Scraper StatusInvest, base em DFP/ITR"
  */
-const FONTE_B3 = 'B3 · dados com atraso de 15 min'
+export const FONTE_COTACAO = 'Brapi (B3), atualização de 10 a 30 min'
+export const FONTE_SERIE = 'StatusInvest (dados diários)'
+export const FONTE_FUNDAMENTALISTAS = 'Scraper StatusInvest, base em DFP/ITR'
 /** Nota do hero quando a moeda do perfil é dólar. */
 const FONTE_USD = 'preço de referência derivado do BDR e do câmbio'
 
@@ -215,13 +217,6 @@ function setorBaixo(setor: string | null): string | null {
   return s ? s.toLowerCase() : null
 }
 
-function diasEntre(de: string, ate: string): number | null {
-  const a = Date.parse(`${de}T12:00:00Z`)
-  const b = Date.parse(`${ate}T12:00:00Z`)
-  if (!Number.isFinite(a) || !Number.isFinite(b)) return null
-  return (b - a) / 86_400_000
-}
-
 function linksLimpos(links: ResumoLink[]): ResumoLink[] {
   const out: ResumoLink[] = []
   const vistos = new Set<string>()
@@ -238,11 +233,17 @@ function linksLimpos(links: ResumoLink[]): ResumoLink[] {
   return out
 }
 
-/** Sufixo " Fonte: …" das cotações B3. Cripto devolve vazio: o site não nomeia provedor. */
+/** Cotação ao vivo. Cripto devolve vazio: /metodologia não nomeia provedor. */
 function fonteCotacao(i: ResumoAtivoInput): string {
   if (i.kind === 'crypto') return ''
-  if (i.moeda === 'USD') return ` Fonte: ${FONTE_USD}. Dados da B3 com atraso de 15 min.`
-  return ` Fonte: ${FONTE_B3}.`
+  if (i.moeda === 'USD') return ` Fonte: ${FONTE_USD}. ${FONTE_COTACAO}.`
+  return ` Fonte: ${FONTE_COTACAO}.`
+}
+
+/** Faixa de 52 semanas e série diária, com a data do dado quando ela existe. */
+function fonteSerie(iso: string | null | undefined): string {
+  const d = dataBr(iso)
+  return d ? ` Fonte: ${FONTE_SERIE}, em ${d}.` : ` Fonte: ${FONTE_SERIE}.`
 }
 
 function caudaTitulo(i: ResumoAtivoInput): string {
@@ -300,15 +301,15 @@ function paragrafoIdentidade(i: ResumoAtivoInput): string | null {
     if (setor && !(i.kind === 'fii' && setor === 'imobiliário')) partes.push(`O setor é ${setor}.`)
   }
   if (ok(i.preco)) partes.push(fraseCotacao(i))
-  const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda, i.kind === 'crypto' ? '' : fonteCotacao(i))
+  const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda, i.kind === 'crypto' ? '' : fonteSerie(i.data))
   if (faixa && i.kind !== 'crypto') partes.push(faixa)
   return partes.join(' ')
 }
 
 /**
- * Cotação ao vivo, não o fechamento de um pregão encerrado. O atraso é o
- * carimbo que a faixa do site já mostra. Cripto usa o texto do hero
- * ("mercado 24 horas"), sem inventar provedor.
+ * Cotação ao vivo, não o fechamento de um pregão encerrado. O selo é o da
+ * tabela de cotações intraday em /metodologia. Cripto fica só com a data:
+ * /metodologia não nomeia provedor.
  */
 function fraseCotacao(i: ResumoAtivoInput): string {
   const quando = dataBr(i.data)
@@ -316,8 +317,8 @@ function fraseCotacao(i: ResumoAtivoInput): string {
   const extra = variacao ? `, com ${variacao}` : ''
   const preco = precoFmt(i.preco as number, i.kind, i.moeda)
   if (i.kind === 'crypto') {
-    const atualizado = quando ? `, atualizado em ${quando}` : ''
-    return `O preço mais recente em reais é ${preco}${extra}. Mercado 24 horas${atualizado}.`
+    const atualizado = quando ? ` Atualizado em ${quando}.` : ''
+    return `O preço mais recente em reais é ${preco}${extra}.${atualizado}`
   }
   const atualizada = quando ? `, atualizada em ${quando}` : ''
   return `A cotação mais recente é ${preco}${atualizada}${extra}.${fonteCotacao(i)}`
@@ -349,12 +350,12 @@ function indicadores12m(n: ResumoNumeros): string[] {
 /** Números de um instante, não de uma janela de 12 meses. */
 function indicadoresPonto(n: ResumoNumeros, moeda: 'BRL' | 'USD'): string[] {
   const partes: string[] = []
-  if (ok(n.pvp)) partes.push(`P/VP de ${nf2.format(n.pvp)}`)
-  if (ok(n.valorMercado) && n.valorMercado > 0) partes.push(`valor de mercado de ${moneyBig(n.valorMercado, moeda)}`)
-  if (ok(n.vpCota) && n.vpCota > 0) partes.push(`valor patrimonial por cota de ${precoFmt(n.vpCota, 'fii', 'BRL')}`)
-  if (ok(n.rendaMedia24m) && n.rendaMedia24m > 0) partes.push(`renda média por cota em 24 meses de ${precoFmt(n.rendaMedia24m, 'fii', 'BRL')}`)
-  if (ok(n.ifix)) partes.push(`participação no IFIX de ${pctAbs(n.ifix)}`)
-  if (ok(n.cotistas) && n.cotistas > 0) partes.push(`${nf0.format(n.cotistas)} cotistas`)
+  if (ok(n.pvp)) partes.push(`o P/VP é ${nf2.format(n.pvp)}`)
+  if (ok(n.valorMercado) && n.valorMercado > 0) partes.push(`o valor de mercado é ${moneyBig(n.valorMercado, moeda)}`)
+  if (ok(n.vpCota) && n.vpCota > 0) partes.push(`o valor patrimonial por cota é ${precoFmt(n.vpCota, 'fii', 'BRL')}`)
+  if (ok(n.rendaMedia24m) && n.rendaMedia24m > 0) partes.push(`a renda média por cota em 24 meses é ${precoFmt(n.rendaMedia24m, 'fii', 'BRL')}`)
+  if (ok(n.ifix)) partes.push(`a participação no IFIX é ${pctAbs(n.ifix)}`)
+  if (ok(n.cotistas) && n.cotistas > 0) partes.push(`há ${nf0.format(n.cotistas)} cotistas`)
   return partes
 }
 
@@ -380,24 +381,11 @@ function paragrafoSerie(i: ResumoAtivoInput): string | null {
   const de = dataBr(s.de)
   const ate = dataBr(s.ate)
   if (!de || !ate) return null
-  const dias = diasEntre(s.de, s.ate)
-  const periodo = dias != null && dias >= 300 ? `Nos cerca de 12 meses de ${de} a ${ate}` : `De ${de} a ${ate}`
   const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
-  // Cripto: a página não nomeia provedor da série. B3: o mesmo carimbo da faixa.
-  const fonte = i.kind === 'crypto' ? '' : fonteCotacao(i)
-  return `${periodo}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`
-}
-
-function paragrafoSetor(i: ResumoAtivoInput): string | null {
-  const setor = setorBaixo(i.setor)
-  const media = i.setorMedia
-  if (!setor || !media || !ok(media.variacao) || !ok(media.variacaoAtivo) || i.kind === 'crypto') return null
-  const quando = dataBr(media.data)
-  const ancora = quando ? `Na leitura de ${quando} do setor ${setor}` : `Na mesma leitura do setor ${setor}`
-  const mediaTxt = ok(media.papeis) && media.papeis > 0
-    ? `a média dos ${nf0.format(media.papeis)} papéis foi ${pctAssinado(media.variacao)}`
-    : `a média do setor foi ${pctAssinado(media.variacao)}`
-  return `${ancora}, ${i.ticker} variou ${pctAssinado(media.variacaoAtivo)} e ${mediaTxt}. Fonte: ${FONTE_B3}.`
+  // A série e o Ibovespa saem do scrape diário (ticker_historical_prices_si).
+  // Cripto não tem esse selo: /metodologia não nomeia a fonte.
+  const fonte = i.kind === 'crypto' ? '' : fonteSerie(s.ate)
+  return `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`
 }
 
 function fraseAnos(anos: ResumoAno[], oQue: string): string | null {
@@ -438,7 +426,7 @@ function paragrafoProventos(i: ResumoAtivoInput): string | null {
     if (anos) partes.push(anos)
   }
   if (p.proximo === 'a definir') partes.push('O próximo pagamento está a definir.')
-  else if (p.proximo?.trim()) partes.push(`O próximo pagamento informado é ${p.proximo.trim()}.`)
+  else if (p.proximo?.trim()) partes.push(`O próximo pagamento previsto é ${p.proximo.trim()}.`)
   if (!partes.length) return null
   partes.push('Fonte: avisos de proventos da B3.')
   return partes.join(' ')
@@ -545,10 +533,10 @@ function faqPreco(i: ResumoAtivoInput): NuFaqItem | null {
   const extra = variacao ? `, com ${variacao}` : ''
   const preco = precoFmt(i.preco, i.kind, i.moeda)
   if (i.kind === 'crypto') {
-    const atualizado = quando ? `, atualizado em ${quando}` : ''
+    const atualizado = quando ? ` Atualizado em ${quando}.` : ''
     return {
       q: `Qual o preço de ${i.nome} (${i.ticker}) em reais?`,
-      a: `O preço mais recente de ${i.nome} (${i.ticker}) em reais é ${preco}${extra}. Mercado 24 horas${atualizado}.`,
+      a: `O preço mais recente de ${i.nome} (${i.ticker}) em reais é ${preco}${extra}.${atualizado}`,
     }
   }
   const atualizada = quando ? `, atualizada em ${quando}` : ''
@@ -592,20 +580,10 @@ function faqSerie(i: ResumoAtivoInput): NuFaqItem | null {
   const ate = dataBr(s.ate)
   if (!de || !ate) return null
   const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
-  const fonte = i.kind === 'crypto' ? '' : fonteCotacao(i)
+  const fonte = i.kind === 'crypto' ? '' : fonteSerie(s.ate)
   return {
     q: `Como ${i.ticker} variou nos últimos 12 meses?`,
     a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`,
-  }
-}
-
-function faqSetor(i: ResumoAtivoInput): NuFaqItem | null {
-  const texto = paragrafoSetor(i)
-  const setor = setorBaixo(i.setor)
-  if (!texto || !setor) return null
-  return {
-    q: `Como a variação de ${i.ticker} se compara à média do setor ${setor}?`,
-    a: texto,
   }
 }
 
@@ -656,7 +634,6 @@ function faqDe(i: ResumoAtivoInput): NuFaqItem[] {
     faqProventos(i),
     faqCriptoMercado(i),
     faqSerie(i),
-    faqSetor(i),
     faqRank(i),
     faqEtf(i),
   ].filter((f): f is NuFaqItem => !!f && f.q.trim().length > 0 && f.a.trim().length > 0 && !QUEBRADA.test(f.a))
@@ -702,7 +679,6 @@ export function montarResumoAtivo(input: ResumoAtivoInput): AcaoResumoVM | null 
   empurra(paragrafos, paragrafoIdentidade(i))
   empurra(paragrafos, paragrafoIndicadores(i))
   empurra(paragrafos, paragrafoSerie(i))
-  empurra(paragrafos, paragrafoSetor(i))
   empurra(paragrafos, paragrafoProventos(i))
   empurra(paragrafos, paragrafoEtf(i))
   empurra(paragrafos, paragrafoCripto(i))
