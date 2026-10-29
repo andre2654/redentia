@@ -14,13 +14,26 @@
 import type { RankingRowApi } from '../../app/types/rankings'
 import type { LinhaDoSetor } from '../../app/utils/paresDoSetor'
 
+/** O que a página de ativo usa da mesma resposta de /sectors/{slug}/tickers. */
+export interface SetorLista {
+  linhas: LinhaDoSetor[]
+  /**
+   * aggregates.avg_change_percent — variação média do pregão na lista.
+   * DY e P/L médios existem no contrato e voltam null (medido em 29/10/2026):
+   * não são guardados aqui para ninguém tratar null como zero.
+   */
+  variacaoMedia: number | null
+  /** aggregates.ticker_count. É o tamanho da lista (teto 200), não o hub. */
+  papeis: number | null
+}
+
 function backendBase(): string {
   return useRuntimeConfig().backendDirectBase || 'https://redentia-api.saraivada.com/api'
 }
 
 export const fetchSetorLinhasCached = defineCachedFunction(
-  async (apiSlug: string): Promise<LinhaDoSetor[]> => {
-    const res = await $fetch<{ data?: RankingRowApi[] }>(`/sectors/${encodeURIComponent(apiSlug)}/tickers`, {
+  async (apiSlug: string): Promise<SetorLista> => {
+    const res = await $fetch<{ data?: RankingRowApi[]; aggregates?: { avg_change_percent?: number | null; ticker_count?: number | null } }>(`/sectors/${encodeURIComponent(apiSlug)}/tickers`, {
       baseURL: backendBase(),
       // o teto do backend (o imobiliário tem 325 e devolve 200)
       query: { limit: 200 },
@@ -28,7 +41,7 @@ export const fetchSetorLinhasCached = defineCachedFunction(
       timeout: 10_000,
     })
     const rows = Array.isArray(res?.data) ? res.data : []
-    return rows
+    const linhas = rows
       .filter((r): r is RankingRowApi & { ticker: string } => typeof r.ticker === 'string' && r.ticker.length > 0)
       .map((r) => {
         const mc = Number(r.market_cap)
@@ -39,14 +52,22 @@ export const fetchSetorLinhasCached = defineCachedFunction(
           valorDeMercado: r.market_cap != null && Number.isFinite(mc) ? mc : null,
         }
       })
+    const media = Number(res?.aggregates?.avg_change_percent)
+    const papeis = Number(res?.aggregates?.ticker_count)
+    return {
+      linhas,
+      variacaoMedia: Number.isFinite(media) ? media : null,
+      papeis: Number.isFinite(papeis) && papeis > 0 ? papeis : null,
+    }
   },
   {
-    name: 'setor-linhas',
+    // v2: o valor deixou de ser LinhaDoSetor[] e passou a incluir a média do pregão.
+    name: 'setor-linhas-v2',
     maxAge: 6 * 3600,
     swr: true,
     getKey: (apiSlug: string) => apiSlug,
     // Mesma trava do theses-feed: lista vazia (timeout, 502) não entra no
     // cache, e a página seguinte tenta de novo.
-    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+    validate: (entry) => Array.isArray(entry.value?.linhas) && entry.value.linhas.length > 0,
   },
 )

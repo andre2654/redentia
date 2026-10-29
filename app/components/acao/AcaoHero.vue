@@ -34,12 +34,10 @@ onMounted(() => {
     <p v-if="renamedFrom" class="ahr__renamed">{{ renamedFrom }} agora negocia como {{ hero.ticker }}.</p>
     <div class="ahr__badges">
       <img v-if="hero.logo && !logoFailed" :src="hero.logo" alt="" class="ahr__logo" @error="logoFailed = true">
-      <!-- H1 = empresa · ticker, NÃO o preço (20/08/2026). O preço era o h1
-           das ~460 páginas de ativo do sitemap: "R$ 44,39" é o título que o
-           Google lia como assunto da página, num template que disputa
-           consultas de ticker ("itub4", "petr4 cotação"). O preço segue com
-           a mesma classe e o mesmo tamanho — nada muda visualmente, só a tag. -->
-      <h1 class="ahr__company">{{ hero.companyLine }}</h1>
+      <!-- O H1 da página é o do AcaoResumo (nome, ticker e setor). Aqui o
+           nome continua na fileira de badges, com a mesma classe de antes:
+           o preço não volta a ser o título que o Google lia. -->
+      <p class="ahr__company">{{ hero.companyLine }}</p>
       <span class="ahr__exchange">{{ hero.exchangeLabel || 'B3' }}</span>
       <span v-if="position" class="ahr__position">Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</span>
     </div>
@@ -62,7 +60,9 @@ onMounted(() => {
 <style scoped>
 .ahr {
   background: var(--nu-cream);
-  padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 88px);
+  /* O resumo factual continua nesta faixa creme: o fundo do hero encolhe
+     para o título não ficar num vazio. */
+  padding: clamp(56px, 8vw, 104px) clamp(22px, 5.5vw, 80px) clamp(20px, 3vw, 32px);
   animation: nu-fade .5s ease both;
 }
 .ahr__renamed {
@@ -75,7 +75,7 @@ onMounted(() => {
   width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block;
   background: var(--nu-white); flex-shrink: 0;
 }
-/* margin: 0 explícito — virou h1 e o UA aplica margem de bloco por padrão,
+/* margin: 0 explícito — o UA aplica margem de bloco em <p>,
    o que quebraria o alinhamento da linha de badges (flex). */
 .ahr__company { margin: 0; color: var(--nu-blue-text); font-size: clamp(17px, 1.6vw, 21px); font-weight: 800; letter-spacing: -.2px; }
 .ahr__exchange {

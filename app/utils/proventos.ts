@@ -195,6 +195,7 @@ export function proventosBars(
     valFmt: `R$ ${nf2.format(b.val)}`,
     hPct: Math.round((b.val / max) * 1000) / 10,
     current: b.year === String(cy),
+    valor: b.val,
   }))
 }
 

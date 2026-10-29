@@ -114,8 +114,8 @@ if (data.value) {
   // vazio. Ver app/components/acao/AcaoEditorial.vue.
 
   usePageSeo({
-    title: acao.value.seo.title,
-    description: acao.value.seo.description,
+    title: acao.value.resumo?.title || acao.value.seo.title,
+    description: acao.value.resumo?.description || acao.value.seo.description,
     // path, nunca a query: ?de= e ?seguir= têm canonical pra URL limpa
     path: `/asset/${ticker}`,
     structuredData,
@@ -133,6 +133,10 @@ if (data.value) {
   <div v-if="data">
     <!-- cripto não está em `tickers`: a watchlist não a aceita (ver AcaoHero) -->
     <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" :seguivel="acao.kind !== 'crypto'" />
+
+    <!-- Prosa factual no SSR (mesmos dados do payload). FAQPage só aqui quando
+         o editorial não emite o dele: um bloco por página. -->
+    <AcaoResumo v-if="acao.resumo" :resumo="acao.resumo" :schema="!acao.editorial?.faq.length" />
 
     <AcaoChartSection
       :ticker="acao.ticker"

@@ -62,7 +62,7 @@ import type {
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
-import { juntaAte, tituloQueCabe } from '~/utils/serp'
+import { montarResumoAtivo, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
 
 /* ————— helpers de formatação ————— */
 
@@ -1029,54 +1029,52 @@ function buildEditorial(editorial: EditorialApi | null, name: string, isFii: boo
   return { sections, faq, generatedAt: editorial.generated_at }
 }
 
-/* ————— SEO ————— */
+/* ————— resumo factual (SSR) ————— */
 
-/** Title/description por tipo — Score/consenso só existem pra ações, então a
- * promessa da description muda junto com o que a página realmente mostra. */
-function buildSeo(kind: AssetKind, ticker: string, name: string, profile: Pick<TickerProfileApi, 'market_price' | 'change_percent' | 'currency'>, f: Fund | null, editorial: EditorialApi | null, xray: EtfXrayApi | null = null): AcaoPayload['seo'] {
-  const price = profile.market_price
-  const usd = profile.currency === 'USD'
-  const priceFmt = price != null ? `${usd ? 'US$' : 'R$'} ${nf2.format(price)}` : ''
-  // O preço saiu do title: "PETR4 hoje: cotação R$ …, dividendos…" passava de
-  // 70 caracteres com o sufixo · Redentia e o Google reescrevia.
-  const TAIL: Record<AssetKind, string> = {
-    stock: `${ticker} hoje: cotação, dividendos e análise`,
-    fii: `${ticker} hoje: cotação e rendimentos`,
-    bdr: `${ticker} hoje: cotação do BDR`,
-    etf: `${ticker} hoje: cotação e composição`,
-    crypto: `${ticker} hoje: preço e gráfico`,
-  }
-  const facts: string[] = []
-  if (f?.dy != null && f.dy > 0) facts.push(`dividend yield ${nf2.format(f.dy)}%`)
-  if (f?.pl != null && f.pl > 0) facts.push(`P/L ${nf2.format(f.pl)}`)
-  if (kind === 'fii' && f?.pvp != null) facts.push(`P/VP ${nf2.format(f.pvp)}`)
-  if (f?.roe != null && kind !== 'fii') facts.push(`ROE ${nf1.format(f.roe)}%`)
-  const chg = price != null && profile.change_percent != null ? ` (${pctFmt(profile.change_percent)})` : ''
-  const cotacao = price != null
-    ? `Cotação de ${name} (${ticker}): ${priceFmt}${chg}.`
-    : `${name} (${ticker}) ${usd ? 'no mercado americano' : 'na B3'}.`
-  // ETF com raio-X: a taxa real cabe na description quando sobra espaço.
-  let etfFact = ''
-  if (kind === 'etf' && xray?.fees.management_fee != null) {
-    etfFact = `Taxa de administração de ${nf2.format(xray.fees.management_fee)}% a.a.`
-  }
-  const CLOSER: Record<AssetKind, string> = {
-    stock: 'Gráfico, dividendos e análise.',
-    fii: 'Gráfico, rendimentos e indicadores.',
-    bdr: 'Gráfico e fundamentos da matriz.',
-    etf: 'Composição, taxas e gráfico.',
-    crypto: 'Preço em reais e gráfico.',
-  }
+function serieDoResumo(asset: SeriesPoint[], ibov: SeriesPoint[]): ResumoSerie | null {
+  if (asset.length < 2) return null
+  const a = asset[0]
+  const b = asset[asset.length - 1]
+  if (!a || !b || !(a.v > 0) || !Number.isFinite(b.v)) return null
+  const de = a.t.slice(0, 10)
+  const ate = b.t.slice(0, 10)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(de) || !/^\d{4}-\d{2}-\d{2}$/.test(ate)) return null
+  let ibovVar: number | null = null
+  const i0 = ibov[0]
+  const i1 = ibov[ibov.length - 1]
+  if (ibov.length >= 2 && i0 && i1 && i0.v > 0 && Number.isFinite(i1.v)) ibovVar = ((i1.v - i0.v) / i0.v) * 100
+  return { de, ate, variacao: ((b.v - a.v) / a.v) * 100, ibov: ibovVar }
+}
+
+function proventosDoResumo(rows: ProventoRow[] | null, isFii: boolean): ResumoProventos | null {
+  if (!rows) return null
+  const today = spISODate()
+  const w = proventos12m(rows, today)
+  const chart = proventosChart(rows, w, isFii, today)
+  const agenda = proventosAgenda(rows, today)
   return {
-    title: tituloQueCabe(TAIL[kind]),
-    description: juntaAte([
-      cotacao,
-      facts.length ? `${facts.join(', ').replace(/^./, (c) => c.toUpperCase())}.` : '',
-      etfFact,
-      CLOSER[kind],
-    ]),
-    faq: (editorial?.faq_extended ?? []).filter((q) => q.question && q.answer).slice(0, 8),
+    unidade: isFii ? 'cota' : 'ação',
+    renda12: w.income12,
+    eventos12: w.events12,
+    capital12: w.capital12,
+    frequencia: proventosFrequency(w.events12),
+    proximo: agenda.next ? dateShortPt(agenda.next) : agenda.pendingUpcoming ? 'a definir' : null,
+    anos: chart.bars.flatMap((b) => (typeof b.valor === 'number' && b.valor > 0 ? [{ ano: b.year, valor: b.valor, corrente: b.current }] : [])),
+    tipo: chart.kind,
   }
+}
+
+function seoDeResumo(resumo: NonNullable<AcaoPayload['resumo']>): AcaoPayload['seo'] {
+  return {
+    title: resumo.title,
+    description: resumo.description,
+    faq: resumo.faq.map((f) => ({ question: f.q, answer: f.a })),
+  }
+}
+
+const NUMEROS_RESUMO_VAZIOS: ResumoAtivoInput['numeros'] = {
+  dy: null, pl: null, pvp: null, roe: null, margem: null, valorMercado: null,
+  vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
 }
 
 /* ————— seed do design (PETR4) — só pra backend 100% offline ————— */
@@ -1117,6 +1115,46 @@ function petr4Seed(): AcaoPayload {
   const series = seedSeries()
   const first = series[0]!
   const last = series[series.length - 1]!
+  const resumoSeed = montarResumoAtivo({
+    ticker: 'PETR4',
+    nome: 'Petrobras',
+    kind: 'stock',
+    setor: 'Energia',
+    moeda: 'BRL',
+    preco: 38.25,
+    variacaoDia: 0.76,
+    data: null,
+    numeros: { ...NUMEROS_RESUMO_VAZIOS, dy: 6.95, pl: 4.55, pvp: 1.1, roe: 24.2, margem: 21.6, valorMercado: 493.2e9 },
+    fonteIndicadores: 'dados da B3 e balanços',
+    min52: null,
+    max52: null,
+    serie: null,
+    setorMedia: null,
+    proventos: {
+      unidade: 'ação',
+      renda12: 2.66,
+      eventos12: 4,
+      capital12: 0,
+      frequencia: 'Trimestral',
+      proximo: '21 ago 2026',
+      anos: [
+        { ano: '2021', valor: 2.1, corrente: false },
+        { ano: '2022', valor: 6.84, corrente: false },
+        { ano: '2023', valor: 4.25, corrente: false },
+        { ano: '2024', valor: 2.91, corrente: false },
+        { ano: '2025', valor: 2.52, corrente: false },
+        { ano: '2026', valor: 2.66, corrente: true },
+      ],
+      tipo: 'renda',
+    },
+    etf: null,
+    cripto: null,
+    links: [
+      { href: '/calculadora/preco-teto/PETR4', label: 'Preço teto de PETR4' },
+      { href: '/dividendos/PETR4', label: 'Dividendos de PETR4' },
+      { href: '/setor/energia', label: 'Setor energia' },
+    ],
+  })
   return {
     ticker: 'PETR4',
     name: 'Petrobras',
@@ -1220,6 +1258,7 @@ function petr4Seed(): AcaoPayload {
         cons: ['Alta exposição ao preço do petróleo', 'Risco de ingerência estatal', 'Crescimento moderado no longo prazo'],
       },
     },
+    editorial: null,
     news: {
       featured: {
         href: '/noticias',
@@ -1242,11 +1281,10 @@ function petr4Seed(): AcaoPayload {
       { href: '/calculadora/preco-teto/PETR4', label: 'Preço teto de PETR4' },
     ],
     simuladorHref: simuladorAcoesHref('PETR4', 'STOCK'),
-    seo: {
-      title: 'PETR4 hoje: cotação, dividendos e análise',
-      description: 'Cotação de Petrobras (PETR4): R$ 38,25 (+0,76%). Dividend yield 6,95%, P/L 4,55, ROE 24,2%.',
-      faq: [],
-    },
+    resumo: resumoSeed,
+    seo: resumoSeed
+      ? seoDeResumo(resumoSeed)
+      : { title: 'Petrobras (PETR4): cotação e dividendos', description: 'Não é recomendação.', faq: [] },
   }
 }
 
@@ -1609,6 +1647,84 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
   const dividends = buildDividends(provRows ?? [], ticker, isFii, siteDy)
   const setorDoLink = setorConhecido ?? (kind === 'fii' ? SETORES_BY_API['real-estate'] ?? null : null)
+  const paresVm = kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null
+  const precoTetoHref = hrefPrecoTeto({
+    type: profile.type,
+    ticker,
+    lpa: lpaDeOverview(overview),
+    dividendo: dividendoParaBazin({
+      overviewDy: overviewDyOf(overview),
+      price: profile.market_price ?? 0,
+      rows: provRows,
+    }).valor,
+  })
+  const media = ok(paresR)?.media
+  const dataIso = isoDateOrNull(profile.price_date) ?? isoDateOrNull(assetSeries[assetSeries.length - 1]?.t)
+  const min52 = kind === 'fii'
+    ? overview?.scrape_extras?.fii?.min_price_52_weeks ?? null
+    : kind === 'etf'
+      ? overview?.scrape_extras?.etf?.min_price_52_weeks ?? null
+      : overview?.scrape_extras?.market?.min_price_52_weeks ?? null
+  const max52 = kind === 'fii'
+    ? overview?.scrape_extras?.fii?.max_price_52_weeks ?? null
+    : kind === 'etf'
+      ? overview?.scrape_extras?.etf?.max_price_52_weeks ?? null
+      : overview?.scrape_extras?.market?.max_price_52_weeks ?? null
+  const holding = etfXrayApi?.composition.holdings?.[0]
+  const linksResumo: { href: string; label: string }[] = []
+  if (precoTetoHref) linksResumo.push({ href: precoTetoHref, label: `Preço teto de ${ticker}` })
+  if (dividends && dividends.bars.length > 0) linksResumo.push({ href: `/dividendos/${ticker}`, label: `Dividendos de ${ticker}` })
+  if (setorDoLink) linksResumo.push({ href: `/setor/${setorDoLink.ptSlug}`, label: `Setor ${setorDoLink.name.toLowerCase()}` })
+  if (paresVm) {
+    for (const p of paresVm.itens) linksResumo.push({ href: `/asset/${p.ticker}`, label: `${p.nome} (${p.ticker})` })
+  }
+  const resumo = montarResumoAtivo({
+    ticker,
+    nome: name,
+    kind,
+    setor: setorConhecido?.name ?? null,
+    moeda: profile.currency === 'USD' ? 'USD' : 'BRL',
+    preco: profile.market_price,
+    variacaoDia: profile.change_percent,
+    data: dataIso,
+    numeros: {
+      ...NUMEROS_RESUMO_VAZIOS,
+      dy: f?.dy ?? null,
+      pl: f?.pl ?? null,
+      pvp: f?.pvp ?? null,
+      roe: kind === 'fii' ? null : f?.roe ?? null,
+      margem: kind === 'fii' ? null : f?.netMargin ?? null,
+      valorMercado: kind === 'bdr' || !(f?.marketCap && f.marketCap > 0) ? null : f.marketCap,
+      vpCota: f?.fiiVpCota ?? null,
+      rendaMedia24m: f?.fiiRendaMedia ?? null,
+      ifix: f?.fiiIfixShare ?? null,
+      cotistas: f?.fiiCotistas ?? null,
+    },
+    fonteIndicadores: isFii
+      ? 'dados da B3 e informes do fundo'
+      : kind === 'bdr'
+        ? 'resultados da matriz, em dólar'
+        : 'dados da B3 e balanços',
+    min52,
+    max52,
+    serie: serieDoResumo(assetSeries, ibovSeries),
+    setorMedia: kind === 'stock' && setor && media && Number.isFinite(media.variacao)
+      ? { variacao: media.variacao, papeis: media.papeis ?? null }
+      : null,
+    proventos: proventosDoResumo(provRows, isFii),
+    etf: kind === 'etf' && etfXrayApi
+      ? {
+          taxaAdm: etfXrayApi.fees.management_fee,
+          posicoes: etfXrayApi.composition.total_positions,
+          maiorNome: holding?.name || holding?.ticker || null,
+          maiorPeso: holding?.weight != null ? holding.weight * 100 : null,
+          fonte: etfXrayApi.source?.trim() || null,
+          competencia: isoDateOrNull(etfXrayApi.as_of),
+        }
+      : null,
+    cripto: null,
+    links: linksResumo,
+  })
 
   return {
     ticker,
@@ -1616,7 +1732,7 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     kind,
     // Pregão do dado exibido (YYYY-MM-DD): o price_date do perfil ou, sem
     // ele, o último ponto do gráfico. Vira o dateModified da página.
-    dataDate: isoDateOrNull(profile.price_date) ?? isoDateOrNull(assetSeries[assetSeries.length - 1]?.t),
+    dataDate: dataIso,
     hero: buildHero(profile, name),
     currentPrice: profile.market_price,
     series12,
@@ -1634,25 +1750,13 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     news: buildNews(ok(newsR)?.data ?? [], profile, assetSeries),
     editorial: buildEditorial(editorial, name, isFii),
     cadeia: kind === 'stock' ? buildCadeia(ok(cadeiaR), name) : null,
-    pares: kind === 'stock' ? buildPares(setor, ok(paresR)?.data) : null,
-    relacionados: linksRelacionados(
-      setorDoLink,
-      kind,
-      dividends,
-      ticker,
-      hrefPrecoTeto({
-        type: profile.type,
-        ticker,
-        lpa: lpaDeOverview(overview),
-        dividendo: dividendoParaBazin({
-          overviewDy: overviewDyOf(overview),
-          price: profile.market_price ?? 0,
-          rows: provRows,
-        }).valor,
-      }),
-    ),
+    pares: paresVm,
+    relacionados: linksRelacionados(setorDoLink, kind, dividends, ticker, precoTetoHref),
     simuladorHref: simuladorAcoesHref(ticker, profile.type),
-    seo: buildSeo(kind, ticker, name, profile, f, editorial, etfXrayApi),
+    resumo,
+    seo: resumo
+      ? seoDeResumo(resumo)
+      : { title: `${ticker}: cotação na B3`, description: 'Não é recomendação.', faq: [] },
   }
 }
 
@@ -1737,26 +1841,6 @@ function buildCryptoCards(c: CryptoDetailApi): AcaoFundCard[] {
   ].filter((x): x is AcaoMetricCard => x != null)
 }
 
-function buildCryptoSeo(c: CryptoDetailApi, sym: string): AcaoPayload['seo'] {
-  const price = c.price_brl
-  const chg = price != null && c.change_24h_pct != null ? ` (${pctFmt(c.change_24h_pct)} em 24 horas)` : ''
-  const cotacao = price != null
-    ? `Preço de ${c.name} (${sym}): ${cryptoBrl(price)}${chg}.`
-    : `${c.name} (${sym}), preço em reais.`
-  const facts: string[] = []
-  if (c.market_cap_brl != null) facts.push(`valor de mercado ${moneyBig(c.market_cap_brl, 2)}`)
-  if (c.volume_24h_brl != null) facts.push(`volume de ${moneyBig(c.volume_24h_brl, 2)} em 24 horas`)
-  return {
-    title: tituloQueCabe(`${sym} hoje: preço em reais`),
-    description: juntaAte([
-      cotacao,
-      facts.length ? `${facts.join(', ').replace(/^./, (ch) => ch.toUpperCase())}.` : '',
-      'Gráfico de 12 meses, em reais.',
-    ]),
-    faq: [],
-  }
-}
-
 async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
   let c: CryptoDetailApi
   try {
@@ -1779,13 +1863,45 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
 
   const series = toCryptoSeries(ok(pricesR)?.data)
   const series12: AcaoSeriesPair | null = series.length >= 2 ? { asset: series, ibov: [] } : null
+  const dataIso = isoDateOrNull(series[series.length - 1]?.t)
+  const resumo = montarResumoAtivo({
+    ticker: sym,
+    nome: c.name,
+    kind: 'crypto',
+    setor: null,
+    moeda: 'BRL',
+    preco: c.price_brl,
+    variacaoDia: c.change_24h_pct,
+    data: dataIso,
+    numeros: { ...NUMEROS_RESUMO_VAZIOS },
+    fonteIndicadores: null,
+    min52: null,
+    max52: null,
+    serie: serieDoResumo(series, []),
+    setorMedia: null,
+    proventos: null,
+    etf: null,
+    cripto: {
+      valorMercado: c.market_cap_brl,
+      volume24h: c.volume_24h_brl,
+      dominancia: c.market_cap_dominance_pct,
+      rank: c.rank,
+      var7d: c.change_7d_pct,
+      var30d: c.change_30d_pct,
+      min52: c.min_52w_brl,
+      max52: c.max_52w_brl,
+      supplyCirc: c.circulating_supply,
+      supplyMax: c.max_supply,
+    },
+    links: [],
+  })
 
   return {
     ticker: sym,
     name: c.name,
     kind: 'crypto',
     // o último ponto diário da série (o `last_updated` do /crypto vem com fuso trocado)
-    dataDate: isoDateOrNull(series[series.length - 1]?.t),
+    dataDate: dataIso,
     hero: buildCryptoHero(c, sym),
     currentPrice: c.price_brl,
     series12,
@@ -1806,7 +1922,10 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     pares: null,
     relacionados: [],
     simuladorHref: null,
-    seo: buildCryptoSeo(c, sym),
+    resumo,
+    seo: resumo
+      ? seoDeResumo(resumo)
+      : { title: `${sym}: preço em reais`, description: 'Não é recomendação.', faq: [] },
   }
 }
 
