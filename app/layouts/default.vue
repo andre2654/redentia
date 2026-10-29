@@ -19,9 +19,8 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
     <main>
       <slot />
     </main>
-    <!-- O convite da newsletter (21/10/2026): no computador, cartão no canto,
-         aberto por interesse. No celular, o mesmo convite é um bloco no fluxo,
-         aqui, imediatamente antes do rodapé. -->
+    <!-- O convite da newsletter: bloco no fluxo, imediatamente antes do
+         rodapé, no celular e no computador. -->
     <NuNewsletterConvite />
     <NuFooter />
     <!-- Sem modal de anúncio: o NuMcpPromo (o pop-up que abria 5 s depois de

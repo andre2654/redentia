@@ -61,12 +61,7 @@ test('o evento newsletter_assinatura leva o formato e conserva origem, source e 
     conta: 'entrou',
     formato: 'bloco_desktop',
   })
-  assert.deepEqual(paramsEventoNewsletter('convite', 'logado', 'card_desktop'), {
-    origem: 'convite',
-    source: 'convite',
-    conta: 'logado',
-    formato: 'card_desktop',
-  })
+  assert.equal(paramsEventoNewsletter('convite', 'logado', 'card_desktop').formato, undefined)
   assert.deepEqual(paramsEventoNewsletter('rodape', 'logado'), {
     origem: 'rodape',
     source: 'rodape',
@@ -85,20 +80,16 @@ test('cada formulário declara a origem do aceite', () => {
   assert.match(ler('../app/components/nu/NuFooter.vue'), /origem="rodape"/)
   const convite = ler('../app/components/nu/NuNewsletterConvite.vue')
   assert.match(convite, /origem="convite"/)
-  assert.match(convite, /formato="card_desktop"/)
   assert.match(convite, /:formato="fmt"/)
   assert.match(convite, /'bloco_mobile', 'bloco_desktop'/)
   assert.match(convite, /\.nnb--bloco_desktop \{ display: none; \}/)
   assert.match(convite, /@media \(min-width: 761px\) \{\s*\.nnb--bloco_mobile \{ display: none; \}/)
-  assert.match(convite, /\.nnc \{ display: none; \}/)
-  assert.doesNotMatch(convite, /padding-right:\s*calc/)
-  assert.doesNotMatch(convite, /nnc-reserva/)
+  assert.doesNotMatch(convite, /card_desktop/)
+  assert.doesNotMatch(convite, /position:\s*fixed/)
+  assert.doesNotMatch(convite, /setTimeout/)
   const bloco = convite.slice(convite.indexOf('.nnb {'), convite.indexOf('.nnb--bloco_desktop'))
   assert.doesNotMatch(bloco, /position:\s*(fixed|absolute|sticky)/)
   assert.doesNotMatch(bloco, /z-index/)
-  const layout = ler('../app/layouts/default.vue')
-  assert.match(layout, /main \{ flex: 1; \}/)
-  assert.doesNotMatch(layout, /main \{[^}]*max-width/)
   assert.match(ler('../app/components/calc/CalcCapturaTeto.vue'), /useNewsletter\('bloco'\)/)
   assert.match(ler('../app/components/nu/NuNewsletterForm.vue'), /origem:\s*'bloco'/)
 })

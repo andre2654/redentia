@@ -75,7 +75,7 @@ export function paramsEventoNewsletter(origem: string | null | undefined, conta:
  * `origem` diz de onde veio a inscrição, no PUT (`consent_source`) e no
  * evento `newsletter_assinatura` do GA4: bloco (preço teto), guias, rodape
  * ou convite. É o que mostra qual lugar traz assinante.
- * `formato` (`bloco_mobile` | `card_desktop`) vai só no evento, para o
+ * `formato` (`bloco_mobile` | `bloco_desktop`) vai só no evento, para o
  * convite. O gtag só existe depois do aceite de cookies.
  */
 export function useNewsletter(origem: OrigemNewsletter = 'bloco', formato?: string | null) {

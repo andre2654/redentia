@@ -6,16 +6,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
   bannerCookiesEmFluxo,
-  exibirConviteFlutuante,
   folgaDoBannerNoRodape,
 } from '../app/utils/rodape-flutuantes.ts'
-
-test('o convite some quando o rodapé entra na tela', () => {
-  assert.equal(exibirConviteFlutuante(true, false), true)
-  assert.equal(exibirConviteFlutuante(true, true), false)
-  assert.equal(exibirConviteFlutuante(false, false), false)
-  assert.equal(exibirConviteFlutuante(false, true), false)
-})
 
 test('o banner de cookies só sai do fixed no desktop, com rodapé e âncora', () => {
   const base = { aberto: true, rodapeNaTela: true, desktop: true, temAncora: true }
@@ -41,11 +33,15 @@ test('o modal de onboarding fecha com Esc, clique fora e botão com aria-label F
   assert.match(src, /NEWSLETTER_SEGURA_ONBOARDING/)
 })
 
-test('o convite usa o observador do rodapé e fecha depois da assinatura', () => {
+test('o convite é bloco no fluxo e some para quem já assina', () => {
   const src = readFileSync(new URL('../app/components/nu/NuNewsletterConvite.vue', import.meta.url), 'utf8')
-  assert.match(src, /exibirConviteFlutuante/)
-  assert.match(src, /useRodapeNaTela/)
   assert.match(src, /@ja-assinante="ocultarAssinante"/)
+  assert.doesNotMatch(src, /position:\s*fixed/)
+  assert.doesNotMatch(src, /exibirConviteFlutuante/)
+  assert.doesNotMatch(src, /useRodapeNaTela/)
+  const banner = readFileSync(new URL('../app/components/consent/ConsentBanner.vue', import.meta.url), 'utf8')
+  assert.match(banner, /useRodapeNaTela/)
+  assert.match(banner, /folgaDoBannerNoRodape/)
 })
 
 test('o banner reserva no rodapé a própria altura quando ele está visível', () => {

@@ -1,13 +1,7 @@
 /**
- * O convite da newsletter e o aviso de cookies são fixos no canto. Nenhum
- * dos dois fica por cima do rodapé quando ele entra na tela.
- * Sem Vue, para o `node --test`.
+ * O aviso de cookies, no computador e com o rodapé na tela, deixa o fixed
+ * e senta na âncora do rodapé. Sem Vue, para o `node --test`.
  */
-
-/** O cartão do convite sai da tela enquanto o rodapé está visível. */
-export function exibirConviteFlutuante(aberto: boolean, rodapeNaTela: boolean): boolean {
-  return aberto && !rodapeNaTela
-}
 
 /**
  * No computador, com o rodapé na tela, o aviso de cookies deixa de ser fixed

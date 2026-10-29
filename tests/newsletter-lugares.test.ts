@@ -1,27 +1,19 @@
 /**
  * Onde a assinatura de O mercado da semana aparece além dos formulários das
- * páginas: a faixa do rodapé e o convite do canto (21/10/2026). A preço teto
- * fica fora dos dois: o dono vetou mexer nela (15/10/2026) e ela traz três
+ * páginas: a faixa do rodapé e o bloco antes dele (21/10/2026). A faixa do
+ * rodapé fica fora da preço teto: o dono vetou mexer nela (15/10/2026) e ela traz três
  * quartos dos cliques da busca, que o NuMcpPromo cobria quando abria por cima
  * da calculadora.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  CONVITE_CARD_LARGURA_PX,
-  CONVITE_CARD_MARGEM_PX,
-  CONVITE_CONTEUDO_MAX_PX,
   CONVITE_MOBILE_MAX_PX,
   CONVITE_PAUSA_DIAS,
-  cabeCartaoNoGutter,
   conviteElegivel,
   conviteForaDaPagina,
   convitePausado,
-  espacoDoCartao,
-  folgaLateral,
   formatoConvitePorLargura,
-  fracaoLida,
-  larguraMinimaDoCartao,
   rodapeSemAssinatura,
 } from '../app/utils/newsletter-lugares.ts'
 
@@ -85,40 +77,16 @@ test('fechou o convite: some por 30 dias e volta depois', () => {
   assert.equal(convitePausado(agora - 30 * dia, agora), false)
 })
 
-test('até 760px o convite é o bloco do celular', () => {
+test('até 760px o formato é bloco_mobile; acima, bloco_desktop', () => {
   assert.equal(CONVITE_MOBILE_MAX_PX, 760)
   assert.equal(formatoConvitePorLargura(390), 'bloco_mobile')
   assert.equal(formatoConvitePorLargura(760), 'bloco_mobile')
-})
-
-test('sem teto no miúdo não há folga: 1280, 1440 e 1920 ficam no bloco', () => {
-  assert.equal(CONVITE_CONTEUDO_MAX_PX, null)
-  assert.equal(folgaLateral(1920), 0)
-  assert.equal(cabeCartaoNoGutter(1920), false)
-  assert.equal(larguraMinimaDoCartao(), null)
-  for (const w of [761, 1024, 1280, 1440, 1600, 1920]) {
+  for (const w of [761, 1024, 1280, 1440, 1920]) {
     assert.equal(formatoConvitePorLargura(w), 'bloco_desktop', String(w))
   }
 })
 
-test('o cartão só entra quando a folga lateral já cabe nele', () => {
-  assert.equal(CONVITE_CARD_LARGURA_PX, 340)
-  assert.equal(CONVITE_CARD_MARGEM_PX, 24)
-  assert.equal(espacoDoCartao(), 340 + 48)
-  const teto = 1080
-  assert.equal(folgaLateral(1440, teto), (1440 - 1080) / 2)
-  assert.equal(cabeCartaoNoGutter(1440, teto), false)
-  assert.equal(formatoConvitePorLargura(1280, teto), 'bloco_desktop')
-  assert.equal(formatoConvitePorLargura(1440, teto), 'bloco_desktop')
-  assert.equal(formatoConvitePorLargura(1600, teto), 'bloco_desktop')
-  const minima = larguraMinimaDoCartao(teto)
-  assert.equal(minima, Math.ceil(1080 + 2 * (340 + 48)))
-  assert.equal(formatoConvitePorLargura(minima! - 1, teto), 'bloco_desktop')
-  assert.equal(formatoConvitePorLargura(minima!, teto), 'card_desktop')
-  assert.equal(formatoConvitePorLargura(1920, teto), 'card_desktop')
-})
-
-test('quem já assinou não vê o convite, no bloco e no cartão', () => {
+test('quem já assinou não vê o convite', () => {
   const base = {
     ligada: true,
     autenticado: false,
@@ -136,14 +104,4 @@ test('quem já assinou não vê o convite, no bloco e no cartão', () => {
   assert.equal(conviteElegivel({ ...base, autenticado: true }), false)
   assert.equal(conviteElegivel({ ...base, caminho: '/guias' }), false)
   assert.equal(conviteElegivel({ ...base, ligada: false }), false)
-})
-
-test('a fração lida do <main>: 0 no topo, 1 no fim', () => {
-  // main de 3000 px começando no topo da tela de 800 px
-  assert.equal(fracaoLida(0, 3000, 800), 800 / 3000)
-  // rolou 1000 px
-  assert.equal(fracaoLida(-1000, 3000, 800), 0.6)
-  // o fim do main passou da base da tela
-  assert.ok(fracaoLida(-2500, 3000, 800) > 1)
-  assert.equal(fracaoLida(0, 0, 800), 0)
 })
