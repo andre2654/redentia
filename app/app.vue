@@ -31,16 +31,18 @@ const AssumirSessao = defineComponent({
     return () => null
   },
 })
+
+const semLayout = computed(() => useRoute().meta.layout === false)
 </script>
 
 <template>
   <div>
     <AssumirSessao />
     <NuxtRouteAnnouncer />
-    <!-- Fora do layout de propósito: o aviso vale no default, no business
-         e nas páginas sem layout. No computador é fixed (canto); no celular
-         entra no fluxo, antes da página, para não cobrir texto. -->
-    <ConsentBanner />
+    <!-- Páginas sem layout (login, convite) não têm header pra sentar
+         o aviso embaixo. No default e no business ele fica no layout,
+         depois do header, no fluxo — não cobre o header nem títulos. -->
+    <ConsentBanner v-if="semLayout" />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

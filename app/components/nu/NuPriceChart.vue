@@ -73,10 +73,16 @@ const grid = computed(() => {
     if (step >= 1000) return `R$ ${nf0.format(m / 1000)} mil`
     return `R$ ${step >= 1 ? nf0.format(m) : nf2.format(m)}`
   }
+  const last = props.points[props.points.length - 1]
+  const endPct = last ? (Y(last.v) / H) * 100 : null
   const lines: { top: string; lbl: string }[] = []
   for (let m = Math.ceil(lo / step) * step; m < hi; m += step) {
     if (m <= lo) continue
-    lines.push({ top: `${((Y(m) / H) * 100).toFixed(2)}%`, lbl: fmt(m) })
+    const pct = (Y(m) / H) * 100
+    // A pill "TICKER hoje" senta logo acima do fechamento. O rótulo da
+    // grade nessa faixa pisa no texto da pill (o preço de hoje muda).
+    if (endPct != null && pct > endPct - 18 && pct < endPct + 3) continue
+    lines.push({ top: `${pct.toFixed(2)}%`, lbl: fmt(m) })
   }
   return lines
 })
