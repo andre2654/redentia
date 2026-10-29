@@ -1,5 +1,9 @@
 import type { MagicLinkVerifyResponse } from '~/types/auth'
 import {
+  formatoConviteValido,
+  type FormatoConvite,
+} from '../utils/newsletter-lugares.ts'
+import {
   NEWSLETTER_SEGURA_ONBOARDING,
   aposPutNewsletter,
   statusDaResposta,
@@ -37,6 +41,24 @@ export function corpoInscricaoNewsletter(origem?: string | null) {
 }
 
 /**
+ * Params do GA4 em `newsletter_assinatura`. `formato` separa o bloco do
+ * celular do cartão do computador. Não entra no PUT: consent_source continua
+ * sendo a origem, e consent_version não muda.
+ */
+export function paramsEventoNewsletter(origem: string | null | undefined, conta: string, formato?: string | null) {
+  const fonte = origemDaNewsletter(origem)
+  const params: {
+    origem: OrigemNewsletter
+    source: OrigemNewsletter
+    conta: string
+    formato?: FormatoConvite
+  } = { origem: fonte, source: fonte, conta }
+  const f = formatoConviteValido(formato)
+  if (f) params.formato = f
+  return params
+}
+
+/**
  * "O mercado da semana", a newsletter de sexta. Fica em casa desde 21/10/2026
  * (o beehiiv saiu antes de entrar): a inscrição é o tópico `newsletter` das
  * preferências de notificação do Backend, e quem envia é o newsletter:enviar,
@@ -53,9 +75,12 @@ export function corpoInscricaoNewsletter(origem?: string | null) {
  * `origem` diz de onde veio a inscrição, no PUT (`consent_source`) e no
  * evento `newsletter_assinatura` do GA4: bloco (preço teto), guias, rodape
  * ou convite. É o que mostra qual lugar traz assinante.
+ * `formato` (`bloco_mobile` | `bloco_desktop`) vai só no evento, para o
+ * convite. O gtag só existe depois do aceite de cookies.
  */
-export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
+export function useNewsletter(origem: OrigemNewsletter = 'bloco', formato?: string | null) {
   const fonte = origemDaNewsletter(origem)
+  const formatoEvento = formatoConviteValido(formato)
   const { isAuthenticated, setSession, token, clearSession } = useAuthState()
   const { publicFetch, authFetch } = useApi()
   // Enquanto a mensagem de sucesso estiver montada, o onboarding espera.
@@ -166,7 +191,7 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
       localStorage.setItem(NEWSLETTER_ASSINOU, '1')
     }
     catch { /* modo privado: o convite só não fica sabendo */ }
-    ;(window as any).gtag?.('event', 'newsletter_assinatura', { origem: fonte, source: fonte, conta: fim.value })
+    ;(window as any).gtag?.('event', 'newsletter_assinatura', paramsEventoNewsletter(fonte, fim.value, formatoEvento))
   }
 
   /** Sucesso, localStorage e GA4 só depois do 200. Até lá, enviando. */

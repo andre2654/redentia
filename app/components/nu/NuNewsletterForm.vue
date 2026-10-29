@@ -5,17 +5,20 @@
 // e-mail confirmado: um clique). Saiu da faixa do /guias em 21/10/2026 para
 // servir também ao rodapé e ao convite do canto (NuNewsletterConvite).
 import type { OrigemNewsletter } from '~/composables/useNewsletter'
+import type { FormatoConvite } from '~/utils/newsletter-lugares'
 
 const props = withDefaults(defineProps<{
   placeholder?: string
   cta?: string
   /** de onde veio a inscrição: consent_source do PUT e o evento do GA4 */
   origem?: OrigemNewsletter
-}>(), { placeholder: 'Seu melhor e-mail', cta: 'Assinar', origem: 'bloco' })
+  /** bloco do celular ou cartão do computador; só no evento do GA4 */
+  formato?: FormatoConvite | null
+}>(), { placeholder: 'Seu melhor e-mail', cta: 'Assinar', origem: 'bloco', formato: null })
 const emit = defineEmits<{ assinou: []; jaAssinante: [] }>()
 
 const { isAuthenticated } = useAuthState()
-const nl = useNewsletter(props.origem)
+const nl = useNewsletter(props.origem, props.formato)
 const { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, inscricaoEmCurso, erro, confirmacao, legal } = nl
 const email = ref('')
 const codigo = ref('')
