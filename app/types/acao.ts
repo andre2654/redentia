@@ -13,6 +13,7 @@
  *    são POSIÇÕES por ranking, não sub-scores 0-100.
  */
 
+import type { AcaoResumoVM } from '../utils/assetResumo'
 import type { NuDir, NuFaqItem, NuNewsFeaturedItem, NuNewsRowItem } from '~/types/market'
 
 /* ————— shapes da API ————— */
@@ -96,6 +97,9 @@ export interface FundamentalsOverviewApi {
       ifix_share: number | null
       num_shareholders: number | null
       trading_name: string | null
+      /** mínima e máxima de 52 semanas, quando o overview do FII traz */
+      min_price_52_weeks?: number | null
+      max_price_52_weeks?: number | null
     } | null
     /**
      * presente só em ETFs (asset_type: 'etf') — verificado ao vivo 2026-07-13
@@ -404,6 +408,8 @@ export interface AcaoDividendBar {
   valFmt: string
   hPct: number // altura % do máximo
   current: boolean
+  /** soma crua do ano (R$ por ação/cota). Ausente só em seeds manuais. */
+  valor?: number
 }
 
 export interface AcaoDividendsVM {
@@ -707,6 +713,8 @@ export interface AcaoPayload {
    * (BDR, US, cripto): link que abre a calculadora vazia é promessa quebrada.
    */
   simuladorHref: string | null
+  /** Prosa factual do SSR (cotação, indicadores, proventos, FAQ visível). */
+  resumo: AcaoResumoVM | null
   seo: {
     title: string
     description: string
