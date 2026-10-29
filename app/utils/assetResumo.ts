@@ -189,13 +189,6 @@ function pctAbs(n: number, casas: 1 | 2 = 2): string {
   return `${(casas === 1 ? nf1 : nf2).format(n)}%`
 }
 
-function qtd(v: number): string {
-  if (v >= 1e9) return `${nf2.format(v / 1e9)}B`
-  if (v >= 1e6) return `${nf2.format(v / 1e6)}M`
-  if (v >= 1e3) return `${nf2.format(v / 1e3)} mil`
-  return nf2.format(v)
-}
-
 function juntar(partes: string[]): string {
   if (partes.length <= 1) return partes[0] ?? ''
   return `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}`
@@ -293,13 +286,13 @@ function paragrafoIdentidade(i: ResumoAtivoInput): string | null {
   const quem = `${i.nome} (${i.ticker})`
   const partes: string[] = []
   if (i.kind === 'crypto') {
-    partes.push(`${quem} é um criptoativo.`)
+    // Sem número: o backend não deixa claro se a cotação é CoinGecko ou StatusInvest.
+    // O preço continua no hero e no gráfico, que esta frase só aponta.
+    return `${quem} é um criptoativo. A cotação em reais está no topo desta página, e o gráfico fica abaixo do título.`
   }
-  else {
-    partes.push(`${quem} é ${classe(i)}.`)
-    const setor = setorBaixo(i.setor)
-    if (setor && !(i.kind === 'fii' && setor === 'imobiliário')) partes.push(`O setor é ${setor}.`)
-  }
+  partes.push(`${quem} é ${classe(i)}.`)
+  const setor = setorBaixo(i.setor)
+  if (setor && !(i.kind === 'fii' && setor === 'imobiliário')) partes.push(`O setor é ${setor}.`)
   if (ok(i.preco)) partes.push(fraseCotacao(i))
   const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda, i.kind === 'crypto' ? '' : fonteSerie(i.data))
   if (faixa && i.kind !== 'crypto') partes.push(faixa)
@@ -308,18 +301,13 @@ function paragrafoIdentidade(i: ResumoAtivoInput): string | null {
 
 /**
  * Cotação ao vivo, não o fechamento de um pregão encerrado. O selo é o da
- * tabela de cotações intraday em /metodologia. Cripto fica só com a data:
- * /metodologia não nomeia provedor.
+ * tabela de cotações intraday em /metodologia. Cripto não passa por aqui.
  */
 function fraseCotacao(i: ResumoAtivoInput): string {
   const quando = dataBr(i.data)
   const variacao = variacaoDiaFrase(i)
   const extra = variacao ? `, com ${variacao}` : ''
   const preco = precoFmt(i.preco as number, i.kind, i.moeda)
-  if (i.kind === 'crypto') {
-    const atualizado = quando ? ` Atualizado em ${quando}.` : ''
-    return `O preço mais recente em reais é ${preco}${extra}.${atualizado}`
-  }
   const atualizada = quando ? `, atualizada em ${quando}` : ''
   return `A cotação mais recente é ${preco}${atualizada}${extra}.${fonteCotacao(i)}`
 }
@@ -376,6 +364,7 @@ function paragrafoIndicadores(i: ResumoAtivoInput): string | null {
 }
 
 function paragrafoSerie(i: ResumoAtivoInput): string | null {
+  if (i.kind === 'crypto') return null
   const s = i.serie
   if (!s || !ok(s.variacao)) return null
   const de = dataBr(s.de)
@@ -383,9 +372,7 @@ function paragrafoSerie(i: ResumoAtivoInput): string | null {
   if (!de || !ate) return null
   const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
   // A série e o Ibovespa saem do scrape diário (ticker_historical_prices_si).
-  // Cripto não tem esse selo: /metodologia não nomeia a fonte.
-  const fonte = i.kind === 'crypto' ? '' : fonteSerie(s.ate)
-  return `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`
+  return `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonteSerie(s.ate)}`
 }
 
 function fraseAnos(anos: ResumoAno[], oQue: string): string | null {
@@ -454,37 +441,6 @@ function paragrafoEtf(i: ResumoAtivoInput): string | null {
   return partes.join(' ')
 }
 
-function paragrafoCripto(i: ResumoAtivoInput): string | null {
-  const c = i.cripto
-  if (!c || i.kind !== 'crypto') return null
-  const partes: string[] = []
-  const dinheiro: string[] = []
-  if (ok(c.valorMercado) && c.valorMercado > 0) dinheiro.push(`valor de mercado de ${moneyBig(c.valorMercado)}`)
-  if (ok(c.volume24h) && c.volume24h > 0) dinheiro.push(`volume em 24 horas de ${moneyBig(c.volume24h)}`)
-  if (dinheiro.length) partes.push(`Em reais, ${i.nome} tem ${juntar(dinheiro)}.`)
-  if (ok(c.dominancia)) partes.push(`A dominância é ${pctAbs(c.dominancia)}.`)
-  if (ok(c.rank) && c.rank > 0) partes.push(`A posição no ranking global é ${nf0.format(c.rank)}.`)
-  const janelas: string[] = []
-  if (ok(c.var7d)) janelas.push(`${pctAssinado(c.var7d)} em 7 dias`)
-  if (ok(c.var30d)) janelas.push(`${pctAssinado(c.var30d)} em 30 dias`)
-  if (janelas.length) partes.push(`A variação é de ${juntar(janelas)}.`)
-  const faixa = faixa52(c.min52, c.max52, 'crypto', 'BRL')
-  if (faixa) partes.push(faixa)
-  if (ok(c.supplyCirc) && c.supplyCirc > 0 && ok(c.supplyMax) && c.supplyMax > 0) {
-    partes.push(`A oferta em circulação é ${qtd(c.supplyCirc)} ${i.ticker} e a oferta máxima é ${qtd(c.supplyMax)} ${i.ticker}.`)
-  }
-  else if (ok(c.supplyCirc) && c.supplyCirc > 0) {
-    partes.push(`A oferta em circulação é ${qtd(c.supplyCirc)} ${i.ticker}.`)
-  }
-  else if (ok(c.supplyMax) && c.supplyMax > 0) {
-    partes.push(`A oferta máxima é ${qtd(c.supplyMax)} ${i.ticker}.`)
-  }
-  if (!partes.length) return null
-  const quando = dataBr(i.data)
-  if (quando) partes.push(`Valores em reais, atualizados em ${quando}.`)
-  return partes.join(' ')
-}
-
 function indicadoresMeta(i: ResumoAtivoInput): string | null {
   const n = i.numeros
   const partes: string[] = []
@@ -492,24 +448,27 @@ function indicadoresMeta(i: ResumoAtivoInput): string | null {
   if (ok(n.pl)) partes.push(`P/L ${nf2.format(n.pl)}`)
   else if (ok(n.pvp)) partes.push(`P/VP ${nf2.format(n.pvp)}`)
   if (ok(n.roe)) partes.push(`ROE ${pctAbs(n.roe, 1)}`)
-  if (!partes.length && i.kind === 'crypto' && i.cripto && ok(i.cripto.valorMercado) && i.cripto.valorMercado > 0) {
-    partes.push(`valor de mercado ${moneyBig(i.cripto.valorMercado)}`)
-  }
   if (!partes.length && i.etf && ok(i.etf.taxaAdm)) partes.push(`taxa de administração ${pctAbs(i.etf.taxaAdm)} ao ano`)
   if (!partes.length) return null
   return `${juntar(partes).replace(/^./, (c) => c.toUpperCase())}.`
 }
 
 function descricao(i: ResumoAtivoInput): string {
+  if (i.kind === 'crypto') {
+    const frases = [
+      `${i.ticker} (${i.nome}) é um criptoativo.`,
+      'A cotação em reais está nesta página.',
+    ]
+    const corpo = juntaAte(frases, TETO_DESCRICAO - AVISO_META.length - 1)
+    return corpo ? `${corpo} ${AVISO_META}` : AVISO_META
+  }
   const frases: string[] = []
   const quando = dataBr(i.data)
   if (ok(i.preco) && quando) {
-    const oQue = i.kind === 'crypto' ? 'preço mais recente em reais' : 'cotação mais recente'
-    frases.push(`${i.ticker} (${i.nome}): ${oQue} de ${precoFmt(i.preco, i.kind, i.moeda)} em ${quando}.`)
+    frases.push(`${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)} em ${quando}.`)
   }
   else if (ok(i.preco)) {
-    const oQue = i.kind === 'crypto' ? 'preço mais recente em reais' : 'cotação mais recente'
-    frases.push(`${i.ticker} (${i.nome}): ${oQue} de ${precoFmt(i.preco, i.kind, i.moeda)}.`)
+    frases.push(`${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)}.`)
   }
   else {
     frases.push(`${i.ticker} (${i.nome}) é ${classe(i)}.`)
@@ -527,18 +486,11 @@ function descricao(i: ResumoAtivoInput): string {
 }
 
 function faqPreco(i: ResumoAtivoInput): NuFaqItem | null {
-  if (!ok(i.preco)) return null
+  if (i.kind === 'crypto' || !ok(i.preco)) return null
   const quando = dataBr(i.data)
   const variacao = variacaoDiaFrase(i)
   const extra = variacao ? `, com ${variacao}` : ''
   const preco = precoFmt(i.preco, i.kind, i.moeda)
-  if (i.kind === 'crypto') {
-    const atualizado = quando ? ` Atualizado em ${quando}.` : ''
-    return {
-      q: `Qual o preço de ${i.nome} (${i.ticker}) em reais?`,
-      a: `O preço mais recente de ${i.nome} (${i.ticker}) em reais é ${preco}${extra}.${atualizado}`,
-    }
-  }
   const atualizada = quando ? `, atualizada em ${quando}` : ''
   return {
     q: `Qual a cotação de ${i.nome} (${i.ticker})?`,
@@ -574,36 +526,16 @@ function faqProventos(i: ResumoAtivoInput): NuFaqItem | null {
 }
 
 function faqSerie(i: ResumoAtivoInput): NuFaqItem | null {
+  if (i.kind === 'crypto') return null
   const s = i.serie
   if (!s || !ok(s.variacao)) return null
   const de = dataBr(s.de)
   const ate = dataBr(s.ate)
   if (!de || !ate) return null
   const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
-  const fonte = i.kind === 'crypto' ? '' : fonteSerie(s.ate)
   return {
     q: `Como ${i.ticker} variou nos últimos 12 meses?`,
-    a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonte}`,
-  }
-}
-
-function faqCriptoMercado(i: ResumoAtivoInput): NuFaqItem | null {
-  const c = i.cripto
-  if (!c || !ok(c.valorMercado) || c.valorMercado <= 0) return null
-  const vol = ok(c.volume24h) && c.volume24h > 0 ? ` O volume em 24 horas é de ${moneyBig(c.volume24h)}.` : ''
-  return {
-    q: `Qual o valor de mercado de ${i.nome} em reais?`,
-    a: `O valor de mercado em reais de ${i.nome} (${i.ticker}) é ${moneyBig(c.valorMercado)}.${vol}`,
-  }
-}
-
-function faqRank(i: ResumoAtivoInput): NuFaqItem | null {
-  const c = i.cripto
-  if (!c || !ok(c.rank) || c.rank <= 0) return null
-  const dom = ok(c.dominancia) ? ` A dominância é ${pctAbs(c.dominancia)}.` : ''
-  return {
-    q: `Qual a posição de ${i.nome} no ranking global?`,
-    a: `A posição de ${i.nome} (${i.ticker}) no ranking global é ${nf0.format(c.rank)}.${dom}`,
+    a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonteSerie(s.ate)}`,
   }
 }
 
@@ -632,9 +564,7 @@ function faqDe(i: ResumoAtivoInput): NuFaqItem[] {
     faqPreco(i),
     faqDy(i),
     faqProventos(i),
-    faqCriptoMercado(i),
     faqSerie(i),
-    faqRank(i),
     faqEtf(i),
   ].filter((f): f is NuFaqItem => !!f && f.q.trim().length > 0 && f.a.trim().length > 0 && !QUEBRADA.test(f.a))
   return itens.slice(0, 5)
@@ -681,7 +611,6 @@ export function montarResumoAtivo(input: ResumoAtivoInput): AcaoResumoVM | null 
   empurra(paragrafos, paragrafoSerie(i))
   empurra(paragrafos, paragrafoProventos(i))
   empurra(paragrafos, paragrafoEtf(i))
-  empurra(paragrafos, paragrafoCripto(i))
   const faq = faqDe(i)
   return {
     h1: h1De(i),

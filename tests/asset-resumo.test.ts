@@ -239,7 +239,7 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   assert.doesNotMatch(semAviso(textoDe(r)), VERBOS)
 })
 
-test('cripto não cita B3, pregão nem provento, e o preço grande sai sem centavos', () => {
+test('cripto não leva número de mercado no resumo, na FAQ nem na description', () => {
   const r = montarResumoAtivo(base({
     ticker: 'BTC',
     nome: 'Bitcoin',
@@ -264,25 +264,14 @@ test('cripto não cita B3, pregão nem provento, e o preço grande sai sem centa
   assert.ok(r)
   assert.equal(r.h1, 'Bitcoin (BTC), preço em reais')
   assert.equal(r.title, 'Bitcoin (BTC): preço em reais')
-  const corpo = r.paragrafos.join('\n')
-  assert.match(corpo, /R\$ 427\.525/)
-  assert.match(corpo, /em 24 horas/)
-  assert.match(corpo, /preço mais recente em reais é R\$ 427\.525/)
-  assert.match(corpo, /Atualizado em 29\/10\/2026/)
-  assert.doesNotMatch(corpo, /Mercado 24 horas|Fonte:/)
-  assert.match(corpo, /R\$ 8,60T/)
-  assert.match(corpo, /posição no ranking global é 1/)
-  assert.match(corpo, /oferta em circulação é 20,11M BTC/)
-  assert.match(corpo, /oferta máxima é 21,00M BTC/)
-  assert.doesNotMatch(corpo, /B3|pregão|provento|dividend|supply|Fonte:/i)
+  assert.equal(r.paragrafos.join('\n'), 'Bitcoin (BTC) é um criptoativo. A cotação em reais está no topo desta página, e o gráfico fica abaixo do título.')
+  assert.equal(r.description, 'BTC (Bitcoin) é um criptoativo. A cotação em reais está nesta página. Não é recomendação.')
+  assert.doesNotMatch(r.description, /\d/)
+  assert.doesNotMatch(r.paragrafos.join('\n'), /\d/)
+  assert.equal(r.faq.length, 0)
+  assert.equal(r.faqTitulo, null)
   assert.equal(r.links.length, 0)
-  const faqPreco = r.faq.find((f) => /preço/i.test(f.q))
-  assert.ok(faqPreco)
-  assert.match(faqPreco.a, /mais recente/)
-  assert.match(faqPreco.a, /427\.525/)
-  assert.match(faqPreco.a, /Atualizado em 29\/10\/2026/)
-  assert.doesNotMatch(faqPreco.a, /Mercado 24 horas|Fonte:/)
-  assert.doesNotMatch(textoDe(r), /Fonte:|supply|rank global informado/i)
+  assert.doesNotMatch(textoDe(r), /R\$|%|Fonte:|B3|pregão|provento|dividend|supply|rank/i)
   assert.doesNotMatch(semAviso(textoDe(r)), VERBOS)
 })
 

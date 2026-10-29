@@ -1812,7 +1812,7 @@ function cryptoBrl(v: number): string {
   return `R$ ${v >= 1000 ? nf0.format(v) : nf2.format(v)}`
 }
 
-/** 20055443 → '20,06M' (oferta em circulação / oferta máxima). */
+/** 20055443 → '20,06M' (supply circulante/máximo). */
 function compactQty(v: number): string {
   if (v >= 1e9) return `${nfc.format(v / 1e9)}B`
   if (v >= 1e6) return `${nfc.format(v / 1e6)}M`
@@ -1860,8 +1860,8 @@ function buildCryptoStats(c: CryptoDetailApi, sym: string): AcaoStatRow[] {
   if (c.rank != null) rows.push({ l: 'Rank global', v: `#${nf0.format(c.rank)}` })
   if (c.min_52w_brl != null) rows.push({ l: 'Mín. 52 semanas', v: cryptoBrl(c.min_52w_brl) })
   if (c.max_52w_brl != null) rows.push({ l: 'Máx. 52 semanas', v: cryptoBrl(c.max_52w_brl) })
-  if (c.circulating_supply != null) rows.push({ l: 'Oferta em circulação', v: `${compactQty(c.circulating_supply)} ${sym}` })
-  if (c.max_supply != null) rows.push({ l: 'Oferta máxima', v: `${compactQty(c.max_supply)} ${sym}` })
+  if (c.circulating_supply != null) rows.push({ l: 'Supply circulante', v: `${compactQty(c.circulating_supply)} ${sym}` })
+  if (c.max_supply != null) rows.push({ l: 'Supply máximo', v: `${compactQty(c.max_supply)} ${sym}` })
   return rows.slice(0, 8)
 }
 
