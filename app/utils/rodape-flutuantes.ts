@@ -1,6 +1,8 @@
 /**
- * O aviso de cookies, no computador e com o rodapé na tela, deixa o fixed
- * e senta na âncora do rodapé. Sem Vue, para o `node --test`.
+ * O aviso de cookies e o convite da newsletter ficam no fluxo: o aviso
+ * abaixo do header, o convite como bloco imediatamente antes do rodapé.
+ * Não há cartão flutuante. Estas funções medem a folga se o aviso sentar
+ * na âncora do rodapé. Sem Vue, para o `node --test`.
  */
 
 /**
