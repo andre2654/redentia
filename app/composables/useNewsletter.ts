@@ -1,4 +1,9 @@
 import type { MagicLinkVerifyResponse } from '~/types/auth'
+import {
+  NEWSLETTER_SEGURA_ONBOARDING,
+  aposPutNewsletter,
+  statusDaResposta,
+} from '../utils/newsletter-inscricao.ts'
 
 /** Gravado no aparelho de quem assina: o convite do canto não volta para ele. */
 export const NEWSLETTER_ASSINOU = 'nu:newsletter-assinou'
@@ -51,8 +56,20 @@ export function corpoInscricaoNewsletter(origem?: string | null) {
  */
 export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
   const fonte = origemDaNewsletter(origem)
-  const { isAuthenticated, setSession } = useAuthState()
+  const { isAuthenticated, setSession, token, clearSession } = useAuthState()
   const { publicFetch, authFetch } = useApi()
+  // Enquanto a mensagem de sucesso estiver montada, o onboarding espera.
+  const retencoes = useState(NEWSLETTER_SEGURA_ONBOARDING, () => 0)
+  let soltarSucesso: (() => void) | null = null
+  function reterOnboarding() {
+    retencoes.value++
+    let ativo = true
+    return () => {
+      if (!ativo) return
+      ativo = false
+      retencoes.value = Math.max(0, retencoes.value - 1)
+    }
+  }
   const { load: carregarConta } = useMeCliente()
 
   /** false enquanto a conta do logado carrega (o formulário não pisca) */
@@ -64,7 +81,10 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
   const etapa = ref<'email' | 'codigo' | 'ok'>('email')
   const emailPendente = ref('')
   const enviando = ref(false)
+  /** Do pedido do código até o PUT da inscrição: não troca a tela pelo "já recebe". */
+  const inscricaoEmCurso = ref(false)
   const erro = ref<string | null>(null)
+  let falhaPut: unknown = null
   /** como terminou: conta nova, entrou numa conta que existia, ou já estava logado */
   const fim = ref<'nova' | 'entrou' | 'logado'>('logado')
   // O código pedido foi o do login (anônimo) ou o do contact gate (logado).
@@ -88,7 +108,10 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
     if (minha !== rodada) return
     const e = me?.user.email?.trim()
     emailDaConta.value = e && me?.user.email_verified === true ? e : null
-    assinante.value = prefs?.newsletter?.email === true
+    // Um GET que volta no meio do PUT não pode mostrar sucesso antes do 200.
+    if (!inscricaoEmCurso.value && etapa.value !== 'ok') {
+      assinante.value = prefs?.newsletter?.email === true
+    }
     pronto.value = true
   }
 
@@ -116,8 +139,25 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
     }
   }
 
-  function ligarTopico() {
-    return authFetch('/me/notification-preferences', { method: 'PUT', body: corpoInscricaoNewsletter(fonte) }, { redirectOnAuthError: false })
+  async function ligarTopico(): Promise<number> {
+    falhaPut = null
+    try {
+      const res = await $fetch.raw('/api/backend/me/notification-preferences', {
+        method: 'PUT',
+        body: corpoInscricaoNewsletter(fonte),
+        headers: {
+          Accept: 'application/json',
+          ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+        },
+      })
+      return res.status
+    }
+    catch (e) {
+      falhaPut = e
+      const status = statusDaResposta(e)
+      if (status === 401 || status === 403) clearSession()
+      return status
+    }
   }
 
   function concluir() {
@@ -129,13 +169,28 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
     ;(window as any).gtag?.('event', 'newsletter_assinatura', { origem: fonte, source: fonte, conta: fim.value })
   }
 
+  /** Sucesso, localStorage e GA4 só depois do 200. Até lá, enviando. */
+  function aplicarInscricao(fallback: string) {
+    return aposPutNewsletter(ligarTopico, {
+      enviando(v) {
+        enviando.value = v
+        if (v) erro.value = null
+      },
+      sucesso() { concluir() },
+      erro() { erro.value = mensagem(falhaPut, fallback) },
+    })
+  }
+
   async function assinarComConta() {
     if (enviando.value || !emailDaConta.value) return
-    if (await passo(ligarTopico, 'Não conseguimos fazer a inscrição agora. Tente de novo em instantes.')) {
-      emailPendente.value = emailDaConta.value
-      fim.value = 'logado'
-      concluir()
-    }
+    const segurar = reterOnboarding()
+    inscricaoEmCurso.value = true
+    emailPendente.value = emailDaConta.value
+    fim.value = 'logado'
+    const ok = await aplicarInscricao('Não conseguimos fazer a inscrição agora. Tente de novo em instantes.')
+    inscricaoEmCurso.value = false
+    if (ok) soltarSucesso = segurar
+    else segurar()
   }
 
   /** `isca`: o campo que gente não vê. Veio preenchido, finge que mandou. */
@@ -169,6 +224,9 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
       return
     }
     let entrou: 'nova' | 'entrou' | 'logado' = 'logado'
+    // Antes do setSession: o onboarding não pode cobrir o "Pronto".
+    const segurar = reterOnboarding()
+    inscricaoEmCurso.value = true
     const ok = await passo(async () => {
       if (via === 'login') {
         const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', { method: 'POST', body: { email: emailPendente.value, pin } })
@@ -179,13 +237,22 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
         await authFetch('/auth/me/email/verify-pin', { method: 'POST', body: { email: emailPendente.value, pin } }, { redirectOnAuthError: false })
       }
     }, 'Não conseguimos confirmar o código. Tente de novo.')
-    if (!ok) return
+    if (!ok) {
+      inscricaoEmCurso.value = false
+      segurar()
+      return
+    }
     // O e-mail está confirmado (e, no anônimo, a sessão aberta). Se ligar o
     // tópico falhar agora, sobra o botão de um clique com a conta.
     emailDaConta.value = emailPendente.value
     fim.value = entrou
-    if (await passo(ligarTopico, 'O e-mail está confirmado, mas a inscrição não foi feita. Tente de novo.')) concluir()
-    else etapa.value = 'email'
+    const inscrito = await aplicarInscricao('O e-mail está confirmado, mas a inscrição não foi feita. Tente de novo.')
+    inscricaoEmCurso.value = false
+    if (inscrito) soltarSucesso = segurar
+    else {
+      etapa.value = 'email'
+      segurar()
+    }
   }
 
   function trocarEmail() {
@@ -210,10 +277,14 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco') {
   onMounted(() => {
     void conhecerConta()
   })
+  onBeforeUnmount(() => {
+    soltarSucesso?.()
+    soltarSucesso = null
+  })
   watch(isAuthenticated, () => {
     // A própria inscrição abre a sessão: não apaga o que ela está fazendo.
-    if (etapa.value !== 'ok' && !enviando.value) void conhecerConta()
+    if (etapa.value !== 'ok' && !enviando.value && !inscricaoEmCurso.value) void conhecerConta()
   })
 
-  return { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, erro, confirmacao, legal, assinarComConta, pedirCodigo, confirmarCodigo, trocarEmail }
+  return { pronto, emailDaConta, assinante, etapa, emailPendente, enviando, inscricaoEmCurso, erro, confirmacao, legal, assinarComConta, pedirCodigo, confirmarCodigo, trocarEmail }
 }

@@ -105,11 +105,13 @@ const COLUMNS = [
         </div>
       </template>
     </NuFooterCordilheira>
+    <!-- O aviso de cookies senta aqui quando o rodapé está na tela. -->
+    <div id="ancora-cookies" />
   </footer>
 </template>
 
 <style scoped>
-.nuf { --pad: clamp(22px, 5.5vw, 80px); background: var(--nu-navy); padding-top: clamp(64px, 8vw, 110px); overflow: hidden; }
+.nuf { --pad: clamp(22px, 5.5vw, 80px); position: relative; background: var(--nu-navy); padding-top: clamp(64px, 8vw, 110px); overflow: hidden; }
 .nuf__in { padding: 0 var(--pad); }
 .nuf__top { display: flex; gap: clamp(28px, 5vw, 70px); align-items: flex-start; flex-wrap: wrap; }
 .nuf__title {

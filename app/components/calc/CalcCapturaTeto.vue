@@ -34,7 +34,8 @@ const alvoMudou = computed(() => confirmado.value && props.alvo != null && Math.
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const { isAuthenticated } = useAuthState()
 const nl = useNewsletter('bloco')
-const { pronto: nlPronto, emailDaConta, assinante, etapa: nlEtapa, emailPendente: nlEmail, enviando: nlEnviando, erro: nlErro, confirmacao: nlConfirmacao, legal: nlLegal } = nl
+const { pronto: nlPronto, emailDaConta, assinante, etapa: nlEtapa, emailPendente: nlEmail, enviando: nlEnviando, inscricaoEmCurso: nlEmCurso, erro: nlErro, confirmacao: nlConfirmacao, legal: nlLegal } = nl
+const nlJaAssina = computed(() => assinante.value && nlPronto.value && !nlEnviando.value && !nlEmCurso.value && nlEtapa.value === 'email' && !nlErro.value)
 const emailNews = ref('')
 const codigoNews = ref('')
 /** isca para robô: gente não vê nem preenche */
@@ -76,7 +77,7 @@ const isca = ref('')
       <p class="cct__texto">Toda sexta, o resumo da semana na bolsa. Dá para sair em um clique.</p>
 
       <p v-if="nlEtapa === 'ok'" class="cct__ok" role="status">{{ nlConfirmacao }}</p>
-      <p v-else-if="assinante" class="cct__ok" role="status">Você já recebe O mercado da semana{{ emailDaConta ? ` em ${emailDaConta}` : '' }}, toda sexta.</p>
+      <p v-else-if="nlJaAssina" class="cct__ok" role="status">Você já recebe O mercado da semana{{ emailDaConta ? ` em ${emailDaConta}` : '' }}, toda sexta.</p>
       <template v-else-if="isAuthenticated && !nlPronto" />
 
       <!-- Logado com e-mail confirmado: um clique. -->
