@@ -9,7 +9,7 @@ import type { LegalDocData } from '~/types/legal'
 const doc: LegalDocData = {
   eyebrow: 'Jurídico',
   title: 'Política de Cookies e Privacidade',
-  updated: '2026-10-28',
+  updated: '2026-10-29',
   intro: [
     { kind: 'p', text: [
       { text: 'Esta Política de Cookies complementa nossa Política de Privacidade e explica como a ' },
@@ -90,12 +90,12 @@ const doc: LegalDocData = {
       id: 'cookies-terceiros',
       title: 'Cookies de Terceiros',
       blocks: [
-        { kind: 'p', text: 'Ferramentas de análise e anúncio só são carregadas depois que você clica em Aceitar. No Recusar, o navegador não recebe esses scripts e não grava os cookies deles:' },
+        { kind: 'p', text: 'A medição anônima e agregada de audiência é feita pela Vercel (Vercel Web Analytics). Ela não usa cookies e não identifica a pessoa. Roda sem o aceite, com base no legítimo interesse (LGPD, art. 7º, IX). As demais ferramentas (Google Analytics, Microsoft Clarity, Google Tag Manager e LinkedIn Insight) só rodam após o aceite.' },
+        { kind: 'p', text: 'Estas ferramentas de análise e anúncio só são carregadas depois que você clica em Aceitar. No Recusar, o navegador não recebe esses scripts e não grava os cookies deles:' },
         { kind: 'list', items: [
           { text: [{ text: 'Google Analytics 4 e Google Tag Manager', bold: true }, { text: ': medem a visita e as campanhas. Sem o Aceitar, o script não é baixado.' }] },
           { text: [{ text: 'Microsoft Clarity', bold: true }, { text: ': entende o uso da interface. Também fica de fora se você recusar, e não roda em páginas cujo endereço contém um segredo.' }] },
           { text: [{ text: 'LinkedIn Insight Tag', bold: true }, { text: ': mede campanhas do LinkedIn e só existe quando há um Partner ID configurado. Sem o Aceitar, não carrega.' }] },
-          { text: [{ text: 'Vercel Web Analytics', bold: true }, { text: ': mede audiência sem cookie próprio e, mesmo assim, só carrega depois do Aceitar.' }] },
         ] },
         { kind: 'p', text: 'Outros serviços de terceiros podem definir cookies quando você usa a função correspondente, sem depender deste aviso:' },
         { kind: 'list', items: [

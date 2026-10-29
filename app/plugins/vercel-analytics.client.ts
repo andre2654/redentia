@@ -9,20 +9,18 @@
 // auto-reporta o pageview inicial E as navegações client-side (patcha o
 // history API), então cobre o SSR + SPA do Nu sem nada manual.
 //
-// Cookieless, e mesmo assim atrás do consentimento. Não grava _ga nem
-// _clck, mas manda pageview (caminho, referência) para a Vercel. O aviso
-// pede aceite antes de qualquer rastreio; o script não é necessário para
-// a página funcionar. Sem aceite, o <script> não entra no head.
+// Cookieless: não grava cookie e não identifica a pessoa. A medição é
+// anônima e agregada, com base no legítimo interesse (LGPD, art. 7º, IX),
+// então o script entra sem o aceite do aviso. GA4, Clarity, GTM e a
+// Insight Tag continuam atrás do consentimento.
 //
 // Em localhost o endpoint não existe (404 inofensivo); em prod flui normal.
-// Com o aceite já gravado, carrega na inicialização (ocioso: false), como
-// antes do aviso — não espera o requestIdleCallback.
+// Carrega na inicialização, sem esperar o requestIdleCallback.
 //
 // NÃO carrega em rota com token no path (/cliente/convite, /cliente/acesso,
 // /business/convite): o pageview levaria o segredo. Ver
 // utils/analytics-privacy.ts.
 import { isSecretTokenPath } from '~/utils/analytics-privacy'
-import { agendarComConsentimento, lerConsentimento } from '~/utils/consent'
 
 export default defineNuxtPlugin(() => {
   if (isSecretTokenPath(window.location.pathname)) return
@@ -31,7 +29,6 @@ export default defineNuxtPlugin(() => {
 
   const instalar = () => {
     if (carregado) return
-    if (lerConsentimento() !== 'granted') return
     if (isSecretTokenPath(window.location.pathname)) return
     carregado = true
 
@@ -54,5 +51,5 @@ export default defineNuxtPlugin(() => {
     })
   }
 
-  agendarComConsentimento(instalar, { ocioso: false })
+  instalar()
 })

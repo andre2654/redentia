@@ -1,5 +1,6 @@
 /**
- * Consentimento de análise e anúncio, antes de qualquer script de rastreio.
+ * Consentimento de análise e anúncio, antes dos scripts que identificam
+ * a pessoa ou gravam cookie de rastreio.
  *
  * A escolha fica em dois lugares com o mesmo valor (`<versão>.granted` ou
  * `<versão>.denied`):
@@ -9,7 +10,10 @@
  *
  * Versão da política no valor: se CONSENT_POLICY_VERSION mudar, a escolha
  * antiga deixa de valer e o aviso volta. Sem aceite, os plugins não injetam
- * GA4, GTM, Clarity, Vercel Web Analytics nem a Insight Tag.
+ * GA4, GTM, Clarity nem a Insight Tag. O Vercel Web Analytics fica de fora
+ * deste portão: não grava cookie, não identifica a pessoa e mede audiência
+ * de forma anônima e agregada, com base no legítimo interesse (LGPD,
+ * art. 7º, IX). Continua bloqueado em rota com token secreto na URL.
  *
  * Consent Mode do Google não entra: com o consentimento negado o gtag.js
  * ainda seria baixado de googletagmanager.com, e o requisito é sem aceite,
@@ -123,8 +127,7 @@ export function avisarAceite(): void {
  * Se a escolha já existe, dispara agora; senão, quando a pessoa aceitar.
  *
  * `pagoNaHora`: visita paga não espera o ocioso (o GTM e a Insight Tag).
- * `ocioso: false`: entra assim que o consentimento existe (Vercel, que já
- * carregava na inicialização, sem esperar o idle).
+ * `ocioso: false`: entra assim que o consentimento existe, sem esperar o idle.
  */
 export function agendarComConsentimento(executar: () => void, opts?: { pagoNaHora?: boolean, ocioso?: boolean }): void {
   if (import.meta.server) return
