@@ -33,7 +33,7 @@ const alvoMudou = computed(() => confirmado.value && props.alvo != null && Math.
 
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const { isAuthenticated } = useAuthState()
-const nl = useNewsletter()
+const nl = useNewsletter('bloco')
 const { pronto: nlPronto, emailDaConta, assinante, etapa: nlEtapa, emailPendente: nlEmail, enviando: nlEnviando, erro: nlErro, confirmacao: nlConfirmacao, legal: nlLegal } = nl
 const emailNews = ref('')
 const codigoNews = ref('')

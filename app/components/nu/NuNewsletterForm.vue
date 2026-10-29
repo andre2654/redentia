@@ -4,11 +4,13 @@
 // useNewsletter (anônimo: e-mail → código → conta e inscrição; logado com
 // e-mail confirmado: um clique). Saiu da faixa do /guias em 21/10/2026 para
 // servir também ao rodapé e ao convite do canto (NuNewsletterConvite).
+import type { OrigemNewsletter } from '~/composables/useNewsletter'
+
 const props = withDefaults(defineProps<{
   placeholder?: string
   cta?: string
-  /** de onde veio a inscrição, no evento do GA4 (useNewsletter) */
-  origem?: string
+  /** de onde veio a inscrição: consent_source do PUT e o evento do GA4 */
+  origem?: OrigemNewsletter
 }>(), { placeholder: 'Seu melhor e-mail', cta: 'Assinar', origem: 'bloco' })
 const emit = defineEmits<{ assinou: [] }>()
 
