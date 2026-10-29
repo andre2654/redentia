@@ -13,6 +13,14 @@ export const ONBOARDING_OBJETIVOS: OnboardingOpcao[] = [
   { value: 'ferramentas', label: 'Usar as ferramentas', desc: 'Calculadoras, raio-x de ETF e o MCP pra usar com IA.' },
 ]
 
+/**
+ * O gate não roda no login (a sessão nasce lá) nem no produto de escritório.
+ * `/business` e tudo abaixo dele ficam de fora.
+ */
+export function onboardingForaDaRota(caminho: string): boolean {
+  return caminho === '/login' || caminho.startsWith('/business')
+}
+
 export const ONBOARDING_EXPERIENCIAS: OnboardingOpcao[] = [
   { value: 'iniciante', label: 'Estou começando', desc: 'Explica tudo, sem pressa.' },
   { value: 'intermediario', label: 'Já invisto', desc: 'Direto ao ponto, com contexto.' },

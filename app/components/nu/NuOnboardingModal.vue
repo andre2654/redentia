@@ -88,8 +88,11 @@ onBeforeUnmount(() => {
 })
 
 async function check() {
-  if (naFolha.value) return
-  if (!isAuthenticated.value || route.path === '/login' || route.path.startsWith('/business')) return
+  // Folha de cadastro, visitante, /login e /business: o modal não abre.
+  if (naFolha.value || !isAuthenticated.value || onboardingForaDaRota(route.path)) {
+    open.value = false
+    return
+  }
   if (gate.value !== 'unknown') {
     open.value = podeAbrir()
     return
@@ -131,8 +134,10 @@ watch(() => route.path, () => {
     return
   }
   if (dispensado.value) return
+  // Sempre check(): /login, /business e a folha de cadastro continuam de fora.
+  // O ramo que fazia open = true pulava essas exceções.
   if (gate.value === 'unknown') void check()
-  else if (gate.value === 'needed') open.value = true
+  else void check()
 })
 // a folha de cadastro fechou: respondeu lá (gate 'done') ou saiu antes (vale aqui)
 watch(naFolha, (v) => {
