@@ -1,0 +1,33 @@
+{
+  "description": "O Banco Bradesco S.A. atua em banco de varejo, banco corporativo, gestão de recursos, mercado de capitais, cartões e seguros. Os seguros ficam na Bradesco Seguros, com saúde na Bradesco Saúde, além de automóvel, vida, capitalização e previdência. O controle é da Cidade de Deus Companhia Comercial de Participações, holding da fundação criada pelo fundador Amador Aguiar. A fundação destina recursos a programas sociais e educacionais.\n\nO banco atende pessoas físicas e empresas com crédito, conta corrente, cartões e investimentos, em rede física e em canais digitais. A gestão de recursos inclui a Bradesco Asset, a BRAM e a corretora Ágora, para institucionais e para o varejo qualificado. BBDC3 são as ações ordinárias, com direito a voto. BBDC4 são as preferenciais: não dão voto, têm preferência no recebimento de dividendos e concentram a negociação. Há recibos na Bolsa de Nova York sob o código BBD.",
+  "thesis": "A receita do Bradesco junta a margem de crédito e o resultado da Bradesco Seguros. O seguro gera caixa que não segue o mesmo ciclo da inadimplência do varejo bancário e que não depende da Selic da mesma forma que o crédito. A rede física cobre o país, inclusive cidades pequenas, e os canais digitais foram reunidos na unificação do banco principal com o antigo Bradesco Próximo.\n\nOs proventos dependem de deliberação e saem como dividendos ou juros sobre capital próprio, todo mês. O calendário é publicado no site de relações com investidores. Os juros sobre capital próprio têm retenção de imposto de renda na fonte para a pessoa física.",
+  "risks": "A rentabilidade do Bradesco ficou abaixo da do Itaú e da do Banco do Brasil em período recente. Pesam a qualidade da carteira em alguns segmentos, o custo da rede física e a dificuldade de levar o cliente ao canal digital sem perder receita de tarifa. Houve uma reorganização para tentar reverter esse quadro.\n\nO Pix reduziu a receita de TED e de DOC. O Open Finance aumenta a disputa por dados. Há teto de juros no rotativo do cartão. Fintechs como o Nubank disputam o cliente jovem e o de renda mais baixa. A unificação dos canais digitais veio depois da do Itaú e da do Santander, e pesquisas de satisfação colocam o banco atrás de outros do setor. A carteira tem mais exposição a empresas pequenas e médias e a pessoa física de renda mais baixa do que a do Itaú, e a inadimplência subiu mais rápido nesse período, com mais provisão. A rede de agências pesa no custo, e o fechamento de pontos esbarra em questão trabalhista e de relacionamento. A governança da fundação controladora pode alongar uma decisão estratégica. Com Selic baixa e inflação alta, a margem financeira se comprime mais do que em banco de balanço mais leve.",
+  "peers": "Na bolsa brasileira, os pares são o Itaú Unibanco, código ITUB4, e o Banco do Brasil, código BBAS3. Itaú e Bradesco disputam o varejo privado. O Itaú aparece associado a canal digital e ao atacado, e o Bradesco, a seguros e à rede física no interior. O Banco do Brasil é estatal, com agronegócio e funcionalismo público.\n\nFora do Brasil, o mesmo tipo de banco universal aparece em companhias como JPMorgan, Citigroup e HSBC. No grupo, a Bradesco Seguros entra no resultado ao lado do banco. BBDC3 dá direito a voto. BBDC4 não dá voto, tem preferência no dividendo e concentra a negociação. O controle em assembleia se exerce pelas ordinárias.",
+  "history": "O Bradesco foi fundado por Amador Aguiar em Marília, no interior de São Paulo, como Banco Brasileiro de Descontos, para atender o pequeno comerciante e o produtor rural. A presença no interior marcou o banco. A sede Cidade de Deus, em Osasco, tornou-se o endereço símbolo da empresa. A criação da Bradesco Seguros abriu outro bloco de receita.\n\nA expansão veio de crescimento próprio e de aquisições, entre elas o BCN, o Banco Mercantil de São Paulo, o BBVA Brasil, a parceria do Banco Postal com os Correios, depois encerrada, e o HSBC Brasil. Cada compra ampliou a base de clientes e a presença. Depois, o foco passou a ser digitalização e racionalização de agências. A alta da inadimplência pressionou o resultado, e o banco anunciou um plano de transformação. O Banco Next, lançado como banco digital, foi reintegrado ao banco principal.",
+  "faq": [
+    {
+      "q": "Qual a diferença entre BBDC3 e BBDC4?",
+      "a": "BBDC3 são as ações ordinárias e dão direito a voto em assembleia. BBDC4 são as preferenciais: não dão voto e têm preferência no recebimento de dividendos. A negociação se concentra em BBDC4. Na venda de controle, a ordinária pode ter tratamento regulatório próprio."
+    },
+    {
+      "q": "Como a BBDC4 distribui proventos?",
+      "a": "O Bradesco delibera dividendos e juros sobre capital próprio todo mês. O calendário é publicado no site de relações com investidores. Os juros sobre capital próprio têm retenção de imposto de renda na fonte para a pessoa física."
+    },
+    {
+      "q": "Como a Bradesco Seguros entra no resultado do Bradesco?",
+      "a": "A Bradesco Seguros entra de forma relevante no resultado do grupo, com saúde na Bradesco Saúde e presença em vida, automóvel e previdência. Essa receita é menos ligada ao ciclo de inadimplência do que a receita bancária. Em ciclo de inadimplência alta, o seguro ajuda a estabilizar o resultado consolidado."
+    },
+    {
+      "q": "Como a carteira de crédito do Bradesco se compara à do Itaú?",
+      "a": "A carteira do Bradesco tem mais exposição a empresas pequenas e médias e a pessoa física de renda mais baixa, segmentos mais sensíveis ao ciclo econômico. O custo operacional acompanha a rede física extensa, e a ida para o canal digital foi mais lenta. A Bradesco Seguros compensa parte dessa diferença e não a elimina."
+    },
+    {
+      "q": "Como o Pix e o Open Finance se relacionam com o Bradesco?",
+      "a": "O Pix reduziu a receita de TED e de DOC e aumentou a disputa em pagamentos. O Open Finance permite ao cliente compartilhar dados com outros bancos e com fintechs. O Bradesco tem investido em canal digital e em cartão, seguros e crédito imobiliário. A pressão regulatória é tratada como duradoura sobre a margem dos bancos grandes."
+    },
+    {
+      "q": "Quem controla o Bradesco?",
+      "a": "O Bradesco é controlado pela Cidade de Deus Companhia Comercial de Participações, holding ligada à fundação criada por Amador Aguiar. A fundação destina recursos a programas sociais e educacionais. O controle em assembleia se exerce pelas ações ordinárias, no código BBDC3. Essa governança de fundação dá estabilidade no tempo e pode alongar algumas decisões."
+    }
+  ]
+}
