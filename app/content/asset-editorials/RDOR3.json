@@ -1,0 +1,33 @@
+{
+  "description": "A Rede D'Or São Luiz S.A. opera hospitais privados em vários estados, com presença em capitais como Rio de Janeiro, São Paulo, Brasília, Salvador, Recife, Fortaleza e Belo Horizonte. O portfólio inclui hospitais gerais, unidades de oncologia, maternidades, centros de diagnóstico por imagem e laboratórios de análises clínicas.\n\nA operação se organiza em divisão hospitalar e divisão de oncologia. A hospitalar atende por convênios, planos corporativos, particulares e, em alguns casos, pelo SUS. A oncologia cobre quimioterapia, radioterapia, hematologia e medicina personalizada. A companhia adquiriu a operação de saúde da SulAmérica e passou a reunir hospital e plano de saúde. RDOR3 é o código das ações ordinárias, listadas no Novo Mercado. O capital está com investidores institucionais, e a família Moll mantém participação pela holding controladora. A ação integra o Ibovespa.",
+  "thesis": "A receita vem dos hospitais e da oncologia, paga por convênios, planos corporativos, particulares e, em alguns casos, pelo SUS. A companhia negocia com operadoras de planos, fornecedores de insumos, indústria farmacêutica e fabricantes de equipamentos. Com a operação de saúde da SulAmérica, o plano recebe a mensalidade do beneficiário e a rede própria atende o sinistro. Esse plano é voltado às classes A e B.\n\nOs proventos dependem de deliberação do conselho e podem sair como dividendos ou juros sobre capital próprio. O anúncio sai em fato relevante, com a data-com e a data-ex publicadas no site de relações com investidores. Parte do caixa vai para unidades, equipamentos, aquisições e amortização de dívida. Provento extraordinário, quando ocorre, está ligado a venda de ativo, ao fim de um ciclo de aquisições ou a caixa acima do plano.",
+  "risks": "Custos hospitalares sobem acima do IPCA, com medicamentos, salários médicos, tecnologia de diagnóstico e judicialização da saúde. O repasse às operadoras depende de negociação. Quando o reajuste fica abaixo do custo, a margem do hospital comprime.\n\nA expansão por aquisição e por construção de unidades exige financiamento, e a companhia opera com dívida líquida. Em ciclo de Selic alta, o serviço da dívida consome parte do Ebitda. O plano de saúde segue regras da ANS, entre elas sinistralidade, reservas técnicas e reajuste. Mudança de cobertura obrigatória, inclusive por decisão do STJ ou do STF, altera o custo. O gasto com equipes médicas e de enfermagem em região metropolitana também entra na margem. A Hapvida, que também reúne hospital e operadora, passou por integração depois da fusão com a NotreDame Intermédica.",
+  "peers": "No mercado brasileiro, a Kora Saúde, no código KRSA3, também opera rede hospitalar privada. A Hapvida, no código HAPV3, reúne hospital e operadora, com atuação nas classes C e D, enquanto o plano da Rede D'Or é voltado às classes A e B. A Dasa, no código DASA3, atua em diagnóstico por imagem e laboratórios.\n\nFora do Brasil, rede hospitalar privada aparece na HCA Healthcare. O desenho que junta prestador e operadora aparece na Fresenius Medical Care e, em outro formato, na UnitedHealth, pela Optum. A Rede D'Or entrou nesse desenho com a operação de saúde da SulAmérica.",
+  "history": "A Rede D'Or foi fundada pelo médico Jorge Moll Filho a partir da Casa de Saúde Santa Lúcia e expandiu no Rio de Janeiro com hospitais como Copa D'Or, Quinta D'Or e Barra D'Or. O grupo São Luiz, de outra família médica, operava hospitais em São Paulo, entre eles o São Luiz Itaim e o São Luiz Anália Franco. A fusão dessas redes formou a Rede D'Or São Luiz.\n\nDepois da fusão, a companhia adquiriu hospitais em capitais como Brasília, Salvador, Recife, Fortaleza e Belo Horizonte. O GIC, de Cingapura, e o BTG Pactual entraram no capital antes da abertura na bolsa. A oferta inicial na B3 foi seguida de novas aquisições e de investimentos em oncologia. A Oncoclínicas foi unidade de negócios e depois foi desmembrada no código ONCO3, com participação minoritária da Rede D'Or. A compra da operação de saúde da SulAmérica foi feita em troca de ações, e os acionistas da SulAmérica passaram a ter participação na Rede D'Or.",
+  "faq": [
+    {
+      "q": "Por que a RDOR3 não tem ações preferenciais?",
+      "a": "RDOR3 é o código das ações ordinárias, listadas no Novo Mercado. Nesse segmento, a companhia emite só ações ordinárias, com direito a voto, e não emite preferenciais. O direito de o acionista acompanhar a venda do controle faz parte das regras desse segmento. A estrutura foi adotada na oferta inicial de ações."
+    },
+    {
+      "q": "Como a RDOR3 distribui proventos?",
+      "a": "A Rede D'Or distribui dividendos ou juros sobre capital próprio depois de deliberação do conselho, em geral após o encerramento do exercício ou quando há geração de caixa. O anúncio sai em fato relevante, com a data-com e a data-ex publicadas no site de relações com investidores. Parte do caixa vai para expansão e para amortização de dívida."
+    },
+    {
+      "q": "A Rede D'Or distribui proventos extraordinários?",
+      "a": "Proventos extraordinários são raros, porque o negócio hospitalar exige capital para unidades, equipamentos e aquisições. Quando ocorrem, estão ligados a venda de ativo, ao fim de um ciclo de aquisições ou a caixa acima do plano. O excedente de caixa amortiza dívida, financia unidades novas ou paga aquisições."
+    },
+    {
+      "q": "Como a inflação médica se relaciona com a RDOR3?",
+      "a": "A variação do custo médico-hospitalar fica acima do IPCA, com medicamentos, equipamentos e folha de pagamento. O efeito na margem depende do repasse às operadoras de planos. Quando o reajuste do contrato fica abaixo do custo, a margem do hospital comprime. A negociação com os convênios é o canal desse repasse."
+    },
+    {
+      "q": "Qual a relação entre a RDOR3 e a Selic?",
+      "a": "A companhia opera com dívida líquida, então em ciclo de Selic alta o serviço da dívida pesa sobre o Ebitda e o lucro. A taxa de juros também entra no desconto de fluxo de caixa usado em modelos de avaliação. Corte de Selic reduz o custo dessa dívida. Em janelas curtas, a ação teve relação inversa com a curva longa de juros."
+    },
+    {
+      "q": "Como funciona a verticalização entre hospital e plano de saúde?",
+      "a": "Na verticalização, a mesma companhia controla o plano, que recebe a mensalidade, e o hospital, que atende o sinistro. A rede própria recebe pacientes do plano, e o custo médico é acompanhado dentro do grupo. A Rede D'Or adotou esse modelo com a operação de saúde da SulAmérica. O plano é voltado às classes A e B."
+    }
+  ]
+}
