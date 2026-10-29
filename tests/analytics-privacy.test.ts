@@ -42,11 +42,16 @@ test('os plugins de analytics consultam a guarda antes de carregar', () => {
     const src = readFileSync(new URL(`../app/plugins/${f}`, import.meta.url), 'utf8')
     assert.match(src, /isSecretTokenPath\(/, `${f} não consulta isSecretTokenPath`)
   }
+  // Vercel Web Analytics não grava cookie e não identifica a pessoa: entra
+  // sem o aceite. GA4, Clarity, GTM e a Insight Tag continuam no portão.
+  const vercel = readFileSync(new URL('../app/plugins/vercel-analytics.client.ts', import.meta.url), 'utf8')
+  assert.match(vercel, /\n  instalar\(\)/, 'o script da Vercel não é chamado direto')
+  assert.doesNotMatch(vercel, /agendarComConsentimento\(/, 'o script da Vercel voltou a esperar o consentimento')
+  assert.doesNotMatch(vercel, /lerConsentimento\(/, 'o script da Vercel voltou a checar o consentimento')
   for (const f of [
     'google-analytics.client.ts',
     'clarity.client.ts',
     'google-tag-manager.ts',
-    'vercel-analytics.client.ts',
     'linkedin-insight.client.ts',
   ]) {
     const src = readFileSync(new URL(`../app/plugins/${f}`, import.meta.url), 'utf8')
@@ -67,6 +72,16 @@ test('os plugins de analytics consultam a guarda antes de carregar', () => {
   const guard = readFileSync(new URL('../app/plugins/00.rotas-com-segredo.client.ts', import.meta.url), 'utf8')
   assert.match(guard, /isSecretTokenPath\(to\.path\)/)
   assert.match(guard, /location\.assign/)
+})
+
+test('a política de cookies declara a medição da Vercel fora do aceite', () => {
+  const src = readFileSync(new URL('../app/pages/institucional/cookies.vue', import.meta.url), 'utf8')
+  assert.match(src, /updated: '2026-10-29'/)
+  assert.match(src, /A medição anônima e agregada de audiência é feita pela Vercel \(Vercel Web Analytics\)/)
+  assert.match(src, /Ela não usa cookies e não identifica a pessoa/)
+  assert.match(src, /Roda sem o aceite, com base no legítimo interesse \(LGPD, art\. 7º, IX\)/)
+  assert.match(src, /Google Analytics, Microsoft Clarity, Google Tag Manager e LinkedIn Insight\) só rodam após o aceite/)
+  assert.doesNotMatch(src, /só carrega depois do Aceitar/)
 })
 
 test('link com token e chave na tela vão mascarados para o Clarity', () => {
