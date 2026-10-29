@@ -7,7 +7,21 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { CONVITE_PAUSA_DIAS, conviteForaDaPagina, convitePausado, fracaoLida, rodapeSemAssinatura } from '../app/utils/newsletter-lugares.ts'
+import {
+  CONVITE_FOLGA_PX,
+  CONVITE_LARGURA_PX,
+  CONVITE_MARGEM_PX,
+  CONVITE_MOBILE_MAX_PX,
+  CONVITE_PAUSA_DIAS,
+  cardSeparadoDoConteudo,
+  conviteElegivel,
+  conviteForaDaPagina,
+  convitePausado,
+  formatoConvitePorLargura,
+  fracaoLida,
+  reservaDoConviteDesktop,
+  rodapeSemAssinatura,
+} from '../app/utils/newsletter-lugares.ts'
 
 const PRECO_TETO = ['/calculadora/preco-teto', '/calculadora/preco-teto/', '/calculadora/preco-teto/graham', '/calculadora/preco-teto/PETR4', '/Calculadora/Preco-Teto']
 
@@ -18,9 +32,8 @@ test('o rodapé fica sem a faixa só onde a página já tem o formulário dela',
   }
 })
 
-test('o convite fica fora da preço teto, do /guias e das páginas de conta', () => {
+test('o convite fica fora do /guias e das páginas de conta', () => {
   for (const p of [
-    ...PRECO_TETO,
     '/guias',
     '/guias/',
     '/login',
@@ -47,6 +60,7 @@ test('o convite abre no resto do site, inclusive dentro de cada guia', () => {
     '/tesouro',
     '/dividendos/PETR4',
     '/asset/PETR4',
+    ...PRECO_TETO,
     '/guias/data-com-e-data-ex',
     '/glossario/dividend-yield',
     '/noticias',
@@ -67,6 +81,43 @@ test('fechou o convite: some por 30 dias e volta depois', () => {
   assert.equal(convitePausado(agora - dia, agora), true)
   assert.equal(convitePausado(agora - 29 * dia, agora), true)
   assert.equal(convitePausado(agora - 30 * dia, agora), false)
+})
+
+test('até 760px o convite é o bloco; acima, o cartão', () => {
+  assert.equal(CONVITE_MOBILE_MAX_PX, 760)
+  assert.equal(formatoConvitePorLargura(390), 'bloco_mobile')
+  assert.equal(formatoConvitePorLargura(760), 'bloco_mobile')
+  assert.equal(formatoConvitePorLargura(761), 'card_desktop')
+  assert.equal(formatoConvitePorLargura(1440), 'card_desktop')
+})
+
+test('o cartão reserva a própria largura e não invade o texto', () => {
+  assert.equal(CONVITE_LARGURA_PX, 392)
+  assert.equal(CONVITE_MARGEM_PX, 24)
+  assert.equal(CONVITE_FOLGA_PX, 16)
+  assert.equal(reservaDoConviteDesktop(), 392 + 24 + 16)
+  assert.equal(cardSeparadoDoConteudo(1440), true)
+  assert.equal(cardSeparadoDoConteudo(761), true)
+})
+
+test('quem já assinou não vê o convite, no bloco e no cartão', () => {
+  const base = {
+    ligada: true,
+    autenticado: false,
+    folhaAberta: false,
+    contaConviteVisto: false,
+    caminho: '/',
+    assinou: false,
+    fechouEm: null,
+    agora: Date.UTC(2026, 9, 29),
+  }
+  assert.equal(conviteElegivel(base), true)
+  assert.equal(conviteElegivel({ ...base, caminho: '/asset/PETR4' }), true)
+  assert.equal(conviteElegivel({ ...base, caminho: '/calculadora/preco-teto/PETR4' }), true)
+  assert.equal(conviteElegivel({ ...base, assinou: true }), false)
+  assert.equal(conviteElegivel({ ...base, autenticado: true }), false)
+  assert.equal(conviteElegivel({ ...base, caminho: '/guias' }), false)
+  assert.equal(conviteElegivel({ ...base, ligada: false }), false)
 })
 
 test('a fração lida do <main>: 0 no topo, 1 no fim', () => {

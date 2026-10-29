@@ -19,14 +19,14 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
     <main>
       <slot />
     </main>
+    <!-- O convite da newsletter (21/10/2026): no computador, cartão no canto,
+         aberto por interesse. No celular, o mesmo convite é um bloco no fluxo,
+         aqui, imediatamente antes do rodapé. -->
+    <NuNewsletterConvite />
     <NuFooter />
     <!-- Sem modal de anúncio: o NuMcpPromo (o pop-up que abria 5 s depois de
          entrar) saiu de vez em 15/10/2026, a pedido do dono. Não remonte
          anúncio por cima da página sem decisão dele. -->
-    <!-- O convite da newsletter foi decisão dele (21/10/2026): cartão pequeno
-         no canto, aberto por interesse e nunca na chegada. As regras estão no
-         componente. -->
-    <NuNewsletterConvite />
     <!-- A folha de cadastro (21/10/2026): o que pedia conta abre esta folha em
          vez de mandar para o /login. Fechada até um gatilho chamar
          useCadastroFolha().abrir(). -->

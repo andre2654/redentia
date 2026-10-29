@@ -45,7 +45,7 @@ test('o convite usa o observador do rodapé e fecha depois da assinatura', () =>
   const src = readFileSync(new URL('../app/components/nu/NuNewsletterConvite.vue', import.meta.url), 'utf8')
   assert.match(src, /exibirConviteFlutuante/)
   assert.match(src, /useRodapeNaTela/)
-  assert.match(src, /@ja-assinante="fechar"/)
+  assert.match(src, /@ja-assinante="ocultarAssinante"/)
 })
 
 test('o banner reserva no rodapé a própria altura quando ele está visível', () => {

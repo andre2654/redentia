@@ -1,23 +1,21 @@
 <script setup lang="ts">
-// O convite de O mercado da semana: um cartão pequeno no canto da tela (no
-// celular, uma faixa fina embaixo que abre o formulário no toque). Pedido do
-// dono em 21/10/2026 ("talvez até como um modal"), no formato que não repete o
-// NuMcpPromo, removido em 15/10 por abrir 5 s depois da chegada e cobrir a
-// calculadora:
-//  - abre por interesse, nunca na chegada: depois de 12 s no site, quando a
-//    pessoa rolou além de 60% da página ou, no computador, quando o mouse sai
-//    pela barra de abas;
-//  - não escurece a página, não trava a rolagem e não puxa o foco;
-//  - só para quem não tem conta; uma vez por sessão; fechou, some por 30 dias;
-//    assinou, some de vez;
-//  - fica fora da preço teto, do /guias e das páginas de conta (as regras de
-//    página estão em utils/newsletter-lugares.ts).
-// É o banner pequeno que o Google recomenda no lugar do diálogo que cobre o
-// conteúdo, e a newsletter é um dos usos que ele cita
-// (developers.google.com/search/docs/appearance/avoid-intrusive-interstitials).
+// O convite de O mercado da semana. Dois formatos, a mesma cópia e o mesmo
+// formulário (NuNewsletterForm, origem convite):
+//  - celular (até 760px, o breakpoint do site): bloco no fluxo, imediatamente
+//    antes do rodapé. Sempre presente: sem espera de 12 s e sem rolagem. Some
+//    para quem já assinou, fechou ou está fora da página, como o cartão;
+//  - computador: o cartão no canto. Abre por interesse, nunca na chegada:
+//    depois de 12 s, quando a pessoa rolou além de 60% da página ou quando o
+//    mouse sai pela barra de abas. Enquanto está aberto, o <main> reserva a
+//    largura dele para o texto e os botões não passarem por baixo. Some
+//    quando o rodapé entra na tela (PR #123).
+// Os dois nascem no HTML. O CSS esconde um deles (display: none), para o
+// SSR e o cliente não divergirem e o formulário escondido não receber foco.
+// Não escurece a página, não trava a rolagem e não puxa o foco. Fica fora do
+// /guias e das páginas de conta (utils/newsletter-lugares.ts).
 import { CONTA_CONVITE_VISTO } from '~/composables/useConviteDaConta'
 import { NEWSLETTER_ASSINOU } from '~/composables/useNewsletter'
-import { conviteForaDaPagina, convitePausado, fracaoLida } from '~/utils/newsletter-lugares'
+import { conviteElegivel, conviteForaDaPagina, fracaoLida } from '~/utils/newsletter-lugares'
 import { exibirConviteFlutuante } from '~/utils/rodape-flutuantes'
 
 const { isAuthenticated } = useAuthState()
@@ -28,19 +26,27 @@ const folhaCadastro = useCadastroFolha()
 const route = useRoute()
 const ligada = useRuntimeConfig().public.newsletterLigada === true
 
-/** nunca antes disso desde a chegada ao site */
+/** nunca antes disso desde a chegada ao site (só o cartão do computador) */
 const ESPERA_MS = 12_000
 const FECHOU = 'nu:newsletter-convite-fechou'
 const VISTO = 'nu:newsletter-convite-visto'
 
 const aberto = ref(false)
-/** no celular o convite nasce como faixa fina e abre o formulário no toque */
+/** no celular o cartão não aparece; a faixa fina ficou no histórico do componente */
 const expandido = ref(true)
 const cardRef = ref<HTMLElement | null>(null)
+/** localStorage e sessão, lidos depois da hidratação para não divergir do SSR */
+const bloqueado = ref(false)
 let chegada = 0
 let quadro = 0
 let espera: ReturnType<typeof setTimeout> | undefined
 let fechaDepois: ReturnType<typeof setTimeout> | undefined
+
+const blocoVisivel = computed(() => ligada
+  && !isAuthenticated.value
+  && !folhaCadastro.aberta.value
+  && !conviteForaDaPagina(route.path)
+  && !bloqueado.value)
 
 function ler(chave: string, sessao = false): string | null {
   try {
@@ -57,15 +63,28 @@ function gravar(chave: string, valor: string, sessao = false) {
   catch { /* modo privado: vale só nesta visita */ }
 }
 
+function elegivel(): boolean {
+  return conviteElegivel({
+    ligada,
+    autenticado: isAuthenticated.value,
+    folhaAberta: !!folhaCadastro.aberta.value,
+    contaConviteVisto: !!ler(CONTA_CONVITE_VISTO, true),
+    caminho: route.path,
+    assinou: !!ler(NEWSLETTER_ASSINOU),
+    fechouEm: Number(ler(FECHOU)) || null,
+    agora: Date.now(),
+  })
+}
+
 function pode(): boolean {
-  return ligada
-    && !isAuthenticated.value
-    && !folhaCadastro.aberta.value
-    && !ler(CONTA_CONVITE_VISTO, true)
-    && !conviteForaDaPagina(route.path)
-    && !ler(NEWSLETTER_ASSINOU)
-    && !ler(VISTO, true)
-    && !convitePausado(Number(ler(FECHOU)) || null, Date.now())
+  return elegivel() && !ler(VISTO, true)
+}
+
+function sincronizarReserva() {
+  if (!import.meta.client) return
+  const desktop = window.matchMedia('(min-width: 761px)').matches
+  const reserva = desktop && exibirConviteFlutuante(aberto.value, rodapeNaTela.value)
+  document.documentElement.classList.toggle('nnc-reserva', reserva)
 }
 
 function abrir() {
@@ -74,6 +93,7 @@ function abrir() {
   aberto.value = true
   gravar(VISTO, '1', true)
   desligar()
+  sincronizarReserva()
 }
 
 // Rolagem de verdade além de 60% da página: em página curta, que cabe na
@@ -109,15 +129,23 @@ function desligar() {
 
 function fechar() {
   aberto.value = false
+  bloqueado.value = true
   clearTimeout(fechaDepois)
   gravar(FECHOU, String(Date.now()))
+  sincronizarReserva()
 }
 function assinou() {
   // a confirmação fica uns segundos na tela e o cartão sai sozinho
   clearTimeout(fechaDepois)
   fechaDepois = setTimeout(() => {
     aberto.value = false
+    sincronizarReserva()
   }, 8000)
+}
+function ocultarAssinante() {
+  bloqueado.value = true
+  aberto.value = false
+  sincronizarReserva()
 }
 async function expandir() {
   expandido.value = true
@@ -125,32 +153,65 @@ async function expandir() {
   cardRef.value?.querySelector<HTMLInputElement>('input[type=email]')?.focus()
 }
 
+let mqDesktop: MediaQueryList | undefined
+function aoMudarLargura() {
+  sincronizarReserva()
+}
 onMounted(() => {
   chegada = Date.now()
+  if (!elegivel()) bloqueado.value = true
   if (ligada) ligar()
+  mqDesktop = window.matchMedia('(min-width: 761px)')
+  mqDesktop.addEventListener('change', aoMudarLargura)
+  sincronizarReserva()
 })
 onBeforeUnmount(() => {
   desligar()
   clearTimeout(fechaDepois)
+  mqDesktop?.removeEventListener('change', aoMudarLargura)
+  document.documentElement.classList.remove('nnc-reserva')
 })
-// foi para uma página de fora (login, preço teto...) com o convite aberto
+// foi para uma página de fora (login, guias...) com o convite aberto
 watch(() => route.path, (p) => {
-  if (aberto.value && conviteForaDaPagina(p)) aberto.value = false
+  if (aberto.value && conviteForaDaPagina(p)) {
+    aberto.value = false
+    sincronizarReserva()
+  }
 })
+watch([aberto, rodapeNaTela], sincronizarReserva)
 </script>
 
 <template>
+  <section
+    v-if="blocoVisivel"
+    class="nnb"
+    data-convite="bloco"
+    aria-labelledby="nnb-titulo"
+  >
+    <div class="nnb__cabeca">
+      <div class="nnb__texto">
+        <p class="nnb__eyebrow">Newsletter grátis</p>
+        <h2 id="nnb-titulo" class="nnb__titulo">O mercado da semana, toda sexta.</h2>
+      </div>
+      <button type="button" class="nnb__fechar" aria-label="Fechar" @click="fechar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </div>
+    <p class="nnb__sub">O Ibovespa da semana, as notícias que mexeram nele e os proventos da semana que vem.</p>
+    <NuNewsletterForm class="nnb__form" origem="convite" formato="bloco_mobile" @ja-assinante="ocultarAssinante" />
+  </section>
   <Transition name="nnc">
     <div
       v-if="aberto" v-show="exibirConviteFlutuante(aberto, rodapeNaTela)"
       ref="cardRef" class="nnc" :class="{ 'nnc--fino': !expandido }"
+      data-convite="card"
       role="dialog" aria-labelledby="nnc-titulo" @keydown.esc="fechar"
     >
       <template v-if="expandido">
         <p class="nnc__eyebrow">Newsletter grátis</p>
         <h2 id="nnc-titulo" class="nnc__titulo">O mercado da semana, toda sexta.</h2>
         <p class="nnc__sub">O Ibovespa da semana, as notícias que mexeram nele e os proventos da semana que vem.</p>
-        <NuNewsletterForm class="nnc__form" origem="convite" @assinou="assinou" @ja-assinante="fechar" />
+        <NuNewsletterForm class="nnc__form" origem="convite" formato="card_desktop" @assinou="assinou" @ja-assinante="ocultarAssinante" />
       </template>
       <template v-else>
         <p id="nnc-titulo" class="nnc__fino"><strong>O mercado da semana</strong><span>Toda sexta no seu e-mail</span></p>
@@ -164,11 +225,45 @@ watch(() => route.path, (p) => {
 </template>
 
 <style scoped>
+/* bloco no fluxo: só o celular. Sem fixed, absolute, sticky nem z-index. */
+.nnb {
+  margin: 20px 12px 0;
+  padding: 22px 18px 18px;
+  border-radius: var(--nu-r-card);
+  background: var(--nu-navy) url('/email/brilho.jpg') center top / cover no-repeat;
+  color: var(--nu-cream-text);
+}
+.nnb__cabeca { display: flex; align-items: flex-start; gap: 12px; }
+.nnb__texto { flex: 1; min-width: 0; }
+.nnb__eyebrow {
+  margin: 0; color: var(--nu-blue-soft);
+  font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase;
+}
+.nnb__titulo {
+  margin: 8px 0 0; color: var(--nu-cream-text);
+  font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12;
+}
+.nnb__sub { margin: 10px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.nnb__form { margin-top: 18px; }
+.nnb__fechar {
+  flex: none; width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--nu-cream-text-10); color: var(--nu-cream-text-78);
+}
+.nnb__fechar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+
+/* computador: o bloco não existe na tela, nem no foco, nem no leitor */
+@media (min-width: 761px) {
+  .nnb { display: none !important; }
+}
+
 /* abaixo dos painéis do header (60) e dos modais (9999+): o convite nunca
    fica por cima de algo que a pessoa abriu */
 .nnc {
   position: fixed; right: 24px; bottom: calc(24px + var(--ck-h, 0px)); z-index: 50;
   width: min(392px, calc(100vw - 48px));
+  max-height: min(420px, calc(100vh - 220px - var(--ck-h, 0px)));
+  overflow: auto;
   padding: 26px 26px 22px;
   border-radius: var(--nu-r-card);
   /* o brilho do herói dos e-mails: o convite tem a cara do e-mail que promete */
@@ -196,7 +291,8 @@ watch(() => route.path, (p) => {
 .nnc__fechar:hover { background: var(--nu-cream-text-18); color: var(--nu-white); }
 .nnc__fechar:focus-visible, .nnc__abrir:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
 
-/* celular: a faixa fina, com o formulário a um toque */
+/* celular: a faixa fina, com o formulário a um toque (o cartão inteiro fica
+   display:none no breakpoint; isto só vale se a largura mudar com ele aberto) */
 .nnc--fino {
   display: flex; align-items: center; gap: 10px;
   padding: 8px 8px 8px 20px; border-radius: var(--nu-r-pill);
@@ -212,14 +308,27 @@ watch(() => route.path, (p) => {
 }
 .nnc__abrir:hover { background: var(--nu-blue-hover); }
 
+/* celular: o cartão não é desenhado, não recebe foco e não é anunciado */
 @media (max-width: 760px) {
-  .nnc { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom) + var(--ck-h, 0px)); width: auto; padding: 22px 18px 18px; }
-  .nnc--fino { padding: 8px 8px 8px 20px; }
+  .nnc { display: none !important; }
 }
 
 .nnc-enter-active, .nnc-leave-active { transition: opacity .3s ease, transform .3s cubic-bezier(.2, .8, .2, 1); }
 .nnc-enter-from, .nnc-leave-to { opacity: 0; transform: translateY(16px); }
 @media (prefers-reduced-motion: reduce) {
   .nnc-enter-from, .nnc-leave-to { transform: none; }
+}
+</style>
+
+<style>
+/* Enquanto o cartão está no canto, o miolo encolhe a largura dele mais a
+   margem e uma folga (392 + 24 + 16). O header, o aviso de cookies e o
+   rodapé continuam na largura da tela: o cartão fica abaixo deles, e o
+   rodapé tira o cartão da tela (exibirConviteFlutuante). */
+@media (min-width: 761px) {
+  html.nnc-reserva main {
+    padding-right: calc(392px + 24px + 16px);
+    overflow-x: clip;
+  }
 }
 </style>
