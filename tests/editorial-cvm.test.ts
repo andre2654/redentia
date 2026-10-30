@@ -116,7 +116,7 @@ test('a FAQ visível junta as 6 da cópia com as 4 de fonte', () => {
   }))
   const fontes = [
     { q: 'Qual a cotação?', a: 'Fonte: Brapi (B3), atualização de 10 a 30 min.' },
-    { q: 'Qual o dividend yield?', a: 'Fonte: Scraper StatusInvest, base em DFP/ITR.' },
+    { q: 'Qual o dividend yield?', a: 'Fonte: StatusInvest, base em DFP/ITR.' },
     { q: 'Quanto teve em proventos?', a: 'Fonte: avisos de proventos da B3.' },
     { q: 'Como variou nos últimos 12 meses?', a: 'Fonte: StatusInvest (dados diários).' },
   ]

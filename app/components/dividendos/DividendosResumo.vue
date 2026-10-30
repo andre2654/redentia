@@ -15,6 +15,8 @@ defineProps<{
   bars: AcaoDividendBar[]
   /** rodapé das barras (renda por ano, ou amortização quando o papel só devolveu capital) */
   barsNote?: string
+  /** fonte e data dos números da coluna */
+  fonte?: string
 }>()
 </script>
 
@@ -26,6 +28,7 @@ defineProps<{
         <div class="dvr__sub">{{ subtitle }}</div>
         <div class="dvr__stats">
           <NuStatList :rows="rows" />
+          <p v-if="fonte" class="dvr__fonte">{{ fonte }}</p>
         </div>
         <div class="dvr__cta-row">
           <NuxtLink :to="`/calculadora/dividend-yield?ticker=${ticker}`" class="dvr__cta">Calcular o DY de {{ ticker }}</NuxtLink>
@@ -56,6 +59,10 @@ defineProps<{
 }
 .dvr__sub { color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 .dvr__stats { margin-top: 26px; }
+.dvr__fonte {
+  margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm);
+  font-weight: 500; line-height: 1.5; max-width: 46ch;
+}
 .dvr__cta-row { margin-top: 28px; }
 .dvr__cta {
   display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--nu-blue-text);

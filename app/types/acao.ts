@@ -370,8 +370,10 @@ export interface AcaoHeroVM {
 export interface AcaoStatRow {
   l: string
   v: string
-  /** cor de destaque do valor (PR5: 'Desde o lançamento' verde na tese) */
+  /** cor de destaque do valor (PR5: 'Desde o lançamento' verde na tese). Só alta. */
   accent?: 'green'
+  /** fonte e data do número, na linha de baixo do card. Ausente = o bloco não cita. */
+  fonte?: string
 }
 
 export interface AcaoPerfilRow {

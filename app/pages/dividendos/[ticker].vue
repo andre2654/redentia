@@ -106,6 +106,8 @@ if (data.value) {
     path: `/dividendos/${ticker}`,
     // pregão da cotação usada no DY (price_date do perfil), nunca o calendário
     dateModified: div.value.dataDate,
+    // sem provento no histórico: fora do índice, links continuam seguíveis
+    robots: robotsDeDividendos(div.value.temHistorico),
     breadcrumbs: [
       { name: 'Início', path: '/' },
       { name: ticker, path: `/asset/${ticker}` },
@@ -138,19 +140,47 @@ if (data.value) {
       :rows="div.resumo.rows"
       :bars="div.resumo.bars"
       :bars-note="div.resumo.barsNote"
+      :fonte="div.resumo.fonte"
     />
 
     <!-- ============ Histórico real: tabela pagamento a pagamento ============ -->
     <CalcBand :tone="histTone" title="Pagamento por pagamento.">
       <template #dek>
-        <p>Cada {{ div.isFii ? 'rendimento' : 'provento' }} de {{ ticker }} registrado na B3, com data, tipo e valor por {{ div.isFii ? 'cota' : 'ação' }}.</p>
+        <p>Cada {{ div.isFii ? 'rendimento' : 'provento' }} de {{ ticker }} registrado na B3, com data com, data de pagamento, tipo e valor por {{ div.isFii ? 'cota' : 'ação' }}. A data ex é o pregão seguinte à data com.</p>
       </template>
+      <div v-if="div.proximo" class="dvt__next">
+        <h3 class="dvt__next-title">Próximo pagamento</h3>
+        <div class="dvt__next-grid">
+          <div class="dvt__next-card" :class="{ 'dvt__next-card--white': histTone === 'cream' }">
+            <span class="dvt__next-label">Data com</span>
+            <span class="dvt__next-value">{{ div.proximo.com }}</span>
+          </div>
+          <div class="dvt__next-card" :class="{ 'dvt__next-card--white': histTone === 'cream' }">
+            <span class="dvt__next-label">Data ex</span>
+            <span class="dvt__next-value">{{ div.proximo.ex }}</span>
+          </div>
+          <div class="dvt__next-card" :class="{ 'dvt__next-card--white': histTone === 'cream' }">
+            <span class="dvt__next-label">Data de pagamento</span>
+            <span class="dvt__next-value">{{ div.proximo.pagamento }}</span>
+          </div>
+          <div
+            v-for="(linha, i) in div.proximo.linhas"
+            :key="`${linha.tipo}-${i}`"
+            class="dvt__next-card"
+            :class="{ 'dvt__next-card--white': histTone === 'cream' }"
+          >
+            <span class="dvt__next-label">{{ linha.tipo }}</span>
+            <span class="dvt__next-value">{{ linha.valor }}</span>
+          </div>
+        </div>
+        <p class="dvt__fonte">{{ div.proximo.fonte }}</p>
+      </div>
       <div class="dvt__band-body">
         <CalcTableCard
           v-if="div.history"
           :columns="div.history.columns"
           :rows="div.history.rows"
-          :accent-col="2"
+          :accent-col="3"
           :note="div.history.note"
           :tone="histTone === 'cream' ? 'white' : 'cream'"
         />
@@ -210,6 +240,37 @@ if (data.value) {
 
 <style scoped>
 .dvt__band-body { margin-top: clamp(30px, 4vw, 48px); }
+
+.dvt__next { max-width: 1080px; margin: clamp(28px, 4vw, 40px) auto 0; }
+.dvt__next-title {
+  margin: 0 0 14px; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+}
+.dvt__next-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(168px, 100%), 1fr));
+  gap: 12px;
+}
+.dvt__next-card {
+  background: var(--nu-cream);
+  border-radius: var(--nu-r-tile);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.dvt__next-card--white { background: var(--nu-white); }
+.dvt__next-label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.35; }
+.dvt__next-value {
+  color: var(--nu-ink); font-size: clamp(16px, 2vw, 22px); font-weight: 800;
+  letter-spacing: -.2px; line-height: 1.25; overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.dvt__fonte {
+  margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm);
+  font-weight: 500; line-height: 1.5; max-width: 72ch;
+}
 
 /* hero: faixa do código trocado + fileira do "Seguir" (a linha de retorno do
    SeguirAtivo quebra pra baixo do botão via flex-basis 100%) */

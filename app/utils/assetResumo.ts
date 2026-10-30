@@ -145,17 +145,17 @@ const QUEBRADA = /R\$(?!\s*\d)|US\$(?!\s*\d)|(?:^|\s)%|de\s*%|Fonte:\s*$|Fonte:\
  * Selos copiados de /metodologia. Cripto não entra: a página não nomeia provedor.
  * - cotação do pregão: tabela "Cotações intraday", origem Brapi (B3), cron de 10 a 30 min
  * - faixa de 52 semanas e série (ticker_historical_prices_si, scrape_extras): scrape diário do StatusInvest
- * - P/L, P/VP, ROE, margens: "Scraper StatusInvest, base em DFP/ITR"
+ * - P/L, P/VP, ROE, margens: "StatusInvest, base em DFP/ITR"
  */
 export const FONTE_COTACAO = 'Brapi (B3), atualização de 10 a 30 min'
 export const FONTE_SERIE = 'StatusInvest (dados diários)'
 /** Fundamentalistas de empresa listada: tabela de /metodologia (DFP/ITR). */
-export const FONTE_FUNDAMENTALISTAS = 'Scraper StatusInvest, base em DFP/ITR'
+export const FONTE_FUNDAMENTALISTAS = 'StatusInvest, base em DFP/ITR'
 /**
  * FII (scrape_extras.fii) e BDR (scrape_extras.valuation/quality) vêm do mesmo
  * scraper. DFP/ITR não descreve informe de fundo nem DRE da matriz em dólar.
  */
-export const FONTE_SCRAPER = 'Scraper StatusInvest'
+export const FONTE_SCRAPER = 'StatusInvest'
 const SELO_COTACAO = 'Dados: Brapi.'
 const SELO_COTACAO_E_FUNDOS = 'Dados: Brapi e StatusInvest.'
 /** Nota do hero quando a moeda do perfil é dólar. */

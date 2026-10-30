@@ -12,6 +12,7 @@ defineProps<{ items: AcaoStatRow[] }>()
     <div v-for="s in items" :key="s.l" class="dvs__card">
       <span class="dvs__label">{{ s.l }}</span>
       <span class="dvs__value" :class="{ 'dvs__value--green': s.accent === 'green' }">{{ s.v }}</span>
+      <span v-if="s.fonte" class="dvs__fonte">{{ s.fonte }}</span>
     </div>
   </div>
 </template>
@@ -35,9 +36,11 @@ defineProps<{ items: AcaoStatRow[] }>()
 .dvs__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .dvs__value {
   color: var(--nu-ink); font-size: clamp(20px, 2.2vw, 26px); font-weight: 800;
-  letter-spacing: -.3px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  letter-spacing: -.3px; font-variant-numeric: tabular-nums; line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 .dvs__value--green { color: var(--nu-green-2); }
+.dvs__fonte { color: var(--nu-gray); font-size: 12px; font-weight: 500; line-height: 1.4; }
 
 @media (max-width: 760px) {
   .dvs { grid-template-columns: repeat(2, 1fr); }

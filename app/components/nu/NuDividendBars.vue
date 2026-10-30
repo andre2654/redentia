@@ -33,8 +33,9 @@ defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
   justify-content: flex-end; height: 100%; min-width: 0;
 }
 .ndb__val {
-  color: var(--nu-ink); font-size: clamp(12px, 1.3vw, 15px); font-weight: 800;
-  white-space: nowrap; font-variant-numeric: tabular-nums; margin-bottom: 10px;
+  color: var(--nu-ink); font-size: clamp(10px, 2.4vw, 15px); font-weight: 800;
+  width: 100%; text-align: center; line-height: 1.15; overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums; margin-bottom: 10px;
 }
 .ndb__val--current { color: var(--nu-blue-text); }
 .ndb__bar {
@@ -45,5 +46,5 @@ defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
 .ndb__years { display: flex; gap: clamp(10px, 1.6vw, 22px); margin-top: 12px; }
 .ndb__year { flex: 1; text-align: center; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .ndb__year--current { color: var(--nu-ink); font-weight: 800; }
-.ndb__footnote { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 22px; }
+.ndb__footnote { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; margin-top: 22px; }
 </style>
