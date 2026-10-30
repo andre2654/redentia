@@ -15,10 +15,11 @@
  *    INDEXABLE_ASSETS (03/08 e 20/10/2026) saiu do sitemap em 26/10/2026:
  *    ela escondia páginas 200 com demanda (BBDC3, SANB4, ITUB3, …). A lista
  *    continua valendo só para os pares do setor (app/utils/paresDoSetor.ts).
- *  - Dividendos /dividendos/{TICKER}: clássicos + demanda medida + top 100 do
- *    ranking de DY (o endpoint não pagina além de 100). A guarda anti-404
- *    tira ticker que o /tickers-full não conhece. Não dá para listar todo
- *    pagador sem um endpoint em massa: página sem provento é 404.
+ *  - Dividendos /dividendos/{TICKER}: pagadores de GET /dividends/tickers
+ *    (STOCK, REIT e BDR, símbolo B3 válido). BDR entra porque a página
+ *    responde 200 com histórico. Se o endpoint falhar, volta a lista anterior
+ *    (clássicos + demanda medida + top 100 de DY). A guarda anti-404 tira
+ *    ticker que o /tickers-full não conhece e alias (301).
  *  - Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} (top 20, símbolo válido)
  *    vêm do backend. O hub /tesouro entra; o hub /dividendos não (é 301).
  */
@@ -28,6 +29,7 @@ import { GUIDE_DOCS } from '../../app/content/guias'
 import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
 import { symbolShape } from '../../app/utils/tickerClass'
+import { tickersDePaginaDividendos, type DividendTickerRow } from './dividend-sitemap'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
@@ -312,6 +314,8 @@ interface UniverseEntry {
   type?: string
   /** pregão do preço do ativo, 'YYYY-MM-DD' */
   priceDate?: string
+  /** código novo: a URL deste ticker é 301, não entra no sitemap */
+  aliasOf?: string | null
 }
 
 /** Tipos negociados na B3 — o pregão "mais recente" da home e dos rankings sai só deles. */
@@ -327,7 +331,12 @@ const fetchTickerUniverse = defineCachedFunction(
       const items = Array.isArray(res?.data) ? res.data : []
       return items
         .filter((t): t is TickerApiItem & { ticker: string } => typeof t.ticker === 'string' && t.ticker.length > 0)
-        .map((t) => ({ ticker: t.ticker.toUpperCase(), type: t.type, priceDate: isoDate(t.price_date) }))
+        .map((t) => ({
+          ticker: t.ticker.toUpperCase(),
+          type: t.type,
+          priceDate: isoDate(t.price_date),
+          aliasOf: t.alias_of ? String(t.alias_of).toUpperCase() : null,
+        }))
     }
     catch { return [] }
   },
@@ -442,38 +451,61 @@ interface RankingRowApiLite {
   name?: string
 }
 
+function dividendPage(ticker: string): SitePage {
+  return {
+    path: `/dividendos/${ticker}`,
+    title: `Dividendos de ${ticker}`,
+    description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${ticker}.`,
+    // lastmod = price_date do ativo, preenchido em getSiteSections (universo)
+  }
+}
+
 /**
- * /dividendos/{TICKER}: 12 clássicos + os que têm demanda medida
- * (app/content/seo/indexable-dividends.ts) + top 100 do ranking de DY.
- * O ranking não pagina (limit=1000 devolve os mesmos 100). Símbolo inválido
- * fica de fora: a página 404a antes do fetch.
+ * Lista anterior, usada só quando GET /dividends/tickers falha ou volta vazio:
+ * 12 clássicos + demanda medida + top 100 do ranking de DY. O ranking não
+ * pagina (limit=1000 devolve os mesmos 100). Símbolo inválido fica de fora.
+ */
+async function fetchDividendPagesFallback(): Promise<SitePage[]> {
+  const tickers = new Set<string>([...DIVIDEND_CLASSICS, ...INDEXABLE_DIVIDENDS])
+  try {
+    const res = await $fetch<{ data?: RankingRowApiLite[] }>('/rankings/top-dividend-yield?limit=100', {
+      baseURL: backendBase(),
+      timeout: 10_000,
+    })
+    const items = Array.isArray(res?.data) ? res.data : []
+    for (const row of items) {
+      if (typeof row.ticker === 'string' && symbolShape(row.ticker) === 'b3') {
+        tickers.add(row.ticker.toUpperCase())
+      }
+    }
+  } catch {
+    // ranking fora → segue só com os clássicos e a demanda medida
+  }
+  return [...tickers].filter((t) => symbolShape(t) === 'b3').map(dividendPage)
+}
+
+/**
+ * /dividendos/{TICKER}: pagadores de GET /dividends/tickers (STOCK, REIT e
+ * BDR). BDR tem página 200 com histórico, então entra. Símbolo inválido
+ * (MRSA3B) fica de fora: a rota 404a antes do fetch. Endpoint fora ou vazio
+ * cai na lista anterior, pra o sitemap não sumir numa falha.
  */
 const fetchDividendPages = defineCachedFunction(
   async (): Promise<SitePage[]> => {
-    const tickers = new Set<string>([...DIVIDEND_CLASSICS, ...INDEXABLE_DIVIDENDS])
     try {
-      const res = await $fetch<{ data?: RankingRowApiLite[] }>('/rankings/top-dividend-yield?limit=100', {
+      const res = await $fetch<{ data?: DividendTickerRow[] }>('/dividends/tickers', {
         baseURL: backendBase(),
-        timeout: 10_000,
+        timeout: 20_000,
       })
-      const items = Array.isArray(res?.data) ? res.data : []
-      for (const row of items) {
-        if (typeof row.ticker === 'string' && symbolShape(row.ticker) === 'b3') {
-          tickers.add(row.ticker.toUpperCase())
-        }
-      }
+      const tickers = tickersDePaginaDividendos(Array.isArray(res?.data) ? res.data : [])
+      if (tickers.length > 0) return tickers.map(dividendPage)
     } catch {
-      // ranking fora → segue só com os clássicos
+      // endpoint fora → lista anterior
     }
-    return [...tickers].filter((t) => symbolShape(t) === 'b3').map((t) => ({
-      path: `/dividendos/${t}`,
-      title: `Dividendos de ${t}`,
-      description: `Histórico de proventos, dividend yield e agenda de pagamentos de ${t}.`,
-      // lastmod = price_date do ativo, preenchido em getSiteSections (universo)
-    }))
+    return fetchDividendPagesFallback()
   },
   {
-    name: 'site-pages-dividends-v2',
+    name: 'site-pages-dividends-v3',
     maxAge: 3600,
     swr: true,
     getKey: () => 'all',
@@ -580,22 +612,26 @@ export async function getSiteSections(): Promise<SiteSection[]> {
   }
   const corePages = CORE_PAGES.map((p) => (p.path in coreLastmod ? { ...p, lastmod: coreLastmod[p.path] } : p))
 
-  // GUARDA ANTI-404 NO SITEMAP (23/08/2026). fetchDividendPages monta a lista
-  // a partir do ranking /rankings/top-dividend-yield, e o ranking devolve
-  // ticker que o /tickers-full do MESMO backend não conhece — GUAR3 é o caso
-  // vivo. A página /dividendos/{T} 404a quando o profile não existe, então o
-  // sitemap estava publicando um 404. Um só, mas sitemap com 404 é reportado
+  // GUARDA ANTI-404 NO SITEMAP (23/08/2026). A lista vem de
+  // GET /dividends/tickers (ou, se ele falhar, do ranking de DY). Os dois
+  // podem citar ticker que o /tickers-full do MESMO backend não conhece —
+  // GUAR3 é o caso vivo do ranking. A página /dividendos/{T} 404a quando o
+  // profile não existe, e alias responde 301. Sitemap com 404 é reportado
   // pelo Google e derruba a confiança no arquivo inteiro.
   //
   // A régua é o universo CRU (fetchTickerUniverse), NÃO a lista de `ativos`:
   // aquela já passou pela poda por demanda, e ticker podado do /asset pode ter
   // /dividendos válido. Medido: usar a lista podada removia BBSE3, EVEN3,
   // CGRA3, CGRA4, CEBR3 e CEBR6 — todas 200 — pra pegar um único GUAR3.
+  // Alias (alias_of preenchido) sai: a URL é 301 pro código novo.
   // Só filtra quando o universo veio de fato: backend fora devolve [] e aí
   // filtrar apagaria a seção inteira, que é pior que um 404.
-  const universo = new Set(universoCru.map((e) => e.ticker))
+  const universo = new Map(universoCru.map((e) => [e.ticker, e]))
   const dividendos = (universo.size > 0
-    ? dividendosCru.filter((p) => universo.has(p.path.split('/').pop()!.toUpperCase()))
+    ? dividendosCru.filter((p) => {
+        const entrada = universo.get(p.path.split('/').pop()!.toUpperCase())
+        return !!entrada && !entrada.aliasOf
+      })
     : dividendosCru
   ).map((p) => ({ ...p, lastmod: priceDates.get(p.path.split('/').pop()!.toUpperCase()) }))
 

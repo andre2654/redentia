@@ -36,13 +36,9 @@ const incomePill = computed(() => {
         <div class="adv__cta-row">
           <!--
             Leva pra landing de proventos do ticker (histórico completo + FAQ).
-            CONDICIONAL de propósito: este componente renderiza em ~1.674 páginas
-            de ativo, mas o sitemap publica só 32 /dividendos/{TICKER}, e a página
-            de destino dá 404 quando o backend não tem histórico
-            (dividendos/[ticker].vue:42-50). Linkar incondicionalmente é o que
-            fazia o Googlebot descobrir ~1.600 URLs fora do sitemap e gastar
-            crawl em 404: das 1.000 URLs do relatório, 446 tinham impressão SEM
-            estar no sitemap. Sem barras não há histórico, então não há link.
+            CONDICIONAL de propósito: a página de destino dá 404 quando o
+            backend não tem histórico. Sem barras não há histórico, então
+            não há link. O sitemap lista os pagadores de /dividends/tickers.
           -->
           <NuxtLink v-if="dividends.bars.length > 0" :to="`/dividendos/${ticker}`" class="adv__cta adv__cta--primary">
             Ver histórico de dividendos
