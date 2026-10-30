@@ -115,7 +115,7 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
       dy: 6.96139, pl: 5.074, pvp: 1.407, roe: 30.306, margem: 24.316, valorMercado: 718.209e9,
       vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
     },
-    fonteIndicadores: 'Scraper StatusInvest, base em DFP/ITR',
+    fonteIndicadores: 'StatusInvest, base em DFP/ITR',
     min52: 29.53,
     max52: 59.68,
     serie: { de: '2025-10-29', ate: '2026-10-28', variacao: 82.07, ibov: 15.99 },
@@ -169,7 +169,7 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   assert.match(frase12, /ROE de 30,3%/)
   assert.doesNotMatch(frase12, /P\/VP|valor de mercado/)
   assert.match(corpo, /O P\/VP é 1,41 e o valor de mercado é R\$ 718,21B/)
-  assert.match(corpo, /Fonte: Scraper StatusInvest, base em DFP\/ITR/)
+  assert.match(corpo, /Fonte: StatusInvest, base em DFP\/ITR/)
   assert.match(corpo, /De 29\/10\/2025 a 28\/10\/2026, PETR4 variou \+82,07%/)
   assert.match(corpo, /No mesmo período, o Ibovespa variou \+15,99%/)
   assert.doesNotMatch(corpo, /cerca de 12 meses|média dos/)
@@ -213,7 +213,7 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
       dy: 9.086, pl: null, pvp: 0.8918, roe: null, margem: null, valorMercado: null,
       vpCota: 165.476, rendaMedia24m: 1.1, ifix: 4.183, cotistas: 613837,
     },
-    fonteIndicadores: 'Scraper StatusInvest',
+    fonteIndicadores: 'StatusInvest',
     proventos: {
       unidade: 'cota',
       renda12: 12.4,
@@ -238,7 +238,7 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   assert.match(corpo, /a participação no IFIX é 4,18%/)
   assert.match(corpo, /613\.837 cotistas/)
   assert.match(corpo, /por cota/)
-  assert.match(corpo, /Fonte: Scraper StatusInvest\./)
+  assert.match(corpo, /Fonte: StatusInvest\./)
   assert.match(r.description, /cotação mais recente de R\$ 147,58/)
   assert.match(r.description, /Dividend yield 9,09%/)
   assert.match(r.description, /P\/VP 0,89/)

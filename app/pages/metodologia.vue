@@ -65,7 +65,7 @@ const sections: MetSection[] = [
       { kind: 'subsection', title: 'ANBIMA (Associação Brasileira das Entidades dos Mercados Financeiro e de Capitais)', blocks: [
         { kind: 'p', text: 'Autorregulação do mercado de fundos, classificação ANBIMA de fundos (renda fixa, multimercado, ações, cambial, previdência), índices de renda fixa (IMA-B, IMA-S, IRF-M, IDA), curvas de juros futuras, rentabilidade média de tesouro direto, certificações profissionais (CPA-10, CPA-20, CEA, CGA). Frequência: índices ANBIMA atualizados diariamente, classificação revisada por instrução.' },
       ] },
-      { kind: 'p', text: 'Em adição, consumimos APIs públicas e parceiras (Brapi para preços B3 com latência reduzida, scraper proprietário do StatusInvest para fundamentalistas) para reduzir o tempo entre publicação oficial e exibição na plataforma. Toda transformação aplicada (cálculo de DY, P/L, P/VP) parte de dados originados nas fontes acima.' },
+      { kind: 'p', text: 'Em adição, consumimos APIs públicas e parceiras (Brapi para preços B3 com latência reduzida, StatusInvest para fundamentalistas) para reduzir o tempo entre publicação oficial e exibição na plataforma. Toda transformação aplicada (cálculo de DY, P/L, P/VP) parte de dados originados nas fontes acima.' },
     ],
   },
   {
@@ -171,13 +171,13 @@ const sections: MetSection[] = [
     id: 'atualizacao',
     title: '5. Atualização de dados',
     blocks: [
-      { kind: 'p', text: 'A camada de dados que alimenta cotações, fundamentalistas e calendários roda em microsserviços dedicados (news-scraper, fundamentals-scraper, chat-service), com cron jobs específicos por tipo de dado.' },
+      { kind: 'p', text: 'A camada de dados que alimenta cotações, fundamentalistas e calendários roda em serviços dedicados de notícias, fundamentalistas e conversa, com cron jobs específicos por tipo de dado.' },
       { kind: 'table',
         head: ['Tipo de dado', 'Frequência', 'Origem'],
         rows: [
           ['Cotações intraday durante pregão', 'Cron 10 a 30 min', 'Brapi (B3)'],
           ['Cotações de fechamento', 'Diária após pregão', 'B3 oficial via API'],
-          ['Fundamentalistas (P/L, P/VP, ROE, margens)', 'Diária', 'Scraper StatusInvest, base em DFP/ITR'],
+          ['Fundamentalistas (P/L, P/VP, ROE, margens)', 'Diária', 'StatusInvest, base em DFP/ITR'],
           ['Calendário de dividendos', 'Diária', 'B3 (avisos a acionistas)'],
           ['Selic, CDI, IPCA', 'Diária (CDI), por reunião Copom (Selic), mensal (IPCA)', 'BCB SGS, IBGE Sidra'],
           ['Tesouro Direto', 'Diária (preços), mensal (rentabilidade ANBIMA)', 'Tesouro Nacional, ANBIMA'],

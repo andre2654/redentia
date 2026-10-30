@@ -106,6 +106,8 @@ if (data.value) {
     path: `/dividendos/${ticker}`,
     // pregão da cotação usada no DY (price_date do perfil), nunca o calendário
     dateModified: div.value.dataDate,
+    // sem provento no histórico: fora do índice, links continuam seguíveis
+    robots: robotsDeDividendos(div.value.temHistorico),
     breadcrumbs: [
       { name: 'Início', path: '/' },
       { name: ticker, path: `/asset/${ticker}` },

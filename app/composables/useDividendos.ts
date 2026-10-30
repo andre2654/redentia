@@ -76,6 +76,11 @@ export interface DividendosPayload {
     linhas: { tipo: string; valor: string }[]
     fonte: string
   } | null
+  /**
+   * false quando a API respondeu e não há nenhum provento. Fetch que falhou
+   * não entra aqui: isso é indisponível, não histórico vazio.
+   */
+  temHistorico: boolean
   /** tabela do histórico real — null quando não há linhas pra mostrar */
   history: {
     columns: string[]
@@ -332,7 +337,7 @@ function buildPayload(c: Core): DividendosPayload {
     ? null
     : c.dyBasis === 'sem-renda'
       ? `Fonte: avisos de proventos da B3, até ${dateShortPt(c.hoje)}.`
-      : `Fonte: Scraper StatusInvest${c.dyAsOf ? `, em ${dateShortPt(c.dyAsOf)}` : ''}.`
+      : `Fonte: StatusInvest${c.dyAsOf ? `, em ${dateShortPt(c.dyAsOf)}` : ''}.`
   const fonteProventos = `Fonte: avisos de proventos da B3, pela data com até ${dateShortPt(c.hoje)}.`
   const comFonte = (texto: string, fonte: string | null) => (fonte ? `${texto} ${fonte}` : texto)
   // DY oficial, soma de 12 meses e cotação que não fecham entre si (±5%):
@@ -584,6 +589,7 @@ function buildPayload(c: Core): DividendosPayload {
     hero: { companyLine: `${c.name} · ${c.ticker}`, sub: heroSub, stats },
     resumo,
     proximo,
+    temHistorico: c.hist !== 'vazio',
     history,
     historyNotice,
     edu,
@@ -725,7 +731,9 @@ async function loadDividendos(base: string, ticker: string): Promise<DividendosP
   const core = coreFromApi(ticker, profile, overview, dividends)
 
   // Regras de existência: ticker existe mas nunca pagou E não tem DY → 404
-  // (thin content); histórico só INDISPONÍVEL (fetch falhou) sem DY → 503.
+  // (thin content). O 404 já sai com noindex, follow (app/error.vue). Se o
+  // histórico está vazio mas há DY, a página renderiza e o robots da página
+  // pede noindex, follow. Histórico só INDISPONÍVEL (fetch falhou) sem DY → 503.
   const hasAnyDividend = (core.historyRows?.length ?? 0) > 0 || core.bars.length > 0
   if (!hasAnyDividend && core.dy == null) {
     if (dividends === null) {
