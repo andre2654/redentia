@@ -354,6 +354,11 @@ test('cada regra tributária das páginas cita lei no Planalto, e o que não foi
   assert.doesNotMatch(ticker, /país de origem/)
   assert.doesNotMatch(tesouro, /primeiros 30 dias/)
   assert.doesNotMatch(faq, /primeiros 30 dias/)
+  assert.match(ticker, /a partir do mês de janeiro do ano-calendário de 2026/)
+  assert.match(ticker, /art\. 8º da Lei 15\.270\/2025 diz que a lei produzirá efeitos a partir de 1º de janeiro de 2026/)
+  assert.match(ticker, /art\. 14, III, produzirá efeitos a partir de 1º de janeiro de 2026 em relação aos demais dispositivos/)
+  assert.match(ticker, /inciso I, alínea b, reserva o primeiro dia do quarto mês subsequente ao de sua publicação aos arts\. 7º e 9º/)
+  assert.doesNotMatch(ticker, /1º de abril de 2026/)
 })
 
 test('as páginas pedem 404 sem provento, citam a fonte e não recomendam compra', () => {
