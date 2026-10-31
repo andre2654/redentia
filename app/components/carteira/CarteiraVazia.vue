@@ -20,7 +20,6 @@ const passos = [
 <template>
   <section class="cvz" aria-labelledby="cvz-titulo">
     <div class="cvz__miolo">
-      <span class="cvz__estado"><span class="cvz__ponto" aria-hidden="true" />Falta um passo</span>
       <h1 id="cvz-titulo" class="cvz__titulo">Conecte <br>seu banco.</h1>
       <p class="cvz__linha">
         A Redentia lê os seus investimentos pelo Open Finance, testa a carteira em
@@ -59,9 +58,7 @@ const passos = [
   padding: clamp(56px, 8vw, 112px) clamp(22px, 5.5vw, 80px) clamp(44px, 6vw, 80px);
   animation: nu-fade .5s ease both;
 }
-.cvz__estado { display: inline-flex; align-items: center; gap: 9px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
-.cvz__ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-blue); box-shadow: 0 0 0 4px var(--nu-blue-tint); }
-.cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(52px, 8.4vw, 120px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.96; }
+.cvz__titulo { margin: 0; color: var(--nu-ink); font-size: clamp(52px, 8.4vw, 120px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.96; }
 .cvz__linha { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 640px; color: var(--nu-gray-2); font-size: clamp(18px, 2vw, 22px); font-weight: 500; line-height: 1.5; }
 
 .cvz__bancos { list-style: none; margin: clamp(28px, 4vw, 44px) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
