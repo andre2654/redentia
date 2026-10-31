@@ -5,8 +5,8 @@
 // desenham como na Simulação dos apps (AssinaturaExemploCaminhos): nada aqui
 // finge ser a carteira de ninguém. Com a assinatura, o leque sai com os
 // valores dela na /carteira.
-defineProps<{ cheio?: boolean }>()
-const emit = defineEmits<{ (e: 'pronto'): void }>()
+defineProps<{ cheio?: boolean; nascer?: number; correr?: number }>()
+const emit = defineEmits<{ (e: 'pronto'): void; (e: 'comecou', segundos: number): void }>()
 </script>
 
 <template>
@@ -14,7 +14,10 @@ const emit = defineEmits<{ (e: 'pronto'): void }>()
     <figcaption class="aex__topo">
       <span class="aex__titulo">Os próximos 5 anos da sua carteira.</span>
     </figcaption>
-    <AssinaturaExemploCaminhos :altura="300" :preencher="cheio" class="aex__leque" @pronto="emit('pronto')" />
+    <AssinaturaExemploCaminhos
+      :altura="300" :preencher="cheio" :nascer="nascer" :correr="correr" class="aex__leque"
+      @pronto="emit('pronto')" @comecou="(s) => emit('comecou', s)"
+    />
     <span class="aex__nota">Projeção estatística, não previsão nem recomendação.</span>
   </figure>
 </template>
@@ -29,5 +32,5 @@ const emit = defineEmits<{ (e: 'pronto'): void }>()
 .aex--cheio { height: 100%; }
 .aex--cheio .aex__leque { flex: 1; min-height: 0; }
 /* o aviso fica à direita, fora do véu que cobre o começo das linhas */
-.aex--cheio .aex__nota { align-self: flex-end; text-align: right; }
+@media (min-width: 981px) { .aex--cheio .aex__nota { align-self: flex-end; text-align: right; } }
 </style>

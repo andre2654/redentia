@@ -26,16 +26,38 @@ const revelado = ref(false)
 // só para quem não tem JavaScript: ela contaria do HTML, antes de o leque começar)
 const comJs = ref(false)
 onMounted(() => { comJs.value = true })
+
+// enquanto o leque gera os caminhos (mais devagar aqui: ~5 s), três frases,
+// uma de cada vez, no lugar onde o título vai entrar
+const FRASES = [
+  'Testamos a sua carteira em 2.000 cenários.',
+  'Altas, quedas e crises, mês a mês, por 5 anos.',
+  'Do mais otimista ao mais pessimista.',
+]
+const frase = ref(-1)
+const timers: ReturnType<typeof setTimeout>[] = []
+function comecou(segundos: number) {
+  const cada = (segundos * 1000) / FRASES.length
+  FRASES.forEach((_, i) => timers.push(setTimeout(() => { frase.value = i }, i * cada + 150)))
+}
+watch(revelado, (r) => { if (r) frase.value = -1 })
+onBeforeUnmount(() => timers.forEach(clearTimeout))
 </script>
 
 <template>
   <section class="avt" :class="{ 'avt--coreografia': props.modo === 'comecar', 'avt--js': comJs, 'avt--revelado': revelado }">
     <!-- o fundo: o leque inteiro, e o véu que deixa o texto ler por cima -->
     <div class="avt__lado">
-      <AssinaturaExemplo cheio @pronto="revelado = true" />
+      <AssinaturaExemplo cheio :nascer="4.2" :correr="0.9" @comecou="comecou" @pronto="revelado = true" />
     </div>
     <div class="avt__veu" aria-hidden="true" />
     <div class="avt__cols">
+      <!-- as frases da espera: saem quando o texto entra -->
+      <div v-if="modo === 'comecar'" class="avt__frases" aria-live="polite">
+        <Transition name="avt-frase" mode="out-in">
+          <p v-if="frase >= 0 && !revelado" :key="frase" class="avt__frase">{{ FRASES[frase] }}</p>
+        </Transition>
+      </div>
       <div class="avt__texto">
         <span v-if="eyebrow" class="avt__eyebrow" :class="{ 'avt__eyebrow--ambar': modo === 'pendente' }">
           <span class="avt__ponto" aria-hidden="true" />{{ eyebrow }}
@@ -64,7 +86,17 @@ onMounted(() => { comJs.value = true })
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: linear-gradient(90deg, var(--nu-navy) 0%, var(--nu-navy) 30%, color-mix(in srgb, var(--nu-navy) 72%, transparent) 46%, transparent 66%);
 }
-.avt__cols { position: relative; z-index: 1; width: 100%; }
+.avt__cols { position: relative; z-index: 1; width: 100%; display: grid; }
+/* as frases e o texto no mesmo lugar: uma sai, o outro entra */
+.avt__frases, .avt__texto { grid-area: 1 / 1; }
+.avt__frases { align-self: start; max-width: 560px; pointer-events: none; }
+.avt__frase {
+  margin: 0; color: var(--nu-cream-text); font-size: clamp(30px, 3.6vw, 48px); font-weight: 800;
+  letter-spacing: -0.035em; line-height: 1.08; text-wrap: balance;
+}
+.avt-frase-enter-active, .avt-frase-leave-active { transition: opacity .45s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.avt-frase-enter-from { opacity: 0; transform: translateY(14px); }
+.avt-frase-leave-to { opacity: 0; transform: translateY(-10px); }
 .avt__texto { max-width: 600px; }
 .avt__eyebrow { display: inline-flex; align-items: center; gap: 9px; color: var(--nu-blue-soft); font-size: var(--nu-fs-md); font-weight: 800; }
 .avt__ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-blue-soft); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-blue-soft) 22%, transparent); }
@@ -106,6 +138,7 @@ onMounted(() => { comJs.value = true })
   .avt__titulo :deep(br) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .avt__frases { display: none; }
   .avt--coreografia .avt__texto > *, .avt--coreografia .avt__veu { opacity: 1; transform: none; animation: none; }
 }
 </style>

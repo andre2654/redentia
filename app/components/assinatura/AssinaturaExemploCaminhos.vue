@@ -33,9 +33,12 @@ const props = withDefaults(defineProps<{
   altura?: number
   /** ocupa a altura do pai (o fundo do topo do /assinar) em vez da altura fixa */
   preencher?: boolean
-}>(), { altura: 300, preencher: false })
+  /** segundos até o último caminho nascer, e de "hoje" a 5 anos em cada um */
+  nascer?: number
+  correr?: number
+}>(), { altura: 300, preencher: false, nascer: 1.8, correr: 0.45 })
 // 'pronto': os 2.000 nasceram e o acabamento entrou (o topo do /assinar espera por ele)
-const emit = defineEmits<{ (e: 'pronto'): void }>()
+const emit = defineEmits<{ (e: 'pronto'): void; (e: 'comecou', segundos: number): void }>()
 let avisou = false
 function avisar() {
   if (avisou) return
@@ -58,8 +61,8 @@ const tons = Array.from({ length: N }, (_, i) => tomDoCaminho(i / (N - 1), N))
 // a ordem de quem nasce primeiro (para o contador e para desenhar em ordem)
 const porNascimento = Array.from({ length: N }, (_, i) => i).sort((a, b) => nasce[a]! - nasce[b]!)
 
-const NASCER = 1.8 // s até o último nascer
-const CORRER = 0.45 // s de "hoje" a 5 anos, cada caminho
+const NASCER = props.nascer // s até o último nascer
+const CORRER = props.correr // s de "hoje" a 5 anos, cada caminho
 const ACABAR = 0.4 // s do acabamento
 const TOTAL = NASCER + CORRER
 
@@ -287,6 +290,7 @@ function comecar() {
     return
   }
   inicio = performance.now()
+  emit('comecou', TOTAL)
   quadro = requestAnimationFrame(passo)
 }
 
