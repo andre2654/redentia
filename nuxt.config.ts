@@ -287,15 +287,22 @@ export default defineNuxtConfig({
     // Os riscos que o Raio-X apontava (concentração, correlação, país) estão na
     // seção "Diversificação de verdade" do guia de carteira.
     '/guias/raio-x-carteira': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
+    // Dividendos e quanto rende: a primeira leitura depois que o cache da borda
+    // vence não pode esperar a fila de ~900 históricos. ISR serve a última
+    // resposta e regenera fora da requisição. O handler (sitemap-resposta.ts)
+    // devolve a mesma cópia na hora, com teto se não houver nenhuma.
+    '/sitemaps/dividendos.xml': { isr: 3600 },
+    '/sitemaps/quanto-rende.xml': { isr: 3600 },
   },
 
   nitro: {
     // useEvent() fora de handler: o server/plugins/backend-front-key.ts lê o
     // request em curso de dentro do $fetch do SSR pra carimbar o IP do visitante.
     experimental: { asyncContext: true },
-    // O sitemap de quanto rende lê o histórico de cada pagador numa requisição,
-    // espaçado para ficar abaixo do limite do backend (~600/min). ~900 leituras
-    // a 7 por segundo cabem em 180s.
+    // A renovação em segundo plano do sitemap de quanto rende ainda lê o
+    // histórico de cada pagador, espaçado para ficar abaixo do limite do
+    // backend (~600/min). ~900 leituras a 7 por segundo cabem em 180s. A
+    // requisição em si não espera essa fila: devolve a última cópia boa.
     vercel: { functions: { maxDuration: 180 } },
     // Dev: browser fetches de /api/* vão pro VPS por default (dev funciona sem
     // backend local). Override: NUXT_BACKEND_URL / NUXT_CHAT_SERVICE_URL.

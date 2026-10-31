@@ -5,6 +5,7 @@
  */
 import type { H3Event } from 'h3'
 import type { SitePage, SiteSection } from './site-pages'
+import { SITEMAP_CACHE_CONTROL, SITEMAP_CONTENT_TYPE } from './sitemap-cache.ts'
 
 export function escapeXml(value: string): string {
   return value
@@ -83,6 +84,6 @@ export function sitemapIndexXml(entries: Array<{ loc: string; lastmod?: string }
 }
 
 export function cacheSitemap(event: H3Event) {
-  setHeader(event, 'content-type', 'application/xml; charset=utf-8')
-  setHeader(event, 'cache-control', 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400')
+  setHeader(event, 'content-type', SITEMAP_CONTENT_TYPE)
+  setHeader(event, 'cache-control', SITEMAP_CACHE_CONTROL)
 }
