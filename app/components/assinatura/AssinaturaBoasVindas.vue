@@ -7,11 +7,13 @@
 //  - 'demorando': o webhook não chegou nas tentativas — frase honesta e
 //    "Atualizar" (relê de novo);
 //  - 'pronta': uma faixa curta no topo da carteira, com a data da primeira
-//    cobrança, e "Entendi".
+//    cobrança, e "Entendi". Sem banco conectado ainda, a faixa aponta o último
+//    passo (o Open Finance, logo embaixo), e a tela de espera mostra o passo a
+//    passo da assinatura com os dois primeiros feitos (AssinaturaJornada).
 import type { EntitlementsApi } from '~/types/assinatura'
 import { PRECO_MENSAL, dataDaPrimeiraCobranca, dataPorExtenso } from '~/utils/assinatura'
 
-const props = defineProps<{ fase: 'confirmando' | 'demorando' | 'pronta'; ent: EntitlementsApi | null }>()
+const props = defineProps<{ fase: 'confirmando' | 'demorando' | 'pronta'; ent: EntitlementsApi | null; semCarteira?: boolean }>()
 const emit = defineEmits<{ (e: 'fechar'): void; (e: 'tentar'): void }>()
 
 const fimDoTeste = computed(() => dataPorExtenso(props.ent?.subscription?.trial_ends_at) ?? dataDaPrimeiraCobranca())
@@ -30,6 +32,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
       </p>
       <button type="button" class="abv__tentar" @click="emit('tentar')">Atualizar</button>
     </template>
+    <AssinaturaJornada class="abv__jornada" :passo="3" />
   </section>
 
   <section v-else class="abf" role="status">
@@ -40,6 +43,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
       <strong>{{ emTeste ? 'Seu teste de 3 dias começou.' : 'Sua assinatura está ativa.' }}</strong>
       <span v-if="emTeste">Tudo liberado até {{ fimDoTeste }}. A primeira cobrança, de {{ PRECO_MENSAL }}, é nesse dia.</span>
       <span v-else>Tudo liberado: a carteira, os cenários e a IA.</span>
+      <span v-if="semCarteira" class="abf__falta">Agora, o último passo: conecte o seu banco aqui embaixo.</span>
     </span>
     <button type="button" class="abf__ok" @click="emit('fechar')">Entendi</button>
   </section>
@@ -97,4 +101,6 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
 @media (max-width: 760px) {
   .abv__titulo br { display: none; }
 }
+.abv__jornada { margin-top: clamp(32px, 4vw, 48px); width: min(760px, 100%); }
+.abf__falta { color: var(--nu-blue-text); font-weight: 700; }
 </style>

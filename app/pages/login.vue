@@ -75,7 +75,10 @@ const whatsappDown = ref(false)
 // ————— copy dinâmica (verbatim do renderVals do design) —————
 const isCad = computed(() => mode.value === 'cadastro')
 const isPhone = computed(() => method.value === 'phone')
-const headline = computed(() => (isCad.value ? 'Crie sua conta Redentia' : 'Entrar na Redentia'))
+// veio do /assinar (o botão da assinatura, deslogado): é o passo 1 de 3 do
+// passo a passo da assinatura, e a página diz isso (31/10/2026)
+const vemDaAssinatura = redirectTarget.startsWith('/assinar')
+const headline = computed(() => (vemDaAssinatura ? 'Primeiro, a sua conta' : isCad.value ? 'Crie sua conta Redentia' : 'Entrar na Redentia'))
 const inputLabel = computed(() => (isPhone.value ? 'Informe seu celular' : 'Informe seu e-mail'))
 const ready = computed(() =>
   isPhone.value ? phone.value.replace(/\D/g, '').length >= 10 : /.+@.+\..+/.test(email.value),
@@ -289,6 +292,7 @@ async function onGoogleCredential(idToken: string) {
     <!-- :key re-dispara o qfade a cada troca de etapa (mesma página) -->
     <div :key="step" class="lg__step">
       <template v-if="step === 'identifier'">
+        <AssinaturaJornada v-if="vemDaAssinatura" class="lg__jornada" :passo="1" compacto />
         <h1 class="lg__h1">{{ headline }}</h1>
 
         <form @submit.prevent="submitIdentifier">
@@ -364,6 +368,7 @@ async function onGoogleCredential(idToken: string) {
 
 <style scoped>
 .lg__step { animation: nu-fade .5s ease both; }
+.lg__jornada { margin-bottom: 28px; }
 .lg__h1 {
   margin: 0; color: var(--nu-ink);
   font-size: clamp(32px, 3.4vw, 44px); font-weight: 800;

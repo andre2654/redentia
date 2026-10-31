@@ -84,6 +84,8 @@ if (voltou) fase.value = assinatura.assinante.value && payload.value && !payload
 const mostraCarteira = computed(() =>
   assinatura.assinante.value && !!payload.value && !payload.value.semAssinatura && !payload.value.unauthenticated)
 const esperando = computed(() => fase.value === 'confirmando' || fase.value === 'demorando')
+// assinou e ainda não tem banco: a faixa de boas-vindas aponta o Open Finance
+const semCarteira = computed(() => !!payload.value && !(payload.value.groups?.length && payload.value.hero?.patrimonio))
 
 function tentarDeNovo() {
   void confirmar()
@@ -104,6 +106,7 @@ usePageSeo({
       v-if="fase !== 'nenhuma'"
       :fase="fase"
       :ent="assinatura.ent.value"
+      :sem-carteira="semCarteira"
       @fechar="fase = 'nenhuma'"
       @tentar="tentarDeNovo"
     />

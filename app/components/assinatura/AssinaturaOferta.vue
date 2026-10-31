@@ -11,6 +11,8 @@ const props = withDefaults(defineProps<{
 }>(), { modo: 'comecar', cancelado: false })
 
 const { erro, erroPortal, primeiraAssinatura } = useAssinatura()
+// o passo a passo embaixo do botão: deslogado está no 1 (a conta), logado no 2
+const { isAuthenticated } = useAuthState()
 const primeira = dataDaPrimeiraCobranca()
 const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value : erro.value))
 </script>
@@ -32,6 +34,11 @@ const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value
     </div>
 
     <p v-if="erroVisivel" class="aof__erro" role="alert">{{ erroVisivel }}</p>
+
+    <AssinaturaJornada
+      v-if="modo === 'comecar'" class="aof__jornada"
+      :passo="isAuthenticated ? 2 : 1" :primeira-assinatura="primeiraAssinatura" compacto
+    />
 
     <p v-if="modo === 'comecar' && primeiraAssinatura" class="aof__letra">
       Na primeira assinatura, cadastre o cartão e não pague nada por {{ DIAS_GRATIS }}
@@ -67,4 +74,5 @@ const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value
 .aof__acao { margin-top: clamp(22px, 3vw, 30px); }
 .aof__erro { margin: 14px 0 0; max-width: 460px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .aof__letra { margin: 16px 0 0; max-width: 480px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+.aof__jornada { margin-top: 18px; max-width: 560px; }
 </style>
