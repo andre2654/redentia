@@ -86,6 +86,8 @@ export interface BolsaDoDia {
   intradia: { data: string; anterior: number; pontos: [number, number][] } | null
   /** os últimos fechamentos (a linha de reserva quando o pregão minuto a minuto não vem) */
   diarias: { d: string; v: number }[]
+  /** as ações do índice, uma a uma: o mercado inteiro de uma vez (empresa agrupa as classes) */
+  acoes: { ticker: string; empresa: string; pct: number; peso: number; pontos: number }[]
 }
 
 const suspeito = (data: string, variacao: number) => Math.abs(variacao) > SALTO_SUSPEITO && !SALTOS_CONFIRMADOS.has(data)
@@ -99,7 +101,7 @@ function pctDoTexto(t: string | null | undefined): number | null {
 }
 
 export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
-  const vazio: BolsaDoDia = { ibov: null, seguidas: null, mes: null, semana: null, contagem: null, pesos: null, leitura: null, tese: null, intradia: null, diarias: [] }
+  const vazio: BolsaDoDia = { ibov: null, seguidas: null, mes: null, semana: null, contagem: null, pesos: null, leitura: null, tese: null, intradia: null, diarias: [], acoes: [] }
   const ib = e.snapshot?.indices_br?.IBOV
   if (ib?.value == null || ib.change_pct == null || !ib.as_of_date) return vazio
   const ibov = { pontos: ib.value, pct: ib.change_pct, data: ib.as_of_date.slice(0, 10), asOf: e.snapshot?.as_of ?? null }
@@ -184,6 +186,7 @@ export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
     : null
 
   let pesos: BolsaDoDia['pesos'] = null
+  const acoes: BolsaDoDia['acoes'] = []
   const cons = doMesmoDia ? (e.today?.constituents ?? []) : []
   if (cons.length) {
     const anterior = ibov.pontos / (1 + ibov.pct / 100)
@@ -195,6 +198,7 @@ export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
       const pontos = anterior * (c.index_weight / 100) * (c.change_pct / 100)
       soma += pontos
       const nome = nomeDaEmpresa(c.name ?? c.ticker)
+      acoes.push({ ticker: c.ticker, empresa: nome, pct: c.change_pct, peso: c.index_weight, pontos })
       const g = porEmpresa.get(nome)
       if (!g) porEmpresa.set(nome, { nome, ticker: c.ticker, peso: c.index_weight, tickers: [c.ticker], pontos, pct: c.change_pct })
       else {
@@ -255,7 +259,7 @@ export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
     if (pontos.length >= 10) intradia = { data: ibov.data, anterior: ibov.pontos / (1 + ibov.pct / 100), pontos }
   }
 
-  return { ibov, seguidas, mes, semana, contagem, pesos, leitura, tese, intradia, diarias: serie.slice(-23) }
+  return { ibov, seguidas, mes, semana, contagem, pesos, leitura, tese, intradia, diarias: serie.slice(-23), acoes: pesos?.confere ? acoes : [] }
 }
 
 /**

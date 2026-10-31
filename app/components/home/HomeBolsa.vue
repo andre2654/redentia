@@ -7,10 +7,13 @@
 //    ("Quinta queda seguida.");
 //  - à esquerda, a linha do pregão minuto a minuto (HomeBolsaLinha), como a
 //    do Mercado nos apps;
-//  - à direita, quem mais mexeu no índice, em pontos, para os dois lados do
-//    zero, e a régua das 76 ações (HomeBolsaPesos);
-//  - os links do fechamento da IA e da newsletter, e a ponte "Bolsa −0,75% ·
-//    Você —" com o "Conectar carteira".
+//  - à direita, o mercado inteiro de uma vez (HomeBolsaMercado): as 76 ações
+//    em cinza e acesas só as cinco que explicam o dia, a mesma língua do leque
+//    da carteira (pedido do dono: passar a sensação de que a Redentia lê o
+//    mercado e de que a pessoa não precisa ver o mercado inteiro);
+//  - embaixo da linha, o fecho: a leitura da IA numa frase, assinada, e os
+//    links do fechamento inteiro e da newsletter;
+//  - a ponte "Bolsa −0,75% · Você —" com o "Conectar carteira".
 // Saíram o azul-marinho, as pílulas (a faixa "Mercado agora" do topo já
 // mostra), os cartões com ícone, os parágrafos e as listas com abas.
 //
@@ -100,15 +103,23 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
            ficam embaixo da linha, que é mais baixa que as barras -->
       <div class="hbo__desenhos" :class="{ 'hbo__desenhos--um': !pesos }">
         <HomeBolsaLinha class="hbo__area-linha" :intradia="bolsa.intradia" :diarias="bolsa.diarias" :fecha-as="fechaAs" />
-        <HomeBolsaPesos v-if="pesos" class="hbo__area-pesos" :pesos="pesos" :contagem="bolsa.contagem" :ao-vivo="t.aoVivo" @clique="evento('asset')" />
-        <div v-if="(t.linkFechamento && blocos.length) || receber || t.aviso" class="hbo__links hbo__area-links">
+        <HomeBolsaMercado v-if="pesos && bolsa.acoes.length" class="hbo__area-pesos" :acoes="bolsa.acoes" :pesos="pesos" :contagem="bolsa.contagem" :ao-vivo="t.aoVivo" @clique="evento('asset')" />
+        <div v-if="t.leitura || (t.linkFechamento && blocos.length) || receber || t.aviso" class="hbo__area-links">
+          <!-- o fecho: de tudo o que a Redentia leu, uma frase -->
+          <figure v-if="t.leitura" class="hbo__leitura">
+            <figcaption class="hbo__leitura-rotulo">A leitura da IA</figcaption>
+            <blockquote class="hbo__citacao"><p>“{{ t.leitura.texto }}”</p></blockquote>
+            <p class="hbo__assina">{{ t.leitura.assinatura }}</p>
+          </figure>
+          <div class="hbo__links">
           <p v-if="t.aviso" class="hbo__aviso">{{ t.aviso }}</p>
           <button v-if="t.linkFechamento && blocos.length" ref="gatilho" type="button" class="hbo__link" aria-haspopup="dialog" @click="abrir">
-            {{ t.linkFechamento === 'Ler o fechamento inteiro' ? 'Ler o fechamento da IA' : t.linkFechamento }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            {{ t.linkFechamento }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </button>
           <a v-if="receber" href="#newsletter" class="hbo__link" @click="irParaNewsletter">
             Receber toda sexta por e-mail<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </a>
+          </div>
         </div>
       </div>
 
@@ -174,6 +185,13 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
 .hbo__area-pesos { grid-area: pesos; }
 .hbo__area-links { grid-area: links; }
 
+/* a leitura da IA: o fecho do que a Redentia leu */
+.hbo__leitura { margin: 4px 0 8px; padding-left: 18px; border-left: 2px solid var(--nu-ink); }
+.hbo__leitura-rotulo { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.hbo__citacao { margin: 8px 0 0; }
+.hbo__citacao p { margin: 0; max-width: 56ch; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
+.hbo__assina { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
+
 /* os links do fechamento da IA e da newsletter, numa fila */
 .hbo__links { display: flex; align-items: center; gap: 4px 28px; flex-wrap: wrap; }
 .hbo__aviso { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
@@ -216,6 +234,7 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
   .hbo__conectar { justify-self: end; }
 }
 @media (max-width: 560px) {
+  .hbo__citacao p { font-size: var(--nu-fs-lg); }
   .hbo__linha { gap: 10px; }
   .hbo__titulo { font-size: var(--nu-fs-2xl); }
   .hbo__links { gap: 0 20px; }
