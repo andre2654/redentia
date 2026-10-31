@@ -278,6 +278,65 @@ export function lequeDeExemplo(horizonte = 5): FuturoDadosApi {
   }
 }
 
+/**
+ * Os caminhos do cartão de EXEMPLO (pedido do dono, 31/10/2026: o cartão do
+ * /assinar se desenhando como a Simulação dos apps). Não são do motor nem de
+ * carteira nenhuma: sorteados da MESMA log-normal do lequeDeExemplo (o mesmo
+ * drift, o σ de baixo e o de cima), com uma semente fixa, então o SSR, o
+ * browser e todo visitante veem as mesmas linhas. Ordenados pelo final, como
+ * os do motor (índice = percentil), para o tomDoCaminho valer igual.
+ */
+export function caminhosDeExemplo(n = 2000, horizonte = 5, semente = 20261031): CaminhosDoLeque {
+  let a = semente >>> 0
+  // mulberry32: pequeno, rápido e igual em todo lugar
+  const sorteio = () => {
+    a = (a + 0x6D2B79F5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+  const normal = () => Math.sqrt(-2 * Math.log(1 - sorteio())) * Math.cos(2 * Math.PI * sorteio())
+  const meses = horizonte * 12
+  const pontos = meses + 1
+  const brutos: Float64Array[] = []
+  for (let i = 0; i < n; i++) {
+    const c = new Float64Array(pontos)
+    let w = 0
+    c[0] = 100
+    for (let m = 1; m < pontos; m++) {
+      w += normal() * Math.sqrt(1 / 12)
+      c[m] = 100 * Math.exp(0.075 * (m / 12) + w * (w < 0 ? 0.15 : 0.14))
+    }
+    brutos.push(c)
+  }
+  brutos.sort((x, y) => x[meses]! - y[meses]!)
+  const valores = new Float64Array(n * pontos)
+  brutos.forEach((c, i) => valores.set(c, i * pontos))
+  return { n, pontos, valores }
+}
+
+/**
+ * Quando cada caminho do exemplo nasce, de 0 a 1 do tempo de nascer: a ordem é
+ * um sorteio (não a do percentil) e o ritmo acelera, como na Simulação — um,
+ * dois, cinco... e então centenas. Nascidos até f: n · f³.
+ */
+export function nascimentosDoExemplo(n: number, semente = 7): Float64Array {
+  let a = semente >>> 0
+  const sorteio = () => {
+    a = (Math.imul(a ^ (a >>> 16), 0x45d9f3b) + 0x9E3779B9) >>> 0
+    return a / 4294967296
+  }
+  const ordem = Array.from({ length: n }, (_, i) => i)
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(sorteio() * (i + 1))
+    ;[ordem[i], ordem[j]] = [ordem[j]!, ordem[i]!]
+  }
+  const quando = new Float64Array(n)
+  ordem.forEach((caminho, k) => { quando[caminho] = n > 1 ? Math.cbrt(k / (n - 1)) : 0 })
+  return quando
+}
+
 /* ————— o sino dos finais ————— */
 
 /** Um ponto do sino: o valor (eixo do leque) e a densidade, de 0 a 1 (1 = o pico). */

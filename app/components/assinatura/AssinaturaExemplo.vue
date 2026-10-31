@@ -1,12 +1,10 @@
 <script setup lang="ts">
 // O cartão navy do /assinar e do paywall (31/10/2026): a FORMA do que a
-// pessoa recebe — o leque dos 2.000 cenários — sem número nenhum. As faixas
-// são de uma conta genérica (lequeDeExemplo): nada aqui finge ser a carteira
-// de ninguém. Com a assinatura, o mesmo desenho sai com os valores dela na
-// /carteira.
-import { lequeDeExemplo } from '~/utils/futuro'
-
-const dados = lequeDeExemplo()
+// pessoa recebe — o leque dos 2.000 cenários — sem número nenhum. Os
+// caminhos são sorteados de uma conta genérica (caminhosDeExemplo) e se
+// desenham como na Simulação dos apps (AssinaturaExemploCaminhos): nada aqui
+// finge ser a carteira de ninguém. Com a assinatura, o leque sai com os
+// valores dela na /carteira.
 </script>
 
 <template>
@@ -16,7 +14,7 @@ const dados = lequeDeExemplo()
       <span class="aex__titulo">A sua carteira em 2.000 cenários.</span>
       <span class="aex__sub">O otimista, o meio e o pessimista, em dinheiro de hoje.</span>
     </figcaption>
-    <CarteiraLeque :dados="dados" :fins="null" :altura="300" :eixo="{ hoje: 'hoje', fim: 'em 5 anos' }" />
+    <AssinaturaExemploCaminhos :altura="300" />
     <span class="aex__nota">Projeção estatística, não previsão nem recomendação.</span>
   </figure>
 </template>
