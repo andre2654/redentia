@@ -30,6 +30,14 @@ import {
 } from '~/utils/futuro'
 
 const props = withDefaults(defineProps<{ altura?: number }>(), { altura: 300 })
+// 'pronto': os 2.000 nasceram e o acabamento entrou (o topo do /assinar espera por ele)
+const emit = defineEmits<{ (e: 'pronto'): void }>()
+let avisou = false
+function avisar() {
+  if (avisou) return
+  avisou = true
+  emit('pronto')
+}
 
 type Rgb = [number, number, number]
 
@@ -257,6 +265,7 @@ function passo(agora: number) {
   tempo.value = (agora - inicio) / 1000
   avancarCamadas(tempo.value)
   desenhar()
+  if (tempo.value >= TOTAL) avisar()
   if (tempo.value < TOTAL + ACABAR) quadro = requestAnimationFrame(passo)
 }
 function comecar() {
@@ -265,6 +274,7 @@ function comecar() {
     tempo.value = TOTAL + ACABAR
     avancarCamadas(tempo.value)
     desenhar()
+    avisar()
     return
   }
   inicio = performance.now()

@@ -5,6 +5,7 @@
 // desenham como na Simulação dos apps (AssinaturaExemploCaminhos): nada aqui
 // finge ser a carteira de ninguém. Com a assinatura, o leque sai com os
 // valores dela na /carteira.
+const emit = defineEmits<{ (e: 'pronto'): void }>()
 </script>
 
 <template>
@@ -12,7 +13,7 @@
     <figcaption class="aex__topo">
       <span class="aex__titulo">Os próximos 5 anos da sua carteira.</span>
     </figcaption>
-    <AssinaturaExemploCaminhos :altura="300" />
+    <AssinaturaExemploCaminhos :altura="300" @pronto="emit('pronto')" />
     <span class="aex__nota">Projeção estatística, não previsão nem recomendação.</span>
   </figure>
 </template>

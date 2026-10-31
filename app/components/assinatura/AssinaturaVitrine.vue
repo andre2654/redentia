@@ -5,15 +5,23 @@
 // mesmo dia). Uma implementação para o /assinar (H1 da página) e para o
 // paywall da /carteira (mesma oferta, outra frase). O título vem pelo slot
 // para aceitar a quebra de linha feita à mão.
-withDefaults(defineProps<{
+//
+// A coreografia (pedido do dono, 31/10/2026): primeiro só o leque gerando
+// os 2.000 caminhos; quando ele termina, entram o título, a frase, o botão
+// e os selos, um depois do outro. O texto está no HTML desde o servidor (só
+// escondido): sem JavaScript ele aparece sozinho em 4,5 s, e com movimento
+// reduzido nem chega a esconder. No celular o leque sobe para o topo.
+// Cobrança pendente não espera nada.
+const props = withDefaults(defineProps<{
   eyebrow: string
   modo?: 'comecar' | 'pendente'
   cancelado?: boolean
 }>(), { modo: 'comecar', cancelado: false })
+const revelado = ref(false)
 </script>
 
 <template>
-  <section class="avt">
+  <section class="avt" :class="{ 'avt--coreografia': props.modo === 'comecar', 'avt--revelado': revelado }">
     <div class="avt__cols">
       <div class="avt__texto">
         <span v-if="eyebrow" class="avt__eyebrow" :class="{ 'avt__eyebrow--ambar': modo === 'pendente' }">
@@ -24,7 +32,7 @@ withDefaults(defineProps<{
         <AssinaturaOferta class="avt__oferta" :modo="modo" :cancelado="cancelado" escuro />
       </div>
       <div class="avt__lado">
-        <AssinaturaExemplo />
+        <AssinaturaExemplo @pronto="revelado = true" />
       </div>
     </div>
     <!-- o quiz do "Conectar carteira" (abre da oferta) -->
@@ -48,11 +56,23 @@ withDefaults(defineProps<{
 .avt__dek { margin: clamp(18px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-cream-text-70); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }
 .avt__oferta { margin-top: clamp(28px, 3.6vw, 40px); }
 
+/* a coreografia: o texto espera o leque; cada parte entra um pouco depois da outra */
+.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(18px); animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) 4.5s forwards; }
+.avt--revelado .avt__texto > * { animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) forwards; }
+.avt--revelado .avt__texto > :nth-child(2) { animation-delay: .1s; }
+.avt--revelado .avt__texto > :nth-child(3) { animation-delay: .2s; }
+.avt--revelado .avt__texto > :nth-child(4) { animation-delay: .32s; }
+@keyframes avt-entra { to { opacity: 1; transform: none; } }
+
 @media (max-width: 980px) {
   .avt__cols { grid-template-columns: minmax(0, 1fr); }
+  .avt--coreografia .avt__lado { order: -1; }
 }
 @media (max-width: 760px) {
   /* no celular o <br> manual atrapalha o text-wrap: balance */
   .avt__titulo :deep(br) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avt--coreografia .avt__texto > * { opacity: 1; transform: none; animation: none; }
 }
 </style>
