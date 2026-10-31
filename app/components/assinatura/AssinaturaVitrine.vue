@@ -9,7 +9,7 @@
 // A coreografia (pedido do dono, 31/10/2026): primeiro só o leque gerando
 // os 2.000 caminhos; quando ele termina, entram o título, a frase, o botão
 // e os selos, um depois do outro. O texto está no HTML desde o servidor (só
-// escondido): sem JavaScript ele aparece sozinho em 4,5 s, e com movimento
+// escondido): sem JavaScript ele aparece sozinho em 6 s, e com movimento
 // reduzido nem chega a esconder. No celular o leque sobe para o topo.
 // Logo depois o dono pediu o gráfico ocupando a seção inteira: no computador
 // o leque é o fundo do topo, de ponta a ponta, e quando o texto entra um véu
@@ -22,10 +22,14 @@ const props = withDefaults(defineProps<{
   cancelado?: boolean
 }>(), { modo: 'comecar', cancelado: false })
 const revelado = ref(false)
+// com JavaScript, o texto espera o leque de verdade (a salvaguarda de tempo é
+// só para quem não tem JavaScript: ela contaria do HTML, antes de o leque começar)
+const comJs = ref(false)
+onMounted(() => { comJs.value = true })
 </script>
 
 <template>
-  <section class="avt" :class="{ 'avt--coreografia': props.modo === 'comecar', 'avt--revelado': revelado }">
+  <section class="avt" :class="{ 'avt--coreografia': props.modo === 'comecar', 'avt--js': comJs, 'avt--revelado': revelado }">
     <!-- o fundo: o leque inteiro, e o véu que deixa o texto ler por cima -->
     <div class="avt__lado">
       <AssinaturaExemplo cheio @pronto="revelado = true" />
@@ -72,14 +76,15 @@ const revelado = ref(false)
 .avt__oferta { margin-top: clamp(28px, 3.6vw, 40px); }
 
 /* a coreografia: o texto espera o leque; cada parte entra um pouco depois da outra */
-.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(18px); animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) 4.5s forwards; }
+.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(18px); animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) 6s forwards; }
+.avt--coreografia.avt--js:not(.avt--revelado) .avt__texto > *, .avt--coreografia.avt--js:not(.avt--revelado) .avt__veu { animation: none; }
 .avt--revelado .avt__texto > * { animation: avt-entra .6s cubic-bezier(.22, 1, .36, 1) forwards; }
 .avt--revelado .avt__texto > :nth-child(2) { animation-delay: .1s; }
 .avt--revelado .avt__texto > :nth-child(3) { animation-delay: .2s; }
 .avt--revelado .avt__texto > :nth-child(4) { animation-delay: .32s; }
 @keyframes avt-entra { to { opacity: 1; transform: none; } }
 /* o véu chega junto com o texto */
-.avt--coreografia .avt__veu { opacity: 0; animation: avt-veu .8s ease 4.5s forwards; }
+.avt--coreografia .avt__veu { opacity: 0; animation: avt-veu .8s ease 6s forwards; }
 .avt--revelado .avt__veu { animation: avt-veu .8s ease forwards; }
 @keyframes avt-veu { to { opacity: 1; } }
 /* com o texto na tela, a legenda e o contador do leque saem (ficariam pela metade sob o véu) */
