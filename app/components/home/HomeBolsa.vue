@@ -1,25 +1,25 @@
 <script setup lang="ts">
-// A bolsa do dia na home do visitante: "O fechamento" (31/10/2026). O dono
-// pediu para repensar a seção com o mesmo cuidado do topo de quem assina; a
-// forma saiu de uma conversa entre um investidor do público, uma especialista
-// de produto da Apple e uma de UX, e o dono aprovou:
-//  - uma história por dia, só tipografia, no creme (o escuro fica para os
-//    aparelhos do herói): a sobrelinha com a data, o Ibovespa como herói, o
-//    título específico ("Quinta queda seguida."), o mês, quem mexeu no índice
-//    em pontos (só blue chip, pelo peso), a contagem, a tese dos que mexeram;
-//  - à direita, "A leitura" da IA, assinada, e os links do fechamento inteiro
-//    e da newsletter;
-//  - embaixo, a ponte: "Bolsa −0,75% · Você —" e o "Conectar carteira".
+// A bolsa do dia na home do visitante (31/10/2026). Primeiro "O fechamento",
+// só tipografia, saído de uma conversa entre um investidor do público, uma
+// especialista de produto da Apple e uma de UX; o dono achou "texto demais,
+// sem desenho", e a seção virou dois desenhos com pouca palavra:
+//  - em cima, a data do número, o Ibovespa como herói e o título do dia
+//    ("Quinta queda seguida.");
+//  - à esquerda, a linha do pregão minuto a minuto (HomeBolsaLinha), como a
+//    do Mercado nos apps;
+//  - à direita, quem mais mexeu no índice, em pontos, para os dois lados do
+//    zero, e a régua das 76 ações (HomeBolsaPesos);
+//  - os links do fechamento da IA e da newsletter, e a ponte "Bolsa −0,75% ·
+//    Você —" com o "Conectar carteira".
 // Saíram o azul-marinho, as pílulas (a faixa "Mercado agora" do topo já
-// mostra), os quatro cartões com ícone, o botão do resumo que parecia
-// desligado, o convite com WhatsApp e as listas de altas e baixas com abas.
+// mostra), os cartões com ícone, os parágrafos e as listas com abas.
 //
 // Os fatos vêm de UMA fonte (useBolsaDoDia → server/api/bolsa-do-dia), no
 // SSR; as frases, de utils/bolsaDoDia.ts, com o relógio da B3 recalculado no
 // cliente a cada minuto (a página sai da borda com a hora de quem a cacheou).
 // Com a bolsa aberta e a aba à vista, os fatos se atualizam a cada minuto.
-import { textosDaBolsa, type CausaDaBolsa } from '~/utils/bolsaDoDia'
-import { estadoDoPregao } from '~/utils/pregao'
+import { textosDaBolsa } from '~/utils/bolsaDoDia'
+import { estadoDoPregao, horaDoFechamento } from '~/utils/pregao'
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
 
 // o briefing registra o onMounted dele: vem antes de qualquer await (é o texto
@@ -44,22 +44,9 @@ const { bolsa, refresh } = await useBolsaDoDia()
 const estado = computed(() => estadoDoPregao(new Date(agora.value)).estado)
 const t = computed(() => (bolsa.value ? textosDaBolsa(bolsa.value, estado.value, new Date(agora.value)) : null))
 
-// a causa em pedaços: os nomes viram links para a página do ativo
-type Pedaco = { texto: string } | { nome: string; ticker: string }
-function pedacos(c: CausaDaBolsa): Pedaco[] {
-  const out: Pedaco[] = [{ texto: `${c.prefixo} ` }]
-  c.fizeram.forEach((e, i) => {
-    out.push({ nome: e.nome, ticker: e.ticker }, { texto: `, ${e.pontos}${i < c.fizeram.length - 1 ? '; ' : '.'}` })
-  })
-  if (c.contra.length) {
-    c.contra.forEach((e, i) => {
-      out.push({ texto: i === 0 ? ' ' : ' e ' }, { nome: e.nome, ticker: e.ticker }, { texto: ` (${e.pontos})` })
-    })
-    out.push({ texto: ` ${c.fechoContra}` })
-  }
-  return out
-}
-const causa = computed(() => (t.value?.causa ? pedacos(t.value.causa) : []))
+// o trilho da linha termina no fechamento do dia do número (17h ou 18h)
+const fechaAs = computed(() => (bolsa.value?.ibov ? horaDoFechamento(bolsa.value.ibov.data) : 17))
+const pesos = computed(() => (bolsa.value?.pesos?.confere ? bolsa.value.pesos : null))
 
 // o fechamento inteiro na janela, com "A leitura" primeiro (até a página
 // própria de cada fechamento, a segunda leva)
@@ -102,38 +89,27 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
 
 <template>
   <section class="hbo" aria-labelledby="hbo-titulo">
-    <template v-if="t">
+    <template v-if="t && bolsa">
       <p class="hbo__sobre" :class="{ 'hbo__sobre--vivo': t.aoVivo }">{{ t.sobrelinha }}</p>
       <h2 id="hbo-titulo" class="hbo__cabeca">
         <span class="hbo__linha"><span class="hbo__numero">{{ t.numero }}</span> <span class="hbo__legenda">{{ t.legenda }}</span></span>
         <span class="hbo__titulo">{{ t.titulo }}</span>
       </h2>
 
-      <div class="hbo__corpo" :class="{ 'hbo__corpo--so-texto': !t.leitura && !t.aviso && !t.linkFechamento && !receber }">
-        <div class="hbo__texto">
-          <p v-if="t.apoio" class="hbo__apoio">{{ t.apoio }}</p>
-          <p v-if="causa.length" class="hbo__causa"><template v-for="(p, i) in causa" :key="i"><NuxtLink v-if="'ticker' in p" :to="`/asset/${p.ticker}`" class="hbo__empresa" @click="evento('asset')">{{ p.nome }}</NuxtLink><template v-else>{{ p.texto }}</template></template></p>
-          <p v-if="t.contagem" class="hbo__contagem">{{ t.contagem }}</p>
-          <NuxtLink v-if="t.tese" :to="`/tese/${t.tese.slug}`" class="hbo__tese" @click="evento('tese')">
-            {{ t.tese.texto }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-          </NuxtLink>
+      <!-- os dois desenhos: a linha do pregão e quem mexeu no índice; os links
+           ficam embaixo da linha, que é mais baixa que as barras -->
+      <div class="hbo__desenhos" :class="{ 'hbo__desenhos--um': !pesos }">
+        <HomeBolsaLinha class="hbo__area-linha" :intradia="bolsa.intradia" :diarias="bolsa.diarias" :fecha-as="fechaAs" />
+        <HomeBolsaPesos v-if="pesos" class="hbo__area-pesos" :pesos="pesos" :contagem="bolsa.contagem" :ao-vivo="t.aoVivo" @clique="evento('asset')" />
+        <div v-if="(t.linkFechamento && blocos.length) || receber || t.aviso" class="hbo__links hbo__area-links">
+          <p v-if="t.aviso" class="hbo__aviso">{{ t.aviso }}</p>
+          <button v-if="t.linkFechamento && blocos.length" ref="gatilho" type="button" class="hbo__link" aria-haspopup="dialog" @click="abrir">
+            {{ t.linkFechamento === 'Ler o fechamento inteiro' ? 'Ler o fechamento da IA' : t.linkFechamento }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </button>
+          <a v-if="receber" href="#newsletter" class="hbo__link" @click="irParaNewsletter">
+            Receber toda sexta por e-mail<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
         </div>
-
-        <aside v-if="t.leitura || t.aviso || t.linkFechamento || receber" class="hbo__lado" aria-label="O fechamento da IA">
-          <figure v-if="t.leitura" class="hbo__leitura">
-            <blockquote class="hbo__citacao"><p>“{{ t.leitura.texto }}”</p></blockquote>
-            <figcaption class="hbo__assina">{{ t.leitura.assinatura }}</figcaption>
-          </figure>
-          <p v-else-if="t.aviso" class="hbo__aviso">{{ t.aviso }}</p>
-          <div class="hbo__links">
-            <button v-if="t.linkFechamento && blocos.length" ref="gatilho" type="button" class="hbo__link" aria-haspopup="dialog" @click="abrir">
-              {{ t.linkFechamento }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </button>
-            <a v-if="receber" href="#newsletter" class="hbo__link" @click="irParaNewsletter">
-              Receber toda sexta por e-mail<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </a>
-          </div>
-        </aside>
       </div>
 
       <!-- a ponte: a mesma linha que a Redentia escreve para quem conectou a carteira -->
@@ -188,41 +164,27 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
 .hbo__legenda { color: var(--nu-gray); font-size: var(--nu-fs-xl); font-weight: 700; }
 .hbo__titulo { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
 
-/* o corpo: o texto em 7 colunas, a leitura da IA em 4 */
-.hbo__corpo { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 24px clamp(48px, 7vw, 108px); align-items: start; }
-.hbo__corpo--so-texto { grid-template-columns: minmax(0, 760px); }
-.hbo__texto { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
-.hbo__apoio, .hbo__causa { margin: 0; max-width: 56ch; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; text-wrap: pretty; }
-.hbo__empresa {
-  color: var(--nu-ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--nu-ink-30);
-  text-decoration-thickness: 1px; text-underline-offset: 3px; transition: text-decoration-color .15s;
+/* os dois desenhos lado a lado (a linha um pouco maior) e os links embaixo da linha */
+.hbo__desenhos {
+  margin-top: 32px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas: 'linha pesos' 'links pesos'; grid-template-rows: auto 1fr; gap: 20px clamp(40px, 5vw, 72px); align-items: start;
 }
-.hbo__empresa:hover { color: var(--nu-ink); text-decoration-color: var(--nu-ink); }
-.hbo__empresa:focus-visible, .hbo__tese:focus-visible, .hbo__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.hbo__contagem { margin: -4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
-.hbo__tese {
-  align-self: flex-start; display: inline; max-width: 60ch; padding: 10px 0;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.5; font-variant-numeric: tabular-nums;
-}
-/* a seta vai colada à última palavra, mesmo quando a frase quebra */
-.hbo__tese svg { display: inline-block; margin-left: 6px; vertical-align: -3px; }
-.hbo__tese svg, .hbo__link svg, .hbo__conectar svg { flex: none; transition: transform .2s ease; }
-.hbo__tese:hover { color: var(--nu-blue-hover); }
-.hbo__tese:hover svg, .hbo__link:hover svg, .hbo__conectar:hover svg { transform: translateX(3px); }
+.hbo__desenhos--um { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'linha' 'links'; }
+.hbo__area-linha { grid-area: linha; }
+.hbo__area-pesos { grid-area: pesos; }
+.hbo__area-links { grid-area: links; }
 
-/* a leitura da IA: um fio à esquerda, a citação e a assinatura */
-.hbo__lado { border-left: 1px solid var(--nu-cream-line); padding-left: 24px; display: flex; flex-direction: column; gap: 18px; }
-.hbo__leitura { margin: 0; }
-.hbo__citacao { margin: 0; }
-.hbo__citacao p { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
-.hbo__assina { margin-top: 14px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.hbo__aviso { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; }
-.hbo__links { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+/* os links do fechamento da IA e da newsletter, numa fila */
+.hbo__links { display: flex; align-items: center; gap: 4px 28px; flex-wrap: wrap; }
+.hbo__aviso { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
 .hbo__link {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
   color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-md); font-weight: 700;
 }
 .hbo__link:hover { color: var(--nu-blue-hover); }
+.hbo__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
+.hbo__link svg, .hbo__conectar svg { flex: none; transition: transform .2s ease; }
+.hbo__link:hover svg, .hbo__conectar:hover svg { transform: translateX(3px); }
 
 /* a ponte */
 .hbo__ponte {
@@ -247,23 +209,22 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
 .hbo__esqueleto { display: flex; flex-direction: column; gap: 16px; }
 .hbo__esq-texto { max-width: 560px; }
 
-/* uma coluna até 1099 px; a leitura vem depois da tese */
-@media (max-width: 1099px) {
-  .hbo__corpo { grid-template-columns: minmax(0, 720px); }
-  .hbo__lado { border-left: 0; padding-left: 0; padding-top: 24px; border-top: 1px solid var(--nu-cream-line); }
+/* uma coluna até 1023 px: a linha em cima, as barras embaixo */
+@media (max-width: 1023px) {
+  .hbo__desenhos { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'linha' 'pesos' 'links'; grid-template-rows: none; gap: 32px; }
   .hbo__ponte { grid-template-columns: auto 1fr; grid-template-areas: 'placar conectar' 'frase frase'; }
   .hbo__conectar { justify-self: end; }
 }
 @media (max-width: 560px) {
   .hbo__linha { gap: 10px; }
   .hbo__titulo { font-size: var(--nu-fs-2xl); }
-  .hbo__citacao p { font-size: var(--nu-fs-lg); }
-  .hbo__ponte { margin-top: 36px; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'placar' 'conectar' 'frase'; }
+  .hbo__links { gap: 0 20px; }
+  .hbo__ponte { margin-top: 32px; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'placar' 'conectar' 'frase'; }
   .hbo__placar { gap: 28px; }
   .hbo__conectar { justify-self: stretch; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hbo { animation: none; }
-  .hbo__tese svg, .hbo__link svg, .hbo__conectar svg { transition: none; }
+  .hbo__link svg, .hbo__conectar svg { transition: none; }
 }
 </style>
