@@ -92,7 +92,9 @@ const cartoes = computed(() => {
         const resto = texto.slice(lead.length + 1).trim()
         texto = resto.charAt(0).toUpperCase() + resto.slice(1)
       }
-      return { ...x, titulo, rotulo: rotulo[x.icon] ?? x.label, pedacos: marcarTermos(texto) }
+      // a seta de cada ideia: o placar e o que puxou vão no sentido do dia; o que segurou, no contrário
+      const sobe = x.icon === 'flame' ? queda : !queda
+      return { ...x, titulo, rotulo: rotulo[x.icon] ?? x.label, sobe, pedacos: marcarTermos(texto) }
     })
 })
 const blocos = computed(() => todos.value.map((x) => ({ label: x.label, color: x.labelColor, html: x.modalHtml })))
@@ -200,12 +202,16 @@ function irParaNewsletter(e: MouseEvent) {
         <div v-if="fase === 'lido' && (briefingLoading || cartoes.length)" class="hbo__simples" role="region" aria-labelledby="hbo-titulo">
           <ol class="hbo__itens">
             <li v-for="i in (cartoes.length ? 0 : 3)" :key="`sk${i}`" class="hbo__item">
-              <NuSkeleton tone="navy" variant="line" width="110px" height="12px" radius="chip" />
-              <NuSkeleton tone="navy" variant="line" width="70%" height="28px" radius="chip" style="margin-top: 12px" />
+              <NuSkeleton tone="navy" variant="line" width="40px" height="40px" radius="pill" />
+              <NuSkeleton tone="navy" variant="line" width="70%" height="28px" radius="chip" style="margin-top: 16px" />
+              <NuSkeleton tone="navy" variant="line" width="110px" height="12px" radius="chip" style="margin-top: 12px" />
             </li>
             <li v-for="(c, i) in cartoes" :key="i" class="hbo__item">
-              <span class="hbo__item-rotulo">{{ c.rotulo }}</span>
+              <span class="hbo__item-seta" :class="c.sobe ? 'hbo__item-seta--sobe' : 'hbo__item-seta--cai'" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path :d="c.sobe ? 'M12 19V5M6 11l6-6 6 6' : 'M12 5v14M6 13l6 6 6-6'" /></svg>
+              </span>
               <strong class="hbo__item-titulo">{{ c.titulo }}</strong>
+              <span class="hbo__item-rotulo">{{ c.rotulo }}</span>
             </li>
           </ol>
           <div class="hbo__simples-acoes">
@@ -275,17 +281,19 @@ function irParaNewsletter(e: MouseEvent) {
   position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 24px; padding-top: 12px;
   animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards;
 }
-/* só a ideia de cada cartão, sem caixa: um fio separa as três; o texto inteiro fica no resumo do dia */
-.hbo__itens { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.hbo__item { padding: 4px 28px; border-left: 1px solid var(--nu-cream-text-12); animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
-.hbo__item:first-child { padding-left: 0; border-left: 0; }
+/* só a ideia de cada cartão, no centro do quadro: a seta do sentido, o título e o rótulo; o texto inteiro fica no resumo do dia */
+.hbo__itens { list-style: none; margin: auto 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hbo__item { display: flex; flex-direction: column; align-items: center; padding: 0 20px; text-align: center; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
 .hbo__item:nth-child(1) { animation-delay: .1s; }
 .hbo__item:nth-child(2) { animation-delay: .22s; }
 .hbo__item:nth-child(3) { animation-delay: .34s; }
-.hbo__item-rotulo { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.hbo__item-titulo { display: block; margin-top: 10px; color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+.hbo__item-seta { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--nu-r-pill); }
+.hbo__item-seta--sobe { color: var(--nu-green-soft); background: color-mix(in srgb, var(--nu-green-soft) 16%, transparent); }
+.hbo__item-seta--cai { color: var(--nu-red-soft); background: color-mix(in srgb, var(--nu-red-soft) 16%, transparent); }
+.hbo__item-rotulo { display: block; margin-top: 8px; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.hbo__item-titulo { display: block; margin-top: 16px; color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
 /* as ações no fim do quadro, centradas */
-.hbo__simples-acoes { margin-top: auto; padding-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
+.hbo__simples-acoes { padding-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
 .hbo__link-news { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .hbo__link-news:hover { color: var(--nu-cream-text); }
 
@@ -340,8 +348,8 @@ function irParaNewsletter(e: MouseEvent) {
   .hbo__simples { position: static; margin-top: 8px; }
   .hbo__simples-acoes { margin-top: 12px; flex-direction: column; }
   .hbo__itens { grid-template-columns: 1fr; }
-  .hbo__item, .hbo__item:first-child { padding: 16px 0; border-left: 0; border-top: 1px solid var(--nu-cream-text-12); }
-  .hbo__item:first-child { border-top: 0; padding-top: 4px; }
+  .hbo__itens { gap: 28px; }
+  .hbo__item { padding: 0; }
   .hbo__quadro--lido .hbo__grafico { display: none; }
 }
 @media (max-width: 560px) {
