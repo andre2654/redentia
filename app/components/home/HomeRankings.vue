@@ -12,7 +12,7 @@
 //  - o cartão de todos os rankings.
 // Nome da empresa antes do código, para quem está começando.
 import { RANKINGS } from '~/content/rankings/registry'
-import { quandoFoi } from '~/utils/pregao'
+import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import { nomeDaEmpresa } from '~/utils/nomeB3'
 
 const { bolsa } = await useBolsaDoDia()
@@ -76,12 +76,31 @@ const { data: daBolsa } = await useAsyncData('home:rankings', async () => {
 
 const cartoes = computed<Cartao[]>(() => [...doDia.value, ...(daBolsa.value ?? [])])
 const totalDeRankings = Object.keys(RANKINGS).length
+
+// o selo de tempo real: com a bolsa aberta, "Ao vivo" e a hora do dado (as
+// altas e baixas se atualizam a cada minuto junto com a bolsa do dia, a B3
+// entrega com 15 min de atraso); fechada, de qual pregão são os números
+const agora = useState('home:bolsa-agora', () => Date.now())
+const selo = computed(() => {
+  const ib = bolsa.value?.ibov
+  if (!ib) return null
+  const hoje = new Date(agora.value)
+  const aberta = estadoDoPregao(hoje).estado === 'aberta' && ib.data === agoraEmSP(hoje).iso
+  const t = ib.asOf ? Date.parse(ib.asOf) : Number.NaN
+  const hora = Number.isFinite(t) ? (() => { const { hora: h, minuto: m } = agoraEmSP(new Date(t)); return `${h}h${String(m).padStart(2, '0')}` })() : null
+  if (aberta) return { vivo: true, texto: 'Ao vivo', detalhe: `${hora ? `atualizado às ${hora} · ` : ''}B3 com 15 min de atraso` }
+  const dia = new Date(`${ib.data}T12:00:00Z`).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', timeZone: 'UTC' }).replace('-feira', '')
+  return { vivo: false, texto: 'Bolsa fechada', detalhe: `números do pregão de ${dia}` }
+})
 </script>
 
 <template>
   <section v-if="cartoes.length" class="hrk" aria-labelledby="hrk-titulo">
+    <p v-if="selo" class="hrk__selo" :class="{ 'hrk__selo--vivo': selo.vivo }">
+      <i class="hrk__ponto" aria-hidden="true" /><strong>{{ selo.texto }}</strong><span>{{ selo.detalhe }}</span>
+    </p>
     <h2 id="hrk-titulo" class="hrk__titulo">Os rankings.</h2>
-    <p class="hrk__sub">Quem mais subiu e caiu no último pregão, e os rankings da bolsa inteira.</p>
+    <p class="hrk__sub">Quem mais sobe e cai no pregão, em tempo real, e os rankings da bolsa inteira.</p>
 
     <div class="hrk__grade">
       <article v-for="c in cartoes" :key="c.slug" class="hrk__cartao">
@@ -120,6 +139,20 @@ const totalDeRankings = Object.keys(RANKINGS).length
 
 <style scoped>
 .hrk { background: var(--nu-cream); padding: clamp(56px, 7vw, 92px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+.hrk__selo {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 7px 14px 7px 12px; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500;
+}
+.hrk__selo strong { color: var(--nu-ink); font-weight: 800; }
+.hrk__ponto { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-sand); }
+.hrk__selo--vivo strong { color: var(--nu-green-text); }
+.hrk__selo--vivo .hrk__ponto { background: var(--nu-green); }
+/* ao vivo, o ponto pulsa: o sinal de que o número está andando */
+.hrk__selo--vivo .hrk__ponto::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--nu-green);
+  animation: hrk-pulso 1.6s ease-out infinite;
+}
+@keyframes hrk-pulso { from { transform: scale(1); opacity: .6; } to { transform: scale(2.6); opacity: 0; } }
 .hrk__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
 .hrk__sub { margin: 14px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; }
 .hrk__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
@@ -158,7 +191,7 @@ const totalDeRankings = Object.keys(RANKINGS).length
 .hrk__ver--cheio { color: var(--nu-white); }
 .hrk__todos:hover .hrk__ver--cheio { color: var(--nu-white); }
 @media (prefers-reduced-motion: reduce) {
-  .hrk { animation: none; }
+  .hrk, .hrk__selo--vivo .hrk__ponto::after { animation: none; }
   .hrk__ver svg { transition: none; }
 }
 </style>

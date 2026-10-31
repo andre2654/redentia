@@ -38,7 +38,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => observador?.disconnect())
 
-const ALTURA = 340
+const ALTURA = 280
 const M = computed(() => ({ topo: 34, dir: largura.value < 480 ? 92 : 128, base: 30, esq: 2 }))
 const geo = computed(() => {
   if (!props.mercados.length) return null
@@ -126,12 +126,13 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
         </defs>
         <!-- o zero: o nível das 10h -->
         <line :x1="M.esq" :x2="M.esq + geo.w" :y1="geo.zero" :y2="geo.zero" class="hbm__zero" />
-        <text :x="M.esq + 4" :y="geo.zero - 6" class="hbm__zero-txt">nível das 10h</text>
         <!-- as linhas: na leitura, o que falta ler fica apagado -->
         <g v-for="c in geo.caminhos" :key="c.id">
           <path v-if="leitura" :d="c.d" fill="none" class="hbm__apagada" :stroke-width="c.id === 'ibov' ? 3 : 2" stroke-linejoin="round" stroke-linecap="round" />
           <path :d="c.d" fill="none" :stroke="COR[c.id]" :stroke-width="c.id === 'ibov' ? 3 : 2" stroke-linejoin="round" stroke-linecap="round" :clip-path="leitura ? 'url(#hbm-lido)' : undefined" />
         </g>
+        <!-- o rótulo do zero vai por cima das linhas, que começam todas nele -->
+        <text :x="M.esq + 4" :y="geo.zero - 6" class="hbm__zero-txt">nível das 10h</text>
         <!-- os nomes no fim de cada linha -->
         <template v-if="!leitura">
           <g v-for="r in geo.rotulos" :key="r.id">
@@ -169,11 +170,13 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
 .hbm__chave i { width: 14px; height: 3px; border-radius: 2px; }
 .hbm__chave strong { color: var(--nu-cream-text); font-weight: 800; font-variant-numeric: tabular-nums; }
 .hbm__nota { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; }
-.hbm__caixa { position: relative; height: 340px; margin-top: 14px; touch-action: pan-y; outline: none; border-radius: 8px; }
+.hbm__caixa { position: relative; height: 280px; margin-top: 12px; touch-action: pan-y; outline: none; border-radius: 8px; }
 .hbm__caixa:focus-visible { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
 .hbm__svg { display: block; overflow: visible; }
 .hbm__zero { stroke: var(--nu-cream-text-45); stroke-width: 1; stroke-dasharray: 3 4; }
 .hbm__zero-txt, .hbm__marca { fill: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; }
+/* o rótulo do zero fica sob o começo das linhas: um contorno da cor do fundo o separa */
+.hbm__zero-txt { paint-order: stroke; stroke: var(--nu-navy); stroke-width: 4px; stroke-linejoin: round; }
 .hbm__eixo { stroke: var(--nu-cream-text-12); stroke-width: 1; }
 .hbm__apagada { stroke: var(--nu-cream-text-12); }
 .hbm__fim-nome { fill: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 800; }

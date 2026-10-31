@@ -7,15 +7,17 @@
 //  - em cima, a frase da bolsa ("Bolsa em queda.") com a sobrelinha que diz de
 //    quando é o número e quando a bolsa abre, e uma frase que explica o
 //    Ibovespa em português simples;
-//  - três números, não cinco (Ibovespa, dólar e CDI), cada um com uma legenda
-//    do que é; IFIX e Bitcoin ficam na faixa "Mercado agora" do topo;
 //  - "O dia no mercado.": três cartões do fechamento da IA, não quatro ("A
 //    leitura", a mais técnica, fica no resumo inteiro), cada um com o rótulo
 //    do que é, e os termos do mercado com a explicação no toque (HomeTermo);
 //  - "Quem mais subiu e caiu." saiu daqui para a seção de baixo, com os
 //    outros rankings (HomeRankings, pedido do dono no mesmo dia).
 // Os números vêm de uma fonte só (useBolsaDoDia, o mesmo do topo de quem
-// assina); o fechamento da IA, do useNuBriefing; dólar e CDI, da faixa do topo.
+// assina); o fechamento da IA, do useNuBriefing.
+//
+// Mais baixa (pedido do mesmo dia): as fichas de dólar e CDI repetiam a
+// legenda do gráfico e saíram; "Parece confuso?" e o botão sobem para a
+// direita do título, "O mercado" vira rótulo e o gráfico desce a 280 px.
 //
 // Ideia do dono no mesmo dia: logo embaixo de "Bolsa em queda." a linha do
 // pregão, e um botão; ao apertar, a Redentia lê o gráfico inteiro (uma linha
@@ -29,8 +31,6 @@ import { marcarTermos } from '~/utils/termosDoDia'
 
 // o briefing registra o onMounted dele: vem antes de qualquer await
 const { briefing, loading: briefingLoading, real: briefingReal } = useNuBriefing()
-// dólar e CDI, os mesmos da faixa "Mercado agora" (hidratam no cliente)
-const { items: faixa, loading: faixaCarregando } = useMarketTicker()
 
 // a hora vai no estado: a hidratação herda a do servidor e o cliente acerta ao montar
 const agora = useState('home:bolsa-agora', () => Date.now())
@@ -55,9 +55,7 @@ const textos = computed(() => (bolsa.value ? textosDaBolsa(bolsa.value, estado.v
 const ibov = computed(() => bolsa.value?.ibov ?? null)
 const aoVivo = computed(() => estado.value === 'aberta' && ibov.value?.data === agoraEmSP(new Date(agora.value)).iso)
 
-const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-const comSinal = (v: number) => (Math.abs(v) < 0.005 ? '0,00%' : `${v > 0 ? '+' : '−'}${nf2.format(Math.abs(v))}%`)
 
 const titulo = computed(() => fraseDaBolsa(ibov.value?.pct) ?? 'A bolsa hoje.')
 // a frase para quem está começando: o que é o Ibovespa e quantas subiram e caíram
@@ -71,17 +69,6 @@ const explicacao = computed(() => {
   const c = bolsa.value?.contagem
   if (c) s += ` Das ${c.total} empresas dele, ${c.altas} ${aoVivo.value ? 'sobem' : 'subiram'} e ${c.quedas} ${aoVivo.value ? 'caem' : 'caíram'}.`
   return s
-})
-
-// os três números, cada um com a legenda do que é
-const indicadores = computed(() => {
-  const achar = (n: string) => faixa.value.find((i) => i.n === n) ?? null
-  const dolar = achar('Dólar')
-  const cdi = achar('CDI')
-  return [
-    dolar && { n: 'Dólar', legenda: 'quanto custa US$ 1', v: dolar.v, pct: dolar.pct, dir: dolar.dir },
-    cdi && { n: 'CDI', legenda: 'a referência da renda fixa', v: cdi.v, pct: cdi.pct, dir: cdi.dir },
-  ].filter((x): x is NonNullable<typeof x> => !!x)
 })
 
 // o fechamento da IA: o placar, o que puxou e o que segurou ("A leitura" fica no resumo inteiro)
@@ -166,34 +153,29 @@ function irParaNewsletter(e: MouseEvent) {
 
 <template>
   <section class="hbo" aria-labelledby="hbo-titulo">
-    <!-- a frase da bolsa e o que ela quer dizer -->
-    <p v-if="textos" class="hbo__rotulo" :class="{ 'hbo__rotulo--aberta': aoVivo }">{{ textos.sobrelinha }}</p>
-    <h2 id="hbo-titulo" class="hbo__frase">{{ titulo }}</h2>
-    <p v-if="explicacao" class="hbo__sub">{{ explicacao }}</p>
-    <NuSkeleton v-else tone="navy" variant="line" width="min(420px, 80%)" height="18px" radius="chip" class="hbo__sub-sk" />
-
-    <!-- os três números: o Ibovespa em destaque e dólar e CDI ao lado -->
-    <div class="hbo__indicadores">
-      <div v-if="ibov" class="hbo__pilula" :class="ibov.pct < 0 ? 'hbo__pilula--down' : 'hbo__pilula--up'">
-        <span class="hbo__pilula-pct">{{ comSinal(ibov.pct) }}</span>
-        <span class="hbo__pilula-nome">Ibovespa<br>{{ nf0.format(Math.trunc(ibov.pontos)) }} pontos</span>
+    <!-- o topo: a frase da bolsa à esquerda e a deixa à direita, na mesma altura -->
+    <div class="hbo__topo">
+      <div class="hbo__titulos">
+        <p v-if="textos" class="hbo__rotulo" :class="{ 'hbo__rotulo--aberta': aoVivo }">{{ textos.sobrelinha }}</p>
+        <h2 id="hbo-titulo" class="hbo__frase">{{ titulo }}</h2>
+        <p v-if="explicacao" class="hbo__sub">{{ explicacao }}</p>
+        <NuSkeleton v-else tone="navy" variant="line" width="min(420px, 80%)" height="18px" radius="chip" class="hbo__sub-sk" />
       </div>
-      <template v-if="faixaCarregando && !indicadores.length">
-        <NuSkeleton v-for="i in 2" :key="`ski${i}`" tone="navy" variant="line" width="150px" height="66px" radius="tile" />
-      </template>
-      <div v-for="it in indicadores" :key="it.n" class="hbo__ind">
-        <span class="hbo__ind-nome">{{ it.n }}</span>
-        <span class="hbo__ind-linha">
-          <span class="hbo__ind-valor">{{ it.v }}</span>
-          <span v-if="it.pct" class="hbo__ind-pct" :class="`hbo__ind-pct--${it.dir}`">{{ it.pct }}</span>
-        </span>
-        <span class="hbo__ind-legenda">{{ it.legenda }}</span>
+      <div v-if="temGrafico && fase !== 'lido' && (briefingLoading || cartoes.length)" class="hbo__deixa">
+        <p class="hbo__deixa-txt" aria-live="polite">
+          <template v-if="fase === 'antes'"><strong>Parece confuso?</strong> A Redentia deixa mais simples.</template>
+          <template v-else>Lendo <strong>{{ contadores.minutos }}</strong> minutos, <strong>{{ contadores.mercados }}</strong> mercados e <strong>{{ contadores.empresas }}</strong> empresas.</template>
+        </p>
+        <button v-if="fase === 'antes'" type="button" class="hbo__ler hbo__ler--cheio hbo__ler-dia" @click="lerODia">
+          Deixar simples
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
       </div>
     </div>
 
-    <!-- o mercado: os quatro no mesmo gráfico, e a Redentia deixa simples -->
+    <!-- o mercado: os quatro no mesmo gráfico (a legenda dele já dá o número de cada um) -->
     <div v-if="temGrafico && bolsa" class="hbo__mercado">
-      <h3 class="hbo__dia-titulo">O mercado.</h3>
+      <h3 class="hbo__mercado-rotulo">O mercado</h3>
       <div class="hbo__quadro" :class="`hbo__quadro--${fase}`">
         <HomeBolsaMercados class="hbo__grafico" :mercados="bolsa.mercados" :fecha-as="fechaAs" :varredura="fase === 'lendo' ? progresso : null" />
 
@@ -222,17 +204,6 @@ function irParaNewsletter(e: MouseEvent) {
         </div>
       </div>
 
-      <!-- a deixa e o botão -->
-      <div v-if="fase !== 'lido'" class="hbo__deixa">
-        <p class="hbo__deixa-txt">
-          <template v-if="fase === 'antes'"><strong>Parece confuso?</strong> A Redentia deixa mais simples.</template>
-          <template v-else>A Redentia está lendo: <strong>{{ contadores.minutos }}</strong> minutos de pregão, <strong>{{ contadores.mercados }}</strong> mercados, <strong>{{ contadores.empresas }}</strong> empresas.</template>
-        </p>
-        <button v-if="fase === 'antes' && (briefingLoading || cartoes.length)" type="button" class="hbo__ler hbo__ler--cheio hbo__ler-dia" @click="lerODia">
-          Deixar simples
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </button>
-      </div>
     </div>
 
     <!-- sem gráfico: o fechamento da IA direto, em três cartões -->
@@ -271,32 +242,9 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__sub { margin: 14px 0 0; max-width: 62ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .hbo__sub-sk { margin-top: 18px; }
 
-/* os três números: o Ibovespa grande e dólar e CDI em fichas da mesma altura */
-.hbo__indicadores { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
-.hbo__pilula {
-  display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px 10px 14px;
-  border-radius: 14px; background: var(--nu-cream-text-10);
-}
-.hbo__pilula-pct { font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.hbo__pilula--up .hbo__pilula-pct { color: var(--nu-green-soft); }
-.hbo__pilula--down .hbo__pilula-pct { color: var(--nu-red-soft); }
-.hbo__pilula-nome { color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.3; text-transform: uppercase; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
-.hbo__ind {
-  display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 150px;
-  padding: 10px 16px; border-radius: 14px; background: var(--nu-cream-text-08);
-}
-.hbo__ind-nome { color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.hbo__ind-linha { display: flex; align-items: baseline; gap: 8px; }
-.hbo__ind-valor { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.hbo__ind-pct { font-size: var(--nu-fs-sm); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.hbo__ind-pct--up { color: var(--nu-green-soft); }
-.hbo__ind-pct--down { color: var(--nu-red-soft); }
-.hbo__ind-pct--flat { color: var(--nu-cream-text-70); }
-.hbo__ind-legenda { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 500; }
-
 /* o mercado: o gráfico e, depois da leitura, o resumo no mesmo lugar */
-.hbo__mercado { margin-top: clamp(40px, 5vw, 60px); }
-.hbo__quadro { position: relative; margin-top: 18px; }
+.hbo__mercado { margin-top: clamp(28px, 3.4vw, 40px); }
+.hbo__quadro { position: relative; margin-top: 10px; }
 .hbo__grafico { transition: opacity .5s ease, filter .5s ease; }
 /* lido: o gráfico vira fundo, borrado, e o resumo entra por cima */
 .hbo__quadro--lido .hbo__grafico { opacity: .14; filter: blur(3px); pointer-events: none; }
@@ -318,10 +266,13 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__link-news { color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .hbo__link-news:hover { color: var(--nu-cream-text); }
 
-/* a deixa: "Parece confuso?" e o botão */
-.hbo__deixa { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px 24px; flex-wrap: wrap; min-height: 52px; }
-.hbo__deixa-txt { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-xl); font-weight: 500; font-variant-numeric: tabular-nums; }
+/* o topo: o título à esquerda e a deixa ("Parece confuso?" e o botão) à direita */
+.hbo__topo { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 24px 48px; }
+.hbo__titulos { min-width: 0; }
+.hbo__deixa { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; max-width: 340px; text-align: right; }
+.hbo__deixa-txt { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; font-variant-numeric: tabular-nums; text-wrap: balance; }
 .hbo__deixa-txt strong { color: var(--nu-cream-text); font-weight: 800; }
+.hbo__mercado-rotulo { margin: 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .hbo__ler-dia { min-height: 56px; padding: 0 28px; font-size: var(--nu-fs-lg); }
 
 /* o dia no mercado: três cartões do fechamento da IA */
@@ -357,12 +308,16 @@ function irParaNewsletter(e: MouseEvent) {
 
 /* abaixo de 1000 px o resumo vem embaixo do gráfico, que encolhe */
 @media (max-width: 999px) {
+  /* no celular a deixa desce para baixo do gráfico: primeiro se vê o mercado, depois o botão */
+  .hbo { display: flex; flex-direction: column; }
+  .hbo__topo { display: contents; }
+  .hbo__mercado { order: 1; }
+  .hbo__deixa { order: 2; margin-top: 18px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; max-width: none; text-align: left; }
   .hbo__simples { position: static; margin-top: 8px; }
   .hbo__itens { grid-template-columns: 1fr; }
   .hbo__quadro--lido .hbo__grafico { display: none; }
 }
 @media (max-width: 560px) {
-  .hbo__ind { flex: 1 1 140px; min-width: 0; }
   .hbo__dia-acoes { flex-direction: column; align-items: stretch; }
   .hbo__ler { justify-content: center; }
 }
