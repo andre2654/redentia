@@ -16,10 +16,17 @@ import {
   quantoRendeProventos,
   seoQuantoRendeTesouro,
   seoQuantoRendeTicker,
+  temRendaEm12Meses,
   valorQuantoRende,
 } from '../app/utils/quanto-rende.ts'
 import { TETO_DESCRICAO, TETO_TITULO, SUFIXO_MARCA } from '../app/utils/serp.ts'
-import { slugsDePaginaQuantoRendeTesouro, tickersDePaginaQuantoRende } from '../server/utils/quanto-rende-sitemap.ts'
+import {
+  QUANTO_RENDE_SITEMAP_CONCORRENCIA,
+  QUANTO_RENDE_SITEMAP_MAX_AGE,
+  filtrarTickersComRenda,
+  slugsDePaginaQuantoRendeTesouro,
+  tickersDePaginaQuantoRende,
+} from '../server/utils/quanto-rende-sitemap.ts'
 import { tipoDoSitemap } from '../server/utils/sitemap-xml.ts'
 
 test('R$ 1.000 em PETR4: quantidade, proventos e percentual', () => {
@@ -248,6 +255,57 @@ test('sitemap: só count_12m > 0, e título vencido fica de fora', () => {
   ])
   assert.equal(tipoDoSitemap('quanto-rende.xml'), 'quanto-rende')
   assert.equal(tipoDoSitemap('quanto-rende'), 'quanto-rende')
+})
+
+test('ticker só com amortização fica fora do sitemap', () => {
+  const hoje = '2026-10-31'
+  const soAmortizacao = [{
+    ex_date: '2026-08-07',
+    payment_date: '2026-08-28',
+    rate: '176.38',
+    'label ': 'Amortização',
+  }]
+  const comRenda = [{
+    ex_date: '2026-08-21',
+    payment_date: '2026-09-15',
+    rate: '1.50',
+    'label ': 'Dividendo',
+  }]
+  const misto = [
+    ...soAmortizacao,
+    { ex_date: '2026-09-30', payment_date: '2026-10-15', rate: '0.10', 'label ': 'Rendimento' },
+  ]
+  assert.equal(temRendaEm12Meses(soAmortizacao, hoje), false)
+  assert.equal(temRendaEm12Meses(comRenda, hoje), true)
+  assert.equal(temRendaEm12Meses(misto, hoje), true)
+  // Amortização nova e dividendo fora da janela: a página 404a, o sitemap também.
+  assert.equal(temRendaEm12Meses([
+    { ex_date: '2024-01-02', payment_date: '2024-02-01', rate: '2', 'label ': 'JCP' },
+    { ex_date: '2026-09-01', payment_date: '2026-09-15', rate: '3', 'label ': 'Restituição de Capital' },
+  ], hoje), false)
+
+  const filtrados = filtrarTickersComRenda([
+    { ticker: 'BRIP11', type: 'REIT' },
+    { ticker: 'PETR4', type: 'STOCK' },
+    { ticker: 'MXRF11', type: 'REIT' },
+    { ticker: 'SUMIU3', type: 'STOCK' },
+  ], {
+    BRIP11: soAmortizacao,
+    PETR4: comRenda,
+    MXRF11: misto,
+    SUMIU3: null,
+  }, hoje)
+  assert.deepEqual(filtrados.map((t) => t.ticker), ['PETR4', 'MXRF11'])
+
+  assert.ok(QUANTO_RENDE_SITEMAP_MAX_AGE >= 6 * 60 * 60)
+  assert.ok(QUANTO_RENDE_SITEMAP_MAX_AGE <= 24 * 60 * 60)
+  assert.ok(QUANTO_RENDE_SITEMAP_CONCORRENCIA >= 1 && QUANTO_RENDE_SITEMAP_CONCORRENCIA <= 12)
+  const geracao = readFileSync(new URL('../server/utils/site-pages.ts', import.meta.url), 'utf8')
+  assert.match(geracao, /QUANTO_RENDE_SITEMAP_MAX_AGE/)
+  assert.match(geracao, /QUANTO_RENDE_SITEMAP_CONCORRENCIA/)
+  assert.match(geracao, /filtrarTickersComRenda/)
+  const pagina = readFileSync(new URL('../app/composables/useQuantoRende.ts', import.meta.url), 'utf8')
+  assert.match(pagina, /temRendaEm12Meses/)
 })
 
 test('title e description cabem no SERP e carregam o aviso', () => {

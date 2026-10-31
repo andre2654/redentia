@@ -11,7 +11,7 @@
  */
 import type { NuFaqItem } from '~/types/market'
 import type { RenamedRota } from '~/utils/delisted'
-import { dinheiroFmt, diaCurto, rendimentoFmt, qtdFmt, seoQuantoRendeTicker, VALOR_PADRAO, quantoRendeProventos } from '~/utils/quanto-rende'
+import { dinheiroFmt, diaCurto, rendimentoFmt, qtdFmt, seoQuantoRendeTicker, temRendaEm12Meses, VALOR_PADRAO, quantoRendeProventos } from '~/utils/quanto-rende'
 
 export interface QuantoRendeTickerPayload {
   ticker: string
@@ -56,8 +56,7 @@ async function rotaDestino(base: string, novo: string): Promise<RenamedRota> {
     if (profile.type !== 'STOCK' && profile.type !== 'REIT' && profile.type !== 'BDR') return 'asset'
     if (!(profile.market_price != null && profile.market_price > 0)) return 'asset'
     if (divR.status !== 'fulfilled') return 'mesma'
-    const income = proventos12m(parseProventos(divR.value?.data)).income12
-    return income > 0 ? 'mesma' : 'asset'
+    return temRendaEm12Meses(divR.value?.data, spISODate()) ? 'mesma' : 'asset'
   } catch {
     return 'mesma'
   }
@@ -105,7 +104,8 @@ async function loadQuantoRende(base: string, ticker: string): Promise<QuantoRend
   const rows = parseProventos(dividendsR.value?.data)
   const today = spISODate()
   const w = proventos12m(rows, today)
-  if (!(w.income12 > 0)) {
+  // A mesma função do sitemap: amortização sozinha é 404, e fica fora do índice.
+  if (!temRendaEm12Meses(dividendsR.value?.data, today)) {
     throw createError({ statusCode: 404, statusMessage: `${ticker} não pagou proventos nos últimos 12 meses` })
   }
   const site = resolveSiteDy({ overviewDy: overviewDyOf(overview), price, rows, today })

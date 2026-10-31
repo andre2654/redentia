@@ -1,18 +1,23 @@
 /**
  * Quais URLs entram em /sitemaps/quanto-rende.xml.
  *
- * Ação, FII e BDR: só quem tem count_12m > 0 em GET /dividends/tickers, símbolo
- * B3 válido. Sem o campo, fica de fora: ausência não prova provento em 12
- * meses, e a página responde 404. O count_12m não separa renda de amortização.
- * Papel que só devolveu capital (BRIP11, INFB11, ENJU3) entra aqui e a página
- * responde 404. Falta no backend a soma de renda em 12 meses.
+ * Ação, FII e BDR: candidatos são STOCK, REIT e BDR com count_12m > 0 e
+ * símbolo B3 válido. count_12m mistura amortização, então a lista final passa
+ * por filtrarTickersComRenda: o histórico de GET /dividends/{TICKER}, a mesma
+ * leitura da página (temRendaEm12Meses). Sem renda em 12 meses, ou sem
+ * histórico confirmado, a URL fica de fora.
  *
  * Tesouro: a mesma régua da página (paginaTesouroValida). Título vencido ou
  * sem taxa numérica não entra.
  */
 import type { DividendTickerRow } from './dividend-sitemap.ts'
 import { symbolShape } from '../../app/utils/tickerClass.ts'
-import { paginaTesouroValida } from '../../app/utils/quanto-rende.ts'
+import { paginaTesouroValida, temRendaEm12Meses } from '../../app/utils/quanto-rende.ts'
+
+/** Oito pedidos de histórico ao mesmo tempo. A fila não cresce com a lista. */
+export const QUANTO_RENDE_SITEMAP_CONCORRENCIA = 8
+/** 12 h: dentro da janela pedida (6 a 24 h) para não refazer ~900 históricos. */
+export const QUANTO_RENDE_SITEMAP_MAX_AGE = 12 * 60 * 60
 
 export interface QuantoRendeTicker {
   ticker: string
@@ -34,6 +39,24 @@ export function tickersDePaginaQuantoRende(rows: readonly DividendTickerRow[]): 
   return [...seen.entries()]
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([ticker, type]) => ({ ticker, type }))
+}
+
+/**
+ * Só fica quem tem provento de renda em 12 meses no histórico já buscado.
+ * Chave ausente ou null: o GET falhou, e a URL não entra (404 no sitemap é
+ * pior do que omitir até a próxima geração).
+ */
+export function filtrarTickersComRenda(
+  candidatos: readonly QuantoRendeTicker[],
+  historicos: Readonly<Record<string, readonly unknown[] | null | undefined>>,
+  hoje: string,
+): QuantoRendeTicker[] {
+  return candidatos.filter((t) => {
+    if (!Object.prototype.hasOwnProperty.call(historicos, t.ticker)) return false
+    const rows = historicos[t.ticker]
+    if (rows == null) return false
+    return temRendaEm12Meses(rows, hoje)
+  })
 }
 
 export interface TesouroSitemapRow {

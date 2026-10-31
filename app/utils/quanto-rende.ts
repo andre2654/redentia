@@ -18,6 +18,7 @@
  * e a agenda de cupons não vem na API.
  */
 import { MONTHS_PT } from './format.ts'
+import { parseProventos, proventos12m } from './proventos.ts'
 import { juntaAte, tituloQueCabe } from './serp.ts'
 
 export const VALOR_PADRAO = 1000
@@ -111,6 +112,16 @@ export function quantoRendeProventos(
 }
 
 const nfQtdSeo = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+/**
+ * A mesma régua do 404 de /quanto-rende/{TICKER}: houve provento de renda
+ * (dividendo, JCP, rendimento) com data com nos últimos 12 meses.
+ * Amortização e restituição de capital não contam.
+ */
+export function temRendaEm12Meses(apiRows: readonly unknown[] | null | undefined, hoje: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(hoje)) return false
+  return proventos12m(parseProventos(apiRows), hoje).income12 > 0
+}
 
 export function seoQuantoRendeTicker(input: {
   ticker: string

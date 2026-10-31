@@ -22,9 +22,10 @@
  *    ticker que o /tickers-full não conhece e alias (301).
  *  - Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} (top 20, símbolo válido)
  *    vêm do backend. O hub /tesouro entra; o hub /dividendos não (é 301).
- *  - Quanto rende: /quanto-rende/{TICKER} para pagador com count_12m > 0
- *    (STOCK, REIT, BDR) e /quanto-rende/tesouro/{slug} quando a conta da taxa
- *    fecha. Sem fallback: lista vazia ou endpoint fora omite a seção.
+ *  - Quanto rende: /quanto-rende/{TICKER} só com renda (não amortização) em
+ *    12 meses, lida em GET /dividends/{TICKER} com fila limitada e cache de
+ *    12 h, e /quanto-rende/tesouro/{slug} quando a conta da taxa fecha. Sem
+ *    fallback: lista vazia ou endpoint fora omite a seção.
  */
 import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
@@ -33,7 +34,15 @@ import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
 import { symbolShape } from '../../app/utils/tickerClass'
 import { tickersDePaginaDividendos, type DividendTickerRow } from './dividend-sitemap'
-import { slugsDePaginaQuantoRendeTesouro, tickersDePaginaQuantoRende, type TesouroSitemapRow } from './quanto-rende-sitemap'
+import {
+  QUANTO_RENDE_SITEMAP_CONCORRENCIA,
+  QUANTO_RENDE_SITEMAP_MAX_AGE,
+  filtrarTickersComRenda,
+  slugsDePaginaQuantoRendeTesouro,
+  tickersDePaginaQuantoRende,
+  type QuantoRendeTicker,
+  type TesouroSitemapRow,
+} from './quanto-rende-sitemap'
 import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
@@ -522,26 +531,87 @@ const fetchDividendPages = defineCachedFunction(
   },
 )
 
+function statusDaResposta(e: unknown): number | null {
+  const err = e as { statusCode?: number; status?: number; response?: { status?: number } } | null
+  return err?.statusCode ?? err?.status ?? err?.response?.status ?? null
+}
+
 /**
- * /quanto-rende/{TICKER}: pagadores com provento em 12 meses (count_12m > 0).
- * Sem fallback de clássicos: um ticker da lista antiga pode estar sem renda
- * agora, e a página seria 404.
+ * GET /dividends/{TICKER}. [] = a API respondeu sem linhas (não é renda).
+ * null = falha de rede: não dá para afirmar, e o ticker fica de fora.
+ * 404 e 410 são "sem histórico", não falha transitória.
+ */
+async function historicoDeProventos(base: string, ticker: string): Promise<unknown[] | null> {
+  for (let tentativa = 0; tentativa < 2; tentativa++) {
+    try {
+      const res = await $fetch<{ data?: unknown[] }>(`/dividends/${encodeURIComponent(ticker)}`, {
+        baseURL: base,
+        timeout: 8_000,
+      })
+      return Array.isArray(res?.data) ? res.data : []
+    } catch (e) {
+      const status = statusDaResposta(e)
+      if (status === 404 || status === 410) return []
+      if (tentativa === 0) continue
+      return null
+    }
+  }
+  return null
+}
+
+/** Fila fixa. O cursor anda antes do await, então os workers não pegam o mesmo ticker. */
+async function historicosEmFila(
+  base: string,
+  candidatos: readonly QuantoRendeTicker[],
+): Promise<Record<string, unknown[] | null> | null> {
+  const historicos: Record<string, unknown[] | null> = {}
+  const limiteFalhas = Math.floor(candidatos.length * 0.05)
+  let cursor = 0
+  let falhas = 0
+  let abortou = false
+  async function worker() {
+    while (!abortou && cursor < candidatos.length) {
+      const ticker = candidatos[cursor++]!.ticker
+      const rows = await historicoDeProventos(base, ticker)
+      historicos[ticker] = rows
+      if (rows == null) {
+        falhas++
+        if (falhas > limiteFalhas) abortou = true
+      }
+    }
+  }
+  const n = Math.min(QUANTO_RENDE_SITEMAP_CONCORRENCIA, candidatos.length)
+  await Promise.all(Array.from({ length: n }, () => worker()))
+  if (abortou) return null
+  return historicos
+}
+
+/**
+ * /quanto-rende/{TICKER}: candidatos de count_12m, confirmados pelo histórico.
+ * count_12m conta amortização; a página 404a nesse caso. O histórico é o de
+ * GET /dividends/{TICKER}, a mesma leitura da página. Cache de 12 h. Mais de
+ * 5% de falha de rede não grava a lista: um buraco cacheado por 12 h some
+ * com pagadoras de verdade. Sem fallback de clássicos.
  */
 const fetchQuantoRendeTickers = defineCachedFunction(
-  async (): Promise<{ ticker: string; type: string }[]> => {
+  async (): Promise<QuantoRendeTicker[]> => {
     try {
       const res = await $fetch<{ data?: DividendTickerRow[] }>('/dividends/tickers', {
         baseURL: backendBase(),
         timeout: 20_000,
       })
-      return tickersDePaginaQuantoRende(Array.isArray(res?.data) ? res.data : [])
+      const candidatos = tickersDePaginaQuantoRende(Array.isArray(res?.data) ? res.data : [])
+      if (!candidatos.length) return []
+      const historicos = await historicosEmFila(backendBase(), candidatos)
+      if (!historicos) return []
+      return filtrarTickersComRenda(candidatos, historicos, spISODate())
     } catch {
       return []
     }
   },
   {
-    name: 'site-pages-quanto-rende-v1',
-    maxAge: 3600,
+    name: 'site-pages-quanto-rende-v2',
+    maxAge: QUANTO_RENDE_SITEMAP_MAX_AGE,
     swr: true,
     getKey: () => 'all',
     validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
