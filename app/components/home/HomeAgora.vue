@@ -13,15 +13,34 @@
 //  - 'connect' (sem Open Finance, o caso de 96% das contas): "Conecte a sua
 //    carteira." + a mesma chamada do visitante, que leva ao /assinar;
 //  - resumo indisponível (API fora): "Olá, Nome." + o caminho da carteira.
+// A carteira é paga (31/10/2026): os números dela aqui são só de quem assina.
+// Quem tem carteira e não assina vê o passo que falta, com a mesma chamada.
 import type { CarteiraResumoVM } from '~/types/carteira'
 
 const props = defineProps<{ resumo: CarteiraResumoVM | null }>()
 
 const { firstName } = useAuthState()
+
+// O snapshot da assinatura não entra no SSR da home (a borda cacheia a página):
+// sai do cliente, e até ele chegar a frase com número vira esqueleto. O
+// onMounted vem antes do await, senão não registra.
+const assinatura = useAssinatura()
+onMounted(() => { void assinatura.carregar() })
+const podeVerNumeros = computed(() => assinatura.carregado.value && assinatura.assinante.value)
+const naoAssina = computed(() => assinatura.carregado.value && !assinatura.assinante.value)
+
 const { indices, indicesReais } = await useNuMovers()
 const momento = useState('home:momento-bolsa', () => momentoDaBolsa())
 
-const comCarteira = computed(() => props.resumo?.state === 'patrimonio')
+const comCarteira = computed(() => props.resumo?.state === 'patrimonio' && !naoAssina.value)
+// sem assinatura, o passo que falta é assinar; com o gate do servidor ligado o
+// resumo volta null (402), e a frase não promete carteira que não se viu
+const carteiraSemAssinatura = computed(() => naoAssina.value && props.resumo?.state !== 'connect')
+const tituloSemAssinatura = computed(() =>
+  props.resumo?.state === 'patrimonio' ? 'A sua carteira está pronta.' : 'Teste a sua carteira.')
+const subSemAssinatura = computed(() => props.resumo?.state === 'patrimonio'
+  ? 'Ela já chegou do seu banco. Assine para a Redentia testar a carteira em 2.000 cenários e vigiar todo dia por você.'
+  : 'Assine para a Redentia juntar os seus bancos, testar a carteira em 2.000 cenários e vigiar todo dia por você.')
 const semCarteira = computed(() => props.resumo?.state === 'connect')
 
 const ibovPct = computed(() => (indicesReais.value ? numeroDoPct(indices.value.find((i) => i.label === 'IBOV')?.pct) : null))
@@ -59,10 +78,11 @@ const detalhes = computed(() => {
         <div class="hag__meio">
           <p class="hag__estado" :class="{ 'hag__estado--verde': momento.estado === 'aberta' }">{{ momento.rotulo }}</p>
           <h1 id="hag-titulo" class="hag__frase">Tudo normal.</h1>
-          <p class="hag__sub">{{ sub }}</p>
+          <p v-if="podeVerNumeros" class="hag__sub">{{ sub }}</p>
+          <NuSkeleton v-else tone="navy" variant="line" width="min(420px, 80%)" height="20px" radius="chip" class="hag__sub" />
         </div>
         <div class="hag__base">
-          <div v-if="valorDoDia" class="hag__pilula-linha">
+          <div v-if="valorDoDia && podeVerNumeros" class="hag__pilula-linha">
             <span class="hag__pilula" :class="mostrar ? `hag__pilula--${resumo?.hojeDir}` : ''">
               <span class="hag__pilula-valor">{{ mostrar ? valorDoDia : 'R$ •••••' }}</span>
               <span class="hag__pilula-rotulo">{{ rotuloDoDia }}</span>
@@ -84,7 +104,7 @@ const detalhes = computed(() => {
           </div>
           <div class="hag__acoes">
             <button
-              v-if="detalhes.length" type="button" class="hag__detalhes-btn"
+              v-if="detalhes.length && podeVerNumeros" type="button" class="hag__detalhes-btn"
               :aria-expanded="detalhesAbertos" aria-controls="hag-detalhes" @click="detalhesAbertos = !detalhesAbertos"
             >
               {{ detalhesAbertos ? 'Menos detalhes' : 'Detalhes' }}
@@ -102,6 +122,16 @@ const detalhes = computed(() => {
             <span class="hag__detalhe-rotulo">{{ d.rotulo }}</span>
           </NuxtLink>
         </div>
+      </template>
+
+      <!-- carteira conectada, sem assinatura: o passo que falta é assinar -->
+      <template v-else-if="carteiraSemAssinatura">
+        <div class="hag__meio">
+          <p class="hag__estado hag__estado--azul">Falta um passo</p>
+          <h1 id="hag-titulo" class="hag__frase">{{ tituloSemAssinatura }}</h1>
+          <p class="hag__sub">{{ subSemAssinatura }}</p>
+        </div>
+        <HomeChamada tom="escuro" :centro="false" class="hag__chamada" />
       </template>
 
       <!-- sem carteira: o passo que falta, com a mesma chamada do visitante -->

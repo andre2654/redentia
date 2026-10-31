@@ -19,7 +19,7 @@
 //
 // A ordem, de cima para baixo:
 //   visitante  HomeHeroVisitante → HomeComoFunciona → HomeBolsa → HomeMais → FAQ → HomeFecho
-//   logado     HomeAgora → SeguirFaixa → [HomeComoFunciona, sem carteira] → HomeBolsa → HomeMais → FAQ
+//   logado     HomeAgora → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeBolsa → HomeMais → FAQ
 // SEO fica na página (index.vue): o head não varia por sessão.
 const { isAuthenticated, clearSession } = useAuthState()
 
@@ -33,6 +33,11 @@ if (resumoData?.data.value?.unauthenticated) {
 const resumo = computed(() =>
   resumoData?.data.value && !resumoData.data.value.unauthenticated ? resumoData.data.value : null)
 const semCarteira = computed(() => !isAuthenticated.value || resumo.value?.state === 'connect')
+// quem tem conta e não assina também lê o "como funciona" (o snapshot da
+// assinatura chega pelo cliente, carregado pelo HomeAgora)
+const assinatura = useAssinatura()
+const mostrarComoFunciona = computed(() =>
+  semCarteira.value || (assinatura.carregado.value && !assinatura.assinante.value))
 </script>
 
 <template>
@@ -44,7 +49,7 @@ const semCarteira = computed(() => !isAuthenticated.value || resumo.value?.state
          seguido e sem o gancho do primeiro uso, a faixa nem aparece) -->
     <SeguirFaixa v-if="isAuthenticated" />
 
-    <HomeComoFunciona v-if="semCarteira" />
+    <HomeComoFunciona v-if="mostrarComoFunciona" />
 
     <HomeBolsa />
 
