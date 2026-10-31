@@ -22,6 +22,7 @@ import {
 import { TETO_DESCRICAO, TETO_TITULO, SUFIXO_MARCA } from '../app/utils/serp.ts'
 import {
   QUANTO_RENDE_SITEMAP_CONCORRENCIA,
+  QUANTO_RENDE_SITEMAP_INTERVALO_MS,
   QUANTO_RENDE_SITEMAP_MAX_AGE,
   filtrarTickersComRenda,
   slugsDePaginaQuantoRendeTesouro,
@@ -300,6 +301,8 @@ test('ticker só com amortização fica fora do sitemap', () => {
   assert.ok(QUANTO_RENDE_SITEMAP_MAX_AGE >= 6 * 60 * 60)
   assert.ok(QUANTO_RENDE_SITEMAP_MAX_AGE <= 24 * 60 * 60)
   assert.ok(QUANTO_RENDE_SITEMAP_CONCORRENCIA >= 1 && QUANTO_RENDE_SITEMAP_CONCORRENCIA <= 12)
+  // 600/min é o balde do backend. A largada fica abaixo disso.
+  assert.ok(60_000 / QUANTO_RENDE_SITEMAP_INTERVALO_MS <= 500)
   const geracao = readFileSync(new URL('../server/utils/site-pages.ts', import.meta.url), 'utf8')
   assert.match(geracao, /QUANTO_RENDE_SITEMAP_MAX_AGE/)
   assert.match(geracao, /QUANTO_RENDE_SITEMAP_CONCORRENCIA/)

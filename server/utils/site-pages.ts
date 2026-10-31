@@ -36,6 +36,7 @@ import { symbolShape } from '../../app/utils/tickerClass'
 import { tickersDePaginaDividendos, type DividendTickerRow } from './dividend-sitemap'
 import {
   QUANTO_RENDE_SITEMAP_CONCORRENCIA,
+  QUANTO_RENDE_SITEMAP_INTERVALO_MS,
   QUANTO_RENDE_SITEMAP_MAX_AGE,
   filtrarTickersComRenda,
   slugsDePaginaQuantoRendeTesouro,
@@ -541,17 +542,23 @@ function statusDaResposta(e: unknown): number | null {
  * null = falha de rede: não dá para afirmar, e o ticker fica de fora.
  * 404 e 410 são "sem histórico", não falha transitória.
  */
-async function historicoDeProventos(base: string, ticker: string): Promise<unknown[] | null> {
+async function historicoDeProventos(
+  base: string,
+  ticker: string,
+  reservar: () => Promise<void>,
+): Promise<unknown[] | null> {
   for (let tentativa = 0; tentativa < 2; tentativa++) {
+    await reservar()
     try {
       const res = await $fetch<{ data?: unknown[] }>(`/dividends/${encodeURIComponent(ticker)}`, {
         baseURL: base,
-        timeout: 8_000,
+        timeout: 12_000,
       })
       return Array.isArray(res?.data) ? res.data : []
     } catch (e) {
       const status = statusDaResposta(e)
       if (status === 404 || status === 410) return []
+      if (status === 429) await new Promise((r) => setTimeout(r, 1_500))
       if (tentativa === 0) continue
       return null
     }
@@ -559,7 +566,10 @@ async function historicoDeProventos(base: string, ticker: string): Promise<unkno
   return null
 }
 
-/** Fila fixa. O cursor anda antes do await, então os workers não pegam o mesmo ticker. */
+/**
+ * Fila fixa, com largada espaçada. O cursor e o relógio andam antes do
+ * await, então dois workers não pegam o mesmo ticker nem a mesma vaga.
+ */
 async function historicosEmFila(
   base: string,
   candidatos: readonly QuantoRendeTicker[],
@@ -567,10 +577,18 @@ async function historicosEmFila(
   const historicos: Record<string, unknown[] | null> = {}
   let cursor = 0
   let falhas = 0
+  let proximo = Date.now()
+  function reservar(): Promise<void> {
+    const agora = Date.now()
+    const quando = Math.max(agora, proximo)
+    proximo = quando + QUANTO_RENDE_SITEMAP_INTERVALO_MS
+    const espera = quando - agora
+    return espera > 0 ? new Promise((r) => setTimeout(r, espera)) : Promise.resolve()
+  }
   async function worker() {
     while (cursor < candidatos.length) {
       const ticker = candidatos[cursor++]!.ticker
-      const rows = await historicoDeProventos(base, ticker)
+      const rows = await historicoDeProventos(base, ticker, reservar)
       historicos[ticker] = rows
       if (rows == null) falhas++
     }
@@ -627,7 +645,7 @@ const fetchQuantoRendeTickers = defineCachedFunction(
     }
   },
   {
-    name: 'site-pages-quanto-rende-v3',
+    name: 'site-pages-quanto-rende-v4',
     maxAge: QUANTO_RENDE_SITEMAP_MAX_AGE,
     swr: true,
     getKey: () => 'all',

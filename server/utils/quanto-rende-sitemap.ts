@@ -14,8 +14,10 @@ import type { DividendTickerRow } from './dividend-sitemap.ts'
 import { symbolShape } from '../../app/utils/tickerClass.ts'
 import { paginaTesouroValida, temRendaEm12Meses } from '../../app/utils/quanto-rende.ts'
 
-/** Oito pedidos de histórico ao mesmo tempo. A fila não cresce com a lista. */
+/** No máximo oito leituras em voo. O intervalo abaixo é o que limita a taxa. */
 export const QUANTO_RENDE_SITEMAP_CONCORRENCIA = 8
+/** Uma largada a cada 140 ms, cerca de 7 por segundo, abaixo de 600/min. */
+export const QUANTO_RENDE_SITEMAP_INTERVALO_MS = 140
 /** 12 h: dentro da janela pedida (6 a 24 h) para não refazer ~900 históricos. */
 export const QUANTO_RENDE_SITEMAP_MAX_AGE = 12 * 60 * 60
 
