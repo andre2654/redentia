@@ -183,6 +183,7 @@ if (data.value) {
           :accent-col="3"
           :note="div.history.note"
           :tone="histTone === 'cream' ? 'white' : 'cream'"
+          cards-mobile
         />
         <div v-else class="dvt__notice" :class="{ 'dvt__notice--cream': histTone === 'white' }">
           {{ div.historyNotice }}
