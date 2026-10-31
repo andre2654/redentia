@@ -27,6 +27,8 @@ withDefaults(defineProps<{
         <AssinaturaExemplo />
       </div>
     </div>
+    <!-- o quiz do "Conectar carteira" (abre da oferta) -->
+    <AssinaturaQuiz />
   </section>
 </template>
 
