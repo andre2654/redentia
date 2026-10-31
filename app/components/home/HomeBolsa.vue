@@ -105,10 +105,11 @@ const progresso = ref(0)
 const tituloDoDia = ref<HTMLElement | null>(null)
 let quadro = 0
 const DURACAO = 2800
+const focarTitulo = () => { if (fase.value === 'lido') tituloDoDia.value?.focus({ preventScroll: true }) }
 function lerODia() {
   const fim = () => {
+    // o foco vai para o título novo quando ele entra (focarTitulo, no fim da troca)
     fase.value = 'lido'
-    nextTick(() => tituloDoDia.value?.focus({ preventScroll: true }))
   }
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return fim()
   fase.value = 'lendo'
@@ -121,6 +122,12 @@ function lerODia() {
   }
   quadro = requestAnimationFrame(passo)
 }
+// depois da leitura, a frase que diz o que a Redentia leu
+const leuoDia = computed(() => {
+  const mercados = bolsa.value?.mercados.length ?? 0
+  const empresas = bolsa.value?.acoes.length || bolsa.value?.contagem?.total || 0
+  return `A Redentia leu o pregão inteiro, das 10h às ${fechaAs.value}h, ${mercados} mercados e ${empresas} empresas. O dia em três frases:`
+})
 // os números da leitura sobem junto com a faixa
 const contadores = computed(() => {
   const f = fase.value === 'lendo' ? progresso.value : 0
@@ -156,11 +163,20 @@ function irParaNewsletter(e: MouseEvent) {
   <section class="hbo" aria-labelledby="hbo-titulo">
     <!-- o topo: a frase da bolsa à esquerda e a deixa à direita, na mesma altura -->
     <div class="hbo__topo">
-      <div class="hbo__titulos">
+      <div class="hbo__titulos" :class="{ 'hbo__titulos--lendo': fase === 'lendo' }">
         <p v-if="textos" class="hbo__rotulo" :class="{ 'hbo__rotulo--aberta': aoVivo }">{{ textos.sobrelinha }}</p>
-        <h2 id="hbo-titulo" class="hbo__frase">{{ titulo }}</h2>
-        <p v-if="explicacao" class="hbo__sub">{{ explicacao }}</p>
-        <NuSkeleton v-else tone="navy" variant="line" width="min(420px, 80%)" height="18px" radius="chip" class="hbo__sub-sk" />
+        <!-- lido: o título vira o da leitura, para não ficarem dois títulos na tela -->
+        <Transition name="hbo-troca" mode="out-in" @after-enter="focarTitulo">
+          <div v-if="fase === 'lido'" key="lido">
+            <h2 id="hbo-titulo" ref="tituloDoDia" class="hbo__frase" tabindex="-1">Simples assim.</h2>
+            <p class="hbo__sub">{{ leuoDia }}</p>
+          </div>
+          <div v-else key="bolsa">
+            <h2 id="hbo-titulo" class="hbo__frase">{{ titulo }}</h2>
+            <p v-if="explicacao" class="hbo__sub">{{ explicacao }}</p>
+            <NuSkeleton v-else tone="navy" variant="line" width="min(420px, 80%)" height="18px" radius="chip" class="hbo__sub-sk" />
+          </div>
+        </Transition>
       </div>
       <div v-if="temGrafico && fase !== 'lido' && (briefingLoading || cartoes.length)" class="hbo__deixa">
         <p class="hbo__deixa-txt" aria-live="polite">
@@ -176,13 +192,12 @@ function irParaNewsletter(e: MouseEvent) {
 
     <!-- o mercado: os quatro no mesmo gráfico (a legenda dele já dá o número de cada um) -->
     <div v-if="temGrafico && bolsa" class="hbo__mercado">
-      <h3 class="hbo__mercado-rotulo">O mercado</h3>
+      <h3 class="hbo__mercado-rotulo" :class="{ 'hbo__mercado-rotulo--fora': fase === 'lido' }">O mercado</h3>
       <div class="hbo__quadro" :class="`hbo__quadro--${fase}`">
         <HomeBolsaMercados class="hbo__grafico" :mercados="bolsa.mercados" :fecha-as="fechaAs" :varredura="fase === 'lendo' ? progresso : null" />
 
         <!-- o resultado da leitura: por cima do gráfico, no mesmo lugar -->
-        <div v-if="fase === 'lido' && (briefingLoading || cartoes.length)" class="hbo__simples" role="region" aria-labelledby="hbo-simples">
-          <h4 id="hbo-simples" ref="tituloDoDia" class="hbo__simples-titulo" tabindex="-1">Simples assim.</h4>
+        <div v-if="fase === 'lido' && (briefingLoading || cartoes.length)" class="hbo__simples" role="region" aria-labelledby="hbo-titulo">
           <ol class="hbo__itens">
             <li v-for="i in (cartoes.length ? 0 : 3)" :key="`sk${i}`" class="hbo__item">
               <NuSkeleton tone="navy" variant="line" width="110px" height="12px" radius="chip" />
@@ -239,8 +254,16 @@ function irParaNewsletter(e: MouseEvent) {
   margin: 10px 0 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
   font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.hbo__sub { margin: 14px 0 0; max-width: 62ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.hbo__sub { margin: 14px 0 0; max-width: 62ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; text-wrap: pretty; }
 .hbo__sub-sk { margin-top: 18px; }
+.hbo__frase:focus { outline: none; }
+/* lendo: o topo dá um passo atrás, os olhos vão para o gráfico */
+.hbo__frase, .hbo__sub { transition: opacity .4s ease; }
+.hbo__titulos--lendo .hbo__frase, .hbo__titulos--lendo .hbo__sub { opacity: .3; }
+/* lido: a frase da bolsa sai e entra a da leitura */
+.hbo-troca-enter-active, .hbo-troca-leave-active { transition: opacity .3s ease, transform .3s cubic-bezier(.22, 1, .36, 1); }
+.hbo-troca-enter-from { opacity: 0; transform: translateY(10px); }
+.hbo-troca-leave-to { opacity: 0; transform: translateY(-6px); }
 
 /* o mercado: o gráfico e, depois da leitura, o resumo no mesmo lugar */
 .hbo__mercado { margin-top: clamp(28px, 3.4vw, 40px); }
@@ -249,11 +272,9 @@ function irParaNewsletter(e: MouseEvent) {
 /* lido: o gráfico vira fundo, borrado, e o resumo entra por cima */
 .hbo__quadro--lido .hbo__grafico { opacity: .14; filter: blur(3px); pointer-events: none; }
 .hbo__simples {
-  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 18px;
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 24px; padding-top: 12px;
   animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards;
 }
-.hbo__simples-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
-.hbo__simples-titulo:focus { outline: none; }
 /* só a ideia de cada cartão, sem caixa: um fio separa as três; o texto inteiro fica no resumo do dia */
 .hbo__itens { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hbo__item { padding: 4px 28px; border-left: 1px solid var(--nu-cream-text-12); animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
@@ -273,6 +294,7 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__deixa { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; max-width: 340px; text-align: right; }
 .hbo__deixa-txt { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; font-variant-numeric: tabular-nums; text-wrap: balance; }
 .hbo__deixa-txt strong { color: var(--nu-cream-text); font-weight: 800; }
+.hbo__mercado-rotulo--fora { visibility: hidden; }
 .hbo__mercado-rotulo { margin: 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .hbo__ler-dia { min-height: 56px; padding: 0 28px; font-size: var(--nu-fs-lg); }
 
@@ -326,7 +348,7 @@ function irParaNewsletter(e: MouseEvent) {
 }
 @media (prefers-reduced-motion: reduce) {
   .hbo, .hbo__simples, .hbo__simples * { animation: none !important; }
-  .hbo__grafico { transition: none; }
+  .hbo__grafico, .hbo__frase, .hbo__sub, .hbo-troca-enter-active, .hbo-troca-leave-active { transition: none; }
   .hbo__ler svg { transition: none; }
 }
 </style>
