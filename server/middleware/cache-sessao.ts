@@ -79,6 +79,9 @@ function cachePublicoDaRota(pathname: string): string | null {
   // Método (bazin, graham…) não tem forma de ticker e segue o prefixo geral.
   const slug = /^\/calculadora\/preco-teto\/([^/]+)$/.exec(pathname)?.[1]
   if (slug && symbolShape(slug.toUpperCase()) === 'b3') return QUINZE_MIN
+  // Taxa do dia no Tesouro; cotação no ticker. Os dois mudam mais que um guia.
+  if (pathname.startsWith('/quanto-rende/tesouro/')) return DEZ_MIN
+  if (pathname.startsWith('/quanto-rende/')) return QUINZE_MIN
   const exata = EXATAS[pathname]
   if (exata) return exata
   for (const [prefixo, valor] of PREFIXOS) {

@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
   const nRankings = count('rankings')
   const nTesouro = count('tesouro')
   const nDividendos = count('dividendos')
+  const nQuantoRende = count('quanto-rende')
   const nTeses = count('teses')
   const nGlossario = count('glossario')
   const nPrecoTeto = count('preco-teto')
@@ -114,6 +115,15 @@ Cada pagadora relevante tem página própria em /dividendos/{TICKER} com histór
 - [Dividendos de PETR4](${o}/dividendos/PETR4)
 - [Dividendos de TAEE11](${o}/dividendos/TAEE11)
 - [Dividendos de MXRF11](${o}/dividendos/MXRF11)
+
+### Quanto rende (${nQuantoRende} páginas)
+
+Proventos dos últimos 12 meses aplicados a um valor, em /quanto-rende/{TICKER}, e a taxa de hoje de cada título do Tesouro em /quanto-rende/tesouro/{slug}. Rentabilidade passada não garante rentabilidade futura. Não é recomendação.
+
+- [Quanto rende PETR4](${o}/quanto-rende/PETR4)
+- [Quanto rende MXRF11](${o}/quanto-rende/MXRF11)
+- [Quanto rende AAPL34](${o}/quanto-rende/AAPL34)
+- [Quanto rende o Tesouro Prefixado 2029](${o}/quanto-rende/tesouro/tesouro-prefixado-2029)
 
 ### Teses de investimento (${nTeses} teses vivas)
 

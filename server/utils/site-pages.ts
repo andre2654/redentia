@@ -22,6 +22,9 @@
  *    ticker que o /tickers-full não conhece e alias (301).
  *  - Tesouro /tesouro/{slug} e cripto /asset/{SYMBOL} (top 20, símbolo válido)
  *    vêm do backend. O hub /tesouro entra; o hub /dividendos não (é 301).
+ *  - Quanto rende: /quanto-rende/{TICKER} para pagador com count_12m > 0
+ *    (STOCK, REIT, BDR) e /quanto-rende/tesouro/{slug} quando a conta da taxa
+ *    fecha. Sem fallback: lista vazia ou endpoint fora omite a seção.
  */
 import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
@@ -30,6 +33,8 @@ import { allTerms as glossaryTerms } from '../../app/content/glossario'
 import { INDEXABLE_DIVIDENDS } from '../../app/content/seo/indexable-dividends'
 import { symbolShape } from '../../app/utils/tickerClass'
 import { tickersDePaginaDividendos, type DividendTickerRow } from './dividend-sitemap'
+import { slugsDePaginaQuantoRendeTesouro, tickersDePaginaQuantoRende, type TesouroSitemapRow } from './quanto-rende-sitemap'
+import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
@@ -66,7 +71,7 @@ export interface SitePage {
 
 
 export interface SiteSection {
-  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos' | 'preco-teto'
+  id: 'core' | 'calculadoras' | 'cenarios' | 'rankings' | 'setores' | 'glossario' | 'institucional' | 'teses' | 'ativos' | 'tesouro' | 'cripto' | 'dividendos' | 'quanto-rende' | 'preco-teto'
   title: string
   description?: string
   pages: SitePage[]
@@ -517,6 +522,54 @@ const fetchDividendPages = defineCachedFunction(
   },
 )
 
+/**
+ * /quanto-rende/{TICKER}: pagadores com provento em 12 meses (count_12m > 0).
+ * Sem fallback de clássicos: um ticker da lista antiga pode estar sem renda
+ * agora, e a página seria 404.
+ */
+const fetchQuantoRendeTickers = defineCachedFunction(
+  async (): Promise<{ ticker: string; type: string }[]> => {
+    try {
+      const res = await $fetch<{ data?: DividendTickerRow[] }>('/dividends/tickers', {
+        baseURL: backendBase(),
+        timeout: 20_000,
+      })
+      return tickersDePaginaQuantoRende(Array.isArray(res?.data) ? res.data : [])
+    } catch {
+      return []
+    }
+  },
+  {
+    name: 'site-pages-quanto-rende-v1',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
+)
+
+/** Lista crua de /tesouro para filtrar, a cada request, quem ainda tem conta. */
+const fetchQuantoRendeTesouroRows = defineCachedFunction(
+  async (): Promise<TesouroSitemapRow[]> => {
+    try {
+      const res = await $fetch<{ data?: TesouroSitemapRow[] }>('/tesouro', {
+        baseURL: backendBase(),
+        timeout: 10_000,
+      })
+      return Array.isArray(res?.data) ? res.data : []
+    } catch {
+      return []
+    }
+  },
+  {
+    name: 'site-pages-quanto-rende-tesouro-v1',
+    maxAge: 3600,
+    swr: true,
+    getKey: () => 'all',
+    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+  },
+)
+
 /** Data ('YYYY-MM-DD', fuso de São Paulo) da notícia mais recente → <lastmod> do /noticias. */
 const fetchLatestNewsDate = defineCachedFunction(
   async (): Promise<string | null> => {
@@ -588,7 +641,7 @@ function glossarioPages(): SitePage[] {
  * seção a seção (e corta a cauda de ativos).
  */
 export async function getSiteSections(): Promise<SiteSection[]> {
-  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews] = await Promise.all([
+  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews, quantoRendeCru, quantoRendeTesouroCru] = await Promise.all([
     fetchThesisPages(),
     fetchAssetPages(),
     fetchTesouroPages(),
@@ -596,6 +649,8 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     fetchDividendPages(),
     fetchTickerUniverse(),
     fetchLatestNewsDate(),
+    fetchQuantoRendeTickers(),
+    fetchQuantoRendeTesouroRows(),
   ])
 
   // Datas do DADO (não do calendário): pregão de cada ativo e o mais recente
@@ -634,6 +689,28 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       })
     : dividendosCru
   ).map((p) => ({ ...p, lastmod: priceDates.get(p.path.split('/').pop()!.toUpperCase()) }))
+
+  // Mesma guarda anti-404 do /dividendos: alias é 301, ticker que o universo
+  // não conhece é 404. Universo vazio (backend fora) não apaga a seção.
+  const quantoRendeTickers = (universo.size > 0
+    ? quantoRendeCru.filter((t) => {
+        const entrada = universo.get(t.ticker)
+        return !!entrada && !entrada.aliasOf
+      })
+    : quantoRendeCru
+  ).map((t) => ({
+    path: `/quanto-rende/${t.ticker}`,
+    title: `Quanto rende ${t.ticker}`,
+    description: `Proventos dos últimos 12 meses de ${t.ticker} aplicados a um valor, no preço de hoje.`,
+    lastmod: priceDates.get(t.ticker),
+  }))
+  const quantoRendeTesouro = slugsDePaginaQuantoRendeTesouro(quantoRendeTesouroCru, spISODate()).map((t) => ({
+    path: `/quanto-rende/tesouro/${t.slug}`,
+    title: `Quanto rende ${t.name}`,
+    description: `A taxa de hoje de ${t.name} aplicada a um valor.`,
+    lastmod: t.lastmod,
+  }))
+  const quantoRende = [...quantoRendeTickers, ...quantoRendeTesouro]
 
   const sections: SiteSection[] = [
     { id: 'core', title: 'Páginas principais', pages: corePages },
@@ -698,6 +775,15 @@ export async function getSiteSections(): Promise<SiteSection[]> {
       title: 'Dividendos por ativo',
       description: 'Histórico de proventos e dividend yield por ticker em /dividendos/{TICKER}.',
       pages: dividendos,
+    })
+  }
+
+  if (quantoRende.length > 0) {
+    sections.push({
+      id: 'quanto-rende',
+      title: 'Quanto rende',
+      description: 'Proventos de 12 meses aplicados a um valor em /quanto-rende/{TICKER}, e a taxa de hoje de cada título em /quanto-rende/tesouro/{slug}.',
+      pages: quantoRende,
     })
   }
 

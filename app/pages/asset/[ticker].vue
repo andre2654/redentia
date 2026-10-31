@@ -91,6 +91,12 @@ if (renamedTo) {
 }
 
 const acao = computed(() => data.value!)
+const quantoRendeHref = computed(() => {
+  const a = data.value
+  if (!a?.dividends || !(a.dividends.sum12 > 0)) return null
+  if (a.type !== 'STOCK' && a.type !== 'REIT' && a.type !== 'BDR') return null
+  return `/quanto-rende/${ticker}`
+})
 // "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
 const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
@@ -164,7 +170,14 @@ if (data.value) {
 
     <AcaoFundInfo v-if="acao.fundInfo && !acao.etfXray" :info="acao.fundInfo" />
 
-    <AcaoDividends v-if="acao.dividends" :ticker="acao.ticker" :dividends="acao.dividends" :position="position" :simulador-href="acao.simuladorHref" />
+    <AcaoDividends
+      v-if="acao.dividends"
+      :ticker="acao.ticker"
+      :dividends="acao.dividends"
+      :position="position"
+      :simulador-href="acao.simuladorHref"
+      :quanto-rende-href="quantoRendeHref"
+    />
 
     <AcaoAiAnalysis v-if="acao.ai" :ticker="acao.ticker" :ai="acao.ai" />
 
