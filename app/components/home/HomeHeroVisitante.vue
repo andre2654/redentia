@@ -6,9 +6,8 @@
 //    se ela é boa";
 //  - a chamada única (HomeChamada): os bancos dentro do botão, a IA no rótulo,
 //    o preço do plano e os aparelhos na letra miúda;
-//  - o objeto: os três aparelhos na tela Início do Agora (HomeAparelhos), que
-//    é o conceito dos apps (a pessoa não precisa saber de tudo; abre e vê
-//    "Tudo normal.").
+//  - o objeto: os três aparelhos (HomeAparelhos), cada um numa tela do Agora;
+//    no computador, o Mac grande atrás, cortado pela borda direita.
 // Saiu daqui a barra "Pergunte à Redentia" com as ações flutuando
 // (MercadoHeroPergunta, MercadoHeroAtivos), a pedido do dono.
 // Desde 31/10/2026 (pedido do dono, "pra ocupar menos espaço"), no
@@ -44,18 +43,6 @@
   background: var(--nu-cream);
 }
 .hhv__texto { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
-/* computador: o texto à esquerda e os aparelhos à direita, numa dobra só */
-@media (min-width: 1024px) {
-  .hhv {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); column-gap: clamp(32px, 3.4vw, 64px);
-    min-height: min(720px, calc(100svh - 128px));
-  }
-  /* os aparelhos maiores: a coluna da direita inteira e um respiro a mais
-     para a direita, até o limite do padding da seção */
-  .hhv__aparelhos { margin-top: 0 !important; margin-right: calc(-1 * clamp(0px, 2.5vw, 48px)); width: auto; }
-  .hhv__aparelhos :deep(.hap) { width: 100%; max-width: 980px; }
-  .hhv__luz { left: 74%; bottom: 0; width: min(900px, 70vw); height: 90%; }
-}
 /* uma luz branca atrás dos aparelhos, para o preto das telas não pesar no creme */
 .hhv__luz {
   position: absolute; z-index: -1; left: 50%; bottom: -12%; width: min(1280px, 140vw); height: 70%;
@@ -86,5 +73,27 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hhv__dek, .hhv__chamada, .hhv__aparelhos { animation: none; }
+}
+
+/* computador: o texto à esquerda e os aparelhos à direita, numa dobra só.
+   Fica no fim do arquivo para vencer as regras de base acima.
+   A coluna do texto tem a largura do título (de 380 a 500 px; abaixo de 380
+   o botão não cabe) e a dos aparelhos vai até a borda da tela: a margem
+   negativa come o padding da direita, e o Mac sai pela borda (pedido do
+   dono, 31/10/2026). A caixa para em 1.100 px e, em tela larga e baixa
+   (1536 × 864), na altura que cabe na dobra; presa à direita, o Mac continua
+   cortado. */
+@media (min-width: 1024px) {
+  .hhv {
+    grid-template-columns: clamp(380px, 35vw, 500px) minmax(0, 1fr); column-gap: clamp(24px, 2.6vw, 48px);
+    min-height: min(720px, calc(100svh - 128px));
+    padding-top: clamp(28px, 2.8vw, 44px); padding-bottom: clamp(36px, 3.6vw, 60px);
+  }
+  .hhv__aparelhos {
+    display: flex; justify-content: flex-end; width: auto; margin-top: 0;
+    margin-right: calc(-1 * clamp(22px, 5.5vw, 80px));
+  }
+  .hhv__aparelhos :deep(.hap) { max-width: min(1100px, calc((100svh - 240px) * 1.3)); }
+  .hhv__luz { left: 74%; bottom: 0; width: min(900px, 70vw); height: 90%; }
 }
 </style>
