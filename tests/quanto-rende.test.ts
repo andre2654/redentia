@@ -335,6 +335,27 @@ test('title e description cabem no SERP e carregam o aviso', () => {
   assert.ok(tesouro.description.length <= TETO_DESCRICAO, tesouro.description)
 })
 
+test('cada regra tributária das páginas cita lei no Planalto, e o que não foi confirmado saiu', () => {
+  const ticker = readFileSync(new URL('../app/pages/quanto-rende/[ticker].vue', import.meta.url), 'utf8')
+  const tesouro = readFileSync(new URL('../app/pages/quanto-rende/tesouro/[slug].vue', import.meta.url), 'utf8')
+  const faq = readFileSync(new URL('../app/composables/useQuantoRendeTesouro.ts', import.meta.url), 'utf8')
+  for (const href of [
+    'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm',
+    'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp224.htm',
+    'https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033compilado.htm',
+    'https://www.planalto.gov.br/ccivil_03/leis/l8668.htm',
+  ]) {
+    assert.match(ticker, new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  }
+  assert.match(tesouro, /l11033compilado\.htm/)
+  assert.match(tesouro, /decreto\/d6306\.htm/)
+  assert.match(faq, /l11033compilado\.htm/)
+  assert.match(faq, /decreto\/d6306\.htm/)
+  assert.doesNotMatch(ticker, /país de origem/)
+  assert.doesNotMatch(tesouro, /primeiros 30 dias/)
+  assert.doesNotMatch(faq, /primeiros 30 dias/)
+})
+
 test('as páginas pedem 404 sem provento, citam a fonte e não recomendam compra', () => {
   const ticker = readFileSync(new URL('../app/pages/quanto-rende/[ticker].vue', import.meta.url), 'utf8')
   const tesouro = readFileSync(new URL('../app/pages/quanto-rende/tesouro/[slug].vue', import.meta.url), 'utf8')

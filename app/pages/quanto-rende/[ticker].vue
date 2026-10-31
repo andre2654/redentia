@@ -159,13 +159,20 @@ if (data.value) {
           A cotação é {{ dinheiroFmt(qr.preco) }}. {{ qr.fontePreco }} A fração de {{ qr.unidade }} mostra a parte proporcional do valor. Quem compra na B3 compra unidade inteira, e a nota acima separa o que cabe inteiro do que sobra.
         </p>
         <p v-if="qr.isFii">
-          Rendimentos de FII são isentos de IR para pessoa física quando o fundo é negociado em bolsa, tem pelo menos 100 cotistas e o investidor tem menos de 10% das cotas. A conta mostra o valor bruto informado à B3. Ganho na venda da cota paga 20%.
+          Os valores são brutos, como informados à B3.
+          Pelo <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033compilado.htm" target="_blank" rel="noopener noreferrer">art. 3º, III, da Lei 11.033/2004</a>, o rendimento distribuído por fundo de investimento imobiliário com cotas admitidas à negociação exclusivamente em bolsa ou mercado de balcão organizado é isento de IR na fonte e na declaração da pessoa física.
+          O § 1º, I, exige no mínimo 100 cotistas, na redação da <a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14754.htm" target="_blank" rel="noopener noreferrer">Lei 14.754/2023</a>, e o § 1º, II, na redação da <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14130.htm" target="_blank" rel="noopener noreferrer">Lei 14.130/2021</a>, não dá o benefício a quem tem 10% ou mais das cotas ou dos rendimentos do fundo.
+          O ganho na alienação ou no resgate da cota paga IR de 20%, pelo <a href="https://www.planalto.gov.br/ccivil_03/leis/l8668.htm" target="_blank" rel="noopener noreferrer">art. 18 da Lei 8.668/1993</a>, com a redação da Lei 9.779/1999.
         </p>
         <p v-else-if="qr.isBdr">
-          O dividendo de BDR não tem a isenção do dividendo de ação brasileira. O valor por BDR já chega depois do imposto retido no país de origem. A conta usa o número informado à B3, sem um líquido adicional calculado aqui.
+          A conta usa o valor por BDR informado à B3 e não calcula imposto em cima dele.
         </p>
         <p v-else>
-          Os valores são brutos, como informados à B3. Dividendo de ação é isento para pessoa física até R$ 50 mil por mês da mesma empresa. Acima disso, desde 2026, a empresa retém 10% sobre o total do mês. JCP tem 17,5% retidos na fonte. A soma não separa um líquido por investidor.
+          Os valores são brutos, como informados à B3.
+          Pelo <a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm" target="_blank" rel="noopener noreferrer">art. 10 da Lei 9.249/1995, na redação da Lei 15.270/2025</a>, o lucro ou dividendo pago por pessoa jurídica tributada pelo lucro real, presumido ou arbitrado não fica sujeito a IR na fonte nem entra na base do beneficiário domiciliado no País, ressalvados os arts. 6º-A e 16-A da Lei 9.250/1995.
+          O <a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm" target="_blank" rel="noopener noreferrer">art. 6º-A da Lei 9.250/1995, incluído pelo art. 2º da Lei 15.270/2025</a>, manda reter 10% sobre o total do mês quando uma mesma pessoa jurídica paga a uma mesma pessoa física residente mais de R$ 50.000 em lucros e dividendos nesse mês, a partir de janeiro de 2026.
+          JCP tem IR na fonte de 17,5% na data do pagamento ou do crédito, pelo § 2º do art. 9º da Lei 9.249/1995, com a redação do <a href="https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp224.htm" target="_blank" rel="noopener noreferrer">art. 8º da Lei Complementar 224/2025</a>, com efeitos a partir de 1º de janeiro de 2026 (art. 14, III).
+          A soma desta página não separa um líquido por investidor.
         </p>
       </div>
     </CalcBand>
@@ -202,6 +209,7 @@ if (data.value) {
   margin: 0 0 16px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7;
 }
 .qr-page__prose p:last-child { margin-bottom: 0; }
+.qr-page__prose a { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .qr-page__faq-nota {
   margin: 0 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
 }

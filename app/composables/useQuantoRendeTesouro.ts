@@ -128,9 +128,10 @@ async function loadQuantoRendeTesouro(base: string, slug: string): Promise<Quant
     ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.price_buy)
     : null
 
+  const leiIr = 'Lei 11.033/2004, art. 1º, incisos I a IV (https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033compilado.htm)'
   const irFrase = exemplo.aliquota != null
-    ? `Neste prazo a tabela regressiva de renda fixa, a mesma já descrita nas páginas de Tesouro, fica em ${aliquotaFmt(exemplo.aliquota)} sobre o rendimento.`
-    : 'O IR incide sobre o rendimento, pela tabela regressiva, e não há um líquido único nesta página.'
+    ? `Neste prazo a alíquota da ${leiIr} fica em ${aliquotaFmt(exemplo.aliquota)} sobre o rendimento.`
+    : `O IR incide sobre o rendimento, pela ${leiIr}, e não há um líquido único nesta página.`
 
   const faq: NuFaqItem[] = [
     {
@@ -140,8 +141,8 @@ async function loadQuantoRendeTesouro(base: string, slug: string): Promise<Quant
     {
       q: 'O valor é bruto ou líquido de imposto?',
       a: exemplo.liquido != null
-        ? `Os dois saem na página. O líquido desconta ${aliquotaFmt(exemplo.aliquota!)} de IR sobre o ganho, não sobre o valor aplicado. ${irFrase} IOF só existe nos primeiros 30 dias, e a tabela diária não está calculada aqui. A custódia da B3 também fica de fora.`
-        : `${irFrase} ${exemplo.tipo === 'selic' ? '' : 'Sem o índice do período, ou com juros pagos no caminho, um único líquido em reais inventaria dado. '}IOF e custódia da B3 não entram nesta conta. ${fonteTaxa}`,
+        ? `Os dois saem na página. O líquido desconta ${aliquotaFmt(exemplo.aliquota!)} de IR sobre o rendimento, não sobre o valor aplicado. ${irFrase} O IOF do resgate de renda fixa segue a tabela do anexo do art. 32 do Decreto 6.306/2007 (https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm) e não entra neste número. A custódia da B3 também fica de fora.`
+        : `${irFrase} ${exemplo.tipo === 'selic' ? '' : 'Sem o índice do período, ou com juros pagos no caminho, um único líquido em reais inventaria dado. '}O IOF do resgate de renda fixa segue a tabela do anexo do art. 32 do Decreto 6.306/2007 (https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm) e não entra nesta conta. A custódia da B3 também fica de fora. ${fonteTaxa}`,
     },
     {
       q: 'Isso é uma recomendação?',

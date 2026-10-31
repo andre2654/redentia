@@ -71,7 +71,7 @@ const cards = computed(() => {
       taxa,
       { rotulo: `Bruto ${prazo}`, valor: dinheiroFmt(c.montante), fonte: u.fonteTaxa },
       { rotulo: 'Rendimento bruto', valor: dinheiroFmt(c.ganho), fonte: u.fonteTaxa },
-      { rotulo: `IR (${aliquotaFmt(c.aliquota)})`, valor: dinheiroFmt(c.imposto), fonte: 'Tabela regressiva de renda fixa já descrita nas páginas de Tesouro. Incide sobre o rendimento.' },
+      { rotulo: `IR (${aliquotaFmt(c.aliquota)})`, valor: dinheiroFmt(c.imposto), fonte: 'Lei 11.033/2004, art. 1º, incisos I a IV. Incide sobre o rendimento.' },
       { rotulo: 'Líquido de IR', valor: dinheiroFmt(c.liquido), fonte: u.fonteTaxa },
     ]
   }
@@ -152,14 +152,10 @@ if (data.value) {
         <p v-if="titulo.referenciaFmt && titulo.referenciaRotulo && conta.tipo !== 'selic'">
           {{ titulo.referenciaRotulo }}: {{ titulo.referenciaFmt }}. A página não projeta esse índice para a frente. {{ titulo.fonteReferencia }}
         </p>
-        <p v-if="conta.aliquota && conta.dias != null && conta.dias <= 30">
-          Neste prazo também incide IOF. A tabela diária não está calculada aqui, então o líquido, quando aparece, é só depois do IR.
-        </p>
-        <p v-else-if="conta.liquido != null">
-          IOF só existe nos primeiros 30 dias. Este prazo passa disso. A custódia da B3 não entra na conta.
-        </p>
-        <p v-else>
-          A custódia da B3 não entra na conta. A tabela regressiva de IR está descrita nas páginas de Tesouro: 22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima de 720, sobre o rendimento.
+        <p class="qrt__lei">
+          O IR incide sobre o rendimento, não sobre o valor aplicado, pelas alíquotas do <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033compilado.htm" target="_blank" rel="noopener noreferrer">art. 1º da Lei 11.033/2004</a>: 22,5% até 180 dias, 20% de 181 a 360 dias, 17,5% de 361 a 720 dias e 15% acima de 720 dias.
+          O IOF do resgate, da cessão ou da repactuação de renda fixa segue o prazo e fica limitado ao rendimento, pela tabela do anexo do <a href="https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm" target="_blank" rel="noopener noreferrer">art. 32 do Decreto 6.306/2007</a>.
+          Esta página não aplica essa tabela do IOF. A custódia da B3 não entra na conta.
         </p>
       </QuantoRendePainel>
     </CalcBand>
@@ -186,6 +182,11 @@ if (data.value) {
 </template>
 
 <style scoped>
+.qrt__lei {
+  margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500;
+  line-height: 1.55; max-width: 72ch; overflow-wrap: anywhere;
+}
+.qrt__lei a { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .qrt__nota {
   margin: 0 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
 }
