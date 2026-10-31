@@ -4,24 +4,22 @@
  * vazia — inclusive no SSR), hidrata com o backend real no onMounted e QUALQUER
  * erro degrada de volta pro seed. Fetchers tipados em services/market.ts;
  * shapes em types/market.ts. Contrato de UX: designs/Redentia Mercado Nu.dc.html.
+ *
+ * Home nova (31/10/2026): saíram daqui as teses, o Tesouro, as notícias, o
+ * Explore e os guias, que a home deixou de mostrar (o que sobrou: o mercado do
+ * dia, o fechamento da IA e o FAQ). E os blocos que ficaram passaram a dizer
+ * se o que está na tela veio da API (`reais`, `real`): o seed só segura a
+ * forma da seção no SSR e nunca aparece como número de verdade.
  */
 import type {
   NuBriefing,
   NuDir,
   NuFaqItem,
-  NuGuideCardItem,
   NuIndexStat,
   NuMoverRow,
   NuMoverTab,
   NuMoversClass,
-  NuNewsFeaturedItem,
-  NuNewsRowItem,
   NuStatPill,
-  NuTesouroGroup,
-  NuTesouroHighlight,
-  NuThesis,
-  TeseTrajetoria,
-  ThesisCardApi,
 } from '~/types/market'
 
 /* ————— helpers de formatação ————— */
@@ -37,205 +35,6 @@ function dirOf(n: number): NuDir {
 }
 /* localISODate/relTime/sourcePretty: compartilhados em app/utils/format.ts (PR3);
    escapeHtml/briefingHtml idem (extraídos no PR7 — a Home renderiza o mesmo briefing) */
-/** '2026-08-15' → 'Venc. 08/26' (formato dos cards de Tesouro do design). */
-function vencFmt(dateStr: string | null): string {
-  if (!dateStr) return ''
-  const [y, m] = dateStr.split('-')
-  if (!y || !m) return ''
-  return `Venc. ${m}/${y.slice(2)}`
-}
-
-/* ═════ Teses (carrossel) ═════ */
-
-const TILE_CYCLE = ['var(--nu-amber)', 'var(--nu-green-soft)', 'var(--nu-blue-soft)'] as const
-
-const THESES_SEED: NuThesis[] = [
-  {
-    slug: 'a-fabrica-volta-para-casa',
-    cat: 'Reindustrialização',
-    image: '/teses/reindustrializacao-eua.webp',
-    perf: '+34%',
-    perfLabel: 'Tese em destaque',
-    titlePre: 'A fábrica ',
-    titleHi: 'volta',
-    titlePost: ' para casa',
-    desc: 'Mais de US$ 1,4 tri em fábricas anunciadas: quem vende energia, automação e máquina pesada fatura primeiro.',
-    tickers: [
-      { letter: 'C', name: 'CATP34', tile: 'var(--nu-amber)' },
-      { letter: 'G', name: 'GGBR4', tile: 'var(--nu-green-soft)' },
-    ],
-    more: '+5',
-    fontes: '246 fontes',
-    href: '/login',
-    leftTitle: 'A fábrica volta para casa.',
-    leftDesc: 'Os EUA decidiram fabricar de novo, e quem vende as picaretas ganha primeiro. Convicção 88/100, revalidada hoje com a entrada da TUPY3.',
-    cta: 'Ver a tese completa',
-    ctaHref: '/login',
-  },
-  {
-    slug: 'energia-para-ia',
-    cat: 'Energia',
-    image: '/teses/a-conta-de-luz-da-ia.webp',
-    perf: '+96%',
-    perfLabel: 'Melhor tese',
-    titlePre: '',
-    titleHi: 'Energia',
-    titlePost: ' para IA',
-    desc: 'Data centers e reatores reativados pressionam uma oferta que não cresce há mais de uma década.',
-    tickers: [
-      { letter: 'E', name: 'EGIE3', tile: 'var(--nu-green-soft)' },
-      { letter: 'N', name: 'NEOE3', tile: 'var(--nu-blue-soft)' },
-    ],
-    more: '+4',
-    fontes: '230 fontes',
-    href: '/login',
-    leftTitle: 'Energia para IA.',
-    leftDesc: 'Os data centers vão dobrar o consumo de energia do mundo, e alguém precisa gerar. A melhor tese da Redentia até aqui: +96% desde o lançamento.',
-    cta: 'Criar conta para desbloquear',
-    ctaHref: '/login',
-  },
-  {
-    slug: 'a-nova-geografia-do-frete',
-    cat: 'Logística',
-    image: '/teses/a-nova-geografia-do-frete.webp',
-    perf: '+18%',
-    perfLabel: 'Tese recente',
-    titlePre: 'A nova geografia do ',
-    titleHi: 'frete',
-    titlePost: '',
-    desc: 'O nearshoring redesenha as rotas globais, e o Brasil herda a comida, o minério e o frete.',
-    tickers: [
-      { letter: 'R', name: 'RAIL3', tile: 'var(--nu-amber)' },
-      { letter: 'S', name: 'STBP3', tile: 'var(--nu-blue-soft)' },
-    ],
-    more: '+3',
-    fontes: '118 fontes',
-    href: '/login',
-    leftTitle: 'A nova geografia do frete.',
-    leftDesc: 'Quando a fábrica muda de continente, a carga muda de rota. A perna brasileira do reshoring: portos, ferrovias e grãos.',
-    cta: 'Criar conta para desbloquear',
-    ctaHref: '/login',
-  },
-  {
-    slug: 'o-imovel-mais-disputado-do-mundo',
-    cat: 'Data centers',
-    image: '/teses/imovel-mais-disputado-data-center.webp',
-    perf: '+44%',
-    perfLabel: 'Popular',
-    titlePre: 'O imóvel mais ',
-    titleHi: 'disputado',
-    titlePost: ' do mundo',
-    desc: 'A fila por um data center vago nunca foi tão longa: quem aluga o rack ganha primeiro.',
-    tickers: [
-      { letter: 'E', name: 'EQIX34', tile: 'var(--nu-blue-soft)' },
-      { letter: 'A', name: 'ALOS3', tile: 'var(--nu-amber)' },
-    ],
-    more: '+4',
-    fontes: '187 fontes',
-    href: '/login',
-    leftTitle: 'O imóvel mais disputado do mundo.',
-    leftDesc: 'A IA precisa de endereço: galpões, refrigeração e megawatts. Quem já tem o terreno e a energia cobra o aluguel do século.',
-    cta: 'Criar conta para desbloquear',
-    ctaHref: '/login',
-  },
-]
-
-function mapThesis(c: ThesisCardApi, i: number, authed: boolean): NuThesis {
-  // Espelha o gating do design: 1ª tese (em destaque) abre a página da tese,
-  // as demais convidam pro login — mas o convite é só pra ANÔNIMO; logado vai
-  // direto pra tese (o /login não faz sentido pra quem já tem sessão).
-  const unlocked = i === 0 || authed
-  const href = unlocked ? `/tese/${c.id}` : '/login'
-  const title = (c.title ?? '').trim()
-  const leftTitle = /[.!?…]$/.test(title) ? title : `${title}.`
-  return {
-    slug: c.id,
-    cat: c.sector,
-    image: teseCover(c.image),
-    perf: c.returnLabel || null,
-    perfLabel: c.rankLabel || 'Tese Redentia',
-    // A API não marca trecho de destaque no título — hidratado renderiza plano.
-    titlePre: title,
-    titleHi: '',
-    titlePost: '',
-    desc: c.description,
-    tickers: (c.tickers ?? []).slice(0, 2).map((t, j) => ({
-      letter: t.charAt(0) || '?',
-      name: t,
-      tile: TILE_CYCLE[(i + j) % TILE_CYCLE.length]!,
-    })),
-    more: c.extraTickers > 0 ? `+${c.extraTickers}` : null,
-    fontes: `${c.sourcesCount} fontes`,
-    href,
-    leftTitle,
-    leftDesc: c.conviction != null ? `${c.description} Convicção ${c.conviction}/100.` : c.description,
-    cta: unlocked ? 'Ver a tese completa' : 'Criar conta para desbloquear',
-    ctaHref: href,
-    conviction: c.conviction,
-    tickerList: c.tickers ?? [],
-    extraTickers: c.extraTickers,
-    sourcesCount: c.sourcesCount,
-    lastStudyDate: c.lastStudyDate ?? null,
-    rank: c.rankLabel,
-  }
-}
-
-export function useNuTheses() {
-  // Estado = cards CRUS da API; os VMs saem de um computed porque o href das
-  // teses travadas depende de isAuthenticated (reage a login/logout sem
-  // re-fetch). SSR-safe: apiCards só é preenchido no onMounted, então o SSR
-  // sempre renderiza o SEED — zero hydration mismatch.
-  const apiCards = useState<ThesisCardApi[]>('nu:mercado:theses-api', () => [])
-  const started = useState('nu:mercado:theses-started', () => false)
-  const loading = useState('nu:mercado:theses-loading', () => true)
-  const { isAuthenticated } = useAuthState()
-
-  const theses = computed<NuThesis[]>(() => {
-    if (apiCards.value.length < 2) return THESES_SEED
-    return apiCards.value.map((c, i) => mapThesis(c, i, isAuthenticated.value))
-  })
-
-  async function hydrate() {
-    if (started.value) return
-    started.value = true
-    try {
-      const res = await marketFetchTheses()
-      const cards = (res?.data ?? []).slice(0, 4)
-      if (cards.length < 2) return // carrossel precisa de conteúdo — mantém o seed
-      apiCards.value = cards
-    }
-    catch { /* mantém o seed */ }
-    finally { loading.value = false }
-  }
-
-  onMounted(hydrate)
-  return { theses, loading }
-}
-
-/**
- * A trajetória das teses da faixa da home (21/10/2026): a convicção dia a dia
- * e o desempenho, numa requisição só ao /api/theses-trajetoria (cacheado na
- * borda). Só no navegador e só para as teses da API: o seed não tem trajetória,
- * e sem ela a faixa mostra os números da lista.
- */
-export function useNuTesesTrajetoria(slugs: Ref<string[]>) {
-  const porSlug = shallowRef<Record<string, TeseTrajetoria | null>>({})
-  let pedido = ''
-  async function buscar(lista: string[]) {
-    const chave = lista.join(',')
-    if (!chave || chave === pedido) return
-    pedido = chave
-    try {
-      const res = await $fetch<{ data: Record<string, TeseTrajetoria | null> }>(`/api/theses-trajetoria?slugs=${encodeURIComponent(chave)}`)
-      if (pedido === chave) porSlug.value = res?.data ?? {}
-    }
-    catch { /* a faixa fica com os números da lista */ }
-  }
-  onMounted(() => {
-    watch(slugs, (s) => void buscar(s), { immediate: true })
-  })
-  return { porSlug }
-}
 
 /* ═════ Movers ("O mercado hoje") ═════ */
 
@@ -275,6 +74,10 @@ export async function useNuMovers() {
   const indices = useState<NuIndexStat[]>('nu:mercado:indices', () => INDICES_SEED)
   const started = useState('nu:mercado:movers-started', () => false)
   const loading = useState('nu:mercado:movers-loading', () => true)
+  // as abas e os índices que vieram da API (o resto continua no seed, que a
+  // home não mostra como dado: a aba sem número de verdade some)
+  const reais = useState<NuMoverTab[]>('nu:mercado:movers-reais', () => [])
+  const indicesReais = useState('nu:mercado:indices-reais', () => false)
 
   async function hydrate() {
     if (started.value) return
@@ -287,12 +90,20 @@ export async function useNuMovers() {
         indices: NuIndexStat[]
       }>('/api/mercado-movers')
       const next: Record<NuMoverTab, NuMoversClass> = { ...movers.value }
+      const vieram: NuMoverTab[] = []
       for (const tab of tabs) {
         const bloco = res?.movers?.[tab]
-        if (bloco && bloco.gainers.length >= 3 && bloco.losers.length >= 3) next[tab] = bloco
+        if (bloco && bloco.gainers.length >= 3 && bloco.losers.length >= 3) {
+          next[tab] = bloco
+          vieram.push(tab)
+        }
       }
       movers.value = next
-      if (res?.indices?.length) indices.value = res.indices
+      reais.value = vieram
+      if (res?.indices?.length) {
+        indices.value = res.indices
+        indicesReais.value = true
+      }
     }
     catch { /* mantém o seed */ }
     finally { loading.value = false }
@@ -300,7 +111,7 @@ export async function useNuMovers() {
 
   if (import.meta.server) await hydrate()
   else onMounted(hydrate)
-  return { tabs, movers, indices, loading }
+  return { tabs, movers, indices, loading, reais, indicesReais }
 }
 
 /* ═════ Briefing ("A leitura do dia") ═════ */
@@ -354,6 +165,10 @@ export function useNuBriefing() {
   const briefing = useState<NuBriefing>('nu:mercado:briefing', () => BRIEFING_SEED)
   const started = useState('nu:mercado:briefing-started', () => false)
   const loading = useState('nu:mercado:briefing-loading', () => true)
+  // true só quando o briefing veio da API: o seed não abre como "fechamento de hoje"
+  const real = useState('nu:mercado:briefing-real', () => false)
+  // altas e quedas das ações do Ibovespa no dia (GET /market/today), para a frase da home
+  const amplitude = useState<{ altas: number; quedas: number } | null>('nu:mercado:amplitude', () => null)
 
   async function hydrate() {
     if (started.value) return
@@ -365,6 +180,16 @@ export function useNuBriefing() {
         marketFetchToday(),
         marketFetchQuote('PETR4'),
       ])
+      // a amplitude vale mesmo sem o briefing (a frase da home usa só ela)
+      if (today.status === 'fulfilled') {
+        const cons = today.value?.constituents ?? []
+        if (cons.length) {
+          amplitude.value = {
+            altas: cons.filter((c) => (c.change_pct ?? 0) > 0).length,
+            quedas: cons.filter((c) => (c.change_pct ?? 0) < 0).length,
+          }
+        }
+      }
       if (b.status !== 'fulfilled' || !b.value?.data?.headline) return
       const d = b.value.data
       const paras = String(d.body ?? '').split(/\n+/).map((s) => s.trim()).filter(Boolean)
@@ -417,264 +242,41 @@ export function useNuBriefing() {
         takeaway: null, // idem: sem bloco "o que segurar" no resource atual
         sections: d.sections ?? null, // blocos estruturados (PR-B) — buildDayTopics consome cru
       }
+      real.value = true
     }
     catch { /* mantém o seed */ }
     finally { loading.value = false }
   }
 
   onMounted(hydrate)
-  return { briefing, loading }
+  return { briefing, loading, real, amplitude }
 }
 
-/* ═════ Tesouro Direto ═════ */
+/* ═════ FAQ da home ═════ */
 
-const TESOURO_HIGHLIGHT_SEED: NuTesouroHighlight = {
-  name: 'IPCA+ 2026',
-  venc: 'Venc. 08/26',
-  rate: 'IPCA+ 11,48%',
-  updated: 'Atualizado hoje · 12:47',
-}
-
-const TESOURO_GROUPS_SEED: NuTesouroGroup[] = [
-  {
-    name: 'IPCA+',
-    count: '5 títulos',
-    rows: [
-      { name: 'IPCA+ 2026', venc: 'Venc. 08/26', rate: 'IPCA+ 11,48%' },
-      { name: 'IPCA+ JS 2026', venc: 'Venc. 08/26', rate: 'IPCA+ 11,48%' },
-      { name: 'IPCA+ JS 2028', venc: 'Venc. 08/28', rate: 'IPCA+ —' },
-      { name: 'IPCA+ 2029', venc: 'Venc. 05/29', rate: 'IPCA+ 8,43%' },
-      { name: 'IPCA+ JS 2030', venc: 'Venc. 08/30', rate: 'IPCA+ 8,43%' },
-    ],
-  },
-  {
-    name: 'SELIC',
-    count: '5 títulos',
-    rows: [
-      { name: 'Selic 2027', venc: 'Venc. 02/27', rate: 'SELIC +0,01%' },
-      { name: 'Selic 2028', venc: 'Venc. 02/28', rate: 'SELIC +0,02%' },
-      { name: 'Selic 2029', venc: 'Venc. 02/29', rate: 'SELIC +0,04%' },
-      { name: 'Selic 2031', venc: 'Venc. 02/31', rate: 'SELIC +0,07%' },
-      { name: 'Reserva 2036', venc: 'Venc. 05/36', rate: 'SELIC —' },
-    ],
-  },
-  {
-    name: 'Prefixado',
-    count: '5 títulos',
-    rows: [
-      { name: 'Prefixado 2027', venc: 'Venc. 12/26', rate: '13,81%' },
-      { name: 'Prefixado JS 2027', venc: 'Venc. 12/26', rate: '13,84%' },
-      { name: 'Prefixado 2028', venc: 'Venc. 12/27', rate: '14,10%' },
-      { name: 'Prefixado 2029', venc: 'Venc. 12/28', rate: '14,32%' },
-      { name: 'Prefixado JS 2029', venc: 'Venc. 12/28', rate: '14,24%' },
-    ],
-  },
-]
-
-export function useNuTesouro() {
-  const highlight = useState<NuTesouroHighlight>('nu:mercado:tesouro-hi', () => TESOURO_HIGHLIGHT_SEED)
-  const groups = useState<NuTesouroGroup[]>('nu:mercado:tesouro-groups', () => TESOURO_GROUPS_SEED)
-  const started = useState('nu:mercado:tesouro-started', () => false)
-  const loading = useState('nu:mercado:tesouro-loading', () => true)
-
-  async function hydrate() {
-    if (started.value) return
-    started.value = true
-    try {
-      const defs = [
-        { indexer: 'IPCA', name: 'IPCA+' },
-        { indexer: 'SELIC', name: 'SELIC' },
-        { indexer: 'PREFIXADO', name: 'Prefixado' },
-      ] as const
-      const results = await Promise.allSettled(defs.map((d) => marketFetchTesouro(d.indexer)))
-
-      const shortName = (n: string) => n.replace(/^Tesouro\s+/i, '')
-      const next: NuTesouroGroup[] = []
-      for (let i = 0; i < defs.length; i++) {
-        const r = results[i]
-        if (r?.status !== 'fulfilled' || !(r.value?.data ?? []).length) continue
-        const data = r.value.data
-        next.push({
-          name: defs[i]!.name,
-          count: `${r.value.meta?.count ?? data.length} títulos`,
-          rows: data.slice(0, 5).map((t) => ({ name: shortName(t.name), venc: vencFmt(t.maturity_date), rate: t.rate })),
-        })
-      }
-      // O grid do design é 1 destaque + 3 grupos: só troca com os 3 completos.
-      if (next.length === defs.length) groups.value = next
-
-      const ipca = results[0]?.status === 'fulfilled' ? (results[0].value?.data ?? []) : []
-      const best = ipca
-        .filter((t) => t.rate_numeric != null)
-        .sort((a, b) => (b.rate_numeric ?? 0) - (a.rate_numeric ?? 0))[0]
-      if (best) {
-        let updated = ''
-        if (best.refreshed_at) {
-          const dt = new Date(best.refreshed_at)
-          if (!Number.isNaN(dt.getTime())) {
-            const hm = `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`
-            const day = localISODate(dt) === localISODate() ? 'hoje' : `${String(dt.getDate()).padStart(2, '0')}/${String(dt.getMonth() + 1).padStart(2, '0')}`
-            updated = `Atualizado ${day} · ${hm}`
-          }
-        }
-        highlight.value = {
-          name: shortName(best.name),
-          venc: vencFmt(best.maturity_date),
-          rate: best.rate,
-          updated: updated || highlight.value.updated,
-        }
-      }
-    }
-    catch { /* mantém o seed */ }
-    finally { loading.value = false }
-  }
-
-  onMounted(hydrate)
-  return { highlight, groups, loading }
-}
-
-/* ═════ Notícias ═════ */
-
-const NEWS_FEATURED_SEED: NuNewsFeaturedItem = {
-  href: '/noticias',
-  badge: { text: 'IBOV +0,91%', dir: 'up' },
-  source: 'Exame · hoje, 08:30',
-  title: 'Ibovespa renova recorde histórico aos 197 mil pontos.',
-  dek: 'Fluxo estrangeiro e balanços acima do esperado sustentam a 12ª máxima do ano na B3.',
-}
-
-const NEWS_ROWS_SEED: NuNewsRowItem[] = [
-  { href: '/noticias', title: 'Banco do Brasil anuncia dividendos extraordinários', source: 'Money Times · hoje, 09:12', ticker: { text: 'BBAS3 +2,10%', dir: 'up' } },
-  { href: '/noticias', title: 'Petroleiras perdem apelo com Brent caminhando para US$ 60', source: 'Valor Investe · hoje, 09:40', ticker: { text: 'PETR4 -1,20%', dir: 'down' } },
-  { href: '/noticias', title: 'Vale amplia guidance de produção de minério para 2027', source: 'InfoMoney · ontem', ticker: { text: 'VALE3 +3,10%', dir: 'up' } },
-  { href: '/noticias', title: 'WEG anuncia nova fábrica de motores no México', source: 'Bloomberg Línea · ontem', ticker: { text: 'WEGE3 +1,72%', dir: 'up' } },
-]
-
-interface RawNews {
-  source: string
-  title: string
-  dek: string
-  ticker: string | null
-  publishedAt: string | null
-}
-
-export function useNuNews() {
-  const featured = useState<NuNewsFeaturedItem>('nu:mercado:news-featured', () => NEWS_FEATURED_SEED)
-  const rows = useState<NuNewsRowItem[]>('nu:mercado:news-rows', () => NEWS_ROWS_SEED)
-  const loaded = useState('nu:mercado:news-loaded', () => false)
-  const started = useState('nu:mercado:news-started', () => false)
-  const loading = useState('nu:mercado:news-loading', () => true)
-
-  async function hydrate() {
-    if (started.value) return
-    started.value = true
-    try {
-      // news_takes traz tickers como objeto {ticker,dir}; /news como string.
-      const tickerOf = (t: unknown): string | null => {
-        if (typeof t === 'string') return t
-        if (t && typeof t === 'object' && 'ticker' in t) return String((t as { ticker: unknown }).ticker)
-        return null
-      }
-      let items: RawNews[] = []
-      const research = await marketFetchResearchNews(8).catch(() => null)
-      if (research?.data?.length) {
-        items = research.data.map((n) => ({
-          source: n.source,
-          title: n.title,
-          dek: n.atlasReading ?? '',
-          ticker: tickerOf(n.tickers?.[0]),
-          publishedAt: n.publishedAt,
-        }))
-      } else {
-        const latest = await marketFetchLatestNews(8).catch(() => null)
-        items = (latest?.data ?? []).map((n) => ({
-          source: n.source,
-          title: n.title,
-          dek: n.excerpt ?? '',
-          ticker: tickerOf(n.tickers?.[0]),
-          publishedAt: n.published_at,
-        }))
-      }
-      if (items.length < 2) return // precisa de destaque + pelo menos 1 linha
-
-      const picked = items.slice(0, 5)
-      const symbols = [...new Set(picked.map((n) => n.ticker).filter((t): t is string => !!t))]
-      // Cotações da MESMA rota Laravel das páginas (≤5 fetches, cache 300s no
-      // servidor) — o batch do chat-service ficava stale vs o scraper.
-      const quotes = new Map<string, number>()
-      await Promise.all(symbols.map(async (s) => {
-        const q = await marketFetchQuote(s).catch(() => null)
-        if (q?.data?.change_percent != null) quotes.set(s.toUpperCase(), q.data.change_percent)
-      }))
-
-      const badgeFor = (t: string | null) => {
-        if (!t) return null
-        const chg = quotes.get(t.toUpperCase())
-        if (chg == null) return null
-        return { text: `${t.toUpperCase()} ${pctFmt(chg)}`, dir: dirOf(chg) }
-      }
-      const sourceLine = (n: RawNews) => {
-        const label = sourcePretty(n.source)
-        const when = relTime(n.publishedAt)
-        return when ? `${label} · ${when}` : label
-      }
-
-      const first = picked[0]!
-      featured.value = {
-        href: '/noticias',
-        badge: badgeFor(first.ticker),
-        source: sourceLine(first),
-        title: first.title,
-        dek: first.dek,
-      }
-      rows.value = picked.slice(1).map((n) => ({
-        href: '/noticias',
-        title: n.title,
-        source: sourceLine(n),
-        ticker: badgeFor(n.ticker),
-      }))
-      loaded.value = true
-    }
-    catch { /* mantém o seed */ }
-    finally { loading.value = false }
-  }
-
-  onMounted(hydrate)
-  return { featured, rows, loaded, loading }
-}
-
-/* ═════ Conteúdo estático da página (copy exata do design) ═════ */
-
-// (Card "Cripto" removido — não existe página de cripto pra apontar; a lista
-//  é uma coluna flex, então 4 linhas não quebram o layout.)
-export const MERCADO_EXPLORE = [
-  { t: 'Ações', d: 'Análise fundamentalista de 400+ empresas da B3, com score e preço-alvo.', href: '/asset/PETR4' },
-  { t: 'FIIs', d: 'Fundos imobiliários com dividend yield, vacância e histórico de proventos.', href: '/rankings?classe=fiis' },
-  { t: 'Tesouro Direto', d: 'Títulos públicos comparados com CDB e poupança, sem juridiquês.', href: '/ranking/tesouro-direto' },
-  { t: 'Calculadoras', d: 'Juros compostos, preço teto e renda passiva em segundos.', href: '/calculadoras' },
-] as const
-
-export const MERCADO_GUIDES: NuGuideCardItem[] = [
-  { tag: 'Guia Redentia', title: 'Open Finance: carteira espalhada?', href: '/guias/open-finance', variant: 1 },
-  { tag: 'Ações', title: 'Como investir em ações', href: '/guias', variant: 2 },
-  { tag: 'FIIs', title: 'Melhores FIIs 2026', href: '/guias', variant: 3 },
-  { tag: 'Análise', title: 'Análise PETR4', href: '/guias', variant: 1 },
-  { tag: 'Ações', title: 'Small caps: guia completo', href: '/guias', variant: 2 },
-  { tag: 'Dividendos', title: 'Como calcular dividendos', href: '/guias', variant: 3 },
-]
-
+// Revisto em 31/10/2026 com o plano único (R$ 19,99 por mês, 3 dias grátis
+// com cartão; pagos a carteira, o Open Finance e a IA). A resposta antiga do
+// "é gratuita?" falava de um plano Pro que deixou de existir. Os cenários são
+// os do motor da Simulação: 2.000 caminhos de cinco anos sorteados de trechos
+// reais do histórico (blocos conjuntos), com juros, dólar e petróleo juntos,
+// em dinheiro de hoje. Os apps ainda não estão na App Store (recusa de
+// 23/10/2026, conta de organização): "a caminho", sem data.
 export const MERCADO_FAQS: NuFaqItem[] = [
   {
-    q: 'A Redentia é gratuita?',
-    a: 'Sim. Criar conta, acompanhar o mercado, ler os guias e usar as calculadoras é grátis. Recursos avançados da IA e alertas ilimitados fazem parte do plano Pro.',
+    q: 'Quanto custa a Redentia?',
+    a: 'O mercado do dia, as calculadoras, os rankings e os guias são grátis e não pedem conta. A carteira conectada pelo Open Finance, os 2.000 cenários e a IA fazem parte da assinatura: R$ 19,99 por mês. Os 3 primeiros dias são grátis; o cartão é pedido no começo e a primeira cobrança vem no fim do teste.',
   },
   {
-    q: 'Como a IA analisa as ações?',
-    a: 'Ela cruza os fundamentos publicados pelas empresas (balanços, dividendos, endividamento) com preço e consenso de analistas, e traduz tudo em um score de 0 a 100 explicado em português claro.',
+    q: 'Como funcionam os 2.000 cenários?',
+    a: 'A Redentia pega a sua carteira de verdade e sorteia 2.000 caminhos possíveis para os próximos cinco anos, a partir de trechos reais do histórico do mercado, com juros, dólar e petróleo andando juntos. O resultado vem em dinheiro de hoje: o caminho pessimista, o do meio e o otimista. É uma simulação, não uma promessa de rendimento.',
   },
   {
-    q: 'Preciso conectar minha corretora?',
-    a: 'Não é obrigatório. Você pode cadastrar posições manualmente ou conectar via Open Finance, com consentimento regulado pelo Banco Central: somente leitura, sem acesso a movimentações.',
+    q: 'Preciso conectar meu banco?',
+    a: 'Para a Redentia vigiar a carteira, sim. A conexão é pelo Open Finance, regulado pelo Banco Central, e funciona com mais de 110 bancos e corretoras. É só leitura: a Redentia vê os investimentos e o saldo, nunca move o seu dinheiro e nunca vê a sua senha do banco.',
+  },
+  {
+    q: 'Tem app para iPhone, Mac e Apple Watch?',
+    a: 'Tem, e eles estão a caminho da App Store. Enquanto isso, tudo funciona aqui no site, com a mesma conta e a mesma assinatura.',
   },
   {
     q: 'A Redentia recomenda compra e venda?',

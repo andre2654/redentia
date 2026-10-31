@@ -394,4 +394,24 @@
      calendário e a borda do botão de contorno carregam informação, não são
      moldura. Medido: 3,15:1 sobre branco, 3,10:1 sobre creme. */
   --nu-ink-45: rgba(10, 10, 12, 0.45);
+
+  /* ——— Home (31/10/2026): a tela do Agora dos apps no site ———
+     Valores do canvas V5MBL5Q3 (IPhoneAgoraV2, WatchAgora, MacAgoraInicio):
+     o preto do Agora, o verde da bolsa aberta, o vermelho e o âmbar do aviso.
+     Só a home usa (HomeAgora, HomeComoFunciona, HomeLeque). */
+  --nu-agora-bg: #000000;
+  --nu-agora-cartao: #161618;                        /* cartão sobre o preto */
+  --nu-agora-texto: #F5F5F7;
+  --nu-agora-sub: rgba(255, 255, 255, 0.62);
+  --nu-agora-pilula: rgba(255, 255, 255, 0.12);
+  --nu-agora-linha: rgba(255, 255, 255, 0.10);
+  --nu-agora-verde: #5EDB3B;
+  --nu-agora-vermelho: #FF375F;
+  --nu-agora-ambar: #FFD60A;
+  --nu-agora-azul: #64B5FF;
+  /* sombra dos aparelhos sobre o creme (filter: drop-shadow respeita o recorte) */
+  --nu-home-sombra-aparelho: drop-shadow(0 28px 36px rgba(12, 21, 36, 0.26));
+  --nu-home-sombra-janela: 0 40px 90px -36px rgba(12, 21, 36, 0.55), 0 0 0 1px rgba(12, 21, 36, 0.08);
+  --nu-home-sombra-botao: 0 18px 40px -16px rgba(47, 106, 255, 0.65);
+  --nu-home-sombra-botao-escuro: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
 }
