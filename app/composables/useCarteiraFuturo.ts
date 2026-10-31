@@ -3,6 +3,10 @@
  * client e depois do mount: o motor roda 2.000 caminhos e não pode segurar o
  * SSR da página. Enquanto isso a seção mostra o esqueleto na forma do leque.
  *
+ * `caminhos` são os 2.000 caminhos já decodificados (caminhosDoLeque), uma vez
+ * só; null quando a resposta não os traz ou não fecha, e aí o leque cai nas
+ * faixas. Decodificados, os arrays crus saem de `dados` (~1 MB a menos).
+ *
  * Estados:
  *  - 'carregando' → esqueleto
  *  - 'pronto'     → vm + dados
@@ -17,7 +21,7 @@
  */
 import type { FuturoDadosApi } from '~/types/assinatura'
 import { erroDeAssinatura, statusHttpDoErro } from '~/utils/assinatura'
-import { listaDeFora, montarFuturo, type FuturoVM } from '~/utils/futuro'
+import { caminhosDoLeque, listaDeFora, montarFuturo, type CaminhosDoLeque, type FuturoComCaminhos, type FuturoVM } from '~/utils/futuro'
 
 export type EstadoDoFuturo = 'carregando' | 'pronto' | 'vazio' | 'fora' | 'erro' | 'invalida' | 'bloqueado'
 
@@ -26,6 +30,7 @@ export function useCarteiraFuturo() {
   const estado = ref<EstadoDoFuturo>('carregando')
   const dados = shallowRef<FuturoDadosApi | null>(null)
   const vm = shallowRef<FuturoVM | null>(null)
+  const caminhos = shallowRef<CaminhosDoLeque | null>(null)
   /** 'BTC (cripto) e COE XP (COE)' — no estado 'fora' */
   const fora = ref<string | null>(null)
 
@@ -50,7 +55,9 @@ export function useCarteiraFuturo() {
         estado.value = 'invalida'
         return
       }
-      dados.value = r.data
+      const { paths_data: _crus, ...resto } = r.data as FuturoComCaminhos
+      caminhos.value = caminhosDoLeque(r.data as FuturoComCaminhos)
+      dados.value = resto
       vm.value = montado
       estado.value = 'pronto'
     } catch (err) {
@@ -62,5 +69,5 @@ export function useCarteiraFuturo() {
 
   onMounted(carregar)
 
-  return { estado, dados, vm, fora, carregar }
+  return { estado, dados, vm, caminhos, fora, carregar }
 }

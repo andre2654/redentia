@@ -2,17 +2,21 @@
  * "Daqui a 5 anos": o leque do motor de cenários sobre a carteira da pessoa,
  * em dinheiro de hoje (GET /me/carteira/futuro). O desenho do Agora dos apps
  * (canvas V5MBL5Q3, IPhoneAgoraV2 · Detalhes e MacAgoraFerramentas), no
- * contrato final do Backend (31/10/2026):
+ * contrato do Backend de 31/10/2026:
  *  - `series` é MENSAL (61 pontos, mês 0 a 60; `year` decimal) com p10–p90;
- *  - `sample_paths` traz UM caminho real (o mais perto do meio): ele é a linha
- *    acesa do meio. O motor não expõe mais caminhos, então o leque é desenhado
- *    pelas faixas (80% e 50%) e pelas linhas de cada quantil — nada de
- *    caminho inventado;
+ *  - `paths_data` traz os 2.000 caminhos do motor (`paths_encoding`
+ *    "permil-delta", ver caminhosDoLeque), ordenados pelo valor final. São
+ *    eles que o leque desenha, um a um, em canvas (CarteiraLequeCaminhos);
+ *  - sem `paths_data` (resposta antiga ou que não fecha), o leque cai nas
+ *    faixas (80% e 50%) e nas linhas de cada quantil (CarteiraLeque, SVG) —
+ *    nada de caminho inventado. `sample_paths` (UM caminho, o mais perto do
+ *    meio) segue no contrato, mas a linha acesa do meio agora é o p50;
  *  - `today_value` é a carteira inteira; a série e os finais partem de
  *    `covered_value` (a parte que o motor simula). O que ficou de fora é dito.
  *
- * Aqui mora só conta: o texto formatado e a geometria do SVG. Todo número sai
- * da resposta da API. Os testes importam direto (sem import de valor).
+ * Aqui mora só conta: o texto formatado, os caminhos decodificados e a
+ * geometria. Todo número sai da resposta da API. Os testes importam direto
+ * (sem import de valor).
  */
 import type { FuturoDadosApi, FuturoPontoApi } from '~/types/assinatura'
 
@@ -222,21 +226,9 @@ export function desenharLeque(d: FuturoDadosApi, caixa: CaixaDoLeque): DesenhoDo
     ? caminho.map((v, i): Pt => [xDe((i * anoMax) / (caminho.length - 1)), yDe(v)])
     : lado('p50')
 
-  // O sino dos finais na ponta: densidade log-normal ajustada pelos quantis do
-  // motor (p10, p50, p90), desenhada para a direita a partir de xFim.
-  const mu = Math.log(Math.max(d.end.p50, 1))
-  const sigma = Math.max((Math.log(Math.max(d.end.p90, 1)) - Math.log(Math.max(d.end.p10, 1))) / (2 * 1.2816), 0.01)
-  const larguraSino = Math.max(caixa.sino - 2, 0)
-  const passos = 48
-  const dens: Pt[] = []
-  for (let i = 0; i <= passos; i++) {
-    const v = yMin + ((yMax - yMin) * i) / passos
-    const z = v > 0 ? (Math.log(v) - mu) / sigma : -10
-    dens.push([v, v > 0 ? Math.exp(-0.5 * z * z) / v : 0])
-  }
-  const pico = Math.max(...dens.map((x) => x[1])) || 1
-  const sinoPts: Pt[] = dens.map(([v, p]) => [xFim + 2 + (p / pico) * larguraSino, yDe(v)])
-  const sino = `M${xFim + 2},${yDe(yMax).toFixed(1)}` + sinoPts.map((p) => `L${p[0].toFixed(1)},${p[1].toFixed(1)}`).join('') + `L${xFim + 2},${yDe(yMin).toFixed(1)}Z`
+  // O sino dos finais na ponta, sem os caminhos: a densidade que os quantis do
+  // motor (p10, p50, p90) desenham, de cima para baixo (ver sinoDosQuantis).
+  const sino = caminhoDoSino(sinoDosQuantis(d.end, yMin, yMax), xFim + 2, Math.max(caixa.sino - 2, 0), yDe)
 
   return {
     faixa80: faixa('p10', 'p90'),
@@ -284,4 +276,310 @@ export function lequeDeExemplo(horizonte = 5): FuturoDadosApi {
     end: { p10: fim.p10, p50: fim.p50, p90: fim.p90 },
     series, sample_paths: null, covered_value: 100, excluded: [], disclaimer: '',
   }
+}
+
+/* ————— o sino dos finais ————— */
+
+/** Um ponto do sino: o valor (eixo do leque) e a densidade, de 0 a 1 (1 = o pico). */
+export type PontoDoSino = [valor: number, densidade: number]
+
+const PASSOS_DO_SINO = 160
+
+function normalizarSino(pts: PontoDoSino[]): PontoDoSino[] {
+  const pico = Math.max(...pts.map((p) => p[1]))
+  return pico > 0 ? pts.map(([v, d]) => [v, d / pico]) : pts.map(([v]) => [v, 0])
+}
+
+/**
+ * O sino sem os caminhos: a densidade de duas metades log-normais presas nos
+ * quantis do motor (o lado de cima com o σ do p90, o de baixo com o do p10),
+ * contínua no p50. Amostrada de cima (hi) para baixo (lo): o contorno não se
+ * cruza (o desenho antigo ia de baixo para cima depois de começar no alto e
+ * saía como uma agulha dupla). A janela do leque sem caminhos vai só um
+ * pouco além do p10–p90, onde a densidade ainda é alta: nos 12% de cada
+ * borda ela é levada a zero, para o sino fechar em vez de sair cortado.
+ */
+export function sinoDosQuantis(end: { p10: number; p50: number; p90: number }, lo: number, hi: number, passos = PASSOS_DO_SINO): PontoDoSino[] {
+  const ln = (v: number) => Math.log(Math.max(v, 1e-9))
+  const mu = ln(end.p50)
+  const sCima = Math.max((ln(end.p90) - mu) / 1.2816, 1e-3)
+  const sBaixo = Math.max((mu - ln(end.p10)) / 1.2816, 1e-3)
+  const pts: PontoDoSino[] = []
+  for (let i = 0; i <= passos; i++) {
+    const v = hi - ((hi - lo) * i) / passos
+    if (v <= 0) {
+      pts.push([v, 0])
+      continue
+    }
+    const z = (ln(v) - mu) / (v >= end.p50 ? sCima : sBaixo)
+    const u = (v - lo) / (hi - lo || 1)
+    const borda = (x: number) => {
+      const k = Math.min(Math.max(x / 0.12, 0), 1)
+      return k * k * (3 - 2 * k)
+    }
+    pts.push([v, (Math.exp(-0.5 * z * z) / v) * borda(u) * borda(1 - u)])
+  }
+  return normalizarSino(pts)
+}
+
+/**
+ * O sino COM os caminhos: a densidade de onde eles terminam (núcleo
+ * gaussiano, banda de Silverman), de cima (hi) para baixo (lo). É o
+ * histograma suave dos 2.000 finais, não uma curva ajustada.
+ */
+export function sinoDosFins(fins: ArrayLike<number>, lo: number, hi: number, passos = PASSOS_DO_SINO): PontoDoSino[] {
+  const n = fins.length
+  const ordenados = Float64Array.from(fins).sort()
+  let soma = 0
+  for (let i = 0; i < n; i++) soma += ordenados[i]!
+  const media = soma / n
+  let quad = 0
+  for (let i = 0; i < n; i++) quad += (ordenados[i]! - media) ** 2
+  const dp = Math.sqrt(quad / Math.max(n - 1, 1))
+  const iqr = quantilOrdenado(ordenados, 0.75) - quantilOrdenado(ordenados, 0.25)
+  const escala = Math.min(dp, iqr / 1.34) || dp || (hi - lo) / 20 || 1
+  const banda = 0.9 * escala * n ** -0.2
+  const pts: PontoDoSino[] = []
+  for (let i = 0; i <= passos; i++) {
+    const v = hi - ((hi - lo) * i) / passos
+    let dens = 0
+    for (let k = 0; k < n; k++) {
+      const z = (v - ordenados[k]!) / banda
+      if (z > -5 && z < 5) dens += Math.exp(-0.5 * z * z)
+    }
+    pts.push([v, dens])
+  }
+  return normalizarSino(pts)
+}
+
+/** Contorno fechado do sino em SVG: a base em x0 e a barriga para a direita. */
+export function caminhoDoSino(pts: PontoDoSino[], x0: number, largura: number, yDe: (v: number) => number): string {
+  if (!pts.length) return ''
+  const f = (n: number) => n.toFixed(1)
+  const corpo = pts.map(([v, d]) => `L${f(x0 + d * largura)},${f(yDe(v))}`).join('')
+  return `M${f(x0)},${f(yDe(pts[0]![0]))}${corpo}L${f(x0)},${f(yDe(pts[pts.length - 1]![0]))}Z`
+}
+
+/* ————— os 2.000 caminhos ————— */
+
+/** A resposta com os caminhos do motor (Backend de 31/10/2026; opcional). */
+export interface FuturoComCaminhos extends FuturoDadosApi {
+  /** "permil-delta": milésimos de covered_value; o 1º é 1000 e os outros, a diferença para o mês anterior */
+  paths_encoding?: string | null
+  paths_data?: number[][] | null
+}
+
+export interface CaminhosDoLeque {
+  /** quantos caminhos */
+  n: number
+  /** pontos por caminho, na grade de `series` (61: mês 0 a 60) */
+  pontos: number
+  /** reais de hoje, caminho a caminho: o mês t do caminho i está em [i * pontos + t] */
+  valores: Float64Array
+}
+
+/** Menos que isso não é leque de caminhos: cai nas faixas. */
+export const MIN_CAMINHOS = 50
+
+/**
+ * Os caminhos do motor em reais de hoje, ordenados pelo valor final (do pior
+ * ao melhor: o índice é o percentil de onde o caminho termina). Lê
+ * "permil-delta" (o fio do Backend: soma acumulada × coberto / 1000) e
+ * "permil" (milésimos absolutos). Qualquer coisa fora do contrato (formato
+ * desconhecido, caminho de outro tamanho que a série, número não finito,
+ * poucos caminhos) devolve null e o leque cai nas faixas.
+ */
+export function caminhosDoLeque(d: FuturoComCaminhos | null | undefined): CaminhosDoLeque | null {
+  if (!d || !Array.isArray(d.paths_data) || d.paths_data.length < MIN_CAMINHOS) return null
+  const formato = d.paths_encoding
+  if (formato !== 'permil-delta' && formato !== 'permil') return null
+  if (!valido(d.covered_value) || d.covered_value <= 0 || !Array.isArray(d.series)) return null
+  const base = d.covered_value
+  const pontos = d.series.length
+  const n = d.paths_data.length
+  const valores = new Float64Array(n * pontos)
+  for (let i = 0; i < n; i++) {
+    const linha = d.paths_data[i]
+    if (!Array.isArray(linha) || linha.length !== pontos) return null
+    let acc = 0
+    for (let t = 0; t < pontos; t++) {
+      const x = linha[t]
+      if (!valido(x)) return null
+      acc = formato === 'permil-delta' ? acc + x : x
+      valores[i * pontos + t] = (base * acc) / 1000
+    }
+  }
+  const c: CaminhosDoLeque = { n, pontos, valores }
+  // o Backend já manda em ordem; conferir custa n comparações
+  let emOrdem = true
+  for (let i = 1; i < n && emOrdem; i++) emOrdem = fimDoCaminho(c, i - 1) <= fimDoCaminho(c, i)
+  if (emOrdem) return c
+  const ordem = Array.from({ length: n }, (_, i) => i).sort((a, b) => fimDoCaminho(c, a) - fimDoCaminho(c, b))
+  const ordenados = new Float64Array(n * pontos)
+  ordem.forEach((de, para) => ordenados.set(valores.subarray(de * pontos, (de + 1) * pontos), para * pontos))
+  return { n, pontos, valores: ordenados }
+}
+
+export function fimDoCaminho(c: CaminhosDoLeque, i: number): number {
+  return c.valores[i * c.pontos + c.pontos - 1]!
+}
+
+/** Quantil por interpolação linear num vetor JÁ ordenado (a conta do motor). */
+export function quantilOrdenado(v: ArrayLike<number>, q: number): number {
+  if (!v.length) return Number.NaN
+  const pos = q * (v.length - 1)
+  const lo = Math.floor(pos)
+  const hi = Math.ceil(pos)
+  return v[lo]! * (1 - (pos - lo)) + v[hi]! * (pos - lo)
+}
+
+/** O mês t de todos os caminhos, ordenado. */
+export function colunaDoMes(c: CaminhosDoLeque, t: number): Float64Array {
+  const col = new Float64Array(c.n)
+  for (let i = 0; i < c.n; i++) col[i] = c.valores[i * c.pontos + t]!
+  return col.sort()
+}
+
+/**
+ * A janela vertical do leque com caminhos: do quantil 0,5% ao 99,5% de cada
+ * mês (e a faixa e o hoje dentro). Os ~10 caminhos de cada ponta que passam
+ * disso saem pela borda, que esmaece: escalar pelo caminho mais extremo de
+ * 2.000 achataria a faixa de 80% numa fita; apertar mais cortaria o sino dos
+ * finais antes de ele chegar a zero.
+ */
+export function janelaDosCaminhos(c: CaminhosDoLeque, serie: FuturoPontoApi[], inicio: number): { lo: number; hi: number } {
+  let lo = inicio
+  let hi = inicio
+  for (let t = 0; t < c.pontos; t++) {
+    const col = colunaDoMes(c, t)
+    lo = Math.min(lo, quantilOrdenado(col, 0.005))
+    hi = Math.max(hi, quantilOrdenado(col, 0.995))
+  }
+  for (const s of serie) {
+    lo = Math.min(lo, s.p10)
+    hi = Math.max(hi, s.p90)
+  }
+  const folga = (hi - lo) * 0.04 || hi * 0.1
+  return { lo: Math.max(0, lo - folga), hi: hi + folga }
+}
+
+/**
+ * O índice do caminho mais perto de `valor` no mês t (a distância vertical
+ * no ponto do cursor). No mês 0 todos valem o mesmo; ali vale o mês 1.
+ */
+export function caminhoMaisPerto(c: CaminhosDoLeque, t: number, valor: number): number {
+  const m = Math.min(Math.max(t, 1), c.pontos - 1)
+  let melhor = 0
+  let menor = Infinity
+  for (let i = 0; i < c.n; i++) {
+    const dist = Math.abs(c.valores[i * c.pontos + m]! - valor)
+    if (dist < menor) {
+      menor = dist
+      melhor = i
+    }
+  }
+  return melhor
+}
+
+/**
+ * Os três caminhos de um mês (o pedido do dono para o hover, 31/10/2026: "o
+ * caminho do meio, o mais otimista e o mais pessimista daquele ponto"): os
+ * caminhos REAIS que, no mês t, estão no p90, no p50 e no p10 da faixa, e
+ * por isso batem com os números da leitura. O do topo e o do fundo seriam
+ * os 2 de 2.000 mais extremos, fora da janela quase sempre.
+ */
+export function caminhosDoMes(c: CaminhosDoLeque, serie: FuturoPontoApi[], t: number): { otimista: number; meio: number; pessimista: number } {
+  const s = serie[Math.min(Math.max(t, 1), serie.length - 1)]!
+  return {
+    otimista: caminhoMaisPerto(c, t, s.p90),
+    meio: caminhoMaisPerto(c, t, s.p50),
+    pessimista: caminhoMaisPerto(c, t, s.p10),
+  }
+}
+
+/**
+ * Afasta rótulos empilhados na vertical (y de cima para baixo) para que
+ * nenhum encoste no vizinho: mantém a ordem, empurra para baixo o que encosta
+ * e, se passar da base, sobe o bloco todo. Devolve na ordem recebida.
+ */
+export function afastarRotulos(ys: number[], gap: number, topo: number, base: number): number[] {
+  const ordem = ys.map((y, i) => ({ y, i })).sort((a, b) => a.y - b.y)
+  for (let k = 0; k < ordem.length; k++) {
+    const minimo = k ? ordem[k - 1]!.y + gap : topo
+    ordem[k]!.y = Math.max(ordem[k]!.y, minimo)
+  }
+  const sobra = ordem.length ? ordem[ordem.length - 1]!.y - base : 0
+  if (sobra > 0) {
+    for (const o of ordem) o.y -= sobra
+    for (let k = 0; k < ordem.length; k++) ordem[k]!.y = Math.max(ordem[k]!.y, k ? ordem[k - 1]!.y + gap : topo)
+  }
+  const out = new Array<number>(ys.length)
+  for (const o of ordem) out[o.i] = o.y
+  return out
+}
+
+/**
+ * O tom de um caminho pela posição de onde ele termina (0 = o pior final,
+ * 1 = o melhor), como no Agora: o miolo creme, as pontas em verde (alto) e
+ * vermelho (baixo), mais opacas quanto mais raras. `mistura` vai de −1
+ * (vermelho cheio) a +1 (verde cheio); `alfa` sobe nas pontas porque lá há
+ * poucos caminhos e no miolo, centenas se somam. Com menos caminhos, cada
+ * fio pesa mais.
+ */
+export function tomDoCaminho(rank: number, n: number): { mistura: number; alfa: number } {
+  const u = Math.max(-1, Math.min(1, (rank - 0.5) * 2))
+  const a = Math.abs(u)
+  const t = Math.max(0, Math.min(1, (a - 0.28) / (0.86 - 0.28)))
+  const suave = t * t * (3 - 2 * t)
+  const peso = Math.min(Math.max(Math.sqrt(2000 / Math.max(n, 1)), 1), 3)
+  const alfa = Math.min((0.04 + 0.26 * a ** 2.4) * peso, 0.9)
+  return { mistura: Math.sign(u) * suave, alfa: Math.round(alfa * 1000) / 1000 }
+}
+
+const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+
+/** O mês t do leque em palavras: 'hoje', 'mar/2028'. Sem `as_of` válido, 'mês 17'. */
+export function mesDoLeque(asOf: string | null | undefined, t: number): string {
+  if (t <= 0) return 'hoje'
+  const ano = Number(String(asOf ?? '').slice(0, 4))
+  const mes = Number(String(asOf ?? '').slice(5, 7)) - 1
+  if (!(ano > 1900) || !(mes >= 0 && mes <= 11)) return `mês ${t}`
+  const k = mes + t
+  return `${MESES_CURTOS[k % 12]}/${ano + Math.floor(k / 12)}`
+}
+
+/**
+ * Os anos do meio que cabem no eixo: sem encostar no "hoje · R$ X" (à
+ * esquerda), no ano final (à direita) nem um no outro. Era o "2027" em cima
+ * do "hoje · R$ 66,2 mil" nas larguras médias.
+ */
+export function marcasDoEixo(
+  marcas: { x: number; rotulo: string | null }[],
+  limites: { hojeDireita: number; fimEsquerda: number; meiaLargura: number; folga?: number },
+): { x: number; rotulo: string }[] {
+  const folga = limites.folga ?? 12
+  const out: { x: number; rotulo: string }[] = []
+  let direita = limites.hojeDireita
+  for (const m of marcas) {
+    if (!m.rotulo) continue
+    if (m.x - limites.meiaLargura < direita + folga) continue
+    if (m.x + limites.meiaLargura > limites.fimEsquerda - folga) continue
+    out.push({ x: m.x, rotulo: m.rotulo })
+    direita = m.x + limites.meiaLargura
+  }
+  return out
+}
+
+/** '#8FF0B5' ou 'rgb(143, 240, 181)' (o que o getComputedStyle devolve de um token) → [r, g, b]. */
+export function rgbDaCor(cor: string | null | undefined): [number, number, number] | null {
+  const v = String(cor ?? '').trim()
+  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(v)
+  if (hex) {
+    const h = hex[1]!.length === 3 ? hex[1]!.replace(/./g, (c) => c + c) : hex[1]!
+    const n = Number.parseInt(h, 16)
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+  }
+  const rgb = /^rgba?\(\s*(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)/i.exec(v)
+  if (rgb) return [Math.round(Number(rgb[1])), Math.round(Number(rgb[2])), Math.round(Number(rgb[3]))]
+  return null
 }

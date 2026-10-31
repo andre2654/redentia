@@ -2,14 +2,16 @@
 // "Daqui a 5 anos" (31/10/2026): o momento assinatura da /carteira. O motor
 // roda 2.000 caminhos da carteira da pessoa em 5 anos, em dinheiro de hoje
 // (GET /me/carteira/futuro), e a banda navy responde numa frase: "Entre R$ X
-// e R$ Y." Embaixo, o leque (CarteiraLeque) com otimista, meio e pessimista.
+// e R$ Y." Embaixo, o leque com otimista, meio e pessimista: os 2.000
+// caminhos em canvas, com hover (CarteiraLequeCaminhos), ou, se a resposta
+// não trouxer os caminhos, as faixas (CarteiraLeque).
 //
 // Um momento assinatura por tela (dono, 16/10): o resto da carteira fica no
 // creme calmo. Carregando → esqueleto na forma do leque; sem posições → some;
 // nada simulável → a frase do que ficou de fora; motor fora do ar → frase com
 // "Tentar de novo"; carteira que o motor recusa → frase calma. Nunca cartão
 // quebrado nem espaço vazio sem explicação.
-const { estado, dados, vm, fora, carregar } = useCarteiraFuturo()
+const { estado, dados, vm, caminhos, fora, carregar } = useCarteiraFuturo()
 
 const pergunta = '/busca?chat=1&q=' + encodeURIComponent('O que mais pesa no cenário pessimista da minha carteira nos próximos 5 anos, e como eu protejo esse lado?')
 </script>
@@ -30,7 +32,16 @@ const pergunta = '/busca?chat=1&q=' + encodeURIComponent('O que mais pesa no cen
       </div>
 
       <div class="cfu__grafico">
+        <CarteiraLequeCaminhos
+          v-if="caminhos"
+          :dados="dados"
+          :caminhos="caminhos"
+          :fins="vm.fins"
+          :eixo="{ hoje: `hoje · ${vm.hoje}`, fim: vm.anoFinal, anos: vm.anosDoMeio }"
+          :altura="420"
+        />
         <CarteiraLeque
+          v-else
           :dados="dados"
           :fins="vm.fins"
           :eixo="{ hoje: `hoje · ${vm.hoje}`, fim: vm.anoFinal, anos: vm.anosDoMeio }"

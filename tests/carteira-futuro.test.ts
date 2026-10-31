@@ -7,16 +7,31 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  afastarRotulos,
   anoDoFim,
   brlDoLeque,
+  caminhoDoSino,
+  caminhosDoMes,
+  caminhoMaisPerto,
+  caminhosDoLeque,
+  colunaDoMes,
   curvaDoLeque,
   desenharLeque,
+  fimDoCaminho,
   futuroDesenhavel,
   inicioDoLeque,
+  janelaDosCaminhos,
   lequeDeExemplo,
   listaDeFora,
+  marcasDoEixo,
+  mesDoLeque,
   montarFuturo,
   motivoDeFora,
+  quantilOrdenado,
+  rgbDaCor,
+  sinoDosFins,
+  sinoDosQuantis,
+  tomDoCaminho,
 } from '../app/utils/futuro.ts'
 import { comparacaoAoVivo, fatoDoPregao, fraseDaCarteira, nomeParaFrase, rotuloDaPilula } from '../app/utils/carteira-agora.ts'
 import { estadoDoPregao, horaDoFechamento, quandoFoi, semPregao } from '../app/utils/pregao.ts'
@@ -109,7 +124,11 @@ test('geometria: série mensal no x decimal, o otimista em cima e o caminho real
   assert.ok(Math.abs(d.xAnos[0]! - (10 + (690 - 10) / 5)) < 0.01)
   assert.match(d.faixa80, /^M10,.*Z$/)
   assert.match(d.meio, /^M10,/)
-  assert.match(d.sino, /^M692,/)
+  assert.match(d.sino, /^M692(\.0)?,/)
+  // o sino desce de cima para baixo, sem voltar (o antigo começava no alto,
+  // pulava para baixo e subia de novo: a "agulha dupla")
+  const ysDoSino = [...d.sino.matchAll(/[ML][\d.]+,([\d.]+)/g)].map((m) => Number(m[1]))
+  for (let i = 1; i < ysDoSino.length; i++) assert.ok(ysDoSino[i]! >= ysDoSino[i - 1]! - 1e-9, `sino volta no ponto ${i}`)
   // sem o caminho, a linha do meio é o p50
   assert.equal(desenharLeque({ ...FUTURO, sample_paths: null }, caixa).meioReal, false)
 })
@@ -205,4 +224,218 @@ test('quando foi o pregão, falado a partir de hoje', () => {
   assert.equal(quandoFoi('2026-10-30', sp('2026-11-02T09:00:00')), 'na sexta')
   assert.equal(quandoFoi('2026-10-10', agora), 'em 10/10')
   assert.equal(quandoFoi(null, agora), null)
+})
+
+/* ————— os 2.000 caminhos ————— */
+
+// Um motor de mentira, só para o teste: caminhos de um passeio aleatório com
+// semente fixa, a faixa CONTADA neles mês a mês (como no motor) e o fio
+// "permil-delta" do Backend.
+function motorDeTeste(n = 400, meses = 60, coberto = 66170.58) {
+  let semente = 7
+  const rnd = () => { semente = (semente * 1103515245 + 12345) % 2147483648; return semente / 2147483648 }
+  const normal = () => Math.sqrt(-2 * Math.log(Math.max(rnd(), 1e-9))) * Math.cos(2 * Math.PI * rnd())
+  const permil: number[][] = []
+  for (let c = 0; c < n; c++) {
+    let v = 1
+    const l = [1000]
+    for (let m = 1; m <= meses; m++) { v *= Math.exp(0.006 + 0.045 * normal()); l.push(Math.round(v * 1000)) }
+    permil.push(l)
+  }
+  permil.sort((a, b) => a[meses]! - b[meses]!)
+  const series = Array.from({ length: meses + 1 }, (_, m) => {
+    const col = permil.map((l) => (coberto * l[m]!) / 1000).sort((a, b) => a - b)
+    const q = (x: number) => quantilOrdenado(col, x)
+    return { month: m, year: m / 12, p10: q(0.1), p25: q(0.25), p50: q(0.5), p75: q(0.75), p90: q(0.9) }
+  })
+  const delta = permil.map((l) => l.map((v, i) => (i ? v - l[i - 1]! : v)))
+  const f = series[meses]!
+  return {
+    permil,
+    dados: {
+      ...FUTURO, today_value: coberto, covered_value: coberto, series, sample_paths: null,
+      end: { p10: f.p10, p50: f.p50, p90: f.p90 },
+      paths: n, paths_encoding: 'permil-delta', paths_data: delta,
+    },
+  }
+}
+
+test('caminhos: "permil-delta" volta aos reais de hoje, na grade da série', () => {
+  const { permil, dados } = motorDeTeste()
+  const c = caminhosDoLeque(dados)!
+  assert.equal(c.n, 400)
+  assert.equal(c.pontos, 61)
+  assert.equal(c.valores[0], 66170.58)
+  // soma acumulada × coberto / 1000, exata
+  assert.ok(Math.abs(c.valores[5 * 61 + 37]! - (66170.58 * permil[5]![37]!) / 1000) < 1e-6)
+  // ordenados pelo valor final: o índice é o percentil de onde terminam
+  for (let i = 1; i < c.n; i++) assert.ok(fimDoCaminho(c, i - 1) <= fimDoCaminho(c, i))
+})
+
+test('caminhos: o p10/p50/p90 de cada mês, contado nos caminhos, é a faixa', () => {
+  const { dados } = motorDeTeste()
+  const c = caminhosDoLeque(dados)!
+  for (let t = 0; t < c.pontos; t++) {
+    const col = colunaDoMes(c, t)
+    for (const [k, q] of [['p10', 0.1], ['p50', 0.5], ['p90', 0.9]] as const) {
+      assert.ok(Math.abs(quantilOrdenado(col, q) - dados.series[t]![k]) < 0.01, `${k} do mês ${t}`)
+    }
+  }
+})
+
+test('caminhos: "permil" absoluto e ordem que chega trocada', () => {
+  const { permil, dados } = motorDeTeste(60)
+  const trocado = [...permil].reverse()
+  const c = caminhosDoLeque({ ...dados, paths_encoding: 'permil', paths_data: trocado })!
+  assert.equal(c.n, 60)
+  for (let i = 1; i < c.n; i++) assert.ok(fimDoCaminho(c, i - 1) <= fimDoCaminho(c, i))
+  assert.ok(Math.abs(fimDoCaminho(c, 59) - (66170.58 * permil[59]![60]!) / 1000) < 1e-6)
+})
+
+test('caminhos fora do contrato caem nas faixas (null), nunca em caminho inventado', () => {
+  const { dados } = motorDeTeste(80)
+  assert.equal(caminhosDoLeque(null), null)
+  assert.equal(caminhosDoLeque(FUTURO), null)
+  assert.equal(caminhosDoLeque({ ...dados, paths_encoding: 'float' }), null)
+  assert.equal(caminhosDoLeque({ ...dados, paths_encoding: null }), null)
+  assert.equal(caminhosDoLeque({ ...dados, paths_data: dados.paths_data.slice(0, 20) }), null)
+  assert.equal(caminhosDoLeque({ ...dados, covered_value: null }), null)
+  const curto = dados.paths_data.map((l, i) => (i === 3 ? l.slice(0, 40) : l))
+  assert.equal(caminhosDoLeque({ ...dados, paths_data: curto }), null)
+  const furado = dados.paths_data.map((l, i) => (i === 3 ? l.map((v, t) => (t === 9 ? Number.NaN : v)) : l))
+  assert.equal(caminhosDoLeque({ ...dados, paths_data: furado }), null)
+})
+
+test('a janela vertical cobre a faixa e quase todos os caminhos', () => {
+  const { dados } = motorDeTeste()
+  const c = caminhosDoLeque(dados)!
+  const { lo, hi } = janelaDosCaminhos(c, dados.series, 66170.58)
+  for (const s of dados.series) assert.ok(s.p10 >= lo && s.p90 <= hi)
+  let fora = 0
+  for (let i = 0; i < c.n; i++) if (fimDoCaminho(c, i) > hi || fimDoCaminho(c, i) < lo) fora++
+  assert.ok(fora <= c.n * 0.02, `${fora} caminhos fora`)
+  assert.ok(lo >= 0)
+})
+
+test('o caminho mais perto do cursor', () => {
+  const { dados } = motorDeTeste()
+  const c = caminhosDoLeque(dados)!
+  const alvo = c.valores[123 * 61 + 30]!
+  assert.equal(c.valores[caminhoMaisPerto(c, 30, alvo) * 61 + 30], alvo)
+  // no mês 0 todos valem o mesmo: vale o mês 1
+  const m1 = c.valores[200 * 61 + 1]!
+  assert.equal(c.valores[caminhoMaisPerto(c, 0, m1) * 61 + 1], m1)
+  // o mais alto e o mais baixo
+  assert.equal(caminhoMaisPerto(c, 60, 1e12), c.n - 1)
+  assert.equal(caminhoMaisPerto(c, 60, 0), 0)
+})
+
+test('o hover acende os três caminhos reais que, no mês, estão no p90, no p50 e no p10', () => {
+  const { dados } = motorDeTeste(2000)
+  const c = caminhosDoLeque(dados)!
+  for (const t of [1, 12, 30, 59, 60]) {
+    const trio = caminhosDoMes(c, dados.series, t)
+    const s = dados.series[t]!
+    const passo = (s.p90 - s.p10) / 200
+    assert.ok(Math.abs(c.valores[trio.otimista * 61 + t]! - s.p90) <= passo, `otimista no mês ${t}`)
+    assert.ok(Math.abs(c.valores[trio.meio * 61 + t]! - s.p50) <= passo, `meio no mês ${t}`)
+    assert.ok(Math.abs(c.valores[trio.pessimista * 61 + t]! - s.p10) <= passo, `pessimista no mês ${t}`)
+  }
+  // no mês 60, é o caminho que termina no p90/p50/p10 (com empates do
+  // milésimo, um vizinho de mesmo final)
+  const fim = caminhosDoMes(c, dados.series, 60)
+  assert.ok(Math.abs(fim.otimista - 0.9 * (c.n - 1)) <= c.n / 100)
+  assert.ok(Math.abs(fim.meio - 0.5 * (c.n - 1)) <= c.n / 100)
+  // em hoje todos valem o mesmo: vale o mês 1, e são três caminhos diferentes
+  const hoje = caminhosDoMes(c, dados.series, 0)
+  assert.equal(new Set([hoje.otimista, hoje.meio, hoje.pessimista]).size, 3)
+})
+
+test('rótulos empilhados não encostam e voltam na ordem recebida', () => {
+  assert.deepEqual(afastarRotulos([100, 105, 300], 26, 0, 400), [100, 126, 300])
+  // ordem trocada: a saída segue a entrada
+  assert.deepEqual(afastarRotulos([300, 100, 105], 26, 0, 400), [300, 100, 126])
+  // passou da base: o bloco sobe
+  assert.deepEqual(afastarRotulos([380, 390, 395], 20, 0, 400), [360, 380, 400])
+  // e não fura o topo
+  assert.deepEqual(afastarRotulos([-10, 0], 20, 10, 400), [10, 30])
+})
+
+test('o tom de cada caminho: creme no miolo, verde no alto, vermelho embaixo', () => {
+  assert.equal(tomDoCaminho(0.5, 2000).mistura, 0)
+  assert.equal(tomDoCaminho(1, 2000).mistura, 1)
+  assert.equal(tomDoCaminho(0, 2000).mistura, -1)
+  assert.ok(tomDoCaminho(0.55, 2000).mistura === 0, 'o miolo é creme puro')
+  assert.ok(tomDoCaminho(0.95, 2000).mistura > 0.9)
+  // as pontas são raras: mais opacas que o miolo, que soma centenas de fios
+  assert.ok(tomDoCaminho(0.99, 2000).alfa > tomDoCaminho(0.5, 2000).alfa * 4)
+  assert.ok(tomDoCaminho(0.5, 2000).alfa < 0.06)
+  for (let r = 0.5; r < 1; r += 0.05) assert.ok(tomDoCaminho(r + 0.05, 2000).alfa >= tomDoCaminho(r, 2000).alfa)
+  // simétrico, e com menos caminhos cada fio pesa mais
+  assert.equal(tomDoCaminho(0.2, 2000).alfa, tomDoCaminho(0.8, 2000).alfa)
+  assert.ok(tomDoCaminho(0.5, 300).alfa > tomDoCaminho(0.5, 2000).alfa)
+})
+
+test('o mês da leitura, em palavras', () => {
+  assert.equal(mesDoLeque('2026-10-30', 0), 'hoje')
+  assert.equal(mesDoLeque('2026-10-30', 17), 'mar/2028')
+  assert.equal(mesDoLeque('2026-10-30', 2), 'dez/2026')
+  assert.equal(mesDoLeque('2026-10-30', 3), 'jan/2027')
+  assert.equal(mesDoLeque('2026-10-30', 60), 'out/2031')
+  assert.equal(mesDoLeque('', 17), 'mês 17')
+})
+
+test('eixo: o ano que encostaria no "hoje · R$ X" ou no ano final sai', () => {
+  const marcas = [{ x: 150, rotulo: '2027' }, { x: 290, rotulo: '2028' }, { x: 430, rotulo: '2029' }, { x: 570, rotulo: '2030' }]
+  // "hoje · R$ 66,2 mil" com 160px: o 2027 (130–170) cairia em cima
+  assert.deepEqual(marcasDoEixo(marcas, { hojeDireita: 160, fimEsquerda: 690, meiaLargura: 20 }).map((m) => m.rotulo), ['2028', '2029', '2030'])
+  // com espaço, todos
+  assert.equal(marcasDoEixo(marcas, { hojeDireita: 100, fimEsquerda: 690, meiaLargura: 20 }).length, 4)
+  // o 2030 encostaria no 2031
+  assert.deepEqual(marcasDoEixo(marcas, { hojeDireita: 100, fimEsquerda: 595, meiaLargura: 20 }).map((m) => m.rotulo), ['2027', '2028', '2029'])
+  // apertados entre si: um sim, um não
+  const juntos = [{ x: 200, rotulo: 'a' }, { x: 230, rotulo: 'b' }, { x: 260, rotulo: 'c' }]
+  assert.deepEqual(marcasDoEixo(juntos, { hojeDireita: 0, fimEsquerda: 900, meiaLargura: 15, folga: 8 }).map((m) => m.rotulo), ['a', 'c'])
+  assert.deepEqual(marcasDoEixo([{ x: 300, rotulo: null }], { hojeDireita: 0, fimEsquerda: 900, meiaLargura: 20 }), [])
+})
+
+test('o sino dos finais é uma densidade lisa, de um pico só, de cima para baixo', () => {
+  const { dados } = motorDeTeste(2000)
+  const c = caminhosDoLeque(dados)!
+  const fins = Array.from({ length: c.n }, (_, i) => fimDoCaminho(c, i))
+  const { lo, hi } = janelaDosCaminhos(c, dados.series, 66170.58)
+  const s = sinoDosFins(fins, lo, hi)
+  assert.equal(s.length, 161)
+  assert.equal(s[0]![0], hi)
+  assert.equal(s[s.length - 1]![0], lo)
+  assert.equal(Math.max(...s.map((p) => p[1])), 1)
+  // um pico só: sobe até ele e desce depois
+  const pico = s.findIndex((p) => p[1] === 1)
+  for (let i = 1; i <= pico; i++) assert.ok(s[i]![1] >= s[i - 1]![1] - 0.02, `sobe em ${i}`)
+  for (let i = pico + 1; i < s.length; i++) assert.ok(s[i]![1] <= s[i - 1]![1] + 0.02, `desce em ${i}`)
+  // o pico fica no miolo dos finais e as pontas quase zeram
+  const v = s[pico]![0]
+  assert.ok(v > quantilOrdenado(fins, 0.2) && v < quantilOrdenado(fins, 0.6), `pico em ${v}`)
+  assert.ok(s[0]![1] < 0.05 && s[s.length - 1]![1] < 0.05)
+})
+
+test('sem caminhos, o sino sai dos quantis, liso e ordenado', () => {
+  const s = sinoDosQuantis({ p10: 63500, p50: 97800, p90: 147200 }, 40000, 200000)
+  assert.equal(s[0]![0], 200000)
+  assert.equal(s[s.length - 1]![0], 40000)
+  const pico = s.reduce((m, p, i) => (p[1] > s[m]![1] ? i : m), 0)
+  // a moda de uma log-normal fica um pouco abaixo da mediana
+  assert.ok(s[pico]![0] > 63500 && s[pico]![0] <= 97800, `pico em ${s[pico]![0]}`)
+  const d = caminhoDoSino(s, 700, 60, (v) => 400 - v / 1000)
+  assert.match(d, /^M700\.0,200\.0L/)
+  assert.match(d, /L700\.0,360\.0Z$/)
+})
+
+test('cor de token lida do CSS', () => {
+  assert.deepEqual(rgbDaCor('#8FF0B5'), [143, 240, 181])
+  assert.deepEqual(rgbDaCor(' #fff '), [255, 255, 255])
+  assert.deepEqual(rgbDaCor('rgb(12, 21, 36)'), [12, 21, 36])
+  assert.deepEqual(rgbDaCor('rgba(245, 241, 234, 0.7)'), [245, 241, 234])
+  assert.equal(rgbDaCor(''), null)
+  assert.equal(rgbDaCor('var(--x)'), null)
 })

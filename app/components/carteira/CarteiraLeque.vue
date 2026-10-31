@@ -3,11 +3,13 @@
 // desenho do Agora dos apps (IPhoneAgoraV2 · Simulação e MacAgoraFerramentas),
 // traduzido para o navy do Nu.
 //
-// O motor expõe as faixas mês a mês e UM caminho real (o mais perto do meio).
-// Então o leque é desenhado pelo que existe: a faixa de 80% (p10–p90) com o
-// verde no alto e o vermelho embaixo, a de 50% (p25–p75) mais clara, um fio
-// em cada quantil e, aceso no meio, o caminho real. Nenhum caminho inventado.
-// Na ponta, o sino dos finais e os três rótulos.
+// Este é o leque SEM os caminhos: o desenho de exemplo do /assinar e do
+// paywall, e o recuo da /carteira quando a resposta não traz os 2.000
+// caminhos (com eles, quem desenha é o CarteiraLequeCaminhos, em canvas).
+// Desenha o que existe: a faixa de 80% (p10–p90) com o verde no alto e o
+// vermelho embaixo, a de 50% (p25–p75) mais clara, um fio em cada quantil e,
+// aceso no meio, o caminho real do motor (ou o p50). Nenhum caminho
+// inventado. Na ponta, o sino dos finais e os três rótulos.
 //
 // Movimento: o leque abre da esquerda para a direita UMA vez, quando entra na
 // tela (1,6 s), e os rótulos chegam depois. Nada fica em laço. Com movimento
@@ -16,7 +18,7 @@
 // `fins` null = desenho de exemplo (o /assinar e o paywall): só os nomes
 // otimista, meio e pessimista, sem número nenhum.
 import type { FuturoDadosApi } from '~/types/assinatura'
-import { desenharLeque } from '~/utils/futuro'
+import { desenharLeque, marcasDoEixo } from '~/utils/futuro'
 
 const props = withDefaults(defineProps<{
   dados: FuturoDadosApi
@@ -30,7 +32,9 @@ const props = withDefaults(defineProps<{
 
 const uid = useId()
 const raiz = ref<HTMLElement | null>(null)
+const hojeEl = ref<HTMLElement | null>(null)
 const largura = ref(960)
+const larguraHoje = ref(150)
 const celular = computed(() => largura.value < 600)
 const h = computed(() => (celular.value ? Math.round(props.altura * 0.66) : props.altura))
 // coluna dos rótulos à direita do sino (o número + o nome)
@@ -64,13 +68,21 @@ const rotulos = computed(() => {
   return itens.map((it) => ({ ...it, valor: props.fins?.[it.k] ?? null }))
 })
 
-// anos do meio no eixo: no celular não cabem ao lado do "hoje · R$ X" (as
-// linhas verticais seguem marcando os anos)
+// anos do meio no eixo, só os que cabem sem encostar no "hoje · R$ X" (o
+// "2027" caía em cima dele nas larguras médias) nem no ano final; no celular
+// não cabem (as linhas verticais seguem marcando os anos)
 const marcas = computed(() => {
   if (celular.value) return []
   const anos = props.eixo?.anos ?? []
-  return desenho.value.xAnos.map((x, i) => ({ x, rotulo: anos[i] ?? null }))
+  return marcasDoEixo(
+    desenho.value.xAnos.map((x, i) => ({ x, rotulo: anos[i] ?? null })),
+    { hojeDireita: larguraHoje.value, fimEsquerda: desenho.value.xFim - 22, meiaLargura: 20 },
+  )
 })
+function medirHoje() {
+  if (hojeEl.value) larguraHoje.value = hojeEl.value.offsetWidth || larguraHoje.value
+}
+watch(largura, () => nextTick(medirHoje))
 
 /* ——— abre uma vez, quando aparece ——— */
 const armado = ref(false)
@@ -82,6 +94,8 @@ onMounted(() => {
   const el = raiz.value
   if (!el) return
   largura.value = Math.round(el.clientWidth) || largura.value
+  medirHoje()
+  document.fonts?.ready.then(medirHoje).catch(() => {})
   ro = new ResizeObserver(([e]) => {
     const w = Math.round(e?.contentRect.width ?? 0)
     if (w && Math.abs(w - largura.value) > 2) largura.value = w
@@ -192,10 +206,8 @@ onBeforeUnmount(() => { io?.disconnect(); ro?.disconnect() })
     </div>
 
     <div v-if="eixo" class="clq__eixo" :style="{ top: `${h + 10}px` }">
-      <span class="clq__eixo-hoje">{{ eixo.hoje }}</span>
-      <template v-for="m in marcas" :key="`r-${m.x}`">
-        <span v-if="m.rotulo" class="clq__eixo-ano" :style="{ left: `${m.x}px` }">{{ m.rotulo }}</span>
-      </template>
+      <span ref="hojeEl" class="clq__eixo-hoje">{{ eixo.hoje }}</span>
+      <span v-for="m in marcas" :key="`r-${m.rotulo}`" class="clq__eixo-ano" :style="{ left: `${m.x}px` }">{{ m.rotulo }}</span>
       <span class="clq__eixo-fim" :style="{ left: `${desenho.xFim}px` }">{{ eixo.fim }}</span>
     </div>
   </div>
