@@ -10,11 +10,36 @@
 //
 // A pílula tem o próprio olho (escondida a cada abertura, como no app). O olho
 // global (useHiddenValues) segue valendo para os detalhes de baixo.
+//
+// Logo abaixo da pílula, as contas do Open Finance (pedido do dono, 31/10/2026):
+// de onde a carteira vem, num relance, e o "Adicionar conta" para trazer mais
+// uma. Só o nome e o logo: o valor de cada banco fica no cartão "Suas contas".
+// Conta que pede reconexão leva à /conta, onde mora o reconectar.
 import type { CarteiraAgoraVM } from '~/types/carteira'
 import { fraseDaCarteira, rotuloDaPilula } from '~/utils/carteira-agora'
 import { estadoDoPregao, quandoFoi } from '~/utils/pregao'
 
 const props = defineProps<{ agora: CarteiraAgoraVM }>()
+const emit = defineEmits<{ (e: 'connected'): void }>()
+
+const { connections, loading: contasCarregando, ensure: carregarContas, refresh: atualizarContas } = useContasConectadas()
+onMounted(carregarContas)
+
+const RECONECTAR = new Set(['LOGIN_ERROR', 'WAITING_USER_INPUT', 'ERROR', 'ITEM_NOT_FOUND'])
+const Link = resolveComponent('NuxtLink')
+const { openWidget, opening, registering, error: erroConexao } = usePluggyConnect()
+const conectou = ref(false)
+function adicionarConta() {
+  if (opening.value || registering.value) return
+  openWidget({
+    onConnected: async () => {
+      conectou.value = true
+      emit('connected')
+      await atualizarContas()
+    },
+  })
+}
+const rotuloAdicionar = computed(() => (opening.value || registering.value ? 'Abrindo conexão segura…' : 'Adicionar conta'))
 
 const pregao = computed(() => estadoDoPregao())
 const quando = computed(() => quandoFoi(props.agora.priceDate))
@@ -79,6 +104,35 @@ const porque = computed(() => {
         Sua carteira vale <strong>{{ revelado ? agora.patrimonio : 'R$ ••••••' }}</strong>
       </span>
     </div>
+
+    <div class="cag__contas" data-clarity-mask="true">
+      <template v-if="contasCarregando">
+        <NuSkeleton v-for="i in 2" :key="i" width="132px" height="40px" radius="pill" />
+      </template>
+      <template v-else>
+        <component
+          :is="RECONECTAR.has(c.status) ? Link : 'span'"
+          v-for="c in connections"
+          :key="c.id"
+          :to="RECONECTAR.has(c.status) ? '/conta#open-finance' : undefined"
+          class="cag__conta"
+          :class="{ 'cag__conta--reconectar': RECONECTAR.has(c.status) }"
+        >
+          <span class="cag__conta-logo" aria-hidden="true">
+            <img v-if="c.institution_logo" :src="c.institution_logo" alt="" width="26" height="26" loading="lazy">
+            <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V7l6-4 6 4v14" /></svg>
+          </span>
+          <span class="cag__conta-nome">{{ c.institution_name }}</span>
+          <span v-if="RECONECTAR.has(c.status)" class="cag__conta-status">Reconectar</span>
+        </component>
+      </template>
+      <button type="button" class="cag__conta-mais" :disabled="opening || registering" @click="adicionarConta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+        {{ rotuloAdicionar }}
+      </button>
+    </div>
+    <p v-if="conectou" class="cag__contas-aviso" role="status">Conta conectada. As posições dela chegam aqui em alguns minutos.</p>
+    <p v-else-if="erroConexao" class="cag__contas-aviso cag__contas-aviso--erro" role="alert">{{ erroConexao }}</p>
 
     <div class="cag__pe">
       <span class="cag__meta">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span>
@@ -164,6 +218,35 @@ const porque = computed(() => {
 .cag__total { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; transition: opacity .25s, transform .25s; }
 .cag__total strong { color: var(--nu-ink); font-weight: 800; }
 .cag__total--oculto { opacity: 0; transform: translateX(-6px); visibility: hidden; }
+
+/* as contas do Open Finance: um chip por banco e o "+" no fim da fila */
+.cag__contas { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.cag__conta {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-card);
+  border-radius: var(--nu-r-pill); padding: 7px 16px 7px 7px;
+  font-size: var(--nu-fs-sm); font-weight: 700;
+}
+.cag__conta-logo {
+  width: 26px; height: 26px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--nu-cream); color: var(--nu-gray-2);
+}
+.cag__conta-logo img { width: 100%; height: 100%; object-fit: cover; }
+.cag__conta--reconectar { transition: transform .15s; }
+.cag__conta--reconectar:hover { color: var(--nu-ink); transform: translateY(-1px); }
+.cag__conta-status { color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 800; }
+.cag__conta-mais {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-family: inherit;
+  background: transparent; color: var(--nu-ink); border: 2px dashed var(--nu-ink-16);
+  border-radius: var(--nu-r-pill); padding: 9px 16px;
+  font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, border-color .2s;
+}
+.cag__conta-mais:hover:not(:disabled) { background: var(--nu-white); border-color: var(--nu-ink-30); }
+.cag__conta-mais:disabled { cursor: progress; opacity: .7; }
+.cag__conta-mais:focus-visible, .cag__conta--reconectar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cag__contas-aviso { margin: 12px 0 0; color: var(--nu-green-text); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cag__contas-aviso--erro { color: var(--nu-red-2); }
 
 .cag__pe {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;

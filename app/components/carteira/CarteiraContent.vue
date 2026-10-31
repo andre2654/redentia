@@ -51,7 +51,7 @@ onMounted(() => {
   <!-- CLARITY (11/10/2026): toda seção com dado da pessoa leva
        data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
   <div v-if="conectada">
-    <CarteiraAgora id="hoje" :agora="agora" />
+    <CarteiraAgora id="hoje" :agora="agora" @connected="emit('connected')" />
     <CarteiraFuturo id="futuro" />
     <CarteiraPosicoes
       v-if="payload.groups.length && payload.hero.patrimonio"
