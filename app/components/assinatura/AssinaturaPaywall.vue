@@ -2,11 +2,11 @@
 // O paywall da /carteira (31/10/2026): a tela INTEIRA de carteira é paga, e
 // quem está logado sem assinatura vê isto no lugar dela — calmo, bonito e com
 // um próximo passo só ("Começar 3 dias grátis"). Mesmo conteúdo do /assinar
-// (AssinaturaVitrine + Beneficios + ComoFunciona), com a frase da carteira.
+// (AssinaturaVitrine + Beneficios), com a frase da carteira. O "Como funciona o
+// teste" saiu (pedido do dono, 31/10/2026): o preço e o teste ficam no fim do quiz.
 // Cobrança pendente → o botão leva ao portal (trocar o cartão), não a um
 // Checkout novo.
 defineProps<{ pendente?: boolean }>()
-const { primeiraAssinatura } = useAssinatura()
 </script>
 
 <template>
@@ -34,8 +34,6 @@ const { primeiraAssinatura } = useAssinatura()
     <div class="apw__beneficios">
       <AssinaturaBeneficios />
     </div>
-
-    <AssinaturaComoFunciona v-if="!pendente && primeiraAssinatura" />
   </div>
 </template>
 

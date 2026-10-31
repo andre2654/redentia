@@ -85,7 +85,8 @@ function cores(el: HTMLElement) {
 
 // geometria do desenho, em px de CSS
 function geometria(w: number, h: number) {
-  const esq = 18, dir = Math.min(118, w * 0.3), topo = 18, base = 34
+  // a margem da direita cabe sempre o "pessimista" (13 px em negrito + o recuo de 20)
+  const esq = 18, dir = Math.min(118, Math.max(w * 0.3, 98)), topo = 18, base = 34
   const x0 = esq, x1 = w - dir
   const lmin = Math.log(leque!.min), lmax = Math.log(leque!.max)
   const y = (v: number) => topo + (h - topo - base) * (1 - (Math.log(v) - lmin) / (lmax - lmin))

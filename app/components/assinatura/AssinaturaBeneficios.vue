@@ -1,77 +1,138 @@
 <script setup lang="ts">
 // "O que vem na assinatura." (31/10/2026): as quatro coisas que a pessoa
-// ganha, em palavras simples — a carteira de qualquer banco (Open Finance), o
-// teste de 2.000 cenários, a IA que conhece a carteira e os avisos. Um cartão
-// por coisa, ícone, título e duas linhas. Os bancos são os SVGs oficiais de
-// public/instituicoes (o mesmo seletor do Pluggy Connect).
-import { INSTITUICOES } from '~/content/instituicoes'
-
+// ganha. No mesmo dia o dono pediu os cartões no formato da home ("é mais
+// bonito"): o mesmo esqueleto do HomeComoFunciona — a tela preta do app no
+// alto, o título curto e duas linhas —, com um quarto cartão para a IA.
+//  1. Junta os bancos (os logos reais de public/icons, os mesmos da home);
+//  2. Testa 2.000 futuros (o HomeLeque);
+//  3. Responde com os seus números (uma conversa de exemplo, sem número);
+//  4. Chama só quando importa (os dois estados do Agora).
+// Nada aqui recomenda: a IA explica a carteira, não diz o que comprar.
 withDefaults(defineProps<{ titulo?: boolean }>(), { titulo: true })
 
-const VITRINE = ['nubank', 'itau', 'bradesco', 'bb', 'santander', 'inter', 'xp', 'btg']
-const bancos = VITRINE.map((s) => INSTITUICOES.find((i) => i.slug === s)).filter((i): i is (typeof INSTITUICOES)[number] => !!i && i.logo)
-
-const itens = [
-  {
-    icone: 'banco',
-    t: 'Sua carteira de qualquer banco',
-    d: 'Conecte pelo Open Finance e veja ações, FIIs, Tesouro, CDBs e cripto num lugar só. A Redentia só lê: não movimenta nada.',
-  },
-  {
-    icone: 'leque',
-    t: '2.000 cenários para os próximos 5 anos',
-    d: 'O motor roda a sua carteira em 2.000 caminhos e mostra o otimista, o meio e o pessimista, em dinheiro de hoje.',
-  },
-  {
-    icone: 'ia',
-    t: 'Uma IA que conhece a sua carteira',
-    d: 'Pergunte por que caiu, quanto rende ou o que mudar. A resposta vem com os seus números, não com a média do mercado.',
-  },
-  {
-    icone: 'aviso',
-    t: 'Aviso só quando importa',
-    d: 'Um papel seu despencou? Você fica sabendo. No resto do tempo, a Redentia fica quieta e vigia por você.',
-  },
-] as const
+const BANCOS = [
+  { nome: 'Nubank', logo: '/icons/logo-nubank.webp' },
+  { nome: 'Itaú', logo: '/icons/logo-itau.webp' },
+  { nome: 'Inter', logo: '/icons/logo-inter.webp' },
+  { nome: 'Bradesco', logo: '/icons/logo-bradesco.webp' },
+  { nome: 'Santander', logo: '/icons/logo-santander.webp' },
+]
 </script>
 
 <template>
   <section class="abn" aria-labelledby="abn-titulo">
     <h2 v-if="titulo" id="abn-titulo" class="abn__titulo">O que vem <br>na assinatura.</h2>
     <h2 v-else id="abn-titulo" class="abn__sr">O que vem na assinatura</h2>
-    <ul class="abn__grade">
-      <li v-for="it in itens" :key="it.t" class="abn__card">
-        <span class="abn__icone" aria-hidden="true">
-          <svg v-if="it.icone === 'banco'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18M12 3l9 5H3l9-5Z" /></svg>
-          <svg v-else-if="it.icone === 'leque'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c5 0 9-4 18-8M3 13c6 0 10-1 18-1M3 13c5 0 9 3 18 7" /><circle cx="3" cy="13" r="1.5" fill="currentColor" /></svg>
-          <svg v-else-if="it.icone === 'ia'" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="abn__miolo" /></svg>
-          <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>
-        </span>
-        <h3 class="abn__t">{{ it.t }}</h3>
-        <p class="abn__d">{{ it.d }}</p>
-        <ul v-if="it.icone === 'banco'" class="abn__bancos" aria-label="Alguns dos bancos e corretoras que conectam">
-          <li v-for="b in bancos" :key="b.slug" :title="b.name"><ClienteInstLogo :inst="b" :size="30" /></li>
-        </ul>
-      </li>
-    </ul>
+
+    <div class="abn__grade">
+      <article class="abn__cartao">
+        <div class="abn__tela">
+          <ul class="abn__bancos">
+            <li v-for="b in BANCOS" :key="b.nome">
+              <img :src="b.logo" alt="" width="48" height="48" loading="lazy">
+              <span>{{ b.nome }}</span>
+            </li>
+            <li class="abn__mais"><b>+110</b><span>bancos e corretoras</span></li>
+          </ul>
+        </div>
+        <h3 class="abn__nome">Junta os seus bancos.</h3>
+        <p class="abn__texto">Você conecta uma vez pelo Open Finance e a carteira inteira chega sozinha. Só leitura: a Redentia nunca move o seu dinheiro.</p>
+      </article>
+
+      <article class="abn__cartao">
+        <div class="abn__tela abn__tela--leque">
+          <p class="abn__tela-rotulo">Daqui a 5 anos</p>
+          <HomeLeque />
+          <p class="abn__tela-pe">2.000 cenários possíveis</p>
+        </div>
+        <h3 class="abn__nome">Testa 2.000 futuros.</h3>
+        <p class="abn__texto">A sua carteira nos próximos cinco anos, em dinheiro de hoje: o caminho pessimista, o do meio e o otimista.</p>
+      </article>
+
+      <article class="abn__cartao">
+        <div class="abn__tela abn__tela--conversa">
+          <p class="abn__fala abn__fala--voce">Por que a minha carteira caiu hoje?</p>
+          <div class="abn__resposta">
+            <span class="abn__marca" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /></svg>
+            </span>
+            <p class="abn__fala">Os bancos puxaram. Eles são a maior parte da sua carteira, e caíram mais que a bolsa.</p>
+          </div>
+        </div>
+        <h3 class="abn__nome">Responde com os seus números.</h3>
+        <p class="abn__texto">Pergunte por que caiu, quanto rende ou o que pesa mais. A IA lê a sua carteira, não a média do mercado.</p>
+      </article>
+
+      <article class="abn__cartao">
+        <div class="abn__tela abn__tela--estados">
+          <div class="abn__estado">
+            <span class="abn__estado-rotulo abn__estado-rotulo--verde">Bolsa aberta</span>
+            <span class="abn__estado-frase">Tudo normal.</span>
+          </div>
+          <div class="abn__estado abn__estado--aviso">
+            <span class="abn__estado-rotulo abn__estado-rotulo--ambar">Algo pede você</span>
+            <span class="abn__estado-frase">Um ativo passou do seu alerta.</span>
+          </div>
+        </div>
+        <h3 class="abn__nome">Chama só quando importa.</h3>
+        <p class="abn__texto">Abra e saiba numa frase se está tudo normal. Quando algo pede você, ela avisa na hora. No resto do tempo, silêncio.</p>
+      </article>
+    </div>
   </section>
 </template>
 
 <style scoped>
 .abn__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
 .abn__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 .abn__grade {
-  list-style: none; margin: clamp(28px, 4vw, 48px) 0 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: clamp(14px, 1.6vw, 20px);
+  display: grid; gap: 18px; margin-top: clamp(36px, 4.5vw, 56px);
+  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
 }
-.abn__card { background: var(--nu-cream); border-radius: var(--nu-r-card); padding: clamp(22px, 2.6vw, 30px); display: flex; flex-direction: column; }
-.abn__icone {
-  width: 48px; height: 48px; border-radius: var(--nu-r-tile);
-  background: var(--nu-white); color: var(--nu-blue);
-  display: inline-flex; align-items: center; justify-content: center;
+.abn__cartao { display: flex; flex-direction: column; padding: 14px 14px 28px; border-radius: var(--nu-r-card-lg); background: var(--nu-cream); }
+
+/* a tela preta do app no alto de cada cartão, sempre da mesma altura */
+.abn__tela {
+  position: relative; display: flex; flex-direction: column; justify-content: center;
+  aspect-ratio: 16 / 13; overflow: hidden; border-radius: 18px; background: var(--nu-agora-bg); color: var(--nu-agora-texto);
 }
-.abn__miolo { fill: var(--nu-white); }
-.abn__t { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.015em; line-height: 1.2; }
-.abn__d { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
-.abn__bancos { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.abn__nome { margin: 24px 14px 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+.abn__texto { margin: 10px 14px 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+
+/* 1 · os bancos */
+.abn__bancos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 6px; margin: 0; padding: 0 14px; list-style: none; }
+.abn__bancos li { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
+.abn__bancos img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.abn__bancos span { color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; text-align: center; }
+.abn__mais b {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+  background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums;
+}
+
+/* 2 · o leque */
+.abn__tela--leque { justify-content: space-between; padding: 16px 0 12px; }
+.abn__tela-rotulo { margin: 0 16px; color: var(--nu-agora-azul); font-size: var(--nu-fs-sm); font-weight: 700; }
+.abn__tela-pe { margin: 0 16px; color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
+.abn__tela--leque :deep(.hlq) { aspect-ratio: auto; flex: 1; min-height: 0; margin: 6px 0; }
+
+/* 3 · a conversa */
+.abn__tela--conversa { gap: 12px; padding: 18px; }
+.abn__fala { margin: 0; padding: 12px 14px; border-radius: 16px; background: var(--nu-agora-cartao); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.abn__fala--voce { align-self: flex-end; max-width: 82%; background: var(--nu-blue); color: var(--nu-white); font-weight: 700; border-bottom-right-radius: 6px; }
+.abn__resposta { display: flex; align-items: flex-end; gap: 8px; max-width: 92%; }
+.abn__resposta .abn__fala { border-bottom-left-radius: 6px; }
+.abn__marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--nu-agora-pilula); color: var(--nu-agora-azul); }
+
+/* 4 · os dois estados */
+.abn__tela--estados { gap: 12px; padding: 16px; }
+.abn__estado { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 14px; background: var(--nu-agora-cartao); }
+.abn__estado--aviso { box-shadow: inset 0 0 0 1.5px var(--nu-agora-ambar); }
+.abn__estado-rotulo { font-size: var(--nu-fs-sm); font-weight: 700; }
+.abn__estado-rotulo--verde { color: var(--nu-agora-verde); }
+.abn__estado-rotulo--ambar { color: var(--nu-agora-ambar); }
+.abn__estado-frase { color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+
+@media (max-width: 760px) {
+  .abn__titulo :deep(br), .abn__titulo br { display: none; }
+}
 </style>

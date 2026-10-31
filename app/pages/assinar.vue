@@ -76,9 +76,6 @@ usePageSeo({
     <div class="asn__beneficios">
       <AssinaturaBeneficios />
     </div>
-
-    <!-- o teste é só da primeira assinatura: quem já assinou não lê o passo a passo dele -->
-    <AssinaturaComoFunciona v-if="!pendente && assinatura.primeiraAssinatura.value" />
   </div>
 </template>
 
