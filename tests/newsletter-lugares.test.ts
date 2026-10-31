@@ -47,7 +47,6 @@ test('o convite fica fora da preço teto, do /guias e das páginas de conta', ()
 
 test('o convite abre no resto do site, inclusive dentro de cada guia', () => {
   for (const p of [
-    '/',
     '/rankings',
     '/ranking/maiores-dividendos',
     '/calculadora/acoes',
@@ -93,7 +92,7 @@ test('quem já assinou não vê o convite', () => {
     autenticado: false,
     folhaAberta: false,
     contaConviteVisto: false,
-    caminho: '/',
+    caminho: '/rankings',
     assinou: false,
     fechouEm: null,
     agora: Date.UTC(2026, 9, 29),
@@ -104,5 +103,7 @@ test('quem já assinou não vê o convite', () => {
   assert.equal(conviteElegivel({ ...base, assinou: true }), false)
   assert.equal(conviteElegivel({ ...base, autenticado: true }), false)
   assert.equal(conviteElegivel({ ...base, caminho: '/guias' }), false)
+  // a home tem a faixa do rodapé de ponta a ponta (dono, 31/10/2026)
+  assert.equal(conviteElegivel({ ...base, caminho: '/' }), false)
   assert.equal(conviteElegivel({ ...base, ligada: false }), false)
 })

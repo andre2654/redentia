@@ -15,9 +15,14 @@ export function rodapeSemAssinatura(caminho: string): boolean {
   return PRECO_TETO.test(caminho) || GUIAS.test(caminho)
 }
 
+// a home: o rodapé já tem a faixa da newsletter de ponta a ponta, e o cartão
+// solto acima dele repetia o mesmo formulário (dono, 31/10/2026)
+const HOME = /^\/?$/
+
 const CONVITE_FORA = [
   PRECO_TETO,
   GUIAS,
+  HOME,
   // login, conta, as ferramentas de tela cheia e a página da assinatura (o
   // /assinar tem um gesto só: o teste grátis)
   /^\/(?:login|conta|carteira|busca|simulacao|assinar)(?:\/|$)/i,
