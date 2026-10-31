@@ -52,7 +52,8 @@ export function useMarketTicker() {
       const next: TickerItem[] = []
       const ibov = snap?.indices_br?.IBOV
       const ifix = snap?.indices_br?.IFIX
-      if (ibov?.value != null) next.push({ n: 'IBOV', v: nf0.format(ibov.value), ...pctFmt(ibov.change_pct) })
+      // pontos truncados, como a IA escreve (167.921,8 → 167.921), e não arredondados
+      if (ibov?.value != null) next.push({ n: 'IBOV', v: nf0.format(Math.trunc(ibov.value)), ...pctFmt(ibov.change_pct) })
       if (ifix?.value != null) next.push({ n: 'IFIX', v: nf0.format(ifix.value), ...pctFmt(ifix.change_pct) })
       const usd = snap?.macro?.usd_brl
       if (usd?.value != null) next.push({ n: 'Dólar', v: `R$ ${nf2.format(usd.value)}`, ...pctFmt(usd.change_pct) })

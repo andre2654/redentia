@@ -8,14 +8,18 @@
  * utils/pregao.ts, a mesma que a /carteira e o useSeguirGancho leem: o ano
  * novo da B3 entra num lugar só.
  */
-import { ANOS_COM_CALENDARIO, SEM_PREGAO_B3 } from './pregao.ts'
+import { ANOS_COM_CALENDARIO, SEM_PREGAO_B3, horaDoFechamento } from './pregao.ts'
 
 export { SEM_PREGAO_B3 }
 export const ANOS_COM_CALENDARIO_B3 = ANOS_COM_CALENDARIO
 
-/** Pregão regular da B3, em minutos do dia no fuso de São Paulo (10h às 17h). */
+/**
+ * Pregão regular da B3, em minutos do dia no fuso de São Paulo: abre às 10h e
+ * fecha às 17h ou às 18h, conforme o horário de verão dos EUA
+ * (horaDoFechamento). Até 31/10/2026 o fechamento estava fixo em 17h, e de
+ * 03/11 em diante a home diria "fechada" das 17h às 18h com a bolsa aberta.
+ */
 const ABRE = 10 * 60
-const FECHA = 17 * 60
 
 export type EstadoDaBolsa = 'aberta' | 'antes' | 'fechada'
 
@@ -60,6 +64,6 @@ export function momentoDaBolsa(now = new Date()): MomentoDaBolsa {
   const r = relogioSP(now)
   if (!temPregao(r.iso, r.semana)) return { estado: 'fechada', rotulo: 'Bolsa fechada', numerosDeHoje: false }
   if (r.minutos < ABRE) return { estado: 'antes', rotulo: 'A bolsa abre às 10h', numerosDeHoje: false }
-  if (r.minutos < FECHA) return { estado: 'aberta', rotulo: 'Bolsa aberta', numerosDeHoje: true }
+  if (r.minutos < horaDoFechamento(r.iso) * 60) return { estado: 'aberta', rotulo: 'Bolsa aberta', numerosDeHoje: true }
   return { estado: 'fechada', rotulo: 'Bolsa fechada', numerosDeHoje: true }
 }

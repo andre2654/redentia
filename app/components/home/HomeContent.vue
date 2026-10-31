@@ -19,7 +19,7 @@
 //
 // A ordem, de cima para baixo:
 //   visitante  HomeHeroVisitante → HomeComoFunciona → HomeBolsa → HomeMais → FAQ → HomeFecho
-//   logado     HomeAgora (tela cheia, Ibovespa no alto) → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeMais → FAQ
+//   logado     HomeAgora (tela cheia: o dia, os anéis e três números) → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeMais → FAQ
 // SEO fica na página (index.vue): o head não varia por sessão.
 const { isAuthenticated, clearSession } = useAuthState()
 
@@ -66,7 +66,7 @@ const mostrarComoFunciona = computed(() =>
           <div class="mfq__copy">O que a assinatura inclui, quanto custa, de onde vêm os cenários e como fica o seu dinheiro.</div>
         </div>
         <div class="mfq__right">
-          <NuFaqAccordion :items="MERCADO_FAQS" />
+          <NuFaqAccordion :items="MERCADO_FAQS" surface="white" />
         </div>
       </div>
     </section>
@@ -76,8 +76,10 @@ const mostrarComoFunciona = computed(() =>
 </template>
 
 <style scoped>
-/* ——— FAQ (o mesmo da home anterior; o /benchmark-ia e a /teses copiam) ——— */
-.mfq { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+/* ——— FAQ (o mesmo da home anterior; o /benchmark-ia e a /teses copiam).
+   Creme com os cartões brancos desde 31/10/2026, para alternar com o branco
+   do "O que é grátis" logo acima ——— */
+.mfq { background: var(--nu-cream); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
 .mfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .mfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .mfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }

@@ -41,7 +41,9 @@ const DESTINOS = [
 </template>
 
 <style scoped>
-.hms { background: var(--nu-cream); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+/* fundo branco e linhas creme: a página alterna creme e branco de cima a baixo
+   (31/10/2026, a bolsa do dia passou a ser creme) */
+.hms { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
 .hms__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
 .hms__dek { margin: 20px 0 0; max-width: 640px; color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }
 .hms__grade {
@@ -50,7 +52,7 @@ const DESTINOS = [
 }
 .hms__linha {
   display: flex; align-items: center; gap: 18px; min-height: 84px; padding: 20px 22px 20px 26px;
-  border-radius: var(--nu-r-card); background: var(--nu-white);
+  border-radius: var(--nu-r-card); background: var(--nu-cream);
   transition: transform .15s ease, box-shadow .2s ease;
 }
 .hms__linha:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }

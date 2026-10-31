@@ -24,10 +24,23 @@
  * as datas aqui. Até lá, qualquer conta que atravesse um ano sem calendário
  * responde "no próximo pregão, às 19h" em vez de chutar o dia.
  */
-export const SEM_PREGAO_B3 = new Set([
-  '2026-01-01', '2026-02-16', '2026-02-17', '2026-04-03', '2026-04-21', '2026-05-01', '2026-06-04',
-  '2026-09-07', '2026-10-12', '2026-11-02', '2026-11-20', '2026-12-24', '2026-12-25', '2026-12-31',
-])
+export const FERIADOS_B3: Readonly<Record<string, string>> = {
+  '2026-01-01': 'Confraternização Universal',
+  '2026-02-16': 'Carnaval',
+  '2026-02-17': 'Carnaval',
+  '2026-04-03': 'Sexta-feira Santa',
+  '2026-04-21': 'Tiradentes',
+  '2026-05-01': 'Dia do Trabalho',
+  '2026-06-04': 'Corpus Christi',
+  '2026-09-07': 'Independência',
+  '2026-10-12': 'Nossa Senhora Aparecida',
+  '2026-11-02': 'Finados',
+  '2026-11-20': 'Consciência Negra',
+  '2026-12-24': 'Véspera de Natal',
+  '2026-12-25': 'Natal',
+  '2026-12-31': 'Último dia do ano',
+}
+export const SEM_PREGAO_B3 = new Set(Object.keys(FERIADOS_B3))
 export const ANOS_COM_CALENDARIO = new Set([2026])
 
 const DIA_DA_SEMANA = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'] as const
@@ -55,6 +68,22 @@ export function agoraEmSP(now = new Date()): { iso: string; hora: number; minuto
 export function semPregao(iso: string): boolean {
   const semana = new Date(`${iso}T12:00:00Z`).getUTCDay()
   return semana === 0 || semana === 6 || SEM_PREGAO_B3.has(iso)
+}
+
+/**
+ * O pregão seguinte a um dia ('2026-10-30' → '2026-11-03', porque 02/11 é
+ * Finados). null quando o caminho atravessa um ano sem o calendário da B3:
+ * aí quem chama diz "no próximo pregão" em vez de chutar o dia.
+ */
+export function proximoPregao(iso: string): string | null {
+  const d = new Date(`${iso.slice(0, 10)}T12:00:00Z`)
+  for (let i = 0; i < 15; i++) {
+    d.setUTCDate(d.getUTCDate() + 1)
+    const dia = d.toISOString().slice(0, 10)
+    if (!ANOS_COM_CALENDARIO.has(Number(dia.slice(0, 4)))) return null
+    if (!semPregao(dia)) return dia
+  }
+  return null
 }
 
 /**

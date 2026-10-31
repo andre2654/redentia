@@ -60,7 +60,7 @@ const COLUMNS = [
         </div>
       </div>
 
-      <section v-if="assinaturaNoRodape" class="nuf__news" aria-labelledby="nuf-news-titulo">
+      <section v-if="assinaturaNoRodape" id="newsletter" class="nuf__news" aria-labelledby="nuf-news-titulo">
         <div class="nuf__news-texto">
           <h2 id="nuf-news-titulo" class="nuf__news-titulo">O mercado da semana, toda sexta.</h2>
           <p class="nuf__news-sub">O Ibovespa da semana, as notícias que mexeram nele e os proventos da semana que vem, num e-mail só.</p>

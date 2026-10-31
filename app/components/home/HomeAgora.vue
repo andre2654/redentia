@@ -43,7 +43,8 @@ onMounted(() => {
 const podeVerNumeros = computed(() => assinatura.carregado.value && assinatura.assinante.value)
 const naoAssina = computed(() => assinatura.carregado.value && !assinatura.assinante.value)
 
-const { indices, indicesReais } = await useNuMovers()
+// o Ibovespa da home sai de uma fonte só (a mesma da seção da bolsa)
+const { bolsa } = await useBolsaDoDia()
 const momento = useState('home:momento-bolsa', () => momentoDaBolsa())
 onMounted(() => { momento.value = momentoDaBolsa() })
 
@@ -59,13 +60,14 @@ const subSemAssinatura = computed(() => props.resumo?.state === 'patrimonio'
 const semCarteira = computed(() => props.resumo?.state === 'connect')
 
 // o dia: a bolsa vem casada pelo dia de preço; com a bolsa aberta e a série
-// ainda sem o ponto de hoje, o Ibovespa da faixa do mercado entra de reserva
-const ibov = computed(() => (indicesReais.value ? indices.value.find((i) => i.label === 'IBOV') ?? null : null))
+// ainda sem o ponto de hoje, o snapshot do Ibovespa entra de reserva, se for
+// do mesmo dia de preço da carteira
 const estado = computed(() => (agora.value ? estadoDoPregao(agora.value).estado : null))
 const dia = computed(() => {
   const d = props.resumo?.dia ?? null
-  if (!d || d.bolsaPct != null || estado.value !== 'aberta') return d
-  return { ...d, bolsaPct: numeroDoPct(ibov.value?.pct) }
+  const ib = bolsa.value?.ibov
+  if (!d || d.bolsaPct != null || estado.value !== 'aberta' || !ib || ib.data !== d.priceDate) return d
+  return { ...d, bolsaPct: ib.pct }
 })
 const frases = computed(() => (dia.value && estado.value && agora.value ? frasesDoDia(dia.value, estado.value, agora.value) : null))
 
