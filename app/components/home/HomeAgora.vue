@@ -43,7 +43,8 @@ const subSemAssinatura = computed(() => props.resumo?.state === 'patrimonio'
   : 'Assine para a Redentia juntar os seus bancos, testar a carteira em 2.000 cenários e vigiar todo dia por você.')
 const semCarteira = computed(() => props.resumo?.state === 'connect')
 
-const ibovPct = computed(() => (indicesReais.value ? numeroDoPct(indices.value.find((i) => i.label === 'IBOV')?.pct) : null))
+const ibov = computed(() => (indicesReais.value ? indices.value.find((i) => i.label === 'IBOV') ?? null : null))
+const ibovPct = computed(() => numeroDoPct(ibov.value?.pct))
 const carteiraPct = computed(() => pctDoResumo(props.resumo?.hojeTxt))
 const sub = computed(() => fraseDaCarteira(carteiraPct.value, ibovPct.value, momento.value) ?? 'Estamos analisando tudo para você.')
 
@@ -73,6 +74,12 @@ const detalhes = computed(() => {
 <template>
   <section class="hag" aria-labelledby="hag-titulo">
     <div class="hag__tela">
+      <!-- o Ibovespa no alto da tela, como contexto (a seção da bolsa saiu da
+           home de quem está logado em 31/10/2026, a pedido do dono) -->
+      <div v-if="ibov" class="hag__ibov" :class="`hag__ibov--${ibov.dir}`">
+        <span class="hag__ibov-pct">{{ ibov.pct }}</span>
+        <span class="hag__ibov-nome">Ibovespa<br>{{ ibov.value }} pontos</span>
+      </div>
       <!-- com carteira: a resposta do dia -->
       <template v-if="comCarteira">
         <div class="hag__meio">
@@ -169,17 +176,27 @@ const detalhes = computed(() => {
    nada que a pessoa esteja vendo (CLS). */
 .hag {
   display: flex; min-height: max(560px, calc(100svh - 128px));
-  background: var(--nu-cream); padding: clamp(20px, 3vw, 40px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-agora-bg);
 }
 /* a tela do app: preta, a frase no meio e a pílula embaixo */
 .hag__tela {
   flex: 1; width: 100%;
-  display: flex; flex-direction: column; justify-content: center; gap: clamp(36px, 5vw, 64px); max-width: 1056px; margin: 0 auto;
-  padding: clamp(36px, 5vw, 64px) clamp(24px, 5vw, 64px); border-radius: clamp(28px, 3vw, 40px);
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(36px, 5vw, 64px);
+  padding: clamp(28px, 4vw, 48px) clamp(22px, 5.5vw, 80px) clamp(36px, 5vw, 64px);
   background: var(--nu-agora-bg); color: var(--nu-agora-texto);
   animation: nu-fade .5s ease both;
 }
 .hag__meio { margin-top: auto; }
+
+/* o Ibovespa no alto: a mesma pílula que a seção da bolsa usava */
+.hag__ibov {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px 10px 14px;
+  border-radius: 14px; background: var(--nu-agora-pilula);
+}
+.hag__ibov-pct { font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; color: var(--nu-agora-texto); font-variant-numeric: tabular-nums; }
+.hag__ibov--up .hag__ibov-pct { color: var(--nu-agora-verde); }
+.hag__ibov--down .hag__ibov-pct { color: var(--nu-agora-vermelho); }
+.hag__ibov-nome { color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.3; text-transform: uppercase; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
 .hag__base, .hag__chamada { margin-top: auto; }
 .hag__estado { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-lg); font-weight: 700; }
 .hag__estado--verde { color: var(--nu-agora-verde); }

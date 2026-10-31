@@ -19,7 +19,7 @@
 //
 // A ordem, de cima para baixo:
 //   visitante  HomeHeroVisitante → HomeComoFunciona → HomeBolsa → HomeMais → FAQ → HomeFecho
-//   logado     HomeAgora → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeBolsa → HomeMais → FAQ
+//   logado     HomeAgora (tela cheia, Ibovespa no alto) → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeMais → FAQ
 // SEO fica na página (index.vue): o head não varia por sessão.
 const { isAuthenticated, clearSession } = useAuthState()
 
@@ -51,7 +51,9 @@ const mostrarComoFunciona = computed(() =>
 
     <HomeComoFunciona v-if="mostrarComoFunciona" />
 
-    <HomeBolsa />
+    <!-- a bolsa do dia fica para o visitante; o logado tem o Ibovespa no alto da
+         tela preta (pedido do dono, 31/10/2026) -->
+    <HomeBolsa v-if="!isAuthenticated" />
 
     <HomeMais />
 
