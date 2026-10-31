@@ -29,7 +29,11 @@ import {
   tomDoCaminho,
 } from '~/utils/futuro'
 
-const props = withDefaults(defineProps<{ altura?: number }>(), { altura: 300 })
+const props = withDefaults(defineProps<{
+  altura?: number
+  /** ocupa a altura do pai (o fundo do topo do /assinar) em vez da altura fixa */
+  preencher?: boolean
+}>(), { altura: 300, preencher: false })
 // 'pronto': os 2.000 nasceram e o acabamento entrou (o topo do /assinar espera por ele)
 const emit = defineEmits<{ (e: 'pronto'): void }>()
 let avisou = false
@@ -63,7 +67,12 @@ const raiz = ref<HTMLElement | null>(null)
 const cv = ref<HTMLCanvasElement | null>(null)
 const largura = ref(420)
 const celular = computed(() => largura.value < 420)
-const h = computed(() => (celular.value ? Math.round(props.altura * 0.74) : props.altura))
+const palco = ref<HTMLElement | null>(null)
+const alturaDoPalco = ref(0)
+const h = computed(() => {
+  if (props.preencher && alturaDoPalco.value > 120) return alturaDoPalco.value
+  return celular.value ? Math.round(props.altura * 0.74) : props.altura
+})
 const colNomes = computed(() => (celular.value ? 88 : 92))
 const larguraSino = computed(() => (celular.value ? 26 : 40))
 const xFim = computed(() => Math.max(largura.value - colNomes.value - larguraSino.value, 120))
@@ -291,10 +300,13 @@ onMounted(() => {
   cores.navy = rgbDaCor(css.getPropertyValue('--nu-navy'))
   dpr = Math.min(window.devicePixelRatio || 1, 2)
   largura.value = raiz.value?.clientWidth || largura.value
-  observador = new ResizeObserver(([e]) => {
-    const w = Math.round(e!.contentRect.width)
-    if (!w || w === largura.value) return
+  if (props.preencher) alturaDoPalco.value = palco.value?.clientHeight ?? 0
+  observador = new ResizeObserver(() => {
+    const w = Math.round(raiz.value?.clientWidth ?? 0)
+    const alt = props.preencher ? Math.round(palco.value?.clientHeight ?? 0) : alturaDoPalco.value
+    if (!w || (w === largura.value && alt === alturaDoPalco.value)) return
     largura.value = w
+    alturaDoPalco.value = alt
     // a largura mudou: as camadas se refazem até o ponto em que a animação está
     nextTick(() => {
       recomecarCamadas()
@@ -303,6 +315,7 @@ onMounted(() => {
     })
   })
   if (raiz.value) observador.observe(raiz.value)
+  if (props.preencher && palco.value) observador.observe(palco.value)
   desenhar()
   // começa quando o cartão aparece, uma vez
   vigia = new IntersectionObserver((es) => {
@@ -322,12 +335,12 @@ const nf = new Intl.NumberFormat('pt-BR')
 </script>
 
 <template>
-  <div ref="raiz" class="aec">
+  <div ref="raiz" class="aec" :class="{ 'aec--cheio': preencher }">
     <p class="aec__conta" aria-hidden="true">
       <strong>{{ nf.format(pronto ? N : nascidos) }}</strong>
       <span>{{ pronto ? 'caminhos · a faixa de 80%' : `${nascidos === 1 ? 'caminho' : 'caminhos'} de ${nf.format(N)}` }}</span>
     </p>
-    <div class="aec__palco" :style="{ height: `${h}px` }">
+    <div ref="palco" class="aec__palco" :style="preencher ? undefined : { height: `${h}px` }">
       <canvas
         ref="cv"
         class="aec__cv"
@@ -352,6 +365,9 @@ const nf = new Intl.NumberFormat('pt-BR')
 
 <style scoped>
 .aec { position: relative; }
+/* cheio: o palco estica até o fim do pai, e o canvas segue a altura medida */
+.aec--cheio { display: flex; flex-direction: column; height: 100%; }
+.aec--cheio .aec__palco { flex: 1; min-height: 0; }
 .aec__conta { margin: 0 0 8px; display: flex; align-items: baseline; gap: 6px; min-height: 22px; font-variant-numeric: tabular-nums; }
 .aec__conta strong { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; }
 .aec__conta span { color: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: 700; }
