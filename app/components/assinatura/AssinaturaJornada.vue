@@ -15,7 +15,9 @@ const props = withDefaults(defineProps<{
   /** quem já assinou antes não tem o teste: o passo 2 vira "Cartão" */
   primeiraAssinatura?: boolean
   compacto?: boolean
-}>(), { primeiraAssinatura: true, compacto: false })
+  /** no fundo azul-marinho */
+  escuro?: boolean
+}>(), { primeiraAssinatura: true, compacto: false, escuro: false })
 
 const passos = computed(() => [
   { n: 1, t: 'Sua conta', d: 'Seu e-mail e um código. Sem senha.' },
@@ -30,7 +32,7 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 </script>
 
 <template>
-  <ol class="ajr" :class="{ 'ajr--compacto': compacto }" :aria-label="`Passo ${passo} de 3`">
+  <ol class="ajr" :class="{ 'ajr--compacto': compacto, 'ajr--escuro': escuro }" :aria-label="`Passo ${passo} de 3`">
     <li
       v-for="p in passos" :key="p.n"
       class="ajr__passo" :class="`ajr__passo--${estado(p.n)}`"
@@ -80,6 +82,17 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr--compacto .ajr__passo { align-items: center; gap: 8px; padding: 8px 14px 8px 8px; }
 .ajr--compacto .ajr__marca { width: 22px; height: 22px; font-size: var(--nu-fs-xs); }
 .ajr--compacto .ajr__t { white-space: nowrap; }
+
+/* no azul-marinho: o passo da vez acende, os outros ficam no contorno */
+.ajr--escuro .ajr__passo { background: var(--nu-navy-2); box-shadow: none; }
+.ajr--escuro .ajr__marca { background: var(--nu-cream-text-12); color: var(--nu-cream-text-70); }
+.ajr--escuro .ajr__t { color: var(--nu-cream-text); }
+.ajr--escuro .ajr__d { color: var(--nu-cream-text-55); }
+.ajr--escuro .ajr__passo--agora { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
+.ajr--escuro .ajr__passo--agora .ajr__marca { background: var(--nu-blue); color: var(--nu-white); }
+.ajr--escuro .ajr__passo--feito .ajr__marca { background: var(--nu-green); color: var(--nu-white); }
+.ajr--escuro .ajr__passo--feito .ajr__t, .ajr--escuro .ajr__passo--depois .ajr__t { color: var(--nu-cream-text-70); }
+.ajr--escuro .ajr__passo--depois { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-cream-text-12); }
 
 @media (max-width: 760px) {
   .ajr:not(.ajr--compacto) { grid-template-columns: minmax(0, 1fr); gap: 8px; }

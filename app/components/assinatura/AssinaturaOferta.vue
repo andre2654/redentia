@@ -8,7 +8,9 @@ const props = withDefaults(defineProps<{
   modo?: 'comecar' | 'pendente'
   /** voltou do Checkout sem assinar (?cancelado=1) */
   cancelado?: boolean
-}>(), { modo: 'comecar', cancelado: false })
+  /** no fundo azul-marinho (o topo do /assinar e do paywall) */
+  escuro?: boolean
+}>(), { modo: 'comecar', cancelado: false, escuro: false })
 
 const { erro, erroPortal, primeiraAssinatura } = useAssinatura()
 // o passo a passo embaixo do botão: deslogado está no 1 (a conta), logado no 2
@@ -18,7 +20,7 @@ const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value
 </script>
 
 <template>
-  <div class="aof">
+  <div class="aof" :class="{ 'aof--escuro': escuro }">
     <div v-if="modo === 'comecar'" class="aof__preco">
       <span class="aof__valor">{{ PRECO_MENSAL }}</span>
       <span class="aof__mes">por mês</span>
@@ -37,7 +39,7 @@ const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value
 
     <AssinaturaJornada
       v-if="modo === 'comecar'" class="aof__jornada"
-      :passo="isAuthenticated ? 2 : 1" :primeira-assinatura="primeiraAssinatura" compacto
+      :passo="isAuthenticated ? 2 : 1" :primeira-assinatura="primeiraAssinatura" compacto :escuro="escuro"
     />
 
     <p v-if="modo === 'comecar' && primeiraAssinatura" class="aof__letra">
@@ -75,4 +77,11 @@ const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value
 .aof__erro { margin: 14px 0 0; max-width: 460px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .aof__letra { margin: 16px 0 0; max-width: 480px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
 .aof__jornada { margin-top: 18px; max-width: 560px; }
+
+/* no azul-marinho: os textos em creme, o selo verde sobre o escuro */
+.aof--escuro .aof__valor { color: var(--nu-cream-text); }
+.aof--escuro .aof__mes { color: var(--nu-cream-text-70); }
+.aof--escuro .aof__selo { background: color-mix(in srgb, var(--nu-green-soft) 16%, transparent); color: var(--nu-green-soft); }
+.aof--escuro .aof__letra { color: var(--nu-cream-text-55); }
+.aof--escuro .aof__erro { color: var(--nu-red-soft); }
 </style>

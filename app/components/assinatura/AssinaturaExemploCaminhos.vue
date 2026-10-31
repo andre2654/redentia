@@ -56,7 +56,7 @@ const cv = ref<HTMLCanvasElement | null>(null)
 const largura = ref(420)
 const celular = computed(() => largura.value < 420)
 const h = computed(() => (celular.value ? Math.round(props.altura * 0.74) : props.altura))
-const colNomes = computed(() => (celular.value ? 70 : 82))
+const colNomes = computed(() => (celular.value ? 88 : 92))
 const larguraSino = computed(() => (celular.value ? 26 : 40))
 const xFim = computed(() => Math.max(largura.value - colNomes.value - larguraSino.value, 120))
 const PAD = 12

@@ -20,11 +20,8 @@
 </template>
 
 <style scoped>
-.aex {
-  margin: 0; background: var(--nu-navy); border-radius: var(--nu-r-card-lg);
-  padding: clamp(24px, 3vw, 36px); box-shadow: var(--nu-shadow-float);
-  display: flex; flex-direction: column; gap: clamp(18px, 2.4vw, 28px);
-}
+/* sem caixa (pedido do dono, 31/10/2026): o leque fica solto no azul-marinho do topo */
+.aex { margin: 0; display: flex; flex-direction: column; gap: clamp(18px, 2.4vw, 28px); }
 .aex__topo { display: flex; flex-direction: column; gap: 8px; }
 .aex__eyebrow { color: var(--nu-blue-soft); font-size: var(--nu-fs-sm); font-weight: 800; }
 .aex__titulo { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
