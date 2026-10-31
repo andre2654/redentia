@@ -36,6 +36,7 @@ test('o convite fica fora da preço teto, do /guias e das páginas de conta', ()
     '/carteira',
     '/busca',
     '/simulacao',
+    '/assinar',
     '/cliente',
     '/cliente/acesso/abc',
     '/institucional/privacy',

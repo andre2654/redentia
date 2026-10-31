@@ -34,6 +34,7 @@
  * /carteira limpa a sessão e redireciona pro /login (padrão useApi).
  */
 import type {
+  CarteiraAgoraVM,
   CarteiraAllocationVM,
   CarteiraGroupVM,
   CarteiraHeatmapVM,
@@ -256,9 +257,14 @@ function groupDesc(groupRows: PosRow[], analysis: PortfolioAnalysisApi['analysis
 function buildGroups(
   rows: PosRow[],
   analysis: PortfolioAnalysisApi['analysis'] | null,
+  today: PortfolioTodayApi | null = null,
 ): { positionsSub: string | null; groups: CarteiraGroupVM[] } {
   if (!rows.length) return { positionsSub: null, groups: [] }
   const total = rows.reduce((s, r) => s + r.value, 0)
+  // variação do dia por papel (/portfolio/today) → a do grupo, só com quem tem dado
+  const diaPor = new Map((today?.positions ?? [])
+    .filter((p) => p.day_change_amount != null && p.value_now != null)
+    .map((p) => [p.ticker.toUpperCase(), { amt: p.day_change_amount as number, now: p.value_now as number }]))
 
   const byClass = new Map<string, PosRow[]>()
   for (const r of rows) {
@@ -304,6 +310,7 @@ function buildGroups(
         shareNum: (gTotal / total) * 100,
         ret: retPct != null ? pctFmt(retPct) : null,
         retKind: retPct == null ? 'flat' : retPct >= 0 ? 'up' : 'down',
+        ...diaDoGrupo(list, diaPor),
         rows: rowsVM,
         desc: groupDesc(list, analysis),
         cta: GROUP_CTA[name]?.cta ?? 'Ver na busca',
@@ -315,6 +322,81 @@ function buildGroups(
   const nc = byClass.size
   const positionsSub = `${nc} ${nc === 1 ? 'classe' : 'classes'} · role para explorar`
   return { positionsSub, groups }
+}
+
+/** Variação do dia do grupo: Σ variação ÷ Σ valor de ontem, só papéis com dado. */
+function diaDoGrupo(list: PosRow[], diaPor: Map<string, { amt: number; now: number }>): Pick<CarteiraGroupVM, 'dia' | 'diaDir'> {
+  let amt = 0
+  let ontem = 0
+  for (const r of list) {
+    const d = diaPor.get(r.ticker.toUpperCase())
+    if (!d) continue
+    amt += d.amt
+    ontem += d.now - d.amt
+  }
+  if (ontem <= 0) return { dia: null, diaDir: 'up' }
+  const pct = (amt / ontem) * 100
+  return { dia: `${pct >= 0 ? '+' : '−'}${nf2.format(Math.abs(pct))}%`, diaDir: dirOf(pct) }
+}
+
+/* ————— o topo calmo (Agora, 31/10/2026) ————— */
+
+/**
+ * O que a frase do topo precisa: o resultado do dia (/portfolio/today), a
+ * bolsa no MESMO dia de preço (série do Ibovespa casada por price_dates.today)
+ * e o papel que caiu 5% ou mais. A frase é montada no componente, com o
+ * relógio do pregão (utils/carteira-agora.ts). Sem carteira → null.
+ */
+function buildAgora(
+  rows: PosRow[],
+  today: PortfolioTodayApi | null,
+  ibov: SeriesPoint[] | null,
+  totalValue: number,
+): CarteiraAgoraVM | null {
+  if (totalValue <= 0) return null
+  const priceDate = today?.price_dates?.today ?? null
+
+  let carteiraPct: number | null = null
+  let diaValor: string | null = null
+  let diaPct: string | null = null
+  let diaDir: NuDir = 'up'
+  if (today?.totals && today.totals.value_d1 > 0) {
+    const amt = today.totals.day_change_amount
+    const pctDay = today.totals.day_change_pct
+    carteiraPct = pctDay
+    diaDir = dirOf(amt)
+    diaValor = `${amt >= 0 ? '+' : '−'}R$ ${nf2.format(Math.abs(amt))}`
+    diaPct = `${pctDay >= 0 ? '+' : '−'}${nf2.format(Math.abs(pctDay))}%`
+  }
+
+  let bolsaPct: number | null = null
+  if (priceDate && ibov?.length) {
+    const i = ibov.findIndex((p) => p.t.slice(0, 10) === priceDate)
+    const prev = i > 0 ? ibov[i - 1]! : null
+    if (prev && prev.v > 0) bolsaPct = (ibov[i]!.v / prev.v - 1) * 100
+  }
+
+  let alerta: CarteiraAgoraVM['alerta'] = null
+  for (const p of today?.positions ?? []) {
+    if (p.day_change_pct == null || p.value_now == null || p.value_now < totalValue * 0.01) continue
+    if (p.day_change_pct <= QUEDA_QUE_PEDE_ATENCAO && (!alerta || p.day_change_pct < alerta.pct)) {
+      alerta = { ticker: p.ticker, nome: nomeParaFrase(p.name, p.ticker), pct: p.day_change_pct }
+    }
+  }
+
+  const n = rows.length
+  return {
+    priceDate,
+    carteiraPct,
+    bolsaPct,
+    diaValor,
+    diaPct,
+    diaDir,
+    alerta,
+    patrimonio: `R$ ${nf2.format(totalValue)}`,
+    ativos: `${n} ${n === 1 ? 'ativo' : 'ativos'}`,
+    atualizado: relTime(today?.as_of ?? null) || null,
+  }
 }
 
 /* ————— Raio-X (regras PORTADAS do usePortfolioScore do Frontend /raio-x) ————— */
@@ -748,6 +830,7 @@ function emptyPayload(unauthenticated: boolean): CarteiraPayload {
   return {
     unauthenticated,
     hero: { state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up', metaLine: null, stats: [] },
+    agora: null,
     allocation: [],
     chart: null,
     positionsSub: null,
@@ -782,6 +865,8 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
   if (portfolioR.status === 'rejected') {
     const e = portfolioR.reason as { statusCode?: number; response?: { status?: number } }
     const status = e?.statusCode ?? e?.response?.status
+    // gate do plano único (31/10/2026): "precisa assinar" não é sessão morta
+    if (erroDeAssinatura(portfolioR.reason)) return { ...emptyPayload(false), semAssinatura: true }
     if (status === 401 || status === 403) return emptyPayload(true)
   }
 
@@ -800,10 +885,11 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
   const rows = toRows(portfolio)
   const totalValue = portfolioTotalValue(portfolio, today)
-  const { positionsSub, groups } = buildGroups(rows, analysis)
+  const { positionsSub, groups } = buildGroups(rows, analysis, today)
 
   return {
     hero: buildHero(rows, today, income, totalValue),
+    agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue),
     allocation: buildAllocation(rows),
     chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
     positionsSub,
@@ -817,7 +903,7 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
 /* ————— composable ————— */
 
-export async function useCarteira() {
+export async function useCarteira(opts: { immediate?: boolean } = {}) {
   const config = useRuntimeConfig()
   const { token } = useAuthState()
   // Server: URL direta do Laravel (sem loopback no próprio Nitro).
@@ -832,9 +918,12 @@ export async function useCarteira() {
       if (!t) return Promise.resolve(emptyPayload(true))
       return loadCarteira(import.meta.server ? serverBase : clientBase, t)
     },
+    // a /carteira só busca a carteira de quem assina: sem assinatura a página
+    // vira o paywall e chama execute() quando o Checkout confirma
+    { immediate: opts.immediate ?? true },
   )
 
-  return { data, pending, refresh }
+  return { data, pending, refresh, execute: refresh }
 }
 
 /* ————— resumo da home `/` (banda "Sua carteira" + mini-dashboard do hero) ————— */
@@ -875,6 +964,7 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
   if (portfolioR.status === 'rejected') {
     const e = portfolioR.reason as { statusCode?: number; response?: { status?: number } }
     const status = e?.statusCode ?? e?.response?.status
+    if (erroDeAssinatura(portfolioR.reason)) return null // sem assinatura → a banda some, a sessão fica
     if (status === 401 || status === 403) return { ...RESUMO_CONNECT, unauthenticated: true }
     return null // dado indisponível (não-auth) → seção some
   }

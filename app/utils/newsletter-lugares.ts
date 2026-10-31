@@ -18,8 +18,9 @@ export function rodapeSemAssinatura(caminho: string): boolean {
 const CONVITE_FORA = [
   PRECO_TETO,
   GUIAS,
-  // login, conta e as ferramentas de tela cheia
-  /^\/(?:login|conta|carteira|busca|simulacao)(?:\/|$)/i,
+  // login, conta, as ferramentas de tela cheia e a página da assinatura (o
+  // /assinar tem um gesto só: o teste grátis)
+  /^\/(?:login|conta|carteira|busca|simulacao|assinar)(?:\/|$)/i,
   // área do cliente (links com token), institucionais e o B2B
   /^\/(?:cliente|institucional|business)(?:\/|$)/i,
 ]

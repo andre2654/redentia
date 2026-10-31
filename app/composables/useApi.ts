@@ -34,6 +34,9 @@ export function useApi() {
         ...(opts.headers ?? {}),
       },
       onResponseError({ response }) {
+        // 402/403 `assinatura_necessaria` (gate do plano único, 31/10/2026) é
+        // "não assina", não sessão morta: quem chamou mostra o paywall.
+        if (ehAssinaturaNecessaria(response.status, response._data)) return
         if (response.status === 401 || response.status === 403) {
           clearSession()
           if (redirectOnAuthError) {

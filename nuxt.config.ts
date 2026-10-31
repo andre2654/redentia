@@ -112,6 +112,9 @@ export default defineNuxtConfig({
     '/raio-x': { redirect: { to: '/', statusCode: 301 } },
     '/raio-x/**': { redirect: { to: '/', statusCode: 301 } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
+    // /assinar (plano único, 31/10/2026): o SSR lê a assinatura de quem está
+    // logado (assinante vai para a /carteira) → varia por cookie.
+    '/assinar': { headers: { 'cache-control': 'private, no-store' } },
     // /simulacao: pessoal e atrás de login (guard inline na página). O
     // resultado é da carteira de quem pediu — não pode encostar em cache
     // compartilhado de CDN.

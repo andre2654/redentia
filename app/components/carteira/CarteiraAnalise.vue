@@ -1,0 +1,79 @@
+<script setup lang="ts">
+// "A análise completa" (31/10/2026): o que a /carteira mostrava de cara —
+// desempenho contra IBOV e CDI, Raio-X, movimentações e P&L mês a mês — agora
+// sob pedido, depois do topo calmo. Os componentes são os mesmos de antes, com
+// os mesmos números; só deixaram de disputar a primeira olhada.
+// Chegar com âncora de uma dessas seções (#raio-x, #pnl…, os atalhos da home)
+// abre a análise sozinho.
+import type { CarteiraPayload } from '~/types/carteira'
+
+const props = defineProps<{ payload: CarteiraPayload }>()
+
+const ANCORAS = ['desempenho', 'raio-x', 'movimentacoes', 'pnl']
+const aberta = ref(false)
+
+const partes = computed(() => {
+  const p = props.payload
+  const l: string[] = []
+  if (p.chart) l.push('desempenho')
+  if (p.raiox) l.push('Raio-X')
+  if (p.movements) l.push('movimentações')
+  if (p.heatmap) l.push('P&L mês a mês')
+  return l
+})
+const resumo = computed(() => {
+  const l = partes.value
+  if (!l.length) return ''
+  const txt = l.length === 1 ? l[0]! : `${l.slice(0, -1).join(', ')} e ${l[l.length - 1]}`
+  return txt.charAt(0).toUpperCase() + txt.slice(1) + '.'
+})
+
+onMounted(() => {
+  const id = useRoute().hash.slice(1)
+  if (id && ANCORAS.includes(id)) {
+    aberta.value = true
+    nextTick(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }))
+  }
+})
+</script>
+
+<template>
+  <div v-if="partes.length">
+    <section class="can" :class="{ 'can--aberta': aberta }">
+      <button type="button" class="can__botao" :aria-expanded="aberta" aria-controls="can-conteudo" @click="aberta = !aberta">
+        <span class="can__textos">
+          <span class="can__titulo">{{ aberta ? 'Esconder a análise completa' : 'Ver a análise completa' }}</span>
+          <span class="can__sub">{{ resumo }}</span>
+        </span>
+        <svg class="can__seta" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+      </button>
+    </section>
+
+    <div v-if="aberta" id="can-conteudo" class="can__conteudo">
+      <NuPortfolioChart v-if="payload.chart" id="desempenho" class="can__sec" :chart="payload.chart" data-clarity-mask="true" />
+      <CarteiraRaioX v-if="payload.raiox" id="raio-x" class="can__sec" :raiox="payload.raiox" data-clarity-mask="true" />
+      <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="can__sec" :movements="payload.movements" data-clarity-mask="true" />
+      <CarteiraHeatmap v-if="payload.heatmap" id="pnl" class="can__sec" :heatmap="payload.heatmap" data-clarity-mask="true" />
+      <CarteiraMcpBanner />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.can { background: var(--nu-white); padding: clamp(28px, 4vw, 48px) clamp(22px, 5.5vw, 80px); border-top: 1px solid var(--nu-cream-2); }
+.can__botao {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  background: var(--nu-cream); border: none; cursor: pointer; font-family: inherit; text-align: left;
+  border-radius: var(--nu-r-card); padding: clamp(20px, 2.6vw, 28px) clamp(22px, 3vw, 32px);
+  transition: background .2s, transform .15s;
+}
+.can__botao:hover { background: var(--nu-cream-4); }
+.can__botao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.can__textos { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.01em; }
+.can__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.can__seta { color: var(--nu-gray); flex-shrink: 0; transition: transform .25s; }
+.can--aberta .can__seta { transform: rotate(180deg); }
+.can__conteudo { animation: nu-fade .4s ease both; }
+.can__sec { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
+</style>

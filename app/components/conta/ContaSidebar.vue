@@ -6,6 +6,7 @@
 // Visual do design: ícone + label; ativo = card branco com sombra.
 const items = [
   { id: 'perfil', label: 'Perfil', icon: 'user' },
+  { id: 'assinatura', label: 'Assinatura', icon: 'card' },
   { id: 'notificacoes', label: 'Notificações', icon: 'bell' },
   { id: 'open-finance', label: 'Open Finance', icon: 'link' },
   { id: 'mcp', label: 'Redentia MCP', icon: 'mcp' },
@@ -14,6 +15,7 @@ const items = [
 
 const ICON: Record<string, string[]> = {
   user: ['M20 21a8 8 0 0 0-16 0', 'M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z'],
+  card: ['M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z', 'M3 10h18', 'M7 15h3'],
   bell: ['M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9', 'M10.3 21a1.94 1.94 0 0 0 3.4 0'],
   link: ['M9 17H7A5 5 0 0 1 7 7h2', 'M15 7h2a5 5 0 0 1 0 10h-2', 'M8 12h8'],
   mcp: ['M12 3v18', 'M3 12h18', 'M5.6 5.6l12.8 12.8', 'M18.4 5.6 5.6 18.4'],

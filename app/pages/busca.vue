@@ -206,6 +206,10 @@ onBeforeUnmount(() => {
       <BuscaBrowseList v-if="browseMode" :browse="browseVM" @more="index.showMore()" />
       <BuscaResults v-else :results="results" />
     </template>
+
+    <!-- A IA é paga (31/10/2026): quem não assina e tenta mandar mensagem vê
+         esta folha em vez do envio (useNuChat.send → garantirAcesso). -->
+    <AssinaturaGateSheet />
   </div>
 </template>
 
