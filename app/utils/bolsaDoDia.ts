@@ -57,6 +57,8 @@ export interface EntradaDaBolsa {
     sections?: { placar?: { stat?: string | null } | null; leitura?: { blurb?: string | null } | null } | null
   } | null
   teses: { id: string; title: string; tickers: string[]; conviction: number | null }[] | null
+  /** o pregão minuto a minuto da B3 (cotacao.b3.com.br DailyFluctuationHistory/IBOV) */
+  intradia?: { TradgFlr?: { date?: string | null; scty?: { lstQtn?: { closPric: number | null; dtTm: string; prcFlcn?: number | null }[] | null } | null } | null } | null
 }
 
 /** pct: a variação do dia do papel principal da empresa (o de maior peso) */
@@ -80,6 +82,10 @@ export interface BolsaDoDia {
   pesos: { variacao: number; soma: number; confere: boolean; negativas: EmpresaDoDia[]; positivas: EmpresaDoDia[] } | null
   leitura: { texto: string; data: string; publicadoEm: string | null; bate: boolean } | null
   tese: { slug: string; titulo: string; convicao: number; nomes: string[]; antes: { valor: number; ate: string } | null } | null
+  /** o pregão do último dia, um ponto por minuto: [minutos desde as 10h, pontos] */
+  intradia: { data: string; anterior: number; pontos: [number, number][] } | null
+  /** os últimos fechamentos (a linha de reserva quando o pregão minuto a minuto não vem) */
+  diarias: { d: string; v: number }[]
   /** as ações do índice, uma a uma: o mercado inteiro de uma vez (empresa agrupa as classes) */
   acoes: { ticker: string; empresa: string; pct: number; peso: number; pontos: number }[]
 }
@@ -95,7 +101,7 @@ function pctDoTexto(t: string | null | undefined): number | null {
 }
 
 export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
-  const vazio: BolsaDoDia = { ibov: null, seguidas: null, mes: null, semana: null, contagem: null, pesos: null, leitura: null, tese: null, acoes: [] }
+  const vazio: BolsaDoDia = { ibov: null, seguidas: null, mes: null, semana: null, contagem: null, pesos: null, leitura: null, tese: null, intradia: null, diarias: [], acoes: [] }
   const ib = e.snapshot?.indices_br?.IBOV
   if (ib?.value == null || ib.change_pct == null || !ib.as_of_date) return vazio
   const ibov = { pontos: ib.value, pct: ib.change_pct, data: ib.as_of_date.slice(0, 10), asOf: e.snapshot?.as_of ?? null }
@@ -238,7 +244,22 @@ export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
     if (melhor) tese = { slug: melhor.t.id, titulo: melhor.t.title, convicao: melhor.t.conviction!, nomes: melhor.nomes, antes: null }
   }
 
-  return { ibov, seguidas, mes, semana, contagem, pesos, leitura, tese, acoes: pesos?.confere ? acoes : [] }
+  // o pregão minuto a minuto: só o do mesmo dia do snapshot, um ponto por minuto
+  let intradia: BolsaDoDia['intradia'] = null
+  const b3 = e.intradia?.TradgFlr
+  if (b3?.date?.slice(0, 10) === ibov.data) {
+    const porMinuto = new Map<number, number>()
+    for (const q of b3.scty?.lstQtn ?? []) {
+      const m = q.dtTm.match(/^(\d{2}):(\d{2})/)
+      if (!m || q.closPric == null || q.closPric <= 0) continue
+      const minuto = (Number(m[1]) - 10) * 60 + Number(m[2])
+      if (minuto >= 0) porMinuto.set(minuto, q.closPric)
+    }
+    const pontos = [...porMinuto.entries()].sort((a, b) => a[0] - b[0]) as [number, number][]
+    if (pontos.length >= 10) intradia = { data: ibov.data, anterior: ibov.pontos / (1 + ibov.pct / 100), pontos }
+  }
+
+  return { ibov, seguidas, mes, semana, contagem, pesos, leitura, tese, intradia, diarias: serie.slice(-23), acoes: pesos?.confere ? acoes : [] }
 }
 
 /**

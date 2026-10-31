@@ -17,8 +17,14 @@
 //    sem abas de classe e sem o preço.
 // Os números vêm de uma fonte só (useBolsaDoDia, o mesmo do topo de quem
 // assina); o fechamento da IA, do useNuBriefing; dólar e CDI, da faixa do topo.
+//
+// Ideia do dono no mesmo dia: logo embaixo de "Bolsa em queda." a linha do
+// pregão, e um botão; ao apertar, a Redentia lê o gráfico inteiro (uma linha
+// clara atravessa o dia, das 10h ao fechamento, com a hora que está lendo) e
+// então aparecem os cartões do fechamento. É o gesto do produto: você não lê
+// o mercado, ela lê e te entrega o que importa.
 import { textosDaBolsa } from '~/utils/bolsaDoDia'
-import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
+import { agoraEmSP, estadoDoPregao, horaDoFechamento, quandoFoi } from '~/utils/pregao'
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
 import { marcarTermos } from '~/utils/termosDoDia'
 
@@ -39,7 +45,10 @@ onMounted(() => {
     if (estado.value === 'aberta' && document.visibilityState === 'visible') void refresh()
   }, 60_000)
 })
-onBeforeUnmount(() => { if (relogio) clearInterval(relogio) })
+onBeforeUnmount(() => {
+  if (relogio) clearInterval(relogio)
+  if (quadro) cancelAnimationFrame(quadro)
+})
 
 const { bolsa, refresh } = await useBolsaDoDia()
 const estado = computed(() => estadoDoPregao(new Date(agora.value)).estado)
@@ -90,6 +99,33 @@ const cartoes = computed(() => {
     .map((x) => ({ ...x, rotulo: rotulo[x.icon] ?? x.label, pedacos: marcarTermos(x.cardBlurb) }))
 })
 const blocos = computed(() => todos.value.map((x) => ({ label: x.label, color: x.labelColor, html: x.modalHtml })))
+
+// a leitura: antes do botão, só o gráfico; lendo, a varredura; lido, os cartões
+const temGrafico = computed(() => !!(bolsa.value?.intradia || (bolsa.value?.diarias.length ?? 0) > 1))
+const fechaAs = computed(() => (ibov.value ? horaDoFechamento(ibov.value.data) : 17))
+const fase = ref<'antes' | 'lendo' | 'lido'>('antes')
+const progresso = ref(0)
+const tituloDoDia = ref<HTMLElement | null>(null)
+let quadro = 0
+const DURACAO = 2200
+function lerODia() {
+  const fim = () => {
+    fase.value = 'lido'
+    nextTick(() => tituloDoDia.value?.focus({ preventScroll: true }))
+  }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return fim()
+  fase.value = 'lendo'
+  const inicio = performance.now()
+  const passo = (t: number) => {
+    const f = Math.min(1, (t - inicio) / DURACAO)
+    progresso.value = f < 0.5 ? 2 * f * f : 1 - (-2 * f + 2) ** 2 / 2
+    if (f < 1) quadro = requestAnimationFrame(passo)
+    else fim()
+  }
+  quadro = requestAnimationFrame(passo)
+}
+// sem gráfico, os cartões aparecem direto
+const mostraCartoes = computed(() => fase.value === 'lido' || !temGrafico.value)
 const aberto = ref(false)
 const gatilho = ref<HTMLButtonElement | null>(null)
 function fechar() {
@@ -158,9 +194,19 @@ const quandoDasListas = computed(() => {
       </div>
     </div>
 
-    <!-- o dia no mercado: o fechamento da IA em três cartões -->
-    <div v-if="briefingLoading || cartoes.length" class="hbo__dia">
-      <h3 class="hbo__dia-titulo">O dia no mercado.</h3>
+    <!-- o pregão e o botão: a Redentia lê o gráfico antes de mostrar o fechamento -->
+    <div v-if="temGrafico && bolsa" class="hbo__pregao">
+      <HomeBolsaLinha :intradia="bolsa.intradia" :diarias="bolsa.diarias" :fecha-as="fechaAs" :varredura="fase === 'lendo' ? progresso : null" />
+      <button v-if="fase === 'antes' && (briefingLoading || cartoes.length)" type="button" class="hbo__ler hbo__ler--cheio hbo__ler-dia" @click="lerODia">
+        Ler o dia com a Redentia
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+      <p v-else-if="fase === 'lendo'" class="hbo__lendo" aria-live="polite">A Redentia está lendo o pregão minuto a minuto e as {{ bolsa.acoes.length || 76 }} empresas do Ibovespa.</p>
+    </div>
+
+    <!-- o dia no mercado: o fechamento da IA em três cartões, depois da leitura -->
+    <div v-if="mostraCartoes && (briefingLoading || cartoes.length)" class="hbo__dia" :class="{ 'hbo__dia--lido': fase === 'lido' }">
+      <h3 ref="tituloDoDia" class="hbo__dia-titulo" tabindex="-1">O dia no mercado.</h3>
       <p v-if="briefingReal" class="hbo__dia-meta">{{ briefing.metaLine }}</p>
       <NuSkeleton v-else tone="navy" variant="line" width="min(360px, 80%)" height="15px" radius="chip" style="margin-top: 10px" />
       <div class="hbo__dia-grade">
@@ -257,8 +303,21 @@ const quandoDasListas = computed(() => {
 .hbo__ind-pct--flat { color: var(--nu-cream-text-70); }
 .hbo__ind-legenda { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 500; }
 
+/* o pregão e o botão da leitura */
+.hbo__pregao { margin-top: clamp(36px, 4vw, 48px); max-width: 980px; }
+.hbo__ler-dia { margin-top: 20px; }
+.hbo__lendo { margin: 20px 0 0; min-height: 52px; display: flex; align-items: center; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
+
 /* o dia no mercado: três cartões do fechamento da IA */
 .hbo__dia { margin-top: clamp(44px, 5vw, 60px); }
+.hbo__dia-titulo:focus { outline: none; }
+/* depois da leitura, os cartões entram um a um */
+.hbo__dia--lido .hbo__dia-titulo, .hbo__dia--lido .hbo__dia-meta, .hbo__dia--lido .hbo__dia-cartao, .hbo__dia--lido .hbo__dia-acoes { animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
+.hbo__dia--lido .hbo__dia-cartao:nth-child(1) { animation-delay: .12s; }
+.hbo__dia--lido .hbo__dia-cartao:nth-child(2) { animation-delay: .24s; }
+.hbo__dia--lido .hbo__dia-cartao:nth-child(3) { animation-delay: .36s; }
+.hbo__dia--lido .hbo__dia-acoes { animation-delay: .48s; }
+@keyframes hbo-entra { from { opacity: 0; transform: translateY(12px); } }
 .hbo__dia-titulo, .hbo__listas-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .hbo__dia-meta { margin: 10px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
 .hbo__dia-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
@@ -312,7 +371,7 @@ const quandoDasListas = computed(() => {
   .hbo__ler { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hbo { animation: none; }
+  .hbo, .hbo__dia--lido * { animation: none !important; }
   .hbo__ler svg { transition: none; }
 }
 </style>
