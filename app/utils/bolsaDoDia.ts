@@ -58,8 +58,18 @@ export interface EntradaDaBolsa {
   } | null
   teses: { id: string; title: string; tickers: string[]; conviction: number | null }[] | null
   /** o pregão minuto a minuto da B3 (cotacao.b3.com.br DailyFluctuationHistory/IBOV) */
-  intradia?: { TradgFlr?: { date?: string | null; scty?: { lstQtn?: { closPric: number | null; dtTm: string; prcFlcn?: number | null }[] | null } | null } | null } | null
+  intradia?: SerieDaB3 | null
+  /** o mesmo para o IFIX e para o mini dólar futuro (WDO), que anda como o dólar */
+  ifixIntradia?: SerieDaB3 | null
+  dolarIntradia?: SerieDaB3 | null
+  /** o Bitcoin em reais de 5 em 5 minutos (data-api.binance.vision, klines BTCBRL): [abertura em ms, open, high, low, close, ...] */
+  btcKlines?: (string | number)[][] | null
 }
+
+export type SerieDaB3 = { TradgFlr?: { date?: string | null; scty?: { lstQtn?: { closPric: number | null; dtTm: string; prcFlcn?: number | null }[] | null } | null } | null }
+
+/** Um mercado no gráfico do dia: [minutos desde as 10h, % desde as 10h]. */
+export interface MercadoDoDia { id: 'ibov' | 'ifix' | 'dolar' | 'btc'; nome: string; pontos: [number, number][]; final: number }
 
 /** pct: a variação do dia do papel principal da empresa (o de maior peso) */
 export interface EmpresaDoDia { nome: string; ticker: string; tickers: string[]; pontos: number; pct: number | null }
@@ -86,6 +96,8 @@ export interface BolsaDoDia {
   intradia: { data: string; anterior: number; pontos: [number, number][] } | null
   /** os últimos fechamentos (a linha de reserva quando o pregão minuto a minuto não vem) */
   diarias: { d: string; v: number }[]
+  /** Ibovespa, IFIX, dólar e Bitcoin no mesmo dia, em % desde as 10h, para o gráfico "O mercado" */
+  mercados: MercadoDoDia[]
   /** as ações do índice, uma a uma: o mercado inteiro de uma vez (empresa agrupa as classes) */
   acoes: { ticker: string; empresa: string; pct: number; peso: number; pontos: number }[]
 }
@@ -101,7 +113,7 @@ function pctDoTexto(t: string | null | undefined): number | null {
 }
 
 export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
-  const vazio: BolsaDoDia = { ibov: null, seguidas: null, mes: null, semana: null, contagem: null, pesos: null, leitura: null, tese: null, intradia: null, diarias: [], acoes: [] }
+  const vazio: BolsaDoDia = { ibov: null, seguidas: null, mes: null, semana: null, contagem: null, pesos: null, leitura: null, tese: null, intradia: null, diarias: [], mercados: [], acoes: [] }
   const ib = e.snapshot?.indices_br?.IBOV
   if (ib?.value == null || ib.change_pct == null || !ib.as_of_date) return vazio
   const ibov = { pontos: ib.value, pct: ib.change_pct, data: ib.as_of_date.slice(0, 10), asOf: e.snapshot?.as_of ?? null }
@@ -259,7 +271,47 @@ export function montarBolsaDoDia(e: EntradaDaBolsa): BolsaDoDia {
     if (pontos.length >= 10) intradia = { data: ibov.data, anterior: ibov.pontos / (1 + ibov.pct / 100), pontos }
   }
 
-  return { ibov, seguidas, mes, semana, contagem, pesos, leitura, tese, intradia, diarias: serie.slice(-23), acoes: pesos?.confere ? acoes : [] }
+  // os quatro mercados do dia, todos em % desde as 10h e cortados no fechamento do índice
+  const fimDoDia = intradia?.pontos[intradia.pontos.length - 1]?.[0] ?? null
+  const mercados: MercadoDoDia[] = []
+  const emPct = (id: MercadoDoDia['id'], nome: string, porMinuto: [number, number][]) => {
+    const pts = porMinuto.filter(([m]) => m >= 0 && (fimDoDia == null || m <= fimDoDia)).sort((a, b) => a[0] - b[0])
+    if (pts.length < 10) return
+    const base = pts[0]![1]
+    const pontos = pts.map(([m, v]) => [m, (v / base - 1) * 100] as [number, number])
+    mercados.push({ id, nome, pontos, final: pontos[pontos.length - 1]![1] })
+  }
+  if (intradia) emPct('ibov', 'Ibovespa', intradia.pontos)
+  if (intradia) {
+    const ifix = minutoAMinuto(e.ifixIntradia, ibov.data)
+    if (ifix) emPct('ifix', 'IFIX', ifix)
+    const dolar = minutoAMinuto(e.dolarIntradia, ibov.data)
+    if (dolar) emPct('dolar', 'Dólar', dolar)
+    const btc = (e.btcKlines ?? [])
+      .map((k) => {
+        const t = Number(k[0])
+        const close = Number(k[4])
+        const { iso, hora, minuto } = agoraEmSP(new Date(t))
+        return iso === ibov.data && close > 0 ? [(hora - 10) * 60 + minuto, close] as [number, number] : null
+      })
+      .filter((x): x is [number, number] => !!x)
+    emPct('btc', 'Bitcoin', btc)
+  }
+
+  return { ibov, seguidas, mes, semana, contagem, pesos, leitura, tese, intradia, diarias: serie.slice(-23), mercados, acoes: pesos?.confere ? acoes : [] }
+}
+
+/** A série da B3 de um dia, um preço por minuto desde as 10h (o último de cada minuto). */
+function minutoAMinuto(b3: SerieDaB3 | null | undefined, data: string): [number, number][] | null {
+  const t = b3?.TradgFlr
+  if (t?.date?.slice(0, 10) !== data) return null
+  const porMinuto = new Map<number, number>()
+  for (const q of t.scty?.lstQtn ?? []) {
+    const m = q.dtTm.match(/^(\d{2}):(\d{2})/)
+    if (!m || q.closPric == null || q.closPric <= 0) continue
+    porMinuto.set((Number(m[1]) - 10) * 60 + Number(m[2]), q.closPric)
+  }
+  return [...porMinuto.entries()]
 }
 
 /**

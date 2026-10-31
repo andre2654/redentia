@@ -96,18 +96,28 @@ const cartoes = computed(() => {
   }
   return todos.value
     .filter((x) => x.icon !== 'compass')
-    .map((x) => ({ ...x, rotulo: rotulo[x.icon] ?? x.label, pedacos: marcarTermos(x.cardBlurb) }))
+    .map((x) => {
+      // o placar ganha o título do dia; se o texto da IA começa com ele, não repete
+      const titulo = x.stat ? (textos.value?.titulo ?? x.stat) : x.cardTitle
+      const lead = titulo ? titulo.replace(/\.$/, '') : ''
+      let texto = x.cardBlurb
+      if (lead && texto.toLowerCase().startsWith(`${lead.toLowerCase()}:`)) {
+        const resto = texto.slice(lead.length + 1).trim()
+        texto = resto.charAt(0).toUpperCase() + resto.slice(1)
+      }
+      return { ...x, titulo, rotulo: rotulo[x.icon] ?? x.label, pedacos: marcarTermos(texto) }
+    })
 })
 const blocos = computed(() => todos.value.map((x) => ({ label: x.label, color: x.labelColor, html: x.modalHtml })))
 
 // a leitura: antes do botão, só o gráfico; lendo, a varredura; lido, os cartões
-const temGrafico = computed(() => !!(bolsa.value?.intradia || (bolsa.value?.diarias.length ?? 0) > 1))
+const temGrafico = computed(() => (bolsa.value?.mercados.length ?? 0) > 0)
 const fechaAs = computed(() => (ibov.value ? horaDoFechamento(ibov.value.data) : 17))
 const fase = ref<'antes' | 'lendo' | 'lido'>('antes')
 const progresso = ref(0)
 const tituloDoDia = ref<HTMLElement | null>(null)
 let quadro = 0
-const DURACAO = 2200
+const DURACAO = 2800
 function lerODia() {
   const fim = () => {
     fase.value = 'lido'
@@ -124,8 +134,16 @@ function lerODia() {
   }
   quadro = requestAnimationFrame(passo)
 }
-// sem gráfico, os cartões aparecem direto
-const mostraCartoes = computed(() => fase.value === 'lido' || !temGrafico.value)
+// os números da leitura sobem junto com a faixa
+const contadores = computed(() => {
+  const f = fase.value === 'lendo' ? progresso.value : 0
+  const minutos = bolsa.value?.intradia?.pontos.length ?? 433
+  return {
+    minutos: Math.round(f * minutos),
+    mercados: Math.min(bolsa.value?.mercados.length ?? 4, Math.ceil(f * (bolsa.value?.mercados.length ?? 4))),
+    empresas: Math.round(f * (bolsa.value?.acoes.length || 76)),
+  }
+})
 const aberto = ref(false)
 const gatilho = ref<HTMLButtonElement | null>(null)
 function fechar() {
@@ -194,46 +212,61 @@ const quandoDasListas = computed(() => {
       </div>
     </div>
 
-    <!-- o pregão e o botão: a Redentia lê o gráfico antes de mostrar o fechamento -->
-    <div v-if="temGrafico && bolsa" class="hbo__pregao">
-      <HomeBolsaLinha :intradia="bolsa.intradia" :diarias="bolsa.diarias" :fecha-as="fechaAs" :varredura="fase === 'lendo' ? progresso : null" />
-      <button v-if="fase === 'antes' && (briefingLoading || cartoes.length)" type="button" class="hbo__ler hbo__ler--cheio hbo__ler-dia" @click="lerODia">
-        Ler o dia com a Redentia
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </button>
-      <p v-else-if="fase === 'lendo'" class="hbo__lendo" aria-live="polite">A Redentia está lendo o pregão minuto a minuto e as {{ bolsa.acoes.length || 76 }} empresas do Ibovespa.</p>
+    <!-- o mercado: os quatro no mesmo gráfico, e a Redentia deixa simples -->
+    <div v-if="temGrafico && bolsa" class="hbo__mercado">
+      <h3 class="hbo__dia-titulo">O mercado.</h3>
+      <div class="hbo__quadro" :class="`hbo__quadro--${fase}`">
+        <HomeBolsaMercados class="hbo__grafico" :mercados="bolsa.mercados" :fecha-as="fechaAs" :varredura="fase === 'lendo' ? progresso : null" />
+
+        <!-- o resultado da leitura: por cima do gráfico, no mesmo lugar -->
+        <div v-if="fase === 'lido' && (briefingLoading || cartoes.length)" class="hbo__simples" role="region" aria-labelledby="hbo-simples">
+          <h4 id="hbo-simples" ref="tituloDoDia" class="hbo__simples-titulo" tabindex="-1">Simples assim.</h4>
+          <ol class="hbo__itens">
+            <li v-for="i in (cartoes.length ? 0 : 3)" :key="`sk${i}`" class="hbo__item">
+              <NuSkeleton tone="navy" variant="line" width="110px" height="12px" radius="chip" />
+              <NuSkeleton tone="navy" variant="text" :lines="2" last-width="70%" height="15px" style="margin-top: 10px" />
+            </li>
+            <li v-for="(c, i) in cartoes" :key="i" class="hbo__item">
+              <span class="hbo__item-rotulo">{{ c.rotulo }}</span>
+              <strong class="hbo__item-titulo">{{ c.titulo }}</strong>
+              <p class="hbo__item-texto"><template v-for="(p, j) in c.pedacos" :key="j"><HomeTermo v-if="'termo' in p" :texto="p.texto" :termo="p.termo" :slug="p.slug" /><template v-else>{{ p.texto }}</template></template></p>
+            </li>
+          </ol>
+          <div class="hbo__simples-acoes">
+            <button v-if="cartoes.length" ref="gatilho" type="button" class="hbo__ler hbo__ler--cheio" aria-haspopup="dialog" :aria-expanded="aberto" @click="aberto = true">
+              Ler o resumo do dia
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </button>
+            <button type="button" class="hbo__ler" @click="fase = 'antes'">Ver o gráfico de novo</button>
+            <a v-if="receber" href="#newsletter" class="hbo__link-news" @click="irParaNewsletter">Receber toda sexta por e-mail</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- a deixa e o botão -->
+      <div v-if="fase !== 'lido'" class="hbo__deixa">
+        <p class="hbo__deixa-txt">
+          <template v-if="fase === 'antes'"><strong>Parece confuso?</strong> A Redentia deixa mais simples.</template>
+          <template v-else>A Redentia está lendo: <strong>{{ contadores.minutos }}</strong> minutos de pregão, <strong>{{ contadores.mercados }}</strong> mercados, <strong>{{ contadores.empresas }}</strong> empresas.</template>
+        </p>
+        <button v-if="fase === 'antes' && (briefingLoading || cartoes.length)" type="button" class="hbo__ler hbo__ler--cheio hbo__ler-dia" @click="lerODia">
+          Deixar simples
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+      </div>
     </div>
 
-    <!-- o dia no mercado: o fechamento da IA em três cartões, depois da leitura -->
-    <div v-if="mostraCartoes && (briefingLoading || cartoes.length)" class="hbo__dia" :class="{ 'hbo__dia--lido': fase === 'lido' }">
-      <h3 ref="tituloDoDia" class="hbo__dia-titulo" tabindex="-1">O dia no mercado.</h3>
+    <!-- sem gráfico: o fechamento da IA direto, em três cartões -->
+    <div v-else-if="briefingLoading || cartoes.length" class="hbo__dia">
+      <h3 class="hbo__dia-titulo">O dia no mercado.</h3>
       <p v-if="briefingReal" class="hbo__dia-meta">{{ briefing.metaLine }}</p>
-      <NuSkeleton v-else tone="navy" variant="line" width="min(360px, 80%)" height="15px" radius="chip" style="margin-top: 10px" />
       <div class="hbo__dia-grade">
-        <div v-for="i in (cartoes.length ? 0 : 3)" :key="`skd${i}`" class="hbo__dia-cartao">
-          <NuSkeleton tone="navy" variant="line" width="120px" height="13px" radius="chip" />
-          <NuSkeleton tone="navy" variant="line" width="62%" height="32px" style="margin-top: 22px" />
-          <NuSkeleton tone="navy" variant="text" :lines="3" last-width="72%" height="15px" style="margin-top: 12px" />
-        </div>
         <div v-for="(c, i) in cartoes" :key="i" class="hbo__dia-cartao">
           <span class="hbo__dia-rotulo">{{ c.rotulo }}</span>
           <div v-if="c.stat" class="hbo__dia-stat">{{ c.stat }}</div>
           <div v-else-if="c.cardTitle" class="hbo__dia-titulo-cartao">{{ c.cardTitle }}</div>
           <p class="hbo__dia-texto"><template v-for="(p, j) in c.pedacos" :key="j"><HomeTermo v-if="'termo' in p" :texto="p.texto" :termo="p.termo" :slug="p.slug" /><template v-else>{{ p.texto }}</template></template></p>
         </div>
-      </div>
-      <div class="hbo__dia-acoes">
-        <button
-          v-if="cartoes.length" ref="gatilho" type="button" class="hbo__ler hbo__ler--cheio"
-          aria-haspopup="dialog" :aria-expanded="aberto" @click="aberto = true"
-        >
-          Ler o resumo do dia
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </button>
-        <a v-if="receber" href="#newsletter" class="hbo__ler" @click="irParaNewsletter">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>
-          Receber toda sexta por e-mail
-        </a>
       </div>
     </div>
 
@@ -303,20 +336,40 @@ const quandoDasListas = computed(() => {
 .hbo__ind-pct--flat { color: var(--nu-cream-text-70); }
 .hbo__ind-legenda { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 500; }
 
-/* o pregão e o botão da leitura */
-.hbo__pregao { margin-top: clamp(40px, 5vw, 60px); }
-.hbo__ler-dia { margin-top: 20px; }
-.hbo__lendo { margin: 20px 0 0; min-height: 52px; display: flex; align-items: center; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
+/* o mercado: o gráfico e, depois da leitura, o resumo no mesmo lugar */
+.hbo__mercado { margin-top: clamp(40px, 5vw, 60px); }
+.hbo__quadro { position: relative; margin-top: 18px; }
+.hbo__grafico { transition: opacity .5s ease, filter .5s ease; }
+/* lido: o gráfico vira fundo, borrado, e o resumo entra por cima */
+.hbo__quadro--lido .hbo__grafico { opacity: .14; filter: blur(3px); pointer-events: none; }
+.hbo__simples {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 18px;
+  animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards;
+}
+.hbo__simples-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
+.hbo__simples-titulo:focus { outline: none; }
+.hbo__itens { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.hbo__item { padding: 18px 20px; border-radius: 18px; background: var(--nu-navy-2); animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
+.hbo__item:nth-child(1) { animation-delay: .1s; }
+.hbo__item:nth-child(2) { animation-delay: .22s; }
+.hbo__item:nth-child(3) { animation-delay: .34s; }
+.hbo__item-rotulo { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.hbo__item-titulo { display: block; margin-top: 8px; color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
+.hbo__item-texto { margin: 6px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.hbo__simples-acoes { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
+.hbo__link-news { color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.hbo__link-news:hover { color: var(--nu-cream-text); }
+
+/* a deixa: "Parece confuso?" e o botão */
+.hbo__deixa { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px 24px; flex-wrap: wrap; min-height: 52px; }
+.hbo__deixa-txt { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-xl); font-weight: 500; font-variant-numeric: tabular-nums; }
+.hbo__deixa-txt strong { color: var(--nu-cream-text); font-weight: 800; }
+.hbo__ler-dia { min-height: 56px; padding: 0 28px; font-size: var(--nu-fs-lg); }
 
 /* o dia no mercado: três cartões do fechamento da IA */
 .hbo__dia { margin-top: clamp(44px, 5vw, 60px); }
 .hbo__dia-titulo:focus { outline: none; }
-/* depois da leitura, os cartões entram um a um */
-.hbo__dia--lido .hbo__dia-titulo, .hbo__dia--lido .hbo__dia-meta, .hbo__dia--lido .hbo__dia-cartao, .hbo__dia--lido .hbo__dia-acoes { animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
-.hbo__dia--lido .hbo__dia-cartao:nth-child(1) { animation-delay: .12s; }
-.hbo__dia--lido .hbo__dia-cartao:nth-child(2) { animation-delay: .24s; }
-.hbo__dia--lido .hbo__dia-cartao:nth-child(3) { animation-delay: .36s; }
-.hbo__dia--lido .hbo__dia-acoes { animation-delay: .48s; }
+/* o resumo da leitura entra de baixo para cima */
 @keyframes hbo-entra { from { opacity: 0; transform: translateY(12px); } }
 .hbo__dia-titulo, .hbo__listas-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .hbo__dia-meta { margin: 10px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
@@ -365,13 +418,20 @@ const quandoDasListas = computed(() => {
 .hbo__pct--up { color: var(--nu-green-soft); }
 .hbo__pct--down { color: var(--nu-red-soft); }
 
+/* abaixo de 1000 px o resumo vem embaixo do gráfico, que encolhe */
+@media (max-width: 999px) {
+  .hbo__simples { position: static; margin-top: 8px; }
+  .hbo__itens { grid-template-columns: 1fr; }
+  .hbo__quadro--lido .hbo__grafico { display: none; }
+}
 @media (max-width: 560px) {
   .hbo__ind { flex: 1 1 140px; min-width: 0; }
   .hbo__dia-acoes { flex-direction: column; align-items: stretch; }
   .hbo__ler { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hbo, .hbo__dia--lido * { animation: none !important; }
+  .hbo, .hbo__simples, .hbo__simples * { animation: none !important; }
+  .hbo__grafico { transition: none; }
   .hbo__ler svg { transition: none; }
 }
 </style>
