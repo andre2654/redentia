@@ -284,7 +284,8 @@ function irParaNewsletter(e: MouseEvent) {
 .hbo__item:nth-child(3) { animation-delay: .34s; }
 .hbo__item-rotulo { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
 .hbo__item-titulo { display: block; margin-top: 10px; color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
-.hbo__simples-acoes { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
+/* as ações no fim do quadro, centradas */
+.hbo__simples-acoes { margin-top: auto; padding-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
 .hbo__link-news { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .hbo__link-news:hover { color: var(--nu-cream-text); }
 
@@ -337,6 +338,7 @@ function irParaNewsletter(e: MouseEvent) {
   .hbo__mercado { order: 1; }
   .hbo__deixa { order: 2; margin-top: 18px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; max-width: none; text-align: left; }
   .hbo__simples { position: static; margin-top: 8px; }
+  .hbo__simples-acoes { margin-top: 12px; flex-direction: column; }
   .hbo__itens { grid-template-columns: 1fr; }
   .hbo__item, .hbo__item:first-child { padding: 16px 0; border-left: 0; border-top: 1px solid var(--nu-cream-text-12); }
   .hbo__item:first-child { border-top: 0; padding-top: 4px; }
