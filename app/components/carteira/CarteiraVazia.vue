@@ -10,6 +10,15 @@ const emit = defineEmits<{ (e: 'connected'): void }>()
 const VITRINE = ['nubank', 'itau', 'bradesco', 'bb', 'santander', 'inter', 'xp', 'btg', 'c6', 'rico']
 const bancos = VITRINE.map((s) => INSTITUICOES.find((i) => i.slug === s)).filter((i): i is (typeof INSTITUICOES)[number] => !!i && i.logo)
 
+// a frase dos logos: os três que todo mundo reconhece e quantos mais
+const quemConecta = (() => {
+  const nomes = bancos.slice(0, 3).map((b) => b.name)
+  const resto = bancos.length - nomes.length
+  return resto > 0
+    ? `${nomes.join(', ')} e mais ${resto} bancos e corretoras.`
+    : `${nomes.join(', ')}.`
+})()
+
 const passos = [
   { t: 'Escolha o banco', d: 'Banco ou corretora onde estão os seus investimentos.' },
   { t: 'Autorize no app dele', d: 'A autorização é sua e vale só para leitura.' },
@@ -22,22 +31,25 @@ const passos = [
     <div class="cvz__miolo">
       <h1 id="cvz-titulo" class="cvz__titulo">Conecte <br>seu banco.</h1>
       <p class="cvz__linha">
-        A Redentia lê os seus investimentos pelo Open Finance, testa a carteira em
-        2.000 cenários e avisa quando algo pede você.
+        A Redentia lê os seus investimentos automaticamente, testa a carteira em
+        2.000 cenários e alerta quando algo acontece.
       </p>
 
-      <ul class="cvz__bancos" aria-label="Alguns dos bancos e corretoras que conectam">
-        <li v-for="b in bancos" :key="b.slug" class="cvz__banco" :title="b.name">
-          <ClienteInstLogo :inst="b" :size="32" />
-          <span class="cvz__banco-nome">{{ b.name }}</span>
-        </li>
-      </ul>
+      <!-- os bancos numa fila só: os logos encostados e, ao lado, quem são -->
+      <div class="cvz__bancos">
+        <ul class="cvz__logos" aria-hidden="true">
+          <li v-for="b in bancos" :key="b.slug" class="cvz__logo" :title="b.name">
+            <ClienteInstLogo :inst="b" :size="28" />
+          </li>
+        </ul>
+        <p class="cvz__bancos-txt">{{ quemConecta }}</p>
+      </div>
 
       <div class="cvz__acao">
         <CarteiraConnect @connected="emit('connected')" />
         <p class="cvz__seguro">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6l8-3Z" /><path d="m9 12 2 2 4-4" /></svg>
-          Regulado pelo Banco Central. A Redentia só lê: não movimenta nada.
+          Regulado pelo Banco Central.
         </p>
       </div>
     </div>
@@ -61,13 +73,21 @@ const passos = [
 .cvz__titulo { margin: 0; color: var(--nu-ink); font-size: clamp(52px, 8.4vw, 120px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.96; }
 .cvz__linha { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 640px; color: var(--nu-gray-2); font-size: clamp(18px, 2vw, 22px); font-weight: 500; line-height: 1.5; }
 
-.cvz__bancos { list-style: none; margin: clamp(28px, 4vw, 44px) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
-.cvz__banco {
-  display: inline-flex; align-items: center; gap: 10px;
-  background: var(--nu-white); border-radius: var(--nu-r-pill); padding: 6px 16px 6px 6px;
-  box-shadow: var(--nu-shadow-pos-nav);
+.cvz__bancos { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); }
+.cvz__logos { list-style: none; margin: 0; padding: 0 0 0 8px; display: flex; }
+.cvz__logo {
+  display: grid; place-items: center; width: 44px; height: 44px; margin-left: -8px;
+  border-radius: 50%; overflow: hidden; background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-cream), var(--nu-shadow-pos-nav);
+  transition: transform .2s cubic-bezier(.22, 1, .36, 1);
 }
-.cvz__banco-nome { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
+.cvz__logo :deep(.cil) { border: 0; border-radius: 7px; }
+@media (max-width: 420px) {
+  .cvz__logo { width: 38px; height: 38px; margin-left: -9px; }
+  .cvz__logo :deep(.cil) { width: 24px !important; height: 24px !important; }
+}
+.cvz__logo:hover { transform: translateY(-3px); }
+.cvz__bancos-txt { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+@media (prefers-reduced-motion: reduce) { .cvz__logo { transition: none; } }
 
 .cvz__acao { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin-top: clamp(28px, 4vw, 40px); }
 .cvz__seguro { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
