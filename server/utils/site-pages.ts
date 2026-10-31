@@ -563,58 +563,75 @@ async function historicoDeProventos(base: string, ticker: string): Promise<unkno
 async function historicosEmFila(
   base: string,
   candidatos: readonly QuantoRendeTicker[],
-): Promise<Record<string, unknown[] | null> | null> {
+): Promise<{ historicos: Record<string, unknown[] | null>; falhas: number }> {
   const historicos: Record<string, unknown[] | null> = {}
-  const limiteFalhas = Math.floor(candidatos.length * 0.05)
   let cursor = 0
   let falhas = 0
-  let abortou = false
   async function worker() {
-    while (!abortou && cursor < candidatos.length) {
+    while (cursor < candidatos.length) {
       const ticker = candidatos[cursor++]!.ticker
       const rows = await historicoDeProventos(base, ticker)
       historicos[ticker] = rows
-      if (rows == null) {
-        falhas++
-        if (falhas > limiteFalhas) abortou = true
-      }
+      if (rows == null) falhas++
     }
   }
   const n = Math.min(QUANTO_RENDE_SITEMAP_CONCORRENCIA, candidatos.length)
   await Promise.all(Array.from({ length: n }, () => worker()))
-  if (abortou) return null
-  return historicos
+  return { historicos, falhas }
+}
+
+export interface QuantoRendeTickersCache {
+  tickers: QuantoRendeTicker[]
+  /** false = alguma leitura falhou; não cachear, e o XML sai sem cache de borda */
+  completo: boolean
+}
+
+let geracaoQuantoRendeCompleta = true
+
+/** A rota do sitemap lê isto depois de getSiteSections. */
+export function quantoRendeGeracaoCompleta(): boolean {
+  return geracaoQuantoRendeCompleta
+}
+
+export function resetQuantoRendeGeracao(): void {
+  geracaoQuantoRendeCompleta = true
 }
 
 /**
  * /quanto-rende/{TICKER}: candidatos de count_12m, confirmados pelo histórico.
  * count_12m conta amortização; a página 404a nesse caso. O histórico é o de
- * GET /dividends/{TICKER}, a mesma leitura da página. Cache de 12 h. Mais de
- * 5% de falha de rede não grava a lista: um buraco cacheado por 12 h some
- * com pagadoras de verdade. Sem fallback de clássicos.
+ * GET /dividends/{TICKER}, a mesma leitura da página. Cache de 12 h só quando
+ * toda a fila respondeu. Falha de rede tira o ticker desta resposta e não
+ * grava o buraco por 12 h. Sem fallback de clássicos.
  */
 const fetchQuantoRendeTickers = defineCachedFunction(
-  async (): Promise<QuantoRendeTicker[]> => {
+  async (): Promise<QuantoRendeTickersCache> => {
     try {
       const res = await $fetch<{ data?: DividendTickerRow[] }>('/dividends/tickers', {
         baseURL: backendBase(),
-        timeout: 20_000,
+        timeout: 25_000,
       })
       const candidatos = tickersDePaginaQuantoRende(Array.isArray(res?.data) ? res.data : [])
-      if (!candidatos.length) return []
-      const historicos = await historicosEmFila(backendBase(), candidatos)
-      if (!historicos) return []
-      return filtrarTickersComRenda(candidatos, historicos, spISODate())
+      if (!candidatos.length) {
+        geracaoQuantoRendeCompleta = false
+        return { tickers: [], completo: false }
+      }
+      const { historicos, falhas } = await historicosEmFila(backendBase(), candidatos)
+      const tickers = filtrarTickersComRenda(candidatos, historicos, spISODate())
+      const completo = falhas === 0
+      geracaoQuantoRendeCompleta = completo
+      return { tickers, completo }
     } catch {
-      return []
+      geracaoQuantoRendeCompleta = false
+      return { tickers: [], completo: false }
     }
   },
   {
-    name: 'site-pages-quanto-rende-v2',
+    name: 'site-pages-quanto-rende-v3',
     maxAge: QUANTO_RENDE_SITEMAP_MAX_AGE,
     swr: true,
     getKey: () => 'all',
-    validate: (entry) => Array.isArray(entry.value) && entry.value.length > 0,
+    validate: (entry) => entry.value?.completo === true && Array.isArray(entry.value.tickers) && entry.value.tickers.length > 0,
   },
 )
 
@@ -711,7 +728,8 @@ function glossarioPages(): SitePage[] {
  * seção a seção (e corta a cauda de ativos).
  */
 export async function getSiteSections(): Promise<SiteSection[]> {
-  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews, quantoRendeCru, quantoRendeTesouroCru] = await Promise.all([
+  resetQuantoRendeGeracao()
+  const [teses, ativos, tesouro, cripto, dividendosCru, universoCru, latestNews, quantoRendePacote, quantoRendeTesouroCru] = await Promise.all([
     fetchThesisPages(),
     fetchAssetPages(),
     fetchTesouroPages(),
@@ -722,6 +740,7 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     fetchQuantoRendeTickers(),
     fetchQuantoRendeTesouroRows(),
   ])
+  const quantoRendeCru = quantoRendePacote.tickers
 
   // Datas do DADO (não do calendário): pregão de cada ativo e o mais recente
   // de todos, que é de onde saem a home e os 22 rankings.
