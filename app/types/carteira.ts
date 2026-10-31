@@ -12,6 +12,7 @@
  */
 import type { NuDir } from '~/types/market'
 import type { HomeChartVM } from '~/types/home'
+import type { ResumoDoDia } from '~/utils/diaDaCarteira'
 
 /* ————— shapes da API ————— */
 
@@ -279,6 +280,8 @@ export interface CarteiraResumoVM {
   movLabel: string | null // 'últimos 12 meses' (janela honesta do fetch)
   /** pontos de atenção do Raio-X (0 = estado positivo) — null = raio-x indisponível */
   atencao: number | null
+  /** o dia da carteira para o topo da home (utils/diaDaCarteira.ts) — null sem carteira */
+  dia?: ResumoDoDia | null
 }
 
 /** Payload único do useAsyncData da /carteira. */

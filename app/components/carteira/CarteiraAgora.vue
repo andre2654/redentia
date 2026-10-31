@@ -8,7 +8,8 @@
 // (utils/pregao.ts) e os números do /portfolio/today que o useCarteira já
 // trouxe. Nenhum número inventado: sem /today, a frase não afirma nada.
 //
-// A pílula tem o próprio olho (escondida a cada abertura, como no app). O olho
+// A pílula tem o próprio olho: abre escondida, como no app, e o "mostrar"
+// vale para a visita inteira, o mesmo da home (useValoresVisiveis). O olho
 // global (useHiddenValues) segue valendo para os detalhes de baixo.
 //
 // Logo abaixo da pílula, as contas do Open Finance (pedido do dono, 31/10/2026):
@@ -51,7 +52,7 @@ const frase = computed(() => fraseDaCarteira({
   alerta: props.agora.alerta ? { nome: props.agora.alerta.nome, pct: props.agora.alerta.pct } : null,
 }))
 
-const revelado = ref(false)
+const { visiveis: revelado, alternar: alternarRevelado } = useValoresVisiveis()
 const temDia = computed(() => !!props.agora.diaValor)
 const rotulo = computed(() => rotuloDaPilula(quando.value))
 
@@ -83,7 +84,7 @@ const porque = computed(() => {
         :class="revelado ? `cag__pilula--${agora.diaDir}` : 'cag__pilula--oculta'"
         :aria-pressed="revelado"
         :aria-label="revelado ? `Resultado ${rotulo}: ${agora.diaValor}, ${agora.diaPct}. Esconder.` : `Mostrar o resultado ${rotulo === 'hoje' ? 'de hoje' : `de ${rotulo}`}`"
-        @click="revelado = !revelado"
+        @click="alternarRevelado"
       >
         <span class="cag__pilula-valor">{{ revelado ? agora.diaValor : 'R$ •••••' }}</span>
         <span v-if="revelado && agora.diaPct" class="cag__pilula-pct">{{ agora.diaPct }}</span>
@@ -94,7 +95,7 @@ const porque = computed(() => {
         class="cag__olho"
         :aria-label="revelado ? 'Esconder os valores' : 'Mostrar os valores'"
         :aria-pressed="revelado"
-        @click="revelado = !revelado"
+        @click="alternarRevelado"
       >
         <svg v-if="revelado" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
         <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>

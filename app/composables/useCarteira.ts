@@ -1020,6 +1020,15 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     movCount: movements ? movements.allEvents.length : null,
     movLabel: movements ? 'últimos 12 meses' : null,
     atencao: raiox ? raiox.attention : null,
+    // o topo da home (31/10/2026): o dia contra a bolsa no MESMO dia de preço,
+    // quem pesou, a renda fixa e o provento do dia
+    dia: montarResumoDoDia({
+      today,
+      posicoes: rows,
+      total: totalValue,
+      ibov: ibov12m.length ? ibov12m : null,
+      income,
+    }),
   }
 }
 
