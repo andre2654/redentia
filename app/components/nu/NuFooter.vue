@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Footer Nu — navy: 2 cards de produto, a marca com redes e contato ao lado das
+// Footer Nu — navy: a marca com redes e contato ao lado das
 // colunas de links, e embaixo a cordilheira do Ibovespa (NuFooterCordilheira),
 // com a frase grande no céu e o copyright na base da serra.
 // Redesenho do dono em 20/10/2026 ("deixar meu footer mais foda", com rodapés
@@ -9,16 +9,14 @@
 // das páginas que já têm o formulário delas: o /guias, que fecha com a faixa
 // azul logo acima do rodapé, e a preço teto, que tem o bloco no resultado e o
 // veto do dono (o rodapé dela segue como estava).
+// Em 31/10/2026 o dono tirou os dois cards de produto ("Conheça outras
+// maneiras de usar a Redentia", grandes demais) e o preço da frase da marca.
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
 
 const route = useRoute()
 const { reabrir } = useConsent()
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const assinaturaNoRodape = computed(() => newsletterLigada && !rodapeSemAssinatura(route.path))
-const CARDS = [
-  { title: 'Redentia AI', desc: 'Seu assistente de investimentos, disponível 24h para qualquer pergunta.', to: '/busca' },
-  { title: 'Redentia Calculadoras', desc: 'Preço teto, juros compostos e renda passiva: resultados em segundos.', to: '/calculadoras' },
-]
 // REDISTRIBUIÇÃO DE LINK INTERNO (03/08/2026). O footer é sitewide, então é o
 // maior distribuidor de equity do site, e estava mal alocado:
 //  - "Ações" apontava pro hardcoded /asset/PETR4, URL que nem aparece no
@@ -47,19 +45,6 @@ const COLUMNS = [
 <template>
   <footer class="nuf">
     <div class="nuf__in">
-      <div class="nuf__top">
-        <h2 class="nuf__title">Conheça outras maneiras de usar a Redentia</h2>
-        <div class="nuf__cards">
-          <NuxtLink v-for="c in CARDS" :key="c.title" :to="c.to" class="nuf__card">
-            <span class="nuf__card-title">{{ c.title }}</span>
-            <span class="nuf__card-desc">{{ c.desc }}</span>
-            <span class="nuf__card-arrow">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-            </span>
-          </NuxtLink>
-        </div>
-      </div>
-
       <section v-if="assinaturaNoRodape" id="newsletter" class="nuf__news" aria-labelledby="nuf-news-titulo">
         <div class="nuf__news-texto">
           <h2 id="nuf-news-titulo" class="nuf__news-titulo">O mercado da semana, toda sexta.</h2>
@@ -71,7 +56,7 @@ const COLUMNS = [
       <div class="nuf__mapa">
         <div class="nuf__marca">
           <div class="nuf__marca-nome"><img src="/logo-branca.svg" alt="" class="nuf__marca-logo">Redentia</div>
-          <p class="nuf__marca-frase">Mercado em tempo real, teses e calculadoras grátis para quem investe no Brasil. E a sua carteira testada em 2.000 cenários, por R$ 19,99 por mês.</p>
+          <p class="nuf__marca-frase">Mercado em tempo real, teses e calculadoras grátis para quem investe no Brasil.</p>
           <div class="nuf__social-row" aria-label="Redes sociais">
             <a href="https://www.linkedin.com/company/redentia" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="LinkedIn"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M7 10v7M7 6.5v.01M11 17v-4a2 2 0 0 1 4 0v4" /></svg></a>
             <a href="https://www.instagram.com/redentia.app/" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="Instagram"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5" /><circle cx="12" cy="12" r="3.6" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>
@@ -114,28 +99,6 @@ const COLUMNS = [
 <style scoped>
 .nuf { --pad: clamp(22px, 5.5vw, 80px); position: relative; background: var(--nu-navy); padding-top: clamp(64px, 8vw, 110px); overflow: hidden; }
 .nuf__in { padding: 0 var(--pad); }
-.nuf__top { display: flex; gap: clamp(28px, 5vw, 70px); align-items: flex-start; flex-wrap: wrap; }
-.nuf__title {
-  margin: 0; flex: 1 1 240px; min-width: min(220px, 100%); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14;
-}
-.nuf__cards {
-  flex: 2.4 1 480px; min-width: min(320px, 100%);
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;
-}
-.nuf__card {
-  background: var(--nu-navy-2); border-radius: var(--nu-r-panel); padding: 30px;
-  display: flex; flex-direction: column; min-height: 290px;
-  transition: background .2s, transform .18s;
-}
-.nuf__card:hover { background: var(--nu-navy-3); transform: translateY(-3px); }
-.nuf__card-title { color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; }
-.nuf__card-desc { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; margin-top: 12px; max-width: 320px; }
-.nuf__card-arrow {
-  margin-top: auto; width: 46px; height: 46px; border-radius: 50%; background: var(--nu-blue);
-  display: flex; align-items: center; justify-content: center;
-}
-
 /* a assinatura da newsletter: o painel navy-2 dos cards, de ponta a ponta */
 .nuf__news {
   display: flex; gap: clamp(24px, 4vw, 64px); align-items: center; flex-wrap: wrap;
@@ -146,6 +109,8 @@ const COLUMNS = [
 .nuf__news-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.14; }
 .nuf__news-sub { margin: 12px 0 0; max-width: 52ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .nuf__news-form { flex: 1 1 340px; min-width: min(280px, 100%); }
+/* o que abre o rodapé não leva margem por cima (os cards de produto saíram em 31/10/2026) */
+.nuf__in > :first-child { margin-top: 0; }
 
 /* a marca à esquerda, as colunas à direita */
 .nuf__mapa {
