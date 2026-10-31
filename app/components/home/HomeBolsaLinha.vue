@@ -55,8 +55,8 @@ onMounted(() => {
 onBeforeUnmount(() => observador?.disconnect())
 
 // a mesma altura em toda largura: a caixa tem 240 no CSS e nada pula ao medir
-const ALTURA = 240
-const M = { topo: 16, dir: 72, base: 30, esq: 2 }
+const ALTURA = 340
+const M = { topo: 40, dir: 96, base: 30, esq: 2 }
 const geo = computed(() => {
   const s = serie.value
   if (s.length < 2) return null
@@ -92,6 +92,15 @@ const marcas = computed(() => {
   }
   const s = serie.value
   return [{ x: 0, t: s[0]!.rotulo, ancora: 'start' }, { x: s[s.length - 1]!.x, t: s[s.length - 1]!.rotulo, ancora: 'end' }]
+})
+
+// a máxima e a mínima do dia, marcadas na linha
+const extremos = computed(() => {
+  const s = serie.value
+  if (s.length < 3) return []
+  const max = s.reduce((a, b) => (b.v > a.v ? b : a))
+  const min = s.reduce((a, b) => (b.v < a.v ? b : a))
+  return [{ tipo: 'max' as const, ...max }, { tipo: 'min' as const, ...min }]
 })
 
 // a leitura: onde está a linha da Redentia e que hora ela está lendo
@@ -162,7 +171,7 @@ const resumo = computed(() => {
       <svg v-if="geo" :width="largura" :height="ALTURA" :viewBox="`0 0 ${largura} ${ALTURA}`" class="hbl__svg" aria-hidden="true">
         <defs>
           <linearGradient id="hbl-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" :stop-color="cor" stop-opacity="0.16" />
+            <stop offset="0" :stop-color="cor" stop-opacity="0.38" />
             <stop offset="1" :stop-color="cor" stop-opacity="0" />
           </linearGradient>
         </defs>
@@ -174,13 +183,21 @@ const resumo = computed(() => {
         <clipPath id="hbl-lido"><rect x="0" y="0" :width="leitura ? leitura.x : largura" :height="ALTURA" /></clipPath>
         <path :d="geo.area" fill="url(#hbl-area)" :clip-path="leitura ? 'url(#hbl-lido)' : undefined" />
         <!-- na leitura, o que falta ler fica apagado e o que já foi lido acende -->
-        <path v-if="leitura" :d="geo.linha" fill="none" class="hbl__apagada" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
-        <path :d="geo.linha" fill="none" :stroke="cor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" :clip-path="leitura ? 'url(#hbl-lido)' : undefined" />
+        <path v-if="leitura" :d="geo.linha" fill="none" class="hbl__apagada" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+        <path :d="geo.linha" fill="none" :stroke="cor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" class="hbl__linha" :style="{ color: cor }" :clip-path="leitura ? 'url(#hbl-lido)' : undefined" />
+        <!-- a máxima e a mínima do dia -->
+        <template v-for="e in extremos" :key="e.tipo">
+          <template v-if="!leitura || leitura.x >= geo.X(e.x)">
+            <circle :cx="geo.X(e.x)" :cy="geo.Y(e.v)" r="3.5" :fill="cor" />
+            <text :x="geo.X(e.x)" :y="e.tipo === 'max' ? geo.Y(e.v) - 12 : geo.Y(e.v) + 20" :text-anchor="geo.X(e.x) < 70 ? 'start' : 'middle'" class="hbl__extremo">{{ e.tipo === 'max' ? 'máxima' : 'mínima' }} {{ pts(e.v) }} · {{ e.rotulo }}</text>
+          </template>
+        </template>
         <!-- a ponta: o ponto com o anel de creme e o valor -->
         <template v-if="!leitura || leitura.x >= geo.X(geo.ultimo.x)">
           <circle :cx="geo.X(geo.ultimo.x)" :cy="geo.Y(geo.ultimo.v)" r="6" class="hbl__anel" />
           <circle :cx="geo.X(geo.ultimo.x)" :cy="geo.Y(geo.ultimo.v)" r="4" :fill="cor" />
-          <text :x="geo.X(geo.ultimo.x) + 10" :y="geo.Y(geo.ultimo.v) + 4" class="hbl__fim">{{ pts(geo.ultimo.v) }}</text>
+          <text :x="geo.X(geo.ultimo.x) + 12" :y="geo.Y(geo.ultimo.v) - 2" class="hbl__fim">{{ pts(geo.ultimo.v) }}</text>
+          <text v-if="referencia != null" :x="geo.X(geo.ultimo.x) + 12" :y="geo.Y(geo.ultimo.v) + 18" class="hbl__fim-pct" :fill="cor">{{ pct((geo.ultimo.v / referencia - 1) * 100) }}</text>
         </template>
         <!-- o eixo do tempo -->
         <line :x1="M.esq" :x2="M.esq + geo.w" :y1="geo.base" :y2="geo.base" class="hbl__eixo" />
@@ -209,12 +226,16 @@ const resumo = computed(() => {
 <style scoped>
 .hbl { margin: 0; min-width: 0; }
 .hbl__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.hbl__caixa { position: relative; height: 240px; touch-action: pan-y; outline: none; border-radius: 8px; }
+.hbl__caixa { position: relative; height: 340px; touch-action: pan-y; outline: none; border-radius: 8px; }
 .hbl__caixa:focus-visible { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
 .hbl__svg { display: block; overflow: visible; }
 .hbl__ref { stroke: var(--nu-cream-text-45); stroke-width: 1; stroke-dasharray: 3 4; }
 .hbl__ref-txt, .hbl__marca { fill: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
-.hbl__fim { fill: var(--nu-cream-text); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbl__fim { fill: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbl__fim-pct { font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+/* o brilho na cor do sentido do dia */
+.hbl__linha { filter: drop-shadow(0 0 8px currentColor); }
+.hbl__extremo { fill: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
 .hbl__eixo { stroke: var(--nu-cream-text-12); stroke-width: 1; }
 .hbl__anel { fill: var(--nu-navy); }
 .hbl__cursor { stroke: var(--nu-cream-text-45); stroke-width: 1; }

@@ -304,7 +304,7 @@ const quandoDasListas = computed(() => {
 .hbo__ind-legenda { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 500; }
 
 /* o pregão e o botão da leitura */
-.hbo__pregao { margin-top: clamp(36px, 4vw, 48px); max-width: 980px; }
+.hbo__pregao { margin-top: clamp(40px, 5vw, 60px); }
 .hbo__ler-dia { margin-top: 20px; }
 .hbo__lendo { margin: 20px 0 0; min-height: 52px; display: flex; align-items: center; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
 
