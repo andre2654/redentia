@@ -32,8 +32,16 @@ defineProps<{ pendente?: boolean }>()
     </AssinaturaVitrine>
 
     <div class="apw__beneficios">
-      <AssinaturaBeneficios />
+      <AssinaturaBeneficios :conectar="!pendente" />
     </div>
+
+    <!-- as seções que prendem até conectar: cada uma termina no "Conectar carteira" (o quiz) -->
+    <template v-if="!pendente">
+      <AssinaturaAntesDepois />
+      <AssinaturaSeguranca />
+      <AssinaturaPerguntas />
+      <AssinaturaFecho />
+    </template>
   </div>
 </template>
 

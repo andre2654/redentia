@@ -8,7 +8,9 @@
 //  3. Responde com os seus números (uma conversa de exemplo, sem número);
 //  4. Chama só quando importa (os dois estados do Agora).
 // Nada aqui recomenda: a IA explica a carteira, não diz o que comprar.
-withDefaults(defineProps<{ titulo?: boolean }>(), { titulo: true })
+// Logo depois, "deixe maior": dois por linha, as telas maiores, e no fim o
+// "Conectar carteira" (todas as seções do /assinar terminam nele).
+withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: true, conectar: false })
 
 const BANCOS = [
   { nome: 'Nubank', logo: '/icons/logo-nubank.webp' },
@@ -22,6 +24,7 @@ const BANCOS = [
 <template>
   <section class="abn" aria-labelledby="abn-titulo">
     <h2 v-if="titulo" id="abn-titulo" class="abn__titulo">O que vem <br>na assinatura.</h2>
+    <p v-if="titulo" class="abn__dek">Quatro coisas, todos os dias, sem você precisar abrir planilha nenhuma.</p>
     <h2 v-else id="abn-titulo" class="abn__sr">O que vem na assinatura</h2>
 
     <div class="abn__grade">
@@ -78,34 +81,40 @@ const BANCOS = [
         <p class="abn__texto">Abra e saiba numa frase se está tudo normal. Quando algo pede você, ela avisa na hora. No resto do tempo, silêncio.</p>
       </article>
     </div>
+
+    <div v-if="conectar" class="abn__acao">
+      <AssinaturaConectar origem="beneficios" />
+    </div>
   </section>
 </template>
 
 <style scoped>
 .abn__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
+.abn__dek { margin: 18px 0 0; max-width: 560px; color: var(--nu-gray-2); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
+.abn__acao { display: flex; justify-content: center; margin-top: clamp(36px, 4.4vw, 56px); }
 .abn__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .abn__grade {
-  display: grid; gap: 18px; margin-top: clamp(36px, 4.5vw, 56px);
-  grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
+  display: grid; gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(36px, 4.5vw, 56px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.abn__cartao { display: flex; flex-direction: column; padding: 14px 14px 28px; border-radius: var(--nu-r-card-lg); background: var(--nu-cream); }
+.abn__cartao { display: flex; flex-direction: column; padding: 16px 16px 34px; border-radius: var(--nu-r-card-lg); background: var(--nu-cream); }
 
 /* a tela preta do app no alto de cada cartão, sempre da mesma altura */
 .abn__tela {
   position: relative; display: flex; flex-direction: column; justify-content: center;
-  aspect-ratio: 16 / 13; overflow: hidden; border-radius: 18px; background: var(--nu-agora-bg); color: var(--nu-agora-texto);
+  aspect-ratio: 16 / 10; overflow: hidden; border-radius: 20px; background: var(--nu-agora-bg); color: var(--nu-agora-texto);
 }
-.abn__nome { margin: 24px 14px 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
-.abn__texto { margin: 10px 14px 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.abn__nome { margin: 28px 18px 0; color: var(--nu-ink); font-size: clamp(26px, 2.6vw, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+.abn__texto { margin: 12px 18px 0; max-width: 52ch; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.55; }
 
 /* 1 · os bancos */
-.abn__bancos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 6px; margin: 0; padding: 0 14px; list-style: none; }
+.abn__bancos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 8px; margin: 0 auto; padding: 0 18px; width: min(100%, 460px); list-style: none; }
 .abn__bancos li { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
-.abn__bancos img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.abn__bancos img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
 .abn__bancos span { color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; text-align: center; }
 .abn__mais b {
-  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+  display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%;
   background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums;
 }
 
@@ -116,23 +125,27 @@ const BANCOS = [
 .abn__tela--leque :deep(.hlq) { aspect-ratio: auto; flex: 1; min-height: 0; margin: 6px 0; }
 
 /* 3 · a conversa */
-.abn__tela--conversa { gap: 12px; padding: 18px; }
-.abn__fala { margin: 0; padding: 12px 14px; border-radius: 16px; background: var(--nu-agora-cartao); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.abn__tela--conversa { gap: 14px; padding: clamp(18px, 2.4vw, 32px); }
+.abn__fala { margin: 0; padding: 14px 16px; border-radius: 18px; background: var(--nu-agora-cartao); color: var(--nu-agora-texto); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
 .abn__fala--voce { align-self: flex-end; max-width: 82%; background: var(--nu-blue); color: var(--nu-white); font-weight: 700; border-bottom-right-radius: 6px; }
 .abn__resposta { display: flex; align-items: flex-end; gap: 8px; max-width: 92%; }
 .abn__resposta .abn__fala { border-bottom-left-radius: 6px; }
 .abn__marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; background: var(--nu-agora-pilula); color: var(--nu-agora-azul); }
 
 /* 4 · os dois estados */
-.abn__tela--estados { gap: 12px; padding: 16px; }
+.abn__tela--estados { gap: 14px; padding: clamp(18px, 2.4vw, 32px); }
 .abn__estado { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 14px; background: var(--nu-agora-cartao); }
 .abn__estado--aviso { box-shadow: inset 0 0 0 1.5px var(--nu-agora-ambar); }
 .abn__estado-rotulo { font-size: var(--nu-fs-sm); font-weight: 700; }
 .abn__estado-rotulo--verde { color: var(--nu-agora-verde); }
 .abn__estado-rotulo--ambar { color: var(--nu-agora-ambar); }
-.abn__estado-frase { color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+.abn__estado-frase { color: var(--nu-agora-texto); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
 
+@media (max-width: 860px) {
+  .abn__grade { grid-template-columns: minmax(0, 1fr); }
+  .abn__tela { aspect-ratio: 16 / 12; }
+}
 @media (max-width: 760px) {
-  .abn__titulo :deep(br), .abn__titulo br { display: none; }
+  .abn__titulo br { display: none; }
 }
 </style>
