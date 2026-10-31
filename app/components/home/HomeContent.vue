@@ -18,7 +18,7 @@
 //    Sem carteira, vê também os três cartões: é o passo que falta.
 //
 // A ordem, de cima para baixo:
-//   visitante  HomeHeroVisitante → HomeComoFunciona → HomeBolsa → HomeMais → FAQ → HomeFecho
+//   visitante  HomeHeroVisitante → HomeComoFunciona → HomeBolsa → HomeRankings → HomeMais → FAQ → HomeFecho
 //   logado     HomeAgora (tela cheia: o dia, os anéis e três números) → SeguirFaixa → [HomeComoFunciona, sem carteira ou sem assinatura] → HomeMais → FAQ
 // SEO fica na página (index.vue): o head não varia por sessão.
 const { isAuthenticated, clearSession } = useAuthState()
@@ -54,6 +54,8 @@ const mostrarComoFunciona = computed(() =>
     <!-- a bolsa do dia fica para o visitante; o logado tem o Ibovespa no alto da
          tela preta (pedido do dono, 31/10/2026) -->
     <HomeBolsa v-if="!isAuthenticated" />
+    <!-- os rankings: as altas e baixas do dia e os da bolsa, com o "Ver todos" -->
+    <HomeRankings v-if="!isAuthenticated" />
 
     <HomeMais />
 

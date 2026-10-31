@@ -12,9 +12,8 @@
 //  - "O dia no mercado.": três cartões do fechamento da IA, não quatro ("A
 //    leitura", a mais técnica, fica no resumo inteiro), cada um com o rótulo
 //    do que é, e os termos do mercado com a explicação no toque (HomeTermo);
-//  - "Quem mais subiu e caiu.": só entre as 76 empresas do Ibovespa, as que o
-//    iniciante conhece, três de cada lado, o nome da empresa antes do código;
-//    sem abas de classe e sem o preço.
+//  - "Quem mais subiu e caiu." saiu daqui para a seção de baixo, com os
+//    outros rankings (HomeRankings, pedido do dono no mesmo dia).
 // Os números vêm de uma fonte só (useBolsaDoDia, o mesmo do topo de quem
 // assina); o fechamento da IA, do useNuBriefing; dólar e CDI, da faixa do topo.
 //
@@ -163,26 +162,6 @@ function irParaNewsletter(e: MouseEvent) {
   alvo.querySelector<HTMLInputElement>('input[type="email"]')?.focus({ preventScroll: true })
 }
 
-// as altas e as baixas entre as empresas do Ibovespa, três de cada lado, uma linha por empresa
-const listas = computed(() => {
-  const acoes = bolsa.value?.acoes ?? []
-  if (acoes.length < 6) return null
-  const umaPorEmpresa = (lista: typeof acoes) => {
-    const vistas = new Set<string>()
-    return lista.filter((a) => (vistas.has(a.empresa) ? false : (vistas.add(a.empresa), true))).slice(0, 3)
-  }
-  const ordem = [...acoes].sort((a, b) => b.pct - a.pct)
-  return {
-    altas: umaPorEmpresa(ordem.filter((a) => a.pct > 0)),
-    baixas: umaPorEmpresa([...ordem].reverse().filter((a) => a.pct < 0)),
-  }
-})
-const quandoDasListas = computed(() => {
-  const ib = ibov.value
-  if (!ib) return ''
-  if (aoVivo.value) return 'até agora'
-  return quandoFoi(ib.data, new Date(agora.value)) ?? ''
-})
 </script>
 
 <template>
@@ -270,27 +249,6 @@ const quandoDasListas = computed(() => {
       </div>
     </div>
 
-    <!-- as altas e as baixas entre as maiores empresas -->
-    <div v-if="listas" class="hbo__listas">
-      <h3 class="hbo__listas-titulo">Quem mais subiu e caiu.</h3>
-      <p class="hbo__dia-meta">Entre as {{ bolsa?.acoes.length }} empresas do Ibovespa, {{ quandoDasListas }}.</p>
-      <div class="hbo__grade">
-        <div v-for="lado in (['altas', 'baixas'] as const)" :key="lado" class="hbo__cartao">
-          <span class="hbo__cartao-nome">{{ lado === 'altas' ? 'Maiores altas' : 'Maiores baixas' }}</span>
-          <div class="hbo__linhas">
-            <NuxtLink v-for="(a, i) in listas[lado]" :key="a.ticker" :to="`/asset/${a.ticker}`" class="hbo__linha">
-              <span class="hbo__pos">{{ i + 1 }}</span>
-              <span class="hbo__id">
-                <span class="hbo__empresa">{{ a.empresa }}</span>
-                <span class="hbo__ticker">{{ a.ticker }}</span>
-              </span>
-              <span class="hbo__pct" :class="a.pct < 0 ? 'hbo__pct--down' : 'hbo__pct--up'">{{ comSinal(a.pct) }}</span>
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <NuDayModal
       :open="aberto"
       eyebrow="Resumo do dia · Redentia"
@@ -371,7 +329,7 @@ const quandoDasListas = computed(() => {
 .hbo__dia-titulo:focus { outline: none; }
 /* o resumo da leitura entra de baixo para cima */
 @keyframes hbo-entra { from { opacity: 0; transform: translateY(12px); } }
-.hbo__dia-titulo, .hbo__listas-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.hbo__dia-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .hbo__dia-meta { margin: 10px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
 .hbo__dia-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
 @media (max-width: 900px) { .hbo__dia-grade { grid-template-columns: 1fr; } }
@@ -396,27 +354,6 @@ const quandoDasListas = computed(() => {
 .hbo__ler:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .hbo__ler svg { transition: transform .2s ease; }
 .hbo__ler:hover svg { transform: translateX(3px); }
-
-/* as altas e as baixas: três por lado, o nome da empresa primeiro */
-.hbo__listas { margin-top: clamp(44px, 5vw, 60px); }
-.hbo__grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; margin-top: 24px; }
-.hbo__cartao { background: var(--nu-navy-2); border-radius: var(--nu-r-card-lg); padding: 22px 26px; }
-.hbo__cartao-nome { color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
-.hbo__linhas { margin-top: 10px; }
-.hbo__linha {
-  display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 10px 12px; margin: 0 -12px;
-  border-top: 1px solid var(--nu-cream-text-12); border-radius: var(--nu-r-card); transition: background .16s;
-}
-.hbo__linhas > .hbo__linha:first-child { border-top: none; }
-.hbo__linha:hover { background: var(--nu-cream-text-08); }
-.hbo__linha:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
-.hbo__pos { width: 18px; flex-shrink: 0; color: var(--nu-cream-text-45); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
-.hbo__id { flex: 1; min-width: 0; overflow: hidden; }
-.hbo__empresa { display: block; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hbo__ticker { display: block; margin-top: 1px; color: var(--nu-cream-text-50); font-size: var(--nu-fs-dense); font-weight: 500; white-space: nowrap; }
-.hbo__pct { flex-shrink: 0; min-width: 72px; text-align: right; font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.hbo__pct--up { color: var(--nu-green-soft); }
-.hbo__pct--down { color: var(--nu-red-soft); }
 
 /* abaixo de 1000 px o resumo vem embaixo do gráfico, que encolhe */
 @media (max-width: 999px) {
