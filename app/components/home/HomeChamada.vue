@@ -3,7 +3,8 @@
 // que tem IA, que testamos os cenários, que pegamos a carteira do cara em
 // qualquer um dos bancos (e usar a imagem dos bancos) e mostrar que tem app
 // iPhone, Mac e Watch". Um botão só, com os logos dos bancos dentro dele (a
-// carteira vem de qualquer banco), o rótulo com a IA, a letra miúda com o
+// carteira vem de qualquer banco), o rótulo "Conectar carteira" (troca do
+// dono no mesmo dia; a IA fica na linha de apoio do herói), a letra miúda com o
 // preço do plano e o Open Finance, e a linha dos aparelhos.
 //
 // Destino: /assinar, a página do plano único (R$ 19,99 por mês, 3 dias
@@ -41,7 +42,7 @@ const BANCOS = [
           class="hch__banco" :class="{ 'hch__banco--extra': i >= 3 }" :style="{ zIndex: BANCOS.length - i }"
         >
       </span>
-      <span class="hch__rotulo">Testar minha carteira<span class="hch__ia"> com a IA</span></span>
+      <span class="hch__rotulo">Conectar carteira</span>
       <svg class="hch__seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
     </NuxtLink>
 
@@ -112,7 +113,7 @@ const BANCOS = [
 @media (max-width: 560px) {
   .hch { align-self: stretch; }
   .hch__botao { width: 100%; justify-content: center; gap: 12px; padding: 10px 20px 10px 10px; font-size: var(--nu-fs-md); }
-  .hch__ia, .hch__banco--extra { display: none; }
+  .hch__banco--extra { display: none; }
   .hch__banco { width: 30px; height: 30px; }
   /* o preço numa linha, o banco na outra; os aparelhos em cima da frase deles */
   .hch__letra strong { display: block; }

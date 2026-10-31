@@ -11,6 +11,9 @@
 //    "Tudo normal.").
 // Saiu daqui a barra "Pergunte à Redentia" com as ações flutuando
 // (MercadoHeroPergunta, MercadoHeroAtivos), a pedido do dono.
+// Desde 31/10/2026 (pedido do dono, "pra ocupar menos espaço"), no
+// computador o texto fica à esquerda e os aparelhos à direita, numa dobra só;
+// no celular, um embaixo do outro.
 // O H1 é o único da página. "Mercado hoje" deixou de abrir o título: 84% dos
 // cliques do Google na home vêm da busca "redentia" (GSC, 90 dias até
 // 28/10/2026), gente que já ouviu falar e quer saber o que é.
@@ -19,12 +22,14 @@
 <template>
   <section class="hhv" aria-labelledby="hhv-titulo">
     <div class="hhv__luz" aria-hidden="true" />
-    <p class="hhv__produto"><img src="/logo-azul.svg" alt="" width="22" height="22">Redentia</p>
-    <h1 id="hhv-titulo" class="hhv__titulo">Simulamos a sua carteira em 2.000 cenários <br>para ver se ela é boa.</h1>
-    <p class="hhv__dek">
-      Você conecta o banco uma vez. A IA testa a carteira nos próximos cinco anos, vigia todo dia e só chama quando algo pede você.
-    </p>
-    <HomeChamada class="hhv__chamada" />
+    <div class="hhv__texto">
+      <p class="hhv__produto"><img src="/logo-azul.svg" alt="" width="22" height="22">Redentia</p>
+      <h1 id="hhv-titulo" class="hhv__titulo">Simulamos a sua carteira em 2.000 cenários para ver se ela é boa.</h1>
+      <p class="hhv__dek">
+        Você conecta o banco uma vez. A IA testa a carteira nos próximos cinco anos, vigia todo dia e só chama quando algo pede você.
+      </p>
+      <HomeChamada class="hhv__chamada" :centro="false" />
+    </div>
     <div class="hhv__aparelhos">
       <HomeAparelhos />
     </div>
@@ -34,9 +39,22 @@
 <style scoped>
 .hhv {
   position: relative; isolation: isolate; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; text-align: center;
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: center;
   padding: clamp(36px, 4.4vw, 64px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 88px);
   background: var(--nu-cream);
+}
+.hhv__texto { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+/* computador: o texto à esquerda e os aparelhos à direita, numa dobra só */
+@media (min-width: 1024px) {
+  .hhv {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); column-gap: clamp(32px, 3.4vw, 64px);
+    min-height: min(720px, calc(100svh - 128px));
+  }
+  /* os aparelhos maiores: a coluna da direita inteira e um respiro a mais
+     para a direita, até o limite do padding da seção */
+  .hhv__aparelhos { margin-top: 0 !important; margin-right: calc(-1 * clamp(0px, 2.5vw, 48px)); width: auto; }
+  .hhv__aparelhos :deep(.hap) { width: 100%; max-width: 980px; }
+  .hhv__luz { left: 74%; bottom: 0; width: min(900px, 70vw); height: 90%; }
 }
 /* uma luz branca atrás dos aparelhos, para o preto das telas não pesar no creme */
 .hhv__luz {
@@ -50,11 +68,11 @@
   color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700;
 }
 .hhv__titulo {
-  margin: 14px 0 0; color: var(--nu-ink);
-  font-size: clamp(38px, 4.2vw, 60px); font-weight: 800; letter-spacing: -0.05em; line-height: 1;
+  margin: 14px 0 0; max-width: 15ch; color: var(--nu-ink);
+  font-size: clamp(38px, 4.2vw, 60px); font-weight: 800; letter-spacing: -0.05em; line-height: 1; text-wrap: balance;
 }
 .hhv__dek {
-  margin: 22px 0 0; max-width: 50ch; color: var(--nu-gray-2);
+  margin: 22px 0 0; max-width: 46ch; color: var(--nu-gray-2);
   font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; text-wrap: balance;
 }
 .hhv__chamada { margin-top: clamp(30px, 3.4vw, 40px); }
@@ -66,9 +84,6 @@
 .hhv__aparelhos { animation-delay: .2s; }
 @keyframes hhv-entra { from { opacity: 0; transform: translateY(14px); } }
 
-@media (max-width: 960px) {
-  .hhv__titulo br { display: none; }
-}
 @media (prefers-reduced-motion: reduce) {
   .hhv__dek, .hhv__chamada, .hhv__aparelhos { animation: none; }
 }

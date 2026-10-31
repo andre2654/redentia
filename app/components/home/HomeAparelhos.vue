@@ -23,7 +23,7 @@
       class="hap__mac"
       src="/img/home/mac-simulacao-1640.webp"
       srcset="/img/home/mac-simulacao-820.webp 820w, /img/home/mac-simulacao-1640.webp 1640w"
-      sizes="(max-width: 760px) 92vw, min(58vw, 630px)"
+      sizes="(max-width: 760px) 92vw, (max-width: 1023px) min(58vw, 630px), min(46vw, 740px)"
       width="1640" height="1025" loading="lazy" decoding="async"
       alt="O app da Redentia no Mac, na Simulação: a carteira em 2.000 caminhos, com o otimista, o meio e o pessimista, e quem sofre e por quê."
     >
@@ -31,7 +31,7 @@
       class="hap__watch"
       src="/img/home/watch-detalhes-400.webp"
       srcset="/img/home/watch-detalhes-200.webp 200w, /img/home/watch-detalhes-400.webp 400w"
-      sizes="(max-width: 760px) 30vw, min(13vw, 140px)"
+      sizes="(max-width: 760px) 30vw, (max-width: 1023px) min(13vw, 140px), min(10vw, 170px)"
       width="400" height="490" loading="lazy" decoding="async"
       alt="O app da Redentia no Apple Watch: os anéis do dia, você contra a bolsa. Caiu menos que a bolsa."
     >
@@ -39,7 +39,7 @@
       class="hap__iphone"
       src="/img/home/iphone-detalhes-520.webp"
       srcset="/img/home/iphone-detalhes-260.webp 260w, /img/home/iphone-detalhes-520.webp 520w"
-      sizes="(max-width: 760px) 38vw, min(16vw, 174px)"
+      sizes="(max-width: 760px) 38vw, (max-width: 1023px) min(16vw, 174px), min(13vw, 210px)"
       width="520" height="1099" loading="lazy" decoding="async"
       alt="O app da Redentia no iPhone, em Detalhes: os anéis da semana, o dia contra a bolsa e a carteira."
     >
@@ -47,8 +47,8 @@
 </template>
 
 <style scoped>
-/* Computador: caixa de 100 × 64,4, mais estreita que a coluna do texto
-   (o conjunto acompanha o título, não ocupa a dobra inteira). A janela do Mac
+/* Computador: caixa de 100 × 64,4 na coluna da direita do herói (o texto
+   fica à esquerda, numa dobra só). A janela do Mac
    ocupa 76% da largura no alto; o iPhone desce pela direita e o relógio pela
    esquerda, sobre ela. */
 .hap { position: relative; width: min(820px, 100%); aspect-ratio: 100 / 64.4; margin: 0 auto; }

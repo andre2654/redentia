@@ -75,7 +75,7 @@ test('a chamada única leva ao /assinar e não promete App Store que ainda não 
 test('a home tem um H1 por variante e as três seções que o dono tirou não voltam', () => {
   const visitante = ler('app/components/home/HomeHeroVisitante.vue')
   assert.equal((visitante.match(/<h1\b/g) ?? []).length, 1)
-  assert.match(visitante, /Simulamos a sua carteira em 2\.000 cenários <br>para ver se ela é boa\./)
+  assert.match(visitante, /Simulamos a sua carteira em 2\.000 cenários para ver se ela é boa\./)
   const conteudo = ler('app/components/home/HomeContent.vue')
   for (const saiu of ['MercadoHeroPergunta', 'MercadoCarteiraConectada', 'NuTeseStrip'])
     assert.doesNotMatch(conteudo, new RegExp(`<${saiu}\\b`), saiu)
