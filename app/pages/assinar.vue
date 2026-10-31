@@ -53,13 +53,13 @@ usePageSeo({
 <template>
   <div class="asn">
     <AssinaturaVitrine
-      :eyebrow="pendente ? 'Pagamento pendente' : 'Assinatura Redentia'"
+      :eyebrow="pendente ? 'Pagamento pendente' : ''"
       :modo="pendente ? 'pendente' : 'comecar'"
       :cancelado="cancelado"
     >
       <template #titulo>
         <template v-if="pendente">A cobrança <br>não passou.</template>
-        <template v-else>Sua carteira, <br>vigiada todo dia.</template>
+        <template v-else>Um banco não <br>vê o outro.</template>
       </template>
       <template #dek>
         <template v-if="pendente">
@@ -67,8 +67,8 @@ usePageSeo({
           Nada mais muda.
         </template>
         <template v-else>
-          A Redentia lê seus investimentos em qualquer banco, testa a carteira em
-          2.000 cenários e te avisa quando algo pede você. No resto do tempo, silêncio.
+          A Redentia vê todos, testa a sua carteira em 2.000 cenários e te avisa
+          quando importa.
         </template>
       </template>
     </AssinaturaVitrine>

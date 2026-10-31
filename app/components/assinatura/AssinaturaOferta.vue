@@ -17,6 +17,8 @@ const props = withDefaults(defineProps<{
 const { erro, erroPortal } = useAssinatura()
 const erroVisivel = computed(() => (props.modo === 'pendente' ? erroPortal.value : erro.value))
 const quiz = useQuizAssinatura()
+// o que tira o medo de conectar, em três toques
+const SELOS = ['Leva 1 minuto', 'Regulado pelo Banco Central', 'Só leitura']
 </script>
 
 <template>
@@ -33,7 +35,12 @@ const quiz = useQuizAssinatura()
           <svg class="aof__seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
         </button>
       </div>
-      <p class="aof__leve">Seis perguntas, um minuto.</p>
+      <ul class="aof__selos">
+        <li v-for="s in SELOS" :key="s">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+          {{ s }}
+        </li>
+      </ul>
       <p v-if="erroVisivel" class="aof__erro" role="alert">{{ erroVisivel }}</p>
     </template>
 
@@ -72,8 +79,11 @@ const quiz = useQuizAssinatura()
 .aof__conectar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 .aof__seta { transition: transform .2s; }
 .aof__conectar:hover .aof__seta { transform: translateX(3px); }
-.aof__leve { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.aof--escuro .aof__leve { color: var(--nu-cream-text-55); }
+.aof__selos { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.aof__selos li { display: inline-flex; align-items: center; gap: 6px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.aof__selos svg { color: var(--nu-green); }
+.aof--escuro .aof__selos li { color: var(--nu-cream-text-70); }
+.aof--escuro .aof__selos svg { color: var(--nu-green-soft); }
 
 /* no azul-marinho: os textos em creme */
 .aof--escuro .aof__letra { color: var(--nu-cream-text-55); }

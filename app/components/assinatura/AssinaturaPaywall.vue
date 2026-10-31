@@ -12,7 +12,7 @@ const { primeiraAssinatura } = useAssinatura()
 <template>
   <div class="apw">
     <AssinaturaVitrine
-      :eyebrow="pendente ? 'Pagamento pendente' : 'Sua carteira'"
+      :eyebrow="pendente ? 'Pagamento pendente' : ''"
       :modo="pendente ? 'pendente' : 'comecar'"
     >
       <template #titulo>
@@ -25,8 +25,8 @@ const { primeiraAssinatura } = useAssinatura()
           na hora, com os cenários e a IA.
         </template>
         <template v-else>
-          Abra e saiba se está tudo normal. Embaixo, o que você tem em qualquer banco,
-          os 2.000 cenários dos próximos 5 anos e a IA que responde com os seus números.
+          Todos os bancos somados, 2.000 cenários e uma IA que responde com os seus
+          números.
         </template>
       </template>
     </AssinaturaVitrine>

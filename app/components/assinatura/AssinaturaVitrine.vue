@@ -16,7 +16,7 @@ withDefaults(defineProps<{
   <section class="avt">
     <div class="avt__cols">
       <div class="avt__texto">
-        <span class="avt__eyebrow" :class="{ 'avt__eyebrow--ambar': modo === 'pendente' }">
+        <span v-if="eyebrow" class="avt__eyebrow" :class="{ 'avt__eyebrow--ambar': modo === 'pendente' }">
           <span class="avt__ponto" aria-hidden="true" />{{ eyebrow }}
         </span>
         <h1 class="avt__titulo"><slot name="titulo" /></h1>
@@ -43,7 +43,8 @@ withDefaults(defineProps<{
 .avt__ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-blue-soft); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-blue-soft) 22%, transparent); }
 .avt__eyebrow--ambar { color: var(--nu-amber-fill); }
 .avt__eyebrow--ambar .avt__ponto { background: var(--nu-amber-fill); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-amber-fill) 22%, transparent); }
-.avt__titulo { margin: 18px 0 0; color: var(--nu-cream-text); font-size: clamp(42px, 5vw, 72px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.98; }
+.avt__eyebrow + .avt__titulo { margin-top: 18px; }
+.avt__titulo { margin: 0; color: var(--nu-cream-text); font-size: clamp(42px, 5vw, 72px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.98; }
 .avt__dek { margin: clamp(18px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-cream-text-70); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }
 .avt__oferta { margin-top: clamp(28px, 3.6vw, 40px); }
 
