@@ -293,6 +293,10 @@ export default defineNuxtConfig({
     // useEvent() fora de handler: o server/plugins/backend-front-key.ts lê o
     // request em curso de dentro do $fetch do SSR pra carimbar o IP do visitante.
     experimental: { asyncContext: true },
+    // O sitemap de quanto rende lê o histórico de cada pagador numa requisição,
+    // espaçado para ficar abaixo do limite do backend (~600/min). ~900 leituras
+    // a 7 por segundo cabem em 180s.
+    vercel: { functions: { maxDuration: 180 } },
     // Dev: browser fetches de /api/* vão pro VPS por default (dev funciona sem
     // backend local). Override: NUXT_BACKEND_URL / NUXT_CHAT_SERVICE_URL.
     devProxy: {

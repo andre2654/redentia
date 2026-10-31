@@ -93,6 +93,8 @@ export interface DividendosPayload {
   faq: NuFaqItem[]
   /** simulador de /calculadora/acoes com o ativo preenchido; null se o tipo não é coberto (utils/simulador.ts) */
   simuladorHref: string | null
+  /** /quanto-rende/{TICKER} só com renda em 12 meses; sem isso a página é 404 */
+  quantoRendeHref: string | null
   seo: { title: string; description: string }
 }
 
@@ -595,6 +597,7 @@ function buildPayload(c: Core): DividendosPayload {
     edu,
     faq,
     simuladorHref: simuladorAcoesHref(c.ticker, c.type),
+    quantoRendeHref: c.sum12 > 0 ? `/quanto-rende/${c.ticker}` : null,
     seo: {
       // TITLE NUMÉRICO (03/08/2026). O title genérico custava caro: as 124 URLs
       // de /dividendos e /tesouro somam 18.165 impressões/mês e devolvem 75

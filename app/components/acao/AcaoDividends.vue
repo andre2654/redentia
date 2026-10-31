@@ -13,6 +13,8 @@ const props = defineProps<{
   position: AcaoPosition | null
   /** simulador de /calculadora/acoes com o ativo preenchido; null = tipo não coberto */
   simuladorHref?: string | null
+  /** /quanto-rende/{TICKER} só quando há renda em 12 meses e o tipo tem a página */
+  quantoRendeHref?: string | null
 }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
@@ -44,6 +46,7 @@ const incomePill = computed(() => {
             Ver histórico de dividendos
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </NuxtLink>
+          <NuxtLink v-if="quantoRendeHref" :to="quantoRendeHref" class="adv__cta">Quanto rende um valor</NuxtLink>
           <!--
             "Simulador de dividendos" leva pra DONA do cluster, a
             /calculadora/acoes (bloco DONO DO CLUSTER em

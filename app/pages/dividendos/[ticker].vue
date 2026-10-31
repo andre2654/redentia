@@ -214,6 +214,10 @@ if (data.value) {
              /calculadora/acoes (bloco DONO DO CLUSTER em
              pages/calculadora/acoes.vue). Vem primeiro de propósito. O card de
              DY ao lado segue com a âncora de DY, que é o termo da página dele. -->
+        <NuxtLink v-if="div.quantoRendeHref" :to="div.quantoRendeHref" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
+          <h3 class="dvt__card-link-title">Quanto rende um valor em {{ ticker }}</h3>
+          <p class="dvt__card-p">Os proventos dos últimos 12 meses aplicados a um valor, no preço de hoje</p>
+        </NuxtLink>
         <NuxtLink v-if="div.simuladorHref" :to="div.simuladorHref" class="dvt__card-link" :class="{ 'dvt__card-link--white': crossTone === 'cream' }">
           <h3 class="dvt__card-link-title">Simulador de dividendos</h3>
           <p class="dvt__card-p">Quanto {{ ticker }} teria rendido com os {{ div.isFii ? 'rendimentos' : 'proventos' }} reinvestidos, no histórico real da B3</p>

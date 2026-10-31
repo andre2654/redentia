@@ -54,6 +54,20 @@ if (error.value || !data.value) {
 const titulo = computed(() => data.value!)
 /** 'Tesouro IPCA+ 2029' → 'IPCA+ 2029' (H2 do gráfico, sem repetir a marca) */
 const shortName = computed(() => titulo.value.hero.name.replace(/^Tesouro\s+/i, ''))
+const quantoRendeHref = computed(() => {
+  const t = titulo.value.raw
+  const maturity = t.maturity_date ? t.maturity_date.slice(0, 10) : null
+  const ok = paginaTesouroValida({
+    slug,
+    name: t.name,
+    indexer: t.indexer,
+    rateNumeric: t.rate_numeric,
+    referenceRate: t.reference_rate,
+    maturity,
+    hoje: spISODate(),
+  })
+  return ok ? `/quanto-rende/tesouro/${slug}` : null
+})
 
 const nfBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const sideCards = computed(() => {
@@ -151,6 +165,10 @@ usePageSeo({
         <NuxtLink to="/ranking/tesouro-direto" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Ranking do Tesouro Direto</h3>
           <p class="tsd__card-link-desc">Compare este título com os demais, ordenados pela maior taxa de hoje.</p>
+        </NuxtLink>
+        <NuxtLink v-if="quantoRendeHref" :to="quantoRendeHref" class="tsd__card-link">
+          <h3 class="tsd__card-link-title">Quanto rende um valor neste título</h3>
+          <p class="tsd__card-link-desc">A taxa de hoje aplicada a um valor, com o bruto e o IR quando a conta fecha.</p>
         </NuxtLink>
         <NuxtLink :to="titulo.calcHref" class="tsd__card-link">
           <h3 class="tsd__card-link-title">Simular na calculadora de juros compostos</h3>
