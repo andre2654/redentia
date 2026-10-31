@@ -138,7 +138,10 @@ const detalhes = computed(() => {
           <h1 id="hag-titulo" class="hag__frase">{{ tituloSemAssinatura }}</h1>
           <p class="hag__sub">{{ subSemAssinatura }}</p>
         </div>
-        <HomeChamada tom="escuro" :centro="false" class="hag__chamada" />
+        <HomeChamada
+          tom="escuro" :centro="false" class="hag__chamada"
+          :rotulo="resumo?.state === 'patrimonio' ? (assinatura.primeiraAssinatura.value ? 'Começar 3 dias grátis' : 'Assinar a Redentia') : 'Conectar carteira'"
+        />
       </template>
 
       <!-- sem carteira: o passo que falta, com a mesma chamada do visitante -->
