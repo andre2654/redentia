@@ -24,7 +24,7 @@ defineProps<{
   <div class="ctc" :class="{ 'ctc--cream': tone === 'cream', 'ctc--cards': cardsMobile }">
     <ul v-if="cardsMobile" class="ctc__cards">
       <li v-for="(r, i) in rows" :key="i" class="ctc__card">
-        <p class="ctc__card-head">{{ r[0] }}</p>
+        <p class="ctc__card-head"><span class="ctc__card-kicker">{{ columns[0] }}</span>{{ r[0] }}</p>
         <dl class="ctc__card-grid">
           <div v-for="(cell, j) in r.slice(1)" :key="j" class="ctc__card-item">
             <dt>{{ columns[j + 1] }}</dt>
@@ -86,6 +86,10 @@ defineProps<{
   .ctc__card-head {
     margin: 0 0 10px; color: var(--nu-ink); font-size: var(--nu-fs-md);
     font-weight: 800; font-variant-numeric: tabular-nums;
+  }
+  .ctc__card-kicker {
+    display: block; margin-bottom: 2px; color: var(--nu-gray); font-size: var(--nu-fs-xs);
+    font-weight: 700; letter-spacing: 1px; text-transform: uppercase; line-height: 1.3;
   }
   .ctc__card-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0;
