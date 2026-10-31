@@ -102,6 +102,8 @@ const CORE_PAGES: SitePage[] = [
   ...guideDocPages(),
   { path: '/calculadoras', title: 'Hub de calculadoras', description: 'Todas as calculadoras financeiras gratuitas da Redentia.' },
   { path: '/mcp', title: 'Redentia MCP', description: 'Servidor MCP da Redentia: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
+  // A página do plano único (31/10/2026): R$ 19,99 por mês, 3 dias grátis.
+  { path: '/assinar', title: 'Assinatura Redentia', description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números.', lastmod: '2026-10-31' },
   // Indexável desde 20/10/2026 (decisão do dono; o noindex era trava de
   // compliance). lastmod = a última mudança de conteúdo da página.
   { path: '/business', title: 'Redentia For Business', description: 'Para escritórios de investimento: a carteira do cliente consolidada por Open Finance, com o consentimento dele, no Claude ou no ChatGPT da mesa.', lastmod: '2026-10-15' },

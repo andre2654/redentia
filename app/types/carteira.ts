@@ -137,6 +137,30 @@ export interface CarteiraGroupVM {
   desc: string | null // editorial do /portfolio/analysis — null = coluna só com CTA
   cta: string
   ctaHref: string
+  /** variação do grupo no dia ('−1,03%') — null = sem /portfolio/today pros papéis dele */
+  dia?: string | null
+  diaDir?: NuDir
+}
+
+/**
+ * O topo calmo da /carteira (Agora, 31/10/2026): os números que a frase e a
+ * pílula escondida precisam. A frase é montada no componente com o relógio do
+ * pregão (utils/carteira-agora.ts). Campo null = o pedaço da frase não afirma.
+ */
+export interface CarteiraAgoraVM {
+  /** price_dates.today do /portfolio/today ('2026-10-30') */
+  priceDate: string | null
+  carteiraPct: number | null
+  /** Ibovespa no MESMO dia de preço (série casada por data) */
+  bolsaPct: number | null
+  diaValor: string | null // '+R$ 412,30' (mascarável)
+  diaPct: string | null // '+0,62%'
+  diaDir: NuDir
+  /** o papel que caiu 5% ou mais no dia (o pior), com o nome da frase */
+  alerta: { ticker: string; nome: string; pct: number } | null
+  patrimonio: string // 'R$ 66.170,58' (mascarável)
+  ativos: string // '6 ativos'
+  atualizado: string | null // 'agora', 'há 5 min'
 }
 
 export interface RaioXMetricVM {
@@ -261,7 +285,11 @@ export interface CarteiraResumoVM {
 export interface CarteiraPayload {
   /** token morto → a página limpa a sessão e redireciona pro /login */
   unauthenticated?: boolean
+  /** o servidor respondeu 402/403 assinatura_necessaria → a página vira o paywall */
+  semAssinatura?: boolean
   hero: CarteiraHeroVM
+  /** o topo calmo — null sem carteira */
+  agora: CarteiraAgoraVM | null
   allocation: CarteiraAllocationVM[]
   chart: HomeChartVM | null
   positionsSub: string | null // '5 classes · role para explorar' (posicoes-v2)

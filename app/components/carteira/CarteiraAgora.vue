@@ -1,0 +1,185 @@
+<script setup lang="ts">
+// O topo da /carteira (31/10/2026), no conceito do Agora dos apps: a pessoa
+// abre e lê numa frase se está tudo bem ("Tudo normal."), com o estado do
+// pregão em cima e o resultado do dia ESCONDIDO na pílula até ela querer ver.
+// Quase nada na tela, de propósito: o detalhe vem embaixo, quando ela rolar.
+//
+// A frase é montada aqui (utils/carteira-agora.ts) com o relógio do pregão
+// (utils/pregao.ts) e os números do /portfolio/today que o useCarteira já
+// trouxe. Nenhum número inventado: sem /today, a frase não afirma nada.
+//
+// A pílula tem o próprio olho (escondida a cada abertura, como no app). O olho
+// global (useHiddenValues) segue valendo para os detalhes de baixo.
+import type { CarteiraAgoraVM } from '~/types/carteira'
+import { fraseDaCarteira, rotuloDaPilula } from '~/utils/carteira-agora'
+import { estadoDoPregao, quandoFoi } from '~/utils/pregao'
+
+const props = defineProps<{ agora: CarteiraAgoraVM }>()
+
+const pregao = computed(() => estadoDoPregao())
+const quando = computed(() => quandoFoi(props.agora.priceDate))
+const frase = computed(() => fraseDaCarteira({
+  pregao: pregao.value.estado,
+  quando: quando.value,
+  carteiraPct: props.agora.carteiraPct,
+  bolsaPct: props.agora.bolsaPct,
+  alerta: props.agora.alerta ? { nome: props.agora.alerta.nome, pct: props.agora.alerta.pct } : null,
+}))
+
+const revelado = ref(false)
+const temDia = computed(() => !!props.agora.diaValor)
+const rotulo = computed(() => rotuloDaPilula(quando.value))
+
+const porque = computed(() => {
+  const a = props.agora.alerta
+  if (!a) return null
+  const q = `Por que ${a.ticker} caiu ${quando.value ?? 'hoje'}? E o que isso muda na minha carteira?`
+  return `/busca?chat=1&q=${encodeURIComponent(q)}`
+})
+</script>
+
+<template>
+  <section class="cag" :class="`cag--${frase.tom}`" aria-labelledby="cag-titulo">
+    <div class="cag__miolo">
+      <span class="cag__estado" :class="`cag__estado--${frase.tom === 'atencao' ? 'atencao' : pregao.estado}`">
+        <span class="cag__ponto" aria-hidden="true" />
+        {{ frase.tom === 'atencao' ? 'Pede atenção' : pregao.rotulo }}
+      </span>
+      <h1 id="cag-titulo" class="cag__titulo">{{ frase.titulo }}</h1>
+      <p class="cag__linha" :class="{ 'cag__linha--analisando': frase.analisando }">{{ frase.linha }}</p>
+      <NuxtLink v-if="porque" :to="porque" class="cag__porque">Por que caiu?</NuxtLink>
+    </div>
+
+    <div class="cag__dia" data-clarity-mask="true">
+      <button
+        v-if="temDia"
+        type="button"
+        class="cag__pilula"
+        :class="revelado ? `cag__pilula--${agora.diaDir}` : 'cag__pilula--oculta'"
+        :aria-pressed="revelado"
+        :aria-label="revelado ? `Resultado ${rotulo}: ${agora.diaValor}, ${agora.diaPct}. Esconder.` : `Mostrar o resultado ${rotulo === 'hoje' ? 'de hoje' : `de ${rotulo}`}`"
+        @click="revelado = !revelado"
+      >
+        <span class="cag__pilula-valor">{{ revelado ? agora.diaValor : 'R$ •••••' }}</span>
+        <span v-if="revelado && agora.diaPct" class="cag__pilula-pct">{{ agora.diaPct }}</span>
+        <span class="cag__pilula-quando">{{ rotulo }}</span>
+      </button>
+      <button
+        type="button"
+        class="cag__olho"
+        :aria-label="revelado ? 'Esconder os valores' : 'Mostrar os valores'"
+        :aria-pressed="revelado"
+        @click="revelado = !revelado"
+      >
+        <svg v-if="revelado" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+        <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>
+      </button>
+      <!-- o total ocupa o lugar dele mesmo escondido: revelar não empurra a tela -->
+      <span class="cag__total" :class="{ 'cag__total--oculto': !revelado }" :aria-hidden="!revelado">
+        Sua carteira vale <strong>{{ revelado ? agora.patrimonio : 'R$ ••••••' }}</strong>
+      </span>
+    </div>
+
+    <div class="cag__pe">
+      <span class="cag__meta">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span>
+      <NuxtLink to="/busca?chat=1" class="cag__perguntar">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cag__losango-miolo" /></svg>
+        Pergunte à Redentia
+      </NuxtLink>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.cag {
+  background: var(--nu-cream);
+  padding: clamp(56px, 8vw, 112px) clamp(22px, 5.5vw, 80px) clamp(24px, 3vw, 36px);
+  min-height: clamp(520px, calc(100svh - 150px), 760px);
+  display: flex; flex-direction: column;
+  animation: nu-fade .5s ease both;
+  scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
+}
+.cag__miolo { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+
+.cag__estado {
+  display: inline-flex; align-items: center; gap: 9px;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 700;
+}
+.cag__ponto { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-sand); }
+.cag__estado--aberta { color: var(--nu-green-text); }
+.cag__estado--aberta .cag__ponto { background: var(--nu-green); box-shadow: 0 0 0 4px var(--nu-green-tint); }
+.cag__estado--atencao { color: var(--nu-amber-text); }
+.cag__estado--atencao .cag__ponto { background: var(--nu-amber-fill); box-shadow: 0 0 0 4px var(--nu-amber-bg); }
+
+.cag__titulo {
+  margin: 18px 0 0; color: var(--nu-ink);
+  font-size: clamp(56px, 9.4vw, 132px); font-weight: 800; letter-spacing: -0.05em; line-height: 0.96;
+}
+.cag__linha {
+  margin: clamp(16px, 2vw, 24px) 0 0; max-width: 680px;
+  color: var(--nu-gray-2); font-size: clamp(18px, 2vw, 24px); font-weight: 500; line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+/* o brilho do "Estamos analisando…" do Agora: passa três vezes e para */
+.cag__linha--analisando {
+  background: linear-gradient(100deg, var(--nu-gray-2) 0%, var(--nu-gray-2) 38%, var(--nu-sand) 50%, var(--nu-gray-2) 62%, var(--nu-gray-2) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: cag-brilho 2.6s linear 3 both;
+}
+@keyframes cag-brilho { from { background-position: 100% 0; } to { background-position: 0% 0; } }
+
+.cag__porque {
+  margin-top: 22px; display: inline-flex; align-items: center;
+  background: var(--nu-amber-bg); color: var(--nu-amber-text);
+  border-radius: var(--nu-r-pill); padding: 11px 20px; font-size: var(--nu-fs-sm); font-weight: 800;
+  transition: transform .15s, filter .2s;
+}
+.cag__porque:hover { color: var(--nu-amber-text); transform: translateY(-2px); filter: brightness(.97); }
+.cag__porque:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+
+/* a pílula do dia: escondida ao abrir */
+.cag__dia { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: clamp(36px, 5vw, 56px); }
+.cag__pilula {
+  display: inline-flex; align-items: baseline; gap: 10px;
+  border: none; cursor: pointer; font-family: inherit;
+  border-radius: var(--nu-r-input); padding: 12px 18px 12px 16px;
+  transition: background .25s, color .25s, transform .15s;
+}
+.cag__pilula:active { transform: translateY(1px); }
+.cag__pilula:focus-visible, .cag__olho:focus-visible, .cag__perguntar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cag__pilula--oculta { background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-card); }
+.cag__pilula--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
+.cag__pilula--down { background: var(--nu-red-pill-bg); color: var(--nu-red-2); }
+.cag__pilula-valor { font-size: clamp(24px, 2.6vw, 30px); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.cag__pilula-pct { font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.cag__pilula-quando { font-size: var(--nu-fs-xs); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.cag__olho {
+  width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+  background: transparent; color: var(--nu-ink); border: 2px solid var(--nu-ink-16);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .2s, border-color .2s;
+}
+.cag__olho:hover { background: var(--nu-white); border-color: var(--nu-ink-30); }
+.cag__total { color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; transition: opacity .25s, transform .25s; }
+.cag__total strong { color: var(--nu-ink); font-weight: 800; }
+.cag__total--oculto { opacity: 0; transform: translateX(-6px); visibility: hidden; }
+
+.cag__pe {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-top: clamp(32px, 5vw, 56px); padding-top: 20px; border-top: 1px solid var(--nu-cream-line);
+}
+.cag__meta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cag__perguntar {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--nu-navy); color: var(--nu-cream-text);
+  border-radius: var(--nu-r-pill); padding: 11px 20px 11px 16px;
+  font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, transform .15s;
+}
+.cag__perguntar:hover { background: var(--nu-navy-2); color: var(--nu-cream-text); transform: translateY(-2px); }
+.cag__losango-miolo { fill: var(--nu-navy); }
+
+@media (max-width: 760px) {
+  .cag { min-height: clamp(480px, calc(100svh - 140px), 680px); }
+}
+</style>

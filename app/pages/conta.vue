@@ -79,6 +79,9 @@ usePageSeo({
         <section id="perfil" class="conta__sec">
           <ContaPerfil />
         </section>
+        <section id="assinatura" class="conta__sec">
+          <ContaAssinatura />
+        </section>
         <section id="notificacoes" class="conta__sec">
           <ContaNotificacoes />
         </section>

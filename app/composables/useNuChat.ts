@@ -80,6 +80,7 @@ const uid = () => `m${Date.now().toString(36)}${idc++}`
 export function useNuChat() {
   const cfg = useRuntimeConfig()
   const { token, isAuthenticated, clearSession } = useAuthState()
+  const assinatura = useAssinatura()
 
   const messages = useState<NuChatMsg[]>('nu:chat:messages', () => [])
   const streaming = useState<boolean>('nu:chat:streaming', () => false)
@@ -159,6 +160,11 @@ export function useNuChat() {
         a.done = true
         break
       case 'error':
+        if (data?.code === 'assinatura_necessaria') {
+          a.error = 'A conversa é de quem assina a Redentia.'
+          assinatura.recusado('chat')
+          break
+        }
         a.error = data.message || 'Erro ao processar a mensagem. Tente de novo.'
         break
       case 'max.blocked':
@@ -196,6 +202,11 @@ export function useNuChat() {
     const msg = text.trim()
     if (!msg || streaming.value) return
 
+    // A IA é paga (plano único, 31/10/2026): quem não assina vê a folha do
+    // AssinaturaGateSheet em vez do envio, antes de qualquer gasto de IA.
+    if (!(await assinatura.garantirAcesso('chat'))) return
+    if (streaming.value) return
+
     messages.value.push({ id: uid(), role: 'user', content: msg, citations: [], followups: [] })
     const a: NuChatMsg = { id: uid(), role: 'assistant', content: '', citations: [], followups: [], error: null }
     messages.value.push(a)
@@ -224,6 +235,12 @@ export function useNuChat() {
       if (!res.ok) {
         let payload: any = null
         try { payload = await res.json() } catch { /* corpo não-JSON */ }
+        if (ehAssinaturaNecessaria(res.status, payload)) {
+          // gate do servidor: a mensagem não foi aceita → tira o par e abre a folha
+          messages.value.splice(messages.value.length - 2, 2)
+          assinatura.recusado('chat')
+          return
+        }
         if (res.status === 401) {
           // Token sanctum morreu no meio da sessão — o gate da página já
           // barrou o anônimo antes de qualquer gasto de IA.
