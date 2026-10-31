@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Header Nu — fiel ao design (quadrado azul com a marca, nav de pills, busca
-// circular; deslogado = Entrar/Criar conta; logado = pill IA + avatar).
+// circular; deslogado = Entrar/Conectar carteira; logado = pill IA + avatar).
 // Contrato de UX: designs/Redentia {Mercado,Home} Nu.dc.html.
 //
 // UX do dono (2026-07-11):
@@ -10,7 +10,7 @@
 //   que abre um menu full-screen (itens grandes com chevron, ativo em azul,
 //   CTAs de rodapé) — referência visual enviada pelo dono.
 // - tablet (761–1023, 23/10/2026): a nav já vai para o hambúrguer, porque não
-//   cabe inteira; Entrar/Criar conta (ou a pílula da IA e o avatar) ficam.
+//   cabe inteira; Entrar/Conectar carteira (ou a pílula da IA e o avatar) ficam.
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
 
@@ -368,7 +368,8 @@ onBeforeUnmount(() => {
         </template>
         <template v-else>
           <NuxtLink to="/login" class="nuh__enter nuh__desktop-only">Entrar</NuxtLink>
-          <NuxtLink to="/login" class="nuh__cta nuh__desktop-only">Criar conta grátis</NuxtLink>
+          <!-- o mesmo gesto da chamada única da home (31/10/2026): a assinatura -->
+          <NuxtLink to="/assinar" class="nuh__cta nuh__desktop-only">Conectar carteira</NuxtLink>
         </template>
 
         <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="menuOpen" @click="toggleMenu(true)">
@@ -443,7 +444,7 @@ onBeforeUnmount(() => {
           </template>
           <template v-else>
             <NuxtLink to="/login" class="num__cta-outline" @click="toggleMenu(false)">Entrar</NuxtLink>
-            <NuxtLink to="/login" class="num__cta" @click="toggleMenu(false)">Criar conta grátis</NuxtLink>
+            <NuxtLink to="/assinar" class="num__cta" @click="toggleMenu(false)">Conectar carteira</NuxtLink>
           </template>
         </div>
       </div>

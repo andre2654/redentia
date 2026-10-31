@@ -71,7 +71,7 @@ const COLUMNS = [
       <div class="nuf__mapa">
         <div class="nuf__marca">
           <div class="nuf__marca-nome"><img src="/logo-branca.svg" alt="" class="nuf__marca-logo">Redentia</div>
-          <p class="nuf__marca-frase">Mercado em tempo real, teses e calculadoras para quem investe no Brasil. Grátis, sem conta.</p>
+          <p class="nuf__marca-frase">Mercado em tempo real, teses e calculadoras grátis para quem investe no Brasil. E a sua carteira testada em 2.000 cenários, por R$ 19,99 por mês.</p>
           <div class="nuf__social-row" aria-label="Redes sociais">
             <a href="https://www.linkedin.com/company/redentia" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="LinkedIn"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M7 10v7M7 6.5v.01M11 17v-4a2 2 0 0 1 4 0v4" /></svg></a>
             <a href="https://www.instagram.com/redentia.app/" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="Instagram"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5" /><circle cx="12" cy="12" r="3.6" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>

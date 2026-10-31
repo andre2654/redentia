@@ -284,6 +284,6 @@ export const MERCADO_FAQS: NuFaqItem[] = [
   },
   {
     q: 'Meus dados ficam seguros?',
-    a: 'Sim. Usamos criptografia de ponta a ponta e seus dados nunca são vendidos. Você pode excluir a conta e todos os dados a qualquer momento.',
+    a: 'Sim. A Redentia só lê, pelo Open Finance regulado pelo Banco Central: não movimenta dinheiro e não vê a senha do seu banco. Os dados trafegam criptografados e nunca são vendidos. Você revoga a conexão e exclui a conta e todos os dados quando quiser.',
   },
 ]
