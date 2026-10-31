@@ -74,9 +74,14 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr__passo--depois { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-cream-line); }
 .ajr__passo--depois .ajr__t { color: var(--nu-gray-2); }
 
-.ajr--compacto .ajr__passo { align-items: center; padding: 10px 12px; }
+/* compacto (embaixo do botão, no login): só os títulos, cada passo do tamanho
+   do nome dele e numa linha só; se não couber, a fila quebra inteira */
+.ajr--compacto { display: flex; flex-wrap: wrap; gap: 6px; }
+.ajr--compacto .ajr__passo { align-items: center; gap: 8px; padding: 8px 14px 8px 8px; }
+.ajr--compacto .ajr__marca { width: 22px; height: 22px; font-size: var(--nu-fs-xs); }
+.ajr--compacto .ajr__t { white-space: nowrap; }
 
 @media (max-width: 760px) {
-  .ajr { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .ajr:not(.ajr--compacto) { grid-template-columns: minmax(0, 1fr); gap: 8px; }
 }
 </style>
