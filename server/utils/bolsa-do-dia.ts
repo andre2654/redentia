@@ -2,8 +2,7 @@
  * A bolsa do dia da home do visitante (31/10/2026): os fatos do fechamento,
  * montados no servidor a partir da API pública (utils/bolsaDoDia.ts). É a
  * fonte única do número do dia: o snapshot do Ibovespa, com a série diária,
- * o /market/today (pesos do índice), o fechamento da IA, as teses e o pregão
- * minuto a minuto da B3 (a linha do dia).
+ * o /market/today (pesos do índice), o fechamento da IA e as teses.
  * Fetch direto no Laravel e cache de 2 minutos; a série inteira (desde 2001)
  * e a história da convicção mudam devagar e ficam 1 hora.
  * A chave do cache leva a base da API: dois servidores locais apontando para
@@ -34,30 +33,16 @@ const historicoDaTese = defineCachedFunction(
   { name: 'bolsa-historico-tese', maxAge: 3600, swr: true, getKey: (slug: string) => `v1-${chaveDaBase()}-${slug}` },
 )
 
-// O pregão minuto a minuto do Ibovespa, da própria B3 (público, sem chave; pede
-// um User-Agent de navegador). Falhou, a linha do dia cai para os fechamentos.
-const intradiaDaB3 = defineCachedFunction(
-  async () => {
-    const r: unknown = await $fetch('https://cotacao.b3.com.br/mds/api/v1/DailyFluctuationHistory/IBOV', {
-      headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36' },
-      timeout: 8_000,
-    }).catch(() => null)
-    return r != null && typeof r === 'object' ? (r as EntradaDaBolsa['intradia']) : null
-  },
-  { name: 'bolsa-intradia-b3', maxAge: 120, swr: true, getKey: () => 'v1', validate: (e) => Boolean((e.value as EntradaDaBolsa['intradia'])?.TradgFlr?.date) },
-)
-
 export const fetchBolsaDoDia = defineCachedFunction(
   async (): Promise<BolsaDoDia> => {
-    const [snapshot, today, serie, briefing, teses, intradia] = await Promise.all([
+    const [snapshot, today, serie, briefing, teses] = await Promise.all([
       pegar<EntradaDaBolsa['snapshot']>('/market/snapshot?scope=ibov'),
       pegar<EntradaDaBolsa['today']>('/market/today'),
       serieDoIbov(),
       pegar<{ data?: EntradaDaBolsa['briefing'] }>('/briefing/today'),
       pegar<{ data?: EntradaDaBolsa['teses'] }>('/theses'),
-      intradiaDaB3(),
     ])
-    const dia = montarBolsaDoDia({ snapshot, today, serie, briefing: briefing?.data ?? null, teses: teses?.data ?? null, intradia })
+    const dia = montarBolsaDoDia({ snapshot, today, serie, briefing: briefing?.data ?? null, teses: teses?.data ?? null })
     if (dia.tese) dia.tese.antes = convicaoAntes(await historicoDaTese(dia.tese.slug), dia.tese.convicao)
     return dia
   },

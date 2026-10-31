@@ -114,14 +114,7 @@ test('a convicção de antes, só se mudou nos últimos 30 dias', () => {
   assert.equal(convicaoAntes([{ date: '2026-10-30', conviction: 88 }], 88), null)
 })
 
-test('o pregão minuto a minuto: um ponto por minuto, só do mesmo dia, contra o fechamento anterior', () => {
-  const b3 = (date: string) => ({ TradgFlr: { date, scty: { lstQtn: Array.from({ length: 30 }, (_, i) => ({ closPric: 169000 - i * 10, dtTm: `10:${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}` })) } } })
-  const r = montarBolsaDoDia({ ...fixture, intradia: b3('2026-10-30') })
-  assert.equal(r.intradia!.pontos.length, 15) // dois por minuto viram um
-  assert.deepEqual(r.intradia!.pontos[0], [0, 168990]) // fica o último de cada minuto
-  assert.equal(Math.round(r.intradia!.anterior), 169191)
-  assert.equal(montarBolsaDoDia({ ...fixture, intradia: b3('2026-10-29') }).intradia, null)
-  // a variação do papel principal vai junto com os pontos da empresa
-  assert.equal(r.pesos!.negativas[0]!.pct, fixture.today!.constituents!.find((c) => c.ticker === 'ITUB4')!.change_pct)
-  assert.equal(r.diarias.length, 23)
+test('a variação do papel principal vai junto com os pontos da empresa', () => {
+  assert.equal(dia.pesos!.negativas[0]!.pct, fixture.today!.constituents!.find((c) => c.ticker === 'ITUB4')!.change_pct)
+  assert.equal(dia.acoes.length, 76)
 })

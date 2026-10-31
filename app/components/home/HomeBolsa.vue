@@ -1,40 +1,38 @@
 <script setup lang="ts">
-// A bolsa do dia na home do visitante (31/10/2026). Primeiro "O fechamento",
-// só tipografia, saído de uma conversa entre um investidor do público, uma
-// especialista de produto da Apple e uma de UX; o dono achou "texto demais,
-// sem desenho", e a seção virou dois desenhos com pouca palavra:
-//  - em cima, a data do número, o Ibovespa como herói e o título do dia
-//    ("Quinta queda seguida.");
-//  - à esquerda, a linha do pregão minuto a minuto (HomeBolsaLinha), como a
-//    do Mercado nos apps;
-//  - à direita, o mercado inteiro de uma vez (HomeBolsaMercado): as 76 ações
-//    em cinza e acesas só as cinco que explicam o dia, a mesma língua do leque
-//    da carteira (pedido do dono: passar a sensação de que a Redentia lê o
-//    mercado e de que a pessoa não precisa ver o mercado inteiro);
-//  - embaixo da linha, o fecho: a leitura da IA numa frase, assinada, e os
-//    links do fechamento inteiro e da newsletter;
-//  - a ponte "Bolsa −0,75% · Você —" com o "Conectar carteira".
-// Saíram o azul-marinho, as pílulas (a faixa "Mercado agora" do topo já
-// mostra), os cartões com ícone, os parágrafos e as listas com abas.
-//
-// Os fatos vêm de UMA fonte (useBolsaDoDia → server/api/bolsa-do-dia), no
-// SSR; as frases, de utils/bolsaDoDia.ts, com o relógio da B3 recalculado no
-// cliente a cada minuto (a página sai da borda com a hora de quem a cacheou).
-// Com a bolsa aberta e a aba à vista, os fatos se atualizam a cada minuto.
+// A bolsa do dia na home do visitante (31/10/2026). Depois de cinco linhas
+// novas, o dono pediu: "volte ao que era e tente apenas reduzir aquilo,
+// deixando uma UX e UI melhor principalmente para o entendimento de
+// investidores iniciantes". Então é a seção de antes, no azul-marinho, mais
+// curta e explicada:
+//  - em cima, a frase da bolsa ("Bolsa em queda.") com a sobrelinha que diz de
+//    quando é o número e quando a bolsa abre, e uma frase que explica o
+//    Ibovespa em português simples;
+//  - três números, não cinco (Ibovespa, dólar e CDI), cada um com uma legenda
+//    do que é; IFIX e Bitcoin ficam na faixa "Mercado agora" do topo;
+//  - "O dia no mercado.": três cartões do fechamento da IA, não quatro ("A
+//    leitura", a mais técnica, fica no resumo inteiro), cada um com o rótulo
+//    do que é, e os termos do mercado com a explicação no toque (HomeTermo);
+//  - "Quem mais subiu e caiu.": só entre as 76 empresas do Ibovespa, as que o
+//    iniciante conhece, três de cada lado, o nome da empresa antes do código;
+//    sem abas de classe e sem o preço.
+// Os números vêm de uma fonte só (useBolsaDoDia, o mesmo do topo de quem
+// assina); o fechamento da IA, do useNuBriefing; dólar e CDI, da faixa do topo.
 import { textosDaBolsa } from '~/utils/bolsaDoDia'
-import { estadoDoPregao, horaDoFechamento } from '~/utils/pregao'
+import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
+import { marcarTermos } from '~/utils/termosDoDia'
 
-// o briefing registra o onMounted dele: vem antes de qualquer await (é o texto
-// inteiro do fechamento, para a janela)
-const { briefing, real: briefingReal } = useNuBriefing()
+// o briefing registra o onMounted dele: vem antes de qualquer await
+const { briefing, loading: briefingLoading, real: briefingReal } = useNuBriefing()
+// dólar e CDI, os mesmos da faixa "Mercado agora" (hidratam no cliente)
+const { items: faixa, loading: faixaCarregando } = useMarketTicker()
 
 // a hora vai no estado: a hidratação herda a do servidor e o cliente acerta ao montar
 const agora = useState('home:bolsa-agora', () => Date.now())
 let relogio: ReturnType<typeof setInterval> | null = null
 onMounted(() => {
   agora.value = Date.now()
-  // a busca do servidor falhou (o esqueleto está na tela): o navegador tenta de novo
+  // a busca do servidor falhou: o navegador tenta de novo
   if (!bolsa.value?.ibov) setTimeout(() => { void refresh() }, 1500)
   relogio = setInterval(() => {
     agora.value = Date.now()
@@ -45,112 +43,178 @@ onBeforeUnmount(() => { if (relogio) clearInterval(relogio) })
 
 const { bolsa, refresh } = await useBolsaDoDia()
 const estado = computed(() => estadoDoPregao(new Date(agora.value)).estado)
-const t = computed(() => (bolsa.value ? textosDaBolsa(bolsa.value, estado.value, new Date(agora.value)) : null))
+const textos = computed(() => (bolsa.value ? textosDaBolsa(bolsa.value, estado.value, new Date(agora.value)) : null))
+const ibov = computed(() => bolsa.value?.ibov ?? null)
+const aoVivo = computed(() => estado.value === 'aberta' && ibov.value?.data === agoraEmSP(new Date(agora.value)).iso)
 
-// o trilho da linha termina no fechamento do dia do número (17h ou 18h)
-const fechaAs = computed(() => (bolsa.value?.ibov ? horaDoFechamento(bolsa.value.ibov.data) : 17))
-const pesos = computed(() => (bolsa.value?.pesos?.confere ? bolsa.value.pesos : null))
+const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const comSinal = (v: number) => (Math.abs(v) < 0.005 ? '0,00%' : `${v > 0 ? '+' : '−'}${nf2.format(Math.abs(v))}%`)
 
-// o fechamento inteiro na janela, com "A leitura" primeiro (até a página
-// própria de cada fechamento, a segunda leva)
-const blocos = computed(() => {
-  if (!briefingReal.value) return []
-  const topicos = dayTopicsFromNuBriefing(briefing.value).filter((x) => x.real)
-  const leitura = topicos.filter((x) => x.icon === 'compass')
-  return [...leitura, ...topicos.filter((x) => x.icon !== 'compass')].map((x) => ({ label: x.label, color: x.labelColor, html: x.modalHtml }))
+const titulo = computed(() => fraseDaBolsa(ibov.value?.pct) ?? 'A bolsa hoje.')
+// a frase para quem está começando: o que é o Ibovespa e quantas subiram e caíram
+const explicacao = computed(() => {
+  const ib = ibov.value
+  if (!ib) return null
+  const quando = aoVivo.value ? 'até agora' : (quandoFoi(ib.data, new Date(agora.value)) ?? '')
+  const parado = Math.abs(ib.pct) < 0.005
+  const verbo = parado ? (aoVivo.value ? 'fica estável' : 'ficou estável') : ib.pct < 0 ? (aoVivo.value ? 'cai' : 'caiu') : (aoVivo.value ? 'sobe' : 'subiu')
+  let s = `O Ibovespa, o índice das maiores empresas da bolsa, ${verbo}${parado ? '' : ` ${nf2.format(Math.abs(ib.pct))}%`} ${quando}.`
+  const c = bolsa.value?.contagem
+  if (c) s += ` Das ${c.total} empresas dele, ${c.altas} ${aoVivo.value ? 'sobem' : 'subiram'} e ${c.quedas} ${aoVivo.value ? 'caem' : 'caíram'}.`
+  return s
 })
+
+// os três números, cada um com a legenda do que é
+const indicadores = computed(() => {
+  const achar = (n: string) => faixa.value.find((i) => i.n === n) ?? null
+  const dolar = achar('Dólar')
+  const cdi = achar('CDI')
+  return [
+    dolar && { n: 'Dólar', legenda: 'quanto custa US$ 1', v: dolar.v, pct: dolar.pct, dir: dolar.dir },
+    cdi && { n: 'CDI', legenda: 'a referência da renda fixa', v: cdi.v, pct: cdi.pct, dir: cdi.dir },
+  ].filter((x): x is NonNullable<typeof x> => !!x)
+})
+
+// o fechamento da IA: o placar, o que puxou e o que segurou ("A leitura" fica no resumo inteiro)
+const todos = computed(() => (briefingReal.value ? dayTopicsFromNuBriefing(briefing.value).filter((x) => x.real) : []))
+const cartoes = computed(() => {
+  const queda = (ibov.value?.pct ?? 0) < 0
+  const rotulo: Record<string, string> = {
+    trend: 'O placar do dia',
+    bars: queda ? 'O que puxou para baixo' : 'O que puxou para cima',
+    flame: queda ? 'O que segurou' : 'O que ficou para trás',
+  }
+  return todos.value
+    .filter((x) => x.icon !== 'compass')
+    .map((x) => ({ ...x, rotulo: rotulo[x.icon] ?? x.label, pedacos: marcarTermos(x.cardBlurb) }))
+})
+const blocos = computed(() => todos.value.map((x) => ({ label: x.label, color: x.labelColor, html: x.modalHtml })))
 const aberto = ref(false)
 const gatilho = ref<HTMLButtonElement | null>(null)
-function abrir() {
-  aberto.value = true
-  evento('fechamento')
-}
 function fechar() {
   aberto.value = false
   nextTick(() => gatilho.value?.focus())
 }
 
 // "Receber por e-mail": a newsletter do rodapé (O mercado da semana, toda
-// sexta), só quando ela está ligada e aparece nesta página. O diário entra
-// quando o envio diário for ligado no servidor (decisão do dono, 31/10/2026).
+// sexta), só quando ela está ligada e aparece nesta página (decisão do dono,
+// 31/10/2026: o convite do visitante é só por e-mail).
 const receber = useRuntimeConfig().public.newsletterLigada === true && !rodapeSemAssinatura('/')
 function irParaNewsletter(e: MouseEvent) {
   const alvo = document.getElementById('newsletter')
-  evento('receber')
   if (!alvo) return
   e.preventDefault()
   alvo.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' })
   alvo.querySelector<HTMLInputElement>('input[type="email"]')?.focus({ preventScroll: true })
 }
 
-/** Os cliques da seção no GA4 (o gtag só existe depois do aceite de cookies). */
-function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') {
-  if (import.meta.server) return
-  ;(window as any).gtag?.('event', 'home_bolsa_clique', { alvo })
-}
+// as altas e as baixas entre as empresas do Ibovespa, três de cada lado, uma linha por empresa
+const listas = computed(() => {
+  const acoes = bolsa.value?.acoes ?? []
+  if (acoes.length < 6) return null
+  const umaPorEmpresa = (lista: typeof acoes) => {
+    const vistas = new Set<string>()
+    return lista.filter((a) => (vistas.has(a.empresa) ? false : (vistas.add(a.empresa), true))).slice(0, 3)
+  }
+  const ordem = [...acoes].sort((a, b) => b.pct - a.pct)
+  return {
+    altas: umaPorEmpresa(ordem.filter((a) => a.pct > 0)),
+    baixas: umaPorEmpresa([...ordem].reverse().filter((a) => a.pct < 0)),
+  }
+})
+const quandoDasListas = computed(() => {
+  const ib = ibov.value
+  if (!ib) return ''
+  if (aoVivo.value) return 'até agora'
+  return quandoFoi(ib.data, new Date(agora.value)) ?? ''
+})
 </script>
 
 <template>
   <section class="hbo" aria-labelledby="hbo-titulo">
-    <template v-if="t && bolsa">
-      <p class="hbo__sobre" :class="{ 'hbo__sobre--vivo': t.aoVivo }">{{ t.sobrelinha }}</p>
-      <h2 id="hbo-titulo" class="hbo__cabeca">
-        <span class="hbo__linha"><span class="hbo__numero">{{ t.numero }}</span> <span class="hbo__legenda">{{ t.legenda }}</span></span>
-        <span class="hbo__titulo">{{ t.titulo }}</span>
-      </h2>
+    <!-- a frase da bolsa e o que ela quer dizer -->
+    <p v-if="textos" class="hbo__rotulo" :class="{ 'hbo__rotulo--aberta': aoVivo }">{{ textos.sobrelinha }}</p>
+    <h2 id="hbo-titulo" class="hbo__frase">{{ titulo }}</h2>
+    <p v-if="explicacao" class="hbo__sub">{{ explicacao }}</p>
+    <NuSkeleton v-else tone="navy" variant="line" width="min(420px, 80%)" height="18px" radius="chip" class="hbo__sub-sk" />
 
-      <!-- os dois desenhos: a linha do pregão e quem mexeu no índice; os links
-           ficam embaixo da linha, que é mais baixa que as barras -->
-      <div class="hbo__desenhos" :class="{ 'hbo__desenhos--um': !pesos }">
-        <HomeBolsaLinha class="hbo__area-linha" :intradia="bolsa.intradia" :diarias="bolsa.diarias" :fecha-as="fechaAs" />
-        <HomeBolsaMercado v-if="pesos && bolsa.acoes.length" class="hbo__area-pesos" :acoes="bolsa.acoes" :pesos="pesos" :contagem="bolsa.contagem" :ao-vivo="t.aoVivo" @clique="evento('asset')" />
-        <div v-if="t.leitura || (t.linkFechamento && blocos.length) || receber || t.aviso" class="hbo__area-links">
-          <!-- o fecho: de tudo o que a Redentia leu, uma frase -->
-          <figure v-if="t.leitura" class="hbo__leitura">
-            <figcaption class="hbo__leitura-rotulo">A leitura da IA</figcaption>
-            <blockquote class="hbo__citacao"><p>“{{ t.leitura.texto }}”</p></blockquote>
-            <p class="hbo__assina">{{ t.leitura.assinatura }}</p>
-          </figure>
-          <div class="hbo__links">
-          <p v-if="t.aviso" class="hbo__aviso">{{ t.aviso }}</p>
-          <button v-if="t.linkFechamento && blocos.length" ref="gatilho" type="button" class="hbo__link" aria-haspopup="dialog" @click="abrir">
-            {{ t.linkFechamento }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-          </button>
-          <a v-if="receber" href="#newsletter" class="hbo__link" @click="irParaNewsletter">
-            Receber toda sexta por e-mail<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-          </a>
+    <!-- os três números: o Ibovespa em destaque e dólar e CDI ao lado -->
+    <div class="hbo__indicadores">
+      <div v-if="ibov" class="hbo__pilula" :class="ibov.pct < 0 ? 'hbo__pilula--down' : 'hbo__pilula--up'">
+        <span class="hbo__pilula-pct">{{ comSinal(ibov.pct) }}</span>
+        <span class="hbo__pilula-nome">Ibovespa<br>{{ nf0.format(Math.trunc(ibov.pontos)) }} pontos</span>
+      </div>
+      <template v-if="faixaCarregando && !indicadores.length">
+        <NuSkeleton v-for="i in 2" :key="`ski${i}`" tone="navy" variant="line" width="150px" height="66px" radius="tile" />
+      </template>
+      <div v-for="it in indicadores" :key="it.n" class="hbo__ind">
+        <span class="hbo__ind-nome">{{ it.n }}</span>
+        <span class="hbo__ind-linha">
+          <span class="hbo__ind-valor">{{ it.v }}</span>
+          <span v-if="it.pct" class="hbo__ind-pct" :class="`hbo__ind-pct--${it.dir}`">{{ it.pct }}</span>
+        </span>
+        <span class="hbo__ind-legenda">{{ it.legenda }}</span>
+      </div>
+    </div>
+
+    <!-- o dia no mercado: o fechamento da IA em três cartões -->
+    <div v-if="briefingLoading || cartoes.length" class="hbo__dia">
+      <h3 class="hbo__dia-titulo">O dia no mercado.</h3>
+      <p v-if="briefingReal" class="hbo__dia-meta">{{ briefing.metaLine }}</p>
+      <NuSkeleton v-else tone="navy" variant="line" width="min(360px, 80%)" height="15px" radius="chip" style="margin-top: 10px" />
+      <div class="hbo__dia-grade">
+        <div v-for="i in (cartoes.length ? 0 : 3)" :key="`skd${i}`" class="hbo__dia-cartao">
+          <NuSkeleton tone="navy" variant="line" width="120px" height="13px" radius="chip" />
+          <NuSkeleton tone="navy" variant="line" width="62%" height="32px" style="margin-top: 22px" />
+          <NuSkeleton tone="navy" variant="text" :lines="3" last-width="72%" height="15px" style="margin-top: 12px" />
+        </div>
+        <div v-for="(c, i) in cartoes" :key="i" class="hbo__dia-cartao">
+          <span class="hbo__dia-rotulo">{{ c.rotulo }}</span>
+          <div v-if="c.stat" class="hbo__dia-stat">{{ c.stat }}</div>
+          <div v-else-if="c.cardTitle" class="hbo__dia-titulo-cartao">{{ c.cardTitle }}</div>
+          <p class="hbo__dia-texto"><template v-for="(p, j) in c.pedacos" :key="j"><HomeTermo v-if="'termo' in p" :texto="p.texto" :termo="p.termo" :slug="p.slug" /><template v-else>{{ p.texto }}</template></template></p>
+        </div>
+      </div>
+      <div class="hbo__dia-acoes">
+        <button
+          v-if="cartoes.length" ref="gatilho" type="button" class="hbo__ler hbo__ler--cheio"
+          aria-haspopup="dialog" :aria-expanded="aberto" @click="aberto = true"
+        >
+          Ler o resumo do dia
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+        <a v-if="receber" href="#newsletter" class="hbo__ler" @click="irParaNewsletter">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>
+          Receber toda sexta por e-mail
+        </a>
+      </div>
+    </div>
+
+    <!-- as altas e as baixas entre as maiores empresas -->
+    <div v-if="listas" class="hbo__listas">
+      <h3 class="hbo__listas-titulo">Quem mais subiu e caiu.</h3>
+      <p class="hbo__dia-meta">Entre as {{ bolsa?.acoes.length }} empresas do Ibovespa, {{ quandoDasListas }}.</p>
+      <div class="hbo__grade">
+        <div v-for="lado in (['altas', 'baixas'] as const)" :key="lado" class="hbo__cartao">
+          <span class="hbo__cartao-nome">{{ lado === 'altas' ? 'Maiores altas' : 'Maiores baixas' }}</span>
+          <div class="hbo__linhas">
+            <NuxtLink v-for="(a, i) in listas[lado]" :key="a.ticker" :to="`/asset/${a.ticker}`" class="hbo__linha">
+              <span class="hbo__pos">{{ i + 1 }}</span>
+              <span class="hbo__id">
+                <span class="hbo__empresa">{{ a.empresa }}</span>
+                <span class="hbo__ticker">{{ a.ticker }}</span>
+              </span>
+              <span class="hbo__pct" :class="a.pct < 0 ? 'hbo__pct--down' : 'hbo__pct--up'">{{ comSinal(a.pct) }}</span>
+            </NuxtLink>
           </div>
         </div>
       </div>
-
-      <!-- a ponte: a mesma linha que a Redentia escreve para quem conectou a carteira -->
-      <div class="hbo__ponte">
-        <dl class="hbo__placar">
-          <div class="hbo__par"><dt>{{ t.ponte.rotulo }}</dt><dd>{{ t.ponte.valor }}</dd></div>
-          <div class="hbo__par"><dt>Você</dt><dd class="hbo__voce" aria-label="Você: sem carteira conectada">—</dd></div>
-        </dl>
-        <NuxtLink to="/assinar" class="hbo__conectar" @click="evento('conectar')">
-          Conectar carteira<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </NuxtLink>
-        <p class="hbo__frase">{{ t.ponte.frase }}</p>
-      </div>
-    </template>
-
-    <!-- só quando a busca no servidor falhou: a forma do conteúdo, em creme -->
-    <template v-else>
-      <h2 id="hbo-titulo" class="hbo__sr">A bolsa hoje</h2>
-      <div class="hbo__esqueleto" aria-hidden="true">
-        <NuSkeleton variant="line" width="260px" height="19px" radius="chip" />
-        <NuSkeleton variant="block" width="min(420px, 90%)" height="62px" radius="tile" />
-        <NuSkeleton variant="line" width="min(420px, 80%)" height="32px" radius="chip" />
-        <NuSkeleton variant="text" :lines="2" last-width="70%" class="hbo__esq-texto" />
-        <NuSkeleton variant="text" :lines="3" last-width="55%" class="hbo__esq-texto" />
-      </div>
-    </template>
+    </div>
 
     <NuDayModal
       :open="aberto"
-      eyebrow="Fechamento · IA da Redentia"
+      eyebrow="Resumo do dia · Redentia"
       title="O dia no mercado"
       :date-line="briefing.metaLine"
       :blocks="blocos"
@@ -160,90 +224,95 @@ function evento(alvo: 'asset' | 'tese' | 'fechamento' | 'receber' | 'conectar') 
 </template>
 
 <style scoped>
-/* creme, como a página: o escuro fica para os aparelhos do herói */
-.hbo { background: var(--nu-cream); padding: clamp(56px, 6.7vw, 96px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
-.hbo__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-.hbo__sobre { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-eyebrow); font-weight: 700; font-variant-numeric: tabular-nums; }
-.hbo__sobre--vivo { color: var(--nu-green-text); }
-.hbo__sobre--vivo::before { content: '●'; margin-right: 8px; }
-
-/* o número, a legenda e o título são um h2 só */
-.hbo__cabeca { margin: 14px 0 0; display: flex; flex-direction: column; gap: 6px; font-weight: 800; }
-.hbo__linha { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.hbo__numero { color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
-.hbo__legenda { color: var(--nu-gray); font-size: var(--nu-fs-xl); font-weight: 700; }
-.hbo__titulo { color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
-
-/* os dois desenhos lado a lado (a linha um pouco maior) e os links embaixo da linha */
-.hbo__desenhos {
-  margin-top: 32px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  grid-template-areas: 'linha pesos' 'links pesos'; grid-template-rows: auto 1fr; gap: 20px clamp(40px, 5vw, 72px); align-items: start;
+.hbo { background: var(--nu-navy); padding: clamp(56px, 7vw, 92px) clamp(22px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+.hbo__rotulo { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 700; }
+.hbo__rotulo--aberta { color: var(--nu-green-soft); }
+.hbo__frase {
+  margin: 10px 0 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h2);
+  font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
 }
-.hbo__desenhos--um { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'linha' 'links'; }
-.hbo__area-linha { grid-area: linha; }
-.hbo__area-pesos { grid-area: pesos; }
-.hbo__area-links { grid-area: links; }
+.hbo__sub { margin: 14px 0 0; max-width: 62ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.hbo__sub-sk { margin-top: 18px; }
 
-/* a leitura da IA: o fecho do que a Redentia leu */
-.hbo__leitura { margin: 4px 0 8px; padding-left: 18px; border-left: 2px solid var(--nu-ink); }
-.hbo__leitura-rotulo { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.hbo__citacao { margin: 8px 0 0; }
-.hbo__citacao p { margin: 0; max-width: 56ch; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
-.hbo__assina { margin: 10px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-
-/* os links do fechamento da IA e da newsletter, numa fila */
-.hbo__links { display: flex; align-items: center; gap: 4px 28px; flex-wrap: wrap; }
-.hbo__aviso { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; }
-.hbo__link {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
-  color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-md); font-weight: 700;
+/* os três números: o Ibovespa grande e dólar e CDI em fichas da mesma altura */
+.hbo__indicadores { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+.hbo__pilula {
+  display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px 10px 14px;
+  border-radius: 14px; background: var(--nu-cream-text-10);
 }
-.hbo__link:hover { color: var(--nu-blue-hover); }
-.hbo__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.hbo__link svg, .hbo__conectar svg { flex: none; transition: transform .2s ease; }
-.hbo__link:hover svg, .hbo__conectar:hover svg { transform: translateX(3px); }
-
-/* a ponte */
-.hbo__ponte {
-  margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--nu-cream-line);
-  display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: 'placar frase conectar'; align-items: center; gap: 16px 40px;
+.hbo__pilula-pct { font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.hbo__pilula--up .hbo__pilula-pct { color: var(--nu-green-soft); }
+.hbo__pilula--down .hbo__pilula-pct { color: var(--nu-red-soft); }
+.hbo__pilula-nome { color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.3; text-transform: uppercase; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.hbo__ind {
+  display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 150px;
+  padding: 10px 16px; border-radius: 14px; background: var(--nu-cream-text-08);
 }
-.hbo__placar { grid-area: placar; margin: 0; display: flex; gap: 40px; }
-.hbo__par { display: flex; flex-direction: column; gap: 4px; }
-.hbo__par dt { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
-.hbo__par dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.hbo__voce { color: var(--nu-sand) !important; }
-.hbo__frase { grid-area: frase; margin: 0; max-width: 60ch; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; text-wrap: pretty; }
-.hbo__conectar {
-  grid-area: conectar; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px;
-  border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white);
-  font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap; box-shadow: var(--nu-home-sombra-botao);
-  transition: background .2s ease;
-}
-.hbo__conectar:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.hbo__conectar:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 4px; }
+.hbo__ind-nome { color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.hbo__ind-linha { display: flex; align-items: baseline; gap: 8px; }
+.hbo__ind-valor { color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hbo__ind-pct { font-size: var(--nu-fs-sm); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hbo__ind-pct--up { color: var(--nu-green-soft); }
+.hbo__ind-pct--down { color: var(--nu-red-soft); }
+.hbo__ind-pct--flat { color: var(--nu-cream-text-70); }
+.hbo__ind-legenda { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 500; }
 
-.hbo__esqueleto { display: flex; flex-direction: column; gap: 16px; }
-.hbo__esq-texto { max-width: 560px; }
+/* o dia no mercado: três cartões do fechamento da IA */
+.hbo__dia { margin-top: clamp(44px, 5vw, 60px); }
+.hbo__dia-titulo, .hbo__listas-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.hbo__dia-meta { margin: 10px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; }
+.hbo__dia-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+@media (max-width: 900px) { .hbo__dia-grade { grid-template-columns: 1fr; } }
+.hbo__dia-cartao { display: flex; flex-direction: column; background: var(--nu-navy-2); border-radius: var(--nu-r-card-lg); padding: 24px 26px 28px; }
+.hbo__dia-rotulo { color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.hbo__dia-stat, .hbo__dia-titulo-cartao { padding-top: 18px; color: var(--nu-cream-text); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.hbo__dia-stat { font-size: var(--nu-fs-h2); font-variant-numeric: tabular-nums; }
+.hbo__dia-titulo-cartao { font-size: var(--nu-fs-2xl); }
+.hbo__dia-texto { margin: 12px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
+.hbo__dia-texto :deep(.hte__termo) { color: var(--nu-cream-text); }
+.hbo__dia-acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
 
-/* uma coluna até 1023 px: a linha em cima, as barras embaixo */
-@media (max-width: 1023px) {
-  .hbo__desenhos { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'linha' 'pesos' 'links'; grid-template-rows: none; gap: 32px; }
-  .hbo__ponte { grid-template-columns: auto 1fr; grid-template-areas: 'placar conectar' 'frase frase'; }
-  .hbo__conectar { justify-self: end; }
+/* os botões: o resumo em creme (o texto escuro agora lê) e a newsletter em contorno */
+.hbo__ler {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 24px;
+  border: 1.5px solid var(--nu-cream-text-12); border-radius: var(--nu-r-pill); background: transparent; cursor: pointer;
+  color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s, border-color .2s;
 }
+.hbo__ler:hover { background: var(--nu-cream-text-08); border-color: var(--nu-cream-text-45); color: var(--nu-cream-text); }
+.hbo__ler.hbo__ler--cheio { background: var(--nu-cream); border-color: var(--nu-cream); color: var(--nu-navy); }
+.hbo__ler.hbo__ler--cheio:hover { background: var(--nu-white); border-color: var(--nu-white); color: var(--nu-navy); }
+.hbo__ler:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
+.hbo__ler svg { transition: transform .2s ease; }
+.hbo__ler:hover svg { transform: translateX(3px); }
+
+/* as altas e as baixas: três por lado, o nome da empresa primeiro */
+.hbo__listas { margin-top: clamp(44px, 5vw, 60px); }
+.hbo__grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; margin-top: 24px; }
+.hbo__cartao { background: var(--nu-navy-2); border-radius: var(--nu-r-card-lg); padding: 22px 26px; }
+.hbo__cartao-nome { color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -.3px; }
+.hbo__linhas { margin-top: 10px; }
+.hbo__linha {
+  display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 10px 12px; margin: 0 -12px;
+  border-top: 1px solid var(--nu-cream-text-12); border-radius: var(--nu-r-card); transition: background .16s;
+}
+.hbo__linhas > .hbo__linha:first-child { border-top: none; }
+.hbo__linha:hover { background: var(--nu-cream-text-08); }
+.hbo__linha:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.hbo__pos { width: 18px; flex-shrink: 0; color: var(--nu-cream-text-45); font-size: var(--nu-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.hbo__id { flex: 1; min-width: 0; overflow: hidden; }
+.hbo__empresa { display: block; color: var(--nu-cream-text); font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hbo__ticker { display: block; margin-top: 1px; color: var(--nu-cream-text-50); font-size: var(--nu-fs-dense); font-weight: 500; white-space: nowrap; }
+.hbo__pct { flex-shrink: 0; min-width: 72px; text-align: right; font-size: var(--nu-fs-md); font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hbo__pct--up { color: var(--nu-green-soft); }
+.hbo__pct--down { color: var(--nu-red-soft); }
+
 @media (max-width: 560px) {
-  .hbo__citacao p { font-size: var(--nu-fs-lg); }
-  .hbo__linha { gap: 10px; }
-  .hbo__titulo { font-size: var(--nu-fs-2xl); }
-  .hbo__links { gap: 0 20px; }
-  .hbo__ponte { margin-top: 32px; grid-template-columns: minmax(0, 1fr); grid-template-areas: 'placar' 'conectar' 'frase'; }
-  .hbo__placar { gap: 28px; }
-  .hbo__conectar { justify-self: stretch; }
+  .hbo__ind { flex: 1 1 140px; min-width: 0; }
+  .hbo__dia-acoes { flex-direction: column; align-items: stretch; }
+  .hbo__ler { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hbo { animation: none; }
-  .hbo__link svg, .hbo__conectar svg { transition: none; }
+  .hbo__ler svg { transition: none; }
 }
 </style>

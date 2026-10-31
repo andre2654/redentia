@@ -410,10 +410,6 @@
   --nu-agora-ambar: #FFD60A;
   --nu-agora-azul: #64B5FF;
   /* sombra dos aparelhos sobre o creme (filter: drop-shadow respeita o recorte) */
-  /* alta e queda nos gráficos da bolsa da home (31/10/2026): par validado contra
-     daltonismo sobre o creme (o --nu-green com o --nu-red falha no deutan, ΔE 4,5) */
-  --nu-chart-alta: #0E8A7A;
-  --nu-chart-queda: #D6323B;
   --nu-home-sombra-aparelho: drop-shadow(0 28px 36px rgba(12, 21, 36, 0.26));
   --nu-home-sombra-janela: 0 40px 90px -36px rgba(12, 21, 36, 0.55), 0 0 0 1px rgba(12, 21, 36, 0.08);
   --nu-home-sombra-botao: 0 18px 40px -16px rgba(47, 106, 255, 0.65);
