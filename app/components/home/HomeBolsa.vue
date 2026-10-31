@@ -10,6 +10,7 @@
 //  - "O dia no mercado.": três cartões do fechamento da IA, não quatro ("A
 //    leitura", a mais técnica, fica no resumo inteiro), cada um com o rótulo
 //    do que é, e os termos do mercado com a explicação no toque (HomeTermo);
+//    depois da leitura, só a ideia de cada cartão (o texto vai no resumo);
 //  - "Quem mais subiu e caiu." saiu daqui para a seção de baixo, com os
 //    outros rankings (HomeRankings, pedido do dono no mesmo dia).
 // Os números vêm de uma fonte só (useBolsaDoDia, o mesmo do topo de quem
@@ -185,12 +186,11 @@ function irParaNewsletter(e: MouseEvent) {
           <ol class="hbo__itens">
             <li v-for="i in (cartoes.length ? 0 : 3)" :key="`sk${i}`" class="hbo__item">
               <NuSkeleton tone="navy" variant="line" width="110px" height="12px" radius="chip" />
-              <NuSkeleton tone="navy" variant="text" :lines="2" last-width="70%" height="15px" style="margin-top: 10px" />
+              <NuSkeleton tone="navy" variant="line" width="70%" height="28px" radius="chip" style="margin-top: 12px" />
             </li>
             <li v-for="(c, i) in cartoes" :key="i" class="hbo__item">
               <span class="hbo__item-rotulo">{{ c.rotulo }}</span>
               <strong class="hbo__item-titulo">{{ c.titulo }}</strong>
-              <p class="hbo__item-texto"><template v-for="(p, j) in c.pedacos" :key="j"><HomeTermo v-if="'termo' in p" :texto="p.texto" :termo="p.termo" :slug="p.slug" /><template v-else>{{ p.texto }}</template></template></p>
             </li>
           </ol>
           <div class="hbo__simples-acoes">
@@ -198,7 +198,7 @@ function irParaNewsletter(e: MouseEvent) {
               Ler o resumo do dia
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </button>
-            <button type="button" class="hbo__ler" @click="fase = 'antes'">Ver o gráfico de novo</button>
+            <button type="button" class="hbo__link-news" @click="fase = 'antes'">Ver o gráfico de novo</button>
             <a v-if="receber" href="#newsletter" class="hbo__link-news" @click="irParaNewsletter">Receber toda sexta por e-mail</a>
           </div>
         </div>
@@ -254,16 +254,17 @@ function irParaNewsletter(e: MouseEvent) {
 }
 .hbo__simples-titulo { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; }
 .hbo__simples-titulo:focus { outline: none; }
-.hbo__itens { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.hbo__item { padding: 18px 20px; border-radius: 18px; background: var(--nu-navy-2); animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
+/* só a ideia de cada cartão, sem caixa: um fio separa as três; o texto inteiro fica no resumo do dia */
+.hbo__itens { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hbo__item { padding: 4px 28px; border-left: 1px solid var(--nu-cream-text-12); animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) backwards; }
+.hbo__item:first-child { padding-left: 0; border-left: 0; }
 .hbo__item:nth-child(1) { animation-delay: .1s; }
 .hbo__item:nth-child(2) { animation-delay: .22s; }
 .hbo__item:nth-child(3) { animation-delay: .34s; }
 .hbo__item-rotulo { display: block; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.hbo__item-titulo { display: block; margin-top: 8px; color: var(--nu-cream-text); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
-.hbo__item-texto { margin: 6px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.hbo__simples-acoes { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
-.hbo__link-news { color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.hbo__item-titulo { display: block; margin-top: 10px; color: var(--nu-cream-text); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+.hbo__simples-acoes { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; animation: hbo-entra .5s cubic-bezier(.22, 1, .36, 1) .46s backwards; }
+.hbo__link-news { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .hbo__link-news:hover { color: var(--nu-cream-text); }
 
 /* o topo: o título à esquerda e a deixa ("Parece confuso?" e o botão) à direita */
@@ -315,6 +316,8 @@ function irParaNewsletter(e: MouseEvent) {
   .hbo__deixa { order: 2; margin-top: 18px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; max-width: none; text-align: left; }
   .hbo__simples { position: static; margin-top: 8px; }
   .hbo__itens { grid-template-columns: 1fr; }
+  .hbo__item, .hbo__item:first-child { padding: 16px 0; border-left: 0; border-top: 1px solid var(--nu-cream-text-12); }
+  .hbo__item:first-child { border-top: 0; padding-top: 4px; }
   .hbo__quadro--lido .hbo__grafico { display: none; }
 }
 @media (max-width: 560px) {
