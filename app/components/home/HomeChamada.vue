@@ -94,7 +94,7 @@ const BANCOS = [
 .hch__banco + .hch__banco { margin-left: -9px; }
 .hch__rotulo { white-space: nowrap; }
 
-/* a letra miúda: o preço primeiro, depois de onde vem a carteira */
+/* a letra miúda: de onde vem a carteira (sem preço desde 01/11/2026) */
 .hch__letra {
   margin: 18px 0 0; max-width: 64ch; color: var(--nu-gray-2);
   font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; text-wrap: balance;
@@ -118,7 +118,7 @@ const BANCOS = [
   .hch__botao { width: 100%; justify-content: center; gap: 12px; padding: 10px 20px 10px 10px; font-size: var(--nu-fs-md); }
   .hch__banco--extra { display: none; }
   .hch__banco { width: 30px; height: 30px; }
-  /* o preço numa linha, o banco na outra; os aparelhos em cima da frase deles */
+  /* a frase em negrito numa linha, o Open Finance na outra; os aparelhos em cima da frase deles */
   .hch__letra strong { display: block; }
   .hch__apps { flex-direction: column; gap: 6px; }
   .hch:not(.hch--centro) .hch__apps { align-items: flex-start; }

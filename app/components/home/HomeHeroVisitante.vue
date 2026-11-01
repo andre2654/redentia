@@ -75,6 +75,29 @@
   .hhv__dek, .hhv__chamada, .hhv__aparelhos { animation: none; }
 }
 
+/* celular e tablet (pedido do dono, 01/11/2026: "fica muito estranho, parece
+   que ocupa muito espaço"): numa coluna só o texto à esquerda deixava metade da
+   tela vazia. Agora tudo no centro, o título menor e o espaço entre as partes
+   mais curto; no celular saem a linha "Redentia" (a marca está no topo) e a
+   dos aparelhos (o desenho deles vem logo abaixo). */
+@media (max-width: 1023px) {
+  .hhv__texto { align-items: center; text-align: center; }
+  .hhv__titulo { max-width: 18ch; font-size: clamp(32px, 6.2vw, 46px); line-height: 1.02; }
+  .hhv__dek { max-width: 40ch; margin-top: 16px; }
+  .hhv__chamada { margin-top: 26px; }
+  .hhv__chamada :deep(.hch__letra), .hhv__chamada :deep(.hch__apps) { text-align: center; justify-content: center; }
+  .hhv__chamada { align-items: center; }
+  .hhv__aparelhos { margin-top: 32px; }
+}
+@media (max-width: 560px) {
+  .hhv { padding-top: 28px; }
+  .hhv__produto { display: none; }
+  .hhv__titulo { margin-top: 0; }
+  .hhv__dek { font-size: var(--nu-fs-lg); }
+  .hhv__chamada :deep(.hch__apps) { display: none; }
+  .hhv__chamada :deep(.hch__letra strong) { display: inline; }
+}
+
 /* computador: o texto à esquerda e os aparelhos à direita, numa dobra só.
    Fica no fim do arquivo para vencer as regras de base acima.
    A coluna do texto tem a largura do título (de 380 a 500 px; abaixo de 380
