@@ -113,15 +113,18 @@ const BANCOS = [
 .hch--escuro .hch__letra, .hch--escuro .hch__apps { color: var(--nu-white-85); }
 .hch--escuro .hch__letra strong, .hch--escuro .hch__glifos { color: var(--nu-white); }
 
+/* a linha dos aparelhos fica só no computador (pedido do dono, 01/11/2026):
+   no celular e no tablet ela só empurrava os aparelhos para baixo */
+@media (max-width: 1023px) {
+  .hch__apps { display: none; }
+}
 @media (max-width: 560px) {
   .hch { align-self: stretch; }
   .hch__botao { width: 100%; justify-content: center; gap: 12px; padding: 10px 20px 10px 10px; font-size: var(--nu-fs-md); }
   .hch__banco--extra { display: none; }
   .hch__banco { width: 30px; height: 30px; }
-  /* a frase em negrito numa linha, o Open Finance na outra; os aparelhos em cima da frase deles */
+  /* a frase em negrito numa linha, o Open Finance na outra */
   .hch__letra strong { display: block; }
-  .hch__apps { flex-direction: column; gap: 6px; }
-  .hch:not(.hch--centro) .hch__apps { align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hch__botao, .hch__seta { transition: none; }

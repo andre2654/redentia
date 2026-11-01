@@ -63,11 +63,15 @@
 
 /* Celular: a janela do Mac na largura toda e o iPhone maior, que é o aparelho
    de quem está lendo. Caixa de 100 × 113. */
+/* celular: o iPhone e o relógio sobem por cima do Mac (pedido do dono,
+   01/11/2026: "mais sobrepostos... mais para cima"), e a caixa fica mais baixa.
+   Em largura W: o Mac tem 0,625 W de altura, o iPhone 0,80 W começando em
+   0,22 W e o relógio 0,37 W começando em 0,50 W; a caixa, 1,03 W. */
 @media (max-width: 760px) {
-  .hap { aspect-ratio: 100 / 113; }
+  .hap { aspect-ratio: 100 / 103; }
   .hap__mac { left: 0; width: 100%; }
-  .hap__iphone { right: 3%; top: 28.3%; width: 38%; }
-  .hap__watch { left: 3%; top: 65.7%; width: 30%; }
+  .hap__iphone { right: 3%; top: 21.4%; width: 38%; }
+  .hap__watch { left: 4%; top: 48.5%; width: 30%; }
 }
 
 /* Computador (o herói em duas colunas): a caixa vai da coluna da direita até

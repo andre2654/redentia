@@ -78,8 +78,8 @@
 /* celular e tablet (pedido do dono, 01/11/2026: "fica muito estranho, parece
    que ocupa muito espaço"): numa coluna só o texto à esquerda deixava metade da
    tela vazia. Agora tudo no centro, o título menor e o espaço entre as partes
-   mais curto; no celular saem a linha "Redentia" (a marca está no topo) e a
-   dos aparelhos (o desenho deles vem logo abaixo). Logo depois, o dono: "tirar
+   mais curto; no celular sai a linha "Redentia" (a marca está no topo); a dos
+   aparelhos sai em todo o site abaixo de 1.024 px (HomeChamada). Logo depois, o dono: "tirar
    texto daqui... para o usuário conseguir ver os dispositivos, que é o que chama
    atenção": a frase de apoio sai abaixo de 1.024 px (o "Você não precisa
    acompanhar tudo." logo abaixo diz o mesmo) e os aparelhos sobem. */
@@ -88,7 +88,7 @@
   .hhv__titulo { max-width: 18ch; font-size: clamp(32px, 6.2vw, 46px); line-height: 1.02; }
   .hhv__dek { display: none; }
   .hhv__chamada { margin-top: 24px; }
-  .hhv__chamada :deep(.hch__letra), .hhv__chamada :deep(.hch__apps) { text-align: center; justify-content: center; }
+  .hhv__chamada :deep(.hch__letra) { text-align: center; }
   .hhv__chamada { align-items: center; }
   .hhv__aparelhos { margin-top: 28px; }
 }
@@ -96,7 +96,6 @@
   .hhv { padding-top: 28px; }
   .hhv__produto { display: none; }
   .hhv__titulo { margin-top: 0; }
-  .hhv__chamada :deep(.hch__apps) { display: none; }
   .hhv__chamada :deep(.hch__letra strong) { display: inline; }
 }
 
