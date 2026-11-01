@@ -63,10 +63,12 @@ test('a amplitude diz de quando é, e some sem contagem', () => {
   assert.equal(fraseDaAmplitude(null, 3), null)
 })
 
-test('a chamada única leva ao /assinar e não promete App Store que ainda não existe', () => {
+test('a chamada única leva ao /assinar, não fala de preço e não promete App Store que ainda não existe', () => {
   const chamada = ler('app/components/home/HomeChamada.vue')
   assert.match(chamada, /to="\/assinar"/)
-  assert.match(chamada, /3 dias grátis, depois R\$ 19,99 por mês\./)
+  // a entrada não fala de preço (decisão do dono, 01/11/2026): ele vem no fim do quiz
+  assert.doesNotMatch(chamada.slice(chamada.indexOf('<template>')), /19,99|dias grátis/)
+  assert.match(chamada, /Qualquer banco ou corretora\./)
   assert.match(chamada, /Em breve no iPhone, no Mac e no Apple&nbsp;Watch\./)
   for (const f of ['app/components/home/HomeChamada.vue', 'app/components/home/HomeAparelhos.vue', 'app/components/home/HomeHeroVisitante.vue', 'app/composables/useMercado.ts'])
     assert.doesNotMatch(ler(f), /apps\.apple\.com|Baixar na App Store|Disponível na App Store/i, f)

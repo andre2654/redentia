@@ -5,7 +5,8 @@
 // iPhone, Mac e Watch". Um botão só, com os logos dos bancos dentro dele (a
 // carteira vem de qualquer banco), o rótulo "Conectar carteira" (troca do
 // dono no mesmo dia; a IA fica na linha de apoio do herói), a letra miúda com o
-// preço do plano e o Open Finance, e a linha dos aparelhos.
+// Open Finance e a linha dos aparelhos. Sem preço desde 01/11/2026 (decisão do
+// dono: a entrada não fala de preço; ele aparece no fim do quiz do /assinar).
 //
 // Destino: /assinar, a página do plano único (R$ 19,99 por mês, 3 dias
 // grátis com cartão). Ela vale para logado e deslogado: quem ainda não tem
@@ -49,8 +50,8 @@ const BANCOS = [
     </NuxtLink>
 
     <p class="hch__letra">
-      <strong>3 dias grátis, depois R$ 19,99 por mês.</strong>
-      Qualquer banco ou corretora, pelo Open Finance.
+      <strong>Qualquer banco ou corretora.</strong>
+      Pelo Open Finance, só leitura.
     </p>
 
     <p class="hch__apps">

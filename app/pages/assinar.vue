@@ -45,7 +45,7 @@ const pendente = computed(() => assinatura.situacao.value === 'pendente')
 
 usePageSeo({
   title: 'Assinatura Redentia',
-  description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números. R$ 19,99 por mês, 3 dias grátis na primeira assinatura.',
+  description: 'Sua carteira de qualquer banco pelo Open Finance, testada em 2.000 cenários, com a IA que responde com os seus números. Só leitura, regulado pelo Banco Central.',
   path: '/assinar',
 })
 </script>

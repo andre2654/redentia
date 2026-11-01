@@ -178,7 +178,7 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
         </div>
         <HomeChamada
           tom="escuro" :centro="false" class="hag__chamada"
-          :rotulo="resumo?.state === 'patrimonio' ? (assinatura.primeiraAssinatura.value ? 'Começar 3 dias grátis' : 'Assinar a Redentia') : 'Conectar carteira'"
+          :rotulo="resumo?.state === 'patrimonio' ? 'Ver a minha carteira' : 'Conectar carteira'"
         />
       </template>
 
