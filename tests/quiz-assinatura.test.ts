@@ -7,6 +7,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   PASSOS,
+  passosDoQuiz,
   PERGUNTAS,
   alternarBanco,
   fraseDosAvisos,
@@ -23,6 +24,13 @@ test('seis perguntas, dois respiros, a montagem e o resultado, nessa ordem', () 
   assert.equal(PERGUNTAS.length, 6)
   assert.deepEqual(PASSOS.map((p) => (p.tipo === 'pergunta' ? p.pergunta.id : p.tipo === 'respiro' ? p.id : p.tipo)),
     ['investe', 'bancos', 'frequencia', 'avisos', 'preocupa', 'queda', 'cenarios', 'quer', 'montando', 'resultado'])
+})
+
+test('sem conta, o e-mail vem antes do resultado; com conta, não aparece', () => {
+  const nome = (p: ReturnType<typeof passosDoQuiz>[number]) => (p.tipo === 'pergunta' ? p.pergunta.id : p.tipo === 'respiro' ? p.id : p.tipo)
+  assert.deepEqual(passosDoQuiz(true).slice(-4).map(nome), ['quer', 'conta', 'montando', 'resultado'])
+  assert.equal(passosDoQuiz(false), PASSOS)
+  assert.ok(!passosDoQuiz(false).some((p) => p.tipo === 'conta'))
 })
 
 test('lista em palavras', () => {

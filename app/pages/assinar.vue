@@ -59,7 +59,7 @@ usePageSeo({
     >
       <template #titulo>
         <template v-if="pendente">A cobrança <br>não passou.</template>
-        <template v-else>Clareza de todos <br>os seus investimentos.</template>
+        <template v-else>Clareza sobre <br>todos os seus <br>investimentos.</template>
       </template>
       <template #dek>
         <template v-if="pendente">
@@ -82,7 +82,6 @@ usePageSeo({
       <AssinaturaBancos />
       <AssinaturaAntesDepois />
       <AssinaturaMcp />
-      <AssinaturaSeguranca />
       <AssinaturaPerguntas />
       <AssinaturaFecho />
     </template>

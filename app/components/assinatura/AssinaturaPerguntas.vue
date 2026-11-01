@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // As perguntas que travam a decisão (31/10/2026), respondidas sem rodeio. O
-// preço não aparece aqui: ele vem no fim do quiz, antes de qualquer pagamento
-// (decisão do dono, o topo é o "Conectar carteira"). Nada recomenda investimento.
+// topo não diz preço (o "Conectar carteira" abre o quiz), mas quem pergunta
+// "Quanto custa?" lê a resposta direta (revisão de funil, 01/11/2026: esconder
+// o preço de quem procura por ele tira confiança). Nada recomenda investimento.
+import { DIAS_GRATIS, PRECO_MENSAL } from '~/utils/assinatura'
 // No mesmo dia, o dono pediu o modelo do FAQ da home: o texto à esquerda e o
 // NuFaqAccordion à direita (cartões brancos no creme). O JSON-LD fica com o da
 // home: o /assinar é privado e não precisa de um FAQPage a mais.
@@ -18,7 +20,7 @@ const PERGUNTAS: NuFaqItem[] = [
   },
   {
     q: 'Quanto custa?',
-    a: 'Você vê o preço de lançamento no fim do quiz, antes de qualquer pagamento. Na primeira assinatura dá para testar antes, e você cancela quando quiser, em Configurações.',
+    a: `${PRECO_MENSAL} por mês, preço de lançamento. Na primeira assinatura são ${DIAS_GRATIS} dias grátis para testar, e você cancela quando quiser, em Configurações.`,
   },
   {
     q: 'A Redentia diz o que eu devo comprar?',
@@ -42,15 +44,15 @@ const PERGUNTAS: NuFaqItem[] = [
         </div>
       </div>
       <div class="apg__dir">
-        <NuFaqAccordion :items="PERGUNTAS" surface="white" :schema="false" />
+        <NuFaqAccordion :items="PERGUNTAS" :schema="false" />
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* o mesmo FAQ da home (HomeContent .mfq): creme, o texto à esquerda */
-.apg { background: var(--nu-cream); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
+/* o mesmo FAQ da home (HomeContent .mfq), o texto à esquerda; aqui no branco com os cartões creme (alterna com o MCP) */
+.apg { background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
 .apg__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .apg__esq { flex: 1 1 300px; min-width: min(280px, 100%); }
 .apg__copy { margin: 22px 0 0; max-width: 420px; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; }

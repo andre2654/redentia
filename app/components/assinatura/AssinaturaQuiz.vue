@@ -12,7 +12,7 @@
 import { DIAS_GRATIS, PRECO_MENSAL, dataDaPrimeiraCobranca } from '~/utils/assinatura'
 import { INSTITUICOES } from '~/content/instituicoes'
 import {
-  PASSOS,
+  passosDoQuiz,
   alternarBanco,
   fraseDosAvisos,
   fraseDosCenarios,
@@ -25,16 +25,26 @@ import {
 
 const { aberto, fechar, evento } = useQuizAssinatura()
 const { erro, primeiraAssinatura } = useAssinatura()
-const { displayName } = useAuthState()
+const { displayName, isAuthenticated } = useAuthState()
+// sem conta, o e-mail vem antes do resultado (passosDoQuiz); a conta nasce aqui
+// mesmo, com o código de 6 números (o mesmo cadastro da folha e do /login)
+const comConta = ref(false)
+const PASSOS_ = computed(() => passosDoQuiz(comConta.value))
+const cad = useCadastroInline()
+const email = ref('')
+const codigo = ref('')
+const isca = ref('')
+// o onboarding obrigatório da conta nova espera o quiz fechar (como espera a folha)
+const naFolha = useState<boolean>('nu:onb-na-folha', () => false)
 
 const indice = ref(0)
 const respostas = ref<Respostas>({})
 const indo = ref<'frente' | 'tras'>('frente')
-const passo = computed(() => PASSOS[indice.value]!)
-const totalPerguntas = PASSOS.filter((p) => p.tipo === 'pergunta').length
+const passo = computed(() => PASSOS_.value[indice.value]!)
+const totalPerguntas = PASSOS_.value.filter((p) => p.tipo === 'pergunta').length
 // a barra: quantas perguntas já ficaram para trás (os respiros não contam)
-const feitas = computed(() => PASSOS.slice(0, indice.value).filter((p) => p.tipo === 'pergunta').length)
-const progresso = computed(() => (passo.value.tipo === 'resultado' ? 1 : passo.value.tipo === 'montando' ? 0.96 : feitas.value / totalPerguntas))
+const feitas = computed(() => PASSOS_.value.slice(0, indice.value).filter((p) => p.tipo === 'pergunta').length)
+const progresso = computed(() => (passo.value.tipo === 'resultado' ? 1 : passo.value.tipo === 'montando' ? 0.96 : passo.value.tipo === 'conta' ? 0.9 : feitas.value / totalPerguntas))
 
 const instituicao = (slug: string) => INSTITUICOES.find((i) => i.slug === slug)
 const nomeDoBanco = (slug: string) => instituicao(slug)?.name ?? slug
@@ -62,7 +72,7 @@ function escolher(p: Pergunta, o: Opcao) {
 }
 
 function avancar() {
-  if (indice.value >= PASSOS.length - 1) return
+  if (indice.value >= PASSOS_.value.length - 1) return
   indo.value = 'frente'
   indice.value++
   const p = passo.value
@@ -73,10 +83,24 @@ function voltar() {
   if (indice.value === 0) return
   indo.value = 'tras'
   indice.value--
-  // a montagem não tem volta: pula de volta para a última pergunta
-  if (passo.value.tipo === 'montando') indice.value--
+  // a montagem não tem volta, e a conta já feita também não: pula até a última pergunta
+  while (indice.value > 0 && (passo.value.tipo === 'montando' || (passo.value.tipo === 'conta' && isAuthenticated.value))) indice.value--
 }
 const podeVoltar = computed(() => indice.value > 0 && passo.value.tipo !== 'montando')
+
+// o passo da conta: o e-mail, o código e, confirmado, o resultado
+async function pedirCodigo() {
+  if (await cad.pedirCodigo(email.value, '/assinar', isca.value)) {
+    codigo.value = ''
+    evento('quiz_conta_codigo')
+  }
+}
+async function confirmarCodigo() {
+  const feito = await cad.confirmar(codigo.value)
+  if (!feito) return
+  evento('quiz_conta_feita', { nova: feito.novaConta })
+  avancar()
+}
 
 // a montagem: as quatro linhas se acendem e o resultado entra sozinho
 const linhasDaMontagem = computed(() => {
@@ -117,7 +141,10 @@ function onKey(e: KeyboardEvent) {
 watch(aberto, (open) => {
   if (import.meta.server) return
   document.documentElement.style.overflow = open ? 'hidden' : ''
+  naFolha.value = open
   if (open) {
+    comConta.value = !isAuthenticated.value
+    cad.trocarContato()
     indice.value = 0
     respostas.value = {}
     indo.value = 'frente'
@@ -277,6 +304,43 @@ const ICONES: Record<string, string> = {
                 <button type="button" class="aqz__seguir aqz__seguir--claro" @click="avancar">Continuar</button>
               </section>
 
+              <!-- a conta: para onde mandamos o plano (só para quem chega sem conta) -->
+              <section v-else-if="passo.tipo === 'conta'" :key="`c-${indice}`" class="aqz__passo">
+                <template v-if="cad.etapa.value === 'contato'">
+                  <h2 :id="tituloId" class="aqz__titulo">Para onde mandamos o seu plano?</h2>
+                  <p class="aqz__sub">O seu e-mail. Mandamos um código de 6 números para confirmar, sem senha.</p>
+                  <form class="aqz__form" @submit.prevent="pedirCodigo">
+                    <label class="aqz__rotulo" for="aqz-email">E-mail</label>
+                    <input id="aqz-email" v-model="email" class="aqz__campo" type="email" inputmode="email" autocomplete="email" placeholder="voce@email.com" required>
+                    <input v-model="isca" class="aqz__isca" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+                    <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert">{{ cad.erro.value }}</p>
+                    <button type="submit" class="aqz__seguir" :disabled="cad.enviando.value || !email.trim()">
+                      {{ cad.enviando.value ? 'Enviando o código' : 'Ver o meu plano' }}
+                    </button>
+                  </form>
+                  <p class="aqz__miudo">Ao continuar, você cria a sua conta na Redentia e aceita os <NuxtLink to="/institucional/terms" target="_blank">Termos</NuxtLink> e a <NuxtLink to="/institucional/privacy" target="_blank">Privacidade</NuxtLink>.</p>
+                </template>
+                <template v-else>
+                  <h2 :id="tituloId" class="aqz__titulo">Confira o seu e-mail.</h2>
+                  <p class="aqz__sub">Mandamos um código de 6 números para <strong>{{ cad.contato.value }}</strong>.</p>
+                  <form class="aqz__form" @submit.prevent="confirmarCodigo">
+                    <label class="aqz__rotulo" for="aqz-codigo">Código</label>
+                    <input id="aqz-codigo" v-model="codigo" class="aqz__campo aqz__campo--codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
+                    <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert">{{ cad.erro.value }}</p>
+                    <button type="submit" class="aqz__seguir" :disabled="cad.enviando.value || codigo.replace(/\D/g, '').length !== 6">
+                      {{ cad.enviando.value ? 'Confirmando' : 'Confirmar' }}
+                    </button>
+                  </form>
+                  <p class="aqz__miudo">
+                    <button type="button" class="aqz__link" :disabled="cad.reenviarEm.value > 0" @click="cad.reenviar('/assinar')">
+                      {{ cad.reenviarEm.value > 0 ? `Reenviar em ${cad.reenviarEm.value} s` : 'Reenviar o código' }}
+                    </button>
+                    ·
+                    <button type="button" class="aqz__link" @click="cad.trocarContato()">Trocar o e-mail</button>
+                  </p>
+                </template>
+              </section>
+
               <!-- a montagem -->
               <section v-else-if="passo.tipo === 'montando'" :key="`m-${indice}`" class="aqz__passo aqz__passo--centro">
                 <h2 :id="tituloId" class="aqz__titulo">Montando o seu plano.</h2>
@@ -427,6 +491,23 @@ const ICONES: Record<string, string> = {
 .aqz__seguir:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .aqz__seguir--claro { background: var(--nu-cream); color: var(--nu-navy); margin-top: 28px; }
 .aqz__seguir--claro:hover:not(:disabled) { background: var(--nu-white); }
+
+/* a conta */
+.aqz__form { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
+.aqz__rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.aqz__campo {
+  min-height: 56px; padding: 0 18px; border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white);
+  box-shadow: inset 0 0 0 1.5px var(--nu-cream-line); color: var(--nu-ink); font-family: inherit; font-size: var(--nu-fs-lg); font-weight: 700;
+}
+.aqz__campo:focus { outline: none; box-shadow: inset 0 0 0 2px var(--nu-blue); }
+.aqz__campo--codigo { letter-spacing: .4em; font-variant-numeric: tabular-nums; }
+.aqz__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.aqz__form .aqz__seguir { margin-top: 14px; }
+.aqz__erro-claro { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.aqz__miudo { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+.aqz__miudo a, .aqz__link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.aqz__link { padding: 0; border: 0; background: none; font-family: inherit; font-size: inherit; cursor: pointer; }
+.aqz__link:disabled { color: var(--nu-gray); text-decoration: none; cursor: default; }
 
 /* o aviso de exemplo */
 .aqz__celular { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 32px; padding: 22px 18px; border-radius: 28px; background: var(--nu-navy-2); }

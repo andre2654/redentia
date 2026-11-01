@@ -3,7 +3,8 @@
 // ganha. No mesmo dia o dono pediu os cartões no formato da home ("é mais
 // bonito"): o mesmo esqueleto do HomeComoFunciona — a tela preta do app no
 // alto, o título curto e duas linhas —, com um quarto cartão para a IA.
-//  1. Junta os bancos (os logos reais de public/icons, os mesmos da home);
+//  1. Todos os bancos numa tela (o print da /carteira de verdade, desde 01/11/2026:
+//     os logos dos bancos já estão na seção dos bancos logo abaixo);
 //  2. Testa 2.000 futuros (o HomeLeque);
 //  3. Responde com os seus números (uma conversa de exemplo, sem número);
 //  4. Chama só quando importa (os dois estados do Agora).
@@ -12,34 +13,23 @@
 // "Conectar carteira" (todas as seções do /assinar terminam nele).
 withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: true, conectar: false })
 
-const BANCOS = [
-  { nome: 'Nubank', logo: '/icons/logo-nubank.webp' },
-  { nome: 'Itaú', logo: '/icons/logo-itau.webp' },
-  { nome: 'Inter', logo: '/icons/logo-inter.webp' },
-  { nome: 'Bradesco', logo: '/icons/logo-bradesco.webp' },
-  { nome: 'Santander', logo: '/icons/logo-santander.webp' },
-]
 </script>
 
 <template>
   <section class="abn" aria-labelledby="abn-titulo">
-    <h2 v-if="titulo" id="abn-titulo" class="abn__titulo">O que vem <br>na assinatura.</h2>
+    <h2 v-if="titulo" id="abn-titulo" class="abn__titulo">O que a Redentia <br>faz por você.</h2>
     <p v-if="titulo" class="abn__dek">Quatro coisas, todos os dias, sem você precisar abrir planilha nenhuma.</p>
-    <h2 v-else id="abn-titulo" class="abn__sr">O que vem na assinatura</h2>
+    <h2 v-else id="abn-titulo" class="abn__sr">O que a Redentia faz por você</h2>
 
     <div class="abn__grade">
       <article class="abn__cartao">
-        <div class="abn__tela">
-          <ul class="abn__bancos">
-            <li v-for="b in BANCOS" :key="b.nome">
-              <img :src="b.logo" alt="" width="48" height="48" loading="lazy">
-              <span>{{ b.nome }}</span>
-            </li>
-            <li class="abn__mais"><b>+110</b><span>bancos e corretoras</span></li>
-          </ul>
+        <!-- a tela de verdade da /carteira (print do 01/11/2026, valor escondido pelo olho), marcada como exemplo -->
+        <div class="abn__tela abn__tela--print">
+          <span class="abn__exemplo">Exemplo</span>
+          <img src="/assinatura/carteira-exemplo.png" alt="Exemplo da carteira na Redentia: Tudo normal. Na sexta, sua carteira caiu 0,62%; a bolsa, 0,75%. Contas no Itaú e na XP." width="1200" height="608" loading="lazy" class="abn__print">
         </div>
-        <h3 class="abn__nome">Junta os seus bancos.</h3>
-        <p class="abn__texto">Você conecta uma vez pelo Open Finance e a carteira inteira chega sozinha. Só leitura: a Redentia nunca move o seu dinheiro.</p>
+        <h3 class="abn__nome">Todos os bancos, numa tela.</h3>
+        <p class="abn__texto">A carteira inteira somada, com uma frase que diz se está tudo normal. Abriu, soube.</p>
       </article>
 
       <article class="abn__cartao">
@@ -108,14 +98,12 @@ const BANCOS = [
 .abn__nome { margin: 28px 18px 0; color: var(--nu-ink); font-size: clamp(26px, 2.6vw, 34px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
 .abn__texto { margin: 12px 18px 0; max-width: 52ch; color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.55; }
 
-/* 1 · os bancos */
-.abn__bancos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 8px; margin: 0 auto; padding: 0 18px; width: min(100%, 460px); list-style: none; }
-.abn__bancos li { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
-.abn__bancos img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
-.abn__bancos span { color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; text-align: center; }
-.abn__mais b {
-  display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%;
-  background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums;
+/* 1 · o print da carteira, numa janela creme sobre o preto */
+.abn__tela--print { padding: clamp(16px, 2.4vw, 28px); }
+.abn__print { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--nu-cream); }
+.abn__exemplo {
+  position: absolute; top: 12px; right: 12px; z-index: 1; padding: 4px 10px; border-radius: var(--nu-r-pill);
+  background: var(--nu-agora-pilula); color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700;
 }
 
 /* 2 · o leque */

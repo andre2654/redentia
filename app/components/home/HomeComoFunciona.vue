@@ -35,7 +35,7 @@ const BANCOS = [
               <img :src="b.logo" alt="" width="52" height="52" loading="lazy">
               <span>{{ b.nome }}</span>
             </li>
-            <li class="hcf__mais"><b>+110</b><span>bancos e corretoras</span></li>
+            <li class="hcf__mais"><b>+100</b><span>bancos e corretoras</span></li>
           </ul>
         </div>
         <h3 class="hcf__nome">Junta os seus bancos.</h3>

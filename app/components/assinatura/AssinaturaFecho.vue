@@ -36,7 +36,7 @@ const bancos = VITRINE.map((s) => INSTITUICOES.find((i) => i.slug === s)).filter
 <style scoped>
 .afc {
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  background: var(--nu-white); padding: clamp(72px, 9vw, 128px) clamp(22px, 5.5vw, 80px);
+  background: var(--nu-cream); padding: clamp(72px, 9vw, 128px) clamp(22px, 5.5vw, 80px);
 }
 
 /* o desenho: os bancos encostados → a linha → a marca */
@@ -44,7 +44,7 @@ const bancos = VITRINE.map((s) => INSTITUICOES.find((i) => i.slug === s)).filter
 .afc__bancos { list-style: none; margin: 0; padding: 0 0 0 10px; display: flex; }
 .afc__banco {
   display: grid; place-items: center; width: 50px; height: 50px; margin-left: -10px; border-radius: 50%;
-  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-white), 0 0 0 4px var(--nu-cream-line), var(--nu-shadow-pos-nav);
+  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-cream), var(--nu-shadow-pos-nav);
   animation: afc-entra .5s cubic-bezier(.22, 1, .36, 1) calc(var(--i) * 50ms) backwards;
 }
 .afc__banco :deep(.cil) { border: 0; border-radius: 8px; }

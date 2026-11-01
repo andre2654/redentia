@@ -112,6 +112,7 @@ export type Respostas = Partial<Record<IdPergunta, string[]>>
 export type Passo =
   | { tipo: 'pergunta'; pergunta: Pergunta }
   | { tipo: 'respiro'; id: 'avisos' | 'cenarios' }
+  | { tipo: 'conta' }
   | { tipo: 'montando' }
   | { tipo: 'resultado' }
 
@@ -127,6 +128,19 @@ export const PASSOS: Passo[] = [
   { tipo: 'montando' },
   { tipo: 'resultado' },
 ]
+
+/**
+ * Os passos para quem chega sem conta (pedido do dono, 01/11/2026, na revisão
+ * do funil): o e-mail vem ANTES do resultado ("para onde mandamos o seu
+ * plano?"), com o mesmo código de 6 números do /login. Quem desiste no preço
+ * já é uma conta (recebe os e-mails de boas-vindas) e o botão do fim vai
+ * direto ao pagamento. Quem já está logado não vê esse passo.
+ */
+export function passosDoQuiz(comConta: boolean): Passo[] {
+  if (!comConta) return PASSOS
+  const i = PASSOS.findIndex((p) => p.tipo === 'montando')
+  return [...PASSOS.slice(0, i), { tipo: 'conta' }, ...PASSOS.slice(i)]
+}
 
 /** "Nubank", "Nubank e XP", "Nubank, Itaú e XP". */
 export function listaEmPalavras(nomes: string[]): string {

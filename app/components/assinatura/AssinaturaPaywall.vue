@@ -40,7 +40,6 @@ defineProps<{ pendente?: boolean }>()
       <AssinaturaBancos />
       <AssinaturaAntesDepois />
       <AssinaturaMcp />
-      <AssinaturaSeguranca />
       <AssinaturaPerguntas />
       <AssinaturaFecho />
     </template>

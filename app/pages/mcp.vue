@@ -43,7 +43,7 @@ const FAQS = [
   { q: 'Existe limite de uso?', a: 'Sim, um limite de uso justo: 50 consultas por dia e 60 por minuto por chave, que renovam sozinhos. A simulação de cenário é cálculo pesado e tem um sub-limite próprio, de 10 por dia e 3 por minuto, que também conta nas 50 do dia. É bem mais do que uma conversa sobre a sua carteira consome, e existe pra manter a chave gratuita de pé pra todo mundo. Escritório que usa o MCP como ferramenta de trabalho tem plano próprio, com limite muito maior: redentia.com.br/business.' },
   { q: 'A IA consegue mexer na minha carteira?', a: 'Não. O acesso é somente leitura por design: o MCP responde consultas (posições, proventos, cotações, teses, notícias) e não executa nenhuma ação. Não existe ferramenta de compra, venda ou alteração de dados.' },
   { q: 'Quais assistentes funcionam hoje?', a: 'O claude.ai conecta como conector personalizado: cole a URL, clique em Connect e autorize com a sua chave. O ChatGPT conecta pelo modo desenvolvedor da OpenAI, do mesmo jeito. Cursor, Claude Code e Raycast conectam direto com a chave; o Claude Desktop, pela ponte mcp-remote.' },
-  { q: 'De onde vem a minha carteira?', a: 'Do Open Finance, a conexão oficial regulada pelo Banco Central. Você conecta corretoras e bancos (XP, Nubank, Itaú, BTG e mais de 200 instituições) e a Redentia importa suas posições automaticamente, sempre somente leitura.' },
+  { q: 'De onde vem a minha carteira?', a: 'Do Open Finance, a conexão oficial regulada pelo Banco Central. Você conecta corretoras e bancos (XP, Nubank, Itaú, BTG e mais de 100 instituições) e a Redentia importa suas posições automaticamente, sempre somente leitura.' },
   { q: 'Como revogo o acesso?', a: 'Em Configurações, seção MCP: desligue o interruptor, gere uma nova chave (a antiga para de valer) ou desligue escopos individuais, como carteira ou cenários, mantendo o resto. A mudança vale em até um minuto, porque o servidor guarda a validação da chave por sessenta segundos.' },
 ]
 
@@ -156,7 +156,7 @@ usePageSeo({
           <p class="mdoc__lead">
             A carteira que a sua IA lê chega na Redentia pelo <strong>Open Finance</strong>, a conexão oficial
             regulada pelo Banco Central. XP, Nubank, Itaú, BTG Pactual, Rico, Clear, Inter, C6, Bradesco,
-            Santander, Banco do Brasil, Toro, Avenue, Ágora e mais de 200 outras instituições.
+            Santander, Banco do Brasil, Toro, Avenue, Ágora e mais de 100 outras instituições.
           </p>
           <p class="mdoc__insts-note">
             Sempre somente leitura: você escolhe o que compartilhar e desconecta quando quiser.
@@ -172,7 +172,7 @@ usePageSeo({
         <span v-for="s in ['xp', 'nubank', 'itau', 'btg', 'bradesco', 'santander', 'bb', 'inter', 'rico', 'c6']" :key="s" class="mdoc__ava">
           <img :src="`/instituicoes/${s}.svg`" :alt="s" width="30" height="30" loading="lazy">
         </span>
-        <span class="mdoc__ava mdoc__ava--more">+200</span>
+        <span class="mdoc__ava mdoc__ava--more">+100</span>
       </div>
     </section>
 
