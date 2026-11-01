@@ -59,7 +59,7 @@ usePageSeo({
     >
       <template #titulo>
         <template v-if="pendente">A cobrança <br>não passou.</template>
-        <template v-else>Um banco não <br>vê o outro.</template>
+        <template v-else>Clareza de todos <br>os seus investimentos.</template>
       </template>
       <template #dek>
         <template v-if="pendente">
@@ -67,8 +67,8 @@ usePageSeo({
           Nada mais muda.
         </template>
         <template v-else>
-          A Redentia vê todos, testa a sua carteira em 2.000 cenários e te avisa
-          quando importa.
+          A Redentia junta os seus bancos, testa a sua carteira em 2.000 cenários
+          e te avisa quando importa.
         </template>
       </template>
     </AssinaturaVitrine>
@@ -79,7 +79,9 @@ usePageSeo({
 
     <!-- as seções que prendem até conectar: cada uma termina no "Conectar carteira" (o quiz) -->
     <template v-if="!pendente">
+      <AssinaturaBancos />
       <AssinaturaAntesDepois />
+      <AssinaturaMcp />
       <AssinaturaSeguranca />
       <AssinaturaPerguntas />
       <AssinaturaFecho />

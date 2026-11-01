@@ -47,11 +47,11 @@ const LINHAS = [
 </template>
 
 <style scoped>
-.aad { background: var(--nu-cream); padding: clamp(64px, 8.5vw, 112px) clamp(22px, 5.5vw, 80px); }
+.aad { background: var(--nu-white); padding: clamp(64px, 8.5vw, 112px) clamp(22px, 5.5vw, 80px); }
 .aad__titulo { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; }
 .aad__quadro { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(36px, 4.5vw, 56px); }
 .aad__coluna { padding: clamp(26px, 3vw, 40px); border-radius: var(--nu-r-card-lg); }
-.aad__coluna--sem { background: var(--nu-white); }
+.aad__coluna--sem { background: var(--nu-cream); }
 .aad__coluna--com { background: var(--nu-navy); }
 .aad__rotulo { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .aad__rotulo--com { color: var(--nu-blue-soft); }
@@ -60,7 +60,7 @@ const LINHAS = [
 .aad__coluna--sem .aad__item { color: var(--nu-gray-2); }
 .aad__coluna--com .aad__item { color: var(--nu-cream-text); }
 .aad__marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; }
-.aad__marca--sem { background: var(--nu-red-bg); color: var(--nu-red-text); }
+.aad__marca--sem { background: var(--nu-white); color: var(--nu-red-text); }
 .aad__marca--com { background: var(--nu-green); color: var(--nu-white); }
 .aad__acao { display: flex; justify-content: center; margin-top: clamp(36px, 4.4vw, 56px); }
 

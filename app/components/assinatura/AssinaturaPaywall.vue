@@ -37,7 +37,9 @@ defineProps<{ pendente?: boolean }>()
 
     <!-- as seções que prendem até conectar: cada uma termina no "Conectar carteira" (o quiz) -->
     <template v-if="!pendente">
+      <AssinaturaBancos />
       <AssinaturaAntesDepois />
+      <AssinaturaMcp />
       <AssinaturaSeguranca />
       <AssinaturaPerguntas />
       <AssinaturaFecho />

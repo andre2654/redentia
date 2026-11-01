@@ -9,6 +9,23 @@
 // e anima -50% da própria largura.
 const { items, loading } = useMarketTicker()
 
+// No /assinar (pedido do dono, 31/10/2026: "algo que ajude a vender"), a
+// faixa troca as cotações pelo que a pessoa ganha ao conectar, girando do
+// mesmo jeito, e o canto direito abre o quiz. Tudo o que está aqui existe.
+const route = useRoute()
+const vendendo = computed(() => route.path === '/assinar')
+const VENDAS = [
+  'Nubank, Itaú, XP e mais de 100 bancos e corretoras',
+  'Todos os seus investimentos numa tela só',
+  '2.000 cenários dos próximos 5 anos',
+  'Um aviso no dia em que importa',
+  'Uma IA que responde com os seus números',
+  'Só leitura: ninguém mexe no seu dinheiro',
+  'Regulado pelo Banco Central',
+  'Cancele quando quiser',
+]
+const quiz = useQuizAssinatura()
+
 // larguras variadas pros bares do skeleton (parece uma faixa de cotações)
 const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 </script>
@@ -16,7 +33,27 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 <template>
   <!-- items vazio = hidratou e nada real chegou: a faixa some (some, não
        mente). loading ainda true = skeleton, o estado normal do SSR. -->
-  <div v-if="loading || items.length" class="nut-wrap">
+  <!-- no /assinar: o que vem ao conectar -->
+  <div v-if="vendendo" class="nut-wrap">
+    <div class="nut">
+      <span class="nut__label">Ao conectar</span>
+      <div class="nut__marquee">
+        <div class="nut__track">
+          <div v-for="half in 2" :key="half" class="nut__group" :aria-hidden="half === 2 || undefined">
+            <span v-for="v in VENDAS" :key="`${half}-${v}`" class="nut__item">
+              <svg class="nut__visto" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              <span class="nut__value">{{ v }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="nut__conectar" aria-haspopup="dialog" @click="quiz.abrir('faixa')">
+        Conectar carteira
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+    </div>
+  </div>
+  <div v-else-if="loading || items.length" class="nut-wrap">
     <div class="nut">
       <span class="nut__label">Mercado agora</span>
       <div class="nut__marquee">
@@ -61,8 +98,21 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 .nut__pct { font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .nut__pct--up { color: var(--nu-green-text); }
 .nut__pct--down { color: var(--nu-red-text); }
+.nut__visto { color: var(--nu-green); flex-shrink: 0; }
+.nut__conectar {
+  display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; padding: 8px 14px; border: 0; border-radius: var(--nu-r-pill);
+  background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: 800; cursor: pointer;
+  transition: background .2s;
+}
+.nut__conectar:hover { background: var(--nu-blue-hover); }
+.nut__conectar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .nut__note { color: var(--nu-gray); font-size: var(--nu-fs-dense); white-space: nowrap; flex-shrink: 0; }
 
+/* no celular a faixa de venda fica só com os itens e o botão */
+@media (max-width: 560px) {
+  .nut:has(.nut__conectar) .nut__label { display: none; }
+  .nut:has(.nut__conectar) { gap: 14px; padding: 10px 16px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .nut__track { animation: none; }
 }
