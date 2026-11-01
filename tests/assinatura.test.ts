@@ -346,3 +346,11 @@ test('o checkout leva os dados e devolve "dados" quando falta o CPF', async () =
   assert.deepEqual(corpo, { cpf: '52998224725', celular: '5511987654321', whatsapp_opt_in: true })
   assert.equal(f.estado.erro.value, null)
 })
+
+test('celular inválido ou de outra conta volta aos dados com o aviso', async () => {
+  for (const code of ['celular_invalido', 'celular_em_uso']) {
+    const f = montar({ postCheckout: async () => { throw Object.assign(new Error('x'), { statusCode: 422, data: { code } }) } })
+    assert.equal(await f.controle.comecar({ cpf: '52998224725', celular: '5511987654321' }), 'dados')
+    assert.match(f.estado.erro.value ?? '', /celular/i)
+  }
+})

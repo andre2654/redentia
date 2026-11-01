@@ -277,6 +277,8 @@ export const ERRO_PLANO = 'A assinatura está fechada para novas entradas neste 
 /** 422 do CPF no checkout (Backend, 01/11/2026) */
 export const ERRO_CPF_INVALIDO = 'Confira o CPF: os números não batem.'
 export const ERRO_CPF_DIFERENTE = 'Esta conta já tem outro CPF. Se precisar trocar, fale com a gente em relacionamento@redentia.com.br.'
+export const ERRO_CELULAR_INVALIDO = 'Confira o celular, com o DDD: (11) 98765-4321.'
+export const ERRO_CELULAR_EM_USO = 'Este celular já está em outra conta da Redentia. Use outro número ou deixe em branco.'
 export const ERRO_PORTAL = 'Não conseguimos abrir o portal da assinatura agora. Tente de novo em instantes.'
 
 /** Para onde o /login devolve quem clicou em "Começar 3 dias grátis" deslogado. */
@@ -348,6 +350,11 @@ export function criarControleAssinatura(d: DepsDoControle) {
       if (code === 'cpf_necessario') return 'dados'
       if (code === 'cpf_invalido' || (status === 422 && /cpf/i.test(JSON.stringify(corpoDoErro(err) ?? '')) && code !== 'cpf_diferente')) {
         estado.erro.value = ERRO_CPF_INVALIDO
+        return 'dados'
+      }
+      // o celular é opcional: número inválido ou de outra conta volta aos dados com o aviso
+      if (code === 'celular_invalido' || code === 'celular_em_uso') {
+        estado.erro.value = code === 'celular_em_uso' ? ERRO_CELULAR_EM_USO : ERRO_CELULAR_INVALIDO
         return 'dados'
       }
       if (code === 'cpf_diferente') {
