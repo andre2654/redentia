@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
 }>(), { modo: 'comecar', tamanho: 'grande', largo: false })
 
 const { abrindo, abrindoPortal, comecar, gerenciar, primeiraAssinatura } = useAssinatura()
+const quiz = useQuizAssinatura()
 
 const ocupado = computed(() => (props.modo === 'pendente' ? abrindoPortal.value : abrindo.value))
 const rotulo = computed(() => {
@@ -24,7 +25,9 @@ const rotulo = computed(() => {
 
 function clicar() {
   if (ocupado.value) return
-  void (props.modo === 'pendente' ? gerenciar() : comecar())
+  if (props.modo === 'pendente') return void gerenciar()
+  // sem CPF na conta: o quiz abre no passo dos dados (desde 01/11/2026 o CPF é obrigatório)
+  void comecar().then((r) => { if (r === 'dados') void quiz.abrirNosDados('botao') })
 }
 </script>
 

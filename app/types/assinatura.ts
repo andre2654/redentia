@@ -38,11 +38,17 @@ export interface EntitlementsApi {
     cancel_at_period_end?: boolean | null
   } | null
   has_active_subscription: boolean
+  /** o teste de 3 dias ainda vale para esta pessoa (um por e-mail e por CPF; Backend, 01/11/2026) */
+  trial_disponivel?: boolean
+  /** a conta ainda não tem CPF: o checkout responde 422 cpf_necessario sem ele */
+  precisa_cpf?: boolean
   can?: Record<string, boolean>
   limits?: Record<string, number>
 }
 
 export interface CheckoutApi { checkout_url: string }
+/** O que vai no POST /billing/checkout além do plano: o CPF (obrigatório na 1ª vez) e o WhatsApp. */
+export interface DadosDoTitular { cpf: string; celular?: string; whatsapp_opt_in?: boolean }
 export interface PortalApi { portal_url: string }
 
 /** Um ponto do leque, em reais de hoje. A série é MENSAL (mês 0 a 60). */

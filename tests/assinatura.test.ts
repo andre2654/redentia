@@ -8,6 +8,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { cpfValido, formatarCelular, formatarCpf, normalizarCelular } from '../app/utils/assinatura.ts'
 import {
   CORPO_CHECKOUT,
   DESTINO_DEPOIS_DO_LOGIN,
@@ -314,4 +315,34 @@ test('conexão nova de Open Finance na /conta pede assinatura antes do widget', 
   const src = ler('components/conta/ContaOpenFinance.vue')
   const fluxo = src.slice(src.indexOf('async function openConnectFlow()'))
   assert.ok(fluxo.indexOf("navigateTo('/assinar')") < fluxo.indexOf('openWidget('))
+})
+
+/* ————— os dados do titular (01/11/2026) ————— */
+
+test('CPF: dígitos verificadores, máscara e os repetidos', () => {
+  assert.equal(cpfValido('529.982.247-25'), true)
+  assert.equal(cpfValido('52998224725'), true)
+  assert.equal(cpfValido('529.982.247-24'), false)
+  assert.equal(cpfValido('111.111.111-11'), false)
+  assert.equal(cpfValido('123'), false)
+  assert.equal(formatarCpf('52998224725'), '529.982.247-25')
+  assert.equal(formatarCpf('5299'), '529.9')
+})
+
+test('celular: só brasileiro com 9, com ou sem o 55', () => {
+  assert.equal(normalizarCelular('(11) 98765-4321'), '5511987654321')
+  assert.equal(normalizarCelular('+55 11 98765-4321'), '5511987654321')
+  assert.equal(normalizarCelular('(11) 3765-4321'), null)
+  assert.equal(normalizarCelular('987654321'), null)
+  assert.equal(formatarCelular('11987654321'), '(11) 98765-4321')
+  assert.equal(formatarCelular('5511987654321'), '(11) 98765-4321')
+})
+
+test('o checkout leva os dados e devolve "dados" quando falta o CPF', async () => {
+  let corpo: unknown = null
+  const f = montar({ postCheckout: async (d?: unknown) => { corpo = d; throw Object.assign(new Error('x'), { statusCode: 422, data: { code: 'cpf_necessario' } }) } })
+  const r = await f.controle.comecar({ cpf: '52998224725', celular: '5511987654321', whatsapp_opt_in: true })
+  assert.equal(r, 'dados')
+  assert.deepEqual(corpo, { cpf: '52998224725', celular: '5511987654321', whatsapp_opt_in: true })
+  assert.equal(f.estado.erro.value, null)
 })

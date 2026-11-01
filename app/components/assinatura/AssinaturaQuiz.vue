@@ -2,14 +2,15 @@
 // O quiz do "Conectar carteira" (pedido do dono, 31/10/2026): seis perguntas
 // rápidas, uma por tela, dois respiros (o aviso de exemplo e os 2.000
 // cenários se desenhando), a montagem do plano e o resultado, que termina no
-// preço de lançamento e no mesmo AssinaturaBotao do resto do site (login,
+// preço de lançamento e, para quem ainda não tem CPF na conta, nos dados do
+// titular (CPF e WhatsApp) antes do pagamento (login,
 // Checkout da Stripe). As regras e as frases estão em utils/quizAssinatura.
 //
 // Gestos: escolha única avança sozinha (com um respiro de 0,22 s para o toque
 // aparecer); escolha múltipla tem "Continuar". Voltar no canto, Esc fecha.
 // No celular ocupa a tela; no computador, um cartão no meio.
 // Acessibilidade do NuDayModal: useModalA11y (Tab preso + foco devolvido).
-import { DIAS_GRATIS, PRECO_MENSAL, dataDaPrimeiraCobranca } from '~/utils/assinatura'
+import { DIAS_GRATIS, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
 import { INSTITUICOES } from '~/content/instituicoes'
 import {
   passosDoQuiz,
@@ -23,8 +24,44 @@ import {
   type Respostas,
 } from '~/utils/quizAssinatura'
 
-const { aberto, fechar, evento } = useQuizAssinatura()
-const { erro, primeiraAssinatura } = useAssinatura()
+const { aberto, direto, montado, fechar, evento } = useQuizAssinatura()
+const assinatura = useAssinatura()
+const { erro, primeiraAssinatura, abrindo } = assinatura
+
+// os dados do titular (01/11/2026): o CPF é obrigatório no pagamento (o teste
+// é um por e-mail e por CPF) e o WhatsApp é o canal do onboarding. Pedidos no
+// fim, só para quem ainda não tem CPF na conta, depois de ver o plano e o preço.
+const pedirDados = ref(false)
+const cpf = ref('')
+const celular = ref('')
+const erroDados = ref<string | null>(null)
+const precisaDosDados = computed(() => assinatura.ent.value?.precisa_cpf !== false)
+async function irParaPagamento() {
+  evento('quiz_oferta')
+  erroDados.value = null
+  if (precisaDosDados.value) {
+    pedirDados.value = true
+    evento('quiz_dados_aberto')
+    return
+  }
+  if ((await assinatura.comecar()) === 'dados') pedirDados.value = true
+}
+async function enviarDados() {
+  erroDados.value = null
+  if (!cpfValido(cpf.value)) {
+    erroDados.value = 'Confira o CPF: os números não batem.'
+    return
+  }
+  const cel = celular.value.trim() ? normalizarCelular(celular.value) : null
+  if (celular.value.trim() && !cel) {
+    erroDados.value = 'Confira o celular, com o DDD: (11) 98765-4321.'
+    return
+  }
+  evento('quiz_dados_enviados', { whatsapp: !!cel })
+  await assinatura.comecar({ cpf: cpf.value.replace(/\D/g, ''), ...(cel ? { celular: cel, whatsapp_opt_in: true } : {}) })
+}
+onMounted(() => { montado.value = true })
+onBeforeUnmount(() => { montado.value = false })
 const { displayName, isAuthenticated } = useAuthState()
 // sem conta, o e-mail vem antes do resultado (passosDoQuiz); a conta nasce aqui
 // mesmo, com o código de 6 números (o mesmo cadastro da folha e do /login)
@@ -80,13 +117,19 @@ function avancar() {
   if (p.tipo === 'resultado') evento('quiz_resultado')
 }
 function voltar() {
+  // nos dados, voltar é voltar ao plano (quem abriu direto nos dados fecha)
+  if (pedirDados.value) {
+    if (direto.value === 'dados') return fechar()
+    pedirDados.value = false
+    return
+  }
   if (indice.value === 0) return
   indo.value = 'tras'
   indice.value--
   // a montagem não tem volta, e a conta já feita também não: pula até a última pergunta
   while (indice.value > 0 && (passo.value.tipo === 'montando' || (passo.value.tipo === 'conta' && isAuthenticated.value))) indice.value--
 }
-const podeVoltar = computed(() => indice.value > 0 && passo.value.tipo !== 'montando')
+const podeVoltar = computed(() => pedirDados.value || (indice.value > 0 && passo.value.tipo !== 'montando'))
 
 // o passo da conta: o e-mail, o código e, confirmado, o resultado
 async function pedirCodigo() {
@@ -145,7 +188,9 @@ watch(aberto, (open) => {
   if (open) {
     comConta.value = !isAuthenticated.value
     cad.trocarContato()
-    indice.value = 0
+    pedirDados.value = direto.value === 'dados'
+    erroDados.value = null
+    indice.value = direto.value === 'dados' ? PASSOS_.value.length - 1 : 0
     respostas.value = {}
     indo.value = 'frente'
     document.addEventListener('keydown', onKey)
@@ -355,6 +400,24 @@ const ICONES: Record<string, string> = {
               </section>
 
               <!-- o resultado e a oferta -->
+              <!-- os dados do titular: CPF e WhatsApp, antes do pagamento -->
+              <section v-else-if="pedirDados" key="dados" class="aqz__passo">
+                <h2 :id="tituloId" class="aqz__titulo">Falta pouco.</h2>
+                <p class="aqz__sub">O CPF confirma que o teste grátis é seu. O WhatsApp é por onde a Redentia te avisa.</p>
+                <form class="aqz__form" @submit.prevent="enviarDados">
+                  <label class="aqz__rotulo" for="aqz-cpf">CPF</label>
+                  <input id="aqz-cpf" :value="cpf" class="aqz__campo" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" required @input="cpf = formatarCpf(($event.target as HTMLInputElement).value)">
+                  <label class="aqz__rotulo aqz__rotulo--depois" for="aqz-cel">WhatsApp <span>(opcional)</span></label>
+                  <input id="aqz-cel" :value="celular" class="aqz__campo" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98765-4321" @input="celular = formatarCelular(($event.target as HTMLInputElement).value)">
+                  <p class="aqz__miudo aqz__miudo--junto">Com o número, você recebe os avisos da Redentia no WhatsApp. Para parar, é só responder SAIR.</p>
+                  <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert">{{ erroDados || erro }}</p>
+                  <button type="submit" class="aqz__seguir" :disabled="abrindo || cpf.replace(/\D/g, '').length !== 11">
+                    {{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}
+                  </button>
+                </form>
+                <p class="aqz__miudo">O pagamento é na Stripe, com o cartão. O CPF fica guardado com segurança e não aparece para ninguém.</p>
+              </section>
+
               <section v-else :key="`f-${indice}`" class="aqz__passo">
                 <h2 :id="tituloId" class="aqz__titulo">{{ titulo }}</h2>
                 <p class="aqz__sub">O que a Redentia vai fazer pela sua carteira:</p>
@@ -382,7 +445,10 @@ const ICONES: Record<string, string> = {
                     </template>
                     <template v-else>Cobrança hoje, no cartão, e depois uma vez por mês. Cancele quando quiser.</template>
                   </p>
-                  <AssinaturaBotao largo @click.capture="evento('quiz_oferta')" />
+                  <button type="button" class="aqz__pagar" :disabled="abrindo" @click="irParaPagamento">
+                    {{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : `Assinar por ${PRECO_MENSAL}/mês` }}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </button>
                   <p v-if="erro" class="aqz__erro" role="alert">{{ erro }}</p>
                 </div>
               </section>
@@ -501,6 +567,17 @@ const ICONES: Record<string, string> = {
 }
 .aqz__campo:focus { outline: none; box-shadow: inset 0 0 0 2px var(--nu-blue); }
 .aqz__campo--codigo { letter-spacing: .4em; font-variant-numeric: tabular-nums; }
+.aqz__rotulo--depois { margin-top: 8px; }
+.aqz__rotulo span { color: var(--nu-gray); font-weight: 500; }
+.aqz__miudo--junto { margin-top: 0; }
+.aqz__pagar {
+  display: inline-flex; align-items: center; justify-content: center; gap: 11px; width: 100%; min-height: 58px; border: 0;
+  border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-family: inherit;
+  font-size: var(--nu-fs-lg); font-weight: 800; cursor: pointer; transition: background .2s;
+}
+.aqz__pagar:hover:not(:disabled) { background: var(--nu-blue-hover); }
+.aqz__pagar:disabled { opacity: .7; cursor: progress; }
+.aqz__pagar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 .aqz__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .aqz__form .aqz__seguir { margin-top: 14px; }
 .aqz__erro-claro { margin: 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }

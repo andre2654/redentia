@@ -5,7 +5,7 @@
  * quem chama. O serviço NÃO engole erro: quem decide a tela é o useAssinatura
  * (402/403 assinatura_necessaria → paywall; 401 → sessão morta).
  */
-import type { CheckoutApi, EntitlementsApi, FuturoApi, PortalApi } from '~/types/assinatura'
+import type { CheckoutApi, EntitlementsApi, FuturoApi, PortalApi, DadosDoTitular } from '~/types/assinatura'
 import { CORPO_CHECKOUT } from '~/utils/assinatura'
 
 type AuthHeaders = Record<string, string>
@@ -16,8 +16,8 @@ export function assinaturaFetchEntitlements(base: string, headers: AuthHeaders) 
 }
 
 /** POST /billing/checkout — sessão do Checkout da Stripe com o teste de 3 dias. */
-export function assinaturaPostCheckout(base: string, headers: AuthHeaders) {
-  return $fetch<CheckoutApi>(`${base}/billing/checkout`, { method: 'POST', headers, body: { ...CORPO_CHECKOUT } })
+export function assinaturaPostCheckout(base: string, headers: AuthHeaders, dados?: DadosDoTitular) {
+  return $fetch<CheckoutApi>(`${base}/billing/checkout`, { method: 'POST', headers, body: { ...CORPO_CHECKOUT, ...(dados ?? {}) } })
 }
 
 /** POST /billing/portal — portal da Stripe (cartão, faturas, cancelamento). */

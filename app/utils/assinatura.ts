@@ -10,7 +10,7 @@
  * O useAssinatura só liga isto ao useState e ao $fetch. Os testes
  * (tests/assinatura.test.ts) importam direto.
  */
-import type { CheckoutApi, EntitlementsApi, PortalApi } from '~/types/assinatura'
+import type { CheckoutApi, EntitlementsApi, PortalApi, DadosDoTitular } from '~/types/assinatura'
 
 export const PRECO_MENSAL = 'R$ 19,99'
 export const DIAS_GRATIS = 3
@@ -197,6 +197,49 @@ export function urlSegura(url: unknown): string | null {
   }
 }
 
+/* ————— os dados do titular (CPF e WhatsApp, 01/11/2026) ————— */
+
+/** CPF com os dígitos verificadores (só números; rejeita 111.111.111-11 e afins). */
+export function cpfValido(cpf: string): boolean {
+  const d = cpf.replace(/\D/g, '')
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false
+  const dv = (n: number) => {
+    let soma = 0
+    for (let i = 0; i < n; i++) soma += Number(d[i]) * (n + 1 - i)
+    const r = (soma * 10) % 11
+    return r === 10 ? 0 : r
+  }
+  return dv(9) === Number(d[9]) && dv(10) === Number(d[10])
+}
+
+/** 12345678909 → 123.456.789-09, conforme digita. */
+export function formatarCpf(v: string): string {
+  const d = v.replace(/\D/g, '').slice(0, 11)
+  if (d.length <= 3) return d
+  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`
+  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`
+}
+
+/** (11) 98765-4321 → 5511987654321; null quando não é um celular brasileiro. */
+export function normalizarCelular(v: string): string | null {
+  let d = v.replace(/\D/g, '')
+  if (d.startsWith('55') && d.length === 13) d = d.slice(2)
+  if (d.length !== 11 || d[2] !== '9') return null
+  return `55${d}`
+}
+
+/** 11987654321 → (11) 98765-4321, conforme digita. */
+export function formatarCelular(v: string): string {
+  let d = v.replace(/\D/g, '')
+  if (d.startsWith('55') && d.length > 11) d = d.slice(2)
+  d = d.slice(0, 11)
+  if (!d.length) return ''
+  if (d.length <= 2) return `(${d}`
+  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+}
+
 /* ————— o controle ————— */
 
 /** Uma caixa com `.value`: um Ref do Vue no app, um objeto simples no teste. */
@@ -219,7 +262,7 @@ export interface DepsDoControle {
   estado: EstadoDoControle
   logado: () => boolean
   buscarEntitlements: () => Promise<EntitlementsApi>
-  postCheckout: () => Promise<CheckoutApi>
+  postCheckout: (dados?: DadosDoTitular) => Promise<CheckoutApi>
   postPortal: () => Promise<PortalApi>
   /** sai do site (window.location.assign) */
   irPara: (url: string) => void
@@ -231,6 +274,9 @@ export interface DepsDoControle {
 export const ERRO_CHECKOUT = 'Não conseguimos abrir o pagamento agora. Nada foi cobrado. Tente de novo em instantes.'
 /** 422 `plano_inativo` / `ciclo_indisponivel`: o plano está fora do ar do lado de lá. */
 export const ERRO_PLANO = 'A assinatura está fechada para novas entradas neste momento. Nada foi cobrado. Tente de novo mais tarde.'
+/** 422 do CPF no checkout (Backend, 01/11/2026) */
+export const ERRO_CPF_INVALIDO = 'Confira o CPF: os números não batem.'
+export const ERRO_CPF_DIFERENTE = 'Esta conta já tem outro CPF. Se precisar trocar, fale com a gente em relacionamento@redentia.com.br.'
 export const ERRO_PORTAL = 'Não conseguimos abrir o portal da assinatura agora. Tente de novo em instantes.'
 
 /** Para onde o /login devolve quem clicou em "Começar 3 dias grátis" deslogado. */
@@ -261,7 +307,7 @@ export function criarControleAssinatura(d: DepsDoControle) {
    * sozinho. Logado → Checkout da Stripe. Quem já assina vai para a carteira; quem
    * tem cobrança pendente vai ao portal (não abre uma 2ª assinatura).
    */
-  async function comecar(): Promise<void> {
+  async function comecar(dados?: DadosDoTitular): Promise<'dados' | void> {
     if (estado.abrindo.value) return
     estado.erro.value = null
     if (!d.logado()) {
@@ -279,7 +325,7 @@ export function criarControleAssinatura(d: DepsDoControle) {
     }
     estado.abrindo.value = true
     try {
-      const r = await d.postCheckout()
+      const r = await d.postCheckout(dados)
       const url = urlSegura(r?.checkout_url)
       if (!url) throw new Error('checkout_url')
       d.irPara(url)
@@ -296,6 +342,16 @@ export function criarControleAssinatura(d: DepsDoControle) {
       // 409 assinatura_ativa: já assina (o snapshot estava velho) → a carteira
       if (status === 409 || code === 'assinatura_ativa') {
         await d.navegar('/carteira')
+        return
+      }
+      // 422 cpf_necessario: a conta ainda não tem CPF; quem chamou pede (o quiz, no passo dos dados)
+      if (code === 'cpf_necessario') return 'dados'
+      if (code === 'cpf_invalido' || (status === 422 && /cpf/i.test(JSON.stringify(corpoDoErro(err) ?? '')) && code !== 'cpf_diferente')) {
+        estado.erro.value = ERRO_CPF_INVALIDO
+        return 'dados'
+      }
+      if (code === 'cpf_diferente') {
+        estado.erro.value = ERRO_CPF_DIFERENTE
         return
       }
       estado.erro.value = code === 'plano_inativo' || code === 'ciclo_indisponivel' ? ERRO_PLANO : ERRO_CHECKOUT

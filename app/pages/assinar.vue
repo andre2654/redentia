@@ -20,18 +20,29 @@ const route = useRoute()
 const router = useRouter()
 const { clearSession, isAuthenticated } = useAuthState()
 const assinatura = useAssinatura()
+const quiz = useQuizAssinatura()
 
 // estado e hooks ANTES do 1º await (hook depois do await some em silêncio)
 const continuar = route.query.continuar === '1'
 const cancelado = cancelouNoCheckout(route.query)
 onMounted(() => {
+  // ?dados=1: o botão de fora (a /conta) ouviu cpf_necessario e mandou para cá
+  if (route.query.dados === '1' && isAuthenticated.value) {
+    const query = { ...route.query }
+    delete query.dados
+    void router.replace({ query })
+    void nextTick(() => { void quiz.abrirNosDados('conta') })
+    return
+  }
   if (!continuar) return
   // tira o ?continuar da URL (voltar para cá não reabre o Checkout) e segue
   const query = { ...route.query }
   delete query.continuar
   void router.replace({ query })
   const s = assinatura.situacao.value
-  if (isAuthenticated.value && (s === 'sem' || s === 'desconhecido')) void assinatura.comecar()
+  if (isAuthenticated.value && (s === 'sem' || s === 'desconhecido')) {
+    void assinatura.comecar().then((r) => { if (r === 'dados') void quiz.abrirNosDados('continuar') })
+  }
 })
 
 const { sessaoMorta } = await useAssinaturaDaPagina()

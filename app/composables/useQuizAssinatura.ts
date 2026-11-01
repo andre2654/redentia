@@ -6,6 +6,10 @@
 export function useQuizAssinatura() {
   const aberto = useState('quiz:aberto', () => false)
   const origem = useState<string>('quiz:origem', () => '')
+  /** abre direto no passo do CPF (o checkout respondeu cpf_necessario) */
+  const direto = useState<'dados' | null>('quiz:direto', () => null)
+  /** o quiz está montado nesta página (o /assinar e o paywall); fora dele, o botão manda ao /assinar */
+  const montado = useState('quiz:montado', () => false)
 
   function evento(nome: string, params: Record<string, unknown> = {}) {
     if (import.meta.server) return
@@ -14,12 +18,21 @@ export function useQuizAssinatura() {
 
   function abrir(de: string) {
     origem.value = de
+    direto.value = null
     aberto.value = true
     evento('quiz_aberto')
+  }
+  /** Falta o CPF para o pagamento: o quiz abre no passo dos dados (ou o /assinar abre, se o quiz não está aqui). */
+  function abrirNosDados(de: string) {
+    if (!montado.value) return navigateTo('/assinar?dados=1')
+    origem.value = de
+    direto.value = 'dados'
+    aberto.value = true
+    evento('quiz_dados_aberto')
   }
   function fechar() {
     aberto.value = false
   }
 
-  return { aberto, origem, abrir, fechar, evento }
+  return { aberto, origem, direto, montado, abrir, abrirNosDados, fechar, evento }
 }

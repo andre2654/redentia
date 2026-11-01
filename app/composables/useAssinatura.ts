@@ -47,7 +47,7 @@ export function useAssinatura() {
     estado,
     logado: () => isAuthenticated.value,
     buscarEntitlements: () => assinaturaFetchEntitlements(base, headers()),
-    postCheckout: () => assinaturaPostCheckout(base, headers()),
+    postCheckout: (dados) => assinaturaPostCheckout(base, headers(), dados),
     postPortal: () => assinaturaPostPortal(base, headers()),
     irPara: (url) => { window.location.assign(url) },
     navegar: (caminho) => navigateTo(caminho),
@@ -58,7 +58,9 @@ export function useAssinatura() {
   /** passa pelo gate (assinante, em teste, em carência, ou snapshot indisponível) */
   const assinante = computed(() => temAcesso(situacao.value))
   /** o teste de 3 dias vale (primeira assinatura, ou ainda não sabemos) */
-  const primeiraAssinatura = computed(() => !jaAssinouAntes(estado.ent.value))
+  const primeiraAssinatura = computed(() => (typeof estado.ent.value?.trial_disponivel === 'boolean' ? estado.ent.value.trial_disponivel : !jaAssinouAntes(estado.ent.value)))
+  /** a conta ainda não tem CPF: o quiz pede antes do pagamento */
+  const precisaCpf = computed(() => estado.ent.value?.precisa_cpf === true)
 
   function abrirGate(origem: OrigemDoGate) { estado.gate.value = origem }
   function fecharGate() { estado.gate.value = null }
@@ -74,6 +76,7 @@ export function useAssinatura() {
     situacao,
     assinante,
     primeiraAssinatura,
+    precisaCpf,
     abrirGate,
     fecharGate,
     ...controle,
