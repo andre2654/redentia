@@ -26,6 +26,10 @@ const VENDAS = [
 ]
 const quiz = useQuizAssinatura()
 
+// Os protótipos do topo (?topo=1|2|3, só no dev; ver NuHeader) trazem o
+// mercado dentro deles: a faixa daqui sai, menos a de venda do /assinar.
+const prototipoDoTopo = computed(() => import.meta.dev && ['1', '2', '3'].includes(String(route.query.topo ?? '')))
+
 // larguras variadas pros bares do skeleton (parece uma faixa de cotações)
 const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
 </script>
@@ -53,7 +57,7 @@ const SK_WIDTHS = [64, 90, 74, 104, 88, 70, 96, 78]
       </button>
     </div>
   </div>
-  <div v-else-if="loading || items.length" class="nut-wrap">
+  <div v-else-if="!prototipoDoTopo && (loading || items.length)" class="nut-wrap">
     <div class="nut">
       <span class="nut__label">Mercado agora</span>
       <div class="nut__marquee">

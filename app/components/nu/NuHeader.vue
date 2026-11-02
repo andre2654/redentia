@@ -13,8 +13,26 @@
 //   cabe inteira; Entrar/Conectar carteira (ou o avatar) ficam.
 // - sem botão da IA (dono, 02/11/2026: "pode tirar esse botão pra sempre"): a
 //   pergunta mora na barra do pé de toda página (ChatBarra).
+import type { Component } from 'vue'
+
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
+
+// PROTÓTIPO (02/11/2026, o dono: "precisamos dar uma modernizada no header da
+// Redentia, tanto para mobile quanto desktop, e desse carrossel"): três
+// direções para o header e a faixa "Mercado agora" juntos, trocadas só no dev
+// por ?topo=1 (vidro), ?topo=2 (uma linha só) e ?topo=3 (editorial calmo). Em
+// produção import.meta.dev é false, o mapa fica vazio (nem entra no bundle) e
+// segue este header até o dono escolher. Com um protótipo na tela, o
+// NuMarketTicker some (o mercado mora dentro da direção).
+const TOPOS: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('./topo/NuTopoVidro.vue')),
+      '2': defineAsyncComponent(() => import('./topo/NuTopoLinha.vue')),
+      '3': defineAsyncComponent(() => import('./topo/NuTopoEditorial.vue')),
+    }
+  : {}
+const prototipo = computed(() => TOPOS[String(route.query.topo ?? '')] ?? null)
 
 // Estrutura de nav (direção do dono 2026-07-13): Início (a home única = o
 // Mercado auth-aware) · Carteira (logado — página separada) · Teses ·
@@ -229,6 +247,7 @@ function onScroll() {
 // A faixa do ticker (irmã no layout) lê --nuh-h pra grudar logo abaixo;
 // a var vive no <html> pra atravessar os escopos. Fallback SSR: 76px.
 watch(shrunk, (s) => {
+  if (prototipo.value) return // o protótipo publica a altura dele
   document.documentElement.style.setProperty('--nuh-h', s ? '58px' : '76px')
 })
 
@@ -274,7 +293,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="nuh-wrap" :class="{ 'nuh-wrap--shrunk': shrunk }">
+  <component :is="prototipo" v-if="prototipo" />
+  <div v-else class="nuh-wrap" :class="{ 'nuh-wrap--shrunk': shrunk }">
     <div class="nuh">
       <NuxtLink to="/" class="nuh__brand" aria-label="Redentia">
         <img src="/logo-branca.svg" alt="Redentia" class="nuh__logo">
