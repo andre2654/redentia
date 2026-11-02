@@ -256,7 +256,9 @@ export async function useTesesPage() {
     return latest
   })
 
-  return { ideias, pesquisas, estrategias, loading, dataDate }
+  // cards crus e favoritos: as direções novas da página (?teses=1|2|3 no dev,
+  // useTesesVitrine) montam o próprio VM a partir deles
+  return { ideias, pesquisas, estrategias, loading, dataDate, cards: apiCards, favoritos: favSlugs }
 }
 
 /* ═════ FAQ (copy do design; travessões viram vírgula — regra de copy pública) ═════ */

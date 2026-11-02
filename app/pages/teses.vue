@@ -5,7 +5,26 @@
 // hero → "Grandes ideias." → banner Redentia AI → "Estratégias de
 // investidores." → "Melhores pesquisas." → vantagens (#explorar) → FAQ.
 // Dados: useTesesPage (seed do design → /theses real → degrade).
-const { ideias, pesquisas, estrategias, loading, dataDate } = await useTesesPage()
+import type { Component } from 'vue'
+
+// PROTÓTIPO (02/11/2026, o dono: "consegue refazer essa página das /teses?"):
+// três direções para o miolo, trocadas só no dev por ?teses=1 (o índice de
+// revista), ?teses=2 (a linha d'água, no escuro) e ?teses=3 (a grade com
+// filtros). Em produção import.meta.dev é false, o mapa fica vazio (nem entra
+// no bundle) e segue a página de hoje até o dono escolher. O SEO não muda em
+// nenhuma: mesmo usePageSeo, as 10 teses com link no HTML do SSR e o FAQ (com
+// o FAQPage) no fim.
+const route = useRoute()
+const DIRECOES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/teses/direcoes/TesesRevista.vue')),
+      '2': defineAsyncComponent(() => import('~/components/teses/direcoes/TesesLinhaDagua.vue')),
+      '3': defineAsyncComponent(() => import('~/components/teses/direcoes/TesesGrade.vue')),
+    }
+  : {}
+const direcao = computed(() => DIRECOES[String(route.query.teses ?? '')] ?? null)
+
+const { ideias, pesquisas, estrategias, loading, dataDate, cards, favoritos } = await useTesesPage()
 
 usePageSeo({
   title: 'Teses de investimento',
@@ -17,7 +36,21 @@ usePageSeo({
 </script>
 
 <template>
-  <div>
+  <div v-if="direcao" class="tsd">
+    <component :is="direcao" :cards="cards" :favoritos="favoritos" />
+    <section class="tsf tsf--nova">
+      <div class="tsf__cols">
+        <div class="tsf__left">
+          <h2 class="tsf__title">Ficou com alguma<br>dúvida?</h2>
+          <div class="tsf__copy">Respostas para as principais dúvidas sobre teses de investimento na Redentia.</div>
+        </div>
+        <div class="tsf__right">
+          <NuFaqAccordion :items="TESES_FAQS" :default-open="-1" surface="white" />
+        </div>
+      </div>
+    </section>
+  </div>
+  <div v-else>
     <!-- Hero (sem eyebrow — anatomia própria do design, ≠ NuPageHero) -->
     <section class="tsh">
       <h1 class="tsh__title">Invista em ideias,<br>não em palpites.</h1>
@@ -107,4 +140,6 @@ usePageSeo({
 }
 .tsf__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .tsf__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
+/* o FAQ das direções novas: o mesmo conteúdo, o título em 500 do idioma novo */
+.tsf--nova .tsf__title { font-weight: 500; letter-spacing: -0.045em; }
 </style>
