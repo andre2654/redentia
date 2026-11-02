@@ -8,7 +8,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { TEXTO_ACEITE_WHATSAPP, cpfValido, formatarCelular, formatarCpf, normalizarCelular } from '../app/utils/assinatura.ts'
+import { TEXTO_ACEITE_WHATSAPP, ehEmailRelayDaApple, emailValido, oQueFaltaNoTitular, cpfValido, formatarCelular, formatarCpf, normalizarCelular } from '../app/utils/assinatura.ts'
 import {
   CORPO_CHECKOUT,
   DESTINO_DEPOIS_DO_LOGIN,
@@ -383,3 +383,30 @@ test('o aceite do WhatsApp é o texto registrado no Backend, numa caixa desmarca
   assert.match(quiz, /whatsapp_opt_in: aceiteWhatsapp\.value/)
   assert.doesNotMatch(quiz, /whatsapp_opt_in: true/)
 })
+
+// os precisa_* ficam na raiz do /me/entitlements (o ent() põe o extra na assinatura)
+test('o que falta no titular: e-mail real, celular e CPF (regra do dono, 02/11/2026)', () => {
+  // o Backend manda os três
+  assert.deepEqual(oQueFaltaNoTitular(({ ...ent(false, null), ...{ precisa_cpf: true, precisa_email: false, precisa_celular: true } }), 'ana@exemplo.com'), { cpf: true, email: false, celular: true, relay: false })
+  // cadastro só por celular: pede e-mail e CPF
+  assert.deepEqual(oQueFaltaNoTitular(({ ...ent(false, null), ...{ precisa_cpf: true, precisa_email: true, precisa_celular: false } }), null), { cpf: true, email: true, celular: false, relay: false })
+  // Backend antigo, sem precisa_email/precisa_celular: o relay da Apple e a conta sem e-mail pedem e-mail; o celular é pedido
+  const velho = ({ ...ent(false, null), ...{ precisa_cpf: true } })
+  assert.deepEqual(oQueFaltaNoTitular(velho, 'x1y2@privaterelay.appleid.com'), { cpf: true, email: true, celular: true, relay: true })
+  assert.equal(oQueFaltaNoTitular(velho, '').email, true)
+  assert.equal(oQueFaltaNoTitular(velho, 'ana@exemplo.com').email, false)
+  // tudo na conta: nada a pedir
+  const tudo = oQueFaltaNoTitular(({ ...ent(false, null), ...{ precisa_cpf: false, precisa_email: false, precisa_celular: false } }), 'ana@exemplo.com')
+  assert.equal(tudo.cpf || tudo.email || tudo.celular, false)
+  assert.equal(ehEmailRelayDaApple('ABC@PrivateRelay.AppleID.com'), true)
+  assert.equal(emailValido('ana@exemplo.com'), true)
+  assert.equal(emailValido('ana@exemplo'), false)
+})
+
+for (const [code, volta] of [['email_necessario', 'dados'], ['email_invalido', 'dados'], ['email_em_uso', 'dados'], ['celular_necessario', 'dados']] as const) {
+  test(`checkout ${code} volta aos dados com o aviso`, async () => {
+    const { controle, estado } = montar({ carregado: true, ent: ent(false, null), postCheckout: async () => { throw Object.assign(new Error('x'), { statusCode: 422, data: { code } }) } })
+    assert.equal(await controle.comecar({ cpf: '52998224725' }), volta)
+    assert.ok(estado.erro.value && estado.erro.value.length > 10)
+  })
+}

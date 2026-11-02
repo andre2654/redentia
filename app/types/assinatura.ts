@@ -42,13 +42,17 @@ export interface EntitlementsApi {
   trial_disponivel?: boolean
   /** a conta ainda não tem CPF: o checkout responde 422 cpf_necessario sem ele */
   precisa_cpf?: boolean
+  /** sem e-mail real (cadastro só por celular ou "Ocultar meu e-mail" da Apple): 422 email_necessario (02/11/2026) */
+  precisa_email?: boolean
+  /** sem celular na conta: 422 celular_necessario (02/11/2026) */
+  precisa_celular?: boolean
   can?: Record<string, boolean>
   limits?: Record<string, number>
 }
 
 export interface CheckoutApi { checkout_url: string }
 /** O que vai no POST /billing/checkout além do plano: o CPF (obrigatório na 1ª vez) e o WhatsApp. */
-export interface DadosDoTitular { cpf: string; celular?: string; whatsapp_opt_in?: boolean }
+export interface DadosDoTitular { cpf?: string; email?: string; celular?: string; whatsapp_opt_in?: boolean }
 export interface PortalApi { portal_url: string }
 
 /** Um ponto do leque, em reais de hoje. A série é MENSAL (mês 0 a 60). */

@@ -11,7 +11,7 @@
 // No celular ocupa a tela; no computador, um cartão no meio.
 // Acessibilidade do NuDayModal: useModalA11y (Tab preso + foco devolvido).
 import type { AppleCredencial } from '~/composables/useAppleAuth'
-import { TEXTO_ACEITE_WHATSAPP, DIAS_GRATIS, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
+import { TEXTO_ACEITE_WHATSAPP, DIAS_GRATIS, emailValido, oQueFaltaNoTitular, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
 import { INSTITUICOES } from '~/content/instituicoes'
 import {
   passosDoQuiz,
@@ -30,16 +30,31 @@ const { aberto, direto, montado, fechar, evento } = useQuizAssinatura()
 const assinatura = useAssinatura()
 const { erro, primeiraAssinatura, abrindo } = assinatura
 
-// os dados do titular (01/11/2026): o CPF é obrigatório no pagamento (o teste
-// é um por e-mail e por CPF) e o WhatsApp é o canal do onboarding. Pedidos no
-// fim, só para quem ainda não tem CPF na conta, depois de ver o plano e o preço.
+// os dados do titular (01/11/2026; e-mail e celular obrigatórios em 02/11/2026):
+// toda assinatura termina com e-mail real, celular e CPF. O passo pede só o que
+// falta: quem entrou pelo celular dá o e-mail; quem entrou pelo e-mail dá o
+// celular; o "Ocultar meu e-mail" da Apple dá um e-mail de verdade. O aceite do
+// WhatsApp continua à parte, numa caixa desmarcada.
 const pedirDados = ref(false)
 const cpf = ref('')
 const celular = ref('')
+const emailReal = ref('')
 // o "sim" do WhatsApp é um gesto: a caixa começa desmarcada (LGPD)
 const aceiteWhatsapp = ref(false)
 const erroDados = ref<string | null>(null)
-const precisaDosDados = computed(() => assinatura.ent.value?.precisa_cpf !== false)
+const { user: usuario } = useAuthState()
+const falta = computed(() => oQueFaltaNoTitular(assinatura.ent.value, usuario.value?.email))
+const precisaDosDados = computed(() => falta.value.cpf || falta.value.email || falta.value.celular)
+const dadosProntos = computed(() =>
+  (!falta.value.cpf || cpf.value.replace(/\D/g, '').length === 11)
+  && (!falta.value.email || emailReal.value.trim().length > 3)
+  && (!falta.value.celular || celular.value.replace(/\D/g, '').length >= 10))
+const subDosDados = computed(() => {
+  if (falta.value.relay) return 'O seu e-mail da Apple fica oculto. Diga para onde mandamos os recibos e os avisos, e o seu WhatsApp.'
+  if (falta.value.email && falta.value.cpf) return 'O CPF confirma que o teste grátis é seu. O e-mail é por onde chegam os recibos e os avisos.'
+  if (falta.value.cpf) return 'O CPF confirma que o teste grátis é seu. O WhatsApp é por onde a Redentia te avisa.'
+  return 'Só confirmar como falamos com você.'
+})
 async function irParaPagamento() {
   evento('quiz_oferta')
   erroDados.value = null
@@ -52,17 +67,26 @@ async function irParaPagamento() {
 }
 async function enviarDados() {
   erroDados.value = null
-  if (!cpfValido(cpf.value)) {
+  if (falta.value.cpf && !cpfValido(cpf.value)) {
     erroDados.value = 'Confira o CPF: os números não batem.'
     return
   }
+  if (falta.value.email && !emailValido(emailReal.value)) {
+    erroDados.value = 'Confira o e-mail: ele parece incompleto.'
+    return
+  }
   const cel = celular.value.trim() ? normalizarCelular(celular.value) : null
-  if (celular.value.trim() && !cel) {
+  if ((falta.value.celular || celular.value.trim()) && !cel) {
     erroDados.value = 'Confira o celular, com o DDD: (11) 98765-4321.'
     return
   }
-  evento('quiz_dados_enviados', { whatsapp: !!cel && aceiteWhatsapp.value })
-  await assinatura.comecar({ cpf: cpf.value.replace(/\D/g, ''), ...(cel ? { celular: cel, whatsapp_opt_in: aceiteWhatsapp.value } : {}) })
+  evento('quiz_dados_enviados', { whatsapp: aceiteWhatsapp.value, email: falta.value.email, celular: falta.value.celular })
+  await assinatura.comecar({
+    ...(falta.value.cpf ? { cpf: cpf.value.replace(/\D/g, '') } : {}),
+    ...(falta.value.email ? { email: emailReal.value.trim().toLowerCase() } : {}),
+    ...(cel ? { celular: cel } : {}),
+    whatsapp_opt_in: aceiteWhatsapp.value,
+  })
 }
 onMounted(() => { montado.value = true })
 onBeforeUnmount(() => { montado.value = false })
@@ -426,22 +450,30 @@ const ICONES: Record<string, string> = {
               <!-- os dados do titular: CPF e WhatsApp, antes do pagamento -->
               <section v-else-if="pedirDados" key="dados" class="aqz__passo">
                 <h2 :id="tituloId" class="aqz__titulo">Falta pouco.</h2>
-                <p class="aqz__sub">O CPF confirma que o teste grátis é seu. O WhatsApp é por onde a Redentia te avisa.</p>
+                <p class="aqz__sub">{{ subDosDados }}</p>
                 <form class="aqz__form" @submit.prevent="enviarDados">
-                  <label class="aqz__rotulo" for="aqz-cpf">CPF</label>
-                  <input id="aqz-cpf" :value="cpf" class="aqz__campo" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" required @input="cpf = formatarCpf(($event.target as HTMLInputElement).value)">
-                  <label class="aqz__rotulo aqz__rotulo--depois" for="aqz-cel">WhatsApp <span>(opcional)</span></label>
-                  <input id="aqz-cel" :value="celular" class="aqz__campo" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98765-4321" @input="celular = formatarCelular(($event.target as HTMLInputElement).value)">
+                  <template v-if="falta.cpf">
+                    <label class="aqz__rotulo" for="aqz-cpf">CPF</label>
+                    <input id="aqz-cpf" :value="cpf" class="aqz__campo" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" required @input="cpf = formatarCpf(($event.target as HTMLInputElement).value)">
+                  </template>
+                  <template v-if="falta.email">
+                    <label class="aqz__rotulo" :class="{ 'aqz__rotulo--depois': falta.cpf }" for="aqz-email-real">{{ falta.relay ? 'O seu e-mail de verdade' : 'E-mail' }}</label>
+                    <input id="aqz-email-real" v-model="emailReal" class="aqz__campo" type="email" inputmode="email" autocomplete="email" placeholder="voce@email.com" required>
+                  </template>
+                  <template v-if="falta.celular">
+                    <label class="aqz__rotulo" :class="{ 'aqz__rotulo--depois': falta.cpf || falta.email }" for="aqz-cel">Celular (WhatsApp)</label>
+                    <input id="aqz-cel" :value="celular" class="aqz__campo" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98765-4321" required @input="celular = formatarCelular(($event.target as HTMLInputElement).value)">
+                  </template>
                   <label class="aqz__aceite">
                     <input v-model="aceiteWhatsapp" type="checkbox" class="aqz__aceite-caixa">
                     <span>{{ TEXTO_ACEITE_WHATSAPP }}</span>
                   </label>
                   <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert">{{ erroDados || erro }}</p>
-                  <button type="submit" class="aqz__seguir" :disabled="abrindo || cpf.replace(/\D/g, '').length !== 11">
+                  <button type="submit" class="aqz__seguir" :disabled="abrindo || !dadosProntos">
                     {{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}
                   </button>
                 </form>
-                <p class="aqz__miudo">O pagamento é na Stripe, com o cartão. O CPF fica guardado com segurança e não aparece para ninguém.</p>
+                <p class="aqz__miudo">O pagamento é na Stripe, com o cartão. {{ falta.cpf ? 'O CPF fica guardado com segurança e não aparece para ninguém.' : 'Os seus dados ficam guardados com segurança.' }}</p>
               </section>
 
               <section v-else :key="`f-${indice}`" class="aqz__passo">

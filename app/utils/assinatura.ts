@@ -284,11 +284,42 @@ export const ERRO_PLANO = 'A assinatura está fechada para novas entradas neste 
  */
 export const TEXTO_ACEITE_WHATSAPP = 'Quero receber a Redentia no WhatsApp. Para parar, é só responder SAIR.'
 
+/** O "Ocultar meu e-mail" da Apple: o endereço existe, mas não é da pessoa. */
+export function ehEmailRelayDaApple(email: string | null | undefined): boolean {
+  return /@privaterelay\.appleid\.com$/i.test((email ?? '').trim())
+}
+
+/** E-mail com cara de e-mail (o Backend confere de novo). */
+export function emailValido(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())
+}
+
+/**
+ * O que falta pedir no "Falta pouco." (regra do dono, 02/11/2026): toda
+ * assinatura termina com e-mail real, celular e CPF. Quem entrou só pelo
+ * celular dá o e-mail; quem entrou pelo e-mail dá o celular; o "Ocultar meu
+ * e-mail" da Apple dá um e-mail de verdade. O Backend manda precisa_*; sem o
+ * campo (Backend antigo), o e-mail sai da conta e o celular é pedido.
+ */
+export function oQueFaltaNoTitular(ent: EntitlementsApi | null | undefined, emailDaConta: string | null | undefined): { cpf: boolean; email: boolean; celular: boolean; relay: boolean } {
+  const relay = ehEmailRelayDaApple(emailDaConta)
+  return {
+    cpf: ent?.precisa_cpf !== false,
+    email: typeof ent?.precisa_email === 'boolean' ? ent.precisa_email : (!emailDaConta?.trim() || relay),
+    celular: typeof ent?.precisa_celular === 'boolean' ? ent.precisa_celular : true,
+    relay,
+  }
+}
+
 /** 422 do CPF no checkout (Backend, 01/11/2026) */
 export const ERRO_CPF_INVALIDO = 'Confira o CPF: os números não batem.'
 export const ERRO_CPF_DIFERENTE = 'Esta conta já tem outro CPF. Se precisar trocar, fale com a gente em relacionamento@redentia.com.br.'
 export const ERRO_CELULAR_INVALIDO = 'Confira o celular, com o DDD: (11) 98765-4321.'
 export const ERRO_CELULAR_EM_USO = 'Este celular já está em outra conta da Redentia. Use outro número ou deixe em branco.'
+export const ERRO_EMAIL_INVALIDO = 'Confira o e-mail: ele parece incompleto.'
+export const ERRO_EMAIL_EM_USO = 'Este e-mail já está em outra conta da Redentia. Entre com ele, ou use outro.'
+export const ERRO_EMAIL_NECESSARIO = 'Falta o seu e-mail: é por ele que chegam os recibos e os avisos.'
+export const ERRO_CELULAR_NECESSARIO = 'Falta o seu celular, com o DDD.'
 export const ERRO_PORTAL = 'Não conseguimos abrir o portal da assinatura agora. Tente de novo em instantes.'
 
 /**
@@ -375,6 +406,15 @@ export function criarControleAssinatura(d: DepsDoControle) {
         return 'dados'
       }
       // o celular é opcional: número inválido ou de outra conta volta aos dados com o aviso
+      // e-mail e celular viraram obrigatórios para quem não tem (02/11/2026)
+      if (code === 'email_necessario' || code === 'email_invalido' || code === 'email_em_uso') {
+        estado.erro.value = code === 'email_em_uso' ? ERRO_EMAIL_EM_USO : code === 'email_invalido' ? ERRO_EMAIL_INVALIDO : ERRO_EMAIL_NECESSARIO
+        return 'dados'
+      }
+      if (code === 'celular_necessario') {
+        estado.erro.value = ERRO_CELULAR_NECESSARIO
+        return 'dados'
+      }
       if (code === 'celular_invalido' || code === 'celular_em_uso') {
         estado.erro.value = code === 'celular_em_uso' ? ERRO_CELULAR_EM_USO : ERRO_CELULAR_INVALIDO
         return 'dados'
