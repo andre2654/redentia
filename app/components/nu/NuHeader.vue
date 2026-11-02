@@ -10,11 +10,11 @@
 //   que abre um menu full-screen (itens grandes com chevron, ativo em azul,
 //   CTAs de rodapé) — referência visual enviada pelo dono.
 // - tablet (761–1023, 23/10/2026): a nav já vai para o hambúrguer, porque não
-//   cabe inteira; Entrar/Conectar carteira (ou a pílula da IA e o avatar) ficam.
+//   cabe inteira; Entrar/Conectar carteira (ou o avatar) ficam.
+// - sem botão da IA (dono, 02/11/2026: "pode tirar esse botão pra sempre"): a
+//   pergunta mora na barra do pé de toda página (ChatBarra).
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
-// o "Pergunte à Redentia AI" abre o painel do chat nesta página (02/11/2026)
-const chatPainel = useChatPainel()
 
 // Estrutura de nav (direção do dono 2026-07-13): Início (a home única = o
 // Mercado auth-aware) · Carteira (logado — página separada) · Teses ·
@@ -348,9 +348,6 @@ onBeforeUnmount(() => {
         </NuxtLink>
 
         <template v-if="isAuthenticated">
-          <NuxtLink to="/busca" class="nuh__ai nuh__desktop-only" @click.prevent="chatPainel.abrir()">
-            <span>Pergunte à Redentia AI</span>
-          </NuxtLink>
           <div class="nuh__account">
             <button
               type="button" class="nuh__avatar" aria-label="Conta"
@@ -441,7 +438,6 @@ onBeforeUnmount(() => {
           <template v-if="isAuthenticated">
             <NuxtLink to="/carteira" class="num__cta-outline" @click="toggleMenu(false)">Minha carteira</NuxtLink>
             <NuxtLink to="/conta" class="num__cta-outline" @click="toggleMenu(false)">Configurações</NuxtLink>
-            <NuxtLink to="/busca" class="num__cta" @click.prevent="toggleMenu(false); chatPainel.abrir()">Pergunte à Redentia AI</NuxtLink>
             <button type="button" class="num__logout" @click="logout">Sair</button>
           </template>
           <template v-else>
@@ -574,14 +570,6 @@ onBeforeUnmount(() => {
 }
 .nuh-wrap--shrunk .nuh__cta { padding: 9px 18px; font-size: var(--nu-fs-sm); }
 .nuh__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.nuh__ai {
-  display: inline-flex; align-items: center; gap: 9px; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 12px 22px;
-  font-size: var(--nu-fs-md); font-weight: 700; white-space: nowrap;
-  transition: background .2s, padding .28s ease, font-size .28s ease;
-}
-.nuh-wrap--shrunk .nuh__ai { padding: 9px 18px; font-size: var(--nu-fs-sm); }
-.nuh__ai:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
 .nuh__account { position: relative; flex-shrink: 0; display: flex; }
 .nuh__avatar {
   width: 42px; height: 42px; border-radius: 50%; background: var(--nu-blue);
