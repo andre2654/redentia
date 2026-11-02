@@ -14,9 +14,11 @@
 // Mandar o visitante primeiro para o /login esconderia o preço atrás de um
 // cadastro, que é o contrário do que a Apple faria.
 //
-// Os apps NÃO estão na App Store (recusa de 23/10/2026: a conta precisa ser
-// de organização). Por isso a linha diz "em breve" e não tem link nenhum.
-// Quando sair, a linha vira o selo da loja.
+// A linha dos aparelhos sai de utils/appsRedentia.ts, a fonte única do que
+// já está na App Store (02/11/2026: só o iPhone; Mac e relógio em revisão).
+// O link da loja fica nos aparelhos do herói (HomeHeroVisitante), não aqui:
+// a ação desta chamada é uma só, conectar a carteira.
+import { fraseDosApps } from '~/utils/appsRedentia'
 withDefaults(defineProps<{
   /** 'claro' no creme (o herói); 'escuro' sobre o navy (o fecho da página) */
   tom?: 'claro' | 'escuro'
@@ -24,8 +26,8 @@ withDefaults(defineProps<{
   centro?: boolean
   /** quem já conectou o banco não lê "Conectar carteira": o passo dele é assinar */
   rotulo?: string
-  /** 'calmo': o botão mais baixo, os bancos menores e o peso 600 (os protótipos do
-   *  herói de 02/11/2026, ?heroi=1|2|3 no dev); 'grande' é o de sempre */
+  /** 'calmo': o botão mais baixo, os bancos menores e o peso 600 (o herói
+   *  do visitante desde 02/11/2026, "A noite"); 'grande' é o de sempre */
   porte?: 'grande' | 'calmo'
 }>(), { tom: 'claro', centro: true, rotulo: 'Conectar carteira', porte: 'grande' })
 
@@ -64,7 +66,7 @@ const BANCOS = [
         <svg width="18" height="16" viewBox="0 0 26 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="18" height="12.5" rx="1.8" /><path d="M1.5 20h23" /></svg>
         <svg width="14" height="16" viewBox="0 0 20 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="13" height="13" rx="3.6" /><path d="M6.5 5.5l.8-3h5.4l.8 3M6.5 18.5l.8 3h5.4l.8-3" /></svg>
       </span>
-      Hoje no site. Em breve no iPhone, no Mac e no Apple&nbsp;Watch.
+      {{ fraseDosApps() }}
     </p>
   </div>
 </template>
@@ -129,7 +131,7 @@ const BANCOS = [
   /* a frase em negrito numa linha, o Open Finance na outra */
   .hch__letra strong { display: block; }
 }
-/* porte calmo (protótipos do herói, 02/11/2026): a mesma chamada num botão de
+/* porte calmo (o herói do visitante, 02/11/2026): a mesma chamada num botão de
    52 px, os bancos de 26 px e o rótulo em 600, para ficar do tamanho do título
    em peso médio, e não maior que ele */
 .hch--calmo .hch__botao {

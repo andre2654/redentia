@@ -178,8 +178,9 @@ export function useNuBriefing() {
 // "é gratuita?" falava de um plano Pro que deixou de existir. Os cenários são
 // os do motor da Simulação: 2.000 caminhos de cinco anos sorteados de trechos
 // reais do histórico (blocos conjuntos), com juros, dólar e petróleo juntos,
-// em dinheiro de hoje. Os apps ainda não estão na App Store (recusa de
-// 23/10/2026, conta de organização): "a caminho", sem data.
+// em dinheiro de hoje. Os apps: desde 02/11/2026 o do iPhone está na App
+// Store; o do Mac e o do relógio seguem na revisão da Apple, "a caminho", sem
+// data. Quando saírem, mude esta resposta junto com utils/appsRedentia.ts.
 export const MERCADO_FAQS: NuFaqItem[] = [
   {
     q: 'Quanto custa a Redentia?',
@@ -195,7 +196,7 @@ export const MERCADO_FAQS: NuFaqItem[] = [
   },
   {
     q: 'Tem app para iPhone, Mac e Apple Watch?',
-    a: 'Tem, e eles estão a caminho da App Store. Enquanto isso, tudo funciona aqui no site, com a mesma conta e a mesma assinatura.',
+    a: 'O do iPhone já está na App Store. O do Mac e o do Apple Watch estão a caminho. No site e no app, é a mesma conta e a mesma assinatura.',
   },
   {
     q: 'A Redentia recomenda compra e venda?',

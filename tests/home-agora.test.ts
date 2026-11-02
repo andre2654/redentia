@@ -2,14 +2,15 @@
  * A home nova (31/10/2026): as frases do Agora no site e o relógio da B3.
  * Cada caso trava uma regra de produto: frase só com número de verdade, o
  * tempo do verbo certo (ao vivo, fechou hoje, último pregão), o feriado da B3
- * contando como bolsa fechada, e a chamada única levando ao /assinar sem
- * link de App Store (os apps ainda não estão na loja).
+ * contando como bolsa fechada, a chamada única levando ao /assinar e os apps
+ * com link de loja só quando estão na loja (desde 02/11/2026, o do iPhone).
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { fraseDaAmplitude, fraseDaBolsa, fraseDaCarteira, numeroDoPct, pctDoResumo } from '../app/utils/homeAgora.ts'
 import { momentoDaBolsa } from '../app/utils/pregaoB3.ts'
+import { APPS_REDENTIA, emBreveDosApps, fraseDosApps, seloDoApp } from '../app/utils/appsRedentia.ts'
 
 const ler = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8')
 
@@ -63,16 +64,39 @@ test('a amplitude diz de quando é, e some sem contagem', () => {
   assert.equal(fraseDaAmplitude(null, 3), null)
 })
 
-test('a chamada única abre o quiz do /assinar, não fala de preço e não promete App Store que ainda não existe', () => {
+test('a chamada única abre o quiz do /assinar e não fala de preço', () => {
   const chamada = ler('app/components/home/HomeChamada.vue')
   // abre o quiz direto (01/11/2026): sem o segundo toque na página do plano
   assert.match(chamada, /to="\/assinar\?quiz=1&de=home"/)
   // a entrada não fala de preço (decisão do dono, 01/11/2026): ele vem no fim do quiz
   assert.doesNotMatch(chamada.slice(chamada.indexOf('<template>')), /19,99|dias grátis/)
   assert.match(chamada, /Qualquer banco ou corretora\./)
-  assert.match(chamada, /Em breve no iPhone, no Mac e no Apple&nbsp;Watch\./)
-  for (const f of ['app/components/home/HomeChamada.vue', 'app/components/home/HomeAparelhos.vue', 'app/components/home/HomeHeroVisitante.vue', 'app/composables/useMercado.ts'])
-    assert.doesNotMatch(ler(f), /apps\.apple\.com|Baixar na App Store|Disponível na App Store/i, f)
+  // a linha dos aparelhos sai da fonte única, e o link da loja não mora na chamada
+  assert.match(chamada, /fraseDosApps\(\)/)
+  assert.doesNotMatch(chamada, /apps\.apple\.com/)
+})
+
+test('os apps: só o que está na App Store vira link; o resto diz "em breve" (02/11/2026)', () => {
+  // conferido na API do iTunes em 02/11/2026: só o iPhone publicado
+  assert.equal(APPS_REDENTIA.iphone.loja, 'https://apps.apple.com/br/app/id6823992050')
+  assert.equal(APPS_REDENTIA.mac.loja, null)
+  assert.equal(APPS_REDENTIA.watch.loja, null)
+  assert.equal(fraseDosApps(), 'No site e no iPhone. Em breve no Mac e no Apple\u00a0Watch.')
+  assert.equal(emBreveDosApps(), 'Em breve no Mac e no Apple\u00a0Watch')
+  assert.deepEqual(seloDoApp('iphone'), { rotulo: 'Baixar na App Store', url: 'https://apps.apple.com/br/app/id6823992050' })
+  assert.deepEqual(seloDoApp('mac'), { rotulo: 'Em breve no Mac', url: null })
+  // quando a Apple aprovar, é uma linha: a frase e o selo acompanham sozinhos
+  const todos = { ...APPS_REDENTIA, mac: { nome: 'Mac', loja: 'https://apps.apple.com/br/app/id1' }, watch: { nome: 'Apple\u00a0Watch', loja: 'https://apps.apple.com/br/app/id6823992050' } }
+  assert.equal(fraseDosApps(todos), 'No site, no iPhone, no Mac e no Apple\u00a0Watch.')
+  assert.equal(emBreveDosApps(todos), null)
+  assert.equal(seloDoApp('mac', todos).url, 'https://apps.apple.com/br/app/id1')
+  // a URL da loja só existe na fonte única: o herói e a chamada não a escrevem à mão
+  for (const f of ['app/components/home/HomeChamada.vue', 'app/components/home/HomeHeroVisitante.vue', 'app/composables/useMercado.ts'])
+    assert.doesNotMatch(ler(f), /apps\.apple\.com|Disponível na App Store/i, f)
+  // o link da loja abre em outra aba sem dar acesso à página (rel=noopener)
+  const heroi = ler('app/components/home/HomeHeroVisitante.vue')
+  assert.match(heroi, /target: '_blank', rel: 'noopener'/)
+  assert.match(heroi, /target="_blank" rel="noopener"/)
 })
 
 test('a home tem um H1 por variante e as três seções que o dono tirou não voltam', () => {

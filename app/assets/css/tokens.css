@@ -409,9 +409,8 @@
   --nu-agora-vermelho: #FF375F;
   --nu-agora-ambar: #FFD60A;
   --nu-agora-azul: #64B5FF;
-  /* sombra dos aparelhos sobre o creme (filter: drop-shadow respeita o recorte) */
-  --nu-home-sombra-aparelho: drop-shadow(0 28px 36px rgba(12, 21, 36, 0.26));
-  --nu-home-sombra-janela: 0 40px 90px -36px rgba(12, 21, 36, 0.55), 0 0 0 1px rgba(12, 21, 36, 0.08);
+  /* a sombra do botão da chamada (HomeChamada); a dos aparelhos sobre o creme
+     saiu com o herói antigo (02/11/2026) */
   --nu-home-sombra-botao: 0 18px 40px -16px rgba(47, 106, 255, 0.65);
   --nu-home-sombra-botao-escuro: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
 
