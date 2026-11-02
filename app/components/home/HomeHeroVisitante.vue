@@ -187,6 +187,31 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
 .hhv__aparelho--mac, .hhv__r--mac { left: 6%; top: 0; width: 88%; }
 .hhv__aparelho--iphone, .hhv__r--iphone { right: 0; top: 35.2%; width: 19%; }
 .hhv__aparelho--watch, .hhv__r--watch { left: 1%; top: 74.4%; width: 13%; }
+/* o relógio com a pulseira (dono, 02/11/2026: "coloque a pulserinha do watch").
+   A foto é só a caixa: a pulseira esportiva grafite sai de cima e de baixo, em
+   CSS, por trás da caixa (isolation segura o z-index -1 dentro do relógio). A
+   caixa sobe para a ponta de baixo pousar no chão; o reflexo fica só da caixa,
+   que já some no desfoque. */
+.hhv__aparelho--watch { top: 60.3%; isolation: isolate; }
+.hhv__r--watch { top: 60.3%; }
+.hhv__aparelho--watch::before, .hhv__aparelho--watch::after {
+  content: ''; position: absolute; z-index: -1; left: 47.6%; width: 60%; height: 55%;
+  transform: translateX(-50%); pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .55), transparent 18%, transparent 82%, rgba(0, 0, 0, .55)),
+    linear-gradient(90deg, #1d1e22, #3a3c42 42%, #2b2d32 58%, #18191c);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06), 0 18px 34px -14px var(--nu-agora-bg);
+}
+/* a de cima entra por trás do topo da caixa; a de baixo, pelo pé */
+.hhv__aparelho--watch::before { bottom: 93%; border-radius: 46% 46% 10% 10% / 16% 16% 4% 4%; }
+.hhv__aparelho--watch::after {
+  top: 93%; border-radius: 10% 10% 46% 46% / 4% 4% 16% 16%;
+  /* os furinhos da pulseira esportiva, no meio da ponta de baixo */
+  background:
+    radial-gradient(circle at 50% 50%, #0d0e10 0 22%, transparent 26%) 50% 58% / 18% 9% repeat-y,
+    linear-gradient(90deg, rgba(0, 0, 0, .55), transparent 18%, transparent 82%, rgba(0, 0, 0, .55)),
+    linear-gradient(90deg, #1d1e22, #3a3c42 42%, #2b2d32 58%, #18191c);
+}
 /* a borda fina com brilho no topo, como vidro */
 .hhv__aparelho--mac img { border-radius: 1.1% / 1.76%; box-shadow: 0 0 0 1px var(--nu-white-14), 0 -1px 0 0 var(--nu-white-30); }
 .hhv__aparelho--iphone img, .hhv__aparelho--watch img { filter: drop-shadow(0 24px 40px var(--nu-agora-bg)); }
@@ -231,7 +256,7 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
 }
 .hhv__aparelho--mac .hhv__selo { top: 5%; }
 .hhv__aparelho--iphone .hhv__selo { top: 12%; }
-.hhv__aparelho--watch .hhv__selo { top: -30%; }
+.hhv__aparelho--watch .hhv__selo { top: -48%; }
 
 @media (hover: hover) {
   .hhv__aparelho:hover .hhv__selo { opacity: 1; transform: translate(-50%, 0); }
