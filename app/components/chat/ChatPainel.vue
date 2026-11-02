@@ -313,8 +313,11 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .cpn {
-  position: fixed; z-index: 51; top: 0; right: 0; bottom: 0; width: var(--chat-painel-w, 440px);
-  display: flex; flex-direction: column; background: var(--nu-white);
+  /* solto da borda (dono, 02/11/2026: "dê uma margem nesse chat e deixe arredondado") */
+  position: fixed; z-index: 51; top: var(--chat-painel-margem); right: var(--chat-painel-margem); bottom: var(--chat-painel-margem);
+  width: var(--chat-painel-w, 440px);
+  display: flex; flex-direction: column; overflow: hidden; background: var(--nu-white);
+  border-radius: var(--nu-r-card-lg);
   box-shadow: var(--nu-chat-sombra-painel);
 }
 .cpn--atras { z-index: 40; }
@@ -371,7 +374,7 @@ onBeforeUnmount(() => {
 .cpn-enter-from, .cpn-leave-to { transform: translateX(24px); opacity: 0; }
 
 @media (max-width: 759px) {
-  .cpn { width: 100%; box-shadow: none; }
+  .cpn { inset: 0; width: 100%; border-radius: 0; box-shadow: none; }
   .cpn__topo { padding-top: env(safe-area-inset-top); height: calc(60px + env(safe-area-inset-top)); padding-left: 18px; }
   .cpn__corpo { padding: 4px 18px 12px; }
   .cpn__pe { padding-left: 12px; padding-right: 12px; }
@@ -382,10 +385,11 @@ onBeforeUnmount(() => {
 <style>
 /* O painel encosta à direita e a página encolhe ao lado dele, no computador
    largo; entre 760 e 1180px ele passa por cima (a página ficaria estreita). */
-:root { --chat-painel-w: 440px; }
+:root { --chat-painel-w: 440px; --chat-painel-margem: 12px; }
 @media (min-width: 1180px) {
   .nu-shell { transition: margin-right .38s cubic-bezier(.2, .8, .2, 1); }
-  html.nu-chat-aberto .nu-shell { margin-right: var(--chat-painel-w); }
+  /* a página encolhe o painel e as duas margens dele */
+  html.nu-chat-aberto .nu-shell { margin-right: calc(var(--chat-painel-w) + 2 * var(--chat-painel-margem)); }
 }
 @media (min-width: 1500px) { :root { --chat-painel-w: 460px; } }
 @media (prefers-reduced-motion: reduce) { .nu-shell { transition: none; } }
