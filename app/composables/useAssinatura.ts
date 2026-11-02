@@ -24,6 +24,23 @@ import {
   type OrigemDoGate,
 } from '~/utils/assinatura'
 
+/**
+ * Só no `nuxi dev`: com o cookie do plugins/dev-assinante.ts, a conta aparece
+ * em teste de 3 dias (o resto do snapshot é o de verdade). Em produção o
+ * `import.meta.dev` é falso e o bloco some do bundle.
+ */
+function comoAssinanteNoDev(e: EntitlementsApi | null): EntitlementsApi | null {
+  if (!import.meta.dev || useCookie('nu-dev-assinante').value !== '1') return e
+  const fim = new Date(Date.now() + 3 * 86_400_000).toISOString()
+  return {
+    ...(e ?? {}),
+    plan: { slug: 'redentia', name: 'Redentia' },
+    subscription: { status: 'trialing', trial_ends_at: fim, current_period_end: fim, cancel_at_period_end: false },
+    has_active_subscription: true,
+    trial_disponivel: false,
+  }
+}
+
 export function useAssinatura() {
   const { token, isAuthenticated } = useAuthState()
 
@@ -46,7 +63,7 @@ export function useAssinatura() {
   const controle = criarControleAssinatura({
     estado,
     logado: () => isAuthenticated.value,
-    buscarEntitlements: () => assinaturaFetchEntitlements(base, headers()),
+    buscarEntitlements: () => assinaturaFetchEntitlements(base, headers()).then(comoAssinanteNoDev),
     postCheckout: (dados) => assinaturaPostCheckout(base, headers(), dados),
     postPortal: () => assinaturaPostPortal(base, headers()),
     irPara: (url) => { window.location.assign(url) },
@@ -102,7 +119,7 @@ export async function useAssinaturaDaPagina() {
       if (!t) return { ent: null, sessaoMorta: false }
       const base = import.meta.server ? serverBase : '/api/backend'
       try {
-        const ent = await assinaturaFetchEntitlements(base, { Accept: 'application/json', Authorization: `Bearer ${t}` })
+        const ent = comoAssinanteNoDev(await assinaturaFetchEntitlements(base, { Accept: 'application/json', Authorization: `Bearer ${t}` }))
         return { ent, sessaoMorta: false }
       } catch (err) {
         return { ent: null, sessaoMorta: statusHttpDoErro(err) === 401 }
