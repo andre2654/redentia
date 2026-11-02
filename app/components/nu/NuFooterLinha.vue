@@ -1,13 +1,15 @@
 <script setup lang="ts">
-// Rodapé, direção 2 "Calma" (protótipo de 02/11/2026, ?rodape=2 no dev). O
-// jeito Apple pela contenção: navy fundo, uma luz macia, o título enorme em
-// peso leve (500, o mais leve que a casa carrega) e um traço só de luz
-// atravessando a banda: o Ibovespa, fechamento de cada mês desde jan/1995, em
-// escala log (a mesma série da cordilheira, app/content/ibov-mensal.ts). O
-// traço entra pela esquerda, vindo de 1995, e acaba num ponto aceso: hoje.
-// A luz da banda nasce desse ponto. Grão fino por cima. Nada mais.
-// Passar o mouse acende o mês e os pontos. O último mês é o fechamento de
-// 20/10/2026, e o rótulo diz isso (dado estático, ver o arquivo da série).
+// A banda de assinatura do rodapé (NuFooter), escolhida pelo dono em
+// 02/11/2026 ("gostei do 2", entre três direções; trocou a cordilheira). O
+// jeito Apple pela contenção: navy, uma luz macia, o título enorme em peso
+// leve (500, o mais leve que a casa carrega) e um traço só de luz atravessando
+// a banda: o Ibovespa, fechamento de cada mês desde jan/1995, em escala log
+// (app/content/ibov-mensal.ts). O traço entra pela borda esquerda, vindo de
+// 1995, e acaba num ponto aceso: hoje. A luz da banda nasce desse ponto. Grão
+// fino por cima. Nada mais.
+// Passar o mouse acende o mês e os pontos. A série é estática e para em
+// 20/10/2026, e o último rótulo diz isso ("20/10/26"): não estenda a série com
+// dado não confirmado (o pregão de 26/10 ainda é suspeito, ver bolsaDoDia.ts).
 import { IBOV_MENSAL, IBOV_MENSAL_INICIO } from '~/content/ibov-mensal'
 
 const VW = 1600
@@ -49,7 +51,7 @@ function mover(e: PointerEvent) {
 </script>
 
 <template>
-  <div ref="el" data-banda="calma" class="nrc" :class="revealClass">
+  <div ref="el" class="nrc" :class="revealClass">
     <div class="nrc__luz" aria-hidden="true" />
     <h2 class="nrc__titulo">Seja qual for a sua meta,<br> a Redentia tem um caminho.</h2>
 
@@ -85,8 +87,12 @@ function mover(e: PointerEvent) {
 <style scoped>
 .nrc {
   --g: clamp(22px, 5.5vw, 80px);
+  /* as medidas de dentro seguem a largura da banda (cqw), não a da janela: com o
+     painel do chat aberto a página encolhe ao lado dele e o título tem de caber */
+  container-type: inline-size;
   position: relative; isolation: isolate;
-  padding-top: clamp(72px, 9vw, 140px);
+  /* a banda inteira cabe na tela no fim da página (1440×900: com header, faixa e a barra da pergunta) */
+  padding-top: clamp(56px, 5.5vw, 96px);
   background: var(--nu-navy);
 }
 /* a luz: nasce do ponto de hoje (à direita) e um véu frio desce sobre o título */
@@ -98,19 +104,19 @@ function mover(e: PointerEvent) {
 }
 .nrc__titulo {
   margin: 0 auto; padding: 0 var(--g); max-width: 16ch; box-sizing: content-box; text-align: center;
-  font-size: clamp(42px, 6.9vw, 112px); font-weight: 500; letter-spacing: -0.05em; line-height: 1.02;
+  font-size: clamp(40px, 6.3cqw, 104px); font-weight: 500; letter-spacing: -0.05em; line-height: 1.02;
   color: var(--nu-cream-text);
   background: linear-gradient(180deg, var(--nu-cream-text) 40%, var(--nu-cream-text-85) 100%);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   text-wrap: balance;
 }
 .nrc__titulo br { display: none; }
-@media (min-width: 900px) { .nrc__titulo { max-width: none; } .nrc__titulo br { display: inline; } }
+@container (min-width: 900px) { .nrc__titulo { max-width: none; } .nrc__titulo br { display: inline; } }
 
 /* o traço: entra pela borda esquerda (1995 vem de fora) e acaba no gutter da direita */
 .nrc__cena {
-  position: relative; margin: clamp(48px, 6vw, 88px) var(--g) 0 0;
-  height: clamp(150px, 17vw, 260px); cursor: crosshair;
+  position: relative; margin: clamp(40px, 4.4cqw, 72px) var(--g) 0 0;
+  height: clamp(150px, 13cqw, 220px); cursor: crosshair;
 }
 .nrc__traco { position: absolute; inset: 0; }
 .nrc__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
@@ -145,10 +151,10 @@ function mover(e: PointerEvent) {
 .nrc__marca--inicio .nrc__marca-rot { transform: none; }
 
 .nrc__legenda {
-  margin: 28px 0 0; padding: 0 var(--g); text-align: center;
+  margin: 24px 0 0; padding: 0 var(--g); text-align: center;
   color: var(--nu-cream-text-45); font-size: var(--nu-fs-xs); font-weight: 500; letter-spacing: .01em;
 }
-.nrc__base { position: relative; z-index: 1; margin-top: clamp(44px, 5.5vw, 80px); }
+.nrc__base { position: relative; z-index: 1; margin-top: clamp(40px, 4.4cqw, 64px); }
 
 .nrc__grao {
   position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .32; mix-blend-mode: overlay;

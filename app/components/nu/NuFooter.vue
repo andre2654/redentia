@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // Footer Nu — navy: a marca com redes e contato ao lado das
-// colunas de links, e embaixo a cordilheira do Ibovespa (NuFooterCordilheira),
-// com a frase grande no céu e o copyright na base da serra.
-// Redesenho do dono em 20/10/2026 ("deixar meu footer mais foda", com rodapés
-// ilustrados de referência). Antes: designs/Redentia Mercado Nu.dc.html (linhas 521-589).
+// colunas de links, e embaixo a banda de assinatura (NuFooterLinha): a frase
+// grande em peso leve e um traço de luz só, o Ibovespa mês a mês desde 1995,
+// com o copyright no pé. Escolhida pelo dono em 02/11/2026 ("gostei do 2"),
+// entre três direções; trocou a cordilheira do Ibovespa (20/10/2026, que já
+// tinha trocado o rodapé de designs/Redentia Mercado Nu.dc.html, linhas 521-589).
 // Desde 21/10/2026, entre os cards e o mapa, a assinatura de O mercado da
 // semana, para "onde eu assino?" ter resposta em qualquer página. Fica fora
 // das páginas que já têm o formulário delas: o /guias, que fecha com a faixa
@@ -12,24 +13,8 @@
 // Em 31/10/2026 o dono tirou os dois cards de produto ("Conheça outras
 // maneiras de usar a Redentia", grandes demais) e o preço da frase da marca.
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
-import type { Component } from 'vue'
-import NuFooterCordilheira from './NuFooterCordilheira.vue'
 
 const route = useRoute()
-// PROTÓTIPO (02/11/2026, o dono: "agora esse footer, queria uma outra pegada
-// aqui"): três direções para a banda de assinatura, trocadas só no dev por
-// ?rodape=1 (os caminhos do motor de cenários), ?rodape=2 (calma, a linha do
-// Ibovespa) e ?rodape=3 (viva, o pregão numa frase). Em produção
-// import.meta.dev é false, o mapa fica vazio (nem entra no bundle) e segue a
-// cordilheira até o dono escolher.
-const BANDAS: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('./rodape/NuRodapeCaminhos.vue')),
-      '2': defineAsyncComponent(() => import('./rodape/NuRodapeCalma.vue')),
-      '3': defineAsyncComponent(() => import('./rodape/NuRodapeViva.vue')),
-    }
-  : {}
-const banda = computed(() => BANDAS[String(route.query.rodape ?? '')] ?? NuFooterCordilheira)
 const { reabrir } = useConsent()
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const assinaturaNoRodape = computed(() => newsletterLigada && !rodapeSemAssinatura(route.path))
@@ -93,27 +78,24 @@ const COLUMNS = [
       </div>
     </div>
 
-    <component :is="banda" class="nuf__serra">
-      <template #ceu>
-        <h2 class="nuf__hero">Seja qual for a sua meta, a Redentia tem um caminho</h2>
-      </template>
+    <NuFooterLinha class="nuf__serra">
       <template #base>
         <div class="nuf__bottom">
-        <img src="/logo-branca.svg" alt="Redentia" class="nuf__bottom-logo">
-        <span class="nuf__copy">© 2026 Redentia · {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
-        <!-- a entrada do B2B no app (direção do dono 2026-08-01): botão discreto
-             no rodapé, não item de coluna — é outro produto, não outra página -->
-        <NuxtLink to="/business" class="nuf__biz">For Business</NuxtLink>
+          <img src="/logo-branca.svg" alt="Redentia" class="nuf__bottom-logo">
+          <span class="nuf__copy">© 2026 Redentia · {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
+          <!-- a entrada do B2B no app (direção do dono 2026-08-01): botão discreto
+               no rodapé, não item de coluna — é outro produto, não outra página -->
+          <NuxtLink to="/business" class="nuf__biz">For Business</NuxtLink>
         </div>
       </template>
-    </component>
+    </NuFooterLinha>
     <!-- O aviso de cookies senta aqui quando o rodapé está na tela. -->
     <div id="ancora-cookies" />
   </footer>
 </template>
 
 <style scoped>
-.nuf { --pad: clamp(22px, 5.5vw, 80px); position: relative; background: var(--nu-navy); padding-top: clamp(64px, 8vw, 110px); overflow: hidden; }
+.nuf { --pad: clamp(22px, 5.5vw, 80px); container: rodape / inline-size; position: relative; background: var(--nu-navy); padding-top: clamp(64px, 8vw, 110px); overflow: hidden; }
 .nuf__in { padding: 0 var(--pad); }
 /* a assinatura da newsletter: o painel navy-2 dos cards, de ponta a ponta */
 .nuf__news {
@@ -155,16 +137,12 @@ const COLUMNS = [
 .nuf__pref:hover { color: var(--nu-white); }
 .nuf__pref:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 
-/* a cordilheira: de ponta a ponta, a frase no céu e o copyright na base */
-.nuf__serra { --nfc-pad: var(--pad); margin-top: clamp(56px, 7vw, 100px); }
-.nuf__hero {
-  margin: 0; padding: 0 var(--pad); color: var(--nu-cream-text);
-  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.045em; line-height: 1.03;
-}
+/* a banda de assinatura: de ponta a ponta, a frase, o traço e o copyright no pé */
+.nuf__serra { margin-top: clamp(56px, 7vw, 100px); }
 .nuf__bottom { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 0 var(--pad) 26px; }
 .nuf__bottom-logo { width: 27px; height: 27px; display: block; object-fit: contain; }
 .nuf__copy { color: var(--nu-cream-text-78); font-size: var(--nu-fs-sm); font-weight: 500; }
-/* sobre a base da serra: o mesmo navy do rodapé, com borda fina */
+/* no pé da banda: o mesmo navy do rodapé, com borda fina */
 .nuf__biz {
   margin-left: auto; display: inline-flex; align-items: center;
   background: var(--nu-navy); color: var(--nu-cream-text); border: 1px solid var(--nu-cream-text-22);
@@ -174,12 +152,18 @@ const COLUMNS = [
 .nuf__biz:hover { background: var(--nu-navy-2); border-color: var(--nu-cream-text-45); color: var(--nu-white); }
 .nuf__biz:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; }
 
-@media (max-width: 1180px) {
+/* pela largura do rodapé, não da janela: com o painel do chat aberto a página
+   encolhe ao lado dele, e as cinco colunas não cabem mais */
+@container rodape (max-width: 1180px) {
   .nuf__grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 }
-@media (max-width: 900px) {
+@container rodape (max-width: 900px) {
   .nuf__mapa { grid-template-columns: 1fr; }
-  .nuf__hero { margin-bottom: 28px; }
-  .nuf__bottom { padding-top: 22px; }
+}
+/* no celular: a marca e o copyright numa linha, o For Business embaixo, alinhado com eles */
+@media (max-width: 760px) {
+  .nuf__bottom { align-items: flex-start; row-gap: 20px; }
+  .nuf__copy { flex: 1 1 calc(100% - 43px); min-width: 0; line-height: 1.5; padding-top: 2px; }
+  .nuf__biz { margin-left: 0; }
 }
 </style>
