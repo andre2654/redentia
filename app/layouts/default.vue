@@ -30,9 +30,8 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
          vez de mandar para o /login. Fechada até um gatilho chamar
          useCadastroFolha().abrir(). -->
     <CadastroFolha />
-    <!-- Onboarding obrigatório: logado sem investor_goal responde antes de
-         seguir (decisão do dono, 24/08). -->
-    <NuOnboardingModal />
+    <!-- O onboarding obrigatório ("O que te trouxe aqui?") saiu em 02/11/2026,
+         a pedido do dono: o quiz da assinatura já pergunta o que importa. -->
     <!-- O recado do André (26/10/2026, o dia vermelho depois do 2º turno):
          decisão do dono. Abre sozinho uma vez para quem está logado, fora das
          páginas de busca; a faixa acima abre para todo mundo. Some sozinho na

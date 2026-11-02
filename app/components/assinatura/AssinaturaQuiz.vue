@@ -99,8 +99,6 @@ const cad = useCadastroInline()
 const email = ref('')
 const codigo = ref('')
 const isca = ref('')
-// o onboarding obrigatório da conta nova espera o quiz fechar (como espera a folha)
-const naFolha = useState<boolean>('nu:onb-na-folha', () => false)
 
 const indice = ref(0)
 const respostas = ref<Respostas>({})
@@ -226,7 +224,6 @@ function onKey(e: KeyboardEvent) {
 watch(aberto, (open) => {
   if (import.meta.server) return
   document.documentElement.style.overflow = open ? 'hidden' : ''
-  naFolha.value = open
   if (open) {
     comConta.value = !isAuthenticated.value
     cad.trocarContato()

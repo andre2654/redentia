@@ -4,11 +4,11 @@
 // sobe esta folha com o que a pessoa pediu já funcionando (o herói, com dado
 // real), três motivos e o campo do e-mail (ou do WhatsApp, no resumo). O
 // código de 6 números chega na mesma folha; confirmado, a conta é criada, a
-// ação do gatilho roda sozinha e, se a conta é nova, as duas perguntas do
-// onboarding obrigatório vêm aqui mesmo, sem um segundo modal por cima.
+// ação do gatilho roda sozinha. As duas perguntas do onboarding (objetivo e
+// experiência) saíram em 02/11/2026, a pedido do dono: o quiz da assinatura
+// já pergunta o que importa.
 // No computador é um cartão no centro; no celular, uma folha que sobe do pé.
 // Montada uma vez no layout; quem abre é useCadastroFolha().abrir().
-import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
 import type { DadosAtivo, DadosResumo } from '~/composables/useCadastroDados'
 import type { CadastroFeito } from '~/composables/useCadastroFolha'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
@@ -17,11 +17,6 @@ import type { CadastroIcone } from '~/utils/cadastro'
 const { aberta, fechar: fecharFolha } = useCadastroFolha()
 const cad = useCadastroInline()
 const dados = useCadastroDados()
-const { authFetch } = useApi()
-const meCliente = useMeCliente()
-// o onboarding obrigatório espera a folha (NuOnboardingModal)
-const naFolha = useState<boolean>('nu:onb-na-folha', () => false)
-const gate = useState<'unknown' | 'needed' | 'done'>('nu:onb-gate', () => 'unknown')
 
 const ctx = computed(() => aberta.value?.contexto ?? null)
 const gesto = computed(() => ctx.value?.gesto ?? 'pergunta')
@@ -38,16 +33,9 @@ const codigo = ref('')
 const isca = ref('')
 const feito = ref<CadastroFeito | null>(null)
 const acaoFalhou = ref(false)
-/** onboarding obrigatório: null = não precisa; depois o passo em que está */
-const onboarding = ref<null | 'objetivo' | 'experiencia'>(null)
-const objetivo = ref<string | null>(null)
-const salvando = ref(false)
-const erroOnboarding = ref('')
 
 const ativo = ref<DadosAtivo | null>(null)
 const resumo = ref<DadosResumo | null>(null)
-const OBJETIVOS = ONBOARDING_OBJETIVOS
-const EXPERIENCIAS = ONBOARDING_EXPERIENCIAS
 
 const texto = computed(() => {
   const c = ctx.value
@@ -92,12 +80,8 @@ watch(() => aberta.value?.id, async (id) => {
   isca.value = ''
   feito.value = null
   acaoFalhou.value = false
-  onboarding.value = null
-  objetivo.value = null
-  erroOnboarding.value = ''
   cad.trocarContato()
   cad.canal.value = gesto.value === 'resumo' ? 'whatsapp' : 'email'
-  naFolha.value = true
   ativo.value = null
   resumo.value = null
   await nextTick()
@@ -116,8 +100,6 @@ watch(() => aberta.value?.id, async (id) => {
 })
 
 function fechar() {
-  // fechar no meio vale: sem as respostas, o onboarding obrigatório volta a valer
-  naFolha.value = false
   fecharFolha()
 }
 
@@ -144,19 +126,9 @@ function aoDigitarCodigo(e: Event) {
   if (v.length === 6) void confirmarCodigo()
 }
 
-/* ——— código → conta → ação → onboarding ——— */
-async function precisaDoOnboarding(): Promise<boolean> {
-  const me = await meCliente.load()
-  if (!me?.user || me.user.investor_goal) return false
-  try {
-    const biz = await authFetch<BusinessAccountStatus>('/me/business', {}, { redirectOnAuthError: false })
-    return !biz?.has_account
-  }
-  catch {
-    return false
-  }
-}
-
+/* ——— código → conta → ação ———
+ * (o onboarding de objetivo e experiência saiu em 02/11/2026: o quiz da
+ * assinatura já pergunta o que importa) */
 async function confirmarCodigo() {
   const f = await cad.confirmar(codigo.value)
   if (!f) {
@@ -181,35 +153,11 @@ async function contaFeita(f: CadastroFeito) {
   catch {
     acaoFalhou.value = true
   }
-  onboarding.value = (await precisaDoOnboarding()) ? 'objetivo' : null
   finalizado.value = true
-}
-
-function escolherObjetivo(v: string) {
-  objetivo.value = v
-  onboarding.value = 'experiencia'
-}
-
-async function escolherExperiencia(v: string) {
-  if (salvando.value) return
-  salvando.value = true
-  erroOnboarding.value = ''
-  try {
-    await authFetch('/auth/profile', { method: 'PUT', body: { investor_goal: objetivo.value, investor_experience: v } }, { redirectOnAuthError: false })
-    gate.value = 'done'
-    onboarding.value = null
-  }
-  catch {
-    erroOnboarding.value = 'Não conseguimos salvar agora. Confira sua conexão e toque de novo na opção.'
-  }
-  finally {
-    salvando.value = false
-  }
 }
 
 async function concluir() {
   const depois = aberta.value?.depois
-  naFolha.value = false
   fecharFolha()
   await depois?.()
 }
@@ -345,28 +293,11 @@ const socialNaFolha = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
               </div>
             </template>
 
-            <!-- 3 · pronto, e o onboarding junto -->
+            <!-- 3 · pronto -->
             <template v-else>
               <h2 id="ncf-titulo" class="ncf__titulo">{{ pronto.titulo }}</h2>
               <p class="ncf__apoio">{{ pronto.linha }}</p>
-              <div v-if="onboarding" class="ncf__onb">
-                <template v-if="onboarding === 'objetivo'">
-                  <div class="ncf__onb-titulo">O que te trouxe à Redentia?</div>
-                  <div class="ncf__onb-apoio">Uma resposta, e a Redentia se organiza em volta dela.</div>
-                  <div class="ncf__opcoes">
-                    <button v-for="o in OBJETIVOS" :key="o.value" type="button" class="ncf__opcao" @click="escolherObjetivo(o.value)">{{ o.label }}</button>
-                  </div>
-                </template>
-                <template v-else>
-                  <div class="ncf__onb-titulo">Qual sua experiência com investimentos?</div>
-                  <div class="ncf__onb-apoio">Ajusta o tom das explicações.</div>
-                  <div class="ncf__opcoes ncf__opcoes--tres">
-                    <button v-for="o in EXPERIENCIAS" :key="o.value" type="button" class="ncf__opcao" :disabled="salvando" @click="escolherExperiencia(o.value)">{{ salvando ? 'Salvando…' : o.label }}</button>
-                  </div>
-                  <p v-if="erroOnboarding" class="ncf__erro" role="alert">{{ erroOnboarding }}</p>
-                </template>
-              </div>
-              <button v-else type="button" class="ncf__botao ncf__botao--fim" @click="concluir">{{ botaoFinal }}</button>
+              <button type="button" class="ncf__botao ncf__botao--fim" @click="concluir">{{ botaoFinal }}</button>
             </template>
           </div>
         </section>
@@ -376,8 +307,7 @@ const socialNaFolha = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
 </template>
 
 <style scoped>
-/* acima do conteúdo e dos modais Nu (9999); abaixo só do onboarding (10000),
-   que de todo modo espera a folha fechar */
+/* acima do conteúdo e dos modais Nu (9999) */
 .ncf {
   position: fixed; inset: 0; z-index: 9999;
   display: flex; align-items: center; justify-content: center; padding: 24px 16px;
@@ -461,19 +391,6 @@ const socialNaFolha = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
 .ncf__links { display: flex; gap: 20px; margin-top: 22px; }
 .ncf__links button { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; }
 .ncf__links button:disabled { color: var(--nu-gray); cursor: default; }
-
-.ncf__onb { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--nu-cream-2); }
-.ncf__onb-titulo { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
-.ncf__onb-apoio { margin-top: 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.ncf__opcoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
-.ncf__opcoes--tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.ncf__opcao {
-  min-height: 56px; padding: 10px 14px; border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-tile); background: var(--nu-white);
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; text-align: left; cursor: pointer;
-  transition: border-color .15s, background .15s;
-}
-.ncf__opcao:hover { border-color: var(--nu-blue); background: var(--nu-blue-tint-2); }
-.ncf__opcao:disabled { opacity: .6; cursor: default; }
 
 /* entrada: o fundo escurece, o cartão sobe */
 .ncf-enter-active, .ncf-leave-active { transition: opacity .25s ease; }
