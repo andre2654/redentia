@@ -158,7 +158,8 @@ watch(aberto, async (a) => {
     if (celular()) html.style.overflow = 'hidden'
     if (isAuthenticated.value && !sessions.value.length) void chat.loadSessions()
     await nextTick()
-    composer.value?.focar()
+    // no celular o foco subiria o teclado por cima da resposta que vai chegar
+    if (!celular()) composer.value?.focar()
     if (messages.value.length) rolarAoFim(false)
   } else {
     html.style.removeProperty('overflow')
@@ -279,7 +280,7 @@ onBeforeUnmount(() => {
           ref="composer" v-model="texto" :contextos="contextos" :streaming="streaming" :novo-id="novoId"
           @enviar="enviarDoCampo" @parar="chat.stop()" @remover="painel.remover"
         />
-        <p class="cpn__aviso">Respostas geradas por IA. Não são recomendação de investimento.</p>
+        <p class="cpn__aviso">Gerado por IA. Não é recomendação de investimento.</p>
       </footer>
     </aside>
   </Transition>

@@ -72,9 +72,28 @@ function uniaoDosFilhos(el: Element, fundo: number, acc: { x0: number; y0: numbe
     acc.x1 = Math.max(acc.x1, q.right); acc.y1 = Math.max(acc.y1, q.bottom)
   }
 }
+/** Onde acabam o header e a faixa sticky (o contorno não passa por baixo deles). */
+function topoLivre(): number {
+  let y = 0
+  for (const el of Array.from(document.querySelectorAll('.nuh-wrap, .nut-wrap, .nsr-wrap'))) {
+    const q = el.getBoundingClientRect()
+    if (q.top <= y + 1 && q.bottom > y) y = q.bottom
+  }
+  return y
+}
+
 function retanguloDe(el: HTMLElement): DOMRect {
   const r = el.getBoundingClientRect()
   if (r.width < window.innerWidth * 0.6) return r
+  // banda com fundo próprio (o gráfico navy): o contorno fica dentro dela, a
+  // 12px da borda visível; o gráfico que sangra até a borda entra inteiro
+  const fundo = getComputedStyle(el).backgroundColor
+  if (fundo && fundo !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(fundo)) {
+    const vw = document.documentElement.clientWidth
+    const x0 = Math.max(r.left, 0) + 18, x1 = Math.min(r.right, vw) - 18
+    const y0 = Math.max(r.top, topoLivre()) + 18, y1 = Math.min(r.bottom, window.innerHeight) - 18
+    return new DOMRect(x0, y0, Math.max(0, x1 - x0), Math.max(0, y1 - y0))
+  }
   const acc = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity }
   uniaoDosFilhos(el, 2, acc)
   return acc.x0 === Infinity ? r : new DOMRect(acc.x0 - 10, acc.y0 - 10, acc.x1 - acc.x0 + 20, acc.y1 - acc.y0 + 20)
@@ -197,7 +216,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.cse { position: fixed; inset: 0; z-index: 49; pointer-events: none; overflow: hidden; }
+.cse { position: fixed; inset: 0; z-index: 39; pointer-events: none; overflow: hidden; }
 
 /* a luz que segue o ponteiro: três manchas da paleta da barra, desfocadas */
 .cse__luz {
