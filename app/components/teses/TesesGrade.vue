@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// /teses, direção 3 (PROTÓTIPO, ?teses=3 no dev, 02/11/2026): "A grade".
-// Cartões ricos numa grade com uma barra de filtros que gruda no topo: o tipo
+// /teses: "A grade" (02/11/2026), a direção que o dono escolheu entre três
+// ("gostei da 3, pode manter nela"). Cartões ricos numa grade com uma barra de filtros que gruda no topo: o tipo
 // (o shelf da API: Grandes ideias / Estratégias), "mudou em 30 dias" (pela
 // convicção dia a dia) e a ordem. Cada cartão diz a tese numa frase, os papéis,
 // a convicção com o desenho dos últimos meses e a última mudança. No celular
@@ -13,7 +13,12 @@
 import type { ThesisCardApi } from '~/types/market'
 import { contextoDaTese, type TeseVitrineVM } from '~/composables/useTesesVitrine'
 
-const props = defineProps<{ cards: ThesisCardApi[]; favoritos: string[] }>()
+const props = defineProps<{
+  cards: ThesisCardApi[]
+  favoritos: string[]
+  /** a lista ainda não chegou (o SSR falhou e o cliente tenta de novo): esqueleto */
+  carregando?: boolean
+}>()
 const { teses, estado, revisadaEm } = useTesesVitrine(toRef(props, 'cards'), toRef(props, 'favoritos'))
 
 type Tipo = 'todas' | 'tema' | 'estrategia'
@@ -22,12 +27,7 @@ const tipo = ref<Tipo>('todas')
 const recentes = ref(false)
 const ordem = ref<Ordem>('conviccao')
 
-// "mudou em 30 dias": a última mudança cai nos 30 dias antes do último ponto da série
-const mudouRecente = (t: TeseVitrineVM) => {
-  if (!t.mudanca || !t.serie?.length) return false
-  const fim = Date.parse(`${t.serie[t.serie.length - 1]!.d}T12:00:00Z`)
-  return fim - Date.parse(`${t.mudanca.data}T12:00:00Z`) <= 30 * 86_400_000
-}
+const mudouRecente = (t: TeseVitrineVM) => t.mudouRecente
 const contagem = computed(() => ({
   todas: teses.value.length,
   tema: teses.value.filter((t) => t.tipo === 'tema').length,
@@ -110,7 +110,24 @@ const falhouImagem = ref<Record<string, boolean>>({})
       </label>
     </div>
 
-    <ul v-if="visiveis.length" class="tgr__grade">
+    <!-- esqueleto dos cartões: só quando a lista não veio no SSR e o cliente tenta de novo -->
+    <ul v-if="carregando && !teses.length" class="tgr__grade" aria-hidden="true">
+      <li v-for="i in 6" :key="i">
+        <span class="tgr__cartao tgr__cartao--sk">
+          <span class="tgr__capa"><NuSkeleton variant="block" width="100%" height="100%" radius="0" /></span>
+          <span class="tgr__corpo">
+            <NuSkeleton variant="line" width="140px" height="12px" />
+            <NuSkeleton variant="text" :lines="2" last-width="60%" height="22px" class="tgr__sk-nome" />
+            <NuSkeleton variant="text" :lines="2" last-width="80%" height="13px" class="tgr__sk-frase" />
+            <span class="tgr__pe">
+              <span class="tgr__conv"><NuSkeleton variant="line" width="56px" height="12px" /><NuSkeleton variant="line" width="48px" height="32px" /></span>
+              <NuSkeleton variant="line" width="100%" height="30px" radius="8px" />
+            </span>
+          </span>
+        </span>
+      </li>
+    </ul>
+    <ul v-else-if="visiveis.length" class="tgr__grade">
       <li v-for="t in visiveis" :key="t.slug">
         <NuxtLink v-contexto-chat="contextoDaTese(t)" :to="t.href" class="tgr__cartao">
           <span class="tgr__capa">
@@ -132,7 +149,7 @@ const falhouImagem = ref<Record<string, boolean>>({})
                 <NuSkeleton v-else-if="estado === 'esperando'" variant="line" width="100%" height="30px" radius="8px" />
               </span>
               <span class="tgr__mudou">
-                <template v-if="t.mudancaFrase">{{ t.mudancaFrase[0]!.toUpperCase() }}{{ t.mudancaFrase.slice(1) }}</template>
+                <template v-if="t.mudancaFrase">{{ t.mudancaFrase }}</template>
                 <template v-else-if="t.serie">Estável desde {{ t.serie[0]!.d.slice(8, 10) }}/{{ t.serie[0]!.d.slice(5, 7) }}</template>
                 <NuSkeleton v-else-if="estado === 'esperando'" variant="line" width="160px" height="12px" />
               </span>
@@ -211,7 +228,10 @@ const falhouImagem = ref<Record<string, boolean>>({})
 /* ——— a grade ——— */
 .tgr__grade {
   list-style: none; margin: 16px 0 0; padding: 0 var(--g);
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr)); gap: clamp(16px, 1.8vw, 24px);
+  /* no máximo três colunas (1440 e 1024), duas no tablet, uma no celular */
+  --gap: clamp(16px, 1.8vw, 24px);
+  display: grid; gap: var(--gap);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(280px, calc((100% - 2 * var(--gap)) / 3))), 1fr));
 }
 .tgr__cartao {
   display: flex; flex-direction: column; height: 100%; border-radius: var(--nu-r-card); overflow: hidden;
@@ -251,6 +271,9 @@ const falhouImagem = ref<Record<string, boolean>>({})
 .tgr__conv-linha { display: block; height: 30px; color: var(--nu-blue); }
 .tgr__mudou { grid-column: 1 / -1; min-height: 18px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 
+.tgr__cartao--sk { pointer-events: none; }
+.tgr__sk-nome { margin-top: 12px; }
+.tgr__sk-frase { margin-top: 10px; margin-bottom: 18px; }
 .tgr__vazio { padding: 40px var(--g) 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
 .tgr__vazio p { margin: 0; }
 .tgr__limpar {
@@ -274,7 +297,11 @@ const falhouImagem = ref<Record<string, boolean>>({})
   .tgr__chip { height: 36px; padding: 0 14px; }
   .tgr__nome { font-size: var(--nu-fs-xl); }
 }
-@media (max-width: 560px) { .tgr__conta-rev { display: none; } }
+@media (max-width: 560px) {
+  .tgr__conta-rev { display: none; }
+  /* o feed do celular: a capa mais baixa, para caber mais tese por tela */
+  .tgr__capa { aspect-ratio: 2 / 1; }
+}
 @media (prefers-reduced-motion: reduce) {
   .tgr, .tgr__cartao, .tgr__capa-img, .tgr__barra { animation: none; transition: none; }
 }

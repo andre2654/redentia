@@ -381,11 +381,7 @@
   --nu-cta-scrim-h: linear-gradient(90deg, #2F6BFF 0%, rgba(47, 107, 255, 0.82) 24%, rgba(47, 107, 255, 0.44) 56%, rgba(47, 107, 255, 0.12) 100%);
   --nu-cta-scrim-v: linear-gradient(180deg, rgba(47, 107, 255, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
 
-  /* ——— /teses (valores exatos de Redentia Teses Nu.dc.html) ———
-     Os carrosséis reusam --nu-tese-grad-1..3, --nu-white-92/-62/-16/-18/-85,
-     --nu-green-soft(-22); o FAQ reusa --nu-gray-2/--nu-ink-75. Só o NOVO aqui. */
-  --nu-teses-hero-sub: #5C564B;   /* parágrafo do hero "Invista em ideias" */
-  --nu-teses-benefit: #1E48B5;    /* cards do grid "Sua jornada com mais vantagens" */
+  /* ——— /teses ("A grade", 02/11/2026): sem cor própria, só tokens de uso geral ——— */
 
   /* ——— /business (painel de credibilidade do hero) ———
      Degrau novo na rampa de ink que já existe (75, 30, 16, 14, 10, 04). Nasce
@@ -422,11 +418,4 @@
   --nu-chat-sombra-painel: 0 0 0 1px rgba(12, 21, 36, 0.07), 0 28px 70px -24px rgba(12, 21, 36, 0.34);
   --nu-chat-sombra-sug: 0 18px 50px -12px rgba(12, 21, 36, 0.28), 0 0 0 1px rgba(12, 21, 36, 0.07);
   --nu-chat-sombra-rotulo: 0 6px 16px -6px rgba(12, 21, 36, 0.45);
-
-  /* ——— /teses, direção "A linha d'água" (protótipo de 02/11/2026) ———
-     O sol das teses que boiam acima do Ibovespa: as cores do momento
-     assinatura do app (RedentiaApp/App/TeseWaterline.swift, WaterlineSun). */
-  --nu-teses-sol: #FFD7A0;                       /* miolo da luz */
-  --nu-teses-sol-halo: rgba(244, 174, 98, 0.42); /* halo quente */
-  --nu-teses-sol-halo-0: rgba(244, 174, 98, 0);
 }

@@ -1,17 +1,17 @@
 /**
- * O view-model das direções novas da /teses (02/11/2026, protótipos no dev por
- * ?teses=1|2|3). A lista vem do SSR (useTesesPage → /api/theses, as 10 teses
- * com link no HTML da 1ª resposta); o painel (/api/teses-painel: a convicção
- * dia a dia, a cesta e o último pregão) enriquece depois do mount, com
- * esqueleto no lugar do que ainda não chegou. Falhou, os desenhos somem e a
- * lista fica (regra 7: dado que falta faz o elemento sumir).
+ * O view-model dos cartões da /teses ("A grade", 02/11/2026). A lista vem do
+ * SSR (useTesesPage → /api/theses, as 10 teses com link no HTML da 1ª
+ * resposta); o painel (/api/teses-painel: a convicção dia a dia) enriquece
+ * depois do mount, com esqueleto no lugar do desenho enquanto não chega.
+ * Falhou, os desenhos somem e a lista fica (regra 7: dado que falta faz o
+ * elemento sumir). O pedido nunca segura o SSR.
  *
  * Nada aqui depende de login no SSR (a rota é cacheada na borda): o "Seguindo"
  * só aparece depois do mount, pelos favoritos que o useTesesPage já busca.
  */
 import type { Ref } from 'vue'
 import type { ThesisCardApi } from '~/types/market'
-import { fraseDaMudanca, ultimaMudanca, type PainelDasTeses, type PontoDeConviccao } from '~/utils/tesesPainel'
+import { fraseDaMudanca, mudouEmTrintaDias, ultimaMudanca, type PainelDasTeses, type PontoDeConviccao } from '~/utils/tesesPainel'
 
 export interface TeseVitrineVM {
   slug: string
@@ -36,10 +36,10 @@ export interface TeseVitrineVM {
   /* ——— do painel (null até chegar, ou se faltou) ——— */
   serie: PontoDeConviccao[] | null
   mudanca: { data: string; de: number; para: number } | null
-  /** 'subiu de 90 em 21 out' */
+  /** 'Subiu de 90 em 21 out' */
   mudancaFrase: string | null
-  cesta: { serie: number[]; deltaPct: number | null; desde: string | null } | null
-  dia: { pct: number; papeis: number; total: number } | null
+  /** a última mudança cai nos 30 dias antes da revalidação mais recente */
+  mudouRecente: boolean
 }
 
 const tema = (s: string) => s.replace(/^Tese\s*·\s*/u, '').trim() || s
@@ -54,7 +54,8 @@ export function useTesesVitrine(cards: Ref<ThesisCardApi[]>, favoritos: Ref<stri
     montado.value = true
     if (estado.value === 'pronto') return
     try {
-      const r = await $fetch<PainelDasTeses>('/api/teses-painel')
+      // 12 s e desiste: o esqueleto do desenho some, o cartão fica inteiro
+      const r = await $fetch<PainelDasTeses>('/api/teses-painel', { timeout: 12_000 })
       if (r && Object.keys(r.teses ?? {}).length) {
         painel.value = r
         estado.value = 'pronto'
@@ -90,8 +91,7 @@ export function useTesesVitrine(cards: Ref<ThesisCardApi[]>, favoritos: Ref<stri
         serie: p?.conviccao ?? null,
         mudanca,
         mudancaFrase: fraseDaMudanca(mudanca),
-        cesta: p?.cesta ?? null,
-        dia: p?.dia ?? null,
+        mudouRecente: mudouEmTrintaDias(p?.conviccao),
       }
     })
   })
@@ -115,7 +115,7 @@ export function contextoDaTese(t: TeseVitrineVM) {
     texto: [
       `Tese: ${t.titulo} (${t.tema})`,
       t.frase,
-      t.conviccao != null ? `Convicção ${t.conviccao} de 100${t.mudancaFrase ? `, ${t.mudancaFrase}` : ''}` : '',
+      t.conviccao != null ? `Convicção ${t.conviccao} de 100${t.mudancaFrase ? ` (${t.mudancaFrase.toLowerCase()})` : ''}` : '',
       t.tickers.length ? `Papéis: ${t.tickers.join(', ')}${t.mais ? ` e mais ${t.mais}` : ''}` : '',
     ].filter(Boolean).join('\n'),
   }
