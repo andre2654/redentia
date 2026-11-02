@@ -3,6 +3,7 @@
 // o ticker "Mercado agora" por um rail de seções; todo o resto mantém o ticker,
 // automático. Ver useSectionRail.ts p/ a nota de SSR (rail entra na hidratação).
 const railSections = useState<RailState | null>('nu:section-rail', () => null)
+const route = useRoute()
 </script>
 
 <template>
@@ -37,6 +38,16 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
          páginas de busca; a faixa acima abre para todo mundo. Some sozinho na
          data de useRecado. -->
     <NuRecado />
+    <!-- O chat em painel (02/11/2026, pedido do dono): a barra de pergunta no pé
+       de toda página, o painel à direita e o cursor mágico que mostra pedaços
+       da página à Redentia. Os três são position: fixed (o clip do shell não
+       os prende); o shell encolhe ao lado do painel (ChatPainel). -->
+    <ChatBarra />
+    <ChatPainel />
+    <ChatSeletor />
+    <!-- A folha da assinatura, para o envio do painel (useNuChat.send). A
+         /busca ainda monta a dela; aqui fica fora dela para não abrir duas. -->
+    <AssinaturaGateSheet v-if="route.path !== '/busca'" />
   </div>
 </template>
 
