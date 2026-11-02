@@ -214,14 +214,18 @@ function cryptoItem(c: RawCrypto): BuscaItem {
 }
 
 function tesouroItem(t: RawTesouro): BuscaItem {
-  const indexador = tesouroIndexerShort(t.indexer)
+  // o nome já diz o indexador ("Tesouro IPCA+ 2035"); o vencimento com mês
+  // diz mais, e some se a data não vier
+  const m = /^(\d{4})-(\d{2})/.exec(t.maturity ?? '')
+  const vence = m ? `Vence em ${MONTHS_PT[Number(m[2]) - 1]}/${m[1]}` : tesouroIndexerShort(t.indexer)
   return {
     id: `tesouro:${t.slug}`,
     tipo: 'tesouro',
     titulo: t.name,
-    sub: ['Tesouro Direto', indexador].filter(Boolean).join(' · '),
+    sub: vence,
     href: `/tesouro/${t.slug}`,
-    valor: tesouroRateFmt({ rate: t.rate, rate_numeric: parseTesouroRate(t.rate), indexer: t.indexer }) || null,
+    // 'IPCA + 7,84%' vira 'IPCA+ 7,84%', o jeito do nome do título (e cabe no celular)
+    valor: tesouroRateFmt({ rate: t.rate, rate_numeric: parseTesouroRate(t.rate), indexer: t.indexer }).replace(/\s\+\s/, '+ ') || null,
   }
 }
 

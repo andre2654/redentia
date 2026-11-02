@@ -50,7 +50,7 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
     </span>
 
     <span class="bl__id">
-      <span class="bl__titulo">{{ props.item.titulo }}</span>
+      <span class="bl__titulo" :class="{ 'bl__titulo--quebra': props.item.tipo !== 'ativo' }">{{ props.item.titulo }}</span>
       <span v-if="props.item.sub" class="bl__sub">{{ props.item.sub }}</span>
     </span>
 
@@ -87,6 +87,11 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
 .bl__titulo {
   display: block; font-size: var(--nu-fs-md); font-weight: 800; line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* título de Tesouro, tese e guia é frase: quebra em até duas linhas em vez de
+   cortar o vencimento ("Tesouro IPCA+ com Juros Semestrais 2035") */
+.bl__titulo--quebra {
+  white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
 }
 .bl__sub {
   display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500;
