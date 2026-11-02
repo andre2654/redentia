@@ -6,7 +6,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { AVISO_RESUMO, fundirFaq, montarResumoAtivo, type ResumoAtivoInput } from '../app/utils/assetResumo.ts'
-import { TETO_DESCRICAO, TETO_TITULO_PAGINA } from '../app/utils/serp.ts'
+import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, TETO_TITULO_PAGINA } from '../app/utils/serp.ts'
 
 const VERBOS = /\b(compre|comprar|compra|vend(?:a|e|er)|recomend\w*|oportunidade|vale a pena|barat[oa]s?|car[oa]s?|atrativ[oa]s?|imperd[ií]vel|garantid[oa]s?)\b/i
 
@@ -143,15 +143,11 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   }))
   assert.ok(r)
   assert.equal(r.h1, 'Petrobras (PETR4), setor energia')
-  assert.equal(r.title, 'Petrobras (PETR4): cotação e dividendos')
+  assert.equal(r.title, 'PETR4 cotação hoje: Petrobras e dividendos')
   assert.ok(r.title.length <= TETO_TITULO_PAGINA)
   assert.ok(r.description.length <= TETO_DESCRICAO)
-  assert.match(r.description, /PETR4/)
-  assert.match(r.description, /R\$ 52,51/)
-  assert.match(r.description, /28\/10\/2026/)
-  assert.match(r.description, /Dividend yield 6,96%/)
-  assert.match(r.description, /P\/L 5,07/)
-  assert.match(r.description, /Dados: Brapi e StatusInvest\./)
+  assert.match(r.description, /Cotação PETR4 \(Petrobras\) hoje: R\$ 52,51 no fechamento de 28\/10\/2026 \(Brapi\)/)
+  assert.match(r.description, /Dividend yield 6,96%, P\/L 5,07 \(StatusInvest\)/)
   assert.match(r.description, /Não é recomendação\.$/)
   const corpo = r.paragrafos.join('\n')
   assert.match(corpo, /cotação mais recente é R\$ 52,51/)
@@ -227,7 +223,7 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   }))
   assert.ok(r)
   assert.equal(r.h1, 'Pátria Log (HGLG11), fundo imobiliário')
-  assert.equal(r.title, 'Pátria Log (HGLG11): cotação do FII')
+  assert.equal(r.title, 'HGLG11 cotação hoje: Pátria Log, FII')
   const corpo = r.paragrafos.join('\n')
   assert.doesNotMatch(corpo, /P\/L/)
   assert.doesNotMatch(corpo, /m[eé]dia do setor|m[eé]dia dos \d/)
@@ -239,10 +235,8 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   assert.match(corpo, /613\.837 cotistas/)
   assert.match(corpo, /por cota/)
   assert.match(corpo, /Fonte: StatusInvest\./)
-  assert.match(r.description, /cotação mais recente de R\$ 147,58/)
-  assert.match(r.description, /Dividend yield 9,09%/)
-  assert.match(r.description, /P\/VP 0,89/)
-  assert.match(r.description, /Dados: Brapi e StatusInvest\./)
+  assert.match(r.description, /Cotação HGLG11 \(Pátria Log\) hoje: R\$ 147,58 no fechamento de 28\/10\/2026 \(Brapi\)/)
+  assert.match(r.description, /Dividend yield 9,09%, P\/VP 0,89 \(StatusInvest\)/)
   assert.match(r.description, /Não é recomendação\.$/)
   assert.ok(r.description.length <= TETO_DESCRICAO)
   assert.doesNotMatch(semAviso(textoDe(r)), VERBOS)
@@ -332,11 +326,122 @@ test('nome longo não estoura o title e o ticker permanece', () => {
   }))
   assert.ok(r)
   assert.ok(r.title.length <= TETO_TITULO_PAGINA, r.title)
-  assert.match(r.title, /PCAR3/)
+  assert.match(r.title, /^PCAR3 cotação hoje:/)
+  assert.equal(r.title.includes('Companhia Brasileira de Distribuição e Logística Integrada Nacional'), false)
   assert.match(r.h1, /Companhia Brasileira de Distribuição/)
   assert.ok(r.description.length <= TETO_DESCRICAO)
+  assert.match(r.description, /PCAR3/)
+  assert.match(r.description, /R\$ 10,00/)
+  assert.match(r.description, /28\/10\/2026/)
 })
 
 test('sem nome não há resumo', () => {
   assert.equal(montarResumoAtivo(base({ nome: '   ', ticker: 'PETR4' })), null)
+})
+
+const CVM20 = /\b(barato|oportunidade|compre|vale a pena)\b/i
+
+const PROVENTOS: NonNullable<ResumoAtivoInput['proventos']> = {
+  unidade: 'ação',
+  renda12: 1,
+  eventos12: 1,
+  capital12: 0,
+  frequencia: null,
+  proximo: null,
+  anos: [],
+  tipo: 'renda',
+}
+
+function numerosDe(dy: number | null, pl: number | null): ResumoAtivoInput['numeros'] {
+  return {
+    dy, pl, pvp: null, roe: null, margem: null, valorMercado: null,
+    vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
+  }
+}
+
+test('título e description de /asset usam o dado, cabem no SERP e não recomendam', () => {
+  const casos: Array<{ ticker: string; nome: string; preco: number; dy: number | null; pl: number | null; title: string; description: string }> = [
+    {
+      ticker: 'BBAS3', nome: 'Banco do Brasil', preco: 16.47, dy: 4.19, pl: 7.66,
+      title: 'BBAS3 cotação hoje: Banco do Brasil e dividendos',
+      description: 'Cotação BBAS3 (Banco do Brasil) hoje: R$ 16,47 no fechamento de 30/10/2026 (Brapi). Dividend yield 4,19%, P/L 7,66 (StatusInvest). Não é recomendação.',
+    },
+    {
+      ticker: 'ITUB4', nome: 'Itaú Unibanco', preco: 38.69, dy: 7.97, pl: 9.56,
+      title: 'ITUB4 cotação hoje: Itaú Unibanco e dividendos',
+      description: 'Cotação ITUB4 (Itaú Unibanco) hoje: R$ 38,69 no fechamento de 30/10/2026 (Brapi). Dividend yield 7,97%, P/L 9,56 (StatusInvest). Não é recomendação.',
+    },
+    {
+      ticker: 'POMO4', nome: 'Marcopolo', preco: 3.7, dy: 24.98, pl: 4.14,
+      title: 'POMO4 cotação hoje: Marcopolo e dividendos',
+      description: 'Cotação POMO4 (Marcopolo) hoje: R$ 3,70 no fechamento de 30/10/2026 (Brapi). Dividend yield 24,98%, P/L 4,14 (StatusInvest). Não é recomendação.',
+    },
+    {
+      ticker: 'SAPR4', nome: 'Sanepar', preco: 6.03, dy: 1.87, pl: 20.01,
+      title: 'SAPR4 cotação hoje: Sanepar e dividendos',
+      description: 'Cotação SAPR4 (Sanepar) hoje: R$ 6,03 no fechamento de 30/10/2026 (Brapi). Dividend yield 1,87%, P/L 20,01 (StatusInvest). Não é recomendação.',
+    },
+    {
+      ticker: 'UNIP6', nome: 'Unipar', preco: 51, dy: 12.7, pl: 21.36,
+      title: 'UNIP6 cotação hoje: Unipar e dividendos',
+      description: 'Cotação UNIP6 (Unipar) hoje: R$ 51,00 no fechamento de 30/10/2026 (Brapi). Dividend yield 12,70%, P/L 21,36 (StatusInvest). Não é recomendação.',
+    },
+    {
+      ticker: 'CXSE3', nome: 'Caixa Seguridade', preco: 21.38, dy: null, pl: null,
+      title: 'CXSE3 cotação hoje: Caixa Seguridade e dividendos',
+      description: 'Cotação CXSE3 (Caixa Seguridade) hoje: R$ 21,38 no fechamento de 30/10/2026 (Brapi). Não é recomendação.',
+    },
+  ]
+
+  for (const c of casos) {
+    const r = montarResumoAtivo(base({
+      ticker: c.ticker,
+      nome: c.nome,
+      kind: 'stock',
+      preco: c.preco,
+      data: '2026-10-30',
+      numeros: numerosDe(c.dy, c.pl),
+      proventos: PROVENTOS,
+    }))
+    assert.ok(r, c.ticker)
+    assert.equal(r.title, c.title, c.ticker)
+    assert.ok(r.title.length + SUFIXO_MARCA.length <= TETO_TITULO, `${c.ticker} ${r.title.length + SUFIXO_MARCA.length}`)
+    assert.equal(r.description, c.description, c.ticker)
+    assert.ok(r.description.length <= TETO_DESCRICAO, `${c.ticker} ${r.description.length}`)
+    assert.doesNotMatch(`${r.title}\n${r.description}`, CVM20, c.ticker)
+  }
+
+  const bdr = montarResumoAtivo(base({ ticker: 'AAPL34', nome: 'Apple', kind: 'bdr', preco: 50, data: '2026-10-30' }))
+  const etf = montarResumoAtivo(base({ ticker: 'BOVA11', nome: 'Ibovespa', kind: 'etf', preco: 140, data: '2026-10-30' }))
+  const semProvento = montarResumoAtivo(base({ ticker: 'XYZW3', nome: 'Empresa', preco: 10, data: '2026-10-30' }))
+  assert.equal(bdr?.title, 'AAPL34 cotação hoje: Apple, BDR')
+  assert.equal(etf?.title, 'BOVA11 cotação hoje: Ibovespa, ETF')
+  assert.equal(semProvento?.title, 'XYZW3 cotação hoje: Empresa na B3')
+
+  const outraData = montarResumoAtivo(base({
+    ticker: 'BBAS3', nome: 'Banco do Brasil', preco: 10, data: '2026-01-05',
+    numeros: numerosDe(4.19, 7.66), proventos: PROVENTOS,
+  }))
+  assert.match(outraData?.description ?? '', /no fechamento de 05\/01\/2026/)
+  assert.match(outraData?.description ?? '', /R\$ 10,00/)
+  assert.doesNotMatch(outraData?.description ?? '', /30\/10\/2026|16,47/)
+})
+
+test('cotação sem número não inventa preço nem data', () => {
+  const r = montarResumoAtivo(base({ ticker: 'BBAS3', nome: 'Banco do Brasil' }))
+  assert.ok(r)
+  assert.match(r.description, /Cotação BBAS3 \(Banco do Brasil\) hoje sem número de fechamento/)
+  assert.match(r.description, /Não é recomendação\.$/)
+  assert.doesNotMatch(r.description, /R\$|US\$|\d{2}\/\d{2}|%/)
+  assert.doesNotMatch(r.description, /Dividend yield|P\/L/)
+  assert.ok(r.description.length <= TETO_DESCRICAO)
+  assert.doesNotMatch(`${r.title}\n${r.description}`, CVM20)
+
+  const semData = montarResumoAtivo(base({
+    ticker: 'ITUB4', nome: 'Itaú Unibanco', preco: 38.69, proventos: PROVENTOS,
+  }))
+  assert.match(semData?.description ?? '', /R\$ 38,69/)
+  assert.match(semData?.description ?? '', /sem data de fechamento/)
+  assert.doesNotMatch(semData?.description ?? '', /\d{2}\/\d{2}\/\d{4}/)
+  assert.doesNotMatch(semData?.description ?? '', CVM20)
 })

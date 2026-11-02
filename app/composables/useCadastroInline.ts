@@ -1,6 +1,7 @@
 import type { MagicLinkVerifyResponse, MagicPinVerifyResponse, MeResponse, SocialLoginResponse } from '~/types/auth'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
 import type { CadastroFeito } from '~/composables/useCadastroFolha'
+import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '../utils/atribuicao.ts'
 
 /**
  * O cadastro dentro da folha (CadastroFolha): o mesmo login por código do
@@ -123,11 +124,21 @@ export function useCadastroInline() {
     try {
       if (canal.value === 'whatsapp') {
         // o magic-pin devolve o token em `token` (não access_token)
-        const r = await publicFetch<MagicPinVerifyResponse & { is_new_user?: boolean }>('/auth/magic-pin/verify', { method: 'POST', body: { phone: contato.value, pin } })
+        const r = await publicFetch<MagicPinVerifyResponse>('/auth/magic-pin/verify', {
+          method: 'POST',
+          body: { phone: contato.value, pin },
+          headers: cabecalhosAtribuicaoDaSessao(),
+        })
+        dispararEventoAuth('magic_pin', r.is_new_user === true)
         setSession(r.token, r.user ? { id: r.user.id, name: r.user.name ?? '', email: r.user.email ?? undefined } : null)
         return { canal: 'whatsapp', novaConta: r.is_new_user === true, contato: contato.value }
       }
-      const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', { method: 'POST', body: { email: contato.value, pin } })
+      const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', {
+        method: 'POST',
+        body: { email: contato.value, pin },
+        headers: cabecalhosAtribuicaoDaSessao(),
+      })
+      dispararEventoAuth('magic_link', r.is_new_user === true)
       setSession(r.access_token, { id: r.user.id, name: r.user.name ?? '', email: r.user.email ?? undefined })
       return { canal: 'email', novaConta: r.is_new_user === true, contato: contato.value }
     }
@@ -153,7 +164,12 @@ export function useCadastroInline() {
       const body = provedor === 'google'
         ? { id_token: credencial as string }
         : { id_token: (credencial as AppleCredencial).idToken, nonce: (credencial as AppleCredencial).nonce, name: (credencial as AppleCredencial).nome }
-      const r = await publicFetch<SocialLoginResponse>(`/auth/${provedor}`, { method: 'POST', body })
+      const r = await publicFetch<SocialLoginResponse>(`/auth/${provedor}`, {
+        method: 'POST',
+        body,
+        headers: cabecalhosAtribuicaoDaSessao(),
+      })
+      dispararEventoAuth(provedor, r.is_new_user === true)
       let u = r.user ?? null
       setSession(r.access_token, u ? { id: u.id, name: u.name ?? '', email: u.email ?? undefined } : null)
       if (!u) {

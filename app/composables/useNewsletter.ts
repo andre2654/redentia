@@ -1,4 +1,5 @@
 import type { MagicLinkVerifyResponse } from '~/types/auth'
+import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '../utils/atribuicao.ts'
 import {
   formatoConviteValido,
   type FormatoConvite,
@@ -254,7 +255,12 @@ export function useNewsletter(origem: OrigemNewsletter = 'bloco', formato?: stri
     inscricaoEmCurso.value = true
     const ok = await passo(async () => {
       if (via === 'login') {
-        const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', { method: 'POST', body: { email: emailPendente.value, pin } })
+        const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', {
+          method: 'POST',
+          body: { email: emailPendente.value, pin },
+          headers: cabecalhosAtribuicaoDaSessao(),
+        })
+        dispararEventoAuth('magic_link', r.is_new_user === true)
         setSession(r.access_token, { id: r.user.id, name: r.user.name ?? '', email: r.user.email ?? undefined })
         entrou = r.is_new_user ? 'nova' : 'entrou'
       }

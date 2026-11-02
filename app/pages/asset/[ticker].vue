@@ -91,12 +91,22 @@ if (renamedTo) {
 }
 
 const acao = computed(() => data.value!)
-const quantoRendeHref = computed(() => {
-  const a = data.value
-  if (!a?.dividends || !(a.dividends.sum12 > 0)) return null
-  if (a.type !== 'STOCK' && a.type !== 'REIT' && a.type !== 'BDR') return null
-  return `/quanto-rende/${ticker}`
+// Links de proventos (app/utils/proventosLinks.ts): /dividendos quando
+// GET /api/dividends/tickers lista o ticker como pagador (ou há barras), e
+// /quanto-rende com renda em 12 meses. Falha do endpoint → só as barras.
+const { data: pagadorData } = await useFetch<{ pagador: boolean }>(`/api/dividendos-pagador/${ticker}`, {
+  key: `dividendos-pagador:${ticker}`,
+  default: () => ({ pagador: false }),
 })
+const proventosHrefs = computed(() => hrefsDeProventos({
+  ticker,
+  kind: data.value?.kind ?? '',
+  pagador: !!pagadorData.value?.pagador,
+  barras: data.value?.dividends?.bars.length ?? 0,
+  renda12: data.value?.dividends?.sum12 ?? 0,
+}))
+const quantoRendeHref = computed(() => proventosHrefs.value.quantoRende)
+const relacionados = computed(() => relacionadosComProventos(data.value?.relacionados ?? [], proventosHrefs.value, ticker))
 // "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
 const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
@@ -177,6 +187,7 @@ if (data.value) {
       :position="position"
       :simulador-href="acao.simuladorHref"
       :quanto-rende-href="quantoRendeHref"
+      :dividendos-href="proventosHrefs.dividendos"
     />
 
     <AcaoAiAnalysis v-if="acao.ai" :ticker="acao.ticker" :ai="acao.ai" />
@@ -195,7 +206,7 @@ if (data.value) {
 
     <AcaoPares v-if="acao.pares" :pares="acao.pares" :tone="acao.cadeia ? 'white' : 'cream'" />
 
-    <AcaoRelacionados :links="acao.relacionados" />
+    <AcaoRelacionados :links="relacionados" />
 
     <!-- No fim do miolo, fora do hero. -->
     <NuAcompanheAndre lugar="asset" />

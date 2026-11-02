@@ -1,8 +1,10 @@
 /**
  * useGoogleAuth — Google Identity Services (GIS) → id_token.
  * Porte do composable homônimo do Frontend (o fluxo que o Laravel espera:
- * o browser obtém um id_token JWT e o POST /auth/google valida via
- * tokeninfo + audience check com o client_id público).
+ * o browser obtém um id_token JWT e o POST /auth/google, feito em /login
+ * por onGoogleCredential, valida via tokeninfo + audience check com o
+ * client_id público). Esse POST leva o header de atribuição e dispara
+ * sign_up ou login. Este composable só entrega o id_token.
  *
  * O SDK carrega lazy no primeiro uso (visitante que nunca clica no Google
  * não paga o script). O GIS só emite credencial pelo botão oficial

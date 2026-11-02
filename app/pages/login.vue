@@ -24,9 +24,10 @@ import type {
   MagicLinkVerifyResponse,
   MagicPinVerifyResponse,
   MeResponse,
-  TokenGrant,
+  SocialLoginResponse,
 } from '~/types/auth'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
+import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
 definePageMeta({
   layout: false,
@@ -196,13 +197,17 @@ async function verifyPin(pin: string) {
       const r = await publicFetch<MagicPinVerifyResponse>('/auth/magic-pin/verify', {
         method: 'POST',
         body: { phone: phone.value, pin },
+        headers: cabecalhosAtribuicaoDaSessao(),
       })
+      dispararEventoAuth('magic_pin', r.is_new_user === true)
       await finishLogin(r.token, r.user?.id, r.user?.name, r.user?.email)
     } else {
       const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', {
         method: 'POST',
         body: { email: email.value.trim(), pin },
+        headers: cabecalhosAtribuicaoDaSessao(),
       })
+      dispararEventoAuth('magic_link', r.is_new_user === true)
       await finishLogin(r.access_token, r.user?.id, r.user?.name, r.user?.email)
     }
   } catch (e) {
@@ -279,10 +284,12 @@ async function onGoogleCredential(idToken: string) {
   googleSubmitting.value = true
   googleError.value = null
   try {
-    const r = await publicFetch<TokenGrant>('/auth/google', {
+    const r = await publicFetch<SocialLoginResponse>('/auth/google', {
       method: 'POST',
       body: { id_token: idToken },
+      headers: cabecalhosAtribuicaoDaSessao(),
     })
+    dispararEventoAuth('google', r.is_new_user === true)
     await finishLogin(r.access_token)
   } catch (e) {
     // 401 token inválido/aud errada · 422 e-mail não verificado · 503 tokeninfo fora
@@ -299,10 +306,12 @@ async function onAppleCredential(cred: AppleCredencial) {
   googleSubmitting.value = true
   googleError.value = null
   try {
-    const r = await publicFetch<TokenGrant>('/auth/apple', {
+    const r = await publicFetch<SocialLoginResponse>('/auth/apple', {
       method: 'POST',
       body: { id_token: cred.idToken, nonce: cred.nonce, name: cred.nome },
+      headers: cabecalhosAtribuicaoDaSessao(),
     })
+    dispararEventoAuth('apple', r.is_new_user === true)
     await finishLogin(r.access_token)
   } catch (e) {
     googleError.value = apiMessage(e, 'Falha ao entrar com a Apple. Tente novamente.')

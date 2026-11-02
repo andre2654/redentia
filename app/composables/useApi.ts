@@ -1,3 +1,5 @@
+import { cabecalhosAtribuicaoDaSessao, caminhoCriaConta } from '../utils/atribuicao.ts'
+
 /**
  * Cliente API central (padrão herdado do Atlas):
  *  - publicFetch: endpoints públicos do Laravel via proxy same-origin /api/backend
@@ -7,6 +9,11 @@
  *                 /teses), passe { redirectOnAuthError: false } — token
  *                 expirado então só limpa a sessão, sem expulsar o visitante.
  * Tudo same-origin → CORS não existe. SSR usa o proxy do Nitro igualmente.
+ *
+ * Pedido que cria conta (verify do PIN, Google, cadastro por senha) leva
+ * `X-Redentia-Attribution` quando a sessão guardou origem. O backend pode
+ * ignorar o header. Quem chama também pode passar o mesmo header: o valor
+ * é o da sessão, e o do caller vence se for outro.
  */
 export function useApi() {
   const { token, clearSession } = useAuthState()
@@ -17,7 +24,11 @@ export function useApi() {
   function publicFetch<T>(path: string, opts: Parameters<typeof $fetch>[1] = {}) {
     return $fetch<T>(`${base}${path}`, {
       ...opts,
-      headers: { Accept: 'application/json', ...(opts.headers ?? {}) },
+      headers: {
+        Accept: 'application/json',
+        ...(caminhoCriaConta(path) ? cabecalhosAtribuicaoDaSessao() : {}),
+        ...(opts.headers ?? {}),
+      },
     })
   }
 

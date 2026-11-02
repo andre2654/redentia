@@ -15,6 +15,8 @@ const props = defineProps<{
   simuladorHref?: string | null
   /** /quanto-rende/{TICKER} só quando há renda em 12 meses e o tipo tem a página */
   quantoRendeHref?: string | null
+  /** /dividendos/{TICKER}: pagador em /dividends/tickers ou com barras (utils/proventosLinks.ts) */
+  dividendosHref?: string | null
 }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
@@ -42,7 +44,7 @@ const incomePill = computed(() => {
             backend não tem histórico. Sem barras não há histórico, então
             não há link. O sitemap lista os pagadores de /dividends/tickers.
           -->
-          <NuxtLink v-if="dividends.bars.length > 0" :to="`/dividendos/${ticker}`" class="adv__cta adv__cta--primary">
+          <NuxtLink v-if="dividendosHref" :to="dividendosHref" class="adv__cta adv__cta--primary">
             Ver histórico de dividendos
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
           </NuxtLink>

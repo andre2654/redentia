@@ -15,7 +15,7 @@ import { SETORES_BY_API } from '../content/setores.ts'
 import { nomeDaEmpresa } from './nomeB3.ts'
 import { bazinPrice, bookValuePrice, computeAll, grahamPrice, plSectorPrice } from './preco-teto.ts'
 import { resolveSiteDy, type ProventoRow } from './proventos.ts'
-import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, juntaAte, tituloQueCabe } from './serp.ts'
+import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, descricaoQueCabe, tituloQueCabe } from './serp.ts'
 import { symbolShape } from './tickerClass.ts'
 
 export const TIPOS_PRECO_TETO = new Set(['STOCK', 'REIT', 'FUND'])
@@ -150,6 +150,22 @@ export function dataLonga(iso: string | null | undefined): string | null {
   return `${Number(d.slice(8, 10))} de ${mes} de ${d.slice(0, 4)}`
 }
 
+/** 'YYYY-MM-DD' → '30/10'. A description não tem espaço para o ano. */
+function dataCurta(iso: string | null | undefined): string | null {
+  const d = String(iso ?? '').slice(0, 10)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return null
+  const mes = Number(d.slice(5, 7))
+  const dia = Number(d.slice(8, 10))
+  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null
+  return `${d.slice(8, 10)}/${d.slice(5, 7)}`
+}
+
+/** Preço da meta, com espaço comum. Zero, NaN e ausência não viram "R$ ". */
+function reaisMeta(v: number | null | undefined): string | null {
+  if (typeof v !== 'number' || !Number.isFinite(v) || !(v > 0)) return null
+  return `R$ ${numBr(v)}`
+}
+
 export function lpaDeOverview(ov: OverviewPrecoTeto | null | undefined): number {
   const n = num(ov?.key_statistics?.trailing_eps) || num(ov?.scrape_extras?.valuation?.earnings_per_share)
   return n
@@ -260,32 +276,83 @@ export function sectorPlEfetivo(lpa: number, mediaSetor: number | null): {
   return { valor: 0, fonte: 'ausente' }
 }
 
+/**
+ * Busca "preço justo {T}" na faixa 5–20 (GSC de 02/11/2026).
+ * Graham já é o preço justo mostrado na página. Lista pequena, de propósito.
+ */
+export const TICKERS_TITULO_PRECO_JUSTO = new Set(['ITUB4', 'ITSA4', 'SAPR4'])
+
+const AVISO_PRECO_TETO = 'Não é recomendação.'
+
 export function tituloPrecoTeto(ticker: string, temGraham: boolean): string {
+  const t = ticker.trim().toUpperCase()
+  if (temGraham && TICKERS_TITULO_PRECO_JUSTO.has(t)) {
+    return tituloQueCabe(`Preço teto e preço justo ${t}: Bazin e Graham`)
+  }
   const titulo = temGraham
-    ? `Preço teto ${ticker} hoje: Bazin, Graham e justo`
-    : `Preço teto ${ticker} hoje: Bazin e rendimento`
+    ? `Preço teto ${t} hoje: Bazin, Graham e consenso`
+    : `Preço teto ${t} hoje: Bazin e consenso`
   return tituloQueCabe(titulo)
 }
 
 export function descricaoPrecoTeto(partes: {
   ticker: string
   nome: string
-  preco: string
-  bazin: string | null
-  graham: string | null
-  consenso: string | null
+  /** 'YYYY-MM-DD' do fechamento. Sem data válida, a frase não inventa dia. */
+  dataISO: string | null
+  preco: number | null
+  bazin: number | null
+  graham: number | null
+  consenso: number | null
 }): string {
-  const aviso = 'Não é recomendação.'
-  const corpo = juntaAte([
-    `Preço teto de ${partes.ticker} (${partes.nome}) hoje.`,
-    partes.bazin ? `Bazin ${partes.bazin}.` : null,
-    partes.graham ? `Graham ${partes.graham}.` : null,
-    partes.consenso ? `Consenso ${partes.consenso}.` : null,
-    `Cotação ${partes.preco}.`,
-    'Conta passo a passo.',
-  ], TETO_DESCRICAO - aviso.length - 1)
-  const full = corpo ? `${corpo} ${aviso}` : aviso
-  return full.length <= TETO_DESCRICAO ? full : full.slice(0, TETO_DESCRICAO)
+  const aviso = AVISO_PRECO_TETO
+  const orcamento = TETO_DESCRICAO - aviso.length - 1
+  const ticker = partes.ticker.trim().toUpperCase()
+  const quando = dataCurta(partes.dataISO)
+  const quandoTexto = quando ? `em ${quando}` : 'sem data de fechamento'
+  const preco = reaisMeta(partes.preco)
+  const cotacao = preco ? `Cotação ${preco} (Brapi).` : 'Cotação sem número neste fechamento.'
+  const bazin = reaisMeta(partes.bazin)
+  const graham = reaisMeta(partes.graham)
+  const consenso = reaisMeta(partes.consenso)
+  const nomeCheio = partes.nome.replace(/\s+/g, ' ').trim()
+
+  const metodosDe = (comGraham: boolean, comConsenso: boolean): string => {
+    const itens: string[] = []
+    if (bazin) itens.push(`Bazin ${bazin}`)
+    if (comGraham && graham) itens.push(`Graham ${graham}`)
+    if (comConsenso && consenso) itens.push(`consenso ${consenso}`)
+    return itens.length ? itens.join(', ') : 'sem número de Bazin, Graham ou consenso'
+  }
+
+  const frase = (nome: string | null, comGraham: boolean, comConsenso: boolean): string => {
+    const quem = nome ? ` (${nome})` : ''
+    return `Preço teto ${ticker}${quem} ${quandoTexto}: ${metodosDe(comGraham, comConsenso)}. ${cotacao}`
+  }
+
+  // Nome longo encolhe no espaço, com os números. Se o esqueleto ainda não cabe, sai o consenso e depois o Graham.
+  const cortes: Array<[boolean, boolean]> = [[true, true], [true, false], [false, false]]
+  let corpo = ''
+  let coube = false
+  const tentar = (nome: string | null, g: boolean, c: boolean): boolean => {
+    const candidato = frase(nome, g, c)
+    if (candidato.length > orcamento) return false
+    corpo = candidato
+    coube = true
+    return true
+  }
+  for (const [g, c] of cortes) {
+    if (tentar(nomeCheio || null, g, c)) break
+    if (!nomeCheio) continue
+    const base = frase(null, g, c)
+    const tetoNome = orcamento - base.length - 3
+    if (tetoNome < 3) continue
+    const curto = tituloQueCabe(nomeCheio, tetoNome)
+    if (curto && tentar(curto, g, c)) break
+  }
+  if (!coube) corpo = descricaoQueCabe(frase(null, false, false), orcamento)
+  const full = `${corpo} ${aviso}`.replace(/\s+/g, ' ').trim()
+  return full.length <= TETO_DESCRICAO ? full : descricaoQueCabe(full)
 }
 
 export interface MontarPrecoTetoInput {
@@ -350,10 +417,11 @@ export function montarPrecoTeto(i: MontarPrecoTetoInput): PrecoTetoView | null {
   const description = descricaoPrecoTeto({
     ticker,
     nome,
-    preco: brl(i.preco),
-    bazin: bazin > 0 ? brl(bazin) : null,
-    graham: graham > 0 ? brl(graham) : null,
-    consenso: consenso > 0 ? brl(consenso) : null,
+    dataISO,
+    preco: i.preco,
+    bazin,
+    graham,
+    consenso,
   })
 
   return {
