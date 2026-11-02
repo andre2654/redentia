@@ -52,8 +52,9 @@ export function rotuloDoTipo(type: string): string {
     case 'REIT': return 'FII'
     case 'BDR': return 'BDR'
     case 'ETF': return 'ETF'
-    case 'US_STOCK': return 'Ação dos EUA'
-    case 'US_ETF': return 'ETF dos EUA'
+    case 'US_STOCK': return 'EUA'
+    case 'US_ETF': return 'ETF EUA'
+    case 'AGRI_FUND': return 'Fiagro'
     case 'CRYPTO': return 'Cripto'
     default: return ''
   }

@@ -7,11 +7,14 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { compararCasados, faixaDoCasamento, normBusca, rotuloDoTipo, umaLinhaPorEmpresa } from '../app/utils/buscaRanking.ts'
 import type { Casado } from '../app/utils/buscaRanking.ts'
 import { acaoDoLinkDeChat, loginParaPerguntar, proximoIndice } from '../app/utils/buscaTeclado.ts'
 import { adicionarRecente, lerRecentes, removerRecente } from '../app/utils/buscaRecentes.ts'
 import type { BuscaRecente } from '../app/utils/buscaRecentes.ts'
+
+const ler = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8')
 
 test('faixa do casamento: ticker exato, prefixo do ticker, nome, e nada', () => {
   assert.equal(faixaDoCasamento('petr4', 'PETR4', 'Petrobras'), 0)
@@ -35,7 +38,7 @@ test('mesma faixa: quem vale mais na bolsa primeiro; sem valor, alfabético', ()
 test('rótulo do tipo e uma linha por empresa nas maiores', () => {
   assert.equal(rotuloDoTipo('STOCK'), 'Ação')
   assert.equal(rotuloDoTipo('REIT'), 'FII')
-  assert.equal(rotuloDoTipo('US_ETF'), 'ETF dos EUA')
+  assert.equal(rotuloDoTipo('US_ETF'), 'ETF EUA')
   assert.equal(rotuloDoTipo('???'), '')
   const maiores = umaLinhaPorEmpresa([{ ticker: 'PETR4' }, { ticker: 'PETR3' }, { ticker: 'ITUB4' }, { ticker: 'VALE3' }], 2)
   assert.deepEqual(maiores.map((a) => a.ticker), ['PETR4', 'ITUB4'])
@@ -95,4 +98,14 @@ test('recentes guardadas: formato errado some e link para fora não entra', () =
     { id: 'ativo:PETR4', tipo: 'ativo', titulo: 'PETR4', sub: 'Petrobras', href: '/asset/PETR4', ticker: 'PETR4' },
     { id: 'tese:a', tipo: 'tese', titulo: 'A tese', sub: '', href: '/tese/a' },
   ])
+})
+
+test('a página da busca não monta mais o chat e segue noindex', () => {
+  const pagina = ler('app/pages/busca.vue')
+  assert.ok(!/<BuscaChatView|<BuscaHistoryDrawer/.test(pagina), 'o chat saiu da página: vive no painel')
+  assert.match(pagina, /useChatPainel\(\)/)
+  assert.match(pagina, /robots:\s*'noindex, follow'/)
+  // CVM: a copy da busca não manda comprar nem vender
+  const copy = [pagina, ler('app/components/busca/BuscaCampo.vue'), ler('app/components/busca/BuscaLista.vue')].join('\n')
+  assert.ok(!/\b(compre|venda)\b/i.test(copy.replace(/<!--[\s\S]*?-->|\/\/.*$/gm, '')))
 })
