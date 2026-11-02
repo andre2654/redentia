@@ -348,6 +348,18 @@ async function onAppleCredential(cred: AppleCredencial) {
         <NuTextDivider class="lg__divider" />
 
         <div class="lg__alts">
+          <div class="lg__marcas">
+            <LoginAppleButton
+              :disabled="googleSubmitting"
+              @credential="onAppleCredential"
+              @error="googleError = $event"
+            />
+            <LoginGoogleButton
+              :disabled="googleSubmitting"
+              @credential="onGoogleCredential"
+              @error="googleError = $event"
+            />
+          </div>
           <NuListActionButton :label="methodCta" @click="toggleMethod">
             <template #icon>
               <!-- envelope (está em celular → oferece e-mail) -->
@@ -362,17 +374,6 @@ async function onAppleCredential(cred: AppleCredencial) {
               </svg>
             </template>
           </NuListActionButton>
-
-          <LoginAppleButton
-            :disabled="googleSubmitting"
-            @credential="onAppleCredential"
-            @error="googleError = $event"
-          />
-          <LoginGoogleButton
-            :disabled="googleSubmitting"
-            @credential="onGoogleCredential"
-            @error="googleError = $event"
-          />
         </div>
         <p v-if="googleSubmitting" class="lg__google-state">{{ socialEntrando === 'apple' ? 'Entrando com a Apple…' : 'Entrando com o Google…' }}</p>
         <p v-else-if="googleError" class="lg__error lg__error--tight">{{ googleError }}</p>
@@ -410,6 +411,8 @@ async function onAppleCredential(cred: AppleCredencial) {
 .lg__cta { margin-top: clamp(36px, 5vh, 52px); }
 .lg__divider { margin-top: 30px; }
 .lg__alts { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
+.lg__marcas { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.lg__marcas:empty { display: none; }
 .lg__google-state { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
 .lg__footer { margin-top: clamp(32px, 5vh, 52px); }
 </style>

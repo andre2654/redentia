@@ -82,9 +82,9 @@ onBeforeUnmount(() => {
     class="lgb"
     :class="{ 'lgb--busy': props.disabled }"
   >
-    <!-- Camada visual (contrato do design) — a interação real é do iframe -->
-    <NuListActionButton label="Continuar com o Google" tabindex="-1" aria-hidden="true">
-      <template #icon>
+    <!-- Camada visual: a pílula branca do guia de marca do Google (borda
+         #747775, texto #1F1F1F, o G de quatro cores). A interação real é do iframe. -->
+    <span class="lgb__pilula" aria-hidden="true">
         <!-- Logo oficial 4 cores do design; fills fixos por guideline de
              marca do Google (não são tokens do tema) -->
         <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
@@ -93,8 +93,8 @@ onBeforeUnmount(() => {
           <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
           <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C36.9 40.4 44 35 44 24c0-1.3-.1-2.6-.4-3.9z" />
         </svg>
-      </template>
-    </NuListActionButton>
+      <span>Continuar com o Google</span>
+    </span>
     <!-- Botão oficial do GIS, invisível e esticado sobre a linha -->
     <div ref="hostRef" class="lgb__gis" :style="overlayStyle" />
   </div>
@@ -102,6 +102,14 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .lgb { position: relative; }
+.lgb__pilula {
+  display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 52px;
+  box-sizing: border-box; padding: 0 20px; border-radius: var(--nu-r-pill);
+  /* cores fixas do guia de marca do Google, não são tokens do tema */
+  background: #FFFFFF; box-shadow: inset 0 0 0 1px #747775; color: #1F1F1F;
+  font-size: var(--nu-fs-md); font-weight: 700; transition: background .2s;
+}
+.lgb:hover .lgb__pilula { background: #F8F9FA; }
 .lgb--busy { pointer-events: none; }
 .lgb__gis {
   position: absolute; top: 0; left: 0;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Apple e Google numa caixa só, para a folha de cadastro e o quiz da
-// assinatura: o mesmo par de linhas do /login, com o divisor "ou" embaixo.
+// Apple e Google juntos, para a folha de cadastro e o quiz da assinatura:
+// as duas pílulas de marca do /login, com o divisor "ou" embaixo.
 // Sem nenhum dos dois configurado no ambiente, não renderiza nada (nem o
 // divisor), e o e-mail fica sozinho como antes.
 import type { AppleCredencial } from '~/composables/useAppleAuth'
@@ -25,11 +25,7 @@ const disponivel = !!(google || apple)
 
 <style scoped>
 .lso { display: flex; flex-direction: column; gap: 18px; }
-.lso__caixa {
-  display: flex; flex-direction: column; padding: 4px 10px; border-radius: var(--nu-r-tile);
-  background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-cream-line);
-}
-.lso__caixa > :deep(* + *) { border-top: 1px solid var(--nu-cream-line); }
+.lso__caixa { display: flex; flex-direction: column; gap: 10px; }
 .lso__ou {
   display: flex; align-items: center; gap: 12px; margin: 0;
   color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700;
