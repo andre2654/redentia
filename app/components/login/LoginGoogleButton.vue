@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // 'Continuar com o Google' — a linha custom do design + o Google Identity
 // Services REAL (mesma troca id_token → POST /auth/google do Frontend
-// atual, GoogleAuthBlock.vue).
+// atual, GoogleAuthBlock.vue). O POST, o header X-Redentia-Attribution
+// e o evento sign_up/login ficam em /login (onGoogleCredential).
 //
 // Como o GIS só emite id_token pelo botão oficial (iframe) e o design pede
 // um list-button próprio, usamos o padrão overlay: o botão oficial é

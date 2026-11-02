@@ -1,5 +1,6 @@
 import type { MagicLinkVerifyResponse, MagicPinVerifyResponse } from '~/types/auth'
 import type { CadastroFeito } from '~/composables/useCadastroFolha'
+import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '../utils/atribuicao.ts'
 
 /**
  * O cadastro dentro da folha (CadastroFolha): o mesmo login por código do
@@ -122,11 +123,21 @@ export function useCadastroInline() {
     try {
       if (canal.value === 'whatsapp') {
         // o magic-pin devolve o token em `token` (não access_token)
-        const r = await publicFetch<MagicPinVerifyResponse & { is_new_user?: boolean }>('/auth/magic-pin/verify', { method: 'POST', body: { phone: contato.value, pin } })
+        const r = await publicFetch<MagicPinVerifyResponse>('/auth/magic-pin/verify', {
+          method: 'POST',
+          body: { phone: contato.value, pin },
+          headers: cabecalhosAtribuicaoDaSessao(),
+        })
+        dispararEventoAuth('magic_pin', r.is_new_user === true)
         setSession(r.token, r.user ? { id: r.user.id, name: r.user.name ?? '', email: r.user.email ?? undefined } : null)
         return { canal: 'whatsapp', novaConta: r.is_new_user === true, contato: contato.value }
       }
-      const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', { method: 'POST', body: { email: contato.value, pin } })
+      const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', {
+        method: 'POST',
+        body: { email: contato.value, pin },
+        headers: cabecalhosAtribuicaoDaSessao(),
+      })
+      dispararEventoAuth('magic_link', r.is_new_user === true)
       setSession(r.access_token, { id: r.user.id, name: r.user.name ?? '', email: r.user.email ?? undefined })
       return { canal: 'email', novaConta: r.is_new_user === true, contato: contato.value }
     }

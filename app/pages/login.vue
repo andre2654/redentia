@@ -20,11 +20,12 @@
 // destino pós-auth e também viaja no redirect_to dos requests de PIN.
 import type {
   AuthChannelsStatus,
+  GoogleAuthResponse,
   MagicLinkVerifyResponse,
   MagicPinVerifyResponse,
   MeResponse,
-  TokenGrant,
 } from '~/types/auth'
+import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
 definePageMeta({
   layout: false,
@@ -191,13 +192,17 @@ async function verifyPin(pin: string) {
       const r = await publicFetch<MagicPinVerifyResponse>('/auth/magic-pin/verify', {
         method: 'POST',
         body: { phone: phone.value, pin },
+        headers: cabecalhosAtribuicaoDaSessao(),
       })
+      dispararEventoAuth('magic_pin', r.is_new_user === true)
       await finishLogin(r.token, r.user?.id, r.user?.name, r.user?.email)
     } else {
       const r = await publicFetch<MagicLinkVerifyResponse>('/auth/magic-link/verify', {
         method: 'POST',
         body: { email: email.value.trim(), pin },
+        headers: cabecalhosAtribuicaoDaSessao(),
       })
+      dispararEventoAuth('magic_link', r.is_new_user === true)
       await finishLogin(r.access_token, r.user?.id, r.user?.name, r.user?.email)
     }
   } catch (e) {
@@ -271,10 +276,12 @@ async function onGoogleCredential(idToken: string) {
   googleSubmitting.value = true
   googleError.value = null
   try {
-    const r = await publicFetch<TokenGrant>('/auth/google', {
+    const r = await publicFetch<GoogleAuthResponse>('/auth/google', {
       method: 'POST',
       body: { id_token: idToken },
+      headers: cabecalhosAtribuicaoDaSessao(),
     })
+    dispararEventoAuth('google', r.is_new_user === true)
     await finishLogin(r.access_token)
   } catch (e) {
     // 401 token inválido/aud errada · 422 e-mail não verificado · 503 tokeninfo fora
