@@ -12,8 +12,24 @@
 // Em 31/10/2026 o dono tirou os dois cards de produto ("Conheça outras
 // maneiras de usar a Redentia", grandes demais) e o preço da frase da marca.
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
+import type { Component } from 'vue'
+import NuFooterCordilheira from './NuFooterCordilheira.vue'
 
 const route = useRoute()
+// PROTÓTIPO (02/11/2026, o dono: "agora esse footer, queria uma outra pegada
+// aqui"): três direções para a banda de assinatura, trocadas só no dev por
+// ?rodape=1 (os caminhos do motor de cenários), ?rodape=2 (calma, a linha do
+// Ibovespa) e ?rodape=3 (viva, o pregão numa frase). Em produção
+// import.meta.dev é false, o mapa fica vazio (nem entra no bundle) e segue a
+// cordilheira até o dono escolher.
+const BANDAS: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('./rodape/NuRodapeCaminhos.vue')),
+      '2': defineAsyncComponent(() => import('./rodape/NuRodapeCalma.vue')),
+      '3': defineAsyncComponent(() => import('./rodape/NuRodapeViva.vue')),
+    }
+  : {}
+const banda = computed(() => BANDAS[String(route.query.rodape ?? '')] ?? NuFooterCordilheira)
 const { reabrir } = useConsent()
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
 const assinaturaNoRodape = computed(() => newsletterLigada && !rodapeSemAssinatura(route.path))
@@ -77,7 +93,7 @@ const COLUMNS = [
       </div>
     </div>
 
-    <NuFooterCordilheira class="nuf__serra">
+    <component :is="banda" class="nuf__serra">
       <template #ceu>
         <h2 class="nuf__hero">Seja qual for a sua meta, a Redentia tem um caminho</h2>
       </template>
@@ -90,7 +106,7 @@ const COLUMNS = [
         <NuxtLink to="/business" class="nuf__biz">For Business</NuxtLink>
         </div>
       </template>
-    </NuFooterCordilheira>
+    </component>
     <!-- O aviso de cookies senta aqui quando o rodapé está na tela. -->
     <div id="ancora-cookies" />
   </footer>
