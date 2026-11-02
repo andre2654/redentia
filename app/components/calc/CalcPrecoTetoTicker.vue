@@ -91,6 +91,7 @@ const metodos = computed(() => {
         </li>
       </ul>
       <p class="ptt__aviso">Não é recomendação de compra ou venda. O preço teto é uma régua sobre os números dos últimos 12 meses, não uma previsão e não uma orientação.</p>
+      <CalcConvitePrecoTeto :ticker="view.ticker" :alvo="view.consenso > 0 ? view.consenso : null" />
     </section>
 
     <section v-if="view.tabela.length" class="ptt__table-sec">
