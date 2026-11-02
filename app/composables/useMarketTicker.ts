@@ -32,6 +32,8 @@ function pctFmt(x: unknown): { pct: string | null; dir: TickerItem['dir'] } {
   return { pct: `${sign}${nf2.format(n)}%`, dir: n > 0 ? 'up' : n < 0 ? 'down' : 'flat' }
 }
 
+let emCurso: Promise<void> | null = null
+
 export function useMarketTicker() {
   const items = useState<TickerItem[]>('nu:ticker', () => [])
   const loaded = useState<boolean>('nu:ticker-loaded', () => false)
@@ -45,6 +47,13 @@ export function useMarketTicker() {
 
   async function hydrate() {
     if (loaded.value) { loading.value = false; return }
+    // o header (menu) e a régua usam o mesmo estado: uma busca só por carga
+    if (emCurso) return emCurso
+    emCurso = buscar().finally(() => { emCurso = null })
+    return emCurso
+  }
+
+  async function buscar() {
     try {
       const [snap, petrQ, btc] = await Promise.all([
         publicFetch<any>('/market/snapshot?scope=ibov').catch(() => null),

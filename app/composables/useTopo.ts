@@ -1,21 +1,21 @@
 /**
- * O comportamento comum dos topos novos (02/11/2026, protótipos ?topo=1|2|3):
+ * O comportamento do header (02/11/2026, a direção "editorial calmo"):
  * encolher ao rolar, publicar a altura em --nuh-h, os painéis da nav, o menu
- * de conta, o painel do mercado e o menu do celular. Cada direção só desenha.
+ * de conta e o menu do celular. O NuHeader só desenha.
  *
  * Encolher tem HISTERESE, como o NuHeader: encolhe passando de 72px e volta
  * só abaixo de 16px. Com um limiar só, a altura que some faz o scroll
  * re-cruzar a fronteira e o header pulsa.
  *
- * Os painéis são position: fixed e vão para o <body> (Teleport): o vidro
- * (backdrop-filter) e o container query viram bloco de contenção de fixed, e
- * um painel preso dentro deles abriria no lugar errado. Fecham ao rolar (a
+ * Os painéis são position: fixed e vão para o <body> (Teleport): o header
+ * tem container-type (as larguras contam pelo contêiner), que vira bloco de
+ * contenção de fixed: preso dentro dele, um painel abriria no lugar errado. Fecham ao rolar (a
  * âncora se move), com Escape e com clique fora.
  */
 import type { NavChild, NavItem } from '~/utils/topo'
 import { grupoAtivo, mercadoDoTopo, navDoTopo, ordenarCotacoes, rotaAtiva } from '~/utils/topo'
 
-export type PainelDoTopo = { tipo: 'nav'; item: string } | { tipo: 'conta' } | { tipo: 'mercado' }
+export type PainelDoTopo = { tipo: 'nav'; item: string } | { tipo: 'conta' }
 
 export function useTopo(alturas: { normal: number; encolhido: number; celular?: { normal: number; encolhido: number } }) {
   const { isAuthenticated, initial, clearSession } = useAuthState()
@@ -100,14 +100,48 @@ export function useTopo(alturas: { normal: number; encolhido: number; celular?: 
     const p = painel.value
     if (p?.tipo === 'nav' && p.item === item.label) { painel.value = null; return }
     abrirNav(item, ev.currentTarget as HTMLElement)
+    if (ev.detail === 0) focarPainel() // Enter/Espaço: o foco entra no painel
   }
-  function alternar(tipo: 'conta' | 'mercado', ev: MouseEvent, largura: number) {
+  /* ——— teclado nos painéis ———
+     O painel mora no <body>, longe do gatilho na ordem do Tab. Aberto pelo
+     teclado, o foco entra nele; setas andam entre os itens; Tab no último (ou
+     Shift+Tab no primeiro) fecha e segue a ordem da página a partir do gatilho. */
+  function itensDoPainel(): HTMLElement[] {
+    return Array.from(document.querySelectorAll<HTMLElement>('[data-topo-painel] [role="menuitem"], [data-topo-painel] [data-topo-foco]'))
+  }
+  function focarPainel() {
+    void nextTick(() => itensDoPainel()[0]?.focus())
+  }
+  function teclaNoPainel(e: KeyboardEvent) {
+    const itens = itensDoPainel()
+    const i = itens.indexOf(document.activeElement as HTMLElement)
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      const prox = e.key === 'ArrowDown' ? (i + 1) % itens.length : (i - 1 + itens.length) % itens.length
+      itens[prox]?.focus()
+      return
+    }
+    if (e.key !== 'Tab') return
+    const saiFrente = !e.shiftKey && i === itens.length - 1
+    const saiTras = e.shiftKey && i <= 0
+    if (!saiFrente && !saiTras) return
+    e.preventDefault()
+    const g = gatilho
+    fecharPainel()
+    if (!g || !document.contains(g)) return
+    if (saiTras) { g.focus(); return }
+    const focaveis = Array.from(document.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+      .filter((el) => el.offsetParent !== null && !el.closest('[data-topo-painel]'))
+    focaveis[focaveis.indexOf(g) + 1]?.focus()
+  }
+  function alternar(tipo: 'conta', ev: MouseEvent, largura: number) {
     limparTimers()
     if (painel.value?.tipo === tipo) { fecharPainel(); return }
     const el = ev.currentTarget as HTMLElement
     ancorar(el, largura, 'dir')
     gatilho = el
     painel.value = { tipo }
+    if (ev.detail === 0) focarPainel()
   }
   function fecharPainel(devolverFoco = false) {
     painel.value = null
@@ -161,13 +195,13 @@ export function useTopo(alturas: { normal: number; encolhido: number; celular?: 
   return {
     isAuthenticated, initial, nav, ativo, paiAtivo, shrunk,
     painel, pos, itemAberto, filhoQuente, filhosDe,
-    navEntra, navSai, painelEntra, navClique, alternar, fecharPainel,
+    navEntra, navSai, painelEntra, navClique, alternar, fecharPainel, teclaNoPainel,
     menuAberto, abrirMenu, sair,
   }
 }
 
 /**
- * O mercado dos topos novos: as cotações reais do useMarketTicker, na ordem de
+ * O mercado do topo (a régua do NuMarketTicker e o menu do celular): as cotações reais do useMarketTicker, na ordem de
  * leitura, e o estado da bolsa. O relógio só anda no client (o SSR renderiza o
  * esqueleto; estado no servidor daria hydration mismatch na virada do minuto).
  */

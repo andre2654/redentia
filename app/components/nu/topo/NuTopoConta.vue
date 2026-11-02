@@ -1,13 +1,13 @@
 <script setup lang="ts">
-// O menu da conta (avatar logado) nos topos novos: Minha carteira,
+// O menu da conta (avatar logado) do header: Minha carteira,
 // Configurações e Sair. Vai para o <body>, ancorado à direita do avatar.
-defineProps<{ right: number; top: number; vidro?: boolean }>()
-const emit = defineEmits<{ fechar: []; sair: [] }>()
+defineProps<{ right: number; top: number }>()
+const emit = defineEmits<{ fechar: []; sair: []; tecla: [KeyboardEvent] }>()
 </script>
 
 <template>
   <Teleport to="body">
-    <div class="ntk" :class="{ 'ntk--vidro': vidro }" role="menu" data-topo-painel :style="{ right: `${right}px`, top: `${top}px` }">
+    <div class="ntk" role="menu" data-topo-painel @keydown="emit('tecla', $event)" :style="{ right: `${right}px`, top: `${top}px` }">
       <NuxtLink to="/carteira" role="menuitem" class="ntk__item" @click="emit('fechar')">Minha carteira</NuxtLink>
       <NuxtLink to="/conta" role="menuitem" class="ntk__item" @click="emit('fechar')">Configurações</NuxtLink>
       <div class="ntk__div" role="separator" />
@@ -24,7 +24,6 @@ const emit = defineEmits<{ fechar: []; sair: [] }>()
   box-shadow: 0 24px 54px -22px rgba(12, 21, 36, 0.32), 0 2px 8px rgba(12, 21, 36, 0.06);
   animation: ntk-entra .18s cubic-bezier(.2, .8, .2, 1) both; transform-origin: top right;
 }
-.ntk--vidro { background: var(--nu-white-88); backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8); }
 @keyframes ntk-entra { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
 .ntk__item {
   display: block; width: 100%; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent;

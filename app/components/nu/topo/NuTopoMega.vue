@@ -1,13 +1,13 @@
 <script setup lang="ts">
-// O painel de preview da nav nos topos novos: a lista à esquerda e a vinheta
+// O painel de preview da nav do header: a lista à esquerda e a vinheta
 // à direita (a referência do dono de 20/08, a mesma do NuHeader), com o hover
 // em cada item trocando a vinheta. Vai para o <body> e é position: fixed (ver
-// useTopo). `vidro` deixa o painel translúcido, para a direção 1.
+// useTopo).
 import type { NavChild } from '~/utils/topo'
 import { rotaAtiva } from '~/utils/topo'
 
-const props = defineProps<{ filhos: NavChild[]; left: number; top: number; quente: NavChild | null; vidro?: boolean }>()
-const emit = defineEmits<{ quente: [NavChild]; entra: []; sai: []; fechar: [] }>()
+const props = defineProps<{ filhos: NavChild[]; left: number; top: number; quente: NavChild | null }>()
+const emit = defineEmits<{ quente: [NavChild]; entra: []; sai: []; fechar: []; tecla: [KeyboardEvent] }>()
 const route = useRoute()
 const ativo = (to: string) => rotaAtiva(route.path, to)
 const unico = computed(() => props.filhos.length === 1)
@@ -16,7 +16,7 @@ const unico = computed(() => props.filhos.length === 1)
 <template>
   <Teleport to="body">
     <div
-      class="ntg" :class="{ 'ntg--vidro': vidro, 'ntg--unico': unico }" role="menu" data-topo-painel
+      class="ntg" :class="{ 'ntg--unico': unico }" role="menu" data-topo-painel @keydown="emit('tecla', $event)"
       :style="{ left: `${left}px`, top: `${top}px` }"
       @mouseenter="emit('entra')" @mouseleave="emit('sai')"
     >
@@ -46,10 +46,6 @@ const unico = computed(() => props.filhos.length === 1)
   background: var(--nu-white); border: 1px solid var(--nu-navy-06); border-radius: var(--nu-r-panel);
   box-shadow: 0 24px 54px -22px rgba(12, 21, 36, 0.32), 0 2px 8px rgba(12, 21, 36, 0.06);
   animation: ntg-entra .22s cubic-bezier(.2, .8, .2, 1) both; transform-origin: top left;
-}
-.ntg--vidro {
-  background: var(--nu-white-88);
-  backdrop-filter: blur(24px) saturate(1.8); -webkit-backdrop-filter: blur(24px) saturate(1.8);
 }
 @keyframes ntg-entra { from { opacity: 0; transform: translateY(-4px) scale(.985); } to { opacity: 1; transform: none; } }
 .ntg__lista { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 4px; }

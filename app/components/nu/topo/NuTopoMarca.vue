@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// A marca dos topos novos: o losango azul solto (sem o quadrado azul pesado)
+// A marca do header: o losango azul solto (sem o quadrado azul pesado)
 // e o nome em Jakarta 800, o mesmo par do hero da home (HomeHeroVisitante).
 defineProps<{ tamanho?: number }>()
 </script>

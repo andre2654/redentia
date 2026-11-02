@@ -123,7 +123,3 @@ export function mercadoDoTopo(now: Date, asOf: string | null | undefined): Merca
   }
   return { estado, rotulo, referencia }
 }
-
-/** O aviso de atraso que acompanha as cotações (B3), em duas medidas. */
-export const AVISO_ATRASO = 'B3 · dados com atraso de 15 min'
-export const AVISO_ATRASO_CURTO = 'Atraso de 15 min'
