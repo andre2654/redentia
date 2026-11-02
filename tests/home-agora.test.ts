@@ -63,9 +63,10 @@ test('a amplitude diz de quando é, e some sem contagem', () => {
   assert.equal(fraseDaAmplitude(null, 3), null)
 })
 
-test('a chamada única leva ao /assinar, não fala de preço e não promete App Store que ainda não existe', () => {
+test('a chamada única abre o quiz do /assinar, não fala de preço e não promete App Store que ainda não existe', () => {
   const chamada = ler('app/components/home/HomeChamada.vue')
-  assert.match(chamada, /to="\/assinar"/)
+  // abre o quiz direto (01/11/2026): sem o segundo toque na página do plano
+  assert.match(chamada, /to="\/assinar\?quiz=1&de=home"/)
   // a entrada não fala de preço (decisão do dono, 01/11/2026): ele vem no fim do quiz
   assert.doesNotMatch(chamada.slice(chamada.indexOf('<template>')), /19,99|dias grátis/)
   assert.match(chamada, /Qualquer banco ou corretora\./)

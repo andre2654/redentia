@@ -369,7 +369,7 @@ onBeforeUnmount(() => {
         <template v-else>
           <NuxtLink to="/login" class="nuh__enter nuh__desktop-only">Entrar</NuxtLink>
           <!-- o mesmo gesto da chamada única da home (31/10/2026): a assinatura -->
-          <NuxtLink to="/assinar" class="nuh__cta nuh__desktop-only">Conectar carteira</NuxtLink>
+          <NuxtLink to="/assinar?quiz=1&de=topo" class="nuh__cta nuh__desktop-only">Conectar carteira</NuxtLink>
         </template>
 
         <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="menuOpen" @click="toggleMenu(true)">
@@ -444,7 +444,7 @@ onBeforeUnmount(() => {
           </template>
           <template v-else>
             <NuxtLink to="/login" class="num__cta-outline" @click="toggleMenu(false)">Entrar</NuxtLink>
-            <NuxtLink to="/assinar" class="num__cta" @click="toggleMenu(false)">Conectar carteira</NuxtLink>
+            <NuxtLink to="/assinar?quiz=1&de=menu" class="num__cta" @click="toggleMenu(false)">Conectar carteira</NuxtLink>
           </template>
         </div>
       </div>

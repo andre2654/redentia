@@ -37,6 +37,28 @@ export interface Pergunta {
   opcoes: Opcao[]
 }
 
+/** Onde o quiz deixa os bancos marcados, para a carteira vazia começar por eles. */
+const CHAVE_BANCOS = 'nu:quiz-bancos'
+
+/** Guarda só os bancos conhecidos (sem "outro" e "nenhum"); storage bloqueado não quebra o quiz. */
+export function guardarBancosDoQuiz(bancos: readonly string[] | undefined): void {
+  const conhecidos = (bancos ?? []).filter((b) => (BANCOS_DO_QUIZ as readonly string[]).includes(b))
+  try {
+    if (conhecidos.length) localStorage.setItem(CHAVE_BANCOS, JSON.stringify(conhecidos))
+  }
+  catch { /* aba anônima ou storage cheio: a carteira vazia mostra a vitrine de sempre */ }
+}
+
+export function bancosDoQuiz(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(CHAVE_BANCOS) ?? '[]')
+    return Array.isArray(v) ? v.filter((b): b is string => typeof b === 'string' && (BANCOS_DO_QUIZ as readonly string[]).includes(b)) : []
+  }
+  catch {
+    return []
+  }
+}
+
 /** Os bancos da pergunta 2: os mesmos da carteira vazia. */
 export const BANCOS_DO_QUIZ = ['nubank', 'itau', 'bradesco', 'bb', 'santander', 'inter', 'xp', 'btg', 'c6', 'rico'] as const
 

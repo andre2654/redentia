@@ -10,6 +10,7 @@
 // aparecer); escolha múltipla tem "Continuar". Voltar no canto, Esc fecha.
 // No celular ocupa a tela; no computador, um cartão no meio.
 // Acessibilidade do NuDayModal: useModalA11y (Tab preso + foco devolvido).
+import type { AppleCredencial } from '~/composables/useAppleAuth'
 import { DIAS_GRATIS, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
 import { INSTITUICOES } from '~/content/instituicoes'
 import {
@@ -17,6 +18,7 @@ import {
   alternarBanco,
   fraseDosAvisos,
   fraseDosCenarios,
+  guardarBancosDoQuiz,
   resultadoDoQuiz,
   tituloDoResultado,
   type Opcao,
@@ -114,7 +116,11 @@ function avancar() {
   indice.value++
   const p = passo.value
   evento('quiz_passo', { passo: indice.value, nome: p.tipo === 'pergunta' ? p.pergunta.id : p.tipo === 'respiro' ? p.id : p.tipo })
-  if (p.tipo === 'resultado') evento('quiz_resultado')
+  if (p.tipo === 'resultado') {
+    evento('quiz_resultado')
+    // a carteira vazia começa pelos bancos que a pessoa contou aqui
+    guardarBancosDoQuiz(respostas.value.bancos)
+  }
 }
 function voltar() {
   // nos dados, voltar é voltar ao plano (quem abriu direto nos dados fecha)
@@ -144,16 +150,26 @@ async function confirmarCodigo() {
   evento('quiz_conta_feita', { nova: feito.novaConta })
   avancar()
 }
+const socialNoQuiz = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
+// Apple ou Google: a conta nasce sem sair do quiz e sem esperar o código
+async function entrarSocial(provedor: 'google' | 'apple', credencial: string | AppleCredencial) {
+  const feito = await cad.entrarSocial(provedor, credencial)
+  if (!feito) return
+  evento('quiz_conta_feita', { nova: feito.novaConta, via: provedor })
+  avancar()
+}
 
-// a montagem: as quatro linhas se acendem e o resultado entra sozinho
+// a montagem: as quatro linhas se acendem e o resultado entra sozinho. Nada é
+// calculado aqui, então as linhas não fingem trabalho: são o plano anotado a
+// partir das respostas, o que a Redentia vai fazer depois de conectar.
 const linhasDaMontagem = computed(() => {
   const bancos = (respostas.value.bancos ?? []).filter((b) => b !== 'nenhum' && b !== 'outro').map(nomeDoBanco)
   const preocupa = respostas.value.preocupa ?? []
   return [
-    'Lendo as suas respostas',
-    bancos.length ? `Separando ${bancos.length > 2 ? `${bancos.slice(0, 2).join(', ')} e mais ${bancos.length - 2}` : bancos.join(' e ')}` : 'Preparando a sua carteira',
-    'Preparando os 2.000 cenários',
-    preocupa.includes('queda') ? 'Ajustando os avisos para uma queda forte' : 'Ajustando os avisos',
+    bancos.length ? `Ler ${bancos.length > 2 ? `${bancos.slice(0, 2).join(', ')} e mais ${bancos.length - 2}` : bancos.join(' e ')} pelo Open Finance` : 'Começar a carteira com você',
+    'Testar a carteira em 2.000 cenários',
+    preocupa.includes('queda') ? 'Avisar numa queda forte' : 'Avisar só quando importar',
+    'Mandar o resumo do pregão, todo dia útil',
   ]
 })
 const acesas = ref(0)
@@ -353,7 +369,11 @@ const ICONES: Record<string, string> = {
               <section v-else-if="passo.tipo === 'conta'" :key="`c-${indice}`" class="aqz__passo">
                 <template v-if="cad.etapa.value === 'contato'">
                   <h2 :id="tituloId" class="aqz__titulo">Para onde mandamos o seu plano?</h2>
-                  <p class="aqz__sub">O seu e-mail. Mandamos um código de 6 números para confirmar, sem senha.</p>
+                  <p class="aqz__sub">{{ socialNoQuiz ? 'Com a sua conta Apple ou Google, num toque. Ou pelo e-mail, com um código de 6 números, sem senha.' : 'O seu e-mail. Mandamos um código de 6 números para confirmar, sem senha.' }}</p>
+                  <LoginSocial
+                    class="aqz__social" divisor="ou com o e-mail" :disabled="cad.enviando.value"
+                    @google="entrarSocial('google', $event)" @apple="entrarSocial('apple', $event)" @error="cad.erro.value = $event"
+                  />
                   <form class="aqz__form" @submit.prevent="pedirCodigo">
                     <label class="aqz__rotulo" for="aqz-email">E-mail</label>
                     <input id="aqz-email" v-model="email" class="aqz__campo" type="email" inputmode="email" autocomplete="email" placeholder="voce@email.com" required>
@@ -388,7 +408,7 @@ const ICONES: Record<string, string> = {
 
               <!-- a montagem -->
               <section v-else-if="passo.tipo === 'montando'" :key="`m-${indice}`" class="aqz__passo aqz__passo--centro">
-                <h2 :id="tituloId" class="aqz__titulo">Montando o seu plano.</h2>
+                <h2 :id="tituloId" class="aqz__titulo">Anotando o seu plano.</h2>
                 <ol class="aqz__montagem" aria-live="polite">
                   <li v-for="(l, i) in linhasDaMontagem" :key="i" class="aqz__linha" :class="{ 'aqz__linha--acesa': i < acesas, 'aqz__linha--agora': i === acesas }">
                     <span class="aqz__linha-marca" aria-hidden="true">
@@ -559,6 +579,8 @@ const ICONES: Record<string, string> = {
 .aqz__seguir--claro:hover:not(:disabled) { background: var(--nu-white); }
 
 /* a conta */
+.aqz__social { margin-top: 26px; }
+.aqz__social + .aqz__form { margin-top: 18px; }
 .aqz__form { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
 .aqz__rotulo { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
 .aqz__campo {

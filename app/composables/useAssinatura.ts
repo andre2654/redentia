@@ -50,6 +50,7 @@ export function useAssinatura() {
     postCheckout: (dados) => assinaturaPostCheckout(base, headers(), dados),
     postPortal: () => assinaturaPostPortal(base, headers()),
     irPara: (url) => { window.location.assign(url) },
+    medir: (evento, params) => { ;(window as any).gtag?.('event', evento, params) },
     navegar: (caminho) => navigateTo(caminho),
     esperar: (ms) => new Promise((r) => setTimeout(r, ms)),
   })

@@ -25,6 +25,19 @@ const quiz = useQuizAssinatura()
 // estado e hooks ANTES do 1º await (hook depois do await some em silêncio)
 const continuar = route.query.continuar === '1'
 const cancelado = cancelouNoCheckout(route.query)
+function abrirQuizPelaUrl(): boolean {
+  if (route.query.quiz !== '1') return false
+  const de = typeof route.query.de === 'string' ? route.query.de.slice(0, 24) : 'link'
+  const query = { ...route.query }
+  delete query.quiz
+  delete query.de
+  void router.replace({ query })
+  void nextTick(() => { quiz.abrir(de) })
+  return true
+}
+// o "Conectar carteira" do topo, clicado já nesta página, não remonta a página
+watch(() => route.query.quiz, () => { abrirQuizPelaUrl() })
+
 onMounted(() => {
   // ?dados=1: o botão de fora (a /conta) ouviu cpf_necessario e mandou para cá
   if (route.query.dados === '1' && isAuthenticated.value) {
@@ -34,6 +47,9 @@ onMounted(() => {
     void nextTick(() => { void quiz.abrirNosDados('conta') })
     return
   }
+  // ?quiz=1: o "Conectar carteira" de fora (a home, a folha da IA) já abre o
+  // quiz, sem pedir um segundo toque nesta página. A origem vai em ?de=.
+  if (abrirQuizPelaUrl()) return
   if (!continuar) return
   // tira o ?continuar da URL (voltar para cá não reabre o Checkout) e segue
   const query = { ...route.query }

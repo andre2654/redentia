@@ -48,6 +48,13 @@ async function confirmar() {
   }
   await buscarCarteira?.()
   fase.value = 'pronta'
+  medirChegada()
+}
+
+// a volta da Stripe com a assinatura liberada: o fim do funil no GA4 (uma vez,
+// o ?assinatura=ok sai da URL logo na chegada)
+function medirChegada() {
+  ;(window as any).gtag?.('event', 'assinatura_iniciada', { situacao: assinatura.situacao.value })
 }
 
 onMounted(() => {
@@ -58,6 +65,7 @@ onMounted(() => {
   delete query.session_id
   void router.replace({ query, hash: route.hash })
   if (fase.value === 'confirmando') void confirmar()
+  else if (fase.value === 'pronta') medirChegada()
 })
 
 const { sessaoMorta } = await useAssinaturaDaPagina()

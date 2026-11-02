@@ -38,7 +38,7 @@ const BANCOS = [
 
 <template>
   <div class="hch" :class="[`hch--${tom}`, { 'hch--centro': centro }]">
-    <NuxtLink to="/assinar" class="hch__botao">
+    <NuxtLink to="/assinar?quiz=1&de=home" class="hch__botao">
       <span class="hch__bancos" aria-hidden="true">
         <img
           v-for="(b, i) in BANCOS" :key="b.nome" :src="b.logo" alt="" width="34" height="34"

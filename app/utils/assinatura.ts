@@ -266,6 +266,8 @@ export interface DepsDoControle {
   postPortal: () => Promise<PortalApi>
   /** sai do site (window.location.assign) */
   irPara: (url: string) => void
+  /** o evento do funil no GA4 (gtag), só com o plano: nunca CPF, e-mail ou celular */
+  medir?: (evento: string, params: Record<string, unknown>) => void
   /** navega no app (navigateTo) */
   navegar: (caminho: string) => unknown
   esperar: (ms: number) => Promise<void>
@@ -280,6 +282,17 @@ export const ERRO_CPF_DIFERENTE = 'Esta conta já tem outro CPF. Se precisar tro
 export const ERRO_CELULAR_INVALIDO = 'Confira o celular, com o DDD: (11) 98765-4321.'
 export const ERRO_CELULAR_EM_USO = 'Este celular já está em outra conta da Redentia. Use outro número ou deixe em branco.'
 export const ERRO_PORTAL = 'Não conseguimos abrir o portal da assinatura agora. Tente de novo em instantes.'
+
+/**
+ * O begin_checkout do GA4 (evento recomendado de e-commerce): sai logo antes
+ * de ir para a Stripe. O valor é o da mensalidade; o teste de 3 dias vai em
+ * `teste`.
+ */
+export const EVENTO_CHECKOUT = {
+  currency: 'BRL',
+  value: 19.99,
+  items: [{ item_id: 'redentia-mensal', item_name: 'Redentia', price: 19.99, quantity: 1 }],
+} as const
 
 /** Para onde o /login devolve quem clicou em "Começar 3 dias grátis" deslogado. */
 export const DESTINO_DEPOIS_DO_LOGIN = '/assinar?continuar=1'
@@ -330,6 +343,7 @@ export function criarControleAssinatura(d: DepsDoControle) {
       const r = await d.postCheckout(dados)
       const url = urlSegura(r?.checkout_url)
       if (!url) throw new Error('checkout_url')
+      d.medir?.('begin_checkout', { ...EVENTO_CHECKOUT, teste: estado.ent.value?.trial_disponivel !== false })
       d.irPara(url)
       // fica "abrindo" até a página sair: o botão não volta a ficar clicável
       return

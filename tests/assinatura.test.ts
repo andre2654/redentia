@@ -145,7 +145,7 @@ function montar(o: Partial<Omit<DepsDoControle, 'estado'>> & { ent?: Ent; carreg
     abrindoPortal: caixa(false),
     erroPortal: caixa<string | null>(null),
   }
-  const chamadas = { ent: 0, checkout: 0, portal: 0, idas: [] as string[], navegacoes: [] as string[], esperas: [] as number[] }
+  const chamadas = { ent: 0, checkout: 0, portal: 0, idas: [] as string[], navegacoes: [] as string[], esperas: [] as number[], eventos: [] as { evento: string; params: Record<string, unknown> }[] }
   const controle = criarControleAssinatura({
     estado,
     logado: () => o.logado ?? true,
@@ -153,6 +153,7 @@ function montar(o: Partial<Omit<DepsDoControle, 'estado'>> & { ent?: Ent; carreg
     postCheckout: o.postCheckout ?? (async () => { chamadas.checkout++; return { checkout_url: 'https://checkout.stripe.com/c/pay/cs_test_1' } }),
     postPortal: o.postPortal ?? (async () => { chamadas.portal++; return { portal_url: 'https://billing.stripe.com/p/session/test_1' } }),
     irPara: (url) => { chamadas.idas.push(url) },
+    medir: (evento, params) => { chamadas.eventos.push({ evento, params }) },
     navegar: (c) => { chamadas.navegacoes.push(c) },
     esperar: async (ms) => { chamadas.esperas.push(ms) },
   })
@@ -353,4 +354,23 @@ test('celular inválido ou de outra conta volta aos dados com o aviso', async ()
     assert.equal(await f.controle.comecar({ cpf: '52998224725', celular: '5511987654321' }), 'dados')
     assert.match(f.estado.erro.value ?? '', /celular/i)
   }
+})
+
+test('o begin_checkout sai antes da Stripe, só com o plano', async () => {
+  const { controle, chamadas } = montar({ carregado: true, ent: ent(false, null) })
+  await controle.comecar({ cpf: '52998224725', celular: '5511987654321', whatsapp_opt_in: true })
+  assert.equal(chamadas.idas.length, 1)
+  assert.equal(chamadas.eventos.length, 1)
+  const [{ evento, params }] = chamadas.eventos
+  assert.equal(evento, 'begin_checkout')
+  assert.equal(params.currency, 'BRL')
+  assert.equal(params.value, 19.99)
+  // nada do titular no evento
+  assert.doesNotMatch(JSON.stringify(params), /52998224725|987654321/)
+})
+
+test('checkout que falha não mede begin_checkout', async () => {
+  const { controle, chamadas } = montar({ carregado: true, ent: ent(false, null), postCheckout: async () => { throw Object.assign(new Error('x'), { statusCode: 500 }) } })
+  await controle.comecar()
+  assert.equal(chamadas.eventos.length, 0)
 })

@@ -57,7 +57,7 @@ onBeforeUnmount(() => {
             quanto rende, o que pesa mais.
           </p>
 
-          <NuxtLink to="/assinar" class="ags__conectar" @click="fecharGate">
+          <NuxtLink to="/assinar?quiz=1&de=gate" class="ags__conectar" @click="fecharGate">
             Conectar carteira
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </NuxtLink>
