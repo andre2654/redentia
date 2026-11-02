@@ -261,3 +261,10 @@ export function esquecerPerguntaDoGate(a: Armazem): void {
 export function podeRetomarPerguntaAqui(path: string): boolean {
   return !/^\/(login|assinar|cliente|business)(\/|$)/.test(path)
 }
+
+/** "P/L" + "PETR4" → "P/L PETR4"; sem sujeito (ou já citado), só o rótulo. */
+export function rotuloComSobre(rotulo: string, sobre: string, max = 34): string {
+  const r = String(rotulo ?? '').replace(/\s+/g, ' ').trim()
+  const s = String(sobre ?? '').trim()
+  return rotuloCurto(s && !r.toUpperCase().includes(s.toUpperCase()) ? `${r} ${s}` : r, max)
+}

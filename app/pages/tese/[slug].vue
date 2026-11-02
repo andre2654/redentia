@@ -33,6 +33,8 @@ definePageMeta({
 })
 
 const slug = String(useRoute().params.slug ?? '').toLowerCase()
+// o sujeito dos cartões que vão ao chat ("P/L PETR4"): useSobreDoContexto
+proverSobreDoContexto(() => data.value?.title)
 
 const { data, error } = await useTese(slug)
 

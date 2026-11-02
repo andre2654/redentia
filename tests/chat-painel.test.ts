@@ -14,6 +14,7 @@ import {
   MAX_CONTEXTOS,
   pedidoDaQuery,
   querySemPedido,
+  rotuloComSobre,
   rotuloCurto,
   routeContextDaRota,
   sugestoesDaRota,
@@ -250,4 +251,22 @@ test('sem conta, a pergunta abre a folha de cadastro; sem assinatura, o quiz', (
   const p = readFileSync(new URL('../app/components/chat/ChatPainel.vue', import.meta.url), 'utf8')
   assert.match(p, /assinatura\.assinante\.value/)
   assert.match(p, /esquecerPerguntaDoGate\(localStorage\)/)
+})
+
+test('o rótulo leva o sujeito da página, curto e sem repetir', () => {
+  assert.equal(rotuloComSobre('P/L', 'PETR4'), 'P/L PETR4')
+  assert.equal(rotuloComSobre('Proventos PETR4', 'PETR4'), 'Proventos PETR4')
+  assert.equal(rotuloComSobre('Dividend Yield', ''), 'Dividend Yield')
+  assert.ok(rotuloComSobre('Uma métrica de nome bem comprido demais', 'TAEE11').length <= 34)
+})
+
+test('o cursor mágico escolhe o pedaço mais de dentro e acha seções com título', () => {
+  const src = ler('app/components/chat/ChatSeletor.vue')
+  assert.match(src, /cands\.find\(\(c\) => cands\.every\(\(o\) => o === c \|\| !c\.contains\(o\)\)\)/)
+  assert.match(src, /closest<HTMLElement>\('section, article'\)/)
+  // os cartões do design system levam o sujeito da página
+  for (const f of ['NuMetricCard', 'NuStatList', 'NuScoreCard', 'NuDividendBars']) {
+    assert.match(ler(`app/components/nu/${f}.vue`), /useSobreDoContexto\(\)/, f)
+  }
+  assert.match(ler('app/pages/asset/[ticker].vue'), /proverSobreDoContexto\(ticker\)/)
 })

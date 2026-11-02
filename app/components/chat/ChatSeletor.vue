@@ -9,7 +9,7 @@
 // funcionando (trocar o período do gráfico, seguir o ativo).
 // Movimento reduzido: sem a luz que segue; o contorno fica, sem animação.
 // Teclado: nada muda (não há armadilha); o painel continua no Tab normal.
-import { contextoDoLinkDeAtivo, MAX_CONTEXTOS, textoCompacto } from '~/utils/chat-painel'
+import { contextoDoLinkDeAtivo, MAX_CONTEXTOS, rotuloCurto, textoCompacto } from '~/utils/chat-painel'
 import type { ContextoDoChat } from '~/composables/useChatPainel'
 
 const painel = useChatPainel()
@@ -29,21 +29,38 @@ let elAlvo: HTMLElement | null = null
 let px = -999, py = -999, lx = -999, ly = -999
 let raf = 0
 
-/** O pedaço sob o ponteiro: o marcado mais próximo ou um link de ativo solto. */
+/** A seção (ou o artigo) com título mais próxima: o pedaço genérico de
+ *  qualquer página que ninguém marcou (um bloco de guia, de glossário). */
+function secaoDe(el: Element): HTMLElement | null {
+  let s = el.closest<HTMLElement>('section, article')
+  while (s) {
+    if (s.closest('footer, nav, header')) return null
+    if (s.querySelector('h1, h2, h3')) return s
+    s = s.parentElement?.closest<HTMLElement>('section, article') ?? null
+  }
+  return null
+}
+
+/**
+ * O pedaço sob o ponteiro: o mais de dentro entre o marcado com
+ * v-contexto-chat, um link para /asset/X e a seção com título. Assim o card
+ * dentro da seção ganha do bloco, e a linha dentro do card ganha do card.
+ */
 function pedacoDe(t: EventTarget | null): HTMLElement | null {
   const el = t instanceof Element ? t : null
   // o painel, a barra, os modais e o header/faixa sticky (o contorno passa por
   // baixo deles e o clique anexaria sem ninguém ver) ficam de fora
   if (!el || el.closest('.cpn, .cba, [aria-modal="true"], .nuh-wrap, .nut-wrap, .nsr-wrap')) return null
-  const marcado = el.closest<HTMLElement>('[data-chat-contexto]')
+  const cands = [
+    el.closest<HTMLElement>('[data-chat-contexto]'),
+    el.closest<HTMLElement>('a[href^="/asset/"]'),
+    secaoDe(el),
+  ].filter((c): c is HTMLElement => !!c)
+  const alvo = cands.find((c) => cands.every((o) => o === c || !c.contains(o))) ?? null
   const inter = el.closest<HTMLElement>(INTERATIVO)
   // um controle dentro do pedaço (e que não é o próprio pedaço) segue sendo controle
-  if (marcado && inter && inter !== marcado && marcado.contains(inter)) {
-    return inter.matches('a[href^="/asset/"]') ? inter : null
-  }
-  if (marcado) return marcado
-  const link = el.closest<HTMLElement>('a[href^="/asset/"]')
-  return link
+  if (alvo && inter && inter !== alvo && alvo.contains(inter)) return null
+  return alvo
 }
 
 function contextoDe(el: HTMLElement): ContextoDoChat | null {
@@ -51,7 +68,11 @@ function contextoDe(el: HTMLElement): ContextoDoChat | null {
   const v = contextoChatDoElemento(el)
   if (v) return { id: v.id, tipo: v.tipo, rotulo: v.rotulo, texto: textoCompacto(v.texto ?? el.innerText), rota }
   const href = el.getAttribute('href')
-  return href ? contextoDoLinkDeAtivo(href, el.innerText, rota) : null
+  if (href && el.matches('a')) return contextoDoLinkDeAtivo(href, el.innerText, rota)
+  // innerText: o <br> do título vira espaço ("O que sustenta e o que ameaça")
+  const titulo = el.querySelector<HTMLElement>('h1, h2, h3')?.innerText ?? ''
+  const rotulo = rotuloCurto(titulo, 34)
+  return rotulo ? { id: `secao:${rota}:${rotulo}`, tipo: 'secao', rotulo, texto: textoCompacto(el.innerText), rota } : null
 }
 
 function rotuloDe(el: HTMLElement): string {
@@ -84,13 +105,19 @@ function topoLivre(): number {
   return y
 }
 
+function bandaEscura(cor: string): boolean {
+  const m = cor.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/)
+  if (!m || (m[4] !== undefined && Number(m[4]) < 0.5)) return false
+  const [r, g, bl] = [Number(m[1]), Number(m[2]), Number(m[3])]
+  return (0.2126 * r + 0.7152 * g + 0.0722 * bl) / 255 < 0.35
+}
+
 function retanguloDe(el: HTMLElement): DOMRect {
   const r = el.getBoundingClientRect()
   if (r.width < window.innerWidth * 0.6) return r
-  // banda com fundo próprio (o gráfico navy): o contorno fica dentro dela, a
-  // 12px da borda visível; o gráfico que sangra até a borda entra inteiro
-  const fundo = getComputedStyle(el).backgroundColor
-  if (fundo && fundo !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(fundo)) {
+  // banda escura (o gráfico navy, que sangra até a borda): o contorno fica
+  // dentro dela, a 18px da borda visível. Banda clara abraça o conteúdo.
+  if (bandaEscura(getComputedStyle(el).backgroundColor)) {
     const vw = document.documentElement.clientWidth
     const x0 = Math.max(r.left, 0) + 18, x1 = Math.min(r.right, vw) - 18
     const y0 = Math.max(r.top, topoLivre()) + 18, y1 = Math.min(r.bottom, window.innerHeight) - 18
@@ -103,7 +130,14 @@ function retanguloDe(el: HTMLElement): DOMRect {
 
 function medir() {
   if (!elAlvo || !elAlvo.isConnected) { alvo.value = null; return }
-  const r = retanguloDe(elAlvo)
+  // o contorno fica sempre inteiro na tela: bloco maior que a tela ganha a
+  // janela visível dele (abaixo do header, acima do pé)
+  const q = retanguloDe(elAlvo)
+  const topo = topoLivre() + 8
+  const x0 = Math.max(q.left, 8), x1 = Math.min(q.right, document.documentElement.clientWidth - 8)
+  const y0 = Math.max(q.top, topo), y1 = Math.min(q.bottom, window.innerHeight - 8)
+  if (x1 - x0 < 8 || y1 - y0 < 8) { alvo.value = null; return }
+  const r = new DOMRect(x0, y0, x1 - x0, y1 - y0)
   const raio = parseFloat(getComputedStyle(elAlvo).borderTopLeftRadius) || 0
   alvo.value = { x: r.left, y: r.top, w: r.width, h: r.height, r: `${Math.max(14, raio + 6)}px` }
 }
@@ -115,7 +149,14 @@ function quadro() {
   ly += (py - ly) * 0.22
   if (luz.value) luz.value.style.transform = `translate3d(${lx}px, ${ly}px, 0)`
   // a etiqueta "+ PETR4" anda colada ao ponteiro (nunca some atrás do header)
-  if (etiqueta.value) etiqueta.value.style.transform = `translate3d(${px + 16}px, ${py + 18}px, 0)`
+  // perto da borda (ou do painel), a etiqueta vira para o outro lado do ponteiro
+  if (etiqueta.value) {
+    const limite = document.querySelector('.nu-shell')?.getBoundingClientRect().right ?? window.innerWidth
+    const w = etiqueta.value.offsetWidth, h = etiqueta.value.offsetHeight
+    const ex = px + 16 + w > limite - 8 ? px - 12 - w : px + 16
+    const ey = py + 18 + h > window.innerHeight - 8 ? py - 12 - h : py + 18
+    etiqueta.value.style.transform = `translate3d(${ex}px, ${ey}px, 0)`
+  }
   medir()
   if (Math.abs(px - lx) > 0.5 || Math.abs(py - ly) > 0.5) raf = requestAnimationFrame(quadro)
 }

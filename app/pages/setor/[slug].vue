@@ -23,6 +23,8 @@ if (!entry) {
 }
 
 const { rows, aggregates, sectorName, pending, unavailable, empty } = useSectorDetail(entry)
+// o sujeito dos cartões que vão ao chat ("P/L PETR4"): useSobreDoContexto
+proverSobreDoContexto(entry.name)
 
 // ————— formatters da faixa de aggregates —————
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
@@ -168,7 +170,7 @@ usePageSeo({
     <section class="sts__body">
       <!-- faixa de aggregates reais (só os campos com dado) -->
       <div v-if="statCards.length" class="sts__stats">
-        <div v-for="c in statCards" :key="c.label" class="sts__stat">
+        <div v-for="c in statCards" :key="c.label" v-contexto-chat="{ id: `setor:${slug}:${c.label}`, tipo: 'grafico', rotulo: rotuloCurto(`${c.label} · ${entry.name}`), texto: `${c.label} (setor ${entry.name}): ${c.value}` }" class="sts__stat">
           <span class="sts__stat-label">{{ c.label }}</span>
           <span
             class="sts__stat-value"

@@ -54,6 +54,8 @@ definePageMeta({
 
 const route = useRoute()
 const ticker = String(route.params.ticker ?? '').toUpperCase()
+// o sujeito dos cartões que vão ao chat ("P/L PETR4"): useSobreDoContexto
+proverSobreDoContexto(ticker)
 
 const { data, error, activeRange, setRange, rangeLoading, currentSeries, position } = await useAcao(ticker)
 

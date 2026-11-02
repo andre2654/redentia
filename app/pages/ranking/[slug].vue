@@ -25,6 +25,9 @@ const isLinked = (p: RankingParagraph): p is { linkText: string; href: string; t
 const route = useRoute()
 const slug = String(route.params.slug ?? '')
 const meta = RANKINGS[slug]
+
+// o sujeito das linhas que vão ao chat ("3º PETR4 · Maiores DY")
+proverSobreDoContexto(() => meta?.title)
 if (!meta) {
   throw createError({ statusCode: 404, statusMessage: 'Ranking não encontrado', fatal: true })
 }
