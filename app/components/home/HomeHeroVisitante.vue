@@ -16,10 +16,28 @@
 // O H1 é o único da página. "Mercado hoje" deixou de abrir o título: 84% dos
 // cliques do Google na home vêm da busca "redentia" (GSC, 90 dias até
 // 28/10/2026), gente que já ouviu falar e quer saber o que é.
+import type { Component } from 'vue'
+
+// PROTÓTIPO (02/11/2026, o dono: "agora melhore esse header, ele está meio
+// fraco e feio perante a todo o resto"): três direções para este herói,
+// trocadas só no dev por ?heroi=1 (página de produto, o Mac no centro),
+// ?heroi=2 (o motor: os 2.000 caminhos sobre o navy) e ?heroi=3 (a noite: os
+// aparelhos no escuro). Em produção import.meta.dev é false, o mapa fica vazio
+// (nem entra no bundle) e segue o herói de hoje até o dono escolher.
+const route = useRoute()
+const HEROIS: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('./heroi/HomeHeroiProduto.vue')),
+      '2': defineAsyncComponent(() => import('./heroi/HomeHeroiMotor.vue')),
+      '3': defineAsyncComponent(() => import('./heroi/HomeHeroiNoite.vue')),
+    }
+  : {}
+const prototipo = computed(() => HEROIS[String(route.query.heroi ?? '')] ?? null)
 </script>
 
 <template>
-  <section class="hhv" aria-labelledby="hhv-titulo">
+  <component :is="prototipo" v-if="prototipo" />
+  <section v-else class="hhv" aria-labelledby="hhv-titulo">
     <div class="hhv__luz" aria-hidden="true" />
     <div class="hhv__texto">
       <p class="hhv__produto"><img src="/logo-azul.svg" alt="" width="22" height="22">Redentia</p>

@@ -24,7 +24,10 @@ withDefaults(defineProps<{
   centro?: boolean
   /** quem já conectou o banco não lê "Conectar carteira": o passo dele é assinar */
   rotulo?: string
-}>(), { tom: 'claro', centro: true, rotulo: 'Conectar carteira' })
+  /** 'calmo': o botão mais baixo, os bancos menores e o peso 600 (os protótipos do
+   *  herói de 02/11/2026, ?heroi=1|2|3 no dev); 'grande' é o de sempre */
+  porte?: 'grande' | 'calmo'
+}>(), { tom: 'claro', centro: true, rotulo: 'Conectar carteira', porte: 'grande' })
 
 // os logos que o site já tem (public/icons), os mesmos da CarteiraMontagem
 const BANCOS = [
@@ -37,7 +40,7 @@ const BANCOS = [
 </script>
 
 <template>
-  <div class="hch" :class="[`hch--${tom}`, { 'hch--centro': centro }]">
+  <div class="hch" :class="[`hch--${tom}`, `hch--${porte}`, { 'hch--centro': centro }]">
     <NuxtLink to="/assinar?quiz=1&de=home" class="hch__botao">
       <span class="hch__bancos" aria-hidden="true">
         <img
@@ -126,6 +129,27 @@ const BANCOS = [
   /* a frase em negrito numa linha, o Open Finance na outra */
   .hch__letra strong { display: block; }
 }
+/* porte calmo (protótipos do herói, 02/11/2026): a mesma chamada num botão de
+   52 px, os bancos de 26 px e o rótulo em 600, para ficar do tamanho do título
+   em peso médio, e não maior que ele */
+.hch--calmo .hch__botao {
+  min-height: 52px; gap: 12px; padding: 6px 22px 6px 7px;
+  font-size: var(--nu-fs-md); font-weight: 600; letter-spacing: -0.005em;
+  box-shadow: 0 10px 28px -14px color-mix(in srgb, var(--nu-blue) 70%, transparent);
+}
+.hch--calmo.hch--escuro .hch__botao { box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--nu-agora-bg) 70%, transparent); }
+.hch--calmo .hch__banco { width: 26px; height: 26px; box-shadow: 0 0 0 2px var(--nu-blue); }
+.hch--calmo.hch--escuro .hch__banco { box-shadow: 0 0 0 2px var(--nu-white); }
+.hch--calmo .hch__banco + .hch__banco { margin-left: -7px; }
+.hch--calmo .hch__seta { width: 16px; height: 16px; }
+.hch--calmo .hch__letra { margin-top: 16px; font-size: var(--nu-fs-sm); }
+.hch--calmo .hch__letra strong { font-weight: 600; }
+.hch--calmo .hch__apps { margin-top: 6px; }
+@media (max-width: 560px) {
+  .hch--calmo .hch__botao { padding: 6px 18px 6px 7px; gap: 10px; }
+  .hch--calmo .hch__banco { width: 26px; height: 26px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hch__botao, .hch__seta { transition: none; }
 }
