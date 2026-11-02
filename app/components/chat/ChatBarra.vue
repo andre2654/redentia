@@ -11,10 +11,16 @@
 //
 // O fim da página nunca fica embaixo dela: o layout soma a altura da barra ao
 // pé do rodapé (html.nu-chat-barra, estilo global abaixo).
+//
+// No foco, a marca dá lugar a dois botões (dono, 02/11/2026): expandir abre o
+// painel como está; conversa abre o painel já nas conversas anteriores (só
+// para quem entrou). A troca é uma mola: a marca gira e some, os botões
+// crescem um depois do outro.
 import { barraVisivel, sugestoesDaRota } from '~/utils/chat-painel'
 
 const route = useRoute()
 const painel = useChatPainel()
+const { isAuthenticated } = useAuthState()
 
 const visivel = computed(() => barraVisivel(route.path, painel.aberto.value))
 const sugestoes = computed(() => sugestoesDaRota(route.path).slice(0, 4))
@@ -37,6 +43,21 @@ function perguntar(q?: string) {
   // sem texto, a seta abre o painel vazio (com as sugestões dele); sem conta,
   // a pergunta abre a folha de cadastro (useChatPainel.perguntar)
   painel.perguntar(t)
+}
+
+function sairDaBarra() {
+  texto.value = ''
+  ativa.value = -1
+  focado.value = false
+  campo.value?.blur()
+}
+function expandir() {
+  sairDaBarra()
+  painel.abrir()
+}
+function abrirConversas() {
+  sairDaBarra()
+  painel.abrirConversas()
 }
 
 function onKey(e: KeyboardEvent) {
@@ -82,7 +103,21 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
       <form class="cba__form" role="search" aria-label="Pergunte à Redentia" @submit.prevent="perguntar()">
         <ChatPilula :aceso="focado || !!texto">
           <div class="cba__linha" @click="campo?.focus()">
-            <img src="/logo-azul.svg" alt="" width="20" height="20" class="cba__marca">
+            <span class="cba__lado" :class="{ 'cba__lado--aberto': focado, 'cba__lado--dois': focado && isAuthenticated }">
+              <img src="/logo-azul.svg" alt="" width="20" height="20" class="cba__marca">
+              <button
+                type="button" class="cba__acao" style="--i: 0" aria-label="Abrir o chat" title="Abrir o chat"
+                :tabindex="focado ? 0 : -1" @mousedown.prevent @click.stop="expandir"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5" /></svg>
+              </button>
+              <button
+                v-if="isAuthenticated" type="button" class="cba__acao" style="--i: 1" aria-label="Suas conversas" title="Suas conversas"
+                :tabindex="focado ? 0 : -1" @mousedown.prevent @click.stop="abrirConversas"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12z" /><path d="M9 11h6M9 14.5h3.5" /></svg>
+              </button>
+            </span>
             <input
               ref="campo" v-model="texto" class="cba__campo" type="text" enterkeyhint="send" autocomplete="off"
               placeholder="Pergunte à Redentia" aria-label="Pergunte à Redentia"
@@ -108,6 +143,39 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 .cba__form { --cpi-raio: 28px; }
 .cba__linha { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 6px 0 18px; cursor: text; }
 .cba__marca { flex-shrink: 0; display: block; }
+
+/* o lado esquerdo: a marca em repouso; no foco, os dois botões (mola) */
+.cba__lado {
+  --mola: cubic-bezier(.34, 1.56, .64, 1);
+  position: relative; flex-shrink: 0;
+  width: 20px; height: 34px; margin-left: 0;
+  transition: width .42s var(--mola), margin-left .42s var(--mola);
+}
+.cba__lado--aberto { width: 34px; margin-left: -8px; }
+.cba__lado--dois { width: 72px; }
+.cba__lado .cba__marca {
+  position: absolute; left: 0; top: 7px;
+  transition: transform .38s var(--mola), opacity .22s ease;
+}
+.cba__lado--aberto .cba__marca { transform: rotate(-90deg) scale(.2); opacity: 0; }
+.cba__acao {
+  position: absolute; top: 0; left: calc(var(--i) * 38px);
+  width: 34px; height: 34px; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
+  display: grid; place-items: center; background: var(--nu-cream); color: var(--nu-ink);
+  opacity: 0; transform: scale(.4) rotate(-20deg); pointer-events: none;
+  transition: transform .42s var(--mola), opacity .2s ease, background .15s ease, color .15s ease;
+  transition-delay: 0s;
+}
+.cba__lado--aberto .cba__acao {
+  opacity: 1; transform: none; pointer-events: auto;
+  transition-delay: calc(60ms + var(--i) * 70ms), calc(60ms + var(--i) * 70ms), 0s, 0s;
+}
+.cba__acao:hover { background: var(--nu-ink); color: var(--nu-white); }
+.cba__acao:active { transform: scale(.92); }
+.cba__acao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .cba__lado, .cba__lado .cba__marca, .cba__acao { transition-duration: .01ms !important; transition-delay: 0s !important; }
+}
 .cba__campo {
   flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; font: inherit;
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500;

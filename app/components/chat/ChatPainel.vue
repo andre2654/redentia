@@ -125,6 +125,14 @@ onMounted(retomarPerguntaDoGate)
 watch([() => assinatura.carregado.value, () => assinatura.assinante.value, () => route.path], retomarPerguntaDoGate)
 
 /* ——— histórico ——— */
+// o botão de conversa da barra: o painel abre já na lista
+watch([aberto, () => painel.conversasPedidas.value], ([a, pedidas]) => {
+  if (!import.meta.client || !a || !pedidas) return
+  painel.conversasPedidas.value = false
+  historico.value = true
+  if (isAuthenticated.value) void chat.loadSessions()
+}, { immediate: true })
+
 function alternarHistorico() {
   historico.value = !historico.value
   if (historico.value && isAuthenticated.value) void chat.loadSessions()

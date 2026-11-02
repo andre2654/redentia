@@ -36,6 +36,8 @@ export function useChatPainel() {
   const aberto = useState<boolean>('nu:chat-painel:aberto', () => false)
   const pendente = useState<PerguntaPendente | null>('nu:chat-painel:pendente', () => null)
   const contextos = useState<ContextoDoChat[]>('nu:chat-painel:contextos', () => [])
+  /** o painel abre já na lista de conversas (o botão de conversa da barra) */
+  const conversasPedidas = useState<boolean>('nu:chat-painel:conversas', () => false)
 
   /** Abre o painel; com `pergunta`, ela é enviada assim que o painel montar. */
   function abrir(pergunta?: string, extras: ContextoDoChat[] = []) {
@@ -50,6 +52,12 @@ export function useChatPainel() {
 
   function fechar() {
     aberto.value = false
+  }
+
+  /** Abre o painel já nas conversas anteriores (quem entrou). */
+  function abrirConversas() {
+    conversasPedidas.value = true
+    aberto.value = true
   }
 
   function anexar(c: ContextoDoChat) {
@@ -94,5 +102,5 @@ export function useChatPainel() {
     useCadastroFolha().abrir({ gesto: 'pergunta', pergunta: texto }, () => true, volta, () => abrir(texto, junto))
   }
 
-  return { aberto, pendente, contextos, abrir, perguntar, pedirConta, fechar, anexar, remover, consumirPendente }
+  return { aberto, pendente, contextos, conversasPedidas, abrir, abrirConversas, perguntar, pedirConta, fechar, anexar, remover, consumirPendente }
 }
