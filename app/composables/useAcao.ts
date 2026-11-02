@@ -1317,7 +1317,7 @@ function petr4Seed(): AcaoPayload {
     resumo: resumoSeed,
     seo: resumoSeed
       ? seoDeResumo(resumoSeed)
-      : { title: 'Petrobras (PETR4): cotação e dividendos', description: 'Não é recomendação.', faq: [] },
+      : { title: 'PETR4 cotação hoje: Petrobras e dividendos', description: 'Não é recomendação.', faq: [] },
   }
 }
 
