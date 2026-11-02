@@ -8,7 +8,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { cpfValido, formatarCelular, formatarCpf, normalizarCelular } from '../app/utils/assinatura.ts'
+import { TEXTO_ACEITE_WHATSAPP, cpfValido, formatarCelular, formatarCpf, normalizarCelular } from '../app/utils/assinatura.ts'
 import {
   CORPO_CHECKOUT,
   DESTINO_DEPOIS_DO_LOGIN,
@@ -373,4 +373,13 @@ test('checkout que falha não mede begin_checkout', async () => {
   const { controle, chamadas } = montar({ carregado: true, ent: ent(false, null), postCheckout: async () => { throw Object.assign(new Error('x'), { statusCode: 500 }) } })
   await controle.comecar()
   assert.equal(chamadas.eventos.length, 0)
+})
+
+test('o aceite do WhatsApp é o texto registrado no Backend, numa caixa desmarcada', () => {
+  // mesmo texto de App\\Services\\WhatsAppConsent::TEXTO (versão whatsapp-2026-11-01)
+  assert.equal(TEXTO_ACEITE_WHATSAPP, 'Quero receber a Redentia no WhatsApp. Para parar, é só responder SAIR.')
+  const quiz = readFileSync(new URL('../app/components/assinatura/AssinaturaQuiz.vue', import.meta.url), 'utf8')
+  assert.match(quiz, /const aceiteWhatsapp = ref\(false\)/)
+  assert.match(quiz, /whatsapp_opt_in: aceiteWhatsapp\.value/)
+  assert.doesNotMatch(quiz, /whatsapp_opt_in: true/)
 })

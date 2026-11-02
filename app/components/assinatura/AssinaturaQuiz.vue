@@ -11,7 +11,7 @@
 // No celular ocupa a tela; no computador, um cartão no meio.
 // Acessibilidade do NuDayModal: useModalA11y (Tab preso + foco devolvido).
 import type { AppleCredencial } from '~/composables/useAppleAuth'
-import { DIAS_GRATIS, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
+import { TEXTO_ACEITE_WHATSAPP, DIAS_GRATIS, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
 import { INSTITUICOES } from '~/content/instituicoes'
 import {
   passosDoQuiz,
@@ -36,6 +36,8 @@ const { erro, primeiraAssinatura, abrindo } = assinatura
 const pedirDados = ref(false)
 const cpf = ref('')
 const celular = ref('')
+// o "sim" do WhatsApp é um gesto: a caixa começa desmarcada (LGPD)
+const aceiteWhatsapp = ref(false)
 const erroDados = ref<string | null>(null)
 const precisaDosDados = computed(() => assinatura.ent.value?.precisa_cpf !== false)
 async function irParaPagamento() {
@@ -59,8 +61,8 @@ async function enviarDados() {
     erroDados.value = 'Confira o celular, com o DDD: (11) 98765-4321.'
     return
   }
-  evento('quiz_dados_enviados', { whatsapp: !!cel })
-  await assinatura.comecar({ cpf: cpf.value.replace(/\D/g, ''), ...(cel ? { celular: cel, whatsapp_opt_in: true } : {}) })
+  evento('quiz_dados_enviados', { whatsapp: !!cel && aceiteWhatsapp.value })
+  await assinatura.comecar({ cpf: cpf.value.replace(/\D/g, ''), ...(cel ? { celular: cel, whatsapp_opt_in: aceiteWhatsapp.value } : {}) })
 }
 onMounted(() => { montado.value = true })
 onBeforeUnmount(() => { montado.value = false })
@@ -206,6 +208,7 @@ watch(aberto, (open) => {
     cad.trocarContato()
     pedirDados.value = direto.value === 'dados'
     erroDados.value = null
+    aceiteWhatsapp.value = false
     indice.value = direto.value === 'dados' ? PASSOS_.value.length - 1 : 0
     respostas.value = {}
     indo.value = 'frente'
@@ -429,7 +432,10 @@ const ICONES: Record<string, string> = {
                   <input id="aqz-cpf" :value="cpf" class="aqz__campo" type="text" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" required @input="cpf = formatarCpf(($event.target as HTMLInputElement).value)">
                   <label class="aqz__rotulo aqz__rotulo--depois" for="aqz-cel">WhatsApp <span>(opcional)</span></label>
                   <input id="aqz-cel" :value="celular" class="aqz__campo" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(11) 98765-4321" @input="celular = formatarCelular(($event.target as HTMLInputElement).value)">
-                  <p class="aqz__miudo aqz__miudo--junto">Com o número, você recebe os avisos da Redentia no WhatsApp. Para parar, é só responder SAIR.</p>
+                  <label class="aqz__aceite">
+                    <input v-model="aceiteWhatsapp" type="checkbox" class="aqz__aceite-caixa">
+                    <span>{{ TEXTO_ACEITE_WHATSAPP }}</span>
+                  </label>
                   <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert">{{ erroDados || erro }}</p>
                   <button type="submit" class="aqz__seguir" :disabled="abrindo || cpf.replace(/\D/g, '').length !== 11">
                     {{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}
@@ -592,6 +598,8 @@ const ICONES: Record<string, string> = {
 .aqz__rotulo--depois { margin-top: 8px; }
 .aqz__rotulo span { color: var(--nu-gray); font-weight: 500; }
 .aqz__miudo--junto { margin-top: 0; }
+.aqz__aceite { display: flex; align-items: flex-start; gap: 10px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; cursor: pointer; }
+.aqz__aceite-caixa { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--nu-blue); cursor: pointer; }
 .aqz__pagar {
   display: inline-flex; align-items: center; justify-content: center; gap: 11px; width: 100%; min-height: 58px; border: 0;
   border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-family: inherit;

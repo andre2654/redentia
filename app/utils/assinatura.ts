@@ -276,6 +276,14 @@ export interface DepsDoControle {
 export const ERRO_CHECKOUT = 'Não conseguimos abrir o pagamento agora. Nada foi cobrado. Tente de novo em instantes.'
 /** 422 `plano_inativo` / `ciclo_indisponivel`: o plano está fora do ar do lado de lá. */
 export const ERRO_PLANO = 'A assinatura está fechada para novas entradas neste momento. Nada foi cobrado. Tente de novo mais tarde.'
+/**
+ * O aceite do WhatsApp, palavra por palavra igual ao do Backend
+ * (App\Services\WhatsAppConsent::TEXTO, versão whatsapp-2026-11-01): é este
+ * texto que fica registrado como prova do "sim" (LGPD). Mudou aqui, sobe a
+ * versão lá junto.
+ */
+export const TEXTO_ACEITE_WHATSAPP = 'Quero receber a Redentia no WhatsApp. Para parar, é só responder SAIR.'
+
 /** 422 do CPF no checkout (Backend, 01/11/2026) */
 export const ERRO_CPF_INVALIDO = 'Confira o CPF: os números não batem.'
 export const ERRO_CPF_DIFERENTE = 'Esta conta já tem outro CPF. Se precisar trocar, fale com a gente em relacionamento@redentia.com.br.'
