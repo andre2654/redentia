@@ -13,7 +13,10 @@
 // quebrado nem espaço vazio sem explicação.
 const { estado, dados, vm, caminhos, fora, carregar } = useCarteiraFuturo()
 
-const pergunta = '/busca?chat=1&q=' + encodeURIComponent('O que mais pesa no cenário pessimista da minha carteira nos próximos 5 anos, e como eu protejo esse lado?')
+const PERGUNTA = 'O que mais pesa no cenário pessimista da minha carteira nos próximos 5 anos, e como eu protejo esse lado?'
+const pergunta = '/busca?chat=1&q=' + encodeURIComponent(PERGUNTA)
+// abre o painel do chat nesta página (02/11/2026); o href fica para outra aba
+const painel = useChatPainel()
 </script>
 
 <template>
@@ -25,7 +28,7 @@ const pergunta = '/busca?chat=1&q=' + encodeURIComponent('O que mais pesa no cen
           <h2 id="cfu-titulo" class="cfu__frase">{{ vm.frase }}</h2>
           <p class="cfu__sub">{{ vm.cenarios }} Em dinheiro de hoje.</p>
         </div>
-        <NuxtLink :to="pergunta" class="cfu__perguntar">
+        <NuxtLink :to="pergunta" class="cfu__perguntar" @click.prevent="painel.abrir(PERGUNTA)">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cfu__losango-miolo" /></svg>
           Como proteger o lado pessimista
         </NuxtLink>

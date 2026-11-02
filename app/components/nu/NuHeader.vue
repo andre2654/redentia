@@ -13,6 +13,8 @@
 //   cabe inteira; Entrar/Conectar carteira (ou a pílula da IA e o avatar) ficam.
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
+// o "Pergunte à Redentia AI" abre o painel do chat nesta página (02/11/2026)
+const chatPainel = useChatPainel()
 
 // Estrutura de nav (direção do dono 2026-07-13): Início (a home única = o
 // Mercado auth-aware) · Carteira (logado — página separada) · Teses ·
@@ -346,7 +348,7 @@ onBeforeUnmount(() => {
         </NuxtLink>
 
         <template v-if="isAuthenticated">
-          <NuxtLink to="/busca" class="nuh__ai nuh__desktop-only">
+          <NuxtLink to="/busca" class="nuh__ai nuh__desktop-only" @click.prevent="chatPainel.abrir()">
             <span>Pergunte à Redentia AI</span>
           </NuxtLink>
           <div class="nuh__account">
@@ -439,7 +441,7 @@ onBeforeUnmount(() => {
           <template v-if="isAuthenticated">
             <NuxtLink to="/carteira" class="num__cta-outline" @click="toggleMenu(false)">Minha carteira</NuxtLink>
             <NuxtLink to="/conta" class="num__cta-outline" @click="toggleMenu(false)">Configurações</NuxtLink>
-            <NuxtLink to="/busca" class="num__cta" @click="toggleMenu(false)">Pergunte à Redentia AI</NuxtLink>
+            <NuxtLink to="/busca" class="num__cta" @click.prevent="toggleMenu(false); chatPainel.abrir()">Pergunte à Redentia AI</NuxtLink>
             <button type="button" class="num__logout" @click="logout">Sair</button>
           </template>
           <template v-else>

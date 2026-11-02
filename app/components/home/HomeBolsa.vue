@@ -162,7 +162,7 @@ function irParaNewsletter(e: MouseEvent) {
 </script>
 
 <template>
-  <section class="hbo" aria-labelledby="hbo-titulo">
+  <section v-contexto-chat="{ id: 'bolsa:hoje', tipo: 'bolsa', rotulo: 'A bolsa hoje' }" class="hbo" aria-labelledby="hbo-titulo">
     <!-- o topo: a frase da bolsa à esquerda e a deixa à direita, na mesma altura -->
     <div class="hbo__topo">
       <div class="hbo__titulos" :class="{ 'hbo__titulos--lendo': fase === 'lendo' }">

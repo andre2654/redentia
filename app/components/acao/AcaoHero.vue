@@ -22,6 +22,19 @@ import type { AcaoPosition } from '~/composables/useAcao'
 const props = defineProps<{ hero: AcaoHeroVM; position: AcaoPosition | null; renamedFrom?: string | null; seguivel: boolean }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+
+// o ativo como contexto do chat (cursor mágico e o "Perguntar à Redentia"):
+// o que o hero mostra, nada além
+const contexto = computed(() => ({
+  id: `ativo:${props.hero.ticker}`,
+  tipo: 'ativo',
+  rotulo: props.hero.ticker,
+  texto: [props.hero.companyLine, `Preço: ${props.hero.priceFmt}`, props.hero.changeLine, props.hero.metaLine].filter(Boolean).join('\n'),
+}))
+const painel = useChatPainel()
+function perguntar() {
+  painel.abrir(undefined, [{ ...contexto.value, rota: `/asset/${props.hero.ticker}` }])
+}
 const logoFailed = ref(false)
 
 onMounted(() => {
@@ -30,7 +43,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="ahr">
+  <section v-contexto-chat="contexto" class="ahr">
     <p v-if="renamedFrom" class="ahr__renamed">{{ renamedFrom }} agora negocia como {{ hero.ticker }}.</p>
     <div class="ahr__badges">
       <img v-if="hero.logo && !logoFailed" :src="hero.logo" alt="" class="ahr__logo" @error="logoFailed = true">
@@ -49,7 +62,8 @@ onMounted(() => {
       <span v-if="hero.metaLine" class="ahr__meta">{{ hero.metaLine }}</span>
     </div>
     <div class="ahr__ctas">
-      <NuxtLink to="/busca" class="ahr__primary">Perguntar à Redentia AI</NuxtLink>
+      <!-- abre o painel do chat já com o ativo junto (o href fica para sem JS) -->
+      <NuxtLink to="/busca" class="ahr__primary" @click.prevent="perguntar">Perguntar à Redentia AI</NuxtLink>
       <SeguirAtivo v-if="seguivel" :ticker="hero.ticker" :path="`/asset/${hero.ticker}`" />
       <NuxtLink to="/" class="ahr__outline">Adicionar à carteira</NuxtLink>
     </div>

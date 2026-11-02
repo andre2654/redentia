@@ -14,7 +14,7 @@ const imgFailed = ref(false)
 </script>
 
 <template>
-  <NuxtLink :to="`/tese/${t.slug}`" class="ntr">
+  <NuxtLink v-contexto-chat="{ id: `tese:${t.slug}`, tipo: 'tese', rotulo: rotuloCurto(t.title) }" :to="`/tese/${t.slug}`" class="ntr">
     <span class="ntr__media">
       <img v-if="t.image && !imgFailed" :src="t.image" :alt="t.title" class="ntr__img" loading="lazy" @error="imgFailed = true">
     </span>

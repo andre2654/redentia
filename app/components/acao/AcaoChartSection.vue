@@ -31,6 +31,14 @@ function periodPct(points: { v: number }[] | undefined): number | null {
   if (!first) return null
   return ((last - first) / first) * 100
 }
+// o gráfico como contexto do chat: os pontos que ele desenha, em palavras
+const contexto = computed(() => ({
+  id: `grafico:${props.ticker}:${props.range}`,
+  tipo: 'grafico',
+  rotulo: `Gráfico ${props.ticker} · ${heading.value}`,
+  texto: [textoDoGrafico(props.ticker, heading.value, props.series?.asset ?? [], props.series?.ibov ?? []), textoDeLinhas(props.stats)].filter(Boolean).join('\n'),
+}))
+
 const legend = computed(() => {
   const out: { label: string; pct: string; accent: 'up' | 'down' | null }[] = []
   const asset = periodPct(props.series?.asset)
@@ -42,7 +50,7 @@ const legend = computed(() => {
 </script>
 
 <template>
-  <section v-if="series" class="acs">
+  <section v-if="series" v-contexto-chat="contexto" class="acs">
     <div class="acs__head">
       <h2 class="acs__title">{{ ticker }}<br>em {{ heading }}.</h2>
       <NuRangeTabs :model-value="range" :disabled="rangeLoading" @update:model-value="emit('update:range', $event)" />

@@ -7,7 +7,7 @@ defineProps<{ item: NuNewsRowItem }>()
 </script>
 
 <template>
-  <NuxtLink :to="item.href" class="nnr">
+  <NuxtLink v-contexto-chat="{ id: `noticia:${item.href}`, tipo: 'noticia', rotulo: rotuloCurto(item.title), texto: `${item.title} (${item.source})` }" :to="item.href" class="nnr">
     <span class="nnr__main">
       <span class="nnr__title">{{ item.title }}</span>
       <span class="nnr__source">{{ item.source }}</span>

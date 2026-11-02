@@ -20,6 +20,19 @@ const props = defineProps<{
 }>()
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+
+// os proventos como contexto do chat: o mesmo que o bloco mostra
+const contexto = computed(() => ({
+  id: `proventos:${props.ticker}`,
+  tipo: 'proventos',
+  rotulo: `Proventos ${props.ticker}`,
+  texto: [
+    `Proventos de ${props.ticker}. ${props.dividends.subtitle}`,
+    textoDeLinhas(props.dividends.rows),
+    props.dividends.bars.length ? `Por ano: ${props.dividends.bars.map((b) => `${b.year} ${b.valFmt}`).join('; ')}` : '',
+    props.dividends.barsNote,
+  ].filter(Boolean).join('\n'),
+}))
 const incomePill = computed(() => {
   if (!props.position || props.dividends.sum12 <= 0) return null
   const total = props.position.qty * props.dividends.sum12
@@ -28,7 +41,7 @@ const incomePill = computed(() => {
 </script>
 
 <template>
-  <section class="adv">
+  <section v-contexto-chat="contexto" class="adv">
     <div class="adv__cols">
       <div class="adv__left">
         <h2 class="adv__title">{{ dividends.heading[0] }}<br>{{ dividends.heading[1] }}</h2>

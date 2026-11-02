@@ -7,7 +7,7 @@ defineProps<{ item: NuNewsFeaturedItem }>()
 </script>
 
 <template>
-  <NuxtLink :to="item.href" class="nnf">
+  <NuxtLink v-contexto-chat="{ id: `noticia:${item.href}`, tipo: 'noticia', rotulo: rotuloCurto(item.title), texto: [item.title, item.dek, item.source].filter(Boolean).join('\n') }" :to="item.href" class="nnf">
     <span class="nnf__meta">
       <span v-if="item.badge" class="nnf__badge" :class="`nnf__badge--${item.badge.dir}`">{{ item.badge.text }}</span>
       <span class="nnf__source">{{ item.source }}</span>

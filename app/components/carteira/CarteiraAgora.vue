@@ -56,24 +56,26 @@ const { visiveis: revelado, alternar: alternarRevelado } = useValoresVisiveis()
 const temDia = computed(() => !!props.agora.diaValor)
 const rotulo = computed(() => rotuloDaPilula(quando.value))
 
-const porque = computed(() => {
+const perguntaPorque = computed(() => {
   const a = props.agora.alerta
-  if (!a) return null
-  const q = `Por que ${a.ticker} caiu ${quando.value ?? 'hoje'}? E o que isso muda na minha carteira?`
-  return `/busca?chat=1&q=${encodeURIComponent(q)}`
+  return a ? `Por que ${a.ticker} caiu ${quando.value ?? 'hoje'}? E o que isso muda na minha carteira?` : null
 })
+// os atalhos abrem o painel do chat nesta página (02/11/2026); o href da
+// /busca fica para quem abre em outra aba
+const porque = computed(() => (perguntaPorque.value ? `/busca?chat=1&q=${encodeURIComponent(perguntaPorque.value)}` : null))
+const painel = useChatPainel()
 </script>
 
 <template>
   <section class="cag" :class="`cag--${frase.tom}`" aria-labelledby="cag-titulo">
-    <div class="cag__miolo">
+    <div v-contexto-chat="{ id: 'carteira:hoje', tipo: 'carteira', rotulo: 'Carteira hoje', texto: [frase.titulo, frase.linha].filter(Boolean).join('\n') }" class="cag__miolo">
       <span class="cag__estado" :class="`cag__estado--${frase.tom === 'atencao' ? 'atencao' : pregao.estado}`">
         <span class="cag__ponto" aria-hidden="true" />
         {{ frase.tom === 'atencao' ? 'Pede atenção' : pregao.rotulo }}
       </span>
       <h1 id="cag-titulo" class="cag__titulo">{{ frase.titulo }}</h1>
       <p class="cag__linha" :class="{ 'cag__linha--analisando': frase.analisando }">{{ frase.linha }}</p>
-      <NuxtLink v-if="porque" :to="porque" class="cag__porque">Por que caiu?</NuxtLink>
+      <NuxtLink v-if="porque" :to="porque" class="cag__porque" @click.prevent="painel.abrir(perguntaPorque!)">Por que caiu?</NuxtLink>
     </div>
 
     <div class="cag__dia" data-clarity-mask="true">
@@ -137,7 +139,7 @@ const porque = computed(() => {
 
     <div class="cag__pe">
       <span class="cag__meta">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span>
-      <NuxtLink to="/busca?chat=1" class="cag__perguntar">
+      <NuxtLink to="/busca?chat=1" class="cag__perguntar" @click.prevent="painel.abrir()">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cag__losango-miolo" /></svg>
         Pergunte à Redentia
       </NuxtLink>

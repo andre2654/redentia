@@ -15,7 +15,20 @@ const props = defineProps<{
 }>()
 
 const { hidden, mask } = useHiddenValues()
-const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref } = useAporteChat()
+
+// o resumo da carteira como contexto do chat. Valores ocultos (o olho) seguem
+// ocultos: vai o que está na tela.
+const contextoResumo = computed(() => ({
+  id: 'carteira:resumo',
+  tipo: 'carteira',
+  rotulo: 'Sua carteira',
+  texto: [
+    `Patrimônio: ${mask(props.patrimonio)}`,
+    props.allocation.length ? `Alocação: ${props.allocation.map((a) => `${a.name} ${a.pct}`).join('; ')}` : '',
+    ...props.groups.map((g) => `${g.name}: ${g.rows.map((r) => r.label).join(', ')}`),
+  ].filter(Boolean).join('\n'),
+}))
+const { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref, rebalancear } = useAporteChat()
 
 // abre o maior grupo por padrão quando só há um (nada a esconder)
 const abertos = ref<Set<string>>(new Set(props.groups.length === 1 ? [props.groups[0]!.name] : []))
@@ -33,7 +46,7 @@ const idDe = (nome: string) => `cps-${nome.toLowerCase().normalize('NFD').replac
 <template>
   <section class="cps" aria-labelledby="cps-titulo">
     <div class="cps__cols">
-      <div class="cps__lado">
+      <div v-contexto-chat="contextoResumo" class="cps__lado">
         <h2 id="cps-titulo" class="cps__titulo">Sua carteira</h2>
         <div class="cps__total-linha">
           <span class="cps__total" data-clarity-mask="true">{{ total }}</span>
@@ -44,7 +57,7 @@ const idDe = (nome: string) => `cps-${nome.toLowerCase().normalize('NFD').replac
         </div>
         <div class="cps__acoes">
           <button type="button" class="cps__acao" @click="openAporte">Planejar aporte</button>
-          <NuxtLink :to="rebalanceHref" class="cps__acao cps__acao--quieta">Rebalancear com a IA</NuxtLink>
+          <NuxtLink :to="rebalanceHref" class="cps__acao cps__acao--quieta" @click="rebalancear">Rebalancear com a IA</NuxtLink>
         </div>
       </div>
 
@@ -75,10 +88,10 @@ const idDe = (nome: string) => `cps-${nome.toLowerCase().normalize('NFD').replac
 
           <div v-show="abertos.has(g.name)" :id="idDe(g.name)" class="cps__papeis">
             <template v-for="r in g.rows" :key="r.ticker">
-              <NuxtLink v-if="r.href" :to="r.href" class="cps__papel cps__papel--link">
+              <NuxtLink v-if="r.href" v-contexto-chat="{ id: `posicao:${r.ticker}`, tipo: 'posicao', rotulo: rotuloCurto(r.label, 28) }" :to="r.href" class="cps__papel cps__papel--link">
                 <CarteiraPosicaoLinha :row="r" :hidden="hidden" :mask="mask" />
               </NuxtLink>
-              <div v-else class="cps__papel">
+              <div v-else v-contexto-chat="{ id: `posicao:${r.ticker}`, tipo: 'posicao', rotulo: rotuloCurto(r.label, 28) }" class="cps__papel">
                 <CarteiraPosicaoLinha :row="r" :hidden="hidden" :mask="mask" />
               </div>
             </template>

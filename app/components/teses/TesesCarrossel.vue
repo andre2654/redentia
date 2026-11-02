@@ -72,6 +72,7 @@ function gradFor(i: number) {
           </div>
           <NuxtLink
             v-for="(c, i) in (loading ? [] : cards)" :key="c.slug"
+            v-contexto-chat="{ id: `tese:${c.slug}`, tipo: 'tese', rotulo: rotuloCurto(c.title) }"
             :to="c.href" class="tcr__card" :style="{ background: gradFor(i) }"
           >
             <img
