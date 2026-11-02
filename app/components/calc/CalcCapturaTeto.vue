@@ -46,7 +46,7 @@ const isca = ref('')
   <div class="cct">
     <div v-if="alvoFmt" class="cct__bloco">
       <p class="cct__titulo">Avise quando {{ papel }} cruzar {{ alvoFmt }}</p>
-      <p class="cct__texto">Um e-mail no fim do pregão em que a cotação passar o preço teto que você calculou. Grátis, com a sua conta.</p>
+      <p class="cct__texto">Um e-mail no fim do pregão em que a cotação cruzar o preço teto que você calculou. Grátis, com a sua conta.</p>
       <p v-if="confirmado" :class="entrega === 'email' ? 'cct__ok' : 'cct__nota'" role="status">{{ confirmacao }}</p>
 
       <!-- Sem e-mail confirmado (entrou pelo celular): confirma um aqui. -->
