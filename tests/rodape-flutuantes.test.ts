@@ -25,12 +25,7 @@ test('a folga do rodapé é a altura do banner, e zero quando ele não está nes
   assert.equal(folgaDoBannerNoRodape(false, 96), 0)
 })
 
-test('o convite é bloco no fluxo e some para quem já assina', () => {
-  const src = readFileSync(new URL('../app/components/nu/NuNewsletterConvite.vue', import.meta.url), 'utf8')
-  assert.match(src, /@ja-assinante="ocultarAssinante"/)
-  assert.doesNotMatch(src, /position:\s*fixed/)
-  assert.doesNotMatch(src, /exibirConviteFlutuante/)
-  assert.doesNotMatch(src, /useRodapeNaTela/)
+test('o banner de cookies acompanha o rodapé', () => {
   const banner = readFileSync(new URL('../app/components/consent/ConsentBanner.vue', import.meta.url), 'utf8')
   assert.match(banner, /useRodapeNaTela/)
   assert.match(banner, /folgaDoBannerNoRodape/)

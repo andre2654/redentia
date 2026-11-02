@@ -20,9 +20,8 @@ const route = useRoute()
     <main>
       <slot />
     </main>
-    <!-- O convite da newsletter: bloco no fluxo, imediatamente antes do
-         rodapé, no celular e no computador. -->
-    <NuNewsletterConvite />
+    <!-- Sem o convite da newsletter antes do rodapé (02/11/2026, dono: "remova
+         isso, porque já tem no footer"): a assinatura semanal fica no rodapé. -->
     <NuFooter />
     <!-- Sem modal de anúncio: o NuMcpPromo (o pop-up que abria 5 s depois de
          entrar) saiu de vez em 15/10/2026, a pedido do dono. Não remonte
