@@ -8,7 +8,7 @@
  * Não consulta a API. Quem chama (useAcao) entrega o que o SSR já baixou.
  */
 import type { NuFaqItem } from '../types/market'
-import { TETO_DESCRICAO, TETO_TITULO_PAGINA, juntaAte, tituloQueCabe } from './serp.ts'
+import { TETO_DESCRICAO, TETO_TITULO_PAGINA, descricaoQueCabe, juntaAte, tituloQueCabe } from './serp.ts'
 
 export const AVISO_RESUMO = 'Não é recomendação de compra ou venda.'
 const AVISO_META = 'Não é recomendação.'
@@ -156,8 +156,6 @@ export const FONTE_FUNDAMENTALISTAS = 'StatusInvest, base em DFP/ITR'
  * scraper. DFP/ITR não descreve informe de fundo nem DRE da matriz em dólar.
  */
 export const FONTE_SCRAPER = 'StatusInvest'
-const SELO_COTACAO = 'Dados: Brapi.'
-const SELO_COTACAO_E_FUNDOS = 'Dados: Brapi e StatusInvest.'
 /** Nota do hero quando a moeda do perfil é dólar. */
 const FONTE_USD = 'preço de referência derivado do BDR e do câmbio'
 
@@ -247,21 +245,40 @@ function fonteSerie(iso: string | null | undefined): string {
   return d ? ` Fonte: ${FONTE_SERIE}, em ${d}.` : ` Fonte: ${FONTE_SERIE}.`
 }
 
+function temProventoNoTitulo(i: ResumoAtivoInput): boolean {
+  const p = i.proventos
+  return !!p && (p.renda12 > 0 || p.anos.some((a) => a.valor > 0))
+}
+
+/** Cauda depois do nome. Classe primeiro; "e dividendos" ou "na B3" na ação. */
 function caudaTitulo(i: ResumoAtivoInput): string {
   if (i.kind === 'crypto') return ': preço em reais'
-  if (i.kind === 'fii') return ': cotação do FII'
-  if (i.kind === 'bdr') return ': cotação do BDR'
-  if (i.kind === 'etf') return ': cotação do ETF'
-  if (i.proventos && (i.proventos.renda12 > 0 || i.proventos.anos.some((a) => a.valor > 0))) return ': cotação e dividendos'
-  return ': cotação na B3'
+  if (i.kind === 'fii') return ', FII'
+  if (i.kind === 'bdr') return ', BDR'
+  if (i.kind === 'etf') return ', ETF'
+  if (temProventoNoTitulo(i)) return ' e dividendos'
+  return ' na B3'
 }
 
 function titulo(i: ResumoAtivoInput): string {
   const cauda = caudaTitulo(i)
-  const comNome = `${i.nome} (${i.ticker})${cauda}`
-  if (comNome.length <= TETO_TITULO_PAGINA) return comNome
-  const soTicker = `${i.ticker}${cauda}`
-  return soTicker.length <= TETO_TITULO_PAGINA ? soTicker : tituloQueCabe(soTicker)
+  if (i.kind === 'crypto') {
+    const comNome = `${i.nome} (${i.ticker})${cauda}`
+    if (comNome.length <= TETO_TITULO_PAGINA) return comNome
+    const soTicker = `${i.ticker}${cauda}`
+    return soTicker.length <= TETO_TITULO_PAGINA ? soTicker : tituloQueCabe(soTicker)
+  }
+  const prefixo = `${i.ticker} cotação hoje: `
+  const cheio = `${prefixo}${i.nome}${cauda}`
+  if (cheio.length <= TETO_TITULO_PAGINA) return cheio
+  const orcamento = TETO_TITULO_PAGINA - prefixo.length - cauda.length
+  if (orcamento >= 3) {
+    const nome = tituloQueCabe(i.nome, orcamento)
+    const montado = `${prefixo}${nome}${cauda}`
+    if (nome && montado.length <= TETO_TITULO_PAGINA) return montado
+  }
+  const semNome = `${i.ticker} cotação hoje${cauda}`
+  return semNome.length <= TETO_TITULO_PAGINA ? semNome : tituloQueCabe(`${i.ticker} cotação hoje`)
 }
 
 function h1De(i: ResumoAtivoInput): string {
@@ -449,20 +466,32 @@ function paragrafoEtf(i: ResumoAtivoInput): string | null {
   return partes.join(' ')
 }
 
-/** Frases soltas da description: o que não cabe sai inteiro, a cotação fica. */
-function frasesMeta(i: ResumoAtivoInput): string[] {
+/** DY e P/L (ou P/VP). Sem o número, a frase não entra. */
+function indicadoresMeta(i: ResumoAtivoInput): string[] {
+  if (i.kind !== 'stock' && i.kind !== 'fii' && i.kind !== 'bdr') return []
   const n = i.numeros
   const out: string[] = []
-  if (ok(n.dy)) out.push(`Dividend yield ${pctAbs(n.dy)}.`)
-  if (ok(n.pl)) out.push(`P/L ${nf2.format(n.pl)}.`)
-  else if (ok(n.pvp)) out.push(`P/VP ${nf2.format(n.pvp)}.`)
-  if (ok(n.roe)) out.push(`ROE ${pctAbs(n.roe, 1)}.`)
-  if (!out.length && i.etf && ok(i.etf.taxaAdm)) out.push(`Taxa de administração ${pctAbs(i.etf.taxaAdm)} ao ano.`)
+  if (ok(n.dy)) out.push(`Dividend yield ${pctAbs(n.dy)}`)
+  if (ok(n.pl)) out.push(`P/L ${nf2.format(n.pl)}`)
+  else if (ok(n.pvp)) out.push(`P/VP ${nf2.format(n.pvp)}`)
+  if (!out.length && i.etf && ok(i.etf.taxaAdm)) out.push(`Taxa de administração ${pctAbs(i.etf.taxaAdm)} ao ano`)
   return out
 }
 
-function comSelo(corpo: string, selo: string): string {
-  return `${corpo} ${selo} ${AVISO_META}`
+function cotacaoMeta(i: ResumoAtivoInput, nome: string | null): string {
+  const quem = nome ? ` (${nome})` : ''
+  const quando = dataBr(i.data)
+  const preco = ok(i.preco) ? precoFmt(i.preco, i.kind, i.moeda) : null
+  const fonte = i.moeda === 'USD' ? 'preço de referência' : 'Brapi'
+  if (!preco) return `Cotação ${i.ticker}${quem} hoje sem número de fechamento.`
+  if (!quando) return `Cotação ${i.ticker}${quem} hoje: ${preco}, sem data de fechamento (${fonte}).`
+  return `Cotação ${i.ticker}${quem} hoje: ${preco} no fechamento de ${quando} (${fonte}).`
+}
+
+function corpoMeta(i: ResumoAtivoInput, nome: string | null, indicadores: string[]): string {
+  const quote = cotacaoMeta(i, nome)
+  if (!indicadores.length) return quote
+  return `${quote} ${indicadores.join(', ')} (StatusInvest).`
 }
 
 function descricao(i: ResumoAtivoInput): string {
@@ -474,28 +503,35 @@ function descricao(i: ResumoAtivoInput): string {
     const corpo = juntaAte(frases, TETO_DESCRICAO - AVISO_META.length - 1)
     return corpo ? `${corpo} ${AVISO_META}` : AVISO_META
   }
-  const quando = dataBr(i.data)
-  const quote = ok(i.preco) && quando
-    ? `${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)} em ${quando}.`
-    : ok(i.preco)
-      ? `${i.ticker} (${i.nome}): cotação mais recente de ${precoFmt(i.preco, i.kind, i.moeda)}.`
-      : `${i.ticker} (${i.nome}) é ${classe(i)}.`
-  const metas = (i.kind === 'stock' || i.kind === 'fii' || i.kind === 'bdr') ? frasesMeta(i) : []
-  const variacao = variacaoDiaFrase(i)
-  const variacaoFrase = variacao ? `${variacao.charAt(0).toUpperCase()}${variacao.slice(1)}.` : null
-  if (!ok(i.preco) && !metas.length) {
-    const corpo = juntaAte([quote], TETO_DESCRICAO - AVISO_META.length - 1)
-    return corpo ? `${corpo} ${AVISO_META}` : AVISO_META
+  const orcamento = TETO_DESCRICAO - AVISO_META.length - 1
+  const nomeCheio = i.nome.replace(/\s+/g, ' ').trim()
+  let indicadores = indicadoresMeta(i)
+  let corpo = ''
+  let coube = false
+  const tentar = (nome: string | null, lista: string[]): boolean => {
+    const candidato = corpoMeta(i, nome, lista)
+    if (candidato.length > orcamento) return false
+    corpo = candidato
+    coube = true
+    return true
   }
-  // Cotação e variação do dia são Brapi. DY, P/L, P/VP e ROE são StatusInvest.
-  // Indicador que não cabe sai; a cotação permanece.
-  if (metas.length) {
-    const orcamento = TETO_DESCRICAO - ` ${SELO_COTACAO_E_FUNDOS} ${AVISO_META}`.length
-    const corpo = juntaAte([quote, ...metas, variacaoFrase], orcamento)
-    if (metas.some((m) => corpo.includes(m))) return comSelo(corpo, SELO_COTACAO_E_FUNDOS)
+  // P/L (ou P/VP) sai antes do dividend yield. O nome longo encolhe no espaço.
+  while (!coube) {
+    if (tentar(nomeCheio || null, indicadores)) break
+    if (nomeCheio) {
+      const base = corpoMeta(i, null, indicadores)
+      const tetoNome = orcamento - base.length - 3
+      if (tetoNome >= 3) {
+        const curto = tituloQueCabe(nomeCheio, tetoNome)
+        if (curto && tentar(curto, indicadores)) break
+      }
+    }
+    if (!indicadores.length) break
+    indicadores = indicadores.slice(0, -1)
   }
-  const orcamento = TETO_DESCRICAO - ` ${SELO_COTACAO} ${AVISO_META}`.length
-  return comSelo(juntaAte([quote, variacaoFrase], orcamento), SELO_COTACAO)
+  if (!coube) corpo = descricaoQueCabe(corpoMeta(i, null, []), orcamento)
+  const full = `${corpo} ${AVISO_META}`.replace(/\s+/g, ' ').trim()
+  return full.length <= TETO_DESCRICAO ? full : descricaoQueCabe(full)
 }
 
 function faqPreco(i: ResumoAtivoInput): NuFaqItem | null {
