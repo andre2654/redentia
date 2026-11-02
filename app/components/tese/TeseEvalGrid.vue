@@ -175,7 +175,11 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
   display: inline-flex; align-items: center; gap: 7px;
   color: var(--nu-green-soft); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
-  background: var(--nu-green-bg); border-radius: var(--nu-r-pill); padding: 6px 12px;
+  /* sobre o navy: verde translúcido com o texto verde claro (o --nu-green-bg é
+     do fundo claro e apagava o texto; dono, 02/11/2026) */
+  background: color-mix(in srgb, var(--nu-green-soft) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nu-green-soft) 26%, transparent);
+  border-radius: var(--nu-r-pill); padding: 6px 12px;
 }
 .tev__gate-title {
   margin: 16px 0 0; color: var(--nu-cream-text); font-size: clamp(26px, 3.2vw, 40px);
