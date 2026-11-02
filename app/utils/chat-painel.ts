@@ -151,13 +151,13 @@ const MAX_REDIRECT = 256
  * pergunta no sessionStorage.
  */
 export function loginComPergunta(path: string, query: Record<string, unknown>, pergunta: string): { url: string; naUrl: boolean } {
-  const params = new URLSearchParams()
-  for (const [k, v] of Object.entries(querySemPedido(query))) {
-    if (typeof v === 'string') params.set(k, v)
-  }
-  const base = params.toString() ? `${path}?${params.toString()}` : path
-  params.set('pergunta', pergunta)
-  const comPergunta = `${path}?${params.toString()}`
+  // %20, não '+': quem lê a volta é o vue-router, e o espaço fica inequívoco
+  const par = (k: string, v: string) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
+  const pares = Object.entries(querySemPedido(query))
+    .filter((e): e is [string, string] => typeof e[1] === 'string')
+    .map(([k, v]) => par(k, v))
+  const base = pares.length ? `${path}?${pares.join('&')}` : path
+  const comPergunta = `${path}?${[...pares, par('pergunta', pergunta)].join('&')}`
   const naUrl = comPergunta.length <= MAX_REDIRECT
   const volta = naUrl ? comPergunta : base.length <= MAX_REDIRECT ? base : path
   return { url: `/login?redirect=${encodeURIComponent(volta)}`, naUrl }

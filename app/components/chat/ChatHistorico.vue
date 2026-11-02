@@ -13,7 +13,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'abrir', id: string): void
   (e: 'apagar', id: string): void
-  (e: 'nova'): void
 }>()
 
 function tituloDe(s: NuChatSession): string {

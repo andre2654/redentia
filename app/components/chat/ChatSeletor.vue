@@ -32,7 +32,9 @@ let raf = 0
 /** O pedaço sob o ponteiro: o marcado mais próximo ou um link de ativo solto. */
 function pedacoDe(t: EventTarget | null): HTMLElement | null {
   const el = t instanceof Element ? t : null
-  if (!el || el.closest('.cpn, .cba, [aria-modal="true"]')) return null
+  // o painel, a barra, os modais e o header/faixa sticky (o contorno passa por
+  // baixo deles e o clique anexaria sem ninguém ver) ficam de fora
+  if (!el || el.closest('.cpn, .cba, [aria-modal="true"], .nuh-wrap, .nut-wrap, .nsr-wrap')) return null
   const marcado = el.closest<HTMLElement>('[data-chat-contexto]')
   const inter = el.closest<HTMLElement>(INTERATIVO)
   // um controle dentro do pedaço (e que não é o próprio pedaço) segue sendo controle
