@@ -36,7 +36,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 </script>
 
 <template>
-  <section class="cmv">
+  <section v-contexto-chat="{ id: 'carteira:movimentacoes', tipo: 'carteira', rotulo: 'Movimentações' }" class="cmv">
     <div class="cmv__head">
       <h2 class="cmv__title">Movimentações.</h2>
       <NuFilterPills v-model="tab" :items="TABS" />
@@ -47,7 +47,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
       · {{ countLabel }}
     </div>
     <div class="cmv__list">
-      <div v-for="e in rows" :key="e.key" class="cmv__row">
+      <div v-for="e in rows" :key="e.key" v-contexto-chat="{ id: `carteira:mov:${e.key}`, tipo: 'posicao', rotulo: `${e.badge} ${e.ticker} ${e.d}/${e.m}` }" class="cmv__row">
         <span class="cmv__date-tile">
           <span class="cmv__date-d">{{ e.d }}</span>
           <span class="cmv__date-m">{{ e.m }}</span>

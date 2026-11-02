@@ -5,6 +5,9 @@
 // 9, como o splice do design). Seção some sem fundamentos.
 import type { AcaoFundCard, AcaoPerfilRow } from '~/types/acao'
 
+// o sujeito do chip ("Fundamentos PETR4"): a página provê o ticker
+const sobre = useSobreDoContexto()
+
 defineProps<{
   heading: [string, string]
   /** subtítulo por tipo de ativo (B3/informes do fundo/matriz em dólar) */
@@ -15,13 +18,17 @@ defineProps<{
 </script>
 
 <template>
-  <section v-if="fcards.length" class="afd">
+  <section v-if="fcards.length" v-contexto-chat="{ id: `fundamentos:${sobre}`, tipo: 'grafico', rotulo: rotuloComSobre('Fundamentos', sobre) }" class="afd">
     <div class="afd__cols">
       <div class="afd__left">
         <h2 class="afd__title">{{ heading[0] }}<br>{{ heading[1] }}</h2>
         <div class="afd__sub">{{ sub }}</div>
         <div v-if="perfil.length" class="afd__perfil">
-          <div v-for="p in perfil" :key="p.name" class="afd__dim">
+          <div
+            v-for="p in perfil" :key="p.name"
+            v-contexto-chat="{ id: `perfil:${sobre}:${p.name}`, tipo: 'grafico', rotulo: rotuloComSobre(p.name, sobre), texto: `${p.name}${sobre ? ` (${sobre})` : ''}: ${p.tag.text}` }"
+            class="afd__dim"
+          >
             <span class="afd__dim-name">{{ p.name }}</span>
             <NuTagPill :tag="p.tag" />
           </div>

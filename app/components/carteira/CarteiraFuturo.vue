@@ -34,7 +34,7 @@ const painel = useChatPainel()
         </NuxtLink>
       </div>
 
-      <div class="cfu__grafico">
+      <div v-contexto-chat="{ id: 'carteira:futuro', tipo: 'grafico', rotulo: `Carteira em ${vm.horizonte} anos`, texto: [`Daqui a ${vm.horizonte} anos: ${vm.frase}`, `${vm.cenarios} Em dinheiro de hoje.`, vm.cobertura, vm.disclaimer].filter(Boolean).join('\n') }" class="cfu__grafico">
         <CarteiraLequeCaminhos
           v-if="caminhos"
           :dados="dados"

@@ -16,6 +16,8 @@ const props = withDefaults(defineProps<{
   // a tese tem relatório completo? (só então o gate promete o relatório)
   hasReport?: boolean
 }>(), { studiesCount: 0, hasReport: false })
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
@@ -52,6 +54,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
         :is="!isLocked(i) && hrefFor(c.ticker) ? NuxtLink : 'article'"
         v-for="(c, i) in cards" :key="c.ticker"
         :to="!isLocked(i) && hrefFor(c.ticker) ? hrefFor(c.ticker)! : undefined"
+        v-contexto-chat="isLocked(i) ? null : { id: `tese-ativo:${sobre}:${c.ticker}`, tipo: 'tese', rotulo: rotuloCurto(`${c.ticker} na tese`), texto: [`${c.ticker} (${c.name}) na tese ${sobre}: ${c.badgeText}`, c.txt, c.pq ? `Por quê: ${c.pq}` : ''].filter(Boolean).join('\n') }"
         class="tev__card"
         :class="{
           'tev__card--hi': c.highlight && !isLocked(i),

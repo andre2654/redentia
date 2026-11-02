@@ -23,7 +23,9 @@ defineProps<{ rows: TesouroRowVM[] }>()
       </thead>
       <tbody>
         <tr
-          v-for="row in rows" :key="row.slug" class="ttb__row"
+          v-for="row in rows" :key="row.slug"
+          v-contexto-chat="{ id: `tesouro:${row.slug}`, tipo: 'ativo', rotulo: rotuloCurto(row.name) }"
+          class="ttb__row"
           @click="navigateTo(`/tesouro/${row.slug}`)"
         >
           <td class="ttb__cell ttb__cell--asset">

@@ -13,7 +13,7 @@ const setor = computed(() => props.pares.setor.nome.toLowerCase())
 </script>
 
 <template>
-  <section class="apr" :class="{ 'apr--white': tone === 'white' }">
+  <section v-contexto-chat="{ id: `pares:${pares.setor.nome}`, tipo: 'secao', rotulo: rotuloCurto(`Setor ${pares.setor.nome}`) }" class="apr" :class="{ 'apr--white': tone === 'white' }">
     <h2 class="apr__title">Outras empresas do setor {{ setor }}.</h2>
     <ul class="apr__grid">
       <li v-for="p in pares.itens" :key="p.ticker">

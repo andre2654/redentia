@@ -82,7 +82,7 @@ const vendeM = computed(() => ramo(props.cadeia.vendePara, totalVendeM.value, RO
 </script>
 
 <template>
-  <section class="acd">
+  <section v-contexto-chat="{ id: `cadeia:${ticker}`, tipo: 'grafico', rotulo: `Cadeia de ${ticker}` }" class="acd">
     <h2 class="acd__title">De quem a {{ nome }} compra<br> e para quem vende.</h2>
 
     <!-- desktop e tablet: o grafo inteiro -->

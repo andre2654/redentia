@@ -5,12 +5,14 @@
 import type { TesouroSideCardVM } from '~/types/tesouro'
 
 defineProps<{ cards: TesouroSideCardVM[] }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
   <section class="tsc">
     <div class="tsc__grid">
-      <article v-for="c in cards" :key="c.label" class="tsc__card">
+      <article v-for="c in cards" :key="c.label" v-contexto-chat="{ id: `tesouro-lado:${sobre}:${c.label}`, tipo: 'ativo', rotulo: rotuloComSobre(c.label, sobre.replace(/^Tesouro\s+/i, '')), texto: [`${c.label} · ${sobre}: ${c.priceFmt}`, c.rateFmt ? `Taxa ${c.rateFmt}` : '', c.note].filter(Boolean).join('\n') }" class="tsc__card">
         <p class="tsc__label">{{ c.label }}</p>
         <p class="tsc__price">{{ c.priceFmt }}</p>
         <p v-if="c.rateFmt" class="tsc__rate">Taxa {{ c.rateFmt }}</p>

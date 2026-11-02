@@ -19,6 +19,8 @@
 import type { TeseReportVM } from '~/types/tese'
 
 const props = defineProps<{ report: TeseReportVM }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 // pilares com índice 01/02… (tabular-nums) — largura fixa pro ritmo da lista
 const idx = (i: number) => String(i + 1).padStart(2, '0')
@@ -55,7 +57,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
       <div v-if="report.thesisHtml.length" id="rel-tese" class="trp__block">
         <h2 class="trp__h2">A tese, em pilares.</h2>
         <div class="trp__pillars">
-          <div v-for="(b, i) in report.thesisHtml" :key="i" class="trp__pillar">
+          <div v-for="(b, i) in report.thesisHtml" :key="i" v-contexto-chat="{ id: `tese-pilar:${sobre}:${i}`, tipo: 'tese', rotulo: rotuloCurto(`Pilar ${i + 1} · ${sobre}`) }" class="trp__pillar">
             <span class="trp__pillar-idx">{{ idx(i) }}</span>
             <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
             <span class="trp__pillar-txt" v-html="b" />
@@ -67,7 +69,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
       <div v-if="report.risksHtml.length" id="rel-riscos" class="trp__block">
         <h2 class="trp__h2">O que mata a tese.</h2>
         <div class="trp__risks">
-          <div v-for="(b, i) in report.risksHtml" :key="i" class="trp__risk">
+          <div v-for="(b, i) in report.risksHtml" :key="i" v-contexto-chat="{ id: `tese-risco:${sobre}:${i}`, tipo: 'tese', rotulo: rotuloCurto(`Risco ${i + 1} · ${sobre}`) }" class="trp__risk">
             <span class="trp__risk-dot" />
             <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
             <span class="trp__risk-txt" v-html="b" />

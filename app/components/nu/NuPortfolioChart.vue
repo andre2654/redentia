@@ -97,7 +97,7 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 </script>
 
 <template>
-  <section class="hch">
+  <section v-contexto-chat="{ id: 'carteira:desempenho', tipo: 'grafico', rotulo: 'Desempenho da carteira' }" class="hch">
     <div class="hch__head">
       <h2 class="hch__title">Sua carteira<br>{{ TITLE[period] }}</h2>
       <div v-if="!chart.collecting" class="hch__periods">

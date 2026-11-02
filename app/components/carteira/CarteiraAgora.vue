@@ -78,7 +78,8 @@ const painel = useChatPainel()
       <NuxtLink v-if="porque" :to="porque" class="cag__porque" @click.prevent="painel.abrir(perguntaPorque!)">Por que caiu?</NuxtLink>
     </div>
 
-    <div class="cag__dia" data-clarity-mask="true">
+    <!-- o resultado do dia: escondido no olho, vai escondido ao chat -->
+    <div v-contexto-chat="{ id: 'carteira:dia', tipo: 'carteira', rotulo: 'Resultado do dia', texto: revelado ? [`Resultado ${rotulo}: ${agora.diaValor ?? ''} ${agora.diaPct ?? ''}`, `Patrimônio: ${agora.patrimonio}`].join('\n') : 'Resultado do dia e patrimônio (a pessoa escondeu os valores na tela)' }" class="cag__dia" data-clarity-mask="true">
       <button
         v-if="temDia"
         type="button"
@@ -108,7 +109,7 @@ const painel = useChatPainel()
       </span>
     </div>
 
-    <div class="cag__contas" data-clarity-mask="true">
+    <div v-contexto-chat="{ id: 'carteira:contas', tipo: 'carteira', rotulo: 'Contas conectadas' }" class="cag__contas" data-clarity-mask="true">
       <template v-if="contasCarregando">
         <NuSkeleton v-for="i in 2" :key="i" width="132px" height="40px" radius="pill" />
       </template>

@@ -7,6 +7,8 @@
 import type { TesouroRankingRow } from '~/types/rankings'
 
 defineProps<{ rows: TesouroRankingRow[] }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const nfBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -32,7 +34,9 @@ function fmtMaturity(iso: string | null): string {
       </thead>
       <tbody>
         <tr
-          v-for="(row, i) in rows" :key="row.slug" class="rkt__row"
+          v-for="(row, i) in rows" :key="row.slug"
+          v-contexto-chat="{ id: `ranking-tesouro:${sobre}:${row.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`${i + 1}º ${row.name}`) }"
+          class="rkt__row"
           @click="navigateTo(`/tesouro/${row.slug}`)"
         >
           <td class="rkt__cell rkt__cell--pos">{{ i + 1 }}</td>

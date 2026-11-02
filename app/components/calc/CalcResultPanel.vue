@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="crp">
+  <div v-contexto-chat="{ id: `resultado:${caption ?? value}`, tipo: 'grafico', rotulo: rotuloCurto(caption || 'Resultado da conta', 30), texto: [caption, value, ...(items ?? []).map((it) => `${it.label}: ${it.value}`)].filter(Boolean).join('\n') }" class="crp">
     <!-- linha de topo: frase à esquerda + ações (ex.: salvar simulação) à
          direita — a ação fica colada no resultado sem roubar altura -->
     <div v-if="caption || $slots.actions" class="crp__top">

@@ -19,6 +19,8 @@ const props = defineProps<{
   /** habilita a coluna/linha de breakdown por ranking (redentia-score). */
   breakdown?: boolean
 }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const expandedTicker = ref<string | null>(null)
 function toggleBreakdown(ticker: string) {
@@ -59,6 +61,7 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
       <tbody>
         <template v-for="(row, i) in rows" :key="rankingTicker(row) || i">
           <tr
+            v-contexto-chat="{ id: `ranking-linha:${sobre}:${rankingTicker(row)}`, tipo: 'ranking', rotulo: rotuloCurto(`${i + 1}º ${rankingTicker(row)}${sobre ? ` · ${sobre}` : ''}`) }"
             class="rkt__row"
             @click="navigateTo(`/asset/${rankingTicker(row)}`)"
           >

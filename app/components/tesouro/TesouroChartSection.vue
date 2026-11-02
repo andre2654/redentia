@@ -16,6 +16,8 @@ const props = defineProps<{
   currentLabel: string
   unavailable: boolean
 }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const emit = defineEmits<{ 'update:range': [TesouroRange]; 'update:mode': [TesouroChartMode] }>()
 
@@ -35,7 +37,7 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 </script>
 
 <template>
-  <section class="tcs">
+  <section v-contexto-chat="{ id: `tesouro-grafico:${sobre}`, tipo: 'grafico', rotulo: rotuloComSobre('Gráfico', sobre.replace(/^Tesouro\s+/i, '')) }" class="tcs">
     <div class="tcs__head">
       <h2 class="tcs__title">{{ name }}<br>em {{ heading }}.</h2>
       <div class="tcs__controls">

@@ -51,7 +51,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
 <template>
   <section class="cpc" aria-label="Proventos e contas" data-clarity-mask="true">
     <div class="cpc__grade">
-      <article v-if="income && (income.agenda || income.month)" id="renda-passiva" class="cpc__card">
+      <article v-if="income && (income.agenda || income.month)" id="renda-passiva" v-contexto-chat="{ id: 'carteira:proventos', tipo: 'proventos', rotulo: 'Proventos da carteira' }" class="cpc__card">
         <header class="cpc__head">
           <h2 class="cpc__titulo">Proventos</h2>
           <span class="cpc__conta">{{ income.agenda ? income.agenda.footLabel : income.month?.subLabel }}</span>
@@ -63,7 +63,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
             <span class="cpc__destaque-txt">a caminho</span>
           </div>
           <ul class="cpc__lista">
-            <li v-for="r in income.agenda.rows" :key="`${r.ticker}-${r.d}-${r.m}`" class="cpc__linha">
+            <li v-for="r in income.agenda.rows" :key="`${r.ticker}-${r.d}-${r.m}`" v-contexto-chat="{ id: `carteira:provento:${r.ticker}:${r.d}${r.m}`, tipo: 'proventos', rotulo: `Provento ${r.ticker} ${r.d}/${r.m.toLowerCase()}` }" class="cpc__linha">
               <span class="cpc__data"><strong>{{ r.d }}</strong>{{ r.m.toLowerCase() }}</span>
               <span class="cpc__nome"><strong>{{ r.ticker }}</strong><span>{{ r.tipo }}</span></span>
               <span class="cpc__val">{{ hidden ? '+R$ ••' : r.val }}</span>
@@ -77,7 +77,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
             <span class="cpc__destaque-txt">{{ income.month.label.toLowerCase() }}</span>
           </div>
           <ul class="cpc__lista">
-            <li v-for="p in income.month.payments" :key="`${p.ticker}-${p.d}`" class="cpc__linha">
+            <li v-for="p in income.month.payments" :key="`${p.ticker}-${p.d}`" v-contexto-chat="{ id: `carteira:provento:${p.ticker}:${p.d}`, tipo: 'proventos', rotulo: `Provento ${p.ticker} dia ${p.d}` }" class="cpc__linha">
               <span class="cpc__data"><strong>{{ p.d }}</strong>{{ income.month.label.slice(0, 3).toLowerCase() }}</span>
               <span class="cpc__nome"><strong>{{ p.ticker }}</strong><span>{{ p.tipo }}</span></span>
               <span class="cpc__val">{{ hidden ? '+R$ ••' : p.val }}</span>
@@ -88,7 +88,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
         <p class="cpc__pe">{{ hidden ? 'R$ •• nos últimos 12 meses' : income.sub }}</p>
       </article>
 
-      <article id="contas" class="cpc__card">
+      <article id="contas" v-contexto-chat="{ id: 'carteira:suas-contas', tipo: 'carteira', rotulo: 'Suas contas' }" class="cpc__card">
         <header class="cpc__head">
           <h2 class="cpc__titulo">Suas contas</h2>
           <NuxtLink to="/conta#open-finance" class="cpc__gerenciar">Gerenciar</NuxtLink>
@@ -103,7 +103,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
         </div>
 
         <ul v-else-if="connections.length" class="cpc__lista">
-          <li v-for="c in connections" :key="c.id" class="cpc__linha cpc__linha--conta">
+          <li v-for="c in connections" :key="c.id" v-contexto-chat="{ id: `carteira:conta:${c.id}`, tipo: 'carteira', rotulo: rotuloCurto(c.institution_name, 28) }" class="cpc__linha cpc__linha--conta">
             <span class="cpc__logo" aria-hidden="true">
               <img v-if="c.institution_logo" :src="c.institution_logo" alt="" width="40" height="40" loading="lazy">
               <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V7l6-4 6 4v14" /></svg>

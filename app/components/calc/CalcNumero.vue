@@ -15,7 +15,7 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="cnu">
+  <div v-contexto-chat="{ id: `conta:${legenda}`, tipo: 'grafico', rotulo: rotuloCurto(legenda.replace(/[,:]\s*$/, ''), 30), texto: [`${legenda} ${valor}${unidade ?? ''}`, selo, explica].filter(Boolean).join('\n') }" class="cnu">
     <p class="cnu__legenda">{{ legenda }}</p>
     <p class="cnu__valor">{{ valor }}<span v-if="unidade" class="cnu__unidade">{{ unidade }}</span></p>
     <span v-if="selo" class="cnu__selo" :class="`cnu__selo--${tom}`">{{ selo }}</span>

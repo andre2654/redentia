@@ -39,12 +39,16 @@ function paragraphs(body: string): string[] {
 <template>
   <section class="aed">
     <div class="aed__wrap">
-      <article v-for="s in editorial.sections" :key="s.id" class="aed__block">
+      <article
+        v-for="s in editorial.sections" :key="s.id"
+        v-contexto-chat="{ id: `editorial:${ticker}:${s.id}`, tipo: 'secao', rotulo: rotuloCurto(s.heading) }"
+        class="aed__block"
+      >
         <h2 class="aed__h2">{{ s.heading }}</h2>
         <p v-for="(p, i) in paragraphs(s.body)" :key="i" class="aed__p">{{ p }}</p>
       </article>
 
-      <div v-if="editorial.faq.length" class="aed__faq">
+      <div v-if="editorial.faq.length" v-contexto-chat="{ id: `faq:${ticker}`, tipo: 'secao', rotulo: `Perguntas sobre ${ticker}` }" class="aed__faq">
         <h2 class="aed__h2">Perguntas frequentes sobre {{ ticker }}</h2>
         <NuFaqAccordion :items="editorial.faq" surface="white" />
       </div>

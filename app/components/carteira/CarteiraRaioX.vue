@@ -13,7 +13,7 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
 </script>
 
 <template>
-  <section class="crx">
+  <section v-contexto-chat="{ id: 'carteira:raio-x', tipo: 'carteira', rotulo: 'Raio-X da carteira' }" class="crx">
     <div class="crx__cols">
       <div class="crx__left">
         <h2 class="crx__title">Raio-X da<br>carteira.</h2>
@@ -32,7 +32,7 @@ defineProps<{ raiox: CarteiraRaioXVM }>()
 
       <div class="crx__right">
         <div class="crx__grid">
-          <div v-for="m in raiox.metrics" :key="m.label" class="crx__card">
+          <div v-for="m in raiox.metrics" :key="m.label" v-contexto-chat="{ id: `carteira:raio-x:${m.label}`, tipo: 'carteira', rotulo: rotuloCurto(`${m.label} da carteira`), texto: `${m.label} da carteira: ${m.value} (${m.tag})` }" class="crx__card">
             <div class="crx__card-label">{{ m.label }}</div>
             <div class="crx__card-row">
               <span class="crx__card-value">{{ m.value }}</span>

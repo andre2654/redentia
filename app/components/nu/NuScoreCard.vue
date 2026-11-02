@@ -4,11 +4,21 @@
 // com hairlines rgba(creme,.14). Card #2456C9 radius 26 hover -3px.
 import type { AcaoScoreVM } from '~/types/acao'
 
-defineProps<{ score: AcaoScoreVM }>()
+const props = defineProps<{ score: AcaoScoreVM }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
+const contexto = computed(() => ({
+  id: `score:${sobre.value}`,
+  tipo: 'grafico',
+  rotulo: rotuloComSobre('Redentia Score', sobre.value),
+  texto: [`Redentia Score${sobre.value ? ` de ${sobre.value}` : ''}: ${props.score.score100}/100 (${props.score.pill.text})`,
+    ...props.score.subScores.map((s) => `${s.name}: ${s.value}`)].join('\n'),
+}))
 </script>
 
 <template>
-  <div class="nsc">
+  <div v-contexto-chat="contexto" class="nsc">
     <div class="nsc__head">
       <span class="nsc__label">Redentia Score</span>
       <span class="nsc__pill" :class="`nsc__pill--${score.pill.variant}`">{{ score.pill.text }}</span>

@@ -6,10 +6,11 @@
 import type { AcaoFundInfoVM } from '~/types/acao'
 
 defineProps<{ info: AcaoFundInfoVM }>()
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
-  <section class="afi">
+  <section v-contexto-chat="{ id: `fundo:${sobre}`, tipo: 'grafico', rotulo: rotuloComSobre('O fundo', sobre) }" class="afi">
     <div class="afi__cols">
       <div class="afi__left">
         <h2 class="afi__title">{{ info.heading[0] }}<br>{{ info.heading[1] }}</h2>

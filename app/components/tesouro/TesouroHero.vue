@@ -6,10 +6,12 @@
 import type { TesouroHeroVM } from '~/types/tesouro'
 
 defineProps<{ hero: TesouroHeroVM }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
-  <section class="thr">
+  <section v-contexto-chat="{ id: `tesouro-hero:${hero.name}`, tipo: 'ativo', rotulo: rotuloCurto(hero.name) }" class="thr">
     <NuxtLink to="/tesouro" class="thr__eyebrow">Tesouro Direto</NuxtLink>
     <div class="thr__badges">
       <NuBadge variant="blue" size="hero">{{ hero.indexerShort }}</NuBadge>

@@ -4,11 +4,20 @@
 // Hover lift -2px.
 import type { AcaoMetricCard } from '~/types/acao'
 
-defineProps<{ card: AcaoMetricCard }>()
+const props = defineProps<{ card: AcaoMetricCard }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
+const contexto = computed(() => ({
+  id: `metrica:${sobre.value}:${props.card.label}`,
+  tipo: 'grafico',
+  rotulo: rotuloComSobre(props.card.label, sobre.value),
+  texto: [`${props.card.label}${sobre.value ? ` (${sobre.value})` : ''}: ${props.card.value}`, props.card.tag?.text].filter(Boolean).join('\n'),
+}))
 </script>
 
 <template>
-  <div class="nmc">
+  <div v-contexto-chat="contexto" class="nmc">
     <div class="nmc__label">{{ card.label }}</div>
     <div class="nmc__value">{{ card.value }}</div>
     <NuTagPill v-if="card.tag" :tag="card.tag" block />

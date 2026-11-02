@@ -193,7 +193,7 @@ function irParaNewsletter(e: MouseEvent) {
     </div>
 
     <!-- o mercado: os quatro no mesmo gráfico (a legenda dele já dá o número de cada um) -->
-    <div v-if="temGrafico && bolsa" class="hbo__mercado">
+    <div v-if="temGrafico && bolsa" v-contexto-chat="{ id: 'bolsa:mercados', tipo: 'bolsa', rotulo: 'O mercado hoje' }" class="hbo__mercado">
       <h3 class="hbo__mercado-rotulo" :class="{ 'hbo__mercado-rotulo--fora': fase === 'lido' }">O mercado</h3>
       <div class="hbo__quadro" :class="`hbo__quadro--${fase}`">
         <HomeBolsaMercados class="hbo__grafico" :mercados="bolsa.mercados" :fecha-as="fechaAs" :varredura="fase === 'lendo' ? progresso : null" />
@@ -206,7 +206,7 @@ function irParaNewsletter(e: MouseEvent) {
               <NuSkeleton tone="navy" variant="line" width="70%" height="28px" radius="chip" style="margin-top: 16px" />
               <NuSkeleton tone="navy" variant="line" width="110px" height="12px" radius="chip" style="margin-top: 12px" />
             </li>
-            <li v-for="(c, i) in cartoes" :key="i" class="hbo__item">
+            <li v-for="(c, i) in cartoes" :key="i" v-contexto-chat="{ id: `bolsa:leitura:${i}`, tipo: 'bolsa', rotulo: rotuloCurto(c.titulo || c.rotulo, 30), texto: [c.titulo, c.rotulo].filter(Boolean).join('\n') }" class="hbo__item">
               <span class="hbo__item-seta" :class="c.sobe ? 'hbo__item-seta--sobe' : 'hbo__item-seta--cai'" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path :d="c.sobe ? 'M12 19V5M6 11l6-6 6 6' : 'M12 5v14M6 13l6 6 6-6'" /></svg>
               </span>
@@ -232,7 +232,7 @@ function irParaNewsletter(e: MouseEvent) {
       <h3 class="hbo__dia-titulo">O dia no mercado.</h3>
       <p v-if="briefingReal" class="hbo__dia-meta">{{ briefing.metaLine }}</p>
       <div class="hbo__dia-grade">
-        <div v-for="(c, i) in cartoes" :key="i" class="hbo__dia-cartao">
+        <div v-for="(c, i) in cartoes" :key="i" v-contexto-chat="{ id: `bolsa:dia:${i}`, tipo: 'bolsa', rotulo: rotuloCurto(c.rotulo, 30) }" class="hbo__dia-cartao">
           <span class="hbo__dia-rotulo">{{ c.rotulo }}</span>
           <div v-if="c.stat" class="hbo__dia-stat">{{ c.stat }}</div>
           <div v-else-if="c.cardTitle" class="hbo__dia-titulo-cartao">{{ c.cardTitle }}</div>

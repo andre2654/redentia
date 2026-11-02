@@ -8,6 +8,8 @@ const props = defineProps<{
   cards: { rotulo: string; valor: string; fonte: string }[]
   aviso: string
 }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 const emit = defineEmits<{ 'update:modelValue': [v: number] }>()
 
 const texto = ref(dinheiroFmt(props.modelValue).replace(/^R\$\s*/, ''))
@@ -63,7 +65,7 @@ function aoSair() {
     </div>
 
     <div class="qr__cards">
-      <article v-for="c in cards" :key="c.rotulo" class="qr__card">
+      <article v-for="c in cards" :key="c.rotulo" v-contexto-chat="{ id: `quanto-rende:${sobre}:${c.rotulo}`, tipo: 'proventos', rotulo: rotuloComSobre(c.rotulo, sobre), texto: `${c.rotulo}${sobre ? ` (${sobre})` : ''}: ${c.valor}. ${c.fonte}` }" class="qr__card">
         <h3 class="qr__card-rotulo">{{ c.rotulo }}</h3>
         <p class="qr__card-valor">{{ c.valor }}</p>
         <p class="qr__card-fonte">{{ c.fonte }}</p>

@@ -20,7 +20,7 @@ const fmt = fmtBRL
 </script>
 
 <template>
-  <div class="sab">
+  <div v-contexto-chat="{ id: 'sim:faixas', tipo: 'grafico', rotulo: 'Faixas ano a ano' }" class="sab">
     <div class="sab__grid">
       <div
         v-for="(a, i) in annual" :key="a.year"

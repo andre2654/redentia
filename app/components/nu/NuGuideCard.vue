@@ -7,7 +7,7 @@ defineProps<{ card: NuGuideCardItem }>()
 </script>
 
 <template>
-  <NuxtLink :to="card.href" class="ngc" :class="`ngc--${card.variant}`">
+  <NuxtLink v-contexto-chat="{ id: `guia:${card.href}`, tipo: 'secao', rotulo: rotuloCurto(card.title) }" :to="card.href" class="ngc" :class="`ngc--${card.variant}`">
     <span class="ngc__content">
       <span class="ngc__tag">{{ card.tag }}</span>
       <span class="ngc__title">{{ card.title }}</span>

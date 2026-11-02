@@ -23,7 +23,7 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
 </script>
 
 <template>
-  <section class="chm">
+  <section v-contexto-chat="{ id: 'carteira:pnl', tipo: 'grafico', rotulo: 'P&L mês a mês' }" class="chm">
     <div class="chm__head">
       <div>
         <h2 class="chm__title">P&amp;L mês a mês.</h2>
@@ -48,7 +48,7 @@ function cellStyle(c: { alpha: number; neg: boolean; inkWhite: boolean } | null)
           <span v-for="m in MESES" :key="m" class="chm__month">{{ m }}</span>
           <span class="chm__month chm__month--ano">Ano</span>
         </div>
-        <div v-for="y in heatmap.years" :key="y.y" class="chm__grid chm__grid--row">
+        <div v-for="y in heatmap.years" :key="y.y" v-contexto-chat="{ id: `carteira:pnl:${y.y}`, tipo: 'grafico', rotulo: `P&L ${y.y}`, texto: `P&L da carteira em ${y.y}, mês a mês: ${y.cells.map((c) => c?.txt ?? '—').join(' · ')}. Ano: ${y.ano}` }" class="chm__grid chm__grid--row">
           <span class="chm__year">{{ y.y }}</span>
           <span v-for="(c, i) in y.cells" :key="i" class="chm__cell" :style="cellStyle(c)">{{ c?.txt ?? '' }}</span>
           <span class="chm__cell chm__cell--ano" :class="y.anoNeg ? 'chm__cell--ano-neg' : 'chm__cell--ano-pos'">{{ y.ano }}</span>

@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<{
   schema?: boolean
   parte?: 'titulo' | 'corpo'
 }>(), { schema: true, parte: 'corpo' })
+const sobre = useSobreDoContexto()
 
 if (props.parte === 'corpo' && props.schema && props.resumo.faq.length) useFaqSchema(props.resumo.faq)
 </script>
@@ -33,7 +34,9 @@ if (props.parte === 'corpo' && props.schema && props.resumo.faq.length) useFaqSc
 
   <section v-else class="ars" aria-label="Resumo do ativo">
     <div class="ars__wrap">
-      <p v-for="(p, i) in resumo.paragrafos" :key="i" class="ars__p">{{ p }}</p>
+      <div v-contexto-chat="{ id: `resumo:${sobre}`, tipo: 'secao', rotulo: rotuloComSobre('Resumo', sobre), texto: resumo.paragrafos.join('\n') }" class="ars__resumo">
+        <p v-for="(p, i) in resumo.paragrafos" :key="i" class="ars__p">{{ p }}</p>
+      </div>
 
       <nav v-if="resumo.links.length" class="ars__nav" aria-label="Páginas relacionadas a este ativo">
         <p class="ars__kicker">Veja também</p>
@@ -46,7 +49,11 @@ if (props.parte === 'corpo' && props.schema && props.resumo.faq.length) useFaqSc
 
       <div v-if="resumo.faq.length" class="ars__faq">
         <h2 class="ars__h2">{{ resumo.faqTitulo }}</h2>
-        <article v-for="item in resumo.faq" :key="item.q" class="ars__qa">
+        <article
+          v-for="item in resumo.faq" :key="item.q"
+          v-contexto-chat="{ id: `pergunta:${sobre}:${item.q}`, tipo: 'secao', rotulo: rotuloCurto(item.q), texto: `${item.q}\n${item.a}` }"
+          class="ars__qa"
+        >
           <h3 class="ars__q">{{ item.q }}</h3>
           <p class="ars__a">{{ item.a }}</p>
         </article>

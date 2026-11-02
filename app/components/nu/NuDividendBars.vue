@@ -6,12 +6,19 @@
 import type { AcaoDividendBar } from '~/types/acao'
 
 defineProps<{ bars: AcaoDividendBar[]; footnote: string }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
   <div>
     <div class="ndb__bars">
-      <div v-for="b in bars" :key="b.year" class="ndb__col">
+      <div
+        v-for="b in bars" :key="b.year"
+        v-contexto-chat="{ id: `provento-ano:${sobre}:${b.year}`, tipo: 'proventos', rotulo: rotuloComSobre(`Proventos ${b.year}`, sobre), texto: `Proventos${sobre ? ` de ${sobre}` : ''} em ${b.year}: ${b.valFmt}${b.current ? ' (ano corrente)' : ''}. ${footnote}` }"
+        class="ndb__col"
+      >
         <span class="ndb__val" :class="{ 'ndb__val--current': b.current }">{{ b.valFmt }}</span>
         <div class="ndb__bar" :class="{ 'ndb__bar--current': b.current }" :style="{ height: `${b.hPct}%` }" />
       </div>

@@ -90,6 +90,16 @@ const fatos = computed(() => {
   if (r.proventos12m) lista.push({ k: 'proventos', rotulo: 'Proventos em 12 meses', valor: visiveis.value ? r.proventos12m : ESCONDIDO, to: '/carteira#renda-passiva' })
   return lista
 })
+// os anéis como contexto do chat: as duas variações do dia, como o anel mostra
+const contextoAneis = computed(() => {
+  const d = dia.value
+  if (!podeVerNumeros.value || !d || d.carteiraPct == null) return null
+  const f = (n: number) => `${n > 0 ? '+' : ''}${nf2.format(n)}%`
+  return {
+    id: 'home:aneis', tipo: 'carteira', rotulo: 'Você e a bolsa hoje',
+    texto: [`Sua carteira: ${f(d.carteiraPct)}`, d.bolsaPct != null ? `Ibovespa: ${f(d.bolsaPct)}` : '', d.provento ? 'Caiu provento' : ''].filter(Boolean).join('\n'),
+  }
+})
 const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'caiu' : 'nenhum'} ${frases.value.quando}` : null))
 </script>
 
@@ -99,7 +109,7 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
       <!-- com carteira: o dia, o anel e os três números -->
       <template v-if="comCarteira">
         <div class="hag__painel">
-          <div class="hag__texto" aria-live="polite">
+          <div v-contexto-chat="podeVerNumeros && frases ? { id: 'home:dia', tipo: 'carteira', rotulo: 'Seu dia', texto: [frases.sobrelinha, frases.titulo, frases.veredito, frases.apoio].filter(Boolean).join('\n') } : null" class="hag__texto" aria-live="polite">
             <template v-if="podeVerNumeros && frases">
               <p class="hag__sobre" :class="`hag__sobre--${frases.sobrelinhaTom}`">{{ frases.sobrelinha }}</p>
               <h1 id="hag-titulo" class="hag__frase">{{ frases.titulo }}</h1>
@@ -119,7 +129,7 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
               <NuSkeleton tone="navy" variant="text" :lines="2" last-width="60%" class="hag__esq-apoio" />
             </template>
           </div>
-          <div v-if="!podeVerNumeros || dia?.carteiraPct != null" class="hag__anel">
+          <div v-if="!podeVerNumeros || dia?.carteiraPct != null" v-contexto-chat="contextoAneis" class="hag__anel">
             <HomeAneis
               :voce="dia?.carteiraPct ?? null" :bolsa="dia?.bolsaPct ?? null"
               :provento="!!dia?.provento" :provento-sub="proventoSub"
@@ -131,7 +141,7 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
         <div class="hag__faixa">
           <ul v-if="podeVerNumeros" class="hag__fatos">
             <li v-for="f in fatos" :key="f.k" class="hag__fato">
-              <NuxtLink :to="f.to" class="hag__fato-link">
+              <NuxtLink v-contexto-chat="{ id: `home:fato:${f.k}`, tipo: 'carteira', rotulo: f.rotulo, texto: `${f.rotulo}: ${f.valor}` }" :to="f.to" class="hag__fato-link">
                 <span class="hag__fato-rotulo">{{ f.rotulo }}</span>
                 <span class="hag__fato-valor" :class="[f.tom && `hag__fato-valor--${f.tom}`, { 'hag__fato-valor--escondido': !visiveis }]">{{ f.valor }}</span>
               </NuxtLink>

@@ -9,7 +9,7 @@ defineProps<{ ticker: string; news: AcaoNewsVM }>()
 </script>
 
 <template>
-  <section class="anw">
+  <section v-contexto-chat="{ id: `noticias:${ticker}`, tipo: 'noticia', rotulo: `Notícias de ${ticker}` }" class="anw">
     <h2 class="anw__title">{{ ticker }} no<br>noticiário.</h2>
     <div class="anw__featured">
       <NuNewsFeatured :item="news.featured" />

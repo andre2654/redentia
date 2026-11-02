@@ -11,13 +11,17 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
 </script>
 
 <template>
-  <section class="aai">
+  <section v-contexto-chat="{ id: `analise:${ticker}`, tipo: 'grafico', rotulo: `O que a Redentia vê · ${ticker}` }" class="aai">
     <h2 class="aai__title">O que a Redentia vê.</h2>
     <div class="aai__sub">Análise gerada pela Redentia AI{{ ai.updatedLabel ? ` · ${ai.updatedLabel}` : '' }}</div>
     <div class="aai__grid">
       <NuScoreCard v-if="ai.score" :score="ai.score" />
 
-      <div v-if="ai.consensus" class="aai__card">
+      <div
+        v-if="ai.consensus"
+        v-contexto-chat="{ id: `consenso:${ticker}`, tipo: 'grafico', rotulo: `Consenso ${ticker}`, texto: [`Consenso dos analistas para ${ticker}: ${ai.consensus.pill}`, `Potencial: ${ai.consensus.upsideFmt}. ${ai.consensus.subLine}`, `Atual ${ai.consensus.labels.current} · alvo médio ${ai.consensus.labels.avg} · alvo máx. ${ai.consensus.labels.high}`, ai.consensus.footnote].filter(Boolean).join('\n') }"
+        class="aai__card"
+      >
         <div class="aai__card-head">
           <span class="aai__card-label">Consenso</span>
           <span class="aai__rec" :class="`aai__rec--${ai.consensus.pillVariant}`">{{ ai.consensus.pill }}</span>
@@ -37,7 +41,11 @@ defineProps<{ ticker: string; ai: AcaoAiVM }>()
         <div class="aai__footnote">{{ ai.consensus.footnote }}</div>
       </div>
 
-      <div v-if="ai.read" class="aai__card">
+      <div
+        v-if="ai.read"
+        v-contexto-chat="{ id: `leitura:${ticker}`, tipo: 'grafico', rotulo: `Leitura da IA · ${ticker}`, texto: [`Leitura da IA sobre ${ticker}.`, `A favor: ${ai.read.pros.join('; ')}`, `Contra: ${ai.read.cons.join('; ')}`].join('\n') }"
+        class="aai__card"
+      >
         <span class="aai__card-label">Leitura da IA</span>
         <div class="aai__read-head aai__read-head--pros">Pontos fortes</div>
         <div class="aai__read-list">

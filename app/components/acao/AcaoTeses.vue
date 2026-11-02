@@ -15,7 +15,7 @@ const heading = computed(() =>
 </script>
 
 <template>
-  <section v-if="theses.length" class="ats">
+  <section v-if="theses.length" v-contexto-chat="{ id: `teses:${ticker}`, tipo: 'tese', rotulo: `Teses com ${ticker}`, texto: `${heading}\n${theses.map((t) => `${t.title}: ${t.roleStrong}${t.roleRest}`).join('\n')}` }" class="ats">
     <div class="ats__head">
       <div>
         <div class="ats__eyebrow">Teses Redentia</div>

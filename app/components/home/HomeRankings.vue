@@ -103,7 +103,11 @@ const selo = computed(() => {
     <p class="hrk__sub">Quem mais sobe e cai no pregão, em tempo real, e os rankings da bolsa inteira.</p>
 
     <div class="hrk__grade">
-      <article v-for="c in cartoes" :key="c.slug" class="hrk__cartao">
+      <article
+        v-for="c in cartoes" :key="c.slug"
+        v-contexto-chat="{ id: `ranking:${c.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`Ranking · ${c.titulo}`), texto: [c.titulo, c.sub, ...c.linhas.map((l, i) => `${i + 1}. ${l.ticker} (${l.nome}): ${l.valor}`)].filter(Boolean).join('\n') }"
+        class="hrk__cartao"
+      >
         <h3 class="hrk__nome">{{ c.titulo }}</h3>
         <p class="hrk__cartao-sub">{{ c.sub }}</p>
         <ol class="hrk__linhas">
