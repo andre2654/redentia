@@ -77,7 +77,7 @@ test('o texto descreve o acompanhamento que já existe e não recomenda', () => 
   assert.equal(EVENTO_SUBMIT_CONVITE_PRECO_TETO, 'preco_teto_convite_submit')
   const comPreco = corpoConvitePrecoTeto('petr4', 'R$ 42,10')
   const semPreco = corpoConvitePrecoTeto('PETR4', null)
-  assert.equal(comPreco, 'Um e-mail no fim do pregão em que a cotação de PETR4 passar o preço teto desta página (R$ 42,10). O papel entra na sua lista de ativos seguidos.')
+  assert.equal(comPreco, 'Um e-mail no fim do pregão em que a cotação de PETR4 cruzar o preço teto desta página (R$ 42,10). O papel entra na sua lista de ativos seguidos.')
   assert.equal(semPreco, 'PETR4 entra na sua lista de ativos seguidos. A cotação do último pregão fica na sua página inicial.')
   assert.match(comPreco, /e-mail/)
   assert.doesNotMatch(semPreco, /e-mail|alerta/i)

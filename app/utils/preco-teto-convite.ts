@@ -41,7 +41,7 @@ export function corpoConvitePrecoTeto(ticker: string, alvoFormatado: string | nu
   const t = normalizarTickerConvite(ticker)
   if (!t) return ''
   if (alvoFormatado) {
-    return `Um e-mail no fim do pregão em que a cotação de ${t} passar o preço teto desta página (${alvoFormatado}). O papel entra na sua lista de ativos seguidos.`
+    return `Um e-mail no fim do pregão em que a cotação de ${t} cruzar o preço teto desta página (${alvoFormatado}). O papel entra na sua lista de ativos seguidos.`
   }
   return `${t} entra na sua lista de ativos seguidos. A cotação do último pregão fica na sua página inicial.`
 }
