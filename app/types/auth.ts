@@ -27,6 +27,14 @@ export interface TokenGrant {
   expires_in: number
 }
 
+/**
+ * POST /auth/google — { id_token }. `is_new_user` só entra quando o backend
+ * manda (redentia-api#16). Ausente não é conta nova.
+ */
+export interface GoogleAuthResponse extends TokenGrant {
+  is_new_user?: boolean
+}
+
 /** POST /auth/magic-pin/verify — { phone, pin } (⚠️ token, não access_token). */
 export interface MagicPinVerifyResponse {
   token: string
