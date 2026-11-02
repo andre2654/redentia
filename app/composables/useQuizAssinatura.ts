@@ -1,6 +1,7 @@
 /**
  * Quem abre e fecha o quiz do "Conectar carteira" (31/10/2026). Um só no site
- * (o AssinaturaQuiz vive na AssinaturaVitrine, do /assinar e do paywall), e
+ * (o AssinaturaQuiz vive no layout desde 02/11/2026: abre de qualquer página,
+ * do /assinar, do paywall e do chat), e
  * os eventos do funil vão para o GA4 só com o passo, nunca com as respostas.
  */
 export function useQuizAssinatura() {

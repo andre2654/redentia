@@ -34,8 +34,9 @@ function perguntar(q?: string) {
   ativa.value = -1
   focado.value = false
   campo.value?.blur()
-  // sem texto, a seta abre o painel vazio (com as sugestões dele)
-  painel.abrir(t || undefined)
+  // sem texto, a seta abre o painel vazio (com as sugestões dele); sem conta,
+  // a pergunta abre a folha de cadastro (useChatPainel.perguntar)
+  painel.perguntar(t)
 }
 
 function onKey(e: KeyboardEvent) {

@@ -45,9 +45,9 @@ const route = useRoute()
     <ChatBarra />
     <ChatPainel />
     <ChatSeletor />
-    <!-- A folha da assinatura, para o envio do painel (useNuChat.send). A
-         /busca ainda monta a dela; aqui fica fora dela para não abrir duas. -->
-    <AssinaturaGateSheet v-if="route.path !== '/busca'" />
+    <!-- O quiz da assinatura, um só no site: abre da oferta (/assinar, paywall)
+         e do chat, quando quem entrou e não assina pergunta (ChatPainel). -->
+    <AssinaturaQuiz />
   </div>
 </template>
 

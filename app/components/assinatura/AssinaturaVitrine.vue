@@ -67,8 +67,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
         <AssinaturaOferta class="avt__oferta" :modo="modo" :cancelado="cancelado" escuro />
       </div>
     </div>
-    <!-- o quiz do "Conectar carteira" (abre da oferta) -->
-    <AssinaturaQuiz />
+    <!-- o quiz do "Conectar carteira" vive no layout (abre da oferta e do chat) -->
   </section>
 </template>
 

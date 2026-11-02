@@ -302,7 +302,10 @@ test('a conversa pergunta antes de gastar IA e trata a recusa do servidor', () =
   const send = src.slice(src.indexOf('async function send('))
   assert.ok(send.indexOf("garantirAcesso('chat')") < send.indexOf('messages.value.push'))
   assert.match(send, /ehAssinaturaNecessaria\(res\.status, payload\)/)
-  assert.match(ler('pages/busca.vue'), /<AssinaturaGateSheet \/>/)
+  // o gate da conversa abre o quiz, montado uma vez no layout (02/11/2026)
+  assert.match(ler('layouts/default.vue'), /<AssinaturaQuiz \/>/)
+  assert.doesNotMatch(ler('components/assinatura/AssinaturaVitrine.vue'), /<AssinaturaQuiz/)
+  assert.match(ler('components/chat/ChatPainel.vue'), /if \(g !== 'chat'\) return\n\s+assinatura\.fecharGate\(\)\n\s+quiz\.abrir\('chat'\)/)
 })
 
 test('a /carteira não busca a carteira de quem não assina', () => {

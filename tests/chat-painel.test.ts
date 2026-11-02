@@ -190,3 +190,64 @@ test('movimento reduzido: a mensagem não envolve palavras', () => {
   assert.match(src, /prefers-reduced-motion: reduce/)
   assert.match(src, /if \(!animar \|\| import\.meta\.server\) return base/)
 })
+
+/* ——— a pergunta que esbarrou na assinatura ——— */
+
+function armazemFalso() {
+  const m = new Map<string, string>()
+  return {
+    getItem: (k: string) => m.get(k) ?? null,
+    setItem: (k: string, v: string) => { m.set(k, v) },
+    removeItem: (k: string) => { m.delete(k) },
+    m,
+  }
+}
+
+test('a pergunta do gate é guardada, lida e esquecida', async () => {
+  const { guardarPerguntaDoGate, lerPerguntaDoGate, esquecerPerguntaDoGate } = await import('../app/utils/chat-painel.ts')
+  const a = armazemFalso()
+  const ctx = { id: 'ativo:PETR4', tipo: 'ativo', rotulo: 'PETR4', texto: 'PETR4 R$ 52,71' }
+  guardarPerguntaDoGate(a, '  Por que a PETR4 mexeu hoje?  ', [ctx], 1_000)
+  assert.deepEqual(lerPerguntaDoGate(a, 2_000), { texto: 'Por que a PETR4 mexeu hoje?', contextos: [ctx], em: 1_000 })
+  esquecerPerguntaDoGate(a)
+  assert.equal(lerPerguntaDoGate(a, 2_000), null)
+  // vazio não é guardado
+  guardarPerguntaDoGate(a, '   ', [], 1_000)
+  assert.equal(a.m.size, 0)
+})
+
+test('a pergunta do gate vence em 6 horas e ignora lixo', async () => {
+  const { guardarPerguntaDoGate, lerPerguntaDoGate, VALIDADE_PERGUNTA_DO_GATE_MS, CHAVE_PERGUNTA_DO_GATE } = await import('../app/utils/chat-painel.ts')
+  const a = armazemFalso()
+  guardarPerguntaDoGate(a, 'vale a pena?', [], 0)
+  assert.ok(lerPerguntaDoGate(a, VALIDADE_PERGUNTA_DO_GATE_MS))
+  assert.equal(lerPerguntaDoGate(a, VALIDADE_PERGUNTA_DO_GATE_MS + 1), null)
+  a.setItem(CHAVE_PERGUNTA_DO_GATE, '{não é json')
+  assert.equal(lerPerguntaDoGate(a, 0), null)
+  a.setItem(CHAVE_PERGUNTA_DO_GATE, JSON.stringify({ texto: 'oi', em: 0, contextos: [{ id: 1 }, { id: 'x', rotulo: 'X', texto: 't', tipo: 'ativo' }] }))
+  assert.deepEqual(lerPerguntaDoGate(a, 0)?.contextos.map((c) => c.id), ['x'])
+  // armazém que explode (modo privado) não derruba nada
+  const quebrado = { getItem: () => { throw new Error('x') }, setItem: () => { throw new Error('x') }, removeItem: () => { throw new Error('x') } }
+  guardarPerguntaDoGate(quebrado, 'oi', [], 0)
+  assert.equal(lerPerguntaDoGate(quebrado, 0), null)
+})
+
+test('a pergunta guardada não abre o painel no meio do fluxo', async () => {
+  const { podeRetomarPerguntaAqui } = await import('../app/utils/chat-painel.ts')
+  for (const p of ['/login', '/assinar', '/assinar/obrigado', '/cliente/abc', '/business']) assert.equal(podeRetomarPerguntaAqui(p), false, p)
+  for (const p of ['/carteira', '/', '/asset/PETR4', '/assinatura']) assert.equal(podeRetomarPerguntaAqui(p), true, p)
+})
+
+test('sem conta, a pergunta abre a folha de cadastro; sem assinatura, o quiz', () => {
+  const painel = readFileSync(new URL('../app/composables/useChatPainel.ts', import.meta.url), 'utf8')
+  assert.match(painel, /isAuthenticated\.value\) \{ abrir\(texto, extras\); return \}/)
+  assert.match(painel, /useCadastroFolha\(\)\.abrir\(\{ gesto: 'pergunta', pergunta: texto \}, \(\) => true, volta, \(\) => abrir\(texto, junto\)\)/)
+  for (const arq of ['../app/components/chat/ChatBarra.vue', '../app/pages/busca.vue']) {
+    assert.match(readFileSync(new URL(arq, import.meta.url), 'utf8'), /painel\.perguntar\(/, arq)
+  }
+  const chat = readFileSync(new URL('../app/composables/useNuChat.ts', import.meta.url), 'utf8')
+  assert.match(chat, /garantirAcesso\('chat'\)\)\) \{\n\s+\/\/[^\n]*\n\s+if \(import\.meta\.client\) guardarPerguntaDoGate/)
+  const p = readFileSync(new URL('../app/components/chat/ChatPainel.vue', import.meta.url), 'utf8')
+  assert.match(p, /assinatura\.assinante\.value/)
+  assert.match(p, /esquecerPerguntaDoGate\(localStorage\)/)
+})

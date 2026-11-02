@@ -9,6 +9,8 @@
  * o painel aberto (o cursor mágico): um ativo, um gráfico, uma linha da
  * carteira. Vão junto com a próxima pergunta e saem depois do envio.
  */
+import { voltaComPergunta } from '~/utils/chat-painel'
+
 export interface ContextoDoChat {
   /** estável por pedaço da página, para não anexar o mesmo duas vezes */
   id: string
@@ -26,6 +28,9 @@ export interface PerguntaPendente {
   texto: string
   contextos: ContextoDoChat[]
 }
+
+/** A pergunta longa demais para o `?pergunta=` da volta do /login espera aqui. */
+export const CHAVE_POS_LOGIN = 'nu:chat:pergunta-pos-login'
 
 export function useChatPainel() {
   const aberto = useState<boolean>('nu:chat-painel:aberto', () => false)
@@ -62,5 +67,32 @@ export function useChatPainel() {
     return p
   }
 
-  return { aberto, pendente, contextos, abrir, fechar, anexar, remover, consumirPendente }
+  /**
+   * Perguntar de qualquer lugar (barra, /busca, atalhos). Quem não entrou vê a
+   * folha de cadastro com a pergunta guardada no herói; com a conta aberta, o
+   * painel abre e manda. Quem entrou e não assina vê o quiz ao enviar
+   * (ChatPainel). Dono, 02/11/2026: "se o cara não tiver logado aparece esse
+   * modal pedindo para ele logar".
+   */
+  function perguntar(pergunta: string, extras: ContextoDoChat[] = []) {
+    const texto = pergunta.trim()
+    if (!texto) { abrir(); return }
+    if (useAuthState().isAuthenticated.value) { abrir(texto, extras); return }
+    pedirConta(texto, [...contextos.value, ...extras.filter((c) => !contextos.value.some((x) => x.id === c.id))])
+  }
+
+  function pedirConta(texto: string, junto: ContextoDoChat[]) {
+    if (import.meta.server) return
+    const route = useRoute()
+    const { volta, naUrl } = voltaComPergunta(route.path, route.query as Record<string, unknown>, texto)
+    // quem prefere o /login (celular, Google por lá) volta com a pergunta
+    if (!naUrl) {
+      try { sessionStorage.setItem(CHAVE_POS_LOGIN, texto) } catch { /* sem storage: volta sem a pergunta */ }
+    }
+    aberto.value = false
+    contextos.value = []
+    useCadastroFolha().abrir({ gesto: 'pergunta', pergunta: texto }, () => true, volta, () => abrir(texto, junto))
+  }
+
+  return { aberto, pendente, contextos, abrir, perguntar, pedirConta, fechar, anexar, remover, consumirPendente }
 }

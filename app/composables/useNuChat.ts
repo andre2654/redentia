@@ -20,7 +20,7 @@
  */
 
 import type { ContextoDoChat } from '~/composables/useChatPainel'
-import { anexosDoTurno, MAX_CONTEXTOS, routeContextDaRota } from '~/utils/chat-painel'
+import { anexosDoTurno, guardarPerguntaDoGate, MAX_CONTEXTOS, routeContextDaRota } from '~/utils/chat-painel'
 
 export interface NuChatCitation {
   id?: number
@@ -175,6 +175,8 @@ export function useNuChat() {
       case 'error':
         if (data?.code === 'assinatura_necessaria') {
           a.error = 'A conversa é de quem assina a Redentia.'
+          const pergunta = [...messages.value].reverse().find((m) => m.role === 'user')?.content
+          if (import.meta.client && pergunta) guardarPerguntaDoGate(localStorage, pergunta, [], Date.now())
           assinatura.recusado('chat')
           break
         }
@@ -218,8 +220,12 @@ export function useNuChat() {
     if (!msg || streaming.value) return false
 
     // A IA é paga (plano único, 31/10/2026): quem não assina vê a folha do
-    // AssinaturaGateSheet em vez do envio, antes de qualquer gasto de IA.
-    if (!(await assinatura.garantirAcesso('chat'))) return false
+    // o quiz da assinatura em vez do envio (ChatPainel), antes de qualquer gasto de IA.
+    if (!(await assinatura.garantirAcesso('chat'))) {
+      // a pergunta espera a assinatura: a folha mostra e o painel a retoma
+      if (import.meta.client) guardarPerguntaDoGate(localStorage, msg, opts.contextos ?? [], Date.now())
+      return false
+    }
     if (streaming.value) return false
 
     // Os pedaços da página vão como attachments de texto: o servidor dobra o

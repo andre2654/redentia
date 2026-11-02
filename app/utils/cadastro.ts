@@ -20,6 +20,22 @@ export interface CadastroLinha {
   texto: string
 }
 
+/** Os ícones das linhas das folhas (cadastro e assinatura): traços de 24×24. */
+export const ICONES: Record<CadastroIcone, string[]> = {
+  envelope: ['M5.5 5h13A2.5 2.5 0 0 1 21 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5v-9A2.5 2.5 0 0 1 5.5 5z', 'M3.5 7l8.5 6 8.5-6'],
+  jornal: ['M5 4h11a3 3 0 0 1 3 3v11a2 2 0 0 1-2 2H6a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2z', 'M7 9h8M7 13h8M7 17h5'],
+  calendario: ['M6 5h12a2.5 2.5 0 0 1 2.5 2.5v10A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-10A2.5 2.5 0 0 1 6 5z', 'M3.5 10h17M8 3v4M16 3v4'],
+  relogio: ['M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z', 'M12 7.5V12l3 2'],
+  conversa: ['M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12z'],
+  carteira: ['M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z', 'M15 3.8A8.5 8.5 0 0 1 20.2 9H15z'],
+  marcador: ['M6.5 3.5h11a1 1 0 0 1 1 1v16l-6.5-4-6.5 4v-16a1 1 0 0 1 1-1z'],
+  ajuste: ['M4 7h10M18 7h2M4 17h4M12 17h8', 'M16 4.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z', 'M10 14.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z'],
+  brilho: ['M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z', 'M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'],
+  grafico: ['M4 19h16', 'M5 15l4-4 3 3 6-7'],
+  historico: ['M4 12a8 8 0 1 0 2.4-5.7', 'M4 4v4h4', 'M12 8v4l3 2'],
+  cadeado: ['M7.5 10.5h9a2.5 2.5 0 0 1 2.5 2.5v5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18v-5a2.5 2.5 0 0 1 2.5-2.5z', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'],
+}
+
 export interface CadastroTexto {
   titulo: string
   apoio: string
@@ -106,13 +122,16 @@ export function textoDoGesto(
   }
   return {
     titulo: 'Sua pergunta está guardada.',
-    apoio: 'Entre de graça e a Redentia responde na hora, em português.',
+    // a conversa é da assinatura (02/11/2026): quem entra e não assina vê o
+    // quiz logo depois do código. A folha diz isso antes, sem preço (a
+    // entrada não fala de preço desde 01/11), para o quiz não ser surpresa.
+    apoio: 'Entre na sua conta e a Redentia responde com os números do pregão e da sua carteira.',
     linhas: [
       { icone: 'conversa', titulo: 'Pergunte o que quiser', texto: 'Ações, FIIs, dividendos e a sua carteira.' },
       { icone: 'grafico', titulo: 'Com os dados do pregão', texto: 'A resposta usa as cotações e as notícias do dia.' },
-      { icone: 'historico', titulo: 'Fica no seu histórico', texto: 'Retome a conversa quando quiser.' },
+      { icone: 'brilho', titulo: '3 dias grátis para testar', texto: 'A conversa é de quem assina, e o teste vem primeiro.' },
     ],
-    botao: 'Ver a resposta',
+    botao: 'Continuar',
     aceite: 'Ao confirmar, você cria sua conta grátis na Redentia.',
   }
 }

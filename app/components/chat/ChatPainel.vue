@@ -14,10 +14,9 @@
 // A conversa é a do useNuChat (stream, sessões, gate da assinatura). Quem não
 // entrou vai ao login e volta para a mesma página com a pergunta em
 // ?pergunta= (utils/chat-painel.ts): ela é enviada sozinha na volta.
-import { loginComPergunta, MAX_CONTEXTOS, pedidoDaQuery, querySemPedido, sugestoesDaRota } from '~/utils/chat-painel'
-import type { ContextoDoChat } from '~/composables/useChatPainel'
+import { esquecerPerguntaDoGate, lerPerguntaDoGate, MAX_CONTEXTOS, pedidoDaQuery, podeRetomarPerguntaAqui, querySemPedido, sugestoesDaRota } from '~/utils/chat-painel'
+import { CHAVE_POS_LOGIN, type ContextoDoChat } from '~/composables/useChatPainel'
 
-const CHAVE_POS_LOGIN = 'nu:chat:pergunta-pos-login'
 
 const route = useRoute()
 const router = useRouter()
@@ -54,19 +53,25 @@ const dica = computed(() => (contextos.value.length >= MAX_CONTEXTOS
   ? `Até ${MAX_CONTEXTOS} pedaços da página por pergunta.`
   : 'Clique em algo da página para mostrar à Redentia.'))
 
-/* ——— enviar ——— */
-function irAoLogin(pergunta: string) {
-  const { url, naUrl } = loginComPergunta(route.path, route.query as Record<string, unknown>, pergunta)
-  if (!naUrl) {
-    try { sessionStorage.setItem(CHAVE_POS_LOGIN, pergunta) } catch { /* sem storage: volta sem a pergunta */ }
-  }
-  void navigateTo(url)
-}
+/* ——— enviar ———
+   Quem não entrou vê a folha de cadastro com a pergunta (o herói da pergunta
+   guardada); com a conta aberta, o painel reabre e manda. Quem entrou e não
+   assina vê o quiz da assinatura de cara (dono, 02/11/2026: "se estiver
+   logado mas não for assinante, já mostra o quiz logo de cara"). */
+const quiz = useQuizAssinatura()
+
+// o gate da conversa (o envio barrado, ou o chat-service com
+// assinatura_necessaria) abre o quiz no lugar da folha antiga
+watch(() => assinatura.gate.value, (g) => {
+  if (g !== 'chat') return
+  assinatura.fecharGate()
+  quiz.abrir('chat')
+})
 
 async function enviar(pergunta: string, junto: ContextoDoChat[]) {
   const q = pergunta.trim()
   if (!q || streaming.value) return
-  if (!isAuthenticated.value) { irAoLogin(q); return }
+  if (!isAuthenticated.value) { painel.pedirConta(q, junto); return }
   historico.value = false
   const ok = await chat.send(q, { contextos: junto, rota: route.path })
   // não saiu (gate da assinatura): a pergunta e os chips voltam ao campo
@@ -98,6 +103,26 @@ watch([aberto, () => painel.pendente.value], ([a, p]) => {
   const pend = painel.consumirPendente()
   if (pend) void enviar(pend.texto, pend.contextos)
 }, { immediate: true })
+
+// a pergunta que esbarrou na assinatura (o quiz abriu no lugar): quando a pessoa
+// volta assinante, o painel abre e a manda sozinho. Fora do meio do fluxo
+// (login, /assinar) e só com a assinatura confirmada: com o webhook atrasado,
+// espera o snapshot virar e tenta de novo.
+let retomando = false
+function retomarPerguntaDoGate() {
+  if (!import.meta.client || retomando || !isAuthenticated.value) return
+  if (!podeRetomarPerguntaAqui(route.path)) return
+  const p = lerPerguntaDoGate(localStorage, Date.now())
+  if (!p) return
+  if (!assinatura.carregado.value) { void assinatura.carregar(); return }
+  if (!assinatura.assinante.value || assinatura.situacao.value === 'desconhecido') return
+  retomando = true
+  esquecerPerguntaDoGate(localStorage)
+  painel.abrir(p.texto, p.contextos)
+  retomando = false
+}
+onMounted(retomarPerguntaDoGate)
+watch([() => assinatura.carregado.value, () => assinatura.assinante.value, () => route.path], retomarPerguntaDoGate)
 
 /* ——— histórico ——— */
 function alternarHistorico() {

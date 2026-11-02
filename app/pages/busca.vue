@@ -127,11 +127,8 @@ function abrirLinha(i: number) {
 function perguntar() {
   const p = texto.value
   if (!p) return
-  if (!isAuthenticated.value) {
-    void navigateTo(loginParaPerguntar(p))
-    return
-  }
-  painel.abrir(p)
+  // sem conta, a folha de cadastro com a pergunta; com conta, o painel
+  painel.perguntar(p)
 }
 
 function rolarAteAtivo() {
@@ -256,11 +253,6 @@ if (linkDeChat.tipo === 'login') {
       </p>
     </section>
 
-    <!-- A IA é paga (31/10/2026): quem não assina e manda pergunta vê esta
-         folha (useNuChat.send → garantirAcesso). Quem envia agora é o painel
-         do chat; a folha muda para junto dele no merge do feat/chat-painel
-         (tests/assinatura.test.ts trava onde ela está montada). -->
-    <AssinaturaGateSheet />
   </div>
 </template>
 

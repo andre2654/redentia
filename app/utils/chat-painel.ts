@@ -151,6 +151,12 @@ const MAX_REDIRECT = 256
  * pergunta no sessionStorage.
  */
 export function loginComPergunta(path: string, query: Record<string, unknown>, pergunta: string): { url: string; naUrl: boolean } {
+  const { volta, naUrl } = voltaComPergunta(path, query, pergunta)
+  return { url: `/login?redirect=${encodeURIComponent(volta)}`, naUrl }
+}
+
+/** A página de volta com a pergunta em `?pergunta=` (a folha de cadastro e o /login usam). */
+export function voltaComPergunta(path: string, query: Record<string, unknown>, pergunta: string): { volta: string; naUrl: boolean } {
   // %20, não '+': quem lê a volta é o vue-router, e o espaço fica inequívoco
   const par = (k: string, v: string) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`
   const pares = Object.entries(querySemPedido(query))
@@ -160,7 +166,7 @@ export function loginComPergunta(path: string, query: Record<string, unknown>, p
   const comPergunta = `${path}?${[...pares, par('pergunta', pergunta)].join('&')}`
   const naUrl = comPergunta.length <= MAX_REDIRECT
   const volta = naUrl ? comPergunta : base.length <= MAX_REDIRECT ? base : path
-  return { url: `/login?redirect=${encodeURIComponent(volta)}`, naUrl }
+  return { volta, naUrl }
 }
 
 /** O rótulo do chip, curto: "Por que a Vale caiu…". */
@@ -200,4 +206,58 @@ export function textoDoGrafico(
     linhas.push(`IBOV no mesmo período: ${pct.format(((ibov[ibov.length - 1]!.v - ibov[0]!.v) / ibov[0]!.v) * 100)}%.`)
   }
   return linhas.join('\n')
+}
+
+/* ——— a pergunta que esbarrou na assinatura ———
+   Quem pergunta sem assinar vê a folha da assinatura; a pergunta fica guardada
+   no navegador e, quando a pessoa volta assinante (Stripe → /carteira), o
+   painel abre e a manda sozinho. Vale por 6 horas: depois disso a pergunta já
+   não é a do momento. */
+
+export const CHAVE_PERGUNTA_DO_GATE = 'nu:chat:pergunta-do-gate'
+export const VALIDADE_PERGUNTA_DO_GATE_MS = 6 * 60 * 60 * 1000
+
+export interface PerguntaDoGate {
+  texto: string
+  contextos: ContextoDoChat[]
+  em: number
+}
+
+interface Armazem {
+  getItem(k: string): string | null
+  setItem(k: string, v: string): void
+  removeItem(k: string): void
+}
+
+export function guardarPerguntaDoGate(a: Armazem, texto: string, contextos: ContextoDoChat[], agora: number): void {
+  const t = texto.trim()
+  if (!t) return
+  try {
+    a.setItem(CHAVE_PERGUNTA_DO_GATE, JSON.stringify({ texto: t, contextos: contextos.slice(0, MAX_CONTEXTOS), em: agora }))
+  } catch { /* navegador sem espaço ou privado: a folha segue sem a pergunta */ }
+}
+
+/** A pergunta guardada, ou null se não há, se está velha ou se veio torta. */
+export function lerPerguntaDoGate(a: Armazem, agora: number): PerguntaDoGate | null {
+  let bruto: string | null = null
+  try { bruto = a.getItem(CHAVE_PERGUNTA_DO_GATE) } catch { return null }
+  if (!bruto) return null
+  try {
+    const p = JSON.parse(bruto) as Partial<PerguntaDoGate>
+    if (typeof p.texto !== 'string' || !p.texto.trim() || typeof p.em !== 'number') return null
+    if (agora - p.em > VALIDADE_PERGUNTA_DO_GATE_MS || p.em > agora + 60_000) return null
+    const contextos = Array.isArray(p.contextos)
+      ? p.contextos.filter((c): c is ContextoDoChat => !!c && typeof c.id === 'string' && typeof c.rotulo === 'string' && typeof c.texto === 'string')
+      : []
+    return { texto: p.texto.trim(), contextos, em: p.em }
+  } catch { return null }
+}
+
+export function esquecerPerguntaDoGate(a: Armazem): void {
+  try { a.removeItem(CHAVE_PERGUNTA_DO_GATE) } catch { /* nada a fazer */ }
+}
+
+/** Onde a pergunta guardada NÃO deve abrir o painel sozinha (o meio do fluxo). */
+export function podeRetomarPerguntaAqui(path: string): boolean {
+  return !/^\/(login|assinar|cliente|business)(\/|$)/.test(path)
 }
