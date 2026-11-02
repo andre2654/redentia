@@ -11,7 +11,8 @@
 // desenhado no próprio site. Os três aparelhos flutuam sobre um chão de vidro
 // (o reflexo, desfocado para não espelhar texto legível) e uma linha de luz no
 // horizonte, nas cores do brilho da barra da Redentia (--nu-chat-luz-*). O fim
-// do herói se dissolve no branco da seção de baixo, sem degrau.
+// do herói é um corte seco para a seção de baixo, sem degradê (dono, 02/11/2026:
+// "prefiro sem o degradê aqui").
 //
 // Os aparelhos levam à loja (pedido do dono, 02/11/2026: "faça um efeito
 // quando faço hover em algum dos dispositivos que apareça pra clicar e ir para
@@ -124,27 +125,19 @@ const ligacao = (s: { rotulo: string; url: string | null }, nome: string) =>
 <style scoped>
 .hhv {
   --g: clamp(22px, 5.5vw, 80px);
-  /* a faixa do fim, onde o escuro se dissolve no branco da seção de baixo */
-  --fade: clamp(96px, 11vw, 176px);
+  /* o respiro do fim, ainda no escuro */
+  --fim: clamp(48px, 5.5vw, 88px);
   position: relative; isolation: isolate; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: clamp(40px, 4.4vw, 60px) var(--g) var(--fade);
-  background: var(--nu-white);
+  padding: clamp(40px, 4.4vw, 60px) var(--g) var(--fim);
+  background: var(--nu-agora-bg);
 }
-/* o céu: navy no alto (o mesmo do rodapé), preto onde os aparelhos ficam, e no
-   fim ele se apaga (máscara) no branco do fundo da seção */
+/* o céu: navy no alto (o mesmo do rodapé), preto onde os aparelhos ficam */
 .hhv__ceu {
   position: absolute; inset: 0; z-index: -2; pointer-events: none;
   background:
     radial-gradient(60% 38% at 50% 0%, color-mix(in srgb, var(--nu-blue) 16%, transparent), transparent),
     linear-gradient(180deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-navy) 55%, var(--nu-agora-bg)) 42%, var(--nu-agora-bg) 72%);
-  /* a dissolução com curva (rápida no começo, longa no fim), para não virar uma faixa cinza */
-  --mascara: linear-gradient(180deg,
-    var(--nu-agora-bg) calc(100% - var(--fade)),
-    color-mix(in srgb, var(--nu-agora-bg) 45%, transparent) calc(100% - var(--fade) * .62),
-    color-mix(in srgb, var(--nu-agora-bg) 14%, transparent) calc(100% - var(--fade) * .3),
-    transparent);
-  -webkit-mask-image: var(--mascara); mask-image: var(--mascara);
 }
 .hhv__texto { display: flex; flex-direction: column; align-items: center; max-width: 1120px; }
 .hhv__produto {
