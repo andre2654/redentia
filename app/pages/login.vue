@@ -9,7 +9,8 @@
 // primário) e e-mail → POST /auth/magic-link/* (PIN por e-mail). O verify
 // faz firstOrCreate no backend, então Entrar e Criar conta compartilham o
 // MESMO fluxo (o modo só troca a copy, fiel ao design). Google entra via
-// GIS → POST /auth/google (LoginGoogleButton).
+// GIS → POST /auth/google (LoginGoogleButton) e a Apple via Sign in with
+// Apple JS → POST /auth/apple (LoginAppleButton).
 //
 // GET /auth/channels/status decide o canal: WhatsApp fora → método e-mail
 // vira o default e o submit por celular é bloqueado com aviso inline (sem
@@ -25,6 +26,7 @@ import type {
   MeResponse,
   TokenGrant,
 } from '~/types/auth'
+import type { AppleCredencial } from '~/composables/useAppleAuth'
 
 definePageMeta({
   layout: false,
@@ -50,7 +52,7 @@ const redirectTarget = sanitizeRedirect(route.query.redirect)
 // '· Redentia' do titleTemplate global (ficaria "Entrar na Redentia · Redentia").
 usePageSeo({
   title: 'Entrar na Redentia',
-  description: 'Acesse ou crie sua conta Redentia com celular (código por WhatsApp), e-mail ou Google.',
+  description: 'Acesse ou crie sua conta Redentia com celular (código por WhatsApp), e-mail, Apple ou Google.',
   path: '/login',
   robots: 'noindex, follow',
 })
@@ -269,8 +271,11 @@ function backToIdentifier() {
 }
 
 // ————— Google (id_token → POST /auth/google → sessão) —————
+const socialEntrando = ref<'google' | 'apple'>('google')
+
 async function onGoogleCredential(idToken: string) {
   if (googleSubmitting.value) return
+  socialEntrando.value = 'google'
   googleSubmitting.value = true
   googleError.value = null
   try {
@@ -282,6 +287,25 @@ async function onGoogleCredential(idToken: string) {
   } catch (e) {
     // 401 token inválido/aud errada · 422 e-mail não verificado · 503 tokeninfo fora
     googleError.value = apiMessage(e, 'Falha ao entrar com o Google. Tente novamente.')
+    googleSubmitting.value = false
+  }
+}
+
+// Apple: o mesmo caminho do Google (POST /auth/apple), com o nonce cru e o
+// nome que a Apple só manda na primeira autorização
+async function onAppleCredential(cred: AppleCredencial) {
+  if (googleSubmitting.value) return
+  socialEntrando.value = 'apple'
+  googleSubmitting.value = true
+  googleError.value = null
+  try {
+    const r = await publicFetch<TokenGrant>('/auth/apple', {
+      method: 'POST',
+      body: { id_token: cred.idToken, nonce: cred.nonce, name: cred.nome },
+    })
+    await finishLogin(r.access_token)
+  } catch (e) {
+    googleError.value = apiMessage(e, 'Falha ao entrar com a Apple. Tente novamente.')
     googleSubmitting.value = false
   }
 }
@@ -339,13 +363,18 @@ async function onGoogleCredential(idToken: string) {
             </template>
           </NuListActionButton>
 
+          <LoginAppleButton
+            :disabled="googleSubmitting"
+            @credential="onAppleCredential"
+            @error="googleError = $event"
+          />
           <LoginGoogleButton
             :disabled="googleSubmitting"
             @credential="onGoogleCredential"
             @error="googleError = $event"
           />
         </div>
-        <p v-if="googleSubmitting" class="lg__google-state">Entrando com o Google…</p>
+        <p v-if="googleSubmitting" class="lg__google-state">{{ socialEntrando === 'apple' ? 'Entrando com a Apple…' : 'Entrando com o Google…' }}</p>
         <p v-else-if="googleError" class="lg__error lg__error--tight">{{ googleError }}</p>
 
         <NuInlineTextToggle class="lg__footer" :label="altLabel" :cta="altCta" @click="toggleMode" />

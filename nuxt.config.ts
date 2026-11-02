@@ -55,6 +55,12 @@ export default defineNuxtConfig({
       // o botão Google do /login se esconde sozinho (LoginGoogleButton
       // documenta o que falta pra ligar).
       googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      // Sign in with Apple (o Services ID da Apple, público como o do Google).
+      // O backend confere a assinatura do id_token pela JWKS da Apple e o aud
+      // contra APPLE_CLIENT_IDS. O redirect precisa estar cadastrado no
+      // Services ID (Apple Developer → Identifiers); sem a env, o botão some.
+      appleClientId: process.env.NUXT_PUBLIC_APPLE_CLIENT_ID || '',
+      appleRedirectUri: process.env.NUXT_PUBLIC_APPLE_REDIRECT_URI || '',
       // Observabilidade (migrada do Frontend antigo no cutover). Plugins
       // client carregam lazy (requestIdleCallback) pra não competir com o
       // LCP. Pra desligar num env, basta setar a env correspondente vazia.

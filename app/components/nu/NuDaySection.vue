@@ -45,7 +45,8 @@ const briefingTriggerRef = ref<HTMLButtonElement | null>(null)
 function openBriefing() {
   if (!isAuthenticated.value) {
     folha.abrir({ gesto: 'resumo' }, async (f) => {
-      await save({ whatsapp: f.canal === 'whatsapp', email: f.canal === 'email' })
+      // Google e Apple entram pelo e-mail da conta: o resumo vai para ele
+      await save({ whatsapp: f.canal === 'whatsapp', email: f.canal !== 'whatsapp' })
       return true
     }, '/')
     return

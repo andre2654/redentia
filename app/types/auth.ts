@@ -27,6 +27,15 @@ export interface TokenGrant {
   expires_in: number
 }
 
+/**
+ * POST /auth/google e /auth/apple. O token vem como no magic-link; `user` e
+ * `is_new_user` chegaram depois (podem faltar num backend antigo).
+ */
+export interface SocialLoginResponse extends TokenGrant {
+  user?: { id: number; name: string | null; email: string | null }
+  is_new_user?: boolean
+}
+
 /** POST /auth/magic-pin/verify — { phone, pin } (⚠️ token, não access_token). */
 export interface MagicPinVerifyResponse {
   token: string

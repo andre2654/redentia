@@ -11,6 +11,7 @@
 import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
 import type { DadosAtivo, DadosResumo } from '~/composables/useCadastroDados'
 import type { CadastroFeito } from '~/composables/useCadastroFolha'
+import type { AppleCredencial } from '~/composables/useAppleAuth'
 import type { CadastroIcone } from '~/utils/cadastro'
 
 const { aberta, fechar: fecharFolha } = useCadastroFolha()
@@ -162,6 +163,16 @@ async function confirmarCodigo() {
     codigo.value = ''
     return
   }
+  await contaFeita(f)
+}
+
+// Google ou Apple: a conta nasce sem código e segue o mesmo fim
+async function entrarSocial(provedor: 'google' | 'apple', credencial: string | AppleCredencial) {
+  const f = await cad.entrarSocial(provedor, credencial)
+  if (f) await contaFeita(f)
+}
+
+async function contaFeita(f: CadastroFeito) {
   feito.value = f
   eventoCadastro('cadastro_folha_conta', { gesto: gesto.value, canal: f.canal, nova: f.novaConta })
   try {
@@ -216,7 +227,7 @@ const fimDoCodigo = computed(() => ({
 
 const pronto = computed(() => {
   const f = feito.value
-  const onde = f ? (f.canal === 'whatsapp' ? 'no seu WhatsApp' : `em ${f.contato}`) : ''
+  const onde = f ? (f.canal === 'whatsapp' ? 'no seu WhatsApp' : f.contato ? `em ${f.contato}` : 'no seu e-mail') : ''
   if (acaoFalhou.value) {
     return { titulo: 'Sua conta está criada.', linha: 'Só não conseguimos terminar o que você pediu agora. Tente de novo na página.' }
   }
@@ -232,6 +243,8 @@ const pronto = computed(() => {
 })
 const botaoFinal = computed(() => (gesto.value === 'pergunta' ? 'Ver a resposta' : gesto.value === 'carteira' ? 'Ir para a carteira' : 'Continuar'))
 const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.value)}`)
+// com Apple ou Google na folha, o rodapé só aponta o celular
+const socialNaFolha = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
 </script>
 
 <template>
@@ -280,6 +293,10 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
                 </li>
               </ul>
 
+              <LoginSocial
+                v-if="!ehWhats" class="ncf__social" divisor="ou com o e-mail" :disabled="cad.enviando.value"
+                @google="entrarSocial('google', $event)" @apple="entrarSocial('apple', $event)" @error="cad.erro.value = $event"
+              />
               <form class="ncf__form" @submit.prevent="enviarContato">
                 <div v-if="gesto === 'resumo' && !cad.whatsappFora.value" class="ncf__canais" role="radiogroup" aria-label="Onde receber">
                   <button type="button" role="radio" :aria-checked="ehWhats" class="ncf__canal" :class="{ 'ncf__canal--on': ehWhats }" @click="trocarCanal('whatsapp')">WhatsApp</button>
@@ -301,6 +318,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
                 <button type="button" class="ncf__agora-nao" @click="fechar">Agora não</button>
                 <!-- no resumo o WhatsApp já está no seletor: sobra só quem já tem conta -->
                 <span v-if="gesto === 'resumo'">Já tem conta? <NuxtLink :to="linkLogin" @click="fechar">Entrar</NuxtLink></span>
+                <span v-else-if="socialNaFolha">Ou entre com o <NuxtLink :to="linkLogin" @click="fechar">celular</NuxtLink></span>
                 <span v-else>Ou entre com <NuxtLink :to="linkLogin" @click="fechar">Google</NuxtLink> ou <NuxtLink :to="linkLogin" @click="fechar">celular</NuxtLink></span>
               </div>
             </template>
@@ -393,6 +411,8 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
 .ncf__linha b { display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .ncf__linha span span { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
 
+.ncf__social { margin-top: 22px; }
+.ncf__social + .ncf__form { margin-top: 18px; }
 .ncf__form { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
 .ncf__canais { display: flex; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-cream); }
 .ncf__canal {
