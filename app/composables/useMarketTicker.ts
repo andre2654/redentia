@@ -38,6 +38,9 @@ export function useMarketTicker() {
   // loading = ainda não tentou hidratar (SSR + antes do fetch). A faixa mostra
   // skeleton nesse intervalo; vira false no fim do hydrate, com dado ou sem.
   const loading = useState<boolean>('nu:ticker-loading', () => true)
+  // a data do IBOV que a API devolveu (as_of_date): o topo diz "Fechamento de
+  // sexta, 30/10" com ela, e nunca chuta a data quando ela não vem
+  const asOf = useState<string | null>('nu:ticker-asof', () => null)
   const { publicFetch } = useApi()
 
   async function hydrate() {
@@ -52,11 +55,14 @@ export function useMarketTicker() {
       const next: TickerItem[] = []
       const ibov = snap?.indices_br?.IBOV
       const ifix = snap?.indices_br?.IFIX
+      asOf.value = typeof ibov?.as_of_date === 'string' ? ibov.as_of_date : null
       // pontos truncados, como a IA escreve (167.921,8 → 167.921), e não arredondados
       if (ibov?.value != null) next.push({ n: 'IBOV', v: nf0.format(Math.trunc(ibov.value)), ...pctFmt(ibov.change_pct) })
       if (ifix?.value != null) next.push({ n: 'IFIX', v: nf0.format(ifix.value), ...pctFmt(ifix.change_pct) })
       const usd = snap?.macro?.usd_brl
-      if (usd?.value != null) next.push({ n: 'Dólar', v: `R$ ${nf2.format(usd.value)}`, ...pctFmt(usd.change_pct) })
+      // o macro do snapshot traz a variação do dólar como delta_pct (PTAX contra
+      // a PTAX anterior), não change_pct: sem o fallback a faixa nunca a mostrava
+      if (usd?.value != null) next.push({ n: 'Dólar', v: `R$ ${nf2.format(usd.value)}`, ...pctFmt(usd.change_pct ?? usd.delta_pct) })
       const petr = petrQ?.data
       if (petr?.market_price != null) next.push({ n: 'PETR4', v: `R$ ${nf2.format(petr.market_price)}`, ...pctFmt(petr.change_percent) })
       const btcData = btc?.data ?? btc
@@ -83,5 +89,5 @@ export function useMarketTicker() {
 
   onMounted(hydrate)
 
-  return { items, loaded, loading }
+  return { items, loaded, loading, asOf }
 }
