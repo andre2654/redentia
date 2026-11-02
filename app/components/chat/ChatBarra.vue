@@ -16,7 +16,13 @@
 // painel como está; conversa abre o painel já nas conversas anteriores (só
 // para quem entrou). A troca é uma mola: a marca gira e some, os botões
 // crescem um depois do outro.
-import { barraVisivel, sugestoesDaRota } from '~/utils/chat-painel'
+//
+// No celular (dono, 02/11/2026: "fica encapsulado e mostra uma animação só pra
+// mostrar que é um input; quando clicar já foca"), a barra em repouso é uma
+// cápsula estreita no centro, com a pergunta se escrevendo sozinha no
+// placeholder. O toque cai no próprio campo (o foco é nativo, o teclado abre
+// no mesmo gesto) e a cápsula se abre em mola até a largura toda.
+import { barraVisivel, sugestoesDaRota, tickerDaRota } from '~/utils/chat-painel'
 
 const route = useRoute()
 const painel = useChatPainel()
@@ -33,6 +39,72 @@ const raiz = ref<HTMLElement | null>(null)
 const listaId = useId()
 
 const mostrarSugestoes = computed(() => focado.value && !texto.value.trim() && sugestoes.value.length > 0)
+
+/* ——— a cápsula do celular ——— */
+const movel = ref(false)
+const recolhida = computed(() => movel.value && !focado.value && !texto.value)
+const PADRAO = 'Pergunte à Redentia'
+const dica = ref(PADRAO)
+let relogio: ReturnType<typeof setTimeout> | null = null
+let mq: MediaQueryList | null = null
+let semMovimento = false
+
+function pararDica() {
+  if (relogio) clearTimeout(relogio)
+  relogio = null
+  dica.value = PADRAO
+}
+// escreve e apaga, uma frase por vez: o padrão, depois as sugestões da página
+function rodarDica() {
+  pararDica()
+  if (!recolhida.value || semMovimento) return
+  // só frase que cabe inteira na cápsula (medida na fonte do campo): cortada
+  // no meio, a frase não convida
+  const t = tickerDaRota(route.path)
+  const candidatas = [...(t ? [`E a ${t}, hoje?`, `Fale da ${t}`] : []), ...sugestoes.value, 'Como foi a bolsa?', 'Pergunte de um ativo']
+  const frases = [PADRAO, ...[...new Set(candidatas.filter(cabeNoCampo))].slice(0, 2)]
+  let f = 0
+  let n = PADRAO.length
+  let apagando = false
+  const passo = () => {
+    if (!recolhida.value) { pararDica(); return }
+    const alvo = frases[f]!
+    if (!apagando) {
+      n++
+      dica.value = alvo.slice(0, n)
+      if (n >= alvo.length) { apagando = true; relogio = setTimeout(passo, 2400); return }
+      relogio = setTimeout(passo, 55)
+    }
+    else {
+      n--
+      dica.value = alvo.slice(0, Math.max(n, 0))
+      if (n <= 0) { apagando = false; f = (f + 1) % frases.length; relogio = setTimeout(passo, 380); return }
+      relogio = setTimeout(passo, 26)
+    }
+  }
+  dica.value = PADRAO
+  relogio = setTimeout(() => { apagando = true; passo() }, 2600)
+}
+let regua: CanvasRenderingContext2D | null = null
+function cabeNoCampo(s: string): boolean {
+  const el = campo.value
+  if (!el) return false
+  regua ??= document.createElement('canvas').getContext('2d')
+  if (!regua) return s.length <= 18
+  const cs = getComputedStyle(el)
+  // o placeholder da cápsula é 600 (mais largo que o campo, 500)
+  regua.font = `600 ${cs.fontSize} ${cs.fontFamily}`
+  return regua.measureText(s).width <= el.clientWidth - 6
+}
+function lerTela() { movel.value = !!mq?.matches }
+onMounted(() => {
+  mq = window.matchMedia('(max-width: 760px)')
+  semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  lerTela()
+  mq.addEventListener('change', lerTela)
+})
+onBeforeUnmount(() => { mq?.removeEventListener('change', lerTela); pararDica() })
+watch([recolhida, () => route.path], ([r]) => { if (r) rodarDica(); else pararDica() })
 
 function perguntar(q?: string) {
   const t = (q ?? texto.value).trim()
@@ -84,7 +156,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 
 <template>
   <Transition name="cba">
-    <div v-if="visivel" ref="raiz" class="cba" @focusout="onFocusOut">
+    <div v-if="visivel" ref="raiz" class="cba" :class="{ 'cba--capsula': recolhida }" @focusout="onFocusOut">
       <Transition name="cba-sug">
         <ul v-if="mostrarSugestoes" :id="listaId" class="cba__sugs" role="listbox" aria-label="Sugestões de pergunta">
           <li v-for="(s, k) in sugestoes" :key="s" role="presentation">
@@ -120,7 +192,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
             </span>
             <input
               ref="campo" v-model="texto" class="cba__campo" type="text" enterkeyhint="send" autocomplete="off"
-              placeholder="Pergunte à Redentia" aria-label="Pergunte à Redentia"
+              :placeholder="movel ? dica : PADRAO" aria-label="Pergunte à Redentia"
               role="combobox" :aria-expanded="mostrarSugestoes" :aria-controls="listaId" aria-autocomplete="list"
               :aria-activedescendant="mostrarSugestoes && ativa >= 0 ? `${listaId}-${ativa}` : undefined"
               @focus="focado = true" @keydown="onKey"
@@ -213,10 +285,23 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 .cba-sug-enter-from, .cba-sug-leave-to { opacity: 0; transform: translateY(8px); }
 
 @media (max-width: 760px) {
-  .cba { bottom: calc(12px + env(safe-area-inset-bottom)); width: calc(100% - 24px); }
+  .cba {
+    bottom: calc(12px + env(safe-area-inset-bottom)); width: calc(100% - 24px);
+    transition: width .5s cubic-bezier(.34, 1.4, .64, 1);
+  }
   .cba__linha { height: 50px; padding-left: 16px; gap: 10px; }
   /* 16px no campo: abaixo disso o iOS dá zoom no foco */
-  .cba__campo { font-size: 16px; }
+  .cba__campo { font-size: 16px; text-overflow: ellipsis; }
+  .cba__enviar { transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease, width .35s ease, background .2s ease; }
+
+  /* em repouso: a cápsula, estreita, com a pergunta se escrevendo */
+  .cba--capsula { width: min(272px, calc(100% - 24px)); }
+  .cba--capsula .cba__linha { height: 46px; padding-right: 16px; }
+  .cba--capsula .cba__campo::placeholder { color: var(--nu-ink); font-weight: 600; }
+  .cba--capsula .cba__enviar { width: 0; opacity: 0; transform: scale(.3); pointer-events: none; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .cba, .cba__enviar { transition: none; }
 }
 </style>
 
