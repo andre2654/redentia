@@ -44,6 +44,10 @@ const route = useRoute()
     <ChatBarra />
     <ChatPainel />
     <ChatSeletor />
+    <!-- A janelinha de espiar ativo (03/11/2026, pedido do dono): o clique num
+         link para /asset/X abre um cartão no canto em vez da página
+         (plugins/espiar-ativo.client.ts); maximizar leva à página. -->
+    <EspiarAtivo />
     <!-- O quiz da assinatura, um só no site: abre da oferta (/assinar, paywall)
          e do chat, quando quem entrou e não assina pergunta (ChatPainel). -->
     <AssinaturaQuiz />

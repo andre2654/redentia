@@ -5,6 +5,8 @@
 // do dia que o índice tem; sem número, o lado direito some.
 // A linha marcada (teclado ou mouse) ganha o fundo creme: é o mesmo estado
 // para os dois, então nunca há duas linhas acesas.
+// `data-sem-espiar` (03/11/2026): a busca é o "ir até o ativo", e o Enter já
+// navega direto (busca.vue); o clique faz o mesmo, sem a janelinha de espiar.
 import type { BuscaItem } from '~/composables/useBuscaIndex'
 
 const props = defineProps<{
@@ -24,6 +26,7 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
   <NuxtLink
     :id="props.id"
     :to="props.item.href"
+    data-sem-espiar
     class="bl"
     :class="{ 'bl--ativo': props.ativo }"
     role="option"
