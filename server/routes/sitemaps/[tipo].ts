@@ -2,12 +2,10 @@
  * /sitemaps/{tipo}.xml — um urlset por família de página.
  * O índice em /sitemap.xml só aponta para os tipos que têm URL.
  *
- * dividendos e quanto-rende respondem da última cópia boa. A fila que monta
- * o quanto-rende passa de dois minutos; o Googlebot não espera isso.
+ * Todos os tipos respondem da última cópia boa. A montagem é a mesma lista
+ * de páginas de antes, e a fila do quanto-rende passa de dois minutos.
  */
 import { responderSitemapPesado } from '../../utils/sitemap-resposta.ts'
-
-const SITEMAPS_PESADOS = new Set(['dividendos', 'quanto-rende'])
 
 export default defineEventHandler(async (event) => {
   const tipo = tipoDoSitemap(getRouterParam(event, 'tipo'))
@@ -15,12 +13,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Sitemap não encontrado' })
   }
 
-  const origin = siteOrigin(event)
-  if (SITEMAPS_PESADOS.has(tipo)) {
-    return responderSitemapPesado(event, tipo, origin)
-  }
-
-  const pages = paginasDoGrupo(await getSiteSections(), tipo)
-  cacheSitemap(event)
-  return urlsetXml(origin, pages)
+  return responderSitemapPesado(event, tipo, siteOrigin(event))
 })

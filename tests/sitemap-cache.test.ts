@@ -1,6 +1,6 @@
 /**
- * A resposta de /sitemaps/dividendos.xml e /sitemaps/quanto-rende.xml sai da
- * última cópia boa. A geração nova não segura a requisição, e uma geração
+ * A resposta de /sitemap.xml e de cada /sitemaps/{tipo}.xml sai da última
+ * cópia boa. A geração nova não segura a requisição, e uma geração
  * incompleta não apaga a cópia que já servia.
  */
 import { test } from 'node:test'
@@ -20,6 +20,13 @@ import {
   type CopiaSitemap,
 } from '../server/utils/sitemap-cache.ts'
 import { SEMENTES_SITEMAP } from '../server/data/sitemap-semente.ts'
+import {
+  SITEMAP_INDICE,
+  SITEMAP_ORDEM,
+  caminhoDoSitemap,
+  entradasDoIndice,
+  sitemapIndexXml,
+} from '../server/utils/sitemap-xml.ts'
 
 const ORIGEM = 'https://www.redentia.com.br'
 
@@ -189,6 +196,33 @@ test('troca o host do loc e deixa o path como está', () => {
   assert.equal(copiaServe(copia(xml, 1)), true)
   assert.equal(copiaServe({ xml: '<urlset></urlset>', storedAt: 1, completo: true, origin: ORIGEM }), false)
   assert.equal(copiaServe(copia(xml, 1, false)), false)
+  const indice = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${ORIGEM}/sitemaps/paginas.xml</loc></sitemap>\n</sitemapindex>\n`
+  assert.equal(copiaServe(copia(indice, 1)), true)
+  assert.match(xmlNaOrigem(indice, ORIGEM, 'http://localhost:3000'), /<loc>http:\/\/localhost:3000\/sitemaps\/paginas.xml<\/loc>/)
+  assert.equal(copiaServe({ xml: '<sitemapindex></sitemapindex>', storedAt: 1, completo: true, origin: ORIGEM }), false)
+})
+
+test('o índice lista só grupo com página, na ordem, com o lastmod mais novo', () => {
+  const sections = [
+    { id: 'core', title: '', pages: [{ path: '/', title: 'Home', lastmod: '2026-10-01' }] },
+    { id: 'institucional', title: '', pages: [{ path: '/institucional/about', title: 'Sobre' }] },
+    { id: 'rankings', title: '', pages: [
+      { path: '/ranking/dy', title: 'DY', lastmod: '2026-10-30' },
+      { path: '/ranking/pl', title: 'PL', lastmod: '2026-10-02' },
+    ] },
+    { id: 'teses', title: '', pages: [] },
+  ]
+  const entries = entradasDoIndice(ORIGEM, sections as never)
+  assert.deepEqual(entries.map((e) => e.loc), [
+    `${ORIGEM}/sitemaps/paginas.xml`,
+    `${ORIGEM}/sitemaps/rankings.xml`,
+  ])
+  assert.equal(entries[0]?.lastmod, '2026-10-01')
+  assert.equal(entries[1]?.lastmod, '2026-10-30')
+  const xml = sitemapIndexXml(entries)
+  assert.match(xml, /<sitemapindex /)
+  assert.equal(xml.includes('<urlset'), false)
+  assert.equal(xml.includes('<lastmod>2026-10-30</lastmod>'), true)
 })
 
 test('janela e teto cabem no que o Googlebot aguenta, e o header continua o de antes', () => {
@@ -209,31 +243,56 @@ test('fallback do ISR aponta o xml e o content-type', () => {
   assert.equal(headers['content-type'], SITEMAP_CONTENT_TYPE)
 })
 
-test('a rota pesada usa a cópia boa e o xml continua saindo de getSiteSections', () => {
+test('toda rota de sitemap usa a cópia boa e o xml continua saindo de getSiteSections', () => {
   const rota = readFileSync(new URL('../server/routes/sitemaps/[tipo].ts', import.meta.url), 'utf8')
+  const indice = readFileSync(new URL('../server/routes/sitemap.xml.ts', import.meta.url), 'utf8')
   const resposta = readFileSync(new URL('../server/utils/sitemap-resposta.ts', import.meta.url), 'utf8')
   const cfg = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
+  const semente = readFileSync(new URL('../scripts/atualizar-sitemap-semente.mjs', import.meta.url), 'utf8')
+  const fallback = readFileSync(new URL('../scripts/sitemap-isr-fallback.mjs', import.meta.url), 'utf8')
   assert.match(rota, /responderSitemapPesado/)
-  assert.match(rota, /dividendos/)
-  assert.match(rota, /quanto-rende/)
+  assert.doesNotMatch(rota, /getSiteSections/)
+  assert.match(indice, /responderSitemapPesado/)
+  assert.match(indice, /SITEMAP_INDICE/)
   assert.match(resposta, /getSiteSections\(\)/)
   assert.match(resposta, /urlsetXml\(origin, pages\)/)
   assert.match(resposta, /paginasDoGrupo\(sections, tipo\)/)
+  assert.match(resposta, /entradasDoIndice\(origin, sections\)/)
+  assert.match(resposta, /sitemapIndexXml\(entradas\)/)
   assert.match(resposta, /quantoRendeGeracaoCompleta\(\)/)
   assert.match(resposta, /waitUntil\(seguro\)/)
-  assert.match(cfg, /'\/sitemaps\/dividendos\.xml': \{ isr: 3600 \}/)
-  assert.match(cfg, /'\/sitemaps\/quanto-rende\.xml': \{ isr: 3600 \}/)
+  assert.match(resposta, /SITEMAP_ORDEM/)
+  assert.match(semente, /SITEMAP_ORDEM/)
+  assert.match(semente, /SITEMAP_INDICE/)
+  assert.match(semente, /entradasDoIndice/)
+  assert.match(fallback, /SITEMAP_ORDEM/)
+  assert.match(fallback, /SITEMAP_INDICE/)
+  assert.match(fallback, /arquivoDoSitemap/)
+  for (const tipo of [...SITEMAP_ORDEM, SITEMAP_INDICE]) {
+    const caminho = caminhoDoSitemap(tipo).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    assert.match(cfg, new RegExp(`'${caminho}': \\{ isr: 3600 \\}`), tipo)
+  }
 })
 
-test('a semente do build traz os dois urlsets canônicos', () => {
-  for (const tipo of ['dividendos', 'quanto-rende'] as const) {
+test('a semente do build traz o índice e todos os urlsets canônicos', () => {
+  for (const tipo of SITEMAP_ORDEM) {
     const item = SEMENTES_SITEMAP[tipo]
     assert.ok(item, tipo)
     assert.equal(item.origin, ORIGEM)
     assert.match(item.xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset /)
     assert.equal(item.urls, item.xml.split('<loc>').length - 1)
-    assert.ok(item.urls > 500, `${tipo} ${item.urls}`)
+    assert.ok(item.urls > 0, `${tipo} ${item.urls}`)
     assert.match(item.xml, /<loc>https:\/\/www\.redentia\.com\.br\//)
+    assert.equal(copiaServe({ xml: item.xml, storedAt: item.storedAt, completo: true, origin: item.origin }), true)
   }
+  assert.ok(SEMENTES_SITEMAP.dividendos!.urls > 500)
+  assert.ok(SEMENTES_SITEMAP['quanto-rende']!.urls > 500)
   assert.ok(SEMENTES_SITEMAP.dividendos!.urls > SEMENTES_SITEMAP['quanto-rende']!.urls)
+  const indice = SEMENTES_SITEMAP[SITEMAP_INDICE]
+  assert.ok(indice)
+  assert.equal(indice.origin, ORIGEM)
+  assert.match(indice.xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<sitemapindex /)
+  assert.equal(indice.urls, indice.xml.split('<loc>').length - 1)
+  assert.equal(indice.urls, SITEMAP_ORDEM.length)
+  assert.equal(copiaServe({ xml: indice.xml, storedAt: indice.storedAt, completo: true, origin: indice.origin }), true)
 })
