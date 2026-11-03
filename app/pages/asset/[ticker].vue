@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
+import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
 // /asset/[ticker] — página de ativo (PR2, nasceu como /acao/[ticker]).
 // A URL canônica voltou a ser /asset/{ticker} (equity de SEO da Redentia
 // antiga); /acao/** só existiu dias no vercel.app e hoje 301a pra cá
@@ -112,6 +114,41 @@ const relacionados = computed(() => relacionadosComProventos(data.value?.relacio
 // "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
 const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
+// PROTÓTIPO (03/11/2026, o dono: "tente reimaginar essa página (e cuidado com
+// o SEO)"): três direções, trocadas só no dev por ?ativo=1 (a ficha: um
+// documento de consulta com o índice ao lado), ?ativo=2 (a noite: o preço e a
+// linha de luz no escuro do herói da home, as seções centradas embaixo) e
+// ?ativo=3 (o painel: a página inteira numa grade de cartões). Em produção
+// import.meta.dev é false, o mapa fica vazio (os componentes nem entram no
+// bundle) e segue a página de hoje até o dono escolher. As três recebem o mesmo
+// payload (o `vm`): mudam a forma, nunca o número. O SEO é o desta página (o
+// usePageSeo abaixo, que não muda), com o mesmo H1, os mesmos títulos, o mesmo
+// FAQPage e todo o texto e os links no HTML do servidor:
+// scripts/seo-paridade-ativo.mjs confere.
+const DIRECOES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/ativo/direcoes/AtivoFicha.vue')),
+      '2': defineAsyncComponent(() => import('~/components/ativo/direcoes/AtivoNoite.vue')),
+      '3': defineAsyncComponent(() => import('~/components/ativo/direcoes/AtivoPainel.vue')),
+    }
+  : {}
+const direcao = computed(() => (data.value ? DIRECOES[String(route.query.ativo ?? '')] ?? null : null))
+const direcaoVm = computed<AtivoDirecaoVM | null>(() => (import.meta.dev && data.value
+  ? {
+      acao: acao.value,
+      position: position.value,
+      renamedFrom: renamedFrom.value,
+      seguivel: acao.value.kind !== 'crypto',
+      range: activeRange.value,
+      setRange,
+      rangeLoading: rangeLoading.value,
+      series: currentSeries.value,
+      dividendosHref: proventosHrefs.value.dividendos,
+      quantoRendeHref: quantoRendeHref.value,
+      relacionados: relacionados.value,
+    }
+  : null))
+
 if (data.value) {
   const assetUrl = `${useSiteOrigin()}/asset/${ticker}`
   // JSON-LD por tipo: Corporation (ação/BDR), InvestmentFund (FII/ETF) e
@@ -148,7 +185,8 @@ if (data.value) {
 </script>
 
 <template>
-  <div v-if="data">
+  <component :is="direcao" v-if="direcao && direcaoVm" :vm="direcaoVm" />
+  <div v-else-if="data">
     <!-- cripto não está em `tickers`: a watchlist não a aceita (ver AcaoHero) -->
     <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" :seguivel="acao.kind !== 'crypto'" />
 
