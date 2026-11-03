@@ -14,7 +14,7 @@
  * e cada /asset faz ~10 chamadas (rajada já derrubou produção, 23/09/2026).
  *
  *   node scripts/seo-paridade-ativo.mjs [--base http://localhost:3471] [--pausa 4000]
- *        [--tickers PETR4,ITUB4] [--antiga .prints-ativo/antiga]
+ *        [--tickers PETR4,ITUB4] [--antiga .prints-ativo/antiga] [--query '?cadeia=2']
  *
  * `--antiga` é a pasta com TICKER.html da página anterior, salvo por curl em
  * 03/11/2026 às 18:39, antes da troca (a saída da comparação daquele dia está
@@ -37,6 +37,8 @@ const BASE = args.base ?? 'http://localhost:3471'
 const PAUSA = Number(args.pausa ?? 4000)
 const TICKERS = (args.tickers ?? 'PETR4,ITUB4,MXRF11,BOVA11,AAPL34,SHUL4').split(',')
 const ANTIGA = args.antiga ?? '.prints-ativo/antiga'
+// `--query '?cadeia=2'`: confere uma direção do dev contra a mesma página antiga
+const QUERY = args.query ?? ''
 const QUEDA_MAX = 0.02
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'", '#x27': "'", '#160': ' ' }
@@ -160,7 +162,7 @@ async function main() {
     const salvo = join(ANTIGA, `${t}.html`)
     if (!existsSync(salvo)) { console.log(`\n${t}: sem ${salvo}, pulei`); falhou = true; continue }
     const antes = extrair(await readFile(salvo, 'utf8'))
-    const depois = extrair(await buscar(`${BASE}/asset/${t}`))
+    const depois = extrair(await buscar(`${BASE}/asset/${t}${QUERY}`))
     await dorme(PAUSA)
     const c = comparar(antes, depois, { mascara: true })
     const pct = (-c.queda * 100).toFixed(1)

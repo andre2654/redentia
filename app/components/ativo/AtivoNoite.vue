@@ -20,6 +20,7 @@ import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
 import AcaoCadeia from '~/components/acao/AcaoCadeia.vue'
 import AcaoEtfXray from '~/components/acao/AcaoEtfXray.vue'
 import AcaoFundInfo from '~/components/acao/AcaoFundInfo.vue'
+import type { Component } from 'vue'
 
 const props = defineProps<{ vm: AtivoDirecaoVM }>()
 const { v, a, t, contexto, contextoGrafico, tituloGrafico, legenda, linhas, cartoes, perguntas, perguntar, abrirCom, secoes, links, ir } = useAtivoDirecao(() => props.vm)
@@ -65,6 +66,22 @@ watch(atual, (id) => {
   const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ul.scrollTo({ left: Math.max(0, alvo), behavior: calmo ? 'auto' : 'smooth' })
 })
+
+// PROTÓTIPO (03/11/2026, o dono: "consegue reimaginar essa seção aqui?"): três
+// direções para a cadeia de fornecimento, trocadas só no dev por ?cadeia=1 (o
+// razão: uma linha por empresa, com o que se compra e o que se vende dos dois
+// lados), ?cadeia=2 (o mapa calmo: fios finos iguais, a empresa no centro em
+// texto) e ?cadeia=3 (o que se sabe: a fração conhecida primeiro, as empresas
+// em fichas). Em produção o mapa fica vazio e segue o AcaoCadeia de hoje.
+const rota = useRoute()
+const CADEIAS: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaRazao.vue')),
+      '2': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaMapa.vue')),
+      '3': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaConhecido.vue')),
+    }
+  : {}
+const cadeiaDirecao = computed(() => CADEIAS[String(rota.query.cadeia ?? '')] ?? null)
 
 const palco = ref<HTMLElement | null>(null)
 onMounted(() => {
@@ -145,10 +162,7 @@ onMounted(() => {
 
       <!-- o resumo factual: o que o gráfico e os números dizem, em palavras -->
       <section v-if="a.resumo" v-contexto-chat="{ id: `resumo:${t}`, tipo: 'secao', rotulo: rotuloComSobre('Resumo', t), texto: a.resumo.paragrafos.join('\n') }" class="an__sec an__sec--resumo" aria-label="Resumo do ativo">
-        <div class="an__estreito an__resumo">
-          <p v-for="(p, i) in a.resumo.paragrafos" :key="i">{{ p }}</p>
-          <p class="an__aviso">{{ a.resumo.aviso }}</p>
-        </div>
+        <div class="an__estreito"><AtivoResumo :ticker="t" :resumo="a.resumo" /></div>
       </section>
     </div>
 
@@ -224,7 +238,8 @@ onMounted(() => {
     </section>
 
     <section v-if="a.cadeia" id="cadeia" class="an__embutida" :class="{ 'an__embutida--branca': tons.cadeia === 'branco' }">
-      <AcaoCadeia :cadeia="a.cadeia" :nome="a.name" :ticker="t" />
+      <component :is="cadeiaDirecao" v-if="cadeiaDirecao" :cadeia="a.cadeia" :nome="a.name" :ticker="t" :tom="tons.cadeia" />
+      <AcaoCadeia v-else :cadeia="a.cadeia" :nome="a.name" :ticker="t" />
     </section>
 
     <section v-if="a.pares" id="setor" class="an__sec" :class="tom('setor')">
@@ -370,8 +385,6 @@ onMounted(() => {
 .an__estreito { max-width: 760px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
 .an__sec--resumo .an__estreito { margin-top: 0; }
 .an__largo { max-width: 1080px; margin: clamp(28px, 3.4vw, 44px) auto 0; }
-.an__resumo p { margin: 0 0 14px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7; }
-.an__resumo .an__aviso { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .an__sec--creme .an__ind :deep(.ain__dim) { background: var(--nu-white); }
 .an__sec--creme :deep(.apg__mais), .an__sec--creme :deep(.avt__lista a), .an__sec--creme :deep(.apv__cta:not(.apv__cta--1)) { background: var(--nu-white); }
 

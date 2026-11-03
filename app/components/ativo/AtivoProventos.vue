@@ -68,14 +68,16 @@ const renda = computed(() => {
           v-for="(b, i) in dividends.bars" :key="b.year"
           v-contexto-chat="{ id: `provento-ano:${sobre}:${b.year}`, tipo: 'proventos', rotulo: rotuloComSobre(`Proventos ${b.year}`, sobre), texto: `Proventos${sobre ? ` de ${sobre}` : ''} em ${b.year}: ${b.valFmt}${b.current ? ' (ano corrente)' : ''}. ${dividends.barsNote}` }"
           class="apv__col" :class="{ 'apv__col--atual': b.current, 'apv__col--on': barra === i, 'apv__col--recua': barra != null && barra !== i }"
-          tabindex="0" :aria-label="`${b.year}: ${b.valFmt} ${unidade}`"
+          tabindex="0" :aria-label="`${b.current ? 'Últimos 12 meses' : b.year}: ${b.valFmt} ${unidade}`"
           @mouseenter="barra = i" @focus="barra = i" @blur="barra === i && (barra = null)"
         >
           <span class="apv__val">{{ b.valFmt }}</span>
           <span class="apv__trilho"><span class="apv__barra" :style="{ height: `${Math.max(2, b.hPct)}%` }" /></span>
-          <span class="apv__ano">{{ b.year }}</span>
+          <!-- a barra corrente soma os ÚLTIMOS 12 MESES (proventosChart): o rótulo diz
+               isso, para não brigar com o "2026 até agora" do resumo -->
+          <span class="apv__ano">{{ b.current ? '12 meses' : b.year }}</span>
           <span v-if="barra === i" class="apv__dica" :class="`apv__dica--${lado(i)}`" aria-hidden="true">
-            <span class="apv__dica-a">{{ b.current ? `${b.year} · últimos 12 meses` : b.year }}</span>
+            <span class="apv__dica-a">{{ b.current ? 'Últimos 12 meses' : b.year }}</span>
             <span class="apv__dica-v">{{ b.valFmt }} {{ unidade }}</span>
           </span>
         </li>

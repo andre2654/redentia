@@ -35,6 +35,7 @@ import type {
   AcaoPerfilRow,
   SupplyChainApi,
   SupplyLinkApi,
+  SupplyRestApi,
   AcaoRange,
   AcaoScoreVM,
   AcaoSeriesPair,
@@ -1509,6 +1510,27 @@ function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'
 
 const nfPct = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
 
+/** "menos de 0,1%" no lugar de um 0,06% que parece preciso e não é o ponto */
+function pctCobertura(p: number): string {
+  if (p <= 0) return '0%'
+  if (p < 0.1) return 'menos de 0,1%'
+  return `${nfPct.format(p)}%`
+}
+
+function cadeiaCobertura(api: SupplyChainApi): AcaoCadeiaVM['cobertura'] {
+  const t = api.totais
+  if (!t || !api.restante) return null
+  const lado = (total: number, r: SupplyRestApi | null, tem: boolean) => {
+    if (!tem || !r || !total) return null
+    const p = (r.listadas / total) * 100
+    return { total: fmtCompactMoney(total, 'BRL'), conhecido: fmtCompactMoney(r.listadas, 'BRL'), pct: pctCobertura(p), pctN: Math.min(100, p), semValor: r.fora_da_conta }
+  }
+  const receita = lado(t.receita, api.restante.clientes, api.vende_para.length > 0)
+  const custo = t.custo != null ? lado(t.custo, api.restante.custo, api.compra_de.length > 0) : null
+  if (!receita && !custo) return null
+  return { ano: t.ano, fonte: t.fonte, url: t.url, receita, custo }
+}
+
 function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCadeiaVM | null {
   if (!api || (!api.compra_de?.length && !api.vende_para?.length)) return null
   const all = [...api.compra_de, ...api.vende_para]
@@ -1521,6 +1543,7 @@ function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCa
     compraDe: [...api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false, api.totais)), ...(restoCusto ? [restoCusto] : [])],
     vendePara: [...api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true, api.totais)), ...(restoClientes ? [restoClientes] : [])],
     fontes,
+    cobertura: cadeiaCobertura(api),
   }
 }
 

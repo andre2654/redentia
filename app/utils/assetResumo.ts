@@ -124,11 +124,38 @@ export interface ResumoAtivoInput {
   links: ResumoLink[]
 }
 
+/** Um pedaço de frase; `n` marca o número em destaque. */
+export interface ResumoTrecho { t: string; n?: boolean }
+export type ResumoFrase = ResumoTrecho[]
+
+/**
+ * O mesmo resumo, para ler (03/11/2026, o dono: "esse texto aqui também não
+ * ficou legal"): frases curtas com o número em destaque, os indicadores numa
+ * lista, os proventos por ano numa fileira de números e as fontes juntas numa
+ * linha no fim, com a data uma vez só. Os números, as fontes e as datas são os
+ * dos `paragrafos` (que seguem para o chat e para os testes); só a forma muda.
+ */
+export interface ResumoFatos {
+  titulo: string
+  frases: ResumoFrase[]
+  indicadores: { rotulo: string; valor: string }[]
+  /** o que é janela de 12 meses e o que é de hoje */
+  indicadoresNota: string | null
+  proventos: {
+    frases: ResumoFrase[]
+    /** um por ano com data-com; o ano corrente é "até agora", e os 12 meses vêm à parte */
+    anos: { rotulo: string; valor: string; corrente: boolean }[]
+    legenda: string
+  } | null
+  fontes: string | null
+}
+
 export interface AcaoResumoVM {
   h1: string
   title: string
   description: string
   paragrafos: string[]
+  fatos: ResumoFatos
   links: ResumoLink[]
   faqTitulo: string | null
   faq: NuFaqItem[]
@@ -619,6 +646,169 @@ function faqDe(i: ResumoAtivoInput): NuFaqItem[] {
   return itens.slice(0, 5)
 }
 
+/* ————— o resumo para ler (ResumoFatos) ————— */
+
+/** "R$ 726,6 bi": o valor de mercado no tamanho de leitura (o "726,56B" era de planilha). */
+function dinheiroCurto(v: number, moeda: 'BRL' | 'USD' = 'BRL'): string {
+  const cur = moedaDe(moeda)
+  const a = Math.abs(v)
+  if (a >= 1e12) return `${cur} ${nf1.format(v / 1e12)} tri`
+  if (a >= 1e9) return `${cur} ${nf1.format(v / 1e9)} bi`
+  if (a >= 1e6) return `${cur} ${nf1.format(v / 1e6)} mi`
+  return `${cur} ${nf2.format(v)}`
+}
+
+const T = (t: string): ResumoTrecho => ({ t })
+const N = (t: string): ResumoTrecho => ({ t, n: true })
+
+function fatosIndicadores(i: ResumoAtivoInput): Pick<ResumoFatos, 'indicadores' | 'indicadoresNota'> {
+  const n = i.numeros
+  const moeda = i.moeda === 'USD' && i.kind !== 'bdr' ? 'USD' : 'BRL'
+  const doze: { rotulo: string; valor: string }[] = []
+  if (ok(n.dy)) doze.push({ rotulo: 'Dividend yield', valor: pctAbs(n.dy) })
+  if (ok(n.pl)) doze.push({ rotulo: 'P/L', valor: nf2.format(n.pl) })
+  if (ok(n.roe)) doze.push({ rotulo: 'ROE', valor: pctAbs(n.roe, 1) })
+  if (ok(n.margem)) doze.push({ rotulo: 'Margem líquida', valor: pctAbs(n.margem, 1) })
+  const hoje: { rotulo: string; valor: string }[] = []
+  if (ok(n.pvp)) hoje.push({ rotulo: 'P/VP', valor: nf2.format(n.pvp) })
+  if (ok(n.valorMercado) && n.valorMercado > 0) hoje.push({ rotulo: 'Valor de mercado', valor: dinheiroCurto(n.valorMercado, moeda) })
+  if (ok(n.vpCota) && n.vpCota > 0) hoje.push({ rotulo: 'Valor patrimonial por cota', valor: precoFmt(n.vpCota, 'fii', 'BRL') })
+  if (ok(n.rendaMedia24m) && n.rendaMedia24m > 0) hoje.push({ rotulo: 'Renda média por cota em 24 meses', valor: precoFmt(n.rendaMedia24m, 'fii', 'BRL') })
+  if (ok(n.ifix)) hoje.push({ rotulo: 'Participação no IFIX', valor: pctAbs(n.ifix) })
+  if (ok(n.cotistas) && n.cotistas > 0) hoje.push({ rotulo: 'Cotistas', valor: nf0.format(n.cotistas) })
+  // "dividend yield, P/L, ROE e margem líquida": sigla fica em caixa alta
+  const nomes = juntar(doze.map((x) => (/^[A-Z/]+$/.test(x.rotulo) ? x.rotulo : x.rotulo.toLowerCase())))
+  const nota = doze.length
+    ? `${nomes.charAt(0).toUpperCase()}${nomes.slice(1)}: últimos 12 meses.${hoje.length ? ' Os demais, na leitura mais recente.' : ''}`
+    : null
+  return { indicadores: [...doze, ...hoje], indicadoresNota: nota }
+}
+
+function fatosProventos(i: ResumoAtivoInput): ResumoFatos['proventos'] {
+  const p = i.proventos
+  if (!p) return null
+  const u = p.unidade
+  const frases: ResumoFrase[] = []
+  const nome = i.kind === 'fii' ? 'rendimentos' : 'proventos de renda'
+  let oQue = i.kind === 'fii' ? 'Rendimentos com data-com' : 'Dividendos e JCP com data-com'
+  if (p.tipo === 'capital' && ok(p.capital12) && p.capital12 > 0) {
+    frases.push([T(`Nos últimos 12 meses, ${i.ticker} não teve provento de renda com data-com. A amortização soma `), N(precoFmt(p.capital12, 'stock', 'BRL')), T(` por ${u}; ela devolve capital e fica fora do dividend yield.`)])
+    oQue = 'Amortização com data-com'
+  }
+  else if (ok(p.renda12) && p.renda12 > 0) {
+    const n = ok(p.eventos12) && p.eventos12 > 0 ? `, em ${nf0.format(p.eventos12)} ${p.eventos12 === 1 ? 'provento' : 'proventos'}` : ''
+    const cad = p.frequencia?.trim() ? `, numa cadência ${p.frequencia.trim().toLowerCase()}` : ''
+    frases.push([T(`Nos últimos 12 meses, os ${nome} de ${i.ticker} com data-com somaram `), N(precoFmt(p.renda12, 'stock', 'BRL')), T(` por ${u}${n}${cad}.`)])
+    // pagamento mensal (FII, em geral): a média por mês é a conta que a pessoa faz
+    if (ok(p.eventos12) && p.eventos12 >= 10) frases.push([T('Na média, '), N(precoFmt(p.renda12 / 12, 'stock', 'BRL')), T(` por ${u} a cada mês.`)])
+    else if (ok(p.eventos12) && p.eventos12 >= 2) frases.push([T('Na média, '), N(precoFmt(p.renda12 / p.eventos12, 'stock', 'BRL')), T(` por ${u} a cada provento.`)])
+    if (ok(p.capital12) && p.capital12 > 0) {
+      frases.push([T('Houve ainda '), N(precoFmt(p.capital12, 'stock', 'BRL')), T(` por ${u} em amortização, fora dessa soma.`)])
+    }
+  }
+  else if (p.renda12 === 0) {
+    frases.push([T(`Não houve provento de renda com data-com nos últimos 12 meses de ${i.ticker}.`)])
+  }
+  if (p.proximo === 'a definir') frases.push([T('O próximo pagamento está a definir.')])
+  else if (p.proximo?.trim()) frases.push([T('O próximo pagamento previsto é '), N(p.proximo.trim()), T('.')])
+  const anos = p.anos
+    .filter((a) => ok(a.valor) && a.valor > 0 && /^\d{4}$/.test(a.ano))
+    .map((a) => ({ rotulo: a.corrente ? `${a.ano} até agora` : a.ano, valor: precoFmt(a.valor, 'stock', 'BRL'), corrente: a.corrente }))
+  if (!frases.length && !anos.length) return null
+  return { frases, anos, legenda: `${oQue}, por ano, em R$ por ${u}. O ano corrente vai até hoje; os 12 meses estão na frase acima.` }
+}
+
+function fatosEtf(i: ResumoAtivoInput): ResumoFrase[] {
+  const e = i.etf
+  if (!e) return []
+  const out: ResumoFrase[] = []
+  const comp = dataBr(e.competencia)
+  if (ok(e.posicoes) && e.posicoes > 0) out.push([T(comp ? `A carteira de ${comp} reúne ` : 'A carteira informada reúne '), N(nf0.format(e.posicoes)), T(' posições.')])
+  else if (comp) out.push([T(`A carteira informada é a de ${comp}.`)])
+  if (e.maiorNome?.trim() && ok(e.maiorPeso) && e.maiorPeso > 0) out.push([T(`A maior posição é ${e.maiorNome.trim()}, com `), N(pctAbs(e.maiorPeso)), T(' do fundo.')])
+  if (ok(e.taxaAdm)) {
+    out.push([T('A taxa de administração informada é de '), N(pctAbs(e.taxaAdm)), T(' ao ano.')])
+    // a taxa em dinheiro, a mesma conta do Raio-X ("Em 10 anos, R$ 10 mil pagam")
+    out.push([T('Sobre R$ 10 mil investidos, isso dá cerca de '), N(`R$ ${nf0.format(e.taxaAdm * 100)}`), T(' por ano, descontados da cota.')])
+  }
+  return out
+}
+
+function fatosDe(i: ResumoAtivoInput): ResumoFatos {
+  const quem = `${i.nome} (${i.ticker})`
+  const titulo = `${i.ticker} em resumo`
+  if (i.kind === 'crypto') {
+    return { titulo, frases: [[T(`${quem} é um criptoativo. A cotação em reais está no topo desta página, e o gráfico fica abaixo do título.`)]], indicadores: [], indicadoresNota: null, proventos: null, fontes: null }
+  }
+  const frases: ResumoFrase[] = []
+  const setor = setorBaixo(i.setor)
+  const comSetor = setor && !(i.kind === 'fii' && setor === 'imobiliário') ? `, do setor de ${setor}` : ''
+  frases.push([T(`${quem} é ${classe(i)}${comSetor}.`)])
+  if (ok(i.preco)) {
+    const v = variacaoDiaFrase(i)
+    frases.push([
+      T('A cotação mais recente é '), N(precoFmt(i.preco, i.kind, i.moeda)),
+      // o fechamento anterior pela mesma conta do herói (useAcao.buildHero): os dois batem
+      ...(v && ok(i.variacaoDia)
+        ? [
+            T(', com variação de '), N(pctAssinado(i.variacaoDia)), T(' no dia ('),
+            N(`${i.variacaoDia < 0 ? '-' : '+'}${moedaDe(i.moeda)} ${nf2.format(Math.abs(i.preco - i.preco / (1 + i.variacaoDia / 100)))}`),
+            T('), sobre o fechamento anterior de '), N(precoFmt(i.preco / (1 + i.variacaoDia / 100), i.kind, i.moeda)), T('.'),
+          ]
+        : [T('.')]),
+    ])
+  }
+  const a = ok(i.min52) && i.min52 > 0 ? precoFmt(i.min52, i.kind, i.moeda) : null
+  const b = ok(i.max52) && i.max52 > 0 ? precoFmt(i.max52, i.kind, i.moeda) : null
+  if (a && b) {
+    frases.push([T('Nas últimas 52 semanas, a mínima foi '), N(a), T(' e a máxima, '), N(b), T('.')])
+    // onde o preço de hoje está dentro dessa faixa: conta, não opinião
+    if (ok(i.preco) && i.max52! > i.min52!) {
+      const abaixo = ((i.max52! - i.preco) / i.max52!) * 100
+      const acima = ((i.preco - i.min52!) / i.min52!) * 100
+      if (abaixo >= 0 && acima >= 0) frases.push([T('Hoje a cotação está '), N(pctAbs(abaixo, 1)), T(' abaixo da máxima e '), N(pctAbs(acima, 1)), T(' acima da mínima.')])
+    }
+  }
+  else if (a) frases.push([T('A mínima de 52 semanas foi '), N(a), T('.')])
+  else if (b) frases.push([T('A máxima de 52 semanas foi '), N(b), T('.')])
+  const s = i.serie
+  const de = dataBr(s?.de)
+  const ate = dataBr(s?.ate)
+  if (s && ok(s.variacao) && de && ate) {
+    frases.push([
+      T(`De ${de} a ${ate}, ${i.ticker} variou `), N(pctAssinado(s.variacao)),
+      ...(ok(s.ibov) ? [T(', contra '), N(pctAssinado(s.ibov)), T(' do Ibovespa.')] : [T('.')]),
+    ])
+    // a mesma variação em dinheiro: a conta que a pessoa faz de cabeça
+    const mil = (v: number) => `R$ ${nf0.format(1000 * (1 + v / 100))}`
+    frases.push([
+      T(`Em valores: R$ 1.000 em ${i.ticker} no início do período valiam `), N(mil(s.variacao)),
+      ...(ok(s.ibov) ? [T(' no fim, contra '), N(mil(s.ibov)), T(' no Ibovespa, sem contar proventos.')] : [T(' no fim, sem contar proventos.')]),
+    ])
+    if (ok(s.ibov)) {
+      const dif = s.variacao - s.ibov
+      if (Math.abs(dif) >= 0.01) frases.push([T('A diferença no período é de '), N(`${nf1.format(Math.abs(dif))} pontos percentuais`), T(dif > 0 ? `, a favor de ${i.ticker}.` : ', a favor do índice.')])
+    }
+  }
+  frases.push(...fatosEtf(i))
+
+  // as fontes juntas, cada uma dizendo de quê; a data uma vez só
+  // as fontes numa frase só, cada uma dizendo de onde vem o quê
+  const fontes: string[] = []
+  if (ok(i.preco)) fontes.push(i.moeda === 'USD' ? `a cotação é um ${FONTE_USD} (${FONTE_COTACAO})` : `a cotação vem da ${FONTE_COTACAO}`)
+  if (a || b || (s && ok(s.variacao))) fontes.push(`a faixa de 52 semanas e a variação no período vêm do ${FONTE_SERIE}`)
+  const ind = fatosIndicadores(i)
+  if (ind.indicadores.length && i.fonteIndicadores?.trim()) fontes.push(`os indicadores, do ${i.fonteIndicadores.trim()}`)
+  const prov = fatosProventos(i)
+  if (prov) fontes.push('os proventos, dos avisos de proventos da B3')
+  if (i.etf?.fonte?.trim() && fatosEtf(i).length) fontes.push(`a carteira, de ${i.etf.fonte.trim()}`)
+  const quando = dataBr(i.data) ?? ate
+  const linha = fontes.length
+    ? `Fontes: ${fontes.join('; ')}.${quando ? ` Atualizado em ${quando}.` : ''}`
+    : null
+  return { titulo, frases, ...ind, proventos: prov, fontes: linha }
+}
+
 const NUMEROS_VAZIOS: ResumoNumeros = {
   dy: null, pl: null, pvp: null, roe: null, margem: null, valorMercado: null,
   vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
@@ -666,6 +856,7 @@ export function montarResumoAtivo(input: ResumoAtivoInput): AcaoResumoVM | null 
     title: titulo(i),
     description: descricao(i),
     paragrafos,
+    fatos: fatosDe(i),
     links: linksLimpos(i.links),
     faqTitulo: faq.length ? `Perguntas frequentes sobre ${ticker}` : null,
     faq,
