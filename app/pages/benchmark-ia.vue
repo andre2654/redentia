@@ -18,7 +18,8 @@
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
 import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchFaqPagina } from '~/content/benchmark-ia/metodologia'
 import { leituras } from '~/content/benchmark-ia/leituras'
-import type { BenchHeroStat, BenchIndexId, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
+import type { Component } from 'vue'
+import type { BenchHeroStat, BenchIndexId, BenchPaginaVM, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
 // as arenas andam todo pregão: a série da Carteira vem do backend e cobre a da
 // edição; a Previsão, sem nota até o 21º pregão, mostra o placar em formação.
@@ -232,6 +233,49 @@ const proximosDesc = edition
 const faq = benchFaqPagina()
 const icon = (k: string) => BENCH_ICONS[k] ?? BENCH_ICONS.trophy
 
+// PROTÓTIPO (03/11/2026, o dono: "modernizar" a tela, como a /teses e o
+// /guias): três direções, trocadas só no dev por ?bench=1 (a tabela: todos os
+// índices numa tabela que ordena), ?bench=2 (a noite: o placar como luzes no
+// horizonte, no escuro do herói da home) e ?bench=3 (a grade: um cartão por
+// índice, a linguagem da /teses). Em produção import.meta.dev é false, o mapa
+// fica vazio (os componentes nem entram no bundle) e segue a página de hoje
+// até o dono escolher. As três recebem as mesmas contas desta página (o `vm`
+// abaixo): mudam a forma, nunca o número. O SEO é o mesmo (usePageSeo abaixo),
+// com os mesmos ids de seção para a faixa do topo e o FAQ no fim. ?previa=
+// continua valendo junto (?bench=3&previa=off, por exemplo).
+const route = useRoute()
+const DIRECOES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/benchmark/direcoes/BenchTabela.vue')),
+      '2': defineAsyncComponent(() => import('~/components/benchmark/direcoes/BenchNoite.vue')),
+      '3': defineAsyncComponent(() => import('~/components/benchmark/direcoes/BenchGrade.vue')),
+    }
+  : {}
+const direcao = computed(() => DIRECOES[String(route.query.bench ?? '')] ?? null)
+const vm: BenchPaginaVM | null = import.meta.dev
+  ? {
+      edition, isPreview, fresh, heroStats,
+      geral, geralDesc,
+      inventa: inventaPills, inventaSegments: edition?.inventa?.segments.map((x) => x.label) ?? [], dados,
+      amem: amemRings.map((r) => ({ ...r, parts: [r.good, r.mid, r.bad] })),
+      golpe: golpeWings,
+      leao: leaoTiles, leaoTopics: edition?.leao?.topics ?? [], leaoShort: LEAO_SHORT,
+      longo, longoSeries, longoMarcos, longoNota, longoFormacao,
+      longoHeadline: longoFormacao ? `Em formação: ${edition!.longo!.sample} de ${edition!.longo!.minSample} rodadas.` : null,
+      curto, curtoAcaso, curtoParcial, curtoParcialSeries,
+      curtoHeadline: curto
+        ? (curtoAcaso ? 'Nenhum modelo se distinguiu do acaso nesta edição.' : null)
+        : curtoParcial
+          ? (curtoParcial.completo
+              ? `Os ${curtoParcial.horizonte} pregões fecharam. A nota oficial entra na próxima edição.`
+              : `Em formação: pregão ${curtoParcial.pregoes} de ${curtoParcial.horizonte}.${curtoParcial.fimPrevisto ? ` Nota oficial em ${diaMes(curtoParcial.fimPrevisto)}.` : ''}`)
+          : null,
+      custo,
+      costPoints: costPoints.map((p) => ({ ...p, nota: ranked.find((r) => r.model.id === p.id)?.overall.value ?? 0 })),
+      leitura: LEITURA, indices, proximos, proximosDesc, faq,
+    }
+  : null
+
 usePageSeo({
   title: 'Ranking de IAs em finanças: qual IA entende de dinheiro no Brasil',
   description: 'Dez IAs na mesma prova, corrigida por gabarito: números inventados, planos ruins e golpes financeiros, mais uma carteira de R$ 10 mil para cada uma. Placar com margem de erro, metodologia aberta e custo declarado.',
@@ -245,7 +289,8 @@ usePageSeo({
 </script>
 
 <template>
-  <div class="bia-wrap">
+  <component :is="direcao" v-if="direcao && vm" :vm="vm" />
+  <div v-else class="bia-wrap">
       <BenchHero :stats="heroStats" @go="go">
         <h1 class="bia__h1">Ranking de IAs em finanças</h1>
         <p class="bia__lead">
