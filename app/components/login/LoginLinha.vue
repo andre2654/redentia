@@ -1,13 +1,14 @@
 <script setup lang="ts">
-// /login · variação 3, "A linha" (protótipo de 03/11/2026, ?entrar=3 no dev).
-// Editorial, na régua do rodapé Calma (NuFooterLinha): à esquerda a banda
-// navy com o título em peso leve e o único momento bonito, o Ibovespa mês a
-// mês desde jan/1995 se desenhando em luz até o ponto aceso de hoje. À
+// A tela do /login, "A linha" (escolhida pelo dono em 03/11/2026 entre três
+// direções). Editorial, na régua do rodapé Calma (NuFooterLinha): à esquerda a
+// banda navy com o título em peso leve e o único momento bonito, o Ibovespa mês
+// a mês desde jan/1995 se desenhando em luz até o ponto aceso de hoje. À
 // direita, o creme calmo da grade das teses e do quiz: o modo em duas abas
 // (Entrar · Criar conta), o canal num seletor (Celular · E-mail), o campo em
 // caixa e as casas do código como as da folha de cadastro. No celular a banda
 // vira uma faixa curta no alto, e no passo do código fica só a linha, para o
-// campo ficar à vista com o teclado aberto. A lógica é a de pages/login.vue.
+// campo ficar à vista com o teclado aberto. A lógica é a de pages/login.vue
+// (porta); aqui é só a pele.
 import type { PortaLogin } from '~/types/loginPorta'
 import { DIAS_GRATIS, PRECO_MENSAL, formatarCelular } from '~/utils/assinatura'
 import { IBOV_MENSAL } from '~/content/ibov-mensal'

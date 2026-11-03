@@ -1,9 +1,8 @@
 <script setup lang="ts">
-// O campo do código de 6 números das três variações do /login (protótipo de
-// 03/11/2026). Um input de verdade, invisível, por cima das seis casas (como
+// O campo do código de 6 números do /login (LoginLinha, 03/11/2026). Um input de verdade, invisível, por cima das seis casas (como
 // na folha de cadastro): o teclado numérico, o colar e o autofill do código
 // do SMS/e-mail (one-time-code) caem nele inteiros. O comportamento é o do
-// LoginPinStep: no 6º número envia sozinho (uma vez por código), e o erro do
+// antigo LoginPinStep: no 6º número envia sozinho (uma vez por código), e o erro do
 // backend limpa as casas e devolve o foco.
 // `tom`: 'pilula' (dentro do anel iridescente), 'escuro' (sobre a noite) e
 // 'caixas' (as casas de creme da folha). 16 px no input: o iOS não dá zoom.

@@ -1,7 +1,7 @@
-// O que a página /login entrega às variações visuais do protótipo de
-// 03/11/2026 (?entrar=1|2|3, só no dev). A lógica de autenticação mora só em
-// pages/login.vue; a variação recebe este objeto (reactive, então os refs vêm
-// desembrulhados e os campos `phone`/`email` aceitam escrita) e só desenha.
+// O que a página /login entrega à tela (LoginLinha, desde 03/11/2026). A
+// lógica de autenticação mora só em pages/login.vue; a tela recebe este objeto
+// (reactive, então os refs vêm desembrulhados e os campos `phone`/`email`
+// aceitam escrita) e só desenha.
 import type { AppleCredencial } from '~/composables/useAppleAuth'
 
 export interface PortaLogin {
@@ -20,13 +20,12 @@ export interface PortaLogin {
   whatsappDown: boolean
   socialEntrando: 'google' | 'apple'
   resendIn: number
-  // derivados (a copy de sempre, para quem quiser reaproveitar)
+  // derivados (a copy de sempre)
   isCad: boolean
   isPhone: boolean
   ready: boolean
   vemDaAssinatura: boolean
   mainCta: string
-  methodCta: string
   altLabel: string
   altCta: string
   fieldHelp: string

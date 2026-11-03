@@ -1,15 +1,11 @@
 <script setup lang="ts">
 // Split-screen de autenticação (contrato: Redentia Login Nu.dc.html):
 // coluna do form (flex 1.15 1 520px, logo block flush no topo, miolo
-// centralizado com paddings fluidos) + painel dark com a orbe (flex 1 1
-// 460px, some <=1020px via NuAuthAsidePanel). Sem header/nav/footer — quem
-// usa este layout declara `definePageMeta({ layout: false })`.
-//
-// O painel da direita é TROCÁVEL pelo slot `panel` (2026-08-03): a
-// /business/cadastro precisa da mesma casca com um painel B2B, e forkar o
-// layout inteiro por causa de uma coluna duplicaria o split, os paddings e o
-// breakpoint de 1020px. Sem o slot, cai no NuAuthAsidePanel de sempre e o
-// /login não muda em nada.
+// centralizado com paddings fluidos) + o painel da direita, que vem pelo slot
+// `panel` (hoje o RbAuthAside da /business/cadastro e do convite; ele some
+// <=1020px). Sem header/nav/footer — quem usa este layout declara
+// `definePageMeta({ layout: false })`. O /login saiu desta casca em
+// 03/11/2026 (LoginLinha), e com ele o painel padrão (NuAuthAsidePanel).
 withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/' })
 </script>
 
@@ -23,11 +19,7 @@ withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/' })
         </div>
       </div>
     </div>
-    <slot name="panel">
-      <NuAuthAsidePanel>
-        <slot name="aside">Todos os seus investimentos.<br>Uma IA do seu lado.</slot>
-      </NuAuthAsidePanel>
-    </slot>
+    <slot name="panel" />
   </div>
 </template>
 

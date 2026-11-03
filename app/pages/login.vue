@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// /login — porta de entrada do miolo logado (PR6). Contrato de UX:
-// docs/redentia-nu/designs/Redentia Login Nu.dc.html (split-screen: form à
-// esquerda, painel dark com a orbe à direita; modos Entrar/Criar conta e
-// métodos celular/e-mail na MESMA rota, sem navegação).
+// /login — porta de entrada do miolo logado (PR6). Desde 03/11/2026 a tela é
+// "A linha" (LoginLinha), escolhida pelo dono entre três direções: a banda
+// navy com o Ibovespa desde 1995 e o formulário no creme; modos Entrar/Criar
+// conta e métodos celular/e-mail na MESMA rota, sem navegação. Esta página
+// guarda toda a lógica; LoginLinha recebe `porta` (estado + ações) e desenha.
 //
 // O design coleta só o identificador (estilo Nubank); o fluxo real é
 // passwordless por PIN — celular → POST /auth/magic-pin/* (WhatsApp,
@@ -27,7 +28,6 @@ import type {
   SocialLoginResponse,
 } from '~/types/auth'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
-import type { Component } from 'vue'
 import type { PortaLogin } from '~/types/loginPorta'
 import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
@@ -83,8 +83,6 @@ const isPhone = computed(() => method.value === 'phone')
 // veio do /assinar (o botão da assinatura, deslogado): é o passo 1 de 3 do
 // passo a passo da assinatura, e a página diz isso (31/10/2026)
 const vemDaAssinatura = redirectTarget.startsWith('/assinar')
-const headline = computed(() => (vemDaAssinatura ? 'Primeiro, a sua conta' : isCad.value ? 'Crie sua conta Redentia' : 'Entrar na Redentia'))
-const inputLabel = computed(() => (isPhone.value ? 'Informe seu celular' : 'Informe seu e-mail'))
 const ready = computed(() =>
   isPhone.value ? phone.value.replace(/\D/g, '').length >= 10 : /.+@.+\..+/.test(email.value),
 )
@@ -93,11 +91,6 @@ const mainCta = computed(() => {
   if (!ready.value) return 'Continuar'
   return isCad.value ? 'Criar conta' : 'Acessar'
 })
-const methodCta = computed(() =>
-  isPhone.value
-    ? isCad.value ? 'Cadastrar com e-mail' : 'Entrar com e-mail'
-    : isCad.value ? 'Cadastrar com celular' : 'Entrar com celular',
-)
 const altLabel = computed(() => (isCad.value ? 'Já tem uma conta?' : 'Ainda não tem uma conta?'))
 const altCta = computed(() => (isCad.value ? 'Entrar' : 'Criar agora'))
 const fieldHelp = computed(() =>
@@ -321,26 +314,11 @@ async function onAppleCredential(cred: AppleCredencial) {
   }
 }
 
-// ————— PROTÓTIPO (03/11/2026): três peles para esta tela —————
-// O dono pediu a tela de entrar e criar conta no idioma novo do site (o herói
-// "A noite", o topo editorial, o rodapé Calma, a pílula do chat). Três
-// direções, trocadas só no dev por ?entrar=1 (a pergunta: o campo é a pílula
-// iridescente), ?entrar=2 (a noite: escuro, com os aparelhos) e ?entrar=3 (a
-// linha: o Ibovespa desde 1995 na banda navy). A lógica é esta página; a
-// variação só recebe `porta` e desenha. Em produção import.meta.dev é false,
-// o mapa fica vazio (nem entra no bundle) e segue a tela de hoje.
-const VARIANTES: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/login/variantes/LoginVarPergunta.vue')),
-      '2': defineAsyncComponent(() => import('~/components/login/variantes/LoginVarNoite.vue')),
-      '3': defineAsyncComponent(() => import('~/components/login/variantes/LoginVarLinha.vue')),
-    }
-  : {}
-const variante = computed(() => VARIANTES[String(route.query.entrar ?? '')] ?? null)
+// ————— o que a tela (LoginLinha) recebe: o estado e as ações desta página —————
 const porta: PortaLogin = reactive({
   mode, method, phone, email, step, sending, verifying, identifierError, pinError, googleError,
   googleSubmitting, whatsappDown, socialEntrando, resendIn,
-  isCad, isPhone, ready, vemDaAssinatura, mainCta, methodCta, altLabel, altCta, fieldHelp, whatsappNotice,
+  isCad, isPhone, ready, vemDaAssinatura, mainCta, altLabel, altCta, fieldHelp, whatsappNotice,
   submitIdentifier, verifyPin, resendPin, backToIdentifier, toggleMode, toggleMethod, onGoogleCredential, onAppleCredential,
 })
 
@@ -374,108 +352,5 @@ if (import.meta.dev) {
 </script>
 
 <template>
-  <component :is="variante" v-if="variante" :porta="porta" />
-  <NuAuthLayout v-else>
-    <!-- :key re-dispara o qfade a cada troca de etapa (mesma página) -->
-    <div :key="step" class="lg__step">
-      <template v-if="step === 'identifier'">
-        <AssinaturaJornada v-if="vemDaAssinatura" class="lg__jornada" :passo="1" compacto />
-        <h1 class="lg__h1">{{ headline }}</h1>
-
-        <form @submit.prevent="submitIdentifier">
-          <div class="lg__label"><NuFieldLabel :label="inputLabel" :help="fieldHelp" /></div>
-          <NuUnderlineInput
-            v-if="isPhone"
-            v-model="phone"
-            type="tel"
-            name="phone"
-            placeholder="(11) 90000-0000"
-            autocomplete="tel-national"
-          />
-          <NuUnderlineInput
-            v-else
-            v-model="email"
-            type="email"
-            name="email"
-            placeholder="voce@email.com"
-            autocomplete="email"
-          />
-          <p v-if="identifierError" class="lg__error">{{ identifierError }}</p>
-          <p v-else-if="whatsappDown && isPhone" class="lg__notice">{{ whatsappNotice }}</p>
-
-          <NuPillButton class="lg__cta" type="submit" :disabled="!ready" :loading="sending">
-            {{ mainCta }}
-          </NuPillButton>
-        </form>
-
-        <NuTextDivider class="lg__divider" />
-
-        <div class="lg__alts">
-          <div class="lg__marcas">
-            <LoginAppleButton
-              :disabled="googleSubmitting"
-              @credential="onAppleCredential"
-              @error="googleError = $event"
-            />
-            <LoginGoogleButton
-              :disabled="googleSubmitting"
-              @credential="onGoogleCredential"
-              @error="googleError = $event"
-            />
-          </div>
-          <NuListActionButton :label="methodCta" @click="toggleMethod">
-            <template #icon>
-              <!-- envelope (está em celular → oferece e-mail) -->
-              <svg v-if="isPhone" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="14" rx="2.5" />
-                <path d="M3.5 7l8.5 6 8.5-6" />
-              </svg>
-              <!-- smartphone (está em e-mail → oferece celular) -->
-              <svg v-else width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
-                <path d="M11 18.5h2" />
-              </svg>
-            </template>
-          </NuListActionButton>
-        </div>
-        <p v-if="googleSubmitting" class="lg__google-state">{{ socialEntrando === 'apple' ? 'Entrando com a Apple…' : 'Entrando com o Google…' }}</p>
-        <p v-else-if="googleError" class="lg__error lg__error--tight">{{ googleError }}</p>
-
-        <NuInlineTextToggle class="lg__footer" :label="altLabel" :cta="altCta" @click="toggleMode" />
-      </template>
-
-      <LoginPinStep
-        v-else
-        :identifier="isPhone ? phone : email.trim()"
-        :channel="isPhone ? 'whatsapp' : 'email'"
-        :verifying="verifying"
-        :error="pinError"
-        :resend-in="resendIn"
-        @submit="verifyPin"
-        @resend="resendPin"
-        @back="backToIdentifier"
-      />
-    </div>
-  </NuAuthLayout>
+  <LoginLinha :porta="porta" />
 </template>
-
-<style scoped>
-.lg__step { animation: nu-fade .5s ease both; }
-.lg__jornada { margin-bottom: 28px; }
-.lg__h1 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(32px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.05;
-}
-.lg__label { margin-top: clamp(36px, 5vh, 56px); }
-.lg__error { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
-.lg__error--tight { margin-top: 10px; }
-.lg__notice { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.lg__cta { margin-top: clamp(36px, 5vh, 52px); }
-.lg__divider { margin-top: 30px; }
-.lg__alts { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
-.lg__marcas { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
-.lg__marcas:empty { display: none; }
-.lg__google-state { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.lg__footer { margin-top: clamp(32px, 5vh, 52px); }
-</style>
