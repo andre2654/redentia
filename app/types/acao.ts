@@ -337,7 +337,7 @@ export interface EtfXrayTreeNodeApi {
  */
 export type AssetKind = 'stock' | 'fii' | 'bdr' | 'etf' | 'crypto'
 
-export type AcaoRange = '1mo' | '6mo' | '12mo'
+export type AcaoRange = '1mo' | '6mo' | '12mo' | '5y'
 
 /** enum completo do `mode` de /prices (PR5: o IBOV da tese olha além de 12M). */
 export type PriceMode = AcaoRange | 'ytd' | '3mo' | '2y' | '3y' | '4y' | '5y' | 'full'

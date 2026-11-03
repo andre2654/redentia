@@ -112,5 +112,9 @@ const ctxLeitura = computed(() => {
 .ale__marca--pro { background: var(--nu-green); }
 .ale__marca--con { background: var(--nu-amber-fill); }
 .ale__chat { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: 700; }
-.ale__chat:hover { color: var(--nu-blue-hover); }
+.ale__chat { transition: gap .2s ease, color .2s ease; }
+.ale__chat:hover { gap: 12px; color: var(--nu-blue-hover); }
+.ale__subs div { transition: background .2s ease; border-radius: 6px; }
+.ale__subs div:hover { background: var(--nu-ink-04); }
+@media (prefers-reduced-motion: reduce) { .ale__chat, .ale__subs div { transition: none; } }
 </style>

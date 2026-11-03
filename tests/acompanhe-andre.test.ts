@@ -53,6 +53,7 @@ test('calculadora, ativo e rodapé passam o lugar certo', () => {
   const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
   assert.match(ler('app/pages/calculadora/preco-teto/index.vue'), /<NuAcompanheAndre lugar="calculadora" \/>/)
   assert.match(ler('app/components/calc/CalcPrecoTetoTicker.vue'), /<NuAcompanheAndre lugar="calculadora" \/>/)
-  assert.match(ler('app/pages/asset/[ticker].vue'), /<NuAcompanheAndre lugar="asset" \/>/)
+  // a página de ativo é o AtivoNoite desde 03/11/2026
+  assert.match(ler('app/components/ativo/AtivoNoite.vue'), /<NuAcompanheAndre lugar="asset"/)
   assert.match(ler('app/components/nu/NuFooter.vue'), /<NuAcompanheAndre lugar="rodape" tom="escuro" \/>/)
 })

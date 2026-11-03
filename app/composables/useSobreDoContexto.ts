@@ -1,7 +1,7 @@
 /**
  * De quem é o pedaço da página (02/11/2026, "coloque mais elementos nesse
- * hover"). Os cartões genéricos do design system (NuMetricCard, NuStatList,
- * NuScoreCard, NuDividendBars) não sabem de qual ativo, tese ou título falam;
+ * hover"). Os cartões genéricos do design system (NuStatList, NuDividendBars e os do /asset,
+ * AtivoIndicadores e AtivoProventos) não sabem de qual ativo, tese ou título falam;
  * a página diz uma vez (`proverSobreDoContexto('PETR4')`) e o rótulo do chip
  * sai específico: "P/L PETR4", não só "P/L".
  */

@@ -39,7 +39,12 @@ const falhou = ref<Record<string, boolean>>({})
 
 <style scoped>
 .ats2__lista { list-style: none; margin: 0; padding: 0; }
-.ats2__item { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--nu-cream-line); color: inherit; }
+.ats2 { position: relative; isolation: isolate; }
+.ats2__item { position: relative; display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--nu-cream-line); color: inherit; }
+.ats2__item::before { content: ''; position: absolute; inset: 3px -12px; z-index: -1; border-radius: 16px; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); opacity: 0; transition: opacity .2s ease; }
+.ats2__item:hover::before { opacity: 1; }
+.ats2__capa img { transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
+.ats2__item:hover .ats2__capa img { transform: scale(1.06); }
 .ats2__capa { flex-shrink: 0; width: 96px; height: 64px; border-radius: var(--nu-r-chip); overflow: hidden; background: var(--nu-navy); }
 .ats2__capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ats2__corpo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }

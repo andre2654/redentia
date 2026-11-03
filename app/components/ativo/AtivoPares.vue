@@ -33,11 +33,23 @@ const setor = computed(() => props.pares.setor.nome.toLowerCase())
 .apa__grade--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 760px) { .apa__grade--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .apa__grade--3, .apa__grade--2 { grid-template-columns: minmax(0, 1fr); } }
-.apa__par { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--nu-cream-line); color: inherit; }
+.apa { position: relative; isolation: isolate; }
+.apa__par { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--nu-cream-line); color: inherit; }
+.apa__par::before {
+  content: ''; position: absolute; inset: 3px -12px; z-index: -1; border-radius: 14px; background: var(--nu-white);
+  box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); opacity: 0; transform: scale(.98);
+  transition: opacity .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
+}
+.apa__par:hover::before, .apa__par:focus-visible::before { opacity: 1; transform: none; }
+.apa__par:focus-visible { outline: none; }
+.apa__par > :first-child { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.apa__par:hover > :first-child { transform: translateY(-2px); }
 .apa__id { display: flex; flex-direction: column; min-width: 0; }
 .apa__t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; transition: color .2s; }
 .apa__par:hover .apa__t { color: var(--nu-blue-text); }
 .apa__n { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .apa__setor { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
-.apa__setor:hover { color: var(--nu-blue-hover); }
+.apa__setor { transition: gap .2s ease, color .2s ease; }
+.apa__setor:hover { gap: 12px; color: var(--nu-blue-hover); }
+@media (prefers-reduced-motion: reduce) { .apa__par::before, .apa__par > :first-child, .apa__setor { transition: none; } }
 </style>

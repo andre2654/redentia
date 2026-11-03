@@ -1799,9 +1799,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
 
 /**
  * Mapa AcaoRange → range REAL da API de cripto (verificado 2026-07-13):
- * `30d` e `6m` funcionam; '12m' cai no default do endpoint, que É 12 meses.
+ * `30d` e `6m` funcionam; '12m' cai no default do endpoint, que É 12 meses;
+ * `5y` é aceito pelo endpoint (ver CryptoPricePointApi).
  */
-const CRYPTO_RANGE: Record<AcaoRange, string> = { '1mo': '30d', '6mo': '6m', '12mo': '12m' }
+const CRYPTO_RANGE: Record<AcaoRange, string> = { '1mo': '30d', '6mo': '6m', '12mo': '12m', '5y': '5y' }
 
 const nfc = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 })
 
@@ -1999,7 +2000,7 @@ export async function useAcao(ticker: string) {
   // hidratação o callback não roda de novo, o payload SSR é a verdade.
   const isCrypto = data.value?.kind === 'crypto'
 
-  /* tabs 1M/6M/12M: 12M vem do payload SSR; 1M/6M são buscados sob demanda
+  /* tabs 1M/6M/12M/5A: 12M vem do payload SSR; 1M/6M/5A são buscados sob demanda
      no client e cacheados; erro de fetch mantém o range anterior (degrade). */
   const activeRange = ref<AcaoRange>('12mo')
   const rangeSeries = ref<Partial<Record<AcaoRange, AcaoSeriesPair>>>(

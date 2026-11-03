@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// O seletor de período do gráfico (1M · 6M · 12M) nas direções do /asset: o
+// O seletor de período do gráfico (1M · 6M · 12M · 5A) do /asset: o
 // segmentado da /teses. Desabilita enquanto a série nova chega.
 import type { AcaoRange } from '~/types/acao'
 
@@ -9,6 +9,9 @@ const ABAS: { v: AcaoRange; r: string; nome: string }[] = [
   { v: '1mo', r: '1M', nome: '1 mês' },
   { v: '6mo', r: '6M', nome: '6 meses' },
   { v: '12mo', r: '12M', nome: '12 meses' },
+  // 5 anos: GET /tickers/{t}/prices?mode=5y e /indices/IBOV/prices?mode=5y
+  // respondem com ~1.250 pregões (conferido em 03/11/2026)
+  { v: '5y', r: '5A', nome: '5 anos' },
 ]
 </script>
 

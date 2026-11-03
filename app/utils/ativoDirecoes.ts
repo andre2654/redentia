@@ -228,3 +228,27 @@ export function vejaTambem(...listas: Array<Array<{ href: string; label: string 
   }
   return out
 }
+
+/**
+ * O termo do glossário (/glossario/{slug}) de cada indicador que a página
+ * mostra: o hover do indicador lê a definição curta (`short`) de lá, sem
+ * escrever outra. Indicador sem termo no glossário não ganha definição.
+ */
+const GLOSSARIO_DO_INDICADOR: Record<string, string> = {
+  'roe': 'roe',
+  'roa': 'roa',
+  'dividend yield': 'dividend-yield',
+  'dividend yield (12m)': 'dividend-yield',
+  'p/l': 'p-l',
+  'p/l (ttm)': 'p-l',
+  'p/vp': 'p-vp',
+  'ev/ebitda': 'ev-ebitda',
+  'margem líquida': 'margem-liquida',
+  'lucro líquido (12m)': 'lucro-liquido',
+  'dív. líq./ebitda': 'divida-liquida-ebitda',
+  'participação no ifix': 'ifix',
+  'valor de mercado': 'valor-mercado',
+}
+export function slugDoIndicador(rotulo: string): string | null {
+  return GLOSSARIO_DO_INDICADOR[rotulo.trim().toLowerCase()] ?? null
+}

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Paridade de SEO do /asset/{TICKER} entre a página de hoje e as direções do
- * dev (?ativo=1|2|3). Prova as regras 1 a 3 do pedido do dono (03/11/2026,
- * "tente reimaginar essa página (e cuidado com o SEO)"):
+ * Paridade de SEO do /asset/{TICKER}: a página de hoje ("A noite", promovida
+ * em 03/11/2026) contra o HTML salvo da página ANTERIOR, a que o Google
+ * indexava. Prova as regras do pedido do dono ("tente reimaginar essa página
+ * (e cuidado com o SEO)"):
  *
  *  1. <title>, meta description, canonical, robots, hreflang e JSON-LD iguais;
- *  2. um H1 só, com o mesmo texto, e todo título (h2/h3) de hoje ainda é título;
+ *  2. um H1 só, com o mesmo texto, e todo título (h2/h3) de antes ainda é título;
  *  3. o texto do HTML do servidor não cai mais de 2% e nenhum link interno some.
  *
  * Lê o HTML do SERVIDOR (fetch, sem JS): é o que o Google recebe primeiro.
@@ -13,15 +14,15 @@
  * e cada /asset faz ~10 chamadas (rajada já derrubou produção, 23/09/2026).
  *
  *   node scripts/seo-paridade-ativo.mjs [--base http://localhost:3471] [--pausa 4000]
- *        [--tickers PETR4,ITUB4] [--variantes 1,2,3] [--antes pasta-com-TICKER.html]
+ *        [--tickers PETR4,ITUB4] [--antiga .prints-ativo/antiga]
  *
- * A página de hoje é buscada antes E depois das direções: o preço anda entre
- * uma carga e outra (o fechamento ajusta depois das 18h), e o <title>, a meta e
- * o JSON-LD carregam o preço. Um campo da direção passa se for igual ao de uma
- * das duas cargas da página de hoje.
- * `--antes pasta` (opcional, com TICKER.html salvo por curl ANTES da mudança no
- * código) confere também que a página de hoje não mudou: o mesmo H1, os mesmos
- * títulos, os mesmos links e o mesmo texto (±0,5%, o preço no meio do texto).
+ * `--antiga` é a pasta com TICKER.html da página anterior, salvo por curl em
+ * 03/11/2026 às 18:39, antes da troca (a saída da comparação daquele dia está
+ * em .prints-ativo/seo-paridade-final.txt). Como o preço e os indicadores
+ * andam entre o dia salvo e hoje, o <title>, a meta, o JSON-LD e os trechos de
+ * texto se comparam com os NÚMEROS mascarados (cada sequência de dígitos vira
+ * #): o que tem de ser igual é a frase, não a cotação. Canonical, robots,
+ * hreflang, H1, títulos e links se comparam inteiros.
  * Sai com código 1 se alguma regra falhar.
  */
 import { readFile } from 'node:fs/promises'
@@ -35,8 +36,7 @@ const args = Object.fromEntries(
 const BASE = args.base ?? 'http://localhost:3471'
 const PAUSA = Number(args.pausa ?? 4000)
 const TICKERS = (args.tickers ?? 'PETR4,ITUB4,MXRF11,BOVA11,AAPL34,SHUL4').split(',')
-const VARIANTES = (args.variantes ?? '1,2,3').split(',')
-const ANTES = args.antes ?? null
+const ANTIGA = args.antiga ?? '.prints-ativo/antiga'
 const QUEDA_MAX = 0.02
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'", '#x27': "'", '#160': ' ' }
@@ -118,15 +118,24 @@ async function buscar(url) {
   throw new Error(`${url} → 426 três vezes`)
 }
 
-export function comparar(antes, depois, antes2 = antes) {
+/** cada número vira #: "R$ 50,60 em 03/11/2026" e "R$ 50,71 em 03/11/2026" são a mesma frase */
+export const semNumeros = (s) => (s == null ? s : String(s).replace(/\d+/g, '#'))
+
+export function comparar(antes, depois, { mascara = false } = {}) {
+  const m = mascara ? semNumeros : (x) => x
   const falhas = []
-  for (const k of ['title', 'description', 'canonical', 'robots']) {
-    if (antes[k] !== depois[k] && antes2[k] !== depois[k]) falhas.push(`${k} mudou: "${antes[k]}" → "${depois[k]}"`)
+  for (const k of ['title', 'description']) {
+    if (m(antes[k]) !== m(depois[k])) falhas.push(`${k} mudou: "${antes[k]}" → "${depois[k]}"`)
+  }
+  for (const k of ['canonical', 'robots']) {
+    if (antes[k] !== depois[k]) falhas.push(`${k} mudou: "${antes[k]}" → "${depois[k]}"`)
   }
   if (antes.hreflang.join('|') !== depois.hreflang.join('|')) falhas.push('hreflang mudou')
-  if (antes.jsonld.join('\n') !== depois.jsonld.join('\n') && antes2.jsonld.join('\n') !== depois.jsonld.join('\n')) {
-    const a = new Set(antes.jsonld)
-    const d = new Set(depois.jsonld)
+  const ja = antes.jsonld.map(m).sort()
+  const jd = depois.jsonld.map(m).sort()
+  if (ja.join('\n') !== jd.join('\n')) {
+    const a = new Set(ja)
+    const d = new Set(jd)
     falhas.push(`JSON-LD mudou: ${[...a].filter((x) => !d.has(x)).length} bloco(s) saíram, ${[...d].filter((x) => !a.has(x)).length} entraram`)
   }
   if (depois.h1.length !== 1) falhas.push(`${depois.h1.length} H1 (esperado 1)`)
@@ -139,7 +148,8 @@ export function comparar(antes, depois, antes2 = antes) {
   const sumiram = [...antes.links].filter((l) => !depois.links.has(l))
   if (sumiram.length) falhas.push(`links internos que sumiram: ${sumiram.join(', ')}`)
   // o texto de hoje que não aparece na direção (sem espaços: a quebra de linha muda entre layouts)
-  const trechosFora = [...new Set(antes.trechos)].filter((t) => !depois.textoMain.includes(t.replace(/\s+/g, '')))
+  const alvo = m(depois.textoMain)
+  const trechosFora = [...new Set(antes.trechos)].filter((t) => !alvo.includes(m(t.replace(/\s+/g, ''))))
   return { falhas, queda, sumiram, novos: [...depois.links].filter((l) => !antes.links.has(l)), trechosFora }
 }
 
@@ -147,39 +157,22 @@ async function main() {
   let falhou = false
   const linhas = []
   for (const t of TICKERS) {
-    const antes = extrair(await buscar(`${BASE}/asset/${t}`))
+    const salvo = join(ANTIGA, `${t}.html`)
+    if (!existsSync(salvo)) { console.log(`\n${t}: sem ${salvo}, pulei`); falhou = true; continue }
+    const antes = extrair(await readFile(salvo, 'utf8'))
+    const depois = extrair(await buscar(`${BASE}/asset/${t}`))
     await dorme(PAUSA)
-    console.log(`\n${t} · hoje: ${antes.palavrasBody} palavras (main ${antes.palavrasMain}), ${antes.links.size} links internos, H1 "${antes.h1.join(' | ')}" (${antes.h1.length}), ${antes.jsonld.length} JSON-LD, ${antes.titulos.length} h2/h3`)
-    const salvo = ANTES ? join(ANTES, `${t}.html`) : null
-    if (salvo && existsSync(salvo)) {
-      const velho = extrair(await readFile(salvo, 'utf8'))
-      const f = []
-      if (velho.h1.join('|') !== antes.h1.join('|')) f.push('H1')
-      if (velho.titulos.join('|') !== antes.titulos.join('|')) f.push('títulos')
-      if ([...velho.links].sort().join('|') !== [...antes.links].sort().join('|')) f.push('links')
-      if (Math.abs(velho.palavrasBody - antes.palavrasBody) / velho.palavrasBody > 0.005) f.push(`texto ${velho.palavrasBody} → ${antes.palavrasBody}`)
-      if (f.length) { falhou = true; console.log(`  página de hoje MUDOU desde o HTML salvo antes da mudança: ${f.join(', ')}`) }
-      else console.log(`  página de hoje igual à de antes da mudança (${velho.palavrasBody} palavras e ${velho.links.size} links no HTML salvo)`)
-    }
-    const depoisDe = []
-    for (const v of VARIANTES) {
-      depoisDe.push([v, extrair(await buscar(`${BASE}/asset/${t}?ativo=${v}`))])
-      await dorme(PAUSA)
-    }
-    const antes2 = VARIANTES.length ? extrair(await buscar(`${BASE}/asset/${t}`)) : antes
-    if (VARIANTES.length) await dorme(PAUSA)
-    for (const [v, depois] of depoisDe) {
-      const c = comparar(antes, depois, antes2)
-      const pct = (-c.queda * 100).toFixed(1)
-      const ok = c.falhas.length === 0
-      if (!ok) falhou = true
-      console.log(`  ?ativo=${v} ${ok ? 'OK ' : 'FALHA'} ${depois.palavrasBody} palavras (${pct > 0 ? '+' : ''}${pct}%), links ${depois.links.size} (${c.sumiram.length} sumiram, ${c.novos.length} novos), H1 ${depois.h1.length}, JSON-LD ${depois.jsonld.length}, h2/h3 ${depois.titulos.length}`)
-      for (const f of c.falhas) console.log(`     - ${f}`)
-      if (c.trechosFora.length) console.log(`     texto de hoje fora da direção (${c.trechosFora.length}): ${c.trechosFora.map((x) => `"${x.slice(0, 60)}"`).join(' · ')}`)
-      linhas.push({ ticker: t, variante: v, ok, antes: antes.palavrasBody, depois: depois.palavrasBody, links: [antes.links.size, depois.links.size], sumiram: c.sumiram, falhas: c.falhas })
-    }
+    const c = comparar(antes, depois, { mascara: true })
+    const pct = (-c.queda * 100).toFixed(1)
+    const ok = c.falhas.length === 0
+    if (!ok) falhou = true
+    console.log(`\n${t} · antes: ${antes.palavrasBody} palavras, ${antes.links.size} links, H1 "${antes.h1.join(' | ')}", ${antes.jsonld.length} JSON-LD, ${antes.titulos.length} h2/h3`)
+    console.log(`  agora ${ok ? 'OK ' : 'FALHA'} ${depois.palavrasBody} palavras (${pct > 0 ? '+' : ''}${pct}%), links ${depois.links.size} (${c.sumiram.length} sumiram, ${c.novos.length} novos), H1 ${depois.h1.length}, JSON-LD ${depois.jsonld.length}, h2/h3 ${depois.titulos.length}`)
+    for (const f of c.falhas) console.log(`     - ${f}`)
+    if (c.trechosFora.length) console.log(`     texto de antes fora da página (${c.trechosFora.length}): ${c.trechosFora.map((x) => `"${x.slice(0, 60)}"`).join(' · ')}`)
+    linhas.push({ ticker: t, ok })
   }
-  console.log(`\n${falhou ? 'FALHOU' : 'TUDO OK'}: ${linhas.filter((l) => l.ok).length}/${linhas.length} combinações passam nas regras 1 a 3.`)
+  console.log(`\n${falhou ? 'FALHOU' : 'TUDO OK'}: ${linhas.filter((l) => l.ok).length}/${TICKERS.length} tickers passam nas regras 1 a 3.`)
   process.exit(falhou ? 1 : 0)
 }
 

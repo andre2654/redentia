@@ -25,6 +25,7 @@ withDefaults(defineProps<{ news: AcaoNewsVM; compacta?: boolean }>(), { compacta
       <li v-for="(n, i) in news.rows" :key="i">
         <NuxtLink v-contexto-chat="{ id: `noticia:${n.href}`, tipo: 'noticia', rotulo: rotuloCurto(n.title), texto: `${n.title} (${n.source})` }" :to="n.href" class="ano__linha">
           <span class="ano__l-t">{{ n.title }}</span>
+          <svg class="ano__seta" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" /></svg>
           <span class="ano__l-m">
             <span class="ano__fonte">{{ n.source }}</span>
             <span v-if="n.ticker" class="ano__pct ano__pct--texto" :class="`ano__pct--${n.ticker.dir}`">{{ n.ticker.text }}</span>
@@ -40,7 +41,9 @@ withDefaults(defineProps<{ news: AcaoNewsVM; compacta?: boolean }>(), { compacta
 </template>
 
 <style scoped>
-.ano__dest { display: flex; flex-direction: column; gap: 10px; color: inherit; }
+.ano { position: relative; isolation: isolate; }
+.ano__dest { position: relative; display: flex; flex-direction: column; gap: 10px; color: inherit; }
+.ano__dest::before { inset: -12px -14px; }
 .ano__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ano__pct { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
 .ano__pct--up { background: var(--nu-green-bg); color: var(--nu-green-2); }
@@ -59,10 +62,21 @@ withDefaults(defineProps<{ news: AcaoNewsVM; compacta?: boolean }>(), { compacta
 .ano--compacta .ano__titulo { font-size: var(--nu-fs-xl); }
 .ano--compacta .ano__dek { font-size: var(--nu-fs-sm); -webkit-line-clamp: 3; }
 .ano__linhas { list-style: none; margin: 22px 0 0; padding: 0; }
-.ano__linha { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid var(--nu-cream-line); color: inherit; }
+.ano__linha { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 14px 32px 14px 0; border-top: 1px solid var(--nu-cream-line); color: inherit; }
+/* o hover: um fundo claro que vaza um pouco da coluna, a tinta azul e a seta que chega */
+.ano__linha::before, .ano__dest::before {
+  content: ''; position: absolute; inset: 2px -14px; z-index: -1; border-radius: 14px; background: var(--nu-ink-04);
+  opacity: 0; transition: opacity .2s ease;
+}
+.ano__linha:hover::before, .ano__linha:focus-visible::before, .ano__dest:hover::before, .ano__dest:focus-visible::before { opacity: 1; }
+.ano__linha:focus-visible, .ano__dest:focus-visible { outline: none; }
+.ano__seta { position: absolute; right: 4px; top: 50%; color: var(--nu-blue-text); opacity: 0; transform: translate(-8px, -50%); transition: opacity .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.ano__linha:hover .ano__seta, .ano__linha:focus-visible .ano__seta { opacity: 1; transform: translate(0, -50%); }
 .ano__l-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; line-height: 1.4; transition: color .2s; }
 .ano__linha:hover .ano__l-t { color: var(--nu-blue-text); }
 .ano__l-m { display: flex; gap: 10px; align-items: baseline; }
 .ano__todas { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
-.ano__todas:hover { color: var(--nu-blue-hover); }
+.ano__todas { transition: gap .2s ease, color .2s ease; }
+.ano__todas:hover { gap: 12px; color: var(--nu-blue-hover); }
+@media (prefers-reduced-motion: reduce) { .ano__linha::before, .ano__dest::before, .ano__seta, .ano__todas, .ano__titulo, .ano__l-t { transition: none; } }
 </style>

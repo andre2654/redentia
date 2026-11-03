@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
 import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
+import AtivoNoite from '~/components/ativo/AtivoNoite.vue'
 // /asset/[ticker] — página de ativo (PR2, nasceu como /acao/[ticker]).
 // A URL canônica voltou a ser /asset/{ticker} (equity de SEO da Redentia
 // antiga); /acao/** só existiu dias no vercel.app e hoje 301a pra cá
 // (routeRules). SÓ a URL mudou: composables/componentes internos mantêm o
 // nome do domínio (useAcao, types/acao, Acao*.vue) — renomear seria churn
-// sem ganho. Contrato de UX:
-// docs/redentia-nu/designs/Redentia Acoes Nu.dc.html. O layout default já
-// renderiza NuHeader + NuMarketTicker + NuFooter; aqui vive o miolo na ordem
-// do design: hero → gráfico 12M (dark) → teses → fundamentos → dividendos →
-// análise IA (banda azul) → notícias → outras empresas do setor (só ação).
+// sem ganho. O layout default já renderiza NuHeader + NuMarketTicker +
+// NuFooter; o miolo é o AtivoNoite (components/ativo/AtivoNoite.vue), na ordem
+// da barra de seções: o ativo (preço, gráfico, resumo) → indicadores → por
+// dentro (ETF) → proventos → análise → sobre → teses → notícias → cadeia →
+// setor → perguntas.
 //
 // TIPOS DE ATIVO (2026-07-13): a mesma página serve ação, FII, BDR, ETF e
 // CRIPTO — cada seção degrada por payload (vazio → some), então o template é
@@ -114,30 +114,17 @@ const relacionados = computed(() => relacionadosComProventos(data.value?.relacio
 // "EMBR3 agora negocia como EMBJ3." — só com `?de=` confirmado pelo backend
 const renamedFrom = data.value ? await useRenamedFrom(ticker) : computed(() => null)
 
-// PROTÓTIPO (03/11/2026, o dono: "tente reimaginar essa página (e cuidado com
-// o SEO)"): três direções, trocadas só no dev por ?ativo=1 (a ficha: um
-// documento de consulta com o índice ao lado), ?ativo=2 (a noite: o preço e a
-// linha de luz no escuro do herói da home, as seções centradas embaixo) e
-// ?ativo=3 (o painel: a página inteira numa grade de cartões). Em produção
-// import.meta.dev é false, o mapa fica vazio (os componentes nem entram no
-// bundle) e segue a página de hoje até o dono escolher. As três recebem o mesmo
-// payload (o `vm`): mudam a forma, nunca o número. O SEO é o desta página (o
-// usePageSeo abaixo, que não muda), com o mesmo H1, os mesmos títulos, o mesmo
-// FAQPage e todo o texto e os links no HTML do servidor:
-// scripts/seo-paridade-ativo.mjs confere.
-const DIRECOES: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/ativo/direcoes/AtivoFicha.vue')),
-      '2': defineAsyncComponent(() => import('~/components/ativo/direcoes/AtivoNoite.vue')),
-      '3': defineAsyncComponent(() => import('~/components/ativo/direcoes/AtivoPainel.vue')),
-    }
-  : {}
-const direcao = computed(() => (data.value ? DIRECOES[String(route.query.ativo ?? '')] ?? null : null))
-const direcaoVm = computed<AtivoDirecaoVM | null>(() => (import.meta.dev && data.value
+// A página é "A noite" (AtivoNoite, escolhida pelo dono em 03/11/2026 entre
+// três direções). Ela recebe o payload do useAcao inteiro (o `vm`) e só muda a
+// forma: o SEO é o daqui (usePageSeo abaixo), com o mesmo H1, os mesmos
+// títulos, o mesmo FAQPage e todo o texto e os links no HTML do servidor;
+// scripts/seo-paridade-ativo.mjs confere contra a página anterior salva.
+const vm = computed<AtivoDirecaoVM | null>(() => (data.value
   ? {
       acao: acao.value,
       position: position.value,
       renamedFrom: renamedFrom.value,
+      // cripto não está em `tickers`: a watchlist não a aceita (ver SeguirAtivo)
       seguivel: acao.value.kind !== 'crypto',
       range: activeRange.value,
       setRange,
@@ -185,70 +172,5 @@ if (data.value) {
 </script>
 
 <template>
-  <component :is="direcao" v-if="direcao && direcaoVm" :vm="direcaoVm" />
-  <div v-else-if="data">
-    <!-- cripto não está em `tickers`: a watchlist não a aceita (ver AcaoHero) -->
-    <AcaoHero :hero="acao.hero" :position="position" :renamed-from="renamedFrom" :seguivel="acao.kind !== 'crypto'" />
-
-    <!-- O H1 fica no topo. O miolo (e a FAQ, quando não há editorial) vem
-         depois do gráfico e dos indicadores, para não empurrar o gráfico. -->
-    <AcaoResumo v-if="acao.resumo" parte="titulo" :resumo="acao.resumo" :schema="false" />
-
-    <AcaoChartSection
-      :ticker="acao.ticker"
-      :series="currentSeries"
-      :stats="acao.chartStats"
-      :range="activeRange"
-      :range-loading="rangeLoading"
-      :current-label="acao.hero.priceFmt"
-      :simulador-href="acao.simuladorHref"
-      @update:range="setRange"
-    />
-
-    <AcaoTeses :ticker="acao.ticker" :theses="acao.theses" />
-
-    <AcaoFundamentals :heading="acao.fundHeading" :sub="acao.fundSub" :perfil="acao.perfil" :fcards="acao.fcards" />
-
-    <!-- Prosa factual no SSR. FAQPage só aqui quando a editorial não tem a
-         dela: com editorial, as perguntas novas já foram fundidas lá. -->
-    <AcaoResumo v-if="acao.resumo" parte="corpo" :resumo="acao.resumo" :schema="!acao.editorial?.faq.length" />
-
-    <!-- Raio-X de ETF (carteira CVM + taxas em cascata + correlação) ocupa o
-         slot onde os fundamentos de empresa somem pra ETF; a ficha cadastral
-         (AcaoFundInfo) é absorvida por ele e só renderiza como fallback. -->
-    <AcaoEtfXray v-if="acao.etfXray" :ticker="acao.ticker" :xray="acao.etfXray" />
-
-    <AcaoFundInfo v-if="acao.fundInfo && !acao.etfXray" :info="acao.fundInfo" />
-
-    <AcaoDividends
-      v-if="acao.dividends"
-      :ticker="acao.ticker"
-      :dividends="acao.dividends"
-      :position="position"
-      :simulador-href="acao.simuladorHref"
-      :quanto-rende-href="quantoRendeHref"
-      :dividendos-href="proventosHrefs.dividendos"
-    />
-
-    <AcaoAiAnalysis v-if="acao.ai" :ticker="acao.ticker" :ai="acao.ai" />
-
-    <!-- Prosa longa + FAQ visível. Fica entre a banda azul da IA e a branca das
-         notícias pra manter a alternância de tom (creme entre azul e branco). -->
-    <AcaoEditorial v-if="acao.editorial" :ticker="acao.ticker" :editorial="acao.editorial" />
-
-    <AcaoNews v-if="acao.news" :ticker="acao.ticker" :news="acao.news" />
-
-    <!-- Outras empresas do setor + link pro /setor (só ação). Creme depois do
-         branco das notícias, antes do navy do rodapé. -->
-    <!-- De quem compra e para quem vende (creme). Com ela, os pares do setor
-         abaixo passam a branco pra manter a alternância antes do rodapé. -->
-    <AcaoCadeia v-if="acao.cadeia" :cadeia="acao.cadeia" :nome="acao.name" :ticker="acao.ticker" />
-
-    <AcaoPares v-if="acao.pares" :pares="acao.pares" :tone="acao.cadeia ? 'white' : 'cream'" />
-
-    <AcaoRelacionados :links="relacionados" />
-
-    <!-- No fim do miolo, fora do hero. -->
-    <NuAcompanheAndre lugar="asset" />
-  </div>
+  <AtivoNoite v-if="vm" :vm="vm" />
 </template>

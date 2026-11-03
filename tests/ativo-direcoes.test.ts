@@ -5,6 +5,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import {
   caminhosDoGrafico, cartoesCoerentes, extremosDaSerie, fraseDeAbertura, legendaDoGrafico, linhasCoerentes,
   lucroNaoFecha, marcasDePreco, numeroDoRotulo, pctDaLinhaDoDia, perguntasDoAtivo, secoesDoAtivo, vejaTambem,
@@ -105,4 +106,15 @@ test('veja também: o link repetido sai, a âncora diferente para o mesmo destin
     [{ href: '/setor/energia', label: 'Ranking do setor energia' }, { href: '/dividendos/PETR4', label: 'Dividendos de PETR4' }, { href: '/calculadora/preco-teto/PETR4', label: 'Preço teto de PETR4' }],
   )
   assert.deepEqual(r.map((x) => x.label), ['Dividendos de PETR4', 'Setor energia', 'Ranking do setor energia', 'Preço teto de PETR4'])
+})
+
+test('indicador → termo do glossário (só os que existem lá)', async () => {
+  const { slugDoIndicador } = await import('../app/utils/ativoDirecoes.ts')
+  assert.equal(slugDoIndicador('P/L (TTM)'), 'p-l')
+  assert.equal(slugDoIndicador('Dív. Líq./EBITDA'), 'divida-liquida-ebitda')
+  assert.equal(slugDoIndicador('Cotistas'), null)
+  const fontes = ['grupo-1', 'grupo-2', 'grupo-3', 'grupo-4'].map((g) => readFileSync(new URL(`../app/content/glossario/${g}.ts`, import.meta.url), 'utf8')).join('\n')
+  for (const r of ['ROE', 'ROA', 'Dividend Yield', 'P/L', 'P/VP', 'EV/EBITDA', 'Margem Líquida', 'Lucro Líquido (12M)', 'Dív. Líq./EBITDA', 'Participação no IFIX', 'Valor de Mercado']) {
+    assert.match(fontes, new RegExp(`slug: '${slugDoIndicador(r)}'`), r)
+  }
 })

@@ -31,6 +31,10 @@ const contexto = computed(() => ({
     props.dividends.barsNote,
   ].filter(Boolean).join('\n'),
 }))
+// a barra sob o mouse (ou em foco) acende e diz o ano e o valor; as outras recuam
+const barra = ref<number | null>(null)
+const unidade = computed(() => (/por cota/.test(props.dividends.subtitle) ? 'por cota' : 'por ação'))
+const lado = (i: number) => (i === 0 ? 'esq' : i === props.dividends.bars.length - 1 ? 'dir' : 'meio')
 const renda = computed(() => {
   if (!props.position || props.dividends.sum12 <= 0) return null
   return `Suas ${nf0.format(props.position.qty)} cotas geraram R$ ${nf0.format(props.position.qty * props.dividends.sum12)} em 12 meses`
@@ -59,15 +63,21 @@ const renda = computed(() => {
     </div>
 
     <figure v-if="dividends.bars.length" class="apv__barras">
-      <ol class="apv__cols">
+      <ol class="apv__cols" @mouseleave="barra = null">
         <li
-          v-for="b in dividends.bars" :key="b.year"
+          v-for="(b, i) in dividends.bars" :key="b.year"
           v-contexto-chat="{ id: `provento-ano:${sobre}:${b.year}`, tipo: 'proventos', rotulo: rotuloComSobre(`Proventos ${b.year}`, sobre), texto: `Proventos${sobre ? ` de ${sobre}` : ''} em ${b.year}: ${b.valFmt}${b.current ? ' (ano corrente)' : ''}. ${dividends.barsNote}` }"
-          class="apv__col" :class="{ 'apv__col--atual': b.current }"
+          class="apv__col" :class="{ 'apv__col--atual': b.current, 'apv__col--on': barra === i, 'apv__col--recua': barra != null && barra !== i }"
+          tabindex="0" :aria-label="`${b.year}: ${b.valFmt} ${unidade}`"
+          @mouseenter="barra = i" @focus="barra = i" @blur="barra === i && (barra = null)"
         >
           <span class="apv__val">{{ b.valFmt }}</span>
           <span class="apv__trilho"><span class="apv__barra" :style="{ height: `${Math.max(2, b.hPct)}%` }" /></span>
           <span class="apv__ano">{{ b.year }}</span>
+          <span v-if="barra === i" class="apv__dica" :class="`apv__dica--${lado(i)}`" aria-hidden="true">
+            <span class="apv__dica-a">{{ b.current ? `${b.year} · últimos 12 meses` : b.year }}</span>
+            <span class="apv__dica-v">{{ b.valFmt }} {{ unidade }}</span>
+          </span>
         </li>
       </ol>
       <figcaption class="apv__nota">{{ dividends.barsNote }}</figcaption>
@@ -90,18 +100,37 @@ const renda = computed(() => {
 .apv__ctas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .apv__cta {
   display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600; transition: background .2s;
+  background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600;
+  transition: background .2s ease, box-shadow .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
 }
+.apv__cta:hover { transform: translateY(-1px); }
+.apv__cta:active { transform: scale(.97); }
 .apv__cta:hover { background: var(--nu-cream-hover); color: var(--nu-ink); box-shadow: inset 0 0 0 1px var(--nu-cream-line); }
 .apv__cta--1 { background: var(--nu-ink); color: var(--nu-white); }
 .apv__cta--1:hover { background: var(--nu-ink-hover); color: var(--nu-white); box-shadow: none; }
 
 .apv__barras { margin: 0; }
 .apv__cols { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: clamp(6px, 1.4vw, 16px); height: 220px; }
-.apv__col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.apv__col { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; outline: none; cursor: default; transition: opacity .2s ease; }
+.apv__col--recua { opacity: .5; }
+.apv__col:focus-visible .apv__barra { box-shadow: 0 0 0 2px var(--nu-blue); }
+.apv__col--on .apv__barra { background: var(--nu-ink-30); transform: scaleY(1.02); }
+.apv__col--on.apv__col--atual .apv__barra { background: var(--nu-blue-hover); }
+.apv__dica {
+  position: absolute; top: -8px; transform: translateY(-100%); z-index: 3; pointer-events: none;
+  display: flex; flex-direction: column; gap: 2px; padding: 8px 11px; border-radius: var(--nu-r-chip); white-space: nowrap;
+  background: var(--nu-navy); color: var(--nu-cream-text); box-shadow: var(--nu-shadow-float); font-variant-numeric: tabular-nums;
+  animation: apv-entra .18s ease both;
+}
+@keyframes apv-entra { from { opacity: 0; } }
+.apv__dica--meio { left: 50%; transform: translate(-50%, -100%); }
+.apv__dica--esq { left: 0; }
+.apv__dica--dir { right: 0; }
+.apv__dica-a { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 600; }
+.apv__dica-v { font-size: var(--nu-fs-sm); font-weight: 700; }
 .apv__val { color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .apv__trilho { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-.apv__barra { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: var(--nu-bar-inactive); }
+.apv__barra { display: block; width: 100%; border-radius: 8px 8px 3px 3px; background: var(--nu-bar-inactive); transform-origin: 50% 100%; transition: background .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1); }
 .apv__col--atual .apv__barra { background: var(--nu-blue); }
 .apv__col--atual .apv__val { color: var(--nu-blue-text); font-weight: 700; }
 .apv__ano { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -110,6 +139,11 @@ const renda = computed(() => {
 .apv__renda {
   grid-column: 1 / -1; justify-self: start; margin: 0; padding: 9px 16px; border-radius: var(--nu-r-pill);
   background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) {
+  .apv__col, .apv__barra, .apv__cta { transition: none; }
+  .apv__dica { animation: none; }
+  .apv__cta:hover, .apv__cta:active, .apv__col--on .apv__barra { transform: none; }
 }
 @media (max-width: 520px) {
   .apv__cols { height: 180px; }

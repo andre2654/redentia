@@ -30,6 +30,29 @@ const VENDAS = [
 const quiz = useQuizAssinatura()
 
 
+// A altura da régua vai para --nut-h no <html>, como o header publica a dele em
+// --nuh-h (useTopo): quem gruda logo abaixo dos dois (a barra de seções do
+// /asset) usa top: calc(var(--nuh-h) + var(--nut-h)) e encosta sem vão, com o
+// header encolhido ou não e em qualquer largura. Sem régua, 0px.
+const regua = ref<HTMLElement | null>(null)
+let ro: ResizeObserver | null = null
+function publicarAltura() {
+  const h = regua.value?.getBoundingClientRect().height ?? 0
+  document.documentElement.style.setProperty('--nut-h', `${Math.round(h)}px`)
+}
+onMounted(() => {
+  ro = new ResizeObserver(publicarAltura)
+  watch(regua, (el, antes) => {
+    if (antes) ro?.unobserve(antes)
+    if (el) ro?.observe(el)
+    publicarAltura()
+  }, { immediate: true })
+})
+onBeforeUnmount(() => {
+  ro?.disconnect()
+  document.documentElement.style.removeProperty('--nut-h')
+})
+
 // larguras variadas pros bares do esqueleto (parece a régua de cotações)
 const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 </script>
@@ -38,7 +61,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
   <!-- items vazio = hidratou e nada real chegou: a faixa some (some, não
        mente). loading ainda true = skeleton, o estado normal do SSR. -->
   <!-- no /assinar: o que vem ao conectar -->
-  <div v-if="vendendo" class="nut-wrap">
+  <div v-if="vendendo" ref="regua" class="nut-wrap">
     <div class="nut">
       <span class="nut__label">Ao conectar</span>
       <div class="nut__marquee">
@@ -57,7 +80,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
       </button>
     </div>
   </div>
-  <div v-else-if="loading || itens.length" class="nut-wrap nut-regua">
+  <div v-else-if="loading || itens.length" ref="regua" class="nut-wrap nut-regua">
     <div v-if="loading" class="nut-regua__sk" aria-hidden="true">
       <NuSkeleton v-for="(w, i) in SK_WIDTHS" :key="i" variant="line" :width="`${w}px`" height="12px" radius="pill" />
     </div>

@@ -1,10 +1,10 @@
 /**
- * O que as três direções do /asset/{TICKER} dividem (protótipo de 03/11/2026,
- * no dev por ?ativo=1|2|3; a página de hoje segue sem o parâmetro). A página
- * entrega o mesmo payload do useAcao (o `vm`), e aqui saem as escolhas comuns:
- * o ativo como contexto do chat, as perguntas prontas, a legenda, as linhas e
- * os cartões sem o lucro que não fecha, as seções da página e os links.
- * As direções mudam a forma, nunca o número.
+ * As escolhas da página de ativo (/asset/{TICKER}, o AtivoNoite). Nasceu em
+ * 03/11/2026 para as três direções do protótipo; o dono escolheu "A noite" e
+ * ficou só ela. A página entrega o mesmo payload do useAcao (o `vm`), e aqui
+ * saem: o ativo como contexto do chat, as perguntas prontas, a legenda, as
+ * linhas e os cartões sem o lucro que não fecha, as seções na ordem da página
+ * e os links. Muda a forma, nunca o número.
  */
 import type { AcaoPayload, AcaoRange, AcaoSeriesPair } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
@@ -24,7 +24,7 @@ export interface AtivoDirecaoVM {
   relacionados: { href: string; label: string }[]
 }
 
-export const ROTULO_PERIODO: Record<AcaoRange, string> = { '1mo': '1 mês', '6mo': '6 meses', '12mo': '12 meses' }
+export const ROTULO_PERIODO: Record<AcaoRange, string> = { '1mo': '1 mês', '6mo': '6 meses', '12mo': '12 meses', '5y': '5 anos' }
 
 export function useAtivoDirecao(vm: () => AtivoDirecaoVM) {
   const v = computed(vm)

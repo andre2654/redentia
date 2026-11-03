@@ -37,8 +37,12 @@ test('Veja também soma os links sem duplicar', () => {
 test('a página de ativo usa o endpoint de pagadores e passa os hrefs', () => {
   const vue = readFileSync(new URL('../app/pages/asset/[ticker].vue', import.meta.url), 'utf8')
   assert.match(vue, /\/api\/dividendos-pagador\//)
-  assert.match(vue, /:dividendos-href="proventosHrefs\.dividendos"/)
-  assert.match(vue, /<AcaoRelacionados :links="relacionados" \/>/)
+  assert.match(vue, /dividendosHref: proventosHrefs\.value\.dividendos/)
+  assert.match(vue, /relacionados: relacionados\.value/)
+  // a página (AtivoNoite) leva os dois aos proventos e ao "Veja também"
+  const pagina = readFileSync(new URL('../app/components/ativo/AtivoNoite.vue', import.meta.url), 'utf8')
+  assert.match(pagina, /:dividendos-href="v\.dividendosHref"/)
+  assert.match(pagina, /<AtivoVejaTambem :links="links"/)
   const api = readFileSync(new URL('../server/utils/dividend-payers.ts', import.meta.url), 'utf8')
   assert.match(api, /\/dividends\/tickers/)
   assert.match(api, /tickersDePaginaDividendos/)

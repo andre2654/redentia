@@ -265,8 +265,8 @@ test('o cursor mágico escolhe o pedaço mais de dentro e acha seções com tít
   assert.match(src, /cands\.find\(\(c\) => cands\.every\(\(o\) => o === c \|\| !c\.contains\(o\)\)\)/)
   assert.match(src, /closest<HTMLElement>\('section, article'\)/)
   // os cartões do design system levam o sujeito da página
-  for (const f of ['NuMetricCard', 'NuStatList', 'NuScoreCard', 'NuDividendBars']) {
-    assert.match(ler(`app/components/nu/${f}.vue`), /useSobreDoContexto\(\)/, f)
+  for (const f of ['nu/NuStatList', 'nu/NuDividendBars', 'ativo/AtivoIndicadores', 'ativo/AtivoProventos']) {
+    assert.match(ler(`app/components/${f}.vue`), /useSobreDoContexto\(\)/, f)
   }
   assert.match(ler('app/pages/asset/[ticker].vue'), /proverSobreDoContexto\(ticker\)/)
 })

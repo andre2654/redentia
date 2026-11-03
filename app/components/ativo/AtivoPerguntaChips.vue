@@ -29,8 +29,10 @@ const emit = defineEmits<{ perguntar: [string] }>()
 .apc__q {
   display: inline-flex; align-items: center; gap: 9px; min-height: 40px; padding: 8px 16px 8px 12px; border: 0; border-radius: var(--nu-r-pill);
   font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; text-align: left; cursor: pointer; font-variant-numeric: tabular-nums;
-  transition: background .2s, box-shadow .2s, transform .15s;
+  transition: background .2s ease, box-shadow .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
 }
+.apc__q:hover { transform: translateY(-2px); }
+.apc__q:active { transform: scale(.97); }
 .apc__q:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .apc__logo { flex-shrink: 0; display: block; }
 .apc--claro .apc__q { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 0 0 1px var(--nu-cream-line); }
@@ -38,5 +40,5 @@ const emit = defineEmits<{ perguntar: [string] }>()
 .apc--escuro .apc__q { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); }
 .apc--escuro .apc__q:hover { background: var(--nu-white-18); }
 .apc--escuro .apc__logo { filter: brightness(0) invert(1); opacity: .9; }
-@media (prefers-reduced-motion: reduce) { .apc__q { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .apc__q { transition: none; } .apc__q:hover, .apc__q:active { transform: none; } }
 </style>
