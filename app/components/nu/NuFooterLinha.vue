@@ -12,7 +12,7 @@
 // dado não confirmado (o pregão de 26/10 ainda é suspeito, ver bolsaDoDia.ts).
 import { IBOV_MENSAL, IBOV_MENSAL_INICIO } from '~/content/ibov-mensal'
 
-const VW = 1600
+const VW = 1600 // o viewBox do SVG é literal (0 0 1600 300): o :viewBox vira prop do DOM e o Vue reclama
 const VH = 300
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 
@@ -57,10 +57,10 @@ function mover(e: PointerEvent) {
 
     <div ref="cena" class="nrc__cena" @pointermove="mover" @pointerleave="marca = null">
       <div class="nrc__traco">
-        <svg :viewBox="`0 0 ${VW} ${VH}`" preserveAspectRatio="none" class="nrc__svg nrc__svg--brilho" aria-hidden="true">
+        <svg viewBox="0 0 1600 300" preserveAspectRatio="none" class="nrc__svg nrc__svg--brilho" aria-hidden="true">
           <path :d="d" class="nrc__brilho" />
         </svg>
-        <svg :viewBox="`0 0 ${VW} ${VH}`" preserveAspectRatio="none" class="nrc__svg" aria-hidden="true">
+        <svg viewBox="0 0 1600 300" preserveAspectRatio="none" class="nrc__svg" aria-hidden="true">
           <defs>
             <linearGradient id="nrc-luz" x1="0" y1="0" :x2="VW" y2="0" gradientUnits="userSpaceOnUse">
               <stop offset="0" class="nrc__s-0" />
