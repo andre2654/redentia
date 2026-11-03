@@ -20,8 +20,9 @@ import {
 const PRECO_TETO = ['/calculadora/preco-teto', '/calculadora/preco-teto/', '/calculadora/preco-teto/graham', '/calculadora/preco-teto/PETR4', '/Calculadora/Preco-Teto']
 
 test('o rodapé fica sem a faixa só onde a página já tem o formulário dela', () => {
-  for (const p of [...PRECO_TETO, '/guias', '/guias/']) assert.equal(rodapeSemAssinatura(p), true, p)
-  for (const p of ['/', '/rankings', '/tesouro', '/calculadora/acoes', '/guias/data-com-e-data-ex', '/asset/PETR4', '/login', '/calculadora/preco-tetox']) {
+  for (const p of PRECO_TETO) assert.equal(rodapeSemAssinatura(p), true, p)
+  // o /guias perdeu a faixa azul dele (03/11/2026): a assinatura é a do rodapé
+  for (const p of ['/guias', '/guias/', '/', '/rankings', '/tesouro', '/calculadora/acoes', '/guias/data-com-e-data-ex', '/asset/PETR4', '/login', '/calculadora/preco-tetox']) {
     assert.equal(rodapeSemAssinatura(p), false, p)
   }
 })

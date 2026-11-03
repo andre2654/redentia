@@ -76,7 +76,8 @@ test('o evento newsletter_assinatura leva o formato e conserva origem, source e 
 
 test('cada formulário declara a origem do aceite', () => {
   const ler = (caminho: string) => readFileSync(new URL(caminho, import.meta.url), 'utf8')
-  assert.match(ler('../app/components/nu/NuNewsletterBand.vue'), /origem="guias"/)
+  // a faixa azul do /guias (NuNewsletterBand) saiu em 03/11/2026: lá a assinatura é a do rodapé
+  assert.doesNotMatch(ler('../app/pages/guias/index.vue'), /NuNewsletterBand/)
   assert.match(ler('../app/components/nu/NuFooter.vue'), /origem="rodape"/)
   // o convite antes do rodapé saiu (02/11/2026): a newsletter fica só no rodapé
   assert.doesNotMatch(ler('../app/layouts/default.vue'), /<NuNewsletterConvite/)

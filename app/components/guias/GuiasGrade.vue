@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// /guias, direção 3 (protótipo de 02/11/2026): "A grade com busca", a mesma
-// linguagem da /teses. Uma barra que gruda embaixo da régua do mercado com a
+// /guias: "A grade com busca" (03/11/2026), a direção que o dono escolheu
+// entre três ("pode manter o 3"). A mesma linguagem da /teses. Uma barra que gruda embaixo da régua do mercado com a
 // busca (título, linha, tema e os títulos das seções) e os temas com a
 // contagem; embaixo, cartões ricos: tema e tempo, o título, uma linha e o
 // começo do sumário do guia. No celular vira um feed vertical e os temas rolam
@@ -103,7 +103,7 @@ const SUMARIO = 3
 }
 .ggr__barra-in { display: flex; align-items: center; gap: 12px; padding: 12px var(--g); }
 .ggr__busca {
-  position: relative; display: flex; align-items: center; flex: 0 0 300px; height: 38px; padding: 0 12px 0 14px; gap: 9px;
+  position: relative; display: flex; align-items: center; flex: 0 1 300px; min-width: 200px; height: 38px; padding: 0 12px 0 14px; gap: 9px;
   border-radius: var(--nu-r-pill); background: var(--nu-cream); color: var(--nu-gray); transition: box-shadow .2s, background .2s;
 }
 .ggr__busca:focus-within { background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-blue); }
@@ -117,7 +117,11 @@ const SUMARIO = 3
 .ggr__busca-x { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; margin-right: -4px; border: 0; border-radius: 50%; background: var(--nu-sand-2); color: var(--nu-ink); cursor: pointer; }
 .ggr__busca-x svg { width: 12px; height: 12px; }
 .ggr__busca-x:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.ggr__chips { display: flex; align-items: center; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.ggr__chips {
+  /* os temas rolam de lado até a borda da tela: o chip cortado na borda diz que tem mais */
+  display: flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none;
+  margin-right: calc(-1 * var(--g)); padding-right: var(--g);
+}
 .ggr__chips::-webkit-scrollbar { display: none; }
 .ggr__chip {
   display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; height: 38px; padding: 0 16px; border: 0; border-radius: var(--nu-r-pill);
@@ -172,18 +176,19 @@ const SUMARIO = 3
   font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer;
 }
 
-@media (max-width: 1100px) { .ggr__busca { flex-basis: 240px; } }
 @media (max-width: 640px) { .ggr__barra { top: calc(var(--nuh-h, 52px) + 29px); } }
 @media (max-width: 900px) {
   .ggr__barra-in { flex-direction: column; align-items: stretch; gap: 10px; padding: 10px 0; }
   .ggr__busca { flex: 0 0 auto; margin: 0 var(--g); }
-  .ggr__chips { padding: 0 var(--g); }
+  .ggr__chips { margin-right: 0; padding: 0 var(--g); }
   .ggr__chip { height: 34px; padding: 0 14px; }
   .ggr__nome { font-size: var(--nu-fs-xl); }
 }
 @media (max-width: 560px) {
   .ggr__conta-rev { display: none; }
-  .ggr__sumario-i:nth-child(n + 3) { display: none; }
+  /* no celular o cartão é tema, título e uma linha: o sumário fica no guia */
+  .ggr__sumario { display: none; }
+  .ggr__cartao { padding: 20px 20px 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ggr, .ggr__cartao, .ggr__barra { animation: none; transition: none; }

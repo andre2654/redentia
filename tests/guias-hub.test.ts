@@ -1,13 +1,12 @@
 /**
- * O hub /guias como biblioteca (02/11/2026): a camada de apresentação sobre o
- * registry. O que importa garantir é que guia novo da rotina semanal aparece
- * sozinho (tema pela tag, fora das trilhas cai só na lista) e que card sem
- * guia escrito não entra nas contagens.
+ * O hub /guias, "A grade com busca" (03/11/2026): a camada de apresentação
+ * sobre o registry. O que importa garantir é que guia novo da rotina semanal
+ * aparece sozinho (tema pela tag) e que card sem guia escrito não entra nas
+ * contagens.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
-import { GUIAS_TRILHAS, guiasBuscar, guiasMesAno, guiasNormalizar, montarBibliotecaGuias } from '../app/utils/guiasHub.ts'
+import { guiasBuscar, guiasMesAno, guiasNormalizar, montarBibliotecaGuias } from '../app/utils/guiasHub.ts'
 
 const doc = (slug: string, tag: string, data: string, secoes: string[] = ['Uma seção']) => ({
   slug, tag, title: `Título ${slug}`, dek: 'dek', description: 'desc', summary: `resumo ${slug}`, minutes: 9, author: 'Equipe',
@@ -30,7 +29,7 @@ const META = [
   { title: 'Guia novo', description: 'que a rotina escreveu', tag: 'FIIs', minutes: 10, slug: 'guia-novo-da-rotina' },
 ] as any
 
-test('guia novo do registry aparece sozinho, no tema da tag, e vira o destaque', () => {
+test('guia novo do registry aparece sozinho, no tema da tag, e vira o mais novo', () => {
   const b = montarBibliotecaGuias(META, DOCS, DOCS['open-finance'])
   const novo = b.itens.find((g) => g.chave === 'guia-novo-da-rotina')!
   assert.equal(novo.tema, 'fiis')
@@ -52,24 +51,6 @@ test('o guia de IR mora em Imposto de renda, não em Guia Redentia', () => {
   assert.equal(b.itens.find((g) => g.chave === 'como-declarar-investimentos-no-ir')!.tema, 'impostos')
 })
 
-test('a trilha ignora slug que não existe e some com menos de dois guias', () => {
-  const b = montarBibliotecaGuias(META, DOCS, DOCS['open-finance'])
-  const comece = b.trilhas.find((t) => t.id === 'comece')!
-  assert.deepEqual(comece.itens.map((g) => g.chave), ['reserva-de-emergencia', 'tesouro-direto-para-iniciantes'])
-  assert.equal(comece.minutos, 18)
-  assert.equal(b.trilhas.some((t) => t.id === 'analise'), false)
-})
-
-test('todo slug das trilhas existe no registry de verdade', () => {
-  const index = readFileSync(new URL('../app/content/guias/index.ts', import.meta.url), 'utf8')
-  for (const t of GUIAS_TRILHAS) for (const s of t.slugs) {
-    const f = readFileSync(new URL(`../app/content/guias/${s}.ts`, import.meta.url), 'utf8')
-    assert.match(f, new RegExp(`slug: '${s}'`), s)
-    const nome = /export const (\w+_GUIDE)/.exec(f)![1]
-    assert.match(index, new RegExp(`\\[${nome}\\.slug\\]`), `${s} em GUIDE_DOCS`)
-  }
-})
-
 test('a busca ignora acento e caixa, e quem acha no título vem antes', () => {
   const b = montarBibliotecaGuias(META, DOCS)
   assert.equal(guiasNormalizar('  AÇÕES  na Declaração '), 'acoes na declaracao')
@@ -80,4 +61,15 @@ test('a busca ignora acento e caixa, e quem acha no título vem antes', () => {
   assert.equal(guiasBuscar(b.itens, '').length, b.itens.length)
   assert.equal(guiasMesAno('2026-10-26'), 'out 2026')
   assert.equal(guiasMesAno(''), null)
+})
+
+test('a página lê o registry pela biblioteca, sem herói antigo nem faixa da newsletter', async () => {
+  const { readFileSync } = await import('node:fs')
+  const pagina = readFileSync(new URL('../app/pages/guias/index.vue', import.meta.url), 'utf8')
+  assert.match(pagina, /montarBibliotecaGuias\(GUIDES, GUIDE_DOCS, FEATURED_GUIDE\)/)
+  assert.match(pagina, /<GuiasGrade /)
+  assert.doesNotMatch(pagina, /NuNewsletterBand|NuPageHero|import\.meta\.dev/)
+  const grade = readFileSync(new URL('../app/components/guias/GuiasGrade.vue', import.meta.url), 'utf8')
+  assert.equal((grade.match(/<h1\b/g) ?? []).length, 1)
+  assert.match(grade, /v-contexto-chat/)
 })

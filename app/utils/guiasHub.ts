@@ -1,12 +1,10 @@
 /**
- * O hub /guias visto como biblioteca (02/11/2026): a camada de APRESENTAÇÃO
+ * O hub /guias, "A grade com busca" (03/11/2026): a camada de APRESENTAÇÃO
  * sobre o registry de app/content/guias. Nada aqui muda o formato do dado: a
  * rotina semanal continua escrevendo `app/content/guias/<slug>.ts` + uma linha
  * em GUIDE_DOCS e outra em GUIDES, e tudo o que entra lá aparece sozinho no
  * hub. O tema sai da `tag` que a rotina já escreve; os mapas abaixo só
  * refinam (o guia de IR mora em "Imposto de renda", não em "Guia Redentia").
- * Slug que ainda não existe nas trilhas cai só na lista completa, e slug de
- * trilha que sumiu do registry é ignorado em silêncio.
  *
  * Sem `~/` em import de valor: o teste (node --test) importa este arquivo.
  */
@@ -42,42 +40,6 @@ const TEMA_DO_SLUG: Record<string, GuiaTemaId> = {
   'como-declarar-investimentos-no-ir': 'impostos',
   'imposto-sobre-dividendos': 'impostos',
 }
-
-export interface GuiaTrilha { id: string; titulo: string; linha: string; slugs: string[] }
-
-/** As trilhas: sequências de leitura escolhidas à mão (só slugs). */
-export const GUIAS_TRILHAS: readonly GuiaTrilha[] = [
-  {
-    id: 'comece',
-    titulo: 'Comece por aqui',
-    linha: 'Do colchão de segurança à primeira carteira.',
-    slugs: ['reserva-de-emergencia', 'tesouro-direto-para-iniciantes', 'como-investir-em-acoes', 'como-investir-em-etf', 'como-montar-carteira-de-investimentos'],
-  },
-  {
-    id: 'dividendos',
-    titulo: 'Viver de dividendos',
-    linha: 'Como o provento funciona e como fazer ele pagar as contas.',
-    slugs: ['data-com-e-data-ex', 'acoes-fiis-dividendos-todo-mes', 'calculadora-de-dividendos', 'melhores-fiis-2026', 'tesouro-renda-mais-educa-mais'],
-  },
-  {
-    id: 'analise',
-    titulo: 'Analisar uma empresa',
-    linha: 'Os indicadores, o preço teto e onde o risco mora.',
-    slugs: ['como-analisar-uma-acao', 'como-calcular-preco-teto', 'small-caps-guia-completo', 'como-investir-em-bdr'],
-  },
-  {
-    id: 'ir',
-    titulo: 'Imposto de renda',
-    linha: 'O que é isento, o que é tributado e como declarar.',
-    slugs: ['cdb-lci-lca', 'imposto-sobre-dividendos', 'como-declarar-investimentos-no-ir'],
-  },
-  {
-    id: 'ia',
-    titulo: 'Sua carteira com IA',
-    linha: 'Conecte a carteira e pergunte sobre ela em português.',
-    slugs: ['open-finance', 'conectar-carteira-ao-chatgpt', 'mcp-para-investimentos'],
-  },
-]
 
 export interface GuiaItemVM {
   /** slug do guia */
@@ -131,7 +93,6 @@ export interface BibliotecaGuias {
   /** o guia mais novo (pela data de publicação) */
   destaque: GuiaItemVM | null
   temas: (GuiaTema & { itens: GuiaItemVM[] })[]
-  trilhas: (GuiaTrilha & { itens: GuiaItemVM[]; minutos: number })[]
   /** a revisão mais recente entre os guias */
   atualizadoEm: string | null
 }
@@ -182,33 +143,11 @@ export function montarBibliotecaGuias(
   const comData = itens.filter((g) => g.publicado)
   const destaque = comData.reduce<GuiaItemVM | null>((a, g) => (!a || (g.publicado! > a.publicado!) ? g : a), null)
   const revisoes = Object.values(docs).map((d) => d.dateModified).filter(Boolean).sort()
-  const porChave = new Map(itens.map((g) => [g.chave, g]))
 
   return {
     itens,
     destaque,
     temas: GUIAS_TEMAS.map((t) => ({ ...t, itens: itens.filter((g) => g.tema === t.id) })).filter((t) => t.itens.length),
-    trilhas: GUIAS_TRILHAS
-      .map((t) => {
-        const lista = t.slugs.map((s) => porChave.get(s)).filter((g): g is GuiaItemVM => !!g)
-        return { ...t, itens: lista, minutos: lista.reduce((s, g) => s + g.minutos, 0) }
-      })
-      .filter((t) => t.itens.length >= 2),
     atualizadoEm: guiasMesAno(revisoes.at(-1)),
   }
-}
-
-/** Guias abertos neste navegador (só para o progresso das trilhas). */
-export const GUIAS_LIDOS_CHAVE = 'nu:guias-abertos'
-export function guiasLerAbertos(): string[] {
-  try {
-    const v = JSON.parse(localStorage.getItem(GUIAS_LIDOS_CHAVE) ?? '[]')
-    return Array.isArray(v) ? v.filter((s) => typeof s === 'string').slice(0, 200) : []
-  } catch { return [] }
-}
-export function guiasMarcarAberto(chave: string): string[] {
-  const lista = guiasLerAbertos()
-  if (!lista.includes(chave)) lista.push(chave)
-  try { localStorage.setItem(GUIAS_LIDOS_CHAVE, JSON.stringify(lista)) } catch { /* modo privado: sem progresso */ }
-  return lista
 }

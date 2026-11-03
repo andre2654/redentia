@@ -7,12 +7,13 @@
 
 // a preço teto: veto do dono (15/10/2026); ela já tem o bloco no resultado
 const PRECO_TETO = /^\/calculadora\/preco-teto(?:\/|$)/i
-// o /guias fecha com a faixa azul da newsletter
+// o /guias: o convite fica fora (a faixa azul da página saiu em 03/11/2026,
+// com "A grade com busca", e a assinatura do /guias voltou a ser a do rodapé)
 const GUIAS = /^\/guias\/?$/i
 
 /** O rodapé fica sem a faixa onde a página já tem o formulário dela. */
 export function rodapeSemAssinatura(caminho: string): boolean {
-  return PRECO_TETO.test(caminho) || GUIAS.test(caminho)
+  return PRECO_TETO.test(caminho)
 }
 
 // a home: o rodapé já tem a faixa da newsletter de ponta a ponta, e o cartão

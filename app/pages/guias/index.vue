@@ -1,45 +1,24 @@
 <script setup lang="ts">
-// /guias — hub do blog/guias (PR4). Contrato de UX:
-// docs/redentia-nu/designs/Redentia Guias Nu.dc.html. O layout default já
-// renderiza NuHeader + NuMarketTicker + NuFooter; aqui vive o miolo na ordem
-// do design: hero creme (eyebrow + H1 + tabs) → faixa branca com featured +
-// grid de cards → newsletter azul.
+// /guias — o hub dos guias. Desde 03/11/2026 é "A grade com busca"
+// (GuiasGrade), escolhida pelo dono entre três direções ("pode manter o 3"):
+// a mesma linguagem da /teses, com a busca e os temas numa barra que gruda
+// embaixo da régua do mercado e cartões com o começo do sumário de cada guia.
+// Saíram o herói creme com as tabs, o card em destaque e a faixa azul da
+// newsletter: a assinatura voltou para o rodapé (utils/newsletter-lugares).
 //
-// Conteúdo vem do registry tipado (app/content/guias) — mesma fonte do
-// /guias/[slug]. Filtro por tab é client-side sobre a lista (como no mock);
-// o featured só aparece em Tudo/Guia Redentia. Guia sem página escrita =
-// card "Em breve" (o design pede o grid completo de 9 cards; some só os
-// escritos deixaria as tabs FIIs/Renda fixa/Cripto vazias).
+// Conteúdo: o registry tipado de app/content/guias, lido por
+// montarBibliotecaGuias (utils/guiasHub) sem mudar o formato que a rotina
+// semanal escreve. Guia novo entra sozinho, no tema da tag dele.
 //
-// SEO: SSR-first (conteúdo 100% local no HTML), canonical /guias, JSON-LD
-// BreadcrumbList + ItemList (só itens com destino real). routeRules '/guias'
+// SEO: SSR-first (conteúdo 100% local no HTML), um H1 só, os 21 guias com
+// link na 1ª resposta (a busca e os temas só filtram no cliente), canonical
+// /guias, JSON-LD BreadcrumbList + ItemList. O ItemList segue o registry
+// como era (o card "Análise PETR4", que aponta para /asset/PETR4, continua
+// nele e fica fora da grade até o dono decidir). routeRules '/guias'
 // cacheia 3600s no nuxt.config.
-import type { Component } from 'vue'
-import { FEATURED_GUIDE, GUIDES, GUIDE_DOCS, GUIDE_TABS, guideCardTo } from '~/content/guias'
+import { FEATURED_GUIDE, GUIDES, GUIDE_DOCS, guideCardTo } from '~/content/guias'
 
-// PROTÓTIPO (02/11/2026, o dono: "modifique a página /guias agora"): três
-// direções para o miolo, trocadas só no dev por ?guias=1 (a biblioteca, por
-// tema), ?guias=2 (as trilhas de leitura) e ?guias=3 (a grade com busca, a
-// mesma linguagem da /teses). Em produção import.meta.dev é false, o mapa fica
-// vazio (nem entra no bundle) e segue a página de hoje até o dono escolher. O
-// SEO não muda em nenhuma: o mesmo usePageSeo abaixo, um H1 só e todos os
-// guias com link no HTML do SSR (o filtro e a busca só agem no cliente). A
-// lista sai de montarBibliotecaGuias (utils/guiasHub), que lê o registry sem
-// mudar o formato que a rotina semanal escreve.
-const route = useRoute()
-const DIRECOES: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/guias/direcoes/GuiasBiblioteca.vue')),
-      '2': defineAsyncComponent(() => import('~/components/guias/direcoes/GuiasTrilhas.vue')),
-      '3': defineAsyncComponent(() => import('~/components/guias/direcoes/GuiasGrade.vue')),
-    }
-  : {}
-const direcao = computed(() => DIRECOES[String(route.query.guias ?? '')] ?? null)
-const biblioteca = computed(() => (direcao.value ? montarBibliotecaGuias(GUIDES, GUIDE_DOCS, FEATURED_GUIDE) : null))
-
-const tab = ref<string>('Tudo')
-const showFeatured = computed(() => tab.value === 'Tudo' || tab.value === 'Guia Redentia')
-const filtered = computed(() => GUIDES.filter((g) => tab.value === 'Tudo' || g.tag === tab.value))
+const biblioteca = montarBibliotecaGuias(GUIDES, GUIDE_DOCS, FEATURED_GUIDE)
 
 // ——— SEO ———
 const origin = useSiteOrigin()
@@ -73,57 +52,5 @@ usePageSeo({
 </script>
 
 <template>
-  <component :is="direcao" v-if="direcao && biblioteca" :biblioteca="biblioteca" />
-  <div v-else>
-    <NuPageHero
-      eyebrow="Blog da Redentia"
-      subtitle="Do primeiro aporte à carteira que paga suas contas, em português claro."
-      size="lg"
-    >
-      <template #title>Guias para<br>investir melhor.</template>
-      <NuFilterPills :items="GUIDE_TABS" :model-value="tab" @update:model-value="tab = $event" />
-    </NuPageHero>
-
-    <section class="ghb">
-      <GuiasFeaturedCard
-        v-if="showFeatured"
-        :to="`/guias/${FEATURED_GUIDE.slug}`"
-        :tag="FEATURED_GUIDE.tag"
-        :meta-line="`${FEATURED_GUIDE.minutes} min de leitura · ${FEATURED_GUIDE.updatedShort}`"
-        :title="FEATURED_GUIDE.title"
-        :summary="FEATURED_GUIDE.summary"
-        cta="Ler o guia"
-        class="ghb__featured"
-      />
-      <div class="ghb__grid">
-        <GuiasCard
-          v-for="(g, i) in filtered" :key="g.title"
-          :title="g.title" :description="g.description" :tag="g.tag"
-          :minutes="g.minutes" :to="guideCardTo(g)"
-          :gradient="((i % 3) + 1) as 1 | 2 | 3"
-        />
-      </div>
-    </section>
-
-    <NuNewsletterBand
-      subtitle="Um e-mail por semana. Sem spam, cancele quando quiser."
-      placeholder="Seu melhor e-mail"
-      cta="Assinar"
-    >
-      <template #title>O mercado da semana,<br>toda sexta.</template>
-    </NuNewsletterBand>
-  </div>
+  <GuiasGrade :biblioteca="biblioteca" />
 </template>
-
-<style scoped>
-.ghb {
-  background: var(--nu-white);
-  padding: clamp(48px, 6vw, 80px) clamp(22px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
-  animation: nu-fade .5s ease both;
-}
-.ghb__featured { margin-bottom: 16px; }
-.ghb__grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px;
-}
-</style>
