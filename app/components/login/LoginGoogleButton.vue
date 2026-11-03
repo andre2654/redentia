@@ -23,6 +23,8 @@ import type { CSSProperties } from 'vue'
 const props = defineProps<{
   /** trava a interação enquanto o pai troca o id_token pelo token sanctum */
   disabled?: boolean
+  /** 'escuro' é o tema escuro do guia do Google (#131314, borda #8E918F), para fundo escuro */
+  tom?: 'claro' | 'escuro'
 }>()
 const emit = defineEmits<{ credential: [idToken: string]; error: [message: string] }>()
 
@@ -32,7 +34,10 @@ const rowRef = ref<HTMLElement | null>(null)
 const hostRef = ref<HTMLElement | null>(null)
 const failed = ref(false)
 const overlayStyle = ref<CSSProperties>({})
-const available = computed(() => !!clientId && !failed.value)
+// só no dev, para ver a tela sem o client id no ambiente: ?entrar-marcas=1
+// desenha a pílula, sem o GIS por cima (o clique não faz nada)
+const amostra = import.meta.dev && !clientId && useRoute().query['entrar-marcas'] === '1'
+const available = computed(() => (!!clientId || amostra) && !failed.value)
 
 // O GIS aceita só width fixa (máx. 400px) e altura 40px; a linha custom é
 // fluida. O scale estica o iframe invisível até as bordas da linha pra não
@@ -81,7 +86,7 @@ onBeforeUnmount(() => {
     v-if="available"
     ref="rowRef"
     class="lgb"
-    :class="{ 'lgb--busy': props.disabled }"
+    :class="{ 'lgb--busy': props.disabled, 'lgb--escuro': tom === 'escuro' }"
   >
     <!-- Camada visual: a pílula branca do guia de marca do Google (borda
          #747775, texto #1F1F1F, o G de quatro cores). A interação real é do iframe. -->
@@ -112,6 +117,11 @@ onBeforeUnmount(() => {
 }
 .lgb:hover .lgb__pilula { background: #F8F9FA; }
 .lgb--busy { pointer-events: none; }
+.lgb--escuro .lgb__pilula { background: #131314; box-shadow: inset 0 0 0 1px #8E918F; color: #E3E3E3; }
+.lgb--escuro:hover .lgb__pilula { background: #1F1F21; }
+/* o foco real cai no iframe invisível do GIS: o anel vai na pílula */
+.lgb:focus-within .lgb__pilula { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
+.lgb--escuro:focus-within .lgb__pilula { outline-color: var(--nu-white); }
 .lgb__gis {
   position: absolute; top: 0; left: 0;
   width: 400px; height: 40px;

@@ -3,17 +3,21 @@
 // com o popup do Sign in with Apple JS no clique (useAppleAuth). Sem
 // NUXT_PUBLIC_APPLE_CLIENT_ID no ambiente, não renderiza nada; quem fecha o
 // popup não vê erro.
+// `tom="branco"` é a pílula branca do guia da Apple, para fundo escuro.
 import type { AppleCredencial } from '~/composables/useAppleAuth'
 import { appleCancelado } from '~/composables/useAppleAuth'
 
-const props = defineProps<{ disabled?: boolean }>()
+const props = defineProps<{ disabled?: boolean; tom?: 'preto' | 'branco' }>()
 const emit = defineEmits<{ credential: [cred: AppleCredencial]; error: [message: string] }>()
 
 const { entrar, clientId } = useAppleAuth()
 const abrindo = ref(false)
+// só no dev, para ver a tela sem o client id no ambiente: ?entrar-marcas=1
+// desenha a pílula, que não faz nada no clique
+const amostra = import.meta.dev && useRoute().query['entrar-marcas'] === '1'
 
 async function clicar() {
-  if (props.disabled || abrindo.value) return
+  if (props.disabled || abrindo.value || (amostra && !clientId)) return
   abrindo.value = true
   try {
     emit('credential', await entrar())
@@ -28,7 +32,7 @@ async function clicar() {
 </script>
 
 <template>
-  <div v-if="clientId" class="lab" :class="{ 'lab--busy': props.disabled || abrindo }">
+  <div v-if="clientId || amostra" class="lab" :class="{ 'lab--busy': props.disabled || abrindo, 'lab--branco': tom === 'branco' }">
     <!-- a pílula preta do guia da Apple: maçã e texto em branco -->
     <button type="button" class="lab__pilula" @click="clicar">
       <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -51,4 +55,7 @@ async function clicar() {
 .lab__pilula:hover { background: #1D1D1F; }
 .lab__pilula:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 .lab__pilula svg { margin-top: -2px; }
+.lab--branco .lab__pilula { background: #FFFFFF; color: #000000; }
+.lab--branco .lab__pilula:hover { background: #F2F2F7; }
+.lab--branco .lab__pilula:focus-visible { outline-color: var(--nu-white); }
 </style>

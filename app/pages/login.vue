@@ -27,6 +27,8 @@ import type {
   SocialLoginResponse,
 } from '~/types/auth'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
+import type { Component } from 'vue'
+import type { PortaLogin } from '~/types/loginPorta'
 import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
 definePageMeta({
@@ -318,10 +320,62 @@ async function onAppleCredential(cred: AppleCredencial) {
     googleSubmitting.value = false
   }
 }
+
+// ————— PROTÓTIPO (03/11/2026): três peles para esta tela —————
+// O dono pediu a tela de entrar e criar conta no idioma novo do site (o herói
+// "A noite", o topo editorial, o rodapé Calma, a pílula do chat). Três
+// direções, trocadas só no dev por ?entrar=1 (a pergunta: o campo é a pílula
+// iridescente), ?entrar=2 (a noite: escuro, com os aparelhos) e ?entrar=3 (a
+// linha: o Ibovespa desde 1995 na banda navy). A lógica é esta página; a
+// variação só recebe `porta` e desenha. Em produção import.meta.dev é false,
+// o mapa fica vazio (nem entra no bundle) e segue a tela de hoje.
+const VARIANTES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/login/variantes/LoginVarPergunta.vue')),
+      '2': defineAsyncComponent(() => import('~/components/login/variantes/LoginVarNoite.vue')),
+      '3': defineAsyncComponent(() => import('~/components/login/variantes/LoginVarLinha.vue')),
+    }
+  : {}
+const variante = computed(() => VARIANTES[String(route.query.entrar ?? '')] ?? null)
+const porta: PortaLogin = reactive({
+  mode, method, phone, email, step, sending, verifying, identifierError, pinError, googleError,
+  googleSubmitting, whatsappDown, socialEntrando, resendIn,
+  isCad, isPhone, ready, vemDaAssinatura, mainCta, methodCta, altLabel, altCta, fieldHelp, whatsappNotice,
+  submitIdentifier, verifyPin, resendPin, backToIdentifier, toggleMode, toggleMethod, onGoogleCredential, onAppleCredential,
+})
+
+// Os estados que só aparecem depois de um request (código enviado, erro,
+// WhatsApp fora, entrando) forçados no dev, sem request nenhum ao backend:
+// ?entrar-estado=pin|pin-erro|verificando|erro|enviando|whatsapp|social,
+// com ?entrar-modo=cadastro e ?entrar-metodo=email. Roda no setup, igual no
+// SSR e no cliente, então não há troca na hidratação.
+if (import.meta.dev) {
+  const forcar = String(route.query['entrar-estado'] ?? '')
+  if (route.query['entrar-modo'] === 'cadastro') mode.value = 'cadastro'
+  if (route.query['entrar-metodo'] === 'email') method.value = 'email'
+  if (forcar) {
+    if (!phone.value) phone.value = '(11) 98765-4321'
+    if (!email.value) email.value = 'voce@email.com'
+  }
+  if (forcar === 'pin' || forcar === 'pin-erro' || forcar === 'verificando') {
+    step.value = 'pin'
+    resendIn.value = forcar === 'pin' ? 24 : 0
+  }
+  if (forcar === 'pin-erro') pinError.value = 'Código incorreto. Você ainda tem 2 tentativas.'
+  if (forcar === 'verificando') verifying.value = true
+  if (forcar === 'erro') identifierError.value = 'Não foi possível enviar o código. Tente novamente.'
+  if (forcar === 'enviando') sending.value = true
+  if (forcar === 'whatsapp') {
+    whatsappDown.value = true
+    phone.value = ''
+  }
+  if (forcar === 'social') googleSubmitting.value = true
+}
 </script>
 
 <template>
-  <NuAuthLayout>
+  <component :is="variante" v-if="variante" :porta="porta" />
+  <NuAuthLayout v-else>
     <!-- :key re-dispara o qfade a cada troca de etapa (mesma página) -->
     <div :key="step" class="lg__step">
       <template v-if="step === 'identifier'">
