@@ -218,7 +218,7 @@ export interface BenchNavItem {
   soon?: boolean
 }
 
-/** número de destaque no topo do /benchmark-ia (BenchHero) */
+/** número de destaque no topo do /benchmark-ia (BenchNoite) */
 export interface BenchHeroStat {
   /** id da seção para onde o cartão leva */
   id: string
@@ -237,7 +237,7 @@ export interface BenchChartInfo {
   blocos: { rotulo: string; texto: string }[]
 }
 
-/* ——— protótipo das três direções da página (03/11/2026, só no dev por ?bench=1|2|3) ——— */
+/* ——— a página "A noite" (03/11/2026): o que a página calcula e BenchNoite mostra ——— */
 export interface BenchIndexSection {
   id: BenchIndexId
   label: string
@@ -251,8 +251,8 @@ export interface BenchIndexSection {
 export type BenchRowParts = BenchRankingRow & { parts: number[] }
 
 /**
- * Tudo o que a página já calcula da edição, entregue de uma vez às direções:
- * elas só mudam a forma, nunca a conta.
+ * Tudo o que a página calcula da edição, entregue de uma vez a BenchNoite:
+ * ela só muda a forma, nunca a conta.
  */
 export interface BenchPaginaVM {
   edition: BenchEdition | null

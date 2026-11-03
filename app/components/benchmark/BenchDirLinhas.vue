@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Lista ranqueada das três direções do /benchmark-ia (03/11/2026): uma linha
+// Lista ranqueada do /benchmark-ia "A noite" (03/11/2026): uma linha
 // por modelo, com a logo, o nome, uma barra calma e o número. Serve a todos os
 // índices: nota com margem de erro (Placar geral), barra dividida em faixas
 // (Inventa, Concorda), barra que sai do zero para os dois lados (Carteira,
@@ -36,19 +36,12 @@ const props = withDefaults(defineProps<{
   numerado?: boolean
   foco?: string | null
   tom?: 'claro' | 'escuro'
-  densa?: boolean
-  /** marca o começo e o fim da escala embaixo da lista */
-  eixo?: boolean
   /** como ler a linha, para leitor de tela ("nota", "excesso sobre o Ibovespa") */
   rotulo?: string
-  /** o selo "empate" ao lado do nome (só no placar geral: nos índices, vira ruído) */
-  empate?: boolean
-}>(), { format: undefined, min: undefined, max: undefined, tons: () => ['bom', 'meio', 'ruim'], numerado: true, foco: null, tom: 'claro', densa: false, eixo: false, rotulo: 'nota', empate: false })
+}>(), { format: undefined, min: undefined, max: undefined, tons: () => ['bom', 'meio', 'ruim'], numerado: true, foco: null, tom: 'claro', rotulo: 'nota' })
 const emit = defineEmits<{ (e: 'hover', id: string | null): void; (e: 'pick', id: string): void }>()
 
 const fmt = (v: number) => (props.format ?? fmtBench.one)(v)
-// a régua sem casa decimal quando o limite é redondo ("60", não "60,0")
-const fmtEixo = (v: number) => (!props.format && Number.isInteger(v) ? String(v) : fmt(v))
 const escala = computed(() => {
   const vals = props.rows.flatMap((r) => [r.value, r.lo ?? r.value, r.hi ?? r.value])
   const temNegativo = vals.some((v) => v < 0)
@@ -76,7 +69,7 @@ const aria = (r: Linha) => [
 </script>
 
 <template>
-  <div class="bdl" :class="[`bdl--${tom}`, { 'bdl--densa': densa, 'bdl--foco': !!foco, 'bdl--sem-num': !numerado }]">
+  <div class="bdl" :class="[`bdl--${tom}`, { 'bdl--foco': !!foco, 'bdl--sem-num': !numerado }]">
     <ol class="bdl__lista" @mouseleave="emit('hover', null)">
       <li v-for="r in rows" :key="r.id" class="bdl__item" :class="{ 'bdl__item--on': r.id === foco, 'bdl__item--top': numerado && r.rank === 1 }">
         <button
@@ -90,7 +83,6 @@ const aria = (r: Linha) => [
               <template v-else>{{ r.name.charAt(0) }}</template>
             </span>
             <span class="bdl__name">{{ r.name }}</span>
-            <span v-if="empate && numerado && r.tied" class="bdl__tie">empate</span>
           </span>
           <span class="bdl__track" aria-hidden="true">
             <span v-if="zero > 0" class="bdl__zero" :style="{ left: `${zero}%` }" />
@@ -112,9 +104,6 @@ const aria = (r: Linha) => [
         </button>
       </li>
     </ol>
-    <div v-if="eixo" class="bdl__eixo" aria-hidden="true">
-      <span class="bdl__eixo-in"><span>{{ fmtEixo(escala.lo) }}</span><span>{{ fmtEixo(escala.hi) }}</span></span>
-    </div>
   </div>
 </template>
 
@@ -159,11 +148,6 @@ const aria = (r: Linha) => [
 }
 .bdl__tile img { width: 14px; height: 14px; display: block; object-fit: contain; }
 .bdl__name { min-width: 0; color: var(--tinta); font-size: var(--nu-fs-sm); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bdl__tie {
-  flex-shrink: 0; padding: 1px 8px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 600;
-}
-.bdl--escuro .bdl__tie { background: var(--nu-blue-soft-18); color: var(--nu-blue-soft); }
 
 .bdl__track { position: relative; height: 8px; border-radius: var(--nu-r-pill); background: var(--pista); }
 .bdl__fill { position: absolute; top: 0; bottom: 0; border-radius: var(--nu-r-pill); background: var(--nu-blue-soft); transition: background .18s ease; }
@@ -191,34 +175,8 @@ const aria = (r: Linha) => [
 .bdl--escuro .bdl__item--on .bdl__val { color: var(--nu-blue-soft); }
 .bdl__extra { color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; text-align: right; }
 
-.bdl__eixo { display: grid; grid-template-columns: var(--cols); gap: 14px; margin-top: 6px; }
-.bdl__eixo-in { grid-column: -3 / -2; display: flex; justify-content: space-between; color: var(--apoio); font-size: var(--nu-fs-xs); font-weight: 500; font-variant-numeric: tabular-nums; }
-.bdl--sem-num .bdl__eixo-in { grid-column: 2; }
-
-/* densa (dentro de cartão) e estreito: duas linhas, o nome inteiro em cima
-   com o número, a barra embaixo com o apoio à direita */
-.bdl--densa .bdl__l { gap: 6px 10px; padding: 9px 12px; }
-.bdl--densa .bdl__tile { width: 22px; height: 22px; }
-.bdl--densa .bdl__tile img { width: 12px; height: 12px; }
-.bdl--densa .bdl__name { font-size: var(--nu-fs-dense); }
-.bdl--densa .bdl__pos { font-size: var(--nu-fs-xs); }
-.bdl--densa .bdl__val { font-size: var(--nu-fs-sm); }
-.bdl--densa .bdl__track { height: 6px; }
-.bdl--densa { --cols: 24px minmax(0, 1fr) auto; }
-.bdl--densa.bdl--sem-num { --cols: minmax(0, 1fr) auto; }
-.bdl--densa .bdl__l { grid-template-areas: 'pos who val' '. track extra'; }
-.bdl--densa.bdl--sem-num .bdl__l { grid-template-areas: 'who val' 'track extra'; }
-.bdl--densa .bdl__pos { grid-area: pos; }
-.bdl--densa .bdl__who { grid-area: who; }
-.bdl--densa .bdl__track { grid-area: track; }
-.bdl--densa .bdl__num { display: contents; }
-.bdl--densa .bdl__val { grid-area: val; text-align: right; }
-.bdl--densa .bdl__extra { grid-area: extra; align-self: center; }
-.bdl--densa .bdl__eixo { grid-template-columns: 24px minmax(0, 1fr) auto; }
-.bdl--densa.bdl--sem-num .bdl__eixo { grid-template-columns: minmax(0, 1fr) auto; }
-.bdl--densa .bdl__eixo-in { grid-column: 2; }
-.bdl--densa.bdl--sem-num .bdl__eixo-in { grid-column: 1; }
-
+/* estreito: duas linhas, o nome inteiro em cima com o número, a barra
+   embaixo com o apoio à direita */
 @container (max-width: 480px) {
   .bdl { --cols: 24px minmax(0, 1fr) auto; }
   .bdl--sem-num { --cols: minmax(0, 1fr) auto; }
@@ -230,10 +188,6 @@ const aria = (r: Linha) => [
   .bdl__num { display: contents; }
   .bdl__val { grid-area: val; text-align: right; }
   .bdl__extra { grid-area: extra; align-self: center; }
-  .bdl__eixo { grid-template-columns: 24px minmax(0, 1fr) auto; }
-  .bdl--sem-num .bdl__eixo { grid-template-columns: minmax(0, 1fr) auto; }
-  .bdl__eixo-in { grid-column: 2; }
-  .bdl--sem-num .bdl__eixo-in { grid-column: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bdl__l, .bdl__fill { transition: none; }

@@ -33,7 +33,24 @@ const mesDe = (i: number) => {
   return `${MESES[m % 12]}/${String((anoIni + Math.floor(m / 12)) % 100).padStart(2, '0')}`
 }
 
-const { el, revealClass } = useReveal(0.2)
+// a entrada só embeleza (03/11/2026): título, traço e ponto saem prontos do
+// servidor; nada fica escondido esperando o IntersectionObserver (numa aba em
+// segundo plano ou num print de página inteira ele não dispara, e a banda
+// ficava vazia). `soEmbeleza` em useReveal só passa a 'in' quando a banda
+// montou fora da tela e está chegando; aí a entrada roda uma vez, em Web
+// Animations (em CSS ela recomeçava do zero a cada recálculo de estilo), com
+// as mesmas durações e curvas de antes.
+const { el, state } = useReveal(0.2, { soEmbeleza: true })
+watch(state, (st) => {
+  const raiz = el.value
+  if (st !== 'in' || !raiz) return
+  const q = (c: string) => raiz.querySelector<HTMLElement>(c)
+  const lento = 'cubic-bezier(.2, .8, .2, 1)'
+  q('.nrc__titulo')?.animate([{ opacity: 0, filter: 'blur(14px)', transform: 'translateY(14px)' }, { opacity: 1, filter: 'none', transform: 'none' }], { duration: 1400, easing: lento, fill: 'backwards' })
+  q('.nrc__traco')?.animate([{ clipPath: 'inset(-20px 100% -20px 0)' }, { clipPath: 'inset(-20px 0 -20px 0)' }], { duration: 2600, delay: 450, easing: 'cubic-bezier(.55, .05, .25, 1)', fill: 'backwards' })
+  q('.nrc__legenda')?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1000, delay: 2400, easing: 'ease', fill: 'backwards' })
+  q('.nrc__hoje')?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1000, delay: 2900, easing: 'ease', fill: 'backwards' })
+})
 
 const cena = ref<HTMLElement | null>(null)
 const marca = ref<{ x: number; y: number; rotulo: string; valor: string; virar: boolean } | null>(null)
@@ -51,7 +68,7 @@ function mover(e: PointerEvent) {
 </script>
 
 <template>
-  <div ref="el" class="nrc" :class="revealClass">
+  <div ref="el" class="nrc">
     <div class="nrc__luz" aria-hidden="true" />
     <h2 class="nrc__titulo">Seja qual for a sua meta,<br> a Redentia tem um caminho.</h2>
 
@@ -162,16 +179,4 @@ function mover(e: PointerEvent) {
   mask-image: linear-gradient(180deg, transparent, var(--nu-navy) 12%, var(--nu-navy) 72%, transparent);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 }
-
-/* entrada: o título sai do desfoque; o traço se acende da esquerda para a direita; o ponto de hoje acende por último */
-.is-pending .nrc__titulo { opacity: 0; filter: blur(14px); transform: translateY(14px); }
-.is-in .nrc__titulo { animation: nrc-titulo 1.4s cubic-bezier(.2, .8, .2, 1) backwards; }
-@keyframes nrc-titulo { from { opacity: 0; filter: blur(14px); transform: translateY(14px); } }
-.is-pending .nrc__traco { clip-path: inset(-20px 100% -20px 0); }
-.is-in .nrc__traco { animation: nrc-traco 2.6s cubic-bezier(.55, .05, .25, 1) .45s backwards; }
-@keyframes nrc-traco { from { clip-path: inset(-20px 100% -20px 0); } to { clip-path: inset(-20px 0 -20px 0); } }
-.is-pending .nrc__hoje, .is-pending .nrc__legenda { opacity: 0; }
-.is-in .nrc__hoje { animation: nrc-acende 1s ease 2.9s backwards; }
-.is-in .nrc__legenda { animation: nrc-acende 1s ease 2.4s backwards; }
-@keyframes nrc-acende { from { opacity: 0; } }
 </style>

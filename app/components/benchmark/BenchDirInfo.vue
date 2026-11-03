@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// Os dois botões de cada índice nas direções novas do /benchmark-ia: "Leitura"
-// (a opinião da casa, com o selo) e "i" (como ler o gráfico). Abrem o mesmo
-// modal da página de hoje (NuDayModal), com o mesmo texto de BenchSection.
+// Os dois botões de cada índice do /benchmark-ia "A noite": "Leitura"
+// (a opinião da casa, com o selo) e "i" (como ler o gráfico). Os dois abrem
+// o modal da casa (NuDayModal).
 import type { BenchChartInfo } from '~/types/benchmark'
 import type { Leitura } from '~/content/benchmark-ia/leituras'
 import type { NuDayBlock } from '~/types/market'

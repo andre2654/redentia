@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// /benchmark-ia, direção 2 (03/11/2026): "A noite". O topo é o escuro do herói
+// /benchmark-ia: "A noite" (03/11/2026), a direção que o dono escolheu entre
+// três ("a 2"), no lugar da página de faixas navy e creme. O topo é o escuro do herói
 // da home (o navy do rodapé descendo ao preto, a linha de luz no horizonte) e
 // o Placar geral vira o momento bonito: dez colunas de luz que sobem do
 // horizonte, da altura da nota, com a margem de erro em traço fino; quem
@@ -7,11 +8,11 @@
 // as dez IAs: escolher uma acende o modelo em todos os gráficos da página. Os
 // índices descem um por vez, centrados e calmos, no branco.
 // No celular as colunas não cabem: o placar vira a lista com barras, ainda no
-// escuro. A entrada (as colunas subindo) é CSS puro, sem esperar observador.
+// escuro. A entrada (as colunas subindo) só embeleza: ver o onMounted.
 import type { BenchPaginaVM } from '~/types/benchmark'
 
 const props = defineProps<{ vm: BenchPaginaVM }>()
-const { hover, fixo, foco, pick, metodo, INFO, go, manchete, ctx } = useBenchDirecao(() => props.vm)
+const { hover, fixo, foco, pick, metodo, INFO, go, manchete, ctx } = useBenchPagina(() => props.vm)
 const v = computed(() => props.vm)
 
 /* ——— o horizonte ——— */
@@ -38,6 +39,26 @@ const amemLinhas = computed(() => v.value.amem.map((r) => ({ ...r, extra: (r.par
 const longoSel = ref(props.vm.longoSeries[0]?.id ?? '')
 const longoVisto = computed(() => (foco.value && props.vm.longoSeries.some((s) => s.id === foco.value) ? foco.value : longoSel.value))
 function escolherLongo(id: string) { longoSel.value = id; pick(id) }
+
+/* ——— a entrada das colunas: só embeleza ———
+   As colunas saem prontas do servidor. A subida do horizonte é Web Animations,
+   disparada uma vez no mount, e só com a aba visível, o palco na tela e sem
+   pedido de menos movimento. Em CSS puro ela recomeçava do zero a cada
+   recálculo de estilo (um print de página inteira pegava as colunas no chão);
+   sem JS, numa aba em segundo plano ou fora da tela, as colunas só estão lá. */
+const palco = ref<HTMLElement | null>(null)
+onMounted(() => {
+  const el = palco.value
+  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const r = el.getBoundingClientRect()
+  if (r.top >= window.innerHeight || r.bottom <= 0) return
+  const curva = 'cubic-bezier(.2, .8, .2, 1)'
+  el.querySelectorAll<HTMLElement>('.bno__col').forEach((col, i) => {
+    col.querySelector('.bno__pilar')?.animate([{ transform: 'scaleY(0)' }, { transform: 'none' }], { duration: 1100, delay: 150 + i * 70, easing: curva, fill: 'backwards' })
+    col.querySelectorAll('.bno__ic, .bno__v').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 900 + i * 70, easing: 'ease', fill: 'backwards' }))
+  })
+  el.querySelector('.bno__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: curva, fill: 'backwards' })
+})
 </script>
 
 <template>
@@ -55,7 +76,7 @@ function escolherLongo(id: string) { longoSel.value = id; pick(id) }
       </div>
 
       <!-- ============ Placar geral: as luzes no horizonte ============ -->
-      <div v-if="vm.geral" id="geral" v-contexto-chat="ctx.geral" class="bno__palco">
+      <div v-if="vm.geral" id="geral" ref="palco" v-contexto-chat="ctx.geral" class="bno__palco">
         <h2 class="bno__sr">Placar geral</h2>
         <ol class="bno__luzes" @mouseleave="hover = null">
           <li
@@ -327,13 +348,6 @@ function escolherLongo(id: string) { longoSel.value = id; pick(id) }
 .bno__ponto--bad { background: var(--nu-agora-vermelho); }
 .bno__ponto--good { background: var(--nu-agora-azul); }
 
-/* entrada: as colunas sobem do horizonte em cadeia; o resto já está lá */
-.bno__pilar { animation: bno-sobe 1.1s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(.15s + var(--i) * 70ms); }
-.bno__ic, .bno__v { animation: bno-acende .5s ease backwards; animation-delay: calc(.9s + var(--i) * 70ms); }
-.bno__horizonte { animation: bno-linha 1.4s cubic-bezier(.2, .8, .2, 1) backwards; }
-@keyframes bno-sobe { from { transform: scaleY(0); } }
-@keyframes bno-acende { from { opacity: 0; } }
-@keyframes bno-linha { from { opacity: .2; transform: scaleX(.5); } }
 
 /* ——— a barra que gruda ——— */
 .bno__barra {
@@ -400,7 +414,6 @@ function escolherLongo(id: string) { longoSel.value = id; pick(id) }
 }
 @media (max-width: 640px) { .bno { --cola: calc(var(--nuh-h, 58px) + 46px); } }
 @media (prefers-reduced-motion: reduce) {
-  .bno__pilar, .bno__ic, .bno__v, .bno__horizonte { animation: none; }
   .bno__col, .bno__pilar, .bno__chip { transition: none; }
 }
 </style>

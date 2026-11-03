@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Fim das direções novas do /benchmark-ia: as dúvidas no FAQ da casa, no
+// Fim do /benchmark-ia "A noite": as dúvidas no FAQ da casa, no
 // mesmo bloco da /teses (faixa creme, título 500, a chamada para a Redentia AI),
 // e o aviso legal. O id "metodologia" é o destino do "Como medimos" do topo e
 // do último item da faixa de seções.

@@ -1,18 +1,18 @@
 /**
- * O que as três direções do /benchmark-ia (protótipo de 03/11/2026, ?bench=)
- * dividem: o modelo em foco (o hover acende, o clique fixa, valendo para todos
- * os gráficos da página), o número de manchete de cada índice, o texto que o
- * cursor mágico do chat anexa de cada bloco e o pulo para uma seção.
+ * O estado do /benchmark-ia "A noite" (03/11/2026): o modelo em foco (o hover
+ * acende, o clique fixa, valendo para todos os gráficos da página), o número de
+ * manchete de cada índice, o texto que o cursor mágico do chat anexa de cada
+ * bloco e o pulo para uma seção.
  *
  * Os gráficos de dentro saem sempre prontos (REVEAL_SEM_ENTRADA): na página de
- * hoje, o estado de espera da entrada animada deixava cartões e faixas vazios
+ * faixas, o estado de espera da entrada animada deixava cartões e faixas vazios
  * no preview em segundo plano.
  *
- * Chame no setup do componente da direção, antes de qualquer await.
+ * Chame no setup de BenchNoite, antes de qualquer await.
  */
 import { BENCH_CHART_INFO, BENCH_INDICES } from '~/content/benchmark-ia/metodologia'
 import { REVEAL_SEM_ENTRADA } from '~/composables/useReveal'
-import { contextoDoRanking, mediaDe, ultimoComDado } from '~/utils/benchDirecoes'
+import { contextoDoRanking, mediaDe, ultimoComDado } from '~/utils/benchPagina'
 import type { BenchIndexId, BenchPaginaVM } from '~/types/benchmark'
 import type { ValorContextoChat } from '~/utils/contexto-chat-registro'
 
@@ -21,7 +21,7 @@ export type BenchBlocoId = 'geral' | BenchIndexId | 'custo'
 /** o número grande e a linha embaixo dele, por índice */
 export interface BenchManchete { numero: string; frase: string }
 
-export function useBenchDirecao(vmRef: () => BenchPaginaVM) {
+export function useBenchPagina(vmRef: () => BenchPaginaVM) {
   provide(REVEAL_SEM_ENTRADA, true)
 
   const hover = ref<string | null>(null)
@@ -102,5 +102,5 @@ export function useBenchDirecao(vmRef: () => BenchPaginaVM) {
     return out
   })
 
-  return { hover, fixo, foco, pick, metodo, INFO, go, manchete, parcialAgora, ctx }
+  return { hover, fixo, foco, pick, metodo, INFO, go, manchete, ctx }
 }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// Custo × nota (03/11/2026, direções novas do /benchmark-ia): cada modelo é
+// Custo × nota (03/11/2026, /benchmark-ia "A noite"): cada modelo é
 // um ponto, o custo por mil respostas na horizontal (escala logarítmica, vai
 // de menos de um dólar a mais de dez) e a nota geral na vertical. A linha liga
 // a fronteira: os modelos que nenhum outro bate com nota maior pagando menos
 // (é o que o "i" do custo já descrevia e a página de hoje não desenhava). Só
 // os da fronteira e o modelo em foco levam o nome escrito; os outros, no hover.
 // Altura fixa (sem salto de layout) e pontos em HTML, para a logo sair nítida.
-import { fronteiraDeCusto } from '~/utils/benchDirecoes'
+import { fronteiraDeCusto } from '~/utils/benchPagina'
 
 const props = withDefaults(defineProps<{
   points: { id: string; name: string; cost: number; nota: number; rank: number }[]

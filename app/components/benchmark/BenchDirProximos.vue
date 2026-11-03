@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// "Próximos índices" nas direções novas: o que ainda não tem nota, uma linha
+// "Próximos índices" do /benchmark-ia: o que ainda não tem nota, uma linha
 // por índice, com a pergunta e o que falta. Sem cartão: lista com fio.
 import { BENCH_INDICES } from '~/content/benchmark-ia/metodologia'
 import type { BenchIndexSection } from '~/types/benchmark'

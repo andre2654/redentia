@@ -1,12 +1,14 @@
 <script setup lang="ts">
 // /benchmark-ia — Ranking de IAs em finanças (Benchmark de IA da Redentia).
 //
-// Dividida em faixas como as outras páginas da casa (dono, 16/10, no lugar do
-// menu lateral do OpenRouter): topo navy com título e números da edição, depois
-// uma faixa por seção alternando branco e creme, cada uma com eyebrow, título,
-// uma frase, o gráfico e, quando cabe, a lista em duas colunas; no fim, "Como
-// medimos" em prosa. A navegação é a faixa de seções do topo (useSectionRail),
-// a mesma da /carteira, no lugar das cotações.
+// "A noite" (03/11/2026), a direção que o dono escolheu entre três ("a 2")
+// para modernizar a tela, no lugar da página de faixas navy e creme: o topo no
+// escuro do herói da home, com o Placar geral em colunas de luz sobre o
+// horizonte, uma barra que gruda para destacar uma IA na página toda e os
+// índices um por vez, centrados, no branco (components/benchmark/BenchNoite).
+// Esta página só faz as contas da edição (o `vm`) e o SEO; a forma é toda de
+// BenchNoite. A navegação é a faixa de seções do topo (useSectionRail), a mesma
+// da /carteira, no lugar das cotações.
 //
 // O placar só mostra edição publicada (content/benchmark-ia/edicoes). Índice
 // fora da edição não vira caixa vazia no meio da página: todos os que ainda
@@ -16,10 +18,9 @@
 // sem linha de aviso na tela a pedido do dono (15/10). Ela nunca chega à
 // produção: o composable só a devolve com import.meta.dev.
 // Indexável com edição real; sem edição (ou na prévia do dev), noindex.
-import { BENCH_CHART_INFO as INFO, BENCH_DISCLAIMER, BENCH_INDICES, benchFaqPagina } from '~/content/benchmark-ia/metodologia'
+import { BENCH_INDICES, benchFaqPagina } from '~/content/benchmark-ia/metodologia'
 import { leituras } from '~/content/benchmark-ia/leituras'
-import type { Component } from 'vue'
-import type { BenchHeroStat, BenchIndexId, BenchPaginaVM, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
+import type { BenchHeroStat, BenchIndexId, BenchIndexSection, BenchPaginaVM, BenchRankingRow, BenchRodadaMarco } from '~/types/benchmark'
 
 // as arenas andam todo pregão: a série da Carteira vem do backend e cobre a da
 // edição; a Previsão, sem nota até o 21º pregão, mostra o placar em formação.
@@ -110,19 +111,16 @@ const custo = ranked.length
 /* ——— cada índice tem sua forma (dono, 15/10: "varie mais nos gráficos") ——— */
 const partsOf = (stack: { rows: { modelId: string; parts: number[] }[] } | undefined, id: string) =>
   stack?.rows.find((s) => s.modelId === id)?.parts ?? [0, 0, 0]
-// Inventa número?: pílulas da carteira, na ordem da nota
+// Inventa número?: acertou, não sei, inventou, na ordem da nota
 const inventaPills = (inventa ?? []).map((r) => ({ ...r, parts: partsOf(edition?.inventa, r.id) }))
-// Concorda com tudo?: o muro (disse não, no muro, disse sim)
-const amemRings = (amem ?? []).map((r) => {
-  const p = partsOf(edition?.amem, r.id)
-  return { ...r, good: p[0] ?? 0, mid: p[1] ?? 0, bad: p[2] ?? 0 }
-})
-// Cai em golpes financeiros?: borboleta (golpes pegos x legítimas acusadas)
+// Concorda com tudo?: disse não, no muro, concordou
+const amemParts = (amem ?? []).map((r) => ({ ...r, parts: partsOf(edition?.amem, r.id) }))
+// Cai em golpes financeiros?: golpes pegos x legítimas acusadas (BenchButterfly)
 const golpeWings = (golpe ?? []).map((r) => {
   const g = edition?.golpe?.find((x) => x.modelId === r.id)
   return { ...r, caught: g?.caught ?? 0, falseAlarm: g?.falseAlarm ?? 0 }
 })
-// Sistema tributário brasileiro: blocos por tema, na ordem da nota
+// Sistema tributário brasileiro: blocos por tema, na ordem da nota (BenchTiles)
 const leaoTiles = (leao ?? []).map((r) => ({ ...r, cells: edition?.leao?.rows.find((x) => x.modelId === r.id)?.cells ?? [] }))
 // rótulos curtos das colunas no celular, na ordem dos blocos que o report.ts publica
 const LEAO_SHORT = ['Div.', 'Aç.', 'DARF', 'FII', 'RF', 'Ext.', 'Nov.']
@@ -141,12 +139,11 @@ const longoSeries = (longo ?? []).map((r) => {
     marcos: (s?.rodadas ?? []).filter((x) => x.n > 1).map((x) => ({ i: x.i, label: marcoRodada(x) })),
   }
 })
-const longoSel = ref(longoSeries[0]?.id ?? '')
-// passar o mouse numa linha da lista mostra aquele modelo no gráfico só enquanto
-// durar o hover (dono, 16/10); o clique (ou o toque, no celular) fixa a escolha
-const longoHover = ref<string | null>(null)
-// Custo: esferas com área proporcional ao custo, cor pela posição no placar geral
-const costPoints = ranked.map((r) => ({ id: r.model.id, name: r.model.name, cost: r.model.costPer1k, rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99 }))
+// Custo: um ponto por modelo, custo × nota geral (BenchDirDispersao)
+const costPoints = ranked.map((r) => ({
+  id: r.model.id, name: r.model.name, cost: r.model.costPer1k, nota: r.overall.value,
+  rank: geral?.find((g) => g.id === r.model.id)?.rank ?? 99,
+}))
 
 const dados = edition?.inventaDados?.length
   ? {
@@ -156,7 +153,6 @@ const dados = edition?.inventaDados?.length
   : null
 
 /* ——— índices: o que tem resultado vira seção; o resto vai para "Próximos índices" ——— */
-type IndexSection = { id: BenchIndexId; label: string; icon: string; on: boolean; next: string }
 const NOVA = edition ? 'Fora desta edição.' : 'Entra na primeira edição.'
 const ARENA = 'Começa na primeira rodada mensal.'
 const diaMes = (iso: string) => iso.slice(8, 10) + '/' + iso.slice(5, 7)
@@ -164,7 +160,7 @@ const st = edition?.curtoStatus
 const CURTO_NEXT = st?.proximaCorrecao
   ? `Primeira nota em ${diaMes(st.proximaCorrecao)}.`
   : ARENA
-const indices: IndexSection[] = [
+const indices: BenchIndexSection[] = [
   { id: 'inventa', label: method('inventa').name, icon: 'ghost', on: !!inventa, next: NOVA },
   { id: 'amem', label: method('amem').name, icon: 'hand', on: !!amem, next: NOVA },
   { id: 'golpe', label: method('golpe').name, icon: 'shield', on: !!golpe, next: edition ? NOVA : 'Em construção.' },
@@ -172,7 +168,6 @@ const indices: IndexSection[] = [
   { id: 'longo', label: method('longo').name, icon: 'trend', on: !!longo, next: ARENA },
   { id: 'curto', label: method('curto').name, icon: 'zap', on: !!curto || !!curtoParcial, next: CURTO_NEXT },
 ]
-const shown = (id: BenchIndexId) => indices.find((x) => x.id === id)!.on
 const proximos = indices.filter((x) => !x.on)
 
 // o placar geral diz de quais laboratórios é a média
@@ -183,7 +178,7 @@ const labsDaMedia = indices
   .map((x) => ({ inventa: 'Inventa', amem: 'Concorda', golpe: 'Golpes', leao: 'Tributário' } as Record<string, string>)[x.id] ?? x.label)
 const geralDesc = ponto(`Média de ${nomes(labsDaMedia)}, de 0 a 100`)
 
-/* ——— topo navy: até três números da edição, cada um leva à sua seção ——— */
+/* ——— o topo: até três números da edição, cada um leva à sua seção ——— */
 const media = (stack: { rows: { parts: number[] }[] } | undefined, i: number) =>
   stack?.rows.length ? stack.rows.reduce((a, r) => a + (r.parts[i] ?? 0), 0) / stack.rows.length : null
 const inventou = media(edition?.inventa, 2)
@@ -214,67 +209,39 @@ const railSections = [
 ]
 useSectionRail(railSections, { pageLabel: 'Ranking de IAs' })
 
-function go(id: string) {
-  scrollToRailSection(id)
-  history.replaceState(null, '', `#${id}`)
-}
-
 // linha de frescor, curta como o "Usage data through…" do OpenRouter. Na
 // prévia do dev não sai nada (dono, 15/10: "pode tirar esse texto").
 const dataBR = edition ? new Date(`${edition.dateIso}T12:00:00`).toLocaleDateString('pt-BR') : ''
 const fresh = !edition
   ? 'Primeira edição em breve. O método já está publicado no fim da página.'
   : isPreview ? null : `Dados da ${edition.label}, de ${dataBR}.`
-// conta aberta: o custo total da edição sai na seção de custo
-const custoDesc = 'Quanto custa cada mil respostas, em dólar. Menor é melhor.'
 const proximosDesc = edition
   ? 'O que ainda não tem nota.'
   : 'Os índices do ranking.'
 const faq = benchFaqPagina()
-const icon = (k: string) => BENCH_ICONS[k] ?? BENCH_ICONS.trophy
 
-// PROTÓTIPO (03/11/2026, o dono: "modernizar" a tela, como a /teses e o
-// /guias): três direções, trocadas só no dev por ?bench=1 (a tabela: todos os
-// índices numa tabela que ordena), ?bench=2 (a noite: o placar como luzes no
-// horizonte, no escuro do herói da home) e ?bench=3 (a grade: um cartão por
-// índice, a linguagem da /teses). Em produção import.meta.dev é false, o mapa
-// fica vazio (os componentes nem entram no bundle) e segue a página de hoje
-// até o dono escolher. As três recebem as mesmas contas desta página (o `vm`
-// abaixo): mudam a forma, nunca o número. O SEO é o mesmo (usePageSeo abaixo),
-// com os mesmos ids de seção para a faixa do topo e o FAQ no fim. ?previa=
-// continua valendo junto (?bench=3&previa=off, por exemplo).
-const route = useRoute()
-const DIRECOES: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/benchmark/direcoes/BenchTabela.vue')),
-      '2': defineAsyncComponent(() => import('~/components/benchmark/direcoes/BenchNoite.vue')),
-      '3': defineAsyncComponent(() => import('~/components/benchmark/direcoes/BenchGrade.vue')),
-    }
-  : {}
-const direcao = computed(() => DIRECOES[String(route.query.bench ?? '')] ?? null)
-const vm: BenchPaginaVM | null = import.meta.dev
-  ? {
-      edition, isPreview, fresh, heroStats,
-      geral, geralDesc,
-      inventa: inventaPills, inventaSegments: edition?.inventa?.segments.map((x) => x.label) ?? [], dados,
-      amem: amemRings.map((r) => ({ ...r, parts: [r.good, r.mid, r.bad] })),
-      golpe: golpeWings,
-      leao: leaoTiles, leaoTopics: edition?.leao?.topics ?? [], leaoShort: LEAO_SHORT,
-      longo, longoSeries, longoMarcos, longoNota, longoFormacao,
-      longoHeadline: longoFormacao ? `Em formação: ${edition!.longo!.sample} de ${edition!.longo!.minSample} rodadas.` : null,
-      curto, curtoAcaso, curtoParcial, curtoParcialSeries,
-      curtoHeadline: curto
-        ? (curtoAcaso ? 'Nenhum modelo se distinguiu do acaso nesta edição.' : null)
-        : curtoParcial
-          ? (curtoParcial.completo
-              ? `Os ${curtoParcial.horizonte} pregões fecharam. A nota oficial entra na próxima edição.`
-              : `Em formação: pregão ${curtoParcial.pregoes} de ${curtoParcial.horizonte}.${curtoParcial.fimPrevisto ? ` Nota oficial em ${diaMes(curtoParcial.fimPrevisto)}.` : ''}`)
-          : null,
-      custo,
-      costPoints: costPoints.map((p) => ({ ...p, nota: ranked.find((r) => r.model.id === p.id)?.overall.value ?? 0 })),
-      leitura: LEITURA, indices, proximos, proximosDesc, faq,
-    }
-  : null
+// tudo o que BenchNoite mostra, de uma vez: ela muda a forma, nunca a conta
+const vm: BenchPaginaVM = {
+  edition, isPreview, fresh, heroStats,
+  geral, geralDesc,
+  inventa: inventaPills, inventaSegments: edition?.inventa?.segments.map((x) => x.label) ?? [], dados,
+  amem: amemParts,
+  golpe: golpeWings,
+  leao: leaoTiles, leaoTopics: edition?.leao?.topics ?? [], leaoShort: LEAO_SHORT,
+  longo, longoSeries, longoMarcos, longoNota, longoFormacao,
+  longoHeadline: longoFormacao ? `Em formação: ${edition!.longo!.sample} de ${edition!.longo!.minSample} rodadas.` : null,
+  curto, curtoAcaso, curtoParcial, curtoParcialSeries,
+  curtoHeadline: curto
+    ? (curtoAcaso ? 'Nenhum modelo se distinguiu do acaso nesta edição.' : null)
+    : curtoParcial
+      ? (curtoParcial.completo
+          ? `Os ${curtoParcial.horizonte} pregões fecharam. A nota oficial entra na próxima edição.`
+          : `Em formação: pregão ${curtoParcial.pregoes} de ${curtoParcial.horizonte}.${curtoParcial.fimPrevisto ? ` Nota oficial em ${diaMes(curtoParcial.fimPrevisto)}.` : ''}`)
+      : null,
+  custo,
+  costPoints,
+  leitura: LEITURA, indices, proximos, proximosDesc, faq,
+}
 
 usePageSeo({
   title: 'Ranking de IAs em finanças: qual IA entende de dinheiro no Brasil',
@@ -289,176 +256,5 @@ usePageSeo({
 </script>
 
 <template>
-  <component :is="direcao" v-if="direcao && vm" :vm="vm" />
-  <div v-else class="bia-wrap">
-      <BenchHero :stats="heroStats" @go="go">
-        <h1 class="bia__h1">Ranking de IAs em finanças</h1>
-        <p class="bia__lead">
-          Dez IAs, a mesma prova de finanças, corrigida por gabarito.
-          <a href="#metodologia" class="bia__link" @click.prevent="go('metodologia')">Como medimos</a>
-        </p>
-        <p v-if="fresh" class="bia__fresh">{{ fresh }}</p>
-      </BenchHero>
-
-      <!-- ============ Placar geral ============ -->
-      <BenchSection eyebrow="Placar" v-if="geral" id="geral" title="Placar geral" :desc="geralDesc" :info="INFO.geral">
-        <BenchRange :rows="geral" />
-        <p v-if="edition?.seal" class="bia__seal">Respostas lacradas (SHA-256): <code>{{ edition.seal }}</code></p>
-      </BenchSection>
-
-      <!-- ============ Inventa número? (pílulas da carteira) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('inventa')" id="inventa" :title="method('inventa').name" :desc="method('inventa').question" :info="INFO.inventa" :leitura="LEITURA.inventa">
-        <BenchWaffle v-if="edition?.inventa" :segments="edition.inventa.segments" :rows="inventaPills" />
-        <p v-if="dados" class="bia__note">
-          Com os dados da Redentia no enunciado, a invenção média cai de <b>{{ fmtBench.pct(dados.sem) }}</b> para <b>{{ fmtBench.pct(dados.com) }}</b>. Essa rodada fica fora do ranking.
-        </p>
-      </BenchSection>
-
-      <!-- ============ Concorda com tudo? (o muro) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('amem')" id="amem" :title="method('amem').name" :desc="method('amem').question" :info="INFO.amem" :leitura="LEITURA.amem">
-        <BenchWall v-if="edition?.amem" :rows="amemRings" />
-      </BenchSection>
-
-      <!-- ============ Cai em golpes financeiros? (borboleta) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('golpe')" id="golpe" :title="method('golpe').name" :desc="method('golpe').question" :info="INFO.golpe">
-        <BenchButterfly :rows="golpeWings" />
-      </BenchSection>
-
-      <!-- ============ Sistema tributário brasileiro (blocos por tema) ============ -->
-      <BenchSection eyebrow="Laboratório" v-if="shown('leao')" id="leao" :title="method('leao').name" :desc="method('leao').question" :info="INFO.leao" :leitura="LEITURA.leao">
-        <BenchTiles v-if="edition?.leao" :topics="edition.leao.topics" :short-topics="LEAO_SHORT" :rows="leaoTiles" />
-      </BenchSection>
-
-      <!-- ============ Arenas: linha navy e pontos em torno do zero ============ -->
-      <BenchSection eyebrow="Arena ao vivo" v-if="shown('longo')" id="longo" :title="method('longo').name" :desc="method('longo').question" :info="INFO.longo">
-        <p v-if="longoFormacao" class="bia__headline">Em formação: {{ edition!.longo!.sample }} de {{ edition!.longo!.minSample }} rodadas.</p>
-        <BenchLineNavy
-          v-if="edition?.longo" :model-value="longoHover ?? longoSel" @update:model-value="longoSel = $event"
-          :labels="edition.longo.labels" :ibov="edition.longo.ibov" :selic="edition.longo.selic"
-          :series="longoSeries" :marcos="longoMarcos" :footnote="longoNota"
-        />
-        <BenchRankList
-          v-if="longo" :rows="longo" :format="fmtBench.signedPp" :numbered="!longoFormacao" interactive :active-id="longoHover ?? longoSel"
-          @hover="longoHover = $event" @pick="longoSel = $event; longoHover = null"
-        />
-      </BenchSection>
-
-      <BenchSection eyebrow="Arena ao vivo" v-if="shown('curto')" id="curto" :title="method('curto').name" :desc="method('curto').question" :info="curto ? INFO.curto : INFO.curtoParcial">
-        <template v-if="curto">
-          <p v-if="curtoAcaso" class="bia__headline">Nenhum modelo se distinguiu do acaso nesta edição.</p>
-          <BenchDots :rows="curto" :format="fmtBench.ic" zero-label="0 = ordem igual ao acaso" footnote="Ponto cinza: sem evidência de habilidade." />
-        </template>
-        <template v-else-if="curtoParcial">
-          <p class="bia__headline">
-            <template v-if="curtoParcial.completo">Os {{ curtoParcial.horizonte }} pregões fecharam. A nota oficial entra na próxima edição.</template>
-            <template v-else>Em formação: pregão {{ curtoParcial.pregoes }} de {{ curtoParcial.horizonte }}.{{ curtoParcial.fimPrevisto ? ` Nota oficial em ${diaMes(curtoParcial.fimPrevisto)}.` : '' }}</template>
-          </p>
-          <BenchIcLines :labels="curtoParcial.labels" :series="curtoParcialSeries" :horizonte="curtoParcial.horizonte" :fim="curtoParcial.fimPrevisto ? diaMes(curtoParcial.fimPrevisto) : null" />
-        </template>
-      </BenchSection>
-
-      <!-- ============ Custo (esferas) ============ -->
-      <BenchSection eyebrow="Conta aberta" v-if="custo" id="custo" title="Custo por mil respostas" :desc="custoDesc" :info="INFO.custo" :leitura="LEITURA.custo">
-        <BenchBubbles :points="costPoints" />
-      </BenchSection>
-
-      <!-- ============ Próximos índices (tudo que ainda não tem resultado) ============ -->
-      <BenchSection eyebrow="Em construção" v-if="proximos.length" id="proximos" title="Próximos índices" :desc="proximosDesc">
-        <ul class="bia__next">
-          <li v-for="p in proximos" :key="p.id" class="bia__next-item">
-            <span class="bia__next-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path :d="icon(p.icon)" /></svg></span>
-            <span class="bia__next-text">
-              <span class="bia__next-name">{{ p.label }}</span>
-              <span class="bia__next-q">{{ method(p.id).question }}</span>
-            </span>
-            <span class="bia__next-status">{{ p.next }}</span>
-          </li>
-        </ul>
-      </BenchSection>
-
-      <!-- ============ Dúvidas: o FAQ padrão da casa (home e /teses), duas colunas ============ -->
-      <!-- id "metodologia": o "Como medimos" do topo e a faixa de seções levam aqui -->
-      <section id="metodologia" class="bfq">
-        <div class="bfq__cols">
-          <div class="bfq__left">
-            <NuSectionHeading>Ficou com alguma<br>dúvida?</NuSectionHeading>
-            <div class="bfq__copy">Como o ranking é feito, o que ele mede e o que ele não diz.</div>
-            <NuxtLink to="/busca" class="bfq__cta">Perguntar à Redentia AI</NuxtLink>
-          </div>
-          <div class="bfq__right">
-            <NuFaqAccordion :items="faq" />
-          </div>
-        </div>
-        <p class="bia__disclaimer">{{ BENCH_DISCLAIMER }}</p>
-      </section>
-
-  </div>
+  <BenchNoite :vm="vm" />
 </template>
-
-<style scoped>
-/* faixas de largura inteira, como as outras páginas da casa (BenchHero navy +
-   BenchSection alternando branco e creme); container "bench" para as consultas */
-.bia-wrap { container: bench / inline-size; animation: nu-fade .5s ease both; }
-
-/* título, apoio e data moram no painel navy do topo (BenchHero) */
-.bia__h1 {
-  margin: 0; max-width: 16ch; color: var(--nu-cream-text); font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.045em; line-height: 1;
-}
-.bia__lead { margin: 20px 0 0; max-width: 62ch; color: var(--nu-cream-text-75); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }
-.bia__link { color: var(--nu-cream-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-cream-text-45); }
-.bia__link:hover { text-decoration-color: var(--nu-cream-text); }
-.bia__fresh { margin: 10px 0 0; color: var(--nu-cream-text-55); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
-
-.bia__note { margin: 16px 0 0; max-width: 74ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
-.bia__note b { color: var(--nu-ink); font-weight: 800; font-variant-numeric: tabular-nums; }
-.bia__headline { margin: 0 0 16px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; line-height: 1.4; }
-.bia__seal { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; overflow-wrap: anywhere; }
-.bia__seal code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--nu-gray-3); }
-
-/* FAQ: o mesmo da home (.mfq em MercadoContent) e da /teses */
-.bfq { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); background: var(--nu-white); padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px); }
-.bfq__cols { max-width: 1240px; margin: 0 auto; display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
-.bfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.bfq__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
-.bfq__cta {
-  display: inline-flex; align-items: center; background: var(--nu-blue); color: var(--nu-white);
-  border-radius: var(--nu-r-pill); padding: 15px 26px; font-size: var(--nu-fs-md); font-weight: 700;
-  margin-top: 30px; transition: background .2s;
-}
-.bfq__cta:hover { background: var(--nu-blue-hover); color: var(--nu-white); }
-.bfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-.bfq .bia__disclaimer { max-width: 1240px; margin-left: auto; margin-right: auto; }
-
-/* próximos índices: uma linha por índice, ícone, nome, pergunta e o que falta */
-.bia__next { list-style: none; margin: 0; padding: 0; border-radius: var(--nu-r-tile); background: var(--b-surface, var(--nu-cream)); }
-.bia__next-item {
-  display: grid; grid-template-columns: 36px minmax(0, 1fr) minmax(0, 260px); align-items: center; gap: 14px;
-  padding: 14px 18px;
-}
-.bia__next-item + .bia__next-item { border-top: 1px solid var(--nu-cream-2); }
-.bia__next-icon {
-  width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
-  background: var(--b-surface-hi, var(--nu-white)); color: var(--nu-blue);
-}
-.bia__next-icon svg { width: 20px; height: 20px; }
-.bia__next-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.bia__next-name { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
-.bia__next-q { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
-.bia__next-status { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
-
-
-.bia__disclaimer {
-  margin: 32px 0 0; padding-top: 24px; border-top: 1px solid var(--nu-ink-10);
-  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.6; max-width: 90ch;
-}
-
-@container bench (max-width: 640px) {
-  .bia__next-item { grid-template-columns: 36px minmax(0, 1fr); padding: 14px 16px; }
-  .bia__next-status { grid-column: 2; }
-}
-
-/* impresso ou salvo em PDF: sem animação de entrada (os gráficos saem prontos, ver useReveal) */
-@media print {
-  .bia-wrap { animation: none; }
-}
-</style>
