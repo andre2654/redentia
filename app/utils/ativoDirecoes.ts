@@ -252,3 +252,6 @@ const GLOSSARIO_DO_INDICADOR: Record<string, string> = {
 export function slugDoIndicador(rotulo: string): string | null {
   return GLOSSARIO_DO_INDICADOR[rotulo.trim().toLowerCase()] ?? null
 }
+
+/** O que o gráfico lê sob a mira (ou no fim de uma medida): o topo mostra no preço grande. */
+export interface LeituraDoGrafico { preco: string; data: string; var: string; dir: 'up' | 'down'; delta?: string; de?: string; medida: boolean }

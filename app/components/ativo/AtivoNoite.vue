@@ -74,6 +74,35 @@ watch(atual, (id) => {
 // texto) e ?cadeia=3 (o que se sabe: a fração conhecida primeiro, as empresas
 // em fichas). Em produção o mapa fica vazio e segue o AcaoCadeia de hoje.
 const rota = useRoute()
+// PROTÓTIPO (03/11/2026, o dono: "acho que o header e o banner dá pra ficar com
+// mais cara de app"): três topos, só no dev por ?topo-ativo=1 (a bolsa no
+// bolso: o idioma do app Ações, à margem, o preço que segue a mira),
+// ?topo-ativo=2 (a janela do Mac: duas colunas, ações e números ao lado) e
+// ?topo-ativo=3 (o app no iPhone: barra com voltar, título grande, widgets).
+// Nos três, ao rolar, o papel e o preço entram na barra que gruda.
+const TOPOS: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/ativo/topo/TopoBolsa.vue')),
+      '2': defineAsyncComponent(() => import('~/components/ativo/topo/TopoPainel.vue')),
+      '3': defineAsyncComponent(() => import('~/components/ativo/topo/TopoApp.vue')),
+    }
+  : {}
+const topoAtivo = computed(() => String(rota.query['topo-ativo'] ?? ''))
+const topoDirecao = computed(() => TOPOS[topoAtivo.value] ?? null)
+const heroi = ref<HTMLElement | null>(null)
+const compacta = ref(false)
+let obsHeroi: IntersectionObserver | null = null
+onMounted(() => {
+  if (!heroi.value) return
+  // o preço saiu de baixo do header e da régua: a barra mostra o papel (só embeleza)
+  obsHeroi = new IntersectionObserver(([e]) => { compacta.value = !!e && !e.isIntersecting && e.boundingClientRect.top < 0 }, { rootMargin: '-140px 0px 0px 0px', threshold: 0 })
+  obsHeroi.observe(heroi.value)
+})
+onBeforeUnmount(() => obsHeroi?.disconnect())
+function voltar() {
+  if (window.history.length > 1) window.history.back()
+  else navigateTo('/')
+}
 const CADEIAS: Record<string, Component> = import.meta.dev
   ? {
       '1': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaRazao.vue')),
@@ -100,7 +129,16 @@ onMounted(() => {
   <div class="an">
     <div id="cotacao" class="an__ativo">
       <!-- ============ o céu: o preço e a linha de luz ============ -->
-      <section v-contexto-chat="contexto" class="an__ceu" aria-labelledby="an-h1">
+      <div ref="heroi">
+      <!-- protótipo do topo (?topo-ativo=1|2|3, só no dev); sem o parâmetro, o céu de hoje -->
+      <component
+        :is="topoDirecao" v-if="topoDirecao"
+        :a="a" :t="t" :series="v.series" :range="v.range" :range-loading="v.rangeLoading" :position="v.position"
+        :renamed-from="v.renamedFrom" :seguivel="v.seguivel" :titulo-grafico="tituloGrafico" :legenda="legenda" :linhas="linhas"
+        :perguntas="perguntas" :contexto="contexto" :contexto-grafico="contextoGrafico"
+        @periodo="v.setRange" @perguntar="perguntar" @abrir="abrirCom()"
+      />
+      <section v-else v-contexto-chat="contexto" class="an__ceu" aria-labelledby="an-h1">
         <div class="an__luz" aria-hidden="true" />
         <div class="an__texto">
           <p v-if="v.renamedFrom" class="an__trocou">{{ v.renamedFrom }} agora negocia como {{ t }}.</p>
@@ -159,6 +197,7 @@ onMounted(() => {
           <span>Quanto {{ t }} teria rendido com dividendos reinvestidos, no histórico real da B3.</span>
         </p>
       </section>
+      </div>
 
       <!-- o resumo factual: o que o gráfico e os números dizem, em palavras -->
       <section v-if="a.resumo" v-contexto-chat="{ id: `resumo:${t}`, tipo: 'secao', rotulo: rotuloComSobre('Resumo', t), texto: a.resumo.paragrafos.join('\n') }" class="an__sec an__sec--resumo" aria-label="Resumo do ativo">
@@ -167,7 +206,18 @@ onMounted(() => {
     </div>
 
     <!-- ============ a barra que gruda: as seções, na ordem da página ============ -->
-    <nav v-if="secoes.length > 1" class="an__barra" aria-label="Seções da página">
+    <nav v-if="secoes.length > 1" class="an__barra" :class="{ 'an__barra--app': topoDirecao, 'an__barra--compacta': compacta }" aria-label="Seções da página">
+      <!-- a barra compacta do app: quando o topo sai da tela, o papel e o preço
+           entram aqui, como o título grande do iOS que vira pequeno. Só no
+           cliente e dentro da altura que a barra já tem: não empurra nada. -->
+      <div v-if="topoDirecao && compacta" class="an__ident" :class="{ 'an__ident--app': topoAtivo === '3' }">
+        <button v-if="topoAtivo === '3'" type="button" class="an__ident-voltar" aria-label="Voltar" @click="voltar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+        </button>
+        <b class="an__ident-t">{{ t }}</b>
+        <span class="an__ident-p">{{ a.hero.priceFmt }}</span>
+        <span v-if="a.hero.changeLine" class="an__ident-v" :class="`an__ident-v--${a.hero.dir}`">{{ a.hero.dir === 'down' ? '-' : '+' }}{{ a.hero.changeLine.match(/\(([^)]+)\)/)?.[1] ?? '' }}</span>
+      </div>
       <ul ref="fileira" class="an__chips">
         <li v-for="s in secoes" :key="s.id">
           <a
@@ -359,6 +409,19 @@ onMounted(() => {
   /* o mesmo passo da régua e do header quando o header encolhe */
   transition: top .32s cubic-bezier(.2, .8, .2, 1);
 }
+/* a barra compacta dos protótipos do topo: o papel à esquerda, as seções à direita */
+.an__barra--app { display: flex; align-items: center; }
+.an__barra--app .an__chips { flex: 1; min-width: 0; }
+.an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--g); animation: an-ident .22s ease both; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@keyframes an-ident { from { opacity: 0; transform: translateY(4px); } }
+.an__ident-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.an__ident-p { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
+.an__ident-v { font-size: var(--nu-fs-sm); font-weight: 700; }
+.an__ident-v--up { color: var(--nu-green-text); }
+.an__ident-v--down { color: var(--nu-red-text); }
+.an__ident-voltar { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: var(--nu-cream); color: var(--nu-ink); cursor: pointer; }
+.an__ident-voltar:hover { background: var(--nu-cream-hover); }
+.an__barra--compacta .an__chip--ativo { display: none; }
 .an__chips { list-style: none; margin: 0; padding: 10px var(--g); display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .an__chips::-webkit-scrollbar { display: none; }
 .an__chip {
@@ -417,7 +480,9 @@ onMounted(() => {
   .an__nums { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
   .an__chips { padding: 8px var(--g); }
 }
+@media (max-width: 680px) { .an__ident-p { display: none; } }
 @media (prefers-reduced-motion: reduce) {
+  .an__ident { animation: none; }
   .an__chip, .an__carteira, .an__barra, .an__num, .an__num-v, .an__botoes :deep(.nfb),
   .an__embutida :deep(.acd__no), .an__embutida :deep(.axb__card) { transition: none; }
   .an__chip:hover, .an__chip:active, .an__carteira:hover, .an__carteira:active, .an__botoes :deep(.nfb:hover),

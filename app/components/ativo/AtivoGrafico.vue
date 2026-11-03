@@ -22,6 +22,7 @@
 //                até o ponto de hoje, com halo
 // viewBox literal: o :viewBox vira prop do DOM e o Vue reclama (NuFooterLinha).
 import type { SeriesPoint } from '~/types/acao'
+import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 
 const props = withDefaults(defineProps<{
   ativo: SeriesPoint[]
@@ -131,6 +132,18 @@ const medicao = computed(() => {
     centro: Math.min(84, Math.max(16, (ini.x + fim.x) / 2)),
   }
 })
+/**
+ * A leitura sobe para quem quer mostrá-la fora do gráfico (o preço grande do
+ * topo acompanha a mira, como no app Ações): o dia sob a mira, ou o fim da
+ * medida com a variação do intervalo; null quando não há leitura.
+ */
+const emit = defineEmits<{ leitura: [LeituraDoGrafico | null] }>()
+watch([leitura, medicao], ([l, m]) => {
+  if (m) emit('leitura', { preco: fmtPreco(m.fim.p.v), data: m.ate, var: m.var, dir: m.dir as 'up' | 'down', delta: m.delta, de: m.de, medida: true })
+  else if (l) emit('leitura', { preco: l.preco, data: l.data, var: l.var, dir: l.dir as 'up' | 'down', medida: false })
+  else emit('leitura', null)
+})
+
 /** o que o leitor de tela ouve (a mesma leitura da dica) */
 const falado = computed(() => {
   if (medicao.value) {
