@@ -63,7 +63,7 @@ const secoesEditorial = computed(() => a.value.editorial?.sections ?? [])
           </span>
         </p>
         <div class="ap__grafico">
-          <AtivoGrafico :ativo="v.series.asset" :ibov="v.series.ibov" :ticker="t" :atual="a.hero.priceFmt" tom="escuro" :carregando="v.rangeLoading" />
+          <AtivoGrafico :ativo="v.series.asset" :ibov="v.series.ibov" :ticker="t" :atual="a.hero.priceFmt" tom="escuro" :carregando="v.rangeLoading" marcas-fora />
         </div>
         <dl v-if="linhas.length" class="ap__nums">
           <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `linha:${t}:${r.l}`, tipo: 'grafico', rotulo: rotuloComSobre(r.l, t), texto: `${r.l} (${t}): ${r.v}` }" class="ap__num">
@@ -229,7 +229,7 @@ const secoesEditorial = computed(() => a.value.editorial?.sections ?? [])
 .ap__leg b.ap__leg--down { color: var(--nu-red-soft); }
 .ap__leg-traco { width: 16px; height: 2px; border-radius: 1px; background: var(--nu-blue-soft); }
 .ap__leg-traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-cream-text-35) 0 3px, transparent 3px 7px); }
-.ap__grafico { position: relative; height: clamp(200px, 20vw, 280px); margin-top: 14px; }
+.ap__grafico { position: relative; height: clamp(200px, 20vw, 280px); margin: 14px 0 0 44px; }
 .ap__nums { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 130px), 1fr)); gap: 0 18px; margin: 18px 0 0; }
 .ap__num { display: flex; flex-direction: column; gap: 3px; padding: 10px 0; border-top: 1px solid var(--nu-cream-text-14); }
 .ap__num dt { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 600; }

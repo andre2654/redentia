@@ -101,7 +101,7 @@ onMounted(() => {
           <AtivoPeriodo :model-value="v.range" :disabled="v.rangeLoading" tom="escuro" @update:model-value="v.setRange" />
         </div>
         <div class="an__grafico">
-          <AtivoGrafico :ativo="v.series.asset" :ibov="v.series.ibov" :ticker="t" :atual="a.hero.priceFmt" tom="luz" :carregando="v.rangeLoading" />
+          <AtivoGrafico :ativo="v.series.asset" :ibov="v.series.ibov" :ticker="t" :atual="a.hero.priceFmt" tom="luz" :carregando="v.rangeLoading" marcas-fora />
         </div>
         <div class="an__horizonte" aria-hidden="true" />
       </div>
@@ -270,7 +270,7 @@ onMounted(() => {
 .an__leg b.an__leg--down { color: var(--nu-red-soft); }
 .an__leg-traco { width: 16px; height: 2px; border-radius: 1px; background: var(--nu-blue-soft); }
 .an__leg-traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
-.an__grafico { position: relative; height: clamp(220px, 24vw, 330px); margin-top: 18px; }
+.an__grafico { position: relative; height: clamp(220px, 24vw, 330px); margin: 18px 0 0 48px; }
 /* a linha de luz do horizonte: o brilho da barra da Redentia (o do herói da home) */
 .an__horizonte {
   height: 2px; margin: 0 -12%; pointer-events: none; border-radius: 50%;
