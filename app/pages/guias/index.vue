@@ -14,7 +14,28 @@
 // SEO: SSR-first (conteúdo 100% local no HTML), canonical /guias, JSON-LD
 // BreadcrumbList + ItemList (só itens com destino real). routeRules '/guias'
 // cacheia 3600s no nuxt.config.
-import { FEATURED_GUIDE, GUIDES, GUIDE_TABS, guideCardTo } from '~/content/guias'
+import type { Component } from 'vue'
+import { FEATURED_GUIDE, GUIDES, GUIDE_DOCS, GUIDE_TABS, guideCardTo } from '~/content/guias'
+
+// PROTÓTIPO (02/11/2026, o dono: "modifique a página /guias agora"): três
+// direções para o miolo, trocadas só no dev por ?guias=1 (a biblioteca, por
+// tema), ?guias=2 (as trilhas de leitura) e ?guias=3 (a grade com busca, a
+// mesma linguagem da /teses). Em produção import.meta.dev é false, o mapa fica
+// vazio (nem entra no bundle) e segue a página de hoje até o dono escolher. O
+// SEO não muda em nenhuma: o mesmo usePageSeo abaixo, um H1 só e todos os
+// guias com link no HTML do SSR (o filtro e a busca só agem no cliente). A
+// lista sai de montarBibliotecaGuias (utils/guiasHub), que lê o registry sem
+// mudar o formato que a rotina semanal escreve.
+const route = useRoute()
+const DIRECOES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/guias/direcoes/GuiasBiblioteca.vue')),
+      '2': defineAsyncComponent(() => import('~/components/guias/direcoes/GuiasTrilhas.vue')),
+      '3': defineAsyncComponent(() => import('~/components/guias/direcoes/GuiasGrade.vue')),
+    }
+  : {}
+const direcao = computed(() => DIRECOES[String(route.query.guias ?? '')] ?? null)
+const biblioteca = computed(() => (direcao.value ? montarBibliotecaGuias(GUIDES, GUIDE_DOCS, FEATURED_GUIDE) : null))
 
 const tab = ref<string>('Tudo')
 const showFeatured = computed(() => tab.value === 'Tudo' || tab.value === 'Guia Redentia')
@@ -52,7 +73,8 @@ usePageSeo({
 </script>
 
 <template>
-  <div>
+  <component :is="direcao" v-if="direcao && biblioteca" :biblioteca="biblioteca" />
+  <div v-else>
     <NuPageHero
       eyebrow="Blog da Redentia"
       subtitle="Do primeiro aporte à carteira que paga suas contas, em português claro."
