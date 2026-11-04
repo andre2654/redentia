@@ -123,8 +123,8 @@ export function anexosDoTurno(contextos: ContextoDoChat[]) {
 }
 
 /**
- * O que a URL pede ao painel. `?pergunta=` abre e envia em qualquer página;
- * `?chat=1` só abre. Na /busca o `?chat=1&q=` é contrato da própria página
+ * O que a URL pede ao painel. `?pergunta=` abre com a pergunta (enviar ou só
+ * preencher o campo, quem decide é acaoDoPedido); `?chat=1` só abre. Na /busca o `?chat=1&q=` é contrato da própria página
  * (useAporteChat, atalhos da carteira) e fica com ela.
  */
 export function pedidoDaQuery(path: string, query: Record<string, unknown>): { abrir: boolean; pergunta: string | null } {
@@ -244,6 +244,59 @@ export function lerPerguntaDoGate(a: Armazem, agora: number): PerguntaDoGate | n
 
 export function esquecerPerguntaDoGate(a: Armazem): void {
   try { a.removeItem(CHAVE_PERGUNTA_DO_GATE) } catch { /* nada a fazer */ }
+}
+
+/* ——— a volta do login com a pergunta (04/11/2026) ———
+   O `?pergunta=` na URL abre o painel com a pergunta. Ela só é ENVIADA sozinha
+   quando quem mandou a pessoa ao login deixou o marcador nesta aba
+   (sessionStorage, gravado pelo useChatPainel.pedirConta) com a mesma
+   pergunta. Um link de fora (e-mail, outro site, um print) só preenche o campo
+   e espera a pessoa enviar: ninguém faz o chat de quem assina mandar uma
+   pergunta por um link. O marcador vale uma vez e por 30 minutos (o login com
+   código no WhatsApp cabe nisso). A pergunta guardada do gate da assinatura
+   (acima, 6 horas) é outra regra e continua igual. */
+
+export const CHAVE_VOLTA_DO_LOGIN = 'nu:chat:pergunta-da-volta'
+export const VALIDADE_VOLTA_DO_LOGIN_MS = 30 * 60 * 1000
+
+/** Quem manda ao login com `?pergunta=` na volta grava isto antes. */
+export function marcarVoltaDoLogin(a: Armazem, pergunta: string, agora: number): void {
+  const texto = pergunta.trim()
+  if (!texto) return
+  try { a.setItem(CHAVE_VOLTA_DO_LOGIN, JSON.stringify({ texto, em: agora })) } catch { /* sem storage: na volta a pergunta só preenche o campo */ }
+}
+
+export type AcaoDoPedido =
+  | { tipo: 'nada' }
+  | { tipo: 'abrir' }
+  | { tipo: 'preencher'; pergunta: string }
+  | { tipo: 'enviar'; pergunta: string }
+
+/**
+ * O que o painel faz com o pedido da URL. Envia só com a conta aberta e o
+ * marcador da volta do login valendo para a MESMA pergunta; o marcador é
+ * apagado na leitura, use ou não. Sem storage (`a` null) nunca envia.
+ */
+export function acaoDoPedido(
+  pedido: { abrir: boolean; pergunta: string | null },
+  logado: boolean,
+  a: Armazem | null,
+  agora: number,
+): AcaoDoPedido {
+  if (!pedido.abrir) return { tipo: 'nada' }
+  if (!pedido.pergunta) return { tipo: 'abrir' }
+  let marcada: string | null = null
+  if (a) {
+    try {
+      const bruto = a.getItem(CHAVE_VOLTA_DO_LOGIN)
+      a.removeItem(CHAVE_VOLTA_DO_LOGIN)
+      const m = bruto ? JSON.parse(bruto) as { texto?: unknown; em?: unknown } : null
+      if (m && typeof m.texto === 'string' && typeof m.em === 'number'
+        && agora - m.em <= VALIDADE_VOLTA_DO_LOGIN_MS && m.em <= agora + 60_000) marcada = m.texto.trim()
+    } catch { marcada = null }
+  }
+  if (logado && marcada !== null && marcada === pedido.pergunta.trim()) return { tipo: 'enviar', pergunta: pedido.pergunta }
+  return { tipo: 'preencher', pergunta: pedido.pergunta }
 }
 
 /** Onde a pergunta guardada NÃO deve abrir o painel sozinha (o meio do fluxo). */

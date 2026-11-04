@@ -3,7 +3,7 @@
 // agora não será uma janela e sim um componente que pode ser aberto em qualquer
 // página"). Montado no layout padrão; abre pela barra flutuante (ChatBarra),
 // por useChatPainel().abrir(pergunta) de qualquer tela e pelos deep-links
-// `?pergunta=` (abre e envia) e `?chat=1` (só abre).
+// `?pergunta=` (abre com a pergunta) e `?chat=1` (só abre).
 //
 // No computador ele encosta à direita e a página encolhe ao lado (a página
 // continua usável, e é dela que a pessoa tira o contexto com o cursor mágico,
@@ -13,8 +13,10 @@
 //
 // A conversa é a do useNuChat (stream, sessões, gate da assinatura). Quem não
 // entrou vai ao login e volta para a mesma página com a pergunta em
-// ?pergunta= (utils/chat-painel.ts): ela é enviada sozinha na volta.
-import { esquecerPerguntaDoGate, lerPerguntaDoGate, MAX_CONTEXTOS, pedidoDaQuery, podeRetomarPerguntaAqui, querySemPedido, sugestoesDaRota } from '~/utils/chat-painel'
+// ?pergunta= (utils/chat-painel.ts): ela é enviada sozinha na volta, porque
+// quem mandou ao login deixou o marcador na aba. Um ?pergunta= de fora só
+// preenche o campo e espera a pessoa enviar (acaoDoPedido).
+import { acaoDoPedido, esquecerPerguntaDoGate, lerPerguntaDoGate, MAX_CONTEXTOS, pedidoDaQuery, podeRetomarPerguntaAqui, querySemPedido, sugestoesDaRota } from '~/utils/chat-painel'
 import { CHAVE_POS_LOGIN, type ContextoDoChat } from '~/composables/useChatPainel'
 
 
@@ -208,12 +210,14 @@ watch(aberto, async (a) => {
 function lerPedido() {
   const pedido = pedidoDaQuery(route.path, route.query as Record<string, unknown>)
   if (!pedido.abrir) return
-  if (pedido.pergunta) {
-    // logado: abre e envia. Visitante: abre com a pergunta no campo; enviar
-    // leva ao login (sem mandar ninguém ao login só por abrir um link)
-    if (isAuthenticated.value) painel.abrir(pedido.pergunta)
-    else { texto.value = pedido.pergunta; painel.abrir() }
-  } else painel.abrir()
+  let aba: Storage | null = null
+  try { aba = sessionStorage } catch { /* sem storage: nunca envia sozinho */ }
+  // enviar: a volta do login que esta aba pediu. Preencher: qualquer outro
+  // link (de fora, ou do visitante, que ao enviar vai ao login)
+  const acao = acaoDoPedido(pedido, isAuthenticated.value, aba, Date.now())
+  if (acao.tipo === 'enviar') painel.abrir(acao.pergunta)
+  else if (acao.tipo === 'preencher') { texto.value = acao.pergunta; painel.abrir() }
+  else painel.abrir()
   void router.replace({ query: querySemPedido(route.query as Record<string, unknown>) as Record<string, string> })
 }
 watch(() => route.query, lerPedido)

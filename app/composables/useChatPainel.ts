@@ -9,7 +9,7 @@
  * o painel aberto (o cursor mágico): um ativo, um gráfico, uma linha da
  * carteira. Vão junto com a próxima pergunta e saem depois do envio.
  */
-import { voltaComPergunta } from '~/utils/chat-painel'
+import { marcarVoltaDoLogin, voltaComPergunta } from '~/utils/chat-painel'
 
 export interface ContextoDoChat {
   /** estável por pedaço da página, para não anexar o mesmo duas vezes */
@@ -93,10 +93,13 @@ export function useChatPainel() {
     if (import.meta.server) return
     const route = useRoute()
     const { volta, naUrl } = voltaComPergunta(route.path, route.query as Record<string, unknown>, texto)
-    // quem prefere o /login (celular, Google por lá) volta com a pergunta
-    if (!naUrl) {
-      try { sessionStorage.setItem(CHAVE_POS_LOGIN, texto) } catch { /* sem storage: volta sem a pergunta */ }
-    }
+    // quem prefere o /login (celular, Google por lá) volta com a pergunta. O
+    // marcador desta aba é o que deixa o painel ENVIÁ-LA na volta: um
+    // ?pergunta= que chega de fora só preenche o campo (acaoDoPedido).
+    try {
+      if (naUrl) marcarVoltaDoLogin(sessionStorage, texto, Date.now())
+      else sessionStorage.setItem(CHAVE_POS_LOGIN, texto)
+    } catch { /* sem storage: volta sem a pergunta, ou com ela só no campo */ }
     aberto.value = false
     contextos.value = []
     useCadastroFolha().abrir({ gesto: 'pergunta', pergunta: texto }, () => true, volta, () => abrir(texto, junto))

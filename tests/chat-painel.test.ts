@@ -7,9 +7,12 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
+  acaoDoPedido,
   anexosDoTurno,
   barraVisivel,
+  CHAVE_VOLTA_DO_LOGIN,
   contextoDoLinkDeAtivo,
+  marcarVoltaDoLogin,
   MAX_CONTEXTOS,
   pedidoDaQuery,
   querySemPedido,
@@ -21,6 +24,7 @@ import {
   textoDeLinhas,
   textoDoGrafico,
   tickerDaRota,
+  VALIDADE_VOLTA_DO_LOGIN_MS,
   voltaComPergunta,
 } from '../app/utils/chat-painel.ts'
 import {
@@ -123,12 +127,64 @@ test('o gráfico em palavras usa só os pontos desenhados', () => {
   assert.equal(rotuloCurto('Uma manchete bem comprida sobre a bolsa de hoje', 20), 'Uma manchete bem co…')
 })
 
-test('deep-links: ?pergunta= abre e envia; ?chat=1 só abre (fora da /busca)', () => {
+test('deep-links: ?pergunta= abre com a pergunta; ?chat=1 só abre (fora da /busca)', () => {
   assert.deepEqual(pedidoDaQuery('/asset/PETR4', { pergunta: ' Por que? ' }), { abrir: true, pergunta: 'Por que?' })
   assert.deepEqual(pedidoDaQuery('/', { chat: '1' }), { abrir: true, pergunta: null })
   assert.deepEqual(pedidoDaQuery('/busca', { chat: '1', q: 'x' }), { abrir: false, pergunta: null })
   assert.deepEqual(pedidoDaQuery('/', {}), { abrir: false, pergunta: null })
   assert.deepEqual(querySemPedido({ pergunta: 'a', chat: '1', tipo: 'acoes' }), { tipo: 'acoes' })
+})
+
+/** sessionStorage de mentira, para os dois caminhos do ?pergunta= */
+function aba() {
+  const m = new Map<string, string>()
+  return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => { m.set(k, v) }, removeItem: (k: string) => { m.delete(k) }, m }
+}
+
+test('?pergunta= de fora: abre com a pergunta no campo e não envia', () => {
+  const agora = Date.parse('2026-11-04T12:00:00-03:00')
+  const pedido = pedidoDaQuery('/asset/PETR4', { pergunta: 'Venda tudo agora?' })
+  // quem assina, sem marcador nenhum na aba: só preenche
+  assert.deepEqual(acaoDoPedido(pedido, true, aba(), agora), { tipo: 'preencher', pergunta: 'Venda tudo agora?' })
+  // sem storage: nunca envia
+  assert.deepEqual(acaoDoPedido(pedido, true, null, agora), { tipo: 'preencher', pergunta: 'Venda tudo agora?' })
+  // o marcador é de OUTRA pergunta: só preenche, e o marcador some do mesmo jeito
+  const outra = aba()
+  marcarVoltaDoLogin(outra, 'Por que a PETR4 mexeu hoje?', agora)
+  assert.deepEqual(acaoDoPedido(pedido, true, outra, agora), { tipo: 'preencher', pergunta: 'Venda tudo agora?' })
+  assert.equal(outra.m.has(CHAVE_VOLTA_DO_LOGIN), false)
+  // sem pergunta e sem ?chat=1, nada; com ?chat=1, só abre
+  assert.deepEqual(acaoDoPedido(pedidoDaQuery('/', {}), true, aba(), agora), { tipo: 'nada' })
+  assert.deepEqual(acaoDoPedido(pedidoDaQuery('/', { chat: '1' }), true, aba(), agora), { tipo: 'abrir' })
+})
+
+test('?pergunta= na volta do login que esta aba pediu: envia uma vez só', () => {
+  const agora = Date.parse('2026-11-04T12:00:00-03:00')
+  const pergunta = 'Por que a PETR4 mexeu hoje?'
+  const { volta } = voltaComPergunta('/asset/PETR4', {}, pergunta)
+  const pedido = pedidoDaQuery('/asset/PETR4', Object.fromEntries(new URLSearchParams(volta.split('?')[1])))
+  const s = aba()
+  marcarVoltaDoLogin(s, `  ${pergunta} `, agora - 5 * 60_000)
+  assert.deepEqual(acaoDoPedido(pedido, true, s, agora), { tipo: 'enviar', pergunta })
+  // o marcador vale uma vez: o mesmo link de novo só preenche
+  assert.deepEqual(acaoDoPedido(pedido, true, s, agora), { tipo: 'preencher', pergunta })
+  // voltou sem entrar: preenche (enviar leva ao login de novo)
+  marcarVoltaDoLogin(s, pergunta, agora)
+  assert.deepEqual(acaoDoPedido(pedido, false, s, agora), { tipo: 'preencher', pergunta })
+  // marcador velho (mais de 30 minutos) ou torto: só preenche
+  marcarVoltaDoLogin(s, pergunta, agora - VALIDADE_VOLTA_DO_LOGIN_MS - 1)
+  assert.deepEqual(acaoDoPedido(pedido, true, s, agora), { tipo: 'preencher', pergunta })
+  s.setItem(CHAVE_VOLTA_DO_LOGIN, '{quebrado')
+  assert.deepEqual(acaoDoPedido(pedido, true, s, agora), { tipo: 'preencher', pergunta })
+})
+
+test('quem manda ao login com a pergunta na URL deixa o marcador; a longa vai pelo sessionStorage', () => {
+  const src = readFileSync(new URL('../app/composables/useChatPainel.ts', import.meta.url), 'utf8')
+  assert.match(src, /if \(naUrl\) marcarVoltaDoLogin\(sessionStorage, texto, Date\.now\(\)\)/)
+  assert.match(src, /else sessionStorage\.setItem\(CHAVE_POS_LOGIN, texto\)/)
+  const p = readFileSync(new URL('../app/components/chat/ChatPainel.vue', import.meta.url), 'utf8')
+  assert.match(p, /acaoDoPedido\(pedido, isAuthenticated\.value, aba, Date\.now\(\)\)/)
+  assert.doesNotMatch(p, /if \(isAuthenticated\.value\) painel\.abrir\(pedido\.pergunta\)/)
 })
 
 test('o login volta para a mesma página com a pergunta, dentro do teto do redirect', () => {
