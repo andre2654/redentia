@@ -6,7 +6,10 @@
 import type { NavItem } from '~/utils/topo'
 import { grupoAtivo, rotaAtiva } from '~/utils/topo'
 
-const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean }>()
+// `variante="business"` (04/11/2026): a marca For Business, sem a busca de
+// ativo, e no pé "Falar com a gente" e "Entrar" (ou "Minha conta") do Business.
+const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean; variante?: 'business' }>()
+const destinoCadastro = useDestinoCadastroBusiness()
 const emit = defineEmits<{ fechar: []; sair: [] }>()
 const route = useRoute()
 const ativo = (to: string) => rotaAtiva(route.path, to)
@@ -32,14 +35,14 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
     <Transition name="ntn">
       <div v-if="aberto" ref="caixa" class="ntn" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
         <div class="ntn__topo">
-          <NuTopoMarca class="ntn__marca" @click="emit('fechar')" />
+          <NuTopoMarca class="ntn__marca" :business="variante === 'business'" @click="emit('fechar')" />
           <button type="button" class="ntn__fechar" aria-label="Fechar menu" @click="emit('fechar')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
         </div>
 
         <div class="ntn__rolo">
-          <NuxtLink to="/busca" class="ntn__busca" @click="emit('fechar')">
+          <NuxtLink v-if="variante !== 'business'" to="/busca" class="ntn__busca" @click="emit('fechar')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.2-3.2" /></svg>
             Buscar ativo, tese ou guia
           </NuxtLink>
@@ -77,7 +80,11 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
           <div v-if="$slots.mercado" class="ntn__mercado"><slot name="mercado" /></div>
         </div>
 
-        <div class="ntn__pe">
+        <div v-if="variante === 'business'" class="ntn__pe">
+          <NuxtLink to="/business#contato" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">Falar com a gente</NuxtLink>
+          <NuxtLink :to="logado ? '/business/chaves' : destinoCadastro" class="ntn__cta" @click="emit('fechar')">{{ logado ? 'Minha conta' : 'Entrar' }}</NuxtLink>
+        </div>
+        <div v-else class="ntn__pe">
           <template v-if="logado">
             <NuxtLink to="/carteira" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">Minha carteira</NuxtLink>
             <div class="ntn__linha">

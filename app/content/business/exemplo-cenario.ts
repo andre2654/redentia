@@ -54,3 +54,38 @@ export function choqueTxt(v: number): string {
   if (v === 0) return '0%'
   return `${v > 0 ? '+' : '−'}${Math.abs(v).toFixed(1).replace('.', ',').replace(/,0$/, '')}%`
 }
+
+/**
+ * O pregão de 03/11/2026 das posições da carteira de exemplo, de uma chamada a
+ * get_quotes em 04/11/2026 (o mesmo dado que a tela "Carteira do cliente" do
+ * Redentia MCP mostra). Variação do dia como a B3 fechou; HGLG11 e ITUB4
+ * estavam no dia ex (o FII pagou R$ 1,17 por cota), e a variação aqui é a
+ * bruta, como a tela mostra.
+ */
+export const EXEMPLO_PREGAO = {
+  data: '03/11/2026',
+  posicoes: [
+    { ticker: 'Tesouro Selic', nome: 'Renda fixa', dia: null },
+    { ticker: 'ITUB4', nome: 'Itaú Unibanco', dia: -0.52 },
+    { ticker: 'IVVB11', nome: 'iShares S&P 500', dia: 0.66 },
+    { ticker: 'PETR4', nome: 'Petrobras', dia: -3.79 },
+    { ticker: 'VALE3', nome: 'Vale', dia: -2.85 },
+    { ticker: 'HGLG11', nome: 'Pátria Log', dia: -3.26 },
+    { ticker: 'LREN3', nome: 'Lojas Renner', dia: 1.0 },
+  ],
+  /** a leitura da casa sobre o dia da PETR4 (news.reading de get_quotes), nas
+      duas primeiras frases; a terceira fala do Copom e fica de fora */
+  porque: {
+    ticker: 'PETR4',
+    variacao: -3.79,
+    titulo: 'Ibovespa tem 6ª queda seguida com piora do cenário doméstico; dólar fecha na maior cotação do ano',
+    leitura: 'O Ibovespa caiu 1,42%, aos 165.528 pontos, na sexta queda seguida, e o dólar fechou a R$ 5,49, maior nível desde dezembro de 2025. Petrobras e Vale puxaram o tombo.',
+    fonte: 'Money Times',
+    hora: '03/11, 18:25',
+  },
+} as const
+
+/** "+0,66%" / "−3,79%" (duas casas, como a tela do MCP) */
+export function diaTxt(v: number): string {
+  return `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2).replace('.', ',')}%`
+}

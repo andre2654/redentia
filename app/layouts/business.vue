@@ -1,21 +1,29 @@
 <script setup lang="ts">
 /**
- * Layout da Redentia for Business.
+ * Layout da Redentia for Business (a landing /business e o painel logado:
+ * /business/chaves e /business/clientes).
  *
- * Deliberadamente MAIS MAGRO que o `default`: sem NuMarketTicker (a faixa de
- * cotações é linguagem do app de investidor, não de infraestrutura para
- * escritório).
+ * DESDE 04/11/2026, O TOPO E O RODAPÉ DO SITE NOVO, na variante "business"
+ * (o dono: "o header e o footer precisam ir para o nosso atual [...] com
+ * pequenas alterações para ser mais voltado à identidade For Business"). Saíram
+ * o RbHeader e o RbFooter. O que muda está no topo de NuHeader.vue e de
+ * NuFooter.vue; o idioma visual é o mesmo do site.
+ *
+ * Continua MAIS MAGRO que o `default`: sem a faixa de cotações (é linguagem do
+ * app de investidor) e sem a barra e o painel do chat da Redentia, que são do
+ * investidor e da assinatura; quem atende a mesa do assessor é o assistente do
+ * próprio escritório.
  */
 </script>
 
 <template>
   <div class="rb-shell">
-    <RbHeader />
+    <NuHeader variante="business" />
     <ConsentBanner />
     <main>
       <slot />
     </main>
-    <RbFooter />
+    <NuFooter variante="business" />
   </div>
 </template>
 

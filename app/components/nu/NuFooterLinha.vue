@@ -70,7 +70,8 @@ function mover(e: PointerEvent) {
 <template>
   <div ref="el" class="nrc">
     <div class="nrc__luz" aria-hidden="true" />
-    <h2 class="nrc__titulo">Seja qual for a sua meta,<br> a Redentia tem um caminho.</h2>
+    <!-- o slot #titulo troca a frase (a /business, 04/11/2026); sem ele, a do site -->
+    <h2 class="nrc__titulo"><slot name="titulo">Seja qual for a sua meta,<br> a Redentia tem um caminho.</slot></h2>
 
     <div ref="cena" class="nrc__cena" @pointermove="mover" @pointerleave="marca = null">
       <div class="nrc__traco">

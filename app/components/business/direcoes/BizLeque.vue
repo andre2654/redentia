@@ -161,17 +161,19 @@ function desenhar() {
   g.globalAlpha = 1
 }
 
+/* `tocar` (useBizEntrada, no pai) varre os fios da esquerda para a direita,
+   uma vez: o leque se abrindo. Sem ele, os fios só aparecem prontos. */
+const props = withDefaults(defineProps<{ tocar?: boolean }>(), { tocar: false })
 onMounted(() => {
   desenhar()
   ro = new ResizeObserver(() => desenhar())
   if (caixa.value) ro.observe(caixa.value)
-  const el = caixa.value
-  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  const r = el.getBoundingClientRect()
-  if (r.top >= window.innerHeight || r.bottom <= 0) return
+})
+watch(() => props.tocar, (t) => {
+  if (!t) return
   tela.value?.animate(
     [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }],
-    { duration: 1600, delay: 250, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' },
+    { duration: 1800, delay: 150, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' },
   )
 })
 onBeforeUnmount(() => { ro?.disconnect(); ro = null })

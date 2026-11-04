@@ -7,7 +7,10 @@
  *
  *  1. <title>, meta description, canonical, robots e JSON-LD iguais;
  *  2. um H1 só, com o mesmo texto;
- *  3. nenhum link interno some;
+ *  3. nenhum link interno DO CORPO some (o <main>). Desde 04/11/2026 a /business
+ *     usa o topo e o rodapé novos do site, na variante business: os links
+ *     deles mudaram de propósito, então saem da regra e a saída lista quais
+ *     entraram e quais saíram, para o dono ver;
  *  4. o FAQ inteiro continua no HTML do servidor (as 30 perguntas e respostas);
  *  5. no máximo ~650 palavras fora do FAQ (a regra de densidade da página,
  *     ver o topo de pages/business/index.vue). Conta o <main> sem a seção
@@ -45,6 +48,22 @@ function texto(n) {
   }
   rec(n)
   return out.replace(/&[a-z#0-9]+;/gi, ' ').replace(/\s+/g, ' ').trim()
+}
+
+/** os links internos (href que começa com /) dentro e fora do <main> */
+function linksPorLugar(html) {
+  const doc = parse(html)
+  const corpo = new Set()
+  const fora = new Set()
+  const rec = (n, dentro) => {
+    if (n.type !== ELEMENT_NODE && n.type !== 0) return
+    const aqui = dentro || (n.type === ELEMENT_NODE && n.name === 'main')
+    const h = n.attributes?.href
+    if (n.type === ELEMENT_NODE && n.name === 'a' && typeof h === 'string' && h.startsWith('/') && !h.startsWith('//')) (aqui ? corpo : fora).add(h.replace(/&amp;/g, '&'))
+    for (const c of n.children ?? []) rec(c, aqui)
+  }
+  rec(doc, false)
+  return { corpo, fora }
 }
 
 /** palavras do <main>, do FAQ (#faq) e a lista de perguntas do FAQ no HTML */
@@ -87,7 +106,13 @@ async function main() {
     const d = densidade(html)
     const c = comparar(antes, depois)
     // a regra do /asset sobre queda de texto não vale aqui (rodapé do script)
-    const falhas = c.falhas.filter((f) => !f.startsWith('texto caiu') && !f.startsWith('títulos que deixaram'))
+    const falhas = c.falhas.filter((f) => !f.startsWith('texto caiu') && !f.startsWith('títulos que deixaram') && !f.startsWith('links internos que sumiram'))
+    const la = linksPorLugar(antigaHtml)
+    const ld = linksPorLugar(html)
+    const sumiuDoCorpo = [...la.corpo].filter((l) => !ld.corpo.has(l) && !ld.fora.has(l))
+    if (sumiuDoCorpo.length) falhas.push(`links do corpo que sumiram: ${sumiuDoCorpo.join(', ')}`)
+    const topoSaiu = [...la.fora].filter((l) => !ld.fora.has(l))
+    const topoEntrou = [...ld.fora].filter((l) => !la.fora.has(l))
     // a página de hoje (sem parâmetro) só entra pela paridade: o teto é das direções
     if (q && d.fora > TETO) falhas.push(`${d.fora} palavras fora do FAQ (teto ${TETO})`)
     if (RB_FAQ) {
@@ -97,7 +122,9 @@ async function main() {
     }
     if (falhas.length) falhou = true
     console.log(`\n/business${q || ' (sem parâmetro)'} ${falhas.length ? 'FALHA' : 'OK'}`)
-    console.log(`  ${d.fora} palavras fora do FAQ (main ${d.total}, FAQ ${d.noFaq}) · H1 ${depois.h1.length} "${depois.h1.join(' | ')}" · JSON-LD ${depois.jsonld.length} · links ${depois.links.size} (${c.sumiram.length} sumiram, ${c.novos.length} novos${c.novos.length ? `: ${c.novos.join(', ')}` : ''})`)
+    console.log(`  ${d.fora} palavras fora do FAQ (main ${d.total}, FAQ ${d.noFaq}) · H1 ${depois.h1.length} "${depois.h1.join(' | ')}" · JSON-LD ${depois.jsonld.length}`)
+    console.log(`  topo e rodapé: saíram ${topoSaiu.length ? topoSaiu.join(', ') : 'nenhum'} · entraram ${topoEntrou.length ? topoEntrou.join(', ') : 'nenhum'}`)
+    console.log(`  corpo: ${ld.corpo.size} links (${[...ld.corpo].join(', ') || 'nenhum'})`)
     for (const f of falhas) console.log(`     - ${f}`)
   }
   console.log(`\n${falhou ? 'FALHOU' : 'TUDO OK'}`)

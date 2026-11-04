@@ -12,12 +12,23 @@
 // veto do dono (o rodapé dela segue como estava).
 // Em 31/10/2026 o dono tirou os dois cards de produto ("Conheça outras
 // maneiras de usar a Redentia", grandes demais) e o preço da frase da marca.
+//
+// VARIANTE "business" (04/11/2026, o dono: o rodapé novo na /business, "com
+// pequenas alterações para ser mais voltado à identidade For Business"). O
+// mesmo rodapé, com estas trocas: sem a newsletter de investidor; a marca diz
+// "Redentia For Business" com a frase do Business; as colunas apontam para o
+// B2B (o Business, o MCP, a metodologia, a segurança, o contato e o legal); a
+// frase grande da banda é a do Business; e o botão do pé leva aos
+// investidores, no lugar do "For Business". A linha do Ibovespa fica: é a
+// assinatura visual do site, e o Business lê o mesmo mercado.
 import { rodapeSemAssinatura } from '~/utils/newsletter-lugares'
 
+const props = defineProps<{ variante?: 'business' }>()
+const business = computed(() => props.variante === 'business')
 const route = useRoute()
 const { reabrir } = useConsent()
 const newsletterLigada = useRuntimeConfig().public.newsletterLigada === true
-const assinaturaNoRodape = computed(() => newsletterLigada && !rodapeSemAssinatura(route.path))
+const assinaturaNoRodape = computed(() => !business.value && newsletterLigada && !rodapeSemAssinatura(route.path))
 // REDISTRIBUIÇÃO DE LINK INTERNO (03/08/2026). O footer é sitewide, então é o
 // maior distribuidor de equity do site, e estava mal alocado:
 //  - "Ações" apontava pro hardcoded /asset/PETR4, URL que nem aparece no
@@ -41,6 +52,13 @@ const COLUMNS = [
   { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Como funciona', to: '/institucional/how-works' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Contato', to: '/institucional/contact' }] },
   { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
 ]
+const COLUMNS_BUSINESS = [
+  { title: 'Business', links: [{ label: 'Para escritórios', to: '/business' }, { label: 'Segurança', to: '/business#seguranca' }, { label: 'Plano', to: '/business#prova' }, { label: 'Perguntas', to: '/business#faq' }] },
+  { title: 'Produto', links: [{ label: 'Redentia MCP', to: '/mcp' }, { label: 'Metodologia', to: '/metodologia' }, { label: 'Para investidores', to: '/' }] },
+  { title: 'Empresa', links: [{ label: 'Sobre', to: '/institucional/about' }, { label: 'Contato', to: '/business#contato' }] },
+  { title: 'Legal', links: [{ label: 'Privacidade', to: '/institucional/privacy' }, { label: 'Cookies', to: '/institucional/cookies' }, { label: 'Termos de Uso', to: '/institucional/terms' }] },
+]
+const colunas = computed(() => (business.value ? COLUMNS_BUSINESS : COLUMNS))
 </script>
 
 <template>
@@ -56,18 +74,19 @@ const COLUMNS = [
 
       <div class="nuf__mapa">
         <div class="nuf__marca">
-          <div class="nuf__marca-nome"><img src="/logo-branca.svg" alt="" class="nuf__marca-logo">Redentia</div>
-          <p class="nuf__marca-frase">Mercado em tempo real, teses e calculadoras grátis para quem investe no Brasil.</p>
+          <div class="nuf__marca-nome"><img src="/logo-branca.svg" alt="" class="nuf__marca-logo">Redentia<span v-if="business" class="nuf__marca-biz">For Business</span></div>
+          <p v-if="business" class="nuf__marca-frase">O mercado, os cenários e a carteira do cliente no assistente que a sua mesa já usa.</p>
+          <p v-else class="nuf__marca-frase">Mercado em tempo real, teses e calculadoras grátis para quem investe no Brasil.</p>
           <div class="nuf__social-row" aria-label="Redes sociais">
             <a href="https://www.linkedin.com/company/redentia" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="LinkedIn"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M7 10v7M7 6.5v.01M11 17v-4a2 2 0 0 1 4 0v4" /></svg></a>
             <a href="https://www.instagram.com/redentia.app/" target="_blank" rel="noopener noreferrer" class="nuf__soc" aria-label="Instagram"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5" /><circle cx="12" cy="12" r="3.6" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" /></svg></a>
           </div>
           <a href="mailto:relacionamento@redentia.com.br" class="nuf__mail">relacionamento@redentia.com.br</a>
           <span class="nuf__hours">Atendimento em dias úteis, das 8h às 18h (Brasília)</span>
-          <NuAcompanheAndre lugar="rodape" tom="escuro" />
+          <template v-if="!business"><NuAcompanheAndre lugar="rodape" tom="escuro" /></template>
         </div>
         <nav class="nuf__grid" aria-label="Mapa do site">
-          <div v-for="col in COLUMNS" :key="col.title" class="nuf__col">
+          <div v-for="col in colunas" :key="col.title" class="nuf__col">
             <div class="nuf__col-title">{{ col.title }}</div>
             <div class="nuf__col-links">
               <NuxtLink v-for="l in col.links" :key="l.label" :to="l.to" class="nuf__link">{{ l.label }}</NuxtLink>
@@ -79,13 +98,15 @@ const COLUMNS = [
     </div>
 
     <NuFooterLinha class="nuf__serra">
+      <template v-if="business" #titulo>Sua próxima reunião<br> já começa preparada.</template>
       <template #base>
         <div class="nuf__bottom">
           <img src="/logo-branca.svg" alt="Redentia" class="nuf__bottom-logo">
           <span class="nuf__copy">© 2026 Redentia · {{ EMPRESA.razaoSocial }} · CNPJ {{ EMPRESA.cnpj }}</span>
           <!-- a entrada do B2B no app (direção do dono 2026-08-01): botão discreto
                no rodapé, não item de coluna — é outro produto, não outra página -->
-          <NuxtLink to="/business" class="nuf__biz">For Business</NuxtLink>
+          <NuxtLink v-if="business" to="/" class="nuf__biz">Para investidores</NuxtLink>
+          <NuxtLink v-else to="/business" class="nuf__biz">For Business</NuxtLink>
         </div>
       </template>
     </NuFooterLinha>
@@ -117,6 +138,7 @@ const COLUMNS = [
 }
 .nuf__marca { display: flex; flex-direction: column; align-items: flex-start; }
 .nuf__marca-nome { display: flex; align-items: center; gap: 12px; color: var(--nu-cream-text); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.nuf__marca-biz { margin-left: -4px; color: var(--nu-blue-soft); }
 .nuf__marca-logo { width: 30px; height: 30px; display: block; object-fit: contain; }
 .nuf__marca-frase { margin: 16px 0 0; max-width: 34ch; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .nuf__social-row { display: flex; align-items: center; gap: 20px; margin-top: 24px; }

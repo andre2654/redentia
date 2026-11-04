@@ -51,6 +51,20 @@ export const NAV_DO_TOPO: NavItem[] = [
   },
 ]
 
+/**
+ * A nav do topo na /business (04/11/2026, o dono: o topo do site novo "com
+ * pequenas alterações para ser mais voltado à identidade For Business"). As
+ * partes da landing, com o caminho inteiro (/business#...) para valer também
+ * do painel logado (/business/chaves, /business/clientes). As âncoras existem
+ * nas direções da landing (ver pages/business/index.vue).
+ */
+export const NAV_BUSINESS: NavItem[] = [
+  { label: 'Produto', to: '/business#produto' },
+  { label: 'Segurança', to: '/business#seguranca' },
+  { label: 'Plano', to: '/business#prova' },
+  { label: 'Perguntas', to: '/business#faq' },
+]
+
 /** A nav de quem está vendo: sem sessão, saem os destinos que pedem login. */
 export function navDoTopo(logado: boolean): NavItem[] {
   return NAV_DO_TOPO

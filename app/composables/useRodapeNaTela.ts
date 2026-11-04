@@ -1,5 +1,5 @@
 /**
- * O rodapé do site (NuFooter ou RbFooter) cruzou a tela. O convite da
+ * O rodapé do site (NuFooter, também na /business) cruzou a tela. O convite da
  * newsletter e o aviso de cookies usam isto para sair de cima dele.
  */
 export function useRodapeNaTela() {
@@ -13,7 +13,7 @@ export function useRodapeNaTela() {
     vistos.clear()
     visivel.value = false
     if (!import.meta.client || !('IntersectionObserver' in window)) return
-    const alvos = document.querySelectorAll('footer.nuf, footer.rbf')
+    const alvos = document.querySelectorAll('footer.nuf')
     if (!alvos.length) return
     io = new IntersectionObserver((entries) => {
       for (const e of entries) {

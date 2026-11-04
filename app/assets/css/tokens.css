@@ -418,4 +418,16 @@
   --nu-chat-sombra-painel: 0 0 0 1px rgba(12, 21, 36, 0.07), 0 28px 70px -24px rgba(12, 21, 36, 0.34);
   --nu-chat-sombra-sug: 0 18px 50px -12px rgba(12, 21, 36, 0.28), 0 0 0 1px rgba(12, 21, 36, 0.07);
   --nu-chat-sombra-rotulo: 0 6px 16px -6px rgba(12, 21, 36, 0.45);
+  /* ——— /business (04/11/2026): as telas do Redentia MCP no Claude e no ChatGPT ———
+     Os valores de mcp-service/src/apps/base.css (o idioma dos e-mails v2), para
+     a landing mostrar as telas como elas são: o cinza das listas agrupadas e a
+     pílula cheia verde e vermelha. Só os recortes de tela da /business usam. */
+  --nu-tela-bloco: #F5F5F7;
+  --nu-tela-linha: #DCDCE1;
+  --nu-tela-apoio: #6E6E73;
+  --nu-tela-nota: #86868B;
+  --nu-tela-alta: #15803D;
+  --nu-tela-queda: #C9302C;
+  --nu-tela-neutro: #E8E8ED;
+  --nu-tela-marinho: #041255;
 }

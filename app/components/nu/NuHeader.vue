@@ -21,17 +21,35 @@
 //   pergunta mora na barra do pé de toda página (ChatBarra).
 // - Celular: barra fina, marca menor, ícones de 20px com área de toque de 44px
 //   (o padding faz a área, não o desenho).
+//
+// VARIANTE "business" (04/11/2026, o dono: "o header e o footer precisam ir
+// para o nosso atual [...] com pequenas alterações para ser mais voltado à
+// identidade For Business"). O mesmo topo, com três trocas: a marca diz
+// "Redentia For Business" e volta à /business; a nav são as partes da landing
+// (NAV_BUSINESS); à direita saem a busca e a conta de investidor e entram
+// "Entrar" (o cadastro do Business, ou "Minha conta" no painel de chaves) e o
+// "Falar com a gente" (#contato). Sem painéis de preview e sem a lista do
+// mercado no menu. A troca de "Entrar" por "Minha conta" só acontece depois do
+// mount: a /business é cacheada na borda e o SSR não pode variar por cookie
+// (mesma regra do topo antigo da /business).
+const props = defineProps<{ variante?: 'business' }>()
+const business = computed(() => props.variante === 'business')
 const topo = useTopo({ normal: 72, encolhido: 60, celular: { normal: 52, encolhido: 46 } })
 const { itens, mercado } = useMercadoDoTopo()
+const nav = computed(() => (business.value ? NAV_BUSINESS : topo.nav.value))
+const destinoCadastro = useDestinoCadastroBusiness()
+const montado = ref(false)
+onMounted(() => { montado.value = true })
+const logadoBiz = computed(() => business.value && montado.value && topo.isAuthenticated.value)
 </script>
 
 <template>
   <div class="nuh-wrap" :class="{ 'nuh-wrap--shrunk': topo.shrunk.value }">
     <div class="nuh">
-      <NuTopoMarca class="nuh__marca" />
+      <NuTopoMarca class="nuh__marca" :business="business" />
 
       <nav class="nuh__nav" aria-label="Principal">
-        <template v-for="item in topo.nav.value" :key="item.label">
+        <template v-for="item in nav" :key="item.label">
           <NuxtLink
             v-if="item.to" :to="item.to" class="nuh__item"
             :class="{ 'nuh__item--ativo': topo.ativo(item.to), 'nuh__item--aberto': topo.painel.value?.tipo === 'nav' && topo.painel.value.item === item.label }"
@@ -51,7 +69,14 @@ const { itens, mercado } = useMercadoDoTopo()
         </template>
       </nav>
 
-      <div class="nuh__dir">
+      <div v-if="business" class="nuh__dir">
+        <NuxtLink :to="logadoBiz ? '/business/chaves' : destinoCadastro" class="nuh__entrar">{{ logadoBiz ? 'Minha conta' : 'Entrar' }}</NuxtLink>
+        <NuxtLink to="/business#contato" class="nuh__cta">Falar com a gente</NuxtLink>
+        <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="topo.menuAberto.value" @click="topo.abrirMenu(true)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M4 9h16M4 15h16" /></svg>
+        </button>
+      </div>
+      <div v-else class="nuh__dir">
         <NuxtLink to="/busca" class="nuh__busca" aria-label="Buscar">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.2-3.2" /></svg>
           <span class="nuh__busca-texto">Buscar ativo ou tese</span>
@@ -82,8 +107,11 @@ const { itens, mercado } = useMercadoDoTopo()
     v-if="topo.painel.value?.tipo === 'conta'" :right="topo.pos.value.right" :top="topo.pos.value.top"
     @fechar="topo.fecharPainel()" @sair="topo.sair()" @tecla="topo.teclaNoPainel($event)"
   />
-  <NuTopoMenu :aberto="topo.menuAberto.value" :nav="topo.nav.value" :logado="topo.isAuthenticated.value" @fechar="topo.abrirMenu(false)" @sair="topo.sair()">
-    <template v-if="itens.length" #mercado>
+  <NuTopoMenu
+    :aberto="topo.menuAberto.value" :nav="nav" :logado="business ? logadoBiz : topo.isAuthenticated.value" :variante="variante"
+    @fechar="topo.abrirMenu(false)" @sair="topo.sair()"
+  >
+    <template v-if="itens.length && !business" #mercado>
       <NuTopoMercadoLista :itens="itens.slice(0, 4)" :mercado="mercado" />
     </template>
   </NuTopoMenu>
