@@ -8,8 +8,9 @@
 //  - à esquerda, o texto: a sobrelinha com a data, o título que só diz "Tudo
 //    normal." quando é verdade, o veredito ("Caiu menos que a bolsa.") e uma
 //    causa que nunca elogia (utils/diaDaCarteira.ts);
-//  - à direita, os anéis do relógio (HomeAneis): você contra a bolsa e o
-//    provento do dia;
+//  - à direita, o losango da marca (HomeLosango; até 04/11 eram os anéis do
+//    relógio, que o dono achou parecidos com os do Apple Fitness): você contra
+//    a bolsa e o provento do dia;
 //  - embaixo, uma faixa com três números (patrimônio, o dia, proventos em 12
 //    meses), em R$ escondido até o olho, que vale só para a visita
 //    (useValoresVisiveis), e o "Abrir minha carteira".
@@ -21,32 +22,11 @@
 //    carteira." + a mesma chamada do visitante, que leva ao /assinar;
 //  - carteira sem assinatura: o passo que falta é assinar;
 //  - resumo indisponível (API fora): "Olá, Nome." + o caminho da carteira.
-import type { Component } from 'vue'
 import type { CarteiraResumoVM } from '~/types/carteira'
-import { frasesDoDia } from '~/utils/diaDaCarteira'
+import { frasesDoDia, subDoProvento } from '~/utils/diaDaCarteira'
 import { estadoDoPregao } from '~/utils/pregao'
-import HomeAneis from './HomeAneis.vue'
 
 const props = defineProps<{ resumo: CarteiraResumoVM | null }>()
-
-// ESBOÇO (03/11/2026, o dono: "esse está muito perto do ícone de gym da
-// Apple"): alternativas para os anéis, trocadas só no dev por ?aneis=N, com as
-// mesmas props do HomeAneis. Dos quatro primeiros ficou o 3 (o losango), e o
-// dono pediu mais com a marca (04/11): 5 (o logo como ponteiro), 6 (a
-// constelação), 7 (o nível sobreposto) e 8 (o miolo aceso). Em produção
-// import.meta.dev é false, o mapa fica vazio (nem entra no bundle) e seguem os
-// anéis de hoje. Lado a lado, com os casos extremos: /dev/aneis (só no dev).
-const route = useRoute()
-const ESBOCOS_ANEIS: Record<string, Component> = import.meta.dev
-  ? {
-      '3': defineAsyncComponent(() => import('./aneis/HomeAneisLosango.vue')),
-      '5': defineAsyncComponent(() => import('./aneis/HomeAneisPonteiro.vue')),
-      '6': defineAsyncComponent(() => import('./aneis/HomeAneisConstelacao.vue')),
-      '7': defineAsyncComponent(() => import('./aneis/HomeAneisNivel.vue')),
-      '8': defineAsyncComponent(() => import('./aneis/HomeAneisMiolo.vue')),
-    }
-  : {}
-const esbocoAneis = computed(() => ESBOCOS_ANEIS[String(route.query.aneis ?? '')] ?? HomeAneis)
 
 const { firstName } = useAuthState()
 
@@ -111,23 +91,24 @@ const fatos = computed(() => {
   if (r.proventos12m) lista.push({ k: 'proventos', rotulo: 'Proventos em 12 meses', valor: visiveis.value ? r.proventos12m : ESCONDIDO, to: '/carteira#renda-passiva' })
   return lista
 })
-// os anéis como contexto do chat: as duas variações do dia, como o anel mostra
-const contextoAneis = computed(() => {
+// o losango como contexto do chat: as duas variações do dia e o provento, como o losango mostra
+const contextoLosango = computed(() => {
   const d = dia.value
   if (!podeVerNumeros.value || !d || d.carteiraPct == null) return null
   const f = (n: number) => `${n > 0 ? '+' : ''}${nf2.format(n)}%`
   return {
-    id: 'home:aneis', tipo: 'carteira', rotulo: 'Você e a bolsa hoje',
-    texto: [`Sua carteira: ${f(d.carteiraPct)}`, d.bolsaPct != null ? `Ibovespa: ${f(d.bolsaPct)}` : '', d.provento ? 'Caiu provento' : ''].filter(Boolean).join('\n'),
+    id: 'home:losango', tipo: 'carteira', rotulo: 'Você e a bolsa hoje',
+    texto: [`Sua carteira: ${f(d.carteiraPct)}`, d.bolsaPct != null ? `Ibovespa: ${f(d.bolsaPct)}` : '', d.provento && proventoSub.value ? `Provento: ${proventoSub.value}` : ''].filter(Boolean).join('\n'),
   }
 })
-const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'caiu' : 'nenhum'} ${frases.value.quando}` : null))
+// a linha do provento do losango: quem pagou, e o R$ só com os valores à vista (o olho da faixa)
+const proventoSub = computed(() => (frases.value && dia.value ? subDoProvento(dia.value, frases.value.quando, visiveis.value) : null))
 </script>
 
 <template>
   <section class="hag" aria-labelledby="hag-titulo">
     <div class="hag__tela">
-      <!-- com carteira: o dia, o anel e os três números -->
+      <!-- com carteira: o dia, o losango e os três números -->
       <template v-if="comCarteira">
         <div class="hag__painel">
           <div v-contexto-chat="podeVerNumeros && frases ? { id: 'home:dia', tipo: 'carteira', rotulo: 'Seu dia', texto: [frases.sobrelinha, frases.titulo, frases.veredito, frases.apoio].filter(Boolean).join('\n') } : null" class="hag__texto" aria-live="polite">
@@ -150,9 +131,8 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
               <NuSkeleton tone="navy" variant="text" :lines="2" last-width="60%" class="hag__esq-apoio" />
             </template>
           </div>
-          <div v-if="!podeVerNumeros || dia?.carteiraPct != null" v-contexto-chat="contextoAneis" class="hag__anel">
-            <component
-              :is="esbocoAneis"
+          <div v-if="!podeVerNumeros || dia?.carteiraPct != null" v-contexto-chat="contextoLosango" class="hag__losango">
+            <HomeLosango
               :voce="dia?.carteiraPct ?? null" :bolsa="dia?.bolsaPct ?? null"
               :provento="!!dia?.provento" :provento-sub="proventoSub"
               :esmaecido="!!frases?.esmaecido" :carregando="!podeVerNumeros || !frases"
@@ -260,13 +240,13 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
 }
 .hag__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* o painel: o texto à esquerda e o anel à direita */
+/* o painel: o texto à esquerda e o losango à direita */
 .hag__painel {
   margin-top: auto;
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 24px clamp(24px, 3vw, 48px);
 }
 .hag__texto { min-width: 0; }
-.hag__anel { justify-self: end; width: min(100%, 620px); }
+.hag__losango { justify-self: end; width: min(100%, 620px); }
 
 .hag__sobre { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-eyebrow); font-weight: 700; font-variant-numeric: tabular-nums; }
 .hag__sobre--verde { color: var(--nu-agora-verde); }
@@ -339,10 +319,10 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
 .hag__alerta:hover { background: color-mix(in srgb, var(--nu-agora-ambar) 24%, transparent); color: var(--nu-agora-ambar); }
 .hag__carteira:focus-visible, .hag__alerta:focus-visible { outline: 2px solid var(--nu-agora-azul); outline-offset: 3px; }
 
-/* abaixo de 960 px: o anel em cima, centrado, e o texto embaixo */
+/* abaixo de 960 px: o losango em cima, centrado, e o texto embaixo */
 @media (max-width: 959px) {
   .hag__painel { grid-template-columns: minmax(0, 1fr); }
-  .hag__anel { order: -1; justify-self: center; width: min(100%, 460px); }
+  .hag__losango { order: -1; justify-self: center; width: min(100%, 460px); }
 }
 @media (max-width: 560px) {
   .hag__tela { gap: 28px; }

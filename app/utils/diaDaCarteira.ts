@@ -14,8 +14,9 @@
  *    ("Nenhum papel seu caiu 5% ou mais na sexta."). A frase nunca elogia: com
  *    muita renda fixa a carteira "cai menos que a bolsa" quase todo dia por
  *    composição, e aí ela diz isso e compara só as ações com a bolsa.
- * Os anéis são os do relógio e do iPhone (o R2, AneisR2.swift nos apps): você
- * por fora, a bolsa no meio, o provento no centro; uma volta = 3%.
+ * No site, ao lado do texto, o losango da marca (HomeLosango, 04/11/2026, no
+ * lugar dos anéis do relógio, que o dono achou parecidos demais com os do
+ * Apple Fitness): você contra a bolsa e o provento do dia; 3% é a escala.
  *
  * Funções puras, sem Nuxt: o teste trava o texto (tests/dia-da-carteira.test.ts).
  * Regra de sempre: dado que falta some, nunca vira zero nem frase inventada.
@@ -25,7 +26,7 @@ import { nomeParaFrase, QUEDA_QUE_PEDE_ATENCAO } from './carteira-agora.ts'
 
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-/** A linha de aviso dos apps: uma volta do anel e o dia que tira o "Tudo normal." */
+/** A linha de aviso dos apps: a escala do losango num dia comum e o dia que tira o "Tudo normal." */
 export const LINHA_DO_DIA = 3
 /** Abaixo disso o dia é "estável" (em %). */
 const ESTAVEL = 0.05
@@ -78,6 +79,8 @@ export interface ResumoDoDia {
   acoesPct: number | null
   /** caiu provento na carteira no dia do preço */
   provento: boolean
+  /** o que caiu: o total em R$ e os papéis, do maior para o menor (null sem provento) */
+  proventoDoDia?: { valor: number; tickers: string[] } | null
 }
 
 /**
@@ -90,7 +93,7 @@ export function montarResumoDoDia(e: {
   posicoes: { assetClass: string; value: number }[]
   total: number
   ibov: { t: string; v: number }[] | null
-  income: { months: { entries: { trade_date: string; amount: number }[] }[] } | null
+  income: { months: { entries: { ticker?: string; trade_date: string; amount: number }[] }[] } | null
 }): ResumoDoDia {
   const priceDate = e.today?.price_dates?.today ?? null
   const totals = e.today?.totals
@@ -143,16 +146,25 @@ export function montarResumoDoDia(e: {
     if (ontem > 0) acoesPct = (amt / ontem) * 100
   }
 
-  const provento = !!priceDate && (e.income?.months ?? []).some((m) => m.entries.some((x) => x.trade_date?.slice(0, 10) === priceDate && x.amount > 0))
+  // o provento do dia: o total e os papéis que pagaram, do maior para o menor
+  const doDia = priceDate
+    ? (e.income?.months ?? []).flatMap((m) => m.entries).filter((x) => x.trade_date?.slice(0, 10) === priceDate && x.amount > 0)
+    : []
+  const provento = doDia.length > 0
+  const porPapel = new Map<string, number>()
+  for (const x of doDia) if (x.ticker) porPapel.set(x.ticker, (porPapel.get(x.ticker) ?? 0) + x.amount)
+  const proventoDoDia = provento
+    ? { valor: Math.round(doDia.reduce((t, x) => t + x.amount, 0) * 100) / 100, tickers: [...porPapel].sort((a, b) => b[1] - a[1]).map(([t]) => t) }
+    : null
 
-  return { priceDate, asOf: e.today?.as_of ?? null, carteiraPct, diaValor, bolsaPct, alerta, outrasQuedas, maiorPeso, rendaFixa, acoesPct, provento }
+  return { priceDate, asOf: e.today?.as_of ?? null, carteiraPct, diaValor, bolsaPct, alerta, outrasQuedas, maiorPeso, rendaFixa, acoesPct, provento, proventoDoDia }
 }
 
 /* ————— as palavras ————— */
 
 /** '0,62%' sem sinal (o verbo dá o sentido). */
 const pctAbs = (n: number) => `${nf2.format(Math.abs(n))}%`
-/** '−0,62%' / '+0,24%' / '0,00%' para os rótulos do anel (com o "−" de verdade). */
+/** '−0,62%' / '+0,24%' / '0,00%' para os rótulos do losango (com o "−" de verdade). */
 export function pctComSinal(n: number): string {
   if (Math.abs(n) < 0.005) return '0,00%'
   return `${n > 0 ? '+' : '−'}${nf2.format(Math.abs(n))}%`
@@ -216,7 +228,7 @@ export interface FrasesDoDia {
   /** 'hoje', 'ontem', 'na sexta': o fio do provento e o fecho */
   quando: string
   aoVivo: boolean
-  /** antes da abertura: o anel do pregão anterior esmaecido */
+  /** antes da abertura: o losango do pregão anterior esmaecido */
   esmaecido: boolean
 }
 
@@ -318,52 +330,21 @@ export function frasesDoDia(r: ResumoDoDia, estado: EstadoDoPregao, agora = new 
   return { ...base, sobrelinha, sobrelinhaTom, titulo, veredito, apoio: causa ? `${causa} ${fecho}` : fecho }
 }
 
-/* ————— o anel (R2 dos apps: AneisR2.swift) ————— */
-
-/** A fração da volta (0…1) de um dia: uma volta = 3%, no mínimo 6° quando andou. */
-export function fracaoDoAnel(v: number | null, linha = LINHA_DO_DIA, minimoGraus = 6): number {
-  if (v == null || linha <= 0) return 0
-  const f = Math.min(Math.abs(v) / linha, 1)
-  return Math.abs(v) >= 0.005 ? Math.max(f, minimoGraus / 360) : f
-}
-
-/** O ponto da ponta do arco no quadro de 150 (zero no alto; a queda anda para trás). */
-export function pontaDoAnel(r: number, v: number): { x: number; y: number } {
-  const g = fracaoDoAnel(v) * 360
-  const graus = g >= 359.9 ? (v < 0 ? -90 - 359.9 : 269.9) : v < 0 ? -90 - g : -90 + g
-  const a = (graus * Math.PI) / 180
-  return { x: 75 + r * Math.cos(a), y: 75 + r * Math.sin(a) }
-}
-
-export interface FioDoAnel {
-  chave: 'voce' | 'bolsa' | 'provento'
-  ponta: { x: number; y: number }
-  y: number
-  esquerda: boolean
-  nome: string
-  sub: string
-}
-
-/** Os fios dos rótulos, como o gerador: cada lado empilha de cima para baixo, com 36 de folga. */
-export function fiosDoAnel(voce: number | null, bolsa: number | null, provento: string | null): FioDoAnel[] {
-  const itens: FioDoAnel[] = []
-  if (voce != null) {
-    const p = pontaDoAnel(64, voce)
-    itens.push({ chave: 'voce', ponta: p, y: p.y, esquerda: p.x < 75, nome: 'você', sub: pctComSinal(voce) })
-  }
-  if (bolsa != null) {
-    const p = pontaDoAnel(44, bolsa)
-    itens.push({ chave: 'bolsa', ponta: p, y: p.y, esquerda: p.x < 75, nome: 'bolsa', sub: pctComSinal(bolsa) })
-  }
-  const out: FioDoAnel[] = []
-  for (const esquerda of [true, false]) {
-    let ultimo = -99
-    for (const f of itens.filter((i) => i.esquerda === esquerda).sort((a, b) => a.ponta.y - b.ponta.y)) {
-      const y = Math.max(f.ponta.y, ultimo + 36)
-      ultimo = y
-      out.push({ ...f, y })
-    }
-  }
-  if (provento != null) out.push({ chave: 'provento', ponta: { x: 84, y: 79 }, y: 138, esquerda: false, nome: 'provento', sub: provento })
-  return out
+/**
+ * O texto do provento ao lado do losango ("provento · …"). O R$ só aparece com
+ * os valores à vista (o olho da faixa, useValoresVisiveis); escondido, diz só
+ * quem pagou. `quando` é o 'hoje' / 'ontem' / 'na sexta' das frases.
+ *  - sem provento: 'nenhum hoje'
+ *  - à vista: 'R$ 48,20 de ITSA4 hoje' / 'R$ 61,00 de ITSA4 e BBAS3 hoje' / 'R$ 90,10 de ITSA4 e mais 2 hoje'
+ *  - escondido: 'ITSA4 pagou hoje' / 'ITSA4 e BBAS3 pagaram hoje'
+ *  - sem o papel no dado: 'caiu hoje' (ou 'R$ 48,20 hoje' à vista)
+ */
+export function subDoProvento(r: Pick<ResumoDoDia, 'provento' | 'proventoDoDia'>, quando: string, visiveis: boolean): string {
+  if (!r.provento) return `nenhum ${quando}`
+  const t = r.proventoDoDia?.tickers ?? []
+  const quem = t.length === 0 ? '' : t.length === 1 ? t[0]! : t.length === 2 ? `${t[0]} e ${t[1]}` : `${t[0]} e mais ${t.length - 1}`
+  const valor = r.proventoDoDia && visiveis ? `R$ ${nf2.format(r.proventoDoDia.valor)}` : null
+  if (valor) return quem ? `${valor} de ${quem} ${quando}` : `${valor} ${quando}`
+  if (!quem) return `caiu ${quando}`
+  return `${quem} ${t.length === 1 ? 'pagou' : 'pagaram'} ${quando}`
 }

@@ -1,9 +1,8 @@
 /**
- * A geometria da marca da Redentia (public/logo-azul.svg e logo-branca.svg, a
- * do header em NuTopoMarca), para os esboços que disputam o lugar dos anéis do
- * dia (04/11/2026; o dono: "gostei de usarmos mais a logo da Redentia igual o
- * 3, explore mais isso"). Os desenhos usam as peças do próprio logo, não "um
- * losango qualquer".
+ * A geometria da marca da Redentia (public/logo-azul.svg, a do header em
+ * NuTopoMarca), para o losango do dia da home (HomeLosango, 04/11/2026; o
+ * dono: "gostei de usarmos mais a logo da Redentia"). O desenho usa as peças
+ * do próprio logo, não "um losango qualquer".
  *
  * Como o logo é construído, medido no SVG (quadro de 206, centro em 103):
  *  - um quadrado em pé a 45°: as bordas são retas x ± y = constante, sem
@@ -63,45 +62,4 @@ const r3 = (n: number) => Math.round(n * 1000) / 1000
 export function transformDoLogo(cx: number, cy: number, tamanho: number): string {
   const k = tamanho / LOGO.lado
   return `translate(${r3(cx - tamanho / 2)} ${r3(cy - tamanho / 2)}) scale(${r3(k)})`
-}
-
-/**
- * Um losango em pé, com centro (cx, cy), meia diagonal `r` no canto vivo e os
- * quatro cantos arredondados com raio `canto`, como o de fora e o miolo do
- * logo. Para o miolo: losangoArredondado(103, 103, 52.66, 20).
- */
-export function losangoArredondado(cx: number, cy: number, r: number, canto: number): string {
-  // o arco de 90° de raio `canto` começa a canto·√2/2 da ponta viva, ao longo de cada borda
-  const c = Math.max(0, Math.min(canto, r * Math.SQRT2 / 2))
-  const d = c * Math.SQRT1_2 // o recuo em x e em y, ao longo da borda a 45°
-  const p = (x: number, y: number) => `${r3(x)} ${r3(y)}`
-  const pontas = [
-    [cx, cy - r], [cx + r, cy], [cx, cy + r], [cx - r, cy],
-  ] as const
-  // de cada ponta, o recuo para a borda anterior e para a seguinte
-  const partes: string[] = []
-  for (let i = 0; i < 4; i++) {
-    const [x, y] = pontas[i]!
-    const [xa, ya] = pontas[(i + 3) % 4]!
-    const [xs, ys] = pontas[(i + 1) % 4]!
-    const ux = (xa - x) / Math.hypot(xa - x, ya - y)
-    const uy = (ya - y) / Math.hypot(xa - x, ya - y)
-    const vx = (xs - x) / Math.hypot(xs - x, ys - y)
-    const vy = (ys - y) / Math.hypot(xs - x, ys - y)
-    const ent = p(x + ux * d * Math.SQRT2, y + uy * d * Math.SQRT2)
-    const sai = p(x + vx * d * Math.SQRT2, y + vy * d * Math.SQRT2)
-    partes.push(`${i === 0 ? 'M' : 'L'}${ent} A${r3(c)} ${r3(c)} 0 0 1 ${sai}`)
-  }
-  return `${partes.join(' ')} Z`
-}
-
-/** O miolo do logo, no quadro de 206. */
-export const MIOLO_DO_LOGO = losangoArredondado(LOGO.centro, LOGO.centro, LOGO.mioloVivo, LOGO.cantoDoMiolo)
-
-/**
- * A meia largura de um losango em pé de meia diagonal `r` na altura `dy` a
- * partir do centro (o canto vivo; as bordas a 45°: r − |dy|).
- */
-export function meiaLarguraDoLosango(r: number, dy: number): number {
-  return Math.max(0, r - Math.abs(dy))
 }

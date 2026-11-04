@@ -1,11 +1,11 @@
 /**
- * A geometria da marca nos esboços dos anéis (04/11/2026): as medidas que
+ * A geometria da marca no losango do dia (04/11/2026): as medidas que
  * saíram do SVG do logo e as contas que põem as peças no desenho.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { LOGO, losangoArredondado, meiaLarguraDoLosango, MIOLO_DO_LOGO, PECAS_DO_LOGO, transformDoLogo } from '../app/utils/marcaRedentia.ts'
+import { LOGO, PECAS_DO_LOGO, transformDoLogo } from '../app/utils/marcaRedentia.ts'
 
 test('as peças são as do SVG da marca, sem tirar nem pôr', () => {
   const svg = readFileSync(new URL('../public/logo-azul.svg', import.meta.url), 'utf8')
@@ -31,23 +31,4 @@ test('as proporções do logo: quadrado a 45°, miolo de 0,43 e abas de 0,27', (
 test('o transform põe o logo de 206 no tamanho e no centro pedidos', () => {
   assert.equal(transformDoLogo(160, 96, 206), 'translate(57 -7) scale(1)')
   assert.equal(transformDoLogo(100, 100, 103), 'translate(48.5 48.5) scale(0.5)')
-})
-
-test('o losango arredondado começa e termina nas bordas a 45°', () => {
-  const d = losangoArredondado(100, 100, 50, 10)
-  assert.match(d, /^M/)
-  assert.equal((d.match(/A/g) ?? []).length, 4)
-  assert.match(d, /Z$/)
-  // o primeiro ponto fica na borda de cima à esquerda, a 10 da ponta
-  const [x, y] = d.slice(1).split(' ').map(Number)
-  assert.ok(Math.abs(x! - (100 - 10 * Math.SQRT1_2)) < 0.01 && Math.abs(y! - (50 + 10 * Math.SQRT1_2)) < 0.01)
-  // canto zero vira o losango vivo
-  assert.match(losangoArredondado(0, 0, 10, 0), /^M0 -10 A0 0 0 0 1 0 -10 L10 0/)
-  assert.ok(MIOLO_DO_LOGO.startsWith('M'))
-})
-
-test('a meia largura do losango cai a 45° e não fica negativa', () => {
-  assert.equal(meiaLarguraDoLosango(50, 0), 50)
-  assert.equal(meiaLarguraDoLosango(50, -20), 30)
-  assert.equal(meiaLarguraDoLosango(50, 80), 0)
 })

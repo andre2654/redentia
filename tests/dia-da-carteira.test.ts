@@ -6,7 +6,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { contraABolsa, fiosDoAnel, fracaoDoAnel, frasesDoDia, montarResumoDoDia, pctComSinal, type ResumoDoDia } from '../app/utils/diaDaCarteira.ts'
+import { contraABolsa, frasesDoDia, montarResumoDoDia, pctComSinal, subDoProvento, type ResumoDoDia } from '../app/utils/diaDaCarteira.ts'
 
 const base: ResumoDoDia = {
   priceDate: '2026-10-30',
@@ -99,18 +99,22 @@ test('as palavras contra a bolsa, nos quase iguais e nos estáveis', () => {
   assert.equal(frasesDoDia({ ...base, carteiraPct: null }, 'fechada', sexta18h), null)
 })
 
-test('o anel: uma volta é 3%, o arco mínimo é 6° e a queda anda para trás', () => {
-  assert.equal(fracaoDoAnel(-1.5), 0.5)
-  assert.equal(fracaoDoAnel(-8), 1)
-  assert.equal(fracaoDoAnel(0.01), 6 / 360)
-  assert.equal(fracaoDoAnel(null), 0)
-  assert.equal(Math.round(fracaoDoAnel(-0.62) * 360), 74)
-  const fios = fiosDoAnel(-0.62, -0.82, 'nenhum hoje')
-  assert.deepEqual(fios.map((f) => [f.chave, f.esquerda]), [['voce', true], ['bolsa', true], ['provento', false]])
-  // empilhados com folga de 36 do mesmo lado
-  assert.ok(fios[1]!.y - fios[0]!.y > 35.999)
+test('os rótulos do losango levam o "−" de verdade', () => {
   assert.equal(pctComSinal(-0.62), '−0,62%')
   assert.equal(pctComSinal(0.001), '0,00%')
+})
+
+test('o provento ao lado do losango: quem pagou, e o R$ só com os valores à vista', () => {
+  const com = { provento: true, proventoDoDia: { valor: 48.2, tickers: ['ITSA4'] } }
+  assert.equal(subDoProvento({ provento: false, proventoDoDia: null }, 'hoje', true), 'nenhum hoje')
+  assert.equal(subDoProvento(com, 'hoje', true), 'R$ 48,20 de ITSA4 hoje')
+  assert.equal(subDoProvento(com, 'hoje', false), 'ITSA4 pagou hoje')
+  assert.equal(subDoProvento({ provento: true, proventoDoDia: { valor: 61, tickers: ['ITSA4', 'BBAS3'] } }, 'na sexta', false), 'ITSA4 e BBAS3 pagaram na sexta')
+  assert.equal(subDoProvento({ provento: true, proventoDoDia: { valor: 90.1, tickers: ['ITSA4', 'BBAS3', 'TAEE11'] } }, 'hoje', true), 'R$ 90,10 de ITSA4 e mais 2 hoje')
+  // o dado sem o papel: não inventa quem pagou
+  assert.equal(subDoProvento({ provento: true, proventoDoDia: { valor: 48.2, tickers: [] } }, 'hoje', false), 'caiu hoje')
+  assert.equal(subDoProvento({ provento: true, proventoDoDia: { valor: 48.2, tickers: [] } }, 'hoje', true), 'R$ 48,20 hoje')
+  assert.equal(subDoProvento({ provento: true }, 'ontem', true), 'caiu ontem')
 })
 
 test('o resumo do dia sai do /today, do /portfolio e do /income', () => {
@@ -129,7 +133,7 @@ test('o resumo do dia sai do /today, do /portfolio e do /income', () => {
     posicoes: [{ assetClass: 'STOCK', value: 26409 }, { assetClass: 'TREASURY', value: 27000 }, { assetClass: 'REIT', value: 11760 }],
     total: 65169,
     ibov: [{ t: '2026-10-29', v: 171650 }, { t: '2026-10-30', v: 170242 }],
-    income: { months: [{ entries: [{ trade_date: '2026-10-30', amount: 82.5 }] }] },
+    income: { months: [{ entries: [{ ticker: 'HGLG11', trade_date: '2026-10-30', amount: 82.5 }, { ticker: 'ITUB4', trade_date: '2026-10-30', amount: 12.1 }, { ticker: 'ITUB4', trade_date: '2026-10-29', amount: 9 }] }] },
   })
   assert.equal(Math.round(r.bolsaPct! * 100) / 100, -0.82)
   assert.equal(r.alerta, null) // a Oi caiu 7%, mas pesa menos de 1%
@@ -137,5 +141,7 @@ test('o resumo do dia sai do /today, do /portfolio e do /income', () => {
   assert.equal(r.maiorPeso!.nome, 'Itaú')
   assert.equal(Math.round(r.rendaFixa!), 41)
   assert.equal(r.provento, true)
+  // só o do dia de preço, somado, e os papéis do maior para o menor
+  assert.deepEqual(r.proventoDoDia, { valor: 94.6, tickers: ['HGLG11', 'ITUB4'] })
   assert.ok(r.acoesPct! < -1.3 && r.acoesPct! > -1.4)
 })
