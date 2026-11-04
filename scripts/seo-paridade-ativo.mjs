@@ -13,17 +13,22 @@
  * Uma página por vez, com pausa entre elas: o dev fala com a API de produção,
  * e cada /asset faz ~10 chamadas (rajada já derrubou produção, 23/09/2026).
  *
- *   node scripts/seo-paridade-ativo.mjs [--base http://localhost:3471] [--pausa 4000]
- *        [--tickers PETR4,ITUB4] [--antiga .prints-ativo/antiga] [--query '?x=1']
+ *   node scripts/seo-paridade-ativo.mjs --antiga <pasta> [--base http://localhost:3471]
+ *        [--pausa 4000] [--tickers PETR4,ITUB4]
  *
- * `--antiga` é a pasta com TICKER.html da página anterior, salvo por curl em
- * 03/11/2026 às 18:39, antes da troca (a saída da comparação daquele dia está
- * em .prints-ativo/seo-paridade-final.txt). Como o preço e os indicadores
- * andam entre o dia salvo e hoje, o <title>, a meta, o JSON-LD e os trechos de
+ * `--antiga` é obrigatório: a pasta com TICKER.html da página anterior, salvo
+ * por curl. A pasta é LOCAL e NÃO é versionada (HTML de produção, ~150 KB por
+ * página): a de 03/11/2026, 18:39, antes da troca, ficou em .prints-ativo/antiga
+ * na worktree de quem rodou, que o .git/info/exclude ignora. Para comparar de
+ * novo, salve as páginas de antes com curl numa pasta sua. Como o preço e
+ * os indicadores andam entre o dia salvo e hoje, o <title>, a meta, o JSON-LD e os trechos de
  * texto se comparam com os NÚMEROS mascarados (cada sequência de dígitos vira
  * #): o que tem de ser igual é a frase, não a cotação. Canonical, robots,
  * hreflang, H1, títulos e links se comparam inteiros.
- * Sai com código 1 se alguma regra falhar.
+ * Sai com código 1 se alguma regra falhar, 2 se faltar o `--antiga`.
+ *
+ * O `ultrahtml` não está no package.json: vem transitivo do Nuxt. Se um dia
+ * sumir do node_modules, é ele que falta aqui.
  */
 import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
@@ -36,9 +41,7 @@ const args = Object.fromEntries(
 const BASE = args.base ?? 'http://localhost:3471'
 const PAUSA = Number(args.pausa ?? 4000)
 const TICKERS = (args.tickers ?? 'PETR4,ITUB4,MXRF11,BOVA11,AAPL34,SHUL4').split(',')
-const ANTIGA = args.antiga ?? '.prints-ativo/antiga'
-// `--query '?x=1'`: confere um protótipo do dev (atrás de um parâmetro) contra a mesma página antiga
-const QUERY = args.query ?? ''
+const ANTIGA = args.antiga
 const QUEDA_MAX = 0.02
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'", '#x27': "'", '#160': ' ' }
@@ -149,20 +152,24 @@ export function comparar(antes, depois, { mascara = false } = {}) {
   if (queda > QUEDA_MAX) falhas.push(`texto caiu ${(queda * 100).toFixed(1)}% (${antes.palavrasBody} → ${depois.palavrasBody})`)
   const sumiram = [...antes.links].filter((l) => !depois.links.has(l))
   if (sumiram.length) falhas.push(`links internos que sumiram: ${sumiram.join(', ')}`)
-  // o texto de hoje que não aparece na direção (sem espaços: a quebra de linha muda entre layouts)
+  // o texto de antes que não aparece na página de agora (sem espaços: a quebra de linha muda entre layouts)
   const alvo = m(depois.textoMain)
   const trechosFora = [...new Set(antes.trechos)].filter((t) => !alvo.includes(m(t.replace(/\s+/g, ''))))
   return { falhas, queda, sumiram, novos: [...depois.links].filter((l) => !antes.links.has(l)), trechosFora }
 }
 
 async function main() {
+  if (!ANTIGA) {
+    console.error('Falta --antiga <pasta>: a pasta local (não versionada) com TICKER.html da página de antes.')
+    process.exit(2)
+  }
   let falhou = false
   const linhas = []
   for (const t of TICKERS) {
     const salvo = join(ANTIGA, `${t}.html`)
     if (!existsSync(salvo)) { console.log(`\n${t}: sem ${salvo}, pulei`); falhou = true; continue }
     const antes = extrair(await readFile(salvo, 'utf8'))
-    const depois = extrair(await buscar(`${BASE}/asset/${t}${QUERY}`))
+    const depois = extrair(await buscar(`${BASE}/asset/${t}`))
     await dorme(PAUSA)
     const c = comparar(antes, depois, { mascara: true })
     const pct = (-c.queda * 100).toFixed(1)

@@ -28,10 +28,6 @@ export function adicionarRecente(lista: BuscaRecente[], item: BuscaRecente, max 
   return [item, ...lista.filter((r) => r.id !== item.id)].slice(0, max)
 }
 
-export function removerRecente(lista: BuscaRecente[], id: string): BuscaRecente[] {
-  return lista.filter((r) => r.id !== id)
-}
-
 /**
  * Lê o que estava guardado. Qualquer coisa fora do formato some (versão velha,
  * edição à mão, JSON quebrado), e o href precisa ser rota interna: o que está

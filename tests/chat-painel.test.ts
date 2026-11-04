@@ -10,7 +10,6 @@ import {
   anexosDoTurno,
   barraVisivel,
   contextoDoLinkDeAtivo,
-  loginComPergunta,
   MAX_CONTEXTOS,
   pedidoDaQuery,
   querySemPedido,
@@ -22,6 +21,7 @@ import {
   textoDeLinhas,
   textoDoGrafico,
   tickerDaRota,
+  voltaComPergunta,
 } from '../app/utils/chat-painel.ts'
 import {
   agendarPalavras,
@@ -132,15 +132,14 @@ test('deep-links: ?pergunta= abre e envia; ?chat=1 só abre (fora da /busca)', (
 })
 
 test('o login volta para a mesma página com a pergunta, dentro do teto do redirect', () => {
-  const { url, naUrl } = loginComPergunta('/asset/PETR4', { range: '6mo' }, 'Por que a PETR4 mexeu hoje?')
+  const { volta, naUrl } = voltaComPergunta('/asset/PETR4', { range: '6mo' }, 'Por que a PETR4 mexeu hoje?')
   assert.equal(naUrl, true)
-  const volta = decodeURIComponent(url.replace('/login?redirect=', ''))
   assert.ok(volta.startsWith('/asset/PETR4?range=6mo&pergunta='))
   assert.equal(new URLSearchParams(volta.split('?')[1]).get('pergunta'), 'Por que a PETR4 mexeu hoje?')
   // longa demais para os 256 do sanitizeRedirect: volta sem ela (vai pelo sessionStorage)
-  const longa = loginComPergunta('/carteira', {}, 'a '.repeat(200))
+  const longa = voltaComPergunta('/carteira', {}, 'a '.repeat(200))
   assert.equal(longa.naUrl, false)
-  assert.equal(longa.url, `/login?redirect=${encodeURIComponent('/carteira')}`)
+  assert.equal(longa.volta, '/carteira')
 })
 
 /* ——— a resposta surgindo palavra por palavra ——— */

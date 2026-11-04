@@ -6,6 +6,11 @@
 import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
 import { CABECALHOS_JSON_DO_PROXY } from './server/utils/backend-proxy-json.ts'
 
+/** Uma rota de app/pages/dev/ (a página ou o arquivo dela). */
+function paginaDeDev(p: { path: string; file?: string }): boolean {
+  return p.path === '/dev' || p.path.startsWith('/dev/') || /[\\/]pages[\\/]dev[\\/]/.test(p.file ?? '')
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-11',
   devtools: { enabled: false },
@@ -331,6 +336,21 @@ export default defineNuxtConfig({
 
   components: [{ path: '~/components', pathPrefix: false }],
   imports: { dirs: ['services'] },
+
+  // As páginas de pages/dev/ (o /dev/losango) só existem no `nuxi dev`: fora
+  // dele a rota sai da lista antes de virar o routes.mjs, então nem a página
+  // nem o chunk dela entram no build. O middleware de 404 de cada página fica
+  // como segunda trava.
+  modules: [
+    (_opcoes, nuxt) => {
+      if (nuxt.options.dev) return
+      nuxt.hook('pages:extend', (paginas) => {
+        for (let i = paginas.length - 1; i >= 0; i--) {
+          if (paginaDeDev(paginas[i]!)) paginas.splice(i, 1)
+        }
+      })
+    },
+  ],
 
   // Prévia do formulário de /business (`?demo=1`). Constante de build: produção
   // da Vercel grava false, e a env pública não reverte isso. Ver business-lead.ts.

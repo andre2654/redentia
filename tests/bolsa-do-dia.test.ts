@@ -7,11 +7,18 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { causaEmTexto, convicaoAntes, montarBolsaDoDia, pontosComSinal, pontosTruncados, textosDaBolsa, type EntradaDaBolsa } from '../app/utils/bolsaDoDia.ts'
+import { convicaoAntes, montarBolsaDoDia, pontosComSinal, pontosTruncados, textosDaBolsa, type CausaDaBolsa, type EntradaDaBolsa } from '../app/utils/bolsaDoDia.ts'
 import { proximoPregao } from '../app/utils/pregao.ts'
 import { momentoDaBolsa } from '../app/utils/pregaoB3.ts'
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/bolsa-2026-10-30.json', import.meta.url), 'utf8')) as EntradaDaBolsa
+
+/** A causa em texto corrido, para comparar de uma vez (a seção desenha as mesmas peças). */
+function causaEmTexto(c: CausaDaBolsa): string {
+  const fizeram = c.fizeram.map((x) => `${x.nome}, ${x.pontos}`).join('; ')
+  const contra = c.contra.map((x) => `${x.nome} (${x.pontos})`).join(' e ')
+  return `${c.prefixo} ${fizeram}.${contra ? ` ${contra} ${c.fechoContra}` : ''}`
+}
 const dia = montarBolsaDoDia(fixture)
 const sexta21h = new Date('2026-10-30T21:00:00-03:00')
 const sabado = new Date('2026-10-31T11:00:00-03:00')

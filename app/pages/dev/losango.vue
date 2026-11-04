@@ -3,11 +3,12 @@
 // todos os estados, para conferir sem sessão. Nasceu em 03/11/2026 como
 // /dev/aneis, com os esboços que disputavam o lugar dos anéis; em 04/11 o
 // dono escolheu o losango ("gostei do anéis 3, pode remover os outros agora")
-// e a página ficou só com ele e os casos. A /dev/aneis redireciona para cá.
+// e a página ficou só com ele e os casos (a /dev/aneis saiu em 04/11).
 // Os valores de base são os do pregão de 03/11 (você −1,44%, bolsa −1,42%);
 // os do provento saem do subDoProvento, como na home.
-// Em produção a página é 404 (o middleware) e o losango nem entra no chunk
-// dela (o componente só é importado no dev).
+// Fora do `nuxi dev` a rota nem existe: o nuxt.config tira pages/dev/ da
+// lista (pages:extend). O middleware de 404 e o import só no dev ficam como
+// segunda trava.
 // Filtro: ?caso=base|provento|… (um caso só).
 import type { Component } from 'vue'
 import { contraABolsa, subDoProvento } from '~/utils/diaDaCarteira'

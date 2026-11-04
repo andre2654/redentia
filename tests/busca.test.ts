@@ -10,8 +10,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { compararCasados, faixaDoCasamento, normBusca, rotuloDoTipo, umaLinhaPorEmpresa } from '../app/utils/buscaRanking.ts'
 import type { Casado } from '../app/utils/buscaRanking.ts'
-import { acaoDoLinkDeChat, loginParaPerguntar, proximoIndice } from '../app/utils/buscaTeclado.ts'
-import { adicionarRecente, lerRecentes, removerRecente } from '../app/utils/buscaRecentes.ts'
+import { acaoDoLinkDeChat, proximoIndice } from '../app/utils/buscaTeclado.ts'
+import { adicionarRecente, lerRecentes } from '../app/utils/buscaRecentes.ts'
 import type { BuscaRecente } from '../app/utils/buscaRecentes.ts'
 
 const ler = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8')
@@ -65,11 +65,6 @@ test('?chat=1: anônimo vai pro login com a pergunta; logado abre o painel e lim
     { tipo: 'abrir', pergunta: 'Rebalancear carteira', query: { tipo: 'acoes' } },
   )
   assert.deepEqual(acaoDoLinkDeChat({ chat: '1' }, '/busca?chat=1', true), { tipo: 'abrir', pergunta: '', query: {} })
-  // o botão "Perguntar à Redentia" do anônimo volta pra busca já com o ?chat=1&q=
-  const para = loginParaPerguntar('PETR4 é cara?')
-  const volta = decodeURIComponent(para.replace('/login?redirect=', ''))
-  assert.equal(volta, '/busca?chat=1&q=PETR4%20%C3%A9%20cara%3F')
-  assert.deepEqual(acaoDoLinkDeChat({ chat: '1', q: 'PETR4 é cara?' }, volta, true), { tipo: 'abrir', pergunta: 'PETR4 é cara?', query: {} })
 })
 
 test('recentes: a última na frente, sem repetir, no máximo seis', () => {
@@ -79,7 +74,6 @@ test('recentes: a última na frente, sem repetir, no máximo seis', () => {
   assert.deepEqual(lista.map((x) => x.id), ['G', 'F', 'E', 'D', 'C', 'B'])
   lista = adicionarRecente(lista, r('D'))
   assert.deepEqual(lista.map((x) => x.id), ['D', 'G', 'F', 'E', 'C', 'B'])
-  assert.deepEqual(removerRecente(lista, 'G').map((x) => x.id), ['D', 'F', 'E', 'C', 'B'])
 })
 
 test('recentes guardadas: formato errado some e link para fora não entra', () => {

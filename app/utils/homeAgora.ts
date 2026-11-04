@@ -21,21 +21,6 @@ export function fraseDaBolsa(ibovPct: number | null | undefined): string | null 
   return 'Bolsa estável.'
 }
 
-/**
- * A variação do dia da carteira a partir do texto do resumo
- * ('+R$ 761,20 (0,91%) hoje' ou '−R$ 12,40 (0,05%) hoje', o formato que o
- * loadCarteiraResumo monta). O sinal vem do primeiro caractere. Formato
- * diferente → null (a frase de comparação some).
- */
-export function pctDoResumo(hojeTxt: string | null | undefined): number | null {
-  if (!hojeTxt) return null
-  const m = hojeTxt.match(/^([+−-])R\$\s[\d.,]+\s\(([\d.]*\d(?:,\d+)?)%\)/)
-  if (!m) return null
-  const v = Number(m[2]!.replace(/\./g, '').replace(',', '.'))
-  if (!Number.isFinite(v)) return null
-  return m[1] === '+' ? v : -v
-}
-
 /** '0,91%' sem sinal: o verbo da frase já diz se subiu ou caiu. */
 const pctAbs = (n: number) => `${nf2.format(Math.abs(n))}%`
 
@@ -67,29 +52,4 @@ export function fraseDaCarteira(
   const bolsa = ibovPct != null && Number.isFinite(ibovPct) ? ` e a bolsa ${movimento(ibovPct, aoVivo)}` : ''
   if (momento.numerosDeHoje) return `Sua carteira ${movimento(carteiraPct, aoVivo)} hoje${bolsa}.`
   return `No último pregão, sua carteira ${movimento(carteiraPct, false)}${bolsa}.`
-}
-
-/**
- * "13 ações do Ibovespa subiram e 63 caíram." a partir das contagens do dia.
- * Fora do dia (antes das 10h, fim de semana, feriado) a frase diz de quando é:
- * "No último pregão, 13 ações do Ibovespa subiram e 63 caíram."
- */
-export function fraseDaAmplitude(
-  altas: number | null | undefined,
-  quedas: number | null | undefined,
-  momento?: Pick<MomentoDaBolsa, 'numerosDeHoje'>,
-): string | null {
-  if (altas == null || quedas == null || altas + quedas === 0) return null
-  const a = `${altas} ${altas === 1 ? 'ação do Ibovespa subiu' : 'ações do Ibovespa subiram'}`
-  const q = `${quedas} ${quedas === 1 ? 'caiu' : 'caíram'}`
-  return momento && !momento.numerosDeHoje ? `No último pregão, ${a} e ${q}.` : `${a} e ${q}.`
-}
-
-/** '+0,91%', '-1,06%' ou '−1,06%' (o NuIndexStat dos movers) → número; formato estranho → null. */
-export function numeroDoPct(txt: string | null | undefined): number | null {
-  const m = (txt ?? '').trim().match(/^([+−-]?)(\d[\d.]*(?:,\d+)?)%$/)
-  if (!m) return null
-  const v = Number(m[2]!.replace(/\./g, '').replace(',', '.'))
-  if (!Number.isFinite(v)) return null
-  return m[1] === '-' || m[1] === '−' ? -v : v
 }

@@ -8,7 +8,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { fraseDaAmplitude, fraseDaBolsa, fraseDaCarteira, numeroDoPct, pctDoResumo } from '../app/utils/homeAgora.ts'
+import { fraseDaBolsa, fraseDaCarteira } from '../app/utils/homeAgora.ts'
 import { momentoDaBolsa } from '../app/utils/pregaoB3.ts'
 import { APPS_REDENTIA, emBreveDosApps, fraseDosApps, seloDoApp } from '../app/utils/appsRedentia.ts'
 
@@ -33,10 +33,6 @@ test('a frase da bolsa sai do Ibovespa de verdade; sem número, sem frase', () =
   assert.equal(fraseDaBolsa(0.1), 'Bolsa estável.')
   assert.equal(fraseDaBolsa(null), null)
   assert.equal(fraseDaBolsa(Number.NaN), null)
-  assert.equal(numeroDoPct('+0,91%'), 0.91)
-  assert.equal(numeroDoPct('-1,06%'), -1.06)
-  assert.equal(numeroDoPct('−1,06%'), -1.06)
-  assert.equal(numeroDoPct('—'), null)
 })
 
 test('a carteira contra a bolsa: cada uma com o seu verbo, no tempo certo', () => {
@@ -49,19 +45,6 @@ test('a carteira contra a bolsa: cada uma com o seu verbo, no tempo certo', () =
   assert.equal(fraseDaCarteira(0, 1.2, aoVivo), 'Sua carteira fica estável hoje e a bolsa sobe 1,20%.')
   assert.equal(fraseDaCarteira(0.5, null, aoVivo), 'Sua carteira sobe 0,50% hoje.')
   assert.equal(fraseDaCarteira(null, 1, aoVivo), null)
-  // o texto do resumo da carteira (loadCarteiraResumo) vira número com sinal
-  assert.equal(pctDoResumo('+R$ 761,20 (0,91%) hoje'), 0.91)
-  assert.equal(pctDoResumo('−R$ 1.243,60 (1,83%) hoje'), -1.83)
-  assert.equal(pctDoResumo('R$ 10'), null)
-  assert.equal(pctDoResumo(null), null)
-})
-
-test('a amplitude diz de quando é, e some sem contagem', () => {
-  assert.equal(fraseDaAmplitude(17, 58), '17 ações do Ibovespa subiram e 58 caíram.')
-  assert.equal(fraseDaAmplitude(1, 1), '1 ação do Ibovespa subiu e 1 caiu.')
-  assert.equal(fraseDaAmplitude(17, 58, { numerosDeHoje: false }), 'No último pregão, 17 ações do Ibovespa subiram e 58 caíram.')
-  assert.equal(fraseDaAmplitude(0, 0), null)
-  assert.equal(fraseDaAmplitude(null, 3), null)
 })
 
 test('a chamada única abre o quiz do /assinar e não fala de preço', () => {

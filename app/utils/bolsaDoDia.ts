@@ -390,13 +390,6 @@ export interface TextosDaBolsa {
   ponte: { rotulo: string; valor: string; frase: string }
 }
 
-/** A causa em texto corrido, para o teste e para o leitor de tela. */
-export function causaEmTexto(c: CausaDaBolsa): string {
-  const fizeram = c.fizeram.map((x) => `${x.nome}, ${x.pontos}`).join('; ')
-  const contra = c.contra.map((x) => `${x.nome} (${x.pontos})`).join(' e ')
-  return `${c.prefixo} ${fizeram}.${contra ? ` ${contra} ${c.fechoContra}` : ''}`
-}
-
 /**
  * As frases da seção, dos fatos do dia e do relógio da B3. Sem o Ibovespa →
  * null (a seção mostra o esqueleto e tenta de novo).

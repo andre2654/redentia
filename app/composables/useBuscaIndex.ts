@@ -109,14 +109,6 @@ export interface BuscaBrowseVM {
   estado: BuscaEstado
 }
 
-/** Copy verbatim do design — usada no hero E no estado vazio do chat. */
-export const BUSCA_SUGESTOES = [
-  'Vale a pena comprar PETR4 hoje?',
-  'Como está a diversificação da minha carteira?',
-  'Qual tese combina com meu perfil?',
-  'O DY de 7% da PETR4 é sustentável?',
-] as const
-
 type LoadStatus = 'idle' | 'loading' | 'ready' | 'error'
 
 interface RawAsset {

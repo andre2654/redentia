@@ -519,8 +519,6 @@ export interface AcaoCadeiaItemVM {
   ticker: string
   /** nó "Outros clientes" / "Restante do custo": sem logo e sem link */
   resto: boolean
-  /** fatia da receita (venda) ou do custo (compra) para a espessura da linha; null = traço fino */
-  peso: number | null
   nome: string
   /** 'nafta', 'transporte ferroviário'; null quando a fonte não diz */
   oQue: string | null

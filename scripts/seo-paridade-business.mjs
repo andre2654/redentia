@@ -3,7 +3,7 @@
  * Paridade de SEO e densidade da /business contra o HTML da página salvo por
  * curl em 04/11/2026, antes da troca do topo e do rodapé. Nasceu para as
  * direções do dev (?biz=, que saíram do código; estão no commit 9a1dd15d) e
- * fica para conferir a página de verdade. Cópia adaptada de seo-paridade-ativo.mjs, com as regras do
+ * ficou para conferir a página de verdade. Cópia adaptada de seo-paridade-ativo.mjs, com as regras do
  * pedido do dono para a /business:
  *
  *  1. <title>, meta description, canonical, robots e JSON-LD iguais;
@@ -13,16 +13,22 @@
  *     deles mudaram de propósito, então saem da regra e a saída lista quais
  *     entraram e quais saíram, para o dono ver;
  *  4. o FAQ inteiro continua no HTML do servidor (as 30 perguntas e respostas);
- *  5. no máximo ~650 palavras fora do FAQ (a regra de densidade da página,
- *     ver o topo de pages/business/index.vue). Conta o <main> sem a seção
- *     #faq, no HTML do servidor (sem JS), que é o que o Google recebe.
+ *  5. a densidade: as palavras fora do FAQ (a regra de ~650 da página, ver o
+ *     topo de pages/business/index.vue). Conta o <main> sem a seção #faq, no
+ *     HTML do servidor (sem JS), que é o que o Google recebe. Acima do teto
+ *     sai um aviso, não uma falha: a página de hoje é a referência.
  *
  * Diferente do /asset, o texto PODE cair: a página é enxuta de propósito.
- * Uma carga por direção, com pausa: o dev fala com a API de produção.
+ * Uma carga só: o dev fala com a API de produção.
  *
- *   node scripts/seo-paridade-business.mjs [--base http://localhost:3471]
- *        [--antiga .prints-business/antiga.html] [--pausa 2500] [--teto 650]
- * Sai com código 1 se alguma regra falhar.
+ *   node scripts/seo-paridade-business.mjs --antiga <arquivo.html>
+ *        [--base http://localhost:3471] [--teto 650]
+ *
+ * `--antiga` é obrigatório: o HTML salvo por curl da página de antes. O
+ * arquivo é LOCAL e NÃO é versionado: o de 04/11/2026 ficou em
+ * .prints-business/antiga.html na worktree de quem rodou (ignorado pelo
+ * .git/info/exclude). O `ultrahtml` vem transitivo do Nuxt, não do package.json.
+ * Sai com código 1 se alguma regra falhar, 2 se faltar o `--antiga`.
  */
 import { readFile } from 'node:fs/promises'
 import { parse, walkSync, ELEMENT_NODE, TEXT_NODE } from 'ultrahtml'
@@ -32,10 +38,8 @@ const args = Object.fromEntries(
   process.argv.slice(2).reduce((acc, a, i, all) => (a.startsWith('--') ? [...acc, [a.slice(2), all[i + 1]]] : acc), []),
 )
 const BASE = args.base ?? 'http://localhost:3471'
-const ANTIGA = args.antiga ?? '.prints-business/antiga.html'
-const PAUSA = Number(args.pausa ?? 2500)
+const ANTIGA = args.antiga
 const TETO = Number(args.teto ?? 650)
-const DIRECOES = ['']
 
 const SEM_TEXTO = new Set(['script', 'style', 'noscript', 'template', 'head'])
 const palavras = (s) => s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length
@@ -94,42 +98,39 @@ async function buscar(url) {
 }
 
 async function main() {
+  if (!ANTIGA) {
+    console.error('Falta --antiga <arquivo.html>: o HTML local (não versionado) da /business de antes.')
+    process.exit(2)
+  }
   const { RB_FAQ } = await import('../app/content/business/faq.ts').catch(() => ({ RB_FAQ: null }))
   const antigaHtml = await readFile(ANTIGA, 'utf8')
   const antes = extrair(antigaHtml)
   const dAntes = densidade(antigaHtml)
-  console.log(`hoje (salva) · ${dAntes.fora} palavras fora do FAQ (main ${dAntes.total}, FAQ ${dAntes.noFaq}) · H1 "${antes.h1.join(' | ')}" · ${antes.jsonld.length} JSON-LD · ${antes.links.size} links internos`)
-  let falhou = false
-  for (const q of DIRECOES) {
-    const html = await buscar(`${BASE}/business${q}`)
-    await dorme(PAUSA)
-    const depois = extrair(html)
-    const d = densidade(html)
-    const c = comparar(antes, depois)
-    // a regra do /asset sobre queda de texto não vale aqui (rodapé do script)
-    const falhas = c.falhas.filter((f) => !f.startsWith('texto caiu') && !f.startsWith('títulos que deixaram') && !f.startsWith('links internos que sumiram'))
-    const la = linksPorLugar(antigaHtml)
-    const ld = linksPorLugar(html)
-    const sumiuDoCorpo = [...la.corpo].filter((l) => !ld.corpo.has(l) && !ld.fora.has(l))
-    if (sumiuDoCorpo.length) falhas.push(`links do corpo que sumiram: ${sumiuDoCorpo.join(', ')}`)
-    const topoSaiu = [...la.fora].filter((l) => !ld.fora.has(l))
-    const topoEntrou = [...ld.fora].filter((l) => !la.fora.has(l))
-    // a página de hoje (sem parâmetro) só entra pela paridade: o teto é das direções
-    if (q && d.fora > TETO) falhas.push(`${d.fora} palavras fora do FAQ (teto ${TETO})`)
-    if (RB_FAQ) {
-      const plano = d.faqTexto.replace(/\s+/g, '')
-      const faltam = RB_FAQ.flatMap((g) => g.itens).filter((it) => !plano.includes(it.q.replace(/\s+/g, '')) || !plano.includes(it.a.replace(/\s+/g, '').replace(/&/g, '')))
-      if (faltam.length) falhas.push(`FAQ sem ${faltam.length} pergunta(s) no SSR: ${faltam.map((f) => f.q).join(' · ')}`)
-    }
-    if (falhas.length) falhou = true
-    console.log(`\n/business${q || ' (sem parâmetro)'} ${falhas.length ? 'FALHA' : 'OK'}`)
-    console.log(`  ${d.fora} palavras fora do FAQ (main ${d.total}, FAQ ${d.noFaq}) · H1 ${depois.h1.length} "${depois.h1.join(' | ')}" · JSON-LD ${depois.jsonld.length}`)
-    console.log(`  topo e rodapé: saíram ${topoSaiu.length ? topoSaiu.join(', ') : 'nenhum'} · entraram ${topoEntrou.length ? topoEntrou.join(', ') : 'nenhum'}`)
-    console.log(`  corpo: ${ld.corpo.size} links (${[...ld.corpo].join(', ') || 'nenhum'})`)
-    for (const f of falhas) console.log(`     - ${f}`)
+  console.log(`antes (salva) · ${dAntes.fora} palavras fora do FAQ (main ${dAntes.total}, FAQ ${dAntes.noFaq}) · H1 "${antes.h1.join(' | ')}" · ${antes.jsonld.length} JSON-LD · ${antes.links.size} links internos`)
+  const html = await buscar(`${BASE}/business`)
+  const depois = extrair(html)
+  const d = densidade(html)
+  const c = comparar(antes, depois)
+  // a regra do /asset sobre queda de texto não vale aqui (topo do script)
+  const falhas = c.falhas.filter((f) => !f.startsWith('texto caiu') && !f.startsWith('títulos que deixaram') && !f.startsWith('links internos que sumiram'))
+  const la = linksPorLugar(antigaHtml)
+  const ld = linksPorLugar(html)
+  const sumiuDoCorpo = [...la.corpo].filter((l) => !ld.corpo.has(l) && !ld.fora.has(l))
+  if (sumiuDoCorpo.length) falhas.push(`links do corpo que sumiram: ${sumiuDoCorpo.join(', ')}`)
+  const topoSaiu = [...la.fora].filter((l) => !ld.fora.has(l))
+  const topoEntrou = [...ld.fora].filter((l) => !la.fora.has(l))
+  if (RB_FAQ) {
+    const plano = d.faqTexto.replace(/\s+/g, '')
+    const faltam = RB_FAQ.flatMap((g) => g.itens).filter((it) => !plano.includes(it.q.replace(/\s+/g, '')) || !plano.includes(it.a.replace(/\s+/g, '').replace(/&/g, '')))
+    if (faltam.length) falhas.push(`FAQ sem ${faltam.length} pergunta(s) no SSR: ${faltam.map((f) => f.q).join(' · ')}`)
   }
-  console.log(`\n${falhou ? 'FALHOU' : 'TUDO OK'}`)
-  process.exit(falhou ? 1 : 0)
+  console.log(`\n/business ${falhas.length ? 'FALHA' : 'OK'}`)
+  console.log(`  ${d.fora} palavras fora do FAQ (main ${d.total}, FAQ ${d.noFaq})${d.fora > TETO ? ` · aviso: acima do teto de ${TETO}` : ''} · H1 ${depois.h1.length} "${depois.h1.join(' | ')}" · JSON-LD ${depois.jsonld.length}`)
+  console.log(`  topo e rodapé: saíram ${topoSaiu.length ? topoSaiu.join(', ') : 'nenhum'} · entraram ${topoEntrou.length ? topoEntrou.join(', ') : 'nenhum'}`)
+  console.log(`  corpo: ${ld.corpo.size} links (${[...ld.corpo].join(', ') || 'nenhum'})`)
+  for (const f of falhas) console.log(`     - ${f}`)
+  console.log(`\n${falhas.length ? 'FALHOU' : 'TUDO OK'}`)
+  process.exit(falhas.length ? 1 : 0)
 }
 
 main().catch((e) => { console.error(e); process.exit(2) })

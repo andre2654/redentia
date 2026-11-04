@@ -144,17 +144,6 @@ export function querySemPedido(query: Record<string, unknown>): Record<string, u
 /** O sanitizeRedirect (utils/auth.ts) recusa volta maior que isto. */
 const MAX_REDIRECT = 256
 
-/**
- * O login de quem não entrou: volta para a MESMA página com a pergunta em
- * `?pergunta=`, que reabre o painel e envia depois do login. Pergunta longa
- * demais para o redirect volta sem ela (`naUrl: false`): quem chama guarda a
- * pergunta no sessionStorage.
- */
-export function loginComPergunta(path: string, query: Record<string, unknown>, pergunta: string): { url: string; naUrl: boolean } {
-  const { volta, naUrl } = voltaComPergunta(path, query, pergunta)
-  return { url: `/login?redirect=${encodeURIComponent(volta)}`, naUrl }
-}
-
 /** A página de volta com a pergunta em `?pergunta=` (a folha de cadastro e o /login usam). */
 export function voltaComPergunta(path: string, query: Record<string, unknown>, pergunta: string): { volta: string; naUrl: boolean } {
   // %20, não '+': quem lê a volta é o vue-router, e o espaço fica inequívoco

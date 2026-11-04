@@ -10,8 +10,7 @@ const props = withDefaults(defineProps<{
   conta: ContaJuros
   /** depois do cadastro: "Conta guardada" fixo, bola parada no fim */
   guardada?: boolean
-  painel?: boolean
-}>(), { guardada: false, painel: false })
+}>(), { guardada: false })
 
 const curva = computed(() => curvaJuros(props.conta, 456, 120, 10))
 const meses = computed(() => Math.round(props.conta.anos * 12))
@@ -22,19 +21,13 @@ const sub = computed(() => {
   return partes.join(' · ')
 })
 
-// o laço: parada no início, rola de 7% a 40% do ciclo, fica no fim. Na folha
-// são 9 s, em volta; no painel do login roda uma vez, nos 6 s da cena do
-// NuAuthFuncoes, e para no fim.
-const ciclo = props.painel ? 6000 : 9000
+// o laço de 9 s: parada no início, rola de 7% a 40% do ciclo, fica no fim
+const ciclo = 9000
 const p = ref(1)
 let quadro = 0
 let inicio = 0
 function passo(agora: number) {
   const decorrido = agora - inicio
-  if (props.painel && decorrido >= ciclo * 0.4) {
-    p.value = 1
-    return
-  }
   const f = (decorrido % ciclo) / ciclo
   p.value = f < 0.07 ? 0 : f < 0.4 ? (f - 0.07) / 0.33 : 1
   quadro = requestAnimationFrame(passo)
@@ -64,7 +57,7 @@ const id = useId()
 </script>
 
 <template>
-  <div class="chs" :class="{ 'chs--painel': painel, 'chs--guardada': guardada }" aria-hidden="true">
+  <div class="chs" :class="{ 'chs--guardada': guardada }" aria-hidden="true">
     <div class="chs__topo">
       <div>
         <div class="chs__valor">{{ valor }}</div>
@@ -95,9 +88,7 @@ const id = useId()
 
 <style scoped>
 .chs { display: flex; flex-direction: column; padding: 22px 28px 14px; color: var(--nu-cream-text); }
-.chs--painel { padding: 0; }
 .chs__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 44px; }
-.chs--painel .chs__topo { padding-right: 0; }
 .chs__valor { font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .chs__sub { margin-top: 2px; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 500; }
 .chs__selo {
@@ -112,13 +103,10 @@ const id = useId()
 
 /* o ciclo é o mesmo do rAF da bola: o selo entra quando ela chega e, na
    virada da folha, o herói apaga e volta, para a bola não saltar do fim ao
-   começo. No painel roda uma vez; a cena sai pela Transition do NuAuthFuncoes
-   (o esmaecer do laço venceria a opacidade dela), então lá o herói não apaga. */
+   começo. */
 .chs { --chs-ciclo: 9s; animation: chs-volta var(--chs-ciclo) ease infinite; }
 .chs__selo { animation: chs-selo var(--chs-ciclo) cubic-bezier(.2, .8, .2, 1) infinite; }
-.chs--painel { --chs-ciclo: 6s; }
-.chs--painel .chs__selo { animation-iteration-count: 1; }
-.chs--painel, .chs--guardada, .chs--guardada .chs__selo { animation: none; }
+.chs--guardada, .chs--guardada .chs__selo { animation: none; }
 @keyframes chs-volta { 0% { opacity: 0; } 3%, 93% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes chs-selo { 0%, 42% { opacity: 0; transform: translateY(6px); } 48%, 100% { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {

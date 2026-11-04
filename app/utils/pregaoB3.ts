@@ -8,10 +8,9 @@
  * utils/pregao.ts, a mesma que a /carteira e o useSeguirGancho leem: o ano
  * novo da B3 entra num lugar só.
  */
-import { ANOS_COM_CALENDARIO, SEM_PREGAO_B3, horaDoFechamento } from './pregao.ts'
+import { SEM_PREGAO_B3, horaDoFechamento } from './pregao.ts'
 
 export { SEM_PREGAO_B3 }
-export const ANOS_COM_CALENDARIO_B3 = ANOS_COM_CALENDARIO
 
 /**
  * Pregão regular da B3, em minutos do dia no fuso de São Paulo: abre às 10h e

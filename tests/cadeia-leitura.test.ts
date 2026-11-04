@@ -9,7 +9,7 @@ import type { AcaoCadeiaItemVM, AcaoCadeiaVM } from '../app/types/acao.ts'
 
 function item(ticker: string, nome: string, oQue: string | null, valor: string | null, quando: string | null, vende: boolean, resto = false): AcaoCadeiaItemVM {
   return {
-    ticker, resto, peso: null, nome, oQue, valor, valorQuando: quando,
+    ticker, resto, nome, oQue, valor, valorQuando: quando,
     detalhe: {
       titulo: vende ? `Petrobras vende para ${nome}` : `Petrobras compra de ${nome}`,
       de: vende ? 'Petrobras' : nome, para: vende ? nome : 'Petrobras', oQue, valores: [], conta: null, nota: null, fonteConta: null,

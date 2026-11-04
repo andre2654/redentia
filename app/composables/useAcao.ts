@@ -1440,22 +1440,10 @@ function cadeiaDetalhe(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeia
   }
 }
 
-/**
- * Fatia do total do lado (receita para quem compra da empresa, custo para quem
- * vende a ela) — só valor anual, em real, do mesmo ano da DFP; o resto fica
- * com o traço fino (contrato pela vigência e dólar não são comparáveis).
- */
-function cadeiaPeso(l: SupplyLinkApi, totais: SupplyChainApi['totais'], vende: boolean): number | null {
-  const base = vende ? totais?.receita : totais?.custo
-  if (!base || !l.anual || l.anual.moeda !== 'BRL' || l.anual.ano !== totais?.ano) return null
-  return Math.min(1, l.anual.valor / base)
-}
-
-function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean, totais: SupplyChainApi['totais']): AcaoCadeiaItemVM {
+function cadeiaItem(l: SupplyLinkApi, eu: string, vende: boolean): AcaoCadeiaItemVM {
   return {
     ticker: l.ticker,
     resto: false,
-    peso: cadeiaPeso(l, totais, vende),
     nome: nomeDoLink(l),
     oQue: l.o_que,
     valor: cadeiaValor(l)?.[0] ?? null,
@@ -1481,7 +1469,6 @@ function cadeiaResto(api: SupplyChainApi, eu: string, lado: 'clientes' | 'custo'
   return {
     ticker: clientes ? 'resto-clientes' : 'resto-custo',
     resto: true,
-    peso: Math.min(1, r.valor / base),
     nome: clientes ? 'Outros clientes' : 'Restante do custo',
     oQue: clientes ? `fora da bolsa · ${pct}% da receita` : `fora da bolsa e custos próprios · ${pct}% do custo`,
     valor: fmtCompactMoney(r.valor, 'BRL'),
@@ -1540,8 +1527,8 @@ function buildCadeia(api: SupplyChainApi | null | undefined, eu: string): AcaoCa
   const restoCusto = cadeiaResto(api, eu, 'custo')
   const restoClientes = cadeiaResto(api, eu, 'clientes')
   return {
-    compraDe: [...api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false, api.totais)), ...(restoCusto ? [restoCusto] : [])],
-    vendePara: [...api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true, api.totais)), ...(restoClientes ? [restoClientes] : [])],
+    compraDe: [...api.compra_de.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, false)), ...(restoCusto ? [restoCusto] : [])],
+    vendePara: [...api.vende_para.slice(0, CADEIA_MAX).map((l) => cadeiaItem(l, eu, true)), ...(restoClientes ? [restoClientes] : [])],
     fontes,
     cobertura: cadeiaCobertura(api),
   }

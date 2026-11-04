@@ -42,9 +42,3 @@ export function acaoDoLinkDeChat(
   }
   return { tipo: 'abrir', pergunta, query: resto }
 }
-
-/** Para onde manda o anônimo que clicou em "Perguntar à Redentia". */
-export function loginParaPerguntar(pergunta: string): string {
-  const volta = `/busca?chat=1&q=${encodeURIComponent(pergunta)}`
-  return `/login?redirect=${encodeURIComponent(volta)}`
-}
