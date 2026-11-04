@@ -201,7 +201,9 @@ onMounted(() => {
 
       <!-- o resumo factual: o que o gráfico e os números dizem, em palavras -->
       <section v-if="a.resumo" v-contexto-chat="{ id: `resumo:${t}`, tipo: 'secao', rotulo: rotuloComSobre('Resumo', t), texto: a.resumo.paragrafos.join('\n') }" class="an__sec an__sec--resumo" aria-label="Resumo do ativo">
-        <div class="an__estreito"><AtivoResumo :ticker="t" :resumo="a.resumo" /></div>
+        <!-- o resumo recolhido (o dono, 03/11): uma faixa de ponta a ponta, colada no céu;
+             o texto dela alinha com o conteúdo do céu por dentro (AtivoResumo) -->
+        <AtivoResumo :ticker="t" :resumo="a.resumo" />
       </section>
     </div>
 
@@ -439,14 +441,14 @@ onMounted(() => {
 .an__sec { scroll-margin-top: calc(var(--cola) + var(--barra-h)); padding: clamp(56px, 7vw, 96px) var(--g); }
 #cotacao { scroll-margin-top: var(--cola); }
 .an__sec--creme { background: var(--nu-cream); }
-.an__sec--resumo { padding-top: clamp(40px, 5vw, 64px); padding-bottom: clamp(40px, 5vw, 64px); }
+/* a faixa do resumo encosta no céu: sem padding em cima nem dos lados (sem 100vw: nada de rolagem lateral) */
+.an__sec--resumo { padding: 0 0 clamp(40px, 5vw, 64px); }
 .an__sec--fim { padding-bottom: clamp(40px, 5vw, 64px); }
 .an__cab { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 720px; margin: 0 auto; }
 .an__tipo { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; }
 .an__h2 { margin: 10px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.045em; line-height: 1.05; text-wrap: balance; }
 .an__q { margin: 12px 0 0; max-width: 52ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; text-wrap: balance; }
 .an__estreito { max-width: 760px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
-.an__sec--resumo .an__estreito { margin-top: 0; }
 .an__largo { max-width: 1080px; margin: clamp(28px, 3.4vw, 44px) auto 0; }
 .an__sec--creme .an__ind :deep(.ain__dim) { background: var(--nu-white); }
 .an__sec--creme :deep(.apg__mais), .an__sec--creme :deep(.avt__lista a), .an__sec--creme :deep(.apv__cta:not(.apv__cta--1)) { background: var(--nu-white); }

@@ -121,10 +121,9 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 .cms__corpo :deep(code) { background: var(--nu-cream); border-radius: 6px; padding: 1px 6px; font-size: var(--nu-fs-sm); }
 .cms__corpo :deep(:last-child) { margin-bottom: 0; }
 
-/* a palavra surgindo do desfoque (o herói antigo da home) */
-.cms__corpo :deep(.rp) { display: inline-block; animation: cms-palavra .52s cubic-bezier(.22, 1, .36, 1) backwards; }
+/* a palavra surgindo do desfoque (o herói antigo da home; a keyframe está em base.css) */
+.cms__corpo :deep(.rp) { display: inline-block; animation: nu-palavra .52s cubic-bezier(.22, 1, .36, 1) backwards; }
 .cms__corpo :deep(.rp--ja) { animation: none; }
-@keyframes cms-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
 
 .cms__erro { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
 .cms__entrar {

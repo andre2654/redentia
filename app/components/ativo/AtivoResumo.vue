@@ -1,76 +1,135 @@
 <script setup lang="ts">
-// O resumo factual do /asset, para ler (03/11/2026). Era uma parede de quatro
-// parágrafos com "Fonte:" no meio de cada frase e a data três vezes; agora são
-// frases curtas com o número em destaque, os indicadores numa lista, os
-// proventos por ano numa fileira de números e as fontes juntas no fim, com a
-// data uma vez. O texto vem pronto de utils/assetResumo.ts (montarResumoAtivo →
-// `fatos`), com os mesmos números, fontes e datas dos `paragrafos` (que seguem
-// para o chat). Tudo no HTML do servidor: é o trecho citável da página.
-import type { AcaoResumoVM } from '~/utils/assetResumo'
+// O resumo factual do /asset, recolhido (03/11/2026). O dono achou o bloco
+// "muito texto" e pediu "só uma barra ocupando toda a largura escrito Resumo e
+// podendo apertar para ver mais detalhes (e fazer o texto surgir com o mesmo
+// efeito do chat)". Depois, no preview: a barra é o próprio título ("PETR4 em
+// resumo", com o chevron à direita), sem outro gatilho, sem o aviso de
+// recomendação neste bloco; e uma faixa de ponta a ponta da tela, colada no
+// céu de cima, com o texto nas margens do conteúdo do céu. Dentro, as frases
+// curtas com o número em negrito, os indicadores numa lista, os proventos por
+// ano numa <dl> e as fontes juntas no fim, com a data uma vez.
+//
+// SEO: <details> nativo, fechado. O texto inteiro está no HTML do servidor
+// (o Google indexa texto dentro de <details>; o que ele perde é conteúdo que
+// só chega por JS no clique, por isso nada de v-if nem busca ao abrir).
+// O miolo vem pronto de utils/assetResumo.ts (resumoHtml, tudo escapado), o
+// mesmo no servidor e no cliente. Na PRIMEIRA abertura, e só no cliente, cada
+// palavra é embrulhada por utils/revelar-palavras.ts e sai do desfoque como nas
+// respostas do chat (a keyframe nu-palavra está em base.css). Terminada a fila,
+// o miolo volta ao HTML puro: fechar e abrir de novo mostra o texto direto.
+// Movimento reduzido: texto direto sempre.
+// Os `paragrafos` (o texto corrido) seguem para o chat, por AtivoNoite.
+import { resumoHtml, type AcaoResumoVM } from '~/utils/assetResumo'
+import { agendarPalavras, contarPalavras, envolverPalavras } from '~/utils/revelar-palavras'
 
-defineProps<{ ticker: string; resumo: AcaoResumoVM }>()
+const props = defineProps<{ ticker: string; resumo: AcaoResumoVM }>()
+
+const DURACAO = 520 // a mesma do CSS (.rp) e de revelar-palavras
+const base = computed(() => resumoHtml(props.resumo.fatos))
+const revelando = ref<string | null>(null)
+const miolo = computed(() => revelando.value ?? base.value)
+
+let jaAbriu = false
+let fim: ReturnType<typeof setTimeout> | undefined
+function parar() {
+  clearTimeout(fim)
+  revelando.value = null
+}
+
+// o clique chega antes de o <details> abrir: o embrulho entra no DOM antes do
+// primeiro quadro aberto, sem o texto piscar inteiro (Enter e espaço também são clique)
+function aoClicar(e: MouseEvent) {
+  const d = (e.currentTarget as HTMLElement).parentElement as HTMLDetailsElement | null
+  if (!d || d.open || jaAbriu) return
+  jaAbriu = true
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const agora = performance.now()
+  const agenda = agendarPalavras([], contarPalavras(base.value), agora)
+  revelando.value = envolverPalavras(base.value, agenda, agora)
+  fim = setTimeout(parar, (agenda.length ? agenda[agenda.length - 1]! - agora : 0) + DURACAO + 60)
+}
+// aberto por outro caminho (a busca da página, por exemplo): texto direto;
+// fechado no meio da fila: na próxima, texto direto
+function aoAlternar(e: Event) {
+  if ((e.currentTarget as HTMLDetailsElement).open) jaAbriu = true
+  else parar()
+}
+watch(() => props.ticker, () => { jaAbriu = false; parar() })
+onBeforeUnmount(() => clearTimeout(fim))
 </script>
 
 <template>
   <div class="ars2">
-    <h2 class="ars2__h2">{{ resumo.fatos.titulo }}</h2>
-    <p v-if="resumo.fatos.fontes" class="ars2__dek">Os fatos de hoje sobre {{ ticker }}, em frases curtas, com a fonte de cada número no fim.</p>
-    <p v-for="(f, i) in resumo.fatos.frases" :key="i" class="ars2__frase">
-      <template v-for="(p, j) in f" :key="j"><b v-if="p.n">{{ p.t }}</b><template v-else>{{ p.t }}</template></template>
-    </p>
-
-    <template v-if="resumo.fatos.indicadores.length">
-      <dl class="ars2__ind">
-        <div v-for="x in resumo.fatos.indicadores" :key="x.rotulo" class="ars2__ind-i">
-          <dt>{{ x.rotulo }}</dt>
-          <dd>{{ x.valor }}</dd>
-        </div>
-      </dl>
-      <p v-if="resumo.fatos.indicadoresNota" class="ars2__nota">{{ resumo.fatos.indicadoresNota }}</p>
-    </template>
-
-    <div v-if="resumo.fatos.proventos" class="ars2__prov">
-      <p v-for="(f, i) in resumo.fatos.proventos.frases" :key="i" class="ars2__frase">
-        <template v-for="(p, j) in f" :key="j"><b v-if="p.n">{{ p.t }}</b><template v-else>{{ p.t }}</template></template>
-      </p>
-      <template v-if="resumo.fatos.proventos.anos.length">
-        <ol class="ars2__anos">
-          <li v-for="x in resumo.fatos.proventos.anos" :key="x.rotulo" class="ars2__ano" :class="{ 'ars2__ano--atual': x.corrente }">
-            <span class="ars2__ano-r">{{ x.rotulo }}</span>
-            <span class="ars2__ano-v">{{ x.valor }}</span>
-          </li>
-        </ol>
-        <p class="ars2__nota">{{ resumo.fatos.proventos.legenda }}</p>
-      </template>
-    </div>
-
-    <p v-if="resumo.fatos.fontes" class="ars2__fontes">{{ resumo.fatos.fontes }}</p>
-    <p class="ars2__aviso">{{ resumo.aviso }}</p>
+    <details v-if="base" :key="ticker" class="ars2__mais" @toggle="aoAlternar">
+      <summary class="ars2__sum" @click="aoClicar">
+        <h2 class="ars2__h2">{{ resumo.fatos.titulo }}</h2>
+        <span class="ars2__chev" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+        </span>
+      </summary>
+      <!-- eslint-disable-next-line vue/no-v-html — resumoHtml escapa tudo antes -->
+      <div class="ars2__corpo" v-html="miolo" />
+    </details>
   </div>
 </template>
 
 <style scoped>
-.ars2 { max-width: 68ch; }
-.ars2__h2 { margin: 0 0 14px; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.03em; line-height: 1.15; }
-.ars2__dek { margin: -6px 0 16px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.ars2__frase { margin: 0 0 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
-.ars2__frase b { color: var(--nu-ink); font-weight: 700; white-space: nowrap; }
-.ars2__ind { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 24px; margin: 22px 0 0; }
-.ars2__ind-i { display: flex; flex-direction: column-reverse; gap: 2px; padding: 12px 0; border-top: 1px solid var(--nu-cream-line); }
-.ars2__ind-i dt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.ars2__ind-i dd { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
-.ars2__nota { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
-.ars2__prov { margin-top: 26px; }
-.ars2__anos { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid var(--nu-cream-line); border-bottom: 1px solid var(--nu-cream-line); }
-.ars2__ano { display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px 0; margin-right: 18px; font-variant-numeric: tabular-nums; }
-.ars2__ano-r { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
-.ars2__ano-v { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
-.ars2__ano--atual .ars2__ano-r { color: var(--nu-blue-text); }
-.ars2__fontes { margin: 24px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
-.ars2__aviso { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+/* a faixa: de ponta a ponta (o pai não tem padding lateral), sem fio em cima:
+   a borda de cima é a troca do céu escuro para o branco. O texto fica nas
+   margens do conteúdo do céu (--g e a coluna de 1180px de AtivoNoite). Sem
+   100vw: a largura é a do pai, sem rolagem lateral. A altura é a de uma linha
+   de lista, no idioma das Perguntas frequentes. */
+.ars2 { --ars2-m: max(var(--g, 22px), calc((100% - 1180px) / 2)); }
+.ars2__mais { position: relative; isolation: isolate; border-bottom: 1px solid var(--nu-cream-line); }
+.ars2__sum {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  min-height: 56px; padding: 14px var(--ars2-m); cursor: pointer; list-style: none;
+  color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.35;
+  transition: color .2s ease;
+}
+.ars2__sum::-webkit-details-marker { display: none; }
+.ars2__h2 { margin: 0; font: inherit; color: inherit; letter-spacing: -0.01em; }
+.ars2__sum::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--nu-ink-04); opacity: 0; transition: opacity .2s ease; }
+.ars2__sum:hover { color: var(--nu-blue-text); }
+.ars2__sum:hover::before { opacity: 1; }
+.ars2__sum:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: -2px; }
+.ars2__chev {
+  display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--nu-cream); color: var(--nu-ink);
+  transition: transform .42s cubic-bezier(.34, 1.56, .64, 1), background .2s ease, color .2s ease;
+}
+.ars2__sum:hover .ars2__chev { background: var(--nu-ink); color: var(--nu-white); }
+.ars2__mais[open] .ars2__chev { transform: rotate(180deg); }
+
+/* dentro: a largura toda, nas mesmas margens da barra */
+.ars2__corpo { padding: 2px var(--ars2-m) 24px; }
+.ars2__corpo :deep(.ars2__frase) { margin: 0 0 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(b) { color: var(--nu-ink); font-weight: 700; white-space: nowrap; }
+/* a lista corre em fileiras na largura toda (uma coluna no celular): segue lista simples */
+.ars2__corpo :deep(.ars2__ind) { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 40px; margin: 18px 0 0; padding: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.75; font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(.ars2__ind li) { margin-left: 18px; }
+.ars2__corpo :deep(.ars2__ind li::marker) { color: var(--nu-gray); }
+.ars2__corpo :deep(.ars2__nota) { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+.ars2__corpo :deep(.ars2__prov) { margin-top: 20px; }
+.ars2__corpo :deep(.ars2__anos) { display: flex; flex-wrap: wrap; margin: 12px 0 0; border-top: 1px solid var(--nu-cream-line); border-bottom: 1px solid var(--nu-cream-line); font-variant-numeric: tabular-nums; }
+.ars2__corpo :deep(.ars2__ano) { display: flex; flex-direction: column; gap: 2px; padding: 10px 18px 10px 0; margin-right: 18px; }
+.ars2__corpo :deep(.ars2__ano dt) { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; }
+.ars2__corpo :deep(.ars2__ano dd) { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600; }
+.ars2__corpo :deep(.ars2__ano--atual dt) { color: var(--nu-blue-text); }
+.ars2__corpo :deep(.ars2__ano--doze) { padding-left: 18px; border-left: 1px solid var(--nu-cream-line); }
+.ars2__corpo :deep(.ars2__fontes) { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
+
+/* a palavra surgindo do desfoque, como no chat (ChatMensagem) */
+.ars2__corpo :deep(.rp) { display: inline-block; animation: nu-palavra .52s cubic-bezier(.22, 1, .36, 1) backwards; }
+.ars2__corpo :deep(.rp--ja) { animation: none; }
+
 @media (max-width: 560px) {
-  .ars2__frase { font-size: var(--nu-fs-md); }
-  .ars2__ind { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
-  .ars2__ano { padding-right: 12px; margin-right: 12px; }
+  .ars2__corpo :deep(.ars2__ano) { padding-right: 12px; margin-right: 12px; }
+  /* no celular, os 12 meses viram a última fileira, com o fio em cima */
+  .ars2__corpo :deep(.ars2__ano--doze) { flex-basis: 100%; margin-right: 0; padding-left: 0; border-left: 0; border-top: 1px solid var(--nu-cream-line); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ars2__sum, .ars2__sum::before, .ars2__chev { transition: none; }
+  .ars2__corpo :deep(.rp) { animation: none; }
 }
 </style>

@@ -143,8 +143,11 @@ export interface ResumoFatos {
   indicadoresNota: string | null
   proventos: {
     frases: ResumoFrase[]
-    /** um por ano com data-com; o ano corrente é "até agora", e os 12 meses vêm à parte */
-    anos: { rotulo: string; valor: string; corrente: boolean }[]
+    /**
+     * um por ano com data-com; o ano corrente é "2026 até agora", e a última
+     * linha, quando houver, é a janela de 12 meses ("Últimos 12 meses", `doze`)
+     */
+    anos: { rotulo: string; valor: string; corrente: boolean; doze?: boolean }[]
     legenda: string
   } | null
   fontes: string | null
@@ -713,9 +716,12 @@ function fatosProventos(i: ResumoAtivoInput): ResumoFatos['proventos'] {
   else if (p.proximo?.trim()) frases.push([T('O próximo pagamento previsto é '), N(p.proximo.trim()), T('.')])
   const anos = p.anos
     .filter((a) => ok(a.valor) && a.valor > 0 && /^\d{4}$/.test(a.ano))
-    .map((a) => ({ rotulo: a.corrente ? `${a.ano} até agora` : a.ano, valor: precoFmt(a.valor, 'stock', 'BRL'), corrente: a.corrente }))
+    .map((a): NonNullable<ResumoFatos['proventos']>['anos'][number] => ({ rotulo: a.corrente ? `${a.ano} até agora` : a.ano, valor: precoFmt(a.valor, 'stock', 'BRL'), corrente: a.corrente }))
   if (!frases.length && !anos.length) return null
-  return { frases, anos, legenda: `${oQue}, por ano, em R$ por ${u}. O ano corrente vai até hoje; os 12 meses estão na frase acima.` }
+  // a janela de 12 meses na mesma tabela, com o nome dela (não é um ano)
+  const doze = anos.length && p.tipo !== 'capital' && ok(p.renda12) && p.renda12 > 0
+  if (doze) anos.push({ rotulo: 'Últimos 12 meses', valor: precoFmt(p.renda12, 'stock', 'BRL'), corrente: false, doze: true })
+  return { frases, anos, legenda: `${oQue}, em R$ por ${u}. O ano corrente vai até hoje${doze ? '; os últimos 12 meses contam de hoje para trás' : ''}.` }
 }
 
 function fatosEtf(i: ResumoAtivoInput): ResumoFrase[] {
@@ -807,6 +813,35 @@ function fatosDe(i: ResumoAtivoInput): ResumoFatos {
     ? `Fontes: ${fontes.join('; ')}.${quando ? ` Atualizado em ${quando}.` : ''}`
     : null
   return { titulo, frases, ...ind, proventos: prov, fontes: linha }
+}
+
+const escHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const fraseHtml = (f: ResumoFrase) => f.map((p) => (p.n ? `<b>${escHtml(p.t)}</b>` : escHtml(p.t))).join('')
+
+/**
+ * O miolo do resumo recolhido (03/11/2026), em HTML: AtivoResumo.vue o põe por
+ * v-html, o mesmo no servidor e no cliente, para o texto inteiro estar no HTML
+ * que o Google lê e para, na primeira abertura, envolverPalavras
+ * (utils/revelar-palavras.ts) embrulhar cada palavra como nas respostas do chat.
+ * Tudo escapado aqui. Os proventos por ano numa <dl>: o ano no <dt>, o valor no
+ * <dd> (copiado, sai em linhas separadas, não "2021R$ 5,65").
+ */
+export function resumoHtml(f: ResumoFatos): string {
+  const out: string[] = []
+  for (const x of f.frases) out.push(`<p class="ars2__frase">${fraseHtml(x)}</p>`)
+  if (f.indicadores.length) {
+    out.push(`<ul class="ars2__ind">${f.indicadores.map((x) => `<li>${escHtml(x.rotulo)}: <b>${escHtml(x.valor)}</b></li>`).join('')}</ul>`)
+    if (f.indicadoresNota) out.push(`<p class="ars2__nota">${escHtml(f.indicadoresNota)}</p>`)
+  }
+  const p = f.proventos
+  if (p) {
+    const anos = p.anos.length
+      ? `<dl class="ars2__anos">${p.anos.map((x) => `<div class="ars2__ano${x.corrente ? ' ars2__ano--atual' : ''}${x.doze ? ' ars2__ano--doze' : ''}"><dt>${escHtml(x.rotulo)}</dt><dd>${escHtml(x.valor)}</dd></div>`).join('')}</dl><p class="ars2__nota">${escHtml(p.legenda)}</p>`
+      : ''
+    out.push(`<div class="ars2__prov">${p.frases.map((x) => `<p class="ars2__frase">${fraseHtml(x)}</p>`).join('')}${anos}</div>`)
+  }
+  if (f.fontes) out.push(`<p class="ars2__fontes">${escHtml(f.fontes)}</p>`)
+  return out.join('')
 }
 
 const NUMEROS_VAZIOS: ResumoNumeros = {
