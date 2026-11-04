@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Paridade de SEO e densidade da /business: as três direções do dev
- * (?biz=1|2|3, 04/11/2026) contra o HTML da página de hoje, salvo por curl
- * antes da troca. Cópia adaptada de seo-paridade-ativo.mjs, com as regras do
+ * Paridade de SEO e densidade da /business contra o HTML da página salvo por
+ * curl em 04/11/2026, antes da troca do topo e do rodapé. Nasceu para as
+ * direções do dev (?biz=, que saíram do código; estão no commit 9a1dd15d) e
+ * fica para conferir a página de verdade. Cópia adaptada de seo-paridade-ativo.mjs, com as regras do
  * pedido do dono para a /business:
  *
  *  1. <title>, meta description, canonical, robots e JSON-LD iguais;
@@ -34,7 +35,7 @@ const BASE = args.base ?? 'http://localhost:3471'
 const ANTIGA = args.antiga ?? '.prints-business/antiga.html'
 const PAUSA = Number(args.pausa ?? 2500)
 const TETO = Number(args.teto ?? 650)
-const DIRECOES = ['', '?biz=2']
+const DIRECOES = ['']
 
 const SEM_TEXTO = new Set(['script', 'style', 'noscript', 'template', 'head'])
 const palavras = (s) => s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length

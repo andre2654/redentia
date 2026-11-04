@@ -55,11 +55,13 @@ export const NAV_DO_TOPO: NavItem[] = [
  * A nav do topo na /business (04/11/2026, o dono: o topo do site novo "com
  * pequenas alterações para ser mais voltado à identidade For Business"). As
  * partes da landing, com o caminho inteiro (/business#...) para valer também
- * do painel logado (/business/chaves, /business/clientes). As âncoras existem
- * nas direções da landing (ver pages/business/index.vue).
+ * do painel logado (/business/chaves, /business/clientes). Cada âncora é um id
+ * que existe na página: #dia (o dia de mesa, RbJornada), #seguranca
+ * (RbSeguranca), #prova (o plano, RbProva) e #faq (RbFaq). Mudou o id na
+ * página, muda aqui e nas colunas do rodapé business (NuFooter).
  */
 export const NAV_BUSINESS: NavItem[] = [
-  { label: 'Produto', to: '/business#produto' },
+  { label: 'Produto', to: '/business#dia' },
   { label: 'Segurança', to: '/business#seguranca' },
   { label: 'Plano', to: '/business#prova' },
   { label: 'Perguntas', to: '/business#faq' },

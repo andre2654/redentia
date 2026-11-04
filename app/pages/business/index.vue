@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
 /**
  * Redentia for Business — landing do produto B2B (assessoria vinculada,
  * family office, gestora, consultoria).
@@ -32,27 +31,10 @@ usePageSeo({
 // Opt-out do sufixo global (mesmo caso do /login): o título já traz a marca e
 // "Redentia For Business · Redentia" repete a palavra duas vezes.
 useHead({ titleTemplate: null })
-
-// PROTÓTIPO (04/11/2026, o dono: "refazermos a tela do /business"). Duas
-// levas de três direções; ele escolheu a 2, "a Decade com produto" ("ficou
-// melhor, mas ainda tá meio merda"), e ela foi refeita em cima do diagnóstico
-// dele. Só ela fica, no dev, por ?biz=2, até ele aprovar. Em produção
-// import.meta.dev é false, o mapa fica vazio (o componente nem entra no
-// bundle) e segue a página de hoje. Mesmo SEO (o usePageSeo acima), mesmo H1,
-// FAQ inteiro no SSR com um FAQPage só, o mesmo #contato (RbContato) e as
-// âncoras da nav do topo (#produto, #seguranca, #prova, #faq).
-const route = useRoute()
-const DIRECOES: Record<string, Component> = import.meta.dev
-  ? {
-      '2': defineAsyncComponent(() => import('~/components/business/direcoes/BizDecadeProduto.vue')),
-    }
-  : {}
-const direcao = computed(() => DIRECOES[String(route.query.biz ?? '')] ?? null)
 </script>
 
 <template>
-  <component :is="direcao" v-if="direcao" />
-  <div v-else>
+  <div>
     <RbHero />
     <RbDivisao />
     <RbJornada />
