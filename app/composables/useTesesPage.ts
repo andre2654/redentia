@@ -38,17 +38,6 @@ export async function useTesesPage() {
   // de UM usuário no cache de TODOS. Hoje isso está garantido por construção: o
   // href é igual pra todo mundo e `favSlugs` só é preenchido no onMounted.
 
-  // useAsyncData resolve no servidor E serializa no payload, então o 1º render
-  // do cliente usa o MESMO dado — sem mismatch e sem refetch.
-  const { data: ssrCards } = await useAsyncData('teses:cards', () => marketFetchTheses(), {
-    transform: (res) => (res?.data ?? []) as ThesisCardApi[],
-    default: () => [] as ThesisCardApi[],
-  })
-  if (ssrCards.value?.length && !apiCards.value.length) {
-    apiCards.value = ssrCards.value
-    loading.value = false
-  }
-
   // redirectOnAuthError:false — /teses é pública; token expirado limpa a
   // sessão mas NUNCA expulsa o visitante pro /login. Falha = nenhum "Seguindo".
   const favoritosDaConta = () => isAuthenticated.value
@@ -72,7 +61,22 @@ export async function useTesesPage() {
     favSlugs.value = await favs
   }
 
+  // ANTES do await: dentro de composable, depois do `await useAsyncData` não há
+  // mais instância ativa e o Vue descarta o hook (só avisa no dev). Era assim
+  // até 04/11/2026: o "Seguindo" nunca chegava e, com o backend fora no SSR,
+  // a grade ficava no esqueleto sem tentar de novo.
   onMounted(hydrate)
+
+  // useAsyncData resolve no servidor E serializa no payload, então o 1º render
+  // do cliente usa o MESMO dado — sem mismatch e sem refetch.
+  const { data: ssrCards } = await useAsyncData('teses:cards', () => marketFetchTheses(), {
+    transform: (res) => (res?.data ?? []) as ThesisCardApi[],
+    default: () => [] as ThesisCardApi[],
+  })
+  if (ssrCards.value?.length && !apiCards.value.length) {
+    apiCards.value = ssrCards.value
+    loading.value = false
+  }
 
   /**
    * Estudo mais recente entre as teses ('YYYY-MM-DD') — dateModified do hub.

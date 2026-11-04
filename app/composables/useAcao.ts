@@ -1996,6 +1996,26 @@ export async function useAcao(ticker: string) {
   // (Ameriprise ganha do token AMP numa plataforma de investimentos).
   const shape = symbolShape(ticker)
 
+  /* posição do usuário (auth-only, client-only): pill do hero + pill de renda
+     na seção de dividendos. Anônimo nunca vê (V1 pública); erro esconde.
+     ANTES do await do useAsyncData: depois dele o composable não tem mais
+     instância ativa e o Vue descartava este onMounted (até 04/11/2026 a pill
+     de posição nunca aparecia). */
+  const position = ref<AcaoPosition | null>(null)
+  onMounted(async () => {
+    if (!isAuthenticated.value) return
+    try {
+      // redirectOnAuthError:false — página PÚBLICA que só enriquece com sessão:
+      // token vencido limpa a sessão em silêncio em vez de expulsar o visitante
+      // pro /login (P0 do DESIGN-SYSTEM §14). Quem leva pro login é a ação que
+      // a pessoa pediu, não um enriquecimento em segundo plano.
+      const res = await authFetch<{ positions?: Record<string, unknown>[] }>('/portfolio', {}, { redirectOnAuthError: false })
+      const pos = (res?.positions ?? []).find((p) => String(p.ticker ?? '').toUpperCase() === ticker)
+      const qty = Number(pos?.quantity ?? pos?.qty ?? pos?.shares ?? NaN)
+      if (Number.isFinite(qty) && qty > 0) position.value = { qty }
+    } catch { /* pill some */ }
+  })
+
   const { data, error } = await useAsyncData<AcaoPayload>(
     `acao:${ticker}`,
     async () => {
@@ -2052,23 +2072,6 @@ export async function useAcao(ticker: string) {
   const currentSeries = computed<AcaoSeriesPair | null>(
     () => rangeSeries.value[activeRange.value] ?? data.value?.series12 ?? null,
   )
-
-  /* posição do usuário (auth-only, client-only): pill do hero + pill de renda
-     na seção de dividendos. Anônimo nunca vê (V1 pública); erro esconde. */
-  const position = ref<AcaoPosition | null>(null)
-  onMounted(async () => {
-    if (!isAuthenticated.value) return
-    try {
-      // redirectOnAuthError:false — página PÚBLICA que só enriquece com sessão:
-      // token vencido limpa a sessão em silêncio em vez de expulsar o visitante
-      // pro /login (P0 do DESIGN-SYSTEM §14). Quem leva pro login é a ação que
-      // a pessoa pediu, não um enriquecimento em segundo plano.
-      const res = await authFetch<{ positions?: Record<string, unknown>[] }>('/portfolio', {}, { redirectOnAuthError: false })
-      const pos = (res?.positions ?? []).find((p) => String(p.ticker ?? '').toUpperCase() === ticker)
-      const qty = Number(pos?.quantity ?? pos?.qty ?? pos?.shares ?? NaN)
-      if (Number.isFinite(qty) && qty > 0) position.value = { qty }
-    } catch { /* pill some */ }
-  })
 
   return { data, error, activeRange, setRange, rangeLoading, currentSeries, position }
 }
