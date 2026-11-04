@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 /**
  * Redentia for Business — landing do produto B2B (assessoria vinculada,
  * family office, gestora, consultoria).
@@ -31,10 +32,30 @@ usePageSeo({
 // Opt-out do sufixo global (mesmo caso do /login): o título já traz a marca e
 // "Redentia For Business · Redentia" repete a palavra duas vezes.
 useHead({ titleTemplate: null })
+
+// PROTÓTIPO (04/11/2026, o dono: "refazermos a tela do /business"): três
+// direções, trocadas só no dev por ?biz=1 (a Decade modernizada: os mesmos
+// gestos no idioma novo), ?biz=2 (a noite: uma carteira de exemplo
+// atravessando um choque em 2.000 caminhos) e ?biz=3 (a grade: um cartão por
+// coisa que a mesa recebe, filtrado pelo tipo de casa). Em produção
+// import.meta.dev é false, o mapa fica vazio (os componentes nem entram no
+// bundle) e segue a página de hoje até o dono escolher. As três têm o mesmo
+// SEO (o usePageSeo acima), o mesmo H1, o FAQ inteiro no SSR com um FAQPage
+// só e o mesmo #contato no fim (RbContato).
+const route = useRoute()
+const DIRECOES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/business/direcoes/BizDecade.vue')),
+      '2': defineAsyncComponent(() => import('~/components/business/direcoes/BizNoite.vue')),
+      '3': defineAsyncComponent(() => import('~/components/business/direcoes/BizGrade.vue')),
+    }
+  : {}
+const direcao = computed(() => DIRECOES[String(route.query.biz ?? '')] ?? null)
 </script>
 
 <template>
-  <div>
+  <component :is="direcao" v-if="direcao" />
+  <div v-else>
     <RbHero />
     <RbDivisao />
     <RbJornada />
