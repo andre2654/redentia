@@ -513,7 +513,7 @@ export interface SupplyRestApi {
   fora_da_conta: number
 }
 
-/** Uma linha de "Compra de / Vende para" (AcaoCadeia.vue). */
+/** Uma ligação de "Compra de / Vende para" (CadeiaRazao.vue, via utils/cadeiaLeitura). */
 export interface AcaoCadeiaItemVM {
   /** ticker da empresa; nos nós de resto, uma chave ('resto-clientes') */
   ticker: string
@@ -564,7 +564,7 @@ export interface AcaoCadeiaDetalheVM {
   }[]
 }
 
-/** Bloco "De quem compra e para quem vende" do /asset (AcaoCadeia.vue). */
+/** Bloco "De quem compra e para quem vende" do /asset (CadeiaRazao.vue). */
 export interface AcaoCadeiaVM {
   compraDe: AcaoCadeiaItemVM[]
   vendePara: AcaoCadeiaItemVM[]

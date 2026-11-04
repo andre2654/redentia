@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// Cadeia, direção 1: "O razão" (?cadeia=1, 03/11/2026). Uma linha por empresa,
+// A cadeia de fornecimento do /asset: "O razão" (03/11/2026, a escolha do dono
+// entre três direções; substitui o mapa com as linhas e o nó navy, o antigo
+// AcaoCadeia). Dados de GET /assets/{t}/supply-chain (useAcao). Uma linha por empresa,
 // com a empresa no meio: à esquerda o que a empresa da página COMPRA dela, à
 // direita o que VENDE para ela. Quem está nas duas pontas (a Vibra na PETR4)
 // enche as duas células da mesma linha, sem cartão repetido. Valor que a fonte
@@ -92,13 +94,14 @@ const { empresas, cobertura, resto, aberto, ativo, titulo, contexto, fontes } = 
 .crz__tabela { max-width: 1080px; margin: clamp(28px, 3.4vw, 44px) auto 0; }
 .crz__linha {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 300px) minmax(0, 1fr); align-items: center; gap: 0 20px;
-  padding: 14px 16px; border-top: 1px solid var(--nu-cream-line); border-radius: 14px;
+  /* o fio reto entre as linhas; o canto redondo só na linha acesa (sem fio) */
+  padding: 14px 16px; border-top: 1px solid var(--nu-cream-line);
   transition: background .2s ease, box-shadow .2s ease, opacity .2s ease;
 }
 .crz__linha--cab { padding-top: 0; padding-bottom: 10px; border-top: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .crz__linha--cab span:first-child { text-align: right; }
 .crz__linha--cab span:nth-child(2) { text-align: center; }
-.crz__linha--on { background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); border-top-color: transparent; }
+.crz__linha--on { border-radius: 14px; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); border-top-color: transparent; }
 .crz--branco .crz__linha--on { background: var(--nu-cream); }
 .crz__linha--on + .crz__linha { border-top-color: transparent; }
 .crz__linha--recua { opacity: .6; }

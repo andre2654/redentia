@@ -14,7 +14,7 @@
  * e cada /asset faz ~10 chamadas (rajada já derrubou produção, 23/09/2026).
  *
  *   node scripts/seo-paridade-ativo.mjs [--base http://localhost:3471] [--pausa 4000]
- *        [--tickers PETR4,ITUB4] [--antiga .prints-ativo/antiga] [--query '?cadeia=2']
+ *        [--tickers PETR4,ITUB4] [--antiga .prints-ativo/antiga] [--query '?x=1']
  *
  * `--antiga` é a pasta com TICKER.html da página anterior, salvo por curl em
  * 03/11/2026 às 18:39, antes da troca (a saída da comparação daquele dia está
@@ -37,7 +37,7 @@ const BASE = args.base ?? 'http://localhost:3471'
 const PAUSA = Number(args.pausa ?? 4000)
 const TICKERS = (args.tickers ?? 'PETR4,ITUB4,MXRF11,BOVA11,AAPL34,SHUL4').split(',')
 const ANTIGA = args.antiga ?? '.prints-ativo/antiga'
-// `--query '?cadeia=2'`: confere uma direção do dev contra a mesma página antiga
+// `--query '?x=1'`: confere um protótipo do dev (atrás de um parâmetro) contra a mesma página antiga
 const QUERY = args.query ?? ''
 const QUEDA_MAX = 0.02
 

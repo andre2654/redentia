@@ -70,12 +70,6 @@ export function fonteDaLigacao(i: AcaoCadeiaItemVM | null): string | null {
   return ano ? `${p.fonte}, ${ano}` : p.fonte
 }
 
-/** A relação dita por inteiro, para o hover e o chat: "Petrobras vende para Vibra: derivados de petróleo · R$ 218,0 mi em contratos". */
-export function relacaoDaLigacao(i: AcaoCadeiaItemVM): string {
-  const v = valorDaLigacao(i)
-  return [`${i.detalhe.titulo}${i.oQue ? `: ${i.oQue}` : ''}`, v].filter(Boolean).join(' · ')
-}
-
 /**
  * A fração que conhecemos, em frase: o que as ligações com valor explicam da
  * receita e do custo do ano. É o "restante" dito sem desenhar uma faixa do

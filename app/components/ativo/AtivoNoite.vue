@@ -15,11 +15,10 @@
 // Tudo sai do servidor: o texto, os links, o FAQ (<details>). Ao rolar, o
 // papel, o preço e a variação entram na barra que gruda, sem empurrar nada.
 import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
-import AcaoCadeia from '~/components/acao/AcaoCadeia.vue'
 import AcaoEtfXray from '~/components/acao/AcaoEtfXray.vue'
 import AcaoFundInfo from '~/components/acao/AcaoFundInfo.vue'
+import CadeiaRazao from '~/components/ativo/cadeia/CadeiaRazao.vue'
 import TopoBolsa from '~/components/ativo/topo/TopoBolsa.vue'
-import type { Component } from 'vue'
 
 const props = defineProps<{ vm: AtivoDirecaoVM }>()
 const { v, a, t, contexto, contextoGrafico, tituloGrafico, legenda, linhas, cartoes, perguntas, perguntar, abrirCom, secoes, links, ir } = useAtivoDirecao(() => props.vm)
@@ -64,13 +63,6 @@ watch(atual, (id) => {
   ul.scrollTo({ left: Math.max(0, alvo), behavior: calmo ? 'auto' : 'smooth' })
 })
 
-// PROTÓTIPO (03/11/2026, o dono: "consegue reimaginar essa seção aqui?"): três
-// direções para a cadeia de fornecimento, trocadas só no dev por ?cadeia=1 (o
-// razão: uma linha por empresa, com o que se compra e o que se vende dos dois
-// lados), ?cadeia=2 (o mapa calmo: fios finos iguais, a empresa no centro em
-// texto) e ?cadeia=3 (o que se sabe: a fração conhecida primeiro, as empresas
-// em fichas). Em produção o mapa fica vazio e segue o AcaoCadeia de hoje.
-const rota = useRoute()
 const heroi = ref<HTMLElement | null>(null)
 const compacta = ref(false)
 let obsHeroi: IntersectionObserver | null = null
@@ -81,14 +73,6 @@ onMounted(() => {
   obsHeroi.observe(heroi.value)
 })
 onBeforeUnmount(() => obsHeroi?.disconnect())
-const CADEIAS: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaRazao.vue')),
-      '2': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaMapa.vue')),
-      '3': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaConhecido.vue')),
-    }
-  : {}
-const cadeiaDirecao = computed(() => CADEIAS[String(rota.query.cadeia ?? '')] ?? null)
 </script>
 
 <template>
@@ -191,9 +175,9 @@ const cadeiaDirecao = computed(() => CADEIAS[String(rota.query.cadeia ?? '')] ??
       <div class="an__estreito"><AtivoNoticias :news="a.news" /></div>
     </section>
 
-    <section v-if="a.cadeia" id="cadeia" class="an__embutida" :class="{ 'an__embutida--branca': tons.cadeia === 'branco' }">
-      <component :is="cadeiaDirecao" v-if="cadeiaDirecao" :cadeia="a.cadeia" :nome="a.name" :ticker="t" :tom="tons.cadeia" />
-      <AcaoCadeia v-else :cadeia="a.cadeia" :nome="a.name" :ticker="t" />
+    <!-- a cadeia, "O razão" (a escolha do dono entre três, 03/11): uma linha por empresa -->
+    <section v-if="a.cadeia" id="cadeia" class="an__embutida">
+      <CadeiaRazao :cadeia="a.cadeia" :nome="a.name" :ticker="t" :tom="tons.cadeia" />
     </section>
 
     <section v-if="a.pares" id="setor" class="an__sec" :class="tom('setor')">
@@ -277,19 +261,14 @@ const cadeiaDirecao = computed(() => CADEIAS[String(rota.query.cadeia ?? '')] ??
 .an__sec--creme .an__ind :deep(.ain__dim) { background: var(--nu-white); }
 .an__sec--creme :deep(.apg__mais), .an__sec--creme :deep(.avt__lista a), .an__sec--creme :deep(.apv__cta:not(.apv__cta--1)) { background: var(--nu-white); }
 
-/* AcaoEtfXray e AcaoCadeia vêm prontos (as bandas deles); aqui o título no peso
-   da página, a cor na alternância e o hover com mola e anel */
+/* AcaoEtfXray e AcaoFundInfo vêm prontos (as bandas deles); aqui o título no
+   peso da página, a cor na alternância e o hover com mola e anel. A cadeia
+   (CadeiaRazao) já recebe o tom da alternância. */
 .an__embutida { scroll-margin-top: calc(var(--cola) + var(--barra-h) - 20px); }
-.an__embutida :deep(.axb__title), .an__embutida :deep(.acd__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.045em; }
+.an__embutida :deep(.axb__title), .an__embutida :deep(.afi__title) { font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.045em; }
 .an__embutida--inverte :deep(.axb--white), .an__embutida--inverte :deep(.afi) { background: var(--nu-cream); }
 .an__embutida--inverte :deep(.axb--cream) { background: var(--nu-white); }
 .an__embutida--inverte :deep(.axb--cream .axb__card) { background: var(--nu-cream); }
-.an__embutida--branca :deep(.acd) { background: var(--nu-white); }
-.an__embutida--branca :deep(.acd__no:not(.acd__no--resto)) { background: var(--nu-cream); }
-.an__embutida :deep(.acd__no) { transition: transform .45s var(--mola), box-shadow .22s ease; }
-.an__embutida :deep(.acd__no:not(.acd__no--resto):hover) { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
-.an__embutida :deep(.acd__no:hover .acd__ticker) { color: var(--nu-blue-text); }
-.an__embutida :deep(.acd__ticker) { transition: color .2s ease; }
 .an__embutida :deep(.axb__row) { transition: background .2s ease; border-radius: 8px; }
 .an__embutida :deep(.axb__row--link:hover) { background: var(--nu-ink-04); }
 .an__embutida :deep(.axb__card) { transition: transform .45s var(--mola), box-shadow .22s ease; }
@@ -311,8 +290,8 @@ const cadeiaDirecao = computed(() => CADEIAS[String(rota.query.cadeia ?? '')] ??
 @media (prefers-reduced-motion: reduce) {
   .an__ident { animation: none; }
   .an__chip, .an__barra,
-  .an__embutida :deep(.acd__no), .an__embutida :deep(.axb__card) { transition: none; }
+  .an__embutida :deep(.axb__card) { transition: none; }
   .an__chip:hover, .an__chip:active,
-  .an__embutida :deep(.acd__no:hover), .an__embutida :deep(.axb__card:hover) { transform: none; }
+  .an__embutida :deep(.axb__card:hover) { transform: none; }
 }
 </style>

@@ -1,8 +1,8 @@
 /**
- * O que as três direções da cadeia de fornecimento do /asset dividem
- * (?cadeia=1|2|3, 03/11/2026): as empresas uma vez cada (utils/cadeiaLeitura),
- * a fração conhecida em frase, o painel das provas (AcaoCadeiaDetalhe) e a
- * empresa sob o mouse, que acende a linha ou o caminho dela.
+ * A leitura da cadeia de fornecimento do /asset (CadeiaRazao, 03/11/2026): as
+ * empresas uma vez cada (utils/cadeiaLeitura), a fração conhecida em frase, o
+ * painel das provas (AcaoCadeiaDetalhe) e a empresa sob o mouse, que acende a
+ * linha dela.
  */
 import type { AcaoCadeiaDetalheVM, AcaoCadeiaVM } from '~/types/acao'
 

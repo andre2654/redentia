@@ -1,10 +1,10 @@
 /**
- * A cadeia de fornecimento lida por empresa (?cadeia=1|2|3, 03/11/2026). Os
+ * A cadeia de fornecimento lida por empresa (CadeiaRazao, 03/11/2026). Os
  * números são os da PETR4 em 03/11/2026 (GET /assets/PETR4/supply-chain).
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { contextoDaCadeia, empresasDaCadeia, fonteDaLigacao, frasesDaCobertura, relacaoDaLigacao, restoDaCadeia, valorDaLigacao } from '../app/utils/cadeiaLeitura.ts'
+import { contextoDaCadeia, empresasDaCadeia, fonteDaLigacao, frasesDaCobertura, restoDaCadeia, valorDaLigacao } from '../app/utils/cadeiaLeitura.ts'
 import type { AcaoCadeiaItemVM, AcaoCadeiaVM } from '../app/types/acao.ts'
 
 function item(ticker: string, nome: string, oQue: string | null, valor: string | null, quando: string | null, vende: boolean, resto = false): AcaoCadeiaItemVM {
@@ -53,7 +53,6 @@ test('valor ausente fica calado (null), nunca "Indisponível"; a fonte vem com o
   assert.equal(valorDaLigacao(braskem!.venda), 'R$ 16,2 bi em 2025')
   assert.equal(valorDaLigacao(vibra!.compra), null)
   assert.equal(fonteDaLigacao(vibra!.compra), 'Relatório anual na SEC (20-F), 2026')
-  assert.equal(relacaoDaLigacao(vibra!.venda!), 'Petrobras vende para Vibra: derivados de petróleo · R$ 218,0 mi em contratos')
   assert.doesNotMatch(contextoDaCadeia(PETR4, 'Petrobras'), /Indispon/)
 })
 
