@@ -5,11 +5,12 @@
 // antigo LoginPinStep: no 6º número envia sozinho (uma vez por código), e o erro do
 // backend limpa as casas e devolve o foco.
 // `tom`: 'pilula' (dentro do anel iridescente), 'escuro' (sobre a noite) e
-// 'caixas' (as casas de creme da folha). 16 px no input: o iOS não dá zoom.
+// 'caixas' (as casas de creme da folha) e 'grande' (os números grandes sobre
+// um traço, do protótipo "Passo a passo"). 16 px no input: o iOS não dá zoom.
 const props = withDefaults(defineProps<{
   verifying: boolean
   error: string | null
-  tom?: 'pilula' | 'escuro' | 'caixas'
+  tom?: 'pilula' | 'escuro' | 'caixas' | 'grande'
   rotulo?: string
 }>(), { tom: 'caixas', rotulo: 'Código de 6 números' })
 const emit = defineEmits<{ submit: [pin: string] }>()
@@ -86,6 +87,16 @@ defineExpose({ focar: () => campo.value?.focus() })
 }
 .lco--caixas .lco__casa--vez { box-shadow: inset 0 0 0 2px var(--nu-blue); }
 .lco--caixas.lco--erro .lco__casa { box-shadow: inset 0 0 0 1.5px var(--nu-red); }
+
+/* grande: o número em 40 px sobre um traço, e o traço da vez em azul */
+.lco--grande { gap: 8px; }
+.lco--grande .lco__casa {
+  height: 72px; border-bottom: 2px solid var(--nu-cream-line); color: var(--nu-ink);
+  font-size: clamp(34px, 10vw, 44px); font-weight: 700; letter-spacing: -0.02em;
+}
+.lco--grande .lco__casa--cheia { border-bottom-color: var(--nu-ink-30); }
+.lco--grande .lco__casa--vez { border-bottom-color: var(--nu-blue); }
+.lco--grande.lco--erro .lco__casa { border-bottom-color: var(--nu-red); }
 
 /* escuro: traços de luz sobre a noite */
 .lco--escuro .lco__casa {

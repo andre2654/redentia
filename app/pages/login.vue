@@ -28,6 +28,7 @@ import type {
   SocialLoginResponse,
 } from '~/types/auth'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
+import type { Component } from 'vue'
 import type { PortaLogin } from '~/types/loginPorta'
 import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
@@ -349,8 +350,27 @@ if (import.meta.dev) {
   }
   if (forcar === 'social') googleSubmitting.value = true
 }
+
+// ————— PROTÓTIPO (04/11/2026): três peles novas, pensadas no celular —————
+// O dono achou a experiência de "A linha" esquisita no celular (a faixa navy
+// com a frase toma a primeira tela, dois seletores empilhados, o teclado
+// cobre o campo). Três direções, trocadas só no dev por ?entrar=1 (folha
+// nativa: Apple e Google em cima e um campo só), ?entrar=2 (passo a passo:
+// uma pergunta por tela) e ?entrar=3 (a noite compacta: a linha num céu
+// baixo e o formulário numa folha por cima). A variação só recebe `porta` e
+// desenha. Em produção import.meta.dev é false, o mapa fica vazio (nem entra
+// no bundle) e segue "A linha".
+const VARIANTES: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('~/components/login/variantes/LoginFolha.vue')),
+      '2': defineAsyncComponent(() => import('~/components/login/variantes/LoginPassos.vue')),
+      '3': defineAsyncComponent(() => import('~/components/login/variantes/LoginNoite.vue')),
+    }
+  : {}
+const variante = computed(() => VARIANTES[String(route.query.entrar ?? '')] ?? null)
 </script>
 
 <template>
-  <LoginLinha :porta="porta" />
+  <component :is="variante" v-if="variante" :porta="porta" />
+  <LoginLinha v-else :porta="porta" />
 </template>
