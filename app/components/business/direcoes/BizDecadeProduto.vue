@@ -267,9 +267,11 @@ const ctx = (id: string, rotulo: string) => ({ id: `business:${id}`, tipo: 'bloc
 /* ——— passo 04, cheio, no azul claro ——— */
 .bxd-rel { padding: clamp(56px, 7vw, 96px) var(--g); }
 .bxd-rel__painel {
-  display: grid; grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr); gap: clamp(28px, 4vw, 72px); align-items: center;
+  display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 4vw, 72px); align-items: center;
   padding: clamp(36px, 5vw, 72px); border-radius: var(--raio); background: var(--nu-blue-bg); overflow: hidden;
 }
+/* o título numa linha só quando cabe; o balance quebrava em "Leve o / relatório pronto." */
+.bxd-rel__texto .bxd__h3 { text-wrap: pretty; }
 .bxd-rel__folhas { position: relative; width: min(620px, 100%); justify-self: center; padding: 0 0 18px 18px; }
 /* as outras páginas do documento, por trás: só papel, sem texto */
 .bxd-rel__tras { position: absolute; inset: 18px 0 0 18px; border-radius: 6px; background: var(--nu-white); box-shadow: 0 0 0 1px rgba(12, 21, 36, .08), 0 30px 60px -30px rgba(12, 21, 36, .4); transform: rotate(3deg); }

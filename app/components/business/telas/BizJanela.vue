@@ -6,8 +6,9 @@
  *  - `assistente`: a conversa no assistente da mesa, onde as telas do Redentia
  *    MCP aparecem. Sem logo de ninguém: a barra diz "Assistente da mesa" e a
  *    legenda da página diz que é o Claude ou o ChatGPT que o escritório usa.
- * `rotulo` é a etiqueta honesta do canto ("Exemplo"): dado de exemplo nunca
- * aparece sem ela.
+ * `rotulo` é a etiqueta honesta ("Exemplo"): dado de exemplo nunca aparece
+ * sem ela. No assistente ela vem colada ao nome, à esquerda, e não no canto:
+ * a janela grande do hero vaza pela borda direita e a etiqueta sumia junto.
  */
 withDefaults(defineProps<{ tipo?: 'painel' | 'assistente'; endereco?: string; rotulo?: string; escuro?: boolean; composer?: boolean }>(), {
   tipo: 'painel', endereco: 'redentia.com.br/business', rotulo: 'Exemplo', escuro: false, composer: false,
@@ -48,7 +49,8 @@ withDefaults(defineProps<{ tipo?: 'painel' | 'assistente'; endereco?: string; ro
   display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
   background: var(--nu-white); color: var(--nu-tela-apoio); font-size: var(--nu-fs-xs); font-weight: 500;
 }
-.bzj__quem { flex: 1; display: inline-flex; align-items: center; gap: 7px; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; }
+.bzj__quem { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; }
+.bzj--assistente .bzj__rot { margin-right: auto; }
 .bzj__rot {
   flex-shrink: 0; padding: 2px 9px; border-radius: var(--nu-r-pill); background: var(--nu-white);
   color: var(--nu-tela-apoio); font-size: var(--nu-fs-xs); font-weight: 700; box-shadow: inset 0 0 0 1px var(--nu-tela-linha);
