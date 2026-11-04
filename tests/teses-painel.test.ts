@@ -43,6 +43,9 @@ test('/teses: a grade é a página, sem protótipo nem a promessa "com um toque"
   assert.doesNotMatch(pagina, /import\.meta\.dev|query\.teses|TesesCarrossel|TesesVantagens|TesesAiBanner/)
   assert.match(pagina, /usePageSeo\(\{[\s\S]*title: 'Teses de investimento'[\s\S]*dateModified: dataDate[\s\S]*breadcrumbs/)
   assert.match(pagina, /<NuFaqAccordion :items="TESES_FAQS"/) // o FAQPage sai daqui
+  // o chat saiu da /busca: o "Perguntar à Redentia AI" do FAQ abre o painel
+  assert.match(pagina, /class="tsf__cta" @click="painel\.abrir\(\)"/)
+  assert.doesNotMatch(pagina, /to="\/busca"/)
   const grade = readFileSync(new URL('../app/components/teses/TesesGrade.vue', import.meta.url), 'utf8')
   assert.equal((grade.match(/<h1\b/g) ?? []).length, 1)
   assert.doesNotMatch(grade + pagina, /Invista na tese inteira/)

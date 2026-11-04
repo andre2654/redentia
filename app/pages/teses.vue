@@ -10,6 +10,8 @@
 // dia (/api/teses-painel) só enriquece depois do mount. O FAQ emite o FAQPage
 // (NuFaqAccordion). Um H1 só, o da grade.
 const { cards, favoritos, loading, dataDate } = await useTesesPage()
+// o chat saiu da /busca (02/11/2026): o botão do FAQ abre o painel do chat
+const painel = useChatPainel()
 
 usePageSeo({
   title: 'Teses de investimento',
@@ -30,7 +32,7 @@ usePageSeo({
         <div class="tsf__left">
           <h2 class="tsf__title">Ficou com alguma<br>dúvida?</h2>
           <div class="tsf__copy">Respostas para as principais dúvidas sobre teses de investimento na Redentia.</div>
-          <NuxtLink to="/busca" class="tsf__cta">Perguntar à Redentia AI</NuxtLink>
+          <button type="button" class="tsf__cta" @click="painel.abrir()">Perguntar à Redentia AI</button>
         </div>
         <div class="tsf__right">
           <NuFaqAccordion :items="TESES_FAQS" :default-open="-1" surface="white" />
@@ -51,9 +53,9 @@ usePageSeo({
 }
 .tsf__copy { color: var(--nu-gray-2); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; margin-top: 22px; max-width: 420px; }
 .tsf__cta {
-  display: inline-flex; align-items: center; height: 44px; padding: 0 22px; margin-top: 28px;
+  display: inline-flex; align-items: center; height: 44px; padding: 0 22px; margin-top: 28px; border: 0; background: transparent; cursor: pointer;
   border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--nu-ink-16);
-  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, box-shadow .2s;
+  font: inherit; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; transition: background .2s, box-shadow .2s;
 }
 .tsf__cta:hover { background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-ink-30); color: var(--nu-ink); }
 .tsf__cta:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }

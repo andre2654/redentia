@@ -29,6 +29,10 @@ const rotulo = (id: string) => secoes.value.find((s) => s.id === id)?.rotulo ?? 
 // a alternância branco/creme das bandas, pela ordem do que a página tem (duas
 // bandas da mesma cor seguidas viram uma só, com o dobro do respiro no meio).
 // O resumo, logo depois do herói, é branco; o Raio-X de ETF traz duas bandas.
+// As perguntas fecham SEMPRE em creme (o FAQ da /teses: cartões brancos na
+// faixa creme). Quando a conta as pintaria de branco, elas ficam creme e se
+// juntam à banda creme de antes (o mesmo caso das duas bandas seguidas); o
+// topo, logo depois do resumo, não muda.
 const tons = computed(() => {
   const ids: Array<[string, number]> = []
   if (cartoes.value.length) ids.push(['indicadores', 1])
@@ -48,6 +52,7 @@ const tons = computed(() => {
     out[id] = creme ? 'creme' : 'branco'
     if (n % 2 === 1) creme = !creme
   }
+  out.perguntas = 'creme'
   return out
 })
 const tom = (id: string) => (tons.value[id] === 'creme' ? 'an__sec--creme' : '')
@@ -188,11 +193,14 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
       <div class="an__largo"><AtivoPares :pares="a.pares" /></div>
     </section>
 
-    <section id="perguntas" class="an__sec an__sec--fim" :class="tom('perguntas')">
-      <div class="an__estreito">
-        <AtivoPerguntas :ticker="t" :editorial="a.editorial" :resumo="a.resumo" />
-        <SeguirGancho v-if="v.seguivel" :atual="t" :surface="tons.perguntas === 'creme' ? 'cream' : 'white'" class="an__gancho" />
-        <AtivoVejaTambem :links="links" class="an__veja" />
+    <!-- as perguntas no idioma do FAQ da /teses: o H2 grande à esquerda, os cartões à direita -->
+    <section id="perguntas" class="an__sec an__sec--fim an__sec--faq" :class="tom('perguntas')">
+      <div class="an__faq">
+        <AtivoPerguntas :ticker="t" :editorial="a.editorial" :resumo="a.resumo" @perguntar="abrirCom()" />
+        <div class="an__faq-pe">
+          <SeguirGancho v-if="v.seguivel" :atual="t" :surface="tons.perguntas === 'creme' ? 'cream' : 'white'" class="an__gancho" />
+          <AtivoVejaTambem :links="links" class="an__veja" />
+        </div>
       </div>
     </section>
   </div>
@@ -259,7 +267,7 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
 .an__estreito { max-width: 760px; margin: clamp(28px, 3.4vw, 40px) auto 0; }
 .an__largo { max-width: 1080px; margin: clamp(28px, 3.4vw, 44px) auto 0; }
 .an__sec--creme .an__ind :deep(.ain__dim) { background: var(--nu-white); }
-.an__sec--creme :deep(.apg__mais), .an__sec--creme :deep(.avt__lista a), .an__sec--creme :deep(.apv__cta:not(.apv__cta--1)) { background: var(--nu-white); }
+.an__sec--creme :deep(.avt__lista a), .an__sec--creme :deep(.apv__cta:not(.apv__cta--1)) { background: var(--nu-white); }
 
 /* AcaoEtfXray e AcaoFundInfo vêm prontos (as bandas deles); aqui o título no
    peso da página, a cor na alternância e o hover com mola e anel. A cadeia
@@ -274,7 +282,15 @@ onBeforeUnmount(() => obsHeroi?.disconnect())
 .an__embutida :deep(.axb__card) { transition: transform .45s var(--mola), box-shadow .22s ease; }
 .an__embutida :deep(.axb__card:hover) { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
 
-.an__gancho { margin-top: 32px; }
+/* a faixa do FAQ: a largura do /teses (sem o miolo de 760px), o gancho e o
+   "veja também" embaixo das duas colunas */
+.an__sec--faq { padding-top: clamp(64px, 8.5vw, 110px); }
+.an__faq { max-width: 1280px; margin: 0 auto; }
+.an__faq-pe { margin-top: clamp(48px, 6vw, 80px); }
+/* colada numa banda creme (a conta pintaria as perguntas de branco): um fio
+   no lugar do segundo respiro */
+.an__sec--creme + .an__sec--faq, .an__embutida:has(.crz--creme) + .an__sec--faq { padding-top: 0; }
+.an__sec--creme + .an__sec--faq .an__faq, .an__embutida:has(.crz--creme) + .an__sec--faq .an__faq { padding-top: clamp(56px, 7vw, 96px); border-top: 1px solid var(--nu-cream-line); }
 .an__veja { margin-top: 40px; }
 
 @media (max-width: 680px) {
