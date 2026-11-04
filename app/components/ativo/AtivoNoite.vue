@@ -1,33 +1,30 @@
 <script setup lang="ts">
 // /asset: "A noite" (03/11/2026), a direção que o dono escolheu entre três
 // ("a 2"), com o refino que ele pediu no mesmo dia. O topo é o escuro do herói
-// da home e do /benchmark-ia (o navy do rodapé descendo ao preto): o nome, o
-// H1, o preço em peso leve, as perguntas prontas e, atravessando o herói, o
-// preço do período como uma linha de luz que acende até o ponto de hoje, com o
-// IBOV apagado por baixo. É o único momento brilhante da tela; o resto é calmo.
-// O gráfico se lê com a mira e mede entre dois pontos (AtivoGrafico).
+// da home e do /benchmark-ia (o navy do rodapé descendo ao preto) no idioma do
+// app Ações, "A bolsa no bolso" (TopoBolsa, a escolha do dono entre três topos
+// em 03/11): o papel e as ações em botões redondos, o preço grande e fino que
+// acompanha a mira, a linha de luz de borda a borda e o período embaixo. É o
+// único momento brilhante da tela; o resto é calmo.
 // Logo abaixo, os números do gráfico em fila e o resumo factual. Depois, uma
 // barra que gruda com as seções, NA ORDEM em que a página desce: o ativo,
 // indicadores, por dentro (ETF), proventos, análise, sobre, teses, notícias,
 // cadeia, setor e perguntas. A barra encosta embaixo do header e da régua do
 // mercado pela altura que os dois publicam (--nuh-h do useTopo, --nut-h do
 // NuMarketTicker), sem px chutado.
-// Tudo sai do servidor: o texto, os links, o FAQ (<details>). A linha se
-// desenhando é Web Animations, uma vez no mount, só com a aba visível, o herói
-// na tela e sem pedido de menos movimento (a lição do /benchmark-ia: nada
-// espera o observador para existir).
+// Tudo sai do servidor: o texto, os links, o FAQ (<details>). Ao rolar, o
+// papel, o preço e a variação entram na barra que gruda, sem empurrar nada.
 import type { AtivoDirecaoVM } from '~/composables/useAtivoDirecao'
 import AcaoCadeia from '~/components/acao/AcaoCadeia.vue'
 import AcaoEtfXray from '~/components/acao/AcaoEtfXray.vue'
 import AcaoFundInfo from '~/components/acao/AcaoFundInfo.vue'
+import TopoBolsa from '~/components/ativo/topo/TopoBolsa.vue'
 import type { Component } from 'vue'
 
 const props = defineProps<{ vm: AtivoDirecaoVM }>()
 const { v, a, t, contexto, contextoGrafico, tituloGrafico, legenda, linhas, cartoes, perguntas, perguntar, abrirCom, secoes, links, ir } = useAtivoDirecao(() => props.vm)
 const atual = useSecaoAtual(() => secoes.value.map((s) => s.id), 220)
-const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const tesesTitulo = computed(() => (a.value.theses.length === 1 ? `${t.value} faz parte de 1 tese.` : `${t.value} faz parte de ${a.value.theses.length} teses.`))
-const logoFalhou = ref(false)
 const rotulo = (id: string) => secoes.value.find((s) => s.id === id)?.rotulo ?? ''
 
 // a alternância branco/creme das bandas, pela ordem do que a página tem (duas
@@ -74,21 +71,6 @@ watch(atual, (id) => {
 // texto) e ?cadeia=3 (o que se sabe: a fração conhecida primeiro, as empresas
 // em fichas). Em produção o mapa fica vazio e segue o AcaoCadeia de hoje.
 const rota = useRoute()
-// PROTÓTIPO (03/11/2026, o dono: "acho que o header e o banner dá pra ficar com
-// mais cara de app"): três topos, só no dev por ?topo-ativo=1 (a bolsa no
-// bolso: o idioma do app Ações, à margem, o preço que segue a mira),
-// ?topo-ativo=2 (a janela do Mac: duas colunas, ações e números ao lado) e
-// ?topo-ativo=3 (o app no iPhone: barra com voltar, título grande, widgets).
-// Nos três, ao rolar, o papel e o preço entram na barra que gruda.
-const TOPOS: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/ativo/topo/TopoBolsa.vue')),
-      '2': defineAsyncComponent(() => import('~/components/ativo/topo/TopoPainel.vue')),
-      '3': defineAsyncComponent(() => import('~/components/ativo/topo/TopoApp.vue')),
-    }
-  : {}
-const topoAtivo = computed(() => String(rota.query['topo-ativo'] ?? ''))
-const topoDirecao = computed(() => TOPOS[topoAtivo.value] ?? null)
 const heroi = ref<HTMLElement | null>(null)
 const compacta = ref(false)
 let obsHeroi: IntersectionObserver | null = null
@@ -99,10 +81,6 @@ onMounted(() => {
   obsHeroi.observe(heroi.value)
 })
 onBeforeUnmount(() => obsHeroi?.disconnect())
-function voltar() {
-  if (window.history.length > 1) window.history.back()
-  else navigateTo('/')
-}
 const CADEIAS: Record<string, Component> = import.meta.dev
   ? {
       '1': defineAsyncComponent(() => import('~/components/ativo/cadeia/CadeiaRazao.vue')),
@@ -111,92 +89,19 @@ const CADEIAS: Record<string, Component> = import.meta.dev
     }
   : {}
 const cadeiaDirecao = computed(() => CADEIAS[String(rota.query.cadeia ?? '')] ?? null)
-
-const palco = ref<HTMLElement | null>(null)
-onMounted(() => {
-  const el = palco.value
-  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  const r = el.getBoundingClientRect()
-  if (r.top >= window.innerHeight || r.bottom <= 0) return
-  const curva = 'cubic-bezier(.2, .8, .2, 1)'
-  el.querySelector('.agr__svg')?.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1400, delay: 150, easing: curva, fill: 'backwards' })
-  el.querySelectorAll('.agr__fim, .agr__hoje').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 1350, easing: 'ease', fill: 'backwards' }))
-  el.querySelector('.an__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: curva, fill: 'backwards' })
-})
 </script>
 
 <template>
   <div class="an">
     <div id="cotacao" class="an__ativo">
-      <!-- ============ o céu: o preço e a linha de luz ============ -->
+      <!-- ============ o topo: o papel, o preço e a linha de luz ============ -->
       <div ref="heroi">
-      <!-- protótipo do topo (?topo-ativo=1|2|3, só no dev); sem o parâmetro, o céu de hoje -->
-      <component
-        :is="topoDirecao" v-if="topoDirecao"
-        :a="a" :t="t" :series="v.series" :range="v.range" :range-loading="v.rangeLoading" :position="v.position"
-        :renamed-from="v.renamedFrom" :seguivel="v.seguivel" :titulo-grafico="tituloGrafico" :legenda="legenda" :linhas="linhas"
-        :perguntas="perguntas" :contexto="contexto" :contexto-grafico="contextoGrafico"
-        @periodo="v.setRange" @perguntar="perguntar" @abrir="abrirCom()"
-      />
-      <section v-else v-contexto-chat="contexto" class="an__ceu" aria-labelledby="an-h1">
-        <div class="an__luz" aria-hidden="true" />
-        <div class="an__texto">
-          <p v-if="v.renamedFrom" class="an__trocou">{{ v.renamedFrom }} agora negocia como {{ t }}.</p>
-          <div class="an__produto">
-            <img v-if="a.hero.logo && !logoFalhou" :src="a.hero.logo" alt="" width="22" height="22" class="an__logo" @error="logoFalhou = true">
-            <p class="an__empresa">{{ a.hero.companyLine }}</p>
-            <span class="an__bolsa">{{ a.hero.exchangeLabel || 'B3' }}</span>
-            <span v-if="v.position" class="an__posicao">Na sua carteira · {{ nf0.format(v.position.qty) }} {{ v.position.qty === 1 ? 'cota' : 'cotas' }}</span>
-          </div>
-          <h1 v-if="a.resumo" id="an-h1" class="an__h1">{{ a.resumo.h1 }}</h1>
-          <p class="an__preco">{{ a.hero.priceFmt }}</p>
-          <p class="an__dia">
-            <span v-if="a.hero.changeLine" class="an__delta" :class="`an__delta--${a.hero.dir}`">
-              <svg width="10" height="10" viewBox="0 0 10 10" :class="{ 'an__tri--baixo': a.hero.dir === 'down' }" aria-hidden="true"><path d="M5 1.5l3.5 6H1.5z" fill="currentColor" /></svg>{{ a.hero.changeLine }}
-            </span>
-            <span v-if="a.hero.metaLine" class="an__meta">{{ a.hero.metaLine }}</span>
-          </p>
-          <div class="an__botoes">
-            <SeguirAtivo v-if="v.seguivel" :ticker="t" :path="`/asset/${t}`" />
-            <NuxtLink to="/" class="an__carteira">Adicionar à carteira</NuxtLink>
-          </div>
-          <!-- no lugar do "Perguntar à Redentia AI" (repetia a barra do rodapé):
-               perguntas sobre ESTE ativo, que abrem o painel com ele anexado -->
-          <AtivoPerguntaChips :perguntas="perguntas" tom="escuro" :rotulo="null" class="an__perguntas" @perguntar="perguntar" />
-        </div>
-
-        <div v-if="v.series" ref="palco" v-contexto-chat="contextoGrafico" class="an__palco">
-          <div class="an__palco-cab">
-            <h2 class="an__h2-ceu">{{ tituloGrafico }}</h2>
-            <p v-if="legenda.length" class="an__legenda">
-              <span v-for="l in legenda" :key="l.rotulo" class="an__leg">
-                <i class="an__leg-traco" :class="{ 'an__leg-traco--ibov': l.rotulo === 'IBOV' }" aria-hidden="true" />{{ l.rotulo }}
-                <b :class="l.dir ? `an__leg--${l.dir}` : ''">{{ l.pct }}</b>
-              </span>
-            </p>
-            <AtivoPeriodo :model-value="v.range" :disabled="v.rangeLoading" tom="escuro" @update:model-value="v.setRange" />
-          </div>
-          <div class="an__grafico">
-            <AtivoGrafico
-              :ativo="v.series.asset" :ibov="v.series.ibov" :ticker="t" :atual="a.hero.priceFmt" :rotulo="tituloGrafico"
-              tom="luz" :carregando="v.rangeLoading" marcas-fora
-            />
-          </div>
-          <div class="an__horizonte" aria-hidden="true" />
-          <p class="an__dica-uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
-        </div>
-
-        <dl v-if="linhas.length" class="an__nums">
-          <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `linha:${t}:${r.l}`, tipo: 'grafico', rotulo: rotuloComSobre(r.l, t), texto: `${r.l} (${t}): ${r.v}` }" class="an__num">
-            <dd class="an__num-v">{{ r.v }}</dd>
-            <dt class="an__num-r">{{ r.l }}</dt>
-          </div>
-        </dl>
-        <p v-if="a.simuladorHref" class="an__sim">
-          <NuxtLink :to="a.simuladorHref" class="an__sim-link">Simulador de ações</NuxtLink>
-          <span>Quanto {{ t }} teria rendido com dividendos reinvestidos, no histórico real da B3.</span>
-        </p>
-      </section>
+        <TopoBolsa
+          :a="a" :t="t" :series="v.series" :range="v.range" :range-loading="v.rangeLoading" :position="v.position"
+          :renamed-from="v.renamedFrom" :seguivel="v.seguivel" :titulo-grafico="tituloGrafico" :legenda="legenda" :linhas="linhas"
+          :perguntas="perguntas" :contexto="contexto" :contexto-grafico="contextoGrafico"
+          @periodo="v.setRange" @perguntar="perguntar" @abrir="abrirCom()"
+        />
       </div>
 
       <!-- o resumo factual: o que o gráfico e os números dizem, em palavras -->
@@ -208,14 +113,11 @@ onMounted(() => {
     </div>
 
     <!-- ============ a barra que gruda: as seções, na ordem da página ============ -->
-    <nav v-if="secoes.length > 1" class="an__barra" :class="{ 'an__barra--app': topoDirecao, 'an__barra--compacta': compacta }" aria-label="Seções da página">
+    <nav v-if="secoes.length > 1" class="an__barra" :class="{ 'an__barra--compacta': compacta }" aria-label="Seções da página">
       <!-- a barra compacta do app: quando o topo sai da tela, o papel e o preço
            entram aqui, como o título grande do iOS que vira pequeno. Só no
            cliente e dentro da altura que a barra já tem: não empurra nada. -->
-      <div v-if="topoDirecao && compacta" class="an__ident" :class="{ 'an__ident--app': topoAtivo === '3' }">
-        <button v-if="topoAtivo === '3'" type="button" class="an__ident-voltar" aria-label="Voltar" @click="voltar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
-        </button>
+      <div v-if="compacta" class="an__ident">
         <b class="an__ident-t">{{ t }}</b>
         <span class="an__ident-p">{{ a.hero.priceFmt }}</span>
         <span v-if="a.hero.changeLine" class="an__ident-v" :class="`an__ident-v--${a.hero.dir}`">{{ a.hero.dir === 'down' ? '-' : '+' }}{{ a.hero.changeLine.match(/\(([^)]+)\)/)?.[1] ?? '' }}</span>
@@ -307,7 +209,6 @@ onMounted(() => {
         <AtivoPerguntas :ticker="t" :editorial="a.editorial" :resumo="a.resumo" />
         <SeguirGancho v-if="v.seguivel" :atual="t" :surface="tons.perguntas === 'creme' ? 'cream' : 'white'" class="an__gancho" />
         <AtivoVejaTambem :links="links" class="an__veja" />
-        <NuAcompanheAndre lugar="asset" class="an__andre" />
       </div>
     </section>
   </div>
@@ -325,83 +226,6 @@ onMounted(() => {
   background: var(--nu-white);
 }
 
-/* ——— o céu: o mesmo do herói "A noite" da home ——— */
-.an__ceu {
-  position: relative; isolation: isolate; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: clamp(44px, 5vw, 72px) var(--g) clamp(40px, 4.4vw, 64px);
-  background: var(--nu-agora-bg); color: var(--nu-agora-texto);
-}
-.an__luz {
-  position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(60% 38% at 50% 0%, color-mix(in srgb, var(--nu-blue) 16%, transparent), transparent),
-    linear-gradient(180deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-navy) 55%, var(--nu-agora-bg)) 46%, var(--nu-agora-bg) 80%);
-}
-.an__texto { display: flex; flex-direction: column; align-items: center; max-width: 1000px; }
-.an__trocou { margin: 0 0 16px; padding: 6px 12px; border-radius: var(--nu-r-pill); background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 600; }
-.an__produto { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; min-height: 26px; }
-.an__logo { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; background: var(--nu-white); }
-.an__empresa { margin: 0; color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -0.02em; }
-.an__bolsa { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; }
-.an__posicao { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--nu-r-pill); background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
-.an__h1 { margin: 14px 0 0; max-width: 22ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
-.an__preco { margin: 10px 0 0; color: var(--nu-agora-texto); font-size: var(--nu-fs-hero); font-weight: 500; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
-.an__dia { display: flex; align-items: center; justify-content: center; gap: 8px 14px; flex-wrap: wrap; margin: 18px 0 0; }
-.an__delta { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.an__delta--up { background: var(--nu-green-soft-16); color: var(--nu-green-soft); }
-.an__delta--down { background: var(--nu-red-soft-16); color: var(--nu-red-soft); }
-.an__tri--baixo { transform: rotate(180deg); }
-.an__meta { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
-.an__botoes { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
-.an__botoes :deep(.nfb) {
-  height: 44px; padding: 0 20px; font-size: var(--nu-fs-sm); font-weight: 700; background: var(--nu-agora-texto); color: var(--nu-agora-bg);
-  transition: background .2s ease, box-shadow .2s ease, transform .45s var(--mola);
-}
-.an__botoes :deep(.nfb:hover) { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--nu-white-35), var(--nu-home-sombra-botao-escuro); }
-.an__botoes :deep(.nfb:active) { transform: scale(.97); }
-.an__botoes :deep(.nfb--on) { background: var(--nu-green-soft); color: var(--nu-navy); }
-.an__botoes :deep(.sga__msg--on) { color: var(--nu-agora-sub); }
-.an__carteira {
-  display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--nu-cream-text-40);
-  color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 700;
-  transition: background .2s ease, box-shadow .2s ease, transform .45s var(--mola);
-}
-.an__carteira:hover { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-cream-text-80); transform: translateY(-2px); }
-.an__carteira:active { transform: scale(.97); }
-.an__perguntas { margin-top: 22px; }
-.an__perguntas :deep(.apc__lista) { justify-content: center; }
-
-.an__palco { position: relative; width: min(1180px, 100%); margin-top: clamp(36px, 4vw, 56px); }
-.an__palco-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; text-align: left; }
-.an__h2-ceu { margin: 0; color: var(--nu-agora-texto); font-size: var(--nu-fs-xl); font-weight: 600; letter-spacing: -0.02em; }
-.an__legenda { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; margin-right: auto; }
-.an__leg { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 600; }
-.an__leg b { color: var(--nu-agora-texto); font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; }
-.an__leg b.an__leg--up { color: var(--nu-green-soft); }
-.an__leg b.an__leg--down { color: var(--nu-red-soft); }
-.an__leg-traco { width: 16px; height: 2px; border-radius: 1px; background: var(--nu-blue-soft); }
-.an__leg-traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
-.an__grafico { position: relative; height: clamp(220px, 24vw, 330px); margin: 30px 0 0 48px; }
-/* a linha de luz do horizonte: o brilho da barra da Redentia (o do herói da home) */
-.an__horizonte {
-  height: 2px; margin: 0 -12%; pointer-events: none; border-radius: 50%;
-  background: linear-gradient(90deg, transparent 4%, var(--nu-chat-luz-1) 24%, var(--nu-white-60) 50%, var(--nu-chat-luz-3) 76%, transparent 96%);
-  box-shadow: 0 0 18px 3px var(--nu-chat-luz-1), 0 0 60px 14px var(--nu-chat-luz-2);
-}
-.an__dica-uso { margin: 14px 0 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); font-weight: 500; }
-@media (hover: none) { .an__dica-uso { display: none; } }
-
-.an__nums { width: min(1180px, 100%); margin: clamp(24px, 2.6vw, 36px) 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 0 24px; text-align: left; }
-.an__num { position: relative; display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 6px; padding: 16px 0 4px; border-top: 1px solid var(--nu-agora-linha); transition: border-color .2s ease; }
-.an__num:hover { border-top-color: var(--nu-blue-soft); }
-.an__num-v { margin: 0; color: var(--nu-agora-texto); font-size: var(--nu-fs-2xl); font-weight: 500; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; transition: color .2s ease; }
-.an__num:hover .an__num-v { color: var(--nu-blue-soft); }
-.an__num-r { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; }
-.an__sim { display: flex; justify-content: center; align-items: baseline; gap: 6px 12px; flex-wrap: wrap; margin: 24px 0 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; }
-.an__sim-link { color: var(--nu-agora-texto); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-white-35); transition: text-decoration-color .2s ease; }
-.an__sim-link:hover { color: var(--nu-agora-texto); text-decoration-color: var(--nu-agora-texto); }
-
 /* ——— a barra que gruda: encosta na régua, fundo de vidro quase opaco ——— */
 .an__barra {
   position: sticky; top: var(--cola); z-index: 30;
@@ -410,10 +234,10 @@ onMounted(() => {
   border-bottom: 1px solid var(--nu-cream-line);
   /* o mesmo passo da régua e do header quando o header encolhe */
   transition: top .32s cubic-bezier(.2, .8, .2, 1);
+  /* compacta: o papel à esquerda, as seções à direita */
+  display: flex; align-items: center;
 }
-/* a barra compacta dos protótipos do topo: o papel à esquerda, as seções à direita */
-.an__barra--app { display: flex; align-items: center; }
-.an__barra--app .an__chips { flex: 1; min-width: 0; }
+.an__barra .an__chips { flex: 1; min-width: 0; }
 .an__ident { display: flex; align-items: center; gap: 10px; flex-shrink: 0; padding-left: var(--g); animation: an-ident .22s ease both; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @keyframes an-ident { from { opacity: 0; transform: translateY(4px); } }
 .an__ident-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
@@ -421,9 +245,9 @@ onMounted(() => {
 .an__ident-v { font-size: var(--nu-fs-sm); font-weight: 700; }
 .an__ident-v--up { color: var(--nu-green-text); }
 .an__ident-v--down { color: var(--nu-red-text); }
-.an__ident-voltar { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: var(--nu-cream); color: var(--nu-ink); cursor: pointer; }
-.an__ident-voltar:hover { background: var(--nu-cream-hover); }
 .an__barra--compacta .an__chip--ativo { display: none; }
+/* compacta, a fileira que rola some num degradê junto do papel (não corta seco) */
+.an__barra--compacta .an__chips { -webkit-mask-image: linear-gradient(90deg, transparent 6px, #000 22px); mask-image: linear-gradient(90deg, transparent 6px, #000 22px); }
 .an__chips { list-style: none; margin: 0; padding: 10px var(--g); display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .an__chips::-webkit-scrollbar { display: none; }
 .an__chip {
@@ -473,21 +297,22 @@ onMounted(() => {
 
 .an__gancho { margin-top: 32px; }
 .an__veja { margin-top: 40px; }
-.an .an__andre { margin: 24px 0 0; padding: 0; background: transparent; }
 
 @media (max-width: 680px) {
   .an { --barra-h: 53px; }
-  .an__palco-cab { justify-content: flex-start; }
-  .an__horizonte { margin: 0 -24px; }
-  .an__nums { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
   .an__chips { padding: 8px var(--g); }
 }
-@media (max-width: 680px) { .an__ident-p { display: none; } }
+/* no celular o papel encolhe, mas o preço fica: ticker, preço e variação */
+@media (max-width: 680px) {
+  .an__ident { gap: 6px; }
+  .an__ident-t, .an__ident-p { font-size: var(--nu-fs-sm); }
+  .an__ident-v { font-size: var(--nu-fs-xs); }
+}
 @media (prefers-reduced-motion: reduce) {
   .an__ident { animation: none; }
-  .an__chip, .an__carteira, .an__barra, .an__num, .an__num-v, .an__botoes :deep(.nfb),
+  .an__chip, .an__barra,
   .an__embutida :deep(.acd__no), .an__embutida :deep(.axb__card) { transition: none; }
-  .an__chip:hover, .an__chip:active, .an__carteira:hover, .an__carteira:active, .an__botoes :deep(.nfb:hover),
+  .an__chip:hover, .an__chip:active,
   .an__embutida :deep(.acd__no:hover), .an__embutida :deep(.axb__card:hover) { transform: none; }
 }
 </style>

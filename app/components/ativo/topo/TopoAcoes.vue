@@ -1,16 +1,10 @@
 <script setup lang="ts">
-// As ações do topo do ativo como botões-ícone redondos, com rótulo embaixo e
-// dica no hover (?topo-ativo=1|2|3, 03/11/2026): Seguir (a mesma lógica da
+// As ações do topo do ativo (TopoBolsa) como botões-ícone redondos, com rótulo
+// embaixo e dica no hover (03/11/2026): Seguir (a mesma lógica da
 // estrela de hoje, useSeguirAtivo), Adicionar à carteira (o mesmo link),
 // Compartilhar (a folha do sistema; sem ela, copia o link) e Perguntar (abre o
 // painel do chat com o ativo anexado). Mola só no toque.
-const props = withDefaults(defineProps<{
-  ticker: string
-  seguivel: boolean
-  tom?: 'escuro' | 'claro'
-  /** sem rótulo embaixo: só o círculo (a barra compacta) */
-  compacto?: boolean
-}>(), { tom: 'escuro', compacto: false })
+const props = defineProps<{ ticker: string; seguivel: boolean }>()
 const emit = defineEmits<{ perguntar: [] }>()
 
 const caminho = computed(() => `/asset/${props.ticker}`)
@@ -28,7 +22,7 @@ async function compartilhar() {
 </script>
 
 <template>
-  <div class="tac" :class="[`tac--${tom}`, { 'tac--compacto': compacto }]">
+  <div class="tac">
     <button
       v-if="seguivel" type="button" class="tac__b" :class="{ 'tac__b--on': following }" :aria-pressed="following" :aria-busy="pending || undefined"
       :title="following ? 'Deixar de seguir' : 'Seguir'" @click="toggle"
@@ -75,21 +69,13 @@ async function compartilhar() {
 .tac__b:hover .tac__c { transform: translateY(-2px); }
 .tac__b:active .tac__c { transform: scale(.92); }
 .tac__r { font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.25; }
-.tac--escuro .tac__c { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); }
-.tac--escuro .tac__b:hover .tac__c { background: var(--nu-white-18); }
-.tac--escuro .tac__r { color: var(--nu-agora-sub); }
-.tac--escuro .tac__b--on .tac__c { background: var(--nu-green-soft); color: var(--nu-navy); box-shadow: none; }
-.tac--escuro .tac__logo { filter: brightness(0) invert(1); }
-.tac--claro .tac__c { background: var(--nu-cream); color: var(--nu-ink); }
-.tac--claro .tac__b:hover .tac__c { background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card); }
-.tac--claro .tac__r { color: var(--nu-gray-2); }
-.tac--claro .tac__b--on .tac__c { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
-.tac--compacto { gap: 6px; }
-.tac--compacto .tac__b { width: auto; }
-.tac--compacto .tac__c { width: 36px; height: 36px; }
-.tac--compacto .tac__r { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tac__c { background: var(--nu-agora-pilula); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); }
+.tac__b:hover .tac__c { background: var(--nu-white-18); }
+.tac__r { color: var(--nu-agora-sub); }
+.tac__b--on .tac__c { background: var(--nu-green-soft); color: var(--nu-navy); box-shadow: none; }
+.tac__logo { filter: brightness(0) invert(1); }
 .tac__msg { position: absolute; top: 100%; left: 0; margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: 600; opacity: 0; transition: opacity .2s ease; white-space: nowrap; }
-.tac--escuro .tac__msg { color: var(--nu-agora-sub); }
+.tac__msg { color: var(--nu-agora-sub); }
 .tac__msg--on { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   .tac__c, .tac__msg { transition: none; }

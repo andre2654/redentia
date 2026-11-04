@@ -20,6 +20,13 @@
 //   tom 'escuro' linha azul-clara sobre navy
 //   tom 'luz'    a linha de luz da noite (o rodapé, o /login): o traço acende
 //                até o ponto de hoje, com halo
+// De borda a borda (o topo do /asset, TopoBolsa): a caixa vai até a beira da
+// tela, mas o desenho mora numa área por dentro (.agr__plot), recuada por
+// --agr-esq e --agr-dir. Os fios das marcas continuam de ponta a ponta; o ponto
+// de hoje, o halo, o rótulo e os rótulos das marcas (recuados por
+// --agr-rotulo-esq) cabem inteiros, com respiro. A mira lê pela área de
+// dentro: o mouse ou o dedo na faixa da beira cai na ponta (o primeiro ou o
+// último dia), então medir até as pontas continua fácil.
 // viewBox literal: o :viewBox vira prop do DOM e o Vue reclama (NuFooterLinha).
 import type { SeriesPoint } from '~/types/acao'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
@@ -35,11 +42,9 @@ const props = withDefaults(defineProps<{
   carregando?: boolean
   /** sem as marcas de preço */
   semMarcas?: boolean
-  /** os rótulos das marcas à esquerda, fora da caixa (o pai reserva a margem) */
-  marcasFora?: boolean
   /** 'PETR4 em 12 meses', para o leitor de tela */
   rotulo?: string
-}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, marcasFora: false, rotulo: '' })
+}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '' })
 
 const W = 1000
 const H = 300
@@ -88,6 +93,16 @@ function ibovEm(t: string): number | null {
   }
   return r ?? s[0]!.v
 }
+/**
+ * A dica presa à mira sem sair da caixa: no meio, centrada; perto das pontas,
+ * ancorada pela borda (a dica cresce para dentro), então ela cabe inteira em
+ * qualquer largura, até no 375, sem depender de quanto o texto mede.
+ */
+function ancora(x: number): Record<string, string> {
+  if (x < 25) return { left: `${x}%`, '--agr-dica-x': '-8px' }
+  if (x > 75) return { left: `${x}%`, '--agr-dica-x': 'calc(-100% + 8px)' }
+  return { left: `${x}%`, '--agr-dica-x': '-50%' }
+}
 const pct = (a: number, b: number) => (a ? ((b - a) / a) * 100 : 0)
 const ponto = (i: number) => {
   const p = props.ativo[i]
@@ -98,6 +113,8 @@ const ponto = (i: number) => {
 const cursor = ref<number | null>(null)
 const medida = ref<{ a: number; b: number } | null>(null)
 const caixa = ref<HTMLElement | null>(null)
+/** a área do desenho, por dentro do recuo: é por ela que o x vira dia */
+const plot = ref<HTMLElement | null>(null)
 
 const leitura = computed(() => {
   const i = cursor.value
@@ -129,7 +146,7 @@ const medicao = computed(() => {
     de: dataDoPonto(ini.p.t), ate: dataDoPonto(fim.p.t),
     delta: fmtDelta(d), var: pctAtivo(v), dir: v < 0 ? 'down' : 'up',
     ibov: ib0 && ib1 != null ? pctAtivo(pct(ib0, ib1)) : null,
-    centro: Math.min(84, Math.max(16, (ini.x + fim.x) / 2)),
+    centro: (ini.x + fim.x) / 2,
   }
 })
 /**
@@ -166,7 +183,7 @@ watch(() => props.ativo, limpar)
 
 /* ——— mouse e toque ——— */
 function indiceDoEvento(e: PointerEvent | { clientX: number }): number {
-  const el = caixa.value
+  const el = plot.value ?? caixa.value
   if (!el) return 0
   const r = el.getBoundingClientRect()
   return indiceDoX(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)))
@@ -298,12 +315,14 @@ function aoTeclar(e: KeyboardEvent) {
 
 <template>
   <div
-    ref="caixa" class="agr" :class="[`agr--${tom}`, { 'agr--carregando': carregando, 'agr--fora': marcasFora, 'agr--lendo': leitura || medicao }]"
+    ref="caixa" class="agr" :class="[`agr--${tom}`, { 'agr--carregando': carregando, 'agr--lendo': leitura || medicao }]"
     tabindex="0" role="group"
     :aria-label="`${rotulo || `Gráfico de ${ticker}`}. Setas movem a mira; Enter marca o início de uma medida.`"
     @pointerdown="aoApertar" @pointermove="aoMover" @pointerup="aoSoltar" @pointercancel="aoCancelar" @pointerleave="aoSair"
     @focus="aoFocar" @blur="limpar" @keydown="aoTeclar"
   >
+    <span v-for="m in marcas" :key="m.v" class="agr__marca" :style="{ top: `${m.top}%` }" aria-hidden="true"><span class="agr__marca-t">{{ fmtMarca(m.v) }}</span></span>
+    <div ref="plot" class="agr__plot">
     <svg class="agr__svg" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient :id="`${uid}-area`" x1="0" y1="0" x2="0" y2="1">
@@ -321,7 +340,6 @@ function aoTeclar(e: KeyboardEvent) {
       <path v-if="tom === 'luz'" :d="c.linha" class="agr__halo" />
       <path :d="c.linha" class="agr__linha" :stroke="tom === 'luz' ? `url(#${uid}-luz)` : undefined" />
     </svg>
-    <span v-for="m in marcas" :key="m.v" class="agr__marca" :style="{ top: `${m.top}%` }" aria-hidden="true"><span class="agr__marca-t">{{ fmtMarca(m.v) }}</span></span>
     <template v-if="fimPct">
       <span class="agr__fim" :style="{ left: `${fimPct.x}%`, top: `${fimPct.y}%` }" aria-hidden="true" />
       <span class="agr__hoje" :class="{ 'agr__hoje--baixo': fimPct.y < 22 }" :style="{ top: `${fimPct.y}%` }">
@@ -337,7 +355,7 @@ function aoTeclar(e: KeyboardEvent) {
       <span class="agr__mira agr__mira--medida" :style="{ left: `${medicao.fim.x}%` }" aria-hidden="true" />
       <span class="agr__ponto" :style="{ left: `${medicao.ini.x}%`, top: `${medicao.ini.y}%` }" aria-hidden="true" />
       <span class="agr__ponto" :style="{ left: `${medicao.fim.x}%`, top: `${medicao.fim.y}%` }" aria-hidden="true" />
-      <span class="agr__dica agr__dica--medida" :style="{ left: `${medicao.centro}%` }" aria-hidden="true">
+      <span class="agr__dica agr__dica--medida" :style="ancora(medicao.centro)" aria-hidden="true">
         <span class="agr__dica-d">{{ medicao.de }} → {{ medicao.ate }}</span>
         <span class="agr__dica-l">
           <span class="agr__dica-p" :class="`agr__dica-v--${medicao.dir}`">{{ medicao.delta }}</span>
@@ -351,7 +369,7 @@ function aoTeclar(e: KeyboardEvent) {
     <template v-else-if="leitura">
       <span class="agr__mira" :style="{ left: `${leitura.x}%` }" aria-hidden="true" />
       <span class="agr__ponto" :style="{ left: `${leitura.x}%`, top: `${leitura.y}%` }" aria-hidden="true" />
-      <span class="agr__dica" :style="{ left: `${Math.min(86, Math.max(14, leitura.x))}%` }" aria-hidden="true">
+      <span class="agr__dica" :style="ancora(leitura.x)" aria-hidden="true">
         <span class="agr__dica-d">{{ leitura.data }}</span>
         <span class="agr__dica-l">
           <span class="agr__dica-p">{{ leitura.preco }}</span>
@@ -360,6 +378,7 @@ function aoTeclar(e: KeyboardEvent) {
         <span v-if="leitura.ibov" class="agr__dica-i">IBOV {{ leitura.ibov }}</span>
       </span>
     </template>
+    </div>
     <span class="agr__sr" aria-live="polite">{{ falado }}</span>
   </div>
 </template>
@@ -373,6 +392,7 @@ function aoTeclar(e: KeyboardEvent) {
 }
 .agr:focus-visible { box-shadow: 0 0 0 2px var(--nu-blue-soft); }
 .agr--carregando { opacity: .45; }
+.agr__plot { position: absolute; top: 0; bottom: 0; left: var(--agr-esq, 0px); right: var(--agr-dir, 0px); pointer-events: none; }
 .agr__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .agr__linha { fill: none; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .agr__ibov { fill: none; stroke-width: 1.3; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
@@ -394,12 +414,11 @@ function aoTeclar(e: KeyboardEvent) {
 .agr--luz .agr__ibov { stroke: var(--nu-white-30); }
 
 .agr__marca { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid; pointer-events: none; }
-/* o rótulo fica em cima do fio, à esquerda; com marcasFora, fora da caixa */
+/* o rótulo fica em cima do fio, à esquerda, recuado da beira */
 .agr__marca-t {
-  position: absolute; left: 0; bottom: 3px; white-space: nowrap;
+  position: absolute; left: var(--agr-rotulo-esq, 0px); bottom: 3px; white-space: nowrap;
   font-size: var(--nu-fs-xs); font-weight: 600; font-variant-numeric: tabular-nums;
 }
-.agr--fora .agr__marca-t { left: auto; right: calc(100% + 10px); bottom: auto; top: 0; transform: translateY(-50%); }
 .agr--claro .agr__marca { border-color: var(--nu-ink-04); }
 .agr--claro .agr__marca-t { color: var(--nu-gray); }
 .agr--escuro .agr__marca, .agr--luz .agr__marca { border-color: var(--nu-cream-text-08); }
@@ -412,9 +431,11 @@ function aoTeclar(e: KeyboardEvent) {
 .agr--escuro .agr__fim { background: var(--nu-blue-soft); box-shadow: 0 0 0 6px var(--nu-blue-soft-18); }
 .agr--luz .agr__fim { background: var(--nu-white); box-shadow: 0 0 0 6px var(--nu-blue-soft-18), 0 0 22px 4px var(--nu-blue-soft); }
 
-/* o rótulo de hoje fica DENTRO da caixa, encostado à direita: nunca vaza */
+/* o rótulo de hoje fica DENTRO da caixa, encostado à direita: nunca vaza. Sem
+   recuo (o ponto na beira), 18px para dentro; com recuo, a borda direita do
+   rótulo alinha com o ponto */
 .agr__hoje {
-  position: absolute; right: 18px; transform: translateY(calc(-100% - 14px)); pointer-events: none;
+  position: absolute; right: max(0px, calc(18px - var(--agr-dir, 0px))); transform: translateY(calc(-100% - 14px)); pointer-events: none;
   display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 7px 11px; border-radius: var(--nu-r-chip);
   font-variant-numeric: tabular-nums; white-space: nowrap; transition: opacity .2s ease;
 }
@@ -440,7 +461,7 @@ function aoTeclar(e: KeyboardEvent) {
   background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-blue), 0 0 0 7px var(--nu-blue-28);
 }
 .agr__dica {
-  position: absolute; top: 0; transform: translate(-50%, calc(-100% - 10px)); pointer-events: none; z-index: 2;
+  position: absolute; top: 0; transform: translate(var(--agr-dica-x, -50%), calc(-100% - 10px)); pointer-events: none; z-index: 2;
   display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; border-radius: var(--nu-r-chip); white-space: nowrap;
   background: var(--nu-navy-2); color: var(--nu-cream-text); font-variant-numeric: tabular-nums;
   box-shadow: 0 0 0 1px var(--nu-cream-text-12), var(--nu-shadow-chart-tip);

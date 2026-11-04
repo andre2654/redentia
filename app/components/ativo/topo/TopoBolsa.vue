@@ -1,12 +1,19 @@
 <script setup lang="ts">
-// Topo do ativo, direção 1: "A bolsa no bolso" (?topo-ativo=1, 03/11/2026),
-// o idioma do app Ações e da página do papel no app da Redentia (V4Ativo): tudo
+// O topo do /asset: "A bolsa no bolso" (03/11/2026, a escolha do dono entre
+// três topos com cara de app), o idioma do app Ações e da página do papel no app da Redentia (V4Ativo): tudo
 // alinhado à margem esquerda, sem centralizar. Em cima, o papel e as ações em
 // botões redondos; embaixo, o preço na fonte fina e grande, que acompanha a
 // mira quando o dedo (ou o mouse) passa no gráfico, com a data e a variação
 // desde o início do período no lugar do fechamento anterior. O gráfico vai de
 // borda a borda e o período fica embaixo dele, num controle segmentado largo.
-// O H1 é o mesmo de hoje, com o mesmo texto e o mesmo nível.
+// O H1 é o mesmo do céu anterior, com o mesmo texto e o mesmo nível.
+// De borda a borda sem cortar nada: a linha e os fios vão até a beira, mas o
+// ponto de hoje, o halo e o rótulo ficam recuados pela margem da página (no
+// mínimo 44px, o raio do halo com respiro), e os rótulos das marcas começam na
+// margem do texto (--agr-esq, --agr-dir e --agr-rotulo-esq do AtivoGrafico).
+// A linha se desenhando é Web Animations, uma vez no mount, só com a aba
+// visível, o gráfico na tela e sem pedido de menos movimento (a lição do
+// /benchmark-ia: nada espera o observador para existir).
 import type { AcaoPayload, AcaoRange, AcaoSeriesPair, AcaoStatRow } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 import type { LeituraDoGrafico, LegendaItem } from '~/utils/ativoDirecoes'
@@ -34,6 +41,18 @@ const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const leitura = ref<LeituraDoGrafico | null>(null)
 const logoFalhou = ref(false)
 const preco = computed(() => leitura.value?.preco ?? props.a.hero.priceFmt)
+
+const palco = ref<HTMLElement | null>(null)
+onMounted(() => {
+  const el = palco.value
+  if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const r = el.getBoundingClientRect()
+  if (r.top >= window.innerHeight || r.bottom <= 0) return
+  const curva = 'cubic-bezier(.2, .8, .2, 1)'
+  el.querySelector('.agr__svg')?.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1400, delay: 150, easing: curva, fill: 'backwards' })
+  el.querySelectorAll('.agr__fim, .agr__hoje').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 1350, easing: 'ease', fill: 'backwards' }))
+  el.querySelector('.tbo__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: curva, fill: 'backwards' })
+})
 </script>
 
 <template>
@@ -49,7 +68,7 @@ const preco = computed(() => leitura.value?.preco ?? props.a.hero.priceFmt)
         </div>
         <span v-if="position" class="tbo__posicao">Na sua carteira · {{ nf0.format(position.qty) }} {{ position.qty === 1 ? 'cota' : 'cotas' }}</span>
       </div>
-      <TopoAcoes :ticker="t" :seguivel="seguivel" tom="escuro" @perguntar="emit('abrir')" />
+      <TopoAcoes :ticker="t" :seguivel="seguivel" @perguntar="emit('abrir')" />
     </div>
 
     <div class="tbo__preco-linha">
@@ -66,7 +85,7 @@ const preco = computed(() => leitura.value?.preco ?? props.a.hero.priceFmt)
       </p>
     </div>
 
-    <div v-if="series" v-contexto-chat="contextoGrafico" class="tbo__palco">
+    <div v-if="series" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco">
       <div class="tbo__palco-cab">
         <h2 class="tbo__h2">{{ tituloGrafico }}</h2>
         <p v-if="legenda.length" class="tbo__legenda">
@@ -133,8 +152,13 @@ const preco = computed(() => leitura.value?.preco ?? props.a.hero.priceFmt)
 .tbo__leg b.tbo__leg--down { color: var(--nu-red-soft); }
 .tbo__traco { width: 14px; height: 2px; background: var(--nu-blue-soft); }
 .tbo__traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
-/* de borda a borda: o gráfico sai da margem, como no app */
-.tbo__grafico { position: relative; height: clamp(220px, 26vw, 360px); margin: 14px calc(var(--g) * -1) 0; }
+/* de borda a borda: o gráfico sai da margem, como no app; o ponto de hoje, o
+   halo e o rótulo recuam até a margem (no mínimo 44px), os rótulos das marcas
+   começam na margem do texto */
+.tbo__grafico {
+  position: relative; height: clamp(220px, 26vw, 360px); margin: 14px calc(var(--g) * -1) 0;
+  --agr-esq: 16px; --agr-dir: max(var(--g), 44px); --agr-rotulo-esq: var(--g);
+}
 .tbo__horizonte { height: 1px; margin: 0 calc(var(--g) * -1); background: linear-gradient(90deg, transparent, var(--nu-chat-luz-1) 30%, var(--nu-white-60) 50%, var(--nu-chat-luz-3) 70%, transparent); box-shadow: 0 0 18px 3px var(--nu-chat-luz-1); }
 .tbo__periodo { display: flex; margin-top: 14px; }
 .tbo__seg { width: 100%; max-width: 520px; }
