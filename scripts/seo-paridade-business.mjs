@@ -34,7 +34,7 @@ const BASE = args.base ?? 'http://localhost:3471'
 const ANTIGA = args.antiga ?? '.prints-business/antiga.html'
 const PAUSA = Number(args.pausa ?? 2500)
 const TETO = Number(args.teto ?? 650)
-const DIRECOES = ['', '?biz=1', '?biz=2', '?biz=3']
+const DIRECOES = ['', '?biz=2']
 
 const SEM_TEXTO = new Set(['script', 'style', 'noscript', 'template', 'head'])
 const palavras = (s) => s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length

@@ -33,22 +33,18 @@ usePageSeo({
 // "Redentia For Business · Redentia" repete a palavra duas vezes.
 useHead({ titleTemplate: null })
 
-// PROTÓTIPO (04/11/2026, o dono: "refazermos a tela do /business"; a primeira
-// leva de três foi recusada: "parece site, não produto", "ficou parecida com a
-// atual", referências Decade e Brex). Três direções novas, trocadas só no dev:
-// ?biz=1 (a tela primeiro, na gramática da Brex), ?biz=2 (a Decade com o
-// produto vivo no lugar da foto) e ?biz=3 (a demo rolável: rolar faz a reunião
-// acontecer no assistente). Em produção import.meta.dev é false, o mapa fica
-// vazio (os componentes nem entram no bundle) e segue a página de hoje até o
-// dono escolher. As três têm o mesmo SEO (o usePageSeo acima), o mesmo H1, o
-// FAQ inteiro no SSR com um FAQPage só, o mesmo #contato no fim (RbContato) e
-// as âncoras da nav do topo (#produto, #seguranca, #prova, #faq).
+// PROTÓTIPO (04/11/2026, o dono: "refazermos a tela do /business"). Duas
+// levas de três direções; ele escolheu a 2, "a Decade com produto" ("ficou
+// melhor, mas ainda tá meio merda"), e ela foi refeita em cima do diagnóstico
+// dele. Só ela fica, no dev, por ?biz=2, até ele aprovar. Em produção
+// import.meta.dev é false, o mapa fica vazio (o componente nem entra no
+// bundle) e segue a página de hoje. Mesmo SEO (o usePageSeo acima), mesmo H1,
+// FAQ inteiro no SSR com um FAQPage só, o mesmo #contato (RbContato) e as
+// âncoras da nav do topo (#produto, #seguranca, #prova, #faq).
 const route = useRoute()
 const DIRECOES: Record<string, Component> = import.meta.dev
   ? {
-      '1': defineAsyncComponent(() => import('~/components/business/direcoes/BizBrex.vue')),
       '2': defineAsyncComponent(() => import('~/components/business/direcoes/BizDecadeProduto.vue')),
-      '3': defineAsyncComponent(() => import('~/components/business/direcoes/BizDemo.vue')),
     }
   : {}
 const direcao = computed(() => DIRECOES[String(route.query.biz ?? '')] ?? null)

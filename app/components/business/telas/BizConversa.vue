@@ -34,7 +34,7 @@ const atraso = (i: number) => `${Math.round(Math.min(i * 38, 900) + 350)}ms`
 .bcv__resposta { display: flex; flex-direction: column; gap: 10px; }
 .bcv__texto { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .bcv__fonte { margin: 0; color: var(--nu-tela-nota); font-size: var(--nu-fs-xs); font-weight: 500; }
-.bcv__tela { border-radius: var(--nu-r-panel); background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-tela-linha); overflow: hidden; }
+.bcv__tela { background: var(--nu-white); }
 .bcv--tocar .bcv__p { display: inline-block; animation: nu-palavra .52s cubic-bezier(.22, 1, .36, 1) backwards; }
 .bcv--tocar .bcv__tela { animation: bcv-tela .6s cubic-bezier(.2, .8, .2, 1) backwards .3s; }
 @keyframes bcv-tela { from { opacity: 0; transform: translateY(10px); } }

@@ -163,7 +163,8 @@ function desenhar() {
 
 /* `tocar` (useBizEntrada, no pai) varre os fios da esquerda para a direita,
    uma vez: o leque se abrindo. Sem ele, os fios só aparecem prontos. */
-const props = withDefaults(defineProps<{ tocar?: boolean }>(), { tocar: false })
+/* `rotulos` false: o leque como fundo (o hero da /business), sem os valores */
+const props = withDefaults(defineProps<{ tocar?: boolean; rotulos?: boolean }>(), { tocar: false, rotulos: true })
 onMounted(() => {
   desenhar()
   ro = new ResizeObserver(() => desenhar())
@@ -196,10 +197,12 @@ const DESCRICAO = `Leque de ${N.toLocaleString('pt-BR')} caminhos da carteira de
       </svg>
       <span class="bzl__ponto bzl__ponto--alto" :style="{ top: ROTULOS.p90.y }" />
       <span class="bzl__ponto bzl__ponto--baixo" :style="{ top: ROTULOS.p10.y }" />
-      <span class="bzl__rot bzl__rot--alto" :style="{ top: ROTULOS.p90.y }">{{ ROTULOS.p90.txt }}</span>
-      <span class="bzl__rot bzl__rot--baixo" :style="{ top: ROTULOS.p10.y }">{{ ROTULOS.p10.txt }}</span>
+      <template v-if="rotulos">
+        <span class="bzl__rot bzl__rot--alto" :style="{ top: ROTULOS.p90.y }">{{ ROTULOS.p90.txt }}</span>
+        <span class="bzl__rot bzl__rot--baixo" :style="{ top: ROTULOS.p10.y }">{{ ROTULOS.p10.txt }}</span>
+      </template>
     </div>
-    <div class="bzl__eixo" aria-hidden="true"><span>hoje, R$ 1 milhão</span><span>em {{ X.horizonte }}</span></div>
+    <div v-if="rotulos" class="bzl__eixo" aria-hidden="true"><span>hoje, R$ 1 milhão</span><span>em {{ X.horizonte }}</span></div>
   </figure>
 </template>
 

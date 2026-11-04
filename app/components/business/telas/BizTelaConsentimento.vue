@@ -18,7 +18,6 @@ const LISTA = ['xp', 'btg', 'nubank', 'itau'].map((s) => INSTITUICOES.find((i) =
 <template>
   <div class="bcs" :class="{ 'bcs--tocar': tocar }">
     <p class="bcs__h">Selecione a instituição</p>
-    <div class="bcs__busca">Encontre a sua instituição</div>
     <div class="bcs__abas"><span class="bcs__aba--on">Todas</span><span>Bancos</span><span>Corretoras</span></div>
     <ul class="bcs__lista">
       <li v-for="(i, k) in LISTA" :key="i.slug" :class="{ 'bcs__item--escolhido': k === 0 }">
