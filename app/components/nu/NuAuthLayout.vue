@@ -5,7 +5,8 @@
 // `panel` (hoje o RbAuthAside da /business/cadastro e do convite; ele some
 // <=1020px). Sem header/nav/footer — quem usa este layout declara
 // `definePageMeta({ layout: false })`. O /login saiu desta casca em
-// 03/11/2026 (LoginLinha), e com ele o painel padrão (NuAuthAsidePanel).
+// 03/11/2026, e com ele o painel padrão (NuAuthAsidePanel); hoje a tela dele
+// é a LoginMinimo.
 withDefaults(defineProps<{ logoTo?: string }>(), { logoTo: '/' })
 </script>
 

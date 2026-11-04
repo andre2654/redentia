@@ -1,9 +1,10 @@
 <script setup lang="ts">
-// /login — porta de entrada do miolo logado (PR6). Desde 03/11/2026 a tela é
-// "A linha" (LoginLinha), escolhida pelo dono entre três direções: a banda
-// navy com o Ibovespa desde 1995 e o formulário no creme; modos Entrar/Criar
-// conta e métodos celular/e-mail na MESMA rota, sem navegação. Esta página
-// guarda toda a lógica; LoginLinha recebe `porta` (estado + ações) e desenha.
+// /login — porta de entrada do miolo logado (PR6). Desde 04/11/2026 a tela é
+// a "Minimal" (LoginMinimo), escolhida pelo dono entre sete direções pensadas
+// no celular: branco, um título enorme e leve, um campo, um botão, e a Apple e
+// o Google em linhas finas. Entrar e Criar conta, celular e e-mail, na MESMA
+// rota, sem navegação. Esta página guarda toda a lógica; LoginMinimo recebe
+// `porta` (estado + ações) e desenha.
 //
 // O design coleta só o identificador (estilo Nubank); o fluxo real é
 // passwordless por PIN — celular → POST /auth/magic-pin/* (WhatsApp,
@@ -28,7 +29,6 @@ import type {
   SocialLoginResponse,
 } from '~/types/auth'
 import type { AppleCredencial } from '~/composables/useAppleAuth'
-import type { Component } from 'vue'
 import type { PortaLogin } from '~/types/loginPorta'
 import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
@@ -315,7 +315,7 @@ async function onAppleCredential(cred: AppleCredencial) {
   }
 }
 
-// ————— o que a tela (LoginLinha) recebe: o estado e as ações desta página —————
+// ————— o que a tela (LoginMinimo) recebe: o estado e as ações desta página —————
 const porta: PortaLogin = reactive({
   mode, method, phone, email, step, sending, verifying, identifierError, pinError, googleError,
   googleSubmitting, whatsappDown, socialEntrando, resendIn,
@@ -350,36 +350,8 @@ if (import.meta.dev) {
   }
   if (forcar === 'social') googleSubmitting.value = true
 }
-
-// ————— PROTÓTIPO (04/11/2026): três peles novas, pensadas no celular —————
-// O dono achou a experiência de "A linha" esquisita no celular (a faixa navy
-// com a frase toma a primeira tela, dois seletores empilhados, o teclado
-// cobre o campo). Três direções, trocadas só no dev por ?entrar=1 (folha
-// nativa: Apple e Google em cima e um campo só), ?entrar=2 (passo a passo:
-// uma pergunta por tela) e ?entrar=3 (a noite compacta: a linha num céu
-// baixo e o formulário numa folha por cima). Mais quatro, a pedido do dono
-// ("crie mais versões"): ?entrar=4 (a conversa: a Redentia pergunta e a
-// pessoa responde na pílula do chat), ?entrar=5 (o losango: o logo grande
-// reage ao contato e ao código), ?entrar=6 (minimal: branco, um título
-// enorme e leve) e ?entrar=7 (com o pregão do dia numa faixa antes do
-// formulário). A variação só recebe `porta` e
-// desenha. Em produção import.meta.dev é false, o mapa fica vazio (nem entra
-// no bundle) e segue "A linha".
-const VARIANTES: Record<string, Component> = import.meta.dev
-  ? {
-      '1': defineAsyncComponent(() => import('~/components/login/variantes/LoginFolha.vue')),
-      '2': defineAsyncComponent(() => import('~/components/login/variantes/LoginPassos.vue')),
-      '3': defineAsyncComponent(() => import('~/components/login/variantes/LoginNoite.vue')),
-      '4': defineAsyncComponent(() => import('~/components/login/variantes/LoginConversa.vue')),
-      '5': defineAsyncComponent(() => import('~/components/login/variantes/LoginLosango.vue')),
-      '6': defineAsyncComponent(() => import('~/components/login/variantes/LoginMinimo.vue')),
-      '7': defineAsyncComponent(() => import('~/components/login/variantes/LoginMercado.vue')),
-    }
-  : {}
-const variante = computed(() => VARIANTES[String(route.query.entrar ?? '')] ?? null)
 </script>
 
 <template>
-  <component :is="variante" v-if="variante" :porta="porta" />
-  <LoginLinha v-else :porta="porta" />
+  <LoginMinimo :porta="porta" />
 </template>

@@ -1,4 +1,4 @@
-// O que a página /login entrega à tela (LoginLinha, desde 03/11/2026). A
+// O que a página /login entrega à tela (LoginMinimo, desde 04/11/2026). A
 // lógica de autenticação mora só em pages/login.vue; a tela recebe este objeto
 // (reactive, então os refs vêm desembrulhados e os campos `phone`/`email`
 // aceitam escrita) e só desenha.

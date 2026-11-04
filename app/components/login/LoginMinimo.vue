@@ -1,14 +1,15 @@
 <script setup lang="ts">
-// PROTÓTIPO 6 do /login (04/11/2026, ?entrar=6 só no dev): "Minimal Apple",
-// a mais calma. Branco total, só a marca pequena, um título enorme e leve
-// ("Entre."), um campo, um botão e muito respiro. Apple e Google descem para
-// duas linhas finas no pé, nos estilos de contorno dos próprios guias (a
-// Apple "white with outline", o Google neutro), sem pílula cheia. O canal é
-// uma palavra ao lado do rótulo. A lógica é a de pages/login.vue (porta);
-// aqui é só a pele.
+// A tela do /login, a "Minimal" (escolhida pelo dono em 04/11/2026 entre sete
+// direções pensadas no celular: "gostei do 6, pode manter"). Branco total, só
+// a marca pequena, um título enorme e leve ("Entre."), um campo, um botão e
+// muito respiro. Apple e Google descem para duas linhas finas no pé, nos
+// estilos de contorno dos próprios guias (a Apple "white with outline", o
+// Google neutro), sem pílula cheia. O canal é uma palavra ao lado do rótulo.
+// Com o teclado aberto, useCampoAVista põe o campo e o botão acima dele. A
+// lógica é a de pages/login.vue (porta); aqui é só a pele.
 import type { PortaLogin } from '~/types/loginPorta'
 import { DIAS_GRATIS, PRECO_MENSAL, formatarCelular } from '~/utils/assinatura'
-import LoginCodigo from '../LoginCodigo.vue'
+import LoginCodigo from './LoginCodigo.vue'
 
 const props = defineProps<{ porta: PortaLogin }>()
 const p = props.porta
@@ -69,12 +70,13 @@ useCampoAVista(bloco)
             <p id="lmi-nota" class="lmi__nota" :class="{ 'lmi__nota--erro': p.identifierError, 'lmi__nota--aviso': !p.identifierError && p.whatsappDown && p.isPhone }" aria-live="polite">
               <template v-if="p.identifierError">{{ p.identifierError }}</template>
               <template v-else-if="p.whatsappDown && p.isPhone">{{ p.whatsappNotice }}</template>
+              <template v-else-if="p.isPhone">{{ p.fieldHelp }}</template>
               <template v-else>&nbsp;</template>
             </p>
-            <button type="submit" class="lmi__cta" :class="{ 'lmi__cta--indo': p.sending }" :disabled="!p.ready || p.sending">{{ p.sending ? 'Enviando…' : 'Continuar' }}</button>
+            <button type="submit" class="lmi__cta" :class="{ 'lmi__cta--indo': p.sending }" :disabled="!p.ready || p.sending">{{ p.mainCta }}</button>
           </form>
 
-          <div class="lmi__marcas">
+          <div class="lmi__marcas" :class="{ 'lmi__marcas--ocupado': p.googleSubmitting }">
             <LoginAppleButton tom="contorno" :disabled="p.googleSubmitting" @credential="p.onAppleCredential" @error="p.googleError = $event" />
             <LoginGoogleButton :disabled="p.googleSubmitting" @credential="p.onGoogleCredential" @error="p.googleError = $event" />
           </div>
@@ -87,9 +89,9 @@ useCampoAVista(bloco)
 
         <template v-else>
           <h1 class="lmi__titulo">{{ titulo }}</h1>
-          <p class="lmi__dek">Enviado para <b>{{ destino }}</b>. {{ p.isPhone ? 'Vale 5 minutos.' : 'Vale 10 minutos.' }}</p>
+          <p class="lmi__dek">{{ p.isPhone ? 'Mandamos 6 números no WhatsApp' : 'Mandamos 6 números para' }} <b :class="{ 'lmi__fone': p.isPhone }">{{ destino }}</b>. {{ p.isPhone ? 'Valem 5 minutos.' : 'Valem 10 minutos.' }}</p>
           <div ref="bloco" class="lmi__bloco-codigo">
-            <LoginCodigo tom="grande" :verifying="p.verifying" :error="p.pinError" @submit="p.verifyPin" />
+            <LoginCodigo :verifying="p.verifying" :error="p.pinError" @submit="p.verifyPin" />
             <p class="lmi__nota" :class="{ 'lmi__nota--erro': p.pinError }" aria-live="polite">
               <template v-if="p.pinError">{{ p.pinError }}</template>
               <template v-else-if="p.verifying">Conferindo…</template>
@@ -120,10 +122,11 @@ useCampoAVista(bloco)
 .lmi__jornada { margin-bottom: 24px; }
 
 .lmi__titulo {
-  margin: 0; color: var(--nu-ink); font-size: clamp(60px, 19vw, 104px); font-weight: 300; letter-spacing: -0.055em; line-height: .95;
+  margin: 0; color: var(--nu-ink); font-size: clamp(56px, 18vw, 92px); font-weight: 300; letter-spacing: -0.055em; line-height: .95;
 }
 .lmi__dek { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-md); line-height: 1.5; }
 .lmi__dek b { color: var(--nu-ink); font-weight: 600; overflow-wrap: anywhere; }
+.lmi__dek .lmi__fone { white-space: nowrap; }
 
 .lmi__form { display: flex; flex-direction: column; margin-top: clamp(28px, 6vh, 56px); }
 .lmi__rotulos { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -164,6 +167,8 @@ useCampoAVista(bloco)
 /* as marcas: duas linhas finas, no contorno dos guias */
 .lmi__marcas { display: flex; flex-direction: column; gap: 8px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--nu-navy-07); }
 .lmi__marcas:empty { display: none; }
+/* entrando com a Apple ou o Google: as duas linhas esmaecem juntas (a da Apple já esmaece sozinha) */
+.lmi__marcas--ocupado :deep(.lgb) { opacity: .6; }
 .lmi__marcas :deep(.lab__pilula), .lmi__marcas :deep(.lgb__pilula) { min-height: 48px; font-size: var(--nu-fs-sm); font-weight: 600; }
 
 .lmi__plano { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); line-height: 1.5; }
@@ -175,7 +180,7 @@ useCampoAVista(bloco)
 .lmi__pe .lmi__link { min-height: 0; padding: 0; vertical-align: baseline; }
 .lmi__link:disabled { color: var(--nu-gray); cursor: default; }
 
-.lmi__bloco-codigo { margin-top: clamp(28px, 6vh, 56px); }
+.lmi__bloco-codigo { margin-top: clamp(12px, 3vh, 32px); }
 .lmi__acoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-top: 8px; }
 .lmi__espera { display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-variant-numeric: tabular-nums; }
 

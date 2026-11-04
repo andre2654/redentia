@@ -1,4 +1,4 @@
-// O campo e o botão à vista com o teclado aberto (protótipos do /login,
+// O campo e o botão à vista com o teclado aberto (o /login, LoginMinimo,
 // 04/11/2026). No celular o teclado come metade da tela: quando um campo
 // dentro de `bloco` ganha foco, ou quando a área visível encolhe com o campo
 // já focado, a página rola o mínimo para o bloco inteiro (o campo e o botão
