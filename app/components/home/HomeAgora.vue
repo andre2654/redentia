@@ -21,11 +21,30 @@
 //    carteira." + a mesma chamada do visitante, que leva ao /assinar;
 //  - carteira sem assinatura: o passo que falta é assinar;
 //  - resumo indisponível (API fora): "Olá, Nome." + o caminho da carteira.
+import type { Component } from 'vue'
 import type { CarteiraResumoVM } from '~/types/carteira'
 import { frasesDoDia } from '~/utils/diaDaCarteira'
 import { estadoDoPregao } from '~/utils/pregao'
+import HomeAneis from './HomeAneis.vue'
 
 const props = defineProps<{ resumo: CarteiraResumoVM | null }>()
+
+// ESBOÇO (03/11/2026, o dono: "esse está muito perto do ícone de gym da
+// Apple"): quatro alternativas para os anéis, trocadas só no dev por ?aneis=1
+// (a régua do zero), ?aneis=2 (as colunas de luz), ?aneis=3 (o losango da
+// marca) e ?aneis=4 (o placar). Mesmas props do HomeAneis. Em produção
+// import.meta.dev é false, o mapa fica vazio (nem entra no bundle) e seguem os
+// anéis de hoje. Lado a lado, com os casos extremos: /dev/aneis (só no dev).
+const route = useRoute()
+const ESBOCOS_ANEIS: Record<string, Component> = import.meta.dev
+  ? {
+      '1': defineAsyncComponent(() => import('./aneis/HomeAneisRegua.vue')),
+      '2': defineAsyncComponent(() => import('./aneis/HomeAneisColunas.vue')),
+      '3': defineAsyncComponent(() => import('./aneis/HomeAneisLosango.vue')),
+      '4': defineAsyncComponent(() => import('./aneis/HomeAneisPlacar.vue')),
+    }
+  : {}
+const esbocoAneis = computed(() => ESBOCOS_ANEIS[String(route.query.aneis ?? '')] ?? HomeAneis)
 
 const { firstName } = useAuthState()
 
@@ -130,7 +149,8 @@ const proventoSub = computed(() => (frases.value ? `${dia.value?.provento ? 'cai
             </template>
           </div>
           <div v-if="!podeVerNumeros || dia?.carteiraPct != null" v-contexto-chat="contextoAneis" class="hag__anel">
-            <HomeAneis
+            <component
+              :is="esbocoAneis"
               :voce="dia?.carteiraPct ?? null" :bolsa="dia?.bolsaPct ?? null"
               :provento="!!dia?.provento" :provento-sub="proventoSub"
               :esmaecido="!!frases?.esmaecido" :carregando="!podeVerNumeros || !frases"
