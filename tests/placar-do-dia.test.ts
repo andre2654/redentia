@@ -1,11 +1,11 @@
 /**
  * As contas dos esboços que disputam o lugar dos anéis (03/11/2026): a escala
  * que só cresce de 3 em 3, a diferença em p.p. a partir do que a tela mostra e
- * a barra dividida do placar, que deixa ver a diferença pequena.
+ * os losangos da constelação, cada um uma fração fixa da escala.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { dicaDoDia, diferencaEmPP, escalaDoDia, marcasDaEscala, pesoDaDiferenca, posicaoNaEscala, ppComSinal, quemNaFrente, TETO_DA_ESCALA } from '../app/utils/placarDoDia.ts'
+import { dicaDoDia, diferencaEmPP, escalaDoDia, faladoDoDia, losangosDoDia, marcasDaEscala, posicaoNaEscala, ppComSinal, quemNaFrente, TETO_DA_ESCALA } from '../app/utils/placarDoDia.ts'
 
 test('a escala é 3 num dia comum, cresce de 3 em 3 e para no teto', () => {
   assert.equal(escalaDoDia([-1.44, -1.42]), 3)
@@ -54,16 +54,6 @@ test('quem foi melhor: atrás, à frente ou empatado', () => {
   assert.equal(quemNaFrente(null, -1.42), null)
 })
 
-test('a barra do placar mostra a diferença pequena e não estoura na grande', () => {
-  assert.equal(pesoDaDiferenca(-0.02), -0.1)
-  assert.equal(pesoDaDiferenca(0.5), 0.5)
-  assert.equal(pesoDaDiferenca(2), 1)
-  assert.equal(pesoDaDiferenca(7.4), 1)
-  assert.equal(pesoDaDiferenca(-7.4), -1)
-  assert.equal(pesoDaDiferenca(0), 0)
-  assert.equal(pesoDaDiferenca(null), 0)
-})
-
 test('a dica do hover: uma frase por série, e a que falta some', () => {
   const dia = { voce: -1.44, bolsa: -1.42, provento: false, proventoSub: 'nenhum hoje' }
   assert.equal(dicaDoDia('voce', dia), 'Sua carteira: −1,44%, 0,02 p.p. atrás da bolsa')
@@ -79,4 +69,19 @@ test('as marcas da escala: as pontas, os terços e o zero', () => {
   assert.deepEqual(marcasDaEscala(3).map((m) => m.rotulo), ['−3%', '−2%', '−1%', '0', '+1%', '+2%', '+3%'])
   assert.deepEqual(marcasDaEscala(9).map((m) => m.rotulo), ['−9%', '−6%', '−3%', '0', '+3%', '+6%', '+9%'])
   assert.equal(marcasDaEscala(3)[0]!.f, -1)
+})
+
+test('a frase do leitor de tela diz os dois, a diferença e o provento', () => {
+  assert.equal(faladoDoDia(-1.44, -1.42, false), 'Você menos 1,44%, bolsa menos 1,42%, 0,02 p.p. atrás da bolsa, sem provento.')
+  assert.equal(faladoDoDia(null, -1.42, true), 'Você sem dado, bolsa menos 1,42%, caiu provento.')
+  assert.equal(faladoDoDia(-1.42, -1.42, false), 'Você menos 1,42%, bolsa menos 1,42%, empatado com a bolsa, sem provento.')
+})
+
+test('a constelação: cada losango vale 1/12 da escala, e o último acende em parte', () => {
+  assert.deepEqual(losangosDoDia(-1.44, 3), { cheios: 5, fracao: 0.76, passou: false, unidade: 0.25 })
+  assert.deepEqual(losangosDoDia(-1.42, 3), { cheios: 5, fracao: 0.68, passou: false, unidade: 0.25 })
+  assert.deepEqual(losangosDoDia(0, 3), { cheios: 0, fracao: 0, passou: false, unidade: 0.25 })
+  assert.deepEqual(losangosDoDia(3, 3), { cheios: 12, fracao: 0, passou: false, unidade: 0.25 })
+  assert.deepEqual(losangosDoDia(-6.2, 9), { cheios: 8, fracao: 0.27, passou: false, unidade: 0.75 })
+  assert.deepEqual(losangosDoDia(11.3, 9), { cheios: 12, fracao: 0, passou: true, unidade: 0.75 })
 })

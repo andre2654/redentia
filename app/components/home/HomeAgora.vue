@@ -30,18 +30,20 @@ import HomeAneis from './HomeAneis.vue'
 const props = defineProps<{ resumo: CarteiraResumoVM | null }>()
 
 // ESBOÇO (03/11/2026, o dono: "esse está muito perto do ícone de gym da
-// Apple"): quatro alternativas para os anéis, trocadas só no dev por ?aneis=1
-// (a régua do zero), ?aneis=2 (as colunas de luz), ?aneis=3 (o losango da
-// marca) e ?aneis=4 (o placar). Mesmas props do HomeAneis. Em produção
+// Apple"): alternativas para os anéis, trocadas só no dev por ?aneis=N, com as
+// mesmas props do HomeAneis. Dos quatro primeiros ficou o 3 (o losango), e o
+// dono pediu mais com a marca (04/11): 5 (o logo como ponteiro), 6 (a
+// constelação), 7 (o nível sobreposto) e 8 (o miolo aceso). Em produção
 // import.meta.dev é false, o mapa fica vazio (nem entra no bundle) e seguem os
 // anéis de hoje. Lado a lado, com os casos extremos: /dev/aneis (só no dev).
 const route = useRoute()
 const ESBOCOS_ANEIS: Record<string, Component> = import.meta.dev
   ? {
-      '1': defineAsyncComponent(() => import('./aneis/HomeAneisRegua.vue')),
-      '2': defineAsyncComponent(() => import('./aneis/HomeAneisColunas.vue')),
       '3': defineAsyncComponent(() => import('./aneis/HomeAneisLosango.vue')),
-      '4': defineAsyncComponent(() => import('./aneis/HomeAneisPlacar.vue')),
+      '5': defineAsyncComponent(() => import('./aneis/HomeAneisPonteiro.vue')),
+      '6': defineAsyncComponent(() => import('./aneis/HomeAneisConstelacao.vue')),
+      '7': defineAsyncComponent(() => import('./aneis/HomeAneisNivel.vue')),
+      '8': defineAsyncComponent(() => import('./aneis/HomeAneisMiolo.vue')),
     }
   : {}
 const esbocoAneis = computed(() => ESBOCOS_ANEIS[String(route.query.aneis ?? '')] ?? HomeAneis)

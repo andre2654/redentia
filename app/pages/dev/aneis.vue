@@ -1,12 +1,13 @@
 <script setup lang="ts">
-// SÓ NO DEV (03/11/2026): os quatro esboços que disputam o lugar dos anéis do
-// dia na home de quem assina, lado a lado, com os anéis de hoje para comparar,
+// SÓ NO DEV (03/11/2026; refeita em 04/11, quando ficou o 3 e vieram 5 a 8 com
+// a marca): os esboços que disputam o lugar dos anéis do dia na home de quem
+// assina, lado a lado, com os anéis de hoje para comparar,
 // os valores do pregão de 03/11 (você −1,44%, bolsa −1,42%, nenhum provento) e
 // os casos extremos. A home logada precisa de sessão; aqui não, para os prints.
-// Na home, o mesmo esboço entra por ?aneis=1|2|3|4.
+// Na home, o mesmo esboço entra por ?aneis=3|5|6|7|8.
 // Em produção a página é 404 (o middleware) e os esboços nem entram no bundle
 // (o mapa abaixo fica vazio fora do dev).
-// Filtros: ?so=0|1|2|3|4 (um desenho só) e ?caso=base|provento|… (um caso só).
+// Filtros: ?so=0|3|5|6|7|8 (um desenho só) e ?caso=base|provento|… (um caso só).
 import type { Component } from 'vue'
 import { contraABolsa } from '~/utils/diaDaCarteira'
 
@@ -21,10 +22,11 @@ useSeoMeta({ title: 'Esboços dos anéis (dev)', robots: 'noindex, nofollow' })
 const DESENHOS: { id: string; nome: string; nota: string; comp: Component | null }[] = import.meta.dev
   ? [
       { id: '0', nome: 'Hoje: os anéis', nota: 'O desenho no ar, para comparar.', comp: defineAsyncComponent(() => import('~/components/home/HomeAneis.vue')) },
-      { id: '1', nome: '1 · A régua do zero', nota: 'Um eixo com o zero no meio; você por cima e a bolsa por baixo deslizam até o seu %, e o trecho entre os dois é a diferença.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisRegua.vue')) },
-      { id: '2', nome: '2 · As colunas de luz', nota: 'Duas colunas sobre o horizonte, no idioma de "A noite": sobem na alta, descem na queda, e um colchete diz a diferença.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisColunas.vue')) },
-      { id: '3', nome: '3 · O losango', nota: 'As duas metades do logo: você à esquerda, a bolsa à direita, cada uma enche do zero até o seu %; o degrau na costura é a diferença.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisLosango.vue')) },
-      { id: '4', nome: '4 · O placar', nota: 'Os dois números grandes e o cabo de guerra: o corte da barra sai do meio para o lado de quem foi melhor.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisPlacar.vue')) },
+      { id: '3', nome: '3 · O losango', nota: 'As duas metades do logo são os dois vasos: você à esquerda, a bolsa à direita, cada uma enche do zero até o seu %. O miolo diz a diferença; a aba de baixo acende no provento.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisLosango.vue')) },
+      { id: '5', nome: '5 · O logo como ponteiro', nota: 'O logo desliza sobre a linha do zero: você é o logo cheio, pousado por cima, a bolsa o vazado, pendurado por baixo. As pontas tocam a linha no número, e o trecho entre elas é a diferença.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisPonteiro.vue')) },
+      { id: '6', nome: '6 · A constelação', nota: 'Duas fileiras de logos pequenos, cada um uma fração fixa (0,25% num dia comum), que acendem do zero para fora: dá para contar. A diferença fica entre as fileiras, onde elas terminam.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisConstelacao.vue')) },
+      { id: '7', nome: '7 · O nível sobreposto', nota: 'Um logo inteiro: você é o preenchimento, a bolsa uma linha de nível. A faixa listrada entre os dois é a diferença, e o número dela fica no miolo.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisNivel.vue')) },
+      { id: '8', nome: '8 · O miolo aceso', nota: 'Dois logos quietos; o dado é o miolo, que acende com a área do dia, na cor do sentido e com a seta. O mais emblemático: o número embaixo faz a leitura.', comp: defineAsyncComponent(() => import('~/components/home/aneis/HomeAneisMiolo.vue')) },
     ]
   : []
 
@@ -62,9 +64,9 @@ const propsDe = (c: Caso) => ({
 <template>
   <main class="dva">
     <header class="dva__topo">
-      <p class="dva__sobre">Só no dev · ?so=0–4 · ?caso=base, provento, iguais, opostos, alta, grande, teto, sem-carteira, esmaecido, carregando</p>
+      <p class="dva__sobre">Só no dev · ?so=0, 3, 5–8 · ?caso=base, provento, iguais, opostos, alta, grande, teto, sem-carteira, esmaecido, carregando</p>
       <h1 class="dva__titulo">Esboços para os anéis do dia</h1>
-      <p class="dva__sub">Você contra a bolsa e o provento, sem anéis. Na home: <code>?aneis=1|2|3|4</code>.</p>
+      <p class="dva__sub">Você contra a bolsa e o provento, sem anéis. Com a marca da Redentia. Na home: <code>?aneis=3|5|6|7|8</code>.</p>
     </header>
 
     <!-- lado a lado, no pregão de 03/11 -->

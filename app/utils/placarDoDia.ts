@@ -1,10 +1,11 @@
 /**
  * As contas dos esboços que disputam o lugar dos anéis na home (03/11/2026).
- * O dono: "esse está muito perto do ícone de gym da Apple". Os quatro esboços
- * (a régua do zero, as colunas de luz, o losango e o placar; ?aneis=1|2|3|4 no
- * dev) dizem a mesma coisa que os anéis, você contra a bolsa e o provento, mas
- * deixam legível a diferença, que no desenho de anéis quase some (−1,44% contra
- * −1,42% dá dois arcos iguais).
+ * O dono: "esse está muito perto do ícone de gym da Apple". Dos quatro
+ * primeiros ficou o losango (?aneis=3), e em 04/11 vieram mais quatro com a
+ * marca (?aneis=5|6|7|8; a geometria do logo está em utils/marcaRedentia.ts).
+ * Todos dizem a mesma coisa que os anéis, você contra a bolsa e o provento,
+ * mas deixam legível a diferença, que no desenho de anéis quase some (−1,44%
+ * contra −1,42% dá dois arcos iguais).
  *
  * Funções puras, sem Nuxt: o teste trava as contas (tests/placar-do-dia.test.ts).
  * Regra de sempre: dado que falta some, nunca vira zero.
@@ -71,17 +72,6 @@ export function quemNaFrente(voce: number | null, bolsa: number | null): QuemNaF
 }
 
 /**
- * O deslocamento da barra dividida do placar, de −1 (a bolsa leva tudo) a 1
- * (você leva tudo). Raiz quadrada até o teto de 2 p.p.: a diferença pequena,
- * que é a de quase todo dia, ainda se vê (0,02 p.p. empurra 10% da metade), e a
- * grande não estoura a barra.
- */
-export function pesoDaDiferenca(d: number | null, teto = 2): number {
-  if (d == null || teto <= 0 || Math.abs(d) < 0.005) return 0
-  return Math.sign(d) * Math.sqrt(Math.min(Math.abs(d), teto) / teto)
-}
-
-/**
  * A dica do hover dos esboços, uma frase por série:
  * 'Sua carteira: −1,44%, 0,02 p.p. atrás da bolsa' / 'Ibovespa: −1,42% no mesmo dia' /
  * 'Provento: nenhum hoje'. Série sem dado → null.
@@ -108,4 +98,25 @@ export function marcasDaEscala(escala: number): { f: number; rotulo: string }[] 
     out.push({ f: i / 3, rotulo: v === 0 ? '0' : `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('pt-BR')}%` })
   }
   return out
+}
+
+/** A frase do leitor de tela: 'Você menos 1,44%, bolsa menos 1,42%, 0,02 p.p. atrás da bolsa, sem provento.' */
+export function faladoDoDia(voce: number | null, bolsa: number | null, provento: boolean): string {
+  const p = (v: number | null) => (v == null ? 'sem dado' : `${v < 0 ? 'menos ' : ''}${nf2.format(Math.abs(v))}%`)
+  const q = quemNaFrente(voce, bolsa)
+  const rel = q ? `, ${q.lider === 'empate' ? 'empatado com a bolsa' : `${q.numero} ${q.relacao}`}` : ''
+  return `Você ${p(voce)}, bolsa ${p(bolsa)}${rel}, ${provento ? 'caiu provento' : 'sem provento'}.`
+}
+
+/**
+ * As unidades da constelação: cada losango vale 1/12 da escala (0,25% num
+ * dia comum, 0,5% ou 0,75% no dia grande). Devolve os cheios, a fração do
+ * último aceso (0…1) e se passou dos 12.
+ */
+export function losangosDoDia(v: number, escala: number, porLado = 12): { cheios: number; fracao: number; passou: boolean; unidade: number } {
+  const unidade = escala / porLado
+  const n = Math.abs(r2(v)) / unidade
+  if (n > porLado + 1e-9) return { cheios: porLado, fracao: 0, passou: true, unidade }
+  const cheios = Math.floor(n + 1e-9)
+  return { cheios, fracao: r2(n - cheios), passou: false, unidade }
 }
