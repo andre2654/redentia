@@ -357,7 +357,12 @@ if (import.meta.dev) {
 // cobre o campo). Três direções, trocadas só no dev por ?entrar=1 (folha
 // nativa: Apple e Google em cima e um campo só), ?entrar=2 (passo a passo:
 // uma pergunta por tela) e ?entrar=3 (a noite compacta: a linha num céu
-// baixo e o formulário numa folha por cima). A variação só recebe `porta` e
+// baixo e o formulário numa folha por cima). Mais quatro, a pedido do dono
+// ("crie mais versões"): ?entrar=4 (a conversa: a Redentia pergunta e a
+// pessoa responde na pílula do chat), ?entrar=5 (o losango: o logo grande
+// reage ao contato e ao código), ?entrar=6 (minimal: branco, um título
+// enorme e leve) e ?entrar=7 (com o pregão do dia numa faixa antes do
+// formulário). A variação só recebe `porta` e
 // desenha. Em produção import.meta.dev é false, o mapa fica vazio (nem entra
 // no bundle) e segue "A linha".
 const VARIANTES: Record<string, Component> = import.meta.dev
@@ -365,6 +370,10 @@ const VARIANTES: Record<string, Component> = import.meta.dev
       '1': defineAsyncComponent(() => import('~/components/login/variantes/LoginFolha.vue')),
       '2': defineAsyncComponent(() => import('~/components/login/variantes/LoginPassos.vue')),
       '3': defineAsyncComponent(() => import('~/components/login/variantes/LoginNoite.vue')),
+      '4': defineAsyncComponent(() => import('~/components/login/variantes/LoginConversa.vue')),
+      '5': defineAsyncComponent(() => import('~/components/login/variantes/LoginLosango.vue')),
+      '6': defineAsyncComponent(() => import('~/components/login/variantes/LoginMinimo.vue')),
+      '7': defineAsyncComponent(() => import('~/components/login/variantes/LoginMercado.vue')),
     }
   : {}
 const variante = computed(() => VARIANTES[String(route.query.entrar ?? '')] ?? null)

@@ -3,10 +3,13 @@
 // com o popup do Sign in with Apple JS no clique (useAppleAuth). Sem
 // NUXT_PUBLIC_APPLE_CLIENT_ID no ambiente, não renderiza nada; quem fecha o
 // popup não vê erro.
+// `tom` (04/11/2026, protótipos do /login): 'preto' é o padrão; 'branco' é a
+// pílula branca do guia da Apple, para fundo escuro; 'contorno' é o estilo
+// "white with outline" do mesmo guia, para a tela branca mais calma.
 import type { AppleCredencial } from '~/composables/useAppleAuth'
 import { appleCancelado } from '~/composables/useAppleAuth'
 
-const props = defineProps<{ disabled?: boolean }>()
+const props = defineProps<{ disabled?: boolean; tom?: 'preto' | 'branco' | 'contorno' }>()
 const emit = defineEmits<{ credential: [cred: AppleCredencial]; error: [message: string] }>()
 
 const { entrar, clientId } = useAppleAuth()
@@ -31,7 +34,7 @@ async function clicar() {
 </script>
 
 <template>
-  <div v-if="clientId || amostra" class="lab" :class="{ 'lab--busy': props.disabled || abrindo }">
+  <div v-if="clientId || amostra" class="lab" :class="[{ 'lab--busy': props.disabled || abrindo }, tom && tom !== 'preto' ? `lab--${tom}` : '']">
     <!-- a pílula preta do guia da Apple: maçã e texto em branco -->
     <button type="button" class="lab__pilula" @click="clicar">
       <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -54,4 +57,9 @@ async function clicar() {
 .lab__pilula:hover { background: #1D1D1F; }
 .lab__pilula:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 .lab__pilula svg { margin-top: -2px; }
+.lab--branco .lab__pilula { background: #FFFFFF; color: #000000; }
+.lab--branco .lab__pilula:hover { background: #F2F2F7; }
+.lab--branco .lab__pilula:focus-visible { outline-color: var(--nu-white); }
+.lab--contorno .lab__pilula { background: #FFFFFF; color: #000000; box-shadow: inset 0 0 0 1px #000000; }
+.lab--contorno .lab__pilula:hover { background: #F5F5F7; }
 </style>
