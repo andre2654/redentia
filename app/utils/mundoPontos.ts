@@ -151,23 +151,3 @@ export function pontosDaTerra(): PontosDaTerra {
   memo = { n, lat, lon, pais }
   return memo
 }
-
-/**
- * Projeção Natural Earth I na caixa 1000×436 do mapa plano (a MESMA dos
- * caminhos de utils/mundoPaises.ts: d3.geoNaturalEarth1().fitWidth(1000),
- * escala 185.013 e translação [500, 255,08]). Fórmula de Šavrič et al.
- */
-export const MAPA_W = 1000
-export const MAPA_H = 436
-const NE_K = 185.01300522314244
-const NE_TX = 500
-const NE_TY = 255.08452233618345
-export function projetarPlano(lon: number, lat: number): [x: number, y: number] {
-  const l = (lon * Math.PI) / 180
-  const f = (lat * Math.PI) / 180
-  const f2 = f * f
-  const f4 = f2 * f2
-  const x = l * (0.8707 - 0.131979 * f2 + f4 * (-0.013791 + f4 * (0.003971 * f2 - 0.001529 * f4)))
-  const y = f * (1.007226 + f2 * (0.015085 + f4 * (-0.044475 + 0.028874 * f2 - 0.005916 * f4)))
-  return [NE_TX + NE_K * x, NE_TY - NE_K * y]
-}

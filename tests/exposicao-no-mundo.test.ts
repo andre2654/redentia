@@ -15,7 +15,7 @@ import {
   type PosicaoMundo,
 } from '../app/utils/exposicaoNoMundo.ts'
 import { alfa2De, numericoDe, numericosDaRegiao, paisesDaRegiao, REGIOES_FIXAS } from '../app/utils/regioesDoMundo.ts'
-import { PAISES_ID, pontosDaTerra, projetarPlano } from '../app/utils/mundoPontos.ts'
+import { PAISES_ID, pontosDaTerra } from '../app/utils/mundoPontos.ts'
 
 const pos = (ticker: string, classe: string | null, valor: number): PosicaoMundo => ({ ticker, classe, valor })
 
@@ -231,14 +231,11 @@ test('as regiões: cada país numa região só, e os membros que o mapa acende',
   assert.deepEqual(semRegiao, [])
 })
 
-test('o dado do mundo: pontos com país e a projeção do mapa plano', () => {
+test('o dado do mundo: pontos com país', () => {
   const t = pontosDaTerra()
   assert.ok(t.n > 4000 && t.n < 6000)
   const br = PAISES_ID.indexOf('076')
   let noBrasil = 0
   for (let i = 0; i < t.n; i++) if (t.pais[i] === br) noBrasil++
   assert.ok(noBrasil > 200)
-  // São Paulo cai no lugar certo do mapa 1000×436 (d3.geoNaturalEarth1)
-  const [x, y] = projetarPlano(-46.6, -23.5)
-  assert.ok(Math.abs(x - 372.38) < 0.05 && Math.abs(y - 331.69) < 0.05)
 })

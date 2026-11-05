@@ -12,11 +12,9 @@
 // utils/exposicaoNoMundo.ts e a busca (1 chamada de receita + no máximo 10 de
 // BDR/ETF, cache de 5 min) de composables/useExposicaoNoMundo.ts.
 //
-// Três desenhos, para o dono escolher olhando (switch só no dev, ?mundo=1|2|3;
-// em produção vale o 1):
-//  1. o globo de pontos que gira até o Brasil, com arcos saindo daqui;
-//  2. o mapa-múndi plano de pontos, com bolhas proporcionais e a lista ao lado;
-//  3. os países pintados e uma barra única empilhada.
+// O desenho é o globo de pontos que gira até o Brasil, com arcos saindo
+// daqui, e a lista ao lado. Saiu de três (globo, mapa plano com bolhas,
+// países pintados); o dono escolheu o globo ("pode manter o mundo 1").
 //
 // Carregando: esqueleto na forma do que chega. Sem posição: a seção some (o
 // CarteiraContent nem monta). A frase surge palavra por palavra quando entra
@@ -28,15 +26,6 @@ const props = defineProps<{ posicoes: CarteiraPosicaoMundo[] }>()
 
 const { vm } = useExposicaoNoMundo(() => props.posicoes)
 const { mask } = useHiddenValues()
-const route = useRoute()
-
-const variacao = computed<1 | 2 | 3>(() => {
-  if (import.meta.dev) {
-    const q = Number(route.query.mundo)
-    if (q === 2 || q === 3) return q
-  }
-  return 1
-})
 
 /* ————— cores: Brasil no azul da marca, o resto na paleta do brilho do chat ————— */
 
@@ -146,7 +135,7 @@ const contexto = computed(() => ({
 </script>
 
 <template>
-  <section class="cmu" :class="`cmu--v${variacao}`" aria-labelledby="cmu-titulo" data-clarity-mask="true">
+  <section class="cmu" aria-labelledby="cmu-titulo" data-clarity-mask="true">
     <div ref="cabeca" class="cmu__cabeca">
       <span class="cmu__eyebrow">No mundo</span>
       <h2 v-if="pronto" id="cmu-titulo" class="cmu__frase" :class="`cmu__frase--${modo}`" :aria-label="vm.frase">
@@ -164,32 +153,13 @@ const contexto = computed(() => ({
     </div>
 
     <div v-contexto-chat="contexto" class="cmu__corpo">
-      <!-- 1 · o globo -->
-      <template v-if="variacao === 1">
-        <div class="cmu__globo">
-          <CarteiraMundoGlobo v-if="pronto" :fatias="noMapa" :ativo="ativo" @ativo="marcar" />
-          <NuSkeleton v-else variant="circle" width="80%" height="auto" class="cmu__esq-globo" />
-        </div>
-      </template>
+      <div class="cmu__globo">
+        <CarteiraMundoGlobo v-if="pronto" :fatias="noMapa" :ativo="ativo" @ativo="marcar" />
+        <NuSkeleton v-else variant="circle" width="80%" height="auto" class="cmu__esq-globo" />
+      </div>
 
-      <!-- 2 · o mapa plano -->
-      <template v-else-if="variacao === 2">
-        <div class="cmu__mapa">
-          <CarteiraMundoMapa v-if="pronto" :fatias="noMapa" :ativo="ativo" @ativo="marcar" />
-          <NuSkeleton v-else width="100%" height="auto" radius="card" class="cmu__esq-mapa" />
-        </div>
-      </template>
-
-      <!-- 3 · os países pintados + a barra -->
-      <template v-else>
-        <div class="cmu__pintado">
-          <CarteiraMundoPintado v-if="pronto" :fatias="noMapa" :fora="fora" :legenda="linhas" :ativo="ativo" @ativo="marcar" />
-          <NuSkeleton v-else width="100%" height="auto" radius="card" class="cmu__esq-mapa" />
-        </div>
-      </template>
-
-      <!-- a lista (1 e 2): é ela que diz tudo, o desenho só embeleza -->
-      <div v-if="variacao !== 3" class="cmu__lado">
+      <!-- a lista: é ela que diz tudo, o desenho só embeleza -->
+      <div class="cmu__lado">
         <ul v-if="pronto" class="cmu__lista">
           <li
             v-for="(f, i) in linhas" :key="f.chave"
@@ -250,18 +220,10 @@ const contexto = computed(() => ({
 .cmu__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 
 .cmu__corpo { display: grid; gap: clamp(28px, 4vw, 64px); margin-top: clamp(28px, 4vw, 52px); align-items: center; }
-.cmu--v1 .cmu__corpo { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
-.cmu--v2 .cmu__corpo { grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); }
-.cmu--v3 .cmu__corpo { grid-template-columns: minmax(0, 1fr); }
+.cmu__corpo { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
 
 .cmu__globo { width: 100%; max-width: 560px; justify-self: center; position: relative; aspect-ratio: 1 / 1; display: grid; place-items: center; }
 .cmu__esq-globo { aspect-ratio: 1 / 1; }
-.cmu__mapa {
-  background: var(--nu-cream); border-radius: var(--nu-r-card-lg); padding: clamp(14px, 2.4vw, 30px) clamp(10px, 2vw, 24px);
-  box-shadow: 0 0 0 1px rgba(12, 21, 36, 0.04), 0 24px 60px -30px rgba(12, 21, 36, 0.18);
-}
-.cmu__esq-mapa { aspect-ratio: 1000 / 436; }
-.cmu__pintado { width: 100%; }
 
 .cmu__lista { list-style: none; margin: 0; padding: 0; }
 .cmu__linha {
@@ -294,7 +256,7 @@ const contexto = computed(() => ({
 .cmu__esq-pct { margin-left: auto; }
 
 @media (max-width: 900px) {
-  .cmu--v1 .cmu__corpo, .cmu--v2 .cmu__corpo { grid-template-columns: minmax(0, 1fr); }
+  .cmu__corpo { grid-template-columns: minmax(0, 1fr); }
   .cmu__globo { max-width: 440px; }
 }
 @media (max-width: 480px) {
