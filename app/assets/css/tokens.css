@@ -369,6 +369,12 @@
      calendário e a borda do botão de contorno carregam informação, não são
      moldura. Medido: 3,15:1 sobre branco, 3,10:1 sobre creme. */
 
+  /* /business nova (05/11/2026, o print do dono): o azul-lavanda do botão cheio
+     sobre navy (o navy por cima dá 11,6:1) e o pontilhado do hero */
+  --nu-biz-lavanda: #C3CBFF;
+  --nu-biz-lavanda-hover: #D6DBFF;
+  --nu-biz-ponto: rgba(195, 203, 255, 0.16);
+
   /* ——— Home (31/10/2026): a tela do Agora dos apps no site ———
      Valores do canvas V5MBL5Q3 (IPhoneAgoraV2, WatchAgora, MacAgoraInicio):
      o preto do Agora, o verde da bolsa aberta, o vermelho e o âmbar do aviso.

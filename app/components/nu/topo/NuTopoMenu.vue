@@ -8,7 +8,9 @@ import { grupoAtivo, rotaAtiva } from '~/utils/topo'
 
 // `variante="business"` (04/11/2026): a marca For Business, sem a busca de
 // ativo, e no pé "Falar com a gente" e "Entrar" (ou "Minha conta") do Business.
-const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean; variante?: 'business' }>()
+// `bizNova` (05/11/2026, só no dev por ?biz=): o pé do print, "Testar com
+// carteira demo" (o mesmo cadastro do Entrar) e "Agendar 1 hora" (#contato).
+const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean; variante?: 'business'; bizNova?: boolean }>()
 const destinoCadastro = useDestinoCadastroBusiness()
 const emit = defineEmits<{ fechar: []; sair: [] }>()
 const route = useRoute()
@@ -80,7 +82,11 @@ onBeforeUnmount(() => { if (import.meta.client) document.removeEventListener('ke
           <div v-if="$slots.mercado" class="ntn__mercado"><slot name="mercado" /></div>
         </div>
 
-        <div v-if="variante === 'business'" class="ntn__pe">
+        <div v-if="variante === 'business' && bizNova" class="ntn__pe">
+          <NuxtLink :to="logado ? '/business/chaves' : destinoCadastro" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">{{ logado ? 'Minha conta' : 'Testar com carteira demo' }}</NuxtLink>
+          <NuxtLink to="/business#contato" class="ntn__cta" @click="emit('fechar')">Agendar 1 hora</NuxtLink>
+        </div>
+        <div v-else-if="variante === 'business'" class="ntn__pe">
           <NuxtLink to="/business#contato" class="ntn__cta ntn__cta--cheio" @click="emit('fechar')">Falar com a gente</NuxtLink>
           <NuxtLink :to="logado ? '/business/chaves' : destinoCadastro" class="ntn__cta" @click="emit('fechar')">{{ logado ? 'Minha conta' : 'Entrar' }}</NuxtLink>
         </div>

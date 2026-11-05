@@ -13,11 +13,16 @@
  * app de investidor) e sem a barra e o painel do chat da Redentia, que são do
  * investidor e da assinatura; quem atende a mesa do assessor é o assistente do
  * próprio escritório.
+ *
+ * Na /business nova (05/11/2026, só no dev por ?biz=1|2|3) entra a faixa do
+ * estudo Wealth 2030 acima do topo, como no print do dono.
  */
+const bizVar = useBizVariacao()
 </script>
 
 <template>
   <div class="rb-shell">
+    <BizFaixaEstudo v-if="bizVar" :tema="bizVar" />
     <NuHeader variante="business" />
     <ConsentBanner />
     <main>

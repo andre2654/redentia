@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CTA_DEMO, NAV_BIZ_NOVA } from '~/content/business/landing'
 // Header Nu, "editorial calmo" (02/11/2026, o dono escolheu a direção 3 entre
 // três protótipos: "gostei do 3 e no mobile pode deixar ainda menor").
 //
@@ -32,11 +33,20 @@
 // mercado no menu. A troca de "Entrar" por "Minha conta" só acontece depois do
 // mount: a /business é cacheada na borda e o SSR não pode variar por cookie
 // (mesma regra do topo antigo da /business).
+//
+// A /BUSINESS NOVA (05/11/2026, só no dev por ?biz=1|2|3, ver useBizVariacao):
+// a nav do print do dono (Agentes · Para quem · Segurança · Preço), em caixa
+// alta espaçada, e à direita um botão só, "Testar com carteira demo", que leva
+// ao mesmo cadastro do "Entrar". O tom acompanha o hero de cada variação: navy
+// (1), o preto d'"A noite" (2) e o branco de hoje (3). Sem ?biz, e em
+// produção, nada aqui muda.
 const props = defineProps<{ variante?: 'business' }>()
 const business = computed(() => props.variante === 'business')
+const bizVar = useBizVariacao()
+const bizNova = computed(() => business.value && bizVar.value !== null)
 const topo = useTopo({ normal: 72, encolhido: 60, celular: { normal: 52, encolhido: 46 } })
 const { itens, mercado } = useMercadoDoTopo()
-const nav = computed(() => (business.value ? NAV_BUSINESS : topo.nav.value))
+const nav = computed(() => (bizNova.value ? [...NAV_BIZ_NOVA] : business.value ? NAV_BUSINESS : topo.nav.value))
 const destinoCadastro = useDestinoCadastroBusiness()
 const montado = ref(false)
 onMounted(() => { montado.value = true })
@@ -44,7 +54,10 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 </script>
 
 <template>
-  <div class="nuh-wrap" :class="{ 'nuh-wrap--shrunk': topo.shrunk.value }">
+  <div
+    class="nuh-wrap"
+    :class="{ 'nuh-wrap--shrunk': topo.shrunk.value, 'nuh-wrap--biz': bizNova, 'nuh-wrap--navy': bizVar === '1' && business, 'nuh-wrap--noite': bizVar === '2' && business }"
+  >
     <div class="nuh">
       <NuTopoMarca class="nuh__marca" :business="business" />
 
@@ -69,7 +82,13 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
         </template>
       </nav>
 
-      <div v-if="business" class="nuh__dir">
+      <div v-if="bizNova" class="nuh__dir">
+        <NuxtLink :to="logadoBiz ? '/business/chaves' : destinoCadastro" class="nuh__cta nuh__cta--biz">{{ logadoBiz ? 'Minha conta' : CTA_DEMO }}</NuxtLink>
+        <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="topo.menuAberto.value" @click="topo.abrirMenu(true)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M4 9h16M4 15h16" /></svg>
+        </button>
+      </div>
+      <div v-else-if="business" class="nuh__dir">
         <NuxtLink :to="logadoBiz ? '/business/chaves' : destinoCadastro" class="nuh__entrar">{{ logadoBiz ? 'Minha conta' : 'Entrar' }}</NuxtLink>
         <NuxtLink to="/business#contato" class="nuh__cta">Falar com a gente</NuxtLink>
         <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="topo.menuAberto.value" @click="topo.abrirMenu(true)">
@@ -108,7 +127,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
     @fechar="topo.fecharPainel()" @sair="topo.sair()" @tecla="topo.teclaNoPainel($event)"
   />
   <NuTopoMenu
-    :aberto="topo.menuAberto.value" :nav="nav" :logado="business ? logadoBiz : topo.isAuthenticated.value" :variante="variante"
+    :aberto="topo.menuAberto.value" :nav="nav" :logado="business ? logadoBiz : topo.isAuthenticated.value" :variante="variante" :biz-nova="bizNova"
     @fechar="topo.abrirMenu(false)" @sair="topo.sair()"
   >
     <template v-if="itens.length && !business" #mercado>
@@ -213,4 +232,27 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 @media (prefers-reduced-motion: reduce) {
   .nuh, .nuh__item::after { transition: none; }
 }
+
+/* ——— a /business nova (dev, ?biz=) ——— */
+/* a nav do print: caixa alta espaçada, mais miúda */
+.nuh-wrap--biz .nuh__nav { justify-content: center; gap: 2px; }
+.nuh-wrap--biz .nuh__item { font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 0 14px; }
+.nuh-wrap--biz .nuh__item::after { left: 14px; right: 14px; }
+.nuh__cta--biz { padding: 0 18px; }
+/* escuros: o fio vira luz, a marca e a nav ficam claras, o botão é claro */
+.nuh-wrap--navy, .nuh-wrap--noite { border-bottom-color: var(--nu-white-14); color: var(--nu-cream-text); }
+.nuh-wrap--navy { background: var(--nu-navy); }
+.nuh-wrap--noite { background: var(--nu-agora-bg); border-bottom-color: var(--nu-agora-linha); }
+.nuh-wrap--navy :deep(.ntm), .nuh-wrap--noite :deep(.ntm) { color: var(--nu-cream-text); }
+.nuh-wrap--navy :deep(.ntm__biz), .nuh-wrap--noite :deep(.ntm__biz) { color: var(--nu-blue-soft); }
+.nuh-wrap--navy .nuh__item, .nuh-wrap--noite .nuh__item { color: var(--nu-cream-text-70); }
+.nuh-wrap--navy .nuh__item:hover, .nuh-wrap--noite .nuh__item:hover { color: var(--nu-cream-text); }
+.nuh-wrap--navy .nuh__item::after, .nuh-wrap--noite .nuh__item::after { background: var(--nu-blue-soft); }
+.nuh-wrap--navy .nuh__item:hover::after, .nuh-wrap--noite .nuh__item:hover::after { transform: scaleX(1); }
+.nuh-wrap--navy .nuh__cta--biz, .nuh-wrap--noite .nuh__cta--biz { background: var(--nu-cream-text); color: var(--nu-navy); }
+.nuh-wrap--navy .nuh__cta--biz:hover, .nuh-wrap--noite .nuh__cta--biz:hover { background: var(--nu-white); color: var(--nu-ink); }
+.nuh-wrap--navy .nuh__burger, .nuh-wrap--noite .nuh__burger { color: var(--nu-cream-text); }
+.nuh-wrap--navy .nuh__burger:hover, .nuh-wrap--noite .nuh__burger:hover { background: var(--nu-white-14); }
+.nuh-wrap--noite .nuh__item { letter-spacing: .02em; text-transform: none; font-size: var(--nu-fs-sm); font-weight: 600; }
+/* no celular o botão vai para o menu, como o do site: o hero tem os dois logo abaixo */
 </style>

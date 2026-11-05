@@ -22,7 +22,11 @@
  * Uma carga só: o dev fala com a API de produção.
  *
  *   node scripts/seo-paridade-business.mjs --antiga <arquivo.html>
- *        [--base http://localhost:3471] [--teto 650]
+ *        [--base http://localhost:3471] [--teto 650] [--biz 1|2|3]
+ *
+ * `--biz` (05/11/2026) confere uma variação da /business nova do dev
+ * (?biz=1|2|3, ver components/business/nova/BizLanding.vue) no lugar da
+ * página de hoje.
  *
  * `--antiga` é obrigatório: o HTML salvo por curl da página de antes. O
  * arquivo é LOCAL e NÃO é versionado: o de 04/11/2026 ficou em
@@ -40,6 +44,7 @@ const args = Object.fromEntries(
 const BASE = args.base ?? 'http://localhost:3471'
 const ANTIGA = args.antiga
 const TETO = Number(args.teto ?? 650)
+const Q = args.biz ? `?biz=${args.biz}` : ''
 
 const SEM_TEXTO = new Set(['script', 'style', 'noscript', 'template', 'head'])
 const palavras = (s) => s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length
@@ -107,7 +112,7 @@ async function main() {
   const antes = extrair(antigaHtml)
   const dAntes = densidade(antigaHtml)
   console.log(`antes (salva) · ${dAntes.fora} palavras fora do FAQ (main ${dAntes.total}, FAQ ${dAntes.noFaq}) · H1 "${antes.h1.join(' | ')}" · ${antes.jsonld.length} JSON-LD · ${antes.links.size} links internos`)
-  const html = await buscar(`${BASE}/business`)
+  const html = await buscar(`${BASE}/business${Q}`)
   const depois = extrair(html)
   const d = densidade(html)
   const c = comparar(antes, depois)
@@ -124,7 +129,7 @@ async function main() {
     const faltam = RB_FAQ.flatMap((g) => g.itens).filter((it) => !plano.includes(it.q.replace(/\s+/g, '')) || !plano.includes(it.a.replace(/\s+/g, '').replace(/&/g, '')))
     if (faltam.length) falhas.push(`FAQ sem ${faltam.length} pergunta(s) no SSR: ${faltam.map((f) => f.q).join(' · ')}`)
   }
-  console.log(`\n/business ${falhas.length ? 'FALHA' : 'OK'}`)
+  console.log(`\n/business${Q} ${falhas.length ? 'FALHA' : 'OK'}`)
   console.log(`  ${d.fora} palavras fora do FAQ (main ${d.total}, FAQ ${d.noFaq})${d.fora > TETO ? ` · aviso: acima do teto de ${TETO}` : ''} · H1 ${depois.h1.length} "${depois.h1.join(' | ')}" · JSON-LD ${depois.jsonld.length}`)
   console.log(`  topo e rodapé: saíram ${topoSaiu.length ? topoSaiu.join(', ') : 'nenhum'} · entraram ${topoEntrou.length ? topoEntrou.join(', ') : 'nenhum'}`)
   console.log(`  corpo: ${ld.corpo.size} links (${[...ld.corpo].join(', ') || 'nenhum'})`)

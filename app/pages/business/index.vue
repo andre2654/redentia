@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 /**
  * Redentia for Business — landing do produto B2B (assessoria vinculada,
  * family office, gestora, consultoria).
@@ -31,10 +32,23 @@ usePageSeo({
 // Opt-out do sufixo global (mesmo caso do /login): o título já traz a marca e
 // "Redentia For Business · Redentia" repete a palavra duas vezes.
 useHead({ titleTemplate: null })
+
+// PROTÓTIPO (05/11/2026, o dono mandou o print de uma landing do Redentia For
+// Business: "vamos tentar deixar mais nesse estilo, só que mais o nosso
+// estilo"). Três variações, no dev, por ?biz=1|2|3 (ver o topo de
+// components/business/nova/BizLanding.vue). Em produção import.meta.dev é
+// false, o componente nem entra no bundle e segue a página de hoje, até ele
+// escolher. O topo (NuHeader) e a faixa do estudo (layout) leem a mesma
+// variação por useBizVariacao. Mesmo SEO (o usePageSeo acima).
+const bizVar = useBizVariacao()
+const Landing: Component | null = import.meta.dev
+  ? defineAsyncComponent(() => import('~/components/business/nova/BizLanding.vue'))
+  : null
 </script>
 
 <template>
-  <div>
+  <component :is="Landing" v-if="Landing && bizVar" :v="bizVar" />
+  <div v-else>
     <RbHero />
     <RbDivisao />
     <RbJornada />
