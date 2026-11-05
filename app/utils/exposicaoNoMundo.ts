@@ -200,7 +200,7 @@ const PAISES: Record<string, Pais> = {
   philippines: p('608', 'Filipinas', 'nas Filipinas', 122, 12),
   malaysia: p('458', 'Malásia', 'na Malásia', 102, 4),
   kazakhstan: p('398', 'Cazaquistão', 'no Cazaquistão', 67, 48),
-  // os que apareceram na receita do piloto (05/11/2026): Randon, Klabin
+  // os que apareceram na receita do piloto (05/11/2026): Irani (RANI3), Klabin
   paraguay: p('600', 'Paraguai', 'no Paraguai', -58, -23.3),
   bolivia: p('068', 'Bolívia', 'na Bolívia', -64.6, -16.5),
   ecuador: p('218', 'Equador', 'no Equador', -78.4, -1.5),
