@@ -416,9 +416,9 @@ function buildAgora(
  *    <1.8→32, senão 15). Sem série suficiente → card some (sem beta chutado)
  *  - Renda: DY 12m ponderado por valor (campo dividend_yield do /portfolio);
  *    thresholds de calcRendaPassiva (<2→25, <4→50, <6→70, <9→88, senão 95)
- *  - Qualidade: média ponderada do Redentia Score (0-10 → ×10 pra /100 — NÃO
- *    ×20, gotcha documentado) dos ativos cobertos pelo ranking; exige ≥2
- *    ativos cobertos, senão some
+ *  - Qualidade: média ponderada do Redentia Score na régua /100 do /asset (o
+ *    percentil no ranking; o cru 0-10 é comprimido, ×10 subestimava) dos
+ *    ativos cobertos pelo ranking; exige ≥2 ativos cobertos, senão some
  * Score geral = média ponderada com os pesos do usePortfolioScore
  * (diversificação 1.4 · risco/volatilidade 1.1 · renda 0.9 · qualidade 1.5)
  * sobre as métricas PRESENTES. Badge = bandas portadas (<45 crítica, <65
@@ -489,15 +489,32 @@ function buildRaioX(
     dims.push({ weight: 0.9, score, vm: { label: 'Renda', value: `DY ${nf1.format(dy)}%`, fillPct: score, note, ...tagFor(score) } })
   }
 
-  /* Qualidade (Redentia Score real, 0-10 → ×10) */
+  /* Qualidade (Redentia Score real, na régua /100 do /asset: o percentil)
+     O redentia_score cru é 0-10 COMPRIMIDO: em 05/11/2026 o topo do
+     ranking era 3,81 e a mediana 1,01 (BBSE3 1,19; PETR4 1,08). ×10 dava
+     "11/100" para uma carteira com BBSE3 e PETR4 acima da mediana. O /asset
+     (useAcao, buildScore) mostra o PERCENTIL no ranking, (1 − posição/total)
+     × 100, entre 1 e 99: BBSE3 65/100, PETR4 56/100. A carteira usa a mesma
+     régua, ponderada pelo valor de cada posição coberta. */
   {
-    const scoreMap = new Map((scoreRows ?? []).filter((s) => s.redentia_score != null).map((s) => [s.ticker.toUpperCase(), s.redentia_score as number]))
+    const lista = scoreRows ?? []
+    const scoreMap = new Map<string, number>()
+    lista.forEach((s, idx) => {
+      if (s.redentia_score == null) return
+      const t = s.ticker.toUpperCase()
+      if (!scoreMap.has(t)) scoreMap.set(t, Math.min(99, Math.max(1, Math.round((1 - idx / lista.length) * 100))))
+    })
     const matched = rows.filter((r) => scoreMap.has(r.ticker.toUpperCase()))
     if (matched.length >= 2) {
       const mTotal = matched.reduce((s, r) => s + r.value, 0)
-      const q = Math.round(matched.reduce((s, r) => s + (scoreMap.get(r.ticker.toUpperCase())! * 10) * r.value, 0) / mTotal)
-      const top = [...matched].sort((a, b) => scoreMap.get(b.ticker.toUpperCase())! - scoreMap.get(a.ticker.toUpperCase())!).slice(0, 2)
-      const note = `Score médio de ${matched.length} dos seus ativos: ${top.map((t) => t.ticker).join(' e ')} ${top.length > 1 ? 'puxam' : 'puxa'} para cima.`
+      const q = Math.round(matched.reduce((s, r) => s + scoreMap.get(r.ticker.toUpperCase())! * r.value, 0) / mTotal)
+      // nota baixa (Atenção, < 70): quem puxa para BAIXO (os dois piores); alta: quem puxa para cima
+      const baixa = q < 70
+      const ordem = [...matched].sort((a, b) => scoreMap.get(b.ticker.toUpperCase())! - scoreMap.get(a.ticker.toUpperCase())!)
+      const quem = (baixa ? ordem.reverse() : ordem).slice(0, 2).map((t) => t.ticker)
+      const note = matched.length === 2
+        ? `Score médio de ${quem.join(' e ')}, os dois dos seus ativos que a Redentia pontua.`
+        : `Score médio de ${matched.length} dos seus ativos: ${quem.join(' e ')} puxam para ${baixa ? 'baixo' : 'cima'}.`
       dims.push({ weight: 1.5, score: q, vm: { label: 'Qualidade', value: `${q}/100`, fillPct: q, note, ...tagFor(q) } })
     }
   }

@@ -18,6 +18,9 @@ import {
   trocarIsin,
   achadosHtml,
   tituloDosAchados,
+  tituloDeOrdem,
+  numerosBr,
+  semJargao,
   PEDIDO_DE_ANALISE_NOVA,
   type EntradaDosAchados,
 } from '../app/utils/achadosDaCarteira.ts'
@@ -86,9 +89,13 @@ test('a ordem é por gravidade, com o dado de hoje antes do texto antigo no empa
     'forca:-:analise',
   ])
   assert.equal(vm.itens[0]!.dimensao, 'Qualidade')
-  assert.equal(vm.pontos, 5)
-  assert.equal(vm.ideias, 1)
+  // a análise é de 22/05 (antiga): a contagem do título é só a de hoje
+  assert.equal(vm.pontos, 3)
+  assert.equal(vm.ideias, 0)
+  assert.equal(vm.antigos, 3)
   assert.equal(vm.vazio, false)
+  // sem métrica Excelente hoje, o ponto forte antigo vai para o fim também
+  assert.deepEqual(vm.itens.filter((a) => a.antigo).map((a) => a.tipo), ['risco', 'risco', 'ideia', 'forca'])
 })
 
 test('o risco que diz o mesmo de uma métrica em Atenção some, e a métrica guarda a data da análise', () => {
@@ -181,7 +188,7 @@ test('sem nada a apontar, a seção fica vazia (a linha calma), sem inventar ite
 })
 
 test('o que olhou e o resumo, no singular e no plural', () => {
-  const vm = montarAchados(entrada())
+  const vm = montarAchados(entrada({ analise: { ...ANALISE, generated_at: '2026-10-20T12:00:00Z' } }))
   assert.equal(oQueOlhou(vm), '4 ativos em 4 dimensões')
   assert.equal(resumoDosAchados(vm), '5 pontos de atenção e 1 ideia para avaliar')
   assert.equal(resumoDosAchados({ pontos: 1, ideias: 0 }), '1 ponto de atenção')
@@ -200,37 +207,166 @@ test('o assunto do texto da IA casa com a dimensão do Raio-X', () => {
 test('o ponto decimal não corta a frase ao tirar a ordem', () => {
   const vm = montarAchados(entrada({ raiox: null }))
   const conc = vm.itens.find((a) => /Concentração/.test(a.titulo))!
-  assert.match(conc.texto!, /somam 26\.1% da carteira\.$/)
+  assert.match(conc.texto!, /somam 26,1% da carteira\.$/)
 })
 
 test('cada item tem uma pergunta pronta para o chat', () => {
   for (const a of montarAchados(entrada()).itens) assert.ok(a.pergunta.length > 20, a.id)
 })
 
-test('a barra: o título conta os achados e diz a análise desatualizada', () => {
+test('a barra: o título conta os achados de hoje, com os números à parte, e diz a análise desatualizada', () => {
   const vm = montarAchados(entrada())
-  assert.deepEqual(tituloDosAchados({ ...vm, analise: { ...vm.analise!, desatualizada: true } }),
-    { titulo: `A Redentia olhou a sua carteira: ${resumoDosAchados(vm)}`, idade: 'análise de 22/05, desatualizada' })
-  assert.deepEqual(tituloDosAchados({ pontos: 0, ideias: 0, vazio: true, analise: null }), { titulo: 'A Redentia olhou a sua carteira: nada pede atenção', idade: null })
+  const t = tituloDosAchados(vm)
+  assert.equal(t.titulo, 'A Redentia olhou a sua carteira: 3 pontos de atenção')
+  assert.equal(t.idade, 'análise de 22/05, desatualizada')
+  assert.deepEqual(t.pedacos.filter((p) => p.numero), [{ texto: '3', numero: 'atencao' }])
+  assert.equal(t.pedacos.map((p) => p.texto).join(''), t.titulo)
+  const recente = montarAchados(entrada({ analise: { ...ANALISE, generated_at: '2026-10-20T12:00:00Z' } }))
+  const tr = tituloDosAchados(recente)
+  assert.equal(tr.titulo, 'A Redentia olhou a sua carteira: 5 pontos de atenção e 1 ideia para avaliar')
+  assert.equal(tr.idade, null)
+  assert.deepEqual(tr.pedacos.filter((p) => p.numero).map((p) => `${p.numero}:${p.texto}`), ['atencao:5', 'ideia:1'])
+  assert.equal(tituloDosAchados({ pontos: 0, ideias: 0, vazio: true, analise: null }).titulo, 'A Redentia olhou a sua carteira: nada pede atenção')
+  // só a análise antiga tem o que apontar: hoje, nada
+  assert.equal(tituloDosAchados({ pontos: 0, ideias: 0, vazio: false, analise: null }).titulo, 'A Redentia olhou a sua carteira: nada pede atenção hoje')
 })
 
-test('a barra aberta: um grupo por tipo, tudo escapado, o R$ mascarado e sem ordem', () => {
+test('a barra aberta: de hoje em colunas, a análise antiga no fim, tudo escapado, o R$ mascarado e sem ordem', () => {
   const vm = montarAchados(entrada())
-  const html = achadosHtml(vm, { aviso: 'Os números são de hoje.', mascarar: (t) => t.replace(/R\$\s?[\d.,]+/g, 'R$ ••••') })
-  const grupos = [...html.matchAll(/<p class="cah__grupo">([^<]+)<\/p>/g)].map((x) => x[1])
-  assert.deepEqual(grupos, ['Pede atenção', 'Ideias para avaliar', 'Vai bem'])
+  const html = achadosHtml(vm, { aviso: 'O que está em cima é de hoje.', mascarar: (t) => t.replace(/R\$\s?[\d.,]+/g, 'R$ ••••') })
+  const grupos = [...html.matchAll(/<p class="cah__grupo">(.+?)<\/p>/g)].map((x) => x[1]!.replace(/<[^>]+>/g, ''))
+  assert.deepEqual(grupos, ['Pede atenção', 'Da análise de 22/05 há 167 dias'])
   assert.equal((html.match(/<li /g) ?? []).length, vm.itens.length)
+  // a análise antiga fica depois das colunas de hoje
+  assert.ok(html.indexOf('cah__antiga') > html.indexOf('cah__cols'))
+  assert.doesNotMatch(html.slice(0, html.indexOf('cah__antiga')), /Exposição a juros|Liquidez/)
   assert.match(html, /A Redentia olhou <b>4 ativos em 4 dimensões<\/b>/)
   assert.match(html, /R\$ ••••/)
   assert.doesNotMatch(html, /R\$ 1\.200/)
   assert.doesNotMatch(html, /BRSTN|[Rr]ecomendamos|Venda VALE3/)
-  assert.match(html, /<p class="ars2__nota">Os números são de hoje\.<\/p>$/)
-  // a gravidade vai no texto quando o selo diz mais que o grupo
-  assert.match(html, /cah__item--baixa"><b>Liquidez de AUPO11\.<\/b>[^]*?Vale olhar · análise de 22\/05/)
+  assert.match(html, /<p class="ars2__nota">O que está em cima é de hoje\.<\/p>$/)
+  // o número de hoje à direita do título, e o "Perguntar à Redentia" da linha
+  assert.match(html, /<b class="cah__t">A qualidade pede atenção<\/b><span class="cah__v">40\/100<\/span>/)
+  assert.equal((html.match(/class="cah__perg" data-achado="/g) ?? []).length, vm.itens.length)
+  for (const a of vm.itens) assert.ok(html.includes(`data-achado="${a.id}"`), a.id)
+  // o ponto leve diz "Vale olhar"; de hoje não repete "visto hoje"
+  assert.match(html, /<b class="cah__t">Liquidez de AUPO11<\/b><\/p><p class="cah__x">[^<]*<\/p><div class="cah__pe"><span class="cah__meta">Vale olhar<\/span><button /)
+  assert.doesNotMatch(html, /visto hoje/)
   const sujo = montarAchados(entrada({ analise: { ...ANALISE, risks: [{ title: 'Risco <script>', body: 'a & b', severity: 'high' }] } }))
   const h2 = achadosHtml(sujo)
-  assert.match(h2, /Risco &lt;script&gt;\./)
+  assert.match(h2, /Risco &lt;script&gt;/)
   assert.match(h2, /a &amp; b/)
+})
+
+test('a barra aberta com a análise recente: sem separação, ideias e o que vai bem na segunda coluna', () => {
+  const vm = montarAchados(entrada({ analise: { ...ANALISE, generated_at: '2026-10-20T12:00:00Z' } }))
+  assert.equal(vm.itens.some((a) => a.antigo), false)
+  const html = achadosHtml(vm)
+  assert.doesNotMatch(html, /cah__antiga/)
+  assert.match(html, /<div class="cah__cols cah__cols--2"><div class="cah__col"><p class="cah__grupo">Pede atenção<\/p>[^]*<\/div><div class="cah__col"><p class="cah__grupo">Ideias para avaliar<\/p>[^]*<p class="cah__grupo">Vai bem<\/p>/)
+  // o que é da análise leva a data na linha
+  assert.match(html, /<span class="cah__meta">análise de 20\/10<\/span>/)
+})
+
+/* ————— a carteira do dono, aberta em 05/11/2026 (as frases reais) ————— */
+
+const POSICOES_DO_DONO = [
+  { ticker: 'AUPO11', classe: 'ETF', valor: 6000, nome: 'AUPO11' },
+  { ticker: 'BBSE3', classe: 'STOCK', valor: 3500, nome: 'BB Seguridade' },
+  { ticker: 'BRSTNCNTB4W2', classe: 'TREASURY', valor: 15000, nome: 'Tesouro IPCA+ 2032' },
+  { ticker: 'PETR4', classe: 'STOCK', valor: 8000, nome: 'Petrobras' },
+]
+const ANALISE_DO_DONO: CarteiraAnaliseIA = {
+  generated_at: '2026-05-22T14:10:00Z',
+  risks: [
+    { title: 'Concentração em poucos ativos', body: 'Os três principais ativos (AUPO11, BBSE3, BRSTNCNTB4W2) somam 26.1% da carteira, o que pode aumentar o risco de perdas significativas.', severity: 'high' },
+    { title: 'Exposição a juros altos', body: 'Com a Selic em 14.5%, a renda fixa pode se tornar mais atrativa, impactando a performance de ações.', severity: 'medium' },
+  ],
+  recommendations: [
+    { title: 'Avaliar redução de concentração', body: 'Considere reduzir a exposição nos três principais ativos para diversificar ainda mais a carteira.' },
+    { title: 'Rebalancear para ações de dividendos', body: 'Avalie aumentar a alocação em ações com bom histórico de pagamento de dividendos, especialmente em momentos de correção.' },
+  ],
+  strengths: [{ title: 'Diversificação elevada', body: 'A carteira possui 12 setores distintos, com um HHI de 0.17, indicando uma boa dispersão de risco.' }],
+}
+const entradaDoDono = (o: Partial<EntradaDosAchados> = {}): EntradaDosAchados => ({
+  raiox: raiox([
+    metrica('Diversificação', 95, '95/100', '58,2% em ações. Maior setor: Financeiro (21% do total).'),
+    metrica('Renda', 25, 'DY 1,6%', 'R$ 9.118 em proventos nos últimos 12 meses.'),
+    metrica('Qualidade', 52, '52/100', 'Score médio de 4 dos seus ativos: PETR4 e BBSE3 puxam para baixo.'),
+  ]),
+  analise: ANALISE_DO_DONO,
+  posicoes: POSICOES_DO_DONO,
+  olhadaEm: '2026-11-05T11:01:00Z',
+  agora: AGORA,
+  ...o,
+})
+
+test('CVM: a alocação prescrita das frases reais cai (frase e título)', () => {
+  assert.equal(temOrdem('Considere reduzir a exposição nos três principais ativos para diversificar ainda mais a carteira.'), true)
+  assert.equal(temOrdem('Avalie aumentar a alocação em ações com bom histórico de pagamento de dividendos, especialmente em momentos de correção.'), true)
+  assert.equal(temOrdem('Rebalancear para ações de dividendos'), true)
+  assert.equal(temOrdem('Sugerimos diversificar entre setores.'), true)
+  assert.equal(temOrdem('Vale a pena trocar parte dos FIIs.'), true)
+  assert.equal(tituloDeOrdem('Avaliar redução de concentração'), true)
+  assert.equal(tituloDeOrdem('Rebalancear para ações de dividendos'), true)
+  assert.equal(tituloDeOrdem('Reduza a renda fixa'), true)
+  // o fato descritivo fica
+  assert.equal(temOrdem('Os três principais ativos somam 26.1% da carteira, o que pode aumentar o risco de perdas significativas.'), false)
+  assert.equal(temOrdem('Com a Selic em 14.5%, a renda fixa pode se tornar mais atrativa, impactando a performance de ações.'), false)
+  assert.equal(temOrdem('A carteira possui 12 setores distintos, indicando uma boa dispersão de risco.'), false)
+  assert.equal(tituloDeOrdem('Diversificação elevada'), false)
+  assert.equal(tituloDeOrdem('Olhar a fatia de renda fixa'), false)
+  assert.equal(tituloDeOrdem('Comparar os FIIs de logística'), false)
+  assert.equal(tituloDeOrdem('Concentração em poucos ativos'), false)
+})
+
+test('a carteira do dono: sem ideia sobra, o grupo some e a contagem acompanha', () => {
+  const vm = montarAchados(entradaDoDono())
+  assert.equal(vm.itens.filter((a) => a.tipo === 'ideia').length, 0)
+  assert.equal(vm.ideias, 0)
+  assert.equal(tituloDosAchados(vm).titulo, 'A Redentia olhou a sua carteira: 2 pontos de atenção')
+  const html = achadosHtml(vm)
+  assert.doesNotMatch(html, /Ideias para avaliar/)
+  assert.doesNotMatch(html, /Considere|Avalie|Rebalancear|Avaliar redução|reduzir a exposição|aumentar a alocação/)
+  for (const a of vm.itens) assert.equal(temOrdem(`${a.titulo} ${a.texto ?? ''}`), false, a.id)
+  // a mesma análise, recente: as ideias continuam fora (são ordem), os riscos sobem
+  const recente = montarAchados(entradaDoDono({ analise: { ...ANALISE_DO_DONO, generated_at: '2026-10-20T12:00:00Z' } }))
+  assert.equal(recente.ideias, 0)
+  assert.equal(tituloDosAchados(recente).titulo, 'A Redentia olhou a sua carteira: 4 pontos de atenção')
+})
+
+test('a carteira do dono: número brasileiro e sem o jargão do HHI', () => {
+  const vm = montarAchados(entradaDoDono({ analise: { ...ANALISE_DO_DONO, generated_at: '2026-10-20T12:00:00Z' } }))
+  const texto = (t: RegExp) => vm.itens.find((a) => t.test(a.titulo))!.texto
+  assert.equal(texto(/Concentração/), 'Os três principais ativos (AUPO11, BBSE3, Tesouro IPCA+ 2032) somam 26,1% da carteira, o que pode aumentar o risco de perdas significativas.')
+  assert.equal(texto(/juros/), 'Com a Selic em 14,5%, a renda fixa pode se tornar mais atrativa, impactando a performance de ações.')
+  assert.equal(texto(/Diversificação elevada/), 'A carteira possui 12 setores distintos, indicando uma boa dispersão de risco.')
+  assert.equal(numerosBr('HHI de 0.17 e 0.175; R$ 9.118 e 1.200; 1.234.567; 2.5x'), 'HHI de 0,17 e 0,175; R$ 9.118 e 1.200; 1.234.567; 2,5x')
+  assert.equal(semJargao('Bem espalhada (HHI 0.17).'), 'Bem espalhada.')
+  assert.equal(semJargao('São 12 setores, com um índice HHI de 0,17, bem distribuídos.'), 'São 12 setores, bem distribuídos.')
+})
+
+test('a carteira do dono: o que é de 22/05 vai para o grupo do fim; em cima, só o de hoje', () => {
+  const vm = montarAchados(entradaDoDono())
+  const hoje = vm.itens.filter((a) => !a.antigo)
+  assert.deepEqual(hoje.map((a) => `${a.tipo}:${a.titulo}`), [
+    'atencao:A renda pede atenção',
+    'atencao:A qualidade pede atenção',
+    'forca:Diversificação em nível excelente',
+  ])
+  assert.ok(hoje.every((a) => a.quando === 'hoje'))
+  // o ponto forte antigo fala do mesmo que a métrica Excelente de hoje: fica a métrica, com a nota
+  assert.equal(hoje[2]!.confirmadoEm, '22/05')
+  assert.deepEqual(vm.itens.filter((a) => a.antigo).map((a) => a.titulo), ['Concentração em poucos ativos', 'Exposição a juros altos'])
+  assert.equal(vm.antigos, 2)
+  const html = achadosHtml(vm)
+  const antes = html.slice(0, html.indexOf('cah__antiga'))
+  assert.doesNotMatch(antes, /Selic|Concentração em poucos/)
+  assert.match(html, /<div class="cah__antiga"><p class="cah__grupo">Da análise de 22\/05 <span class="cah__grupo-d">há 167 dias<\/span><\/p>/)
+  // a análise recente (até 30 dias) não separa
+  const recente = montarAchados(entradaDoDono({ analise: { ...ANALISE_DO_DONO, generated_at: '2026-10-20T12:00:00Z' } }))
+  assert.equal(recente.antigos, 0)
+  assert.doesNotMatch(achadosHtml(recente), /cah__antiga/)
 })
 
 test('a barra aberta sem achado: a linha calma, nunca vazia', () => {

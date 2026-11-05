@@ -23,9 +23,10 @@
 // A mesma barra serve à /carteira (05/11/2026, "a Redentia encontrou", o
 // CarteiraAchados): no lugar do `resumo`, um `titulo` e o `html` do miolo (já
 // escapado por quem monta), o slot `antes` no começo da barra (a assinatura
-// "Redentia AI"), o `fim` logo depois do título (a idade da análise) e o
-// `depois` no fim do miolo (as ações). Sem eles, o /asset
-// sai como sempre.
+// "Redentia AI"), o `titulo` no lugar do texto do h2 (a contagem com os
+// números em destaque; o `titulo` em texto segue como o nome da barra), o
+// `fim` logo depois do título (a idade da análise) e o `depois` no fim do
+// miolo (as ações). Sem eles, o /asset sai como sempre.
 import { resumoHtml, type AcaoResumoVM } from '~/utils/assetResumo'
 import { agendarPalavras, contarPalavras, envolverPalavras } from '~/utils/revelar-palavras'
 
@@ -72,7 +73,8 @@ onBeforeUnmount(() => clearTimeout(fim))
     <details v-if="base" :key="ticker" class="ars2__mais" @toggle="aoAlternar">
       <summary class="ars2__sum" @click="aoClicar">
         <slot v-if="slots.antes" name="antes" />
-        <h2 class="ars2__h2">{{ tituloDaBarra }}</h2>
+        <h2 v-if="slots.titulo" class="ars2__h2"><slot name="titulo" /></h2>
+        <h2 v-else class="ars2__h2">{{ tituloDaBarra }}</h2>
         <slot v-if="slots.fim" name="fim" />
         <span class="ars2__chev" aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg>
