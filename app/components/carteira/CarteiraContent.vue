@@ -11,6 +11,7 @@
 //                        único momento assinatura da tela, na banda navy)
 //  3. CarteiraPosicoes   o total, a barra por classe e os grupos (papéis sob pedido)
 //     CarteiraMundo      "onde está o meu dinheiro?" — país e região, num globo (05/11)
+//     CarteiraCadeia     "as minhas empresas dependem umas das outras?" (05/11)
 //  4. ProventosContas    o que está a caminho e as contas do Open Finance
 //  5. CarteiraAnalise    desempenho, Raio-X, movimentações e P&L, sob pedido
 // Sem Open Finance conectado a página VIRA o convite (CarteiraVazia). Seção
@@ -22,6 +23,9 @@ const emit = defineEmits<{ (e: 'connected'): void }>()
 
 const conectada = computed(() => props.payload.hero.state === 'patrimonio' && !!props.payload.agora)
 const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
+// a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
+const temAcoes = computed(() => !!props.payload.posicoesMundo?.some((p) => p.classe === 'STOCK'))
+const temCadeia = ref(false)
 
 // A faixa abaixo do header vira o rail desta página quando há carteira (no
 // lugar do "Mercado agora": a carteira não precisa do mercado piscando em
@@ -32,6 +36,7 @@ const railSections = computed<RailSection[]>(() => {
   const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }, { id: 'futuro', label: 'Daqui a 5 anos' }]
   if (p.groups.length) s.push({ id: 'posicoes', label: 'Posições' })
   if (p.posicoesMundo?.length) s.push({ id: 'mundo', label: 'No mundo' })
+  if (temAcoes.value && temCadeia.value) s.push({ id: 'cadeia', label: 'Na cadeia' })
   if (p.income && (p.income.agenda || p.income.month)) s.push({ id: 'renda-passiva', label: 'Proventos' })
   s.push({ id: 'contas', label: 'Contas' })
   return s
@@ -63,6 +68,7 @@ onMounted(() => {
       :allocation="payload.allocation"
     />
     <CarteiraMundo v-if="payload.posicoesMundo?.length" id="mundo" :posicoes="payload.posicoesMundo" />
+    <CarteiraCadeia v-if="temAcoes" id="cadeia" :posicoes="payload.posicoesMundo!" @ligacoes="temCadeia = $event" />
     <CarteiraProventosContas :income="payload.income" @connected="emit('connected')" />
     <CarteiraAnalise :payload="payload" />
   </div>
