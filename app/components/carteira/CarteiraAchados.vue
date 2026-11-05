@@ -23,6 +23,14 @@
 // A conta toda é de utils/achadosDaCarteira.ts (gravidade, ISIN → nome, dedupe,
 // idade, CVM: nada de compre/venda), e o miolo sai escapado de achadosHtml. O
 // dado vem no SSR, no mesmo payload do topo; o texto inteiro está no HTML.
+//
+// Mais três tipos, só no dev (05/11/2026, o dono: "ainda não, tente pensar em
+// mais 3 tipos"), por ?achados=1|2|3; sem o parâmetro, e em produção, a barra.
+// Cada um nasce de uma peça já aprovada; a lógica é a mesma (montarAchados), e
+// as palavras de cada um saem de utils/achadosNaTela.ts:
+//  1. CarteiraAchadosLeitura  a leitura em prosa (AtivoProsa, veredito da HomeAgora)
+//  2. CarteiraAchadosNumeros  o diagnóstico em números (AtivoIndicadores, faixa da HomeAgora)
+//  3. CarteiraAchadosConversa a Redentia quer conversar (AtivoPerguntaChips, ChatPilula)
 import type { CarteiraAnaliseIA, CarteiraPosicaoMundo, CarteiraRaioXVM } from '~/types/carteira'
 import { achadosHtml, montarAchados, oQueOlhou, PEDIDO_DE_ANALISE_NOVA, resumoDosAchados, tituloDosAchados } from '~/utils/achadosDaCarteira'
 
@@ -32,6 +40,15 @@ const props = defineProps<{
   posicoes: CarteiraPosicaoMundo[]
   olhadaEm: string | null
 }>()
+
+/* ————— o tipo: 0 é a barra; 1, 2 e 3 só no dev ————— */
+const route = useRoute()
+const tipo = computed<0 | 1 | 2 | 3>(() => {
+  if (!import.meta.dev) return 0
+  const q = Number(route.query.achados)
+  return q === 1 || q === 2 || q === 3 ? q : 0
+})
+const metricas = computed(() => props.raiox?.metrics ?? [])
 
 /* ————— a análise: a do payload, ou a relida depois de pedir uma nova ————— */
 const relida = ref<CarteiraAnaliseIA | null | undefined>(undefined)
@@ -128,6 +145,10 @@ function aoClicarNoMiolo(e: MouseEvent) {
   e.preventDefault()
   painel.abrir(semValor(a.pergunta), [contexto.value])
 }
+/* a pergunta de um dos tipos novos: abre o painel com ela e com os achados anexados */
+function perguntarSobre(pergunta: string) {
+  painel.abrir(semValor(pergunta), [contexto.value])
+}
 function agir(q: string) {
   if (q === RELENDO) return
   if (q === PEDIR) {
@@ -140,8 +161,11 @@ function agir(q: string) {
 </script>
 
 <template>
-  <section v-contexto-chat="contexto" class="cah" aria-label="O que a Redentia encontrou" data-clarity-mask="true" @click="aoClicarNoMiolo">
-    <AtivoResumo ticker="carteira" :titulo="cabeca.titulo" :html="html">
+  <section v-contexto-chat="contexto" class="cah" :class="tipo ? `cah--t${tipo}` : null" aria-label="O que a Redentia encontrou" data-clarity-mask="true" @click="aoClicarNoMiolo">
+    <CarteiraAchadosLeitura v-if="tipo === 1" :vm="vm" :metricas="metricas" :selo="cabeca.idade" :acoes="acoes" :mascarar="semValor" @perguntar="perguntarSobre" @agir="agir" />
+    <CarteiraAchadosNumeros v-else-if="tipo === 2" :vm="vm" :metricas="metricas" :selo="cabeca.idade" :acoes="acoes" :mascarar="semValor" @perguntar="perguntarSobre" @agir="agir" />
+    <CarteiraAchadosConversa v-else-if="tipo === 3" :vm="vm" :metricas="metricas" :selo="cabeca.idade" :acoes="acoes" :mascarar="semValor" :perguntar="PERGUNTAR" @perguntar="perguntarSobre" @agir="agir" />
+    <AtivoResumo v-else ticker="carteira" :titulo="cabeca.titulo" :html="html">
       <template #antes>
         <span class="cah__assinatura"><img src="/logo-azul.svg" alt="" width="14" height="14">Redentia AI</span>
       </template>
