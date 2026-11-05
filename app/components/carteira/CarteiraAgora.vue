@@ -12,8 +12,8 @@
 //    com peso, no lugar do eyebrow; a frase sai de utils/carteira-agora.ts;
 //  - o patrimônio grande no lugar do preço (TopoPreco), que segue a mira do
 //    gráfico, e a linha do dia ("−R$ 145,20 (0,22%) hoje");
-//  - o losango compacto (HomeLosango, a variação 3 que o dono mandou manter)
-//    num cartão, ao lado da linha do dia, com você e a bolsa;
+//  - o losango do dia (HomeLosango) solto à direita do patrimônio, como na
+//    home; o cartão saiu em 05/11 ("não gostei do losango em forma de card");
 //  - a carteira contra o IBOV no gráfico do /asset (AtivoGrafico, tom luz),
 //    com a mira, o arrasto que mede, os períodos que a curva cobre e os números
 //    numa fileira;
@@ -28,7 +28,6 @@ import type { HomeChartVM } from '~/types/home'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 import { fraseDaCarteira } from '~/utils/carteira-agora'
 import { pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
-import { quemNaFrente } from '~/utils/losangoDoDia'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
@@ -98,7 +97,6 @@ const dia = computed(() => {
 const temLosango = computed(() => props.agora.carteiraPct != null)
 const esmaecido = computed(() => pregao.value.estado === 'antes' && props.agora.priceDate?.slice(0, 10) !== agoraEmSP().iso)
 const proventoSub = computed(() => subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value))
-const frente = computed(() => quemNaFrente(props.agora.carteiraPct, bolsaPct.value))
 const contextoLosango = computed(() => {
   const c = props.agora.carteiraPct
   if (c == null) return null
@@ -243,6 +241,8 @@ onMounted(() => {
       </div>
     </div>
 
+    <div class="cto__corpo">
+    <div class="cto__esq">
     <!-- o estado e a frase: o eyebrow do topo, com peso -->
     <p class="cto__estado" :class="`cto__estado--${atencao ? 'atencao' : pregao.estado}`">
       <span class="cto__ponto" aria-hidden="true" />
@@ -267,23 +267,17 @@ onMounted(() => {
         </p>
       </div>
 
-      <!-- o losango do dia: o logo da marca, com você e a bolsa ao lado -->
-      <NuxtLink v-if="temLosango" v-contexto-chat="contextoLosango" to="/carteira#posicoes" class="cto__losango" :class="{ 'cto__losango--esmaecido': esmaecido }">
-        <span class="cto__losango-logo">
-          <HomeLosango
-            tema="noite" compacto link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
-            :voce="agora.carteiraPct" :bolsa="bolsaPct" :provento="agora.provento" :provento-sub="proventoSub" :esmaecido="esmaecido"
-          />
-        </span>
-        <span class="cto__losango-texto">
-          <span class="cto__losango-nums">
-            <span :class="agora.carteiraPct! < 0 ? 'tbo__delta--down' : 'tbo__delta--up'"><span class="cto__quem">Você</span> {{ pctComSinal(agora.carteiraPct!) }}</span>
-            <span v-if="bolsaPct != null"><span class="cto__quem">Bolsa</span> {{ pctComSinal(bolsaPct) }}</span>
-          </span>
-          <span v-if="frente" class="cto__losango-rel">{{ frente.lider === 'empate' ? 'Empatado com a bolsa' : `${frente.numero} ${frente.relacao}` }}</span>
-          <span class="cto__losango-prov" :class="{ 'cto__losango-prov--aceso': agora.provento }">Provento · {{ proventoSub }}</span>
-        </span>
-      </NuxtLink>
+    </div>
+    </div>
+
+    <!-- o losango do dia, solto como na home (o cartão saiu em 05/11: o
+         dono "não gostei do losango em forma de card") -->
+    <div v-if="temLosango" v-contexto-chat="contextoLosango" class="cto__losango">
+      <HomeLosango
+        tema="noite" link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
+        :voce="agora.carteiraPct" :bolsa="bolsaPct" :provento="agora.provento" :provento-sub="proventoSub" :esmaecido="esmaecido"
+      />
+    </div>
     </div>
 
     <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco">
@@ -368,25 +362,13 @@ onMounted(() => {
 .cto__frase--link:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; border-radius: 4px; }
 .cto__frase-sub { color: var(--nu-red-soft); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-/* o patrimônio e o losango lado a lado; no celular, o losango desce */
-.cto__dia-linha { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px 32px; flex-wrap: wrap; }
+/* o patrimônio à esquerda e o losango solto à direita (como na home); no
+   celular, o losango desce para baixo do patrimônio */
+.cto__corpo { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px clamp(24px, 4vw, 64px); }
+.cto__esq { min-width: 0; }
+.cto__dia-linha { display: flex; align-items: flex-end; gap: 18px 32px; flex-wrap: wrap; }
 .cto .cto__preco-linha { margin-top: 10px; min-width: 0; }
-.cto__losango {
-  display: flex; align-items: center; gap: 14px; padding: 10px 18px 10px 10px; border-radius: var(--nu-r-tile);
-  background: var(--nu-agora-cartao); color: var(--nu-agora-texto); box-shadow: inset 0 0 0 1px var(--nu-agora-linha);
-  transition: transform .45s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s ease, background .2s ease;
-}
-.cto__losango:hover { color: var(--nu-agora-texto); transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--nu-white-18), 0 18px 40px -22px var(--nu-blue-soft); }
-.cto__losango:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
-/* o recorte das abas do logo usa a cor do cartão */
-.cto__losango-logo { flex: none; width: 72px; --nu-agora-bg: var(--nu-agora-cartao); }
-.cto__losango-texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; font-variant-numeric: tabular-nums; }
-.cto__losango-nums { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: var(--nu-fs-lg); font-weight: 700; white-space: nowrap; }
-.cto__quem { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 600; }
-.cto__losango-rel { color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 600; }
-.cto__losango-prov { color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 500; }
-.cto__losango-prov--aceso { color: var(--nu-green-soft); font-weight: 700; }
-.cto__losango--esmaecido .cto__losango-nums, .cto__losango--esmaecido .cto__losango-rel { opacity: .6; }
+.cto__losango { width: clamp(240px, 24vw, 340px); margin-top: clamp(14px, 2vw, 24px); }
 
 /* as contas: discretas, no pé, onde o /asset põe o simulador */
 .cto__contas { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
@@ -402,10 +384,12 @@ onMounted(() => {
 @media (max-width: 640px) {
   .cto__acoes { gap: 6px; }
   .cto__frase { font-size: var(--nu-fs-lg); }
-  .cto__losango { width: 100%; }
+}
+@media (max-width: 900px) {
+  .cto__corpo { grid-template-columns: minmax(0, 1fr); }
+  .cto__losango { justify-self: center; width: min(100%, 400px); margin: 8px 0 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cto__losango, .cto__frase--link { transition: none; }
-  .cto__losango:hover { transform: none; }
+  .cto__frase--link { transition: none; }
 }
 </style>
