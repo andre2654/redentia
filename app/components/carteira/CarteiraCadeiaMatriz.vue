@@ -1,13 +1,16 @@
 <script setup lang="ts">
-// Variação 2 da "Na cadeia" (CarteiraCadeia): a matriz "quem vende para
-// quem". Cada linha é quem vende; cada coluna, quem compra. As suas empresas
+// O desenho da "Na cadeia" (CarteiraCadeia), escolhido pelo dono entre
+// três: a matriz "quem vende para quem". Cada linha é quem vende; cada coluna, quem compra. As suas empresas
 // vêm primeiro (em cima e à esquerda) e o quadrante delas fica aceso: ali
 // está a ligação "dentro da carteira". As de fora vêm depois, mais apagadas.
 // A célula acesa é um ponto: cheio quando a empresa informou um valor, só o
 // aro quando a ligação existe sem número; azul quando as duas pontas são
-// suas. Passar o mouse acende a linha e a coluna e escreve a ligação no cartão
-// de baixo; clicar abre as provas.
-import type { CadeiaDaCarteira, EmpresaDaCarteiraCadeia, LigacaoDaCadeia } from '~/utils/cadeiaDaCarteira'
+// suas. Passar o mouse acende a linha e a coluna e abre a dica em cima da
+// célula (o que circula, o valor e quem informou); clicar abre as provas. O
+// cartão de baixo saiu em 05/11 (o dono: "pode tirar isso").
+// import explícito: há outros fraseDaCarteira nos utils (carteira-agora,
+// homeAgora) e o auto-import pegaria o errado
+import { fraseDaCarteira, valorEmLinha, type CadeiaDaCarteira, type EmpresaDaCarteiraCadeia, type LigacaoDaCadeia } from '~/utils/cadeiaDaCarteira'
 
 const props = defineProps<{
   vm: CadeiaDaCarteira
@@ -42,10 +45,36 @@ const focoL = computed(() => (props.foco ? celula.value.get(props.foco) ?? null 
 const linhaOn = (p: Ponta) => (mouse.value ? mouse.value.v === p.raiz : focoL.value?.vende === p.raiz)
 const colunaOn = (p: Ponta) => (mouse.value ? mouse.value.c === p.raiz : focoL.value?.compra === p.raiz)
 
-function entrar(v: Ponta, c: Ponta) {
+/* ——— a dica: em cima da célula (embaixo, perto do topo), presa na largura ——— */
+const raiz = ref<HTMLElement | null>(null)
+const minhas = computed(() => props.ligadas.map((e) => e.raiz))
+const dica = ref<{ frase: string; valor: string; x: number; y: number; embaixo: boolean } | null>(null)
+function abrirDica(el: HTMLElement, l: LigacaoDaCadeia) {
+  const r = raiz.value
+  if (!r) return
+  const a = el.getBoundingClientRect()
+  const b = r.getBoundingClientRect()
+  const meia = Math.min(150, b.width / 2)
+  const embaixo = a.top - b.top < 110
+  dica.value = {
+    frase: fraseDaCarteira(l, props.vm.nomes, minhas.value),
+    valor: valorEmLinha(l, props.vm.nomes),
+    x: Math.min(Math.max(a.left + a.width / 2 - b.left, meia), b.width - meia),
+    y: embaixo ? a.bottom - b.top + 8 : a.top - b.top - 8,
+    embaixo,
+  }
+}
+function sair() {
+  mouse.value = null
+  dica.value = null
+}
+
+function entrar(ev: Event, v: Ponta, c: Ponta) {
   mouse.value = { v: v.raiz, c: c.raiz }
   const l = lig(v, c)
-  if (l) emit('foco', l.id)
+  if (!l) return
+  emit('foco', l.id)
+  abrirDica(ev.currentTarget as HTMLElement, l)
 }
 function tamanho(l: LigacaoDaCadeia): number {
   const v = l.valor
@@ -59,12 +88,12 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 </script>
 
 <template>
-  <div class="ccm" :class="`ccm--${modo}`" :style="{ '--n': pontas.length }">
-    <div class="ccm__rolo">
+  <div ref="raiz" class="ccm" :class="`ccm--${modo}`" :style="{ '--n': pontas.length }">
+    <div class="ccm__rolo" @scroll.passive="dica = null">
       <div
         class="ccm__grade" role="grid" :aria-label="`Quem vende para quem: ${vm.frase}`"
         :style="{ gridTemplateColumns: trilhas, gridTemplateRows: trilhasL }"
-        @pointerleave="mouse = null"
+        @pointerleave="sair"
       >
         <!-- o canto: como ler -->
         <div class="ccm__canto" role="presentation">
@@ -98,8 +127,8 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
                 'ccm__cel--on': foco === lig(v, c)!.id,
               }"
               :style="{ '--d': i + j, gridColumn: pos(j), gridRow: pos(i) }"
-              :aria-label="titulo(v, c, lig(v, c))" :title="titulo(v, c, lig(v, c))"
-              @pointerenter="entrar(v, c)" @focus="entrar(v, c)" @click="emit('abrir', lig(v, c)!.id)"
+              :aria-label="titulo(v, c, lig(v, c))"
+              @pointerenter="entrar($event, v, c)" @focus="entrar($event, v, c)" @blur="dica = null" @click="emit('abrir', lig(v, c)!.id)"
             >
               <span
                 class="ccm__ponto" :class="{ 'ccm__ponto--int': v.minha && c.minha, 'ccm__ponto--sem': !lig(v, c)!.valor }"
@@ -115,11 +144,20 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
               }"
               :style="{ '--d': i + j, gridColumn: pos(j), gridRow: pos(i) }"
               :aria-label="v.raiz === c.raiz ? undefined : titulo(v, c, null)"
-              @pointerenter="mouse = { v: v.raiz, c: c.raiz }"
+              @pointerenter="mouse = { v: v.raiz, c: c.raiz }; dica = null"
             />
           </template>
         </template>
       </div>
+    </div>
+
+    <div
+      v-if="dica" class="ccm__dica" :class="{ 'ccm__dica--embaixo': dica.embaixo }"
+      :style="{ left: `${dica.x}px`, top: `${dica.y}px` }" aria-hidden="true"
+    >
+      <p class="ccm__dica-frase">{{ dica.frase }}</p>
+      <p class="ccm__dica-valor">{{ dica.valor }}</p>
+      <p class="ccm__dica-acao">Clique para ver as provas</p>
     </div>
 
     <p class="ccm__legenda" aria-hidden="true">
@@ -132,7 +170,7 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 </template>
 
 <style scoped>
-.ccm { --cel: 52px; --rot: 168px; --sep: 10px; --ease: cubic-bezier(.2, .8, .2, 1); --mola: cubic-bezier(.34, 1.56, .64, 1); max-width: 1080px; margin: 0 auto; }
+.ccm { --cel: 52px; --rot: 168px; --sep: 10px; --ease: cubic-bezier(.2, .8, .2, 1); --mola: cubic-bezier(.34, 1.56, .64, 1); max-width: 1080px; margin: 0 auto; position: relative; }
 .ccm__rolo { display: flex; justify-content: center; }
 .ccm__grade {
   display: grid;
@@ -187,6 +225,20 @@ const titulo = (v: Ponta, c: Ponta, l: LigacaoDaCadeia | null) =>
 .ccm__leg-p--int { background: #2F6AFF; box-shadow: 0 0 8px color-mix(in srgb, #2F6AFF 60%, transparent); }
 .ccm__leg-p--sem { background: var(--nu-white); border: 2px solid color-mix(in srgb, var(--nu-navy) 55%, transparent); }
 .ccm__leg-q { width: 14px; height: 14px; border-radius: 4px; background: color-mix(in srgb, #2F6AFF 10%, transparent); }
+
+/* ——— a dica: navy, a sombra da casa ——— */
+.ccm__dica {
+  position: absolute; z-index: 5; transform: translate(-50%, -100%);
+  width: max-content; max-width: min(300px, calc(100% - 16px)); padding: 12px 14px;
+  border-radius: 14px; background: var(--nu-navy); color: var(--nu-cream-text);
+  box-shadow: 0 18px 40px -16px rgba(12, 21, 36, 0.45);
+  pointer-events: none; animation: ccm-dica .18s var(--ease) both;
+}
+.ccm__dica--embaixo { transform: translate(-50%, 0); }
+.ccm__dica-frase { margin: 0; font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4; }
+.ccm__dica-valor { margin: 4px 0 0; font-size: var(--nu-fs-xs); font-weight: 500; opacity: .72; font-variant-numeric: tabular-nums; }
+.ccm__dica-acao { margin: 6px 0 0; font-size: var(--nu-fs-xs); font-weight: 700; color: #9DB8FF; }
+@keyframes ccm-dica { from { opacity: 0; } }
 
 /* ——— a entrada: as células acendem em diagonal ——— */
 .ccm--esperando .ccm__cel, .ccm--esperando .ccm__col, .ccm--esperando .ccm__rot { opacity: 0; }

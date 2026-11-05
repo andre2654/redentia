@@ -16,13 +16,9 @@
 // /assets/{t}/supply-chain por empresa, só ação, no máximo 12, cache de 5 min)
 // de composables/useCadeiaDaCarteira.ts. Sem nenhuma ligação, a seção some.
 //
-// TRÊS VARIAÇÕES (o método do dono), só no dev por ?cadeia-carteira=1|2|3;
-// em produção vale a 1:
-//  1. a rede: as suas empresas no anel de dentro, do tamanho do peso na
-//     carteira, as de fora em volta, apagadas; as setas dizem quem vende;
-//  2. a matriz "quem vende para quem": linha vende, coluna compra, o
-//     quadrante das suas aceso;
-//  3. a lista narrada: uma frase por ligação, com o mini-diagrama.
+// O desenho é a matriz "quem vende para quem" (CarteiraCadeiaMatriz): linha
+// vende, coluna compra, o quadrante das suas aceso. Saiu de três (rede,
+// matriz, lista narrada); o dono escolheu a matriz ("eu escolhi o da tabela").
 import AcaoCadeiaDetalhe from '~/components/acao/AcaoCadeiaDetalhe.vue'
 import type { AcaoCadeiaDetalheVM } from '~/types/acao'
 import type { CarteiraPosicaoMundo } from '~/types/carteira'
@@ -33,14 +29,6 @@ const emit = defineEmits<{ ligacoes: [tem: boolean] }>()
 
 const { vm, pendente } = useCadeiaDaCarteira(() => props.posicoes)
 
-const route = useRoute()
-const variacao = computed<1 | 2 | 3>(() => {
-  if (import.meta.dev) {
-    const q = Number(route.query['cadeia-carteira'])
-    if (q === 2 || q === 3) return q
-  }
-  return 1
-})
 
 const pronto = computed(() => !pendente.value && !vm.value.vazia)
 const mostrar = computed(() => pendente.value || !vm.value.vazia)
@@ -106,7 +94,7 @@ const contexto = computed(() => ({
 </script>
 
 <template>
-  <section v-if="mostrar" class="cca" :class="`cca--v${variacao}`" aria-labelledby="cca-titulo" data-clarity-mask="true">
+  <section v-if="mostrar" class="cca" aria-labelledby="cca-titulo" data-clarity-mask="true">
     <div ref="cabeca" class="cca__cabeca">
       <span class="cca__eyebrow">Na cadeia</span>
       <h2 v-if="pronto" id="cca-titulo" class="cca__frase" :class="`cca__frase--${modo}`" :aria-label="vm.frase">
@@ -123,34 +111,15 @@ const contexto = computed(() => ({
     </div>
 
     <div v-contexto-chat="contexto" class="cca__corpo">
-      <!-- carregando: o esqueleto na forma da variação -->
-      <div v-if="!pronto" class="cca__esq" :class="`cca__esq--v${variacao}`" aria-hidden="true">
-        <template v-if="variacao === 3">
-          <div v-for="n in 3" :key="n" class="cca__esq-linha">
-            <NuSkeleton width="132px" height="40px" radius="pill" />
-            <NuSkeleton width="min(520px, 70%)" height="22px" radius="chip" />
-          </div>
-        </template>
-        <template v-else>
-          <NuSkeleton width="100%" height="100%" radius="card-lg" class="cca__esq-bloco" />
-        </template>
+      <!-- carregando: o esqueleto na forma da matriz -->
+      <div v-if="!pronto" class="cca__esq" aria-hidden="true">
+        <NuSkeleton width="100%" height="100%" radius="card-lg" class="cca__esq-bloco" />
       </div>
 
       <template v-else>
-        <CarteiraCadeiaRede
-          v-if="variacao === 1"
-          :vm="vm" :ligadas="ligadas" :ticker-de="tickerDe" :foco="focoId" :modo="modo"
-          @foco="focoMouse = $event" @abrir="abrir"
-        />
         <CarteiraCadeiaMatriz
-          v-else-if="variacao === 2"
           :vm="vm" :ligadas="ligadas" :ticker-de="tickerDe" :foco="focoId" :modo="modo"
           @foco="focoMouse = $event" @abrir="abrir"
-        />
-        <CarteiraCadeiaNarrada
-          v-else
-          :vm="vm" :ticker-de="tickerDe" :modo="modo"
-          @abrir="abrir"
         />
 
         <div class="cca__pe">
@@ -199,19 +168,14 @@ const contexto = computed(() => ({
 .cca__corpo { margin-top: clamp(28px, 4vw, 52px); }
 
 /* esqueleto: a altura do que chega */
-.cca__esq--v1 { aspect-ratio: 16 / 9; max-width: 1080px; }
-.cca__esq--v2 { aspect-ratio: 16 / 8; max-width: 860px; }
+.cca__esq { aspect-ratio: 16 / 8; max-width: 860px; }
 .cca__esq-bloco { display: block; }
-.cca__esq--v3 { display: flex; flex-direction: column; }
-.cca__esq-linha { display: flex; align-items: center; gap: 22px; padding: 22px 0; border-top: 1px solid var(--nu-cream-2); }
-.cca__esq-linha:first-child { border-top: none; }
 
 .cca__provas { padding: 0; border: 0; background: none; font: inherit; color: var(--nu-blue-text); font-weight: 700; cursor: pointer; }
 .cca__provas:hover { color: var(--nu-blue-hover); }
 .cca__provas:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
 
 .cca__pe { max-width: 860px; margin: clamp(28px, 3.4vw, 40px) auto 0; display: flex; flex-direction: column; gap: 12px; }
-.cca--v3 .cca__pe { margin-left: 0; }
 .cca__quietas { display: flex; flex-direction: column; gap: 10px; }
 .cca__pe-rot { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .cca__chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -223,9 +187,7 @@ const contexto = computed(() => ({
 .cca__chip:hover { background: var(--nu-cream-hover); transform: translateY(-1px); color: var(--nu-ink); }
 
 @media (max-width: 600px) {
-  .cca__esq--v1 { aspect-ratio: 1 / 1.1; }
-  .cca__esq--v2 { aspect-ratio: 1 / 1; }
-  .cca__esq-linha { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .cca__esq { aspect-ratio: 1 / 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cca__frase--revelando .cca__palavra { animation: none; }
