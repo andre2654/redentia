@@ -38,6 +38,8 @@ export function useChatPainel() {
   const contextos = useState<ContextoDoChat[]>('nu:chat-painel:contextos', () => [])
   /** o painel abre já na lista de conversas (o botão de conversa da barra) */
   const conversasPedidas = useState<boolean>('nu:chat-painel:conversas', () => false)
+  /** o texto que o painel põe no campo SEM enviar (preencher) */
+  const rascunho = useState<string | null>('nu:chat-painel:rascunho', () => null)
 
   /** Abre o painel; com `pergunta`, ela é enviada assim que o painel montar. */
   function abrir(pergunta?: string, extras: ContextoDoChat[] = []) {
@@ -47,6 +49,12 @@ export function useChatPainel() {
       pendente.value = { texto, contextos: [...contextos.value] }
       contextos.value = []
     }
+    aberto.value = true
+  }
+
+  /** Abre o painel com o texto já no campo, sem enviar: o envio fica com a pessoa. */
+  function preencher(texto: string) {
+    rascunho.value = texto.trim() || null
     aberto.value = true
   }
 
@@ -105,5 +113,5 @@ export function useChatPainel() {
     useCadastroFolha().abrir({ gesto: 'pergunta', pergunta: texto }, () => true, volta, () => abrir(texto, junto))
   }
 
-  return { aberto, pendente, contextos, conversasPedidas, abrir, abrirConversas, perguntar, pedirConta, fechar, anexar, remover, consumirPendente }
+  return { aberto, pendente, contextos, conversasPedidas, rascunho, abrir, preencher, abrirConversas, perguntar, pedirConta, fechar, anexar, remover, consumirPendente }
 }

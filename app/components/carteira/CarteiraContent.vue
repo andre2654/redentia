@@ -7,6 +7,7 @@
 // pessoa não precisa saber de tudo nem se preocupar. A ordem da tela responde
 // uma pergunta por vez:
 //  1. CarteiraAgora      "está tudo bem?" — uma frase, o dia escondido na pílula
+//     CarteiraAchados    "o que a Redentia encontrou?" — o agente diz o que viu (05/11)
 //  2. CarteiraFuturo     "e daqui a 5 anos?" — o leque de 2.000 cenários (o
 //                        único momento assinatura da tela, na banda navy)
 //  3. CarteiraPosicoes   o total, a barra por classe e os grupos (papéis sob pedido)
@@ -26,6 +27,8 @@ const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
 // a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
 const temAcoes = computed(() => !!props.payload.posicoesMundo?.some((p) => p.classe === 'STOCK'))
 const temCadeia = ref(false)
+// os achados da Redentia AI: com Raio-X ou com a análise escrita (sem nada, a linha calma)
+const temAchados = computed(() => !!(props.payload.raiox || props.payload.analise))
 
 // A faixa abaixo do header vira o rail desta página quando há carteira (no
 // lugar do "Mercado agora": a carteira não precisa do mercado piscando em
@@ -33,7 +36,9 @@ const temCadeia = ref(false)
 const railSections = computed<RailSection[]>(() => {
   if (!conectada.value) return []
   const p = props.payload
-  const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }, { id: 'futuro', label: 'Daqui a 5 anos' }]
+  const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }]
+  if (temAchados.value) s.push({ id: 'achados', label: 'Achados' })
+  s.push({ id: 'futuro', label: 'Daqui a 5 anos' })
   if (p.groups.length) s.push({ id: 'posicoes', label: 'Posições' })
   if (p.posicoesMundo?.length) s.push({ id: 'mundo', label: 'No mundo' })
   if (temAcoes.value && temCadeia.value) s.push({ id: 'cadeia', label: 'Na cadeia' })
@@ -59,6 +64,14 @@ onMounted(() => {
        data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
   <div v-if="conectada">
     <CarteiraAgora id="hoje" :agora="agora" @connected="emit('connected')" />
+    <CarteiraAchados
+      v-if="temAchados"
+      id="achados"
+      :raiox="payload.raiox"
+      :analise="payload.analise ?? null"
+      :posicoes="payload.posicoesMundo ?? []"
+      :olhada-em="payload.olhadaEm ?? null"
+    />
     <CarteiraFuturo id="futuro" />
     <CarteiraPosicoes
       v-if="payload.groups.length && payload.hero.patrimonio"

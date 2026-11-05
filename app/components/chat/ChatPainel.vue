@@ -106,6 +106,15 @@ watch([aberto, () => painel.pendente.value], ([a, p]) => {
   if (pend) void enviar(pend.texto, pend.contextos)
 }, { immediate: true })
 
+// o texto que alguém pediu para pôr no campo sem enviar (preencher): a
+// pessoa lê e manda ela mesma
+watch([aberto, () => painel.rascunho.value], ([a, r]) => {
+  if (!import.meta.client || !a || !r) return
+  painel.rascunho.value = null
+  texto.value = r
+  nextTick(() => composer.value?.focar())
+}, { immediate: true })
+
 // a pergunta que esbarrou na assinatura (o quiz abriu no lugar): quando a pessoa
 // volta assinante, o painel abre e a manda sozinho. Fora do meio do fluxo
 // (login, /assinar) e só com a assinatura confirmada: com o webhook atrasado,

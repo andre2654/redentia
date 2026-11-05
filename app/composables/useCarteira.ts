@@ -906,6 +906,12 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
     // a seção "No mundo" (05/11/2026): ticker, classe, valor cru e nome de cada
     // posição (o Tesouro aparece pelo nome, não pelo ISIN do ticker)
     posicoesMundo: rows.map((r) => ({ ticker: r.ticker, classe: r.assetClass, valor: r.value, nome: r.name })),
+    // os achados da Redentia AI (05/11/2026): a análise escrita segue adiante
+    // inteira (riscos, ideias e pontos fortes), com a hora desta carga
+    analise: analysis
+      ? { risks: analysis.risks, recommendations: analysis.recommendations, strengths: analysis.strengths, generated_at: analysis.generated_at }
+      : null,
+    olhadaEm: new Date().toISOString(),
   }
 }
 
