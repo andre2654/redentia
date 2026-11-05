@@ -212,15 +212,11 @@ export const PARA_QUEM = [
  * convite como única escrita, a prova do aceite, o contrato do provedor de IA)
  * mora no FAQ.
  */
-export const SEGURANCA = [
-  { id: 'le', t: 'Só lê.', d: 'Nada compra, vende ou transfere.' },
-  { id: 'sim', t: 'Cliente só entra com o sim dele.', d: 'O aceite fica registrado, e ele revoga quando quiser.' },
-  { id: 'ia', t: 'A IA é a da sua casa.', d: 'A Redentia não treina modelo com o seu dado.' },
-] as const
 
 /**
- * AS TRÊS VARIAÇÕES DA SEGURANÇA (?seguranca=1|2|3, só no dev, 05/11/2026). O
- * dono, olhando os três cartões: "agora aqui acho que precisamos reimaginar".
+ * A SEGURANÇA É O REGISTRO (o dono escolheu a 3 das três variações do dev em
+ * 05/11/2026; a pergunta do compliance e a lente saíram). Antes, olhando os três
+ * cartões: "agora aqui acho que precisamos reimaginar".
  * O título fica ("Seu compliance pergunta. A gente mostra."), e cada variação
  * mostra de um jeito. Teto: as 61 palavras da seção de hoje (no HTML do
  * servidor, com os rótulos dos desenhos). O que cada frase afirma, e de onde
@@ -232,35 +228,6 @@ export const SEGURANCA = [
  * até 07/10/2027. É a mesma Mariana da pauta de sexta nos passos.
  */
 export const SEGURANCA_CLIENTE = { nome: 'Mariana Ribeiro Costa', banco: 'Nubank', desde: '07/10/2026', ate: '07/10/2027' } as const
-
-/** 1 · A pergunta do compliance: o título literal, um dossiê aberto. */
-export interface PerguntaDoCompliance { id: 'dinheiro' | 'autoriza' | 'revoga' | 'ia'; q: string; r: string }
-export const SEGURANCA_PERGUNTAS: PerguntaDoCompliance[] = [
-  // PluggyService só tem leitura (listInvestments, listAccounts, list*Transactions); o MCP não tem ferramenta que mexa em patrimônio (FAQ)
-  { id: 'dinheiro', q: 'Vocês movimentam dinheiro?', r: 'Não. Só lê.' },
-  // business_client_consents: granted_at, versão e hash do termo, navegador (FAQ "Onde os dados...")
-  { id: 'autoriza', q: 'Quem autoriza o acesso?', r: 'O cliente, com o aceite registrado.' },
-  // ClientConsentService::revoke apaga conexões e posições; o cliente revoga pelo link de gestão
-  { id: 'revoga', q: 'O cliente pode tirar?', r: 'Quando quiser, e as posições são apagadas.' },
-  // FAQ "Algum modelo de IA treina...": a Redentia não treina nem põe modelo próprio no caminho
-  { id: 'ia', q: 'Vocês treinam IA com o dado?', r: 'Não. A IA é a da sua casa.' },
-]
-/** o que a prova da pergunta 1 mostra: só a primeira acende */
-export const SEGURANCA_PERMISSOES = ['Ler', 'Comprar', 'Vender', 'Transferir'] as const
-export const SEGURANCA_IAS = ['Claude', 'ChatGPT'] as const
-
-/** 2 · A lente: uma peça só, desenhada. Os rótulos do desenho e as três frases da legenda. */
-export const SEGURANCA_LENTE = {
-  banco: 'Banco do cliente',
-  lente: 'Redentia',
-  bloqueadas: ['Comprar', 'Vender', 'Transferir'],
-  ia: 'IA da sua casa',
-  legenda: [
-    { id: 'le', t: 'Só lê. Nada compra, vende ou transfere.' },
-    { id: 'giro', t: 'O cliente desliga quando quiser.' },
-    { id: 'ia', t: 'A leitura vai para a IA da sua casa. A Redentia não treina modelo.' },
-  ],
-} as const
 
 /**
  * 3 · O registro: as linhas são eventos que o produto grava
@@ -332,7 +299,7 @@ export function precoDaMesa(n: number): { total: number; linhas: { rotulo: strin
  *  - Desenha uma tela que não existe, a "Mesa" do Redentia For Business (a fila na lateral e as quatro áreas, com Editar e Aprovar). Afirma tudo o que a fila já afirma e mais: que há um app próprio com essa tela. O produto de hoje é o MCP no assistente de IA.
  *  - Os números são os da fila (R$ 4,97 mi em 4 clientes, 6 de 7, sexta às 10h, a pergunta do Lucas), e nada diz "demonstração".
  *
- * AS TRÊS VARIAÇÕES DA SEGURANÇA (?seguranca=1|2|3, só no dev, 05/11/2026). CONFERIDO (lastro no código ou no FAQ):
+ * A SEGURANÇA É O REGISTRO (BizSegurancaRegistro, escolhido em 05/11/2026). CONFERIDO (lastro no código ou no FAQ):
  *  - Só lê: o PluggyService só tem leitura (listInvestments, listAccounts, listInvestmentTransactions, listAccountTransactions, getItem) e o connect token; o termo grava o escopo de leitura (config business_clients.scope: posições, saldo, movimentações); o MCP não tem ferramenta que compre, venda ou transfira (FAQ).
  *  - O aceite fica registrado: business_client_consents (granted_at, expires_at, terms_version, terms_sha256, user_agent; o IP só com a origem provada).
  *  - 12 meses: consent_months = 12; o business:clientes-expirar (diário) encerra o vencido e apaga as posições. 07/10/2026 → 07/10/2027 é a Mariana.
@@ -344,7 +311,6 @@ export function precoDaMesa(n: number): { total: number; linhas: { rotulo: strin
  *  - "O cliente vê o mesmo registro" (3): é verdade para o registro do cliente dele (o link de gestão mostra as 20 últimas linhas). As linhas do Fernando e da Mariana juntas são a visão do escritório (o painel), não a de um cliente só.
  *  - A linha "Consentimento vence" (3) não é um evento gravado: é a validade (o `until` do link de gestão). O evento `expired` só nasce no dia, se ele não renovar.
  *  - A revogação ficou sem linha (3): os clientes do elenco estão todos conectados na fila e nos passos; "Lucas revogou o Itaú" desmentiria o atendimento dele de 05/11. Se o dono quiser a linha, falta um cliente revogado no elenco.
- *  - A lente (2) desenha o banco como um cofre que a Redentia "olha pelo vidro". É metáfora: o dado chega pelo Open Finance, pela Pluggy (o FAQ diz isso), e a chave que gira na tela é um desenho do Revogar do link de gestão, não um controle do produto.
- *  - "Claude" e "ChatGPT" (1) seguem como hoje; "Onde o dado fica?" ficou só no FAQ, porque a região de hospedagem entra no contrato e a resposta curta mentiria por omissão.
- *  - Palavras da seção no HTML do servidor: 60 (1), 46 (2) e 56 (3); hoje são 61.
+ *  - "Onde o dado fica?" fica só no FAQ, porque a região de hospedagem entra no contrato.
+ *  - Palavras da seção no HTML do servidor: 56 (eram 61 nos cartões).
  */

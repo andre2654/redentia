@@ -22,7 +22,7 @@
  * Densidade: o teto de ~650 palavras fora do FAQ (scripts/seo-paridade-business.mjs).
  */
 import {
-  CTA_AGENDA, CTA_DEMO, HERO, LOGOS_CLIENTES, PARA_QUEM, SEGURANCA, precoDaMesa,
+  CTA_AGENDA, CTA_DEMO, HERO, LOGOS_CLIENTES, PARA_QUEM, precoDaMesa,
 } from '~/content/business/landing'
 
 const destinoCadastro = useDestinoCadastroBusiness()
@@ -31,19 +31,11 @@ const destinoCadastro = useDestinoCadastroBusiness()
    O dono viu as três variações dos passos no dev (05/11/2026) e escolheu a 1,
    a câmera dentro do produto. O cartão sobre a foto (BizPassos), o caminho do
    dinheiro e a conversa na IA saíram; estão no commit 75d9dd60. */
-const route = useRoute()
 
-/* ——— as três variações da segurança (05/11/2026), SÓ NO DEV ———
-   O dono, olhando os três cartões: "agora aqui acho que precisamos reimaginar".
-   `?seguranca=1|2|3` troca os cartões por uma das três; sem o parâmetro, e em
-   produção (import.meta.dev é false), ficam os cartões de hoje. As três são
-   Lazy: não entram no pacote da página de produção. O cabeçalho é o mesmo.
-   1 · a pergunta do compliance · 2 · a lente · 3 · o registro */
-const variacaoDaSeguranca = computed(() => {
-  if (!import.meta.dev) return ''
-  const v = String(route.query.seguranca ?? '')
-  return v === '1' || v === '2' || v === '3' ? v : ''
-})
+/* ——— a segurança: o registro (BizSegurancaRegistro) ———
+   O dono viu as três variações no dev (05/11/2026) e escolheu a 3, o registro
+   de acesso. A pergunta do compliance, a lente e os três cartões saíram; estão
+   no commit 4abbe0fb. */
 
 /* ——— a calculadora do plano (a mesma conta de RbProva) ——— */
 const MIN = 1
@@ -122,29 +114,7 @@ const semPonto = (t: string) => t.replace(/\.$/, '')
         <p class="bzl-olho">Segurança</p>
         <h2 id="bzs-titulo" class="bzl-h2">Seu compliance pergunta<span class="bzl-p">.</span> <br class="bzl-br">A gente mostra<span class="bzl-p">.</span></h2>
       </header>
-      <LazyBizSegurancaPerguntas v-if="variacaoDaSeguranca === '1'" />
-      <LazyBizSegurancaLente v-else-if="variacaoDaSeguranca === '2'" />
-      <LazyBizSegurancaRegistro v-else-if="variacaoDaSeguranca === '3'" />
-      <ol v-else class="bzs__cards">
-        <li v-for="(c, i) in SEGURANCA" :key="c.id" class="bzs__card">
-          <div class="bzs__visual" aria-hidden="true">
-            <div v-if="c.id === 'le'" class="bzs__acoes">
-              <span class="bzs__acao bzs__acao--sim">Ler</span><span class="bzs__acao">Comprar</span><span class="bzs__acao">Vender</span><span class="bzs__acao">Transferir</span>
-            </div>
-            <div v-else-if="c.id === 'sim'" class="bzs__aceite">
-              <span class="bzs__ok"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></span>
-              <span class="bzs__aceite-txt"><strong>Autorizado pelo cliente</strong><span>até 07/10/2027</span></span>
-              <span class="bzs__revogar">Revogar</span>
-            </div>
-            <div v-else class="bzs__ias"><span class="bzs__ia">Claude</span><span class="bzs__ia">ChatGPT</span></div>
-          </div>
-          <div class="bzs__corpo">
-            <span class="bzs__n">{{ String(i + 1).padStart(2, '0') }}</span>
-            <h3 class="bzs__t">{{ c.t }}</h3>
-            <p class="bzs__d">{{ c.d }}</p>
-          </div>
-        </li>
-      </ol>
+      <BizSegurancaRegistro />
     </section>
 
     <!-- ================= o plano ================= -->
@@ -258,26 +228,6 @@ section { scroll-margin-top: calc(var(--nuh-h, 72px) + 16px); }
 
 /* ——— segurança ——— */
 .bzs { padding: clamp(64px, 8vw, 120px) var(--g); }
-.bzs__cards { list-style: none; margin: clamp(36px, 4.4vw, 56px) auto 0; padding: 0; max-width: 1180px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-@media (min-width: 900px) { .bzs__cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
-.bzs__card { display: flex; flex-direction: column; border-radius: var(--nu-r-card); overflow: clip; background: var(--nu-white); box-shadow: var(--sombra); transition: transform .35s var(--curva), box-shadow .35s var(--curva); }
-.bzs__card:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px rgba(12, 21, 36, .08), 0 34px 70px -32px rgba(12, 21, 36, .28); }
-.bzs__visual { height: 132px; padding: 0 20px; display: grid; place-items: center; background: var(--nu-cream); }
-.bzs__corpo { padding: clamp(20px, 2.4vw, 28px); }
-.bzs__n { color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
-.bzs__t { margin: 8px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.015em; line-height: 1.25; }
-.bzs__d { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
-.bzs__acoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.bzs__acao { padding: 6px 12px; border-radius: var(--nu-r-pill); border: 1px solid var(--nu-ink-14); background: var(--nu-white); color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: line-through; text-decoration-thickness: 1.5px; }
-.bzs__acao--sim { border-color: var(--nu-blue); background: var(--nu-blue); color: var(--nu-white); text-decoration: none; }
-.bzs__aceite { width: 100%; max-width: 320px; padding: 12px 14px; border-radius: 14px; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-cream-line); display: flex; align-items: center; gap: 12px; text-align: left; }
-.bzs__ok { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--nu-green-bg); color: var(--nu-green-text); }
-.bzs__aceite-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.bzs__aceite-txt strong { color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 700; }
-.bzs__aceite-txt span { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
-.bzs__revogar { margin-left: auto; flex: none; padding: 5px 10px; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--nu-ink-14); color: var(--nu-red-text); font-size: var(--nu-fs-xs); font-weight: 700; }
-.bzs__ias { display: flex; gap: 10px; }
-.bzs__ia { padding: 10px 18px; border-radius: 14px; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-cream-line); color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; letter-spacing: -0.01em; }
 
 /* ——— o plano ——— */
 .bzr { padding: clamp(64px, 8vw, 120px) var(--g); background: var(--nu-cream); }
@@ -347,7 +297,6 @@ section { scroll-margin-top: calc(var(--nuh-h, 72px) + 16px); }
 .bzl .bzl-h2, .bzl .bzq__nome { font-family: var(--serifa); font-weight: 400; letter-spacing: -0.02em; }
 .bzl .bzq { background: var(--nu-cream); }
 .bzl .bzq__item:hover { border-top-color: var(--nu-navy); }
-.bzl .bzs__card { box-shadow: 0 0 0 1px var(--nu-cream-line); }
 .bzl .bzr { background: var(--nu-navy); position: relative; isolation: isolate; }
 .bzl .bzr::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
@@ -363,7 +312,7 @@ section { scroll-margin-top: calc(var(--nuh-h, 72px) + 16px); }
 
 @media (prefers-reduced-motion: reduce) {
   .bzh__olho, .bzh__l1, .bzh__l2, .bzh__apoio, .bzh__ctas, .bzh__garantias, .bzh__impl { animation: none; }
-  .bzb, .bzs__card { transition: none; }
-  .bzb:hover, .bzs__card:hover { transform: none; }
+  .bzb { transition: none; }
+  .bzb:hover { transform: none; }
 }
 </style>

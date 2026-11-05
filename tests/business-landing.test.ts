@@ -7,8 +7,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import {
-  ATENDIMENTO, CARTEIRAS, CLIENTES_FORA, FILA, HERO, LOGOS_CLIENTES, NAV_BIZ_NOVA, PASSOS, PAUTA, PARA_QUEM, SEGURANCA,
-  SEGURANCA_CLIENTE, SEGURANCA_IAS, SEGURANCA_LENTE, SEGURANCA_PERGUNTAS, SEGURANCA_PERMISSOES, SEGURANCA_REGISTRO,
+  ATENDIMENTO, CARTEIRAS, CLIENTES_FORA, FILA, HERO, LOGOS_CLIENTES, NAV_BIZ_NOVA, PASSOS, PAUTA, PARA_QUEM,
+  SEGURANCA_CLIENTE, SEGURANCA_REGISTRO,
   precoDaMesa, reaisCurtos, totalFora,
 } from '../app/content/business/landing.ts'
 import { clientActionLabel } from '../app/utils/clientes.ts'
@@ -80,7 +80,7 @@ test('um passo por item da fila, na mesma ordem, com uma frase de apoio só', ()
 })
 
 test('a página não diz demonstração, teste nem "sem comissão", e não promete resultado', () => {
-  const tudo = JSON.stringify({ FILA, HERO, PASSOS, CLIENTES_FORA, CARTEIRAS, PAUTA, ATENDIMENTO, PARA_QUEM, SEGURANCA })
+  const tudo = JSON.stringify({ FILA, HERO, PASSOS, CLIENTES_FORA, CARTEIRAS, PAUTA, ATENDIMENTO, PARA_QUEM, SEGURANCA_REGISTRO })
   assert.doesNotMatch(tudo, /demonstra|\bteste\b|exemplo|fictíci|simulad|sem comiss/i)
   assert.doesNotMatch(tudo, /economi[zs]e|horas? (a menos|por semana)|\d+% mais/i)
 })
@@ -125,20 +125,15 @@ test('os passos são a câmera dentro do produto, sem switch do dev, e as outras
   assert.match(ler('app/composables/usePassosTravados.ts'), /addEventListener\('bzj:ir'/)
 })
 
-test('as três variações da segurança (?seguranca=1|2|3) só existem no dev, e sem o parâmetro ficam os cartões', () => {
+test('a segurança é o registro (escolha do dono), sem as outras variações nem o switch', () => {
   const landing = ler('app/components/business/nova/BizLanding.vue')
-  assert.match(landing, /const variacaoDaSeguranca = computed\(\(\) => \{\n  if \(!import\.meta\.dev\) return ''/)
-  assert.match(landing, /route\.query\.seguranca/)
-  assert.match(landing, /<LazyBizSegurancaPerguntas v-if="variacaoDaSeguranca === '1'" \/>/)
-  assert.match(landing, /<LazyBizSegurancaLente v-else-if="variacaoDaSeguranca === '2'" \/>/)
-  assert.match(landing, /<LazyBizSegurancaRegistro v-else-if="variacaoDaSeguranca === '3'" \/>/)
-  assert.match(landing, /<ol v-else class="bzs__cards">/)
-  for (const f of ['BizSegurancaPerguntas', 'BizSegurancaLente', 'BizSegurancaRegistro']) {
-    const src = ler(`app/components/business/nova/${f}.vue`)
-    // nada em loop, e o reduzir movimento tem a regra dele
-    assert.doesNotMatch(src, /\binfinite\b|setInterval/, f)
-    assert.match(src, /prefers-reduced-motion: reduce/, f)
-  }
+  assert.match(landing, /<BizSegurancaRegistro \/>/)
+  assert.doesNotMatch(landing, /variacaoDaSeguranca|route\.query\.seguranca|bzs__cards/)
+  for (const f of ['BizSegurancaPerguntas', 'BizSegurancaLente']) assert.equal(existsSync(new URL(`../app/components/business/nova/${f}.vue`, import.meta.url)), false, f)
+  const src = ler('app/components/business/nova/BizSegurancaRegistro.vue')
+  // nada em loop, e o reduzir movimento tem a regra dele
+  assert.doesNotMatch(src, /\binfinite\b|setInterval/)
+  assert.match(src, /prefers-reduced-motion: reduce/)
 })
 
 test('o registro da variação 3 só mostra eventos que o produto grava, com o rótulo do produto', () => {
@@ -165,10 +160,10 @@ test('o registro da variação 3 só mostra eventos que o produto grava, com o r
 function R_LINHAS() { return SEGURANCA_REGISTRO.linhas }
 
 test('a copy da segurança nova não tem termo técnico, não diz demonstração e não diz "sem comissão"', () => {
-  const tudo = JSON.stringify({ SEGURANCA_PERGUNTAS, SEGURANCA_PERMISSOES, SEGURANCA_IAS, SEGURANCA_LENTE, SEGURANCA_REGISTRO, SEGURANCA_CLIENTE })
+  const tudo = JSON.stringify({ SEGURANCA_REGISTRO, SEGURANCA_CLIENTE })
   assert.doesNotMatch(tudo, /demonstra|\bteste\b|exemplo|fictíci|simulad|sem comiss/i)
   assert.doesNotMatch(tudo, /\btoken\b|\bAPI\b|\bMCP\b|OAuth|escopo|servidor|ferramenta|\bskill|\bchave\b|\bhash\b/i)
-  for (const f of ['BizSegurancaPerguntas', 'BizSegurancaLente', 'BizSegurancaRegistro']) {
+  for (const f of ['BizSegurancaRegistro']) {
     const tpl = ler(`app/components/business/nova/${f}.vue`).split('<template>')[1]!.split('</template>\n\n<style')[0]!.replace(/<!--[\s\S]*?-->/g, '')
     assert.doesNotMatch(tpl, /\btoken\b|\bAPI\b|\bMCP\b|OAuth|escopo|servidor|ferramenta|\bchave\b/i, f)
   }

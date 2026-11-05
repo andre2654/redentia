@@ -26,9 +26,9 @@ const plano = (f: string) => ler(f).replace(/\s+/g, ' ')
  * para a frase, e esta asserção muda junto.
  */
 // Desde 05/11/2026 as frases de segurança da landing moram em
-// content/business/landing.ts (SEGURANCA) e são desenhadas pelo BizLanding; o
-// RbSeguranca saiu com a página de antes.
-const SEGURANCA_LANDING = ['content/business/landing.ts', 'components/business/nova/BizLanding.vue']
+// content/business/landing.ts (SEGURANCA_REGISTRO) e são desenhadas pelo
+// BizSegurancaRegistro; o RbSeguranca saiu com a página de antes.
+const SEGURANCA_LANDING = ['content/business/landing.ts', 'components/business/nova/BizLanding.vue', 'components/business/nova/BizSegurancaRegistro.vue']
 
 test('CV-01: banco separado não é afirmado (não existe), a prova do aceite é a gravada, e "nenhum dado real" não volta', () => {
   const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
