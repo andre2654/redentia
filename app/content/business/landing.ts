@@ -195,6 +195,44 @@ export const PASSOS: Passo[] = [
 ]
 
 /**
+ * A conversa da variação 3 dos passos (?passos=3, só no dev; BizPassosConversa).
+ * É a mais honesta com o produto de hoje: a Redentia dentro do assistente de IA
+ * da mesa (o MCP), e é o assessor quem pergunta. Por isso o apoio de cada passo
+ * troca o "o agente faz sozinho" por "você pede": mesma extensão, uma frase só.
+ * O nome do assistente fica genérico ("seu assistente de IA") até o dono dizer
+ * se pode escrever Claude. `fez` é a linha do que ela leu antes de responder
+ * (sem nome de ferramenta: a regra da página é nada de termo técnico fora do FAQ).
+ */
+export interface TrocaDaConversa { pergunta: string; fez: string; resposta: string; apoio: string }
+export const ASSISTENTE = { nome: 'Seu assistente de IA', conectada: 'Redentia conectada', campo: 'Pergunte sobre seus clientes' } as const
+export const CONVERSA: Record<IdDoPasso, TrocaDaConversa> = {
+  captacao: {
+    pergunta: 'Quanto dos meus clientes está fora do escritório?',
+    fez: `Somou ${CLIENTES_FORA.length} carteiras`,
+    resposta: `${reaisCurtos(totalFora())}, em ${CLIENTES_FORA.length} clientes. A maior está na ${maior.banco}.`,
+    apoio: 'Você pergunta, e ela soma o que cada cliente tem em cada banco conectado.',
+  },
+  fechamento: {
+    pergunta: `Fecha ${FECHAMENTO.mes} para mim.`,
+    fez: `Conferiu as ${CARTEIRAS.length} carteiras`,
+    resposta: `${CARTEIRAS.filter((c) => c.ok).length} de ${CARTEIRAS.length} fecharam. Falta uma:`,
+    apoio: 'Ela confere carteira por carteira e diz qual não fechou, com o motivo de cada uma.',
+  },
+  reuniao: {
+    pergunta: `Prepara a reunião da ${primeiroNome(PAUTA.cliente)}.`,
+    fez: `Leu a carteira da ${primeiroNome(PAUTA.cliente)}`,
+    resposta: 'A pauta de sexta, às 10h:',
+    apoio: 'Na véspera, você pede, e ela junta o que mudou na carteira, os proventos e o cenário que vale mostrar.',
+  },
+  atendimento: {
+    pergunta: `O ${primeiroNome(ATENDIMENTO.cliente)} perguntou por que caiu.`,
+    fez: `Leu a carteira do ${primeiroNome(ATENDIMENTO.cliente)} e o pregão`,
+    resposta: 'Um rascunho, para você revisar antes de enviar:',
+    apoio: 'Ela escreve a resposta sobre a carteira do cliente, e nada sai sem você ler e enviar.',
+  },
+}
+
+/**
  * Para quem. Os dois perfis de comprador da página de antes (os cards do
  * plano do RbProva) mais a consultoria. A linha da assessoria é a da RCVM 178,
  * art. 25, VII: funciona sem dado de cliente. Uma linha curta por perfil desde
@@ -253,4 +291,10 @@ export function precoDaMesa(n: number): { total: number; linhas: { rotulo: strin
  *  - H1: muda de "Consolide a carteira do seu cliente com 1 clique." para o título do print (o dono já sabe). A meta description segue a de antes.
  *  - O PDF do Wealth 2030 passa a ser público em /estudos/wealth-2030.pdf (o documento diz "distribuição livre").
  *  - A página é indexável desde 20/10, e a regra de lá era "frase nova aqui precisa ser verdade hoje": esta é a direção do produto que vem aí, então não sobe para a main sem o sim do dono, item a item.
+ *
+ * AS TRÊS VARIAÇÕES DOS PASSOS (?passos=1|2|3, só no dev, 05/11/2026). Cada uma afirma coisas diferentes:
+ *  - 1 · A câmera dentro do produto: desenha uma tela que não existe, a "Mesa" do Redentia For Business (a fila na lateral e as quatro áreas, com Editar e Aprovar). Afirma tudo o que a fila já afirma e mais: que há um app próprio com essa tela. O produto de hoje é o MCP no assistente de IA.
+ *  - 2 · O caminho do dinheiro: a leitura banco a banco tem lastro (cada conexão é uma instituição, com o aceite do cliente). Sem lastro: a linha do BTG que para em âmbar e a nota "5 BDRs sem extrato" (a cena da Família Azevedo, como no passo 02), e a soma "fora do escritório" como saída pronta. Os apoios dos passos são os de hoje, com "o agente junta" no 03.
+ *  - 3 · Ao vivo na sua IA: é o produto de hoje (o assessor pergunta; a Redentia responde dentro do assistente). DEIXA DE AFIRMAR: agente que roda sozinho e "na véspera" sem ser chamado (o apoio vira "você pede"), a tela de fila, o botão Aprovar e o envio ao cliente (vira um rascunho com "Copiar"; "nada sai sem você ler e enviar"), e a pergunta que "chega" de um canal (é o assessor quem conta: "O Lucas perguntou por que caiu"). TEM LASTRO: ler as carteiras consentidas com a instituição de cada uma (list_clients, get_client_portfolio), somar o que está fora do BTG na conversa, ler o pregão (get_market_snapshot), a pauta (o comando preparar-reuniao) e o texto para o cliente (a skill redentia-por-que-moveu). AINDA SEM LASTRO: "Fecha outubro para mim", "Conferiu as 7 carteiras" e "6 de 7 fecharam" (não há conciliação contra extrato), o motivo dos 5 BDRs (a cena) e o rascunho "num dia de bolsa em baixa" (a cena, não um pregão real). A PERGUNTAR: se a janela pode dizer "Claude" (hoje diz "Seu assistente de IA"), e se a linha "Redentia conectada" pode ficar.
+ *  - Nas três: os números são os da fila (R$ 4,97 mi em 4 clientes, 6 de 7, sexta às 10h, a pergunta do Lucas), e nada diz "demonstração". As palavras fora do FAQ ficam em 636 (1), 544 (2) e 643 (3); hoje são 647.
  */

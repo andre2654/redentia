@@ -27,6 +27,19 @@ import {
 
 const destinoCadastro = useDestinoCadastroBusiness()
 
+/* ——— as três variações dos passos (05/11/2026), SÓ NO DEV ———
+   O dono achou o cartão branco sobre a foto comum demais ("queria algo mais
+   inovador para mostrar ali as funções"). `?passos=1|2|3` troca o BizPassos por
+   uma das três; sem o parâmetro, e em produção (import.meta.dev é false), fica
+   o de hoje. Os três são Lazy: não entram no pacote da página de produção.
+   1 · a câmera dentro do produto · 2 · o caminho do dinheiro · 3 · ao vivo na IA */
+const route = useRoute()
+const variacaoDosPassos = computed(() => {
+  if (!import.meta.dev) return ''
+  const v = String(route.query.passos ?? '')
+  return v === '1' || v === '2' || v === '3' ? v : ''
+})
+
 /* ——— a calculadora do plano (a mesma conta de RbProva) ——— */
 const MIN = 1
 const MAX = 100
@@ -84,7 +97,10 @@ const semPonto = (t: string) => t.replace(/\.$/, '')
     </section>
 
     <!-- ================= os quatro pontos da fila, um por tela ================= -->
-    <BizPassos />
+    <LazyBizPassosCamera v-if="variacaoDosPassos === '1'" />
+    <LazyBizPassosDinheiro v-else-if="variacaoDosPassos === '2'" />
+    <LazyBizPassosConversa v-else-if="variacaoDosPassos === '3'" />
+    <BizPassos v-else />
 
     <!-- ================= para quem ================= -->
     <section id="para-quem" class="bzq" aria-labelledby="bzq-titulo">
