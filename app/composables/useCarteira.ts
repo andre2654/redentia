@@ -901,8 +901,9 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
     income: buildIncome(income, upcoming, rows),
     movements: buildMovements(trades),
     heatmap: buildHeatmap(curve),
-    // a seção "No mundo" (05/11/2026): ticker, classe e valor cru de cada posição
-    posicoesMundo: rows.map((r) => ({ ticker: r.ticker, classe: r.assetClass, valor: r.value })),
+    // a seção "No mundo" (05/11/2026): ticker, classe, valor cru e nome de cada
+    // posição (o Tesouro aparece pelo nome, não pelo ISIN do ticker)
+    posicoesMundo: rows.map((r) => ({ ticker: r.ticker, classe: r.assetClass, valor: r.value, nome: r.name })),
   }
 }
 

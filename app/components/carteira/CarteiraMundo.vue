@@ -31,7 +31,7 @@ const { mask } = useHiddenValues()
 
 const COR_BRASIL = '#2F6AFF'
 const PALETA = ['#FF6B8A', '#9B7BFF', '#1FB5D6', '#E8A33D', '#4CB782', '#C45BD9', '#7A8699']
-const COR_FORA: Record<string, string> = { sede: '#9FB3DA', cripto: '#F2994A', ouro: '#D4A017', 'sem-dado': '#B9AE9C' }
+const COR_FORA: Record<string, string> = { outros: '#8F86B8', sede: '#9FB3DA', cripto: '#F2994A', ouro: '#D4A017', 'sem-dado': '#B9AE9C' }
 
 type FatiaCor = FatiaMundo & { cor: string }
 const noMapa = computed<FatiaCor[]>(() => {
@@ -43,8 +43,10 @@ const lista = computed(() => [...noMapa.value, ...fora.value])
 
 /**
  * A lista curta: os 5 maiores lugares do mapa e, se houver mais, uma linha
- * "Outros lugares" com a soma (a receita de uma empresa só já espalha o
- * dinheiro em seis regiões). O mapa continua acendendo todos.
+ * "Mais N lugares" com a soma (a receita de uma empresa só já espalha o
+ * dinheiro em seis regiões). O mapa continua acendendo todos. Não se chama
+ * "Outros": "Outros países" é a chave `outros` da receita, dinheiro fora do
+ * Brasil que a empresa não diz de onde, e mora lá embaixo, fora do mapa.
  */
 const LUGARES_NA_LISTA = 5
 type LinhaMundo = FatiaCor & { juntos?: string[] }
@@ -57,7 +59,7 @@ const lugares = computed<LinhaMundo[]>(() => {
   const pct = resto.reduce((s, f) => s + f.pct, 0)
   const outros: LinhaMundo = {
     ...resto[0]!,
-    chave: 'outros-lugares', tipo: 'regiao', nome: 'Outros lugares', cor: '#B9AE9C',
+    chave: 'outros-lugares', tipo: 'regiao', nome: `Mais ${resto.length} lugares`, cor: '#B9AE9C',
     valor: resto.reduce((s, f) => s + f.valor, 0), pct, pctInt,
     pctTxt: pctInt === 0 && pct > 0 ? 'menos de 1%' : `${pctInt}%`,
     tickers: [...new Set(resto.flatMap((f) => f.tickers))], paises: [], ancora: null, todos: false,
@@ -68,7 +70,7 @@ const lugares = computed<LinhaMundo[]>(() => {
 const linhas = computed<LinhaMundo[]>(() => [...lugares.value, ...fora.value])
 
 const ativo = ref<string | null>(null)
-// "Outros lugares" junta vários: o hover nele não apaga o mapa
+// "Mais N lugares" junta vários: o hover nele não apaga o mapa
 function marcar(chave: string | null) { ativo.value = chave === 'outros-lugares' ? null : chave }
 
 const pronto = computed(() => !vm.value.pendente && lista.value.length > 0)
@@ -83,8 +85,14 @@ function papeis(f: FatiaCor): string {
 function subDe(f: FatiaCor): string {
   const j = (f as LinhaMundo).juntos
   if (j) return j.join(', ')
-  // região da receita (Europa, Ásia…) e região do índice do ETF (Mundo desenvolvido)
-  if (f.tipo === 'regiao') return f.chave.startsWith('etf:') ? `região do índice · ${papeis(f)}` : `receita de ${papeis(f)}`
+  // região do índice do ETF (Mundo desenvolvido) e região da receita (América
+  // do Norte, Europa…): a empresa diz a região, não o país (e "América do
+  // Norte" fica separada de "Estados Unidos" por isso)
+  if (f.tipo === 'regiao') {
+    if (f.chave.startsWith('etf:')) return `região do índice · ${papeis(f)}`
+    return `região informada ${f.tickers.length > 1 ? 'pelas empresas' : 'pela empresa'} · ${papeis(f)}`
+  }
+  if (f.tipo === 'outros') return `fora do Brasil, sem o país · ${papeis(f)}`
   if (f.tipo === 'cripto') return `sem fronteira · ${papeis(f)}`
   if (f.tipo === 'ouro') return `sem país · ${papeis(f)}`
   if (f.tipo === 'sede') return `sem dado de receita · ${papeis(f)}`
@@ -128,7 +136,7 @@ const contexto = computed(() => ({
   texto: [
     vm.value.frase,
     vm.value.coberturaTxt ?? '',
-    'Ações e FIIs contam pela receita por país ou região (item 1.7 do Formulário de Referência da CVM); sem esse dado, ficam em "Brasil (sede)". BDR conta pelo país da empresa, ETF pela região do índice.',
+    'Ações e FIIs contam pela receita por país ou região (item 1.7 do Formulário de Referência da CVM); sem esse dado, ficam em "Brasil (sede)". "Outros países" é receita fora do Brasil que a empresa não diz de onde vem. BDR conta pelo país da empresa, ETF pela região do índice, Tesouro e renda fixa como Brasil.',
     ...lista.value.map((f) => `${f.nome}: ${f.pctTxt} (${f.tickers.join(', ')})`),
   ].filter(Boolean).join('\n'),
 }))

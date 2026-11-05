@@ -318,4 +318,6 @@ export interface CarteiraPosicaoMundo {
   /** asset_class do /portfolio (STOCK, REIT, ETF, BDR, CRYPTO, TREASURY…) */
   classe: string
   valor: number
+  /** o nome da posição ('Tesouro IPCA+ 2035'): a lista mostra o título por ele, não pelo ISIN */
+  nome: string | null
 }

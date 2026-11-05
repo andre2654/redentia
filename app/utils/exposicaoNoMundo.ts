@@ -16,10 +16,21 @@
  *  - ETF: a região do índice (`profile.geography` do GET /etfs/{t}/xray; o
  *    `country` do /tickers diz onde o ETF é LISTADO). Região é região:
  *    WRLD11 é "Mundo desenvolvido", nunca "70% EUA";
- *  - Tesouro, renda fixa, poupança e conta: Brasil, sem chamada;
+ *  - Tesouro, renda fixa, poupança e conta: Brasil, sem chamada (na lista,
+ *    pelo nome que a carteira dá ao título, nunca pelo código ISIN);
  *  - cripto: sem país, à parte, fora do mapa;
  *  - o resto sem dado (ETF sem perfil, a API fora, classe desconhecida):
  *    "Sem dado". Nunca chute.
+ *
+ * O DADO REAL (05/11/2026, a resposta do piloto do backend para 49 papéis):
+ *  - as fatias de uma empresa podem somar mais de 100 (a Gerdau soma 101,7
+ *    por eliminações entre regiões): a soma manda e vira 100;
+ *  - abaixo de 100 (o BB soma 96), o resto é "Receita não detalhada";
+ *  - a chave `outros` ("outros países", "Demais países", "Fora do Brasil")
+ *    é dinheiro de verdade fora do Brasil, só sem lugar: vira "Outros
+ *    países", fora do mapa e sem arco, e não se mistura com "Sem dado";
+ *  - `status: 'nao_aplicavel_100_brasil'` (o item 1.7 não se aplica porque a
+ *    receita é toda daqui) é 100% Brasil pela receita: conta como sabido.
  *
  * Sem Vue nem Nuxt, para o `node --test`. A busca está em
  * composables/useExposicaoNoMundo.ts e o desenho em CarteiraMundo.vue.
@@ -32,6 +43,8 @@ export interface PosicaoMundo {
   /** asset_class do /portfolio (STOCK, REIT, ETF, BDR, CRYPTO, TREASURY…) */
   classe: string | null
   valor: number
+  /** o nome da posição na carteira ('Tesouro IPCA+ 2035'); a lista usa no Tesouro e na renda fixa */
+  nome?: string | null
 }
 
 /** Uma fatia do GET /revenue-geography (contrato de 05/11/2026). */
@@ -48,6 +61,8 @@ export interface FatiaReceitaApi {
 export interface ReceitaGeografiaApi {
   ano: number | null
   fonte_url: string | null
+  /** 'lido' | 'nao_aplicavel_100_brasil' | … */
+  status?: string | null
   fatias: FatiaReceitaApi[]
   cobertura_pct: number | null
 }
@@ -59,21 +74,23 @@ export interface ReceitaGeografiaApi {
 export type FonteMundo =
   | { tipo: 'pais'; pais: string | null }
   | { tipo: 'etf'; geografia: string | null; classe: string | null }
-  | { tipo: 'receita'; fatias: FatiaReceitaApi[]; cobertura: number | null }
+  | { tipo: 'receita'; fatias: FatiaReceitaApi[]; cobertura: number | null; status?: string | null }
   | null
 
 export type ViaMundo = 'ticker' | 'etf' | 'receita'
 
-export type TipoFatia = 'pais' | 'regiao' | 'cripto' | 'ouro' | 'sede' | 'sem-dado'
+export type TipoFatia = 'pais' | 'regiao' | 'outros' | 'cripto' | 'ouro' | 'sede' | 'sem-dado'
 
 export interface FatiaMundo {
-  /** 'BR', 'US', 'reg:america_do_norte', 'etf:GLOBAL_DEVELOPED', 'cripto', 'sede-br'… */
+  /** 'BR', 'US', 'reg:america_do_norte', 'etf:GLOBAL_DEVELOPED', 'outros', 'cripto', 'sede-br'… */
   chave: string
   tipo: TipoFatia
   /** 'Brasil', 'Estados Unidos', 'América do Norte', 'Brasil (sede)' */
   nome: string
   /** o lugar com a preposição de "exposto a": 'ao Brasil', 'à Europa' */
   a: string
+  /** o lugar com a preposição de "está em": 'no Brasil', 'na Europa' (a frase de cima) */
+  em: string
   valor: number
   /** participação crua, 0–100 */
   pct: number
@@ -104,14 +121,14 @@ export interface ExposicaoNoMundo {
   total: number
   /** países e regiões, do maior para o menor */
   noMapa: FatiaMundo[]
-  /** cripto, ouro, "Brasil (sede)" e o que não tem dado: fora do mapa */
+  /** "Outros países", "Brasil (sede)", cripto, ouro e o que não tem dado: fora do mapa */
   fora: FatiaMundo[]
-  /** '62% do seu dinheiro está exposto ao Brasil. …' */
+  /** '71% do seu dinheiro está no Brasil, 9% na China e 4% na Ásia.' */
   frase: string
-  /** 'Sabemos de onde vem a receita de 3 das suas 8 empresas.' — null = sabemos de todas */
+  /** 'Sabemos de onde vem a receita de 3 das suas 8 empresas; 12% do seu dinheiro segue sem dado.' — null = sabemos de todas */
   coberturaTxt: string | null
   cobertura: CoberturaReceita
-  /** ainda falta a resposta de algum ticker (a tela mostra o esqueleto) */
+  /** ainda falta a resposta de algum papel (a tela mostra o esqueleto) */
   pendente: boolean
 }
 
@@ -183,6 +200,13 @@ const PAISES: Record<string, Pais> = {
   philippines: p('608', 'Filipinas', 'nas Filipinas', 122, 12),
   malaysia: p('458', 'Malásia', 'na Malásia', 102, 4),
   kazakhstan: p('398', 'Cazaquistão', 'no Cazaquistão', 67, 48),
+  // os que apareceram na receita do piloto (05/11/2026): Randon, Klabin
+  paraguay: p('600', 'Paraguai', 'no Paraguai', -58, -23.3),
+  bolivia: p('068', 'Bolívia', 'na Bolívia', -64.6, -16.5),
+  ecuador: p('218', 'Equador', 'no Equador', -78.4, -1.5),
+  vietnam: p('704', 'Vietnã', 'no Vietnã', 106, 16),
+  kuwait: p('414', 'Kuwait', 'no Kuwait', 47.7, 29.3),
+  pakistan: p('586', 'Paquistão', 'no Paquistão', 69.3, 30),
 }
 
 const ALIAS: Record<string, string> = {
@@ -191,6 +215,7 @@ const ALIAS: Record<string, string> = {
   'the netherlands': 'netherlands', holland: 'netherlands', uk: 'united kingdom',
   'great britain': 'united kingdom', 'cayman is.': 'cayman islands', 'hong kong sar': 'hong kong',
   'russian federation': 'russia', türkiye: 'turkey', turkiye: 'turkey', uae: 'united arab emirates',
+  'viet nam': 'vietnam',
 }
 
 function paisPorNome(nome: string | null): Pais | null {
@@ -231,7 +256,6 @@ const REGIOES_RECEITA: Record<string, Omit<Regiao, 'paises' | 'todos'>> = {
   oriente_medio: { nome: 'Oriente Médio', em: 'no Oriente Médio', ancora: [46, 27] },
   africa: { nome: 'África', em: 'na África', ancora: [20, 4] },
   oceania: { nome: 'Oceania', em: 'na Oceania', ancora: [134, -25] },
-  outros: { nome: 'Outras regiões', em: 'em outras regiões', ancora: null },
 }
 
 /**
@@ -300,35 +324,40 @@ type Base = Omit<FatiaMundo, 'pct' | 'pctInt' | 'pctTxt' | 'valor' | 'tickers'>
 
 const fatiaPais = (ps: Pais): Base => {
   const iso = alfa2De(ps.id) ?? ps.id
-  return { chave: iso, tipo: 'pais', nome: ps.nome, a: exposto(ps.em), paises: [ps.id], todos: false, ancora: ps.ancora }
+  return { chave: iso, tipo: 'pais', nome: ps.nome, a: exposto(ps.em), em: ps.em, paises: [ps.id], todos: false, ancora: ps.ancora }
 }
-const FORA: Record<'cripto' | 'ouro' | 'sede' | 'sem-dado' | 'rec-resto', Base> = {
-  cripto: { chave: 'cripto', tipo: 'cripto', nome: 'Cripto', a: 'a cripto', paises: [], todos: false, ancora: null },
-  ouro: { chave: 'ouro', tipo: 'ouro', nome: 'Ouro', a: 'a ouro', paises: [], todos: false, ancora: null },
-  sede: { chave: 'sede-br', tipo: 'sede', nome: 'Brasil (sede)', a: 'a empresas com sede no Brasil', paises: [], todos: false, ancora: null },
-  'sem-dado': { chave: 'sem-dado', tipo: 'sem-dado', nome: 'Sem dado', a: 'a lugar desconhecido', paises: [], todos: false, ancora: null },
-  'rec-resto': { chave: 'rec-resto', tipo: 'sem-dado', nome: 'Receita não detalhada', a: 'a receita não detalhada', paises: [], todos: false, ancora: null },
+const sem = { paises: [] as string[], todos: false, ancora: null }
+const FORA: Record<'outros' | 'cripto' | 'ouro' | 'sede' | 'sem-dado' | 'rec-resto', Base> = {
+  // a chave `outros` da receita: dinheiro fora do Brasil que a empresa não diz de onde
+  outros: { chave: 'outros', tipo: 'outros', nome: 'Outros países', a: 'a outros países', em: 'em outros países', ...sem },
+  cripto: { chave: 'cripto', tipo: 'cripto', nome: 'Cripto', a: 'a cripto', em: 'em cripto', ...sem },
+  ouro: { chave: 'ouro', tipo: 'ouro', nome: 'Ouro', a: 'a ouro', em: 'em ouro', ...sem },
+  sede: { chave: 'sede-br', tipo: 'sede', nome: 'Brasil (sede)', a: 'a empresas com sede no Brasil', em: 'em empresas com sede no Brasil', ...sem },
+  'sem-dado': { chave: 'sem-dado', tipo: 'sem-dado', nome: 'Sem dado', a: 'a lugar desconhecido', em: 'em lugar desconhecido', ...sem },
+  'rec-resto': { chave: 'rec-resto', tipo: 'sem-dado', nome: 'Receita não detalhada', a: 'a receita não detalhada', em: 'em receita não detalhada', ...sem },
 }
 
 /** A fatia do mapa de uma fatia de receita (país ISO-2 ou região fixa). */
 function baseDaReceita(f: FatiaReceitaApi): Base | null {
   const chave = String(f.chave ?? '').trim()
   if (!chave) return null
+  // "outros países", "Demais países", "Fora do Brasil": tudo vira uma linha só
+  if (chave.toLowerCase() === 'outros') return FORA.outros
   const regiao = REGIOES_RECEITA[chave.toLowerCase()]
   if (regiao) {
     const k = chave.toLowerCase()
-    return { chave: `reg:${k}`, tipo: 'regiao', nome: regiao.nome, a: exposto(regiao.em), paises: numericosDaRegiao(k), todos: false, ancora: regiao.ancora }
+    return { chave: `reg:${k}`, tipo: 'regiao', nome: regiao.nome, a: exposto(regiao.em), em: regiao.em, paises: numericosDaRegiao(k), todos: false, ancora: regiao.ancora }
   }
   if (/^[A-Za-z]{2}$/.test(chave)) {
     const ps = paisPorAlfa2(chave)
     if (ps) return fatiaPais(ps)
     const num = numericoDe(chave)
     const nome = (f.nome ?? '').trim() || chave.toUpperCase()
-    return { chave: chave.toUpperCase(), tipo: 'pais', nome, a: `a ${nome}`, paises: num ? [num] : [], todos: false, ancora: null }
+    return { chave: chave.toUpperCase(), tipo: 'pais', nome, a: `a ${nome}`, em: `em ${nome}`, paises: num ? [num] : [], todos: false, ancora: null }
   }
   // região que o contrato não conhece: aparece com o nome que veio, sem pintar
   const nome = (f.nome ?? '').trim() || chave
-  return { chave: `reg:${chave.toLowerCase()}`, tipo: 'regiao', nome, a: `a ${nome}`, paises: [], todos: false, ancora: null }
+  return { chave: `reg:${chave.toLowerCase()}`, tipo: 'regiao', nome, a: `a ${nome}`, em: `em ${nome}`, paises: [], todos: false, ancora: null }
 }
 
 /** Para onde vai o valor da posição: [fatia, fração 0–1][]; null = pendente. */
@@ -344,10 +373,14 @@ function destinosDe(ps: PosicaoMundo, fontes: Readonly<Record<string, FonteMundo
 
   if (via === 'receita') {
     if (!f || f.tipo !== 'receita') return [[FORA.sede, 1]]
-    const validas = f.fatias.filter((x) => Number.isFinite(x.pct) && x.pct > 0)
+    // o item 1.7 não se aplica porque a receita é toda daqui: 100% Brasil, sabido
+    if (f.status === 'nao_aplicavel_100_brasil') return [[fatiaPais(BRASIL), 1]]
+    // pct ≤ 0 (ou lixo) não entra
+    const validas = (f.fatias ?? []).filter((x) => Number.isFinite(x.pct) && x.pct > 0)
     const soma = validas.reduce((s, x) => s + x.pct, 0)
     if (!(soma > 0)) return [[FORA.sede, 1]]
-    // fatias que somam mais de 100 (arredondamento da empresa) são reescaladas
+    // a soma das fatias manda: acima de 100 (eliminações, como os 101,7 da
+    // Gerdau, ou arredondamento) vira 100; abaixo, o resto fica não detalhado
     const escala = soma > 100 ? 100 / soma : 1
     const out: [Base, number][] = []
     for (const x of validas) {
@@ -365,7 +398,7 @@ function destinosDe(ps: PosicaoMundo, fontes: Readonly<Record<string, FonteMundo
     const pais = paisPorNome(f.pais)
     if (pais) return [[fatiaPais(pais), 1]]
     const nome = f.pais.trim()
-    return [[{ chave: `x:${nome.toLowerCase()}`, tipo: 'pais', nome, a: `a ${nome}`, paises: [], todos: false, ancora: null }, 1]]
+    return [[{ chave: `x:${nome.toLowerCase()}`, tipo: 'pais', nome, a: `a ${nome}`, em: `em ${nome}`, paises: [], todos: false, ancora: null }, 1]]
   }
   if (f.tipo === 'etf') {
     // a classe do perfil manda antes da geografia (HASH11 é cripto "GLOBAL")
@@ -376,7 +409,7 @@ function destinosDe(ps: PosicaoMundo, fontes: Readonly<Record<string, FonteMundo
     const gp = GEO_PAIS[g]
     if (gp) return [[fatiaPais(PAISES[gp]!), 1]]
     const r = REGIOES_ETF[g]
-    if (r) return [[{ chave: `etf:${g}`, tipo: 'regiao', nome: r.nome, a: exposto(r.em), paises: r.paises, todos: r.todos, ancora: null }, 1]]
+    if (r) return [[{ chave: `etf:${g}`, tipo: 'regiao', nome: r.nome, a: exposto(r.em), em: r.em, paises: r.paises, todos: r.todos, ancora: null }, 1]]
   }
   return [[FORA['sem-dado'], 1]]
 }
@@ -401,7 +434,14 @@ function pctTexto(pctInt: number, pct: number): string {
   return `${pctInt}%`
 }
 
-const ORDEM_FORA: Record<string, number> = { sede: 0, cripto: 1, ouro: 2, 'sem-dado': 3 }
+/** fora do mapa: primeiro o dinheiro que tem lugar só sem nome (outros países), por último o sem dado */
+const ORDEM_FORA: Record<string, number> = { outros: 0, sede: 1, cripto: 2, ouro: 3, 'sem-dado': 4 }
+
+/** Como a posição aparece na lista: o título do Tesouro pelo nome ('Tesouro IPCA+ 2035'), não pelo ISIN. */
+function rotuloDe(ps: PosicaoMundo, classe: string): string {
+  const nome = (ps.nome ?? '').trim()
+  return CLASSES_BRASIL.has(classe) && nome ? nome : ps.ticker
+}
 
 export function exposicaoNoMundo(
   posicoes: PosicaoMundo[],
@@ -424,14 +464,15 @@ export function exposicaoNoMundo(
     const destinos = destinosDe(ps, fontes)
     if (!destinos) { pendente = true; continue }
     if (CLASSES_RECEITA.has(c) && destinos.some(([b]) => b.tipo !== 'sede')) comReceita.add(t)
+    const rotulo = rotuloDe(ps, c)
     for (const [b, k] of destinos) {
       const v = ps.valor * k
       const f = fatias.get(b.chave)
       if (f) {
         f.valor += v
-        if (!f.tickers.includes(ps.ticker)) f.tickers.push(ps.ticker)
+        if (!f.tickers.includes(rotulo)) f.tickers.push(rotulo)
       } else {
-        fatias.set(b.chave, { ...b, valor: v, tickers: [ps.ticker] })
+        fatias.set(b.chave, { ...b, valor: v, tickers: [rotulo] })
       }
     }
   }
@@ -442,9 +483,9 @@ export function exposicaoNoMundo(
   const ints = (lista.length ? inteirosQueSomam100(pcts) : []).map((x) => (lista.length > 1 ? Math.min(x, 99) : x))
   const todas: FatiaMundo[] = lista.map((f, i) => ({ ...f, pct: pcts[i]!, pctInt: ints[i]!, pctTxt: pctTexto(ints[i]!, pcts[i]!) }))
 
-  const noMapa = todas.filter((f) => f.tipo === 'pais' || f.tipo === 'regiao')
+  const noMapa = todas.filter(noMapaDe)
   const fora = todas
-    .filter((f) => f.tipo !== 'pais' && f.tipo !== 'regiao')
+    .filter((f) => !noMapaDe(f))
     .sort((a, b) => ORDEM_FORA[a.tipo]! - ORDEM_FORA[b.tipo]! || b.valor - a.valor)
 
   const nTotal = acoes.size + fiis.size
@@ -459,59 +500,67 @@ export function exposicaoNoMundo(
     noMapa,
     fora,
     frase: pendente ? '' : fraseDoMundo(todas),
-    coberturaTxt: !pendente && cobertura.total > 0 && cobertura.comDado < cobertura.total ? fraseDaCobertura(cobertura) : null,
+    coberturaTxt: !pendente && cobertura.total > 0 && cobertura.comDado < cobertura.total
+      // a sede que já abre a frase de cima não se repete aqui
+      ? fraseDaCobertura(cobertura, todas[0]?.tipo === 'sede' ? null : todas.find((f) => f.tipo === 'sede') ?? null)
+      : null,
     cobertura,
     pendente,
   }
 }
 
+const noMapaDe = (f: { tipo: TipoFatia }) => f.tipo === 'pais' || f.tipo === 'regiao'
+
 /**
- * A frase de cima. Uma afirmação por lugar conhecido, os três maiores (o que
- * sobra vira "ao resto"). "Brasil (sede)" só entra quando é o maior grupo, e
- * dito como é: empresas com sede no Brasil, sem dado de receita (senão a
- * frase abriria com um Brasil pequeno e esconderia o maior pedaço). O sem
- * dado nunca entra. De quantas empresas sabemos a receita vai na linha de
- * baixo (fraseDaCobertura), não aqui.
+ * A frase de cima: uma frase só, curta, com os três maiores lugares
+ * conhecidos ("71% do seu dinheiro está no Brasil, 9% na China e 4% na
+ * Ásia."). Descreve, não recomenda (CVM). Ficam de fora:
+ *  - "Brasil (sede)" e "Sem dado", que vão na linha de baixo
+ *    (fraseDaCobertura), a menos que sejam o maior pedaço: aí a frase abre
+ *    com eles, ditos como são (senão abriria com um Brasil pequeno e
+ *    esconderia o maior pedaço);
+ *  - "Outros países" e "Receita não detalhada": estão na lista, sem lugar
+ *    para dizer.
  */
 export function fraseDoMundo(todas: FatiaMundo[]): string {
-  const ditas = todas.filter((f) => f.tipo !== 'sem-dado' && f.tipo !== 'sede')
+  const ditas = todas.filter((f) => noMapaDe(f) || f.tipo === 'cripto' || f.tipo === 'ouro')
   const so = todas.length === 1 ? todas[0]! : null
   if (so && so.tipo === 'cripto') return 'Todo o seu dinheiro está em cripto, que não tem país.'
   if (so && so.tipo === 'sede') return 'Todo o seu dinheiro está em empresas com sede no Brasil, ainda sem dado de receita.'
-  if (so && so.tipo !== 'sem-dado') return `Todo o seu dinheiro está exposto ${so.a}.`
-  const partes: string[] = []
-  const maior = todas.find((f) => f.tipo !== 'sem-dado')
-  const sedeNaFrente = maior?.tipo === 'sede'
-  if (sedeNaFrente) partes.push(`${maiuscula(maior!.pctTxt)} do seu dinheiro está em empresas com sede no Brasil, ainda sem dado de receita.`)
-  if (ditas.length) {
-    const [a, ...resto] = sedeNaFrente ? [null, ...ditas] : ditas
-    const lista = (sedeNaFrente ? ditas : resto).slice(0, 2)
-    const sobra = (sedeNaFrente ? ditas : resto).slice(lista.length)
-    if (a) partes.push(`${maiuscula(a.pctTxt)} do seu dinheiro está exposto ${a.a}.`)
-    const itens = lista.map((f, i) => (sedeNaFrente && i === 0 ? `${f.pctTxt} está exposto ${f.a}` : `${f.pctTxt} ${f.a}`))
-    if (sobra.length) {
-      const pInt = sobra.reduce((s, f) => s + f.pctInt, 0)
-      const pRaw = sobra.reduce((s, f) => s + f.pct, 0)
-      itens.push(`${pctTexto(pInt, pRaw)} ao resto`)
-    }
-    if (itens.length) {
-      const s2 = itens.length > 1 ? `${itens.slice(0, -1).join(', ')} e ${itens[itens.length - 1]}` : itens[0]!
-      partes.push(`${maiuscula(s2)}.`)
-    }
-  }
-  if (!partes.length && todas.length) return 'Ainda não temos o país dos seus investimentos.'
-  return partes.join(' ')
+  if (so && so.tipo !== 'sem-dado') return `Todo o seu dinheiro está ${so.em}.`
+  if (so) return 'Ainda não temos o país dos seus investimentos.'
+
+  const maior = todas[0]
+  const abre = maior && maior.chave === 'sede-br'
+    ? `${maiuscula(maior.pctTxt)} do seu dinheiro está em empresas com sede no Brasil, ainda sem dado de receita.`
+    : maior && maior.chave === 'sem-dado'
+      ? `${maiuscula(maior.pctTxt)} do seu dinheiro está em investimentos que ainda não sabemos onde estão.`
+      : null
+
+  const tres = ditas.slice(0, 3)
+  if (!tres.length) return abre ?? (todas.length ? 'Ainda não temos o país dos seus investimentos.' : '')
+  const itens = tres.map((f) => `${f.pctTxt} ${f.em}`)
+  const juntos = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} e ${xs[xs.length - 1]}` : xs[0]!)
+  if (!abre) return `${juntos([`${maiuscula(tres[0]!.pctTxt)} do seu dinheiro está ${tres[0]!.em}`, ...itens.slice(1)])}.`
+  // depois da sede: "Outros 18% estão no Brasil e 10% na América do Norte."
+  const [p, ...resto] = tres
+  const cabeca = p!.pctInt === 0 ? `Menos de 1% está ${p!.em}` : p!.pctInt === 1 ? `Outro 1% está ${p!.em}` : `Outros ${p!.pctTxt} estão ${p!.em}`
+  return `${abre} ${juntos([cabeca, ...resto.map((f) => `${f.pctTxt} ${f.em}`)])}.`
 }
 
-/** 'Sabemos de onde vem a receita de 3 das suas 8 empresas.' */
-export function fraseDaCobertura(cob: CoberturaReceita): string {
+/**
+ * 'Sabemos de onde vem a receita de 9 das suas 15 empresas e fundos; 12% do
+ * seu dinheiro segue sem dado.' O "sem dado" mora aqui, não na abertura.
+ */
+export function fraseDaCobertura(cob: CoberturaReceita, sede: Pick<FatiaMundo, 'pct' | 'pctInt'> | null = null): string {
   const { comDado: k, total: n, quem } = cob
   const fem = quem === 'empresas'
   const umaSo = quem === 'empresas' ? 'empresa' : quem === 'fundos imobiliários' ? 'fundo imobiliário' : 'empresa ou fundo'
   if (n === 1) return `Ainda não sabemos de onde vem a receita ${fem || quem === 'empresas e fundos' ? 'da sua' : 'do seu'} ${umaSo}.`
   const das = fem || quem === 'empresas e fundos' ? 'das suas' : 'dos seus'
   if (k === 0) return `Ainda não sabemos de onde vem a receita ${das} ${n} ${quem}.`
-  return `Sabemos de onde vem a receita de ${k} ${das} ${n} ${quem}.`
+  const semDado = sede && sede.pct > 0 ? `; ${pctTexto(sede.pctInt, sede.pct)} do seu dinheiro segue sem dado` : ''
+  return `Sabemos de onde vem a receita de ${k} ${das} ${n} ${quem}${semDado}.`
 }
 
 const maiuscula = (s: string) => (s ? s[0]!.toUpperCase() + s.slice(1) : s)

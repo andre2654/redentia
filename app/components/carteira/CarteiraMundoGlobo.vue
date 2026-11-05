@@ -32,8 +32,13 @@ const tela = ref<HTMLCanvasElement | null>(null)
 const lado = ref(0)
 const dica = ref<{ x: number; y: number; nome: string; pct: string } | null>(null)
 
-// países e regiões com ponto de chegada (a região de receita tem âncora; a de ETF, não)
-const destinos = computed(() => props.fatias.filter((f) => f.ancora && f.chave !== 'BR'))
+// países e regiões com ponto de chegada (a região de receita tem âncora; a de
+// ETF, não). Arco só para os 6 maiores (a lista dá linha própria a até 6
+// lugares): com o dado real (05/11/2026) a receita da Randon sozinha espalha o
+// dinheiro em 15 países, e 19 arcos viravam um novelo. Os pequenos seguem
+// acesos no globo, só sem arco.
+const ARCOS_NO_MAXIMO = 6
+const destinos = computed(() => props.fatias.filter((f) => f.ancora && f.chave !== 'BR').slice(0, ARCOS_NO_MAXIMO))
 const alvo = computed<VistaGlobo>(() => vistaEntre(BRASIL, destinos.value[0]?.ancora ?? null))
 
 let cena: CenaPreparada | null = null
