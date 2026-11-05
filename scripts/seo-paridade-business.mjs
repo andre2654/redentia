@@ -7,7 +7,9 @@
  * pedido do dono para a /business:
  *
  *  1. <title>, meta description, canonical, robots e JSON-LD iguais;
- *  2. um H1 só, com o mesmo texto;
+ *  2. um H1 só. Desde 05/11/2026 o H1 é o título do print do dono (HERO.titulo
+ *     em content/business/landing.ts; ele sabe da troca): o H1 da página salva
+ *     ou esse, e qualquer outro é falha;
  *  3. nenhum link interno DO CORPO some (o <main>). Desde 04/11/2026 a /business
  *     usa o topo e o rodapé novos do site, na variante business: os links
  *     deles mudaram de propósito, então saem da regra e a saída lista quais
@@ -22,11 +24,10 @@
  * Uma carga só: o dev fala com a API de produção.
  *
  *   node scripts/seo-paridade-business.mjs --antiga <arquivo.html>
- *        [--base http://localhost:3471] [--teto 650] [--biz 1|2|3]
+ *        [--base http://localhost:3471] [--teto 650]
  *
- * `--biz` (05/11/2026) confere uma variação da /business nova do dev
- * (?biz=1|2|3, ver components/business/nova/BizLanding.vue) no lugar da
- * página de hoje.
+ * O `--biz` (as três variações do dev, ?biz=1|2|3) saiu em 05/11/2026, quando
+ * o dono escolheu a 1 e ela virou a página.
  *
  * `--antiga` é obrigatório: o HTML salvo por curl da página de antes. O
  * arquivo é LOCAL e NÃO é versionado: o de 04/11/2026 ficou em
@@ -44,7 +45,6 @@ const args = Object.fromEntries(
 const BASE = args.base ?? 'http://localhost:3471'
 const ANTIGA = args.antiga
 const TETO = Number(args.teto ?? 650)
-const Q = args.biz ? `?biz=${args.biz}` : ''
 
 const SEM_TEXTO = new Set(['script', 'style', 'noscript', 'template', 'head'])
 const palavras = (s) => s.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length
@@ -108,16 +108,21 @@ async function main() {
     process.exit(2)
   }
   const { RB_FAQ } = await import('../app/content/business/faq.ts').catch(() => ({ RB_FAQ: null }))
+  const { HERO } = await import('../app/content/business/landing.ts').catch(() => ({ HERO: null }))
+  const H1_NOVO = HERO ? HERO.titulo.join(' ') : null
   const antigaHtml = await readFile(ANTIGA, 'utf8')
   const antes = extrair(antigaHtml)
   const dAntes = densidade(antigaHtml)
   console.log(`antes (salva) · ${dAntes.fora} palavras fora do FAQ (main ${dAntes.total}, FAQ ${dAntes.noFaq}) · H1 "${antes.h1.join(' | ')}" · ${antes.jsonld.length} JSON-LD · ${antes.links.size} links internos`)
-  const html = await buscar(`${BASE}/business${Q}`)
+  const html = await buscar(`${BASE}/business`)
   const depois = extrair(html)
   const d = densidade(html)
   const c = comparar(antes, depois)
   // a regra do /asset sobre queda de texto não vale aqui (topo do script)
   const falhas = c.falhas.filter((f) => !f.startsWith('texto caiu') && !f.startsWith('títulos que deixaram') && !f.startsWith('links internos que sumiram'))
+  // o H1 do print (regra 2): a troca combinada sai da lista de falhas e vira aviso
+  const h1Combinado = depois.h1.length === 1 && H1_NOVO && depois.h1[0] === H1_NOVO && depois.h1[0] !== antes.h1[0]
+  if (h1Combinado) falhas.splice(falhas.findIndex((f) => f.startsWith('H1 mudou')), 1)
   const la = linksPorLugar(antigaHtml)
   const ld = linksPorLugar(html)
   const sumiuDoCorpo = [...la.corpo].filter((l) => !ld.corpo.has(l) && !ld.fora.has(l))
@@ -129,8 +134,9 @@ async function main() {
     const faltam = RB_FAQ.flatMap((g) => g.itens).filter((it) => !plano.includes(it.q.replace(/\s+/g, '')) || !plano.includes(it.a.replace(/\s+/g, '').replace(/&/g, '')))
     if (faltam.length) falhas.push(`FAQ sem ${faltam.length} pergunta(s) no SSR: ${faltam.map((f) => f.q).join(' · ')}`)
   }
-  console.log(`\n/business${Q} ${falhas.length ? 'FALHA' : 'OK'}`)
+  console.log(`\n/business ${falhas.length ? 'FALHA' : 'OK'}`)
   console.log(`  ${d.fora} palavras fora do FAQ (main ${d.total}, FAQ ${d.noFaq})${d.fora > TETO ? ` · aviso: acima do teto de ${TETO}` : ''} · H1 ${depois.h1.length} "${depois.h1.join(' | ')}" · JSON-LD ${depois.jsonld.length}`)
+  if (h1Combinado) console.log(`  H1 trocado como combinado: "${antes.h1[0]}" → "${depois.h1[0]}"`)
   console.log(`  topo e rodapé: saíram ${topoSaiu.length ? topoSaiu.join(', ') : 'nenhum'} · entraram ${topoEntrou.length ? topoEntrou.join(', ') : 'nenhum'}`)
   console.log(`  corpo: ${ld.corpo.size} links (${[...ld.corpo].join(', ') || 'nenhum'})`)
   for (const f of falhas) console.log(`     - ${f}`)

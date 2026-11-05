@@ -8,7 +8,7 @@ import { grupoAtivo, rotaAtiva } from '~/utils/topo'
 
 // `variante="business"` (04/11/2026): a marca For Business, sem a busca de
 // ativo, e no pé "Falar com a gente" e "Entrar" (ou "Minha conta") do Business.
-// `bizNova` (05/11/2026, só no dev por ?biz=): o pé do print, "Testar com
+// `bizNova` (05/11/2026, na landing /business): o pé do print, "Testar com
 // carteira demo" (o mesmo cadastro do Entrar) e "Agendar 1 hora" (#contato).
 const props = defineProps<{ aberto: boolean; nav: NavItem[]; logado: boolean; variante?: 'business'; bizNova?: boolean }>()
 const destinoCadastro = useDestinoCadastroBusiness()

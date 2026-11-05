@@ -56,12 +56,14 @@ export const NAV_DO_TOPO: NavItem[] = [
  * pequenas alterações para ser mais voltado à identidade For Business"). As
  * partes da landing, com o caminho inteiro (/business#...) para valer também
  * do painel logado (/business/chaves, /business/clientes). Cada âncora é um id
- * que existe na página: #dia (o dia de mesa, RbJornada), #seguranca
- * (RbSeguranca), #prova (o plano, RbProva) e #faq (RbFaq). Mudou o id na
- * página, muda aqui e nas colunas do rodapé business (NuFooter).
+ * que existe na página (components/business/nova/BizLanding.vue): #agentes (a
+ * fila de aprovação; o #dia do RbJornada saiu em 05/11/2026), #seguranca,
+ * #prova (o plano) e #faq (RbFaq). Mudou o id na página, muda aqui e nas
+ * colunas do rodapé business (NuFooter). Na própria landing a nav é a do
+ * print (NAV_BIZ_NOVA, em content/business/landing.ts).
  */
 export const NAV_BUSINESS: NavItem[] = [
-  { label: 'Produto', to: '/business#dia' },
+  { label: 'Produto', to: '/business#agentes' },
   { label: 'Segurança', to: '/business#seguranca' },
   { label: 'Plano', to: '/business#prova' },
   { label: 'Perguntas', to: '/business#faq' },

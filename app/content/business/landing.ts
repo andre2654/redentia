@@ -1,31 +1,36 @@
 /**
- * O conteúdo da /business nova (05/11/2026), em três variações no dev
- * (?biz=1|2|3, ver pages/business/index.vue). O dono mandou o print de uma
- * landing do Redentia For Business e pediu "mais nesse estilo (só que mais o
- * nosso estilo)". As três variações leem DAQUI, para a escolha ser de desenho e
- * não de texto. Sem import de valor do Nuxt: os testes importam direto.
+ * O conteúdo da /business (05/11/2026). O dono mandou o print de uma landing
+ * do Redentia For Business ("mais nesse estilo, só que mais o nosso"), viu três
+ * variações e escolheu a 1, a Serifa: "eu gostei do 1, mas depois do hero
+ * dedique aqueles scrolls personalizados para explicar melhor esses pontos".
+ * Os pontos são os quatro itens da fila de aprovação (FILA), e cada um ganhou
+ * um passo do scroll travado (PASSOS, em components/business/nova/BizPassos.vue).
+ * Sem import de valor do Nuxt: os testes importam direto.
  *
- * ⚠️ A COPY É A DO PRINT, que é a direção do dono, mas parte dela ainda não tem
- * lastro no produto. A lista "a confirmar com o dono" está em A_CONFIRMAR, no
- * fim deste arquivo, e nada dela vai para produção sem o sim dele.
+ * ⚠️ A COPY É A DO PRINT, que é a direção do dono (o produto que vem aí), mas
+ * parte dela ainda não tem lastro no produto de hoje. A lista "a confirmar com
+ * o dono" está no fim deste arquivo, e nada dela vai para produção sem o sim dele.
  *
- * A FILA DE APROVAÇÃO usa o elenco da conta interna das calls de venda
- * (Backend: database/data/business/elenco-calls.json e config/
+ * O ELENCO. A fila e os passos usam o elenco da conta interna das calls de
+ * venda (Backend: database/data/business/elenco-calls.json e config/
  * business_clients.php, chave demo), para os nomes e os valores baterem com a
  * carteira que o prospect vê na demonstração:
- *   Mariana Ribeiro Costa · Nubank · moderado · ~R$ 525 mil
+ *   Mariana Ribeiro Costa · Nubank · moderado · ~R$ 525 mil (14 posições:
+ *     1 Selic, 1 IPCA, 3 FIIs, 7 ações e 2 ETFs, profiles.moderado)
  *   Helena Duarte Campos · Bradesco · conservador · R$ 1.284.330
- *   Lucas Bastos Rezende · Itaú · arrojado · R$ 842.615
+ *   Lucas Bastos Rezende · Itaú · arrojado · R$ 842.615 (60% em ações)
  *   Carolina Prado Vieira · XP · dolarizado · R$ 2.317.940
- *   Família Azevedo · BTG · family office · R$ 23.618.450
+ *   Família Azevedo · BTG · family office · R$ 23.618.450 (cerca de 33
+ *     posições, 5 delas em BDR, profiles.familyoffice)
  *   Eduardo Sales Pacheco e Juliana Mota Santana (painel), Fernando Albuquerque
- *   Lima (convite pendente)
+ *   Lima (convite pendente, não entra na conta)
  * São sete carteiras conectadas. A casa da cena custodia no BTG, então "fora
  * do escritório" são as quatro de pessoa física com valor no elenco em outros
- * bancos: 525 + 1.284 + 843 + 2.318 = R$ 4,97 mi, que vira "R$ 4,9 mi" (o
- * elenco avisa que o total real fica um pouco abaixo do alvo). O perfil
- * dolarizado da Carolina põe 75% em ETF internacional, BDR e exportadora
- * (30 + 20 + 25, profiles.dolarizado). Nada aqui diz "demonstração".
+ * bancos: 525 + 1.284 + 843 + 2.318 = R$ 4,97 mi. O perfil dolarizado da
+ * Carolina põe 75% em ETF internacional, BDR e exportadora (30 + 20 + 25).
+ * Os números da fila SAEM das listas dos passos (CLIENTES_FORA, CARTEIRAS), e
+ * o teste confere que as duas telas contam a mesma coisa. Nada aqui diz
+ * "demonstração".
  */
 
 export const ESTUDO = {
@@ -36,7 +41,7 @@ export const ESTUDO = {
   href: '/estudos/wealth-2030.pdf',
 } as const
 
-/** A nav do topo nas variações: cada uma é um id das seções da página nova. */
+/** A nav do topo da /business: cada uma é um id das seções da página. */
 export const NAV_BIZ_NOVA = [
   { label: 'Agentes', to: '/business#agentes' },
   { label: 'Para quem', to: '/business#para-quem' },
@@ -64,8 +69,63 @@ export const HERO = {
  */
 export const LOGOS_CLIENTES: { nome: string; src: string; largura: number }[] = []
 
+export type IdDoPasso = 'captacao' | 'fechamento' | 'reuniao' | 'atendimento'
+
+/** "R$ 4,97 mi" e "R$ 843 mil": o jeito curto da fila e dos passos. */
+export function reaisCurtos(n: number): string {
+  if (n >= 1_000_000) return `R$ ${(n / 1_000_000).toFixed(2).replace('.', ',')} mi`
+  return `R$ ${Math.round(n / 1000)} mil`
+}
+
+/* ——— 01 · captação: o patrimônio dos clientes fora do escritório ——— */
+export interface ClienteFora { nome: string; banco: string; slug: string; valor: number; nota?: string }
+/** Do maior para o menor; o primeiro é o destaque do passo e a linha da fila. */
+export const CLIENTES_FORA: ClienteFora[] = [
+  { nome: 'Carolina Prado Vieira', banco: 'XP', slug: 'xp', valor: 2_317_940, nota: '75% ligado ao dólar' },
+  { nome: 'Helena Duarte Campos', banco: 'Bradesco', slug: 'bradesco', valor: 1_284_330 },
+  { nome: 'Lucas Bastos Rezende', banco: 'Itaú', slug: 'itau', valor: 842_615 },
+  { nome: 'Mariana Ribeiro Costa', banco: 'Nubank', slug: 'nubank', valor: 525_000 },
+]
+export const totalFora = (): number => CLIENTES_FORA.reduce((s, c) => s + c.valor, 0)
+
+/* ——— 02 · fechamento: as sete carteiras, uma ainda sem fechar ——— */
+export interface CarteiraDoMes { nome: string; ok: boolean; motivo?: string }
+export const CARTEIRAS: CarteiraDoMes[] = [
+  { nome: 'Carolina Prado Vieira', ok: true },
+  { nome: 'Eduardo Sales Pacheco', ok: true },
+  { nome: 'Helena Duarte Campos', ok: true },
+  { nome: 'Juliana Mota Santana', ok: true },
+  { nome: 'Lucas Bastos Rezende', ok: true },
+  { nome: 'Mariana Ribeiro Costa', ok: true },
+  // os 5 BDRs são os do perfil familyoffice; o atraso do extrato é a cena (A_CONFIRMAR)
+  { nome: 'Família Azevedo', ok: false, motivo: 'Faltam os 5 BDRs no extrato de 31/10 do BTG.' },
+]
+export const FECHAMENTO = { mes: 'outubro', dia: 3, dias: 5 } as const
+
+/* ——— 03 · reunião: a pauta da Mariana ——— */
+export const PAUTA = {
+  cliente: 'Mariana Ribeiro Costa',
+  // a fila é de quinta, 05/11: "amanhã às 10h" é sexta
+  quando: 'Sexta, 10h',
+  perfil: 'Nubank · moderado · 14 posições',
+  itens: [
+    'O que mudou nas 14 posições em outubro',
+    'Os 3 FIIs e os proventos de novembro',
+    'A carteira no cenário de expansão fiscal',
+  ],
+} as const
+
+/* ——— 04 · atendimento: a pergunta do Lucas e a resposta rascunhada ——— */
+export const ATENDIMENTO = {
+  cliente: 'Lucas Bastos Rezende',
+  banco: 'Itaú',
+  pergunta: 'Por que caiu?',
+  // os 60% são o miolo de ações do perfil arrojado (profiles.arrojado)
+  resposta: 'Oi, Lucas. A queda veio das ações, que são 60% da sua carteira, num dia de bolsa em baixa. O plano segue o mesmo, e te mostro o detalhe na próxima conversa.',
+} as const
+
 export interface ItemDaFila {
-  id: 'captacao' | 'fechamento' | 'reuniao' | 'atendimento'
+  id: IdDoPasso
   tipo: string
   etapa?: string
   titulo: string
@@ -75,6 +135,9 @@ export interface ItemDaFila {
   acao: string
 }
 
+const maior = CLIENTES_FORA[0]!
+const primeiroNome = (n: string) => n.split(' ')[0]
+
 export const FILA: { rotulo: string; quando: string; itens: ItemDaFila[] } = {
   rotulo: 'Fila de aprovação',
   // quinta, 05/11/2026: com Finados na segunda, é o 3º dia útil de novembro
@@ -82,75 +145,85 @@ export const FILA: { rotulo: string; quando: string; itens: ItemDaFila[] } = {
   itens: [
     {
       id: 'captacao', tipo: 'Captação',
-      titulo: 'R$ 4,9 mi fora do escritório, em 4 clientes',
-      linha: 'Maior: R$ 2,3 mi da Carolina na XP, 75% ligado ao dólar.',
+      titulo: `${reaisCurtos(totalFora())} fora do escritório, em ${CLIENTES_FORA.length} clientes`,
+      linha: `Maior: ${reaisCurtos(maior.valor)} da ${primeiroNome(maior.nome)} na ${maior.banco}, ${maior.nota}.`,
       acao: 'Ver clientes',
     },
     {
-      id: 'fechamento', tipo: 'Fechamento de outubro', etapa: 'Dia 3 de 5',
-      titulo: 'carteiras conciliadas', feito: 6, total: 7,
+      id: 'fechamento', tipo: `Fechamento de ${FECHAMENTO.mes}`, etapa: `Dia ${FECHAMENTO.dia} de ${FECHAMENTO.dias}`,
+      titulo: 'carteiras conciliadas', feito: CARTEIRAS.filter((c) => c.ok).length, total: CARTEIRAS.length,
       acao: 'Revisar',
     },
     {
       id: 'reuniao', tipo: 'Reunião',
-      titulo: 'Mariana, amanhã às 10h',
+      titulo: `${primeiroNome(PAUTA.cliente)}, amanhã às 10h`,
       linha: 'Pauta pronta',
       acao: 'Abrir pauta',
     },
     {
       id: 'atendimento', tipo: 'Atendimento',
-      titulo: '“Por que caiu?”',
-      linha: 'Lucas · resposta para aprovar',
+      titulo: `“${ATENDIMENTO.pergunta}”`,
+      linha: `${primeiroNome(ATENDIMENTO.cliente)} · resposta para aprovar`,
       acao: 'Aprovar',
     },
   ],
 }
 
-/** O que a fila conta, para quem não enxerga o desenho. */
-export function descricaoDaFila(): string {
-  const [c, f, r, a] = FILA.itens
-  return `${FILA.rotulo}, ${FILA.quando}, ${FILA.itens.length} prontos. ${c.tipo}: ${c.titulo}. ${c.linha} ${f.tipo}, ${f.etapa!.toLowerCase()}: ${f.feito} de ${f.total} ${f.titulo}. ${r.tipo}: ${r.titulo}, ${r.linha!.toLowerCase()}. ${a.tipo}: ${a.titulo}, ${a.linha}.`
-}
+/**
+ * Os quatro passos do scroll travado, um por item da fila e na mesma ordem
+ * (o botão de cada item da fila rola até o passo dele). Densidade da página:
+ * rótulo, título de uma linha e UMA frase de apoio; o resto é o visual.
+ */
+export interface Passo { id: IdDoPasso; rotulo: string; titulo: string; apoio: string }
+export const PASSOS: Passo[] = [
+  {
+    id: 'captacao', rotulo: 'Captação', titulo: 'O patrimônio lá fora.',
+    apoio: 'Cada banco que o cliente conecta entra na soma, e o que está fora do escritório aparece por cliente e por banco.',
+  },
+  {
+    id: 'fechamento', rotulo: 'Fechamento', titulo: 'Cada carteira, conferida.',
+    apoio: 'As posições batem com o extrato de cada banco, e a carteira que não fecha chega com o motivo.',
+  },
+  {
+    id: 'reuniao', rotulo: 'Reunião', titulo: 'A pauta chega pronta.',
+    apoio: 'Na véspera, o agente junta o que mudou na carteira, os proventos do mês e o cenário que vale mostrar.',
+  },
+  {
+    id: 'atendimento', rotulo: 'Atendimento', titulo: 'Você revisa e assina.',
+    apoio: 'A pergunta do cliente chega com a resposta escrita sobre a carteira dele, e ela só sai depois que você aprova.',
+  },
+]
 
-export const BENEFICIOS = [
-  { id: 'mes', icone: 'calendario', texto: 'Feche o mês em dias, não semanas, com cada número apontando para o extrato de origem' },
-  { id: 'captacao', icone: 'bancos', texto: 'Veja o patrimônio que o cliente tem em outros bancos e transforme isso em captação' },
-  { id: 'reuniao', icone: 'assinatura', texto: 'Chegue à reunião e responda o cliente com tudo pronto, sem deixar de assinar a recomendação' },
+/**
+ * Para quem. Os dois perfis de comprador da página de antes (os cards do
+ * plano do RbProva) mais a consultoria. A linha da assessoria é a da RCVM 178,
+ * art. 25, VII: funciona sem dado de cliente. Uma linha curta por perfil desde
+ * 05/11/2026, para os passos caberem no teto de palavras.
+ */
+export const PARA_QUEM = [
+  { id: 'assessoria', nome: 'Assessoria', linha: 'Funciona sem dado de cliente.' },
+  { id: 'family', nome: 'Family office', linha: 'Cada família consolidada, com o aceite dela.' },
+  { id: 'gestora', nome: 'Gestora e consultoria', linha: 'O relatório sai com a sua marca.' },
 ] as const
 
 /**
- * Para quem. Os dois perfis de comprador que a página já tinha (os cards do
- * plano, RbProva) mais a consultoria, que o topo de pages/business/index.vue
- * já lista. A linha da assessoria é a da RCVM 178, art. 25, VII: funciona sem
- * dado de cliente.
+ * Segurança: as três frases do RbSeguranca de antes (conferidas no código em
+ * 11/10/2026), encurtadas em 05/11/2026 sem trocar o que afirmam. O detalhe (o
+ * convite como única escrita, a prova do aceite, o contrato do provedor de IA)
+ * mora no FAQ.
  */
-export const PARA_QUEM = [
-  { id: 'assessoria', nome: 'Assessoria', linha: 'Funciona sem dado de cliente: o mercado e o cenário chegam prontos para a mesa.' },
-  { id: 'family', nome: 'Family office', linha: 'A carteira de cada família, consolidada com o aceite dela.' },
-  { id: 'gestora', nome: 'Gestora e consultoria', linha: 'O cenário roda sobre a carteira, e o relatório sai com a sua marca.' },
-] as const
-
-/** Segurança: as três frases de RbSeguranca (conferidas no código em 11/10/2026). */
 export const SEGURANCA = [
-  { id: 'le', t: 'Só lê.', d: 'Nada compra, vende ou transfere. A única ação é o convite ao cliente, que não abre nada sem o aceite dele.' },
-  { id: 'sim', t: 'Cliente só entra com o sim dele.', d: 'O aceite e cada leitura da carteira ficam registrados. Ele revoga quando quiser, e as posições são apagadas.' },
-  { id: 'ia', t: 'A IA é a da sua casa.', d: 'Quem responde é o Claude ou o ChatGPT do escritório, no contrato que vocês já têm. A Redentia não treina modelo com o seu dado.' },
+  { id: 'le', t: 'Só lê.', d: 'Nada compra, vende ou transfere.' },
+  { id: 'sim', t: 'Cliente só entra com o sim dele.', d: 'O aceite fica registrado, e ele revoga quando quiser.' },
+  { id: 'ia', t: 'A IA é a da sua casa.', d: 'A Redentia não treina modelo com o seu dado.' },
 ] as const
 
-/** O preço por pessoa, em faixas progressivas (contrato de 13/10/2026; o mesmo de RbProva). */
+/** O preço por pessoa, em faixas progressivas (contrato de 13/10/2026; o mesmo do RbProva de antes). */
 export const FAIXAS = [
   { de: 1, ate: 10, preco: 500, rotulo: '1ª a 10ª' },
   { de: 11, ate: 25, preco: 300, rotulo: '11ª a 25ª' },
   { de: 26, ate: 50, preco: 200, rotulo: '26ª a 50ª' },
   { de: 51, ate: Infinity, preco: 150, rotulo: '51ª ou mais' },
-] as const
-
-export const INCLUI = [
-  'Um acesso por pessoa da mesa',
-  'Cenários para toda a mesa',
-  'Sete rotinas prontas no Claude',
-  'Funciona sem dado de cliente',
-  'Garantia de 30 dias',
 ] as const
 
 /** Total do mês para `n` pessoas, faixa a faixa (10 = 5.000; 25 = 9.500; 50 = 14.500). */
@@ -160,17 +233,24 @@ export function precoDaMesa(n: number): { total: number; linhas: { rotulo: strin
 }
 
 /*
- * A CONFIRMAR COM O DONO antes de qualquer variação ir para produção (cada
- * frase do print, ou da fila, que hoje não tem lastro ou precisa da palavra dele):
+ * A CONFIRMAR COM O DONO antes de a página ir para produção (cada frase do
+ * print, da fila ou dos passos que hoje não tem lastro no produto ou precisa da
+ * palavra dele). Atualizada em 05/11/2026, com os quatro passos:
  *  - Feche o mês em 5 dias / dia 3 de 5: a revisão do FAQ de 11/10 tirou as respostas de fechamento e conciliação porque o produto não as entregava; as movimentações entraram em 29/10 (contrato da One), mas não há fechamento medido.
- *  - carteiras conciliadas / cada número apontando para o extrato de origem: não existe conciliação nem procedência por número no produto hoje.
- *  - Agentes e a fila de aprovação: o produto é o MCP dentro do Claude ou do ChatGPT; não há tela de fila nem agente que roda sozinho.
- *  - Captação fora do escritório: a leitura por instituição existe (uma conexão por banco), mas não há tela que some o patrimônio fora da casa.
+ *  - Carteiras conciliadas e o passo 02 ("As posições batem com o extrato de cada banco, e a carteira que não fecha chega com o motivo"): não existe conciliação contra extrato no produto hoje.
+ *  - O motivo da carteira que falta ("Faltam os 5 BDRs no extrato de 31/10 do BTG", Família Azevedo): é a cena. Os 5 BDRs são os do perfil familyoffice, mas o elenco não tem extrato atrasado.
+ *  - Agentes e a fila de aprovação: o produto é o MCP dentro do Claude ou do ChatGPT; não há tela de fila nem agente que roda sozinho. Os passos 03 ("Na véspera, o agente junta...") e 04 dizem que o agente trabalha sem ser chamado.
+ *  - Captação fora do escritório e o passo 01 ("Cada banco que o cliente conecta entra na soma... por cliente e por banco"): a leitura por instituição existe (uma conexão por banco), mas não há tela que some o patrimônio fora da casa.
+ *  - R$ 4,97 mi na fila: o print dizia "R$ 4,9 mi", mas a lista do passo 01 soma 4,97 (2,32 + 1,28 + 0,84 + 0,53) e "4,9" seria arredondar para baixo. Trocado para a fila e o passo baterem; se ele preferir o número redondo, é mudar o valor da Mariana no elenco, não o texto.
+ *  - Reunião ("Mariana, amanhã às 10h", "Sexta, 10h"): não há agenda ligada ao produto; a pauta existe como o comando preparar-reuniao, chamado pelo assessor. Os três itens da pauta são os temas que esse comando cobre, sem número.
+ *  - Atendimento (passo 04): não há canal que traga a pergunta do cliente (WhatsApp, e-mail) nem botão de aprovar e enviar. O rascunho para o Lucas ("num dia de bolsa em baixa") é a cena, não um pregão real; os 60% em ações são os do perfil arrojado.
+ *  - Nomes e valores do elenco nos passos (os quatro clientes com o patrimônio por banco, as sete carteiras): a revisão de 13/08 tirou patrimônio do hero de então; aqui são os do elenco das calls, e nada diz "demonstração".
  *  - Testar com carteira demo: leva ao /business/cadastro, como o Entrar; conta nova é externa e não ganha a carteira gerada (só conta interna tem demo).
  *  - Agendar 1 hora: não há link de agenda; leva ao formulário #contato, que responde por e-mail.
- *  - Garantia de 30 dias: tem lastro (contrato de 13/10 e FAQ "Quanto custa?"), mas o hero de hoje trocou a garantia pela frase de implantação; as duas ficaram.
- *  - Valores em reais na fila: a revisão de 13/08 tirou patrimônio do hero de hoje; aqui são os do elenco das calls.
+ *  - Garantia de 30 dias: tem lastro (contrato de 13/10 e FAQ "Quanto custa?"); ficou só no hero, junto com a frase da implantação.
+ *  - Cortes pelo teto de ~650 palavras (05/11): saíram os três benefícios ao lado da fila (os passos contam os mesmos pontos), o card escuro de family office e gestora (fica o "Agendar 1 hora" no card do preço e a linha em Para quem), a lista do que o plano inclui e a linha de prazo e IPCA (as duas no FAQ "Quanto custa?" e "Tem fidelidade?"); Para quem e Segurança ficaram com uma linha curta por item.
  *  - Logos de clientes: a faixa existe e está oculta até chegarem os arquivos e a autorização de cada cliente.
- *  - H1: muda de "Consolide a carteira do seu cliente com 1 clique." para o título do print.
+ *  - H1: muda de "Consolide a carteira do seu cliente com 1 clique." para o título do print (o dono já sabe). A meta description segue a de antes.
  *  - O PDF do Wealth 2030 passa a ser público em /estudos/wealth-2030.pdf (o documento diz "distribuição livre").
+ *  - A página é indexável desde 20/10, e a regra de lá era "frase nova aqui precisa ser verdade hoje": esta é a direção do produto que vem aí, então não sobe para a main sem o sim do dono, item a item.
  */

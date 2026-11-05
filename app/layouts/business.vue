@@ -14,15 +14,15 @@
  * investidor e da assinatura; quem atende a mesa do assessor é o assistente do
  * próprio escritório.
  *
- * Na /business nova (05/11/2026, só no dev por ?biz=1|2|3) entra a faixa do
- * estudo Wealth 2030 acima do topo, como no print do dono.
+ * Na landing (/business, desde 05/11/2026) entra a faixa do estudo Wealth
+ * 2030 acima do topo, como no print do dono. O painel logado não tem a faixa.
  */
-const bizVar = useBizVariacao()
+const route = useRoute()
 </script>
 
 <template>
   <div class="rb-shell">
-    <BizFaixaEstudo v-if="bizVar" :tema="bizVar" />
+    <BizFaixaEstudo v-if="route.path === '/business'" />
     <NuHeader variante="business" />
     <ConsentBanner />
     <main>

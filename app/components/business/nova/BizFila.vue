@@ -1,43 +1,45 @@
 <script setup lang="ts">
 /**
- * A fila de aprovação: o coração da /business nova (05/11/2026, o print do
- * dono). Uma tela de produto encolhida: o que os agentes deixaram pronto na
- * manhã, para o assessor aprovar. Os nomes e os valores são os do elenco da
- * conta interna das calls (ver o topo de content/business/landing.ts).
+ * A fila de aprovação: o coração da /business (05/11/2026, o print do dono).
+ * Uma tela de produto encolhida: o que os agentes deixaram pronto na manhã,
+ * para o assessor aprovar. Os nomes e os valores são os do elenco da conta
+ * interna das calls (ver o topo de content/business/landing.ts), e saem das
+ * mesmas listas que os passos do scroll (BizPassos) mostram em detalhe.
  *
- * DOIS TONS:
- *  - `navy`: o cartão navy do print (variações 1 e 3);
- *  - `noite`: o momento assinatura da variação 2, vidro escuro com a moldura
- *    iridescente da ChatPilula girando atrás e cada palavra saindo do desfoque.
+ * O BOTÃO DE CADA ITEM É UM LINK DE VERDADE para o passo dele (#passo-<id>).
+ * Sem JS, o navegador pula para a âncora; com JS, a fila avisa o BizPassos
+ * (evento `bzj:ir`), que rola até o passo ficar em foco e põe o foco nele. O
+ * link cobre o item inteiro (::after), e no celular o rótulo vira só a seta.
  *
- * AS LIÇÕES DO RbHERO, QUE VALEM AQUI:
+ * AS LIÇÕES DO HERO ANTIGO, QUE VALEM AQUI:
  *  1. REPOUSO = ESTADO FINAL. O SSR serve a fila pronta: quatro itens, a barra
  *     do fechamento em 6 de 7. Sem JS, com reduced-motion ou com a aba em
  *     segundo plano, o cartão já conta a história inteira.
  *  2. A ANIMAÇÃO NÃO MUDA ALTURA. Tudo está no DOM desde o início; a entrada é
  *     Web Animations com fill "backwards" (opacidade, transform e desfoque), e
- *     só quando o cartão entra na tela. Uma vez: nada em loop, a não ser o
- *     brilho do tom `noite`.
+ *     só quando o cartão entra na tela. Uma vez, nada em loop.
  *  3. reduced-motion é checado À MÃO, porque o relógio é JS.
- * A entrada inteira dura ~3,4 s, então não pede controle. O brilho do `noite`
- * gira sem fim, e por isso esse tom tem o botão de pausar (SC 2.2.2).
+ * A entrada inteira dura ~3,4 s, então não pede controle (SC 2.2.2).
  */
-import { FILA, descricaoDaFila } from '~/content/business/landing'
+import { FILA, type IdDoPasso } from '~/content/business/landing'
 
-const props = withDefaults(defineProps<{ tema?: 'navy' | 'noite' }>(), { tema: 'navy' })
-
-const DESCRICAO = descricaoDaFila()
 const fechamento = FILA.itens.find((i) => i.id === 'fechamento')!
 
 // SSR e reduced-motion: o estado final
 const prontos = ref(FILA.itens.length)
 const feito = ref(fechamento.feito!)
-const anima = ref(false)
-const pausado = ref(false)
 const raiz = ref<HTMLElement | null>(null)
 
 const palavras = (t: string) => t.split(' ')
 const pct = (n: number) => `${(n / fechamento.total!) * 100}%`
+
+/** Pede ao scroll dos passos para levar até o passo; sem ninguém ouvindo, vale a âncora. */
+function irAoPasso(id: IdDoPasso, ev: MouseEvent) {
+  if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0) return
+  const pedido = new CustomEvent('bzj:ir', { detail: id, cancelable: true })
+  window.dispatchEvent(pedido)
+  if (pedido.defaultPrevented) ev.preventDefault()
+}
 
 let timers: ReturnType<typeof setTimeout>[] = []
 let io: IntersectionObserver | null = null
@@ -62,13 +64,6 @@ function entrar() {
       [{ opacity: 0, transform: 'translateY(16px) scale(.985)', filter: 'blur(6px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }],
       { duration: 680, delay: t, easing: CURVA, fill: 'backwards' },
     )
-    // no tom noite, cada palavra do título sai do desfoque (revelar-palavras)
-    if (props.tema === 'noite') {
-      item.querySelectorAll<HTMLElement>('.bfl__w').forEach((w, k) => w.animate(
-        [{ opacity: 0, filter: 'blur(8px)', transform: 'translateY(6px)' }, { opacity: 1, filter: 'blur(0)', transform: 'none' }],
-        { duration: 520, delay: t + 120 + Math.min(k * 38, 400), easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' },
-      ))
-    }
     depois(t + 260, () => { prontos.value = i + 1 })
   })
   // a barra do fechamento anda: chega a 5 de 7, respira e fecha o dia em 6
@@ -86,7 +81,6 @@ function entrar() {
 
 onMounted(() => {
   if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
-  anima.value = props.tema === 'noite' // o botão só existe onde há loop
   if (document.visibilityState !== 'visible' || !('IntersectionObserver' in window) || !raiz.value) return
   io = new IntersectionObserver((ents) => {
     if (!ents.some((e) => e.isIntersecting)) return
@@ -103,94 +97,53 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="bfl-palco" :class="[`bfl-palco--${tema}`, { 'bfl-palco--pausado': pausado }]">
-    <div class="bfl-moldura">
-    <div v-if="tema === 'noite'" class="bfl__brilho" aria-hidden="true" />
-    <div v-if="tema === 'noite'" class="bfl__anel" aria-hidden="true" />
-    <div ref="raiz" class="bfl" :class="`bfl--${tema}`" role="img" :aria-label="DESCRICAO">
-      <div class="bfl__dentro" aria-hidden="true">
-        <div class="bfl__topo">
-          <span class="bfl__rotulo">{{ FILA.rotulo }}</span>
-          <span class="bfl__quando">{{ FILA.quando }}</span>
-          <span class="bfl__prontos"><span class="bfl__vivo" />{{ prontos }} {{ prontos === 1 ? 'pronto' : 'prontos' }}</span>
+  <div ref="raiz" class="bfl">
+    <div class="bfl__topo">
+      <span class="bfl__rotulo">{{ FILA.rotulo }}</span>
+      <span class="bfl__quando">{{ FILA.quando }}</span>
+      <!-- o contador anda na entrada; para o leitor de tela, vale o estado final -->
+      <span class="bfl__prontos" aria-hidden="true"><span class="bfl__vivo" />{{ prontos }} {{ prontos === 1 ? 'pronto' : 'prontos' }}</span>
+    </div>
+
+    <ol class="bfl__lista">
+      <li v-for="it in FILA.itens" :key="it.id" class="bfl__item" :class="`bfl__item--${it.id}`">
+        <div class="bfl__miolo">
+          <p class="bfl__tipo">{{ it.tipo }}<span v-if="it.etapa" class="bfl__etapa"> · {{ it.etapa }}</span></p>
+          <template v-if="it.id === 'fechamento'">
+            <p class="bfl__t"><strong class="bfl__n">{{ feito }} de {{ it.total }}</strong> <template v-for="(w, k) in palavras(it.titulo)" :key="k"><span class="bfl__w">{{ w }}</span>{{ ' ' }}</template></p>
+            <div class="bfl__barra" aria-hidden="true"><span class="bfl__barra-in" :style="{ width: pct(it.feito!) }" /></div>
+          </template>
+          <template v-else>
+            <p class="bfl__t"><template v-for="(w, k) in palavras(it.titulo)" :key="k"><span class="bfl__w">{{ w }}</span>{{ ' ' }}</template></p>
+            <p v-if="it.linha" class="bfl__l">{{ it.linha }}</p>
+          </template>
         </div>
-
-        <ol class="bfl__lista">
-          <li v-for="it in FILA.itens" :key="it.id" class="bfl__item" :class="`bfl__item--${it.id}`">
-            <div class="bfl__miolo">
-              <p class="bfl__tipo">{{ it.tipo }}<span v-if="it.etapa" class="bfl__etapa"> · {{ it.etapa }}</span></p>
-              <template v-if="it.id === 'fechamento'">
-                <p class="bfl__t"><strong class="bfl__n">{{ feito }} de {{ it.total }}</strong> <template v-for="(w, k) in palavras(it.titulo)" :key="k"><span class="bfl__w">{{ w }}</span>{{ ' ' }}</template></p>
-                <div class="bfl__barra"><span class="bfl__barra-in" :style="{ width: pct(it.feito!) }" /></div>
-              </template>
-              <template v-else>
-                <p class="bfl__t"><template v-for="(w, k) in palavras(it.titulo)" :key="k"><span class="bfl__w">{{ w }}</span>{{ ' ' }}</template></p>
-                <p v-if="it.linha" class="bfl__l">{{ it.linha }}</p>
-              </template>
-            </div>
-            <span class="bfl__acao" :class="{ 'bfl__acao--cheia': it.id === 'atendimento' }">
-              {{ it.acao }}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-            </span>
-          </li>
-        </ol>
-      </div>
-    </div>
-    </div>
-
-    <!-- Controle real (SC 2.2.2): só onde o brilho gira sem fim. -->
-    <button
-      v-if="anima" type="button" class="bfl__pausa"
-      :aria-label="pausado ? 'Continuar o brilho da fila' : 'Pausar o brilho da fila'" @click="pausado = !pausado"
-    >
-      <svg v-if="pausado" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" /></svg>
-      <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5.5" y="4.5" width="4.5" height="15" rx="1" /><rect x="14" y="4.5" width="4.5" height="15" rx="1" /></svg>
-    </button>
+        <a
+          :href="`#passo-${it.id}`" class="bfl__acao" :class="{ 'bfl__acao--cheia': it.id === 'atendimento' }"
+          @click="irAoPasso(it.id, $event)"
+        >
+          <span class="bfl__acao-t">{{ it.acao }}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+        </a>
+      </li>
+    </ol>
   </div>
 </template>
 
 <style scoped>
-.bfl-palco { position: relative; width: 100%; }
-.bfl-moldura { position: relative; isolation: isolate; }
-
 /* ——— o cartão ——— */
 .bfl {
   position: relative; border-radius: var(--nu-r-card); padding: clamp(18px, 2.4vw, 26px);
-  color: var(--nu-cream-text);
-}
-.bfl--navy {
-  background: var(--nu-navy);
+  color: var(--nu-cream-text); background: var(--nu-navy);
   /* sombra tingida de navy: o anel de 1px faz a borda, a grande dá a altura */
   box-shadow: 0 0 0 1px var(--nu-white-14) inset, 0 40px 80px -40px rgba(12, 21, 36, .55), 0 18px 40px -24px rgba(12, 21, 36, .35);
 }
-.bfl--navy::before {
+.bfl::before {
   /* a luz de cima: uma borda fina que brilha no topo, como o vidro do app */
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
   background: linear-gradient(180deg, var(--nu-white-14), transparent 22%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 1px;
 }
-.bfl--noite {
-  margin: 2px; border-radius: calc(var(--nu-r-card) - 2px);
-  background: color-mix(in srgb, var(--nu-agora-cartao) 92%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3);
-}
-
-/* ——— a moldura iridescente (tom noite), a da ChatPilula ——— */
-.bfl__anel { position: absolute; inset: 0; border-radius: var(--nu-r-card); overflow: hidden; pointer-events: none; z-index: -1; }
-.bfl__anel::before {
-  content: ''; position: absolute; left: 50%; top: 50%; width: 300%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  background: conic-gradient(from 0deg, var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4), var(--nu-serie-2), var(--nu-serie-6), var(--nu-blue));
-  animation: bfl-gira 9s linear infinite;
-}
-.bfl__brilho {
-  position: absolute; inset: -10px; z-index: -2; border-radius: var(--nu-r-card); filter: blur(28px); opacity: .3; pointer-events: none;
-  background: linear-gradient(90deg, var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4), var(--nu-serie-2));
-  animation: bfl-respira 6s ease-in-out infinite; transition: opacity .3s ease;
-}
-.bfl-palco--noite:hover .bfl__brilho { opacity: .46; }
-.bfl-palco--pausado .bfl__anel::before, .bfl-palco--pausado .bfl__brilho { animation-play-state: paused; }
-@keyframes bfl-gira { to { transform: translate(-50%, -50%) rotate(360deg); } }
-@keyframes bfl-respira { 50% { opacity: .16; } }
 
 /* ——— o topo do cartão ——— */
 .bfl__topo { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; padding: 0 4px 14px; }
@@ -205,11 +158,10 @@ onBeforeUnmount(() => {
 /* ——— os itens ——— */
 .bfl__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .bfl__item {
-  display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; border-radius: var(--nu-r-tile);
+  position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; border-radius: var(--nu-r-tile);
   background: var(--nu-white-14); background: color-mix(in srgb, var(--nu-white) 6%, transparent);
   transition: background .2s ease, transform .3s cubic-bezier(.2, .8, .2, 1);
 }
-.bfl--noite .bfl__item { background: color-mix(in srgb, var(--nu-white) 5%, transparent); }
 .bfl__item:hover { background: color-mix(in srgb, var(--nu-white) 11%, transparent); transform: translateX(2px); }
 .bfl__miolo { flex: 1; min-width: 0; }
 .bfl__tipo { margin: 0; color: var(--nu-cream-text-55); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
@@ -223,39 +175,33 @@ onBeforeUnmount(() => {
   position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; transform-origin: left center;
   background: linear-gradient(90deg, var(--nu-blue), var(--nu-blue-soft));
 }
-.bfl--noite .bfl__barra-in { background: linear-gradient(90deg, var(--nu-blue), var(--nu-serie-5), var(--nu-serie-4)); }
 
-/* a ação de cada item: discreta, acende no hover; a do atendimento é o botão */
+/* a ação de cada item: discreta, acende no hover; a do atendimento é o botão.
+   O ::after estica o link sobre o item inteiro. */
 .bfl__acao {
   flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 10px 0 12px; border-radius: var(--nu-r-pill);
   color: var(--nu-cream-text-70); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap;
   box-shadow: inset 0 0 0 1px var(--nu-white-14); transition: color .2s, background .2s, box-shadow .2s;
 }
+.bfl__acao::after { content: ''; position: absolute; inset: 0; border-radius: var(--nu-r-tile); }
+.bfl__acao:focus-visible { outline: none; }
+.bfl__acao:focus-visible::after { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
 .bfl__item:hover .bfl__acao { color: var(--nu-cream-text); box-shadow: inset 0 0 0 1px var(--nu-white-35); }
 .bfl__acao--cheia, .bfl__item:hover .bfl__acao--cheia { background: var(--nu-biz-lavanda); color: var(--nu-navy); box-shadow: none; }
-.bfl--noite .bfl__acao--cheia, .bfl--noite .bfl__item:hover .bfl__acao--cheia { background: var(--nu-agora-texto); color: var(--nu-ink); }
 .bfl__item:hover .bfl__acao--cheia { background: var(--nu-biz-lavanda-hover); }
-
-/* ——— pausar ——— */
-.bfl__pausa {
-  position: relative; margin: 14px 4px 0 auto; width: 44px; height: 44px; border-radius: 50%;
-  display: grid; place-items: center; cursor: pointer;
-  border: 1px solid var(--nu-agora-linha); background: var(--nu-agora-pilula); color: var(--nu-agora-texto);
-  transition: background .2s, border-color .2s;
-}
-.bfl__pausa:hover { background: var(--nu-white-18); border-color: var(--nu-white-35); }
-.bfl__pausa:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.bfl__acao svg { transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.bfl__item:hover .bfl__acao svg { transform: translateX(2px); }
 
 @media (max-width: 520px) {
   .bfl__item { padding: 12px; gap: 10px; }
-  .bfl__acao { display: none; }
-  .bfl__acao--cheia { display: inline-flex; }
+  /* no celular a ação vira só a seta (o rótulo fica para o leitor de tela) */
+  .bfl__acao:not(.bfl__acao--cheia) { width: 30px; padding: 0; justify-content: center; }
+  .bfl__acao:not(.bfl__acao--cheia) .bfl__acao-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .bfl__t { font-size: var(--nu-fs-md); }
   .bfl__quando { order: 3; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bfl__anel::before, .bfl__brilho { animation: none; }
   .bfl__item { transition: background .2s ease; }
-  .bfl__item:hover { transform: none; }
+  .bfl__item:hover, .bfl__item:hover .bfl__acao svg { transform: none; }
 }
 </style>
