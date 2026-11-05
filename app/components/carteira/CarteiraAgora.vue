@@ -24,11 +24,9 @@
 // mesma reserva da bolsa durante o pregão (o snapshot do Ibovespa, se for do
 // mesmo dia de preço), que vale também para a frase. Só %, como na home: o
 // R$ do provento só aparece com os valores à vista (o olho da pílula).
-// Três variações, só no dev, por ?losango-carteira=1|2|3 (em produção, a 1):
-//  1. ao lado da frase, como na home (no celular, em cima, centrado);
-//  2. o protagonista do topo: grande e centrado, com a frase embaixo;
-//  3. no bloco do dia: o logo pequeno num cartão, com os números ao lado, em
-//     cima da pílula.
+// Saiu de três variações; o dono escolheu a 3 ("pode manter o losango
+// carteira 3"): o logo pequeno (compacto) num cartão branco no bloco do dia,
+// com os números ao lado, em cima da pílula.
 import type { CarteiraAgoraVM } from '~/types/carteira'
 import { fraseDaCarteira, rotuloDaPilula } from '~/utils/carteira-agora'
 import { pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
@@ -59,13 +57,6 @@ const rotuloAdicionar = computed(() => (opening.value || registering.value ? 'Ab
 
 const { visiveis: revelado, alternar: alternarRevelado } = useValoresVisiveis()
 const painel = useChatPainel()
-// a variação do losango: só no dev, pelo parâmetro; em produção, a 1
-const route = useRoute()
-const variacao = computed<1 | 2 | 3>(() => {
-  if (!import.meta.dev) return 1
-  const v = String(route.query['losango-carteira'] ?? '')
-  return v === '2' ? 2 : v === '3' ? 3 : 1
-})
 
 // a reserva da bolsa, como na home: com o pregão aberto e a série do Ibovespa
 // ainda sem o ponto de hoje, o snapshot entra se for do mesmo dia de preço
@@ -118,7 +109,7 @@ const porque = computed(() => (perguntaPorque.value ? `/busca?chat=1&q=${encodeU
 </script>
 
 <template>
-  <section class="cag" :class="[`cag--${frase.tom}`, `cag--v${variacao}`]" aria-labelledby="cag-titulo">
+  <section class="cag" :class="`cag--${frase.tom}`" aria-labelledby="cag-titulo">
     <div class="cag__topo">
       <div v-contexto-chat="{ id: 'carteira:hoje', tipo: 'carteira', rotulo: 'Carteira hoje', texto: [frase.titulo, frase.linha].filter(Boolean).join('\n') }" class="cag__miolo">
         <span class="cag__estado" :class="`cag__estado--${frase.tom === 'atencao' ? 'atencao' : pregao.estado}`">
@@ -129,19 +120,10 @@ const porque = computed(() => (perguntaPorque.value ? `/busca?chat=1&q=${encodeU
         <p class="cag__linha" :class="{ 'cag__linha--analisando': frase.analisando }">{{ frase.linha }}</p>
         <NuxtLink v-if="porque" :to="porque" class="cag__porque" @click.prevent="painel.abrir(perguntaPorque!)">Por que caiu?</NuxtLink>
       </div>
-
-      <!-- o losango do dia (variações 1 e 2): você contra a bolsa e o provento -->
-      <div v-if="temLosango && variacao !== 3" v-contexto-chat="contextoLosango" class="cag__losango" data-clarity-mask="true">
-        <HomeLosango
-          tema="dia" link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
-          :voce="agora.carteiraPct" :bolsa="bolsaPct"
-          :provento="agora.provento" :provento-sub="proventoSub" :esmaecido="esmaecido"
-        />
-      </div>
     </div>
 
-    <!-- variação 3: o losango pequeno no bloco do dia, com os números ao lado -->
-    <div v-if="temLosango && variacao === 3" v-contexto-chat="contextoLosango" class="cag__cartao" :class="{ 'cag__cartao--esmaecido': esmaecido }" data-clarity-mask="true">
+    <!-- o losango do dia: o logo pequeno num cartão, com os números ao lado -->
+    <div v-if="temLosango" v-contexto-chat="contextoLosango" class="cag__cartao" :class="{ 'cag__cartao--esmaecido': esmaecido }" data-clarity-mask="true">
       <div class="cag__cartao-logo">
         <HomeLosango
           tema="dia" compacto link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
@@ -350,25 +332,7 @@ const porque = computed(() => (perguntaPorque.value ? `/busca?chat=1&q=${encodeU
 .cag__perguntar:hover { background: var(--nu-navy-2); color: var(--nu-cream-text); transform: translateY(-2px); }
 .cag__losango-miolo { fill: var(--nu-navy); }
 
-/* ——— o losango do dia ——— */
-/* 1: ao lado da frase, como na home; no celular, embaixo dela */
-.cag__losango { width: min(100%, 400px); margin-top: clamp(28px, 6vw, 40px); }
-.cag--v1 .cag__titulo { font-size: var(--nu-fs-hero); }
-@media (min-width: 960px) {
-  .cag--v1 .cag__topo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(24px, 3vw, 48px); }
-  .cag--v1 .cag__losango { justify-self: end; width: min(100%, 560px); margin: 0; }
-}
-
-/* 2: o protagonista do topo: grande, centrado, com a frase embaixo */
-.cag--v2 .cag__topo { align-items: center; text-align: center; }
-.cag--v2 .cag__losango { order: -1; width: min(100%, 720px); margin: 0 0 clamp(20px, 3vw, 32px); }
-.cag--v2 .cag__miolo { align-items: center; }
-.cag--v2 .cag__titulo { margin-top: 14px; font-size: var(--nu-fs-hero); }
-.cag--v2 .cag__linha { margin-inline: auto; text-wrap: balance; }
-.cag--v2 .cag__dia, .cag--v2 .cag__contas { justify-content: center; }
-.cag--v2 .cag__contas-aviso { text-align: center; }
-
-/* 3: o logo pequeno num cartão do dia, com os números ao lado, em cima da pílula */
+/* ——— o losango do dia: o logo pequeno num cartão, com os números ao lado, em cima da pílula ——— */
 .cag__cartao {
   display: flex; align-items: center; gap: clamp(12px, 2vw, 18px); width: fit-content; max-width: 100%;
   margin-top: clamp(36px, 5vw, 56px); padding: 12px 22px 12px 12px;
@@ -388,7 +352,7 @@ const porque = computed(() => (perguntaPorque.value ? `/busca?chat=1&q=${encodeU
 .cag__cartao-prov--aceso { color: var(--nu-ink); font-weight: 700; }
 .cag__cartao-cifrao { color: var(--nu-green-text); font-weight: 800; }
 .cag__cartao--esmaecido .cag__cartao-nums, .cag__cartao--esmaecido .cag__cartao-rel { opacity: .6; }
-.cag--v3 .cag__dia { margin-top: 14px; }
+.cag__cartao + .cag__dia { margin-top: 14px; }
 
 @media (max-width: 760px) {
   .cag { min-height: clamp(480px, calc(100svh - 140px), 680px); }
