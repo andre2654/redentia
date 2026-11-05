@@ -22,7 +22,7 @@
  * Regra de sempre: dado que falta some, nunca vira zero nem frase inventada.
  */
 import { agoraEmSP, quandoFoi, semPregao, type EstadoDoPregao } from './pregao.ts'
-import { nomeParaFrase, QUEDA_QUE_PEDE_ATENCAO } from './carteira-agora.ts'
+import { cotacaoPendente, nomeParaFrase, QUEDA_QUE_PEDE_ATENCAO } from './carteira-agora.ts'
 
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -54,7 +54,10 @@ export interface HojeDaApi {
     value_now: number | null
     day_change_amount: number | null
     day_change_pct: number | null
+    flags?: string[] | null
   }[]
+  /** avisos do /portfolio/today; pending_today_<TICKER> = a cotação de hoje do papel não chegou */
+  flags?: string[] | null
 }
 
 export interface ResumoDoDia {
@@ -108,7 +111,9 @@ export function montarResumoDoDia(e: {
     if (prev && prev.v > 0) bolsaPct = (e.ibov[i]!.v / prev.v - 1) * 100
   }
 
-  const posicoes = e.today?.positions ?? []
+  // papel com a cotação de hoje pendente (pending_today_*) sai do dia: a
+  // variação dele é falsa (05/11/2026, FLRY3 "−20,28%" com a Fleury subindo)
+  const posicoes = (e.today?.positions ?? []).filter((p) => !cotacaoPendente(p.ticker, e.today?.flags, p.flags))
   const quedas = posicoes
     .filter((p) => p.day_change_pct != null && p.day_change_pct <= QUEDA_QUE_PEDE_ATENCAO)
     .sort((a, b) => a.day_change_pct! - b.day_change_pct!)

@@ -379,9 +379,11 @@ function buildAgora(
 
   let alerta: CarteiraAgoraVM['alerta'] = null
   for (const p of today?.positions ?? []) {
-    if (p.day_change_pct == null || p.value_now == null || p.value_now < totalValue * 0.01) continue
-    if (p.day_change_pct <= QUEDA_QUE_PEDE_ATENCAO && (!alerta || p.day_change_pct < alerta.pct)) {
-      alerta = { ticker: p.ticker, nome: nomeParaFrase(p.name, p.ticker), pct: p.day_change_pct }
+    // papel com a cotação de hoje pendente (flags pending_today_*) não vira alerta
+    const pct = variacaoConfiavel(p, today?.flags)
+    if (pct == null || p.value_now == null || p.value_now < totalValue * 0.01) continue
+    if (pct <= QUEDA_QUE_PEDE_ATENCAO && (!alerta || pct < alerta.pct)) {
+      alerta = { ticker: p.ticker, nome: nomeParaFrase(p.name, p.ticker), pct }
     }
   }
 

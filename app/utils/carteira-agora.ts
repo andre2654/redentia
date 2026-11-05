@@ -93,6 +93,33 @@ export function fraseDaCarteira(i: EntradaDaFrase): FraseDaCarteira {
   return { titulo: 'Tudo normal.', linha: fatoDoPregao(i.quando, i.carteiraPct, i.bolsaPct), tom: 'normal', analisando: false }
 }
 
+/**
+ * A cotação de hoje do papel ainda não chegou. Em 05/11/2026 o /portfolio/today
+ * devolveu FLRY3 com −20,28% no dia enquanto a Fleury subia 0,43%: o preço de
+ * hoje não tinha chegado e a conta saiu contra um preço velho. A resposta já
+ * avisava, em `flags: ["pending_today_FLRY3"]` (no topo e, às vezes, na
+ * própria posição). O backend passa a devolver null nesses casos; até lá, e
+ * por garantia, o front não confia na variação de um papel assim marcado.
+ */
+export function cotacaoPendente(ticker: string, flags?: readonly string[] | null, flagsDaPosicao?: readonly string[] | null): boolean {
+  const alvo = `pending_today_${ticker}`.toUpperCase()
+  return [...(flags ?? []), ...(flagsDaPosicao ?? [])].some((f) => typeof f === 'string' && f.toUpperCase() === alvo)
+}
+
+/**
+ * A variação do dia de um papel em que dá para confiar: null quando ela não
+ * veio ou quando a cotação de hoje ainda está pendente (cotacaoPendente). É o
+ * que o alerta do topo da /carteira e o da home usam: papel sem preço de hoje
+ * nunca vira "caiu 20%".
+ */
+export function variacaoConfiavel(
+  p: { ticker: string; day_change_pct: number | null; flags?: readonly string[] | null },
+  flags?: readonly string[] | null,
+): number | null {
+  if (p.day_change_pct == null || !Number.isFinite(p.day_change_pct)) return null
+  return cotacaoPendente(p.ticker, flags, p.flags) ? null : p.day_change_pct
+}
+
 /** Rótulo da pílula do dia: 'hoje', 'ontem', 'sexta', '28/10' (sem preposição). */
 export function rotuloDaPilula(quando: string | null): string {
   if (!quando) return 'hoje'
