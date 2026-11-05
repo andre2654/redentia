@@ -305,4 +305,17 @@ export interface CarteiraPayload {
   income: CarteiraIncomeVM | null
   movements: CarteiraMovementsVM | null
   heatmap: CarteiraHeatmapVM | null
+  /** a seção "No mundo" (05/11/2026); ausente no payload vazio */
+  posicoesMundo?: CarteiraPosicaoMundo[]
+}
+
+/**
+ * Uma posição para a seção "No mundo" da /carteira (CarteiraMundo): o valor
+ * CRU em R$ (a conta em % é de utils/exposicaoNoMundo.ts).
+ */
+export interface CarteiraPosicaoMundo {
+  ticker: string
+  /** asset_class do /portfolio (STOCK, REIT, ETF, BDR, CRYPTO, TREASURY…) */
+  classe: string
+  valor: number
 }

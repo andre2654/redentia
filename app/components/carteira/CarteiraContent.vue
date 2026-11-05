@@ -10,6 +10,7 @@
 //  2. CarteiraFuturo     "e daqui a 5 anos?" — o leque de 2.000 cenários (o
 //                        único momento assinatura da tela, na banda navy)
 //  3. CarteiraPosicoes   o total, a barra por classe e os grupos (papéis sob pedido)
+//     CarteiraMundo      "onde está o meu dinheiro?" — país e região, num globo (05/11)
 //  4. ProventosContas    o que está a caminho e as contas do Open Finance
 //  5. CarteiraAnalise    desempenho, Raio-X, movimentações e P&L, sob pedido
 // Sem Open Finance conectado a página VIRA o convite (CarteiraVazia). Seção
@@ -30,6 +31,7 @@ const railSections = computed<RailSection[]>(() => {
   const p = props.payload
   const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }, { id: 'futuro', label: 'Daqui a 5 anos' }]
   if (p.groups.length) s.push({ id: 'posicoes', label: 'Posições' })
+  if (p.posicoesMundo?.length) s.push({ id: 'mundo', label: 'No mundo' })
   if (p.income && (p.income.agenda || p.income.month)) s.push({ id: 'renda-passiva', label: 'Proventos' })
   s.push({ id: 'contas', label: 'Contas' })
   return s
@@ -60,6 +62,7 @@ onMounted(() => {
       :groups="payload.groups"
       :allocation="payload.allocation"
     />
+    <CarteiraMundo v-if="payload.posicoesMundo?.length" id="mundo" :posicoes="payload.posicoesMundo" />
     <CarteiraProventosContas :income="payload.income" @connected="emit('connected')" />
     <CarteiraAnalise :payload="payload" />
   </div>
