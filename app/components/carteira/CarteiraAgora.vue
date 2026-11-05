@@ -16,9 +16,24 @@
 // de onde a carteira vem, num relance, e o "Adicionar conta" para trazer mais
 // uma. Só o nome e o logo: o valor de cada banco fica no cartão "Suas contas".
 // Conta que pede reconexão leva à /conta, onde mora o reconectar.
+//
+// O losango do dia (05/11/2026; o dono: "precisamos trazer nosso novo
+// elemento da logo, que tem no início, também na carteira"): o HomeLosango
+// da home, no tema do creme, com o mesmo dado (você e a bolsa no mesmo dia de
+// preço; a aba de baixo acende com o provento do dia, proventoDoDiaDe) e a
+// mesma reserva da bolsa durante o pregão (o snapshot do Ibovespa, se for do
+// mesmo dia de preço), que vale também para a frase. Só %, como na home: o
+// R$ do provento só aparece com os valores à vista (o olho da pílula).
+// Três variações, só no dev, por ?losango-carteira=1|2|3 (em produção, a 1):
+//  1. ao lado da frase, como na home (no celular, em cima, centrado);
+//  2. o protagonista do topo: grande e centrado, com a frase embaixo;
+//  3. no bloco do dia: o logo pequeno num cartão, com os números ao lado, em
+//     cima da pílula.
 import type { CarteiraAgoraVM } from '~/types/carteira'
 import { fraseDaCarteira, rotuloDaPilula } from '~/utils/carteira-agora'
-import { estadoDoPregao, quandoFoi } from '~/utils/pregao'
+import { pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
+import { quemNaFrente } from '~/utils/losangoDoDia'
+import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 
 const props = defineProps<{ agora: CarteiraAgoraVM }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
@@ -42,19 +57,56 @@ function adicionarConta() {
 }
 const rotuloAdicionar = computed(() => (opening.value || registering.value ? 'Abrindo conexão segura…' : 'Adicionar conta'))
 
+const { visiveis: revelado, alternar: alternarRevelado } = useValoresVisiveis()
+const painel = useChatPainel()
+// a variação do losango: só no dev, pelo parâmetro; em produção, a 1
+const route = useRoute()
+const variacao = computed<1 | 2 | 3>(() => {
+  if (!import.meta.dev) return 1
+  const v = String(route.query['losango-carteira'] ?? '')
+  return v === '2' ? 2 : v === '3' ? 3 : 1
+})
+
+// a reserva da bolsa, como na home: com o pregão aberto e a série do Ibovespa
+// ainda sem o ponto de hoje, o snapshot entra se for do mesmo dia de preço
+const { bolsa } = await useBolsaDoDia()
+
 const pregao = computed(() => estadoDoPregao())
 const quando = computed(() => quandoFoi(props.agora.priceDate))
+const bolsaPct = computed(() => {
+  const b = props.agora.bolsaPct
+  const ib = bolsa.value?.ibov
+  if (b != null || pregao.value.estado !== 'aberta' || !ib || ib.data !== props.agora.priceDate) return b
+  return ib.pct
+})
 const frase = computed(() => fraseDaCarteira({
   pregao: pregao.value.estado,
   quando: quando.value,
   carteiraPct: props.agora.carteiraPct,
-  bolsaPct: props.agora.bolsaPct,
+  bolsaPct: bolsaPct.value,
   alerta: props.agora.alerta ? { nome: props.agora.alerta.nome, pct: props.agora.alerta.pct } : null,
 }))
 
-const { visiveis: revelado, alternar: alternarRevelado } = useValoresVisiveis()
 const temDia = computed(() => !!props.agora.diaValor)
 const rotulo = computed(() => rotuloDaPilula(quando.value))
+
+/* ——— o losango do dia ——— */
+// sem o dia da carteira, o losango some (dado que falta some, nunca vira zero)
+const temLosango = computed(() => props.agora.carteiraPct != null)
+// antes da abertura, o pregão anterior vai esmaecido (a mesma regra da home)
+const esmaecido = computed(() => pregao.value.estado === 'antes' && props.agora.priceDate?.slice(0, 10) !== agoraEmSP().iso)
+// a linha do provento: quem pagou, e o R$ só com os valores à vista
+const proventoSub = computed(() => subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value))
+const frente = computed(() => quemNaFrente(props.agora.carteiraPct, bolsaPct.value))
+const contextoLosango = computed(() => {
+  const c = props.agora.carteiraPct
+  if (c == null) return null
+  const b = bolsaPct.value
+  return {
+    id: 'carteira:losango', tipo: 'carteira', rotulo: 'Você e a bolsa hoje',
+    texto: [`Sua carteira: ${pctComSinal(c)}`, b != null ? `Ibovespa: ${pctComSinal(b)}` : '', props.agora.provento ? `Provento: ${proventoSub.value}` : ''].filter(Boolean).join('\n'),
+  }
+})
 
 const perguntaPorque = computed(() => {
   const a = props.agora.alerta
@@ -63,19 +115,50 @@ const perguntaPorque = computed(() => {
 // os atalhos abrem o painel do chat nesta página (02/11/2026); o href da
 // /busca fica para quem abre em outra aba
 const porque = computed(() => (perguntaPorque.value ? `/busca?chat=1&q=${encodeURIComponent(perguntaPorque.value)}` : null))
-const painel = useChatPainel()
 </script>
 
 <template>
-  <section class="cag" :class="`cag--${frase.tom}`" aria-labelledby="cag-titulo">
-    <div v-contexto-chat="{ id: 'carteira:hoje', tipo: 'carteira', rotulo: 'Carteira hoje', texto: [frase.titulo, frase.linha].filter(Boolean).join('\n') }" class="cag__miolo">
-      <span class="cag__estado" :class="`cag__estado--${frase.tom === 'atencao' ? 'atencao' : pregao.estado}`">
-        <span class="cag__ponto" aria-hidden="true" />
-        {{ frase.tom === 'atencao' ? 'Pede atenção' : pregao.rotulo }}
-      </span>
-      <h1 id="cag-titulo" class="cag__titulo">{{ frase.titulo }}</h1>
-      <p class="cag__linha" :class="{ 'cag__linha--analisando': frase.analisando }">{{ frase.linha }}</p>
-      <NuxtLink v-if="porque" :to="porque" class="cag__porque" @click.prevent="painel.abrir(perguntaPorque!)">Por que caiu?</NuxtLink>
+  <section class="cag" :class="[`cag--${frase.tom}`, `cag--v${variacao}`]" aria-labelledby="cag-titulo">
+    <div class="cag__topo">
+      <div v-contexto-chat="{ id: 'carteira:hoje', tipo: 'carteira', rotulo: 'Carteira hoje', texto: [frase.titulo, frase.linha].filter(Boolean).join('\n') }" class="cag__miolo">
+        <span class="cag__estado" :class="`cag__estado--${frase.tom === 'atencao' ? 'atencao' : pregao.estado}`">
+          <span class="cag__ponto" aria-hidden="true" />
+          {{ frase.tom === 'atencao' ? 'Pede atenção' : pregao.rotulo }}
+        </span>
+        <h1 id="cag-titulo" class="cag__titulo">{{ frase.titulo }}</h1>
+        <p class="cag__linha" :class="{ 'cag__linha--analisando': frase.analisando }">{{ frase.linha }}</p>
+        <NuxtLink v-if="porque" :to="porque" class="cag__porque" @click.prevent="painel.abrir(perguntaPorque!)">Por que caiu?</NuxtLink>
+      </div>
+
+      <!-- o losango do dia (variações 1 e 2): você contra a bolsa e o provento -->
+      <div v-if="temLosango && variacao !== 3" v-contexto-chat="contextoLosango" class="cag__losango" data-clarity-mask="true">
+        <HomeLosango
+          tema="dia" link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
+          :voce="agora.carteiraPct" :bolsa="bolsaPct"
+          :provento="agora.provento" :provento-sub="proventoSub" :esmaecido="esmaecido"
+        />
+      </div>
+    </div>
+
+    <!-- variação 3: o losango pequeno no bloco do dia, com os números ao lado -->
+    <div v-if="temLosango && variacao === 3" v-contexto-chat="contextoLosango" class="cag__cartao" :class="{ 'cag__cartao--esmaecido': esmaecido }" data-clarity-mask="true">
+      <div class="cag__cartao-logo">
+        <HomeLosango
+          tema="dia" compacto link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
+          :voce="agora.carteiraPct" :bolsa="bolsaPct"
+          :provento="agora.provento" :provento-sub="proventoSub" :esmaecido="esmaecido"
+        />
+      </div>
+      <div class="cag__cartao-texto" aria-hidden="true">
+        <p class="cag__cartao-nums">
+          <span class="cag__cartao-num" :class="agora.carteiraPct! < 0 ? 'cag__cartao-num--down' : 'cag__cartao-num--up'"><span class="cag__cartao-quem">Você</span> {{ pctComSinal(agora.carteiraPct!) }}</span>
+          <span v-if="bolsaPct != null" class="cag__cartao-num cag__cartao-num--bolsa"><span class="cag__cartao-quem">Bolsa</span> {{ pctComSinal(bolsaPct) }}</span>
+        </p>
+        <p v-if="frente" class="cag__cartao-rel">{{ frente.lider === 'empate' ? 'Empatado com a bolsa' : `${frente.numero} ${frente.relacao}` }}</p>
+        <p class="cag__cartao-prov" :class="{ 'cag__cartao-prov--aceso': agora.provento }">
+          <span class="cag__cartao-cifrao" aria-hidden="true">$</span> Provento · {{ proventoSub }}
+        </p>
+      </div>
     </div>
 
     <!-- o resultado do dia: escondido no olho, vai escondido ao chat -->
@@ -157,7 +240,8 @@ const painel = useChatPainel()
   animation: nu-fade .5s ease both;
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
-.cag__miolo { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.cag__topo { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.cag__miolo { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
 
 .cag__estado {
   display: inline-flex; align-items: center; gap: 9px;
@@ -266,7 +350,49 @@ const painel = useChatPainel()
 .cag__perguntar:hover { background: var(--nu-navy-2); color: var(--nu-cream-text); transform: translateY(-2px); }
 .cag__losango-miolo { fill: var(--nu-navy); }
 
+/* ——— o losango do dia ——— */
+/* 1: ao lado da frase, como na home; no celular, embaixo dela */
+.cag__losango { width: min(100%, 400px); margin-top: clamp(28px, 6vw, 40px); }
+.cag--v1 .cag__titulo { font-size: var(--nu-fs-hero); }
+@media (min-width: 960px) {
+  .cag--v1 .cag__topo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(24px, 3vw, 48px); }
+  .cag--v1 .cag__losango { justify-self: end; width: min(100%, 560px); margin: 0; }
+}
+
+/* 2: o protagonista do topo: grande, centrado, com a frase embaixo */
+.cag--v2 .cag__topo { align-items: center; text-align: center; }
+.cag--v2 .cag__losango { order: -1; width: min(100%, 720px); margin: 0 0 clamp(20px, 3vw, 32px); }
+.cag--v2 .cag__miolo { align-items: center; }
+.cag--v2 .cag__titulo { margin-top: 14px; font-size: var(--nu-fs-hero); }
+.cag--v2 .cag__linha { margin-inline: auto; text-wrap: balance; }
+.cag--v2 .cag__dia, .cag--v2 .cag__contas { justify-content: center; }
+.cag--v2 .cag__contas-aviso { text-align: center; }
+
+/* 3: o logo pequeno num cartão do dia, com os números ao lado, em cima da pílula */
+.cag__cartao {
+  display: flex; align-items: center; gap: clamp(12px, 2vw, 18px); width: fit-content; max-width: 100%;
+  margin-top: clamp(36px, 5vw, 56px); padding: 12px 22px 12px 12px;
+  background: var(--nu-white); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-card);
+}
+/* o recorte das abas do logo usa o fundo de quem está atrás: o branco do cartão */
+.cag__cartao-logo { flex: none; width: clamp(76px, 9vw, 96px); --hlo-fundo: var(--nu-white); }
+.cag__cartao-texto { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cag__cartao-nums { margin: 0; display: flex; flex-wrap: wrap; gap: 2px 16px; }
+.cag__cartao-num { font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cag__cartao-num--up { color: var(--nu-green-text); }
+.cag__cartao-num--down { color: var(--nu-red-text); }
+.cag__cartao-num--bolsa { color: var(--nu-navy); }
+.cag__cartao-quem { font-size: var(--nu-fs-sm); font-weight: 800; letter-spacing: 0; }
+.cag__cartao-rel { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+.cag__cartao-prov { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cag__cartao-prov--aceso { color: var(--nu-ink); font-weight: 700; }
+.cag__cartao-cifrao { color: var(--nu-green-text); font-weight: 800; }
+.cag__cartao--esmaecido .cag__cartao-nums, .cag__cartao--esmaecido .cag__cartao-rel { opacity: .6; }
+.cag--v3 .cag__dia { margin-top: 14px; }
+
 @media (max-width: 760px) {
   .cag { min-height: clamp(480px, calc(100svh - 140px), 680px); }
+  .cag__cartao { width: 100%; padding-right: 16px; }
+  .cag__cartao-num { font-size: var(--nu-fs-xl); }
 }
 </style>

@@ -162,6 +162,10 @@ export interface CarteiraAgoraVM {
   patrimonio: string // 'R$ 66.170,58' (mascarável)
   ativos: string // '6 ativos'
   atualizado: string | null // 'agora', 'há 5 min'
+  /** caiu provento no dia de preço (a aba de baixo do losango; proventoDoDiaDe) */
+  provento: boolean
+  /** o total e os papéis do provento do dia; null sem provento */
+  proventoDoDia: { valor: number; tickers: string[] } | null
 }
 
 export interface RaioXMetricVM {

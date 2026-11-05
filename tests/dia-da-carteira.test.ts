@@ -6,7 +6,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { contraABolsa, frasesDoDia, montarResumoDoDia, pctComSinal, subDoProvento, type ResumoDoDia } from '../app/utils/diaDaCarteira.ts'
+import { contraABolsa, frasesDoDia, montarResumoDoDia, pctComSinal, proventoDoDiaDe, subDoProvento, type ResumoDoDia } from '../app/utils/diaDaCarteira.ts'
 
 const base: ResumoDoDia = {
   priceDate: '2026-10-30',
@@ -144,4 +144,21 @@ test('o resumo do dia sai do /today, do /portfolio e do /income', () => {
   // só o do dia de preço, somado, e os papéis do maior para o menor
   assert.deepEqual(r.proventoDoDia, { valor: 94.6, tickers: ['HGLG11', 'ITUB4'] })
   assert.ok(r.acoesPct! < -1.3 && r.acoesPct! > -1.4)
+})
+
+test('o provento do dia, a mesma conta na home e na /carteira (a aba de baixo do losango)', () => {
+  const income = {
+    months: [
+      { entries: [{ ticker: 'ITUB4', trade_date: '2026-10-30', amount: 12.1 }, { ticker: 'HGLG11', trade_date: '2026-10-30T00:00:00Z', amount: 82.5 }] },
+      { entries: [{ ticker: 'ITUB4', trade_date: '2026-10-29', amount: 9 }, { ticker: 'BBAS3', trade_date: '2026-10-30', amount: 0 }] },
+    ],
+  }
+  // só o dia de preço, somado, os papéis do maior para o menor; valor zero não conta
+  assert.deepEqual(proventoDoDiaDe('2026-10-30', income), { provento: true, proventoDoDia: { valor: 94.6, tickers: ['HGLG11', 'ITUB4'] } })
+  // dia sem provento, sem o dia de preço ou sem o /income: a aba não acende
+  assert.deepEqual(proventoDoDiaDe('2026-10-28', income), { provento: false, proventoDoDia: null })
+  assert.deepEqual(proventoDoDiaDe(null, income), { provento: false, proventoDoDia: null })
+  assert.deepEqual(proventoDoDiaDe('2026-10-30', null), { provento: false, proventoDoDia: null })
+  // o papel que veio sem ticker soma no total, mas não entra na lista
+  assert.deepEqual(proventoDoDiaDe('2026-10-30', { months: [{ entries: [{ trade_date: '2026-10-30', amount: 5 }] }] }), { provento: true, proventoDoDia: { valor: 5, tickers: [] } })
 })

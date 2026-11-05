@@ -352,6 +352,7 @@ function buildAgora(
   today: PortfolioTodayApi | null,
   ibov: SeriesPoint[] | null,
   totalValue: number,
+  income: IncomeApi | null = null,
 ): CarteiraAgoraVM | null {
   if (totalValue <= 0) return null
   const priceDate = today?.price_dates?.today ?? null
@@ -396,6 +397,8 @@ function buildAgora(
     patrimonio: `R$ ${nf2.format(totalValue)}`,
     ativos: `${n} ${n === 1 ? 'ativo' : 'ativos'}`,
     atualizado: relTime(today?.as_of ?? null) || null,
+    // o provento do dia de preço: a mesma conta do topo da home (o losango)
+    ...proventoDoDiaDe(priceDate, income),
   }
 }
 
@@ -889,7 +892,7 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
   return {
     hero: buildHero(rows, today, income, totalValue),
-    agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue),
+    agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
     allocation: buildAllocation(rows),
     chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
     positionsSub,

@@ -146,18 +146,32 @@ export function montarResumoDoDia(e: {
     if (ontem > 0) acoesPct = (amt / ontem) * 100
   }
 
-  // o provento do dia: o total e os papéis que pagaram, do maior para o menor
-  const doDia = priceDate
-    ? (e.income?.months ?? []).flatMap((m) => m.entries).filter((x) => x.trade_date?.slice(0, 10) === priceDate && x.amount > 0)
-    : []
-  const provento = doDia.length > 0
-  const porPapel = new Map<string, number>()
-  for (const x of doDia) if (x.ticker) porPapel.set(x.ticker, (porPapel.get(x.ticker) ?? 0) + x.amount)
-  const proventoDoDia = provento
-    ? { valor: Math.round(doDia.reduce((t, x) => t + x.amount, 0) * 100) / 100, tickers: [...porPapel].sort((a, b) => b[1] - a[1]).map(([t]) => t) }
-    : null
+  const { provento, proventoDoDia } = proventoDoDiaDe(priceDate, e.income)
 
   return { priceDate, asOf: e.today?.as_of ?? null, carteiraPct, diaValor, bolsaPct, alerta, outrasQuedas, maiorPeso, rendaFixa, acoesPct, provento, proventoDoDia }
+}
+
+/**
+ * O provento do dia de preço, do /portfolio/income: o total e os papéis que
+ * pagaram, do maior para o menor. É a aba de baixo do losango, na home
+ * (montarResumoDoDia) e na /carteira (buildAgora do useCarteira): a mesma
+ * conta nas duas telas. Sem o dia de preço ou sem o /income → sem provento
+ * (a aba não acende; nunca inventa).
+ */
+export function proventoDoDiaDe(
+  priceDate: string | null,
+  income: { months: { entries: { ticker?: string; trade_date: string; amount: number }[] }[] } | null,
+): Pick<ResumoDoDia, 'provento' | 'proventoDoDia'> {
+  const doDia = priceDate
+    ? (income?.months ?? []).flatMap((m) => m.entries).filter((x) => x.trade_date?.slice(0, 10) === priceDate && x.amount > 0)
+    : []
+  if (!doDia.length) return { provento: false, proventoDoDia: null }
+  const porPapel = new Map<string, number>()
+  for (const x of doDia) if (x.ticker) porPapel.set(x.ticker, (porPapel.get(x.ticker) ?? 0) + x.amount)
+  return {
+    provento: true,
+    proventoDoDia: { valor: Math.round(doDia.reduce((t, x) => t + x.amount, 0) * 100) / 100, tickers: [...porPapel].sort((a, b) => b[1] - a[1]).map(([t]) => t) },
+  }
 }
 
 /* ————— as palavras ————— */

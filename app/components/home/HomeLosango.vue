@@ -21,6 +21,12 @@
 // movimento (como em "A noite" do /benchmark-ia). Numa aba em segundo plano,
 // num print ou sem JS, os números estão lá.
 // Hover numa série apaga as outras e abre a dica.
+// Na /carteira (05/11/2026; o dono: "trazer nosso novo elemento da logo
+// também na carteira") o mesmo desenho entra no topo creme: `tema="dia"`
+// troca as cores da noite pelas do creme (as mesmas variáveis, redefinidas
+// no próprio losango), `compacto` deixa só o logo, sem texto dentro, para
+// quem escreve os números ao lado, e os links apontam para as seções da
+// própria página (linkDia, linkProvento).
 import { pctComSinal } from '~/utils/diaDaCarteira'
 import { LOGO, PECAS_DO_LOGO, transformDoLogo } from '~/utils/marcaRedentia'
 import { dicaDoDia, escalaDoDia, faladoDoDia, posicaoNaEscala, quemNaFrente } from '~/utils/losangoDoDia'
@@ -35,11 +41,24 @@ const props = withDefaults(defineProps<{
   esmaecido?: boolean
   /** até a assinatura chegar: só o logo apagado, sem número */
   carregando?: boolean
-}>(), { provento: false, proventoSub: null, esmaecido: false, carregando: false })
+  /** 'noite' (a home, sobre o preto) ou 'dia' (o creme da /carteira) */
+  tema?: 'noite' | 'dia'
+  /** só o logo, sem rótulo, escala, miolo nem linha do provento: os números vão ao lado, em HTML */
+  compacto?: boolean
+  /** para onde levam você e a bolsa */
+  linkDia?: string
+  /** para onde leva a aba do provento */
+  linkProvento?: string
+}>(), {
+  provento: false, proventoSub: null, esmaecido: false, carregando: false,
+  tema: 'noite', compacto: false, linkDia: '/carteira', linkProvento: '/carteira#renda-passiva',
+})
 
 const ROSA = 'var(--nu-agora-vermelho)'
 const VERDE = 'var(--nu-agora-verde)'
 const BRANCO = 'var(--nu-agora-texto)'
+// a bolsa: o branco na noite; no creme, o navy da marca (o tema redefine)
+const BOLSA = 'var(--hlo-bolsa, var(--nu-agora-texto))'
 const corVoce = computed(() => (props.voce == null ? BRANCO : props.voce < 0 ? ROSA : VERDE))
 const uid = `hlo${useId()}`
 const acendeu = computed(() => props.provento && !props.carregando)
@@ -72,7 +91,11 @@ const nivel = (v: number | null, chave: 'voce' | 'bolsa', cor: string) => {
   return { chave, v, cor, h, sobe, y, passou: p.passou, yRotulo, xRotulo: chave === 'voce' ? CX - meia - 8 : CX + meia + 8 }
 }
 const nVoce = computed(() => nivel(props.voce, 'voce', corVoce.value))
-const nBolsa = computed(() => nivel(props.bolsa, 'bolsa', BRANCO))
+const nBolsa = computed(() => nivel(props.bolsa, 'bolsa', BOLSA))
+// o quadro do compacto: só o logo (de 82 a 238 e de 16 a 172), com folga para o traço
+const VIEWBOX = computed(() => (props.compacto ? '76 10 168 168' : '0 0 320 206'))
+/** até onde a linha do zero passa da ponta do logo */
+const ALEM = computed(() => (props.compacto ? 4 : 12))
 const lados = computed(() => [
   { chave: 'voce' as const, peca: PECAS_DO_LOGO.esquerda, n: nVoce.value, x0: 0 },
   { chave: 'bolsa' as const, peca: PECAS_DO_LOGO.direita, n: nBolsa.value, x0: C },
@@ -86,7 +109,7 @@ const apagado = (c: 'voce' | 'bolsa' | 'provento') => foco.value != null && foco
 const dica = computed(() => {
   // o provento não tem dica: a linha de baixo já diz quem pagou, e a dica
   // cobriria a aba acesa; no hover, a aba e a linha é que acendem mais
-  if (!foco.value || foco.value === 'provento' || props.carregando) return null
+  if (!foco.value || foco.value === 'provento' || props.carregando || props.compacto) return null
   const texto = dicaDoDia(foco.value, props)
   const n = foco.value === 'voce' ? nVoce.value : nBolsa.value
   if (!texto || !n) return null
@@ -132,9 +155,9 @@ function ir(destino: string, e: MouseEvent) {
 </script>
 
 <template>
-  <figure ref="raiz" class="hlo" :class="{ 'hlo--esmaecido': esmaecido, 'hlo--carregando': carregando }">
+  <figure ref="raiz" class="hlo" :class="{ 'hlo--esmaecido': esmaecido, 'hlo--carregando': carregando, 'hlo--dia': tema === 'dia', 'hlo--compacto': compacto }">
     <figcaption class="hlo__sr">{{ falado }}</figcaption>
-    <svg viewBox="0 0 320 206" class="hlo__svg" aria-hidden="true" @mouseleave="foco = null">
+    <svg :viewBox="VIEWBOX" class="hlo__svg" aria-hidden="true" @mouseleave="foco = null">
       <defs>
         <!-- um id por instância: a página de dev põe várias juntas -->
         <clipPath :id="`${uid}-voce`"><path :d="PECAS_DO_LOGO.esquerda" /></clipPath>
@@ -145,8 +168,8 @@ function ir(destino: string, e: MouseEvent) {
           <stop offset="1" :stop-color="corVoce" stop-opacity=".55" />
         </linearGradient>
         <linearGradient :id="`${uid}-bolsa-luz`" gradientUnits="userSpaceOnUse" :x1="LOGO.lado" y1="0" :x2="C" y2="0">
-          <stop offset="0" :stop-color="BRANCO" />
-          <stop offset="1" :stop-color="BRANCO" stop-opacity=".55" />
+          <stop offset="0" :stop-color="BOLSA" />
+          <stop offset="1" :stop-color="BOLSA" stop-opacity=".55" />
         </linearGradient>
         <!-- a aba do provento: o degradê vertical das abas do logo (claro na
              ponta, mais fundo nas garras), em verde -->
@@ -157,8 +180,8 @@ function ir(destino: string, e: MouseEvent) {
         </linearGradient>
       </defs>
 
-      <!-- você e a bolsa: levam à /carteira -->
-      <a href="/carteira" class="hlo__link" @click="ir('/carteira', $event)">
+      <!-- você e a bolsa: levam à /carteira (na /carteira, às posições) -->
+      <a :href="linkDia" class="hlo__link" @click="ir(linkDia, $event)">
         <g v-for="l in lados" :key="l.chave" class="hlo__grupo" :class="{ 'hlo__grupo--apagado': apagado(l.chave) }" @mouseenter="foco = l.chave">
           <g :transform="TRANSFORM">
             <!-- o trilho: a metade do logo -->
@@ -172,7 +195,7 @@ function ir(destino: string, e: MouseEvent) {
               </g>
             </g>
           </g>
-          <g v-if="l.n" class="hlo__rotulo">
+          <g v-if="l.n && !compacto" class="hlo__rotulo">
             <path
               v-if="l.n.passou"
               :d="l.n.sobe ? `M${fx(l.chave === 'voce' ? 84 : 122) - 4} ${fy(22) - 4} l4 -5 l4 5` : `M${fx(l.chave === 'voce' ? 84 : 122) - 4} ${fy(184) + 4} l4 5 l4 -5`"
@@ -190,7 +213,7 @@ function ir(destino: string, e: MouseEvent) {
         </g>
 
         <!-- o miolo: a diferença em p.p. -->
-        <g v-if="frente && !carregando" class="hlo__dif" :class="{ 'hlo__grupo--apagado': foco === 'provento' }">
+        <g v-if="frente && !carregando && !compacto" class="hlo__dif" :class="{ 'hlo__grupo--apagado': foco === 'provento' }">
           <text :x="CX" :y="CY + 1" text-anchor="middle" class="hlo__pp">{{ frente.numero }}</text>
           <text :x="CX" :y="CY + 14" text-anchor="middle" class="hlo__relacao" :fill="frente.lider === 'empate' ? 'var(--nu-agora-sub)' : corVoce">{{ palavra }}</text>
         </g>
@@ -198,16 +221,16 @@ function ir(destino: string, e: MouseEvent) {
 
       <!-- o zero: a linha do meio, fora do miolo; e as pontas da escala -->
       <g class="hlo__zero">
-        <line :x1="CX - R - 12" :x2="CX - MIOLO - 3" :y1="CY" :y2="CY" stroke="#fff" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
-        <line :x1="CX + MIOLO + 3" :x2="CX + R + 12" :y1="CY" :y2="CY" stroke="#fff" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
+        <line :x1="CX - R - ALEM" :x2="CX - MIOLO - 3" :y1="CY" :y2="CY" stroke="var(--hlo-zero, #fff)" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
+        <line :x1="CX + MIOLO + 3" :x2="CX + R + ALEM" :y1="CY" :y2="CY" stroke="var(--hlo-zero, #fff)" :stroke-opacity="carregando ? 0.2 : 0.55" stroke-width="1.5" stroke-dasharray="3 4" />
       </g>
-      <template v-if="!carregando">
+      <template v-if="!carregando && !compacto">
         <text :x="fx(140)" :y="fy(22.8) + 3" class="hlo__marca">+{{ escala }}%</text>
         <text :x="fx(140)" :y="fy(183.3) + 8" class="hlo__marca">−{{ escala }}%</text>
       </template>
 
       <!-- o provento: a aba de baixo do logo e a linha de baixo; levam à renda passiva -->
-      <a href="/carteira#renda-passiva" class="hlo__link" @click="ir('/carteira#renda-passiva', $event)">
+      <a :href="linkProvento" class="hlo__link" @click="ir(linkProvento, $event)">
         <g class="hlo__grupo" :class="{ 'hlo__grupo--apagado': apagado('provento'), 'hlo__grupo--foco': foco === 'provento' }" @mouseenter="foco = 'provento'">
           <rect x="40" y="184" width="240" height="22" fill="transparent" />
           <g :transform="TRANSFORM">
@@ -229,10 +252,10 @@ function ir(destino: string, e: MouseEvent) {
             v-if="!carregando" :x="CX" :y="fy(188)" text-anchor="middle" dominant-baseline="central"
             class="hlo__cifrao" :class="{ 'hlo__cifrao--aceso': acendeu }" :fill="acendeu ? 'var(--nu-agora-bg)' : VERDE" :fill-opacity="acendeu ? 1 : 0.7"
           >$</text>
-          <text v-if="!carregando" :x="CX" y="201" text-anchor="middle" class="hlo__prov hlo__prov-linha">
+          <text v-if="!carregando && !compacto" :x="CX" y="201" text-anchor="middle" class="hlo__prov hlo__prov-linha">
             <tspan :fill="VERDE" font-weight="800">provento</tspan><tspan v-if="proventoSub" class="hlo__prov-sub" :class="{ 'hlo__prov-sub--aceso': acendeu }" dx="5">· {{ proventoSub }}</tspan>
           </text>
-          <rect v-else x="110" y="191" width="100" height="12" rx="6" :fill="BRANCO" fill-opacity="0.08" />
+          <rect v-else-if="!compacto" x="110" y="191" width="100" height="12" rx="6" :fill="BRANCO" fill-opacity="0.08" />
         </g>
       </a>
     </svg>
@@ -272,6 +295,22 @@ function ir(destino: string, e: MouseEvent) {
 
 .hlo__grupo, .hlo__dif { transition: opacity .15s ease; }
 .hlo__grupo--apagado { opacity: .3; }
+
+/* no creme da /carteira: as mesmas variáveis, com as cores do dia. O fundo
+   (que recorta as abas por cima das metades) é o de quem põe o losango */
+.hlo--dia {
+  --nu-agora-bg: var(--hlo-fundo, var(--nu-cream));
+  --nu-agora-texto: var(--nu-ink);
+  --nu-agora-sub: var(--nu-gray-2);
+  --nu-agora-cartao: var(--nu-white);
+  --nu-agora-linha: var(--nu-cream-line);
+  --nu-agora-verde: var(--nu-green-text);
+  --nu-agora-vermelho: var(--nu-red-text);
+  --nu-agora-azul: var(--nu-blue);
+  --hlo-bolsa: var(--nu-navy);
+  --hlo-zero: var(--nu-ink);
+}
+.hlo--dia .hlo__dica { box-shadow: 0 0 0 1px var(--nu-cream-line), var(--nu-shadow-card); }
 
 /* antes da abertura: o pregão anterior, esmaecido */
 .hlo--esmaecido .hlo__nivel, .hlo--esmaecido .hlo__dif, .hlo--esmaecido .hlo__peca { opacity: .55; }
