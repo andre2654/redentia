@@ -218,6 +218,80 @@ export const SEGURANCA = [
   { id: 'ia', t: 'A IA é a da sua casa.', d: 'A Redentia não treina modelo com o seu dado.' },
 ] as const
 
+/**
+ * AS TRÊS VARIAÇÕES DA SEGURANÇA (?seguranca=1|2|3, só no dev, 05/11/2026). O
+ * dono, olhando os três cartões: "agora aqui acho que precisamos reimaginar".
+ * O título fica ("Seu compliance pergunta. A gente mostra."), e cada variação
+ * mostra de um jeito. Teto: as 61 palavras da seção de hoje (no HTML do
+ * servidor, com os rótulos dos desenhos). O que cada frase afirma, e de onde
+ * vem, está ao lado dela; o que é cena está na lista "a confirmar".
+ *
+ * O cliente das provas é a Mariana Ribeiro Costa (Nubank), a única do elenco
+ * que já existia antes da leva das calls: a conexão dela é de 07/10/2026, e o
+ * consentimento vale 12 meses (config/business_clients.php, consent_months),
+ * até 07/10/2027. É a mesma Mariana da pauta de sexta nos passos.
+ */
+export const SEGURANCA_CLIENTE = { nome: 'Mariana Ribeiro Costa', banco: 'Nubank', desde: '07/10/2026', ate: '07/10/2027' } as const
+
+/** 1 · A pergunta do compliance: o título literal, um dossiê aberto. */
+export interface PerguntaDoCompliance { id: 'dinheiro' | 'autoriza' | 'revoga' | 'ia'; q: string; r: string }
+export const SEGURANCA_PERGUNTAS: PerguntaDoCompliance[] = [
+  // PluggyService só tem leitura (listInvestments, listAccounts, list*Transactions); o MCP não tem ferramenta que mexa em patrimônio (FAQ)
+  { id: 'dinheiro', q: 'Vocês movimentam dinheiro?', r: 'Não. Só lê.' },
+  // business_client_consents: granted_at, versão e hash do termo, navegador (FAQ "Onde os dados...")
+  { id: 'autoriza', q: 'Quem autoriza o acesso?', r: 'O cliente, com o aceite registrado.' },
+  // ClientConsentService::revoke apaga conexões e posições; o cliente revoga pelo link de gestão
+  { id: 'revoga', q: 'O cliente pode tirar?', r: 'Quando quiser, e as posições são apagadas.' },
+  // FAQ "Algum modelo de IA treina...": a Redentia não treina nem põe modelo próprio no caminho
+  { id: 'ia', q: 'Vocês treinam IA com o dado?', r: 'Não. A IA é a da sua casa.' },
+]
+/** o que a prova da pergunta 1 mostra: só a primeira acende */
+export const SEGURANCA_PERMISSOES = ['Ler', 'Comprar', 'Vender', 'Transferir'] as const
+export const SEGURANCA_IAS = ['Claude', 'ChatGPT'] as const
+
+/** 2 · A lente: uma peça só, desenhada. Os rótulos do desenho e as três frases da legenda. */
+export const SEGURANCA_LENTE = {
+  banco: 'Banco do cliente',
+  lente: 'Redentia',
+  bloqueadas: ['Comprar', 'Vender', 'Transferir'],
+  ia: 'IA da sua casa',
+  legenda: [
+    { id: 'le', t: 'Só lê. Nada compra, vende ou transfere.' },
+    { id: 'giro', t: 'O cliente desliga quando quiser.' },
+    { id: 'ia', t: 'A leitura vai para a IA da sua casa. A Redentia não treina modelo.' },
+  ],
+} as const
+
+/**
+ * 3 · O registro: as linhas são eventos que o produto grava
+ * (business_client_access_log), com o rótulo que o painel e o link de gestão
+ * do cliente mostram (app/utils/clientes.ts, ACTION_LABEL). O teste confere
+ * que cada `acao` existe lá e que o texto é o rótulo, com o banco no fim
+ * quando é a conexão. Os nomes, as datas e as horas são do elenco (cena).
+ * A última linha não é um evento: é a validade do consentimento (o `until` do
+ * link de gestão), por isso vem tracejada.
+ */
+export interface LinhaDoRegistro { quando: string; quem: string; acao: string; texto: string; futura?: boolean }
+export const SEGURANCA_REGISTRO: { titulo: string; linhas: LinhaDoRegistro[]; frases: { id: string; t: string; linhas: number[] }[] } = {
+  titulo: 'Registro de acesso',
+  linhas: [
+    { quando: '07/10/2026 14:02', quem: 'Mariana', acao: 'consent_granted', texto: 'Consentimento dado' },
+    { quando: '07/10/2026 14:03', quem: 'Mariana', acao: 'connection_added', texto: 'Conexão criada: Nubank' },
+    // o convite pendente do elenco (vale 7 dias): aberto, sem aceite, nada é lido
+    { quando: '03/11/2026 16:20', quem: 'Fernando', acao: 'invite_opened', texto: 'Convite aberto' },
+    // a leitura da véspera da pauta de sexta (a fila diz "Pauta pronta" às 8h02 de quinta)
+    { quando: '05/11/2026 07:58', quem: 'Mariana', acao: 'portfolio_read', texto: 'Carteira consultada' },
+    { quando: '07/10/2027', quem: 'Mariana', acao: 'expired', texto: 'Consentimento vence', futura: true },
+  ],
+  // cada frase acende as linhas que a provam
+  frases: [
+    { id: 'leitura', t: 'Cada leitura fica no registro.', linhas: [3] },
+    // showAccess (BusinessClientPublicController): o link de gestão mostra as 20 últimas linhas e tem o Revogar
+    { id: 'cliente', t: 'O cliente vê o mesmo registro e revoga por ele.', linhas: [0, 1, 4] },
+    { id: 'nenhuma', t: 'Nenhuma linha compra, vende ou transfere.', linhas: [0, 1, 2, 3, 4] },
+  ],
+}
+
 /** O preço por pessoa, em faixas progressivas (contrato de 13/10/2026; o mesmo do RbProva de antes). */
 export const FAIXAS = [
   { de: 1, ate: 10, preco: 500, rotulo: '1ª a 10ª' },
@@ -257,4 +331,20 @@ export function precoDaMesa(n: number): { total: number; linhas: { rotulo: strin
  * OS PASSOS SÃO A CÂMERA DENTRO DO PRODUTO (BizPassosCamera; o dono escolheu a variação 1 das três do dev em 05/11/2026):
  *  - Desenha uma tela que não existe, a "Mesa" do Redentia For Business (a fila na lateral e as quatro áreas, com Editar e Aprovar). Afirma tudo o que a fila já afirma e mais: que há um app próprio com essa tela. O produto de hoje é o MCP no assistente de IA.
  *  - Os números são os da fila (R$ 4,97 mi em 4 clientes, 6 de 7, sexta às 10h, a pergunta do Lucas), e nada diz "demonstração".
+ *
+ * AS TRÊS VARIAÇÕES DA SEGURANÇA (?seguranca=1|2|3, só no dev, 05/11/2026). CONFERIDO (lastro no código ou no FAQ):
+ *  - Só lê: o PluggyService só tem leitura (listInvestments, listAccounts, listInvestmentTransactions, listAccountTransactions, getItem) e o connect token; o termo grava o escopo de leitura (config business_clients.scope: posições, saldo, movimentações); o MCP não tem ferramenta que compre, venda ou transfira (FAQ).
+ *  - O aceite fica registrado: business_client_consents (granted_at, expires_at, terms_version, terms_sha256, user_agent; o IP só com a origem provada).
+ *  - 12 meses: consent_months = 12; o business:clientes-expirar (diário) encerra o vencido e apaga as posições. 07/10/2026 → 07/10/2027 é a Mariana.
+ *  - Revogar apaga as posições: ClientConsentService::revoke (conexões e posições; a prova do aceite e o registro ficam, FAQ "O que acontece... se eu cancelar?").
+ *  - O registro: business_client_access_log é append-only, sem posição nem valor; grava consent_granted, connection_added, invite_opened, portfolio_read, expired, revoked, purged etc. O cliente vê as 20 últimas linhas no link de gestão (BusinessClientPublicController::showAccess), com o botão de revogar; o rótulo de cada evento é o de utils/clientes.ts.
+ *  - Não treina modelo: a afirmação é do FAQ ("A Redentia não treina modelo nenhum com o dado dos seus clientes, e não coloca modelo próprio no caminho"), conferida na revisão de 11/10 (o dado vai para o modelo da conta da casa). NÃO HÁ LASTRO ESCRITO FORA DO FAQ: não achei política, termo ou contrato que diga isso; se o dono quiser a frase na página, vale pôr no termo ou no contrato.
+ * A CONFIRMAR:
+ *  - Os nomes, as datas e as horas das provas e do registro são do elenco (cena): a Mariana não deu o aceite às 14h02 de 07/10, o Fernando não abriu o convite às 16h20 de 03/11, e a leitura das 7h58 de 05/11 é a véspera da pauta, que hoje não roda sozinha (o assessor pede).
+ *  - "O cliente vê o mesmo registro" (3): é verdade para o registro do cliente dele (o link de gestão mostra as 20 últimas linhas). As linhas do Fernando e da Mariana juntas são a visão do escritório (o painel), não a de um cliente só.
+ *  - A linha "Consentimento vence" (3) não é um evento gravado: é a validade (o `until` do link de gestão). O evento `expired` só nasce no dia, se ele não renovar.
+ *  - A revogação ficou sem linha (3): os clientes do elenco estão todos conectados na fila e nos passos; "Lucas revogou o Itaú" desmentiria o atendimento dele de 05/11. Se o dono quiser a linha, falta um cliente revogado no elenco.
+ *  - A lente (2) desenha o banco como um cofre que a Redentia "olha pelo vidro". É metáfora: o dado chega pelo Open Finance, pela Pluggy (o FAQ diz isso), e a chave que gira na tela é um desenho do Revogar do link de gestão, não um controle do produto.
+ *  - "Claude" e "ChatGPT" (1) seguem como hoje; "Onde o dado fica?" ficou só no FAQ, porque a região de hospedagem entra no contrato e a resposta curta mentiria por omissão.
+ *  - Palavras da seção no HTML do servidor: 60 (1), 46 (2) e 56 (3); hoje são 61.
  */

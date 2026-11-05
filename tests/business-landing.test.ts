@@ -8,8 +8,10 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import {
   ATENDIMENTO, CARTEIRAS, CLIENTES_FORA, FILA, HERO, LOGOS_CLIENTES, NAV_BIZ_NOVA, PASSOS, PAUTA, PARA_QUEM, SEGURANCA,
+  SEGURANCA_CLIENTE, SEGURANCA_IAS, SEGURANCA_LENTE, SEGURANCA_PERGUNTAS, SEGURANCA_PERMISSOES, SEGURANCA_REGISTRO,
   precoDaMesa, reaisCurtos, totalFora,
 } from '../app/content/business/landing.ts'
+import { clientActionLabel } from '../app/utils/clientes.ts'
 
 const ler = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8')
 
@@ -121,4 +123,53 @@ test('os passos são a câmera dentro do produto, sem switch do dev, e as outras
   assert.doesNotMatch(src, /\binfinite\b/)
   assert.match(src, /@media \(scripting: enabled\) and \(prefers-reduced-motion: no-preference\)/)
   assert.match(ler('app/composables/usePassosTravados.ts'), /addEventListener\('bzj:ir'/)
+})
+
+test('as três variações da segurança (?seguranca=1|2|3) só existem no dev, e sem o parâmetro ficam os cartões', () => {
+  const landing = ler('app/components/business/nova/BizLanding.vue')
+  assert.match(landing, /const variacaoDaSeguranca = computed\(\(\) => \{\n  if \(!import\.meta\.dev\) return ''/)
+  assert.match(landing, /route\.query\.seguranca/)
+  assert.match(landing, /<LazyBizSegurancaPerguntas v-if="variacaoDaSeguranca === '1'" \/>/)
+  assert.match(landing, /<LazyBizSegurancaLente v-else-if="variacaoDaSeguranca === '2'" \/>/)
+  assert.match(landing, /<LazyBizSegurancaRegistro v-else-if="variacaoDaSeguranca === '3'" \/>/)
+  assert.match(landing, /<ol v-else class="bzs__cards">/)
+  for (const f of ['BizSegurancaPerguntas', 'BizSegurancaLente', 'BizSegurancaRegistro']) {
+    const src = ler(`app/components/business/nova/${f}.vue`)
+    // nada em loop, e o reduzir movimento tem a regra dele
+    assert.doesNotMatch(src, /\binfinite\b|setInterval/, f)
+    assert.match(src, /prefers-reduced-motion: reduce/, f)
+  }
+})
+
+test('o registro da variação 3 só mostra eventos que o produto grava, com o rótulo do produto', () => {
+  const eventos = R_LINHAS()
+  for (const l of eventos.filter((x) => !x.futura)) {
+    const rotulo = clientActionLabel(l.acao)
+    assert.notEqual(rotulo, l.acao, `${l.acao}: evento que o produto grava`)
+    assert.ok(l.texto === rotulo || l.texto.startsWith(`${rotulo}: `), `${l.acao}: o texto é o rótulo do produto`)
+  }
+  // a linha futura é a validade do consentimento: 12 meses depois do aceite
+  const fut = eventos.filter((x) => x.futura)
+  assert.equal(fut.length, 1)
+  assert.equal(fut[0]!.quando, SEGURANCA_CLIENTE.ate)
+  assert.ok(eventos[0]!.quando.startsWith(SEGURANCA_CLIENTE.desde))
+  const [d, m, a] = SEGURANCA_CLIENTE.desde.split('/').map(Number)
+  assert.equal(SEGURANCA_CLIENTE.ate, `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${a! + 1}`)
+  // a conexão é a do elenco (Mariana no Nubank), e cada frase aponta para linhas que existem
+  assert.match(eventos[1]!.texto, new RegExp(SEGURANCA_CLIENTE.banco))
+  assert.ok(CLIENTES_FORA.some((c) => c.nome === SEGURANCA_CLIENTE.nome && c.banco === SEGURANCA_CLIENTE.banco))
+  for (const f of SEGURANCA_REGISTRO.frases) for (const i of f.linhas) assert.ok(eventos[i], `${f.id}: linha ${i}`)
+  // ninguém do elenco que está na fila ou nos passos aparece revogando
+  assert.ok(!eventos.some((l) => /revoked|purged/.test(l.acao)))
+})
+function R_LINHAS() { return SEGURANCA_REGISTRO.linhas }
+
+test('a copy da segurança nova não tem termo técnico, não diz demonstração e não diz "sem comissão"', () => {
+  const tudo = JSON.stringify({ SEGURANCA_PERGUNTAS, SEGURANCA_PERMISSOES, SEGURANCA_IAS, SEGURANCA_LENTE, SEGURANCA_REGISTRO, SEGURANCA_CLIENTE })
+  assert.doesNotMatch(tudo, /demonstra|\bteste\b|exemplo|fictíci|simulad|sem comiss/i)
+  assert.doesNotMatch(tudo, /\btoken\b|\bAPI\b|\bMCP\b|OAuth|escopo|servidor|ferramenta|\bskill|\bchave\b|\bhash\b/i)
+  for (const f of ['BizSegurancaPerguntas', 'BizSegurancaLente', 'BizSegurancaRegistro']) {
+    const tpl = ler(`app/components/business/nova/${f}.vue`).split('<template>')[1]!.split('</template>\n\n<style')[0]!.replace(/<!--[\s\S]*?-->/g, '')
+    assert.doesNotMatch(tpl, /\btoken\b|\bAPI\b|\bMCP\b|OAuth|escopo|servidor|ferramenta|\bchave\b/i, f)
+  }
 })

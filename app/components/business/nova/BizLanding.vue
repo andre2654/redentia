@@ -33,6 +33,18 @@ const destinoCadastro = useDestinoCadastroBusiness()
    dinheiro e a conversa na IA saíram; estão no commit 75d9dd60. */
 const route = useRoute()
 
+/* ——— as três variações da segurança (05/11/2026), SÓ NO DEV ———
+   O dono, olhando os três cartões: "agora aqui acho que precisamos reimaginar".
+   `?seguranca=1|2|3` troca os cartões por uma das três; sem o parâmetro, e em
+   produção (import.meta.dev é false), ficam os cartões de hoje. As três são
+   Lazy: não entram no pacote da página de produção. O cabeçalho é o mesmo.
+   1 · a pergunta do compliance · 2 · a lente · 3 · o registro */
+const variacaoDaSeguranca = computed(() => {
+  if (!import.meta.dev) return ''
+  const v = String(route.query.seguranca ?? '')
+  return v === '1' || v === '2' || v === '3' ? v : ''
+})
+
 /* ——— a calculadora do plano (a mesma conta de RbProva) ——— */
 const MIN = 1
 const MAX = 100
@@ -110,7 +122,10 @@ const semPonto = (t: string) => t.replace(/\.$/, '')
         <p class="bzl-olho">Segurança</p>
         <h2 id="bzs-titulo" class="bzl-h2">Seu compliance pergunta<span class="bzl-p">.</span> <br class="bzl-br">A gente mostra<span class="bzl-p">.</span></h2>
       </header>
-      <ol class="bzs__cards">
+      <LazyBizSegurancaPerguntas v-if="variacaoDaSeguranca === '1'" />
+      <LazyBizSegurancaLente v-else-if="variacaoDaSeguranca === '2'" />
+      <LazyBizSegurancaRegistro v-else-if="variacaoDaSeguranca === '3'" />
+      <ol v-else class="bzs__cards">
         <li v-for="(c, i) in SEGURANCA" :key="c.id" class="bzs__card">
           <div class="bzs__visual" aria-hidden="true">
             <div v-if="c.id === 'le'" class="bzs__acoes">
