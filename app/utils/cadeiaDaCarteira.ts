@@ -105,8 +105,6 @@ export interface CadeiaDaCarteira {
   frase: string
   /** nome por raiz (as suas e as de fora), para as frases */
   nomes: Record<string, string>
-  /** por raiz das suas: quantas empresas de fora ligadas a ela ficaram sem aparecer */
-  maisFora: Record<string, number>
   /** nenhuma ligação: a seção some */
   vazia: boolean
 }
@@ -342,12 +340,6 @@ export function cadeiaDaCarteira(posicoes: PosicaoDaCadeia[], respostas: Record<
   }
   const externas = escolhidas.sort(compararExternas)
 
-  const maisFora: Record<string, number> = {}
-  for (const x of listaFora) {
-    if (externas.includes(x)) continue
-    for (const r of x.empresas) maisFora[r] = (maisFora[r] ?? 0) + 1
-  }
-
   const vazia = internas.length === 0 && externas.length === 0
   return {
     empresas,
@@ -357,7 +349,6 @@ export function cadeiaDaCarteira(posicoes: PosicaoDaCadeia[], respostas: Record<
     temCompartilhada: compartilhadas.length > 0,
     frase: vazia ? '' : fraseDaCadeia(internas, externas, nomes),
     nomes,
-    maisFora,
     vazia,
   }
 }
@@ -485,24 +476,4 @@ export function contextoDaCadeiaDaCarteira(c: CadeiaDaCarteira): string {
     ...c.externas.flatMap((x) => x.ligacoes.map(linha)),
     semLigacao.length ? `Sem ligação com listadas: ${semLigacao.join(', ')}.` : '',
   ].filter(Boolean).join('\n')
-}
-
-
-const FONTE: Record<string, string> = {
-  cvm_partes_relacionadas: 'Formulário de Referência (CVM)',
-  fre: 'Formulário de Referência (CVM)',
-  edgar_10k: 'relatórios anuais na SEC',
-  nota_explicativa: 'demonstrações financeiras',
-  ri: 'documentos de RI',
-  release: 'releases de resultado',
-  contrato: 'comunicados das empresas',
-  noticia: 'notícias',
-}
-
-/** De onde vêm as ligações que a seção mostra: 'comunicados das empresas, Formulário de Referência (CVM) e relatórios anuais na SEC'. */
-export function fontesDaCadeiaDaCarteira(c: CadeiaDaCarteira): string {
-  const ligs = [...c.internas, ...c.externas.flatMap((x) => x.ligacoes)]
-  const tipos = [...new Set(ligs.flatMap((l) => (l.link.tipos_fonte ?? []).map((t) => FONTE[t]).filter((x): x is string => !!x)))]
-  if (tipos.length <= 1) return tipos[0] ?? ''
-  return `${tipos.slice(0, -1).join(', ')} e ${tipos[tipos.length - 1]}`
 }

@@ -4,7 +4,7 @@
 // as de fora, em volta, apagadas, perto das suas. Cada seta vai de quem vende
 // para quem compra; a ligação entre duas suas é a azul, mais grossa, com o que
 // circula escrito em cima. Passar o mouse numa logo ou numa seta acende as
-// ligações dela e escreve a ligação no cartão de baixo; clicar abre as provas.
+// ligações dela; clicar abre as provas.
 // Entra desenhando as setas uma vez (a luz percorre a azul); sem JS ou com
 // Reduzir Movimento, já está desenhada.
 import type { CadeiaDaCarteira, EmpresaDaCarteiraCadeia, LigacaoDaCadeia } from '~/utils/cadeiaDaCarteira'

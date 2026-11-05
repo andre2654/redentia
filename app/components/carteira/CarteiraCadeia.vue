@@ -26,7 +26,7 @@
 import AcaoCadeiaDetalhe from '~/components/acao/AcaoCadeiaDetalhe.vue'
 import type { AcaoCadeiaDetalheVM } from '~/types/acao'
 import type { CarteiraPosicaoMundo } from '~/types/carteira'
-import { contextoDaCadeiaDaCarteira, detalheDaLigacao, fontesDaCadeiaDaCarteira, fraseDaCarteira, valorEmLinha, type LigacaoDaCadeia } from '~/utils/cadeiaDaCarteira'
+import { contextoDaCadeiaDaCarteira, detalheDaLigacao } from '~/utils/cadeiaDaCarteira'
 
 const props = defineProps<{ posicoes: CarteiraPosicaoMundo[] }>()
 const emit = defineEmits<{ ligacoes: [tem: boolean] }>()
@@ -49,7 +49,6 @@ watch(() => vm.value.vazia, (v) => { if (!pendente.value) emit('ligacoes', !v) }
 
 /* ————— quem aparece ————— */
 
-const minhas = computed(() => vm.value.empresas.map((e) => e.raiz))
 /** as suas que têm alguma ligação na tela (as outras vão para o pé, quietas) */
 const ligadas = computed(() => vm.value.empresas.filter((e) =>
   vm.value.internas.some((l) => l.vende === e.raiz || l.compra === e.raiz)
@@ -61,17 +60,11 @@ const tickerDe = computed<Record<string, string>>(() => ({
 }))
 const todas = computed(() => [...vm.value.internas, ...vm.value.externas.flatMap((x) => x.ligacoes)])
 const porId = computed(() => new Map(todas.value.map((l) => [l.id, l])))
-const maisFora = computed(() => Object.entries(vm.value.maisFora)
-  .map(([raiz, n]) => ({ raiz, n, ticker: tickerDe.value[raiz] ?? raiz, nome: vm.value.nomes[raiz] ?? raiz }))
-  .sort((a, b) => b.n - a.n))
-const fontes = computed(() => fontesDaCadeiaDaCarteira(vm.value))
 
 /* ————— a ligação em foco (rede e matriz) e o painel das provas ————— */
 
 const focoMouse = ref<string | null>(null)
 const focoId = computed(() => (focoMouse.value && porId.value.has(focoMouse.value) ? focoMouse.value : todas.value[0]?.id ?? null))
-const foco = computed<LigacaoDaCadeia | null>(() => (focoId.value ? porId.value.get(focoId.value) ?? null : null))
-const focoInterna = computed(() => !!foco.value && minhas.value.includes(foco.value.vende) && minhas.value.includes(foco.value.compra))
 
 const aberto = ref<AcaoCadeiaDetalheVM | null>(null)
 function abrir(id: string) {
@@ -160,25 +153,6 @@ const contexto = computed(() => ({
           @abrir="abrir"
         />
 
-        <!-- a ligação em foco (rede e matriz): o que circula, o valor, quem informou -->
-        <div v-if="variacao !== 3 && foco" class="cca__foco" aria-live="polite">
-          <div class="cca__foco-par" aria-hidden="true">
-            <NuAssetLogo :ticker="tickerDe[foco.vende] ?? foco.vende" :letter="(tickerDe[foco.vende] ?? foco.vende).charAt(0)" tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)" :size="34" :radius="9" />
-            <svg class="cca__foco-seta" width="44" height="12" viewBox="0 0 44 12"><path d="M1 6h40M36 1.5 41 6l-5 4.5" /></svg>
-            <NuAssetLogo :ticker="tickerDe[foco.compra] ?? foco.compra" :letter="(tickerDe[foco.compra] ?? foco.compra).charAt(0)" tile-bg="var(--nu-tile-blue-bg)" tile-fg="var(--nu-blue-deep)" :size="34" :radius="9" />
-          </div>
-          <div class="cca__foco-txt">
-            <p class="cca__foco-frase">
-              {{ fraseDaCarteira(foco, vm.nomes, minhas) }}
-              <span v-if="focoInterna" class="cca__foco-duas">Você tem as duas.</span>
-            </p>
-            <p class="cca__foco-valor">
-              {{ valorEmLinha(foco, vm.nomes) }}
-              · <button type="button" class="cca__provas" @click="abrir(foco.id)">ver as provas</button>
-            </p>
-          </div>
-        </div>
-
         <div class="cca__pe">
           <div v-if="quietas.length" class="cca__quietas">
             <span class="cca__pe-rot">Sem ligação verificada com outras listadas</span>
@@ -189,11 +163,6 @@ const contexto = computed(() => ({
               </NuxtLink>
             </span>
           </div>
-          <p v-for="m in maisFora" :key="m.raiz" class="cca__mais">
-            A {{ m.nome }} se liga a mais {{ m.n }} {{ m.n === 1 ? 'empresa listada' : 'empresas listadas' }} fora da sua carteira.
-            <NuxtLink :to="`/asset/${m.ticker}`" class="cca__provas">Ver a cadeia da {{ m.nome }} ›</NuxtLink>
-          </p>
-          <p v-if="fontes" class="cca__fontes">Fontes: {{ fontes }}. Valores como a empresa informou, na moeda dela; contratos somam a vigência inteira.</p>
         </div>
       </template>
     </div>
@@ -237,21 +206,6 @@ const contexto = computed(() => ({
 .cca__esq-linha { display: flex; align-items: center; gap: 22px; padding: 22px 0; border-top: 1px solid var(--nu-cream-2); }
 .cca__esq-linha:first-child { border-top: none; }
 
-/* a ligação em foco: o único plano que flutua */
-.cca__foco {
-  display: flex; align-items: center; gap: 18px; max-width: 760px; margin: clamp(18px, 2.4vw, 28px) auto 0;
-  padding: 16px 20px; border-radius: var(--nu-r-card, 24px); background: var(--nu-white);
-  box-shadow: 0 0 0 1px var(--nu-navy-06), var(--nu-shadow-card);
-  /* a altura de duas linhas de frase: trocar a ligação no hover não empurra o pé */
-  min-height: 112px;
-  animation: nu-fade .25s ease both;
-}
-.cca__foco-par { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.cca__foco-seta { fill: none; stroke: var(--nu-blue); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.cca__foco-txt { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.cca__foco-frase { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; letter-spacing: -0.01em; line-height: 1.35; }
-.cca__foco-duas { color: var(--nu-blue-text); font-weight: 800; }
-.cca__foco-valor { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .cca__provas { padding: 0; border: 0; background: none; font: inherit; color: var(--nu-blue-text); font-weight: 700; cursor: pointer; }
 .cca__provas:hover { color: var(--nu-blue-hover); }
 .cca__provas:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
@@ -267,18 +221,13 @@ const contexto = computed(() => ({
   transition: background .18s, transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 .cca__chip:hover { background: var(--nu-cream-hover); transform: translateY(-1px); color: var(--nu-ink); }
-.cca__mais { margin: 0; color: var(--nu-gray-2, var(--nu-gray)); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.cca__fontes { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.55; }
 
 @media (max-width: 600px) {
-  .cca__foco { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; }
-  .cca__foco-frase { font-size: var(--nu-fs-md); }
   .cca__esq--v1 { aspect-ratio: 1 / 1.1; }
   .cca__esq--v2 { aspect-ratio: 1 / 1; }
   .cca__esq-linha { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cca__frase--revelando .cca__palavra { animation: none; }
-  .cca__foco { animation: none; }
 }
 </style>

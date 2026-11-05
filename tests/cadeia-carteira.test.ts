@@ -11,7 +11,6 @@ import {
   contextoDaCadeiaDaCarteira,
   detalheDaLigacao,
   fraseDaCarteira,
-  fontesDaCadeiaDaCarteira,
   raizDaEmpresa,
   tickersDaCadeia,
   valorDaCadeia,
@@ -191,13 +190,4 @@ test('a frase pelo lado da carteira e o que ficou de fora', () => {
   assert.equal(fraseDaCarteira(c.internas[0]!, c.nomes, minhas), 'A Vale compra diesel, diesel renovável da Petrobras.')
   const axia = c.externas.find((x) => x.raiz === 'AXIA')!
   assert.equal(fraseDaCarteira(axia.ligacoes[0]!, c.nomes, minhas), 'A WEG vende aerogeradores e manutenção para a Axia Energia.')
-  // a Petrobras se liga a mais 4 de fora (Vibra, Ultrapar, Gerdau, Suzano) que a seção não mostra
-  assert.deepEqual(c.maisFora, { PETR: 4 })
-})
-
-test('as fontes do pé', () => {
-  const c = cadeiaDaCarteira(DONO, REAL)
-  const f = fontesDaCadeiaDaCarteira(c)
-  assert.match(f, /comunicados das empresas/)
-  assert.match(f, / e /)
 })
