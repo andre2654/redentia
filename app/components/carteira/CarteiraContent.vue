@@ -6,8 +6,10 @@
 // REDESENHO DE 31/10/2026 (plano único + o conceito do Agora dos apps): a
 // pessoa não precisa saber de tudo nem se preocupar. A ordem da tela responde
 // uma pergunta por vez:
-//  1. CarteiraAgora      "está tudo bem?" — uma frase, o dia escondido na pílula
-//     CarteiraAchados    "o que a Redentia encontrou?" — o agente diz o que viu (05/11)
+//  1. CarteiraAgora      "está tudo bem?" — o topo escuro do /asset ("a carteira
+//                        no bolso", 05/11): a frase, o patrimônio, o losango e a curva
+//     CarteiraAchados    "o que a Redentia encontrou?" — a barra do "em resumo"
+//                        do /asset, colada no topo (05/11)
 //  2. CarteiraFuturo     "e daqui a 5 anos?" — o leque de 2.000 cenários (o
 //                        único momento assinatura da tela, na banda navy)
 //  3. CarteiraPosicoes   o total, a barra por classe e os grupos (papéis sob pedido)
@@ -63,7 +65,7 @@ onMounted(() => {
   <!-- CLARITY (11/10/2026): toda seção com dado da pessoa leva
        data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
   <div v-if="conectada">
-    <CarteiraAgora id="hoje" :agora="agora" @connected="emit('connected')" />
+    <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" @connected="emit('connected')" />
     <CarteiraAchados
       v-if="temAchados"
       id="achados"

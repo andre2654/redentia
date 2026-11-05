@@ -44,7 +44,13 @@ const props = withDefaults(defineProps<{
   semMarcas?: boolean
   /** 'PETR4 em 12 meses', para o leitor de tela */
   rotulo?: string
-}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '' })
+  /**
+   * os valores em R$ escondidos (o olho do topo da /carteira, 05/11/2026): as
+   * marcas ficam só no fio, e a dica, a medida e a leitura que sobe mostram a
+   * máscara no lugar do R$; a variação em % continua (ela nunca se esconde)
+   */
+  mascarado?: boolean
+}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '', mascarado: false })
 
 const W = 1000
 const H = 300
@@ -56,6 +62,8 @@ const moeda = computed(() => (props.atual.trim().startsWith('US$') ? 'US$' : 'R$
 const fmtMarca = (v: number) => `${moeda.value} ${Math.abs(v) >= 100 || Number.isInteger(v) ? nf0.format(v) : nf2.format(v)}`
 const fmtPreco = (v: number) => `${moeda.value} ${nf2.format(v)}`
 const fmtDelta = (v: number) => `${v > 0 ? '+' : v < 0 ? '-' : ''}${moeda.value} ${nf2.format(Math.abs(v))}`
+const MASCARA = 'R$ ••••'
+const valor = (v: number) => (props.mascarado ? MASCARA : fmtPreco(v))
 const fimPct = computed(() => (c.value.fim ? { x: (c.value.fim.x / W) * 100, y: (c.value.fim.y / H) * 100 } : null))
 const uid = useId()
 
@@ -127,7 +135,7 @@ const leitura = computed(() => {
   const ib = ibovEm(q.p.t)
   return {
     ...q,
-    data: dataDoPonto(q.p.t), preco: fmtPreco(q.p.v), var: pctAtivo(v), dir: v < 0 ? 'down' : 'up',
+    data: dataDoPonto(q.p.t), preco: valor(q.p.v), var: pctAtivo(v), dir: v < 0 ? 'down' : 'up',
     ibov: ib0 && ib != null ? pctAtivo(pct(ib0, ib)) : null,
   }
 })
@@ -144,7 +152,7 @@ const medicao = computed(() => {
   return {
     ini, fim,
     de: dataDoPonto(ini.p.t), ate: dataDoPonto(fim.p.t),
-    delta: fmtDelta(d), var: pctAtivo(v), dir: v < 0 ? 'down' : 'up',
+    delta: props.mascarado ? MASCARA : fmtDelta(d), var: pctAtivo(v), dir: v < 0 ? 'down' : 'up',
     ibov: ib0 && ib1 != null ? pctAtivo(pct(ib0, ib1)) : null,
     centro: (ini.x + fim.x) / 2,
   }
@@ -156,7 +164,7 @@ const medicao = computed(() => {
  */
 const emit = defineEmits<{ leitura: [LeituraDoGrafico | null] }>()
 watch([leitura, medicao], ([l, m]) => {
-  if (m) emit('leitura', { preco: fmtPreco(m.fim.p.v), data: m.ate, var: m.var, dir: m.dir as 'up' | 'down', delta: m.delta, de: m.de, medida: true })
+  if (m) emit('leitura', { preco: valor(m.fim.p.v), data: m.ate, var: m.var, dir: m.dir as 'up' | 'down', delta: m.delta, de: m.de, medida: true })
   else if (l) emit('leitura', { preco: l.preco, data: l.data, var: l.var, dir: l.dir as 'up' | 'down', medida: false })
   else emit('leitura', null)
 })
@@ -321,7 +329,7 @@ function aoTeclar(e: KeyboardEvent) {
     @pointerdown="aoApertar" @pointermove="aoMover" @pointerup="aoSoltar" @pointercancel="aoCancelar" @pointerleave="aoSair"
     @focus="aoFocar" @blur="limpar" @keydown="aoTeclar"
   >
-    <span v-for="m in marcas" :key="m.v" class="agr__marca" :style="{ top: `${m.top}%` }" aria-hidden="true"><span class="agr__marca-t">{{ fmtMarca(m.v) }}</span></span>
+    <span v-for="m in marcas" :key="m.v" class="agr__marca" :style="{ top: `${m.top}%` }" aria-hidden="true"><span v-if="!mascarado" class="agr__marca-t">{{ fmtMarca(m.v) }}</span></span>
     <div ref="plot" class="agr__plot">
     <svg class="agr__svg" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
       <defs>

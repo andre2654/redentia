@@ -16,6 +16,8 @@ import {
   resumoDosAchados,
   temOrdem,
   trocarIsin,
+  achadosHtml,
+  tituloDosAchados,
   PEDIDO_DE_ANALISE_NOVA,
   type EntradaDosAchados,
 } from '../app/utils/achadosDaCarteira.ts'
@@ -203,4 +205,38 @@ test('o ponto decimal não corta a frase ao tirar a ordem', () => {
 
 test('cada item tem uma pergunta pronta para o chat', () => {
   for (const a of montarAchados(entrada()).itens) assert.ok(a.pergunta.length > 20, a.id)
+})
+
+test('a barra: o título conta os achados e diz a análise desatualizada', () => {
+  const vm = montarAchados(entrada())
+  assert.deepEqual(tituloDosAchados({ ...vm, analise: { ...vm.analise!, desatualizada: true } }),
+    { titulo: `A Redentia olhou a sua carteira: ${resumoDosAchados(vm)}`, idade: 'análise de 22/05, desatualizada' })
+  assert.deepEqual(tituloDosAchados({ pontos: 0, ideias: 0, vazio: true, analise: null }), { titulo: 'A Redentia olhou a sua carteira: nada pede atenção', idade: null })
+})
+
+test('a barra aberta: um grupo por tipo, tudo escapado, o R$ mascarado e sem ordem', () => {
+  const vm = montarAchados(entrada())
+  const html = achadosHtml(vm, { aviso: 'Os números são de hoje.', mascarar: (t) => t.replace(/R\$\s?[\d.,]+/g, 'R$ ••••') })
+  const grupos = [...html.matchAll(/<p class="cah__grupo">([^<]+)<\/p>/g)].map((x) => x[1])
+  assert.deepEqual(grupos, ['Pede atenção', 'Ideias para avaliar', 'Vai bem'])
+  assert.equal((html.match(/<li /g) ?? []).length, vm.itens.length)
+  assert.match(html, /A Redentia olhou <b>4 ativos em 4 dimensões<\/b>/)
+  assert.match(html, /R\$ ••••/)
+  assert.doesNotMatch(html, /R\$ 1\.200/)
+  assert.doesNotMatch(html, /BRSTN|[Rr]ecomendamos|Venda VALE3/)
+  assert.match(html, /<p class="ars2__nota">Os números são de hoje\.<\/p>$/)
+  // a gravidade vai no texto quando o selo diz mais que o grupo
+  assert.match(html, /cah__item--baixa"><b>Liquidez de AUPO11\.<\/b>[^]*?Vale olhar · análise de 22\/05/)
+  const sujo = montarAchados(entrada({ analise: { ...ANALISE, risks: [{ title: 'Risco <script>', body: 'a & b', severity: 'high' }] } }))
+  const h2 = achadosHtml(sujo)
+  assert.match(h2, /Risco &lt;script&gt;\./)
+  assert.match(h2, /a &amp; b/)
+})
+
+test('a barra aberta sem achado: a linha calma, nunca vazia', () => {
+  const vm = montarAchados(entrada({ analise: null, raiox: raiox([metrica('Risco', 80, 'Beta 0,84', 'ok')]) }))
+  assert.equal(vm.vazio, true)
+  const html = achadosHtml(vm)
+  assert.match(html, /Nada pede atenção agora\./)
+  assert.doesNotMatch(html, /cah__grupo/)
 })

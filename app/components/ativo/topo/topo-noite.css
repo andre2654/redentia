@@ -1,0 +1,65 @@
+/* O topo escuro "A bolsa no bolso" (03/11/2026): o céu, a linha do nome, o
+   preço grande, o palco do gráfico de borda a borda, os números em fila e o
+   pé. Saiu do <style scoped> do TopoBolsa em 05/11/2026 para o topo da
+   /carteira (CarteiraAgora) usar as MESMAS regras, sem cópia: cada um importa
+   este arquivo com <style scoped src>, e o escopo continua sendo o de cada
+   componente. Mudou aqui, mudou nos dois. */
+.tbo {
+  --g: clamp(16px, 4vw, 56px);
+  position: relative; isolation: isolate; overflow: hidden; padding: clamp(24px, 3vw, 40px) var(--g) clamp(28px, 3vw, 44px);
+  background: var(--nu-agora-bg); color: var(--nu-agora-texto);
+}
+.tbo__luz { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--nu-navy) 0%, var(--nu-agora-bg) 70%); }
+.tbo__trocou { margin: 0 0 12px; font-size: var(--nu-fs-sm); color: var(--nu-agora-sub); }
+.tbo__linha1 { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.tbo__id { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; }
+.tbo__logo { width: 28px; height: 28px; border-radius: 50%; background: var(--nu-white); object-fit: cover; }
+.tbo__empresa { margin: 0; display: flex; align-items: center; gap: 8px; font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.02em; }
+.tbo__bolsa { display: inline-flex; height: 22px; align-items: center; padding: 0 8px; border-radius: var(--nu-r-pill); box-shadow: inset 0 0 0 1px var(--nu-agora-linha); color: var(--nu-agora-sub); font-size: var(--nu-fs-xs); font-weight: 700; }
+.tbo__h1 { margin: 2px 0 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; }
+.tbo__posicao { padding: 4px 10px; border-radius: var(--nu-r-pill); background: var(--nu-agora-pilula); font-size: var(--nu-fs-xs); font-weight: 700; }
+
+.tbo__preco-linha { margin-top: clamp(18px, 2.4vw, 28px); }
+.tbo__preco { margin: 0; font-size: var(--nu-fs-hero); font-weight: 300; letter-spacing: -0.04em; line-height: 1; }
+.tbo__dia { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; min-height: 26px; margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+.tbo__delta { font-size: var(--nu-fs-lg); font-weight: 700; }
+.tbo__delta--up { color: var(--nu-green-soft); }
+.tbo__delta--down { color: var(--nu-red-soft); }
+.tbo__meta { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; }
+
+.tbo__palco { margin-top: clamp(20px, 2.6vw, 32px); }
+.tbo__palco-cab { display: flex; align-items: baseline; gap: 8px 20px; flex-wrap: wrap; }
+.tbo__h2 { margin: 0; font-size: var(--nu-fs-md); font-weight: 600; color: var(--nu-agora-texto); }
+.tbo__legenda { display: flex; gap: 4px 16px; flex-wrap: wrap; margin: 0; }
+.tbo__leg { display: inline-flex; align-items: center; gap: 6px; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 600; }
+.tbo__leg b { color: var(--nu-agora-texto); font-variant-numeric: tabular-nums; }
+.tbo__leg b.tbo__leg--up { color: var(--nu-green-soft); }
+.tbo__leg b.tbo__leg--down { color: var(--nu-red-soft); }
+.tbo__traco { width: 14px; height: 2px; background: var(--nu-blue-soft); }
+.tbo__traco--ibov { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
+/* de borda a borda: o gráfico sai da margem, como no app; o ponto de hoje, o
+   halo e o rótulo recuam até a margem (no mínimo 44px), os rótulos das marcas
+   começam na margem do texto */
+.tbo__grafico {
+  position: relative; height: clamp(220px, 26vw, 360px); margin: 14px calc(var(--g) * -1) 0;
+  --agr-esq: 16px; --agr-dir: max(var(--g), 44px); --agr-rotulo-esq: var(--g);
+}
+.tbo__horizonte { height: 1px; margin: 0 calc(var(--g) * -1); background: linear-gradient(90deg, transparent, var(--nu-chat-luz-1) 30%, var(--nu-white-60) 50%, var(--nu-chat-luz-3) 70%, transparent); box-shadow: 0 0 18px 3px var(--nu-chat-luz-1); }
+.tbo__periodo { display: flex; margin-top: 14px; }
+.tbo__seg { width: 100%; max-width: 520px; }
+.tbo__seg :deep(.ape__b) { flex: 1; }
+.tbo__uso { margin: 8px 0 0; color: var(--nu-cream-text-50); font-size: var(--nu-fs-xs); }
+@media (hover: none) { .tbo__uso { display: none; } }
+
+.tbo__nums { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 0 24px; margin: 24px 0 0; }
+.tbo__num { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 0; border-top: 1px solid var(--nu-agora-linha); }
+.tbo__num dt { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; }
+.tbo__num dd { margin: 0; font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; }
+.tbo__pe { display: flex; justify-content: space-between; align-items: center; gap: 16px 32px; flex-wrap: wrap; margin-top: 20px; }
+.tbo__sim { margin: 0; color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); }
+.tbo__sim-l { margin-right: 8px; color: var(--nu-agora-texto); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--nu-white-35); }
+@media (max-width: 640px) {
+  .tbo__linha1 { flex-direction: column; }
+  .tbo__nums { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+  .tbo__num { flex-direction: column; gap: 2px; }
+}

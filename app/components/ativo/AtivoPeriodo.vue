@@ -3,9 +3,11 @@
 // segmentado da /teses. Desabilita enquanto a série nova chega.
 import type { AcaoRange } from '~/types/acao'
 
-withDefaults(defineProps<{ modelValue: AcaoRange; disabled?: boolean; tom?: 'claro' | 'escuro' }>(), { disabled: false, tom: 'claro' })
+// `opcoes` deixa só os períodos que a série cobre (a curva da /carteira começa
+// quando a pessoa conectou; 05/11/2026); sem ela, os quatro
+const props = withDefaults(defineProps<{ modelValue: AcaoRange; disabled?: boolean; tom?: 'claro' | 'escuro'; opcoes?: AcaoRange[] | null }>(), { disabled: false, tom: 'claro', opcoes: null })
 const emit = defineEmits<{ 'update:modelValue': [AcaoRange] }>()
-const ABAS: { v: AcaoRange; r: string; nome: string }[] = [
+const TODAS: { v: AcaoRange; r: string; nome: string }[] = [
   { v: '1mo', r: '1M', nome: '1 mês' },
   { v: '6mo', r: '6M', nome: '6 meses' },
   { v: '12mo', r: '12M', nome: '12 meses' },
@@ -13,6 +15,7 @@ const ABAS: { v: AcaoRange; r: string; nome: string }[] = [
   // respondem com ~1.250 pregões (conferido em 03/11/2026)
   { v: '5y', r: '5A', nome: '5 anos' },
 ]
+const ABAS = computed(() => (props.opcoes ? TODAS.filter((a) => props.opcoes!.includes(a.v)) : TODAS))
 </script>
 
 <template>

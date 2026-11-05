@@ -409,3 +409,69 @@ export function oQueOlhou(vm: Pick<AchadosVM, 'ativos' | 'dimensoes'>): string |
   const a = `${vm.ativos} ${vm.ativos === 1 ? 'ativo' : 'ativos'}`
   return vm.dimensoes ? `${a} em ${vm.dimensoes} ${vm.dimensoes === 1 ? 'dimensão' : 'dimensões'}` : a
 }
+
+/* ————— a barra "a Redentia encontrou" (05/11/2026) ————— */
+
+const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ESC[c]!)
+/** o título vira frase: ponto no fim, se não tiver pontuação */
+const comPonto = (s: string) => (/[.!?…:]$/.test(s) ? s : `${s}.`)
+
+/**
+ * O título da barra recolhida, no idioma do "PETR4 em resumo" do /asset:
+ * 'A Redentia olhou a sua carteira: 5 pontos de atenção e 2 ideias para
+ * avaliar', e a idade da análise ao lado, em cinza ('análise de 22/05,
+ * desatualizada'), quando ela está desatualizada. Sem achado, a linha calma.
+ */
+export function tituloDosAchados(vm: Pick<AchadosVM, 'pontos' | 'ideias' | 'vazio' | 'analise'>): { titulo: string; idade: string | null } {
+  const idade = vm.analise?.desatualizada ? `análise de ${vm.analise.data}, desatualizada` : null
+  return { titulo: `A Redentia olhou a sua carteira: ${vm.vazio ? 'nada pede atenção' : resumoDosAchados(vm)}`, idade }
+}
+
+const GRUPOS: { rotulo: string; tipos: TipoDoAchado[] }[] = [
+  { rotulo: 'Pede atenção', tipos: ['atencao', 'risco'] },
+  { rotulo: 'Ideias para avaliar', tipos: ['ideia'] },
+  { rotulo: 'Vai bem', tipos: ['forca'] },
+]
+
+export interface OpcoesDoHtml {
+  /** o aviso da análise antiga ('Os números são de hoje. A análise escrita é de 22/05…') */
+  aviso?: string | null
+  /** troca o R$ pela máscara quando o olho está fechado */
+  mascarar?: (t: string) => string
+}
+
+/**
+ * O miolo da barra aberta: o texto simples do resumo do /asset (frases e
+ * listas), já escapado, para o AtivoResumo revelar palavra por palavra. Um
+ * grupo por tipo (o que pede atenção, as ideias, o que vai bem), cada item
+ * com o título em negrito, o texto e, em cinza, de quando é (e o 'Vale olhar'
+ * do ponto leve, que diz mais que o grupo). A cor do marcador acompanha a
+ * gravidade, mas nunca sozinha. Sem achado, a linha calma e o que olhou.
+ */
+export function achadosHtml(vm: AchadosVM, o: OpcoesDoHtml = {}): string {
+  const m = o.mascarar ?? ((t: string) => t)
+  const out: string[] = []
+  const olhou = oQueOlhou(vm)
+  if (olhou || vm.olhouEm) {
+    out.push(`<p class="ars2__frase">A Redentia olhou${olhou ? ` <b>${esc(olhou)}</b>` : ' a sua carteira'}${vm.olhouEm ? `, ${esc(vm.olhouEm)}` : ''}.</p>`)
+  }
+  if (vm.vazio) {
+    out.push('<p class="ars2__frase">Nada pede atenção agora.</p>')
+  } else {
+    for (const g of GRUPOS) {
+      const itens = vm.itens.filter((a) => g.tipos.includes(a.tipo))
+      if (!itens.length) continue
+      out.push(`<p class="cah__grupo">${esc(g.rotulo)}</p><ul class="cah__lista">`)
+      for (const a of itens) {
+        const quando = [a.gravidade === 'baixa' ? a.selo : null, a.quando === 'hoje' ? 'visto hoje' : a.quando, a.valor, a.confirmadoEm ? `a análise de ${a.confirmadoEm} já apontava` : null]
+          .filter(Boolean).join(' · ')
+        const tom = a.tipo === 'ideia' ? 'ideia' : a.tipo === 'forca' ? 'forca' : (a.gravidade ?? 'media')
+        out.push(`<li class="cah__item cah__item--${tom}"><b>${esc(comPonto(a.titulo))}</b>${a.texto ? ` ${esc(m(a.texto))}` : ''} <span class="cah__quando">${esc(quando)}</span></li>`)
+      }
+      out.push('</ul>')
+    }
+  }
+  if (o.aviso) out.push(`<p class="ars2__nota">${esc(o.aviso)}</p>`)
+  return out.join('')
+}
