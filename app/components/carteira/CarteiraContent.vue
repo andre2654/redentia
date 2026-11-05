@@ -8,8 +8,9 @@
 // uma pergunta por vez:
 //  1. CarteiraAgora      "está tudo bem?" — o topo escuro do /asset ("a carteira
 //                        no bolso", 05/11): a frase, o patrimônio, o losango e a curva
-//     CarteiraAchados    "o que a Redentia encontrou?" — a barra do "em resumo"
-//                        do /asset, colada no topo (05/11)
+//     CarteiraIdeias     "o que a Redentia encontrou?" — o botão "Ideias" do
+//                        topo, que abre o modal (05/11; a barra entre o topo e
+//                        o "Daqui a 5 anos" saiu)
 //  2. CarteiraFuturo     "e daqui a 5 anos?" — o leque de 2.000 cenários (o
 //                        único momento assinatura da tela, na banda navy)
 //  3. CarteiraPosicoes   o total, a barra por classe e os grupos (papéis sob pedido)
@@ -29,8 +30,14 @@ const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
 // a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
 const temAcoes = computed(() => !!props.payload.posicoesMundo?.some((p) => p.classe === 'STOCK'))
 const temCadeia = ref(false)
-// os achados da Redentia AI: com Raio-X ou com a análise escrita (sem nada, a linha calma)
-const temAchados = computed(() => !!(props.payload.raiox || props.payload.analise))
+// os achados da Redentia AI, no modal do botão "Ideias" do topo: com Raio-X ou
+// com a análise escrita (sem nada a apontar, a linha calma); sem os dois, o topo
+// fica com o Perguntar
+const achados = computed(() => {
+  const p = props.payload
+  if (!p.raiox && !p.analise) return null
+  return { raiox: p.raiox, analise: p.analise ?? null, posicoes: p.posicoesMundo ?? [], olhadaEm: p.olhadaEm ?? null }
+})
 
 // A faixa abaixo do header vira o rail desta página quando há carteira (no
 // lugar do "Mercado agora": a carteira não precisa do mercado piscando em
@@ -39,7 +46,6 @@ const railSections = computed<RailSection[]>(() => {
   if (!conectada.value) return []
   const p = props.payload
   const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }]
-  if (temAchados.value) s.push({ id: 'achados', label: 'Achados' })
   s.push({ id: 'futuro', label: 'Daqui a 5 anos' })
   if (p.groups.length) s.push({ id: 'posicoes', label: 'Posições' })
   if (p.posicoesMundo?.length) s.push({ id: 'mundo', label: 'No mundo' })
@@ -65,15 +71,7 @@ onMounted(() => {
   <!-- CLARITY (11/10/2026): toda seção com dado da pessoa leva
        data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
   <div v-if="conectada">
-    <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" @connected="emit('connected')" />
-    <CarteiraAchados
-      v-if="temAchados"
-      id="achados"
-      :raiox="payload.raiox"
-      :analise="payload.analise ?? null"
-      :posicoes="payload.posicoesMundo ?? []"
-      :olhada-em="payload.olhadaEm ?? null"
-    />
+    <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" :achados="achados" @connected="emit('connected')" />
     <CarteiraFuturo id="futuro" />
     <CarteiraPosicoes
       v-if="payload.groups.length && payload.hero.patrimonio"

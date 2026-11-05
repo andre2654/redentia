@@ -2,7 +2,8 @@
  * O que a Redentia AI encontrou na carteira (05/11/2026; o dono: "precisamos
  * encontrar algum lugar para apresentar isso, talvez logo abaixo do hero,
  * passando a ideia de que foi o agente da Redentia que encontrou esses
- * pontos"). A seção CarteiraAchados mostra; a conta mora aqui.
+ * pontos"). O botão "Ideias" do topo (CarteiraIdeias) abre o modal que
+ * mostra; a conta mora aqui.
  *
  * Duas fontes, cada uma com a sua data:
  *  - o Raio-X (useCarteira, buildRaioX): as métricas são recalculadas a cada
@@ -70,14 +71,6 @@ export interface Achado {
   pergunta: string
 }
 
-export interface PassoDoAgente {
-  /** a dimensão conferida ('Diversificação') */
-  dimensao: string
-  valor: string
-  tag: string
-  atencao: boolean
-}
-
 export interface IdadeDaAnalise {
   data: string
   dias: number
@@ -107,7 +100,6 @@ export interface AchadosVM {
   ativos: number
   /** em quantas dimensões (as métricas do Raio-X) */
   dimensoes: number
-  passos: PassoDoAgente[]
   /** 'hoje às 08:01' (no fuso de São Paulo) */
   olhouEm: string | null
   analise: AnaliseNaSecao | null
@@ -474,7 +466,6 @@ export function montarAchados(e: EntradaDosAchados): AchadosVM {
     antigos,
     ativos: posicoes.length,
     dimensoes: metricas.length,
-    passos: metricas.map((m) => ({ dimensao: m.label, valor: m.value, tag: m.tag, atencao: m.tag === 'Atenção' })),
     olhouEm: quandoOlhou(e.olhadaEm, agora),
     analise: analise && idade ? { ...idade, desatualizada: analiseDesatualizada(analise.generated_at, e.ultimoSync, agora) } : null,
     vazio: pontos + ideias + antigos === 0,
@@ -489,6 +480,12 @@ export function resumoDosAchados(vm: Pick<AchadosVM, 'pontos' | 'ideias'>): stri
   return p || i || 'nada que peça atenção'
 }
 
+/** A assinatura do modal: 'olhou 18 ativos hoje às 12:17' | 'olhou a sua carteira hoje às 12:17'. */
+export function assinaturaDosAchados(vm: Pick<AchadosVM, 'ativos' | 'olhouEm'>): string {
+  const o = vm.ativos ? `olhou ${vm.ativos} ${vm.ativos === 1 ? 'ativo' : 'ativos'}` : 'olhou a sua carteira'
+  return vm.olhouEm ? `${o} ${vm.olhouEm}` : o
+}
+
 /** 'olhou 18 ativos em 4 dimensões' (sem o que não tem número) */
 export function oQueOlhou(vm: Pick<AchadosVM, 'ativos' | 'dimensoes'>): string | null {
   if (!vm.ativos) return null
@@ -496,21 +493,21 @@ export function oQueOlhou(vm: Pick<AchadosVM, 'ativos' | 'dimensoes'>): string |
   return vm.dimensoes ? `${a} em ${vm.dimensoes} ${vm.dimensoes === 1 ? 'dimensão' : 'dimensões'}` : a
 }
 
-/* ————— a barra "a Redentia encontrou" (05/11/2026) ————— */
+/* ————— o modal das ideias (05/11/2026; antes, a barra "a Redentia encontrou") ————— */
 
 const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ESC[c]!)
 
-/** Um pedaço do título da barra: texto, ou o número em destaque (com o tom dele). */
+/** Um pedaço do título: texto, ou o número em destaque (com o tom dele). */
 export interface PedacoDoTitulo {
   texto: string
   numero?: 'atencao' | 'ideia'
 }
 
 /**
- * O título da barra recolhida, no idioma do "PETR4 em resumo" do /asset:
- * 'A Redentia olhou a sua carteira: 2 pontos de atenção e 1 ideia para
- * avaliar', e a idade da análise ao lado, em cinza ('análise de 22/05,
+ * O título dos achados: 'A Redentia olhou a sua carteira: 2 pontos de atenção
+ * e 1 ideia para avaliar' (o modal mostra os pedaços sem a abertura, que já
+ * vai na assinatura), e a idade da análise ao lado, em cinza ('análise de 22/05,
  * desatualizada'), quando ela está desatualizada. Sem achado, a linha calma.
  * A contagem é a do que é de hoje: a análise antiga fica no grupo do fim.
  * `pedacos` é o mesmo título com os números separados, para o destaque.
@@ -530,8 +527,8 @@ export function tituloDosAchados(vm: Pick<AchadosVM, 'pontos' | 'ideias' | 'vazi
 }
 
 /**
- * Os grupos: em cima, o que é de hoje, em duas colunas no desktop ("Pede
- * atenção" | as ideias e o que vai bem); embaixo, a análise antiga, apagada.
+ * Os grupos: em cima, o que é de hoje ("Pede atenção", depois as ideias e o
+ * que vai bem); embaixo, a análise antiga, apagada.
  */
 const COLUNAS: { rotulo: string; tipos: TipoDoAchado[] }[][] = [
   [{ rotulo: 'Pede atenção', tipos: ['atencao', 'risco'] }],
@@ -539,6 +536,9 @@ const COLUNAS: { rotulo: string; tipos: TipoDoAchado[] }[][] = [
 ]
 
 export interface OpcoesDoHtml {
+  /** a frase do que olhou no começo ('A Redentia olhou 18 ativos…'); o modal a
+   *  leva na assinatura e passa false */
+  olhou?: boolean
   /** o aviso da análise antiga ('O que está em cima é de hoje. A análise escrita é de 22/05…') */
   aviso?: string | null
   /** troca o R$ pela máscara quando o olho está fechado */
@@ -576,21 +576,20 @@ function grupoHtml(rotulo: string, itens: Achado[], m: (t: string) => string, ex
 }
 
 /**
- * O miolo da barra aberta, já escapado, para o AtivoResumo revelar palavra por
- * palavra. A frase do que olhou; o que é de hoje em duas colunas ("Pede
- * atenção" | ideias e "Vai bem"; uma no celular); a análise antiga num grupo
- * próprio no fim ("Da análise de 22/05"); e o aviso. A cor do marcador
+ * O miolo do modal das ideias, já escapado: a frase do que olhou (sem ela com
+ * `olhou: false`); o que é de hoje ("Pede atenção", ideias e "Vai bem"); a
+ * análise antiga num grupo próprio no fim ("Da análise de 22/05"); e o aviso. A cor do marcador
  * acompanha a gravidade, mas nunca sozinha. Sem achado, a linha calma.
  */
 export function achadosHtml(vm: AchadosVM, o: OpcoesDoHtml = {}): string {
   const m = o.mascarar ?? ((t: string) => t)
   const out: string[] = []
   const olhou = oQueOlhou(vm)
-  if (olhou || vm.olhouEm) {
-    out.push(`<p class="ars2__frase">A Redentia olhou${olhou ? ` <b>${esc(olhou)}</b>` : ' a sua carteira'}${vm.olhouEm ? `, ${esc(vm.olhouEm)}` : ''}.</p>`)
+  if (o.olhou !== false && (olhou || vm.olhouEm)) {
+    out.push(`<p class="cah__frase">A Redentia olhou${olhou ? ` <b>${esc(olhou)}</b>` : ' a sua carteira'}${vm.olhouEm ? `, ${esc(vm.olhouEm)}` : ''}.</p>`)
   }
   if (vm.vazio) {
-    out.push('<p class="ars2__frase">Nada pede atenção agora.</p>')
+    out.push('<p class="cah__frase">Nada pede atenção agora.</p>')
   } else {
     const hoje = vm.itens.filter((a) => !a.antigo)
     const colunas = COLUNAS
@@ -598,13 +597,13 @@ export function achadosHtml(vm: AchadosVM, o: OpcoesDoHtml = {}): string {
       .filter((col) => col.length)
       .map((col) => `<div class="cah__col">${col.map((x) => grupoHtml(x.g.rotulo, x.itens, m)).join('')}</div>`)
     if (colunas.length) out.push(`<div class="cah__cols cah__cols--${colunas.length}">${colunas.join('')}</div>`)
-    else out.push('<p class="ars2__frase">Hoje, nada pede atenção.</p>')
+    else out.push('<p class="cah__frase">Hoje, nada pede atenção.</p>')
     const velhos = vm.itens.filter((a) => a.antigo)
     if (velhos.length && vm.analise) {
       const dias = `<span class="cah__grupo-d">há ${vm.analise.dias} dias</span>`
       out.push(`<div class="cah__antiga">${grupoHtml(`Da análise de ${vm.analise.data}`, velhos, m, ` ${dias}`)}</div>`)
     }
   }
-  if (o.aviso) out.push(`<p class="ars2__nota">${esc(o.aviso)}</p>`)
+  if (o.aviso) out.push(`<p class="cah__nota">${esc(o.aviso)}</p>`)
   return out.join('')
 }

@@ -7,7 +7,9 @@
 // (topo-noite.css, importado com escopo próprio):
 //  - a linha do nome ("Sua carteira") com o chip de quantos ativos e de quando;
 //  - os botões redondos do TopoBotao: Mostrar/Esconder valores (o olho da
-//    visita, useValoresVisiveis), Adicionar conta (o Pluggy) e Perguntar;
+//    visita, useValoresVisiveis), Adicionar conta (o Pluggy) e Ideias (05/11,
+//    no lugar do Perguntar: o modal com o que a Redentia AI encontrou na
+//    carteira, CarteiraIdeias; o Perguntar segue lá dentro e nos chips);
 //  - o estado do pregão e a frase do dia ("Tudo normal." ou "Pede atenção"),
 //    com peso, no lugar do eyebrow; a frase sai de utils/carteira-agora.ts;
 //  - o patrimônio grande no lugar do preço (TopoPreco), que segue a mira do
@@ -23,7 +25,7 @@
 // as marcas e a dica do gráfico e os números da fileira; o % nunca se esconde.
 // Tudo sai do servidor; a animação (a linha se desenhando) só embeleza.
 import type { AcaoRange, SeriesPoint } from '~/types/acao'
-import type { CarteiraAgoraVM, CarteiraHeroVM } from '~/types/carteira'
+import type { CarteiraAgoraVM, CarteiraAnaliseIA, CarteiraHeroVM, CarteiraPosicaoMundo, CarteiraRaioXVM } from '~/types/carteira'
 import type { HomeChartVM } from '~/types/home'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 import { fraseDaCarteira } from '~/utils/carteira-agora'
@@ -32,7 +34,14 @@ import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
 
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats'] }>()
+/** o que o modal das ideias lê (CarteiraIdeias); sem Raio-X nem análise, fica o Perguntar */
+interface AchadosDoTopo {
+  raiox: CarteiraRaioXVM | null
+  analise: CarteiraAnaliseIA | null
+  posicoes: CarteiraPosicaoMundo[]
+  olhadaEm: string | null
+}
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
@@ -235,7 +244,8 @@ onMounted(() => {
         <TopoBotao :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
-        <TopoBotao rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
+        <CarteiraIdeias v-if="achados" v-bind="achados" />
+        <TopoBotao v-else rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
           <img src="/logo-azul.svg" alt="" width="16" height="16" class="cto__logo">
         </TopoBotao>
       </div>

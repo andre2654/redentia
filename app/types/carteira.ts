@@ -307,15 +307,15 @@ export interface CarteiraPayload {
   heatmap: CarteiraHeatmapVM | null
   /** a seção "No mundo" (05/11/2026); ausente no payload vazio */
   posicoesMundo?: CarteiraPosicaoMundo[]
-  /** a análise escrita pela IA, para a seção dos achados (05/11/2026); null sem análise */
+  /** a análise escrita pela IA, para o modal das ideias do topo (05/11/2026); null sem análise */
   analise?: CarteiraAnaliseIA | null
   /** quando a carteira foi carregada (ISO): a hora em que a Redentia "olhou" */
   olhadaEm?: string
 }
 
 /**
- * O pedaço do GET /portfolio/analysis que a seção dos achados lê (o
- * CarteiraAchados): riscos, ideias e pontos fortes, com a data da análise.
+ * O pedaço do GET /portfolio/analysis que o modal das ideias lê (o
+ * CarteiraIdeias): riscos, ideias e pontos fortes, com a data da análise.
  */
 export type CarteiraAnaliseIA = Pick<PortfolioAnalysisApi['analysis'], 'risks' | 'recommendations' | 'strengths' | 'generated_at'>
 

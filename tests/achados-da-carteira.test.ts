@@ -12,6 +12,7 @@ import {
   idadeDaAnalise,
   montarAchados,
   oQueOlhou,
+  assinaturaDosAchados,
   quandoOlhou,
   resumoDosAchados,
   temOrdem,
@@ -244,7 +245,7 @@ test('a barra aberta: de hoje em colunas, a análise antiga no fim, tudo escapad
   assert.match(html, /R\$ ••••/)
   assert.doesNotMatch(html, /R\$ 1\.200/)
   assert.doesNotMatch(html, /BRSTN|[Rr]ecomendamos|Venda VALE3/)
-  assert.match(html, /<p class="ars2__nota">O que está em cima é de hoje\.<\/p>$/)
+  assert.match(html, /<p class="cah__nota">O que está em cima é de hoje\.<\/p>$/)
   // o número de hoje à direita do título, e o "Perguntar à Redentia" da linha
   assert.match(html, /<b class="cah__t">A qualidade pede atenção<\/b><span class="cah__v">40\/100<\/span>/)
   assert.equal((html.match(/class="cah__perg" data-achado="/g) ?? []).length, vm.itens.length)
@@ -375,4 +376,17 @@ test('a barra aberta sem achado: a linha calma, nunca vazia', () => {
   const html = achadosHtml(vm)
   assert.match(html, /Nada pede atenção agora\./)
   assert.doesNotMatch(html, /cah__grupo/)
+})
+
+test('o modal: a assinatura diz o que olhou e quando; sem a frase de abertura no miolo', () => {
+  const vm = montarAchados(entrada())
+  assert.equal(assinaturaDosAchados(vm), 'olhou 4 ativos hoje às 08:01')
+  assert.equal(assinaturaDosAchados({ ativos: 1, olhouEm: null }), 'olhou 1 ativo')
+  assert.equal(assinaturaDosAchados({ ativos: 0, olhouEm: 'hoje às 08:01' }), 'olhou a sua carteira hoje às 08:01')
+  const html = achadosHtml(vm, { olhou: false })
+  assert.doesNotMatch(html, /A Redentia olhou/)
+  assert.match(html, /^<div class="cah__cols/)
+  // os grupos seguem os mesmos
+  assert.match(html, /<p class="cah__grupo">Pede atenção<\/p>/)
+  assert.match(html, /<div class="cah__antiga">/)
 })
