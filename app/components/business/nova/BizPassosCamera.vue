@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
- * VARIAÇÃO 1 DOS PASSOS (?passos=1, só no dev): "A CÂMERA DENTRO DO PRODUTO"
- * (05/11/2026). O dono achou o cartão branco sobre a foto, que trocava a cada
- * passo, "comum demais". Aqui não há quatro cartões: há UM app, a mesa do
+ * OS PASSOS DA /business: "A CÂMERA DENTRO DO PRODUTO" (05/11/2026). O dono
+ * achou o cartão branco sobre a foto, que trocava a cada passo, "comum demais",
+ * viu três variações no dev (?passos=1|2|3) e escolheu esta, a 1; as outras
+ * duas e o cartão sobre a foto (BizPassos) saíram, e estão no commit 75d9dd60. Aqui não há quatro cartões: há UM app, a mesa do
  * assessor do Redentia For Business, desenhado inteiro (a fila à esquerda e as
  * quatro áreas: captação, fechamento, pauta e resposta), e o scroll move uma
  * câmera sobre ele, como as páginas de produto da Apple e da Linear. A abertura

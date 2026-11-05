@@ -9,11 +9,11 @@
  *
  * O pedido junto com a escolha: "depois do hero dedique aqueles scrolls
  * personalizados para explicar melhor esses pontos". Por isso, logo depois da
- * fila, vem o scroll travado (BizPassos), um passo por item da fila, e o botão
+ * fila, vem o scroll travado (BizPassosCamera, a câmera dentro do produto), um passo por item da fila, e o botão
  * de cada item rola até o passo dele.
  *
  * Ordem das bandas: hero navy → a fila e os três benefícios (branco) → os
- * quatro passos (navy, a foto presa) → para quem (creme) → segurança (branco)
+ * quatro passos (a câmera sobre a mesa do produto) → para quem (creme) → segurança (branco)
  * → preço (navy) → FAQ (branco) → o fecho.
  *
  * SEO: um H1 só (o título do print), o FAQ inteiro no SSR com um FAQPage só
@@ -27,18 +27,11 @@ import {
 
 const destinoCadastro = useDestinoCadastroBusiness()
 
-/* ——— as três variações dos passos (05/11/2026), SÓ NO DEV ———
-   O dono achou o cartão branco sobre a foto comum demais ("queria algo mais
-   inovador para mostrar ali as funções"). `?passos=1|2|3` troca o BizPassos por
-   uma das três; sem o parâmetro, e em produção (import.meta.dev é false), fica
-   o de hoje. Os três são Lazy: não entram no pacote da página de produção.
-   1 · a câmera dentro do produto · 2 · o caminho do dinheiro · 3 · ao vivo na IA */
+/* ——— os passos: a câmera dentro do produto (BizPassosCamera) ———
+   O dono viu as três variações dos passos no dev (05/11/2026) e escolheu a 1,
+   a câmera dentro do produto. O cartão sobre a foto (BizPassos), o caminho do
+   dinheiro e a conversa na IA saíram; estão no commit 75d9dd60. */
 const route = useRoute()
-const variacaoDosPassos = computed(() => {
-  if (!import.meta.dev) return ''
-  const v = String(route.query.passos ?? '')
-  return v === '1' || v === '2' || v === '3' ? v : ''
-})
 
 /* ——— a calculadora do plano (a mesma conta de RbProva) ——— */
 const MIN = 1
@@ -97,10 +90,7 @@ const semPonto = (t: string) => t.replace(/\.$/, '')
     </section>
 
     <!-- ================= os quatro pontos da fila, um por tela ================= -->
-    <LazyBizPassosCamera v-if="variacaoDosPassos === '1'" />
-    <LazyBizPassosDinheiro v-else-if="variacaoDosPassos === '2'" />
-    <LazyBizPassosConversa v-else-if="variacaoDosPassos === '3'" />
-    <BizPassos v-else />
+    <BizPassosCamera />
 
     <!-- ================= para quem ================= -->
     <section id="para-quem" class="bzq" aria-labelledby="bzq-titulo">

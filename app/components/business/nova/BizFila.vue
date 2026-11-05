@@ -4,10 +4,10 @@
  * Uma tela de produto encolhida: o que os agentes deixaram pronto na manhã,
  * para o assessor aprovar. Os nomes e os valores são os do elenco da conta
  * interna das calls (ver o topo de content/business/landing.ts), e saem das
- * mesmas listas que os passos do scroll (BizPassos) mostram em detalhe.
+ * mesmas listas que os passos do scroll (BizPassosCamera) mostram em detalhe.
  *
  * O BOTÃO DE CADA ITEM É UM LINK DE VERDADE para o passo dele (#passo-<id>).
- * Sem JS, o navegador pula para a âncora; com JS, a fila avisa o BizPassos
+ * Sem JS, o navegador pula para a âncora; com JS, a fila avisa os passos
  * (evento `bzj:ir`), que rola até o passo ficar em foco e põe o foco nele. O
  * link cobre o item inteiro (::after), e no celular o rótulo vira só a seta.
  *

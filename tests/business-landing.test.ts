@@ -7,7 +7,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import {
-  ASSISTENTE, ATENDIMENTO, CARTEIRAS, CLIENTES_FORA, CONVERSA, FILA, HERO, LOGOS_CLIENTES, NAV_BIZ_NOVA, PASSOS, PAUTA, PARA_QUEM, SEGURANCA,
+  ATENDIMENTO, CARTEIRAS, CLIENTES_FORA, FILA, HERO, LOGOS_CLIENTES, NAV_BIZ_NOVA, PASSOS, PAUTA, PARA_QUEM, SEGURANCA,
   precoDaMesa, reaisCurtos, totalFora,
 } from '../app/content/business/landing.ts'
 
@@ -74,7 +74,7 @@ test('um passo por item da fila, na mesma ordem, com uma frase de apoio só', ()
   // o botão de cada item da fila é um link para o passo dele
   const fila = ler('app/components/business/nova/BizFila.vue')
   assert.match(fila, /:href="`#passo-\$\{it\.id\}`"/)
-  assert.match(ler('app/components/business/nova/BizPassos.vue'), /:id="`passo-\$\{p\.id\}`"/)
+  assert.match(ler('app/components/business/nova/BizPassosCamera.vue'), /:id="`passo-\$\{p\.id\}`"/)
 })
 
 test('a página não diz demonstração, teste nem "sem comissão", e não promete resultado', () => {
@@ -104,42 +104,21 @@ test('a página de antes e as variações do dev saíram', () => {
   assert.match(ler('app/components/nu/NuHeader.vue'), /business\.value && route\.path === '\/business'/)
 })
 
-test('as três variações dos passos (?passos=1|2|3) só existem no dev e mantêm a ligação com a fila', () => {
+test('os passos são a câmera dentro do produto, sem switch do dev, e as outras variações saíram', () => {
   const landing = ler('app/components/business/nova/BizLanding.vue')
-  assert.match(landing, /if \(!import\.meta\.dev\) return ''/)
-  assert.match(landing, /route\.query\.passos/)
-  // sem o parâmetro fica o BizPassos de hoje; as variações são Lazy (fora do pacote de produção)
-  assert.match(landing, /<LazyBizPassosCamera v-if="variacaoDosPassos === '1'" \/>/)
-  assert.match(landing, /<LazyBizPassosDinheiro v-else-if="variacaoDosPassos === '2'" \/>/)
-  assert.match(landing, /<LazyBizPassosConversa v-else-if="variacaoDosPassos === '3'" \/>/)
-  assert.match(landing, /<BizPassos v-else \/>/)
-  for (const f of ['BizPassosCamera', 'BizPassosDinheiro', 'BizPassosConversa']) {
-    const src = ler(`app/components/business/nova/${f}.vue`)
-    // cada passo é a âncora do botão da fila, e a mecânica (bzj:ir, régua, teclado) é a comum
-    assert.match(src, /:id="`passo-\$\{p\.id\}`"/, f)
-    assert.match(src, /usePassosTravados\(/, f)
-    assert.match(src, /<BizPassosRegua /, f)
-    // nada em loop, e o reduzir movimento cai no estado final empilhado
-    assert.doesNotMatch(src, /\binfinite\b/, f)
-    assert.match(src, /@media \(scripting: enabled\) and \(prefers-reduced-motion: no-preference\)/, f)
-  }
+  assert.match(landing, /<BizPassosCamera \/>/)
+  assert.doesNotMatch(landing, /LazyBizPassos|variacaoDosPassos|route\.query\.passos/)
+  for (const f of ['BizPassos', 'BizPassosDinheiro', 'BizPassosConversa'])
+    assert.equal(existsSync(new URL(`../app/components/business/nova/${f}.vue`, import.meta.url)), false, f)
+  assert.equal(existsSync(new URL('../public/business-hero/lounge.webp', import.meta.url)), false)
+  const src = ler('app/components/business/nova/BizPassosCamera.vue')
+  // cada passo é a âncora do botão da fila, e a mecânica (bzj:ir, régua, teclado) é a comum
+  assert.match(src, /usePassosTravados\(/)
+  assert.match(src, /<BizPassosRegua /)
+  // o FLIP lê o item da fila pelo seletor da classe dele
+  assert.match(src, /\.bfl__item--/)
+  // nada em loop, e o reduzir movimento cai no estado final empilhado
+  assert.doesNotMatch(src, /\binfinite\b/)
+  assert.match(src, /@media \(scripting: enabled\) and \(prefers-reduced-motion: no-preference\)/)
   assert.match(ler('app/composables/usePassosTravados.ts'), /addEventListener\('bzj:ir'/)
-})
-
-test('a conversa da variação 3 conta os mesmos números da fila e não usa termo técnico', () => {
-  assert.deepEqual(Object.keys(CONVERSA), PASSOS.map((p) => p.id))
-  const cap = FILA.itens.find((i) => i.id === 'captacao')!
-  assert.ok(CONVERSA.captacao.resposta.startsWith(reaisCurtos(totalFora())))
-  assert.ok(cap.titulo.startsWith(reaisCurtos(totalFora())))
-  const f = FILA.itens.find((i) => i.id === 'fechamento')!
-  assert.ok(CONVERSA.fechamento.resposta.startsWith(`${f.feito} de ${f.total}`))
-  assert.ok(CONVERSA.reuniao.pergunta.includes(PAUTA.cliente.split(' ')[0]!))
-  assert.ok(CONVERSA.atendimento.pergunta.includes(ATENDIMENTO.cliente.split(' ')[0]!))
-  for (const [id, t] of Object.entries(CONVERSA)) {
-    assert.equal(t.apoio.split(/[.!?](\s|$)/).filter((x) => x && x.trim()).length, 1, `${id}: uma frase de apoio`)
-    assert.ok(t.apoio.length <= 110, `${id}: o apoio não cresce`)
-  }
-  const tudo = JSON.stringify({ CONVERSA, ASSISTENTE })
-  assert.doesNotMatch(tudo, /demonstra|\bteste\b|exemplo|fictíci|simulad|sem comiss/i)
-  assert.doesNotMatch(tudo, /\bMCP\b|ferramenta|servidor|\bskill|\bchave\b|Claude|ChatGPT/i)
 })

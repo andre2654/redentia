@@ -1,7 +1,6 @@
 <script setup lang="ts">
 /**
- * A régua 01–04 das variações dos passos (?passos=1|2|3): a mesma do BizPassos
- * de hoje. Quatro links (#passo-<id>): o Tab passa por eles, e cada um, ao
+ * A régua 01–04 dos passos (BizPassosCamera): a mesma do BizPassos de antes. Quatro links (#passo-<id>): o Tab passa por eles, e cada um, ao
  * receber o foco pelo teclado, leva ao passo dele. O trilho do passo em foco
  * enche com o progresso.
  */

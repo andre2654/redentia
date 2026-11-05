@@ -1,7 +1,7 @@
 /**
- * A mecânica comum das três variações dos quatro passos da /business (05/11/2026,
- * ?passos=1|2|3 no dev). O BizPassos de hoje tem a dele, igual a esta; esta
- * existe para as variações não repetirem o mesmo código três vezes.
+ * A mecânica dos quatro passos da /business (BizPassosCamera, 05/11/2026).
+ * Nasceu comum às três variações do dev (?passos=1|2|3); o dono escolheu a
+ * câmera, e ela ficou como a mecânica dos passos.
  *
  * O QUE ELA FAZ:
  *  - mede, a cada quadro de rolagem, qual passo está na linha de leitura e o

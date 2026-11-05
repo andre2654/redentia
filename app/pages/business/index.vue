@@ -7,7 +7,7 @@
  * landing do Redentia For Business, viu três variações no dev (?biz=1|2|3) e
  * escolheu a 1, a Serifa, com o scroll travado depois da fila ("dedique
  * aqueles scrolls personalizados para explicar melhor esses pontos"). Tudo
- * mora em components/business/nova/ (BizLanding, BizFila, BizPassos) e o
+ * mora em components/business/nova/ (BizLanding, BizFila, BizPassosCamera) e o
  * texto em content/business/landing.ts, que tem no fim a lista do que falta o
  * dono confirmar. A página de antes (RbHero, RbDivisao, RbJornada, RbSeguranca,
  * RbProva) saiu; a regra de densidade dela continua: uma ideia por tela e
