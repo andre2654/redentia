@@ -115,12 +115,9 @@ const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
 // outro lugar"): o losango sai do topo da carteira (segue no Início) e a
 // comparação com a bolsa vira meia frase na linha do dia, com o provento do
 // dia quando houver; o gráfico fica baixo, e o topo inteiro cabe numa tela.
-// No dev, ?topo=losango traz o losango de volta para comparar.
+// A tela antiga (sem `visao`) segue com o losango e o gráfico alto.
 const enxuto = computed(() => !!props.visao)
-const rotaTopo = useRoute()
-const comLosango = computed(() => !enxuto.value || (import.meta.dev && rotaTopo.query.topo === 'losango'))
-const semLosango = computed(() => !comLosango.value)
-const versaoTopo = computed(() => (enxuto.value && semLosango.value ? '2' : '0'))
+const semLosango = enxuto
 /** 'Caiu menos que a bolsa (−0,52%). R$ 48,20 de ITSA4 hoje.' */
 const contraBolsa = computed(() => {
   const c = props.agora.carteiraPct
@@ -588,7 +585,7 @@ const statusLinha = computed(() => {
     </div>
     </div>
 
-    <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco" :class="{ 'cto__palco--baixo': versaoTopo === '2' }">
+    <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco" :class="{ 'cto__palco--baixo': enxuto }">
       <div class="tbo__palco-cab">
         <h2 class="tbo__h2">{{ tituloGrafico }}</h2>
         <p v-if="legenda.length" class="tbo__legenda">
