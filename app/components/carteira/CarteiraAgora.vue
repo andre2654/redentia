@@ -104,6 +104,18 @@ const urgente = computed(() => {
 })
 const atencao = computed(() => frase.value.tom === 'atencao' || !!urgente.value)
 const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
+// O topo enxuto da tela nova (06/11/2026; o dono: "conseguimos dar uma
+// simplificada nesse hero também?"). O dia aparecia três vezes (a linha, a
+// frase e o losango), o rendimento duas (a legenda e a fileira) e o proventos
+// já mora no "Quanto ele te paga". Saem a frase do dia, a fileira de números,
+// as perguntas prontas (a barra do chat está sempre ali) e a dica do cursor;
+// o CDI vai para a legenda, o período sobe para o lado do título do gráfico e
+// o "Adicionar conta" vai para a linha das conexões.
+// No dev, ?topo= compara: 1 enxuto · 2 enxuto com o gráfico baixo · 3 sem o losango.
+const enxuto = computed(() => !!props.visao)
+const rotaTopo = useRoute()
+const versaoTopo = computed(() => (enxuto.value && import.meta.dev ? (['2', '3'].includes(String(rotaTopo.query.topo)) ? String(rotaTopo.query.topo) : '1') : '0'))
+const semLosango = computed(() => versaoTopo.value === '3')
 /* o frescor: de quando é cada conexão (a regra da tela nova: todo dado diz a data) */
 const FONTE: Record<string, string> = { posicoes: 'posições', transacoes: 'transações', proventos: 'proventos', cartao: 'cartão' }
 const frescor = computed(() => (props.visao?.conexoes ?? []).map((c) => ({
@@ -121,7 +133,7 @@ const dia = computed(() => {
 })
 
 /* ——— o losango do dia (a variação 3, compacta, num cartão) ——— */
-const temLosango = computed(() => props.agora.carteiraPct != null)
+const temLosango = computed(() => props.agora.carteiraPct != null && !semLosango.value)
 const esmaecido = computed(() => pregao.value.estado === 'antes' && props.agora.priceDate?.slice(0, 10) !== agoraEmSP().iso)
 const proventoSub = computed(() => subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value))
 const contextoLosango = computed(() => {
@@ -259,7 +271,7 @@ onMounted(() => {
           <svg v-if="revelado" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>
         </TopoBotao>
-        <TopoBotao :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
+        <TopoBotao v-if="!enxuto" :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
         <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" />
@@ -292,7 +304,8 @@ onMounted(() => {
           </template>
           <template v-else>
             <span v-if="dia" class="tbo__delta" :class="`tbo__delta--${agora.diaDir}`">{{ dia }}</span>
-            <span class="tbo__meta">{{ linhaDoDia }}</span>
+            <span v-if="!enxuto" class="tbo__meta">{{ linhaDoDia }}</span>
+            <span v-else-if="semLosango && bolsaPct != null" class="tbo__meta">a bolsa, {{ pctComSinal(bolsaPct) }}</span>
           </template>
         </p>
       </div>
@@ -310,7 +323,7 @@ onMounted(() => {
     </div>
     </div>
 
-    <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco">
+    <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco" :class="{ 'cto__palco--baixo': versaoTopo === '2' }">
       <div class="tbo__palco-cab">
         <h2 class="tbo__h2">{{ tituloGrafico }}</h2>
         <p v-if="legenda.length" class="tbo__legenda">
@@ -318,7 +331,9 @@ onMounted(() => {
             <i class="tbo__traco" :class="{ 'tbo__traco--ibov': l.rotulo === 'IBOV' }" aria-hidden="true" />{{ l.rotulo }}
             <b :class="l.dir ? `tbo__leg--${l.dir}` : ''">{{ l.pct }}</b>
           </span>
+          <span v-if="enxuto && cdiPct != null" class="tbo__leg cto__leg-cdi">CDI <b>{{ pctAtivo(cdiPct) }}</b></span>
         </p>
+        <AtivoPeriodo v-if="enxuto && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
       </div>
       <div class="tbo__grafico">
         <AtivoGrafico
@@ -327,20 +342,20 @@ onMounted(() => {
         />
       </div>
       <div class="tbo__horizonte" aria-hidden="true" />
-      <div v-if="opcoes.length > 1" class="tbo__periodo">
+      <div v-if="!enxuto && opcoes.length > 1" class="tbo__periodo">
         <AtivoPeriodo v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="tbo__seg" :style="{ maxWidth: `${opcoes.length * 130}px` }" />
       </div>
-      <p class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
+      <p v-if="!enxuto" class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
     </div>
 
-    <dl v-if="linhas.length" class="tbo__nums">
+    <dl v-if="!enxuto && linhas.length" class="tbo__nums">
       <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `carteira:linha:${r.l}`, tipo: 'carteira', rotulo: r.l, texto: `${r.l}: ${r.v}` }" class="tbo__num">
         <dt>{{ r.l }}</dt><dd>{{ r.v }}</dd>
       </div>
     </dl>
 
     <div class="tbo__pe">
-      <AtivoPerguntaChips :perguntas="perguntas" tom="escuro" :rotulo="null" @perguntar="perguntar" />
+      <AtivoPerguntaChips v-if="!enxuto" :perguntas="perguntas" tom="escuro" :rotulo="null" @perguntar="perguntar" />
       <!-- a tela nova: de quando é cada conexão, e o que ela traz -->
       <div v-if="visao" class="tbo__sim cto__contas cto__frescor">
         <span v-for="c in frescor" :key="c.id" class="cto__conta" :class="`cto__conta--${c.estado}`" :title="`Traz ${c.traz}`">
@@ -349,6 +364,10 @@ onMounted(() => {
           <span class="cto__quando">{{ c.estado === 'ok' ? `atualizado ${c.quando}` : `parado desde ${c.quando}` }}</span>
           <NuxtLink v-if="c.estado !== 'ok'" to="/conta#open-finance" class="cto__conta-status">Reconectar</NuxtLink>
         </span>
+        <button type="button" class="cto__mais-conta" :disabled="abrindo" @click="adicionarConta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          {{ abrindo ? 'Abrindo…' : 'Adicionar conta' }}
+        </button>
       </div>
       <!-- de onde a carteira vem: as contas do Open Finance, discretas -->
       <div v-else v-contexto-chat="{ id: 'carteira:contas', tipo: 'carteira', rotulo: 'Contas conectadas' }" class="tbo__sim cto__contas">
@@ -417,6 +436,14 @@ onMounted(() => {
 .cto__conta-logo img { width: 100%; height: 100%; object-fit: cover; }
 .cto__conta-status { color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 700; }
 .cto__conta--reconectar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.cto__mais-conta { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; cursor: pointer; transition: color .2s; }
+.cto__mais-conta:hover { color: var(--nu-agora-texto); }
+.cto__mais-conta:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; border-radius: 4px; }
+/* o topo enxuto: o período ao lado do título do gráfico, o CDI na legenda (sem traço: ele não é desenhado) */
+.cto .tbo__palco-cab { align-items: center; }
+.cto__periodo-cab { margin-left: auto; }
+.cto__leg-cdi { color: var(--nu-agora-sub); }
+.cto__palco--baixo :deep(.tbo__grafico), .cto__palco--baixo .tbo__grafico { height: clamp(140px, 15vw, 210px); }
 .cto__frase--botao { padding: 0; border: 0; background: none; font-family: inherit; text-align: left; cursor: pointer; text-decoration-color: var(--nu-white-35); }
 .cto__frescor { gap: 6px 18px; }
 .cto__fresco { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green-soft); box-shadow: 0 0 0 3px var(--nu-green-soft-16); }
