@@ -7,7 +7,8 @@
 // abre a análise sozinho.
 import type { CarteiraPayload } from '~/types/carteira'
 
-const props = defineProps<{ payload: CarteiraPayload }>()
+// enxuta (a /carteira nova, 06/11/2026): sem o Raio-X (vira fonte do motor de avisos) e sem o banner do MCP
+const props = defineProps<{ payload: CarteiraPayload; enxuta?: boolean }>()
 
 const ANCORAS = ['desempenho', 'raio-x', 'movimentacoes', 'pnl']
 const aberta = ref(false)
@@ -16,7 +17,7 @@ const partes = computed(() => {
   const p = props.payload
   const l: string[] = []
   if (p.chart) l.push('desempenho')
-  if (p.raiox) l.push('Raio-X')
+  if (p.raiox && !props.enxuta) l.push('Raio-X')
   if (p.movements) l.push('movimentações')
   if (p.heatmap) l.push('P&L mês a mês')
   return l
@@ -51,10 +52,10 @@ onMounted(() => {
 
     <div v-if="aberta" id="can-conteudo" class="can__conteudo">
       <NuPortfolioChart v-if="payload.chart" id="desempenho" class="can__sec" :chart="payload.chart" data-clarity-mask="true" />
-      <CarteiraRaioX v-if="payload.raiox" id="raio-x" class="can__sec" :raiox="payload.raiox" data-clarity-mask="true" />
+      <CarteiraRaioX v-if="payload.raiox && !enxuta" id="raio-x" class="can__sec" :raiox="payload.raiox" data-clarity-mask="true" />
       <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="can__sec" :movements="payload.movements" data-clarity-mask="true" />
       <CarteiraHeatmap v-if="payload.heatmap" id="pnl" class="can__sec" :heatmap="payload.heatmap" data-clarity-mask="true" />
-      <CarteiraMcpBanner />
+      <CarteiraMcpBanner v-if="!enxuta" />
     </div>
   </div>
 </template>

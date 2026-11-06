@@ -25,6 +25,11 @@ import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
 const props = defineProps<{ payload: CarteiraPayload }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
+// A /carteira nova (06/11/2026), por enquanto só no dev e com mock
+// (components/carteira/visao/CarteiraVisao.vue); ?visao=antiga volta para esta.
+import CarteiraVisao from '~/components/carteira/visao/CarteiraVisao.vue'
+const visaoNova = computed(() => import.meta.dev && useRoute().query.visao !== 'antiga')
+
 const conectada = computed(() => props.payload.hero.state === 'patrimonio' && !!props.payload.agora)
 const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
 // a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
@@ -43,7 +48,7 @@ const achados = computed(() => {
 // lugar do "Mercado agora": a carteira não precisa do mercado piscando em
 // cima). Só entra seção que está no DOM; ids batem com o template.
 const railSections = computed<RailSection[]>(() => {
-  if (!conectada.value) return []
+  if (!conectada.value || visaoNova.value) return []
   const p = props.payload
   const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }]
   s.push({ id: 'futuro', label: 'Daqui a 5 anos' })
@@ -70,7 +75,8 @@ onMounted(() => {
 <template>
   <!-- CLARITY (11/10/2026): toda seção com dado da pessoa leva
        data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
-  <div v-if="conectada">
+  <CarteiraVisao v-if="conectada && visaoNova" :payload="payload" @connected="emit('connected')" />
+  <div v-else-if="conectada">
     <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" :achados="achados" @connected="emit('connected')" />
     <CarteiraFuturo id="futuro" />
     <CarteiraPosicoes

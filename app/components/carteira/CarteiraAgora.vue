@@ -33,6 +33,9 @@ import { pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
+import CarteiraAvisos from '~/components/carteira/visao/CarteiraAvisos.vue'
+import type { AvisosVisao, ConexaoVisao } from '~/types/carteiraVisao'
+import { quandoAtualizou } from '~/utils/carteiraVisao'
 
 /** o que o modal das ideias lê (CarteiraIdeias); sem Raio-X nem análise, fica o Perguntar */
 interface AchadosDoTopo {
@@ -41,13 +44,16 @@ interface AchadosDoTopo {
   posicoes: CarteiraPosicaoMundo[]
   olhadaEm: string | null
 }
-const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null }>()
+/** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão */
+interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null }
+const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
 // os onMounted dos composables vêm antes do await
 const { visiveis: revelado, alternar: alternarRevelado } = useValoresVisiveis()
 const { connections, loading: contasCarregando, ensure: carregarContas, refresh: atualizarContas } = useContasConectadas()
-onMounted(carregarContas)
+// a tela nova traz as conexões no próprio payload (o frescor); não busca de novo
+onMounted(() => { if (!props.visao) void carregarContas() })
 const painel = useChatPainel()
 
 /* ——— as contas e o Pluggy ——— */
@@ -89,8 +95,20 @@ const entradaDaFrase = computed(() => ({
 const frase = computed(() => fraseDaCarteira({ ...entradaDaFrase.value, alerta: props.agora.alerta ? { nome: props.agora.alerta.nome, pct: props.agora.alerta.pct } : null }))
 // na atenção, a linha do dia ainda conta a carteira contra a bolsa (a frase sem o alerta)
 const linhaDoDia = computed(() => fraseDaCarteira({ ...entradaDaFrase.value, alerta: null }).linha)
-const atencao = computed(() => frase.value.tom === 'atencao')
-const alerta = computed(() => (atencao.value ? props.agora.alerta : null))
+const alerta = computed(() => (frase.value.tom === 'atencao' ? props.agora.alerta : null))
+// o aviso urgente do motor sobe para o estado do topo (a queda forte do dia ganha dele)
+const urgente = computed(() => {
+  const v = props.visao
+  if (!v?.avisos.urgente || alerta.value) return null
+  return v.avisos.itens.find((a) => a.id === v.avisos.urgente) ?? null
+})
+const atencao = computed(() => frase.value.tom === 'atencao' || !!urgente.value)
+const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
+/* o frescor: de quando é cada conexão (a regra da tela nova: todo dado diz a data) */
+const FONTE: Record<string, string> = { posicoes: 'posições', transacoes: 'transações', proventos: 'proventos', cartao: 'cartão' }
+const frescor = computed(() => (props.visao?.conexoes ?? []).map((c) => ({
+  ...c, quando: quandoAtualizou(c.atualizadaEm), traz: c.fontes.map((f) => FONTE[f]).join(', '),
+})))
 
 const ESCONDIDO = 'R$ ••••••'
 const semSinal = (s: string) => s.replace(/^[+−-]/, '')
@@ -244,7 +262,8 @@ onMounted(() => {
         <TopoBotao :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
-        <CarteiraIdeias v-if="achados" v-bind="achados" />
+        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" />
+        <CarteiraIdeias v-else-if="achados" v-bind="achados" />
         <TopoBotao v-else rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
           <img src="/logo-azul.svg" alt="" width="16" height="16" class="cto__logo">
         </TopoBotao>
@@ -258,6 +277,7 @@ onMounted(() => {
       <span class="cto__ponto" aria-hidden="true" />
       <span class="cto__pregao">{{ atencao ? 'Pede atenção' : pregao.rotulo }}</span>
       <NuxtLink v-if="alerta" :to="`/asset/${alerta.ticker}`" class="cto__frase cto__frase--link">{{ frase.titulo }}</NuxtLink>
+      <button v-else-if="urgente" type="button" class="cto__frase cto__frase--link cto__frase--botao" @click="avisosRef?.abrir(urgente.id)">{{ urgente.curto }}</button>
       <strong v-else class="cto__frase">{{ frase.titulo }}</strong>
       <span v-if="alerta" class="cto__frase-sub">{{ frase.linha }}</span>
     </p>
@@ -321,8 +341,17 @@ onMounted(() => {
 
     <div class="tbo__pe">
       <AtivoPerguntaChips :perguntas="perguntas" tom="escuro" :rotulo="null" @perguntar="perguntar" />
+      <!-- a tela nova: de quando é cada conexão, e o que ela traz -->
+      <div v-if="visao" class="tbo__sim cto__contas cto__frescor">
+        <span v-for="c in frescor" :key="c.id" class="cto__conta" :class="`cto__conta--${c.estado}`" :title="`Traz ${c.traz}`">
+          <span class="cto__fresco" aria-hidden="true" />
+          {{ c.instituicao }}
+          <span class="cto__quando">{{ c.estado === 'ok' ? `atualizado ${c.quando}` : `parado desde ${c.quando}` }}</span>
+          <NuxtLink v-if="c.estado !== 'ok'" to="/conta#open-finance" class="cto__conta-status">Reconectar</NuxtLink>
+        </span>
+      </div>
       <!-- de onde a carteira vem: as contas do Open Finance, discretas -->
-      <div v-contexto-chat="{ id: 'carteira:contas', tipo: 'carteira', rotulo: 'Contas conectadas' }" class="tbo__sim cto__contas">
+      <div v-else v-contexto-chat="{ id: 'carteira:contas', tipo: 'carteira', rotulo: 'Contas conectadas' }" class="tbo__sim cto__contas">
         <template v-if="contasCarregando && !connections.length">
           <NuSkeleton v-for="i in 2" :key="i" tone="navy" width="96px" height="26px" radius="pill" />
         </template>
@@ -388,6 +417,11 @@ onMounted(() => {
 .cto__conta-logo img { width: 100%; height: 100%; object-fit: cover; }
 .cto__conta-status { color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 700; }
 .cto__conta--reconectar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.cto__frase--botao { padding: 0; border: 0; background: none; font-family: inherit; text-align: left; cursor: pointer; text-decoration-color: var(--nu-white-35); }
+.cto__frescor { gap: 6px 18px; }
+.cto__fresco { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-green-soft); box-shadow: 0 0 0 3px var(--nu-green-soft-16); }
+.cto__conta--velha .cto__fresco, .cto__conta--caida .cto__fresco { background: var(--nu-amber-fill); box-shadow: 0 0 0 3px var(--nu-warning-bg); }
+.cto__quando { color: var(--nu-agora-sub); font-weight: 500; font-variant-numeric: tabular-nums; }
 .cto__aviso { flex-basis: 100%; color: var(--nu-green-soft); font-size: var(--nu-fs-sm); font-weight: 500; }
 .cto__aviso--erro { color: var(--nu-red-soft); }
 
