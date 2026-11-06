@@ -280,13 +280,61 @@ onMounted(desenharGrafico)
    o patrimônio e o gráfico (montado só ao abrir: o gráfico mede a largura) ——— */
 const detalhes = ref(false)
 const recolhido = computed(() => enxuto.value && !detalhes.value)
-async function abrirDetalhes() {
+/* A abertura (06/11, o dono: "uma animação foda no formato da logo da
+   Redentia"): as quatro peças do losango da marca nascem no botão, se abrem
+   para os quatro lados e somem nas bordas, enquanto o vão do meio, também um
+   losango, cresce até cobrir o topo e revela o patrimônio e o gráfico, que
+   então se desenha. ~1,1 s; com movimento reduzido, abre direto. */
+const secao = ref<HTMLElement | null>(null)
+const detRef = ref<HTMLElement | null>(null)
+const abrindoLogo = ref<{ x: number; y: number } | null>(null)
+const logoRef = ref<SVGSVGElement | null>(null)
+async function abrirDetalhes(e?: MouseEvent) {
+  const sec = secao.value
+  const btn = (e?.currentTarget as HTMLElement | null) ?? null
+  const calmo = !sec || !btn || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const bs = btn?.getBoundingClientRect()
   detalhes.value = true
   await nextTick()
+  if (calmo || !bs || !detRef.value) { desenharGrafico(); return }
+  const sr = sec!.getBoundingClientRect()
+  const dr = detRef.value.getBoundingClientRect()
+  // o centro: o botão, nas coordenadas da seção (a logo) e do miolo (o vão)
+  const cx = bs.left + bs.width / 2
+  const cy = bs.top + bs.height / 2
+  abrindoLogo.value = { x: cx - sr.left, y: cy - sr.top }
+  const x = cx - dr.left
+  const y = cy - dr.top
+  // o losango que cobre tudo: a maior soma |dx| + |dy| até um canto da seção
+  const cantos = [[sr.left, sr.top], [sr.right, sr.top], [sr.left, sr.bottom], [sr.right, sr.bottom]]
+  const r = Math.max(...cantos.map(([a, b]) => Math.abs(a! - cx) + Math.abs(b! - cy))) * 1.05
+  const los = (k: number) => `polygon(${x}px ${y - k}px, ${x + k}px ${y}px, ${x}px ${y + k}px, ${x - k}px ${y}px)`
+  const curva = 'cubic-bezier(.6, 0, .25, 1)'
+  detRef.value.animate([{ clipPath: los(0) }, { clipPath: los(26), offset: 0.16 }, { clipPath: los(r) }], { duration: 1100, easing: curva })
+  await nextTick()
+  const svg = logoRef.value
+  if (svg) {
+    const ida = r * 0.9
+    const pecas: [string, number, number][] = [['.cto__p-e', -1, 0], ['.cto__p-d', 1, 0], ['.cto__p-c', 0, -1], ['.cto__p-b', 0, 1]]
+    svg.animate([
+      { transform: 'scale(.5) rotate(-45deg)', opacity: 0 }, { transform: 'scale(1) rotate(0)', opacity: 1, offset: 0.16 },
+      { transform: 'scale(1.35)', opacity: 1, offset: 0.5 }, { transform: 'scale(2.2)', opacity: 0 },
+    ], { duration: 1100, easing: curva, fill: 'forwards' })
+    for (const [sel, dx, dy] of pecas) {
+      svg.querySelector(sel)?.animate([
+        { transform: 'translate(0, 0)' }, { transform: 'translate(0, 0)', offset: 0.16 },
+        { transform: `translate(${dx * ida / 2.4}px, ${dy * ida / 2.4}px)` },
+      ], { duration: 1100, easing: curva, fill: 'forwards' })
+    }
+  }
+  // a linha se desenha enquanto o losango abre (depois, ela piscaria: aparece, some e redesenha)
   desenharGrafico()
+  setTimeout(() => { abrindoLogo.value = null }, 1100)
 }
 const pedemAtencao = computed(() => (props.visao?.avisos.itens ?? []).filter((a) => a.gravidade === 'alta' || a.gravidade === 'media'))
 const NA_FRENTE = 2
+// o "+N": todos os outros avisos (os de atenção que não couberam e os de bom saber)
+const outrosAvisos = computed(() => Math.max(0, (props.visao?.avisos.itens.length ?? 0) - (atencao.value ? Math.min(NA_FRENTE, pedemAtencao.value.length) : 0)))
 const statusTitulo = computed(() => (atencao.value ? 'Pede atenção.' : 'Tudo normal.'))
 const statusLinha = computed(() => {
   const l = linhaDoDia.value
@@ -297,7 +345,7 @@ const statusLinha = computed(() => {
 </script>
 
 <template>
-  <section v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao }" aria-labelledby="cto-h1" data-clarity-mask="true">
+  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao }" aria-labelledby="cto-h1" data-clarity-mask="true">
     <div class="tbo__luz" aria-hidden="true" />
     <div class="tbo__linha1">
       <div class="tbo__id">
@@ -311,13 +359,29 @@ const statusLinha = computed(() => {
         <TopoBotao v-if="!enxuto" :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
-        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" />
+        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" sem-botao />
         <CarteiraIdeias v-else-if="achados" v-bind="achados" />
         <TopoBotao v-else rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
           <img src="/logo-azul.svg" alt="" width="16" height="16" class="cto__logo">
         </TopoBotao>
       </div>
     </div>
+
+    <!-- a logo que abre (só durante a abertura) -->
+    <svg
+      v-if="abrindoLogo" ref="logoRef" class="cto__logo-abre" :style="{ left: `${abrindoLogo.x}px`, top: `${abrindoLogo.y}px` }"
+      viewBox="0 0 206 206" width="120" height="120" aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="cto-g-h1" x1="206" y1="103" x2="147" y2="103" gradientUnits="userSpaceOnUse"><stop stop-color="#58AFF5" /><stop offset=".73" stop-color="#1838C9" /><stop offset="1" stop-color="#041255" /></linearGradient>
+        <linearGradient id="cto-g-h2" x1="0" y1="103" x2="59" y2="103" gradientUnits="userSpaceOnUse"><stop stop-color="#58AFF5" /><stop offset=".73" stop-color="#1838C9" /><stop offset="1" stop-color="#041255" /></linearGradient>
+        <linearGradient id="cto-g-v" x1="103" y1="0" x2="103" y2="206" gradientUnits="userSpaceOnUse"><stop stop-color="#58AFF5" /><stop offset=".2" stop-color="#1838C9" /><stop offset=".8" stop-color="#1838C9" /><stop offset="1" stop-color="#58AFF5" /></linearGradient>
+      </defs>
+      <g class="cto__p-d"><path d="M203.597 97.1954C206.802 100.401 206.802 105.598 203.597 108.803L134.492 177.907C131.038 181.361 126.354 183.302 121.469 183.302C111.297 183.302 103.051 175.056 103.051 164.884V163.719C103.051 158.525 105.114 153.544 108.787 149.872L141.517 117.141C149.328 109.331 149.328 96.6675 141.517 88.857L108.765 56.1042C105.106 52.4453 103.051 47.4828 103.051 42.3084V41.287C103.051 31.0758 111.329 22.7979 121.54 22.7979C126.444 22.7979 131.146 24.7459 134.614 28.2132L203.597 97.1954Z" fill="url(#cto-g-h1)" /></g>
+      <g class="cto__p-e"><path d="M2.40387 97.1954C-0.801339 100.401 -0.801239 105.598 2.40387 108.803L71.5084 177.907C74.9624 181.361 79.6471 183.302 84.5318 183.302C94.7038 183.302 102.95 175.056 102.95 164.884V163.719C102.95 158.525 100.887 153.544 97.2141 149.872L64.4834 117.141C56.6729 109.331 56.6729 96.6675 64.4832 88.857L97.2354 56.1042C100.894 52.4453 102.95 47.4828 102.95 42.3084V41.287C102.95 31.0758 94.6719 22.7979 84.4607 22.7979C79.5571 22.7979 74.8544 24.7459 71.387 28.2132L2.40387 97.1954Z" fill="url(#cto-g-h2)" /></g>
+      <g class="cto__p-b"><path d="M136.957 121.702C142.901 115.757 151.303 120.19 146.991 127.408L136.325 145.265C132.632 151.448 130.682 158.516 130.682 165.717V179.198C130.682 180.913 129.89 182.509 128.677 183.722L108.804 203.596L108.498 203.887C105.38 206.704 100.621 206.704 97.5031 203.887L97.1964 203.596L78.3916 184.791C76.8886 183.289 75.8762 181.323 75.8761 179.198V165.606C75.876 158.473 73.9686 151.469 70.3507 145.321L59.6515 127.14C55.6644 120.365 63.5105 116.169 69.0694 121.728L89.2707 141.929C96.8532 149.512 109.147 149.512 116.73 141.929L136.957 121.702Z" fill="url(#cto-g-v)" /></g>
+      <g class="cto__p-c"><path d="M97.1964 2.40394C100.402 -0.801314 105.599 -0.801314 108.804 2.40394L128.591 22.1899C129.854 23.4531 130.682 25.1146 130.682 26.901V40.3815C130.682 47.5832 132.632 54.6509 136.325 60.8336L146.991 78.6901C151.275 85.8611 142.932 90.2724 137.026 84.3658L116.694 64.034C109.131 56.4707 96.8689 56.4706 89.3057 64.0337L69.0001 84.3389C63.4794 89.8595 55.6917 85.6864 59.6515 78.9577L70.3507 60.777C73.9684 54.6294 75.8761 47.6258 75.8761 40.4928V26.901C75.8762 24.7015 76.9289 22.6705 78.4843 21.1152L97.1964 2.40394Z" fill="url(#cto-g-v)" /></g>
+    </svg>
 
     <!-- recolhido: só o estado e o que pede atenção -->
     <div v-if="recolhido" class="cto__resumo">
@@ -338,17 +402,19 @@ const statusLinha = computed(() => {
             <span class="cto__item-v">Ver</span>
           </button>
         </li>
-        <li v-if="pedemAtencao.length > NA_FRENTE">
-          <button type="button" class="cto__item cto__item--mais" @click="avisosRef?.abrir()">E mais {{ pedemAtencao.length - NA_FRENTE }} nos avisos</button>
-        </li>
       </ul>
+      <button v-if="outrosAvisos" type="button" class="cto__mais" :aria-label="`Ver todos os avisos: mais ${outrosAvisos}`" @click="avisosRef?.abrir()">
+        <span class="cto__mais-n">+{{ outrosAvisos }}</span>
+        {{ outrosAvisos === 1 ? 'aviso' : 'avisos' }}
+      </button>
       <button type="button" class="cto__detalhes" :aria-expanded="false" @click="abrirDetalhes">
         Ver detalhes
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
       </button>
     </div>
 
-    <template v-else>
+
+    <div v-else ref="detRef" class="cto__det">
     <div class="cto__corpo">
     <div class="cto__esq">
     <!-- o estado e a frase: o eyebrow do topo, com peso -->
@@ -419,7 +485,7 @@ const statusLinha = computed(() => {
       Ver menos
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg>
     </button>
-    </template>
+    </div>
 
     <dl v-if="!enxuto && linhas.length" class="tbo__nums">
       <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `carteira:linha:${r.l}`, tipo: 'carteira', rotulo: r.l, texto: `${r.l}: ${r.v}` }" class="tbo__num">
@@ -526,10 +592,19 @@ const statusLinha = computed(() => {
 .cto__item-t { flex: 1; min-width: 0; }
 .cto__item-v { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 700; transition: color .2s, transform .2s; }
 .cto__item:hover .cto__item-v { color: var(--nu-agora-texto); transform: translateX(3px); }
+.cto__logo-abre {
+  position: absolute; z-index: 3; margin: -60px 0 0 -60px; pointer-events: none; overflow: visible; transform-origin: 50% 50%;
+  filter: drop-shadow(0 0 18px rgba(88, 175, 245, .75)) drop-shadow(0 0 42px rgba(24, 56, 201, .6));
+}
+.cto__logo-abre g { transform-box: fill-box; transform-origin: 50% 50%; }
+.cto__mais { display: flex; width: fit-content; align-items: center; gap: 8px; margin-top: 14px; padding: 0; border: 0; background: none; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-md); font-weight: 600; cursor: pointer; transition: color .2s; }
+.cto__mais:hover { color: var(--nu-agora-texto); }
+.cto__mais:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; border-radius: 6px; }
+.cto__mais-n { display: inline-grid; place-items: center; min-width: 34px; height: 26px; padding: 0 8px; border-radius: var(--nu-r-pill); background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font-size: var(--nu-fs-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
 .cto__item--mais { color: var(--nu-agora-sub); font-size: var(--nu-fs-md); font-weight: 600; }
 .cto__item:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; border-radius: 4px; }
 .cto__detalhes {
-  display: inline-flex; align-items: center; gap: 8px; height: 42px; margin-top: clamp(22px, 3vw, 32px); padding: 0 20px; border: 0; border-radius: var(--nu-r-pill);
+  display: flex; width: fit-content; align-items: center; gap: 8px; height: 42px; margin-top: clamp(22px, 3vw, 32px); padding: 0 20px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s;
 }
 .cto__detalhes:hover { background: var(--nu-white-12, rgba(255,255,255,.16)); }

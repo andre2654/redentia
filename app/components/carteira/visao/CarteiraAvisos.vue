@@ -21,7 +21,8 @@ import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
 import { gruposDeAvisos, quandoAtualizou, tituloDosAvisos } from '~/utils/carteiraVisao'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
-const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string | null }>()
+// semBotao (06/11): o topo recolhido abre o modal pelos próprios itens e pelo "+N"; o botão redondo sai
+const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string | null; semBotao?: boolean }>()
 
 const { hidden } = useHiddenValues()
 const semValor = (t: string) => (hidden.value ? t.replace(/R\$\s?[\d.,]+( mil)?/g, 'R$ ••••') : t)
@@ -103,6 +104,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
 
 <template>
   <TopoBotao
+    v-if="!semBotao"
     rotulo="Avisos" :aria-label="pontos ? `Avisos da carteira: ${pontos} pedem atenção` : 'Avisos da carteira'" :title="pontos ? `${pontos} pedem atenção` : 'Avisos da carteira'"
     aria-haspopup="dialog" :aria-expanded="aberto" class="cav__b" @click="abrir()"
   >
