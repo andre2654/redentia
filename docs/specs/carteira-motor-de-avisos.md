@@ -327,3 +327,23 @@ Cada leva vira um PR no backend (andre2654/redentia-api) e outro no front, só c
 3. **Cartão e conta:** buscar as transações do cartão e da conta (consentimento e privacidade). Sem isso, não existe "renda × gasto".
 4. **Regras de imposto:** conferir as regras de IR numa fonte antes de as frases irem ao ar.
 5. **Carteira do dono:** a dele está mais nova no espelho Business. Juntar as duas fotografias por pessoa é a Leva 0 ou fica para depois?
+
+### Lições do primeiro ensaio com a carteira real (06/11/2026)
+
+Ensaio só de leitura no espelho Business do dono, com os dados de 29/10. Ele gerou 12 avisos e 5 vetos. O que muda no motor:
+
+- **Juntar o que conta a mesma história:**
+  - DARF de jan–mar e o DARF do ETF de abril viram um aviso só, "imposto de 2026".
+  - As quedas de 30 dias e a marcação do Tesouro viram um aviso só, "o que a queda pós-eleição tirou da carteira".
+  - Com isso, saem no máximo 3 "pede atenção".
+- **Frescor por detector, não por carteira:**
+  - O imposto de meses passados não depende do dado de hoje.
+  - Agenda e quedas usam preço de mercado, que está em dia.
+  - Só o que depende da posição (isenção do mês, concentração) espera a reconexão.
+- **Reconexão em primeiro:** é a ação de 2 minutos que destrava as outras.
+- **Correlação robusta:** um dia extremo (26/10, Ibovespa −13,88% com circuit breaker após o 2º turno, confirmado nas notícias) infla as correlações. AUPO11 × resto vai de 0,60 para 0,81. Usar correlação de postos (Spearman) ou cortar os dias acima de 3 desvios, e dizer isso na prova.
+- **Nome de ativo no "meio-termo":**
+  - No site: só a classe ("FII de papel").
+  - No app, onde o dono aceitou o risco: os nomes.
+- **O detector `proventos.faltou` vale ouro:** achou um JCP da Copel de 30/09 (R$ 265–304) que não caiu na conta.
+- **Os detectores de imposto precisam do preço médio (Leva 0, item 2).** Sem ele, todo aviso de imposto de ação sai "incompleto".
