@@ -284,7 +284,7 @@ const detalhes = computed(() => fase.value !== 'recolhido')
 const recolhido = computed(() => enxuto.value && fase.value === 'recolhido')
 /* A abertura em onda (06/11; o dono: "uma animação foda no formato da logo",
    depois "mais robusta, mais bonita, mais suave" e "como se ela gerasse uma
-   onda que vai mostrando os dados"). Em ~1,5 s, sem corte seco:
+   onda que vai mostrando os dados"; depois "pode ser mais rápida"). Em ~0,9 s, sem corte seco:
     1. o resumo sai desfocando, e a altura do topo cresce devagar até a nova;
     2. as quatro peças do losango da marca se juntam no meio do topo, acesas;
     3. a logo pulsa e solta a onda: dois anéis em losango que se abrem até as
@@ -341,11 +341,11 @@ async function abrirDetalhes() {
   const SUAVE = 'cubic-bezier(.4, 0, .2, 1)'
 
   // 1. a altura cresce e o resumo sai desfocando
-  anima(troca, [{ height: `${h0}px` }, { height: `${h1}px` }], { duration: 900, easing: SUAVE })
+  anima(troca, [{ height: `${h0}px` }, { height: `${h1}px` }], { duration: 560, easing: SUAVE })
   anima(resumoRef.value, [
     { opacity: 1, filter: 'blur(0)', transform: 'none' },
     { opacity: 0, filter: 'blur(10px)', transform: 'translateY(-10px) scale(.985)' },
-  ], { duration: 360, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'forwards' })
+  ], { duration: 220, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'forwards' })
 
   // a origem: o meio do topo novo (nas coordenadas da tela, da seção e de cada alvo)
   const sr = sec!.getBoundingClientRect()
@@ -355,8 +355,9 @@ async function abrirDetalhes() {
   const cantos = [[sr.left, dr.top], [sr.right, dr.top], [sr.left, dr.top + h1], [sr.right, dr.top + h1]]
   const R = Math.max(...cantos.map(([a, b]) => Math.abs(a! - ox) + Math.abs(b! - oy))) * 1.04
   abrindoLogo.value = { x: ox - sr.left, y: oy - sr.top, w: sr.width, h: sr.height + (h1 - h0) }
-  const T0 = 420 // a onda sai quando a logo termina de se juntar
-  const DUR = 1050
+  const T0 = 230 // a onda sai quando a logo termina de se juntar
+  const DUR = 640
+  const TOTAL = T0 + DUR + 80 // a logo vive do começo ao fim da onda
 
   // 4. cada dado surge quando a frente passa por ele (a distância é a do losango: |dx| + |dy| ao ponto mais perto)
   const alvos = [...det.querySelectorAll('.cto__estado, .tbo__preco, .tbo__dia, .tbo__h2, .tbo__leg, .cto__periodo-cab, .cto__detalhes--menos'), ...sec!.querySelectorAll('.cto__acoes > *')]
@@ -368,7 +369,7 @@ async function abrirDetalhes() {
     anima(el, [
       { opacity: 0, filter: 'blur(10px)', transform: 'translateY(10px)' },
       { opacity: 1, filter: 'blur(0)', transform: 'none' },
-    ], { duration: 640, delay: atraso, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' })
+    ], { duration: 420, delay: atraso, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' })
   })
   // o gráfico se revela sob a frente (o mesmo losango, nas coordenadas dele)
   const graf = det.querySelector('.tbo__grafico')
@@ -378,7 +379,7 @@ async function abrirDetalhes() {
     const gy = oy - gr.top
     const los = (k: number) => `polygon(${gx}px ${gy - k}px, ${gx + k}px ${gy}px, ${gx}px ${gy + k}px, ${gx - k}px ${gy}px)`
     anima(graf, [{ clipPath: los(0) }, { clipPath: los(R) }], { duration: DUR, delay: T0, easing: ONDA, fill: 'backwards' })
-    anima(det.querySelector('.tbo__horizonte'), [{ opacity: 0, transform: 'scaleX(.2)' }, { opacity: 1, transform: 'none' }], { duration: 1100, delay: T0 + 200, easing: SUAVE, fill: 'backwards' })
+    anima(det.querySelector('.tbo__horizonte'), [{ opacity: 0, transform: 'scaleX(.2)' }, { opacity: 1, transform: 'none' }], { duration: 640, delay: T0 + 120, easing: SUAVE, fill: 'backwards' })
   }
 
   await nextTick()
@@ -387,20 +388,20 @@ async function abrirDetalhes() {
   if (svg) {
     anima(svg, [
       { opacity: 0, transform: 'scale(.72) rotate(-18deg)' },
-      { opacity: 1, transform: 'scale(1) rotate(0)', offset: T0 / 1500 },
-      { opacity: 1, transform: 'scale(1.12)', offset: (T0 + 140) / 1500 },
-      { opacity: .9, transform: 'scale(1)', offset: (T0 + 420) / 1500 },
+      { opacity: 1, transform: 'scale(1) rotate(0)', offset: T0 / TOTAL },
+      { opacity: 1, transform: 'scale(1.12)', offset: (T0 + 90) / TOTAL },
+      { opacity: .9, transform: 'scale(1)', offset: (T0 + 260) / TOTAL },
       { opacity: 0, transform: 'scale(.86)' },
-    ], { duration: 1500, easing: 'cubic-bezier(.33, 0, .2, 1)', fill: 'forwards' })
+    ], { duration: TOTAL, easing: 'cubic-bezier(.33, 0, .2, 1)', fill: 'forwards' })
     const pecas: [string, number, number][] = [['.cto__p-e', -1, 0], ['.cto__p-d', 1, 0], ['.cto__p-c', 0, -1], ['.cto__p-b', 0, 1]]
     for (const [sel, dx, dy] of pecas) {
       anima(svg.querySelector(sel), [
         { transform: `translate(${dx * 46}px, ${dy * 46}px)`, opacity: 0 },
-        { transform: 'translate(0, 0)', opacity: 1, offset: T0 / 1500 },
-        { transform: `translate(${dx * 9}px, ${dy * 9}px)`, opacity: 1, offset: (T0 + 160) / 1500 },
-        { transform: 'translate(0, 0)', opacity: 1, offset: (T0 + 480) / 1500 },
+        { transform: 'translate(0, 0)', opacity: 1, offset: T0 / TOTAL },
+        { transform: `translate(${dx * 9}px, ${dy * 9}px)`, opacity: 1, offset: (T0 + 100) / TOTAL },
+        { transform: 'translate(0, 0)', opacity: 1, offset: (T0 + 300) / TOTAL },
         { transform: 'translate(0, 0)', opacity: 1 },
-      ], { duration: 1500, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'forwards' })
+      ], { duration: TOTAL, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'forwards' })
     }
   }
   // 3. a luz do centro
@@ -408,7 +409,7 @@ async function abrirDetalhes() {
     { opacity: 0, transform: 'translate(-50%, -50%) scale(.3)' },
     { opacity: .7, transform: 'translate(-50%, -50%) scale(1)', offset: .35 },
     { opacity: 0, transform: 'translate(-50%, -50%) scale(1.6)' },
-  ], { duration: 1000, delay: T0 - 60, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'both' })
+  ], { duration: 620, delay: T0 - 40, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'both' })
 
   // 3. os anéis da onda, no relógio da revelação
   const inicio = performance.now()
@@ -435,7 +436,7 @@ async function abrirDetalhes() {
   setTimeout(() => {
     fase.value = 'aberto'
     limparAbertura()
-  }, T0 + DUR + 120)
+  }, TOTAL + 60)
 }
 // "Ver menos": o miolo esmaece e a altura volta devagar; o resumo entra com o gesto de sempre
 async function fecharDetalhes() {
@@ -443,12 +444,12 @@ async function fecharDetalhes() {
   const troca = trocaRef.value
   const h1 = troca?.offsetHeight ?? 0
   const calmo = !troca || window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (!calmo) await detRef.value?.animate([{ opacity: 1, filter: 'blur(0)' }, { opacity: 0, filter: 'blur(8px)' }], { duration: 220, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {})
+  if (!calmo) await detRef.value?.animate([{ opacity: 1, filter: 'blur(0)' }, { opacity: 0, filter: 'blur(8px)' }], { duration: 160, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {})
   fase.value = 'recolhido'
   await nextTick()
   if (calmo || !troca) return
   const h0 = troca.offsetHeight
-  anima(troca, [{ height: `${h1}px` }, { height: `${h0}px` }], { duration: 600, easing: 'cubic-bezier(.4, 0, .2, 1)' })
+  anima(troca, [{ height: `${h1}px` }, { height: `${h0}px` }], { duration: 420, easing: 'cubic-bezier(.4, 0, .2, 1)' })
 }
 const pedemAtencao = computed(() => (props.visao?.avisos.itens ?? []).filter((a) => a.gravidade === 'alta' || a.gravidade === 'media'))
 const NA_FRENTE = 2
