@@ -29,7 +29,7 @@ import type { CarteiraAgoraVM, CarteiraAnaliseIA, CarteiraHeroVM, CarteiraPosica
 import type { HomeChartVM } from '~/types/home'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 import { fraseDaCarteira } from '~/utils/carteira-agora'
-import { pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
+import { contraABolsa, pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
@@ -111,11 +111,25 @@ const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
 // as perguntas prontas (a barra do chat está sempre ali) e a dica do cursor;
 // o CDI vai para a legenda, o período sobe para o lado do título do gráfico e
 // o "Adicionar conta" vai para a linha das conexões.
-// No dev, ?topo= compara: 1 enxuto · 2 enxuto com o gráfico baixo · 3 sem o losango.
+// Depois (06/11, o dono apontando o losango: "talvez tirar isso ou colocar em
+// outro lugar"): o losango sai do topo da carteira (segue no Início) e a
+// comparação com a bolsa vira meia frase na linha do dia, com o provento do
+// dia quando houver; o gráfico fica baixo, e o topo inteiro cabe numa tela.
+// No dev, ?topo=losango traz o losango de volta para comparar.
 const enxuto = computed(() => !!props.visao)
 const rotaTopo = useRoute()
-const versaoTopo = computed(() => (enxuto.value && import.meta.dev ? (['2', '3'].includes(String(rotaTopo.query.topo)) ? String(rotaTopo.query.topo) : '1') : '0'))
-const semLosango = computed(() => versaoTopo.value === '3')
+const comLosango = computed(() => !enxuto.value || (import.meta.dev && rotaTopo.query.topo === 'losango'))
+const semLosango = computed(() => !comLosango.value)
+const versaoTopo = computed(() => (enxuto.value && semLosango.value ? '2' : '0'))
+/** 'Caiu menos que a bolsa (−0,52%). R$ 48,20 de ITSA4 hoje.' */
+const contraBolsa = computed(() => {
+  const c = props.agora.carteiraPct
+  const b = bolsaPct.value
+  if (c == null || b == null) return null
+  const t = contraABolsa(c, b, pregao.value.estado === 'aberta')
+  const prov = props.agora.provento ? ` Provento: ${subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value)}.` : ''
+  return `${t.charAt(0).toUpperCase()}${t.slice(1)} (${pctComSinal(b)}).${prov}`
+})
 /* o frescor: de quando é cada conexão (a regra da tela nova: todo dado diz a data) */
 const FONTE: Record<string, string> = { posicoes: 'posições', transacoes: 'transações', proventos: 'proventos', cartao: 'cartão' }
 const frescor = computed(() => (props.visao?.conexoes ?? []).map((c) => ({
@@ -305,7 +319,7 @@ onMounted(() => {
           <template v-else>
             <span v-if="dia" class="tbo__delta" :class="`tbo__delta--${agora.diaDir}`">{{ dia }}</span>
             <span v-if="!enxuto" class="tbo__meta">{{ linhaDoDia }}</span>
-            <span v-else-if="semLosango && bolsaPct != null" class="tbo__meta">a bolsa, {{ pctComSinal(bolsaPct) }}</span>
+            <span v-else-if="semLosango && contraBolsa" class="tbo__meta">{{ contraBolsa }}</span>
           </template>
         </p>
       </div>
