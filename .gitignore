@@ -26,3 +26,6 @@ logs
 .env*
 .claude/launch.json
 newsletter-rascunhos/
+
+# dados reais de uma carteira para o dev (nunca no git)
+app/dev/*.local.json

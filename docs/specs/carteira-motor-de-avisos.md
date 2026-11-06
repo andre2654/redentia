@@ -226,3 +226,104 @@ seguir.
 - **IR:** conferir as regras do imposto mínimo e da compensação de prejuízo numa fonte
   antes das frases.
 - **Página:** Contas fora da página e Raio-X substituído pelo motor.
+
+---
+
+## Parte 3 · Plano para tornar real (06/11/2026)
+
+A tela mockada foi aprovada ("agora ficou legal"). O mapa do backend (só leitura) diz o que já existe e o que falta.
+
+### O que já existe e vamos reaproveitar
+
+| Peça | Onde está |
+|---|---|
+| Posições B2C | `portfolio_positions` (com `maturity`, `indexer`, `last_synced_at`) |
+| Transações de investimento B2C | `portfolio_trades` (BUY/SELL/DIVIDEND/JCP/INCOME/TAX, com data, quantidade e preço) |
+| Espelho B2B | `business_client_positions` e `business_client_transactions` via `ClientPortfolioReader` |
+| Proventos anunciados | `ticker_dividends_si` via `PortfolioSnapshotService::upcomingDividendsForHoldings` |
+| Preços diários | `market_prices`, `ticker_historical_prices_si` (~5 anos), `tesouro_direto_historical_prices_si` |
+| Simulação | `ScenarioEngineService::run(['positions' => [...], 'positions_b' => [...], 'horizon_years' => 5])`, que devolve séries p10–p90 em R$, impacto por posição e a comparação A × B |
+| Fatores | `ticker_factor_tags` (seeder com `TICKER_OVERRIDES`) |
+| Cadeia e receita por país | `SupplyChainService::forTicker` e `GET /revenue-geography` |
+| Teses | `investment_theses` (conviction 0–100, tickers) e `thesis_conviction_snapshots` |
+| Nota da Redentia | `RankingService` (calculada na hora, sem percentil guardado) |
+
+### O que falta
+
+- **Rota:** não existe nada em `/me/carteira/*`, nem o `futuro` que o front já chama.
+- **Gastos:** `SyncPluggyConnectionJob` baixa as transações da conta e joga fora tudo que não é provento. O cartão nunca é buscado.
+- **Sincronização:** nada agenda a sincronização do B2C.
+- **Correlação:** cobre só ETF contra o índice de referência e os 10 maiores papéis de cada ETF.
+- **Sinal de alta ou queda:** não existe (média de 200 dias, percentil da nota, tese ativa).
+- **Preço médio:** não é reconstruído a partir das transações. Bonificação e desdobramento chegam crus.
+- **Simulação de renda:** o motor de simulação devolve o valor da carteira, não a renda mensal.
+
+### As levas
+
+**Leva 0 · A base (backend, sem mudar nada visível)**
+1. **`GastosDaConta`:** a tabela `pluggy_account_transactions`, com usuário, conexão, conta, `external_id` único, data, valor, descrição, categoria da Pluggy e o tipo dela.
+   - O sync guarda tudo da conta (BANK) e passa a buscar também o cartão (CREDIT), nos últimos 90 dias.
+   - Cada linha leva marcas calculadas: transferência entre contas próprias, pagamento de fatura e aplicação ou resgate.
+   - Antes de tudo, conferir se o consentimento do site cobre conta e cartão.
+2. **`PrecoMedio`:** reconstrói o custo pelas `portfolio_trades` (e pelas transações B2B).
+   - Bonificação e desdobramento entram como evento, nunca como compra a R$ 0.
+   - Devolve o custo e um selo de "conhecido" ou "desconhecido".
+3. **Fatores consertados:** override versionado no `TickerFactorTagsSeeder` (AUPO11 = Selic; Tesouro IPCA+ = juros longos), aplicado por comando.
+4. **`CorrelacaoDaCarteira`:** correlação de 1 ano calculada na hora dos preços guardados, para os papéis da carteira, com cache de 1 dia. Cobre ação, FII, ETF e Tesouro.
+5. **`SinalDoAtivo`:** usa só dados que já temos (preço contra a média de 200 dias, retorno de 6 meses contra o IBOV, percentil da nota no universo do ranking, conviction da tese ativa). Devolve "alta", "queda" ou "neutro" e o motivo. Serve só aos vetos.
+
+**Leva 1 · O motor e a rota**
+- **Classes em `App/Services/Avisos/`:**
+  - `FotografiaDaCarteira`: monta a carteira a partir do B2C ou do B2B, com o frescor de cada fonte.
+  - `Detector` (interface `detectar(Fotografia): array<Aviso>`) e os 8 detectores da primeira leva.
+  - `Portao` (frescor, completude, sanidade, linguagem), `Vetos` e `Priorizador`.
+  - `Movimentos`: simula o candidato com `ScenarioEngineService::run` na carteira de antes e na de depois (`positions_b`).
+- **Limites e regras:**
+  - Os limites de cada veto e de cada detector ficam em `config/avisos.php`, versionados.
+  - As regras de imposto citam a fonte (Lei 11.033/2004, art. 3º; IN RFB 1.585/2015) e são conferidas antes de ir ao ar.
+- **A tabela `carteira_avisos`:**
+  - Colunas: dono (usuário ou cliente), chave de dedupe, detector, estado (novo, visto, resolvido, adiado), payload, primeira e última vez visto, `resolvido_em`, `adiado_ate`.
+  - Ela guarda só o estado. O aviso é recalculado a cada leitura.
+- **As rotas:**
+  - `GET /me/carteira/visao` devolve o contrato de `types/carteiraVisao.ts`. É calculado no pedido, com cache de 10 minutos por pessoa e invalidado quando o sync termina. A tela não depende de agendamento ("nada roda sozinho").
+  - `PATCH /me/carteira/avisos/{chave}` recebe `{ estado: 'resolvido' | 'adiado' }`.
+  - `GET /me/carteira/futuro` é o mesmo motor, com os caminhos (ver abaixo).
+- **Os caminhos de 5 anos:** o motor de simulação devolve o valor. A renda de cada cenário sai do valor × o DY de cada classe (proventos dos últimos 12 meses ÷ valor médio), com a origem do número dita na nota. Os três caminhos são `positions` hoje, o meio-termo em `positions_b` e o aporte em `aporte_mensal`, se o motor aceitar; senão, uma soma simples documentada.
+
+**Leva 2 · O front de verdade**
+- **Composable `useCarteiraVisao`:** busca no SSR com o Bearer, como o `useCarteira`. O mock continua só no dev (`?cenario=`).
+- **"Já sei" e "adiar":** passam a gravar no `PATCH`.
+- **Saída por bandeira:** primeiro só para o dono, depois para todos. A tela antiga sai depois de duas semanas sem problema, junto com `CarteiraIdeias`, `CarteiraRaioX` na carteira, `CarteiraProventosContas`, `CarteiraFuturo` e `utils/achadosDaCarteira.ts`.
+
+**Leva 3 · Os testes que garantem**
+- **Backend:** testes de feature em `tests/Feature/Avisos/` no Postgres de teste, com fixtures por cenário:
+  - sem Open Finance, conexão caída;
+  - carteira pequena, só renda fixa, só FII;
+  - fim de semana e feriado;
+  - DARF no início do mês, dezembro, abril e maio.
+- **Contas e vetos:**
+  - teste de propriedade: nenhum movimento sugerido fura um veto, e nenhum aviso sai sem prova;
+  - as invariantes: posições = patrimônio, fatores = 100%.
+- **Replay:** os últimos 6 meses de uma carteira real, numa fixture anonimizada local fora do git, para ver o que o motor teria dito e quando.
+- **Front:** os testes de hoje (`tests/carteira-visao.test.ts`) passam a rodar contra respostas gravadas do endpoint.
+
+**Leva 4 · Os canais** (depois): Início, app, widget, Atividade ao Vivo, WhatsApp e e-mail, lendo `/me/carteira/visao` ou a tabela de avisos. Esta é a única leva que precisa de agendamento, então só com o OK do dono.
+
+### Ordem e tamanho (estimativa)
+
+| Leva | O que entrega | Tamanho |
+|---|---|---|
+| 0 | Gastos guardados, preço médio, fatores, correlação, sinal | 3–4 dias |
+| 1 | Motor, `carteira_avisos`, `/me/carteira/visao` e `futuro` | 4–5 dias |
+| 2 | Tela real atrás de bandeira, primeiro só para o dono | 2 dias |
+| 3 | Fixtures por cenário, replay, propriedades | junto com 1 e 2 |
+| 4 | Canais | depois |
+
+Cada leva vira um PR no backend (andre2654/redentia-api) e outro no front, só com o OK do dono e com prints.
+
+### Decisões do dono antes da Leva 0
+1. **Sincronização diária:** ligar a do B2C (um agendamento no `routes/console.php`)? Sem ela, a tela mostra "parado desde" e vira o aviso de reconexão, o que é honesto mas fica velho.
+2. **Reconexão:** reconectar o Nubank no site, porque a conexão ficou órfã em 28/10.
+3. **Cartão e conta:** buscar as transações do cartão e da conta (consentimento e privacidade). Sem isso, não existe "renda × gasto".
+4. **Regras de imposto:** conferir as regras de IR numa fonte antes de as frases irem ao ar.
+5. **Carteira do dono:** a dele está mais nova no espelho Business. Juntar as duas fotografias por pessoa é a Leva 0 ou fica para depois?

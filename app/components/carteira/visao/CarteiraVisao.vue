@@ -19,7 +19,8 @@
 // calmo, velho ou semgasto.
 import type { CarteiraPayload, CarteiraAgoraVM, CarteiraHeroVM } from '~/types/carteira'
 import type { HomeChartVM } from '~/types/home'
-import { CENARIOS, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
+import { CENARIOS as CENARIOS_MOCK, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
+import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
 import { brl2 } from '~/utils/carteiraVisao'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
 import VisaoRenda from './VisaoRenda.vue'
@@ -29,14 +30,20 @@ const emit = defineEmits<{ (e: 'connected'): void }>()
 
 const route = useRoute()
 const router = useRouter()
-const cenario = computed<CenarioVisao>(() => {
-  const c = String(route.query.cenario ?? 'normal') as CenarioVisao
+// a carteira real do dono, calculada só lendo a produção (app/dev/*.local.json,
+// fora do git): entra como mais um cenário quando o arquivo existe
+const locais = import.meta.glob<Visao>('~/dev/*.local.json', { eager: true, import: 'default' })
+const real = Object.values(locais)[0] ?? null
+type Cenario = CenarioVisao | 'real'
+const CENARIOS: { id: Cenario; nome: string }[] = real ? [{ id: 'real', nome: 'Sua carteira (real)' }, ...CENARIOS_MOCK] : CENARIOS_MOCK
+const cenario = computed<Cenario>(() => {
+  const c = String(route.query.cenario ?? (real ? 'real' : 'normal')) as Cenario
   return CENARIOS.some((x) => x.id === c) ? c : 'normal'
 })
-function trocarCenario(c: CenarioVisao) {
-  void router.replace({ query: { ...route.query, cenario: c === 'normal' ? undefined : c }, hash: route.hash })
+function trocarCenario(c: Cenario) {
+  void router.replace({ query: { ...route.query, cenario: c }, hash: route.hash })
 }
-const visao = computed(() => visaoMock(cenario.value))
+const visao = computed<Visao>(() => (cenario.value === 'real' && real ? real : visaoMock(cenario.value as CenarioVisao)))
 
 /* ————— o topo na escala do mock ————— */
 const fator = computed(() => {
