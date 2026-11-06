@@ -261,7 +261,7 @@ function perguntar(q?: string) { painel.abrir(q, [contexto.value]) }
 
 const palco = ref<HTMLElement | null>(null)
 // a linha se desenhando, como no /asset (TopoBolsa): uma vez, com a aba e o gráfico à vista
-onMounted(() => {
+function desenharGrafico() {
   const el = palco.value
   if (!el || document.visibilityState !== 'visible' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   const r = el.getBoundingClientRect()
@@ -270,6 +270,29 @@ onMounted(() => {
   el.querySelector('.agr__svg')?.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 1400, delay: 150, easing: curvaE, fill: 'backwards' })
   el.querySelectorAll('.agr__fim, .agr__hoje').forEach((x) => x.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 1350, easing: 'ease', fill: 'backwards' }))
   el.querySelector('.tbo__horizonte')?.animate([{ opacity: 0.2, transform: 'scaleX(.5)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: curvaE, fill: 'backwards' })
+}
+onMounted(desenharGrafico)
+
+/* ——— o topo recolhido (06/11, o dono: "quando entrarmos, o hero pode mostrar só
+   se está tudo normal ou se pede atenção, e um botão para ver detalhes que
+   mostra o mais completo"). Entra sempre recolhido: o estado grande, a linha
+   do dia e o que pede atenção, cada item abrindo o aviso. "Ver detalhes" monta
+   o patrimônio e o gráfico (montado só ao abrir: o gráfico mede a largura) ——— */
+const detalhes = ref(false)
+const recolhido = computed(() => enxuto.value && !detalhes.value)
+async function abrirDetalhes() {
+  detalhes.value = true
+  await nextTick()
+  desenharGrafico()
+}
+const pedemAtencao = computed(() => (props.visao?.avisos.itens ?? []).filter((a) => a.gravidade === 'alta' || a.gravidade === 'media'))
+const NA_FRENTE = 2
+const statusTitulo = computed(() => (atencao.value ? 'Pede atenção.' : 'Tudo normal.'))
+const statusLinha = computed(() => {
+  const l = linhaDoDia.value
+  if (atencao.value) return l
+  const n = props.visao?.avisos.olhados.length
+  return `${l}${n ? ` Olhei ${n} coisas e nada pede a sua atenção.` : ''}`
 })
 </script>
 
@@ -281,7 +304,7 @@ onMounted(() => {
         <h1 id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></h1>
       </div>
       <div class="cto__acoes">
-        <TopoBotao :rotulo="revelado ? 'Esconder valores' : 'Mostrar valores'" :aria-pressed="revelado" :title="revelado ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternarRevelado">
+        <TopoBotao v-if="!recolhido" :rotulo="revelado ? 'Esconder valores' : 'Mostrar valores'" :aria-pressed="revelado" :title="revelado ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternarRevelado">
           <svg v-if="revelado" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>
         </TopoBotao>
@@ -296,6 +319,36 @@ onMounted(() => {
       </div>
     </div>
 
+    <!-- recolhido: só o estado e o que pede atenção -->
+    <div v-if="recolhido" class="cto__resumo">
+      <p class="cto__estado" :class="`cto__estado--${pregao.estado}`">
+        <span class="cto__ponto" aria-hidden="true" />
+        <span class="cto__pregao">{{ pregao.rotulo }}</span>
+      </p>
+      <h2 class="cto__status" :class="{ 'cto__status--atencao': atencao }">{{ statusTitulo }}</h2>
+      <p class="cto__status-linha">{{ statusLinha }}</p>
+      <ul v-if="atencao" class="cto__itens">
+        <li v-if="alerta">
+          <NuxtLink :to="`/asset/${alerta.ticker}`" class="cto__item"><span class="cto__item-p cto__item-p--alta" aria-hidden="true" /><span class="cto__item-t">{{ frase.titulo }} {{ frase.linha }}</span><span class="cto__item-v">Ver</span></NuxtLink>
+        </li>
+        <li v-for="a in pedemAtencao.slice(0, NA_FRENTE)" :key="a.id">
+          <button type="button" class="cto__item" @click="avisosRef?.abrir(a.id)">
+            <span class="cto__item-p" :class="`cto__item-p--${a.gravidade}`" aria-hidden="true" />
+            <span class="cto__item-t">{{ a.titulo }}</span>
+            <span class="cto__item-v">Ver</span>
+          </button>
+        </li>
+        <li v-if="pedemAtencao.length > NA_FRENTE">
+          <button type="button" class="cto__item cto__item--mais" @click="avisosRef?.abrir()">E mais {{ pedemAtencao.length - NA_FRENTE }} nos avisos</button>
+        </li>
+      </ul>
+      <button type="button" class="cto__detalhes" :aria-expanded="false" @click="abrirDetalhes">
+        Ver detalhes
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+      </button>
+    </div>
+
+    <template v-else>
     <div class="cto__corpo">
     <div class="cto__esq">
     <!-- o estado e a frase: o eyebrow do topo, com peso -->
@@ -361,6 +414,12 @@ onMounted(() => {
       </div>
       <p v-if="!enxuto" class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
     </div>
+
+    <button v-if="enxuto" type="button" class="cto__detalhes cto__detalhes--menos" :aria-expanded="true" @click="detalhes = false">
+      Ver menos
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg>
+    </button>
+    </template>
 
     <dl v-if="!enxuto && linhas.length" class="tbo__nums">
       <div v-for="r in linhas" :key="r.l" v-contexto-chat="{ id: `carteira:linha:${r.l}`, tipo: 'carteira', rotulo: r.l, texto: `${r.l}: ${r.v}` }" class="tbo__num">
@@ -450,6 +509,33 @@ onMounted(() => {
 .cto__conta-logo img { width: 100%; height: 100%; object-fit: cover; }
 .cto__conta-status { color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 700; }
 .cto__conta--reconectar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+/* ——— o topo recolhido ——— */
+.cto__resumo { animation: cto-entra .5s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes cto-entra { from { opacity: 0; transform: translateY(6px); } }
+.cto__status { margin: 10px 0 0; color: var(--nu-agora-texto); font-size: clamp(44px, 6.4vw, 88px); font-weight: 700; letter-spacing: -0.045em; line-height: 1; }
+.cto__status--atencao { color: var(--nu-amber-soft); }
+.cto__status-linha { margin: 14px 0 0; max-width: 62ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.cto__itens { list-style: none; margin: clamp(18px, 2.4vw, 26px) 0 0; padding: 0; max-width: 720px; }
+.cto__item {
+  display: flex; align-items: baseline; gap: 12px; width: 100%; padding: 14px 0; border: 0; border-top: 1px solid var(--nu-white-12, rgba(255,255,255,.12));
+  background: none; color: var(--nu-agora-texto); font: inherit; font-size: var(--nu-fs-lg); font-weight: 700; text-align: left; text-decoration: none; cursor: pointer;
+}
+.cto__itens li:last-child .cto__item { border-bottom: 1px solid var(--nu-white-12, rgba(255,255,255,.12)); }
+.cto__item-p { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-amber-fill); transform: translateY(-2px); }
+.cto__item-p--alta { background: var(--nu-red-soft); }
+.cto__item-t { flex: 1; min-width: 0; }
+.cto__item-v { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 700; transition: color .2s, transform .2s; }
+.cto__item:hover .cto__item-v { color: var(--nu-agora-texto); transform: translateX(3px); }
+.cto__item--mais { color: var(--nu-agora-sub); font-size: var(--nu-fs-md); font-weight: 600; }
+.cto__item:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; border-radius: 4px; }
+.cto__detalhes {
+  display: inline-flex; align-items: center; gap: 8px; height: 42px; margin-top: clamp(22px, 3vw, 32px); padding: 0 20px; border: 0; border-radius: var(--nu-r-pill);
+  background: var(--nu-agora-pilula); color: var(--nu-agora-texto); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s;
+}
+.cto__detalhes:hover { background: var(--nu-white-12, rgba(255,255,255,.16)); }
+.cto__detalhes:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
+.cto__detalhes--menos { margin-top: 18px; background: transparent; padding: 0; height: auto; color: var(--nu-agora-sub); }
+.cto__detalhes--menos:hover { background: transparent; color: var(--nu-agora-texto); }
 .cto__mais-conta { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; cursor: pointer; transition: color .2s; }
 .cto__mais-conta:hover { color: var(--nu-agora-texto); }
 .cto__mais-conta:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; border-radius: 4px; }
