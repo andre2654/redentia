@@ -1,69 +1,110 @@
-# Run state — "revise o SEO, pq aparentemente caiu"
+# Run state: carteira nova real, motor de avisos, relatório e limpeza do chat/Raio-X
 
-Início: 2026-08-22 · Modo: fable-it · Contexto único (sem fleet — instrução
-permanente do projeto é não usar subagentes sem pedido explícito)
+Started: 2026-11-07  |  Integrador: sessão principal  |  Last updated: 2026-11-07
 
-## Objetivo
+Todo agente desta execução lê este arquivo antes de começar e escreve nele antes de terminar, na sua linha da tabela e nas seções de fatos e de pendências.
+Se a execução for interrompida, é este arquivo, e não a conversa, que leva o trabalho adiante.
 
-Determinar se houve queda real de SEO/tráfego, achar a causa, e consertar o que
-estiver quebrado.
+Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as decisões do dono de 06 e 07/11).
 
-## DoD (derivada — o usuário não forneceu; declarada aqui e no relatório)
+## Definition of Done
 
-| # | Critério | Status |
-|---|---|---|
-| 1 | Estabelecer se a queda é real ou artefato de leitura | VERIFIED |
-| 2 | Descartar regressão vinda dos commits de 21/08 | VERIFIED |
-| 3 | Varrer a superfície indexável em busca de defeito real | VERIFIED |
-| 4 | Consertar os defeitos achados que couberem no escopo | VERIFIED |
-| 5 | Deixar recomendação registrada pro que não couber | VERIFIED |
+> Fonte do DoD: **derivado** do objetivo. O dono disse em 07/11: "pode seguir com tudo, pra já terminar tudo, pode demorar". O escopo são as levas da Parte 4.7 e a auditoria da Parte 5 do plano.
 
-## Fatos verificados (rastreados, não inferidos)
+| # | Critério | Status | Evidência |
+|---|----------|--------|-----------|
+| 1 | Chat sem MAX: `fix/chat-sem-max` no remoto, PR para `main`, CI verde | TODO | |
+| 2 | Chat sem Raio-X e sem sobras de tier: `chore/chat-sem-raiox`, montada sobre `feat/ia-paga` + `fix/chat-sem-max`. Sem geração de Raio-X, sem trava MAX e sem contadores. Typecheck e testes verdes, PR aberto. `feat/ia-paga` com PR aberto e CI verde | TODO | |
+| 3 | MCP sem `reading`/Raio-X em `get_portfolio`: PR aberto, CI verde | TODO | |
+| 4 | Backend `feat/plano-unico` atualizado com `main`, PR aberto, CI na contagem-base | TODO | |
+| 5 | Backend `fix/dia-pendente`: PR aberto, CI na contagem-base | TODO | |
+| 6 | Backend limpeza (`chore/sem-raiox-e-tiers`, sobre plano-unico). Saem: o POST de análise, o `reading` do MCP, as métricas `raiox_*`/`has_xray` do admin, `PlanSeeder`, `RequiresLimit`/`RequiresFeature`, `check-and-increment` e `analyses_deleted`. O GET de análise fica só leitura e a tabela fica. Suíte sem falha nova, PR aberto | TODO | |
+| 7 | Leva 0, a base (em `feat/carteira-motor`). Transações de conta e cartão guardadas com marcas. Preço médio. Fatores consertados. Correlação robusta. Sinal de alta ou queda. DY de 12 meses. Sync diário do B2C agendado, com flag desligada. Testes | TODO | |
+| 8 | Motor e rotas: `GET /me/carteira/visao`, `PATCH /me/carteira/avisos/{chave}`, imposto (mês atual e anterior, grupos, histórico com selo), os detectores aprovados, portão, prioridade, vetos e a flag de usuários. Testes por cenário e execução com a carteira real local | TODO | |
+| 9 | Relatório `GET /me/carteira/relatorio`. Indicadores (lista no ledger) contra o benchmark composto, nota pela mediana dos pilares. Testes com resposta conhecida e execução com a carteira real local | TODO | |
+| 10 | Motor de recomendação. Avaliador (renda, correlação, país, fator, look-through, imposto, taxa, cenários), candidatos e vetos novos. Avisos 13, 14, 15, 16, 20 e 21 com texto dentro da regra da CVM. Testes | TODO | |
+| 11 | Canais e preferências. Tópicos novos. Comandos `carteira:semana`, `carteira:proventos-mes`, `carteira:provento-pago` e `carteira:relatorio-mensal` (e-mail e WhatsApp com opt-in), agendados com flag desligada, com o dry-run conferido. Avisos 17 e 19 | TODO | |
+| 12 | Front. Raio-X e sobras de tier fora. A tela nova lê o `/me/carteira/visao` real (SSR, esqueleto, flag). Seções de imposto e relatório. Preferências em /conta e no modal. `npm test` verde. Prints com a carteira real (backend local + fixture) | TODO | |
+| 13 | PRs de tudo, com revisão independente em 2 lentes e sem achado bloqueante. Ordem de merge escrita. **Nada mesclado nem em produção sem o clique do dono** | TODO | |
 
-- **A queda não é real.** Volatilidade semana-sobre-semana do site em 92 dias de
-  dado do GSC: desvio padrão de 18,3 pontos, faixa de -33,8% a +50,2%. Uma
-  semana de -8% ocorre em 19% das janelas. -8% está a menos de meio desvio.
-- **O último ponto do gráfico é sábado 22/08 e está incompleto** (linha
-  tracejada). 15/08 também é sábado, então a janela é Sáb→Sáb.
-- **Fim de semana rende 31% menos que dia útil** (média de cliques: 59,4 útil
-  contra 41,0 fim de semana; sábado é o pior dia, 38,6).
-- **Nenhuma regressão dos commits de 21/08**: 22 rotas principais em 200; TTFB
-  com cache quente 0,15-0,30s; navegação SPA funciona; redirect apex→www
-  correto (308); canonical auto-referente nas 3 URLs enviadas ao GSC.
-- **`GET /api/theses` do backend leva 3,0-3,2s** pra devolver 5 KB e 10 itens.
-  Todos os outros endpoints: 0,26-0,41s. Medido 6 vezes.
-- **Esse endpoint estava no `Promise.allSettled` de toda página de ativo**
-  (useAcao.ts:1237), definindo o piso de latência das 460 URLs de /asset/*.
-- **Mismatch de hidratação em todas as páginas**, causado pela faixa "Mercado
-  agora" do layout: SSR renderiza skeleton, cliente renderiza dado real.
-  Confirmado em página que a run não tocou (/calculadora/juros-compostos).
-- **Erro `Cannot read properties of null (reading 'sequence')`** vem do
-  Microsoft Clarity (terceiro), presente em páginas não tocadas.
+## Decision ledger
 
-## Ledger de decisões
+| Data | Decisão | Por quê | Onde |
+|------|---------|---------|------|
+| 07/11 | **Merge e deploy são do dono.** Abrimos PR, esperamos o CI e revisamos. O `gh pr merge` fica com ele, um por vez (a Vercel publica fora de ordem) | Merge na `main` = deploy automático (CD de api, chat e mcp; Vercel no front). Regras da memória: `auto-mode-barra-deploy-e-cd`, `pr-so-com-aprovacao-do-dono`, `vercel-merges-seguidos-...` | esta linha |
+| 07/11 | **PRs autorizados** pelo "pode seguir com tudo", dado em resposta a "posso abrir o PR?" | O dono | conversa |
+| 07/11 | **Nada dispara sozinho.** Todo comando agendado novo tem flag de config com padrão `false`, e o envio real só sai com `--confirm`. Sem flag ligada, o agendamento não envia nada | `nada-roda-sozinho-sem-o-dono`; enviar para terceiro é parada obrigatória | config/notifications.php e config/carteira.php |
+| 07/11 | **Base dos branches do backend: `feat/plano-unico`** (b3fb3db, já com a `main`). PRs empilhados, com base `feat/plano-unico`. Quando ele entrar, o GitHub redireciona para `main` | `/me/carteira/*` precisa da trava `assinatura:carteira` e do `/me/carteira/futuro`, que só existem nele | Backend |
+| 07/11 | **Branches do backend:** `feat/carteira-motor` (critérios 7, 8, 10, 11), `feat/carteira-relatorio` (9), `chore/sem-raiox-e-tiers` (6). Worktrees em `_fable-worktrees/be-<nome>` | Separar o que é independente | Backend |
+| 07/11 | **Postgres de teste por agente:** `<nome>-pg`, rede `<nome>-net`, imagem `redentia-php-test`, receita da memória `backend-suite-local-docker` | `RefreshDatabase` num banco compartilhado apaga o teste do vizinho | — |
+| 07/11 | **Contagem-base do CI do Backend:** medir na base antes de mudar. Vale o delta (testes, falhas, PHPStan); a falha antiga da DataHealth não conta | `backend-ci-ja-falha-antes-de-voce` | — |
+| 07/11 | **Push:** `gh auth switch --user andre2654` antes. `git -C <caminho>` em vez de `cd` | memória | — |
+| 07/11 | **Front:** continua em `feat/chat-painel` (worktree `Frontend-wt-chat-painel`), PR com base `redentia-v2`. Dev server só o de :3471 nesta worktree | `redentia-branch-alvo-dos-prs`, `dois-dev-servers-mesma-worktree` | Front |
+| 07/11 | **Chat:** PR 1 `fix/chat-sem-max` → main; PR 2 `feat/ia-paga` → main; PR 3 `chore/chat-sem-raiox` (= merge de ia-paga + sem-max + limpeza) → main, mesclado por último | Evitar conflito em `intake.ts` | chat-service |
+| 07/11 | **Flag da tela nova (servidor):** `config('carteira.visao_usuarios')`, env `CARTEIRA_VISAO_USUARIOS`, lista de user ids ou `*`, padrão vazio. Fora da lista: `404 {"error":"visao_desligada"}`, e o front mostra a tela antiga | Sair primeiro só para o dono (user 3) sem precisar de deploy do front | Backend + front |
+| 07/11 | **Raio-X:** a tela para de mostrar. O POST e a geração saem. O GET e a tabela `portfolio_analyses` **ficam**. Apagar a tabela é parada obrigatória e vai em PR futuro com o dono | Apagar dado é irreversível | — |
+| 07/11 | **`limits` do `/me/entitlements` mantém o formato** (o app do iPhone decodifica). Só saem os middlewares, a rota e o seeder sem uso | Não quebrar o app (o dono cuida dos apps) | — |
+| 07/11 | **Texto dentro da regra da CVM:** nunca "compre/venda/recomendamos/vale a pena". Movimento = "se trocar X por Y, muda A → B (simulação)", com o lado ruim. Variante `site` (sem ticker no movimento, só a classe) e `app` (com ticker). O `/visao` do site usa `site`. O teste de linguagem faz parte do portão | CVM; decisão do dono (só o app aceita "Ações recomendadas") | `App\Services\Avisos\Textos` |
+| 07/11 | **Imposto:** regras da memória `ir-regras-conferidas-out-2026`: DARF 6015, vencimento no último dia útil do mês seguinte (antecipa), isenção ≤ R$ 20 mil por mês em ações à vista, FII 20%, ETF 15% sem isenção, JCP 17,5% retido. O aviso só fala do mês atual e do anterior | Decisão do dono | `App\Services\Carteira\Imposto` |
+| 07/11 | **Provento:** soma sempre depois da dedupe `ScrapeDividends::resolve` (R1–R4 + R7). Ajustar desdobramento pelos `ticker_splits_si`. FII com o provento somado de volta no dia ex | memórias `dividendos-duplicados-si-b3`, `b3-desdobramento-ajuste-de-preco`, `fii-dia-ex-...` | — |
+| 07/11 | **Correlação:** Spearman dos retornos diários de 252 pregões (preço ajustado por desdobramento, FII com provento de volta), com `n_obs` na prova. Menos de 60 pregões = sem correlação | Um dia extremo (26/10) inflava o Pearson | `CorrelacaoDaCarteira` |
+| 07/11 | **Benchmark do relatório:** composto pelas classes da carteira e recalculado por mês. RF/LFT/CDB/Tesouro/ETF de RF = CDI; ação e ETF de ação BR = IBOV; FII = IFIX; BDR e ETF exterior = IVVB11 (se não houver série, IBOV, dito na nota). IBOV e CDI puros também saem | Decisão do dono (07/11, "sim") | `Relatorio` |
+| 07/11 | **Nota da carteira:** indicador → 0–100 por faixas fixas documentadas. Pilares: retorno, risco, eficiência, diversificação. Pilar = mediana dos seus indicadores. Nota = mediana dos 4 pilares. Com menos de 12 meses de histórico: `historico_curto = true` | Decisão do dono (07/11, "pode ser") | `Relatorio` |
+| 07/11 | **Fixture real local:** a carteira do dono (B2B cliente 15 mais o histórico B2C do user 3) e os dados de referência dos tickers dele, exportados **só lendo** a produção para `scratchpad/fixture-dono/` (fora do git). Importador local em Docker. Serve à verificação real (8, 9, 10, 12) | Verificar com dado real sem escrever na produção | ver Interface contracts |
+| 07/11 | **Canais:** tópicos novos em `NotificationPreferenceController::TOPICS`: `carteira_semana`, `carteira_proventos_mes`, `carteira_provento_pago`, `carteira_relatorio`, `carteira_imposto`, `carteira_ideias`. WhatsApp desligado sem opt-in (`whatsapp_opt_in_at` + preferência). E-mail sem linha = desligado (opt-in explícito) | Lista de opt-in pedida pelo dono | Backend + /conta |
+| 07/11 | **Página da carteira nova:** topo → Onde está → Quanto ele te paga → Imposto do mês → "Ver o relatório completo" (fechado: indicadores, desempenho, movimentações com selo de imposto, P&L). A "Análise completa" vira o relatório | Pedido do dono, mantendo a página curta | Front |
 
-- **Não converter a faixa de mercado pra SSR.** Exigiria 3 fetches bloqueantes
-  em toda página; sem cache compartilhado pioraria o TTFB global. Decisão de
-  arquitetura, fora do escopo de conserto de passagem. → open item.
-- **Não mexer no TTL de `/asset/**` (s-maxage=120).** É escolha deliberada de
-  frescor de preço, não defeito. → recomendação, não mudança.
-- **Cachear /theses no Nitro em vez de esperar o backend.** O conserto certo é
-  no Laravel (repo separado); a mitigação no frontend é reversível, segue
-  padrão já existente no repo (site-pages.ts) e foi medida.
+## Verified facts
+
+| Fato | Como foi rastreado | Âncora |
+|------|--------------------|--------|
+| O `main` de api, front, chat e mcp não tem PR aberto (07/11) | `gh pr list` nos 3 repos | — |
+| `feat/plano-unico` = b3fb3db (merge limpo da main 821ea03) | `git merge` local | Backend-wt-plano-unico |
+| O front `feat/chat-painel` contém `feat/plano-unico-carteira-home`, está 160 commits na frente e 2 atrás da `redentia-v2` | `git rev-list` / `merge-base` | Frontend |
+| O chat-service em produção (`origin/main` f3c0c48) já não manda "trocar pra MAX" no prompt Basic. O MAX sobra só no tier fixo por sessão e no gate do `intake.ts` | leitura de `personas.ts` e `intake.ts` em origin/main | chat-service |
+| `portfolio_trades.pluggy_connection_id` é `nullOnDelete`: desconectar não apaga histórico | migration 2026_05_09_120000 | Backend |
+| `SyncPluggyConnectionJob` baixa as transações da conta e descarta o que não é provento; nunca busca cartão; nada agenda o sync do B2C | Explore 06/11 | `app/Jobs/SyncPluggyConnectionJob.php` |
+| `EtfXrayService` já achata ETF dentro de ETF (look-through) | leitura | `app/Services/EtfXrayService.php:183` |
+| `macro_prices` tem PTAX, Selic, IPCA e Brent (`macro:ingest` diário) | `routes/console.php` | Backend |
+| `ScenarioEngineService::run(['positions'=>…, 'positions_b'=>…, 'horizon_years'=>5])` aceita carteira arbitrária e devolve p10–p90 em R$ | Explore 06/11 | `app/Services/Simulation/ScenarioEngineService.php` |
+| `NotificationPreferenceController`: canais email/whatsapp × tópicos, com descadastro assinado | leitura | `app/Http/Controllers/Api/NotificationPreferenceController.php` |
+| O front aceita backend local por `NUXT_BACKEND_URL` | `nuxt.config.ts:40,94,325` | Front |
+| A queda de 26/10 (IBOV −13,88%, circuit breaker depois do 2º turno) é real | 3 fontes jornalísticas + `indices/IBOV/prices` | — |
+
+## Interface contracts
+
+| Com | Forma / contrato | Combinado | Status |
+|-----|------------------|-----------|--------|
+| Front ↔ Backend `/me/carteira/visao` | `app/types/carteiraVisao.ts` (`CarteiraVisao`) **mais** `imposto: ImpostoVisao`, `indicadores: IndicadorResumo[]` (no máximo 6, do relatório) e `geradoEm: string`. O backend é dono do formato: se precisar mudar, muda o TS no mesmo PR do front e anota aqui | 07/11 | assumido |
+| `ImpostoVisao` | `{ mesAtual: MesImposto, mesAnterior: MesImposto, historico: MesHistorico[] }`. `MesImposto = { mes:'2026-11', grupos: [{ grupo:'acoes'|'fii'|'etf'|'rf'|'cripto', vendido:number, lucro:number|null, isencao:number|null, cabeAinda:number|null, impostoEstimado:number|null, aliquota:number, custoConhecido:boolean, nota:string }], darf: { valor:number|null, vence:'2026-12-30'|null, codigo:'6015' } }`. `MesHistorico = { mes, vendas:number, selo:'isento'|'pago'|'a_conferir'|'custo_desconhecido'|'sem_venda', operacoes: [{ data, ticker, nome, lado:'compra'|'venda', quantidade, valor, grupo }] }` | 07/11 | assumido |
+| `PATCH /me/carteira/avisos/{chave}` | body `{ estado: 'visto'|'resolvido'|'adiado', dias?: number }` → `200 { chave, estado, adiadoAte }`. A chave vem em `Aviso.id` | 07/11 | assumido |
+| `GET /me/carteira/relatorio` | `{ periodo:{inicio,fim,dias,historicoCurto}, benchmark:{nome, composicao:[{indice,peso}], notas:string[]}, retorno:{twr,mwr,cagr,real}, indicadores:[{chave,nome,valor,unidade:'%'|'x'|'R$'|'',pilar:'retorno'|'risco'|'eficiencia'|'diversificacao',nota,bench:number|null,descricao,comoCalculei}], pilares:[{chave,nome,nota}], nota:number, series:{carteira:[{t,v}], benchmark:[{t,v}], cdi:[{t,v}], ibov:[{t,v}]}, geradoEm }`. Indicadores: twr, mwr, cagr, retorno_real, volatilidade, downside_deviation, max_drawdown, beta, r2, sharpe, sortino, treynor, alpha_jensen, m2, information_ratio, tracking_error, appraisal_ratio | 07/11 | assumido |
+| `Aviso` (PHP → JSON) | o do TS, mais `pergunta: string` (a dúvida que ele responde) e `canais: ('tela'|'email'|'whatsapp')[]`. Detector sem pergunta e sem saída não vira aviso | 07/11 | assumido |
+| Fixture real local | `scratchpad/fixture-dono/*.json`, uma tabela por arquivo (linhas cruas). `importar.php` roda no container contra o `<nome>-pg` depois do `migrate`. O dono vira o user id **3** local, com as posições e transações do B2B (cliente 15) como se fossem do B2C, mais o histórico B2C até 31/05. O token Sanctum local é criado pelo importador e gravado em `scratchpad/fixture-dono/token.txt` (só local) | 07/11 | assumido |
+| Serviços da base (PHP) | `App\Services\Carteira\{FotografiaDaCarteira::doUsuario(int): Fotografia, PrecoMedio::calcular(array $trades, array $eventos): array, CorrelacaoDaCarteira::matriz(array $tickers, int $pregoes=252): array, SinalDoAtivo::para(string): array, DividendYield::dozeMeses(string): array, FatorDoAtivo::principal(string $ticker, string $classe, ?string $nome, ?string $indexador): string, Imposto::doMes(Fotografia, string $mes): array}` | 07/11 | assumido |
 
 ## Drive-by fixes
 
-- `perf(seo)`: espelho cacheado de /theses. A/B no mesmo servidor, mesmos
-  tickers: **3,57s → 0,75s** por página de ativo (4,7x).
+| O que estava quebrado | Correção | Commit |
+|-----------------------|----------|--------|
 
 ## Open items
 
-- **Faixa "Mercado agora" client-only** → mismatch de hidratação em ~745
-  páginas e home invisível pra crawler de IA. Conserto: fetch cacheado no
-  servidor (padrão do theses-feed.ts aplicado ao snapshot de mercado).
-  Recomendado como frente própria.
-- **Backend `/theses` a 3s** → o cache do frontend é band-aid. Corrigir a query
-  no Laravel (PR pra `main`).
-- **`/asset/**` com s-maxage=120** numa página cujo próprio aviso diz "atraso
-  de 15 min". Subir pra 300-900s reduziria MISS de crawler. Decisão do dono.
-- **TRPL4 e GUAR3** seguem 404 no backend (tickers reais, falha de ingestão).
+| Item | Suposição / decisão tomada | Recomendação |
+|------|-----------------------------|--------------|
+| Consentimento da Pluggy para conta e cartão no site | Assumido que o item do usuário já tem os produtos ACCOUNTS/TRANSACTIONS/CREDIT_CARDS. Se o `/v2/transactions` do cartão der 403, o sync registra e segue sem o cartão | Conferir no primeiro sync real depois da reconexão do dono |
+| Nubank do dono parado desde 16/07 | O dono desconecta e reconecta em /conta (1 min). Não apagamos a conexão no banco | — |
+
+## Hard stops awaiting authorization
+
+| Ação | Estado preparado | O que falta |
+|------|------------------|-------------|
+| Merge dos PRs (= deploy) | — | o clique do dono, na ordem escrita no relatório final |
+| Ligar as flags de envio (`notifications.carteira_*_enabled`) e o sync diário | — | o dono, depois do deploy |
+| Apagar a tabela `portfolio_analyses` | não preparado (fora deste escopo) | PR futuro, com o dono |
+| Criar o preço na Stripe live e migrar os assinantes (plano único) | já documentado em `feat/plano-unico` | o dono, depois do deploy |
+
+## Shipped
+
+| PR | Critérios | Estado |
+|----|-----------|--------|
