@@ -22,15 +22,25 @@
 // sem dado real não renderiza. Nunca número inventado.
 import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
 
+import CarteiraVisao from '~/components/carteira/visao/CarteiraVisao.vue'
+
 const props = defineProps<{ payload: CarteiraPayload }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
-// A /carteira nova (06/11/2026), por enquanto só no dev e com mock
-// (components/carteira/visao/CarteiraVisao.vue); ?visao=antiga volta para esta.
-import CarteiraVisao from '~/components/carteira/visao/CarteiraVisao.vue'
-const visaoNova = computed(() => import.meta.dev && useRoute().query.visao !== 'antiga')
-
 const conectada = computed(() => props.payload.hero.state === 'patrimonio' && !!props.payload.agora)
+
+// A /carteira nova (06/11/2026; real desde 07/11): com a resposta de
+// GET /me/carteira/visao, ela; com a flag do servidor desligada para a pessoa
+// (404 visao_desligada) ou sem resposta, esta tela, que não depende dela. No
+// dev, ?cenario= força o mock (normal, calmo, velho, semgasto ou real).
+const route = useRoute()
+const { visao, refresh: atualizarVisao } = await useCarteiraVisao({ immediate: conectada.value })
+const mockDoDev = computed(() => import.meta.dev && !!route.query.cenario)
+const visaoNova = computed(() => mockDoDev.value || !!visao.value)
+function conectou() {
+  void atualizarVisao()
+  emit('connected')
+}
 const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
 // a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
 const temAcoes = computed(() => !!props.payload.posicoesMundo?.some((p) => p.classe === 'STOCK'))
@@ -75,9 +85,9 @@ onMounted(() => {
 <template>
   <!-- CLARITY (11/10/2026): toda seção com dado da pessoa leva
        data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
-  <CarteiraVisao v-if="conectada && visaoNova" :payload="payload" @connected="emit('connected')" />
+  <CarteiraVisao v-if="conectada && visaoNova" :payload="payload" :visao="mockDoDev ? null : visao" @connected="conectou" />
   <div v-else-if="conectada">
-    <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" :achados="achados" @connected="emit('connected')" />
+    <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" :achados="achados" @connected="conectou" />
     <CarteiraFuturo id="futuro" />
     <CarteiraPosicoes
       v-if="payload.groups.length && payload.hero.patrimonio"
@@ -88,8 +98,8 @@ onMounted(() => {
     />
     <CarteiraMundo v-if="payload.posicoesMundo?.length" id="mundo" :posicoes="payload.posicoesMundo" />
     <CarteiraCadeia v-if="temAcoes" id="cadeia" :posicoes="payload.posicoesMundo!" @ligacoes="temCadeia = $event" />
-    <CarteiraProventosContas :income="payload.income" @connected="emit('connected')" />
+    <CarteiraProventosContas :income="payload.income" @connected="conectou" />
     <CarteiraAnalise :payload="payload" />
   </div>
-  <CarteiraVazia v-else @connected="emit('connected')" />
+  <CarteiraVazia v-else @connected="conectou" />
 </template>

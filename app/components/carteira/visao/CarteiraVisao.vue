@@ -8,15 +8,18 @@
 //  3. Do que ele é feito?         "Onde está o seu dinheiro": Ativos, No mundo,
 //                                 Na cadeia e Riscos, quatro lentes num lugar só
 //  4. Quanto ele te paga?         renda × gasto, novembro e os caminhos de 5 anos
-// Depois, a análise completa fechada (desempenho, movimentações, P&L). Saíram
-// da página: Contas (o frescor do topo e /conta), Raio-X (vira fonte do
-// motor) e o banner do MCP (já no painel do chat).
+// Depois, o imposto do mês e o relatório completo, fechado (07/11: a nota, os
+// indicadores, o desempenho, as movimentações com o selo do imposto e o P&L).
+// Saíram da página: Contas (o frescor do topo e /conta), Raio-X e o banner do
+// MCP (já no painel do chat).
 //
-// SÓ NO DEV, POR ENQUANTO: o GET /me/carteira/visao não existe, então tudo o
-// que é novo sai do mock (app/dev/carteiraVisaoMock.ts), com as posições do
-// espelho Business do dono. O topo usa a curva real, na escala do mock, para a
-// soma das posições bater com o patrimônio. ?cenario= troca o caso: normal,
-// calmo, velho ou semgasto.
+// DE ONDE VEM (07/11/2026): `visao` é a resposta de GET /me/carteira/visao
+// (useCarteiraVisao, no CarteiraContent). O topo continua vindo do /portfolio
+// (o dia, a curva e a fileira), mas o patrimônio e o número de ativos do topo
+// são os da visão, a mesma soma das posições lá embaixo (a invariante).
+// SÓ NO DEV, sem `visao`: o mock de app/dev/carteiraVisaoMock.ts, com a curva
+// do topo na escala do mock e a pílula que troca o ?cenario= (normal, calmo,
+// velho, semgasto ou a carteira real local, app/dev/*.local.json).
 import type { CarteiraPayload, CarteiraAgoraVM, CarteiraHeroVM } from '~/types/carteira'
 import type { HomeChartVM } from '~/types/home'
 import { CENARIOS as CENARIOS_MOCK, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
@@ -24,15 +27,19 @@ import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
 import { brl2 } from '~/utils/carteiraVisao'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
 import VisaoRenda from './VisaoRenda.vue'
+import VisaoImposto from './VisaoImposto.vue'
+import VisaoRelatorio from './VisaoRelatorio.vue'
 
-const props = defineProps<{ payload: CarteiraPayload }>()
+const props = defineProps<{ payload: CarteiraPayload; visao?: Visao | null }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
+/* ————— só no dev: o mock ————— */
+const mock = computed(() => import.meta.dev && !props.visao)
 const route = useRoute()
 const router = useRouter()
 // a carteira real do dono, calculada só lendo a produção (app/dev/*.local.json,
 // fora do git): entra como mais um cenário quando o arquivo existe
-const locais = import.meta.glob<Visao>('~/dev/*.local.json', { eager: true, import: 'default' })
+const locais: Record<string, Visao> = import.meta.dev ? import.meta.glob<Visao>('~/dev/*.local.json', { eager: true, import: 'default' }) : {}
 const real = Object.values(locais)[0] ?? null
 type Cenario = CenarioVisao | 'real'
 const CENARIOS: { id: Cenario; nome: string }[] = real ? [{ id: 'real', nome: 'Sua carteira (real)' }, ...CENARIOS_MOCK] : CENARIOS_MOCK
@@ -43,10 +50,15 @@ const cenario = computed<Cenario>(() => {
 function trocarCenario(c: Cenario) {
   void router.replace({ query: { ...route.query, cenario: c }, hash: route.hash })
 }
-const visao = computed<Visao>(() => (cenario.value === 'real' && real ? real : visaoMock(cenario.value as CenarioVisao)))
+// fora do dev o mock nem existe: a tela só é montada com a visão real (CarteiraContent)
+const doMock = computed<Visao | null>(() => (import.meta.dev ? (cenario.value === 'real' && real ? real : visaoMock(cenario.value as CenarioVisao)) : null))
+const visao = computed<Visao>(() => (props.visao ?? doMock.value)!)
 
-/* ————— o topo na escala do mock ————— */
+/* ————— o topo ————— */
+// no mock, a curva real do /portfolio vai para a escala do mock (a soma das
+// posições bate com o patrimônio); com a visão real, a curva fica como veio
 const fator = computed(() => {
+  if (!mock.value) return 1
   const pts = props.payload.chart?.points
   const ult = pts?.[pts.length - 1]?.v
   return ult ? visao.value.patrimonio / ult : 1
@@ -61,6 +73,7 @@ const escalar = (t: string) => (Math.abs(fator.value - 1) < 1e-6 ? t : t.replace
 const agora = computed<CarteiraAgoraVM>(() => {
   const a = props.payload.agora as CarteiraAgoraVM
   const pct = a.carteiraPct
+  // o R$ do dia sai do % do dia sobre o patrimônio da visão: o mesmo número do topo
   const dia = pct != null ? (visao.value.patrimonio * pct) / (100 + pct) : null
   return {
     ...a,
@@ -73,16 +86,24 @@ const agora = computed<CarteiraAgoraVM>(() => {
 const chart = computed<HomeChartVM | null>(() => {
   const c = props.payload.chart
   if (!c) return null
-  return { ...c, points: c.points.map((p) => ({ ...p, v: p.v * fator.value })), currentLabel: brl2(visao.value.patrimonio) }
+  const f = fator.value
+  return { ...c, points: f === 1 ? c.points : c.points.map((p) => ({ ...p, v: p.v * f })), currentLabel: brl2(visao.value.patrimonio) }
 })
 const stats = computed<CarteiraHeroVM['stats']>(() => props.payload.hero.stats.map((s) => ({ ...s, value: escalar(s.value) })))
-const topo = computed(() => ({ avisos: visao.value.avisos, conexoes: visao.value.conexoes, ativos: visao.value.posicoes.length, dadosDe: visao.value.dadosDe }))
+const topo = computed(() => ({ avisos: visao.value.avisos, conexoes: visao.value.conexoes, ativos: visao.value.posicoes.length, dadosDe: visao.value.dadosDe, mock: mock.value }))
+/** com fonte velha, quem parou: 'a conexão Nubank' (o aviso do topo diz o resto) */
+const parada = computed(() => {
+  const nome = visao.value.conexoes.find((c) => c.estado !== 'ok')?.instituicao
+  return nome ? `a conexão ${nome}` : 'a conexão'
+})
 
 /* ————— o rail ————— */
 const railSections = computed<RailSection[]>(() => [
   { id: 'hoje', label: 'Hoje' },
   { id: 'onde', label: 'Onde está' },
   { id: 'renda', label: 'Quanto paga' },
+  ...(visao.value.imposto ? [{ id: 'imposto', label: 'Imposto' }] : []),
+  { id: 'relatorio', label: 'Relatório' },
 ])
 useSectionRail(railSections, { pageLabel: 'Carteira' })
 </script>
@@ -92,15 +113,17 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
     <CarteiraAgora id="hoje" :agora="agora" :chart="chart" :stats="stats" :visao="topo" @connected="emit('connected')" />
     <p v-if="visao.dadosDe" class="cvi__parcial" role="status">
       <span class="cvi__parcial-p" aria-hidden="true" />
-      O que está abaixo é de {{ visao.dadosDe }}, a última vez que o Nubank atualizou. Os números de imposto e risco esperam a reconexão.
+      O que está abaixo é de {{ visao.dadosDe }}, a última vez que {{ parada }} atualizou. Os números de imposto e risco esperam a reconexão.
       <NuxtLink to="/conta#open-finance">Reconectar</NuxtLink>
     </p>
     <VisaoOndeEsta id="onde" :visao="visao" />
     <VisaoRenda id="renda" :visao="visao" />
-    <CarteiraAnalise :payload="payload" enxuta />
+    <!-- a resposta real sempre traz o imposto; o cenário real local do dev pode vir sem -->
+    <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" />
+    <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
 
     <!-- só no dev: o caso que a tela está mostrando -->
-    <div class="cvi__dev" role="group" aria-label="Cenário do mock">
+    <div v-if="mock" class="cvi__dev" role="group" aria-label="Cenário do mock">
       <span class="cvi__dev-t">Mock</span>
       <button
         v-for="c in CENARIOS" :key="c.id" type="button" class="cvi__dev-b" :class="{ 'cvi__dev-b--on': cenario === c.id }"

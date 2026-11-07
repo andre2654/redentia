@@ -5,10 +5,12 @@
 // mesma tela (CarteiraContent → CarteiraVisao); ?visao=antiga volta à antiga.
 // O topo daqui também é mock: uma curva de 12 meses que termina no patrimônio
 // do mock, e um Ibovespa sintético. ?cenario=normal|calmo|velho|semgasto.
+// O relatório aberto (07/11) traz as movimentações do histórico do imposto do
+// mock, com o selo nas vendas, e um P&L mês a mês do mock.
 // Fora do `nuxi dev` a rota nem existe (pages/dev/ sai no nuxt.config).
 import type { CarteiraPayload } from '~/types/carteira'
 import type { SeriesPoint } from '~/types/acao'
-import { visaoMock } from '~/dev/carteiraVisaoMock'
+import { heatmapMock, movimentosMock, visaoMock } from '~/dev/carteiraVisaoMock'
 import { brl2 } from '~/utils/carteiraVisao'
 import CarteiraVisao from '~/components/carteira/visao/CarteiraVisao.vue'
 
@@ -50,7 +52,7 @@ const payload = {
     priceDate: new Date().toISOString().slice(0, 10), carteiraPct: -0.31, bolsaPct: -0.52, diaValor: '−R$ 2.005,60', diaPct: '−0,31%', diaDir: 'down',
     alerta: null, patrimonio: brl2(v.patrimonio), ativos: `${v.posicoes.length} ativos`, atualizado: null, provento: false, proventoDoDia: null,
   },
-  allocation: [], groups: [], positionsSub: null, raiox: null, income: null, movements: null, heatmap: null,
+  allocation: [], groups: [], positionsSub: null, raiox: null, income: null, movements: movimentosMock(), heatmap: heatmapMock(),
   chart: { points: pontos, collecting: false, currentLabel: brl2(v.patrimonio), ibov12m: ibov, cdiRate: 14.9 },
 } as unknown as CarteiraPayload
 </script>

@@ -8,9 +8,15 @@
 // círculo azul 52px e gap 14→19px no hover — aqui ele é FUNCIONAL: expande
 // a lista pros últimos 12 meses buscados (não existe página de extrato).
 import type { CarteiraMovementsVM, CarteiraMovementVM } from '~/types/carteira'
+import type { SeloImposto } from '~/types/carteiraVisao'
+import { SELO } from '~/utils/impostoVisao'
 
-const props = defineProps<{ movements: CarteiraMovementsVM }>()
+// selos (a /carteira nova, 07/11/2026): o selo do imposto do mês de cada venda,
+// pela chave 'AAAA-MM|TICKER' do histórico do imposto; venda fora dele fica sem
+const props = defineProps<{ movements: CarteiraMovementsVM; selos?: Record<string, SeloImposto> }>()
 const { hidden } = useHiddenValues()
+const seloDe = (e: CarteiraMovementVM): SeloImposto | null =>
+  (e.badge === 'Venda' && e.mes ? props.selos?.[`${e.mes}|${e.ticker}`] ?? null : null)
 
 const TABS = ['Tudo', 'Compras', 'Vendas', 'Proventos'] as const
 const tab = ref<string>('Tudo')
@@ -57,6 +63,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
           <span class="cmv__ticker-row">
             <span class="cmv__ticker">{{ e.ticker }}</span>
             <span class="cmv__badge" :class="`cmv__badge--${e.badge.toLowerCase()}`">{{ e.badge }}</span>
+            <span v-if="seloDe(e)" class="cmv__selo" :class="`cmv__selo--${seloDe(e)}`">{{ SELO[seloDe(e)!] }}</span>
           </span>
           <span class="cmv__desc">{{ e.sub }}</span>
         </span>
@@ -97,7 +104,7 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv__date-d { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; line-height: 1; }
 .cmv__date-m { color: var(--nu-gray); font-size: 9px; font-weight: 800; letter-spacing: .5px; margin-top: 2px; }
 .cmv__main { flex: 1; min-width: 0; overflow: hidden; }
-.cmv__ticker-row { display: flex; align-items: center; gap: 10px; }
+.cmv__ticker-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; }
 .cmv__ticker { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; white-space: nowrap; }
 .cmv__badge {
   display: inline-flex; align-items: center; font-size: var(--nu-fs-xs); font-weight: 700;
@@ -106,6 +113,11 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
 .cmv__badge--provento { background: var(--nu-green-bg); color: var(--nu-green-2); }
 .cmv__badge--compra { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 .cmv__badge--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
+/* o selo do imposto da venda: contorno, para não brigar com o tipo */
+.cmv__selo { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--nu-r-pill); font-size: var(--nu-fs-xs); font-weight: 700; white-space: nowrap; box-shadow: inset 0 0 0 1px currentColor; }
+.cmv__selo--isento { color: var(--nu-green-2); }
+.cmv__selo--pago { color: var(--nu-blue-text); }
+.cmv__selo--a_conferir, .cmv__selo--custo_desconhecido { color: var(--nu-amber-text); }
 .cmv__desc {
   display: block; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -123,4 +135,16 @@ const hasMore = computed(() => props.movements.allEvents.length > props.movement
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .cmv__more-label { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
+/* no celular (07/11/2026): com a data, a logo e o valor na mesma linha, sobravam
+   59 px para o ticker em 375 (o GOLD11 saía cortado). O ticker e os selos ganham
+   a largura toda; a descrição e o valor descem para a segunda linha. */
+@media (max-width: 640px) {
+  .cmv__row { display: grid; grid-template-columns: 48px 48px minmax(0, 1fr) auto; grid-template-areas: 'd l t t' 'd l s v'; align-items: center; column-gap: 12px; row-gap: 2px; }
+  .cmv__date-tile { grid-area: d; }
+  .cmv__row > :nth-child(2) { grid-area: l; }
+  .cmv__main { display: contents; }
+  .cmv__ticker-row { grid-area: t; }
+  .cmv__desc { grid-area: s; margin-top: 0; }
+  .cmv__val { grid-area: v; }
+}
 </style>
