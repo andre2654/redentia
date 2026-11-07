@@ -65,7 +65,7 @@ test('uma linha por grupo: a barra das ações, a do lucro, a renda fixa e o cus
   assert.equal(lf.direita, 'R$ 82 de imposto')
   assert.equal(lf.texto, 'Vendeu R$ 6.180, com R$ 412 de lucro.')
   assert.deepEqual(lf.barra, { tipo: 'lucro', impostoPct: 20 })
-  assert.deepEqual(linhaDoGrupo(etf!, '2026-11'), { nome: 'ETF', direita: 'Sem venda', texto: '', barra: null, semCusto: false })
+  assert.deepEqual(linhaDoGrupo(etf!, '2026-11'), { nome: 'ETF', direita: 'Sem vendas', texto: '', barra: null, semCusto: false })
   const lr = linhaDoGrupo(rf!, '2026-11')
   assert.equal(lr.direita, 'Retido na fonte')
   assert.equal(lr.texto, 'Sem resgate em novembro.')
@@ -95,7 +95,7 @@ const OUTUBRO_REAL: MesImposto = {
 }
 const NOVEMBRO_REAL: MesImposto = {
   mes: '2026-11',
-  grupos: [{ grupo: 'acoes', vendido: 0, lucro: 0, isencao: 20000, cabeAinda: 20000, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: 'Sem venda de ações no mês: cabem os R$ 20 mil inteiros.' }],
+  grupos: [{ grupo: 'acoes', vendido: 0, lucro: 0, isencao: 20000, cabeAinda: 20000, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: 'Sem vendas de ações no mês: cabem os R$ 20 mil inteiros.' }],
   darf: { valor: null, vence: null, codigo: '6015' },
 }
 
@@ -112,7 +112,7 @@ test('resposta real: ações isentas sem o custo fecham o mês (o selo é isento
 
 test('resposta real: a linha do grupo é a nota do backend, sem a frase da tela repetida antes dela', () => {
   const [g] = NOVEMBRO_REAL.grupos
-  assert.equal(textoDoGrupo(g!, linhaDoGrupo(g!, '2026-11')), 'Sem venda de ações no mês: cabem os R$ 20 mil inteiros.')
+  assert.equal(textoDoGrupo(g!, linhaDoGrupo(g!, '2026-11')), 'Sem vendas de ações no mês: cabem os R$ 20 mil inteiros.')
   const [acoes, rf] = OUTUBRO_REAL.grupos
   assert.equal(textoDoGrupo(acoes!, linhaDoGrupo(acoes!, '2026-10')), acoes!.nota)
   // a renda fixa: o resgate (que a nota não diz) e a regra da retenção (que a nota diz)

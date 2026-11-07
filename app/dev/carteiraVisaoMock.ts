@@ -238,8 +238,8 @@ const HISTORICO_ANTES: MesHistorico[] = [
 /** a nota de cada grupo, no texto de `Imposto::grupoDoMes` (a explicação do mês, com os números) */
 const reais = (v: number) => `R$ ${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v)}`
 function notaMock(grupo: 'acoes' | 'fii' | 'etf' | 'rf', vendido: number): string {
-  if (grupo === 'acoes') return vendido > 0 ? `Vendido ${reais(vendido)} de R$ 20 mil isentos; ainda cabe ${reais(Math.max(0, 20000 - vendido))}.` : 'Sem venda de ações no mês: cabem os R$ 20 mil inteiros.'
-  if (grupo === 'rf') return vendido > 0 ? 'O imposto da renda fixa (Tesouro, CDB, ETF de renda fixa) é retido na fonte, de 22,5% a 15% pelo prazo: não entra no DARF.' : 'Sem venda de renda fixa no mês.'
+  if (grupo === 'acoes') return vendido > 0 ? `Vendido ${reais(vendido)} de R$ 20 mil isentos; ainda cabe ${reais(Math.max(0, 20000 - vendido))}.` : 'Sem vendas de ações no mês: cabem os R$ 20 mil inteiros.'
+  if (grupo === 'rf') return vendido > 0 ? 'O imposto da renda fixa (Tesouro, CDB, ETF de renda fixa) é retido na fonte, de 22,5% a 15% pelo prazo: não entra no DARF.' : 'Sem vendas de renda fixa no mês.'
   return `${grupo === 'fii' ? 'FII' : 'ETF'}: ${reais(vendido)} vendidos, sem isenção; o lucro paga ${grupo === 'fii' ? 20 : 15}%.`
 }
 

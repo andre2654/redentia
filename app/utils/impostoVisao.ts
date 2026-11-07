@@ -89,7 +89,7 @@ export type BarraDoGrupo =
 
 export interface LinhaDoGrupo {
   nome: string
-  /** à direita do nome: 'R$ 18.700 de R$ 20 mil', 'R$ 82 de imposto', 'Sem venda' */
+  /** à direita do nome: 'R$ 18.700 de R$ 20 mil', 'R$ 82 de imposto', 'Sem vendas' */
   direita: string
   /** a linha cinza, antes da regra do grupo */
   texto: string
@@ -121,7 +121,7 @@ export function linhaDoGrupo(g: GrupoImpostoVisao, mes: string, fmt: (v: number)
       : `Sem resgate em ${nomeDoMes(mes)}.`
     return { nome, direita: 'Retido na fonte', texto, barra: null, semCusto: false }
   }
-  if (g.vendido <= 0) return { nome, direita: 'Sem venda', texto: '', barra: null, semCusto: false }
+  if (g.vendido <= 0) return { nome, direita: 'Sem vendas', texto: '', barra: null, semCusto: false }
   if (semCusto || g.lucro == null) return { nome, direita: 'Lucro a conferir', texto: `Vendeu ${fmt(g.vendido)}. Sem o custo, eu não sei o lucro.`, barra: null, semCusto: true }
   if (g.lucro <= 0) return { nome, direita: 'Sem imposto', texto: `Vendeu ${fmt(g.vendido)}, sem lucro.`, barra: null, semCusto: false }
   return {
@@ -209,7 +209,7 @@ export const SELO: Record<SeloImposto, string> = {
   pago: 'Imposto pago',
   a_conferir: 'Imposto a conferir',
   custo_desconhecido: 'Custo desconhecido',
-  sem_venda: 'Sem venda',
+  sem_venda: 'Sem vendas',
 }
 
 /** as vendas do histórico com o selo do mês delas, pela chave 'AAAA-MM|TICKER' (a lista de movimentações cruza por ela) */

@@ -167,6 +167,9 @@ function agir(a: Aviso, acao: AcaoAviso) {
     } else if (acao.alvo.startsWith('#')) {
       void navigateTo({ hash: acao.alvo })
       nextTick(() => document.getElementById(acao.alvo.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    } else if (/^https?:\/\//i.test(acao.alvo)) {
+      // a notícia do fato relevante é de outro site: o navigateTo recusa URL de fora sem external
+      void navigateTo(acao.alvo, { external: true, open: { target: '_blank' } })
     } else void navigateTo(acao.alvo)
     return
   }
