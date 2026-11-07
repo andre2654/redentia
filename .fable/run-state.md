@@ -16,9 +16,9 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | 1 | Chat sem MAX: `fix/chat-sem-max` no remoto, PR para `main`, CI verde | VERIFIED | chat #9 (4bd9e9f), CI verde, 401 testes locais, 529 no CI |
 | 2 | Chat sem Raio-X e sem sobras de tier: `chore/chat-sem-raiox`, montada sobre `feat/ia-paga` + `fix/chat-sem-max`. Sem geração de Raio-X, sem trava MAX e sem contadores. Typecheck e testes verdes, PR aberto. `feat/ia-paga` com PR aberto e CI verde | VERIFIED (falta a revisão do 13) | chat #10 ia-paga (7a709a9), CI verde; chat #11 (f773d21), CI verde, 526 no CI. O #11 tirou também ~730 linhas de auto-research do MAX em `agent.ts`, mais `intent-classifier.ts` e `forceProposeOnFirstIter`: a revisão precisa confirmar que era código morto |
 | 3 | MCP sem `reading`/Raio-X em `get_portfolio`: PR aberto, CI verde | VERIFIED | mcp #14 (35281b3), CI verde, 49 → 50 testes |
-| 4 | Backend `feat/plano-unico` atualizado com `main`, PR aberto, CI na contagem-base | TODO | |
-| 5 | Backend `fix/dia-pendente`: PR aberto, CI na contagem-base | TODO | |
-| 6 | Backend limpeza (`chore/sem-raiox-e-tiers`, sobre plano-unico). Saem: o POST de análise, o `reading` do MCP, as métricas `raiox_*`/`has_xray` do admin, `PlanSeeder`, `RequiresLimit`/`RequiresFeature`, `check-and-increment` e `analyses_deleted`. O GET de análise fica só leitura e a tabela fica. Suíte sem falha nova, PR aberto | TODO | |
+| 4 | Backend `feat/plano-unico` atualizado com `main`, PR aberto, CI na contagem-base | VERIFIED | api #21 (b3fb3db): o CI dá 1366 testes OK e PHPStan limpo, igual à base local |
+| 5 | Backend `fix/dia-pendente`: PR aberto, CI na contagem-base | VERIFIED | api #22 (ed26dc0): o CI dá 1245 OK, a main +6; os 6 testes novos falham no código antigo (−20,28 em vez de null) |
+| 6 | Backend limpeza (`chore/sem-raiox-e-tiers`, sobre plano-unico). Saem: o POST de análise, o `reading` do MCP, as métricas `raiox_*`/`has_xray` do admin, `PlanSeeder`, `RequiresLimit`/`RequiresFeature`, `check-and-increment` e `analyses_deleted`. O GET de análise fica só leitura e a tabela fica. Suíte sem falha nova, PR aberto | VERIFIED (falta a revisão do 13) | api #23 (a4ba8ef, base feat/plano-unico): o CI dá 1362 OK (−4: testes do que saiu) e PHPStan limpo. Ficam `basic_chat_daily`/`max_chat_daily`, porque o chat em produção lê `limits.max_chat_daily`, e o `UsageCounterService`, que monta o `usage` |
 | 7 | Leva 0, a base (em `feat/carteira-motor`). Transações de conta e cartão guardadas com marcas. Preço médio. Fatores consertados. Correlação robusta. Sinal de alta ou queda. DY de 12 meses. Sync diário do B2C agendado, com flag desligada. Testes | TODO | |
 | 8 | Motor e rotas: `GET /me/carteira/visao`, `PATCH /me/carteira/avisos/{chave}`, imposto (mês atual e anterior, grupos, histórico com selo), os detectores aprovados, portão, prioridade, vetos e a flag de usuários. Testes por cenário e execução com a carteira real local | TODO | |
 | 9 | Relatório `GET /me/carteira/relatorio`. Indicadores (lista no ledger) contra o benchmark composto, nota pela mediana dos pilares. Testes com resposta conhecida e execução com a carteira real local | TODO | |
@@ -101,6 +101,10 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | O comentário do `CarteiraMcpBanner.vue` ainda cita o Raio-X; links para `/carteira#raio-x` deixam de abrir a análise (nenhum no front) | Sem impacto | Conferir o app e o chat |
 | Sobras inofensivas do MAX no chat: 6 comparações `tier === 'max' || 'atlas'` em `loop.ts`, `post.ts` e `intake.ts`, comentários e o prefixo `max` no `leaked-marker-parser` | Nenhum turno chega como max (`tierEfetivo`) | PR à parte, depois |
 | Teste do mcp instável na base `c975d48` (1 falha a frio, depois 49/49) | Não vem do diff | Observar |
+| Conflito previsto no `bootstrap/app.php` entre o api #23 e os `feat/carteira-*`: as linhas do alias `carteira.visao` ficam coladas nas de `feature`/`limit`, que saem | Antes de abrir os PRs da carteira, mesclar o `chore/sem-raiox-e-tiers` neles, mantendo `carteira.visao` sem `feature`/`limit`. A ordem vira plano-unico → sem-raiox → carteira-* | integrador |
+| PRs empilhados com base `feat/plano-unico`: depois do merge do #21, a base precisa ir para main | — | No relatório final: `gh pr edit <n> --base main` para o #23 e os da carteira, ou retarget antes da entrega |
+| As métricas `raiox_*` saíram do admin, embora a `origin/main` antiga do front (24927ee8, fora do ar) ainda as leia. A `redentia-v2` em produção não usa | Aceito: o admin antigo mostra "—" | reverter 998c6df se o dono discordar |
+| O Infection (mutação, só relatório) falha às vezes em `EngineGoldenTest` | Não vem dos PRs | Investigar à parte |
 | Nubank do dono parado desde 16/07 | O dono desconecta e reconecta em /conta (1 min). Não apagamos a conexão no banco | — |
 
 ## Hard stops awaiting authorization
@@ -120,3 +124,6 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | https://github.com/andre2654/redentia-chat-service/pull/10 | 2 (ia-paga) | aberto, CI verde. A flag `CHAT_ASSINATURA_OBRIGATORIA` vem desligada por padrão. Mesclar DEPOIS do api plano-unico |
 | https://github.com/andre2654/redentia-chat-service/pull/11 | 2 | aberto, CI verde. Mesclar por último no chat, depois do api chore/sem-raiox |
 | https://github.com/andre2654/redentia-mcp/pull/14 | 3 | aberto, CI verde |
+| https://github.com/andre2654/redentia-api/pull/21 | 4 | aberto, CI = base. Passos do dono depois do merge: o preço na Stripe live e a migração dos assinantes |
+| https://github.com/andre2654/redentia-api/pull/22 | 5 | aberto, CI verde (independente) |
+| https://github.com/andre2654/redentia-api/pull/23 | 6 | aberto, base feat/plano-unico, CI verde |
