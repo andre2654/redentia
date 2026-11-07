@@ -32,9 +32,24 @@ export function usePreferenciasDaCarteira() {
   const optIn = useState<boolean>('carteira:prefs:whatsapp', () => false)
   /** a falha da última gravação, no tópico dela (a tela mostra a linha ali) */
   const erro = ref<{ topico: TopicoCarteira; texto: string } | null>(null)
+  // as preferências são de uma sessão: sair e entrar com outra conta na mesma
+  // aba relê, em vez de mostrar (e regravar) as da conta anterior
+  const { token } = useAuthState()
+  const dono = useState<string | null>('carteira:prefs:dono', () => null)
+  function daSessao() {
+    if (!import.meta.client) return
+    const d = resumoDoToken(token.value)
+    if (dono.value === d) return
+    dono.value = d
+    prefs.value = vazio()
+    optIn.value = false
+    estado.value = 'nao'
+  }
+  daSessao()
 
   /** `user`: quem já tem o /auth/me (a /conta) passa, e ele não é buscado de novo */
   async function carregar(opts: { user?: Record<string, unknown> | null } = {}) {
+    daSessao()
     if (import.meta.server || estado.value === 'carregando' || estado.value === 'pronto') return
     // sem sessão não há o que ler: a tela diz que não conseguiu, em vez de esqueleto para sempre
     if (!isAuthenticated.value) {
