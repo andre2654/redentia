@@ -493,7 +493,7 @@ const statusLinha = computed(() => {
 </script>
 
 <template>
-  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao }" aria-labelledby="cto-h1" data-clarity-mask="true">
+  <section ref="secao" v-contexto-chat="contexto" class="tbo cto" :class="{ 'cto--atencao': atencao, 'cto--enxuto': enxuto }" aria-labelledby="cto-h1" data-clarity-mask="true">
     <div class="tbo__luz" aria-hidden="true" />
     <div class="tbo__linha1">
       <div class="tbo__id">
@@ -809,6 +809,16 @@ const statusLinha = computed(() => {
 @media (max-width: 640px) {
   .cto__acoes { gap: 6px; }
   .cto__frase { font-size: var(--nu-fs-lg); }
+  /* Tela nova no celular: o olho fica na linha do título, só com o ícone
+     (o rótulo continua como nome acessível). No topo-noite, a linha vira
+     coluna e o olho descia para uma linha própria de ~110 px; recolhido,
+     ele fica invisível e a linha sobrava vazia sob o título */
+  .cto--enxuto .tbo__linha1 { flex-direction: row; flex-wrap: nowrap; align-items: center; }
+  .cto--enxuto .cto__acoes { flex-shrink: 0; }
+  .cto--enxuto .cto__acoes :deep(.tac__b) { width: auto; }
+  .cto--enxuto .cto__acoes :deep(.tac__r) {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
 }
 @media (max-width: 900px) {
   .cto__corpo { grid-template-columns: minmax(0, 1fr); }
