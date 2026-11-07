@@ -74,6 +74,7 @@ const temFuturo = computed(() => cob.value != null && r.value.caminhos.length > 
 const escolhido = ref(r.value.caminhos[0]?.id ?? '')
 const caminho = computed(() => r.value.caminhos.find((c) => c.id === escolhido.value) ?? r.value.caminhos[0]!)
 const yMax = computed(() => Math.max(10, Math.ceil((Math.max(0, ...r.value.caminhos.flatMap((c) => c.p90)) * 1.08) / 10) * 10))
+// o viewBox do gráfico é literal no template (0 0 600 240): mudou aqui, muda lá
 const W = 600
 const H = 240
 const xDe = (i: number) => (i / 60) * W
@@ -204,7 +205,8 @@ function simular() {
           @pointermove="mover" @pointerleave="mira = null"
         >
           <span v-for="g in grades" :key="g" class="vrd__gl" :style="{ bottom: `${(g / yMax) * 100}%` }"><span>{{ g }}%</span></span>
-          <svg :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" class="vrd__svg" aria-hidden="true">
+          <!-- viewBox literal (W × H): o :viewBox vira prop do DOM e o Vue reclama, como no AtivoGrafico -->
+          <svg viewBox="0 0 600 240" preserveAspectRatio="none" class="vrd__svg" aria-hidden="true">
             <!-- os outros caminhos, apagados: a escolha se compara sem trocar de aba -->
             <path v-for="c in r.caminhos.filter((x) => x.id !== escolhido)" :key="c.id" :d="linha(c.mediana)" class="vrd__fantasma" vector-effect="non-scaling-stroke" />
             <path :d="banda" class="vrd__banda" />
