@@ -10,6 +10,7 @@
 // do modal de avisos da /carteira grava (usePreferenciasDaCarteira). O
 // WhatsApp só liga com o aceite da pessoa; sem ele, fica desligado com a dica.
 import { TOPICOS_CARTEIRA, type TopicoCarteira } from '~/utils/avisosCanais'
+import { semQuebraNoReal } from '~/utils/carteiraVisao'
 
 const { data: me } = await useMe()
 const { prefs, save, hydrate } = useBriefingPrefs()
@@ -93,7 +94,7 @@ const em = computed({
           <li v-for="t in TOPICOS_CARTEIRA" :key="t.id" class="nt__aviso">
             <div class="nt__aviso-txt">
               <span class="nt__aviso-n">{{ t.nome }}<span class="nt__aviso-q">{{ t.quando }}</span></span>
-              <span class="nt__aviso-ex">“{{ t.exemplo }}”</span>
+              <span class="nt__aviso-ex">“{{ semQuebraNoReal(t.exemplo) }}”</span>
             </div>
             <div v-if="carteiraPronta" class="nt__aviso-ch">
               <label class="nt__aviso-c" :class="{ 'nt__aviso-c--off': !carteira.optIn.value }">
