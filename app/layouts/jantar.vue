@@ -26,11 +26,13 @@ const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20sabe
         <span aria-hidden="true">→</span>
       </a>
     </header>
+    <!-- Aviso de cookies no fluxo, abaixo do header, como no layout
+         padrão. No jt-foot ele caía entre o fecho da página e o rodapé. -->
+    <ConsentBanner />
     <main>
       <slot />
     </main>
     <div class="jt-foot">
-      <ConsentBanner />
       <NuFooter />
     </div>
   </div>
