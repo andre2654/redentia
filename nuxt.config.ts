@@ -301,12 +301,24 @@ export default defineNuxtConfig({
     // Os riscos que o Raio-X apontava (concentração, correlação, país) estão na
     // seção "Diversificação de verdade" do guia de carteira.
     '/guias/raio-x-carteira': { redirect: { to: '/guias/como-montar-carteira-de-investimentos', statusCode: 301 } },
-    // Dividendos e quanto rende: a primeira leitura depois que o cache da borda
-    // vence não pode esperar a fila de ~900 históricos. ISR serve a última
-    // resposta e regenera fora da requisição. O handler (sitemap-resposta.ts)
-    // devolve a mesma cópia na hora, com teto se não houver nenhuma.
+    // Sitemaps: a primeira leitura depois que o cache da borda vence não pode
+    // esperar getSiteSections() — a fila de ~900 históricos passa de um minuto
+    // e os outros arquivos esperam a mesma fila. ISR serve a última resposta
+    // e regenera fora da requisição. O handler (sitemap-resposta.ts) devolve
+    // a mesma cópia na hora, com teto se não houver nenhuma. Índice e todos
+    // os urlsets.
+    '/sitemap.xml': { isr: 3600 },
+    '/sitemaps/paginas.xml': { isr: 3600 },
+    '/sitemaps/calculadoras.xml': { isr: 3600 },
+    '/sitemaps/rankings.xml': { isr: 3600 },
+    '/sitemaps/setores.xml': { isr: 3600 },
+    '/sitemaps/glossario.xml': { isr: 3600 },
+    '/sitemaps/teses.xml': { isr: 3600 },
+    '/sitemaps/tesouro.xml': { isr: 3600 },
     '/sitemaps/dividendos.xml': { isr: 3600 },
     '/sitemaps/quanto-rende.xml': { isr: 3600 },
+    '/sitemaps/preco-teto.xml': { isr: 3600 },
+    '/sitemaps/ativos.xml': { isr: 3600 },
   },
 
   nitro: {

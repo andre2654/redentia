@@ -1,9 +1,10 @@
 /**
- * Resposta de /sitemaps/dividendos.xml e /sitemaps/quanto-rende.xml.
+ * Resposta de /sitemap.xml e de cada /sitemaps/{tipo}.xml.
  *
- * A lista de URLs continua sendo getSiteSections() + urlsetXml(). A requisição
- * leva a última cópia boa (memória deste isolate, cache de runtime da Vercel
- * ou a semente gravada no build) e a fila de históricos segue no waitUntil.
+ * A lista de URLs continua sendo getSiteSections() + urlsetXml(), e o índice
+ * continua sendo entradasDoIndice() + sitemapIndexXml(). A requisição leva a
+ * última cópia boa (memória deste isolate, cache de runtime da Vercel ou a
+ * semente gravada no build) e a fila de históricos segue no waitUntil.
  * Geração incompleta não substitui uma cópia completa.
  */
 import { getCache, waitUntil } from '@vercel/functions'
@@ -19,15 +20,22 @@ import {
   resolverSitemapEmCache,
   type CopiaSitemap,
 } from './sitemap-cache.ts'
-import { paginasDoGrupo, urlsetXml } from './sitemap-xml.ts'
+import {
+  SITEMAP_INDICE,
+  SITEMAP_ORDEM,
+  entradasDoIndice,
+  paginasDoGrupo,
+  sitemapIndexXml,
+  urlsetXml,
+} from './sitemap-xml.ts'
 
-const TIPOS_PESADOS = ['dividendos', 'quanto-rende'] as const
+const TIPOS = SITEMAP_ORDEM
 const TTL_REMOTO_S = 7 * 24 * 60 * 60
 const LOCK_S = 200
 const LOCK_KEY = 'sitemap-pesado-lock'
 
 const memoria = new Map<string, CopiaSitemap>()
-let geracaoAmbos: Promise<Map<string, CopiaSitemap>> | null = null
+let geracaoTodos: Promise<Map<string, CopiaSitemap>> | null = null
 
 function chaveDe(tipo: string, origin: string): string {
   return `sitemap-xml:v1:${tipo}:${origin}`
@@ -126,21 +134,23 @@ async function soltarLock(): Promise<void> {
 }
 
 /**
- * Uma geração enche os dois arquivos. Pedidos juntos esperam a mesma promise
- * em vez de abrir outra fila de históricos.
+ * Uma geração enche o índice e todos os urlsets. Pedidos juntos esperam a
+ * mesma promise em vez de abrir outra fila de históricos.
  */
-function gerarAmbos(origin: string): Promise<Map<string, CopiaSitemap>> {
-  if (geracaoAmbos) return geracaoAmbos
-  geracaoAmbos = (async () => {
+function gerarTodos(origin: string): Promise<Map<string, CopiaSitemap>> {
+  if (geracaoTodos) return geracaoTodos
+  geracaoTodos = (async () => {
     const out = new Map<string, CopiaSitemap>()
     const peguei = await lockLivre()
     if (!peguei) return out
     try {
       const sections = await getSiteSections()
       const storedAt = Date.now()
-      for (const tipo of TIPOS_PESADOS) {
+      let todosCompletos = true
+      for (const tipo of TIPOS) {
         const pages = paginasDoGrupo(sections, tipo)
         const completo = pages.length > 0 && (tipo !== 'quanto-rende' || quantoRendeGeracaoCompleta())
+        if (!completo) todosCompletos = false
         const copia: CopiaSitemap = {
           xml: urlsetXml(origin, pages),
           storedAt,
@@ -150,18 +160,27 @@ function gerarAmbos(origin: string): Promise<Map<string, CopiaSitemap>> {
         out.set(tipo, copia)
         if (copia.completo) await gravarCopia(tipo, copia)
       }
+      const entradas = entradasDoIndice(origin, sections)
+      const indice: CopiaSitemap = {
+        xml: sitemapIndexXml(entradas),
+        storedAt,
+        completo: todosCompletos && entradas.length === TIPOS.length,
+        origin,
+      }
+      out.set(SITEMAP_INDICE, indice)
+      if (indice.completo) await gravarCopia(SITEMAP_INDICE, indice)
       return out
     } finally {
       await soltarLock()
     }
   })().finally(() => {
-    geracaoAmbos = null
+    geracaoTodos = null
   })
-  return geracaoAmbos
+  return geracaoTodos
 }
 
 function gerarTipo(tipo: string, origin: string): Promise<CopiaSitemap> {
-  return gerarAmbos(origin).then((mapa) => mapa.get(tipo) ?? {
+  return gerarTodos(origin).then((mapa) => mapa.get(tipo) ?? {
     xml: '',
     storedAt: Date.now(),
     completo: false,

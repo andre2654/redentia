@@ -51,6 +51,8 @@ const EXATAS: Record<string, string> = {
   // /business: landing sem variante logada, indexável desde 20/10/2026. Cadastro,
   // chaves, skills e convite seguem private/no-store no nuxt.config.ts.
   '/business': HORA,
+  // /jantar: landing estática do jantar. Sem variante logada.
+  '/jantar': HORA,
   // Rankings e setores: o backend cacheia 15 min → s-maxage=900.
   '/rankings': QUINZE_MIN,
   '/setor': QUINZE_MIN,

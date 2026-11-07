@@ -1,7 +1,7 @@
 /**
- * Grava server/data/sitemap-semente.ts: a última cópia boa de
- * /sitemaps/dividendos.xml e /sitemaps/quanto-rende.xml, gerada pelo MESMO
- * getSiteSections() + urlsetXml() da rota.
+ * Grava server/data/sitemap-semente.ts: a última cópia boa de /sitemap.xml e
+ * de cada /sitemaps/{tipo}.xml, gerada pelo MESMO getSiteSections() +
+ * urlsetXml() / entradasDoIndice() da rota.
  *
  * Falha de rede não apaga o arquivo anterior (sitemap vazio é pior que a
  * lista de ontem). Roda no build e pode rodar à mão:
@@ -18,7 +18,6 @@ const APP = join(ROOT, 'app')
 const ORIGIN = 'https://www.redentia.com.br'
 const BASE = process.env.NUXT_BACKEND_URL ?? 'https://redentia-api.saraivada.com/api'
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../server/data/sitemap-semente.ts')
-const TIPOS = ['dividendos', 'quanto-rende']
 
 globalThis.defineCachedFunction = (fn) => fn
 globalThis.useRuntimeConfig = () => ({
@@ -76,15 +75,18 @@ async function main() {
   const pages = await jiti.import('../server/utils/site-pages.ts')
   const xml = await jiti.import('../server/utils/sitemap-xml.ts')
   const anterior = await anteriorDoArquivo(jiti)
+  const tipos = [...xml.SITEMAP_ORDEM, xml.SITEMAP_INDICE]
   console.log('gerando sitemaps (quanto rende lê o histórico, cerca de 2 min)...')
   const t0 = Date.now()
   const sections = await pages.getSiteSections()
   const storedAt = Date.now()
   const sementes = {}
-  for (const tipo of TIPOS) {
+  let todosCompletos = true
+  for (const tipo of xml.SITEMAP_ORDEM) {
     const lista = xml.paginasDoGrupo(sections, tipo)
     const completo = lista.length > 0 && (tipo !== 'quanto-rende' || pages.quantoRendeGeracaoCompleta())
     if (!completo) {
+      todosCompletos = false
       console.warn(`sitemap ${tipo}: geração incompleta (${lista.length} urls); arquivo anterior fica`)
       continue
     }
@@ -96,11 +98,25 @@ async function main() {
     }
     console.log(`sitemap ${tipo}: ${lista.length} urls em ${((Date.now() - t0) / 1000).toFixed(1)}s`)
   }
+  if (todosCompletos) {
+    const entradas = xml.entradasDoIndice(ORIGIN, sections)
+    sementes[xml.SITEMAP_INDICE] = {
+      xml: xml.sitemapIndexXml(entradas),
+      storedAt,
+      origin: ORIGIN,
+      urls: entradas.length,
+    }
+    console.log(`sitemap índice: ${entradas.length} arquivos em ${((Date.now() - t0) / 1000).toFixed(1)}s`)
+  } else {
+    console.warn('sitemap índice: geração incompleta; arquivo anterior fica')
+  }
 
   const junto = { ...anterior, ...sementes }
-  if (!temCopia(junto, 'dividendos') || !temCopia(junto, 'quanto-rende')) {
-    console.error('semente sem os dois sitemaps')
-    process.exit(existsSync(OUT) && temCopia(anterior, 'dividendos') && temCopia(anterior, 'quanto-rende') ? 0 : 1)
+  const faltam = tipos.filter((tipo) => !temCopia(junto, tipo))
+  if (faltam.length) {
+    console.error(`semente sem: ${faltam.join(', ')}`)
+    const anteriorOk = tipos.every((tipo) => temCopia(anterior, tipo))
+    process.exit(anteriorOk ? 0 : 1)
   }
   if (Object.keys(sementes).length === 0) {
     console.warn('geração falhou; semente anterior permanece')

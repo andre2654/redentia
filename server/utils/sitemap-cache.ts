@@ -1,9 +1,10 @@
 /**
- * Cache da resposta XML de /sitemaps/dividendos.xml e /sitemaps/quanto-rende.xml.
+ * Cache da resposta XML de /sitemap.xml e de cada /sitemaps/{tipo}.xml.
  *
  * A borda (Cache-Control / ISR) só entrega a cópia velha para QUEM NÃO é a
  * requisição que dispara a regeneração. O Googlebot é essa requisição, e a
- * fila de históricos passa de 120s — o fetch do sitemap morre.
+ * fila de históricos passa de 120s — o fetch do sitemap morre. Os outros
+ * arquivos esperam a mesma fila, porque todos saem de getSiteSections().
  *
  * Aqui a própria função devolve a última cópia boa na hora e renova depois.
  * Sem cópia, ou com cópia mais velha que a janela de stale, a geração nova
@@ -46,9 +47,14 @@ export class SitemapIndisponivel extends Error {
   }
 }
 
+/** Urlset de um arquivo filho, ou o sitemapindex de /sitemap.xml. */
+function xmlPareceSitemap(xml: string): boolean {
+  return xml.includes('<urlset') || xml.includes('<sitemapindex')
+}
+
 export function copiaServe(c: CopiaSitemap | null | undefined): c is CopiaSitemap {
   if (!c || c.completo !== true) return false
-  if (typeof c.xml !== 'string' || !c.xml.includes('<urlset')) return false
+  if (typeof c.xml !== 'string' || !xmlPareceSitemap(c.xml)) return false
   if (!c.xml.includes('<loc>')) return false
   if (typeof c.storedAt !== 'number' || !Number.isFinite(c.storedAt)) return false
   if (typeof c.origin !== 'string' || c.origin.length === 0) return false
@@ -137,7 +143,7 @@ export async function resolverSitemapEmCache(opts: OpcoesSitemapCache): Promise<
     if (r.ok && copiaServe(r.c)) await opts.gravar(r.c)
   })
 
-  if (!corrida.timeout && corrida.r.ok && corrida.r.c.xml.includes('<urlset')) {
+  if (!corrida.timeout && corrida.r.ok && xmlPareceSitemap(corrida.r.c.xml)) {
     return {
       xml: xmlNaOrigem(corrida.r.c.xml, corrida.r.c.origin || opts.origin, opts.origin),
       contentType: SITEMAP_CONTENT_TYPE,

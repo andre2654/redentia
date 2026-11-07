@@ -35,6 +35,19 @@ export const SITEMAP_ORDEM = [
   'teses', 'tesouro', 'dividendos', 'quanto-rende', 'preco-teto', 'ativos',
 ] as const
 
+/** Chave da cópia de /sitemap.xml. Não é um arquivo em /sitemaps/. */
+export const SITEMAP_INDICE = 'index'
+
+/** Path público do índice ou de um urlset. */
+export function caminhoDoSitemap(tipo: string): string {
+  return tipo === SITEMAP_INDICE ? '/sitemap.xml' : `/sitemaps/${tipo}.xml`
+}
+
+/** Nome do arquivo na borda (ISR). O índice é sitemap.xml, não index.xml. */
+export function arquivoDoSitemap(tipo: string): string {
+  return tipo === SITEMAP_INDICE ? 'sitemap.xml' : `${tipo}.xml`
+}
+
 /** 'ativos.xml' → 'ativos'; tipo desconhecido → null. */
 export function tipoDoSitemap(param: string | undefined): string | null {
   const tipo = String(param ?? '').replace(/\.xml$/i, '')
@@ -63,6 +76,24 @@ export function latestLastmod(pages: SitePage[]): string | undefined {
     (acc, page) => (page.lastmod && (!acc || page.lastmod > acc) ? page.lastmod : acc),
     undefined,
   )
+}
+
+/**
+ * Entradas de /sitemap.xml. Arquivo vazio (backend fora, seção omitida) não
+ * entra. <lastmod> é a data mais nova REAL das URLs daquele arquivo.
+ */
+export function entradasDoIndice(
+  origin: string,
+  sections: SiteSection[],
+): Array<{ loc: string; lastmod?: string }> {
+  return SITEMAP_ORDEM.flatMap((tipo) => {
+    const pages = paginasDoGrupo(sections, tipo)
+    if (!pages.length) return []
+    return [{
+      loc: `${origin}/sitemaps/${tipo}.xml`,
+      lastmod: latestLastmod(pages),
+    }]
+  })
 }
 
 export function urlsetXml(origin: string, pages: SitePage[]): string {
