@@ -18,7 +18,7 @@ const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20sabe
 
 test('a página usa o layout com nav e rodapé do site e não entra no menu', () => {
   assert.match(pagina, /layout:\s*'jantar'/)
-  assert.match(layout, /<NuHeader\s*\/>/)
+  assert.match(layout, /<NuHeader marca-clara\s*\/>/)
   assert.match(layout, /<NuFooter\s*\/>/)
   assert.doesNotMatch(nav, /\/jantar/)
 })
@@ -72,6 +72,10 @@ test('a página é navy contínuo, com pílula creme, e o header do site fica cl
   assert.doesNotMatch(pagina, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|font-family:\s*Inter|jt__bloco--creme|jt__bloco--azul/)
   assert.doesNotMatch(layout, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|nuh-wrap|nuh__navitem/)
   assert.match(nav, /\.nuh-wrap \{[^}]*background:\s*var\(--nu-white\)/)
+  assert.match(nav, /\.nuh__brand \{[^}]*background:\s*var\(--nu-blue\)/)
+  assert.match(nav, /\.nuh__brand--clara \{[^}]*background:\s*transparent/)
+  assert.match(nav, /logo-azul\.svg/)
+  assert.doesNotMatch(layout, /#0c1524[^]*nuh|nuh[^]*#0c1524/)
   assert.equal(existsSync(new URL('../public/fonts/inter-latin.woff2', import.meta.url)), false)
   assert.equal(existsSync(new URL('../public/fonts/noto-serif-display-latin.woff2', import.meta.url)), false)
 })

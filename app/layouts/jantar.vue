@@ -3,15 +3,16 @@
  * Landing do Wealth Intelligence Dinner.
  *
  * Nav e rodapé são os do site (NuHeader / NuFooter, com a política de
- * privacidade). O header fica o claro padrão: o contraste é cabeçalho claro
- * sobre a página navy. A faixa "Mercado agora" fica de fora, e o convite da
- * newsletter também. O rodapé padrão permanece.
+ * privacidade). A barra é a clara do site, inteira: a marca não fica num
+ * quadrado azul, que no celular se soltava da faixa e se misturava com o
+ * ticker. A faixa "Mercado agora" fica de fora, e o convite da newsletter
+ * também. O rodapé padrão permanece.
  */
 </script>
 
 <template>
   <div class="jt-shell">
-    <NuHeader />
+    <NuHeader marca-clara />
     <ConsentBanner />
     <main>
       <slot />
