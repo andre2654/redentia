@@ -34,8 +34,11 @@ import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } fro
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
-// semBotao (06/11): o topo recolhido abre o modal pelos próprios itens e pelo "+N"; o botão redondo sai
-const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string | null; semBotao?: boolean; mock?: boolean }>()
+// semBotao (06/11): sem o botão redondo; o modal abre pelos próprios itens e pelo "+N".
+// botaoOculto (07/11): o botão existe, mas fica invisível e fora do Tab. É o topo
+// recolhido da tela nova, que tem o "+N"; aberto, o "+N" some e o sino volta. Guardar
+// o lugar evita que o olho ao lado pule na abertura
+const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string | null; semBotao?: boolean; botaoOculto?: boolean; mock?: boolean }>()
 
 const { hidden } = useHiddenValues()
 const semValor = (t: string) => (hidden.value ? t.replace(/R\$\s?[\d.,]+( mil)?/g, 'R$ ••••') : t)
@@ -176,7 +179,8 @@ function agir(a: Aviso, acao: AcaoAviso) {
   <TopoBotao
     v-if="!semBotao"
     rotulo="Avisos" :aria-label="pontos ? `Avisos da carteira: ${pontos} pedem atenção` : 'Avisos da carteira'" :title="pontos ? `${pontos} pedem atenção` : 'Avisos da carteira'"
-    aria-haspopup="dialog" :aria-expanded="aberto" class="cav__b" @click="abrir()"
+    aria-haspopup="dialog" :aria-expanded="aberto" class="cav__b" :class="{ 'cav__b--oculto': botaoOculto }"
+    :aria-hidden="botaoOculto || undefined" :tabindex="botaoOculto ? -1 : undefined" @click="abrir()"
   >
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>
     <span v-if="pontos" class="cav__selo">{{ pontos }}</span>
@@ -305,6 +309,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
 <style scoped>
 /* ——— o botão do topo ——— */
 .cav__b :deep(.tac__c) { position: relative; }
+.cav__b--oculto { visibility: hidden; }
 .cav__selo {
   position: absolute; top: -3px; right: -5px; display: grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px;
   border-radius: var(--nu-r-pill); background: var(--nu-amber-fill); color: var(--nu-navy);

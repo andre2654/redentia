@@ -508,7 +508,8 @@ const statusLinha = computed(() => {
         <TopoBotao v-if="!enxuto" :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
-        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" :mock="visao.mock" sem-botao />
+        <!-- o sino: recolhido, os avisos abrem pelo "+N" e ele só guarda o lugar; aberto, é a entrada dos avisos -->
+        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" :mock="visao.mock" :botao-oculto="recolhido" />
         <CarteiraIdeias v-else-if="achados" v-bind="achados" />
         <TopoBotao v-else rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
           <img src="/logo-azul.svg" alt="" width="16" height="16" class="cto__logo">
