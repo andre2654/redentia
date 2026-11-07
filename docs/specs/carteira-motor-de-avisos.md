@@ -347,3 +347,152 @@ Ensaio só de leitura no espelho Business do dono, com os dados de 29/10. Ele ge
   - No app, onde o dono aceitou o risco: os nomes.
 - **O detector `proventos.faltou` vale ouro:** achou um JCP da Copel de 30/09 (R$ 265–304) que não caiu na conta.
 - **Os detectores de imposto precisam do preço médio (Leva 0, item 2).** Sem ele, todo aviso de imposto de ação sai "incompleto".
+
+---
+
+## Parte 4 · Revisão do dono (07/11/2026): avisos, recomendação, relatório e imposto
+
+### 4.1 O veredito do dono sobre os 12 avisos do ensaio
+
+| # | Aviso | Veredito | Onde e quando |
+|---|---|---|---|
+| 1, 3, 9 | Imposto (meses passados, ETF de abril, isenção do BBSE3) | Só o **mês atual e o anterior**. O histórico vira um componente de imposto na carteira | Aviso no mês; histórico com selo na carteira |
+| 2 | Conexão parada | Fica | Topo e aviso |
+| 4 | Quedas da semana | Fica, no fim de semana | **Sábado**, e-mail e WhatsApp (hoje não existe) |
+| 5, 6, 7, 8, 11 | Selic, JCP faltando, prejuízo de FII, juros longos, FII de papel | **Cortados** | — |
+| 10 | Quanto recebi | Fica | WhatsApp e e-mail no dia ou na semana do pagamento |
+| 12 | Proventos do mês | Fica, **no início do mês**: o esperado e o já confirmado | Dia 1, e-mail e WhatsApp |
+
+### 4.2 Avisos novos pedidos (todos passam pelo motor de recomendação)
+
+O texto nunca manda comprar ou vender: diz o que muda se ele fizer, com o lado ruim e a palavra "simulação". No app, onde o dono aceitou o risco, os nomes dos ativos aparecem. No site, aparece a classe ou a escolha do próprio usuário.
+
+| # | Pedido | Texto proposto |
+|---|---|---|
+| 13 | Trocar X por Y sobe o DY | "Trocar R$ 20 mil de VALE3 por TAEE11, os dois já na sua carteira, levaria o seu dividend yield de 4,8% para 5,6%, uns R$ 140 a mais por mês. A venda cabe na isenção de novembro, e a carteira fica um pouco mais concentrada em energia (de 4% para 7%). [Simular]" |
+| 14 | Saldo parado vira provento | "Você tem R$ 2.300 na conta. Nos ativos que você já tem, isso renderia uns R$ 19 por mês de proventos. [Ver as opções]" |
+| 15 | Data-com | "A data-com de ITSA4 é 30/11: quem tiver a ação até esse dia recebe R$ 0,40 por ação. No dia seguinte, o preço costuma cair perto desse valor." A última frase é obrigatória: sem ela, o aviso engana. |
+| 16 | Menos Brasil | "Trocar estes 2 papéis por estes 2 deixaria 55% da sua carteira dependendo do Brasil, contra 70% hoje, pela receita das empresas. [Simular]" |
+| 17 | Ajustes que teriam rendido mais | Reescrito, porque "teria rendido 20%" escolhe o passado depois de saber o resultado: "Com estes 3 ajustes, a carteira de hoje, testada nos últimos 3 anos, rende X em vez de Y. Nos 2.000 cenários dos próximos 5 anos, a mediana vai de A para B. Passado não garante futuro." |
+| 18 | Relatório da carteira | Mensal, por e-mail e WhatsApp, com link para o relatório na carteira (ver 4.4) |
+| 19 | "Amanhã talvez caia" | Reescrito como agenda: "Amanhã tem Copom, o balanço da WEG e a data-com de ITSA4, que mexem com 45% da sua carteira." Fato, não previsão. |
+| 20 | "Perdeu os fundamentos, recomendamos vender" | Reescrito: "A tese da X perdeu 2 dos 3 motivos (o que mudou: …), e a ação caiu 18%. [Ver a tese] [Simular sem ela]". O "recomendamos vender" não vai para o site. |
+| 21 | Outros do mesmo tipo | Sobreposição: "BOVA11 e o seu ITUB4 somam 14% em Itaú". Taxa: "você paga R$ 1.240 por ano em taxa de ETF e fundo". Fundo de fundos: taxa dupla. Fato relevante de empresa sua. Vencimento de renda fixa. |
+
+### 4.3 O motor de recomendação
+
+**O que já existe:**
+- `ScenarioEngineService::run` com `positions_b`, que compara a carteira de antes e a de depois.
+- `EtfXrayService`, com a exposição look-through que achata ETF dentro de ETF até o ativo.
+- `GET /revenue-geography` e o `SupplyChainService`.
+- `macro_prices`, com PTAX, Selic, IPCA e Brent diários.
+- Os proventos de 12 meses (`ticker_dividends_si`) e a correlação calculada dos preços (Leva 0).
+
+**O avaliador:** recebe um movimento (vender A, comprar B, valores) e devolve antes × depois de:
+1. renda (DY e R$ por mês, pelos proventos de 12 meses);
+2. correlação de preço com o resto da carteira (robusta, ver Parte 3);
+3. exposição "demográfica": país pela receita, setor e fator;
+4. exposição look-through, que mostra quando o mesmo papel aparece de novo dentro de ETF e na carteira direta;
+5. custo: imposto da venda (isenção do mês, 15% ou 20%), taxa de administração e bitributação de fundo de fundos;
+6. risco nos cenários do motor de simulação (p10 a 5 anos).
+
+**Os candidatos, nesta ordem:**
+1. o que já está na carteira (aumentar ou reduzir);
+2. o saldo parado;
+3. o universo filtrado por qualidade (nota, liquidez, histórico de proventos sem corte).
+
+**Os vetos:** os da Parte 1, mais dois novos:
+- nunca aumentar o maior fator da carteira;
+- nunca criar sobreposição look-through acima de 10% num emissor só.
+
+Sai o movimento mais leve que melhora o objetivo, com números e o lado ruim.
+
+**O que falta:**
+- DY projetado por ativo (média de 12 meses, cortes marcados);
+- a tela de candidatos do universo;
+- a composição de fundos que não são ETF. Hoje a Pluggy entrega fundos e o sync os descarta.
+
+### 4.4 O Raio-X sai; entra o Relatório da carteira
+
+**Onde o Raio-X da carteira mora hoje (vai sair):**
+- **Front:**
+  - componentes `CarteiraRaioX.vue`, `CarteiraAnalise.vue` (a parte do Raio-X), `CarteiraIdeias.vue`, `CarteiraAgora.vue` (a prop de achados), `CarteiraContent.vue` e `CarteiraMcpBanner.vue`;
+  - lógica: `utils/achadosDaCarteira.ts`, `useCarteira.ts` (o `raiox` do payload), `services/carteira.ts`, `types/carteira.ts` (`CarteiraRaioXVM`), `utils/chat-painel.ts` e a página `simulacao.vue`;
+  - um guia que cita o Raio-X.
+- **Backend:**
+  - `PortfolioAnalysisController` e o modelo `PortfolioAnalysis`, com a tabela `portfolio_analyses`;
+  - `PortfolioController`, onde entra no payload;
+  - as menções no admin (Dashboard, Communication, DataHealth, User) e em `ApplyAutomationDefaults`.
+- **chat-service:**
+  - a ferramenta `import-portfolio`, que escreve a análise com o gpt-4o-mini;
+  - `portfolio-registry` e `lib/raio-x`, com seus testes.
+- **mcp-service:** `src/tools.ts` e `src/laravel.ts`.
+- **Fica:** o Raio-X de ETF (`EtfXrayService`, /etf), que é outra coisa.
+
+**Como sai:** primeiro a tela para de mostrar. A tabela e a rota ficam só para leitura até o relatório novo entrar, e depois saem num PR próprio.
+
+**O relatório novo** é a seção "Relatório" e o PDF mensal:
+- carteira no geral;
+- indicadores;
+- correlação;
+- país e cadeia;
+- fatores;
+- proventos;
+- imposto do mês.
+
+**Os indicadores e as contas:**
+
+| Grupo | Indicadores | De onde sai |
+|---|---|---|
+| Retorno | TWR, MWR (XIRR), CAGR, retorno real | Valor diário reconstruído pelas transações (a lógica de `equityCurve`) e os aportes e retiradas; IPCA de `macro_prices` |
+| Risco | Volatilidade, downside deviation, drawdown máximo, Beta, R² | Retornos diários do TWR contra o benchmark |
+| Eficiência | Sharpe, Sortino, Treynor, Alpha de Jensen, M², Information Ratio, Tracking Error, Appraisal Ratio | Livre de risco = CDI diário (Selic de `macro_prices`); MAR do Sortino = CDI |
+
+- **O benchmark:** a carteira do dono é 53% renda fixa, então comparar só com o IBOV distorce. O relatório usa um **benchmark composto pelas classes da carteira** (por exemplo, 50% CDI, 30% IBOV e 20% IFIX, recalculado por mês) e mostra também IBOV e CDI puros.
+- **A janela:** cada indicador diz o período e o número de dias. Abaixo de 12 meses, aparece "histórico curto", com o número em cinza. O histórico do dono começa em maio de 2025.
+- **A nota da carteira, com mediana e não média:**
+  - Cada indicador vira uma nota de 0 a 100 por faixas fixas e documentadas.
+  - As notas se juntam em 4 pilares (retorno, risco, eficiência e diversificação), e a nota final é a mediana dos pilares.
+  - Mediana porque um indicador extremo, como um Sharpe que explode num período curto, não arrasta a nota.
+  - Pilares porque Sharpe, Sortino e M² medem quase a mesma coisa; sem os pilares, contariam três vezes.
+
+### 4.5 O componente de imposto na carteira
+
+- **O mês atual:** uma barra por grupo.
+  - **Ações:** "vendido R$ X de R$ 20 mil isentos, ainda cabe R$ Y".
+  - **FII e ETF:** sem isenção. A barra mostra o lucro do mês e o imposto estimado.
+  - **Renda fixa:** imposto retido na fonte.
+  - **Cripto:** isenção mensal própria, com a regra conferida antes.
+- **O histórico:** compras e vendas por mês, cada mês com um selo: isento, imposto pago, imposto a conferir ou custo desconhecido.
+- **O aviso:** só o mês atual e o anterior ("o DARF de outubro vence em 30/11").
+- **A fonte:** as regras saem de `memory: ir-regras-conferidas-out-2026` e são conferidas antes de ir ao ar.
+
+### 4.6 Os canais
+
+Hoje existem:
+- o briefing diário por e-mail (desligado);
+- o resumo dos ativos seguidos (19h, ligado);
+- as boas-vindas;
+- o `whatsapp:broadcast`, manual, só para quem deu opt-in, via Z-API, que já morreu em silêncio antes.
+
+**Não existe nada sobre a carteira.** Os novos:
+
+| Quando | O quê | Canal |
+|---|---|---|
+| Sábado de manhã | A semana da carteira (quedas, altas, o que segurou) | E-mail e WhatsApp |
+| Dia 1 | Os proventos do mês: esperado e confirmado | E-mail e WhatsApp |
+| Dia do pagamento | "Caíram R$ X de Y" | WhatsApp (e e-mail no resumo semanal) |
+| Mensal | O relatório da carteira | E-mail com PDF, e WhatsApp com link |
+
+Todo canal novo depende de agendamento e de opt-in de WhatsApp, então só entra com o OK do dono ("nada roda sozinho").
+
+### 4.7 Levas revisadas
+
+| Leva | Entrega | Depende de |
+|---|---|---|
+| 0 | A base: preço médio, gastos, fatores, correlação robusta, sinal, DY de 12 meses | Consentimento de cartão e conta |
+| 1 | O componente de imposto e o aviso do mês | Leva 0 (preço médio) |
+| 2 | O relatório e os indicadores, a nota por pilares e a saída do Raio-X | Valor diário + aportes |
+| 3 | O motor de recomendação e os avisos 13, 14, 15, 16, 20 e 21 | Levas 0 e 2 |
+| 4 | Os canais: sábado, dia 1, pagamento, relatório mensal | OK de agendamento e opt-in |
+| 5 | Os avisos 17 e 19 (teste de 3 anos e agenda de amanhã) | Levas 2 e 3 |
