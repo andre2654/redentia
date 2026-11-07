@@ -24,7 +24,7 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | 9 | Relatório `GET /me/carteira/relatorio`. Indicadores (lista no ledger) contra o benchmark composto, nota pela mediana dos pilares. Testes com resposta conhecida e execução com a carteira real local | TODO | |
 | 10 | Motor de recomendação. Avaliador (renda, correlação, país, fator, look-through, imposto, taxa, cenários), candidatos e vetos novos. Avisos 13, 14, 15, 16, 20 e 21 com texto dentro da regra da CVM. Testes | TODO | |
 | 11 | Canais e preferências. Tópicos novos. Comandos `carteira:semana`, `carteira:proventos-mes`, `carteira:provento-pago` e `carteira:relatorio-mensal` (e-mail e WhatsApp com opt-in), agendados com flag desligada, com o dry-run conferido. Avisos 17 e 19 | TODO | |
-| 12 | Front. Raio-X e sobras de tier fora. A tela nova lê o `/me/carteira/visao` real (SSR, esqueleto, flag). Seções de imposto e relatório. Preferências em /conta e no modal. `npm test` verde. Prints com a carteira real (backend local + fixture) | TODO | |
+| 12 | Front. Raio-X e sobras de tier fora. A tela nova lê o `/me/carteira/visao` real (SSR, esqueleto, flag). Seções de imposto e relatório. Preferências em /conta e no modal. `npm test` verde. Prints com a carteira real (backend local + fixture) | IN-PROGRESS | 12a feito: `6ff5e22f`. Saíram o Raio-X do front e o tier do chat; 515 testes verdes; o vue-tsc ficou nos mesmos 114 erros antigos; o grep do portão ficou vazio |
 | 13 | PRs de tudo, com revisão independente em 2 lentes e sem achado bloqueante. Ordem de merge escrita. **Nada mesclado nem em produção sem o clique do dono** | TODO | |
 
 ## Decision ledger
@@ -52,6 +52,10 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | 07/11 | **Nota da carteira:** indicador → 0–100 por faixas fixas documentadas. Pilares: retorno, risco, eficiência, diversificação. Pilar = mediana dos seus indicadores. Nota = mediana dos 4 pilares. Com menos de 12 meses de histórico: `historico_curto = true` | Decisão do dono (07/11, "pode ser") | `Relatorio` |
 | 07/11 | **Fixture real local:** a carteira do dono (B2B cliente 15 mais o histórico B2C do user 3) e os dados de referência dos tickers dele, exportados **só lendo** a produção para `scratchpad/fixture-dono/` (fora do git). Importador local em Docker. Serve à verificação real (8, 9, 10, 12) | Verificar com dado real sem escrever na produção | ver Interface contracts |
 | 07/11 | **Canais:** tópicos novos em `NotificationPreferenceController::TOPICS`: `carteira_semana`, `carteira_proventos_mes`, `carteira_provento_pago`, `carteira_relatorio`, `carteira_imposto`, `carteira_ideias`. WhatsApp desligado sem opt-in (`whatsapp_opt_in_at` + preferência). E-mail sem linha = desligado (opt-in explícito) | Lista de opt-in pedida pelo dono | Backend + /conta |
+| 07/11 | **Scaffold da carteira nova** em `19a33ab` (feat/carteira-motor): config/carteira.php, o middleware `carteira.visao`, o grupo /me/carteira com âncoras e o teste unitário. O feat/carteira-relatorio parte dele (fast-forward) | Os dois branches não brigam por arquivo | Backend |
+| 07/11 | **O `wipe` continua apagando as análises do usuário** (privacidade, enquanto a tabela existir). Vale mais que a sugestão da auditoria | LGPD | `PortfolioController::wipe` |
+| 07/11 | **O score determinístico fica** e alimenta o modal das Ideias da tela antiga. Os tipos passam a ser `CarteiraScoreVM`/`ScoreMetricVM`; o campo `raiox` e o `buildRaioX` mantêm o nome | Menor diff; a tela antiga segue até a flag virar `*` | `useCarteira.ts`, `types/carteira.ts` |
+| 07/11 | **O front não manda mais `tier`.** O chat-service assume basic quando falta | Sobra do MAX | `useNuChat.ts` |
 | 07/11 | **Página da carteira nova:** topo → Onde está → Quanto ele te paga → Imposto do mês → "Ver o relatório completo" (fechado: indicadores, desempenho, movimentações com selo de imposto, P&L). A "Análise completa" vira o relatório | Pedido do dono, mantendo a página curta | Front |
 
 ## Verified facts
@@ -93,6 +97,8 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | Item | Suposição / decisão tomada | Recomendação |
 |------|-----------------------------|--------------|
 | Consentimento da Pluggy para conta e cartão no site | Assumido que o item do usuário já tem os produtos ACCOUNTS/TRANSACTIONS/CREDIT_CARDS. Se o `/v2/transactions` do cartão der 403, o sync registra e segue sem o cartão | Conferir no primeiro sync real depois da reconexão do dono |
+| O resumo da home calcula `score`/`atencao` que nenhuma tela lê, e por isso busca o ranking e a curva | Fora do escopo do DoD | Limpar num PR à parte |
+| O comentário do `CarteiraMcpBanner.vue` ainda cita o Raio-X; links para `/carteira#raio-x` deixam de abrir a análise (nenhum no front) | Sem impacto | Conferir o app e o chat |
 | Nubank do dono parado desde 16/07 | O dono desconecta e reconecta em /conta (1 min). Não apagamos a conexão no banco | — |
 
 ## Hard stops awaiting authorization
