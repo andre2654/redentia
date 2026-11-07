@@ -16,32 +16,34 @@ const template = pagina.slice(pagina.indexOf('<template>'), pagina.lastIndexOf('
 const descricao = 'Mesa fechada em São Paulo, dezembro, data a combinar. 10 cadeiras, uma mesa, nenhuma palestra. Convite sob curadoria. Jantar a R$ 600, só após a aprovação.'
 const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20saber%20mais%20sobre%20o%20Redentia%20Wealth%20Intelligence%20Dinner'
 
-test('a página usa o layout com nav e rodapé do site e não entra no menu', () => {
+test('a página usa o layout do jantar, com rodapé do site, e não entra no menu', () => {
   assert.match(pagina, /layout:\s*'jantar'/)
-  assert.match(layout, /<NuHeader marca-clara\s*\/>/)
+  assert.doesNotMatch(layout, /<NuHeader/)
   assert.match(layout, /<NuFooter\s*\/>/)
   assert.doesNotMatch(nav, /\/jantar/)
+  assert.doesNotMatch(layout.slice(layout.indexOf('<template>')), /Início|Teses|Criar conta|Ferramentas/)
 })
 
 test('o CTA é a fila no WhatsApp, em aba nova, sem formulário', () => {
   assert.ok(pagina.includes(fila))
+  assert.ok(layout.includes(fila))
   assert.doesNotMatch(template, /André|Andre/i)
-  const anchors = template.match(/<a\b[^>]*>/g) ?? []
-  assert.ok(anchors.length >= 3)
+  const layoutTpl = layout.slice(layout.indexOf('<template>'), layout.lastIndexOf('</template>'))
+  const anchors = `${template}\n${layoutTpl}`.match(/<a\b[^>]*>/g) ?? []
+  assert.equal(anchors.length, 4)
   for (const a of anchors) {
     assert.match(a, /:href="fila"/)
     assert.match(a, /target="_blank"/)
     assert.match(a, /rel="noopener noreferrer"/)
   }
-  assert.equal(anchors.length, 3)
-  assert.equal((template.match(/Entrar na fila/g) ?? []).length, 3)
+  assert.equal((`${template}\n${layoutTpl}`.match(/Entrar na fila/g) ?? []).length, 4)
   assert.doesNotMatch(template, /<form\b|<input\b|<textarea\b|<select\b/i)
   assert.doesNotMatch(template, /quem já sentou|Edição inaugural/i)
   assert.match(template, />Imagem ilustrativa\.</)
   assert.match(pagina, /Mesa posta em restaurante, imagem ilustrativa/)
-  assert.match(pagina, /Pratos servidos, imagem ilustrativa/)
-  assert.match(pagina, /Vinho sendo servido em uma taça, imagem ilustrativa/)
-  assert.match(pagina, /Taças de cristal e talheres sobre linho, imagem ilustrativa/)
+  assert.match(pagina, /Pratos de alta gastronomia, imagem ilustrativa/)
+  assert.match(pagina, /Vinho sendo servido, imagem ilustrativa/)
+  assert.match(pagina, /Taças e talheres, imagem ilustrativa/)
   for (const nome of ['mesa-posta', 'pratos', 'vinho', 'tacas']) {
     assert.equal(existsSync(new URL(`../public/img/jantar/${nome}.webp`, import.meta.url)), true, nome)
   }
@@ -71,19 +73,19 @@ test('a copy fica nos fatos travados', () => {
   assert.equal(descricao.length <= 160, true, String(descricao.length))
 })
 
-test('a página é navy contínuo, com pílula creme, e o header do site fica claro', () => {
+test('a página é navy contínuo, com pílula creme, e o header do produto não entra', () => {
   assert.match(pagina, /#0c1524/)
   assert.match(pagina, /#2f6aff/)
   assert.match(pagina, /#f5f1ea/)
   assert.match(pagina, /var\(--nu-font\)/)
   assert.match(pagina, /background:\s*#f5f1ea;\s*color:\s*#0c1524/)
+  assert.match(layout, /logo-azul\.svg/)
+  assert.match(layout, /background:\s*#f5f1ea;\s*color:\s*#0c1524/)
   assert.doesNotMatch(pagina, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|font-family:\s*Inter|jt__bloco--creme|jt__bloco--azul/)
   assert.doesNotMatch(layout, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|nuh-wrap|nuh__navitem/)
   assert.match(nav, /\.nuh-wrap \{[^}]*background:\s*var\(--nu-white\)/)
   assert.match(nav, /\.nuh__brand \{[^}]*background:\s*var\(--nu-blue\)/)
-  assert.match(nav, /\.nuh__brand--clara \{[^}]*background:\s*transparent/)
-  assert.match(nav, /logo-azul\.svg/)
-  assert.doesNotMatch(layout, /#0c1524[^]*nuh|nuh[^]*#0c1524/)
+  assert.doesNotMatch(nav, /nuh__brand--clara|marcaClara/)
   assert.equal(existsSync(new URL('../public/fonts/inter-latin.woff2', import.meta.url)), false)
   assert.equal(existsSync(new URL('../public/fonts/noto-serif-display-latin.woff2', import.meta.url)), false)
 })

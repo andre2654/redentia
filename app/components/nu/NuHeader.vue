@@ -11,16 +11,6 @@
 //   CTAs de rodapé) — referência visual enviada pelo dono.
 // - tablet (761–1023, 23/10/2026): a nav já vai para o hambúrguer, porque não
 //   cabe inteira; Entrar/Criar conta (ou a pílula da IA e o avatar) ficam.
-const props = withDefaults(defineProps<{
-  /**
-   * Landing do jantar: a marca senta na barra clara, sem o quadrado azul.
-   * Nas outras rotas o quadrado azul com a marca branca continua o padrão.
-   */
-  marcaClara?: boolean
-}>(), { marcaClara: false })
-
-const logoDaBarra = computed(() => props.marcaClara ? '/logo-azul.svg' : '/logo-branca.svg')
-
 const { isAuthenticated, initial, clearSession } = useAuthState()
 const route = useRoute()
 
@@ -284,8 +274,8 @@ onBeforeUnmount(() => {
 <template>
   <div class="nuh-wrap" :class="{ 'nuh-wrap--shrunk': shrunk }">
     <div class="nuh">
-      <NuxtLink to="/" class="nuh__brand" :class="{ 'nuh__brand--clara': marcaClara }" aria-label="Redentia">
-        <img :src="logoDaBarra" alt="Redentia" class="nuh__logo">
+      <NuxtLink to="/" class="nuh__brand" aria-label="Redentia">
+        <img src="/logo-branca.svg" alt="Redentia" class="nuh__logo">
       </NuxtLink>
 
       <nav class="nuh__nav" data-nu-nav>
@@ -391,8 +381,8 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <div v-if="menuOpen" ref="menuRef" class="num" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1">
         <div class="num__top">
-          <NuxtLink to="/" class="num__brand" :class="{ 'num__brand--clara': marcaClara }" aria-label="Redentia" @click="toggleMenu(false)">
-            <img :src="logoDaBarra" alt="Redentia" class="num__logo">
+          <NuxtLink to="/" class="num__brand" aria-label="Redentia" @click="toggleMenu(false)">
+            <img src="/logo-branca.svg" alt="Redentia" class="num__logo">
           </NuxtLink>
           <div class="num__top-right">
             <NuxtLink to="/busca" class="num__icon" aria-label="Buscar" @click="toggleMenu(false)">
@@ -475,8 +465,6 @@ onBeforeUnmount(() => {
   transition: width .28s ease, height .28s ease;
 }
 .nuh-wrap--shrunk .nuh__brand { width: 58px; height: 58px; }
-/* Landing do jantar: a marca fica sobre a mesma superfície clara da barra. */
-.nuh__brand--clara { background: transparent; }
 .nuh__logo { width: 34px; height: 34px; display: block; object-fit: contain; transition: width .28s ease, height .28s ease; }
 .nuh-wrap--shrunk .nuh__logo { width: 27px; height: 27px; }
 .nuh__nav {
@@ -638,7 +626,6 @@ onBeforeUnmount(() => {
   width: 76px; height: 76px; background: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
 }
-.num__brand--clara { background: transparent; }
 .num__logo { width: 34px; height: 34px; display: block; object-fit: contain; }
 .num__top-right { display: flex; align-items: center; gap: 10px; }
 .num__icon {

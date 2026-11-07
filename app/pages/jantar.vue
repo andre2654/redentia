@@ -1,15 +1,12 @@
 <script setup lang="ts">
 /**
- * Redentia Wealth Intelligence Dinner — /jantar (07/11/2026).
+ * Redentia Wealth Intelligence Dinner — /jantar.
  *
  * Fatos travados: 10 cadeiras, uma mesa, São Paulo, dezembro (data a
  * combinar), conversa de 20 minutos, R$ 600 só depois da aprovação.
  * Sem formulário e sem número inventado. O texto público não atribui
- * o jantar a uma pessoa.
- * Cada CTA abre o WhatsApp, numa aba nova.
- *
- * Uma página só, navy contínuo. Azul só como acento. O cartão de fatos
- * é creme. Plus Jakarta, a fonte do site. O header claro é o do site.
+ * o jantar a uma pessoa. As fotos são natureza-morta, imagem ilustrativa.
+ * Cada “Entrar na fila” abre o WhatsApp, numa aba nova.
  */
 const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20saber%20mais%20sobre%20o%20Redentia%20Wealth%20Intelligence%20Dinner'
 
@@ -22,7 +19,6 @@ usePageSeo({
   description: descricao,
   path: '/jantar',
 })
-// O título já traz a marca. O sufixo global repetiria "Redentia".
 useHead({
   titleTemplate: null,
   bodyAttrs: { class: 'pagina-jantar' },
@@ -35,51 +31,31 @@ const criterios = [
   'Jantar completo, R$\u00A0600, pago somente após a aprovação',
 ]
 
-const painel = [
-  { rotulo: 'Lugares', nota: 'todos na mesma mesa', valor: '10' },
-  { rotulo: 'Palestras', nota: 'sem palco e sem plateia', valor: 'Nenhuma' },
-  { rotulo: 'Onde', nota: '', valor: 'São Paulo' },
-  { rotulo: 'Quando', nota: 'data a combinar', valor: 'Dezembro' },
-  { rotulo: 'Jantar', nota: 'pago somente após a aprovação', valor: 'R$\u00A0600' },
-]
-
 const curadoria = [
-  { id: 'operacao', titulo: 'Operação', texto: 'Você já corre assessoria, family office, banco ou gestora.' },
-  { id: 'decisao', titulo: 'Decisão', texto: 'Você é sócio, diretor ou C\u2011level. A mesa é para quem constrói, não para quem está começando.' },
-  { id: 'troca', titulo: 'Troca', texto: 'Você chega para somar, não para vender.' },
+  { id: 'operacao', titulo: 'Operação', texto: 'Você já corre assessoria, family office, banco ou gestora.', linha: '' },
+  { id: 'decisao', titulo: 'Decisão', texto: 'Você é sócio, diretor ou C\u2011level.', linha: 'A mesa é para quem constrói, não para quem está começando.' },
+  { id: 'troca', titulo: 'Troca', texto: 'Você chega para somar, não para vender.', linha: '' },
 ]
 
 const fotos = [
-  { src: '/img/jantar/mesa-posta.webp', alt: 'Mesa posta em restaurante, imagem ilustrativa' },
-  { src: '/img/jantar/pratos.webp', alt: 'Pratos servidos, imagem ilustrativa' },
-  { src: '/img/jantar/vinho.webp', alt: 'Vinho sendo servido em uma taça, imagem ilustrativa' },
-  { src: '/img/jantar/tacas.webp', alt: 'Taças de cristal e talheres sobre linho, imagem ilustrativa' },
-]
-
-const temas = [
-  { nome: 'IA no Wealth Management', linha: 'o que já muda no dia a dia' },
-  { nome: 'Operação', linha: 'processos, times e escala' },
-  { nome: 'Consolidação patrimonial', linha: 'a visão do patrimônio inteiro' },
-  { nome: 'Futuro das assessorias', linha: 'o que vem nos próximos anos' },
+  { src: '/img/jantar/mesa-posta.webp', alt: 'Mesa posta em restaurante, imagem ilustrativa', encaixe: 'a' },
+  { src: '/img/jantar/pratos.webp', alt: 'Pratos de alta gastronomia, imagem ilustrativa', encaixe: 'b' },
+  { src: '/img/jantar/vinho.webp', alt: 'Vinho sendo servido, imagem ilustrativa', encaixe: 'c' },
+  { src: '/img/jantar/tacas.webp', alt: 'Taças e talheres, imagem ilustrativa', encaixe: 'd' },
 ]
 </script>
 
 <template>
   <div class="jt">
     <div class="jt__ticker">
-      <p class="jt__ticker-text">
-        <img src="/logo-branca.svg" alt="" width="12" height="12" class="jt__gem">
-        <span class="jt__ticker-frase">Mesa fechada. Convite sob curadoria. Conversa entre quem decide. Poucas cadeiras, nenhuma por acaso.</span>
-      </p>
-      <a class="jt__ticker-cta" :href="fila" target="_blank" rel="noopener noreferrer">
-        Entrar na fila
-        <span aria-hidden="true">→</span>
-      </a>
+      <span class="jt__diamond" aria-hidden="true" />
+      <p class="jt__ticker-frase">Mesa fechada. Convite sob curadoria. Conversa entre quem decide. Poucas cadeiras, nenhuma por acaso.</p>
+      <a class="jt__ticker-cta" :href="fila" target="_blank" rel="noopener noreferrer">Entrar na fila →</a>
     </div>
 
     <section class="jt__hero" aria-labelledby="jt-hero-titulo">
       <div class="jt__hero-grid">
-        <div class="jt__hero-copy">
+        <div>
           <h1 id="jt-hero-titulo">O jantar dos <span class="jt__em">CEOs</span> de assessorias, family offices e gestoras.</h1>
           <p class="jt__apoio">A próxima mesa já está posta. Reserve sua cadeira.</p>
           <p class="jt__lead">
@@ -87,84 +63,72 @@ const temas = [
           </p>
           <ul class="jt__list">
             <li v-for="item in criterios" :key="item">
-              <svg class="jt__check" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
-                <path d="M4.5 10.5l3.5 3.5 7.5-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              <span class="jt__ok" aria-hidden="true">✓</span>
               <span>{{ item }}</span>
             </li>
           </ul>
-          <a class="jt__cta" :href="fila" target="_blank" rel="noopener noreferrer">
+          <a class="jt__pill" :href="fila" target="_blank" rel="noopener noreferrer">
             Entrar na fila
             <span aria-hidden="true">→</span>
           </a>
         </div>
-
-        <aside class="jt__painel" aria-labelledby="jt-formato">
-          <h2 id="jt-formato" class="jt__painel-titulo">O formato</h2>
-          <dl class="jt__dl">
-            <div v-for="item in painel" :key="item.rotulo" class="jt__row">
-              <dt>
-                <span class="jt__row-k">{{ item.rotulo }}</span>
-                <span v-if="item.nota" class="jt__row-n">{{ item.nota }}</span>
-              </dt>
-              <dd>{{ item.valor }}</dd>
-            </div>
-          </dl>
-        </aside>
+        <div>
+          <div class="jt__mosaic">
+            <figure v-for="foto in fotos" :key="foto.src" :class="`jt__mosaic-${foto.encaixe}`">
+              <img :src="foto.src" :alt="foto.alt" width="960" height="720" decoding="async">
+            </figure>
+          </div>
+          <p class="jt__nota">Imagem ilustrativa.</p>
+        </div>
       </div>
     </section>
 
     <section id="curadoria" class="jt__sec" aria-labelledby="jt-curadoria-titulo">
-      <p class="jt__eyebrow">Curadoria</p>
       <div class="jt__split">
-        <h2 id="jt-curadoria-titulo">Nem todo mundo senta nesta mesa.</h2>
-        <p class="jt__lead">A cadeira não se compra. Se conquista pela trajetória.</p>
+        <div>
+          <p class="jt__kicker">Curadoria</p>
+          <h2 id="jt-curadoria-titulo">Nem todo mundo senta nesta mesa.</h2>
+        </div>
+        <p class="jt__aside">A cadeira não se compra. Se conquista pela trajetória.</p>
       </div>
       <div class="jt__cols">
         <article v-for="card in curadoria" :key="card.id" class="jt__col">
           <h3>{{ card.titulo }}</h3>
-          <p>{{ card.texto }}</p>
+          <p class="jt__col-big">{{ card.texto }}</p>
+          <p v-if="card.linha" class="jt__col-small">{{ card.linha }}</p>
         </article>
       </div>
     </section>
 
     <section id="mesa" class="jt__sec" aria-labelledby="jt-mesa-titulo">
       <div class="jt__split">
-        <h2 id="jt-mesa-titulo">Não é evento.<br>É uma mesa fechada.</h2>
-        <p class="jt__lead">
+        <div>
+          <p class="jt__kicker">Redentia</p>
+          <h2 id="jt-mesa-titulo">Não é evento. É uma mesa fechada.</h2>
+        </div>
+        <p class="jt__aside">
           O que acontece ao redor da mesa é o que importa: conversa franca sobre IA no wealth, operação, consolidação patrimonial e o que vem pela frente. Sem palco, sem crachá, sem apresentação de slides.
         </p>
       </div>
-      <figure class="jt__galeria">
-        <figcaption>Imagem ilustrativa.</figcaption>
-        <ul class="jt__fotos">
-          <li v-for="foto in fotos" :key="foto.src">
-            <img :src="foto.src" :alt="foto.alt" width="960" height="720" loading="lazy" decoding="async">
-          </li>
-        </ul>
-      </figure>
-      <p class="jt__eyebrow jt__pauta">Na pauta</p>
-      <ul class="jt__temas">
-        <li v-for="tema in temas" :key="tema.nome">
-          <p class="jt__tema-nome">{{ tema.nome }}</p>
-          <p class="jt__tema-linha">{{ tema.linha }}</p>
+      <ul class="jt__faixa">
+        <li v-for="foto in fotos.slice(0, 3)" :key="`faixa-${foto.src}`">
+          <img :src="foto.src" :alt="foto.alt" width="960" height="720" loading="lazy" decoding="async">
         </li>
       </ul>
+      <p class="jt__nota">Imagem ilustrativa.</p>
     </section>
 
     <section class="jt__fecho" aria-labelledby="jt-fecho-titulo">
-      <div class="jt__fecho-in">
-        <p class="jt__eyebrow">São Paulo · dezembro</p>
-        <h2 id="jt-fecho-titulo">Reserve sua cadeira.</h2>
-        <p class="jt__lead">Entre na fila. A aprovação é por curadoria; a data vem depois dela.</p>
-        <a class="jt__cta" :href="fila" target="_blank" rel="noopener noreferrer">
-          Entrar na fila
-          <span aria-hidden="true">→</span>
-        </a>
-        <p class="jt__fine">
-          10 cadeiras, uma mesa. Conversa de 20 minutos. Jantar completo, R$&nbsp;600, pago somente após a aprovação.
-        </p>
-      </div>
+      <p class="jt__meta">São Paulo · dezembro</p>
+      <h2 id="jt-fecho-titulo">Reserve sua cadeira.</h2>
+      <p class="jt__lead">Entre na fila. A aprovação é por curadoria; a data vem depois dela.</p>
+      <a class="jt__pill" :href="fila" target="_blank" rel="noopener noreferrer">
+        Entrar na fila
+        <span aria-hidden="true">→</span>
+      </a>
+      <p class="jt__fine">
+        10 cadeiras, uma mesa. Conversa de 20 minutos. Jantar completo, R$&nbsp;600, pago somente após a aprovação.
+      </p>
     </section>
   </div>
 </template>
@@ -174,361 +138,239 @@ const temas = [
   --jt-navy: #0c1524;
   --jt-blue: #2f6aff;
   --jt-cream: #f5f1ea;
-  --jt-muted: rgba(245, 241, 234, 0.72);
-  --jt-line: rgba(245, 241, 234, 0.16);
-  background: var(--jt-navy);
+  --jt-muted: rgba(245, 241, 234, 0.62);
+  --jt-line: rgba(245, 241, 234, 0.14);
   color: var(--jt-cream);
   font-family: var(--nu-font);
   font-weight: 500;
   line-height: 1.5;
-  overflow-x: clip;
 }
 .jt ::selection { background: var(--jt-blue); color: #fff; }
 
 .jt__ticker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 6px 20px;
-  padding: 11px 24px;
   background: var(--jt-blue);
   color: #fff;
-  text-align: center;
-}
-.jt__ticker-text {
+  min-height: 42px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 0;
-  min-width: 0;
-  max-width: min(980px, 100%);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.45;
+  padding: 10px 24px;
+  font-size: 13.5px;
+  font-weight: 500;
 }
-.jt__ticker-frase { min-width: 0; }
-.jt__gem { width: 12px; height: 12px; flex-shrink: 0; margin-top: 4px; display: block; }
-.jt__ticker-cta {
-  color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.4;
-  padding: 4px 2px;
-  white-space: nowrap;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.jt__diamond {
+  width: 7px;
+  height: 7px;
+  background: #fff;
+  transform: rotate(45deg);
+  flex: 0 0 7px;
 }
+.jt__ticker-frase { margin: 0; }
+.jt__ticker-cta { color: #fff; font-weight: 700; white-space: nowrap; }
 .jt__ticker-cta:hover,
-.jt__ticker-cta:focus-visible { color: #fff; }
+.jt__ticker-cta:focus-visible { color: #fff; text-decoration: underline; }
 
 .jt__hero,
 .jt__sec,
 .jt__fecho {
-  padding: clamp(64px, 7.5vw, 104px) clamp(20px, 4vw, 48px);
+  width: min(1120px, calc(100% - 80px));
+  margin: 0 auto;
 }
-.jt__hero {
-  padding-top: clamp(44px, 5vw, 72px);
-  padding-bottom: clamp(52px, 6vw, 84px);
-}
-.jt__hero-grid,
-.jt__split,
-.jt__cols,
-.jt__temas,
-.jt__pauta,
-.jt__galeria,
-.jt__fecho-in {
-  max-width: 1160px;
-  margin-left: auto;
-  margin-right: auto;
-}
+.jt__hero { padding: 88px 0 100px; }
 .jt__hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
-  gap: clamp(40px, 5vw, 88px);
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
   align-items: center;
 }
 .jt h1,
 .jt h2 {
   margin: 0;
   font-family: var(--nu-font);
-  font-weight: 800;
-  letter-spacing: -0.045em;
-  line-height: 1.02;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
 }
-.jt h1 {
-  max-width: 13em;
-  font-size: clamp(2.45rem, 3.9vw, 3.7rem);
-}
+.jt h1 { font-size: 56px; max-width: 14ch; }
 .jt__em { color: var(--jt-blue); }
 .jt__apoio {
-  margin: 20px 0 0;
-  max-width: 18em;
-  color: var(--jt-cream);
-  font-size: clamp(1.35rem, 2vw, 1.7rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.25;
+  margin: 22px 0 0;
+  max-width: 22ch;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 .jt__lead {
-  margin: 22px 0 0;
-  max-width: 38rem;
+  margin: 18px 0 0;
+  max-width: 42ch;
+  font-size: 16px;
+  line-height: 1.55;
   color: var(--jt-muted);
-  font-size: 1.05rem;
-  font-weight: 500;
-  line-height: 1.6;
 }
 .jt__list {
   list-style: none;
-  margin: 32px 0 0;
-  padding: 26px 0 0;
+  margin: 28px 0 0;
+  padding: 22px 0 0;
   border-top: 1px solid var(--jt-line);
   display: grid;
-  gap: 16px;
+  gap: 10px;
 }
 .jt__list li {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
+  display: flex;
   gap: 12px;
-  align-items: start;
-  font-size: 1.02rem;
-  font-weight: 500;
+  align-items: flex-start;
+  font-size: 15px;
   line-height: 1.45;
+  color: rgba(245, 241, 234, 0.88);
 }
-.jt__check { color: var(--jt-blue); margin-top: 2px; }
-.jt__cta {
+.jt__ok { color: var(--jt-blue); font-weight: 700; line-height: 1.45; }
+.jt__pill {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 28px;
-  min-height: 54px;
-  padding: 15px 28px;
-  border-radius: 999px;
+  gap: 8px;
+  margin-top: 32px;
   background: #f5f1ea;
   color: #0c1524;
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
+  border-radius: 999px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
-.jt__cta:hover,
-.jt__cta:focus-visible { background: #fff; color: #0c1524; }
-.jt a:focus-visible {
-  outline: 2px solid var(--jt-cream);
-  outline-offset: 3px;
-}
-.jt__cta:focus-visible { outline-color: var(--jt-blue); }
+.jt__pill:hover,
+.jt__pill:focus-visible { background: #fff; color: #0c1524; }
+.jt a:focus-visible { outline: 2px solid var(--jt-cream); outline-offset: 3px; }
+.jt__pill:focus-visible { outline-color: var(--jt-blue); }
 
-.jt__painel {
-  background: var(--jt-cream);
-  color: var(--jt-navy);
-  border-radius: 28px;
-  padding: clamp(28px, 3vw, 40px);
-}
-.jt__painel-titulo {
-  margin: 0 0 6px;
-  color: var(--jt-navy);
-  font-family: var(--nu-font);
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-.jt__dl { margin: 0; }
-.jt__row {
+.jt__mosaic {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px 20px;
-  align-items: center;
-  padding: 18px 0;
-  border-top: 1px solid rgba(12, 21, 36, 0.1);
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
-.jt__row dt { margin: 0; min-width: 0; }
-.jt__row-k {
-  display: block;
-  color: var(--jt-navy);
-  font-size: 1rem;
-  font-weight: 700;
-}
-.jt__row-n {
-  display: block;
-  margin-top: 3px;
-  color: rgba(12, 21, 36, 0.62);
-  font-size: 0.92rem;
-  font-weight: 500;
-  line-height: 1.35;
-}
-.jt__row dd {
-  margin: 0;
-  color: var(--jt-navy);
-  font-family: var(--nu-font);
-  font-size: clamp(1.45rem, 1.8vw, 1.85rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-  text-align: right;
-  white-space: nowrap;
-}
+.jt__mosaic figure { margin: 0; overflow: hidden; border-radius: 6px; }
+.jt__mosaic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.jt__mosaic-a,
+.jt__mosaic-b { height: 210px; }
+.jt__mosaic-c,
+.jt__mosaic-d { height: 252px; }
+.jt__mosaic-d { margin-top: -42px; }
+.jt__nota { margin: 16px 0 0; font-size: 12px; color: rgba(245, 241, 234, 0.45); }
 
-.jt__sec { border-top: 1px solid var(--jt-line); }
-.jt__eyebrow {
-  margin: 0 0 18px;
+.jt__sec { padding: 96px 0; }
+.jt__kicker {
+  margin: 0 0 14px;
   color: var(--jt-blue);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.jt h2 { font-size: clamp(2.4rem, 4.2vw, 3.7rem); max-width: 11em; }
 .jt__split {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: clamp(24px, 4vw, 64px);
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
   align-items: end;
+  margin-bottom: 56px;
 }
-.jt__split .jt__lead { margin-top: 0; margin-bottom: 6px; }
+.jt h2 { font-size: 56px; line-height: 1.05; max-width: 14ch; }
+.jt__aside {
+  margin: 0 0 6px;
+  max-width: 38ch;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--jt-muted);
+}
 .jt__cols {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: clamp(48px, 6vw, 72px);
+  grid-template-columns: 1fr 1fr 1fr;
   border-top: 1px solid var(--jt-line);
 }
-.jt__col {
-  min-width: 0;
-  padding: 28px 36px 4px 0;
-  border-right: 1px solid var(--jt-line);
-}
+.jt__col { min-width: 0; padding: 28px 28px 8px 0; border-right: 1px solid var(--jt-line); }
 .jt__col:last-child { border-right: 0; padding-right: 0; }
-.jt__col:not(:first-child) { padding-left: 36px; }
+.jt__col + .jt__col { padding-left: 28px; }
 .jt__col h3 {
-  margin: 0;
+  margin: 0 0 10px;
   color: var(--jt-blue);
   font-family: var(--nu-font);
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.jt__col p {
-  margin: 14px 0 0;
-  color: var(--jt-cream);
-  font-size: clamp(1.2rem, 1.5vw, 1.45rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.3;
-}
-.jt__galeria { margin: clamp(40px, 5vw, 64px) auto 0; }
-.jt__galeria figcaption {
-  margin: 0 0 14px;
-  color: var(--jt-muted);
-  font-size: 0.95rem;
   font-weight: 600;
 }
-.jt__fotos {
-  list-style: none;
+.jt__col-big {
   margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-.jt__fotos li { min-width: 0; }
-.jt__fotos img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: 18px;
-}
-.jt__pauta { margin-top: clamp(56px, 7vw, 88px); }
-.jt__temas {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--jt-line);
-}
-.jt__temas li {
-  min-width: 0;
-  padding: 22px 32px 22px 0;
-  border-bottom: 1px solid var(--jt-line);
-}
-.jt__temas li:nth-child(odd) { border-right: 1px solid var(--jt-line); padding-right: 32px; }
-.jt__temas li:nth-child(even) { padding-left: 32px; }
-.jt__tema-nome {
-  margin: 0;
-  font-size: clamp(1.2rem, 1.6vw, 1.45rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-size: 24px;
   line-height: 1.25;
+  letter-spacing: -0.03em;
+  font-weight: 600;
 }
-.jt__tema-linha {
-  margin: 6px 0 0;
+.jt__col-small {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--jt-muted);
-  font-size: 0.98rem;
-  font-weight: 500;
 }
 
-.jt__fecho {
-  border-top: 1px solid var(--jt-line);
-  text-align: center;
+.jt__faixa {
+  list-style: none;
+  display: flex;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
 }
-.jt__fecho-in { max-width: 760px; }
-.jt__fecho .jt__eyebrow { margin-bottom: 16px; }
-.jt__fecho h2 { max-width: none; font-size: clamp(2.6rem, 5vw, 4rem); }
-.jt__fecho .jt__lead { margin-left: auto; margin-right: auto; }
-.jt__fecho .jt__cta { margin-top: 32px; }
+.jt__faixa li {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.jt__faixa img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.jt__faixa + .jt__nota { margin-top: 14px; font-size: 13px; }
+
+.jt__fecho { padding: 80px 0 120px; text-align: left; }
+.jt__meta { margin: 0 0 16px; color: var(--jt-muted); font-size: 14px; }
+.jt__fecho h2 { max-width: none; font-size: 64px; }
+.jt__fecho .jt__lead { max-width: 46ch; }
 .jt__fine {
-  margin: 22px auto 0;
-  max-width: 34rem;
+  margin: 22px 0 0;
+  max-width: 36rem;
   color: var(--jt-muted);
-  font-size: 0.98rem;
-  font-weight: 500;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 900px) {
+  .jt__hero,
+  .jt__sec,
+  .jt__fecho { width: calc(100% - 40px); }
+  .jt__hero { padding: 48px 0 64px; }
   .jt__hero-grid,
   .jt__split,
-  .jt__cols { grid-template-columns: 1fr; }
-  .jt__split { align-items: start; }
+  .jt__cols { grid-template-columns: 1fr; gap: 28px; }
   .jt h1,
-  .jt h2,
-  .jt__apoio { max-width: none; }
+  .jt h2 { font-size: 40px; max-width: none; }
+  .jt__fecho h2 { font-size: 40px; }
+  .jt__split { margin-bottom: 28px; align-items: start; }
+  .jt__mosaic-a,
+  .jt__mosaic-b,
+  .jt__mosaic-c,
+  .jt__mosaic-d { height: 160px; }
+  .jt__mosaic-d { margin-top: 0; }
   .jt__col,
-  .jt__col:not(:first-child),
-  .jt__col:last-child {
-    padding: 26px 0;
+  .jt__col + .jt__col {
+    padding: 22px 0;
     border-right: 0;
     border-bottom: 1px solid var(--jt-line);
   }
   .jt__col:last-child { border-bottom: 0; }
+  .jt__faixa { overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; }
+  .jt__faixa li { flex: 0 0 78%; height: 210px; scroll-snap-align: start; }
+  .jt__sec { padding: 64px 0; }
 }
-@media (max-width: 760px) {
-  .jt__ticker-text { font-size: 13.5px; }
-  .jt__cta { width: 100%; }
-  .jt__fotos {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-  }
-  .jt__fotos li {
-    flex: 0 0 78%;
-    scroll-snap-align: start;
-  }
-  .jt__temas { grid-template-columns: 1fr; }
-  .jt__temas li,
-  .jt__temas li:nth-child(odd),
-  .jt__temas li:nth-child(even) {
-    padding: 20px 0;
-    border-right: 0;
-  }
+@media (max-width: 720px) {
+  .jt__ticker { flex-wrap: wrap; justify-content: flex-start; text-align: left; gap: 8px; }
+  .jt__ticker-cta { width: 100%; }
+  .jt__pill { width: 100%; justify-content: center; }
 }
 </style>
