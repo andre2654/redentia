@@ -14,7 +14,7 @@
 // comprido quebram a linha em vez de passar por cima do número; e sem fatores
 // (o bloco que quebrou no servidor vem []) a lente diz que não abriu.
 import type { CarteiraVisao } from '~/types/carteiraVisao'
-import { brl0, nomeCurto, pctTxt } from '~/utils/carteiraVisao'
+import { brl0, ehRendaFixa, nomeCurto, pctTxt } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
@@ -24,6 +24,12 @@ const COR: Record<string, string> = {
 }
 const fatores = computed(() => props.visao.fatores.map((f) => ({ ...f, cor: COR[f.chave] ?? '#8F86B8' })))
 const nomeDe = (t: string) => props.visao.posicoes.find((p) => p.ticker === t)
+// 07/11, revisão do dono: dois títulos do Tesouro IPCA+ andarem juntos é a
+// escada de vencimentos dele, e não diz nada. O par só entra com renda
+// variável de um dos lados (o backend também corta, antes de pegar os maiores).
+// O Tesouro chega pelo nome ('Tesouro IPCA+ 2040'); o resto, pelo ticker
+const ehRf = (rotulo: string) => /^Tesouro\b/.test(rotulo) || (() => { const p = nomeDe(rotulo); return !!p && ehRendaFixa(p) })()
+const juntos = computed(() => props.visao.juntos.filter((j) => !(ehRf(j.a) && ehRf(j.b))))
 const rotuloDe = (t: string) => { const p = nomeDe(t); return p?.classe === 'TREASURY' ? nomeCurto(p.nome).replace('Tesouro ', '') : t }
 const frase = computed(() => {
   const f = fatores.value[0]
@@ -83,9 +89,9 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
     </ul>
     </template>
 
-    <div v-if="visao.protecoes.length || visao.juntos.length" class="vlr__duas">
+    <div v-if="visao.protecoes.length || juntos.length" class="vlr__duas">
       <div v-if="visao.protecoes.length">
-        <h4 class="vlr__h4">Quem protege a carteira</h4>
+        <h4 class="vlr__h4">Quem diversifica a carteira</h4>
         <p class="vlr__h4-s">Andam pouco ou ao contrário do resto. Por isso ficam de fora das trocas que o motor simula, mesmo os que pagam pouco provento.</p>
         <ul class="vlr__mini">
           <li v-for="p in visao.protecoes" :key="p.ticker">
@@ -95,11 +101,11 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
           </li>
         </ul>
       </div>
-      <div v-if="visao.juntos.length">
+      <div v-if="juntos.length">
         <h4 class="vlr__h4">Andam juntos</h4>
         <p class="vlr__h4-s">Quando um cai, o outro tende a cair junto. Ter os dois quase não diversifica.</p>
         <ul class="vlr__mini vlr__mini--pares">
-          <li v-for="j in visao.juntos" :key="`${j.a}-${j.b}`">
+          <li v-for="j in juntos" :key="`${j.a}-${j.b}`">
             <span class="vlr__mini-t">{{ j.a }} e {{ j.b }}</span>
             <span class="vlr__mini-x">{{ j.correlacao >= 0.9 ? 'Quase o mesmo ativo.' : j.correlacao >= 0.7 ? 'Muito parecidos.' : 'Parecidos.' }}</span>
             <span class="vlr__mini-c">{{ corr(j.correlacao) }}</span>
@@ -107,7 +113,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
         </ul>
       </div>
     </div>
-    <p v-if="visao.protecoes.length || visao.juntos.length" class="vlr__fonte">Correlação de 1 ano, dos preços de fechamento. Vai de −1 (andam ao contrário) a 1 (andam iguais).</p>
+    <p v-if="visao.protecoes.length || juntos.length" class="vlr__fonte">Correlação de 1 ano, dos preços de fechamento. Vai de −1 (andam ao contrário) a 1 (andam iguais).</p>
   </div>
 </template>
 

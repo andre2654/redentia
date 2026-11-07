@@ -29,6 +29,11 @@ import { agoraEmSP } from '~/utils/pregao'
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
 const r = computed(() => props.visao.renda as RendaVisao)
+// 07/11, revisão do dono: com o Nubank (conta e cartão) já conectado, pedir
+// "Conecte o cartão" era estranho. O gasto só começa a ser lido no próximo
+// sync depois do deploy; enquanto não chega, a tela diz isso, e só convida a
+// conectar quem não tem banco que traga a conta ou o cartão
+const bancoDoGasto = computed(() => props.visao.conexoes.find((c) => c.estado !== 'caida' && (c.fontes.includes('cartao') || c.fontes.includes('transacoes')))?.instituicao ?? null)
 
 const cob = computed(() => cobertura(r.value))
 const comRendeu = computed(() => (r.value.gastoMedio ? ((r.value.caiu + r.value.rendeu) / r.value.gastoMedio) * 100 : null))
@@ -155,14 +160,19 @@ function simular() {
       </p>
     </div>
     <div v-else class="vrd__convite">
-      <p class="vrd__convite-t">Conecte o cartão e a conta do dia a dia, e eu digo quanto da sua vida os investimentos já pagam.</p>
-      <NuxtLink to="/conta#open-finance" class="vrd__convite-b">Conectar</NuxtLink>
+      <template v-if="bancoDoGasto">
+        <p class="vrd__convite-t">Os gastos da conta e do cartão do {{ bancoDoGasto }} entram na próxima atualização, e aí eu digo quanto da sua vida os investimentos já pagam.</p>
+      </template>
+      <template v-else>
+        <p class="vrd__convite-t">Conecte o cartão e a conta do dia a dia, e eu digo quanto da sua vida os investimentos já pagam.</p>
+        <NuxtLink to="/conta#open-finance" class="vrd__convite-b">Conectar</NuxtLink>
+      </template>
     </div>
 
     <div class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
       <!-- mês a mês e o mês corrente (sem os 5 anos, lado a lado) -->
       <div class="vrd__col">
-        <h3 class="vrd__h3">{{ meses[0]?.gasto ? 'Quanto pagou, mês a mês' : 'Quanto caiu, mês a mês' }}</h3>
+        <h3 class="vrd__h3">{{ meses[0]?.gasto ? 'Quanto pagou, mês a mês' : 'Quanto caiu na conta, mês a mês' }}</h3>
         <ol class="vrd__meses">
           <li v-for="m in meses" :key="m.mes" class="vrd__mes" :class="{ 'vrd__mes--ultimo': m.mes === meses[meses.length - 1]!.mes }">
             <span class="vrd__mes-v">{{ m.txt }}</span>

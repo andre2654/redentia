@@ -9,7 +9,7 @@ import { impostoMock, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoM
 import { visaoDesligada } from '../app/utils/carteiraVisao.ts'
 import {
   diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao,
-  selosDasVendas, textoDoGrupo, vendasCurtas,
+  selosDasVendas, textoDoGrupo, vendasCurtas, vendasNaBolsa,
 } from '../app/utils/impostoVisao.ts'
 import { composicaoTxt, fraseDaNota, indicadoresPorPilar, mediana, periodoTxt, valorDoIndicador } from '../app/utils/relatorioCarteira.ts'
 import { TOPICOS_CARTEIRA, temOptInWhatsapp, topicoDoDetector, topicosDosAvisos } from '../app/utils/avisosCanais.ts'
@@ -31,10 +31,10 @@ test('o mês por extenso, curto e com o ano; o dia do vencimento', () => {
 
 test('a frase grande do mês', () => {
   const normal = impostoMock('normal').mesAtual
-  assert.equal(fraseDoMes(normal), 'Em novembro você ainda pode vender R$ 1.300 em ações sem imposto.')
+  assert.equal(fraseDoMes(normal), 'Em novembro ainda cabem R$ 1.300 em vendas de ações sem imposto.')
   assert.equal(fraseDoMes(impostoMock('calmo').mesAtual), 'Novembro sem imposto até agora.')
   // o R$ da pessoa passa pela máscara do olho; o teto da regra, não
-  assert.equal(fraseDoMes(normal, () => 'R$ ••••'), 'Em novembro você ainda pode vender R$ •••• em ações sem imposto.')
+  assert.equal(fraseDoMes(normal, () => 'R$ ••••'), 'Em novembro ainda cabem R$ •••• em vendas de ações sem imposto.')
   const passou = mes([grupo({ grupo: 'acoes', vendido: 23000, lucro: 3000, isencao: 20000, cabeAinda: 0, impostoEstimado: 450 })], { valor: 450, vence: '2026-12-30', codigo: '6015' })
   assert.equal(fraseDoMes(passou), 'Em novembro, as vendas de ações passaram dos R$ 20 mil isentos.')
   assert.equal(fraseDoMes(passou, () => 'R$ ••••'), 'Em novembro, as vendas de ações passaram dos R$ 20 mil isentos.')
@@ -52,7 +52,7 @@ test('a nota cinza: o mês anterior numa frase', () => {
   assert.equal(linhaDoMesAnterior(impostoMock('normal').mesAnterior), 'Outubro ficou isento, com R$ 12.400 em vendas.')
   const comDarf: MesImposto = { mes: '2026-10', grupos: [grupo({ grupo: 'fii', vendido: 6000, lucro: 410, impostoEstimado: 82, aliquota: 0.2 })], darf: { valor: 82, vence: '2026-11-30', codigo: '6015' } }
   assert.equal(linhaDoMesAnterior(comDarf), 'O DARF de outubro, de R$ 82, vence em 30/11.')
-  assert.equal(linhaDoMesAnterior({ mes: '2026-10', grupos: [grupo({ grupo: 'acoes', isencao: 20000, cabeAinda: 20000 })], darf: { valor: null, vence: null, codigo: '6015' } }), 'Outubro sem venda.')
+  assert.equal(linhaDoMesAnterior({ mes: '2026-10', grupos: [grupo({ grupo: 'acoes', isencao: 20000, cabeAinda: 20000 })], darf: { valor: null, vence: null, codigo: '6015' } }), 'Outubro sem vendas.')
 })
 
 test('uma linha por grupo: a barra das ações, a do lucro, a renda fixa e o custo desconhecido', () => {
@@ -158,9 +158,9 @@ test('os grupos sempre na mesma ordem, e os meses do mais velho ao mais novo (os
 test('as vendas na coluna estreita do histórico', () => {
   assert.equal(vendasCurtas(0), '—')
   assert.equal(vendasCurtas(640), 'R$ 640')
-  assert.equal(vendasCurtas(9800), '9,8 mil')
-  assert.equal(vendasCurtas(18700), '19 mil')
-  assert.equal(vendasCurtas(154380), '154 mil')
+  assert.equal(vendasCurtas(9800), 'R$ 9,8 mil')
+  assert.equal(vendasCurtas(18700), 'R$ 19 mil')
+  assert.equal(vendasCurtas(154380), 'R$ 154 mil')
 })
 
 test('as vendas da lista de movimentações levam o selo do mês delas', () => {
@@ -234,4 +234,20 @@ test('a mediana do backend, os pilares e as frases do relatório', () => {
   assert.equal(fraseDaNota(null), 'Ainda não há histórico para dar uma nota à carteira.')
   assert.equal(composicaoTxt(r.benchmark.composicao), '53% CDI, 27% IBOV e 19% IFIX')
   assert.equal(composicaoTxt([{ indice: 'CDI', peso: 100 }]), '100% CDI')
+})
+
+test('qual venda está sem custo: o ticker na frase, e a genérica sem o campo novo', () => {
+  const g = (semCusto?: string[]) => ({ grupo: 'fii' as const, vendido: 7.87, lucro: null, isencao: null, cabeAinda: null, impostoEstimado: null, aliquota: 0.2, custoConhecido: false, nota: '', ...(semCusto ? { semCusto } : {}) })
+  const mes = (semCusto?: string[]) => ({ mes: '2026-10', grupos: [g(semCusto)], darf: { valor: null, vence: null, codigo: '6015' as const } })
+  assert.equal(linhaDoMesAnterior(mes(['XPML12', 'BTLG12'])), 'Em outubro, faltou o custo de XPML12 e BTLG12 para fechar a conta.')
+  assert.equal(linhaDoMesAnterior(mes(['A', 'B', 'C', 'D'])), 'Em outubro, faltou o custo de A, B e mais 2 para fechar a conta.')
+  assert.equal(linhaDoMesAnterior(mes()), 'Em outubro, faltou o custo de uma venda para fechar a conta.')
+  assert.equal(fraseDoMes({ ...mes(['XPML12']), mes: '2026-11' }), 'Em novembro, falta o custo de XPML12 para eu fechar a conta.')
+})
+
+test('as barras do histórico contam só as vendas da bolsa (a renda fixa sai com o imposto retido)', () => {
+  const op = (grupo: string, lado: 'compra' | 'venda', valor: number) => ({ data: '2026-02-10', ticker: 'X', nome: 'X', lado, quantidade: 1, valor, grupo })
+  const m = { operacoes: [op('acoes', 'venda', 26801), op('rf', 'venda', 100000), op('fii', 'venda', 5000), op('acoes', 'compra', 9000)] } as never
+  assert.equal(vendasNaBolsa(m), 31801)
+  assert.equal(vendasNaBolsa({ operacoes: [op('rf', 'venda', 333)] } as never), 0)
 })

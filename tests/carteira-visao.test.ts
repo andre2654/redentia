@@ -6,7 +6,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { CENARIOS, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
-import { brlCurto, cobertura, confereComOTopo, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, tituloDosAvisos } from '../app/utils/carteiraVisao.ts'
+import { brlCurto, cobertura, confereComOTopo, ehRendaFixa, fraseDosAtivos, grupoDaPosicao, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, tituloDosAvisos } from '../app/utils/carteiraVisao.ts'
 import { mesesEmOrdem } from '../app/utils/impostoVisao.ts'
 import { mediana } from '../app/utils/relatorioCarteira.ts'
 import type { MesImposto } from '../app/types/carteiraVisao.ts'
@@ -212,4 +212,24 @@ test('o nome curto do título, o rótulo na frase e o R$ que não quebra a linha
   assert.equal(semQuebraNoReal('caiu R$ 6.645 (−1,0%)'), 'caiu R$\u00a06.645 (−1,0%)')
   assert.equal(semQuebraNoReal('R$ •••• de proventos'), 'R$\u00a0•••• de proventos')
   assert.equal(semQuebraNoReal('Receita em R$ e em dólar'), 'Receita em R$ e em dólar')
+})
+
+test('a lente Ativos: o ETF de CDI é renda fixa, e a frase só fala de concentração na renda variável', () => {
+  const p = (ticker: string, classe: string, fator: string, valor: number, nome = ticker) => ({ ticker, nome, classe, fator, valor })
+  const carteira = [
+    p('AUPO11', 'ETF', 'selic', 204165), p('GOLD11', 'ETF', 'ouro', 10440),
+    p('BRSTNCNTB476', 'TREASURY', 'juros', 136661, 'Tesouro IPCA+ 2050 · IPCA + 6,97%'),
+    p('ITSA4', 'STOCK', 'brasil', 29138), p('PETR4', 'STOCK', 'petroleo', 21773), p('VALE3', 'STOCK', 'dolar', 132952),
+    p('MCCI11', 'REIT', 'juros', 100968),
+  ]
+  const total = carteira.reduce((s, x) => s + x.valor, 0)
+  assert.equal(grupoDaPosicao(carteira[0]!), 'RF')
+  assert.equal(grupoDaPosicao(carteira[1]!), 'ETF')
+  assert.equal(grupoDaPosicao(carteira[6]!), 'REIT', 'FII com fator juros continua FII')
+  assert.equal(ehRendaFixa(carteira[2]!), true)
+  // sem concentração na renda variável: a frase diz como o dinheiro se divide
+  assert.equal(fraseDosAtivos(carteira, total), '7 ativos: 54% em renda fixa, 29% em ações e 16% em FIIs.')
+  // uma ação pesando mais de um quarto volta a ser o que a pessoa vê primeiro
+  const concentrada = [p('PETR4', 'STOCK', 'petroleo', 400), p('AUPO11', 'ETF', 'selic', 600)]
+  assert.equal(fraseDosAtivos(concentrada, 1000), '2 ativos, e 40% num só: o PETR4.')
 })

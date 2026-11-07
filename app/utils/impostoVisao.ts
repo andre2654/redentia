@@ -52,9 +52,22 @@ export function gruposEmOrdem(grupos: GrupoImpostoVisao[]): GrupoImpostoVisao[] 
 const vendeuSemCusto = (g: GrupoImpostoVisao) => g.vendido > 0 && !g.custoConhecido && g.impostoEstimado == null && g.grupo !== 'cripto'
 
 /**
+ * Qual venda está sem custo (07/11, revisão do dono: "faltou o custo de uma
+ * venda" não dizia qual). O backend manda `semCusto` por grupo; sem ele (o
+ * backend antigo), a frase fica genérica. 'XPML12', 'XPML12 e BTLG12',
+ * 'XPML12, BTLG12 e mais 2'
+ */
+function qualVendaSemCusto(m: MesImposto): string {
+  const t = [...new Set(m.grupos.filter(vendeuSemCusto).flatMap((g) => g.semCusto ?? []))]
+  if (!t.length) return 'uma venda'
+  if (t.length <= 2) return t.join(' e ')
+  return `${t.slice(0, 2).join(', ')} e mais ${t.length - 2}`
+}
+
+/**
  * A frase grande do mês:
  *  - 'Novembro sem imposto até agora.' (sem venda, ou venda sem imposto)
- *  - 'Em novembro você ainda pode vender R$ 1.300 em ações sem imposto.'
+ *  - 'Em novembro ainda cabem R$ 1.300 em vendas de ações sem imposto.'
  *  - 'Em novembro, as vendas de ações passaram dos R$ 20 mil isentos.'
  *  - 'Em novembro, o imposto estimado é de R$ 82.' (FII ou ETF com lucro)
  */
@@ -65,10 +78,10 @@ export function fraseDoMes(m: MesImposto, fmt: (v: number) => string = brl0): st
   if (acoes?.isencao != null && acoes.vendido > 0) {
     if (acoes.vendido > acoes.isencao) return `Em ${nome}, as vendas de ações passaram dos ${teto(acoes.isencao)} isentos.`
     if ((acoes.cabeAinda ?? 0) <= 0) return `Em ${nome}, as vendas de ações chegaram aos ${teto(acoes.isencao)} isentos.`
-    return `Em ${nome} você ainda pode vender ${fmt(acoes.cabeAinda!)} em ações sem imposto.`
+    return `Em ${nome} ainda cabem ${fmt(acoes.cabeAinda!)} em vendas de ações sem imposto.`
   }
   if ((m.darf.valor ?? 0) > 0) return `Em ${nome}, o imposto estimado é de ${fmt(m.darf.valor!)}.`
-  if (m.grupos.some(vendeuSemCusto)) return `Em ${nome}, falta o custo de uma venda para eu fechar a conta.`
+  if (m.grupos.some(vendeuSemCusto)) return `Em ${nome}, falta o custo de ${qualVendaSemCusto(m)} para eu fechar a conta.`
   return `${cap(nome)} sem imposto até agora.`
 }
 
@@ -77,8 +90,8 @@ export function linhaDoMesAnterior(m: MesImposto, fmt: (v: number) => string = b
   const nome = nomeDoMes(m.mes)
   if ((m.darf.valor ?? 0) > 0 && m.darf.vence) return `O DARF de ${nome}, de ${fmt(m.darf.valor!)}, vence em ${diaMes(m.darf.vence)}.`
   const vendido = m.grupos.reduce((s, g) => s + g.vendido, 0)
-  if (vendido <= 0) return `${cap(nome)} sem venda.`
-  if (m.grupos.some(vendeuSemCusto)) return `Em ${nome}, faltou o custo de uma venda para fechar a conta.`
+  if (vendido <= 0) return `${cap(nome)} sem vendas.`
+  if (m.grupos.some(vendeuSemCusto)) return `Em ${nome}, faltou o custo de ${qualVendaSemCusto(m)} para fechar a conta.`
   return `${cap(nome)} ficou isento, com ${fmt(vendido)} em vendas.`
 }
 
@@ -196,12 +209,23 @@ export function mesesEmOrdem(h: MesHistorico[]): MesHistorico[] {
   return [...h].sort((a, b) => a.mes.localeCompare(b.mes)).slice(-12)
 }
 
-/** a coluna estreita do histórico: '154 mil' · '9,8 mil' · 'R$ 640' · '—' */
+/** a coluna estreita do histórico, sempre com o R$ (a revisão do dono viu '11 mil' ao lado de 'R$ 341'): 'R$ 154 mil' · 'R$ 9,8 mil' · 'R$ 640' · '—' */
 export function vendasCurtas(v: number): string {
   if (!v) return '—'
   if (Math.abs(v) < 1000) return brl0(v)
   const mil = v / 1000
-  return `${mil < 10 ? nf1.format(Math.round(mil * 10) / 10) : nf0.format(Math.round(mil))} mil`
+  return `R$ ${mil < 10 ? nf1.format(Math.round(mil * 10) / 10) : nf0.format(Math.round(mil))} mil`
+}
+
+/**
+ * As vendas do mês que contam para o imposto que a pessoa apura: as da bolsa
+ * (ações, FII, ETF de renda variável, BDR, cripto). A renda fixa (Tesouro, CDB,
+ * ETF de renda fixa como o AUPO11) sai com o imposto retido na fonte; somada
+ * nas barras, ela fazia fevereiro parecer R$ 212 mil e julho "isento com 54
+ * mil", confundindo com a isenção de R$ 20 mil, que é só das ações.
+ */
+export function vendasNaBolsa(m: Pick<MesHistorico, 'operacoes'>): number {
+  return m.operacoes.filter((o) => o.lado === 'venda' && o.grupo !== 'rf').reduce((s, o) => s + o.valor, 0)
 }
 
 export const SELO: Record<SeloImposto, string> = {

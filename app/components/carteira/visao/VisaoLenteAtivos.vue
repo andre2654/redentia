@@ -1,44 +1,32 @@
 <script setup lang="ts">
 // A lente Ativos (06/11/2026): as posições numa barra por classe e na lista,
-// no idioma do "No mundo" (a frase grande, a lista que diz tudo). No pé, a
-// conta que o backend garante e que a tela mostra: os ativos somam o
-// patrimônio do topo. É o sinal de robustez mais barato que existe.
+// no idioma do "No mundo" (a frase grande, a lista que diz tudo).
+//
+// 07/11, revisão do dono com a carteira dele: a classe é a do que o ativo É.
+// O AUPO11 (um ETF de CDI) mora na renda fixa, junto com o Tesouro, e não em
+// "ETFs" com o ouro; a frase só fala de concentração na renda variável
+// (fraseDosAtivos). A linha "os ativos somam o mesmo valor do topo" saiu: era
+// conferência de teste. Fica só o aviso de quando a soma NÃO bate.
 import type { CarteiraVisao, PosicaoVisao } from '~/types/carteiraVisao'
-import { brl0, brl2, confereComOTopo, pctTxt, rotuloDaPosicao } from '~/utils/carteiraVisao'
+import { GRUPOS_DA_CARTEIRA, brl0, brl2, confereComOTopo, fraseDosAtivos, grupoDaPosicao, pctTxt } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
 
-const CLASSES: Record<string, { nome: string; cor: string; ordem: number }> = {
-  TREASURY: { nome: 'Tesouro Direto', cor: 'var(--nu-alloc-fixed)', ordem: 1 },
-  ETF: { nome: 'ETFs', cor: 'var(--nu-class-etf)', ordem: 2 },
-  REIT: { nome: 'FIIs', cor: 'var(--nu-alloc-fii)', ordem: 3 },
-  STOCK: { nome: 'Ações', cor: 'var(--nu-alloc-stock)', ordem: 4 },
-}
 const total = computed(() => props.visao.patrimonio)
 const grupos = computed(() => {
   const m = new Map<string, PosicaoVisao[]>()
-  for (const p of props.visao.posicoes) m.set(p.classe, [...(m.get(p.classe) ?? []), p])
+  for (const p of props.visao.posicoes) m.set(grupoDaPosicao(p), [...(m.get(grupoDaPosicao(p)) ?? []), p])
   return [...m.entries()]
     .map(([classe, ps]) => {
-      const c = CLASSES[classe] ?? { nome: classe, cor: 'var(--nu-gray)', ordem: 9 }
+      const c = GRUPOS_DA_CARTEIRA[classe] ?? { nome: classe, naFrase: classe, cor: 'var(--nu-gray)' }
       const valor = ps.reduce((s, p) => s + p.valor, 0)
-      return { classe, ...c, valor, pct: (valor / total.value) * 100, itens: [...ps].sort((a, b) => b.valor - a.valor) }
+      return { classe, nome: c.nome, cor: c.cor, valor, pct: (valor / total.value) * 100, itens: [...ps].sort((a, b) => b.valor - a.valor) }
     })
     .sort((a, b) => b.valor - a.valor)
 })
 const maior = computed(() => [...props.visao.posicoes].sort((a, b) => b.valor - a.valor)[0])
-const frase = computed(() => {
-  const n = props.visao.posicoes.length
-  const m = maior.value
-  if (!m) return ''
-  const pm = (m.valor / total.value) * 100
-  // o ticker (ou o título do Tesouro): o nome inteiro do fundo não cabe na frase ('o Aupo Renda Fixa Pos-Fixada DI')
-  const quem = rotuloDaPosicao(m)
-  // um ativo pesando mais que um quarto é o que a pessoa precisa ver primeiro
-  if (pm >= 25) return `${n} ativos, e ${pm >= 30 && pm < 37 ? 'um terço' : pctTxt(pm)} num só: o ${quem}.`
-  return `${n} ativos em ${grupos.value.length} classes. O maior é o ${quem}, com ${pctTxt(pm)}.`
-})
+const frase = computed(() => fraseDosAtivos(props.visao.posicoes, total.value))
 const confere = computed(() => confereComOTopo(props.visao))
 // a soma de verdade das linhas (o backend garante que é o patrimônio; se um dia não for, a tela diz)
 const soma = computed(() => props.visao.posicoes.reduce((s, p) => s + p.valor, 0))
@@ -50,7 +38,7 @@ const NA_LISTA = 3
 const expandidos = ref<Set<string>>(new Set())
 function expandir(c: string) { expandidos.value = new Set([...expandidos.value, c]) }
 const visiveis = (g: { classe: string; itens: PosicaoVisao[] }) => (expandidos.value.has(g.classe) ? g.itens : g.itens.slice(0, NA_LISTA))
-const NOME_PLURAL: Record<string, [string, string]> = { STOCK: ['ação', 'ações'], REIT: ['FII', 'FIIs'], ETF: ['ETF', 'ETFs'], TREASURY: ['título', 'títulos'] }
+const NOME_PLURAL: Record<string, [string, string]> = { STOCK: ['ação', 'ações'], REIT: ['FII', 'FIIs'], ETF: ['ETF', 'ETFs'], RF: ['ativo', 'ativos'] }
 function maisDe(g: { classe: string; itens: PosicaoVisao[] }) {
   const n = g.itens.length - NA_LISTA
   const [um, varios] = NOME_PLURAL[g.classe] ?? ['ativo', 'ativos']
@@ -95,12 +83,9 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
       </div>
     </div>
 
-    <p class="vla__confere" :class="{ 'vla__confere--nao': !confere }">
-      <span class="vla__check" aria-hidden="true">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-      </span>
-      <template v-if="confere">{{ visao.posicoes.length }} ativos somam {{ mask(brl2(soma)) }}, o mesmo valor do topo.</template>
-      <template v-else>{{ visao.posicoes.length }} ativos somam {{ mask(brl2(soma)) }}, e o topo mostra {{ mask(brl2(total)) }}.</template>
+    <!-- só quando a soma das linhas não bate com o topo (o backend garante que bate) -->
+    <p v-if="!confere" class="vla__confere vla__confere--nao">
+      {{ visao.posicoes.length }} ativos somam {{ mask(brl2(soma)) }}, e o topo mostra {{ mask(brl2(total)) }}.
     </p>
   </div>
 </template>

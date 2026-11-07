@@ -215,6 +215,8 @@ export interface GrupoImpostoVisao {
   /** 0,15 · 0,20 */
   aliquota: number
   custoConhecido: boolean
+  /** os tickers vendidos no mês sem o custo conhecido (07/11; vem vazio quando não falta nada e pode faltar no backend antigo) */
+  semCusto?: string[]
   /**
    * a explicação do grupo no mês, com os números ('Vendido R$ 7,87 de R$ 20 mil
    * isentos; ainda cabe R$ 19.992,13. R$ 7,87 das vendas têm o custo

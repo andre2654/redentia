@@ -74,6 +74,62 @@ export function rotuloDaPosicao(p: Pick<PosicaoVisao, 'ticker' | 'nome' | 'class
   return p.classe === 'TREASURY' && p.nome ? nomeCurto(p.nome) : p.ticker
 }
 
+/**
+ * Renda fixa pelo que o ativo É, não pelo invólucro (07/11, revisão do dono):
+ * o AUPO11 é um ETF, mas rende o CDI, e para quem investe é caixa. Tesouro, CDB
+ * e o ETF que mora no fator Selic ou juros (LFT, IPCA+) contam como renda fixa,
+ * o mesmo critério do imposto (o backend põe esses ETFs no grupo `rf`) e do
+ * "No mundo". O FII com fator juros continua FII.
+ */
+const FATOR_DE_RENDA_FIXA = new Set(['selic', 'juros'])
+export function ehRendaFixa(p: Pick<PosicaoVisao, 'classe' | 'fator'>): boolean {
+  if (p.classe === 'TREASURY' || p.classe === 'FIXED_INCOME') return true
+  return p.classe === 'ETF' && FATOR_DE_RENDA_FIXA.has(p.fator)
+}
+
+/** o grupo da lente Ativos: 'RF' para a renda fixa (inclusive o ETF de CDI), senão a classe */
+export function grupoDaPosicao(p: Pick<PosicaoVisao, 'classe' | 'fator'>): string {
+  return ehRendaFixa(p) ? 'RF' : p.classe
+}
+
+/** os grupos da lente Ativos: o nome no título e o nome dentro da frase */
+export const GRUPOS_DA_CARTEIRA: Record<string, { nome: string; naFrase: string; cor: string }> = {
+  RF: { nome: 'Renda fixa', naFrase: 'renda fixa', cor: 'var(--nu-alloc-fixed)' },
+  STOCK: { nome: 'Ações', naFrase: 'ações', cor: 'var(--nu-alloc-stock)' },
+  REIT: { nome: 'FIIs', naFrase: 'FIIs', cor: 'var(--nu-alloc-fii)' },
+  ETF: { nome: 'ETFs', naFrase: 'ETFs', cor: 'var(--nu-class-etf)' },
+  BDR: { nome: 'BDRs', naFrase: 'BDRs', cor: 'var(--nu-class-etf)' },
+  CRYPTO: { nome: 'Cripto', naFrase: 'cripto', cor: 'var(--nu-gray)' },
+}
+
+/** 'a', 'a e b', 'a, b e c' */
+function juntar(partes: string[]): string {
+  return partes.length <= 1 ? (partes[0] ?? '') : `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}`
+}
+
+/**
+ * A frase grande da lente Ativos. Peso demais num ativo só é o que a pessoa
+ * precisa ver primeiro, mas só na renda variável: um terço num fundo de CDI é
+ * caixa, não risco (a revisão do dono achou "um terço num só: o AUPO11"
+ * estranho, e o relatório dizia "maior posição: 4,6%" ao mesmo tempo). Sem
+ * concentração, a frase diz como o dinheiro se divide, pelas maiores classes.
+ */
+export function fraseDosAtivos(posicoes: Pick<PosicaoVisao, 'ticker' | 'nome' | 'classe' | 'fator' | 'valor'>[], patrimonio: number): string {
+  const n = posicoes.length
+  if (!n || patrimonio <= 0) return ''
+  const maiorRv = [...posicoes].filter((p) => !ehRendaFixa(p)).sort((a, b) => b.valor - a.valor)[0]
+  const pm = maiorRv ? (maiorRv.valor / patrimonio) * 100 : 0
+  if (maiorRv && pm >= 25) return `${n} ativos, e ${pm >= 30 && pm < 37 ? 'um terço' : pctTxt(pm)} num só: o ${rotuloDaPosicao(maiorRv)}.`
+  const porGrupo = new Map<string, number>()
+  for (const p of posicoes) porGrupo.set(grupoDaPosicao(p), (porGrupo.get(grupoDaPosicao(p)) ?? 0) + p.valor)
+  const partes = [...porGrupo.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .filter(([, v]) => (v / patrimonio) * 100 >= 5)
+    .slice(0, 3)
+    .map(([g, v]) => `${pctTxt((v / patrimonio) * 100)} em ${GRUPOS_DA_CARTEIRA[g]?.naFrase ?? g.toLowerCase()}`)
+  return partes.length ? `${n} ativos: ${juntar(partes)}.` : `${n} ativos.`
+}
+
 /** 'caiu R$ 6.645' sem quebrar a linha entre o R$ e o número (o texto do backend vem com espaço comum) */
 export function semQuebraNoReal(t: string): string {
   return t.replace(/R\$ (?=[\d•])/g, 'R$\u00a0')

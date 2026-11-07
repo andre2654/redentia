@@ -16,7 +16,7 @@
 // explicação do mês, com os números), e não mais a frase da tela repetida antes
 // dela; a operação sem quantidade (direito de subscrição) mostra só o valor.
 import type { ImpostoVisao, MesHistorico, SeloImposto } from '~/types/carteiraVisao'
-import { SELO, diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas } from '~/utils/impostoVisao'
+import { SELO, diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas, vendasNaBolsa } from '~/utils/impostoVisao'
 import { brl0, brl2 } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ imposto: ImpostoVisao; dadosDe: string | null }>()
@@ -41,8 +41,9 @@ const darf = computed(() => {
 
 /* ————— os últimos 12 meses ————— */
 const meses = computed(() => mesesEmOrdem(props.imposto.historico))
-const maxVendas = computed(() => Math.max(1, ...meses.value.map((m) => m.vendas)))
-const altura = (m: MesHistorico) => (m.vendas > 0 ? Math.max(6, (m.vendas / maxVendas.value) * 100) : 0)
+// as barras contam só as vendas da bolsa (vendasNaBolsa): a renda fixa sai com o imposto retido
+const maxVendas = computed(() => Math.max(1, ...meses.value.map((m) => vendasNaBolsa(m))))
+const altura = (m: MesHistorico) => (vendasNaBolsa(m) > 0 ? Math.max(6, (vendasNaBolsa(m) / maxVendas.value) * 100) : 0)
 const ORDEM_SELO: SeloImposto[] = ['isento', 'pago', 'a_conferir', 'custo_desconhecido', 'sem_venda']
 const legenda = computed(() => ORDEM_SELO.filter((s) => meses.value.some((m) => m.selo === s)))
 const aberto = ref<string | null>(null)
@@ -52,7 +53,7 @@ function abrirMes(m: MesHistorico) {
 }
 const mesAberto = computed(() => meses.value.find((m) => m.mes === aberto.value) ?? null)
 const capMes = (mes: string) => { const t = mesEAno(mes); return t.charAt(0).toUpperCase() + t.slice(1) }
-const rotuloDoMes = (m: MesHistorico) => `${capMes(m.mes)}: ${SELO[m.selo].toLowerCase()}${m.vendas ? `, ${fmt(m.vendas)} em vendas` : ''}${m.operacoes.length ? '' : ', sem operações'}`
+const rotuloDoMes = (m: MesHistorico) => `${capMes(m.mes)}: ${SELO[m.selo].toLowerCase()}${vendasNaBolsa(m) ? `, ${fmt(vendasNaBolsa(m))} em vendas na bolsa` : ''}${m.operacoes.length ? '' : ', sem operações'}`
 const fmtData = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`
 /** a linha de baixo da operação: a quantidade (quando diz algo) e o nome */
 const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
@@ -97,6 +98,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
     <!-- os últimos 12 meses, com o selo -->
     <h3 class="vim__h3">Os últimos 12 meses</h3>
+    <p class="vim__h3-s">Vendas na bolsa por mês. A renda fixa fica de fora: o imposto dela já sai retido na fonte.</p>
     <ol class="vim__meses">
       <li v-for="m in meses" :key="m.mes">
         <button
@@ -104,7 +106,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
           :disabled="!m.operacoes.length" :aria-expanded="m.operacoes.length ? aberto === m.mes : undefined"
           :aria-controls="m.operacoes.length ? 'vim-ops' : undefined" :aria-label="rotuloDoMes(m)" @click="abrirMes(m)"
         >
-          <span class="vim__mes-v">{{ m.vendas ? mask(vendasCurtas(m.vendas)) : '—' }}</span>
+          <span class="vim__mes-v">{{ vendasNaBolsa(m) ? mask(vendasCurtas(vendasNaBolsa(m))) : '—' }}</span>
           <span class="vim__mes-b"><i :style="{ height: `${altura(m)}%` }" /></span>
           <span class="vim__mes-n">{{ mesCurto(m.mes) }}</span>
         </button>
@@ -115,7 +117,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
     </ul>
 
     <div v-if="mesAberto" id="vim-ops" class="vim__ops">
-      <p class="vim__ops-t">{{ capMes(mesAberto.mes) }} <span>· {{ SELO[mesAberto.selo] }}{{ mesAberto.vendas ? ` · ${fmt(mesAberto.vendas)} em vendas` : '' }}</span></p>
+      <p class="vim__ops-t">{{ capMes(mesAberto.mes) }} <span>· {{ SELO[mesAberto.selo] }}{{ vendasNaBolsa(mesAberto) ? ` · ${fmt(vendasNaBolsa(mesAberto))} em vendas na bolsa` : '' }}</span></p>
       <ul class="vim__ops-l">
         <!-- a mesma venda pode vir duas vezes no dia (TAEE11 em 27/05): a chave leva a posição -->
         <li v-for="(o, i) in mesAberto.operacoes" :key="`${o.data}-${o.ticker}-${o.lado}-${i}`">
@@ -169,6 +171,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
 /* ——— os últimos 12 meses: a fileira do "mês a mês" de Quanto ele te paga ——— */
 .vim__h3 { margin: clamp(36px, 4.4vw, 52px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.vim__h3-s { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); line-height: 1.45; }
 .vim__meses { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 14px 0 0; padding: 0; max-width: 1100px; }
 .vim__mes {
   display: grid; grid-template-rows: auto 92px auto; gap: 6px; width: 100%; padding: 8px 2px 0; border: 0; border-radius: 12px;
