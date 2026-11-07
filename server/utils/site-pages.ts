@@ -113,6 +113,14 @@ const CORE_PAGES: SitePage[] = [
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
   { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
+  // Wealth Intelligence Dinner (07/11/2026). Landing de campanha, fora do menu.
+  // lastmod é o dia em que a página entrou — a data do jantar ainda não existe.
+  {
+    path: '/jantar',
+    title: 'Redentia Wealth Intelligence Dinner',
+    description: 'Mesa fechada em São Paulo, dezembro, data a combinar. 10 cadeiras, uma mesa, nenhuma palestra. Convite sob curadoria. Jantar a R$ 600, só após a aprovação.',
+    lastmod: '2026-11-07',
+  },
 ]
 
 const INSTITUCIONAL_PAGES: SitePage[] = [
