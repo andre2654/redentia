@@ -37,6 +37,14 @@ test('o CTA é a fila no WhatsApp, em aba nova, sem formulário', () => {
   assert.equal((template.match(/Entrar na fila/g) ?? []).length, 3)
   assert.doesNotMatch(template, /<form\b|<input\b|<textarea\b|<select\b/i)
   assert.doesNotMatch(template, /quem já sentou|Edição inaugural/i)
+  assert.match(template, />Imagem ilustrativa\.</)
+  assert.match(pagina, /Mesa posta em restaurante, imagem ilustrativa/)
+  assert.match(pagina, /Pratos servidos, imagem ilustrativa/)
+  assert.match(pagina, /Vinho sendo servido em uma taça, imagem ilustrativa/)
+  assert.match(pagina, /Taças de cristal e talheres sobre linho, imagem ilustrativa/)
+  for (const nome of ['mesa-posta', 'pratos', 'vinho', 'tacas']) {
+    assert.equal(existsSync(new URL(`../public/img/jantar/${nome}.webp`, import.meta.url)), true, nome)
+  }
 })
 
 test('a copy fica nos fatos travados', () => {

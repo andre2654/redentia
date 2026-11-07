@@ -49,6 +49,13 @@ const curadoria = [
   { id: 'troca', titulo: 'Troca', texto: 'Você chega para somar, não para vender.' },
 ]
 
+const fotos = [
+  { src: '/img/jantar/mesa-posta.webp', alt: 'Mesa posta em restaurante, imagem ilustrativa' },
+  { src: '/img/jantar/pratos.webp', alt: 'Pratos servidos, imagem ilustrativa' },
+  { src: '/img/jantar/vinho.webp', alt: 'Vinho sendo servido em uma taça, imagem ilustrativa' },
+  { src: '/img/jantar/tacas.webp', alt: 'Taças de cristal e talheres sobre linho, imagem ilustrativa' },
+]
+
 const temas = [
   { nome: 'IA no Wealth Management', linha: 'o que já muda no dia a dia' },
   { nome: 'Operação', linha: 'processos, times e escala' },
@@ -128,6 +135,14 @@ const temas = [
           O que acontece ao redor da mesa é o que importa: conversa franca sobre IA no wealth, operação, consolidação patrimonial e o que vem pela frente. Sem palco, sem crachá, sem apresentação de slides.
         </p>
       </div>
+      <figure class="jt__galeria">
+        <figcaption>Imagem ilustrativa.</figcaption>
+        <ul class="jt__fotos">
+          <li v-for="foto in fotos" :key="foto.src">
+            <img :src="foto.src" :alt="foto.alt" width="960" height="720" loading="lazy" decoding="async">
+          </li>
+        </ul>
+      </figure>
       <p class="jt__eyebrow jt__pauta">Na pauta</p>
       <ul class="jt__temas">
         <li v-for="tema in temas" :key="tema.nome">
@@ -223,6 +238,7 @@ const temas = [
 .jt__cols,
 .jt__temas,
 .jt__pauta,
+.jt__galeria,
 .jt__fecho-in {
   max-width: 1160px;
   margin-left: auto;
@@ -404,6 +420,30 @@ const temas = [
   letter-spacing: -0.03em;
   line-height: 1.3;
 }
+.jt__galeria { margin: clamp(40px, 5vw, 64px) auto 0; }
+.jt__galeria figcaption {
+  margin: 0 0 14px;
+  color: var(--jt-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.jt__fotos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.jt__fotos li { min-width: 0; }
+.jt__fotos img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 18px;
+}
 .jt__pauta { margin-top: clamp(56px, 7vw, 88px); }
 .jt__temas {
   list-style: none;
@@ -472,6 +512,17 @@ const temas = [
 @media (max-width: 760px) {
   .jt__ticker-text { font-size: 13.5px; }
   .jt__cta { width: 100%; }
+  .jt__fotos {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+  }
+  .jt__fotos li {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+  }
   .jt__temas { grid-template-columns: 1fr; }
   .jt__temas li,
   .jt__temas li:nth-child(odd),
