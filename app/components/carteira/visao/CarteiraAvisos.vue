@@ -17,12 +17,19 @@
 //  - "O que eu olhei": o checklist, que é o "Sigo de olho" com prova.
 // Nada aqui manda comprar ou vender: são fatos e simulações (CVM). Simular e
 // Perguntar só PREENCHEM o chat; quem envia é a pessoa.
+//
+// 07/11/2026, de verdade: "Já sei" grava `resolvido` e "desfazer" grava
+// `visto` (PATCH /me/carteira/avisos/{chave}); a tela troca na hora e, se a
+// gravação falhar, volta e diz numa linha. No pé, "Receber estes avisos por":
+// WhatsApp, e-mail ou só aqui, por tópico (o detector diz qual), no mesmo
+// lugar das preferências de /conta. No mock do dev nada é gravado.
 import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
 import { gruposDeAvisos, quandoAtualizou, tituloDosAvisos } from '~/utils/carteiraVisao'
+import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
 // semBotao (06/11): o topo recolhido abre o modal pelos próprios itens e pelo "+N"; o botão redondo sai
-const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string | null; semBotao?: boolean }>()
+const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string | null; semBotao?: boolean; mock?: boolean }>()
 
 const { hidden } = useHiddenValues()
 const semValor = (t: string) => (hidden.value ? t.replace(/R\$\s?[\d.,]+( mil)?/g, 'R$ ••••') : t)
@@ -45,6 +52,7 @@ const provaAberta = ref<string | null>(null)
 function abrir(id?: string | null) {
   aberto.value = true
   provaAberta.value = id ?? null
+  if (!props.mock) void canais.carregar()
   if (id) nextTick(() => document.getElementById(`cav-${id}`)?.scrollIntoView({ block: 'nearest' }))
 }
 function fechar() { aberto.value = false }
@@ -65,15 +73,49 @@ onBeforeUnmount(() => {
 })
 
 function alternarProva(id: string) { provaAberta.value = provaAberta.value === id ? null : id }
-function resolver(id: string) {
+
+/* ————— "Já sei" e "desfazer", gravados ————— */
+const { gravar } = useAvisoEstado()
+// a linha de erro sai onde o aviso está agora: no próprio item (voltou para a lista) ou junto do "Você já sabia"
+const erroEstado = ref<{ id: string; texto: string } | null>(null)
+const erroNaLista = computed(() => !!erroEstado.value && !resolvidos.value.has(erroEstado.value.id))
+// a última troca de cada aviso: se a pessoa mudou de novo, a falha da anterior não desfaz a atual
+const versao = new Map<string, number>()
+function aplicar(id: string, resolvido: boolean) {
   const s = new Set(resolvidos.value)
-  s.add(id)
+  if (resolvido) s.add(id)
+  else s.delete(id)
   resolvidos.value = s
 }
-function desfazer(id: string) {
-  const s = new Set(resolvidos.value)
-  s.delete(id)
-  resolvidos.value = s
+async function marcar(id: string, resolvido: boolean) {
+  const v = (versao.get(id) ?? 0) + 1
+  versao.set(id, v)
+  aplicar(id, resolvido)
+  erroEstado.value = null
+  if (props.mock) return
+  try {
+    await gravar(id, resolvido ? 'resolvido' : 'visto')
+  } catch {
+    if (versao.get(id) !== v) return
+    aplicar(id, !resolvido)
+    erroEstado.value = { id, texto: resolvido ? 'Não consegui guardar o “Já sei”. O aviso voltou para a lista.' : 'Não consegui desfazer agora. Tente de novo.' }
+  }
+}
+const resolver = (id: string) => marcar(id, true)
+const desfazer = (id: string) => marcar(id, false)
+
+/* ————— por onde receber: um tópico por detector ————— */
+const canais = usePreferenciasDaCarteira()
+const topicos = computed(() => topicosDosAvisos(props.avisos.itens))
+const canaisProntos = computed(() => props.mock || canais.estado.value === 'pronto')
+const canaisFalharam = computed(() => !props.mock && canais.estado.value === 'erro')
+const soAqui = (t: TopicoCarteira) => !canais.prefs.value[t].email && !canais.prefs.value[t].whatsapp
+function alternarCanal(t: TopicoCarteira, canal: 'email' | 'whatsapp') {
+  const atual = canais.prefs.value[t]
+  void canais.salvar(t, { ...atual, [canal]: !atual[canal] }, { local: props.mock })
+}
+function ficarAqui(t: TopicoCarteira) {
+  void canais.salvar(t, { email: false, whatsapp: false }, { local: props.mock })
 }
 
 /* ————— as ações ————— */
@@ -163,11 +205,13 @@ function agir(a: Aviso, acao: AcaoAviso) {
                   <!-- a conexão não se "já sabe": ela sai quando volta a atualizar -->
                   <button v-if="!a.detector.startsWith('conexao')" type="button" class="cav__ja" @click="resolver(a.id)">Já sei</button>
                 </div>
+                <p v-if="erroEstado?.id === a.id" class="cav__erro cav__erro--item" role="status">{{ erroEstado.texto }}</p>
               </li>
             </ul>
           </div>
         </template>
 
+        <p v-if="erroEstado && !erroNaLista" class="cav__erro" role="status">{{ erroEstado.texto }}</p>
         <p v-if="grupos.resolvidos.length" class="cav__resolvidos">
           <template v-for="(a, i) in grupos.resolvidos" :key="a.id">
             <span>{{ i ? ' · ' : 'Você já sabia: ' }}{{ a.curto.replace(/\.$/, '') }} </span>
@@ -204,6 +248,24 @@ function agir(a: Aviso, acao: AcaoAviso) {
             </li>
           </ul>
         </details>
+
+        <div v-if="topicos.length" class="cav__canais">
+          <p class="cav__canais-t">Receber estes avisos por</p>
+          <p v-if="canaisFalharam" class="cav__erro">Não consegui ler por onde você recebe agora. Tente de novo mais tarde.</p>
+          <ul v-else class="cav__canais-l">
+            <li v-for="t in topicos" :key="t.id" class="cav__canal">
+              <span class="cav__canal-n">{{ t.nome }}</span>
+              <span v-if="!canaisProntos" class="cav__canal-op" aria-hidden="true"><NuSkeleton width="232px" height="38px" radius="pill" /></span>
+              <span v-else class="cav__canal-op" role="group" :aria-label="`${t.nome}: por onde receber`">
+                <button type="button" class="cav__op" :aria-pressed="canais.prefs.value[t.id].whatsapp" :disabled="!canais.optIn.value" @click="alternarCanal(t.id, 'whatsapp')">WhatsApp</button>
+                <button type="button" class="cav__op" :aria-pressed="canais.prefs.value[t.id].email" @click="alternarCanal(t.id, 'email')">E-mail</button>
+                <button type="button" class="cav__op" :aria-pressed="soAqui(t.id)" @click="ficarAqui(t.id)">Só aqui</button>
+              </span>
+              <p v-if="canais.erro.value?.topico === t.id" class="cav__erro cav__erro--canal" role="status">{{ canais.erro.value.texto }}</p>
+            </li>
+          </ul>
+          <p v-if="canaisProntos && !canais.optIn.value" class="cav__canais-dica">O WhatsApp fica desligado até você aceitar receber a Redentia por lá.</p>
+        </div>
 
         <p class="cav__pe">São fatos e simulações sobre a sua carteira, não recomendação de compra ou venda. Quem decide é você.</p>
       </div>
@@ -309,6 +371,28 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__olhado--nao .cav__check { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .cav__olhado-r { color: var(--nu-ink); font-weight: 700; }
 .cav__olhado-v { color: var(--nu-gray-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cav__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
+.cav__erro--item { margin: 8px 0 0 18px; }
+.cav__erro--canal { flex-basis: 100%; margin: 0; }
+
+/* ——— por onde receber: o segmentado claro das lentes, com mais de uma escolha ——— */
+.cav__canais { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--nu-day-divider); }
+.cav__canais-t { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.cav__canais-l { list-style: none; margin: 6px 0 0; padding: 0; }
+.cav__canal { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 8px 0; }
+.cav__canal + .cav__canal { border-top: 1px solid var(--nu-cream-line); }
+.cav__canal-n { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; }
+.cav__canal-op { display: inline-flex; padding: 3px; border-radius: var(--nu-r-pill); background: var(--nu-cream); }
+.cav__op {
+  height: 32px; padding: 0 14px; border: 0; border-radius: var(--nu-r-pill); background: transparent; white-space: nowrap;
+  color: var(--nu-gray-2); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s;
+}
+.cav__op:hover:not(:disabled) { color: var(--nu-ink); }
+.cav__op[aria-pressed='true'] { background: var(--nu-white); color: var(--nu-ink); box-shadow: 0 1px 3px var(--nu-ink-14); }
+.cav__op:disabled { color: var(--nu-gray); opacity: .55; cursor: not-allowed; }
+.cav__op:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.cav__canais-dica { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
+
 .cav__pe { margin: 22px 0 0; padding-top: 16px; border-top: 1px solid var(--nu-day-divider); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 
 @keyframes cavfade { from { opacity: 0; } to { opacity: 1; } }
@@ -323,8 +407,12 @@ function agir(a: Aviso, acao: AcaoAviso) {
   .cav__v { margin-left: 18px; font-size: var(--nu-fs-md); }
   .cav__olhados li { grid-template-columns: 20px minmax(0, 1fr); }
   .cav__olhado-v { grid-column: 2; }
+  .cav__canal { flex-direction: column; align-items: stretch; }
+  .cav__canal-op { align-self: stretch; }
+  .cav__op { flex: 1; padding: 0 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cav, .cav__card, .cav__prova { animation: none; }
+  .cav__op { transition: none; }
 }
 </style>

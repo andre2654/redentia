@@ -43,8 +43,8 @@ interface AchadosDoTopo {
   posicoes: CarteiraPosicaoMundo[]
   olhadaEm: string | null
 }
-/** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão */
-interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null }
+/** a /carteira nova (06/11/2026): os avisos do motor e o frescor de cada conexão; `mock` (só no dev) não grava nada */
+interface VisaoDoTopo { avisos: AvisosVisao; conexoes: ConexaoVisao[]; ativos: number; dadosDe: string | null; mock?: boolean }
 const props = defineProps<{ agora: CarteiraAgoraVM; chart: HomeChartVM | null; stats: CarteiraHeroVM['stats']; achados?: AchadosDoTopo | null; visao?: VisaoDoTopo | null }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
@@ -476,7 +476,7 @@ const statusLinha = computed(() => {
         <TopoBotao v-if="!enxuto" :rotulo="abrindo ? 'Abrindo…' : 'Adicionar conta'" title="Adicionar uma conta pelo Open Finance" :disabled="abrindo" :aria-busy="abrindo || undefined" @click="adicionarConta">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
         </TopoBotao>
-        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" sem-botao />
+        <CarteiraAvisos v-if="visao" ref="avisosRef" :avisos="visao.avisos" :ativos="visao.ativos" :dados-de="visao.dadosDe" :mock="visao.mock" sem-botao />
         <CarteiraIdeias v-else-if="achados" v-bind="achados" />
         <TopoBotao v-else rotulo="Perguntar" title="Perguntar à Redentia sobre a sua carteira" @click="perguntar()">
           <img src="/logo-azul.svg" alt="" width="16" height="16" class="cto__logo">
