@@ -86,7 +86,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
     <div v-if="visao.protecoes.length || visao.juntos.length" class="vlr__duas">
       <div v-if="visao.protecoes.length">
         <h4 class="vlr__h4">Quem protege a carteira</h4>
-        <p class="vlr__h4-s">Andam pouco ou ao contrário do resto. Por isso eu não sugiro vender, mesmo os que pagam pouco provento.</p>
+        <p class="vlr__h4-s">Andam pouco ou ao contrário do resto. Por isso ficam de fora das trocas que o motor simula, mesmo os que pagam pouco provento.</p>
         <ul class="vlr__mini">
           <li v-for="p in visao.protecoes" :key="p.ticker">
             <NuxtLink :to="`/asset/${p.ticker}`" class="vlr__mini-t">{{ p.ticker }}</NuxtLink>

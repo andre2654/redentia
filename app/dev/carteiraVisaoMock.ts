@@ -205,7 +205,7 @@ const AVISOS: Aviso[] = [
 const DESCARTADOS: CarteiraVisao['avisos']['descartados'] = [
   { id: 'vender:WEGE3', movimento: 'Trocar WEGE3 por uma ação que paga mais dividendo', veto: 'A WEG protege a carteira do dólar e paga pouco porque reinveste. Trocar por dividendo deixaria você mais exposto ao Brasil.' },
   { id: 'vender:GOLD11', movimento: 'Vender GOLD11 para comprar renda', veto: 'É o único ativo que tende a subir quando o resto cai (correlação de −0,18 com a carteira).' },
-  { id: 'vender:PRIO3', movimento: 'Vender PRIO3 para reduzir o petróleo', veto: 'Está no quartil de cima da nota da Redentia e acima da média de 200 dias. Com sinal de alta, eu não sugiro venda.' },
+  { id: 'vender:PRIO3', movimento: 'Vender PRIO3 para reduzir o petróleo', veto: 'Está no quartil de cima da nota da Redentia e acima da média de 200 dias. Com sinal de alta, ele fica fora das trocas.' },
   { id: 'comprar:FII-papel', movimento: 'Comprar mais FII de papel para a renda', veto: 'Os juros longos já são 37% da carteira, e FII de papel reforça esse mesmo risco.' },
 ]
 
