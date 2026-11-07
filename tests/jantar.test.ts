@@ -33,8 +33,10 @@ test('o CTA é a fila no WhatsApp, em aba nova, sem formulário', () => {
     assert.match(a, /target="_blank"/)
     assert.match(a, /rel="noopener noreferrer"/)
   }
-  assert.equal((template.match(/Entrar na fila/g) ?? []).length, anchors.length)
+  assert.equal(anchors.length, 3)
+  assert.equal((template.match(/Entrar na fila/g) ?? []).length, 3)
   assert.doesNotMatch(template, /<form\b|<input\b|<textarea\b|<select\b/i)
+  assert.doesNotMatch(template, /quem já sentou|Edição inaugural/i)
 })
 
 test('a copy fica nos fatos travados', () => {
@@ -61,17 +63,14 @@ test('a copy fica nos fatos travados', () => {
   assert.equal(descricao.length <= 160, true, String(descricao.length))
 })
 
-test('a página usa a identidade da campanha e o header navy fica só neste layout', () => {
+test('a página é navy contínuo, com pílula creme, e o header do site fica claro', () => {
   assert.match(pagina, /#0c1524/)
   assert.match(pagina, /#2f6aff/)
   assert.match(pagina, /#f5f1ea/)
   assert.match(pagina, /var\(--nu-font\)/)
-  assert.match(pagina, /logo-branca\.svg/)
-  assert.match(pagina, /logo-azul\.svg/)
-  assert.doesNotMatch(pagina, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|font-family:\s*Inter/)
-  assert.doesNotMatch(layout, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin/)
-  assert.match(layout, /body\.pagina-jantar \.nuh-wrap/)
-  assert.match(layout, /#0c1524/)
+  assert.match(pagina, /background:\s*#f5f1ea;\s*color:\s*#0c1524/)
+  assert.doesNotMatch(pagina, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|font-family:\s*Inter|jt__bloco--creme|jt__bloco--azul/)
+  assert.doesNotMatch(layout, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|nuh-wrap|nuh__navitem/)
   assert.match(nav, /\.nuh-wrap \{[^}]*background:\s*var\(--nu-white\)/)
   assert.equal(existsSync(new URL('../public/fonts/inter-latin.woff2', import.meta.url)), false)
   assert.equal(existsSync(new URL('../public/fonts/noto-serif-display-latin.woff2', import.meta.url)), false)
