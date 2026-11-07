@@ -414,20 +414,19 @@ Sai o movimento mais leve que melhora o objetivo, com números e o lado ruim.
 
 ### 4.4 O Raio-X sai; entra o Relatório da carteira
 
-**Onde o Raio-X da carteira mora hoje (vai sair):**
+**Onde o Raio-X da carteira mora hoje (vai sair):** corrigido pela auditoria de 07/11, ver a Parte 5.
 - **Front:**
-  - componentes `CarteiraRaioX.vue`, `CarteiraAnalise.vue` (a parte do Raio-X), `CarteiraIdeias.vue`, `CarteiraAgora.vue` (a prop de achados), `CarteiraContent.vue` e `CarteiraMcpBanner.vue`;
-  - lógica: `utils/achadosDaCarteira.ts`, `useCarteira.ts` (o `raiox` do payload), `services/carteira.ts`, `types/carteira.ts` (`CarteiraRaioXVM`), `utils/chat-painel.ts` e a página `simulacao.vue`;
-  - um guia que cita o Raio-X.
-- **Backend:**
-  - `PortfolioAnalysisController` e o modelo `PortfolioAnalysis`, com a tabela `portfolio_analyses`;
-  - `PortfolioController`, onde entra no payload;
-  - as menções no admin (Dashboard, Communication, DataHealth, User) e em `ApplyAutomationDefaults`.
-- **chat-service:**
-  - a ferramenta `import-portfolio`, que escreve a análise com o gpt-4o-mini;
-  - `portfolio-registry` e `lib/raio-x`, com seus testes.
-- **mcp-service:** `src/tools.ts` e `src/laravel.ts`.
-- **Fica:** o Raio-X de ETF (`EtfXrayService`, /etf), que é outra coisa.
+  - componentes `CarteiraRaioX.vue`, a seção `#raio-x` em `CarteiraAnalise.vue`, `CarteiraIdeias.vue` (`relerAnalise`, que pede ao chat para "reanalisar"), `CarteiraAgora.vue` (a prop `analise`) e `CarteiraMcpBanner.vue`;
+  - lógica: `utils/achadosDaCarteira.ts` (`PEDIDO_DE_ANALISE_NOVA`), `useCarteira.ts` (a análise, o `groupDesc` e o banner de `buildRaioX`), `services/carteira.ts` (`carteiraFetchAnalysis`) e `types/carteira.ts` (`PortfolioAnalysisApi`, `CarteiraAnaliseIA`).
+- **Backend:** `PortfolioAnalysisController`, o modelo `PortfolioAnalysis`, as rotas `portfolio/analysis`, a tabela `portfolio_analyses` e os testes; o `analyses_deleted` do `PortfolioController::wipe`; o campo `reading` de `McpKeyController::portfolio`; as métricas `raiox_*` e `has_xray` do admin; e as chaves `raio_x:*` em `SyncPluggyConnectionJob`. O método fica, porque também limpa outros caches.
+- **chat-service:** `lib/raio-x.ts` com o teste e o script; a parte de análise do `import-portfolio.ts` (o import do XLSX fica); o bloco 1c de `auto-actions.ts` (regex "reanalisar"); o evento `portfolio.analyzed`; e as regras de reanálise em `base.ts` e `personas.ts`.
+- **mcp-service:** a descrição de `get_portfolio` em `src/tools.ts`.
+- **Ficam, porque não são o Raio-X da carteira:**
+  - o Raio-X de ETF (`EtfXrayService`, /etf, `simulacao.vue`, `DataHealth`, a parte de ETF do `laravel.ts`);
+  - o post "Raio-X da semana" (`ApplyAutomationDefaults`, `InternalCreativeController`);
+  - o `portfolio-registry` do chat;
+  - o chip "raio-X da PETR4" em `utils/chat-painel.ts`.
+- **Um ajuste:** o score determinístico do `buildRaioX` não é IA e pode seguir como insumo do motor até o relatório entrar.
 
 **Como sai:** primeiro a tela para de mostrar. A tabela e a rota ficam só para leitura até o relatório novo entrar, e depois saem num PR próprio.
 
@@ -496,3 +495,29 @@ Todo canal novo depende de agendamento e de opt-in de WhatsApp, então só entra
 | 3 | O motor de recomendação e os avisos 13, 14, 15, 16, 20 e 21 | Levas 0 e 2 |
 | 4 | Os canais: sábado, dia 1, pagamento, relatório mensal | OK de agendamento e opt-in |
 | 5 | Os avisos 17 e 19 (teste de 3 anos e agenda de amanhã) | Levas 2 e 3 |
+
+---
+
+## Parte 5 · Auditoria do chat e do Raio-X (07/11/2026, só leitura)
+
+**Os branches:** o plano único (gate de assinatura, entitlements, `/me/carteira/futuro`) existe só em `feat/plano-unico` (Backend) e `feat/ia-paga` (chat-service, `assinatura-gate.ts`). Nada disso está no `main`.
+
+**P0: quebrado ou enganoso agora**
+1. **chat-service, `personas.ts` 456–485 e `base.ts:21`:** o prompt Basic, que hoje todo mundo recebe, manda dizer "troque pra MAX" e bloqueia gráfico, watchlist, cenário, planilha e diário. O marcador `{{max:…}}` não é interpretado pelo front e deve aparecer literal na tela (conferir em produção).
+2. **A IA não está protegida no servidor:** o chat exige login, mas não assinatura. Quem barra é só o front, que libera quando não sabe o estado. O `feat/ia-paga` resolve isso.
+3. **chat-service, `chat.stream.ts` e `intake.ts`:** o tier fica fixo por sessão, então as sessões antigas `max` seguem no caminho MAX. O gate MAX tem texto errado ("7 dias grátis", "/pricing", "00:00 UTC"). Forçar `basic` e apagar o gate.
+4. **Ordem de deploy:** o front chama `/me/carteira/futuro`, que só existe em `feat/plano-unico`. O Backend tem de ir antes, senão a tela cai em erro.
+5. **O botão "Reanalisar minha carteira"** em `CarteiraIdeias.vue`: sai.
+
+**P1: código morto com risco**
+- O Raio-X inteiro (a lista da 4.4).
+- **Backend:** `PlanSeeder` (Pro e Max), os middlewares `RequiresLimit` e `RequiresFeature` (sem rota), `checkAndIncrement` com a rota `me/usage/check-and-increment` e os testes, a lista de features do `EntitlementService`, e os limites `basic_chat_daily` e `max_chat_daily`, que nunca são aplicados. Antes de mexer em `limits`, conferir o que o app do iPhone lê.
+- **chat-service:** `checkAndIncrementUsage` e `countMaxMessagesSince`, sem uso.
+
+**P2: cosmético**
+- As métricas do admin.
+- **Front:** `tier: 'basic'` em `useNuChat.ts`, o `case 'max.blocked'` e um comentário do Pro.
+- **chat-service:** `tier.ts`, os comentários Basic/MAX e os defaults de env (kimi, hy3) em relação ao Gemini.
+- O tier `atlas` é outro produto e fica.
+
+**A regra do plano único para a IA:** assinatura ativa ou teste = IA liberada; sem assinatura = `assinatura_necessaria`. Um modelo só e nenhum contador por tier. Fica só o `RATE_LIMIT_PER_HOUR` (anti-abuso), com um teto diário único opcional se o custo pedir.
