@@ -38,8 +38,9 @@ export interface PortfolioTodayApi {
   totals: {
     value_now: number
     value_d1: number
-    day_change_amount: number
-    day_change_pct: number
+    /** null quando nenhuma posição tem o preço de hoje (fix/dia-pendente) */
+    day_change_amount: number | null
+    day_change_pct: number | null
   }
   positions: {
     ticker: string

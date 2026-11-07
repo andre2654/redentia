@@ -46,7 +46,7 @@ const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sáb
 export interface HojeDaApi {
   as_of?: string | null
   price_dates?: { today: string | null } | null
-  totals?: { value_d1: number; day_change_amount: number; day_change_pct: number } | null
+  totals?: { value_d1: number; day_change_amount: number | null; day_change_pct: number | null } | null
   positions?: {
     ticker: string
     name: string | null
@@ -100,7 +100,7 @@ export function montarResumoDoDia(e: {
 }): ResumoDoDia {
   const priceDate = e.today?.price_dates?.today ?? null
   const totals = e.today?.totals
-  const temDia = !!totals && totals.value_d1 > 0
+  const temDia = !!totals && totals.value_d1 > 0 && totals.day_change_amount != null && totals.day_change_pct != null
   const carteiraPct = temDia ? totals!.day_change_pct : null
   const diaValor = temDia ? totals!.day_change_amount : null
 

@@ -137,7 +137,9 @@ function buildHero(rows: PosRow[], today: PortfolioTodayApi | null, income: Inco
 
   let hojeTxt: string | null = null
   let hojeDir: NuDir = 'up'
-  if (today?.totals && today.totals.value_d1 > 0) {
+  // o total do dia vem null quando nenhuma posição tem o preço de hoje (api
+  // fix/dia-pendente): sem número, a linha some em vez de "+R$ 0,00 hoje"
+  if (today?.totals && today.totals.value_d1 > 0 && today.totals.day_change_amount != null && today.totals.day_change_pct != null) {
     const amt = today.totals.day_change_amount
     const pctDay = today.totals.day_change_pct
     hojeDir = dirOf(amt)
@@ -340,7 +342,9 @@ function buildAgora(
   let diaValor: string | null = null
   let diaPct: string | null = null
   let diaDir: NuDir = 'up'
-  if (today?.totals && today.totals.value_d1 > 0) {
+  // o total do dia vem null quando nenhuma posição tem o preço de hoje (api
+  // fix/dia-pendente): sem número, a linha some em vez de "+R$ 0,00 hoje"
+  if (today?.totals && today.totals.value_d1 > 0 && today.totals.day_change_amount != null && today.totals.day_change_pct != null) {
     const amt = today.totals.day_change_amount
     const pctDay = today.totals.day_change_pct
     carteiraPct = pctDay
@@ -961,7 +965,9 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
   // badge do dia: MESMA regra do buildHero (só com /today válido; nunca inventado)
   let hojeTxt: string | null = null
   let hojeDir: NuDir = 'up'
-  if (today?.totals && today.totals.value_d1 > 0) {
+  // o total do dia vem null quando nenhuma posição tem o preço de hoje (api
+  // fix/dia-pendente): sem número, a linha some em vez de "+R$ 0,00 hoje"
+  if (today?.totals && today.totals.value_d1 > 0 && today.totals.day_change_amount != null && today.totals.day_change_pct != null) {
     const amt = today.totals.day_change_amount
     const pctDay = today.totals.day_change_pct
     hojeDir = dirOf(amt)

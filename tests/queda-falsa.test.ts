@@ -73,3 +73,18 @@ test('montarResumoDoDia (home): a queda de verdade continua pedindo atenção', 
   assert.equal(r.alerta?.pct, -6.2)
   assert.deepEqual(r.outrasQuedas, [])
 })
+
+test('montarResumoDoDia (home): com o total do dia null (nada com o preço de hoje), sem número do dia', () => {
+  // api fix/dia-pendente (N13): quando nenhuma posição tem o preço de hoje, o
+  // total do dia vem null, e a tela não pode virar "+R$ 0,00 (0,00%) hoje"
+  const today: HojeDaApi = {
+    price_dates: { today: '2026-11-09' },
+    totals: { value_d1: 20000, day_change_amount: null, day_change_pct: null },
+    positions: [pos('FLRY3', null, 2500), pos('VALE3', null, 9000)],
+    flags: ['pending_today_FLRY3', 'pending_today_VALE3'],
+  }
+  const r = montarResumoDoDia({ today, posicoes: [], total: 20000, ibov: null, income: null })
+  assert.equal(r.carteiraPct, null)
+  assert.equal(r.diaValor, null)
+  assert.equal(r.alerta, null)
+})
