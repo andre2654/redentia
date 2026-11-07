@@ -18,6 +18,11 @@
  * isento), o relatório (relatorioMock, uma carteira com 53% em renda fixa) e,
  * para a página do dev, as movimentações e o P&L (movimentosMock, heatmapMock).
  * Os textos dos indicadores são os do backend (Indicadores::CATALOGO).
+ *
+ * 07/11/2026, com a resposta real do backend (feat/carteira-motor): o estado
+ * de cada aviso (os dois primeiros novos), o método de cada fator, a fonte do
+ * "rendeu" e as notas do imposto no formato de `Imposto::grupoDoMes` (a
+ * explicação do mês, com os números).
  */
 import type { Aviso, CarteiraVisao, CaminhoVisao, ImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, PosicaoVisao } from '~/types/carteiraVisao'
 import type { CarteiraRelatorio, IndicadorRelatorio, PilarRelatorio, UnidadeRelatorio } from '~/types/carteiraRelatorio'
@@ -58,13 +63,14 @@ const POSICOES: PosicaoVisao[] = [
 
 const PATRIMONIO = Math.round(POSICOES.reduce((s, p) => s + p.valor, 0) * 100) / 100
 
+const MOTOR = 'Simulação da Redentia (motor de cenários): '
 const FATORES_BASE: Omit<CarteiraVisao['fatores'][number], 'pct' | 'valor' | 'tickers'>[] = [
-  { chave: 'juros', nome: 'Inflação e juros longos', seCenario: 'Se os juros longos subirem 1 ponto', efeito: '−R$ 21 mil', efeitoDir: 'down' },
-  { chave: 'selic', nome: 'Selic', seCenario: 'Cada corte de 1 ponto na Selic', efeito: '−R$ 170 por mês de rendimento', efeitoDir: 'down' },
-  { chave: 'brasil', nome: 'Economia do Brasil', seCenario: 'Se o Ibovespa cair 10%', efeito: '−R$ 12 mil', efeitoDir: 'down' },
-  { chave: 'petroleo', nome: 'Petróleo', seCenario: 'Se o petróleo cair 20%', efeito: '−R$ 6 mil', efeitoDir: 'down' },
-  { chave: 'dolar', nome: 'Exportação e dólar', seCenario: 'Se o dólar subir 10%', efeito: '+R$ 2,6 mil', efeitoDir: 'up' },
-  { chave: 'ouro', nome: 'Ouro', seCenario: 'Se o dólar subir 10%', efeito: '+R$ 1 mil', efeitoDir: 'up' },
+  { chave: 'juros', nome: 'Inflação e juros longos', seCenario: 'Se os juros longos subirem 1 ponto', efeito: '−R$ 21 mil', efeitoDir: 'down', metodo: `${MOTOR}juros 1 ponto acima de hoje (pelo dial da Selic), que remarca o Tesouro IPCA+ e o prefixado pela duração e reprecifica os FIIs.` },
+  { chave: 'selic', nome: 'Selic', seCenario: 'Cada corte de 1 ponto na Selic', efeito: '−R$ 170 por mês de rendimento', efeitoDir: 'down', metodo: 'Conta simples: 1 ponto de Selic ao ano sobre R$ 203.544, ÷ 12.' },
+  { chave: 'brasil', nome: 'Economia do Brasil', seCenario: 'Se o Ibovespa cair 10%', efeito: '−R$ 12 mil', efeitoDir: 'down', metodo: `${MOTOR}Ibovespa −10% de uma vez, com o beta de cada papel.` },
+  { chave: 'petroleo', nome: 'Petróleo', seCenario: 'Se o petróleo cair 20%', efeito: '−R$ 6 mil', efeitoDir: 'down', metodo: `${MOTOR}petróleo −20%, pela exposição de cada papel ao petróleo.` },
+  { chave: 'dolar', nome: 'Exportação e dólar', seCenario: 'Se o dólar subir 10%', efeito: '+R$ 2,6 mil', efeitoDir: 'up', metodo: `${MOTOR}dólar +10% sobre a cotação de hoje, pela exposição de cada papel ao câmbio.` },
+  { chave: 'ouro', nome: 'Ouro', seCenario: 'Se o ouro subir 10%', efeito: '+R$ 1 mil', efeitoDir: 'up', metodo: 'Estimativa simples: o ETF de ouro acompanha o ouro em reais, então +10% no ouro dá uns +10% nele.' },
 ]
 
 function fatores(): CarteiraVisao['fatores'] {
@@ -128,7 +134,7 @@ const AVISOS: Aviso[] = [
       { tipo: 'ver', rotulo: 'Ver as vendas', alvo: '#movimentacoes' },
       { tipo: 'perguntar', rotulo: 'Perguntar à Redentia', alvo: 'Como eu confiro se devo DARF das vendas de fevereiro?' },
     ],
-    pergunta: 'Devo imposto?', canais: ['tela', 'email', 'whatsapp'],
+    pergunta: 'Devo imposto?', canais: ['tela', 'email', 'whatsapp'], estado: 'novo',
   },
   {
     id: 'renda.selic:AUPO11', detector: 'renda.selic', gravidade: 'media',
@@ -146,7 +152,7 @@ const AVISOS: Aviso[] = [
       { tipo: 'ver', rotulo: 'Ver nos riscos', alvo: 'lente:riscos' },
       { tipo: 'simular', rotulo: 'Simular a Selic a 12%', alvo: 'Simule a minha carteira com a Selic caindo para 12% em 2027.' },
     ],
-    pergunta: 'Ninguém me avisou do risco?', canais: ['tela'],
+    pergunta: 'Ninguém me avisou do risco?', canais: ['tela'], estado: 'novo',
   },
   {
     id: 'proventos.semana:2026-11-10', detector: 'proventos.agenda', gravidade: 'bom',
@@ -161,7 +167,7 @@ const AVISOS: Aviso[] = [
     ],
     fonte: 'Agenda de proventos da B3',
     acoes: [{ tipo: 'ver', rotulo: 'Ver a agenda', alvo: '#renda' }],
-    pergunta: 'Quanto vou receber?', canais: ['tela', 'email', 'whatsapp'],
+    pergunta: 'Quanto vou receber?', canais: ['tela', 'email', 'whatsapp'], estado: 'visto',
   },
   {
     id: 'imposto.prejuizo-fii', detector: 'imposto.prejuizo', gravidade: 'info',
@@ -177,7 +183,7 @@ const AVISOS: Aviso[] = [
     ],
     fonte: 'Transações da Pluggy',
     acoes: [{ tipo: 'perguntar', rotulo: 'Perguntar à Redentia', alvo: 'Como funciona abater prejuízo de FII no imposto?' }],
-    pergunta: 'Devo imposto?', canais: ['tela', 'email'],
+    pergunta: 'Devo imposto?', canais: ['tela', 'email'], estado: 'visto',
   },
   {
     id: 'imposto.isencao:2026-11', detector: 'imposto.isencao', gravidade: 'info',
@@ -192,7 +198,7 @@ const AVISOS: Aviso[] = [
     ],
     fonte: 'Transações da Pluggy, regra da Receita (Lei 11.033/2004, art. 3º, I)',
     acoes: [{ tipo: 'ver', rotulo: 'Ver o imposto do mês', alvo: '#imposto' }],
-    pergunta: 'Quanto ainda posso vender sem imposto?', canais: ['tela', 'email', 'whatsapp'],
+    pergunta: 'Quanto ainda posso vender sem imposto?', canais: ['tela', 'email', 'whatsapp'], estado: 'visto',
   },
 ]
 
@@ -229,21 +235,22 @@ const HISTORICO_ANTES: MesHistorico[] = [
   { mes: '2026-10', vendas: 12400, selo: 'isento', operacoes: [op('2026-10-15', 'PETR4', 'Petrobras', 'venda', 400, 31, 'acoes')] },
 ]
 
-const NOTA_GRUPO = {
-  acoes: 'Até R$ 20 mil de vendas no mês, o lucro de ações à vista é isento.',
-  fii: 'FII paga 20% sobre o lucro, sem isenção.',
-  etf: 'ETF de ações paga 15% sobre o lucro, sem isenção.',
-  rf: 'O imposto sai no resgate, retido pela corretora.',
-} as const
+/** a nota de cada grupo, no texto de `Imposto::grupoDoMes` (a explicação do mês, com os números) */
+const reais = (v: number) => `R$ ${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v)}`
+function notaMock(grupo: 'acoes' | 'fii' | 'etf' | 'rf', vendido: number): string {
+  if (grupo === 'acoes') return vendido > 0 ? `Vendido ${reais(vendido)} de R$ 20 mil isentos; ainda cabe ${reais(Math.max(0, 20000 - vendido))}.` : 'Sem venda de ações no mês: cabem os R$ 20 mil inteiros.'
+  if (grupo === 'rf') return vendido > 0 ? 'O imposto da renda fixa (Tesouro, CDB, ETF de renda fixa) é retido na fonte, de 22,5% a 15% pelo prazo: não entra no DARF.' : 'Sem venda de renda fixa no mês.'
+  return `${grupo === 'fii' ? 'FII' : 'ETF'}: ${reais(vendido)} vendidos, sem isenção; o lucro paga ${grupo === 'fii' ? 20 : 15}%.`
+}
 
 function mesSemVenda(mes: string, acoesVendidas = 0, lucroAcoes = 0): MesImposto {
   return {
     mes,
     grupos: [
-      { grupo: 'acoes', vendido: acoesVendidas, lucro: lucroAcoes, isencao: 20000, cabeAinda: 20000 - acoesVendidas, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: NOTA_GRUPO.acoes },
-      { grupo: 'fii', vendido: 0, lucro: 0, isencao: null, cabeAinda: null, impostoEstimado: 0, aliquota: 0.2, custoConhecido: true, nota: NOTA_GRUPO.fii },
-      { grupo: 'etf', vendido: 0, lucro: 0, isencao: null, cabeAinda: null, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: NOTA_GRUPO.etf },
-      { grupo: 'rf', vendido: 0, lucro: 0, isencao: null, cabeAinda: null, impostoEstimado: 0, aliquota: 0, custoConhecido: true, nota: NOTA_GRUPO.rf },
+      { grupo: 'acoes', vendido: acoesVendidas, lucro: lucroAcoes, isencao: 20000, cabeAinda: 20000 - acoesVendidas, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: notaMock('acoes', acoesVendidas) },
+      { grupo: 'fii', vendido: 0, lucro: 0, isencao: null, cabeAinda: null, impostoEstimado: 0, aliquota: 0.2, custoConhecido: true, nota: notaMock('fii', 0) },
+      { grupo: 'etf', vendido: 0, lucro: 0, isencao: null, cabeAinda: null, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: notaMock('etf', 0) },
+      { grupo: 'rf', vendido: 0, lucro: 0, isencao: null, cabeAinda: null, impostoEstimado: 0, aliquota: 0, custoConhecido: true, nota: notaMock('rf', 0) },
     ],
     darf: { valor: null, vence: null, codigo: '6015' },
   }
@@ -257,7 +264,7 @@ export function impostoMock(cenario: CenarioVisao = 'normal'): ImpostoVisao {
   if (vendeu) {
     mesAtual = mesSemVenda('2026-11', 18700, 2500)
     // HGLG11: 40 cotas a R$ 154,50, com preço médio de R$ 144,20 → R$ 412 de lucro, 20% = R$ 82,40
-    mesAtual.grupos[1] = { ...mesAtual.grupos[1]!, vendido: 6180, lucro: 412, impostoEstimado: 82.4 }
+    mesAtual.grupos[1] = { ...mesAtual.grupos[1]!, vendido: 6180, lucro: 412, impostoEstimado: 82.4, nota: notaMock('fii', 6180) }
     // o DARF de novembro vence no último dia útil de dezembro: 31/12 não tem expediente, então 30/12
     mesAtual.darf = { valor: 82.4, vence: '2026-12-30', codigo: '6015' }
   }
@@ -303,7 +310,7 @@ export function visaoMock(cenario: CenarioVisao = 'normal'): CarteiraVisao {
       ],
       fonte: 'Pluggy',
       acoes: [{ tipo: 'ver', rotulo: 'Reconectar o Nubank', alvo: '/conta#open-finance' }],
-      pergunta: 'Os meus números estão em dia?', canais: ['tela'],
+      pergunta: 'Os meus números estão em dia?', canais: ['tela'], estado: 'novo',
     }]
     urgente = 'conexao:nubank'
   }
@@ -345,6 +352,7 @@ export function visaoMock(cenario: CenarioVisao = 'normal'): CarteiraVisao {
     renda: {
       caiu: 1015,
       rendeu: 3240,
+      rendeuFonte: 'Estimativa: a Selic diária de outubro (Banco Central) sobre o que rende a Selic e o IPCA de setembro (IBGE) mais a taxa de cada título sobre o Tesouro IPCA+.',
       gastoMedio: semGasto ? null : Math.round((GASTO[2]! + GASTO[3]! + GASTO[4]!) / 3),
       mesFechado: 'outubro',
       meses: MESES.map((mes, i) => ({ mes, renda: RENDA[i]!, gasto: semGasto ? null : GASTO[i]! })),
@@ -443,7 +451,8 @@ export function movimentosMock(): CarteiraMovementsVM {
       key: `${o.lado}-${o.ticker}-${o.data}`, d: o.data.slice(8, 10), m: MES3[Number(o.data.slice(5, 7)) - 1]!, mes: o.data.slice(0, 7),
       ticker: o.ticker, letter: o.ticker.charAt(0), tileBg: TILES[i % 3]![0], tileFg: TILES[i % 3]![1],
       badge: o.lado === 'venda' ? 'Venda' : 'Compra',
-      sub: `${nfQtd.format(o.quantidade)} ${o.grupo === 'fii' ? 'cotas' : o.grupo === 'acoes' ? 'ações' : 'cotas'} × R$ ${nfMov.format(o.valor / o.quantidade)}`,
+      // no mock toda operação tem quantidade; a resposta real pode vir sem (OperacaoImposto.quantidade null)
+      sub: o.quantidade ? `${nfQtd.format(o.quantidade)} ${o.grupo === 'fii' ? 'cotas' : o.grupo === 'acoes' ? 'ações' : 'cotas'} × R$ ${nfMov.format(o.valor / o.quantidade)}` : o.nome,
       valRaw, val: `${valRaw < 0 ? '-' : '+'}R$ ${nfMov.format(Math.abs(valRaw))}`,
     }
   })

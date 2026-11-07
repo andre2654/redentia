@@ -4,7 +4,7 @@
 // conta que o backend garante e que a tela mostra: os ativos somam o
 // patrimônio do topo. É o sinal de robustez mais barato que existe.
 import type { CarteiraVisao, PosicaoVisao } from '~/types/carteiraVisao'
-import { brl0, brl2, confereComOTopo, pctTxt } from '~/utils/carteiraVisao'
+import { brl0, brl2, confereComOTopo, pctTxt, rotuloDaPosicao } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
@@ -33,11 +33,15 @@ const frase = computed(() => {
   const m = maior.value
   if (!m) return ''
   const pm = (m.valor / total.value) * 100
+  // o ticker (ou o título do Tesouro): o nome inteiro do fundo não cabe na frase ('o Aupo Renda Fixa Pos-Fixada DI')
+  const quem = rotuloDaPosicao(m)
   // um ativo pesando mais que um quarto é o que a pessoa precisa ver primeiro
-  if (pm >= 25) return `${n} ativos, e ${pm >= 30 && pm < 37 ? 'um terço' : pctTxt(pm)} num só: o ${m.nome}.`
-  return `${n} ativos em ${grupos.value.length} classes. O maior é ${m.nome}, com ${pctTxt(pm)}.`
+  if (pm >= 25) return `${n} ativos, e ${pm >= 30 && pm < 37 ? 'um terço' : pctTxt(pm)} num só: o ${quem}.`
+  return `${n} ativos em ${grupos.value.length} classes. O maior é o ${quem}, com ${pctTxt(pm)}.`
 })
 const confere = computed(() => confereComOTopo(props.visao))
+// a soma de verdade das linhas (o backend garante que é o patrimônio; se um dia não for, a tela diz)
+const soma = computed(() => props.visao.posicoes.reduce((s, p) => s + p.valor, 0))
 
 const Link = resolveComponent('NuxtLink')
 const aberto = ref<string | null>(null)
@@ -95,7 +99,8 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
       <span class="vla__check" aria-hidden="true">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
       </span>
-      {{ visao.posicoes.length }} ativos somam {{ mask(brl2(total)) }}, o mesmo valor do topo.
+      <template v-if="confere">{{ visao.posicoes.length }} ativos somam {{ mask(brl2(soma)) }}, o mesmo valor do topo.</template>
+      <template v-else>{{ visao.posicoes.length }} ativos somam {{ mask(brl2(soma)) }}, e o topo mostra {{ mask(brl2(total)) }}.</template>
     </p>
   </div>
 </template>

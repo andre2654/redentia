@@ -98,10 +98,11 @@ const parada = computed(() => {
 })
 
 /* ————— o rail ————— */
+// renda e imposto vêm null quando o bloco quebra no servidor: a seção some, e o rail junto
 const railSections = computed<RailSection[]>(() => [
   { id: 'hoje', label: 'Hoje' },
   { id: 'onde', label: 'Onde está' },
-  { id: 'renda', label: 'Quanto paga' },
+  ...(visao.value.renda ? [{ id: 'renda', label: 'Quanto paga' }] : []),
   ...(visao.value.imposto ? [{ id: 'imposto', label: 'Imposto' }] : []),
   { id: 'relatorio', label: 'Relatório' },
 ])
@@ -117,8 +118,8 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
       <NuxtLink to="/conta#open-finance">Reconectar</NuxtLink>
     </p>
     <VisaoOndeEsta id="onde" :visao="visao" />
-    <VisaoRenda id="renda" :visao="visao" />
-    <!-- a resposta real sempre traz o imposto; o cenário real local do dev pode vir sem -->
+    <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
+    <!-- o imposto vem null quando o bloco quebra no servidor (e o cenário real antigo do dev vinha sem) -->
     <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" />
     <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
 

@@ -6,7 +6,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { CENARIOS, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
-import { brlCurto, cobertura, confereComOTopo, gruposDeAvisos, pctTxt, quandoAtualizou, tituloDosAvisos } from '../app/utils/carteiraVisao.ts'
+import { brlCurto, cobertura, confereComOTopo, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, tituloDosAvisos } from '../app/utils/carteiraVisao.ts'
 import { mesesEmOrdem } from '../app/utils/impostoVisao.ts'
 import { mediana } from '../app/utils/relatorioCarteira.ts'
 import type { MesImposto } from '../app/types/carteiraVisao.ts'
@@ -100,7 +100,7 @@ for (const { id } of CENARIOS) {
 
   test(`mock ${id}: nenhuma frase manda comprar ou vender`, () => {
     const v = visaoMock(id)
-    const textos = [...v.avisos.itens.flatMap((a) => [a.titulo, a.texto, ...a.acoes.map((x) => x.rotulo)]), ...v.renda.caminhos.map((c) => c.nome)]
+    const textos = [...v.avisos.itens.flatMap((a) => [a.titulo, a.texto, ...a.acoes.map((x) => x.rotulo)]), ...v.renda!.caminhos.map((c) => c.nome)]
     for (const t of textos) assert.doesNotMatch(t, /\b(compre|venda já|vender agora|recomendamos)\b/i, t)
   })
 }
@@ -116,12 +116,14 @@ test('conexão parada: só o aviso de conexão sai, o resto espera', () => {
 
 test('sem cartão: a cobertura da vida é null, nunca zero', () => {
   assert.equal(cobertura(visaoMock('semgasto').renda), null)
+  // o bloco da renda que quebrou no servidor vem null: nada de cobertura
+  assert.equal(cobertura(null), null)
   const c = cobertura(visaoMock('normal').renda)!
   assert.ok(c > 9 && c < 11, `cobertura ${c}`)
 })
 
 test('caminhos: 61 pontos e p10 ≤ mediana ≤ p90', () => {
-  for (const c of visaoMock('normal').renda.caminhos) {
+  for (const c of visaoMock('normal').renda!.caminhos) {
     assert.equal(c.mediana.length, 61)
     c.mediana.forEach((m, i) => assert.ok(c.p10[i]! <= m && m <= c.p90[i]!, `${c.id}[${i}]`))
   }
@@ -191,4 +193,23 @@ test('relatório do mock: o pilar é a mediana dos indicadores dele, e a nota é
   for (const i of r.indicadores) assert.ok(i.nota == null || (i.nota >= 0 && i.nota <= 100), i.chave)
   assert.ok(Math.abs(r.benchmark.composicao.reduce((s, c) => s + c.peso, 0) - 100) < 0.5, 'o benchmark soma 100%')
   assert.equal(r.periodo.historicoCurto, false)
+})
+
+test('resposta real: o contrato que o backend manda a mais (estado, método, fonte do rendeu)', () => {
+  for (const { id } of CENARIOS) {
+    const v = visaoMock(id)
+    for (const a of v.avisos.itens) assert.ok(a.estado === 'novo' || a.estado === 'visto', `${a.id}: estado ${a.estado}`)
+    for (const f of v.fatores) assert.ok(f.metodo.length > 20, `${f.chave} sem o método`)
+    assert.ok(v.renda!.rendeuFonte, 'rendeu sem fonte')
+  }
+})
+
+test('o nome curto do título, o rótulo na frase e o R$ que não quebra a linha', () => {
+  assert.equal(nomeCurto('Tesouro IPCA+ 2050 · IPCA + 6,97%'), 'Tesouro IPCA+ 2050')
+  assert.equal(nomeCurto('Itaúsa'), 'Itaúsa')
+  assert.equal(rotuloDaPosicao({ ticker: 'AUPO11', nome: 'Aupo Renda Fixa Pos-Fixada DI', classe: 'ETF' }), 'AUPO11')
+  assert.equal(rotuloDaPosicao({ ticker: 'BRSTNCNTB476', nome: 'Tesouro IPCA+ 2050 · IPCA + 6,97%', classe: 'TREASURY' }), 'Tesouro IPCA+ 2050')
+  assert.equal(semQuebraNoReal('caiu R$ 6.645 (−1,0%)'), 'caiu R$\u00a06.645 (−1,0%)')
+  assert.equal(semQuebraNoReal('R$ •••• de proventos'), 'R$\u00a0•••• de proventos')
+  assert.equal(semQuebraNoReal('Receita em R$ e em dólar'), 'Receita em R$ e em dólar')
 })

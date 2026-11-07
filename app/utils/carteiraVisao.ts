@@ -2,7 +2,7 @@
  * As contas pequenas da /carteira nova (06/11/2026): o número brasileiro, a
  * data de quando cada fonte atualizou, a cobertura da vida. Puras, com teste.
  */
-import type { AvisosVisao, CarteiraVisao, GravidadeAviso } from '~/types/carteiraVisao'
+import type { AvisosVisao, CarteiraVisao, GravidadeAviso, PosicaoVisao, RendaVisao } from '~/types/carteiraVisao'
 
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const nf1 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -36,9 +36,9 @@ export function quandoAtualizou(iso: string, agora = new Date()): string {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-/** quanto da vida a renda que caiu na conta paga (0-100), ou null sem gasto */
-export function cobertura(r: CarteiraVisao['renda']): number | null {
-  if (!r.gastoMedio) return null
+/** quanto da vida a renda que caiu na conta paga (0-100), ou null sem gasto (ou sem a renda) */
+export function cobertura(r: RendaVisao | null): number | null {
+  if (!r?.gastoMedio) return null
   return (r.caiu / r.gastoMedio) * 100
 }
 
@@ -58,6 +58,25 @@ export function tituloDosAvisos(atencao: number, saber: number): string {
   if (!atencao && !saber) return 'Tudo normal. Sigo de olho.'
   if (!atencao) return saber === 1 ? 'Tudo normal. Uma coisa boa de saber.' : `Tudo normal. ${saber} coisas boas de saber.`
   return atencao === 1 ? 'Uma coisa pede a sua atenção.' : `${atencao} coisas pedem a sua atenção.`
+}
+
+/**
+ * O nome sem o complemento que o backend põe depois do ' · ' ('Tesouro IPCA+
+ * 2050 · IPCA + 6,97%' → 'Tesouro IPCA+ 2050'): para frase e lista curta. A
+ * lista de Ativos mostra o nome inteiro, com a taxa.
+ */
+export function nomeCurto(nome: string): string {
+  return nome.split(' · ')[0]!.trim() || nome
+}
+
+/** como a posição entra numa frase: o título do Tesouro pelo nome curto, o resto pelo ticker */
+export function rotuloDaPosicao(p: Pick<PosicaoVisao, 'ticker' | 'nome' | 'classe'>): string {
+  return p.classe === 'TREASURY' && p.nome ? nomeCurto(p.nome) : p.ticker
+}
+
+/** 'caiu R$ 6.645' sem quebrar a linha entre o R$ e o número (o texto do backend vem com espaço comum) */
+export function semQuebraNoReal(t: string): string {
+  return t.replace(/R\$ (?=[\d•])/g, 'R$\u00a0')
 }
 
 /** a soma das posições bate com o patrimônio (a regra que o backend garante) */

@@ -23,8 +23,14 @@
 // gravação falhar, volta e diz numa linha. No pé, "Receber estes avisos por":
 // WhatsApp, e-mail ou só aqui, por tópico (o detector diz qual), no mesmo
 // lugar das preferências de /conta. No mock do dev nada é gravado.
+//
+// 07/11, com a resposta real: o backend diz o estado de cada aviso
+// (`Aviso.estado`). O que chegou desde a última vez leva o selo "Novo"; abrir
+// os avisos grava `visto` (o mesmo PATCH), e o selo fica até a página
+// recarregar. O título e o texto não quebram a linha entre o R$ e o número, e
+// o título também esconde o R$ com o olho fechado.
 import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
-import { gruposDeAvisos, quandoAtualizou, tituloDosAvisos } from '~/utils/carteiraVisao'
+import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } from '~/utils/carteiraVisao'
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
@@ -33,6 +39,8 @@ const props = defineProps<{ avisos: AvisosVisao; ativos: number; dadosDe: string
 
 const { hidden } = useHiddenValues()
 const semValor = (t: string) => (hidden.value ? t.replace(/R\$\s?[\d.,]+( mil)?/g, 'R$ ••••') : t)
+/** o texto na tela: sem o R$ com o olho fechado, e sem quebrar 'R$ 6.645' em duas linhas */
+const naTela = (t: string) => semQuebraNoReal(semValor(t))
 
 const resolvidos = ref<Set<string>>(new Set())
 const grupos = computed(() => gruposDeAvisos(props.avisos, resolvidos.value))
@@ -52,6 +60,7 @@ const provaAberta = ref<string | null>(null)
 function abrir(id?: string | null) {
   aberto.value = true
   provaAberta.value = id ?? null
+  marcarVistos()
   if (!props.mock) void canais.carregar()
   if (id) nextTick(() => document.getElementById(`cav-${id}`)?.scrollIntoView({ block: 'nearest' }))
 }
@@ -76,6 +85,18 @@ function alternarProva(id: string) { provaAberta.value = provaAberta.value === i
 
 /* ————— "Já sei" e "desfazer", gravados ————— */
 const { gravar } = useAvisoEstado()
+
+/* ————— novo e visto ————— */
+// o `visto` de cada aviso novo, gravado uma vez por página; o "Já sei" espera
+// ele terminar, para o `resolvido` nunca chegar antes e ser desfeito por ele
+const vistos = new Map<string, Promise<unknown>>()
+function marcarVistos() {
+  if (props.mock) return
+  for (const a of props.avisos.itens) {
+    if (a.estado !== 'novo' || vistos.has(a.id)) continue
+    vistos.set(a.id, gravar(a.id, 'visto').catch(() => { vistos.delete(a.id) }))
+  }
+}
 // a linha de erro sai onde o aviso está agora: no próprio item (voltou para a lista) ou junto do "Você já sabia"
 const erroEstado = ref<{ id: string; texto: string } | null>(null)
 const erroNaLista = computed(() => !!erroEstado.value && !resolvidos.value.has(erroEstado.value.id))
@@ -94,6 +115,7 @@ async function marcar(id: string, resolvido: boolean) {
   erroEstado.value = null
   if (props.mock) return
   try {
+    await vistos.get(id)
     await gravar(id, resolvido ? 'resolvido' : 'visto')
   } catch {
     if (versao.get(id) !== v) return
@@ -178,12 +200,13 @@ function agir(a: Aviso, acao: AcaoAviso) {
             <ul class="cav__lista">
               <li v-for="a in g[1]" :id="`cav-${a.id}`" :key="a.id" class="cav__item" :class="`cav__item--${a.gravidade}`">
                 <div class="cav__linha">
-                  <p class="cav__t">{{ a.titulo }}</p>
+                  <p class="cav__t">{{ naTela(a.titulo) }}</p>
                   <p v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</p>
                 </div>
-                <p class="cav__x">{{ semValor(a.texto) }}</p>
+                <p class="cav__x">{{ naTela(a.texto) }}</p>
                 <p v-if="a.ressalva" class="cav__ressalva">{{ a.ressalva }}</p>
                 <p class="cav__meta">
+                  <span v-if="a.estado === 'novo'" class="cav__novo">Novo</span>
                   <span class="cav__conf" :class="`cav__conf--${a.confianca}`">{{ CONFIANCA[a.confianca] }}</span>
                   <span v-if="a.prazo">{{ a.prazo }}</span>
                   <button type="button" class="cav__como" :aria-expanded="provaAberta === a.id" @click="alternarProva(a.id)">
@@ -214,7 +237,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
         <p v-if="erroEstado && !erroNaLista" class="cav__erro" role="status">{{ erroEstado.texto }}</p>
         <p v-if="grupos.resolvidos.length" class="cav__resolvidos">
           <template v-for="(a, i) in grupos.resolvidos" :key="a.id">
-            <span>{{ i ? ' · ' : 'Você já sabia: ' }}{{ a.curto.replace(/\.$/, '') }} </span>
+            <span>{{ i ? ' · ' : 'Você já sabia: ' }}{{ naTela(a.curto.replace(/\.$/, '')) }} </span>
             <button type="button" class="cav__desfazer" @click="desfazer(a.id)">desfazer</button>
           </template>
         </p>
@@ -323,6 +346,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__x { margin: 6px 0 0 18px; max-width: 64ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cav__ressalva { margin: 8px 0 0 18px; max-width: 64ch; padding-left: 12px; border-left: 2px solid var(--nu-amber); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
 .cav__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.cav__novo { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: var(--nu-r-pill); background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 800; }
 .cav__conf { display: inline-flex; align-items: center; gap: 6px; }
 .cav__conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--nu-green); }
 .cav__conf--estimativa::before { background: var(--nu-blue); }

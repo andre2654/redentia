@@ -35,7 +35,7 @@ import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
 import CarteiraAvisos from '~/components/carteira/visao/CarteiraAvisos.vue'
 import type { AvisosVisao, ConexaoVisao } from '~/types/carteiraVisao'
-import { quandoAtualizou } from '~/utils/carteiraVisao'
+import { quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
 
 /** o que o modal das ideias lê (CarteiraIdeias); sem o score, fica o Perguntar */
 interface AchadosDoTopo {
@@ -126,11 +126,17 @@ const contraBolsa = computed(() => {
   const prov = props.agora.provento ? ` Provento: ${subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value)}.` : ''
   return `${t.charAt(0).toUpperCase()}${t.slice(1)} (${pctComSinal(b)}).${prov}`
 })
-/* o frescor: de quando é cada conexão (a regra da tela nova: todo dado diz a data) */
+/* o frescor: de quando é cada conexão (a regra da tela nova: todo dado diz a data).
+   A conexão que nunca sincronizou vem sem data (atualizadaEm null) e diz isso. */
 const FONTE: Record<string, string> = { posicoes: 'posições', transacoes: 'transações', proventos: 'proventos', cartao: 'cartão' }
-const frescor = computed(() => (props.visao?.conexoes ?? []).map((c) => ({
-  ...c, quando: quandoAtualizou(c.atualizadaEm), traz: c.fontes.map((f) => FONTE[f]).join(', '),
-})))
+const frescor = computed(() => (props.visao?.conexoes ?? []).map((c) => {
+  const quando = c.atualizadaEm ? quandoAtualizou(c.atualizadaEm) : null
+  return {
+    ...c,
+    quando: !quando ? 'ainda sem sincronizar' : c.estado === 'ok' ? `atualizado ${quando}` : `parado desde ${quando}`,
+    traz: c.fontes.length ? c.fontes.map((f) => FONTE[f]).join(', ') : null,
+  }
+}))
 
 const ESCONDIDO = 'R$ ••••••'
 const semSinal = (s: string) => s.replace(/^[+−-]/, '')
@@ -526,7 +532,8 @@ const statusLinha = computed(() => {
         <li v-for="a in pedemAtencao.slice(0, NA_FRENTE)" :key="a.id">
           <button type="button" class="cto__item" @click="avisosRef?.abrir(a.id)">
             <span class="cto__item-p" :class="`cto__item-p--${a.gravidade}`" aria-hidden="true" />
-            <span class="cto__item-t">{{ a.titulo }}</span>
+            <!-- o R$ do aviso segue o olho do topo, como o patrimônio -->
+            <span class="cto__item-t">{{ semQuebraNoReal(mascarar(a.titulo)) }}</span>
             <span class="cto__item-v">Ver</span>
           </button>
         </li>
@@ -599,7 +606,7 @@ const statusLinha = computed(() => {
       <div class="tbo__grafico">
         <AtivoGrafico
           :ativo="fatia" :ibov="ibov" ticker="Você" :atual="atualHoje" :rotulo="tituloGrafico" tom="luz"
-          :carregando="buscando" :mascarado="!revelado" @leitura="leitura = $event"
+          :carregando="buscando" :mascarado="!revelado" :rotulo-abaixo-ate="enxuto ? 50 : 22" @leitura="leitura = $event"
         />
       </div>
       <div class="tbo__horizonte" aria-hidden="true" />
@@ -626,10 +633,10 @@ const statusLinha = computed(() => {
       <AtivoPerguntaChips v-if="!enxuto" :perguntas="perguntas" tom="escuro" :rotulo="null" @perguntar="perguntar" />
       <!-- a tela nova: de quando é cada conexão, e o que ela traz -->
       <div v-if="visao" class="tbo__sim cto__contas cto__frescor">
-        <span v-for="c in frescor" :key="c.id" class="cto__conta" :class="`cto__conta--${c.estado}`" :title="`Traz ${c.traz}`">
+        <span v-for="c in frescor" :key="c.id" class="cto__conta" :class="`cto__conta--${c.estado}`" :title="c.traz ? `Traz ${c.traz}` : undefined">
           <span class="cto__fresco" aria-hidden="true" />
           {{ c.instituicao }}
-          <span class="cto__quando">{{ c.estado === 'ok' ? `atualizado ${c.quando}` : `parado desde ${c.quando}` }}</span>
+          <span class="cto__quando">{{ c.quando }}</span>
           <NuxtLink v-if="c.estado !== 'ok'" to="/conta#open-finance" class="cto__conta-status">Reconectar</NuxtLink>
         </span>
         <button type="button" class="cto__mais-conta" :disabled="abrindo" @click="adicionarConta">

@@ -12,13 +12,17 @@
 // Tudo vem calculado do backend (GET /me/carteira/visao → imposto); as frases
 // saem de utils/impostoVisao.ts. Com a conexão parada, o mês atual espera: o
 // histórico fica, porque o passado não depende do dado de hoje.
+// 07/11, com a resposta real: a linha de cada grupo é a nota do backend (a
+// explicação do mês, com os números), e não mais a frase da tela repetida antes
+// dela; a operação sem quantidade (direito de subscrição) mostra só o valor.
 import type { ImpostoVisao, MesHistorico, SeloImposto } from '~/types/carteiraVisao'
-import { SELO, diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, vendasCurtas } from '~/utils/impostoVisao'
+import { SELO, diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas } from '~/utils/impostoVisao'
 import { brl0, brl2 } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ imposto: ImpostoVisao; dadosDe: string | null }>()
-const { mask } = useHiddenValues()
+const { mask, hidden } = useHiddenValues()
 const fmt = (v: number) => mask(brl0(v))
+const daNota = (t: string) => (hidden.value ? mascararNota(t) : t)
 
 const atual = computed(() => props.imposto.mesAtual)
 const nome = computed(() => nomeDoMes(atual.value.mes))
@@ -26,7 +30,10 @@ const frase = computed(() => (props.dadosDe ? `O imposto de ${nome.value} espera
 const sub = computed(() => (props.dadosDe
   ? `Os dados são de ${props.dadosDe}: as vendas depois disso ainda não chegaram.`
   : linhaDoMesAnterior(props.imposto.mesAnterior, fmt)))
-const grupos = computed(() => (props.dadosDe ? [] : gruposEmOrdem(atual.value.grupos).map((g) => ({ g, l: linhaDoGrupo(g, atual.value.mes, fmt) }))))
+const grupos = computed(() => (props.dadosDe ? [] : gruposEmOrdem(atual.value.grupos).map((g) => {
+  const l = linhaDoGrupo(g, atual.value.mes, fmt)
+  return { g, l, texto: textoDoGrupo(g, l, fmt, daNota) }
+})))
 const darf = computed(() => {
   const d = atual.value.darf
   return !props.dadosDe && d.valor != null && d.valor > 0 && d.vence ? { valor: d.valor, vence: d.vence, codigo: d.codigo } : null
@@ -47,8 +54,9 @@ const mesAberto = computed(() => meses.value.find((m) => m.mes === aberto.value)
 const capMes = (mes: string) => { const t = mesEAno(mes); return t.charAt(0).toUpperCase() + t.slice(1) }
 const rotuloDoMes = (m: MesHistorico) => `${capMes(m.mes)}: ${SELO[m.selo].toLowerCase()}${m.vendas ? `, ${fmt(m.vendas)} em vendas` : ''}${m.operacoes.length ? '' : ', sem operações'}`
 const fmtData = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`
-const nfQtd = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 })
-const UNIDADE: Record<string, string> = { acoes: 'ações', fii: 'cotas', etf: 'cotas', rf: 'títulos', cripto: 'unidades' }
+/** a linha de baixo da operação: a quantidade (quando diz algo) e o nome */
+const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
+  [quantidadeDaOperacao(o), o.nome && o.nome !== o.ticker ? o.nome : null].filter(Boolean).join(' · ')
 </script>
 
 <template>
@@ -59,7 +67,7 @@ const UNIDADE: Record<string, string> = { acoes: 'ações', fii: 'cotas', etf: '
 
     <!-- o mês atual, um grupo por linha -->
     <ul v-if="grupos.length" class="vim__grupos">
-      <li v-for="{ g, l } in grupos" :key="g.grupo" class="vim__grupo">
+      <li v-for="{ g, l, texto } in grupos" :key="g.grupo" class="vim__grupo">
         <div class="vim__g-cab">
           <span class="vim__g-n">{{ l.nome }}<span v-if="l.semCusto" class="vim__tag">Custo desconhecido</span></span>
           <span class="vim__g-v">{{ l.direita }}</span>
@@ -77,7 +85,7 @@ const UNIDADE: Record<string, string> = { acoes: 'ações', fii: 'cotas', etf: '
           <span class="vim__imposto" :style="{ width: `${l.barra.impostoPct}%` }" />
           <span class="vim__fica" />
         </div>
-        <p class="vim__g-x">{{ [l.texto, g.nota].filter(Boolean).join(' ') }}</p>
+        <p v-if="texto" class="vim__g-x">{{ texto }}</p>
       </li>
     </ul>
 
@@ -109,11 +117,12 @@ const UNIDADE: Record<string, string> = { acoes: 'ações', fii: 'cotas', etf: '
     <div v-if="mesAberto" id="vim-ops" class="vim__ops">
       <p class="vim__ops-t">{{ capMes(mesAberto.mes) }} <span>· {{ SELO[mesAberto.selo] }}{{ mesAberto.vendas ? ` · ${fmt(mesAberto.vendas)} em vendas` : '' }}</span></p>
       <ul class="vim__ops-l">
-        <li v-for="o in mesAberto.operacoes" :key="`${o.data}-${o.ticker}-${o.lado}`">
+        <!-- a mesma venda pode vir duas vezes no dia (TAEE11 em 27/05): a chave leva a posição -->
+        <li v-for="(o, i) in mesAberto.operacoes" :key="`${o.data}-${o.ticker}-${o.lado}-${i}`">
           <span class="vim__op-d">{{ fmtData(o.data) }}</span>
           <span class="vim__op-t">
             <span class="vim__op-tk">{{ o.ticker }}<span class="vim__lado" :class="`vim__lado--${o.lado}`">{{ o.lado === 'venda' ? 'Venda' : 'Compra' }}</span></span>
-            <span class="vim__op-q">{{ nfQtd.format(o.quantidade) }} {{ UNIDADE[o.grupo] ?? 'unidades' }}<template v-if="o.nome && o.nome !== o.ticker"> · {{ o.nome }}</template></span>
+            <span v-if="subDaOperacao(o)" class="vim__op-q">{{ subDaOperacao(o) }}</span>
           </span>
           <span class="vim__op-v">{{ mask(brl2(o.valor)) }}</span>
         </li>

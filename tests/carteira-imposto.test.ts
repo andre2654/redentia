@@ -8,7 +8,8 @@ import assert from 'node:assert/strict'
 import { impostoMock, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
 import { visaoDesligada } from '../app/utils/carteiraVisao.ts'
 import {
-  diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, selosDasVendas, vendasCurtas,
+  diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao,
+  selosDasVendas, textoDoGrupo, vendasCurtas,
 } from '../app/utils/impostoVisao.ts'
 import { composicaoTxt, fraseDaNota, indicadoresPorPilar, mediana, periodoTxt, valorDoIndicador } from '../app/utils/relatorioCarteira.ts'
 import { TOPICOS_CARTEIRA, temOptInWhatsapp, topicoDoDetector, topicosDosAvisos } from '../app/utils/avisosCanais.ts'
@@ -75,6 +76,72 @@ test('uma linha por grupo: a barra das ações, a do lucro, a renda fixa e o cus
   assert.deepEqual(semCusto.barra, { tipo: 'isencao', pct: 100, passou: true })
   assert.equal(linhaDoGrupo(grupo({ grupo: 'etf', vendido: 9000, lucro: null, impostoEstimado: null, custoConhecido: false }), '2026-11').direita, 'Lucro a conferir')
   assert.equal(linhaDoGrupo(grupo({ grupo: 'acoes', isencao: 20000, cabeAinda: 20000 }), '2026-11').texto, 'Cabem R$ 20 mil em vendas sem imposto.')
+})
+
+/* a resposta real do /me/carteira/visao (fixture do dono, 07/11/2026): outubro e novembro como o backend mandou */
+const OUTUBRO_REAL: MesImposto = {
+  mes: '2026-10',
+  grupos: [
+    {
+      grupo: 'acoes', vendido: 7.87, lucro: null, isencao: 20000, cabeAinda: 19992.13, impostoEstimado: 0, aliquota: 0.15, custoConhecido: false,
+      nota: 'Vendido R$ 7,87 de R$ 20 mil isentos; ainda cabe R$ 19.992,13. R$ 7,87 das vendas têm o custo desconhecido, mas o mês é isento. O prejuízo a abater conta só as vendas desde 08/2021, o começo do histórico que eu tenho.',
+    },
+    {
+      grupo: 'rf', vendido: 333.39, lucro: null, isencao: null, cabeAinda: null, impostoEstimado: null, aliquota: 0.15, custoConhecido: true,
+      nota: 'O imposto da renda fixa (Tesouro, CDB, ETF de renda fixa) é retido na fonte, de 22,5% a 15% pelo prazo: não entra no DARF.',
+    },
+  ],
+  darf: { valor: null, vence: null, codigo: '6015' },
+}
+const NOVEMBRO_REAL: MesImposto = {
+  mes: '2026-11',
+  grupos: [{ grupo: 'acoes', vendido: 0, lucro: 0, isencao: 20000, cabeAinda: 20000, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: 'Sem venda de ações no mês: cabem os R$ 20 mil inteiros.' }],
+  darf: { valor: null, vence: null, codigo: '6015' },
+}
+
+test('resposta real: ações isentas sem o custo fecham o mês (o selo é isento, e a frase não diz que faltou o custo)', () => {
+  assert.equal(linhaDoMesAnterior(OUTUBRO_REAL), 'Outubro ficou isento, com R$ 341 em vendas.')
+  const acoes = linhaDoGrupo(OUTUBRO_REAL.grupos[0]!, '2026-10')
+  assert.equal(acoes.semCusto, false, 'sem o selo âmbar: o mês é isento de qualquer jeito')
+  assert.equal(fraseDoMes(NOVEMBRO_REAL), 'Novembro sem imposto até agora.')
+  // quando o custo faz falta (passou da isenção), o backend manda o imposto null, e aí falta mesmo
+  const passou = mes([grupo({ grupo: 'acoes', vendido: 23000, lucro: null, isencao: 20000, cabeAinda: 0, impostoEstimado: null, custoConhecido: false })])
+  assert.equal(linhaDoGrupo(passou.grupos[0]!, '2026-11').semCusto, true)
+  assert.equal(linhaDoMesAnterior({ ...passou, mes: '2026-10' }), 'Em outubro, faltou o custo de uma venda para fechar a conta.')
+})
+
+test('resposta real: a linha do grupo é a nota do backend, sem a frase da tela repetida antes dela', () => {
+  const [g] = NOVEMBRO_REAL.grupos
+  assert.equal(textoDoGrupo(g!, linhaDoGrupo(g!, '2026-11')), 'Sem venda de ações no mês: cabem os R$ 20 mil inteiros.')
+  const [acoes, rf] = OUTUBRO_REAL.grupos
+  assert.equal(textoDoGrupo(acoes!, linhaDoGrupo(acoes!, '2026-10')), acoes!.nota)
+  // a renda fixa: o resgate (que a nota não diz) e a regra da retenção (que a nota diz)
+  assert.equal(textoDoGrupo(rf!, linhaDoGrupo(rf!, '2026-10')), `R$ 333 em resgates. ${rf!.nota}`)
+  // FII e ETF: a nota diz o vendido e a alíquota; a tela põe o lucro
+  const fii = grupo({ grupo: 'fii', vendido: 6180, lucro: 412, impostoEstimado: 82.4, aliquota: 0.2, nota: 'FII: R$ 6.180,00 vendidos, sem isenção; o lucro paga 20%.' })
+  assert.equal(textoDoGrupo(fii, linhaDoGrupo(fii, '2026-11')), 'FII: R$ 6.180,00 vendidos, sem isenção; o lucro paga 20%. O lucro foi de R$ 412.')
+  // sem nota, a frase da tela
+  const semNota = grupo({ grupo: 'acoes', isencao: 20000, cabeAinda: 20000, nota: '' })
+  assert.equal(textoDoGrupo(semNota, linhaDoGrupo(semNota, '2026-11')), 'Cabem R$ 20 mil em vendas sem imposto.')
+  // o olho fechado: o R$ da pessoa some, o da regra fica
+  const escondido = textoDoGrupo(acoes!, linhaDoGrupo(acoes!, '2026-10', () => 'R$ ••••'), () => 'R$ ••••', mascararNota)
+  assert.equal(escondido, 'Vendido R$ •••• de R$ 20 mil isentos; ainda cabe R$ ••••. R$ •••• das vendas têm o custo desconhecido, mas o mês é isento. O prejuízo a abater conta só as vendas desde 08/2021, o começo do histórico que eu tenho.')
+  assert.equal(mascararNota('Imposto de R$ 8,50, abaixo dos R$ 10 do DARF mínimo: soma ao do mês seguinte.'), 'Imposto de R$ ••••, abaixo dos R$ 10 do DARF mínimo: soma ao do mês seguinte.')
+  assert.equal(mascararNota('Vendido R$ 20.000,00 de R$ 20 mil isentos.'), 'Vendido R$ •••• de R$ 20 mil isentos.')
+})
+
+test('resposta real: a quantidade da operação só quando diz alguma coisa', () => {
+  // direito de subscrição: a corretora não manda a quantidade
+  assert.equal(quantidadeDaOperacao({ ticker: 'XPML12', quantidade: null, grupo: 'acoes' }), null)
+  // CDB do Open Finance: a "quantidade" é o valor de face em centavos
+  assert.equal(quantidadeDaOperacao({ ticker: 'RF-952BD7D6', quantidade: 9000.2748557, grupo: 'rf' }), null)
+  // o ETF de renda fixa é em cotas, o Tesouro em títulos; uma é singular
+  assert.equal(quantidadeDaOperacao({ ticker: 'AUPO11', quantidade: 39, grupo: 'rf' }), '39 cotas')
+  assert.equal(quantidadeDaOperacao({ ticker: 'AUPO11', quantidade: 1, grupo: 'rf' }), '1 cota')
+  assert.equal(quantidadeDaOperacao({ ticker: 'BRSTNCNTB476', quantidade: 0.37, grupo: 'rf' }), '0,37 títulos')
+  assert.equal(quantidadeDaOperacao({ ticker: 'BBSE3', quantidade: 50, grupo: 'acoes' }), '50 ações')
+  assert.equal(quantidadeDaOperacao({ ticker: 'ITSA4', quantidade: 1, grupo: 'acoes' }), '1 ação')
+  assert.equal(quantidadeDaOperacao({ ticker: 'HGLG11', quantidade: 2, grupo: 'fii' }), '2 cotas')
 })
 
 test('os grupos sempre na mesma ordem, e os meses do mais velho ao mais novo (os últimos 12)', () => {

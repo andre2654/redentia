@@ -7,8 +7,14 @@
 //
 // É também a vitrine dos vetos: "quem protege" é exatamente o que o motor
 // não sugere vender.
+//
+// 07/11, com a resposta real: cada fator tem o "Como calculei", com o método
+// do efeito (`FatorVisao.metodo`: o motor de cenários ou a conta simples); o
+// Tesouro entra pelo nome curto, sem a taxa; os pares do "Andam juntos" com nome
+// comprido quebram a linha em vez de passar por cima do número; e sem fatores
+// (o bloco que quebrou no servidor vem []) a lente diz que não abriu.
 import type { CarteiraVisao } from '~/types/carteiraVisao'
-import { brl0, pctTxt } from '~/utils/carteiraVisao'
+import { brl0, nomeCurto, pctTxt } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
@@ -18,17 +24,25 @@ const COR: Record<string, string> = {
 }
 const fatores = computed(() => props.visao.fatores.map((f) => ({ ...f, cor: COR[f.chave] ?? '#8F86B8' })))
 const nomeDe = (t: string) => props.visao.posicoes.find((p) => p.ticker === t)
-const rotuloDe = (t: string) => { const p = nomeDe(t); return p?.classe === 'TREASURY' ? p.nome.replace('Tesouro ', '') : t }
+const rotuloDe = (t: string) => { const p = nomeDe(t); return p?.classe === 'TREASURY' ? nomeCurto(p.nome).replace('Tesouro ', '') : t }
 const frase = computed(() => {
   const f = fatores.value[0]
   return f ? `${pctTxt(f.pct)} do seu dinheiro depende de ${f.nome.toLowerCase()}.` : ''
 })
 const ativo = ref<string | null>(null)
+// o "Como calculei" de um fator por vez
+const comoAberto = ref<string | null>(null)
+const alternarComo = (chave: string) => { comoAberto.value = comoAberto.value === chave ? null : chave }
 const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', ',')}` : c.toFixed(2).replace('.', ','))
 </script>
 
 <template>
   <div class="vlr">
+    <template v-if="!fatores.length">
+      <h3 class="vlr__frase">Os riscos não abriram agora.</h3>
+      <p class="vlr__nota">A conta dos fatores falhou deste lado. As outras lentes e o resto da carteira estão certos.</p>
+    </template>
+    <template v-else>
     <h3 class="vlr__frase">{{ frase }}</h3>
     <p class="vlr__nota">Cada ativo conta no fator que mais o move. O efeito de cada cenário sai do motor de simulação da Redentia.</p>
 
@@ -52,16 +66,25 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
         <span class="vlr__se">
           <span class="vlr__se-c">{{ f.seCenario }}</span>
           <span class="vlr__se-e" :class="`vlr__se-e--${f.efeitoDir}`">{{ mask(f.efeito) }}</span>
+          <button
+            v-if="f.metodo" type="button" class="vlr__como" :aria-expanded="comoAberto === f.chave" :aria-controls="`vlr-como-${f.chave}`"
+            @click="alternarComo(f.chave)"
+          >
+            Como calculei
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
         </span>
         <span class="vlr__valores">
           <span class="vlr__pct">{{ pctTxt(f.pct) }}</span>
           <span class="vlr__valor">{{ mask(brl0(f.valor)) }}</span>
         </span>
+        <p v-if="comoAberto === f.chave" :id="`vlr-como-${f.chave}`" class="vlr__prova">{{ f.metodo }}</p>
       </li>
     </ul>
+    </template>
 
-    <div class="vlr__duas">
-      <div>
+    <div v-if="visao.protecoes.length || visao.juntos.length" class="vlr__duas">
+      <div v-if="visao.protecoes.length">
         <h4 class="vlr__h4">Quem protege a carteira</h4>
         <p class="vlr__h4-s">Andam pouco ou ao contrário do resto. Por isso eu não sugiro vender, mesmo os que pagam pouco provento.</p>
         <ul class="vlr__mini">
@@ -72,10 +95,10 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
           </li>
         </ul>
       </div>
-      <div>
+      <div v-if="visao.juntos.length">
         <h4 class="vlr__h4">Andam juntos</h4>
         <p class="vlr__h4-s">Quando um cai, o outro tende a cair junto. Ter os dois quase não diversifica.</p>
-        <ul class="vlr__mini">
+        <ul class="vlr__mini vlr__mini--pares">
           <li v-for="j in visao.juntos" :key="`${j.a}-${j.b}`">
             <span class="vlr__mini-t">{{ j.a }} e {{ j.b }}</span>
             <span class="vlr__mini-x">{{ j.correlacao >= 0.9 ? 'Quase o mesmo ativo.' : j.correlacao >= 0.7 ? 'Muito parecidos.' : 'Parecidos.' }}</span>
@@ -84,7 +107,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
         </ul>
       </div>
     </div>
-    <p class="vlr__fonte">Correlação de 1 ano, dos preços de fechamento. Vai de −1 (andam ao contrário) a 1 (andam iguais).</p>
+    <p v-if="visao.protecoes.length || visao.juntos.length" class="vlr__fonte">Correlação de 1 ano, dos preços de fechamento. Vai de −1 (andam ao contrário) a 1 (andam iguais).</p>
   </div>
 </template>
 
@@ -113,6 +136,11 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 .vlr__se-e--down { color: var(--nu-red-text); }
 .vlr__se-e--up { color: var(--nu-green-text, var(--nu-green)); }
 .vlr__valores { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.vlr__como { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-top: 2px; padding: 2px 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
+.vlr__como svg { transition: transform .2s; }
+.vlr__como[aria-expanded='true'] svg { transform: rotate(180deg); }
+.vlr__como:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
+.vlr__prova { grid-column: 2 / -1; margin: 4px 0 0; padding: 12px 14px; max-width: 80ch; border-radius: 12px; background: var(--nu-cream); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; animation: nu-fade .2s ease both; }
 .vlr__pct { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
 .vlr__valor { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 
@@ -121,6 +149,11 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 .vlr__h4-s { margin: 6px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .vlr__mini { list-style: none; margin: 12px 0 0; padding: 0; }
 .vlr__mini li { display: grid; grid-template-columns: minmax(84px, auto) minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 11px 0; border-top: 1px solid var(--nu-cream-2); }
+/* os pares têm nome comprido (dois títulos do Tesouro): o nome na linha de cima, a frase e o número embaixo */
+.vlr__mini--pares li { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 't c' 'x x'; row-gap: 2px; }
+.vlr__mini--pares .vlr__mini-t { grid-area: t; }
+.vlr__mini--pares .vlr__mini-x { grid-area: x; }
+.vlr__mini--pares .vlr__mini-c { grid-area: c; }
 .vlr__mini-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; text-decoration: none; }
 a.vlr__mini-t:hover { color: var(--nu-blue-text); }
 .vlr__mini-x { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
@@ -131,6 +164,18 @@ a.vlr__mini-t:hover { color: var(--nu-blue-text); }
 @media (max-width: 900px) {
   .vlr__linha { grid-template-columns: 12px minmax(0, 1fr) auto; }
   .vlr__se { grid-column: 2 / -1; grid-row: 2; }
+  .vlr__prova { grid-row: 3; }
   .vlr__duas { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  /* quem protege: o ticker em cima, a frase e o número embaixo (a frase não cabe em 3 colunas) */
+  .vlr__mini li { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 't c' 'x x'; row-gap: 2px; }
+  .vlr__mini-t { grid-area: t; }
+  .vlr__mini-x { grid-area: x; }
+  .vlr__mini-c { grid-area: c; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vlr__prova { animation: none; }
+  .vlr__como svg { transition: none; }
 }
 </style>

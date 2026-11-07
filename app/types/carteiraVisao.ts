@@ -10,7 +10,15 @@
  *  - `fatores[].pct` soma 100 (cada ativo mora num fator só);
  *  - todo número de uma frase está em `prova` (nenhum aviso sem prova);
  *  - fonte velha demais não vira aviso: vira o aviso de conexão, e o resto
- *    espera (`avisos.retidos`).
+ *    espera (`avisos.retidos`);
+ *  - um bloco que quebra no servidor some, nunca com zero falso
+ *    (`VisaoDaCarteira::bloco`): `renda` e `imposto` vêm null e `fatores`, [].
+ *
+ * Conferido contra a resposta real em 07/11/2026 (a fixture do dono, branch
+ * feat/carteira-motor 8b80971): o backend manda também `Aviso.estado`,
+ * `FatorVisao.metodo` e `RendaVisao.rendeuFonte`; `ConexaoVisao.atualizadaEm`
+ * e `OperacaoImposto.quantidade` podem vir null; e `GrupoImpostoVisao.nota` é a
+ * explicação do grupo no mês, com os números, e não a regra numa frase.
  */
 
 export type FonteVisao = 'posicoes' | 'transacoes' | 'proventos' | 'cartao'
@@ -19,9 +27,9 @@ export interface ConexaoVisao {
   id: string
   instituicao: string
   logo: string | null
-  /** ISO da última sincronização que funcionou */
-  atualizadaEm: string
-  /** 'ok' até 1 dia; 'velha' depois; 'caida' pede reconexão */
+  /** ISO da última sincronização que funcionou; null se nunca sincronizou (o estado vem 'velha') */
+  atualizadaEm: string | null
+  /** 'ok' até 48 h (`carteira.conexao_velha_horas`); 'velha' depois; 'caida' pede reconexão */
   estado: 'ok' | 'velha' | 'caida'
   /** o que essa conexão traz */
   fontes: FonteVisao[]
@@ -55,6 +63,14 @@ export interface AcaoAviso {
 /** por onde o aviso pode sair (a tela sempre; e-mail e WhatsApp com o opt-in do tópico) */
 export type CanalAviso = 'tela' | 'email' | 'whatsapp'
 
+/**
+ * O que a pessoa já fez com o aviso (carteira_avisos, `EstadoDosAvisos`): `novo`
+ * na primeira leitura e `visto` depois que ela abriu os avisos (ou desfez um
+ * "Já sei"). O resolvido não volta no /visao, e o adiado volta como `novo`
+ * quando o prazo passa.
+ */
+export type EstadoAviso = 'novo' | 'visto'
+
 export interface Aviso {
   /** a chave de dedupe do motor: detector + objeto + período */
   id: string
@@ -79,6 +95,7 @@ export interface Aviso {
   /** a dúvida do investidor que o aviso responde ('Devo imposto?'); detector sem pergunta não vira aviso */
   pergunta: string
   canais: CanalAviso[]
+  estado: EstadoAviso
 }
 
 /** um movimento que o motor considerou e não sugeriu, com o veto que barrou */
@@ -117,6 +134,8 @@ export interface FatorVisao {
   /** o efeito em R$ (texto pronto, com sinal) */
   efeito: string
   efeitoDir: 'up' | 'down'
+  /** como o efeito foi calculado (o motor de cenários, ou a conta simples), numa frase: o "Como calculei" da lente */
+  metodo: string
 }
 
 export interface ProtecaoVisao {
@@ -160,8 +179,10 @@ export interface CaminhoVisao {
 export interface RendaVisao {
   /** caiu na conta no último mês fechado */
   caiu: number
-  /** rendeu e ficou investido (AUPO11, Tesouro) no mesmo mês */
+  /** rendeu e ficou investido (AUPO11, Tesouro) no mesmo mês, estimado */
   rendeu: number
+  /** de onde sai o `rendeu` ('Estimativa: a Selic diária de outubro…'; sem nada que renda: 'Nada na carteira rende sem pagar provento.') */
+  rendeuFonte: string
   /** média de 3 meses; null sem cartão e conta */
   gastoMedio: number | null
   mesFechado: string
@@ -194,7 +215,12 @@ export interface GrupoImpostoVisao {
   /** 0,15 · 0,20 */
   aliquota: number
   custoConhecido: boolean
-  /** a regra do grupo numa frase curta */
+  /**
+   * a explicação do grupo no mês, com os números ('Vendido R$ 7,87 de R$ 20 mil
+   * isentos; ainda cabe R$ 19.992,13. R$ 7,87 das vendas têm o custo
+   * desconhecido, mas o mês é isento.'): o day trade, o prejuízo abatido, o custo
+   * que falta e desde quando há histórico. A tela mostra como veio.
+   */
   nota: string
 }
 
@@ -221,7 +247,8 @@ export interface OperacaoImposto {
   ticker: string
   nome: string
   lado: 'compra' | 'venda'
-  quantidade: number
+  /** null quando a corretora não manda (direito de subscrição, provento lançado como negócio) */
+  quantidade: number | null
   /** o total da operação, em R$ */
   valor: number
   grupo: GrupoImposto
@@ -251,10 +278,12 @@ export interface CarteiraVisao {
   fatores: FatorVisao[]
   protecoes: ProtecaoVisao[]
   juntos: ParJuntoVisao[]
-  renda: RendaVisao
+  /** null quando o bloco quebrou no servidor: a seção some */
+  renda: RendaVisao | null
   /** com fonte velha, a data dos dados que a tela mostra */
   dadosDe: string | null
-  imposto: ImpostoVisao
+  /** null quando o bloco quebrou no servidor: a seção some */
+  imposto: ImpostoVisao | null
   /** ISO de quando o backend montou esta visão (cache de 10 minutos por pessoa) */
   geradoEm: string
 }

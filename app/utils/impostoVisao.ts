@@ -9,7 +9,7 @@
  * R$ da pessoa: a tela passa a versão com a máscara do olho (useHiddenValues),
  * e o teto da isenção, que é regra e não dado dela, nunca se esconde.
  */
-import type { GrupoImposto, GrupoImpostoVisao, MesHistorico, MesImposto, SeloImposto } from '~/types/carteiraVisao'
+import type { GrupoImposto, GrupoImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, SeloImposto } from '~/types/carteiraVisao'
 
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
@@ -43,7 +43,13 @@ export function gruposEmOrdem(grupos: GrupoImpostoVisao[]): GrupoImpostoVisao[] 
   return [...grupos].sort((a, b) => ORDEM.indexOf(a.grupo) - ORDEM.indexOf(b.grupo))
 }
 
-const vendeuSemCusto = (g: GrupoImpostoVisao) => g.vendido > 0 && !g.custoConhecido
+/**
+ * Vendeu e o custo que falta impede a conta. Sem o custo, o backend só deixa o
+ * imposto null quando precisa dele (`Imposto::grupoDoMes`, o `incompleto`): nas
+ * ações dentro dos R$ 20 mil o mês é isento de qualquer jeito, e o imposto vem 0.
+ * Cripto fica de fora: a regra ainda vai ser conferida e o imposto não é estimado.
+ */
+const vendeuSemCusto = (g: GrupoImpostoVisao) => g.vendido > 0 && !g.custoConhecido && g.impostoEstimado == null && g.grupo !== 'cripto'
 
 /**
  * A frase grande do mês:
@@ -125,6 +131,64 @@ export function linhaDoGrupo(g: GrupoImpostoVisao, mes: string, fmt: (v: number)
     barra: { tipo: 'lucro', impostoPct: Math.min(100, g.aliquota * 100) },
     semCusto: false,
   }
+}
+
+/**
+ * Esconde os R$ da pessoa num texto do backend (a nota do grupo), com o olho
+ * fechado. O teto da regra (R$ 20 mil) e o DARF mínimo (R$ 10) não são dado
+ * dela: ficam.
+ */
+export function mascararNota(t: string): string {
+  return t.replace(/R\$\s?\d[\d.]*(?:,\d+)?(?:\s?mil)?/g, (m: string, off: number, todo: string) =>
+    /^R\$\s?20 mil$/.test(m) || todo.startsWith(' do DARF', off + m.length) ? m : 'R$ ••••')
+}
+
+/**
+ * A linha cinza de cada grupo, embaixo da barra. A nota do backend já é a
+ * explicação do mês com os números (o que vendeu e o que ainda cabe, o day trade,
+ * o prejuízo abatido, o custo que falta): ela vai como veio, e a frase da tela
+ * só entra no que a nota não diz:
+ *  - renda fixa: o quanto foi resgatado (a nota é a regra da retenção);
+ *  - FII e ETF: o lucro do mês (a nota diz o vendido e a alíquota);
+ *  - sem nota: a frase da tela inteira.
+ * `fmt` formata o R$ da pessoa (com a máscara do olho); `mascarar`, o texto da nota.
+ */
+export function textoDoGrupo(
+  g: GrupoImpostoVisao,
+  linha: LinhaDoGrupo,
+  fmt: (v: number) => string = brl0,
+  mascarar: (t: string) => string = (t) => t,
+): string {
+  const nota = (g.nota ?? '').trim()
+  if (!nota) return linha.texto
+  const n = mascarar(nota)
+  if (g.grupo === 'rf' && g.vendido > 0) return `${fmt(g.vendido)} em resgates${g.impostoEstimado ? `, com ${fmt(g.impostoEstimado)} retidos` : ''}. ${n}`
+  if ((g.grupo === 'fii' || g.grupo === 'etf') && g.vendido > 0 && g.lucro != null && g.custoConhecido) {
+    if (g.lucro > 0) return `${n} O lucro foi de ${fmt(g.lucro)}.`
+    if (g.lucro < 0) return `${n} O mês deu ${fmt(-g.lucro)} de prejuízo.`
+  }
+  return n
+}
+
+const UNIDADES: Record<GrupoImposto, [string, string]> = {
+  acoes: ['ação', 'ações'], fii: ['cota', 'cotas'], etf: ['cota', 'cotas'], rf: ['título', 'títulos'], cripto: ['unidade', 'unidades'],
+}
+const nfQtd = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 })
+/**
+ * A quantidade de uma operação do histórico ('39 cotas', '1 ação'), ou null
+ * quando não diz nada à pessoa:
+ *  - a corretora não mandou (direito de subscrição, provento lançado como negócio);
+ *  - CDB e afins do Open Finance (`RF-…`): a "quantidade" é o valor de face em
+ *    unidades de centavo (9.000,27 para R$ 90,05).
+ * Na renda fixa, o ETF listado na B3 (o AUPO11, que o imposto põe em `rf`) é
+ * em cotas; o resto (o Tesouro), em títulos.
+ */
+export function quantidadeDaOperacao(o: Pick<OperacaoImposto, 'ticker' | 'quantidade' | 'grupo'>): string | null {
+  const q = o.quantidade
+  if (q == null || !Number.isFinite(q) || q <= 0) return null
+  if (o.grupo === 'rf' && /^RF-/i.test(o.ticker)) return null
+  const [um, varios] = o.grupo === 'rf' && /^[A-Z]{4}1[1-9]$/.test(o.ticker) ? UNIDADES.fii : (UNIDADES[o.grupo] ?? UNIDADES.cripto)
+  return `${nfQtd.format(q)} ${q === 1 ? um : varios}`
 }
 
 /** o histórico do mais velho ao mais novo (da esquerda para a direita), os últimos 12 */

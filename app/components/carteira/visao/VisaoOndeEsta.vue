@@ -7,8 +7,9 @@
 // Mundo e Cadeia são as seções de 05/11 por inteiro (as mesmas buscas e
 // contas), sem a moldura delas. A lente só monta quando é aberta, e o
 // KeepAlive guarda as que já abriram (o globo não refaz a busca).
-import type { CarteiraVisao } from '~/types/carteiraVisao'
+import type { CarteiraVisao, PosicaoVisao } from '~/types/carteiraVisao'
 import type { CarteiraPosicaoMundo } from '~/types/carteira'
+import { nomeCurto } from '~/utils/carteiraVisao'
 import VisaoLenteAtivos from './VisaoLenteAtivos.vue'
 import VisaoLenteRiscos from './VisaoLenteRiscos.vue'
 
@@ -22,7 +23,21 @@ const LENTES = [
 ] as const
 const lente = useState<string>('carteira:lente', () => 'ativos')
 
-const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => props.visao.posicoes.map((p) => ({ ticker: p.ticker, classe: p.classe, valor: p.valor, nome: p.nome })))
+/**
+ * As posições para No mundo e Na cadeia. Duas leituras do backend entram aqui,
+ * para a mesma tela não se contradizer:
+ *  - ETF que mora no fator Selic ou juros é ETF de renda fixa do Brasil (LFT,
+ *    IPCA+; o mesmo critério do imposto, que o põe em `rf`). No mundo ele conta
+ *    como renda fixa, Brasil, em vez de "Sem dado" (o perfil do AUPO11 não tem
+ *    a geografia, e a lente Riscos já diz "Selic");
+ *  - o título do Tesouro vai pelo nome curto, sem a taxa.
+ */
+const RENDA_FIXA = new Set(['selic', 'juros'])
+function paraOMundo(p: PosicaoVisao): CarteiraPosicaoMundo {
+  if (p.classe === 'ETF' && RENDA_FIXA.has(p.fator)) return { ticker: p.ticker, classe: 'FIXED_INCOME', valor: p.valor, nome: p.ticker }
+  return { ticker: p.ticker, classe: p.classe, valor: p.valor, nome: p.classe === 'TREASURY' ? nomeCurto(p.nome) : p.nome }
+}
+const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => props.visao.posicoes.map(paraOMundo))
 
 function teclar(e: KeyboardEvent) {
   const i = LENTES.findIndex((l) => l.id === lente.value)

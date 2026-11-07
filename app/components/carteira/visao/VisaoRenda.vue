@@ -14,12 +14,21 @@
 //    tamanho em que o motor parou por um veto. Nada manda comprar: escolher o
 //    caminho só redesenha a curva, e "Simular" preenche o chat.
 // Sem o cartão conectado, a frase fala só da renda e a régua vira o convite.
-import type { CarteiraVisao } from '~/types/carteiraVisao'
+//
+// 07/11, com a resposta real: o que rendeu e ficou investido aparece também sem
+// o cartão, com a fonte da estimativa (`rendeuFonte`); o mês dos proventos
+// marcados e os meses da média do gasto saem do dado (eram fixos); sem os
+// caminhos (o motor não respondeu), o "Daqui a 5 anos" não monta; e, sem ele, o
+// mês a mês e o mês corrente ficam lado a lado, sem a metade vazia.
+import type { CarteiraVisao, RendaVisao } from '~/types/carteiraVisao'
 import { brl0, cobertura, pctTxt } from '~/utils/carteiraVisao'
+import { nomeDoMes } from '~/utils/impostoVisao'
+import { agoraEmSP } from '~/utils/pregao'
 
+// quem monta a seção só a monta com a renda (CarteiraVisao: o bloco que quebrou vem null)
 const props = defineProps<{ visao: CarteiraVisao }>()
 const { mask } = useHiddenValues()
-const r = computed(() => props.visao.renda)
+const r = computed(() => props.visao.renda as RendaVisao)
 
 const cob = computed(() => cobertura(r.value))
 const comRendeu = computed(() => (r.value.gastoMedio ? ((r.value.caiu + r.value.rendeu) / r.value.gastoMedio) * 100 : null))
@@ -27,6 +36,8 @@ const falta = computed(() => (r.value.gastoMedio ? Math.max(0, r.value.gastoMedi
 const frase = computed(() => (cob.value != null
   ? `Seus investimentos já pagam ${pctTxt(cob.value)} da sua vida.`
   : `Em ${r.value.mesFechado}, seus investimentos pagaram ${mask(brl0(r.value.caiu))}.`))
+// sem o cartão: o que rendeu e ficou investido (a régua, que dizia isso, vira o convite)
+const rendeuSemGasto = computed(() => (cob.value == null && r.value.rendeu > 0 ? r.value.rendeu : null))
 
 /* a régua: a vida inteira de largura */
 const regua = computed(() => {
@@ -45,14 +56,24 @@ const meses = computed(() => {
   return ms.map((m, i) => ({ ...m, v: valores[i]!, h: (valores[i]! / max) * 100, txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)) }))
 })
 
-/* novembro */
+/* o mês corrente: o que já está marcado */
 const fmtDia = (iso: string) => { const [, mm, dd] = iso.split('-'); return `${dd}/${mm}` }
 const marcadosTotal = computed(() => r.value.marcados.reduce((s, m) => s + m.valor, 0))
+// o mês dos pagamentos marcados (o backend manda os do mês corrente); sem nenhum, o mês de hoje
+const mesMarcado = computed(() => nomeDoMes(r.value.marcados[0]?.data.slice(0, 7) ?? agoraEmSP().iso.slice(0, 7)))
+// os meses da média do gasto ('agosto a outubro'): os últimos com gasto no mês a mês
+const MES_LONGO: Record<string, string> = { jan: 'janeiro', fev: 'fevereiro', mar: 'março', abr: 'abril', mai: 'maio', jun: 'junho', jul: 'julho', ago: 'agosto', set: 'setembro', out: 'outubro', nov: 'novembro', dez: 'dezembro' }
+const mesesDoGasto = computed(() => {
+  const com = r.value.meses.filter((m) => m.gasto != null).slice(-3).map((m) => MES_LONGO[m.mes] ?? m.mes)
+  if (!com.length) return null
+  return com.length === 1 ? `de ${com[0]}` : `de ${com[0]} a ${com[com.length - 1]}`
+})
 
-/* daqui a 5 anos: os caminhos */
+/* daqui a 5 anos: os caminhos (sem eles, a coluna não monta) */
+const temFuturo = computed(() => cob.value != null && r.value.caminhos.length > 0)
 const escolhido = ref(r.value.caminhos[0]?.id ?? '')
 const caminho = computed(() => r.value.caminhos.find((c) => c.id === escolhido.value) ?? r.value.caminhos[0]!)
-const yMax = computed(() => Math.ceil((Math.max(...r.value.caminhos.flatMap((c) => c.p90)) * 1.08) / 10) * 10)
+const yMax = computed(() => Math.max(10, Math.ceil((Math.max(0, ...r.value.caminhos.flatMap((c) => c.p90)) * 1.08) / 10) * 10))
 const W = 600
 const H = 240
 const xDe = (i: number) => (i / 60) * W
@@ -111,6 +132,10 @@ function simular() {
       Em {{ r.mesFechado }} caíram {{ mask(brl0(r.caiu)) }} na sua conta, e você gasta uns {{ mask(brl0(r.gastoMedio!)) }} por mês.
       Contando o que rendeu e ficou investido, seriam {{ pctTxt(comRendeu!) }}.
     </p>
+    <p v-else-if="rendeuSemGasto != null" class="vrd__sub">
+      Fora isso, uns {{ mask(brl0(rendeuSemGasto)) }} renderam e ficaram investidos, sem cair na conta.
+    </p>
+    <p v-if="rendeuSemGasto != null" class="vrd__fonte">{{ r.rendeuFonte }}</p>
 
     <!-- a régua: a vida inteira de largura -->
     <div v-if="regua" class="vrd__regua">
@@ -123,15 +148,18 @@ function simular() {
         <div><dt><i class="vrd__k vrd__k--rendeu" />Rendeu e ficou investido</dt><dd>{{ mask(brl0(r.rendeu)) }}</dd></div>
         <div><dt><i class="vrd__k vrd__k--falta" />Falta para pagar tudo</dt><dd>{{ mask(brl0(falta!)) }} por mês</dd></div>
       </dl>
-      <p class="vrd__fonte">Gastos: a média de agosto a outubro no cartão e na conta, sem o pagamento da fatura, as transferências entre as suas contas e as aplicações.</p>
+      <p class="vrd__fonte">
+        Gastos: a média {{ mesesDoGasto ?? 'dos últimos meses' }} no cartão e na conta, sem o pagamento da fatura, as transferências entre as suas contas e as aplicações.
+        <template v-if="r.rendeu > 0">O que rendeu: {{ r.rendeuFonte.replace(/^Estimativa: /, 'estimativa com ') }}</template>
+      </p>
     </div>
     <div v-else class="vrd__convite">
       <p class="vrd__convite-t">Conecte o cartão e a conta do dia a dia, e eu digo quanto da sua vida os investimentos já pagam.</p>
       <NuxtLink to="/conta#open-finance" class="vrd__convite-b">Conectar</NuxtLink>
     </div>
 
-    <div class="vrd__grade">
-      <!-- mês a mês e novembro -->
+    <div class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
+      <!-- mês a mês e o mês corrente (sem os 5 anos, lado a lado) -->
       <div class="vrd__col">
         <h3 class="vrd__h3">{{ meses[0]?.gasto ? 'Quanto pagou, mês a mês' : 'Quanto caiu, mês a mês' }}</h3>
         <ol class="vrd__meses">
@@ -142,7 +170,7 @@ function simular() {
           </li>
         </ol>
 
-        <h3 class="vrd__h3 vrd__h3--2">Em novembro, já marcados</h3>
+        <h3 class="vrd__h3 vrd__h3--2">Em {{ mesMarcado }}, já marcados</h3>
         <ul class="vrd__agenda">
           <li v-for="m in r.marcados" :key="m.data">
             <span class="vrd__ag-d">{{ fmtDia(m.data) }}</span>
@@ -154,7 +182,7 @@ function simular() {
       </div>
 
       <!-- daqui a 5 anos -->
-      <div v-if="cob != null" class="vrd__col vrd__futuro">
+      <div v-if="temFuturo" class="vrd__col vrd__futuro">
         <h3 class="vrd__h3">E daqui a 5 anos?</h3>
         <div class="vrd__caminhos" role="radiogroup" aria-label="Caminhos simulados">
           <button
@@ -283,7 +311,15 @@ function simular() {
 .vrd__simular:hover { background: var(--nu-cream-2); }
 .vrd__simular:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 
-@media (max-width: 960px) { .vrd__grade { grid-template-columns: minmax(0, 1fr); } }
+/* sem os 5 anos: o mês a mês e o mês corrente lado a lado (a coluna da direita ficava vazia) */
+.vrd__grade--lado { grid-template-columns: minmax(0, 1fr); max-width: 1100px; }
+.vrd__grade--lado .vrd__col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto; grid-auto-flow: column; column-gap: clamp(32px, 5vw, 80px); align-content: start; }
+.vrd__grade--lado .vrd__h3--2 { margin-top: 0; }
+@media (max-width: 960px) {
+  .vrd__grade { grid-template-columns: minmax(0, 1fr); }
+  .vrd__grade--lado .vrd__col { display: block; }
+  .vrd__grade--lado .vrd__h3--2 { margin-top: clamp(28px, 3.4vw, 40px); }
+}
 @media (max-width: 480px) {
   .vrd__graf { margin-right: 46px; }
   .vrd__cam { grid-template-columns: 18px minmax(0, 1fr); }

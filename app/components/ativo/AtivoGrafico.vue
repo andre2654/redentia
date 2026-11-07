@@ -50,7 +50,13 @@ const props = withDefaults(defineProps<{
    * máscara no lugar do R$; a variação em % continua (ela nunca se esconde)
    */
   mascarado?: boolean
-}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '', mascarado: false })
+  /**
+   * até que altura (em % do gráfico, de cima) o rótulo "hoje" desce para baixo
+   * do ponto em vez de subir. 22 no gráfico alto; o gráfico baixo do topo da
+   * /carteira passa 50, senão o rótulo sobe por cima dos períodos (07/11/2026)
+   */
+  rotuloAbaixoAte?: number
+}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '', mascarado: false, rotuloAbaixoAte: 22 })
 
 const W = 1000
 const H = 300
@@ -350,7 +356,7 @@ function aoTeclar(e: KeyboardEvent) {
     </svg>
     <template v-if="fimPct">
       <span class="agr__fim" :style="{ left: `${fimPct.x}%`, top: `${fimPct.y}%` }" aria-hidden="true" />
-      <span class="agr__hoje" :class="{ 'agr__hoje--baixo': fimPct.y < 22 }" :style="{ top: `${fimPct.y}%` }">
+      <span class="agr__hoje" :class="{ 'agr__hoje--baixo': fimPct.y < rotuloAbaixoAte }" :style="{ top: `${fimPct.y}%` }">
         <span class="agr__hoje-r">{{ ticker }} hoje</span>
         <span class="agr__hoje-v">{{ atual }}</span>
       </span>
