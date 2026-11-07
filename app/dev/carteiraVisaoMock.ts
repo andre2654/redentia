@@ -399,14 +399,21 @@ const INDICADORES: LinhaIndicador[] = [
   ['correlacao_media', 'Correlação média', 'diversificacao', '', 0.31, null, 71, 'O quanto os ativos de renda variável sobem e descem juntos: perto de 1, juntos; perto de 0, cada um no seu ritmo.', 'Correlação de Spearman (pela ordem dos retornos, para um dia extremo não dominar) dos retornos diários de cada par de ativos de renda variável nos últimos 252 pregões, com o provento somado de volta no dia ex. Só entram pares com pelo menos 60 pregões juntos; a nota é a média simples dos pares.'],
 ]
 
-/** uma série mensal base 100 que termina em `fim` (o relatório traz as quatro; a tela usa o gráfico do /portfolio) */
-function indiceMensal(fim: number, ondula: number): CarteiraRelatorio['series']['carteira'] {
-  const out: CarteiraRelatorio['series']['carteira'] = []
-  for (let i = 0; i <= 18; i++) {
-    const d = new Date(Date.UTC(2025, 4 + i, 2))
-    out.push({ t: d.toISOString().slice(0, 10), v: +(100 + (fim - 100) * (i / 18) + Math.sin(i * 1.3) * ondula).toFixed(2) })
+/**
+ * um índice base 100, um ponto por dia útil de 02/05/2025 a 06/11/2026, que
+ * termina exatamente em `fim`: a TWR da série inteira é o `retorno.twr` do
+ * mock, e o desempenho (a TWR contra o benchmark) e a legenda do topo cortam
+ * esta série por período, como fazem com a resposta real
+ */
+function indiceDiario(fim: number, ondula: number): CarteiraRelatorio['series']['carteira'] {
+  const dias: string[] = []
+  for (let t = Date.UTC(2025, 4, 2); t <= Date.UTC(2026, 10, 6); t += 86_400_000) {
+    const d = new Date(t)
+    if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) dias.push(d.toISOString().slice(0, 10))
   }
-  return out
+  const n = dias.length - 1
+  // a onda zera nas pontas (sen de 9π): o primeiro ponto é 100 e o último, `fim`
+  return dias.map((t, i) => ({ t, v: +(100 + (fim - 100) * (i / n) + Math.sin((i / n) * Math.PI * 9) * ondula).toFixed(2) }))
 }
 
 export function relatorioMock(): CarteiraRelatorio {
@@ -432,7 +439,7 @@ export function relatorioMock(): CarteiraRelatorio {
       { chave: 'diversificacao', nome: 'Diversificação', nota: 86 },
     ],
     nota: 72,
-    series: { carteira: indiceMensal(121.42, 1.6), benchmark: indiceMensal(118.9, 1.9), cdi: indiceMensal(122.6, 0), ibov: indiceMensal(106.4, 4.2) },
+    series: { carteira: indiceDiario(121.42, 1.6), benchmark: indiceDiario(118.9, 1.9), cdi: indiceDiario(122.6, 0), ibov: indiceDiario(106.4, 4.2) },
     geradoEm: new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 9, 12).toISOString(),
   }
 }

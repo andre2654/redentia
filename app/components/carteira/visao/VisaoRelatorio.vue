@@ -9,15 +9,19 @@
 //    "Como calculei", que abre a definição e a conta;
 //  - contra o quê: o período, o selo de "histórico curto" e o benchmark
 //    composto pelas classes da carteira;
-//  - depois, os componentes de sempre: o desempenho (NuPortfolioChart), as
-//    movimentações (com o selo do imposto nas vendas, cruzando com o
-//    histórico do imposto) e o P&L mês a mês.
+//  - o desempenho (VisaoDesempenho, 07/11): a rentabilidade (TWR) das séries
+//    do mesmo relatório contra o benchmark, e não mais a curva do patrimônio
+//    com os aportes (o "Você +51%" contra a TWR de ~20%);
+//  - depois, os componentes de sempre: as movimentações (com o selo do
+//    imposto nas vendas, cruzando com o histórico do imposto) e o P&L mês a
+//    mês.
 // Chegar com âncora de uma dessas partes (#relatorio, #movimentacoes…, o link
 // do relatório mensal) abre sozinho.
 import type { CarteiraPayload } from '~/types/carteira'
 import type { MesHistorico } from '~/types/carteiraVisao'
 import { composicaoTxt, fraseDaNota, indicadoresPorPilar, periodoTxt, valorDoIndicador } from '~/utils/relatorioCarteira'
 import { selosDasVendas } from '~/utils/impostoVisao'
+import VisaoDesempenho from './VisaoDesempenho.vue'
 
 const props = defineProps<{ payload: CarteiraPayload; historico: MesHistorico[]; mock?: boolean }>()
 
@@ -30,8 +34,8 @@ function alternar() {
 
 const partes = computed(() => {
   const p = props.payload
-  const l = ['a nota e os indicadores']
-  if (p.chart) l.push('o desempenho')
+  // o desempenho sai do próprio relatório (as séries da TWR e do benchmark)
+  const l = ['a nota e os indicadores', 'o desempenho contra o benchmark']
   if (p.movements) l.push('as movimentações')
   if (p.heatmap) l.push('o P&L mês a mês')
   const t = l.length === 1 ? l[0]! : `${l.slice(0, -1).join(', ')} e ${l[l.length - 1]}`
@@ -151,7 +155,7 @@ onMounted(() => {
         </template>
       </section>
 
-      <NuPortfolioChart v-if="payload.chart" id="desempenho" class="vrl__sec" :chart="payload.chart" data-clarity-mask="true" />
+      <VisaoDesempenho id="desempenho" class="vrl__sec" :relatorio="r" :estado="estado" data-clarity-mask="true" />
       <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="vrl__sec" :movements="payload.movements" :selos="selos" data-clarity-mask="true" />
       <CarteiraHeatmap v-if="payload.heatmap" id="pnl" class="vrl__sec" :heatmap="payload.heatmap" data-clarity-mask="true" />
     </div>

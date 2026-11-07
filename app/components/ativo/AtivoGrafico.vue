@@ -27,6 +27,11 @@
 // --agr-rotulo-esq) cabem inteiros, com respiro. A mira lê pela área de
 // dentro: o mouse ou o dedo na faixa da beira cai na ponta (o primeiro ou o
 // último dia), então medir até as pontas continua fácil.
+// Em % (07/11/2026, o desempenho da /carteira): a série é um índice com base
+// 100 no primeiro ponto (a TWR do relatório) e a tracejada, o benchmark; as
+// marcas dizem a variação desde o início ('+10%'), a dica e a medida mostram
+// só a variação, e a tracejada leva o nome de `comparacao`. Sem essas props,
+// tudo como antes.
 // viewBox literal: o :viewBox vira prop do DOM e o Vue reclama (NuFooterLinha).
 import type { SeriesPoint } from '~/types/acao'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
@@ -56,7 +61,13 @@ const props = withDefaults(defineProps<{
    * /carteira passa 50, senão o rótulo sobe por cima dos períodos (07/11/2026)
    */
   rotuloAbaixoAte?: number
-}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '', mascarado: false, rotuloAbaixoAte: 22 })
+  /** 'R$' (preço, patrimônio) ou '%' (um índice com base 100 no primeiro ponto: a TWR do relatório da /carteira) */
+  unidade?: 'R$' | '%'
+  /** o nome da linha tracejada na dica e no leitor de tela */
+  comparacao?: string
+  /** o rótulo do ponto de hoje; sem ele, '{ticker} hoje' */
+  rotuloHoje?: string
+}>(), { ibov: () => [], tom: 'claro', carregando: false, semMarcas: false, rotulo: '', mascarado: false, rotuloAbaixoAte: 22, unidade: 'R$', comparacao: 'IBOV', rotuloHoje: undefined })
 
 const W = 1000
 const H = 300
@@ -65,11 +76,22 @@ const marcas = computed(() => (props.semMarcas ? [] : marcasDePreco(c.value.lo, 
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const moeda = computed(() => (props.atual.trim().startsWith('US$') ? 'US$' : 'R$'))
-const fmtMarca = (v: number) => `${moeda.value} ${Math.abs(v) >= 100 || Number.isInteger(v) ? nf0.format(v) : nf2.format(v)}`
+const emPct = computed(() => props.unidade === '%')
+// em %, tudo se mede a partir do primeiro ponto da série (a base 100)
+const base = computed(() => props.ativo[0]?.v || 100)
+const nf1 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
+const desdeABase = (v: number) => (v / base.value - 1) * 100
+function fmtMarca(v: number): string {
+  if (emPct.value) {
+    const p = desdeABase(v)
+    return `${p > 1e-6 ? '+' : p < -1e-6 ? '−' : ''}${nf1.format(Math.abs(p))}%`
+  }
+  return `${moeda.value} ${Math.abs(v) >= 100 || Number.isInteger(v) ? nf0.format(v) : nf2.format(v)}`
+}
 const fmtPreco = (v: number) => `${moeda.value} ${nf2.format(v)}`
 const fmtDelta = (v: number) => `${v > 0 ? '+' : v < 0 ? '-' : ''}${moeda.value} ${nf2.format(Math.abs(v))}`
 const MASCARA = 'R$ ••••'
-const valor = (v: number) => (props.mascarado ? MASCARA : fmtPreco(v))
+const valor = (v: number) => (emPct.value ? pctAtivo(desdeABase(v)) : props.mascarado ? MASCARA : fmtPreco(v))
 const fimPct = computed(() => (c.value.fim ? { x: (c.value.fim.x / W) * 100, y: (c.value.fim.y / H) * 100 } : null))
 const uid = useId()
 
@@ -179,11 +201,11 @@ watch([leitura, medicao], ([l, m]) => {
 const falado = computed(() => {
   if (medicao.value) {
     const m = medicao.value
-    return `De ${m.de} a ${m.ate}: ${m.delta}, ${m.var}${m.ibov ? `; IBOV ${m.ibov}` : ''}.`
+    return `De ${m.de} a ${m.ate}: ${emPct.value ? m.var : `${m.delta}, ${m.var}`}${m.ibov ? `; ${props.comparacao} ${m.ibov}` : ''}.`
   }
   if (leitura.value) {
     const l = leitura.value
-    return `${l.data}: ${l.preco}, ${l.var} desde o início do período${l.ibov ? `; IBOV ${l.ibov}` : ''}.`
+    return `${l.data}: ${emPct.value ? l.var : `${l.preco}, ${l.var}`} desde o início do período${l.ibov ? `; ${props.comparacao} ${l.ibov}` : ''}.`
   }
   return ''
 })
@@ -329,7 +351,7 @@ function aoTeclar(e: KeyboardEvent) {
 
 <template>
   <div
-    ref="caixa" class="agr" :class="[`agr--${tom}`, { 'agr--carregando': carregando, 'agr--lendo': leitura || medicao }]"
+    ref="caixa" class="agr" :class="[`agr--${tom}`, { 'agr--carregando': carregando, 'agr--lendo': leitura || medicao, 'agr--pct': emPct }]"
     tabindex="0" role="group"
     :aria-label="`${rotulo || `Gráfico de ${ticker}`}. Setas movem a mira; Enter marca o início de uma medida.`"
     @pointerdown="aoApertar" @pointermove="aoMover" @pointerup="aoSoltar" @pointercancel="aoCancelar" @pointerleave="aoSair"
@@ -357,7 +379,7 @@ function aoTeclar(e: KeyboardEvent) {
     <template v-if="fimPct">
       <span class="agr__fim" :style="{ left: `${fimPct.x}%`, top: `${fimPct.y}%` }" aria-hidden="true" />
       <span class="agr__hoje" :class="{ 'agr__hoje--baixo': fimPct.y < rotuloAbaixoAte }" :style="{ top: `${fimPct.y}%` }">
-        <span class="agr__hoje-r">{{ ticker }} hoje</span>
+        <span class="agr__hoje-r">{{ rotuloHoje ?? `${ticker} hoje` }}</span>
         <span class="agr__hoje-v">{{ atual }}</span>
       </span>
     </template>
@@ -372,10 +394,10 @@ function aoTeclar(e: KeyboardEvent) {
       <span class="agr__dica agr__dica--medida" :style="ancora(medicao.centro)" aria-hidden="true">
         <span class="agr__dica-d">{{ medicao.de }} → {{ medicao.ate }}</span>
         <span class="agr__dica-l">
-          <span class="agr__dica-p" :class="`agr__dica-v--${medicao.dir}`">{{ medicao.delta }}</span>
+          <span v-if="!emPct" class="agr__dica-p" :class="`agr__dica-v--${medicao.dir}`">{{ medicao.delta }}</span>
           <span class="agr__dica-v" :class="`agr__dica-v--${medicao.dir}`">{{ medicao.var }}</span>
         </span>
-        <span v-if="medicao.ibov" class="agr__dica-i">IBOV {{ medicao.ibov }}</span>
+        <span v-if="medicao.ibov" class="agr__dica-i">{{ comparacao }} {{ medicao.ibov }}</span>
       </span>
     </template>
 
@@ -386,10 +408,10 @@ function aoTeclar(e: KeyboardEvent) {
       <span class="agr__dica" :style="ancora(leitura.x)" aria-hidden="true">
         <span class="agr__dica-d">{{ leitura.data }}</span>
         <span class="agr__dica-l">
-          <span class="agr__dica-p">{{ leitura.preco }}</span>
+          <span v-if="!emPct" class="agr__dica-p">{{ leitura.preco }}</span>
           <span class="agr__dica-v" :class="`agr__dica-v--${leitura.dir}`">{{ leitura.var }}</span>
         </span>
-        <span v-if="leitura.ibov" class="agr__dica-i">IBOV {{ leitura.ibov }}</span>
+        <span v-if="leitura.ibov" class="agr__dica-i">{{ comparacao }} {{ leitura.ibov }}</span>
       </span>
     </template>
     </div>
@@ -488,6 +510,8 @@ function aoTeclar(e: KeyboardEvent) {
 .agr__dica-v--up { color: var(--nu-green-soft); }
 .agr__dica-v--down { color: var(--nu-red-soft); }
 .agr__dica-i { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 600; }
+/* em %, a variação é o número da dica */
+.agr--pct .agr__dica-v { font-size: var(--nu-fs-md); }
 .agr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .agr, .agr__hoje { transition: none; } }
 </style>

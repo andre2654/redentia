@@ -83,11 +83,19 @@ const agora = computed<CarteiraAgoraVM>(() => {
     diaValor: dia != null ? `${dia < 0 ? '−' : '+'}R$ ${nf2.format(Math.abs(dia))}` : a.diaValor,
   }
 })
+// a curva termina no patrimônio do topo (a soma das posições da visão), como o
+// buildEquityChartVM ancora no total do /portfolio/today na tela antiga: sem
+// isso, a mira no último dia e a variação do período liam o total do
+// /portfolio (07/11/2026: R$ 639.552,04 contra os R$ 636.096,48 da visão, que
+// marca o Tesouro pelo preço do Tesouro Direto)
 const chart = computed<HomeChartVM | null>(() => {
   const c = props.payload.chart
   if (!c) return null
   const f = fator.value
-  return { ...c, points: f === 1 ? c.points : c.points.map((p) => ({ ...p, v: p.v * f })), currentLabel: brl2(visao.value.patrimonio) }
+  const points = f === 1 ? [...c.points] : c.points.map((p) => ({ ...p, v: p.v * f }))
+  const ult = points[points.length - 1]
+  if (ult) points[points.length - 1] = { ...ult, v: visao.value.patrimonio }
+  return { ...c, points, currentLabel: brl2(visao.value.patrimonio) }
 })
 const stats = computed<CarteiraHeroVM['stats']>(() => props.payload.hero.stats.map((s) => ({ ...s, value: escalar(s.value) })))
 const topo = computed(() => ({ avisos: visao.value.avisos, conexoes: visao.value.conexoes, ativos: visao.value.posicoes.length, dadosDe: visao.value.dadosDe, mock: mock.value }))

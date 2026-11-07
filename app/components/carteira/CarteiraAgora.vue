@@ -36,6 +36,7 @@ import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
 import CarteiraAvisos from '~/components/carteira/visao/CarteiraAvisos.vue'
 import type { AvisosVisao, ConexaoVisao } from '~/types/carteiraVisao'
 import { quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
+import { legendaDoTopo, rentabilidadeNoPeriodo } from '~/utils/rentabilidadeCarteira'
 
 /** o que o modal das ideias lê (CarteiraIdeias); sem o score, fica o Perguntar */
 interface AchadosDoTopo {
@@ -54,6 +55,9 @@ const { connections, loading: contasCarregando, ensure: carregarContas, refresh:
 // a tela nova traz as conexões no próprio payload (o frescor); não busca de novo
 onMounted(() => { if (!props.visao) void carregarContas() })
 const painel = useChatPainel()
+// a tela nova: o relatório da carteira dá a rentabilidade (TWR) da legenda do
+// gráfico; é buscado ao abrir "Ver detalhes" e dividido com a seção do relatório
+const rel = useCarteiraRelatorio({ mock: props.visao?.mock })
 
 /* ——— as contas e o Pluggy ——— */
 const RECONECTAR = new Set(['LOGIN_ERROR', 'WAITING_USER_INPUT', 'ERROR', 'ITEM_NOT_FOUND'])
@@ -207,7 +211,20 @@ const ibov = computed<SeriesPoint[]>(() => {
   const ini = fatia.value[0]?.t.slice(0, 10)
   return ini && fonte ? fonte.filter((p) => p.t.slice(0, 10) >= ini) : []
 })
-const legenda = computed(() => legendaDoGrafico('Você', fatia.value, ibov.value))
+/* A legenda (07/11/2026, o "Você +51%"): a variação da curva é a do
+   PATRIMÔNIO, com os aportes dentro, e não a rentabilidade. Na tela nova,
+   "Você" é a TWR do período (a series.carteira do /me/carteira/relatorio,
+   cortada no dia em que a fatia começa) e o crescimento do patrimônio vira a
+   meta ao lado; sem o relatório (carregando ou com erro), a legenda diz
+   "Patrimônio (com aportes)", nunca "Você". A tela antiga, sem o relatório,
+   chama a linha pelo nome certo: "Patrimônio", com aportes. */
+const twr = computed(() => {
+  const r = rel.relatorio.value
+  const ini = fatia.value[0]?.t
+  if (!enxuto.value || rel.estado.value !== 'pronto' || !r || !ini) return null
+  return rentabilidadeNoPeriodo(r.series.carteira, ini)
+})
+const legenda = computed(() => legendaDoTopo(fatia.value, ibov.value, twr.value, enxuto.value ? '(com aportes)' : 'com aportes'))
 const tituloGrafico = computed(() => {
   const ini = fatia.value[0]?.t.slice(0, 10)
   // a curva mais curta que o período: o título diz desde quando
@@ -242,8 +259,8 @@ const perguntas = computed(() => {
   const c = props.agora.carteiraPct
   if (c != null) out.push(Math.abs(c) < 0.005 ? `Por que a carteira ficou estável ${q}?` : `Por que a carteira ${moveu(c)} ${q}?`)
   if (alerta.value) out.push(`Por que ${alerta.value.ticker} ${moveu(alerta.value.pct)} ${q}?`)
-  const voce = legenda.value.find((l) => l.rotulo === 'Você')
-  if (voce) out.push(`O que explica ${voce.pct} da carteira ${tituloGrafico.value.replace(/^Sua carteira /, '').replace(/\.$/, '')}?`)
+  const pat = legenda.value.itens.find((l) => l.rotulo === 'Patrimônio')
+  if (pat) out.push(`Quanto da variação de ${pat.pct} do patrimônio ${tituloGrafico.value.replace(/^Sua carteira /, '').replace(/\.$/, '')} veio dos aportes?`)
   return out
 })
 const contexto = computed(() => ({
@@ -255,9 +272,16 @@ const contexto = computed(() => ({
     `${props.agora.ativos}${props.agora.atualizado ? ` · atualizado ${props.agora.atualizado}` : ''}`,
   ].filter(Boolean).join('\n'),
 }))
+// o que o chat lê do gráfico: cada número com o nome do que ele mede
+const NO_CHAT: Record<string, string> = { Você: 'Rentabilidade da carteira no período (TWR, sem o efeito dos aportes)', Patrimônio: 'Variação do patrimônio no período, com os aportes', IBOV: 'IBOV no período' }
 const contextoGrafico = computed(() => ({
   id: 'carteira:grafico', tipo: 'grafico', rotulo: tituloGrafico.value.replace(/\.$/, ''),
-  texto: [tituloGrafico.value, ...legenda.value.map((l) => `${l.rotulo}: ${l.pct}`), cdiPct.value != null ? `CDI no período: ${pctAtivo(cdiPct.value)}` : ''].filter(Boolean).join('\n'),
+  texto: [
+    `${tituloGrafico.value} A linha do gráfico é o patrimônio em R$.`,
+    ...legenda.value.itens.map((l) => `${NO_CHAT[l.rotulo]}: ${l.pct}${l.rotulo === 'Você' && l.nota ? ` (${l.nota})` : ''}`),
+    legenda.value.meta ? `${legenda.value.meta.charAt(0).toUpperCase()}${legenda.value.meta.slice(1)}.` : '',
+    cdiPct.value != null ? `CDI no período: ${pctAtivo(cdiPct.value)}` : '',
+  ].filter(Boolean).join('\n'),
 }))
 function perguntar(q?: string) { painel.abrir(q, [contexto.value]) }
 
@@ -325,6 +349,8 @@ const instanteDe = (fr: number) => 1 - Math.sqrt(Math.max(0, 1 - fr)) // inverso
 
 async function abrirDetalhes() {
   if (fase.value !== 'recolhido') return
+  // a TWR da legenda: o relatório é pedido agora (o servidor guarda 10 min); até chegar, "Patrimônio (com aportes)"
+  if (props.visao) void rel.carregar()
   const sec = secao.value
   const troca = trocaRef.value
   const h0 = troca?.offsetHeight ?? 0
@@ -594,18 +620,21 @@ const statusLinha = computed(() => {
     <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco" :class="{ 'cto__palco--baixo': enxuto }">
       <div class="tbo__palco-cab">
         <h2 class="tbo__h2">{{ tituloGrafico }}</h2>
-        <p v-if="legenda.length" class="tbo__legenda">
-          <span v-for="l in legenda" :key="l.rotulo" class="tbo__leg">
-            <i class="tbo__traco" :class="{ 'tbo__traco--ibov': l.rotulo === 'IBOV' }" aria-hidden="true" />{{ l.rotulo }}
+        <!-- o traço diz qual linha o número descreve: a cheia é o patrimônio, a tracejada o IBOV; a TWR e o CDI não são desenhados -->
+        <p v-if="legenda.itens.length" class="tbo__legenda">
+          <span v-for="l in legenda.itens" :key="l.rotulo" class="tbo__leg">
+            <i v-if="l.traco" class="tbo__traco" :class="{ 'tbo__traco--ibov': l.traco === 'tracejado' }" aria-hidden="true" />{{ l.rotulo }}
             <b :class="l.dir ? `tbo__leg--${l.dir}` : ''">{{ l.pct }}</b>
+            <span v-if="l.nota" class="cto__leg-nota">{{ l.nota }}</span>
           </span>
           <span v-if="enxuto && cdiPct != null" class="tbo__leg cto__leg-cdi">CDI <b>{{ pctAtivo(cdiPct) }}</b></span>
+          <span v-if="legenda.meta" class="tbo__leg cto__leg-meta"><i class="tbo__traco" aria-hidden="true" />{{ legenda.meta }}</span>
         </p>
         <AtivoPeriodo v-if="enxuto && opcoes.length > 1" v-model="range" :opcoes="opcoes" :disabled="buscando" tom="escuro" class="cto__periodo-cab" />
       </div>
       <div class="tbo__grafico">
         <AtivoGrafico
-          :ativo="fatia" :ibov="ibov" ticker="Você" :atual="atualHoje" :rotulo="tituloGrafico" tom="luz"
+          :ativo="fatia" :ibov="ibov" ticker="Patrimônio" :atual="atualHoje" :rotulo="tituloGrafico" tom="luz"
           :carregando="buscando" :mascarado="!revelado" :rotulo-abaixo-ate="enxuto ? 50 : 22" @leitura="leitura = $event"
         />
       </div>
@@ -765,6 +794,9 @@ const statusLinha = computed(() => {
 .cto .tbo__palco-cab { align-items: center; }
 .cto__periodo-cab { margin-left: auto; }
 .cto__leg-cdi { color: var(--nu-agora-sub); }
+/* a meta da legenda: o "(com aportes)" e o "desde" ao lado do número, e o crescimento do patrimônio ao lado da TWR, discretos */
+.cto__leg-nota { color: var(--nu-agora-sub); font-weight: 500; }
+.cto__leg-meta { color: var(--nu-agora-sub); font-weight: 500; }
 .cto__palco--baixo :deep(.tbo__grafico), .cto__palco--baixo .tbo__grafico { height: clamp(140px, 15vw, 210px); }
 .cto__frase--botao { padding: 0; border: 0; background: none; font-family: inherit; text-align: left; cursor: pointer; text-decoration-color: var(--nu-white-35); }
 .cto__frescor { gap: 6px 18px; }

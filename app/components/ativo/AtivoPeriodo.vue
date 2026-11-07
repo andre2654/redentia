@@ -42,6 +42,7 @@ const ABAS = computed(() => (props.opcoes ? TODAS.filter((a) => props.opcoes!.in
 .ape--escuro { background: var(--nu-agora-pilula); }
 .ape--escuro .ape__b { color: var(--nu-agora-sub); }
 .ape--escuro .ape__b:hover { color: var(--nu-agora-texto); }
-.ape--escuro .ape__b--on { background: var(--nu-agora-texto); color: var(--nu-agora-bg); }
+/* o ativo vence o hover: sem isso, o ponteiro em cima do período escolhido deixava o texto branco no fundo branco */
+.ape--escuro .ape__b--on, .ape--escuro .ape__b--on:hover { background: var(--nu-agora-texto); color: var(--nu-agora-bg); }
 @media (prefers-reduced-motion: reduce) { .ape__b { transition: none; } }
 </style>
