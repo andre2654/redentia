@@ -29,6 +29,11 @@ function ajustar() {
   el.style.height = `${Math.min(el.scrollHeight, 132)}px`
 }
 watch(() => props.modelValue, () => nextTick(ajustar))
+// o painel monta o campo já com o texto quando alguém o preenche de fora (o
+// Simular e o Perguntar dos avisos da /carteira, 07/11/2026): sem ajustar na
+// montagem, a pergunta longa ficava numa linha só, rolada, com o começo
+// escondido sob os chips
+onMounted(ajustar)
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {

@@ -143,10 +143,16 @@ function ficarAqui(t: TopicoCarteira) {
 /* ————— as ações ————— */
 const painel = useChatPainel()
 const lente = useState<string>('carteira:lente', () => 'ativos')
+// O aviso que vai junto da pergunta (Perguntar e Simular, 07/11/2026). O chip
+// do campo é a parte que aparece na tela: segue o olho. O texto, só o modelo
+// lê, e vai com os números: sem eles, "Simule trocar R$ 10 mil…" com o olho
+// fechado chegava como "R$ ••••" e a simulação saía às cegas. O texto do site
+// não leva ticker no movimento (o motor manda só a classe), e o id do aviso,
+// que leva, não vai.
 function contextoDe(a: Aviso) {
   return {
-    id: `carteira:aviso:${a.id}`, tipo: 'carteira', rotulo: a.titulo,
-    texto: [a.titulo, semValor(a.texto), a.ressalva ?? '', ...a.prova.map((p) => `${p.rotulo}: ${semValor(p.valor)}`), `Fonte: ${a.fonte}`].filter(Boolean).join('\n'),
+    id: `carteira:aviso:${a.id}`, tipo: 'carteira', rotulo: semValor(a.titulo),
+    texto: [a.titulo, a.texto, a.ressalva ?? '', ...a.prova.map((p) => `${p.rotulo}: ${p.valor}`), `Fonte: ${a.fonte}`].filter(Boolean).join('\n'),
   }
 }
 function agir(a: Aviso, acao: AcaoAviso) {
