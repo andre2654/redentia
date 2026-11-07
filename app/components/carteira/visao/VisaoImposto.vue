@@ -98,7 +98,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
     <!-- os últimos 12 meses, com o selo -->
     <h3 class="vim__h3">Os últimos 12 meses</h3>
-    <p class="vim__h3-s">Vendas na bolsa por mês. A renda fixa fica de fora: o imposto dela já sai retido na fonte.</p>
+    <p class="vim__h3-s">Vendas na bolsa por mês, em reais. A renda fixa fica de fora: o imposto dela já sai retido na fonte.</p>
     <ol class="vim__meses">
       <li v-for="m in meses" :key="m.mes">
         <button
@@ -106,7 +106,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
           :disabled="!m.operacoes.length" :aria-expanded="m.operacoes.length ? aberto === m.mes : undefined"
           :aria-controls="m.operacoes.length ? 'vim-ops' : undefined" :aria-label="rotuloDoMes(m)" @click="abrirMes(m)"
         >
-          <span class="vim__mes-v">{{ vendasNaBolsa(m) ? mask(vendasCurtas(vendasNaBolsa(m))) : '—' }}</span>
+          <span class="vim__mes-v"><template v-if="vendasNaBolsa(m)"><span class="vim__rs">R$ </span>{{ mask(vendasCurtas(vendasNaBolsa(m)).replace(/^R\$ /, '')) }}</template><template v-else>—</template></span>
           <span class="vim__mes-b"><i :style="{ height: `${altura(m)}%` }" /></span>
           <span class="vim__mes-n">{{ mesCurto(m.mes) }}</span>
         </button>
@@ -216,6 +216,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 @media (max-width: 640px) {
   .vim__meses { grid-template-columns: repeat(6, minmax(0, 1fr)); row-gap: 10px; }
   .vim__mes { grid-template-rows: auto 64px auto; }
+  /* seis colunas por fileira: o R$ sai do rótulo (a legenda diz "em reais"), senão 'R$ 200 mil' encosta no vizinho */
+  .vim__rs { display: none; }
   .vim__ops { padding: 14px 14px 4px; }
   .vim__ops-l li { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; }
 }

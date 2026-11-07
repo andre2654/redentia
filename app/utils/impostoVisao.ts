@@ -89,10 +89,12 @@ export function fraseDoMes(m: MesImposto, fmt: (v: number) => string = brl0): st
 export function linhaDoMesAnterior(m: MesImposto, fmt: (v: number) => string = brl0): string {
   const nome = nomeDoMes(m.mes)
   if ((m.darf.valor ?? 0) > 0 && m.darf.vence) return `O DARF de ${nome}, de ${fmt(m.darf.valor!)}, vence em ${diaMes(m.darf.vence)}.`
-  const vendido = m.grupos.reduce((s, g) => s + g.vendido, 0)
-  if (vendido <= 0) return `${cap(nome)} sem vendas.`
+  // só as vendas da bolsa, como as barras do histórico: a renda fixa sai com o imposto retido
+  // (outubro dizia "R$ 341 em vendas" com a barra em R$ 8, porque somava o AUPO11)
+  const vendido = m.grupos.filter((g) => g.grupo !== 'rf').reduce((s, g) => s + g.vendido, 0)
+  if (vendido <= 0) return `${cap(nome)} sem vendas na bolsa.`
   if (m.grupos.some(vendeuSemCusto)) return `Em ${nome}, faltou o custo de ${qualVendaSemCusto(m)} para fechar a conta.`
-  return `${cap(nome)} ficou isento, com ${fmt(vendido)} em vendas.`
+  return `${cap(nome)} ficou isento, com ${fmt(vendido)} em vendas na bolsa.`
 }
 
 export type BarraDoGrupo =

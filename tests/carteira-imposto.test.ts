@@ -49,10 +49,10 @@ test('a frase grande do mês', () => {
 })
 
 test('a nota cinza: o mês anterior numa frase', () => {
-  assert.equal(linhaDoMesAnterior(impostoMock('normal').mesAnterior), 'Outubro ficou isento, com R$ 12.400 em vendas.')
+  assert.equal(linhaDoMesAnterior(impostoMock('normal').mesAnterior), 'Outubro ficou isento, com R$ 12.400 em vendas na bolsa.')
   const comDarf: MesImposto = { mes: '2026-10', grupos: [grupo({ grupo: 'fii', vendido: 6000, lucro: 410, impostoEstimado: 82, aliquota: 0.2 })], darf: { valor: 82, vence: '2026-11-30', codigo: '6015' } }
   assert.equal(linhaDoMesAnterior(comDarf), 'O DARF de outubro, de R$ 82, vence em 30/11.')
-  assert.equal(linhaDoMesAnterior({ mes: '2026-10', grupos: [grupo({ grupo: 'acoes', isencao: 20000, cabeAinda: 20000 })], darf: { valor: null, vence: null, codigo: '6015' } }), 'Outubro sem vendas.')
+  assert.equal(linhaDoMesAnterior({ mes: '2026-10', grupos: [grupo({ grupo: 'acoes', isencao: 20000, cabeAinda: 20000 })], darf: { valor: null, vence: null, codigo: '6015' } }), 'Outubro sem vendas na bolsa.')
 })
 
 test('uma linha por grupo: a barra das ações, a do lucro, a renda fixa e o custo desconhecido', () => {
@@ -100,7 +100,7 @@ const NOVEMBRO_REAL: MesImposto = {
 }
 
 test('resposta real: ações isentas sem o custo fecham o mês (o selo é isento, e a frase não diz que faltou o custo)', () => {
-  assert.equal(linhaDoMesAnterior(OUTUBRO_REAL), 'Outubro ficou isento, com R$ 341 em vendas.')
+  assert.equal(linhaDoMesAnterior(OUTUBRO_REAL), 'Outubro ficou isento, com R$ 8 em vendas na bolsa.')
   const acoes = linhaDoGrupo(OUTUBRO_REAL.grupos[0]!, '2026-10')
   assert.equal(acoes.semCusto, false, 'sem o selo âmbar: o mês é isento de qualquer jeito')
   assert.equal(fraseDoMes(NOVEMBRO_REAL), 'Novembro sem imposto até agora.')
