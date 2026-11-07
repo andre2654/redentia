@@ -537,9 +537,8 @@ O dono quer "ter em algum lugar na plataforma quais avisos dei opt-in no WhatsAp
   - `carteira_semana` (sábado);
   - `carteira_proventos_mes` (dia 1);
   - `carteira_provento_pago`;
-  - `carteira_relatorio` (mensal);
-  - `carteira_imposto` (o mês atual e o anterior);
-  - `carteira_ideias` (os avisos de recomendação 13–21).
+  - `carteira_relatorio` (mensal).
+  - *(07/11: `carteira_imposto` e `carteira_ideias` saíram. Nenhum comando os envia: o imposto e as ideias ficam só na tela.)*
 - **Onde se escolhe:**
   - Em /conta, um bloco "Avisos da carteira": uma linha por tópico com três opções (WhatsApp, e-mail, nenhum) e o exemplo da mensagem.
   - No modal de avisos, no pé, "Receber isto por: WhatsApp · e-mail · só aqui", que grava no mesmo lugar.

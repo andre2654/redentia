@@ -172,24 +172,25 @@ test('as vendas da lista de movimentações levam o selo do mês delas', () => {
 })
 
 test('o tópico de cada detector', () => {
-  assert.equal(topicoDoDetector('imposto.darf'), 'carteira_imposto')
-  assert.equal(topicoDoDetector('imposto.isencao'), 'carteira_imposto')
+  // imposto e ideias aparecem só na tela: nenhum comando os envia
+  assert.equal(topicoDoDetector('imposto.darf'), null)
+  assert.equal(topicoDoDetector('imposto.isencao'), null)
   assert.equal(topicoDoDetector('proventos.agenda'), 'carteira_proventos_mes')
   assert.equal(topicoDoDetector('proventos.mes'), 'carteira_proventos_mes')
   assert.equal(topicoDoDetector('proventos.pago'), 'carteira_provento_pago')
   assert.equal(topicoDoDetector('quedas'), 'carteira_semana')
   assert.equal(topicoDoDetector('semana.resumo'), 'carteira_semana')
-  assert.equal(topicoDoDetector('movimento.dy'), 'carteira_ideias')
-  assert.equal(topicoDoDetector('ideias.saldo'), 'carteira_ideias')
+  assert.equal(topicoDoDetector('movimento.dy'), null)
+  assert.equal(topicoDoDetector('ideia.troca_dy'), null)
   assert.equal(topicoDoDetector('relatorio.mensal'), 'carteira_relatorio')
   assert.equal(topicoDoDetector('conexao.velha'), null)
   assert.equal(topicoDoDetector('renda.selic'), null)
-  assert.deepEqual(topicosDosAvisos(visaoMock('normal').avisos.itens).map((t) => t.id), ['carteira_proventos_mes', 'carteira_imposto'])
+  assert.deepEqual(topicosDosAvisos(visaoMock('normal').avisos.itens).map((t) => t.id), ['carteira_proventos_mes'])
   assert.deepEqual(topicosDosAvisos(visaoMock('velho').avisos.itens), [])
 })
 
 test('os tópicos novos das preferências, e os exemplos dentro da regra da CVM', () => {
-  assert.deepEqual(TOPICOS_CARTEIRA.map((t) => t.id), ['carteira_semana', 'carteira_proventos_mes', 'carteira_provento_pago', 'carteira_relatorio', 'carteira_imposto', 'carteira_ideias'])
+  assert.deepEqual(TOPICOS_CARTEIRA.map((t) => t.id), ['carteira_semana', 'carteira_proventos_mes', 'carteira_provento_pago', 'carteira_relatorio'])
   for (const t of TOPICOS_CARTEIRA) {
     assert.match(t.exemplo, /\d/, `${t.id}: frase sem número`)
     assert.doesNotMatch(t.exemplo, /\b(compre|comprar|venda|vender|recomendamos|recomendo|vale a pena)\b/i, t.exemplo)
