@@ -1,8 +1,9 @@
 /**
  * O contrato de `GET /me/carteira/visao` (planejado em 06/11/2026; ver
  * docs/specs/carteira-motor-de-avisos.md). O backend monta tudo, o motor de
- * avisos inclusive, e o front só desenha. Enquanto o endpoint não existe, a
- * tela nova roda no dev com o mock de app/dev/carteiraVisaoMock.ts.
+ * avisos inclusive, e o front só desenha (composables/useCarteiraVisao.ts).
+ * No dev, ?cenario= troca a resposta pelo mock de app/dev/carteiraVisaoMock.ts.
+ * O backend é dono do formato: se mudar, este arquivo muda no mesmo PR.
  *
  * Regras que o backend garante (e os testes dele conferem):
  *  - a soma de `posicoes[].valor` é `patrimonio`;
@@ -51,6 +52,9 @@ export interface AcaoAviso {
   alvo: string
 }
 
+/** por onde o aviso pode sair (a tela sempre; e-mail e WhatsApp com o opt-in do tópico) */
+export type CanalAviso = 'tela' | 'email' | 'whatsapp'
+
 export interface Aviso {
   /** a chave de dedupe do motor: detector + objeto + período */
   id: string
@@ -72,6 +76,9 @@ export interface Aviso {
   prova: ProvaAviso[]
   fonte: string
   acoes: AcaoAviso[]
+  /** a dúvida do investidor que o aviso responde ('Devo imposto?'); detector sem pergunta não vira aviso */
+  pergunta: string
+  canais: CanalAviso[]
 }
 
 /** um movimento que o motor considerou e não sugeriu, com o veto que barrou */
@@ -163,6 +170,78 @@ export interface RendaVisao {
   caminhos: CaminhoVisao[]
 }
 
+/* ————— o imposto do mês (contrato de 07/11/2026, run-state "ImpostoVisao") —————
+ * As regras são as de ir-regras-conferidas-out-2026: ações à vista isentas até
+ * R$ 20 mil de vendas no mês (Lei 11.033/2004, art. 3º, I), 15% sobre o lucro
+ * acima disso; FII 20% e ETF 15%, sem isenção; renda fixa retida na fonte;
+ * DARF 6015 no último dia útil do mês seguinte (antecipa). O backend calcula,
+ * o front só desenha. */
+
+export type GrupoImposto = 'acoes' | 'fii' | 'etf' | 'rf' | 'cripto'
+
+export interface GrupoImpostoVisao {
+  grupo: GrupoImposto
+  /** o total vendido (ou resgatado) no mês, em R$ */
+  vendido: number
+  /** o lucro das vendas do mês; null quando falta o custo */
+  lucro: number | null
+  /** o teto de vendas isentas no mês (ações: 20 mil); null quando o grupo não tem isenção */
+  isencao: number | null
+  /** isenção − vendido, nunca abaixo de zero; null sem isenção */
+  cabeAinda: number | null
+  /** o imposto do mês, estimado; null quando falta o custo */
+  impostoEstimado: number | null
+  /** 0,15 · 0,20 */
+  aliquota: number
+  custoConhecido: boolean
+  /** a regra do grupo numa frase curta */
+  nota: string
+}
+
+export interface DarfVisao {
+  /** null sem imposto a pagar no mês */
+  valor: number | null
+  /** ISO ('2026-12-30'), o último dia útil do mês seguinte; null sem DARF */
+  vence: string | null
+  codigo: '6015'
+}
+
+export interface MesImposto {
+  /** '2026-11' */
+  mes: string
+  grupos: GrupoImpostoVisao[]
+  darf: DarfVisao
+}
+
+export type SeloImposto = 'isento' | 'pago' | 'a_conferir' | 'custo_desconhecido' | 'sem_venda'
+
+export interface OperacaoImposto {
+  /** ISO do pregão */
+  data: string
+  ticker: string
+  nome: string
+  lado: 'compra' | 'venda'
+  quantidade: number
+  /** o total da operação, em R$ */
+  valor: number
+  grupo: GrupoImposto
+}
+
+export interface MesHistorico {
+  mes: string
+  /** o total vendido no mês, todos os grupos */
+  vendas: number
+  selo: SeloImposto
+  operacoes: OperacaoImposto[]
+}
+
+export interface ImpostoVisao {
+  mesAtual: MesImposto
+  mesAnterior: MesImposto
+  /** os últimos 12 meses, com o selo de cada um */
+  historico: MesHistorico[]
+}
+
 export interface CarteiraVisao {
   versao: string
   patrimonio: number
@@ -175,4 +254,7 @@ export interface CarteiraVisao {
   renda: RendaVisao
   /** com fonte velha, a data dos dados que a tela mostra */
   dadosDe: string | null
+  imposto: ImpostoVisao
+  /** ISO de quando o backend montou esta visão (cache de 10 minutos por pessoa) */
+  geradoEm: string
 }

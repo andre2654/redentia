@@ -694,6 +694,7 @@ function buildMovements(trades: TradeApi[] | null): CarteiraMovementsVM | null {
     events.push({
       key: t.id,
       date,
+      mes: date.slice(0, 7),
       d: date.slice(8, 10),
       m: (MONTHS_PT[Number(date.slice(5, 7)) - 1] ?? '').toUpperCase(),
       ticker: t.ticker,

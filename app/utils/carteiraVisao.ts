@@ -65,3 +65,8 @@ export function confereComOTopo(v: CarteiraVisao): boolean {
   const soma = v.posicoes.reduce((s, p) => s + p.valor, 0)
   return Math.abs(soma - v.patrimonio) < 0.5
 }
+
+/** a flag do servidor (`carteira.visao_usuarios`) deixou a pessoa de fora: 404 `{ error: 'visao_desligada' }` */
+export function visaoDesligada(status: number | undefined, corpo: unknown): boolean {
+  return status === 404 && (corpo as { error?: unknown } | null | undefined)?.error === 'visao_desligada'
+}

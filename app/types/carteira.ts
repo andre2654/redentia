@@ -211,6 +211,8 @@ export interface CarteiraMovementVM {
   sub: string
   valRaw: number
   val: string // '+R$ 217,40' / '-R$ 758,00' (mascarável)
+  /** 'AAAA-MM': a venda cruza com o selo do mês no imposto (a /carteira nova) */
+  mes?: string
 }
 
 export interface CarteiraMovementsVM {
