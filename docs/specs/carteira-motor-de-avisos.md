@@ -521,3 +521,26 @@ Todo canal novo depende de agendamento e de opt-in de WhatsApp, então só entra
 - O tier `atlas` é outro produto e fica.
 
 **A regra do plano único para a IA:** assinatura ativa ou teste = IA liberada; sem assinatura = `assinatura_necessaria`. Um modelo só e nenhum contador por tier. Fica só o `RATE_LIMIT_PER_HOUR` (anti-abuso), com um teto diário único opcional se o custo pedir.
+
+### 4.8 Onde a pessoa escolhe o que recebe (pedido do dono, 07/11)
+
+O dono quer "ter em algum lugar na plataforma quais avisos dei opt-in no WhatsApp ou e-mail ou nenhum".
+
+**O que já existe:**
+- `NotificationPreferenceController` (`GET/PUT /me/notification-preferences`): uma linha por (usuário, canal, tópico), com os canais `email` e `whatsapp`.
+- Descadastro one-click com URL assinada.
+- O `users.whatsapp_opt_in_at` (desde 01/11).
+- Os tópicos de hoje: `daily_briefing`, `teaser`, `watchlist`, `newsletter`, `boas_vindas`.
+
+**O que entra:**
+- **Tópicos novos:**
+  - `carteira_semana` (sábado);
+  - `carteira_proventos_mes` (dia 1);
+  - `carteira_provento_pago`;
+  - `carteira_relatorio` (mensal);
+  - `carteira_imposto` (o mês atual e o anterior);
+  - `carteira_ideias` (os avisos de recomendação 13–21).
+- **Onde se escolhe:**
+  - Em /conta, um bloco "Avisos da carteira": uma linha por tópico com três opções (WhatsApp, e-mail, nenhum) e o exemplo da mensagem.
+  - No modal de avisos, no pé, "Receber isto por: WhatsApp · e-mail · só aqui", que grava no mesmo lugar.
+- **O padrão:** tudo desligado para WhatsApp até a pessoa dar o opt-in (risco de ban da instância Z-API). Para e-mail, ligado só nos tópicos que ela já recebe hoje.
