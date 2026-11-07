@@ -5,7 +5,8 @@
  * 2026-07-12: POST /stream anônimo → 401 {error:'auth_required'}; GET
  * /sessions com X-Client-Id novo → {sessions:[]}):
  *  - POST /stream: body { message, sessionId (OMITIDO no 1º envio — nunca
- *    null), tenantSlug:'redentia', tier:'basic' }; Bearer sanctum (logado) +
+ *    null), tenantSlug:'redentia' }; sem `tier` (plano único, 07/11/2026: o
+ *    chat-service usa 'basic' quando ele falta); Bearer sanctum (logado) +
  *    X-Client-Id; SSE com eventos tipados; heartbeats ':' ignorados; frame
  *    ruim NUNCA derruba o stream.
  *  - Sessões server-side: banco é a fonte de verdade (decisão 2026-06-26) —
@@ -182,9 +183,6 @@ export function useNuChat() {
         }
         a.error = data.message || 'Erro ao processar a mensagem. Tente de novo.'
         break
-      case 'max.blocked':
-        a.error = data.message || 'Você atingiu o limite de uso por agora. Tente novamente mais tarde.'
-        break
       // form.show / action.propose / asset.card / artifact.* / goal.* /
       // decision.* / research.* / scenario.* / preexec.* / alert.* /
       // portfolio.* / context.probe: ignorados em silêncio (contrato PR9).
@@ -258,7 +256,6 @@ export function useNuChat() {
           // NUNCA mandar sessionId null — omitido no 1º envio
           ...(sessionId.value ? { sessionId: sessionId.value } : {}),
           tenantSlug: 'redentia',
-          tier: 'basic',
           ...(attachments ? { attachments } : {}),
           ...(routeContext ? { routeContext } : {}),
         }),

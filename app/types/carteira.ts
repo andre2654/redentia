@@ -2,7 +2,7 @@
  * Tipos do domínio Carteira (PR8 `/carteira`).
  *  - *Api = shapes REAIS do backend (verificados em Backend/app/... 2026-07-11:
  *    PortfolioTradesController (index/income/equityCurve), DividendCalendar-
- *    Controller (upcoming), PortfolioAnalysisController, PluggyController)
+ *    Controller (upcoming), PluggyController)
  *  - Carteira*VM = view-models por seção (shape do design Redentia Carteira
  *    Nu.dc.html — CONTRATO de UX)
  *
@@ -64,21 +64,6 @@ export interface UpcomingDividendsApi {
   total: number
 }
 
-/** GET /portfolio/analysis → { analysis } (404 `no_analysis_yet` tolerado). */
-export interface PortfolioAnalysisApi {
-  analysis: {
-    score: number
-    score_band: 'critico' | 'atencao' | 'bom' | 'excelente' | string
-    dimensions: { key: string; label?: string | null; value: number; note?: string | null }[] | null
-    strengths: { title: string; body?: string | null }[] | null
-    risks: { title: string; body?: string | null; severity: 'low' | 'medium' | 'high' }[] | null
-    recommendations: { title: string; body?: string | null }[] | null
-    thesis_per_asset: { ticker: string; thesis?: string | null; status: string }[] | null
-    summary_md: string | null
-    generated_at: string | null
-  }
-}
-
 /** GET /pluggy/connections → { data[] } (shape do PluggyController). */
 export interface PluggyConnectionApi {
   id: number
@@ -135,7 +120,6 @@ export interface CarteiraGroupVM {
   ret: string | null // '+12,4%' — null = sem custo no grupo (pill some)
   retKind: 'up' | 'down' | 'flat'
   rows: CarteiraRowVM[]
-  desc: string | null // editorial do /portfolio/analysis — null = coluna só com CTA
   cta: string
   ctaHref: string
   /** variação do grupo no dia ('−1,03%') — null = sem /portfolio/today pros papéis dele */
@@ -168,7 +152,7 @@ export interface CarteiraAgoraVM {
   proventoDoDia: { valor: number; tickers: string[] } | null
 }
 
-export interface RaioXMetricVM {
+export interface ScoreMetricVM {
   label: string // 'DIVERSIFICAÇÃO'
   value: string // '62/100' | 'Beta 0,84' | 'DY 6,1%'
   tag: string // 'Atenção' | 'Controlado' | 'Excelente'
@@ -178,20 +162,19 @@ export interface RaioXMetricVM {
   note: string
 }
 
-export interface CarteiraRaioXVM {
+/**
+ * O score determinístico da carteira (useCarteira, buildRaioX): sem IA, as
+ * métricas recalculadas a cada carga. Alimenta as Ideias do topo
+ * (utils/achadosDaCarteira.ts). O Raio-X da carteira (a seção e a análise
+ * escrita pela IA) saiu da tela em 07/11/2026.
+ */
+export interface CarteiraScoreVM {
   score: number // 0-100
-  badge: string // 'Boa saúde · 1 ponto de atenção'
   /** banda isolada ('Boa saúde') — mesma régua nas duas telas (home + /carteira) */
   band: string
   /** nº de métricas com score <70 — reusado pelo mini-dashboard e atalhos da home */
   attention: number
-  metrics: RaioXMetricVM[]
-  /** insight do /portfolio/analysis — null = banner some (sem IA inventada) */
-  insight: string | null
-  /** data da análise da IA ('22/05') quando NÃO é de hoje — o banner mostra;
-   *  null = análise de hoje (ou sem data). As MÉTRICAS são sempre frescas
-   *  (computadas a cada load); só o texto da IA pode ser antigo. */
-  insightDate: string | null
+  metrics: ScoreMetricVM[]
 }
 
 export interface CarteiraIncomeVM {
@@ -277,12 +260,12 @@ export interface CarteiraResumoVM {
   hojeDir: NuDir
   /** proventos 12M ('R$ 4.980', mascarável) — null = /income indisponível ou zero */
   proventos12m: string | null
-  /** score do Raio-X (mesma régua da /carteira) — null = raio-x indisponível */
+  /** o score determinístico (mesma régua da /carteira) — null = score indisponível */
   score: { val: number; band: string; tone: 'green' | 'amber' } | null
   /** nº de movimentações na janela de 12m do /portfolio/trades — null = sem eventos */
   movCount: number | null
   movLabel: string | null // 'últimos 12 meses' (janela honesta do fetch)
-  /** pontos de atenção do Raio-X (0 = estado positivo) — null = raio-x indisponível */
+  /** pontos de atenção do score (0 = estado positivo) — null = score indisponível */
   atencao: number | null
   /** o dia da carteira para o topo da home (utils/diaDaCarteira.ts) — null sem carteira */
   dia?: ResumoDoDia | null
@@ -301,23 +284,16 @@ export interface CarteiraPayload {
   chart: HomeChartVM | null
   positionsSub: string | null // '5 classes · role para explorar' (posicoes-v2)
   groups: CarteiraGroupVM[]
-  raiox: CarteiraRaioXVM | null
+  /** o score determinístico (buildRaioX), para as Ideias do topo; null sem carteira */
+  raiox: CarteiraScoreVM | null
   income: CarteiraIncomeVM | null
   movements: CarteiraMovementsVM | null
   heatmap: CarteiraHeatmapVM | null
   /** a seção "No mundo" (05/11/2026); ausente no payload vazio */
   posicoesMundo?: CarteiraPosicaoMundo[]
-  /** a análise escrita pela IA, para o modal das ideias do topo (05/11/2026); null sem análise */
-  analise?: CarteiraAnaliseIA | null
   /** quando a carteira foi carregada (ISO): a hora em que a Redentia "olhou" */
   olhadaEm?: string
 }
-
-/**
- * O pedaço do GET /portfolio/analysis que o modal das ideias lê (o
- * CarteiraIdeias): riscos, ideias e pontos fortes, com a data da análise.
- */
-export type CarteiraAnaliseIA = Pick<PortfolioAnalysisApi['analysis'], 'risks' | 'recommendations' | 'strengths' | 'generated_at'>
 
 /**
  * Uma posição para a seção "No mundo" da /carteira (CarteiraMundo): o valor

@@ -5,136 +5,63 @@
  * pontos"). O botão "Ideias" do topo (CarteiraIdeias) abre o modal que
  * mostra; a conta mora aqui.
  *
- * Duas fontes, cada uma com a sua data:
- *  - o Raio-X (useCarteira, buildRaioX): as métricas são recalculadas a cada
- *    carga, então o ponto de atenção delas é DE HOJE;
- *  - a análise escrita pela IA (GET /portfolio/analysis): um retrato gravado
- *    quando a carteira foi importada no chat (chat-service, import_portfolio).
- *    Pode ter meses. Cada item dela leva a data; passando de 30 dias, ou
- *    sendo anterior à última sincronização do Open Finance, ela é dita
- *    desatualizada com todas as letras. Não existe endpoint que gere uma
- *    análise nova (o POST /portfolio/analysis só grava o que o chat-service
- *    calculou): quem refaz é o chat, quando a mensagem pede "reanalisar"
- *    (chat-service, llm/turn/auto-actions.ts, roda import_portfolio no modo
- *    reanalyze). O botão "Pedir uma análise nova" só preenche essa frase no
- *    painel do chat; o envio fica com a pessoa.
+ * A fonte é o score determinístico (useCarteira, buildRaioX): as métricas são
+ * recalculadas a cada carga, então o ponto de atenção delas é DE HOJE. A
+ * análise escrita pela IA (o Raio-X da carteira, GET /portfolio/analysis) e o
+ * "Pedir uma análise nova" saíram da tela em 07/11/2026; o relatório da
+ * carteira entra no lugar (docs/specs/carteira-motor-de-avisos.md, 4.4).
  *
  * Regras de conteúdo:
- *  - CVM: nada de ordem (compre, venda, recomendamos) nem de alocação
- *    prescrita ("considere reduzir a exposição", "avalie aumentar a
- *    alocação", "rebalancear"). A frase da IA que traz isso sai; o item cujo
- *    TÍTULO é uma ordem ("Rebalancear para…", "Avaliar redução de…") cai
- *    inteiro. A recomendação que sobra, descritiva, vira "ideia para avaliar".
- *  - Os números do texto da IA vêm no padrão americano (26.1%, 0.17): viram o
- *    brasileiro (26,1%, 0,17). O jargão sem explicação ("com um HHI de 0.17")
- *    sai.
- *  - A análise antiga (mais de 30 dias) não se mistura com o que é de hoje: os
- *    itens dela vão para um grupo próprio no fim ("Da análise de 22/05"), e a
- *    contagem do título conta só o que é de hoje.
- *  - O código ISIN do Tesouro (BRSTN…) vira o nome da posição; sem a posição,
- *    "um título do Tesouro".
- *  - O risco da IA que fala do mesmo assunto de uma métrica em Atenção não
- *    aparece duas vezes: fica a métrica (o dado de hoje), com a nota de que a
- *    análise já tinha apontado o mesmo.
- *  - Sem dado real, o item não existe. Sem nenhum, `vazio` e a seção vira uma
- *    linha calma.
+ *  - O texto é o da métrica (a nota do buildRaioX): descreve, sem ordem de
+ *    compra e venda nem alocação prescrita (CVM).
+ *  - Sem dado real, o item não existe. Sem ponto de atenção, `vazio` e a seção
+ *    vira uma linha calma.
  *
  * Sem Vue nem Nuxt: o teste (tests/achados-da-carteira.test.ts) importa direto.
  */
-import type { CarteiraAnaliseIA, CarteiraPosicaoMundo, CarteiraRaioXVM, RaioXMetricVM } from '~/types/carteira'
+import type { CarteiraPosicaoMundo, CarteiraScoreVM, ScoreMetricVM } from '~/types/carteira'
 
-export type Gravidade = 'alta' | 'media' | 'baixa'
-export type TipoDoAchado = 'atencao' | 'risco' | 'ideia' | 'forca'
+export type Gravidade = 'alta' | 'media'
+export type TipoDoAchado = 'atencao' | 'forca'
 
 export interface Achado {
   id: string
   tipo: TipoDoAchado
-  /** só atenção e risco têm gravidade */
+  /** só a atenção tem gravidade */
   gravidade: Gravidade | null
-  /** o selo do cartão ('Pede atenção', 'Vale olhar', 'Ideia para avaliar', 'Vai bem') */
+  /** o selo do cartão ('Pede atenção', 'Vai bem') */
   selo: string
   titulo: string
   texto: string | null
-  /** 'raiox' = calculado agora; 'analise' = o texto da IA, com a data dela */
-  origem: 'raiox' | 'analise'
-  /** de quando é o achado: 'hoje' ou 'análise de 22/05' */
-  quando: string
-  /** a dimensão do Raio-X a que o achado pertence (a linha do tempo agrupa por ela) */
-  dimensao: string | null
-  /** o número da métrica ('62/100', 'Beta 1,21'), quando vem do Raio-X */
-  valor: string | null
-  /** o risco da análise que dizia o mesmo ('22/05'), quando a métrica o absorveu */
-  confirmadoEm: string | null
-  /** vem da análise antiga (mais de 30 dias): vai para o grupo do fim, com a data */
-  antigo: boolean
+  /** a métrica do score a que o achado pertence */
+  dimensao: string
+  /** o número da métrica ('62/100', 'Beta 1,21') */
+  valor: string
   /** a pergunta pronta para o chat */
   pergunta: string
 }
 
-export interface IdadeDaAnalise {
-  data: string
-  dias: number
-  antiga: boolean
-}
-
-export interface AnaliseNaSecao {
-  /** '22/05' (com o ano quando não é o ano corrente: '22/05/2025') */
-  data: string
-  dias: number
-  /** passou de 30 dias */
-  antiga: boolean
-  /** antiga, ou anterior à última sincronização do Open Finance: vale pedir outra */
-  desatualizada: boolean
-}
-
 export interface AchadosVM {
-  /** atenção e risco por gravidade, depois as ideias, depois o que vai bem */
+  /** a atenção por gravidade, depois o que vai bem */
   itens: Achado[]
-  /** quantos pedem atenção HOJE (atenção + risco, fora os da análise antiga) */
+  /** quantos pedem atenção hoje */
   pontos: number
-  /** as ideias de hoje (as da análise antiga não contam) */
-  ideias: number
-  /** riscos e ideias da análise antiga, no grupo do fim */
-  antigos: number
   /** quantos ativos a Redentia olhou */
   ativos: number
-  /** em quantas dimensões (as métricas do Raio-X) */
+  /** em quantas dimensões (as métricas do score) */
   dimensoes: number
   /** 'hoje às 08:01' (no fuso de São Paulo) */
   olhouEm: string | null
-  analise: AnaliseNaSecao | null
-  /** nada que peça atenção nem ideia: a seção vira a linha calma */
+  /** nada que peça atenção: a seção vira a linha calma */
   vazio: boolean
 }
 
 export interface EntradaDosAchados {
-  raiox: CarteiraRaioXVM | null
-  analise: CarteiraAnaliseIA | null
+  raiox: CarteiraScoreVM | null
   posicoes: CarteiraPosicaoMundo[]
   /** quando a carteira foi carregada (ISO), a hora em que a Redentia "olhou" */
   olhadaEm: string | null
-  /** a sincronização mais recente do Open Finance (last_synced_at, ISO) */
-  ultimoSync?: string | null
   agora?: Date
-}
-
-/** A partir de quantos dias a análise escrita é dita antiga. */
-export const DIAS_ANALISE_ANTIGA = 30
-
-/**
- * A frase que pede ao chat uma análise nova. Tem de casar com a regex do
- * chat-service (reanalyzeKeywordRE em llm/turn/auto-actions.ts: "reanalisar").
- */
-export const PEDIDO_DE_ANALISE_NOVA = 'Reanalisar minha carteira'
-
-/** A análise é desatualizada: antiga, ou anterior ao último sync do Open Finance. */
-export function analiseDesatualizada(generatedAt: string | null | undefined, ultimoSync: string | null | undefined, agora = new Date()): boolean {
-  const idade = idadeDaAnalise(generatedAt, agora)
-  if (!idade) return false
-  if (idade.antiga) return true
-  const g = dataValida(generatedAt)
-  const s = dataValida(ultimoSync)
-  return !!(g && s && s.getTime() > g.getTime())
 }
 
 const FUSO = 'America/Sao_Paulo'
@@ -169,132 +96,15 @@ export function quandoOlhou(olhadaEm: string | null, agora = new Date()): string
   return `em ${a.dia}/${a.mes} às ${a.hora}`
 }
 
-/** A data e a idade da análise escrita; null sem data válida. */
-export function idadeDaAnalise(generatedAt: string | null | undefined, agora = new Date()): IdadeDaAnalise | null {
-  const d = dataValida(generatedAt)
-  if (!d) return null
-  const g = partesSP(d)
-  const h = partesSP(agora)
-  // dias de calendário em São Paulo, não horas corridas
-  const dias = Math.max(0, Math.round((Date.parse(`${h.iso}T12:00:00Z`) - Date.parse(`${g.iso}T12:00:00Z`)) / DIA_MS))
-  const data = g.ano === h.ano ? `${g.dia}/${g.mes}` : `${g.dia}/${g.mes}/${g.ano}`
-  return { data, dias, antiga: dias > DIAS_ANALISE_ANTIGA }
-}
-
-/* ————— o texto da IA ————— */
+/* ————— os itens ————— */
 
 /** Minúsculas e sem acento, para casar sem depender de caixa nem de til. */
 function plano(s: string): string {
   return s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 }
 
-/** ISIN de título brasileiro (BRSTNCNTB7T1): BR + 9 + o dígito verificador. */
-const ISIN = /\bBR[A-Z0-9]{9}\d\b/g
-
-/** Troca o código do Tesouro pelo nome que a carteira dá ao título. */
-export function trocarIsin(texto: string, posicoes: CarteiraPosicaoMundo[]): string {
-  const nomes = new Map(posicoes.filter((p) => p.nome && p.nome !== p.ticker).map((p) => [p.ticker.toUpperCase(), p.nome!]))
-  return texto.replace(ISIN, (cod) => nomes.get(cod.toUpperCase()) ?? 'um título do Tesouro')
-}
-
-/**
- * Linguagem de ordem que a CVM veda num texto que não é recomendação
- * individual: comprar, vender, "recomendamos", "você deve"… A frase que traz
- * isso sai inteira. "venda" pega também o substantivo: melhor perder a frase
- * do que deixar passar uma ordem.
- */
-const ORDEM = /\b(compre|comprem|comprar|compra de|venda|vendam|vender|recomend\w*|sugerimos|sugere-se|sugiro|aconselh\w*|voce deve|voce deveria|deve-se|zere|zerar)\b/
-
-/**
- * A alocação prescrita, que também é recomendação (05/11/2026, na carteira do
- * dono passou "Considere reduzir a exposição…" e "Avalie aumentar a
- * alocação…"): o verbo que manda pensar (considere, avalie, vale…) seguido,
- * na mesma frase, do verbo que mexe na carteira (reduzir, aumentar, alocar…);
- * e as expressões que já são a ordem sozinhas ("reduzir a exposição",
- * "aumentar a alocação", "rebalancear", "diversificar ainda mais").
- */
-const PENSE = /\b(considere|considerem|considerar|avalie|avaliem|pense em|vale a pena|valeria|seria (interessante|bom|prudente|recomendavel)|convem|e interessante)\b/
-const MEXA = /\b(reduz\w*|aument\w*|aloc\w*|realoc\w*|rebalance\w*|diversific\w*|troc\w*|diminu\w*|elev\w*|concentr\w* (mais|menos)|migr\w*|substitu\w*|refor\w*)\b/
-const ALOCACAO = /\b(reduzir|diminuir) (a |sua |essa )?(exposicao|posicao|participacao|fatia|peso)|\b(aumentar|elevar|ampliar) (a |sua )?(alocacao|exposicao|posicao|participacao|fatia|peso)|\brebalance\w*|\brealoc\w*|\bdiversificar ainda mais\b/
-
-/**
- * O título que é uma ordem: começa no verbo de mexer na carteira, no
- * infinitivo ou no imperativo ("Rebalancear para…", "Avaliar redução de…",
- * "Reduza…"). "Olhar…" e "Comparar…" são olhar um fato, ficam.
- */
-const TITULO_DE_ORDEM = /^(avaliar|avalie|considerar|considere|rebalancear|rebalanceie|reduzir|reduza|aumentar|aumente|alocar|aloque|realocar|realoque|diversificar|diversifique|trocar|troque|elevar|eleve|diminuir|diminua|migrar|migre|substituir|substitua|reforcar|reforce|vender|venda|comprar|compre|zerar|zere|manter|mantenha)\b/
-
-export function temOrdem(texto: string): boolean {
-  const t = plano(texto)
-  if (ORDEM.test(t) || ALOCACAO.test(t)) return true
-  // "pense" e "mexa" na mesma frase: "Considere reduzir…", "Avalie aumentar…"
-  const p = PENSE.exec(t)
-  return !!p && MEXA.test(t.slice(p.index))
-}
-
-/** O título que é ordem (ou traz ordem) derruba o item inteiro. */
-export function tituloDeOrdem(titulo: string): boolean {
-  return temOrdem(titulo) || TITULO_DE_ORDEM.test(plano(titulo).trim())
-}
-
-/**
- * Os números da IA no padrão brasileiro: 26.1% → 26,1%, 0.17 → 0,17. Ponto
- * com três casas é milhar ("R$ 9.118", "1.200") e fica, menos depois do zero
- * ("0.175" é decimal). Número com dois pontos ("1.234.567") não é tocado.
- */
-export function numerosBr(texto: string): string {
-  return texto.replace(/(?<![\d.,])(\d+)\.(\d+)(?!\d|[.,]\d)/g, (m, i: string, d: string) => (d.length === 3 && i !== '0' ? m : `${i},${d}`))
-}
-
-/** O jargão sem explicação sai: "…12 setores distintos, com um HHI de 0.17, indicando…" */
-export function semJargao(texto: string): string {
-  return texto
-    .replace(/,\s*(?:com|e)\s+(?:um\s+)?(?:índice\s+|indice\s+)?HHI(?:\s*\([^)]*\))?\s+(?:de\s+)?\d+(?:[.,]\d+)?/gi, '')
-    .replace(/\s*\((?:índice\s+|indice\s+)?(?:de\s+)?HHI[^)]*\)/gi, '')
-    .replace(/\s{2,}/g, ' ')
-}
-
-/** As frases do texto, sem as que trazem ordem. */
-function semOrdem(texto: string | null | undefined): string | null {
-  if (!texto) return null
-  // a frase acaba no ponto seguido de espaço e maiúscula: "26.1%" não corta
-  const frases = texto.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"“(])/)
-  const fica = frases.map((f) => f.trim()).filter((f) => f && !temOrdem(f))
-  return fica.length ? fica.join(' ') : null
-}
-
-/** O texto da IA pronto para a tela: sem ordem, o nome no lugar do ISIN, sem jargão, número brasileiro. */
-function limpar(texto: string | null | undefined, posicoes: CarteiraPosicaoMundo[]): string | null {
-  const t = semOrdem(texto)
-  return t ? numerosBr(semJargao(trocarIsin(t, posicoes))) : null
-}
-
-/** O título da IA pronto para a tela. */
-function tituloLimpo(titulo: string, posicoes: CarteiraPosicaoMundo[]): string {
-  return numerosBr(semJargao(trocarIsin(titulo.trim(), posicoes)))
-}
-
-/* ————— o assunto: a mesma conversa entre a métrica e o risco ————— */
-
-/** Que dimensão do Raio-X um texto da IA está discutindo (a primeira que casar). */
-const ASSUNTOS: { dimensao: string; re: RegExp }[] = [
-  { dimensao: 'Diversificação', re: /concentra|diversifica|principais ativos|maiores posic|peso (elevado|alto|excessivo)|setor/ },
-  { dimensao: 'Risco', re: /volatil|\bbeta\b|oscila|drawdown|risco de mercado|sensibilidade ao (ibov|mercado)/ },
-  // "renda fixa" é classe de ativo, não a renda da carteira
-  { dimensao: 'Renda', re: /\brenda (passiva|mensal|da carteira)\b|dividend|provento|yield|\bdy\b/ },
-  { dimensao: 'Qualidade', re: /qualidade|fundament|redentia score/ },
-]
-
-export function assuntoDe(texto: string): string | null {
-  const t = plano(texto)
-  return ASSUNTOS.find((a) => a.re.test(t))?.dimensao ?? null
-}
-
-/* ————— os itens ————— */
-
-const ORDEM_GRAVIDADE: Record<Gravidade, number> = { alta: 0, media: 1, baixa: 2 }
-const ORDEM_TIPO: Record<TipoDoAchado, number> = { atencao: 0, risco: 0, ideia: 1, forca: 2 }
-const GRAVIDADE_DA_IA: Record<string, Gravidade> = { high: 'alta', medium: 'media', low: 'baixa' }
+const ORDEM_GRAVIDADE: Record<Gravidade, number> = { alta: 0, media: 1 }
+const ORDEM_TIPO: Record<TipoDoAchado, number> = { atencao: 0, forca: 1 }
 
 /** o título da métrica em Atenção, no gênero da palavra */
 const TITULO_DA_METRICA: Record<string, string> = {
@@ -304,14 +114,12 @@ const TITULO_DA_METRICA: Record<string, string> = {
   Qualidade: 'A qualidade pede atenção',
 }
 
-function seloDe(tipo: TipoDoAchado, g: Gravidade | null): string {
-  if (tipo === 'ideia') return 'Ideia para avaliar'
-  if (tipo === 'forca') return 'Vai bem'
-  return g === 'baixa' ? 'Vale olhar' : 'Pede atenção'
+function seloDe(tipo: TipoDoAchado): string {
+  return tipo === 'forca' ? 'Vai bem' : 'Pede atenção'
 }
 
 /** ponto de atenção da métrica: abaixo de 45 é grave (a régua da banda crítica) */
-function gravidadeDaMetrica(m: RaioXMetricVM): Gravidade {
+function gravidadeDaMetrica(m: ScoreMetricVM): Gravidade {
   return m.fillPct < 45 ? 'alta' : 'media'
 }
 
@@ -324,160 +132,60 @@ export function montarAchados(e: EntradaDosAchados): AchadosVM {
   const agora = e.agora ?? new Date()
   const posicoes = e.posicoes ?? []
   const metricas = e.raiox?.metrics ?? []
-  const analise = e.analise
-  const idade = idadeDaAnalise(analise?.generated_at ?? null, agora)
-  const quandoAnalise = idade ? (idade.dias === 0 ? 'hoje' : `análise de ${idade.data}`) : 'análise da Redentia'
-  // a análise antiga não se mistura com o que é de hoje: os itens dela vão para o fim
-  const antigo = !!idade?.antiga
 
   const itens: Achado[] = []
 
-  /* 1. os pontos de atenção do Raio-X: de hoje */
-  const atencoes = new Map<string, Achado>()
+  /* 1. os pontos de atenção do score: de hoje */
   for (const m of metricas) {
     if (m.tag !== 'Atenção') continue
     const g = gravidadeDaMetrica(m)
-    const a: Achado = {
+    itens.push({
       id: `raiox:${chave(m.label)}`,
       tipo: 'atencao',
       gravidade: g,
-      selo: seloDe('atencao', g),
+      selo: seloDe('atencao'),
       titulo: TITULO_DA_METRICA[m.label] ?? `${m.label}: pede atenção`,
       texto: m.note || null,
-      origem: 'raiox',
-      quando: 'hoje',
       dimensao: m.label,
       valor: m.value,
-      confirmadoEm: null,
-      antigo: false,
       pergunta: `A Redentia apontou ${m.label.toLowerCase()} como ponto de atenção na minha carteira (${m.value}). ${m.note} O que isso quer dizer para mim?`.replace(/\s+/g, ' ').trim(),
-    }
-    atencoes.set(m.label, a)
-    itens.push(a)
-  }
-
-  /* 2. os riscos da análise escrita, com a data dela */
-  for (const [i, r] of (analise?.risks ?? []).entries()) {
-    if (!r?.title || tituloDeOrdem(r.title)) continue
-    const titulo = tituloLimpo(r.title, posicoes)
-    const texto = limpar(r.body, posicoes)
-    const assunto = assuntoDe(`${r.title} ${r.body ?? ''}`)
-    const mesma = assunto ? atencoes.get(assunto) : undefined
-    if (mesma) {
-      // a métrica de hoje já diz isso: fica ela, com a nota de que a análise concordava
-      mesma.confirmadoEm = idade?.data ?? null
-      continue
-    }
-    const g = GRAVIDADE_DA_IA[r.severity] ?? 'baixa'
-    itens.push({
-      id: `risco:${i}:${chave(r.title)}`,
-      tipo: 'risco',
-      gravidade: g,
-      selo: seloDe('risco', g),
-      titulo,
-      texto,
-      origem: 'analise',
-      quando: quandoAnalise,
-      dimensao: assunto,
-      valor: null,
-      confirmadoEm: null,
-      antigo,
-      pergunta: `A análise da Redentia${idade && idade.dias > 0 ? ` de ${idade.data}` : ''} apontou na minha carteira: "${titulo}". Isso ainda vale hoje?`,
     })
   }
+  const pontos = itens.length
 
-  /* 3. as recomendações viram ideias para avaliar: só as descritivas, com texto */
-  for (const [i, r] of (analise?.recommendations ?? []).entries()) {
-    if (!r?.title || tituloDeOrdem(r.title)) continue
-    const titulo = tituloLimpo(r.title, posicoes)
-    const texto = limpar(r.body, posicoes)
-    // sem o texto (todas as frases eram ordem), o título sozinho é a ordem disfarçada
-    if (r.body && !texto) continue
-    itens.push({
-      id: `ideia:${i}:${chave(r.title)}`,
-      tipo: 'ideia',
-      gravidade: null,
-      selo: seloDe('ideia', null),
-      titulo,
-      texto,
-      origem: 'analise',
-      quando: quandoAnalise,
-      dimensao: assuntoDe(`${r.title} ${r.body ?? ''}`),
-      valor: null,
-      confirmadoEm: null,
-      antigo,
-      pergunta: `A Redentia levantou uma ideia para avaliar na minha carteira: "${titulo}". O que eu deveria considerar antes?`,
-    })
-  }
-
-  const deHoje = (a: Achado) => !a.antigo
-  const pontos = itens.filter((a) => deHoje(a) && (a.tipo === 'atencao' || a.tipo === 'risco')).length
-  const ideias = itens.filter((a) => deHoje(a) && a.tipo === 'ideia').length
-  const antigos = itens.filter((a) => a.antigo).length
-
-  /* 4. um contrapeso: o que vai bem. Com a análise recente, o ponto forte dela;
-     sem ela, ou com ela antiga, a métrica Excelente de hoje (e o ponto forte
-     antigo vai para o fim, a não ser que fale do mesmo que a métrica) */
-  const forte = (analise?.strengths ?? []).find((s) => s?.title && !tituloDeOrdem(s.title))
+  /* 2. um contrapeso: o que vai bem (a métrica Excelente de hoje) */
   const exc = metricas.find((m) => m.tag === 'Excelente')
-  const forcaDaMetrica = (m: RaioXMetricVM): Achado => ({
-    id: `forca:${chave(m.label)}`,
-    tipo: 'forca', gravidade: null, selo: seloDe('forca', null),
-    titulo: `${m.label} em nível excelente`, texto: m.note || null,
-    origem: 'raiox', quando: 'hoje', dimensao: m.label, valor: m.value, confirmadoEm: null, antigo: false,
-    pergunta: `A Redentia viu ${m.label.toLowerCase()} como ponto forte da minha carteira (${m.value}). O que sustenta isso?`,
-  })
-  const forcaDaAnalise = (s: NonNullable<typeof forte>): Achado => {
-    const titulo = tituloLimpo(s.title, posicoes)
-    return {
-      id: `forca:${chave(s.title)}`,
-      tipo: 'forca', gravidade: null, selo: seloDe('forca', null),
-      titulo, texto: limpar(s.body, posicoes),
-      origem: 'analise', quando: quandoAnalise,
-      dimensao: assuntoDe(`${s.title} ${s.body ?? ''}`), valor: null, confirmadoEm: null, antigo,
-      pergunta: `A Redentia viu um ponto forte na minha carteira: "${titulo}". O que sustenta isso?`,
-    }
-  }
-  if (forte && !antigo) {
-    itens.push(forcaDaAnalise(forte))
-  } else {
-    const hoje = exc ? forcaDaMetrica(exc) : null
-    if (hoje) itens.push(hoje)
-    if (forte) {
-      const f = forcaDaAnalise(forte)
-      if (hoje && f.dimensao === hoje.dimensao) hoje.confirmadoEm = idade?.data ?? null
-      else itens.push(f)
-    }
+  if (exc) {
+    itens.push({
+      id: `forca:${chave(exc.label)}`,
+      tipo: 'forca', gravidade: null, selo: seloDe('forca'),
+      titulo: `${exc.label} em nível excelente`, texto: exc.note || null,
+      dimensao: exc.label, valor: exc.value,
+      pergunta: `A Redentia viu ${exc.label.toLowerCase()} como ponto forte da minha carteira (${exc.value}). O que sustenta isso?`,
+    })
   }
 
-  // a ordem: gravidade, e no empate o dado de hoje antes do texto antigo
+  // a ordem: a atenção pela gravidade, depois o que vai bem
   const pos = new Map(itens.map((a, i) => [a.id, i]))
   itens.sort((a, b) =>
     ORDEM_TIPO[a.tipo] - ORDEM_TIPO[b.tipo]
     || (a.gravidade && b.gravidade ? ORDEM_GRAVIDADE[a.gravidade] - ORDEM_GRAVIDADE[b.gravidade] : 0)
-    || (a.origem === b.origem ? 0 : a.origem === 'raiox' ? -1 : 1)
     || pos.get(a.id)! - pos.get(b.id)!,
   )
 
   return {
     itens,
     pontos,
-    ideias,
-    antigos,
     ativos: posicoes.length,
     dimensoes: metricas.length,
     olhouEm: quandoOlhou(e.olhadaEm, agora),
-    analise: analise && idade ? { ...idade, desatualizada: analiseDesatualizada(analise.generated_at, e.ultimoSync, agora) } : null,
-    vazio: pontos + ideias + antigos === 0,
+    vazio: pontos === 0,
   }
 }
 
-/** '2 pontos de atenção e 1 ideia para avaliar' | 'nada que peça atenção' */
-export function resumoDosAchados(vm: Pick<AchadosVM, 'pontos' | 'ideias'>): string {
-  const p = vm.pontos ? `${vm.pontos} ${vm.pontos === 1 ? 'ponto de atenção' : 'pontos de atenção'}` : ''
-  const i = vm.ideias ? `${vm.ideias} ${vm.ideias === 1 ? 'ideia para avaliar' : 'ideias para avaliar'}` : ''
-  if (p && i) return `${p} e ${i}`
-  return p || i || 'nada que peça atenção'
+/** '2 pontos de atenção' | 'nada que peça atenção' */
+export function resumoDosAchados(vm: Pick<AchadosVM, 'pontos'>): string {
+  return vm.pontos ? `${vm.pontos} ${vm.pontos === 1 ? 'ponto de atenção' : 'pontos de atenção'}` : 'nada que peça atenção'
 }
 
 /** A assinatura do modal: 'olhou 18 ativos hoje às 12:17' | 'olhou a sua carteira hoje às 12:17'. */
@@ -501,46 +209,33 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ESC[c]!)
 /** Um pedaço do título: texto, ou o número em destaque (com o tom dele). */
 export interface PedacoDoTitulo {
   texto: string
-  numero?: 'atencao' | 'ideia'
+  numero?: 'atencao'
 }
 
 /**
- * O título dos achados: 'A Redentia olhou a sua carteira: 2 pontos de atenção
- * e 1 ideia para avaliar' (o modal mostra os pedaços sem a abertura, que já
- * vai na assinatura), e a idade da análise ao lado, em cinza ('análise de 22/05,
- * desatualizada'), quando ela está desatualizada. Sem achado, a linha calma.
- * A contagem é a do que é de hoje: a análise antiga fica no grupo do fim.
- * `pedacos` é o mesmo título com os números separados, para o destaque.
+ * O título dos achados: 'A Redentia olhou a sua carteira: 2 pontos de atenção'
+ * (o modal mostra os pedaços sem a abertura, que já vai na assinatura). Sem
+ * achado, a linha calma. `pedacos` é o mesmo título com o número separado,
+ * para o destaque.
  */
-export function tituloDosAchados(vm: Pick<AchadosVM, 'pontos' | 'ideias' | 'vazio' | 'analise'>): { titulo: string; idade: string | null; pedacos: PedacoDoTitulo[] } {
-  const idade = vm.analise?.desatualizada ? `análise de ${vm.analise.data}, desatualizada` : null
+export function tituloDosAchados(vm: Pick<AchadosVM, 'pontos' | 'vazio'>): { titulo: string; pedacos: PedacoDoTitulo[] } {
   const abre = 'A Redentia olhou a sua carteira: '
   const pedacos: PedacoDoTitulo[] = [{ texto: abre }]
-  if (vm.vazio) pedacos.push({ texto: 'nada pede atenção' })
-  else if (!vm.pontos && !vm.ideias) pedacos.push({ texto: 'nada pede atenção hoje' })
-  else {
-    if (vm.pontos) pedacos.push({ texto: String(vm.pontos), numero: 'atencao' }, { texto: ` ${vm.pontos === 1 ? 'ponto de atenção' : 'pontos de atenção'}` })
-    if (vm.pontos && vm.ideias) pedacos.push({ texto: ' e ' })
-    if (vm.ideias) pedacos.push({ texto: String(vm.ideias), numero: 'ideia' }, { texto: ` ${vm.ideias === 1 ? 'ideia para avaliar' : 'ideias para avaliar'}` })
-  }
-  return { titulo: pedacos.map((p) => p.texto).join(''), idade, pedacos }
+  if (vm.vazio || !vm.pontos) pedacos.push({ texto: 'nada pede atenção' })
+  else pedacos.push({ texto: String(vm.pontos), numero: 'atencao' }, { texto: ` ${vm.pontos === 1 ? 'ponto de atenção' : 'pontos de atenção'}` })
+  return { titulo: pedacos.map((p) => p.texto).join(''), pedacos }
 }
 
-/**
- * Os grupos: em cima, o que é de hoje ("Pede atenção", depois as ideias e o
- * que vai bem); embaixo, a análise antiga, apagada.
- */
+/** Os grupos: "Pede atenção" numa coluna e "Vai bem" na outra. */
 const COLUNAS: { rotulo: string; tipos: TipoDoAchado[] }[][] = [
-  [{ rotulo: 'Pede atenção', tipos: ['atencao', 'risco'] }],
-  [{ rotulo: 'Ideias para avaliar', tipos: ['ideia'] }, { rotulo: 'Vai bem', tipos: ['forca'] }],
+  [{ rotulo: 'Pede atenção', tipos: ['atencao'] }],
+  [{ rotulo: 'Vai bem', tipos: ['forca'] }],
 ]
 
 export interface OpcoesDoHtml {
   /** a frase do que olhou no começo ('A Redentia olhou 18 ativos…'); o modal a
    *  leva na assinatura e passa false */
   olhou?: boolean
-  /** o aviso da análise antiga ('O que está em cima é de hoje. A análise escrita é de 22/05…') */
-  aviso?: string | null
   /** troca o R$ pela máscara quando o olho está fechado */
   mascarar?: (t: string) => string
 }
@@ -550,36 +245,27 @@ export const PERGUNTAR_DO_ITEM = 'Perguntar à Redentia'
 
 /**
  * Uma linha: o título e, à direita, o número de hoje (alinhado e tabular, como
- * os indicadores do /asset); embaixo o texto e, no pé da linha, o que diz de
- * quando é (só quando não é de hoje, ou o 'Vale olhar' do ponto leve, que diz
- * mais que o grupo) e, à direita, o "Perguntar à Redentia" da linha, que o
- * componente liga pelo data-achado.
+ * os indicadores do /asset); embaixo o texto e, no pé da linha, o "Perguntar à
+ * Redentia" da linha, que o componente liga pelo data-achado.
  */
 function linhaHtml(a: Achado, m: (t: string) => string): string {
-  const meta = [
-    a.gravidade === 'baixa' ? a.selo : null,
-    a.quando !== 'hoje' && !a.antigo ? a.quando : null,
-    a.confirmadoEm ? `a análise de ${a.confirmadoEm} já apontava` : null,
-  ].filter(Boolean).join(' · ')
-  const tom = a.tipo === 'ideia' ? 'ideia' : a.tipo === 'forca' ? 'forca' : (a.gravidade ?? 'media')
+  const tom = a.tipo === 'forca' ? 'forca' : (a.gravidade ?? 'media')
   return `<li class="cah__item cah__item--${tom}">`
     + `<p class="cah__linha"><b class="cah__t">${esc(a.titulo)}</b>${a.valor ? `<span class="cah__v">${esc(m(a.valor))}</span>` : ''}</p>`
     + (a.texto ? `<p class="cah__x">${esc(m(a.texto))}</p>` : '')
     + '<div class="cah__pe">'
-    + (meta ? `<span class="cah__meta">${esc(meta)}</span>` : '')
     + `<button type="button" class="cah__perg" data-achado="${esc(a.id)}" aria-label="${esc(`${PERGUNTAR_DO_ITEM}: ${a.titulo}`)}">${PERGUNTAR_DO_ITEM}</button>`
     + '</div></li>'
 }
 
-function grupoHtml(rotulo: string, itens: Achado[], m: (t: string) => string, extra = ''): string {
-  return `<p class="cah__grupo">${esc(rotulo)}${extra}</p><ul class="cah__lista">${itens.map((a) => linhaHtml(a, m)).join('')}</ul>`
+function grupoHtml(rotulo: string, itens: Achado[], m: (t: string) => string): string {
+  return `<p class="cah__grupo">${esc(rotulo)}</p><ul class="cah__lista">${itens.map((a) => linhaHtml(a, m)).join('')}</ul>`
 }
 
 /**
  * O miolo do modal das ideias, já escapado: a frase do que olhou (sem ela com
- * `olhou: false`); o que é de hoje ("Pede atenção", ideias e "Vai bem"); a
- * análise antiga num grupo próprio no fim ("Da análise de 22/05"); e o aviso. A cor do marcador
- * acompanha a gravidade, mas nunca sozinha. Sem achado, a linha calma.
+ * `olhou: false`) e o que é de hoje ("Pede atenção" e "Vai bem"). A cor do
+ * marcador acompanha a gravidade, mas nunca sozinha. Sem achado, a linha calma.
  */
 export function achadosHtml(vm: AchadosVM, o: OpcoesDoHtml = {}): string {
   const m = o.mascarar ?? ((t: string) => t)
@@ -590,20 +276,12 @@ export function achadosHtml(vm: AchadosVM, o: OpcoesDoHtml = {}): string {
   }
   if (vm.vazio) {
     out.push('<p class="cah__frase">Nada pede atenção agora.</p>')
-  } else {
-    const hoje = vm.itens.filter((a) => !a.antigo)
-    const colunas = COLUNAS
-      .map((col) => col.map((g) => ({ g, itens: hoje.filter((a) => g.tipos.includes(a.tipo)) })).filter((x) => x.itens.length))
-      .filter((col) => col.length)
-      .map((col) => `<div class="cah__col">${col.map((x) => grupoHtml(x.g.rotulo, x.itens, m)).join('')}</div>`)
-    if (colunas.length) out.push(`<div class="cah__cols cah__cols--${colunas.length}">${colunas.join('')}</div>`)
-    else out.push('<p class="cah__frase">Hoje, nada pede atenção.</p>')
-    const velhos = vm.itens.filter((a) => a.antigo)
-    if (velhos.length && vm.analise) {
-      const dias = `<span class="cah__grupo-d">há ${vm.analise.dias} dias</span>`
-      out.push(`<div class="cah__antiga">${grupoHtml(`Da análise de ${vm.analise.data}`, velhos, m, ` ${dias}`)}</div>`)
-    }
+    return out.join('')
   }
-  if (o.aviso) out.push(`<p class="cah__nota">${esc(o.aviso)}</p>`)
+  const colunas = COLUNAS
+    .map((col) => col.map((g) => ({ g, itens: vm.itens.filter((a) => g.tipos.includes(a.tipo)) })).filter((x) => x.itens.length))
+    .filter((col) => col.length)
+    .map((col) => `<div class="cah__col">${col.map((x) => grupoHtml(x.g.rotulo, x.itens, m)).join('')}</div>`)
+  out.push(`<div class="cah__cols cah__cols--${colunas.length}">${colunas.join('')}</div>`)
   return out.join('')
 }

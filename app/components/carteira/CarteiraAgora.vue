@@ -25,7 +25,7 @@
 // as marcas e a dica do gráfico e os números da fileira; o % nunca se esconde.
 // Tudo sai do servidor; a animação (a linha se desenhando) só embeleza.
 import type { AcaoRange, SeriesPoint } from '~/types/acao'
-import type { CarteiraAgoraVM, CarteiraAnaliseIA, CarteiraHeroVM, CarteiraPosicaoMundo, CarteiraRaioXVM } from '~/types/carteira'
+import type { CarteiraAgoraVM, CarteiraHeroVM, CarteiraPosicaoMundo, CarteiraScoreVM } from '~/types/carteira'
 import type { HomeChartVM } from '~/types/home'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 import { fraseDaCarteira } from '~/utils/carteira-agora'
@@ -37,10 +37,9 @@ import CarteiraAvisos from '~/components/carteira/visao/CarteiraAvisos.vue'
 import type { AvisosVisao, ConexaoVisao } from '~/types/carteiraVisao'
 import { quandoAtualizou } from '~/utils/carteiraVisao'
 
-/** o que o modal das ideias lê (CarteiraIdeias); sem Raio-X nem análise, fica o Perguntar */
+/** o que o modal das ideias lê (CarteiraIdeias); sem o score, fica o Perguntar */
 interface AchadosDoTopo {
-  raiox: CarteiraRaioXVM | null
-  analise: CarteiraAnaliseIA | null
+  raiox: CarteiraScoreVM | null
   posicoes: CarteiraPosicaoMundo[]
   olhadaEm: string | null
 }

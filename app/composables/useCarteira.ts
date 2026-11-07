@@ -19,9 +19,10 @@
  *  - posições   posicoes-v2: sidebar de navegação (scrollspy) + 1 card por
  *               classe; retorno % só onde há custo (average_price) — coluna
  *               honesta, nunca inventada; só classes com dados aparecem
- *  - raio-x     DETERMINÍSTICO de dado real (regras portadas do
- *               usePortfolioScore do Frontend /raio-x — ver buildRaioX);
- *               insight do banner SÓ do /portfolio/analysis; sem carteira → some
+ *  - score      DETERMINÍSTICO de dado real (regras portadas do
+ *               usePortfolioScore do Frontend /raio-x — ver buildRaioX); as
+ *               métricas alimentam as Ideias do topo; sem carteira → some. A
+ *               análise escrita pela IA (o Raio-X) saiu da tela em 07/11/2026
  *  - renda      /portfolio/income + /dividends/upcoming × posições (janela máx
  *               180d do backend); sem proventos E sem agenda → seção some
  *  - movim.     /portfolio/trades (12m): Proventos/Vendas reais; 'Compra' =
@@ -43,11 +44,10 @@ import type {
   CarteiraMovementsVM,
   CarteiraMovementVM,
   CarteiraPayload,
-  CarteiraRaioXVM,
   CarteiraResumoVM,
   CarteiraRowVM,
-  PortfolioAnalysisApi,
-  RaioXMetricVM,
+  CarteiraScoreVM,
+  ScoreMetricVM,
   TradeApi,
   UpcomingDividendsApi,
 } from '~/types/carteira'
@@ -235,28 +235,8 @@ function rowSub(r: PosRow): string {
   return avg != null ? `${cotas} · PM R$ ${nf2.format(avg)}` : cotas
 }
 
-/**
- * Editorial por grupo: SÓ quando o /portfolio/analysis tem tese aplicável
- * (thesis_per_asset da maior posição do grupo). Sem análise → coluna sai só
- * com o CTA (nada de texto inventado) — diretriz documentada.
- */
-function groupDesc(groupRows: PosRow[], analysis: PortfolioAnalysisApi['analysis'] | null): string | null {
-  const theses = analysis?.thesis_per_asset ?? []
-  if (!theses.length) return null
-  for (const r of groupRows) {
-    const hit = theses.find((t) => t.ticker?.toUpperCase() === r.ticker.toUpperCase() && t.thesis?.trim())
-    if (hit?.thesis) {
-      const text = hit.thesis.trim()
-      const capped = text.length > 240 ? `${text.slice(0, 237).trimEnd()}…` : text
-      return `${r.ticker}: ${capped}`
-    }
-  }
-  return null
-}
-
 function buildGroups(
   rows: PosRow[],
-  analysis: PortfolioAnalysisApi['analysis'] | null,
   today: PortfolioTodayApi | null = null,
 ): { positionsSub: string | null; groups: CarteiraGroupVM[] } {
   if (!rows.length) return { positionsSub: null, groups: [] }
@@ -312,7 +292,6 @@ function buildGroups(
         retKind: retPct == null ? 'flat' : retPct >= 0 ? 'up' : 'down',
         ...diaDoGrupo(list, diaPor),
         rows: rowsVM,
-        desc: groupDesc(list, analysis),
         cta: GROUP_CTA[name]?.cta ?? 'Ver na busca',
         ctaHref: GROUP_CTA[name]?.href ?? '/busca',
       }
@@ -404,7 +383,7 @@ function buildAgora(
   }
 }
 
-/* ————— Raio-X (regras PORTADAS do usePortfolioScore do Frontend /raio-x) ————— */
+/* ————— o score (regras PORTADAS do usePortfolioScore do Frontend /raio-x) ————— */
 
 /**
  * 4 métricas do design, todas DETERMINÍSTICAS de dado real:
@@ -421,9 +400,11 @@ function buildAgora(
  *    ativos cobertos pelo ranking; exige ≥2 ativos cobertos, senão some
  * Score geral = média ponderada com os pesos do usePortfolioScore
  * (diversificação 1.4 · risco/volatilidade 1.1 · renda 0.9 · qualidade 1.5)
- * sobre as métricas PRESENTES. Badge = bandas portadas (<45 crítica, <65
- * atenção, <82 boa, senão excelente) + nº de pontos de atenção (score <70).
- * Tags do design: <70 'Atenção' âmbar · 70-84 'Controlado' · ≥85 'Excelente'.
+ * sobre as métricas PRESENTES. Banda = bandas portadas (<45 crítica, <65
+ * atenção, <82 boa, senão excelente); attention = nº de pontos de atenção
+ * (score <70). Tags do design: <70 'Atenção' âmbar · 70-84 'Controlado' ·
+ * ≥85 'Excelente'. Sem IA: o texto da análise escrita (o banner do Raio-X)
+ * saiu em 07/11/2026.
  */
 function buildRaioX(
   rows: PosRow[],
@@ -431,20 +412,19 @@ function buildRaioX(
   scoreRows: ScoreRowApi[] | null,
   curve: EquityCurvePointApi[] | null,
   ibov12m: SeriesPoint[] | null,
-  analysis: PortfolioAnalysisApi['analysis'] | null,
-): CarteiraRaioXVM | null {
+): CarteiraScoreVM | null {
   if (!rows.length) return null
   const total = rows.reduce((s, r) => s + r.value, 0)
   if (total <= 0) return null
 
-  const tagFor = (score: number): Pick<RaioXMetricVM, 'tag' | 'tagTone' | 'fillTone'> =>
+  const tagFor = (score: number): Pick<ScoreMetricVM, 'tag' | 'tagTone' | 'fillTone'> =>
     score < 70
       ? { tag: 'Atenção', tagTone: 'amber', fillTone: 'amber' }
       : score < 85
         ? { tag: 'Controlado', tagTone: 'green', fillTone: 'green' }
         : { tag: 'Excelente', tagTone: 'green', fillTone: 'green' }
 
-  const dims: { weight: number; score: number; vm: RaioXMetricVM }[] = []
+  const dims: { weight: number; score: number; vm: ScoreMetricVM }[] = []
 
   /* Diversificação */
   {
@@ -525,33 +505,10 @@ function buildRaioX(
 
   const band = score < 45 ? 'Saúde crítica' : score < 65 ? 'Atenção' : score < 82 ? 'Boa saúde' : 'Excelente'
   const attention = dims.filter((d) => d.score < 70).length
-  const badge = attention > 0 ? `${band} · ${attention} ${attention === 1 ? 'ponto' : 'pontos'} de atenção` : band
   // band/attention saem isolados no VM: o mini-dashboard da home reusa os
   // MESMOS números desta função (zero regra duplicada — refinamento 2026-07-13)
 
-  /* insight do banner: só do /portfolio/analysis (severity high > medium > low) */
-  let insight: string | null = null
-  const risks = analysis?.risks ?? []
-  if (risks.length) {
-    const order = { high: 0, medium: 1, low: 2 } as Record<string, number>
-    const top = [...risks].sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))[0]!
-    const text = [top.title, top.body].filter(Boolean).join(': ')
-    insight = text.length > 220 ? `${text.slice(0, 217).trimEnd()}…` : text
-  }
-
-  // Data da análise da IA quando NÃO é de hoje: a análise é um snapshot LLM
-  // persistido (portfolio_analyses) que pode ter semanas — sem a data, o
-  // banner apresenta texto antigo como diagnóstico atual (auditoria
-  // 2026-07-16: banner citava composição de 22/05 como se fosse de hoje).
-  let insightDate: string | null = null
-  if (insight && analysis?.generated_at) {
-    const gen = new Date(analysis.generated_at)
-    if (!Number.isNaN(gen.getTime()) && gen.toDateString() !== new Date().toDateString()) {
-      insightDate = `${String(gen.getDate()).padStart(2, '0')}/${String(gen.getMonth() + 1).padStart(2, '0')}`
-    }
-  }
-
-  return { score, badge, band, attention, metrics: dims.map((d) => d.vm), insight, insightDate }
+  return { score, band, attention, metrics: dims.map((d) => d.vm) }
 }
 
 /**
@@ -868,7 +825,7 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
   const headers = { Accept: 'application/json', Authorization: `Bearer ${token}` }
 
   const [
-    portfolioR, todayR, curveR, incomeR, tradesR, analysisR,
+    portfolioR, todayR, curveR, incomeR, tradesR,
     upcomingR, macroR, ibovR, scoreR,
   ] = await Promise.allSettled([
     homeFetchPortfolio(base, headers),
@@ -876,7 +833,6 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
     homeFetchEquityCurve(base, headers),
     homeFetchIncome(base, headers),
     carteiraFetchTrades(base, headers, '12m'),
-    carteiraFetchAnalysis(base, headers), // 404 'no_analysis_yet' cai no ok() → null
     carteiraFetchUpcomingDividends(base, 180),
     homeFetchMacro(base),
     acaoFetchIbovPrices(base, '12mo'),
@@ -897,7 +853,6 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
   const curve = ok(curveR)?.data ?? null
   const income = ok(incomeR)
   const trades = ok(tradesR)?.data ?? null
-  const analysis = ok(analysisR)?.analysis ?? null
   const upcoming = ok(upcomingR)
   const cdiRate = cdiAnnualPct(ok(macroR)?.cdi)
   const ibov12m: SeriesPoint[] = (ok(ibovR)?.data ?? [])
@@ -907,7 +862,7 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
   const rows = toRows(portfolio)
   const totalValue = portfolioTotalValue(portfolio, today)
-  const { positionsSub, groups } = buildGroups(rows, analysis, today)
+  const { positionsSub, groups } = buildGroups(rows, today)
 
   return {
     hero: buildHero(rows, today, income, totalValue),
@@ -916,18 +871,14 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
     chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
     positionsSub,
     groups,
-    raiox: buildRaioX(rows, income, scoreRows, curve, ibov12m.length ? ibov12m : null, analysis),
+    raiox: buildRaioX(rows, income, scoreRows, curve, ibov12m.length ? ibov12m : null),
     income: buildIncome(income, upcoming, rows),
     movements: buildMovements(trades),
     heatmap: buildHeatmap(curve),
     // a seção "No mundo" (05/11/2026): ticker, classe, valor cru e nome de cada
     // posição (o Tesouro aparece pelo nome, não pelo ISIN do ticker)
     posicoesMundo: rows.map((r) => ({ ticker: r.ticker, classe: r.assetClass, valor: r.value, nome: r.name })),
-    // os achados da Redentia AI (05/11/2026): a análise escrita segue adiante
-    // inteira (riscos, ideias e pontos fortes), com a hora desta carga
-    analise: analysis
-      ? { risks: analysis.risks, recommendations: analysis.recommendations, strengths: analysis.strengths, generated_at: analysis.generated_at }
-      : null,
+    // a hora desta carga: a "olhada" das Ideias do topo
     olhadaEm: new Date().toISOString(),
   }
 }
@@ -981,7 +932,7 @@ const RESUMO_CONNECT: CarteiraResumoVM = {
 async function loadCarteiraResumo(base: string, token: string): Promise<CarteiraResumoVM | null> {
   const headers = { Accept: 'application/json', Authorization: `Bearer ${token}` }
 
-  const [portfolioR, todayR, incomeR, tradesR, curveR, ibovR, scoreR, analysisR] = await Promise.allSettled([
+  const [portfolioR, todayR, incomeR, tradesR, curveR, ibovR, scoreR] = await Promise.allSettled([
     homeFetchPortfolio(base, headers),
     homeFetchToday(base, headers),
     homeFetchIncome(base, headers),
@@ -989,7 +940,6 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     homeFetchEquityCurve(base, headers),
     acaoFetchIbovPrices(base, '12mo'),
     acaoFetchScoreRanking(base),
-    carteiraFetchAnalysis(base, headers), // 404 'no_analysis_yet' cai no ok() → null
   ])
 
   if (portfolioR.status === 'rejected') {
@@ -1022,7 +972,7 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     .filter((p) => p.market_price != null)
     .map((p) => ({ t: p.price_at, v: p.market_price as number }))
 
-  // Raio-X: MESMA função da /carteira → score/band/attention idênticos lá e cá.
+  // o score: MESMA função da /carteira → score/band/attention idênticos lá e cá.
   // raiox null (sem carteira, já excluído acima) não acontece aqui; ainda assim
   // os campos degradam pra null (mini-cards somem, atalho de atenção some).
   const raiox = buildRaioX(
@@ -1031,7 +981,6 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     ok(scoreR)?.data ?? null,
     ok(curveR)?.data ?? null,
     ibov12m.length ? ibov12m : null,
-    ok(analysisR)?.analysis ?? null,
   )
 
   // Movimentações: allEvents do MESMO builder do extrato (janela 12m do fetch)

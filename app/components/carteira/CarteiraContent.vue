@@ -17,7 +17,7 @@
 //     CarteiraMundo      "onde está o meu dinheiro?" — país e região, num globo (05/11)
 //     CarteiraCadeia     "as minhas empresas dependem umas das outras?" (05/11)
 //  4. ProventosContas    o que está a caminho e as contas do Open Finance
-//  5. CarteiraAnalise    desempenho, Raio-X, movimentações e P&L, sob pedido
+//  5. CarteiraAnalise    desempenho, movimentações e P&L, sob pedido
 // Sem Open Finance conectado a página VIRA o convite (CarteiraVazia). Seção
 // sem dado real não renderiza. Nunca número inventado.
 import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
@@ -35,13 +35,13 @@ const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
 // a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
 const temAcoes = computed(() => !!props.payload.posicoesMundo?.some((p) => p.classe === 'STOCK'))
 const temCadeia = ref(false)
-// os achados da Redentia AI, no modal do botão "Ideias" do topo: com Raio-X ou
-// com a análise escrita (sem nada a apontar, a linha calma); sem os dois, o topo
-// fica com o Perguntar
+// os achados da Redentia AI, no modal do botão "Ideias" do topo: os pontos de
+// atenção do score de hoje (sem nada a apontar, a linha calma); sem o score, o
+// topo fica com o Perguntar
 const achados = computed(() => {
   const p = props.payload
-  if (!p.raiox && !p.analise) return null
-  return { raiox: p.raiox, analise: p.analise ?? null, posicoes: p.posicoesMundo ?? [], olhadaEm: p.olhadaEm ?? null }
+  if (!p.raiox) return null
+  return { raiox: p.raiox, posicoes: p.posicoesMundo ?? [], olhadaEm: p.olhadaEm ?? null }
 })
 
 // A faixa abaixo do header vira o rail desta página quando há carteira (no
@@ -63,7 +63,7 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
 
 // Âncoras vindas da home (#posicoes, #renda-passiva…): o scrollBehavior do
 // Nuxt dispara antes do layout assentar. Correção pós-mount, como antes; as
-// da análise completa (#raio-x, #pnl…) o CarteiraAnalise abre e rola.
+// da análise completa (#pnl…) o CarteiraAnalise abre e rola.
 onMounted(() => {
   const id = useRoute().hash.slice(1)
   if (!id || !railSections.value.some((s) => s.id === id)) return

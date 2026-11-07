@@ -13,45 +13,30 @@
 // celular, folha que sobe do pé.
 //
 // O conteúdo é o mesmo da barra, já testado em utils/achadosDaCarteira.ts
-// (montarAchados: gravidade, ISIN → nome, CVM sem ordem nem alocação
-// prescrita, número brasileiro, idade da análise): a assinatura "Redentia AI
-// · olhou N ativos hoje às HH:MM", a contagem, as linhas (título e número de
-// hoje à direita, o "Perguntar à Redentia" de cada uma) nos grupos "Pede
-// atenção" / "Vai bem" e, no fim, apagada, "Da análise de 22/05 · há N dias".
-// Com a análise desatualizada, o selo e o "Pedir uma análise nova", que só
-// PREENCHE o pedido no chat (useChatPainel().preencher); o envio fica com a
-// pessoa. Abrir o chat daqui fecha o modal; quando a resposta termina (o
-// streaming do useNuChat volta a false) ou o painel fecha, a análise é relida.
-import type { CarteiraAnaliseIA, CarteiraPosicaoMundo, CarteiraRaioXVM } from '~/types/carteira'
-import { achadosHtml, assinaturaDosAchados, montarAchados, oQueOlhou, PEDIDO_DE_ANALISE_NOVA, resumoDosAchados, tituloDosAchados } from '~/utils/achadosDaCarteira'
+// (montarAchados: os pontos de atenção do score de hoje, por gravidade): a
+// assinatura "Redentia AI · olhou N ativos hoje às HH:MM", a contagem e as
+// linhas (título e número de hoje à direita, o "Perguntar à Redentia" de cada
+// uma) nos grupos "Pede atenção" / "Vai bem". Sem ponto de atenção, a linha
+// calma. Abrir o chat daqui fecha o modal. A análise escrita pela IA e o
+// "Pedir uma análise nova" (que pedia ao chat para reanalisar) saíram em
+// 07/11/2026, com o Raio-X da carteira.
+import type { CarteiraPosicaoMundo, CarteiraScoreVM } from '~/types/carteira'
+import { achadosHtml, assinaturaDosAchados, montarAchados, oQueOlhou, resumoDosAchados, tituloDosAchados } from '~/utils/achadosDaCarteira'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
 const props = defineProps<{
-  raiox: CarteiraRaioXVM | null
-  analise: CarteiraAnaliseIA | null
+  raiox: CarteiraScoreVM | null
   posicoes: CarteiraPosicaoMundo[]
   olhadaEm: string | null
 }>()
 
-/* ————— a análise: a do payload, ou a relida depois de pedir uma nova ————— */
-const relida = ref<CarteiraAnaliseIA | null | undefined>(undefined)
-const analise = computed(() => (relida.value !== undefined ? relida.value : props.analise))
-
-// a sincronização mais recente do Open Finance (o topo já buscou as contas)
-const { connections, ensure: carregarContas } = useContasConectadas()
-onMounted(carregarContas)
-const ultimoSync = computed(() => {
-  const t = connections.value.map((c) => c.last_synced_at).filter((x): x is string => !!x).sort()
-  return t.length ? t[t.length - 1]! : null
-})
-
-const vm = computed(() => montarAchados({ raiox: props.raiox, analise: analise.value, posicoes: props.posicoes, olhadaEm: props.olhadaEm, ultimoSync: ultimoSync.value }))
+const vm = computed(() => montarAchados({ raiox: props.raiox, posicoes: props.posicoes, olhadaEm: props.olhadaEm }))
 const cabeca = computed(() => tituloDosAchados(vm.value))
 const assinatura = computed(() => assinaturaDosAchados(vm.value))
 
 /** a contagem do título, sem a abertura (que vai na assinatura); o número não se separa da palavra dele */
 const tituloEmPartes = computed(() => {
-  const out: { texto: string; numero?: 'atencao' | 'ideia'; cola?: string }[] = []
+  const out: { texto: string; numero?: 'atencao'; cola?: string }[] = []
   let cola = false
   for (const p of cabeca.value.pedacos.slice(1)) {
     if (p.numero) { out.push({ ...p, cola: '' }); cola = true; continue }
@@ -66,20 +51,11 @@ const tituloEmPartes = computed(() => {
   }
   return out
 })
-/** a análise escrita desatualizada: o modal diz, e cada item dela já leva a data */
-const avisoAntiga = computed(() => {
-  const a = vm.value.analise
-  if (!a?.desatualizada) return null
-  if (a.antiga) return vm.value.antigos
-    ? `O que está em cima é de hoje. A análise escrita é de ${a.data}, há ${a.dias} dias, e o que vem dela fica no fim, separado.`
-    : `Os números são de hoje. A análise escrita é de ${a.data}, há ${a.dias} dias.`
-  return `Os números são de hoje. A análise escrita é de ${a.data}, de antes da última sincronização do Open Finance.`
-})
 
 /* ————— o valor em reais some com o olho fechado (o dos detalhes) ————— */
 const { hidden } = useHiddenValues()
 const semValor = (t: string) => (hidden.value ? t.replace(/R\$\s?[\d.,]+/g, 'R$ ••••') : t)
-const html = computed(() => (vm.value.vazio ? '' : achadosHtml(vm.value, { olhou: false, aviso: avisoAntiga.value, mascarar: semValor })))
+const html = computed(() => (vm.value.vazio ? '' : achadosHtml(vm.value, { olhou: false, mascarar: semValor })))
 
 /* ————— o botão: o selo conta os pontos de atenção de hoje ————— */
 const pontos = computed(() => vm.value.pontos)
@@ -113,35 +89,9 @@ onBeforeUnmount(() => {
   document.documentElement.style.overflow = ''
 })
 
-/* ————— pedir uma análise nova: o chat refaz; o modal relê quando ele termina ————— */
-const painel = useChatPainel()
-const { token } = useAuthState()
-const { streaming } = useNuChat()
-const pediu = ref(false)
-const relendo = ref(false)
-async function relerAnalise() {
-  if (!token.value || relendo.value) return
-  relendo.value = true
-  try {
-    const r = await carteiraFetchAnalysis('/api/backend', { Accept: 'application/json', Authorization: `Bearer ${token.value}` })
-    const a = r?.analysis
-    if (a) relida.value = { risks: a.risks, recommendations: a.recommendations, strengths: a.strengths, generated_at: a.generated_at }
-  } catch { /* sem resposta: fica a análise de antes, com a data dela */ } finally {
-    relendo.value = false
-  }
-}
-watch(streaming, (agora, antes) => { if (pediu.value && antes && !agora) void relerAnalise() })
-watch(() => painel.aberto.value, (a) => {
-  if (!pediu.value || a) return
-  pediu.value = false
-  void relerAnalise()
-})
-
 /* ————— as ações: o chip de pergunta do /asset ————— */
-const PERGUNTAR = 'Perguntar à Redentia'
-const PEDIR = 'Pedir uma análise nova'
-const RELENDO = 'Relendo a análise…'
-const acoes = computed(() => [PERGUNTAR, ...(vm.value.analise?.desatualizada ? [relendo.value ? RELENDO : PEDIR] : [])])
+const painel = useChatPainel()
+const acoes = ['Perguntar à Redentia']
 const contexto = computed(() => ({
   id: 'carteira:achados',
   tipo: 'carteira',
@@ -150,9 +100,8 @@ const contexto = computed(() => ({
     vm.value.vazio
       ? `A Redentia olhou ${oQueOlhou(vm.value) ?? 'a carteira'} (${vm.value.olhouEm ?? 'hoje'}) e não encontrou nada que peça atenção.`
       : `A Redentia olhou ${oQueOlhou(vm.value) ?? 'a carteira'} (${vm.value.olhouEm ?? 'hoje'}) e encontrou ${resumoDosAchados(vm.value)}.`,
-    avisoAntiga.value ?? '',
-    ...vm.value.itens.map((a) => `${a.selo} (${a.quando}): ${a.titulo}${a.texto ? ` — ${semValor(a.texto)}` : ''}`),
-  ].filter(Boolean).join('\n'),
+    ...vm.value.itens.map((a) => `${a.selo}: ${a.titulo}${a.texto ? ` — ${semValor(a.texto)}` : ''}`),
+  ].join('\n'),
 }))
 /** abrir o chat daqui fecha o modal primeiro (o foco volta ao botão, e o painel o toma) */
 function abrirChat(pergunta?: string) {
@@ -166,16 +115,6 @@ function aoClicarNoMiolo(e: MouseEvent) {
   if (!a) return
   e.preventDefault()
   abrirChat(semValor(a.pergunta))
-}
-function agir(q: string) {
-  if (q === RELENDO) return
-  if (q === PEDIR) {
-    pediu.value = true
-    fechar()
-    painel.preencher(PEDIDO_DE_ANALISE_NOVA)
-    return
-  }
-  abrirChat()
 }
 </script>
 
@@ -211,15 +150,13 @@ function agir(q: string) {
             <template v-else>{{ p.texto }}</template>
           </template>
         </h2>
-        <p v-if="cabeca.idade" class="cid__idade">{{ cabeca.idade }}</p>
 
+        <!-- sem nada a apontar, a linha calma é o título e o corpo some -->
         <!-- eslint-disable-next-line vue/no-v-html — achadosHtml escapa tudo antes -->
         <div v-if="html" class="cid__corpo" v-html="html" />
-        <!-- sem nada a apontar, a linha calma é o título; fica só o aviso da análise -->
-        <div v-else-if="avisoAntiga" class="cid__corpo"><p class="cah__nota">{{ avisoAntiga }}</p></div>
 
         <div class="cid__pe">
-          <AtivoPerguntaChips :perguntas="acoes" tom="claro" :rotulo="null" @perguntar="agir" />
+          <AtivoPerguntaChips :perguntas="acoes" tom="claro" :rotulo="null" @perguntar="abrirChat()" />
         </div>
       </div>
     </div>
@@ -269,7 +206,6 @@ function agir(q: string) {
 .cid__fechar:hover { background: var(--nu-day-close-hover); }
 .cid__fechar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .cid__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; text-wrap: pretty; }
-.cid__idade { margin: 8px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; }
 .cid__corpo { margin-top: 8px; }
 .cid__pe { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--nu-day-divider); }
 
@@ -280,14 +216,11 @@ function agir(q: string) {
 }
 .cah__cola { white-space: nowrap; }
 .cah__n--atencao { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
-.cah__n--ideia { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 
 /* ——— as linhas: o acabamento que o dono preferiu (o idioma dos indicadores do /asset) ——— */
 .cah :deep(.cah__frase) { margin: 14px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; }
-.cah :deep(.cah__nota) { margin: 18px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.5; }
 .cah :deep(.cah__cols) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
 .cah :deep(.cah__grupo) { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.cah :deep(.cah__grupo-d) { font-weight: 500; }
 .cah :deep(.cah__lista) { list-style: none; margin: 0; padding: 0; }
 .cah :deep(.cah__item) {
   position: relative; margin: 0 0 -1px; padding: 14px 0 8px;
@@ -307,12 +240,10 @@ function agir(q: string) {
 .cah :deep(.cah__t::before) { content: ''; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--nu-gray); transform: translateY(-1px); }
 .cah :deep(.cah__item--alta .cah__t::before) { background: var(--nu-red-text); }
 .cah :deep(.cah__item--media .cah__t::before) { background: var(--nu-amber); }
-.cah :deep(.cah__item--ideia .cah__t::before) { background: var(--nu-blue); }
 .cah :deep(.cah__item--forca .cah__t::before) { background: var(--nu-green); }
 .cah :deep(.cah__v) { flex-shrink: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .cah :deep(.cah__x) { margin: 4px 0 0 18px; max-width: 72ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cah :deep(.cah__pe) { display: flex; align-items: center; justify-content: space-between; gap: 4px 16px; flex-wrap: wrap; min-height: 30px; margin: 2px 0 0 18px; }
-.cah :deep(.cah__meta) { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 /* o "Perguntar à Redentia" da linha: surge no hover e no foco */
 .cah :deep(.cah__perg) {
   display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 4px 0; border: 0; background: none; cursor: pointer;
@@ -326,11 +257,6 @@ function agir(q: string) {
 .cah :deep(.cah__item:hover .cah__perg), .cah :deep(.cah__item:focus-within .cah__perg) { opacity: 1; transform: none; }
 .cah :deep(.cah__perg:hover) { gap: 10px; color: var(--nu-blue-hover); }
 .cah :deep(.cah__perg:focus-visible) { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-/* a análise antiga: no fim, apagada */
-.cah :deep(.cah__antiga) { margin-top: 22px; }
-.cah :deep(.cah__antiga .cah__t) { color: var(--nu-gray-2); font-weight: 600; }
-.cah :deep(.cah__antiga .cah__x) { color: var(--nu-gray); }
-.cah :deep(.cah__antiga .cah__t::before) { opacity: .55; }
 /* sem hover (toque) ou na tela estreita: o "Perguntar" fica à vista */
 @media (hover: none), (max-width: 640px) {
   .cah :deep(.cah__perg) { opacity: 1; transform: none; }

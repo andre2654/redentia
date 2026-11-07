@@ -174,8 +174,7 @@ export function useNuBriefing() {
 /* ═════ FAQ da home ═════ */
 
 // Revisto em 31/10/2026 com o plano único (R$ 19,99 por mês, 3 dias grátis
-// com cartão; pagos a carteira, o Open Finance e a IA). A resposta antiga do
-// "é gratuita?" falava de um plano Pro que deixou de existir. Os cenários são
+// com cartão; pagos a carteira, o Open Finance e a IA). Os cenários são
 // os do motor da Simulação: 2.000 caminhos de cinco anos sorteados de trechos
 // reais do histórico (blocos conjuntos), com juros, dólar e petróleo juntos,
 // em dinheiro de hoje. Os apps: desde 02/11/2026 o do iPhone está na App
