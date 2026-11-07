@@ -4,7 +4,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 const pagina = readFileSync(new URL('../app/pages/jantar.vue', import.meta.url), 'utf8')
 const layout = readFileSync(new URL('../app/layouts/jantar.vue', import.meta.url), 'utf8')
@@ -38,17 +38,43 @@ test('o CTA é a fila no WhatsApp, em aba nova, sem formulário', () => {
 })
 
 test('a copy fica nos fatos travados', () => {
+  const h1 = template.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/)?.[0] ?? ''
+  assert.match(h1, /O jantar dos/)
+  assert.match(h1, /CEOs/)
+  assert.match(h1, /de assessorias, family offices e gestoras\./)
+  assert.doesNotMatch(h1, /A próxima mesa/)
+  const apoio = template.indexOf('jt__apoio')
+  const lead = template.indexOf('jt__lead')
+  assert.ok(template.indexOf('<h1') < apoio && apoio < lead)
+  assert.match(template, /class="jt__apoio">A próxima mesa já está posta\. Reserve sua cadeira\.<\/p>/)
   assert.match(template, /Mesa fechada\. Convite sob curadoria\. Conversa entre quem decide\. Poucas cadeiras, nenhuma por acaso\./)
-  assert.match(template, /A próxima mesa já está posta\. Reserve sua cadeira\./)
   assert.match(template, /Nem todo mundo senta nesta mesa\./)
   assert.match(template, /A cadeira não se compra\. Se conquista pela trajetória\./)
-  assert.match(template, /Não é evento\. É uma mesa fechada\./)
+  assert.match(template, /Não é evento\./)
+  assert.match(template, /É uma mesa fechada\./)
+  assert.match(pagina, /Sócios, diretores e C-level de assessorias, family offices, bancos e gestoras/)
   assert.match(pagina, /conversa de 20 minutos/)
   assert.match(pagina, /R\$\\u00A0600/)
   assert.match(pagina, /Você já corre assessoria, family office, banco ou gestora\./)
   assert.match(pagina, /Você chega para somar, não para vender\./)
   assert.doesNotMatch(pagina, /450|350|40\+|organiz|depoimento|rentabilidade|recomend|clientes|\bCVM\b|\bB3\b/i)
   assert.equal(descricao.length <= 160, true, String(descricao.length))
+})
+
+test('a página usa a identidade da campanha e o header navy fica só neste layout', () => {
+  assert.match(pagina, /#0c1524/)
+  assert.match(pagina, /#2f6aff/)
+  assert.match(pagina, /#f5f1ea/)
+  assert.match(pagina, /var\(--nu-font\)/)
+  assert.match(pagina, /logo-branca\.svg/)
+  assert.match(pagina, /logo-azul\.svg/)
+  assert.doesNotMatch(pagina, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin|font-family:\s*Inter/)
+  assert.doesNotMatch(layout, /3[Dd][Dd][Cc]97|Noto Serif|noto-serif|inter-latin/)
+  assert.match(layout, /body\.pagina-jantar \.nuh-wrap/)
+  assert.match(layout, /#0c1524/)
+  assert.match(nav, /\.nuh-wrap \{[^}]*background:\s*var\(--nu-white\)/)
+  assert.equal(existsSync(new URL('../public/fonts/inter-latin.woff2', import.meta.url)), false)
+  assert.equal(existsSync(new URL('../public/fonts/noto-serif-display-latin.woff2', import.meta.url)), false)
 })
 
 test('a URL entra no sitemap de páginas, com o mesmo título e a mesma description', () => {

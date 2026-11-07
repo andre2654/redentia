@@ -8,9 +8,8 @@
  * o jantar a uma pessoa.
  * Cada CTA abre o WhatsApp, numa aba nova.
  *
- * Cor e tipo desta página apenas: fundo #0A0D0C, acento #3DDC97, texto
- * #F2F1EC, título em Noto Serif Display, corpo em Inter. O resto do site
- * segue creme, azul e Plus Jakarta.
+ * Identidade desta página: a campanha v3. Navy #0c1524, azul #2f6aff,
+ * creme #f5f1ea, Plus Jakarta Sans. O losango é o logo oficial do site.
  */
 const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20saber%20mais%20sobre%20o%20Redentia%20Wealth%20Intelligence%20Dinner'
 
@@ -27,10 +26,6 @@ usePageSeo({
 useHead({
   titleTemplate: null,
   bodyAttrs: { class: 'pagina-jantar' },
-  link: [
-    { rel: 'preload', href: '/fonts/noto-serif-display-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
-    { rel: 'preload', href: '/fonts/inter-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
-  ],
 })
 
 const criterios = [
@@ -66,7 +61,7 @@ const temas = [
   <div class="jt">
     <div class="jt__ticker">
       <p class="jt__ticker-text">
-        <span class="jt__gem" aria-hidden="true" />
+        <img src="/logo-branca.svg" alt="" width="14" height="14" class="jt__gem">
         <span class="jt__ticker-frase">Mesa fechada. Convite sob curadoria. Conversa entre quem decide. Poucas cadeiras, nenhuma por acaso.</span>
       </p>
       <a class="jt__ticker-cta" :href="fila" target="_blank" rel="noopener noreferrer">
@@ -79,11 +74,12 @@ const temas = [
       <div class="jt__hero-grid">
         <div class="jt__hero-copy">
           <p class="jt__brand">
-            <span class="jt__mark" aria-hidden="true" />
+            <img src="/logo-branca.svg" alt="" width="28" height="28" class="jt__mark">
             <span>Redentia</span>
             <span class="jt__kicker">Edição inaugural</span>
           </p>
-          <h1 id="jt-hero-titulo">A próxima mesa já está posta. Reserve sua cadeira.</h1>
+          <h1 id="jt-hero-titulo">O jantar dos <span class="jt__em">CEOs</span> de assessorias, family offices e gestoras.</h1>
+          <p class="jt__apoio">A próxima mesa já está posta. Reserve sua cadeira.</p>
           <p class="jt__lead">
             Entre na fila e sente com quem está construindo o wealth no Brasil. A aprovação é por curadoria; a data vem depois dela. São Paulo · dezembro, data a combinar.
           </p>
@@ -103,7 +99,7 @@ const temas = [
 
         <aside class="jt__painel" aria-labelledby="jt-formato">
           <h2 id="jt-formato" class="jt__painel-titulo">
-            <span class="jt__mark jt__mark--sm" aria-hidden="true" />
+            <img src="/logo-azul.svg" alt="" width="18" height="18" class="jt__mark jt__mark--sm">
             O formato
           </h2>
           <dl class="jt__dl">
@@ -119,7 +115,7 @@ const temas = [
       </div>
     </section>
 
-    <section id="curadoria" class="jt__bloco" aria-labelledby="jt-curadoria-titulo">
+    <section id="curadoria" class="jt__bloco jt__bloco--creme" aria-labelledby="jt-curadoria-titulo">
       <p class="jt__eyebrow">Curadoria</p>
       <div class="jt__split">
         <h2 id="jt-curadoria-titulo">Nem todo mundo senta nesta mesa.</h2>
@@ -133,20 +129,22 @@ const temas = [
       </div>
     </section>
 
-    <section id="mesa" class="jt__bloco jt__bloco--mesa" aria-labelledby="jt-mesa-titulo">
+    <section id="mesa" class="jt__bloco jt__bloco--azul" aria-labelledby="jt-mesa-titulo">
       <div class="jt__split">
-        <h2 id="jt-mesa-titulo">Não é evento. É uma mesa fechada.</h2>
+        <h2 id="jt-mesa-titulo">Não é evento. <span class="jt__em-ink">É uma mesa fechada.</span></h2>
         <p class="jt__lead">
           O que acontece ao redor da mesa é o que importa: conversa franca sobre IA no wealth, operação, consolidação patrimonial e o que vem pela frente. Sem palco, sem crachá, sem apresentação de slides.
         </p>
       </div>
-      <p class="jt__pauta">Na pauta</p>
-      <ul class="jt__temas">
-        <li v-for="tema in temas" :key="tema.nome">
-          <p class="jt__tema-nome">{{ tema.nome }}</p>
-          <p class="jt__tema-linha">{{ tema.linha }}</p>
-        </li>
-      </ul>
+      <div class="jt__pauta-card">
+        <p class="jt__pauta">Na pauta</p>
+        <ul class="jt__temas">
+          <li v-for="tema in temas" :key="tema.nome">
+            <p class="jt__tema-nome">{{ tema.nome }}</p>
+            <p class="jt__tema-linha">{{ tema.linha }}</p>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <section class="jt__fecho" aria-labelledby="jt-fecho-titulo">
@@ -166,45 +164,24 @@ const temas = [
   </div>
 </template>
 
-<style>
-/* Latin variável, auto-hospedado. Só esta página usa as famílias. */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/inter-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'Noto Serif Display';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/noto-serif-display-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-body.pagina-jantar { background: #0A0D0C; }
-</style>
-
 <style scoped>
 .jt {
-  --jt-bg: #0A0D0C;
-  --jt-ink: #F2F1EC;
-  --jt-accent: #3DDC97;
-  --jt-muted: rgba(242, 241, 236, 0.74);
-  --jt-line: rgba(242, 241, 236, 0.14);
-  --jt-card: #121816;
-  --jt-serif: 'Noto Serif Display', Georgia, 'Times New Roman', serif;
-  --jt-sans: Inter, 'Plus Jakarta Sans', system-ui, sans-serif;
-  background: var(--jt-bg);
+  --jt-navy: #0c1524;
+  --jt-blue: #2f6aff;
+  --jt-cream: #f5f1ea;
+  --jt-ink: #f5f1ea;
+  --jt-muted: rgba(245, 241, 234, 0.78);
+  --jt-line: rgba(245, 241, 234, 0.16);
+  --jt-navy-ink: #0c1524;
+  --jt-navy-muted: rgba(12, 21, 36, 0.68);
+  background: var(--jt-navy);
   color: var(--jt-ink);
-  font-family: var(--jt-sans);
-  font-weight: 400;
+  font-family: var(--nu-font);
+  font-weight: 500;
   line-height: 1.5;
   overflow-x: clip;
 }
-.jt ::selection { background: var(--jt-accent); color: var(--jt-bg); }
+.jt ::selection { background: var(--jt-blue); color: #fff; }
 
 .jt__ticker {
   display: flex;
@@ -213,8 +190,8 @@ body.pagina-jantar { background: #0A0D0C; }
   justify-content: center;
   gap: 8px 22px;
   padding: 12px 20px;
-  border-bottom: 1px solid rgba(61, 220, 151, 0.45);
-  background: #0E1211;
+  border-bottom: 1px solid var(--jt-line);
+  background: var(--jt-navy);
   text-align: center;
 }
 .jt__ticker-text {
@@ -228,49 +205,44 @@ body.pagina-jantar { background: #0A0D0C; }
   color: var(--jt-ink);
   font-size: 13.5px;
   line-height: 1.45;
-  letter-spacing: 0.01em;
 }
 .jt__ticker-frase { min-width: 0; }
-.jt__gem,
-.jt__mark {
-  flex-shrink: 0;
-  background: var(--jt-accent);
-  -webkit-mask: url('/logo-branca.svg') center / contain no-repeat;
-  mask: url('/logo-branca.svg') center / contain no-repeat;
-}
-.jt__gem { width: 11px; height: 11px; }
-.jt__mark { width: 26px; height: 26px; }
-.jt__mark--sm { width: 16px; height: 16px; }
+.jt__gem { width: 14px; height: 14px; flex-shrink: 0; margin-top: 3px; display: block; }
 .jt__ticker-cta {
-  color: var(--jt-accent);
+  color: var(--jt-ink);
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1.4;
-  letter-spacing: 0.01em;
   padding: 6px 2px;
   white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .jt__ticker-cta:hover,
-.jt__ticker-cta:focus-visible { color: var(--jt-accent); text-decoration: underline; text-underline-offset: 3px; }
+.jt__ticker-cta:focus-visible { color: #fff; }
 
 .jt__hero,
 .jt__bloco,
 .jt__fecho { padding: clamp(56px, 8vw, 112px) clamp(20px, 4vw, 40px); }
-.jt__hero { padding-top: clamp(40px, 6vw, 84px); position: relative; }
+.jt__hero {
+  padding-top: clamp(36px, 5vw, 72px);
+  position: relative;
+  background: var(--jt-navy);
+}
 .jt__hero::before {
   content: '';
   position: absolute;
   right: max(0px, calc(50% - 720px));
-  top: 40px;
-  width: min(520px, 46vw);
-  height: min(520px, 46vw);
-  background: radial-gradient(circle, rgba(61, 220, 151, 0.16), transparent 68%);
+  top: 20px;
+  width: min(560px, 48vw);
+  height: min(560px, 48vw);
+  background: radial-gradient(circle, rgba(47, 106, 255, 0.28), transparent 68%);
   pointer-events: none;
 }
 .jt__hero-grid,
 .jt__split,
 .jt__cards,
-.jt__temas,
+.jt__pauta-card,
 .jt__fecho-in { position: relative; z-index: 1; }
 .jt__hero-grid,
 .jt__fecho-in,
@@ -289,41 +261,60 @@ body.pagina-jantar { background: #0A0D0C; }
   gap: 10px 12px;
   margin: 0 0 22px;
   font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
+.jt__mark { width: 28px; height: 28px; display: block; flex-shrink: 0; }
+.jt__mark--sm { width: 18px; height: 18px; }
 .jt__kicker {
   margin-left: 4px;
-  padding: 4px 10px;
-  border: 1px solid rgba(61, 220, 151, 0.55);
+  padding: 5px 12px;
+  border: 1.5px solid rgba(245, 241, 234, 0.7);
   border-radius: 999px;
-  color: var(--jt-accent);
+  color: var(--jt-cream);
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 .jt h1,
 .jt h2,
+.jt__apoio,
 .jt__painel-titulo,
 .jt__row dd,
-.jt__tema-nome {
-  font-family: var(--jt-serif);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
+.jt__tema-nome,
+.jt__card h3 {
+  font-family: var(--nu-font);
+  letter-spacing: -0.035em;
 }
 .jt h1 {
   margin: 0;
-  font-size: clamp(2.55rem, 4.6vw, 4.5rem);
-  max-width: min(14ch, 100%);
+  max-width: 16em;
+  color: var(--jt-cream);
+  font-size: clamp(2.15rem, 3.7vw, 3.45rem);
+  font-weight: 800;
+  line-height: 1.05;
 }
-.jt h2 { margin: 0; font-size: clamp(2rem, 3.6vw, 3.35rem); }
+.jt__em { color: var(--jt-blue); }
+.jt__apoio {
+  margin: 18px 0 0;
+  max-width: 22em;
+  color: var(--jt-cream);
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+.jt h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 3.15rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
 .jt__lead {
-  margin: 22px 0 0;
-  max-width: 46rem;
+  margin: 18px 0 0;
+  max-width: 40rem;
   color: var(--jt-muted);
-  font-size: clamp(1.02rem, 1.3vw, 1.15rem);
+  font-size: clamp(1.02rem, 1.25vw, 1.12rem);
+  font-weight: 500;
   line-height: 1.55;
 }
 .jt__list {
@@ -339,9 +330,10 @@ body.pagina-jantar { background: #0A0D0C; }
   gap: 12px;
   align-items: start;
   font-size: 1.02rem;
+  font-weight: 500;
   line-height: 1.4;
 }
-.jt__check { color: var(--jt-accent); margin-top: 1px; }
+.jt__check { color: var(--jt-blue); margin-top: 1px; }
 .jt__cta {
   display: inline-flex;
   align-items: center;
@@ -351,34 +343,36 @@ body.pagina-jantar { background: #0A0D0C; }
   min-height: 52px;
   padding: 14px 26px;
   border-radius: 999px;
-  background: var(--jt-accent);
-  color: var(--jt-bg);
+  background: var(--jt-blue);
+  color: #fff;
   font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 .jt__cta:hover,
-.jt__cta:focus-visible { background: #62e4ad; color: var(--jt-bg); }
+.jt__cta:focus-visible { background: #2258db; color: #fff; }
 .jt a:focus-visible {
-  outline: 2px solid var(--jt-accent);
+  outline: 2px solid var(--jt-cream);
   outline-offset: 3px;
 }
-.jt__cta:focus-visible { outline-color: var(--jt-ink); }
 
 .jt__painel {
-  background: var(--jt-card);
-  border: 1px solid rgba(61, 220, 151, 0.38);
+  background: var(--jt-cream);
+  color: var(--jt-navy-ink);
   border-radius: 28px;
   padding: clamp(22px, 3vw, 32px);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
 }
 .jt__painel-titulo {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 0 0 8px;
-  font-size: 1.35rem;
+  color: var(--jt-navy-ink);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
 }
 .jt__dl { margin: 0; }
 .jt__row {
@@ -387,24 +381,38 @@ body.pagina-jantar { background: #0A0D0C; }
   gap: 12px 18px;
   align-items: center;
   padding: 16px 0;
-  border-top: 1px solid var(--jt-line);
+  border-top: 1px solid rgba(12, 21, 36, 0.12);
 }
 .jt__row dt { margin: 0; min-width: 0; }
-.jt__row-k { display: block; font-size: 1rem; font-weight: 600; }
-.jt__row-n { display: block; margin-top: 2px; color: var(--jt-muted); font-size: 0.92rem; line-height: 1.35; }
+.jt__row-k { display: block; font-size: 1rem; font-weight: 700; }
+.jt__row-n { display: block; margin-top: 2px; color: var(--jt-navy-muted); font-size: 0.92rem; font-weight: 500; line-height: 1.35; }
 .jt__row dd {
   margin: 0;
-  font-size: clamp(1.7rem, 2.2vw, 2.25rem);
+  color: var(--jt-navy-ink);
+  font-size: clamp(1.55rem, 2vw, 2.05rem);
+  font-weight: 800;
+  line-height: 1.05;
   text-align: right;
   white-space: nowrap;
 }
 
-.jt__bloco { border-top: 1px solid var(--jt-line); }
+.jt__bloco--creme {
+  background: var(--jt-cream);
+  color: var(--jt-navy-ink);
+}
+.jt__bloco--creme .jt__eyebrow { color: var(--jt-blue); }
+.jt__bloco--creme .jt__lead { color: var(--jt-navy-muted); }
+.jt__bloco--azul {
+  background: var(--jt-blue);
+  color: #fff;
+}
+.jt__bloco--azul .jt__lead { color: rgba(255, 255, 255, 0.88); }
+.jt__bloco--azul .jt__em-ink { color: var(--jt-navy); }
 .jt__eyebrow {
   margin: 0 0 16px;
-  color: var(--jt-accent);
+  color: var(--jt-cream);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -424,55 +432,74 @@ body.pagina-jantar { background: #0A0D0C; }
 .jt__card {
   margin: 0;
   padding: 26px 24px 28px;
-  background: var(--jt-card);
-  border: 1px solid var(--jt-line);
-  border-top: 2px solid var(--jt-accent);
-  border-radius: 18px;
+  background: var(--jt-navy);
+  color: var(--jt-cream);
+  border-radius: 20px;
 }
 .jt__card h3 {
   margin: 0;
-  font-family: var(--jt-serif);
-  font-size: 1.7rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  color: var(--jt-cream);
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.15;
 }
 .jt__card p {
   margin: 12px 0 0;
   color: var(--jt-muted);
   font-size: 1.02rem;
+  font-weight: 500;
   line-height: 1.5;
 }
+.jt__pauta-card {
+  margin-top: clamp(36px, 5vw, 56px);
+  background: var(--jt-cream);
+  color: var(--jt-navy-ink);
+  border-radius: 28px;
+  padding: clamp(22px, 3vw, 36px);
+}
 .jt__pauta {
-  margin: clamp(36px, 5vw, 52px) 0 0;
-  color: var(--jt-accent);
-  font-family: var(--jt-sans);
+  margin: 0;
+  color: var(--jt-blue);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 .jt__temas {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--jt-line);
 }
 .jt__temas li {
   min-width: 0;
-  padding: 22px 28px 22px 0;
-  border-bottom: 1px solid var(--jt-line);
+  padding: 18px 28px 18px 0;
+  border-bottom: 1px solid rgba(12, 21, 36, 0.12);
 }
 .jt__temas li:nth-child(odd) {
   padding-right: 32px;
-  border-right: 1px solid var(--jt-line);
+  border-right: 1px solid rgba(12, 21, 36, 0.12);
 }
 .jt__temas li:nth-child(even) { padding-left: 32px; padding-right: 0; }
-.jt__tema-nome { margin: 0; font-size: clamp(1.35rem, 2vw, 1.7rem); }
-.jt__tema-linha { margin: 6px 0 0; color: var(--jt-muted); font-size: 0.98rem; }
+.jt__tema-nome {
+  margin: 0;
+  color: var(--jt-navy-ink);
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.jt__tema-linha {
+  margin: 6px 0 0;
+  color: var(--jt-navy-muted);
+  font-size: 0.98rem;
+  font-weight: 500;
+}
 
-.jt__fecho { border-top: 1px solid var(--jt-line); text-align: center; }
+.jt__fecho {
+  background: var(--jt-navy);
+  text-align: center;
+}
 .jt__fecho-in { max-width: 720px; }
 .jt__fecho .jt__lead { margin-left: auto; margin-right: auto; }
 .jt__fecho .jt__cta { margin-top: 28px; }
@@ -481,6 +508,7 @@ body.pagina-jantar { background: #0A0D0C; }
   max-width: 36rem;
   color: var(--jt-muted);
   font-size: 0.95rem;
+  font-weight: 500;
   line-height: 1.5;
 }
 
@@ -490,19 +518,20 @@ body.pagina-jantar { background: #0A0D0C; }
   .jt__split,
   .jt__cards { grid-template-columns: 1fr; }
   .jt__split { align-items: start; }
-  .jt h1 { max-width: 16ch; }
+  .jt h1,
+  .jt__apoio { max-width: none; }
   .jt__painel { max-width: 560px; }
 }
 @media (max-width: 760px) {
-  .jt__ticker-text { font-size: 13px; text-align: left; }
+  .jt__ticker-text { font-size: 13px; }
   .jt__cta { width: 100%; }
   .jt__temas { grid-template-columns: 1fr; }
   .jt__temas li,
   .jt__temas li:nth-child(odd),
   .jt__temas li:nth-child(even) {
-    padding: 20px 0;
+    padding: 18px 0;
     border-right: 0;
   }
-  .jt__card h3 { font-size: 1.5rem; }
+  .jt__card h3 { font-size: 1.4rem; }
 }
 </style>
