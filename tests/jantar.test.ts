@@ -16,6 +16,18 @@ const template = pagina.slice(pagina.indexOf('<template>'), pagina.lastIndexOf('
 const descricao = 'Mesa fechada em São Paulo, dezembro, data a combinar. 10 cadeiras, uma mesa, nenhuma palestra. Convite sob curadoria. Jantar a R$ 600, só após a aprovação.'
 const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20saber%20mais%20sobre%20o%20Redentia%20Wealth%20Intelligence%20Dinner'
 
+test('o aviso de cookies fica abaixo do header, como no resto do site, e não no rodapé', () => {
+  const recorte = (src: string) => src.slice(src.indexOf('<template>'), src.lastIndexOf('</template>'))
+  const jantarTpl = recorte(layout)
+  const padrao = recorte(readFileSync(new URL('../app/layouts/default.vue', import.meta.url), 'utf8'))
+  assert.match(padrao, /<NuHeader\s*\/>[\s\S]*?<ConsentBanner\s*\/>[\s\S]*?<main>/)
+  assert.doesNotMatch(padrao.slice(padrao.lastIndexOf('<NuFooter')), /ConsentBanner/)
+  assert.match(jantarTpl, /<\/header>[\s\S]*?<ConsentBanner\s*\/>[\s\S]*?<main>/)
+  assert.doesNotMatch(jantarTpl.slice(jantarTpl.indexOf('class="jt-foot"')), /ConsentBanner/)
+  assert.equal((jantarTpl.match(/<ConsentBanner\b/g) ?? []).length, 1)
+  assert.doesNotMatch(pagina, /<ConsentBanner\b/)
+})
+
 test('a página usa o layout do jantar, com rodapé do site, e não entra no menu', () => {
   assert.match(pagina, /layout:\s*'jantar'/)
   assert.doesNotMatch(layout, /<NuHeader/)
