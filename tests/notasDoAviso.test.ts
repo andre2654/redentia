@@ -2,15 +2,17 @@
  * As notas da ideia no aviso (08/11/2026): as células do antes → depois das 4
  * notas do relatório (utils/notasDoAviso.ts), o relatório que abre com a troca
  * do hash (VisaoRelatorio.vue), o mock que mostra as notas na
- * /dev/carteira-nova e a faixa no cartão do aviso (CarteiraAvisos.vue). Os .vue
- * são lidos como texto: não dependem do Nuxt.
+ * /dev/carteira-nova e a faixa no cartão do aviso (CarteiraAvisos.vue). Depois,
+ * os indicadores que mudam, na linha embaixo da faixa. Os .vue são lidos como
+ * texto: não dependem do Nuxt.
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { celulasDasNotas } from '../app/utils/notasDoAviso.ts'
+import { celulasDasNotas, indicadoresQueMudam, quantosNaLinha } from '../app/utils/notasDoAviso.ts'
+import { valorDoIndicador } from '../app/utils/relatorioCarteira.ts'
 import { relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
-import type { NotaDoAviso } from '../app/types/carteiraVisao.ts'
+import type { IndicadorDoAviso, NotaDoAviso } from '../app/types/carteiraVisao.ts'
 
 const nota = (pilar: NotaDoAviso['pilar'], nome: string, antes: number | null, depois: number | null): NotaDoAviso => ({ pilar, nome, antes, depois })
 const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
@@ -136,4 +138,152 @@ test('o cartão do aviso desenha a faixa a partir de a.notas, pelo util, entre o
 
   // o chat recebe as notas como a faixa as mostra
   assert.match(script, /Notas do relatório, antes e depois: \$\{notas\}/)
+})
+
+/* ————— os indicadores que mudam ————— */
+
+const ind = (chave: string, unidade: IndicadorDoAviso['unidade'], antes: number | null, depois: number | null, melhor: IndicadorDoAviso['melhor'] = 'maior', nome = chave): IndicadorDoAviso =>
+  ({ chave, nome, unidade, antes, depois, melhor })
+/** os nomes curtos pedidos (08/11), pela chave do catálogo do relatório */
+const CURTOS: Record<string, string> = {
+  twr: 'TWR', mwr: 'MWR', cagr: 'CAGR', retorno_real: 'Acima da inflação', volatilidade: 'Volatilidade',
+  downside_deviation: 'Volatilidade das quedas', max_drawdown: 'Maior queda', beta: 'Beta', r2: 'R²', sharpe: 'Sharpe',
+  sortino: 'Sortino', treynor: 'Treynor', alpha_jensen: 'Alpha', m2: 'M²', information_ratio: 'Information ratio',
+  tracking_error: 'Tracking error', appraisal_ratio: 'Appraisal', maior_posicao: 'Maior posição', maior_classe: 'Maior classe',
+}
+
+test('os indicadores escrevem o valor como o relatório (valorDoIndicador), em cada unidade', () => {
+  const casos: [number, IndicadorDoAviso['unidade']][] = [
+    [21.42, '%'], [-9.46, '%'], [0.04, '%'], [53.28, '%'], [10.57, '%'],
+    [0.78, 'x'], [1, 'x'], [-0.08, ''], [22, ''], [0, ''], [-0.12, ''], [0.41, ''],
+  ]
+  for (const [v, unidade] of casos) {
+    const [i] = indicadoresQueMudam([ind('x', unidade, v, v + 10)])
+    assert.equal(i!.antes, valorDoIndicador(v, unidade), `${v} ${unidade}`)
+    assert.equal(i!.depois, valorDoIndicador(v + 10, unidade), `${v + 10} ${unidade}`)
+  }
+})
+
+test('os indicadores: sai o que o relatório escreveria igual, o que não tem os dois valores e a unidade fora do contrato', () => {
+  const linha = indicadoresQueMudam([
+    ind('volatilidade', '%', 10.57, 10.62, 'menor'), // 10,6% → 10,6%: muda só na 2ª casa
+    ind('sharpe', '', -0.05, -0.01),
+    ind('beta', 'x', null, 0.8, 'menor'),
+    ind('r2', '', 0.81, null),
+    ind('patrimonio', 'R$' as unknown as '%', 1000, 2000), // um R$ apareceria com o olho fechado
+  ])
+  assert.deepEqual(linha.map((i) => i.chave), ['sharpe'])
+  assert.deepEqual(indicadoresQueMudam(undefined), [])
+  assert.deepEqual(indicadoresQueMudam(null), [])
+  assert.deepEqual(indicadoresQueMudam([]), [])
+})
+
+test('os indicadores: melhora pelo lado bom de cada um, com o nome curto e a frase do leitor de tela', () => {
+  const linha = indicadoresQueMudam([
+    ind('sharpe', '', -0.05, -0.01, 'maior', 'Índice de Sharpe'),
+    ind('volatilidade', '%', 10.57, 10.52, 'menor'),
+    ind('beta', 'x', 0.78, 0.81, 'menor'),
+    ind('max_drawdown', '%', -9.46, -11.2, 'maior', 'Maior queda'),
+    ind('alpha_jensen', '%', 1.32, 1.68, 'maior', 'Alpha de Jensen'),
+    ind('numero_de_ativos', '', 22, 23, 'maior', 'Número de ativos'),
+  ])
+  assert.deepEqual(linha.map((i) => [i.nome, i.antes, i.depois, i.melhora]), [
+    ['Sharpe', '−0,05', '−0,01', true],
+    ['Volatilidade', '10,6%', '10,5%', true],
+    ['Beta', '0,78', '0,81', false],
+    ['Maior queda', '−9,5%', '−11,2%', false],
+    ['Alpha', '1,3%', '1,7%', true],
+    ['Número de ativos', '22', '23', true],
+  ])
+  assert.equal(linha[0]!.aria, 'Sharpe: de −0,05 para −0,01, melhora')
+  assert.equal(linha[2]!.aria, 'Beta: de 0,78 para 0,81, piora')
+})
+
+test('os nomes curtos cobrem o catálogo do relatório; só os que já são curtos ficam com o nome dele', () => {
+  for (const [chave, curto] of Object.entries(CURTOS)) {
+    assert.equal(indicadoresQueMudam([ind(chave, '', 1.5, 2.5, 'maior', 'o nome do relatório')])[0]!.nome, curto, chave)
+  }
+  const semCurto = relatorioMock().indicadores.map((i) => i.chave).filter((k) => !(k in CURTOS))
+  assert.deepEqual(semCurto, ['numero_de_ativos', 'correlacao_media'])
+})
+
+test('o mock: os indicadores da ideia partem dos valores do relatório do mock, com o lado bom das faixas do backend', () => {
+  const a = visaoMock('normal').avisos.itens.find((x) => x.detector === 'ideia.ajustes')
+  assert.ok(a?.indicadores?.length, 'o mock sem os indicadores')
+  const catalogo = relatorioMock().indicadores
+  const doRelatorio = new Map(catalogo.map((i) => [i.chave, i]))
+  // Nota::FAIXAS do backend: "menor é melhor"
+  const MENOR = new Set(['volatilidade', 'downside_deviation', 'beta', 'tracking_error', 'maior_posicao', 'maior_classe', 'correlacao_media'])
+  for (const i of a!.indicadores!) {
+    const r = doRelatorio.get(i.chave)
+    assert.ok(r, `${i.chave} fora do catálogo`)
+    assert.deepEqual([i.antes, i.nome, i.unidade], [r!.valor, r!.nome, r!.unidade], `${i.chave}: o antes é o do relatório`)
+    assert.equal(i.melhor, MENOR.has(i.chave) ? 'menor' : 'maior', i.chave)
+    assert.notEqual(i.depois, i.antes, `${i.chave} não muda`)
+  }
+  const ordem = a!.indicadores!.map((i) => catalogo.findIndex((c) => c.chave === i.chave))
+  assert.deepEqual(ordem, [...ordem].sort((x, y) => x - y), 'fora da ordem do catálogo')
+  // a volatilidade das quedas muda só na 2ª casa e sai; 11 ficam, só o beta piora;
+  // 6 cabem nas 2 linhas do desktop e 5 vão para o "Como calculei"
+  const linha = indicadoresQueMudam(a!.indicadores)
+  assert.equal(linha.length, 11)
+  assert.ok(!linha.some((i) => i.chave === 'downside_deviation'))
+  assert.deepEqual(linha.filter((i) => !i.melhora).map((i) => i.chave), ['beta'])
+  assert.equal(quantosNaLinha(linha), 6)
+})
+
+/** um indicador já escrito, só para a conta do tamanho */
+const escrito = (nome: string, antes: string, depois: string) => ({ nome, antes, depois })
+
+test('a linha: até 8 e no máximo 2 linhas no desktop, contando o separador e o "e mais N"', () => {
+  // o caso do dono (troca_dy): 5 curtos cabem inteiros, sem o "e mais"
+  const dono = [escrito('Sharpe', '−0,05', '−0,01'), escrito('Sortino', '−0,07', '−0,02'), escrito('Volatilidade', '10,6%', '10,5%'), escrito('Treynor', '−0,4%', '−0,3%'), escrito('M²', '13,1%', '13,4%')]
+  assert.equal(quantosNaLinha(dono), 5)
+  // dez bem curtos: cabem mais de 8, mas a linha para nos 8
+  assert.equal(quantosNaLinha(Array.from({ length: 10 }, () => escrito('R²', '0,81', '0,83'))), 8)
+  // os nomes mais longos do catálogo: 4 e o "e mais 4"
+  const longos = [
+    escrito('Volatilidade das quedas', '5,1%', '5,0%'), escrito('Information ratio', '0,41', '0,46'), escrito('Tracking error', '3,8%', '3,7%'),
+    escrito('Acima da inflação', '8,4%', '8,8%'), escrito('Maior posição', '14,5%', '14,0%'), escrito('Maior classe', '53,3%', '53,2%'),
+    escrito('Appraisal', '0,27', '0,31'), escrito('Maior queda', '−19,5%', '−19,3%'),
+  ]
+  assert.equal(quantosNaLinha(longos), 4)
+  // sempre pelo menos um; nada sem nada
+  assert.equal(quantosNaLinha([escrito('Volatilidade das quedas', '15,1%', '15,0%')], 20), 1)
+  assert.equal(quantosNaLinha([]), 0)
+})
+
+test('o cartão desenha a linha dos indicadores embaixo das notas: o que cabe, o resto no "Como calculei", e a cor só no texto', () => {
+  const src = ler('app/components/carteira/visao/CarteiraAvisos.vue')
+  const script = src.slice(0, src.indexOf('</script>'))
+  const tpl = src.slice(src.indexOf('<template>'), src.lastIndexOf('</template>'))
+  assert.match(script, /import \{[^}]*\bindicadoresQueMudam\b[^}]*\} from '~\/utils\/notasDoAviso'/)
+  assert.match(script, /indicadoresQueMudam\(a\.indicadores\)/)
+  assert.match(script, /naLinha: quantosNaLinha\(todos\)/)
+
+  const notas = tpl.indexOf('class="cav__notas"')
+  const linha = tpl.indexOf('class="cav__inds"')
+  const ressalva = tpl.indexOf('class="cav__ressalva"')
+  assert.ok(notas > 0 && notas < linha && linha < ressalva, 'a linha fica embaixo das notas e antes da ressalva')
+  const bloco = tpl.slice(linha, ressalva)
+  assert.match(bloco, /v-for="i in indicadoresDe\(a\)\.slice\(0, naLinha\(a\)\)"[^>]*role="img" :aria-label="i\.aria"/)
+  assert.match(bloco, /i\.melhora \? 'cav__ind-d--melhora' : 'cav__ind-d--piora'/)
+  assert.match(bloco, /v-if="indicadoresDe\(a\)\.length > naLinha\(a\)"/)
+  assert.match(bloco, /e mais \{\{ indicadoresDe\(a\)\.length - naLinha\(a\) \}\}/)
+  // número não é R$: nada da linha passa pela máscara do olho
+  assert.doesNotMatch(bloco, /semValor|naTela/)
+
+  // o resto vai para o "Como calculei", e o "e mais N" abre ele
+  const prova = tpl.slice(tpl.indexOf('class="cav__prova"'), tpl.indexOf('class="cav__fonte"'))
+  assert.match(prova, /v-for="i in indicadoresDe\(a\)\.slice\(naLinha\(a\)\)"/)
+  assert.match(prova, /role="img" :aria-label="i\.aria"/)
+  assert.match(bloco, /@click="abrirProva\(a\.id\)"/)
+
+  // a cor é a do texto (verde quando melhora, vermelho quando piora), e a linha quebra entre os indicadores
+  assert.match(src, /\.cav__ind-d--melhora \{ color: var\(--nu-green-text\); \}/)
+  assert.match(src, /\.cav__ind-d--piora \{ color: var\(--nu-red-text\); \}/)
+  assert.match(src, /\.cav__inds \{ display: flex; flex-wrap: wrap;/)
+  assert.match(src, /\.cav__ind \{ white-space: nowrap; \}/)
+  // o chat recebe os indicadores como a linha os mostra
+  assert.match(script, /Indicadores do relatório que mudam: \$\{indicadores\}/)
 })

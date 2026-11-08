@@ -36,10 +36,16 @@
 // +N. É a resposta, de relance, ao "pequenas mudanças que melhorariam todos os
 // índices" do dono. Nota não é R$: não passa pelo olho. O "Ver o relatório"
 // só troca o hash, e o VisaoRelatorio abre sozinho.
+//
+// Embaixo da faixa (08/11, o "só 1 número?" do dono quando só uma nota subia):
+// uma linha com os indicadores do relatório que mudam ("Sharpe −0,05 → −0,01 ·
+// Volatilidade 10,6% → 10,5%"), com a seta e o depois em verde quando melhora e
+// em vermelho quando piora. Na linha, até 8 e no máximo 2 linhas no desktop; o
+// resto vai para o "Como calculei", atrás do "e mais N".
 import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
 import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } from '~/utils/carteiraVisao'
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
-import { celulasDasNotas, type CelulaDaNota } from '~/utils/notasDoAviso'
+import { celulasDasNotas, indicadoresQueMudam, quantosNaLinha, type CelulaDaNota } from '~/utils/notasDoAviso'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
 // semBotao (06/11): sem o botão redondo; o modal abre pelos próprios itens e pelo "+N".
@@ -67,6 +73,13 @@ const notasPorAviso = computed(() => new Map(props.avisos.itens.map((a) => [a.id
 const notasDe = (a: Aviso) => notasPorAviso.value.get(a.id) ?? []
 /** a faixa que muda na barra: 2 px depois do trecho cheio, e larga o bastante para um +1 aparecer */
 const faixa = (n: CelulaDaNota) => ({ left: `calc(${n.base}% + 2px)`, width: `max(4px, calc(${n.topo - n.base}% - 2px))` })
+// os indicadores que mudam: na linha, até 8 e no máximo 2 linhas no desktop (quantosNaLinha); o resto, no "Como calculei"
+const indicadoresPorAviso = computed(() => new Map(props.avisos.itens.map((a) => {
+  const todos = indicadoresQueMudam(a.indicadores)
+  return [a.id, { todos, naLinha: quantosNaLinha(todos) }]
+})))
+const indicadoresDe = (a: Aviso) => indicadoresPorAviso.value.get(a.id)?.todos ?? []
+const naLinha = (a: Aviso) => indicadoresPorAviso.value.get(a.id)?.naLinha ?? 0
 
 /* ————— o modal ————— */
 const aberto = ref(false)
@@ -99,6 +112,8 @@ onBeforeUnmount(() => {
 })
 
 function alternarProva(id: string) { provaAberta.value = provaAberta.value === id ? null : id }
+/** o "e mais N" dos indicadores abre o "Como calculei", onde está o resto */
+function abrirProva(id: string) { provaAberta.value = id }
 
 /* ————— "Já sei" e "desfazer", gravados ————— */
 const { gravar } = useAvisoEstado()
@@ -166,14 +181,17 @@ const route = useRoute()
 // lê, e vai com os números: sem eles, "Simule trocar R$ 10 mil…" com o olho
 // fechado chegava como "R$ ••••" e a simulação saía às cegas. O texto do site
 // não leva ticker no movimento (o motor manda só a classe), e o id do aviso,
-// que leva, não vai. As notas da ideia (08/11) vão como a pessoa as vê na faixa.
+// que leva, não vai. As notas e os indicadores da ideia (08/11) vão como a
+// pessoa os vê na faixa e na linha.
 function contextoDe(a: Aviso) {
   const notas = notasDe(a).map((n) => n.aria).join('; ')
+  const indicadores = indicadoresDe(a).map((i) => i.aria).join('; ')
   return {
     id: `carteira:aviso:${a.id}`, tipo: 'carteira', rotulo: semValor(a.titulo),
     texto: [
       a.titulo, a.texto, a.ressalva ?? '', ...a.prova.map((p) => `${p.rotulo}: ${p.valor}`),
-      notas ? `Notas do relatório, antes e depois: ${notas}` : '', `Fonte: ${a.fonte}`,
+      notas ? `Notas do relatório, antes e depois: ${notas}` : '',
+      indicadores ? `Indicadores do relatório que mudam: ${indicadores}` : '', `Fonte: ${a.fonte}`,
     ].filter(Boolean).join('\n'),
   }
 }
@@ -238,21 +256,32 @@ function agir(a: Aviso, acao: AcaoAviso) {
                   <p v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</p>
                 </div>
                 <p class="cav__x">{{ naTela(a.texto) }}</p>
-                <!-- 08/11: o antes → depois das notas do relatório; cada célula se lê inteira pelo aria-label -->
-                <div v-if="notasDe(a).length" class="cav__notas" role="group" aria-label="As notas do relatório, antes e depois">
-                  <div v-for="n in notasDe(a)" :key="n.pilar" class="cav__nota" role="img" :aria-label="n.aria">
-                    <span class="cav__nota-n">{{ n.nome }}</span>
-                    <span class="cav__nota-v">
-                      <template v-if="n.igual"><b>{{ n.depois }}</b><span class="cav__nota-igual">igual</span></template>
-                      <template v-else>
-                        <span class="cav__nota-a">{{ n.antes ?? '—' }}</span><span class="cav__nota-seta">→</span><b>{{ n.depois ?? '—' }}</b>
-                        <span v-if="n.deltaTxt" class="cav__nota-d" :class="{ 'cav__nota-d--cai': !n.sobe }">{{ n.deltaTxt }}</span>
-                      </template>
+                <!-- 08/11: o placar da ideia, as notas e os indicadores que mudam; tudo se lê pelo aria-label e nada passa pelo olho -->
+                <div v-if="notasDe(a).length || indicadoresDe(a).length" class="cav__placar">
+                  <div v-if="notasDe(a).length" class="cav__notas" role="group" aria-label="As notas do relatório, antes e depois">
+                    <div v-for="n in notasDe(a)" :key="n.pilar" class="cav__nota" role="img" :aria-label="n.aria">
+                      <span class="cav__nota-n">{{ n.nome }}</span>
+                      <span class="cav__nota-v">
+                        <template v-if="n.igual"><b>{{ n.depois }}</b><span class="cav__nota-igual">igual</span></template>
+                        <template v-else>
+                          <span class="cav__nota-a">{{ n.antes ?? '—' }}</span><span class="cav__nota-seta">→</span><b>{{ n.depois ?? '—' }}</b>
+                          <span v-if="n.deltaTxt" class="cav__nota-d" :class="{ 'cav__nota-d--cai': !n.sobe }">{{ n.deltaTxt }}</span>
+                        </template>
+                      </span>
+                      <span class="cav__nota-b">
+                        <i :style="{ width: `${n.base}%` }" />
+                        <i v-if="n.topo > n.base" class="cav__nota-f" :class="{ 'cav__nota-f--cai': !n.sobe }" :style="faixa(n)" />
+                      </span>
+                    </div>
+                  </div>
+                  <div v-if="indicadoresDe(a).length" class="cav__inds" role="group" aria-label="Os indicadores do relatório que mudam">
+                    <span v-for="i in indicadoresDe(a).slice(0, naLinha(a))" :key="i.chave" class="cav__ind" role="img" :aria-label="i.aria">
+                      <span class="cav__ind-n">{{ i.nome }}</span> {{ i.antes }} <span class="cav__ind-d" :class="i.melhora ? 'cav__ind-d--melhora' : 'cav__ind-d--piora'">→ {{ i.depois }}</span>
                     </span>
-                    <span class="cav__nota-b">
-                      <i :style="{ width: `${n.base}%` }" />
-                      <i v-if="n.topo > n.base" class="cav__nota-f" :class="{ 'cav__nota-f--cai': !n.sobe }" :style="faixa(n)" />
-                    </span>
+                    <button
+                      v-if="indicadoresDe(a).length > naLinha(a)" type="button" class="cav__ind-mais"
+                      :aria-label="`Mais ${indicadoresDe(a).length - naLinha(a)} indicadores, no Como calculei`" @click="abrirProva(a.id)"
+                    >e mais {{ indicadoresDe(a).length - naLinha(a) }}</button>
                   </div>
                 </div>
                 <p v-if="a.ressalva" class="cav__ressalva">{{ a.ressalva }}</p>
@@ -268,6 +297,11 @@ function agir(a: Aviso, acao: AcaoAviso) {
                 <div v-if="provaAberta === a.id" class="cav__prova">
                   <dl>
                     <div v-for="p in a.prova" :key="p.rotulo" class="cav__prova-l"><dt>{{ p.rotulo }}</dt><dd>{{ semValor(p.valor) }}</dd></div>
+                    <!-- os indicadores que não couberam na linha do placar -->
+                    <div v-for="i in indicadoresDe(a).slice(naLinha(a))" :key="i.chave" class="cav__prova-l">
+                      <dt>{{ i.nome }}</dt>
+                      <dd><span role="img" :aria-label="i.aria">{{ i.antes }} <span class="cav__ind-d" :class="i.melhora ? 'cav__ind-d--melhora' : 'cav__ind-d--piora'">→ {{ i.depois }}</span></span></dd>
+                    </div>
                   </dl>
                   <p class="cav__fonte">Fonte: {{ a.fonte }}</p>
                 </div>
@@ -398,8 +432,9 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__x { margin: 6px 0 0 18px; max-width: 64ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cav__ressalva { margin: 8px 0 0 18px; max-width: 64ch; padding-left: 12px; border-left: 2px solid var(--nu-amber); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
 
-/* ——— as notas da ideia (08/11): uma célula por pilar, com a barra do relatório (.vrl__barra) ——— */
-.cav__notas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 16px; margin: 12px 0 14px 18px; max-width: 64ch; font-size: var(--nu-fs-md); }
+/* ——— o placar da ideia (08/11): as notas, uma célula por pilar com a barra do relatório (.vrl__barra), e os indicadores que mudam ——— */
+.cav__placar { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 14px 18px; max-width: 64ch; font-size: var(--nu-fs-md); }
+.cav__notas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 16px; }
 .cav__nota { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .cav__nota-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.3; overflow-wrap: break-word; hyphens: auto; }
 .cav__nota-v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
@@ -416,6 +451,16 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__nota-b .cav__nota-f { background: color-mix(in srgb, var(--nu-blue) 45%, var(--nu-white)); transform-origin: left; animation: cavnota .6s cubic-bezier(.22, 1, .36, 1) .3s both; }
 .cav__nota-b .cav__nota-f--cai { background: color-mix(in srgb, var(--nu-red) 45%, var(--nu-white)); }
 @keyframes cavnota { from { transform: scaleX(0); } }
+/* os indicadores que mudam: a linha quebra entre eles, nunca no meio de um; a cor é só a do texto */
+.cav__inds { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.cav__ind { white-space: nowrap; }
+.cav__ind:not(:last-child)::after { content: '·'; margin-left: 8px; color: var(--nu-gray); }
+.cav__ind-n { color: var(--nu-gray-3); font-weight: 700; }
+.cav__ind-d { font-weight: 700; }
+.cav__ind-d--melhora { color: var(--nu-green-text); }
+.cav__ind-d--piora { color: var(--nu-red-text); }
+.cav__ind-mais { padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.cav__ind-mais:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
 .cav__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .cav__novo { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: var(--nu-r-pill); background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 800; }
 .cav__conf { display: inline-flex; align-items: center; gap: 6px; }

@@ -25,8 +25,9 @@
  * explicação do mês, com os números).
  *
  * 08/11/2026: uma ideia nova (ideia.ajustes) com o antes → depois das 4 notas
- * do relatório (`Aviso.notas`). O antes são os pilares do relatorioMock, e o
- * "Ver o relatório" abre o relatório na própria página.
+ * do relatório (`Aviso.notas`) e dos indicadores que mudam (`Aviso.indicadores`).
+ * O antes são os pilares e os valores do relatorioMock, e o "Ver o relatório"
+ * abre o relatório na própria página.
  */
 import type { Aviso, CarteiraVisao, CaminhoVisao, ImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, PosicaoVisao } from '~/types/carteiraVisao'
 import type { CarteiraRelatorio, IndicadorRelatorio, PilarRelatorio, UnidadeRelatorio } from '~/types/carteiraRelatorio'
@@ -231,6 +232,22 @@ const AVISOS: Aviso[] = [
       { pilar: 'risco', nome: 'Risco', antes: 81, depois: 82 },
       { pilar: 'eficiencia', nome: 'Eficiência', antes: 59, depois: 63 },
       { pilar: 'diversificacao', nome: 'Diversificação', antes: 86, depois: 86 },
+    ],
+    // o antes é o valor do relatorioMock; o lado bom, o das faixas do backend (Nota::FAIXAS). A volatilidade
+    // das quedas muda só na 2ª casa (5,1% → 5,1%, a linha tira), o beta piora um pouco e 11 mudam de verdade
+    indicadores: [
+      { chave: 'twr', nome: 'Rentabilidade (TWR)', unidade: '%', antes: 21.42, depois: 22.07, melhor: 'maior' },
+      { chave: 'cagr', nome: 'Rentabilidade ao ano (CAGR)', unidade: '%', antes: 13.81, depois: 14.23, melhor: 'maior' },
+      { chave: 'retorno_real', nome: 'Rentabilidade acima da inflação', unidade: '%', antes: 8.42, depois: 8.83, melhor: 'maior' },
+      { chave: 'volatilidade', nome: 'Volatilidade', unidade: '%', antes: 7.84, depois: 7.69, melhor: 'menor' },
+      { chave: 'downside_deviation', nome: 'Volatilidade das quedas', unidade: '%', antes: 5.12, depois: 5.09, melhor: 'menor' },
+      { chave: 'max_drawdown', nome: 'Maior queda', unidade: '%', antes: -9.46, depois: -9.28, melhor: 'maior' },
+      { chave: 'beta', nome: 'Beta', unidade: 'x', antes: 0.78, depois: 0.79, melhor: 'menor' },
+      { chave: 'sharpe', nome: 'Índice de Sharpe', unidade: '', antes: -0.08, depois: -0.03, melhor: 'maior' },
+      { chave: 'sortino', nome: 'Índice de Sortino', unidade: '', antes: -0.12, depois: -0.05, melhor: 'maior' },
+      { chave: 'alpha_jensen', nome: 'Alpha de Jensen', unidade: '%', antes: 1.32, depois: 1.68, melhor: 'maior' },
+      { chave: 'm2', nome: 'M² (Modigliani)', unidade: '%', antes: 13.69, depois: 14.06, melhor: 'maior' },
+      { chave: 'tracking_error', nome: 'Tracking error', unidade: '%', antes: 3.84, depois: 3.71, melhor: 'menor' },
     ],
   },
 ]

@@ -79,6 +79,22 @@ export interface NotaDoAviso {
 }
 
 /**
+ * Um indicador do relatório que a ideia mexe (08/11/2026): o valor de hoje e o
+ * do mesmo relatório com o ajuste, no arredondamento do relatório (% em pontos
+ * percentuais com 2 casas, razão com 2 casas). `melhor` diz o lado bom: 'maior'
+ * (Sharpe, TWR) ou 'menor' (volatilidade, beta).
+ */
+export interface IndicadorDoAviso {
+  /** a chave do catálogo do relatório (sharpe, volatilidade, max_drawdown…) */
+  chave: string
+  nome: string
+  unidade: '%' | 'x' | ''
+  antes: number | null
+  depois: number | null
+  melhor: 'maior' | 'menor'
+}
+
+/**
  * O que a pessoa já fez com o aviso (carteira_avisos, `EstadoDosAvisos`): `novo`
  * na primeira leitura e `visto` depois que ela abriu os avisos (ou desfez um
  * "Já sei"). O resolvido não volta no /visao, e o adiado volta como `novo`
@@ -118,6 +134,12 @@ export interface Aviso {
    * histórico; pode faltar no backend antigo.
    */
   notas?: NotaDoAviso[] | null
+  /**
+   * 08/11: os indicadores do relatório cujo valor muda com a ideia (só eles),
+   * na ordem do catálogo do relatório. É a resposta ao "só 1 número?" do dono,
+   * quando uma nota sobe e as outras ficam iguais. Pode faltar no backend antigo.
+   */
+  indicadores?: IndicadorDoAviso[] | null
 }
 
 /** um movimento que o motor considerou e não sugeriu, com o veto que barrou */
