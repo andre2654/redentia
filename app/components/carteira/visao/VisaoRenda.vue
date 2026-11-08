@@ -54,12 +54,23 @@ const regua = computed(() => {
 })
 
 /* mês a mês: a cobertura (ou a renda, sem gasto) */
+const comGasto = computed(() => r.value.meses.some((m) => m.gasto))
+// 08/11, o dono pediu esta seção mais simples: sem o gasto (a fileira em R$), o mês corrente entra
+// no fim, tracejado, com o que já está marcado para cair (era uma segunda lista com o total)
+const futuro = computed(() => (!comGasto.value && marcadosTotal.value > 0 ? marcadosTotal.value : null))
 const meses = computed(() => {
   const ms = r.value.meses
   const valores = ms.map((m) => (m.gasto ? (m.renda / m.gasto) * 100 : m.renda))
-  const max = Math.max(...valores) * 1.15
-  return ms.map((m, i) => ({ ...m, v: valores[i]!, h: (valores[i]! / max) * 100, txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)) }))
+  const max = Math.max(...valores, futuro.value ?? 0) * 1.15
+  const linhas = ms.map((m, i) => ({ mes: m.mes, gasto: m.gasto, futuro: false, h: (valores[i]! / max) * 100, txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)) }))
+  if (futuro.value != null) {
+    const mm = Number((r.value.marcados[0]?.data ?? agoraEmSP().iso).slice(5, 7))
+    linhas.push({ mes: MES[mm - 1] ?? '', gasto: null, futuro: true, h: (futuro.value / max) * 100, txt: mask(brl0(futuro.value)) })
+  }
+  return linhas
 })
+const ultimoReal = computed(() => r.value.meses[r.value.meses.length - 1]?.mes)
+const comoAberto = ref(false)
 
 /* o mês corrente: o que já está marcado */
 const fmtDia = (iso: string) => { const [, mm, dd] = iso.split('-'); return `${dd}/${mm}` }
@@ -139,9 +150,10 @@ function simular() {
       Contando o que rendeu e ficou investido, seriam {{ pctTxt(comRendeu!) }}.
     </p>
     <p v-else-if="rendeuSemGasto != null" class="vrd__sub">
-      Fora isso, uns {{ mask(brl0(rendeuSemGasto)) }} renderam e ficaram investidos, sem cair na conta.
+      E mais uns {{ mask(brl0(rendeuSemGasto)) }} renderam e ficaram investidos, sem cair na conta.
+      <button type="button" class="vrd__como" :aria-expanded="comoAberto" aria-controls="vrd-como" @click="comoAberto = !comoAberto">Como calculei</button>
     </p>
-    <p v-if="rendeuSemGasto != null" class="vrd__fonte">{{ r.rendeuFonte }}</p>
+    <p v-if="rendeuSemGasto != null && comoAberto" id="vrd-como" class="vrd__fonte">{{ r.rendeuFonte }}</p>
 
     <!-- a régua: a vida inteira de largura -->
     <div v-if="regua" class="vrd__regua">
@@ -159,25 +171,20 @@ function simular() {
         <template v-if="r.rendeu > 0">O que rendeu: {{ r.rendeuFonte.replace(/^Estimativa: /, 'estimativa com ') }}</template>
       </p>
     </div>
-    <div v-else class="vrd__convite">
-      <template v-if="bancoDoGasto">
-        <p class="vrd__convite-t">Os gastos da conta e do cartão do {{ bancoDoGasto }} entram na próxima atualização, e aí eu digo quanto da sua vida os investimentos já pagam.</p>
-      </template>
-      <template v-else>
-        <p class="vrd__convite-t">Conecte o cartão e a conta do dia a dia, e eu digo quanto da sua vida os investimentos já pagam.</p>
-        <NuxtLink to="/conta#open-finance" class="vrd__convite-b">Conectar</NuxtLink>
-      </template>
+    <div v-else-if="!bancoDoGasto" class="vrd__convite">
+      <p class="vrd__convite-t">Conecte o cartão e a conta do dia a dia, e eu digo quanto da sua vida os investimentos já pagam.</p>
+      <NuxtLink to="/conta#open-finance" class="vrd__convite-b">Conectar</NuxtLink>
     </div>
 
     <div class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
       <!-- mês a mês e o mês corrente (sem os 5 anos, lado a lado) -->
       <div class="vrd__col">
-        <h3 class="vrd__h3">{{ meses[0]?.gasto ? 'Quanto pagou, mês a mês' : 'Quanto caiu na conta, mês a mês' }}</h3>
+        <h3 class="vrd__h3">{{ comGasto ? 'Quanto pagou, mês a mês' : 'Quanto caiu na conta, mês a mês' }}</h3>
         <ol class="vrd__meses">
-          <li v-for="m in meses" :key="m.mes" class="vrd__mes" :class="{ 'vrd__mes--ultimo': m.mes === meses[meses.length - 1]!.mes }">
+          <li v-for="m in meses" :key="m.mes" class="vrd__mes" :class="{ 'vrd__mes--ultimo': !m.futuro && m.mes === ultimoReal, 'vrd__mes--futuro': m.futuro }">
             <span class="vrd__mes-v">{{ m.txt }}</span>
             <span class="vrd__mes-b"><i :style="{ height: `${m.h}%` }" /></span>
-            <span class="vrd__mes-n">{{ m.mes }}</span>
+            <span class="vrd__mes-n">{{ m.mes }}<template v-if="m.futuro"> · a cair</template></span>
           </li>
         </ol>
 
@@ -188,7 +195,7 @@ function simular() {
             <span class="vrd__ag-t">{{ m.tickers.join(', ') }}</span>
             <span class="vrd__ag-v">{{ mask(brl0(m.valor)) }}</span>
           </li>
-          <li class="vrd__ag-total"><span /><span>Total</span><span class="vrd__ag-v">{{ mask(brl0(marcadosTotal)) }}</span></li>
+          <li v-if="futuro == null" class="vrd__ag-total"><span /><span>Total</span><span class="vrd__ag-v">{{ mask(brl0(marcadosTotal)) }}</span></li>
         </ul>
       </div>
 
@@ -236,6 +243,11 @@ function simular() {
         <button type="button" class="vrd__simular" @click="simular">Simular outro caminho</button>
       </div>
     </div>
+
+    <p v-if="!regua && bancoDoGasto" class="vrd__espera">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+      Os gastos do {{ bancoDoGasto }} entram na próxima atualização. Aí eu mostro quanto da sua vida os investimentos já pagam.
+    </p>
   </section>
 </template>
 
@@ -266,13 +278,19 @@ function simular() {
 .vrd__grade { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px clamp(32px, 5vw, 80px); margin-top: clamp(40px, 5vw, 64px); max-width: 1240px; }
 .vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .vrd__h3--2 { margin-top: clamp(28px, 3.4vw, 40px); }
-.vrd__meses { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 16px 0 0; padding: 0; height: 150px; }
+.vrd__meses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; list-style: none; margin: 16px 0 0; padding: 0; height: 150px; }
 .vrd__mes { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; text-align: center; }
 .vrd__mes-v { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .vrd__mes-b { display: flex; align-items: flex-end; justify-content: center; }
 .vrd__mes-b i { display: block; width: min(36px, 70%); border-radius: 4px 4px 0 0; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); }
 .vrd__mes--ultimo .vrd__mes-b i { background: var(--nu-blue); }
 .vrd__mes--ultimo .vrd__mes-v { color: var(--nu-ink); }
+/* o mês corrente: o que já está marcado para cair, tracejado */
+.vrd__mes--futuro .vrd__mes-b i { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-blue); border-radius: 4px 4px 0 0; background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--nu-blue) 14%, transparent) 0 4px, transparent 4px 8px); }
+.vrd__mes--futuro .vrd__mes-v { color: var(--nu-blue-text); }
+.vrd__como { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.vrd__espera { display: flex; align-items: center; gap: 8px; margin: clamp(28px, 3.4vw, 40px) 0 0; max-width: 1100px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.vrd__espera svg { flex: 0 0 auto; color: var(--nu-gray); }
 .vrd__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; border-top: 1px solid var(--nu-cream-line); padding-top: 6px; }
 .vrd__agenda { list-style: none; margin: 10px 0 0; padding: 0; }
 .vrd__agenda li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; padding: 10px 0; border-top: 1px solid var(--nu-cream-line); font-size: var(--nu-fs-md); }
