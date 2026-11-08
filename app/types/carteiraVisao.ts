@@ -152,16 +152,21 @@ export interface ParJuntoVisao {
   correlacao: number
 }
 
+/** o provento dividido por classe (08/11; soma = o total; pode faltar no backend antigo) */
+export interface RendaPorClasse { acoes: number; fii: number }
+
 export interface MesRendaVisao {
   mes: string
   renda: number
   gasto: number | null
+  porClasse?: RendaPorClasse
 }
 
 export interface ProventoMarcadoVisao {
   data: string
   tickers: string[]
   valor: number
+  porClasse?: RendaPorClasse
 }
 
 export interface CaminhoVisao {

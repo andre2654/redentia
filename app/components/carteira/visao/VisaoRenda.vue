@@ -20,7 +20,7 @@
 // marcados e os meses da média do gasto saem do dado (eram fixos); sem os
 // caminhos (o motor não respondeu), o "Daqui a 5 anos" não monta; e, sem ele, o
 // mês a mês e o mês corrente ficam lado a lado, sem a metade vazia.
-import type { CarteiraVisao, RendaVisao } from '~/types/carteiraVisao'
+import type { CarteiraVisao, RendaPorClasse, RendaVisao } from '~/types/carteiraVisao'
 import { brl0, cobertura, pctTxt } from '~/utils/carteiraVisao'
 import { nomeDoMes } from '~/utils/impostoVisao'
 import { agoraEmSP } from '~/utils/pregao'
@@ -58,19 +58,41 @@ const comGasto = computed(() => r.value.meses.some((m) => m.gasto))
 // 08/11, o dono pediu esta seção mais simples: sem o gasto (a fileira em R$), o mês corrente entra
 // no fim, tracejado, com o que já está marcado para cair (era uma segunda lista com o total)
 const futuro = computed(() => (!comGasto.value && marcadosTotal.value > 0 ? marcadosTotal.value : null))
+// 08/11, o dono pediu barras empilhadas por tipo: FIIs e ações (o backend manda `porClasse`; sem ele,
+// a barra sai inteira, de uma cor só). Cada pedaço é a fração do total na altura da barra
+const CLASSES = [{ id: 'fii', nome: 'FIIs' }, { id: 'acoes', nome: 'Ações' }] as const
+function pedacos(total: number, h: number, pc?: RendaPorClasse) {
+  if (!pc || total <= 0) return [{ classe: 'todos', h }]
+  return CLASSES.map((c) => ({ classe: c.id, h: h * ((pc[c.id] ?? 0) / total) })).filter((p) => p.h > 0)
+}
+const porClasseMarcado = computed<RendaPorClasse | undefined>(() => {
+  const ms = r.value.marcados
+  if (!ms.length || ms.some((m) => !m.porClasse)) return undefined
+  return ms.reduce((s, m) => ({ acoes: s.acoes + m.porClasse!.acoes, fii: s.fii + m.porClasse!.fii }), { acoes: 0, fii: 0 })
+})
+const empilhado = computed(() => r.value.meses.some((m) => m.porClasse))
 const meses = computed(() => {
   const ms = r.value.meses
   const valores = ms.map((m) => (m.gasto ? (m.renda / m.gasto) * 100 : m.renda))
   const max = Math.max(...valores, futuro.value ?? 0) * 1.15
-  const linhas = ms.map((m, i) => ({ mes: m.mes, gasto: m.gasto, futuro: false, h: (valores[i]! / max) * 100, txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)) }))
+  const linhas = ms.map((m, i) => {
+    const h = (valores[i]! / max) * 100
+    return { mes: m.mes, gasto: m.gasto, futuro: false, h, pedacos: pedacos(m.renda, h, m.porClasse), txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)) }
+  })
   if (futuro.value != null) {
     const mm = Number((r.value.marcados[0]?.data ?? agoraEmSP().iso).slice(5, 7))
-    linhas.push({ mes: MES[mm - 1] ?? '', gasto: null, futuro: true, h: (futuro.value / max) * 100, txt: mask(brl0(futuro.value)) })
+    const h = (futuro.value / max) * 100
+    linhas.push({ mes: MES[mm - 1] ?? '', gasto: null, futuro: true, h, pedacos: pedacos(futuro.value, h, porClasseMarcado.value), txt: mask(brl0(futuro.value)) })
   }
   return linhas
 })
+// a lista do mês corrente fica fechada: à vista, só o próximo pagamento
+const verMarcados = ref(false)
+const proximo = computed(() => {
+  const hoje = agoraEmSP().iso.slice(0, 10)
+  return r.value.marcados.find((m) => m.data >= hoje) ?? r.value.marcados[0] ?? null
+})
 const ultimoReal = computed(() => r.value.meses[r.value.meses.length - 1]?.mes)
-const comoAberto = ref(false)
 
 /* o mês corrente: o que já está marcado */
 const fmtDia = (iso: string) => { const [, mm, dd] = iso.split('-'); return `${dd}/${mm}` }
@@ -149,11 +171,9 @@ function simular() {
       Em {{ r.mesFechado }} caíram {{ mask(brl0(r.caiu)) }} na sua conta, e você gasta uns {{ mask(brl0(r.gastoMedio!)) }} por mês.
       Contando o que rendeu e ficou investido, seriam {{ pctTxt(comRendeu!) }}.
     </p>
-    <p v-else-if="rendeuSemGasto != null" class="vrd__sub">
-      E mais uns {{ mask(brl0(rendeuSemGasto)) }} renderam e ficaram investidos, sem cair na conta.
-      <button type="button" class="vrd__como" :aria-expanded="comoAberto" aria-controls="vrd-como" @click="comoAberto = !comoAberto">Como calculei</button>
+    <p v-else-if="rendeuSemGasto != null" class="vrd__sub" :title="r.rendeuFonte">
+      Mais uns {{ mask(brl0(rendeuSemGasto)) }} renderam na renda fixa, sem cair na conta.
     </p>
-    <p v-if="rendeuSemGasto != null && comoAberto" id="vrd-como" class="vrd__fonte">{{ r.rendeuFonte }}</p>
 
     <!-- a régua: a vida inteira de largura -->
     <div v-if="regua" class="vrd__regua">
@@ -179,17 +199,24 @@ function simular() {
     <div class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
       <!-- mês a mês e o mês corrente (sem os 5 anos, lado a lado) -->
       <div class="vrd__col">
-        <h3 class="vrd__h3">{{ comGasto ? 'Quanto pagou, mês a mês' : 'Quanto caiu na conta, mês a mês' }}</h3>
+        <h3 class="vrd__h3">{{ comGasto ? 'Quanto pagou, mês a mês' : 'Mês a mês' }}</h3>
+        <ul v-if="empilhado" class="vrd__classes" aria-label="Por tipo">
+          <li v-for="c in CLASSES" :key="c.id"><i class="vrd__k" :class="`vrd__k--${c.id}`" aria-hidden="true" />{{ c.nome }}</li>
+        </ul>
         <ol class="vrd__meses">
           <li v-for="m in meses" :key="m.mes" class="vrd__mes" :class="{ 'vrd__mes--ultimo': !m.futuro && m.mes === ultimoReal, 'vrd__mes--futuro': m.futuro }">
             <span class="vrd__mes-v">{{ m.txt }}</span>
-            <span class="vrd__mes-b"><i :style="{ height: `${m.h}%` }" /></span>
+            <span class="vrd__mes-b"><span class="vrd__pilha" :style="{ height: `${m.h}%` }"><i v-for="p in m.pedacos" :key="p.classe" :class="`vrd__p--${p.classe}`" :style="{ flexGrow: p.h }" /></span></span>
             <span class="vrd__mes-n">{{ m.mes }}<template v-if="m.futuro"> · a cair</template></span>
           </li>
         </ol>
 
         <h3 class="vrd__h3 vrd__h3--2">Em {{ mesMarcado }}, já marcados</h3>
-        <ul class="vrd__agenda">
+        <p v-if="futuro != null && proximo && !verMarcados" class="vrd__prox">
+          Próximo: <b>{{ fmtDia(proximo.data) }}</b>, {{ mask(brl0(proximo.valor)) }} de {{ proximo.tickers.join(' e ') }}.
+          <button v-if="r.marcados.length > 1" type="button" class="vrd__ver" @click="verMarcados = true">Ver os {{ r.marcados.length }}</button>
+        </p>
+        <ul v-if="futuro == null || verMarcados" class="vrd__agenda">
           <li v-for="m in r.marcados" :key="m.data">
             <span class="vrd__ag-d">{{ fmtDia(m.data) }}</span>
             <span class="vrd__ag-t">{{ m.tickers.join(', ') }}</span>
@@ -282,13 +309,24 @@ function simular() {
 .vrd__mes { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; text-align: center; }
 .vrd__mes-v { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .vrd__mes-b { display: flex; align-items: flex-end; justify-content: center; }
-.vrd__mes-b i { display: block; width: min(36px, 70%); border-radius: 4px 4px 0 0; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); }
-.vrd__mes--ultimo .vrd__mes-b i { background: var(--nu-blue); }
+/* a barra é uma pilha: um pedaço por classe (ou um só, sem o porClasse) */
+.vrd__pilha { display: flex; flex-direction: column-reverse; gap: 2px; width: min(36px, 70%); border-radius: 4px 4px 0 0; overflow: hidden; opacity: .5; }
+.vrd__pilha i { display: block; min-height: 2px; }
+.vrd__p--todos { background: var(--nu-blue); }
+.vrd__p--fii, .vrd__k--fii { background: var(--nu-alloc-fii); }
+.vrd__p--acoes, .vrd__k--acoes { background: var(--nu-alloc-stock); }
+.vrd__mes--ultimo .vrd__pilha { opacity: 1; }
+.vrd__classes { display: flex; gap: 6px 16px; flex-wrap: wrap; list-style: none; margin: 8px 0 0; padding: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 600; }
+.vrd__classes li { display: inline-flex; align-items: center; gap: 6px; }
+.vrd__classes .vrd__k { display: inline-block; width: 9px; height: 9px; border-radius: 3px; }
+.vrd__prox { margin: 10px 0 0; color: var(--nu-ink-75); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.vrd__prox b { color: var(--nu-ink); }
+.vrd__ver { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .vrd__mes--ultimo .vrd__mes-v { color: var(--nu-ink); }
 /* o mês corrente: o que já está marcado para cair, tracejado */
-.vrd__mes--futuro .vrd__mes-b i { background: transparent; box-shadow: inset 0 0 0 1.5px var(--nu-blue); border-radius: 4px 4px 0 0; background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--nu-blue) 14%, transparent) 0 4px, transparent 4px 8px); }
+.vrd__mes--futuro .vrd__pilha { opacity: 1; }
+.vrd__mes--futuro .vrd__pilha i { opacity: .45; background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .55) 0 4px, transparent 4px 8px); }
 .vrd__mes--futuro .vrd__mes-v { color: var(--nu-blue-text); }
-.vrd__como { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .vrd__espera { display: flex; align-items: center; gap: 8px; margin: clamp(28px, 3.4vw, 40px) 0 0; max-width: 1100px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
 .vrd__espera svg { flex: 0 0 auto; color: var(--nu-gray); }
 .vrd__mes-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600; border-top: 1px solid var(--nu-cream-line); padding-top: 6px; }
