@@ -146,6 +146,7 @@ function ficarAqui(t: TopicoCarteira) {
 /* ————— as ações ————— */
 const painel = useChatPainel()
 const lente = useState<string>('carteira:lente', () => 'ativos')
+const route = useRoute()
 // O aviso que vai junto da pergunta (Perguntar e Simular, 07/11/2026). O chip
 // do campo é a parte que aparece na tela: segue o olho. O texto, só o modelo
 // lê, e vai com os números: sem eles, "Simule trocar R$ 10 mil…" com o olho
@@ -165,7 +166,9 @@ function agir(a: Aviso, acao: AcaoAviso) {
       lente.value = acao.alvo.slice(6)
       nextTick(() => document.getElementById('onde')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
     } else if (acao.alvo.startsWith('#')) {
-      void navigateTo({ hash: acao.alvo })
+      // com a query de agora: o hash sozinho tirava o ?cenario= do dev (e qualquer outra) da página.
+      // O VisaoRelatorio abre sozinho com o hash dele (#relatorio, #movimentacoes…)
+      void navigateTo({ query: route.query, hash: acao.alvo })
       nextTick(() => document.getElementById(acao.alvo.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
     } else if (/^https?:\/\//i.test(acao.alvo)) {
       // a notícia do fato relevante é de outro site: o navigateTo recusa URL de fora sem external

@@ -16,7 +16,8 @@
 //    imposto nas vendas, cruzando com o histórico do imposto) e o P&L mês a
 //    mês.
 // Chegar com âncora de uma dessas partes (#relatorio, #movimentacoes…, o link
-// do relatório mensal) abre sozinho.
+// do relatório mensal) abre sozinho, e, desde 08/11, também a troca do hash com
+// a página aberta (as ações dos avisos).
 import type { CarteiraPayload } from '~/types/carteira'
 import type { MesHistorico } from '~/types/carteiraVisao'
 import { composicaoTxt, fraseDaNota, indicadoresPorPilar, periodoTxt, valorDoIndicador } from '~/utils/relatorioCarteira'
@@ -56,13 +57,19 @@ const selos = computed(() => selosDasVendas(props.historico))
 
 const route = useRoute()
 const ANCORAS = ['relatorio', 'desempenho', 'movimentacoes', 'pnl']
-onMounted(() => {
-  const id = route.hash.slice(1)
+/** o hash de uma parte do relatório abre a seção, busca o relatório e rola até a parte */
+function abrirNaAncora(hash: string) {
+  const id = hash.slice(1)
   if (!ANCORAS.includes(id)) return
   aberta.value = true
   void carregar()
   nextTick(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }))
-})
+}
+onMounted(() => abrirNaAncora(route.hash))
+// 08/11/2026: com a página aberta, o "Ver o relatório" de um aviso (#relatorio)
+// e o "Ver as vendas" (#movimentacoes) só trocam o hash. Sem isto, a seção
+// ficava fechada, e a parte de dentro nem existia para a página rolar até ela
+watch(() => route.hash, abrirNaAncora)
 </script>
 
 <template>

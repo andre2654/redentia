@@ -1,13 +1,17 @@
 /**
  * As notas da ideia no aviso (08/11/2026): as células do antes → depois das 4
- * notas do relatório (utils/notasDoAviso.ts).
+ * notas do relatório (utils/notasDoAviso.ts) e o relatório que abre com a troca
+ * do hash (VisaoRelatorio.vue). Os .vue são lidos como texto: não dependem do
+ * Nuxt.
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { celulasDasNotas } from '../app/utils/notasDoAviso.ts'
 import type { NotaDoAviso } from '../app/types/carteiraVisao.ts'
 
 const nota = (pilar: NotaDoAviso['pilar'], nome: string, antes: number | null, depois: number | null): NotaDoAviso => ({ pilar, nome, antes, depois })
+const ler = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8')
 
 test('a nota que sobe: os números, o +N e a barra do antes até o depois', () => {
   assert.deepEqual(celulasDasNotas([nota('retorno', 'Retorno', 40, 43)]), [{
@@ -75,4 +79,19 @@ test('a nota é inteira, a barra fica entre 0 e 100 e o nome vazio vira o do pil
   assert.deepEqual([c!.antes, c!.depois, c!.delta, c!.deltaTxt, c!.aria], [40, 42, 2, '+2', 'Eficiência: de 40 para 42'])
   const [fora] = celulasDasNotas([nota('risco', 'Risco', -3, 104)])
   assert.deepEqual([fora!.base, fora!.topo], [0, 100])
+})
+
+test('o relatório abre com a troca do hash, como abre ao chegar com ele, e o aviso troca o hash sem perder a query', () => {
+  const script = ler('app/components/carteira/visao/VisaoRelatorio.vue').split('</script>')[0]!
+  assert.match(script, /const ANCORAS = \['relatorio', 'desempenho', 'movimentacoes', 'pnl'\]/)
+  assert.match(script, /onMounted\(\(\) => abrirNaAncora\(route\.hash\)\)/)
+  assert.match(script, /watch\(\(\) => route\.hash, abrirNaAncora\)/)
+  const abrir = script.slice(script.indexOf('function abrirNaAncora'), script.indexOf('onMounted('))
+  assert.match(abrir, /if \(!ANCORAS\.includes\(id\)\) return/)
+  assert.match(abrir, /aberta\.value = true/)
+  assert.match(abrir, /void carregar\(\)/)
+  assert.match(abrir, /getElementById\(id\)\?\.scrollIntoView\(\{ block: 'start' \}\)/)
+  // o "Ver o relatório" (#relatorio) e o "Ver as vendas" (#movimentacoes) mantêm a query da página (o ?cenario= do dev)
+  const avisos = ler('app/components/carteira/visao/CarteiraAvisos.vue').split('</script>')[0]!
+  assert.match(avisos, /navigateTo\(\{ query: route\.query, hash: acao\.alvo \}\)/)
 })
