@@ -84,6 +84,7 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | 08/11 | **Sem série de preço não há nota:** ativo `constante` ou com provento só pelo extrato (Tesouro com cupom) deixa as notas nulas; série que começa no meio do período só entra nos dias com preço dos dois lados (revisão F2/F3) | Retorno zero inventado distorcia as notas ("nada de palpite") | `NotasDoRelatorio`, `CurvaDaCarteira` |
 | 08/11 | **Nota nula com histórico:** a ideia sai sem a faixa e sem o veto das notas (os outros vetos valem), com log (revisão F15) | O veto das notas é complementar; sem a nota, a ideia se apoia nos outros vetos | idem |
 | 08/11 | **A linha dos indicadores começa por um de cada pilar** (TWR, Maior queda, Sharpe, Maior classe) | Na ordem do catálogo, quatro medidas de retorno tomavam a linha | front `utils/notasDoAviso.ts` |
+| 08/11 | **Os ajustes sobem em degraus até não sobrar o que subir** (pedido do dono: "só parar quando descobrir a melhor opção… apresentar a melhor já de cara"). Cada degrau mede de novo sobre o plano até ali e entra só se: sobe uma nota contra o degrau anterior sem baixar nenhuma (Retorno só com a TWR que não cai); nenhuma fica abaixo da de hoje; o plano todo passa nos vetos; a cauda (volatilidade das quedas e maior queda) não piora; e o plano todo passa nos 2.000 cenários contra a carteira de hoje. Tetos: 6 degraus, 10% da carteira trocados, 8 rodadas de cenário. O motivo de parar vai para a prova ("Por que parei") e para o "O que eu olhei". A subida fica no cache até o fim do dia. **Supera** `ajustes_quantos` (saiu; entrou `ajustes_max_passos`) | Quanto mais a busca otimiza pelas notas, que olham para trás, mais escolhe o que já subiu: o teto de 10% e os cenários olhando para frente seguram isso | backend dfdda05, f5c79b3 |
 
 ## Verified facts
 
@@ -105,6 +106,8 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | O B2B do dono foi sincronizado de novo em 06/11 14:43, com os mesmos valores | exportação | — |
 | O `/me/carteira/futuro` (plano-unico) deixa de fora os 3 Tesouro IPCA+ por "taxa desconhecida", mas o nome traz a taxa ("IPCA + 6,97%") | rodando sobre a fixture | `CarteiraFuturoController` |
 | A queda de 26/10 (IBOV −13,88%, circuit breaker depois do 2º turno) é real | 3 fontes jornalísticas + `indices/IBOV/prices` | — |
+| **A subida na carteira do dono (08/11, `visao-2026-11-08c`)**: 1 degrau (R$ 4,9 mil de FIIs de shoppings por ações de petróleo: Retorno 40 → 41, Eficiência 37 → 39, todos os indicadores que mudam melhoram), parada `cenarios` com 2 rodadas, ~560 ms. No 2º degrau, 29 na lista: 8 não sobem nota, 7 barrados pelo imposto (todos saem do Tesouro IPCA+), 6 pela cauda, 1 pelos cenários (p10 −R$ 1.047 contra hoje, acima da tolerância de 0,1%). /visao fria 2,0–2,4 s; a 2ª visão do dia reusa a subida (ajustes 1,86 s → 0,84 s) | fe-api local + `storage/diag-subida.php`, `diag-subida-cache.php` | `scratchpad/subida-real/` |
+| As 22 posições do dono têm `custo_conhecido=false`, origem `corretora` (o histórico de compras não fecha com a quantidade). Para renda fixa, o custo da corretora não entra no IR: o imposto da troca fica desconhecido e o veto `imposto` barra | `diag-tesouro-custo.php`; `FotografiaDaCarteira::posicao`, `Avaliador::imposto` | backend |
 
 ## Interface contracts
 
@@ -186,6 +189,7 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | CDB (`RF-…`) com a "quantidade" em centavos; "compra" de 620 BBDC3 por R$ 10,69 (bonificação fantasma) | São dados da Pluggy; a tela esconde a quantidade e o filtro de fantasma cuida da compra | — |
 | O estado "Pede atenção" não apareceu com o dado real (a fixture não tem aviso alto ou médio) | Coberto pelo mock e pelos testes | — |
 | Nubank do dono parado desde 16/07 | O dono desconecta e reconecta em /conta (1 min). Não apagamos a conexão no banco | — |
+| Os ajustes que mais subiriam as notas saem do Tesouro IPCA+ (ex.: para ações de petróleo, Retorno 41 → 46 e Eficiência 39 → 44) e ficam barrados pelo imposto desconhecido | Lado conservador: sem o custo conferido, a troca de renda fixa não entra | Se o custo do Tesouro vier conferido (histórico de compras ou informado), eles entram na conta. Decisão do dono |
 
 ## Hard stops awaiting authorization
 
