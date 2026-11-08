@@ -239,6 +239,12 @@ export interface MesImposto {
   mes: string
   grupos: GrupoImpostoVisao[]
   darf: DarfVisao
+  /**
+   * o prejuízo que sobra para abater de lucros futuros no fim do mês, em R$ (07/11;
+   * pode faltar no backend antigo): ações, ETF e BDR juntos (comum e day trade à
+   * parte) e FII à parte
+   */
+  prejuizos?: { comum: number; dayTrade: number; fii: number }
 }
 
 export type SeloImposto = 'isento' | 'pago' | 'a_conferir' | 'custo_desconhecido' | 'sem_venda'

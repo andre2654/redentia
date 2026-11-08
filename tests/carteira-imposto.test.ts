@@ -9,7 +9,7 @@ import { impostoMock, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoM
 import { visaoDesligada } from '../app/utils/carteiraVisao.ts'
 import {
   diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao,
-  selosDasVendas, textoDoGrupo, vendasCurtas, vendasNaBolsa,
+  selosDasVendas, textoDoGrupo, vendasCurtas, vendasNaBolsa, gruposDoMes, linhaDosPrejuizos, grupoDeImpostoDaPosicao,
 } from '../app/utils/impostoVisao.ts'
 import { composicaoTxt, fraseDaNota, indicadoresPorPilar, mediana, periodoTxt, valorDoIndicador } from '../app/utils/relatorioCarteira.ts'
 import { TOPICOS_CARTEIRA, temOptInWhatsapp, topicoDoDetector, topicosDosAvisos } from '../app/utils/avisosCanais.ts'
@@ -65,7 +65,7 @@ test('uma linha por grupo: a barra das ações, a do lucro, a renda fixa e o cus
   assert.equal(lf.direita, 'R$ 82 de imposto')
   assert.equal(lf.texto, 'Vendeu R$ 6.180, com R$ 412 de lucro.')
   assert.deepEqual(lf.barra, { tipo: 'lucro', impostoPct: 20 })
-  assert.deepEqual(linhaDoGrupo(etf!, '2026-11'), { nome: 'ETF', direita: 'Sem vendas', texto: '', barra: null, semCusto: false })
+  assert.deepEqual(linhaDoGrupo(etf!, '2026-11'), { nome: 'ETF', direita: 'Sem vendas', texto: 'ETF não tem isenção: o lucro das vendas paga 15%.', barra: null, semCusto: false })
   const lr = linhaDoGrupo(rf!, '2026-11')
   assert.equal(lr.direita, 'Retido na fonte')
   assert.equal(lr.texto, 'Sem resgate em novembro.')
@@ -250,4 +250,19 @@ test('as barras do histórico contam só as vendas da bolsa (a renda fixa sai co
   const m = { operacoes: [op('acoes', 'venda', 26801), op('rf', 'venda', 100000), op('fii', 'venda', 5000), op('acoes', 'compra', 9000)] } as never
   assert.equal(vendasNaBolsa(m), 31801)
   assert.equal(vendasNaBolsa({ operacoes: [op('rf', 'venda', 333)] } as never), 0)
+})
+
+test('o mês mostra os grupos que a pessoa tem, mesmo sem venda (a revisão do dono: faltava algo)', () => {
+  const novembro = { mes: '2026-11', grupos: [{ grupo: 'acoes' as const, vendido: 0, lucro: 0, isencao: 20000, cabeAinda: 20000, impostoEstimado: 0, aliquota: 0.15, custoConhecido: true, nota: 'Sem vendas de ações no mês: cabem os R$ 20 mil inteiros.' }], darf: { valor: null, vence: null, codigo: '6015' as const } }
+  const posicoes = [
+    { classe: 'STOCK', fator: 'brasil' }, { classe: 'REIT', fator: 'juros' }, { classe: 'ETF', fator: 'selic' },
+    { classe: 'ETF', fator: 'ouro' }, { classe: 'TREASURY', fator: 'juros' },
+  ]
+  assert.deepEqual(gruposDoMes(novembro, posicoes).map((g) => g.grupo), ['acoes', 'fii', 'etf', 'rf'])
+  assert.equal(grupoDeImpostoDaPosicao({ classe: 'ETF', fator: 'selic' }), 'rf', 'o AUPO11 é renda fixa')
+  assert.equal(grupoDeImpostoDaPosicao({ classe: 'REIT', fator: 'juros' }), 'fii')
+  // sem o campo do backend, ou sem prejuízo, nada; com ele, só o que é maior que zero
+  assert.equal(linhaDosPrejuizos(novembro), '')
+  assert.equal(linhaDosPrejuizos({ ...novembro, prejuizos: { comum: 0, dayTrade: 0, fii: 0 } }), '')
+  assert.equal(linhaDosPrejuizos({ ...novembro, prejuizos: { comum: 1200, dayTrade: 0, fii: 300 } }), 'Prejuízo para abater de lucros futuros: R$ 1.200 em ações, ETF e BDR e R$ 300 em FII.')
 })

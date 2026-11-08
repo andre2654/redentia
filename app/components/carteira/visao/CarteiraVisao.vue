@@ -128,7 +128,7 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
     <VisaoOndeEsta id="onde" :visao="visao" />
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
     <!-- o imposto vem null quando o bloco quebra no servidor (e o cenário real antigo do dev vinha sem) -->
-    <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" />
+    <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" :posicoes="visao.posicoes" />
     <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
 
     <!-- só no dev: o caso que a tela está mostrando -->

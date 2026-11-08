@@ -9,7 +9,7 @@
  * R$ da pessoa: a tela passa a versão com a máscara do olho (useHiddenValues),
  * e o teto da isenção, que é regra e não dado dela, nunca se esconde.
  */
-import type { GrupoImposto, GrupoImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, SeloImposto } from '~/types/carteiraVisao'
+import type { GrupoImposto, GrupoImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, PosicaoVisao, SeloImposto } from '~/types/carteiraVisao'
 
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
@@ -38,6 +38,68 @@ export function diaMes(iso: string): string {
 
 export const NOME_DO_GRUPO: Record<GrupoImposto, string> = { acoes: 'Ações', fii: 'FII', etf: 'ETF', rf: 'Renda fixa', cripto: 'Cripto' }
 const ORDEM: GrupoImposto[] = ['acoes', 'fii', 'etf', 'rf', 'cripto']
+/**
+ * O grupo de imposto de uma posição, o mesmo critério do backend: ação e BDR em
+ * ações; FII; o ETF de renda fixa (fator Selic ou juros, como o AUPO11) com o
+ * Tesouro e o CDB na renda fixa; o resto dos ETFs; cripto
+ */
+// a mesma regra do ehRendaFixa de utils/carteiraVisao.ts (sem importar: o teste do node não resolve o ~ em import de valor)
+const FATOR_DE_RENDA_FIXA = new Set(['selic', 'juros'])
+export function grupoDeImpostoDaPosicao(p: Pick<PosicaoVisao, 'classe' | 'fator'>): GrupoImposto | null {
+  if (p.classe === 'TREASURY' || p.classe === 'FIXED_INCOME' || (p.classe === 'ETF' && FATOR_DE_RENDA_FIXA.has(p.fator))) return 'rf'
+  if (p.classe === 'STOCK' || p.classe === 'BDR') return 'acoes'
+  if (p.classe === 'REIT') return 'fii'
+  if (p.classe === 'ETF') return 'etf'
+  if (p.classe === 'CRYPTO') return 'cripto'
+  return null
+}
+
+const ALIQUOTA_DO_GRUPO: Record<GrupoImposto, number> = { acoes: 0.15, fii: 0.2, etf: 0.15, rf: 0, cripto: 0.15 }
+
+/**
+ * Os grupos do mês, com os que a pessoa TEM e não vendeu (07/11, revisão do dono:
+ * "parece que está faltando algo"; o backend só manda o grupo que teve venda, e
+ * as ações pela isenção). Quem tem FII, ETF ou renda fixa vê a regra de cada um.
+ */
+export function gruposDoMes(m: MesImposto, posicoes: Pick<PosicaoVisao, 'classe' | 'fator'>[]): GrupoImpostoVisao[] {
+  const tem = new Set(m.grupos.map((g) => g.grupo))
+  const extras: GrupoImpostoVisao[] = []
+  for (const p of posicoes) {
+    const grupo = grupoDeImpostoDaPosicao(p)
+    if (!grupo || tem.has(grupo)) continue
+    tem.add(grupo)
+    extras.push({
+      grupo, vendido: 0, lucro: null, isencao: grupo === 'acoes' ? 20000 : null, cabeAinda: grupo === 'acoes' ? 20000 : null,
+      impostoEstimado: null, aliquota: ALIQUOTA_DO_GRUPO[grupo], custoConhecido: true, nota: '', semCusto: [],
+    })
+  }
+  return gruposEmOrdem([...m.grupos, ...extras])
+}
+
+/** a regra do grupo sem venda no mês (a linha não fica só com o nome) */
+const REGRA_SEM_VENDA: Partial<Record<GrupoImposto, string>> = {
+  fii: 'FII não tem isenção: o lucro das vendas paga 20%.',
+  etf: 'ETF não tem isenção: o lucro das vendas paga 15%.',
+}
+
+/**
+ * O prejuízo que sobra para abater de lucros futuros (o campo `prejuizos` do
+ * backend): 'Prejuízo para abater de lucros futuros: R$ 1.200 em ações, ETF e
+ * BDR e R$ 300 em FII.' Sem prejuízo (ou sem o campo), ''.
+ */
+export function linhaDosPrejuizos(m: MesImposto, fmt: (v: number) => string = brl0): string {
+  const p = m.prejuizos
+  if (!p) return ''
+  const partes = [
+    p.comum > 0.5 ? `${fmt(p.comum)} em ações, ETF e BDR` : null,
+    p.dayTrade > 0.5 ? `${fmt(p.dayTrade)} em day trade` : null,
+    p.fii > 0.5 ? `${fmt(p.fii)} em FII` : null,
+  ].filter((x): x is string => !!x)
+  if (!partes.length) return ''
+  const lista = partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}`
+  return `Prejuízo para abater de lucros futuros: ${lista}.`
+}
+
 /** sempre ações, FII, ETF, renda fixa e cripto, venha como vier */
 export function gruposEmOrdem(grupos: GrupoImpostoVisao[]): GrupoImpostoVisao[] {
   return [...grupos].sort((a, b) => ORDEM.indexOf(a.grupo) - ORDEM.indexOf(b.grupo))
@@ -136,7 +198,7 @@ export function linhaDoGrupo(g: GrupoImpostoVisao, mes: string, fmt: (v: number)
       : `Sem resgate em ${nomeDoMes(mes)}.`
     return { nome, direita: 'Retido na fonte', texto, barra: null, semCusto: false }
   }
-  if (g.vendido <= 0) return { nome, direita: 'Sem vendas', texto: '', barra: null, semCusto: false }
+  if (g.vendido <= 0) return { nome, direita: 'Sem vendas', texto: REGRA_SEM_VENDA[g.grupo] ?? '', barra: null, semCusto: false }
   if (semCusto || g.lucro == null) return { nome, direita: 'Lucro a conferir', texto: `Vendeu ${fmt(g.vendido)}. Sem o custo, eu não sei o lucro.`, barra: null, semCusto: true }
   if (g.lucro <= 0) return { nome, direita: 'Sem imposto', texto: `Vendeu ${fmt(g.vendido)}, sem lucro.`, barra: null, semCusto: false }
   return {

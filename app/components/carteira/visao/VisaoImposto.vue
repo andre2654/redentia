@@ -15,11 +15,12 @@
 // 07/11, com a resposta real: a linha de cada grupo é a nota do backend (a
 // explicação do mês, com os números), e não mais a frase da tela repetida antes
 // dela; a operação sem quantidade (direito de subscrição) mostra só o valor.
-import type { ImpostoVisao, MesHistorico, SeloImposto } from '~/types/carteiraVisao'
-import { SELO, diaMes, fraseDoMes, gruposEmOrdem, linhaDoGrupo, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas, vendasNaBolsa } from '~/utils/impostoVisao'
+import type { ImpostoVisao, MesHistorico, PosicaoVisao, SeloImposto } from '~/types/carteiraVisao'
+import { SELO, diaMes, fraseDoMes, gruposDoMes, linhaDoGrupo, linhaDosPrejuizos, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas, vendasNaBolsa } from '~/utils/impostoVisao'
 import { brl0, brl2 } from '~/utils/carteiraVisao'
 
-const props = defineProps<{ imposto: ImpostoVisao; dadosDe: string | null }>()
+// as posições: os grupos que a pessoa tem e não vendeu no mês também aparecem, com a regra de cada um
+const props = defineProps<{ imposto: ImpostoVisao; dadosDe: string | null; posicoes?: PosicaoVisao[] }>()
 const { mask, hidden } = useHiddenValues()
 const fmt = (v: number) => mask(brl0(v))
 const daNota = (t: string) => (hidden.value ? mascararNota(t) : t)
@@ -30,10 +31,11 @@ const frase = computed(() => (props.dadosDe ? `O imposto de ${nome.value} espera
 const sub = computed(() => (props.dadosDe
   ? `Os dados são de ${props.dadosDe}: as vendas depois disso ainda não chegaram.`
   : linhaDoMesAnterior(props.imposto.mesAnterior, fmt)))
-const grupos = computed(() => (props.dadosDe ? [] : gruposEmOrdem(atual.value.grupos).map((g) => {
+const grupos = computed(() => (props.dadosDe ? [] : gruposDoMes(atual.value, props.posicoes ?? []).map((g) => {
   const l = linhaDoGrupo(g, atual.value.mes, fmt)
   return { g, l, texto: textoDoGrupo(g, l, fmt, daNota) }
 })))
+const prejuizos = computed(() => (props.dadosDe ? '' : linhaDosPrejuizos(atual.value, fmt)))
 const darf = computed(() => {
   const d = atual.value.darf
   return !props.dadosDe && d.valor != null && d.valor > 0 && d.vence ? { valor: d.valor, vence: d.vence, codigo: d.codigo } : null
@@ -78,6 +80,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
           :aria-label="`${l.nome}: ${fmt(g.vendido)} vendidos de ${brl0(g.isencao ?? 0)} isentos no mês`"
         >
           <span class="vim__vendido" :class="{ 'vim__vendido--passou': l.barra.passou }" :style="{ width: `${l.barra.pct}%` }" />
+          <!-- o que ainda cabe sem imposto: sem venda, a barra inteira é o espaço livre (vazia, parecia quebrada) -->
+          <span v-if="!l.barra.passou" class="vim__cabe" />
         </div>
         <div
           v-else-if="l.barra?.tipo === 'lucro'" class="vim__trilho" role="img"
@@ -89,6 +93,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
         <p v-if="texto" class="vim__g-x">{{ texto }}</p>
       </li>
     </ul>
+
+    <p v-if="prejuizos" class="vim__prej">{{ prejuizos }}</p>
 
     <p v-if="darf" class="vim__darf">
       <span class="vim__darf-t">DARF de {{ nome }}</span>
@@ -156,6 +162,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__trilho { display: flex; gap: 2px; height: 12px; margin-top: 10px; border-radius: 6px; background: var(--nu-cream); box-shadow: inset 0 0 0 1px var(--nu-cream-line); overflow: hidden; }
 .vim__vendido { background: var(--nu-blue); border-radius: 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__vendido--passou { background: var(--nu-amber-fill); }
+.vim__cabe { flex: 1; min-width: 0; background: var(--nu-green-bg); border-radius: 6px; }
+.vim__prej { margin: 14px 0 0; max-width: 1100px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 .vim__imposto { background: var(--nu-amber-fill); border-radius: 6px 3px 3px 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 3px 6px 6px 3px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .3s both; }
 @keyframes vim-cresce { from { transform: scaleX(0); } }
