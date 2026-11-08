@@ -85,6 +85,7 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | 08/11 | **Nota nula com histórico:** a ideia sai sem a faixa e sem o veto das notas (os outros vetos valem), com log (revisão F15) | O veto das notas é complementar; sem a nota, a ideia se apoia nos outros vetos | idem |
 | 08/11 | **A linha dos indicadores começa por um de cada pilar** (TWR, Maior queda, Sharpe, Maior classe) | Na ordem do catálogo, quatro medidas de retorno tomavam a linha | front `utils/notasDoAviso.ts` |
 | 08/11 | **Os ajustes sobem em degraus até não sobrar o que subir** (pedido do dono: "só parar quando descobrir a melhor opção… apresentar a melhor já de cara"). Cada degrau mede de novo sobre o plano até ali e entra só se: sobe uma nota contra o degrau anterior sem baixar nenhuma (Retorno só com a TWR que não cai); nenhuma fica abaixo da de hoje; o plano todo passa nos vetos; a cauda (volatilidade das quedas e maior queda) não piora; e o plano todo passa nos 2.000 cenários contra a carteira de hoje. Tetos: 6 degraus, 10% da carteira trocados, 8 rodadas de cenário. O motivo de parar vai para a prova ("Por que parei") e para o "O que eu olhei". A subida fica no cache até o fim do dia. **Supera** `ajustes_quantos` (saiu; entrou `ajustes_max_passos`) | Quanto mais a busca otimiza pelas notas, que olham para trás, mais escolhe o que já subiu: o teto de 10% e os cenários olhando para frente seguram isso | backend dfdda05, f5c79b3 |
+| 08/11 | **Decisões do dono:** (1) o imposto da renda fixa nas ideias usa o preço médio da corretora quando o histórico não confere o custo, e o aviso diz isso; (2) veto `cauda` em toda ideia com movimento: nenhuma piora a maior queda nem a volatilidade das quedas contra hoje. **Supera** o "custo desconhecido barra a troca de renda fixa" | Com isso, a carteira do dono vai de 1 para 4 ajustes (40/73/37/94 → 45/76/43/94, p10 R$ 722 mil → R$ 731 mil) | backend 0fea866, c875408 |
 
 ## Verified facts
 
@@ -189,7 +190,7 @@ Plano de produto: `docs/specs/carteira-motor-de-avisos.md` (Partes 1 a 5, com as
 | CDB (`RF-…`) com a "quantidade" em centavos; "compra" de 620 BBDC3 por R$ 10,69 (bonificação fantasma) | São dados da Pluggy; a tela esconde a quantidade e o filtro de fantasma cuida da compra | — |
 | O estado "Pede atenção" não apareceu com o dado real (a fixture não tem aviso alto ou médio) | Coberto pelo mock e pelos testes | — |
 | Nubank do dono parado desde 16/07 | O dono desconecta e reconecta em /conta (1 min). Não apagamos a conexão no banco | — |
-| Os ajustes que mais subiriam as notas saem do Tesouro IPCA+ (ex.: para ações de petróleo, Retorno 41 → 46 e Eficiência 39 → 44) e ficam barrados pelo imposto desconhecido | Lado conservador: sem o custo conferido, a troca de renda fixa não entra | Se o custo do Tesouro vier conferido (histórico de compras ou informado), eles entram na conta. Decisão do dono |
+| ~~Os ajustes que mais subiriam as notas saem do Tesouro IPCA+ e ficam barrados pelo imposto desconhecido~~ (resolvido: o dono escolheu o preço médio da corretora) | Lado conservador: sem o custo conferido, a troca de renda fixa não entra | Se o custo do Tesouro vier conferido (histórico de compras ou informado), eles entram na conta. Decisão do dono |
 
 ## Hard stops awaiting authorization
 
