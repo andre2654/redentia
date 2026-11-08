@@ -63,6 +63,21 @@ export interface AcaoAviso {
 /** por onde o aviso pode sair (a tela sempre; e-mail e WhatsApp com o opt-in do tópico) */
 export type CanalAviso = 'tela' | 'email' | 'whatsapp'
 
+/** um dos 4 pilares da nota do relatório (o mesmo `PilarRelatorio` de types/carteiraRelatorio.ts) */
+export type PilarDaNota = 'retorno' | 'risco' | 'eficiencia' | 'diversificacao'
+
+/**
+ * Uma nota do relatório antes e depois da ideia (08/11/2026): `antes` é a nota
+ * de hoje do relatório; `depois`, a do mesmo relatório com o ajuste. De 0 a
+ * 100; null quando o pilar não tem nota.
+ */
+export interface NotaDoAviso {
+  pilar: PilarDaNota
+  nome: string
+  antes: number | null
+  depois: number | null
+}
+
 /**
  * O que a pessoa já fez com o aviso (carteira_avisos, `EstadoDosAvisos`): `novo`
  * na primeira leitura e `visto` depois que ela abriu os avisos (ou desfez um
@@ -96,6 +111,13 @@ export interface Aviso {
   pergunta: string
   canais: CanalAviso[]
   estado: EstadoAviso
+  /**
+   * 08/11: o efeito da ideia nas 4 notas do relatório, na ordem dos pilares,
+   * medido no mesmo relatório como se o ajuste estivesse na carteira desde o
+   * começo do período. Vem nas ideias com movimento quando o relatório tem
+   * histórico; pode faltar no backend antigo.
+   */
+  notas?: NotaDoAviso[] | null
 }
 
 /** um movimento que o motor considerou e não sugeriu, com o veto que barrou */

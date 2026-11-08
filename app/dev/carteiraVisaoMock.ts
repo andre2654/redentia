@@ -23,6 +23,10 @@
  * de cada aviso (os dois primeiros novos), o método de cada fator, a fonte do
  * "rendeu" e as notas do imposto no formato de `Imposto::grupoDoMes` (a
  * explicação do mês, com os números).
+ *
+ * 08/11/2026: uma ideia nova (ideia.ajustes) com o antes → depois das 4 notas
+ * do relatório (`Aviso.notas`). O antes são os pilares do relatorioMock, e o
+ * "Ver o relatório" abre o relatório na própria página.
  */
 import type { Aviso, CarteiraVisao, CaminhoVisao, ImpostoVisao, MesHistorico, MesImposto, OperacaoImposto, PosicaoVisao } from '~/types/carteiraVisao'
 import type { CarteiraRelatorio, IndicadorRelatorio, PilarRelatorio, UnidadeRelatorio } from '~/types/carteiraRelatorio'
@@ -199,6 +203,35 @@ const AVISOS: Aviso[] = [
     fonte: 'Transações da Pluggy, regra da Receita (Lei 11.033/2004, art. 3º, I)',
     acoes: [{ tipo: 'ver', rotulo: 'Ver o imposto do mês', alvo: '#imposto' }],
     pergunta: 'Quanto ainda posso vender sem imposto?', canais: ['tela', 'email', 'whatsapp'], estado: 'visto',
+  },
+  {
+    // 08/11: o antes das notas é o do relatorioMock (os pilares 62, 81, 59 e 86), como no backend ("antes" = a nota do relatório)
+    id: 'ideia.ajustes:2026-11', detector: 'ideia.ajustes', gravidade: 'info',
+    titulo: '3 ajustes pequenos subiriam 3 das 4 notas da carteira, sem baixar nenhuma.',
+    curto: '3 ajustes pequenos subiriam 3 das 4 notas.',
+    texto: 'Numa simulação, com os três juntos: R$ 9,8 mil de ações de saúde por ações de energia elétrica, R$ 6 mil de Tesouro IPCA+ por outro título do Tesouro IPCA+ e aplicar R$ 1,1 mil dos proventos do mês em um ETF de ouro que você já tem. Medi no mesmo relatório, como se eles estivessem na carteira desde 02/05/2025.',
+    emJogo: null, prazo: null, confianca: 'estimativa',
+    ressalva: 'Risco e Diversificação olham a carteira de hoje; Retorno e Eficiência, o passado, e rentabilidade passada não é garantia de rentabilidade futura. Nos 2.000 cenários dos próximos 5 anos, o resultado dos 10% piores não cai. Não é recomendação.',
+    prova: [
+      { rotulo: '1º ajuste', valor: 'R$ 9,8 mil de ações de saúde por ações de energia elétrica' },
+      { rotulo: '2º ajuste', valor: 'R$ 6 mil de Tesouro IPCA+ por outro título do Tesouro IPCA+' },
+      { rotulo: '3º ajuste', valor: 'aplicar R$ 1,1 mil dos proventos do mês em um ETF de ouro que você já tem' },
+      { rotulo: 'Período do relatório', valor: '02/05/2025 a 06/11/2026' },
+      { rotulo: 'Notas (antes → depois)', valor: 'Retorno 62 → 65 · Risco 81 → 82 · Eficiência 59 → 63 · Diversificação 86 → 86' },
+      { rotulo: 'Cenários de 5 anos, os 10% piores', valor: 'R$ 702 mil → R$ 706 mil' },
+    ],
+    fonte: 'O relatório da carteira (a curva real, o benchmark composto, o CDI e o IPCA) e o motor de cenários da Redentia',
+    acoes: [
+      { tipo: 'ver', rotulo: 'Ver o relatório', alvo: '#relatorio' },
+      { tipo: 'simular', rotulo: 'Simular', alvo: 'Simule estes 3 ajustes na minha carteira: R$ 9,8 mil de ações de saúde por ações de energia elétrica, R$ 6 mil de Tesouro IPCA+ por outro título do Tesouro IPCA+ e aplicar R$ 1,1 mil dos proventos do mês em um ETF de ouro que você já tem. O que muda nas notas do relatório e nos cenários de 5 anos?' },
+    ],
+    pergunta: 'Pequenos ajustes melhorariam as notas da minha carteira?', canais: ['tela'], estado: 'novo',
+    notas: [
+      { pilar: 'retorno', nome: 'Retorno', antes: 62, depois: 65 },
+      { pilar: 'risco', nome: 'Risco', antes: 81, depois: 82 },
+      { pilar: 'eficiencia', nome: 'Eficiência', antes: 59, depois: 63 },
+      { pilar: 'diversificacao', nome: 'Diversificação', antes: 86, depois: 86 },
+    ],
   },
 ]
 
