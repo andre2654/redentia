@@ -187,16 +187,32 @@ test('os indicadores: melhora pelo lado bom de cada um, com o nome curto e a fra
     ind('alpha_jensen', '%', 1.32, 1.68, 'maior', 'Alpha de Jensen'),
     ind('numero_de_ativos', '', 22, 23, 'maior', 'Número de ativos'),
   ])
+  // na ordem da linha: um de cada pilar primeiro (maior queda, Sharpe), depois o resto
   assert.deepEqual(linha.map((i) => [i.nome, i.antes, i.depois, i.melhora]), [
+    ['Maior queda', '−9,5%', '−11,2%', false],
     ['Sharpe', '−0,05', '−0,01', true],
     ['Volatilidade', '10,6%', '10,5%', true],
-    ['Beta', '0,78', '0,81', false],
-    ['Maior queda', '−9,5%', '−11,2%', false],
     ['Alpha', '1,3%', '1,7%', true],
+    ['Beta', '0,78', '0,81', false],
     ['Número de ativos', '22', '23', true],
   ])
-  assert.equal(linha[0]!.aria, 'Sharpe: de −0,05 para −0,01, melhora')
-  assert.equal(linha[2]!.aria, 'Beta: de 0,78 para 0,81, piora')
+  const aria = (chave: string) => linha.find((i) => i.chave === chave)!.aria
+  assert.equal(aria('sharpe'), 'Sharpe: de −0,05 para −0,01, melhora')
+  assert.equal(aria('beta'), 'Beta: de 0,78 para 0,81, piora')
+})
+
+test('a linha começa por um indicador de cada pilar, e as quatro medidas de retorno não tomam a frente', () => {
+  // o caso do dono (ideia.ajustes, 08/11): na ordem do catálogo, TWR, MWR, CAGR e
+  // acima da inflação ocupavam a linha e o Sharpe e a maior queda iam para o "e mais 9"
+  const catalogo: [string, IndicadorDoAviso['unidade'], number, number, 'maior' | 'menor'][] = [
+    ['twr', '%', 20.48, 21.02, 'maior'], ['mwr', '%', 13.78, 14.14, 'maior'], ['cagr', '%', 13.34, 13.68, 'maior'],
+    ['retorno_real', '%', 8.52, 8.85, 'maior'], ['volatilidade', '%', 10.59, 10.47, 'menor'], ['max_drawdown', '%', -8.4, -8.19, 'maior'],
+    ['beta', 'x', 1.08, 1.06, 'menor'], ['sharpe', '', -0.05, -0.03, 'maior'], ['sortino', '', -0.07, -0.03, 'maior'],
+    ['maior_classe', '%', 53.58, 52.9, 'menor'],
+  ]
+  const linha = indicadoresQueMudam(catalogo.map(([c, u, a, d, m]) => ind(c, u, a, d, m)))
+  assert.deepEqual(linha.slice(0, 4).map((i) => i.chave), ['twr', 'max_drawdown', 'sharpe', 'maior_classe'])
+  assert.deepEqual(linha.slice(-3).map((i) => i.chave), ['retorno_real', 'mwr', 'cagr'])
 })
 
 test('os nomes curtos cobrem o catálogo do relatório; só os que já são curtos ficam com o nome dele', () => {

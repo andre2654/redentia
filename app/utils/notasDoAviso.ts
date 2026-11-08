@@ -112,10 +112,29 @@ function valorNaUnidade(v: number, unidade: IndicadorDoAviso['unidade']): string
 }
 
 /**
- * Os indicadores da linha, na ordem do catálogo (a que o backend manda). Sai o
- * que, escrito como o relatório escreve, fica igual ('10,6%' → '10,6%'), o que
- * não tem os dois valores e o que vem numa unidade fora do contrato (um R$
- * apareceria com o olho fechado: a linha não passa pela máscara).
+ * A ordem da linha (08/11/2026): primeiro um de cada pilar, o mais conhecido
+ * (TWR, Maior queda, Sharpe, Maior classe), depois o resto. Na ordem do
+ * catálogo, as quatro medidas de retorno (TWR, MWR, CAGR e acima da inflação),
+ * que dizem quase a mesma coisa, tomavam a linha, e o Sharpe e a maior queda
+ * iam para o "e mais N".
+ */
+const ORDEM = [
+  'twr', 'max_drawdown', 'sharpe', 'maior_classe',
+  'volatilidade', 'sortino', 'alpha_jensen', 'beta', 'maior_posicao', 'm2',
+  'retorno_real', 'mwr', 'cagr', 'downside_deviation', 'treynor', 'information_ratio', 'tracking_error', 'appraisal_ratio', 'r2',
+  'numero_de_ativos', 'correlacao_media',
+]
+const posicao = (chave: string) => {
+  const i = ORDEM.indexOf(chave)
+  return i === -1 ? ORDEM.length : i
+}
+
+/**
+ * Os indicadores da linha, na ORDEM de cima (o que não está nela vai para o
+ * fim, na ordem em que o backend manda). Sai o que, escrito como o relatório
+ * escreve, fica igual ('10,6%' → '10,6%'), o que não tem os dois valores e o
+ * que vem numa unidade fora do contrato (um R$ apareceria com o olho fechado:
+ * a linha não passa pela máscara).
  */
 export function indicadoresQueMudam(indicadores: IndicadorDoAviso[] | null | undefined): IndicadorQueMuda[] {
   if (!indicadores?.length) return []
@@ -131,6 +150,9 @@ export function indicadoresQueMudam(indicadores: IndicadorDoAviso[] | null | und
     out.push({ chave: i.chave, nome, antes, depois, melhora, aria: `${nome}: de ${antes} para ${depois}, ${melhora ? 'melhora' : 'piora'}` })
   }
   return out
+    .map((x, k) => ({ x, k }))
+    .sort((a, b) => posicao(a.x.chave) - posicao(b.x.chave) || a.k - b.k)
+    .map(({ x }) => x)
 }
 
 /**
