@@ -35,7 +35,7 @@ const grupos = computed(() => (props.dadosDe ? [] : gruposDoMes(atual.value, pro
   const l = linhaDoGrupo(g, atual.value.mes, fmt)
   return { g, l, texto: textoDoGrupo(g, l, fmt, daNota) }
 })))
-const prejuizos = computed(() => (props.dadosDe ? '' : linhaDosPrejuizos(atual.value, fmt)))
+const prejuizos = computed(() => (props.dadosDe ? '' : linhaDosPrejuizos(atual.value, fmt, props.imposto.historico.some((h) => h.selo === 'custo_desconhecido'))))
 const darf = computed(() => {
   const d = atual.value.darf
   return !props.dadosDe && d.valor != null && d.valor > 0 && d.vence ? { valor: d.valor, vence: d.vence, codigo: d.codigo } : null

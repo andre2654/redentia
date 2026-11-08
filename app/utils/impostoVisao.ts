@@ -87,7 +87,7 @@ const REGRA_SEM_VENDA: Partial<Record<GrupoImposto, string>> = {
  * backend): 'Prejuízo para abater de lucros futuros: R$ 1.200 em ações, ETF e
  * BDR e R$ 300 em FII.' Sem prejuízo (ou sem o campo), ''.
  */
-export function linhaDosPrejuizos(m: MesImposto, fmt: (v: number) => string = brl0): string {
+export function linhaDosPrejuizos(m: MesImposto, fmt: (v: number) => string = brl0, comCustoDesconhecido = false): string {
   const p = m.prejuizos
   if (!p) return ''
   const partes = [
@@ -97,7 +97,8 @@ export function linhaDosPrejuizos(m: MesImposto, fmt: (v: number) => string = br
   ].filter((x): x is string => !!x)
   if (!partes.length) return ''
   const lista = partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}`
-  return `Prejuízo para abater de lucros futuros: ${lista}.`
+  // o mês sem o custo não soma nem abate prejuízo (não se sabe o resultado): o saldo de verdade pode ser outro
+  return `Prejuízo para abater de lucros futuros: ${lista}.${comCustoDesconhecido ? ' Os meses com custo desconhecido ficam de fora dessa conta.' : ''}`
 }
 
 /** sempre ações, FII, ETF, renda fixa e cripto, venha como vier */

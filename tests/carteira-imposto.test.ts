@@ -265,4 +265,6 @@ test('o mês mostra os grupos que a pessoa tem, mesmo sem venda (a revisão do d
   assert.equal(linhaDosPrejuizos(novembro), '')
   assert.equal(linhaDosPrejuizos({ ...novembro, prejuizos: { comum: 0, dayTrade: 0, fii: 0 } }), '')
   assert.equal(linhaDosPrejuizos({ ...novembro, prejuizos: { comum: 1200, dayTrade: 0, fii: 300 } }), 'Prejuízo para abater de lucros futuros: R$ 1.200 em ações, ETF e BDR e R$ 300 em FII.')
+  assert.equal(linhaDosPrejuizos({ ...novembro, prejuizos: { comum: 487.46, dayTrade: 11.24, fii: 368.26 } }, undefined, true),
+    'Prejuízo para abater de lucros futuros: R$ 487 em ações, ETF e BDR, R$ 11 em day trade e R$ 368 em FII. Os meses com custo desconhecido ficam de fora dessa conta.')
 })
