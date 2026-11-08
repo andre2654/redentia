@@ -77,17 +77,37 @@ const meses = computed(() => {
   const max = Math.max(...valores, futuro.value ?? 0) * 1.15
   const linhas = ms.map((m, i) => {
     const h = (valores[i]! / max) * 100
-    return { mes: m.mes, gasto: m.gasto, futuro: false, h, pedacos: pedacos(m.renda, h, m.porClasse), txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)) }
+    return {
+      mes: m.mes, nomeLongo: MES_LONGO[m.mes] ?? m.mes, gasto: m.gasto, futuro: false, h, total: m.renda, porClasse: m.porClasse,
+      pagamentos: m.pagamentos ?? null, pedacos: pedacos(m.renda, h, m.porClasse), txt: m.gasto ? pctTxt(valores[i]!) : mask(brl0(m.renda)),
+    }
   })
   if (futuro.value != null) {
     const mm = Number((r.value.marcados[0]?.data ?? agoraEmSP().iso).slice(5, 7))
+    const mes = MES[mm - 1] ?? ''
     const h = (futuro.value / max) * 100
-    linhas.push({ mes: MES[mm - 1] ?? '', gasto: null, futuro: true, h, pedacos: pedacos(futuro.value, h, porClasseMarcado.value), txt: mask(brl0(futuro.value)) })
+    linhas.push({
+      mes, nomeLongo: MES_LONGO[mes] ?? mes, gasto: null, futuro: true, h, total: futuro.value, porClasse: porClasseMarcado.value,
+      pagamentos: null, pedacos: pedacos(futuro.value, h, porClasseMarcado.value), txt: mask(brl0(futuro.value)),
+    })
   }
   return linhas
 })
 // a lista do mês corrente fica fechada: à vista, só o próximo pagamento
 const verMarcados = ref(false)
+// 08/11, o dono pediu hover e clique: o hover mostra o mês com a divisão por tipo; o clique abre
+// embaixo o que caiu nele, ativo por ativo (o mês a cair abre a lista do que está marcado)
+const mesHover = ref<number | null>(null)
+const mesFixo = ref<number | null>(null)
+function clicarMes(i: number) {
+  const m = meses.value[i]
+  if (!m) return
+  if (m.futuro) { mesFixo.value = null; verMarcados.value = !verMarcados.value; return }
+  mesFixo.value = mesFixo.value === i ? null : i
+}
+const mesSel = computed(() => (mesFixo.value == null ? null : meses.value[mesFixo.value] ?? null))
+const rotuloDoMes = (m: { nomeLongo: string; futuro: boolean; total: number; porClasse?: RendaPorClasse }) =>
+  `${m.nomeLongo}${m.futuro ? ', a cair' : ''}: ${mask(brl0(m.total))}${m.porClasse ? `, ${mask(brl0(m.porClasse.fii))} de FIIs e ${mask(brl0(m.porClasse.acoes))} de ações` : ''}`
 const proximo = computed(() => {
   const hoje = agoraEmSP().iso.slice(0, 10)
   return r.value.marcados.find((m) => m.data >= hoje) ?? r.value.marcados[0] ?? null
@@ -203,13 +223,45 @@ function simular() {
         <ul v-if="empilhado" class="vrd__classes" aria-label="Por tipo">
           <li v-for="c in CLASSES" :key="c.id"><i class="vrd__k" :class="`vrd__k--${c.id}`" aria-hidden="true" />{{ c.nome }}</li>
         </ul>
-        <ol class="vrd__meses">
-          <li v-for="m in meses" :key="m.mes" class="vrd__mes" :class="{ 'vrd__mes--ultimo': !m.futuro && m.mes === ultimoReal, 'vrd__mes--futuro': m.futuro }">
-            <span class="vrd__mes-v">{{ m.txt }}</span>
-            <span class="vrd__mes-b"><span class="vrd__pilha" :style="{ height: `${m.h}%` }"><i v-for="p in m.pedacos" :key="p.classe" :class="`vrd__p--${p.classe}`" :style="{ flexGrow: p.h }" /></span></span>
-            <span class="vrd__mes-n">{{ m.mes }}<template v-if="m.futuro"> · a cair</template></span>
+        <ol class="vrd__meses" @pointerleave="mesHover = null">
+          <li
+            v-for="(m, i) in meses" :key="m.mes" class="vrd__mes"
+            :class="{ 'vrd__mes--ultimo': !m.futuro && m.mes === ultimoReal, 'vrd__mes--futuro': m.futuro, 'vrd__mes--on': mesFixo === i || (m.futuro && verMarcados) }"
+          >
+            <button
+              type="button" class="vrd__mes-btn" :aria-pressed="mesFixo === i || (m.futuro && verMarcados)" :aria-label="rotuloDoMes(m)"
+              @pointerenter="mesHover = i" @focus="mesHover = i" @blur="mesHover = null" @click="clicarMes(i)"
+            >
+              <span class="vrd__mes-v">{{ m.txt }}</span>
+              <span class="vrd__mes-b"><span class="vrd__pilha" :style="{ height: `${m.h}%` }"><i v-for="p in m.pedacos" :key="p.classe" :class="`vrd__p--${p.classe}`" :style="{ flexGrow: p.h }" /></span></span>
+              <span class="vrd__mes-n">{{ m.mes }}<template v-if="m.futuro"> · a cair</template></span>
+            </button>
+            <!-- o hover: o mês e a divisão por tipo -->
+            <span v-if="mesHover === i" class="vrd__dica-mes" :class="{ 'vrd__dica-mes--esq': i === 0, 'vrd__dica-mes--dir': i === meses.length - 1 }" role="tooltip">
+              <b>{{ m.nomeLongo.charAt(0).toUpperCase() + m.nomeLongo.slice(1) }}{{ m.futuro ? ', a cair' : '' }}: {{ mask(brl0(m.total)) }}</b>
+              <template v-if="m.porClasse">
+                <span><i class="vrd__k vrd__k--fii" aria-hidden="true" />FIIs {{ mask(brl0(m.porClasse.fii)) }}</span>
+                <span><i class="vrd__k vrd__k--acoes" aria-hidden="true" />Ações {{ mask(brl0(m.porClasse.acoes)) }}</span>
+              </template>
+              <span class="vrd__dica-mes-x">{{ m.futuro ? 'Clique para ver os pagamentos' : 'Clique para ver o que caiu' }}</span>
+            </span>
           </li>
         </ol>
+
+        <!-- o clique num mês que passou: o que caiu nele, ativo por ativo -->
+        <template v-if="mesSel && !mesSel.futuro">
+          <h3 class="vrd__h3 vrd__h3--2">Em {{ mesSel.nomeLongo }}, {{ mask(brl0(mesSel.total)) }}</h3>
+          <ul v-if="mesSel.pagamentos?.length" class="vrd__agenda">
+            <li v-for="(p, i) in mesSel.pagamentos" :key="`${p.data}-${p.ticker}-${i}`">
+              <span class="vrd__ag-d">{{ fmtDia(p.data) }}</span>
+              <span class="vrd__ag-t"><i class="vrd__k vrd__k--inline" :class="`vrd__k--${p.classe}`" aria-hidden="true" />{{ p.ticker }}</span>
+              <span class="vrd__ag-v">{{ mask(brl0(p.valor)) }}</span>
+            </li>
+          </ul>
+          <p v-else-if="mesSel.porClasse" class="vrd__prox">FIIs {{ mask(brl0(mesSel.porClasse.fii)) }} · Ações {{ mask(brl0(mesSel.porClasse.acoes)) }}</p>
+          <button type="button" class="vrd__ver vrd__ver--volta" @click="mesFixo = null">Voltar para {{ mesMarcado }}</button>
+        </template>
+        <template v-else>
 
         <h3 class="vrd__h3 vrd__h3--2">Em {{ mesMarcado }}, já marcados</h3>
         <p v-if="futuro != null && proximo && !verMarcados" class="vrd__prox">
@@ -224,6 +276,7 @@ function simular() {
           </li>
           <li v-if="futuro == null" class="vrd__ag-total"><span /><span>Total</span><span class="vrd__ag-v">{{ mask(brl0(marcadosTotal)) }}</span></li>
         </ul>
+        </template>
       </div>
 
       <!-- daqui a 5 anos -->
@@ -306,7 +359,25 @@ function simular() {
 .vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .vrd__h3--2 { margin-top: clamp(28px, 3.4vw, 40px); }
 .vrd__meses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; list-style: none; margin: 16px 0 0; padding: 0; height: 150px; }
-.vrd__mes { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; text-align: center; }
+.vrd__mes { position: relative; }
+/* o mês inteiro é o alvo do hover e do clique */
+.vrd__mes-btn { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px; background: none; font: inherit; text-align: center; cursor: pointer; }
+.vrd__mes-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
+.vrd__mes-btn:hover .vrd__pilha, .vrd__mes--on .vrd__pilha { opacity: 1; }
+.vrd__mes--on .vrd__mes-n { color: var(--nu-ink); font-weight: 800; }
+.vrd__dica-mes {
+  position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); z-index: 6; display: grid; gap: 3px;
+  padding: 9px 11px; border-radius: 10px; background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 500;
+  white-space: nowrap; box-shadow: 0 8px 24px var(--nu-ink-14); pointer-events: none; font-variant-numeric: tabular-nums;
+}
+.vrd__dica-mes b { font-size: var(--nu-fs-sm); }
+.vrd__dica-mes span { display: inline-flex; align-items: center; gap: 6px; }
+.vrd__dica-mes .vrd__k { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+.vrd__dica-mes-x { margin-top: 2px; color: color-mix(in srgb, var(--nu-white) 60%, transparent); }
+.vrd__dica-mes--esq { left: 0; transform: none; }
+.vrd__dica-mes--dir { left: auto; right: 0; transform: none; }
+.vrd__k--inline { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 2px; vertical-align: middle; }
+.vrd__ver--volta { display: inline-block; margin: 10px 0 0; }
 .vrd__mes-v { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .vrd__mes-b { display: flex; align-items: flex-end; justify-content: center; }
 /* a barra é uma pilha: um pedaço por classe (ou um só, sem o porClasse) */
