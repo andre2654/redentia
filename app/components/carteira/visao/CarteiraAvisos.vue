@@ -114,6 +114,12 @@ onBeforeUnmount(() => {
 function alternarProva(id: string) { provaAberta.value = provaAberta.value === id ? null : id }
 /** o "e mais N" dos indicadores abre o "Como calculei", onde está o resto */
 function abrirProva(id: string) { provaAberta.value = id }
+/**
+ * Linha da prova com valor de frase (o "Por que parei" dos ajustes, 08/11):
+ * lado a lado, o rótulo era espremido em três linhas. Acima de 60
+ * caracteres, o valor desce para baixo do rótulo.
+ */
+const provaLonga = (valor: string) => valor.length > 60
 
 /* ————— "Já sei" e "desfazer", gravados ————— */
 const { gravar } = useAvisoEstado()
@@ -296,7 +302,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
                 </p>
                 <div v-if="provaAberta === a.id" class="cav__prova">
                   <dl>
-                    <div v-for="p in a.prova" :key="p.rotulo" class="cav__prova-l"><dt>{{ p.rotulo }}</dt><dd>{{ semValor(p.valor) }}</dd></div>
+                    <div v-for="p in a.prova" :key="p.rotulo" class="cav__prova-l" :class="{ 'cav__prova-l--frase': provaLonga(p.valor) }"><dt>{{ p.rotulo }}</dt><dd>{{ semValor(p.valor) }}</dd></div>
                     <!-- os indicadores que não couberam na linha do placar -->
                     <div v-for="i in indicadoresDe(a).slice(naLinha(a))" :key="i.chave" class="cav__prova-l">
                       <dt>{{ i.nome }}</dt>
@@ -477,6 +483,8 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__prova-l:first-child { border-top: 0; }
 .cav__prova-l dt { color: var(--nu-gray-3); font-weight: 500; }
 .cav__prova-l dd { margin: 0; color: var(--nu-ink); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.cav__prova-l--frase { flex-direction: column; gap: 2px; }
+.cav__prova-l--frase dd { text-align: left; font-weight: 600; }
 .cav__fonte { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .cav__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 12px 0 0 18px; }
 .cav__acao {
