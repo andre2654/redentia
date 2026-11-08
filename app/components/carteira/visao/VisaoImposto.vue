@@ -119,7 +119,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
     <!-- o prejuízo que sobra para abater, numa linha (a ressalva mora no "Como funciona") -->
     <p v-if="partesPrej.length" class="vim__prej" :aria-label="prejuizos">
-      <span class="vim__prej-t">Prejuízo para abater</span>
+      <span class="vim__prej-t">Prejuízo estimado para abater</span>
       <template v-for="(p, i) in partesPrej" :key="p.rotulo"><span v-if="i" class="vim__prej-s" aria-hidden="true">·</span><b>{{ fmt(p.valor) }}</b> {{ p.rotulo }}</template>
     </p>
 
@@ -163,17 +163,6 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
       </ul>
     </div>
 
-    <!-- as regras, a fonte e as ressalvas, fechadas: quem quer, abre -->
-    <details class="vim__como">
-      <summary>Como funciona <span>· é uma estimativa</span></summary>
-      <p>
-        Ações à vista são isentas até R$ 20 mil de vendas no mês (Lei 11.033/2004, art. 3º, I); acima disso, o lucro paga 15%.
-        FII paga 20% e ETF, 15%, sem isenção. Na renda fixa, o imposto é retido na fonte, de 22,5% a 15% pelo prazo.
-        O DARF tem o código 6015 e vence no último dia útil do mês seguinte.
-        <template v-if="ressalvaPrej">O prejuízo para abater não conta os meses com custo desconhecido.</template>
-        As barras são as vendas na bolsa: a renda fixa fica de fora. É uma estimativa: confira com quem faz o seu imposto.
-      </p>
-    </details>
   </section>
 </template>
 
@@ -202,10 +191,6 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__prej-t { margin-right: 8px; color: var(--nu-ink); font-weight: 700; }
 .vim__prej b { color: var(--nu-ink); font-weight: 700; }
 .vim__prej-s { margin: 0 8px; color: var(--nu-gray); }
-.vim__como { max-width: 1100px; margin: 22px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.6; }
-.vim__como summary { cursor: pointer; width: fit-content; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-.vim__como summary span { font-weight: 500; color: var(--nu-gray); }
-.vim__como p { margin: 8px 0 0; }
 .vim__imposto { background: var(--nu-amber-fill); border-radius: 6px 3px 3px 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 3px 6px 6px 3px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .3s both; }
 @keyframes vim-cresce { from { transform: scaleX(0); } }
