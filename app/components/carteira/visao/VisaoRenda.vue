@@ -219,6 +219,9 @@ function simular() {
     <div class="vrd__grade" :class="{ 'vrd__grade--lado': !temFuturo }">
       <!-- mês a mês e o mês corrente (sem os 5 anos, lado a lado) -->
       <div class="vrd__col">
+        <!-- as duas partes em caixas próprias (08/11): o lado a lado era um grid que
+             contava os filhos, e a legenda por tipo, um filho a mais, quebrou a grade -->
+        <div class="vrd__parte">
         <h3 class="vrd__h3">{{ comGasto ? 'Quanto pagou, mês a mês' : 'Mês a mês' }}</h3>
         <ul v-if="empilhado" class="vrd__classes" aria-label="Por tipo">
           <li v-for="c in CLASSES" :key="c.id"><i class="vrd__k" :class="`vrd__k--${c.id}`" aria-hidden="true" />{{ c.nome }}</li>
@@ -232,9 +235,10 @@ function simular() {
               type="button" class="vrd__mes-btn" :aria-pressed="mesFixo === i || (m.futuro && verMarcados)" :aria-label="rotuloDoMes(m)"
               @pointerenter="mesHover = i" @focus="mesHover = i" @blur="mesHover = null" @click="clicarMes(i)"
             >
-              <span class="vrd__mes-v">{{ m.txt }}</span>
+              <!-- com o gráfico estreito, o "R$ " e o "· a cair" saem (o @container do .vrd__meses) -->
+              <span class="vrd__mes-v"><template v-if="m.txt.startsWith('R$ ')"><span class="vrd__mes-rs">R$ </span>{{ m.txt.slice(3) }}</template><template v-else>{{ m.txt }}</template></span>
               <span class="vrd__mes-b"><span class="vrd__pilha" :style="{ height: `${m.h}%` }"><i v-for="p in m.pedacos" :key="p.classe" :class="`vrd__p--${p.classe}`" :style="{ flexGrow: p.h }" /></span></span>
-              <span class="vrd__mes-n">{{ m.mes }}<template v-if="m.futuro"> · a cair</template></span>
+              <span class="vrd__mes-n">{{ m.mes }}<span v-if="m.futuro" class="vrd__mes-acair"> · a cair</span></span>
             </button>
             <!-- o hover: o mês e a divisão por tipo -->
             <span v-if="mesHover === i" class="vrd__dica-mes" :class="{ 'vrd__dica-mes--esq': i === 0, 'vrd__dica-mes--dir': i === meses.length - 1 }" role="tooltip">
@@ -247,7 +251,9 @@ function simular() {
             </span>
           </li>
         </ol>
+        </div>
 
+        <div class="vrd__parte">
         <!-- o clique num mês que passou: o que caiu nele, ativo por ativo -->
         <template v-if="mesSel && !mesSel.futuro">
           <h3 class="vrd__h3 vrd__h3--2">Em {{ mesSel.nomeLongo }}, {{ mask(brl0(mesSel.total)) }}</h3>
@@ -277,6 +283,7 @@ function simular() {
           <li v-if="futuro == null" class="vrd__ag-total"><span /><span>Total</span><span class="vrd__ag-v">{{ mask(brl0(marcadosTotal)) }}</span></li>
         </ul>
         </template>
+        </div>
       </div>
 
       <!-- daqui a 5 anos -->
@@ -358,7 +365,12 @@ function simular() {
 .vrd__grade { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px clamp(32px, 5vw, 80px); margin-top: clamp(40px, 5vw, 64px); max-width: 1240px; }
 .vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
 .vrd__h3--2 { margin-top: clamp(28px, 3.4vw, 40px); }
-.vrd__meses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; list-style: none; margin: 16px 0 0; padding: 0; height: 150px; }
+.vrd__meses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; list-style: none; margin: 16px 0 0; padding: 0; height: 150px; container-type: inline-size; }
+/* o rótulo de cada mês numa linha só: quebrado em duas, ele invadia o vizinho */
+.vrd__mes-v, .vrd__mes-n { white-space: nowrap; }
+@container (max-width: 480px) {
+  .vrd__mes-rs, .vrd__mes-acair { display: none; }
+}
 .vrd__mes { position: relative; }
 /* o mês inteiro é o alvo do hover e do clique */
 .vrd__mes-btn { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px; background: none; font: inherit; text-align: center; cursor: pointer; }
@@ -452,7 +464,7 @@ function simular() {
 
 /* sem os 5 anos: o mês a mês e o mês corrente lado a lado (a coluna da direita ficava vazia) */
 .vrd__grade--lado { grid-template-columns: minmax(0, 1fr); max-width: 1100px; }
-.vrd__grade--lado .vrd__col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto; grid-auto-flow: column; column-gap: clamp(32px, 5vw, 80px); align-content: start; }
+.vrd__grade--lado .vrd__col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(32px, 5vw, 80px); align-items: start; }
 .vrd__grade--lado .vrd__h3--2 { margin-top: 0; }
 @media (max-width: 960px) {
   .vrd__grade { grid-template-columns: minmax(0, 1fr); }
