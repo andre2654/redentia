@@ -16,7 +16,7 @@
 // explicação do mês, com os números), e não mais a frase da tela repetida antes
 // dela; a operação sem quantidade (direito de subscrição) mostra só o valor.
 import type { ImpostoVisao, MesHistorico, PosicaoVisao, SeloImposto } from '~/types/carteiraVisao'
-import { ALIQUOTA_EM_POUCAS_PALAVRAS, SELO, diaMes, fraseDoMes, gruposDoMes, linhaDoGrupo, linhaDosPrejuizos, partesDosPrejuizos, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas, vendasNaBolsa } from '~/utils/impostoVisao'
+import { SELO, diaMes, fraseDoMes, gruposDoMes, linhaDoGrupo, linhaDosPrejuizos, partesDosPrejuizos, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasNaBolsa } from '~/utils/impostoVisao'
 import { brl0, brl2 } from '~/utils/carteiraVisao'
 
 // as posições: os grupos que a pessoa tem e não vendeu no mês também aparecem, com a regra de cada um
@@ -28,9 +28,14 @@ const daNota = (t: string) => (hidden.value ? mascararNota(t) : t)
 const atual = computed(() => props.imposto.mesAtual)
 const nome = computed(() => nomeDoMes(atual.value.mes))
 const frase = computed(() => (props.dadosDe ? `O imposto de ${nome.value} espera a conexão voltar.` : fraseDoMes(atual.value, fmt)))
-const sub = computed(() => (props.dadosDe
-  ? `Os dados são de ${props.dadosDe}: as vendas depois disso ainda não chegaram.`
-  : linhaDoMesAnterior(props.imposto.mesAnterior, fmt)))
+// 08/11, o dono pediu menos texto: o mês anterior só aparece quando pede ação (o DARF a pagar, ou
+// o custo que falta); "outubro ficou isento, com R$ 8 em vendas" era ruído
+const sub = computed(() => {
+  if (props.dadosDe) return `Os dados são de ${props.dadosDe}: as vendas depois disso ainda não chegaram.`
+  const ma = props.imposto.mesAnterior
+  const pedeAcao = (ma.darf.valor ?? 0) > 0 || ma.grupos.some((g) => g.vendido > 0 && !g.custoConhecido && g.impostoEstimado == null && g.grupo !== 'cripto')
+  return pedeAcao ? linhaDoMesAnterior(ma, fmt) : ''
+})
 const grupos = computed(() => (props.dadosDe ? [] : gruposDoMes(atual.value, props.posicoes ?? []).map((g) => {
   const l = linhaDoGrupo(g, atual.value.mes, fmt)
   // ações sem venda: a barra e o "R$ 20 mil livres" já dizem tudo, a frase repetia
@@ -42,6 +47,14 @@ const completos = computed(() => grupos.value.filter(({ g }) => g.grupo === 'aco
 const compactos = computed(() => grupos.value.filter(({ g }) => !(g.grupo === 'acoes' || g.vendido > 0)))
 const partesPrej = computed(() => (props.dadosDe ? [] : partesDosPrejuizos(atual.value)))
 const ressalvaPrej = computed(() => props.imposto.historico.some((h) => h.selo === 'custo_desconhecido'))
+// os grupos sem venda numa linha só: 'FII e ETF sem vendas no mês. Renda fixa com o imposto retido na fonte.'
+const resto = computed(() => {
+  const nomes = compactos.value.filter(({ g }) => g.grupo !== 'rf').map(({ l }) => l.nome)
+  const partes: string[] = []
+  if (nomes.length) partes.push(`${nomes.length > 1 ? `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}` : nomes[0]} sem vendas no mês.`)
+  if (compactos.value.some(({ g }) => g.grupo === 'rf')) partes.push('Renda fixa com o imposto retido na fonte.')
+  return partes.join(' ')
+})
 const prejuizos = computed(() => (props.dadosDe ? '' : linhaDosPrejuizos(atual.value, fmt, props.imposto.historico.some((h) => h.selo === 'custo_desconhecido'))))
 const darf = computed(() => {
   const d = atual.value.darf
@@ -73,7 +86,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
   <section class="vim" aria-labelledby="vim-titulo" data-clarity-mask="true">
     <span class="vim__eyebrow">Imposto do mês</span>
     <h2 id="vim-titulo" class="vim__frase">{{ frase }}</h2>
-    <p class="vim__sub">{{ sub }}</p>
+    <p v-if="sub" class="vim__sub">{{ sub }}</p>
 
     <!-- o mês atual, um grupo por linha -->
     <ul v-if="completos.length" class="vim__grupos">
@@ -101,23 +114,14 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
       </li>
     </ul>
 
-    <!-- os grupos sem venda no mês, lado a lado -->
-    <ul v-if="compactos.length" class="vim__mini">
-      <li v-for="{ g, l } in compactos" :key="g.grupo" class="vim__mini-i">
-        <span class="vim__mini-n">{{ l.nome }}</span>
-        <span class="vim__mini-v">{{ l.direita }}</span>
-        <span v-if="ALIQUOTA_EM_POUCAS_PALAVRAS[g.grupo]" class="vim__mini-x">{{ ALIQUOTA_EM_POUCAS_PALAVRAS[g.grupo] }}</span>
-      </li>
-    </ul>
+    <!-- os grupos sem venda no mês, numa linha; a alíquota de cada um mora no "Como funciona" -->
+    <p v-if="resto" class="vim__resto">{{ resto }}</p>
 
-    <!-- o prejuízo que sobra para abater: um número por balde -->
-    <div v-if="partesPrej.length" class="vim__prej" role="group" :aria-label="prejuizos">
+    <!-- o prejuízo que sobra para abater, numa linha (a ressalva mora no "Como funciona") -->
+    <p v-if="partesPrej.length" class="vim__prej" :aria-label="prejuizos">
       <span class="vim__prej-t">Prejuízo para abater</span>
-      <ul class="vim__prej-l">
-        <li v-for="p in partesPrej" :key="p.rotulo"><span class="vim__prej-v">{{ fmt(p.valor) }}</span> <span class="vim__prej-r">{{ p.rotulo }}</span></li>
-      </ul>
-      <span v-if="ressalvaPrej" class="vim__prej-x">Sem contar os meses com custo desconhecido.</span>
-    </div>
+      <template v-for="(p, i) in partesPrej" :key="p.rotulo"><span v-if="i" class="vim__prej-s" aria-hidden="true">·</span><b>{{ fmt(p.valor) }}</b> {{ p.rotulo }}</template>
+    </p>
 
     <p v-if="darf" class="vim__darf">
       <span class="vim__darf-t">DARF de {{ nome }}</span>
@@ -126,23 +130,22 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
     </p>
 
     <!-- os últimos 12 meses, com o selo -->
-    <h3 class="vim__h3">Os últimos 12 meses</h3>
-    <p class="vim__h3-s">Vendas na bolsa por mês, em reais. A renda fixa fica de fora: o imposto dela já sai retido na fonte.</p>
+    <h3 class="vim__h3">Vendas na bolsa, mês a mês</h3>
     <ol class="vim__meses">
       <li v-for="m in meses" :key="m.mes">
         <button
           type="button" class="vim__mes" :class="[`vim__mes--${m.selo}`, { 'vim__mes--on': aberto === m.mes }]"
           :disabled="!m.operacoes.length" :aria-expanded="m.operacoes.length ? aberto === m.mes : undefined"
-          :aria-controls="m.operacoes.length ? 'vim-ops' : undefined" :aria-label="rotuloDoMes(m)" @click="abrirMes(m)"
+          :aria-controls="m.operacoes.length ? 'vim-ops' : undefined" :aria-label="rotuloDoMes(m)" :title="rotuloDoMes(m)" @click="abrirMes(m)"
         >
-          <span class="vim__mes-v"><template v-if="vendasNaBolsa(m)"><span class="vim__rs">R$ </span>{{ mask(vendasCurtas(vendasNaBolsa(m)).replace(/^R\$ /, '')) }}</template><template v-else>—</template></span>
+          <!-- sem o valor em cima de cada barra (eram 12 rótulos): ele aparece ao passar o mouse e no mês aberto -->
           <span class="vim__mes-b"><i :style="{ height: `${altura(m)}%` }" /></span>
           <span class="vim__mes-n">{{ mesCurto(m.mes) }}</span>
         </button>
       </li>
     </ol>
     <ul class="vim__legenda" aria-label="Os selos">
-      <li v-for="s in legenda" :key="s"><i class="vim__k" :class="`vim__k--${s}`" aria-hidden="true" />{{ SELO[s] }}</li>
+      <li v-for="s in legenda.filter((x) => x !== 'sem_venda')" :key="s"><i class="vim__k" :class="`vim__k--${s}`" aria-hidden="true" />{{ SELO[s] }}</li>
     </ul>
 
     <div v-if="mesAberto" id="vim-ops" class="vim__ops">
@@ -160,11 +163,17 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
       </ul>
     </div>
 
-    <p class="vim__fonte">
-      Ações à vista são isentas até R$ 20 mil de vendas no mês (Lei 11.033/2004, art. 3º, I); acima disso, o lucro paga 15%.
-      FII paga 20% e ETF, 15%, sem isenção. Na renda fixa, o imposto é retido na fonte.
-      O DARF tem o código 6015 e vence no último dia útil do mês seguinte. É uma estimativa: confira com quem faz o seu imposto.
-    </p>
+    <!-- as regras, a fonte e as ressalvas, fechadas: quem quer, abre -->
+    <details class="vim__como">
+      <summary>Como funciona <span>· é uma estimativa</span></summary>
+      <p>
+        Ações à vista são isentas até R$ 20 mil de vendas no mês (Lei 11.033/2004, art. 3º, I); acima disso, o lucro paga 15%.
+        FII paga 20% e ETF, 15%, sem isenção. Na renda fixa, o imposto é retido na fonte, de 22,5% a 15% pelo prazo.
+        O DARF tem o código 6015 e vence no último dia útil do mês seguinte.
+        <template v-if="ressalvaPrej">O prejuízo para abater não conta os meses com custo desconhecido.</template>
+        As barras são as vendas na bolsa: a renda fixa fica de fora. É uma estimativa: confira com quem faz o seu imposto.
+      </p>
+    </details>
   </section>
 </template>
 
@@ -187,18 +196,16 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__vendido--passou { background: var(--nu-amber-fill); }
 .vim__cabe { flex: 1; min-width: 0; background: var(--nu-green-bg); border-radius: 6px; }
 /* os grupos sem venda: blocos pequenos, lado a lado */
-.vim__mini { list-style: none; max-width: 1100px; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--nu-cream-line); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px 28px; }
-.vim__mini-i { display: grid; gap: 3px; align-content: start; }
-.vim__mini-n { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-.vim__mini-v { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
-.vim__mini-x { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.vim__resto { max-width: 1100px; margin: 18px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 /* o prejuízo para abater: um número por balde */
-.vim__prej { max-width: 1100px; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--nu-cream-line); display: grid; gap: 6px; }
-.vim__prej-t { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
-.vim__prej-l { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 28px; }
-.vim__prej-v { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
-.vim__prej-r { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.vim__prej-x { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+.vim__prej { max-width: 1100px; margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.vim__prej-t { margin-right: 8px; color: var(--nu-ink); font-weight: 700; }
+.vim__prej b { color: var(--nu-ink); font-weight: 700; }
+.vim__prej-s { margin: 0 8px; color: var(--nu-gray); }
+.vim__como { max-width: 1100px; margin: 22px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.6; }
+.vim__como summary { cursor: pointer; width: fit-content; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.vim__como summary span { font-weight: 500; color: var(--nu-gray); }
+.vim__como p { margin: 8px 0 0; }
 .vim__imposto { background: var(--nu-amber-fill); border-radius: 6px 3px 3px 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 3px 6px 6px 3px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .3s both; }
 @keyframes vim-cresce { from { transform: scaleX(0); } }
@@ -217,7 +224,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__h3-s { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); line-height: 1.45; }
 .vim__meses { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 14px 0 0; padding: 0; max-width: 1100px; }
 .vim__mes {
-  display: grid; grid-template-rows: auto 92px auto; gap: 6px; width: 100%; padding: 8px 2px 0; border: 0; border-radius: 12px;
+  display: grid; grid-template-rows: 92px auto; gap: 6px; width: 100%; padding: 8px 2px 0; border: 0; border-radius: 12px;
   background: transparent; font: inherit; text-align: center; cursor: pointer; transition: background .2s;
 }
 .vim__mes:disabled { cursor: default; }
@@ -254,13 +261,10 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__lado--venda { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .vim__lado--compra { background: var(--nu-blue-tint); color: var(--nu-blue-text); }
 
-.vim__fonte { margin: 22px 0 0; max-width: 1100px; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.6; }
 
 @media (max-width: 640px) {
   .vim__meses { grid-template-columns: repeat(6, minmax(0, 1fr)); row-gap: 10px; }
-  .vim__mes { grid-template-rows: auto 64px auto; }
-  /* seis colunas por fileira: o R$ sai do rótulo (a legenda diz "em reais"), senão 'R$ 200 mil' encosta no vizinho */
-  .vim__rs { display: none; }
+  .vim__mes { grid-template-rows: 64px auto; }
   .vim__ops { padding: 14px 14px 4px; }
   .vim__ops-l li { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; }
 }
