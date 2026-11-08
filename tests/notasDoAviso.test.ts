@@ -1,13 +1,15 @@
 /**
  * As notas da ideia no aviso (08/11/2026): as células do antes → depois das 4
- * notas do relatório (utils/notasDoAviso.ts) e o relatório que abre com a troca
- * do hash (VisaoRelatorio.vue). Os .vue são lidos como texto: não dependem do
- * Nuxt.
+ * notas do relatório (utils/notasDoAviso.ts), o relatório que abre com a troca
+ * do hash (VisaoRelatorio.vue), o mock que mostra as notas na
+ * /dev/carteira-nova e a faixa no cartão do aviso (CarteiraAvisos.vue). Os .vue
+ * são lidos como texto: não dependem do Nuxt.
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { celulasDasNotas } from '../app/utils/notasDoAviso.ts'
+import { relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
 import type { NotaDoAviso } from '../app/types/carteiraVisao.ts'
 
 const nota = (pilar: NotaDoAviso['pilar'], nome: string, antes: number | null, depois: number | null): NotaDoAviso => ({ pilar, nome, antes, depois })
@@ -94,4 +96,44 @@ test('o relatório abre com a troca do hash, como abre ao chegar com ele, e o av
   // o "Ver o relatório" (#relatorio) e o "Ver as vendas" (#movimentacoes) mantêm a query da página (o ?cenario= do dev)
   const avisos = ler('app/components/carteira/visao/CarteiraAvisos.vue').split('</script>')[0]!
   assert.match(avisos, /navigateTo\(\{ query: route\.query, hash: acao\.alvo \}\)/)
+})
+
+test('o mock: a ideia dos ajustes parte das notas do relatório do mock e não baixa nenhuma', () => {
+  const a = visaoMock('normal').avisos.itens.find((x) => x.detector === 'ideia.ajustes')
+  assert.ok(a?.notas?.length, 'o mock sem a ideia das notas')
+  // o antes é a nota do relatório: aviso e relatório na mesma tela não se contradizem
+  assert.deepEqual(a!.notas!.map((n) => [n.pilar, n.nome, n.antes]), relatorioMock().pilares.map((p) => [p.chave, p.nome, p.nota]))
+  const cs = celulasDasNotas(a!.notas)
+  assert.ok(cs.every((c) => c.sobe || c.igual), 'uma nota cai')
+  assert.match(a!.titulo, new RegExp(`${cs.filter((c) => c.sobe).length} das 4 notas`))
+  assert.ok(a!.acoes.some((x) => x.tipo === 'ver' && x.alvo === '#relatorio'), 'sem o "Ver o relatório"')
+})
+
+test('o cartão do aviso desenha a faixa a partir de a.notas, pelo util, entre o texto e a ressalva', () => {
+  const src = ler('app/components/carteira/visao/CarteiraAvisos.vue')
+  const script = src.slice(0, src.indexOf('</script>'))
+  const tpl = src.slice(src.indexOf('<template>'), src.lastIndexOf('</template>'))
+  assert.match(script, /import \{ celulasDasNotas\b[^}]*\} from '~\/utils\/notasDoAviso'/)
+  assert.match(script, /celulasDasNotas\(a\.notas\)/)
+
+  const texto = tpl.indexOf('class="cav__x"')
+  const faixa = tpl.indexOf('<div v-if="notasDe(a).length"')
+  const ressalva = tpl.indexOf('class="cav__ressalva"')
+  assert.ok(texto > 0 && texto < faixa && faixa < ressalva, 'a faixa fica entre o texto e a ressalva')
+  const bloco = tpl.slice(faixa, ressalva)
+  assert.match(bloco, /class="cav__notas" role="group"/)
+  assert.match(bloco, /v-for="n in notasDe\(a\)"[^>]*role="img" :aria-label="n\.aria"/)
+  assert.match(bloco, /class="cav__nota-igual">igual</)
+  assert.match(bloco, /\{\{ n\.deltaTxt \}\}/)
+  // nota não é R$: nada da faixa passa pela máscara do olho
+  assert.doesNotMatch(bloco, /semValor|naTela/)
+
+  // 4 colunas, 2 × 2 no celular estreito; o +N no verde do texto, a queda no vermelho
+  assert.match(src, /\.cav__notas \{ display: grid; grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/)
+  assert.match(src, /@media \(max-width: 520px\) \{\s*\.cav__notas \{ grid-template-columns: repeat\(2, minmax\(0, 1fr\)\); \}/)
+  assert.match(src, /\.cav__nota-d \{ color: var\(--nu-green-text\)/)
+  assert.match(src, /\.cav__nota-d--cai \{ color: var\(--nu-red-text\)/)
+
+  // o chat recebe as notas como a faixa as mostra
+  assert.match(script, /Notas do relatório, antes e depois: \$\{notas\}/)
 })

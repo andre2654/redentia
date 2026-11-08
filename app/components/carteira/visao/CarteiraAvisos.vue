@@ -29,9 +29,17 @@
 // os avisos grava `visto` (o mesmo PATCH), e o selo fica até a página
 // recarregar. O título e o texto não quebram a linha entre o R$ e o número, e
 // o título também esconde o R$ com o olho fechado.
+//
+// 08/11/2026, as notas: a ideia que traz `notas` (o antes → depois das 4 notas
+// do relatório) ganha uma faixa logo abaixo do texto, uma célula por pilar: o
+// nome, os números, a barra do relatório com o ganho num azul mais claro e o
+// +N. É a resposta, de relance, ao "pequenas mudanças que melhorariam todos os
+// índices" do dono. Nota não é R$: não passa pelo olho. O "Ver o relatório"
+// só troca o hash, e o VisaoRelatorio abre sozinho.
 import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
 import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } from '~/utils/carteiraVisao'
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
+import { celulasDasNotas, type CelulaDaNota } from '~/utils/notasDoAviso'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
 // semBotao (06/11): sem o botão redondo; o modal abre pelos próprios itens e pelo "+N".
@@ -53,6 +61,12 @@ const pontos = computed(() => grupos.value.atencao.length)
 const olhou = computed(() => `Olhei ${props.ativos} ativos ${quandoAtualizou(props.avisos.olhouEm)}${props.dadosDe ? `, com os dados de ${props.dadosDe}` : ''}`)
 
 const CONFIANCA: Record<Aviso['confianca'], string> = { certeza: 'Conta fechada', estimativa: 'Estimativa', incompleto: 'Falta um dado' }
+
+/* ————— as notas da ideia (08/11): uma vez por resposta, e não passam pelo olho ————— */
+const notasPorAviso = computed(() => new Map(props.avisos.itens.map((a) => [a.id, celulasDasNotas(a.notas)])))
+const notasDe = (a: Aviso) => notasPorAviso.value.get(a.id) ?? []
+/** a faixa que muda na barra: 2 px depois do trecho cheio, e larga o bastante para um +1 aparecer */
+const faixa = (n: CelulaDaNota) => ({ left: `calc(${n.base}% + 2px)`, width: `max(4px, calc(${n.topo - n.base}% - 2px))` })
 
 /* ————— o modal ————— */
 const aberto = ref(false)
@@ -152,11 +166,15 @@ const route = useRoute()
 // lê, e vai com os números: sem eles, "Simule trocar R$ 10 mil…" com o olho
 // fechado chegava como "R$ ••••" e a simulação saía às cegas. O texto do site
 // não leva ticker no movimento (o motor manda só a classe), e o id do aviso,
-// que leva, não vai.
+// que leva, não vai. As notas da ideia (08/11) vão como a pessoa as vê na faixa.
 function contextoDe(a: Aviso) {
+  const notas = notasDe(a).map((n) => n.aria).join('; ')
   return {
     id: `carteira:aviso:${a.id}`, tipo: 'carteira', rotulo: semValor(a.titulo),
-    texto: [a.titulo, a.texto, a.ressalva ?? '', ...a.prova.map((p) => `${p.rotulo}: ${p.valor}`), `Fonte: ${a.fonte}`].filter(Boolean).join('\n'),
+    texto: [
+      a.titulo, a.texto, a.ressalva ?? '', ...a.prova.map((p) => `${p.rotulo}: ${p.valor}`),
+      notas ? `Notas do relatório, antes e depois: ${notas}` : '', `Fonte: ${a.fonte}`,
+    ].filter(Boolean).join('\n'),
   }
 }
 function agir(a: Aviso, acao: AcaoAviso) {
@@ -220,6 +238,23 @@ function agir(a: Aviso, acao: AcaoAviso) {
                   <p v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</p>
                 </div>
                 <p class="cav__x">{{ naTela(a.texto) }}</p>
+                <!-- 08/11: o antes → depois das notas do relatório; cada célula se lê inteira pelo aria-label -->
+                <div v-if="notasDe(a).length" class="cav__notas" role="group" aria-label="As notas do relatório, antes e depois">
+                  <div v-for="n in notasDe(a)" :key="n.pilar" class="cav__nota" role="img" :aria-label="n.aria">
+                    <span class="cav__nota-n">{{ n.nome }}</span>
+                    <span class="cav__nota-v">
+                      <template v-if="n.igual"><b>{{ n.depois }}</b><span class="cav__nota-igual">igual</span></template>
+                      <template v-else>
+                        <span class="cav__nota-a">{{ n.antes ?? '—' }}</span><span class="cav__nota-seta">→</span><b>{{ n.depois ?? '—' }}</b>
+                        <span v-if="n.deltaTxt" class="cav__nota-d" :class="{ 'cav__nota-d--cai': !n.sobe }">{{ n.deltaTxt }}</span>
+                      </template>
+                    </span>
+                    <span class="cav__nota-b">
+                      <i :style="{ width: `${n.base}%` }" />
+                      <i v-if="n.topo > n.base" class="cav__nota-f" :class="{ 'cav__nota-f--cai': !n.sobe }" :style="faixa(n)" />
+                    </span>
+                  </div>
+                </div>
                 <p v-if="a.ressalva" class="cav__ressalva">{{ a.ressalva }}</p>
                 <p class="cav__meta">
                   <span v-if="a.estado === 'novo'" class="cav__novo">Novo</span>
@@ -362,6 +397,25 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__v { flex-shrink: 0; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cav__x { margin: 6px 0 0 18px; max-width: 64ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .cav__ressalva { margin: 8px 0 0 18px; max-width: 64ch; padding-left: 12px; border-left: 2px solid var(--nu-amber); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
+
+/* ——— as notas da ideia (08/11): uma célula por pilar, com a barra do relatório (.vrl__barra) ——— */
+.cav__notas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 16px; margin: 12px 0 14px 18px; max-width: 64ch; font-size: var(--nu-fs-md); }
+.cav__nota { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.cav__nota-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.3; overflow-wrap: break-word; hyphens: auto; }
+.cav__nota-v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.cav__nota-v b { font-weight: 800; }
+.cav__nota-a { color: var(--nu-gray-2); font-weight: 700; }
+.cav__nota-seta { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.cav__nota-d, .cav__nota-igual { margin-left: 3px; font-size: var(--nu-fs-xs); }
+.cav__nota-d { color: var(--nu-green-text); font-weight: 800; }
+.cav__nota-d--cai { color: var(--nu-red-text); }
+.cav__nota-igual { color: var(--nu-gray); font-weight: 700; }
+.cav__nota-b { position: relative; display: block; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-cream-line); overflow: hidden; }
+.cav__nota-b i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--nu-blue); }
+/* o que muda: o mesmo azul, mais claro (o vermelho, se cair), 2 px depois do que já está */
+.cav__nota-b .cav__nota-f { background: color-mix(in srgb, var(--nu-blue) 45%, var(--nu-white)); transform-origin: left; animation: cavnota .6s cubic-bezier(.22, 1, .36, 1) .3s both; }
+.cav__nota-b .cav__nota-f--cai { background: color-mix(in srgb, var(--nu-red) 45%, var(--nu-white)); }
+@keyframes cavnota { from { transform: scaleX(0); } }
 .cav__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .cav__novo { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: var(--nu-r-pill); background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 800; }
 .cav__conf { display: inline-flex; align-items: center; gap: 6px; }
@@ -452,8 +506,12 @@ function agir(a: Aviso, acao: AcaoAviso) {
   .cav__canal-op { align-self: stretch; }
   .cav__op { flex: 1; padding: 0 8px; }
 }
+/* as notas em 2 × 2: em 4 colunas, cada célula ficaria estreita demais para "Diversificação" e "99 → 100 +1" */
+@media (max-width: 520px) {
+  .cav__notas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .cav, .cav__card, .cav__prova { animation: none; }
+  .cav, .cav__card, .cav__prova, .cav__nota-b .cav__nota-f { animation: none; }
   .cav__op { transition: none; }
 }
 </style>
