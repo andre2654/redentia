@@ -101,6 +101,24 @@ export function linhaDosPrejuizos(m: MesImposto, fmt: (v: number) => string = br
   return `Prejuízo para abater de lucros futuros: ${lista}.${comCustoDesconhecido ? ' Os meses com custo desconhecido ficam de fora dessa conta.' : ''}`
 }
 
+/** a linha miúda do grupo sem venda, no bloco compacto (a regra em poucas palavras) */
+export const ALIQUOTA_EM_POUCAS_PALAVRAS: Partial<Record<GrupoImposto, string>> = {
+  fii: '20% sobre o lucro',
+  etf: '15% sobre o lucro',
+  rf: 'de 22,5% a 15%, pelo prazo',
+}
+
+/** os prejuízos a abater, um número por balde, só os maiores que zero (o bloco compacto) */
+export function partesDosPrejuizos(m: MesImposto): { rotulo: string; valor: number }[] {
+  const p = m.prejuizos
+  if (!p) return []
+  return [
+    { rotulo: 'em ações, ETF e BDR', valor: p.comum },
+    { rotulo: 'em day trade', valor: p.dayTrade },
+    { rotulo: 'em FII', valor: p.fii },
+  ].filter((x) => x.valor > 0.5)
+}
+
 /** sempre ações, FII, ETF, renda fixa e cripto, venha como vier */
 export function gruposEmOrdem(grupos: GrupoImpostoVisao[]): GrupoImpostoVisao[] {
   return [...grupos].sort((a, b) => ORDEM.indexOf(a.grupo) - ORDEM.indexOf(b.grupo))
@@ -191,7 +209,9 @@ export function linhaDoGrupo(g: GrupoImpostoVisao, mes: string, fmt: (v: number)
     if (passou) texto = g.impostoEstimado != null ? `Passou da isenção: o imposto estimado é de ${fmt(g.impostoEstimado)}.` : 'Passou da isenção. Sem o custo, eu não sei o lucro.'
     else if (g.vendido > 0) texto = (g.cabeAinda ?? 0) > 0 ? `Ainda cabem ${fmt(g.cabeAinda!)} em vendas sem imposto.` : 'Chegou ao limite da isenção.'
     else texto = `Cabem ${teto(g.isencao)} em vendas sem imposto.`
-    return { nome, direita: `${fmt(g.vendido)} de ${teto(g.isencao)}`, texto, barra: { tipo: 'isencao', pct: Math.min(100, (g.vendido / g.isencao) * 100), passou }, semCusto }
+    // sem venda, o rótulo diz o que importa ('R$ 20 mil livres'), e não 'R$ 0 de R$ 20 mil'
+    const direita = g.vendido > 0 ? `${fmt(g.vendido)} de ${teto(g.isencao)}` : `${teto(g.isencao)} livres`
+    return { nome, direita, texto, barra: { tipo: 'isencao', pct: Math.min(100, (g.vendido / g.isencao) * 100), passou }, semCusto }
   }
   if (g.grupo === 'rf') {
     const texto = g.vendido > 0

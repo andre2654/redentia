@@ -16,7 +16,7 @@
 // explicação do mês, com os números), e não mais a frase da tela repetida antes
 // dela; a operação sem quantidade (direito de subscrição) mostra só o valor.
 import type { ImpostoVisao, MesHistorico, PosicaoVisao, SeloImposto } from '~/types/carteiraVisao'
-import { SELO, diaMes, fraseDoMes, gruposDoMes, linhaDoGrupo, linhaDosPrejuizos, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas, vendasNaBolsa } from '~/utils/impostoVisao'
+import { ALIQUOTA_EM_POUCAS_PALAVRAS, SELO, diaMes, fraseDoMes, gruposDoMes, linhaDoGrupo, linhaDosPrejuizos, partesDosPrejuizos, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasCurtas, vendasNaBolsa } from '~/utils/impostoVisao'
 import { brl0, brl2 } from '~/utils/carteiraVisao'
 
 // as posições: os grupos que a pessoa tem e não vendeu no mês também aparecem, com a regra de cada um
@@ -33,8 +33,15 @@ const sub = computed(() => (props.dadosDe
   : linhaDoMesAnterior(props.imposto.mesAnterior, fmt)))
 const grupos = computed(() => (props.dadosDe ? [] : gruposDoMes(atual.value, props.posicoes ?? []).map((g) => {
   const l = linhaDoGrupo(g, atual.value.mes, fmt)
-  return { g, l, texto: textoDoGrupo(g, l, fmt, daNota) }
+  // ações sem venda: a barra e o "R$ 20 mil livres" já dizem tudo, a frase repetia
+  return { g, l, texto: g.grupo === 'acoes' && g.vendido <= 0 ? '' : textoDoGrupo(g, l, fmt, daNota) }
 })))
+// 08/11, o dono pediu mais "clean": o grupo que teve venda (e as ações, pela isenção) fica na linha
+// inteira; o que não teve vira um bloco pequeno, lado a lado, com a regra em poucas palavras
+const completos = computed(() => grupos.value.filter(({ g }) => g.grupo === 'acoes' || g.vendido > 0))
+const compactos = computed(() => grupos.value.filter(({ g }) => !(g.grupo === 'acoes' || g.vendido > 0)))
+const partesPrej = computed(() => (props.dadosDe ? [] : partesDosPrejuizos(atual.value)))
+const ressalvaPrej = computed(() => props.imposto.historico.some((h) => h.selo === 'custo_desconhecido'))
 const prejuizos = computed(() => (props.dadosDe ? '' : linhaDosPrejuizos(atual.value, fmt, props.imposto.historico.some((h) => h.selo === 'custo_desconhecido'))))
 const darf = computed(() => {
   const d = atual.value.darf
@@ -69,8 +76,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
     <p class="vim__sub">{{ sub }}</p>
 
     <!-- o mês atual, um grupo por linha -->
-    <ul v-if="grupos.length" class="vim__grupos">
-      <li v-for="{ g, l, texto } in grupos" :key="g.grupo" class="vim__grupo">
+    <ul v-if="completos.length" class="vim__grupos">
+      <li v-for="{ g, l, texto } in completos" :key="g.grupo" class="vim__grupo">
         <div class="vim__g-cab">
           <span class="vim__g-n">{{ l.nome }}<span v-if="l.semCusto" class="vim__tag">Custo desconhecido</span></span>
           <span class="vim__g-v">{{ l.direita }}</span>
@@ -94,7 +101,23 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
       </li>
     </ul>
 
-    <p v-if="prejuizos" class="vim__prej">{{ prejuizos }}</p>
+    <!-- os grupos sem venda no mês, lado a lado -->
+    <ul v-if="compactos.length" class="vim__mini">
+      <li v-for="{ g, l } in compactos" :key="g.grupo" class="vim__mini-i">
+        <span class="vim__mini-n">{{ l.nome }}</span>
+        <span class="vim__mini-v">{{ l.direita }}</span>
+        <span v-if="ALIQUOTA_EM_POUCAS_PALAVRAS[g.grupo]" class="vim__mini-x">{{ ALIQUOTA_EM_POUCAS_PALAVRAS[g.grupo] }}</span>
+      </li>
+    </ul>
+
+    <!-- o prejuízo que sobra para abater: um número por balde -->
+    <div v-if="partesPrej.length" class="vim__prej" role="group" :aria-label="prejuizos">
+      <span class="vim__prej-t">Prejuízo para abater</span>
+      <ul class="vim__prej-l">
+        <li v-for="p in partesPrej" :key="p.rotulo"><span class="vim__prej-v">{{ fmt(p.valor) }}</span> <span class="vim__prej-r">{{ p.rotulo }}</span></li>
+      </ul>
+      <span v-if="ressalvaPrej" class="vim__prej-x">Sem contar os meses com custo desconhecido.</span>
+    </div>
 
     <p v-if="darf" class="vim__darf">
       <span class="vim__darf-t">DARF de {{ nome }}</span>
@@ -163,7 +186,19 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__vendido { background: var(--nu-blue); border-radius: 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__vendido--passou { background: var(--nu-amber-fill); }
 .vim__cabe { flex: 1; min-width: 0; background: var(--nu-green-bg); border-radius: 6px; }
-.vim__prej { margin: 14px 0 0; max-width: 1100px; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+/* os grupos sem venda: blocos pequenos, lado a lado */
+.vim__mini { list-style: none; max-width: 1100px; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--nu-cream-line); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px 28px; }
+.vim__mini-i { display: grid; gap: 3px; align-content: start; }
+.vim__mini-n { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.vim__mini-v { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.vim__mini-x { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
+/* o prejuízo para abater: um número por balde */
+.vim__prej { max-width: 1100px; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--nu-cream-line); display: grid; gap: 6px; }
+.vim__prej-t { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 700; }
+.vim__prej-l { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 28px; }
+.vim__prej-v { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
+.vim__prej-r { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
+.vim__prej-x { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
 .vim__imposto { background: var(--nu-amber-fill); border-radius: 6px 3px 3px 6px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .1s both; }
 .vim__fica { flex: 1; background: color-mix(in srgb, var(--nu-blue) 35%, transparent); border-radius: 3px 6px 6px 3px; transform-origin: left; animation: vim-cresce .9s cubic-bezier(.22, 1, .36, 1) .3s both; }
 @keyframes vim-cresce { from { transform: scaleX(0); } }
