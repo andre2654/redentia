@@ -172,7 +172,7 @@ function cardTypes(meta: RankingMeta): string[] {
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->
     <section v-if="scoreTop.length" class="rkh__spot-wrap">
-      <NuxtLink to="/ranking/redentia-score" class="rkh__spot">
+      <NuxtLink v-contexto-chat="{ id: 'ranking:redentia-score', tipo: 'ranking', rotulo: 'Ranking · Redentia Score' }" to="/ranking/redentia-score" class="rkh__spot">
         <div class="rkh__spot-left">
           <span class="rkh__spot-eyebrow">Exclusivo Redentia</span>
           <h2 class="rkh__spot-title">Redentia Score.</h2>
@@ -183,7 +183,7 @@ function cardTypes(meta: RankingMeta): string[] {
           <span class="rkh__spot-cta">Ver o ranking completo</span>
         </div>
         <ol class="rkh__spot-list">
-          <li v-for="(row, i) in scoreTop" :key="rankingTicker(row)" class="rkh__spot-row">
+          <li v-for="(row, i) in scoreTop" :key="rankingTicker(row)" v-contexto-chat="{ id: `ranking:redentia-score:${rankingTicker(row)}`, tipo: 'ranking', rotulo: `${i + 1}º ${rankingTicker(row)} · Score`, texto: `${i + 1}º no Redentia Score: ${rankingTicker(row)} (${rankingName(row)}), nota ${scoreOf(row)}` }" class="rkh__spot-row">
             <span class="rkh__spot-pos">{{ i + 1 }}</span>
             <span class="rkh__spot-ticker">{{ rankingTicker(row) }}</span>
             <span class="rkh__spot-name">{{ rankingName(row) }}</span>
@@ -195,11 +195,11 @@ function cardTypes(meta: RankingMeta): string[] {
 
     <!-- ============ Grid dos 22, agrupado por tema ============ -->
     <section class="rkh__grid-wrap">
-      <div v-for="g in grupos" :key="g.tema" class="rkh__group">
+      <div v-for="g in grupos" :key="g.tema" v-contexto-chat="{ id: `rankings:${g.tema}`, tipo: 'ranking', rotulo: rotuloCurto(`Rankings · ${g.tema}`) }" class="rkh__group">
         <h2 class="rkh__group-title">{{ g.tema }}</h2>
         <div class="rkh__grid">
           <NuxtLink
-            v-for="m in g.items" :key="m.slug" :to="`/ranking/${m.slug}`"
+            v-for="m in g.items" :key="m.slug" v-contexto-chat="{ id: `ranking:${m.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`Ranking · ${m.title}`) }" :to="`/ranking/${m.slug}`"
             class="rkh__card" :data-slug="m.slug"
           >
             <div class="rkh__card-chips">

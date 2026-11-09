@@ -19,9 +19,10 @@
  *  - posições   posicoes-v2: sidebar de navegação (scrollspy) + 1 card por
  *               classe; retorno % só onde há custo (average_price) — coluna
  *               honesta, nunca inventada; só classes com dados aparecem
- *  - raio-x     DETERMINÍSTICO de dado real (regras portadas do
- *               usePortfolioScore do Frontend /raio-x — ver buildRaioX);
- *               insight do banner SÓ do /portfolio/analysis; sem carteira → some
+ *  - score      DETERMINÍSTICO de dado real (regras portadas do
+ *               usePortfolioScore do Frontend /raio-x — ver buildRaioX); as
+ *               métricas alimentam as Ideias do topo; sem carteira → some. A
+ *               análise escrita pela IA (o Raio-X) saiu da tela em 07/11/2026
  *  - renda      /portfolio/income + /dividends/upcoming × posições (janela máx
  *               180d do backend); sem proventos E sem agenda → seção some
  *  - movim.     /portfolio/trades (12m): Proventos/Vendas reais; 'Compra' =
@@ -34,6 +35,7 @@
  * /carteira limpa a sessão e redireciona pro /login (padrão useApi).
  */
 import type {
+  CarteiraAgoraVM,
   CarteiraAllocationVM,
   CarteiraGroupVM,
   CarteiraHeatmapVM,
@@ -42,11 +44,10 @@ import type {
   CarteiraMovementsVM,
   CarteiraMovementVM,
   CarteiraPayload,
-  CarteiraRaioXVM,
   CarteiraResumoVM,
   CarteiraRowVM,
-  PortfolioAnalysisApi,
-  RaioXMetricVM,
+  CarteiraScoreVM,
+  ScoreMetricVM,
   TradeApi,
   UpcomingDividendsApi,
 } from '~/types/carteira'
@@ -136,7 +137,9 @@ function buildHero(rows: PosRow[], today: PortfolioTodayApi | null, income: Inco
 
   let hojeTxt: string | null = null
   let hojeDir: NuDir = 'up'
-  if (today?.totals && today.totals.value_d1 > 0) {
+  // o total do dia vem null quando nenhuma posição tem o preço de hoje (api
+  // fix/dia-pendente): sem número, a linha some em vez de "+R$ 0,00 hoje"
+  if (today?.totals && today.totals.value_d1 > 0 && today.totals.day_change_amount != null && today.totals.day_change_pct != null) {
     const amt = today.totals.day_change_amount
     const pctDay = today.totals.day_change_pct
     hojeDir = dirOf(amt)
@@ -234,31 +237,16 @@ function rowSub(r: PosRow): string {
   return avg != null ? `${cotas} · PM R$ ${nf2.format(avg)}` : cotas
 }
 
-/**
- * Editorial por grupo: SÓ quando o /portfolio/analysis tem tese aplicável
- * (thesis_per_asset da maior posição do grupo). Sem análise → coluna sai só
- * com o CTA (nada de texto inventado) — diretriz documentada.
- */
-function groupDesc(groupRows: PosRow[], analysis: PortfolioAnalysisApi['analysis'] | null): string | null {
-  const theses = analysis?.thesis_per_asset ?? []
-  if (!theses.length) return null
-  for (const r of groupRows) {
-    const hit = theses.find((t) => t.ticker?.toUpperCase() === r.ticker.toUpperCase() && t.thesis?.trim())
-    if (hit?.thesis) {
-      const text = hit.thesis.trim()
-      const capped = text.length > 240 ? `${text.slice(0, 237).trimEnd()}…` : text
-      return `${r.ticker}: ${capped}`
-    }
-  }
-  return null
-}
-
 function buildGroups(
   rows: PosRow[],
-  analysis: PortfolioAnalysisApi['analysis'] | null,
+  today: PortfolioTodayApi | null = null,
 ): { positionsSub: string | null; groups: CarteiraGroupVM[] } {
   if (!rows.length) return { positionsSub: null, groups: [] }
   const total = rows.reduce((s, r) => s + r.value, 0)
+  // variação do dia por papel (/portfolio/today) → a do grupo, só com quem tem dado
+  const diaPor = new Map((today?.positions ?? [])
+    .filter((p) => p.day_change_amount != null && p.value_now != null)
+    .map((p) => [p.ticker.toUpperCase(), { amt: p.day_change_amount as number, now: p.value_now as number }]))
 
   const byClass = new Map<string, PosRow[]>()
   for (const r of rows) {
@@ -304,8 +292,8 @@ function buildGroups(
         shareNum: (gTotal / total) * 100,
         ret: retPct != null ? pctFmt(retPct) : null,
         retKind: retPct == null ? 'flat' : retPct >= 0 ? 'up' : 'down',
+        ...diaDoGrupo(list, diaPor),
         rows: rowsVM,
-        desc: groupDesc(list, analysis),
         cta: GROUP_CTA[name]?.cta ?? 'Ver na busca',
         ctaHref: GROUP_CTA[name]?.href ?? '/busca',
       }
@@ -317,7 +305,89 @@ function buildGroups(
   return { positionsSub, groups }
 }
 
-/* ————— Raio-X (regras PORTADAS do usePortfolioScore do Frontend /raio-x) ————— */
+/** Variação do dia do grupo: Σ variação ÷ Σ valor de ontem, só papéis com dado. */
+function diaDoGrupo(list: PosRow[], diaPor: Map<string, { amt: number; now: number }>): Pick<CarteiraGroupVM, 'dia' | 'diaDir'> {
+  let amt = 0
+  let ontem = 0
+  for (const r of list) {
+    const d = diaPor.get(r.ticker.toUpperCase())
+    if (!d) continue
+    amt += d.amt
+    ontem += d.now - d.amt
+  }
+  if (ontem <= 0) return { dia: null, diaDir: 'up' }
+  const pct = (amt / ontem) * 100
+  return { dia: `${pct >= 0 ? '+' : '−'}${nf2.format(Math.abs(pct))}%`, diaDir: dirOf(pct) }
+}
+
+/* ————— o topo calmo (Agora, 31/10/2026) ————— */
+
+/**
+ * O que a frase do topo precisa: o resultado do dia (/portfolio/today), a
+ * bolsa no MESMO dia de preço (série do Ibovespa casada por price_dates.today)
+ * e o papel que caiu 5% ou mais. A frase é montada no componente, com o
+ * relógio do pregão (utils/carteira-agora.ts). Sem carteira → null.
+ */
+function buildAgora(
+  rows: PosRow[],
+  today: PortfolioTodayApi | null,
+  ibov: SeriesPoint[] | null,
+  totalValue: number,
+  income: IncomeApi | null = null,
+): CarteiraAgoraVM | null {
+  if (totalValue <= 0) return null
+  const priceDate = today?.price_dates?.today ?? null
+
+  let carteiraPct: number | null = null
+  let diaValor: string | null = null
+  let diaPct: string | null = null
+  let diaDir: NuDir = 'up'
+  // o total do dia vem null quando nenhuma posição tem o preço de hoje (api
+  // fix/dia-pendente): sem número, a linha some em vez de "+R$ 0,00 hoje"
+  if (today?.totals && today.totals.value_d1 > 0 && today.totals.day_change_amount != null && today.totals.day_change_pct != null) {
+    const amt = today.totals.day_change_amount
+    const pctDay = today.totals.day_change_pct
+    carteiraPct = pctDay
+    diaDir = dirOf(amt)
+    diaValor = `${amt >= 0 ? '+' : '−'}R$ ${nf2.format(Math.abs(amt))}`
+    diaPct = `${pctDay >= 0 ? '+' : '−'}${nf2.format(Math.abs(pctDay))}%`
+  }
+
+  let bolsaPct: number | null = null
+  if (priceDate && ibov?.length) {
+    const i = ibov.findIndex((p) => p.t.slice(0, 10) === priceDate)
+    const prev = i > 0 ? ibov[i - 1]! : null
+    if (prev && prev.v > 0) bolsaPct = (ibov[i]!.v / prev.v - 1) * 100
+  }
+
+  let alerta: CarteiraAgoraVM['alerta'] = null
+  for (const p of today?.positions ?? []) {
+    // papel com a cotação de hoje pendente (flags pending_today_*) não vira alerta
+    const pct = variacaoConfiavel(p, today?.flags)
+    if (pct == null || p.value_now == null || p.value_now < totalValue * 0.01) continue
+    if (pct <= QUEDA_QUE_PEDE_ATENCAO && (!alerta || pct < alerta.pct)) {
+      alerta = { ticker: p.ticker, nome: nomeParaFrase(p.name, p.ticker), pct }
+    }
+  }
+
+  const n = rows.length
+  return {
+    priceDate,
+    carteiraPct,
+    bolsaPct,
+    diaValor,
+    diaPct,
+    diaDir,
+    alerta,
+    patrimonio: `R$ ${nf2.format(totalValue)}`,
+    ativos: `${n} ${n === 1 ? 'ativo' : 'ativos'}`,
+    atualizado: relTime(today?.as_of ?? null) || null,
+    // o provento do dia de preço: a mesma conta do topo da home (o losango)
+    ...proventoDoDiaDe(priceDate, income),
+  }
+}
+
+/* ————— o score (regras PORTADAS do usePortfolioScore do Frontend /raio-x) ————— */
 
 /**
  * 4 métricas do design, todas DETERMINÍSTICAS de dado real:
@@ -329,14 +399,16 @@ function buildGroups(
  *    <1.8→32, senão 15). Sem série suficiente → card some (sem beta chutado)
  *  - Renda: DY 12m ponderado por valor (campo dividend_yield do /portfolio);
  *    thresholds de calcRendaPassiva (<2→25, <4→50, <6→70, <9→88, senão 95)
- *  - Qualidade: média ponderada do Redentia Score (0-10 → ×10 pra /100 — NÃO
- *    ×20, gotcha documentado) dos ativos cobertos pelo ranking; exige ≥2
- *    ativos cobertos, senão some
+ *  - Qualidade: média ponderada do Redentia Score na régua /100 do /asset (o
+ *    percentil no ranking; o cru 0-10 é comprimido, ×10 subestimava) dos
+ *    ativos cobertos pelo ranking; exige ≥2 ativos cobertos, senão some
  * Score geral = média ponderada com os pesos do usePortfolioScore
  * (diversificação 1.4 · risco/volatilidade 1.1 · renda 0.9 · qualidade 1.5)
- * sobre as métricas PRESENTES. Badge = bandas portadas (<45 crítica, <65
- * atenção, <82 boa, senão excelente) + nº de pontos de atenção (score <70).
- * Tags do design: <70 'Atenção' âmbar · 70-84 'Controlado' · ≥85 'Excelente'.
+ * sobre as métricas PRESENTES. Banda = bandas portadas (<45 crítica, <65
+ * atenção, <82 boa, senão excelente); attention = nº de pontos de atenção
+ * (score <70). Tags do design: <70 'Atenção' âmbar · 70-84 'Controlado' ·
+ * ≥85 'Excelente'. Sem IA: o texto da análise escrita (o banner do Raio-X)
+ * saiu em 07/11/2026.
  */
 function buildRaioX(
   rows: PosRow[],
@@ -344,20 +416,19 @@ function buildRaioX(
   scoreRows: ScoreRowApi[] | null,
   curve: EquityCurvePointApi[] | null,
   ibov12m: SeriesPoint[] | null,
-  analysis: PortfolioAnalysisApi['analysis'] | null,
-): CarteiraRaioXVM | null {
+): CarteiraScoreVM | null {
   if (!rows.length) return null
   const total = rows.reduce((s, r) => s + r.value, 0)
   if (total <= 0) return null
 
-  const tagFor = (score: number): Pick<RaioXMetricVM, 'tag' | 'tagTone' | 'fillTone'> =>
+  const tagFor = (score: number): Pick<ScoreMetricVM, 'tag' | 'tagTone' | 'fillTone'> =>
     score < 70
       ? { tag: 'Atenção', tagTone: 'amber', fillTone: 'amber' }
       : score < 85
         ? { tag: 'Controlado', tagTone: 'green', fillTone: 'green' }
         : { tag: 'Excelente', tagTone: 'green', fillTone: 'green' }
 
-  const dims: { weight: number; score: number; vm: RaioXMetricVM }[] = []
+  const dims: { weight: number; score: number; vm: ScoreMetricVM }[] = []
 
   /* Diversificação */
   {
@@ -402,15 +473,32 @@ function buildRaioX(
     dims.push({ weight: 0.9, score, vm: { label: 'Renda', value: `DY ${nf1.format(dy)}%`, fillPct: score, note, ...tagFor(score) } })
   }
 
-  /* Qualidade (Redentia Score real, 0-10 → ×10) */
+  /* Qualidade (Redentia Score real, na régua /100 do /asset: o percentil)
+     O redentia_score cru é 0-10 COMPRIMIDO: em 05/11/2026 o topo do
+     ranking era 3,81 e a mediana 1,01 (BBSE3 1,19; PETR4 1,08). ×10 dava
+     "11/100" para uma carteira com BBSE3 e PETR4 acima da mediana. O /asset
+     (useAcao, buildScore) mostra o PERCENTIL no ranking, (1 − posição/total)
+     × 100, entre 1 e 99: BBSE3 65/100, PETR4 56/100. A carteira usa a mesma
+     régua, ponderada pelo valor de cada posição coberta. */
   {
-    const scoreMap = new Map((scoreRows ?? []).filter((s) => s.redentia_score != null).map((s) => [s.ticker.toUpperCase(), s.redentia_score as number]))
+    const lista = scoreRows ?? []
+    const scoreMap = new Map<string, number>()
+    lista.forEach((s, idx) => {
+      if (s.redentia_score == null) return
+      const t = s.ticker.toUpperCase()
+      if (!scoreMap.has(t)) scoreMap.set(t, Math.min(99, Math.max(1, Math.round((1 - idx / lista.length) * 100))))
+    })
     const matched = rows.filter((r) => scoreMap.has(r.ticker.toUpperCase()))
     if (matched.length >= 2) {
       const mTotal = matched.reduce((s, r) => s + r.value, 0)
-      const q = Math.round(matched.reduce((s, r) => s + (scoreMap.get(r.ticker.toUpperCase())! * 10) * r.value, 0) / mTotal)
-      const top = [...matched].sort((a, b) => scoreMap.get(b.ticker.toUpperCase())! - scoreMap.get(a.ticker.toUpperCase())!).slice(0, 2)
-      const note = `Score médio de ${matched.length} dos seus ativos: ${top.map((t) => t.ticker).join(' e ')} ${top.length > 1 ? 'puxam' : 'puxa'} para cima.`
+      const q = Math.round(matched.reduce((s, r) => s + scoreMap.get(r.ticker.toUpperCase())! * r.value, 0) / mTotal)
+      // nota baixa (Atenção, < 70): quem puxa para BAIXO (os dois piores); alta: quem puxa para cima
+      const baixa = q < 70
+      const ordem = [...matched].sort((a, b) => scoreMap.get(b.ticker.toUpperCase())! - scoreMap.get(a.ticker.toUpperCase())!)
+      const quem = (baixa ? ordem.reverse() : ordem).slice(0, 2).map((t) => t.ticker)
+      const note = matched.length === 2
+        ? `Score médio de ${quem.join(' e ')}, os dois dos seus ativos que a Redentia pontua.`
+        : `Score médio de ${matched.length} dos seus ativos: ${quem.join(' e ')} puxam para ${baixa ? 'baixo' : 'cima'}.`
       dims.push({ weight: 1.5, score: q, vm: { label: 'Qualidade', value: `${q}/100`, fillPct: q, note, ...tagFor(q) } })
     }
   }
@@ -421,33 +509,10 @@ function buildRaioX(
 
   const band = score < 45 ? 'Saúde crítica' : score < 65 ? 'Atenção' : score < 82 ? 'Boa saúde' : 'Excelente'
   const attention = dims.filter((d) => d.score < 70).length
-  const badge = attention > 0 ? `${band} · ${attention} ${attention === 1 ? 'ponto' : 'pontos'} de atenção` : band
   // band/attention saem isolados no VM: o mini-dashboard da home reusa os
   // MESMOS números desta função (zero regra duplicada — refinamento 2026-07-13)
 
-  /* insight do banner: só do /portfolio/analysis (severity high > medium > low) */
-  let insight: string | null = null
-  const risks = analysis?.risks ?? []
-  if (risks.length) {
-    const order = { high: 0, medium: 1, low: 2 } as Record<string, number>
-    const top = [...risks].sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))[0]!
-    const text = [top.title, top.body].filter(Boolean).join(': ')
-    insight = text.length > 220 ? `${text.slice(0, 217).trimEnd()}…` : text
-  }
-
-  // Data da análise da IA quando NÃO é de hoje: a análise é um snapshot LLM
-  // persistido (portfolio_analyses) que pode ter semanas — sem a data, o
-  // banner apresenta texto antigo como diagnóstico atual (auditoria
-  // 2026-07-16: banner citava composição de 22/05 como se fosse de hoje).
-  let insightDate: string | null = null
-  if (insight && analysis?.generated_at) {
-    const gen = new Date(analysis.generated_at)
-    if (!Number.isNaN(gen.getTime()) && gen.toDateString() !== new Date().toDateString()) {
-      insightDate = `${String(gen.getDate()).padStart(2, '0')}/${String(gen.getMonth() + 1).padStart(2, '0')}`
-    }
-  }
-
-  return { score, badge, band, attention, metrics: dims.map((d) => d.vm), insight, insightDate }
+  return { score, band, attention, metrics: dims.map((d) => d.vm) }
 }
 
 /**
@@ -633,6 +698,7 @@ function buildMovements(trades: TradeApi[] | null): CarteiraMovementsVM | null {
     events.push({
       key: t.id,
       date,
+      mes: date.slice(0, 7),
       d: date.slice(8, 10),
       m: (MONTHS_PT[Number(date.slice(5, 7)) - 1] ?? '').toUpperCase(),
       ticker: t.ticker,
@@ -748,6 +814,7 @@ function emptyPayload(unauthenticated: boolean): CarteiraPayload {
   return {
     unauthenticated,
     hero: { state: 'connect', patrimonio: null, hojeTxt: null, hojeDir: 'up', metaLine: null, stats: [] },
+    agora: null,
     allocation: [],
     chart: null,
     positionsSub: null,
@@ -763,7 +830,7 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
   const headers = { Accept: 'application/json', Authorization: `Bearer ${token}` }
 
   const [
-    portfolioR, todayR, curveR, incomeR, tradesR, analysisR,
+    portfolioR, todayR, curveR, incomeR, tradesR,
     upcomingR, macroR, ibovR, scoreR,
   ] = await Promise.allSettled([
     homeFetchPortfolio(base, headers),
@@ -771,7 +838,6 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
     homeFetchEquityCurve(base, headers),
     homeFetchIncome(base, headers),
     carteiraFetchTrades(base, headers, '12m'),
-    carteiraFetchAnalysis(base, headers), // 404 'no_analysis_yet' cai no ok() → null
     carteiraFetchUpcomingDividends(base, 180),
     homeFetchMacro(base),
     acaoFetchIbovPrices(base, '12mo'),
@@ -782,6 +848,8 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
   if (portfolioR.status === 'rejected') {
     const e = portfolioR.reason as { statusCode?: number; response?: { status?: number } }
     const status = e?.statusCode ?? e?.response?.status
+    // gate do plano único (31/10/2026): "precisa assinar" não é sessão morta
+    if (erroDeAssinatura(portfolioR.reason)) return { ...emptyPayload(false), semAssinatura: true }
     if (status === 401 || status === 403) return emptyPayload(true)
   }
 
@@ -790,7 +858,6 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
   const curve = ok(curveR)?.data ?? null
   const income = ok(incomeR)
   const trades = ok(tradesR)?.data ?? null
-  const analysis = ok(analysisR)?.analysis ?? null
   const upcoming = ok(upcomingR)
   const cdiRate = cdiAnnualPct(ok(macroR)?.cdi)
   const ibov12m: SeriesPoint[] = (ok(ibovR)?.data ?? [])
@@ -800,24 +867,30 @@ async function loadCarteira(base: string, token: string): Promise<CarteiraPayloa
 
   const rows = toRows(portfolio)
   const totalValue = portfolioTotalValue(portfolio, today)
-  const { positionsSub, groups } = buildGroups(rows, analysis)
+  const { positionsSub, groups } = buildGroups(rows, today)
 
   return {
     hero: buildHero(rows, today, income, totalValue),
+    agora: buildAgora(rows, today, ibov12m.length ? ibov12m : null, totalValue, income),
     allocation: buildAllocation(rows),
     chart: buildEquityChartVM(curve, ibov12m.length ? ibov12m : null, cdiRate, totalValue),
     positionsSub,
     groups,
-    raiox: buildRaioX(rows, income, scoreRows, curve, ibov12m.length ? ibov12m : null, analysis),
+    raiox: buildRaioX(rows, income, scoreRows, curve, ibov12m.length ? ibov12m : null),
     income: buildIncome(income, upcoming, rows),
     movements: buildMovements(trades),
     heatmap: buildHeatmap(curve),
+    // a seção "No mundo" (05/11/2026): ticker, classe, valor cru e nome de cada
+    // posição (o Tesouro aparece pelo nome, não pelo ISIN do ticker)
+    posicoesMundo: rows.map((r) => ({ ticker: r.ticker, classe: r.assetClass, valor: r.value, nome: r.name })),
+    // a hora desta carga: a "olhada" das Ideias do topo
+    olhadaEm: new Date().toISOString(),
   }
 }
 
 /* ————— composable ————— */
 
-export async function useCarteira() {
+export async function useCarteira(opts: { immediate?: boolean } = {}) {
   const config = useRuntimeConfig()
   const { token } = useAuthState()
   // Server: URL direta do Laravel (sem loopback no próprio Nitro).
@@ -832,9 +905,12 @@ export async function useCarteira() {
       if (!t) return Promise.resolve(emptyPayload(true))
       return loadCarteira(import.meta.server ? serverBase : clientBase, t)
     },
+    // a /carteira só busca a carteira de quem assina: sem assinatura a página
+    // vira o paywall e chama execute() quando o Checkout confirma
+    { immediate: opts.immediate ?? true },
   )
 
-  return { data, pending, refresh }
+  return { data, pending, refresh, execute: refresh }
 }
 
 /* ————— resumo da home `/` (banda "Sua carteira" + mini-dashboard do hero) ————— */
@@ -861,7 +937,7 @@ const RESUMO_CONNECT: CarteiraResumoVM = {
 async function loadCarteiraResumo(base: string, token: string): Promise<CarteiraResumoVM | null> {
   const headers = { Accept: 'application/json', Authorization: `Bearer ${token}` }
 
-  const [portfolioR, todayR, incomeR, tradesR, curveR, ibovR, scoreR, analysisR] = await Promise.allSettled([
+  const [portfolioR, todayR, incomeR, tradesR, curveR, ibovR, scoreR] = await Promise.allSettled([
     homeFetchPortfolio(base, headers),
     homeFetchToday(base, headers),
     homeFetchIncome(base, headers),
@@ -869,12 +945,12 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     homeFetchEquityCurve(base, headers),
     acaoFetchIbovPrices(base, '12mo'),
     acaoFetchScoreRanking(base),
-    carteiraFetchAnalysis(base, headers), // 404 'no_analysis_yet' cai no ok() → null
   ])
 
   if (portfolioR.status === 'rejected') {
     const e = portfolioR.reason as { statusCode?: number; response?: { status?: number } }
     const status = e?.statusCode ?? e?.response?.status
+    if (erroDeAssinatura(portfolioR.reason)) return null // sem assinatura → a banda some, a sessão fica
     if (status === 401 || status === 403) return { ...RESUMO_CONNECT, unauthenticated: true }
     return null // dado indisponível (não-auth) → seção some
   }
@@ -889,7 +965,9 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
   // badge do dia: MESMA regra do buildHero (só com /today válido; nunca inventado)
   let hojeTxt: string | null = null
   let hojeDir: NuDir = 'up'
-  if (today?.totals && today.totals.value_d1 > 0) {
+  // o total do dia vem null quando nenhuma posição tem o preço de hoje (api
+  // fix/dia-pendente): sem número, a linha some em vez de "+R$ 0,00 hoje"
+  if (today?.totals && today.totals.value_d1 > 0 && today.totals.day_change_amount != null && today.totals.day_change_pct != null) {
     const amt = today.totals.day_change_amount
     const pctDay = today.totals.day_change_pct
     hojeDir = dirOf(amt)
@@ -901,7 +979,7 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     .filter((p) => p.market_price != null)
     .map((p) => ({ t: p.price_at, v: p.market_price as number }))
 
-  // Raio-X: MESMA função da /carteira → score/band/attention idênticos lá e cá.
+  // o score: MESMA função da /carteira → score/band/attention idênticos lá e cá.
   // raiox null (sem carteira, já excluído acima) não acontece aqui; ainda assim
   // os campos degradam pra null (mini-cards somem, atalho de atenção some).
   const raiox = buildRaioX(
@@ -910,7 +988,6 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     ok(scoreR)?.data ?? null,
     ok(curveR)?.data ?? null,
     ibov12m.length ? ibov12m : null,
-    ok(analysisR)?.analysis ?? null,
   )
 
   // Movimentações: allEvents do MESMO builder do extrato (janela 12m do fetch)
@@ -930,6 +1007,15 @@ async function loadCarteiraResumo(base: string, token: string): Promise<Carteira
     movCount: movements ? movements.allEvents.length : null,
     movLabel: movements ? 'últimos 12 meses' : null,
     atencao: raiox ? raiox.attention : null,
+    // o topo da home (31/10/2026): o dia contra a bolsa no MESMO dia de preço,
+    // quem pesou, a renda fixa e o provento do dia
+    dia: montarResumoDoDia({
+      today,
+      posicoes: rows,
+      total: totalValue,
+      ibov: ibov12m.length ? ibov12m : null,
+      income,
+    }),
   }
 }
 

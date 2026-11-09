@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Tabela do ranking — colunas fixas (#, Ativo com NuAssetLogo, Cotação) +
 // colunas configuráveis por meta.columns (formatters em utils/rankings.ts).
-// Linha inteira navega pro /asset/<ticker>. tabular-nums em todo número.
+// Linha inteira leva ao /asset/<ticker> (pela janelinha de espiar). tabular-nums em todo número.
 // Mobile ≤760: o CONTAINER rola horizontal (a página nunca rola no eixo x).
 //
 // breakdown (só o redentia-score): coluna extra 'Ver detalhe'/'Ocultar' que
@@ -19,6 +19,8 @@ const props = defineProps<{
   /** habilita a coluna/linha de breakdown por ranking (redentia-score). */
   breakdown?: boolean
 }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const expandedTicker = ref<string | null>(null)
 function toggleBreakdown(ticker: string) {
@@ -35,6 +37,18 @@ const defs = computed(() =>
     label: key === 'change' && props.changeLabel ? props.changeLabel : RANKING_COLUMNS[key].label,
   })),
 )
+
+/**
+ * A linha inteira leva ao ativo. Desde 03/11/2026 o clique passa pelo link da
+ * própria linha, e aí vale a janelinha de espiar (plugins/espiar-ativo.client)
+ * como em qualquer link de ativo do site. Com Cmd/Ctrl/Shift/Alt a linha
+ * navega como antes. O @click.stop do link evita o clique voltar à linha.
+ */
+function clicarLinha(e: MouseEvent, ticker: string) {
+  const link = (e.currentTarget as HTMLElement | null)?.querySelector<HTMLAnchorElement>('a.rkt__asset')
+  if (link && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) { link.click(); return }
+  void navigateTo(`/asset/${ticker}`)
+}
 
 function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
   const def = RANKING_COLUMNS[key]
@@ -59,8 +73,9 @@ function cellTone(key: RankingColumnKey, row: RankingRowApi): string {
       <tbody>
         <template v-for="(row, i) in rows" :key="rankingTicker(row) || i">
           <tr
+            v-contexto-chat="{ id: `ranking-linha:${sobre}:${rankingTicker(row)}`, tipo: 'ranking', rotulo: rotuloCurto(`${i + 1}º ${rankingTicker(row)}${sobre ? ` · ${sobre}` : ''}`) }"
             class="rkt__row"
-            @click="navigateTo(`/asset/${rankingTicker(row)}`)"
+            @click="clicarLinha($event, rankingTicker(row))"
           >
             <td class="rkt__cell rkt__cell--pos">{{ i + 1 }}</td>
             <td class="rkt__cell rkt__cell--asset">

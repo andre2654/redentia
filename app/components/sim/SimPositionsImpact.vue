@@ -66,7 +66,7 @@ function betaMeta(p: SimPositionImpact): string | null {
 </script>
 
 <template>
-  <div class="spi">
+  <div v-contexto-chat="{ id: 'sim:posicoes', tipo: 'grafico', rotulo: 'Impacto por posição' }" class="spi">
     <!-- o número-herói do bloco: quanto o cenário tira (ou põe) da carteira -->
     <div class="spi__hero" :class="{ 'spi__hero--in': active }">
       <template v-if="!isFlat">

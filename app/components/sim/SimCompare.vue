@@ -19,7 +19,7 @@ const anchorDiff = computed(() => Math.abs(props.a.assumptions.anchor - props.b.
 </script>
 
 <template>
-  <div class="scp">
+  <div v-contexto-chat="{ id: 'sim:comparar', tipo: 'grafico', rotulo: 'Carteira A x B' }" class="scp">
     <div class="scp__col">
       <div class="scp__head">
         <i class="scp__dot scp__dot--a" aria-hidden="true" />

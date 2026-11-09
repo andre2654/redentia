@@ -9,7 +9,7 @@
  * Os endpoints já cobertos pelo PR7 (portfolio/today/equity-curve/income/
  * macro) REUSAM os fetchers do services/home.ts — zero duplicação.
  */
-import type { PluggyConnectionApi, PortfolioAnalysisApi, TradesApi, UpcomingDividendsApi } from '~/types/carteira'
+import type { PluggyConnectionApi, TradesApi, UpcomingDividendsApi } from '~/types/carteira'
 
 type AuthHeaders = Record<string, string>
 const json = { headers: { Accept: 'application/json' } }
@@ -28,11 +28,6 @@ export function carteiraFetchTrades(base: string, headers: AuthHeaders, period: 
  */
 export function carteiraFetchUpcomingDividends(base: string, days = 180) {
   return $fetch<UpcomingDividendsApi>(`${base}/dividends/upcoming?days=${days}&limit=500`, json)
-}
-
-/** GET /portfolio/analysis — raio-x IA persistido (404 = ainda sem análise). */
-export function carteiraFetchAnalysis(base: string, headers: AuthHeaders) {
-  return $fetch<PortfolioAnalysisApi>(`${base}/portfolio/analysis`, { headers })
 }
 
 /** GET /pluggy/connections — conexões Open Finance do user. */

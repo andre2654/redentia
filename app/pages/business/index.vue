@@ -3,15 +3,15 @@
  * Redentia for Business — landing do produto B2B (assessoria vinculada,
  * family office, gestora, consultoria).
  *
- * ENXUTA DESDE 15/10/2026, à noite. O dono achou a página com "MUITA
- * informação" e mandou olhar a home da Decade: sete blocos, uma ideia por
- * tela, cerca de 600 palavras fora do FAQ (eram ~1.330 em doze blocos). Saíram
- * o trilho do topo (RbCapacidade), a filosofia (RbFilosofia) e as regras da casa
- * (RbRegras); os dois perfis de comprador viraram os dois cards do plano.
- *
- * Ritmo das bandas: creme (hero) → branco (Venn) → creme com a foto fixa (o dia
- * da mesa) → branco (segurança) → creme com um card navy (o plano) → branco
- * (FAQ) → foto escura (o fecho) → navy (footer).
+ * A PÁGINA DO PRINT DO DONO DESDE 05/11/2026. Ele mandou o print de uma
+ * landing do Redentia For Business, viu três variações no dev (?biz=1|2|3) e
+ * escolheu a 1, a Serifa, com o scroll travado depois da fila ("dedique
+ * aqueles scrolls personalizados para explicar melhor esses pontos"). Tudo
+ * mora em components/business/nova/ (BizLanding, BizFila, BizPassosCamera) e o
+ * texto em content/business/landing.ts, que tem no fim a lista do que falta o
+ * dono confirmar. A página de antes (RbHero, RbDivisao, RbJornada, RbSeguranca,
+ * RbProva) saiu; a regra de densidade dela continua: uma ideia por tela e
+ * ~650 palavras fora do FAQ.
  *
  * INDEXÁVEL DESDE 20/10/2026, POR DECISÃO DO DONO. O noindex nasceu como trava
  * de compliance enquanto a seção de segurança afirmava "banco separado" (o
@@ -34,13 +34,5 @@ useHead({ titleTemplate: null })
 </script>
 
 <template>
-  <div>
-    <RbHero />
-    <RbDivisao />
-    <RbJornada />
-    <RbSeguranca />
-    <RbProva />
-    <RbFaq />
-    <RbContato />
-  </div>
+  <BizLanding />
 </template>

@@ -17,7 +17,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 </script>
 
 <template>
-  <section class="the">
+  <section v-contexto-chat="{ id: `tese:${slug}`, tipo: 'tese', rotulo: rotuloCurto(`Tese · ${hero.titlePre}${hero.titleHi}${hero.titlePost}`.replace(/\s+/g, ' ')) }" class="the">
     <div class="the__media">
       <!-- capa = LCP da página SEO de tese: fetchpriority high pra o browser
            priorizar o download (webp otimizado, ~80-145KB) -->

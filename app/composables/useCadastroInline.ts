@@ -1,4 +1,5 @@
-import type { MagicLinkVerifyResponse, MagicPinVerifyResponse } from '~/types/auth'
+import type { MagicLinkVerifyResponse, MagicPinVerifyResponse, MeResponse, SocialLoginResponse } from '~/types/auth'
+import type { AppleCredencial } from '~/composables/useAppleAuth'
 import type { CadastroFeito } from '~/composables/useCadastroFolha'
 import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '../utils/atribuicao.ts'
 
@@ -10,7 +11,7 @@ import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '../utils/atrib
  */
 export function useCadastroInline() {
   const { setSession } = useAuthState()
-  const { publicFetch } = useApi()
+  const { publicFetch, authFetch } = useApi()
 
   const canal = ref<'email' | 'whatsapp'>('email')
   const etapa = ref<'contato' | 'codigo'>('contato')
@@ -151,6 +152,48 @@ export function useCadastroInline() {
     }
   }
 
+  /**
+   * Google (id_token do GIS) ou Apple (id_token + nonce + o nome da 1ª vez).
+   * Abre a sessão e devolve como a conta saiu, ou null com o erro em `erro`.
+   */
+  async function entrarSocial(provedor: 'google' | 'apple', credencial: string | AppleCredencial): Promise<CadastroFeito | null> {
+    if (enviando.value) return null
+    erro.value = null
+    enviando.value = true
+    try {
+      const body = provedor === 'google'
+        ? { id_token: credencial as string }
+        : { id_token: (credencial as AppleCredencial).idToken, nonce: (credencial as AppleCredencial).nonce, name: (credencial as AppleCredencial).nome }
+      const r = await publicFetch<SocialLoginResponse>(`/auth/${provedor}`, {
+        method: 'POST',
+        body,
+        headers: cabecalhosAtribuicaoDaSessao(),
+      })
+      dispararEventoAuth(provedor, r.is_new_user === true)
+      let u = r.user ?? null
+      setSession(r.access_token, u ? { id: u.id, name: u.name ?? '', email: u.email ?? undefined } : null)
+      if (!u) {
+        // backend sem `user` na resposta: o perfil vem do /auth/me
+        try {
+          const me = await authFetch<MeResponse>('/auth/me', {}, { redirectOnAuthError: false })
+          u = { id: me.user.id, name: me.user.name ?? null, email: me.user.email ?? null }
+          setSession(r.access_token, { id: u.id, name: u.name ?? '', email: u.email ?? undefined })
+        }
+        catch { /* a sessão já está no cookie */ }
+      }
+      contato.value = u?.email ?? ''
+      return { canal: provedor, novaConta: r.is_new_user === true, contato: contato.value }
+    }
+    catch (e) {
+      // 401 token inválido · 422 e-mail não verificado · 503 a validação fora do ar
+      erro.value = mensagem(e, provedor === 'google' ? 'Não foi possível entrar com o Google. Tente novamente.' : 'Não foi possível entrar com a Apple. Tente novamente.')
+      return null
+    }
+    finally {
+      enviando.value = false
+    }
+  }
+
   function trocarContato() {
     erro.value = null
     etapa.value = 'contato'
@@ -160,5 +203,5 @@ export function useCadastroInline() {
     if (relogio) clearInterval(relogio)
   })
 
-  return { canal, etapa, contato, enviando, erro, reenviarEm, whatsappFora, conferirCanais, pedirCodigo, reenviar, confirmar, trocarContato }
+  return { canal, etapa, contato, enviando, erro, reenviarEm, whatsappFora, conferirCanais, pedirCodigo, reenviar, confirmar, entrarSocial, trocarContato }
 }

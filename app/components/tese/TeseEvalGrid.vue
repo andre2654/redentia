@@ -16,6 +16,8 @@ const props = withDefaults(defineProps<{
   // a tese tem relatório completo? (só então o gate promete o relatório)
   hasReport?: boolean
 }>(), { studiesCount: 0, hasReport: false })
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 
 const { isAuthenticated } = useAuthState()
 const route = useRoute()
@@ -52,6 +54,7 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
         :is="!isLocked(i) && hrefFor(c.ticker) ? NuxtLink : 'article'"
         v-for="(c, i) in cards" :key="c.ticker"
         :to="!isLocked(i) && hrefFor(c.ticker) ? hrefFor(c.ticker)! : undefined"
+        v-contexto-chat="isLocked(i) ? null : { id: `tese-ativo:${sobre}:${c.ticker}`, tipo: 'tese', rotulo: rotuloCurto(`${c.ticker} na tese`), texto: [`${c.ticker} (${c.name}) na tese ${sobre}: ${c.badgeText}`, c.txt, c.pq ? `Por quê: ${c.pq}` : ''].filter(Boolean).join('\n') }"
         class="tev__card"
         :class="{
           'tev__card--hi': c.highlight && !isLocked(i),
@@ -172,7 +175,11 @@ const showGate = computed(() => !isAuthenticated.value && total.value > FREE)
   display: inline-flex; align-items: center; gap: 7px;
   color: var(--nu-green-soft); font-size: var(--nu-fs-xs); font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
-  background: var(--nu-green-bg); border-radius: var(--nu-r-pill); padding: 6px 12px;
+  /* sobre o navy: verde translúcido com o texto verde claro (o --nu-green-bg é
+     do fundo claro e apagava o texto; dono, 02/11/2026) */
+  background: color-mix(in srgb, var(--nu-green-soft) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nu-green-soft) 26%, transparent);
+  border-radius: var(--nu-r-pill); padding: 6px 12px;
 }
 .tev__gate-title {
   margin: 16px 0 0; color: var(--nu-cream-text); font-size: clamp(26px, 3.2vw, 40px);

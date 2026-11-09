@@ -32,7 +32,6 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path fill="currentColor" d="M14.23 10.16 22.14 1h-1.87l-6.86 7.95L7.7 1H1.5l8.3 12.06L1.5 23h1.87l7.26-8.41L15.8 23h6.2l-7.77-12.84Zm-2.57 2.98-.84-1.2L4.56 2.8h2.88l5.4 7.72.84 1.2 7.02 10.04h-2.88l-5.76-8.62Z" />
       </svg>
-      <span>X</span>
     </a>
     <span>e no</span>
     <a

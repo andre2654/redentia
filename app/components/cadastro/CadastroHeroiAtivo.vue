@@ -2,7 +2,7 @@
 // Herói do "Seguir" (canvas "Cadastro sem muro", 21/10/2026): a linha real do
 // último mês do ativo se desenha, o trecho de hoje sai na cor do movimento e o
 // porquê (a manchete do dia) aparece ancorado no ponto de hoje. O pontilhado é
-// o fechamento de ontem. Serve à folha de cadastro e ao painel do login.
+// o fechamento de ontem. Serve à folha de cadastro.
 // Parado (sem animação ou com movimento reduzido), mostra o quadro final.
 import type { DadosAtivo } from '~/composables/useCadastroDados'
 
@@ -10,9 +10,7 @@ const props = withDefaults(defineProps<{
   dados: DadosAtivo | null
   /** depois do cadastro: "Seguindo" fixo em vez do laço */
   seguindo?: boolean
-  /** no painel do login não há o botão de fechar no canto */
-  painel?: boolean
-}>(), { seguindo: false, painel: false })
+}>(), { seguindo: false })
 
 const linha = computed(() => (props.dados ? linhaDoMes(props.dados.serie, 456, 96, 6) : null))
 const variacao = computed(() => props.dados?.variacao ?? null)
@@ -27,7 +25,7 @@ const id = useId()
 </script>
 
 <template>
-  <div class="cha" :class="{ 'cha--painel': painel, 'cha--seguindo': seguindo, 'cha--sobe': sobe }" :style="tamanhos" aria-hidden="true">
+  <div class="cha" :class="{ 'cha--seguindo': seguindo, 'cha--sobe': sobe }" :style="tamanhos" aria-hidden="true">
     <div class="cha__topo">
       <img v-if="dados?.logo" :src="dados.logo" alt="" class="cha__logo" width="30" height="30">
       <span v-else class="cha__logo cha__logo--letra">{{ (dados?.ticker ?? '').slice(0, 1) }}</span>
@@ -74,9 +72,7 @@ const id = useId()
   padding: 22px 28px 14px; color: var(--nu-cream-text);
 }
 .cha--sobe { --cha-hoje: var(--nu-green-soft); }
-.cha--painel { padding: 0; }
 .cha__topo { display: flex; align-items: center; gap: 10px; padding-right: 44px; }
-.cha--painel .cha__topo { padding-right: 0; }
 .cha__logo { width: 30px; height: 30px; border-radius: 9px; flex: none; object-fit: cover; }
 .cha__logo--letra { display: grid; place-items: center; background: var(--nu-navy-3); font-size: var(--nu-fs-sm); font-weight: 800; }
 .cha__nome { display: flex; flex-direction: column; line-height: 1.15; }
@@ -121,12 +117,6 @@ const id = useId()
 /* depois do cadastro o herói para no quadro final, com o "Seguindo" fixo */
 .cha--seguindo, .cha--seguindo .cha__linha, .cha--seguindo .cha__hoje, .cha--seguindo .cha__area,
 .cha--seguindo .cha__ponto, .cha--seguindo .cha__guia, .cha--seguindo .cha__porque, .cha--seguindo .cha__seguindo { animation: none; }
-/* no painel do login a história roda uma vez, nos 6 s da cena do
-   NuAuthFuncoes, e para no quadro final. A cena entra e sai pela Transition de
-   lá: o esmaecer do laço venceria a opacidade dela e a cena sumiria seca. */
-.cha--painel { --cha-ciclo: 6s; animation: none; }
-.cha--painel .cha__linha, .cha--painel .cha__hoje, .cha--painel .cha__area, .cha--painel .cha__ponto,
-.cha--painel .cha__guia, .cha--painel .cha__porque, .cha--painel .cha__seguindo { animation-iteration-count: 1; }
 
 @keyframes cha-volta { 0% { opacity: 0; } 3%, 93% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes cha-linha { 0% { stroke-dashoffset: var(--cha-corpo); } 26%, 100% { stroke-dashoffset: 0; } }

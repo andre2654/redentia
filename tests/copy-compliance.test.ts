@@ -25,17 +25,22 @@ const plano = (f: string) => ler(f).replace(/\s+/g, ' ')
  * em 11/10 a prova deu negativo em produção. Ligada a chave, o IP pode voltar
  * para a frase, e esta asserção muda junto.
  */
+// Desde 05/11/2026 as frases de segurança da landing moram em
+// content/business/landing.ts (SEGURANCA_REGISTRO) e são desenhadas pelo
+// BizSegurancaRegistro; o RbSeguranca saiu com a página de antes.
+const SEGURANCA_LANDING = ['content/business/landing.ts', 'components/business/nova/BizLanding.vue', 'components/business/nova/BizSegurancaRegistro.vue']
+
 test('CV-01: banco separado não é afirmado (não existe), a prova do aceite é a gravada, e "nenhum dado real" não volta', () => {
   const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
-  for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts'])
+  for (const f of [...SEGURANCA_LANDING, 'content/business/faq.ts'])
     assert.doesNotMatch(visivel(f), /banco separado/i, f)
   // Desde o enxugamento da landing (15/10/2026, à noite) a prova do aceite por
   // extenso mora no FAQ; o card de segurança diz só que o aceite fica
   // registrado. Nenhum dos dois cita o IP.
   assert.match(visivel('content/business/faq.ts'), /prova do aceite \(data, versão do termo, hash do texto aceito e navegador\)/)
-  for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts'])
+  for (const f of [...SEGURANCA_LANDING, 'content/business/faq.ts'])
     assert.doesNotMatch(visivel(f), /\bIP\b/, f)
-  for (const f of ['components/business/RbSeguranca.vue', 'content/business/faq.ts', 'pages/business/clientes.vue'])
+  for (const f of [...SEGURANCA_LANDING, 'content/business/faq.ts', 'pages/business/clientes.vue'])
     assert.doesNotMatch(plano(f), /nenhum dado real/i, f)
 })
 
@@ -115,9 +120,10 @@ test('CV-18: nenhuma marca de demonstração ou de teste na experiência de Clie
 test('CV-19: Clientes do escritório é apresentado como liberado escritório a escritório, sem afirmar carteira real', () => {
   assert.match(plano('pages/business/clientes.vue'), /liberado por convite, escritório a escritório/)
   assert.match(plano('content/business/faq.ts'), /liberado por convite, escritório a escritório/)
-  // Na landing, a frase acompanha o card de family office e gestora (RbProva),
-  // que é onde a conexão do cliente é oferecida desde 15/10/2026.
-  for (const f of ['content/business/faq.ts', 'components/business/RbProva.vue'])
+  // Na landing (desde 05/11/2026, a do print do dono), a frase fica embaixo
+  // das garantias do hero (HERO.implantacao), que é onde a conexão do cliente
+  // é prometida.
+  for (const f of ['content/business/faq.ts', 'content/business/landing.ts'])
     assert.match(plano(f), /habilitada escritório a escritório, na implantação/i, f)
   // Omitir a marca não autoriza afirmar o contrário dela.
   for (const f of UI_CLIENTES)
@@ -154,12 +160,13 @@ test('CV-17: o guia de MCP restringe o "somente leitura" à chave pessoal', () =
  */
 test('CV-20: a landing não afirma que a carteira colada não fica guardada, e não promete 15 ferramentas a toda chave', () => {
   const visivel = (f: string) => semComentarios(ler(f)).replace(/\s+/g, ' ')
-  const landing = ['RbHero', 'RbDivisao', 'RbJornada', 'RbJornadaCard', 'RbSeguranca', 'RbProva', 'RbContato']
-    .map(c => `components/business/${c}.vue`).concat('content/business/faq.ts')
+  const landing = ['nova/BizLanding', 'nova/BizFila', 'nova/BizPassosCamera', 'nova/BizFaixaEstudo', 'RbContato']
+    .map(c => `components/business/${c}.vue`).concat('content/business/faq.ts', 'content/business/landing.ts')
   for (const f of landing) {
     assert.doesNotMatch(visivel(f), /n[aã]o fica guardad|nada guardado|nada da carteira colada fica guardado|servidor n[aã]o guarda/i, f)
     assert.doesNotMatch(visivel(f), /Sem slide/i, f)
   }
-  assert.doesNotMatch(visivel('components/business/RbHero.vue'), /ferramentas no Claude ou no ChatGPT: cotação, notícia com leitura, tese, cenário sobre a carteira e clientes/)
+  for (const f of landing)
+    assert.doesNotMatch(visivel(f), /ferramentas no Claude ou no ChatGPT: cotação, notícia com leitura, tese, cenário sobre a carteira e clientes/, f)
   assert.match(visivel('content/business/faq.ts'), /cache técnico, sem nome e sem chave/)
 })

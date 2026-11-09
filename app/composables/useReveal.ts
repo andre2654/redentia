@@ -1,5 +1,6 @@
 /**
- * Entrada dos gráficos do /benchmark-ia quando chegam na tela.
+ * Entrada de um bloco quando ele chega na tela (gráficos do /benchmark-ia,
+ * a banda do rodapé).
  *
  * Estados: 'idle' (SSR e sem JS: gráfico pronto, sem animação), 'pending'
  * (montou fora da tela: marcas recolhidas, esperando) e 'in' (entrou: as marcas
@@ -12,10 +13,32 @@
  * (prefers-reduced-motion) fica sempre em 'idle'.
  *
  * Chame no setup, antes de qualquer await (onMounted depois de await some).
+ *
+ * REVEAL_SEM_ENTRADA (03/11/2026): quem dá `provide(REVEAL_SEM_ENTRADA, true)`
+ * deixa os gráficos de dentro sempre prontos ('idle'). O /benchmark-ia "A
+ * noite" usa: o estado 'pending' esconde as marcas até o IntersectionObserver
+ * e um requestAnimationFrame dispararem, e numa aba em segundo plano (o preview
+ * do dono) ou num print de página inteira eles não disparam, então o gráfico
+ * ficava vazio (os cartões do "Inventa número?" altos e sem pontos, a faixa
+ * creme vazia depois do Placar geral). Sem o provide, nada muda.
+ *
+ * `{ soEmbeleza: true }` (03/11/2026, a banda do rodapé): nunca há 'pending'.
+ * O bloco sai pronto do servidor e fica pronto; a classe 'is-in' só entra
+ * quando ele monta FORA da tela (e com a aba visível) e o observador avisa que
+ * está chegando perto (uma folga embaixo da tela, para a animação começar
+ * antes de aparecer). O CSS anima só sob 'is-in', com fill `backwards`: se o
+ * observador nunca disparar (aba em segundo plano, print de página inteira), o
+ * conteúdo continua lá, sem animação. Já na tela ao montar: fica pronto, sem
+ * piscar de volta para o começo da animação.
  */
-export function useReveal(threshold = 0.25) {
+import type { InjectionKey } from 'vue'
+
+export const REVEAL_SEM_ENTRADA: InjectionKey<boolean> = Symbol('reveal:sem-entrada')
+
+export function useReveal(threshold = 0.25, opcoes: { soEmbeleza?: boolean } = {}) {
   const el = ref<HTMLElement | null>(null)
   const state = ref<'idle' | 'pending' | 'in'>('idle')
+  const semEntrada = inject(REVEAL_SEM_ENTRADA, false)
   let io: IntersectionObserver | null = null
 
   // impresso ou salvo em PDF sem rolar: tudo volta ao estado pronto (sem isso,
@@ -23,7 +46,16 @@ export function useReveal(threshold = 0.25) {
   const ready = () => { state.value = 'idle'; io?.disconnect() }
   onMounted(() => {
     window.addEventListener('beforeprint', ready)
-    if (!el.value || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (semEntrada || !el.value || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (opcoes.soEmbeleza) {
+      const r = el.value.getBoundingClientRect()
+      if (document.visibilityState !== 'visible' || (r.top < window.innerHeight && r.bottom > 0)) return
+      io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) { state.value = 'in'; io?.disconnect() }
+      }, { rootMargin: '0px 0px 12% 0px' })
+      io.observe(el.value)
+      return
+    }
     state.value = 'pending'
     io = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {

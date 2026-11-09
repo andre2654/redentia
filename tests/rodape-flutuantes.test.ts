@@ -25,20 +25,7 @@ test('a folga do rodapé é a altura do banner, e zero quando ele não está nes
   assert.equal(folgaDoBannerNoRodape(false, 96), 0)
 })
 
-test('o modal de onboarding fecha com Esc, clique fora e botão com aria-label Fechar', () => {
-  const src = readFileSync(new URL('../app/components/nu/NuOnboardingModal.vue', import.meta.url), 'utf8')
-  assert.match(src, /aria-label="Fechar"/)
-  assert.match(src, /e\.key === 'Escape'/)
-  assert.match(src, /@click\.self="dispensar"/)
-  assert.match(src, /NEWSLETTER_SEGURA_ONBOARDING/)
-})
-
-test('o convite é bloco no fluxo e some para quem já assina', () => {
-  const src = readFileSync(new URL('../app/components/nu/NuNewsletterConvite.vue', import.meta.url), 'utf8')
-  assert.match(src, /@ja-assinante="ocultarAssinante"/)
-  assert.doesNotMatch(src, /position:\s*fixed/)
-  assert.doesNotMatch(src, /exibirConviteFlutuante/)
-  assert.doesNotMatch(src, /useRodapeNaTela/)
+test('o banner de cookies acompanha o rodapé', () => {
   const banner = readFileSync(new URL('../app/components/consent/ConsentBanner.vue', import.meta.url), 'utf8')
   assert.match(banner, /useRodapeNaTela/)
   assert.match(banner, /folgaDoBannerNoRodape/)

@@ -6,6 +6,11 @@
 import { businessLeadDemoLigadoNoBuild } from './app/utils/business-lead.ts'
 import { CABECALHOS_JSON_DO_PROXY } from './server/utils/backend-proxy-json.ts'
 
+/** Uma rota de app/pages/dev/ (a página ou o arquivo dela). */
+function paginaDeDev(p: { path: string; file?: string }): boolean {
+  return p.path === '/dev' || p.path.startsWith('/dev/') || /[\\/]pages[\\/]dev[\\/]/.test(p.file ?? '')
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-11',
   devtools: { enabled: false },
@@ -55,6 +60,12 @@ export default defineNuxtConfig({
       // o botão Google do /login se esconde sozinho (LoginGoogleButton
       // documenta o que falta pra ligar).
       googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      // Sign in with Apple (o Services ID da Apple, público como o do Google).
+      // O backend confere a assinatura do id_token pela JWKS da Apple e o aud
+      // contra APPLE_CLIENT_IDS. O redirect precisa estar cadastrado no
+      // Services ID (Apple Developer → Identifiers); sem a env, o botão some.
+      appleClientId: process.env.NUXT_PUBLIC_APPLE_CLIENT_ID || '',
+      appleRedirectUri: process.env.NUXT_PUBLIC_APPLE_REDIRECT_URI || '',
       // Observabilidade (migrada do Frontend antigo no cutover). Plugins
       // client carregam lazy (requestIdleCallback) pra não competir com o
       // LCP. Pra desligar num env, basta setar a env correspondente vazia.
@@ -112,6 +123,9 @@ export default defineNuxtConfig({
     '/raio-x': { redirect: { to: '/', statusCode: 301 } },
     '/raio-x/**': { redirect: { to: '/', statusCode: 301 } },
     '/carteira': { headers: { 'cache-control': 'private, no-store' } },
+    // /assinar (plano único, 31/10/2026): o SSR lê a assinatura de quem está
+    // logado (assinante vai para a /carteira) → varia por cookie.
+    '/assinar': { headers: { 'cache-control': 'private, no-store' } },
     // /simulacao: pessoal e atrás de login (guard inline na página). O
     // resultado é da carteira de quem pediu — não pode encostar em cache
     // compartilhado de CDN.
@@ -334,6 +348,21 @@ export default defineNuxtConfig({
 
   components: [{ path: '~/components', pathPrefix: false }],
   imports: { dirs: ['services'] },
+
+  // As páginas de pages/dev/ (o /dev/losango) só existem no `nuxi dev`: fora
+  // dele a rota sai da lista antes de virar o routes.mjs, então nem a página
+  // nem o chunk dela entram no build. O middleware de 404 de cada página fica
+  // como segunda trava.
+  modules: [
+    (_opcoes, nuxt) => {
+      if (nuxt.options.dev) return
+      nuxt.hook('pages:extend', (paginas) => {
+        for (let i = paginas.length - 1; i >= 0; i--) {
+          if (paginaDeDev(paginas[i]!)) paginas.splice(i, 1)
+        }
+      })
+    },
+  ],
 
   // Prévia do formulário de /business (`?demo=1`). Constante de build: produção
   // da Vercel grava false, e a env pública não reverte isso. Ver business-lead.ts.

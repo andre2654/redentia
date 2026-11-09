@@ -13,7 +13,7 @@ defineProps<{ item: NoticiasItem; reverse: boolean; naCarteira: boolean }>()
 </script>
 
 <template>
-  <article class="nfr" :class="{ 'nfr--reverse': reverse }">
+  <article v-contexto-chat="{ id: `noticia:${item.id}`, tipo: 'noticia', rotulo: rotuloCurto(item.titulo) }" class="nfr" :class="{ 'nfr--reverse': reverse }">
     <NuNewsImage :src="item.image" :alt="item.titulo" class="nfr__media" />
     <div class="nfr__content">
       <div class="nfr__meta">

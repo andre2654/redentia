@@ -3,6 +3,7 @@
 // o ticker "Mercado agora" por um rail de seções; todo o resto mantém o ticker,
 // automático. Ver useSectionRail.ts p/ a nota de SSR (rail entra na hidratação).
 const railSections = useState<RailState | null>('nu:section-rail', () => null)
+const route = useRoute()
 </script>
 
 <template>
@@ -19,9 +20,8 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
     <main>
       <slot />
     </main>
-    <!-- O convite da newsletter: bloco no fluxo, imediatamente antes do
-         rodapé, no celular e no computador. -->
-    <NuNewsletterConvite />
+    <!-- Sem o convite da newsletter antes do rodapé (02/11/2026, dono: "remova
+         isso, porque já tem no footer"): a assinatura semanal fica no rodapé. -->
     <NuFooter />
     <!-- Sem modal de anúncio: o NuMcpPromo (o pop-up que abria 5 s depois de
          entrar) saiu de vez em 15/10/2026, a pedido do dono. Não remonte
@@ -30,14 +30,27 @@ const railSections = useState<RailState | null>('nu:section-rail', () => null)
          vez de mandar para o /login. Fechada até um gatilho chamar
          useCadastroFolha().abrir(). -->
     <CadastroFolha />
-    <!-- Onboarding obrigatório: logado sem investor_goal responde antes de
-         seguir (decisão do dono, 24/08). -->
-    <NuOnboardingModal />
+    <!-- O onboarding obrigatório ("O que te trouxe aqui?") saiu em 02/11/2026,
+         a pedido do dono: o quiz da assinatura já pergunta o que importa. -->
     <!-- O recado do André (26/10/2026, o dia vermelho depois do 2º turno):
          decisão do dono. Abre sozinho uma vez para quem está logado, fora das
          páginas de busca; a faixa acima abre para todo mundo. Some sozinho na
          data de useRecado. -->
     <NuRecado />
+    <!-- O chat em painel (02/11/2026, pedido do dono): a barra de pergunta no pé
+       de toda página, o painel à direita e o cursor mágico que mostra pedaços
+       da página à Redentia. Os três são position: fixed (o clip do shell não
+       os prende); o shell encolhe ao lado do painel (ChatPainel). -->
+    <ChatBarra />
+    <ChatPainel />
+    <ChatSeletor />
+    <!-- A janelinha de espiar ativo (03/11/2026, pedido do dono): o clique num
+         link para /asset/X abre um cartão no canto em vez da página
+         (plugins/espiar-ativo.client.ts); maximizar leva à página. -->
+    <EspiarAtivo />
+    <!-- O quiz da assinatura, um só no site: abre da oferta (/assinar, paywall)
+         e do chat, quando quem entrou e não assina pergunta (ChatPainel). -->
+    <AssinaturaQuiz />
   </div>
 </template>
 

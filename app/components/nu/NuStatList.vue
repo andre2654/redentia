@@ -5,11 +5,17 @@
 import type { AcaoStatRow } from '~/types/acao'
 
 defineProps<{ rows: AcaoStatRow[]; dark?: boolean }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
   <div>
-    <div v-for="(r, i) in rows" :key="r.l" class="nsl__row" :class="[dark ? 'nsl__row--dark' : 'nsl__row--light', { 'nsl__row--first': dark && i === 0 }]">
+    <div
+      v-for="(r, i) in rows" :key="r.l"
+      v-contexto-chat="{ id: `linha:${sobre}:${r.l}`, tipo: 'grafico', rotulo: rotuloComSobre(r.l, sobre), texto: `${r.l}${sobre ? ` (${sobre})` : ''}: ${r.v}${r.fonte ? ` · ${r.fonte}` : ''}` }"
+      class="nsl__row" :class="[dark ? 'nsl__row--dark' : 'nsl__row--light', { 'nsl__row--first': dark && i === 0 }]">
       <span class="nsl__label" :class="dark ? 'nsl__label--dark' : 'nsl__label--light'">{{ r.l }}</span>
       <span class="nsl__value" :class="[dark ? 'nsl__value--dark' : 'nsl__value--light', { 'nsl__value--green': r.accent === 'green' }]">{{ r.v }}</span>
     </div>

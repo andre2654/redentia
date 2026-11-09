@@ -35,15 +35,24 @@ export function useAporteChat() {
     aporteOpen.value = false
   }
 
+  // Desde 02/11/2026 o chat é um painel aberto na própria página (useChatPainel):
+  // os atalhos abrem o painel com a pergunta em vez de ir para a /busca. O
+  // href da /busca fica no link, para quem abre em outra aba.
+  const painel = useChatPainel()
+
   /** valor em reais (inteiro, > 0) → fecha o modal e leva a pergunta pro chat. */
   function confirmAporte(valor: number) {
     aporteOpen.value = false
-    const q = `Tenho R$ ${valor.toLocaleString('pt-BR')} para aportar. Como distribuo entre os ativos da minha carteira?`
-    return navigateTo(chatHref(q))
+    painel.abrir(`Tenho R$ ${valor.toLocaleString('pt-BR')} para aportar. Como distribuo entre os ativos da minha carteira?`)
   }
 
   /** href do "Rebalancear carteira" (NuxtLink :to) — chat direto, sem modal. */
   const rebalanceHref = chatHref(REBALANCE_QUESTION)
+  /** o clique no "Rebalancear": abre o painel com a pergunta pronta */
+  function rebalancear(e?: Event) {
+    e?.preventDefault()
+    painel.abrir(REBALANCE_QUESTION)
+  }
 
-  return { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref }
+  return { aporteOpen, openAporte, closeAporte, confirmAporte, rebalanceHref, rebalancear }
 }

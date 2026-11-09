@@ -18,12 +18,14 @@ defineProps<{
    */
   cardsMobile?: boolean
 }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
   <div class="ctc" :class="{ 'ctc--cream': tone === 'cream', 'ctc--cards': cardsMobile }">
     <ul v-if="cardsMobile" class="ctc__cards">
-      <li v-for="(r, i) in rows" :key="i" class="ctc__card">
+      <li v-for="(r, i) in rows" :key="i" v-contexto-chat="{ id: `tabela:${sobre}:${columns[0]}:${r[0]}`, tipo: 'grafico', rotulo: rotuloComSobre(`${columns[0]} ${r[0]}`, sobre), texto: columns.map((c, j) => `${c}: ${r[j] ?? ''}`).join(' · ') }" class="ctc__card">
         <p class="ctc__card-head"><span class="ctc__card-kicker">{{ columns[0] }}</span>{{ r[0] }}</p>
         <dl class="ctc__card-grid">
           <div v-for="(cell, j) in r.slice(1)" :key="j" class="ctc__card-item">
@@ -39,7 +41,7 @@ defineProps<{
           <tr><th v-for="c in columns" :key="c">{{ c }}</th></tr>
         </thead>
         <tbody>
-          <tr v-for="(r, i) in rows" :key="i">
+          <tr v-for="(r, i) in rows" :key="i" v-contexto-chat="{ id: `tabela:${sobre}:${columns[0]}:${r[0]}`, tipo: 'grafico', rotulo: rotuloComSobre(`${columns[0]} ${r[0]}`, sobre), texto: columns.map((c, j) => `${c}: ${r[j] ?? ''}`).join(' · ') }">
             <td v-for="(cell, j) in r" :key="j" :class="{ 'ctc__td--accent': j === accentCol }">{{ cell }}</td>
           </tr>
         </tbody>

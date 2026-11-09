@@ -49,6 +49,9 @@ a:hover { color: inherit; }
 /* animações compartilhadas dos designs */
 @keyframes nu-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes nu-fade-lg { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+/* a palavra surgindo do desfoque (utils/revelar-palavras.ts): as respostas do
+   chat (ChatMensagem) e o resumo do /asset ao abrir (AtivoResumo) */
+@keyframes nu-palavra { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } }
 @keyframes nu-bob { from { transform: translateY(0); } to { transform: translateY(-10px); } }
 /* shimmer dos skeletons (NuSkeleton). O @media reduced-motion abaixo já congela. */
 @keyframes nu-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }

@@ -124,7 +124,6 @@
   --nu-cream-text-92: rgba(245, 241, 234, 0.92);
   --nu-cream-text-85: rgba(245, 241, 234, 0.85);
   --nu-cream-text-80: rgba(245, 241, 234, 0.8);
-  --nu-cream-text-75: rgba(245, 241, 234, 0.75);
   --nu-cream-text-50: rgba(245, 241, 234, 0.5);
   --nu-cream-text-45: rgba(245, 241, 234, 0.45);
   --nu-cream-text-12: rgba(245, 241, 234, 0.12);
@@ -136,12 +135,10 @@
   --nu-white-85: rgba(255, 255, 255, 0.85);
   --nu-white-78: rgba(255, 255, 255, 0.78);
   --nu-white-75: rgba(255, 255, 255, 0.75);
-  --nu-white-65: rgba(255, 255, 255, 0.65);
   --nu-white-60: rgba(255, 255, 255, 0.6);
   --nu-white-35: rgba(255, 255, 255, 0.35);
   --nu-white-30: rgba(255, 255, 255, 0.3);
   --nu-white-18: rgba(255, 255, 255, 0.18);
-  --nu-white-16: rgba(255, 255, 255, 0.16);
   --nu-white-14: rgba(255, 255, 255, 0.14);
 
   /* opacidades de ink (sobre claro) */
@@ -149,9 +146,6 @@
   --nu-ink-30: rgba(10, 10, 12, 0.3);
   --nu-ink-14: rgba(10, 10, 12, 0.14);
   --nu-ink-04: rgba(10, 10, 12, 0.04);
-
-  /* scrim dos cards de tese (4 stops do design) */
-  --nu-thesis-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.6) 0%, rgba(8, 12, 20, 0.1) 36%, rgba(8, 12, 20, 0.34) 58%, rgba(8, 12, 20, 0.93) 100%);
 
   /* ——— PR2 /asset/[ticker] (valores exatos de Redentia Acoes Nu.dc.html) ——— */
   --nu-amber-bg: #F7E8C8;        /* bg da tag semântica amber (Moderado) */
@@ -171,7 +165,6 @@
 
   /* verde-accent sobre azul (score/consenso) */
   --nu-green-soft-35: rgba(143, 240, 181, 0.35);  /* início do gradiente do range */
-  --nu-green-soft-18: rgba(143, 240, 181, 0.18);  /* bg da pill de classificação */
 
   /* halos do chart de preço */
   --nu-blue-soft-18: rgba(158, 200, 255, 0.18);   /* halo do dot de fechamento */
@@ -282,10 +275,7 @@
   --nu-class-prev: #5B8DEF;     /* Previdência */
   --nu-class-fund: #EB6FA6;     /* Fundos */
   --nu-class-fx: #14B8A6;       /* Câmbio */
-  --nu-white-28: rgba(255, 255, 255, 0.28); /* track da barra no botão ATIVO da sidebar */
   --nu-shadow-pos-nav: 0 1px 2px rgba(12, 21, 36, 0.05);   /* botão de classe em repouso */
-  --nu-shadow-pos-card: 0 1px 3px rgba(12, 21, 36, 0.06), 0 22px 44px -34px rgba(12, 21, 36, 0.45); /* card por classe */
-  --nu-r-pos-card: 28px;        /* raio do card por classe */
   --nu-r-pos-panel: 18px;       /* raio do painel interno creme de linhas */
 
   /* ——— PR10 /calculadoras (valores exatos de Redentia Calculadoras Nu.dc.html) ——— */
@@ -294,15 +284,8 @@
 
   /* ——— PR9 /busca + chat (valores exatos de Redentia Busca Nu.dc.html) ——— */
   --nu-cream-text-90: rgba(245, 241, 234, 0.9);  /* parágrafos da resposta da IA */
-  --nu-gray-hist: #8A7F6D;                       /* texto secundário do drawer de histórico */
-  --nu-veil: rgba(12, 21, 36, 0.6);              /* overlay atrás do drawer */
   --nu-navy-14: rgba(12, 21, 36, 0.14);          /* hover do X do drawer */
-  --nu-navy-09: rgba(12, 21, 36, 0.09);          /* hover da lixeira do histórico */
   --nu-shadow-search: 0 24px 60px -34px rgba(12, 21, 36, 0.25);   /* pill de busca do hero */
-  --nu-shadow-drawer: -30px 0 70px rgba(12, 21, 36, 0.45);        /* painel do histórico */
-  --nu-shadow-hist-active: 0 8px 20px rgba(12, 21, 36, 0.08);     /* item ativo do histórico */
-  /* fade atrás do composer sticky (stops exatos do design) */
-  --nu-chat-fade: linear-gradient(180deg, rgba(12, 21, 36, 0) 0%, #0C1524 42%);
 
   /* ——— PR-R1 NuMarketReading + Login (animação "Redentia lendo o mercado") ——— */
   /* recência do feed que acende sobre navy (wcol do design DC) */
@@ -329,13 +312,11 @@
   --nu-read-doc-bg-light: #EAF1FF;
   /* chrome do card de leitura no hero do /mercado */
   --nu-navy-06: rgba(12, 21, 36, 0.06);                            /* borda do card */
-  --nu-shadow-read-card: 0 34px 74px -36px rgba(12, 21, 36, 0.32); /* sombra do card */
 
   /* ——— PR-R3 carrosséis de tese (valores exatos dos designs v2) ——— */
   /* Mercado "Invista com Teses." — faixa de painéis-imagem (NuTeseStrip) */
   /* scrim do painel selecionado (4 stops — ≠ do --nu-thesis-scrim do card antigo) */
   --nu-tese-strip-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.42) 0%, rgba(8, 12, 20, 0.04) 34%, rgba(8, 12, 20, 0.30) 62%, rgba(8, 12, 20, 0.90) 100%);
-  --nu-white-72: rgba(255, 255, 255, 0.72);  /* perfLabel sobre o scrim do painel */
   --nu-cream-5: #F1ECE1;                      /* bg das setas prev/next da faixa */
   --nu-cream-5-hover: #E5DECE;                /* hover das setas prev/next */
 
@@ -343,8 +324,6 @@
   --nu-tese-grad-1: linear-gradient(200deg, #9EC8FF 0%, #4D86E8 34%, #16233B 88%);
   --nu-tese-grad-2: linear-gradient(165deg, #2F6BFF 0%, #2456C9 46%, #0C1524 100%);
   --nu-tese-grad-3: linear-gradient(205deg, #7FA9F0 0%, #2456C9 56%, #0C1524 96%);
-  --nu-white-92: rgba(255, 255, 255, 0.92);      /* categoria do card */
-  --nu-white-62: rgba(255, 255, 255, 0.62);      /* label "desde que segue" */
   --nu-green-soft-22: rgba(143, 240, 181, 0.22); /* bg da pill "Seguindo" */
 
   /* ——— PR-R4 "O dia no mercado" — seção-gatilho + NuDayModal (designs v2) ——— */
@@ -381,11 +360,7 @@
   --nu-cta-scrim-h: linear-gradient(90deg, #2F6BFF 0%, rgba(47, 107, 255, 0.82) 24%, rgba(47, 107, 255, 0.44) 56%, rgba(47, 107, 255, 0.12) 100%);
   --nu-cta-scrim-v: linear-gradient(180deg, rgba(47, 107, 255, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
 
-  /* ——— /teses (valores exatos de Redentia Teses Nu.dc.html) ———
-     Os carrosséis reusam --nu-tese-grad-1..3, --nu-white-92/-62/-16/-18/-85,
-     --nu-green-soft(-22); o FAQ reusa --nu-gray-2/--nu-ink-75. Só o NOVO aqui. */
-  --nu-teses-hero-sub: #5C564B;   /* parágrafo do hero "Invista em ideias" */
-  --nu-teses-benefit: #1E48B5;    /* cards do grid "Sua jornada com mais vantagens" */
+  /* ——— /teses ("A grade", 02/11/2026): sem cor própria, só tokens de uso geral ——— */
 
   /* ——— /business (painel de credibilidade do hero) ———
      Degrau novo na rampa de ink que já existe (75, 30, 16, 14, 10, 04). Nasce
@@ -393,5 +368,38 @@
      piso de 3:1 que a SC 1.4.11 exige de LIMITE DE CONTROLE — e o quadrado do
      calendário e a borda do botão de contorno carregam informação, não são
      moldura. Medido: 3,15:1 sobre branco, 3,10:1 sobre creme. */
-  --nu-ink-45: rgba(10, 10, 12, 0.45);
+
+  /* /business nova (05/11/2026, o print do dono): o azul-lavanda do botão cheio
+     sobre navy (o navy por cima dá 11,6:1) e o pontilhado do hero */
+  --nu-biz-lavanda: #C3CBFF;
+  --nu-biz-lavanda-hover: #D6DBFF;
+  --nu-biz-ponto: rgba(195, 203, 255, 0.16);
+
+  /* ——— Home (31/10/2026): a tela do Agora dos apps no site ———
+     Valores do canvas V5MBL5Q3 (IPhoneAgoraV2, WatchAgora, MacAgoraInicio):
+     o preto do Agora, o verde da bolsa aberta, o vermelho e o âmbar do aviso.
+     Só a home usa (HomeAgora, HomeComoFunciona, HomeLeque). */
+  --nu-agora-bg: #000000;
+  --nu-agora-cartao: #161618;                        /* cartão sobre o preto */
+  --nu-agora-texto: #F5F5F7;
+  --nu-agora-sub: rgba(255, 255, 255, 0.62);
+  --nu-agora-pilula: rgba(255, 255, 255, 0.12);
+  --nu-agora-linha: rgba(255, 255, 255, 0.10);
+  --nu-agora-verde: #5EDB3B;
+  --nu-agora-vermelho: #FF375F;
+  --nu-agora-ambar: #FFD60A;
+  --nu-agora-azul: #64B5FF;
+  /* a sombra do botão da chamada (HomeChamada); a dos aparelhos sobre o creme
+     saiu com o herói antigo (02/11/2026) */
+  --nu-home-sombra-botao: 0 18px 40px -16px rgba(47, 106, 255, 0.65);
+  --nu-home-sombra-botao-escuro: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
+
+  /* ——— Chat em painel (02/11/2026): barra flutuante, painel à direita, cursor mágico ——— */
+  /* a luz que segue o ponteiro: azul, violeta e rosa da paleta da barra (--nu-blue, --nu-serie-5, --nu-serie-4) */
+  --nu-chat-luz-1: rgba(47, 106, 255, 0.42);
+  --nu-chat-luz-2: rgba(180, 140, 255, 0.40);
+  --nu-chat-luz-3: rgba(255, 107, 138, 0.30);
+  --nu-chat-sombra-painel: 0 0 0 1px rgba(12, 21, 36, 0.07), 0 28px 70px -24px rgba(12, 21, 36, 0.34);
+  --nu-chat-sombra-sug: 0 18px 50px -12px rgba(12, 21, 36, 0.28), 0 0 0 1px rgba(12, 21, 36, 0.07);
+  --nu-chat-sombra-rotulo: 0 6px 16px -6px rgba(12, 21, 36, 0.45);
 }

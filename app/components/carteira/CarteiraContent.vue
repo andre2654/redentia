@@ -1,77 +1,105 @@
 <script setup lang="ts">
-// Miolo da carteira — extraído de pages/carteira.vue (mesmo padrão do
-// MercadoContent: 1 implementação de conteúdo; a página /carteira é um
-// wrapper fino que cuida de auth + SEO). Usado APENAS pela página /carteira —
-// a home `/` mostra só o resumo compacto (MercadoSuaCarteira).
-// Contrato de UX: docs/redentia-nu/designs/Redentia Carteira Nu.dc.html.
+// Miolo da carteira — usado APENAS pela página /carteira (a home `/` mostra só
+// o resumo compacto). A página é um wrapper fino que cuida de auth, assinatura
+// e SEO.
 //
-// TELA DINÂMICA POR CARD (diretriz nº1): sem Open Finance conectado a página
-// VIRA a experiência de conexão (CarteiraHero state 'connect' + Pluggy
-// Connect); cada seção decide cheio | parcial | vazio no useCarteira — seções
-// sem dado real simplesmente não renderizam. Nunca número inventado.
-import type { CarteiraPayload } from '~/types/carteira'
+// REDESENHO DE 31/10/2026 (plano único + o conceito do Agora dos apps): a
+// pessoa não precisa saber de tudo nem se preocupar. A ordem da tela responde
+// uma pergunta por vez:
+//  1. CarteiraAgora      "está tudo bem?" — o topo escuro do /asset ("a carteira
+//                        no bolso", 05/11): a frase, o patrimônio, o losango e a curva
+//     CarteiraIdeias     "o que a Redentia encontrou?" — o botão "Ideias" do
+//                        topo, que abre o modal (05/11; a barra entre o topo e
+//                        o "Daqui a 5 anos" saiu)
+//  2. CarteiraFuturo     "e daqui a 5 anos?" — o leque de 2.000 cenários (o
+//                        único momento assinatura da tela, na banda navy)
+//  3. CarteiraPosicoes   o total, a barra por classe e os grupos (papéis sob pedido)
+//     CarteiraMundo      "onde está o meu dinheiro?" — país e região, num globo (05/11)
+//     CarteiraCadeia     "as minhas empresas dependem umas das outras?" (05/11)
+//  4. ProventosContas    o que está a caminho e as contas do Open Finance
+//  5. CarteiraAnalise    desempenho, movimentações e P&L, sob pedido
+// Sem Open Finance conectado a página VIRA o convite (CarteiraVazia). Seção
+// sem dado real não renderiza. Nunca número inventado.
+import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
+
+import CarteiraVisao from '~/components/carteira/visao/CarteiraVisao.vue'
 
 const props = defineProps<{ payload: CarteiraPayload }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
 
-// Banner contextual (PR-R6): SÓ quando conectado ('patrimonio') declaramos as
-// seções → o layout troca o ticker pelo NuSectionRail. No estado 'connect'
-// (sem Open Finance) a lista sai vazia → o composable zera o estado → fica o
-// ticker "Mercado agora". Cada seção só entra na lista se seu dado existir
-// (MESMA condição do template abaixo), então o rail nunca aponta pra um #id
-// que não está no DOM. Labels/ordem = print do dono; ids batem com o template.
-const railSections = computed<RailSection[]>(() => {
+const conectada = computed(() => props.payload.hero.state === 'patrimonio' && !!props.payload.agora)
+
+// A /carteira nova (06/11/2026; real desde 07/11): com a resposta de
+// GET /me/carteira/visao, ela; com a flag do servidor desligada para a pessoa
+// (404 visao_desligada) ou sem resposta, esta tela, que não depende dela. No
+// dev, ?cenario= força o mock (normal, calmo, velho, semgasto ou real).
+const route = useRoute()
+const { visao, refresh: atualizarVisao } = await useCarteiraVisao({ immediate: conectada.value })
+const mockDoDev = computed(() => import.meta.dev && !!route.query.cenario)
+const visaoNova = computed(() => mockDoDev.value || !!visao.value)
+function conectou() {
+  void atualizarVisao()
+  emit('connected')
+}
+const agora = computed(() => props.payload.agora as CarteiraAgoraVM)
+// a cadeia só existe para ação; a seção diz se achou alguma ligação (o rail espera)
+const temAcoes = computed(() => !!props.payload.posicoesMundo?.some((p) => p.classe === 'STOCK'))
+const temCadeia = ref(false)
+// os achados da Redentia AI, no modal do botão "Ideias" do topo: os pontos de
+// atenção do score de hoje (sem nada a apontar, a linha calma); sem o score, o
+// topo fica com o Perguntar
+const achados = computed(() => {
   const p = props.payload
-  if (p.hero.state !== 'patrimonio') return []
-  const s: RailSection[] = []
-  if (p.chart) s.push({ id: 'desempenho', label: 'Desempenho' })
-  if (p.groups.length && p.positionsSub) s.push({ id: 'posicoes', label: 'Posições' })
-  if (p.raiox) s.push({ id: 'raio-x', label: 'Raio-X da carteira' })
-  if (p.income) s.push({ id: 'renda-passiva', label: 'Renda passiva' })
-  if (p.movements) s.push({ id: 'movimentacoes', label: 'Movimentações' })
-  if (p.heatmap) s.push({ id: 'pnl', label: 'P&L mês a mês' })
+  if (!p.raiox) return null
+  return { raiox: p.raiox, posicoes: p.posicoesMundo ?? [], olhadaEm: p.olhadaEm ?? null }
+})
+
+// A faixa abaixo do header vira o rail desta página quando há carteira (no
+// lugar do "Mercado agora": a carteira não precisa do mercado piscando em
+// cima). Só entra seção que está no DOM; ids batem com o template.
+const railSections = computed<RailSection[]>(() => {
+  if (!conectada.value || visaoNova.value) return []
+  const p = props.payload
+  const s: RailSection[] = [{ id: 'hoje', label: 'Hoje' }]
+  s.push({ id: 'futuro', label: 'Daqui a 5 anos' })
+  if (p.groups.length) s.push({ id: 'posicoes', label: 'Posições' })
+  if (p.posicoesMundo?.length) s.push({ id: 'mundo', label: 'No mundo' })
+  if (temAcoes.value && temCadeia.value) s.push({ id: 'cadeia', label: 'Na cadeia' })
+  if (p.income && (p.income.agenda || p.income.month)) s.push({ id: 'renda-passiva', label: 'Proventos' })
+  s.push({ id: 'contas', label: 'Contas' })
   return s
 })
 useSectionRail(railSections, { pageLabel: 'Carteira' })
 
-// Âncoras vindas da home (refinamento 2026-07-13: mini-dashboard do hero +
-// atalhos da banda "Sua carteira" chegam com #raio-x/#renda-passiva/
-// #movimentacoes/#posicoes): o scrollBehavior default do Nuxt dispara antes
-// do layout assentar (na navegação SPA nem chega a rolar) e a âncora morre no
-// topo. Correção pós-mount reusando o scrollToRailSection (respeita o
-// scroll-margin-top das seções — 1 fonte de verdade). nextTick + correção em
-// 400ms (o chart client-only cresce a página depois do 1º paint; rAF NÃO
-// serve — aba sem paint nunca dispararia o scroll).
+// Âncoras vindas da home (#posicoes, #renda-passiva…): o scrollBehavior do
+// Nuxt dispara antes do layout assentar. Correção pós-mount, como antes; as
+// da análise completa (#pnl…) o CarteiraAnalise abre e rola.
 onMounted(() => {
-  const hash = useRoute().hash
-  if (!hash) return
-  const id = hash.slice(1)
+  const id = useRoute().hash.slice(1)
+  if (!id || !railSections.value.some((s) => s.id === id)) return
   nextTick(() => scrollToRailSection(id))
   setTimeout(() => scrollToRailSection(id), 400)
 })
 </script>
 
 <template>
-  <!-- CLARITY (11/10/2026): o Clarity grava sessão em /carteira, e patrimônio,
-       posições, proventos, movimentações e instituições iam sem máscara para as
-       gravações. Toda seção com dado da pessoa leva data-clarity-mask="true"
-       (o atributo cai na <section> raiz de cada uma). O hero mascara por dentro,
-       só o que é dado: o estado "conecte sua carteira" segue legível no funil. -->
-  <div>
-    <CarteiraHero :hero="payload.hero" :allocation="payload.allocation" @connected="emit('connected')" />
-    <NuPortfolioChart v-if="payload.chart" id="desempenho" class="car-sec" :chart="payload.chart" data-clarity-mask="true" />
-    <CarteiraPositions v-if="payload.groups.length && payload.positionsSub" id="posicoes" class="car-sec" :sub="payload.positionsSub" :groups="payload.groups" data-clarity-mask="true" />
-    <CarteiraMcpBanner v-if="payload.hero.state === 'patrimonio'" />
-    <CarteiraRaioX v-if="payload.raiox" id="raio-x" class="car-sec" :raiox="payload.raiox" data-clarity-mask="true" />
-    <CarteiraIncome v-if="payload.income" id="renda-passiva" class="car-sec" :income="payload.income" data-clarity-mask="true" />
-    <CarteiraMovements v-if="payload.movements" id="movimentacoes" class="car-sec" :movements="payload.movements" data-clarity-mask="true" />
-    <CarteiraHeatmap v-if="payload.heatmap" id="pnl" class="car-sec" :heatmap="payload.heatmap" data-clarity-mask="true" />
+  <!-- CLARITY (11/10/2026): toda seção com dado da pessoa leva
+       data-clarity-mask="true"; o convite de conexão segue legível no funil. -->
+  <CarteiraVisao v-if="conectada && visaoNova" :payload="payload" :visao="mockDoDev ? null : visao" @connected="conectou" />
+  <div v-else-if="conectada">
+    <CarteiraAgora id="hoje" :agora="agora" :chart="payload.chart" :stats="payload.hero.stats" :achados="achados" @connected="conectou" />
+    <CarteiraFuturo id="futuro" />
+    <CarteiraPosicoes
+      v-if="payload.groups.length && payload.hero.patrimonio"
+      id="posicoes"
+      :patrimonio="payload.hero.patrimonio"
+      :groups="payload.groups"
+      :allocation="payload.allocation"
+    />
+    <CarteiraMundo v-if="payload.posicoesMundo?.length" id="mundo" :posicoes="payload.posicoesMundo" />
+    <CarteiraCadeia v-if="temAcoes" id="cadeia" :posicoes="payload.posicoesMundo!" @ligacoes="temCadeia = $event" />
+    <CarteiraProventosContas :income="payload.income" @connected="conectou" />
+    <CarteiraAnalise :payload="payload" />
   </div>
+  <CarteiraVazia v-else @connected="conectou" />
 </template>
-
-<style scoped>
-/* Alvos do rail (PR-R6): scroll-margin compensa o header sticky (--nuh-h) + a
-   própria faixa do rail (~51px) pra a seção parar logo abaixo dela. O scoped
-   alcança a raiz de cada componente-filho (todos têm 1 root <section>). */
-.car-sec { scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-</style>

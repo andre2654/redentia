@@ -4,23 +4,19 @@
 // sobe esta folha com o que a pessoa pediu já funcionando (o herói, com dado
 // real), três motivos e o campo do e-mail (ou do WhatsApp, no resumo). O
 // código de 6 números chega na mesma folha; confirmado, a conta é criada, a
-// ação do gatilho roda sozinha e, se a conta é nova, as duas perguntas do
-// onboarding obrigatório vêm aqui mesmo, sem um segundo modal por cima.
+// ação do gatilho roda sozinha. As duas perguntas do onboarding (objetivo e
+// experiência) saíram em 02/11/2026, a pedido do dono: o quiz da assinatura
+// já pergunta o que importa.
 // No computador é um cartão no centro; no celular, uma folha que sobe do pé.
 // Montada uma vez no layout; quem abre é useCadastroFolha().abrir().
-import type { BusinessAccountStatus } from '~/composables/useBusinessAccount'
 import type { DadosAtivo, DadosResumo } from '~/composables/useCadastroDados'
 import type { CadastroFeito } from '~/composables/useCadastroFolha'
-import type { CadastroIcone } from '~/utils/cadastro'
+import type { AppleCredencial } from '~/composables/useAppleAuth'
+import { ICONES } from '~/utils/cadastro'
 
 const { aberta, fechar: fecharFolha } = useCadastroFolha()
 const cad = useCadastroInline()
 const dados = useCadastroDados()
-const { authFetch } = useApi()
-const meCliente = useMeCliente()
-// o onboarding obrigatório espera a folha (NuOnboardingModal)
-const naFolha = useState<boolean>('nu:onb-na-folha', () => false)
-const gate = useState<'unknown' | 'needed' | 'done'>('nu:onb-gate', () => 'unknown')
 
 const ctx = computed(() => aberta.value?.contexto ?? null)
 const gesto = computed(() => ctx.value?.gesto ?? 'pergunta')
@@ -37,16 +33,9 @@ const codigo = ref('')
 const isca = ref('')
 const feito = ref<CadastroFeito | null>(null)
 const acaoFalhou = ref(false)
-/** onboarding obrigatório: null = não precisa; depois o passo em que está */
-const onboarding = ref<null | 'objetivo' | 'experiencia'>(null)
-const objetivo = ref<string | null>(null)
-const salvando = ref(false)
-const erroOnboarding = ref('')
 
 const ativo = ref<DadosAtivo | null>(null)
 const resumo = ref<DadosResumo | null>(null)
-const OBJETIVOS = ONBOARDING_OBJETIVOS
-const EXPERIENCIAS = ONBOARDING_EXPERIENCIAS
 
 const texto = computed(() => {
   const c = ctx.value
@@ -60,20 +49,6 @@ const texto = computed(() => {
 })
 const ehWhats = computed(() => cad.canal.value === 'whatsapp')
 
-const ICONES: Record<CadastroIcone, string[]> = {
-  envelope: ['M5.5 5h13A2.5 2.5 0 0 1 21 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5v-9A2.5 2.5 0 0 1 5.5 5z', 'M3.5 7l8.5 6 8.5-6'],
-  jornal: ['M5 4h11a3 3 0 0 1 3 3v11a2 2 0 0 1-2 2H6a3 3 0 0 1-3-3V6a2 2 0 0 1 2-2z', 'M7 9h8M7 13h8M7 17h5'],
-  calendario: ['M6 5h12a2.5 2.5 0 0 1 2.5 2.5v10A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-10A2.5 2.5 0 0 1 6 5z', 'M3.5 10h17M8 3v4M16 3v4'],
-  relogio: ['M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z', 'M12 7.5V12l3 2'],
-  conversa: ['M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12z'],
-  carteira: ['M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z', 'M15 3.8A8.5 8.5 0 0 1 20.2 9H15z'],
-  marcador: ['M6.5 3.5h11a1 1 0 0 1 1 1v16l-6.5-4-6.5 4v-16a1 1 0 0 1 1-1z'],
-  ajuste: ['M4 7h10M18 7h2M4 17h4M12 17h8', 'M16 4.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z', 'M10 14.8a2.2 2.2 0 1 1 0 4.4 2.2 2.2 0 0 1 0-4.4z'],
-  brilho: ['M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z', 'M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'],
-  grafico: ['M4 19h16', 'M5 15l4-4 3 3 6-7'],
-  historico: ['M4 12a8 8 0 1 0 2.4-5.7', 'M4 4v4h4', 'M12 8v4l3 2'],
-  cadeado: ['M7.5 10.5h9a2.5 2.5 0 0 1 2.5 2.5v5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 18v-5a2.5 2.5 0 0 1 2.5-2.5z', 'M8 10.5V8a4 4 0 0 1 8 0v2.5'],
-}
 
 /* ——— abrir: zera a folha e busca o dado do herói ——— */
 const cardRef = ref<HTMLElement | null>(null)
@@ -91,12 +66,8 @@ watch(() => aberta.value?.id, async (id) => {
   isca.value = ''
   feito.value = null
   acaoFalhou.value = false
-  onboarding.value = null
-  objetivo.value = null
-  erroOnboarding.value = ''
   cad.trocarContato()
   cad.canal.value = gesto.value === 'resumo' ? 'whatsapp' : 'email'
-  naFolha.value = true
   ativo.value = null
   resumo.value = null
   await nextTick()
@@ -115,8 +86,6 @@ watch(() => aberta.value?.id, async (id) => {
 })
 
 function fechar() {
-  // fechar no meio vale: sem as respostas, o onboarding obrigatório volta a valer
-  naFolha.value = false
   fecharFolha()
 }
 
@@ -143,25 +112,25 @@ function aoDigitarCodigo(e: Event) {
   if (v.length === 6) void confirmarCodigo()
 }
 
-/* ——— código → conta → ação → onboarding ——— */
-async function precisaDoOnboarding(): Promise<boolean> {
-  const me = await meCliente.load()
-  if (!me?.user || me.user.investor_goal) return false
-  try {
-    const biz = await authFetch<BusinessAccountStatus>('/me/business', {}, { redirectOnAuthError: false })
-    return !biz?.has_account
-  }
-  catch {
-    return false
-  }
-}
-
+/* ——— código → conta → ação ———
+ * (o onboarding de objetivo e experiência saiu em 02/11/2026: o quiz da
+ * assinatura já pergunta o que importa) */
 async function confirmarCodigo() {
   const f = await cad.confirmar(codigo.value)
   if (!f) {
     codigo.value = ''
     return
   }
+  await contaFeita(f)
+}
+
+// Google ou Apple: a conta nasce sem código e segue o mesmo fim
+async function entrarSocial(provedor: 'google' | 'apple', credencial: string | AppleCredencial) {
+  const f = await cad.entrarSocial(provedor, credencial)
+  if (f) await contaFeita(f)
+}
+
+async function contaFeita(f: CadastroFeito) {
   feito.value = f
   eventoCadastro('cadastro_folha_conta', { gesto: gesto.value, canal: f.canal, nova: f.novaConta })
   try {
@@ -170,35 +139,11 @@ async function confirmarCodigo() {
   catch {
     acaoFalhou.value = true
   }
-  onboarding.value = (await precisaDoOnboarding()) ? 'objetivo' : null
   finalizado.value = true
-}
-
-function escolherObjetivo(v: string) {
-  objetivo.value = v
-  onboarding.value = 'experiencia'
-}
-
-async function escolherExperiencia(v: string) {
-  if (salvando.value) return
-  salvando.value = true
-  erroOnboarding.value = ''
-  try {
-    await authFetch('/auth/profile', { method: 'PUT', body: { investor_goal: objetivo.value, investor_experience: v } }, { redirectOnAuthError: false })
-    gate.value = 'done'
-    onboarding.value = null
-  }
-  catch {
-    erroOnboarding.value = 'Não conseguimos salvar agora. Confira sua conexão e toque de novo na opção.'
-  }
-  finally {
-    salvando.value = false
-  }
 }
 
 async function concluir() {
   const depois = aberta.value?.depois
-  naFolha.value = false
   fecharFolha()
   await depois?.()
 }
@@ -216,7 +161,7 @@ const fimDoCodigo = computed(() => ({
 
 const pronto = computed(() => {
   const f = feito.value
-  const onde = f ? (f.canal === 'whatsapp' ? 'no seu WhatsApp' : `em ${f.contato}`) : ''
+  const onde = f ? (f.canal === 'whatsapp' ? 'no seu WhatsApp' : f.contato ? `em ${f.contato}` : 'no seu e-mail') : ''
   if (acaoFalhou.value) {
     return { titulo: 'Sua conta está criada.', linha: 'Só não conseguimos terminar o que você pediu agora. Tente de novo na página.' }
   }
@@ -227,11 +172,13 @@ const pronto = computed(() => {
     aposentadoria: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     conta: { titulo: 'Pronto. A conta está guardada.', linha: 'Ela fica no Histórico desta calculadora, pronta para reabrir.' },
     carteira: { titulo: 'Pronto. Agora é conectar.', linha: 'Na sua carteira, toque em "Conectar pelo Open Finance" e autorize no app do seu banco.' },
-    pergunta: { titulo: 'Pronto. Sua conta está criada.', linha: 'A resposta abre assim que você continuar.' },
+    pergunta: { titulo: 'Pronto. Sua conta está criada.', linha: 'A pergunta segue guardada. Continue para a Redentia responder.' },
   }[gesto.value]
 })
-const botaoFinal = computed(() => (gesto.value === 'pergunta' ? 'Ver a resposta' : gesto.value === 'carteira' ? 'Ir para a carteira' : 'Continuar'))
+const botaoFinal = computed(() => (gesto.value === 'carteira' ? 'Ir para a carteira' : 'Continuar'))
 const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.value)}`)
+// com Apple ou Google na folha, o rodapé só aponta o celular
+const socialNaFolha = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
 </script>
 
 <template>
@@ -280,6 +227,10 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
                 </li>
               </ul>
 
+              <LoginSocial
+                v-if="!ehWhats" class="ncf__social" divisor="ou com o e-mail" :disabled="cad.enviando.value"
+                @google="entrarSocial('google', $event)" @apple="entrarSocial('apple', $event)" @error="cad.erro.value = $event"
+              />
               <form class="ncf__form" @submit.prevent="enviarContato">
                 <div v-if="gesto === 'resumo' && !cad.whatsappFora.value" class="ncf__canais" role="radiogroup" aria-label="Onde receber">
                   <button type="button" role="radio" :aria-checked="ehWhats" class="ncf__canal" :class="{ 'ncf__canal--on': ehWhats }" @click="trocarCanal('whatsapp')">WhatsApp</button>
@@ -301,6 +252,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
                 <button type="button" class="ncf__agora-nao" @click="fechar">Agora não</button>
                 <!-- no resumo o WhatsApp já está no seletor: sobra só quem já tem conta -->
                 <span v-if="gesto === 'resumo'">Já tem conta? <NuxtLink :to="linkLogin" @click="fechar">Entrar</NuxtLink></span>
+                <span v-else-if="socialNaFolha">Ou entre com o <NuxtLink :to="linkLogin" @click="fechar">celular</NuxtLink></span>
                 <span v-else>Ou entre com <NuxtLink :to="linkLogin" @click="fechar">Google</NuxtLink> ou <NuxtLink :to="linkLogin" @click="fechar">celular</NuxtLink></span>
               </div>
             </template>
@@ -327,28 +279,11 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
               </div>
             </template>
 
-            <!-- 3 · pronto, e o onboarding junto -->
+            <!-- 3 · pronto -->
             <template v-else>
               <h2 id="ncf-titulo" class="ncf__titulo">{{ pronto.titulo }}</h2>
               <p class="ncf__apoio">{{ pronto.linha }}</p>
-              <div v-if="onboarding" class="ncf__onb">
-                <template v-if="onboarding === 'objetivo'">
-                  <div class="ncf__onb-titulo">O que te trouxe à Redentia?</div>
-                  <div class="ncf__onb-apoio">Uma resposta, e a Redentia se organiza em volta dela.</div>
-                  <div class="ncf__opcoes">
-                    <button v-for="o in OBJETIVOS" :key="o.value" type="button" class="ncf__opcao" @click="escolherObjetivo(o.value)">{{ o.label }}</button>
-                  </div>
-                </template>
-                <template v-else>
-                  <div class="ncf__onb-titulo">Qual sua experiência com investimentos?</div>
-                  <div class="ncf__onb-apoio">Ajusta o tom das explicações.</div>
-                  <div class="ncf__opcoes ncf__opcoes--tres">
-                    <button v-for="o in EXPERIENCIAS" :key="o.value" type="button" class="ncf__opcao" :disabled="salvando" @click="escolherExperiencia(o.value)">{{ salvando ? 'Salvando…' : o.label }}</button>
-                  </div>
-                  <p v-if="erroOnboarding" class="ncf__erro" role="alert">{{ erroOnboarding }}</p>
-                </template>
-              </div>
-              <button v-else type="button" class="ncf__botao ncf__botao--fim" @click="concluir">{{ botaoFinal }}</button>
+              <button type="button" class="ncf__botao ncf__botao--fim" @click="concluir">{{ botaoFinal }}</button>
             </template>
           </div>
         </section>
@@ -358,8 +293,7 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
 </template>
 
 <style scoped>
-/* acima do conteúdo e dos modais Nu (9999); abaixo só do onboarding (10000),
-   que de todo modo espera a folha fechar */
+/* acima do conteúdo e dos modais Nu (9999) */
 .ncf {
   position: fixed; inset: 0; z-index: 9999;
   display: flex; align-items: center; justify-content: center; padding: 24px 16px;
@@ -393,6 +327,8 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
 .ncf__linha b { display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .ncf__linha span span { display: block; margin-top: 2px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
 
+.ncf__social { margin-top: 22px; }
+.ncf__social + .ncf__form { margin-top: 18px; }
 .ncf__form { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
 .ncf__canais { display: flex; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-cream); }
 .ncf__canal {
@@ -441,19 +377,6 @@ const linkLogin = computed(() => `/login?redirect=${encodeURIComponent(voltar.va
 .ncf__links { display: flex; gap: 20px; margin-top: 22px; }
 .ncf__links button { padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; }
 .ncf__links button:disabled { color: var(--nu-gray); cursor: default; }
-
-.ncf__onb { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--nu-cream-2); }
-.ncf__onb-titulo { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; }
-.ncf__onb-apoio { margin-top: 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
-.ncf__opcoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
-.ncf__opcoes--tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.ncf__opcao {
-  min-height: 56px; padding: 10px 14px; border: 1.5px solid var(--nu-cream-2); border-radius: var(--nu-r-tile); background: var(--nu-white);
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; text-align: left; cursor: pointer;
-  transition: border-color .15s, background .15s;
-}
-.ncf__opcao:hover { border-color: var(--nu-blue); background: var(--nu-blue-tint-2); }
-.ncf__opcao:disabled { opacity: .6; cursor: default; }
 
 /* entrada: o fundo escurece, o cartão sobe */
 .ncf-enter-active, .ncf-leave-active { transition: opacity .25s ease; }

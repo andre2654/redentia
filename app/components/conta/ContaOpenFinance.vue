@@ -59,7 +59,17 @@ onMounted(() => void loadAll())
 
 /* ————— ações ————— */
 
+// Open Finance é pago (plano único, 31/10/2026): conexão NOVA só para quem
+// assina; quem não assina vai para a oferta. Reconectar o que já existe segue
+// livre (é manutenção, não uma conta nova).
+const assinatura = useAssinatura()
+
 async function openConnectFlow() {
+  await assinatura.carregar()
+  if (!assinatura.assinante.value) {
+    await navigateTo('/assinar')
+    return
+  }
   await openWidget({
     onSuccess: async () => { notify('success', 'Conta conectada. A sincronização inicial já começou.'); await loadAll() },
     onError: (err) => notify('error', (err as { message?: string })?.message || 'Não foi possível abrir o conector.'),

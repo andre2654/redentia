@@ -76,20 +76,11 @@ test('o evento newsletter_assinatura leva o formato e conserva origem, source e 
 
 test('cada formulário declara a origem do aceite', () => {
   const ler = (caminho: string) => readFileSync(new URL(caminho, import.meta.url), 'utf8')
-  assert.match(ler('../app/components/nu/NuNewsletterBand.vue'), /origem="guias"/)
+  // a faixa azul do /guias (NuNewsletterBand) saiu em 03/11/2026: lá a assinatura é a do rodapé
+  assert.doesNotMatch(ler('../app/pages/guias/index.vue'), /NuNewsletterBand/)
   assert.match(ler('../app/components/nu/NuFooter.vue'), /origem="rodape"/)
-  const convite = ler('../app/components/nu/NuNewsletterConvite.vue')
-  assert.match(convite, /origem="convite"/)
-  assert.match(convite, /:formato="fmt"/)
-  assert.match(convite, /'bloco_mobile', 'bloco_desktop'/)
-  assert.match(convite, /\.nnb--bloco_desktop \{ display: none; \}/)
-  assert.match(convite, /@media \(min-width: 761px\) \{\s*\.nnb--bloco_mobile \{ display: none; \}/)
-  assert.doesNotMatch(convite, /card_desktop/)
-  assert.doesNotMatch(convite, /position:\s*fixed/)
-  assert.doesNotMatch(convite, /setTimeout/)
-  const bloco = convite.slice(convite.indexOf('.nnb {'), convite.indexOf('.nnb--bloco_desktop'))
-  assert.doesNotMatch(bloco, /position:\s*(fixed|absolute|sticky)/)
-  assert.doesNotMatch(bloco, /z-index/)
+  // o convite antes do rodapé saiu (02/11/2026): a newsletter fica só no rodapé
+  assert.doesNotMatch(ler('../app/layouts/default.vue'), /<NuNewsletterConvite/)
   assert.match(ler('../app/components/calc/CalcCapturaTeto.vue'), /useNewsletter\('bloco'\)/)
   assert.match(ler('../app/components/nu/NuNewsletterForm.vue'), /origem:\s*'bloco'/)
 })

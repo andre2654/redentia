@@ -5,10 +5,13 @@
 import type { GuideStat } from '~/types/guias'
 
 defineProps<{ stat: GuideStat }>()
+// o cartão como contexto do chat: o rótulo leva o sujeito da página
+// (proverSobreDoContexto), "P/L PETR4"
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
-  <div class="nsc">
+  <div v-contexto-chat="{ id: `numero:${sobre}:${stat.label}`, tipo: 'grafico', rotulo: rotuloComSobre(stat.label, sobre), texto: `${stat.label}: ${stat.value}` }" class="nsc">
     <div class="nsc__value">{{ stat.value }}</div>
     <div class="nsc__label">{{ stat.label }}</div>
   </div>

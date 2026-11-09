@@ -19,6 +19,7 @@ export const CAMINHOS_QUE_CRIAM_CONTA = [
   '/auth/magic-pin/verify',
   '/auth/magic-link/verify',
   '/auth/google',
+  '/auth/apple',
   '/auth/register',
 ] as const
 
@@ -50,7 +51,7 @@ export interface AtribuicaoEntrada {
   referrer_host?: string
 }
 
-export const METODOS_AUTH = ['magic_pin', 'magic_link', 'google', 'password'] as const
+export const METODOS_AUTH = ['magic_pin', 'magic_link', 'google', 'apple', 'password'] as const
 export type MetodoAuth = (typeof METODOS_AUTH)[number]
 
 export interface ArmazemAtribuicao {

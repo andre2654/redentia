@@ -1,26 +1,30 @@
 <script setup lang="ts">
-// /busca — busca instantânea client-side + chat Redentia AI (PR9, ÚLTIMA
-// tela do Redentia Nu). Contrato de UX: designs/Redentia Busca Nu.dc.html.
+// /busca: só busca (redesenho de 02/11/2026, "a tela de pesquisar mais
+// clara"). O chat saiu daqui para o painel que abre do lado de qualquer
+// página (useChatPainel, branch feat/chat-painel); a busca só entrega a
+// pergunta com abrir(q).
 //
-// Dois modos mutuamente exclusivos (estado chatMode, refletido em ?chat=1
-// via router.replace) + drawer de histórico por cima do chat.
-// Decisões fechadas do PR9:
-//  - Anônimo: a BUSCA funciona 100%; QUALQUER gatilho de chat (Perguntar à
-//    IA, Abrir o chat, chip, conversa recente, deep-link ?chat=1) →
-//    /login?redirect=/busca. Logado: tudo liberado.
-//  - Tier 'basic' + tenant 'redentia' fixos; label sempre "Redentia AI".
-//  - Histórico vem do banco via chat-service (fonte de verdade) — nada de
-//    thread em localStorage.
-//  - Atalhos: '/' foca a busca (fora de campos de texto); Escape em cascata
-//    (drawer → chat → limpa a query), sempre com blur.
-import { BUSCA_SUGESTOES } from '~/composables/useBuscaIndex'
-import type { BuscaType } from '~/composables/useBuscaIndex'
+// Antes eram dois modos na mesma tela (busca e chat, ?chat=1 com drawer de
+// histórico), três entradas de chat acima do primeiro resultado, filtros numa
+// segunda faixa, resultados numa grade de três colunas sem ordem de leitura e
+// "sem resultados" numa linha cinza. Agora: campo e tipos no topo, uma coluna
+// de linhas na ordem em que as setas andam, e a pergunta como última linha.
+//
+//  - ?q= preenche o campo e acompanha o que se digita (o voltar do navegador
+//    devolve a busca); ?tipo= é a pill; '/' foca; Esc limpa.
+//  - ?chat=1 (e ?chat=1&q=) abre o painel com a pergunta. É o contrato dos
+//    atalhos da carteira ("Novo aporte", "Rebalancear"). Chat exige login:
+//    anônimo vai para /login?redirect= com a rota inteira, no servidor.
+//  - ↑↓ andam pela lista inteira e dão a volta; Enter abre a linha marcada
+//    (com texto, a primeira já vem marcada).
+//  - 100% client: zero fetch no SSR (o índice baixa no onMounted).
+import type { BuscaGrupo, BuscaItem, BuscaType } from '~/composables/useBuscaIndex'
 
 const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'eua', 'cripto', 'tesouro']
 
 usePageSeo({
   title: 'Busca',
-  description: 'Busque ativos, teses e guias da Redentia, ou pergunte qualquer coisa à Redentia AI.',
+  description: 'Busque ações, FIIs, BDRs, ETFs, cripto, Tesouro Direto, teses e guias da Redentia.',
   // Ferramenta: não rankeia, mas os links internos (ativos, teses) seguem rastreáveis.
   robots: 'noindex, follow',
 })
@@ -28,189 +32,280 @@ usePageSeo({
 const route = useRoute()
 const router = useRouter()
 const { isAuthenticated } = useAuthState()
-const chat = useNuChat()
+const painel = useChatPainel()
 const index = useBuscaIndex()
+const recentes = useBuscaRecentes()
 
-/* ——— estado dos 3 modos ——— */
+const linkDeChat = acaoDoLinkDeChat(route.query, route.fullPath, isAuthenticated.value)
+
+// com ?chat=1 o ?q= é a pergunta do painel, não a busca
 const qParam = route.query.q
-const q = ref(typeof qParam === 'string' ? qParam : '')
-const chatMode = ref(route.query.chat === '1')
-const histOpen = ref(false)
+const q = ref(typeof qParam === 'string' && linkDeChat.tipo === 'nenhuma' ? qParam : '')
+// com ?q= na chegada a primeira linha já vem marcada, como ao digitar
+const ativo = ref(q.value.trim() ? 0 : -1)
+const campo = ref<{ focus: () => void } | null>(null)
 
-/* ——— filtro de tipo (pills), refletido em ?tipo= ——— */
 const tipo = computed<BuscaType>(() => {
   const t = String(route.query.tipo ?? '')
   return (VALID_TIPOS as string[]).includes(t) ? (t as BuscaType) : 'todos'
 })
+
+const texto = computed(() => q.value.trim())
+const modo = computed<'busca' | 'tipo' | 'inicio'>(() =>
+  texto.value ? 'busca' : tipo.value !== 'todos' ? 'tipo' : 'inicio')
+
+const resultado = computed(() => index.search(q.value, tipo.value))
+const browseVM = computed(() => index.browse(tipo.value))
+const maioresVM = computed(() => index.maiores())
+
+/** com filtro e nada achado: quantos o "Todos" acharia */
+const emTodos = computed(() =>
+  modo.value === 'busca' && tipo.value !== 'todos' && resultado.value.estado === 'vazio'
+    ? index.search(q.value, 'todos').total : 0)
+
+const grupos = computed<BuscaGrupo[]>(() => {
+  if (modo.value === 'busca') return resultado.value.grupos
+  if (modo.value === 'tipo') return browseVM.value.itens.length ? [{ id: 'tipo', titulo: '', itens: browseVM.value.itens }] : []
+  const lista: BuscaGrupo[] = []
+  const rec = recentes.lista.value.map(index.aoVivo)
+  if (rec.length) lista.push({ id: 'recentes', titulo: 'Recentes', itens: rec })
+  lista.push(...maioresVM.value.grupos)
+  return lista
+})
+
+const carregando = computed(() => {
+  if (modo.value === 'busca') return resultado.value.estado === 'carregando' ? 4 : 0
+  if (modo.value === 'tipo') return browseVM.value.estado === 'carregando' ? 8 : 0
+  return maioresVM.value.estado === 'carregando' ? 6 : 0
+})
+
+const itens = computed<BuscaItem[]>(() => grupos.value.flatMap((g) => g.itens))
+const pergunta = computed(() => (texto.value ? { texto: texto.value, logado: isAuthenticated.value } : null))
+const totalNav = computed(() => itens.value.length + (pergunta.value ? 1 : 0))
+const ativoId = computed(() => (ativo.value >= 0 && ativo.value < totalNav.value ? `busca-op-${ativo.value}` : null))
+
+// texto novo marca a primeira linha (Enter já abre); sem texto, nada marcado
+watch([texto, tipo], () => { ativo.value = texto.value ? 0 : -1 })
+watch(totalNav, (n) => { if (ativo.value >= n) ativo.value = texto.value ? 0 : -1 })
+
+/* ——— URL: ?q= acompanha o campo, ?tipo= é a pill ——— */
+let qTimer: ReturnType<typeof setTimeout> | null = null
+watch(q, (v) => {
+  if (qTimer) clearTimeout(qTimer)
+  qTimer = setTimeout(() => {
+    const query = { ...route.query } as Record<string, any>
+    if (v.trim()) query.q = v
+    else delete query.q
+    void router.replace({ query })
+  }, 300)
+})
+
 function setTipo(t: BuscaType) {
-  index.resetBrowse() // nova pill começa do topo da lista
+  index.resetBrowse()
   const query = { ...route.query } as Record<string, any>
   if (t === 'todos') delete query.tipo
   else query.tipo = t
-  router.replace({ query })
-  index.ensureType(t) // garante a fonte do tipo (assets/crypto/tesouro), lazy
+  void router.replace({ query })
+  index.ensureType(t)
 }
 
-// Deep-link ?chat=1 é gatilho de chat: anônimo vai pro login (SSR-side,
-// sem flash — o cookie nu:token é visível no servidor). Preserva a rota
-// INTEIRA (incl. ?q=) pra pergunta sobreviver ao login.
-if (chatMode.value && !isAuthenticated.value) {
-  await navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`, { replace: true })
+/* ——— ações ——— */
+function escolher(it: BuscaItem) {
+  recentes.lembrar(it)
 }
 
-// Modo chat esconde o footer global (o design não tem footer no chat; o
-// layout é intocável — a página estampa uma classe no <html>).
-useHead({ htmlAttrs: { class: computed(() => (chatMode.value ? 'nu-busca-chat' : '')) } })
-
-// ?chat=1 acompanha o estado sem recarregar (deep-link estável).
-watch(chatMode, (on) => {
-  const query = { ...route.query } as Record<string, any>
-  if (on) query.chat = '1'
-  else delete query.chat
-  router.replace({ query })
-  if (!on) histOpen.value = false
-})
-
-/* ——— resultados live ———
-   sem query + tipo específico → LISTA NAVEGÁVEL (browse); senão → busca. */
-const browseMode = computed(() => !q.value.trim() && tipo.value !== 'todos')
-const results = computed(() => index.search(q.value, tipo.value))
-const browseVM = computed(() => index.browse(tipo.value))
-
-const recents = computed(() =>
-  chat.sessions.value.slice(0, 3).map((s) => {
-    const t = (s.title ?? '').trim() || 'Conversa sem título'
-    return {
-      id: s.id,
-      title: t.length > 44 ? `${t.slice(0, 44)}…` : t,
-      time: relAgo(s.updatedAt),
-    }
-  }),
-)
-
-/* ——— gate de auth (decisão fechada: gatilho de chat exige login) ——— */
-function gate(run: () => void) {
-  if (!isAuthenticated.value) {
-    void navigateTo(`/login?redirect=${encodeURIComponent('/busca')}`)
-    return
+function abrirLinha(i: number) {
+  const it = itens.value[i]
+  if (it) {
+    escolher(it)
+    void navigateTo(it.href)
+  } else if (pergunta.value && i === itens.value.length) {
+    perguntar()
   }
-  run()
 }
 
-function askAi() {
-  const question = q.value.trim() || 'O que a Redentia AI pode fazer?'
-  gate(() => {
-    chatMode.value = true
-    void chat.send(question)
-    q.value = ''
-  })
+function perguntar() {
+  const p = texto.value
+  if (!p) return
+  // sem conta, a folha de cadastro com a pergunta; com conta, o painel
+  painel.perguntar(p)
 }
 
-function abrirChat() {
-  gate(() => { chatMode.value = true })
+function rolarAteAtivo() {
+  nextTick(() => document.getElementById(`busca-op-${ativo.value}`)?.scrollIntoView({ block: 'nearest' }))
 }
 
-function suggest(t: string) {
-  gate(() => {
-    chatMode.value = true
-    void chat.send(t)
-  })
+function onTecla(e: KeyboardEvent) {
+  if (e.isComposing) return
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault()
+    ativo.value = proximoIndice(ativo.value, totalNav.value, e.key === 'ArrowDown' ? 1 : -1)
+    rolarAteAtivo()
+  } else if (e.key === 'Enter') {
+    if (ativo.value >= 0) { e.preventDefault(); abrirLinha(ativo.value) }
+  } else if (e.key === 'Escape') {
+    e.preventDefault()
+    e.stopPropagation()
+    if (q.value) q.value = ''
+    else (e.target as HTMLElement).blur()
+  }
 }
 
-function openRecent(id: string) {
-  gate(() => {
-    chatMode.value = true
-    void chat.openSession(id)
-  })
-}
-
-function sairChat() {
-  chat.stop() // X aborta o stream ativo (contrato PR9)
-  chatMode.value = false
-}
-
-/* ——— atalhos de teclado ——— */
-const hero = ref<{ focusInput: () => void } | null>(null)
-
-function isTypingTarget(el: Element | null): boolean {
+function digitando(el: Element | null): boolean {
   if (!el) return false
   const tag = el.tagName
   return tag === 'INPUT' || tag === 'TEXTAREA' || (el as HTMLElement).isContentEditable
 }
 
-function onKey(e: KeyboardEvent) {
-  if (e.key === '/' && !chatMode.value && !isTypingTarget(document.activeElement)) {
+function onTeclaGlobal(e: KeyboardEvent) {
+  if (e.defaultPrevented) return
+  if (e.key === '/' && !digitando(document.activeElement)) {
     e.preventDefault()
-    hero.value?.focusInput()
-    return
-  }
-  if (e.key === 'Escape') {
-    if (histOpen.value) histOpen.value = false
-    else if (chatMode.value) sairChat()
-    else q.value = ''
-    ;(document.activeElement as HTMLElement | null)?.blur?.()
+    campo.value?.focus()
+  } else if (e.key === 'Escape' && !digitando(document.activeElement) && q.value) {
+    q.value = ''
   }
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKey)
-  // ?q= pré-preenchido já pede o universo completo (B3 + cripto + tesouro)
-  if (q.value.trim()) index.ensureUniverse()
-  // ?tipo= deep-linkado já pede a fonte daquele tipo
-  if (tipo.value !== 'todos') index.ensureType(tipo.value)
-  // histórico do banco (anônimo não tem sessão — nem chama)
-  if (isAuthenticated.value) void chat.loadSessions()
-
-  // Deep-link ?chat=1&q= AUTO-ENVIA a pergunta ao chegar — é o contrato dos
-  // atalhos "Novo aporte"/"Rebalancear carteira" da carteira (useAporteChat).
-  // Só logado: o anônimo com ?chat=1 já foi mandado pro login no setup.
-  // Nova conversa pra a pergunta não se misturar num thread antigo; limpa o
-  // ?q= da URL pra um refresh não reenviar (o ?chat=1 fica).
-  if (chatMode.value && q.value.trim() && isAuthenticated.value) {
-    const question = q.value.trim()
-    q.value = ''
-    chat.newConversation()
-    void chat.send(question)
-    const query = { ...route.query } as Record<string, any>
-    delete query.q
-    void router.replace({ query })
+  window.addEventListener('keydown', onTeclaGlobal)
+  index.ensureUniverse()
+  recentes.carregar()
+  if (linkDeChat.tipo === 'abrir') {
+    painel.abrir(linkDeChat.pergunta || undefined)
+    // tira chat e q da URL: um refresh não reenvia a pergunta
+    void router.replace({ query: linkDeChat.query })
   }
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKey)
-  chat.stop() // sair da rota no meio do streaming não deixa fetch órfão
+  window.removeEventListener('keydown', onTeclaGlobal)
+  if (qTimer) clearTimeout(qTimer)
 })
+
+// Deep link de chat do anônimo: login no servidor, sem flash (o cookie de
+// sessão é visível no SSR). Depois de todo hook: hook registrado após um
+// await é descartado.
+if (linkDeChat.tipo === 'login') {
+  await navigateTo(linkDeChat.para, { replace: true })
+}
 </script>
 
 <template>
   <div class="bp">
-    <BuscaChatView
-      v-if="chatMode"
-      v-model:hist-open="histOpen"
-      @exit="sairChat"
+    <BuscaCampo
+      ref="campo"
+      v-model="q"
+      :tipo="tipo"
+      :ativo-id="ativoId"
+      :com-lista="totalNav > 0"
+      @update:tipo="setTipo"
+      @tecla="onTecla"
     />
 
-    <template v-else>
-      <BuscaSearchHero
-        ref="hero"
-        v-model="q"
-        :sugestoes="BUSCA_SUGESTOES"
-        :recents="recents"
-        @ask="askAi"
-        @open-chat="abrirChat"
-        @suggest="suggest"
-        @open-recent="openRecent"
-        @activate="index.ensureUniverse()"
+    <section class="bp__corpo" aria-live="polite" :aria-busy="carregando > 0">
+      <!-- tipo marcado, campo vazio: o cabeçalho da lista navegável -->
+      <div v-if="modo === 'tipo' && browseVM.estado !== 'erro'" class="bp__cab">
+        <h2 class="bp__cab-titulo">
+          {{ browseVM.titulo }}
+          <span v-if="browseVM.total" class="bp__cab-n">{{ browseVM.total }}</span>
+        </h2>
+        <NuxtLink v-if="browseVM.maisHref" :to="browseVM.maisHref" class="bp__link">
+          {{ browseVM.maisRotulo }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+        </NuxtLink>
+      </div>
+
+      <!-- nada achado: frase e saída, antes da pergunta -->
+      <div v-if="modo === 'busca' && resultado.estado === 'vazio'" class="bp__vazio">
+        <h2 class="bp__vazio-titulo">Nada encontrado para “{{ texto }}”.</h2>
+        <p class="bp__vazio-txt">Confira a grafia ou busque pelo ticker, como PETR4.</p>
+        <button v-if="emTodos" type="button" class="bp__outline" @click="setTipo('todos')">
+          {{ emTodos === 1 ? 'Ver 1 resultado' : `Ver ${emTodos} resultados` }} em Todos
+        </button>
+      </div>
+
+      <p
+        v-else-if="(modo === 'busca' && resultado.estado === 'erro') || (modo === 'tipo' && browseVM.estado === 'erro') || (modo === 'inicio' && maioresVM.estado === 'erro' && !grupos.length)"
+        class="bp__erro"
+      >
+        Não consegui carregar os ativos agora. Tente de novo em instantes.
+      </p>
+
+      <BuscaLista
+        :grupos="grupos"
+        :ativo="ativo"
+        :carregando="carregando"
+        :pergunta="pergunta"
+        limpavel="recentes"
+        @escolher="escolher"
+        @perguntar="perguntar"
+        @marcar="ativo = $event"
+        @limpar="recentes.limpar()"
       />
-      <BuscaTypeFilters :model-value="tipo" @update:model-value="setTipo" />
-      <BuscaBrowseList v-if="browseMode" :browse="browseVM" @more="index.showMore()" />
-      <BuscaResults v-else :results="results" />
-    </template>
+
+      <button
+        v-if="modo === 'tipo' && browseVM.hasMore" type="button" class="bp__outline bp__mais"
+        @click="index.showMore()"
+      >Ver mais</button>
+
+      <p v-if="totalNav > 0" class="bp__dica" data-nu-hide aria-hidden="true">
+        <kbd>↑</kbd><kbd>↓</kbd> para navegar <span>·</span> <kbd>Enter</kbd> abre <span>·</span> <kbd>Esc</kbd> limpa
+      </p>
+    </section>
+
   </div>
 </template>
 
-<style>
-/* modo chat: o footer global some (o design não tem footer no chat; o layout
-   é intocável, então a página esconde via classe estampada no <html>) */
-html.nu-busca-chat .nu-shell > footer { display: none; }
+<style scoped>
+.bp__corpo {
+  display: flex; flex-direction: column;
+  padding: clamp(24px, 3.2vw, 44px) clamp(22px, 5.5vw, 80px) clamp(64px, 8vw, 100px);
+  background: var(--nu-white);
+}
+.bp__corpo > * { width: 100%; max-width: 880px; }
+
+.bp__cab {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.bp__cab-titulo {
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.01em;
+}
+.bp__cab-n { margin-left: 6px; color: var(--nu-gray); font-weight: 700; font-variant-numeric: tabular-nums; }
+.bp__link {
+  display: inline-flex; align-items: center; gap: 5px; min-height: 44px;
+  color: var(--nu-blue-text); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap;
+}
+.bp__link:hover { color: var(--nu-blue-hover); }
+.bp__link:hover svg { transform: translateX(3px); }
+.bp__link svg { transition: transform .2s ease; }
+.bp__link:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 6px; }
+
+.bp__vazio { padding: 8px 0 28px; }
+.bp__vazio-titulo {
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 800; letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.bp__vazio-txt { margin: 8px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
+.bp__erro { margin: 0 0 24px; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; }
+
+.bp__outline {
+  align-self: flex-start; width: auto; margin-top: 18px; min-height: 44px; padding: 10px 22px;
+  background: var(--nu-white); color: var(--nu-blue-text);
+  border: 2px solid var(--nu-blue); border-radius: var(--nu-r-pill);
+  font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s;
+}
+.bp__outline:hover { background: var(--nu-blue-tint-2); }
+.bp__outline:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.bp__mais { margin-top: 24px; }
+
+.bp__dica {
+  margin: 28px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600;
+}
+.bp__dica span { margin: 0 6px; }
+.bp__dica kbd {
+  display: inline-block; min-width: 22px; margin-right: 4px; padding: 1px 6px; text-align: center;
+  border: 1.5px solid var(--nu-cream-3); border-radius: 6px;
+  font: inherit; font-weight: 700; color: var(--nu-gray-2);
+}
 </style>

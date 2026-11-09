@@ -18,10 +18,12 @@ defineProps<{
   /** fonte e data dos números da coluna */
   fonte?: string
 }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
-  <section class="dvr">
+  <section v-contexto-chat="{ id: `dividendos-resumo:${sobre}`, tipo: 'proventos', rotulo: rotuloComSobre('Proventos', sobre) }" class="dvr">
     <div class="dvr__cols">
       <div class="dvr__left">
         <h2 class="dvr__title">{{ heading[0] }}<br>{{ heading[1] }}</h2>

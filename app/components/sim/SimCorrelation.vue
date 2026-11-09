@@ -68,7 +68,7 @@ const fmt1 = (v: number) => v.toLocaleString('pt-BR', { maximumFractionDigits: 1
 </script>
 
 <template>
-  <div class="sco">
+  <div v-contexto-chat="{ id: 'sim:correlacao', tipo: 'grafico', rotulo: 'Correlação da carteira' }" class="sco">
     <!-- o número-herói: grau de parentesco, em hierarquia vertical -->
     <div class="sco__hero" :class="{ 'sco__hero--in': active }">
       <span class="sco__hero-label">Intensidade de co-movimento</span>

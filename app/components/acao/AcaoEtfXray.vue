@@ -18,7 +18,7 @@ const open = ref(false)
 
 <template>
   <div>
-    <section class="axb axb--white">
+    <section v-contexto-chat="{ id: `etf-dentro:${ticker}`, tipo: 'grafico', rotulo: `Dentro do ${ticker}` }" class="axb axb--white">
       <div class="axb__cols">
         <div class="axb__left">
           <h2 class="axb__title">Dentro<br>do ETF.</h2>
@@ -45,6 +45,7 @@ const open = ref(false)
               v-for="h in xray.top"
               :key="h.rank"
               v-bind="h.ticker ? { href: `/asset/${h.ticker}` } : {}"
+              v-contexto-chat="h.ticker ? null : { id: `etf-posicao:${ticker}:${h.rank}`, tipo: 'posicao', rotulo: rotuloCurto(`${h.name} no ${ticker}`), texto: `${h.rank}º maior posição do ${ticker}: ${h.name}, ${h.pctLabel}` }"
               class="axb__row"
               :class="{ 'axb__row--link': h.ticker }"
             >
@@ -72,7 +73,7 @@ const open = ref(false)
       </div>
     </section>
 
-    <section v-if="xray.feeCards.length || xray.pageCorr.length" class="axb axb--cream">
+    <section v-if="xray.feeCards.length || xray.pageCorr.length" v-contexto-chat="{ id: `etf-custo:${ticker}`, tipo: 'grafico', rotulo: `Custo do ${ticker}` }" class="axb axb--cream">
       <div class="axb__cols">
         <div class="axb__left">
           <h2 class="axb__title">O custo e<br>o movimento.</h2>
@@ -81,7 +82,11 @@ const open = ref(false)
 
         <div class="axb__content">
           <div v-if="xray.feeCards.length" class="axb__cards">
-            <div v-for="c in xray.feeCards" :key="c.label" class="axb__card">
+            <div
+              v-for="c in xray.feeCards" :key="c.label"
+              v-contexto-chat="{ id: `etf-taxa:${ticker}:${c.label}`, tipo: 'grafico', rotulo: rotuloCurto(`${c.label} ${ticker}`), texto: [`${c.label} (${ticker}): ${c.value}`, c.tag?.text].filter(Boolean).join('\n') }"
+              class="axb__card"
+            >
               <div class="axb__card-label">{{ c.label }}</div>
               <div class="axb__card-value">{{ c.value }}</div>
               <NuTagPill v-if="c.tag" :tag="c.tag" block />
@@ -97,7 +102,7 @@ const open = ref(false)
 
           <template v-if="xray.pageCorr.length">
             <div class="axb__lbl">Correlação · 12 meses</div>
-            <div class="axb__corr">
+            <div v-contexto-chat="{ id: `etf-correlacao:${ticker}`, tipo: 'grafico', rotulo: `Correlação ${ticker}`, texto: `Correlação de 12 meses do ${ticker}: ${xray.pageCorr.map((r) => `${r.symbol} ${r.corrLabel} (${r.tag.text})`).join('; ')}` }" class="axb__corr">
               <div v-for="r in xray.pageCorr" :key="r.symbol" class="axb__corr-row">
                 <span class="axb__corr-sym">{{ r.symbol }}</span>
                 <span class="axb__corr-track">

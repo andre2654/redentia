@@ -247,7 +247,7 @@ test('storage cheio ou fechado não quebra a captura', () => {
 })
 
 test('só o verify, o Google e o cadastro por senha criam conta', () => {
-  for (const p of ['/auth/magic-pin/verify', '/auth/magic-link/verify', '/auth/google', '/auth/register', '/auth/register?x=1', '/auth/register#x']) {
+  for (const p of ['/auth/magic-pin/verify', '/auth/magic-link/verify', '/auth/google', '/auth/apple', '/auth/register', '/auth/register?x=1', '/auth/register#x']) {
     assert.equal(caminhoCriaConta(p), true, p)
   }
   for (const p of [
@@ -318,13 +318,15 @@ test('o evento usa o gtag que já existe e não carrega outro', () => {
 
 test('cada verify que cria conta manda o header e o evento certo', () => {
   const login = ler('../app/pages/login.vue')
-  assert.equal(login.match(/cabecalhosAtribuicaoDaSessao\(\)/g)?.length, 3)
+  assert.equal(login.match(/cabecalhosAtribuicaoDaSessao\(\)/g)?.length, 4)
   assert.match(login, /\/auth\/magic-pin\/verify[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
   assert.match(login, /dispararEventoAuth\('magic_pin', r\.is_new_user === true\)/)
   assert.match(login, /\/auth\/magic-link\/verify[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
   assert.match(login, /dispararEventoAuth\('magic_link', r\.is_new_user === true\)/)
-  assert.match(login, /publicFetch<GoogleAuthResponse>\('\/auth\/google', \{[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
+  assert.match(login, /publicFetch<SocialLoginResponse>\('\/auth\/google', \{[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
   assert.match(login, /dispararEventoAuth\('google', r\.is_new_user === true\)/)
+  assert.match(login, /publicFetch<SocialLoginResponse>\('\/auth\/apple', \{[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
+  assert.match(login, /dispararEventoAuth\('apple', r\.is_new_user === true\)/)
   assert.doesNotMatch(login, /gtag/)
   const resend = login.slice(login.indexOf('async function resendPin'), login.indexOf('function backToIdentifier'))
   assert.doesNotMatch(resend, /cabecalhosAtribuicaoDaSessao|dispararEventoAuth/)
@@ -334,11 +336,14 @@ test('cada verify que cria conta manda o header e o evento certo', () => {
   assert.ok(pin < eventoPin && eventoPin < catchPin)
 
   const inline = ler('../app/composables/useCadastroInline.ts')
-  assert.equal(inline.match(/cabecalhosAtribuicaoDaSessao\(\)/g)?.length, 2)
+  assert.equal(inline.match(/cabecalhosAtribuicaoDaSessao\(\)/g)?.length, 3)
   assert.match(inline, /\/auth\/magic-pin\/verify[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
   assert.match(inline, /dispararEventoAuth\('magic_pin', r\.is_new_user === true\)/)
   assert.match(inline, /\/auth\/magic-link\/verify[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
   assert.match(inline, /dispararEventoAuth\('magic_link', r\.is_new_user === true\)/)
+  // Google e Apple da folha e do quiz passam pelo mesmo entrarSocial
+  assert.match(inline, /`\/auth\/\$\{provedor\}`[\s\S]*?headers: cabecalhosAtribuicaoDaSessao\(\)/)
+  assert.match(inline, /dispararEventoAuth\(provedor, r\.is_new_user === true\)/)
   assert.doesNotMatch(inline, /gtag/)
   const pedir = inline.slice(inline.indexOf('async function pedirCodigo'), inline.indexOf('async function reenviar'))
   assert.doesNotMatch(pedir, /cabecalhosAtribuicaoDaSessao|dispararEventoAuth/)

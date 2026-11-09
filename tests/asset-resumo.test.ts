@@ -5,7 +5,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { AVISO_RESUMO, fundirFaq, montarResumoAtivo, type ResumoAtivoInput } from '../app/utils/assetResumo.ts'
+import { AVISO_RESUMO, fundirFaq, montarResumoAtivo, resumoHtml, type ResumoAtivoInput } from '../app/utils/assetResumo.ts'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO, TETO_TITULO_PAGINA } from '../app/utils/serp.ts'
 
 const VERBOS = /\b(compre|comprar|compra|vend(?:a|e|er)|recomend\w*|oportunidade|vale a pena|barat[oa]s?|car[oa]s?|atrativ[oa]s?|imperd[ií]vel|garantid[oa]s?)\b/i
@@ -444,4 +444,70 @@ test('cotação sem número não inventa preço nem data', () => {
   assert.match(semData?.description ?? '', /sem data de fechamento/)
   assert.doesNotMatch(semData?.description ?? '', /\d{2}\/\d{2}\/\d{4}/)
   assert.doesNotMatch(semData?.description ?? '', CVM20)
+})
+
+test('o resumo para ler (fatos): os mesmos números, fontes e datas, sem "Fonte:" no meio e com a data uma vez', () => {
+  const r = montarResumoAtivo(base({
+    ticker: 'PETR4', nome: 'Petrobras', setor: 'Energia', preco: 50.71, variacaoDia: -3.79, data: '2026-11-03',
+    numeros: { dy: 7.21, pl: 4.9, pvp: 1.36, roe: 30.3, margem: 24.3, valorMercado: 726.56e9, vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null },
+    fonteIndicadores: 'StatusInvest, base em DFP/ITR', min52: 29.53, max52: 59.79,
+    serie: { de: '2025-11-03', ate: '2026-11-03', variacao: 75.16, ibov: 10.02 },
+    proventos: { unidade: 'ação', renda12: 3.66, eventos12: 4, capital12: 0, frequencia: 'Trimestral', proximo: '23 nov 2026', anos: [{ ano: '2025', valor: 2.92, corrente: false }, { ano: '2026', valor: 2.71, corrente: true }], tipo: 'renda' },
+  }))!
+  const f = r.fatos
+  const frase = (x: { t: string }[]) => x.map((p) => p.t).join('')
+  const texto = [f.titulo, ...f.frases.map(frase), ...f.indicadores.map((x) => `${x.rotulo} ${x.valor}`), f.indicadoresNota, ...(f.proventos?.frases.map(frase) ?? []), ...(f.proventos?.anos.map((x) => `${x.rotulo} ${x.valor}`) ?? []), f.proventos?.legenda, f.fontes].join('\n')
+  // os números do parágrafo antigo, todos, pelo menos uma vez
+  for (const n of ['R$ 50,71', '-3,79%', 'R$ 29,53', 'R$ 59,79', '+75,16%', '+10,02%', '7,21%', '4,90', '30,3%', '24,3%', '1,36', 'R$ 3,66', 'R$ 2,92', 'R$ 2,71', '23 nov 2026', '03/11/2025']) {
+    assert.ok(texto.includes(n), n)
+  }
+  // o valor de mercado no tamanho de leitura, não "726,56B"
+  assert.ok(texto.includes('R$ 726,6 bi'))
+  assert.doesNotMatch(texto, /\d+,\d+B\b/)
+  // as fontes juntas, no fim, cada uma uma vez; a data de atualização uma vez
+  for (const fonte of ['Brapi (B3), atualização de 10 a 30 min', 'StatusInvest (dados diários)', 'StatusInvest, base em DFP/ITR', 'avisos de proventos da B3']) {
+    assert.equal(texto.split(fonte).length - 1, 1, fonte)
+  }
+  assert.doesNotMatch(f.frases.map(frase).join(' '), /Fonte:/)
+  assert.equal((f.fontes ?? '').match(/Atualizado em 03\/11\/2026\./g)?.length, 1)
+  // o ano corrente diz que é parcial; os 12 meses têm linha própria, com o nome deles
+  assert.deepEqual(f.proventos?.anos.map((x) => x.rotulo), ['2025', '2026 até agora', 'Últimos 12 meses'])
+  assert.deepEqual(f.proventos?.anos.at(-1), { rotulo: 'Últimos 12 meses', valor: 'R$ 3,66', corrente: false, doze: true })
+  assert.doesNotMatch(f.proventos!.legenda, /frase acima/)
+  assert.match(frase(f.proventos!.frases[0]!), /Nos últimos 12 meses.*R\$ 3,66 por ação/)
+  assert.doesNotMatch(semAviso(texto), VERBOS)
+})
+
+test('o resumo para ler de cripto não leva número', () => {
+  const r = montarResumoAtivo(base({ ticker: 'BTC', nome: 'Bitcoin', kind: 'crypto', preco: 600000, data: '2026-11-03' }))!
+  assert.doesNotMatch(r.fatos.frases.flat().map((p) => p.t).join(''), /\d/)
+  assert.equal(r.fatos.fontes, null)
+})
+
+test('o miolo recolhido (resumoHtml): o texto todo, escapado, com o ano e o valor separados', () => {
+  const r = montarResumoAtivo(base({
+    ticker: 'PETR4', nome: 'Petrobras <S.A.> & Cia', setor: 'Energia', preco: 50.71, variacaoDia: -3.79, data: '2026-11-03',
+    numeros: { dy: 7.21, pl: 4.9, pvp: 1.36, roe: 30.3, margem: 24.3, valorMercado: 726.56e9, vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null },
+    fonteIndicadores: 'StatusInvest, base em DFP/ITR', min52: 29.53, max52: 59.79,
+    serie: { de: '2025-11-03', ate: '2026-11-03', variacao: 75.16, ibov: 10.02 },
+    proventos: { unidade: 'ação', renda12: 3.66, eventos12: 4, capital12: 0, frequencia: 'Trimestral', proximo: '23 nov 2026', anos: [{ ano: '2021', valor: 5.65, corrente: false }, { ano: '2026', valor: 2.71, corrente: true }], tipo: 'renda' },
+  }))!
+  const h = resumoHtml(r.fatos)
+  // nada cru: o nome com < > & sai escapado
+  assert.ok(h.includes('Petrobras &lt;S.A.&gt; &amp; Cia'))
+  assert.doesNotMatch(h, /<S\.A\.>/)
+  // o ano no <dt>, o valor no <dd>: copiado, não gruda ("2021R$ 5,65")
+  assert.ok(h.includes('<dt>2021</dt><dd>R$ 5,65</dd>'))
+  assert.ok(h.includes('<dt>2026 até agora</dt><dd>R$ 2,71</dd>'))
+  assert.ok(h.includes('<dt>Últimos 12 meses</dt><dd>R$ 3,66</dd>'))
+  // o número em negrito; os indicadores numa lista simples
+  assert.ok(h.includes('<b>R$ 50,71</b>'))
+  assert.match(h, /<ul class="ars2__ind"><li>Dividend yield: <b>7,21%<\/b><\/li>/)
+  // as fontes uma vez, no fim, e o aviso fora do miolo
+  assert.equal(h.split('Fontes:').length - 1, 1)
+  assert.ok(h.endsWith('Atualizado em 03/11/2026.</p>'))
+  assert.doesNotMatch(h, /recomendação/)
+  // cada frase e cada número dos fatos está no miolo
+  const texto = h.replace(/<[^>]+>/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+  for (const x of r.fatos.frases) assert.ok(texto.replace(/\s+/g, '').includes(x.map((p) => p.t).join('').replace(/\s+/g, '')))
 })

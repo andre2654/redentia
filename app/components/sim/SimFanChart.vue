@@ -124,7 +124,7 @@ const fmt = fmtBRL
 </script>
 
 <template>
-  <div class="sfc" @mousemove="onMove" @mouseleave="onLeave">
+  <div v-contexto-chat="{ id: 'sim:leque', tipo: 'grafico', rotulo: 'Cenários da simulação' }" class="sfc" @mousemove="onMove" @mouseleave="onLeave">
     <svg class="sfc__svg" :viewBox="`0 0 ${W} ${H}`" preserveAspectRatio="none" aria-hidden="true">
       <line v-for="g in grid" :key="g.y" x1="0" :y1="g.y" x2="1000" :y2="g.y" stroke="var(--nu-cream-text-12)" stroke-width="1" vector-effect="non-scaling-stroke" />
       <path :d="bandPath" fill="var(--nu-blue-soft)" opacity="0.14" class="sfc__band" :class="{ 'sfc__band--in': !drawing }" />

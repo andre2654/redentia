@@ -1,15 +1,18 @@
 <script setup lang="ts">
-// /login — porta de entrada do miolo logado (PR6). Contrato de UX:
-// docs/redentia-nu/designs/Redentia Login Nu.dc.html (split-screen: form à
-// esquerda, painel dark com a orbe à direita; modos Entrar/Criar conta e
-// métodos celular/e-mail na MESMA rota, sem navegação).
+// /login — porta de entrada do miolo logado (PR6). Desde 04/11/2026 a tela é
+// a "Minimal" (LoginMinimo), escolhida pelo dono entre sete direções pensadas
+// no celular: branco, um título enorme e leve, um campo, um botão, e a Apple e
+// o Google em linhas finas. Entrar e Criar conta, celular e e-mail, na MESMA
+// rota, sem navegação. Esta página guarda toda a lógica; LoginMinimo recebe
+// `porta` (estado + ações) e desenha.
 //
 // O design coleta só o identificador (estilo Nubank); o fluxo real é
 // passwordless por PIN — celular → POST /auth/magic-pin/* (WhatsApp,
 // primário) e e-mail → POST /auth/magic-link/* (PIN por e-mail). O verify
 // faz firstOrCreate no backend, então Entrar e Criar conta compartilham o
 // MESMO fluxo (o modo só troca a copy, fiel ao design). Google entra via
-// GIS → POST /auth/google (LoginGoogleButton).
+// GIS → POST /auth/google (LoginGoogleButton) e a Apple via Sign in with
+// Apple JS → POST /auth/apple (LoginAppleButton).
 //
 // GET /auth/channels/status decide o canal: WhatsApp fora → método e-mail
 // vira o default e o submit por celular é bloqueado com aviso inline (sem
@@ -20,11 +23,13 @@
 // destino pós-auth e também viaja no redirect_to dos requests de PIN.
 import type {
   AuthChannelsStatus,
-  GoogleAuthResponse,
   MagicLinkVerifyResponse,
   MagicPinVerifyResponse,
   MeResponse,
+  SocialLoginResponse,
 } from '~/types/auth'
+import type { AppleCredencial } from '~/composables/useAppleAuth'
+import type { PortaLogin } from '~/types/loginPorta'
 import { cabecalhosAtribuicaoDaSessao, dispararEventoAuth } from '~/utils/atribuicao'
 
 definePageMeta({
@@ -51,7 +56,7 @@ const redirectTarget = sanitizeRedirect(route.query.redirect)
 // '· Redentia' do titleTemplate global (ficaria "Entrar na Redentia · Redentia").
 usePageSeo({
   title: 'Entrar na Redentia',
-  description: 'Acesse ou crie sua conta Redentia com celular (código por WhatsApp), e-mail ou Google.',
+  description: 'Acesse ou crie sua conta Redentia com celular (código por WhatsApp), e-mail, Apple ou Google.',
   path: '/login',
   robots: 'noindex, follow',
 })
@@ -76,8 +81,9 @@ const whatsappDown = ref(false)
 // ————— copy dinâmica (verbatim do renderVals do design) —————
 const isCad = computed(() => mode.value === 'cadastro')
 const isPhone = computed(() => method.value === 'phone')
-const headline = computed(() => (isCad.value ? 'Crie sua conta Redentia' : 'Entrar na Redentia'))
-const inputLabel = computed(() => (isPhone.value ? 'Informe seu celular' : 'Informe seu e-mail'))
+// veio do /assinar (o botão da assinatura, deslogado): é o passo 1 de 3 do
+// passo a passo da assinatura, e a página diz isso (31/10/2026)
+const vemDaAssinatura = redirectTarget.startsWith('/assinar')
 const ready = computed(() =>
   isPhone.value ? phone.value.replace(/\D/g, '').length >= 10 : /.+@.+\..+/.test(email.value),
 )
@@ -86,11 +92,6 @@ const mainCta = computed(() => {
   if (!ready.value) return 'Continuar'
   return isCad.value ? 'Criar conta' : 'Acessar'
 })
-const methodCta = computed(() =>
-  isPhone.value
-    ? isCad.value ? 'Cadastrar com e-mail' : 'Entrar com e-mail'
-    : isCad.value ? 'Cadastrar com celular' : 'Entrar com celular',
-)
 const altLabel = computed(() => (isCad.value ? 'Já tem uma conta?' : 'Ainda não tem uma conta?'))
 const altCta = computed(() => (isCad.value ? 'Entrar' : 'Criar agora'))
 const fieldHelp = computed(() =>
@@ -271,12 +272,15 @@ function backToIdentifier() {
 }
 
 // ————— Google (id_token → POST /auth/google → sessão) —————
+const socialEntrando = ref<'google' | 'apple'>('google')
+
 async function onGoogleCredential(idToken: string) {
   if (googleSubmitting.value) return
+  socialEntrando.value = 'google'
   googleSubmitting.value = true
   googleError.value = null
   try {
-    const r = await publicFetch<GoogleAuthResponse>('/auth/google', {
+    const r = await publicFetch<SocialLoginResponse>('/auth/google', {
       method: 'POST',
       body: { id_token: idToken },
       headers: cabecalhosAtribuicaoDaSessao(),
@@ -289,100 +293,65 @@ async function onGoogleCredential(idToken: string) {
     googleSubmitting.value = false
   }
 }
+
+// Apple: o mesmo caminho do Google (POST /auth/apple), com o nonce cru e o
+// nome que a Apple só manda na primeira autorização
+async function onAppleCredential(cred: AppleCredencial) {
+  if (googleSubmitting.value) return
+  socialEntrando.value = 'apple'
+  googleSubmitting.value = true
+  googleError.value = null
+  try {
+    const r = await publicFetch<SocialLoginResponse>('/auth/apple', {
+      method: 'POST',
+      body: { id_token: cred.idToken, nonce: cred.nonce, name: cred.nome },
+      headers: cabecalhosAtribuicaoDaSessao(),
+    })
+    dispararEventoAuth('apple', r.is_new_user === true)
+    await finishLogin(r.access_token)
+  } catch (e) {
+    googleError.value = apiMessage(e, 'Falha ao entrar com a Apple. Tente novamente.')
+    googleSubmitting.value = false
+  }
+}
+
+// ————— o que a tela (LoginMinimo) recebe: o estado e as ações desta página —————
+const porta: PortaLogin = reactive({
+  mode, method, phone, email, step, sending, verifying, identifierError, pinError, googleError,
+  googleSubmitting, whatsappDown, socialEntrando, resendIn,
+  isCad, isPhone, ready, vemDaAssinatura, mainCta, altLabel, altCta, fieldHelp, whatsappNotice,
+  submitIdentifier, verifyPin, resendPin, backToIdentifier, toggleMode, toggleMethod, onGoogleCredential, onAppleCredential,
+})
+
+// Os estados que só aparecem depois de um request (código enviado, erro,
+// WhatsApp fora, entrando) forçados no dev, sem request nenhum ao backend:
+// ?entrar-estado=pin|pin-erro|verificando|erro|enviando|whatsapp|social,
+// com ?entrar-modo=cadastro e ?entrar-metodo=email. Roda no setup, igual no
+// SSR e no cliente, então não há troca na hidratação.
+if (import.meta.dev) {
+  const forcar = String(route.query['entrar-estado'] ?? '')
+  if (route.query['entrar-modo'] === 'cadastro') mode.value = 'cadastro'
+  if (route.query['entrar-metodo'] === 'email') method.value = 'email'
+  if (forcar) {
+    if (!phone.value) phone.value = '(11) 98765-4321'
+    if (!email.value) email.value = 'voce@email.com'
+  }
+  if (forcar === 'pin' || forcar === 'pin-erro' || forcar === 'verificando') {
+    step.value = 'pin'
+    resendIn.value = forcar === 'pin' ? 24 : 0
+  }
+  if (forcar === 'pin-erro') pinError.value = 'Código incorreto. Você ainda tem 2 tentativas.'
+  if (forcar === 'verificando') verifying.value = true
+  if (forcar === 'erro') identifierError.value = 'Não foi possível enviar o código. Tente novamente.'
+  if (forcar === 'enviando') sending.value = true
+  if (forcar === 'whatsapp') {
+    whatsappDown.value = true
+    phone.value = ''
+  }
+  if (forcar === 'social') googleSubmitting.value = true
+}
 </script>
 
 <template>
-  <NuAuthLayout>
-    <!-- :key re-dispara o qfade a cada troca de etapa (mesma página) -->
-    <div :key="step" class="lg__step">
-      <template v-if="step === 'identifier'">
-        <h1 class="lg__h1">{{ headline }}</h1>
-
-        <form @submit.prevent="submitIdentifier">
-          <div class="lg__label"><NuFieldLabel :label="inputLabel" :help="fieldHelp" /></div>
-          <NuUnderlineInput
-            v-if="isPhone"
-            v-model="phone"
-            type="tel"
-            name="phone"
-            placeholder="(11) 90000-0000"
-            autocomplete="tel-national"
-          />
-          <NuUnderlineInput
-            v-else
-            v-model="email"
-            type="email"
-            name="email"
-            placeholder="voce@email.com"
-            autocomplete="email"
-          />
-          <p v-if="identifierError" class="lg__error">{{ identifierError }}</p>
-          <p v-else-if="whatsappDown && isPhone" class="lg__notice">{{ whatsappNotice }}</p>
-
-          <NuPillButton class="lg__cta" type="submit" :disabled="!ready" :loading="sending">
-            {{ mainCta }}
-          </NuPillButton>
-        </form>
-
-        <NuTextDivider class="lg__divider" />
-
-        <div class="lg__alts">
-          <NuListActionButton :label="methodCta" @click="toggleMethod">
-            <template #icon>
-              <!-- envelope (está em celular → oferece e-mail) -->
-              <svg v-if="isPhone" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="14" rx="2.5" />
-                <path d="M3.5 7l8.5 6 8.5-6" />
-              </svg>
-              <!-- smartphone (está em e-mail → oferece celular) -->
-              <svg v-else width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
-                <path d="M11 18.5h2" />
-              </svg>
-            </template>
-          </NuListActionButton>
-
-          <LoginGoogleButton
-            :disabled="googleSubmitting"
-            @credential="onGoogleCredential"
-            @error="googleError = $event"
-          />
-        </div>
-        <p v-if="googleSubmitting" class="lg__google-state">Entrando com o Google…</p>
-        <p v-else-if="googleError" class="lg__error lg__error--tight">{{ googleError }}</p>
-
-        <NuInlineTextToggle class="lg__footer" :label="altLabel" :cta="altCta" @click="toggleMode" />
-      </template>
-
-      <LoginPinStep
-        v-else
-        :identifier="isPhone ? phone : email.trim()"
-        :channel="isPhone ? 'whatsapp' : 'email'"
-        :verifying="verifying"
-        :error="pinError"
-        :resend-in="resendIn"
-        @submit="verifyPin"
-        @resend="resendPin"
-        @back="backToIdentifier"
-      />
-    </div>
-  </NuAuthLayout>
+  <LoginMinimo :porta="porta" />
 </template>
-
-<style scoped>
-.lg__step { animation: nu-fade .5s ease both; }
-.lg__h1 {
-  margin: 0; color: var(--nu-ink);
-  font-size: clamp(32px, 3.4vw, 44px); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.05;
-}
-.lg__label { margin-top: clamp(36px, 5vh, 56px); }
-.lg__error { margin: 12px 0 0; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; }
-.lg__error--tight { margin-top: 10px; }
-.lg__notice { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.lg__cta { margin-top: clamp(36px, 5vh, 52px); }
-.lg__divider { margin-top: 30px; }
-.lg__alts { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
-.lg__google-state { margin: 10px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; }
-.lg__footer { margin-top: clamp(32px, 5vh, 52px); }
-</style>

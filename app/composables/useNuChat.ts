@@ -5,7 +5,8 @@
  * 2026-07-12: POST /stream anônimo → 401 {error:'auth_required'}; GET
  * /sessions com X-Client-Id novo → {sessions:[]}):
  *  - POST /stream: body { message, sessionId (OMITIDO no 1º envio — nunca
- *    null), tenantSlug:'redentia', tier:'basic' }; Bearer sanctum (logado) +
+ *    null), tenantSlug:'redentia' }; sem `tier` (plano único, 07/11/2026: o
+ *    chat-service usa 'basic' quando ele falta); Bearer sanctum (logado) +
  *    X-Client-Id; SSE com eventos tipados; heartbeats ':' ignorados; frame
  *    ruim NUNCA derruba o stream.
  *  - Sessões server-side: banco é a fonte de verdade (decisão 2026-06-26) —
@@ -18,6 +19,9 @@
  * Estado em useState (compartilhado entre page/hero/chat-view — um único
  * contexto de chat no app).
  */
+
+import type { ContextoDoChat } from '~/composables/useChatPainel'
+import { anexosDoTurno, guardarPerguntaDoGate, MAX_CONTEXTOS, routeContextDaRota } from '~/utils/chat-painel'
 
 export interface NuChatCitation {
   id?: number
@@ -38,6 +42,16 @@ export interface NuChatMsg {
   /** sessão sanctum morreu no meio — a UI mostra CTA de login */
   authExpired?: boolean
   done?: boolean
+  /** os pedaços da página que foram junto da pergunta (chips na bolha) */
+  contextos?: Array<{ rotulo: string; tipo?: string }>
+}
+
+/** Opções de um envio vindo do painel (02/11/2026). */
+export interface NuChatSendOpts {
+  /** pedaços da página anexados (useChatPainel): vão como attachments de texto */
+  contextos?: ContextoDoChat[]
+  /** a página de onde a pergunta saiu (routeContext do chat-service) */
+  rota?: string
 }
 
 /** Uma conversa passada, como vem do GET /sessions (mais recente primeiro). */
@@ -80,6 +94,7 @@ const uid = () => `m${Date.now().toString(36)}${idc++}`
 export function useNuChat() {
   const cfg = useRuntimeConfig()
   const { token, isAuthenticated, clearSession } = useAuthState()
+  const assinatura = useAssinatura()
 
   const messages = useState<NuChatMsg[]>('nu:chat:messages', () => [])
   const streaming = useState<boolean>('nu:chat:streaming', () => false)
@@ -159,10 +174,14 @@ export function useNuChat() {
         a.done = true
         break
       case 'error':
+        if (data?.code === 'assinatura_necessaria') {
+          a.error = 'A conversa é de quem assina a Redentia.'
+          const pergunta = [...messages.value].reverse().find((m) => m.role === 'user')?.content
+          if (import.meta.client && pergunta) guardarPerguntaDoGate(localStorage, pergunta, [], Date.now())
+          assinatura.recusado('chat')
+          break
+        }
         a.error = data.message || 'Erro ao processar a mensagem. Tente de novo.'
-        break
-      case 'max.blocked':
-        a.error = data.message || 'Você atingiu o limite de uso por agora. Tente novamente mais tarde.'
         break
       // form.show / action.propose / asset.card / artifact.* / goal.* /
       // decision.* / research.* / scenario.* / preexec.* / alert.* /
@@ -192,11 +211,31 @@ export function useNuChat() {
     }
   }
 
-  async function send(text: string) {
+  /** Envia a pergunta. Devolve false quando ela não saiu (gate da assinatura,
+   *  stream já em curso): o painel devolve o texto ao campo. */
+  async function send(text: string, opts: NuChatSendOpts = {}): Promise<boolean> {
     const msg = text.trim()
-    if (!msg || streaming.value) return
+    if (!msg || streaming.value) return false
 
-    messages.value.push({ id: uid(), role: 'user', content: msg, citations: [], followups: [] })
+    // A IA é paga (plano único, 31/10/2026): quem não assina vê a folha do
+    // o quiz da assinatura em vez do envio (ChatPainel), antes de qualquer gasto de IA.
+    if (!(await assinatura.garantirAcesso('chat'))) {
+      // a pergunta espera a assinatura: a folha mostra e o painel a retoma
+      if (import.meta.client) guardarPerguntaDoGate(localStorage, msg, opts.contextos ?? [], Date.now())
+      return false
+    }
+    if (streaming.value) return false
+
+    // Os pedaços da página vão como attachments de texto: o servidor dobra o
+    // texto na mensagem que o modelo lê e guarda só a prosa + os nomes.
+    const contextos = (opts.contextos ?? []).slice(0, MAX_CONTEXTOS)
+    const attachments = contextos.length ? anexosDoTurno(contextos) : null
+    const routeContext = opts.rota ? routeContextDaRota(opts.rota) : null
+
+    messages.value.push({
+      id: uid(), role: 'user', content: msg, citations: [], followups: [],
+      ...(contextos.length ? { contextos: contextos.map((c) => ({ rotulo: c.rotulo, tipo: c.tipo })) } : {}),
+    })
     const a: NuChatMsg = { id: uid(), role: 'assistant', content: '', citations: [], followups: [], error: null }
     messages.value.push(a)
     // referência REATIVA (o push envolve o objeto em proxy — mutar `a` cru não renderiza)
@@ -217,13 +256,20 @@ export function useNuChat() {
           // NUNCA mandar sessionId null — omitido no 1º envio
           ...(sessionId.value ? { sessionId: sessionId.value } : {}),
           tenantSlug: 'redentia',
-          tier: 'basic',
+          ...(attachments ? { attachments } : {}),
+          ...(routeContext ? { routeContext } : {}),
         }),
       })
 
       if (!res.ok) {
         let payload: any = null
         try { payload = await res.json() } catch { /* corpo não-JSON */ }
+        if (ehAssinaturaNecessaria(res.status, payload)) {
+          // gate do servidor: a mensagem não foi aceita → tira o par e abre a folha
+          messages.value.splice(messages.value.length - 2, 2)
+          assinatura.recusado('chat')
+          return false
+        }
         if (res.status === 401) {
           // Token sanctum morreu no meio da sessão — o gate da página já
           // barrou o anônimo antes de qualquer gasto de IA.
@@ -235,7 +281,7 @@ export function useNuChat() {
         } else {
           live.error = payload?.message || payload?.error || 'Não consegui falar com o servidor. Tente de novo.'
         }
-        return
+        return true
       }
 
       const reader = res.body?.getReader()
@@ -276,6 +322,7 @@ export function useNuChat() {
       // Título da sessão é gerado no servidor no fim do turno — re-lista.
       if (live.done && isAuthenticated.value) void loadSessions()
     }
+    return true
   }
 
   function stop() {
@@ -317,10 +364,11 @@ export function useNuChat() {
     try {
       const r = await $fetch<{
         session: { id: string }
-        messages: Array<{ id: string; role: string; content: string | null; citations?: any[]; createdAt?: string }>
+        messages: Array<{ id: string; role: string; content: string | null; citations?: any[]; createdAt?: string; meta?: any }>
       }>(apiUrl(`/sessions/${id}`), { headers: buildHeaders(), credentials: 'include' })
 
-      const visible = (r.messages || []).filter((m) => m.role === 'user' || m.role === 'assistant')
+      // linha de abertura (meta.hidden) é instrução do app, não fala da pessoa
+      const visible = (r.messages || []).filter((m) => (m.role === 'user' && !m.meta?.hidden) || m.role === 'assistant')
       const out: NuChatMsg[] = []
       let i = 0
       while (i < visible.length) {
@@ -331,7 +379,12 @@ export function useNuChat() {
         if (role === 'user') {
           for (const m of block) {
             const t = (m.content ?? '').trim()
-            if (t) out.push({ id: m.id || uid(), role: 'user', content: t, citations: [], followups: [] })
+            // os chips do contexto voltam dos nomes em meta.attachments
+            const anexos = Array.isArray(m.meta?.attachments) ? m.meta.attachments : []
+            const contextos = anexos
+              .filter((x: any) => typeof x?.name === 'string' && x.kind === 'text')
+              .map((x: any) => ({ rotulo: x.name as string }))
+            if (t) out.push({ id: m.id || uid(), role: 'user', content: t, citations: [], followups: [], ...(contextos.length ? { contextos } : {}) })
           }
         } else {
           const withText = block.filter((m) => (m.content ?? '').trim().length > 0)

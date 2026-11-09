@@ -79,6 +79,9 @@ usePageSeo({
         <section id="perfil" class="conta__sec">
           <ContaPerfil />
         </section>
+        <section id="assinatura" class="conta__sec">
+          <ContaAssinatura />
+        </section>
         <section id="notificacoes" class="conta__sec">
           <ContaNotificacoes />
         </section>
@@ -134,5 +137,8 @@ usePageSeo({
 @media (max-width: 860px) {
   .conta__cols { flex-direction: column; }
   .conta__nav { position: sticky; top: 84px; z-index: 2; flex-basis: auto; width: 100%; background: var(--nu-cream); padding: 8px 0; }
+  /* em coluna, o align-items: flex-start deixava o painel na largura do conteúdo: um e-mail comprido
+     (o "Na sua caixa · …" do resumo diário, que é nowrap) o esticava para fora da tela e cortava os interruptores */
+  .conta__panel { align-self: stretch; width: 100%; }
 }
 </style>

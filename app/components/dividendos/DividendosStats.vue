@@ -5,11 +5,13 @@
 import type { AcaoStatRow } from '~/types/acao'
 
 defineProps<{ items: AcaoStatRow[] }>()
+// o sujeito do chip do chat (proverSobreDoContexto na página)
+const sobre = useSobreDoContexto()
 </script>
 
 <template>
   <div class="dvs">
-    <div v-for="s in items" :key="s.l" class="dvs__card">
+    <div v-for="s in items" :key="s.l" v-contexto-chat="{ id: `dividendos:${sobre}:${s.l}`, tipo: 'proventos', rotulo: rotuloComSobre(s.l, sobre), texto: `${s.l}${sobre ? ` (${sobre})` : ''}: ${s.v}${s.fonte ? ` · ${s.fonte}` : ''}` }" class="dvs__card">
       <span class="dvs__label">{{ s.l }}</span>
       <span class="dvs__value" :class="{ 'dvs__value--green': s.accent === 'green' }">{{ s.v }}</span>
       <span v-if="s.fonte" class="dvs__fonte">{{ s.fonte }}</span>

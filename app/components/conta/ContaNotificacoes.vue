@@ -1,14 +1,30 @@
 <script setup lang="ts">
 // Seção Notificações de /conta (PR4). Central onde a pessoa escolhe ONDE recebe
-// (canais e-mail / WhatsApp) e O QUÊ — por enquanto só o resumo diário. MOCK
-// (decisão do dono): as preferências vivem em localStorage via useBriefingPrefs,
-// compartilhadas com o botão da home; a entrega real por canal é iniciativa
-// futura. Alternar salva na hora. Contato (e-mail/telefone) vem do /auth/me.
+// (canais e-mail / WhatsApp) e O QUÊ. O resumo diário vive em useBriefingPrefs
+// (cache local + o backend), compartilhado com o botão da home. Alternar salva
+// na hora. Contato (e-mail/telefone) vem do /auth/me.
+//
+// "Avisos da carteira" (07/11/2026; plano, Parte 4.8): uma linha por tópico
+// novo (a semana, os proventos do mês e o do dia, o relatório, o imposto e as
+// ideias), com o exemplo da mensagem e os dois canais. É o mesmo lugar que o pé
+// do modal de avisos da /carteira grava (usePreferenciasDaCarteira). O
+// WhatsApp só liga com o aceite da pessoa; sem ele, fica desligado com a dica.
+import { TOPICOS_CARTEIRA, type TopicoCarteira } from '~/utils/avisosCanais'
+import { semQuebraNoReal } from '~/utils/carteiraVisao'
+
 const { data: me } = await useMe()
 const { prefs, save, hydrate } = useBriefingPrefs()
+const carteira = usePreferenciasDaCarteira()
 
 const u = computed(() => me.value?.user ?? null)
-onMounted(hydrate)
+onMounted(() => {
+  hydrate()
+  void carteira.carregar({ user: u.value })
+})
+const carteiraPronta = computed(() => carteira.estado.value === 'pronto')
+function mudarCarteira(t: TopicoCarteira, canal: 'email' | 'whatsapp', v: boolean) {
+  void carteira.salvar(t, { ...carteira.prefs.value[t], [canal]: v })
+}
 
 const hasPhone = computed(() => !!u.value?.celular)
 
@@ -70,6 +86,37 @@ const em = computed({
         </div>
       </div>
 
+      <div class="nt__topic nt__carteira">
+        <h3 class="nt__topic-title">Avisos da carteira</h3>
+        <p class="nt__topic-desc">O que a Redentia manda sobre a sua carteira, além da tela. Sem nada ligado, o aviso fica só na carteira.</p>
+
+        <ul class="nt__avisos">
+          <li v-for="t in TOPICOS_CARTEIRA" :key="t.id" class="nt__aviso">
+            <div class="nt__aviso-txt">
+              <span class="nt__aviso-n">{{ t.nome }}<span class="nt__aviso-q">{{ t.quando }}</span></span>
+              <span class="nt__aviso-ex">“{{ semQuebraNoReal(t.exemplo) }}”</span>
+            </div>
+            <div v-if="carteiraPronta" class="nt__aviso-ch">
+              <label class="nt__aviso-c" :class="{ 'nt__aviso-c--off': !carteira.optIn.value }">
+                <span>WhatsApp</span>
+                <NuToggle :model-value="carteira.prefs.value[t.id].whatsapp" :disabled="!carteira.optIn.value" :aria-label="`${t.nome} por WhatsApp`" @update:model-value="(v: boolean) => mudarCarteira(t.id, 'whatsapp', v)" />
+              </label>
+              <label class="nt__aviso-c">
+                <span>E-mail</span>
+                <NuToggle :model-value="carteira.prefs.value[t.id].email" :aria-label="`${t.nome} por e-mail`" @update:model-value="(v: boolean) => mudarCarteira(t.id, 'email', v)" />
+              </label>
+            </div>
+            <div v-else-if="carteira.estado.value !== 'erro'" class="nt__aviso-ch" aria-hidden="true">
+              <NuSkeleton width="112px" height="30px" radius="pill" />
+              <NuSkeleton width="96px" height="30px" radius="pill" />
+            </div>
+            <p v-if="carteira.erro.value?.topico === t.id" class="nt__erro nt__erro--linha" role="status">{{ carteira.erro.value.texto }}</p>
+          </li>
+        </ul>
+        <p v-if="carteiraPronta && !carteira.optIn.value" class="nt__dica">O WhatsApp fica desligado até você aceitar receber a Redentia por lá.</p>
+        <p v-if="carteira.estado.value === 'erro'" class="nt__erro">Não consegui ler estes avisos agora. Recarregue a página para tentar de novo.</p>
+      </div>
+
       <p class="nt__note">Suas preferências são salvas automaticamente.</p>
     </div>
   </ContaSection>
@@ -93,4 +140,25 @@ const em = computed({
 .nt__ch-meta { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .nt__note { margin: 16px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+
+/* avisos da carteira: o mesmo cartão, uma linha branca por tópico */
+.nt__carteira { margin-top: 14px; }
+.nt__avisos { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 20px 0 0; padding: 0; }
+.nt__aviso { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; background: var(--nu-white); border-radius: var(--nu-r-input); padding: 14px 16px; }
+.nt__erro--linha { flex-basis: 100%; margin: 0; }
+.nt__aviso-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.nt__aviso-n { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.nt__aviso-q { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; }
+.nt__aviso-ex { color: var(--nu-gray-2); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.nt__aviso-ch { flex-shrink: 0; display: flex; align-items: center; gap: 16px; }
+.nt__aviso-c { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.nt__aviso-c--off { color: var(--nu-gray); cursor: not-allowed; }
+.nt__dica { margin: 12px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.5; }
+.nt__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-dense); font-weight: 600; line-height: 1.5; }
+/* no celular, um canal por linha (o nome à esquerda, o interruptor à direita), como no resumo diário */
+@media (max-width: 640px) {
+  .nt__aviso { flex-direction: column; align-items: stretch; }
+  .nt__aviso-ch { flex-direction: column; align-items: stretch; gap: 8px; }
+  .nt__aviso-c { justify-content: space-between; }
+}
 </style>

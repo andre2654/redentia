@@ -56,7 +56,7 @@ usePageSeo({
     </header>
 
     <div class="gt__body">
-      <article class="gt__article">
+      <article v-contexto-chat="{ id: `glossario:${slug}`, tipo: 'secao', rotulo: rotuloCurto(term.term), texto: [`${term.term}: ${term.short}`, ...term.body.map((p) => p.replace(/<[^>]+>/g, ''))].join('\n') }" class="gt__article">
         <!-- eslint-disable-next-line vue/no-v-html -->
         <p v-for="(para, i) in term.body" :key="i" class="gt__p" v-html="para" />
       </article>

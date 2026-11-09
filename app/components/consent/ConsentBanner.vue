@@ -30,7 +30,7 @@ function ambiente() {
 }
 
 function rodape() {
-  return document.querySelector<HTMLElement>('footer.nuf, footer.rbf')
+  return document.querySelector<HTMLElement>('footer.nuf')
 }
 
 function medir() {
