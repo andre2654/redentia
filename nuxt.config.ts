@@ -101,6 +101,9 @@ export default defineNuxtConfig({
     // /login redireciona SSR-side quem já tem cookie de sessão e lê
     // ?redirect/?email — cachear seria servir o redirect de um user pro outro.
     '/login': { headers: { 'cache-control': 'private, no-store' } },
+    // Cron do IndexNow (vercel.json). Sem no-store a borda pode guardar o JSON
+    // e a função não roda no dia seguinte.
+    '/api/cron/indexnow': { headers: { 'cache-control': 'private, no-store' } },
     // Home única (dono, 2026-07-13): o MERCADO é a home `/` pros dois casos
     // (anônimo e logado — só variam SEÇÕES); /mercado 301a pra raiz (regra
     // EXATA; '/' já é private/no-store acima). A carteira segue página
