@@ -27,6 +27,7 @@
  *    12 h, e /quanto-rende/tesouro/{slug} quando a conta da taxa fecha. Sem
  *    fallback: lista vazia ou endpoint fora omite a seção.
  */
+import { DESCRICAO_BUSINESS, TITULO_BUSINESS } from '../../app/utils/jsonld-paginas'
 import { RANKINGS } from '../../app/content/rankings/registry'
 import { SETORES } from '../../app/content/setores'
 import { GUIDE_DOCS } from '../../app/content/guias'
@@ -104,7 +105,7 @@ const CORE_PAGES: SitePage[] = [
   { path: '/mcp', title: 'Redentia MCP', description: 'Servidor MCP da Redentia: conecte sua carteira da B3, teses e dados de mercado ao Claude, ChatGPT e Cursor.' },
   // Indexável desde 20/10/2026 (decisão do dono; o noindex era trava de
   // compliance). lastmod = a última mudança de conteúdo da página.
-  { path: '/business', title: 'Redentia For Business', description: 'Para escritórios de investimento: a carteira do cliente consolidada por Open Finance, com o consentimento dele, no Claude ou no ChatGPT da mesa.', lastmod: '2026-10-15' },
+  { path: '/business', title: TITULO_BUSINESS, description: DESCRICAO_BUSINESS, lastmod: '2026-10-15' },
   { path: '/rankings', title: 'Hub de rankings', description: '22 rankings de ações, FIIs, BDRs e Tesouro Direto atualizados diariamente.' },
   // O hub do Tesouro estava fora do sitemap (só os títulos entravam) e teve
   // 2.446 impressões de 19/07 a 18/10/2026. lastmod = o preço mais novo dos títulos.
