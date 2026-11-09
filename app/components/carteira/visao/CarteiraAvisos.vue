@@ -191,12 +191,17 @@ const route = useRoute()
 // não leva ticker no movimento (o motor manda só a classe), e o id do aviso,
 // que leva, não vai. As notas e os indicadores da ideia (08/11) vão como a
 // pessoa os vê na faixa e na linha.
+const MOTOR_CALCULOU = 'Os números abaixo foram calculados pelo motor de avisos da Redentia sobre a carteira desta pessoa (notas do relatório, imposto, cenários de 5 anos). '
+  + 'Use-os como estão: não recalcule imposto, notas nem cenários. Se faltar um número, diga que ele não está disponível. Explique sem recomendar compra ou venda.'
 function contextoDe(a: Aviso) {
   const notas = notasDe(a).map((n) => n.aria).join('; ')
   const indicadores = indicadoresDe(a).map((i) => i.aria).join('; ')
   return {
     id: `carteira:aviso:${a.id}`, tipo: 'carteira', rotulo: semValor(a.titulo),
     texto: [
+      // 09/11 (a revisão do benchmark de IA): sem isto, o modelo lia os números como um
+      // trecho qualquer e refazia a conta, e a reserva do chat erra IR. As contas são do motor.
+      MOTOR_CALCULOU,
       a.titulo, a.texto, a.ressalva ?? '', ...a.prova.map((p) => `${p.rotulo}: ${p.valor}`),
       notas ? `Notas do relatório, antes e depois: ${notas}` : '',
       indicadores ? `Indicadores do relatório que mudam: ${indicadores}` : '', `Fonte: ${a.fonte}`,

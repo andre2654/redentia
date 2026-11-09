@@ -330,3 +330,11 @@ test('o cartão mostra a lista numerada antes do texto, e o valor passa pelo olh
   assert.ok(ol > 0 && ol < vue.indexOf('<p class="cav__x">{{ naTela(a.texto) }}</p>'))
   assert.match(vue, /<span class="cav__aj-v">\{\{ semValor\(j\.valor\) \}\}<\/span>/)
 })
+
+test('o contexto do aviso diz ao chat que os números são do motor e não se recalculam (09/11)', () => {
+  const vue = ler('app/components/carteira/visao/CarteiraAvisos.vue')
+  assert.match(vue, /const MOTOR_CALCULOU = 'Os números abaixo foram calculados pelo motor de avisos/)
+  assert.match(vue, /não recalcule imposto, notas nem cenários/)
+  const corpo = vue.slice(vue.indexOf('function contextoDe('), vue.indexOf('function agir('))
+  assert.ok(corpo.indexOf('MOTOR_CALCULOU,') < corpo.indexOf('a.titulo, a.texto'))
+})
