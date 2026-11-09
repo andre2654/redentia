@@ -227,6 +227,12 @@ const AVISOS: Aviso[] = [
       { tipo: 'simular', rotulo: 'Simular', alvo: 'Simule estes 3 ajustes na minha carteira: R$ 9,8 mil de ações de saúde por ações de energia elétrica, R$ 6 mil de Tesouro IPCA+ por outro título do Tesouro IPCA+ e aplicar R$ 1,1 mil dos proventos do mês em um ETF de ouro que você já tem. O que muda nas notas do relatório e nos cenários de 5 anos?' },
     ],
     pergunta: 'Pequenos ajustes melhorariam as notas da minha carteira?', canais: ['tela'], estado: 'novo',
+    // 08/11: a lista numerada da tela (Aviso.ajustes), na ordem da prova
+    ajustes: [
+      { valor: 9800, de: 'ações de saúde', para: 'ações de energia elétrica', texto: 'R$ 9,8 mil de ações de saúde por ações de energia elétrica' },
+      { valor: 6000, de: 'Tesouro IPCA+', para: 'outro título do Tesouro IPCA+', texto: 'R$ 6 mil de Tesouro IPCA+ por outro título do Tesouro IPCA+' },
+      { valor: 1100, de: null, para: null, texto: 'Aplicar R$ 1,1 mil dos proventos do mês em um ETF de ouro que você já tem' },
+    ],
     notas: [
       { pilar: 'retorno', nome: 'Retorno', antes: 62, depois: 65 },
       { pilar: 'risco', nome: 'Risco', antes: 81, depois: 82 },

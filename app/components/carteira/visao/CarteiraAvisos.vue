@@ -45,7 +45,7 @@
 import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
 import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } from '~/utils/carteiraVisao'
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
-import { celulasDasNotas, indicadoresQueMudam, quantosNaLinha, type CelulaDaNota } from '~/utils/notasDoAviso'
+import { celulasDasNotas, indicadoresQueMudam, linhasDosAjustes, quantosNaLinha, type CelulaDaNota } from '~/utils/notasDoAviso'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 
 // semBotao (06/11): sem o botão redondo; o modal abre pelos próprios itens e pelo "+N".
@@ -79,6 +79,8 @@ const indicadoresPorAviso = computed(() => new Map(props.avisos.itens.map((a) =>
   return [a.id, { todos, naLinha: quantosNaLinha(todos) }]
 })))
 const indicadoresDe = (a: Aviso) => indicadoresPorAviso.value.get(a.id)?.todos ?? []
+/** a lista numerada dos ajustes (08/11), com dois ou mais */
+const ajustesDe = (a: Aviso) => linhasDosAjustes(a.ajustes)
 const naLinha = (a: Aviso) => indicadoresPorAviso.value.get(a.id)?.naLinha ?? 0
 
 /* ————— o modal ————— */
@@ -261,6 +263,14 @@ function agir(a: Aviso, acao: AcaoAviso) {
                   <p class="cav__t">{{ naTela(a.titulo) }}</p>
                   <p v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</p>
                 </div>
+                <!-- 08/11: os ajustes do plano, numerados ("não deixa claro os ajustes"); o valor passa pelo olho -->
+                <ol v-if="ajustesDe(a).length" class="cav__ajustes" :aria-label="`Os ${ajustesDe(a).length} ajustes`">
+                  <li v-for="(j, k) in ajustesDe(a)" :key="k" class="cav__aj">
+                    <span class="cav__aj-n" aria-hidden="true">{{ k + 1 }}</span>
+                    <span v-if="j.valor" class="cav__aj-t"><span class="cav__aj-v">{{ semValor(j.valor) }}</span><span class="cav__aj-d">{{ j.de }}<span class="cav__aj-seta" aria-hidden="true"> → </span><span class="cav__sr"> por </span>{{ j.para }}</span></span>
+                    <span v-else class="cav__aj-t">{{ naTela(j.texto) }}</span>
+                  </li>
+                </ol>
                 <p class="cav__x">{{ naTela(a.texto) }}</p>
                 <!-- 08/11: o placar da ideia, as notas e os indicadores que mudam; tudo se lê pelo aria-label e nada passa pelo olho -->
                 <div v-if="notasDe(a).length || indicadoresDe(a).length" class="cav__placar">
@@ -436,6 +446,16 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__item--bom .cav__t::before { background: var(--nu-green); }
 .cav__v { flex-shrink: 0; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cav__x { margin: 6px 0 0 18px; max-width: 64ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
+.cav__ajustes { list-style: none; margin: 10px 0 0 18px; padding: 0; max-width: 64ch; display: grid; grid-template-columns: auto max-content minmax(0, 1fr); column-gap: 10px; row-gap: 6px; }
+.cav__aj { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; font-size: var(--nu-fs-md); line-height: 1.4; }
+.cav__aj-n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--nu-ink-04); color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; transform: translateY(-1px); }
+/* com troca, o valor e o de → para ocupam as duas colunas (subgrid); sem troca, a frase ocupa as duas */
+.cav__aj-t { grid-column: 2 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; min-width: 0; color: var(--nu-ink); font-weight: 600; }
+.cav__aj-t:not(:has(.cav__aj-v)) { display: block; }
+.cav__aj-v { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cav__aj-d { min-width: 0; color: var(--nu-ink); }
+.cav__aj-seta { color: var(--nu-gray); }
+.cav__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .cav__ressalva { margin: 8px 0 0 18px; max-width: 64ch; padding-left: 12px; border-left: 2px solid var(--nu-amber); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
 
 /* ——— o placar da ideia (08/11): as notas, uma célula por pilar com a barra do relatório (.vrl__barra), e os indicadores que mudam ——— */

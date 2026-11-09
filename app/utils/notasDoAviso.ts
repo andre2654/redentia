@@ -12,7 +12,7 @@
  * Embaixo da faixa, os indicadores que mudam (`Aviso.indicadores`, 08/11): o
  * "só 1 número?" do dono, quando uma nota sobe e as outras ficam iguais.
  */
-import type { IndicadorDoAviso, NotaDoAviso, PilarDaNota } from '../types/carteiraVisao'
+import type { AjusteDoAviso, IndicadorDoAviso, NotaDoAviso, PilarDaNota } from '../types/carteiraVisao'
 
 export interface CelulaDaNota {
   pilar: PilarDaNota
@@ -184,4 +184,31 @@ export function quantosNaLinha(itens: Pick<IndicadorQueMuda, 'nome' | 'antes' | 
   }
   for (let k = Math.min(max, itens.length); k > 1; k--) if (cabem(k)) return k
   return Math.min(1, itens.length)
+}
+
+/* ————— a lista dos ajustes (08/11) ————— */
+
+export interface LinhaDoAjuste {
+  /** o valor como a frase do backend escreve ('R$ 22 mil'); null sem troca */
+  valor: string | null
+  de: string | null
+  para: string | null
+  /** a frase inteira, para o ajuste sem troca e para o leitor de tela */
+  texto: string
+}
+
+/**
+ * As linhas da lista numerada dos ajustes ("não deixa claro os ajustes", o
+ * dono). O valor sai da própria frase ("R$ 22 mil de Tesouro IPCA+ por ETF
+ * de ouro" → "R$ 22 mil"), para a lista escrever o número igual ao "Como
+ * calculei"; se a frase não terminar em "de {de} por {para}", a linha mostra
+ * a frase inteira. Menos de dois, nada: com um só, o texto do aviso já diz.
+ */
+export function linhasDosAjustes(ajustes: AjusteDoAviso[] | null | undefined): LinhaDoAjuste[] {
+  if (!ajustes || ajustes.length < 2) return []
+  return ajustes.map((a) => {
+    const fim = a.de && a.para ? ` de ${a.de} por ${a.para}` : null
+    if (!fim || !a.texto.endsWith(fim)) return { valor: null, de: null, para: null, texto: a.texto }
+    return { valor: a.texto.slice(0, a.texto.length - fim.length), de: a.de, para: a.para, texto: a.texto }
+  })
 }

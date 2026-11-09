@@ -9,7 +9,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { celulasDasNotas, indicadoresQueMudam, quantosNaLinha } from '../app/utils/notasDoAviso.ts'
+import { celulasDasNotas, indicadoresQueMudam, linhasDosAjustes, quantosNaLinha } from '../app/utils/notasDoAviso.ts'
 import { valorDoIndicador } from '../app/utils/relatorioCarteira.ts'
 import { relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
 import type { IndicadorDoAviso, NotaDoAviso } from '../app/types/carteiraVisao.ts'
@@ -302,4 +302,31 @@ test('o cartão desenha a linha dos indicadores embaixo das notas: o que cabe, o
   assert.match(src, /\.cav__ind \{ white-space: nowrap; \}/)
   // o chat recebe os indicadores como a linha os mostra
   assert.match(script, /Indicadores do relatório que mudam: \$\{indicadores\}/)
+})
+
+/* ————— a lista dos ajustes (08/11: "não deixa claro os ajustes") ————— */
+
+test('a lista dos ajustes: o valor sai da frase, e de → para', () => {
+  const linhas = linhasDosAjustes([
+    { valor: 22100, de: 'Tesouro IPCA+', para: 'ETF de ouro', texto: 'R$ 22 mil de Tesouro IPCA+ por ETF de ouro' },
+    { valor: 4900, de: 'FIIs de shoppings', para: 'ações de seguros', texto: 'R$ 4,9 mil de FIIs de shoppings por ações de seguros' },
+  ])
+  assert.deepEqual(linhas.map((l) => [l.valor, l.de, l.para]), [['R$ 22 mil', 'Tesouro IPCA+', 'ETF de ouro'], ['R$ 4,9 mil', 'FIIs de shoppings', 'ações de seguros']])
+})
+
+test('a lista dos ajustes: sem troca, ou com a frase diferente, vale a frase inteira; com menos de dois, nada', () => {
+  const linhas = linhasDosAjustes([
+    { valor: 1100, de: null, para: null, texto: 'Aplicar R$ 1,1 mil do saldo em um ETF de ouro' },
+    { valor: 3000, de: 'FIIs', para: 'ações', texto: 'R$ 3 mil de outra coisa' },
+  ])
+  assert.deepEqual(linhas.map((l) => [l.valor, l.texto]), [[null, 'Aplicar R$ 1,1 mil do saldo em um ETF de ouro'], [null, 'R$ 3 mil de outra coisa']])
+  assert.deepEqual(linhasDosAjustes([{ valor: 1, de: 'a', para: 'b', texto: 'R$ 1 de a por b' }]), [])
+  assert.deepEqual(linhasDosAjustes(null), [])
+})
+
+test('o cartão mostra a lista numerada antes do texto, e o valor passa pelo olho', () => {
+  const vue = ler('app/components/carteira/visao/CarteiraAvisos.vue')
+  const ol = vue.indexOf('<ol v-if="ajustesDe(a).length" class="cav__ajustes"')
+  assert.ok(ol > 0 && ol < vue.indexOf('<p class="cav__x">{{ naTela(a.texto) }}</p>'))
+  assert.match(vue, /<span class="cav__aj-v">\{\{ semValor\(j\.valor\) \}\}<\/span>/)
 })

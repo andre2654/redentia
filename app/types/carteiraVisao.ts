@@ -140,6 +140,25 @@ export interface Aviso {
    * quando uma nota sobe e as outras ficam iguais. Pode faltar no backend antigo.
    */
   indicadores?: IndicadorDoAviso[] | null
+  /**
+   * 08/11: os ajustes do `ideia.ajustes` com dois ou mais, na ordem do plano
+   * ("não deixa claro os ajustes", o dono). Null nos outros avisos e com um
+   * ajuste só; pode faltar no backend antigo.
+   */
+  ajustes?: AjusteDoAviso[] | null
+}
+
+/**
+ * Um ajuste do plano: o valor (R$), de onde sai e para onde vai, como o site
+ * escreve a classe ("Tesouro IPCA+", "FIIs de papel"), e a frase pronta
+ * ("R$ 22 mil de Tesouro IPCA+ por ETF de ouro"). Sem troca (um aporte do
+ * saldo), `de` e `para` vêm null e vale a frase.
+ */
+export interface AjusteDoAviso {
+  valor: number
+  de: string | null
+  para: string | null
+  texto: string
 }
 
 /** um movimento que o motor considerou e não sugeriu, com o veto que barrou */
