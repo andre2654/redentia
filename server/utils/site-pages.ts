@@ -48,6 +48,7 @@ import { spISODate } from '../../app/utils/format'
 import { tickerDePaginaAtivo } from '../../app/utils/tickerSitemap'
 import { PRECO_TETO_METODOS } from '../../app/content/calculadoras/preco-teto-metodos'
 import { PRECO_TETO_ELEGIVEIS } from '../data/preco-teto-elegiveis'
+import { WEALTH_2030_PAGINA } from '../../app/content/estudo/wealth-2030'
 
 export interface SitePage {
   path: string
@@ -113,6 +114,9 @@ const CORE_PAGES: SitePage[] = [
   { path: '/glossario', title: 'Glossário do investidor', description: 'Dicionário do mercado financeiro brasileiro: os principais termos da bolsa explicados de forma clara, de A a Z.' },
   { path: '/benchmark-ia', title: 'Ranking de IAs em finanças', description: 'Dez IAs na mesma prova de finanças, corrigida por gabarito: números inventados, planos ruins, golpes e uma carteira de R$ 10 mil. Placar com margem de erro e custo declarado.' },
   { path: '/metodologia', title: 'Metodologia', description: 'Como cada calculadora e ranking funciona, fórmulas, fontes oficiais e limitações.' },
+  // Estudo WEALTH 2030 (edição 01, agosto de 2026). lastmod = levantamento
+  // encerrado em 13/08/2026, data do colofão. O hub /estudo segue 404.
+  WEALTH_2030_PAGINA,
   // Wealth Intelligence Dinner (07/11/2026). Landing de campanha, fora do menu.
   // lastmod é o dia em que a página entrou — a data do jantar ainda não existe.
   {

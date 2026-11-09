@@ -12,6 +12,7 @@ useHead({
     innerHTML: JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Organization',
+      '@id': `${site}/#organization`,
       name: 'Redentia',
       legalName: EMPRESA.razaoSocial,
       taxID: EMPRESA.cnpj,
