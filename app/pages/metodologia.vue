@@ -46,7 +46,7 @@ const sections: MetSection[] = [
     id: 'fontes',
     title: '2. Fontes de dados',
     blocks: [
-      { kind: 'p', text: 'Toda informação numérica exibida nas páginas da Redentia pode ser rastreada até uma das seis fontes abaixo. Não usamos dados de terceiros sem origem rastreável, e quando consumimos um agregador (StatusInvest, ComDinheiro, etc), explicitamos que o dado de base também vem destas fontes oficiais.' },
+      { kind: 'p', text: 'Toda informação numérica exibida nas páginas da Redentia pode ser rastreada até uma das seis fontes abaixo. Não usamos dados de terceiros sem origem rastreável, e quando consumimos um agregador (ComDinheiro, etc), explicitamos que o dado de base também vem destas fontes oficiais.' },
       { kind: 'subsection', title: 'B3 (Brasil, Bolsa, Balcão)', blocks: [
         { kind: 'p', text: 'Cotações de ações, FIIs, ETFs e BDRs (preço, volume, ticker), composição de índices (Ibovespa, IFIX, IBrX, Small Cap Index), eventos corporativos (dividendos, JCP, splits, grupamentos, bonificações), composição setorial e dados fundamentalistas reportados pelas companhias listadas. Frequência: dados de pregão em tempo real (com até 15 min de defasagem para feed gratuito), eventos diários, fundamentalistas trimestrais.' },
       ] },
@@ -65,7 +65,7 @@ const sections: MetSection[] = [
       { kind: 'subsection', title: 'ANBIMA (Associação Brasileira das Entidades dos Mercados Financeiro e de Capitais)', blocks: [
         { kind: 'p', text: 'Autorregulação do mercado de fundos, classificação ANBIMA de fundos (renda fixa, multimercado, ações, cambial, previdência), índices de renda fixa (IMA-B, IMA-S, IRF-M, IDA), curvas de juros futuras, rentabilidade média de tesouro direto, certificações profissionais (CPA-10, CPA-20, CEA, CGA). Frequência: índices ANBIMA atualizados diariamente, classificação revisada por instrução.' },
       ] },
-      { kind: 'p', text: 'Em adição, consumimos APIs públicas e parceiras (Brapi para preços B3 com latência reduzida, StatusInvest para fundamentalistas) para reduzir o tempo entre publicação oficial e exibição na plataforma. Toda transformação aplicada (cálculo de DY, P/L, P/VP) parte de dados originados nas fontes acima.' },
+      { kind: 'p', text: 'Em adição, consumimos APIs públicas e parceiras (Brapi para preços B3 com latência reduzida) para reduzir o tempo entre publicação oficial e exibição na plataforma. Toda transformação aplicada (cálculo de DY, P/L, P/VP) parte de dados originados nas fontes acima.' },
     ],
   },
   {
@@ -177,7 +177,7 @@ const sections: MetSection[] = [
         rows: [
           ['Cotações intraday durante pregão', 'Cron 10 a 30 min', 'Brapi (B3)'],
           ['Cotações de fechamento', 'Diária após pregão', 'B3 oficial via API'],
-          ['Fundamentalistas (P/L, P/VP, ROE, margens)', 'Diária', 'StatusInvest, base em DFP/ITR'],
+          ['Fundamentalistas (P/L, P/VP, ROE, margens)', 'Diária', 'Consolidado dos indicadores'],
           ['Calendário de dividendos', 'Diária', 'B3 (avisos a acionistas)'],
           ['Selic, CDI, IPCA', 'Diária (CDI), por reunião Copom (Selic), mensal (IPCA)', 'BCB SGS, IBGE Sidra'],
           ['Tesouro Direto', 'Diária (preços), mensal (rentabilidade ANBIMA)', 'Tesouro Nacional, ANBIMA'],

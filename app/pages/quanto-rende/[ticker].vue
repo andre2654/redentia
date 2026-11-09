@@ -75,9 +75,7 @@ const cards = computed(() => {
     {
       rotulo: 'Rendimento sobre o valor',
       valor: rendimentoFmt(c.rendimentoPct),
-      fonte: u.dyOficial != null && u.dyMatchesSum && u.fonteDy
-        ? `${u.fonteProventos} ${u.fonteDy}`
-        : `${u.fonteProventos} ${u.fontePreco}`,
+      fonte: `${u.fonteProventos} ${u.fontePreco}`,
     },
   ]
 })
@@ -99,11 +97,11 @@ const notaInteiras = computed(() => {
 const notaDy = computed(() => {
   const u = qr.value
   const c = conta.value
-  if (!c || u.dyOficial == null || !u.fonteDy) return ''
+  if (!c || u.dyOficial == null) return ''
   if (u.dyMatchesSum) {
-    return `Esse percentual fecha com o dividend yield oficial de 12 meses, ${rendimentoFmt(u.dyOficial)}. ${u.fonteDy}`
+    return `Esse percentual fecha com o dividend yield oficial de 12 meses, ${rendimentoFmt(u.dyOficial)}.`
   }
-  return `O dividend yield oficial de 12 meses é ${rendimentoFmt(u.dyOficial)}. ${u.fonteDy} A soma dos pagamentos, como foram pagos, dá ${rendimentoFmt(c.rendimentoPct)} sobre a cotação. Os números acima usam essa soma. A causa do afastamento varia, e a página não escolhe uma.`
+  return `O dividend yield oficial de 12 meses é ${rendimentoFmt(u.dyOficial)}. A soma dos pagamentos, como foram pagos, dá ${rendimentoFmt(c.rendimentoPct)} sobre a cotação. Os números acima usam essa soma. A causa do afastamento varia, e a página não escolhe uma.`
 })
 
 const notaCapital = computed(() => {
