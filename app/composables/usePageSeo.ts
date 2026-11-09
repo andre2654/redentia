@@ -8,6 +8,8 @@
  *  - JSON-LD normalizado (Article/FAQPage/BreadcrumbList ganham defaults
  *    obrigatórios pra ninguém esquecer campo de rich snippet)
  */
+import { breadcrumbJsonLd, referenciaOrganizacao } from '../utils/json-ld.ts'
+
 interface Breadcrumb { name: string; path: string }
 
 interface PageSeoInput {
@@ -85,28 +87,27 @@ export function usePageSeo(input: PageSeoInput) {
 
   const ld: Record<string, unknown>[] = []
   const trailing: Record<string, unknown>[] = []
+  // Mesma origem do nó global em app.vue, para o @id resolver na página.
+  const refOrg = referenciaOrganizacao(String(useRuntimeConfig().public.siteUrl))
 
   for (const item of input.structuredData ?? []) {
     const normalized: Record<string, unknown> = { '@context': 'https://schema.org', ...item }
-    if (normalized['@type'] === 'Article' || normalized['@type'] === 'NewsArticle') {
+    const tipo = normalized['@type']
+    if (tipo === 'Article' || tipo === 'NewsArticle') {
       normalized.image ??= image
       normalized.mainEntityOfPage ??= canonical
       normalized.publisher ??= { '@type': 'Organization', name: 'Redentia', logo: { '@type': 'ImageObject', url: `${origin}/logo-azul.svg` } }
+    }
+    if (tipo === 'WebSite' || tipo === 'WebPage') {
+      normalized.publisher ??= refOrg
+    } else if (tipo === 'SoftwareApplication') {
+      normalized.provider ??= refOrg
     }
     ld.push(normalized)
   }
 
   if (input.breadcrumbs?.length) {
-    trailing.push({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: input.breadcrumbs.map((b, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        name: b.name,
-        item: `${origin}${b.path}`,
-      })),
-    })
+    trailing.push(breadcrumbJsonLd(origin, input.breadcrumbs))
   }
 
   /** 'YYYY-MM-DD' válido ou nada: data inventada é pior que data ausente. */
@@ -130,6 +131,7 @@ export function usePageSeo(input: PageSeoInput) {
           dateModified: dateModified.value,
           inLanguage: 'pt-BR',
           isPartOf: { '@type': 'WebSite', name: 'Redentia', url: origin },
+          publisher: refOrg,
         })
       }
       nodes.push(...trailing)
