@@ -13,6 +13,7 @@
 // Tesouro entra pelo nome curto, sem a taxa; os pares do "Andam juntos" com nome
 // comprido quebram a linha em vez de passar por cima do número; e sem fatores
 // (o bloco que quebrou no servidor vem []) a lente diz que não abriu.
+import FraseDestaque from './FraseDestaque.vue'
 import type { CarteiraVisao } from '~/types/carteiraVisao'
 import { brl0, ehRendaFixa, nomeCurto, pctTxt } from '~/utils/carteiraVisao'
 
@@ -49,7 +50,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
       <p class="vlr__nota">A conta dos fatores falhou deste lado. As outras lentes e o resto da carteira estão certos.</p>
     </template>
     <template v-else>
-    <h3 class="vlr__frase">{{ frase }}</h3>
+    <h3 class="vlr__frase"><FraseDestaque :texto="frase" /></h3>
     <p class="vlr__nota">Cada ativo conta no fator que mais o move. O efeito de cada cenário sai do motor de simulação da Redentia.</p>
 
     <div class="vlr__barra" role="img" :aria-label="fatores.map((f) => `${f.nome} ${pctTxt(f.pct)}`).join(', ')">
@@ -118,7 +119,7 @@ const corr = (c: number) => (c < 0 ? `−${Math.abs(c).toFixed(2).replace('.', '
 </template>
 
 <style scoped>
-.vlr__frase { margin: 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; text-wrap: balance; }
+.vlr__frase { margin: 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; text-wrap: balance; }
 .vlr__nota { margin: 16px 0 0; max-width: 620px; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
 .vlr__barra { display: flex; gap: 2px; height: 14px; margin-top: clamp(26px, 3.4vw, 40px); }
 .vlr__seg { flex-basis: 0; min-width: 4px; border-radius: 4px; transition: opacity .25s; }

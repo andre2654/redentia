@@ -8,6 +8,7 @@
 // (fraseDosAtivos). A linha "os ativos somam o mesmo valor do topo" saiu: era
 // conferência de teste. Fica só o aviso de quando a soma NÃO bate.
 import type { CarteiraVisao, PosicaoVisao } from '~/types/carteiraVisao'
+import FraseDestaque from './FraseDestaque.vue'
 import { GRUPOS_DA_CARTEIRA, brl0, brl2, confereComOTopo, fraseDosAtivos, grupoDaPosicao, pctTxt } from '~/utils/carteiraVisao'
 
 const props = defineProps<{ visao: CarteiraVisao }>()
@@ -49,7 +50,7 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
 
 <template>
   <div class="vla">
-    <h3 class="vla__frase">{{ frase }}</h3>
+    <h3 class="vla__frase"><FraseDestaque :texto="frase" /></h3>
 
     <div class="vla__barra" role="img" :aria-label="grupos.map((g) => `${g.nome} ${pctTxt(g.pct)}`).join(', ')">
       <span
@@ -91,7 +92,7 @@ const hrefDe = (p: PosicaoVisao) => (p.classe === 'TREASURY' ? null : `/asset/${
 </template>
 
 <style scoped>
-.vla__frase { margin: 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vla__frase { margin: 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
 .vla__barra { display: flex; gap: 2px; height: 14px; margin-top: clamp(26px, 3.4vw, 40px); }
 .vla__seg { flex-basis: 0; min-width: 4px; border-radius: 4px; transition: opacity .25s; }
 .vla__seg--apagado { opacity: .3; }

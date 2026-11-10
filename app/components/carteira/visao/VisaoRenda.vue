@@ -20,6 +20,7 @@
 // marcados e os meses da média do gasto saem do dado (eram fixos); sem os
 // caminhos (o motor não respondeu), o "Daqui a 5 anos" não monta; e, sem ele, o
 // mês a mês e o mês corrente ficam lado a lado, sem a metade vazia.
+import FraseDestaque from './FraseDestaque.vue'
 import type { CarteiraVisao, RendaPorClasse, RendaVisao } from '~/types/carteiraVisao'
 import { brl0, cobertura, pctTxt } from '~/utils/carteiraVisao'
 import { nomeDoMes } from '~/utils/impostoVisao'
@@ -185,8 +186,8 @@ function simular() {
 
 <template>
   <section class="vrd" aria-labelledby="vrd-titulo" data-clarity-mask="true">
-    <span class="vrd__eyebrow">Quanto ele te paga</span>
-    <h2 id="vrd-titulo" class="vrd__frase">{{ frase }}</h2>
+    <span class="vrd__eyebrow">Quanto ele me paga?</span>
+    <h2 id="vrd-titulo" class="vrd__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="cob != null" class="vrd__sub">
       Em {{ r.mesFechado }} caíram {{ mask(brl0(r.caiu)) }} na sua conta, e você gasta uns {{ mask(brl0(r.gastoMedio!)) }} por mês.
       Contando o que rendeu e ficou investido, seriam {{ pctTxt(comRendeu!) }}.
@@ -340,9 +341,9 @@ function simular() {
 
 <style scoped>
 .vrd { background: var(--nu-cream); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vrd__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
-.vrd__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
-.vrd__sub { margin: 14px 0 0; max-width: 760px; color: var(--nu-ink-75); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.vrd__eyebrow { color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
+.vrd__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vrd__sub { margin: 14px 0 0; max-width: 760px; color: var(--nu-gray-2); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 
 .vrd__regua { margin-top: clamp(26px, 3.4vw, 40px); max-width: 1100px; }
 .vrd__trilho { display: flex; gap: 2px; height: 22px; padding: 0; border-radius: 6px; background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-cream-line); overflow: hidden; }
@@ -363,7 +364,7 @@ function simular() {
 .vrd__convite-b { height: 40px; padding: 0 20px; display: inline-flex; align-items: center; border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: 700; text-decoration: none; }
 
 .vrd__grade { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px clamp(32px, 5vw, 80px); margin-top: clamp(40px, 5vw, 64px); max-width: 1240px; }
-.vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.vrd__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.02em; }
 .vrd__h3--2 { margin-top: clamp(28px, 3.4vw, 40px); }
 .vrd__meses { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; list-style: none; margin: 16px 0 0; padding: 0; height: 150px; container-type: inline-size; }
 /* o rótulo de cada mês numa linha só: quebrado em duas, ele invadia o vizinho */

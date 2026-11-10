@@ -182,7 +182,7 @@ watch(() => route.hash, abrirNaAncora)
 .can__botao:hover { background: var(--nu-cream-4); }
 .can__botao:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .can__textos { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.01em; }
+.can__titulo { color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.01em; }
 .can__sub { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
 .can__seta { color: var(--nu-gray); flex-shrink: 0; transition: transform .25s; }
 .can--aberta .can__seta { transform: rotate(180deg); }
@@ -191,8 +191,8 @@ watch(() => route.hash, abrirNaAncora)
 
 /* aberto: no idioma de "Quanto ele te paga" */
 .vrl { background: var(--nu-cream); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vrl__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
-.vrl__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vrl__eyebrow { color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
+.vrl__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
 .vrl__sub { margin: 14px 0 0; max-width: 760px; color: var(--nu-ink-75); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .vrl__curto { display: inline-flex; align-items: center; height: 26px; margin-left: 6px; padding: 0 10px; border-radius: var(--nu-r-pill); background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-xs); font-weight: 700; vertical-align: 2px; }
 .vrl__curto-x { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }

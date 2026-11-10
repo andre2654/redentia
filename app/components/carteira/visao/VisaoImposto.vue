@@ -15,6 +15,7 @@
 // 07/11, com a resposta real: a linha de cada grupo é a nota do backend (a
 // explicação do mês, com os números), e não mais a frase da tela repetida antes
 // dela; a operação sem quantidade (direito de subscrição) mostra só o valor.
+import FraseDestaque from './FraseDestaque.vue'
 import type { ImpostoVisao, MesHistorico, PosicaoVisao, SeloImposto } from '~/types/carteiraVisao'
 import { SELO, diaMes, fraseDoMes, gruposDoMes, linhaDoGrupo, linhaDosPrejuizos, partesDosPrejuizos, linhaDoMesAnterior, mascararNota, mesCurto, mesEAno, mesesEmOrdem, nomeDoMes, quantidadeDaOperacao, textoDoGrupo, vendasNaBolsa } from '~/utils/impostoVisao'
 import { brl0, brl2 } from '~/utils/carteiraVisao'
@@ -84,8 +85,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
 <template>
   <section class="vim" aria-labelledby="vim-titulo" data-clarity-mask="true">
-    <span class="vim__eyebrow">Imposto do mês</span>
-    <h2 id="vim-titulo" class="vim__frase">{{ frase }}</h2>
+    <span class="vim__eyebrow">Devo imposto?</span>
+    <h2 id="vim-titulo" class="vim__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="sub" class="vim__sub">{{ sub }}</p>
 
     <!-- o mês atual, um grupo por linha -->
@@ -168,8 +169,8 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 
 <style scoped>
 .vim { background: var(--nu-white); padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px); scroll-margin-top: calc(var(--nuh-h, 76px) + 56px); }
-.vim__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
-.vim__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
+.vim__eyebrow { color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
+.vim__frase { margin: 12px 0 0; max-width: 860px; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 500; letter-spacing: -0.035em; line-height: 1.08; font-variant-numeric: tabular-nums; text-wrap: balance; }
 .vim__sub { margin: 14px 0 0; max-width: 760px; color: var(--nu-ink-75); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.45; font-variant-numeric: tabular-nums; }
 
 /* ——— o mês atual, por grupo ——— */
@@ -205,7 +206,7 @@ const subDaOperacao = (o: MesHistorico['operacoes'][number]) =>
 .vim__darf-d { color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 600; }
 
 /* ——— os últimos 12 meses: a fileira do "mês a mês" de Quanto ele te paga ——— */
-.vim__h3 { margin: clamp(36px, 4.4vw, 52px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; }
+.vim__h3 { margin: clamp(36px, 4.4vw, 52px) 0 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.02em; }
 .vim__h3-s { margin: 6px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); line-height: 1.45; }
 .vim__meses { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 14px 0 0; padding: 0; max-width: 1100px; }
 .vim__mes {

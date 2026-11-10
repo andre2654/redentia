@@ -53,7 +53,7 @@ function teclar(e: KeyboardEvent) {
 <template>
   <section class="voe" aria-labelledby="voe-titulo" data-clarity-mask="true">
     <div class="voe__cab">
-      <h2 id="voe-titulo" class="voe__eyebrow">Onde está o seu dinheiro</h2>
+      <h2 id="voe-titulo" class="voe__eyebrow">Onde está o meu dinheiro?</h2>
       <div class="voe__abas" role="tablist" aria-labelledby="voe-titulo" @keydown="teclar">
         <button
           v-for="l in LENTES" :id="`voe-aba-${l.id}`" :key="l.id" type="button" role="tab" class="voe__aba"
@@ -82,7 +82,7 @@ function teclar(e: KeyboardEvent) {
   overflow: hidden;
 }
 .voe__cab { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; }
-.voe__eyebrow { margin: 0; color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.voe__eyebrow { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
 /* as abas: o segmentado claro do /asset (AtivoPeriodo) */
 .voe__abas { display: inline-flex; padding: 3px; border-radius: var(--nu-r-pill); background: var(--nu-cream); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .voe__abas::-webkit-scrollbar { display: none; }
@@ -100,7 +100,7 @@ function teclar(e: KeyboardEvent) {
 /* Mundo e Cadeia sem a moldura deles: a seção é esta */
 .voe__lente :deep(.cmu), .voe__lente :deep(.cca) { padding: 0; background: transparent; overflow: visible; }
 .voe__lente :deep(.cmu__eyebrow), .voe__lente :deep(.cca__eyebrow) { display: none; }
-.voe__lente :deep(.cmu__frase), .voe__lente :deep(.cca__frase) { margin-top: 0; }
+.voe__lente :deep(.cmu__frase), .voe__lente :deep(.cca__frase) { margin-top: 0; font-weight: 500; }
 
 @media (max-width: 640px) {
   .voe__cab { flex-direction: column; align-items: flex-start; }
