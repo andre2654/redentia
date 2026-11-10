@@ -105,9 +105,11 @@ const verMarcados = ref(false)
    Depois (mesmo dia: "faça uma animação trazendo esse para o centro e
    colocando um texto"): o palco. Assim que a rolagem assenta, os meses que
    passaram somem, a barra do mês a cair desliza para o centro do gráfico e a
-   frase entra dos dois lados dela ("Em novembro ainda caem" · a barra com o
-   valor · "5 pagamentos, o próximo em 12/11"). Uns segundos depois, ela volta
-   para o lugar. Com movimento reduzido não há palco, só o escurecimento. */
+   frase entra em cima e embaixo dela ("Em novembro ainda caem" · o valor e a
+   barra · "5 pagamentos, o próximo em 12/11"). De lado ficou apertado (o dono,
+   vendo): em cima e embaixo, com respiro, e a lista do mês um pouco mais
+   longe enquanto o palco está de pé. Uns segundos depois, tudo volta para o
+   lugar. Com movimento reduzido não há palco, só o escurecimento. */
 const pedidoDeFoco = useState('carteira:renda:foco', () => 0)
 const emFoco = ref(false)
 const noPalco = ref(false)
@@ -121,6 +123,8 @@ function pararFoco() {
 }
 const ESCALA_DA_COLUNA = 1.14
 const ESCALA_DO_VALOR = 1.6
+/** a folga a mais entre o valor e o topo da barra, em px */
+const RESPIRO_DO_VALOR = 8
 /** quanto a coluna do mês a cair anda para parar no meio do gráfico */
 function medirPalco(): boolean {
   const palco = palcoRef.value
@@ -129,17 +133,17 @@ function medirPalco(): boolean {
   const a = palco.getBoundingClientRect()
   const b = mes.getBoundingClientRect()
   palco.style.setProperty('--vrd-dx', `${Math.round(a.left + a.width / 2 - (b.left + b.width / 2))}px`)
-  // o valor desce até encostar no topo da barra (qualquer que seja a altura dela) e cresce;
-  // a frase dos lados fica na altura dele, já contando a escala da coluna (que cresce a partir da base)
+  // o valor desce até perto do topo da barra (qualquer que seja a altura dela) e cresce; a frase
+  // de cima para logo acima dele, já contando a escala da coluna (que cresce a partir da base)
   const valor = mes.querySelector<HTMLElement>('.vrd__mes-v')?.getBoundingClientRect()
   const trilho = mes.querySelector<HTMLElement>('.vrd__mes-b')?.getBoundingClientRect()
   const barra = mes.querySelector<HTMLElement>('.vrd__pilha')?.getBoundingClientRect()
   if (valor && trilho && barra) {
-    const dy = Math.max(0, trilho.height - barra.height)
-    const meio = valor.bottom + dy - (valor.height * ESCALA_DO_VALOR) / 2
-    const noPalcoY = b.bottom - ESCALA_DA_COLUNA * (b.bottom - meio)
+    const dy = Math.max(0, trilho.height - barra.height - RESPIRO_DO_VALOR)
+    const topo = valor.bottom + dy - valor.height * ESCALA_DO_VALOR
+    const noPalcoY = b.bottom - ESCALA_DA_COLUNA * (b.bottom - topo)
     palco.style.setProperty('--vrd-dy', `${Math.round(dy)}px`)
-    palco.style.setProperty('--vrd-ty', `${Math.round(noPalcoY - a.top)}px`)
+    palco.style.setProperty('--vrd-topo', `${Math.round(noPalcoY - a.top)}px`)
   }
   return true
 }
@@ -165,7 +169,7 @@ const palcoTxt = computed(() => {
   const p = proximo.value
   return {
     antes: `Em ${mesMarcado.value}`, verbo: n === 1 ? 'ainda cai' : 'ainda caem',
-    quantos: n === 1 ? '1 pagamento' : `${n} pagamentos`, proximo: p ? `o próximo em ${fmtDia(p.data)}` : '',
+    quantos: n === 1 ? '1 pagamento' : `${n} pagamentos`, proximo: p ? `, o próximo em ${fmtDia(p.data)}` : '',
   }
 })
 // 08/11, o dono pediu hover e clique: o hover mostra o mês com a divisão por tipo; o clique abre
@@ -325,9 +329,9 @@ function simular() {
             </span>
           </li>
         </ol>
-        <!-- o palco do mês a cair: a frase, metade de cada lado da barra no centro (só enfeite: a lista abaixo diz o mesmo) -->
-        <p class="vrd__palco-t vrd__palco-t--esq" aria-hidden="true"><span>{{ palcoTxt.antes }}</span><b>{{ palcoTxt.verbo }}</b></p>
-        <p class="vrd__palco-t vrd__palco-t--dir" aria-hidden="true"><b>{{ palcoTxt.quantos }}</b><span>{{ palcoTxt.proximo }}</span></p>
+        <!-- o palco do mês a cair: a frase, metade em cima e metade embaixo da barra no centro (só enfeite: a lista abaixo diz o mesmo) -->
+        <p class="vrd__palco-t vrd__palco-t--cima" aria-hidden="true">{{ palcoTxt.antes }} <b>{{ palcoTxt.verbo }}</b></p>
+        <p class="vrd__palco-t vrd__palco-t--baixo" aria-hidden="true"><b>{{ palcoTxt.quantos }}</b>{{ palcoTxt.proximo }}</p>
         </div>
         </div>
 
@@ -458,33 +462,36 @@ function simular() {
 .vrd--foco .vrd__mes:not(.vrd__mes--futuro) { opacity: .25; }
 .vrd--foco .vrd__mes--futuro .vrd__pilha i { opacity: .8; }
 .vrd--foco .vrd__mes--futuro .vrd__mes-n { color: var(--nu-ink); font-weight: 800; }
-/* o palco: os outros meses somem, o mês a cair vai para o centro e a frase entra dos dois lados */
-.vrd__palco { position: relative; --vrd-meia: 64px; }
+/* o palco: os outros meses somem, o mês a cair vai para o centro e a frase entra em cima e embaixo dele */
+.vrd__palco { position: relative; transition: margin-bottom .7s cubic-bezier(.2, .8, .2, 1); }
+/* a frase de baixo mora num respiro que só existe com o palco de pé: a lista do mês se afasta e depois volta */
+.vrd--palco .vrd__palco { margin-bottom: 76px; }
 .vrd__mes { transform-origin: 50% 100%; transition: opacity .5s ease, transform .9s cubic-bezier(.2, .8, .2, 1); }
 .vrd--palco .vrd__mes:not(.vrd__mes--futuro) { opacity: 0; pointer-events: none; }
 .vrd--palco .vrd__parte--meses :is(.vrd__h3, .vrd__classes) { opacity: 0; }
 .vrd--palco .vrd__mes--futuro { z-index: 1; transform: translateX(var(--vrd-dx, 0px)) scale(1.14); }
 .vrd__mes-v { display: block; transform-origin: 50% 100%; transition: transform .9s cubic-bezier(.2, .8, .2, 1); }
 .vrd--palco .vrd__mes--futuro .vrd__mes-v { transform: translateY(var(--vrd-dy, 0px)) scale(1.6); }
+/* no palco o valor é o herói: volta o "R$ " que o gráfico estreito esconde, e ele fica centrado mesmo mais largo que a coluna */
+.vrd--palco .vrd__mes--futuro .vrd__mes-v { justify-self: center; width: max-content; }
+.vrd--palco .vrd__mes--futuro .vrd__mes-rs { display: inline; }
 .vrd--palco .vrd__mes--futuro .vrd__pilha i { opacity: 1; }
 .vrd__palco-t {
-  position: absolute; top: var(--vrd-ty, 50%); display: flex; flex-direction: column; gap: 2px; margin: 0; max-width: calc(50% - var(--vrd-meia) - 4px); pointer-events: none;
-  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.3; font-variant-numeric: tabular-nums;
-  opacity: 0; filter: blur(8px); transform: translateY(calc(-50% + 8px));
-  transition: opacity .35s ease, filter .35s ease, transform .35s ease;
+  position: absolute; left: 50%; margin: 0; white-space: nowrap; text-align: center; pointer-events: none;
+  color: var(--nu-gray-2); font-weight: 500; line-height: 1.2; font-variant-numeric: tabular-nums;
+  opacity: 0; filter: blur(8px); transition: opacity .35s ease, filter .35s ease, transform .35s ease;
 }
-.vrd__palco-t b { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; }
-.vrd__palco-t--esq { right: calc(50% + var(--vrd-meia)); text-align: right; align-items: flex-end; }
-.vrd__palco-t--dir { left: calc(50% + var(--vrd-meia)); text-align: left; }
-.vrd--palco .vrd__palco-t { opacity: 1; filter: none; transform: translateY(-50%); transition: opacity .55s ease .5s, filter .55s ease .5s, transform .7s cubic-bezier(.2, .8, .2, 1) .5s; }
-.vrd--palco .vrd__palco-t--dir { transition-delay: .66s; }
+.vrd__palco-t b { color: var(--nu-ink); font-weight: 600; }
+.vrd__palco-t--cima { top: calc(var(--vrd-topo, 0px) - 14px); font-size: var(--nu-fs-xl); letter-spacing: -0.02em; transform: translate(-50%, calc(-100% + 8px)); }
+.vrd__palco-t--baixo { top: calc(100% + 20px); font-size: var(--nu-fs-md); transform: translate(-50%, -8px); }
+.vrd--palco .vrd__palco-t { opacity: 1; filter: none; transition: opacity .55s ease .5s, filter .55s ease .5s, transform .7s cubic-bezier(.2, .8, .2, 1) .5s; }
+.vrd--palco .vrd__palco-t--cima { transform: translate(-50%, -100%); }
+.vrd--palco .vrd__palco-t--baixo { transform: translate(-50%, 0); transition-delay: .7s; }
 @media (max-width: 640px) {
-  .vrd__palco { --vrd-meia: 50px; }
-  .vrd__palco-t b { font-size: var(--nu-fs-md); letter-spacing: -0.02em; }
-  .vrd__palco-t { font-size: var(--nu-fs-xs); }
+  .vrd__palco-t--cima { font-size: var(--nu-fs-lg); }
+  .vrd__palco-t--baixo { font-size: var(--nu-fs-sm); }
 }
-/* o mês inteiro é o alvo do hover e do clique */
-.vrd__mes-btn { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px; background: none; font: inherit; text-align: center; cursor: pointer; }
+.vrd__mes-btn { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px; background: none; font: inherit; text-align: center; cursor: pointer; }
 .vrd__mes-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
 .vrd__mes-btn:hover .vrd__pilha, .vrd__mes--on .vrd__pilha { opacity: 1; }
 .vrd__mes--on .vrd__mes-n { color: var(--nu-ink); font-weight: 800; }
