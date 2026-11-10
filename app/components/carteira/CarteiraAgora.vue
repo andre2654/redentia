@@ -36,7 +36,7 @@ import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
 import CarteiraAvisos from '~/components/carteira/visao/CarteiraAvisos.vue'
 import type { AvisosVisao, ConexaoVisao } from '~/types/carteiraVisao'
 import { quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
-import { legendaDoTopo, rentabilidadeNoPeriodo } from '~/utils/rentabilidadeCarteira'
+import { contraOCdi, legendaDoTopo, rentabilidadeNoPeriodo } from '~/utils/rentabilidadeCarteira'
 
 /** o que o modal das ideias lê (CarteiraIdeias); sem o score, fica o Perguntar */
 interface AchadosDoTopo {
@@ -224,6 +224,22 @@ const twr = computed(() => {
   if (!enxuto.value || rel.estado.value !== 'pronto' || !r || !ini) return null
   return rentabilidadeNoPeriodo(r.series.carteira, ini)
 })
+/* "Estou indo bem?" (10/11): o % do CDI no mesmo período do gráfico, com as
+   séries do relatório (a carteira, o CDI e o mix de classes); sem o relatório, some */
+const bem = computed(() => {
+  const r = rel.relatorio.value
+  const ini = fatia.value[0]?.t
+  if (!enxuto.value || rel.estado.value !== 'pronto' || !r || !ini) return null
+  return contraOCdi(r.series, ini, NO_PERIODO[range.value])
+})
+/** a frase com o "130% do CDI" em negrito: [antes, destaque, depois] */
+const bemPartes = computed(() => {
+  const b = bem.value
+  if (!b) return null
+  if (!b.destaque) return [b.frase, '', '']
+  const i = b.frase.indexOf(b.destaque)
+  return [b.frase.slice(0, i), b.destaque, b.frase.slice(i + b.destaque.length)]
+})
 const legenda = computed(() => legendaDoTopo(fatia.value, ibov.value, twr.value, enxuto.value ? '(com aportes)' : 'com aportes'))
 const tituloGrafico = computed(() => {
   const ini = fatia.value[0]?.t.slice(0, 10)
@@ -232,6 +248,8 @@ const tituloGrafico = computed(() => {
   return `Sua carteira ${NO_PERIODO[range.value]}.`
 })
 const cdiPct = computed(() => {
+  // com o relatório, o CDI da série dele (o mesmo do "% do CDI" do topo); sem ele, a taxa do dia levada ao período
+  if (bem.value) return bem.value.cdi
   const r = props.chart?.cdiRate
   const s = fatia.value
   if (r == null || s.length < 2) return null
@@ -268,6 +286,7 @@ const contexto = computed(() => ({
   texto: [
     `${atencao.value ? 'Pede atenção' : pregao.value.rotulo}: ${frase.value.titulo} ${frase.value.linha}`,
     dia.value ? `Resultado: ${dia.value}` : '',
+    bem.value ? `${bem.value.frase} ${bem.value.detalhe}`.trim() : '',
     revelado.value ? `Patrimônio: ${props.agora.patrimonio}` : 'Patrimônio (a pessoa escondeu os valores na tela)',
     `${props.agora.ativos}${props.agora.atualizado ? ` · atualizado ${props.agora.atualizado}` : ''}`,
   ].filter(Boolean).join('\n'),
@@ -484,11 +503,15 @@ const NA_FRENTE = 2
 // o "+N": todos os outros avisos (os de atenção que não couberam e os de bom saber)
 const outrosAvisos = computed(() => Math.max(0, (props.visao?.avisos.itens.length ?? 0) - (atencao.value ? Math.min(NA_FRENTE, pedemAtencao.value.length) : 0)))
 const statusTitulo = computed(() => (atencao.value ? 'Pede atenção.' : 'Tudo normal.'))
-const statusLinha = computed(() => {
-  const l = linhaDoDia.value
-  if (atencao.value) return l
+// a linha do dia, só ela: o que o motor olhou vai para o lado do estado
+const statusLinha = computed(() => linhaDoDia.value)
+// "nada pede a sua atenção" só quando não há aviso nenhum: com aviso de bom
+// saber, a frase dizia "nada" e o "+N aviso" logo abaixo desmentia (10/11)
+const olhouLinha = computed(() => {
   const n = props.visao?.avisos.olhados.length
-  return `${l}${n ? ` Olhei ${n} coisas e nada pede a sua atenção.` : ''}`
+  if (!n) return null
+  const k = outrosAvisos.value
+  return k ? `Olhei ${n} coisas: nada urgente.` : `Olhei ${n} coisas: nada pede a sua atenção.`
 })
 </script>
 
@@ -500,8 +523,8 @@ const statusLinha = computed(() => {
         <h1 id="cto-h1" class="tbo__empresa">Sua carteira <span class="tbo__bolsa">{{ agora.ativos }}<template v-if="agora.atualizado"> · atualizado {{ agora.atualizado }}</template></span></h1>
       </div>
       <div class="cto__acoes">
-        <!-- recolhido, o olho guarda o lugar (sem ele a linha muda de altura e o topo pula na abertura) -->
-        <TopoBotao :class="{ cto__oculto: recolhido }" :aria-hidden="recolhido || undefined" :tabindex="recolhido ? -1 : undefined" :rotulo="revelado ? 'Esconder valores' : 'Mostrar valores'" :aria-pressed="revelado" :title="revelado ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternarRevelado">
+        <!-- o olho vale também recolhido (10/11): o patrimônio aparece já no topo recolhido -->
+        <TopoBotao :rotulo="revelado ? 'Esconder valores' : 'Mostrar valores'" :aria-pressed="revelado" :title="revelado ? 'Esconder os valores' : 'Mostrar os valores'" @click="alternarRevelado">
           <svg v-if="revelado" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><path d="M1 1l22 22" /></svg>
         </TopoBotao>
@@ -550,8 +573,18 @@ const statusLinha = computed(() => {
         <span class="cto__ponto" aria-hidden="true" />
         <span class="cto__pregao">{{ pregao.rotulo }}</span>
       </p>
-      <h2 class="cto__status" :class="{ 'cto__status--atencao': atencao }">{{ statusTitulo }}</h2>
-      <p class="cto__status-linha">{{ statusLinha }}</p>
+      <!-- 10/11 (o dono, "estilo Nubank"): a primeira resposta é quanto você tem; o estado vira uma linha abaixo -->
+      <p class="tbo__preco cto__resumo-preco"><TopoPreco :valor="patrimonio" /></p>
+      <p v-if="statusLinha" class="cto__status-linha">{{ statusLinha }}</p>
+      <!-- estou indo bem? o % do CDI no período do gráfico -->
+      <p v-if="bemPartes" class="cto__bem">
+        <span class="cto__bem-f">{{ bemPartes[0] }}<b v-if="bemPartes[1]">{{ bemPartes[1] }}</b>{{ bemPartes[2] }}</span>
+        <span v-if="bem?.detalhe" class="cto__bem-d">{{ bem.detalhe }}</span>
+      </p>
+      <h2 class="cto__status" :class="{ 'cto__status--atencao': atencao }">
+        <span class="cto__status-p" aria-hidden="true" />{{ statusTitulo }}
+        <span v-if="!atencao && olhouLinha" class="cto__status-sub">{{ olhouLinha }}</span>
+      </h2>
       <ul v-if="atencao" class="cto__itens">
         <li v-if="alerta">
           <NuxtLink :to="`/asset/${alerta.ticker}`" class="cto__item"><span class="cto__item-p cto__item-p--alta" aria-hidden="true" /><span class="cto__item-t">{{ frase.titulo }} {{ frase.linha }}</span><span class="cto__item-v">Ver</span></NuxtLink>
@@ -567,7 +600,7 @@ const statusLinha = computed(() => {
       </ul>
       <button v-if="outrosAvisos" type="button" class="cto__mais" :aria-label="`Ver todos os avisos: mais ${outrosAvisos}`" @click="avisosRef?.abrir()">
         <span class="cto__mais-n">+{{ outrosAvisos }}</span>
-        {{ outrosAvisos === 1 ? 'aviso' : 'avisos' }}
+        {{ outrosAvisos === 1 ? 'aviso para ler' : 'avisos para ler' }}
       </button>
       <button type="button" class="cto__detalhes" :aria-expanded="false" :disabled="fase !== 'recolhido'" @click="abrirDetalhes">
         Ver detalhes
@@ -744,9 +777,17 @@ const statusLinha = computed(() => {
 /* ——— o topo recolhido ——— */
 .cto__resumo { animation: cto-entra .5s cubic-bezier(.22, 1, .36, 1) both; }
 @keyframes cto-entra { from { opacity: 0; transform: translateY(6px); } }
-.cto__status { margin: 10px 0 0; color: var(--nu-agora-texto); font-size: clamp(44px, 6.4vw, 88px); font-weight: 700; letter-spacing: -0.045em; line-height: 1; }
+.cto__resumo-preco { margin-top: clamp(14px, 2vw, 22px); }
+.cto__status { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: clamp(18px, 2.4vw, 26px) 0 0; color: var(--nu-agora-texto); font-size: var(--nu-fs-xl); font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+.cto__status-p { align-self: center; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-green-soft); box-shadow: 0 0 0 3px var(--nu-green-soft-16); }
 .cto__status--atencao { color: var(--nu-amber-soft); }
-.cto__status-linha { margin: 14px 0 0; max-width: 62ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.cto__status--atencao .cto__status-p { background: var(--nu-amber-fill); box-shadow: 0 0 0 3px var(--nu-warning-bg); }
+.cto__status-sub { color: var(--nu-agora-sub); font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; }
+.cto__bem { display: flex; flex-direction: column; gap: 4px; margin: clamp(16px, 2.2vw, 22px) 0 0; padding: 14px 16px; max-width: 62ch; border-radius: var(--nu-r-md, 14px); background: var(--nu-agora-pilula); font-variant-numeric: tabular-nums; }
+.cto__bem-f { color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.4; }
+.cto__bem-f b { font-weight: 800; }
+.cto__bem-d { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
+.cto__status-linha { margin: 10px 0 0; max-width: 62ch; color: var(--nu-agora-sub); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .cto__itens { list-style: none; margin: clamp(18px, 2.4vw, 26px) 0 0; padding: 0; max-width: 720px; }
 .cto__item {
   display: flex; align-items: baseline; gap: 12px; width: 100%; padding: 14px 0; border: 0; border-top: 1px solid var(--nu-white-12, rgba(255,255,255,.12));

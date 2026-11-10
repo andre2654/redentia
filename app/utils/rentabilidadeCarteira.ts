@@ -167,3 +167,81 @@ export function legendaDoDesempenho(series: { carteira: PontoRelatorio[]; benchm
   }
   return out
 }
+
+/* ————— "Estou indo bem?" (10/11/2026, o dono: a carteira "estilo Nubank") —————
+   A resposta na unidade que o brasileiro já usa: o % do CDI. A carteira, o CDI
+   e o benchmark composto (o mesmo mix de classes) saem das três séries do
+   relatório, cortadas no mesmo dia em que o gráfico começa. O % do CDI só vale
+   com os dois positivos: com a carteira negativa, "−40% do CDI" não diz nada,
+   e a frase vira "rendeu −2,10%, e o CDI, 5,00%". */
+
+export interface ContraOCdi {
+  /** '130% do CDI', ou null quando a razão não faz sentido (carteira ≤ 0 ou CDI ≈ 0) */
+  destaque: string | null
+  /** 'Em 12 meses, rendeu 130% do CDI: 17,71% contra 13,65%.' */
+  frase: string
+  /** 'Ficou acima do CDI em 8 de 12 meses. O mesmo mix de classes rendeu 19,20%.' (pode vir vazia) */
+  detalhe: string
+  carteira: number
+  cdi: number
+  mix: number | null
+  acima: { meses: number; de: number } | null
+}
+
+const pct2 = (n: number) => `${nf2.format(n).replace('-', '−')}%`
+
+/** o último ponto de cada mês ('2025-05' → ponto), na ordem */
+function fimDosMeses(serie: PontoRelatorio[]): Map<string, number> {
+  const m = new Map<string, number>()
+  for (const p of serie) m.set(p.t.slice(0, 7), p.v)
+  return m
+}
+
+/**
+ * Em quantos meses inteiros a carteira rendeu mais que o CDI no trecho. O mês
+ * do início e o mês corrente (sem fechar) não contam: só os meses com um fim
+ * de mês antes e depois. null com menos de 2 meses.
+ */
+export function mesesAcimaDoCdi(carteira: PontoRelatorio[], cdi: PontoRelatorio[]): { meses: number; de: number } | null {
+  const a = fimDosMeses(carteira)
+  const b = fimDosMeses(cdi)
+  const chaves = [...a.keys()].filter((k) => b.has(k))
+  // o último mês da série pode estar aberto: só conta se o próximo existir, então cortamos o último
+  const fechados = chaves.slice(0, -1)
+  if (fechados.length < 3) return null
+  let meses = 0
+  let de = 0
+  for (let i = 1; i < fechados.length; i++) {
+    const k0 = fechados[i - 1]!
+    const k1 = fechados[i]!
+    const rc = a.get(k1)! / a.get(k0)! - 1
+    const rd = b.get(k1)! / b.get(k0)! - 1
+    de++
+    if (rc > rd) meses++
+  }
+  return de >= 2 ? { meses, de } : null
+}
+
+/** a frase do "estou indo bem?": carteira, CDI e mix no mesmo trecho; null sem as séries */
+export function contraOCdi(
+  series: { carteira: PontoRelatorio[]; cdi: PontoRelatorio[]; benchmark?: PontoRelatorio[] },
+  desde: string,
+  noPeriodo: string,
+): ContraOCdi | null {
+  const c = rentabilidadeNoPeriodo(series.carteira, desde)
+  const d = rentabilidadeNoPeriodo(series.cdi, desde)
+  if (!c || !d) return null
+  const m = series.benchmark ? rentabilidadeNoPeriodo(series.benchmark, desde) : null
+  // a série do relatório começa depois do período pedido (o 5A): a frase diz desde quando
+  const quando = c.desde ? `Desde ${dataDoPonto(c.desde)}` : noPeriodo.charAt(0).toUpperCase() + noPeriodo.slice(1)
+  const razao = c.pct > 0 && d.pct > 0.05 ? Math.round((c.pct / d.pct) * 100) : null
+  const destaque = razao == null ? null : `${razao}% do CDI`
+  const frase = destaque
+    ? `${quando}, rendeu ${destaque}: ${pct2(c.pct)} contra ${pct2(d.pct)}.`
+    : `${quando}, a carteira rendeu ${pct2(c.pct)}, e o CDI, ${pct2(d.pct)}.`
+  const acima = mesesAcimaDoCdi(serieDesde(series.carteira, desde), serieDesde(series.cdi, desde))
+  const partes: string[] = []
+  if (acima) partes.push(`Ficou acima do CDI em ${acima.meses} de ${acima.de} meses.`)
+  if (m) partes.push(`O mesmo mix de classes rendeu ${pct2(m.pct)}.`)
+  return { destaque, frase, detalhe: partes.join(' '), carteira: c.pct, cdi: d.pct, mix: m?.pct ?? null, acima }
+}
