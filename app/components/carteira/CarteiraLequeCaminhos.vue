@@ -32,6 +32,14 @@
 // Shift, um ano), Home/End vão a hoje e ao fim, Esc fecha a leitura.
 //
 // Sem caminhos na resposta, quem desenha é o CarteiraLeque (as faixas).
+//
+// A cor contra hoje (10/11/2026, o dono aprovou testar): a cor de cada fio
+// deixou de ser a posição dele entre os 2.000 e passou a ser onde ele termina
+// em relação ao que a pessoa tem HOJE (tomContraHoje): rosa só para quem
+// termina abaixo de hoje; o resto vai do creme ao verde. A linha de hoje fica
+// visível, com o rótulo, e os nomes da ponta viram "se for bem", "o mais
+// provável" e "se for mal". O "se for mal" só fica rosa quando termina abaixo
+// de hoje. `cor="posicao"` volta ao desenho de antes (só para comparar no dev).
 import type { FuturoDadosApi } from '~/types/assinatura'
 import {
   afastarRotulos,
@@ -44,6 +52,7 @@ import {
   mesDoLeque,
   rgbDaCor,
   sinoDosFins,
+  tomContraHoje,
   tomDoCaminho,
   type CaminhosDoLeque,
 } from '~/utils/futuro'
@@ -56,7 +65,12 @@ const props = withDefaults(defineProps<{
   eixo: { hoje: string; fim: string; anos?: string[] }
   /** altura no computador (no celular é menor) */
   altura?: number
-}>(), { altura: 420 })
+  /** 'hoje': a cor é onde o fio termina contra o valor de hoje; 'posicao': a posição entre os 2.000 (o desenho de antes) */
+  cor?: 'hoje' | 'posicao'
+}>(), { altura: 420, cor: 'hoje' })
+
+/** os nomes da ponta, em linguagem de gente */
+const NOME: Record<'otimista' | 'meio' | 'pessimista', string> = { otimista: 'se for bem', meio: 'o mais provável', pessimista: 'se for mal' }
 
 type Rgb = [number, number, number]
 type Papel = 'otimista' | 'meio' | 'pessimista'
@@ -93,10 +107,17 @@ const finais = computed(() => {
   return f
 })
 const sino = computed(() => sinoDosFins(finais.value, janela.value.lo, janela.value.hi))
+const contraHoje = computed(() => props.cor === 'hoje')
 const tons = computed(() => {
   const n = props.caminhos.n
-  return Array.from({ length: n }, (_, i) => tomDoCaminho(n > 1 ? i / (n - 1) : 0.5, n))
+  if (!contraHoje.value) return Array.from({ length: n }, (_, i) => tomDoCaminho(n > 1 ? i / (n - 1) : 0.5, n))
+  const hoje = inicio.value
+  let maior = -Infinity
+  for (let i = 0; i < n; i++) maior = Math.max(maior, finais.value[i]!)
+  return Array.from({ length: n }, (_, i) => tomContraHoje(finais.value[i]!, hoje, maior, n > 1 ? i / (n - 1) : 0.5, n))
 })
+/** o "se for mal" (p10 no fim) termina abaixo de hoje? só então ele é rosa */
+const malAbaixoDeHoje = computed(() => !contraHoje.value || props.dados.end.p10 < inicio.value)
 // do miolo para as pontas: os fios coloridos (raros) ficam por cima
 const ordem = computed(() => {
   const n = props.caminhos.n
@@ -124,9 +145,9 @@ const ys = computed(() => {
 const rotulos = computed(() => {
   const gap = celular.value ? 40 : 50
   const itens = [
-    { k: 'otimista' as const, y: ys.value.otimista, nome: 'otimista' },
-    { k: 'meio' as const, y: ys.value.meio, nome: 'meio' },
-    { k: 'pessimista' as const, y: ys.value.pessimista, nome: 'pessimista' },
+    { k: 'otimista' as const, y: ys.value.otimista, nome: contraHoje.value ? NOME.otimista : 'otimista' },
+    { k: 'meio' as const, y: ys.value.meio, nome: contraHoje.value ? NOME.meio : 'meio' },
+    { k: 'pessimista' as const, y: ys.value.pessimista, nome: contraHoje.value ? NOME.pessimista : 'pessimista' },
   ]
   const topo = 20
   const base = h.value - 20
@@ -165,8 +186,13 @@ function corDoCaminho(i: number): string {
   const ponta = tom.mistura >= 0 ? (verde ?? creme) : (vermelho ?? creme)
   return rgba(misturar(creme, ponta, Math.abs(tom.mistura)), tom.alfa)
 }
+/** o "se for mal" acima de hoje: um creme mais quente, sem o rosa do prejuízo */
+function corDoMal(): Rgb | null {
+  if (malAbaixoDeHoje.value) return cores.vermelho ?? cores.creme
+  return cores.creme && cores.vermelho ? misturar(cores.creme, cores.vermelho, 0.28) : cores.creme
+}
 function corDoPapel(p: Papel): Rgb | null {
-  return (p === 'otimista' ? cores.verde : p === 'pessimista' ? cores.vermelho : cores.creme) ?? cores.creme
+  return (p === 'otimista' ? cores.verde : p === 'pessimista' ? corDoMal() : cores.creme) ?? cores.creme
 }
 
 /* ——— geometria em pixels (recalculada quando a largura muda) ——— */
@@ -232,9 +258,9 @@ function comecarParado(): { ctx: CanvasRenderingContext2D; fx: CanvasRenderingCo
     ctx.lineTo(Math.round(x) + 0.5, H - 8)
     ctx.stroke()
   }
-  // o nível de hoje, tracejado até a ponta
-  ctx.setLineDash([2, 4])
-  ctx.strokeStyle = rgba(creme, 0.2)
+  // o nível de hoje, tracejado até a ponta (com a cor contra hoje, é a régua do gráfico: mais visível)
+  ctx.setLineDash(contraHoje.value ? [4, 4] : [2, 4])
+  ctx.strokeStyle = rgba(creme, contraHoje.value ? 0.5 : 0.2)
   ctx.beginPath()
   ctx.moveTo(X_HOJE, ys.value.hoje)
   ctx.lineTo(xFim.value, ys.value.hoje)
@@ -291,12 +317,12 @@ function terminarParado(ctx: CanvasRenderingContext2D, fx: CanvasRenderingContex
   const faixa = ctx.createLinearGradient(0, yTopo, 0, yBase)
   faixa.addColorStop(0, rgba(verde ?? creme, 0.1))
   faixa.addColorStop(0.5, rgba(creme, 0.025))
-  faixa.addColorStop(1, rgba(vermelho ?? creme, 0.1))
+  faixa.addColorStop(1, rgba(corDoMal() ?? creme, malAbaixoDeHoje.value ? 0.1 : 0.05))
   contornoDaFaixa(ctx)
   ctx.fillStyle = faixa
   ctx.fill()
   ctx.lineWidth = 1
-  for (const [k, cor] of [['p90', verde], ['p10', vermelho]] as const) {
+  for (const [k, cor] of [['p90', verde], ['p10', corDoMal()]] as const) {
     ctx.beginPath()
     linhaDaSerie(ctx, k)
     ctx.strokeStyle = rgba(cor ?? creme, 0.42)
@@ -533,7 +559,7 @@ function desenharFinais(ctx: CanvasRenderingContext2D) {
   if (!creme) return
   // guias até os rótulos e os três finais
   for (const r of rotulos.value) {
-    const cor = r.k === 'otimista' ? verde : r.k === 'pessimista' ? vermelho : creme
+    const cor = r.k === 'otimista' ? verde : r.k === 'pessimista' ? corDoMal() : creme
     ctx.setLineDash([2, 3])
     ctx.strokeStyle = rgba(cor ?? creme, 0.45)
     ctx.lineWidth = 1
@@ -828,6 +854,9 @@ onBeforeUnmount(() => {
     >
       <canvas ref="cvBase" class="clc__cv" aria-hidden="true" />
       <canvas ref="cvTopo" class="clc__cv" aria-hidden="true" />
+      <!-- a régua de hoje: o que fica acima dela terminou melhor do que você está hoje -->
+      <!-- na ponta direita, embaixo da linha: ali passam só os poucos fios que terminam abaixo de hoje -->
+      <span v-if="contraHoje" class="clc__hoje" aria-hidden="true" :style="{ top: `${ys.hoje}px`, left: `${xFim - 10}px` }">o que você tem hoje</span>
 
       <template v-if="leitura">
         <span
@@ -836,17 +865,17 @@ onBeforeUnmount(() => {
         >{{ leitura.quando }}</span>
         <span
           v-for="it in leitura.itens.filter((x) => !leitura!.hoje || x.papel === 'meio')" :key="`g-${it.papel}`"
-          class="clc__marca" :class="[`clc__marca--${it.papel}`, { 'clc__marca--esq': leitura.esquerda }]"
+          class="clc__marca" :class="[`clc__marca--${it.papel}`, { 'clc__marca--esq': leitura.esquerda, 'clc__marca--mal-acima': it.papel === 'pessimista' && !malAbaixoDeHoje }]"
           aria-hidden="true"
           :style="{ left: `${leitura.x}px`, top: `${it.yGuia}px` }"
-        ><b>{{ it.valor }}</b><span v-if="!leitura.hoje" class="clc__marca-nome">{{ it.papel }}</span></span>
+        ><b>{{ it.valor }}</b><span v-if="!leitura.hoje" class="clc__marca-nome">{{ contraHoje ? NOME[it.papel] : it.papel }}</span></span>
       </template>
     </div>
 
     <div class="clc__rotulos" :style="{ left: `${xFim + larguraSino + 12}px` }">
       <div
         v-for="r in rotulos" :key="r.k"
-        class="clc__rotulo" :class="`clc__rotulo--${r.k}`"
+        class="clc__rotulo" :class="[`clc__rotulo--${r.k}`, { 'clc__rotulo--mal-acima': r.k === 'pessimista' && !malAbaixoDeHoje }]"
         :style="{ top: `${r.y}px` }"
       >
         <span class="clc__valor">{{ r.valor }}</span>
@@ -900,6 +929,7 @@ onBeforeUnmount(() => {
 .clc__marca b { font-size: var(--nu-fs-sm); font-weight: 800; color: var(--nu-cream-text); }
 .clc__marca--otimista b { color: var(--nu-green-soft); }
 .clc__marca--pessimista b { color: var(--nu-red-soft); }
+.clc__marca--mal-acima b { color: var(--nu-cream-text-85); }
 
 .clc__eixo { position: absolute; left: 0; right: 0; height: 20px; color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
 .clc__eixo-hoje { position: absolute; left: 0; white-space: nowrap; }
@@ -916,6 +946,11 @@ onBeforeUnmount(() => {
 .clc__rotulo--otimista .clc__valor { color: var(--nu-green-soft); }
 .clc__rotulo--meio .clc__valor { color: var(--nu-cream-text); }
 .clc__rotulo--pessimista .clc__valor { color: var(--nu-red-soft); }
+.clc__rotulo--mal-acima .clc__valor { color: var(--nu-cream-text-85); }
+.clc__hoje {
+  position: absolute; transform: translate(-100%, 6px); padding: 2px 8px; border-radius: var(--nu-r-pill); pointer-events: none; white-space: nowrap;
+  background: rgba(12, 21, 36, .78); color: var(--nu-cream-text-85); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .01em;
+}
 .clc__valor--hover { font-size: var(--nu-fs-lg); }
 /* no hover, os finais parados dão lugar aos dos três caminhos acesos (o
    seletor forte vence o da abertura, que tem atraso) */

@@ -684,3 +684,26 @@ export function resultadoDoTeste(c: CaminhosDoLeque | null | undefined, hoje: nu
   }
   return { n: c.n, acimaDeHoje, quedaDe10, dobram }
 }
+
+/**
+ * A cor do fio contra HOJE (10/11/2026). Antes, a cor era a posição do fio
+ * entre os 2.000 (tomDoCaminho): a metade de baixo saía rosa, e o rosa lia
+ * como prejuízo mesmo quando o caminho terminava acima do que a pessoa tem
+ * hoje (na carteira do dono, o p10 de R$ 715 mil está 12% acima dos R$ 640
+ * mil de hoje; só 86 de 2.000 terminam abaixo). Agora:
+ *  - terminou abaixo de hoje → rosa inteiro (mistura −1), um pouco mais visível;
+ *  - terminou acima → do creme (perto de hoje) ao verde (perto do maior final).
+ * A transparência segue a da posição (os fios do miolo, muitos, mais apagados).
+ */
+export function tomContraHoje(fim: number, hoje: number, maiorFim: number, rank: number, n: number): { mistura: number; alfa: number } {
+  const base = tomDoCaminho(rank, n)
+  if (!(hoje > 0) || !Number.isFinite(fim)) return base
+  if (fim < hoje) {
+    const peso = Math.min(Math.max(Math.sqrt(2000 / Math.max(n, 1)), 1), 3)
+    return { mistura: -1, alfa: Math.round(Math.min(Math.max(base.alfa, 0.14 * peso), 0.9) * 1000) / 1000 }
+  }
+  const faixa = maiorFim - hoje
+  const u = faixa > 0 ? Math.min(1, (fim - hoje) / faixa) : 0
+  const t = Math.max(0, Math.min(1, (u - 0.12) / (0.7 - 0.12)))
+  return { mistura: Math.round(t * t * (3 - 2 * t) * 1000) / 1000, alfa: base.alfa }
+}

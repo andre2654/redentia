@@ -37,6 +37,8 @@ const nfInt = new Intl.NumberFormat('pt-BR')
 // as de cima ainda crescem enquanto carregam, então a rolagem espera o leque
 const route = useRoute()
 const raiz = ref<HTMLElement | null>(null)
+// só no dev: ?leque=posicao mostra a cor de antes (a posição entre os 2.000), para comparar
+const corDoLeque = computed(() => (import.meta.dev && route.query.leque === 'posicao' ? 'posicao' : 'hoje'))
 watch(estado, async (e) => {
   if (e !== 'pronto' || route.hash !== '#futuro') return
   await nextTick()
@@ -87,6 +89,7 @@ const apoio = computed(() => {
       <div v-contexto-chat="{ id: 'carteira:futuro', tipo: 'grafico', rotulo: `Carteira em ${vm.horizonte} anos`, texto: [`Daqui a ${vm.horizonte} anos: ${vm.frase}`, `${vm.cenarios} Em dinheiro de hoje.`, vm.cobertura, vm.disclaimer].filter(Boolean).join('\n') }" class="cfu__grafico">
         <CarteiraLequeCaminhos
           v-if="caminhos"
+          :cor="corDoLeque"
           :dados="dados"
           :caminhos="caminhos"
           :fins="vm.fins"

@@ -37,3 +37,17 @@ test('sem caminhos suficientes ou sem o valor de hoje, não há resultado', () =
   assert.equal(resultadoDoTeste(leque([100, 110], MIN_CAMINHOS), 0), null)
   assert.equal(resultadoDoTeste(null, 100), null)
 })
+
+test('a cor do fio é contra hoje: abaixo de hoje é rosa, acima vai do creme ao verde', async () => {
+  const { tomContraHoje, tomDoCaminho } = await import('../app/utils/futuro.ts')
+  // o p10 de quem termina acima de hoje não é rosa (era, pela posição)
+  assert.ok(tomDoCaminho(0.1, 2000).mistura < 0)
+  assert.ok(tomContraHoje(715, 640, 1300, 0.1, 2000).mistura >= 0)
+  // terminou abaixo de hoje: rosa inteiro, e nunca mais apagado que 0,14
+  const abaixo = tomContraHoje(600, 640, 1300, 0.02, 2000)
+  assert.equal(abaixo.mistura, -1)
+  assert.ok(abaixo.alfa >= 0.14)
+  // perto de hoje, creme; perto do maior final, verde
+  assert.equal(tomContraHoje(650, 640, 1300, 0.3, 2000).mistura, 0)
+  assert.equal(tomContraHoje(1250, 640, 1300, 0.99, 2000).mistura, 1)
+})
