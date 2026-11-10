@@ -17,7 +17,6 @@ import { contraABolsa, pctComSinal } from '~/utils/diaDaCarteira'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import { avisosLiberados, quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
 import { nomeDoMes } from '~/utils/impostoVisao'
-import { destacarSecao } from '~/utils/destacarSecao'
 import {
   contraOCdi, inicioDoPeriodo, periodosDoDesempenho, rebase100, serieDesde, variacaoDoIndice, type PeriodoDesempenho,
 } from '~/utils/rentabilidadeCarteira'
@@ -133,10 +132,11 @@ const respostas = computed<Resposta[]>(() => {
   }
   return out
 })
+const focoNaRenda = useState('carteira:renda:foco', () => 0)
 function agir(id: Resposta['id']) {
   if (id === 'olhar') avisosRef.value?.abrir(primeiro.value?.id)
-  // os proventos em destaque por alguns segundos, com o resto da página escurecido
-  else destacarSecao('renda')
+  // o mês a cair em destaque nos proventos, por alguns segundos (VisaoRenda escuta o pedido)
+  else focoNaRenda.value++
 }
 
 /* ————— as conexões ————— */

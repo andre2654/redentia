@@ -96,6 +96,28 @@ const meses = computed(() => {
 })
 // a lista do mês corrente fica fechada: à vista, só o próximo pagamento
 const verMarcados = ref(false)
+/* O foco no mês a cair (10/11/2026, o dono: ao tocar em "Quanto vai cair?" no
+   topo, vir para cá "com a parte atual meio destacada e as outras meio
+   escurecidas por alguns segundos"). O topo soma 1 em `carteira:renda:foco`;
+   aqui a página rola até o mês a mês, a lista do que está marcado abre, e por
+   uns segundos o mês a cair e os pagamentos dele ficam como estão enquanto os
+   meses que passaram, a frase e o resto da seção escurecem. */
+const pedidoDeFoco = useState('carteira:renda:foco', () => 0)
+const emFoco = ref(false)
+const mesesRef = ref<HTMLElement | null>(null)
+let fimDoFoco: ReturnType<typeof setTimeout> | undefined
+watch(pedidoDeFoco, async () => {
+  if (import.meta.server) return
+  mesFixo.value = null
+  verMarcados.value = true
+  emFoco.value = true
+  await nextTick()
+  const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  mesesRef.value?.scrollIntoView({ behavior: calmo ? 'auto' : 'smooth', block: 'start' })
+  if (fimDoFoco) clearTimeout(fimDoFoco)
+  fimDoFoco = setTimeout(() => { emFoco.value = false }, 3600)
+})
+onBeforeUnmount(() => { if (fimDoFoco) clearTimeout(fimDoFoco) })
 // 08/11, o dono pediu hover e clique: o hover mostra o mês com a divisão por tipo; o clique abre
 // embaixo o que caiu nele, ativo por ativo (o mês a cair abre a lista do que está marcado)
 const mesHover = ref<number | null>(null)
@@ -185,7 +207,7 @@ function simular() {
 </script>
 
 <template>
-  <section class="vrd" aria-labelledby="vrd-titulo" data-clarity-mask="true">
+  <section class="vrd" :class="{ 'vrd--foco': emFoco }" aria-labelledby="vrd-titulo" data-clarity-mask="true">
     <span class="vrd__eyebrow">Quanto ele me paga?</span>
     <h2 id="vrd-titulo" class="vrd__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="cob != null" class="vrd__sub">
@@ -222,7 +244,7 @@ function simular() {
       <div class="vrd__col">
         <!-- as duas partes em caixas próprias (08/11): o lado a lado era um grid que
              contava os filhos, e a legenda por tipo, um filho a mais, quebrou a grade -->
-        <div class="vrd__parte">
+        <div ref="mesesRef" class="vrd__parte vrd__parte--meses">
         <h3 class="vrd__h3">{{ comGasto ? 'Quanto pagou, mês a mês' : 'Mês a mês' }}</h3>
         <ul v-if="empilhado" class="vrd__classes" aria-label="Por tipo">
           <li v-for="c in CLASSES" :key="c.id"><i class="vrd__k" :class="`vrd__k--${c.id}`" aria-hidden="true" />{{ c.nome }}</li>
@@ -254,7 +276,7 @@ function simular() {
         </ol>
         </div>
 
-        <div class="vrd__parte">
+        <div class="vrd__parte vrd__parte--marcados">
         <!-- o clique num mês que passou: o que caiu nele, ativo por ativo -->
         <template v-if="mesSel && !mesSel.futuro">
           <h3 class="vrd__h3 vrd__h3--2">Em {{ mesSel.nomeLongo }}, {{ mask(brl0(mesSel.total)) }}</h3>
@@ -373,6 +395,14 @@ function simular() {
   .vrd__mes-rs, .vrd__mes-acair { display: none; }
 }
 .vrd__mes { position: relative; }
+/* o foco no mês a cair: ele e os pagamentos dele ficam; o resto da seção escurece por uns segundos e volta */
+.vrd__parte--meses { scroll-margin-top: calc(var(--nuh-h, 76px) + 76px); }
+.vrd__eyebrow, .vrd__frase, .vrd__sub, .vrd__regua, .vrd__convite, .vrd__h3, .vrd__classes, .vrd__mes, .vrd__futuro, .vrd__espera { transition: opacity .5s ease; }
+.vrd--foco :is(.vrd__eyebrow, .vrd__frase, .vrd__sub, .vrd__regua, .vrd__convite, .vrd__classes, .vrd__futuro, .vrd__espera),
+.vrd--foco .vrd__parte--meses .vrd__h3,
+.vrd--foco .vrd__mes:not(.vrd__mes--futuro) { opacity: .25; }
+.vrd--foco .vrd__mes--futuro .vrd__pilha i { opacity: .8; }
+.vrd--foco .vrd__mes--futuro .vrd__mes-n { color: var(--nu-ink); font-weight: 800; }
 /* o mês inteiro é o alvo do hover e do clique */
 .vrd__mes-btn { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px; background: none; font: inherit; text-align: center; cursor: pointer; }
 .vrd__mes-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
