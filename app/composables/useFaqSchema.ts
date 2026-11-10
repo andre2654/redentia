@@ -1,4 +1,5 @@
 import type { NuFaqItem } from '~/types/market'
+import { faqJsonLd } from '../utils/json-ld.ts'
 
 /**
  * JSON-LD FAQPage de uma lista de perguntas (rich snippet). Regra da casa:
@@ -13,15 +14,7 @@ export function useFaqSchema(items: NuFaqItem[]) {
   useHead({
     script: [{
       type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: items.map((f) => ({
-          '@type': 'Question',
-          name: f.q,
-          acceptedAnswer: { '@type': 'Answer', text: f.a },
-        })),
-      }),
+      innerHTML: JSON.stringify(faqJsonLd(items)),
     }],
   })
 }
