@@ -1,5 +1,9 @@
 <script setup lang="ts">
 // JSON-LD Organization site-wide (1× no app, não em layout — padrão do Frontend).
+// O objeto vive em utils/json-ld.ts: sameAs, fundador e contactPoint entram
+// neste nó, e as outras páginas só referenciam o @id.
+import { organizacaoJsonLd } from '~/utils/json-ld'
+
 const site = useRuntimeConfig().public.siteUrl
 useHead({
   // Sufixo de marca em todo title. Vive AQUI (não no nuxt.config): função de
@@ -9,16 +13,7 @@ useHead({
     title ? `${title} · Redentia` : 'Redentia: invista com uma IA do seu lado',
   script: [{
     type: 'application/ld+json',
-    innerHTML: JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'Redentia',
-      legalName: EMPRESA.razaoSocial,
-      taxID: EMPRESA.cnpj,
-      url: site,
-      logo: `${site}/logo-azul.svg`,
-      description: 'Plataforma brasileira de análise de investimentos com IA: ações, FIIs, notícias, teses e carteira.',
-    }),
+    innerHTML: JSON.stringify(organizacaoJsonLd(site)),
   }],
 })
 
