@@ -110,6 +110,13 @@ export interface ResumoAtivoInput {
   numeros: ResumoNumeros
   /** rótulo da fonte dos indicadores; null = a frase de indicadores não cita fonte */
   fonteIndicadores: string | null
+  /**
+   * Crédito só do dividend yield, frase inteira já com "Fonte:" e ponto.
+   * Entra quando o DY é o zero calculado da ausência de renda em
+   * GET /dividends. Não cobre P/L, P/VP, ROE nem margem. null = o yield
+   * não cita provedor.
+   */
+  fonteDy: string | null
   min52: number | null
   max52: number | null
   serie: ResumoSerie | null
@@ -142,20 +149,13 @@ const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFr
 const QUEBRADA = /R\$(?!\s*\d)|US\$(?!\s*\d)|(?:^|\s)%|de\s*%|Fonte:\s*$|Fonte:\s*\.|setor\s*\.|m[eé]dia de\s*%|\(\s*\)|\b(?:undefined|null|NaN)\b/
 
 /**
- * Selos copiados de /metodologia. Cripto não entra: a página não nomeia provedor.
- * - cotação do pregão: tabela "Cotações intraday", origem Brapi (B3), cron de 10 a 30 min
- * - faixa de 52 semanas e série (ticker_historical_prices_si, scrape_extras): scrape diário do StatusInvest
- * - P/L, P/VP, ROE, margens: "StatusInvest, base em DFP/ITR"
+ * Cotação do pregão: tabela "Cotações intraday" em /metodologia, origem Brapi (B3).
+ * Faixa de 52 semanas, variação de 12 meses e indicadores (DY, P/L, P/VP, ROE,
+ * margens, bloco de FII e de BDR) não citam provedor: a origem desses campos
+ * não está verificada neste repositório. Exceção: o DY 0 calculado da ausência
+ * de renda em GET /dividends cita "avisos de proventos da B3", como /dividendos.
  */
 export const FONTE_COTACAO = 'Brapi (B3), atualização de 10 a 30 min'
-export const FONTE_SERIE = 'StatusInvest (dados diários)'
-/** Fundamentalistas de empresa listada: tabela de /metodologia (DFP/ITR). */
-export const FONTE_FUNDAMENTALISTAS = 'StatusInvest, base em DFP/ITR'
-/**
- * FII (scrape_extras.fii) e BDR (scrape_extras.valuation/quality) vêm do mesmo
- * scraper. DFP/ITR não descreve informe de fundo nem DRE da matriz em dólar.
- */
-export const FONTE_SCRAPER = 'StatusInvest'
 /** Nota do hero quando a moeda do perfil é dólar. */
 const FONTE_USD = 'preço de referência derivado do BDR e do câmbio'
 
@@ -239,12 +239,6 @@ function fonteCotacao(i: ResumoAtivoInput): string {
   return ` Fonte: ${FONTE_COTACAO}.`
 }
 
-/** Faixa de 52 semanas e série diária, com a data do dado quando ela existe. */
-function fonteSerie(iso: string | null | undefined): string {
-  const d = dataBr(iso)
-  return d ? ` Fonte: ${FONTE_SERIE}, em ${d}.` : ` Fonte: ${FONTE_SERIE}.`
-}
-
 function temProventoNoTitulo(i: ResumoAtivoInput): boolean {
   const p = i.proventos
   return !!p && (p.renda12 > 0 || p.anos.some((a) => a.valor > 0))
@@ -319,7 +313,7 @@ function paragrafoIdentidade(i: ResumoAtivoInput): string | null {
   const setor = setorBaixo(i.setor)
   if (setor && !(i.kind === 'fii' && setor === 'imobiliário')) partes.push(`O setor é ${setor}.`)
   if (ok(i.preco)) partes.push(fraseCotacao(i))
-  const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda, i.kind === 'crypto' ? '' : fonteSerie(i.data))
+  const faixa = faixa52(i.min52, i.max52, i.kind, i.moeda)
   if (faixa && i.kind !== 'crypto') partes.push(faixa)
   return partes.join(' ')
 }
@@ -374,16 +368,22 @@ function indicadoresPonto(n: ResumoNumeros, moeda: 'BRL' | 'USD'): string[] {
 
 function paragrafoIndicadores(i: ResumoAtivoInput): string | null {
   const moeda = i.moeda === 'USD' && i.kind !== 'bdr' ? 'USD' : 'BRL'
-  const doze = indicadores12m(i.numeros)
-  const ponto = indicadoresPonto(i.numeros, moeda)
-  if (!doze.length && !ponto.length) return null
+  // O crédito do DY 0 fica numa frase só dele. Os outros números do parágrafo
+  // não herdam essa fonte.
+  const fonteDy = i.fonteDy?.trim() ?? ''
+  const dyIsolado = ok(i.numeros.dy) && fonteDy.length > 0
+  const numeros = dyIsolado ? { ...i.numeros, dy: null } : i.numeros
+  const doze = indicadores12m(numeros)
+  const ponto = indicadoresPonto(numeros, moeda)
+  if (!doze.length && !ponto.length && !dyIsolado) return null
   const frases: string[] = []
+  if (dyIsolado) frases.push(`O dividend yield de 12 meses de ${i.ticker} é ${pctAbs(i.numeros.dy as number)}. ${fonteDy}`)
   if (doze.length) frases.push(`Indicadores dos últimos 12 meses de ${i.ticker}: ${juntar(doze)}.`)
   if (ponto.length) {
     const texto = juntar(ponto)
     frases.push(`${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`)
   }
-  const fonte = i.fonteIndicadores?.trim()
+  const fonte = dyIsolado ? '' : (i.fonteIndicadores?.trim() ?? '')
   if (fonte) frases.push(`Fonte: ${fonte}.`)
   return frases.join(' ')
 }
@@ -396,8 +396,9 @@ function paragrafoSerie(i: ResumoAtivoInput): string | null {
   const ate = dataBr(s.ate)
   if (!de || !ate) return null
   const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
-  // A série e o Ibovespa saem do scrape diário (ticker_historical_prices_si).
-  return `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonteSerie(s.ate)}`
+  // A variação é (último ÷ primeiro) − 1 da série pedida. O provedor da série
+  // não está verificado aqui, então a frase não cita fonte.
+  return `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}`
 }
 
 function fraseAnos(anos: ResumoAno[], oQue: string): string | null {
@@ -491,7 +492,7 @@ function cotacaoMeta(i: ResumoAtivoInput, nome: string | null): string {
 function corpoMeta(i: ResumoAtivoInput, nome: string | null, indicadores: string[]): string {
   const quote = cotacaoMeta(i, nome)
   if (!indicadores.length) return quote
-  return `${quote} ${indicadores.join(', ')} (StatusInvest).`
+  return `${quote} ${indicadores.join(', ')}.`
 }
 
 function descricao(i: ResumoAtivoInput): string {
@@ -549,8 +550,10 @@ function faqPreco(i: ResumoAtivoInput): NuFaqItem | null {
 
 function faqDy(i: ResumoAtivoInput): NuFaqItem | null {
   if (!ok(i.numeros.dy)) return null
-  const fonte = i.fonteIndicadores?.trim()
-  const a = `O dividend yield de 12 meses de ${i.ticker} é ${pctAbs(i.numeros.dy)}.${fonte ? ` Fonte: ${fonte}.` : ''}`
+  const fonteDy = i.fonteDy?.trim()
+  const fonteBloco = i.fonteIndicadores?.trim()
+  const fonte = fonteDy || (fonteBloco ? `Fonte: ${fonteBloco}.` : '')
+  const a = `O dividend yield de 12 meses de ${i.ticker} é ${pctAbs(i.numeros.dy)}.${fonte ? ` ${fonte}` : ''}`
   return { q: `Qual o dividend yield de ${i.ticker}?`, a }
 }
 
@@ -584,7 +587,7 @@ function faqSerie(i: ResumoAtivoInput): NuFaqItem | null {
   const ibov = ok(s.ibov) ? ` No mesmo período, o Ibovespa variou ${pctAssinado(s.ibov)}.` : ''
   return {
     q: `Como ${i.ticker} variou nos últimos 12 meses?`,
-    a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}${fonteSerie(s.ate)}`,
+    a: `De ${de} a ${ate}, ${i.ticker} variou ${pctAssinado(s.variacao)}.${ibov}`,
   }
 }
 

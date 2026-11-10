@@ -137,12 +137,10 @@ interface Core {
   /** type do ProfileResource (STOCK, REIT, BDR…), decide se o simulador cobre o ativo */
   type: string | null
   price: number | null
-  /** 'oficial' = DY do scraper · 'sem-renda' = zero porque não houve renda com data com */
+  /** 'oficial' = DY do overview · 'sem-renda' = zero porque não houve renda com data com */
   dyBasis: 'oficial' | 'sem-renda' | null
   /** pregão da cotação, 'YYYY-MM-DD' */
   priceDate: string | null
-  /** data do DY oficial no overview, 'YYYY-MM-DD' */
-  dyAsOf: string | null
   /** hoje em São Paulo: data da janela de 12 meses */
   hoje: string
   /**
@@ -278,7 +276,6 @@ function coreFromApi(
     price,
     dyBasis: site.basis,
     priceDate: isoDia(profile.price_date),
-    dyAsOf: isoDia(overview?.key_statistics?.updated_at) ?? isoDia(overview?.financial_data?.updated_at),
     hoje: today,
     nextRows,
     dy: site.value,
@@ -335,11 +332,11 @@ function buildPayload(c: Core): DividendosPayload {
   const fonteCotacao = c.price != null
     ? `Fonte: Brapi (B3)${c.priceDate ? `, pregão de ${dateShortPt(c.priceDate)}` : ''}.`
     : null
-  const fonteDy = c.dy == null
-    ? null
-    : c.dyBasis === 'sem-renda'
-      ? `Fonte: avisos de proventos da B3, até ${dateShortPt(c.hoje)}.`
-      : `Fonte: StatusInvest${c.dyAsOf ? `, em ${dateShortPt(c.dyAsOf)}` : ''}.`
+  // DY do overview não cita provedor: a origem não está verificada. O zero
+  // calculado da ausência de renda em GET /dividends cita os avisos da B3.
+  const fonteDy = c.dy != null && c.dyBasis === 'sem-renda'
+    ? `Fonte: avisos de proventos da B3, até ${dateShortPt(c.hoje)}.`
+    : null
   const fonteProventos = `Fonte: avisos de proventos da B3, pela data com até ${dateShortPt(c.hoje)}.`
   const comFonte = (texto: string, fonte: string | null) => (fonte ? `${texto} ${fonte}` : texto)
   // DY oficial, soma de 12 meses e cotação que não fecham entre si (±5%):
@@ -351,7 +348,7 @@ function buildPayload(c: Core): DividendosPayload {
 
   /* hero */
   const stats: AcaoStatRow[] = []
-  if (dyFmt && fonteDy) stats.push({ l: 'Dividend yield (12M)', v: dyFmt, fonte: fonteDy })
+  if (dyFmt) stats.push({ l: 'Dividend yield (12M)', v: dyFmt, ...(fonteDy ? { fonte: fonteDy } : {}) })
   if (sum12Fmt && !openCalc) stats.push({ l: c.isFii ? 'Rendimentos (12M)' : 'Proventos (12M)', v: `${sum12Fmt} / ${unit}`, fonte: fonteProventos })
   else if (cap12Fmt && !sum12Fmt) stats.push({ l: 'Amortização (12M)', v: `${cap12Fmt} / ${unit}`, fonte: fonteProventos })
   if (priceFmt && fonteCotacao) stats.push({ l: 'Cotação', v: priceFmt, fonte: fonteCotacao })
@@ -438,9 +435,9 @@ function buildPayload(c: Core): DividendosPayload {
           : `Valores brutos por ação informados à B3. JCP tem 17,5% de IR retido na fonte; dividendos são isentos pra pessoa física até R$ 50 mil por mês de cada empresa. ${notaEx} ${fonteProventos}`,
     }
   } else if (c.historyRows) {
-    historyNotice = `Ainda não temos os pagamentos de ${c.ticker} na nossa base de proventos. ${dyFmt ? `O dividend yield de ${dyFmt} acima vem dos dados consolidados de mercado. ${fonteDy}` : 'Assim que houver anúncio novo, ele aparece aqui.'}`
+    historyNotice = `Ainda não temos os pagamentos de ${c.ticker} na nossa base de proventos. ${dyFmt ? `O dividend yield de ${dyFmt} acima vem dos dados consolidados de mercado.${fonteDy ? ` ${fonteDy}` : ''}` : 'Assim que houver anúncio novo, ele aparece aqui.'}`
   } else {
-    historyNotice = `O histórico detalhado de ${c.ticker} está temporariamente indisponível. ${dyFmt ? `O dividend yield de ${dyFmt} vem dos dados consolidados de mercado. ${fonteDy}` : ''} Tente de novo em alguns minutos.`.trim()
+    historyNotice = `O histórico detalhado de ${c.ticker} está temporariamente indisponível. ${dyFmt ? `O dividend yield de ${dyFmt} vem dos dados consolidados de mercado.${fonteDy ? ` ${fonteDy}` : ''}` : ''} Tente de novo em alguns minutos.`.trim()
   }
 
   /* seções educacionais (2-3 h2, adaptadas por tipo) */
@@ -625,7 +622,6 @@ function petr4Seed(): DividendosPayload {
     price: 38.25,
     dyBasis: 'oficial',
     priceDate: null,
-    dyAsOf: null,
     hoje: spISODate(),
     nextRows: [],
     dy: 6.95,
