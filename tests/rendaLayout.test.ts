@@ -15,10 +15,12 @@ const fonte = readFileSync(new URL('../app/components/carteira/visao/VisaoRenda.
 
 test('o mês a mês e o mês corrente moram em duas caixas dentro da coluna', () => {
   const col = fonte.slice(fonte.indexOf('<div class="vrd__col">'), fonte.indexOf('<!-- daqui a 5 anos -->'))
-  assert.equal((col.match(/<div class="vrd__parte">/g) ?? []).length, 2)
+  // as duas caixas ganharam nome (10/11, o foco no mês a cair): --meses e --marcados, a primeira com o ref da rolagem
+  const caixas = [...col.matchAll(/<div (?:ref="\w+" )?class="vrd__parte(?: vrd__parte--\w+)?">/g)]
+  assert.equal(caixas.length, 2)
   // a legenda, as barras e o mês clicado ficam dentro das partes
-  const p1 = col.indexOf('<div class="vrd__parte">')
-  const p2 = col.indexOf('<div class="vrd__parte">', p1 + 1)
+  const p1 = caixas[0]!.index!
+  const p2 = caixas[1]!.index!
   assert.ok(col.indexOf('vrd__classes') > p1 && col.indexOf('vrd__classes') < p2)
   assert.ok(col.indexOf('vrd__meses') > p1 && col.indexOf('vrd__meses') < p2)
   assert.ok(col.indexOf('já marcados') > p2)
