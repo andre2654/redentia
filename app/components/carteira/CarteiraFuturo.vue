@@ -11,22 +11,51 @@
 // nada simulável → a frase do que ficou de fora; motor fora do ar → frase com
 // "Tentar de novo"; carteira que o motor recusa → frase calma. Nunca cartão
 // quebrado nem espaço vazio sem explicação.
+// Na linha "A frase" (10/11/2026, o dono: "na carteira precisamos colocar a
+// simulação da carteira nos 2.000 caminhos"): a seção entra na /carteira nova
+// com a pergunta em cima ("E daqui a 5 anos?") e a resposta numa frase com um
+// número só, o meio dos 2.000 caminhos ("Em 5 anos, o meio dos 2.000 caminhos
+// dá R$ 960 mil."); a faixa de 8 em 10 vai na linha de apoio. A banda navy
+// fica: é o momento assinatura da tela.
 const { estado, dados, vm, caminhos, fora, carregar } = useCarteiraFuturo()
 
 const PERGUNTA = 'O que mais pesa no cenário pessimista da minha carteira nos próximos 5 anos, e como eu protejo esse lado?'
 const pergunta = '/busca?chat=1&q=' + encodeURIComponent(PERGUNTA)
 // abre o painel do chat nesta página (02/11/2026); o href fica para outra aba
 const painel = useChatPainel()
+
+const nfInt = new Intl.NumberFormat('pt-BR')
+// quem chega por /carteira#futuro (o botão da home): a seção nasce no cliente e
+// as de cima ainda crescem enquanto carregam, então a rolagem espera o leque
+const route = useRoute()
+const raiz = ref<HTMLElement | null>(null)
+watch(estado, async (e) => {
+  if (e !== 'pronto' || route.hash !== '#futuro') return
+  await nextTick()
+  setTimeout(() => raiz.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150)
+})
+/** a resposta numa frase, com um número só (o meio); a faixa vai no apoio */
+const fraseDoMeio = computed(() => {
+  const v = vm.value
+  if (!v) return null
+  const n = dados.value?.paths
+  return { antes: `Em ${v.horizonte} anos, o meio dos ${n ? `${nfInt.format(n)} ` : ''}caminhos dá `, valor: v.fins.meio, depois: '.' }
+})
+const apoio = computed(() => {
+  const v = vm.value
+  if (!v) return ''
+  return `8 em cada 10 terminam entre ${v.fins.pessimista} e ${v.fins.otimista}, em dinheiro de hoje.`
+})
 </script>
 
 <template>
-  <section v-if="estado !== 'vazio' && estado !== 'bloqueado'" class="cfu" aria-labelledby="cfu-titulo" data-clarity-mask="true">
+  <section v-if="estado !== 'vazio' && estado !== 'bloqueado'" ref="raiz" class="cfu" aria-labelledby="cfu-titulo" data-clarity-mask="true">
     <template v-if="estado === 'pronto' && vm && dados">
       <div class="cfu__head">
         <div class="cfu__texto">
-          <span class="cfu__eyebrow">Daqui a {{ vm.horizonte }} anos</span>
-          <h2 id="cfu-titulo" class="cfu__frase">{{ vm.frase }}</h2>
-          <p class="cfu__sub">{{ vm.cenarios }} Em dinheiro de hoje.</p>
+          <span class="cfu__eyebrow">E daqui a {{ vm.horizonte }} anos?</span>
+          <h2 v-if="fraseDoMeio" id="cfu-titulo" class="cfu__frase">{{ fraseDoMeio.antes }}<b>{{ fraseDoMeio.valor }}</b>{{ fraseDoMeio.depois }}</h2>
+          <p class="cfu__sub">{{ apoio }}</p>
         </div>
         <NuxtLink :to="pergunta" class="cfu__perguntar" @click.prevent="painel.abrir(PERGUNTA)">
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cfu__losango-miolo" /></svg>
@@ -67,7 +96,7 @@ const painel = useChatPainel()
     </div>
 
     <div v-else class="cfu__erro" role="status">
-      <span class="cfu__eyebrow">Daqui a 5 anos</span>
+      <span class="cfu__eyebrow">E daqui a 5 anos?</span>
       <template v-if="estado === 'fora'">
         <p class="cfu__erro-frase">O que você tem hoje fica fora do motor de cenários.</p>
         <p class="cfu__erro-sub">
@@ -97,12 +126,13 @@ const painel = useChatPainel()
 }
 .cfu__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .cfu__texto { min-width: 0; max-width: 820px; }
-.cfu__eyebrow { color: var(--nu-blue-soft); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
+.cfu__eyebrow { color: var(--nu-cream-text-70); font-size: var(--nu-fs-eyebrow); font-weight: 600; }
 .cfu__frase {
   margin: 12px 0 0; color: var(--nu-cream-text);
-  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02;
-  font-variant-numeric: tabular-nums;
+  font-size: var(--nu-fs-h2); font-weight: 500; letter-spacing: -0.035em; line-height: 1.06;
+  font-variant-numeric: tabular-nums; text-wrap: balance;
 }
+.cfu__frase b { color: var(--nu-blue-soft); font-weight: 700; white-space: nowrap; }
 .cfu__sub { margin: 16px 0 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
 .cfu__perguntar {
   display: inline-flex; align-items: center; gap: 9px; flex-shrink: 0;
@@ -126,7 +156,7 @@ const painel = useChatPainel()
 .cfu__esq-leque { margin-top: clamp(20px, 3vw, 36px); }
 
 .cfu__erro { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.cfu__erro-frase { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; max-width: 640px; }
+.cfu__erro-frase { margin: 0; color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.02em; line-height: 1.15; max-width: 640px; }
 .cfu__erro-sub { margin: 0; max-width: 620px; color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; }
 .cfu__tentar {
   border: none; cursor: pointer; background: var(--nu-cream); color: var(--nu-navy);

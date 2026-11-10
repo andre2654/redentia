@@ -184,6 +184,8 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </NuxtLink>
             <NuxtLink v-if="podeVerNumeros && dia?.alerta" to="/carteira" class="haf__botao haf__botao--2">Ver {{ dia.alerta.ticker }} na carteira</NuxtLink>
+            <!-- os 2.000 caminhos de 5 anos moram na /carteira (CarteiraFuturo, #futuro): a home só leva até lá -->
+            <NuxtLink v-else-if="podeVerNumeros" to="/carteira#futuro" class="haf__botao haf__botao--2">Ver a carteira em 5 anos</NuxtLink>
           </div>
         </div>
         <!-- o desenho: a carteira contra o CDI em 12 meses, suave (sem eixos nem mira) -->

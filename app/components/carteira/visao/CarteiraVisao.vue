@@ -30,6 +30,7 @@ import { brl2 } from '~/utils/carteiraVisao'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
 import CarteiraHeroi from './CarteiraHeroi.vue'
 import VisaoRenda from './VisaoRenda.vue'
+import CarteiraFuturo from '~/components/carteira/CarteiraFuturo.vue'
 import VisaoImposto from './VisaoImposto.vue'
 import VisaoRelatorio from './VisaoRelatorio.vue'
 
@@ -84,6 +85,7 @@ const railSections = computed<RailSection[]>(() => [
   { id: 'hoje', label: 'Hoje' },
   { id: 'onde', label: 'Onde está' },
   ...(visao.value.renda ? [{ id: 'renda', label: 'Quanto paga' }] : []),
+  ...(mock.value ? [] : [{ id: 'futuro', label: '5 anos' }]),
   ...(visao.value.imposto ? [{ id: 'imposto', label: 'Imposto' }] : []),
   { id: 'relatorio', label: 'Relatório' },
 ])
@@ -103,6 +105,8 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
     </p>
     <VisaoOndeEsta id="onde" :visao="visao" />
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
+    <!-- e daqui a 5 anos? os 2.000 caminhos do motor (GET /me/carteira/futuro; no mock não há motor) -->
+    <ClientOnly><CarteiraFuturo v-if="!mock" id="futuro" /></ClientOnly>
     <!-- o imposto vem null quando o bloco quebra no servidor (e o cenário real antigo do dev vinha sem) -->
     <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" :posicoes="visao.posicoes" />
     <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
