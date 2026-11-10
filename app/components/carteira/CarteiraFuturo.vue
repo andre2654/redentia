@@ -23,7 +23,12 @@
 // "Testamos a sua carteira em 2.000 futuros possíveis"; embaixo do leque, "O que o teste encontrou", contado nos
 // caminhos do próprio motor (resultadoDoTeste): em quantos ela termina acima
 // de hoje, em quantos passa por uma queda de 10% no caminho e em quantos dobra.
-import { resultadoDoTeste } from '~/utils/futuro'
+// Depois (mesmo dia, "pode seguir"): cada número acende os seus caminhos no
+// leque (passar o mouse, focar ou tocar), o "dobram" deu lugar a "terminam
+// abaixo de hoje" (o risco com o mesmo peso do lado bom, cada um com a cor que
+// tem no leque), o contador dos futuros testados mora no próprio leque, o apoio
+// encurtou e o "Como proteger" foi para o fim, depois dos números.
+import { mascaraDoGrupo, resultadoDoTeste, type GrupoDoTeste } from '~/utils/futuro'
 
 const { estado, dados, vm, caminhos, fora, carregar } = useCarteiraFuturo()
 
@@ -52,22 +57,41 @@ const fraseDoMeio = computed(() => {
 })
 /** o que o teste encontrou, contado nos caminhos do motor; null sem os caminhos (o leque de faixas) */
 const teste = computed(() => (dados.value ? resultadoDoTeste(caminhos.value, dados.value.today_value) : null))
-const fatosDoTeste = computed(() => {
+type CorDoFato = 'verde' | 'vermelho' | 'creme'
+const fatosDoTeste = computed<{ k: GrupoDoTeste; n: string; de: string; texto: string; cor: CorDoFato }[]>(() => {
   const t = teste.value
   if (!t) return []
   const de = `de ${nfInt.format(t.n)}`
   return [
-    { k: 'acima', n: nfInt.format(t.acimaDeHoje), de, texto: 'terminam acima do que você tem hoje' },
-    { k: 'queda', n: nfInt.format(t.quedaDe10), de, texto: 'passam por uma queda de 10% ou mais no caminho' },
-    { k: 'dobra', n: nfInt.format(t.dobram), de, texto: 'dobram de valor' },
+    { k: 'acima', n: nfInt.format(t.acimaDeHoje), de, texto: 'terminam acima do que você tem hoje', cor: 'verde' },
+    { k: 'queda', n: nfInt.format(t.quedaDe10), de, texto: 'passam por uma queda de 10% ou mais no caminho', cor: 'creme' },
+    { k: 'abaixo', n: nfInt.format(t.abaixoDeHoje), de, texto: 'terminam abaixo do que você tem hoje', cor: 'vermelho' },
   ]
 })
+/* cada número acende os seus caminhos no leque: o mouse e o foco acendem; o toque liga e desliga */
+const grupoAceso = ref<GrupoDoTeste | null>(null)
+const fixo = ref(false)
+const mascaras = computed(() => {
+  const t = teste.value
+  return t ? { acima: mascaraDoGrupo(t, 'acima'), queda: mascaraDoGrupo(t, 'queda'), abaixo: mascaraDoGrupo(t, 'abaixo'), dobra: mascaraDoGrupo(t, 'dobra') } : null
+})
+const destaque = computed(() => {
+  const g = grupoAceso.value
+  const m = mascaras.value
+  const f = fatosDoTeste.value.find((x) => x.k === g)
+  return g && m && f ? { mascara: m[g], cor: f.cor } : null
+})
+function acender(g: GrupoDoTeste) { if (!fixo.value) grupoAceso.value = g }
+function apagar() { if (!fixo.value) grupoAceso.value = null }
+function alternarFixo(g: GrupoDoTeste) {
+  if (fixo.value && grupoAceso.value === g) { fixo.value = false; grupoAceso.value = null; return }
+  fixo.value = true
+  grupoAceso.value = g
+}
 const apoio = computed(() => {
   const v = vm.value
   if (!v) return ''
-  const n = dados.value?.paths ?? caminhos.value?.n
-  const teste = n ? `Testamos a sua carteira em ${nfInt.format(n)} futuros possíveis: ` : ''
-  return `${teste}8 em cada 10 terminam entre ${v.fins.pessimista} e ${v.fins.otimista}, em dinheiro de hoje.`
+  return `8 em cada 10 terminam entre ${v.fins.pessimista} e ${v.fins.otimista}, em dinheiro de hoje.`
 })
 </script>
 
@@ -80,16 +104,13 @@ const apoio = computed(() => {
           <h2 v-if="fraseDoMeio" id="cfu-titulo" class="cfu__frase">{{ fraseDoMeio.antes }}<b>{{ fraseDoMeio.valor }}</b>{{ fraseDoMeio.depois }}</h2>
           <p class="cfu__sub">{{ apoio }}</p>
         </div>
-        <NuxtLink :to="pergunta" class="cfu__perguntar" @click.prevent="painel.abrir(PERGUNTA)">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cfu__losango-miolo" /></svg>
-          Como proteger o lado pessimista
-        </NuxtLink>
       </div>
 
       <div v-contexto-chat="{ id: 'carteira:futuro', tipo: 'grafico', rotulo: `Carteira em ${vm.horizonte} anos`, texto: [`Daqui a ${vm.horizonte} anos: ${vm.frase}`, `${vm.cenarios} Em dinheiro de hoje.`, vm.cobertura, vm.disclaimer].filter(Boolean).join('\n') }" class="cfu__grafico">
         <CarteiraLequeCaminhos
           v-if="caminhos"
           :cor="corDoLeque"
+          :destaque="destaque"
           :dados="dados"
           :caminhos="caminhos"
           :fins="vm.fins"
@@ -107,14 +128,25 @@ const apoio = computed(() => {
 
       <!-- o que o teste encontrou: contado nos caminhos do motor, em reais de hoje -->
       <div v-if="fatosDoTeste.length" class="cfu__teste">
-        <p class="cfu__teste-t">O que o teste encontrou</p>
-        <dl class="cfu__fatos">
-          <div v-for="f in fatosDoTeste" :key="f.k" class="cfu__fato">
-            <dt><b>{{ f.n }}</b> {{ f.de }}</dt>
-            <dd>{{ f.texto }}</dd>
-          </div>
-        </dl>
+        <p class="cfu__teste-t">O que o teste encontrou <span class="cfu__teste-dica">· passe o mouse ou toque para ver no gráfico</span></p>
+        <ul class="cfu__fatos" @pointerleave="apagar">
+          <li v-for="f in fatosDoTeste" :key="f.k">
+            <button
+              type="button" class="cfu__fato" :class="[`cfu__fato--${f.cor}`, { 'cfu__fato--on': grupoAceso === f.k, 'cfu__fato--apagado': grupoAceso && grupoAceso !== f.k }]"
+              :aria-pressed="grupoAceso === f.k" :aria-label="`${f.n} ${f.de} ${f.texto}. Mostrar esses caminhos no gráfico`"
+              @pointerenter="(e) => e.pointerType !== 'touch' && acender(f.k)" @focus="acender(f.k)" @blur="apagar" @click="alternarFixo(f.k)"
+            >
+              <span class="cfu__fato-n"><b>{{ f.n }}</b> {{ f.de }}</span>
+              <span class="cfu__fato-t">{{ f.texto }}</span>
+            </button>
+          </li>
+        </ul>
       </div>
+        <NuxtLink :to="pergunta" class="cfu__perguntar cfu__perguntar--fim" @click.prevent="painel.abrir(PERGUNTA)">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 21.5 12 12 21.5 2.5 12Z" fill="currentColor" /><path d="M12 8.2 15.8 12 12 15.8 8.2 12Z" class="cfu__losango-miolo" /></svg>
+          Perguntar à Redentia como proteger o lado ruim
+        </NuxtLink>
+
 
       <p class="cfu__nota">
         <span v-if="vm.cobertura" class="cfu__cobertura">{{ vm.cobertura }}</span>
@@ -181,11 +213,23 @@ const apoio = computed(() => {
 .cfu__grafico { margin-top: clamp(32px, 4vw, 52px); }
 .cfu__teste { margin-top: clamp(28px, 3.4vw, 44px); }
 .cfu__teste-t { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 600; }
-.cfu__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: 10px 0 0; }
-.cfu__fato { padding: 16px 0 4px; border-top: 1px solid rgba(245, 241, 234, .14); }
-.cfu__fato dt { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
-.cfu__fato dt b { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 600; letter-spacing: -0.03em; }
-.cfu__fato dd { margin: 6px 0 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.cfu__teste-dica { color: var(--nu-cream-text-55); font-weight: 500; }
+.cfu__fatos { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: 10px 0 0; padding: 0; }
+.cfu__fato {
+  display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; padding: 16px 0 6px; border: 0; border-top: 1px solid rgba(245, 241, 234, .14);
+  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: opacity .25s, border-color .25s;
+}
+.cfu__fato-n { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cfu__fato-n b { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 600; letter-spacing: -0.03em; }
+.cfu__fato--verde .cfu__fato-n b { color: var(--nu-green-soft); }
+.cfu__fato--vermelho .cfu__fato-n b { color: var(--nu-red-soft); }
+.cfu__fato-t { color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.cfu__fato--on { border-top-color: var(--nu-cream-text); }
+.cfu__fato--verde.cfu__fato--on { border-top-color: var(--nu-green-soft); }
+.cfu__fato--vermelho.cfu__fato--on { border-top-color: var(--nu-red-soft); }
+.cfu__fato--apagado { opacity: .45; }
+.cfu__fato:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 4px; border-radius: 4px; }
+.cfu__perguntar--fim { margin-top: clamp(22px, 3vw, 32px); }
 .cfu__nota {
   margin: clamp(22px, 3vw, 32px) 0 0; max-width: 760px;
   display: flex; flex-direction: column; gap: 4px;

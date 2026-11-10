@@ -1,7 +1,7 @@
 /** O que o teste dos 2.000 caminhos encontrou (10/11/2026): resultadoDoTeste, em utils/futuro.ts */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { MIN_CAMINHOS, resultadoDoTeste, type CaminhosDoLeque } from '../app/utils/futuro.ts'
+import { MIN_CAMINHOS, mascaraDoGrupo, resultadoDoTeste, type CaminhosDoLeque } from '../app/utils/futuro.ts'
 
 /** n caminhos iguais a `linha`, mais os `outros` no fim */
 function leque(linha: number[], n: number, outros: number[][] = []): CaminhosDoLeque {
@@ -23,6 +23,13 @@ test('conta quem termina acima de hoje, quem cai 10% no caminho e quem dobra', (
   assert.equal(r.acimaDeHoje, MIN_CAMINHOS + 2)
   assert.equal(r.quedaDe10, 2)
   assert.equal(r.dobram, 1)
+  assert.equal(r.abaixoDeHoje, 1)
+  // quem é quem: os últimos três são caiNoMeio, dobra e terminaAbaixo
+  const k = MIN_CAMINHOS
+  assert.deepEqual([...mascaraDoGrupo(r, 'queda')].slice(k), [1, 0, 1])
+  assert.deepEqual([...mascaraDoGrupo(r, 'abaixo')].slice(k), [0, 0, 1])
+  assert.deepEqual([...mascaraDoGrupo(r, 'dobra')].slice(k), [0, 1, 0])
+  assert.equal(mascaraDoGrupo(r, 'acima').reduce((s, x) => s + x, 0), r.acimaDeHoje)
 })
 
 test('queda de 9% não conta; terminar igual a hoje não é acima', () => {

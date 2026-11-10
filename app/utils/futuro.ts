@@ -655,10 +655,29 @@ export interface ResultadoDoTeste {
   n: number
   /** caminhos que terminam acima do valor de hoje */
   acimaDeHoje: number
+  /** caminhos que terminam abaixo do valor de hoje (o resto de acimaDeHoje, menos os que terminam igual) */
+  abaixoDeHoje: number
   /** caminhos que, em algum mês, ficam 10% ou mais abaixo do pico que já tinham feito */
   quedaDe10: number
   /** caminhos que terminam com o dobro de hoje ou mais */
   dobram: number
+  /**
+   * quem é quem, para o leque acender cada grupo (10/11/2026): um byte por
+   * caminho, na ordem de `valores`, com os bits GRUPO_DO_TESTE
+   */
+  grupos: Uint8Array
+}
+
+/** os bits de `ResultadoDoTeste.grupos` */
+export const GRUPO_DO_TESTE = { acima: 1, abaixo: 2, queda: 4, dobra: 8 } as const
+export type GrupoDoTeste = keyof typeof GRUPO_DO_TESTE
+
+/** 1 para os caminhos do grupo, 0 para o resto: o que o leque acende */
+export function mascaraDoGrupo(r: ResultadoDoTeste, g: GrupoDoTeste): Uint8Array {
+  const bit = GRUPO_DO_TESTE[g]
+  const m = new Uint8Array(r.n)
+  for (let i = 0; i < r.n; i++) m[i] = r.grupos[i]! & bit ? 1 : 0
+  return m
 }
 
 export const QUEDA_DO_TESTE = 0.10
@@ -666,8 +685,10 @@ export const QUEDA_DO_TESTE = 0.10
 export function resultadoDoTeste(c: CaminhosDoLeque | null | undefined, hoje: number): ResultadoDoTeste | null {
   if (!c || c.n < MIN_CAMINHOS || c.pontos < 2 || !(hoje > 0)) return null
   let acimaDeHoje = 0
+  let abaixoDeHoje = 0
   let quedaDe10 = 0
   let dobram = 0
+  const grupos = new Uint8Array(c.n)
   for (let i = 0; i < c.n; i++) {
     const ini = i * c.pontos
     let pico = c.valores[ini]!
@@ -678,11 +699,14 @@ export function resultadoDoTeste(c: CaminhosDoLeque | null | undefined, hoje: nu
       else if (!caiu && pico > 0 && v / pico - 1 <= -QUEDA_DO_TESTE) caiu = true
     }
     const fim = c.valores[ini + c.pontos - 1]!
-    if (fim > hoje) acimaDeHoje++
-    if (fim >= 2 * hoje) dobram++
-    if (caiu) quedaDe10++
+    let g = 0
+    if (fim > hoje) { acimaDeHoje++; g |= GRUPO_DO_TESTE.acima }
+    if (fim < hoje) { abaixoDeHoje++; g |= GRUPO_DO_TESTE.abaixo }
+    if (fim >= 2 * hoje) { dobram++; g |= GRUPO_DO_TESTE.dobra }
+    if (caiu) { quedaDe10++; g |= GRUPO_DO_TESTE.queda }
+    grupos[i] = g
   }
-  return { n: c.n, acimaDeHoje, quedaDe10, dobram }
+  return { n: c.n, acimaDeHoje, abaixoDeHoje, quedaDe10, dobram, grupos }
 }
 
 /**

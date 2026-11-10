@@ -24,7 +24,7 @@
 // Desempenho: a camada parada é desenhada UMA vez num canvas fora da tela, e
 // de novo só quando a largura muda. O hover redesenha só a camada de cima, e
 // os três caminhos de cada mês são escolhidos uma vez só. Nada fica em laço:
-// quando o leque aparece, uma luz o varre uma vez e as pontas pulsam uma vez.
+// quando o leque aparece, os fios nascem uma vez e as pontas pulsam uma vez.
 // Com movimento reduzido, ele aparece pronto.
 //
 // Hover no computador; no celular, toque e arraste na horizontal (a página
@@ -40,6 +40,15 @@
 // visível, com o rótulo, e os nomes da ponta viram "se for bem", "o mais
 // provável" e "se for mal". O "se for mal" só fica rosa quando termina abaixo
 // de hoje. `cor="posicao"` volta ao desenho de antes (só para comparar no dev).
+//
+// O teste à vista (10/11/2026, o dono: "mostrar o impacto da Redentia de testar
+// em 2.000 cenários"):
+//  - a abertura deixa de ser a luz que varre e passa a ser os 2.000 nascendo,
+//    um a um, em ordem aleatória, com o contador "N futuros testados" no canto;
+//    uma vez só, e com movimento reduzido o leque aparece pronto;
+//  - `destaque` acende um grupo de caminhos (os que terminam abaixo de hoje, os
+//    que caem 10% no caminho...) e apaga o resto: é como "O que o teste
+//    encontrou" mostra no desenho de quem está falando. O hover ganha dele.
 import type { FuturoDadosApi } from '~/types/assinatura'
 import {
   afastarRotulos,
@@ -67,7 +76,13 @@ const props = withDefaults(defineProps<{
   altura?: number
   /** 'hoje': a cor é onde o fio termina contra o valor de hoje; 'posicao': a posição entre os 2.000 (o desenho de antes) */
   cor?: 'hoje' | 'posicao'
-}>(), { altura: 420, cor: 'hoje' })
+  /** um grupo aceso (1 = acende), na ordem dos caminhos, e a cor dele; o resto apaga */
+  destaque?: { mascara: Uint8Array; cor: 'verde' | 'vermelho' | 'creme' } | null
+}>(), { altura: 420, cor: 'hoje', destaque: null })
+
+const nfContador = new Intl.NumberFormat('pt-BR')
+/** quantos fios já nasceram na abertura; null fora dela (mostra o total) */
+const contados = ref<number | null>(null)
 
 /** os nomes da ponta, em linguagem de gente */
 const NOME: Record<'otimista' | 'meio' | 'pessimista', string> = { otimista: 'se for bem', meio: 'o mais provável', pessimista: 'se for mal' }
@@ -495,6 +510,42 @@ function desenharTopo() {
     }
   }
 
+  // um grupo aceso: o resto do leque apaga e só os caminhos do grupo ficam, mais fortes
+  const d = props.destaque
+  if (d && !leitura.value && xs.length && d.mascara.length === props.caminhos.n) {
+    ctx.fillStyle = rgba(navy, 0.8)
+    ctx.fillRect(0, 0, xFim.value + larguraSino.value + 4, H)
+    const P = props.caminhos.pontos
+    let quantos = 0
+    for (let i = 0; i < d.mascara.length; i++) quantos += d.mascara[i]!
+    const cor = (d.cor === 'verde' ? cores.verde : d.cor === 'vermelho' ? cores.vermelho : creme) ?? creme
+    ctx.strokeStyle = rgba(cor, Math.min(0.55, Math.max(0.07, 3.5 / Math.sqrt(Math.max(quantos, 1)))))
+    ctx.lineWidth = celular.value ? 0.9 : 1.1
+    ctx.lineJoin = 'round'
+    for (let i = 0; i < d.mascara.length; i++) {
+      if (!d.mascara[i]) continue
+      const o = i * P
+      ctx.beginPath()
+      ctx.moveTo(xs[0]!, py[o]!)
+      for (let t = 1; t < P; t++) ctx.lineTo(xs[t]!, py[o + t]!)
+      ctx.stroke()
+    }
+    // a régua de hoje e o mais provável continuam à vista, por cima
+    ctx.setLineDash([4, 4])
+    ctx.strokeStyle = rgba(creme, 0.6)
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(X_HOJE, ys.value.hoje)
+    ctx.lineTo(xFim.value, ys.value.hoje)
+    ctx.stroke()
+    ctx.setLineDash([])
+    ctx.strokeStyle = rgba(creme, 0.85)
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    linhaDaSerie(ctx, 'p50')
+    ctx.stroke()
+  }
+
   const l = leitura.value
   if (!l || !xs.length) {
     // em repouso: os três finais de 2031 e as guias até os rótulos (aqui, e
@@ -732,6 +783,19 @@ function redesenhar() {
   passo()
 }
 
+/** a ordem em que os fios nascem na abertura: aleatória, uma por montagem */
+function embaralhar(n: number): Uint32Array {
+  const o = new Uint32Array(n)
+  for (let i = 0; i < n; i++) o[i] = i
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const t = o[i]!
+    o[i] = o[j]!
+    o[j] = t
+  }
+  return o
+}
+
 function abrir() {
   querAbrir = false
   if (!parada) {
@@ -740,26 +804,62 @@ function abrir() {
   }
   if (animacao) return
   visivel.value = true
+  const cv = cvTopo.value
   const W = largura.value
+  const H = h.value
+  const n = props.caminhos.n
+  const P = props.caminhos.pontos
+  const ctx = cv ? prepararCanvas(cv, W, H) : null
+  if (!ctx || !xs.length) {
+    pronto = true
+    mostrarParado()
+    desenharTopo()
+    return
+  }
+  // os 2.000 nascem no topo, um a um, em ordem aleatória; a base fica vazia até o fim
+  const ordemDeNascer = embaralhar(n)
+  ctx.lineWidth = celular.value ? 0.8 : 1
+  ctx.lineJoin = 'round'
+  let feitos = 0
+  contados.value = 0
   const t0 = performance.now()
-  const DUR = 1500
+  const DUR = 1800
   const PULSO = 800
+  let fim = 0
   const passo = (agora: number) => {
-    const p = Math.min((agora - t0) / DUR, 1)
-    const e = 1 - (1 - p) ** 3
-    if (p < 1) {
-      mostrarParado(X_HOJE + e * (W - X_HOJE + 90), Math.sin(Math.PI * Math.min(p * 1.15, 1)))
-    } else {
-      pronto = true
-      mostrarParado()
-      pulso = Math.min((agora - t0 - DUR) / PULSO, 1)
-      desenharTopo()
-      if (pulso >= 1) {
-        pulso = -1
-        desenharTopo()
-        animacao = 0
+    if (!fim) {
+      const p = Math.min((agora - t0) / DUR, 1)
+      // devagar no começo (dá para ver os primeiros nascendo), depressa no meio
+      const e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2
+      const alvo = Math.round(e * n)
+      for (let k = feitos; k < alvo; k++) {
+        const i = ordemDeNascer[k]!
+        ctx.strokeStyle = corDoCaminho(i)
+        const o = i * P
+        ctx.beginPath()
+        ctx.moveTo(xs[0]!, py[o]!)
+        for (let t = 1; t < P; t++) ctx.lineTo(xs[t]!, py[o + t]!)
+        ctx.stroke()
+      }
+      feitos = alvo
+      contados.value = feitos
+      if (p < 1) {
+        animacao = requestAnimationFrame(passo)
         return
       }
+      // todos nasceram: a camada pronta (com a faixa, o meio e o sino) entra no lugar
+      fim = agora
+      pronto = true
+      contados.value = null
+      mostrarParado()
+    }
+    pulso = Math.min((agora - fim) / PULSO, 1)
+    desenharTopo()
+    if (pulso >= 1) {
+      pulso = -1
+      desenharTopo()
+      animacao = 0
+      return
     }
     animacao = requestAnimationFrame(passo)
   }
@@ -774,6 +874,7 @@ watch([largura, h], () => {
   redesenhar()
   nextTick(medirHoje)
 })
+watch(() => props.destaque, () => { if (pronto) pedirTopo() })
 watch(() => props.caminhos, () => {
   ativo.value = false
   redesenhar()
@@ -855,8 +956,10 @@ onBeforeUnmount(() => {
       <canvas ref="cvBase" class="clc__cv" aria-hidden="true" />
       <canvas ref="cvTopo" class="clc__cv" aria-hidden="true" />
       <!-- a régua de hoje: o que fica acima dela terminou melhor do que você está hoje -->
+      <!-- o teste à vista: quantos futuros já foram desenhados (na abertura, contando) -->
+      <span v-if="visivel" class="clc__contador" aria-hidden="true" :style="{ left: `${X_HOJE}px` }"><b>{{ nfContador.format(contados ?? caminhos.n) }}</b> futuros testados</span>
       <!-- na ponta direita, embaixo da linha: ali passam só os poucos fios que terminam abaixo de hoje -->
-      <span v-if="contraHoje" class="clc__hoje" aria-hidden="true" :style="{ top: `${ys.hoje}px`, left: `${xFim - 10}px` }">o que você tem hoje</span>
+      <span v-if="contraHoje" class="clc__hoje" aria-hidden="true" :style="{ top: `${ys.hoje}px`, left: `${xFim - 10}px` }">{{ celular ? 'hoje' : 'o que você tem hoje' }}</span>
 
       <template v-if="leitura">
         <span
@@ -947,6 +1050,11 @@ onBeforeUnmount(() => {
 .clc__rotulo--meio .clc__valor { color: var(--nu-cream-text); }
 .clc__rotulo--pessimista .clc__valor { color: var(--nu-red-soft); }
 .clc__rotulo--mal-acima .clc__valor { color: var(--nu-cream-text-85); }
+.clc__contador {
+  position: absolute; top: 4px; pointer-events: none; white-space: nowrap;
+  color: var(--nu-cream-text-55); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.clc__contador b { color: var(--nu-cream-text); font-weight: 700; }
 .clc__hoje {
   position: absolute; transform: translate(-100%, 6px); padding: 2px 8px; border-radius: var(--nu-r-pill); pointer-events: none; white-space: nowrap;
   background: rgba(12, 21, 36, .78); color: var(--nu-cream-text-85); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: .01em;
