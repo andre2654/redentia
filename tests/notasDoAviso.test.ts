@@ -120,9 +120,11 @@ test('o cartão do aviso desenha a faixa a partir de a.notas, pelo util, entre o
 
   const texto = tpl.indexOf('class="cav__x"')
   const faixa = tpl.indexOf('<div v-if="notasDe(a).length"')
+  // 10/11 (o modal "uma coisa por vez"): a conta (a prova) passou a vir logo depois do placar, antes da ressalva
+  const conta = tpl.indexOf('class="cav__prova"')
   const ressalva = tpl.indexOf('class="cav__ressalva"')
-  assert.ok(texto > 0 && texto < faixa && faixa < ressalva, 'a faixa fica entre o texto e a ressalva')
-  const bloco = tpl.slice(faixa, ressalva)
+  assert.ok(texto > 0 && texto < faixa && faixa < conta && conta < ressalva, 'a faixa fica entre o texto e a conta, e a ressalva depois')
+  const bloco = tpl.slice(faixa, conta)
   assert.match(bloco, /class="cav__notas" role="group"/)
   assert.match(bloco, /v-for="n in notasDe\(a\)"[^>]*role="img" :aria-label="n\.aria"/)
   assert.match(bloco, /class="cav__nota-igual">igual</)
@@ -279,9 +281,10 @@ test('o cartão desenha a linha dos indicadores embaixo das notas: o que cabe, o
 
   const notas = tpl.indexOf('class="cav__notas"')
   const linha = tpl.indexOf('class="cav__inds"')
+  const conta = tpl.indexOf('class="cav__prova"')
   const ressalva = tpl.indexOf('class="cav__ressalva"')
-  assert.ok(notas > 0 && notas < linha && linha < ressalva, 'a linha fica embaixo das notas e antes da ressalva')
-  const bloco = tpl.slice(linha, ressalva)
+  assert.ok(notas > 0 && notas < linha && linha < conta && conta < ressalva, 'a linha fica embaixo das notas, antes da conta e da ressalva')
+  const bloco = tpl.slice(linha, conta)
   assert.match(bloco, /v-for="i in indicadoresDe\(a\)\.slice\(0, naLinha\(a\)\)"[^>]*role="img" :aria-label="i\.aria"/)
   assert.match(bloco, /i\.melhora \? 'cav__ind-d--melhora' : 'cav__ind-d--piora'/)
   assert.match(bloco, /v-if="indicadoresDe\(a\)\.length > naLinha\(a\)"/)
@@ -290,7 +293,7 @@ test('o cartão desenha a linha dos indicadores embaixo das notas: o que cabe, o
   assert.doesNotMatch(bloco, /semValor|naTela/)
 
   // o resto vai para o "Como calculei", e o "e mais N" abre ele
-  const prova = tpl.slice(tpl.indexOf('class="cav__prova"'), tpl.indexOf('class="cav__fonte"'))
+  const prova = tpl.slice(tpl.indexOf('class="cav__prova"'), tpl.indexOf('class="cav__acoes"'))
   assert.match(prova, /v-for="i in indicadoresDe\(a\)\.slice\(naLinha\(a\)\)"/)
   assert.match(prova, /role="img" :aria-label="i\.aria"/)
   assert.match(bloco, /@click="abrirProva\(a\.id\)"/)

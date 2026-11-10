@@ -47,6 +47,7 @@ import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } fro
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
 import { celulasDasNotas, indicadoresQueMudam, linhasDosAjustes, quantosNaLinha, type CelulaDaNota } from '~/utils/notasDoAviso'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
+import FraseDestaque from './FraseDestaque.vue'
 
 // semBotao (06/11): sem o botão redondo; o modal abre pelos próprios itens e pelo "+N".
 // botaoOculto (07/11): o botão existe, mas fica invisível e fora do Tab. É o topo
@@ -88,10 +89,34 @@ const aberto = ref(false)
 const cardRef = ref<HTMLElement | null>(null)
 useModalA11y(cardRef, aberto)
 const idTitulo = useId()
-const provaAberta = ref<string | null>(null)
+/* O modal no jeito "uma coisa por vez" (10/11, o dono: "pense como a Nubank
+   deixaria esse modal"). Com um aviso só, ele é a manchete e abre inteiro. Com
+   vários, cada um é uma linha e só um fica aberto: o que a pessoa tocou no
+   topo, ou o primeiro. A conta (a prova) aparece direto quando é curta (até 6
+   linhas, um comprovante); a longa fica a um toque.
+   Depois (10/11, o dono: "dá para tirar esses textos? para deixar menos
+   complexidade"): a confiança, a fonte e a ressalva saem da frente e moram
+   atrás do "Como calculei", junto da conta longa. Uma exceção: com um dado
+   faltando ('incompleto'), a ressalva continua à vista, porque é ela que diz
+   que a conta não fechou. */
+const todos = computed<Aviso[]>(() => [...grupos.value.atencao, ...grupos.value.saber])
+const unico = computed(() => todos.value.length === 1)
+const expandido = ref<string | null>(null)
+const estaAberto = (a: Aviso) => unico.value || expandido.value === a.id
+function alternar(id: string) { expandido.value = expandido.value === id ? null : id }
+const ROTULO: Record<Aviso['gravidade'], string> = { alta: 'Pede atenção', media: 'Vale olhar', info: 'Bom saber', bom: 'Boa notícia' }
+const CONTA_CURTA = 6
+const comoAberto = ref<Set<string>>(new Set())
+const provaVisivel = (a: Aviso) => a.prova.length <= CONTA_CURTA || comoAberto.value.has(a.id)
+/** 'Mais 1 aviso espera a conexão atualizar.' (era "Outros 1 avisos…", e "Com dado de ," sem a data) */
+const retidosTxt = computed(() => {
+  const n = props.avisos.retidos
+  if (!n) return ''
+  return `${n === 1 ? 'Mais 1 aviso espera' : `Mais ${n} avisos esperam`} a conexão atualizar${props.dadosDe ? `: com dado de ${props.dadosDe}, prefiro não arriscar` : ''}.`
+})
 function abrir(id?: string | null) {
   aberto.value = true
-  provaAberta.value = id ?? null
+  expandido.value = id ?? todos.value[0]?.id ?? null
   marcarVistos()
   if (!props.mock) void canais.carregar()
   if (id) nextTick(() => document.getElementById(`cav-${id}`)?.scrollIntoView({ block: 'nearest' }))
@@ -113,9 +138,16 @@ onBeforeUnmount(() => {
   document.documentElement.style.overflow = ''
 })
 
-function alternarProva(id: string) { provaAberta.value = provaAberta.value === id ? null : id }
+function alternarProva(id: string) {
+  const t = new Set(comoAberto.value)
+  if (t.has(id)) t.delete(id)
+  else t.add(id)
+  comoAberto.value = t
+}
 /** o "e mais N" dos indicadores abre o "Como calculei", onde está o resto */
-function abrirProva(id: string) { provaAberta.value = id }
+function abrirProva(id: string) {
+  if (!comoAberto.value.has(id)) alternarProva(id)
+}
 /**
  * Linha da prova com valor de frase (o "Por que parei" dos ajustes, 08/11):
  * lado a lado, o rótulo era espremido em três linhas. Acima de 60
@@ -246,99 +278,103 @@ function agir(a: Aviso, acao: AcaoAviso) {
       <div ref="cardRef" class="cav__card" role="dialog" aria-modal="true" :aria-labelledby="idTitulo" tabindex="-1" data-clarity-mask="true" @click.stop>
         <span class="cav__alca" aria-hidden="true" />
         <div class="cav__cab">
-          <p class="cav__assinatura">
-            <span class="cav__marca"><img src="/logo-azul.svg" alt="" width="14" height="14">Redentia</span>
-            <span class="cav__olhou">{{ olhou }}</span>
-          </p>
+          <p class="cav__olhou">{{ olhou }}</p>
           <button type="button" class="cav__fechar" aria-label="Fechar" @click="fechar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
         </div>
-        <h2 :id="idTitulo" class="cav__h2">{{ titulo }}</h2>
-        <p v-if="avisos.retidos" class="cav__retidos">
-          Outros {{ avisos.retidos }} avisos esperam a conexão voltar. Com dado de {{ dadosDe }}, eu prefiro não arriscar.
-        </p>
+        <!-- com um aviso só, a manchete é ele (lá embaixo); com vários ou nenhum, o resumo -->
+        <h2 v-if="!unico" :id="idTitulo" class="cav__h2">{{ titulo }}</h2>
 
-        <template v-for="g in ([['Pede atenção', grupos.atencao], ['Bom saber', grupos.saber]] as const)" :key="g[0]">
-          <div v-if="g[1].length" class="cav__grupo">
-            <p class="cav__grupo-t">{{ g[0] }}</p>
-            <ul class="cav__lista">
-              <li v-for="a in g[1]" :id="`cav-${a.id}`" :key="a.id" class="cav__item" :class="`cav__item--${a.gravidade}`">
-                <div class="cav__linha">
-                  <p class="cav__t">{{ naTela(a.titulo) }}</p>
-                  <p v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</p>
-                </div>
-                <!-- 08/11: os ajustes do plano, numerados ("não deixa claro os ajustes"); o valor passa pelo olho -->
-                <ol v-if="ajustesDe(a).length" class="cav__ajustes" :aria-label="`Os ${ajustesDe(a).length} ajustes`">
-                  <li v-for="(j, k) in ajustesDe(a)" :key="k" class="cav__aj">
-                    <span class="cav__aj-n" aria-hidden="true">{{ k + 1 }}</span>
-                    <span v-if="j.valor" class="cav__aj-t"><span class="cav__aj-v">{{ semValor(j.valor) }}</span><span class="cav__aj-d">{{ j.de }}<span class="cav__aj-seta" aria-hidden="true"> → </span><span class="cav__sr"> por </span>{{ j.para }}</span></span>
-                    <span v-else class="cav__aj-t">{{ naTela(j.texto) }}</span>
-                  </li>
-                </ol>
-                <p class="cav__x">{{ naTela(a.texto) }}</p>
-                <!-- 08/11: o placar da ideia, as notas e os indicadores que mudam; tudo se lê pelo aria-label e nada passa pelo olho -->
-                <div v-if="notasDe(a).length || indicadoresDe(a).length" class="cav__placar">
-                  <div v-if="notasDe(a).length" class="cav__notas" role="group" aria-label="As notas do relatório, antes e depois">
-                    <div v-for="n in notasDe(a)" :key="n.pilar" class="cav__nota" role="img" :aria-label="n.aria">
-                      <span class="cav__nota-n">{{ n.nome }}</span>
-                      <span class="cav__nota-v">
-                        <template v-if="n.igual"><b>{{ n.depois }}</b><span class="cav__nota-igual">igual</span></template>
-                        <template v-else>
-                          <span class="cav__nota-a">{{ n.antes ?? '—' }}</span><span class="cav__nota-seta">→</span><b>{{ n.depois ?? '—' }}</b>
-                          <span v-if="n.deltaTxt" class="cav__nota-d" :class="{ 'cav__nota-d--cai': !n.sobe }">{{ n.deltaTxt }}</span>
-                        </template>
+        <ul v-if="todos.length" class="cav__lista" :class="{ 'cav__lista--unico': unico }">
+          <li v-for="a in todos" :id="`cav-${a.id}`" :key="a.id" class="cav__item" :class="[`cav__item--${a.gravidade}`, { 'cav__item--aberto': estaAberto(a) }]">
+            <p class="cav__tipo">
+              <i aria-hidden="true" />{{ ROTULO[a.gravidade] }}
+              <span v-if="a.estado === 'novo'" class="cav__novo">Novo</span>
+              <span v-if="a.prazo" class="cav__prazo">{{ a.prazo }}</span>
+            </p>
+            <h2 v-if="unico" :id="idTitulo" class="cav__h2 cav__h2--aviso"><FraseDestaque :texto="naTela(a.titulo)" /></h2>
+            <button v-else type="button" class="cav__linha" :aria-expanded="estaAberto(a)" @click="alternar(a.id)">
+              <span class="cav__t"><FraseDestaque :texto="naTela(a.titulo)" /></span>
+              <span v-if="a.emJogo" class="cav__v">{{ semValor(a.emJogo) }}</span>
+              <svg class="cav__seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+
+            <div v-if="estaAberto(a)" class="cav__det">
+                  <!-- 08/11: os ajustes do plano, numerados ("não deixa claro os ajustes"); o valor passa pelo olho -->
+                  <ol v-if="ajustesDe(a).length" class="cav__ajustes" :aria-label="`Os ${ajustesDe(a).length} ajustes`">
+                    <li v-for="(j, k) in ajustesDe(a)" :key="k" class="cav__aj">
+                      <span class="cav__aj-n" aria-hidden="true">{{ k + 1 }}</span>
+                      <span v-if="j.valor" class="cav__aj-t"><span class="cav__aj-v">{{ semValor(j.valor) }}</span><span class="cav__aj-d">{{ j.de }}<span class="cav__aj-seta" aria-hidden="true"> → </span><span class="cav__sr"> por </span>{{ j.para }}</span></span>
+                      <span v-else class="cav__aj-t">{{ naTela(j.texto) }}</span>
+                    </li>
+                  </ol>
+              <p class="cav__x">{{ naTela(a.texto) }}</p>
+                  <!-- 08/11: o placar da ideia, as notas e os indicadores que mudam; tudo se lê pelo aria-label e nada passa pelo olho -->
+                  <div v-if="notasDe(a).length || indicadoresDe(a).length" class="cav__placar">
+                    <div v-if="notasDe(a).length" class="cav__notas" role="group" aria-label="As notas do relatório, antes e depois">
+                      <div v-for="n in notasDe(a)" :key="n.pilar" class="cav__nota" role="img" :aria-label="n.aria">
+                        <span class="cav__nota-n">{{ n.nome }}</span>
+                        <span class="cav__nota-v">
+                          <template v-if="n.igual"><b>{{ n.depois }}</b><span class="cav__nota-igual">igual</span></template>
+                          <template v-else>
+                            <span class="cav__nota-a">{{ n.antes ?? '—' }}</span><span class="cav__nota-seta">→</span><b>{{ n.depois ?? '—' }}</b>
+                            <span v-if="n.deltaTxt" class="cav__nota-d" :class="{ 'cav__nota-d--cai': !n.sobe }">{{ n.deltaTxt }}</span>
+                          </template>
+                        </span>
+                        <span class="cav__nota-b">
+                          <i :style="{ width: `${n.base}%` }" />
+                          <i v-if="n.topo > n.base" class="cav__nota-f" :class="{ 'cav__nota-f--cai': !n.sobe }" :style="faixa(n)" />
+                        </span>
+                      </div>
+                    </div>
+                    <div v-if="indicadoresDe(a).length" class="cav__inds" role="group" aria-label="Os indicadores do relatório que mudam">
+                      <span v-for="i in indicadoresDe(a).slice(0, naLinha(a))" :key="i.chave" class="cav__ind" role="img" :aria-label="i.aria">
+                        <span class="cav__ind-n">{{ i.nome }}</span> {{ i.antes }} <span class="cav__ind-d" :class="i.melhora ? 'cav__ind-d--melhora' : 'cav__ind-d--piora'">→ {{ i.depois }}</span>
                       </span>
-                      <span class="cav__nota-b">
-                        <i :style="{ width: `${n.base}%` }" />
-                        <i v-if="n.topo > n.base" class="cav__nota-f" :class="{ 'cav__nota-f--cai': !n.sobe }" :style="faixa(n)" />
-                      </span>
+                      <button
+                        v-if="indicadoresDe(a).length > naLinha(a)" type="button" class="cav__ind-mais"
+                        :aria-label="`Mais ${indicadoresDe(a).length - naLinha(a)} indicadores, no Como calculei`" @click="abrirProva(a.id)"
+                      >e mais {{ indicadoresDe(a).length - naLinha(a) }}</button>
                     </div>
                   </div>
-                  <div v-if="indicadoresDe(a).length" class="cav__inds" role="group" aria-label="Os indicadores do relatório que mudam">
-                    <span v-for="i in indicadoresDe(a).slice(0, naLinha(a))" :key="i.chave" class="cav__ind" role="img" :aria-label="i.aria">
-                      <span class="cav__ind-n">{{ i.nome }}</span> {{ i.antes }} <span class="cav__ind-d" :class="i.melhora ? 'cav__ind-d--melhora' : 'cav__ind-d--piora'">→ {{ i.depois }}</span>
-                    </span>
-                    <button
-                      v-if="indicadoresDe(a).length > naLinha(a)" type="button" class="cav__ind-mais"
-                      :aria-label="`Mais ${indicadoresDe(a).length - naLinha(a)} indicadores, no Como calculei`" @click="abrirProva(a.id)"
-                    >e mais {{ indicadoresDe(a).length - naLinha(a) }}</button>
-                  </div>
-                </div>
-                <p v-if="a.ressalva" class="cav__ressalva">{{ a.ressalva }}</p>
-                <p class="cav__meta">
-                  <span v-if="a.estado === 'novo'" class="cav__novo">Novo</span>
-                  <span class="cav__conf" :class="`cav__conf--${a.confianca}`">{{ CONFIANCA[a.confianca] }}</span>
-                  <span v-if="a.prazo">{{ a.prazo }}</span>
-                  <button type="button" class="cav__como" :aria-expanded="provaAberta === a.id" @click="alternarProva(a.id)">
-                    Como calculei
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-                  </button>
-                </p>
-                <div v-if="provaAberta === a.id" class="cav__prova">
-                  <dl>
-                    <div v-for="p in a.prova" :key="p.rotulo" class="cav__prova-l" :class="{ 'cav__prova-l--frase': provaLonga(p.valor) }"><dt>{{ p.rotulo }}</dt><dd>{{ semValor(p.valor) }}</dd></div>
-                    <!-- os indicadores que não couberam na linha do placar -->
-                    <div v-for="i in indicadoresDe(a).slice(naLinha(a))" :key="i.chave" class="cav__prova-l">
-                      <dt>{{ i.nome }}</dt>
-                      <dd><span role="img" :aria-label="i.aria">{{ i.antes }} <span class="cav__ind-d" :class="i.melhora ? 'cav__ind-d--melhora' : 'cav__ind-d--piora'">→ {{ i.depois }}</span></span></dd>
-                    </div>
-                  </dl>
-                  <p class="cav__fonte">Fonte: {{ a.fonte }}</p>
-                </div>
-                <div class="cav__acoes">
-                  <button
-                    v-for="(ac, i) in a.acoes" :key="ac.rotulo" type="button" class="cav__acao" :class="{ 'cav__acao--1': i === 0 }"
-                    @click="agir(a, ac)"
-                  >{{ ac.rotulo }}</button>
-                  <!-- a conexão não se "já sabe": ela sai quando volta a atualizar -->
-                  <button v-if="!a.detector.startsWith('conexao')" type="button" class="cav__ja" @click="resolver(a.id)">Já sei</button>
-                </div>
-                <p v-if="erroEstado?.id === a.id" class="cav__erro cav__erro--item" role="status">{{ erroEstado.texto }}</p>
-              </li>
-            </ul>
-          </div>
-        </template>
+
+              <!-- a conta, como um comprovante: curta, aparece; longa, fica a um toque -->
+              <div v-if="provaVisivel(a)" class="cav__prova">
+                      <dl>
+                        <div v-for="p in a.prova" :key="p.rotulo" class="cav__prova-l" :class="{ 'cav__prova-l--frase': provaLonga(p.valor) }"><dt>{{ p.rotulo }}</dt><dd>{{ semValor(p.valor) }}</dd></div>
+                        <!-- os indicadores que não couberam na linha do placar -->
+                        <div v-for="i in indicadoresDe(a).slice(naLinha(a))" :key="i.chave" class="cav__prova-l">
+                          <dt>{{ i.nome }}</dt>
+                          <dd><span role="img" :aria-label="i.aria">{{ i.antes }} <span class="cav__ind-d" :class="i.melhora ? 'cav__ind-d--melhora' : 'cav__ind-d--piora'">→ {{ i.depois }}</span></span></dd>
+                        </div>
+                      </dl>
+              </div>
+              <!-- com um dado faltando, a ressalva fica à vista: é ela que diz que a conta não fechou -->
+              <p v-if="a.ressalva && a.confianca === 'incompleto'" class="cav__ressalva">{{ a.ressalva }}</p>
+              <button type="button" class="cav__como" :aria-expanded="comoAberto.has(a.id)" @click="alternarProva(a.id)">
+                Como calculei
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+              </button>
+              <div v-if="comoAberto.has(a.id)" class="cav__notas-conta">
+                <p class="cav__conf" :class="`cav__conf--${a.confianca}`">{{ CONFIANCA[a.confianca] }}</p>
+                <p v-if="a.ressalva && a.confianca !== 'incompleto'">{{ a.ressalva }}</p>
+                <p>Fonte: {{ a.fonte }}</p>
+              </div>
+
+              <div class="cav__acoes">
+                <button
+                  v-for="(ac, i) in a.acoes" :key="ac.rotulo" type="button" class="cav__acao" :class="{ 'cav__acao--1': i === 0 }"
+                  @click="agir(a, ac)"
+                >{{ ac.rotulo }}</button>
+                <!-- a conexão não se "já sabe": ela sai quando volta a atualizar -->
+                <button v-if="!a.detector.startsWith('conexao')" type="button" class="cav__acao cav__ja" @click="resolver(a.id)">Já sei</button>
+              </div>
+            </div>
+            <p v-if="erroEstado?.id === a.id" class="cav__erro cav__erro--item" role="status">{{ erroEstado.texto }}</p>
+          </li>
+        </ul>
+        <p v-if="retidosTxt" class="cav__retidos">{{ retidosTxt }}</p>
 
         <p v-if="erroEstado && !erroNaLista" class="cav__erro" role="status">{{ erroEstado.texto }}</p>
         <p v-if="grupos.resolvidos.length" class="cav__resolvidos">
@@ -352,6 +388,7 @@ function agir(a: Aviso, acao: AcaoAviso) {
           <summary>
             <span class="cav__dobra-t">Considerei e não sugeri</span>
             <span class="cav__dobra-s">{{ avisos.descartados.length }} movimentos barrados</span>
+            <svg class="cav__dobra-seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
           </summary>
           <ul class="cav__desc">
             <li v-for="d in avisos.descartados" :key="d.id">
@@ -361,10 +398,11 @@ function agir(a: Aviso, acao: AcaoAviso) {
           </ul>
         </details>
 
-        <details class="cav__dobra" :open="!grupos.atencao.length">
+        <details class="cav__dobra">
           <summary>
             <span class="cav__dobra-t">O que eu olhei</span>
             <span class="cav__dobra-s">{{ avisos.olhados.filter((o) => o.ok).length }} de {{ avisos.olhados.length }} sem nada a dizer</span>
+            <svg class="cav__dobra-seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
           </summary>
           <ul class="cav__olhados">
             <li v-for="o in avisos.olhados" :key="o.rotulo" :class="{ 'cav__olhado--nao': !o.ok }">
@@ -427,31 +465,34 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__card:focus { outline: none; }
 .cav__alca { display: none; }
 .cav__cab { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.cav__assinatura { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 0; min-width: 0; }
-.cav__marca { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px 0 9px; border-radius: var(--nu-r-pill); background: var(--nu-cream); color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
-.cav__olhou { color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.cav__olhou { margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
 .cav__fechar { flex: 0 0 auto; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--nu-day-close); color: var(--nu-ink); cursor: pointer; transition: background .2s; }
 .cav__fechar:hover { background: var(--nu-day-close-hover); }
 .cav__fechar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.cav__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; text-wrap: pretty; }
-.cav__retidos { margin: 10px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-md); font-weight: 600; line-height: 1.5; }
+.cav__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.03em; line-height: 1.12; text-wrap: balance; font-variant-numeric: tabular-nums; }
+.cav__h2--aviso { margin-top: 10px; font-size: var(--nu-fs-h2-sm); letter-spacing: -0.035em; line-height: 1.08; }
+.cav__retidos { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
-.cav__grupo { margin-top: 22px; }
-.cav__grupo-t { margin: 0 0 4px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; }
-.cav__lista { list-style: none; margin: 0; padding: 0; }
-.cav__item { position: relative; padding: 16px 0 12px; border-top: 1px solid var(--nu-cream-line); scroll-margin: 24px; }
-.cav__item::before { content: ''; position: absolute; inset: 0 -14px; z-index: -1; border-radius: 12px; background: var(--nu-ink-04); opacity: 0; transition: opacity .2s ease; }
-.cav__item:hover::before, .cav__item:focus-within::before { opacity: 1; }
-.cav__linha { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-.cav__t { display: flex; align-items: baseline; gap: 10px; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; line-height: 1.35; }
-.cav__t::before { content: ''; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--nu-gray); transform: translateY(-2px); }
-.cav__item--alta .cav__t::before { background: var(--nu-red-text); }
-.cav__item--media .cav__t::before { background: var(--nu-amber); }
-.cav__item--info .cav__t::before { background: var(--nu-blue); }
-.cav__item--bom .cav__t::before { background: var(--nu-green); }
-.cav__v { flex-shrink: 0; margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cav__x { margin: 6px 0 0 18px; max-width: 64ch; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
-.cav__ajustes { list-style: none; margin: 10px 0 0 18px; padding: 0; max-width: 64ch; display: grid; grid-template-columns: auto max-content minmax(0, 1fr); column-gap: 10px; row-gap: 6px; }
+.cav__lista { list-style: none; margin: 18px 0 0; padding: 0; }
+.cav__lista--unico { margin-top: 14px; }
+.cav__item { position: relative; padding: 18px 0 16px; border-top: 1px solid var(--nu-cream-line); scroll-margin: 24px; }
+.cav__lista--unico .cav__item { padding-top: 0; border-top: 0; }
+.cav__tipo { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 600; }
+.cav__tipo i { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-gray); }
+.cav__item--alta .cav__tipo i { background: var(--nu-red-text); }
+.cav__item--media .cav__tipo i { background: var(--nu-amber); }
+.cav__item--info .cav__tipo i { background: var(--nu-blue); }
+.cav__item--bom .cav__tipo i { background: var(--nu-green); }
+.cav__prazo { color: var(--nu-gray); font-weight: 500; }
+.cav__linha { display: flex; align-items: baseline; gap: 16px; width: 100%; margin-top: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.cav__linha:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; border-radius: 6px; }
+.cav__seta { flex-shrink: 0; align-self: center; color: var(--nu-gray); transition: transform .2s; }
+.cav__linha[aria-expanded='true'] .cav__seta { transform: rotate(180deg); }
+.cav__det { animation: cavfade .2s ease; }
+.cav__t { flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.cav__v { flex-shrink: 0; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cav__x { margin: 12px 0 0; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55; font-variant-numeric: tabular-nums; }
+.cav__ajustes { list-style: none; margin: 14px 0 0; padding: 0; max-width: 64ch; display: grid; grid-template-columns: auto max-content minmax(0, 1fr); column-gap: 10px; row-gap: 6px; }
 .cav__aj { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; font-size: var(--nu-fs-md); line-height: 1.4; }
 .cav__aj-n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--nu-ink-04); color: var(--nu-gray-3); font-size: var(--nu-fs-xs); font-weight: 700; font-variant-numeric: tabular-nums; transform: translateY(-1px); }
 /* com troca, o valor e o de → para ocupam as duas colunas (subgrid); sem troca, a frase ocupa as duas */
@@ -461,10 +502,10 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__aj-d { min-width: 0; color: var(--nu-ink); }
 .cav__aj-seta { color: var(--nu-gray); }
 .cav__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.cav__ressalva { margin: 8px 0 0 18px; max-width: 64ch; padding-left: 12px; border-left: 2px solid var(--nu-amber); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
+.cav__ressalva { margin: 14px 0 0; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 /* ——— o placar da ideia (08/11): as notas, uma célula por pilar com a barra do relatório (.vrl__barra), e os indicadores que mudam ——— */
-.cav__placar { display: flex; flex-direction: column; gap: 12px; margin: 12px 0 14px 18px; max-width: 64ch; font-size: var(--nu-fs-md); }
+.cav__placar { display: flex; flex-direction: column; gap: 12px; margin: 14px 0 0; max-width: 64ch; font-size: var(--nu-fs-md); }
 .cav__notas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 16px; }
 .cav__nota { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .cav__nota-n { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 700; line-height: 1.3; overflow-wrap: break-word; hyphens: auto; }
@@ -492,65 +533,71 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__ind-d--piora { color: var(--nu-red-text); }
 .cav__ind-mais { padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-weight: 700; white-space: nowrap; cursor: pointer; }
 .cav__ind-mais:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.cav__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0 18px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 .cav__novo { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: var(--nu-r-pill); background: var(--nu-blue-tint); color: var(--nu-blue-text); font-size: var(--nu-fs-xs); font-weight: 800; }
-.cav__conf { display: inline-flex; align-items: center; gap: 6px; }
+.cav__conf { display: flex; align-items: center; gap: 6px; font-weight: 700; }
 .cav__conf::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--nu-green); }
 .cav__conf--estimativa::before { background: var(--nu-blue); }
 .cav__conf--incompleto::before { background: var(--nu-amber); }
-.cav__como { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-blue-text); font: inherit; font-weight: 700; }
+.cav__como { display: inline-flex; align-items: center; gap: 4px; margin: 14px 0 0; padding: 0; border: 0; background: none; cursor: pointer; color: var(--nu-gray-2); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; }
+.cav__como:hover { color: var(--nu-ink); }
+.cav__notas-conta { display: grid; gap: 6px; margin: 10px 0 0; max-width: 62ch; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; animation: cavfade .2s ease; }
+.cav__notas-conta p { margin: 0; }
 .cav__como[aria-expanded='true'] svg { transform: rotate(180deg); }
 .cav__como svg { transition: transform .2s; }
 .cav__como:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.cav__prova { margin: 10px 0 0 18px; padding: 12px 14px; border-radius: 12px; background: var(--nu-cream); animation: cavfade .2s ease; }
+.cav__prova { margin: 18px 0 0; border-top: 1px solid var(--nu-cream-line); border-bottom: 1px solid var(--nu-cream-line); animation: cavfade .2s ease; }
 .cav__prova dl { margin: 0; }
-.cav__prova-l { display: flex; justify-content: space-between; gap: 16px; padding: 5px 0; border-top: 1px solid var(--nu-cream-line); font-size: var(--nu-fs-sm); }
+.cav__prova-l { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 12px 0; border-top: 1px solid var(--nu-cream-line); font-size: var(--nu-fs-md); }
 .cav__prova-l:first-child { border-top: 0; }
-.cav__prova-l dt { color: var(--nu-gray-3); font-weight: 500; }
-.cav__prova-l dd { margin: 0; color: var(--nu-ink); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.cav__prova-l dt { color: var(--nu-gray-2); font-weight: 500; }
+.cav__prova-l dd { margin: 0; color: var(--nu-ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+/* o valor curto não quebra ('R$ 387,91' partia em duas linhas no celular); o de frase quebra à vontade */
+.cav__prova-l:not(.cav__prova-l--frase) dd { flex-shrink: 0; white-space: nowrap; }
+/* a última linha da conta curta é o total: o número que a frase destacou */
+.cav__prova-l:last-child:not(:first-child):not(.cav__prova-l--frase) dt { color: var(--nu-ink); font-weight: 700; }
+.cav__prova-l:last-child:not(:first-child):not(.cav__prova-l--frase) dd { font-weight: 800; }
 .cav__prova-l--frase { flex-direction: column; gap: 2px; }
 .cav__prova-l--frase dd { text-align: left; font-weight: 600; }
-.cav__fonte { margin: 8px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; }
-.cav__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 12px 0 0 18px; }
+.cav__acoes { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
 .cav__acao {
-  height: 34px; padding: 0 14px; border-radius: var(--nu-r-pill); border: 1px solid var(--nu-cream-line); background: var(--nu-white);
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; transition: background .2s, border-color .2s;
+  height: 48px; padding: 0 24px; border-radius: var(--nu-r-pill); border: 0; background: var(--nu-cream);
+  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-md); font-weight: 700; cursor: pointer; transition: background .2s;
 }
-.cav__acao:hover { background: var(--nu-cream); }
-.cav__acao--1 { background: var(--nu-ink); border-color: var(--nu-ink); color: var(--nu-white); }
-.cav__acao--1:hover { background: var(--nu-navy); }
+.cav__acao:hover { background: var(--nu-cream-4); }
+.cav__acao--1 { background: var(--nu-blue); color: var(--nu-white); }
+.cav__acao--1:hover { background: var(--nu-blue-hover); }
 .cav__acao:focus-visible, .cav__ja:focus-visible, .cav__desfazer:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
-.cav__ja { margin-left: auto; padding: 6px 4px; border: 0; background: none; color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-sm); font-weight: 700; cursor: pointer; }
-.cav__ja:hover { color: var(--nu-ink); }
+.cav__ja { background: none; color: var(--nu-gray-2); }
+.cav__ja:hover { background: var(--nu-cream); color: var(--nu-ink); }
 .cav__resolvidos { margin: 14px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.6; }
 .cav__desfazer { padding: 0; border: 0; background: none; color: var(--nu-blue-text); font: inherit; font-weight: 700; cursor: pointer; }
 
 .cav__dobra { margin-top: 18px; border-top: 1px solid var(--nu-day-divider); }
-.cav__dobra summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 16px 0 4px; cursor: pointer; list-style: none; }
+.cav__dobra summary { display: flex; align-items: center; gap: 12px; padding: 16px 0; cursor: pointer; list-style: none; }
 .cav__dobra summary::-webkit-details-marker { display: none; }
 .cav__dobra summary:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; border-radius: 4px; }
-.cav__dobra-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
-.cav__dobra-t::after { content: ' ›'; color: var(--nu-gray); display: inline-block; transition: transform .2s; }
-.cav__dobra[open] .cav__dobra-t::after { transform: rotate(90deg); }
-.cav__dobra-s { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.cav__dobra-t { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.cav__dobra-s { margin-left: auto; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; text-align: right; }
+.cav__dobra-seta { flex-shrink: 0; color: var(--nu-gray); transition: transform .2s; }
+.cav__dobra[open] .cav__dobra-seta { transform: rotate(180deg); }
 .cav__desc { list-style: none; margin: 4px 0 0; padding: 0; }
 .cav__desc li { padding: 10px 0; border-top: 1px solid var(--nu-cream-line); }
 .cav__desc li:first-child { border-top: 0; }
 .cav__desc-m { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 700; text-decoration: line-through; text-decoration-color: var(--nu-gray-2); text-decoration-thickness: 1px; }
 .cav__desc-v { margin: 4px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.cav__olhados { list-style: none; margin: 6px 0 0; padding: 0; }
+.cav__olhados { list-style: none; margin: 0 0 8px; padding: 0; }
 .cav__olhados li { display: grid; grid-template-columns: 20px minmax(110px, 200px) minmax(0, 1fr); align-items: baseline; gap: 10px; padding: 7px 0; font-size: var(--nu-fs-sm); }
 .cav__check { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--nu-green-bg, var(--nu-cream)); color: var(--nu-green-text, var(--nu-green)); transform: translateY(3px); font-weight: 800; font-size: 11px; }
 .cav__olhado--nao .cav__check { background: var(--nu-amber-bg); color: var(--nu-amber-text); }
 .cav__olhado-r { color: var(--nu-ink); font-weight: 700; }
 .cav__olhado-v { color: var(--nu-gray-3); font-weight: 500; font-variant-numeric: tabular-nums; }
 .cav__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5; }
-.cav__erro--item { margin: 8px 0 0 18px; }
+.cav__erro--item { margin: 8px 0 0; }
 .cav__erro--canal { flex-basis: 100%; margin: 0; }
 
 /* ——— por onde receber: o segmentado claro das lentes, com mais de uma escolha ——— */
 .cav__canais { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--nu-day-divider); }
-.cav__canais-t { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 800; }
+.cav__canais-t { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
 .cav__canais-l { list-style: none; margin: 6px 0 0; padding: 0; }
 .cav__canal { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 8px 0; }
 .cav__canal + .cav__canal { border-top: 1px solid var(--nu-cream-line); }
@@ -576,8 +623,14 @@ function agir(a: Aviso, acao: AcaoAviso) {
   .cav__card { width: 100%; max-height: 90vh; max-height: 90dvh; border-radius: var(--nu-r-card-lg) var(--nu-r-card-lg) 0 0; padding: 12px 20px calc(20px + env(safe-area-inset-bottom)); animation: cavsobe .32s cubic-bezier(.2, .8, .2, 1); }
   .cav__alca { display: block; width: 40px; height: 4px; margin: 0 auto 14px; border-radius: 2px; background: var(--nu-cream-line); }
   .cav__h2 { margin-top: 16px; font-size: var(--nu-fs-2xl); }
-  .cav__linha { flex-direction: column; gap: 2px; }
-  .cav__v { margin-left: 18px; font-size: var(--nu-fs-md); }
+  .cav__h2--aviso { font-size: var(--nu-fs-h3); }
+  .cav__linha { flex-wrap: wrap; gap: 2px 12px; }
+  .cav__t { flex-basis: calc(100% - 34px); font-size: var(--nu-fs-lg); }
+  .cav__v { order: 3; flex-basis: 100%; }
+  .cav__acoes { flex-direction: column; align-items: stretch; }
+  .cav__dobra summary { flex-wrap: wrap; gap: 2px 12px; }
+  .cav__dobra-t { flex: 1; }
+  .cav__dobra-s { order: 3; flex-basis: 100%; margin-left: 0; text-align: left; }
   .cav__olhados li { grid-template-columns: 20px minmax(0, 1fr); }
   .cav__olhado-v { grid-column: 2; }
   .cav__canal { flex-direction: column; align-items: stretch; }
@@ -589,7 +642,8 @@ function agir(a: Aviso, acao: AcaoAviso) {
   .cav__notas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cav, .cav__card, .cav__prova, .cav__nota-b .cav__nota-f { animation: none; }
+  .cav, .cav__card, .cav__prova, .cav__det, .cav__nota-b .cav__nota-f { animation: none; }
+  .cav__seta, .cav__dobra-seta { transition: none; }
   .cav__op { transition: none; }
 }
 </style>
