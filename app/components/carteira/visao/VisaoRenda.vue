@@ -101,23 +101,73 @@ const verMarcados = ref(false)
    escurecidas por alguns segundos"). O topo soma 1 em `carteira:renda:foco`;
    aqui a página rola até o mês a mês, a lista do que está marcado abre, e por
    uns segundos o mês a cair e os pagamentos dele ficam como estão enquanto os
-   meses que passaram, a frase e o resto da seção escurecem. */
+   meses que passaram, a frase e o resto da seção escurecem.
+   Depois (mesmo dia: "faça uma animação trazendo esse para o centro e
+   colocando um texto"): o palco. Assim que a rolagem assenta, os meses que
+   passaram somem, a barra do mês a cair desliza para o centro do gráfico e a
+   frase entra dos dois lados dela ("Em novembro ainda caem" · a barra com o
+   valor · "5 pagamentos, o próximo em 12/11"). Uns segundos depois, ela volta
+   para o lugar. Com movimento reduzido não há palco, só o escurecimento. */
 const pedidoDeFoco = useState('carteira:renda:foco', () => 0)
 const emFoco = ref(false)
+const noPalco = ref(false)
 const mesesRef = ref<HTMLElement | null>(null)
+const palcoRef = ref<HTMLElement | null>(null)
 let fimDoFoco: ReturnType<typeof setTimeout> | undefined
+let entradaDoPalco: ReturnType<typeof setTimeout> | undefined
+function pararFoco() {
+  if (fimDoFoco) clearTimeout(fimDoFoco)
+  if (entradaDoPalco) clearTimeout(entradaDoPalco)
+}
+const ESCALA_DA_COLUNA = 1.14
+const ESCALA_DO_VALOR = 1.6
+/** quanto a coluna do mês a cair anda para parar no meio do gráfico */
+function medirPalco(): boolean {
+  const palco = palcoRef.value
+  const mes = palco?.querySelector<HTMLElement>('.vrd__mes--futuro')
+  if (!palco || !mes) return false
+  const a = palco.getBoundingClientRect()
+  const b = mes.getBoundingClientRect()
+  palco.style.setProperty('--vrd-dx', `${Math.round(a.left + a.width / 2 - (b.left + b.width / 2))}px`)
+  // o valor desce até encostar no topo da barra (qualquer que seja a altura dela) e cresce;
+  // a frase dos lados fica na altura dele, já contando a escala da coluna (que cresce a partir da base)
+  const valor = mes.querySelector<HTMLElement>('.vrd__mes-v')?.getBoundingClientRect()
+  const trilho = mes.querySelector<HTMLElement>('.vrd__mes-b')?.getBoundingClientRect()
+  const barra = mes.querySelector<HTMLElement>('.vrd__pilha')?.getBoundingClientRect()
+  if (valor && trilho && barra) {
+    const dy = Math.max(0, trilho.height - barra.height)
+    const meio = valor.bottom + dy - (valor.height * ESCALA_DO_VALOR) / 2
+    const noPalcoY = b.bottom - ESCALA_DA_COLUNA * (b.bottom - meio)
+    palco.style.setProperty('--vrd-dy', `${Math.round(dy)}px`)
+    palco.style.setProperty('--vrd-ty', `${Math.round(noPalcoY - a.top)}px`)
+  }
+  return true
+}
 watch(pedidoDeFoco, async () => {
   if (import.meta.server) return
+  pararFoco()
   mesFixo.value = null
+  mesHover.value = null
   verMarcados.value = true
+  noPalco.value = false
   emFoco.value = true
   await nextTick()
   const calmo = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   mesesRef.value?.scrollIntoView({ behavior: calmo ? 'auto' : 'smooth', block: 'start' })
-  if (fimDoFoco) clearTimeout(fimDoFoco)
-  fimDoFoco = setTimeout(() => { emFoco.value = false }, 3600)
+  // o palco entra depois de a rolagem assentar; a medida é da coluna no lugar dela (sem o transform)
+  if (!calmo) entradaDoPalco = setTimeout(() => { noPalco.value = medirPalco() }, 550)
+  fimDoFoco = setTimeout(() => { noPalco.value = false; emFoco.value = false }, calmo ? 3600 : 5200)
 })
-onBeforeUnmount(() => { if (fimDoFoco) clearTimeout(fimDoFoco) })
+onBeforeUnmount(pararFoco)
+/** a frase do palco, em duas metades, uma de cada lado da barra */
+const palcoTxt = computed(() => {
+  const n = r.value.marcados.length
+  const p = proximo.value
+  return {
+    antes: `Em ${mesMarcado.value}`, verbo: n === 1 ? 'ainda cai' : 'ainda caem',
+    quantos: n === 1 ? '1 pagamento' : `${n} pagamentos`, proximo: p ? `o próximo em ${fmtDia(p.data)}` : '',
+  }
+})
 // 08/11, o dono pediu hover e clique: o hover mostra o mês com a divisão por tipo; o clique abre
 // embaixo o que caiu nele, ativo por ativo (o mês a cair abre a lista do que está marcado)
 const mesHover = ref<number | null>(null)
@@ -207,7 +257,7 @@ function simular() {
 </script>
 
 <template>
-  <section class="vrd" :class="{ 'vrd--foco': emFoco }" aria-labelledby="vrd-titulo" data-clarity-mask="true">
+  <section class="vrd" :class="{ 'vrd--foco': emFoco, 'vrd--palco': noPalco }" aria-labelledby="vrd-titulo" data-clarity-mask="true">
     <span class="vrd__eyebrow">Quanto ele me paga?</span>
     <h2 id="vrd-titulo" class="vrd__frase"><FraseDestaque :texto="frase" /></h2>
     <p v-if="cob != null" class="vrd__sub">
@@ -249,6 +299,7 @@ function simular() {
         <ul v-if="empilhado" class="vrd__classes" aria-label="Por tipo">
           <li v-for="c in CLASSES" :key="c.id"><i class="vrd__k" :class="`vrd__k--${c.id}`" aria-hidden="true" />{{ c.nome }}</li>
         </ul>
+        <div ref="palcoRef" class="vrd__palco">
         <ol class="vrd__meses" @pointerleave="mesHover = null">
           <li
             v-for="(m, i) in meses" :key="m.mes" class="vrd__mes"
@@ -274,6 +325,10 @@ function simular() {
             </span>
           </li>
         </ol>
+        <!-- o palco do mês a cair: a frase, metade de cada lado da barra no centro (só enfeite: a lista abaixo diz o mesmo) -->
+        <p class="vrd__palco-t vrd__palco-t--esq" aria-hidden="true"><span>{{ palcoTxt.antes }}</span><b>{{ palcoTxt.verbo }}</b></p>
+        <p class="vrd__palco-t vrd__palco-t--dir" aria-hidden="true"><b>{{ palcoTxt.quantos }}</b><span>{{ palcoTxt.proximo }}</span></p>
+        </div>
         </div>
 
         <div class="vrd__parte vrd__parte--marcados">
@@ -403,6 +458,31 @@ function simular() {
 .vrd--foco .vrd__mes:not(.vrd__mes--futuro) { opacity: .25; }
 .vrd--foco .vrd__mes--futuro .vrd__pilha i { opacity: .8; }
 .vrd--foco .vrd__mes--futuro .vrd__mes-n { color: var(--nu-ink); font-weight: 800; }
+/* o palco: os outros meses somem, o mês a cair vai para o centro e a frase entra dos dois lados */
+.vrd__palco { position: relative; --vrd-meia: 64px; }
+.vrd__mes { transform-origin: 50% 100%; transition: opacity .5s ease, transform .9s cubic-bezier(.2, .8, .2, 1); }
+.vrd--palco .vrd__mes:not(.vrd__mes--futuro) { opacity: 0; pointer-events: none; }
+.vrd--palco .vrd__parte--meses :is(.vrd__h3, .vrd__classes) { opacity: 0; }
+.vrd--palco .vrd__mes--futuro { z-index: 1; transform: translateX(var(--vrd-dx, 0px)) scale(1.14); }
+.vrd__mes-v { display: block; transform-origin: 50% 100%; transition: transform .9s cubic-bezier(.2, .8, .2, 1); }
+.vrd--palco .vrd__mes--futuro .vrd__mes-v { transform: translateY(var(--vrd-dy, 0px)) scale(1.6); }
+.vrd--palco .vrd__mes--futuro .vrd__pilha i { opacity: 1; }
+.vrd__palco-t {
+  position: absolute; top: var(--vrd-ty, 50%); display: flex; flex-direction: column; gap: 2px; margin: 0; max-width: calc(50% - var(--vrd-meia) - 4px); pointer-events: none;
+  color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.3; font-variant-numeric: tabular-nums;
+  opacity: 0; filter: blur(8px); transform: translateY(calc(-50% + 8px));
+  transition: opacity .35s ease, filter .35s ease, transform .35s ease;
+}
+.vrd__palco-t b { color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; }
+.vrd__palco-t--esq { right: calc(50% + var(--vrd-meia)); text-align: right; align-items: flex-end; }
+.vrd__palco-t--dir { left: calc(50% + var(--vrd-meia)); text-align: left; }
+.vrd--palco .vrd__palco-t { opacity: 1; filter: none; transform: translateY(-50%); transition: opacity .55s ease .5s, filter .55s ease .5s, transform .7s cubic-bezier(.2, .8, .2, 1) .5s; }
+.vrd--palco .vrd__palco-t--dir { transition-delay: .66s; }
+@media (max-width: 640px) {
+  .vrd__palco { --vrd-meia: 50px; }
+  .vrd__palco-t b { font-size: var(--nu-fs-md); letter-spacing: -0.02em; }
+  .vrd__palco-t { font-size: var(--nu-fs-xs); }
+}
 /* o mês inteiro é o alvo do hover e do clique */
 .vrd__mes-btn { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 10px; background: none; font: inherit; text-align: center; cursor: pointer; }
 .vrd__mes-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
