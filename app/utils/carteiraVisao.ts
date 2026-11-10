@@ -61,6 +61,32 @@ export function tituloDosAvisos(atencao: number, saber: number): string {
 }
 
 /**
+ * Os avisos do dia saem quando a bolsa abre (10/11/2026, o dono: "libere os
+ * avisos só quando a bolsa abrir"). Em dia de pregão, antes das 10h, a conta
+ * do motor ainda é a de ontem: o topo mostra o esqueleto no lugar da resposta.
+ * Em dia sem pregão a bolsa não abre, e os avisos seguem à mostra.
+ */
+export function avisosLiberados(estado: 'aberta' | 'fechada' | 'antes' | 'sem-pregao'): boolean {
+  return estado !== 'antes'
+}
+
+/**
+ * O que os avisos retidos esperam, numa frase: o preço do último pregão, a
+ * conexão, ou os dois. Era "Outros 1 avisos esperam a conexão voltar. Com dado
+ * de , eu prefiro não arriscar.", sempre culpando a conexão. Sem `por` (resposta
+ * antiga), vale a conexão. '' sem retidos.
+ */
+export function textoDosRetidos(retidos: number, por?: { precos: number; conexao: number } | null, dadosDe?: string | null): string {
+  if (!retidos) return ''
+  const quantos = retidos === 1 ? 'Mais 1 aviso' : `Mais ${retidos} avisos`
+  const precos = por?.precos ?? 0
+  const conexao = por ? por.conexao : retidos
+  if (precos && !conexao) return `${quantos} a caminho: falta chegar o preço do último pregão para eu fechar a conta.`
+  if (precos && conexao) return `${quantos} a caminho: faltam a conexão atualizar e o preço do último pregão chegar.`
+  return `${quantos} a caminho: ${retidos === 1 ? 'espera' : 'esperam'} a conexão atualizar${dadosDe ? ` (o dado é de ${dadosDe})` : ''}.`
+}
+
+/**
  * O nome sem o complemento que o backend põe depois do ' · ' ('Tesouro IPCA+
  * 2050 · IPCA + 6,97%' → 'Tesouro IPCA+ 2050'): para frase e lista curta. A
  * lista de Ativos mostra o nome inteiro, com a taxa.

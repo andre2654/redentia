@@ -6,7 +6,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { CENARIOS, relatorioMock, visaoMock } from '../app/dev/carteiraVisaoMock.ts'
-import { brlCurto, cobertura, confereComOTopo, ehRendaFixa, fraseDosAtivos, grupoDaPosicao, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, tituloDosAvisos } from '../app/utils/carteiraVisao.ts'
+import { brlCurto, cobertura, confereComOTopo, ehRendaFixa, fraseDosAtivos, grupoDaPosicao, gruposDeAvisos, nomeCurto, pctTxt, quandoAtualizou, rotuloDaPosicao, semQuebraNoReal, textoDosRetidos, tituloDosAvisos, avisosLiberados } from '../app/utils/carteiraVisao.ts'
 import { mesesEmOrdem } from '../app/utils/impostoVisao.ts'
 import { mediana } from '../app/utils/relatorioCarteira.ts'
 import type { MesImposto } from '../app/types/carteiraVisao.ts'
@@ -232,4 +232,20 @@ test('a lente Ativos: o ETF de CDI é renda fixa, e a frase só fala de concentr
   // uma ação pesando mais de um quarto volta a ser o que a pessoa vê primeiro
   const concentrada = [p('PETR4', 'STOCK', 'petroleo', 400), p('AUPO11', 'ETF', 'selic', 600)]
   assert.equal(fraseDosAtivos(concentrada, 1000), '2 ativos, e 40% num só: o PETR4.')
+})
+
+test('os avisos do dia saem quando a bolsa abre; em dia sem pregão, seguem à mostra', () => {
+  assert.equal(avisosLiberados('antes'), false)
+  assert.equal(avisosLiberados('aberta'), true)
+  assert.equal(avisosLiberados('fechada'), true)
+  assert.equal(avisosLiberados('sem-pregao'), true)
+})
+
+test('o aviso retido diz o que espera: o preço, a conexão ou os dois', () => {
+  assert.equal(textoDosRetidos(0, { precos: 0, conexao: 0 }), '')
+  assert.equal(textoDosRetidos(1, { precos: 1, conexao: 0 }), 'Mais 1 aviso a caminho: falta chegar o preço do último pregão para eu fechar a conta.')
+  assert.equal(textoDosRetidos(3, { precos: 0, conexao: 3 }, '20/10'), 'Mais 3 avisos a caminho: esperam a conexão atualizar (o dado é de 20/10).')
+  assert.equal(textoDosRetidos(2, { precos: 1, conexao: 1 }), 'Mais 2 avisos a caminho: faltam a conexão atualizar e o preço do último pregão chegar.')
+  // resposta antiga, sem o motivo: vale a conexão, e sem a data não sobra "Com dado de ,"
+  assert.equal(textoDosRetidos(1), 'Mais 1 aviso a caminho: espera a conexão atualizar.')
 })

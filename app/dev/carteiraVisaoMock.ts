@@ -393,6 +393,7 @@ export function visaoMock(cenario: CenarioVisao = 'normal'): CarteiraVisao {
       olhados: olhados(cenario),
       urgente,
       retidos: velho ? 5 : 0,
+      retidosPor: { precos: 0, conexao: velho ? 5 : 0 },
     },
     fatores: fatores(),
     protecoes: [

@@ -43,7 +43,7 @@
 // em vermelho quando piora. Na linha, até 8 e no máximo 2 linhas no desktop; o
 // resto vai para o "Como calculei", atrás do "e mais N".
 import type { AcaoAviso, Aviso, AvisosVisao } from '~/types/carteiraVisao'
-import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, tituloDosAvisos } from '~/utils/carteiraVisao'
+import { gruposDeAvisos, quandoAtualizou, semQuebraNoReal, textoDosRetidos, tituloDosAvisos } from '~/utils/carteiraVisao'
 import { topicosDosAvisos, type TopicoCarteira } from '~/utils/avisosCanais'
 import { celulasDasNotas, indicadoresQueMudam, linhasDosAjustes, quantosNaLinha, type CelulaDaNota } from '~/utils/notasDoAviso'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
@@ -108,12 +108,8 @@ const ROTULO: Record<Aviso['gravidade'], string> = { alta: 'Pede atenção', med
 const CONTA_CURTA = 6
 const comoAberto = ref<Set<string>>(new Set())
 const provaVisivel = (a: Aviso) => a.prova.length <= CONTA_CURTA || comoAberto.value.has(a.id)
-/** 'Mais 1 aviso espera a conexão atualizar.' (era "Outros 1 avisos…", e "Com dado de ," sem a data) */
-const retidosTxt = computed(() => {
-  const n = props.avisos.retidos
-  if (!n) return ''
-  return `${n === 1 ? 'Mais 1 aviso espera' : `Mais ${n} avisos esperam`} a conexão atualizar${props.dadosDe ? `: com dado de ${props.dadosDe}, prefiro não arriscar` : ''}.`
-})
+/** o aviso retido aparece como algo a caminho, com o esqueleto e o que ele espera (textoDosRetidos) */
+const retidosTxt = computed(() => textoDosRetidos(props.avisos.retidos, props.avisos.retidosPor, props.dadosDe))
 function abrir(id?: string | null) {
   aberto.value = true
   expandido.value = id ?? todos.value[0]?.id ?? null
@@ -374,7 +370,14 @@ function agir(a: Aviso, acao: AcaoAviso) {
             <p v-if="erroEstado?.id === a.id" class="cav__erro cav__erro--item" role="status">{{ erroEstado.texto }}</p>
           </li>
         </ul>
-        <p v-if="retidosTxt" class="cav__retidos">{{ retidosTxt }}</p>
+        <!-- o aviso que ainda espera um dado: a caminho, em esqueleto (loading é sempre esqueleto) -->
+        <div v-if="retidosTxt" class="cav__espera" role="status">
+          <span class="cav__espera-esq" aria-hidden="true">
+            <NuSkeleton width="min(340px, 70%)" height="22px" radius="chip" />
+            <NuSkeleton width="min(480px, 92%)" height="14px" radius="chip" />
+          </span>
+          <p class="cav__retidos">{{ retidosTxt }}</p>
+        </div>
 
         <p v-if="erroEstado && !erroNaLista" class="cav__erro" role="status">{{ erroEstado.texto }}</p>
         <p v-if="grupos.resolvidos.length" class="cav__resolvidos">
@@ -471,7 +474,10 @@ function agir(a: Aviso, acao: AcaoAviso) {
 .cav__fechar:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
 .cav__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 500; letter-spacing: -0.03em; line-height: 1.12; text-wrap: balance; font-variant-numeric: tabular-nums; }
 .cav__h2--aviso { margin-top: 10px; font-size: var(--nu-fs-h2-sm); letter-spacing: -0.035em; line-height: 1.08; }
-.cav__retidos { margin: 16px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
+.cav__espera { padding: 18px 0 4px; border-top: 1px solid var(--nu-cream-line); }
+.cav__lista--unico + .cav__espera { margin-top: 22px; }
+.cav__espera-esq { display: grid; gap: 8px; }
+.cav__retidos { margin: 12px 0 0; color: var(--nu-gray-2); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
 
 .cav__lista { list-style: none; margin: 18px 0 0; padding: 0; }
 .cav__lista--unico { margin-top: 14px; }

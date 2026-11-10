@@ -15,7 +15,7 @@ import type { CarteiraAgoraVM } from '~/types/carteira'
 import type { AvisosVisao, ConexaoVisao, RendaVisao } from '~/types/carteiraVisao'
 import { contraABolsa, pctComSinal } from '~/utils/diaDaCarteira'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
-import { quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
+import { avisosLiberados, quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
 import { nomeDoMes } from '~/utils/impostoVisao'
 import {
   contraOCdi, inicioDoPeriodo, periodosDoDesempenho, rebase100, serieDesde, variacaoDoIndice, type PeriodoDesempenho,
@@ -69,7 +69,15 @@ const temGrafico = computed(() => linha.value.length >= 2)
 const tituloGrafico = computed(() => `A rentabilidade da carteira contra o CDI, ${quandoTxt.value.toLowerCase()}`)
 
 /* ————— o dia ————— */
-const pregao = computed(() => estadoDoPregao())
+// o estado do pregão anda com o relógio: às 10h a bolsa abre e os avisos saem, sem recarregar a página
+const relogio = ref(0)
+onMounted(() => {
+  const t = setInterval(() => { relogio.value++ }, 30_000)
+  onBeforeUnmount(() => clearInterval(t))
+})
+const pregao = computed(() => { void relogio.value; return estadoDoPregao() })
+// os avisos do dia só saem com a bolsa aberta (10/11); antes, a resposta fica em esqueleto
+const liberados = computed(() => avisosLiberados(pregao.value.estado))
 const quando = computed(() => quandoFoi(props.agora.priceDate) ?? 'hoje')
 const patrimonio = computed(() => (revelado.value ? props.agora.patrimonio : 'R$ ••••••'))
 const semSinal = (s: string) => s.replace(/^[+−-]/, '')
@@ -87,7 +95,7 @@ const contra = computed(() => {
   return `${contraABolsa(c, b, pregao.value.estado === 'aberta')} (${pctComSinal(b)})`
 })
 const urgente = computed(() => props.avisos.itens.find((a) => a.id === props.avisos.urgente) ?? null)
-const atencao = computed(() => !!urgente.value || !!props.agora.alerta)
+const atencao = computed(() => liberados.value && (!!urgente.value || !!props.agora.alerta))
 
 /* ————— as três respostas ————— */
 const pedem = computed(() => props.avisos.itens.filter((a) => a.gravidade === 'alta' || a.gravidade === 'media'))
@@ -100,15 +108,20 @@ const proximo = computed(() => {
 })
 const dm = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`
 
-interface Resposta { id: 'olhar' | 'receber'; pergunta: string; valor: string; sub: string; acao: string }
+interface Resposta { id: 'olhar' | 'receber'; pergunta: string; valor: string; sub: string; acao: string; espera?: boolean; aCaminho?: string }
 const respostas = computed<Resposta[]>(() => {
   const out: Resposta[] = []
   const n = props.avisos.itens.length
   const k = props.avisos.olhados.length
-  out.push({
+  const r = props.avisos.retidos
+  if (!liberados.value) {
+    out.push({ id: 'olhar', pergunta: 'Tem algo para eu olhar?', acao: '', valor: '', espera: true, sub: 'Os avisos de hoje saem quando a bolsa abrir, às 10h.' })
+  } else out.push({
     id: 'olhar', pergunta: 'Tem algo para eu olhar?', acao: 'Abrir os avisos',
-    valor: pedem.value.length ? (pedem.value.length === 1 ? '1 pede atenção' : `${pedem.value.length} pedem atenção`) : n ? (n === 1 ? '1 aviso para ler' : `${n} avisos para ler`) : 'Nada hoje',
-    sub: primeiro.value ? semQuebraNoReal(mascarar(primeiro.value.titulo)) : k ? `Olhei ${k} coisas na sua carteira e está tudo em ordem.` : 'Está tudo em ordem.',
+    // com aviso na tela, o retido vai na linha de baixo; sem nenhum, ele é a resposta
+    aCaminho: r && n ? (r === 1 ? 'mais 1 a caminho' : `mais ${r} a caminho`) : undefined,
+    valor: r && !n ? (r === 1 ? '1 aviso a caminho' : `${r} avisos a caminho`) : pedem.value.length ? (pedem.value.length === 1 ? '1 pede atenção' : `${pedem.value.length} pedem atenção`) : n ? (n === 1 ? '1 aviso para ler' : `${n} avisos para ler`) : 'Nada hoje',
+    sub: r && !n ? (props.avisos.retidosPor?.precos && !props.avisos.retidosPor.conexao ? 'Falta chegar o preço do último pregão.' : 'Espera a conexão atualizar.') : primeiro.value ? semQuebraNoReal(mascarar(primeiro.value.titulo)) : k ? `Olhei ${k} coisas na sua carteira e está tudo em ordem.` : 'Está tudo em ordem.',
   })
   if (marcados.value.length) {
     const mes = nomeDoMes(marcados.value[0]!.data.slice(0, 7))
@@ -194,8 +207,12 @@ const contexto = computed(() => ({
       </div>
       <div v-for="r in respostas" :key="r.id" class="chv2__fato">
         <dt>{{ r.pergunta }}</dt>
-        <dd><button type="button" class="chv2__link" @click="agir(r.id)">{{ r.valor }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg><span class="chv__sr">{{ r.acao }}</span></button></dd>
+        <!-- antes da abertura, os avisos do dia ainda não saíram: o esqueleto no lugar da resposta -->
+        <dd v-if="r.espera" class="chv2__espera" role="status" :aria-label="r.sub"><NuSkeleton width="min(190px, 80%)" height="28px" radius="chip" /></dd>
+        <dd v-else><button type="button" class="chv2__link" @click="agir(r.id)">{{ r.valor }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg><span class="chv__sr">{{ r.acao }}</span></button></dd>
         <dd class="chv2__fato-s">{{ r.sub }}</dd>
+        <!-- o aviso que ainda espera o preço ou a conexão: a caminho -->
+        <dd v-if="r.aCaminho" class="chv2__fato-s chv2__caminho"><NuSkeleton width="56px" height="10px" radius="pill" aria-hidden="true" />{{ r.aCaminho }}</dd>
       </div>
     </dl>
 
@@ -272,6 +289,10 @@ const contexto = computed(() => ({
 .chv2__fato dd { margin: 6px 0 0; font-size: var(--nu-fs-2xl); font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
 .chv2__fato dd.chv2__fato-s { margin-top: 6px; color: var(--sub); font-size: var(--nu-fs-sm); font-weight: 500; letter-spacing: 0; line-height: 1.45; }
 .chv2__fato-s b { font-weight: 700; }
+.chv2__espera { padding: 2px 0; }
+/* sobre o creme do topo, o esqueleto padrão (areia e creme) quase some: um tom acima, com o mesmo brilho */
+.chv :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-cream)); background-image: linear-gradient(100deg, var(--esq) 25%, var(--nu-white) 50%, var(--esq) 75%); }
+.chv2__fato dd.chv2__caminho { display: flex; align-items: center; gap: 8px; }
 .chv2__link { display: inline-flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
 .chv2__link svg { color: var(--nu-blue-text); transition: transform .2s; }
 .chv2__link:hover svg { transform: translateX(3px); }

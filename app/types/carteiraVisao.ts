@@ -184,6 +184,8 @@ export interface AvisosVisao {
   urgente: string | null
   /** com fonte velha, quantos avisos esperam a conexão voltar */
   retidos: number
+  /** o que os retidos esperam (10/11): o preço do último pregão ou a conexão. Resposta antiga vem sem */
+  retidosPor?: { precos: number; conexao: number }
 }
 
 export interface FatorVisao {
