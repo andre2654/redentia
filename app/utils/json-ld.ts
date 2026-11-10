@@ -8,8 +8,8 @@
  * sameAs do Person usa a URL canônica do perfil, sem parâmetro de campanha.
  * O repositório não tem perfil da empresa no X nem no Threads.
  *
- * O Instagram do schema é o pedido redentia.wealth. O rodapé visível
- * continua em redentia.app; este arquivo não muda link de página.
+ * O Instagram oficial é redentia.wealth, o mesmo dos rodapés visíveis
+ * (NuFooter e RbFooter). Este arquivo não muda link de página.
  *
  * contactPoint só leva o que o site já publica como contato da empresa: o
  * e-mail de suporte (rodapé, /institucional/contact, termos). O wa.me de
