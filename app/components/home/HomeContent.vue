@@ -36,13 +36,25 @@ const semCarteira = computed(() => !isAuthenticated.value || resumo.value?.state
 // quem tem conta e não assina também lê o "como funciona" (o snapshot da
 // assinatura chega pelo cliente, carregado pelo HomeAgora)
 const assinatura = useAssinatura()
+/* Só no dev: o topo novo, na linha "A frase" da /carteira (10/11/2026, o dono:
+   "nessa home também, o que a Nubank faria? vamos redesenhar"). ?home=2 troca
+   o topo de hoje (HomeAgora) pelo HomeAgoraFrase; no ar nada muda até ele escolher. */
+const route = useRoute()
+const router = useRouter()
+const DEV = import.meta.dev
+const topoNovo = computed(() => DEV && route.query.home === '2')
+function trocarTopo(novo: boolean) {
+  const { home: _, ...resto } = route.query
+  void router.replace({ query: novo ? { ...resto, home: '2' } : resto, hash: route.hash })
+}
 const mostrarComoFunciona = computed(() =>
   semCarteira.value || (assinatura.carregado.value && !assinatura.assinante.value))
 </script>
 
 <template>
   <div>
-    <HomeAgora v-if="isAuthenticated" :resumo="resumo" />
+    <HomeAgoraFrase v-if="isAuthenticated && topoNovo" :resumo="resumo" />
+    <HomeAgora v-else-if="isAuthenticated" :resumo="resumo" />
     <HomeHeroVisitante v-else />
 
     <!-- logado: os ativos que a pessoa segue (carga no cliente; sem ativo
@@ -74,10 +86,25 @@ const mostrarComoFunciona = computed(() =>
     </section>
 
     <HomeFecho v-if="!isAuthenticated" />
+
+    <!-- só no dev: qual topo a home de quem está logado mostra -->
+    <div v-if="DEV && isAuthenticated" class="hct__dev" role="group" aria-label="Topo da home">
+      <span class="hct__dev-t">Topo</span>
+      <button type="button" class="hct__dev-b" :class="{ 'hct__dev-b--on': !topoNovo }" :aria-pressed="!topoNovo" @click="trocarTopo(false)">Atual</button>
+      <button type="button" class="hct__dev-b" :class="{ 'hct__dev-b--on': topoNovo }" :aria-pressed="topoNovo" @click="trocarTopo(true)">A frase</button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.hct__dev {
+  position: fixed; right: 16px; bottom: 84px; z-index: 50; display: flex; align-items: center; gap: 4px; padding: 4px;
+  border-radius: var(--nu-r-pill); background: var(--nu-navy); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5);
+}
+.hct__dev-t { padding: 0 8px 0 10px; color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 800; }
+.hct__dev-b { height: 28px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-xs); font-weight: 700; cursor: pointer; }
+.hct__dev-b:hover { color: var(--nu-white); }
+.hct__dev-b--on { background: var(--nu-white); color: var(--nu-navy); }
 /* ——— FAQ (o mesmo da home anterior; o /benchmark-ia e a /teses copiam).
    Creme com os cartões brancos desde 31/10/2026, para alternar com o branco
    do "O que é grátis" logo acima ——— */
