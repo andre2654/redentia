@@ -116,9 +116,9 @@ test('a FAQ visível junta as 6 da cópia com as 4 de fonte', () => {
   }))
   const fontes = [
     { q: 'Qual a cotação?', a: 'Fonte: Brapi (B3), atualização de 10 a 30 min.' },
-    { q: 'Qual o dividend yield?', a: 'Fonte: StatusInvest, base em DFP/ITR.' },
+    { q: 'Qual o dividend yield?', a: 'O dividend yield de 12 meses de PETR4 é 6,96%.' },
     { q: 'Quanto teve em proventos?', a: 'Fonte: avisos de proventos da B3.' },
-    { q: 'Como variou nos últimos 12 meses?', a: 'Fonte: StatusInvest (dados diários).' },
+    { q: 'Como variou nos últimos 12 meses?', a: 'De 29/10/2025 a 28/10/2026, PETR4 variou +82,07%.' },
   ]
   const junto = fundirFaq(editorial, fontes)
   assert.equal(junto.length, 10)

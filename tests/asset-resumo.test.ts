@@ -25,6 +25,7 @@ function base(over: Partial<ResumoAtivoInput> = {}): ResumoAtivoInput {
       vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
     },
     fonteIndicadores: null,
+    fonteDy: null,
     min52: null,
     max52: null,
     serie: null,
@@ -83,6 +84,29 @@ test('zero é dado, não ausência: DY 0 entra e não vira "de %"', () => {
   assert.doesNotMatch(bloco, /de\s*%/)
 })
 
+test('DY 0 dos avisos da B3 cita essa fonte e não empresta ela ao P/L', () => {
+  const r = montarResumoAtivo(base({
+    numeros: {
+      dy: 0, pl: 5.07, pvp: 1.4, roe: 10, margem: 8, valorMercado: null,
+      vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
+    },
+    fonteDy: 'Fonte: avisos de proventos da B3, até 9 nov 2026.',
+  }))
+  assert.ok(r)
+  const texto = textoDe(r)
+  assert.match(texto, /O dividend yield de 12 meses de ZZZZ3 é 0,00%. Fonte: avisos de proventos da B3, até 9 nov 2026\./)
+  const indicadores = r.paragrafos.find((p) => p.includes('P/L'))
+  assert.ok(indicadores)
+  assert.match(indicadores, /P\/L de 5,07/)
+  assert.doesNotMatch(indicadores.split('P/L de 5,07')[1] ?? '', /avisos de proventos/)
+  const faq = r.faq.find((f) => /dividend yield/i.test(f.q))
+  assert.ok(faq)
+  assert.equal(faq.a, 'O dividend yield de 12 meses de ZZZZ3 é 0,00%. Fonte: avisos de proventos da B3, até 9 nov 2026.')
+  assert.doesNotMatch(texto, /status\s*invest/i)
+  assert.doesNotMatch(texto, /Fonte:\s*\./)
+  assert.doesNotMatch(texto, /\(\s*\)/)
+})
+
 test('NaN e link inválido somem', () => {
   const r = montarResumoAtivo(base({
     preco: Number.NaN,
@@ -115,7 +139,6 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
       dy: 6.96139, pl: 5.074, pvp: 1.407, roe: 30.306, margem: 24.316, valorMercado: 718.209e9,
       vpCota: null, rendaMedia24m: null, ifix: null, cotistas: null,
     },
-    fonteIndicadores: 'StatusInvest, base em DFP/ITR',
     min52: 29.53,
     max52: 59.68,
     serie: { de: '2025-10-29', ate: '2026-10-28', variacao: 82.07, ibov: 15.99 },
@@ -147,7 +170,8 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   assert.ok(r.title.length <= TETO_TITULO_PAGINA)
   assert.ok(r.description.length <= TETO_DESCRICAO)
   assert.match(r.description, /Cotação PETR4 \(Petrobras\) hoje: R\$ 52,51 no fechamento de 28\/10\/2026 \(Brapi\)/)
-  assert.match(r.description, /Dividend yield 6,96%, P\/L 5,07 \(StatusInvest\)/)
+  assert.match(r.description, /Dividend yield 6,96%, P\/L 5,07\./)
+  assert.doesNotMatch(r.description, /status\s*invest/i)
   assert.match(r.description, /Não é recomendação\.$/)
   const corpo = r.paragrafos.join('\n')
   assert.match(corpo, /cotação mais recente é R\$ 52,51/)
@@ -155,8 +179,9 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   assert.match(corpo, /Fonte: Brapi \(B3\), atualização de 10 a 30 min/)
   assert.doesNotMatch(corpo, /No pregão de|atraso de 15 min|mesma leitura/)
   assert.match(corpo, /mínima de 52 semanas foi R\$ 29,53/)
-  assert.match(corpo, /máxima foi R\$ 59,68/)
-  assert.match(corpo, /Fonte: StatusInvest \(dados diários\), em 28\/10\/2026/)
+  assert.match(corpo, /máxima foi R\$ 59,68\./)
+  const identidade = r.paragrafos[0] ?? ''
+  assert.equal((identidade.split('máxima foi R$ 59,68.')[1] ?? '').trim(), '')
   const doze = r.paragrafos.find((p) => p.includes('Indicadores dos últimos 12 meses'))
   assert.ok(doze)
   const frase12 = doze.split('. ')[0] ?? ''
@@ -165,9 +190,12 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   assert.match(frase12, /ROE de 30,3%/)
   assert.doesNotMatch(frase12, /P\/VP|valor de mercado/)
   assert.match(corpo, /O P\/VP é 1,41 e o valor de mercado é R\$ 718,21B/)
-  assert.match(corpo, /Fonte: StatusInvest, base em DFP\/ITR/)
+  assert.doesNotMatch(doze, /Fonte:/)
   assert.match(corpo, /De 29\/10\/2025 a 28\/10\/2026, PETR4 variou \+82,07%/)
   assert.match(corpo, /No mesmo período, o Ibovespa variou \+15,99%/)
+  const serie = r.paragrafos.find((p) => p.includes('variou'))
+  assert.ok(serie)
+  assert.doesNotMatch(serie, /Fonte:/)
   assert.doesNotMatch(corpo, /cerca de 12 meses|média dos/)
   assert.match(corpo, /proventos de renda de PETR4 com data-com/)
   assert.match(corpo, /R\$ 3,45 por ação/)
@@ -187,7 +215,8 @@ test('ação com números: title, H1, fontes e FAQ visível, sem verbo de recome
   const faqSerie = r.faq.find((f) => /12 meses/i.test(f.q) && /variou/i.test(f.a))
   assert.ok(faqSerie)
   assert.match(faqSerie.a, /Ibovespa/)
-  assert.match(faqSerie.a, /StatusInvest \(dados diários\), em 28\/10\/2026/)
+  assert.doesNotMatch(faqSerie.a, /Fonte:/)
+  assert.doesNotMatch(faqSerie.a, /status\s*invest/i)
   assert.doesNotMatch(r.faq.map((f) => f.q).join('\n'), /pagou/)
   assert.equal(r.faqTitulo, 'Perguntas frequentes sobre PETR4')
   assert.ok(r.faq.length >= 4 && r.faq.length <= 5)
@@ -207,9 +236,8 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
     data: '2026-10-28',
     numeros: {
       dy: 9.086, pl: null, pvp: 0.8918, roe: null, margem: null, valorMercado: null,
-      vpCota: 165.476, rendaMedia24m: 1.1, ifix: 4.183, cotistas: 613837,
+      vpCota: 165.476, rendaMedia24m: 1.1, ifix: 4.183,       cotistas: 613837,
     },
-    fonteIndicadores: 'StatusInvest',
     proventos: {
       unidade: 'cota',
       renda12: 12.4,
@@ -234,9 +262,10 @@ test('FII sem média de setor e sem P/L não inventa os dois', () => {
   assert.match(corpo, /a participação no IFIX é 4,18%/)
   assert.match(corpo, /613\.837 cotistas/)
   assert.match(corpo, /por cota/)
-  assert.match(corpo, /Fonte: StatusInvest\./)
+  assert.match(corpo, /Fonte: avisos de proventos da B3/)
+  assert.doesNotMatch(corpo, /status\s*invest/i)
   assert.match(r.description, /Cotação HGLG11 \(Pátria Log\) hoje: R\$ 147,58 no fechamento de 28\/10\/2026 \(Brapi\)/)
-  assert.match(r.description, /Dividend yield 9,09%, P\/VP 0,89 \(StatusInvest\)/)
+  assert.match(r.description, /Dividend yield 9,09%, P\/VP 0,89\./)
   assert.match(r.description, /Não é recomendação\.$/)
   assert.ok(r.description.length <= TETO_DESCRICAO)
   assert.doesNotMatch(semAviso(textoDe(r)), VERBOS)
@@ -364,27 +393,27 @@ test('título e description de /asset usam o dado, cabem no SERP e não recomend
     {
       ticker: 'BBAS3', nome: 'Banco do Brasil', preco: 16.47, dy: 4.19, pl: 7.66,
       title: 'BBAS3 cotação hoje: Banco do Brasil e dividendos',
-      description: 'Cotação BBAS3 (Banco do Brasil) hoje: R$ 16,47 no fechamento de 30/10/2026 (Brapi). Dividend yield 4,19%, P/L 7,66 (StatusInvest). Não é recomendação.',
+      description: 'Cotação BBAS3 (Banco do Brasil) hoje: R$ 16,47 no fechamento de 30/10/2026 (Brapi). Dividend yield 4,19%, P/L 7,66. Não é recomendação.',
     },
     {
       ticker: 'ITUB4', nome: 'Itaú Unibanco', preco: 38.69, dy: 7.97, pl: 9.56,
       title: 'ITUB4 cotação hoje: Itaú Unibanco e dividendos',
-      description: 'Cotação ITUB4 (Itaú Unibanco) hoje: R$ 38,69 no fechamento de 30/10/2026 (Brapi). Dividend yield 7,97%, P/L 9,56 (StatusInvest). Não é recomendação.',
+      description: 'Cotação ITUB4 (Itaú Unibanco) hoje: R$ 38,69 no fechamento de 30/10/2026 (Brapi). Dividend yield 7,97%, P/L 9,56. Não é recomendação.',
     },
     {
       ticker: 'POMO4', nome: 'Marcopolo', preco: 3.7, dy: 24.98, pl: 4.14,
       title: 'POMO4 cotação hoje: Marcopolo e dividendos',
-      description: 'Cotação POMO4 (Marcopolo) hoje: R$ 3,70 no fechamento de 30/10/2026 (Brapi). Dividend yield 24,98%, P/L 4,14 (StatusInvest). Não é recomendação.',
+      description: 'Cotação POMO4 (Marcopolo) hoje: R$ 3,70 no fechamento de 30/10/2026 (Brapi). Dividend yield 24,98%, P/L 4,14. Não é recomendação.',
     },
     {
       ticker: 'SAPR4', nome: 'Sanepar', preco: 6.03, dy: 1.87, pl: 20.01,
       title: 'SAPR4 cotação hoje: Sanepar e dividendos',
-      description: 'Cotação SAPR4 (Sanepar) hoje: R$ 6,03 no fechamento de 30/10/2026 (Brapi). Dividend yield 1,87%, P/L 20,01 (StatusInvest). Não é recomendação.',
+      description: 'Cotação SAPR4 (Sanepar) hoje: R$ 6,03 no fechamento de 30/10/2026 (Brapi). Dividend yield 1,87%, P/L 20,01. Não é recomendação.',
     },
     {
       ticker: 'UNIP6', nome: 'Unipar', preco: 51, dy: 12.7, pl: 21.36,
       title: 'UNIP6 cotação hoje: Unipar e dividendos',
-      description: 'Cotação UNIP6 (Unipar) hoje: R$ 51,00 no fechamento de 30/10/2026 (Brapi). Dividend yield 12,70%, P/L 21,36 (StatusInvest). Não é recomendação.',
+      description: 'Cotação UNIP6 (Unipar) hoje: R$ 51,00 no fechamento de 30/10/2026 (Brapi). Dividend yield 12,70%, P/L 21,36. Não é recomendação.',
     },
     {
       ticker: 'CXSE3', nome: 'Caixa Seguridade', preco: 21.38, dy: null, pl: null,
