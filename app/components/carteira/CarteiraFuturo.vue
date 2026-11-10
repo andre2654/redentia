@@ -17,14 +17,22 @@
 // número só, o meio dos 2.000 caminhos ("Em 5 anos, o meio dos 2.000 caminhos
 // dá R$ 960 mil."); a faixa de 8 em 10 vai na linha de apoio. A banda navy
 // fica: é o momento assinatura da tela.
+// Depois (mesmo dia, o dono: "temos que de algum jeito mostrar o impacto da
+// Redentia de testar em 2.000 cenários"): o teste aparece como teste. A
+// manchete diz o mais provável em linguagem de gente; o apoio abre com
+// "Testamos a sua carteira em 2.000 futuros possíveis"; embaixo do leque, "O que o teste encontrou", contado nos
+// caminhos do próprio motor (resultadoDoTeste): em quantos ela termina acima
+// de hoje, em quantos passa por uma queda de 10% no caminho e em quantos dobra.
+import { resultadoDoTeste } from '~/utils/futuro'
+
 const { estado, dados, vm, caminhos, fora, carregar } = useCarteiraFuturo()
 
 const PERGUNTA = 'O que mais pesa no cenário pessimista da minha carteira nos próximos 5 anos, e como eu protejo esse lado?'
 const pergunta = '/busca?chat=1&q=' + encodeURIComponent(PERGUNTA)
 // abre o painel do chat nesta página (02/11/2026); o href fica para outra aba
 const painel = useChatPainel()
-
 const nfInt = new Intl.NumberFormat('pt-BR')
+
 // quem chega por /carteira#futuro (o botão da home): a seção nasce no cliente e
 // as de cima ainda crescem enquanto carregam, então a rolagem espera o leque
 const route = useRoute()
@@ -34,17 +42,30 @@ watch(estado, async (e) => {
   await nextTick()
   setTimeout(() => raiz.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150)
 })
-/** a resposta numa frase, com um número só (o meio); a faixa vai no apoio */
+/** a resposta numa frase, com um número só (o mais provável); a faixa vai no apoio */
 const fraseDoMeio = computed(() => {
   const v = vm.value
   if (!v) return null
-  const n = dados.value?.paths
-  return { antes: `Em ${v.horizonte} anos, o meio dos ${n ? `${nfInt.format(n)} ` : ''}caminhos dá `, valor: v.fins.meio, depois: '.' }
+  return { antes: `Em ${v.horizonte} anos, o mais provável é `, valor: v.fins.meio, depois: '.' }
+})
+/** o que o teste encontrou, contado nos caminhos do motor; null sem os caminhos (o leque de faixas) */
+const teste = computed(() => (dados.value ? resultadoDoTeste(caminhos.value, dados.value.today_value) : null))
+const fatosDoTeste = computed(() => {
+  const t = teste.value
+  if (!t) return []
+  const de = `de ${nfInt.format(t.n)}`
+  return [
+    { k: 'acima', n: nfInt.format(t.acimaDeHoje), de, texto: 'terminam acima do que você tem hoje' },
+    { k: 'queda', n: nfInt.format(t.quedaDe10), de, texto: 'passam por uma queda de 10% ou mais no caminho' },
+    { k: 'dobra', n: nfInt.format(t.dobram), de, texto: 'dobram de valor' },
+  ]
 })
 const apoio = computed(() => {
   const v = vm.value
   if (!v) return ''
-  return `8 em cada 10 terminam entre ${v.fins.pessimista} e ${v.fins.otimista}, em dinheiro de hoje.`
+  const n = dados.value?.paths ?? caminhos.value?.n
+  const teste = n ? `Testamos a sua carteira em ${nfInt.format(n)} futuros possíveis: ` : ''
+  return `${teste}8 em cada 10 terminam entre ${v.fins.pessimista} e ${v.fins.otimista}, em dinheiro de hoje.`
 })
 </script>
 
@@ -79,6 +100,17 @@ const apoio = computed(() => {
           :eixo="{ hoje: `hoje · ${vm.hoje}`, fim: vm.anoFinal, anos: vm.anosDoMeio }"
           :altura="420"
         />
+      </div>
+
+      <!-- o que o teste encontrou: contado nos caminhos do motor, em reais de hoje -->
+      <div v-if="fatosDoTeste.length" class="cfu__teste">
+        <p class="cfu__teste-t">O que o teste encontrou</p>
+        <dl class="cfu__fatos">
+          <div v-for="f in fatosDoTeste" :key="f.k" class="cfu__fato">
+            <dt><b>{{ f.n }}</b> {{ f.de }}</dt>
+            <dd>{{ f.texto }}</dd>
+          </div>
+        </dl>
       </div>
 
       <p class="cfu__nota">
@@ -144,6 +176,13 @@ const apoio = computed(() => {
 .cfu__perguntar:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 2px; }
 .cfu__losango-miolo { fill: var(--nu-navy-2); }
 .cfu__grafico { margin-top: clamp(32px, 4vw, 52px); }
+.cfu__teste { margin-top: clamp(28px, 3.4vw, 44px); }
+.cfu__teste-t { margin: 0; color: var(--nu-cream-text-70); font-size: var(--nu-fs-sm); font-weight: 600; }
+.cfu__fatos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 clamp(20px, 3vw, 44px); margin: 10px 0 0; }
+.cfu__fato { padding: 16px 0 4px; border-top: 1px solid rgba(245, 241, 234, .14); }
+.cfu__fato dt { color: var(--nu-cream-text-70); font-size: var(--nu-fs-md); font-weight: 500; font-variant-numeric: tabular-nums; }
+.cfu__fato dt b { color: var(--nu-cream-text); font-size: var(--nu-fs-h3); font-weight: 600; letter-spacing: -0.03em; }
+.cfu__fato dd { margin: 6px 0 0; color: var(--nu-cream-text-78); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
 .cfu__nota {
   margin: clamp(22px, 3vw, 32px) 0 0; max-width: 760px;
   display: flex; flex-direction: column; gap: 4px;

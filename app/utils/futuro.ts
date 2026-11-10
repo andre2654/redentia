@@ -642,3 +642,45 @@ export function rgbDaCor(cor: string | null | undefined): [number, number, numbe
   if (rgb) return [Math.round(Number(rgb[1])), Math.round(Number(rgb[2])), Math.round(Number(rgb[3]))]
   return null
 }
+
+/* ————— O que o teste encontrou (10/11/2026) —————
+   O dono: "temos que de algum jeito mostrar o impacto da Redentia de testar em
+   2.000 cenários". O leque mostra os 2.000; isto CONTA neles, em frases que
+   qualquer um lê: em quantos a carteira termina acima de hoje, em quantos ela
+   passa por uma queda de 10% ou mais no caminho (do pico ao fundo, mês a mês)
+   e em quantos ela dobra. Tudo em reais de hoje, dos caminhos do próprio
+   motor (nada sorteado no site). */
+
+export interface ResultadoDoTeste {
+  n: number
+  /** caminhos que terminam acima do valor de hoje */
+  acimaDeHoje: number
+  /** caminhos que, em algum mês, ficam 10% ou mais abaixo do pico que já tinham feito */
+  quedaDe10: number
+  /** caminhos que terminam com o dobro de hoje ou mais */
+  dobram: number
+}
+
+export const QUEDA_DO_TESTE = 0.10
+
+export function resultadoDoTeste(c: CaminhosDoLeque | null | undefined, hoje: number): ResultadoDoTeste | null {
+  if (!c || c.n < MIN_CAMINHOS || c.pontos < 2 || !(hoje > 0)) return null
+  let acimaDeHoje = 0
+  let quedaDe10 = 0
+  let dobram = 0
+  for (let i = 0; i < c.n; i++) {
+    const ini = i * c.pontos
+    let pico = c.valores[ini]!
+    let caiu = false
+    for (let t = 1; t < c.pontos; t++) {
+      const v = c.valores[ini + t]!
+      if (v > pico) pico = v
+      else if (!caiu && pico > 0 && v / pico - 1 <= -QUEDA_DO_TESTE) caiu = true
+    }
+    const fim = c.valores[ini + c.pontos - 1]!
+    if (fim > hoje) acimaDeHoje++
+    if (fim >= 2 * hoje) dobram++
+    if (caiu) quedaDe10++
+  }
+  return { n: c.n, acimaDeHoje, quedaDe10, dobram }
+}
