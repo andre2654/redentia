@@ -17,6 +17,7 @@ import { contraABolsa, pctComSinal } from '~/utils/diaDaCarteira'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import { avisosLiberados, quandoAtualizou, semQuebraNoReal } from '~/utils/carteiraVisao'
 import { nomeDoMes } from '~/utils/impostoVisao'
+import { destacarSecao } from '~/utils/destacarSecao'
 import {
   contraOCdi, inicioDoPeriodo, periodosDoDesempenho, rebase100, serieDesde, variacaoDoIndice, type PeriodoDesempenho,
 } from '~/utils/rentabilidadeCarteira'
@@ -134,7 +135,8 @@ const respostas = computed<Resposta[]>(() => {
 })
 function agir(id: Resposta['id']) {
   if (id === 'olhar') avisosRef.value?.abrir(primeiro.value?.id)
-  else document.getElementById('renda')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  // os proventos em destaque por alguns segundos, com o resto da página escurecido
+  else destacarSecao('renda')
 }
 
 /* ————— as conexões ————— */

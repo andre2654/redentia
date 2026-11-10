@@ -129,6 +129,11 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
   --nu-alloc-fii: var(--nu-blue-soft);
   --nu-class-etf: color-mix(in srgb, var(--nu-navy) 24%, var(--nu-white));
 }
+/* O destaque de uma seção (destacarSecao, 10/11): quem foi chamado fica como
+   está e os vizinhos escurecem por alguns segundos, depois voltam devagar. */
+.cvi > * { transition: opacity .6s ease; }
+.cvi > [data-destaque='off'] { opacity: .28; }
+@media (prefers-reduced-motion: reduce) { .cvi > * { transition: none; } }
 .cvi__parcial {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 0; padding: 14px clamp(22px, 5.5vw, 80px);
   background: var(--nu-amber-bg); color: var(--nu-amber-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.5;
