@@ -3,7 +3,7 @@
  * fechamento, montados no servidor com cache de 2 minutos. Sai no SSR (os
  * links para /asset vão no HTML) e é a fonte única do número do dia na home:
  * a seção do visitante (HomeBolsa) e a reserva da bolsa no topo de quem assina
- * (HomeAgora) leem a mesma chave.
+ * (HomeAgoraFrase) leem a mesma chave.
  */
 import type { BolsaDoDia } from '~/utils/bolsaDoDia'
 

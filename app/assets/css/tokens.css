@@ -378,7 +378,7 @@
   /* ——— Home (31/10/2026): a tela do Agora dos apps no site ———
      Valores do canvas V5MBL5Q3 (IPhoneAgoraV2, WatchAgora, MacAgoraInicio):
      o preto do Agora, o verde da bolsa aberta, o vermelho e o âmbar do aviso.
-     Só a home usa (HomeAgora, HomeComoFunciona, HomeLeque). */
+     Só a home usa (HomeComoFunciona, HomeLeque). */
   --nu-agora-bg: #000000;
   --nu-agora-cartao: #161618;                        /* cartão sobre o preto */
   --nu-agora-texto: #F5F5F7;
