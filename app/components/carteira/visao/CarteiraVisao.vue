@@ -26,12 +26,17 @@ import { CENARIOS as CENARIOS_MOCK, visaoMock, type CenarioVisao } from '~/dev/c
 import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
 import { brl2 } from '~/utils/carteiraVisao'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
+import VisaoParaOlhar from './VisaoParaOlhar.vue'
+import CarteiraHeroi from './CarteiraHeroi.vue'
+import CarteiraAgora from '~/components/carteira/CarteiraAgora.vue'
 import VisaoRenda from './VisaoRenda.vue'
 import VisaoImposto from './VisaoImposto.vue'
 import VisaoRelatorio from './VisaoRelatorio.vue'
 
 const props = defineProps<{ payload: CarteiraPayload; visao?: Visao | null }>()
 const emit = defineEmits<{ (e: 'connected'): void }>()
+
+const DEV = import.meta.dev
 
 /* ————— só no dev: o mock ————— */
 const mock = computed(() => import.meta.dev && !props.visao)
@@ -105,10 +110,26 @@ const parada = computed(() => {
   return nome ? `a conexão ${nome}` : 'a conexão'
 })
 
+/* ————— os cartões "Para olhar" abrem o aviso no modal do topo ————— */
+const agoraRef = ref<InstanceType<typeof CarteiraAgora> | InstanceType<typeof CarteiraHeroi> | null>(null)
+
+/* ————— só no dev: as três variações do topo repensado (10/11), ?heroi=1|2|3 —————
+   O dono escolhe olhando; a escolhida fica e as outras saem. Sem o parâmetro, o topo de hoje. */
+const HEROIS = [{ id: 0, nome: 'Atual' }, { id: 1, nome: '1 · A conta' }, { id: 2, nome: '2 · A frase' }, { id: 3, nome: '3 · A noite' }] as const
+const heroi = computed<0 | 1 | 2 | 3>(() => {
+  const n = import.meta.dev ? Number(route.query.heroi) : 0
+  return n === 1 || n === 2 || n === 3 ? n : 0
+})
+function trocarHeroi(n: number) {
+  const { heroi: _, ...resto } = route.query
+  void router.replace({ query: n ? { ...resto, heroi: String(n) } : resto, hash: route.hash })
+}
+
 /* ————— o rail ————— */
 // renda e imposto vêm null quando o bloco quebra no servidor: a seção some, e o rail junto
 const railSections = computed<RailSection[]>(() => [
   { id: 'hoje', label: 'Hoje' },
+  ...(visao.value.avisos.itens.length && !heroi.value ? [{ id: 'olhar', label: 'Para olhar' }] : []),
   { id: 'onde', label: 'Onde está' },
   ...(visao.value.renda ? [{ id: 'renda', label: 'Quanto paga' }] : []),
   ...(visao.value.imposto ? [{ id: 'imposto', label: 'Imposto' }] : []),
@@ -119,17 +140,32 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
 
 <template>
   <div>
-    <CarteiraAgora id="hoje" :agora="agora" :chart="chart" :stats="stats" :visao="topo" @connected="emit('connected')" />
+    <CarteiraHeroi
+      v-if="heroi" id="hoje" ref="agoraRef" :variante="heroi" :agora="agora" :avisos="visao.avisos" :conexoes="visao.conexoes"
+      :ativos="visao.posicoes.length" :renda="visao.renda" :dados-de="visao.dadosDe" :mock="mock" @connected="emit('connected')"
+    />
+    <CarteiraAgora v-else id="hoje" ref="agoraRef" :agora="agora" :chart="chart" :stats="stats" :visao="topo" @connected="emit('connected')" />
     <p v-if="visao.dadosDe" class="cvi__parcial" role="status">
       <span class="cvi__parcial-p" aria-hidden="true" />
       O que está abaixo é de {{ visao.dadosDe }}, a última vez que {{ parada }} atualizou. Os números de imposto e risco esperam a reconexão.
       <NuxtLink to="/conta#open-finance">Reconectar</NuxtLink>
     </p>
+    <!-- com o topo repensado, "tem algo para eu olhar?" já mora no topo -->
+    <VisaoParaOlhar v-if="!heroi" id="olhar" :avisos="visao.avisos" @abrir="agoraRef?.abrirAviso($event)" />
     <VisaoOndeEsta id="onde" :visao="visao" />
     <VisaoRenda v-if="visao.renda" id="renda" :visao="visao" />
     <!-- o imposto vem null quando o bloco quebra no servidor (e o cenário real antigo do dev vinha sem) -->
     <VisaoImposto v-if="visao.imposto" id="imposto" :imposto="visao.imposto" :dados-de="visao.dadosDe" :posicoes="visao.posicoes" />
     <VisaoRelatorio id="relatorio" :payload="payload" :historico="visao.imposto?.historico ?? []" :mock="mock" />
+
+    <!-- só no dev: qual topo a tela está mostrando -->
+    <div v-if="DEV" class="cvi__dev cvi__dev--heroi" role="group" aria-label="Variação do topo">
+      <span class="cvi__dev-t">Topo</span>
+      <button
+        v-for="h in HEROIS" :key="h.id" type="button" class="cvi__dev-b" :class="{ 'cvi__dev-b--on': heroi === h.id }"
+        :aria-pressed="heroi === h.id" @click="trocarHeroi(h.id)"
+      >{{ h.nome }}</button>
+    </div>
 
     <!-- só no dev: o caso que a tela está mostrando -->
     <div v-if="mock" class="cvi__dev" role="group" aria-label="Cenário do mock">
@@ -153,9 +189,13 @@ useSectionRail(railSections, { pageLabel: 'Carteira' })
   position: fixed; left: 16px; bottom: 16px; z-index: 50; display: flex; align-items: center; gap: 4px; padding: 4px;
   border-radius: var(--nu-r-pill); background: var(--nu-navy); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .5);
 }
+.cvi__dev--heroi { left: auto; right: 16px; bottom: 84px; }
 .cvi__dev-t { padding: 0 8px 0 10px; color: var(--nu-amber-soft); font-size: var(--nu-fs-xs); font-weight: 800; }
 .cvi__dev-b { height: 28px; padding: 0 12px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-agora-sub); font: inherit; font-size: var(--nu-fs-xs); font-weight: 700; cursor: pointer; }
 .cvi__dev-b:hover { color: var(--nu-white); }
 .cvi__dev-b--on { background: var(--nu-white); color: var(--nu-navy); }
-@media (max-width: 640px) { .cvi__dev { left: 8px; right: 8px; bottom: 8px; overflow-x: auto; } }
+@media (max-width: 640px) {
+  .cvi__dev { left: 8px; right: 8px; bottom: 8px; overflow-x: auto; }
+  .cvi__dev--heroi { left: 8px; right: 8px; bottom: 76px; }
+}
 </style>

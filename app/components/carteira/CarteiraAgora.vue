@@ -78,6 +78,9 @@ const abrindo = computed(() => opening.value || registering.value)
 
 // a reserva da bolsa, como na home: com o pregão aberto e a série do Ibovespa
 // ainda sem o ponto de hoje, o snapshot entra se for do mesmo dia de preço
+// os cartões da página ("Para olhar", 10/11) abrem o aviso no mesmo modal do
+// topo. Antes do await: num setup assíncrono, o defineExpose depois dele não vale
+defineExpose({ abrirAviso: (id?: string) => avisosRef.value?.abrir(id) })
 const { bolsa } = await useBolsaDoDia()
 
 /* ——— o dia: a frase, o estado e a linha ——— */
@@ -783,7 +786,7 @@ const olhouLinha = computed(() => {
 .cto__status--atencao { color: var(--nu-amber-soft); }
 .cto__status--atencao .cto__status-p { background: var(--nu-amber-fill); box-shadow: 0 0 0 3px var(--nu-warning-bg); }
 .cto__status-sub { color: var(--nu-agora-sub); font-size: var(--nu-fs-md); font-weight: 500; letter-spacing: 0; }
-.cto__bem { display: flex; flex-direction: column; gap: 4px; margin: clamp(16px, 2.2vw, 22px) 0 0; padding: 14px 16px; max-width: 62ch; border-radius: var(--nu-r-md, 14px); background: var(--nu-agora-pilula); font-variant-numeric: tabular-nums; }
+.cto__bem { display: flex; flex-direction: column; gap: 4px; margin: clamp(16px, 2.2vw, 22px) 0 0; padding: 14px 16px; max-width: 62ch; border-radius: var(--nu-r-tile); background: var(--nu-agora-pilula); font-variant-numeric: tabular-nums; }
 .cto__bem-f { color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: 600; line-height: 1.4; }
 .cto__bem-f b { font-weight: 800; }
 .cto__bem-d { color: var(--nu-agora-sub); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; }
