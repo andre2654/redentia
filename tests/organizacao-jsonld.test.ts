@@ -139,7 +139,7 @@ test('o logo do schema é o arquivo que o site já serve', () => {
   assert.match(svg, /<svg\b/)
 })
 
-test('a home, o app e o MCP usam o helper, e o rodapé não muda de Instagram', () => {
+test('a home, o app e o MCP usam o helper, e o rodapé usa o Instagram oficial', () => {
   const app = ler('app/app.vue')
   assert.match(app, /JSON\.stringify\(organizacaoJsonLd\(site\)\)/)
   assert.equal(app.match(/application\/ld\+json/g)?.length, 1)
@@ -171,8 +171,8 @@ test('a home, o app e o MCP usam o helper, e o rodapé não muda de Instagram', 
   const rodape = ler('app/components/nu/NuFooter.vue')
   const rodapeBiz = ler('app/components/business/RbFooter.vue')
   for (const src of [rodape, rodapeBiz]) {
-    assert.match(src, /https:\/\/www\.instagram\.com\/redentia\.app\//)
-    assert.doesNotMatch(src, /redentia\.wealth/)
+    assert.match(src, /https:\/\/www\.instagram\.com\/redentia\.wealth\//)
+    assert.doesNotMatch(src, /instagram\.com\/redentia\.app/)
   }
 
   assert.match(ler('nuxt.config.ts'), /siteUrl: process\.env\.NUXT_PUBLIC_SITE_URL \|\| 'https:\/\/www\.redentia\.com\.br'/)
