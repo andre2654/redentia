@@ -13,6 +13,7 @@ import { parse, compileTemplate } from '@vue/compiler-sfc'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO } from '../app/utils/serp.ts'
+import { idOrganizacao } from '../app/utils/json-ld.ts'
 import {
   WEALTH_2030,
   WEALTH_2030_PAGINA,
@@ -149,7 +150,10 @@ test('o JSON-LD é um Report com o arquivo, sem contagem de folhas', () => {
   assert.match(pagina, /relatorioJsonLd\(origin\)/)
   assert.match(pagina, /usePageSeo\(/)
   assert.match(pagina, /path: doc\.path/)
-  assert.match(read('app/app.vue'), /'@id': `\$\{site\}\/#organization`/)
+  const app = read('app/app.vue')
+  assert.match(app, /JSON\.stringify\(organizacaoJsonLd\(site\)\)/)
+  assert.equal((app.match(/'@type': 'Organization'/g) ?? []).length, 0)
+  assert.equal(idOrganizacao(ORIGEM), WEALTH_ORG_ID)
 })
 
 test('o sitemap de páginas inclui a URL e o llms aponta o estudo', () => {

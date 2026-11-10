@@ -9,7 +9,10 @@
 // CTA auth-aware sem variar o SSR (regra do repo: CDN não varia por cookie):
 // servidor sempre renderiza o destino anônimo (/login?redirect=/conta#mcp,
 // que pra quem já está logado repassa na hora); pós-mount troca pra direto.
+import { referenciaOrganizacao } from '~/utils/json-ld'
+
 const { isAuthenticated } = useAuthState()
+const entidade = String(useRuntimeConfig().public.siteUrl)
 const mounted = ref(false)
 onMounted(() => { mounted.value = true })
 const ctaTo = computed(() => (mounted.value && isAuthenticated.value ? '/conta#mcp' : '/login?redirect=%2Fconta%23mcp'))
@@ -62,6 +65,7 @@ usePageSeo({
       'applicationCategory': 'FinanceApplication',
       'operatingSystem': 'Web',
       'description': 'Servidor MCP (Model Context Protocol) da Redentia: carteira da B3 via Open Finance, cotações, teses de investimento e notícias para assistentes de IA.',
+      'provider': referenciaOrganizacao(entidade),
     },
     {
       '@type': 'FAQPage',

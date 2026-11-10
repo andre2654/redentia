@@ -62,7 +62,7 @@ import type {
 import type { NewsApi, NuDir, ThesisCardApi } from '~/types/market'
 import type { ProventoRow, SiteDy } from '~/utils/proventos'
 import { SETORES_BY_API, type SetorEntry } from '~/content/setores'
-import { FONTE_FUNDAMENTALISTAS, FONTE_SCRAPER, fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
+import { fundirFaq, montarResumoAtivo, type ResumoAno, type ResumoAtivoInput, type ResumoProventos, type ResumoSerie } from '~/utils/assetResumo'
 import { ASSET_EDITORIALS } from '~/content/asset-editorials'
 import { editorialExibido } from '~/utils/assetEditorial'
 
@@ -1158,7 +1158,8 @@ function petr4Seed(): AcaoPayload {
     variacaoDia: 0.76,
     data: null,
     numeros: { ...NUMEROS_RESUMO_VAZIOS, dy: 6.95, pl: 4.55, pvp: 1.1, roe: 24.2, margem: 21.6, valorMercado: 493.2e9 },
-    fonteIndicadores: FONTE_FUNDAMENTALISTAS,
+    fonteIndicadores: null,
+    fonteDy: null,
     min52: null,
     max52: null,
     serie: null,
@@ -1225,7 +1226,7 @@ function petr4Seed(): AcaoPayload {
       { name: 'Dividendo', tag: g('Excelente') },
     ],
     fundHeading: ['Os números', 'da empresa.'],
-    fundSub: `Últimos 12 meses · ${FONTE_FUNDAMENTALISTAS}`,
+    fundSub: 'Últimos 12 meses',
     fundInfo: null,
     etfXray: null,
     fcards: [
@@ -1671,11 +1672,9 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
     ai = { updatedLabel, score, consensus, read }
   }
 
-  // FII: scrape_extras.fii. BDR: scrape_extras.valuation/quality. Os dois são
-  // o scraper StatusInvest. DFP/ITR só descreve a DRE da empresa listada.
-  const fundSub = isFii || kind === 'bdr'
-    ? `Últimos 12 meses · ${FONTE_SCRAPER}`
-    : `Últimos 12 meses · ${FONTE_FUNDAMENTALISTAS}`
+  // Sem provedor no subtítulo: P/L, P/VP, ROE, margens e os blocos de FII e
+  // BDR chegam no overview, e a origem deles não está verificada aqui.
+  const fundSub = 'Últimos 12 meses'
 
   const dividends = buildDividends(provRows ?? [], ticker, isFii, siteDy)
   const setorDoLink = setorConhecido ?? (kind === 'fii' ? SETORES_BY_API['real-estate'] ?? null : null)
@@ -1731,7 +1730,10 @@ async function loadAcao(base: string, ticker: string): Promise<AcaoPayload> {
       ifix: f?.fiiIfixShare ?? null,
       cotistas: f?.fiiCotistas ?? null,
     },
-    fonteIndicadores: isFii || kind === 'bdr' ? FONTE_SCRAPER : FONTE_FUNDAMENTALISTAS,
+    fonteIndicadores: null,
+    fonteDy: siteDy.basis === 'sem-renda'
+      ? `Fonte: avisos de proventos da B3, até ${dateShortPt(spISODate())}.`
+      : null,
     min52,
     max52,
     serie: serieDoResumo(assetSeries, ibovSeries),
@@ -1909,6 +1911,7 @@ async function loadCrypto(base: string, symbol: string): Promise<AcaoPayload> {
     data: dataIso,
     numeros: { ...NUMEROS_RESUMO_VAZIOS },
     fonteIndicadores: null,
+    fonteDy: null,
     min52: null,
     max52: null,
     serie: serieDoResumo(series, []),
