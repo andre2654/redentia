@@ -189,6 +189,10 @@ A Redentia expõe um servidor MCP (Model Context Protocol) remoto oficial. Se o 
 
 - [Redentia For Business](${o}/business): para assessorias, family offices, gestoras e consultorias. A carteira do cliente chega pelo Open Finance, com o consentimento dele, e o escritório pergunta sobre ela no Claude ou no ChatGPT que já usa. Só lê: nada compra, vende ou transfere. Preço por pessoa da mesa.
 
+### Estudo
+
+- [WEALTH 2030](${o}/estudo/wealth-2030): estudo independente da Redentia sobre o futuro das assessorias, family offices e da gestão de patrimônio no Brasil. Descreve o setor a partir de dados públicos e de entrevistas. Não é recomendação de investimento. PDF: ${o}/estudo/wealth-2030.pdf
+
 ## Transparência editorial (E-E-A-T)
 
 - [Metodologia e fontes de dados](${o}/metodologia): como cada calculadora e ranking funciona, fórmulas usadas, fontes oficiais, limitações conhecidas e disclaimer educacional
