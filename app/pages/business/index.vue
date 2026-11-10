@@ -21,15 +21,18 @@
  * implantação" e cada frase de segurança está conferida no código. Frase nova
  * aqui precisa ser verdade hoje, porque agora o Google e as IAs leem a página.
  */
+import { DESCRICAO_BUSINESS, TITULO_BUSINESS, jsonLdBusiness } from '~/utils/jsonld-paginas'
+
 definePageMeta({ layout: 'business' })
 
 usePageSeo({
-  title: 'Redentia For Business',
-  description: 'Consolide a carteira do seu cliente com 1 clique. O cliente autoriza pelo Open Finance, e a Redentia lê o mercado e deixa a conversa pronta, no Claude ou no ChatGPT da mesa. A partir de R$ 500 por pessoa.',
+  title: TITULO_BUSINESS,
+  description: DESCRICAO_BUSINESS,
   path: '/business',
+  structuredData: jsonLdBusiness,
 })
 // Opt-out do sufixo global (mesmo caso do /login): o título já traz a marca e
-// "Redentia For Business · Redentia" repete a palavra duas vezes.
+// "Redentia: plataforma… · Redentia" repete a palavra duas vezes.
 useHead({ titleTemplate: null })
 </script>
 

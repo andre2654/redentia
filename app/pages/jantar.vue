@@ -8,6 +8,8 @@
  * o jantar a uma pessoa. As fotos são natureza-morta, imagem ilustrativa.
  * Cada “Entrar na fila” abre o WhatsApp, numa aba nova.
  */
+import { jsonLdJantar } from '~/utils/jsonld-paginas'
+
 const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20saber%20mais%20sobre%20o%20Redentia%20Wealth%20Intelligence%20Dinner'
 
 const descricao = 'Mesa fechada em São Paulo, dezembro, data a combinar. 10 cadeiras, uma mesa, nenhuma palestra. Convite sob curadoria. Jantar a R$ 600, só após a aprovação.'
@@ -18,6 +20,7 @@ usePageSeo({
   title: 'Redentia Wealth Intelligence Dinner',
   description: descricao,
   path: '/jantar',
+  structuredData: jsonLdJantar,
 })
 useHead({
   titleTemplate: null,
