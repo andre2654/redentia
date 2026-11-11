@@ -1,12 +1,13 @@
 <script setup lang="ts">
-// Cabeçalho de seção do design Nu: eyebrow azul (opcional) + h2 800 + dek.
-// Valores EXATOS de Redentia Mercado Nu.dc.html — slots permitem <br> no título.
+// Cabeçalho de seção: o eyebrow da marca (o corte azul + caixa alta, opcional),
+// o h2 em 800 e o dek. Aportou, 11/11/2026: o eyebrow era um texto azul em
+// caixa baixa; agora é o NuEyebrow. Slots permitem <br> no título.
 defineProps<{ eyebrow?: string; dark?: boolean }>()
 </script>
 
 <template>
   <div>
-    <div v-if="eyebrow" class="nsh__eyebrow" :class="{ 'nsh__eyebrow--dark': dark }">{{ eyebrow }}</div>
+    <NuEyebrow v-if="eyebrow" como="div" :sobre="dark ? 'escuro' : 'claro'">{{ eyebrow }}</NuEyebrow>
     <h2 class="nsh__title" :class="{ 'nsh__title--dark': dark, 'nsh__title--after-eyebrow': eyebrow }">
       <slot />
     </h2>
@@ -17,20 +18,15 @@ defineProps<{ eyebrow?: string; dark?: boolean }>()
 </template>
 
 <style scoped>
-.nsh__eyebrow { color: var(--nu-blue-text); font-size: var(--nu-fs-eyebrow); font-weight: 800; }
-/* dark: o par de acento sobre navy é o blue-soft (o --nu-blue afunda no fundo
-   escuro). Aditivo — o único consumidor de `dark` hoje (TeseDrivers) não passa
-   eyebrow nem dek, então nada muda no app. */
-.nsh__eyebrow--dark { color: var(--nu-blue-soft); }
 .nsh__title {
   margin: 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h2); font-weight: 800;
-  letter-spacing: -0.04em; line-height: 1.02;
+  letter-spacing: -0.03em; line-height: 1.02;
 }
-.nsh__title--after-eyebrow { margin: 12px 0 0; }
+.nsh__title--after-eyebrow { margin: 18px 0 0; }
 .nsh__title--dark { color: var(--nu-cream-text); }
 .nsh__dek {
-  color: var(--nu-gray); font-size: var(--nu-fs-dek); font-weight: 500;
+  color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: 500;
   line-height: 1.55; margin-top: 20px; max-width: 620px;
 }
 .nsh__dek :deep(strong) { color: var(--nu-ink); font-weight: 800; }

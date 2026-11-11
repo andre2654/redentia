@@ -5,6 +5,8 @@
  * O rodapé do site, com a privacidade, permanece.
  */
 const fila = 'https://wa.me/5511951495841?text=Oi%20Andr%C3%A9%2C%20quero%20saber%20mais%20sobre%20o%20Redentia%20Wealth%20Intelligence%20Dinner'
+// O jantar é da Redentia (escritórios): tema da Redentia, não o da Aportou.
+useMarcaRedentia()
 </script>
 
 <template>

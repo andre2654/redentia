@@ -29,9 +29,11 @@ withDefaults(
   display: flex; align-items: center; justify-content: center; width: 100%;
   border: none; border-radius: var(--nu-r-pill); padding: 17px 24px;
   background: var(--nu-blue); color: var(--nu-white);
-  font-size: var(--nu-fs-md); font-weight: 800; cursor: pointer;
+  font-size: 17px; font-weight: 700; cursor: pointer; min-height: 58px;
   transition: background .2s, color .2s, transform .15s;
 }
+.npb:hover { background: var(--nu-blue-hover); }
+.npb:active { transform: scale(.98); }
 .npb--off { background: var(--nu-cream-2); color: var(--nu-gray); pointer-events: none; cursor: default; }
 .npb--wait { pointer-events: none; cursor: default; }
 </style>

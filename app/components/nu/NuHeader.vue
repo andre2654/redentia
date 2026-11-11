@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { CTA_DEMO, NAV_BIZ_NOVA } from '~/content/business/landing'
+// APORTOU (11/11/2026): no site de investidor o topo senta sobre o creme da
+// página, sem fio (o fio só aparece depois de rolar), com o wordmark, a nav em
+// carvão 600 e a chamada em pílula carvão ("Criar conta grátis"), como no
+// quadro Home. A variante business não muda: lá o tema .marca-redentia devolve
+// os tokens antigos e a classe nuh-wrap--b2b segura o fio e os pesos de antes.
+//
 // Header Nu, "editorial calmo" (02/11/2026, o dono escolheu a direção 3 entre
 // três protótipos: "gostei do 3 e no mobile pode deixar ainda menor").
 //
@@ -56,7 +62,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 <template>
   <div
     class="nuh-wrap"
-    :class="{ 'nuh-wrap--shrunk': topo.shrunk.value, 'nuh-wrap--biz': bizNova, 'nuh-wrap--navy': bizNova }"
+    :class="{ 'nuh-wrap--shrunk': topo.shrunk.value, 'nuh-wrap--biz': bizNova, 'nuh-wrap--navy': bizNova, 'nuh-wrap--b2b': business, 'nuh-wrap--ap': !business }"
   >
     <div class="nuh">
       <NuTopoMarca class="nuh__marca" :business="business" />
@@ -108,7 +114,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
         </template>
         <template v-else>
           <NuxtLink to="/login" class="nuh__entrar">Entrar</NuxtLink>
-          <NuxtLink to="/assinar?quiz=1&de=topo" class="nuh__cta">Conectar carteira</NuxtLink>
+          <NuxtLink to="/assinar?quiz=1&de=topo" class="nuh__cta">Criar conta grátis</NuxtLink>
         </template>
         <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="topo.menuAberto.value" @click="topo.abrirMenu(true)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M4 9h16M4 15h16" /></svg>
@@ -231,6 +237,30 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 }
 @media (prefers-reduced-motion: reduce) {
   .nuh, .nuh__item::after { transition: none; }
+}
+
+/* ——— Aportou: o topo do site de investidor ——— */
+.nuh-wrap--ap { background: var(--nu-page); border-bottom-color: transparent; transition: border-color .3s, box-shadow .3s; }
+.nuh-wrap--ap.nuh-wrap--shrunk { border-bottom-color: var(--nu-line-2); }
+.nuh-wrap--ap .nuh__item { color: var(--nu-ink); font-weight: 600; letter-spacing: 0; }
+.nuh-wrap--ap .nuh__item:hover, .nuh-wrap--ap .nuh__item--aberto { color: var(--nu-blue-text); }
+.nuh-wrap--ap .nuh__item--ativo { color: var(--nu-blue-text); }
+.nuh-wrap--ap .nuh__item::after { height: 3px; bottom: 12px; }
+.nuh-wrap--ap .nuh__entrar { height: 44px; font-size: var(--nu-fs-md); }
+.nuh-wrap--ap .nuh__cta { height: 44px; background: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700; }
+.nuh-wrap--ap .nuh__cta:hover { background: var(--nu-ink-hover); }
+.nuh-wrap--ap .nuh__busca { height: 44px; background: var(--nu-band); color: var(--nu-gray); font-weight: 600; }
+.nuh-wrap--ap .nuh__busca:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
+.nuh-wrap--ap .nuh__avatar span { background: var(--nu-ink); font-weight: 800; }
+.nuh-wrap--ap .nuh__avatar:hover span { background: var(--nu-blue); }
+.nuh-wrap--ap .nuh__burger:hover { background: var(--nu-band); }
+@container topo (max-width: 1160px) {
+  .nuh-wrap--ap .nuh__busca { background: transparent; }
+  .nuh-wrap--ap .nuh__busca:hover { background: var(--nu-band); }
+}
+@container topo (max-width: 640px) {
+  .nuh-wrap--ap .nuh__marca { padding: 4px 6px 4px 0; }
+  .nuh-wrap--ap .nuh__marca :deep(svg) { height: 24px; width: auto; }
 }
 
 /* ——— a landing /business (o print do dono) ——— */

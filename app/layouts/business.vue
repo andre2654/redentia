@@ -18,6 +18,9 @@
  * 2030 acima do topo, como no print do dono. O painel logado não tem a faixa.
  */
 const route = useRoute()
+// As telas de escritório seguem com a cara da Redentia: o tema devolve os
+// tokens que a Aportou mudou (assets/css/tema-redentia.css).
+useMarcaRedentia()
 </script>
 
 <template>

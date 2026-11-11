@@ -1,4 +1,9 @@
 <script setup lang="ts">
+// APORTOU (11/11/2026): no site de investidor o rodapé é o NuFooterAportou (o
+// do quadro Home: carvão, a frase da marca, as colunas em caixa alta e o
+// wordmark gigante). Este arquivo segue sendo o rodapé da variante business,
+// com a marca Redentia; COLUMNS (as do investidor) é exportado para o novo.
+//
 // Footer Nu — navy: a marca com redes e contato ao lado das
 // colunas de links, e embaixo a banda de assinatura (NuFooterLinha): a frase
 // grande em peso leve e um traço de luz só, o Ibovespa mês a mês desde 1995,
@@ -62,7 +67,8 @@ const colunas = computed(() => (business.value ? COLUMNS_BUSINESS : COLUMNS))
 </script>
 
 <template>
-  <footer class="nuf">
+  <NuFooterAportou v-if="!business" :colunas="COLUMNS" :assinatura="assinaturaNoRodape" />
+  <footer v-else class="nuf">
     <div class="nuf__in">
       <section v-if="assinaturaNoRodape" id="newsletter" class="nuf__news" aria-labelledby="nuf-news-titulo">
         <div class="nuf__news-texto">

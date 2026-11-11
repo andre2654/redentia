@@ -1,87 +1,81 @@
 /**
- * Redentia Nu — tokens do design system.
- * FONTE DE VERDADE: docs/redentia-nu/designs/*.dc.html (contrato de UX).
+ * Aportou — tokens do design system (11/11/2026).
+ * A Redentia B2C virou Aportou: creme, cobalto, carvão e sálvia, em Figtree.
+ * FONTE DE VERDADE: docs/aportou/ (o contrato) e os quadros do canvas da marca.
+ * O prefixo --nu-* ficou: é nome interno, e 313 componentes dependem dele.
  * Regra de ouro (lição do Frontend, paga com 5.641 inline styles):
  * componente NUNCA hardcoda cor — só var(--nu-*).
  */
 :root {
   /* superfícies */
   --nu-white: #ffffff;
-  --nu-cream: #F5F1EA;        /* fundo base, pills claras */
-  --nu-cream-2: #F0EDE6;      /* bordas suaves */
-  --nu-cream-hover: #f3f0e9;  /* hover de nav/botões fantasmas */
-  --nu-navy: #0C1524;         /* seções escuras (charts, footer) */
-  --nu-navy-2: #16233B;       /* cards sobre navy */
-  --nu-navy-3: #1C2C4A;       /* hover de cards sobre navy */
+  --nu-cream: #F4ECE1;        /* fundo base, pills claras */
+  --nu-cream-2: #EFE4D5;      /* bordas suaves */
+  --nu-cream-hover: #EFE4D5;  /* hover de nav/botões fantasmas */
+  --nu-navy: #111827;         /* seções escuras (charts, footer) */
+  --nu-navy-2: #1B2434;       /* cards sobre navy */
+  --nu-navy-3: #263042;       /* hover de cards sobre navy */
 
   /* marca */
-  --nu-blue: #2F6AFF;         /* primário: fundos, botões, ícones, gráficos. Era #2F6BFF: branco sobre ele dava 4,499:1, um fio abaixo do AA (4,5:1) em todo CTA; #2F6AFF dá 4,54:1. Texto sobre claro usa --nu-blue-text */
-  --nu-blue-hover: #2258DB;
-  --nu-blue-deep: #2456C9;    /* cards de ação em seção azul */
-  --nu-blue-soft: #9EC8FF;    /* acentos sobre navy, linhas de gráfico */
-  --nu-blue-tint: rgba(47, 107, 255, 0.10);  /* pill ativa da nav */
-  --nu-blue-tint-2: rgba(47, 107, 255, 0.08);/* hover de outline */
+  --nu-blue: #2563EB;         /* cobalto: fundos, botões, ícones, gráficos. Branco sobre ele: 5,17:1. Texto sobre claro usa --nu-blue-text */
+  --nu-blue-hover: #1D4ED8;
+  --nu-blue-deep: #1D4ED8;    /* cards de ação em seção azul */
+  --nu-blue-soft: #A9C4FF;    /* acentos sobre navy, linhas de gráfico */
+  --nu-blue-tint: rgba(37, 99, 235, 0.10);  /* pill ativa da nav */
+  --nu-blue-tint-2: rgba(37, 99, 235, 0.08);/* hover de outline */
 
   /* texto */
-  --nu-ink: #0A0A0C;
-  --nu-gray: #6E675B;         /* secundário (AA: 4,97:1 sobre creme) */
-  --nu-gray-2: #57534A;       /* deks */
-  --nu-gray-3: #3A3733;       /* corpo sobre creme */
-  --nu-sand: #B9AE9C;         /* neutro apagado */
-  --nu-sand-2: #ECE7DC;       /* bg de badge neutro */
-  --nu-cream-text: #F5F1EA;   /* texto sobre navy */
-  --nu-cream-text-70: rgba(245, 241, 234, 0.7);
-  --nu-cream-text-78: rgba(245, 241, 234, 0.78);
-  --nu-cream-text-55: rgba(245, 241, 234, 0.55);
-  --nu-cream-text-60: rgba(245, 241, 234, 0.6);
+  --nu-ink: #111827;
+  --nu-gray: #4B5563;         /* secundário (AA: 4,97:1 sobre creme) */
+  --nu-gray-2: #374151;       /* deks */
+  --nu-gray-3: #1F2937;       /* corpo sobre creme */
+  --nu-sand: #B9AD99;         /* neutro apagado */
+  --nu-sand-2: #EFE4D5;       /* bg de badge neutro */
+  --nu-cream-text: #F6F2E9;   /* texto sobre navy */
+  --nu-cream-text-70: rgba(246, 242, 233, 0.7);
+  --nu-cream-text-78: rgba(246, 242, 233, 0.78);
+  --nu-cream-text-55: rgba(246, 242, 233, 0.55);
+  --nu-cream-text-60: rgba(246, 242, 233, 0.6);
 
   /* semânticas de mercado — fundo, ícone e gráfico. Como TEXTO, usar os
      tokens --nu-*-text abaixo: estes hex ficam abaixo de 4,5:1 em fundo claro. */
-  --nu-green: #148F4E;        /* alta (fundo, ícone, gráfico). Texto: --nu-green-text */
-  --nu-green-2: #0E7A42;      /* texto em badge verde que já nasceu mais escuro */
-  --nu-green-bg: #DCF2E4;     /* bg de badge verde */
-  --nu-red: #D6323B;          /* queda (fundo, ícone, gráfico). Texto: --nu-red-text */
-  --nu-red-2: #C22B34;
+  --nu-green: #2F8F55;        /* alta (fundo, ícone, gráfico). Texto: --nu-green-text */
+  --nu-green-2: #18703A;      /* texto em badge verde que já nasceu mais escuro */
+  --nu-green-bg: #DDF2E3;     /* bg de badge verde */
+  --nu-red: #D92D20;          /* queda (fundo, ícone, gráfico). Texto: --nu-red-text */
+  --nu-red-2: #B42318;
 
-  /* Texto da marca e do placar. O azul, o verde e o vermelho de cima continuam
-     nos fundos, botões grandes, ícones e gráficos. Aqui é só a cor da letra:
-     o hex mais claro que ainda fecha 4,60:1 no pior fundo claro em que essa
-     letra aparece (folga pequena sobre 4,5:1). WCAG 2.x, limiar 0,03928.
-     Medido antes, no hex de cima:
-       #2F6AFF sobre creme #F5F1EA = 4,03:1; sobre o tint da nav #EAF0FF = 3,98:1;
-         sobre o número em tile 14% sobre creme (#D9DEED) = 3,38:1 — é este piso
-         que puxa o azul, não o creme sozinho.
-       #148F4E sobre branco = 4,14:1; sobre creme = 3,68:1; sobre o badge
-         #DCF2E4 = 3,52:1 (o piso do verde).
-       #D6323B sobre branco = 4,80:1 (já passava); sobre creme = 4,26:1; sobre
-         o badge #FBE3E4 = 3,93:1 (o piso do vermelho).
-     Com o token:
-       #2A58CF  creme 5,49:1 · branco 6,18:1 · nav #EAF0FF 5,42:1 · tile 14%
-         sobre creme 4,60:1 · badge azul #E8F0FF 5,40:1.
-       #0E7A43  branco 5,41:1 · creme 4,80:1 · vidro #FDFCFB 5,28:1 · badge
-         #DCF2E4 4,60:1.
-       #C42B33  creme 4,99:1 · branco 5,61:1 · badge #FBE3E4 4,60:1. */
-  --nu-blue-text: #2A58CF;
-  --nu-green-text: #0E7A43;
-  --nu-red-text: #C42B33;
+  /* Texto da marca e do placar. O cobalto, o verde e o vermelho de cima ficam
+     nos fundos, botões, ícones e gráficos; aqui é só a cor da letra. Medido
+     (WCAG 2.x) no pior fundo claro em que cada uma aparece:
+       #1D4ED8  página #F9F3EC 6,08:1 · cartão #F4ECE1 5,72:1 · faixa #F1E8DB
+         5,52:1 · selo azul #E6ECFA 5,66:1.
+       #18703A  branco 6,14:1 · página 5,58:1 · selo #DDF2E3 5,23:1.
+       #B42318  página 5,97:1 · selo #FBE4E0 5,41:1.
+     O cobalto puro (#2563EB) como letra sobre a página dá 4,69:1: passa, mas
+     sem folga; texto corrido e link usam #1D4ED8. */
+  --nu-blue-text: #1D4ED8;
+  --nu-green-text: #18703A;
+  --nu-red-text: #B42318;
 
   /* raios */
   --nu-r-pill: 999px;
-  --nu-r-card: 24px;
-  --nu-r-card-lg: 26px;
+  --nu-r-card: 28px;
+  --nu-r-card-lg: 32px;
   --nu-r-panel: 22px;
   --nu-r-tile: 16px;
-  --nu-r-input: 14px;
+  --nu-r-input: 16px;
   --nu-r-chip: 12px;
 
-  /* tipografia. A 'Jakarta Reserva' (base.css) é a Arial com as medidas da
-     Jakarta: ocupa o lugar dela até a fonte chegar, e a troca não mexe a página */
-  --nu-font: 'Plus Jakarta Sans', 'Jakarta Reserva', system-ui, sans-serif;
+  /* tipografia: Figtree (a "Aportou Sans" da identidade). A 'Figtree Reserva'
+     (base.css) é a Arial com as medidas da Figtree: ocupa o lugar dela até a
+     fonte chegar, e a troca não mexe a página */
+  --nu-font: 'Figtree', 'Figtree Reserva', system-ui, sans-serif;
 
   /* Escala única (out/2026). Antes eram 32 tamanhos em px espalhados pelos
      componentes (13,5, 14,5, 15,5...), e cada página tinha 17 a 29 deles.
      Texto usa SÓ estes 7 passos; título usa os papéis fluidos abaixo.
-     Pesos: 500 texto, 700 destaque e interface, 800 título e número grande. */
+     Pesos: 500 texto, 600 apoio, 700 destaque e interface, 800 título e número grande. */
   --nu-fs-xs: 12px;      /* rótulo, eyebrow em caixa alta, nota legal */
   --nu-fs-dense: 13px;   /* tabela e lista densa (cotação, ranking) */
   --nu-fs-sm: 14px;      /* texto secundário, legenda, botão compacto */
@@ -93,41 +87,41 @@
   /* Papéis de título (fluidos). Um padrão só: eyebrow azul + título + dek. */
   --nu-fs-eyebrow: clamp(16px, 1.5vw, 19px);
   --nu-fs-dek: clamp(16px, 1.7vw, 20px);
-  --nu-fs-h3: clamp(24px, 2.6vw, 32px);   /* título dentro de seção, card grande */
+  --nu-fs-h3: clamp(26px, 2.8vw, 38px);   /* título dentro de seção, card grande */
   --nu-fs-h2-sm: clamp(30px, 3.4vw, 46px); /* seção secundária, CTA */
   --nu-fs-h2: clamp(38px, 4.8vw, 62px);   /* título de seção (NuSectionHeading) */
   --nu-fs-hero: clamp(44px, 6.4vw, 88px); /* H1 de página */
 
   /* sombras (dos designs) */
-  --nu-shadow-card: 0 24px 60px -30px rgba(12, 21, 36, 0.18);
-  --nu-shadow-float: 0 30px 64px -24px rgba(5, 10, 25, 0.6);
+  --nu-shadow-card: 0 24px 48px -12px rgba(17, 24, 39, 0.10);
+  --nu-shadow-float: 0 30px 60px -12px rgba(17, 24, 39, 0.22);
 
   /* ——— PR1 /mercado (valores exatos de Redentia Mercado Nu.dc.html) ——— */
-  --nu-green-soft: #8FF0B5;    /* variação positiva sobre navy (perf de tese, altas) */
-  --nu-red-soft: #FFB3B8;      /* variação negativa sobre navy */
-  --nu-amber: #F2C94C;         /* tile de letra dos tickers nos cards de tese */
-  --nu-blue-hover-3: #1F55E0;  /* hover do CTA azul do briefing */
-  --nu-blue-30: rgba(47, 107, 255, 0.3);         /* underline de link inline no briefing */
-  --nu-blue-soft-35: rgba(158, 200, 255, 0.35);  /* underline de link no card takeaway */
-  --nu-grad-blue-1: #4D86E8;   /* stops exclusivos dos gradientes do blog */
-  --nu-grad-blue-2: #7FA9F0;
-  --nu-cream-3: #E9E4D8;       /* track do anel de progresso do carrossel de teses */
-  --nu-cream-4: #EFE9DD;       /* hover das explore rows */
-  --nu-sand-3: #CFC9BC;        /* dot inativo do carrossel */
-  --nu-score-track: #EEF1F5;   /* track da barra do Redentia Score (hero) */
+  --nu-green-soft: #86EFAC;    /* variação positiva sobre navy (perf de tese, altas) */
+  --nu-red-soft: #FCA5A5;      /* variação negativa sobre navy */
+  --nu-amber: #D9973A;         /* tile de letra dos tickers nos cards de tese */
+  --nu-blue-hover-3: #1D4ED8;  /* hover do CTA azul do briefing */
+  --nu-blue-30: rgba(37, 99, 235, 0.3);         /* underline de link inline no briefing */
+  --nu-blue-soft-35: rgba(169, 196, 255, 0.35);  /* underline de link no card takeaway */
+  --nu-grad-blue-1: #3A63D8;   /* stops exclusivos dos gradientes do blog */
+  --nu-grad-blue-2: #5B8CFF;
+  --nu-cream-3: #E6D9C6;       /* track do anel de progresso do carrossel de teses */
+  --nu-cream-4: #EFE4D5;       /* hover das explore rows */
+  --nu-sand-3: #D9CDB9;        /* dot inativo do carrossel */
+  --nu-score-track: #EFE4D5;   /* track da barra do Redentia Score (hero) */
   --nu-orb-deep: #0A1030;      /* radial do painel do orb (hero) */
   --nu-orb-black: #05070F;
   --nu-green-tint: rgba(14, 122, 66, 0.12);  /* bg do badge de ticker positivo (notícias) */
   --nu-red-tint: rgba(214, 50, 59, 0.12);    /* variante negativa (estado de dado real) */
 
   /* opacidades de creme sobre navy/azul (bandas dark do /mercado) */
-  --nu-cream-text-92: rgba(245, 241, 234, 0.92);
-  --nu-cream-text-85: rgba(245, 241, 234, 0.85);
-  --nu-cream-text-80: rgba(245, 241, 234, 0.8);
-  --nu-cream-text-50: rgba(245, 241, 234, 0.5);
-  --nu-cream-text-45: rgba(245, 241, 234, 0.45);
-  --nu-cream-text-12: rgba(245, 241, 234, 0.12);
-  --nu-cream-text-10: rgba(245, 241, 234, 0.1);
+  --nu-cream-text-92: rgba(246, 242, 233, 0.92);
+  --nu-cream-text-85: rgba(246, 242, 233, 0.85);
+  --nu-cream-text-80: rgba(246, 242, 233, 0.8);
+  --nu-cream-text-50: rgba(246, 242, 233, 0.5);
+  --nu-cream-text-45: rgba(246, 242, 233, 0.45);
+  --nu-cream-text-12: rgba(246, 242, 233, 0.12);
+  --nu-cream-text-10: rgba(246, 242, 233, 0.1);
 
   /* opacidades de branco (cards de tese e blog) */
   --nu-white-90: rgba(255, 255, 255, 0.9);
@@ -142,56 +136,56 @@
   --nu-white-14: rgba(255, 255, 255, 0.14);
 
   /* opacidades de ink (sobre claro) */
-  --nu-ink-75: rgba(10, 10, 12, 0.75);
-  --nu-ink-30: rgba(10, 10, 12, 0.3);
-  --nu-ink-14: rgba(10, 10, 12, 0.14);
-  --nu-ink-04: rgba(10, 10, 12, 0.04);
+  --nu-ink-75: rgba(17, 24, 39, 0.75);
+  --nu-ink-30: rgba(17, 24, 39, 0.3);
+  --nu-ink-14: rgba(17, 24, 39, 0.14);
+  --nu-ink-04: rgba(17, 24, 39, 0.04);
 
   /* ——— PR2 /asset/[ticker] (valores exatos de Redentia Acoes Nu.dc.html) ——— */
-  --nu-amber-bg: #F7E8C8;        /* bg da tag semântica amber (Moderado) */
-  --nu-amber-text: #A66B00;      /* texto da tag amber */
-  --nu-amber-soft: #FFD9A0;      /* pontos de atenção sobre azul (Leitura da IA) */
-  --nu-gray-tag: #6B6558;        /* texto da tag cinza (bg é --nu-sand-2) */
-  --nu-cream-line: #E7E0D2;      /* hairline das listas sobre creme */
-  --nu-bar-inactive: rgba(12, 21, 36, 0.13);  /* barras inativas do chart de dividendos */
-  --nu-navy-55: rgba(12, 21, 36, 0.55);       /* label da pill "TICKER hoje" no chart */
+  --nu-amber-bg: #F7E8C6;        /* bg da tag semântica amber (Moderado) */
+  --nu-amber-text: #6B4200;      /* texto da tag amber */
+  --nu-amber-soft: #F4DDB4;      /* pontos de atenção sobre azul (Leitura da IA) */
+  --nu-gray-tag: #4B5563;        /* texto da tag cinza (bg é --nu-sand-2) */
+  --nu-cream-line: #E6D9C6;      /* hairline das listas sobre creme */
+  --nu-bar-inactive: rgba(17, 24, 39, 0.13);  /* barras inativas do chart de dividendos */
+  --nu-navy-55: rgba(17, 24, 39, 0.55);       /* label da pill "TICKER hoje" no chart */
 
   /* opacidades de creme sobre navy/azul exclusivas da tela de ativo */
-  --nu-cream-text-35: rgba(245, 241, 234, 0.35);  /* labels das gridlines do chart */
-  --nu-cream-text-30: rgba(245, 241, 234, 0.30);  /* crosshair do chart */
-  --nu-cream-text-18: rgba(245, 241, 234, 0.18);  /* tracks (score bar, range de consenso) */
-  --nu-cream-text-14: rgba(245, 241, 234, 0.14);  /* hairlines dos cards da seção IA */
-  --nu-cream-text-08: rgba(245, 241, 234, 0.08);  /* gridlines do chart */
+  --nu-cream-text-35: rgba(246, 242, 233, 0.35);  /* labels das gridlines do chart */
+  --nu-cream-text-30: rgba(246, 242, 233, 0.30);  /* crosshair do chart */
+  --nu-cream-text-18: rgba(246, 242, 233, 0.18);  /* tracks (score bar, range de consenso) */
+  --nu-cream-text-14: rgba(246, 242, 233, 0.14);  /* hairlines dos cards da seção IA */
+  --nu-cream-text-08: rgba(246, 242, 233, 0.08);  /* gridlines do chart */
 
   /* verde-accent sobre azul (score/consenso) */
   --nu-green-soft-35: rgba(143, 240, 181, 0.35);  /* início do gradiente do range */
 
   /* halos do chart de preço */
-  --nu-blue-soft-18: rgba(158, 200, 255, 0.18);   /* halo do dot de fechamento */
-  --nu-blue-28: rgba(47, 107, 255, 0.28);         /* halo do dot do crosshair */
+  --nu-blue-soft-18: rgba(169, 196, 255, 0.18);   /* halo do dot de fechamento */
+  --nu-blue-28: rgba(37, 99, 235, 0.28);         /* halo do dot do crosshair */
 
   /* sombras dos overlays do chart (tooltip e pill de fechamento) */
   --nu-shadow-chart-pill: 0 12px 28px -12px rgba(0, 0, 0, 0.5);
   --nu-shadow-chart-tip: 0 18px 40px -14px rgba(0, 0, 0, 0.55);
 
   /* ——— PR3 /noticias (valores exatos de Redentia Noticias Nu.dc.html) ——— */
-  --nu-red-bg: #FBE3E4;        /* bg do chip de ticker negativo (par do --nu-green-bg) */
-  --nu-sand-border: #E4E0D6;   /* borda da tab-pill inativa */
-  --nu-sand-hover: #E2DCCB;    /* hover do botão "Carregar mais" (bg é --nu-sand-2) */
+  --nu-red-bg: #FBE4E0;        /* bg do chip de ticker negativo (par do --nu-green-bg) */
+  --nu-sand-border: #D9CDB9;   /* borda da tab-pill inativa */
+  --nu-sand-hover: #E6D9C6;    /* hover do botão "Carregar mais" (bg é --nu-sand-2) */
 
   /* ——— PR4 /guias (valores exatos de Redentia Guias Nu / Guia Open Finance) ——— */
   --nu-white-20: rgba(255, 255, 255, 0.2);  /* tag-pílula sobre gradient dos cards de guia */
-  --nu-ink-10: rgba(10, 10, 12, 0.10);      /* trilho da timeline de passos do guia */
+  --nu-ink-10: rgba(17, 24, 39, 0.10);      /* trilho da timeline de passos do guia */
 
   /* ——— PR5 /tese/[slug] (valores exatos de Redentia Tese.dc.html) ——— */
-  --nu-tese-line: #5A8CFF;                       /* linha da tese no chart de performance */
-  --nu-blue-bg: #E8F0FF;                         /* bg do badge azul-claro (Acompanhar) */
-  --nu-blue-16: rgba(47, 107, 255, 0.16);        /* highlight de trecho do editorial */
+  --nu-tese-line: #5B8CFF;                       /* linha da tese no chart de performance */
+  --nu-blue-bg: #E6ECFA;                         /* bg do badge azul-claro (Acompanhar) */
+  --nu-blue-16: rgba(37, 99, 235, 0.16);        /* highlight de trecho do editorial */
   --nu-green-soft-16: rgba(143, 240, 181, 0.16); /* bg do badge de convicção no hero */
-  --nu-cream-text-88: rgba(245, 241, 234, 0.88); /* bullets dos driver cards */
-  --nu-cream-text-65: rgba(245, 241, 234, 0.65); /* breadcrumb, linha IBOV, footer do risco */
+  --nu-cream-text-88: rgba(246, 242, 233, 0.88); /* bullets dos driver cards */
+  --nu-cream-text-65: rgba(246, 242, 233, 0.65); /* breadcrumb, linha IBOV, footer do risco */
   /* ——— /benchmark-ia: uma cor por modelo nas linhas da tela cheia (sobre navy) ——— */
-  --nu-serie-1: #5A8CFF;   /* azul */
+  --nu-serie-1: #5B8CFF;   /* azul */
   --nu-serie-2: #FFB547;   /* âmbar */
   --nu-serie-3: #4FD1A5;   /* menta */
   --nu-serie-4: #FF6B8A;   /* rosa */
@@ -201,36 +195,36 @@
   --nu-serie-8: #FF8F5A;   /* laranja */
   --nu-serie-9: #9BE15D;   /* lima */
   --nu-serie-10: #E9A3E8;  /* orquídea */
-  --nu-cream-text-40: rgba(245, 241, 234, 0.4);  /* borda do CTA outline do hero */
-  --nu-cream-text-16: rgba(245, 241, 234, 0.16); /* hairline do footer do risco central */
-  --nu-navy-60: rgba(12, 21, 36, 0.6);           /* valor do IBOV no tooltip do chart */
+  --nu-cream-text-40: rgba(246, 242, 233, 0.4);  /* borda do CTA outline do hero */
+  --nu-cream-text-16: rgba(246, 242, 233, 0.16); /* hairline do footer do risco central */
+  --nu-navy-60: rgba(17, 24, 39, 0.6);           /* valor do IBOV no tooltip do chart */
   /* overlay do hero da tese (4 stops do design) */
   --nu-tese-hero-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.62) 0%, rgba(8, 12, 20, 0.18) 34%, rgba(8, 12, 20, 0.55) 62%, rgba(8, 12, 20, 0.95) 100%);
   /* pares bg/fg dos tiles de ticker (avaliação por ativo) */
   --nu-tile-amber-bg: rgba(242, 201, 76, 0.28);
   --nu-tile-amber-fg: #8A6A00;
-  --nu-tile-blue-bg: rgba(47, 107, 255, 0.14);   /* fg = --nu-blue-deep */
+  --nu-tile-blue-bg: rgba(37, 99, 235, 0.14);   /* fg = --nu-blue-deep */
   --nu-tile-red-bg: rgba(214, 50, 59, 0.12);     /* fg = --nu-red-2 */
   --nu-tile-green-bg: rgba(0, 156, 59, 0.14);    /* fg = --nu-green-2 */
   --nu-tile-orange-bg: rgba(242, 153, 74, 0.22);
   --nu-tile-orange-fg: #C06A10;
 
   /* ——— PR6 /login (valores exatos de Redentia Login Nu.dc.html) ——— */
-  --nu-placeholder: #C9C2B4;   /* placeholder dos inputs underline */
-  --nu-underline: #E9E4D8;     /* linha de repouso do input (mesmo hex de --nu-cream-3, papel próprio) */
-  --nu-row-hover: #FAF8F3;     /* hover dos list-buttons de auth */
+  --nu-placeholder: #6B7280;   /* placeholder dos inputs underline */
+  --nu-underline: #B9AD99;     /* linha de repouso do input (mesmo hex de --nu-cream-3, papel próprio) */
+  --nu-row-hover: #FBF7F1;     /* hover dos list-buttons de auth */
 
   /* ——— PR7 Home logada (valores exatos de Redentia Home Nu.dc.html) ——— */
-  --nu-blue-legend: #7FB1FF;   /* valor 'Você' na legenda do gráfico navy */
-  --nu-ink-hover: #2A2A2E;     /* hover do botão preto do briefing */
+  --nu-blue-legend: #A9C4FF;   /* valor 'Você' na legenda do gráfico navy */
+  --nu-ink-hover: #1F2937;     /* hover do botão preto do briefing */
   --nu-warning-bg: rgba(255, 194, 77, 0.22); /* badge 'Risco de concentração' (texto --nu-amber-soft) */
 
   /* alocação por classe (barra empilhada de "Suas posições") */
-  --nu-alloc-stock: #2F6AFF;   /* Ações (= --nu-blue, papel próprio) */
-  --nu-alloc-fii: #7C5FD6;     /* FIIs */
-  --nu-alloc-fixed: #0E9E63;   /* Renda Fixa */
-  --nu-alloc-crypto: #F2994A;  /* Cripto */
-  --nu-alloc-cash: #B9AE9C;    /* Caixa/Outros (= --nu-sand, papel próprio) */
+  --nu-alloc-stock: #2563EB;   /* Ações (= --nu-blue, papel próprio) */
+  --nu-alloc-fii: #A9C4FF;     /* FIIs */
+  --nu-alloc-fixed: #111827;   /* Renda Fixa */
+  --nu-alloc-crypto: #D9973A;  /* Cripto */
+  --nu-alloc-cash: #9AAE9B;    /* Caixa/Outros (= --nu-sand, papel próprio) */
 
   /* pares bg/fg dos tiles de posição (mapa TL do design) */
   --nu-tile-petr-bg: #00A868;                    /* fg = --nu-white */
@@ -246,27 +240,27 @@
   --nu-tile-mxrf-fg: #7C5FD6;
 
   /* ——— PR8 /carteira (valores exatos de Redentia Carteira Nu.dc.html) ——— */
-  --nu-ink-16: rgba(10, 10, 12, 0.16);       /* borda de repouso do botão-olho */
-  --nu-red-pill-bg: #F8DEDE;                 /* bg da pill de retorno negativo (grupo) */
-  --nu-cream-line-2: #E9E2D3;                /* divisórias do painel interno de ativos */
-  --nu-amber-fill: #E8A13D;                  /* fill âmbar das barras do Raio-X */
-  --nu-cream-text-22: rgba(245, 241, 234, 0.22); /* barras inativas do mini bar chart (renda) */
+  --nu-ink-16: rgba(17, 24, 39, 0.16);       /* borda de repouso do botão-olho */
+  --nu-red-pill-bg: #FBE4E0;                 /* bg da pill de retorno negativo (grupo) */
+  --nu-cream-line-2: #E6D9C6;                /* divisórias do painel interno de ativos */
+  --nu-amber-fill: #D9973A;                  /* fill âmbar das barras do Raio-X */
+  --nu-cream-text-22: rgba(246, 242, 233, 0.22); /* barras inativas do mini bar chart (renda) */
   /* tiles por classe (Renda Fixa / Cripto — fg RF = --nu-alloc-fixed, ETH = tile mxrf) */
   --nu-tile-rf-bg: rgba(14, 158, 99, 0.14);
   --nu-tile-btc-bg: rgba(242, 153, 74, 0.18);
   --nu-tile-btc-fg: #D97706;
   /* heatmap P&L: alpha computada em runtime sobre os canais RGB (função hmCell
      portada do design) — hex só aqui, componente monta rgba(var(--nu-hm-*-rgb), α) */
-  --nu-hm-green-rgb: 14, 158, 99;            /* #0E9E63 */
-  --nu-hm-red-rgb: 214, 50, 59;              /* #D6323B */
-  --nu-hm-green-ink: #0B6B44;                /* texto sobre célula verde clara */
-  --nu-hm-red-ink: #A02730;                  /* texto sobre célula vermelha clara */
-  --nu-hm-empty: #EDE8DC;                    /* célula vazia (mês futuro/sem dado) */
-  --nu-hm-green: #0E9E63;                    /* pill sólida do total anual (papel próprio) */
+  --nu-hm-green-rgb: 47, 143, 85;            /* #0E9E63 */
+  --nu-hm-red-rgb: 217, 45, 32;              /* #D6323B */
+  --nu-hm-green-ink: #18703A;                /* texto sobre célula verde clara */
+  --nu-hm-red-ink: #B42318;                  /* texto sobre célula vermelha clara */
+  --nu-hm-empty: #EFE4D5;                    /* célula vazia (mês futuro/sem dado) */
+  --nu-hm-green: #2F8F55;                    /* pill sólida do total anual (papel próprio) */
 
   /* ——— posicoes-v2 "Suas posições." (designs-v2/Redentia Carteira Nu.dc.html) ———
      Cores por classe: as 5 principais REUSAM --nu-alloc-* (Ações = --nu-blue
-     #2F6AFF; FIIs #7C5FD6, Renda Fixa #0E9E63, Cripto #F2994A, Caixa/Outros
+     #2563EB; FIIs #7C5FD6, Renda Fixa #0E9E63, Cripto #F2994A, Caixa/Outros
      #B9AE9C); abaixo só as classes NOVAS do mapa clsColors. */
   --nu-class-bdr: #E0555F;      /* BDRs */
   --nu-class-etf: #1E8A94;      /* ETFs */
@@ -275,22 +269,22 @@
   --nu-class-prev: #5B8DEF;     /* Previdência */
   --nu-class-fund: #EB6FA6;     /* Fundos */
   --nu-class-fx: #14B8A6;       /* Câmbio */
-  --nu-shadow-pos-nav: 0 1px 2px rgba(12, 21, 36, 0.05);   /* botão de classe em repouso */
+  --nu-shadow-pos-nav: 0 1px 2px rgba(17, 24, 39, 0.05);   /* botão de classe em repouso */
   --nu-r-pos-panel: 18px;       /* raio do painel interno creme de linhas */
 
   /* ——— PR10 /calculadoras (valores exatos de Redentia Calculadoras Nu.dc.html) ——— */
-  --nu-navy-07: rgba(12, 21, 36, 0.07);      /* gridlines do gráfico de projeção */
-  --nu-shadow-slider-thumb: 0 4px 12px -2px rgba(12, 21, 36, 0.35); /* thumb do slider custom */
+  --nu-navy-07: rgba(17, 24, 39, 0.07);      /* gridlines do gráfico de projeção */
+  --nu-shadow-slider-thumb: 0 4px 12px -2px rgba(17, 24, 39, 0.35); /* thumb do slider custom */
 
   /* ——— PR9 /busca + chat (valores exatos de Redentia Busca Nu.dc.html) ——— */
-  --nu-cream-text-90: rgba(245, 241, 234, 0.9);  /* parágrafos da resposta da IA */
-  --nu-navy-14: rgba(12, 21, 36, 0.14);          /* hover do X do drawer */
-  --nu-shadow-search: 0 24px 60px -34px rgba(12, 21, 36, 0.25);   /* pill de busca do hero */
+  --nu-cream-text-90: rgba(246, 242, 233, 0.9);  /* parágrafos da resposta da IA */
+  --nu-navy-14: rgba(17, 24, 39, 0.14);          /* hover do X do drawer */
+  --nu-shadow-search: 0 24px 60px -34px rgba(17, 24, 39, 0.25);   /* pill de busca do hero */
 
   /* ——— PR-R1 NuMarketReading + Login (animação "Redentia lendo o mercado") ——— */
   /* recência do feed que acende sobre navy (wcol do design DC) */
-  --nu-cream-text-24: rgba(245, 241, 234, 0.24);  /* palavra ainda não lida (d<=0) */
-  --nu-cream-text-72: rgba(245, 241, 234, 0.72);  /* palavra recém-lida (d=2) */
+  --nu-cream-text-24: rgba(246, 242, 233, 0.24);  /* palavra ainda não lida (d<=0) */
+  --nu-cream-text-72: rgba(246, 242, 233, 0.72);  /* palavra recém-lida (d=2) */
   --nu-red-soft-16: rgba(255, 179, 184, 0.16);    /* bg da pill de baixa no feed (par de --nu-green-soft-16) */
   --nu-read-doc-bg: rgba(127, 169, 240, 0.16);    /* tile do ícone doc sobre navy (tint de --nu-grad-blue-2 #7FA9F0) */
   /* lockup da marca no morph de brand */
@@ -300,65 +294,65 @@
 
   /* ——— PR-R2 NuMarketReading tema 'light' + card do hero do /mercado ——— */
   /* recência do feed que acende sobre card branco (wcol light do design DC) */
-  --nu-read-word-1: #C4BEB2;   /* palavra ainda não lida (d<=0) */
-  --nu-read-word-2: #BAB4A8;   /* d=1 */
-  --nu-read-word-3: #8E887C;   /* d=2 */
-  --nu-read-word-4: #585349;   /* d=3 (a mais recente antes do topo, que é --nu-ink) */
+  --nu-read-word-1: #C4BBAA;   /* palavra ainda não lida (d<=0) */
+  --nu-read-word-2: #B9AD99;   /* d=1 */
+  --nu-read-word-3: #6B7280;   /* d=2 */
+  --nu-read-word-4: #374151;   /* d=3 (a mais recente antes do topo, que é --nu-ink) */
   /* pills de variação sobre card branco (bg da alta reusa --nu-green-bg; brand reusa --nu-tile-blue-bg) */
-  --nu-read-green: #0B7A3E;    /* texto da pill de alta */
-  --nu-read-red-bg: #FBE1E2;   /* bg da pill de baixa (≠ --nu-red-bg #FBE3E4) */
-  --nu-read-red: #C42B33;      /* texto da pill de baixa */
+  --nu-read-green: #18703A;    /* texto da pill de alta */
+  --nu-read-red-bg: #FBE4E0;   /* bg da pill de baixa (≠ --nu-red-bg #FBE3E4) */
+  --nu-read-red: #B42318;      /* texto da pill de baixa */
   /* tile do ícone doc sobre card branco (brand reusa --nu-blue-16; stroke sempre --nu-blue) */
-  --nu-read-doc-bg-light: #EAF1FF;
+  --nu-read-doc-bg-light: #E6ECFA;
   /* chrome do card de leitura no hero do /mercado */
-  --nu-navy-06: rgba(12, 21, 36, 0.06);                            /* borda do card */
+  --nu-navy-06: rgba(17, 24, 39, 0.06);                            /* borda do card */
 
   /* ——— PR-R3 carrosséis de tese (valores exatos dos designs v2) ——— */
   /* Mercado "Invista com Teses." — faixa de painéis-imagem (NuTeseStrip) */
   /* scrim do painel selecionado (4 stops — ≠ do --nu-thesis-scrim do card antigo) */
   --nu-tese-strip-scrim: linear-gradient(180deg, rgba(8, 12, 20, 0.42) 0%, rgba(8, 12, 20, 0.04) 34%, rgba(8, 12, 20, 0.30) 62%, rgba(8, 12, 20, 0.90) 100%);
-  --nu-cream-5: #F1ECE1;                      /* bg das setas prev/next da faixa */
-  --nu-cream-5-hover: #E5DECE;                /* hover das setas prev/next */
+  --nu-cream-5: #EFE4D5;                      /* bg das setas prev/next da faixa */
+  --nu-cream-5-hover: #E6D9C6;                /* hover das setas prev/next */
 
   /* Home "Suas teses." — cards navy em scroll horizontal (3 gradientes ciclados) */
-  --nu-tese-grad-1: linear-gradient(200deg, #9EC8FF 0%, #4D86E8 34%, #16233B 88%);
-  --nu-tese-grad-2: linear-gradient(165deg, #2F6BFF 0%, #2456C9 46%, #0C1524 100%);
-  --nu-tese-grad-3: linear-gradient(205deg, #7FA9F0 0%, #2456C9 56%, #0C1524 96%);
+  --nu-tese-grad-1: linear-gradient(200deg, #A9C4FF 0%, #3A63D8 34%, #1B2434 88%);
+  --nu-tese-grad-2: linear-gradient(165deg, #2563EB 0%, #1D4ED8 46%, #111827 100%);
+  --nu-tese-grad-3: linear-gradient(205deg, #5B8CFF 0%, #1D4ED8 56%, #111827 96%);
   --nu-green-soft-22: rgba(143, 240, 181, 0.22); /* bg da pill "Seguindo" */
 
   /* ——— PR-R4 "O dia no mercado" — seção-gatilho + NuDayModal (designs v2) ——— */
   /* A seção-gatilho é IGUAL nas duas telas; só o bg da banda difere por tone:
-     tone='mercado' → --nu-blue (#2F6BFF) · tone='home' → --nu-navy (#0C1524).
+     tone='mercado' → --nu-blue (#2563EB) · tone='home' → --nu-navy (#111827).
      Reusam: --nu-cream-text (títulos/ícones), --nu-cream-text-72 (subtítulo da
      banda), --nu-white/--nu-white-75 (número e parágrafos dos cards), --nu-cream
      (bg do botão) + --nu-white (hover). */
-  --nu-day-card-navy: #16357F;    /* bg dos 4 cards de destaque (sobre as duas bandas) */
-  --nu-day-btn-ink: #0A2050;      /* texto do botão creme "Ler o resumo do dia" */
+  --nu-day-card-navy: #1B2434;    /* bg dos 4 cards de destaque (sobre as duas bandas) */
+  --nu-day-btn-ink: #111827;      /* texto do botão creme "Ler o resumo do dia" */
   /* Modal do resumo. Reusam: --nu-blue (eyebrow + rótulo "A leitura do Atlas"),
      --nu-gray (rótulo "O placar" + linha de data), --nu-ink (h4 + botão preto),
      --nu-ink-hover (hover do botão preto), --nu-r-card-lg (raio 26). */
-  --nu-day-card: #FBF9F4;         /* bg do card do modal */
-  --nu-day-backdrop: rgba(8, 14, 30, 0.55);   /* scrim do modal (blur 4px por cima) */
-  --nu-day-divider: #E7E1D4;      /* hairline sob o header do modal */
-  --nu-day-close: #EDE7DA;        /* bg do botão ✕ */
-  --nu-day-close-hover: #E1D9C8;  /* hover do ✕ */
-  --nu-day-body: #2A2620;         /* texto dos 4 parágrafos do modal */
-  --nu-day-puxou: #0B7A4B;        /* rótulo "O que puxou" (verde) */
-  --nu-day-ficou: #C0392B;        /* rótulo "O que ficou pra trás" (vermelho) */
+  --nu-day-card: #FBF7F1;         /* bg do card do modal */
+  --nu-day-backdrop: rgba(17, 24, 39, 0.55);   /* scrim do modal (blur 4px por cima) */
+  --nu-day-divider: #E6D9C6;      /* hairline sob o header do modal */
+  --nu-day-close: #EFE4D5;        /* bg do botão ✕ */
+  --nu-day-close-hover: #E6D9C6;  /* hover do ✕ */
+  --nu-day-body: #1F2937;         /* texto dos 4 parágrafos do modal */
+  --nu-day-puxou: #18703A;        /* rótulo "O que puxou" (verde) */
+  --nu-day-ficou: #B42318;        /* rótulo "O que ficou pra trás" (vermelho) */
   --nu-shadow-day-modal: 0 40px 110px rgba(0, 0, 0, 0.45);
 
   /* ——— PR-R5 novas seções de imagem do /mercado (designs v2) ——— */
   /* "Sua carteira, conectada." agora usa logos reais das marcas
      (public/icons/logo-*.webp), não mais círculos de texto — os tokens
      --nu-bank-* foram removidos por ficarem órfãos. */
-  --nu-cream-text-82: rgba(245, 241, 234, 0.82); /* dek da banda azul + sub do CTA final */
+  --nu-cream-text-82: rgba(246, 242, 233, 0.82); /* dek da banda azul + sub do CTA final */
   /* placeholder elegante das imagens lifestyle (TODO(asset): fotos reais do André) */
-  --nu-img-placeholder: linear-gradient(135deg, #2456C9 0%, #16357F 52%, #0C1524 100%);
-  --nu-img-glow: radial-gradient(120% 90% at 78% 14%, rgba(158, 200, 255, 0.30) 0%, rgba(158, 200, 255, 0) 60%);
-  --nu-cta-placeholder: linear-gradient(120deg, #2F6BFF 0%, #2456C9 58%, #16357F 100%);
+  --nu-img-placeholder: linear-gradient(135deg, #1D4ED8 0%, #1640C2 52%, #111827 100%);
+  --nu-img-glow: radial-gradient(120% 90% at 78% 14%, rgba(169, 196, 255, 0.30) 0%, rgba(169, 196, 255, 0) 60%);
+  --nu-cta-placeholder: linear-gradient(120deg, #2563EB 0%, #1D4ED8 58%, #1640C2 100%);
   /* CTA final com foto de fundo — scrims exatos do design (azul→transparente + base) */
-  --nu-cta-scrim-h: linear-gradient(90deg, #2F6BFF 0%, rgba(47, 107, 255, 0.82) 24%, rgba(47, 107, 255, 0.44) 56%, rgba(47, 107, 255, 0.12) 100%);
-  --nu-cta-scrim-v: linear-gradient(180deg, rgba(47, 107, 255, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
+  --nu-cta-scrim-h: linear-gradient(90deg, #2563EB 0%, rgba(37, 99, 235, 0.82) 24%, rgba(37, 99, 235, 0.44) 56%, rgba(37, 99, 235, 0.12) 100%);
+  --nu-cta-scrim-v: linear-gradient(180deg, rgba(37, 99, 235, 0) 58%, rgba(24, 66, 175, 0.26) 100%);
 
   /* ——— /teses ("A grade", 02/11/2026): sem cor própria, só tokens de uso geral ——— */
 
@@ -391,15 +385,45 @@
   --nu-agora-azul: #64B5FF;
   /* a sombra do botão da chamada (HomeChamada); a dos aparelhos sobre o creme
      saiu com o herói antigo (02/11/2026) */
-  --nu-home-sombra-botao: 0 18px 40px -16px rgba(47, 106, 255, 0.65);
+  --nu-home-sombra-botao: 0 18px 40px -16px rgba(37, 99, 235, 0.65);
   --nu-home-sombra-botao-escuro: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
 
   /* ——— Chat em painel (02/11/2026): barra flutuante, painel à direita, cursor mágico ——— */
   /* a luz que segue o ponteiro: azul, violeta e rosa da paleta da barra (--nu-blue, --nu-serie-5, --nu-serie-4) */
-  --nu-chat-luz-1: rgba(47, 106, 255, 0.42);
+  --nu-chat-luz-1: rgba(37, 99, 235, 0.42);
   --nu-chat-luz-2: rgba(180, 140, 255, 0.40);
   --nu-chat-luz-3: rgba(255, 107, 138, 0.30);
-  --nu-chat-sombra-painel: 0 0 0 1px rgba(12, 21, 36, 0.07), 0 28px 70px -24px rgba(12, 21, 36, 0.34);
-  --nu-chat-sombra-sug: 0 18px 50px -12px rgba(12, 21, 36, 0.28), 0 0 0 1px rgba(12, 21, 36, 0.07);
-  --nu-chat-sombra-rotulo: 0 6px 16px -6px rgba(12, 21, 36, 0.45);
+  --nu-chat-sombra-painel: 0 0 0 1px rgba(17, 24, 39, 0.07), 0 28px 70px -24px rgba(17, 24, 39, 0.34);
+  --nu-chat-sombra-sug: 0 18px 50px -12px rgba(17, 24, 39, 0.28), 0 0 0 1px rgba(17, 24, 39, 0.07);
+  --nu-chat-sombra-rotulo: 0 6px 16px -6px rgba(17, 24, 39, 0.45);
+
+  /* ——— Aportou (11/11/2026): o que a identidade nova trouxe ——— */
+  --nu-page: #F9F3EC;          /* fundo da página (o creme da marca) */
+  --nu-card: #F6EEE5;          /* cartão creme sobre a página */
+  --nu-band: #F1E8DB;          /* faixa de seção e painel quente */
+  --nu-creme: #F6F2E9;         /* o creme da paleta: claro sobre escuro, barras */
+  --nu-sage: #9AAE9B;          /* sálvia: faixa de seção e 2ª cor de apoio */
+  --nu-sage-soft: #B7C3AC;
+  --nu-sage-line: #86998A;     /* hairline sobre sálvia */
+  --nu-line: #D9CDB9;          /* hairline 1,5px sobre creme (FAQ, divisores) */
+  --nu-line-2: #E6D9C6;        /* hairline mais leve, trilho */
+  --nu-borda-campo: #B9AD99;   /* borda de input */
+  --nu-on-dark: #D1D5DB;       /* texto secundário sobre carvão */
+  --nu-on-dark-2: #B6BCC8;     /* legenda sobre carvão */
+  --nu-dark-line: #263042;     /* hairline sobre carvão */
+  --nu-dark-chip: #1B2434;     /* pílula sobre carvão */
+  --nu-dark-chip-line: #3A4459;
+  --nu-blue-on-dark: #5B8CFF;  /* cobalto que lê sobre carvão (gráfico, corte) */
+  --nu-blue-on-blue: #EEF3FF;  /* texto de apoio sobre o gradiente cobalto */
+  --nu-blue-on-blue-2: #DCE6FF;
+  --nu-blue-pale: #C9DAFF;     /* 3ª parada da família azul (barras) */
+  --nu-grad-cobalto: linear-gradient(120deg, #1039BD 0%, #3A63D8 46%, #2450CF 72%, #1640C2 100%);
+  --nu-anel: linear-gradient(90deg, #2563EB, #62C8FF, #9AAE9B, #EBC9A2, #2563EB); /* o anel do input mágico */
+  --nu-r-tag: 8px;             /* etiqueta (ticker, selo "Atenção") */
+  --nu-r-secao: 40px;          /* painel grande (chamada final, painel do login) */
+  --nu-shadow-quente: 0 0 0 1px rgba(120, 90, 50, 0.05), 0 2px 8px rgba(120, 90, 50, 0.06); /* cartão creme */
+  --nu-shadow-escuro: 0 30px 60px rgba(17, 24, 39, 0.20);  /* cartão carvão com a faixa da marca */
+  --nu-shadow-branco: 0 18px 40px rgba(17, 24, 39, 0.08);  /* cartão branco dentro de painel */
+  --nu-fs-hero-xl: clamp(54px, 7.2vw, 104px);  /* H1 da home */
+  --nu-fs-marca: 13.5px;       /* eyebrow da marca: caixa alta, 700, 0.2em, com o corte */
 }
