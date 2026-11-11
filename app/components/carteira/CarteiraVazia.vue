@@ -184,16 +184,18 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 .cvz__linha { margin: clamp(18px, 2vw, 26px) 0 0; max-width: 640px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
 
 .cvz__bancos { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin-top: clamp(28px, 4vw, 44px); }
-.cvz__logos { list-style: none; margin: 0; padding: 0 0 0 8px; display: flex; }
+/* os círculos se encostam sem que o anel de um cubra o logo do vizinho: o logo de fundo cheio (Inter, XP) saía cortado */
+.cvz__logos { list-style: none; margin: 0; padding: 0 0 0 5px; display: flex; flex-wrap: wrap; row-gap: 6px; }
 .cvz__logo {
-  display: grid; place-items: center; width: 44px; height: 44px; margin-left: -8px;
+  display: grid; place-items: center; width: 44px; height: 44px; margin-left: -5px;
   border-radius: 50%; overflow: hidden; background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-page), var(--nu-shadow-pos-nav);
   transition: transform .2s cubic-bezier(.22, 1, .36, 1);
 }
 .cvz__logo :deep(.cil) { border: 0; border-radius: 7px; }
 @media (max-width: 420px) {
-  .cvz__logo { width: 38px; height: 38px; margin-left: -9px; }
-  .cvz__logo :deep(.cil) { width: 24px !important; height: 24px !important; }
+  .cvz__logos { padding-left: 3px; }
+  .cvz__logo { width: 34px; height: 34px; margin-left: -3px; }
+  .cvz__logo :deep(.cil) { width: 22px !important; height: 22px !important; border-radius: 6px; }
 }
 .cvz__logo:hover { transform: translateY(-3px); }
 .cvz__bancos-txt { margin: 0; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }

@@ -21,6 +21,8 @@
  */
 import type { FuturoDadosApi } from '~/types/assinatura'
 import { erroDeAssinatura, statusHttpDoErro } from '~/utils/assinatura'
+import { marcaNaResposta } from '~/utils/carteiraVisao'
+import { marcaNoTexto } from '~/utils/marcaNoTexto'
 import { caminhosDoLeque, listaDeFora, montarFuturo, type CaminhosDoLeque, type FuturoComCaminhos, type FuturoVM } from '~/utils/futuro'
 
 export type EstadoDoFuturo = 'carregando' | 'pronto' | 'vazio' | 'fora' | 'erro' | 'invalida' | 'bloqueado'
@@ -37,10 +39,11 @@ export function useCarteiraFuturo() {
   async function carregar() {
     estado.value = 'carregando'
     try {
-      const r = await carteiraFetchFuturo('/api/backend', {
+      // os textos do motor (o aviso legal, o motivo de quem ficou de fora) com a marca do site; os caminhos passam direto
+      const r = marcaNaResposta(await carteiraFetchFuturo('/api/backend', {
         Accept: 'application/json',
         ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
-      })
+      }), marcaNoTexto)
       if (!r?.data) {
         if (r?.reason === 'sem_posicoes_simulaveis') {
           fora.value = listaDeFora(r.excluded)

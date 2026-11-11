@@ -13,10 +13,16 @@
  *  - `erro`       qualquer outra falha (rede, 5xx, rota que ainda não existe):
  *                 também a tela antiga, que não depende deste endpoint.
  * Nada aqui inventa número: sem resposta, a tela nova não aparece.
+ *
+ * A MARCA (11/11/2026): o backend serve também o app, que ainda se chama
+ * Redentia, e o texto dos avisos, das ideias e do "Como calculei" vem com esse
+ * nome. A resposta passa pelo `marcaNaResposta` antes de virar estado (e antes
+ * de ir para o payload do SSR): só os textos, só na exibição.
  */
 import type { CarteiraVisao } from '~/types/carteiraVisao'
 import { corpoDoErro, statusHttpDoErro } from '~/utils/assinatura'
-import { visaoDesligada } from '~/utils/carteiraVisao'
+import { marcaNaResposta, visaoDesligada } from '~/utils/carteiraVisao'
+import { marcaNoTexto } from '~/utils/marcaNoTexto'
 
 interface EstadoDaVisao {
   visao: CarteiraVisao | null
@@ -39,7 +45,8 @@ export async function useCarteiraVisao(opts: { immediate?: boolean } = {}) {
         const visao = await $fetch<CarteiraVisao>(`${import.meta.server ? serverBase : clientBase}/me/carteira/visao`, {
           headers: { Accept: 'application/json', Authorization: `Bearer ${t}` },
         })
-        return { visao, desligada: false, erro: false }
+        // o texto do motor chega com a marca do app ("Simulação da Redentia"): aqui, e só aqui, vira a do site
+        return { visao: marcaNaResposta(visao, marcaNoTexto), desligada: false, erro: false }
       } catch (e) {
         const desligada = visaoDesligada(statusHttpDoErro(e), corpoDoErro(e))
         return { visao: null, desligada, erro: !desligada }

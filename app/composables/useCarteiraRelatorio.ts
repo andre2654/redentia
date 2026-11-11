@@ -17,6 +17,8 @@
  */
 import type { CarteiraRelatorio } from '~/types/carteiraRelatorio'
 import { relatorioMock } from '~/dev/carteiraVisaoMock'
+import { marcaNaResposta } from '~/utils/carteiraVisao'
+import { marcaNoTexto } from '~/utils/marcaNoTexto'
 
 export type EstadoDoRelatorio = 'fechado' | 'carregando' | 'pronto' | 'erro'
 
@@ -52,7 +54,8 @@ export function useCarteiraRelatorio(opts: { mock?: boolean } = {}) {
       } else {
         r = await authFetch<CarteiraRelatorio>('/me/carteira/relatorio', {}, { redirectOnAuthError: false })
       }
-      relatorio.value = markRaw(r)
+      // os textos do relatório (as notas do benchmark, o "Como calculei") com a marca do site
+      relatorio.value = markRaw(marcaNaResposta(r, marcaNoTexto))
       estado.value = 'pronto'
     } catch {
       estado.value = 'erro'

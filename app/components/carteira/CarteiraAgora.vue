@@ -14,8 +14,10 @@
 //    com peso, no lugar do eyebrow; a frase sai de utils/carteira-agora.ts;
 //  - o patrimônio grande no lugar do preço (TopoPreco), que segue a mira do
 //    gráfico, e a linha do dia ("−R$ 145,20 (0,22%) hoje");
-//  - o losango do dia (HomeLosango) solto à direita do patrimônio, como na
-//    home; o cartão saiu em 05/11 ("não gostei do losango em forma de card");
+//  - (até 11/11) o losango do dia (HomeLosango) à direita do patrimônio. Ele
+//    desenha o dia DENTRO da logo da Redentia, e a tela agora é da Aportou:
+//    saiu daqui também. O que ele dizia fica na linha do dia, em texto: a
+//    carteira contra a bolsa e o provento do dia;
 //  - a carteira contra o IBOV no gráfico do /asset (AtivoGrafico, tom luz),
 //    com a mira, o arrasto que mede, os períodos que a curva cobre e os números
 //    numa fileira;
@@ -30,7 +32,7 @@ import type { HomeChartVM } from '~/types/home'
 import type { LeituraDoGrafico } from '~/utils/ativoDirecoes'
 import { fraseDaCarteira } from '~/utils/carteira-agora'
 import { contraABolsa, pctComSinal, subDoProvento } from '~/utils/diaDaCarteira'
-import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
+import { estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import TopoBotao from '~/components/ativo/topo/TopoBotao.vue'
 import TopoPreco from '~/components/ativo/topo/TopoPreco.vue'
 import CarteiraAvisos from '~/components/carteira/visao/CarteiraAvisos.vue'
@@ -121,17 +123,18 @@ const avisosRef = ref<InstanceType<typeof CarteiraAvisos> | null>(null)
 // outro lugar"): o losango sai do topo da carteira (segue no Início) e a
 // comparação com a bolsa vira meia frase na linha do dia, com o provento do
 // dia quando houver; o gráfico fica baixo, e o topo inteiro cabe numa tela.
-// A tela antiga (sem `visao`) segue com o losango e o gráfico alto.
+// A tela antiga (sem `visao`) segue com o gráfico alto; o losango saiu dela em
+// 11/11 (é a logo da marca antiga), e a linha do dia ganhou o provento.
 const enxuto = computed(() => !!props.visao)
-const semLosango = enxuto
+/** ' Provento: R$ 48,20 de ITSA4 hoje.' quando caiu algum no dia; senão, nada */
+const proventoNaLinha = computed(() => (props.agora.provento ? ` Provento: ${subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value)}.` : ''))
 /** 'Caiu menos que a bolsa (−0,52%). R$ 48,20 de ITSA4 hoje.' */
 const contraBolsa = computed(() => {
   const c = props.agora.carteiraPct
   const b = bolsaPct.value
   if (c == null || b == null) return null
   const t = contraABolsa(c, b, pregao.value.estado === 'aberta')
-  const prov = props.agora.provento ? ` Provento: ${subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value)}.` : ''
-  return `${t.charAt(0).toUpperCase()}${t.slice(1)} (${pctComSinal(b)}).${prov}`
+  return `${t.charAt(0).toUpperCase()}${t.slice(1)} (${pctComSinal(b)}).${proventoNaLinha.value}`
 })
 /* o frescor: de quando é cada conexão (a regra da tela nova: todo dado diz a data).
    A conexão que nunca sincronizou vem sem data (atualizadaEm null) e diz isso. */
@@ -153,20 +156,6 @@ const dia = computed(() => {
   if (!a.diaPct) return null
   const q = quando.value ?? 'hoje'
   return revelado.value && a.diaValor ? `${a.diaValor} (${semSinal(a.diaPct)}) ${q}` : `${a.diaPct} ${q}`
-})
-
-/* ——— o losango do dia (a variação 3, compacta, num cartão) ——— */
-const temLosango = computed(() => props.agora.carteiraPct != null && !semLosango.value)
-const esmaecido = computed(() => pregao.value.estado === 'antes' && props.agora.priceDate?.slice(0, 10) !== agoraEmSP().iso)
-const proventoSub = computed(() => subDoProvento(props.agora, quando.value ?? 'hoje', revelado.value))
-const contextoLosango = computed(() => {
-  const c = props.agora.carteiraPct
-  if (c == null) return null
-  const b = bolsaPct.value
-  return {
-    id: 'carteira:losango', tipo: 'carteira', rotulo: 'Você e a bolsa hoje',
-    texto: [`Sua carteira: ${pctComSinal(c)}`, b != null ? `Ibovespa: ${pctComSinal(b)}` : '', props.agora.provento ? `Provento: ${proventoSub.value}` : ''].filter(Boolean).join('\n'),
-  }
 })
 
 /* ——— o gráfico: a curva do patrimônio contra o IBOV, nos períodos que ela cobre ——— */
@@ -289,6 +278,7 @@ const contexto = computed(() => ({
   texto: [
     `${atencao.value ? 'Pede atenção' : pregao.value.rotulo}: ${frase.value.titulo} ${frase.value.linha}`,
     dia.value ? `Resultado: ${dia.value}` : '',
+    proventoNaLinha.value.trim(),
     bem.value ? `${bem.value.frase} ${bem.value.detalhe}`.trim() : '',
     revelado.value ? `Patrimônio: ${props.agora.patrimonio}` : 'Patrimônio (a pessoa escondeu os valores na tela)',
     `${props.agora.ativos}${props.agora.atualizado ? ` · atualizado ${props.agora.atualizado}` : ''}`,
@@ -635,8 +625,8 @@ const olhouLinha = computed(() => {
           </template>
           <template v-else>
             <span v-if="dia" class="tbo__delta" :class="`tbo__delta--${agora.diaDir}`">{{ dia }}</span>
-            <span v-if="!enxuto" class="tbo__meta">{{ linhaDoDia }}</span>
-            <span v-else-if="semLosango && contraBolsa" class="tbo__meta">{{ contraBolsa }}</span>
+            <span v-if="!enxuto" class="tbo__meta">{{ linhaDoDia }}{{ proventoNaLinha }}</span>
+            <span v-else-if="contraBolsa" class="tbo__meta">{{ contraBolsa }}</span>
           </template>
         </p>
       </div>
@@ -644,14 +634,6 @@ const olhouLinha = computed(() => {
     </div>
     </div>
 
-    <!-- o losango do dia, solto como na home (o cartão saiu em 05/11: o
-         dono "não gostei do losango em forma de card") -->
-    <div v-if="temLosango" v-contexto-chat="contextoLosango" class="cto__losango">
-      <HomeLosango
-        tema="noite" link-dia="/carteira#posicoes" link-provento="/carteira#renda-passiva"
-        :voce="agora.carteiraPct" :bolsa="bolsaPct" :provento="agora.provento" :provento-sub="proventoSub" :esmaecido="esmaecido"
-      />
-    </div>
     </div>
 
     <div v-if="fatia.length >= 2" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco" :class="{ 'cto__palco--baixo': enxuto }">
@@ -760,13 +742,11 @@ const olhouLinha = computed(() => {
 .cto__frase--link:focus-visible { outline: 2px solid var(--nu-blue-soft); outline-offset: 3px; border-radius: 4px; }
 .cto__frase-sub { color: var(--nu-red-soft); font-size: var(--nu-fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-/* o patrimônio à esquerda e o losango solto à direita (como na home); no
-   celular, o losango desce para baixo do patrimônio */
+/* o patrimônio numa coluna só (o losango da direita saiu em 11/11) */
 .cto__corpo { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px clamp(24px, 4vw, 64px); }
 .cto__esq { min-width: 0; }
 .cto__dia-linha { display: flex; align-items: flex-end; gap: 18px 32px; flex-wrap: wrap; }
 .cto .cto__preco-linha { margin-top: 10px; min-width: 0; }
-.cto__losango { width: clamp(240px, 24vw, 340px); margin-top: clamp(14px, 2vw, 24px); }
 
 /* as contas: discretas, no pé, onde o /asset põe o simulador */
 .cto__contas { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
@@ -866,7 +846,6 @@ const olhouLinha = computed(() => {
 }
 @media (max-width: 900px) {
   .cto__corpo { grid-template-columns: minmax(0, 1fr); }
-  .cto__losango { justify-self: center; width: min(100%, 400px); margin: 8px 0 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cto__frase--link { transition: none; }

@@ -26,7 +26,8 @@
 import type { CarteiraPayload, CarteiraAgoraVM } from '~/types/carteira'
 import { CENARIOS as CENARIOS_MOCK, visaoMock, type CenarioVisao } from '~/dev/carteiraVisaoMock'
 import type { CarteiraVisao as Visao } from '~/types/carteiraVisao'
-import { brl2 } from '~/utils/carteiraVisao'
+import { brl2, marcaNaResposta } from '~/utils/carteiraVisao'
+import { marcaNoTexto } from '~/utils/marcaNoTexto'
 import VisaoOndeEsta from './VisaoOndeEsta.vue'
 import CarteiraHeroi from './CarteiraHeroi.vue'
 import VisaoRenda from './VisaoRenda.vue'
@@ -55,7 +56,8 @@ function trocarCenario(c: Cenario) {
   void router.replace({ query: { ...route.query, cenario: c }, hash: route.hash })
 }
 // fora do dev o mock nem existe: a tela só é montada com a visão real (CarteiraContent)
-const doMock = computed<Visao | null>(() => (import.meta.dev ? (cenario.value === 'real' && real ? real : visaoMock(cenario.value as CenarioVisao)) : null))
+// o mock passa pelo mesmo `marcaNaResposta` da resposta real (useCarteiraVisao): a carteira real local é texto do backend
+const doMock = computed<Visao | null>(() => (import.meta.dev ? marcaNaResposta(cenario.value === 'real' && real ? real : visaoMock(cenario.value as CenarioVisao), marcaNoTexto) : null))
 const visao = computed<Visao>(() => (props.visao ?? doMock.value)!)
 
 /* ————— o topo ————— */

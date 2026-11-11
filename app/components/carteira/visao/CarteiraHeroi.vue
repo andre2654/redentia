@@ -233,7 +233,8 @@ const contexto = computed(() => ({
           </div>
         </NuFaixaMarca>
       </div>
-      <NuSkeleton v-else-if="carregando" height="clamp(320px, 34vw, 470px)" radius="card" class="chv2__palco" />
+      <!-- o esqueleto no tom do cartão que vem (carvão): claro, a tela piscava de creme para escuro quando o gráfico chegava -->
+      <NuSkeleton v-else-if="carregando" tone="navy" height="clamp(320px, 34vw, 470px)" radius="card" class="chv2__palco" />
 
       <dl class="chv2__fatos">
         <div class="chv2__fato">

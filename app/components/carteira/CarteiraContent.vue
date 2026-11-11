@@ -7,7 +7,8 @@
 // pessoa não precisa saber de tudo nem se preocupar. A ordem da tela responde
 // uma pergunta por vez:
 //  1. CarteiraAgora      "está tudo bem?" — o topo escuro do /asset ("a carteira
-//                        no bolso", 05/11): a frase, o patrimônio, o losango e a curva
+//                        no bolso", 05/11): a frase, o patrimônio e a curva (o losango
+//                        do dia, que era a logo da marca antiga, saiu em 11/11)
 //     CarteiraIdeias     "o que a Redentia encontrou?" — o botão "Ideias" do
 //                        topo, que abre o modal (05/11; a barra entre o topo e
 //                        o "Daqui a 5 anos" saiu)

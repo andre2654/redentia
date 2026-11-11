@@ -171,3 +171,67 @@ export function confereComOTopo(v: CarteiraVisao): boolean {
 export function visaoDesligada(status: number | undefined, corpo: unknown): boolean {
   return status === 404 && (corpo as { error?: unknown } | null | undefined)?.error === 'visao_desligada'
 }
+
+/* ————— a marca nos textos da API (11/11/2026) —————
+ * Os avisos, as ideias, o "Como calculei" e as notas chegam prontos do backend,
+ * que serve também o app (ainda Redentia): lá o texto não muda. No site, a
+ * resposta passa por aqui UMA vez, no ponto em que vira estado da tela
+ * (useCarteiraVisao, useCarteiraRelatorio, useCarteiraFuturo), e todo texto
+ * sai com a marca do site ("Simulação da Aportou", "tese da Aportou",
+ * "Aportou Score"). Só exibição: nenhum número, chave ou conta muda.
+ * A troca do nome em si é o `marcaNoTexto` (utils/marcaNoTexto.ts), que quem
+ * chama passa como `marca`: este arquivo segue sem importar nada. */
+
+/** a troca do nome num texto: o `marcaNoTexto` */
+type Marca = (texto: string) => string
+
+/** o que identifica e não se lê: o valor fica como veio (o PATCH do "Já sei" usa o `id`; o tópico dos canais, o `detector`) */
+const NAO_E_TEXTO = new Set(['id', 'detector', 'chave', 'ticker', 'tickers', 'slug', 'url', 'href', 'link', 'logo'])
+/** endereço, âncora, rota, e-mail ou alvo de lente (o `alvo` da ação "ver"): não é frase */
+const ENDERECO = /^(?:https?:\/\/|mailto:|\/|#|lente:)/i
+/** o botão da IA no site diz "Perguntar à IA" (docs/aportou/decisoes.md), não "Perguntar à Aportou" */
+const PERGUNTAR = /(?<![\w-])Perguntar à Redentia(?: AI)?(?![\w@-]|\.[A-Za-z]|\s+(?:For\s+)?Business)/g
+
+/** um texto da API com a marca do site */
+export function textoComMarca(t: string, marca: Marca): string {
+  if (!t.includes('edentia') && !t.includes('EDENTIA')) return t
+  if (ENDERECO.test(t)) return t
+  return marca(t.replace(PERGUNTAR, 'Perguntar à IA'))
+}
+
+/**
+ * Percorre a resposta e devolve outra igual, com a marca do site em todo valor
+ * de TEXTO. Não toca em chave, número, booleano, null, lista de números (as
+ * séries e os caminhos passam direto), endereço, nem no valor das chaves de
+ * NAO_E_TEXTO. Código em minúsculas ('redentia_score', '/ranking/redentia-score')
+ * o marcaNoTexto já não troca.
+ * Não muda o que recebeu: o trecho sem troca volta o MESMO objeto.
+ */
+export function marcaNaResposta<T>(valor: T, marca: Marca): T {
+  return percorrer(valor, null, marca) as T
+}
+function percorrer(v: unknown, chave: string | null, marca: Marca): unknown {
+  if (typeof v === 'string') return chave && NAO_E_TEXTO.has(chave) ? v : textoComMarca(v, marca)
+  if (v === null || typeof v !== 'object') return v
+  if (chave && NAO_E_TEXTO.has(chave)) return v
+  if (Array.isArray(v)) {
+    // série, caminho, lista de pesos: nada a ler
+    if (typeof v[0] === 'number') return v
+    let mudou = false
+    const saida = v.map((x) => {
+      const y = percorrer(x, chave, marca)
+      if (y !== x) mudou = true
+      return y
+    })
+    return mudou ? saida : v
+  }
+  // só objeto simples (o JSON da resposta): Date, Map e afins passam como vieram
+  const proto = Object.getPrototypeOf(v)
+  if (proto !== Object.prototype && proto !== null) return v
+  let saida: Record<string, unknown> | null = null
+  for (const [k, x] of Object.entries(v as Record<string, unknown>)) {
+    const y = percorrer(x, k, marca)
+    if (y !== x) (saida ??= { ...(v as Record<string, unknown>) })[k] = y
+  }
+  return saida ?? v
+}
