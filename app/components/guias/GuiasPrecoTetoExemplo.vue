@@ -36,15 +36,16 @@ const view = computed(() => data.value)
       Não é recomendação de compra ou venda. A conta descreve a régua. Não diz o que fazer com {{ view.ticker }}.
     </p>
     <p class="gpt__links">
-      <NuxtLink :to="`/calculadora/preco-teto/${view.ticker}`">Preço teto de {{ view.ticker }}</NuxtLink>
-      <NuxtLink to="/calculadora/preco-teto">Calculadora</NuxtLink>
-      <NuxtLink to="/calculadora/preco-teto/bazin">Bazin</NuxtLink>
-      <NuxtLink to="/calculadora/preco-teto/graham">Graham</NuxtLink>
+      <NuLinkSeta :to="`/calculadora/preco-teto/${view.ticker}`">Preço teto de {{ view.ticker }}</NuLinkSeta>
+      <NuLinkSeta to="/calculadora/preco-teto">Calculadora</NuLinkSeta>
+      <NuLinkSeta to="/calculadora/preco-teto/bazin">Bazin</NuLinkSeta>
+      <NuLinkSeta to="/calculadora/preco-teto/graham">Graham</NuLinkSeta>
     </p>
   </div>
 </template>
 
 <style scoped>
+/* Robustez (11/11/2026): os quatro atalhos são o NuLinkSeta (a ação secundária); tudo em token. */
 .gpt {
   margin-top: 28px;
   background: var(--nu-band);
@@ -55,28 +56,27 @@ const view = computed(() => data.value)
 .gpt__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .gpt__kicker {
   color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio);
-  letter-spacing: 0.16em; text-transform: uppercase;
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
-.gpt__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.gpt__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .gpt__h3 {
   margin: 14px 0 0; color: var(--nu-ink); font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1;
+  font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1;
 }
 .gpt__lead {
   margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md);
-  font-weight: 500; line-height: 1.6;
+  font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 .gpt__steps { margin: 20px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
 .gpt__steps li { margin: 0; padding: 16px 0; border-top: 1px solid var(--nu-line); }
 .gpt__h4 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .gpt__steps p {
   margin: 6px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md);
-  font-weight: 500; line-height: 1.55;
+  font-weight: var(--nu-w-texto); line-height: 1.55; font-variant-numeric: tabular-nums;
 }
 .gpt__note {
   margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px;
-  font-weight: 500; line-height: 1.55;
+  font-weight: var(--nu-w-texto); line-height: 1.55;
 }
-.gpt__links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 16px 0 0; }
-.gpt__links a { color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
+.gpt__links { display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 20px 0 0; font-size: var(--nu-fs-md); }
 </style>

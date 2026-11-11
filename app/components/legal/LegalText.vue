@@ -3,6 +3,8 @@
 // ênfase, <a> pra email/site. Sem v-html — o texto (com acentos) vem do dado.
 // v-for gera os runs adjacentes SEM whitespace entre eles (o espaço faz parte
 // do texto do run, ex.: ' – toda informação…'), preservando o texto original.
+// Robustez (11/11/2026): o link é o mesmo dos guias e do glossário (sublinhado
+// cobalto claro que escurece sob o ponteiro), em token.
 import type { LegalText } from '~/types/legal'
 
 defineProps<{ value: LegalText }>()
@@ -23,8 +25,8 @@ defineProps<{ value: LegalText }>()
 .ltx__b { font-weight: var(--nu-w-forte); color: var(--nu-ink); }
 .ltx__a {
   color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline;
-  text-underline-offset: 2px; text-decoration-thickness: 1.5px;
-  transition: color .2s;
+  text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.ltx__a:hover { color: var(--nu-blue-hover); }
+.ltx__a:hover { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 </style>

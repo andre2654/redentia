@@ -108,7 +108,7 @@ const painel = useChatPainel()
     </section>
 
     <!-- FAQ — seção padrão das outras telas (mesmo bloco do /mercado) -->
-    <section class="cfq">
+    <section v-revelar class="cfq">
       <div class="cfq__cols">
         <div class="cfq__left">
           <NuSectionHeading eyebrow="Dúvidas">Ficou com alguma<br>dúvida?</NuSectionHeading>
@@ -126,24 +126,26 @@ const painel = useChatPainel()
 <style scoped>
 /* Contato na personalidade da Aportou (11/11/2026): creme da página, o
    formulário num cartão creme, os canais em cartões com a sombra quente e a
-   faixa quente do FAQ. Conteúdo, canais e horários iguais. */
+   faixa quente do FAQ. Conteúdo, canais e horários iguais.
+   Robustez (11/11/2026): a coluna do site, a entrada em token, o FAQ entra ao
+   chegar (v-revelar), o e-mail com o sublinhado que escurece; tudo em token. */
 .ctc {
   background: var(--nu-page);
-  padding: clamp(44px, 6vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px);
-  animation: nu-fade .5s ease .06s both;
+  padding: clamp(44px, 6vw, 76px) var(--nu-coluna) clamp(72px, 8vw, 128px);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) var(--nu-passo-cascata) both;
 }
 .ctc__inner { max-width: 760px; }
 
 .ctc__lede {
   margin: 0; color: var(--nu-gray-3);
-  font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45;
+  font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45;
 }
 .ctc__form { margin-top: clamp(28px, 3.5vw, 40px); }
 
 .ctc__h2 {
   margin: clamp(48px, 5.5vw, 68px) 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display);
-  letter-spacing: -0.025em; line-height: 1.05;
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.05;
 }
 
 .ctc__channels {
@@ -159,21 +161,25 @@ const painel = useChatPainel()
   width: 44px; height: 44px; border-radius: 50%;
   background: var(--nu-ink); color: var(--nu-white); margin-bottom: 16px;
 }
-.ctc__channel-label { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.14em; text-transform: uppercase; }
+.ctc__channel-label { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .ctc__channel-value { margin-top: 8px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); line-height: 1.35; overflow-wrap: anywhere; }
-.ctc__channel-value--link { display: inline-block; color: var(--nu-blue-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; transition: color .2s; }
-.ctc__channel-value--link:hover { color: var(--nu-blue-hover); }
+.ctc__channel-value--link {
+  display: inline-block; color: var(--nu-blue-text);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.ctc__channel-value--link:hover { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 
 /* FAQ — seção padrão: 2 colunas, título + texto + chamada à esquerda,
    accordion à direita, sobre a faixa quente */
 .cfq {
   background: var(--nu-band);
-  padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
 }
 .cfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
 .cfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.cfq__copy { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin-top: 22px; max-width: 420px; }
-.cfq__cta { margin-top: 30px; }
+.cfq__copy { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); line-height: 1.5; margin-top: 20px; max-width: 420px; }
+.cfq__cta { margin-top: 32px; }
 .cfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 
 /* ——— computador: a conversa de um lado (a frase e os canais), o formulário
@@ -183,9 +189,9 @@ const painel = useChatPainel()
     max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 640px);
     grid-template-rows: auto auto 1fr; column-gap: clamp(48px, 6vw, 96px); align-items: start;
   }
-  .ctc__lede { grid-column: 1; grid-row: 1; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: 600; letter-spacing: -0.012em; line-height: 1.35; text-wrap: pretty; }
+  .ctc__lede { grid-column: 1; grid-row: 1; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); line-height: 1.35; text-wrap: pretty; }
   .ctc__form { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; }
-  .ctc__h2 { grid-column: 1; grid-row: 2; margin-top: clamp(40px, 4.4vw, 56px); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3; }
+  .ctc__h2 { grid-column: 1; grid-row: 2; margin-top: clamp(40px, 4.4vw, 56px); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; line-height: 1.3; }
   .ctc__channels { grid-column: 1; grid-row: 3; grid-template-columns: 1fr; margin-top: 16px; gap: 12px; }
   .ctc__channel { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; align-items: center; padding: 20px 22px; }
   .ctc__channel-icon { grid-row: 1 / span 2; margin-bottom: 0; }

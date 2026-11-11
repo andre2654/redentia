@@ -24,6 +24,9 @@ const { prev, next } = neighbors(slug)
 // o fio âmbar de atenção. O texto é o mesmo, palavra por palavra.
 const ehExemplo = (html: string) => html.startsWith('<strong>Exemplo ilustrativo:</strong>')
 const ehRessalva = (html: string) => html.startsWith('Ressalva honesta:')
+// ROBUSTEZ (11/11/2026): a leitura como documento (720px, 18px/1,65), o resto
+// abaixo da dobra entra ao chegar (v-revelar); anterior/próximo com a seta que
+// anda para o lado dela; "Ver todos os termos" é o NuLinkSeta; tudo em token.
 
 usePageSeo({
   title: `O que é ${term.term}? Significado e como usar na B3`,
@@ -105,25 +108,25 @@ usePageSeo({
       </aside>
 
       <!-- FAQ -->
-      <section v-if="term.faq.length" class="gt__block gt__block--faq">
+      <section v-if="term.faq.length" v-revelar class="gt__block gt__block--faq">
         <h2 class="gt__h2">Perguntas frequentes</h2>
         <NuFaqAccordion :items="term.faq" :default-open="-1" variant="compact" class="gt__faq" />
       </section>
 
       <!-- nav alfabética anterior/próximo -->
-      <nav class="gt__nav" aria-label="Navegação alfabética">
+      <nav v-revelar class="gt__nav" aria-label="Navegação alfabética">
         <NuxtLink v-if="prev" :to="`/glossario/${prev.slug}`" class="gt__nav-item gt__nav-item--prev">
-          <span class="gt__nav-dir">← Anterior</span>
+          <span class="gt__nav-dir"><svg class="gt__nav-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12H5M10.5 6.5 5 12l5.5 5.5" /></svg>Anterior</span>
           <span class="gt__nav-term">{{ prev.term }}</span>
         </NuxtLink>
         <span v-else class="gt__nav-spacer" />
         <NuxtLink v-if="next" :to="`/glossario/${next.slug}`" class="gt__nav-item gt__nav-item--next">
-          <span class="gt__nav-dir">Próximo →</span>
+          <span class="gt__nav-dir">Próximo<svg class="gt__nav-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg></span>
           <span class="gt__nav-term">{{ next.term }}</span>
         </NuxtLink>
       </nav>
 
-      <NuxtLink to="/glossario" class="gt__back">Ver todos os termos do glossário</NuxtLink>
+      <p class="gt__back"><NuLinkSeta to="/glossario" tom="tinta">Ver todos os termos do glossário</NuLinkSeta></p>
     </div>
   </div>
 </template>
@@ -131,36 +134,41 @@ usePageSeo({
 <style scoped>
 /* O termo na personalidade da Aportou (11/11/2026): tudo sobre o creme da
    página, trilha no eyebrow com o corte, título em 800, chips de 44px, o
-   painel cobalto do backlink e fios de 1,5px. Conteúdo e ordem iguais. */
+   painel cobalto do backlink e fios de 1,5px. Conteúdo e ordem iguais.
+   Robustez (11/11/2026): a coluna do site, a entrada em token, os estados de
+   ponteiro, apertado e foco em tudo o que é clicável. */
 .gt { background: var(--nu-page); }
 
 .gt__hero {
-  padding: clamp(44px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.5vw, 52px);
+  padding: clamp(44px, 6vw, 80px) var(--nu-coluna) clamp(36px, 4.5vw, 52px);
   border-bottom: 1px solid var(--nu-line-2);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
-.gt__crumb { color: var(--nu-ink); transition: color .2s; }
-a.gt__crumb:hover { color: var(--nu-blue-text); }
+.gt__crumb {
+  color: var(--nu-ink); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: transparent;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+a.gt__crumb:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
 .gt__crumb--here { color: var(--nu-gray); }
 .gt__crumb-sep { color: var(--nu-sand); }
 .gt__title {
   margin: 18px 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display);
-  letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
+  letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance;
 }
 /* a definição em destaque: o lead grande, em carvão */
 .gt__short {
-  margin: 22px 0 0; color: var(--nu-ink); font-size: clamp(20px, 2vw, 27px);
-  font-weight: 600; letter-spacing: -0.012em; line-height: 1.35; max-width: 30em; text-wrap: pretty;
+  margin: 20px 0 0; color: var(--nu-ink); font-size: clamp(20px, 2vw, 27px);
+  font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo); line-height: 1.35; max-width: 30em; text-wrap: pretty;
 }
 
 .gt__body {
-  padding: clamp(36px, 4.6vw, 64px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8vw, 110px);
-  animation: nu-fade .5s ease .06s both;
+  padding: clamp(36px, 4.6vw, 64px) var(--nu-coluna) clamp(72px, 8vw, 128px);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) var(--nu-passo-cascata) both;
 }
 .gt__body > * { max-width: 720px; }
 .gt__article { max-width: 720px; }
-.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.65; text-wrap: pretty; }
+.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.65; text-wrap: pretty; }
 .gt__article > * + * { margin-top: 18px; }
 .gt__p :deep(strong) { color: var(--nu-ink); font-weight: var(--nu-w-forte); }
 /* o exemplo que o texto já marca: cartão creme com o corte */
@@ -168,7 +176,7 @@ a.gt__crumb:hover { color: var(--nu-blue-text); }
   display: flex; align-items: flex-start; gap: 14px; padding: 22px 24px; border-radius: var(--nu-r-panel);
   background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
 }
-.gt__article > .gt__exemplo, .gt__article > .gt__exemplo + * { margin-top: 26px; }
+.gt__article > .gt__exemplo, .gt__article > .gt__exemplo + * { margin-top: 24px; }
 .gt__exemplo :deep(.mkc) { margin-top: 6px; }
 .gt__exemplo .gt__p { font-size: var(--nu-fs-md); line-height: 1.6; }
 /* a ressalva: fio âmbar de atenção à esquerda */
@@ -177,73 +185,80 @@ a.gt__crumb:hover { color: var(--nu-blue-text); }
   color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
   text-decoration: underline; text-underline-offset: 3px;
   text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
-  transition: text-decoration-color .2s;
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.gt__article :deep(a:hover) { text-decoration-color: var(--nu-blue); }
+.gt__article :deep(a:hover) { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 
 .gt__block { margin-top: clamp(40px, 5vw, 56px); }
 .gt__h2 {
   margin: 0 0 18px; color: var(--nu-ink); font-size: clamp(24px, 2.4vw, 30px);
-  font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.05;
+  font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.08;
 }
-.gt__chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.gt__chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .gt__chip {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px;
-  background: var(--nu-cream-2); border-radius: var(--nu-r-pill);
-  color: var(--nu-ink); font-size: 14.5px; font-weight: 600;
-  transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  background: var(--nu-cream-2); border-radius: var(--nu-r-pill); -webkit-tap-highlight-color: transparent;
+  color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .gt__chip:hover { background: var(--nu-ink); color: var(--nu-white); }
-.gt__chip:active { transform: scale(.98); }
+.gt__chip:active { transform: scale(.97); }
 
 /* o backlink forte: painel cobalto com o corte gigante a 8% */
 .gt__cta {
   position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
   margin-top: clamp(40px, 5vw, 56px);
-  background: var(--nu-grad-cobalto); color: var(--nu-white);
+  background: var(--nu-grad-cobalto); color: var(--nu-white); -webkit-tap-highlight-color: transparent;
   border-radius: var(--nu-r-card); padding: clamp(24px, 3vw, 34px) clamp(24px, 3.5vw, 38px);
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.gt__cta:hover { color: var(--nu-white); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+@media (hover: hover) { .gt__cta:hover { color: var(--nu-white); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); } }
+.gt__cta:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.gt__cta:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .gt__cta-corte { position: absolute; right: 40px; bottom: -110px; opacity: .08; pointer-events: none; }
 .gt__cta-text { position: relative; display: flex; flex-direction: column; gap: 9px; min-width: 0; }
 .gt__cta-kicker { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.2em; text-transform: uppercase; }
-.gt__cta-label { font-size: clamp(20px, 2.2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; }
+.gt__cta-label { font-size: clamp(20px, 2.2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.15; text-wrap: balance; }
 .gt__cta-arrow {
   position: relative; flex-shrink: 0; width: 46px; height: 46px; border-radius: 50%;
   background: var(--nu-white); color: var(--nu-blue);
   display: flex; align-items: center; justify-content: center;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.gt__cta-arrow svg { width: 20px; height: 20px; transition: transform .25s var(--nu-ease-saida); }
+.gt__cta-arrow svg { width: 20px; height: 20px; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.gt__cta:hover .gt__cta-arrow { transform: scale(1.04); }
 .gt__cta:hover .gt__cta-arrow svg { transform: translateX(3px); }
 
 .gt__faq { margin-top: 0; }
 
 /* nav anterior/próximo */
 .gt__nav {
-  display: flex; gap: 14px; margin-top: clamp(48px, 6vw, 68px);
+  display: flex; gap: 16px; margin-top: clamp(48px, 6vw, 72px);
   padding-top: clamp(28px, 3.5vw, 40px); border-top: 1px solid var(--nu-line);
 }
 .gt__nav-item {
   flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px;
   background: var(--nu-card); border-radius: var(--nu-r-tile); padding: 18px 22px;
-  box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  box-shadow: var(--nu-shadow-quente); -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.gt__nav-item:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
+@media (hover: hover) { .gt__nav-item:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); } }
+.gt__nav-item:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.gt__nav-item:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .gt__nav-item--next { text-align: right; align-items: flex-end; }
 .gt__nav-spacer { flex: 1; }
-.gt__nav-dir { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.14em; text-transform: uppercase; }
-.gt__nav-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-
-.gt__back {
-  display: inline-block; margin-top: clamp(32px, 4vw, 44px);
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
-  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
-  transition: color .2s, transform .2s;
+.gt__nav-dir {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
-.gt__back:hover { color: var(--nu-blue-text); transform: translateX(3px); }
+/* a seta anda para o lado dela */
+.gt__nav-seta { width: 14px; height: 14px; flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.gt__nav-item--prev:hover .gt__nav-seta { transform: translateX(-3px); }
+.gt__nav-item--next:hover .gt__nav-seta { transform: translateX(3px); }
+.gt__nav-term { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+
+.gt__back { margin: clamp(32px, 4vw, 44px) 0 0; font-size: var(--nu-fs-md); }
 
 /* ——— computador: a leitura na coluna da esquerda (alinhada ao título) e, à
    direita, os relacionados e o atalho da plataforma, que acompanham a rolagem ——— */
@@ -259,7 +274,7 @@ a.gt__crumb:hover { color: var(--nu-blue-text); }
   }
   .gt__lado .gt__block--rel { margin-top: 0; }
   .gt__lado .gt__h2 {
-    margin-bottom: 14px; font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3;
+    margin-bottom: 14px; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; line-height: 1.3;
   }
   .gt__lado .gt__chips { gap: 8px; }
   .gt__lado .gt__chip { background: var(--nu-page); }
@@ -276,6 +291,6 @@ a.gt__crumb:hover { color: var(--nu-blue-text); }
 }
 @media (prefers-reduced-motion: reduce) {
   .gt__hero, .gt__body { animation: none; }
-  .gt__cta, .gt__nav-item, .gt__chip, .gt__back, .gt__cta-arrow svg { transition: none; }
+  .gt__cta, .gt__nav-item, .gt__chip, .gt__cta-arrow, .gt__cta-arrow svg, .gt__nav-seta, .gt__crumb { transition: none; }
 }
 </style>

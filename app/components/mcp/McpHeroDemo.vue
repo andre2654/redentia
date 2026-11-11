@@ -7,6 +7,12 @@
 // SSR renderiza o frame inicial sem timers, a animação nasce no onMounted e
 // morre no unmount; prefers-reduced-motion mostra a cena final estática.
 //
+// ROBUSTEZ (11/11/2026): o filme anda nas curvas do site. A janela abre na
+// curva de saída (sem o quique de antes), o cursor viaja na de troca em
+// --nu-dur-entrada (chega antes de cada clique do roteiro: as janelas do
+// roteiro têm 700ms ou mais) e o resto em token. O roteiro (os tempos do JS)
+// e o texto não mudam.
+//
 // Conteúdo/estilo do chat = o contrato visual do MCP (nasceu do mockup do
 // antigo pop-up de anúncio, removido em 15/10/2026): card creme, header
 // Claude + badge, bolha do usuário, chip mono `aportou · get_portfolio` (o
@@ -164,20 +170,20 @@ onBeforeUnmount(clearAll)
 /* ——— dock ——— */
 .mhd__dock {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  display: flex; gap: 14px; transition: opacity .45s ease, transform .45s ease;
+  display: flex; gap: 14px; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor), transform var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 .mhd__dock--away { opacity: 0; transform: translate(-50%, -50%) scale(.9); pointer-events: none; }
 .mhd__tile {
   position: relative; width: 58px; height: 58px; border-radius: 16px; background: var(--nu-white);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--nu-shadow-card); transition: transform .18s ease;
+  box-shadow: var(--nu-shadow-card); transition: transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .mhd__tile img { width: 30px; height: 30px; object-fit: contain; }
 .mhd__tile--claude { transform: scale(1.06); }
 .mhd__tile--pressed { transform: scale(.94); }
 .mhd__ring {
   position: absolute; inset: -5px; border-radius: 20px; border: 2px solid var(--nu-blue);
-  opacity: 0; transition: opacity .15s ease;
+  opacity: 0; transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .mhd__ring--on { opacity: 1; }
 
@@ -188,7 +194,7 @@ onBeforeUnmount(clearAll)
   box-shadow: var(--nu-shadow-branco);
   display: flex; flex-direction: column; overflow: hidden;
   opacity: 0; transform: scale(.94) translateY(10px);
-  transition: opacity .5s ease, transform .55s cubic-bezier(.34, 1.3, .5, 1);
+  transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor), transform var(--nu-dur-lenta) var(--nu-ease-saida);
   pointer-events: none;
 }
 .mhd__win--open { opacity: 1; transform: scale(1) translateY(0); }
@@ -201,7 +207,7 @@ onBeforeUnmount(clearAll)
 .mhd__dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--nu-cream-2); }
 .mhd__app-id { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .mhd__app-id img { border-radius: 4px; }
-.mhd__model { margin-left: auto; background: var(--nu-cream); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); padding: 4px 9px; border-radius: 999px; }
+.mhd__model { margin-left: auto; background: var(--nu-cream); color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); padding: 4px 9px; border-radius: var(--nu-r-pill); }
 
 .mhd__thread { flex: 1; padding: 18px 16px 8px; display: flex; flex-direction: column; gap: 12px; }
 .mhd__user {
@@ -210,7 +216,7 @@ onBeforeUnmount(clearAll)
   font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.45;
   padding: 10px 14px; border-radius: 14px 14px 4px 14px;
   opacity: 0; transform: translateY(6px);
-  transition: opacity .3s ease, transform .35s var(--nu-ease-saida);
+  transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 .mhd__user--in { opacity: 1; transform: translateY(0); }
 
@@ -221,37 +227,37 @@ onBeforeUnmount(clearAll)
   background: var(--nu-blue-bg); color: var(--nu-blue-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); padding: 7px 12px; border-radius: var(--nu-r-tag);
-  animation: mhd-pop .35s var(--nu-ease-saida) both;
+  animation: mhd-pop var(--nu-dur-media) var(--nu-ease-saida) both;
 }
-.mhd__tool--live { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nu-green-soft) 65%, transparent); animation: mhd-pop .35s var(--nu-ease-saida) both, mhd-pulse 1.1s ease-out .3s infinite; }
+.mhd__tool--live { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nu-green-soft) 65%, transparent); animation: mhd-pop var(--nu-dur-media) var(--nu-ease-saida) both, mhd-pulse calc(var(--nu-dur-lenta) * 2) var(--nu-ease-saida) var(--nu-dur-media) infinite; }
 .mhd__tool-dots { display: inline-flex; gap: 3px; }
-.mhd__tool-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: mhd-blink 1s ease-in-out infinite; }
-.mhd__tool-dots i:nth-child(2) { animation-delay: .18s; }
-.mhd__tool-dots i:nth-child(3) { animation-delay: .36s; }
+.mhd__tool-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; animation: mhd-blink var(--nu-dur-respiro) var(--nu-ease-cor) infinite; }
+.mhd__tool-dots i:nth-child(2) { animation-delay: var(--nu-dur-rapida); }
+.mhd__tool-dots i:nth-child(3) { animation-delay: calc(var(--nu-dur-rapida) * 2); }
 
-.mhd__answer { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; max-width: 95%; }
+.mhd__answer { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; max-width: 95%; font-variant-numeric: tabular-nums; }
 .mhd__answer strong { font-weight: var(--nu-w-forte); }
 .mhd__answer em { color: var(--nu-green-text); font-style: normal; font-weight: var(--nu-w-forte); }
 
 .mhd__input {
   display: flex; align-items: center; gap: 10px; margin: 10px 14px 14px;
-  background: var(--nu-cream); border-radius: 999px; padding: 11px 8px 11px 16px; min-height: 42px;
+  background: var(--nu-cream); border-radius: var(--nu-r-pill); padding: 11px 8px 11px 16px; min-height: 42px;
 }
-.mhd__input-text { flex: 1; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: 500; white-space: nowrap; overflow: hidden; }
-.mhd__placeholder { color: var(--nu-gray); font-weight: 500; }
+.mhd__input-text { flex: 1; color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); white-space: nowrap; overflow: hidden; }
+.mhd__placeholder { color: var(--nu-gray); font-weight: var(--nu-w-texto); }
 .mhd__send {
   width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%;
   background: var(--nu-ink); color: var(--nu-white); display: flex; align-items: center; justify-content: center;
-  transition: transform .15s ease;
+  transition: transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .mhd__send--pressed { transform: scale(.85); }
 
-.mhd__caret { display: inline-block; width: 2px; height: 1em; background: var(--nu-blue); vertical-align: text-bottom; margin-left: 1px; animation: mhd-blink .8s step-end infinite; }
+.mhd__caret { display: inline-block; width: 2px; height: 1em; background: var(--nu-blue); vertical-align: text-bottom; margin-left: 1px; animation: mhd-blink var(--nu-dur-respiro) step-end infinite; }
 
 /* ——— cursor: coreografia por fase (posições em % do card) ——— */
 .mhd__cursor {
   position: absolute; z-index: 3; left: 82%; top: 88%;
-  transition: left .95s cubic-bezier(.45, 0, .2, 1), top .95s cubic-bezier(.45, 0, .2, 1), transform .16s ease, opacity .4s ease;
+  transition: left var(--nu-dur-entrada) var(--nu-ease-troca), top var(--nu-dur-entrada) var(--nu-ease-troca), transform var(--nu-dur-rapida) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor);
   filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--nu-ink) 30%, transparent));
 }
 .mhd__ponteiro { fill: var(--nu-ink); stroke: var(--nu-white); }

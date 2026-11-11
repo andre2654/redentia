@@ -2,6 +2,8 @@
 // O estado da bolsa num ponto e numa etiqueta: o ponto verde respira devagar
 // só com o pregão aberto; fora dele fica parado e cinza. `curto` tira o
 // "Feriado · " no celular (fica "Finados").
+// Robustez (11/11/2026, "nada infinito além do anel do input e do esqueleto"):
+// o ponto respira três vezes quando a régua aparece e depois fica aceso, parado.
 import type { MercadoDoTopo } from '~/utils/topo'
 defineProps<{ mercado: MercadoDoTopo | null; curto?: boolean }>()
 </script>
@@ -20,7 +22,7 @@ defineProps<{ mercado: MercadoDoTopo | null; curto?: boolean }>()
 .nte--aberta .nte__ponto { background: var(--nu-green); }
 .nte--aberta .nte__ponto::after {
   content: ''; position: absolute; inset: -4px; border-radius: 50%; background: var(--nu-green);
-  opacity: 0; animation: nte-respira 2.8s ease-out infinite;
+  opacity: 0; animation: nte-respira calc(var(--nu-dur-respiro) * 2) var(--nu-ease-saida) 3;
 }
 @keyframes nte-respira { 0% { transform: scale(.5); opacity: .35; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
 @media (max-width: 760px) { .nte__pre--curto { display: none; } }

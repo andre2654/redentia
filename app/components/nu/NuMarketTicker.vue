@@ -12,6 +12,10 @@
 // Dados via useMarketTicker (esqueleto → hidrata real). Sem dado real a régua
 // NÃO é desenhada: até 2026-08-29 ela degradava pra um seed de cotações do
 // design e mostrava número inventado sob o carimbo "B3".
+// ROBUSTEZ (11/11/2026): a régua senta na coluna do site (--nu-coluna), com o
+// wordmark do topo e o título da página na mesma linha vertical; o número que
+// chega troca o esqueleto num fade (--nu-dur-media), sem pulo; o resto em token.
+// O deslizar do top segue o tempo do encolher do topo (.32s, o mesmo do NuHeader).
 const { itens, loading, mercado } = useMercadoDoTopo()
 
 // No /assinar (pedido do dono, 31/10/2026: "algo que ajude a vender"), a
@@ -105,8 +109,8 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
   position: sticky; top: var(--nuh-h, 72px); z-index: 40;
   transition: top .32s var(--nu-ease-saida);
 }
-.nut { display: flex; align-items: center; gap: 26px; padding: 14px max(22px, calc((100% - 1240px) / 2)); }
-.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.nut { display: flex; align-items: center; gap: 26px; padding: 14px var(--nu-coluna); }
+.nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 .nut__marquee { flex: 1; min-width: 0; overflow: hidden; }
 .nut__track { display: inline-flex; width: max-content; animation: nut-scroll 55s linear infinite; }
 .nut__marquee:hover .nut__track { animation-play-state: paused; }
@@ -118,16 +122,16 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 .nut__conectar {
   display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; padding: 8px 14px; border: 0; border-radius: var(--nu-r-pill);
   background: var(--nu-blue); color: var(--nu-white); font-family: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer;
-  min-height: 36px; transition: background .2s, transform .15s var(--nu-ease-saida);
+  min-height: 36px; transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .nut__conectar:hover { background: var(--nu-blue-hover); }
-.nut__conectar:hover svg { animation: nu-seta .45s var(--nu-ease-cor); }
+.nut__conectar:hover svg { animation: nu-seta var(--nu-dur-lenta) var(--nu-ease-troca); }
 .nut__conectar:active { transform: scale(.98); }
 
 /* no celular a faixa de venda fica só com os itens e o botão */
 @media (max-width: 560px) {
   .nut:has(.nut__conectar) .nut__label { display: none; }
-  .nut:has(.nut__conectar) { gap: 14px; padding: 10px 16px; }
+  .nut:has(.nut__conectar) { gap: 14px; padding: 10px var(--nu-coluna); }
 }
 @media (prefers-reduced-motion: reduce) {
   .nut__track { animation: none; }
@@ -135,22 +139,27 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 
 /* ——— a régua do mercado ——— */
 .nut-regua {
-  display: flex; align-items: center; gap: 22px; height: 40px; padding: 0 max(clamp(16px, 3vw, 40px), calc((100% - 1240px) / 2));
+  display: flex; align-items: center; gap: 24px; height: 40px; padding: 0 var(--nu-coluna);
   font-size: var(--nu-fs-dense);
 }
+/* o número que chega: troca o esqueleto num fade, no mesmo lugar */
+.nut-regua__estado, .nut-regua__cot, .nut-regua__nota { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 .nut-regua__sk { display: flex; align-items: center; gap: 28px; overflow: hidden; }
-.nut-regua__estado { flex-shrink: 0; padding-right: 22px; border-right: 1px solid var(--nu-line-2); height: 16px; }
+.nut-regua__estado { flex-shrink: 0; padding-right: 24px; border-right: 1px solid var(--nu-line-2); height: 16px; }
 .nut-regua__cot { flex: 1 1 0; --ntc-gap: 28px; }
 .nut-regua__relogio { display: none; margin-right: 3px; vertical-align: -1px; }
-.nut-regua__nota { flex-shrink: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; white-space: nowrap; }
+.nut-regua__nota { flex-shrink: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media (max-width: 1100px) { .nut-regua__ref { display: none; } }
 /* celular: a régua mais leve, 30px, em tipo de etiqueta */
 @media (max-width: 640px) {
-  .nut-regua { height: 30px; gap: 12px; padding: 0 16px; font-size: var(--nu-fs-xs); }
+  .nut-regua { height: 30px; gap: 12px; padding: 0 var(--nu-coluna); font-size: var(--nu-fs-xs); }
   .nut-regua__sk { gap: 18px; }
   .nut-regua__estado { padding-right: 12px; height: 12px; }
   .nut-regua__cot { --ntc-gap: 16px; --ntc-h: 18px; }
   .nut-regua__b3 { display: none; }
   .nut-regua__relogio { display: inline-block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nut-regua__estado, .nut-regua__cot, .nut-regua__nota { animation: none; }
 }
 </style>

@@ -5,6 +5,9 @@
 // disclaimer (§7). Toda a prosa (p/list/subsection) passa pelo shared LegalBlocks,
 // então o estilo do texto NÃO é duplicado — herda o do gabarito. Página-local por
 // design (a única página estática que precisa de tabela). Texto VERBATIM na page.
+// ROBUSTEZ (11/11/2026): o mesmo documento do LegalDoc (coluna do site, títulos
+// com ritmo, seções que entram ao chegar); a tabela com o cabeçalho em caixa alta
+// pequena (--nu-ls-caixa), números tabulares e tudo em token.
 import type { LegalBlock } from '~/types/legal'
 
 /** Tabela simples (cabeçalho + linhas de células string) — só a §5 usa. */
@@ -43,7 +46,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
           <LegalBlocks :blocks="intro" lede />
         </div>
 
-        <section v-for="(sec, si) in sections" :key="sec.id">
+        <section v-for="(sec, si) in sections" :key="sec.id" v-revelar>
           <h2 :id="sec.id" class="met-doc__h2" :class="{ 'met-doc__h2--first': si === 0 && !intro?.length }">{{ sec.title }}</h2>
 
           <!-- §7: disclaimer no box com borda azul -->
@@ -81,8 +84,8 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 /* espelha a casca do shared legal/LegalDoc.vue: o creme da página + coluna 820px */
 .met-doc {
   background: var(--nu-page);
-  padding: clamp(44px, 6vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
-  animation: nu-fade .5s ease .06s both;
+  padding: clamp(44px, 6vw, 76px) var(--nu-coluna) clamp(72px, 8vw, 128px);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) var(--nu-passo-cascata) both;
 }
 .met-doc__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .met-doc__cols--toc { justify-content: flex-start; }
@@ -95,7 +98,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 .met-doc__h2 {
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
   font-size: clamp(26px, 2.6vw, 32px); font-weight: var(--nu-w-forte);
-  letter-spacing: -0.025em; line-height: 1.08;
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.12; text-wrap: balance;
   scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 .met-doc__h2--first { margin-top: 0; }
@@ -116,11 +119,11 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 }
 .met-doc__table tbody tr:last-child td { border-bottom: 0; }
 .met-doc__table th {
-  color: var(--nu-gray); font-weight: var(--nu-w-medio); font-size: var(--nu-fs-dense);
-  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--nu-gray); font-weight: var(--nu-w-medio); font-size: var(--nu-fs-xs);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
 .met-doc__table td {
-  color: var(--nu-gray-3); font-weight: 500; line-height: 1.55;
+  color: var(--nu-gray-3); font-weight: var(--nu-w-texto); line-height: 1.55;
   font-variant-numeric: tabular-nums;
 }
 .met-doc__table td:first-child { color: var(--nu-ink); font-weight: var(--nu-w-medio); }

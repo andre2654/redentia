@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CTA_DEMO, NAV_BIZ_NOVA } from '~/content/business/landing'
+import type { NavItem } from '~/utils/topo'
 // APORTOU (11/11/2026): no site de investidor o topo senta sobre o creme da
 // página, sem fio (o fio só aparece depois de rolar), com o wordmark, a nav em
 // carvão 600 e a chamada em pílula carvão ("Criar conta grátis"), como no
@@ -57,6 +58,53 @@ const destinoCadastro = useDestinoCadastroBusiness()
 const montado = ref(false)
 onMounted(() => { montado.value = true })
 const logadoBiz = computed(() => business.value && montado.value && topo.isAuthenticated.value)
+
+// ROBUSTEZ (11/11/2026, docs/aportou/robustez.md): no site de investidor a nav
+// vai a 15px/500 (a Legora), o item ativo ganha um traço cobalto de 2px a uma
+// distância fixa da letra (encolhido ou não) e, sob o ponteiro, UMA pílula
+// creme anda de item em item (translateX + largura medidos, --nu-dur-media
+// --nu-ease-saida). Aparece no lugar, sem vir deslizando de onde parou; com o
+// painel de um grupo aberto, fica no item dele enquanto o ponteiro está no
+// painel. A chamada é a pílula com a seta (NuBotaoSeta carvão p) e o wordmark
+// encolhe junto com a barra. A variante business não tem pílula nem nada disto.
+const navEl = ref<HTMLElement | null>(null)
+const realce = ref({ x: 0, w: 0 })
+const realceVisivel = ref(false)
+const realceQuieto = ref(true)
+let realceSobre: HTMLElement | null = null
+function realceEm(el: HTMLElement | null) {
+  const nav = navEl.value
+  if (business.value || !nav || !el) { realceVisivel.value = false; return }
+  const n = nav.getBoundingClientRect()
+  const r = el.getBoundingClientRect()
+  const novo = { x: r.left - n.left, w: r.width }
+  if (realceVisivel.value) { realce.value = novo; return }
+  // estava escondida: aparece no lugar (sem transição de posição) e só depois passa a andar
+  realceQuieto.value = true
+  realce.value = novo
+  realceVisivel.value = true
+  requestAnimationFrame(() => requestAnimationFrame(() => { realceQuieto.value = false }))
+}
+function sincronizarRealce() {
+  const p = topo.painel.value
+  const aberto = p?.tipo === 'nav' ? p.item : null
+  const doPainel = aberto ? navEl.value?.querySelector<HTMLElement>(`[data-nav="${CSS.escape(aberto)}"]`) ?? null : null
+  realceEm(realceSobre ?? doPainel)
+}
+function itemEntra(item: NavItem, ev: MouseEvent) {
+  realceSobre = ev.currentTarget as HTMLElement
+  sincronizarRealce()
+  if (item.panel || item.children) topo.navEntra(item, ev)
+}
+function itemSai(item: NavItem) {
+  if (item.panel) topo.navSai()
+}
+function navSaiDaNav() {
+  realceSobre = null
+  sincronizarRealce()
+}
+watch(() => topo.painel.value, () => { if (import.meta.client) sincronizarRealce() })
+const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: `translateX(${realce.value.x}px)` }))
 </script>
 
 <template>
@@ -67,20 +115,25 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
     <div class="nuh">
       <NuTopoMarca class="nuh__marca" :business="business" />
 
-      <nav class="nuh__nav" aria-label="Principal">
+      <nav ref="navEl" class="nuh__nav" aria-label="Principal" @mouseleave="navSaiDaNav">
+        <!-- a pílula do hover (só no site de investidor): uma só, que anda de item em item -->
+        <span
+          v-if="!business" class="nuh__realce" :class="{ 'nuh__realce--on': realceVisivel, 'nuh__realce--quieto': realceQuieto }"
+          :style="estiloRealce" aria-hidden="true"
+        />
         <template v-for="item in nav" :key="item.label">
           <NuxtLink
-            v-if="item.to" :to="item.to" class="nuh__item"
+            v-if="item.to" :to="item.to" class="nuh__item" :data-nav="item.label"
             :class="{ 'nuh__item--ativo': topo.ativo(item.to), 'nuh__item--aberto': topo.painel.value?.tipo === 'nav' && topo.painel.value.item === item.label }"
             :aria-current="topo.ativo(item.to) ? 'page' : undefined"
-            @mouseenter="item.panel ? topo.navEntra(item, $event) : undefined"
-            @mouseleave="item.panel ? topo.navSai() : undefined"
+            @mouseenter="itemEntra(item, $event)"
+            @mouseleave="itemSai(item)"
           >{{ item.label }}</NuxtLink>
           <button
-            v-else type="button" class="nuh__item nuh__item--grupo"
+            v-else type="button" class="nuh__item nuh__item--grupo" :data-nav="item.label"
             :class="{ 'nuh__item--ativo': topo.paiAtivo(item), 'nuh__item--aberto': topo.painel.value?.tipo === 'nav' && topo.painel.value.item === item.label }"
             :aria-expanded="topo.painel.value?.tipo === 'nav' && topo.painel.value.item === item.label" aria-haspopup="menu"
-            @mouseenter="topo.navEntra(item, $event)" @mouseleave="topo.navSai()" @click="topo.navClique(item, $event)"
+            @mouseenter="itemEntra(item, $event)" @mouseleave="topo.navSai()" @click="topo.navClique(item, $event)"
           >
             {{ item.label }}
             <svg class="nuh__chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
@@ -114,7 +167,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
         </template>
         <template v-else>
           <NuxtLink to="/login" class="nuh__entrar">Entrar</NuxtLink>
-          <NuxtLink to="/assinar?quiz=1&de=topo" class="nuh__cta">Criar conta grátis</NuxtLink>
+          <NuBotaoSeta to="/assinar?quiz=1&de=topo" variante="carvao" tamanho="p" class="nuh__chamada">Criar conta grátis</NuBotaoSeta>
         </template>
         <button type="button" class="nuh__burger" aria-label="Abrir menu" :aria-expanded="topo.menuAberto.value" @click="topo.abrirMenu(true)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M4 9h16M4 15h16" /></svg>
@@ -124,12 +177,14 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
   </div>
 
   <NuTopoMega
-    v-if="topo.itemAberto.value"
-    :filhos="topo.filhosDe(topo.itemAberto.value)" :left="topo.pos.value.left" :top="topo.pos.value.top" :quente="topo.filhoQuente.value"
+    v-if="!business"
+    :item="topo.itemAberto.value?.label ?? null"
+    :filhos="topo.itemAberto.value ? topo.filhosDe(topo.itemAberto.value) : []" :left="topo.pos.value.left" :top="topo.pos.value.top" :quente="topo.filhoQuente.value"
     @quente="topo.filhoQuente.value = $event" @entra="topo.painelEntra()" @sai="topo.navSai()" @fechar="topo.fecharPainel()" @tecla="topo.teclaNoPainel($event)"
   />
   <NuTopoConta
-    v-if="topo.painel.value?.tipo === 'conta'" :right="topo.pos.value.right" :top="topo.pos.value.top"
+    v-if="!business"
+    :aberto="topo.painel.value?.tipo === 'conta'" :right="topo.pos.value.right" :top="topo.pos.value.top"
     @fechar="topo.fecharPainel()" @sair="topo.sair()" @tecla="topo.teclaNoPainel($event)"
   />
   <NuTopoMenu
@@ -178,7 +233,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 .nuh__busca {
   display: inline-flex; align-items: center; gap: 9px; height: 40px; width: clamp(180px, 18vw, 260px); padding: 0 16px;
   border-radius: var(--nu-r-pill); background: var(--nu-cream); color: var(--nu-gray);
-  font-size: var(--nu-fs-sm); font-weight: 500; white-space: nowrap; transition: background .2s;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); white-space: nowrap; transition: background .2s;
 }
 .nuh__busca:hover { background: var(--nu-cream-4); color: var(--nu-gray-2); }
 .nuh__busca svg { flex-shrink: 0; color: var(--nu-gray-2); }
@@ -239,31 +294,100 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
   .nuh, .nuh__item::after { transition: none; }
 }
 
-/* ——— Aportou: o topo do site de investidor ——— */
-.nuh-wrap--ap { background: var(--nu-page); border-bottom-color: transparent; transition: border-color .3s, box-shadow .3s; }
+/* ——— Aportou: o topo do site de investidor ———
+   Robustez (11/11/2026): tudo em token; o encolher fica no tempo de sempre
+   (--mov, .32s): a régua, a faixa de seções e as barras que grudam (guias,
+   teses, glossário, ativo) andam juntas com ele, sem vão. */
+.nuh-wrap--ap {
+  background: var(--nu-page); border-bottom-color: transparent;
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor);
+}
 .nuh-wrap--ap.nuh-wrap--shrunk { border-bottom-color: var(--nu-line-2); }
-/* a mesma coluna de 1240 do conteúdo: o wordmark alinha com o título da página */
-.nuh-wrap--ap .nuh { padding-inline: max(clamp(16px, 3vw, 40px), calc((100% - 1240px) / 2)); }
-.nuh-wrap--ap .nuh__item { color: var(--nu-ink); font-weight: 600; letter-spacing: 0; }
-.nuh-wrap--ap .nuh__item:hover, .nuh-wrap--ap .nuh__item--aberto { color: var(--nu-blue-text); }
-.nuh-wrap--ap .nuh__item--ativo { color: var(--nu-blue-text); }
-.nuh-wrap--ap .nuh__item::after { height: 3px; bottom: 12px; }
-.nuh-wrap--ap .nuh__entrar { height: 44px; font-size: var(--nu-fs-md); }
-.nuh-wrap--ap .nuh__cta { height: 44px; background: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.nuh-wrap--ap .nuh__cta:hover { background: var(--nu-ink-hover); }
-.nuh-wrap--ap .nuh__busca { height: 44px; background: var(--nu-band); color: var(--nu-gray); font-weight: 600; }
+/* a coluna do conteúdo em toda largura (--nu-coluna): o wordmark alinha com o título da página */
+.nuh-wrap--ap .nuh { padding-inline: var(--nu-coluna); }
+/* o wordmark encolhe junto com a barra */
+.nuh-wrap--ap .nuh__marca :deep(svg) { transform-origin: 0 50%; transition: transform var(--mov); }
+.nuh-wrap--ap.nuh-wrap--shrunk .nuh__marca :deep(svg) { transform: scale(.9); }
+
+/* a nav: 15px/500 em carvão de apoio; sob o ponteiro, aberta ou ativa, carvão */
+.nuh-wrap--ap .nuh__nav { position: relative; gap: 2px; }
+.nuh-wrap--ap .nuh__item {
+  z-index: 1; padding: 0 13px; color: var(--nu-gray-3);
+  font-size: 15px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.nuh-wrap--ap .nuh__item:hover, .nuh-wrap--ap .nuh__item--aberto, .nuh-wrap--ap .nuh__item--ativo { color: var(--nu-ink); }
+/* o ativo: um traço cobalto de 2px a uma distância fixa do centro da letra (encolhido ou não) */
+.nuh-wrap--ap .nuh__item::after {
+  left: 13px; right: 13px; top: calc(50% + 22px); bottom: auto; height: 2px;
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-troca);
+}
+.nuh-wrap--ap .nuh__item--grupo::after { right: 30px; }
+.nuh-wrap--ap .nuh__chev { opacity: .5; transition: transform var(--nu-dur-media) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.nuh-wrap--ap .nuh__item:hover .nuh__chev, .nuh-wrap--ap .nuh__item--aberto .nuh__chev { opacity: 1; }
+/* o foco do teclado tem a forma da pílula */
+.nuh-wrap--ap .nuh__item:focus-visible { outline: none; }
+.nuh-wrap--ap .nuh__item:focus-visible::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 36px; margin-top: -18px;
+  border-radius: var(--nu-r-pill); outline: 3px solid var(--nu-blue); outline-offset: 0; pointer-events: none;
+}
+/* a pílula do hover: aparece no lugar e anda de item em item */
+.nuh__realce {
+  position: absolute; left: 0; top: 50%; height: 36px; margin-top: -18px; border-radius: var(--nu-r-pill);
+  background: var(--nu-band); opacity: 0; pointer-events: none;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), width var(--nu-dur-media) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor);
+}
+.nuh__realce--quieto { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.nuh__realce--on { opacity: 1; }
+
+/* à direita: busca, Entrar e a chamada na mesma altura (40px) */
+.nuh-wrap--ap .nuh__dir { gap: 6px; }
+.nuh-wrap--ap .nuh__busca {
+  height: 40px; background: var(--nu-band); color: var(--nu-gray); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+}
+.nuh-wrap--ap .nuh__busca svg { transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 .nuh-wrap--ap .nuh__busca:hover { background: var(--nu-cream-2); color: var(--nu-ink); }
-.nuh-wrap--ap .nuh__avatar span { background: var(--nu-ink); font-weight: var(--nu-w-forte); }
-.nuh-wrap--ap .nuh__avatar:hover span { background: var(--nu-blue); }
+.nuh-wrap--ap .nuh__busca:hover svg { color: var(--nu-ink); }
+.nuh-wrap--ap .nuh__entrar {
+  height: 40px; padding: 0 14px; color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
+}
+.nuh-wrap--ap .nuh__entrar:hover { background: var(--nu-band); color: var(--nu-ink); }
+.nuh-wrap--ap .nuh__chamada { margin-left: 2px; }
+.nuh-wrap--ap .nuh__avatar { width: 40px; height: 40px; margin-left: 2px; }
+.nuh-wrap--ap .nuh__avatar span {
+  width: 36px; height: 36px; background: var(--nu-ink); font-weight: var(--nu-w-medio);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
+}
+.nuh-wrap--ap .nuh__avatar:hover span { background: var(--nu-ink-hover); }
+/* o menu da conta aberto: o avatar ganha o anel (o estado à vista) */
+.nuh-wrap--ap .nuh__avatar[aria-expanded="true"] span { box-shadow: 0 0 0 3px var(--nu-page), 0 0 0 4.5px var(--nu-line); }
+.nuh-wrap--ap .nuh__burger { transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida); }
 .nuh-wrap--ap .nuh__burger:hover { background: var(--nu-band); }
+/* apertado: afunda 2 a 3%, como a pílula da seta */
+.nuh-wrap--ap :is(.nuh__busca, .nuh__entrar, .nuh__burger, .nuh__avatar):active { transform: scale(.97); }
+.nuh-wrap--ap :is(.nuh__busca, .nuh__entrar, .nuh__avatar, .nuh__burger):focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+
 @container topo (max-width: 1160px) {
   .nuh-wrap--ap .nuh__busca { background: transparent; }
   .nuh-wrap--ap .nuh__busca:hover { background: var(--nu-band); }
 }
+/* com o hambúrguer na ponta, o desenho do ícone (não a área de toque) fecha a coluna */
+@container topo (max-width: 960px) {
+  .nuh-wrap--ap .nuh { padding-right: max(8px, calc(var(--nu-coluna) - 12px)); }
+}
 @container topo (max-width: 640px) {
-  .nuh-wrap--ap .nuh { padding: 0 6px 0 16px; }
-  .nuh-wrap--ap .nuh__marca { padding: 4px 6px 4px 0; }
+  .nuh-wrap--ap .nuh__marca { padding: 4px 6px 4px 2px; }
   .nuh-wrap--ap .nuh__marca :deep(svg) { height: 24px; width: auto; }
+  .nuh-wrap--ap .nuh__dir { gap: 0; }
+  .nuh-wrap--ap .nuh__chamada { display: none; }
+  .nuh-wrap--ap .nuh__busca { width: 44px; height: 44px; }
+  .nuh-wrap--ap .nuh__avatar { width: 44px; height: 44px; margin-left: 0; }
+  .nuh-wrap--ap .nuh__avatar span { width: 30px; height: 30px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nuh__realce, .nuh-wrap--ap .nuh__marca :deep(svg) { transition: none; }
 }
 
 /* ——— a landing /business (o print do dono) ——— */

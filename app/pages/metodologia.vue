@@ -270,7 +270,7 @@ usePageSeo({
     <LegalHero eyebrow="Metodologia" title="Metodologia e fontes de dados" :updated="CONTENT_VERSION" />
     <MetodologiaDoc :intro="intro" :sections="sections" toc>
       <!-- Autoria e E-E-A-T (atribuição editorial do documento antigo) -->
-      <aside class="met-author">
+      <aside v-revelar class="met-author">
         <div class="met-author__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -289,7 +289,8 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* a autoria num cartão creme da Aportou (sombra quente, sem borda) */
+/* a autoria num cartão creme da Aportou (sombra quente, sem borda).
+   Robustez (11/11/2026): entra ao chegar (v-revelar); o link no padrão dos documentos; tudo em token. */
 .met-author {
   display: flex; gap: 18px; align-items: flex-start;
   margin-top: clamp(40px, 5vw, 60px);
@@ -306,14 +307,15 @@ usePageSeo({
 .met-author__icon svg { width: 22px; height: 22px; }
 .met-author__body p {
   margin: 0; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6;
 }
 .met-author__body p + p { margin-top: 8px; }
 .met-author__body a {
   color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline;
-  text-underline-offset: 2px; text-decoration-thickness: 1.5px; transition: color .2s;
+  text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.met-author__body a:hover { color: var(--nu-blue-hover); }
+.met-author__body a:hover { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 
 @media (max-width: 760px) {
   .met-author { gap: 14px; }

@@ -81,7 +81,7 @@ const asOfLine = computed(() => {
           <tr v-for="r in rows" :key="r.ticker">
             <td><NuxtLink :to="`/asset/${r.ticker}`" class="getc__tk">{{ r.ticker }}</NuxtLink></td>
             <td class="getc__num">{{ r.fee }}</td>
-            <td class="getc__num">{{ r.total }}<span v-if="r.piso" class="getc__piso">piso</span></td>
+            <td class="getc__num">{{ r.total }}<NuSelo v-if="r.piso" tom="ambar" tamanho="p" class="getc__piso">piso</NuSelo></td>
           </tr>
         </tbody>
       </table>
@@ -95,29 +95,27 @@ const asOfLine = computed(() => {
 </template>
 
 <style scoped>
-/* cartão creme da Aportou: sombra quente, fios de 1,5px, ticker em selo carvão de raio 8 */
+/* cartão creme da Aportou: sombra quente, fios de 1,5px, ticker em selo carvão de raio 8.
+   Robustez (11/11/2026): o "piso" é o NuSelo âmbar; cabeçalho em caixa alta pequena; tudo em token. */
 .getc { margin-top: 28px; background: var(--nu-band); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); padding: clamp(22px, 2.8vw, 32px); }
 .getc__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.getc__kicker { color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
-.getc__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 500; }
+.getc__kicker { color: var(--nu-ink); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
+.getc__asof { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
 .getc__scroll { overflow-x: auto; margin-top: 14px; }
 .getc__table { width: 100%; border-collapse: collapse; min-width: 420px; }
 .getc__table th {
-  text-align: left; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-  letter-spacing: 0.14em; text-transform: uppercase; padding: 0 12px 10px 0;
+  text-align: left; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; padding: 0 12px 10px 0;
 }
-.getc__table td { padding: 12px 12px 12px 0; border-top: 1px solid var(--nu-line); font-size: var(--nu-fs-md); font-weight: 500; color: var(--nu-gray-2); }
+.getc__table td { padding: 12px 12px 12px 0; border-top: 1px solid var(--nu-line); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); color: var(--nu-gray-2); }
 .getc .getc__tk {
   display: inline-flex; align-items: center; min-height: 28px; padding: 0 9px; border-radius: var(--nu-r-tag);
   background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: 0.04em;
-  text-decoration: none; transition: background .2s;
+  text-decoration: none; transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .getc .getc__tk:hover { background: var(--nu-blue); }
+.getc .getc__tk:active { transform: scale(.97); }
 .getc__table .getc__num { font-variant-numeric: tabular-nums; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
-.getc__piso {
-  margin-left: 8px; background: var(--nu-amber-bg); color: var(--nu-amber-text);
-  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); padding: 3px 8px; border-radius: var(--nu-r-tag);
-  vertical-align: 1px;
-}
-.getc__note { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.55; }
+.getc__piso { margin-left: 8px; }
+.getc__note { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); line-height: 1.55; }
 </style>

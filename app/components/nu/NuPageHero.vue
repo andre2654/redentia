@@ -7,6 +7,8 @@
 // topo e a régua (não é mais uma faixa de outro creme); o eyebrow é o da marca
 // (o corte azul + caixa alta espaçada), o H1 vai em 800 com a entrelinha
 // apertada e o subtítulo vira o lead da marca. Estrutura, textos e slots iguais.
+// ROBUSTEZ (11/11/2026): a coluna do site (--nu-coluna), o título no tracking de
+// exibição e a entrada em token (520ms na curva de saída). Tamanhos iguais.
 defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 </script>
 
@@ -22,22 +24,23 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 <style scoped>
 .nph {
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.5vw, 56px);
-  animation: nu-fade .5s ease both;
+  padding: clamp(48px, 6.5vw, 88px) var(--nu-coluna) clamp(36px, 4.5vw, 56px);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
 .nph__title {
   margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(40px, 5.5vw, 76px);
-  font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 0.98;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 0.98;
 }
 .nph__sub {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
-  line-height: 1.45; margin-top: 22px; max-width: 620px;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
+  line-height: 1.45; margin-top: 20px; max-width: 620px; text-wrap: pretty;
 }
 .nph__actions { margin-top: 32px; }
 
 /* variante lg (o hub /guias): o H1 de página da marca */
-.nph--lg { padding: clamp(56px, 8vw, 100px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 60px); }
+.nph--lg { padding: clamp(56px, 8vw, 100px) var(--nu-coluna) clamp(40px, 5vw, 60px); }
 .nph--lg .nph__title { font-size: var(--nu-fs-hero); }
 .nph--lg .nph__sub { margin-top: 24px; max-width: 560px; }
 .nph--lg .nph__actions { margin-top: 38px; }
+@media (prefers-reduced-motion: reduce) { .nph { animation: none; } }
 </style>

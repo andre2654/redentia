@@ -34,21 +34,23 @@ const updatedText = computed(() => {
 <style scoped>
 /* Na Aportou (11/11/2026) o herói senta no creme da página, como o NuPageHero:
    eyebrow com o corte, H1 em 800 com a entrelinha apertada e um fio de 1,5px
-   separando do documento. */
+   separando do documento.
+   Robustez (11/11/2026): a coluna do site (--nu-coluna), a entrada em token
+   (520ms na curva de saída) e a data como legenda (500, cinza, tabular). */
 .lgh {
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 88px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(32px, 4vw, 48px);
+  padding: clamp(48px, 6.5vw, 88px) var(--nu-coluna) clamp(32px, 4vw, 48px);
   border-bottom: 1px solid var(--nu-line-2);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
 .lgh__inner { max-width: 920px; }
 .lgh__title {
   margin: 18px 0 0; color: var(--nu-ink);
   font-size: clamp(40px, 5.5vw, 76px); font-weight: var(--nu-w-display);
-  letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
+  letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance;
 }
 .lgh__updated {
-  margin-top: 22px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600;
+  margin-top: 20px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
   font-variant-numeric: tabular-nums;
 }
 @media (prefers-reduced-motion: reduce) { .lgh { animation: none; } }

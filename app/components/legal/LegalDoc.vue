@@ -6,6 +6,9 @@
 //
 // TOC: quando `toc`, mostra o NuTocSidebar sticky à esquerda (some ≤1080px) com
 // as seções de 1º nível. Slot default = conteúdo extra abaixo do artigo.
+// ROBUSTEZ (11/11/2026): um documento. Coluna de 720px em 17px/1,65 (LegalBlocks),
+// títulos com ritmo (56px antes, 16px depois), a coluna do site (--nu-coluna) e
+// cada seção abaixo da dobra entra ao chegar (v-revelar). O texto é o mesmo.
 import type { LegalBlock, LegalSection } from '~/types/legal'
 
 const props = withDefaults(defineProps<{
@@ -34,7 +37,7 @@ const tocItems = computed(() =>
           <LegalBlocks :blocks="intro" lede />
         </div>
 
-        <section v-for="(sec, si) in sections" :key="sec.id">
+        <section v-for="(sec, si) in sections" :key="sec.id" v-revelar>
           <h2 :id="sec.id" class="lgd__h2" :class="{ 'lgd__h2--first': si === 0 && !intro?.length }">{{ sec.title }}</h2>
           <LegalBlocks :blocks="sec.blocks" />
         </section>
@@ -49,8 +52,8 @@ const tocItems = computed(() =>
 /* o documento sobre o creme da página (não existe faixa branca de ponta a ponta) */
 .lgd {
   background: var(--nu-page);
-  padding: clamp(44px, 6vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
-  animation: nu-fade .5s ease .06s both;
+  padding: clamp(44px, 6vw, 76px) var(--nu-coluna) clamp(72px, 8vw, 128px);
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) var(--nu-passo-cascata) both;
 }
 .lgd__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .lgd__cols--toc { justify-content: flex-start; }
@@ -64,7 +67,7 @@ const tocItems = computed(() =>
 .lgd__h2 {
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
   font-size: clamp(26px, 2.6vw, 32px); font-weight: var(--nu-w-forte);
-  letter-spacing: -0.025em; line-height: 1.08;
+  letter-spacing: var(--nu-ls-titulo); line-height: 1.12; text-wrap: balance;
   /* o topo e a régua do mercado grudam (~100px): a âncora para abaixo deles */
   scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }

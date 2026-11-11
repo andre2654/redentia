@@ -11,6 +11,12 @@
 // e fora das páginas que já têm o formulário), as redes, o e-mail, o
 // "Acompanhe o André", as preferências de cookies e a porta para o produto de
 // escritório, que agora diz o nome dele: Redentia.
+//
+// ROBUSTEZ (11/11/2026): na coluna do site (--nu-coluna); as cinco colunas
+// numa linha só no computador, com o título em caixa alta pequena e cinza (a
+// Legora, a Rogo) e o link em 15px/500; sob o ponteiro o link clareia e o
+// sublinhado aparece, sem empurrar nada. O wordmark gigante entra ao chegar
+// (v-revelar). Tudo em token.
 defineProps<{
   colunas: { title: string; links: { label: string; to: string }[] }[]
   assinatura: boolean
@@ -61,7 +67,7 @@ const ano = new Date().getFullYear()
         <NuxtLink to="/business" class="nfa__b2b">Para escritórios: {{ MARCA.b2b }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15" /><path d="M13.5 6.5 19 12l-5.5 5.5" /></svg></NuxtLink>
       </div>
 
-      <svg class="nfa__gigante" viewBox="-2 -40 681 142" role="img" aria-label="aportou">
+      <svg v-revelar="{ y: 24 }" class="nfa__gigante" viewBox="-2 -40 681 142" role="img" aria-label="aportou">
         <g fill="none" stroke="currentColor" stroke-width="25"><circle cx="50" cy="50" r="37.5" /><circle cx="173" cy="50" r="37.5" /><circle cx="280.5" cy="50" r="37.5" /><circle cx="520.5" cy="50" r="37.5" /><path d="M593.5 2 V54 A35.25 35.25 0 0 0 664 54" /></g>
         <g fill="currentColor"><rect x="83" y="2" width="25" height="98" /><path d="M121 2 H146 V124 A12 12 0 0 1 134 136 H121 Z" /><path d="M340 100 V26 A26 26 0 0 1 366 0 H399 V23 H372 Q365 23 365 31 V100 Z" /><path d="M408 -25 Q408 -38 421 -38 H433 V62 Q433 77 448 77 H463 V101 H440 Q408 101 408 69 Z" /><rect x="651.5" y="2" width="25" height="98" /></g>
         <path class="nfa__gigante-corte" d="M408 44 V0 H444 C456 0 466 -2 472 -8 C474 8 466 23 448 23 H433 C419 23 410 31 408 44 Z" />
@@ -74,48 +80,72 @@ const ano = new Date().getFullYear()
 
 <style scoped>
 .nfa { container: rodape / inline-size; background: var(--nu-ink); color: var(--nu-on-dark); overflow: hidden; }
-.nfa__in { max-width: 1304px; margin: 0 auto; padding: 64px 32px 0; display: flex; flex-direction: column; gap: 44px; }
+.nfa__in { padding: clamp(64px, 7vw, 96px) var(--nu-coluna) 0; display: flex; flex-direction: column; gap: clamp(40px, 4.4vw, 56px); }
 
 .nfa__news {
   display: flex; flex-wrap: wrap; align-items: center; gap: 24px 56px;
   padding: clamp(24px, 3vw, 40px); border-radius: var(--nu-r-card); background: var(--nu-dark-chip);
+  box-shadow: inset 0 0 0 1px var(--nu-dark-line);
 }
 .nfa__news-texto { flex: 1.3 1 360px; min-width: min(280px, 100%); display: flex; flex-direction: column; gap: 12px; }
-.nfa__news-titulo { margin: 0; color: var(--nu-creme); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
+.nfa__news-titulo { margin: 0; color: var(--nu-creme); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
 .nfa__news-sub { margin: 0; max-width: 52ch; font-size: 17px; line-height: 1.45; }
 .nfa__news-form { flex: 1 1 340px; min-width: min(280px, 100%); }
 
-.nfa__mapa { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 36px 64px; }
-.nfa__marca { flex: 1 1 320px; max-width: 480px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-.nfa__frase { margin: 0; color: var(--nu-creme); font-size: clamp(34px, 4.4vw, 56px); font-weight: var(--nu-w-display); line-height: 1; letter-spacing: -0.03em; text-wrap: balance; }
-.nfa__legal { margin: 0; font-size: 13.5px; line-height: 1.5; }
+/* a marca de um lado, as cinco colunas do outro (numa linha só no computador) */
+.nfa__mapa { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px 48px; }
+.nfa__marca { flex: 1 1 300px; max-width: 380px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.nfa__frase { margin: 0; color: var(--nu-creme); font-size: clamp(34px, 4.4vw, 56px); font-weight: var(--nu-w-display); line-height: 1; letter-spacing: var(--nu-ls-display); text-wrap: balance; }
+.nfa__legal { margin: 0; font-size: 13.5px; line-height: 1.55; }
 .nfa__contato { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
-.nfa__mail { min-height: 44px; display: inline-flex; align-items: center; color: var(--nu-creme); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: color .2s; }
-.nfa__mail:hover { color: var(--nu-white); }
+.nfa__mail {
+  min-height: 44px; display: inline-flex; align-items: center; color: var(--nu-creme); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: transparent;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.nfa__mail:hover { color: var(--nu-white); text-decoration-color: currentColor; }
 .nfa__horas { font-size: 13.5px; color: var(--nu-on-dark-2); }
 .nfa__redes { display: flex; gap: 6px; margin-left: -11px; }
-.nfa__rede { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--nu-creme); transition: background .2s, transform .2s; }
-.nfa__rede:hover { background: var(--nu-dark-chip); color: var(--nu-white); transform: translateY(-2px); }
-
-.nfa__grid { flex: 1.6 1 520px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 28px 40px; align-content: start; }
-.nfa__col { display: flex; flex-direction: column; gap: 0; align-items: flex-start; }
-.nfa__col-titulo { padding-bottom: 6px; color: var(--nu-creme); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
-.nfa__link {
-  min-height: 40px; display: inline-flex; align-items: center; color: var(--nu-on-dark);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.25; transition: color .2s, transform .2s;
+.nfa__rede {
+  width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--nu-creme);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.nfa__link:hover { color: var(--nu-white); transform: translateX(3px); }
-.nfa__link--btn { padding: 0; border: 0; background: none; font-family: inherit; text-align: left; cursor: pointer; }
+.nfa__rede:hover { background: var(--nu-dark-chip); color: var(--nu-white); transform: translateY(-2px); }
+.nfa__rede:active { transform: scale(.94); transition-duration: var(--nu-dur-rapida); }
 
-.nfa__pe { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; }
-.nfa__copy { font-size: 13.5px; line-height: 1.5; }
+.nfa__grid { flex: 2 1 560px; display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 32px 28px; align-content: start; }
+.nfa__col { display: flex; flex-direction: column; gap: 0; align-items: flex-start; }
+/* o título da coluna: caixa alta pequena e cinza (quem lê o link é o link) */
+.nfa__col-titulo {
+  padding-bottom: 10px; color: var(--nu-on-dark-2);
+  font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
+}
+.nfa__link {
+  min-height: 36px; padding-block: 6px; display: inline-flex; align-items: center; color: var(--nu-on-dark);
+  font-size: 15px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.3;
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: transparent;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.nfa__link:hover { color: var(--nu-white); text-decoration-color: color-mix(in srgb, var(--nu-white) 45%, transparent); }
+.nfa__link:active { opacity: .72; }
+.nfa__link--btn { padding: 0; border: 0; background: none; font-family: inherit; text-align: left; cursor: pointer; }
+/* no dedo, o alvo de 44px */
+@media (pointer: coarse) { .nfa__link { min-height: 44px; } }
+
+.nfa__pe {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px;
+  padding-top: 24px; border-top: 1px solid var(--nu-dark-line);
+}
+.nfa__copy { color: var(--nu-on-dark-2); font-size: var(--nu-fs-dense); line-height: 1.5; }
 .nfa__b2b {
   display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px;
   border-radius: var(--nu-r-pill); border: 1px solid var(--nu-dark-chip-line); background: var(--nu-dark-chip);
-  color: var(--nu-white); font-size: 14.5px; font-weight: 600; white-space: nowrap; transition: background .2s, border-color .2s;
+  color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .nfa__b2b:hover { background: var(--nu-dark-line); border-color: var(--nu-on-dark-2); color: var(--nu-white); }
-.nfa__b2b svg { transition: transform .2s; }
+.nfa__b2b:active { transform: scale(.98); }
+.nfa__b2b svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .nfa__b2b:hover svg { transform: translateX(3px); }
 
 .nfa__gigante { display: block; width: 100%; color: var(--nu-dark-line); }
@@ -123,8 +153,8 @@ const ano = new Date().getFullYear()
 :is(.nfa__mail, .nfa__rede, .nfa__link, .nfa__b2b):focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 2px; }
 
 @container rodape (max-width: 640px) {
-  .nfa__in { padding: 48px 20px 0; gap: 36px; }
-  .nfa__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; }
+  .nfa__in { padding-top: 48px; gap: 36px; }
+  .nfa__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; }
 }
-@media (prefers-reduced-motion: reduce) { .nfa__link, .nfa__rede, .nfa__b2b svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .nfa__link, .nfa__mail, .nfa__rede, .nfa__b2b, .nfa__b2b svg { transition: none; } }
 </style>

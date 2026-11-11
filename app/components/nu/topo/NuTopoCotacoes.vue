@@ -4,6 +4,8 @@
 // segunda linha e fica cortado. Sem marquee, sem medir, sem pulo de layout.
 // Ordem de leitura (utils/topo.ts): IBOV, dólar, IFIX, CDI, PETR4, bitcoin —
 // o que some primeiro é o fim da fila.
+// Robustez (11/11/2026): o nome em 500 cinza, o valor e a variação em 600, tudo
+// tabular; o fio entre as cotações é o de 1px da página.
 import type { CotacaoDoTopo } from '~/utils/topo'
 defineProps<{ itens: CotacaoDoTopo[]; separador?: boolean }>()
 </script>
@@ -28,9 +30,9 @@ defineProps<{ itens: CotacaoDoTopo[]; separador?: boolean }>()
 .ntc--sep .ntc__item + .ntc__item { position: relative; }
 .ntc--sep .ntc__item + .ntc__item::before {
   content: ''; position: absolute; left: calc(var(--ntc-gap, 22px) / -2); top: 50%; width: 1px; height: 12px;
-  transform: translateY(-50%); background: var(--nu-cream-line);
+  transform: translateY(-50%); background: var(--nu-line-2);
 }
-.ntc__nome { color: var(--nu-gray); font-weight: var(--nu-w-medio); }
+.ntc__nome { color: var(--nu-gray); font-weight: var(--nu-w-texto); }
 .ntc__valor { color: var(--nu-ink); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .ntc__pct { font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .ntc__pct--up { color: var(--nu-green-text); }

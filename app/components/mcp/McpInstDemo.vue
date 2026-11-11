@@ -5,6 +5,8 @@
 // XP, rola a lista, marca Nubank, clica em Conectar e fecha com o selo
 // "somente leitura". Mesma disciplina do McpHeroDemo/NuMarketReading: frame
 // inicial no SSR, timers só no client, reduced-motion = cena final estática.
+// ROBUSTEZ (11/11/2026): as curvas e os tempos do site (o cursor e a lista na
+// de troca, em --nu-dur-entrada; o resto em token). O roteiro do JS não muda.
 
 type Phase = 'idle' | 'to-xp' | 'click-xp' | 'scroll' | 'to-nu' | 'click-nu' | 'to-btn' | 'click-btn' | 'done'
 
@@ -133,15 +135,15 @@ onBeforeUnmount(clearAll)
 .mid__search {
   display: flex; align-items: center; gap: 9px; margin: 12px 14px 0;
   background: var(--nu-cream); color: var(--nu-gray);
-  font-size: var(--nu-fs-dense); font-weight: 500; padding: 11px 14px; border-radius: 12px;
+  font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); padding: 11px 14px; border-radius: var(--nu-r-chip);
 }
 
 .mid__list-clip { height: 236px; overflow: hidden; margin-top: 6px; }
-.mid__list { transition: transform .8s cubic-bezier(.45, 0, .2, 1); }
+.mid__list { transition: transform var(--nu-dur-entrada) var(--nu-ease-troca); }
 .mid__list--scrolled { transform: translateY(-47px); }
 .mid__row {
   display: flex; align-items: center; gap: 11px;
-  padding: 10px 16px; transition: background .25s ease;
+  padding: 10px 16px; transition: background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .mid__row--hover { background: var(--nu-cream); }
 .mid__row--on { background: var(--nu-blue-bg); }
@@ -151,7 +153,7 @@ onBeforeUnmount(clearAll)
   width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%;
   border: 1.5px solid var(--nu-cream-2); color: transparent;
   display: flex; align-items: center; justify-content: center;
-  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), border-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 .mid__check--on { background: var(--nu-green-soft); border-color: var(--nu-green-soft); color: var(--nu-ink); transform: scale(1.08); }
 
@@ -159,7 +161,7 @@ onBeforeUnmount(clearAll)
   margin: 10px 14px 14px; border: 0; cursor: default;
   background: var(--nu-cream-2); color: var(--nu-gray);
   border-radius: var(--nu-r-pill); padding: 13px 18px; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio);
-  transition: background .25s ease, color .25s ease, transform .15s ease;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .mid__btn--ready { background: var(--nu-blue); color: var(--nu-white); }
 .mid__btn--pressed { transform: scale(.96); }
@@ -168,20 +170,20 @@ onBeforeUnmount(clearAll)
   position: absolute; inset: 0; z-index: 2;
   background: color-mix(in srgb, var(--nu-white) 96%, transparent); backdrop-filter: blur(4px);
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-  opacity: 0; transition: opacity .45s ease; pointer-events: none; padding: 20px;
+  opacity: 0; transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); pointer-events: none; padding: 20px;
 }
 .mid__done--on { opacity: 1; }
 .mid__done-ic {
   width: 54px; height: 54px; border-radius: 50%; background: var(--nu-green-soft); color: var(--nu-ink);
   display: flex; align-items: center; justify-content: center;
 }
-.mid__done-t { margin-top: 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.mid__done-p { margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; }
+.mid__done-t { margin-top: 14px; color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.mid__done-p { margin-top: 6px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 
 /* cursor: coreografia por fase (posições em % da janela) */
 .mid__cursor {
   position: absolute; z-index: 3; left: 85%; top: 92%;
-  transition: left .95s cubic-bezier(.45, 0, .2, 1), top .95s cubic-bezier(.45, 0, .2, 1), transform .16s ease, opacity .4s ease;
+  transition: left var(--nu-dur-entrada) var(--nu-ease-troca), top var(--nu-dur-entrada) var(--nu-ease-troca), transform var(--nu-dur-rapida) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor);
   filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--nu-ink) 30%, transparent));
 }
 .mid__ponteiro { fill: var(--nu-ink); stroke: var(--nu-white); }

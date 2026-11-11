@@ -105,10 +105,10 @@ usePageSeo({
          fecho, como na home): número gigante no cobalto que lê sobre escuro,
          em cima de um fio, e o endpoint em letra de código -->
     <section class="mdoc__band">
-      <div class="mdoc__painel">
+      <div v-revelar class="mdoc__painel">
         <NuEyebrow como="p" sobre="escuro">Como funciona</NuEyebrow>
         <h2 class="mdoc__band-title">Três passos e a sua IA <br>fica do lado de dentro.</h2>
-        <ol class="mdoc__steps">
+        <ol v-revelar="{ alvo: 'filhos' }" class="mdoc__steps">
           <li class="mdoc__step">
             <span class="mdoc__step-n">1</span>
             <div>
@@ -145,7 +145,7 @@ usePageSeo({
          assistente saíram com ela (decisão do dono 2026-08-25). O texto de um
          lado, a porta do outro. -->
     <section id="como-conectar" class="mdoc__sec mdoc__sec--band mdoc__sec--porta">
-      <div class="mdoc__in mdoc__porta">
+      <div v-revelar class="mdoc__in mdoc__porta">
         <div class="mdoc__porta-txt">
           <NuEyebrow como="p">Passo a passo</NuEyebrow>
           <h2 class="mdoc__h2">Como conectar</h2>
@@ -167,7 +167,7 @@ usePageSeo({
     <!-- CORRETORAS — animada (dono 2026-07-18): o filme do seletor Open
          Finance à direita, "Bancos e corretoras suportadas" ao lado -->
     <section class="mdoc__sec">
-      <div class="mdoc__in">
+      <div v-revelar class="mdoc__in">
         <div class="mdoc__cols">
           <div class="mdoc__left">
             <NuEyebrow como="p">Open Finance</NuEyebrow>
@@ -202,14 +202,14 @@ usePageSeo({
          quatro respostas (a coluna da Aportou ficava fora da tela). -->
     <section class="mdoc__sec mdoc__sec--band">
       <div class="mdoc__in">
-        <div class="mdoc__cmp-head">
+        <div v-revelar class="mdoc__cmp-head">
           <NuEyebrow como="p" class="mdoc__eyebrow-centro">O que muda quando você conecta</NuEyebrow>
           <h2 class="mdoc__h2 mdoc__h2--center">O app da corretora <em>mostra</em> a carteira.<br>A sua IA com a Aportou <em>entende</em>.</h2>
           <p class="mdoc__lead mdoc__lead--center">
             Compare o que você consegue fazer hoje com o que passa a conseguir depois de colar uma configuração no seu assistente.
           </p>
         </div>
-        <div class="mdoc__cmp-card">
+        <div v-revelar class="mdoc__cmp-card">
           <table class="mdoc__cmp">
             <thead>
               <tr>
@@ -241,7 +241,7 @@ usePageSeo({
 
     <!-- FAQ — accordion padrão do site, sobre o creme da página -->
     <section class="mdoc__sec">
-      <div class="mdoc__faq">
+      <div v-revelar class="mdoc__faq">
         <NuEyebrow como="p" class="mdoc__eyebrow-centro">Dúvidas</NuEyebrow>
         <h2 class="mdoc__h2 mdoc__h2--center">Perguntas frequentes</h2>
         <div class="mdoc__faq-list">
@@ -256,7 +256,7 @@ usePageSeo({
          corte gigante sai do canto de cima à esquerda (.nu-corte-fundo) e a
          pílula é creme sobre o cobalto -->
     <section class="mdoc__final">
-      <div class="mdoc__final-painel">
+      <div v-revelar class="mdoc__final-painel">
         <MarcaCorte class="mdoc__final-corte nu-corte-fundo" :largura="620" cor="var(--nu-white)" />
         <NuEyebrow como="p" sobre="azul">Aportou MCP</NuEyebrow>
         <h2 class="mdoc__final-t">Dois minutos e a sua IA <br>fica do lado de dentro.</h2>
@@ -270,15 +270,18 @@ usePageSeo({
 <style scoped>
 /* A página na personalidade da Aportou (11/11/2026): creme da página, faixas
    --nu-band, o painel carvão dos passos e o painel azul no fecho. Nenhuma
-   faixa branca de ponta a ponta: branco é só cartão. Cor só por token. */
-.mdoc { --g: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); background: var(--nu-page); }
+   faixa branca de ponta a ponta: branco é só cartão. Cor só por token.
+   Robustez (11/11/2026): a coluna do site, a seção no ritmo do site
+   (clamp(72px, 8vw, 128px)), o que vem abaixo da dobra entra ao chegar
+   (v-revelar; os passos em cascata), o herói em token e tudo o mais em token. */
+.mdoc { --g: var(--nu-coluna); background: var(--nu-page); }
 .mdoc__in { max-width: 1240px; margin: 0 auto; }
 .mdoc__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ——— herói ——— */
 .mdoc__hero {
   padding: clamp(40px, 5.5vw, 80px) var(--g) clamp(48px, 6vw, 80px);
-  animation: nu-fade .5s ease both;
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
 /* duas colunas na anatomia do herói da home: texto + demo */
 .mdoc__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
@@ -294,64 +297,66 @@ usePageSeo({
 .mdoc__h1 {
   margin: 18px 0 0; color: var(--nu-ink);
   font-size: clamp(44px, 5.4vw, 84px); font-weight: var(--nu-w-display);
-  letter-spacing: -0.04em; line-height: .98; text-wrap: balance;
+  letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance;
 }
 .mdoc__sub {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
-  line-height: 1.45; margin: 22px 0 0; max-width: 600px; text-wrap: pretty;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto);
+  line-height: 1.45; margin: 20px 0 0; max-width: 600px; text-wrap: pretty;
 }
-.mdoc__cta { margin-top: 30px; }
+.mdoc__cta { margin-top: 32px; }
 
 /* ——— como funciona: painel carvão, raio de seção; passos numerados do
        contrato (número gigante sobre um fio de 3px) ——— */
-.mdoc__band { padding: 0 var(--g) clamp(56px, 7vw, 96px); }
+.mdoc__band { padding: 0 var(--g) clamp(72px, 8vw, 128px); }
 .mdoc__painel {
   max-width: 1240px; margin: 0 auto;
   background: var(--nu-ink); border-radius: var(--nu-r-secao); box-shadow: var(--nu-shadow-escuro);
   padding: clamp(36px, 5.2vw, 72px) clamp(24px, 5vw, 64px);
-  animation: nu-fade .5s ease .08s both;
 }
 .mdoc__band-title {
   margin: 18px 0 0; color: var(--nu-white);
-  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
+  font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance;
 }
 .mdoc__steps {
   list-style: none; margin: clamp(32px, 4vw, 52px) 0 0; padding: 0;
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 44px);
 }
-.mdoc__step { display: flex; flex-direction: column; animation: nu-fade .5s ease both; }
-.mdoc__step:nth-child(2) { animation-delay: .06s; }
-.mdoc__step:nth-child(3) { animation-delay: .12s; }
+.mdoc__step { display: flex; flex-direction: column; }
 .mdoc__step-n {
   display: block; padding-bottom: 14px; border-bottom: 3px solid var(--nu-dark-chip-line);
   color: var(--nu-blue-on-dark); font-size: clamp(64px, 6vw, 88px); font-weight: var(--nu-w-display);
-  letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nu-ls-display); line-height: .9; font-variant-numeric: tabular-nums;
 }
-.mdoc__step-t { margin-top: 20px; color: var(--nu-white); font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; }
-.mdoc__step-p { margin: 8px 0 0; max-width: 34ch; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.mdoc__step-t { margin-top: 24px; color: var(--nu-white); font-size: clamp(20px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.15; }
+.mdoc__step-p { margin: 8px 0 0; max-width: 34ch; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; }
 .mdoc__endpoint {
   display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
   margin-top: clamp(28px, 3.6vw, 48px); padding-top: clamp(20px, 2.4vw, 28px); border-top: 1px solid var(--nu-dark-line);
 }
-.mdoc__endpoint-label { color: var(--nu-on-dark-2); font-size: var(--nu-fs-marca); font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase; }
+.mdoc__endpoint-label { color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .mdoc__endpoint-url {
   background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); color: var(--nu-green-soft);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-sm); font-weight: 500;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto);
   padding: 11px 15px; border-radius: var(--nu-r-chip); max-width: 100%; overflow-wrap: anywhere;
 }
-.mdoc__endpoint-note { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; overflow-wrap: anywhere; }
+.mdoc__endpoint-note { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); overflow-wrap: anywhere; }
 .mdoc__endpoint-note code { color: var(--nu-on-dark); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-dense); }
 
 /* ——— seções: página e faixa quente se alternam ——— */
-.mdoc__sec { padding: clamp(64px, 7vw, 100px) var(--g); }
+.mdoc__sec { padding: clamp(72px, 8vw, 128px) var(--g); }
 .mdoc__sec--band { background: var(--nu-band); }
-.mdoc__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.mdoc__lead { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin: 18px 0 0; max-width: 720px; text-wrap: pretty; }
+.mdoc__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance; }
+.mdoc__lead { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; margin: 20px 0 0; max-width: 720px; text-wrap: pretty; }
 .mdoc__lead strong { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
-.mdoc__link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.mdoc__link {
+  color: var(--nu-blue-text); font-weight: var(--nu-w-medio);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.mdoc__link:hover { color: var(--nu-blue-hover); text-decoration-color: currentColor; }
 
 /* ——— como conectar: o texto de um lado, a porta (o botão) do outro ——— */
-.mdoc__sec--porta { padding-top: clamp(48px, 5.5vw, 76px); padding-bottom: clamp(48px, 5.5vw, 76px); }
+.mdoc__sec--porta { padding-top: clamp(56px, 6vw, 88px); padding-bottom: clamp(56px, 6vw, 88px); }
 .mdoc__porta { display: flex; align-items: center; justify-content: space-between; gap: 28px 56px; flex-wrap: wrap; }
 .mdoc__porta-txt { flex: 1 1 520px; min-width: 0; }
 .mdoc__porta-acao { display: flex; align-items: center; gap: 16px; flex: none; }
@@ -364,7 +369,7 @@ usePageSeo({
 .mdoc__porta-ia img { width: 26px; height: 26px; object-fit: contain; }
 
 /* ——— corretoras ——— */
-.mdoc__insts-note { display: flex; align-items: flex-start; gap: 9px; margin: 22px 0 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 600; line-height: 1.5; max-width: 720px; }
+.mdoc__insts-note { display: flex; align-items: flex-start; gap: 9px; margin: 24px 0 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: var(--nu-w-medio); line-height: 1.5; max-width: 720px; }
 .mdoc__insts-note svg { flex: none; margin-top: 3px; color: var(--nu-green-text); }
 /* faixa central de avatares sobrepostos + círculo de contagem */
 .mdoc__strip { display: flex; justify-content: center; align-items: center; margin-top: clamp(36px, 4.5vw, 56px); }
@@ -394,14 +399,14 @@ usePageSeo({
 }
 .mdoc__cmp { width: 100%; border-collapse: collapse; }
 .mdoc__cmp thead th {
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
   text-align: center; padding: 20px 14px; border-bottom: 1px solid var(--nu-line-2); line-height: 1.35;
 }
 .mdoc__cmp thead th.mdoc__cmp-q { text-align: left; padding-left: 28px; }
 .mdoc__cmp td, .mdoc__cmp tbody th { text-align: center; padding: 15px 14px; border-bottom: 1px solid var(--nu-line-2); }
 .mdoc__cmp tbody tr:last-child td, .mdoc__cmp tbody tr:last-child th { border-bottom: 0; }
 .mdoc__cmp tbody th.mdoc__cmp-q { text-align: left; padding-left: 28px; color: var(--nu-ink); font-size: 15.5px; font-weight: var(--nu-w-medio); line-height: 1.4; }
-.mdoc__cmp tbody tr { transition: background .2s; }
+.mdoc__cmp tbody tr { transition: background-color var(--nu-dur-media) var(--nu-ease-cor); }
 .mdoc__cmp tbody tr:hover { background: var(--nu-row-hover); }
 .mdoc__cmp thead th.mdoc__cmp-us { color: var(--nu-blue-text); }
 .mdoc__cmp .mdoc__cmp-us { background: var(--nu-blue-bg); }
@@ -410,14 +415,14 @@ usePageSeo({
 .mdoc__marca--sim { color: var(--nu-blue); }
 .mdoc__marca--nao { color: var(--nu-sand); }
 .mdoc__cmp-us .mdoc__marca--sim { background: var(--nu-blue); color: var(--nu-white); }
-.mdoc__cell-txt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
+.mdoc__cell-txt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 
 /* ——— FAQ ——— */
 .mdoc__faq { max-width: 860px; margin: 0 auto; text-align: center; }
 .mdoc__faq-list { margin-top: clamp(28px, 3.5vw, 40px); text-align: left; }
 
 /* ——— chamada final: o painel azul do contrato ——— */
-.mdoc__final { padding: 0 var(--g) clamp(56px, 6vw, 88px); }
+.mdoc__final { padding: 0 var(--g) clamp(72px, 8vw, 128px); }
 .mdoc__final-painel {
   position: relative; isolation: isolate; overflow: hidden; max-width: 1240px; margin: 0 auto;
   display: flex; flex-direction: column; align-items: flex-start;
@@ -426,9 +431,9 @@ usePageSeo({
 }
 /* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
 .mdoc__final-corte { z-index: -1; opacity: .08; }
-.mdoc__final-t { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
-.mdoc__final-p { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-.mdoc__final-cta { margin-top: clamp(26px, 3vw, 36px); }
+.mdoc__final-t { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
+.mdoc__final-p { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; text-wrap: pretty; }
+.mdoc__final-cta { margin-top: clamp(32px, 3.4vw, 40px); }
 
 @media (max-width: 860px) {
   .mdoc__steps { grid-template-columns: minmax(0, 1fr); gap: 26px; }
@@ -461,7 +466,7 @@ usePageSeo({
     grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between;
     padding: 9px 18px; border-top: 0;
   }
-  .mdoc__cmp td.mdoc__cmp-us::before { color: var(--nu-blue-text); font-size: 13.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .mdoc__cmp td.mdoc__cmp-us::before { color: var(--nu-blue-text); font-size: var(--nu-fs-xs); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
   /* o eyebrow comprido cabe numa linha, com o corte ao lado */
   .mdoc__cmp-head .mdoc__eyebrow-centro { font-size: 12px; letter-spacing: 0.12em; }
 }
@@ -475,7 +480,7 @@ usePageSeo({
   .mdoc__band-title br, .mdoc__final-t br { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mdoc__hero, .mdoc__painel, .mdoc__step { animation: none; }
-  .mdoc__cmp tbody tr { transition: none; }
+  .mdoc__hero { animation: none; }
+  .mdoc__cmp tbody tr, .mdoc__link { transition: none; }
 }
 </style>

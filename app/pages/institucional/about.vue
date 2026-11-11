@@ -65,9 +65,9 @@ const MAIS = [
     </section>
 
     <!-- o posicionamento da marca: o mesmo bloco da home, com os mesmos fatos -->
-    <HomeOQueNaoE />
+    <HomeOQueNaoE v-revelar />
 
-    <nav class="sob__mais" aria-label="Mais sobre a Aportou">
+    <nav v-revelar="{ alvo: 'filhos' }" class="sob__mais" aria-label="Mais sobre a Aportou">
       <NuxtLink v-for="l in MAIS" :key="l.to" :to="l.to" class="sob__link">
         <span>{{ l.rotulo }}</span>
         <span class="sob__seta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
@@ -80,43 +80,49 @@ const MAIS = [
 /* Sobre, na narrativa da marca (11/11/2026, 2ª rodada): a frase da Aportou em
    800 com o corte e a assinatura "Uma empresa Redentia" numa linha, ao lado do
    texto de sempre; depois "O que a Aportou não é" (o bloco da home) e os
-   atalhos das páginas irmãs. Nenhum fato, número ou data novos. */
+   atalhos das páginas irmãs. Nenhum fato, número ou data novos.
+   Robustez (11/11/2026): a coluna do site, a entrada em token, o que vem abaixo
+   da dobra entra ao chegar (v-revelar) e os atalhos com apertado e foco. */
 .sob {
-  --lado: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
+  --lado: var(--nu-coluna);
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(40px, 6vw, 96px); align-items: start;
-  background: var(--nu-page); padding: clamp(44px, 6vw, 84px) var(--lado) clamp(56px, 7vw, 100px);
+  background: var(--nu-page); padding: clamp(44px, 6vw, 84px) var(--lado) clamp(72px, 8vw, 128px);
 }
-.sob__marca { position: sticky; top: calc(var(--nuh-h, 72px) + 64px); animation: nu-fade .5s ease both; }
+.sob__marca { position: sticky; top: calc(var(--nuh-h, 72px) + 64px); animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 .sob__frase {
   margin: 22px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display);
-  letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; max-width: 9em;
+  letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance; max-width: 9em;
 }
 .sob__casa {
   display: inline-block; margin: 26px 0 0; padding-top: 16px; border-top: 1px solid var(--nu-line);
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 600;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
 }
-.sob__texto { max-width: 720px; animation: nu-fade .5s ease .06s both; }
-.sob__texto :deep(.lgb__p:first-child) { margin-top: 0; color: var(--nu-ink); font-size: clamp(20px, 1.9vw, 25px); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+.sob__texto { max-width: 720px; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) var(--nu-passo-cascata) both; }
+.sob__texto :deep(.lgb__p:first-child) { margin-top: 0; color: var(--nu-ink); font-size: clamp(20px, 1.9vw, 25px); font-weight: var(--nu-w-medio); line-height: 1.4; letter-spacing: var(--nu-ls-titulo); }
 .sob__texto :deep(.lgb__p + .lgb__p) { margin-top: 20px; }
 
 .sob__mais {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: clamp(12px, 1.6vw, 20px);
   background: var(--nu-page);
-  padding: clamp(48px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8vw, 104px);
+  padding: clamp(48px, 6vw, 80px) var(--nu-coluna) clamp(72px, 8vw, 128px);
 }
 .sob__link {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 84px; padding: 18px 20px 18px 26px;
   border-radius: var(--nu-r-panel); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
-  color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.15;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.sob__link:hover { color: var(--nu-ink); transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
+@media (hover: hover) { .sob__link:hover { color: var(--nu-ink); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); } }
+.sob__link:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
+.sob__link:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 .sob__seta {
   display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px;
-  border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); transition: background .2s;
+  border-radius: 50%; background: var(--nu-ink); color: var(--nu-white);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.sob__seta svg { width: 18px; height: 18px; transition: transform .25s var(--nu-ease-saida); }
-.sob__link:hover .sob__seta { background: var(--nu-blue); }
+.sob__seta svg { width: 18px; height: 18px; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.sob__link:hover .sob__seta { background: var(--nu-blue); transform: scale(1.04); }
 .sob__link:hover .sob__seta svg { transform: translateX(3px); }
 
 @media (max-width: 900px) {

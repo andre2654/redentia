@@ -28,5 +28,7 @@ defineProps<{ tamanho?: number; business?: boolean }>()
 .ntm__biz { color: var(--nu-blue-text); white-space: nowrap; }
 .ntm--aportou { padding: 6px 6px 6px 2px; min-height: 44px; }
 .ntm:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+/* na Aportou, o anel de foco do site (3px) */
+.ntm--aportou:focus-visible { outline-width: 3px; }
 @media (prefers-reduced-motion: reduce) { .ntm__marca { transition: none; } }
 </style>
