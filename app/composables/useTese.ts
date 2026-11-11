@@ -129,6 +129,11 @@ function ibovModeFor(launch: Date | null): PriceMode {
 
 /* ————— hero ————— */
 
+/** Quantos ativos a tela anuncia: o companiesCount ou, zerado, o tamanho de companies[]. */
+function quantosAtivos(d: ThesisFullApi): number {
+  return d.companiesCount > 0 ? d.companiesCount : (d.companies?.length ?? 0)
+}
+
 function buildHero(
   d: ThesisFullApi,
   perf: ThesisPerformanceApi | null,
@@ -171,7 +176,9 @@ function buildHero(
     image: teseCover(d.image),
     convBadge,
     sinceBadge,
-    ativosBadge: `${d.companiesCount} ${d.companiesCount === 1 ? 'ativo' : 'ativos'}`,
+    // a contagem que a tela mostra: a do detail ou, zerada, a da lista que a
+    // página desenha logo abaixo (só exibição; o dado não muda)
+    ativosBadge: `${quantosAtivos(d)} ${quantosAtivos(d) === 1 ? 'ativo' : 'ativos'}`,
     revalBadge,
   }
 }
@@ -294,7 +301,7 @@ function buildNumbers(
   if (benchPct) stats.push({ l: 'IBOV no período', v: pct1(benchPct[benchPct.length - 1]!) })
   const cur = conv?.current ?? d.conviction
   if (cur != null) stats.push({ l: 'Convicção', v: `${cur}/100` })
-  stats.push({ l: 'Ativos', v: String(d.companiesCount) })
+  stats.push({ l: 'Ativos', v: String(quantosAtivos(d)) })
   if (perf.startLabel) stats.push({ l: 'Lançada em', v: perf.startLabel })
   if (d.sourcesCount != null) stats.push({ l: 'Fontes acumuladas', v: nf0.format(d.sourcesCount) })
 

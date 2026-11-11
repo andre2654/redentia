@@ -9,7 +9,12 @@
 // (como nas tabelas de mercado) e a variação do dia no selo de raio 8.
 // `data-sem-espiar` (03/11/2026): a busca é o "ir até o ativo", e o Enter já
 // navega direto (busca.vue); o clique faz o mesmo, sem a janelinha de espiar.
+// Robustez (11/11/2026): a resposta ao digitar fica à vista: o trecho que
+// casou com a busca acende em cobalto no nome (a mesma régua do índice: sem
+// acento e sem caixa). A linha marcada troca de fundo em --nu-dur-rapida;
+// apertada, escurece; a linha que chega entra com um fade curto.
 import type { BuscaItem } from '~/composables/useBuscaIndex'
+import { normBusca } from '~/utils/buscaRanking'
 
 const props = defineProps<{
   item: BuscaItem
@@ -17,11 +22,32 @@ const props = defineProps<{
   ativo: boolean
   /** posição na lista, só para a cor do tile de letra */
   posicao: number
+  /** o que a pessoa digitou: o trecho que casa acende no nome */
+  termo?: string
 }>()
 const emit = defineEmits<{ (e: 'escolher'): void; (e: 'marcar'): void }>()
 
 const capaFalhou = ref(false)
 const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null, props.posicao))
+
+/** O texto em trechos, com o primeiro que casa com o termo marcado. Letra a letra, a posição do original é a do normalizado. */
+function trechos(texto: string | undefined | null): { t: string; casa: boolean }[] {
+  const cru = texto ?? ''
+  const q = normBusca((props.termo ?? '').trim())
+  if (!cru || !q) return [{ t: cru, casa: false }]
+  const letras = Array.from(cru)
+  const norm = letras.map((c) => normBusca(c).charAt(0) || '\u0000').join('')
+  const i = norm.indexOf(q)
+  if (i < 0) return [{ t: cru, casa: false }]
+  const fim = i + Array.from(q).length
+  return [
+    { t: letras.slice(0, i).join(''), casa: false },
+    { t: letras.slice(i, fim).join(''), casa: true },
+    { t: letras.slice(fim).join(''), casa: false },
+  ].filter((p) => p.t)
+}
+const titulo = computed(() => trechos(props.item.titulo))
+const sub = computed(() => trechos(props.item.sub))
 </script>
 
 <template>
@@ -56,8 +82,8 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
 
     <span class="bl__id">
       <span v-if="props.item.tipo === 'ativo' && props.item.ticker" class="bl__titulo bl__titulo--tk"><span class="bl__tk">{{ props.item.titulo }}</span></span>
-      <span v-else class="bl__titulo" :class="{ 'bl__titulo--quebra': props.item.tipo !== 'ativo' }">{{ props.item.titulo }}</span>
-      <span v-if="props.item.sub" class="bl__sub">{{ props.item.sub }}</span>
+      <span v-else class="bl__titulo" :class="{ 'bl__titulo--quebra': props.item.tipo !== 'ativo' }"><template v-for="(p, k) in titulo" :key="k"><span v-if="p.casa" class="bl__casa">{{ p.t }}</span><template v-else>{{ p.t }}</template></template></span>
+      <span v-if="props.item.sub" class="bl__sub"><template v-for="(p, k) in sub" :key="k"><span v-if="p.casa" class="bl__casa">{{ p.t }}</span><template v-else>{{ p.t }}</template></template></span>
     </span>
 
     <span v-if="props.item.valor" class="bl__num">
@@ -74,10 +100,16 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
 .bl {
   display: flex; align-items: center; gap: 14px;
   min-height: 68px; padding: 10px 12px; margin: 0 -12px;
-  border-radius: 14px; color: var(--nu-ink);
-  transition: background .15s;
+  border-radius: var(--nu-r-tile); color: var(--nu-ink); -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
+.bl:hover { color: var(--nu-ink); }
 .bl--ativo { background: var(--nu-cream-2); }
+.bl:active { background: var(--nu-line-2); }
+.bl:focus-visible { outline-offset: 0; }
+/* o trecho que casou com a busca */
+.bl__casa { color: var(--nu-blue-text); }
+.bl__sub .bl__casa { font-weight: var(--nu-w-medio); }
 
 .bl__icone {
   flex: none; width: 40px; height: 40px; border-radius: 12px; overflow: hidden;
@@ -105,7 +137,7 @@ const tile = computed(() => tileFor(props.item.ticker ?? props.item.titulo, null
   white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
 }
 .bl__sub {
-  display: block; margin-top: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500;
+  display: block; margin-top: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 

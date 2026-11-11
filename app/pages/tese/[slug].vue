@@ -196,3 +196,9 @@ usePageSeo({
     <TeseFecho :following="following" :pending="pending" :visitante="!isAuthenticated" :painel="painelNoFecho" @acompanhar="acompanhar" />
   </div>
 </template>
+
+<style scoped>
+/* duas seções seguidas no creme da página (os ativos ou o relatório, e o
+   fecho): o respiro de baixo da primeira já separa; o fecho não soma o dele */
+.tat + .tfe, .trp + .tfe { padding-top: 0; }
+</style>

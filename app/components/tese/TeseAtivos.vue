@@ -14,6 +14,10 @@
 // convite pede o cadastro para abrir o resto. Mudou só a forma: a linha
 // trancada mostra o código, o nome e o papel com um cadeado, sem texto
 // embaçado. Quem entrou vê tudo, sem convite.
+//
+// Robustez (11/11/2026): o cabeçalho e as linhas entram ao rolar (v-revelar,
+// as linhas em cascata), o ritmo é o da base (seção clamp 72–128px, título →
+// lista 40–56px, linhas a 12px) e o "Já tenho conta" do convite é o NuLinkSeta.
 import type { TeseAtivoVM, TeseEvalBadgeVariant, TeseEvalCardVM, TeseStudyVM } from '~/types/tese'
 import type { TeseLinhaVM } from './TeseAtivoLinha.vue'
 import { partesDoCatalyst, partesDoStatus, primeirosPeriodos, revisoesDaMaisNova } from '~/utils/teseTexto'
@@ -124,7 +128,7 @@ function perguntar(l: TeseLinhaVM) {
 
 <template>
   <section id="ativos" class="tat">
-    <div class="tat__cab">
+    <div v-revelar class="tat__cab">
       <div>
         <NuEyebrow como="p">O que está na tese</NuEyebrow>
         <h2 class="tat__h2">{{ titulo }}</h2>
@@ -132,11 +136,11 @@ function perguntar(l: TeseLinhaVM) {
       <span v-if="metaLine" class="tat__meta">{{ metaLine }}</span>
     </div>
 
-    <div class="tat__lista">
+    <div v-revelar="{ alvo: 'filhos' }" class="tat__lista">
       <template v-for="(l, i) in visiveis" :key="l.ticker">
         <TeseAtivoLinha v-if="!trancada(i)" :linha="l" :indice="i" :contexto="contextoDe(l)" @perguntar="perguntar(l)" />
         <!-- trancada (visitante): o código, o nome e o papel, com o cadeado -->
-        <div v-else class="tat__trancada" :style="{ '--i': i }">
+        <div v-else class="tat__trancada">
           <span class="tat__t-id">
             <NuAssetLogo :ticker="l.ticker" :letter="l.ticker.charAt(0) || '?'" tile-bg="var(--nu-cream-2)" tile-fg="var(--nu-ink)" :size="44" :radius="14" />
             <span class="tat__t-quem">
@@ -152,14 +156,14 @@ function perguntar(l: TeseLinhaVM) {
     </div>
 
     <!-- CONVITE (só visitante): pede o cadastro pra abrir o resto da tese -->
-    <NuFaixaMarca v-if="showGate" rotulo="Tese completa" como="p" :altura="56" class="tat__gate">
+    <NuFaixaMarca v-if="showGate" v-revelar rotulo="Tese completa" como="p" :altura="56" class="tat__gate">
       <div class="tat__gate-in">
         <div class="tat__gate-left">
           <h2 class="tat__gate-title">Você viu {{ FREE }} dos {{ total }} ativos.</h2>
           <p class="tat__gate-sub">Crie sua conta grátis para abrir a tese completa: a avaliação de todos os ativos, os sinais de risco, {{ hasReport ? 'o relatório completo' : 'o risco central' }} e o diário, revalidado todo dia pela Aportou.</p>
           <div class="tat__gate-actions">
             <NuBotaoSeta :to="loginTo" variante="azul" tamanho="m">Criar conta grátis</NuBotaoSeta>
-            <NuxtLink :to="loginTo" class="tat__gate-ghost">Já tenho conta</NuxtLink>
+            <NuLinkSeta :to="loginTo" tom="claro">Já tenho conta</NuLinkSeta>
           </div>
           <span class="tat__gate-micro">Grátis, sem cartão de crédito</span>
         </div>
@@ -178,20 +182,20 @@ function perguntar(l: TeseLinhaVM) {
 <style scoped>
 .tat {
   background: var(--nu-page); scroll-margin-top: 120px;
-  padding: clamp(56px, 5.6vw, 80px) max(clamp(20px, 4vw, 56px), calc((100% - 1240px) / 2));
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
 }
-.tat__cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 22px; flex-wrap: wrap; animation: nu-fade .5s ease both; }
-.tat__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.tat__meta { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
+.tat__cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.tat__h2 { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance; }
+/* a legenda: de quando é a composição */
+.tat__meta { color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
-.tat__lista { display: flex; flex-direction: column; gap: 10px; margin-top: clamp(28px, 3vw, 36px); }
+.tat__lista { display: flex; flex-direction: column; gap: 12px; margin-top: clamp(40px, 4vw, 56px); }
 
 /* a linha trancada do visitante: o mesmo cartão, sem miolo, com o cadeado */
 .tat__trancada {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 16px clamp(16px, 2vw, 24px); border-radius: var(--nu-r-panel);
   background: color-mix(in srgb, var(--nu-card) 60%, var(--nu-page)); box-shadow: inset 0 0 0 1px var(--nu-line-2);
-  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
 }
 .tat__t-id { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .tat__t-quem { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -200,40 +204,34 @@ function perguntar(l: TeseLinhaVM) {
   display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag);
   background: var(--nu-gray); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em;
 }
-.tat__t-nome { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; }
-.tat__t-papel { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.35; }
+.tat__t-nome { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.2; }
+.tat__t-papel { color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.35; }
 .tat__cadeado { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--nu-cream-2); color: var(--nu-gray-3); }
 
 /* ——— o convite do visitante: o cartão carvão com a faixa da marca ——— */
-.tat__gate { margin-top: 20px; }
+.tat__gate { margin-top: 24px; }
 .tat__gate-in {
-  padding: clamp(24px, 3vw, 40px) clamp(24px, 3.6vw, 48px) clamp(28px, 3.4vw, 44px);
-  display: flex; gap: clamp(28px, 4vw, 72px); align-items: center; flex-wrap: wrap;
+  padding: clamp(24px, 3vw, 40px) clamp(24px, 3.6vw, 48px) clamp(28px, 3.4vw, 48px);
+  display: flex; gap: clamp(32px, 4vw, 72px); align-items: center; flex-wrap: wrap;
 }
 .tat__gate-left { flex: 1 1 380px; min-width: min(320px, 100%); }
 .tat__gate-title {
   margin: 0; color: var(--nu-white); font-size: var(--nu-fs-h3);
-  font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05;
 }
 .tat__gate-sub {
-  margin: 14px 0 0; color: var(--nu-on-dark); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500;
-  line-height: 1.5; max-width: 48ch;
+  margin: 16px 0 0; color: var(--nu-on-dark); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto);
+  line-height: 1.55; max-width: 48ch;
 }
-.tat__gate-actions { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-top: 26px; }
-.tat__gate-ghost {
-  display: inline-flex; align-items: center; min-height: 44px; color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
-  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-dark-chip-line);
-  transition: text-decoration-color .2s ease;
-}
-.tat__gate-ghost:hover { color: var(--nu-white); text-decoration-color: currentColor; }
-.tat__gate-micro { display: block; margin-top: 14px; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 500; }
+.tat__gate-actions { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; margin-top: 32px; }
+.tat__gate-actions .nls { font-size: var(--nu-fs-md); }
+.tat__gate-micro { display: block; margin-top: 16px; color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-texto); }
 
 .tat__gate-list {
   list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 14px; flex: 0 1 360px; min-width: min(280px, 100%);
+  display: flex; flex-direction: column; gap: 16px; flex: 0 1 360px; min-width: min(280px, 100%);
 }
-.tat__gate-list li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-on-dark); font-size: 15.5px; font-weight: 600; line-height: 1.4; }
+.tat__gate-list li { display: flex; align-items: flex-start; gap: 12px; color: var(--nu-on-dark); font-size: 15.5px; font-weight: var(--nu-w-medio); line-height: 1.4; }
 .tat__gate-list svg { color: var(--nu-green-soft); flex-shrink: 0; margin-top: 1px; }
 .tat__gate-list b { color: var(--nu-white); font-weight: var(--nu-w-forte); }
-@media (prefers-reduced-motion: reduce) { .tat__cab, .tat__trancada { animation: none; } }
 </style>

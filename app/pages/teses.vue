@@ -9,6 +9,8 @@
 // resposta já leva as 10 teses com link para /tese/{slug}; a convicção dia a
 // dia (/api/teses-painel) só enriquece depois do mount. O FAQ emite o FAQPage
 // (NuFaqAccordion). Um H1 só, o da grade.
+// Robustez (11/11/2026): o FAQ, abaixo da dobra, entra ao rolar (v-revelar:
+// o título e o acordeão), no ritmo de seção da base e na coluna de 1240.
 const { cards, favoritos, loading, dataDate } = await useTesesPage()
 // o chat saiu da /busca (02/11/2026): o botão do FAQ abre o painel do chat
 const painel = useChatPainel()
@@ -29,13 +31,13 @@ usePageSeo({
     <!-- FAQ -->
     <section class="tsf">
       <div class="tsf__cols">
-        <div class="tsf__left">
+        <div v-revelar class="tsf__left">
           <NuEyebrow como="p">Perguntas</NuEyebrow>
           <h2 class="tsf__title">Ficou com alguma<br>dúvida?</h2>
           <div class="tsf__copy">Respostas para as principais dúvidas sobre teses de investimento na Aportou.</div>
           <NuBotaoSeta variante="carvao" tamanho="m" class="tsf__cta" @click="painel.abrir()">Perguntar à IA</NuBotaoSeta>
         </div>
-        <div class="tsf__right">
+        <div v-revelar class="tsf__right">
           <NuFaqAccordion :items="TESES_FAQS" :default-open="-1" surface="white" />
         </div>
       </div>
@@ -45,14 +47,14 @@ usePageSeo({
 
 <style scoped>
 /* ——— FAQ (Aportou: a faixa quente, o eyebrow, o H2 em 800, a pílula com a seta) ——— */
-.tsf { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); animation: nu-fade .5s ease both; }
-.tsf__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
+.tsf { background: var(--nu-band); padding: clamp(72px, 8vw, 128px) var(--nu-coluna); }
+.tsf__cols { display: flex; gap: 40px clamp(40px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .tsf__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .tsf__title {
-  margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
-  font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02;
+  margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2);
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02;
 }
-.tsf__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin-top: 20px; max-width: 420px; }
-.tsf__cta { margin-top: 28px; }
+.tsf__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; margin-top: 20px; max-width: 420px; }
+.tsf__cta { margin-top: 32px; }
 .tsf__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 </style>

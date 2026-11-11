@@ -18,6 +18,14 @@
 //  - ↑↓ andam pela lista inteira e dão a volta; Enter abre a linha marcada
 //    (com texto, a primeira já vem marcada).
 //  - 100% client: zero fetch no SSR (o índice baixa no onMounted).
+//
+// Robustez (11/11/2026): a resposta ao digitar fica à vista. A linha de
+// estado diz quantos resultados a busca achou (e é ela, não a lista inteira,
+// que o leitor de tela anuncia); o trecho digitado acende no nome de cada
+// linha; enquanto o índice da B3 ainda baixa, o lugar dos ativos é esqueleto
+// (a resposta parcial, de guias e teses, não finge ser a resposta inteira).
+// Vazio e erro têm frase e próximo passo ("Tentar de novo" recarrega). Os
+// links são o NuLinkSeta; o "Ver mais" é o NuLoadMore.
 import type { BuscaGrupo, BuscaItem, BuscaType } from '~/composables/useBuscaIndex'
 
 const VALID_TIPOS: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'eua', 'cripto', 'tesouro']
@@ -81,11 +89,35 @@ const grupos = computed<BuscaGrupo[]>(() => {
   return lista
 })
 
+// o índice da B3 ainda baixando (o "maiores" só fica carregando por ele)
+const ativosPendentes = computed(() => maioresVM.value.estado === 'carregando')
+const TIPOS_DA_B3: BuscaType[] = ['todos', 'acoes', 'fiis', 'bdrs', 'etfs', 'eua']
 const carregando = computed(() => {
-  if (modo.value === 'busca') return resultado.value.estado === 'carregando' ? 4 : 0
+  if (modo.value === 'busca') {
+    if (resultado.value.estado === 'carregando') return 4
+    // achou guia ou tese antes dos ativos chegarem: o lugar deles é esqueleto
+    return ativosPendentes.value && TIPOS_DA_B3.includes(tipo.value) ? 3 : 0
+  }
   if (modo.value === 'tipo') return browseVM.value.estado === 'carregando' ? 8 : 0
   return maioresVM.value.estado === 'carregando' ? 6 : 0
 })
+
+/** A linha de estado: quantos a busca achou. Vazio e erro já se leem na tela; aqui só para o leitor de tela. */
+const estado = computed<{ texto: string; visivel: boolean } | null>(() => {
+  if (modo.value !== 'busca') return null
+  const r = resultado.value
+  // com os ativos ainda chegando, a contagem é parcial: fica só para o leitor de tela (o esqueleto mostra que vem mais)
+  const parcial = ativosPendentes.value && TIPOS_DA_B3.includes(tipo.value)
+  if (r.estado === 'pronto') return { texto: `${r.total} ${r.total === 1 ? 'resultado' : 'resultados'} para “${texto.value}”`, visivel: !parcial }
+  if (r.estado === 'vazio') return { texto: `Nada encontrado para “${texto.value}”`, visivel: false }
+  if (r.estado === 'erro') return { texto: 'Não consegui carregar os ativos agora.', visivel: false }
+  return null
+})
+const erro = computed(() => (modo.value === 'busca' && resultado.value.estado === 'erro')
+  || (modo.value === 'tipo' && browseVM.value.estado === 'erro')
+  || (modo.value === 'inicio' && maioresVM.value.estado === 'erro' && !grupos.value.length))
+// o índice é baixado uma vez por visita: tentar de novo é recarregar a página (a busca segue na URL)
+function tentarDeNovo() { reloadNuxtApp() }
 
 const itens = computed<BuscaItem[]>(() => grupos.value.flatMap((g) => g.itens))
 const pergunta = computed(() => (texto.value ? { texto: texto.value, logado: isAuthenticated.value } : null))
@@ -210,26 +242,26 @@ if (linkDeChat.tipo === 'login') {
       @tecla="onTecla"
     />
 
-    <section class="bp__corpo" aria-live="polite" :aria-busy="carregando > 0">
+    <section class="bp__corpo" :aria-busy="carregando > 0">
+      <!-- a linha de estado: o que a busca achou, a cada letra (é ela que o leitor de tela anuncia) -->
+      <p class="bp__estado" :class="{ 'nu-sr': !estado?.visivel }" role="status">{{ estado?.texto ?? '' }}</p>
+
       <!-- tipo marcado, campo vazio: o cabeçalho da lista navegável -->
       <div v-if="modo === 'tipo' && browseVM.estado !== 'erro'" class="bp__cab">
         <h2 class="bp__cab-titulo">
           {{ browseVM.titulo }}
           <span v-if="browseVM.total" class="bp__cab-n">{{ browseVM.total }}</span>
         </h2>
-        <NuxtLink v-if="browseVM.maisHref" :to="browseVM.maisHref" class="bp__link">
-          {{ browseVM.maisRotulo }}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
-        </NuxtLink>
+        <NuLinkSeta v-if="browseVM.maisHref" :to="browseVM.maisHref" tom="tinta" class="bp__link">{{ browseVM.maisRotulo }}</NuLinkSeta>
       </div>
 
       <!-- nada achado: frase e saída, antes da pergunta -->
       <div v-if="modo === 'busca' && resultado.estado === 'vazio'" class="bp__vazio">
         <h2 class="bp__vazio-titulo">Nada encontrado para “{{ texto }}”.</h2>
         <p class="bp__vazio-txt">Confira a grafia ou busque pelo ticker, como PETR4.</p>
-        <button v-if="emTodos" type="button" class="bp__outline" @click="setTipo('todos')">
+        <NuBotaoSeta v-if="emTodos" variante="contorno" tamanho="m" class="bp__todos" @click="setTipo('todos')">
           {{ emTodos === 1 ? 'Ver 1 resultado' : `Ver ${emTodos} resultados` }} em Todos
-        </button>
+        </NuBotaoSeta>
         <!-- sugestões: por onde continuar quando a busca não achou -->
         <p class="bp__sug-rotulo">Ou explore por aqui</p>
         <ul class="bp__sug">
@@ -239,18 +271,17 @@ if (linkDeChat.tipo === 'login') {
         </ul>
       </div>
 
-      <p
-        v-else-if="(modo === 'busca' && resultado.estado === 'erro') || (modo === 'tipo' && browseVM.estado === 'erro') || (modo === 'inicio' && maioresVM.estado === 'erro' && !grupos.length)"
-        class="bp__erro"
-      >
-        Não consegui carregar os ativos agora. Tente de novo em instantes.
-      </p>
+      <div v-else-if="erro" class="bp__erro">
+        <p class="bp__erro-t">Não consegui carregar os ativos agora. Tente de novo em instantes.</p>
+        <NuLinkSeta tom="tinta" class="bp__erro-b" @click="tentarDeNovo">Tentar de novo</NuLinkSeta>
+      </div>
 
       <BuscaLista
         :grupos="grupos"
         :ativo="ativo"
         :carregando="carregando"
         :pergunta="pergunta"
+        :termo="modo === 'busca' ? texto : ''"
         limpavel="recentes"
         @escolher="escolher"
         @perguntar="perguntar"
@@ -258,10 +289,9 @@ if (linkDeChat.tipo === 'login') {
         @limpar="recentes.limpar()"
       />
 
-      <button
-        v-if="modo === 'tipo' && browseVM.hasMore" type="button" class="bp__outline bp__mais"
-        @click="index.showMore()"
-      >Ver mais</button>
+      <div v-if="modo === 'tipo' && browseVM.hasMore" class="bp__mais">
+        <NuLoadMore label="Ver mais" @more="index.showMore()" />
+      </div>
 
       <p v-if="totalNav > 0" class="bp__dica" data-nu-hide aria-hidden="true">
         <kbd>↑</kbd><kbd>↓</kbd> para navegar <span>·</span> <kbd>Enter</kbd> abre <span>·</span> <kbd>Esc</kbd> limpa
@@ -274,61 +304,57 @@ if (linkDeChat.tipo === 'login') {
 <style scoped>
 .bp__corpo {
   display: flex; flex-direction: column;
-  padding: clamp(24px, 3.2vw, 44px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
+  padding: clamp(24px, 3.2vw, 40px) var(--nu-coluna) clamp(72px, 8vw, 128px);
   background: var(--nu-page);
 }
-.bp__corpo > * { width: 100%; max-width: 880px; }
+.bp__corpo > :not(.nu-sr) { width: 100%; max-width: 880px; }
+
+/* a linha de estado: quantos a busca achou, discreta, logo acima da lista
+   (sem nada a dizer à vista, ela fica só para o leitor de tela: nunca some do DOM) */
+.bp__estado { margin: 0 0 16px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 
 .bp__cab {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap;
   margin-bottom: 8px;
 }
 .bp__cab-titulo {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.025em;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo);
 }
 .bp__cab-n { margin-left: 6px; color: var(--nu-gray); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
-.bp__link {
-  display: inline-flex; align-items: center; gap: 5px; min-height: 44px;
-  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); white-space: nowrap;
-  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
-}
-.bp__link:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
-.bp__link:hover svg { transform: translateX(3px); }
-.bp__link svg { transition: transform .2s ease; }
-.bp__link:focus-visible { border-radius: 6px; }
+.bp__link { font-size: var(--nu-fs-md); white-space: nowrap; }
 
-.bp__vazio { padding: 8px 0 28px; }
+/* vazio e erro: a frase e o próximo passo; a troca de estado não pula */
+.bp__vazio { padding: 8px 0 32px; animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 .bp__vazio-titulo {
-  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
+  margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05;
   overflow-wrap: anywhere;
 }
-.bp__vazio-txt { margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
-.bp__sug-rotulo { margin: 28px 0 0; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
+.bp__vazio-txt { margin: 16px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; }
+.bp__todos { margin-top: 24px; }
+.bp__sug-rotulo { margin: 32px 0 0; color: var(--nu-ink); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .bp__sug { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; }
 .bp__sug-chip {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: 600; white-space: nowrap;
-  transition: background .2s ease, transform .15s var(--nu-ease-saida);
+  background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
-.bp__sug-chip svg { color: var(--nu-blue-text); transition: transform .2s ease; }
+.bp__sug-chip svg { color: var(--nu-blue-text); transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .bp__sug-chip:hover { background: var(--nu-line-2); color: var(--nu-ink); }
 .bp__sug-chip:hover svg { transform: translateX(3px); }
 .bp__sug-chip:active { transform: scale(.98); }
-@media (prefers-reduced-motion: reduce) { .bp__sug-chip, .bp__sug-chip svg { transition: none; } .bp__sug-chip:hover svg, .bp__sug-chip:active { transform: none; } }
-.bp__erro { margin: 0 0 24px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
-
-.bp__outline {
-  align-self: flex-start; width: auto; margin-top: 18px; min-height: 48px; padding: 0 24px;
-  background: var(--nu-white); color: var(--nu-ink);
-  border: 1.5px solid var(--nu-ink); border-radius: var(--nu-r-pill);
-  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
-}
-.bp__outline:hover { background: var(--nu-row-hover); }
-.bp__outline:active { transform: scale(.98); }
+.bp__erro { margin: 0 0 24px; animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
+.bp__erro-t { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; }
+.bp__erro-b { margin-top: 8px; font-size: var(--nu-fs-md); }
 .bp__mais { margin-top: 24px; }
 
 .bp__dica {
-  margin: 28px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 600;
+  margin: 32px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bp__vazio, .bp__erro { animation: none; }
+  .bp__sug-chip, .bp__sug-chip svg { transition: none; }
+  .bp__sug-chip:hover svg, .bp__sug-chip:active { transform: none; }
 }
 .bp__dica span { margin: 0 6px; }
 .bp__dica kbd {

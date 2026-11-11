@@ -14,6 +14,13 @@
 // ordem usam o trilho da base (NuTrilho, a pílula que desliza). Campo vazio não
 // vira selo. Os dados, os filtros, a ordem e os links são os de antes.
 //
+// Robustez (11/11/2026): o topo entra em cascata (eyebrow, título, dek) e a
+// grade logo depois, em --nu-dur-entrada --nu-ease-saida; os cartões que
+// nascem abaixo da dobra entram ao rolar (v-revelar em cada cartão: uma
+// fileira por vez). O cartão é branco com a sombra do branco; sob o ponteiro
+// sobe 2px, apertado afunda, e o anel de foco abraça o cartão. Toda transição
+// por token. Vazio e erro têm o próximo passo num botão.
+//
 // Sem catalisador no cartão: a lista de /theses não traz, e o campo `catalyst`
 // do detalhe (~440 KB por tese) é texto que empilha vereditos antigos, não uma
 // data próxima confiável. Sem "status" (Núcleo / Em risco) pelo mesmo motivo:
@@ -63,6 +70,8 @@ const visiveis = computed(() => {
   return l.sort((a, b) => (b.conviccao ?? -1) - (a.conviccao ?? -1) || porNome(a, b))
 })
 function limpar() { tipo.value = 'todas'; recentes.value = false }
+// a lista não chegou nem no servidor nem no cliente: tentar de novo é recarregar
+function tentarDeNovo() { reloadNuxtApp() }
 
 const falhouImagem = ref<Record<string, boolean>>({})
 
@@ -147,7 +156,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
       </li>
     </ul>
     <ul v-else-if="visiveis.length" class="tgr__grade">
-      <li v-for="(t, i) in visiveis" :key="t.slug" class="tgr__item" :style="{ '--i': Math.min(i, 8) }">
+      <li v-for="t in visiveis" :key="t.slug" v-revelar class="tgr__item">
         <NuxtLink v-contexto-chat="contextoDaTese(t)" :to="t.href" class="tgr__cartao">
           <span v-if="t.capa && !falhouImagem[t.slug]" class="tgr__capa">
             <img :src="t.capa" :alt="t.titulo" loading="lazy" class="tgr__capa-img" @error="falhouImagem[t.slug] = true">
@@ -155,7 +164,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
           <span class="tgr__corpo">
             <span class="tgr__topo-l">
               <span class="tgr__tema">{{ t.tema }}<span class="tgr__ponto" aria-hidden="true">·</span>{{ t.tipo === 'estrategia' ? 'Estratégia' : 'Grande ideia' }}</span>
-              <span v-if="t.seguindo" class="tgr__seguindo">Seguindo</span>
+              <NuSelo v-if="t.seguindo" tom="verde" ponto class="tgr__seguindo">Seguindo</NuSelo>
             </span>
             <span class="tgr__nome">{{ t.titulo }}</span>
             <span class="tgr__frase">{{ t.frase }}</span>
@@ -190,12 +199,15 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
         </NuxtLink>
       </li>
     </ul>
-    <div v-else class="tgr__vazio">
+    <div v-else class="tgr__vazio" role="status">
       <template v-if="teses.length">
-        <p>Nenhuma tese com esse filtro agora.</p>
-        <button type="button" class="tgr__limpar" @click="limpar">Ver todas as teses</button>
+        <p class="tgr__vazio-t">Nenhuma tese com esse filtro agora.</p>
+        <NuBotaoSeta variante="carvao" tamanho="m" class="tgr__vazio-b" @click="limpar">Ver todas as teses</NuBotaoSeta>
       </template>
-      <p v-else>As teses não carregaram agora. Recarregue a página em alguns minutos.</p>
+      <template v-else>
+        <p class="tgr__vazio-t">As teses não carregaram agora. Recarregue a página em alguns minutos.</p>
+        <NuBotaoSeta variante="carvao" tamanho="m" class="tgr__vazio-b" @click="tentarDeNovo">Tentar de novo</NuBotaoSeta>
+      </template>
     </div>
   </div>
 </template>
@@ -204,11 +216,17 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 /* Aportou (11/11/2026): a página é creme, o título é 800, a barra de filtros é
    a da marca (pílula carvão ligada, chip creme desligado) e o cartão da tese é
    branco com a sombra quente. O conteúdo e a ordem são os de antes. */
-.tgr { --g: clamp(20px, 5.5vw, 80px); --lado: max(var(--g), calc((100% - 1240px) / 2)); background: var(--nu-page); padding-bottom: clamp(64px, 7vw, 100px); animation: nu-fade .5s ease both; }
+.tgr { --lado: var(--nu-coluna); background: var(--nu-page); padding-bottom: clamp(72px, 8vw, 128px); }
 
-.tgr__topo { padding: clamp(44px, 5.6vw, 84px) var(--lado) clamp(28px, 3.4vw, 44px); }
-.tgr__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; max-width: 14ch; }
-.tgr__dek { margin: 20px 0 0; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; max-width: 52ch; }
+/* a entrada da página: o topo em cascata (60ms por peça), a barra e a grade logo depois */
+.tgr__topo { padding: clamp(48px, 5.6vw, 88px) var(--lado) 40px; }
+.tgr__topo > * { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.tgr__topo > :nth-child(2) { animation-delay: 60ms; }
+.tgr__topo > :nth-child(3) { animation-delay: 120ms; }
+.tgr__barra-in, .tgr__conta { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 180ms both; }
+.tgr__grade { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 240ms both; }
+.tgr__titulo { margin: 20px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; max-width: 14ch; }
+.tgr__dek { margin: 20px 0 0; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; max-width: 52ch; }
 
 /* ——— a barra ——— */
 .tgr__barra {
@@ -218,7 +236,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
   background: color-mix(in srgb, var(--nu-page) 92%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
   border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
-  transition: top .32s var(--nu-ease-saida);
+  transition: top var(--nu-dur-media) var(--nu-ease-saida);
 }
 .tgr__barra-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px var(--lado); }
 .tgr__chips { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -226,8 +244,9 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 /* "mudou em 30 dias" é liga/desliga, não uma escolha do trilho: um chip creme que vira carvão */
 .tgr__chip {
   display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; white-space: nowrap;
-  cursor: pointer; transition: background .2s, color .2s, transform .15s var(--nu-ease-saida);
+  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .tgr__chip:hover:not(:disabled) { background: var(--nu-line-2); }
 .tgr__chip:active:not(:disabled) { transform: scale(.98); }
@@ -237,12 +256,14 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 .tgr__chip--on .tgr__chip-n { color: var(--nu-on-dark-2); }
 .tgr__sep { flex-shrink: 0; width: 1.5px; height: 22px; margin: 0 4px; background: var(--nu-line); }
 .tgr__ordem { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.tgr__ordem-r { color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
+.tgr__ordem-r { color: var(--nu-ink); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .tgr__select { display: none; position: relative; }
 .tgr__select select {
   appearance: none; height: 44px; padding: 0 36px 0 16px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600;
+  background: var(--nu-cream-2); color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
+.tgr__select select:hover { background: var(--nu-line-2); }
 .tgr__select::after {
   content: ''; position: absolute; right: 16px; top: 50%; width: 7px; height: 7px; margin-top: -6px; pointer-events: none;
   border-right: 2px solid var(--nu-ink); border-bottom: 2px solid var(--nu-ink); transform: rotate(45deg);
@@ -250,7 +271,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 .tgr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .tgr__conta { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px var(--lado) 0; }
-.tgr__conta-t { margin: 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tgr__conta-t { margin: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .tgr__conta .tgr__select { display: none; }
 
 /* ——— a grade ——— */
@@ -261,16 +282,19 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
   display: grid; gap: var(--gap);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, max(280px, calc((100% - 2 * var(--gap)) / 3))), 1fr));
 }
-/* entrada em cascata (60ms por cartão) */
-.tgr__item { animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
+/* o cartão branco: a sombra do branco em repouso; sob o ponteiro sobe 2px e
+   ganha a sombra erguida; apertado, afunda; o anel de foco abraça o cartão */
 .tgr__cartao {
   display: flex; flex-direction: column; height: 100%; border-radius: var(--nu-r-card); overflow: hidden;
-  background: var(--nu-white); box-shadow: var(--nu-shadow-quente); color: inherit;
-  container: tese / inline-size;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  background: var(--nu-white); box-shadow: var(--nu-shadow-branco); color: inherit;
+  container: tese / inline-size; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
-.tgr__cartao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.tgr__cartao:focus-visible { outline-offset: 3px; }
+@media (hover: hover) {
+  .tgr__cartao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+}
+.tgr__cartao:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.tgr__cartao:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 /* a capa: só quando a tese tem imagem */
 .tgr__capa { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--nu-ink); overflow: hidden; }
 .tgr__capa-img {
@@ -279,22 +303,20 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
      na borda esquerda: no recorte largo ele aparece; o zoom ancorado à direita
      o deixa fora do quadro */
   transform: scale(1.14); transform-origin: 100% 50%;
-  transition: transform .6s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-lenta) var(--nu-ease-saida);
 }
 .tgr__cartao:hover .tgr__capa-img { transform: scale(1.18); }
 .tgr__corpo { flex: 1; display: flex; flex-direction: column; padding: 22px 22px 18px; }
 .tgr__topo-l { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 28px; }
-.tgr__tema { display: flex; align-items: center; gap: 7px; min-width: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: .12em; text-transform: uppercase; }
+.tgr__tema { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; }
 .tgr__ponto { color: var(--nu-sand); }
-.tgr__seguindo {
-  flex: none; display: inline-flex; align-items: center; height: 28px; padding: 0 10px;
-  border-radius: var(--nu-r-tag); background: var(--nu-green-bg); color: var(--nu-green-text); font-size: 13.5px; font-weight: var(--nu-w-medio);
-}
-.tgr__nome { margin-top: 8px; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: var(--nu-w-forte); letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; transition: color .2s ease; }
+/* "Seguindo": o estado, no selo da base */
+.tgr__seguindo { flex: none; }
+.tgr__nome { margin-top: 8px; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.1; text-wrap: balance; transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 .tgr__cartao:hover .tgr__nome { color: var(--nu-blue-text); }
 /* a tese numa frase, em até duas linhas */
 .tgr__frase {
-  margin-top: 10px; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5;
+  margin-top: 12px; color: var(--nu-gray-3); font-size: 15.5px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 /* os selos da tela de tese (raio 8): convicção, retorno, ativos */
@@ -317,22 +339,18 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 }
 .tgr__evol { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .tgr__conv-linha { flex: none; display: block; width: 84px; height: 30px; color: var(--nu-blue); }
-.tgr__mudou { min-width: 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; }
-.tgr__abrir { flex: none; display: inline-flex; align-items: center; gap: 6px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); white-space: nowrap; }
-.tgr__abrir svg { transition: transform .2s ease; }
+.tgr__mudou { min-width: 0; color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.35; font-variant-numeric: tabular-nums; }
+.tgr__abrir { flex: none; display: inline-flex; align-items: center; gap: 6px; color: var(--nu-blue-text); font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap; }
+.tgr__abrir svg { transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .tgr__cartao:hover .tgr__abrir svg { transform: translateX(3px); }
 
 .tgr__cartao--sk { pointer-events: none; }
 .tgr__sk-nome { margin-top: 12px; }
 .tgr__sk-frase { margin-top: 10px; }
-.tgr__vazio { padding: 40px var(--lado) 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; }
-.tgr__vazio p { margin: 0; }
-.tgr__limpar {
-  margin-top: 16px; min-height: 48px; padding: 0 24px; border: 0; border-radius: var(--nu-r-pill); background: var(--nu-ink); color: var(--nu-white);
-  font: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, transform .15s var(--nu-ease-saida);
-}
-.tgr__limpar:hover { background: var(--nu-ink-hover); }
-.tgr__limpar:active { transform: scale(.98); }
+/* vazio e erro: a frase e o próximo passo, no lugar da grade */
+.tgr__vazio { padding: 40px var(--lado) 0; animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
+.tgr__vazio-t { margin: 0; max-width: 46ch; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.35; }
+.tgr__vazio-b { margin-top: 24px; }
 
 /* ——— tablet: a ordem vira menu; celular: a barra rola de lado ——— */
 @media (max-width: 1100px) {
@@ -363,7 +381,9 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
   .tgr__capa { aspect-ratio: 2 / 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tgr, .tgr__item, .tgr__cartao, .tgr__capa-img, .tgr__barra, .tgr__chip, .tgr__limpar, .tgr__abrir svg { animation: none; transition: none; }
-  .tgr__cartao:hover, .tgr__chip:active, .tgr__limpar:active, .tgr__cartao:hover .tgr__abrir svg { transform: none; }
+  .tgr__topo > *, .tgr__barra-in, .tgr__conta, .tgr__grade, .tgr__vazio, .tgr__cartao, .tgr__nome, .tgr__capa-img, .tgr__barra, .tgr__chip, .tgr__abrir svg, .tgr__select select { animation: none; transition: none; }
+  .tgr__cartao:hover, .tgr__cartao:active, .tgr__chip:active, .tgr__cartao:hover .tgr__abrir svg { transform: none; }
+  /* a capa segue recortada (o zoom esconde o selo desenhado na imagem), sem crescer */
+  .tgr__cartao:hover .tgr__capa-img { transform: scale(1.14); }
 }
 </style>

@@ -8,6 +8,11 @@
 // SEO: SSR-first (a 1ª leva do feed vem do servidor via useAsyncData — HTML
 // indexável com notícia real), canonical /noticias, JSON-LD BreadcrumbList +
 // ItemList de NewsArticle. routeRules '/noticias' já cacheia no nuxt.config.
+//
+// Robustez (11/11/2026): a lista entra com a página (em --nu-dur-entrada
+// --nu-ease-saida) e cada notícia que nasce abaixo da dobra entra ao rolar
+// (v-revelar: uma por vez, conforme chega); as que o "Carregar mais" traz
+// entram do mesmo jeito. O vazio é o cartão creme com a frase e o próximo passo.
 import type { NoticiasTab } from '~/types/noticias'
 
 const { items, filtered, tabs, tab, inCarteira, loadMore, loadingMore, exhausted, isAuthenticated } = await useNoticias()
@@ -69,11 +74,11 @@ usePageSeo({
 
     <section class="nof">
       <!-- a lista de leitura: a primeira em destaque, as demais em linhas com fio -->
-      <div v-if="filtered.length" class="nof__stack">
+      <!-- a chave da aba: trocar de aba refaz a entrada da lista (não pula) -->
+      <div v-if="filtered.length" :key="tab" class="nof__stack">
         <NoticiasFeedRow
-          v-for="(n, i) in filtered" :key="n.id"
+          v-for="(n, i) in filtered" :key="n.id" v-revelar
           :item="n" :destaque="i === 0" :na-carteira="inCarteira(n)"
-          class="nof__item" :style="{ '--i': Math.min(i, 6) }"
         />
       </div>
 
@@ -105,26 +110,26 @@ usePageSeo({
 /* Aportou: o feed corre sobre o creme da página (não há faixa branca) */
 .nof {
   background: var(--nu-page);
-  padding: clamp(16px, 2.4vw, 32px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
+  padding: clamp(16px, 2.4vw, 32px) var(--nu-coluna) clamp(72px, 8vw, 128px);
 }
-.nof__stack { display: flex; flex-direction: column; }
-/* entrada em cascata (60ms por linha, só nas primeiras) */
-.nof__item { animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
-.nof__more { text-align: center; margin-top: clamp(28px, 3.6vw, 44px); padding-top: clamp(28px, 3.6vw, 44px); border-top: 1px solid var(--nu-line-2); }
-@media (prefers-reduced-motion: reduce) { .nof__item { animation: none; } }
+/* a lista entra com a página (e de novo a cada troca de aba) */
+.nof__stack { display: flex; flex-direction: column; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.nof__more { text-align: center; margin-top: 0; padding-top: clamp(40px, 4vw, 56px); border-top: 1px solid var(--nu-line-2); }
 
-/* estado vazio: o cartão creme da marca, com a pílula da seta */
+/* estado vazio: o cartão creme da marca, com a pílula da seta; a troca de aba não pula */
 .nof__empty {
   background: var(--nu-card); border-radius: var(--nu-r-card); text-align: center; box-shadow: var(--nu-shadow-quente);
-  padding: clamp(48px, 7vw, 88px) clamp(22px, 5vw, 64px);
+  padding: clamp(48px, 7vw, 88px) clamp(24px, 5vw, 64px);
+  animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both;
 }
 .nof__empty-title {
   color: var(--nu-ink); font-size: var(--nu-fs-h3);
-  font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05;
+  font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05;
 }
 .nof__empty-sub {
-  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: 500; line-height: 1.5;
-  margin: 14px auto 0; max-width: 460px;
+  color: var(--nu-gray-3); font-size: clamp(16px, 1.4vw, 18px); font-weight: var(--nu-w-texto); line-height: 1.55;
+  margin: 16px auto 0; max-width: 460px;
 }
-.nof__empty-cta { margin-top: 26px; }
+.nof__empty-cta { margin-top: 32px; }
+@media (prefers-reduced-motion: reduce) { .nof__stack, .nof__empty { animation: none; } }
 </style>

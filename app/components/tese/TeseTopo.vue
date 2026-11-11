@@ -11,6 +11,13 @@
 // A imagem de capa saiu do topo (fica nos cartões da /teses). Tudo o que era
 // dito na seção "A tese em números" continua aqui: os dois retornos na
 // legenda, convicção e ativos nos selos, lançamento e fontes no pé do cartão.
+// Robustez (11/11/2026): o texto entra em cascata (eyebrow, título, lead,
+// selos, ações, 60ms cada) e o cartão logo depois, em --nu-dur-entrada
+// --nu-ease-saida; uma ação principal na dobra (o "Acompanhar", NuBotaoSeta)
+// e a da IA ao lado como o link da base (NuLinkSeta, com o corte), não um
+// segundo botão cheio; o número grande vai no peso de exibição; contagem
+// zerada (a tese quase vazia da API: "0 ativos", "Fontes acumuladas 0") não
+// vira selo nem linha.
 import type { TeseHeroVM, TeseNumbersVM } from '~/types/tese'
 
 const props = defineProps<{
@@ -41,7 +48,10 @@ const seloRetorno = computed(() => {
 const linha = (rotulo: string) => props.numbers?.stats.find((r) => r.l === rotulo) ?? null
 const daTese = computed(() => linha('Desde o lançamento'))
 const doIbov = computed(() => linha('IBOV no período'))
-const pe = computed(() => (props.numbers?.stats ?? []).filter((r) => !['Desde o lançamento', 'IBOV no período', 'Convicção', 'Ativos'].includes(r.l)))
+// contagem zerada não vira linha no pé (a tese quase vazia da API: "Fontes acumuladas 0")
+const pe = computed(() => (props.numbers?.stats ?? []).filter((r) => !['Desde o lançamento', 'IBOV no período', 'Convicção', 'Ativos'].includes(r.l) && r.v.trim() !== '0'))
+// "0 ativos" não vira selo (a lista logo abaixo diz quantos são)
+const seloAtivos = computed(() => (/^0\s/.test(props.hero.ativosBadge?.trim() ?? '') ? null : props.hero.ativosBadge || null))
 const queda = computed(() => /^[-−]/.test(daTese.value?.v ?? ''))
 const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` : 'A tese desde o lançamento'))
 </script>
@@ -62,7 +72,7 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
         <div class="tto__selos">
           <NuSelo v-if="seloConviccao" tom="azul">{{ seloConviccao }}</NuSelo>
           <NuSelo v-if="seloRetorno" :tom="seloRetorno.queda ? 'vermelho' : 'verde'">{{ seloRetorno.texto }}</NuSelo>
-          <NuSelo tom="carvao">{{ hero.ativosBadge }}</NuSelo>
+          <NuSelo v-if="seloAtivos" tom="carvao">{{ seloAtivos }}</NuSelo>
           <NuSelo v-if="hero.revalBadge" tom="contorno">{{ hero.revalBadge }}</NuSelo>
         </div>
         <div class="tto__acoes">
@@ -70,9 +80,7 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
             :variante="following ? 'contorno' : 'azul'" tamanho="m" :aria-pressed="following" :aria-busy="pending || undefined"
             @click="emit('acompanhar')"
           >{{ following ? 'Acompanhando' : 'Acompanhar esta tese' }}</NuBotaoSeta>
-          <button type="button" class="tto__ia" @click="emit('perguntar')">
-            <MarcaCorte :largura="20" cor="var(--nu-blue-on-dark)" />Perguntar à IA
-          </button>
+          <NuLinkSeta tom="tinta" class="tto__ia" @click="emit('perguntar')"><MarcaCorte :largura="18" class="tto__ia-corte" />Perguntar à IA</NuLinkSeta>
         </div>
       </div>
 
@@ -109,51 +117,55 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
 
 <style scoped>
 .tto {
-  --g: clamp(20px, 4vw, 56px);
-  padding: clamp(32px, 4vw, 60px) var(--g) clamp(40px, 4.6vw, 68px);
+  padding: clamp(32px, 4vw, 56px) var(--nu-coluna) clamp(40px, 4.4vw, 64px);
   background: var(--nu-page); color: var(--nu-ink);
 }
-.tto__grade { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: clamp(28px, 3.4vw, 40px); }
-.tto__texto { min-width: 0; animation: nu-fade .5s ease both; }
+.tto__grade { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
+/* a entrada: o texto em cascata (60ms por peça) e o cartão logo depois */
+.tto__texto { min-width: 0; }
+.tto__texto > * { animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) both; }
+.tto__texto > :nth-child(2) { animation-delay: 60ms; }
+.tto__texto > :nth-child(3) { animation-delay: 120ms; }
+.tto__texto > :nth-child(4) { animation-delay: 180ms; }
+.tto__texto > :nth-child(5) { animation-delay: 240ms; }
 
 .tto__eyebrow { margin: 0; }
 .tto__volta {
   /* a área de toque tem 44px sem mexer na linha do eyebrow */
   display: inline-block; padding: 14px 0; margin: -14px 0;
   color: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px;
-  text-decoration-color: var(--nu-line); transition: text-decoration-color .2s ease, color .2s ease;
+  text-decoration-color: var(--nu-line);
+  transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .tto__volta:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+.tto__volta:active { opacity: .72; }
 .tto__h1 {
   margin: 20px 0 0; font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display);
-  letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
+  letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance;
 }
 .tto__hi { color: var(--nu-blue-text); }
 .tto__lead {
   margin: 20px 0 0; max-width: 34ch; color: var(--nu-gray-3);
-  font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty;
+  font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty;
 }
-.tto__selos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 26px; }
-.tto__acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
-/* a pílula carvão da IA, com o corte */
-.tto__ia {
-  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 24px; border: 0; border-radius: var(--nu-r-pill);
-  background: var(--nu-ink); color: var(--nu-white); font: inherit; font-size: 16.5px; font-weight: var(--nu-w-medio); white-space: nowrap; cursor: pointer;
-  transition: background .2s, transform .15s var(--nu-ease-saida);
-}
-.tto__ia:hover { background: var(--nu-ink-hover); }
-.tto__ia:active { transform: scale(.98); }
+.tto__selos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+.tto__acoes { display: flex; align-items: center; gap: 12px 28px; flex-wrap: wrap; margin-top: 32px; }
+/* a ação da IA: o link da base, com o corte na frente (a letra do botão ao lado) */
+.tto__ia { font-size: 15.5px; white-space: nowrap; }
+/* o corte (um svg em bloco na base) entra na linha do texto */
+.tto__ia .tto__ia-corte { display: inline-block; margin-right: 8px; vertical-align: -1px; }
 
 /* o cartão do gráfico: carvão, com a faixa da marca */
-.tto__palco { min-width: 0; animation: nu-fade .5s ease .1s both; }
-.tto__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 22px); overflow: hidden; }
-.tto__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
+.tto__palco { min-width: 0; animation: nu-fade var(--nu-dur-entrada) var(--nu-ease-saida) 120ms both; }
+.tto__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 24px); overflow: hidden; }
+.tto__legenda { display: flex; align-items: baseline; gap: 8px 32px; flex-wrap: wrap; margin: clamp(18px, 2vw, 24px) var(--pad) 0; }
 .tto__leg { display: inline-flex; align-items: baseline; gap: 10px; }
-.tto__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.tto__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); letter-spacing: -0.04em; line-height: 1; }
+.tto__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums; }
+/* o número grande: peso de exibição (o tamanho faz a hierarquia) */
+.tto__leg--1 b { font-size: clamp(38px, 4.4vw, 58px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1; }
 .tto__leg b.tto__leg--up { color: var(--nu-green-soft); }
 .tto__leg b.tto__leg--down { color: var(--nu-red-soft); }
-.tto__leg-r { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 600; }
+.tto__leg-r { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .tto__traco { width: 16px; height: 3px; border-radius: 2px; background: var(--nu-blue-on-dark); }
 .tto__traco--ibov { height: 0; border-radius: 0; background: none; border-top: 2px dashed var(--nu-on-dark-2); }
 .tto__grafico { position: relative; height: clamp(220px, 23vw, 320px); margin-top: 14px; }
@@ -162,7 +174,7 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
   border-top: 1px solid var(--nu-dark-line);
 }
 .tto__pe-i { display: inline-flex; align-items: baseline; gap: 8px; }
-.tto__pe dt { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; }
+.tto__pe dt { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .tto__pe dd { margin: 0; color: var(--nu-white); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 
 /* duas colunas: a ideia à esquerda, o cartão do gráfico à direita */
@@ -175,12 +187,12 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
   .tto--so .tto__lead { max-width: 52ch; }
 }
 @media (max-width: 480px) {
-  .tto__acoes { flex-direction: column; align-items: stretch; }
+  .tto__acoes { flex-direction: column; align-items: stretch; gap: 16px; }
   .tto__acoes :deep(.nbs) { display: flex; width: 100%; }
   .tto__ia { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tto__texto, .tto__palco { animation: none; }
-  .tto__ia { transition: none; }
+  .tto__texto > *, .tto__palco { animation: none; }
+  .tto__volta { transition: none; }
 }
 </style>

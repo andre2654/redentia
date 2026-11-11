@@ -13,6 +13,23 @@
 //    "Perguntar à IA sobre <TICKER>".
 // Todo o texto fica no HTML do servidor: <details> fechado não esconde do
 // buscador. Repartir é função pura (utils/teseTexto); aqui só se desenha.
+//
+// Robustez (11/11/2026):
+//  - A linha é um <details> (e não o NuAcordeao) porque o cabeçalho dela é
+//    rico (logo, código, nome em h3, papel, selos, frase): a abertura segue a
+//    regra do acordeão da base, 520ms em --nu-ease-troca na altura e na
+//    opacidade. Fechada, sobe 2px e ganha --nu-shadow-card sob o ponteiro;
+//    apertada, afunda; no teclado, o anel de 3px abraça o cartão inteiro.
+//  - "Ler tudo" é o NuLinkSeta: o resto do período continua na MESMA frase (o
+//    texto já está no HTML, escondido até o clique) e o foco vai para ele.
+//  - "Ver as N anteriores" é o NuAcordeao da base.
+//  - A linha do tempo das revisões: ponto de 9px centrado num fio de 1px, o
+//    fio liga um ponto ao outro com a mesma folga em cima e embaixo; a mais
+//    nova em cobalto com o halo.
+//  - "Ver <TICKER>" e "Perguntar à IA sobre <TICKER>" são o NuLinkSeta (o da
+//    IA leva o corte na frente, como no topo da tese).
+//  - A última avaliação deixou de ser caixa dentro do cartão: é um bloco com
+//    o fio embaixo, como os outros.
 import type { RevisaoDoCatalyst } from '~/utils/teseTexto'
 import { dataBr, dataCurta } from '~/utils/teseTexto'
 
@@ -45,10 +62,22 @@ const recentes = computed(() => props.linha.revisoes.slice(0, A_VISTA))
 const anteriores = computed(() => props.linha.revisoes.slice(A_VISTA))
 const temCorpo = computed(() => !!(props.linha.porque.inicio || props.linha.gatilho.inicio || props.linha.revisoes.length || props.linha.ultima))
 const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha.revisoes.length))
+const rotuloAnteriores = computed(() => (anteriores.value.length === 1 ? 'Ver a anterior' : `Ver as ${anteriores.value.length} anteriores`))
+
+// "Ler tudo": o resto aparece na mesma frase e recebe o foco (o link some)
+const lido = reactive({ porque: false, gatilho: false })
+const restoPorque = ref<HTMLElement | null>(null)
+const restoGatilho = ref<HTMLElement | null>(null)
+function lerTudo(qual: 'porque' | 'gatilho') {
+  lido[qual] = true
+  void nextTick(() => (qual === 'porque' ? restoPorque : restoGatilho).value?.focus({ preventScroll: true }))
+}
+const verAnteriores = ref(false)
+const idBase = useId()
 </script>
 
 <template>
-  <details v-contexto-chat="contexto" class="tal" :style="{ '--i': indice }">
+  <details v-contexto-chat="contexto" class="tal">
     <summary class="tal__cab">
       <span class="tal__id">
         <NuAssetLogo :ticker="linha.ticker" :letter="linha.ticker.charAt(0) || '?'" tile-bg="var(--nu-cream-2)" tile-fg="var(--nu-ink)" :size="44" :radius="14" />
@@ -81,11 +110,16 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 
         <section v-if="linha.porque.inicio" class="tal__bloco">
           <h4 class="tal__rotulo">Por que está na tese</h4>
-          <p class="tal__p">{{ linha.porque.inicio }}</p>
-          <details v-if="linha.porque.resto" class="tal__ler">
-            <summary class="tal__ler-b">Ler tudo</summary>
-            <p class="tal__p">{{ linha.porque.resto }}</p>
-          </details>
+          <p class="tal__p">
+            {{ linha.porque.inicio }}<span
+              v-if="linha.porque.resto" v-show="lido.porque" :id="`${idBase}-porque`" ref="restoPorque"
+              class="tal__resto" tabindex="-1"
+            >{{ ` ${linha.porque.resto}` }}</span>
+          </p>
+          <NuLinkSeta
+            v-if="linha.porque.resto && !lido.porque" class="tal__ler" tom="tinta"
+            :aria-expanded="false" :aria-controls="`${idBase}-porque`" @click="lerTudo('porque')"
+          >Ler tudo</NuLinkSeta>
         </section>
       </div>
 
@@ -94,11 +128,16 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
           <h4 class="tal__rotulo">O que tem de acontecer</h4>
           <template v-if="linha.gatilho.inicio">
             <p class="tal__sub">O gatilho</p>
-            <p class="tal__p"><TeseTrechos :texto="linha.gatilho.inicio" /></p>
-            <details v-if="linha.gatilho.resto" class="tal__ler">
-              <summary class="tal__ler-b">Ler tudo</summary>
-              <p class="tal__p"><TeseTrechos :texto="linha.gatilho.resto" /></p>
-            </details>
+            <p class="tal__p">
+              <TeseTrechos :texto="linha.gatilho.inicio" /><span
+                v-if="linha.gatilho.resto" v-show="lido.gatilho" :id="`${idBase}-gatilho`" ref="restoGatilho"
+                class="tal__resto" tabindex="-1"
+              >{{ ' ' }}<TeseTrechos :texto="linha.gatilho.resto" /></span>
+            </p>
+            <NuLinkSeta
+              v-if="linha.gatilho.resto && !lido.gatilho" class="tal__ler" tom="tinta"
+              :aria-expanded="false" :aria-controls="`${idBase}-gatilho`" @click="lerTudo('gatilho')"
+            >Ler tudo</NuLinkSeta>
           </template>
 
           <template v-if="linha.revisoes.length">
@@ -109,31 +148,22 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
                 <p class="tal__rev-t"><TeseTrechos :texto="r.texto" /></p>
               </li>
             </ol>
-            <details v-if="anteriores.length" class="tal__antes">
-              <summary class="tal__antes-b">
-                <span class="tal__antes-f">{{ anteriores.length === 1 ? 'Ver a anterior' : `Ver as ${anteriores.length} anteriores` }}</span>
-                <span class="tal__antes-a">Recolher as anteriores</span>
-                <NuMais :tamanho="28" />
-              </summary>
+            <NuAcordeao v-if="anteriores.length" v-model:aberto="verAnteriores" class="tal__antes" :tamanho-mais="28">
+              <template #titulo><span class="tal__antes-t">{{ verAnteriores ? 'Recolher as anteriores' : rotuloAnteriores }}</span></template>
               <ol class="tal__tempo tal__tempo--antes">
                 <li v-for="(r, i) in anteriores" :key="`a${i}`" class="tal__rev">
                   <time v-if="r.data" class="tal__rev-d" :datetime="r.data">{{ dataBr(r.data) }}</time>
                   <p class="tal__rev-t"><TeseTrechos :texto="r.texto" /></p>
                 </li>
               </ol>
-            </details>
+            </NuAcordeao>
           </template>
         </section>
       </div>
 
       <p class="tal__pe">
-        <NuxtLink v-if="linha.href" :to="linha.href" class="tal__ver">
-          Ver {{ linha.ticker.toUpperCase() }}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </NuxtLink>
-        <button type="button" class="tal__ia" @click="emit('perguntar')">
-          <MarcaCorte :largura="18" />Perguntar à IA sobre {{ linha.ticker.toUpperCase() }}
-        </button>
+        <NuLinkSeta v-if="linha.href" :to="linha.href" class="tal__ver">Ver {{ linha.ticker.toUpperCase() }}</NuLinkSeta>
+        <NuLinkSeta tom="tinta" class="tal__ia" @click="emit('perguntar')"><MarcaCorte :largura="18" class="tal__ia-corte" />Perguntar à IA sobre {{ linha.ticker.toUpperCase() }}</NuLinkSeta>
       </p>
     </div>
   </details>
@@ -142,108 +172,115 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 <style scoped>
 .tal {
   background: var(--nu-card); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
-  animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
   interpolate-size: allow-keywords;
 }
-.tal:not([open]):hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+/* fechada, a linha é o clique: sobe 2px sob o ponteiro e afunda ao apertar */
+@media (hover: hover) {
+  .tal:not([open]):hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+}
+.tal:not([open]):has(> .tal__cab:active) { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+/* o anel de foco abraça o cartão inteiro, não só o cabeçalho */
+.tal:has(> .tal__cab:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 
 /* ——— a linha fechada ——— */
 .tal__cab {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px 16px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px 16px;
   padding: 16px clamp(16px, 2vw, 24px); cursor: pointer; list-style: none; border-radius: var(--nu-r-panel);
+  -webkit-tap-highlight-color: transparent;
 }
 .tal__cab::-webkit-details-marker { display: none; }
+.tal__cab:focus-visible { outline: none; }
 .tal__id { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .tal__quem { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .tal__nomes { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .tal__ticker {
   display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag);
-  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em;
+  background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em; font-variant-numeric: tabular-nums;
 }
-.tal__nome { margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; transition: color .2s ease; }
+.tal__nome {
+  margin: 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.2;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
+}
 .tal__cab:hover .tal__nome { color: var(--nu-blue-text); }
-.tal__papel { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.35; }
+.tal__papel { color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-texto); line-height: 1.35; }
 .tal__selos { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 /* o "+" (NuMais) escurece sob o ponteiro e gira com o <details> aberto: sozinho, no <summary> */
 .tal__frase {
-  grid-column: 1 / -1; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; max-width: 96ch;
+  grid-column: 1 / -1; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.55; max-width: 96ch;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .tal[open] > .tal__cab .tal__frase { display: block; overflow: visible; }
 
-/* ——— a linha aberta ——— */
-/* a altura anima onde o navegador sabe (::details-content); nos outros, o miolo surge */
-.tal::details-content { block-size: 0; overflow: clip; transition: block-size .32s var(--nu-ease-saida), content-visibility .32s allow-discrete; }
-.tal[open]::details-content { block-size: auto; }
-.tal[open] > .tal__corpo { animation: nu-fade .3s ease both; }
-.tal__corpo {
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px clamp(28px, 4vw, 56px);
-  margin: 0 clamp(16px, 2vw, 24px); padding: 24px 0 22px; border-top: 1px solid var(--nu-line-2);
+/* ——— a linha aberta ———
+   a regra do acordeão da base: a altura e a opacidade em --nu-dur-lenta --nu-ease-troca
+   (a altura onde o navegador sabe animar o ::details-content) */
+.tal::details-content {
+  block-size: 0; overflow: clip;
+  transition: block-size var(--nu-dur-lenta) var(--nu-ease-troca), content-visibility var(--nu-dur-lenta) allow-discrete;
 }
-.tal__col { min-width: 0; display: flex; flex-direction: column; gap: 26px; }
-.tal__rotulo { margin: 0; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .16em; text-transform: uppercase; }
-.tal__sub { margin: 14px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.tal__sub--tempo { margin-top: 22px; }
-.tal__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6; text-wrap: pretty; }
+.tal[open]::details-content { block-size: auto; }
+.tal[open] > .tal__corpo { animation: nu-surgir var(--nu-dur-lenta) var(--nu-ease-troca) both; }
+.tal__corpo {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px clamp(32px, 4vw, 56px);
+  margin: 0 clamp(16px, 2vw, 24px); padding: 24px 0; border-top: 1px solid var(--nu-line-2);
+}
+.tal__col { min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.tal__rotulo { margin: 0; color: var(--nu-ink); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); line-height: 1.3; text-transform: uppercase; }
+.tal__sub { margin: 16px 0 0; color: var(--nu-gray); font-size: 14px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
+.tal__rotulo + .tal__sub { margin-top: 12px; }
+.tal__sub--tempo { margin-top: 24px; }
+.tal__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.6; text-wrap: pretty; }
 .tal__rotulo + .tal__p { margin-top: 12px; }
-.tal__bloco--ultima { background: var(--nu-page); border-radius: var(--nu-r-tile); padding: 16px 18px; }
+/* o resto do texto entra na mesma frase, com um fade curto */
+.tal__resto { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
+.tal__resto:focus { outline: none; }
+.tal__ler { margin-top: 8px; font-size: 15px; }
+/* a última avaliação: um bloco com o fio embaixo (era uma caixa dentro do cartão) */
+.tal__bloco--ultima { padding-bottom: 24px; border-bottom: 1px solid var(--nu-line-2); }
 .tal__ultima { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 0; }
 .tal__ultima b { color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.35; }
 
-/* "Ler tudo": o resto do texto, que entra na sequência (o botão some depois de abrir) */
-.tal__ler-b {
-  display: inline-flex; align-items: center; min-height: 44px; list-style: none; cursor: pointer;
-  color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio);
-  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
-  transition: color .2s ease, text-decoration-color .2s ease;
-}
-.tal__ler-b::-webkit-details-marker { display: none; }
-.tal__ler-b:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
-.tal__ler[open] > .tal__ler-b { display: none; }
-.tal__ler[open] > .tal__p { animation: nu-fade .3s ease both; }
-
-/* a linha do tempo das revisões */
+/* ——— a linha do tempo das revisões ———
+   o ponto (9px) centrado no fio (1px); o fio sai 6px abaixo de um ponto e
+   para 6px antes do próximo. O ponto senta no meio da linha da data. */
 .tal__tempo { list-style: none; margin: 12px 0 0; padding: 0; }
-.tal__rev { position: relative; padding: 0 0 18px 22px; }
+.tal__rev { --tal-ponto: 9px; --tal-topo: 5px; position: relative; padding: 0 0 20px 24px; }
 .tal__rev::before {
-  content: ''; position: absolute; left: 0; top: 7px; width: 9px; height: 9px; border-radius: 50%;
-  background: var(--nu-card); box-shadow: inset 0 0 0 2.5px var(--nu-ink);
+  content: ''; position: absolute; left: 0; top: var(--tal-topo); width: var(--tal-ponto); height: var(--tal-ponto); border-radius: 50%;
+  background: var(--nu-card); box-shadow: inset 0 0 0 1.5px var(--nu-gray);
 }
-.tal__rev::after { content: ''; position: absolute; left: 3.75px; top: 20px; bottom: 0; width: 1.5px; background: var(--nu-line); }
-.tal__tempo:not(.tal__tempo--antes) .tal__rev:first-child::before { background: var(--nu-blue); box-shadow: none; }
-.tal__rev:last-child { padding-bottom: 4px; }
+.tal__rev::after {
+  content: ''; position: absolute; left: calc(var(--tal-ponto) / 2 - .5px); width: 1px;
+  top: calc(var(--tal-topo) + var(--tal-ponto) + 6px); bottom: calc(6px - var(--tal-topo));
+  background: var(--nu-line);
+}
+.tal__rev:last-child { padding-bottom: 0; }
 .tal__rev:last-child::after { display: none; }
-.tal__rev-d { display: block; color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.tal__rev-t { margin: 4px 0 0; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.6; text-wrap: pretty; }
-
-.tal__antes { margin-top: 10px; interpolate-size: allow-keywords; }
-.tal__antes::details-content { block-size: 0; overflow: clip; transition: block-size .32s var(--nu-ease-saida), content-visibility .32s allow-discrete; }
-.tal__antes[open]::details-content { block-size: auto; }
-.tal__antes-b {
-  display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 8px 0 18px; list-style: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); background: var(--nu-cream-2); color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio);
-  transition: background .2s ease;
+/* a mais nova: o ponto cheio em cobalto, com o halo */
+.tal__tempo:not(.tal__tempo--antes) > .tal__rev:first-child::before {
+  background: var(--nu-blue); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nu-blue) 18%, transparent);
 }
-.tal__antes-b::-webkit-details-marker { display: none; }
-.tal__antes-b:hover { background: var(--nu-line-2); }
-.tal__antes-a { display: none; }
-.tal__antes[open] > .tal__antes-b .tal__antes-f { display: none; }
-.tal__antes[open] > .tal__antes-b .tal__antes-a { display: inline; }
-.tal__antes[open] > .tal__tempo { margin-top: 18px; animation: nu-fade .3s ease both; }
+.tal__rev-d { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 19px; font-variant-numeric: tabular-nums; }
+.tal__rev-t { margin: 4px 0 0; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.6; text-wrap: pretty; }
 
-/* o pé da linha */
+/* "Ver as N anteriores": o NuAcordeao da base, compacto (o "+" logo depois do
+   rótulo) e com o botão recuado até o texto da linha do tempo; a lista de
+   dentro fica no fio (o miolo do acordeão corta o que sai da caixa) */
+.tal__antes { margin-top: 8px; }
+.tal__antes :deep(.nac__cab) { width: auto; justify-content: flex-start; gap: 12px; padding: 8px 0; margin-left: 24px; }
+.tal__antes-t { font-size: 15px; letter-spacing: var(--nu-ls-texto); }
+.tal__antes :deep(.nac__corpo) { padding-bottom: 4px; }
+.tal__tempo--antes { margin-top: 8px; }
+
+/* ——— o pé da linha ——— */
 .tal__pe {
-  grid-column: 1 / -1; display: flex; align-items: center; gap: 8px 24px; flex-wrap: wrap;
-  margin: 0; padding-top: 14px; border-top: 1px solid var(--nu-line-2);
+  grid-column: 1 / -1; display: flex; align-items: center; gap: 8px 32px; flex-wrap: wrap;
+  margin: 0; padding-top: 16px; border-top: 1px solid var(--nu-line-2);
 }
-.tal__ver, .tal__ia {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none;
-  color: var(--nu-ink); font: inherit; font-size: 15.5px; font-weight: var(--nu-w-medio); cursor: pointer; transition: color .2s ease;
-}
-.tal__ver svg { transition: transform .2s ease; }
-.tal__ver:hover, .tal__ia:hover { color: var(--nu-blue-text); }
-.tal__ver:hover svg { transform: translateX(3px); }
+.tal__ver, .tal__ia { font-size: 15.5px; }
+/* o corte (um svg em bloco na base) entra na linha do texto */
+.tal__ia .tal__ia-corte { display: inline-block; margin-right: 8px; vertical-align: -1px; }
 
 @media (min-width: 980px) {
   .tal__corpo { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
@@ -256,9 +293,9 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
   .tal__mais { grid-column: 2; grid-row: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tal, .tal[open] > .tal__corpo, .tal__ler[open] > .tal__p, .tal__antes[open] > .tal__tempo { animation: none; transition: none; }
-  .tal:not([open]):hover { transform: none; }
-  .tal::details-content, .tal__antes::details-content { transition: none; }
-  .tal__ver svg { transition: none; }
+  .tal, .tal__nome { transition: none; }
+  .tal[open] > .tal__corpo, .tal__resto { animation: none; }
+  .tal:not([open]):hover, .tal:not([open]):has(> .tal__cab:active) { transform: none; }
+  .tal::details-content { transition: none; }
 }
 </style>

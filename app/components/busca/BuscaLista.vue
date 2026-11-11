@@ -4,6 +4,10 @@
 // "Perguntar à Redentia". A marcação é um índice só para a lista inteira
 // (grupos + pergunta), dono na página: o campo segura o foco e as setas
 // mexem aqui (padrão combobox, aria-activedescendant).
+// Robustez (11/11/2026): o que muda ao digitar se vê. O grupo que aparece e
+// a linha que chega entram com um fade curto (--nu-dur-media); a que fica,
+// fica parada (a chave é o id do resultado). O trecho digitado acende no nome
+// (BuscaLinha, pelo `termo`). O esqueleto tem a altura da linha de verdade.
 import type { BuscaGrupo, BuscaItem } from '~/composables/useBuscaIndex'
 
 const props = defineProps<{
@@ -16,6 +20,8 @@ const props = defineProps<{
   pergunta?: { texto: string; logado: boolean } | null
   /** grupo com a ação "Limpar" no cabeçalho (as recentes) */
   limpavel?: string | null
+  /** o que foi digitado: o trecho que casa acende em cada linha */
+  termo?: string
 }>()
 const emit = defineEmits<{
   (e: 'escolher', item: BuscaItem): void
@@ -67,6 +73,7 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
             :item="it"
             :posicao="inicios[gi]! + i"
             :ativo="props.ativo === inicios[gi]! + i"
+            :termo="props.termo"
             @escolher="emit('escolher', it)"
             @marcar="emit('marcar', inicios[gi]! + i)"
           />
@@ -96,28 +103,33 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
 </template>
 
 <style scoped>
-.bli { display: flex; flex-direction: column; gap: 28px; }
+.bli { display: flex; flex-direction: column; gap: 32px; }
+/* o grupo que aparece e a linha que chega: um fade curto (o que fica, fica parado) */
+.bli__grupo, .bli__linhas > li { animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) both; }
 .bli__cab {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   min-height: 24px; margin-bottom: 4px;
 }
 .bli__rotulo {
-  color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio);
-  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--nu-ink); font-size: 13px; font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
 .bli__limpar {
-  background: none; border: none; padding: 8px 0 8px 12px; margin: -8px 0;
-  color: var(--nu-ink); font-size: 14.5px; font-weight: var(--nu-w-medio); cursor: pointer;
-  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
+  /* o alvo chega a 44px sem mexer na linha do cabeçalho */
+  background: none; border: none; padding: 12px 0 12px 12px; margin: -12px 0;
+  color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-medio); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-line);
+  transition: color var(--nu-dur-media) var(--nu-ease-cor), text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .bli__limpar:hover { color: var(--nu-blue-text); text-decoration-color: currentColor; }
+.bli__limpar:active { opacity: .72; }
 .bli__limpar:focus-visible { border-radius: 6px; }
 
 .bli__linhas { list-style: none; margin: 0; padding: 0; }
 .bli__linhas > li + li { border-top: 1px solid var(--nu-line-2); }
 
-/* skeleton espelha a linha: tile 40, ticker + nome, preço + variação */
-.bli__sk { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 0; }
+/* skeleton espelha a linha: tile 40, ticker + nome, preço + variação (a mesma altura) */
+.bli__sk { display: flex; align-items: center; gap: 14px; min-height: 68px; padding: 10px 0; }
 .bli__sk + .bli__sk { border-top: 1px solid var(--nu-line-2); }
 .bli__sk-id { flex: 1; display: flex; flex-direction: column; gap: 7px; }
 .bli__sk-num { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
@@ -126,11 +138,14 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
 .bli__grupo--pergunta { border-top: 1px solid var(--nu-line-2); padding-top: 8px; margin-top: -12px; }
 .bli__perguntar {
   display: flex; align-items: center; gap: 14px; width: calc(100% + 24px);
-  min-height: 64px; padding: 10px 12px; margin: 0 -12px;
-  background: none; border: none; border-radius: 14px; text-align: left; cursor: pointer;
-  color: var(--nu-ink); transition: background .15s;
+  min-height: 68px; padding: 10px 12px; margin: 0 -12px;
+  background: none; border: none; border-radius: var(--nu-r-tile); text-align: left; cursor: pointer;
+  color: var(--nu-ink); font: inherit; -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .bli__perguntar--ativo { background: var(--nu-cream-2); }
+.bli__perguntar:active { background: var(--nu-line-2); }
+.bli__perguntar:focus-visible { outline-offset: 0; }
 .bli__balao {
   flex: none; width: 40px; height: 40px; border-radius: 12px;
   display: inline-flex; align-items: center; justify-content: center;
@@ -142,5 +157,9 @@ const total = computed(() => props.grupos.reduce((n, g) => n + g.itens.length, 0
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .bli__perg-q { color: var(--nu-ink); quotes: '“' '”'; }
-.bli__perg-sub { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+.bli__perg-sub { display: block; margin-top: 4px; color: var(--nu-gray); font-size: 13.5px; font-weight: var(--nu-w-texto); }
+@media (prefers-reduced-motion: reduce) {
+  .bli__grupo, .bli__linhas > li { animation: none; }
+  .bli__limpar, .bli__perguntar { transition: none; }
+}
 </style>

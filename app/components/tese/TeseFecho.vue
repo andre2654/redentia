@@ -5,13 +5,14 @@
 // de seguir de sempre (useThesisFollow, na página): o visitante vai ao /login
 // com a volta para esta tese.
 // `painel: false` deixa só o aviso (o convite do visitante já está logo acima)
+// Robustez (11/11/2026): o painel entra ao rolar (v-revelar), na coluna de 1240.
 withDefaults(defineProps<{ following: boolean; pending: boolean; visitante: boolean; painel?: boolean }>(), { painel: true })
 const emit = defineEmits<{ acompanhar: [] }>()
 </script>
 
 <template>
   <section class="tfe" :class="{ 'tfe--so': !painel }">
-    <div v-if="painel" class="tfe__painel">
+    <div v-if="painel" v-revelar class="tfe__painel">
       <MarcaCorte class="tfe__corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
       <div class="tfe__texto">
         <NuEyebrow como="p" sobre="azul">Acompanhar</NuEyebrow>
@@ -32,27 +33,26 @@ const emit = defineEmits<{ acompanhar: [] }>()
 <style scoped>
 .tfe {
   background: var(--nu-page);
-  padding: clamp(40px, 4.4vw, 64px) max(clamp(20px, 4vw, 56px), calc((100% - 1240px) / 2)) clamp(48px, 5vw, 72px);
+  padding: clamp(40px, 4.4vw, 64px) var(--nu-coluna) clamp(56px, 6vw, 96px);
 }
 .tfe__painel {
   position: relative; overflow: hidden; border-radius: var(--nu-r-secao); background: var(--nu-grad-cobalto); color: var(--nu-white);
-  padding: clamp(28px, 3.8vw, 52px); display: flex; align-items: center; justify-content: space-between; gap: 28px 48px; flex-wrap: wrap;
-  animation: nu-fade .5s ease both;
+  padding: clamp(32px, 3.8vw, 56px); display: flex; align-items: center; justify-content: space-between; gap: 32px 48px; flex-wrap: wrap;
 }
 /* o corte gigante, branco a 8%, no canto (posição e tamanho: a classe global .nu-corte-fundo) */
 .tfe__corte { --corte-l: 520px; opacity: .08; }
 .tfe__texto { position: relative; flex: 1 1 420px; min-width: min(300px, 100%); }
-.tfe__h2 { margin: 16px 0 0; font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.tfe__p { margin: 14px 0 0; max-width: 44ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
+.tfe__h2 { margin: 16px 0 0; font-size: var(--nu-fs-h2-sm); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; text-wrap: balance; }
+.tfe__p { margin: 16px 0 0; max-width: 44ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); line-height: 1.45; }
 .tfe__acao { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
-.tfe__micro { color: var(--nu-blue-on-blue-2); font-size: 13.5px; font-weight: 500; }
+.tfe__micro { color: var(--nu-blue-on-blue-2); font-size: 13px; font-weight: var(--nu-w-texto); }
 .tfe--so { padding-top: 0; }
 .tfe--so .tfe__aviso { margin-top: 0; }
-.tfe__aviso { margin: 22px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; text-align: center; }
+.tfe__aviso { margin: 24px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-texto); text-align: center; }
 @media (max-width: 560px) {
   .tfe__painel { border-radius: var(--nu-r-card-lg); }
   .tfe__acao, .tfe__acao :deep(.nbs) { width: 100%; }
   .tfe__acao :deep(.nbs) { display: flex; }
 }
-@media (prefers-reduced-motion: reduce) { .tfe__painel { animation: none; } }
+
 </style>

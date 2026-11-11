@@ -17,6 +17,14 @@
 // PAYWALL (dono, 14/07/2026), a MESMA regra: para o visitante o diário entra
 // embaçado e sem clique; o título da seção fica nítido para dar o gancho.
 // Quem entrou vê tudo e abre o leitor.
+//
+// Robustez (11/11/2026): a seção entra ao rolar (v-revelar, os estudos em
+// cascata); a linha do tempo tem o ponto centrado na linha da data e o fio de
+// 1px com a mesma folga dos dois lados; cada estudo tem hover, apertado e o
+// anel de foco que lê no carvão; "Ver os N anteriores" é o NuAcordeao da base
+// (vestido para o carvão aqui, ver o pedido no relatório). O leitor vira
+// documento: o título do estudo como manchete, a data uma vez só (no título do
+// modal) e as fontes numa lista com fio, não numa pilha de caixas.
 import type { NuDayBlock } from '~/types/market'
 import type { TeseDecisionVariant, TeseDiaryVM, TeseEvalBadgeVariant, TeseStudyVM } from '~/types/tese'
 
@@ -28,6 +36,8 @@ const A_VISTA = 5
 const recentes = computed(() => props.diary.studies.slice(0, A_VISTA))
 // o visitante não recebe a lista inteira: o diário é de quem entrou
 const anteriores = computed(() => (isAuthenticated.value ? props.diary.studies.slice(A_VISTA) : []))
+const verAnteriores = ref(false)
+const rotuloAnteriores = computed(() => (anteriores.value.length === 1 ? 'Ver o anterior' : `Ver os ${anteriores.value.length} anteriores`))
 
 const selectedId = ref<TeseStudyVM['id']>(props.diary.studies[0]!.id)
 const open = ref(false)
@@ -54,19 +64,21 @@ const DECISION_COLOR: Record<TeseDecisionVariant, string> = {
 }
 const SELO_DA_DECISAO: Record<TeseEvalBadgeVariant, string> = { green: 'verde', blue: 'azul', 'blue-solid': 'azul', red: 'vermelho', neutral: 'neutro' }
 
+// a data aparece uma vez só: no título ("Estudo de 10 nov 2026") ou, no
+// estudo do dia, na linha de baixo, com a convicção e o tempo de leitura
 const modalTitle = computed(() =>
-  selected.value.isToday ? 'O estudo do dia' : `Estudo de ${selected.value.rowDate}`,
+  selected.value.isToday ? 'O estudo do dia' : `Estudo de ${selected.value.dateBadge || selected.value.rowDate}`,
 )
 
 const modalDateLine = computed(() => {
-  const c = selected.value.conv
+  const s = selected.value
+  const c = s.conv
   const conv = !c
     ? 'Revalidação automática da IA'
     : c.changed
       ? `Convicção ${c.from} → ${c.to}`
       : `Convicção mantida em ${c.to}`
-  const leitura = selected.value.minutes ? ` · ${selected.value.minutes} min de leitura` : ''
-  return `${selected.value.dateBadge} · ${conv}${leitura}`
+  return [s.isToday ? s.dateBadge : null, conv, s.minutes ? `${s.minutes} min de leitura` : null].filter(Boolean).join(' · ')
 })
 
 const modalBlocks = computed<NuDayBlock[]>(() => {
@@ -91,11 +103,13 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
     blocks.push({ label: 'Os ativos', color: 'var(--nu-ink)', html: `<span class="tdl-ativos">${html}</span>` })
   }
   if (s.sources.length) {
+    // uma lista com fio (a referência do documento), não uma pilha de caixas
+    const seta = '<svg class="tdl-fonte-seta" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg>'
     const html = s.sources
       .map((f) => {
-        const miolo = `<span class="tdl-fonte-t">${escapeHtml(f.title)}</span>${f.meta ? `<span class="tdl-fonte-m">${escapeHtml(f.meta)}</span>` : ''}`
+        const miolo = `<span class="tdl-fonte-txt"><span class="tdl-fonte-t">${escapeHtml(f.title)}</span>${f.meta ? `<span class="tdl-fonte-m">${escapeHtml(f.meta)}</span>` : ''}</span>`
         return f.url
-          ? `<a class="tdl-fonte" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">${miolo}</a>`
+          ? `<a class="tdl-fonte" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">${miolo}${seta}<span class="nu-sr">(abre em outra aba)</span></a>`
           : `<span class="tdl-fonte">${miolo}</span>`
       })
       .join('')
@@ -107,7 +121,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 
 <template>
   <section id="mudou" class="tdi">
-    <div class="tdi__cab">
+    <div v-revelar class="tdi__cab">
       <NuEyebrow como="p" sobre="escuro">Diário da tese</NuEyebrow>
       <h2 class="tdi__h2">O que mudou.</h2>
       <p class="tdi__meta">{{ diary.metaLine }}</p>
@@ -118,8 +132,8 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
     </div>
 
     <div class="tdi__miolo" :class="{ 'tdi__locked': !isAuthenticated }" :aria-hidden="!isAuthenticated || undefined">
-      <ol class="tdi__tempo">
-        <li v-for="(s, i) in recentes" :key="s.id" class="tdi__item" :class="{ 'tdi__item--novo': i === 0 }" :style="{ '--i': i }">
+      <ol v-revelar="{ alvo: 'filhos' }" class="tdi__tempo">
+        <li v-for="(s, i) in recentes" :key="s.id" class="tdi__item" :class="{ 'tdi__item--novo': i === 0 }">
           <button type="button" class="tdi__estudo" :tabindex="isAuthenticated ? undefined : -1" @click="openStudy(s.id)">
             <span class="tdi__linha">
               <span class="tdi__data">{{ s.dateBadge }}</span>
@@ -134,12 +148,8 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
         </li>
       </ol>
 
-      <details v-if="anteriores.length" class="tdi__antes">
-        <summary class="tdi__antes-b">
-          <span class="tdi__antes-f">{{ anteriores.length === 1 ? 'Ver o anterior' : `Ver os ${anteriores.length} anteriores` }}</span>
-          <span class="tdi__antes-a">Recolher os anteriores</span>
-          <NuMais :tamanho="28" tom="claro" />
-        </summary>
+      <NuAcordeao v-if="anteriores.length" v-model:aberto="verAnteriores" class="tdi__antes" :tamanho-mais="28">
+        <template #titulo><span class="tdi__antes-t">{{ verAnteriores ? 'Recolher os anteriores' : rotuloAnteriores }}</span></template>
         <ol class="tdi__tempo tdi__tempo--antes">
           <li v-for="s in anteriores" :key="s.id" class="tdi__item">
             <button type="button" class="tdi__estudo" @click="openStudy(s.id)">
@@ -154,7 +164,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
             </button>
           </li>
         </ol>
-      </details>
+      </NuAcordeao>
     </div>
 
     <NuDayModal
@@ -171,72 +181,81 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 <style scoped>
 .tdi {
   background: var(--nu-ink); color: var(--nu-white); scroll-margin-top: 120px;
-  padding: clamp(56px, 5.6vw, 80px) max(clamp(20px, 4vw, 56px), calc((100% - 1240px) / 2));
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 3vw, 36px) clamp(36px, 5vw, 88px);
+  padding: clamp(72px, 8vw, 128px) var(--nu-coluna);
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px clamp(40px, 5vw, 88px);
 }
-.tdi__cab { min-width: 0; animation: nu-fade .5s ease both; }
-.tdi__h2 { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
-.tdi__meta { margin: 18px 0 0; max-width: 30ch; color: var(--nu-on-dark); font-size: clamp(17px, 1.4vw, 19px); font-weight: 500; line-height: 1.45; }
-.tdi__sig { display: flex; align-items: flex-start; gap: 10px; margin: 20px 0 0; max-width: 34ch; color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+.tdi__cab { min-width: 0; }
+.tdi__h2 { margin: 20px 0 0; color: var(--nu-white); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; }
+.tdi__meta { margin: 20px 0 0; max-width: 30ch; color: var(--nu-on-dark); font-size: clamp(17px, 1.4vw, 19px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
+.tdi__sig { display: flex; align-items: flex-start; gap: 10px; margin: 24px 0 0; max-width: 34ch; color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.5; }
 .tdi__sig :deep(.mkc) { margin-top: 2px; }
 
 .tdi__miolo { min-width: 0; }
 /* embaçado (visitante): o diário fica atrás do cadastro, sem clique */
 .tdi__locked { filter: blur(7px); opacity: .55; pointer-events: none; user-select: none; }
 
-/* a linha do tempo: o fio à esquerda, um ponto por estudo */
-.tdi__tempo { list-style: none; margin: 0; padding: 0; }
-.tdi__item { position: relative; padding: 0 0 6px 28px; animation: nu-fade .5s ease both; animation-delay: calc(var(--i, 0) * 60ms); }
+/* ——— a linha do tempo ———
+   um ponto (11px) por estudo, sentado no meio da linha da data (a linha tem
+   22px: a altura do selo); o fio de 1px sai 6px abaixo do ponto e para 6px
+   antes do próximo. O mais novo: o ponto cobalto com o halo. */
+.tdi__tempo { --tdi-pad: 12px; --tdi-ponto: 11px; --tdi-topo: calc(var(--tdi-pad) + 11px - var(--tdi-ponto) / 2); list-style: none; margin: 0; padding: 0; }
+.tdi__item { position: relative; padding: 0 0 8px 28px; }
 .tdi__item::before {
-  content: ''; position: absolute; left: 0; top: 19px; width: 11px; height: 11px; border-radius: 50%;
-  background: var(--nu-ink); box-shadow: inset 0 0 0 2.5px var(--nu-on-dark-2);
+  content: ''; position: absolute; left: 0; top: var(--tdi-topo); width: var(--tdi-ponto); height: var(--tdi-ponto); border-radius: 50%;
+  background: var(--nu-ink); box-shadow: inset 0 0 0 1.5px var(--nu-on-dark-2);
 }
 .tdi__item--novo::before { background: var(--nu-blue-on-dark); box-shadow: 0 0 0 4px color-mix(in srgb, var(--nu-blue-on-dark) 22%, transparent); }
-.tdi__item::after { content: ''; position: absolute; left: 4.75px; top: 38px; bottom: -14px; width: 1.5px; background: var(--nu-dark-line); }
+.tdi__item::after {
+  content: ''; position: absolute; left: calc(var(--tdi-ponto) / 2 - .5px); width: 1px;
+  top: calc(var(--tdi-topo) + var(--tdi-ponto) + 6px); bottom: calc(6px - var(--tdi-topo));
+  background: var(--nu-dark-line);
+}
+.tdi__tempo > .tdi__item:last-child { padding-bottom: 0; }
 .tdi__tempo > .tdi__item:last-child::after { display: none; }
-.tdi__tempo--antes .tdi__item { animation: none; }
 
+/* cada estudo é o clique que abre o leitor */
 .tdi__estudo {
   position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; text-align: left;
-  padding: 12px 56px 14px 16px; margin: 0; border: 0; border-radius: var(--nu-r-tile); background: transparent; color: inherit; font: inherit; cursor: pointer;
-  transition: background .2s ease;
+  padding: var(--tdi-pad) 56px 16px 16px; margin: 0; border: 0; border-radius: var(--nu-r-tile); background: transparent; color: inherit; font: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .tdi__estudo:hover { background: var(--nu-dark-chip); }
-.tdi__linha { display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; }
-.tdi__data { color: var(--nu-white); font-size: 14.5px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
-.tdi__dado { color: var(--nu-on-dark-2); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tdi__estudo:active { background: var(--nu-dark-chip); transform: scale(.995); }
+.tdi__estudo:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 0; }
+.tdi__linha { display: flex; align-items: center; gap: 6px 12px; flex-wrap: wrap; min-height: 22px; }
+.tdi__data { color: var(--nu-white); font-size: 14px; font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
+.tdi__dado { color: var(--nu-on-dark-2); font-size: 13.5px; font-weight: var(--nu-w-texto); font-variant-numeric: tabular-nums; }
 .tdi__dado::before { content: '·'; margin-right: 12px; }
 .tdi__titulo {
-  margin: 0; color: var(--nu-white); font-size: 18px; font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.35; text-wrap: pretty;
+  margin: 0; color: var(--nu-white); font-size: 18px; font-weight: var(--nu-w-forte); letter-spacing: -0.01em; line-height: 1.4; text-wrap: pretty;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .tdi__resumo {
-  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.55;
+  color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6;
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 /* a seta do "abrir": no canto, anda 3px no hover */
 .tdi__seta {
   position: absolute; right: 12px; top: 50%; display: grid; place-items: center; width: 36px; height: 36px; margin-top: -18px; border-radius: 50%;
-  color: var(--nu-on-dark-2); transition: transform .2s ease, color .2s ease, background .2s ease;
+  color: var(--nu-on-dark-2);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .tdi__estudo:hover .tdi__seta { color: var(--nu-white); transform: translateX(3px); }
 
-/* "Ver os N anteriores" */
-.tdi__antes { margin: 12px 0 0; interpolate-size: allow-keywords; }
-.tdi__antes::details-content { block-size: 0; overflow: clip; transition: block-size .4s var(--nu-ease-saida), content-visibility .4s allow-discrete; }
-.tdi__antes[open]::details-content { block-size: auto; }
-.tdi__antes-b {
-  /* o botão recua até o texto dos estudos; a lista de dentro segue no fio da linha do tempo */
-  display: inline-flex; align-items: center; gap: 12px; min-height: 44px; margin-left: 28px; padding: 0 8px 0 18px; list-style: none; cursor: pointer;
-  border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line);
-  color: var(--nu-white); font-size: 14.5px; font-weight: var(--nu-w-medio); transition: background .2s ease;
-}
-.tdi__antes-b::-webkit-details-marker { display: none; }
-.tdi__antes-b:hover { background: var(--nu-dark-chip-line); }
-.tdi__antes-a { display: none; }
-.tdi__antes[open] > .tdi__antes-b .tdi__antes-f { display: none; }
-.tdi__antes[open] > .tdi__antes-b .tdi__antes-a { display: inline; }
-.tdi__antes[open] > .tdi__tempo { margin: 16px 0 0; animation: nu-fade .3s ease both; }
+/* "Ver os N anteriores": o NuAcordeao da base, vestido para o carvão (a base
+   ainda não tem o tom escuro), compacto (o "+" logo depois do rótulo) e com o
+   botão recuado até o texto dos estudos; a lista de dentro fica no fio (o
+   miolo do acordeão corta o que sai da caixa) */
+.tdi__antes { margin-top: 16px; }
+.tdi__antes :deep(.nac__cab) { width: auto; justify-content: flex-start; gap: 12px; padding: 8px 0; margin-left: 44px; color: var(--nu-white); }
+.tdi__antes :deep(.nac__cab:hover .nac__titulo) { color: var(--nu-blue-soft); }
+.tdi__antes :deep(.nmx) { --nmx-fundo: var(--nu-creme); --nmx-fundo-hover: var(--nu-white); --nmx-traco: var(--nu-ink); }
+.tdi__antes :deep(.nac__cab:hover .nac__mais) { background-color: var(--nu-white); }
+.tdi__antes :deep(.nac__cab:focus-visible::after) { outline-color: var(--nu-blue-on-dark); }
+.tdi__antes :deep(.nac__corpo) { padding-bottom: 0; color: inherit; }
+.tdi__antes-t { font-size: 15px; letter-spacing: var(--nu-ls-texto); }
+.tdi__tempo--antes { margin-top: 12px; }
 
 /* no computador: o título da seção à esquerda (gruda), a linha do tempo à direita */
 @media (min-width: 1000px) {
@@ -247,40 +266,51 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
   /* no celular os dados quebram de linha: sem o ponto na frente */
   .tdi__dado::before { content: none; }
   .tdi__item { padding-left: 22px; }
-  .tdi__estudo { padding: 12px 40px 14px 8px; }
+  .tdi__estudo { padding: var(--tdi-pad) 40px 16px 8px; }
   .tdi__seta { right: 0; }
-  .tdi__antes-b { margin-left: 22px; }
+  .tdi__antes :deep(.nac__cab) { margin-left: 30px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tdi__cab, .tdi__item, .tdi__antes[open] > .tdi__tempo { animation: none; }
   .tdi__estudo, .tdi__seta { transition: none; }
-  .tdi__estudo:hover .tdi__seta { transform: none; }
-  .tdi__antes::details-content { transition: none; }
+  .tdi__estudo:hover .tdi__seta, .tdi__estudo:active { transform: none; }
 }
 </style>
 
-<!-- o miolo do leitor (NuDayModal): o HTML entra por v-html num Teleport, fora do escopo -->
+<!-- o miolo do leitor (NuDayModal): o HTML entra por v-html num Teleport, fora do escopo.
+     Um documento: o título do estudo como manchete, a leitura em 18px/1,62 (a
+     do modal), os ativos em linhas com fio e as fontes numa lista com fio. -->
 <style>
-.tdl-titulo { display: block; margin-bottom: 12px; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.25; }
+.tdl-titulo { display: block; margin-bottom: 16px; color: var(--nu-ink); font-size: clamp(20px, 2vw, 23px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.3; text-wrap: pretty; }
 .tdl-ativos { display: block; margin-top: 4px; }
-.tdl-ativo { display: block; padding: 14px 0; border-top: 1px solid var(--nu-line-2); }
+.tdl-ativo { display: block; padding: 16px 0; border-top: 1px solid var(--nu-line-2); }
 .tdl-ativo:first-child { border-top: 0; padding-top: 4px; }
 .tdl-ativo-topo { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; }
-.tdl-ticker { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em; }
-.tdl-nome { color: var(--nu-gray); font-size: 14.5px; font-weight: 600; }
+.tdl-ticker { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--nu-r-tag); background: var(--nu-ink); color: var(--nu-white); font-size: 13.5px; font-weight: var(--nu-w-forte); letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.tdl-nome { color: var(--nu-gray); font-size: 14.5px; font-weight: var(--nu-w-medio); }
 .tdl-selo { display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; margin-left: auto; border-radius: var(--nu-r-tag); font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.2; }
 .tdl-selo--verde { background: var(--nu-green-bg); color: var(--nu-green-text); }
 .tdl-selo--azul { background: var(--nu-blue-bg); color: var(--nu-blue-text); }
 .tdl-selo--vermelho { background: var(--nu-red-bg); color: var(--nu-red-text); }
 .tdl-selo--neutro { background: var(--nu-cream-2); color: var(--nu-ink); }
-.tdl-avaliacao { display: block; margin-top: 10px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.4; }
-.tdl-porque { display: block; margin-top: 4px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.55; }
-.tdl-fontes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.tdl-avaliacao { display: block; margin-top: 10px; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.45; }
+.tdl-porque { display: block; margin-top: 4px; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.6; }
+/* as fontes: uma lista com fio, o título e a origem, a seta de "abre fora" */
+.tdl-fontes { display: block; margin-top: 4px; border-top: 1px solid var(--nu-line-2); }
 .tdl-fonte {
-  display: inline-flex; flex-direction: column; gap: 2px; max-width: 100%; padding: 9px 14px; border-radius: var(--nu-r-chip);
-  box-shadow: inset 0 0 0 1px var(--nu-line); color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-medio); line-height: 1.35; text-decoration: none;
-  transition: box-shadow .2s ease, color .2s ease;
+  display: flex; align-items: center; gap: 16px; min-height: 44px; padding: 12px 0; border-bottom: 1px solid var(--nu-line-2);
+  color: var(--nu-ink); text-decoration: none;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
-a.tdl-fonte:hover { box-shadow: inset 0 0 0 1.5px var(--nu-blue); color: var(--nu-blue-text); }
-.tdl-fonte-m { color: var(--nu-gray); font-size: 13.5px; font-weight: 500; }
+.tdl-fonte-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tdl-fonte-t { font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.4; }
+.tdl-fonte-m { color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.4; }
+.tdl-fonte-seta { flex: none; color: var(--nu-gray); transition: transform var(--nu-dur-media) var(--nu-ease-saida), color var(--nu-dur-media) var(--nu-ease-cor); }
+a.tdl-fonte:hover { color: var(--nu-blue-text); }
+a.tdl-fonte:hover .tdl-fonte-seta { color: var(--nu-blue-text); transform: translate(2px, -2px); }
+a.tdl-fonte:active { opacity: .72; }
+a.tdl-fonte:focus-visible { outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .tdl-fonte, .tdl-fonte-seta { transition: none; }
+  a.tdl-fonte:hover .tdl-fonte-seta { transform: none; }
+}
 </style>
