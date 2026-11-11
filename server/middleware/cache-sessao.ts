@@ -55,6 +55,10 @@ const EXATAS: Record<string, string> = {
   '/jantar': HORA,
   // Estudo estático. O hub /estudo não existe (404) e não entra aqui.
   '/estudo/wealth-2030': DIA,
+  // /graficos: HTML público por um dia. Sem stale longo: o número é do dia.
+  // Logado continua private/no-store, como o resto deste mapa. O PNG tem o
+  // próprio cache na rota, também de 24 h, e não passa por este mapa.
+  '/graficos': 'public, s-maxage=86400',
   // Rankings e setores: o backend cacheia 15 min → s-maxage=900.
   '/rankings': QUINZE_MIN,
   '/setor': QUINZE_MIN,
