@@ -4,6 +4,8 @@
 // caixinha com a frase curta e o link para a página do glossário. A frase vem
 // do glossário do site (carregado só quando alguém abre um termo, para não
 // pesar na home) ou de utils/termosDoDia.ts, para o que o glossário não tem.
+// Robustez (11/11/2026): a caixinha flutua com a sombra de menu (--nu-shadow-float)
+// e chega subindo 4 px em 280 ms; o link do glossário é o NuLinkSeta.
 import { EXPLICACOES_DO_DIA } from '~/utils/termosDoDia'
 
 const props = defineProps<{ texto: string; termo: string; slug: string | null }>()
@@ -40,7 +42,7 @@ function saiuDoFoco(e: FocusEvent) {
     <span v-if="aberto" :id="id" role="tooltip" class="hte__caixa" :class="{ 'hte__caixa--dir': aDireita }">
       <span v-if="definicao" class="hte__def">{{ definicao }}</span>
       <NuSkeleton v-else variant="text" :lines="2" last-width="60%" />
-      <NuxtLink v-if="slug" :to="`/glossario/${slug}`" class="hte__link">Ver no glossário →</NuxtLink>
+      <NuLinkSeta v-if="slug" :to="`/glossario/${slug}`" class="hte__link">Ver no glossário</NuLinkSeta>
     </span>
   </span>
 </template>
@@ -55,13 +57,14 @@ function saiuDoFoco(e: FocusEvent) {
 /* a caixinha: cartão branco de raio 16, que surge em 0,2 s */
 .hte__caixa {
   position: absolute; z-index: 5; left: 0; top: calc(100% + 8px); width: min(300px, calc(100vw - 44px));
-  display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: var(--nu-r-tile);
-  background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-card);
-  font-size: 14.5px; font-weight: 500; line-height: 1.5; text-align: left; white-space: normal;
-  animation: nu-surgir .2s ease both;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; border-radius: var(--nu-r-tile);
+  background: var(--nu-white); color: var(--nu-ink); box-shadow: var(--nu-shadow-float);
+  font-size: 14.5px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; text-align: left; white-space: normal;
+  animation: hte-chega var(--nu-dur-media) var(--nu-ease-saida) both;
 }
+@keyframes hte-chega { from { opacity: 0; transform: translateY(4px); } }
 .hte__caixa--dir { left: auto; right: 0; }
 .hte__def { color: var(--nu-ink); }
-.hte__link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 3px; }
-.hte__link:hover { color: var(--nu-blue-hover); }
+.hte__link { font-size: var(--nu-fs-sm); }
+@media (prefers-reduced-motion: reduce) { .hte__caixa { animation: none; } }
 </style>

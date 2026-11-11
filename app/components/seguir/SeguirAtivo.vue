@@ -10,6 +10,8 @@
 // order 1), não um item espremido ao lado. Vazia, a linha sai do fluxo
 // (sr-only) mas continua no DOM: região aria-live que já existia anuncia o
 // texto novo; uma que nasce junto com o texto costuma ser ignorada.
+// Robustez (11/11/2026): a linha de retorno chega com o fade de 280 ms do
+// sistema (--nu-dur-media, --nu-ease-saida), não mais em 200 ms "ease".
 const props = defineProps<{ ticker: string; path: string }>()
 
 const { following, pending, toggle, feedback } = useSeguirAtivo(() => props.ticker, () => props.path)
@@ -29,7 +31,8 @@ const { following, pending, toggle, feedback } = useSeguirAtivo(() => props.tick
   position: static; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none;
   white-space: normal; order: 1; flex-basis: 100%;
   color: var(--nu-green-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); line-height: 1.5;
-  animation: nu-fade .2s ease both;
+  animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) both;
 }
+@media (prefers-reduced-motion: reduce) { .sga__msg--on { animation: none; } }
 .sga__msg--err { color: var(--nu-red-text); }
 </style>

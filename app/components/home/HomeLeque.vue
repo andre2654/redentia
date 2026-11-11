@@ -20,6 +20,11 @@
 // (a home), com o verde e o vermelho que leem sobre ele; o padrão segue o preto
 // da tela do app, para quem já usa (AssinaturaBeneficios). Os nomes das pontas
 // saem na fonte da página (--nu-font, a Figtree), não mais numa fonte fixa.
+//
+// Robustez (11/11/2026): os nomes das pontas e do eixo saem no peso de rótulo
+// do sistema (--nu-w-medio, 600; eram 700 escritos à mão), e o topo do desenho
+// se dissolve (uma máscara de 10%): o 1% de caminhos mais altos passava da
+// borda de cima e o leque terminava num teto reto, como uma caixa.
 const props = withDefaults(defineProps<{ caminhos?: number; tom?: 'preto' | 'carvao' }>(), { caminhos: 2000, tom: 'preto' })
 
 const MESES = 60
@@ -81,6 +86,8 @@ function cores(el: HTMLElement) {
   const cs = getComputedStyle(el)
   const v = (n: string, d: string) => cs.getPropertyValue(n).trim() || d
   const fonte = v('--nu-font', 'system-ui, sans-serif')
+  // o peso de rótulo do sistema (o canvas não lê var(): o valor vem do token)
+  const peso = v('--nu-w-medio', '600')
   if (props.tom === 'carvao') {
     return {
       verde: v('--nu-green-soft', 'lime'),
@@ -88,6 +95,7 @@ function cores(el: HTMLElement) {
       texto: v('--nu-white', 'white'),
       sub: v('--nu-on-dark-2', 'gray'),
       fonte,
+      peso,
     }
   }
   return {
@@ -96,6 +104,7 @@ function cores(el: HTMLElement) {
     texto: v('--nu-agora-texto', 'white'),
     sub: v('--nu-agora-sub', 'gray'),
     fonte,
+    peso,
   }
 }
 
@@ -171,7 +180,7 @@ function pintar(p: number) {
   ctx.fill()
   // as três pontas e os nomes, quando o desenho termina
   const fim = Math.max(0, (p - 0.86) / 0.14)
-  ctx.font = `700 13px ${c.fonte}`
+  ctx.font = `${c.peso} 13px ${c.fonte}`
   ctx.textBaseline = 'middle'
   if (fim > 0) {
     ctx.globalAlpha = fim
@@ -202,7 +211,7 @@ function pintar(p: number) {
   }
   // o eixo: hoje e 5 anos
   ctx.fillStyle = c.sub
-  ctx.font = `700 12.5px ${c.fonte}`
+  ctx.font = `${c.peso} 12.5px ${c.fonte}`
   ctx.textBaseline = 'alphabetic'
   ctx.textAlign = 'left'
   ctx.fillText('hoje', x0, h - base / 2 + 4)
@@ -269,5 +278,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .hlq { position: relative; width: 100%; aspect-ratio: 16 / 10; background: var(--nu-agora-bg); }
 .hlq--carvao { background: var(--nu-ink); }
-.hlq__tela { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* o topo se dissolve: os caminhos mais altos somem no céu em vez de baterem num teto reto */
+.hlq__tela {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  -webkit-mask-image: linear-gradient(180deg, transparent, var(--nu-ink) 10%);
+  mask-image: linear-gradient(180deg, transparent, var(--nu-ink) 10%);
+}
 </style>

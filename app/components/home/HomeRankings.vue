@@ -19,12 +19,18 @@
 // os rankings é o painel azul da marca, com o corte gigante ao fundo. O
 // "Redentia Score" passa a se chamar Aportou Score no texto (o slug
 // /ranking/redentia-score e o campo da API não mudam).
+//
+// Robustez (11/11/2026, docs/aportou/robustez.md): as peças da base no lugar
+// das feitas à mão: o estado da bolsa e as variações do dia são o NuSelo, o
+// "Ver todos" é o NuLinkSeta (a seta que anda e o sublinhado que aparece). O
+// cartão branco sobre a faixa leva a sombra de cartão branco (era a do creme).
+// A linha sob o ponteiro ganha o fundo com o raio concêntrico do cartão e os
+// fios em volta dela somem (o fundo não fica cortado por dois traços);
+// apertada, escurece. A entrada é o v-revelar, em cascata de 60 ms.
 import { RANKINGS } from '~/content/rankings/registry'
 import { agoraEmSP, estadoDoPregao, quandoFoi } from '~/utils/pregao'
 import { nomeDaEmpresa } from '~/utils/nomeB3'
 
-// a entrada da seção: antes do await (o onMounted do useReveal precisa registrar)
-const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 const { bolsa } = await useBolsaDoDia()
 
 const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -85,6 +91,8 @@ const { data: daBolsa } = await useAsyncData('home:rankings', async () => {
 })
 
 const cartoes = computed<Cartao[]>(() => [...doDia.value, ...(daBolsa.value ?? [])])
+/** o endereço do "Ver todos" (o mesmo de antes, em texto: o NuLinkSeta recebe string) */
+const destino = (c: Cartao) => `/ranking/${c.slug}${c.aba ? `?type=${c.aba}` : ''}`
 const totalDeRankings = Object.keys(RANKINGS).length
 
 // o selo de tempo real: com a bolsa aberta, "Ao vivo" e a hora do dado (as
@@ -105,17 +113,18 @@ const selo = computed(() => {
 </script>
 
 <template>
-  <section v-if="cartoes.length" ref="secao" class="hrk" :class="revealClass" aria-labelledby="hrk-titulo">
-    <div class="hrk__cabeca">
+  <section v-if="cartoes.length" class="hrk" aria-labelledby="hrk-titulo">
+    <div v-revelar="{ alvo: 'filhos' }" class="hrk__cabeca">
       <NuEyebrow como="p">A B3 em fila</NuEyebrow>
       <h2 id="hrk-titulo" class="hrk__titulo">Os rankings.</h2>
       <p class="hrk__sub">Quem mais sobe e cai no pregão, em tempo real, e os rankings da bolsa inteira.</p>
-      <p v-if="selo" class="hrk__selo" :class="{ 'hrk__selo--vivo': selo.vivo }">
-        <strong><i class="hrk__ponto" aria-hidden="true" />{{ selo.texto }}</strong><span>{{ selo.detalhe }}</span>
+      <!-- o estado da bolsa: o selo verde com o ponto ao vivo; fechada, o selo de contorno (metadado) -->
+      <p v-if="selo" class="hrk__selo">
+        <NuSelo :tom="selo.vivo ? 'verde' : 'contorno'" ponto>{{ selo.texto }}</NuSelo><span>{{ selo.detalhe }}</span>
       </p>
     </div>
 
-    <div class="hrk__grade">
+    <div v-revelar="{ alvo: 'filhos' }" class="hrk__grade">
       <article
         v-for="c in cartoes" :key="c.slug"
         v-contexto-chat="{ id: `ranking:${c.slug}`, tipo: 'ranking', rotulo: rotuloCurto(`Ranking · ${c.titulo}`), texto: [c.titulo, c.sub, ...c.linhas.map((l, i) => `${i + 1}. ${l.ticker} (${l.nome}): ${l.valor}`)].filter(Boolean).join('\n') }"
@@ -133,14 +142,13 @@ const selo = computed(() => {
                 <span class="hrk__empresa">{{ l.nome }}</span>
                 <span class="hrk__ticker">{{ l.ticker }}</span>
               </span>
-              <span class="hrk__valor" :class="l.tom && `hrk__valor--${l.tom}`">{{ l.valor }}</span>
+              <!-- a variação do dia é o selo da marca; os números dos rankings da bolsa, texto tabular -->
+              <NuSelo v-if="l.tom" :tom="l.tom === 'down' ? 'vermelho' : 'verde'" class="hrk__valor hrk__valor--selo">{{ l.valor }}</NuSelo>
+              <span v-else class="hrk__valor">{{ l.valor }}</span>
             </NuxtLink>
           </li>
         </ol>
-        <NuxtLink :to="{ path: `/ranking/${c.slug}`, query: c.aba ? { type: c.aba } : undefined }" class="hrk__ver">
-          {{ c.ver }}
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </NuxtLink>
+        <p class="hrk__pe"><NuLinkSeta :to="destino(c)">{{ c.ver }}</NuLinkSeta></p>
       </article>
 
       <!-- todos os rankings: o painel azul da marca -->
@@ -148,9 +156,10 @@ const selo = computed(() => {
         <MarcaCorte class="hrk__todos-corte nu-corte-fundo" :largura="300" cor="var(--nu-white)" />
         <span class="hrk__todos-num">{{ totalDeRankings }}</span>
         <span class="hrk__todos-txt">rankings da bolsa, de dividendos a preço justo, atualizados todo dia.</span>
-        <span class="hrk__ver hrk__ver--cheio">
-          Ver todos os rankings
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        <!-- o cartão inteiro é o link: o rótulo desenha o NuLinkSeta claro (a seta de 16 px que anda e o sublinhado do hover) -->
+        <span class="hrk__todos-ver">
+          <span class="hrk__todos-ver-t">Ver todos os rankings</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13.5 6.5 19 12l-5.5 5.5" /></svg>
         </span>
       </NuxtLink>
     </div>
@@ -158,78 +167,74 @@ const selo = computed(() => {
 </template>
 
 <style scoped>
-/* a faixa quente da marca, no contêiner de 1.240 px */
-.hrk { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
-.hrk__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
-.hrk__sub { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-/* o estado da bolsa: selo de raio 8 e, ao lado, de quando são os números */
-.hrk__selo { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 22px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
-.hrk__selo strong {
-  display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: var(--nu-r-tag);
-  background: var(--nu-white); color: var(--nu-ink); font-size: 13.5px; font-weight: var(--nu-w-medio); line-height: 1.3;
-}
-.hrk__ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--nu-sand); }
-.hrk__selo--vivo strong { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.hrk__selo--vivo .hrk__ponto { background: var(--nu-green); }
+/* a faixa quente da marca: a coluna de 1.240 px e o ritmo de seção do sistema */
+.hrk { background: var(--nu-band); padding: clamp(72px, 8vw, 128px) var(--nu-coluna); }
+.hrk__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; }
+.hrk__sub { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
+/* o estado da bolsa: o selo e, ao lado, de quando são os números (a legenda) */
+.hrk__selo { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 24px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
 
-.hrk__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: clamp(32px, 3.6vw, 40px); }
+.hrk__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: clamp(40px, 4.4vw, 56px); }
 @media (max-width: 1100px) { .hrk__grade { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .hrk__grade { grid-template-columns: 1fr; } }
-/* o cartão branco sobre a faixa */
-.hrk__cartao { display: flex; flex-direction: column; padding: 24px 24px 20px; border-radius: var(--nu-r-card); background: var(--nu-white); box-shadow: var(--nu-shadow-quente); }
-.hrk__nome { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; }
-.hrk__cartao-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: 14.5px; font-weight: 500; }
-.hrk__linhas { list-style: none; margin: 12px 0 0; padding: 0; }
+/* o cartão branco sobre a faixa: a sombra de cartão branco (fio de 1 px e camadas que quase não se veem) */
+.hrk__cartao { display: flex; flex-direction: column; padding: 24px 24px 20px; border-radius: var(--nu-r-card); background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+.hrk__nome { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); }
+.hrk__cartao-sub { margin: 4px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
+.hrk__linhas { list-style: none; margin: 16px 0 0; padding: 0; }
 .hrk__logo { flex: none; }
+/* a linha: um fio reto de 1 px em cima, alinhado com o texto do cartão; sob o
+   ponteiro, o fundo com o raio concêntrico (o do cartão menos os 14 px até a
+   beira do fundo) e os dois fios em volta dele somem */
 .hrk__linha {
-  display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 10px; margin: 0 -10px;
-  border-top: 1px solid var(--nu-line-2); color: var(--nu-ink); transition: background .2s;
+  position: relative; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 10px; margin: 0 -10px;
+  border-radius: calc(var(--nu-r-card) - 14px); color: var(--nu-ink);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.hrk__linhas > li:first-child .hrk__linha { border-top-color: transparent; }
-.hrk__linha:hover { background: var(--nu-row-hover); border-radius: var(--nu-r-chip); color: var(--nu-ink); }
-.hrk__pos { width: 16px; flex: none; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
+.hrk__linha::before {
+  content: ''; position: absolute; top: 0; left: 10px; right: 10px; height: 1px; background: var(--nu-line-2);
+  pointer-events: none; transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
+}
+.hrk__linhas > li:first-child .hrk__linha::before { opacity: 0; }
+.hrk__linha:hover { background: var(--nu-row-hover); color: var(--nu-ink); }
+.hrk__linha:hover::before, .hrk__linhas > li:hover + li .hrk__linha::before { opacity: 0; }
+.hrk__linha:active { background: color-mix(in srgb, var(--nu-ink) 5%, var(--nu-row-hover)); transition-duration: var(--nu-dur-rapida); }
+.hrk__pos { width: 16px; flex: none; color: var(--nu-gray); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 .hrk__id { flex: 1; min-width: 0; }
-.hrk__empresa { display: block; font-size: 16.5px; font-weight: var(--nu-w-medio); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hrk__ticker { display: block; color: var(--nu-gray); font-size: 13.5px; font-weight: 600; letter-spacing: .04em; }
+.hrk__empresa { display: block; font-size: 16.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hrk__ticker { display: block; color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: .04em; }
 .hrk__valor { flex: none; font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-/* a variação do dia é o selo de raio 8 da marca */
-.hrk__valor--up, .hrk__valor--down { padding: 4px 9px; border-radius: var(--nu-r-tag); font-size: 14.5px; font-weight: var(--nu-w-medio); }
-.hrk__valor--up { background: var(--nu-green-bg); color: var(--nu-green-text); }
-.hrk__valor--down { background: var(--nu-red-bg); color: var(--nu-red-text); }
-.hrk__ver {
-  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 12px; min-height: 44px;
-  color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio);
-}
-.hrk__ver:hover { color: var(--nu-blue-hover); }
-.hrk__ver svg { transition: transform .2s ease; }
-.hrk__ver:hover svg, .hrk__todos:hover .hrk__ver svg { transform: translateX(3px); }
-/* o cartão de todos os rankings: o painel azul, o convite */
+/* a variação do dia: o NuSelo (o peso e a altura dele) */
+.hrk__valor--selo { font-size: 14px; font-weight: var(--nu-w-medio); }
+/* o "Ver todos" no pé do cartão (o NuLinkSeta tem o alvo de 44 px por dentro) */
+.hrk__pe { margin: auto 0 0; padding-top: 16px; font-size: var(--nu-fs-md); }
+/* o cartão de todos os rankings: o painel azul, o convite; sobe 2 px e ganha a sombra no hover */
 .hrk__todos {
   position: relative; isolation: isolate; overflow: hidden; justify-content: flex-start; gap: 8px;
   background: var(--nu-grad-cobalto); color: var(--nu-white); box-shadow: none;
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
 }
 .hrk__todos:hover { color: var(--nu-white); transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.hrk__todos:active { transform: scale(.99); }
+.hrk__todos:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.hrk__todos:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
 /* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
 .hrk__todos-corte { z-index: -1; opacity: .08; }
-.hrk__todos-num { font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1; }
-.hrk__todos-txt { max-width: 28ch; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.4; }
-.hrk__ver--cheio, .hrk__todos:hover .hrk__ver--cheio { color: var(--nu-white); }
-
-/* entrada: o cabeçalho e os cartões em cascata de 60 ms */
-.hrk.is-in .hrk__cabeca, .hrk.is-in .hrk__cartao { animation: nu-fade .5s ease backwards; }
-.hrk.is-in .hrk__cartao:nth-child(1) { animation-delay: .06s; }
-.hrk.is-in .hrk__cartao:nth-child(2) { animation-delay: .12s; }
-.hrk.is-in .hrk__cartao:nth-child(3) { animation-delay: .18s; }
-.hrk.is-in .hrk__cartao:nth-child(4) { animation-delay: .24s; }
-.hrk.is-in .hrk__cartao:nth-child(5) { animation-delay: .3s; }
-.hrk.is-in .hrk__cartao:nth-child(6) { animation-delay: .36s; }
-
-@media (max-width: 760px) {
-  .hrk { padding-inline: 20px; }
+.hrk__todos-num { font-size: clamp(46px, 5.2vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1; }
+.hrk__todos-txt { max-width: 28ch; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.4; }
+.hrk__todos-ver {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: auto; padding-top: 16px;
+  color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
 }
+.hrk__todos-ver-t {
+  text-decoration-line: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  text-decoration-color: transparent; transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.hrk__todos-ver svg { flex: none; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.hrk__todos:hover .hrk__todos-ver-t { text-decoration-color: currentColor; }
+.hrk__todos:hover .hrk__todos-ver svg { transform: translateX(3px); }
+
 @media (prefers-reduced-motion: reduce) {
-  .hrk__ver svg, .hrk__todos { transition: none; }
+  .hrk__todos, .hrk__todos-ver svg, .hrk__linha { transition: none; }
+  .hrk__todos:hover, .hrk__todos:active { transform: none; }
 }
 </style>

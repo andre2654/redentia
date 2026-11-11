@@ -17,7 +17,12 @@
 // de cartão flutuando e a seta anda 3 px. Os oito destinos, os textos, os
 // links e a ordem são os mesmos; no celular o cartão deita (ícone, texto, seta)
 // para a lista não dobrar de altura.
-const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
+//
+// Robustez (11/11/2026): o cartão clicável é o da base (.nu-cartao--vivo: sobe
+// 2 px com a sombra de cartão erguido em 280 ms, afunda ao apertar, anel de
+// foco de 3 px); o "Abrir" ganha o sublinhado que aparece, como o NuLinkSeta;
+// a entrada é o v-revelar em cascata de 60 ms; a seção respira no ritmo do
+// sistema, na coluna de 1.240.
 // o desenho de cada ícone (traço de 2 px, 24 × 24): só os caminhos
 const DESTINOS = [
   { t: 'Preço teto', d: 'Quanto pagar por uma ação, por cinco métodos.', href: '/calculadora/preco-teto', i: ['M3 5h18', 'M5.5 20v-7', 'M12 20V9.5', 'M18.5 20v-5', 'M3 20h18'] },
@@ -32,14 +37,14 @@ const DESTINOS = [
 </script>
 
 <template>
-  <section ref="secao" class="hms" :class="revealClass" aria-labelledby="hms-titulo">
-    <div class="hms__cabeca">
+  <section class="hms" aria-labelledby="hms-titulo">
+    <div v-revelar="{ alvo: 'filhos' }" class="hms__cabeca">
       <NuEyebrow como="p">Ferramentas abertas</NuEyebrow>
       <h2 id="hms-titulo" class="hms__titulo">De graça, sem conta.</h2>
       <p class="hms__dek">As ferramentas abertas da Aportou, para estudar antes de investir.</p>
     </div>
-    <nav class="hms__grade" aria-label="Ferramentas abertas">
-      <NuxtLink v-for="(x, n) in DESTINOS" :key="x.href" :to="x.href" class="hms__cartao" :style="{ '--i': n }">
+    <nav v-revelar="{ alvo: 'filhos' }" class="hms__grade" aria-label="Ferramentas abertas">
+      <NuxtLink v-for="x in DESTINOS" :key="x.href" :to="x.href" class="hms__cartao nu-cartao--vivo">
         <svg class="hms__icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path v-for="d in x.i" :key="d" :d="d" /></svg>
         <span class="hms__texto">
           <span class="hms__nome">{{ x.t }}</span>
@@ -55,30 +60,30 @@ const DESTINOS = [
 </template>
 
 <style scoped>
-/* o creme da página, no contêiner de 1.240 px */
-.hms { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
-.hms__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
-.hms__dek { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-.hms__grade { display: grid; gap: 16px; margin-top: clamp(36px, 4vw, 44px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
-/* o cartão creme do contrato, clicável: ícone, nome, frase e "Abrir" */
+/* o creme da página: a coluna de 1.240 px e o ritmo de seção do sistema */
+.hms { background: var(--nu-page); padding: clamp(72px, 8vw, 128px) var(--nu-coluna); }
+.hms__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; }
+.hms__dek { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
+.hms__grade { display: grid; gap: 16px; margin-top: clamp(40px, 4.4vw, 56px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* o cartão creme do contrato, clicável (o movimento é o da base, .nu-cartao--vivo): ícone, nome, frase e "Abrir" */
 .hms__cartao {
-  display: flex; flex-direction: column; min-height: 216px; padding: clamp(22px, 2.2vw, 28px);
+  display: flex; flex-direction: column; min-height: 216px; padding: clamp(24px, 2.2vw, 28px);
   border-radius: var(--nu-r-card); background: var(--nu-band); box-shadow: var(--nu-shadow-quente);
-  transition: transform .25s var(--nu-ease-saida), box-shadow .25s var(--nu-ease-saida);
+  -webkit-tap-highlight-color: transparent;
 }
-.hms__cartao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
-.hms__cartao:active { transform: scale(.99); }
-.hms__icone { flex: none; width: 34px; height: 34px; color: var(--nu-blue); }
-.hms__texto { display: block; margin-top: 18px; min-width: 0; }
-.hms__nome { display: block; color: var(--nu-ink); font-size: clamp(21px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.15; }
-.hms__desc { display: block; margin-top: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-.hms__abrir { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 18px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.hms__abrir svg { flex: none; transition: transform .25s var(--nu-ease-saida); }
+.hms__icone { flex: none; width: 32px; height: 32px; color: var(--nu-blue); }
+.hms__texto { display: block; margin-top: 16px; min-width: 0; }
+.hms__nome { display: block; color: var(--nu-ink); font-size: clamp(21px, 1.8vw, 24px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.15; }
+.hms__desc { display: block; margin-top: 8px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
+.hms__abrir { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 16px; color: var(--nu-blue-text); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
+/* o "Abrir" se comporta como o NuLinkSeta: a seta anda 3 px e o sublinhado aparece */
+.hms__abrir-t {
+  text-decoration-line: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px;
+  text-decoration-color: transparent; transition: text-decoration-color var(--nu-dur-media) var(--nu-ease-cor);
+}
+.hms__abrir svg { flex: none; width: 16px; height: 16px; transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
+.hms__cartao:hover .hms__abrir-t { text-decoration-color: currentColor; }
 .hms__cartao:hover .hms__abrir svg { transform: translateX(3px); }
-
-/* entrada: o cabeçalho e os cartões em cascata de 60 ms */
-.hms.is-in .hms__cabeca, .hms.is-in .hms__cartao { animation: nu-fade .5s ease backwards; }
-.hms.is-in .hms__cartao { animation-delay: calc(60ms * (var(--i) + 1)); }
 
 @media (max-width: 1100px) {
   .hms__grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -86,9 +91,8 @@ const DESTINOS = [
 }
 /* no celular o cartão deita: o ícone, o texto e a seta numa linha (a lista do Mais do app) */
 @media (max-width: 640px) {
-  .hms { padding-inline: 20px; }
-  .hms__grade { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .hms__cartao { flex-direction: row; align-items: center; gap: 14px; min-height: 76px; padding: 14px 16px 14px 18px; border-radius: var(--nu-r-panel); }
+  .hms__grade { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .hms__cartao { flex-direction: row; align-items: center; gap: 16px; min-height: 76px; padding: 16px 16px 16px 20px; border-radius: var(--nu-r-panel); }
   .hms__icone { width: 28px; height: 28px; }
   .hms__texto { flex: 1; margin-top: 0; }
   .hms__nome { font-size: var(--nu-fs-lg); }
@@ -97,10 +101,7 @@ const DESTINOS = [
   /* a palavra some da tela e fica para o leitor de tela; a seta basta */
   .hms__abrir-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
-@media (min-width: 641px) and (max-width: 760px) {
-  .hms { padding-inline: 20px; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .hms__cartao, .hms__abrir svg { transition: none; }
+  .hms__abrir svg { transition: none; }
 }
 </style>

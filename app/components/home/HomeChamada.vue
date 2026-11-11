@@ -23,6 +23,11 @@
 // já está na App Store (02/11/2026: só o iPhone; Mac e relógio em revisão).
 // O link da loja fica nos aparelhos do herói (HomeHeroVisitante), não aqui:
 // a ação desta chamada é uma só, conectar a carteira.
+//
+// Robustez (11/11/2026): a pílula perdeu o brilho cobalto de 40 px que tinha
+// embaixo (no creme ele era a sombra mais forte da página, e o NuBotaoSeta não
+// tem sombra em nenhum outro lugar do site: a mesma peça, a mesma cara). A
+// letra miúda vai a 14 px, no peso de texto e a 16 px do botão.
 import { fraseDosApps } from '~/utils/appsRedentia'
 withDefaults(defineProps<{
   /** 'claro' sobre o creme (o topo de quem tem conta); 'escuro' sobre o carvão do herói e o azul do fecho */
@@ -87,10 +92,9 @@ const BANCOS = [
 /* o botão: a pílula da marca (NuBotaoSeta), com os bancos empilhados antes do
    rótulo (o slot `antes`) e a seta no círculo à direita. Com os logos, o recuo
    da esquerda é o do círculo da direita, para a pílula ficar simétrica */
-.hch .hch__botao { max-width: 100%; padding-left: 10px; gap: 14px; box-shadow: var(--nu-home-sombra-botao); }
+.hch .hch__botao { max-width: 100%; padding-left: 10px; gap: 14px; }
 /* o rótulo encosta nos logos; a folga vai toda para antes do círculo */
 .hch .hch__botao :deep(.nbs__txt) { margin-right: auto; padding-right: 4px; }
-.hch--escuro .hch__botao { box-shadow: var(--nu-home-sombra-botao-escuro); }
 .hch--escuro .hch__botao:focus-visible { outline-color: var(--nu-white); }
 .hch__bancos { display: inline-flex; flex: none; }
 .hch__banco {
@@ -102,13 +106,13 @@ const BANCOS = [
 
 /* a letra miúda: de onde vem a carteira (sem preço desde 01/11/2026) */
 .hch__letra {
-  margin: 18px 0 0; max-width: 64ch; color: var(--nu-gray);
-  font-size: 14.5px; font-weight: 500; line-height: 1.55; text-wrap: balance;
+  margin: 16px 0 0; max-width: 64ch; color: var(--nu-gray);
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.55; text-wrap: balance;
 }
 .hch__letra strong { color: var(--nu-ink); font-weight: var(--nu-w-medio); }
 .hch__apps {
   display: inline-flex; align-items: center; gap: 10px; margin: 8px 0 0;
-  color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.4;
+  color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.4;
 }
 .hch__glifos { display: inline-flex; align-items: center; gap: 6px; color: var(--nu-ink); }
 
@@ -120,8 +124,7 @@ const BANCOS = [
 .hch--calmo .hch__botao { padding-left: 8px; gap: 12px; }
 .hch--calmo .hch__banco { width: 30px; height: 30px; box-shadow: 0 0 0 2px var(--nbs-bg, var(--nu-blue)); }
 .hch--calmo .hch__banco + .hch__banco { margin-left: -8px; }
-.hch--calmo .hch__letra { margin-top: 16px; }
-.hch--calmo .hch__apps { margin-top: 6px; }
+.hch--calmo .hch__apps { margin-top: 8px; }
 
 /* a linha dos aparelhos fica só no computador (pedido do dono, 01/11/2026):
    no celular e no tablet ela só empurrava os aparelhos para baixo */

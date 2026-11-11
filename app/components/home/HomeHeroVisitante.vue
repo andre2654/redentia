@@ -25,6 +25,14 @@
 //
 // As imagens dos aparelhos (public/img/home) ficam no repositório: o /assinar
 // ainda usa.
+//
+// Robustez (11/11/2026, docs/aportou/robustez.md): o selo dos 2.000 futuros era
+// uma pílula cobalto cheia, a coisa mais forte do herói depois do título, e lia
+// como um segundo botão ao lado da chamada. Virou o NuSelo azul sobre o escuro
+// (a legenda do palco, não uma ação): a chamada é a única coisa cheia na dobra.
+// Sob o ponteiro, o palco inteiro avisa que é clicável: o selo acende e sobe
+// 2 px; apertado, afunda. Pesos, tracking, espaços (8 px) e a entrada vêm dos
+// tokens (--nu-dur-entrada, --nu-ease-saida, cascata de 60 ms).
 </script>
 
 <template>
@@ -41,7 +49,7 @@
       <div class="hhv__halo" aria-hidden="true" />
       <HomeLeque tom="carvao" class="hhv__leque" />
       <p class="hhv__pe">
-        <span class="hhv__selo"><strong>2.000</strong> futuros testados para cada carteira</span>
+        <NuSelo tom="azul" sobre="escuro" class="hhv__selo"><strong>2.000</strong> futuros testados para cada carteira</NuSelo>
         <span class="hhv__nota">Ilustração do método. O resultado da sua carteira aparece depois de conectar.</span>
       </p>
       <div class="hhv__horizonte" aria-hidden="true" />
@@ -69,19 +77,19 @@
 .hhv__texto { display: flex; flex-direction: column; align-items: center; max-width: 1120px; }
 .hhv__produto {
   display: inline-flex; align-items: center; gap: 8px; margin: 0;
-  color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); letter-spacing: -0.02em;
+  color: var(--nu-agora-texto); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-titulo);
 }
 .hhv__titulo {
-  margin: 22px 0 0; max-width: 22ch;
-  font-size: clamp(36px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 1;
+  margin: 24px 0 0; max-width: 22ch;
+  font-size: clamp(36px, 4.8vw, 68px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1;
   text-wrap: balance;
   color: var(--nu-agora-texto);
   background: linear-gradient(180deg, var(--nu-white) 45%, var(--nu-cream-text-78) 100%);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 .hhv__dek {
-  margin: 18px 0 0; max-width: 54ch; color: var(--nu-agora-sub);
-  font-size: clamp(16px, 1.35vw, 19px); font-weight: 500; line-height: 1.5; text-wrap: balance;
+  margin: 20px 0 0; max-width: 54ch; color: var(--nu-agora-sub);
+  font-size: clamp(16px, 1.35vw, 19px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; text-wrap: balance;
 }
 .hhv__chamada { margin-top: clamp(24px, 2.6vw, 32px); }
 .hhv__chamada :deep(.hch__letra) { color: var(--nu-agora-sub); }
@@ -91,7 +99,8 @@
 .hhv__palco {
   --chao: clamp(64px, 6.4vw, 96px); /* o espaço do selo, embaixo do horizonte */
   position: relative; display: block; width: min(1080px, 84vw); color: inherit;
-  margin-top: clamp(28px, 3.4vw, 48px); padding-bottom: var(--chao);
+  margin-top: clamp(32px, 3.4vw, 48px); padding-bottom: var(--chao);
+  -webkit-tap-highlight-color: transparent;
 }
 .hhv__palco:hover { color: inherit; }
 .hhv__halo {
@@ -104,16 +113,19 @@
 .hhv__palco .hhv__leque { display: block; width: 100%; height: auto; aspect-ratio: 100 / 40; background: transparent; text-align: left; }
 .hhv__pe {
   position: absolute; left: 0; right: 0; bottom: 0; height: var(--chao); margin: 0;
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 18px; padding-top: 18px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 16px; padding-top: 16px;
 }
+/* a legenda do palco: o NuSelo azul sobre o escuro, um pouco maior que o de
+   linha (é a legenda de uma ilustração de 1.080 px); o número em branco */
 .hhv__selo {
-  display: inline-flex; align-items: center; gap: 8px; padding: 9px 17px; border-radius: var(--nu-r-pill);
-  background: var(--nu-blue); color: var(--nu-white); font-size: 15px; font-weight: 500; white-space: nowrap;
-  transition: transform .3s var(--nu-ease-saida);
+  height: 32px; padding: 0 12px; gap: 6px; font-size: 14px;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.hhv__selo strong { font-size: 16px; font-weight: var(--nu-w-forte); }
-.hhv__palco:hover .hhv__selo { transform: translateY(-2px); }
-.hhv__nota { color: var(--nu-agora-sub); font-size: 13.5px; font-weight: 500; line-height: 1.4; }
+.hhv__selo strong { color: var(--nu-white); font-weight: var(--nu-w-forte); }
+/* o palco inteiro é o clique: o selo acende e sobe; apertado, afunda */
+.hhv__palco:hover .hhv__selo { --nsl-fundo: color-mix(in srgb, var(--nu-blue-on-dark) 30%, transparent); transform: translateY(-2px); }
+.hhv__palco:active .hhv__selo { transform: scale(.98); transition-duration: var(--nu-dur-rapida); }
+.hhv__nota { color: var(--nu-agora-sub); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.4; }
 .hhv__palco:focus-visible { outline: 3px solid var(--nu-blue-on-dark); outline-offset: 6px; border-radius: var(--nu-r-card); }
 
 /* a linha de luz: o anel do input mágico (cobalto, céu, sálvia e areia),
@@ -133,12 +145,13 @@
 /* o mesmo anel, desfocado, é o halo colorido em volta do fio */
 .hhv__horizonte::after { inset: -7px 0; filter: blur(9px); opacity: .7; }
 
-/* entrada calma: o título fica parado (LCP); o texto sobe do desfoque; o palco só sobe */
-.hhv__dek, .hhv__chamada { animation: hhv-entra 1s var(--nu-ease-saida) backwards; }
-.hhv__chamada { animation-delay: .1s; }
-.hhv__palco { animation: hhv-sobe 1.1s var(--nu-ease-saida) .1s backwards; }
-@keyframes hhv-entra { from { opacity: 0; filter: blur(8px); transform: translateY(16px); } }
-@keyframes hhv-sobe { from { transform: translateY(28px); } }
+/* entrada calma: o título fica parado (LCP); o texto sobe do desfoque em
+   cascata de 60 ms; o palco só sobe (o leque se desenha sozinho) */
+.hhv__dek, .hhv__chamada { animation: hhv-entra var(--nu-dur-entrada) var(--nu-ease-saida) backwards; }
+.hhv__chamada { animation-delay: 60ms; }
+.hhv__palco { animation: hhv-sobe var(--nu-dur-entrada) var(--nu-ease-saida) 120ms backwards; }
+@keyframes hhv-entra { from { opacity: 0; filter: blur(6px); transform: translateY(14px); } }
+@keyframes hhv-sobe { from { transform: translateY(16px); } }
 
 /* rolar acende o horizonte (só onde existe) */
 @supports (animation-timeline: view()) {
@@ -164,9 +177,9 @@
   .hhv__produto { display: none; }
   .hhv__titulo { margin-top: 0; font-size: clamp(31px, 8.6vw, 37px); line-height: 1.05; }
   .hhv__texto, .hhv__chamada { align-self: stretch; }
-  .hhv__chamada { margin-top: 22px; }
+  .hhv__chamada { margin-top: 24px; }
   .hhv__chamada :deep(.hch__letra strong) { display: inline; }
-  .hhv__palco { --chao: 104px; width: 100%; margin-top: 26px; }
+  .hhv__palco { --chao: 104px; width: 100%; margin-top: 24px; }
   .hhv__palco .hhv__leque { aspect-ratio: 100 / 66; }
 }
 </style>

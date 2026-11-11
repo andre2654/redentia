@@ -10,12 +10,15 @@
 // a 8% no canto) pousado sobre o creme da página, como a chamada final do
 // quadro Home. O título, o texto e a chamada (HomeChamada, agora a pílula
 // creme com a seta no círculo) são os mesmos.
-const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
+//
+// Robustez (11/11/2026): o painel entra com o v-revelar (sobe 14 px e sai do
+// desfoque em 720 ms, uma vez, sem esconder nada no HTML); título e texto nos
+// tokens de peso e tracking; a coluna de 1.240 (--nu-coluna).
 </script>
 
 <template>
-  <section ref="secao" class="hfe" :class="revealClass" aria-labelledby="hfe-titulo">
-    <div class="hfe__painel">
+  <section class="hfe" aria-labelledby="hfe-titulo">
+    <div v-revelar class="hfe__painel">
       <MarcaCorte class="hfe__corte nu-corte-fundo" :largura="620" cor="var(--nu-white)" />
       <NuEyebrow como="p" sobre="azul">Aportou?</NuEyebrow>
       <h2 id="hfe-titulo" class="hfe__titulo">A sua carteira é boa?</h2>
@@ -26,7 +29,7 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 </template>
 
 <style scoped>
-.hfe { background: var(--nu-page); padding: clamp(40px, 5vw, 72px) max(32px, calc((100% - 1240px) / 2)) clamp(56px, 6vw, 88px); }
+.hfe { background: var(--nu-page); padding: clamp(40px, 5vw, 72px) var(--nu-coluna) clamp(56px, 6vw, 96px); }
 /* o painel azul do contrato */
 .hfe__painel {
   position: relative; isolation: isolate; overflow: hidden;
@@ -36,15 +39,11 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 }
 /* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
 .hfe__corte { z-index: -1; opacity: .08; }
-.hfe__titulo { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
-.hfe__dek { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
-.hfe__chamada { margin-top: clamp(26px, 3vw, 36px); }
-
-/* entrada: o painel sobe quando a seção chega perto da tela */
-.hfe.is-in .hfe__painel { animation: nu-subir .5s var(--nu-ease-saida) backwards; }
+.hfe__titulo { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: .98; text-wrap: balance; }
+.hfe__dek { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; text-wrap: pretty; }
+.hfe__chamada { margin-top: clamp(24px, 3vw, 40px); }
 
 @media (max-width: 760px) {
-  .hfe { padding-inline: 20px; }
   .hfe__painel { border-radius: var(--nu-r-card); }
 }
 </style>

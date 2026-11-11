@@ -14,6 +14,9 @@
 // A leitura (`varredura`, 0 a 1): uma faixa clara atravessa o dia, com a hora;
 // o que ela já leu fica aceso e o resto, apagado.
 // Hover, toque e as setas do teclado mostram os quatro naquele minuto.
+// Robustez (11/11/2026): a dica é uma superfície que flutua (--nu-shadow-float,
+// a sombra de menu e painel) e surge em 160 ms em vez de piscar; os pesos e o
+// tracking dos rótulos vêm dos tokens.
 import type { MercadoDoDia } from '~/utils/bolsaDoDia'
 
 const props = defineProps<{
@@ -170,7 +173,7 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
 
 <style scoped>
 .hbm { margin: 0; min-width: 0; }
-.hbm__legenda { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: 500; }
+.hbm__legenda { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--nu-on-dark); font-size: 14.5px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); }
 .hbm__chave { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .hbm__chave i { width: 14px; height: 3px; border-radius: 2px; }
 .hbm__chave strong { color: var(--nu-white); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
@@ -193,11 +196,12 @@ const resumo = computed(() => props.mercados.map((m) => `${m.nome} ${pct(m.final
 .hbm__dica {
   position: absolute; top: 34px; transform: translateX(12px); pointer-events: none; z-index: 2;
   display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; border-radius: var(--nu-r-chip);
-  background: var(--nu-white); box-shadow: var(--nu-shadow-card); white-space: nowrap;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-float); white-space: nowrap;
+  animation: nu-surgir var(--nu-dur-rapida) var(--nu-ease-cor) both;
 }
 .hbm__dica--esq { transform: translateX(calc(-100% - 12px)); }
 .hbm__dica-hora { color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
-.hbm__dica-linha { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; }
+.hbm__dica-linha { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); }
 .hbm__dica-linha i { width: 12px; height: 3px; border-radius: 2px; box-shadow: 0 0 0 1px var(--nu-ink-30); }
 .hbm__dica-linha strong { min-width: 54px; color: var(--nu-ink); font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
 </style>

@@ -31,6 +31,11 @@
 // "SEUS DADOS" (HomeOQueNaoE), depois do "como funciona", para quem ainda vai
 // conectar a carteira. Planos, fatos e o cartão "PERGUNTE À IA" do quadro
 // trazem números de exemplo e não entraram.
+//
+// Robustez (11/11/2026, docs/aportou/robustez.md): toda seção abaixo da dobra
+// entra com o v-revelar (dentro de cada peça; aqui, as duas colunas do FAQ),
+// respira no ritmo de seção do sistema (72 a 128 px) e usa a coluna de 1.240
+// (--nu-coluna), a mesma em todas.
 const { isAuthenticated, clearSession } = useAuthState()
 
 // resumo da carteira (só logado; anônimo não dispara fetch). Token morto
@@ -76,11 +81,11 @@ const mostrarComoFunciona = computed(() =>
          O NuFaqAccordion emite o JSON-LD FAQPage com estas perguntas. -->
     <section id="faq" class="mfq">
       <div class="mfq__cols">
-        <div class="mfq__left">
+        <div v-revelar class="mfq__left">
           <NuSectionHeading eyebrow="Perguntas frequentes">Ficou com alguma <br>dúvida?</NuSectionHeading>
           <div class="mfq__copy">O que a assinatura inclui, quanto custa, de onde vêm os cenários e como fica o seu dinheiro.</div>
         </div>
-        <div class="mfq__right">
+        <div v-revelar class="mfq__right">
           <NuFaqAccordion :items="MERCADO_FAQS" surface="white" />
         </div>
       </div>
@@ -95,12 +100,9 @@ const mostrarComoFunciona = computed(() =>
 /* ——— FAQ (o mesmo da home anterior; o /benchmark-ia e a /teses copiam).
    Aportou: a faixa quente da marca, com os cartões brancos por cima, no
    contêiner de 1.240 px ——— */
-.mfq { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
-.mfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
+.mfq { background: var(--nu-band); padding: clamp(72px, 8vw, 128px) var(--nu-coluna); }
+.mfq__cols { display: flex; gap: clamp(32px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .mfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
-.mfq__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin-top: 20px; max-width: 420px; }
+.mfq__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.45; margin-top: 20px; max-width: 420px; }
 .mfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
-@media (max-width: 760px) {
-  .mfq { padding-inline: 20px; }
-}
 </style>
