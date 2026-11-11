@@ -270,7 +270,7 @@ const estiloAzMarca = computed(() => ({ width: `${azMarca.value.w}px`, transform
   background: color-mix(in srgb, var(--nu-page) 92%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
   border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
-  transition: top .32s var(--nu-ease-saida);
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
 }
 /* uma linha só, na coluna: quando não cabe (tablet, celular) rola de lado */
 .glx__az-inner {

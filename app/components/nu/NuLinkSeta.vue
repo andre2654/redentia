@@ -64,14 +64,18 @@ const attrs = computed(() => {
 </template>
 
 <style scoped>
+/* a letra e a margem em :where: a classe de quem usa (font-size, margin-top)
+   vence SEMPRE, sem depender da ordem em que o CSS chega (no build, a ordem
+   dos pedaços muda). A margem negativa devolve a folga do alvo de 44px. */
+:where(.nls) { font: inherit; margin: calc(var(--nls-folga) * -1) 0; }
 .nls {
   --nls-tinta: var(--nu-blue-text);
   /* a folga que leva o alvo a 44px: sai do padding e volta pela margem */
   --nls-folga: max(0px, calc((44px - 1lh) / 2));
   position: relative; display: inline-flex; align-items: center; gap: 6px; vertical-align: baseline;
-  padding: var(--nls-folga) 0; margin: calc(var(--nls-folga) * -1) 0;
+  padding: var(--nls-folga) 0;
   border: 0; background: none; color: var(--nls-tinta);
-  font: inherit; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35;
+  font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35;
   text-align: left; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor);
 }

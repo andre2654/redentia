@@ -442,6 +442,7 @@
   --nu-dur-entrada: 720ms;  /* revelar ao rolar */
   --nu-dur-respiro: 1150ms; /* o que respira devagar: "conferindo", o cursor do código, o passo da vez */
   --nu-passo-cascata: 60ms; /* entre um item e o próximo numa entrada em cascata */
+  --nu-dur-topo: 320ms;     /* o topo encolhe ao rolar: a régua, a faixa de seções e as barras que grudam andam juntas */
   /* tracking por tamanho: grande aperta, caixa alta abre */
   --nu-ls-display: -0.035em;
   --nu-ls-titulo: -0.02em;

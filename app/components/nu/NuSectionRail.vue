@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
      vive no <html> (72px normal, 60px encolhido; no celular 52 e 46). O tempo
      é o do encolher do topo (.32s --nu-ease-saida), para andarem juntos. */
   position: sticky; top: var(--nuh-h, 72px); z-index: 40;
-  transition: top .32s var(--nu-ease-saida);
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
 }
 .nsr {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;

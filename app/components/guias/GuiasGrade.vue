@@ -112,7 +112,7 @@ const opcoesTema = computed(() => [
   background: color-mix(in srgb, var(--nu-page) 90%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px);
   border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
-  transition: top .32s var(--nu-ease-saida);
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
 }
 .ggr__barra-in { display: flex; align-items: center; gap: 12px; padding: 10px var(--g); }
 .ggr__busca {

@@ -227,7 +227,7 @@ function onSubmit() {
   font-family: var(--nu-font); font-size: 17px; font-weight: var(--nu-w-texto); line-height: 1.4;
   transition: border-color var(--nu-dur-media) var(--nu-ease-cor);
 }
-.ctf__input:hover:not(:focus) { border-color: var(--nu-gray); }
+.ctf__input:hover:not(:focus) { border-color: var(--nu-borda-campo-hover); }
 .ctf__input::placeholder { color: var(--nu-placeholder); font-weight: var(--nu-w-texto); }
 .ctf__input:focus, .ctf__input:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
 .ctf__input--tabular { font-variant-numeric: tabular-nums; }

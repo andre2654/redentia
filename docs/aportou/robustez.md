@@ -21,7 +21,7 @@ Vale junto com `contrato.md` (a identidade), `decisoes.md` (nomes) e `tese.md`. 
 - **Tracking por token**: `--nu-ls-display` −0,035em, `--nu-ls-titulo` −0,02em, `--nu-ls-texto` −0,005em, `--nu-ls-caixa` 0,16em.
 - **`--nu-coluna`**: a margem da coluna de 1240 (`max(clamp(20px,5.5vw,80px), calc((100% - 1240px) / 2))`). Use em vez de copiar a expressão.
 - **`--nu-veu`**: o véu de modal e folha.
-- **`--nu-passo-cascata`** (60ms, entre um item e o próximo), **`--nu-dur-respiro`** (1150ms, o que respira devagar: "conferindo", o cursor do código) e **`--nu-borda-campo-hover`** (a borda do campo sob o ponteiro; a Redentia redefine junto).
+- **`--nu-passo-cascata`** (60ms, entre um item e o próximo), **`--nu-dur-topo`** (320ms, o topo que encolhe e tudo que gruda embaixo dele), **`--nu-dur-respiro`** (1150ms, o que respira devagar: "conferindo", o cursor do código) e **`--nu-borda-campo-hover`** (a borda do campo sob o ponteiro; a Redentia redefine junto).
 - **NuBotaoSeta** em três tamanhos: `g` 56px (herói, formulário), `m` 48px (seção, cartão), `p` 40px (dentro de cartão, linha de tabela). A bola cresce 4% e a seta atravessa no hover; apertar afunda 2%.
 - A Redentia (B2B) devolve pesos e curva antigos em `tema-redentia.css`.
 

@@ -285,7 +285,7 @@ const varDoDia = computed(() => {
   -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px);
   border-top: 1px solid var(--nu-line-2); border-bottom: 1px solid var(--nu-line-2);
   /* o mesmo passo da régua e do header quando o header encolhe (NuMarketTicker: .32s) */
-  transition: top .32s var(--nu-ease-saida);
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
   /* compacta: o papel à esquerda, as seções à direita */
   display: flex; align-items: center;
 }

@@ -204,7 +204,7 @@ const estiloRealce = computed(() => ({ width: `${realce.value.w}px`, transform: 
   background: var(--nu-white); border-bottom: 1px solid var(--nu-cream-line);
 }
 .nuh {
-  --mov: .32s var(--nu-ease-saida);
+  --mov: var(--nu-dur-topo) var(--nu-ease-saida);
   display: flex; align-items: center; height: 72px; padding: 0 clamp(16px, 3vw, 40px);
   transition: height var(--mov);
 }

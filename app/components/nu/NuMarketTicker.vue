@@ -107,7 +107,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
      <html>, setada pelo NuHeader (72px normal, 60px encolhido; no celular
      52 e 46). .nut-wrap é a classe que o ChatSeletor conta como topo. */
   position: sticky; top: var(--nuh-h, 72px); z-index: 40;
-  transition: top .32s var(--nu-ease-saida);
+  transition: top var(--nu-dur-topo) var(--nu-ease-saida);
 }
 .nut { display: flex; align-items: center; gap: 26px; padding: 14px var(--nu-coluna); }
 .nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
