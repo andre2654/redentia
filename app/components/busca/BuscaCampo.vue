@@ -22,7 +22,7 @@ const emit = defineEmits<{
   (e: 'tecla', ev: KeyboardEvent): void
 }>()
 
-const tipos = BUSCA_TIPOS.map((t) => ({ id: t.key as string, rotulo: t.label }))
+const tipos = BUSCA_TIPOS.map((t) => ({ valor: t.key, rotulo: t.label }))
 const input = ref<HTMLInputElement | null>(null)
 const caixa = ref<HTMLElement | null>(null)
 
@@ -84,9 +84,9 @@ defineExpose({ focus: () => input.value?.focus() })
       <kbd v-else class="bc__kbd" data-nu-hide aria-hidden="true">/</kbd>
     </div>
 
-    <!-- os tipos: o trilho das páginas de mercado (creme, a escolhida em pílula carvão) -->
+    <!-- os tipos: o trilho da base (creme, a escolhida na pílula carvão que desliza) -->
     <div class="bc__tipos">
-      <MercadoTrilho :itens="tipos" :model-value="props.tipo" rotulo="Tipo de ativo" @update:model-value="emit('update:tipo', $event as BuscaType)" />
+      <NuTrilho :opcoes="tipos" :model-value="props.tipo" rotulo="Tipo de ativo" @update:model-value="emit('update:tipo', $event)" />
     </div>
   </section>
 </template>
@@ -134,7 +134,7 @@ defineExpose({ focus: () => input.value?.focus() })
   color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
 
-/* os tipos: o trilho (MercadoTrilho); no celular ele rola de lado por dentro */
+/* os tipos: o trilho (NuTrilho); no celular ele rola de lado por dentro */
 .bc__tipos { margin-top: 18px; max-width: 880px; }
 
 @media (max-width: 760px) {

@@ -65,7 +65,7 @@ onMounted(() => abrirAncora(window.location.hash))
         <div class="trp__dobras">
           <!-- A oportunidade: o caso em 1-2 §§, lead em destaque -->
           <details v-if="report.opportunityHtml.length" id="rel-oportunidade" class="trp__dobra">
-            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">A oportunidade</h3><TeseMais /></summary>
+            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">A oportunidade</h3><NuMais :tamanho="36" /></summary>
             <div class="trp__dobra-corpo">
               <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
               <p v-for="(p, i) in report.opportunityHtml" :key="i" class="trp__lead" v-html="p" />
@@ -74,7 +74,7 @@ onMounted(() => abrirAncora(window.location.hash))
 
           <!-- A tese em pontos -->
           <details v-if="report.thesisHtml.length" id="rel-tese" class="trp__dobra">
-            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">A tese, em pilares.</h3><TeseMais /></summary>
+            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">A tese, em pilares.</h3><NuMais :tamanho="36" /></summary>
             <div class="trp__dobra-corpo">
               <ol class="trp__pillars">
                 <li v-for="(b, i) in report.thesisHtml" :key="i" v-contexto-chat="{ id: `tese-pilar:${sobre}:${i}`, tipo: 'tese', rotulo: rotuloCurto(`Pilar ${i + 1} · ${sobre}`) }" class="trp__pillar">
@@ -88,7 +88,7 @@ onMounted(() => abrirAncora(window.location.hash))
 
           <!-- Partes argumentativas: a frase-argumento abre a prosa e as fontes-chip -->
           <details v-for="part in report.parts" :id="part.id" :key="part.id" class="trp__dobra">
-            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">{{ part.heading }}</h3><TeseMais /></summary>
+            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">{{ part.heading }}</h3><NuMais :tamanho="36" /></summary>
             <div class="trp__dobra-corpo">
               <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
               <p v-for="(p, i) in part.paragraphsHtml" :key="i" class="trp__p" v-html="p" />
@@ -108,7 +108,7 @@ onMounted(() => abrirAncora(window.location.hash))
 
           <!-- Valuation: premissas + contas numeradas + preço justo hero -->
           <details v-if="report.valuation" id="rel-valuation" class="trp__dobra">
-            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">O valuation.</h3><TeseMais /></summary>
+            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">O valuation.</h3><NuMais :tamanho="36" /></summary>
             <div class="trp__dobra-corpo">
               <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
               <p v-if="report.valuation.introHtml" class="trp__p" v-html="report.valuation.introHtml" />
@@ -145,7 +145,7 @@ onMounted(() => abrirAncora(window.location.hash))
 
           <!-- Conclusão + marcos observáveis -->
           <details v-if="hasConclusion" id="rel-conclusao" class="trp__dobra">
-            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">Conclusão.</h3><TeseMais /></summary>
+            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">Conclusão.</h3><NuMais :tamanho="36" /></summary>
             <div class="trp__dobra-corpo">
               <!-- eslint-disable-next-line vue/no-v-html — HTML escapado no composable -->
               <p v-for="(p, i) in report.conclusionHtml" :key="i" class="trp__p" v-html="p" />
@@ -161,7 +161,7 @@ onMounted(() => abrirAncora(window.location.hash))
 
           <!-- Fontes consolidadas -->
           <details v-if="report.sources.length" id="rel-fontes" class="trp__dobra">
-            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">Fontes do relatório</h3><TeseMais /></summary>
+            <summary class="trp__dobra-cab"><h3 class="trp__dobra-t">Fontes do relatório</h3><NuMais :tamanho="36" /></summary>
             <div class="trp__dobra-corpo">
               <div class="trp__sources">
                 <component
@@ -246,8 +246,7 @@ onMounted(() => abrirAncora(window.location.hash))
 .trp__dobra-cab::-webkit-details-marker { display: none; }
 .trp__dobra-t { margin: 0; color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 23px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; transition: color .2s ease; }
 .trp__dobra-cab:hover .trp__dobra-t { color: var(--nu-blue-text); }
-.trp__dobra-cab:hover :deep(.tma) { background: var(--nu-ink-hover); }
-.trp__dobra[open] > .trp__dobra-cab :deep(.tma) { transform: rotate(45deg); }
+/* o "+" (NuMais) escurece sob o ponteiro e gira com o <details> aberto: sozinho, no <summary> */
 .trp__dobra-corpo { padding: 0 0 28px; }
 .trp__dobra[open] > .trp__dobra-corpo { animation: nu-fade .3s ease both; }
 .trp__dobra-corpo > :first-child { margin-top: 0; }

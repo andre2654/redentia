@@ -24,6 +24,7 @@ const CLASSE_LABELS: Record<string, RankingClasse | null> = {
   'Renda fixa': 'renda-fixa',
 }
 const pillItems = Object.keys(CLASSE_LABELS)
+const opcoesDoTrilho = pillItems.map((l) => ({ valor: l, rotulo: l }))
 
 const activeClasse = computed<RankingClasse | null>(() => {
   const q = String(route.query.classe ?? '')
@@ -170,7 +171,7 @@ function cardTypes(meta: RankingMeta): string[] {
       subtitle="A B3 inteira ranqueada do maior pro menor: dividendos, tamanho, valuation, crescimento e o Aportou Score. Atualizado diariamente após o pregão."
     >
       <template #title>Rankings da B3.</template>
-      <MercadoTrilho :itens="pillItems" :model-value="activePill" rotulo="Filtrar rankings por classe" @update:model-value="setPill" />
+      <NuTrilho :opcoes="opcoesDoTrilho" :model-value="activePill" rotulo="Filtrar rankings por classe" @update:model-value="setPill" />
     </NuPageHero>
 
     <!-- ============ Destaque: Redentia Score top 5 (SSR real) ============ -->

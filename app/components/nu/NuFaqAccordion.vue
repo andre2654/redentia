@@ -9,13 +9,16 @@
 // Open Finance.dc.html) — cards 22x24, pergunta 17px, ícone 19, gap 12.
 //
 // APORTOU (11/11/2026): no site de investidor o FAQ é o do quadro Home: sem
-// cartão, perguntas em 700 separadas por fios de 1,5px (--nu-line), o "+" num
+// cartão, perguntas em 600 separadas por fios de 1px (--nu-line), o "+" num
 // círculo carvão de 36px que gira 45° ao abrir, e a resposta abre com a altura
 // animada (grid-rows 0fr → 1fr) e fade. As respostas continuam TODAS no HTML do
 // servidor (a fechada fica com altura 0 e `inert`, não some do DOM).
+// ROBUSTEZ (11/11/2026): cada pergunta é um NuAcordeao (a peça da base), com o
+// "+" do NuMais; a API, o single-open e o JSON-LD são os de antes.
 // Nas telas de escritório (.marca-redentia) o visual de antes fica igual: os
 // cartões creme, o "+" solto e a resposta entrando com nu-fade, sem animar a
-// altura. `surface="white"` só muda algo lá (no creme da Aportou não há cartão).
+// altura (o bloco do fim veste o NuAcordeao por dentro, com :deep).
+// `surface="white"` só muda algo lá (no creme da Aportou não há cartão).
 import type { NuFaqItem } from '~/types/market'
 
 const props = withDefaults(
@@ -41,82 +44,51 @@ if (props.schema) useFaqSchema(props.items)
 
 <template>
   <div class="nfa" :class="{ 'nfa--compact': variant === 'compact', 'nfa--white': surface === 'white' }">
-    <div v-for="(f, i) in items" :key="f.q" class="nfa__item" :class="{ 'nfa__item--open': open === i }">
-      <button type="button" class="nfa__q" :aria-expanded="open === i" @click="toggle(i)">
-        <span class="nfa__q-text">{{ f.q }}</span>
-        <!-- tamanho via CSS (.nfa__icon), não :width/:height — binding dinâmico
-             de width em <svg> vira DOM prop na hidratação e SVGSVGElement.width
-             é getter-only (warn em toda página que usa o accordion) -->
-        <span class="nfa__mais" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" class="nfa__icon"><path d="M12 5v14M5 12h14" /></svg>
-        </span>
-      </button>
-      <!-- A resposta NUNCA sai do DOM: TODAS precisam existir no HTML SSR
-           (paridade SEO com as páginas antigas, que serviam tudo via <details>;
-           regra nº1 do PR10). Fechada, fica com altura 0 e inert. A animação
-           vive na classe --open pra replayar a cada abertura. -->
-      <div class="nfa__dobra" :inert="open !== i || undefined">
-        <div class="nfa__dobra-dentro">
-          <div class="nfa__a" :class="{ 'nfa__a--open': open === i }">{{ f.a }}</div>
-        </div>
-      </div>
-    </div>
+    <!-- A resposta NUNCA sai do DOM: TODAS precisam existir no HTML SSR
+         (paridade SEO com as páginas antigas, que serviam tudo via <details>;
+         regra nº1 do PR10). Fechada, fica com altura 0 e inert (NuAcordeao). -->
+    <NuAcordeao
+      v-for="(f, i) in items" :key="f.q" class="nfa__item" :class="{ 'nfa__item--open': open === i }"
+      :aberto="open === i" fio :tamanho-mais="36" @update:aberto="toggle(i)"
+    >
+      <template #titulo><span class="nfa__q-text">{{ f.q }}</span></template>
+      <div class="nfa__a" :class="{ 'nfa__a--open': open === i }">{{ f.a }}</div>
+    </NuAcordeao>
   </div>
 </template>
 
 <style scoped>
 .nfa { display: flex; flex-direction: column; border-top: 1px solid var(--nu-line); }
-.nfa__item { border-bottom: 1px solid var(--nu-line); }
-.nfa__q {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  width: 100%; min-height: 44px; padding: 18px 0; background: transparent; border: none; cursor: pointer; text-align: left;
-  font-family: inherit; color: var(--nu-ink);
-}
-.nfa__q-text { color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.25; transition: color .2s; }
-.nfa__q:hover .nfa__q-text { color: var(--nu-blue-text); }
-.nfa__mais {
-  flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--nu-ink); color: var(--nu-white);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform .3s var(--nu-ease-saida), background .2s;
-}
-.nfa__q:hover .nfa__mais { background: var(--nu-blue); }
-.nfa__item--open .nfa__mais { transform: rotate(45deg); }
-.nfa__icon { display: block; width: 16px; height: 16px; stroke-width: 2.6; }
-/* a altura anima de 0 ao conteúdo (grid 0fr → 1fr) */
-.nfa__dobra { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s var(--nu-ease-saida); }
-.nfa__item--open .nfa__dobra { grid-template-rows: 1fr; }
-.nfa__dobra-dentro { min-height: 0; overflow: hidden; }
-.nfa__a {
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.6;
-  padding: 0 52px 22px 0; opacity: 0; transition: opacity .2s;
-}
-.nfa__a--open { opacity: 1; transition: opacity .3s .08s; }
+.nfa__q-text { display: block; font-size: clamp(19px, 1.7vw, 22px); font-weight: var(--nu-w-medio); letter-spacing: -0.01em; line-height: 1.25; }
+.nfa__a { padding-right: 52px; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.6; }
 
 /* variante compact (o FAQ do guia): pergunta um passo menor */
-.nfa--compact .nfa__q { padding: 16px 0; }
+.nfa--compact :deep(.nac__cab) { padding: 16px 0; }
 .nfa--compact .nfa__q-text { font-size: var(--nu-fs-lg); }
-.nfa--compact .nfa__a { padding-bottom: 20px; }
+.nfa--compact :deep(.nac__corpo) { padding-bottom: 20px; }
 @media (max-width: 560px) { .nfa__a { padding-right: 0; } }
-@media (prefers-reduced-motion: reduce) { .nfa__dobra, .nfa__mais, .nfa__a { transition: none; } }
 
 /* ——— Redentia For Business: o FAQ de antes (cartões creme, "+" solto) ——— */
 .marca-redentia .nfa { gap: 14px; border-top: 0; }
 .marca-redentia .nfa__item { background: var(--nu-cream); border-radius: 18px; padding: 26px 28px; border-bottom: 0; }
-.marca-redentia .nfa__q { align-items: flex-start; gap: 20px; min-height: 0; padding: 0; }
-.marca-redentia .nfa__q-text, .marca-redentia .nfa__q:hover .nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.35; }
-.marca-redentia .nfa__mais, .marca-redentia .nfa__q:hover .nfa__mais {
-  width: 21px; height: 21px; margin-top: 3px; border-radius: 0; background: transparent; color: var(--nu-ink);
-  transition: transform .25s;
-}
-.marca-redentia .nfa__icon { width: 21px; height: 21px; stroke-width: 2.3; }
-.marca-redentia .nfa__dobra { transition: none; }
-.marca-redentia .nfa__a { color: var(--nu-ink-75); line-height: 1.7; padding: 16px 0 0; opacity: 1; transition: none; }
+.marca-redentia .nfa__item :deep(.nac__cab) { position: static; align-items: flex-start; gap: 20px; min-height: 0; padding: 0; border-radius: 0; }
+/* o foco de antes: o anel global no botão inteiro */
+.marca-redentia .nfa__item :deep(.nac__cab:focus-visible) { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
+.marca-redentia .nfa__item :deep(.nac__cab:focus-visible::after) { content: none; }
+.marca-redentia .nfa__q-text { color: var(--nu-ink); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-forte); letter-spacing: -.2px; line-height: 1.35; }
+.marca-redentia .nfa__item :deep(.nmx) { width: 21px; height: 21px; margin-top: 3px; border-radius: 0; background: transparent; color: var(--nu-ink); }
+/* sem o círculo, sem o cobalto do hover e sem afundar: o "+" solto de antes */
+.marca-redentia .nfa__item :deep(.nac__cab:hover .nmx), .marca-redentia .nfa__item :deep(.nac__cab:active .nmx) { background: transparent; transform: none; }
+.marca-redentia .nfa__item :deep(.nmx__x) { width: 21px; height: 21px; stroke-width: 2.3; transition: transform .25s; }
+.marca-redentia .nfa__item :deep(.nac__dobra) { opacity: 1; transition: none; }
+.marca-redentia .nfa__item :deep(.nac__corpo) { padding-bottom: 0; }
+.marca-redentia .nfa__a { color: var(--nu-ink-75); line-height: 1.7; padding: 16px 0 0; }
 .marca-redentia .nfa__a--open { animation: nu-fade .3s ease both; }
 .marca-redentia .nfa--white .nfa__item { background: var(--nu-white); }
 .marca-redentia .nfa--compact { gap: 12px; }
 .marca-redentia .nfa--compact .nfa__item { padding: 22px 24px; }
-.marca-redentia .nfa--compact .nfa__q { gap: 18px; }
-.marca-redentia .nfa--compact .nfa__mais, .marca-redentia .nfa--compact .nfa__icon { width: 19px; height: 19px; }
-.marca-redentia .nfa--compact .nfa__mais { margin-top: 2px; }
+.marca-redentia .nfa--compact .nfa__item :deep(.nac__cab) { gap: 18px; }
+.marca-redentia .nfa--compact .nfa__item :deep(.nmx), .marca-redentia .nfa--compact .nfa__item :deep(.nmx__x) { width: 19px; height: 19px; }
+.marca-redentia .nfa--compact .nfa__item :deep(.nmx) { margin-top: 2px; }
 .marca-redentia .nfa--compact .nfa__a { padding-top: 14px; }
 </style>

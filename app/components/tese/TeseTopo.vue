@@ -60,10 +60,10 @@ const rotuloFaixa = computed(() => (desde.value ? `A tese desde ${desde.value}` 
         <h1 id="tto-h1" class="tto__h1">{{ hero.titlePre }}<span v-if="hero.titleHi" class="tto__hi">{{ hero.titleHi }}</span>{{ hero.titlePost }}</h1>
         <p class="tto__lead">{{ hero.subtitle }}</p>
         <div class="tto__selos">
-          <TeseSelo v-if="seloConviccao" tom="azul">{{ seloConviccao }}</TeseSelo>
-          <TeseSelo v-if="seloRetorno" :tom="seloRetorno.queda ? 'vermelho' : 'verde'">{{ seloRetorno.texto }}</TeseSelo>
-          <TeseSelo tom="carvao">{{ hero.ativosBadge }}</TeseSelo>
-          <TeseSelo v-if="hero.revalBadge" tom="contorno">{{ hero.revalBadge }}</TeseSelo>
+          <NuSelo v-if="seloConviccao" tom="azul">{{ seloConviccao }}</NuSelo>
+          <NuSelo v-if="seloRetorno" :tom="seloRetorno.queda ? 'vermelho' : 'verde'">{{ seloRetorno.texto }}</NuSelo>
+          <NuSelo tom="carvao">{{ hero.ativosBadge }}</NuSelo>
+          <NuSelo v-if="hero.revalBadge" tom="contorno">{{ hero.revalBadge }}</NuSelo>
         </div>
         <div class="tto__acoes">
           <NuBotaoSeta

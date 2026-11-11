@@ -7,11 +7,11 @@
 // vira um feed vertical, com a barra rolando de lado.
 //
 // 2ª rodada da Aportou (11/11/2026): o cartão conversa com a tela de tese nova.
-// Os mesmos selos de raio 8 (TeseSelo): convicção em azul, o retorno desde o
+// Os mesmos selos de raio 8 (NuSelo): convicção em azul, o retorno desde o
 // lançamento em verde ou vermelho, o nº de ativos em carvão; os papéis em
 // etiqueta carvão (os três primeiros) e "+N"; a capa só quando a tese tem
 // imagem; no pé o desenho da convicção, a última mudança e "Abrir tese". Tipo e
-// ordem usam o trilho das páginas de mercado (MercadoTrilho). Campo vazio não
+// ordem usam o trilho da base (NuTrilho, a pílula que desliza). Campo vazio não
 // vira selo. Os dados, os filtros, a ordem e os links são os de antes.
 //
 // Sem catalisador no cartão: a lista de /theses não traz, e o campo `catalyst`
@@ -47,8 +47,8 @@ const TIPOS: { id: Tipo; rotulo: string }[] = [
   { id: 'tema', rotulo: 'Grandes ideias' },
   { id: 'estrategia', rotulo: 'Estratégias' },
 ]
-const tiposDoTrilho = computed(() => TIPOS.map((o) => ({ ...o, n: contagem.value[o.id] })))
-const ordensDoTrilho = computed(() => ORDENS.map((o) => ({ ...o, desligado: o.id === 'mudanca' && estado.value !== 'pronto' })))
+const tiposDoTrilho = computed(() => TIPOS.map((o) => ({ valor: o.id, rotulo: o.rotulo, contagem: contagem.value[o.id] })))
+const ordensDoTrilho = computed(() => ORDENS.map((o) => ({ valor: o.id, rotulo: o.rotulo, desabilitada: o.id === 'mudanca' && estado.value !== 'pronto' })))
 const ORDENS: { id: Ordem; rotulo: string }[] = [
   { id: 'conviccao', rotulo: 'Convicção' },
   { id: 'mudanca', rotulo: 'Mudou por último' },
@@ -96,7 +96,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
     <div class="tgr__barra">
       <div class="tgr__barra-in">
         <div class="tgr__chips">
-          <MercadoTrilho class="tgr__trilho" :itens="tiposDoTrilho" :model-value="tipo" rotulo="Filtrar teses por tipo" @update:model-value="tipo = $event as Tipo" />
+          <NuTrilho v-model="tipo" class="tgr__trilho" :opcoes="tiposDoTrilho" rotulo="Filtrar teses por tipo" />
           <span class="tgr__sep" aria-hidden="true" />
           <button
             type="button" class="tgr__chip" :class="{ 'tgr__chip--on': recentes }" :aria-pressed="recentes"
@@ -105,7 +105,7 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
         </div>
         <div class="tgr__ordem">
           <span id="tgr-ordem" class="tgr__ordem-r">Ordem</span>
-          <MercadoTrilho class="tgr__seg" :itens="ordensDoTrilho" :model-value="ordem" papel="radiogroup" rotulo="Ordenar as teses" @update:model-value="ordem = $event as Ordem" />
+          <NuTrilho v-model="ordem" class="tgr__seg" :opcoes="ordensDoTrilho" rotulo="Ordenar as teses" />
           <label class="tgr__select">
             <span class="tgr__sr">Ordenar por</span>
             <select v-model="ordem">
@@ -160,12 +160,12 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
             <span class="tgr__nome">{{ t.titulo }}</span>
             <span class="tgr__frase">{{ t.frase }}</span>
             <span v-if="t.conviccao != null || extras[t.slug]?.retorno" class="tgr__selos">
-              <TeseSelo v-if="t.conviccao != null" tom="azul">Convicção {{ t.conviccao }} de 100</TeseSelo>
-              <TeseSelo v-if="extras[t.slug]?.retorno" :tom="extras[t.slug]!.retorno!.queda ? 'vermelho' : 'verde'">{{ extras[t.slug]!.retorno!.texto }}</TeseSelo>
+              <NuSelo v-if="t.conviccao != null" tom="azul">Convicção {{ t.conviccao }} de 100</NuSelo>
+              <NuSelo v-if="extras[t.slug]?.retorno" :tom="extras[t.slug]!.retorno!.queda ? 'vermelho' : 'verde'">{{ extras[t.slug]!.retorno!.texto }}</NuSelo>
             </span>
             <!-- o que tem dentro: quantos ativos (selo carvão) e os primeiros papéis em etiqueta -->
             <span v-if="extras[t.slug]?.ativos || t.tickers.length" class="tgr__papeis">
-              <TeseSelo v-if="extras[t.slug]?.ativos" tom="carvao">{{ extras[t.slug]!.ativos }} {{ extras[t.slug]!.ativos === 1 ? 'ativo' : 'ativos' }}</TeseSelo>
+              <NuSelo v-if="extras[t.slug]?.ativos" tom="carvao">{{ extras[t.slug]!.ativos }} {{ extras[t.slug]!.ativos === 1 ? 'ativo' : 'ativos' }}</NuSelo>
               <span v-if="extras[t.slug]?.ativos && t.tickers.length" class="tgr__fio" aria-hidden="true" />
               <span v-for="(tk, k) in t.tickers.slice(0, QUANTOS_PAPEIS)" :key="tk" class="tgr__tk" :class="{ 'tgr__tk--3': k === 2 }">{{ tk }}</span>
               <!-- no cartão estreito cabem dois papéis: o "+N" conta o terceiro -->
@@ -299,7 +299,6 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
 }
 /* os selos da tela de tese (raio 8): convicção, retorno, ativos */
 .tgr__selos { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 16px; }
-.tgr__selos :deep(.tsl--m), .tgr__papeis :deep(.tsl--m) { min-height: 28px; padding: 4px 9px; font-size: 13.5px; }
 /* os papéis: etiqueta carvão, os primeiros e "+N" */
 .tgr__papeis { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
 .tgr__tk {
@@ -345,7 +344,8 @@ const maisPapeis = (t: TeseVitrineVM) => Math.max(0, t.tickers.length - QUANTOS_
   .tgr__barra-in { padding: 6px 0 6px var(--lado); gap: 10px; }
   .tgr__chips { flex: 1; overflow-x: auto; scrollbar-width: none; padding: 2px var(--lado) 2px 0; }
   .tgr__chips::-webkit-scrollbar { display: none; }
-  .tgr__trilho { max-width: none; overflow: visible; }
+  /* a barra inteira rola: o trilho fica do tamanho dele (mais forte que o .ntr do NuTrilho) */
+  .tgr__chips .tgr__trilho { max-width: none; overflow: visible; }
   .tgr__ordem { display: none; }
   .tgr__conta .tgr__select { display: block; }
   .tgr__conta .tgr__select select { background: transparent; box-shadow: inset 0 0 0 1px var(--nu-line); }

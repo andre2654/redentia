@@ -22,6 +22,8 @@
 import type { AcaoPayload, AcaoRange, AcaoSeriesPair, AcaoStatRow } from '~/types/acao'
 import type { AcaoPosition } from '~/composables/useAcao'
 import type { LeituraDoGrafico, LegendaItem } from '~/utils/ativoDirecoes'
+import type { OpcaoDoTrilho } from '~/components/nu/NuTrilho.vue'
+import { ROTULO_PERIODO } from '~/composables/useAtivoDirecao'
 import TopoAcoes from './TopoAcoes.vue'
 import TopoPreco from './TopoPreco.vue'
 
@@ -42,6 +44,10 @@ const props = defineProps<{
   contextoGrafico: Record<string, unknown>
 }>()
 const emit = defineEmits<{ periodo: [AcaoRange]; perguntar: [string]; abrir: [] }>()
+// o seletor do período (NuTrilho): '12M' à vista, '12 meses' para o leitor de tela. 5 anos:
+// GET /tickers/{t}/prices?mode=5y e /indices/IBOV/prices?mode=5y (~1.250 pregões, 03/11/2026)
+const CURTO: Record<AcaoRange, string> = { '1mo': '1M', '6mo': '6M', '12mo': '12M', '5y': '5A' }
+const PERIODOS: OpcaoDoTrilho<AcaoRange>[] = (['1mo', '6mo', '12mo', '5y'] as const).map((v) => ({ valor: v, rotulo: CURTO[v], extenso: ROTULO_PERIODO[v] }))
 const nf0 = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const leitura = ref<LeituraDoGrafico | null>(null)
 const logoFalhou = ref(false)
@@ -108,7 +114,7 @@ onMounted(() => {
       <div v-if="series" ref="palco" v-contexto-chat="contextoGrafico" class="tbo__palco">
         <NuFaixaMarca :rotulo="rotuloFaixa" :altura="56" class="tbo__cartao">
           <template #acoes>
-            <AtivoPeriodo :model-value="range" :disabled="rangeLoading" tom="escuro" class="tbo__seg tbo__seg--topo" @update:model-value="emit('periodo', $event)" />
+            <NuTrilho :opcoes="PERIODOS" :model-value="range" :ocupado="rangeLoading" tom="escuro" tamanho="p" rotulo="Período do gráfico" class="tbo__seg" @update:model-value="emit('periodo', $event)" />
           </template>
           <p v-if="legenda.length" class="tbo__legenda">
             <span v-for="(l, i) in legenda" :key="l.rotulo" class="tbo__leg" :class="{ 'tbo__leg--1': i === 0 }">
@@ -119,7 +125,7 @@ onMounted(() => {
           <div class="tbo__grafico">
             <AtivoGrafico :ativo="series.asset" :ibov="series.ibov" :ticker="t" :atual="a.hero.priceFmt" :rotulo="tituloGrafico" tom="luz" :carregando="rangeLoading" @leitura="leitura = $event" />
           </div>
-          <div class="tbo__periodo"><AtivoPeriodo :model-value="range" :disabled="rangeLoading" tom="escuro" class="tbo__seg tbo__seg--pe" @update:model-value="emit('periodo', $event)" /></div>
+          <NuTrilho :opcoes="PERIODOS" :model-value="range" :ocupado="rangeLoading" tom="escuro" largo rotulo="Período do gráfico" class="tbo__periodo" @update:model-value="emit('periodo', $event)" />
           <p class="tbo__uso" aria-hidden="true">Passe o cursor para ler um dia; arraste para medir entre dois.</p>
         </NuFaixaMarca>
       </div>
@@ -186,11 +192,8 @@ onMounted(() => {
 /* o cartão do gráfico: carvão, com a faixa da marca e o período à direita dela */
 .tbo__palco { grid-area: palco; min-width: 0; animation: nu-fade .5s ease .1s both; }
 .tbo__cartao { --pad: clamp(18px, 2.2vw, 30px); padding-bottom: clamp(16px, 2vw, 24px); }
-.tbo__cartao :deep(.nfm__acoes) { padding: 10px 12px 0 0; }
-.tbo__cartao .tbo__seg--topo { background: transparent; }
-.tbo__cartao .tbo__seg :deep(.ape__b) { height: 38px; color: var(--nu-on-dark); font-weight: var(--nu-w-medio); }
-.tbo__cartao .tbo__seg :deep(.ape__b:hover) { color: var(--nu-white); }
-.tbo__cartao .tbo__seg :deep(.ape__b--on), .tbo__cartao .tbo__seg :deep(.ape__b--on:hover) { background: var(--nu-creme); color: var(--nu-ink); }
+/* o período (NuTrilho escuro, a pílula creme que desliza) centrado na altura da aba de 56px */
+.tbo__cartao :deep(.nfm__acoes) { padding: 6px 10px 0 0; }
 .tbo__legenda { display: flex; align-items: baseline; gap: 6px 28px; flex-wrap: wrap; margin: clamp(18px, 2vw, 26px) var(--pad) 0; }
 .tbo__leg { display: inline-flex; align-items: baseline; gap: 10px; }
 .tbo__leg b { color: var(--nu-white); font-size: clamp(20px, 2vw, 26px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
@@ -207,9 +210,8 @@ onMounted(() => {
   --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
   --agr-hoje-bg: var(--nu-creme); --agr-hoje-fg: var(--nu-ink); --agr-hoje-sub: var(--nu-gray);
 }
+/* no celular o período desce para baixo do gráfico, largo */
 .tbo__periodo { display: none; margin: 16px var(--pad) 0; }
-.tbo__seg--pe { width: 100%; }
-.tbo__seg--pe :deep(.ape__b) { flex: 1; height: 40px; }
 .tbo__uso { margin: 12px var(--pad) 0; color: var(--nu-on-dark-2); font-size: var(--nu-fs-xs); font-weight: 500; }
 @media (hover: none) { .tbo__uso { display: none; } }
 

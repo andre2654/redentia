@@ -16,7 +16,7 @@ const { isAuthenticated } = useAuthState() // CTA final só pra visitante deslog
 
 /* pills ↔ ?indexer= (labels humanas, URL na língua da API) */
 const FILTERS = Object.entries(TESOURO_FILTER_LABELS) as [TesouroIndexerFilter, string][]
-const pillItems = FILTERS.map(([, label]) => label)
+const pillItems = FILTERS.map(([, label]) => ({ valor: label, rotulo: label }))
 const activePill = computed(() => TESOURO_FILTER_LABELS[activeIndexer.value])
 function onPill(label: string) {
   const found = FILTERS.find(([, l]) => l === label)
@@ -88,7 +88,7 @@ usePageSeo({
           <p class="tsh__toolbar-count">{{ count }} {{ count === 1 ? 'título' : 'títulos' }} · ordenados por vencimento</p>
         </div>
         <!-- o filtro por indexador: o trilho das páginas de mercado -->
-        <MercadoTrilho :itens="pillItems" :model-value="activePill" rotulo="Filtrar por indexador" @update:model-value="onPill" />
+        <NuTrilho :opcoes="pillItems" :model-value="activePill" rotulo="Filtrar por indexador" @update:model-value="onPill" />
       </header>
 
       <!-- loading é sempre esqueleto (contrato da Aportou) -->

@@ -61,10 +61,10 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
         </span>
       </span>
       <span v-if="linha.selo || linha.data" class="tal__selos">
-        <TeseSelo v-if="linha.selo" :tom="linha.seloTom">{{ linha.selo }}</TeseSelo>
-        <TeseSelo v-if="linha.data" tom="contorno">Revisto em {{ dataCurta(linha.data) }}</TeseSelo>
+        <NuSelo v-if="linha.selo" :tom="linha.seloTom">{{ linha.selo }}</NuSelo>
+        <NuSelo v-if="linha.data" tom="contorno">Revisto em {{ dataCurta(linha.data) }}</NuSelo>
       </span>
-      <TeseMais class="tal__mais" />
+      <NuMais class="tal__mais" :tamanho="36" />
       <span v-if="linha.frase" class="tal__frase">{{ linha.frase }}</span>
     </summary>
 
@@ -73,7 +73,7 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
         <section v-if="linha.ultima" class="tal__bloco tal__bloco--ultima">
           <h4 class="tal__rotulo">{{ linha.ultima.rotulo }}</h4>
           <p class="tal__ultima">
-            <TeseSelo v-if="linha.ultima.decisao" :tom="linha.ultima.tom">{{ linha.ultima.decisao }}</TeseSelo>
+            <NuSelo v-if="linha.ultima.decisao" :tom="linha.ultima.tom">{{ linha.ultima.decisao }}</NuSelo>
             <b>{{ linha.ultima.avaliacao }}</b>
           </p>
           <p v-if="linha.ultima.porque" class="tal__p">{{ linha.ultima.porque }}</p>
@@ -113,7 +113,7 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
               <summary class="tal__antes-b">
                 <span class="tal__antes-f">{{ anteriores.length === 1 ? 'Ver a anterior' : `Ver as ${anteriores.length} anteriores` }}</span>
                 <span class="tal__antes-a">Recolher as anteriores</span>
-                <TeseMais :tamanho="28" />
+                <NuMais :tamanho="28" />
               </summary>
               <ol class="tal__tempo tal__tempo--antes">
                 <li v-for="(r, i) in anteriores" :key="`a${i}`" class="tal__rev">
@@ -165,8 +165,7 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 .tal__cab:hover .tal__nome { color: var(--nu-blue-text); }
 .tal__papel { color: var(--nu-gray); font-size: 14.5px; font-weight: 500; line-height: 1.35; }
 .tal__selos { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
-.tal__cab:hover .tal__mais { background: var(--nu-ink-hover); }
-.tal[open] > .tal__cab .tal__mais { transform: rotate(45deg); }
+/* o "+" (NuMais) escurece sob o ponteiro e gira com o <details> aberto: sozinho, no <summary> */
 .tal__frase {
   grid-column: 1 / -1; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; max-width: 96ch;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -231,7 +230,6 @@ const temAcontecer = computed(() => !!(props.linha.gatilho.inicio || props.linha
 .tal__antes-a { display: none; }
 .tal__antes[open] > .tal__antes-b .tal__antes-f { display: none; }
 .tal__antes[open] > .tal__antes-b .tal__antes-a { display: inline; }
-.tal__antes[open] > .tal__antes-b :deep(.tma) { transform: rotate(45deg); }
 .tal__antes[open] > .tal__tempo { margin-top: 18px; animation: nu-fade .3s ease both; }
 
 /* o pé da linha */

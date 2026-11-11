@@ -25,13 +25,17 @@
   src: local('Arial Bold'), local('Arial-BoldMT');
   size-adjust: 94.8%; ascent-override: 100.21%; descent-override: 26.37%; line-gap-override: 0%;
 }
+/* O peso de uma face é DESCRITOR do @font-face: lá var() não vale e o navegador
+   descarta a linha (a face cai no peso 400 e a reserva do texto normal virava a
+   Arial Bold). Aqui o número fica escrito: 700 e 800 são as medidas da Figtree
+   nesses pesos, não o peso de um componente. */
 @font-face {
-  font-family: 'Figtree Reserva'; font-weight: var(--nu-w-medio);
+  font-family: 'Figtree Reserva'; font-weight: 700;
   src: local('Arial Bold'), local('Arial-BoldMT');
   size-adjust: 95.63%; ascent-override: 99.34%; descent-override: 26.14%; line-gap-override: 0%;
 }
 @font-face {
-  font-family: 'Figtree Reserva'; font-weight: var(--nu-w-forte);
+  font-family: 'Figtree Reserva'; font-weight: 800;
   src: local('Arial Bold'), local('Arial-BoldMT');
   size-adjust: 96.76%; ascent-override: 98.18%; descent-override: 25.84%; line-gap-override: 0%;
 }
@@ -59,7 +63,15 @@ a:hover { color: inherit; }
 /* scrollbars invisíveis (linguagem do design — faixas roláveis limpas) */
 ::-webkit-scrollbar { width: 0; height: 0; }
 
-/* animações compartilhadas dos designs */
+/* animações compartilhadas dos designs. O keyframe guarda só o caminho; a curva
+   e o tempo são de quem usa, e vêm dos tokens (robustez, 11/11/2026):
+     o que chega (nu-fade, nu-fade-lg, nu-subir, nu-palavra): var(--nu-dur-entrada)
+       ou var(--nu-dur-lenta) com var(--nu-ease-saida);
+     o fundo que escurece (nu-surgir): var(--nu-dur-media) var(--nu-ease-cor);
+     a seta do botão (nu-seta): var(--nu-dur-lenta) var(--nu-ease-troca).
+   A curva não pode morar aqui dentro: var() não vale como animation-timing-function
+   num @keyframes, e escrita à mão ela mudaria também a Redentia (B2B), que tem a dela.
+   A entrada ao rolar é o v-revelar (plugins/revelar.ts), não estes. */
 @keyframes nu-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes nu-fade-lg { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 /* a palavra surgindo do desfoque (utils/revelar-palavras.ts): as respostas do
@@ -102,6 +114,36 @@ a:hover { color: inherit; }
   pointer-events: none;
 }
 .nu-corte-fundo > svg { display: block; width: 100%; height: auto; }
+
+/* ——— Robustez (11/11/2026): superfícies e textos que toda tela usa ———
+   (docs/aportou/robustez.md, seção 4). Cartão: o creme do contrato, raio 28, a
+   sombra quente (um fio de 1px e camadas que quase não se veem). */
+.nu-cartao { background: var(--nu-card); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); }
+/* o cartão branco (dentro de um painel ou sobre a faixa creme) */
+.nu-cartao--branco { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+/* o cartão inteiro é o clique (um link em volta, ou um link esticado por dentro):
+   sobe 2px e a sombra cresce no hover; apertado, afunda; foco no anel de 3px */
+.nu-cartao--vivo {
+  cursor: pointer;
+  transition: transform var(--nu-dur-media) var(--nu-ease-saida), box-shadow var(--nu-dur-media) var(--nu-ease-saida);
+}
+@media (hover: hover) {
+  .nu-cartao--vivo:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-card); }
+}
+.nu-cartao--vivo:active { transform: scale(.995); transition-duration: var(--nu-dur-rapida); }
+.nu-cartao--vivo:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 3px; }
+/* número de destaque: tabular (as casas não dançam quando ele muda) e o tracking de título */
+.nu-num { font-variant-numeric: tabular-nums; letter-spacing: var(--nu-ls-titulo); }
+/* só para o leitor de tela (rótulo de ícone, "(abre em outra aba)") */
+.nu-sr {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+/* a legenda: data, fonte, unidade ("fechamento de 06/11", "Fonte: B3") */
+.nu-legenda { color: var(--nu-gray); font-size: 12.5px; font-weight: var(--nu-w-texto); line-height: 1.45; }
+@media (prefers-reduced-motion: reduce) {
+  .nu-cartao--vivo:hover, .nu-cartao--vivo:active { transform: none; }
+}
 
 /* Foco visível, um só no site: anel cobalto de 3px (o do campo do login). */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {

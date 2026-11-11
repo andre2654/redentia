@@ -22,6 +22,8 @@ const LENTES = [
   { id: 'riscos', nome: 'Riscos' },
 ] as const
 const lente = useState<string>('carteira:lente', () => 'ativos')
+/** as abas (NuTrilho, papel tablist): cada uma aponta o painel que mostra */
+const ABAS = LENTES.map((l) => ({ valor: l.id as string, rotulo: l.nome, controla: `voe-lente-${l.id}` }))
 
 /**
  * As posições para No mundo e Na cadeia. Duas leituras do backend entram aqui,
@@ -38,29 +40,14 @@ function paraOMundo(p: PosicaoVisao): CarteiraPosicaoMundo {
   return { ticker: p.ticker, classe: p.classe, valor: p.valor, nome: p.classe === 'TREASURY' ? nomeCurto(p.nome) : p.nome }
 }
 const posicoesMundo = computed<CarteiraPosicaoMundo[]>(() => props.visao.posicoes.map(paraOMundo))
-
-function teclar(e: KeyboardEvent) {
-  const i = LENTES.findIndex((l) => l.id === lente.value)
-  const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
-  if (!d) return
-  e.preventDefault()
-  const prox = LENTES[(i + d + LENTES.length) % LENTES.length]!
-  lente.value = prox.id
-  nextTick(() => document.getElementById(`voe-aba-${prox.id}`)?.focus())
-}
 </script>
 
 <template>
   <section class="voe" aria-labelledby="voe-titulo" data-clarity-mask="true">
     <div class="voe__cab">
       <NuEyebrow id="voe-titulo" como="h2">Onde está o meu dinheiro?</NuEyebrow>
-      <div class="voe__abas" role="tablist" aria-labelledby="voe-titulo" @keydown="teclar">
-        <button
-          v-for="l in LENTES" :id="`voe-aba-${l.id}`" :key="l.id" type="button" role="tab" class="voe__aba"
-          :class="{ 'voe__aba--on': lente === l.id }" :aria-selected="lente === l.id" :tabindex="lente === l.id ? 0 : -1"
-          :aria-controls="`voe-lente-${l.id}`" @click="lente = l.id"
-        >{{ l.nome }}</button>
-      </div>
+      <!-- as abas: o trilho da base (setas e Home/End andam; a pílula desliza até a lente nova) -->
+      <NuTrilho v-model="lente" :opcoes="ABAS" papel="tablist" id-base="voe-aba" largo="celular" class="voe__abas" aria-labelledby="voe-titulo" />
     </div>
 
     <div :id="`voe-lente-${lente}`" class="voe__lente" role="tabpanel" :aria-labelledby="`voe-aba-${lente}`">
@@ -84,16 +71,8 @@ function teclar(e: KeyboardEvent) {
   overflow: hidden;
 }
 .voe__cab { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; }
-/* as abas: o segmentado da marca, a escolhida na pílula carvão */
-.voe__abas { display: inline-flex; padding: 4px; border-radius: var(--nu-r-pill); background: color-mix(in srgb, var(--nu-ink) 8%, var(--nu-band)); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-.voe__abas::-webkit-scrollbar { display: none; }
-.voe__aba {
-  height: 44px; padding: 0 18px; border: 0; border-radius: var(--nu-r-pill); background: transparent; white-space: nowrap;
-  color: var(--nu-gray-3); font: inherit; font-size: 15px; font-weight: var(--nu-w-medio); cursor: pointer;
-  transition: background .2s, color .2s;
-}
-.voe__aba:hover { color: var(--nu-ink); }
-.voe__aba--on, .voe__aba--on:hover { background: var(--nu-ink); color: var(--nu-white); }
+/* as abas: o NuTrilho, com o trilho um tom abaixo da faixa quente (o creme dele some no --nu-band) */
+.voe__abas { --ntr-trilho: color-mix(in srgb, var(--nu-ink) 8%, var(--nu-band)); }
 .voe__lente { margin-top: clamp(18px, 2.4vw, 28px); min-height: 420px; animation: nu-fade .4s var(--nu-ease-saida) both; }
 
 /* Mundo e Cadeia sem a moldura deles: a seção é esta */
@@ -102,12 +81,10 @@ function teclar(e: KeyboardEvent) {
 .voe__lente :deep(.cmu__frase), .voe__lente :deep(.cca__frase) { margin-top: 0; }
 
 @media (max-width: 640px) {
+  /* no celular as abas descem para baixo do título e esticam (largo="celular") */
   .voe__cab { flex-direction: column; align-items: flex-start; }
-  .voe__abas { align-self: stretch; }
-  .voe__aba { flex: 1; padding: 0 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .voe__lente { animation: none; }
-  .voe__aba { transition: none; }
 }
 </style>

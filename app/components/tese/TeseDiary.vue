@@ -123,7 +123,7 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
           <button type="button" class="tdi__estudo" :tabindex="isAuthenticated ? undefined : -1" @click="openStudy(s.id)">
             <span class="tdi__linha">
               <span class="tdi__data">{{ s.dateBadge }}</span>
-              <TeseSelo v-if="s.tag" :tom="tomDaTag(s.tag)" tamanho="p" sobre="escuro">{{ s.tag }}</TeseSelo>
+              <NuSelo v-if="s.tag" :tom="tomDaTag(s.tag)" tamanho="p" sobre="escuro">{{ s.tag }}</NuSelo>
               <span v-if="s.minutes" class="tdi__dado">{{ s.minutes }} min de leitura</span>
               <span v-if="conviccao(s)" class="tdi__dado">{{ conviccao(s) }}</span>
             </span>
@@ -138,14 +138,14 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
         <summary class="tdi__antes-b">
           <span class="tdi__antes-f">{{ anteriores.length === 1 ? 'Ver o anterior' : `Ver os ${anteriores.length} anteriores` }}</span>
           <span class="tdi__antes-a">Recolher os anteriores</span>
-          <TeseMais :tamanho="28" sobre="escuro" />
+          <NuMais :tamanho="28" tom="claro" />
         </summary>
         <ol class="tdi__tempo tdi__tempo--antes">
           <li v-for="s in anteriores" :key="s.id" class="tdi__item">
             <button type="button" class="tdi__estudo" @click="openStudy(s.id)">
               <span class="tdi__linha">
                 <span class="tdi__data">{{ s.dateBadge }}</span>
-                <TeseSelo v-if="s.tag" :tom="tomDaTag(s.tag)" tamanho="p" sobre="escuro">{{ s.tag }}</TeseSelo>
+                <NuSelo v-if="s.tag" :tom="tomDaTag(s.tag)" tamanho="p" sobre="escuro">{{ s.tag }}</NuSelo>
                 <span v-if="s.minutes" class="tdi__dado">{{ s.minutes }} min de leitura</span>
                 <span v-if="conviccao(s)" class="tdi__dado">{{ conviccao(s) }}</span>
               </span>
@@ -236,7 +236,6 @@ const modalBlocks = computed<NuDayBlock[]>(() => {
 .tdi__antes-a { display: none; }
 .tdi__antes[open] > .tdi__antes-b .tdi__antes-f { display: none; }
 .tdi__antes[open] > .tdi__antes-b .tdi__antes-a { display: inline; }
-.tdi__antes[open] > .tdi__antes-b :deep(.tma) { transform: rotate(45deg); }
 .tdi__antes[open] > .tdi__tempo { margin: 16px 0 0; animation: nu-fade .3s ease both; }
 
 /* no computador: o título da seção à esquerda (gruda), a linha do tempo à direita */

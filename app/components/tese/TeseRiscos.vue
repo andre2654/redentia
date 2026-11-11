@@ -49,7 +49,7 @@ const daLista = computed(() => props.risksHtml.length > 0)
       </ol>
       <div v-else-if="risco" class="trs__central">
         <p class="trs__central-topo">
-          <TeseSelo tom="ambar">Risco central</TeseSelo>
+          <NuSelo tom="ambar">Risco central</NuSelo>
           <svg v-if="trancado" class="trs__cadeado" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Abre com a conta grátis" role="img"><rect x="4.5" y="10.5" width="15" height="10" rx="2.6" /><path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9" /></svg>
         </p>
         <div :class="{ 'trs__trancado': trancado }" :aria-hidden="trancado || undefined">

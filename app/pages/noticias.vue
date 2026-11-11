@@ -18,9 +18,10 @@ const emptyCarteira = computed(() => tab.value === 'Sua carteira' && filtered.va
 const emptyCat = computed(() => tab.value !== 'Sua carteira' && filtered.value.length === 0)
 const showLoadMore = computed(() => !exhausted.value && filtered.value.length > 0)
 
-function setTab(v: string) {
-  tab.value = v as NoticiasTab
+function setTab(v: NoticiasTab) {
+  tab.value = v
 }
+const opcoesDoTrilho = tabs.map((t) => ({ valor: t, rotulo: t }))
 
 // JSON-LD ItemList com os itens REAIS da leva SSR (seed não entra — sem URL
 // nem data, entrar seria poluir o índice).
@@ -63,7 +64,7 @@ usePageSeo({
       subtitle="Toda notícia chega com a leitura da nossa IA: o que muda de verdade, para quais ativos e para a sua carteira."
     >
       <template #title>O mercado,<br>lido pela IA.</template>
-      <MercadoTrilho :itens="tabs" :model-value="tab" rotulo="Filtrar notícias" @update:model-value="setTab" />
+      <NuTrilho :opcoes="opcoesDoTrilho" :model-value="tab" rotulo="Filtrar notícias" @update:model-value="setTab" />
     </NuPageHero>
 
     <section class="nof">

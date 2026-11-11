@@ -53,6 +53,8 @@ const NOMES: Record<PeriodoDesempenho, [curto: string, longo: string]> = {
   '1mo': ['1M', '1 mês'], '6mo': ['6M', '6 meses'], '12mo': ['12M', '12 meses'], tudo: ['Tudo', 'todo o histórico'],
 }
 const opcoes = computed<PeriodoDesempenho[]>(() => (series.value ? periodosDoDesempenho(series.value.carteira) : []))
+/** o seletor do período (NuTrilho): '12M' à vista, '12 meses' para o leitor de tela */
+const opcoesDoTrilho = computed(() => opcoes.value.map((p) => ({ valor: p, rotulo: NOMES[p][0], extenso: NOMES[p][1] })))
 const periodo = ref<PeriodoDesempenho>('12mo')
 watch(opcoes, (o) => {
   if (o.length && !o.includes(periodo.value)) periodo.value = o[o.length - 1]!
@@ -214,9 +216,7 @@ const contexto = computed(() => ({
       <div v-if="temGrafico" class="chv2__palco">
         <NuFaixaMarca :rotulo="rotuloFaixa" como="p" :altura="56" class="chv2__cartao">
           <template v-if="opcoes.length > 1" #acoes>
-            <div class="chv__periodos chv2__periodos" role="radiogroup" aria-label="Período do gráfico">
-              <button v-for="p in opcoes" :key="p" type="button" role="radio" class="chv__periodo" :class="{ 'chv__periodo--on': periodo === p }" :aria-checked="periodo === p" :aria-label="NOMES[p][1]" @click="periodo = p">{{ NOMES[p][0] }}</button>
-            </div>
+            <NuTrilho v-model="periodo" :opcoes="opcoesDoTrilho" tom="escuro" tamanho="p" rotulo="Período do gráfico" class="chv2__periodos" />
           </template>
           <p v-if="legenda.length" class="chv2__legenda">
             <span v-for="(l, i) in legenda" :key="l.rotulo" class="chv2__leg" :class="{ 'chv2__leg--1': i === 0 }">
@@ -228,9 +228,7 @@ const contexto = computed(() => ({
             <AtivoGrafico :ativo="linha" :ibov="linhaCdi" ticker="Você" rotulo-hoje="Você no período" :atual="twr != null ? pctAtivo(twr) : ''" unidade="%" comparacao="CDI" tom="luz" :rotulo="tituloGrafico" />
           </div>
           <!-- no celular o período desce para baixo do gráfico, largo (o mesmo gesto do /asset) -->
-          <div v-if="opcoes.length > 1" class="chv__periodos chv2__periodos chv2__periodos--pe" role="radiogroup" aria-label="Período do gráfico">
-            <button v-for="p in opcoes" :key="p" type="button" role="radio" class="chv__periodo" :class="{ 'chv__periodo--on': periodo === p }" :aria-checked="periodo === p" :aria-label="NOMES[p][1]" @click="periodo = p">{{ NOMES[p][0] }}</button>
-          </div>
+          <NuTrilho v-if="opcoes.length > 1" v-model="periodo" :opcoes="opcoesDoTrilho" tom="escuro" largo rotulo="Período do gráfico" class="chv2__periodos--pe" />
         </NuFaixaMarca>
       </div>
       <!-- o esqueleto no tom do cartão que vem (carvão): claro, a tela piscava de creme para escuro quando o gráfico chegava -->
@@ -301,15 +299,8 @@ const contexto = computed(() => ({
 .chv__dir--up { color: var(--sobe); }
 .chv__dir--down { color: var(--cai); }
 .chv__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-/* o período sobre o carvão do cartão: a escolhida na pílula creme */
-.chv__periodos { display: inline-flex; flex-shrink: 0; }
-.chv__periodo {
-  height: 44px; min-width: 52px; padding: 0 15px; border: 0; border-radius: var(--nu-r-pill); background: transparent; color: var(--nu-on-dark);
-  font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s, color .2s;
-}
-.chv__periodo:hover { color: var(--nu-white); }
-.chv__periodo--on, .chv__periodo--on:hover { background: var(--nu-creme); color: var(--nu-ink); }
-.chv__periodo:focus-visible { outline-color: var(--nu-blue-on-dark); }
+/* o período sobre o carvão do cartão: o NuTrilho escuro (a escolhida na pílula creme, que desliza) */
+.chv2__periodos { flex-shrink: 0; }
 .chv__grafico { position: relative; }
 .chv__pe { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; margin-top: clamp(24px, 3vw, 36px); color: var(--tinta); font-size: var(--nu-fs-sm); font-weight: 600; }
 .chv__conta { display: inline-flex; align-items: center; gap: 8px; }
@@ -350,8 +341,7 @@ const contexto = computed(() => ({
 }
 /* o cartão estica até a altura dos três fatos, e o gráfico ocupa o que sobra (o AtivoGrafico pede 100% de altura: aqui ele se prende às quatro beiras) */
 .chv2__grafico :deep(.agr) { position: absolute; inset: 0; height: auto; }
-.chv2__periodos--pe { display: none; margin: 16px var(--pad) 0; padding: 4px; border-radius: var(--nu-r-pill); background: var(--nu-dark-chip); }
-.chv2__periodos--pe .chv__periodo { flex: 1; }
+.chv2__periodos--pe { display: none; margin: 16px var(--pad) 0; }
 /* os três fatos: cartões creme do contrato; o de atenção, em âmbar */
 .chv2__fatos { display: grid; grid-template-columns: minmax(0, 1fr); align-content: stretch; gap: clamp(12px, 1.4vw, 16px); margin: 0; min-width: 0; }
 .chv2__grade--so .chv2__fatos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }

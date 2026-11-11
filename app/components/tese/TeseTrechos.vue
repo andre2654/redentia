@@ -10,5 +10,5 @@ const trechos = computed(() => trechosDoTexto(props.texto))
 </script>
 
 <template>
-  <template v-for="(t, i) in trechos" :key="i"><TeseSelo v-if="t.tom" :tom="t.tom" tamanho="p">{{ t.texto }}</TeseSelo><template v-else>{{ t.texto }}</template></template>
+  <template v-for="(t, i) in trechos" :key="i"><NuSelo v-if="t.tom" :tom="t.tom" tamanho="p" corrido>{{ t.texto }}</NuSelo><template v-else>{{ t.texto }}</template></template>
 </template>
