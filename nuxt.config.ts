@@ -318,16 +318,20 @@ export default defineNuxtConfig({
     // useEvent() fora de handler: o server/plugins/backend-front-key.ts lê o
     // request em curso de dentro do $fetch do SSR pra carimbar o IP do visitante.
     experimental: { asyncContext: true },
-    // resvg e wawoff2 resolvem binário e wasm em node_modules. Empacotar
-    // quebra o caminho. A rota do PNG faz require deles em runtime.
+    // A Plus Jakarta Sans do PNG entra na função. O CSS do site continua
+    // servindo o mesmo arquivo em /fonts; aqui ele também vai no bundle,
+    // porque a função da Vercel não enxerga public/.
+    serverAssets: [{
+      baseName: 'fonts',
+      dir: fileURLToPath(new URL('./public/fonts', import.meta.url)),
+    }],
     externals: {
-      external: ['@resvg/resvg-js', 'wawoff2'],
-      // O require é dinâmico (createRequire). Sem isto o pacote some do
-      // package.json da função e o PNG quebra na Vercel.
+      // O .wasm não pode ser empacotado pelo rollup. O trace coloca o
+      // pacote dentro da função, e a rota lê index_bg.wasm pelo resolve.
+      external: ['@resvg/resvg-wasm'],
       traceInclude: [
-        require.resolve('@resvg/resvg-js'),
-        require.resolve('wawoff2'),
-        require.resolve('@resvg/resvg-js-linux-x64-gnu'),
+        require.resolve('@resvg/resvg-wasm'),
+        require.resolve('@resvg/resvg-wasm/index_bg.wasm'),
       ],
       // O dev do Nitro reescreve o import de scripts/indexnow.mjs para um
       // caminho acima da raiz do disco. Inline mantém o cron no bundle.

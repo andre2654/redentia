@@ -1,46 +1,72 @@
 /**
- * PNG do gráfico: o SVG vira bitmap com a Plus Jakarta Sans já publicada
- * em /fonts (woff2 → ttf na hora, uma vez por processo). Sem cookie e sem
- * fonte de terceiro: a resposta é o arquivo.
+ * PNG do gráfico no runtime da Vercel.
+ *
+ * O binário nativo de @resvg/resvg-js carregava, e a função quebrava no
+ * passo seguinte: o bundle reescreve import.meta.url para o index da
+ * função, e `../../public/fonts` aponta para `.vercel/output/public/fonts`,
+ * pasta que não existe. A fonte pública mora em `static/fonts`, fora da
+ * função. O WASM entra com o arquivo `.wasm` lido pelo nome do pacote
+ * (traceInclude), e a Plus Jakarta Sans entra como server asset
+ * (`assets:fonts`), sem caminho de disco relativo.
  */
 import { createRequire } from 'node:module'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { initWasm, Resvg } from '@resvg/resvg-wasm'
 import type { Grafico } from '../../app/utils/graficos.ts'
 import { svgDoGrafico } from '../../app/utils/graficos-svg.ts'
 
 const require = createRequire(import.meta.url)
 
-let fontePronta: Promise<string> | null = null
+let wasm: Promise<void> | null = null
 
-function caminhoFonte(): Promise<string> {
-  if (!fontePronta) {
-    fontePronta = (async () => {
-      const { decompress } = require('wawoff2') as { decompress: (b: Buffer) => Promise<Uint8Array> }
-      const woff = readFileSync(fileURLToPath(new URL('../../public/fonts/plus-jakarta-sans-latin.woff2', import.meta.url)))
-      const ttf = Buffer.from(await decompress(woff))
-      const destino = join(tmpdir(), 'redentia-plus-jakarta-sans.ttf')
-      writeFileSync(destino, ttf)
-      return destino
-    })()
+function iniciarWasm(): Promise<void> {
+  if (!wasm) {
+    wasm = initWasm(readFileSync(require.resolve('@resvg/resvg-wasm/index_bg.wasm'))).catch((erro) => {
+      wasm = null
+      throw erro
+    })
   }
-  return fontePronta
+  return wasm
 }
 
-export async function pngDoGrafico(g: Grafico): Promise<Buffer> {
-  const { Resvg } = require('@resvg/resvg-js') as typeof import('@resvg/resvg-js')
+function paraBytes(raw: unknown): Uint8Array | null {
+  if (raw instanceof Uint8Array) return raw
+  if (raw instanceof ArrayBuffer) return new Uint8Array(raw)
+  return null
+}
+
+/** No Nitro, a fonte vem do server asset. No teste, do arquivo do repositório. */
+export async function bytesDaFonte(): Promise<Uint8Array> {
+  if (typeof useStorage === 'function') {
+    const raw = await useStorage('assets:fonts').getItemRaw('plus-jakarta-sans-latin.woff2')
+    const bytes = paraBytes(raw)
+    if (bytes && bytes.byteLength > 0) return bytes
+    throw new Error('fonte do gráfico ausente no bundle')
+  }
+  return new Uint8Array(readFileSync(fileURLToPath(new URL('../../public/fonts/plus-jakarta-sans-latin.woff2', import.meta.url))))
+}
+
+export async function pngDoGrafico(g: Grafico, fonte?: Uint8Array): Promise<Buffer> {
+  await iniciarWasm()
+  const bytes = fonte ?? await bytesDaFonte()
   const { svg } = svgDoGrafico(g)
-  const fonte = await caminhoFonte()
   const resvg = new Resvg(svg, {
     font: {
-      fontFiles: [fonte],
-      loadSystemFonts: false,
+      fontBuffers: [bytes],
       defaultFontFamily: 'Plus Jakarta Sans',
     },
     background: '#f5f1ea',
     fitTo: { mode: 'original' },
   })
-  return resvg.render().asPng()
+  try {
+    const imagem = resvg.render()
+    try {
+      return Buffer.from(imagem.asPng())
+    } finally {
+      imagem.free()
+    }
+  } finally {
+    resvg.free()
+  }
 }

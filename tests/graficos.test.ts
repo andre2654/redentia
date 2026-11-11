@@ -6,11 +6,12 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { createRequire } from 'node:module'
+import { IncomingMessage, ServerResponse } from 'node:http'
+import { createEvent, getResponseHeader } from 'h3'
+import { responderGraficoPng } from '../server/routes/graficos/[arquivo].ts'
 import { SUFIXO_MARCA, TETO_DESCRICAO, TETO_TITULO } from '../app/utils/serp.ts'
 import { SITEMAP_GRUPOS, paginasDoGrupo } from '../server/utils/sitemap-xml.ts'
 import {
-  AVISO,
   CITACAO_CDI,
   GRAFICOS_DESCRICAO,
   GRAFICOS_PAGINA,
@@ -28,7 +29,6 @@ import {
 import { svgDoGrafico } from '../app/utils/graficos-svg.ts'
 import { pngDoGrafico } from '../server/utils/graficos-png.ts'
 
-const require = createRequire(import.meta.url)
 const ler = (caminho: string) => readFileSync(new URL(`../${caminho}`, import.meta.url), 'utf8')
 
 const SERIE_4389 = [{ data: '09/11/2026', valor: '13.65' }]
@@ -187,20 +187,26 @@ test('o SVG leva marca, fonte, data e o aviso, sem caixas sobrepostas', () => {
   }
 })
 
+function eventoPng() {
+  const req = new IncomingMessage(null as never)
+  req.method = 'GET'
+  req.url = '/graficos/cdi.png'
+  req.headers = {}
+  const res = new ServerResponse(req)
+  return createEvent(req, res)
+}
+
 test('o PNG sai do servidor com a marca em pixels e o cabeçalho de arquivo', async () => {
   const g = graficoCdi(leituraCdi(SERIE_4389, null))!
   const buf = await pngDoGrafico(g)
   assert.equal(buf.subarray(0, 8).toString('hex'), '89504e470d0a1a0a')
   assert.equal(buf.readUInt32BE(16), 1200)
   assert.ok(buf.readUInt32BE(20) > 400)
-  const { Resvg } = require('@resvg/resvg-js') as typeof import('@resvg/resvg-js')
+  const { Resvg } = await import('@resvg/resvg-wasm')
+  const fonte = readFileSync(new URL('../public/fonts/plus-jakarta-sans-latin.woff2', import.meta.url))
   const { svg, width, height } = svgDoGrafico(g)
   const png = new Resvg(svg, {
-    font: {
-      fontFiles: [`${process.env.TMPDIR || '/tmp'}/redentia-plus-jakarta-sans.ttf`],
-      loadSystemFonts: false,
-      defaultFontFamily: 'Plus Jakarta Sans',
-    },
+    font: { fontBuffers: [fonte], defaultFontFamily: 'Plus Jakarta Sans' },
   }).render()
   assert.equal(png.width, width)
   assert.equal(png.height, height)
@@ -216,6 +222,27 @@ test('o PNG sai do servidor com a marca em pixels e o cabeçalho de arquivo', as
   }
   assert.ok(navy > 800, `pixels navy ${navy}`)
   assert.ok(azul > 1000, `pixels azuis ${azul}`)
+  png.free()
+})
+
+test('a rota do PNG devolve a assinatura do arquivo e, se a raster falha, 503 sem HTML', async () => {
+  const g = graficoCdi(leituraCdi(SERIE_4389, null))!
+  const event = eventoPng()
+  const body = await responderGraficoPng(event, g)
+  assert.ok(Buffer.isBuffer(body))
+  assert.equal(body.subarray(0, 8).toString('hex'), '89504e470d0a1a0a')
+  assert.equal(getResponseHeader(event, 'content-type'), 'image/png')
+  assert.equal(getResponseHeader(event, 'cache-control'), 'public, max-age=86400, s-maxage=86400')
+  assert.equal(getResponseHeader(event, 'set-cookie'), undefined)
+
+  const falha = eventoPng()
+  const texto = await responderGraficoPng(falha, g, async () => {
+    throw new Error('wasm')
+  })
+  assert.equal(typeof texto, 'string')
+  assert.equal(falha.node.res.statusCode, 503)
+  assert.equal(getResponseHeader(falha, 'cache-control'), 'no-store')
+  assert.equal(getResponseHeader(falha, 'content-type'), 'text/plain; charset=utf-8')
 })
 
 test('a página entra no sitemap de páginas, no llms e no cache de um dia', () => {
@@ -254,9 +281,14 @@ test('a página entra no sitemap de páginas, no llms e no cache de um dia', () 
   assert.match(pagina, /path: GRAFICOS_PATH/)
 
   const rota = ler('server/routes/graficos/[arquivo].ts')
+  const raster = ler('server/utils/graficos-png.ts')
   assert.match(rota, /max-age=86400, s-maxage=86400/)
   assert.match(rota, /no-store/)
+  assert.match(rota, /, 503,/)
   assert.doesNotMatch(rota, /setCookie|gtag|googletagmanager|clarity/)
+  assert.match(raster, /from '@resvg\/resvg-wasm'/)
+  assert.match(raster, /assets:fonts/)
+  assert.doesNotMatch(raster, /from '@resvg\/resvg-js'|require\('wawoff2'\)/)
   assert.match(ler('server/api/graficos.get.ts'), /s-maxage=86400/)
   assert.doesNotMatch(ler('server/api/graficos.get.ts'), /setCookie/)
 })
