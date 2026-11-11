@@ -289,7 +289,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
 
     <!-- carteira conectada sem assinatura, ou sem carteira: o passo que falta -->
     <template v-else-if="carteiraSemAssinatura || semCarteira">
-      <div class="haf__corpo haf__corpo--so">
+      <div class="haf__corpo">
         <div class="haf__texto">
           <NuEyebrow como="p" class="haf__eyebrow">Falta um passo</NuEyebrow>
           <h1 id="haf-titulo" class="haf__frase">
@@ -303,10 +303,19 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
             <template v-else>Assine para a Aportou juntar os seus bancos, testar a carteira em 2.000 cenários e vigiar todo dia por você.</template>
           </p>
           <HomeChamada
-            tom="claro" :centro="false" class="haf__chamada"
+            tom="claro" :centro="false" sem-apps class="haf__chamada"
             :rotulo="carteiraSemAssinatura ? (resumo?.state === 'patrimonio' ? 'Ver a minha carteira' : 'Conectar carteira') : undefined"
           />
         </div>
+        <!-- o que vem depois do passo: o teste dos 2.000 cenários, a mesma
+             ilustração do herói do visitante (sem número de ninguém), no cartão
+             com a faixa da marca; o cartão leva ao mesmo lugar da chamada -->
+        <NuxtLink to="/assinar?quiz=1&de=home-leque" class="haf__graf" aria-label="Conectar a carteira e ver o teste dos 2.000 cenários">
+          <NuFaixaMarca rotulo="Daqui a 5 anos" como="span" :altura="52" class="haf__cartao">
+            <HomeLeque tom="carvao" class="haf__leque" />
+            <span class="haf__leque-pe"><span class="haf__leque-selo"><strong>2.000</strong> futuros testados para a sua carteira</span></span>
+          </NuFaixaMarca>
+        </NuxtLink>
       </div>
     </template>
 
@@ -396,6 +405,10 @@ a.haf__graf:hover { transform: translateY(-2px); }
 .haf__traco--cdi { background: repeating-linear-gradient(90deg, var(--nu-white-35) 0 3px, transparent 3px 7px); }
 /* o gráfico vai de beira a beira do cartão; o ponto de hoje e o rótulo recuam
    (as variáveis que o AtivoGrafico aceita, as mesmas do /asset) */
+.haf__leque { display: block; width: 100%; height: clamp(220px, 22vw, 300px); margin-top: 4px; }
+.haf__leque-pe { display: flex; padding: 0 clamp(18px, 2.4vw, 28px) clamp(18px, 2.2vw, 24px); }
+.haf__leque-selo { display: inline-flex; align-items: center; gap: 8px; padding: 8px 15px; border-radius: var(--nu-r-pill); background: var(--nu-blue); color: var(--nu-white); font-size: 14.5px; font-weight: 500; white-space: nowrap; }
+.haf__leque-selo strong { font-size: 15.5px; font-weight: 800; }
 .haf__graf-area {
   position: relative; display: block; height: clamp(170px, 15vw, 210px); margin-top: 12px;
   --agr-esq: var(--pad); --agr-dir: max(var(--pad), 44px); --agr-rotulo-esq: var(--pad);
