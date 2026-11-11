@@ -278,11 +278,14 @@ export const ERRO_CHECKOUT = 'Não conseguimos abrir o pagamento agora. Nada foi
 export const ERRO_PLANO = 'A assinatura está fechada para novas entradas neste momento. Nada foi cobrado. Tente de novo mais tarde.'
 /**
  * O aceite do WhatsApp, palavra por palavra igual ao do Backend
- * (App\Services\WhatsAppConsent::TEXTO, versão whatsapp-2026-11-01): é este
- * texto que fica registrado como prova do "sim" (LGPD). Mudou aqui, sobe a
- * versão lá junto.
+ * (App\Services\WhatsAppConsent::TEXTO, versão whatsapp-2026-11-11, a da
+ * Aportou; a de 01/11 dizia "Redentia" e segue no mapa de lá para quem já
+ * aceitou): é este texto que fica registrado como prova do "sim" (LGPD).
+ * Mudou aqui, sobe a versão lá junto. ESTE FRONT E O BACKEND DA BRANCH
+ * feat/aportou-marca SOBEM JUNTOS: a versão é carimbada no servidor, e um
+ * lado sem o outro grava o "sim" de um texto com a versão do outro.
  */
-export const TEXTO_ACEITE_WHATSAPP = 'Quero receber a Redentia no WhatsApp. Para parar, é só responder SAIR.'
+export const TEXTO_ACEITE_WHATSAPP = 'Quero receber a Aportou no WhatsApp. Para parar, é só responder SAIR.'
 
 /** O "Ocultar meu e-mail" da Apple: o endereço existe, mas não é da pessoa. */
 export function ehEmailRelayDaApple(email: string | null | undefined): boolean {

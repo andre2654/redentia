@@ -20,7 +20,7 @@ Lista curta do que já foi decidido, para todo construtor escrever igual. Comple
 
 - E-mails `@redentia.com.br`, o domínio `redentia.com.br`, Instagram `redentia.app`, LinkedIn `company/redentia`.
 - Cookies e chaves (`nu:*`, `redentia_consent`, `redentia_chat_client_id`, `redentia:valores-visiveis`), headers `X-Redentia-*`, `tenantSlug: 'redentia'`, `plan_slug: 'redentia'`, `item_id: 'redentia-mensal'`, nomes de evento de analytics.
-- `TEXTO_ACEITE_WHATSAPP` (`utils/assinatura.ts`): é o texto do aceite da LGPD, versionado junto com o backend. **Não toque.** A versão nova entra com a leva do backend.
+- `TEXTO_ACEITE_WHATSAPP` (`utils/assinatura.ts`): é o texto do aceite da LGPD, versionado junto com o backend. Desde 11/11 diz "Aportou" e casa com a versão `whatsapp-2026-11-11` da branch `feat/aportou-marca` do backend. **Front e backend sobem juntos**; não mude o texto sem subir a versão lá.
 - Nomes de arquivo, de componente, de função e de variável (`appsRedentia.ts`, `marcaRedentia.ts`, `APPS_REDENTIA`…).
 - Razão social e CNPJ (`EMPRESA`).
 

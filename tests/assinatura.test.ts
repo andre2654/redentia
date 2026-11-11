@@ -380,7 +380,7 @@ test('checkout que falha não mede begin_checkout', async () => {
 
 test('o aceite do WhatsApp é o texto registrado no Backend, numa caixa desmarcada', () => {
   // mesmo texto de App\\Services\\WhatsAppConsent::TEXTO (versão whatsapp-2026-11-01)
-  assert.equal(TEXTO_ACEITE_WHATSAPP, 'Quero receber a Redentia no WhatsApp. Para parar, é só responder SAIR.')
+  assert.equal(TEXTO_ACEITE_WHATSAPP, 'Quero receber a Aportou no WhatsApp. Para parar, é só responder SAIR.')
   const quiz = readFileSync(new URL('../app/components/assinatura/AssinaturaQuiz.vue', import.meta.url), 'utf8')
   assert.match(quiz, /const aceiteWhatsapp = ref\(false\)/)
   assert.match(quiz, /whatsapp_opt_in: aceiteWhatsapp\.value/)
