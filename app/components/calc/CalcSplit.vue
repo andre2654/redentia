@@ -37,7 +37,7 @@ defineProps<{
 <style scoped>
 .csp {
   background: var(--nu-page);
-  padding: clamp(64px, 8.5vw, 110px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(64px, 8.5vw, 110px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .csp--cream { background: var(--nu-band); }

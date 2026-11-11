@@ -105,7 +105,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
   position: sticky; top: var(--nuh-h, 72px); z-index: 40;
   transition: top .32s cubic-bezier(.2, .8, .2, 1);
 }
-.nut { display: flex; align-items: center; gap: 26px; padding: 14px 22px; }
+.nut { display: flex; align-items: center; gap: 26px; padding: 14px max(22px, calc((100% - 1240px) / 2)); }
 .nut__label { color: var(--nu-ink); font-size: var(--nu-fs-xs); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 .nut__marquee { flex: 1; min-width: 0; overflow: hidden; }
 .nut__track { display: inline-flex; width: max-content; animation: nut-scroll 55s linear infinite; }
@@ -135,7 +135,7 @@ const SK_WIDTHS = [88, 124, 112, 104, 120, 116]
 
 /* ——— a régua do mercado ——— */
 .nut-regua {
-  display: flex; align-items: center; gap: 22px; height: 40px; padding: 0 clamp(16px, 3vw, 40px);
+  display: flex; align-items: center; gap: 22px; height: 40px; padding: 0 max(clamp(16px, 3vw, 40px), calc((100% - 1240px) / 2));
   font-size: var(--nu-fs-dense);
 }
 .nut-regua__sk { display: flex; align-items: center; gap: 28px; overflow: hidden; }

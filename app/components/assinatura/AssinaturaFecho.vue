@@ -35,7 +35,7 @@ const bancos = VITRINE.map((s) => INSTITUICOES.find((i) => i.slug === s)).filter
 <style scoped>
 .afc {
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  background: var(--nu-band); padding: clamp(72px, 8vw, 120px) clamp(20px, 5.5vw, 80px);
+  background: var(--nu-band); padding: clamp(72px, 8vw, 120px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
 
 /* o desenho: os bancos encostados → a linha → a marca */

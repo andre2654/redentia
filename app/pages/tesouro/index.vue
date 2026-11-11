@@ -164,7 +164,7 @@ usePageSeo({
    cartão branco; mesma família do /ranking. O conteúdo é o de antes. */
 .tsh__body {
   background: var(--nu-page);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   display: flex; flex-direction: column; gap: clamp(20px, 2.5vw, 28px);
   animation: nu-fade .5s ease both;
 }

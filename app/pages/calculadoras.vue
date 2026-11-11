@@ -263,7 +263,7 @@ usePageSeo({
 /* ——— hero: creme da página, eyebrow com o corte, H1 em 800 ——— */
 .chb__hero {
   background: var(--nu-page);
-  padding: clamp(48px, 7vw, 92px) clamp(20px, 5.5vw, 80px) clamp(56px, 7vw, 92px);
+  padding: clamp(48px, 7vw, 92px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 92px);
   animation: nu-fade .5s ease both;
 }
 .chb__h1 {
@@ -320,7 +320,7 @@ usePageSeo({
 .chb__card--blue .chb__card-body { color: var(--nu-blue-on-blue); }
 
 /* ——— faixas de conteúdo: creme da página e creme de faixa, alternados ——— */
-.chb__band { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.chb__band { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .chb__band--faixa { background: var(--nu-band); }
 .chb__h3 { margin: 0; color: var(--nu-ink); font-size: var(--nu-fs-xl); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
 .chb__p { margin: 8px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }

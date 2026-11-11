@@ -95,7 +95,7 @@ const mostrarComoFunciona = computed(() =>
 /* ——— FAQ (o mesmo da home anterior; o /benchmark-ia e a /teses copiam).
    Aportou: a faixa quente da marca, com os cartões brancos por cima, no
    contêiner de 1.240 px ——— */
-.mfq { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1176px) / 2)); }
+.mfq { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
 .mfq__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .mfq__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .mfq__copy { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin-top: 20px; max-width: 420px; }

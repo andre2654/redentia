@@ -39,7 +39,7 @@ defineProps<{
 <style scoped>
 .nah {
   background: var(--nu-page);
-  padding: clamp(48px, 7vw, 88px) clamp(22px, 5.5vw, 80px) clamp(44px, 6vw, 72px);
+  padding: clamp(48px, 7vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(44px, 6vw, 72px);
   animation: nu-fade .5s ease both;
 }
 .nah__inner { max-width: 920px; }

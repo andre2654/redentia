@@ -27,7 +27,7 @@ defineProps<{ editorial: TeseEditorialVM }>()
 <style scoped>
 .ted {
   background: var(--nu-page);
-  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
+  padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .ted__cols { display: flex; gap: clamp(28px, 5vw, 80px); flex-wrap: wrap; }

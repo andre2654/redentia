@@ -22,7 +22,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 <style scoped>
 .nph {
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
+  padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
 .nph__title {
@@ -36,7 +36,7 @@ defineProps<{ eyebrow: string; subtitle?: string; size?: 'lg' }>()
 .nph__actions { margin-top: 32px; }
 
 /* variante lg (o hub /guias): o H1 de página da marca */
-.nph--lg { padding: clamp(56px, 8vw, 100px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 60px); }
+.nph--lg { padding: clamp(56px, 8vw, 100px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 60px); }
 .nph--lg .nph__title { font-size: var(--nu-fs-hero); }
 .nph--lg .nph__sub { margin-top: 24px; max-width: 560px; }
 .nph--lg .nph__actions { margin-top: 38px; }

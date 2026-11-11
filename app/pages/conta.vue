@@ -106,7 +106,7 @@ usePageSeo({
 .conta {
   background: var(--nu-page);
   min-height: 100vh;
-  padding: clamp(28px, 5vw, 64px) clamp(20px, 5.5vw, 80px) clamp(60px, 8vw, 110px);
+  padding: clamp(28px, 5vw, 64px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(60px, 8vw, 110px);
   animation: nu-fade .5s ease both;
 }
 .conta__top { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }

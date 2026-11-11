@@ -109,7 +109,7 @@ const idDe = (nome: string) => `cps-${nome.toLowerCase().normalize('NFD').replac
 /* a tela antiga (sem a visão) na Aportou: faixa quente no lugar do branco */
 .cps {
   background: var(--nu-band);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(56px, 7.5vw, 96px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   scroll-margin-top: calc(var(--nuh-h, 76px) + 56px);
 }
 .cps__cols { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: clamp(28px, 5vw, 80px); align-items: start; }

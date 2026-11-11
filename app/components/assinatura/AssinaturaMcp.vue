@@ -31,7 +31,7 @@
 </template>
 
 <style scoped>
-.amc { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.amc { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .amc__cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
 .amc__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
 .amc__dek { margin: 20px 0 0; max-width: 54ch; color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.55; }

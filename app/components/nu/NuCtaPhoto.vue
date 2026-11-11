@@ -45,7 +45,7 @@ withDefaults(defineProps<{
 <style scoped>
 .ncp {
   position: relative; overflow: hidden; background: var(--nu-blue);
-  padding: clamp(52px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(52px, 6.5vw, 84px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   min-height: clamp(320px, 34vw, 430px); display: flex; align-items: center;
   animation: nu-fade .5s ease both;
 }

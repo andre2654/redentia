@@ -118,7 +118,7 @@ usePageSeo({
 .gt { background: var(--nu-page); }
 
 .gt__hero {
-  padding: clamp(44px, 6vw, 80px) clamp(20px, 5.5vw, 80px) clamp(36px, 4.5vw, 52px);
+  padding: clamp(44px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.5vw, 52px);
   border-bottom: 1.5px solid var(--nu-line-2);
   animation: nu-fade .5s ease both;
 }

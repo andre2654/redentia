@@ -242,6 +242,8 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
 /* ——— Aportou: o topo do site de investidor ——— */
 .nuh-wrap--ap { background: var(--nu-page); border-bottom-color: transparent; transition: border-color .3s, box-shadow .3s; }
 .nuh-wrap--ap.nuh-wrap--shrunk { border-bottom-color: var(--nu-line-2); }
+/* a mesma coluna de 1240 do conteúdo: o wordmark alinha com o título da página */
+.nuh-wrap--ap .nuh { padding-inline: max(clamp(16px, 3vw, 40px), calc((100% - 1240px) / 2)); }
 .nuh-wrap--ap .nuh__item { color: var(--nu-ink); font-weight: 600; letter-spacing: 0; }
 .nuh-wrap--ap .nuh__item:hover, .nuh-wrap--ap .nuh__item--aberto { color: var(--nu-blue-text); }
 .nuh-wrap--ap .nuh__item--ativo { color: var(--nu-blue-text); }
@@ -259,6 +261,7 @@ const logadoBiz = computed(() => business.value && montado.value && topo.isAuthe
   .nuh-wrap--ap .nuh__busca:hover { background: var(--nu-band); }
 }
 @container topo (max-width: 640px) {
+  .nuh-wrap--ap .nuh { padding: 0 6px 0 16px; }
   .nuh-wrap--ap .nuh__marca { padding: 4px 6px 4px 0; }
   .nuh-wrap--ap .nuh__marca :deep(svg) { height: 24px; width: auto; }
 }

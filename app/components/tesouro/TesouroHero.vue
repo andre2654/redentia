@@ -31,7 +31,7 @@ const sobre = useSobreDoContexto()
    lista), o nome em 800 e a taxa como número-herói em carvão. */
 .thr {
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(36px, 4.5vw, 56px);
+  padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(36px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
 .thr__eyebrow { display: inline-flex; min-height: 44px; transition: color .2s ease; }

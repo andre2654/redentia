@@ -157,7 +157,7 @@ const selo = computed(() => {
 
 <style scoped>
 /* a faixa quente da marca, no contêiner de 1.240 px */
-.hrk { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1176px) / 2)); }
+.hrk { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
 .hrk__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
 .hrk__sub { margin: 20px 0 0; max-width: 620px; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
 /* o estado da bolsa: selo de raio 8 e, ao lado, de quando são os números */

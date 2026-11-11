@@ -30,7 +30,7 @@ defineProps<{
 .cms {
   display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap;
   background: var(--nu-page);
-  padding: 16px clamp(22px, 5.5vw, 80px) 26px;
+  padding: 16px max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 26px;
 }
 .cms__label { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 700; white-space: nowrap; }
 .cms__chips { list-style: none; display: flex; gap: 8px; flex-wrap: wrap; margin: 0; padding: 0; }

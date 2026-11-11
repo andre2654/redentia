@@ -259,7 +259,7 @@ if (linkDeChat.tipo === 'login') {
 <style scoped>
 .bp__corpo {
   display: flex; flex-direction: column;
-  padding: clamp(24px, 3.2vw, 44px) clamp(20px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
+  padding: clamp(24px, 3.2vw, 44px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   background: var(--nu-page);
 }
 .bp__corpo > * { width: 100%; max-width: 880px; }

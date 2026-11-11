@@ -50,7 +50,7 @@ const SEGURANCA = [
 </template>
 
 <style scoped>
-.abc { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.abc { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .abc__cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
 .abc__titulo { margin: 18px 0 0; max-width: 17ch; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; }
 .abc__titulo span { display: block; margin-top: 6px; color: var(--nu-blue); }

@@ -29,7 +29,7 @@ defineProps<{ faq: NuFaqItem[] }>()
 <style scoped>
 .bdu {
   scroll-margin-top: calc(var(--nuh-h, 76px) + 46px);
-  background: var(--nu-band); padding: clamp(64px, 7vw, 100px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
+  background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
 }
 .bdu__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .bdu__left { flex: 1 1 300px; min-width: min(280px, 100%); }

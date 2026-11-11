@@ -167,7 +167,7 @@ const tocItems = computed(() => props.report.toc.map((t) => ({ label: t.label, t
 <style scoped>
 .trp {
   background: var(--nu-page);
-  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
+  padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .trp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }

@@ -83,7 +83,7 @@ const { empresas, cobertura, resto, aberto, ativo, titulo, contexto, fontes } = 
 </template>
 
 <style scoped>
-.crz { --mola: cubic-bezier(.2, .8, .2, 1); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.crz { --mola: cubic-bezier(.2, .8, .2, 1); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 /* a alternância da página do ativo na Aportou: a faixa quente e o creme da página */
 .crz--creme { background: var(--nu-band); }
 .crz--branco { background: var(--nu-page); }

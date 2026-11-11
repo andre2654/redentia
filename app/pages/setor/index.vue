@@ -108,7 +108,7 @@ usePageSeo({
    com a sombra quente, que sobe 2px ao passar o ponteiro */
 .sth__grid-wrap {
   background: var(--nu-page);
-  padding: clamp(24px, 3vw, 40px) clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
+  padding: clamp(24px, 3vw, 40px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .sth__grid {

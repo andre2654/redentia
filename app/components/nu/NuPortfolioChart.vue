@@ -138,7 +138,7 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
 <style scoped>
 .hch {
   background: var(--nu-navy);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  padding: clamp(56px, 7.5vw, 96px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 76px);
   animation: nu-fade .5s ease both;
 }
 .hch__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
@@ -165,6 +165,9 @@ const pillValue = computed(() => (hidden.value ? 'R$ ••••' : props.chart
   position: relative; height: clamp(280px, 36vw, 430px);
   margin: 34px calc(clamp(22px, 5.5vw, 80px) * -1) calc(clamp(48px, 6vw, 76px) * -1);
 }
+/* em tela larga a seção centra a coluna de 1240px e a margem lateral passa de 80px:
+   o gráfico para de vazar para a borda e fica na coluna */
+@media (min-width: 1401px) { .hch__chart { margin-left: 0; margin-right: 0; } }
 .hch__collecting { margin-top: 34px; max-width: 640px; }
 .hch__collecting-kicker {
   color: var(--nu-blue-soft); font-size: var(--nu-fs-xs); font-weight: 700;

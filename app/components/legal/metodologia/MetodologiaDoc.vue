@@ -78,7 +78,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 /* espelha a casca do shared legal/LegalDoc.vue: o creme da página + coluna 820px */
 .met-doc {
   background: var(--nu-page);
-  padding: clamp(44px, 6vw, 76px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  padding: clamp(44px, 6vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
   animation: nu-fade .5s ease .06s both;
 }
 .met-doc__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }

@@ -55,7 +55,7 @@ useHead({ titleTemplate: null })
    fio carvão de 3px, título em 800. Sobre o creme da página, em cascata. */
 .hw {
   background: var(--nu-page);
-  padding: clamp(48px, 6vw, 80px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  padding: clamp(48px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
 }
 .hw__steps {
   max-width: 1240px; margin: 0; padding: 0; list-style: none;

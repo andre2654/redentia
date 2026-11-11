@@ -26,7 +26,7 @@ const { el: secao, revealClass } = useReveal(0.25, { soEmbeleza: true })
 </template>
 
 <style scoped>
-.hfe { background: var(--nu-page); padding: clamp(40px, 5vw, 72px) max(32px, calc((100% - 1176px) / 2)) clamp(56px, 6vw, 88px); }
+.hfe { background: var(--nu-page); padding: clamp(40px, 5vw, 72px) max(32px, calc((100% - 1240px) / 2)) clamp(56px, 6vw, 88px); }
 /* o painel azul do contrato */
 .hfe__painel {
   position: relative; isolation: isolate; overflow: hidden;

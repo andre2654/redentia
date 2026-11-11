@@ -177,7 +177,7 @@ const tituloLendo = computed(() => (banco.value ? `Lendo o seu ${banco.value}.` 
 <style scoped>
 .cvz {
   background: var(--nu-page);
-  padding: clamp(56px, 8vw, 112px) clamp(22px, 5.5vw, 80px) clamp(44px, 6vw, 80px);
+  padding: clamp(56px, 8vw, 112px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(44px, 6vw, 80px);
   animation: nu-fade .5s ease both;
 }
 .cvz__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero-xl); font-weight: 800; letter-spacing: -0.04em; line-height: 0.96; }

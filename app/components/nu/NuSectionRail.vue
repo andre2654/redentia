@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
 .nsr {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   width: 100%; border: none; background: transparent; cursor: pointer;
-  min-height: 44px; padding: 10px clamp(16px, 3vw, 40px); font-family: inherit; text-align: left;
+  min-height: 44px; padding: 10px max(clamp(16px, 3vw, 40px), calc((100% - 1240px) / 2)); font-family: inherit; text-align: left;
   color: var(--nu-ink);
 }
 .nsr__head { display: inline-flex; align-items: baseline; gap: 10px; min-width: 0; }
@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
 .nsr__row {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
   border: none; background: transparent; cursor: pointer; text-align: left;
-  min-height: 52px; padding: 14px clamp(16px, 3vw, 40px); font-family: inherit;
+  min-height: 52px; padding: 14px max(clamp(16px, 3vw, 40px), calc((100% - 1240px) / 2)); font-family: inherit;
   color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 600;
   transition: background .15s;
 }

@@ -53,7 +53,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
 .abv {
   background: var(--nu-page);
   min-height: clamp(520px, calc(100svh - 150px), 760px);
-  padding: clamp(56px, 8vw, 112px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(56px, 8vw, 112px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
   animation: nu-fade .5s ease both;
 }
@@ -71,7 +71,7 @@ const emTeste = computed(() => (props.ent?.subscription?.status ?? 'trialing') =
 .abf {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
   background: var(--nu-green-bg);
-  padding: 18px clamp(22px, 5.5vw, 80px);
+  padding: 18px max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .abf__check {

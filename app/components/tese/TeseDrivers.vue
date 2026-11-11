@@ -59,7 +59,7 @@ const { isAuthenticated } = useAuthState()
 .tdr {
   /* Aportou: o painel azul é o gradiente cobalto */
   background: var(--nu-grad-cobalto);
-  padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px);
+  padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .tdr__grid {

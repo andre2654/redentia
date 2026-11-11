@@ -102,7 +102,7 @@ usePageSeo({
 /* Aportou: o feed corre sobre o creme da página (não há faixa branca) */
 .nof {
   background: var(--nu-page);
-  padding: clamp(44px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
+  padding: clamp(44px, 5.5vw, 72px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .nof__stack { display: flex; flex-direction: column; gap: clamp(52px, 6.5vw, 92px); }

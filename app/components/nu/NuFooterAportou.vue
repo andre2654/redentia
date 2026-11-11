@@ -74,7 +74,7 @@ const ano = new Date().getFullYear()
 
 <style scoped>
 .nfa { container: rodape / inline-size; background: var(--nu-ink); color: var(--nu-on-dark); overflow: hidden; }
-.nfa__in { max-width: 1240px; margin: 0 auto; padding: 64px 32px 0; display: flex; flex-direction: column; gap: 44px; }
+.nfa__in { max-width: 1304px; margin: 0 auto; padding: 64px 32px 0; display: flex; flex-direction: column; gap: 44px; }
 
 .nfa__news {
   display: flex; flex-wrap: wrap; align-items: center; gap: 24px 56px;

@@ -61,7 +61,7 @@ const NAO_E = [
 .hne {
   position: relative; isolation: isolate; overflow: hidden;
   display: flex; flex-wrap: wrap; align-items: flex-start; gap: 48px 64px;
-  padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1176px) / 2));
+  padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2));
   background: var(--nu-sage); color: var(--nu-ink);
 }
 /* o corte do "t", gigante e quase apagado, no canto de cima */

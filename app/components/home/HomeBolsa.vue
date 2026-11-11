@@ -257,7 +257,7 @@ function irParaNewsletter(e: MouseEvent) {
 
 <style scoped>
 /* a seção carvão da home, no contêiner de 1.240 px */
-.hbo { background: var(--nu-ink); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1176px) / 2)); }
+.hbo { background: var(--nu-ink); padding: clamp(64px, 7vw, 100px) max(32px, calc((100% - 1240px) / 2)); }
 /* a sobrelinha é o eyebrow da marca; com a bolsa aberta, o texto fica verde */
 .hbo__rotulo--aberta { color: var(--nu-green-soft); }
 .hbo__frase {

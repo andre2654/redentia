@@ -304,7 +304,7 @@ const ola = computed(() => `Olá${firstName.value ? `, ${firstName.value}` : ''}
    contrato (a saudação, 28 a 36 px, a frase e o cartão, 28 a 36 px, os fatos):
    nada de altura mínima de tela cheia, que abria vazios entre os blocos. */
 .haf {
-  --g: max(32px, calc((100% - 1176px) / 2));
+  --g: max(32px, calc((100% - 1240px) / 2));
   --tinta: var(--nu-ink); --sub: var(--nu-gray);
   padding: clamp(22px, 2.6vw, 36px) var(--g) clamp(32px, 3.6vw, 48px); background: var(--nu-page); color: var(--tinta); font-variant-numeric: tabular-nums;
 }

@@ -130,7 +130,7 @@ async function deixar(t: string) {
 <style scoped>
 .sgf {
   background: var(--nu-band);
-  padding: clamp(56px, 6vw, 88px) max(32px, calc((100% - 1176px) / 2));
+  padding: clamp(56px, 6vw, 88px) max(32px, calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 @media (max-width: 760px) { .sgf { padding-inline: 20px; } }

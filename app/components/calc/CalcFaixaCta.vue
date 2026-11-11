@@ -81,7 +81,7 @@ const BENEFICIOS = [
 </template>
 
 <style scoped>
-.cft { background: var(--nu-page); padding: clamp(28px, 4vw, 56px) clamp(12px, 5.5vw, 80px) clamp(56px, 7vw, 96px); }
+.cft { background: var(--nu-page); padding: clamp(28px, 4vw, 56px) max(clamp(12px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px); }
 .cft--compacta { padding-top: 0; }
 /* o painel azul do contrato */
 .cft__painel {

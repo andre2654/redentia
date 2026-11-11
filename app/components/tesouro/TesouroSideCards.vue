@@ -25,7 +25,7 @@ const sobre = useSobreDoContexto()
 <style scoped>
 .tsc {
   background: var(--nu-page);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 72px);
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 72px);
   animation: nu-fade .5s ease both;
 }
 .tsc__grid {

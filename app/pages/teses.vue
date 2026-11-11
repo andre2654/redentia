@@ -45,7 +45,7 @@ usePageSeo({
 
 <style scoped>
 /* ——— FAQ (Aportou: a faixa quente, o eyebrow, o H2 em 800, a pílula com a seta) ——— */
-.tsf { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); animation: nu-fade .5s ease both; }
+.tsf { background: var(--nu-band); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); animation: nu-fade .5s ease both; }
 .tsf__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
 .tsf__left { flex: 1 1 300px; min-width: min(280px, 100%); }
 .tsf__title {

@@ -43,7 +43,7 @@ const apps = [
 
 <style scoped>
 /* faixa baixa: o padding-top fica por conta da banda de Posições acima */
-.cmb { background: var(--nu-page); padding: 0 clamp(20px, 5.5vw, 80px) clamp(48px, 6vw, 72px); }
+.cmb { background: var(--nu-page); padding: 0 max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 72px); }
 
 /* o painel azul da marca: gradiente cobalto, raio 32, o corte gigante branco a 8% no canto */
 .cmb__card {

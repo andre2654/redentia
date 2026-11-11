@@ -72,7 +72,7 @@ const serra = logs
 .rfx {
   position: relative; overflow: hidden;
   background: linear-gradient(90deg, var(--nu-navy) 0%, color-mix(in srgb, var(--nu-blue-deep) 55%, var(--nu-navy)) 62%, var(--nu-blue-deep) 100%);
-  padding: 11px calc(clamp(22px, 5.5vw, 80px) + 40px) 11px clamp(22px, 5.5vw, 80px);
+  padding: 11px calc(max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) + 40px) 11px max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade .5s ease both;
 }
 .rfx__serra { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

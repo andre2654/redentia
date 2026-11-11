@@ -37,7 +37,7 @@ const updatedText = computed(() => {
    separando do documento. */
 .lgh {
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 88px) clamp(20px, 5.5vw, 80px) clamp(32px, 4vw, 48px);
+  padding: clamp(48px, 6.5vw, 88px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(32px, 4vw, 48px);
   border-bottom: 1.5px solid var(--nu-line-2);
   animation: nu-fade .5s ease both;
 }

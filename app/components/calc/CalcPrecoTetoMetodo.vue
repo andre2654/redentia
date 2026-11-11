@@ -181,7 +181,7 @@ usePageSeo({
 
 <style scoped>
 .ptm__hero, .ptm__body, .ptm__faq, .ptm__outros {
-  padding: clamp(48px, 6vw, 88px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(48px, 6vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
 /* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e a
    conta ficam no creme da página; as faixas alternam com o creme de faixa. */

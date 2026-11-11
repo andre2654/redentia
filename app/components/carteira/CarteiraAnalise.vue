@@ -60,7 +60,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.can { background: var(--nu-page); padding: clamp(28px, 4vw, 48px) clamp(22px, 5.5vw, 80px); }
+.can { background: var(--nu-page); padding: clamp(28px, 4vw, 48px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .can__botao {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px;
   background: var(--nu-band); border: none; cursor: pointer; font-family: inherit; text-align: left;

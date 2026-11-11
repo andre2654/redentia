@@ -355,7 +355,7 @@ useHead({ link: [{ rel: 'prev', href: '/calculadora/juros-compostos' }] })
 /* Aportou (11/11/2026): creme da página, eyebrow com o corte, selos de raio 8 */
 .jcs__hero {
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 88px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
+  padding: clamp(48px, 6.5vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
   animation: nu-fade .5s ease both;
 }
 .jcs__status {

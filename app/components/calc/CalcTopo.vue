@@ -32,7 +32,7 @@ defineProps<{
 <style scoped>
 .cto {
   background: var(--nu-page); text-align: center;
-  padding: clamp(16px, 2.2vw, 26px) clamp(16px, 5.5vw, 80px) 0;
+  padding: clamp(16px, 2.2vw, 26px) max(clamp(16px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 0;
   animation: nu-fade .5s ease both;
 }
 .cto__voltar { width: fit-content; min-height: 44px; text-align: left; }

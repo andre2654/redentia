@@ -42,7 +42,7 @@ defineProps<{
 <style scoped>
 .cco {
   background: var(--nu-page);
-  padding: clamp(18px, 2.4vw, 28px) clamp(12px, 5.5vw, 80px) clamp(56px, 7vw, 96px);
+  padding: clamp(18px, 2.4vw, 28px) max(clamp(12px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px);
   animation: nu-fade .5s ease both;
 }
 .cco--branco { background: var(--nu-page); }

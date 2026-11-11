@@ -139,7 +139,7 @@ const rotuloConectar = computed(() => (opening.value || registering.value ? 'Abr
 <style scoped>
 .cpc {
   background: var(--nu-page);
-  padding: clamp(56px, 7.5vw, 96px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(56px, 7.5vw, 96px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
 .cpc__grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: clamp(16px, 2vw, 24px); align-items: stretch; }
 /* os dois cartões com a mesma altura; o "Conectar outra conta" desce para o pé */

@@ -99,7 +99,7 @@ defineExpose({ focus: () => input.value?.focus() })
    (borda 1,5px, foco cobalto de 3px) e os tipos são chips de 44px. */
 .bc {
   background: var(--nu-page);
-  padding: clamp(36px, 5vw, 76px) clamp(20px, 5.5vw, 80px) clamp(24px, 3vw, 40px);
+  padding: clamp(36px, 5vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(24px, 3vw, 40px);
   animation: nu-fade .5s ease both;
 }
 .bc__titulo {
@@ -155,7 +155,7 @@ defineExpose({ focus: () => input.value?.focus() })
      rola no X; o container rola), para os resultados subirem junto do campo */
   .bc__tipos {
     flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
-    margin: 14px calc(-1 * clamp(20px, 5.5vw, 80px)) 0; padding: 2px clamp(20px, 5.5vw, 80px);
+    margin: 14px calc(-1 * clamp(20px, 5.5vw, 80px)) 0; padding: 2px max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
     scroll-padding-inline: clamp(20px, 5.5vw, 80px);
   }
   .bc__tipos::-webkit-scrollbar { display: none; }

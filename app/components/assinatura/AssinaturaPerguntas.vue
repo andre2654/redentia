@@ -52,7 +52,7 @@ const PERGUNTAS: NuFaqItem[] = [
 
 <style scoped>
 /* o mesmo FAQ da home (HomeContent .mfq), o texto à esquerda; aqui no branco com os cartões creme (alterna com o MCP) */
-.apg { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.apg { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 .apg__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .apg__esq { flex: 1 1 300px; min-width: min(280px, 100%); }
 .apg__copy { margin: 22px 0 0; max-width: 420px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; }

@@ -120,7 +120,7 @@ usePageSeo({
 /* o miolo sobre o creme da página (não existe faixa branca de ponta a ponta) */
 .gdp {
   background: var(--nu-page);
-  padding: clamp(48px, 6vw, 80px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  padding: clamp(48px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
 }
 .gdp__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .gdp__article { flex: 1; min-width: 0; max-width: 760px; }

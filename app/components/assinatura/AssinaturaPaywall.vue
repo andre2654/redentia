@@ -47,5 +47,5 @@ defineProps<{ pendente?: boolean }>()
 </template>
 
 <style scoped>
-.apw__beneficios { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) clamp(20px, 5.5vw, 80px); }
+.apw__beneficios { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
 </style>

@@ -74,7 +74,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   position: relative; overflow: hidden; display: flex; align-items: center;
   min-height: clamp(600px, 82vh, 820px);
   background: var(--nu-navy);
-  padding: clamp(48px, 7vw, 96px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 96px);
+  padding: clamp(48px, 7vw, 96px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px);
   animation: nu-fade .5s ease both;
 }
 /* o leque de fundo, nas mesmas margens do texto */

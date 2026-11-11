@@ -80,7 +80,7 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
 <style scoped>
 .tcs {
   background: var(--nu-ink);
-  padding: clamp(64px, 7vw, 100px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  padding: clamp(64px, 7vw, 100px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 76px);
   animation: nu-fade .5s ease both;
 }
 .tcs__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
@@ -106,10 +106,13 @@ const MODES: { value: TesouroChartMode; label: string }[] = [
   /* full-bleed: sangra até a borda direita/inferior espelhando o padding da seção */
   margin: 0 calc(clamp(22px, 5.5vw, 80px) * -1) calc(clamp(48px, 6vw, 76px) * -1) 0;
 }
+/* em tela larga a seção centra a coluna de 1240px e a margem lateral passa de 80px:
+   o gráfico para de vazar para a borda e fica na coluna */
+@media (min-width: 1401px) { .tcs__chart { margin-left: 0; margin-right: 0; } }
 .tcs__sk { position: absolute; inset: 0 clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px) 0; }
 .tcs__state {
   margin: 0; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   color: var(--nu-on-dark-2); font-size: var(--nu-fs-md); font-weight: 500; text-align: center;
-  padding: 0 clamp(22px, 5.5vw, 80px);
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
 </style>

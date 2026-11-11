@@ -889,7 +889,7 @@ const readingHtml = computed(() => {
 .sim__wiz {
   position: relative; overflow: hidden;
   background: var(--nu-page);
-  padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px) clamp(48px, 6vw, 76px);
+  padding: clamp(48px, 6.5vw, 84px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(48px, 6vw, 76px);
   transition: background-color 0.9s ease;
   animation: nu-fade 0.5s ease both;
 }
@@ -1007,7 +1007,7 @@ const readingHtml = computed(() => {
 /* ——— resultado: carvão ——— */
 .sim__navy {
   background: var(--nu-ink);
-  padding: clamp(48px, 6.5vw, 84px) clamp(22px, 5.5vw, 80px) clamp(56px, 7vw, 90px);
+  padding: clamp(48px, 6.5vw, 84px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 90px);
 }
 .sim__result-head { display: flex; justify-content: space-between; gap: 26px; flex-wrap: wrap; align-items: flex-start; }
 .sim__navy-title {
@@ -1089,7 +1089,7 @@ const readingHtml = computed(() => {
 /* ——— leitura da Aportou: o painel azul da marca, com o corte gigante ——— */
 .sim__blue {
   background: var(--nu-page);
-  padding: clamp(28px, 4vw, 56px) clamp(16px, 5.5vw, 80px);
+  padding: clamp(28px, 4vw, 56px) max(clamp(16px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   animation: nu-fade 0.5s ease both;
 }
 .sim__blue-painel {
@@ -1148,7 +1148,7 @@ const readingHtml = computed(() => {
 }
 
 /* ——— bandas claras: faixa quente e página, alternadas ——— */
-.sim__band { padding: clamp(64px, 7vw, 100px) clamp(22px, 5.5vw, 80px); animation: nu-fade 0.5s ease both; }
+.sim__band { padding: clamp(64px, 7vw, 100px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)); animation: nu-fade 0.5s ease both; }
 .sim__subsection { margin-top: clamp(64px, 8vw, 104px); }
 .sim__band--faixa { background: var(--nu-band); }
 .sim__band--cream { background: var(--nu-page); }

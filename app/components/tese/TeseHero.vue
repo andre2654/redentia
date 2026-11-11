@@ -60,7 +60,7 @@ const { following, toggle: onToggleFollow } = useThesisFollow(() => props.slug)
 .the__scrim { position: absolute; inset: 0; background: var(--nu-tese-hero-scrim); pointer-events: none; }
 .the__body {
   position: relative; z-index: 1;
-  padding: clamp(48px, 7vw, 80px) clamp(22px, 5.5vw, 80px) clamp(40px, 5vw, 64px);
+  padding: clamp(48px, 7vw, 80px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(40px, 5vw, 64px);
   pointer-events: none;
 }
 .the__crumb {

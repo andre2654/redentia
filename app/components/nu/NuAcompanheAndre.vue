@@ -69,10 +69,10 @@ const hrefThreads = urlAcompanhe('threads', props.lugar)
    11/11/2026; antes pintava uma tira creme ou branca de ponta a ponta) */
 .aa--calculadora {
   justify-content: center;
-  padding: 0 clamp(22px, 5.5vw, 80px) 18px;
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 18px;
 }
 .aa--asset {
-  padding: 0 clamp(22px, 5.5vw, 80px) 18px;
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) 18px;
 }
 .aa--rodape {
   margin-top: 22px;

@@ -25,7 +25,7 @@ defineProps<{
 <style scoped>
 .chr {
   background: var(--nu-page);
-  padding: clamp(40px, 5.5vw, 72px) clamp(22px, 5.5vw, 80px) clamp(34px, 4.5vw, 56px);
+  padding: clamp(40px, 5.5vw, 72px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(34px, 4.5vw, 56px);
   animation: nu-fade .5s ease both;
 }
 .chr__back {

@@ -12,7 +12,7 @@ const { reabrir } = useConsent()
 <style scoped>
 .ckp {
   background: var(--nu-page);
-  padding: 0 clamp(20px, 5.5vw, 80px) clamp(8px, 2vw, 16px);
+  padding: 0 max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(8px, 2vw, 16px);
 }
 .ckp__btn {
   margin: 0;

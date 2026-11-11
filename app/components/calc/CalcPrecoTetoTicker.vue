@@ -152,7 +152,7 @@ const metodos = computed(() => {
 
 <style scoped>
 .ptt__hero, .ptt__nums, .ptt__table-sec, .ptt__passos, .ptt__texto, .ptt__faq {
-  padding: clamp(48px, 6vw, 88px) clamp(22px, 5.5vw, 80px);
+  padding: clamp(48px, 6vw, 88px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2));
 }
 /* Aportou (11/11/2026), só cor: sem faixa branca de ponta a ponta. O topo e os
    números ficam no creme da página; as faixas alternam com o creme de faixa. */

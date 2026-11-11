@@ -240,7 +240,7 @@ function cardTypes(meta: RankingMeta): string[] {
 /* ——— destaque do score: o cartão carvão com a faixa da marca ——— */
 .rkh__spot-wrap {
   background: var(--nu-page);
-  padding: 0 clamp(22px, 5.5vw, 80px) clamp(28px, 3.4vw, 44px);
+  padding: 0 max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(28px, 3.4vw, 44px);
   animation: nu-fade .5s ease both;
 }
 .rkh__spot { display: block; border-radius: var(--nu-r-card); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
@@ -279,7 +279,7 @@ function cardTypes(meta: RankingMeta): string[] {
 .rkh__grid-wrap {
   background: var(--nu-page);
   /* bottom maior: a CTA full-bleed (NuCtaPhoto) cola logo abaixo */
-  padding: clamp(40px, 5vw, 64px) clamp(22px, 5.5vw, 80px) clamp(64px, 7vw, 100px);
+  padding: clamp(40px, 5vw, 64px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 7vw, 100px);
   animation: nu-fade .5s ease both;
 }
 .rkh__group + .rkh__group { margin-top: clamp(44px, 5.5vw, 72px); }

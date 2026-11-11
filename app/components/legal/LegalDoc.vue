@@ -46,7 +46,7 @@ const tocItems = computed(() =>
 /* o documento sobre o creme da página (não existe faixa branca de ponta a ponta) */
 .lgd {
   background: var(--nu-page);
-  padding: clamp(44px, 6vw, 76px) clamp(20px, 5.5vw, 80px) clamp(64px, 8.5vw, 110px);
+  padding: clamp(44px, 6vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
   animation: nu-fade .5s ease .06s both;
 }
 .lgd__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
