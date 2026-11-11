@@ -10,6 +10,11 @@
 // aparecer); escolha múltipla tem "Continuar". Voltar no canto, Esc fecha.
 // No celular ocupa a tela; no computador, um cartão no meio.
 // Acessibilidade do NuDayModal: useModalA11y (Tab preso + foco devolvido).
+// Robustez (11/11/2026): o véu do contrato (--nu-veu), o cartão que sobe em
+// --nu-dur-lenta e sai mais rápido; a barra de progresso é um fio de 4px que
+// anda na curva de troca; o passo que sai some rápido e o que entra desliza
+// 16px; as opções sobem 2px com a sombra de cartão no hover; os campos têm o
+// hover e o anel que aperta; os links são NuLinkSeta e o selo da oferta, NuSelo.
 import type { AppleCredencial } from '~/composables/useAppleAuth'
 import { TEXTO_ACEITE_WHATSAPP, DIAS_GRATIS, emailValido, oQueFaltaNoTitular, PRECO_MENSAL, cpfValido, dataDaPrimeiraCobranca, formatarCelular, formatarCpf, normalizarCelular } from '~/utils/assinatura'
 import { INSTITUICOES } from '~/content/instituicoes'
@@ -99,6 +104,9 @@ const cad = useCadastroInline()
 const email = ref('')
 const codigo = ref('')
 const isca = ref('')
+// de onde veio o erro da conta: só o do e-mail pinta o campo de vermelho
+const erroDoSocial = ref(false)
+const campoComErro = computed(() => !!cad.erro.value && !erroDoSocial.value)
 
 const indice = ref(0)
 const respostas = ref<Respostas>({})
@@ -163,6 +171,7 @@ const podeVoltar = computed(() => pedirDados.value || (indice.value > 0 && passo
 
 // o passo da conta: o e-mail, o código e, confirmado, o resultado
 async function pedirCodigo() {
+  erroDoSocial.value = false
   if (await cad.pedirCodigo(email.value, '/assinar', isca.value)) {
     codigo.value = ''
     evento('quiz_conta_codigo')
@@ -177,6 +186,7 @@ async function confirmarCodigo() {
 const socialNoQuiz = !!(useGoogleAuth().clientId || useAppleAuth().clientId)
 // Apple ou Google: a conta nasce sem sair do quiz e sem esperar o código
 async function entrarSocial(provedor: 'google' | 'apple', credencial: string | AppleCredencial) {
+  erroDoSocial.value = true
   const feito = await cad.entrarSocial(provedor, credencial)
   if (!feito) return
   evento('quiz_conta_feita', { nova: feito.novaConta, via: provedor })
@@ -393,13 +403,13 @@ const ICONES: Record<string, string> = {
                   <p class="aqz__sub">{{ socialNoQuiz ? 'Com a sua conta Apple ou Google, num toque. Ou pelo e-mail, com um código de 6 números, sem senha.' : 'O seu e-mail. Mandamos um código de 6 números para confirmar, sem senha.' }}</p>
                   <LoginSocial
                     class="aqz__social" divisor="ou com o e-mail" :disabled="cad.enviando.value"
-                    @google="entrarSocial('google', $event)" @apple="entrarSocial('apple', $event)" @error="cad.erro.value = $event"
+                    @google="entrarSocial('google', $event)" @apple="entrarSocial('apple', $event)" @error="erroDoSocial = true; cad.erro.value = $event"
                   />
                   <form class="aqz__form" @submit.prevent="pedirCodigo">
                     <label class="aqz__rotulo" for="aqz-email">E-mail</label>
-                    <input id="aqz-email" v-model="email" class="aqz__campo" type="email" inputmode="email" autocomplete="email" placeholder="voce@email.com" required>
+                    <input id="aqz-email" v-model="email" class="aqz__campo" :class="{ 'aqz__campo--erro': campoComErro }" type="email" inputmode="email" autocomplete="email" placeholder="voce@email.com" required :aria-invalid="campoComErro">
                     <input v-model="isca" class="aqz__isca" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
-                    <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert">{{ cad.erro.value }}</p>
+                    <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert"><svg class="aqz__erro-icone" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg><span>{{ cad.erro.value }}</span></p>
                     <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="cad.enviando.value" :disabled="!email.trim()">{{ cad.enviando.value ? 'Enviando o código' : 'Ver o meu plano' }}</NuBotaoSeta>
                   </form>
                   <p class="aqz__miudo">Ao continuar, você cria a sua conta na Aportou e aceita os <NuxtLink to="/institucional/terms" target="_blank">Termos</NuxtLink> e a <NuxtLink to="/institucional/privacy" target="_blank">Privacidade</NuxtLink>.</p>
@@ -410,17 +420,15 @@ const ICONES: Record<string, string> = {
                   <p class="aqz__sub">Mandamos um código de 6 números para <strong>{{ cad.contato.value }}</strong>.</p>
                   <form class="aqz__form" @submit.prevent="confirmarCodigo">
                     <label class="aqz__rotulo" for="aqz-codigo">Código</label>
-                    <input id="aqz-codigo" v-model="codigo" class="aqz__campo aqz__campo--codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
-                    <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert">{{ cad.erro.value }}</p>
+                    <input id="aqz-codigo" v-model="codigo" class="aqz__campo aqz__campo--codigo" :class="{ 'aqz__campo--erro': !!cad.erro.value }" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" required :aria-invalid="!!cad.erro.value">
+                    <p v-if="cad.erro.value" class="aqz__erro-claro" role="alert"><svg class="aqz__erro-icone" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg><span>{{ cad.erro.value }}</span></p>
                     <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="cad.enviando.value" :disabled="codigo.replace(/\D/g, '').length !== 6">{{ cad.enviando.value ? 'Confirmando' : 'Confirmar' }}</NuBotaoSeta>
                   </form>
-                  <p class="aqz__miudo">
-                    <button type="button" class="aqz__link" :disabled="cad.reenviarEm.value > 0" @click="cad.reenviar('/assinar')">
-                      {{ cad.reenviarEm.value > 0 ? `Reenviar em ${cad.reenviarEm.value} s` : 'Reenviar o código' }}
-                    </button>
-                    ·
-                    <button type="button" class="aqz__link" @click="cad.trocarContato()">Trocar o e-mail</button>
-                  </p>
+                  <div class="aqz__links">
+                    <span v-if="cad.reenviarEm.value > 0" class="aqz__espera">Reenviar em {{ cad.reenviarEm.value }} s</span>
+                    <NuLinkSeta v-else @click="cad.reenviar('/assinar')">Reenviar o código</NuLinkSeta>
+                    <NuLinkSeta tom="tinta" @click="cad.trocarContato()">Trocar o e-mail</NuLinkSeta>
+                  </div>
                 </template>
               </section>
 
@@ -460,7 +468,7 @@ const ICONES: Record<string, string> = {
                     <input v-model="aceiteWhatsapp" type="checkbox" class="aqz__aceite-caixa">
                     <span>{{ TEXTO_ACEITE_WHATSAPP }}</span>
                   </label>
-                  <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert">{{ erroDados || erro }}</p>
+                  <p v-if="erroDados || erro" class="aqz__erro-claro" role="alert"><svg class="aqz__erro-icone" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg><span>{{ erroDados || erro }}</span></p>
                   <NuBotaoSeta type="submit" largo class="aqz__seguir" :loading="abrindo" :disabled="!dadosProntos">{{ abrindo ? 'Abrindo o pagamento' : primeiraAssinatura ? 'Começar 3 dias grátis' : 'Ir para o pagamento' }}</NuBotaoSeta>
                 </form>
                 <p class="aqz__miudo">O pagamento é na Stripe, com o cartão. {{ falta.cpf ? 'O CPF fica guardado com segurança e não aparece para ninguém.' : 'Os seus dados ficam guardados com segurança.' }}</p>
@@ -483,7 +491,7 @@ const ICONES: Record<string, string> = {
                 </ul>
 
                 <div class="aqz__oferta">
-                  <span class="aqz__oferta-selo">Preço de lançamento</span>
+                  <NuSelo class="aqz__oferta-selo" tom="azul" sobre="escuro">Preço de lançamento</NuSelo>
                   <div class="aqz__oferta-preco">
                     <strong>{{ PRECO_MENSAL }}</strong><span>por mês</span>
                   </div>
@@ -509,74 +517,88 @@ const ICONES: Record<string, string> = {
 <style scoped>
 .aqz {
   position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px;
-  background: color-mix(in srgb, var(--nu-ink) 62%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  animation: nu-surgir .2s ease backwards;
+  background: var(--nu-veu); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  animation: nu-surgir var(--nu-dur-media) var(--nu-ease-cor) backwards;
 }
 .aqz__card {
   position: relative; display: flex; flex-direction: column; width: min(640px, 100%); height: min(760px, calc(100dvh - 48px));
-  background: var(--nu-page); border-radius: var(--nu-r-card-lg); box-shadow: var(--nu-shadow-escuro); overflow: hidden; outline: none;
-  animation: nu-subir .32s var(--nu-ease-saida) backwards;
+  background: var(--nu-page); border-radius: var(--nu-r-card-lg); box-shadow: var(--nu-shadow-float); overflow: hidden; outline: none;
+  animation: nu-subir var(--nu-dur-lenta) var(--nu-ease-saida) backwards;
 }
 /* nos respiros o cartão inteiro vira azul-marinho */
-.aqz__card { transition: background .3s ease; }
+.aqz__card { transition: background-color var(--nu-dur-lenta) var(--nu-ease-cor); }
 .aqz__card--escuro { background: var(--nu-navy); }
 .aqz__card--escuro .aqz__icone-btn { background: var(--nu-dark-chip); color: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); }
 .aqz__card--escuro .aqz__barra { background: var(--nu-dark-chip-line); }
 .aqz__card--escuro .aqz__barra-cheia { background: var(--nu-blue-on-dark); }
-.aqz__topo { display: flex; align-items: center; gap: 14px; padding: 18px 20px 6px; }
+.aqz__topo { display: flex; align-items: center; gap: 16px; padding: 16px 20px 8px; }
 .aqz__icone-btn {
   display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border: 0; border-radius: 50%;
-  background: var(--nu-white); color: var(--nu-ink); cursor: pointer; box-shadow: var(--nu-shadow-quente); transition: opacity .2s, background .2s, transform .15s var(--nu-ease-saida);
+  background: var(--nu-white); color: var(--nu-ink); cursor: pointer; box-shadow: var(--nu-shadow-quente);
+  transition: opacity var(--nu-dur-media) var(--nu-ease-cor), background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .aqz__icone-btn:hover { background: var(--nu-row-hover); }
 .aqz__icone-btn:active { transform: scale(.94); }
 .aqz__card--escuro .aqz__icone-btn:hover { background: var(--nu-navy-3); }
 .aqz__icone-btn--fora { opacity: 0; pointer-events: none; }
 .aqz__icone-btn:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
-.aqz__barra { flex: 1; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
-.aqz__barra-cheia { display: block; height: 100%; background: var(--nu-blue); border-radius: inherit; transform-origin: left; transition: transform .45s var(--nu-ease-saida); }
+/* o progresso: um fio de 4px; o cheio anda na curva do que muda de lugar */
+.aqz__barra { flex: 1; height: 4px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
+.aqz__barra-cheia { display: block; height: 100%; background: var(--nu-blue); border-radius: inherit; transform-origin: left; transition: transform var(--nu-dur-lenta) var(--nu-ease-troca); }
 
 .aqz__corpo { flex: 1; overflow-y: auto; overflow-x: hidden; }
-.aqz__passo { display: flex; flex-direction: column; min-height: 100%; padding: 22px clamp(22px, 5vw, 44px) 32px; }
+.aqz__passo { display: flex; flex-direction: column; min-height: 100%; padding: 24px clamp(24px, 5vw, 48px) 32px; }
 .aqz__passo--centro { justify-content: center; }
 .aqz__passo--escuro { background: var(--nu-navy); }
 .aqz__conta { font-variant-numeric: tabular-nums; }
-.aqz__titulo { margin: 12px 0 0; color: var(--nu-ink); font-size: clamp(28px, 4.4vw, 38px); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.05; text-wrap: balance; }
+.aqz__titulo { margin: 16px 0 0; color: var(--nu-ink); font-size: clamp(28px, 4.4vw, 38px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.05; text-wrap: balance; }
 .aqz__titulo:focus { outline: none; }
-.aqz__titulo--claro { color: var(--nu-white); margin-top: 18px; }
-.aqz__sub { margin: 10px 0 0; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.5; }
+.aqz__titulo--claro { color: var(--nu-white); margin-top: 16px; }
+.aqz__sub { margin: 12px 0 0; color: var(--nu-gray-3); font-size: 17px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
 .aqz__sub--claro { color: var(--nu-on-dark); }
 
 /* a lista */
-.aqz__lista { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
-.aqz__opcao {
-  display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; text-align: left;
-  border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2), var(--nu-shadow-quente);
-  color: var(--nu-ink); font-family: inherit; cursor: pointer; transition: box-shadow .2s, transform .2s var(--nu-ease-saida);
+/* as opções são cartões clicáveis: no hover sobem 2px e ganham a sombra de cartão;
+   apertadas afundam; a escolhida ganha o anel cobalto de 2px */
+.aqz__lista { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
+.aqz__opcao, .aqz__cartao, .aqz__banco {
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-saida), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
-.aqz__opcao:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
-.aqz__opcao:active { transform: scale(.99); }
+.aqz__opcao {
+  display: flex; align-items: center; gap: 16px; width: 100%; padding: 12px 16px; text-align: left;
+  border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2), var(--nu-shadow-quente);
+  color: var(--nu-ink); font-family: inherit; cursor: pointer;
+}
+@media (hover: hover) {
+  .aqz__opcao:hover, .aqz__cartao:hover, .aqz__banco:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--nu-borda-campo), var(--nu-shadow-card); }
+}
+.aqz__opcao:active, .aqz__cartao:active, .aqz__banco:active { transform: scale(.99); transition-duration: var(--nu-dur-rapida); }
 .aqz__opcao:focus-visible, .aqz__cartao:focus-visible, .aqz__banco:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .aqz__opcao--sim, .aqz__opcao--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
-.aqz__opcao-icone { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--nu-r-chip); background: var(--nu-blue-bg); color: var(--nu-blue-text); transition: background .2s, color .2s; }
+.aqz__opcao-icone {
+  display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--nu-r-chip); background: var(--nu-blue-bg); color: var(--nu-blue-text);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
+}
 .aqz__opcao--sim .aqz__opcao-icone { background: var(--nu-blue); color: var(--nu-white); }
-.aqz__opcao-t { flex: 1; font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); }
+.aqz__opcao-t { flex: 1; font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 
 /* o visto da escolha múltipla */
 .aqz__marca {
   display: grid; place-items: center; width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
-  box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo); color: transparent; transition: background .15s, color .15s;
+  box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo); color: transparent;
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor), box-shadow var(--nu-dur-rapida) var(--nu-ease-cor);
 }
+.aqz__marca svg { transform: scale(.6); transition: transform var(--nu-dur-media) var(--nu-ease-saida); }
 .aqz__opcao--sim .aqz__marca, .aqz__banco--sim .aqz__marca { background: var(--nu-blue); color: var(--nu-white); box-shadow: none; }
+.aqz__opcao--sim .aqz__marca svg, .aqz__banco--sim .aqz__marca svg { transform: none; }
 
 /* a grade da primeira pergunta */
-.aqz__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+.aqz__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
 .aqz__cartao {
-  display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 12px 20px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 12px; text-align: center;
   border: 0; border-radius: var(--nu-r-panel); background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2), var(--nu-shadow-quente);
-  font-family: inherit; cursor: pointer; transition: box-shadow .2s, transform .2s var(--nu-ease-saida);
+  font-family: inherit; cursor: pointer;
 }
-.aqz__cartao:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
 .aqz__cartao--sim, .aqz__cartao--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .aqz__desenho { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; }
 .aqz__desenho--arvore { background: var(--nu-green-bg); color: var(--nu-green-text); }
@@ -587,12 +609,10 @@ const ICONES: Record<string, string> = {
 /* os bancos */
 .aqz__bancos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 24px; }
 .aqz__banco {
-  display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; text-align: left;
+  display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 8px; text-align: left;
   border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2), var(--nu-shadow-quente);
-  font-family: inherit; cursor: pointer; transition: box-shadow .2s, transform .2s var(--nu-ease-saida);
+  font-family: inherit; cursor: pointer;
 }
-.aqz__banco:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
-.aqz__banco:active { transform: scale(.99); }
 .aqz__banco--texto { padding-left: 16px; min-height: 50px; }
 .aqz__banco--sim, .aqz__banco--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .aqz__banco :deep(.cil) { border-radius: 10px; }
@@ -601,88 +621,109 @@ const ICONES: Record<string, string> = {
 /* continuar: a pílula com a seta (NuBotaoSeta); aqui fica só o lugar dela */
 .aqz__seguir { margin-top: auto; flex: none; }
 .aqz__lista + .aqz__seguir, .aqz__bancos + .aqz__seguir { margin-top: 24px; }
-.aqz__seguir--claro { margin-top: 28px; }
+.aqz__seguir--claro { margin-top: 32px; }
 
 /* a conta */
-.aqz__social { margin-top: 26px; }
-.aqz__social + .aqz__form { margin-top: 18px; }
-.aqz__form { display: flex; flex-direction: column; gap: 7px; margin-top: 26px; }
-.aqz__rotulo { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-medio); }
+.aqz__social { margin-top: 24px; }
+.aqz__social + .aqz__form { margin-top: 16px; }
+.aqz__form { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
+.aqz__rotulo { color: var(--nu-ink); font-size: 14px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
+/* o campo da Aportou: hover escurece a borda; o foco acende o anel de 3px, que aperta de 4 para 1px */
 .aqz__campo {
   height: 56px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input); background: var(--nu-white);
-  color: var(--nu-ink); font-family: inherit; font-size: 17px; font-weight: 500; transition: border-color .2s;
+  color: var(--nu-ink); font-family: inherit; font-size: 17px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto);
+  outline: 3px solid transparent; outline-offset: 4px;
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor), outline-color var(--nu-dur-rapida) var(--nu-ease-cor), outline-offset var(--nu-dur-media) var(--nu-ease-saida);
 }
 .aqz__campo::placeholder { color: var(--nu-placeholder); }
-.aqz__campo:focus { outline: 3px solid var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
+.aqz__campo:hover { border-color: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%); }
+.aqz__campo:focus { outline-color: var(--nu-blue); outline-offset: 1px; border-color: var(--nu-blue); }
+.aqz__campo--erro, .aqz__campo--erro:hover { border-color: var(--nu-red); }
+.aqz__campo--erro:focus { border-color: var(--nu-red); outline-color: var(--nu-red); }
 .aqz__campo--codigo { letter-spacing: .4em; font-weight: var(--nu-w-forte); font-variant-numeric: tabular-nums; }
-.aqz__rotulo--depois { margin-top: 11px; }
-.aqz__rotulo span { color: var(--nu-gray); font-weight: 500; }
+.aqz__rotulo--depois { margin-top: 12px; }
+.aqz__rotulo span { color: var(--nu-gray); font-weight: var(--nu-w-texto); }
 .aqz__miudo--junto { margin-top: 0; }
-.aqz__aceite { display: flex; align-items: flex-start; gap: 10px; margin-top: 9px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.45; cursor: pointer; }
+.aqz__aceite { display: flex; align-items: flex-start; gap: 12px; margin-top: 8px; color: var(--nu-gray-3); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.45; cursor: pointer; }
 .aqz__aceite-caixa { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--nu-blue); cursor: pointer; }
 .aqz__isca { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.aqz__form .aqz__seguir { margin-top: 14px; }
-.aqz__erro-claro { margin: 4px 0 0; color: var(--nu-red-text); font-size: 14.5px; font-weight: var(--nu-w-medio); line-height: 1.5; }
-.aqz__miudo { margin: 16px 0 0; color: var(--nu-gray); font-size: 13.5px; font-weight: 500; line-height: 1.5; }
-.aqz__miudo a, .aqz__link { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 2px; }
-.aqz__link { padding: 0; border: 0; background: none; font-family: inherit; font-size: inherit; cursor: pointer; }
-.aqz__link:disabled { color: var(--nu-gray); text-decoration: none; cursor: default; }
+.aqz__form .aqz__seguir { margin-top: 16px; }
+/* o erro: a frase com o ícone, no vermelho, entrando com fade */
+.aqz__erro-claro {
+  display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0; color: var(--nu-red-text); font-size: 14px; font-weight: var(--nu-w-medio); line-height: 1.45;
+  animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) both;
+}
+.aqz__erro-icone { flex: none; margin-top: 1px; }
+.aqz__miudo { margin: 16px 0 0; color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.5; }
+.aqz__miudo a { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.aqz__links { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 24px; min-height: 44px; margin-top: 16px; font-size: 15px; }
+.aqz__espera { color: var(--nu-gray); font-weight: var(--nu-w-medio); font-variant-numeric: tabular-nums; }
 
 /* o aviso de exemplo */
-.aqz__celular { position: relative; display: flex; flex-direction: column; gap: 10px; margin-top: 32px; padding: 22px 18px; border-radius: var(--nu-r-card); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); }
-.aqz__exemplo { color: var(--nu-on-dark-2); font-size: 13px; font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: .16em; }
+.aqz__celular { position: relative; display: flex; flex-direction: column; gap: 12px; margin-top: 32px; padding: 24px 16px; border-radius: var(--nu-r-card); background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); }
+.aqz__exemplo { color: var(--nu-on-dark-2); font-size: 12px; font-weight: var(--nu-w-medio); text-transform: uppercase; letter-spacing: var(--nu-ls-caixa); }
+/* raio concêntrico: o do celular (28) menos o respiro (16) */
 .aqz__aviso {
-  display: flex; gap: 12px; padding: 14px; border-radius: 18px; background: color-mix(in srgb, var(--nu-creme) 96%, transparent); color: var(--nu-ink);
-  animation: aqz-aviso .6s var(--nu-ease-saida) .25s backwards;
+  display: flex; gap: 12px; padding: 12px; border-radius: calc(var(--nu-r-card) - 12px); background: color-mix(in srgb, var(--nu-creme) 96%, transparent); color: var(--nu-ink);
+  animation: aqz-aviso var(--nu-dur-entrada) var(--nu-ease-saida) 240ms backwards;
 }
-.aqz__aviso--atras { opacity: .55; transform: scale(.97); animation-delay: .1s; }
+.aqz__aviso--atras { opacity: .55; transform: scale(.97); animation-delay: 120ms; }
 .aqz__aviso-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .aqz__aviso-topo { display: flex; justify-content: space-between; gap: 8px; font-size: var(--nu-fs-sm); }
 .aqz__aviso-topo strong { font-weight: var(--nu-w-forte); }
-.aqz__aviso-topo span { color: var(--nu-gray); font-weight: 500; }
-.aqz__aviso-msg { font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.4; }
+.aqz__aviso-topo span { color: var(--nu-gray); font-weight: var(--nu-w-texto); }
+.aqz__aviso-msg { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.4; }
 @keyframes aqz-aviso { from { opacity: 0; transform: translateY(-14px) scale(.98); } }
 
-.aqz__leque { margin-top: 26px; }
+.aqz__leque { margin-top: 24px; }
 
 /* a montagem */
-.aqz__montagem { list-style: none; margin: 28px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.aqz__linha { display: flex; align-items: center; gap: 12px; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); transition: color .3s; }
+/* a montagem: cada linha acende quando chega a vez; a da vez respira devagar */
+.aqz__montagem { list-style: none; margin: 32px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.aqz__linha { display: flex; align-items: center; gap: 12px; color: var(--nu-gray); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); transition: color var(--nu-dur-media) var(--nu-ease-cor); }
 .aqz__linha--acesa, .aqz__linha--agora { color: var(--nu-ink); }
-.aqz__linha-marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--nu-line); color: var(--nu-white); transition: background .3s, box-shadow .3s; }
+.aqz__linha-marca {
+  display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--nu-line); color: var(--nu-white);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor);
+}
+.aqz__linha-marca svg { animation: lco-check var(--nu-dur-media) var(--nu-ease-saida) both; }
 .aqz__linha--acesa .aqz__linha-marca { background: var(--nu-green); box-shadow: none; }
-.aqz__linha--agora .aqz__linha-marca { box-shadow: inset 0 0 0 2px var(--nu-blue); animation: aqz-pulso 1s ease-in-out infinite; }
-@keyframes aqz-pulso { 50% { box-shadow: inset 0 0 0 2px var(--nu-blue), 0 0 0 5px var(--nu-blue-tint); } }
+.aqz__linha--agora .aqz__linha-marca { box-shadow: inset 0 0 0 1.5px var(--nu-blue); animation: aqz-pulso calc(var(--nu-dur-entrada) * 1.6) var(--nu-ease-cor) infinite; }
+@keyframes aqz-pulso { 50% { box-shadow: inset 0 0 0 1.5px var(--nu-blue), 0 0 0 4px var(--nu-blue-tint); } }
+@keyframes lco-check { from { opacity: 0; transform: scale(.6); } }
 
 /* o resultado */
-.aqz__itens { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.aqz__item { display: flex; gap: 12px; animation: aqz-entra .45s var(--nu-ease-saida) backwards; }
-.aqz__item:nth-child(2) { animation-delay: .08s; }
-.aqz__item:nth-child(3) { animation-delay: .16s; }
-.aqz__item:nth-child(4) { animation-delay: .24s; }
+.aqz__itens { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.aqz__item { display: flex; gap: 12px; animation: aqz-entra var(--nu-dur-lenta) var(--nu-ease-saida) backwards; }
+.aqz__item:nth-child(2) { animation-delay: 60ms; }
+.aqz__item:nth-child(3) { animation-delay: 120ms; }
+.aqz__item:nth-child(4) { animation-delay: 180ms; }
+.aqz__item:nth-child(n + 5) { animation-delay: 240ms; }
 .aqz__item-marca { display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; background: var(--nu-green); color: var(--nu-white); }
 .aqz__item-t { display: block; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.aqz__item-d { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 15px; font-weight: 500; line-height: 1.45; }
-.aqz__oferta { display: flex; flex-direction: column; gap: 12px; margin-top: 26px; padding: 22px; border-radius: var(--nu-r-card); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro); animation: aqz-entra .5s var(--nu-ease-saida) .3s backwards; }
-.aqz__oferta-selo { align-self: flex-start; padding: 5px 11px; border-radius: var(--nu-r-tag); background: color-mix(in srgb, var(--nu-blue-soft) 18%, transparent); color: var(--nu-blue-soft); font-size: 13.5px; font-weight: var(--nu-w-medio); letter-spacing: .12em; text-transform: uppercase; }
+.aqz__item-d { display: block; margin-top: 2px; color: var(--nu-gray); font-size: 15px; font-weight: var(--nu-w-texto); line-height: 1.45; }
+.aqz__oferta { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; padding: 24px; border-radius: var(--nu-r-card); background: var(--nu-ink); box-shadow: var(--nu-shadow-escuro); animation: aqz-entra var(--nu-dur-lenta) var(--nu-ease-saida) 300ms backwards; }
+/* o selo é o NuSelo azul sobre o carvão; aqui só o lugar e a caixa alta do eyebrow */
+.aqz__oferta-selo { align-self: flex-start; text-transform: uppercase; letter-spacing: var(--nu-ls-caixa); font-size: 12px; }
 .aqz__oferta-preco { display: flex; align-items: baseline; gap: 8px; }
-.aqz__oferta-preco strong { color: var(--nu-white); font-size: clamp(36px, 5vw, 46px); font-weight: var(--nu-w-display); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+.aqz__oferta-preco strong { color: var(--nu-white); font-size: clamp(36px, 5vw, 46px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); font-variant-numeric: tabular-nums; line-height: 1; }
 .aqz__oferta-preco span { color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); }
-.aqz__oferta-letra { margin: 0; color: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.aqz__erro { margin: 0; color: var(--nu-red-soft); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-@keyframes aqz-entra { from { opacity: 0; transform: translateY(10px); } }
+.aqz__oferta-letra { margin: 0; color: var(--nu-on-dark); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+.aqz__erro { margin: 0; color: var(--nu-red-soft); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5; }
+@keyframes aqz-entra { from { opacity: 0; transform: translateY(12px); } }
 
-/* as trocas de passo */
-.aqz-frente-enter-active, .aqz-frente-leave-active, .aqz-tras-enter-active, .aqz-tras-leave-active { transition: opacity .22s ease, transform .26s var(--nu-ease-saida); }
-.aqz-frente-enter-from { opacity: 0; transform: translateX(28px); }
-.aqz-frente-leave-to { opacity: 0; transform: translateX(-28px); }
-.aqz-tras-enter-from { opacity: 0; transform: translateX(-28px); }
-.aqz-tras-leave-to { opacity: 0; transform: translateX(28px); }
-/* abrir é a animação do próprio cartão (nu-subir) e do fundo (nu-surgir); fechar é o inverso, em 0,18s */
-.aqz-leave-active { transition: opacity .18s ease; }
-.aqz-leave-active .aqz__card { transition: transform .18s ease; }
+/* as trocas de passo: o que sai some rápido (160ms, 8px); o que entra desliza 16px e assenta */
+.aqz-frente-leave-active, .aqz-tras-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor); }
+.aqz-frente-enter-active, .aqz-tras-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida); }
+.aqz-frente-enter-from { opacity: 0; transform: translateX(16px); }
+.aqz-frente-leave-to { opacity: 0; transform: translateX(-8px); }
+.aqz-tras-enter-from { opacity: 0; transform: translateX(-16px); }
+.aqz-tras-leave-to { opacity: 0; transform: translateX(8px); }
+/* abrir é a animação do próprio cartão (nu-subir) e do véu (nu-surgir); fechar é o inverso, mais rápido */
+.aqz-leave-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.aqz-leave-active .aqz__card { transition: transform var(--nu-dur-media) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .aqz-leave-to { opacity: 0; }
-.aqz-leave-to .aqz__card { transform: translateY(14px) scale(.985); }
+.aqz-leave-to .aqz__card { transform: translateY(8px) scale(.99); opacity: 0; }
 
 /* no celular, a tela inteira */
 @media (max-width: 640px) {
@@ -700,6 +741,7 @@ const ICONES: Record<string, string> = {
 @media (prefers-reduced-motion: reduce) {
   .aqz-frente-enter-active, .aqz-frente-leave-active, .aqz-tras-enter-active, .aqz-tras-leave-active,
   .aqz-leave-active, .aqz-leave-active .aqz__card, .aqz__barra-cheia { transition: none; }
-  .aqz, .aqz__card, .aqz__aviso, .aqz__item, .aqz__oferta, .aqz__linha--agora .aqz__linha-marca { animation: none; }
+  .aqz, .aqz__card, .aqz__aviso, .aqz__item, .aqz__oferta, .aqz__linha--agora .aqz__linha-marca, .aqz__linha-marca svg, .aqz__erro-claro { animation: none; }
+  .aqz__opcao:hover, .aqz__cartao:hover, .aqz__banco:hover, .aqz__opcao:active, .aqz__cartao:active, .aqz__banco:active { transform: none; }
 }
 </style>

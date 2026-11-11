@@ -267,7 +267,7 @@ onBeforeUnmount(() => {
 .cse__luz {
   position: absolute; left: -75px; top: -75px; width: 150px; height: 150px; border-radius: 50%;
   filter: blur(14px); opacity: .8; will-change: transform;
-  transform: translate3d(-999px, -999px, 0); transition: opacity .2s ease;
+  transform: translate3d(-999px, -999px, 0); transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .cse__manchas {
   position: absolute; inset: 0; border-radius: 50%;
@@ -289,10 +289,10 @@ onBeforeUnmount(() => {
   background: var(--nu-anel); background-size: 200% 100%;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
-  transition: transform .16s var(--nu-ease-saida), width .16s var(--nu-ease-saida), height .16s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-rapida) var(--nu-ease-saida), width var(--nu-dur-rapida) var(--nu-ease-saida), height var(--nu-dur-rapida) var(--nu-ease-saida);
   animation: nu-anel 4s linear infinite;
 }
-.cse__contorno--pulso { animation: nu-anel 4s linear infinite, cse-pulso .5s var(--nu-ease-saida); }
+.cse__contorno--pulso { animation: nu-anel 4s linear infinite, cse-pulso var(--nu-dur-lenta) var(--nu-ease-saida); }
 /* a etiqueta "+ PETR4": a pílula carvão, com o "+" no círculo cobalto */
 .cse__rotulo {
   position: absolute; left: 0; top: 0; will-change: transform;

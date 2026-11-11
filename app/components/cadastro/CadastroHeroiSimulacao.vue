@@ -63,7 +63,7 @@ const id = useId()
         <div class="chs__valor">{{ valor }}</div>
         <div class="chs__sub">{{ sub }}</div>
       </div>
-      <span class="chs__selo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</span>
+      <NuSelo class="chs__selo" tom="verde" sobre="escuro"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</NuSelo>
     </div>
     <svg v-if="curva" class="chs__grafico" viewBox="0 0 456 120">
       <defs>
@@ -90,11 +90,8 @@ const id = useId()
 .chs { display: flex; flex-direction: column; padding: 22px 28px 14px; color: var(--nu-cream-text); }
 .chs__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 44px; }
 .chs__valor { font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.chs__sub { margin-top: 2px; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: 500; }
-.chs__selo {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-}
+.chs__sub { margin-top: 2px; color: var(--nu-cream-text-60); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); }
+/* o selo é o NuSelo verde sobre o carvão; aqui só a entrada dele no laço */
 .chs__grafico { display: block; width: 100%; height: auto; margin-top: 10px; overflow: visible; }
 .chs__reta { stroke: var(--nu-cream-text-35); }
 .chs__aporte { fill: var(--nu-cream-text-55); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); }
@@ -104,7 +101,7 @@ const id = useId()
 /* o ciclo é o mesmo do rAF da bola: o selo entra quando ela chega e, na
    virada da folha, o herói apaga e volta, para a bola não saltar do fim ao
    começo. */
-.chs { --chs-ciclo: 9s; animation: chs-volta var(--chs-ciclo) ease infinite; }
+.chs { --chs-ciclo: 9s; animation: chs-volta var(--chs-ciclo) var(--nu-ease-cor) infinite; }
 .chs__selo { animation: chs-selo var(--chs-ciclo) var(--nu-ease-saida) infinite; }
 .chs--guardada, .chs--guardada .chs__selo { animation: none; }
 @keyframes chs-volta { 0% { opacity: 0; } 3%, 93% { opacity: 1; } 100% { opacity: 0; } }

@@ -5,6 +5,9 @@
 // propósito: nenhum é o "certo".
 // Se um dia o aviso voltar a sentar na âncora do rodapé, a folga
 // (padding-bottom) continua sendo a altura do cartão.
+// Robustez (11/11/2026): escolher não faz a página pular. A faixa some com
+// fade e a altura recolhe (--nu-dur-media, curva de troca); reaberta pelo
+// rodapé, ela volta com fade. Na primeira pintura (SSR) ela já está lá, parada.
 import { bannerCookiesEmFluxo, folgaDoBannerNoRodape } from '~/utils/rodape-flutuantes'
 
 const { aberto, aceitar, recusar } = useConsent()
@@ -95,9 +98,16 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', aoRedimensionar)
   rodape()?.style.removeProperty('padding-bottom')
 })
+
+// a saída recolhe a altura: ela parte da altura de agora (a classe de saída leva a 0)
+function antesDeSair(e: Element) {
+  const alvo = e as HTMLElement
+  alvo.style.height = `${alvo.offsetHeight}px`
+}
 </script>
 
 <template>
+  <Transition name="ck" @before-leave="antesDeSair">
   <aside
     v-if="aberto"
     ref="el"
@@ -121,6 +131,7 @@ onBeforeUnmount(() => {
       <button type="button" class="ck__btn" @click="recusar">Recusar</button>
     </div>
   </aside>
+  </Transition>
 </template>
 
 <style scoped>
@@ -156,18 +167,20 @@ onBeforeUnmount(() => {
   margin: 0;
   color: var(--nu-gray-3);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--nu-w-medio);
+  letter-spacing: var(--nu-ls-texto);
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
 .ck__txt :deep(.mkc) { display: inline-block; vertical-align: -2px; margin-right: 10px; }
-.ck__links { white-space: normal; font-weight: 500; margin-left: 4px; }
+.ck__links { white-space: normal; font-weight: var(--nu-w-texto); margin-left: 4px; }
 .ck__txt a {
   color: var(--nu-blue-text);
   font-weight: var(--nu-w-medio);
   text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  transition: color .2s;
+  transition: color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .ck__txt a:hover { color: var(--nu-blue-deep); }
 .ck__acoes { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
@@ -187,12 +200,21 @@ onBeforeUnmount(() => {
   font-weight: var(--nu-w-medio);
   line-height: 1.2;
   cursor: pointer;
-  transition: background .2s, transform .15s var(--nu-ease-saida);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 /* o alvo de toque tem 44px; a pílula, 36 (o aviso é pequeno de propósito) */
 .ck__btn::after { content: ''; position: absolute; inset: -4px 0; }
 .ck__btn:hover { background: var(--nu-row-hover); }
 .ck__btn:active { transform: scale(.98); }
+/* entrar (reaberto pelo rodapé): fade; sair: fade rápido e a altura recolhe, sem pulo */
+.ck-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.ck-enter-from { opacity: 0; }
+.ck-leave-active {
+  overflow: hidden;
+  transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), height var(--nu-dur-media) var(--nu-ease-troca),
+    padding var(--nu-dur-media) var(--nu-ease-troca), border-bottom-width var(--nu-dur-media) var(--nu-ease-troca);
+}
+.ck-leave-to { opacity: 0; height: 0 !important; padding-top: 0; padding-bottom: 0; border-bottom-width: 0; }
 
 @media (max-width: 759px) {
   .ck { padding: 8px 12px; }
@@ -215,7 +237,7 @@ onBeforeUnmount(() => {
   right: auto;
   bottom: auto;
 }
-@media (prefers-reduced-motion: reduce) { .ck__btn { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ck__btn, .ck-enter-active, .ck-leave-active { transition: none; } }
 </style>
 
 <style>

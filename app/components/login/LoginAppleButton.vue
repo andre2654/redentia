@@ -45,17 +45,20 @@ async function clicar() {
 </template>
 
 <style scoped>
-.lab--busy { pointer-events: none; opacity: .6; }
+.lab--busy { pointer-events: none; opacity: .6; transition: opacity var(--nu-dur-media) var(--nu-ease-cor); }
 .lab__pilula {
   display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 52px;
   padding: 0 20px; border: 0; border-radius: var(--nu-r-pill);
   /* preto e branco do guia da Apple, não são tokens do tema */
   background: #000000; color: #FFFFFF;
-  font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); cursor: pointer; transition: background .2s;
+  font-family: inherit; font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); cursor: pointer;
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .lab__pilula:hover { background: #1D1D1F; }
-.lab__pilula:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
+.lab__pilula:active { transform: scale(.98); }
+.lab__pilula:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .lab__pilula svg { margin-top: -2px; }
 .lab--contorno .lab__pilula { background: #FFFFFF; color: #000000; box-shadow: inset 0 0 0 1px #000000; }
 .lab--contorno .lab__pilula:hover { background: #F5F5F7; }
+@media (prefers-reduced-motion: reduce) { .lab__pilula:active { transform: none; } }
 </style>

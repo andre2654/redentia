@@ -111,12 +111,15 @@ onBeforeUnmount(() => {
   box-sizing: border-box; padding: 0 20px; border-radius: var(--nu-r-pill);
   /* cores fixas do guia de marca do Google, não são tokens do tema */
   background: #FFFFFF; box-shadow: inset 0 0 0 1px #747775; color: #1F1F1F;
-  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); transition: background .2s;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
+  transition: background var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .lgb:hover .lgb__pilula { background: #F8F9FA; }
+.lgb:active .lgb__pilula { transform: scale(.98); }
 .lgb--busy { pointer-events: none; }
+.lgb--busy .lgb__pilula { opacity: .6; }
 /* o foco real cai no iframe invisível do GIS: o anel vai na pílula */
-.lgb:focus-within .lgb__pilula { outline: 2px solid var(--nu-blue); outline-offset: 3px; }
+.lgb:focus-within .lgb__pilula { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .lgb__gis {
   position: absolute; top: 0; left: 0;
   width: 400px; height: 40px;
@@ -124,4 +127,5 @@ onBeforeUnmount(() => {
   opacity: 0.001;
   overflow: hidden;
 }
+@media (prefers-reduced-motion: reduce) { .lgb:active .lgb__pilula { transform: none; } }
 </style>

@@ -29,7 +29,7 @@ const { reabrir } = useConsent()
   font-weight: var(--nu-w-medio);
   line-height: 1.2;
   cursor: pointer;
-  transition: background .2s, transform .15s var(--nu-ease-saida);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .ckp__btn:hover { background: var(--nu-row-hover); }
 .ckp__btn:active { transform: scale(.98); }

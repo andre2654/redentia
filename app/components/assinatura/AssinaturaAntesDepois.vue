@@ -5,6 +5,7 @@
 // lugar. Nada de número inventado: são as quatro coisas que o produto faz.
 // Na Aportou (11/11/2026) a coluna "com" é o cartão carvão com a faixa da
 // marca (NuFaixaMarca); a "sem" é um cartão creme quieto ao lado.
+// Robustez (11/11/2026): entra ao rolar (v-revelar), as duas colunas em cascata.
 const LINHAS = [
   { sem: 'Quatro apps para saber quanto você tem.', com: 'Uma tela, com todos os bancos somados.' },
   { sem: 'A queda você descobre no jornal, dias depois.', com: 'Um aviso no dia, com o porquê.' },
@@ -15,10 +16,12 @@ const LINHAS = [
 
 <template>
   <section class="aad" aria-labelledby="aad-titulo">
-    <NuEyebrow>Antes e depois</NuEyebrow>
-    <h2 id="aad-titulo" class="aad__titulo">Investir em vários bancos <br>não precisa dar trabalho.</h2>
+    <div v-revelar="{ alvo: 'filhos', passo: 60 }">
+      <NuEyebrow>Antes e depois</NuEyebrow>
+      <h2 id="aad-titulo" class="aad__titulo">Investir em vários bancos <br>não precisa dar trabalho.</h2>
+    </div>
 
-    <div class="aad__quadro">
+    <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="aad__quadro">
       <div class="aad__coluna aad__coluna--sem">
         <p class="aad__rotulo">Sem a Aportou</p>
         <ul class="aad__lista">
@@ -42,31 +45,31 @@ const LINHAS = [
       </NuFaixaMarca>
     </div>
 
-    <div class="aad__acao">
+    <div v-revelar class="aad__acao">
       <AssinaturaConectar origem="antes-depois" />
     </div>
   </section>
 </template>
 
 <style scoped>
-.aad { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
-.aad__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
-.aad__quadro { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(36px, 4.5vw, 56px); }
+.aad { background: var(--nu-page); padding: clamp(72px, 8vw, 128px) var(--nu-coluna); }
+.aad__titulo { margin: 16px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; }
+.aad__quadro { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(40px, 4.5vw, 56px); }
 .aad__coluna { border-radius: var(--nu-r-card-lg); }
 .aad__coluna--sem { background: var(--nu-band); box-shadow: var(--nu-shadow-quente); }
 /* o rótulo da coluna "sem" tem a altura da aba da faixa: as duas listas começam na mesma linha */
 .aad__rotulo {
   display: flex; align-items: center; height: 52px; margin: 0; padding: 0 clamp(26px, 3vw, 40px);
-  color: var(--nu-gray); font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--nu-gray); font-size: 15px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-caixa); text-transform: uppercase;
 }
-.aad__lista { list-style: none; margin: 0; padding: clamp(22px, 2.6vw, 30px) clamp(26px, 3vw, 40px) clamp(28px, 3vw, 40px); display: flex; flex-direction: column; gap: 18px; }
-.aad__item { display: flex; align-items: flex-start; gap: 14px; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio); letter-spacing: -0.015em; line-height: 1.3; }
+.aad__lista { list-style: none; margin: 0; padding: clamp(24px, 2.6vw, 32px) clamp(24px, 3vw, 40px) clamp(32px, 3vw, 40px); display: flex; flex-direction: column; gap: 16px; }
+.aad__item { display: flex; align-items: flex-start; gap: 16px; font-size: var(--nu-fs-xl); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.3; }
 .aad__coluna--sem .aad__item { color: var(--nu-gray); }
 .aad__coluna--com .aad__item { color: var(--nu-white); }
 .aad__marca { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; }
 .aad__marca--sem { background: var(--nu-white); color: var(--nu-red-text); }
 .aad__marca--com { background: var(--nu-green-soft); color: var(--nu-ink); }
-.aad__acao { display: flex; justify-content: center; margin-top: clamp(36px, 4.4vw, 56px); }
+.aad__acao { display: flex; justify-content: center; margin-top: clamp(40px, 4.4vw, 56px); }
 
 @media (max-width: 860px) {
   .aad__quadro { grid-template-columns: minmax(0, 1fr); }

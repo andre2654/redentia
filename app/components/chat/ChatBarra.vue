@@ -17,6 +17,11 @@
 // O fim da página nunca fica embaixo dela: o layout soma a altura da barra ao
 // pé do rodapé (html.nu-chat-barra, estilo global abaixo).
 //
+// Robustez (11/11/2026): nada passa do ponto. A cápsula do celular abre na
+// curva do que muda de lugar (--nu-ease-troca), sem a mola que quicava; as
+// trocas da marca pelos botões e das sugestões usam os tempos dos tokens; os
+// chips de sugestão flutuam com a sombra de cartão (--nu-shadow-card).
+//
 // No foco, a marca dá lugar a dois botões (dono, 02/11/2026): expandir abre o
 // painel como está; conversa abre o painel já nas conversas anteriores (só
 // para quem entrou). A troca é uma mola: a marca gira e some, os botões
@@ -220,7 +225,7 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
 /* 58px em repouso; no foco cresce para 62 (o input mágico do quadro) */
 .cba__linha {
   display: flex; align-items: center; gap: 12px; height: 58px; padding: 0 9px 0 20px; cursor: text;
-  transition: height .25s var(--nu-ease-saida), padding .25s var(--nu-ease-saida);
+  transition: height var(--nu-dur-media) var(--nu-ease-saida), padding var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cba--foco .cba__linha { height: 62px; padding-right: 10px; }
 .cba__marca { flex-shrink: 0; display: block; }
@@ -230,13 +235,13 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   --mola: var(--nu-ease-saida);
   position: relative; flex-shrink: 0;
   width: 26px; height: 38px; margin-left: 0;
-  transition: width .42s var(--mola), margin-left .42s var(--mola);
+  transition: width var(--nu-dur-lenta) var(--nu-ease-troca), margin-left var(--nu-dur-lenta) var(--nu-ease-troca);
 }
 .cba__lado--aberto { width: 38px; margin-left: -8px; }
 .cba__lado--dois { width: 80px; }
 .cba__lado .cba__marca {
   position: absolute; left: 0; top: 8px;
-  transition: transform .38s var(--mola), opacity .22s ease;
+  transition: transform var(--nu-dur-lenta) var(--mola), opacity var(--nu-dur-rapida) var(--nu-ease-cor);
 }
 .cba__lado--aberto .cba__marca { transform: rotate(-90deg) scale(.2); opacity: 0; }
 .cba__acao {
@@ -244,34 +249,34 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   width: 38px; height: 38px; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
   display: grid; place-items: center; background: var(--nu-cream-2); color: var(--nu-ink);
   opacity: 0; transform: scale(.4) rotate(-20deg); pointer-events: none;
-  transition: transform .42s var(--mola), opacity .2s ease, background .2s ease, color .2s ease;
+  transition: transform var(--nu-dur-lenta) var(--mola), opacity var(--nu-dur-media) var(--nu-ease-cor), background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor);
   transition-delay: 0s;
 }
 .cba__lado--aberto .cba__acao {
   opacity: 1; transform: none; pointer-events: auto;
-  transition-delay: calc(60ms + var(--i) * 70ms), calc(60ms + var(--i) * 70ms), 0s, 0s;
+  transition-delay: calc(60ms + var(--i) * 60ms), calc(60ms + var(--i) * 60ms), 0s, 0s;
 }
 .cba__acao:hover { background: var(--nu-ink); color: var(--nu-white); }
-.cba__acao:active { transform: scale(.92); }
+.cba__acao:active { transform: scale(.92); transition-duration: var(--nu-dur-rapida); }
 @media (prefers-reduced-motion: reduce) {
   .cba__lado, .cba__lado .cba__marca, .cba__acao, .cba__linha { transition-duration: .01ms !important; transition-delay: 0s !important; }
 }
 .cba__campo {
   flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; font: inherit;
-  color: var(--nu-ink); font-size: 17px; font-weight: 600; caret-color: var(--nu-blue);
+  color: var(--nu-ink); font-size: 17px; font-weight: var(--nu-w-medio); caret-color: var(--nu-blue);
 }
 /* o anel é o foco do campo: o contorno global não entra por cima dele */
 .cba__campo:focus-visible { outline: 0; }
-.cba__campo::placeholder { color: var(--nu-gray); font-weight: 600; opacity: 1; }
+.cba__campo::placeholder { color: var(--nu-gray); font-weight: var(--nu-w-medio); opacity: 1; }
 /* o envio: o círculo cobalto com a seta para cima, sempre */
 .cba__enviar {
   flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
   display: grid; place-items: center; background: var(--nu-blue); color: var(--nu-white);
-  transition: transform .2s ease, background .2s ease, width .25s var(--nu-ease-saida), height .25s var(--nu-ease-saida);
+  transition: transform var(--nu-dur-rapida) var(--nu-ease-saida), background-color var(--nu-dur-media) var(--nu-ease-cor), width var(--nu-dur-media) var(--nu-ease-saida), height var(--nu-dur-media) var(--nu-ease-saida);
 }
 .cba--foco .cba__enviar { width: 42px; height: 42px; }
 .cba__enviar:hover { background: var(--nu-blue-hover); }
-.cba__enviar:hover svg { animation: cba-seta .45s var(--nu-ease-saida); }
+.cba__enviar:hover svg { animation: cba-seta var(--nu-dur-lenta) var(--nu-ease-troca); }
 .cba__enviar:active { transform: scale(.94); }
 
 /* as sugestões: chips brancos com sombra, soltos acima da barra */
@@ -281,18 +286,18 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   list-style: none; margin: 0; padding: 0;
   display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
 }
-.cba__sugs li { animation: nu-fade .32s var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 50ms); }
+.cba__sugs li { animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 60ms); }
+/* os chips flutuam sobre a página: o branco com a sombra de cartão (fio de 1px e camadas que somem) */
 .cba__sug {
   display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; padding: 8px 16px;
   border: 0; border-radius: 22px; background: var(--nu-white); cursor: pointer; text-align: left;
-  color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; line-height: 1.3;
-  /* pedido para a base: a sombra do chip branco do quadro (0 2px 8px a 8% do carvão) */
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--nu-ink) 10%, transparent), 0 0 0 1px var(--nu-navy-07);
-  transition: background .2s ease, color .2s ease, transform .2s var(--nu-ease-saida);
+  color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.3;
+  box-shadow: var(--nu-shadow-card);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida);
 }
 /* a escolhida vira cobalto: os chips flutuam sobre qualquer fundo, e o carvão sumiria nas seções escuras */
 .cba__sug--ativa { background: var(--nu-blue); color: var(--nu-white); transform: translateY(-2px); }
-.cba__sug:active { transform: scale(.98); }
+.cba__sug:active { transform: scale(.98); transition-duration: var(--nu-dur-rapida); }
 
 @keyframes cba-seta {
   0% { transform: translateY(0); }
@@ -301,21 +306,24 @@ useHead(() => ({ htmlAttrs: { class: visivel.value ? 'nu-chat-barra' : '' } }))
   100% { transform: translateY(0); opacity: 1; }
 }
 
-.cba-enter-active, .cba-leave-active { transition: opacity .25s ease, transform .3s var(--nu-ease-saida); }
+/* a barra chega subindo; sai mais rápido do que chega */
+.cba-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-lenta) var(--nu-ease-saida); }
+.cba-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-cor); }
 .cba-enter-from, .cba-leave-to { opacity: 0; transform: translate(-50%, 16px); }
-.cba-sug-enter-active, .cba-sug-leave-active { transition: opacity .18s ease, transform .22s var(--nu-ease-saida); }
+.cba-sug-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida); }
+.cba-sug-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor); }
 .cba-sug-enter-from, .cba-sug-leave-to { opacity: 0; transform: translate(-50%, 8px); }
 
 @media (max-width: 760px) {
   .cba {
     bottom: calc(12px + env(safe-area-inset-bottom)); width: calc(100% - 24px);
-    transition: width .5s cubic-bezier(.34, 1.4, .64, 1);
+    transition: width var(--nu-dur-lenta) var(--nu-ease-troca);
   }
   .cba__linha { height: 52px; padding-left: 16px; gap: 10px; }
   .cba--foco .cba__linha { height: 56px; }
   /* 16px no campo: abaixo disso o iOS dá zoom no foco */
   .cba__campo { font-size: 16px; text-overflow: ellipsis; }
-  .cba__enviar { transition: transform .35s var(--nu-ease-saida), opacity .2s ease, width .35s ease, background .2s ease; }
+  .cba__enviar { transition: transform var(--nu-dur-lenta) var(--nu-ease-saida), opacity var(--nu-dur-media) var(--nu-ease-cor), width var(--nu-dur-lenta) var(--nu-ease-troca), background-color var(--nu-dur-media) var(--nu-ease-cor); }
   .cba__sugs { justify-content: flex-start; width: 100%; max-width: 100%; }
 
   /* em repouso: a cápsula, estreita, com a pergunta se escrevendo */

@@ -379,7 +379,7 @@ const nf = new Intl.NumberFormat('pt-BR')
 .aec__cv { display: block; width: 100%; height: 100%; }
 .aec__nome {
   position: absolute; transform: translateY(-50%); white-space: nowrap;
-  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: opacity .2s linear;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); transition: opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .aec__nome--otimista { color: var(--nu-green-soft); }
 .aec__nome--meio { color: var(--nu-cream-text); }

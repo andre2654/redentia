@@ -7,6 +7,9 @@
 // contorno; as perguntas de continuação, embaixo dele.
 // Palavra já revelada nunca anima de novo; movimento reduzido = texto puro.
 // O markdown é o mesmo do chat da /busca (utils/markdown.ts, escapa antes).
+// Robustez (11/11/2026): a mensagem chega com nu-fade em --nu-dur-lenta; o erro
+// é a frase em vermelho com o ícone e um fio vermelho no balão (fio, não uma
+// caixa dentro do balão); fontes e continuações com hover, apertado e foco.
 import type { NuChatCitation, NuChatMsg } from '~/composables/useNuChat'
 import { agendarPalavras, contarPalavras, cortarPalavraIncompleta, envolverPalavras } from '~/utils/revelar-palavras'
 
@@ -64,12 +67,13 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
   <div v-else class="cms cms--ia">
     <div class="cms__linha">
       <span class="cms__avatar" aria-hidden="true"><MarcaCorte :largura="16" cor="var(--nu-blue-on-dark)" /></span>
-      <div class="cms__balao">
+      <div class="cms__balao" :class="{ 'cms__balao--erro': !!msg.error && !msg.content }">
         <!-- eslint-disable-next-line vue/no-v-html — chatMarkdown escapa tudo antes -->
         <div v-if="msg.content" class="cms__corpo" v-html="html" />
 
-        <div v-if="msg.error" class="cms__erro">
-          <span>{{ msg.error }}</span>
+        <div v-if="msg.error" class="cms__erro" role="alert">
+          <svg class="cms__erro-icone" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5h.01" /></svg>
+          <span class="cms__erro-txt">{{ msg.error }}</span>
           <NuxtLink v-if="msg.authExpired" :to="loginHref" class="cms__entrar">Entrar de novo</NuxtLink>
         </div>
 
@@ -91,7 +95,7 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 
 <style scoped>
 /* a mensagem entra subindo (nu-fade) */
-.cms { animation: nu-fade .32s var(--nu-ease-saida) both; }
+.cms { animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 
 .cms--eu { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin: 16px 0 12px; }
 .cms__ctxs { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; max-width: 92%; }
@@ -105,7 +109,7 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 /* o balão da pessoa: cobalto, com a ponta embaixo à direita */
 .cms__bolha {
   background: var(--nu-blue); color: var(--nu-white);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5;
+  font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5;
   padding: 11px 16px; border-radius: 20px 20px 5px 20px; max-width: 84%;
   white-space: pre-wrap; overflow-wrap: break-word;
 }
@@ -120,17 +124,20 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 /* o balão da IA: branco com fio, com a ponta em cima à esquerda */
 .cms__balao {
   flex: 1; min-width: 0; padding: 14px 16px; border-radius: 5px 20px 20px 20px;
-  background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-line-2);
+  background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2);
   display: flex; flex-direction: column; gap: 12px;
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor);
 }
+/* a resposta que não veio: o fio do balão no vermelho */
+.cms__balao--erro { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nu-red) 32%, var(--nu-line-2)); }
 .cms__corpo { color: var(--nu-ink); min-width: 0; }
-.cms__corpo :deep(p) { margin: 0 0 12px; font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; overflow-wrap: break-word; }
-.cms__corpo :deep(ul), .cms__corpo :deep(ol) { margin: 0 0 12px; padding-left: 20px; font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.cms__corpo :deep(p) { margin: 0 0 12px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; overflow-wrap: break-word; }
+.cms__corpo :deep(ul), .cms__corpo :deep(ol) { margin: 0 0 12px; padding-left: 20px; font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.5; }
 .cms__corpo :deep(li) { margin: 0 0 6px; padding-left: 2px; }
 .cms__corpo :deep(ul > li::marker) { color: var(--nu-blue); }
 .cms__corpo :deep(ol > li::marker) { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); }
 .cms__corpo :deep(strong) { font-weight: var(--nu-w-medio); }
-.cms__corpo :deep(a) { color: var(--nu-blue-text); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.cms__corpo :deep(a) { color: var(--nu-blue-text); font-weight: var(--nu-w-medio); text-decoration: underline; text-underline-offset: 2px; }
 /* a tabela do markdown: cabeçalho em caixa alta sobre um fio, linhas com fio leve */
 .cms__corpo :deep(.md-table) { overflow-x: auto; margin: 0 0 12px; }
 .cms__corpo :deep(table) { border-collapse: collapse; min-width: 100%; }
@@ -140,7 +147,7 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
   border-bottom: 1px solid var(--nu-line);
 }
 .cms__corpo :deep(td) {
-  font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.45; padding: 9px 14px 9px 0;
+  font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.45; padding: 9px 14px 9px 0;
   border-top: 1px solid var(--nu-line-2); font-variant-numeric: tabular-nums; vertical-align: top;
 }
 .cms__corpo :deep(tbody tr:first-child td) { border-top: 0; }
@@ -149,29 +156,32 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 .cms__corpo :deep(:last-child) { margin-bottom: 0; }
 
 /* a palavra surgindo do desfoque (a keyframe está em base.css) */
-.cms__corpo :deep(.rp) { display: inline-block; animation: nu-palavra .52s var(--nu-ease-saida) backwards; }
+.cms__corpo :deep(.rp) { display: inline-block; animation: nu-palavra var(--nu-dur-lenta) var(--nu-ease-saida) backwards; }
 .cms__corpo :deep(.rp--ja) { animation: none; }
 
+/* o erro: a frase com o ícone, no vermelho, sem caixa dentro do balão */
 .cms__erro {
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  padding: 10px 12px; border-radius: var(--nu-r-chip); background: var(--nu-red-bg);
-  color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.45;
+  display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;
+  color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.45;
 }
+.cms__erro-icone { flex: none; margin-top: 1px; }
+.cms__erro-txt { flex: 1; min-width: min(200px, 100%); }
 .cms__entrar {
   display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: var(--nu-r-pill);
   background: var(--nu-ink); color: var(--nu-white); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-  transition: background .2s;
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cms__entrar:hover { background: var(--nu-gray-3); color: var(--nu-white); }
+.cms__entrar:active { transform: scale(.98); }
 
 /* as fontes: chips de contorno, dentro do balão */
-.cms__fontes { display: flex; flex-wrap: wrap; gap: 6px; animation: nu-fade .4s ease both; }
+.cms__fontes { display: flex; flex-wrap: wrap; gap: 6px; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 .cms__fonte {
   display: inline-block; max-width: 100%; padding: 4px 10px; border-radius: var(--nu-r-pill); border: 0;
   background: transparent; box-shadow: inset 0 0 0 1px var(--nu-line);
-  color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-xs); font-weight: 600; line-height: 1.5;
+  color: var(--nu-gray); font: inherit; font-size: var(--nu-fs-xs); font-weight: var(--nu-w-medio); line-height: 1.5;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: box-shadow .2s ease, color .2s ease, background .2s ease;
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .cms__fonte--link:hover, .cms__fonte--mais:hover { box-shadow: inset 0 0 0 1.5px var(--nu-ink); color: var(--nu-ink); }
 .cms__fonte--mais { cursor: pointer; color: var(--nu-ink); font-weight: var(--nu-w-medio); }
@@ -181,9 +191,9 @@ function agendaDe(id: string): number[] { return agendas.get(id) ?? [] }
 .cms__chip {
   min-height: 44px; max-width: 100%; text-align: left; padding: 8px 16px; border: 0; border-radius: 22px;
   background: var(--nu-cream-2); cursor: pointer;
-  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.35;
-  animation: nu-fade .32s var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 60ms);
-  transition: background .2s ease, color .2s ease;
+  color: var(--nu-ink); font: inherit; font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35;
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(var(--k) * 60ms);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cms__chip:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cms__chip:active { transform: scale(.98); }

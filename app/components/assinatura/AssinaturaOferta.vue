@@ -57,19 +57,20 @@ const SELOS = ['Leva 1 minuto', 'Regulado pelo Banco Central', 'Só leitura']
 <style scoped>
 .aof { display: flex; flex-direction: column; align-items: flex-start; }
 .aof__cancelado {
-  margin: 18px 0 0; padding: 12px 16px; border-radius: var(--nu-r-chip);
-  background: var(--nu-white); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5;
-  box-shadow: var(--nu-shadow-branco);
+  margin: 16px 0 0; padding: 12px 16px; border-radius: var(--nu-r-chip);
+  background: var(--nu-white); color: var(--nu-gray-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.5;
+  box-shadow: var(--nu-shadow-branco); animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
 .aof__acao { margin-top: clamp(4px, 1vw, 8px); }
-.aof__erro { margin: 14px 0 0; max-width: 460px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.5; }
-.aof__letra { margin: 16px 0 0; max-width: 480px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
-.aof__selos { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
-.aof__selos li { display: inline-flex; align-items: center; gap: 7px; color: var(--nu-gray-3); font-size: 15px; font-weight: 600; }
+.aof__erro { margin: 16px 0 0; max-width: 460px; color: var(--nu-red-text); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); line-height: 1.5; animation: nu-fade var(--nu-dur-media) var(--nu-ease-saida) both; }
+.aof__letra { margin: 16px 0 0; max-width: 480px; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-texto); line-height: 1.55; }
+.aof__selos { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.aof__selos li { display: inline-flex; align-items: center; gap: 8px; color: var(--nu-gray-3); font-size: 14px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); }
 .aof__selos svg { color: var(--nu-green-text); }
 .aof--escuro .aof__selos li { color: var(--nu-on-dark); }
 .aof--escuro .aof__selos svg { color: var(--nu-green-soft); }
 
+@media (prefers-reduced-motion: reduce) { .aof__cancelado, .aof__erro { animation: none; } }
 /* no azul-marinho: os textos em creme */
 .aof--escuro .aof__letra { color: var(--nu-on-dark-2); }
 .aof--escuro .aof__erro { color: var(--nu-red-soft); }

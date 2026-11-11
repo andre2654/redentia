@@ -58,9 +58,10 @@ const id = useId()
         <circle :cx="linha.fim[0]" :cy="linha.fim[1]" r="5" />
       </g>
     </svg>
-    <div v-else-if="!dados" class="cha__carregando">
-      <span class="cha__esqueleto" />
-      <span class="cha__esqueleto" style="width: 72%" />
+    <!-- carregando: o esqueleto ocupa a altura do gráfico que vem (o cartão não cresce quando o dado chega) -->
+    <div v-else-if="!dados" class="cha__carregando" aria-hidden="true">
+      <NuSkeleton variant="bar" tone="navy" />
+      <NuSkeleton variant="bar" tone="navy" width="72%" />
     </div>
   </div>
 </template>
@@ -77,7 +78,7 @@ const id = useId()
 .cha__logo--letra { display: grid; place-items: center; background: var(--nu-navy-3); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-forte); }
 .cha__nome { display: flex; flex-direction: column; line-height: 1.15; }
 .cha__nome b { font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
-.cha__nome span { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: 500; }
+.cha__nome span { color: var(--nu-cream-text-60); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); }
 .cha__seguindo {
   display: inline-flex; align-items: center; gap: 5px; margin-left: 6px;
   color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
@@ -88,7 +89,7 @@ const id = useId()
 }
 .cha__porque b { color: var(--cha-hoje); font-size: var(--nu-fs-md); font-weight: var(--nu-w-forte); }
 .cha__porque span {
-  color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: 500; line-height: 1.4;
+  color: var(--nu-cream-text-78); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-texto); line-height: 1.4;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .cha__grafico { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
@@ -96,24 +97,19 @@ const id = useId()
 .cha__ontem, .cha__guia { stroke: var(--nu-cream-text-35); }
 .cha__hoje { stroke: var(--cha-hoje); filter: drop-shadow(0 0 6px var(--cha-hoje)); }
 .cha__ponto circle { fill: var(--cha-hoje); }
-.cha__ponto .cha__onda { fill: none; stroke: var(--cha-hoje); transform-box: fill-box; transform-origin: center; animation: cha-onda 1.6s ease-out infinite; }
-.cha__carregando { display: flex; flex-direction: column; gap: 10px; margin-top: 40px; }
-.cha__esqueleto {
-  height: 10px; border-radius: var(--nu-r-pill);
-  background: linear-gradient(90deg, var(--nu-cream-text-14) 0%, var(--nu-cream-text-30) 50%, var(--nu-cream-text-14) 100%);
-  background-size: 200% 100%; animation: cha-brilha 1.8s linear infinite;
-}
+.cha__ponto .cha__onda { fill: none; stroke: var(--cha-hoje); transform-box: fill-box; transform-origin: center; animation: cha-onda calc(var(--nu-dur-entrada) * 2.2) var(--nu-ease-saida) infinite; }
+.cha__carregando { display: flex; flex-direction: column; justify-content: center; gap: 12px; margin-top: 6px; aspect-ratio: 456 / 108; }
 
 /* o laço (9 s): a linha se desenha, hoje cai ou sobe, o porquê aparece e o
    "Seguindo" entra. Cada keyframe parte do escondido; parado, fica o final. */
-.cha { --cha-ciclo: 9s; animation: cha-volta var(--cha-ciclo) ease infinite; }
-.cha__linha { stroke-dasharray: var(--cha-corpo); stroke-dashoffset: 0; animation: cha-linha var(--cha-ciclo) cubic-bezier(.5, 0, .2, 1) infinite; }
-.cha__hoje { stroke-dasharray: var(--cha-queda); stroke-dashoffset: 0; animation: cha-hoje var(--cha-ciclo) ease-in infinite; }
-.cha__area { animation: cha-surge var(--cha-ciclo) ease infinite; }
-.cha__ponto { animation: cha-ponto var(--cha-ciclo) ease infinite; }
-.cha__guia { animation: cha-guia var(--cha-ciclo) ease infinite; }
+.cha { --cha-ciclo: 9s; animation: cha-volta var(--cha-ciclo) var(--nu-ease-cor) infinite; }
+.cha__linha { stroke-dasharray: var(--cha-corpo); stroke-dashoffset: 0; animation: cha-linha var(--cha-ciclo) var(--nu-ease-troca) infinite; }
+.cha__hoje { stroke-dasharray: var(--cha-queda); stroke-dashoffset: 0; animation: cha-hoje var(--cha-ciclo) var(--nu-ease-cor) infinite; }
+.cha__area { animation: cha-surge var(--cha-ciclo) var(--nu-ease-cor) infinite; }
+.cha__ponto { animation: cha-ponto var(--cha-ciclo) var(--nu-ease-cor) infinite; }
+.cha__guia { animation: cha-guia var(--cha-ciclo) var(--nu-ease-cor) infinite; }
 .cha__porque { animation: cha-porque var(--cha-ciclo) var(--nu-ease-saida) infinite; }
-.cha__seguindo { animation: cha-seguindo var(--cha-ciclo) ease infinite; }
+.cha__seguindo { animation: cha-seguindo var(--cha-ciclo) var(--nu-ease-cor) infinite; }
 /* depois do cadastro o herói para no quadro final, com o "Seguindo" fixo */
 .cha--seguindo, .cha--seguindo .cha__linha, .cha--seguindo .cha__hoje, .cha--seguindo .cha__area,
 .cha--seguindo .cha__ponto, .cha--seguindo .cha__guia, .cha--seguindo .cha__porque, .cha--seguindo .cha__seguindo { animation: none; }
@@ -127,9 +123,8 @@ const id = useId()
 @keyframes cha-porque { 0%, 35% { opacity: 0; transform: translateY(8px); } 42%, 100% { opacity: 1; transform: none; } }
 @keyframes cha-seguindo { 0%, 47% { opacity: 0; transform: translateX(-4px); } 52%, 100% { opacity: 1; transform: none; } }
 @keyframes cha-onda { from { transform: scale(1); opacity: .7; } to { transform: scale(3.4); opacity: 0; } }
-@keyframes cha-brilha { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .cha, .cha__linha, .cha__hoje, .cha__area, .cha__ponto, .cha__guia, .cha__porque, .cha__seguindo, .cha__ponto .cha__onda, .cha__esqueleto { animation: none; }
+  .cha, .cha__linha, .cha__hoje, .cha__area, .cha__ponto, .cha__guia, .cha__porque, .cha__seguindo, .cha__ponto .cha__onda { animation: none; }
 }
 </style>

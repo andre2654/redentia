@@ -6,6 +6,9 @@
  * queda vivem no MESMO SVG, então escalam juntos e nunca dão overflow. A
  * linha desenha a si mesma no load. Copy sem travessão (vírgula).
  *
+ * Robustez (11/11/2026): uma ação principal (NuBotaoSeta) e a segunda em
+ * NuLinkSeta; o ponto vermelho pousa sem quicar; tempos e curvas dos tokens.
+ *
  * Os três casos têm copy PRÓPRIA porque dizem coisas diferentes:
  *  - 404: nunca existiu (ou o link quebrou);
  *  - 410: existiu e saiu da B3 (papel deslistado — /asset e /dividendos dos 372
@@ -130,11 +133,11 @@ const goRankings = () => clearError({ redirect: '/rankings' })
         <div class="nf__actions">
           <template v-if="isGone">
             <NuBotaoSeta tamanho="m" @click="goRankings">Ver os rankings da B3</NuBotaoSeta>
-            <NuBotaoSeta tamanho="m" variante="contorno" @click="goSearch">Buscar outro ativo</NuBotaoSeta>
+            <NuLinkSeta tom="tinta" class="nf__link" @click="goSearch">Buscar outro ativo</NuLinkSeta>
           </template>
           <template v-else>
             <NuBotaoSeta tamanho="m" @click="goHome">Voltar para o início</NuBotaoSeta>
-            <NuBotaoSeta tamanho="m" variante="contorno" @click="goSearch">Buscar um ativo</NuBotaoSeta>
+            <NuLinkSeta tom="tinta" class="nf__link" @click="goSearch">Buscar um ativo</NuLinkSeta>
           </template>
         </div>
       </div>
@@ -155,7 +158,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   width: 100%;
   max-width: 680px;
   text-align: center;
-  animation: nu-fade-lg 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: nu-fade-lg var(--nu-dur-entrada) var(--nu-ease-saida) both;
 }
 
 /* hero SVG: escala pra largura do wrap, sem overflow em nenhuma tela */
@@ -177,7 +180,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 .nf__line {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: nf-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
+  animation: nf-draw calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca) 160ms forwards;
   stroke: var(--nu-red);
   filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--nu-red) 30%, transparent));
 }
@@ -186,14 +189,14 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 .nf__stop-queda { stop-color: var(--nu-red); }
 .nf__area {
   opacity: 0;
-  animation: nf-in 1s ease 0.5s forwards;
+  animation: nf-in var(--nu-dur-entrada) var(--nu-ease-cor) 520ms forwards;
 }
 .nf__dot {
   fill: var(--nu-red);
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  animation: nf-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 1.35s forwards;
+  animation: nf-pop var(--nu-dur-lenta) var(--nu-ease-saida) 1360ms forwards;
 }
 .nf__ping {
   stroke: var(--nu-red);
@@ -201,18 +204,18 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   transform-box: fill-box;
   transform-origin: center;
   /* três ondas e para: nada de animação sem fim fora do anel e do esqueleto */
-  animation: nf-ping 1.7s ease-out 1.75s 3;
+  animation: nf-ping calc(var(--nu-dur-entrada) * 2.4) var(--nu-ease-saida) 1760ms 3;
 }
 @keyframes nf-draw { to { stroke-dashoffset: 0; } }
 @keyframes nf-in { to { opacity: 1; } }
-@keyframes nf-pop { 0% { opacity: 0; transform: scale(0.2); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes nf-pop { 0% { opacity: 0; transform: scale(0.4); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes nf-ping { 0% { opacity: 0.5; transform: scale(0.5); } 70%, 100% { opacity: 0; transform: scale(2.6); } }
 
 .nf__eyebrow { justify-content: center; margin-bottom: 16px; }
 .nf__title {
   font-size: clamp(30px, 5vw, 48px);
   font-weight: var(--nu-w-display);
-  letter-spacing: -0.03em;
+  letter-spacing: var(--nu-ls-display);
   line-height: 1.04;
   color: var(--nu-ink);
   margin: 0 auto;
@@ -223,20 +226,29 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   font-size: clamp(15px, 2.3vw, 18px);
   line-height: 1.55;
   color: var(--nu-gray-3);
-  font-weight: 500;
+  font-weight: var(--nu-w-texto);
+  letter-spacing: var(--nu-ls-texto);
   margin: 16px auto 0;
   max-width: 50ch;
 }
+/* uma ação principal (a pílula) e, ao lado, a segunda como link com a seta */
 .nf__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  align-items: center;
+  gap: 16px 32px;
   justify-content: center;
-  margin-top: clamp(24px, 4vw, 36px);
+  margin-top: clamp(32px, 4vw, 40px);
 }
-/* mobile: botões empilham full-width (padrão de toque) */
+.nf__link { font-size: 16px; }
+/* mobile: a pílula ocupa a largura (padrão de toque) e o link fica embaixo, no centro */
 @media (max-width: 520px) {
-  .nf__actions { flex-direction: column; align-items: stretch; }
-  .nf__actions :deep(.nbs) { display: flex; }
+  .nf__actions { flex-direction: column; align-items: center; }
+  .nf__actions :deep(.nbs) { display: flex; align-self: stretch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf__wrap, .nf__area, .nf__dot, .nf__ping { animation: none; }
+  .nf__line { animation: none; stroke-dashoffset: 0; }
+  .nf__area, .nf__dot { opacity: 1; }
 }
 </style>

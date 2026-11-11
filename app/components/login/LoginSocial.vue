@@ -24,11 +24,12 @@ const disponivel = !!(google || apple)
 </template>
 
 <style scoped>
-.lso { display: flex; flex-direction: column; gap: 18px; }
-.lso__caixa { display: flex; flex-direction: column; gap: 10px; }
+.lso { display: flex; flex-direction: column; gap: 16px; }
+.lso__caixa { display: flex; flex-direction: column; gap: 8px; }
+/* o divisor: fio de 1px dos dois lados, a legenda no meio */
 .lso__ou {
-  display: flex; align-items: center; gap: 14px; margin: 0;
-  color: var(--nu-gray); font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 16px; margin: 0;
+  color: var(--nu-gray); font-size: 13px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto);
 }
-.lso__ou::before, .lso__ou::after { content: ''; flex: 1; height: 1.5px; background: var(--nu-line); }
+.lso__ou::before, .lso__ou::after { content: ''; flex: 1; height: 1px; background: var(--nu-line); }
 </style>

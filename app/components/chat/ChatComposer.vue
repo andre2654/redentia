@@ -4,6 +4,8 @@
 // os chips do que a pessoa mostrou da página em cima do texto (removíveis) e o
 // botão cobalto que vira "parar" enquanto a resposta chega. Enter envia,
 // Shift+Enter quebra a linha.
+// Robustez (11/11/2026): o chip novo e o "parar" pousam sem passar do ponto
+// (--nu-ease-saida, sem a mola de 1.4); tempos e curvas dos tokens.
 import type { ContextoDoChat } from '~/composables/useChatPainel'
 
 const props = defineProps<{
@@ -94,17 +96,20 @@ defineExpose({ focar })
   padding: 4px 4px 4px 10px; border-radius: var(--nu-r-pill);
   background: var(--nu-cream-2); color: var(--nu-ink); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
 }
-.cco__chip--novo { animation: cco-pop .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+.cco__chip--novo { animation: cco-pop var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 .cco__chip-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
 .cco__chip-x {
-  width: 22px; height: 22px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: pointer;
-  background: transparent; color: var(--nu-gray); transition: background .15s, color .15s;
+  position: relative; width: 22px; height: 22px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: pointer;
+  background: transparent; color: var(--nu-gray);
+  transition: background-color var(--nu-dur-rapida) var(--nu-ease-cor), color var(--nu-dur-rapida) var(--nu-ease-cor);
 }
+/* o alvo de toque é maior que o círculo */
+.cco__chip-x::after { content: ''; position: absolute; inset: -11px -8px; }
 .cco__chip-x:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cco__linha { display: flex; align-items: flex-end; gap: 10px; }
 .cco__campo {
   flex: 1; min-width: 0; resize: none; border: 0; outline: 0; background: transparent;
-  font: inherit; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45;
+  font: inherit; color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.45;
   padding: 9px 0; max-height: 132px; overflow-y: auto; caret-color: var(--nu-blue);
 }
 /* o anel é o foco do campo: o contorno global não entra por cima dele */
@@ -114,20 +119,24 @@ defineExpose({ focar })
 .cco__btn {
   flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
   display: grid; place-items: center; background: var(--nu-blue); color: var(--nu-white);
-  transition: transform .2s ease, background .2s ease, opacity .2s ease;
+  transition: transform var(--nu-dur-rapida) var(--nu-ease-saida), background-color var(--nu-dur-media) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor);
 }
 .cco__btn:disabled { opacity: .4; cursor: default; }
 .cco__btn:not(:disabled):hover { background: var(--nu-blue-hover); }
 .cco__btn:not(:disabled):active { transform: scale(.94); }
 .cco__btn--parar, .cco__btn--parar:not(:disabled):hover { background: var(--nu-ink); }
-.cco__btn--parar { animation: cco-pop .35s cubic-bezier(.2, 1.4, .4, 1) both; }
+.cco__btn--parar { animation: cco-pop var(--nu-dur-media) var(--nu-ease-saida) both; }
 .cco__quadrado { width: 12px; height: 12px; border-radius: 3px; background: currentColor; }
 
-.cco-chip-enter-active, .cco-chip-leave-active { transition: opacity .2s ease, transform .2s ease; }
+.cco-chip-enter-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-saida); }
+.cco-chip-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-cor); }
 .cco-chip-enter-from, .cco-chip-leave-to { opacity: 0; transform: scale(.9); }
-@keyframes cco-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: none; } }
+@keyframes cco-pop { from { transform: scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
 
 @media (max-width: 760px) {
   .cco__campo { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cco__chip--novo, .cco__btn--parar { animation: none; }
 }
 </style>

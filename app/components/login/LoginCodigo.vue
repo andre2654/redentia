@@ -6,6 +6,10 @@
 // (one-time-code) caem nele inteiros. O comportamento é o do antigo
 // LoginPinStep: no 6º número envia sozinho (uma vez por código), e o erro do
 // backend limpa as casas e devolve o foco. 16 px no input: o iOS não dá zoom.
+// Robustez (11/11/2026): cada número pousa na casa (fade + 6px), a casa da vez
+// mostra o cursor e o anel que aperta de 4 para 1px; o erro deixa as casas
+// vermelhas e a fila acena uma vez (só transform), sem mudar a altura de nada;
+// conferindo, as casas respiram devagar. Movimento reduzido: tudo parado.
 const props = withDefaults(defineProps<{
   verifying: boolean
   error: string | null
@@ -17,6 +21,7 @@ const DIGITOS = 6
 const codigo = ref('')
 const campo = ref<HTMLInputElement | null>(null)
 const focado = ref(false)
+const acenando = ref(false)
 let enviado = ''
 
 function aoDigitar(e: Event) {
@@ -40,6 +45,9 @@ watch(() => props.error, (erro) => {
   if (!erro) return
   codigo.value = ''
   enviado = ''
+  // o aceno roda de novo a cada erro (tira a classe e põe no quadro seguinte)
+  acenando.value = false
+  requestAnimationFrame(() => { acenando.value = true })
   nextTick(() => campo.value?.focus())
 })
 
@@ -49,14 +57,14 @@ defineExpose({ focar: () => campo.value?.focus() })
 
 <template>
   <div
-    class="lco" :class="{ 'lco--erro': !!error, 'lco--foco': focado, 'lco--conferindo': verifying }"
-    @click="campo?.focus()"
+    class="lco" :class="{ 'lco--erro': !!error, 'lco--foco': focado, 'lco--conferindo': verifying, 'lco--acena': acenando }"
+    @click="campo?.focus()" @animationend.self="acenando = false"
   >
     <span
       v-for="i in DIGITOS" :key="i" class="lco__casa"
       :class="{ 'lco__casa--vez': focado && !verifying && codigo.length === i - 1, 'lco__casa--cheia': !!codigo[i - 1] }"
       aria-hidden="true"
-    >{{ codigo[i - 1] ?? '' }}</span>
+    ><span v-if="codigo[i - 1]" class="lco__num">{{ codigo[i - 1] }}</span></span>
     <input
       ref="campo" class="lco__campo" :value="codigo" type="text" inputmode="numeric" pattern="[0-9]*"
       autocomplete="one-time-code" maxlength="6" :aria-label="rotulo" :aria-invalid="!!error" :disabled="verifying"
@@ -70,14 +78,27 @@ defineExpose({ focar: () => campo.value?.focus() })
    raio 16. A casa da vez acende no cobalto (é o foco visível do campo). */
 .lco { position: relative; display: flex; gap: 8px; cursor: text; }
 .lco__casa {
-  flex: 1; min-width: 0; height: 64px; display: grid; place-items: center; box-sizing: border-box;
+  position: relative; flex: 1; min-width: 0; height: 64px; display: grid; place-items: center; box-sizing: border-box;
   border: 1.5px solid var(--nu-borda-campo); border-radius: var(--nu-r-input); background: var(--nu-white); color: var(--nu-ink);
-  font-size: clamp(26px, 7vw, 32px); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
-  transition: border-color .2s, transform .2s var(--nu-ease-saida);
+  font-size: clamp(26px, 7vw, 32px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); font-variant-numeric: tabular-nums;
+  outline: 3px solid transparent; outline-offset: 4px;
+  transition: border-color var(--nu-dur-media) var(--nu-ease-cor), outline-color var(--nu-dur-rapida) var(--nu-ease-cor), outline-offset var(--nu-dur-media) var(--nu-ease-saida);
 }
-.lco__casa--cheia { border-color: var(--nu-ink); }
-.lco__casa--vez { border-color: var(--nu-blue); outline: 3px solid var(--nu-blue); outline-offset: 1px; }
-.lco--erro .lco__casa { border-color: var(--nu-red); }
+.lco:hover .lco__casa:not(.lco__casa--cheia) { border-color: color-mix(in srgb, var(--nu-borda-campo), var(--nu-ink) 30%); }
+.lco__casa--cheia, .lco:hover .lco__casa--cheia { border-color: var(--nu-ink); }
+.lco__casa--vez, .lco:hover .lco__casa--vez { border-color: var(--nu-blue); outline-color: var(--nu-blue); outline-offset: 1px; }
+/* o número pousa na casa */
+.lco__num { display: block; animation: lco-pousa var(--nu-dur-media) var(--nu-ease-saida) both; }
+/* o cursor da casa da vez (o do campo de verdade é transparente) */
+.lco__casa--vez::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 2px; height: 30px; margin: -15px 0 0 -1px; border-radius: 1px;
+  background: var(--nu-blue); animation: lco-cursor calc(var(--nu-dur-entrada) * 1.5) steps(1) infinite;
+}
+/* o erro: as casas no vermelho e a fila acena uma vez, sem mudar a altura */
+.lco--erro .lco__casa, .lco--erro:hover .lco__casa { border-color: var(--nu-red); }
+.lco--erro .lco__casa--vez { outline-color: var(--nu-red); }
+.lco--erro .lco__casa--vez::after { background: var(--nu-red); }
+.lco--acena { animation: lco-acena var(--nu-dur-lenta) var(--nu-ease-cor); }
 /* o campo de verdade, invisível por cima das casas */
 .lco__campo {
   position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; outline: none;
@@ -86,14 +107,18 @@ defineExpose({ focar: () => campo.value?.focus() })
 .lco__campo:disabled { cursor: default; }
 /* o foco visível é a casa da vez (lco__casa--vez) */
 
-.lco--conferindo .lco__casa { animation: lco-confere 1.1s ease-in-out infinite; }
-.lco--conferindo .lco__casa:nth-child(2) { animation-delay: .08s; }
-.lco--conferindo .lco__casa:nth-child(3) { animation-delay: .16s; }
-.lco--conferindo .lco__casa:nth-child(4) { animation-delay: .24s; }
-.lco--conferindo .lco__casa:nth-child(5) { animation-delay: .32s; }
-.lco--conferindo .lco__casa:nth-child(6) { animation-delay: .4s; }
-@keyframes lco-confere { 50% { opacity: .45; } }
+/* conferindo: as casas respiram devagar, uma depois da outra */
+.lco--conferindo .lco__casa { animation: lco-confere calc(var(--nu-dur-entrada) * 1.6) var(--nu-ease-cor) infinite; }
+.lco--conferindo .lco__casa:nth-child(2) { animation-delay: 60ms; }
+.lco--conferindo .lco__casa:nth-child(3) { animation-delay: 120ms; }
+.lco--conferindo .lco__casa:nth-child(4) { animation-delay: 180ms; }
+.lco--conferindo .lco__casa:nth-child(5) { animation-delay: 240ms; }
+.lco--conferindo .lco__casa:nth-child(6) { animation-delay: 300ms; }
+@keyframes lco-confere { 50% { opacity: .58; } }
+@keyframes lco-pousa { from { opacity: 0; transform: translateY(6px) scale(.94); } }
+@keyframes lco-cursor { 50% { opacity: 0; } }
+@keyframes lco-acena { 0%, 100% { transform: none; } 18% { transform: translateX(-6px); } 42% { transform: translateX(5px); } 66% { transform: translateX(-3px); } 84% { transform: translateX(1px); } }
 @media (prefers-reduced-motion: reduce) {
-  .lco__casa { animation: none !important; transition: none; }
+  .lco, .lco__casa, .lco__num, .lco__casa--vez::after { animation: none !important; transition: none; }
 }
 </style>

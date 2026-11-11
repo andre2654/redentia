@@ -54,8 +54,9 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 .ajr { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .ajr__passo {
   display: flex; align-items: flex-start; gap: 12px; min-width: 0;
-  padding: 14px 16px; border-radius: var(--nu-r-tile);
+  padding: 16px; border-radius: var(--nu-r-tile);
   background: var(--nu-white); box-shadow: var(--nu-shadow-quente);
+  transition: box-shadow var(--nu-dur-media) var(--nu-ease-cor), background-color var(--nu-dur-media) var(--nu-ease-cor);
 }
 .ajr__marca {
   width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
@@ -65,7 +66,7 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
 }
 .ajr__texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .ajr__t { color: var(--nu-ink); font-size: 15px; font-weight: var(--nu-w-forte); }
-.ajr__d { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
+.ajr__d { color: var(--nu-gray-2); font-size: 13px; font-weight: var(--nu-w-texto); line-height: 1.45; }
 .ajr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* agora: o passo da vez em azul; feito: o check verde; depois: quieto */

@@ -35,7 +35,7 @@ const PERGUNTAS: NuFaqItem[] = [
 
 <template>
   <section class="apg" aria-labelledby="apg-titulo">
-    <div class="apg__cols">
+    <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="apg__cols">
       <div class="apg__esq">
         <NuSectionHeading id="apg-titulo" eyebrow="Perguntas">Antes de <br>conectar.</NuSectionHeading>
         <p class="apg__copy">O que a Aportou vê, como fica o seu dinheiro e o que acontece depois do quiz.</p>
@@ -52,10 +52,10 @@ const PERGUNTAS: NuFaqItem[] = [
 
 <style scoped>
 /* o mesmo FAQ da home (HomeContent .mfq), o texto à esquerda; aqui no branco com os cartões creme (alterna com o MCP) */
-.apg { background: var(--nu-page); padding: clamp(64px, 7vw, 100px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); }
+.apg { background: var(--nu-page); padding: clamp(72px, 8vw, 128px) var(--nu-coluna); }
 .apg__cols { display: flex; gap: clamp(28px, 5vw, 80px); align-items: flex-start; flex-wrap: wrap; }
 .apg__esq { flex: 1 1 300px; min-width: min(280px, 100%); }
-.apg__copy { margin: 22px 0 0; max-width: 420px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.6; }
-.apg__acao { margin-top: clamp(24px, 3vw, 32px); }
+.apg__copy { margin: 16px 0 0; max-width: 420px; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.6; }
+.apg__acao { margin-top: clamp(24px, 3vw, 40px); }
 .apg__dir { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 </style>

@@ -23,9 +23,9 @@ const id = useId()
       <div>
         <div class="cha2__sub">Aposentadoria aos {{ conta.aposentaAos }}</div>
         <div class="cha2__valor">{{ brlInteiro(conta.total) }}</div>
-        <span class="cha2__meta-selo" :class="{ 'cha2__meta-selo--falta': sobra < 0 }">{{ selo }}</span>
+        <NuSelo class="cha2__meta-selo" :tom="sobra < 0 ? 'ambar' : 'verde'" sobre="escuro">{{ selo }}</NuSelo>
       </div>
-      <span v-if="guardada" class="cha2__selo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</span>
+      <NuSelo v-if="guardada" class="cha2__selo" tom="verde" sobre="escuro"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>Conta guardada</NuSelo>
     </div>
     <svg v-if="curva" class="cha2__grafico" viewBox="0 -14 520 208">
       <defs>
@@ -53,15 +53,8 @@ const id = useId()
 .cha2__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 44px; }
 .cha2__sub { color: var(--nu-cream-text-60); font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
 .cha2__valor { margin-top: 2px; font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.cha2__meta-selo {
-  display: inline-flex; margin-top: 10px; padding: 6px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-}
-.cha2__meta-selo--falta { background: color-mix(in srgb, var(--nu-amber) 22%, transparent); color: var(--nu-amber-soft); }
-.cha2__selo {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: var(--nu-r-tag);
-  background: var(--nu-green-soft-16); color: var(--nu-green-soft); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio);
-}
+/* os selos são o NuSelo sobre o carvão (verde: passa da meta; âmbar: falta) */
+.cha2__meta-selo { margin-top: 12px; }
 .cha2__grafico { display: block; width: 100%; height: auto; margin-top: 6px; overflow: visible; }
 .cha2__stop-alto { stop-color: var(--nu-blue-soft); stop-opacity: 0.28; }
 .cha2__stop-baixo { stop-color: var(--nu-blue-soft); stop-opacity: 0; }
@@ -70,13 +63,13 @@ const id = useId()
 .cha2__linha {
   fill: none; stroke: var(--nu-blue-soft); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--nu-blue-soft) 60%, transparent));
-  stroke-dasharray: 100; stroke-dashoffset: 0; animation: cha2-desenha 1.4s cubic-bezier(.5, 0, .2, 1) both;
+  stroke-dasharray: 100; stroke-dashoffset: 0; animation: cha2-desenha calc(var(--nu-dur-entrada) * 2) var(--nu-ease-troca) both;
 }
-.cha2__area { animation: cha2-surge 1.4s ease both; }
+.cha2__area { animation: cha2-surge calc(var(--nu-dur-entrada) * 2) var(--nu-ease-cor) both; }
 .cha2__ponto { fill: var(--nu-blue-soft); }
 .cha2__onda {
   fill: none; stroke: var(--nu-blue-soft); stroke-width: 2;
-  transform-box: fill-box; transform-origin: center; animation: cha2-onda 1.8s ease-out infinite;
+  transform-box: fill-box; transform-origin: center; animation: cha2-onda calc(var(--nu-dur-entrada) * 2.5) var(--nu-ease-saida) infinite;
 }
 .cha2--guardada .cha2__onda { animation: none; opacity: 0; }
 @keyframes cha2-desenha { from { stroke-dashoffset: 100; } }

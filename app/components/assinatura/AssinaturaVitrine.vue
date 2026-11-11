@@ -16,6 +16,9 @@
 // do próprio azul cobre o começo das linhas (o leque segue vivo à direita);
 // no celular ele ocupa a parte de cima da tela.
 // Cobrança pendente não espera nada.
+// Robustez (11/11/2026): os tempos e as curvas são os dos tokens (o texto
+// entra em cascata de 60ms em --nu-dur-entrada; o véu, em --nu-ease-cor) e a
+// margem da coluna é a --nu-coluna.
 const props = withDefaults(defineProps<{
   eyebrow: string
   modo?: 'comecar' | 'pendente'
@@ -74,8 +77,8 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   position: relative; overflow: hidden; display: flex; align-items: center;
   min-height: clamp(600px, 82vh, 820px);
   background: var(--nu-navy);
-  padding: clamp(48px, 7vw, 96px) max(clamp(22px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px);
-  animation: nu-fade .5s ease both;
+  padding: clamp(48px, 7vw, 96px) var(--nu-coluna) clamp(56px, 7vw, 96px);
+  animation: nu-surgir var(--nu-dur-lenta) var(--nu-ease-cor) both;
 }
 /* o leque de fundo, nas mesmas margens do texto */
 .avt__lado { position: absolute; inset: clamp(36px, 4.4vw, 64px) clamp(22px, 5.5vw, 80px) clamp(28px, 3vw, 44px); z-index: 0; }
@@ -89,29 +92,31 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 .avt__frases { align-self: start; max-width: 560px; pointer-events: none; }
 .avt__frase {
   margin: 0; color: var(--nu-white); font-size: clamp(30px, 3.6vw, 48px); font-weight: var(--nu-w-display);
-  letter-spacing: -0.03em; line-height: 1.05; text-wrap: balance;
+  letter-spacing: var(--nu-ls-display); line-height: 1.05; text-wrap: balance;
 }
-.avt-frase-enter-active, .avt-frase-leave-active { transition: opacity .45s ease, transform .5s var(--nu-ease-saida); }
+/* a frase que sai some rápido; a que entra sobe 14px e assenta */
+.avt-frase-enter-active { transition: opacity var(--nu-dur-lenta) var(--nu-ease-saida), transform var(--nu-dur-lenta) var(--nu-ease-saida); }
+.avt-frase-leave-active { transition: opacity var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-media) var(--nu-ease-cor); }
 .avt-frase-enter-from { opacity: 0; transform: translateY(14px); }
-.avt-frase-leave-to { opacity: 0; transform: translateY(-10px); }
+.avt-frase-leave-to { opacity: 0; transform: translateY(-8px); }
 .avt__texto { max-width: 600px; }
-.avt__eyebrow + .avt__titulo { margin-top: 18px; }
-.avt__titulo { margin: 0; color: var(--nu-white); font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display); letter-spacing: -0.035em; line-height: 0.98; }
-.avt__dek { margin: clamp(18px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-on-dark); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
-.avt__oferta { margin-top: clamp(28px, 3.6vw, 40px); }
+.avt__eyebrow + .avt__titulo { margin-top: 16px; }
+.avt__titulo { margin: 0; color: var(--nu-white); font-size: clamp(42px, 5vw, 72px); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 0.98; }
+.avt__dek { margin: clamp(16px, 2vw, 24px) 0 0; max-width: 560px; color: var(--nu-on-dark); font-size: var(--nu-fs-dek); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
+.avt__oferta { margin-top: clamp(32px, 3.6vw, 40px); }
 
-/* a coreografia: o texto espera o leque; cada parte entra um pouco depois da outra */
-.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(18px); animation: avt-entra .6s var(--nu-ease-saida) 6s forwards; }
+/* a coreografia: o texto espera o leque; cada parte entra 60ms depois da outra */
+.avt--coreografia .avt__texto > * { opacity: 0; transform: translateY(16px); animation: avt-entra var(--nu-dur-entrada) var(--nu-ease-saida) 6s forwards; }
 .avt--coreografia.avt--js:not(.avt--revelado) .avt__texto > *, .avt--coreografia.avt--js:not(.avt--revelado) .avt__veu { animation: none; }
-.avt--revelado .avt__texto > * { animation: avt-entra .6s var(--nu-ease-saida) forwards; }
-.avt--revelado .avt__texto > :nth-child(2) { animation-delay: .1s; }
-.avt--revelado .avt__texto > :nth-child(3) { animation-delay: .2s; }
-.avt--revelado .avt__texto > :nth-child(4) { animation-delay: .32s; }
-.avt--revelado .avt__texto > :nth-child(5) { animation-delay: .42s; }
+.avt--revelado .avt__texto > * { animation: avt-entra var(--nu-dur-entrada) var(--nu-ease-saida) forwards; }
+.avt--revelado .avt__texto > :nth-child(2) { animation-delay: 60ms; }
+.avt--revelado .avt__texto > :nth-child(3) { animation-delay: 120ms; }
+.avt--revelado .avt__texto > :nth-child(4) { animation-delay: 180ms; }
+.avt--revelado .avt__texto > :nth-child(5) { animation-delay: 240ms; }
 @keyframes avt-entra { to { opacity: 1; transform: none; } }
 /* o véu chega junto com o texto */
-.avt--coreografia .avt__veu { opacity: 0; animation: avt-veu .8s ease 6s forwards; }
-.avt--revelado .avt__veu { animation: avt-veu .8s ease forwards; }
+.avt--coreografia .avt__veu { opacity: 0; animation: avt-veu var(--nu-dur-entrada) var(--nu-ease-cor) 6s forwards; }
+.avt--revelado .avt__veu { animation: avt-veu var(--nu-dur-entrada) var(--nu-ease-cor) forwards; }
 @keyframes avt-veu { to { opacity: 1; } }
 /* com o texto na tela, a legenda e o contador do leque saem (ficariam pela metade sob o véu) */
 @media (min-width: 981px) {
@@ -123,7 +128,7 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   .avt--coreografia .avt__frases {
     margin-top: calc(clamp(36px, 4.4vw, 64px) + clamp(26px, 2.8vw, 38px) * 1.1 + clamp(18px, 2.4vw, 28px) + 50px - clamp(48px, 7vw, 96px));
   }
-  .avt__lado :deep(.aex__topo), .avt__lado :deep(.aec__conta) { transition: opacity .5s ease; }
+  .avt__lado :deep(.aex__topo), .avt__lado :deep(.aec__conta) { transition: opacity var(--nu-dur-lenta) var(--nu-ease-cor); }
   .avt--revelado .avt__lado :deep(.aex__topo), .avt--revelado .avt__lado :deep(.aec__conta) { opacity: 0; }
   .avt:not(.avt--coreografia) .avt__lado :deep(.aex__topo), .avt:not(.avt--coreografia) .avt__lado :deep(.aec__conta) { opacity: 0; }
 }

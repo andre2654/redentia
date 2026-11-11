@@ -51,11 +51,11 @@ const texto = computed(() => (props.frase ? `Bom dia. ${props.frase}` : 'Bom dia
 
 /* o laço (10 s): noite → amanhecer. Parado, fica o céu claro com a frase. */
 .chr { --chr-ciclo: 10s; }
-.chr__noite { animation: chr-noite var(--chr-ciclo) ease infinite; }
-.chr__estrela { animation: chr-estrela var(--chr-ciclo) ease infinite; }
-.chr__sol { animation: chr-sol var(--chr-ciclo) cubic-bezier(.2, .7, .2, 1) infinite; }
-.chr__relogio { animation: chr-relogio var(--chr-ciclo) ease infinite; }
-.chr__frase { animation: chr-frase var(--chr-ciclo) ease infinite; }
+.chr__noite { animation: chr-noite var(--chr-ciclo) var(--nu-ease-cor) infinite; }
+.chr__estrela { animation: chr-estrela var(--chr-ciclo) var(--nu-ease-cor) infinite; }
+.chr__sol { animation: chr-sol var(--chr-ciclo) var(--nu-ease-saida) infinite; }
+.chr__relogio { animation: chr-relogio var(--chr-ciclo) var(--nu-ease-cor) infinite; }
+.chr__frase { animation: chr-frase var(--chr-ciclo) var(--nu-ease-cor) infinite; }
 @keyframes chr-noite { 0% { opacity: .62; } 38%, 92% { opacity: 0; } 100% { opacity: .62; } }
 @keyframes chr-estrela { 0%, 8% { opacity: .9; } 34%, 94% { opacity: 0; } 100% { opacity: .9; } }
 @keyframes chr-sol { 0% { transform: translateY(70px); opacity: .5; } 40%, 92% { transform: none; opacity: 1; } 100% { transform: translateY(70px); opacity: .5; } }

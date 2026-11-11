@@ -13,22 +13,27 @@
 // Nada aqui recomenda: a IA explica a carteira, não diz o que comprar.
 // Logo depois, "deixe maior": dois por linha, as telas maiores, e no fim o
 // "Conectar carteira" (todas as seções do /assinar terminam nele).
+// Robustez (11/11/2026): a cabeça e os cartões entram ao rolar (v-revelar, os
+// cartões em cascata de 60ms), não mais todos no carregamento; "Exemplo" e os
+// dois estados do Agora são o NuSelo sobre o carvão.
 withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: true, conectar: false })
 
 </script>
 
 <template>
   <section class="abn" aria-labelledby="abn-titulo">
-    <NuEyebrow v-if="titulo">O que vem na assinatura</NuEyebrow>
-    <h2 v-if="titulo" id="abn-titulo" class="abn__titulo">O que a Aportou <br>faz por você.</h2>
-    <p v-if="titulo" class="abn__dek">Quatro coisas, todos os dias, sem você precisar abrir planilha nenhuma.</p>
+    <div v-if="titulo" v-revelar="{ alvo: 'filhos', passo: 60 }">
+      <NuEyebrow>O que vem na assinatura</NuEyebrow>
+      <h2 id="abn-titulo" class="abn__titulo">O que a Aportou <br>faz por você.</h2>
+      <p class="abn__dek">Quatro coisas, todos os dias, sem você precisar abrir planilha nenhuma.</p>
+    </div>
     <h2 v-else id="abn-titulo" class="abn__sr">O que a Aportou faz por você</h2>
 
-    <div class="abn__grade">
+    <div v-revelar="{ alvo: 'filhos', passo: 60 }" class="abn__grade">
       <article class="abn__cartao">
         <!-- a frase da /carteira numa janela creme, marcada como exemplo: o valor escondido pelo olho, duas contas -->
         <div class="abn__tela abn__tela--print">
-          <span class="abn__exemplo">Exemplo</span>
+          <NuSelo class="abn__exemplo" sobre="escuro">Exemplo</NuSelo>
           <div class="abn__janela" role="img" aria-label="Exemplo da carteira na Aportou: Tudo normal. Na sexta, sua carteira caiu 0,62%; a bolsa, 0,75%. Contas no Itaú e na XP.">
             <div aria-hidden="true">
               <p class="abn__janela-frase">Tudo normal.</p>
@@ -78,11 +83,11 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
       <article class="abn__cartao">
         <div class="abn__tela abn__tela--estados">
           <div class="abn__estado">
-            <span class="abn__estado-rotulo abn__estado-rotulo--verde">Bolsa aberta</span>
+            <NuSelo class="abn__estado-rotulo" tom="verde" sobre="escuro" ponto>Bolsa aberta</NuSelo>
             <span class="abn__estado-frase">Tudo normal.</span>
           </div>
           <div class="abn__estado abn__estado--aviso">
-            <span class="abn__estado-rotulo abn__estado-rotulo--ambar">Algo pede você</span>
+            <NuSelo class="abn__estado-rotulo" tom="ambar" sobre="escuro" ponto>Algo pede você</NuSelo>
             <span class="abn__estado-frase">Um ativo passou do seu alerta.</span>
           </div>
         </div>
@@ -91,37 +96,34 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
       </article>
     </div>
 
-    <div v-if="conectar" class="abn__acao">
+    <div v-if="conectar" v-revelar class="abn__acao">
       <AssinaturaConectar origem="beneficios" />
     </div>
   </section>
 </template>
 
 <style scoped>
-.abn__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: -0.03em; line-height: 1.02; }
-.abn__dek { margin: 18px 0 0; max-width: 560px; color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: 500; line-height: 1.5; }
-.abn__acao { display: flex; justify-content: center; margin-top: clamp(36px, 4.4vw, 56px); }
+.abn__titulo { margin: 16px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-display); line-height: 1.02; }
+.abn__dek { margin: 16px 0 0; max-width: 560px; color: var(--nu-gray-3); font-size: var(--nu-fs-dek); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
+.abn__acao { display: flex; justify-content: center; margin-top: clamp(40px, 4.4vw, 56px); }
 .abn__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .abn__grade {
-  display: grid; gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(36px, 4.5vw, 56px);
+  display: grid; gap: clamp(16px, 1.8vw, 24px); margin-top: clamp(40px, 4.5vw, 56px);
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+/* o cartão creme; a tela preta dentro dele tem o raio concêntrico (32 − 16) */
 .abn__cartao {
-  display: flex; flex-direction: column; padding: 14px 14px 34px; border-radius: var(--nu-r-card-lg); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
-  animation: nu-fade .5s ease backwards;
+  display: flex; flex-direction: column; padding: 16px 16px 32px; border-radius: var(--nu-r-card-lg); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
 }
-.abn__cartao:nth-child(2) { animation-delay: 60ms; }
-.abn__cartao:nth-child(3) { animation-delay: 120ms; }
-.abn__cartao:nth-child(4) { animation-delay: 180ms; }
 
 /* a tela preta do app no alto de cada cartão, sempre da mesma altura */
 .abn__tela {
   position: relative; display: flex; flex-direction: column; justify-content: center;
-  aspect-ratio: 16 / 10; overflow: hidden; border-radius: 22px; background: var(--nu-ink); color: var(--nu-white);
+  aspect-ratio: 16 / 10; overflow: hidden; border-radius: calc(var(--nu-r-card-lg) - 16px); background: var(--nu-ink); color: var(--nu-white);
 }
-.abn__nome { margin: 28px 18px 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: -0.025em; line-height: 1.05; }
-.abn__texto { margin: 12px 18px 0; max-width: 52ch; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.5; }
+.abn__nome { margin: 32px 16px 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: var(--nu-w-display); letter-spacing: var(--nu-ls-titulo); line-height: 1.05; }
+.abn__texto { margin: 12px 16px 0; max-width: 52ch; color: var(--nu-gray-3); font-size: 17px; font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; }
 
 /* 1 · a frase da carteira, numa janela creme sobre o preto. Os tamanhos seguem a largura da tela preta (cqw) */
 /* o alto da tela preta fica para o selo "Exemplo": ele não pisa na janela */
@@ -131,7 +133,7 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
   padding: clamp(14px, 4.4cqw, 26px); border-radius: 16px; background: var(--nu-page); color: var(--nu-ink);
 }
 .abn__janela-frase { margin: 0; font-size: clamp(32px, 12.6cqw, 74px); font-weight: var(--nu-w-display); letter-spacing: -0.045em; line-height: .94; white-space: nowrap; }
-.abn__janela-linha { margin: clamp(6px, 1.8cqw, 12px) 0 0; color: var(--nu-gray); font-size: clamp(12.5px, 3.3cqw, 18px); font-weight: 500; line-height: 1.35; }
+.abn__janela-linha { margin: clamp(6px, 1.8cqw, 12px) 0 0; color: var(--nu-gray); font-size: clamp(12.5px, 3.3cqw, 18px); font-weight: var(--nu-w-texto); line-height: 1.35; }
 .abn__janela-total { display: flex; align-items: center; gap: 8px; }
 .abn__janela-valor {
   display: inline-flex; align-items: baseline; gap: 7px; padding: clamp(6px, 1.7cqw, 10px) clamp(10px, 2.6cqw, 16px); border-radius: 12px;
@@ -147,10 +149,8 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 }
 .abn__conta img { width: clamp(16px, 3.6cqw, 20px); height: clamp(16px, 3.6cqw, 20px); border-radius: 5px; }
 .abn__conta--mais { padding: 4px 11px; background: none; box-shadow: none; outline: 1.5px dashed var(--nu-borda-campo); outline-offset: -1.5px; color: var(--nu-gray-3); }
-.abn__exemplo {
-  position: absolute; top: 12px; right: 12px; z-index: 1; padding: 4px 10px; border-radius: var(--nu-r-tag);
-  background: var(--nu-dark-chip); color: var(--nu-on-dark); font-size: 13.5px; font-weight: var(--nu-w-medio);
-}
+/* "Exemplo" é o NuSelo neutro sobre o carvão; aqui só o lugar dele */
+.abn__exemplo { position: absolute; top: 12px; right: 12px; z-index: 1; }
 
 /* 2 · o leque */
 .abn__tela--leque { justify-content: space-between; padding: 16px 0 12px; }
@@ -160,7 +160,7 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 
 /* 3 · a conversa */
 .abn__tela--conversa { gap: 14px; padding: clamp(18px, 2.4vw, 32px); }
-.abn__fala { margin: 0; padding: 14px 16px; border-radius: 18px; background: var(--nu-dark-chip); color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.45; }
+.abn__fala { margin: 0; padding: 14px 16px; border-radius: 18px; background: var(--nu-dark-chip); color: var(--nu-white); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); line-height: 1.45; }
 .abn__fala--voce { align-self: flex-end; max-width: 82%; background: var(--nu-blue); color: var(--nu-white); font-weight: var(--nu-w-medio); border-bottom-right-radius: 6px; }
 .abn__resposta { display: flex; align-items: flex-end; gap: 8px; max-width: 92%; }
 .abn__resposta .abn__fala { border-bottom-left-radius: 6px; }
@@ -168,11 +168,8 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 
 /* 4 · os dois estados */
 .abn__tela--estados { gap: 14px; padding: clamp(18px, 2.4vw, 32px); }
-.abn__estado { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: var(--nu-r-tile); background: var(--nu-dark-chip); }
+.abn__estado { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; border-radius: var(--nu-r-tile); background: var(--nu-dark-chip); }
 .abn__estado--aviso { box-shadow: inset 0 0 0 1.5px var(--nu-amber); }
-.abn__estado-rotulo { font-size: var(--nu-fs-sm); font-weight: var(--nu-w-medio); }
-.abn__estado-rotulo--verde { color: var(--nu-green-soft); }
-.abn__estado-rotulo--ambar { color: var(--nu-amber-soft); }
 .abn__estado-frase { color: var(--nu-white); font-size: var(--nu-fs-2xl); font-weight: var(--nu-w-forte); letter-spacing: -0.02em; line-height: 1.2; }
 
 @media (max-width: 860px) {
@@ -185,5 +182,4 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 @media (max-width: 760px) {
   .abn__titulo br { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { .abn__cartao { animation: none; } }
 </style>

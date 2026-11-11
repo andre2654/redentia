@@ -21,6 +21,13 @@
 // (NuFaixaMarca) com as ações do painel; embaixo dela, "Falando sobre PETR4"
 // quando a página é de um ativo (é o mesmo foco que vai no routeContext da
 // pergunta). O painel segue lateral, de altura cheia: só a roupa mudou.
+//
+// Robustez (11/11/2026): o painel entra deslizando da borda na curva do que
+// muda de lugar (--nu-ease-troca, --nu-dur-lenta), junto com a página que
+// encolhe, e sai mais rápido; o vazio, as sugestões e as mensagens chegam com
+// nu-fade nos tempos dos tokens, em cascata de 60ms; o "pensando" é sereno: a
+// pílula carvão com o anel no ritmo de repouso e a luz baixa (quem acelera é o
+// anel do campo).
 import { acaoDoPedido, esquecerPerguntaDoGate, lerPerguntaDoGate, MAX_CONTEXTOS, pedidoDaQuery, podeRetomarPerguntaAqui, querySemPedido, sugestoesDaRota, tickerDaRota } from '~/utils/chat-painel'
 import { CHAVE_POS_LOGIN, type ContextoDoChat } from '~/composables/useChatPainel'
 
@@ -353,7 +360,7 @@ onBeforeUnmount(() => {
               :aria-label="pensandoVazio ? 'A IA da Aportou está pensando' : 'A IA da Aportou está buscando os dados'"
             >
               <span v-if="pensandoVazio" class="cpn__pensando-avatar" aria-hidden="true"><MarcaCorte :largura="16" cor="var(--nu-blue-on-dark)" /></span>
-              <ChatPilula class="cpn__pensando-pilula" respondendo escuro>
+              <ChatPilula class="cpn__pensando-pilula" escuro>
                 <span class="cpn__pensando-in" aria-hidden="true">
                   <MarcaCorte :largura="20" cor="var(--nu-blue-on-dark)" />
                   <span>{{ estado }}</span>
@@ -395,7 +402,8 @@ onBeforeUnmount(() => {
 .cpn__topo { flex-shrink: 0; border-radius: 0 !important; box-shadow: none !important; padding-bottom: 16px; }
 .cpn__icone {
   width: 44px; height: 44px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center; cursor: pointer;
-  background: transparent; color: var(--nu-white); transition: background .2s ease, transform .2s ease;
+  background: transparent; color: var(--nu-white);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), box-shadow var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cpn__icone:hover { background: var(--nu-dark-chip); }
 .cpn__icone:active { transform: scale(.94); }
@@ -403,7 +411,7 @@ onBeforeUnmount(() => {
 .cpn__icone:focus-visible { outline-color: var(--nu-white); outline-offset: -3px; }
 .cpn__sobre {
   display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 28px; margin: 0; padding: 14px 20px 0 30px;
-  font-size: var(--nu-fs-marca); font-weight: 500; line-height: 1.3; animation: nu-fade .35s ease both;
+  font-size: var(--nu-fs-marca); font-weight: var(--nu-w-texto); line-height: 1.3; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both;
 }
 .cpn__sobre-rotulo { color: var(--nu-on-dark-2); }
 .cpn__sobre-ativo {
@@ -418,21 +426,21 @@ onBeforeUnmount(() => {
 
 .cpn__corpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 18px 12px; }
 
-/* vazio: o corte grande, o convite e as sugestões da página */
-.cpn__vazio { padding: clamp(20px, 7vh, 72px) 4px 12px; }
-.cpn__vazio-corte { animation: nu-fade .4s ease both; }
+/* vazio: o corte grande, o convite e as sugestões da página, em cascata de 60ms */
+.cpn__vazio { padding: clamp(24px, 7vh, 72px) 4px 12px; }
+.cpn__vazio-corte { animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 .cpn__vazio-titulo {
-  margin: 22px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vh, 34px); font-weight: var(--nu-w-forte); letter-spacing: -0.03em; line-height: 1.05;
-  animation: nu-fade .4s ease .05s both;
+  margin: 24px 0 0; color: var(--nu-ink); font-size: clamp(28px, 3.4vh, 34px); font-weight: var(--nu-w-forte); letter-spacing: var(--nu-ls-titulo); line-height: 1.05;
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) 60ms both;
 }
-.cpn__vazio-sub { margin: 10px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; animation: nu-fade .4s ease .1s both; }
-.cpn__sugs { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 26px; }
+.cpn__vazio-sub { margin: 12px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: var(--nu-w-texto); letter-spacing: var(--nu-ls-texto); line-height: 1.5; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) 120ms both; }
+.cpn__sugs { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 24px; }
 .cpn__sug {
   min-height: 44px; max-width: 100%; text-align: left; padding: 8px 16px; border: 0; border-radius: 22px;
   background: var(--nu-cream-2); cursor: pointer;
-  color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: 600; line-height: 1.35;
-  animation: nu-fade .35s var(--nu-ease-saida) both; animation-delay: calc(160ms + var(--k) * 60ms);
-  transition: background .2s ease, color .2s ease;
+  color: var(--nu-ink); font: inherit; font-size: 14.5px; font-weight: var(--nu-w-medio); letter-spacing: var(--nu-ls-texto); line-height: 1.35;
+  animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; animation-delay: calc(180ms + var(--k) * 60ms);
+  transition: background-color var(--nu-dur-media) var(--nu-ease-cor), color var(--nu-dur-media) var(--nu-ease-cor), transform var(--nu-dur-rapida) var(--nu-ease-saida);
 }
 .cpn__sug:hover { background: var(--nu-ink); color: var(--nu-white); }
 .cpn__sug:active { transform: scale(.98); }
@@ -441,33 +449,36 @@ onBeforeUnmount(() => {
 .cpn__sk { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; }
 .cpn__sk-eu { align-self: flex-end; }
 .cpn__sk-ia { display: flex; align-items: flex-start; gap: 10px; }
-.cpn__sk-balao { flex: 1; min-width: 0; padding: 16px; border-radius: 5px 20px 20px 20px; background: var(--nu-white); box-shadow: 0 0 0 1px var(--nu-line-2); }
+.cpn__sk-balao { flex: 1; min-width: 0; padding: 16px; border-radius: 5px 20px 20px 20px; background: var(--nu-white); box-shadow: inset 0 0 0 1px var(--nu-line-2); }
 
-/* respondendo: o avatar e a pílula carvão dos três pontos */
-.cpn__pensando { display: flex; align-items: center; gap: 10px; margin: 4px 0 20px; animation: nu-fade .3s ease both; }
+/* respondendo: o avatar e a pílula carvão dos três pontos, serena (o anel em repouso e a luz baixa) */
+.cpn__pensando { display: flex; align-items: center; gap: 10px; margin: 4px 0 24px; animation: nu-fade var(--nu-dur-lenta) var(--nu-ease-saida) both; }
 .cpn__pensando--meio { margin-top: -4px; padding-left: 40px; }
 .cpn__pensando-avatar { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--nu-ink); display: grid; place-items: center; }
 .cpn__pensando-pilula { --cpi-raio: 999px; }
+.cpn__pensando-pilula :deep(.cpi__brilho) { opacity: .26; }
 .cpn__pensando-in {
   display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 16px;
-  color: var(--nu-white); font-size: 15px; font-weight: 600; white-space: nowrap;
+  color: var(--nu-white); font-size: 15px; font-weight: var(--nu-w-medio); white-space: nowrap;
 }
 .cpn__pontos { display: inline-flex; gap: 4px; }
-.cpn__pontos i { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-white); animation: nu-ponto 1.2s infinite; }
-.cpn__pontos i:nth-child(2) { animation-delay: .2s; }
-.cpn__pontos i:nth-child(3) { animation-delay: .4s; }
+.cpn__pontos i { width: 6px; height: 6px; border-radius: 50%; background: var(--nu-white); animation: nu-ponto calc(var(--nu-dur-entrada) * 2) var(--nu-ease-cor) infinite; }
+.cpn__pontos i:nth-child(2) { animation-delay: 240ms; }
+.cpn__pontos i:nth-child(3) { animation-delay: 480ms; }
 
 .cpn__pe { flex-shrink: 0; padding: 10px 16px calc(12px + env(safe-area-inset-bottom)); }
 .cpn__dica {
   display: flex; align-items: center; gap: 8px; margin: 0 8px 12px;
-  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; line-height: 1.4;
+  color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: var(--nu-w-medio); line-height: 1.4;
 }
 .cpn__dica-ponto { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--nu-anel); }
-.cpn__aviso { margin: 12px 6px 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.4; text-align: center; }
+.cpn__aviso { margin: 12px 8px 0; color: var(--nu-gray); font-size: var(--nu-fs-xs); font-weight: var(--nu-w-texto); line-height: 1.4; text-align: center; }
 
-.cpn-enter-active, .cpn-leave-active { transition: transform .38s var(--nu-ease-saida), opacity .25s ease; }
-.cpn-leave-active { transition-duration: .22s, .18s; }
-.cpn-enter-from, .cpn-leave-to { transform: translateX(24px); opacity: 0; }
+/* o painel desliza da borda direita (o que muda de lugar), junto com a página que encolhe;
+   sai pelo mesmo caminho, mais rápido */
+.cpn-enter-active { transition: transform var(--nu-dur-lenta) var(--nu-ease-troca), opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.cpn-leave-active { transition: transform var(--nu-dur-media) var(--nu-ease-cor), opacity var(--nu-dur-media) var(--nu-ease-cor); }
+.cpn-enter-from, .cpn-leave-to { transform: translateX(calc(100% + var(--chat-painel-margem))); opacity: 0; }
 
 @media (max-width: 759px) {
   .cpn { inset: 0; width: 100%; border-radius: 0; box-shadow: none; }
@@ -476,7 +487,12 @@ onBeforeUnmount(() => {
   .cpn__corpo { padding: 12px 14px 12px; }
   .cpn__pe { padding-left: 12px; padding-right: 12px; }
   .cpn__pensando--meio { padding-left: 34px; }
-  .cpn-enter-from, .cpn-leave-to { transform: translateY(32px); }
+  /* no celular a folha de tela cheia sobe do pé */
+  .cpn-enter-from, .cpn-leave-to { transform: translateY(40px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cpn-enter-active, .cpn-leave-active { transition: opacity var(--nu-dur-rapida) var(--nu-ease-cor); }
+  .cpn-enter-from, .cpn-leave-to { transform: none; }
 }
 </style>
 
@@ -485,9 +501,10 @@ onBeforeUnmount(() => {
    largo; entre 760 e 1180px ele passa por cima (a página ficaria estreita). */
 :root { --chat-painel-w: 440px; --chat-painel-margem: 12px; }
 @media (min-width: 1180px) {
-  .nu-shell { transition: margin-right .38s var(--nu-ease-saida); }
-  /* a página encolhe o painel e as duas margens dele */
-  html.nu-chat-aberto .nu-shell { margin-right: calc(var(--chat-painel-w) + 2 * var(--chat-painel-margem)); }
+  /* fechar: a página volta no tempo da saída do painel (mais rápida) */
+  .nu-shell { transition: margin-right var(--nu-dur-media) var(--nu-ease-cor); }
+  /* abrir: a página encolhe o painel e as duas margens dele, na mesma curva e no mesmo tempo da entrada dele */
+  html.nu-chat-aberto .nu-shell { margin-right: calc(var(--chat-painel-w) + 2 * var(--chat-painel-margem)); transition: margin-right var(--nu-dur-lenta) var(--nu-ease-troca); }
 }
 @media (min-width: 1500px) { :root { --chat-painel-w: 460px; } }
 @media (prefers-reduced-motion: reduce) { .nu-shell { transition: none; } }
