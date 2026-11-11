@@ -20,6 +20,7 @@
  */
 import type { SimResultApi, SimMacroPathApi } from '~/composables/useSimulacao'
 import type { SimResult, SimSeries, SimPositionImpact, SimEvent, SimAnnual, SimMacroPath } from './simMock'
+import { emFrase } from './simMock'
 
 /** O que o motor manda além do que o mock tinha — a tela pode usar ou ignorar. */
 export interface SimResultExtra {
@@ -143,7 +144,7 @@ export function adaptResult(api: SimResultApi): { result: SimResult; extra: SimR
         ? 'No cenário base, o tempo é o único protagonista.'
         : `${scenarioTitle}, em poder de compra de hoje.`,
       narrative: api.scenario?.narrative_md ?? '',
-      filmLine: scenarioTitle.toLowerCase(),
+      filmLine: emFrase(scenarioTitle),
       sources: api.scenario?.sources ?? [],
     },
     series,

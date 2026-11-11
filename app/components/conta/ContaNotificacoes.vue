@@ -164,7 +164,18 @@ const em = computed({
 .nt__erro { margin: 12px 0 0; color: var(--nu-amber-text); font-size: var(--nu-fs-dense); font-weight: 600; line-height: 1.5; }
 /* no celular, um canal por linha (o nome à esquerda, o interruptor à direita), como no resumo diário */
 @media (max-width: 640px) {
-  .nt__ch-meta { white-space: normal; overflow-wrap: anywhere; }
+  /* três cartões um dentro do outro deixavam o texto com 230px: o assunto perde a caixa branca
+     (vira título + fio) e são as linhas que sobem para o branco, na largura toda do painel */
+  .nt__topic { background: transparent; box-shadow: none; border-radius: 0; padding: 0; }
+  .nt__carteira { margin-top: 26px; padding-top: 24px; border-top: 1.5px solid var(--nu-line); }
+  .nt__ch, .nt__aviso { background: var(--nu-white); box-shadow: var(--nu-shadow-branco); }
+  .nt__aviso-ch :deep(.nusk) { --esq: color-mix(in srgb, var(--nu-ink) 9%, var(--nu-white)); }
+  /* o canal em duas linhas: ícone, nome e interruptor em cima; o contato embaixo, na largura toda
+     (ao lado do interruptor o e-mail quebrava no meio) */
+  .nt__ch { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 10px 14px; padding: 14px 16px; }
+  .nt__ch-txt { display: contents; }
+  .nt__ch-meta { grid-column: 1 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; }
+  .nt__ch > :deep(.ntg) { grid-column: 3; grid-row: 1; }
   .nt__aviso { flex-direction: column; align-items: stretch; }
   .nt__aviso-ch { flex-direction: column; align-items: stretch; gap: 0; }
   .nt__aviso-c { justify-content: space-between; }

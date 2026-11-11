@@ -13,7 +13,7 @@
 // ============================================================================
 import {
   runMockSimulation, buildClientSummary, buildCorrelation, buildSeeThrough,
-  fmtBRL, fmtBRLFull, shocksTitle,
+  fmtBRL, fmtBRLFull, shocksTitle, emFrase,
   shocksFromDials, DIAL_DEFAULTS, HORIZON_MONTHS,
   type SimResult, type SimSeries, type SimPortfolioInput, type SimShocks, type SimDials,
   type SimScheduledScenario, type SimMacroKey, type SimCorrelationOut, type SimSeeThroughItem,
@@ -35,7 +35,7 @@ definePageMeta({
   ],
 })
 usePageSeo({
-  title: 'Simulação — o futuro da sua carteira',
+  title: 'Simulação: o futuro da sua carteira',
   description: 'Simule cenários de 10 anos na sua carteira. Protótipo.',
   path: '/simulacao',
   noindex: true,
@@ -88,7 +88,7 @@ const filmSteps = computed(() => {
     fullSchedule.value.length > 1
       ? `Aplicando ${fullSchedule.value.length} cenários pela década`
       : fullSchedule.value.length === 1
-        ? `Aplicando o cenário de ${fullSchedule.value[0]!.year}: ${shocksTitle(fullSchedule.value[0]!.shocks).toLowerCase()}`
+        ? `Aplicando o cenário de ${fullSchedule.value[0]!.year}: ${emFrase(shocksTitle(fullSchedule.value[0]!.shocks))}`
         : 'Cenário base: compondo o caminho',
   ]
 })
@@ -1097,7 +1097,8 @@ const readingHtml = computed(() => {
   background: var(--nu-grad-cobalto); border-radius: var(--nu-r-secao);
   padding: clamp(44px, 6vw, 84px) clamp(22px, 5vw, 72px);
 }
-.sim__blue-corte { position: absolute; right: -70px; bottom: -110px; opacity: 0.08; pointer-events: none; }
+/* a posição é da classe global .nu-corte-fundo (canto de cima à esquerda); aqui só a opacidade */
+.sim__blue-corte { opacity: 0.08; }
 .sim__blue-body { position: relative; max-width: 860px; margin: 0 auto; }
 .sim__blue-eyebrow { justify-content: center; margin-bottom: 20px; }
 .sim__blue-lead {
@@ -1167,14 +1168,16 @@ const readingHtml = computed(() => {
 /* painel de limites: o cartão quente, tipografia de nota — não compete com os blocos */
 .sim__limits { margin-top: 40px; padding: clamp(22px, 3vw, 34px); background: var(--nu-band); border-radius: var(--nu-r-card); box-shadow: var(--nu-shadow-quente); }
 .sim__limits-title { display: block; color: var(--nu-ink); font-size: 13.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
-.sim__limits-list { margin: 16px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 10px; }
-.sim__limits-list li { color: var(--nu-gray-3); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+/* duas colunas no desktop (a linha tinha 170 caracteres de ponta a ponta) e o marcador cobalto da marca */
+.sim__limits-list { list-style: none; margin: 18px 0 0; padding: 0; columns: 2 420px; column-gap: clamp(28px, 4vw, 56px); }
+.sim__limits-list li { position: relative; break-inside: avoid; padding: 0 0 14px 20px; color: var(--nu-gray-3); font-size: 15px; font-weight: 500; line-height: 1.55; }
+.sim__limits-list li:last-child { padding-bottom: 0; }
+.sim__limits-list li::before { content: ''; position: absolute; left: 0; top: .6em; width: 8px; height: 8px; border-radius: 3px; background: var(--nu-blue); }
 .sim__again { margin-top: 48px; }
 
 @media (max-width: 760px) {
   .sim__chart { height: 300px; }
   .sim__blue-painel { border-radius: var(--nu-r-card-lg); }
-  .sim__blue-corte { right: -160px; bottom: -150px; }
   .sim__wiz-nav > * { flex: 1 1 auto; }
 }
 </style>

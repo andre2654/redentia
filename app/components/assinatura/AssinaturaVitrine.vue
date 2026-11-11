@@ -115,6 +115,14 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 @keyframes avt-veu { to { opacity: 1; } }
 /* com o texto na tela, a legenda e o contador do leque saem (ficariam pela metade sob o véu) */
 @media (min-width: 981px) {
+  /* as frases da espera entram logo abaixo do título e do contador do leque, que ocupam o alto do fundo
+     (antes a frase caía em cima do contador): a coluna estica e só o texto do título fica no meio.
+     A conta é a do alto do leque: a margem dele + o título + o respiro + o contador. */
+  .avt--coreografia .avt__cols { align-self: stretch; }
+  .avt--coreografia .avt__texto { align-self: center; }
+  .avt--coreografia .avt__frases {
+    margin-top: calc(clamp(36px, 4.4vw, 64px) + clamp(26px, 2.8vw, 38px) * 1.1 + clamp(18px, 2.4vw, 28px) + 50px - clamp(48px, 7vw, 96px));
+  }
   .avt__lado :deep(.aex__topo), .avt__lado :deep(.aec__conta) { transition: opacity .5s ease; }
   .avt--revelado .avt__lado :deep(.aex__topo), .avt--revelado .avt__lado :deep(.aec__conta) { opacity: 0; }
   .avt:not(.avt--coreografia) .avt__lado :deep(.aex__topo), .avt:not(.avt--coreografia) .avt__lado :deep(.aec__conta) { opacity: 0; }

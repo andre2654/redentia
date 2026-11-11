@@ -26,6 +26,9 @@ const tocItems = computed(() =>
       <NuTocSidebar v-if="toc" :items="tocItems" :label="tocLabel" />
 
       <article class="lgd__article" :class="{ 'lgd__article--narrow': !toc }">
+        <!-- celular e tablet: o mesmo sumário, fechado, no topo da leitura -->
+        <LegalIndice v-if="toc" :items="tocItems" :rotulo="tocLabel" />
+
         <!-- lede: parágrafos de abertura antes da 1ª seção -->
         <div v-if="intro?.length" class="lgd__intro">
           <LegalBlocks :blocks="intro" lede />
@@ -51,7 +54,8 @@ const tocItems = computed(() =>
 }
 .lgd__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .lgd__cols--toc { justify-content: flex-start; }
-.lgd__article { flex: 1; min-width: 0; max-width: 820px; }
+/* documento de leitura: coluna de ~720px */
+.lgd__article { flex: 1; min-width: 0; max-width: 720px; }
 /* sem TOC: coluna centralizada */
 .lgd__article--narrow { margin-left: auto; margin-right: auto; }
 
@@ -61,8 +65,8 @@ const tocItems = computed(() =>
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
   font-size: clamp(26px, 2.6vw, 32px); font-weight: 800;
   letter-spacing: -0.025em; line-height: 1.08;
-  /* compensa a faixa "Mercado agora" sticky (~48px) + respiro */
-  scroll-margin-top: 88px;
+  /* o topo e a régua do mercado grudam (~100px): a âncora para abaixo deles */
+  scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 .lgd__h2--first { margin-top: 0; }
 @media (prefers-reduced-motion: reduce) { .lgd { animation: none; } }

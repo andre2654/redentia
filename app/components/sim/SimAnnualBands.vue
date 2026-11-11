@@ -38,7 +38,7 @@ const fmt = fmtBRL
       </div>
     </div>
     <div class="sab__legend">
-      <span><i class="sab__dot sab__dot--band" />faixa pessimista–otimista (p10–p90)</span>
+      <span><i class="sab__dot sab__dot--band" />faixa do pessimista ao otimista (p10 a p90)</span>
       <span><i class="sab__dot sab__dot--mid" />mediana</span>
     </div>
   </div>

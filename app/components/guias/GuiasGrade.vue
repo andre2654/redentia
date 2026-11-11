@@ -63,7 +63,7 @@ const SUMARIO = 3
       <li v-for="g in visiveis" :key="g.chave">
         <NuxtLink v-contexto-chat="contexto(g)" :to="g.to" class="ggr__cartao">
           <span class="ggr__sobre">
-            <span><span class="ggr__tema">{{ g.temaRotulo }}</span><span class="ggr__ponto" aria-hidden="true">·</span>{{ g.minutos }} min de leitura</span>
+            <span class="ggr__sobre-e"><span class="ggr__tema">{{ g.temaRotulo }}</span><span class="ggr__tempo">{{ g.minutos }} min<span class="ggr__tempo-l"> de leitura</span></span></span>
             <span v-if="g === b.destaque" class="ggr__novo">Mais novo</span>
           </span>
           <span class="ggr__nome">{{ g.titulo }}</span>
@@ -89,7 +89,8 @@ const SUMARIO = 3
 /* A grade na personalidade da Aportou (11/11/2026): creme da página, título em
    800, eyebrow com o corte, cartões creme com a sombra quente, selos de raio 8
    e fios de 1,5px. A estrutura (barra que gruda, busca, temas, grade) é a mesma. */
-.ggr { --g: clamp(20px, 5.5vw, 80px); background: var(--nu-page); padding-bottom: clamp(56px, 7vw, 104px); animation: nu-fade .5s ease both; }
+/* a mesma coluna do topo e do rodapé: 1240px centrada, margem fluida abaixo de 1400px */
+.ggr { --m: clamp(20px, 5.5vw, 80px); --g: max(var(--m), calc((100% - 1240px) / 2)); background: var(--nu-page); padding-bottom: clamp(56px, 7vw, 104px); animation: nu-fade .5s ease both; }
 
 .ggr__topo { padding: clamp(40px, 5.2vw, 80px) var(--g) clamp(24px, 3vw, 40px); }
 .ggr__titulo { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; max-width: 16ch; }
@@ -105,7 +106,8 @@ const SUMARIO = 3
 }
 .ggr__barra-in { display: flex; align-items: center; gap: 12px; padding: 10px var(--g); }
 .ggr__busca {
-  position: relative; display: flex; align-items: center; flex: 0 1 300px; min-width: 200px; height: 44px; padding: 0 12px 0 16px; gap: 9px;
+  /* a busca cede primeiro (até 200px): em 1440 os temas cabem todos na coluna */
+  position: relative; display: flex; align-items: center; flex: 0 1000 300px; min-width: 200px; height: 44px; padding: 0 12px 0 16px; gap: 9px;
   border-radius: var(--nu-r-pill); background: var(--nu-white); color: var(--nu-gray);
   box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo); transition: box-shadow .2s;
 }
@@ -123,8 +125,10 @@ const SUMARIO = 3
 .ggr__chips {
   /* os temas rolam de lado até a borda da tela: o chip cortado na borda diz que tem mais */
   display: flex; align-items: center; gap: 8px; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none;
-  margin-right: calc(-1 * var(--g)); padding: 3px var(--g) 3px 3px;
+  padding: 3px 0 3px 3px;
 }
+/* abaixo da coluna cheia os temas vazam até a borda da tela */
+@media (max-width: 1399px) { .ggr__chips { margin-right: calc(-1 * var(--m)); padding-right: var(--m); } }
 .ggr__chips::-webkit-scrollbar { display: none; }
 .ggr__chip {
   display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 44px; padding: 0 17px; border: 0; border-radius: var(--nu-r-pill);
@@ -156,11 +160,13 @@ const SUMARIO = 3
 }
 .ggr__cartao:hover { transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
 .ggr__sobre { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; font-variant-numeric: tabular-nums; }
-.ggr__tema { color: var(--nu-ink); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-.ggr__ponto { margin: 0 8px; color: var(--nu-sand); }
+.ggr__sobre-e { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+/* o tema num selo de raio 8, como os selos da home e do ativo */
+.ggr__tema { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-cream-2); color: var(--nu-ink); font-size: 13.5px; font-weight: 700; white-space: nowrap; }
+.ggr__tempo { white-space: nowrap; }
 .ggr__novo { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: var(--nu-r-tag); background: var(--nu-blue-bg); color: var(--nu-blue-text); font-size: 13.5px; font-weight: 700; white-space: nowrap; }
 .ggr__nome { margin-top: 14px; color: var(--nu-ink); font-size: clamp(22px, 1.9vw, 26px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; text-wrap: balance; }
-.ggr__frase { margin-top: 10px; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; }
+.ggr__frase { margin-top: 10px; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 500; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .ggr__sumario { display: flex; flex-direction: column; margin-top: 18px; padding: 4px 16px; border-radius: var(--nu-r-tile); background: var(--nu-page); }
 .ggr__sumario-i {
   display: flex; gap: 12px; padding: 10px 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.4;
@@ -189,16 +195,15 @@ const SUMARIO = 3
 @media (max-width: 640px) { .ggr__barra { top: calc(var(--nuh-h, 52px) + 29px); } }
 @media (max-width: 900px) {
   .ggr__barra-in { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 0; }
-  .ggr__busca { flex: 0 0 auto; margin: 0 var(--g); }
-  .ggr__chips { margin-right: 0; padding: 3px var(--g); }
+  .ggr__busca { flex: 0 0 auto; margin: 0 var(--m); }
+  .ggr__chips { margin-right: 0; padding: 3px var(--m); }
 }
 @media (max-width: 560px) {
   .ggr__conta-rev { display: none; }
   /* no celular o cartão é tema, título e uma linha: o sumário fica no guia */
   .ggr__sumario { display: none; }
   .ggr__cartao { padding: 22px 20px 18px; }
-  .ggr__tema { letter-spacing: 0.1em; }
-  .ggr__sobre { align-items: flex-start; }
+  .ggr__tempo-l { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ggr, .ggr__grade > li, .ggr__cartao, .ggr__barra, .ggr__seta svg { animation: none; transition: none; }

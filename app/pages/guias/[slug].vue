@@ -89,6 +89,9 @@ usePageSeo({
         </NuTocSidebar>
 
         <article class="gdp__article">
+          <!-- o índice lateral some abaixo de 1080px: no celular e no tablet o
+               mesmo sumário (mesmas âncoras) abre aqui, fechado -->
+          <LegalIndice :items="tocItems" rotulo="Neste guia" />
           <section v-for="(sec, si) in doc.sections" :key="sec.id">
             <h2 :id="sec.id" class="gdp__h2" :class="{ 'gdp__h2--first': si === 0 }">{{ sec.title }}</h2>
             <template v-for="(b, bi) in sec.blocks" :key="`${sec.id}-${bi}`">
@@ -117,33 +120,38 @@ usePageSeo({
 </template>
 
 <style scoped>
-/* o miolo sobre o creme da página (não existe faixa branca de ponta a ponta) */
+/* o miolo sobre o creme da página (não existe faixa branca de ponta a ponta).
+   Um fio de 1,5px na coluna separa o topo do artigo da leitura. */
 .gdp {
   background: var(--nu-page);
-  padding: clamp(48px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
+  padding: 0 max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8.5vw, 110px);
 }
-.gdp__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
-.gdp__article { flex: 1; min-width: 0; max-width: 760px; }
+.gdp__cols {
+  display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start;
+  border-top: 1.5px solid var(--nu-line-2); padding-top: clamp(32px, 4.4vw, 56px);
+}
+/* a coluna de leitura: ~720px, 18px com entrelinha 1,65 */
+.gdp__article { flex: 1; min-width: 0; max-width: 720px; animation: nu-fade .5s ease both; }
 
 .gdp__h2 {
   margin: clamp(44px, 5vw, 64px) 0 0; color: var(--nu-ink);
   font-size: var(--nu-fs-h3); font-weight: 800;
   letter-spacing: -0.025em; line-height: 1.05; text-wrap: balance;
-  /* 40px do design + a faixa "Mercado agora" sticky (~48px) do layout */
-  scroll-margin-top: 88px;
+  /* o topo e a régua do mercado grudam (~100px): a âncora para abaixo deles */
+  scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 .gdp__h2--first { margin-top: 0; }
 
 .gdp__p {
   margin: 18px 0 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg);
-  font-weight: 500; line-height: 1.7;
+  font-weight: 500; line-height: 1.65; text-wrap: pretty;
 }
 .gdp__p + .gdp__p { margin-top: 16px; }
-.gdp__p :deep(strong) { font-weight: 800; }
+.gdp__p :deep(strong) { color: var(--nu-ink); font-weight: 800; }
 /* cross-links inline (v-html, href interno) — cor de marca + sublinhado sutil */
 .gdp__article :deep(a) {
   color: var(--nu-blue-text); font-weight: 700;
-  text-decoration: underline; text-underline-offset: 2px;
+  text-decoration: underline; text-underline-offset: 3px;
   text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
   transition: text-decoration-color .2s;
 }
@@ -157,4 +165,6 @@ usePageSeo({
 .gdp__checks { margin-top: 22px; }
 .gdp__cta { margin-top: clamp(40px, 5vw, 56px); }
 .gdp__faq { margin-top: 24px; }
+
+@media (prefers-reduced-motion: reduce) { .gdp__article { animation: none; } }
 </style>

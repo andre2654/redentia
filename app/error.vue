@@ -149,7 +149,7 @@ const goRankings = () => clearError({ redirect: '/rankings' })
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(40px, 7vh, 96px) clamp(20px, 5vw, 40px);
+  padding: clamp(32px, 5vh, 72px) clamp(20px, 5vw, 40px) clamp(56px, 9vh, 110px);
 }
 .nf__wrap {
   width: 100%;
@@ -159,12 +159,14 @@ const goRankings = () => clearError({ redirect: '/rankings' })
 }
 
 /* hero SVG: escala pra largura do wrap, sem overflow em nenhuma tela */
+/* 540px de teto: o número não empurra o título e os dois botões para fora da primeira dobra */
 .nf__svg {
   display: block;
   width: 100%;
+  max-width: 540px;
   height: auto;
   overflow: visible;
-  margin-bottom: clamp(10px, 2.5vw, 22px);
+  margin: 0 auto clamp(10px, 2.5vw, 22px);
 }
 .nf__num {
   font-family: var(--nu-font);

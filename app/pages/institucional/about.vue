@@ -38,11 +38,94 @@ usePageSeo({
 
 // Title antigo já traz a marca + cauda de SEO — opt-out do sufixo global (igual /login).
 useHead({ titleTemplate: null })
+
+// as páginas irmãs (os mesmos rótulos e destinos do rodapé, coluna "Empresa")
+const MAIS = [
+  { rotulo: 'Como funciona', to: '/institucional/how-works' },
+  { rotulo: 'Metodologia', to: '/metodologia' },
+  { rotulo: 'Contato', to: '/institucional/contact' },
+]
 </script>
 
 <template>
   <div>
     <LegalHero :eyebrow="doc.eyebrow" :title="doc.title" />
-    <LegalDoc :intro="doc.intro" :sections="doc.sections" />
+
+    <!-- a marca de um lado, o texto do outro: a frase e a assinatura vêm de
+         MARCA (as mesmas do rodapé); os parágrafos são os do documento -->
+    <section class="sob">
+      <div class="sob__marca">
+        <MarcaCorte :largura="52" />
+        <p class="sob__frase">{{ MARCA.frase }}</p>
+        <p class="sob__casa">{{ MARCA.assinatura }}</p>
+      </div>
+      <div class="sob__texto">
+        <LegalBlocks :blocks="doc.intro ?? []" lede />
+      </div>
+    </section>
+
+    <!-- o posicionamento da marca: o mesmo bloco da home, com os mesmos fatos -->
+    <HomeOQueNaoE />
+
+    <nav class="sob__mais" aria-label="Mais sobre a Aportou">
+      <NuxtLink v-for="l in MAIS" :key="l.to" :to="l.to" class="sob__link">
+        <span>{{ l.rotulo }}</span>
+        <span class="sob__seta" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+      </NuxtLink>
+    </nav>
   </div>
 </template>
+
+<style scoped>
+/* Sobre, na narrativa da marca (11/11/2026, 2ª rodada): a frase da Aportou em
+   800 com o corte e a assinatura "Uma empresa Redentia" numa linha, ao lado do
+   texto de sempre; depois "O que a Aportou não é" (o bloco da home) e os
+   atalhos das páginas irmãs. Nenhum fato, número ou data novos. */
+.sob {
+  --lado: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(40px, 6vw, 96px); align-items: start;
+  background: var(--nu-page); padding: clamp(44px, 6vw, 84px) var(--lado) clamp(56px, 7vw, 100px);
+}
+.sob__marca { position: sticky; top: calc(var(--nuh-h, 72px) + 64px); animation: nu-fade .5s ease both; }
+.sob__frase {
+  margin: 22px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; max-width: 9em;
+}
+.sob__casa {
+  display: inline-block; margin: 26px 0 0; padding-top: 16px; border-top: 1.5px solid var(--nu-line);
+  color: var(--nu-gray); font-size: 14.5px; font-weight: 600;
+}
+.sob__texto { max-width: 720px; animation: nu-fade .5s ease .06s both; }
+.sob__texto :deep(.lgb__p:first-child) { margin-top: 0; color: var(--nu-ink); font-size: clamp(20px, 1.9vw, 25px); font-weight: 600; line-height: 1.4; letter-spacing: -0.01em; }
+.sob__texto :deep(.lgb__p + .lgb__p) { margin-top: 20px; }
+
+.sob__mais {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: clamp(12px, 1.6vw, 20px);
+  background: var(--nu-page);
+  padding: clamp(48px, 6vw, 80px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8vw, 104px);
+}
+.sob__link {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 84px; padding: 18px 20px 18px 26px;
+  border-radius: var(--nu-r-panel); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+  color: var(--nu-ink); font-size: clamp(19px, 1.7vw, 22px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1);
+}
+.sob__link:hover { color: var(--nu-ink); transform: translateY(-2px); box-shadow: var(--nu-shadow-quente), var(--nu-shadow-card); }
+.sob__seta {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px;
+  border-radius: 50%; background: var(--nu-ink); color: var(--nu-white); transition: background .2s;
+}
+.sob__seta svg { width: 18px; height: 18px; transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+.sob__link:hover .sob__seta { background: var(--nu-blue); }
+.sob__link:hover .sob__seta svg { transform: translateX(3px); }
+
+@media (max-width: 900px) {
+  .sob { grid-template-columns: 1fr; row-gap: clamp(32px, 7vw, 44px); }
+  .sob__marca { position: static; }
+  .sob__frase { margin-top: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sob__marca, .sob__texto { animation: none; }
+  .sob__link, .sob__seta, .sob__seta svg { transition: none; }
+}
+</style>

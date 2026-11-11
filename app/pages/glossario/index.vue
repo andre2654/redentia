@@ -156,7 +156,8 @@ const totalShown = computed(() => filtered.value.length)
 /* O hub na personalidade da Aportou (11/11/2026): creme da página, a busca no
    padrão de campo (borda de 1,5px, anel cobalto no foco), o A-Z com fios de
    1,5px e cartões creme com a sombra quente. Estrutura e conteúdo iguais. */
-.glx { background: var(--nu-page); }
+/* --lado: a mesma coluna do topo e do rodapé (1240px centrada, margem fluida abaixo de 1400px) */
+.glx { --lado: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); background: var(--nu-page); }
 
 /* hero extras (busca dentro do slot de ações do NuPageHero) */
 .glx__hero-sub {
@@ -194,24 +195,24 @@ const totalShown = computed(() => filtered.value.length)
   border-top: 1.5px solid var(--nu-line-2); border-bottom: 1.5px solid var(--nu-line-2);
   transition: top .28s ease;
 }
+/* uma linha só, na coluna: quando não cabe (tablet, celular) rola de lado */
 .glx__az-inner {
-  display: flex; flex-wrap: wrap; gap: 2px; justify-content: center;
-  max-width: 980px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 40px);
+  display: flex; flex-wrap: nowrap; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  padding: 8px var(--lado) 8px calc(var(--lado) - 11px);
 }
+.glx__az-inner::-webkit-scrollbar { display: none; }
 .glx__az-item {
-  min-width: 32px; height: 32px; padding: 0 4px;
+  flex: 0 0 auto; min-width: 38px; height: 38px; padding: 0 4px;
   display: inline-flex; align-items: center; justify-content: center;
-  color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700;
-  border-radius: var(--nu-r-tag); transition: background .2s, color .2s;
+  color: var(--nu-ink); font-size: var(--nu-fs-md); font-weight: 700;
+  border-radius: var(--nu-r-tag); transition: background .2s, color .2s, transform .15s cubic-bezier(.2, .8, .2, 1);
   font-variant-numeric: tabular-nums;
 }
+.glx__az-item:active { transform: scale(.96); }
 .glx__az-item:hover { background: var(--nu-ink); color: var(--nu-white); }
 .glx__az-item--off { color: var(--nu-sand); pointer-events: none; cursor: default; }
 
-.glx__body {
-  max-width: 980px; margin: 0 auto;
-  padding: clamp(32px, 5vw, 56px) clamp(20px, 5vw, 48px) clamp(64px, 8vw, 110px);
-}
+.glx__body { padding: clamp(32px, 5vw, 56px) var(--lado) clamp(64px, 8vw, 110px); }
 .glx__count {
   color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600;
   font-variant-numeric: tabular-nums; margin-bottom: 12px;
@@ -219,7 +220,7 @@ const totalShown = computed(() => filtered.value.length)
 .glx__empty { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; margin-top: 24px; }
 .glx__empty-link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 
-.glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 140px); }
+.glx__section { margin-top: clamp(36px, 4.5vw, 56px); scroll-margin-top: calc(var(--nuh-h, 76px) + 116px); }
 .glx__section:first-of-type { margin-top: 8px; }
 /* a letra: número-herói cobalto sobre um fio carvão de 3px */
 .glx__letter {
@@ -228,8 +229,8 @@ const totalShown = computed(() => filtered.value.length)
   padding-bottom: 12px; border-bottom: 3px solid var(--nu-ink);
 }
 .glx__grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: clamp(12px, 1.4vw, 18px);
 }
 .glx__card {
   position: relative; display: flex; flex-direction: column; gap: 8px;
@@ -254,8 +255,13 @@ const totalShown = computed(() => filtered.value.length)
 @media (max-width: 760px) {
   .glx__grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 640px) { .glx__az { top: calc(var(--nuh-h, 52px) + 29px); } }
+@media (max-width: 640px) {
+  .glx__az { top: calc(var(--nuh-h, 52px) + 29px); }
+  /* no dedo: alvo de 44px, e a letra cortada na borda diz que tem mais */
+  .glx__az-inner { gap: 2px; padding: 6px var(--lado) 6px calc(var(--lado) - 14px); }
+  .glx__az-item { min-width: 44px; height: 44px; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .glx__card, .glx__card-arrow { animation: none; transition: none; }
+  .glx__card, .glx__card-arrow, .glx__az-item { animation: none; transition: none; }
 }
 </style>

@@ -19,6 +19,12 @@ if (!term) {
 const related = relatedTerms(term)
 const { prev, next } = neighbors(slug)
 
+// Só apresentação: o parágrafo que o conteúdo já marca como "Exemplo
+// ilustrativo:" vira o cartão creme com o corte, e a "Ressalva honesta:" ganha
+// o fio âmbar de atenção. O texto é o mesmo, palavra por palavra.
+const ehExemplo = (html: string) => html.startsWith('<strong>Exemplo ilustrativo:</strong>')
+const ehRessalva = (html: string) => html.startsWith('Ressalva honesta:')
+
 usePageSeo({
   title: `O que é ${term.term}? Significado e como usar na B3`,
   description: term.short,
@@ -58,12 +64,22 @@ usePageSeo({
 
     <div class="gt__body">
       <article v-contexto-chat="{ id: `glossario:${slug}`, tipo: 'secao', rotulo: rotuloCurto(term.term), texto: [`${term.term}: ${term.short}`, ...term.body.map((p) => p.replace(/<[^>]+>/g, ''))].join('\n') }" class="gt__article">
-        <!-- eslint-disable-next-line vue/no-v-html -->
-        <p v-for="(para, i) in term.body" :key="i" class="gt__p" v-html="para" />
+        <template v-for="(para, i) in term.body" :key="i">
+          <div v-if="ehExemplo(para)" class="gt__exemplo">
+            <MarcaCorte :largura="20" />
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <p class="gt__p" v-html="para" />
+          </div>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <p v-else class="gt__p" :class="{ 'gt__p--ressalva': ehRessalva(para) }" v-html="para" />
+        </template>
       </article>
 
+      <!-- no computador os relacionados e o atalho da plataforma sobem para a
+           coluna da direita (a ordem no HTML é a mesma de sempre) -->
+      <aside class="gt__lado">
       <!-- termos relacionados -->
-      <section v-if="related.length" class="gt__block">
+      <section v-if="related.length" class="gt__block gt__block--rel">
         <h2 class="gt__h2">Termos relacionados</h2>
         <div class="gt__chips">
           <NuxtLink
@@ -86,9 +102,10 @@ usePageSeo({
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
         </span>
       </NuxtLink>
+      </aside>
 
       <!-- FAQ -->
-      <section v-if="term.faq.length" class="gt__block">
+      <section v-if="term.faq.length" class="gt__block gt__block--faq">
         <h2 class="gt__h2">Perguntas frequentes</h2>
         <NuFaqAccordion :items="term.faq" :default-open="-1" variant="compact" class="gt__faq" />
       </section>
@@ -131,23 +148,34 @@ a.gt__crumb:hover { color: var(--nu-blue-text); }
   font-size: var(--nu-fs-hero); font-weight: 800;
   letter-spacing: -0.035em; line-height: .98; text-wrap: balance;
 }
+/* a definição em destaque: o lead grande, em carvão */
 .gt__short {
-  margin: 20px 0 0; color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px);
-  font-weight: 500; line-height: 1.45; max-width: 680px;
+  margin: 22px 0 0; color: var(--nu-ink); font-size: clamp(20px, 2vw, 27px);
+  font-weight: 600; letter-spacing: -0.012em; line-height: 1.35; max-width: 30em; text-wrap: pretty;
 }
 
 .gt__body {
-  max-width: 760px; margin: 0 auto;
-  padding: clamp(40px, 5.5vw, 72px) clamp(20px, 5.5vw, 40px) clamp(64px, 8vw, 110px);
+  padding: clamp(36px, 4.6vw, 64px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(64px, 8vw, 110px);
   animation: nu-fade .5s ease .06s both;
 }
-.gt__article { max-width: 760px; }
-.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.7; }
-.gt__p + .gt__p { margin-top: 18px; }
+.gt__body > * { max-width: 720px; }
+.gt__article { max-width: 720px; }
+.gt__p { margin: 0; color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.65; text-wrap: pretty; }
+.gt__article > * + * { margin-top: 18px; }
 .gt__p :deep(strong) { color: var(--nu-ink); font-weight: 800; }
+/* o exemplo que o texto já marca: cartão creme com o corte */
+.gt__exemplo {
+  display: flex; align-items: flex-start; gap: 14px; padding: 22px 24px; border-radius: var(--nu-r-panel);
+  background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+}
+.gt__article > .gt__exemplo, .gt__article > .gt__exemplo + * { margin-top: 26px; }
+.gt__exemplo :deep(.mkc) { margin-top: 6px; }
+.gt__exemplo .gt__p { font-size: var(--nu-fs-md); line-height: 1.6; }
+/* a ressalva: fio âmbar de atenção à esquerda */
+.gt__p--ressalva { padding-left: 20px; border-left: 3px solid var(--nu-amber); }
 .gt__article :deep(a) {
   color: var(--nu-blue-text); font-weight: 700;
-  text-decoration: underline; text-underline-offset: 2px;
+  text-decoration: underline; text-underline-offset: 3px;
   text-decoration-thickness: 1.5px; text-decoration-color: var(--nu-blue-soft);
   transition: text-decoration-color .2s;
 }
@@ -217,6 +245,30 @@ a.gt__crumb:hover { color: var(--nu-blue-text); }
 }
 .gt__back:hover { color: var(--nu-blue-text); transform: translateX(3px); }
 
+/* ——— computador: a leitura na coluna da esquerda (alinhada ao título) e, à
+   direita, os relacionados e o atalho da plataforma, que acompanham a rolagem ——— */
+@media (min-width: 1080px) {
+  .gt__body {
+    display: grid; grid-template-columns: minmax(0, 720px) minmax(300px, 380px);
+    justify-content: space-between; column-gap: clamp(48px, 6vw, 96px); align-items: start;
+  }
+  .gt__body > * { grid-column: 1; }
+  .gt__lado {
+    grid-column: 2; grid-row: 1 / span 5; position: sticky; top: calc(var(--nuh-h, 72px) + 64px);
+    padding: 26px; border-radius: var(--nu-r-card); background: var(--nu-card); box-shadow: var(--nu-shadow-quente);
+  }
+  .gt__lado .gt__block--rel { margin-top: 0; }
+  .gt__lado .gt__h2 {
+    margin-bottom: 14px; font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3;
+  }
+  .gt__lado .gt__chips { gap: 8px; }
+  .gt__lado .gt__chip { background: var(--nu-page); }
+  .gt__lado .gt__chip:hover { background: var(--nu-ink); }
+  .gt__lado .gt__cta { margin-top: 24px; flex-direction: column; align-items: flex-start; gap: 22px; padding: 26px; border-radius: var(--nu-r-panel); }
+  .gt__lado .gt__cta-label { font-size: 22px; }
+  .gt__lado .gt__block--rel + .gt__cta { margin-top: 24px; }
+  .gt__lado > .gt__cta:first-child { margin-top: 0; }
+}
 @media (max-width: 640px) {
   .gt__nav { flex-direction: column; }
   .gt__nav-item--next { text-align: left; align-items: flex-start; }

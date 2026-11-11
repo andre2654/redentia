@@ -69,7 +69,7 @@ usePageSeo({
       </div>
       <button type="button" class="conta__logout" @click="logout">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>
-        Sair
+        <span class="conta__logout-txt">Sair</span>
       </button>
     </header>
 
@@ -139,20 +139,33 @@ usePageSeo({
 .conta__logout:hover svg { transform: translateX(3px); }
 
 .conta__cols { display: flex; gap: clamp(20px, 3vw, 40px); align-items: flex-start; margin-top: clamp(28px, 4vw, 48px); }
-.conta__nav { flex: 0 0 clamp(210px, 22vw, 264px); position: sticky; top: 96px; }
+/* o menu cola abaixo do topo + a faixa do mercado (100px), com folga */
+.conta__nav { flex: 0 0 clamp(210px, 22vw, 264px); position: sticky; top: 124px; }
 .conta__panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: clamp(18px, 2.6vw, 28px); }
 /* âncora do scrollspy: compensa o header + faixa "Mercado agora" sticky */
-.conta__sec { scroll-margin-top: 112px; animation: nu-fade .5s ease both; }
+.conta__sec { scroll-margin-top: 124px; animation: nu-fade .5s ease both; }
 .conta__sec:nth-child(2) { animation-delay: 60ms; }
 .conta__sec:nth-child(3) { animation-delay: 120ms; }
 .conta__sec:nth-child(n+4) { animation-delay: 180ms; }
 
 @media (max-width: 860px) {
   .conta__cols { flex-direction: column; }
-  .conta__nav { position: sticky; top: 84px; z-index: 2; flex-basis: auto; width: 100%; background: var(--nu-page); padding: 8px 0; }
+  /* a faixa de atalhos vai de ponta a ponta (os cartões passavam pelos lados dela) e leva um fio embaixo */
+  .conta__nav {
+    position: sticky; top: 76px; z-index: 2; flex-basis: auto; align-self: stretch;
+    margin: 0 calc(-1 * clamp(20px, 5.5vw, 80px)); padding: 10px clamp(20px, 5.5vw, 80px);
+    background: var(--nu-page); box-shadow: 0 1.5px 0 var(--nu-line-2);
+  }
+  .conta__sec { scroll-margin-top: 148px; }
   /* em coluna, o align-items: flex-start deixava o painel na largura do conteúdo: um e-mail comprido
      (o "Na sua caixa · …" do resumo diário, que é nowrap) o esticava para fora da tela e cortava os interruptores */
   .conta__panel { align-self: stretch; width: 100%; }
+}
+/* no celular o "Sair" fica na linha do nome, só com o ícone (o rótulo segue para o leitor de tela) */
+@media (max-width: 520px) {
+  .conta__top { flex-wrap: nowrap; align-items: flex-start; }
+  .conta__logout { width: 48px; padding: 0; justify-content: center; }
+  .conta__logout-txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .conta__logout svg { transition: none; }

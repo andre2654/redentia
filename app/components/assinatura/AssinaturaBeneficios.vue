@@ -3,8 +3,10 @@
 // ganha. No mesmo dia o dono pediu os cartões no formato da home ("é mais
 // bonito"): o mesmo esqueleto do HomeComoFunciona — a tela preta do app no
 // alto, o título curto e duas linhas —, com um quarto cartão para a IA.
-//  1. Todos os bancos numa tela (o print da /carteira de verdade, desde 01/11/2026:
-//     os logos dos bancos já estão na seção dos bancos logo abaixo);
+//  1. Todos os bancos numa tela (era um print da /carteira antiga; desde 11/11/2026
+//     é uma composição em HTML, na letra e nas cores da Aportou, com a mesma
+//     frase e as mesmas duas contas de exemplo que o print mostrava, marcada
+//     "Exemplo". Nenhum dado de pessoa: o valor segue escondido pelo olho);
 //  2. Testa 2.000 futuros (o HomeLeque);
 //  3. Responde com os seus números (uma conversa de exemplo, sem número);
 //  4. Chama só quando importa (os dois estados do Agora).
@@ -24,10 +26,28 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 
     <div class="abn__grade">
       <article class="abn__cartao">
-        <!-- a tela de verdade da /carteira (print do 01/11/2026, valor escondido pelo olho), marcada como exemplo -->
+        <!-- a frase da /carteira numa janela creme, marcada como exemplo: o valor escondido pelo olho, duas contas -->
         <div class="abn__tela abn__tela--print">
           <span class="abn__exemplo">Exemplo</span>
-          <img src="/assinatura/carteira-exemplo.png" alt="Exemplo da carteira na Aportou: Tudo normal. Na sexta, sua carteira caiu 0,62%; a bolsa, 0,75%. Contas no Itaú e na XP." width="1200" height="608" loading="lazy" class="abn__print">
+          <div class="abn__janela" role="img" aria-label="Exemplo da carteira na Aportou: Tudo normal. Na sexta, sua carteira caiu 0,62%; a bolsa, 0,75%. Contas no Itaú e na XP.">
+            <div aria-hidden="true">
+              <p class="abn__janela-frase">Tudo normal.</p>
+              <p class="abn__janela-linha">Na sexta, sua carteira caiu 0,62%; a bolsa, 0,75%.</p>
+            </div>
+            <div aria-hidden="true">
+              <div class="abn__janela-total">
+                <span class="abn__janela-valor"><span>R$</span><span class="abn__janela-pontos">•••••</span><small>Sexta</small></span>
+                <span class="abn__janela-olho">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 6.2A9.6 9.6 0 0 1 12 6c5 0 8.5 4 9.5 6a12 12 0 0 1-2.7 3.4M6.6 7.6A12 12 0 0 0 2.5 12c1 2 4.5 6 9.5 6 1.5 0 2.8-.3 4-.9M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+                </span>
+              </div>
+              <div class="abn__janela-contas">
+                <span class="abn__conta"><img src="/instituicoes/itau.svg" alt="" width="20" height="20" loading="lazy">Itaú</span>
+                <span class="abn__conta"><img src="/instituicoes/xp.svg" alt="" width="20" height="20" loading="lazy">XP Investimentos</span>
+                <span class="abn__conta abn__conta--mais">+ Adicionar conta</span>
+              </div>
+            </div>
+          </div>
         </div>
         <h3 class="abn__nome">Todos os bancos, numa tela.</h3>
         <p class="abn__texto">A carteira inteira somada, com uma frase que diz se está tudo normal. Abriu, soube.</p>
@@ -103,9 +123,30 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 .abn__nome { margin: 28px 18px 0; color: var(--nu-ink); font-size: var(--nu-fs-h3); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
 .abn__texto { margin: 12px 18px 0; max-width: 52ch; color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.5; }
 
-/* 1 · o print da carteira, numa janela creme sobre o preto */
-.abn__tela--print { padding: clamp(16px, 2.4vw, 28px); }
-.abn__print { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--nu-cream); }
+/* 1 · a frase da carteira, numa janela creme sobre o preto. Os tamanhos seguem a largura da tela preta (cqw) */
+/* o alto da tela preta fica para o selo "Exemplo": ele não pisa na janela */
+.abn__tela--print { padding: 46px clamp(14px, 2.4vw, 28px) clamp(14px, 2.4vw, 28px); container-type: inline-size; }
+.abn__janela {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 10px; height: 100%; min-height: 0;
+  padding: clamp(14px, 4.4cqw, 26px); border-radius: 16px; background: var(--nu-page); color: var(--nu-ink);
+}
+.abn__janela-frase { margin: 0; font-size: clamp(32px, 12.6cqw, 74px); font-weight: 800; letter-spacing: -0.045em; line-height: .94; white-space: nowrap; }
+.abn__janela-linha { margin: clamp(6px, 1.8cqw, 12px) 0 0; color: var(--nu-gray); font-size: clamp(12.5px, 3.3cqw, 18px); font-weight: 500; line-height: 1.35; }
+.abn__janela-total { display: flex; align-items: center; gap: 8px; }
+.abn__janela-valor {
+  display: inline-flex; align-items: baseline; gap: 7px; padding: clamp(6px, 1.7cqw, 10px) clamp(10px, 2.6cqw, 16px); border-radius: 12px;
+  background: var(--nu-white); box-shadow: var(--nu-shadow-quente); font-size: clamp(16px, 4.4cqw, 25px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15;
+}
+.abn__janela-pontos { font-size: 1.35em; line-height: .6; letter-spacing: .04em; }
+.abn__janela-valor small { color: var(--nu-gray); font-size: clamp(10px, 2.1cqw, 12px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.abn__janela-olho { display: grid; place-items: center; width: clamp(30px, 6.8cqw, 38px); height: clamp(30px, 6.8cqw, 38px); border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--nu-line); color: var(--nu-ink); }
+.abn__janela-contas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: clamp(6px, 1.6cqw, 10px); }
+.abn__conta {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 5px; border-radius: var(--nu-r-pill);
+  background: var(--nu-white); box-shadow: var(--nu-shadow-quente); font-size: clamp(11.5px, 2.5cqw, 14px); font-weight: 700; white-space: nowrap;
+}
+.abn__conta img { width: clamp(16px, 3.6cqw, 20px); height: clamp(16px, 3.6cqw, 20px); border-radius: 5px; }
+.abn__conta--mais { padding: 4px 11px; background: none; box-shadow: none; outline: 1.5px dashed var(--nu-borda-campo); outline-offset: -1.5px; color: var(--nu-gray-3); }
 .abn__exemplo {
   position: absolute; top: 12px; right: 12px; z-index: 1; padding: 4px 10px; border-radius: var(--nu-r-tag);
   background: var(--nu-dark-chip); color: var(--nu-on-dark); font-size: 13.5px; font-weight: 700;
@@ -137,6 +178,9 @@ withDefaults(defineProps<{ titulo?: boolean; conectar?: boolean }>(), { titulo: 
 @media (max-width: 860px) {
   .abn__grade { grid-template-columns: minmax(0, 1fr); }
   .abn__tela { aspect-ratio: 16 / 12; }
+  /* numa coluna só, a janela da carteira tem a altura do que ela mostra */
+  .abn__tela--print { aspect-ratio: auto; }
+  .abn__janela { height: auto; }
 }
 @media (max-width: 760px) {
   .abn__titulo br { display: none; }

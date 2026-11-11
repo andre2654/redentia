@@ -23,6 +23,8 @@ const loading = ref(true)
 const errorMsg = ref<string | null>(null)
 const syncingIds = reactive(new Set<number>())
 const deletingIds = reactive(new Set<number>())
+// logo da instituição que não carregou: cai no ícone de prédio (só apresentação)
+const logoFalhou = reactive(new Set<number>())
 
 // feedback inline (o Nu não tem toast): banner some sozinho
 const notice = ref<{ tone: 'success' | 'error', text: string } | null>(null)
@@ -250,7 +252,7 @@ function timeSince(iso: string | null): string {
           <div class="of__card-top">
             <div class="of__inst">
               <span class="of__logo" aria-hidden="true">
-                <img v-if="conn.institution_logo" :src="conn.institution_logo" :alt="conn.institution_name" class="of__logo-img" loading="lazy">
+                <img v-if="conn.institution_logo && !logoFalhou.has(conn.id)" :src="conn.institution_logo" alt="" class="of__logo-img" loading="lazy" @error="logoFalhou.add(conn.id)">
                 <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V7l6-4 6 4v14M10 9h.01M14 9h.01M10 13h.01M14 13h.01M10 17h.01M14 17h.01" /></svg>
               </span>
               <span class="of__inst-text">

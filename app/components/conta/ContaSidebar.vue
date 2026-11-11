@@ -24,6 +24,19 @@ const ICON: Record<string, string[]> = {
 }
 
 const active = ref(0)
+// No celular os atalhos são uma faixa que rola de lado: quando a seção muda, a
+// pílula ativa vem para o meio da faixa (antes ela ficava fora da tela a partir
+// de "Notificações"). Só mexe na rolagem horizontal da faixa, nunca na da página.
+const nav = ref<HTMLElement | null>(null)
+watch(active, (i) => {
+  const el = nav.value
+  if (!el || el.scrollWidth <= el.clientWidth) return
+  const item = el.children[i] as HTMLElement | undefined
+  if (!item) return
+  const alvo = item.offsetLeft - (el.clientWidth - item.offsetWidth) / 2
+  const suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  el.scrollTo({ left: Math.max(0, alvo), behavior: suave ? 'smooth' : 'auto' })
+})
 useNuScrollFrame(() => {
   const vh = window.innerHeight || 800
   let idx = 0
@@ -46,7 +59,7 @@ function go(e: MouseEvent, id: string) {
 </script>
 
 <template>
-  <nav class="csb" aria-label="Seções da conta">
+  <nav ref="nav" class="csb" aria-label="Seções da conta">
     <a
       v-for="(it, i) in items"
       :key="it.id"
@@ -81,7 +94,7 @@ function go(e: MouseEvent, id: string) {
 .csb__item--active:hover .csb__icon { color: var(--nu-blue-on-dark); transform: none; }
 
 @media (max-width: 860px) {
-  .csb { flex-direction: row; overflow-x: auto; gap: 8px; padding-bottom: 4px; scrollbar-width: none; }
+  .csb { flex-direction: row; overflow-x: auto; gap: 8px; scrollbar-width: none; overscroll-behavior-x: contain; }
   .csb::-webkit-scrollbar { display: none; }
   .csb__item { flex-shrink: 0; min-height: 44px; padding: 0 16px; background: var(--nu-cream-2); }
   .csb__item--active, .csb__item--active:hover { background: var(--nu-ink); }

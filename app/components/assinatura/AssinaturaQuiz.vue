@@ -185,7 +185,7 @@ async function entrarSocial(provedor: 'google' | 'apple', credencial: string | A
 
 // a montagem: as quatro linhas se acendem e o resultado entra sozinho. Nada é
 // calculado aqui, então as linhas não fingem trabalho: são o plano anotado a
-// partir das respostas, o que a Redentia vai fazer depois de conectar.
+// partir das respostas, o que a Aportou vai fazer depois de conectar.
 const linhasDaMontagem = computed(() => {
   const bancos = (respostas.value.bancos ?? []).filter((b) => b !== 'nenhum' && b !== 'outro').map(nomeDoBanco)
   const preocupa = respostas.value.preocupa ?? []
@@ -532,7 +532,7 @@ const ICONES: Record<string, string> = {
 .aqz__icone-btn:active { transform: scale(.94); }
 .aqz__card--escuro .aqz__icone-btn:hover { background: var(--nu-navy-3); }
 .aqz__icone-btn--fora { opacity: 0; pointer-events: none; }
-.aqz__icone-btn:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.aqz__icone-btn:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .aqz__barra { flex: 1; height: 6px; border-radius: var(--nu-r-pill); background: var(--nu-line-2); overflow: hidden; }
 .aqz__barra-cheia { display: block; height: 100%; background: var(--nu-blue); border-radius: inherit; transform-origin: left; transition: transform .45s cubic-bezier(.22, 1, .36, 1); }
 
@@ -556,7 +556,7 @@ const ICONES: Record<string, string> = {
 }
 .aqz__opcao:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
 .aqz__opcao:active { transform: scale(.99); }
-.aqz__opcao:focus-visible, .aqz__cartao:focus-visible, .aqz__banco:focus-visible { outline: 2px solid var(--nu-blue); outline-offset: 2px; }
+.aqz__opcao:focus-visible, .aqz__cartao:focus-visible, .aqz__banco:focus-visible { outline: 3px solid var(--nu-blue); outline-offset: 2px; }
 .aqz__opcao--sim, .aqz__opcao--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .aqz__opcao-icone { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--nu-r-chip); background: var(--nu-blue-bg); color: var(--nu-blue-text); transition: background .2s, color .2s; }
 .aqz__opcao--sim .aqz__opcao-icone { background: var(--nu-blue); color: var(--nu-white); }
@@ -589,10 +589,12 @@ const ICONES: Record<string, string> = {
 .aqz__banco {
   display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px; text-align: left;
   border: 0; border-radius: var(--nu-r-tile); background: var(--nu-white); box-shadow: inset 0 0 0 1.5px var(--nu-line-2), var(--nu-shadow-quente);
-  font-family: inherit; cursor: pointer; transition: box-shadow .2s;
+  font-family: inherit; cursor: pointer; transition: box-shadow .2s, transform .2s cubic-bezier(.2, .8, .2, 1);
 }
+.aqz__banco:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--nu-borda-campo), var(--nu-shadow-branco); }
+.aqz__banco:active { transform: scale(.99); }
 .aqz__banco--texto { padding-left: 16px; min-height: 50px; }
-.aqz__banco--sim { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
+.aqz__banco--sim, .aqz__banco--sim:hover { box-shadow: inset 0 0 0 2px var(--nu-blue), var(--nu-shadow-quente); }
 .aqz__banco :deep(.cil) { border-radius: 10px; }
 .aqz__banco-nome { flex: 1; min-width: 0; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 

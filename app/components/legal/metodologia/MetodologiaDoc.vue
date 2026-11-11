@@ -35,6 +35,9 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
       <NuTocSidebar v-if="toc" :items="tocItems" :label="tocLabel" />
 
       <article class="met-doc__article" :class="{ 'met-doc__article--narrow': !toc }">
+        <!-- celular e tablet: o mesmo sumário, fechado, no topo da leitura -->
+        <LegalIndice v-if="toc" :items="tocItems" :rotulo="tocLabel" />
+
         <!-- lede: parágrafo de abertura antes da 1ª seção -->
         <div v-if="intro?.length" class="met-doc__intro">
           <LegalBlocks :blocks="intro" lede />
@@ -83,7 +86,8 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
 }
 .met-doc__cols { display: flex; gap: clamp(40px, 5vw, 88px); align-items: flex-start; }
 .met-doc__cols--toc { justify-content: flex-start; }
-.met-doc__article { flex: 1; min-width: 0; max-width: 820px; }
+/* documento de leitura: coluna de ~720px (a tabela e o box usam a mesma) */
+.met-doc__article { flex: 1; min-width: 0; max-width: 720px; }
 .met-doc__article--narrow { margin-left: auto; margin-right: auto; }
 
 .met-doc__intro { margin-bottom: clamp(12px, 2vw, 20px); }
@@ -92,7 +96,7 @@ const isTable = (b: MetBlock): b is MetTable => b.kind === 'table'
   margin: clamp(40px, 4.5vw, 56px) 0 0; color: var(--nu-ink);
   font-size: clamp(26px, 2.6vw, 32px); font-weight: 800;
   letter-spacing: -0.025em; line-height: 1.08;
-  scroll-margin-top: 88px;
+  scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 .met-doc__h2--first { margin-top: 0; }
 

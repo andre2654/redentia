@@ -458,7 +458,7 @@ function onSearchEnter() {
 
 .spbm__filters { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
 .spbm__filter {
-  min-height: 40px; border: none; border-radius: var(--nu-r-pill); background: var(--nu-cream-2);
+  min-height: 44px; border: none; border-radius: var(--nu-r-pill); background: var(--nu-cream-2);
   color: var(--nu-ink); padding: 0 15px; font-size: 14px; font-weight: 600;
   cursor: pointer; font-family: inherit; transition: background 0.2s, color 0.2s;
 }

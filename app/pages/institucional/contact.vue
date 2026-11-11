@@ -128,7 +128,7 @@ useHead({ titleTemplate: null })
   padding: clamp(44px, 6vw, 76px) max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)) clamp(56px, 7vw, 96px);
   animation: nu-fade .5s ease .06s both;
 }
-.ctc__inner { max-width: 760px; margin: 0 auto; }
+.ctc__inner { max-width: 760px; }
 
 .ctc__lede {
   margin: 0; color: var(--nu-gray-3);
@@ -172,6 +172,21 @@ useHead({ titleTemplate: null })
 .cfq__cta { margin-top: 30px; }
 .cfq__right { flex: 1.6 1 480px; min-width: min(340px, 100%); }
 
+/* ——— computador: a conversa de um lado (a frase e os canais), o formulário
+   do outro, na coluna da página. A ordem no HTML é a de sempre. ——— */
+@media (min-width: 1000px) {
+  .ctc__inner {
+    max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 640px);
+    grid-template-rows: auto auto 1fr; column-gap: clamp(48px, 6vw, 96px); align-items: start;
+  }
+  .ctc__lede { grid-column: 1; grid-row: 1; color: var(--nu-ink); font-size: clamp(22px, 2vw, 27px); font-weight: 600; letter-spacing: -0.012em; line-height: 1.35; text-wrap: pretty; }
+  .ctc__form { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; }
+  .ctc__h2 { grid-column: 1; grid-row: 2; margin-top: clamp(40px, 4.4vw, 56px); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; line-height: 1.3; }
+  .ctc__channels { grid-column: 1; grid-row: 3; grid-template-columns: 1fr; margin-top: 16px; gap: 12px; }
+  .ctc__channel { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; align-items: center; padding: 20px 22px; }
+  .ctc__channel-icon { grid-row: 1 / span 2; margin-bottom: 0; }
+  .ctc__channel-value { margin-top: 4px; }
+}
 @media (max-width: 760px) {
   .ctc__channels { grid-template-columns: 1fr; }
 }

@@ -193,7 +193,7 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
       </div>
       <div class="mcp__perm">
         <div class="mcp__perm-txt">
-          <div class="mcp__perm-name">Notícias &amp; pesquisa</div>
+          <div class="mcp__perm-name">Notícias e pesquisa</div>
           <div class="mcp__perm-desc">Notícias analisadas e relatórios da Aportou.</div>
         </div>
         <button type="button" class="msw" :class="{ 'msw--on': perms.news }" role="switch" :aria-checked="perms.news" aria-label="Permissão notícias e pesquisa" @click="onTogglePerm('news')"><span class="msw__knob" /></button>
@@ -224,10 +224,8 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
   background: var(--nu-grad-cobalto); color: var(--nu-white);
   box-shadow: var(--nu-shadow-card);
 }
-.mcp__corte {
-  position: absolute; top: -34px; right: -96px; opacity: .08; pointer-events: none;
-  transition: opacity .3s ease;
-}
+/* a posição é da classe global .nu-corte-fundo (sai sempre do canto de cima à esquerda); aqui só a opacidade */
+.mcp__corte { opacity: .08; transition: opacity .3s ease; }
 
 /* DESLIGADO (dono 2026-07-14): card cinza, como se o MCP estivesse mesmo fora.
    Fundo vira o carvão apagado + conteúdo dessatura/esmaece/trava; SÓ o
@@ -337,7 +335,6 @@ onBeforeUnmount(() => { clearTimeout(tTimer) })
 .msw:focus-visible { outline: 3px solid var(--nu-white); outline-offset: 2px; }
 
 @media (max-width: 520px) {
-  .mcp__corte { right: -40px; top: -20px; transform: scale(.62); transform-origin: top right; }
   /* o interruptor fica na linha do eyebrow, e o texto usa a largura toda */
   .mcp__head { display: block; }
   .mcp__head > .msw { position: absolute; top: -4px; right: 0; }

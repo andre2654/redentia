@@ -78,7 +78,9 @@ usePageSeo({
 <template>
   <div class="mdoc">
     <!-- HERÓI — duas colunas (texto à esquerda, demo à direita) sobre o creme
-         da página, com o eyebrow da marca e a pílula da seta (11/11/2026) -->
+         da página, com o eyebrow da marca e a pílula da seta (11/11/2026). A
+         demo mora num palco creme: o filme começa no mini-dock e a janela
+         abre dentro dele, sem deixar a coluna vazia. -->
     <section class="mdoc__hero">
       <div class="mdoc__cols">
         <div class="mdoc__left">
@@ -92,48 +94,47 @@ usePageSeo({
           <NuBotaoSeta :to="ctaTo" class="mdoc__cta">Gerar minha chave</NuBotaoSeta>
         </div>
         <div class="mdoc__right">
-          <McpHeroDemo />
+          <div class="mdoc__palco">
+            <McpHeroDemo />
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- PAINEL AZUL — os três passos sobre o gradiente cobalto da marca, com o
-         corte gigante no canto; os cartões são carvão translúcido e o número
-         leva o verde claro (o acento do MCP) -->
+    <!-- COMO FUNCIONA — os três passos num painel carvão (o azul fica para o
+         fecho, como na home): número gigante no cobalto que lê sobre escuro,
+         em cima de um fio, e o endpoint em letra de código -->
     <section class="mdoc__band">
       <div class="mdoc__painel">
-        <MarcaCorte class="mdoc__painel-corte nu-corte-fundo" :largura="520" cor="var(--nu-white)" />
-        <div class="mdoc__band-in">
-          <NuEyebrow como="p" sobre="azul">Como funciona</NuEyebrow>
-          <h2 class="mdoc__band-title">Três passos e a sua IA<br>fica do lado de dentro.</h2>
-          <ol class="mdoc__steps">
-            <li class="mdoc__step">
-              <span class="mdoc__step-n">1</span>
-              <div>
-                <div class="mdoc__step-t">Gere a chave</div>
-                <p class="mdoc__step-p">Em Configurações, seção MCP. A chave aparece uma única vez, copie na hora.</p>
-              </div>
-            </li>
-            <li class="mdoc__step">
-              <span class="mdoc__step-n">2</span>
-              <div>
-                <div class="mdoc__step-t">Conecte no assistente</div>
-                <p class="mdoc__step-p">O passo a passo abre logo abaixo, no formato do Claude ou do ChatGPT.</p>
-              </div>
-            </li>
-            <li class="mdoc__step">
-              <span class="mdoc__step-n">3</span>
-              <div>
-                <div class="mdoc__step-t">Pergunte</div>
-                <p class="mdoc__step-p">"Como está a minha carteira hoje?" e a resposta vem com os seus dados reais.</p>
-              </div>
-            </li>
-          </ol>
-          <div class="mdoc__endpoint">
-            <span class="mdoc__endpoint-label">Endpoint</span>
-            <code class="mdoc__endpoint-url">https://redentia-api.saraivada.com/mcp</code>
-            <span class="mdoc__endpoint-note">streamable HTTP · <code>Authorization: Bearer rdt_mcp_…</code></span>
-          </div>
+        <NuEyebrow como="p" sobre="escuro">Como funciona</NuEyebrow>
+        <h2 class="mdoc__band-title">Três passos e a sua IA <br>fica do lado de dentro.</h2>
+        <ol class="mdoc__steps">
+          <li class="mdoc__step">
+            <span class="mdoc__step-n">1</span>
+            <div>
+              <div class="mdoc__step-t">Gere a chave</div>
+              <p class="mdoc__step-p">Em Configurações, seção MCP. A chave aparece uma única vez, copie na hora.</p>
+            </div>
+          </li>
+          <li class="mdoc__step">
+            <span class="mdoc__step-n">2</span>
+            <div>
+              <div class="mdoc__step-t">Conecte no assistente</div>
+              <p class="mdoc__step-p">O passo a passo abre logo abaixo, no formato do Claude ou do ChatGPT.</p>
+            </div>
+          </li>
+          <li class="mdoc__step">
+            <span class="mdoc__step-n">3</span>
+            <div>
+              <div class="mdoc__step-t">Pergunte</div>
+              <p class="mdoc__step-p">"Como está a minha carteira hoje?" e a resposta vem com os seus dados reais.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="mdoc__endpoint">
+          <span class="mdoc__endpoint-label">Endpoint</span>
+          <code class="mdoc__endpoint-url">https://redentia-api.saraivada.com/mcp</code>
+          <span class="mdoc__endpoint-note">streamable HTTP · <code>Authorization: Bearer rdt_mcp_…</code></span>
         </div>
       </div>
     </section>
@@ -141,16 +142,25 @@ usePageSeo({
     <!-- COMO CONECTAR — o passo a passo virou o wizard (o mesmo modal do
          /business/chaves, origem="mcp"): uma pergunta por tela, Claude ou
          ChatGPT. A seção só abre a porta; os prints e as configs por
-         assistente saíram com ela (decisão do dono 2026-08-25). -->
-    <section id="como-conectar" class="mdoc__sec mdoc__sec--band">
-      <div class="mdoc__in">
-        <NuEyebrow como="p">Passo a passo</NuEyebrow>
-        <h2 class="mdoc__h2">Como conectar</h2>
-        <p class="mdoc__lead">
-          Um passo a passo de um minuto, no formato do seu assistente: Claude ou ChatGPT.
-          A chave fica em <NuxtLink :to="ctaTo" class="mdoc__link">Configurações → MCP</NuxtLink>.
-        </p>
-        <NuBotaoSeta variante="carvao" tamanho="m" class="mdoc__cta" @click="conexaoAberta = true">Ver o passo a passo</NuBotaoSeta>
+         assistente saíram com ela (decisão do dono 2026-08-25). O texto de um
+         lado, a porta do outro. -->
+    <section id="como-conectar" class="mdoc__sec mdoc__sec--band mdoc__sec--porta">
+      <div class="mdoc__in mdoc__porta">
+        <div class="mdoc__porta-txt">
+          <NuEyebrow como="p">Passo a passo</NuEyebrow>
+          <h2 class="mdoc__h2">Como conectar</h2>
+          <p class="mdoc__lead">
+            Um passo a passo de um minuto, no formato do seu assistente: Claude ou ChatGPT.
+            A chave fica em <NuxtLink :to="ctaTo" class="mdoc__link">Configurações → MCP</NuxtLink>.
+          </p>
+        </div>
+        <div class="mdoc__porta-acao">
+          <span class="mdoc__porta-ias" aria-hidden="true">
+            <span class="mdoc__porta-ia"><img src="/icons/logo-claude.webp" alt="" width="26" height="26" loading="lazy"></span>
+            <span class="mdoc__porta-ia"><img src="/icons/logo-chatgpt.webp" alt="" width="26" height="26" loading="lazy"></span>
+          </span>
+          <NuBotaoSeta variante="carvao" @click="conexaoAberta = true">Ver o passo a passo</NuBotaoSeta>
+        </div>
       </div>
     </section>
 
@@ -168,7 +178,8 @@ usePageSeo({
               Santander, Banco do Brasil, Toro, Avenue, Ágora e mais de 100 outras instituições.
             </p>
             <p class="mdoc__insts-note">
-              Sempre somente leitura: você escolhe o que compartilhar e desconecta quando quiser.
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              <span>Sempre somente leitura: você escolhe o que compartilhar e desconecta quando quiser.</span>
             </p>
           </div>
           <div class="mdoc__right">
@@ -186,7 +197,9 @@ usePageSeo({
       </div>
     </section>
 
-    <!-- COMPARATIVO — o que muda quando você conecta (perguntas de investidor) -->
+    <!-- COMPARATIVO — o que muda quando você conecta (perguntas de investidor).
+         No computador é a tabela; no celular cada linha vira um cartão com as
+         quatro respostas (a coluna da Aportou ficava fora da tela). -->
     <section class="mdoc__sec mdoc__sec--band">
       <div class="mdoc__in">
         <div class="mdoc__cmp-head">
@@ -197,27 +210,31 @@ usePageSeo({
           </p>
         </div>
         <div class="mdoc__cmp-card">
-          <div class="mdoc__cmp-scroll">
-            <table class="mdoc__cmp">
-              <thead>
-                <tr>
-                  <th class="mdoc__cmp-q">Quero…</th>
-                  <th v-for="c in COMPARE_COLS" :key="c">{{ c }}</th>
-                  <th class="mdoc__cmp-us">Aportou MCP</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in COMPARE" :key="row.q">
-                  <td class="mdoc__cmp-q">{{ row.q }}</td>
-                  <td v-for="(cell, i) in row.cells" :key="i" :class="{ 'mdoc__cmp-us': i === 3 }">
-                    <svg v-if="cell === 'yes'" class="mdoc__yes" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg>
-                    <svg v-else-if="cell === 'no'" class="mdoc__no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
-                    <span v-else class="mdoc__cell-txt">{{ cell === 'partial' ? 'parcial' : 'n/a' }}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <table class="mdoc__cmp">
+            <thead>
+              <tr>
+                <th class="mdoc__cmp-q" scope="col">Quero…</th>
+                <th v-for="c in COMPARE_COLS" :key="c" scope="col">{{ c }}</th>
+                <th class="mdoc__cmp-us" scope="col">Aportou MCP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in COMPARE" :key="row.q">
+                <th class="mdoc__cmp-q" scope="row">{{ row.q }}</th>
+                <td v-for="(cell, i) in row.cells" :key="i" :class="{ 'mdoc__cmp-us': i === 3 }" :data-coluna="i === 3 ? 'Aportou MCP' : COMPARE_COLS[i]">
+                  <span v-if="cell === 'yes'" class="mdoc__marca mdoc__marca--sim">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11" /></svg>
+                    <span class="mdoc__sr">sim</span>
+                  </span>
+                  <span v-else-if="cell === 'no'" class="mdoc__marca mdoc__marca--nao">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                    <span class="mdoc__sr">não</span>
+                  </span>
+                  <span v-else class="mdoc__cell-txt">{{ cell === 'partial' ? 'parcial' : 'n/a' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -235,33 +252,44 @@ usePageSeo({
 
     <RbConexaoModal :open="conexaoAberta" :plain-key="null" origem="mcp" @close="conexaoAberta = false" />
 
-    <!-- CHAMADA FINAL — faixa sálvia (o rodapé logo abaixo é carvão), com o
-         corte em carvão no eyebrow, como no quadro da home -->
+    <!-- CHAMADA FINAL — o painel azul do contrato, como o fecho da home: o
+         corte gigante sai do canto de cima à esquerda (.nu-corte-fundo) e a
+         pílula é creme sobre o cobalto -->
     <section class="mdoc__final">
-      <p class="nu-eyebrow mdoc__eyebrow-centro"><MarcaCorte cor="var(--nu-ink)" /><span>Aportou MCP</span></p>
-      <h2 class="mdoc__final-t">Dois minutos e a sua IA<br>fica do lado de dentro.</h2>
-      <p class="mdoc__final-p">Gere a chave grátis e conecte a Aportou ao seu assistente hoje.</p>
-      <NuBotaoSeta :to="ctaTo" variante="carvao" class="mdoc__cta">Gerar minha chave</NuBotaoSeta>
+      <div class="mdoc__final-painel">
+        <MarcaCorte class="mdoc__final-corte nu-corte-fundo" :largura="620" cor="var(--nu-white)" />
+        <NuEyebrow como="p" sobre="azul">Aportou MCP</NuEyebrow>
+        <h2 class="mdoc__final-t">Dois minutos e a sua IA <br>fica do lado de dentro.</h2>
+        <p class="mdoc__final-p">Gere a chave grátis e conecte a Aportou ao seu assistente hoje.</p>
+        <NuBotaoSeta :to="ctaTo" variante="creme" class="mdoc__final-cta">Gerar minha chave</NuBotaoSeta>
+      </div>
     </section>
   </div>
 </template>
 
 <style scoped>
 /* A página na personalidade da Aportou (11/11/2026): creme da página, faixas
-   --nu-band, o painel cobalto dos passos, carvão no fecho. Nenhuma faixa
-   branca de ponta a ponta: branco é só cartão. Cor só por token. */
-.mdoc { --g: clamp(20px, 5.5vw, 80px); background: var(--nu-page); }
+   --nu-band, o painel carvão dos passos e o painel azul no fecho. Nenhuma
+   faixa branca de ponta a ponta: branco é só cartão. Cor só por token. */
+.mdoc { --g: max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2)); background: var(--nu-page); }
 .mdoc__in { max-width: 1240px; margin: 0 auto; }
+.mdoc__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ——— herói ——— */
 .mdoc__hero {
-  padding: clamp(56px, 8vw, 104px) var(--g) clamp(52px, 7vw, 84px);
+  padding: clamp(40px, 5.5vw, 80px) var(--g) clamp(48px, 6vw, 80px);
   animation: nu-fade .5s ease both;
 }
 /* duas colunas na anatomia do herói da home: texto + demo */
 .mdoc__cols { display: flex; gap: clamp(28px, 5vw, 72px); align-items: center; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
 .mdoc__left { flex: 1.1 1 460px; min-width: min(320px, 100%); }
 .mdoc__right { flex: 1 1 380px; min-width: min(320px, 100%); display: flex; justify-content: center; }
+/* o palco da demo: um painel quente onde o dock e a janela acontecem */
+.mdoc__palco {
+  display: flex; justify-content: center; width: 100%; max-width: 580px;
+  padding: clamp(18px, 3vw, 44px); border-radius: var(--nu-r-card-lg);
+  background: var(--nu-band); box-shadow: var(--nu-shadow-quente);
+}
 /* H1 no clamp do herói de duas colunas: divide a largura com a demo */
 .mdoc__h1 {
   margin: 18px 0 0; color: var(--nu-ink);
@@ -270,63 +298,74 @@ usePageSeo({
 }
 .mdoc__sub {
   color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500;
-  line-height: 1.45; margin: 22px 0 0; max-width: 600px;
+  line-height: 1.45; margin: 22px 0 0; max-width: 600px; text-wrap: pretty;
 }
 .mdoc__cta { margin-top: 30px; }
 
-/* ——— painel azul: o gradiente cobalto da marca, raio de seção, o corte
-       gigante a 8% no canto; cartões de passo em carvão translúcido ——— */
-.mdoc__band { padding: 0 var(--g) clamp(52px, 6.5vw, 84px); }
+/* ——— como funciona: painel carvão, raio de seção; passos numerados do
+       contrato (número gigante sobre um fio de 3px) ——— */
+.mdoc__band { padding: 0 var(--g) clamp(56px, 7vw, 96px); }
 .mdoc__painel {
-  position: relative; overflow: hidden; max-width: 1240px; margin: 0 auto;
-  background: var(--nu-grad-cobalto); border-radius: var(--nu-r-secao);
-  padding: clamp(36px, 5.2vw, 72px) clamp(22px, 5vw, 64px);
+  max-width: 1240px; margin: 0 auto;
+  background: var(--nu-ink); border-radius: var(--nu-r-secao); box-shadow: var(--nu-shadow-escuro);
+  padding: clamp(36px, 5.2vw, 72px) clamp(24px, 5vw, 64px);
   animation: nu-fade .5s ease .08s both;
 }
-.mdoc__painel-corte { position: absolute; right: -90px; bottom: -150px; opacity: .08; pointer-events: none; }
-.mdoc__band-in { position: relative; }
 .mdoc__band-title {
   margin: 18px 0 0; color: var(--nu-white);
-  font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02;
+  font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance;
 }
 .mdoc__steps {
-  list-style: none; margin: clamp(28px, 3.5vw, 40px) 0 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 16px;
+  list-style: none; margin: clamp(32px, 4vw, 52px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 44px);
 }
-.mdoc__step {
-  display: flex; gap: 14px; align-items: flex-start;
-  background: color-mix(in srgb, var(--nu-ink) 46%, transparent);
-  box-shadow: inset 0 0 0 1.5px var(--nu-white-14);
-  border-radius: var(--nu-r-panel); padding: 22px 20px;
-  animation: nu-fade .5s ease both;
-}
+.mdoc__step { display: flex; flex-direction: column; animation: nu-fade .5s ease both; }
 .mdoc__step:nth-child(2) { animation-delay: .06s; }
 .mdoc__step:nth-child(3) { animation-delay: .12s; }
 .mdoc__step-n {
-  width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-  background: var(--nu-green-soft); color: var(--nu-ink); border-radius: 50%; font-size: var(--nu-fs-md); font-weight: 800;
+  display: block; padding-bottom: 14px; border-bottom: 3px solid var(--nu-dark-chip-line);
+  color: var(--nu-blue-on-dark); font-size: clamp(64px, 6vw, 88px); font-weight: 800;
+  letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums;
 }
-.mdoc__step-t { color: var(--nu-white); font-size: var(--nu-fs-lg); font-weight: 800; letter-spacing: -0.01em; }
-.mdoc__step-p { margin: 6px 0 0; color: var(--nu-blue-on-blue); font-size: var(--nu-fs-sm); font-weight: 500; line-height: 1.55; }
-.mdoc__endpoint { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: clamp(24px, 3vw, 32px); }
-.mdoc__endpoint-label { color: var(--nu-blue-on-blue); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.mdoc__step-t { margin-top: 20px; color: var(--nu-white); font-size: clamp(20px, 1.8vw, 24px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.mdoc__step-p { margin: 8px 0 0; max-width: 34ch; color: var(--nu-on-dark); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.5; }
+.mdoc__endpoint {
+  display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
+  margin-top: clamp(28px, 3.6vw, 48px); padding-top: clamp(20px, 2.4vw, 28px); border-top: 1.5px solid var(--nu-dark-line);
+}
+.mdoc__endpoint-label { color: var(--nu-on-dark-2); font-size: var(--nu-fs-marca); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .mdoc__endpoint-url {
-  background: color-mix(in srgb, var(--nu-ink) 60%, transparent); color: var(--nu-green-soft);
+  background: var(--nu-dark-chip); box-shadow: inset 0 0 0 1px var(--nu-dark-chip-line); color: var(--nu-green-soft);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-sm); font-weight: 500;
-  padding: 11px 15px; border-radius: var(--nu-r-chip); overflow-x: auto; white-space: nowrap; max-width: 100%;
+  padding: 11px 15px; border-radius: var(--nu-r-chip); max-width: 100%; overflow-wrap: anywhere;
 }
-.mdoc__endpoint-note { color: var(--nu-blue-on-blue-2); font-size: var(--nu-fs-dense); font-weight: 500; }
-.mdoc__endpoint-note code { color: var(--nu-white); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.mdoc__endpoint-note { color: var(--nu-on-dark-2); font-size: var(--nu-fs-sm); font-weight: 500; overflow-wrap: anywhere; }
+.mdoc__endpoint-note code { color: var(--nu-on-dark); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--nu-fs-dense); }
 
 /* ——— seções: página e faixa quente se alternam ——— */
 .mdoc__sec { padding: clamp(64px, 7vw, 100px) var(--g); }
 .mdoc__sec--band { background: var(--nu-band); }
-.mdoc__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2-sm); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.mdoc__lead { color: var(--nu-gray-3); font-size: var(--nu-fs-lg); font-weight: 500; line-height: 1.5; margin: 18px 0 0; max-width: 720px; }
-.mdoc__link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.mdoc__h2 { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
+.mdoc__lead { color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; margin: 18px 0 0; max-width: 720px; text-wrap: pretty; }
+.mdoc__lead strong { color: var(--nu-ink); font-weight: 700; }
+.mdoc__link { color: var(--nu-blue-text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+
+/* ——— como conectar: o texto de um lado, a porta (o botão) do outro ——— */
+.mdoc__sec--porta { padding-top: clamp(48px, 5.5vw, 76px); padding-bottom: clamp(48px, 5.5vw, 76px); }
+.mdoc__porta { display: flex; align-items: center; justify-content: space-between; gap: 28px 56px; flex-wrap: wrap; }
+.mdoc__porta-txt { flex: 1 1 520px; min-width: 0; }
+.mdoc__porta-acao { display: flex; align-items: center; gap: 16px; flex: none; }
+.mdoc__porta-ias { display: flex; }
+.mdoc__porta-ia {
+  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%;
+  background: var(--nu-white); box-shadow: 0 0 0 3px var(--nu-band), var(--nu-shadow-quente);
+}
+.mdoc__porta-ia + .mdoc__porta-ia { margin-left: -12px; }
+.mdoc__porta-ia img { width: 26px; height: 26px; object-fit: contain; }
 
 /* ——— corretoras ——— */
-.mdoc__insts-note { margin: 20px 0 0; color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; line-height: 1.6; max-width: 720px; }
+.mdoc__insts-note { display: flex; align-items: flex-start; gap: 9px; margin: 22px 0 0; color: var(--nu-gray-3); font-size: 15.5px; font-weight: 600; line-height: 1.5; max-width: 720px; }
+.mdoc__insts-note svg { flex: none; margin-top: 3px; color: var(--nu-green-text); }
 /* faixa central de avatares sobrepostos + círculo de contagem */
 .mdoc__strip { display: flex; justify-content: center; align-items: center; margin-top: clamp(36px, 4.5vw, 56px); }
 .mdoc__ava {
@@ -343,47 +382,100 @@ usePageSeo({
 }
 
 /* ——— comparativo: cartão branco dentro da faixa quente ——— */
-.mdoc__cmp-head { text-align: center; max-width: 820px; margin: 0 auto; }
+.mdoc__cmp-head { text-align: center; max-width: 1040px; margin: 0 auto; }
 .mdoc__eyebrow-centro { justify-content: center; }
+.mdoc__h2--center { font-size: clamp(30px, 4vw, 54px); }
 .mdoc__h2 em { color: var(--nu-blue-text); font-style: normal; }
 .mdoc__lead--center { margin-left: auto; margin-right: auto; }
 .mdoc__cmp-card {
-  background: var(--nu-white); border-radius: var(--nu-r-panel);
-  box-shadow: var(--nu-shadow-branco); margin: 36px auto 0; max-width: 1080px;
+  background: var(--nu-white); border-radius: var(--nu-r-card);
+  box-shadow: var(--nu-shadow-branco); margin: clamp(32px, 4vw, 48px) auto 0; max-width: 1080px;
   overflow: hidden;
 }
-.mdoc__cmp-scroll { overflow-x: auto; }
-.mdoc__cmp { width: 100%; min-width: 720px; border-collapse: collapse; }
-.mdoc__cmp th {
+.mdoc__cmp { width: 100%; border-collapse: collapse; }
+.mdoc__cmp thead th {
   color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
-  text-align: center; padding: 18px 14px; border-bottom: 1.5px solid var(--nu-line-2);
+  text-align: center; padding: 20px 14px; border-bottom: 1.5px solid var(--nu-line-2); line-height: 1.35;
 }
-.mdoc__cmp th.mdoc__cmp-q { text-align: left; padding-left: 24px; }
-.mdoc__cmp td { text-align: center; padding: 15px 14px; border-bottom: 1.5px solid var(--nu-line-2); }
-.mdoc__cmp tbody tr:last-child td { border-bottom: 0; }
-.mdoc__cmp td.mdoc__cmp-q { text-align: left; padding-left: 24px; color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 700; line-height: 1.4; }
-.mdoc__cmp th.mdoc__cmp-us { color: var(--nu-blue-text); }
+.mdoc__cmp thead th.mdoc__cmp-q { text-align: left; padding-left: 28px; }
+.mdoc__cmp td, .mdoc__cmp tbody th { text-align: center; padding: 15px 14px; border-bottom: 1.5px solid var(--nu-line-2); }
+.mdoc__cmp tbody tr:last-child td, .mdoc__cmp tbody tr:last-child th { border-bottom: 0; }
+.mdoc__cmp tbody th.mdoc__cmp-q { text-align: left; padding-left: 28px; color: var(--nu-ink); font-size: 15.5px; font-weight: 700; line-height: 1.4; }
+.mdoc__cmp tbody tr { transition: background .2s; }
+.mdoc__cmp tbody tr:hover { background: var(--nu-row-hover); }
+.mdoc__cmp thead th.mdoc__cmp-us { color: var(--nu-blue-text); }
 .mdoc__cmp .mdoc__cmp-us { background: var(--nu-blue-bg); }
-.mdoc__yes { color: var(--nu-blue); display: inline-block; vertical-align: middle; }
-.mdoc__no { color: var(--nu-sand); display: inline-block; vertical-align: middle; }
-.mdoc__cell-txt { color: var(--nu-gray); font-size: var(--nu-fs-dense); font-weight: 600; }
+/* as marcas: o sim da Aportou é o círculo cheio; o dos outros, só o traço */
+.mdoc__marca { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; vertical-align: middle; }
+.mdoc__marca--sim { color: var(--nu-blue); }
+.mdoc__marca--nao { color: var(--nu-sand); }
+.mdoc__cmp-us .mdoc__marca--sim { background: var(--nu-blue); color: var(--nu-white); }
+.mdoc__cell-txt { color: var(--nu-gray); font-size: var(--nu-fs-sm); font-weight: 600; }
 
-/* ——— FAQ + chamada final ——— */
+/* ——— FAQ ——— */
 .mdoc__faq { max-width: 860px; margin: 0 auto; text-align: center; }
 .mdoc__faq-list { margin-top: clamp(28px, 3.5vw, 40px); text-align: left; }
-.mdoc__final {
-  background: var(--nu-sage); padding: clamp(64px, 8vw, 104px) var(--g); text-align: center;
-  display: flex; flex-direction: column; align-items: center;
-}
-.mdoc__final-t { margin: 18px 0 0; color: var(--nu-ink); font-size: var(--nu-fs-h2); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.mdoc__final-p { margin: 18px 0 0; color: var(--nu-ink); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; }
 
+/* ——— chamada final: o painel azul do contrato ——— */
+.mdoc__final { padding: 0 var(--g) clamp(56px, 6vw, 88px); }
+.mdoc__final-painel {
+  position: relative; isolation: isolate; overflow: hidden; max-width: 1240px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: clamp(36px, 6vw, 88px) clamp(24px, 5vw, 64px);
+  border-radius: var(--nu-r-secao); background: var(--nu-grad-cobalto); color: var(--nu-white);
+}
+/* posição e tamanho são da classe global .nu-corte-fundo (sempre no canto de cima à esquerda) */
+.mdoc__final-corte { z-index: -1; opacity: .08; }
+.mdoc__final-t { margin: 18px 0 0; color: var(--nu-white); font-size: var(--nu-fs-hero); font-weight: 800; letter-spacing: -0.035em; line-height: .98; text-wrap: balance; }
+.mdoc__final-p { margin: 20px 0 0; max-width: 46ch; color: var(--nu-blue-on-blue); font-size: clamp(18px, 1.5vw, 21px); font-weight: 500; line-height: 1.45; text-wrap: pretty; }
+.mdoc__final-cta { margin-top: clamp(26px, 3vw, 36px); }
+
+@media (max-width: 860px) {
+  .mdoc__steps { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .mdoc__step-n { font-size: 56px; padding-bottom: 10px; }
+  .mdoc__step-t { margin-top: 14px; }
+  .mdoc__step-p { max-width: none; }
+}
+/* ——— comparativo no celular: cada linha é um cartão. A pergunta em cima, as
+       três respostas de hoje lado a lado e a da Aportou numa faixa azul ——— */
+@media (max-width: 760px) {
+  .mdoc__cmp-card { background: none; box-shadow: none; border-radius: 0; overflow: visible; }
+  .mdoc__cmp, .mdoc__cmp tbody { display: block; }
+  .mdoc__cmp thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .mdoc__cmp tbody tr {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    background: var(--nu-white); border-radius: var(--nu-r-panel); box-shadow: var(--nu-shadow-branco); overflow: hidden;
+  }
+  .mdoc__cmp tbody tr:hover { background: var(--nu-white); }
+  .mdoc__cmp tbody tr + tr { margin-top: 12px; }
+  .mdoc__cmp tbody th.mdoc__cmp-q { grid-column: 1 / -1; padding: 16px 18px 13px; border-bottom: 0; font-size: 16.5px; line-height: 1.3; }
+  .mdoc__cmp td {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px;
+    padding: 10px 6px; border-bottom: 0; border-top: 1.5px solid var(--nu-line-2);
+  }
+  .mdoc__cmp td + td:not(.mdoc__cmp-us) { border-left: 1.5px solid var(--nu-line-2); }
+  .mdoc__cmp td::before {
+    content: attr(data-coluna); color: var(--nu-gray); font-size: 12.5px; font-weight: 700; line-height: 1.25; text-align: center; text-wrap: balance;
+  }
+  .mdoc__cmp td.mdoc__cmp-us {
+    grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between;
+    padding: 9px 18px; border-top: 0;
+  }
+  .mdoc__cmp td.mdoc__cmp-us::before { color: var(--nu-blue-text); font-size: 13.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+  /* o eyebrow comprido cabe numa linha, com o corte ao lado */
+  .mdoc__cmp-head .mdoc__eyebrow-centro { font-size: 12px; letter-spacing: 0.12em; }
+}
 @media (max-width: 640px) {
-  .mdoc__band { padding-left: 12px; padding-right: 12px; }
-  .mdoc__painel { border-radius: var(--nu-r-card-lg); }
-  .mdoc__painel-corte { width: 280px; height: auto; right: -70px; bottom: -80px; }
+  .mdoc__band, .mdoc__final { padding-left: 12px; padding-right: 12px; }
+  .mdoc__painel, .mdoc__final-painel { border-radius: var(--nu-r-card-lg); }
+  .mdoc__porta-acao { gap: 12px; }
+  .mdoc__porta-ia { width: 44px; height: 44px; }
+  .mdoc__porta-ia img { width: 22px; height: 22px; }
+  /* no celular a quebra feita à mão atrapalha o text-wrap: balance */
+  .mdoc__band-title br, .mdoc__final-t br { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mdoc__hero, .mdoc__painel, .mdoc__step { animation: none; }
+  .mdoc__cmp tbody tr { transition: none; }
 }
 </style>

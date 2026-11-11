@@ -64,8 +64,8 @@ const estado = (n: number) => (n < props.passo ? 'feito' : n === props.passo ? '
   background: var(--nu-cream-2); color: var(--nu-gray-3);
 }
 .ajr__texto { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.ajr__t { color: var(--nu-ink); font-size: var(--nu-fs-sm); font-weight: 800; }
-.ajr__d { color: var(--nu-gray-2); font-size: var(--nu-fs-xs); font-weight: 500; line-height: 1.45; }
+.ajr__t { color: var(--nu-ink); font-size: 15px; font-weight: 800; }
+.ajr__d { color: var(--nu-gray-2); font-size: 13.5px; font-weight: 500; line-height: 1.45; }
 .ajr__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* agora: o passo da vez em azul; feito: o check verde; depois: quieto */

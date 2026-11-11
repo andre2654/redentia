@@ -175,6 +175,11 @@ export function shocksTitle(s: SimShocks): string {
   if (s.petroleo !== undefined) parts.push(`Petróleo ${fmtSigned(s.petroleo, 0)}%`)
   return parts.length ? parts.join(' · ') : 'Cenário base'
 }
+/** o título do cenário no meio de uma frase: minúsculas, mas "R$" e "Selic" ficam como se escrevem
+ *  (o toLowerCase puro dava "dólar a r$ 5,56") */
+export function emFrase(t: string): string {
+  return t.toLowerCase().replace(/r\$/g, 'R$').replace(/\bselic\b/g, 'Selic')
+}
 export interface SimScenarioOut {
   key: string
   title: string
@@ -459,7 +464,7 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
         rfNote: p.asset.rf?.durationYears
           ? `marcação ≈ −duration ${p.asset.rf.durationYears.toLocaleString('pt-BR')} anos × Δjuros${p.asset.rf.indexer === 'ipca' ? ' (sensibilidade nominal 0,65)' : ''}`
           : p.asset.rf
-            ? 'pós-fixado: sem marcação relevante — o efeito é no carrego'
+            ? 'pós-fixado: sem marcação relevante, o efeito é no carrego'
             : undefined,
       }
     })
@@ -501,15 +506,15 @@ export function runMockSimulation(shocks: SimShocks, portfolio: SimPortfolioInpu
     ? 'No cenário base, o tempo é o único protagonista.'
     : items.length === 1
       ? `A conta do cenário desenhado: ${fmtSigned(severest!.total)}% na carteira, no ${severest!.total < 0 ? 'vale' : 'pico'}.`
-      : `Uma década, ${items.length} cenários — o mais fundo leva ${fmtSigned(severest!.total)}%.`
+      : `Uma década, ${items.length} cenários: o mais fundo leva ${fmtSigned(severest!.total)}%.`
   const narrative = isBase
-    ? 'A carteira compõe {mark}CDI mais o prêmio de risco{/mark} escalado pelo beta. Em 10 anos, a diferença entre o pessimista e o otimista vem inteira da volatilidade — e é por isso que {mark}a faixa abre com o tempo{/mark}.'
+    ? 'A carteira compõe {mark}CDI mais o prêmio de risco{/mark} escalado pelo beta. Em 10 anos, a diferença entre o pessimista e o otimista vem inteira da volatilidade, e é por isso que {mark}a faixa abre com o tempo{/mark}.'
     : items.length === 1
-      ? `Com ${shocksTitle(items[0]!.shocks).toLowerCase()} em ${items[0]!.year}, as regras do motor dão {mark}${fmtSigned(severest!.total)}% na carteira{/mark}, aplicados ao longo de 6 meses${severest!.total < 0 ? ' com recuperação em U' : ''}.${costTxt}${whoTxt} Cada regra usada está aberta aqui embaixo — mude o cenário e a conta refaz.`
-      : `${computed.map((c, ix) => `${ix === 0 ? 'Em' : 'em'} {mark}${c.year}{/mark}, ${shocksTitle(c.shocks).toLowerCase()} dá ${fmtSigned(c.total)}% na carteira`).join('; ')}.${costTxt}${whoTxt}`
+      ? `Com ${emFrase(shocksTitle(items[0]!.shocks))} em ${items[0]!.year}, as regras do motor dão {mark}${fmtSigned(severest!.total)}% na carteira{/mark}, aplicados ao longo de 6 meses${severest!.total < 0 ? ' com recuperação em U' : ''}.${costTxt}${whoTxt} Cada regra usada está aberta aqui embaixo: mude o cenário e a conta refaz.`
+      : `${computed.map((c, ix) => `${ix === 0 ? 'Em' : 'em'} {mark}${c.year}{/mark}, ${emFrase(shocksTitle(c.shocks))} dá ${fmtSigned(c.total)}% na carteira`).join('; ')}.${costTxt}${whoTxt}`
   const filmLine = isBase
-    ? 'cenário base — só o tempo e os juros'
-    : items.length === 1 ? title.toLowerCase() : `${items.length} cenários pela década`
+    ? 'cenário base: só o tempo e os juros'
+    : items.length === 1 ? emFrase(title) : `${items.length} cenários pela década`
 
   return {
     shocks,
@@ -569,17 +574,17 @@ export function buildClientSummary(r: SimResult): SimClientSummary {
 
   const whatsapp
     = `Rodei uma simulação de 10 anos da sua carteira (${anchor}) no cenário "${r.scenario.title}". `
-      + `O caminho central termina em ${fmtBRL(r.final.p50)} — mas o honesto é a faixa: entre ${faixa}.`
+      + `O caminho central termina em ${fmtBRL(r.final.p50)}, mas o honesto é a faixa: entre ${faixa}.`
       + `${choqueTxt} Os números já são líquidos de IR estimado. Te mostro as premissas quando quiser.`
 
-  const emailSubject = `Simulação da sua carteira — ${r.scenario.title}`
+  const emailSubject = `Simulação da sua carteira: ${r.scenario.title}`
   const emailBody
     = `Simulei o comportamento da sua carteira (${anchor} hoje) ao longo de 10 anos no cenário "${r.scenario.title}". `
-      + `A mediana da simulação termina em ${fmtBRL(r.final.p50)}, com a faixa estatística entre ${faixa} — a faixa é o dado; a mediana é só o meio dela.`
+      + `A mediana da simulação termina em ${fmtBRL(r.final.p50)}, com a faixa estatística entre ${faixa}. A faixa é o dado; a mediana é só o meio dela.`
       + `${choqueTxt} O carrego líquido estimado da carteira nesse cenário é de ${r.assumptions.carryPct.toLocaleString('pt-BR')}% ao ano, com beta ${r.assumptions.beta.toLocaleString('pt-BR')} contra o IBOV. `
       + `Posso abrir a conta posição a posição na nossa próxima conversa.`
 
-  const footer = `Simulação de ${hoje} · protótipo Aportou · faixa estatística com premissas explícitas — não é previsão nem recomendação de investimento · valores líquidos de IR estimado (isentos sem desconto).`
+  const footer = `Simulação de ${hoje} · protótipo Aportou · faixa estatística com premissas explícitas, não é previsão nem recomendação de investimento · valores líquidos de IR estimado (isentos sem desconto).`
 
   return { whatsapp, emailSubject, emailBody, footer }
 }

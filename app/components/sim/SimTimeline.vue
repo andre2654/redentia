@@ -44,7 +44,7 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
     <div ref="track" class="stl__track" @pointerdown="onDown" @pointermove="onMove" @pointerup="onUp" @pointercancel="onUp">
       <div class="stl__rail" />
       <span v-for="y in years" :key="y.label" class="stl__year" :style="{ left: `${y.f * 100}%` }">
-        <i class="stl__tick" />{{ y.label }}
+        <i class="stl__tick" /><span><span class="stl__sec">{{ y.label.slice(0, 2) }}</span>{{ y.label.slice(2) }}</span>
       </span>
       <span
         v-for="ev in events" :key="ev.label + ev.at" class="stl__event"
@@ -82,5 +82,9 @@ const cursorLabel = computed(() => (cursor.value === null ? null : props.dates[c
   position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
   color: var(--nu-white); font-size: var(--nu-fs-xs); font-weight: 700; font-style: normal;
   white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+/* no celular dez anos de quatro dígitos encostavam um no outro: ficam os dois últimos, como no "ano a ano" */
+@media (max-width: 560px) {
+  .stl__sec { display: none; }
 }
 </style>

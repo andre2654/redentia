@@ -44,10 +44,10 @@ withDefaults(defineProps<{
 <style scoped>
 .lgb__p {
   margin: 16px 0 0; color: var(--nu-gray-3);
-  font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  font-size: 17px; font-weight: 500; line-height: 1.65; text-wrap: pretty;
 }
 .lgb__p--lede {
-  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 20px); line-height: 1.55;
+  color: var(--nu-gray-3); font-size: clamp(18px, 1.5vw, 21px); line-height: 1.5;
 }
 
 .lgb__list {
@@ -59,7 +59,7 @@ withDefaults(defineProps<{
   margin: 12px 0 4px; list-style: lower-alpha; gap: 8px;
 }
 .lgb__li {
-  color: var(--nu-gray-3); font-size: var(--nu-fs-md); font-weight: 500; line-height: 1.7;
+  color: var(--nu-gray-3); font-size: 17px; font-weight: 500; line-height: 1.65;
   padding-left: 4px;
 }
 .lgb__li::marker { color: var(--nu-blue-text); font-weight: 700; }
@@ -69,6 +69,6 @@ withDefaults(defineProps<{
   margin: clamp(24px, 2.6vw, 32px) 0 0; color: var(--nu-ink);
   font-size: clamp(19px, 1.7vw, 22px); font-weight: 800;
   letter-spacing: -0.02em; line-height: 1.2;
-  scroll-margin-top: 88px;
+  scroll-margin-top: calc(var(--nuh-h, 72px) + 64px);
 }
 </style>

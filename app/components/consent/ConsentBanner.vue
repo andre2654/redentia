@@ -140,7 +140,8 @@ onBeforeUnmount(() => {
   max-width: 100%;
   margin: 0;
   box-sizing: border-box;
-  padding: 8px clamp(12px, 2vw, 32px);
+  /* o texto e os botões alinham com o contêiner do topo (1240px), não com a borda da janela */
+  padding: 8px max(clamp(20px, 5.5vw, 80px), calc((100% - 1240px) / 2));
   border-radius: 0;
   background: var(--nu-band);
   color: var(--nu-ink);
@@ -198,6 +199,13 @@ onBeforeUnmount(() => {
   .ck__txt { font-size: 13.5px; line-height: 1.3; }
   .ck__acoes { gap: 6px; }
   .ck__btn { padding: 0 14px; font-size: 13.5px; }
+}
+/* celular: o corte numa coluna e o texto na outra (a frase não volta para baixo do sinal),
+   e "Privacidade · Cookies" ficam juntos na linha de baixo */
+@media (max-width: 520px) {
+  .ck__txt { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; }
+  .ck__txt :deep(.mkc) { grid-row: 1 / span 2; align-self: start; margin: 1px 0 0; }
+  .ck__links { grid-column: 2; margin: 3px 0 0; }
 }
 /* No fluxo do rodapé o cartão também não sai do documento: a folga, se
    houver, é o padding-bottom do rodapé, não um fixed por cima do texto. */
